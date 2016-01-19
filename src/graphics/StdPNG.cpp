@@ -368,10 +368,8 @@ void CPNGFile::WaitForSaves()
 		first = false;
 #ifdef HAVE_WINTHREAD
 		Sleep(100);
-#elif defined (__APPLE__)
+#else
 		sched_yield();
-#elif defined(HAVE_PTHREAD)
-		pthread_yield();
 #endif
 	}
 }

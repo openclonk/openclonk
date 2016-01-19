@@ -64,7 +64,7 @@ func EnsureTrees(proplist area)
 	return true;
 }
 
-global func FxIntWaterfallTimer(object obj, int eff)
+global func FxIntWaterfallTimer(object obj, proplist eff)
 {
 	InsertMaterial(Material("Water"), 1560,840);
 	ExtractLiquid(1314,901);

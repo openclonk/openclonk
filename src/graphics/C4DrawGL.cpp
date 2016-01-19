@@ -103,7 +103,7 @@ namespace
 #undef USERPARAM_CONST
 
 CStdGL::CStdGL():
-	pMainCtx(0), CurrentVBO(0)
+	pMainCtx(0), CurrentVBO(0), NextVAOID(VAOIDs.end())
 {
 	GenericVBOs[0] = 0;
 	Default();
@@ -220,6 +220,11 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_MaterialAmbient] = "materialAmbient"; // unused
+	uniformNames[C4SSU_MaterialDiffuse] = "materialDiffuse"; // unused
+	uniformNames[C4SSU_MaterialSpecular] = "materialSpecular"; // unused
+	uniformNames[C4SSU_MaterialEmission] = "materialEmission"; // unused
+	uniformNames[C4SSU_MaterialShininess] = "materialShininess"; // unused
 	uniformNames[C4SSU_Bones] = "bones"; // unused
 	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
 	uniformNames[C4SSU_Count] = NULL;
@@ -376,16 +381,6 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 {
 	// store options
 	bool ok = RestoreDeviceObjects();
-
-	// - AMD GPUs have supported OpenGL 2.1 since 2007
-	// - nVidia GPUs have supported OpenGL 2.1 since 2005
-	// - Intel integrated GPUs have supported OpenGL 2.1 since Clarkdale (maybe earlier).
-	// And we've already been using features from OpenGL 2.1. Nobody has complained yet.
-	// So checking for 2.1 support should be fine.
-	if (!GLEW_VERSION_2_1)
-	{
-		return Error("  gl: OpenGL Version 2.1 or higher required. A better graphics driver will probably help.");
-	}
 	return ok;
 }
 
@@ -646,21 +641,31 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		glBufferSubData(GL_ARRAY_BUFFER, 0, n_vertices * sizeof(C4BltVertex), vertices);
 	}
 
-	const GLuint position = shader_call->GetAttribute(C4SSA_Position);
-	const GLuint color = shader_call->GetAttribute(C4SSA_Color);
-	const GLuint texcoord = has_tex ? shader_call->GetAttribute(C4SSA_TexCoord) : 0;
-
-	glEnableVertexAttribArray(position);
-	glEnableVertexAttribArray(color);
-
-	if(has_tex)
+	// Choose the VAO that corresponds to the chosen VBO. Also, use one
+	// that supplies texture coordinates if we have texturing enabled.
+	GLuint vao;
+	const unsigned int vao_index = vbo_index + (has_tex ? N_GENERIC_VBOS : 0);
+	const unsigned int vao_id = GenericVAOs[vao_index];
+	const bool has_vao = GetVAO(vao_id, vao);
+	glBindVertexArray(vao);
+	if (!has_vao)
 	{
-		glEnableVertexAttribArray(texcoord);
-		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
-	}
+		// Initialize VAO for this context
+		const GLuint position = shader_call->GetAttribute(C4SSA_Position);
+		const GLuint color = shader_call->GetAttribute(C4SSA_Color);
+		const GLuint texcoord = has_tex ? shader_call->GetAttribute(C4SSA_TexCoord) : 0;
 
-	glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
-	glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
+		glEnableVertexAttribArray(position);
+		glEnableVertexAttribArray(color);
+		if (has_tex)
+			glEnableVertexAttribArray(texcoord);
+
+
+		glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
+		glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
+		if (has_tex)
+			glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
+	}
 
 	switch (op)
 	{
@@ -675,10 +680,8 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		break;
 	}
 
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	if(has_tex) glDisableVertexAttribArray(texcoord);
-	glDisableVertexAttribArray(position);
-	glDisableVertexAttribArray(color);
 }
 
 C4Shader* CStdGL::GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal)
@@ -806,6 +809,8 @@ bool CStdGL::RestoreDeviceObjects()
 		GenericVBOSizes[i] = GENERIC_VBO_SIZE;
 		glBindBuffer(GL_ARRAY_BUFFER, GenericVBOs[i]);
 		glBufferData(GL_ARRAY_BUFFER, GenericVBOSizes[i] * sizeof(C4BltVertex), NULL, GL_STREAM_DRAW);
+		GenericVAOs[i] = GenVAOID();
+		GenericVAOs[i + N_GENERIC_VBOS] = GenVAOID();
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -832,9 +837,13 @@ bool CStdGL::InvalidateDeviceObjects()
 
 	// invalidate generic VBOs
 	if (GenericVBOs[0] != 0)
+	{
 		glDeleteBuffers(N_GENERIC_VBOS, GenericVBOs);
-	GenericVBOs[0] = 0;
-	CurrentVBO = 0;
+		GenericVBOs[0] = 0;
+		CurrentVBO = 0;
+		for (unsigned int i = 0; i < N_GENERIC_VBOS * 2; ++i)
+			FreeVAOID(GenericVAOs[i]);
+	}
 
 	// invalidate shaders
 
@@ -930,6 +939,122 @@ void CStdGL::Default()
 	sfcFmt=0;
 	iClrDpt=0;
 	Workarounds.LowMaxVertexUniformCount = false;
+}
+
+unsigned int CStdGL::GenVAOID()
+{
+	// Generate a new VAO ID. Make them sequential so that the actual
+	// VAOs in the context can be simply maintained with a lookup table.
+	unsigned int id;
+	if (NextVAOID == VAOIDs.begin())
+	{
+		// Insert at the beginning
+		id = 1;
+	}
+	else
+	{
+		// Insert at the end, or somewhere in the middle
+		std::set<unsigned int>::iterator iter = NextVAOID;
+		--iter;
+
+		id = *iter + 1;
+	}
+
+	// Actually insert the ID
+#ifdef NDEBUG
+	std::set<unsigned int>::iterator inserted_iter = VAOIDs.insert(NextVAOID, id);
+#else
+	std::pair<std::set<unsigned int>::iterator, bool> inserted = VAOIDs.insert(id);
+	assert(inserted.second == true);
+	std::set<unsigned int>::iterator inserted_iter = inserted.first;
+#endif
+
+	// Update next VAO ID: increment iterator until we find a gap
+	// in the sequence.
+	NextVAOID = inserted_iter;
+	unsigned int prev_id = id;
+	++NextVAOID;
+	while(NextVAOID != VAOIDs.end() && prev_id + 1 == *NextVAOID)
+	{
+		prev_id = *NextVAOID;
+		++NextVAOID;
+	}
+
+	return id;
+}
+
+void CStdGL::FreeVAOID(unsigned int vaoid)
+{
+	std::set<unsigned int>::iterator iter = VAOIDs.find(vaoid);
+	assert(iter != VAOIDs.end());
+
+	// Delete this VAO in the current context
+	if (pCurrCtx)
+	{
+		if (vaoid < pCurrCtx->hVAOs.size() && pCurrCtx->hVAOs[vaoid] != 0)
+		{
+			glDeleteVertexArrays(1, &pCurrCtx->hVAOs[vaoid]);
+			pCurrCtx->hVAOs[vaoid] = 0;
+		}
+	}
+
+	// For all other contexts, mark it to be deleted as soon as we select
+	// that context. Otherwise we would need to do a lot of context
+	// switching at this point.
+	for (std::list<CStdGLCtx*>::iterator iter = CStdGLCtx::contexts.begin(); iter != CStdGLCtx::contexts.end(); ++iter)
+	{
+		CStdGLCtx* ctx = *iter;
+		if (ctx != pCurrCtx && vaoid < ctx->hVAOs.size() && ctx->hVAOs[vaoid] != 0)
+			if (std::find(ctx->VAOsToBeDeleted.begin(), ctx->VAOsToBeDeleted.end(), vaoid) == ctx->VAOsToBeDeleted.end())
+				ctx->VAOsToBeDeleted.push_back(vaoid);
+	}
+
+	// Delete the VAO ID from our list of VAO IDs in use
+	// If the Next VAO ID is 1, then no matter what we delete we don't need
+	// to update anything. If it is not at the beginning, then move it to the
+	// gap we just created if it was at a higher place, to make sure we keep
+	// the numbers as sequential as possible.
+	unsigned int nextVaoID = 1;
+	if (NextVAOID != VAOIDs.begin())
+	{
+		std::set<unsigned int>::iterator next_vao_iter = NextVAOID;
+		--next_vao_iter;
+		nextVaoID = *next_vao_iter + 1;
+	}
+
+	assert(vaoid != nextVaoID);
+
+	if (vaoid < nextVaoID || iter == NextVAOID)
+		NextVAOID = VAOIDs.erase(iter);
+	else
+		VAOIDs.erase(iter);
+}
+
+bool CStdGL::GetVAO(unsigned int vaoid, GLuint& vao)
+{
+	assert(pCurrCtx != NULL);
+
+	if (vaoid >= pCurrCtx->hVAOs.size())
+	{
+		// Resize the VAO array so that all generated VAO IDs fit
+		// in it, and not only the one requested in this call.
+		// We hope to get away with fewer reallocations this way.
+		assert(VAOIDs.find(vaoid) != VAOIDs.end());
+		std::set<unsigned int>::iterator iter = VAOIDs.end();
+		--iter;
+
+		pCurrCtx->hVAOs.resize(*iter + 1);
+	}
+
+	if (pCurrCtx->hVAOs[vaoid] == 0)
+	{
+		glGenVertexArrays(1, &pCurrCtx->hVAOs[vaoid]);
+		vao = pCurrCtx->hVAOs[vaoid];
+		return false;
+	}
+
+	vao = pCurrCtx->hVAOs[vaoid];
+	return true;
 }
 
 #endif // USE_CONSOLE

@@ -1,9 +1,9 @@
-attribute vec3 oc_Position;
-attribute vec3 oc_Normal;
-attribute vec2 oc_TexCoord;
+in vec3 oc_Position;
+in vec3 oc_Normal;
+in vec2 oc_TexCoord;
 
-varying vec3 vtxNormal;
-varying vec2 texcoord;
+out vec3 vtxNormal;
+out vec2 texcoord;
 
 uniform mat4 projectionMatrix;
 uniform mat4 modelviewMatrix;

@@ -162,7 +162,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 	// abort if loading wasn't successful
 	if (!fSuccess) return false;
 	// create surface(s) - do not create an 8bit-buffer!
-	if (!Create(png.iWdt, png.iHgt, false, 0, iFlags)) return false;
+	if (!Create(png.iWdt, png.iHgt, iFlags)) return false;
 	// lock for writing data
 	if (!Lock()) return false;
 	if (textures.empty())
@@ -342,7 +342,7 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup, int iFlags)
 	jpeg_start_decompress(&cinfo);
 
 	// create surface(s) - do not create an 8bit-buffer!
-	if (!Create(cinfo.output_width, cinfo.output_height, false, 0, iFlags)) return false;
+	if (!Create(cinfo.output_width, cinfo.output_height, iFlags)) return false;
 	// JSAMPLEs per row in output buffer
 	row_stride = cinfo.output_width * cinfo.output_components;
 	// Make a one-row-high sample array that will go away at jpeg_destroy_decompress
@@ -377,7 +377,7 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup, int iFlags)
 
 bool C4Surface::ReadJPEG(CStdStream &, int) {
 	// Dummy surface
-	if (!Create(1, 1, false, 1, 0)) return false;
+	if (!Create(1, 1)) return false;
 	return true;
 }
 

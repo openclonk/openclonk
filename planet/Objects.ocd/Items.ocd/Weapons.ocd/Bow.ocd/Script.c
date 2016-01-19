@@ -60,7 +60,7 @@ public func GetAnimationSet() { return animation_set; }
 public func RejectUse(object clonk)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
-	return !clonk->HasHandAction();
+	return !clonk->HasHandAction(false, false, true);
 }
 
 public func ControlUseStart(object clonk, int x, int y)
@@ -234,3 +234,4 @@ local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local BlastIncinerate = 30;
 local ContactIncinerate = 5;
+local ForceFreeHands = true;

@@ -30,19 +30,19 @@
 protected func Construction()
 {
 	_inherited(...);
-
-	SetAction("Walk");
-	SetDir(Random(2));
-	// Broadcast for rules
-	GameCallEx("OnClonkCreation", this);
+	
+	SetSkin(0);
 
 	AddEffect("IntTurn", this, 1, 1, this);
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
 	iHandMesh = [0,0];
-
-	SetSkin(0);
+	
+	SetAction("Walk");
+	SetDir(Random(2));
+	// Broadcast for rules
+	GameCallEx("OnClonkCreation", this);
 }
 
 /* When adding to the crew of a player */
@@ -455,27 +455,35 @@ static const CARRY_Spear        = 6;
 static const CARRY_Musket       = 7;
 static const CARRY_Grappler     = 8;
 
-func HasHandAction(sec, just_wear)
+func HasHandAction(sec, just_wear, bool force_landscape_letgo)
 {
+	// Check if the clonk is currently able to use hands
+	// sec: Needs both hands (e.g. CarryHeavy?)
+	// just_wear: ???
+	// force_landscape_letgo: Also allow from actions where hands are currently grabbing the landscape (scale, hangle)
 	if(sec && fBothHanded)
 		return false;
 	if(just_wear)
 	{
-		if( HasActionProcedure() && !fHandAction ) // For wear purpose fHandAction==-1 also blocks
+		if( HasActionProcedure(force_landscape_letgo) && !fHandAction ) // For wear purpose fHandAction==-1 also blocks
 			return true;
 	}
 	else
 	{
-		if( HasActionProcedure() && (!fHandAction || fHandAction == -1) )
+		if( HasActionProcedure(force_landscape_letgo) && (!fHandAction || fHandAction == -1) )
 			return true;
 	}
 	return false;
 }
 
-func HasActionProcedure()
+func HasActionProcedure(bool force_landscape_letgo)
 {
+	// Check if the clonk is currently in an action where he could use his hands
+	// if force_landscape_letgo is true, also allow during scale/hangle assuming the clonk will let go
 	var action = GetAction();
 	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride" || action == "BridgeStand")
+		return true;
+	if (force_landscape_letgo) if (action == "Scale" || action == "Hangle")
 		return true;
 	return false;
 }
@@ -653,7 +661,12 @@ func SetSkin(int new_skin)
 
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
-	SetAction("Jump"); //refreshes animation
+	//refreshes animation (whatever that means?)
+	// Go back to original action afterwards and hope
+	// that noone calls SetSkin during more compex activities
+	var prev_action = GetAction();
+	SetAction("Jump");
+	SetAction(prev_action);
 
 	return skin;
 }

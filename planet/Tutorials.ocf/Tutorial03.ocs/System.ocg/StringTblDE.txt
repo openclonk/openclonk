@@ -3,6 +3,7 @@ DlgLumberjackHello=Hallo, ich bin %s, die Holzfällerin des Dorfes.
 DlgLumberjackReply=Ich heiße %s. Du schaust traurig aus.
 DlgLumberjackSawmill=Ja, das stimmt. Mein Sägewerk wurde zerstört und ich finde keine Steine, um es wieder aufzubauen. Kannst du mir helfen?
 DlgLumberjackRock=Ja, ich werde dir Steine finden.
+DlgLumberjackTalkToOthers=Danke, vielleicht kannst du jetzt einem der anderen Dorfbewohner helfen.
 DlgLumberjackWellDone=Danke vielmals, dass du das Sägewerk aufgebaut hast. Kann ich irgendwas für dich tun?
 DlgLumberjackFavor=Tatsächlich kannst du das, ja. Ich brauche Holz, du hast nicht zufällig eine Axt?
 DlgLumberjackMines=Nein, leider nicht. Ich habe meine Axt in der Mine fallen gelassen, als ich mich während des Angriffes versteckt habe.

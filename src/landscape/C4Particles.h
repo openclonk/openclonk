@@ -343,7 +343,7 @@ private:
 
 	// OpenGL optimizations
 	GLuint drawingDataVertexBufferObject;
-	GLuint drawingDataVertexArraysObject;
+	unsigned int drawingDataVertexArraysObject;
 	void ClearBufferObjects();
 
 	// delete the particle at indexTo. If possible, replace it with the particle at indexFrom to keep the particles tighly packed
@@ -445,10 +445,8 @@ class C4ParticleSystem
 
 private:
 	// contains an array with indices for vertices, separated by a primitive restart index
-	std::vector<uint32_t> primitiveRestartIndices;
-	// these are fallbacks for if primitiveRestartIndex is not supported by the graphics card
-	std::vector<GLsizei> multiDrawElementsCountArray;
-	std::vector<uint32_t *> multiDrawElementsIndexArray;
+	GLuint ibo;
+	size_t ibo_size;
 	std::list<C4ParticleList> particleLists;
 
 	CStdCSec particleListAccessMutex;
@@ -475,7 +473,6 @@ public:
 		frameCounterAdvancedEvent.Set();
 #endif
 	}
-	void DoInit();
 	// resets the internal state of the particle system and unloads all definitions
 	void Clear();
 	void DrawGlobalParticles(C4TargetFacet cgo)
@@ -502,17 +499,9 @@ public:
 	C4ParticleSystemDefinitionList definitions;
 
 #ifndef USE_CONSOLE
-	// on some graphics card, glPrimitiveRestartIndex might not be supported
-	bool usePrimitiveRestartIndexWorkaround;
-	GLsizei *GetMultiDrawElementsCountArray() { return &multiDrawElementsCountArray[0]; } 
-	GLvoid **GetMultiDrawElementsIndexArray() { return reinterpret_cast<GLvoid**> (&multiDrawElementsIndexArray[0]); }
-
-	// if true, OpenGL VAOs will not be used (instead the slower direct calls will be made)
-	bool useVAOWorkaround;
-
 	// usually, the following methods are used for drawing
+	GLuint GetIBO() const { return ibo; }
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
-	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
 	// creates a new particle
 	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);

@@ -878,6 +878,11 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_MaterialAmbient] = "materialAmbient";
+	uniformNames[C4SSU_MaterialDiffuse] = "materialDiffuse";
+	uniformNames[C4SSU_MaterialSpecular] = "materialSpecular";
+	uniformNames[C4SSU_MaterialEmission] = "materialEmission";
+	uniformNames[C4SSU_MaterialShininess] = "materialShininess";
 	uniformNames[C4SSU_Bones] = "bones";
 	uniformNames[C4SSU_CullMode] = "cullMode";
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)

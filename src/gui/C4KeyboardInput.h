@@ -225,9 +225,10 @@ private:
 // extra data associated with a key event
 struct C4KeyEventData
 {
+	enum { KeyPos_None = 0x7fffff }; // value used to denote invalid/none key positions
 	int32_t iStrength; // pressure between 0 and 100 (100 for nomal keypress)
 	int32_t game_x,game_y, vp_x,vp_y;       // position for mouse event, landscape+viewport coordinates
-	C4KeyEventData() : iStrength(0), game_x(0), game_y(0), vp_x(0), vp_y(0) {}
+	C4KeyEventData() : iStrength(0), game_x(KeyPos_None), game_y(KeyPos_None), vp_x(KeyPos_None), vp_y(KeyPos_None) {}
 	C4KeyEventData(int32_t iStrength, int32_t game_x, int32_t game_y, int32_t vp_x, int32_t vp_y) : iStrength(iStrength), game_x(game_x), game_y(game_y),vp_x(vp_x),vp_y(vp_y) {}
 	void CompileFunc(StdCompiler *pComp);
 	bool operator ==(const struct C4KeyEventData &cmp) const;

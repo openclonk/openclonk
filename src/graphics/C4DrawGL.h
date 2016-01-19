@@ -68,6 +68,12 @@ enum C4SS_Uniforms
 	C4SSU_AmbientTransform, // C4SSC_LIGHT
 	C4SSU_AmbientBrightness, // C4SSC_LIGHT
 
+	C4SSU_MaterialAmbient, // for meshes
+	C4SSU_MaterialDiffuse, // for meshes
+	C4SSU_MaterialSpecular, // for meshes
+	C4SSU_MaterialEmission, // for meshes
+	C4SSU_MaterialShininess, // for meshes
+
 	C4SSU_Bones, // for meshes
 	C4SSU_CullMode, // for meshes
 
@@ -99,7 +105,7 @@ class CStdGLCtx
 {
 public:
 	CStdGLCtx();  // ctor
-	~CStdGLCtx() { Clear(); }; // dtor
+	~CStdGLCtx() { Clear(); } // dtor
 
 	void Clear();               // clear objects
 
@@ -129,6 +135,15 @@ protected:
 #elif defined(USE_X11)
 	/*GLXContext*/void * ctx;
 #endif
+
+	// Global list of all OpenGL contexts in use
+	static std::list<CStdGLCtx*> contexts;
+	std::list<CStdGLCtx*>::iterator this_context;
+
+	// VAOs available on this context
+	std::vector<GLuint> hVAOs;
+	// VAOs to be deleted the next time this context is being made current.
+	std::vector<unsigned int> VAOsToBeDeleted;
 
 	friend class CStdGL;
 	friend class C4Surface;
@@ -188,8 +203,31 @@ protected:
 	GLuint GenericVBOs[N_GENERIC_VBOS];
 	unsigned int GenericVBOSizes[N_GENERIC_VBOS];
 	unsigned int CurrentVBO;
+	// We need twice as much VAOs, since the sprite rendering routines work
+	// both with and without textures (in which case we either need texture
+	// coordinates or not).
+	unsigned int GenericVAOs[N_GENERIC_VBOS * 2];
+
+	// VAO IDs currently in use.
+	std::set<unsigned int> VAOIDs;
+	std::set<unsigned int>::iterator NextVAOID;
 
 public:
+	// Create a new (unique) VAO ID. A VAO ID is a number that identifies
+	// a certain VAO across all OpenGL contexts. This indirection is needed
+	// because, unlike most other GL state, VAOs are not shared between
+	// OpenGL contexts.
+	unsigned int GenVAOID();
+
+	// Free the given VAO ID, i.e. it can be re-used for new VAOs. This causes
+	// the VAO associated with this ID to be deleted in all OpenGL contexts.
+	void FreeVAOID(unsigned int vaoid);
+
+	// Return a VAO with the given vao ID in the "vao" output variable.
+	// If the function returns false, the VAO was newly created, otherwise
+	// an existing VAO is returned.
+	bool GetVAO(unsigned int vaoid, GLuint& vao);
+
 	// General
 	void Clear();
 	void Default();

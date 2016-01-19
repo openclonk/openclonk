@@ -159,6 +159,7 @@ func Intro_11()
 		{
 			crew->SetPosition(g_tuesday_pos[0],-100);
 			crew->SetXDir(-10); crew->SetYDir(-30);
+			crew->SetAction("Tumble");
 			if (!index) SetPlrView(plr, crew);
 		}
 	}

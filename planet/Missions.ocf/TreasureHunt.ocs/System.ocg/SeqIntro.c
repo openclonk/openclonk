@@ -21,13 +21,13 @@ func Intro_Init(object flagpole)
 	// Pyrit the pilot
 	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
-	this.pilot->SetSkin(2);
 	this.pilot->Enter(this.plane);
 	this.pilot->SetAction("Walk");
 	this.pilot->SetName("Pyrit");
 	this.pilot->SetColor(0xff0000);
 	this.pilot->SetDir(DIR_Left);
 	this.pilot->SetObjectLayer(this.pilot);
+	this.pilot->SetAlternativeSkin("MaleBrownHair");
 	
 	// Pyit has a red hat!
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));

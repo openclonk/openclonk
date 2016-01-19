@@ -967,16 +967,6 @@ bool C4ParticleChunk::Exec(C4Object *obj, float timeDelta)
 	return particleCount > 0;
 }
 
-#if defined(__APPLE__)
-#undef glGenVertexArrays
-#undef glBindVertexArray
-#undef glDeleteVertexArrays
-
-#define glGenVertexArrays glGenVertexArraysAPPLE
-#define glBindVertexArray glBindVertexArrayAPPLE
-#define glDeleteVertexArrays glDeleteVertexArraysAPPLE
-#endif
-
 void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call, int texUnit, const StdProjectionMatrix& modelview)
 {
 	if (particleCount == 0) return;
@@ -1021,66 +1011,46 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 			glObjectLabel(GL_BUFFER, drawingDataVertexBufferObject, -1, "<particles>/VBO");
 #endif
 
-		// generate new vertex arrays object
-		if (!Particles.useVAOWorkaround)
-		{
-			glGenVertexArrays(1, &drawingDataVertexArraysObject);
-			assert (drawingDataVertexArraysObject != 0 && "Could not generate OpenGL vertex arrays object.");
-			
-			// set up the vertex array structure once
-			glBindVertexArray(drawingDataVertexArraysObject);
-
-#ifdef GL_KHR_debug
-			if (glObjectLabel)
-				glObjectLabel(GL_VERTEX_ARRAY, drawingDataVertexArraysObject, -1, "<particles>/VAO");
-#endif
-
-			glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
-			glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
-			glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
-			glVertexAttribPointer(call.GetAttribute(C4SSA_Position), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
-			glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
-			glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
-			glBindVertexArray(0);
-		}
+		// generate new VAO ID
+		drawingDataVertexArraysObject = pGL->GenVAOID();
+		assert (drawingDataVertexArraysObject != 0 && "Could not generate a VAO ID.");
 	}
 
-	assert ((Particles.useVAOWorkaround || drawingDataVertexArraysObject != 0) && "No vertex arrays object has been created yet.");
-	assert ((drawingDataVertexBufferObject != 0) && "No buffer object has been created yet.");
 
-	// bind the VBO and push the new vertex data
-	// this has to be done before binding the vertex arrays object
+	// Push the new vertex data
 	glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(C4Particle::DrawingData::Vertex) * particleCount, &vertexCoordinates[0], GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// bind VAO and set correct state
-	if (!Particles.useVAOWorkaround)
+	// set up the vertex array structure
+	GLuint vao;
+	const bool has_vao = pGL->GetVAO(drawingDataVertexArraysObject, vao);
+	glBindVertexArray(vao);
+
+	assert ((drawingDataVertexBufferObject != 0) && "No buffer object has been created yet.");
+	assert ((drawingDataVertexArraysObject != 0) && "No vertex arrays object has been created yet.");
+
+	if (!has_vao)
 	{
-		glBindVertexArray(drawingDataVertexArraysObject);
-	}
-	else
-	{
+		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO());
+#ifdef GL_KHR_debug
+		if (glObjectLabel)
+			glObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
+#endif
+
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_Position), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
 	}
 
-	if (!Particles.usePrimitiveRestartIndexWorkaround)
-	{
-		glDrawElements(GL_TRIANGLE_STRIP, static_cast<GLsizei> (5 * particleCount), GL_UNSIGNED_INT, ::Particles.GetPrimitiveRestartArray());
-	}
-	else
-	{
-		glMultiDrawElements(GL_TRIANGLE_STRIP, ::Particles.GetMultiDrawElementsCountArray(), GL_UNSIGNED_INT, const_cast<const GLvoid**>(::Particles.GetMultiDrawElementsIndexArray()), static_cast<GLsizei> (particleCount));
-	}
+	glDrawElements(GL_TRIANGLE_STRIP, static_cast<GLsizei> (5 * particleCount), GL_UNSIGNED_INT, 0);
 
 	// reset buffer data
-	if (!Particles.useVAOWorkaround)
-	{
-		glBindVertexArray(0);
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 bool C4ParticleChunk::IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t _attachment) const
@@ -1093,7 +1063,7 @@ void C4ParticleChunk::ClearBufferObjects()
 	if (drawingDataVertexBufferObject != 0) // the value 0 as a buffer index is reserved and will never be returned by glGenBuffers
 		glDeleteBuffers(1, &drawingDataVertexBufferObject);
 	if (drawingDataVertexArraysObject != 0)
-		glDeleteVertexArrays(1, &drawingDataVertexArraysObject);
+		pGL->FreeVAOID(drawingDataVertexArraysObject);
 
 	drawingDataVertexArraysObject = 0;
 	drawingDataVertexBufferObject = 0;
@@ -1158,11 +1128,8 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	pDraw->DeactivateBlitModulation();
 	pDraw->ResetBlitMode();
 	
-	if (!Particles.usePrimitiveRestartIndexWorkaround)
-	{
-		glPrimitiveRestartIndex(0xffffffff);
-		glEnable(GL_PRIMITIVE_RESTART);
-	}
+	glPrimitiveRestartIndex(0xffffffff);
+	glEnable(GL_PRIMITIVE_RESTART);
 
 	// enable shader
 	C4ShaderCall call(pGL->GetSpriteShader(true, false, false));
@@ -1176,16 +1143,6 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	// texture unit. Will be used for each particle chunk to bind
 	// their texture to this unit.
 	const GLint texUnit = call.AllocTexUnit(C4SSU_BaseTex);
-	// Texture coordinates are always associated to texture unit 0, since
-	// there is only one set of texture coordinates
-	glClientActiveTexture(GL_TEXTURE0);
-
-	if (Particles.useVAOWorkaround)
-	{
-		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
-		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
-		glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
-	}
 
 	accessMutex.Enter();
 
@@ -1206,17 +1163,7 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	accessMutex.Leave();
 
-	if (Particles.useVAOWorkaround)
-	{
-		glDisableVertexAttribArray(call.GetAttribute(C4SSA_Position));
-		glDisableVertexAttribArray(call.GetAttribute(C4SSA_Color));
-		glDisableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
-	}
-
-	if (!Particles.usePrimitiveRestartIndexWorkaround)
-	{
-		glDisable(GL_PRIMITIVE_RESTART);
-	}
+	glDisable(GL_PRIMITIVE_RESTART);
 }
 
 void C4ParticleList::Clear()
@@ -1286,8 +1233,8 @@ C4ParticleSystem::C4ParticleSystem() : frameCounterAdvancedEvent(false)
 {
 	currentSimulationTime = 0;
 	globalParticles = 0;
-	usePrimitiveRestartIndexWorkaround = false;
-	useVAOWorkaround = false;
+	ibo = 0;
+	ibo_size = 0;
 }
 
 C4ParticleSystem::~C4ParticleSystem()
@@ -1296,30 +1243,6 @@ C4ParticleSystem::~C4ParticleSystem()
 
 	calculationThread.SignalStop();
 	CalculateNextStep();
-
-	for (std::vector<uint32_t *>::iterator iter = multiDrawElementsIndexArray.begin(); iter != multiDrawElementsIndexArray.end(); ++iter)
-		delete[] (*iter);
-}
-
-void C4ParticleSystem::DoInit()
-{
-	// we use features that are only supported from 3.1 upwards. Check whether the graphics card supports that and - if not - use workarounds
-	if (!GLEW_VERSION_3_1 || (glPrimitiveRestartIndex == 0))
-	{
-		usePrimitiveRestartIndexWorkaround = true;
-		LogSilent("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
-	}
-
-	assert (glGenBuffers != 0 && "Your graphics card does not seem to support buffer objects.");
-	useVAOWorkaround = false;
-
-#ifndef USE_WIN32_WINDOWS
-	// Every window in developers' mode has an own OpenGL context at the moment. Certain objects are not shared between contexts.
-	// In that case we can just use the slower workaround without VAOs to allow the developer to view particles in every viewport.
-	// The best solution would obviously be to make all windows use a single OpenGL context. This has to be considered as a workaround.
-	if (Application.isEditor)
-		useVAOWorkaround = true;
-#endif
 }
 
 void C4ParticleSystem::ExecuteCalculation()
@@ -1345,8 +1268,6 @@ void C4ParticleSystem::ExecuteCalculation()
 		particleListAccessMutex.Leave();
 	}
 }
-#else // ifdef USE_CONSOLE
-void C4ParticleSystem::DoInit() {}
 #endif
 
 C4ParticleList *C4ParticleSystem::GetNewParticleList(C4Object *forObject)
@@ -1492,59 +1413,31 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 
 void C4ParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 {
-	if (!usePrimitiveRestartIndexWorkaround)
+	// prepare array with indices, separated by special primitive restart index
+	const uint32_t PRI = 0xffffffff;
+	size_t neededAmount = 5 * forAmount;
+
+	if (ibo == 0) glGenBuffers(1, &ibo);
+
+	if (ibo_size < neededAmount * sizeof(GLuint))
 	{
-		// prepare array with indices, separated by special primitive restart index
-		const uint32_t PRI = 0xffffffff;
-		size_t neededAmount = 5 * forAmount;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-		if (primitiveRestartIndices.size() < neededAmount)
+		std::vector<GLuint> ibo_data;
+		ibo_data.reserve(neededAmount);
+
+		unsigned int index = 0;
+		for (unsigned int i = 0; i < neededAmount; ++i)
 		{
-			uint32_t oldValue = 0;
-
-			if (primitiveRestartIndices.size() > 2)
-			{
-				oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-1];
-				if (oldValue == PRI)
-					oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-2];
-				++oldValue;
-			}
-			size_t oldSize = primitiveRestartIndices.size();
-			primitiveRestartIndices.resize(neededAmount);
-
-			for (size_t i = oldSize; i < neededAmount; ++i)
-			{
-				if (((i+1) % 5 == 0) && (i != 0))
-				{
-					primitiveRestartIndices[i] = PRI;
-				}
-				else
-				{
-					primitiveRestartIndices[i] = oldValue++;
-				}
-			}
-		}
-	}
-	else
-	{
-		// prepare arrays for glMultiDrawElements
-		if (multiDrawElementsCountArray.size() <= forAmount)
-		{
-			multiDrawElementsCountArray.resize(forAmount, 4);
+			if ((i+1) % 5 == 0)
+				ibo_data.push_back(PRI);
+			else
+				ibo_data.push_back(index++);
 		}
 
-		if (multiDrawElementsIndexArray.size() <= forAmount)
-		{
-			uint32_t oldSize = multiDrawElementsIndexArray.size();
-			multiDrawElementsIndexArray.resize(forAmount);
-
-			for (; oldSize < forAmount; ++oldSize)
-			{
-				multiDrawElementsIndexArray[oldSize] = new uint32_t[4];
-				for (uint32_t i = 0; i < 4; ++i)
-					multiDrawElementsIndexArray[oldSize][i] = 4 * oldSize + i;	
-			}
-		}
+		ibo_size = neededAmount * sizeof(GLuint);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size, &ibo_data[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 }
 #endif
@@ -1552,6 +1445,9 @@ void C4ParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 void C4ParticleSystem::Clear()
 {
 #ifndef USE_CONSOLE
+	if (ibo != 0) glDeleteBuffers(1, &ibo);
+	ibo = 0; ibo_size = 0;
+
 	currentSimulationTime = 0;
 	ClearAllParticles();
 #endif

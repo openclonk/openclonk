@@ -1,2 +1,2 @@
-Name=HeavyCrumb
-Description=Hurts Clonks and buildings!
+Name=Felsbrocken
+Description=Verletzt Clonks und beschädigt Gebäude.

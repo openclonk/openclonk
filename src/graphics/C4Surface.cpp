@@ -51,7 +51,7 @@ C4Surface::C4Surface(int iWdt, int iHgt, int iFlags) : fIsBackground(false)
 {
 	Default();
 	// create
-	Create(iWdt, iHgt, false, 0, iFlags);
+	Create(iWdt, iHgt, iFlags);
 }
 
 C4Surface::C4Surface(C4AbstractApp * pApp, C4Window * pWindow):
@@ -94,7 +94,6 @@ void C4Surface::Default()
 	pWindow=NULL;
 	ClrByOwnerClr=0;
 	iTexSize=iTexX=iTexY=0;
-	fIsRenderTarget=false;
 	fIsBackground=false;
 #ifdef _DEBUG
 	dbg_idx = NULL;
@@ -172,7 +171,7 @@ void C4Surface::Clip(int iX, int iY, int iX2, int iY2)
 	ClipX2=Clamp(iX2,0,Wdt-1); ClipY2=Clamp(iY2,0,Hgt-1);
 }
 
-bool C4Surface::Create(int iWdt, int iHgt, bool fIsRenderTarget, int MaxTextureSize, int iFlags)
+bool C4Surface::Create(int iWdt, int iHgt, int iFlags)
 {
 	Clear(); Default();
 	// check size
@@ -187,9 +186,8 @@ bool C4Surface::Create(int iWdt, int iHgt, bool fIsRenderTarget, int MaxTextureS
 	Format=pGL->sfcFmt;
 #endif
 	byBytesPP=pDraw->byByteCnt;
-	this->fIsRenderTarget = fIsRenderTarget;
 	// create textures
-	if (!CreateTextures(MaxTextureSize, iFlags)) { Clear(); return false; }
+	if (!CreateTextures(iFlags)) { Clear(); return false; }
 	// update clipping
 	NoClip();
 	// success
@@ -203,7 +201,7 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 	// Default to other surface's color depth
 	Default();
 	// Create surface (TODO: copy flags)
-	if (!Create(fromSfc.Wdt, fromSfc.Hgt, false, 0, 0)) return false;
+	if (!Create(fromSfc.Wdt, fromSfc.Hgt)) return false;
 	// Blit copy
 	if (!pDraw->BlitSurface(&fromSfc, this, 0, 0, false))
 		{ Clear(); return false; }
@@ -211,39 +209,16 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 	return true;
 }
 
-namespace
-{
-	int GetNeedTexSize(int Size)
-	{
-		int iNeedSize = Size;
-
-	#ifndef USE_CONSOLE
-		if (!pGL || !GLEW_ARB_texture_non_power_of_two)
-	#endif
-		{
-			int n=0;
-			while ((1<<++n) < iNeedSize) {}
-			iNeedSize = 1<<n;
-		}
-
-		return iNeedSize;
-	}
-}
-
-bool C4Surface::CreateTextures(int MaxTextureSize, int Flags)
+bool C4Surface::CreateTextures(int Flags)
 {
 	// free previous
 	FreeTextures();
-	iTexSize=std::min(GetNeedTexSize(std::max(Wdt, Hgt)), pDraw->MaxTexSize);
-	if (MaxTextureSize)
-		iTexSize=std::min(iTexSize, MaxTextureSize);
+	iTexSize=std::min(std::max(Wdt, Hgt), pDraw->MaxTexSize);
 	// get the number of textures needed for this size
 	iTexX=(Wdt-1)/iTexSize +1;
 	iTexY=(Hgt-1)/iTexSize +1;
 	// get mem for texture array
 	textures.reserve(iTexX * iTexY);
-	// cvan't be render target if it's not a single surface
-	if (!IsSingleSurface()) fIsRenderTarget = false;
 	// create textures
 	for (int y = 0; y < iTexY; ++y)
 	{
@@ -251,8 +226,8 @@ bool C4Surface::CreateTextures(int MaxTextureSize, int Flags)
 		{
 			int sizeX = iTexSize;
 			int sizeY = iTexSize;
-			if(x == iTexX-1) sizeX = GetNeedTexSize( (Wdt - 1) % iTexSize + 1);
-			if(y == iTexY-1) sizeY = GetNeedTexSize( (Hgt - 1) % iTexSize + 1);
+			if(x == iTexX-1) sizeX = (Wdt - 1) % iTexSize + 1;
+			if(y == iTexY-1) sizeY = (Hgt - 1) % iTexSize + 1;
 
 			textures.emplace_back(sizeX, sizeY, Flags);
 			
@@ -337,7 +312,7 @@ bool C4Surface::CreateColorByOwner(C4Surface *pBySurface)
 	if (!pBySurface) return false;
 	if (pBySurface->textures.empty()) return false;
 	// create in same size
-	if (!Create(pBySurface->Wdt, pBySurface->Hgt, false, 0, 0)) return false;
+	if (!Create(pBySurface->Wdt, pBySurface->Hgt)) return false;
 	// copy scale
 	Scale = pBySurface->Scale;
 	// set main surface
@@ -421,7 +396,7 @@ bool C4Surface::ReadBMP(CStdStream &hGroup, int iFlags)
 	}
 
 	// Create and lock surface
-	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, false, 0, iFlags)) return false;
+	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, iFlags)) return false;
 	if (!Lock()) { Clear(); return false; }
 
 	// create line buffer
@@ -729,6 +704,8 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 				uint16_t wClr=ClrDw2W(dwClr);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, iX, iY, 1, 1, GL_BGRA, GL_UNSIGNED_SHORT_4_4_4_4_REV, &wClr);
 			}
+			const bool fMipMap = (pTexRef->iFlags & C4SF_MipMap) != 0;
+			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 			return true;
 		}
 		// Otherwise, make sure that the texlock covers the new pixel
@@ -968,8 +945,8 @@ void C4TexRef::CreateTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
-	if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
+	if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
 
@@ -1038,6 +1015,10 @@ void C4TexRef::Unlock()
 				assert(pGL->pMainCtx);
 				pGL->pMainCtx->Select();
 			}
+
+			const bool fTileable = (iFlags & C4SF_Tileable) != 0;
+			const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
+
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			// reuse the existing texture
@@ -1047,6 +1028,7 @@ void C4TexRef::Unlock()
 			                GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 
 			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
+			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
 

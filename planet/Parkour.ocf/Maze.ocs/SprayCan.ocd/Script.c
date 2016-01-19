@@ -23,43 +23,36 @@ func SetPaintCol(int idx)
 }
 
 // Impact sound
-func Hit()
+public func Hit()
 {
 	Sound("Hits::GeneralHit?");
 }
 
 // Item activation
-func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, int x, int y)
 {
-	if (Distance(0,0,x,y) > max_dist) return true;
-
-	x += GetX(); y += GetY();
-	last_x = x; last_y = y;
-	last_ldx=last_ldy=0;
-	var r = Random(90), wdt = 2;
-	var ldx = Sin(r, wdt), ldy = Cos(r, wdt);
-	DrawMaterialQuad(paint_col, x-ldx,y-ldy, x-ldy,y+ldx, x+ldx,y+ldy, x+ldy,y-ldx, DMQ_Bridge);
-	SetAction("Spraying");
-	return true;
+	return ControlUseHolding(clonk, x, y);
 }
 
-func HoldingEnabled() { return true; }
+public func HoldingEnabled() { return true; }
 
-func ControlUseHolding(object clonk, int new_x, int new_y)
-{	
-	new_x += GetX(); new_y += GetY();
-	if (new_x==last_x && new_y == last_y) return true;
-
-	if (Distance(GetX(),GetY(),new_x,new_y) > max_dist)
+public func ControlUseHolding(object clonk, int new_x, int new_y)
+{
+	// Out of reach? Stop spraying.
+	if (Distance(0,0,new_x,new_y) > max_dist)
 	{
-		last_x = new_x;
-		last_y = new_y;
 		SetAction("Idle");
 		return true;
 	}
 
-	if (GetAction() != "Spraying") SetAction("Spraying");
+	// Work in global coordinates
+	new_x += GetX(); new_y += GetY();
+
+	// (re-)start spraying
+	if (GetAction() != "Spraying") StartSpraying(clonk, new_x, new_y);
 	
+	// Spray paint if position moved
+	if (new_x==last_x && new_y == last_y) return true;
 	var wdt = 2;
 	var dx=new_x-last_x, dy=new_y-last_y;
 	var d = Distance(dx,dy);
@@ -82,6 +75,19 @@ public func ControlUseCancel(object clonk, int x, int y)
 	SetAction("Idle");
 	return true;
 }
+
+private func StartSpraying(object clonk, int x, int y)
+{
+	// Go into spray mode and place an initial blob
+	last_x = x; last_y = y;
+	last_ldx=last_ldy=0;
+	var r = Random(90), wdt = 2;
+	var ldx = Sin(r, wdt), ldy = Cos(r, wdt);
+	DrawMaterialQuad(paint_col, x-ldx,y-ldy, x-ldy,y+ldx, x+ldx,y+ldy, x+ldy,y-ldx, DMQ_Bridge);
+	SetAction("Spraying");
+	return true;
+}
+
 
 local ActMap = {
 	Spraying = {

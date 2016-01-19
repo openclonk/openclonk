@@ -59,8 +59,8 @@ namespace
 	////////////////////////////////////////////
 	StdStrBuf Texture2DToCode(int index, bool hasTextureAnimation)
 	{
-		if (hasTextureAnimation) return FormatString("texture2D(oc_Texture%d, (oc_TextureMatrix%d * vec4(texcoord, 0.0, 1.0)).xy)", index, index);
-		return FormatString("texture2D(oc_Texture%d, texcoord)", index);
+		if (hasTextureAnimation) return FormatString("texture(oc_Texture%d, (oc_TextureMatrix%d * vec4(texcoord, 0.0, 1.0)).xy)", index, index);
+		return FormatString("texture(oc_Texture%d, texcoord)", index);
 	}
 
 	StdStrBuf TextureUnitSourceToCode(int index, StdMeshMaterialTextureUnit::BlendOpSourceType source, const float manualColor[3], float manualAlpha, bool hasTextureAnimation)
@@ -123,17 +123,17 @@ namespace
 		case StdMeshMaterialPass::DF_AlwaysFail:
 			return StdStrBuf("discard;");
 		case StdMeshMaterialPass::DF_Less:
-			return FormatString("if (!(color.a < %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a < %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_LessEqual:
-			return FormatString("if (!(color.a <= %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a <= %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_Equal:
-			return FormatString("if (!(color.a == %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a == %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_NotEqual:
-			return FormatString("if (!(color.a != %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a != %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_Greater:
-			return FormatString("if (!(color.a > %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a > %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_GreaterEqual:
-			return FormatString("if (!(color.a >= %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a >= %f)) discard;", pass.AlphaRejectionValue);
 		default:
 			assert(false);
 			return StdStrBuf();
@@ -238,10 +238,10 @@ namespace
 			"\n"
 			"slice(texture)\n"
 			"{\n"
-			"  vec4 diffuse = color;\n"
+			"  vec4 diffuse = fragColor;\n"
 			"  vec4 currentColor = diffuse;\n"
 			"  %s\n"
-			"  color = currentColor;\n"
+			"  fragColor = currentColor;\n"
 			"}\n"
 			"\n"
 			"slice(finish)\n"
@@ -614,7 +614,10 @@ namespace
 
 		bool using_shared_vertices = instance.GetSubMesh().GetVertices().empty();
 		GLuint vbo = mesh_instance.GetMesh().GetVBO();
-		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInBuffer();
+		GLuint ibo = mesh_instance.GetIBO();
+		unsigned int vaoid = mesh_instance.GetVAOID();
+		size_t vertex_buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInVBO();
+		size_t index_buffer_offset = instance.GetSubMesh().GetOffsetInIBO(); // note this is constant
 
 		// Cook the bone transform matrixes into something that OpenGL can use. This could be moved into RenderMeshImpl.
 		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
@@ -665,13 +668,6 @@ namespace
 				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-
-			// Set material properties
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pass.Specular);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 
 			glFrontFace(parity ? GL_CW : GL_CCW);
 			if(mesh_instance.GetCompletion() < 1.0f)
@@ -734,6 +730,14 @@ namespace
 			call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, modelviewMatrix);
 			call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, normalMatrixTranspose);
 
+
+			// Upload material properties
+			call.SetUniform4fv(C4SSU_MaterialAmbient, 1, pass.Ambient);
+			call.SetUniform4fv(C4SSU_MaterialDiffuse, 1, pass.Diffuse);
+			call.SetUniform4fv(C4SSU_MaterialSpecular, 1, pass.Specular);
+			call.SetUniform4fv(C4SSU_MaterialEmission, 1, pass.Emissive);
+			call.SetUniform1f(C4SSU_MaterialShininess, pass.Shininess);
+
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
 			{
@@ -743,24 +747,39 @@ namespace
 					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
 			}
 
-			// Bind the vertex data of the mesh
+			GLuint vao;
+			const bool has_vao = pGL->GetVAO(vaoid, vao);
+			glBindVertexArray(vao);
+			if (!has_vao)
+			{
+				// Bind the vertex data of the mesh
+				// Note this relies on the fact that all vertex
+				// attributes for all shaders are at the same
+				// locations.
+				// TODO: And this fails if the mesh changes
+				// from a material with texture to one without
+				// or vice versa.
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices1));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(x));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(nx));
+				if (shader->GetAttribute(C4SSA_TexCoord) != -1)
+					glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(u));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(bone_weight));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(bone_index));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
+				if (shader->GetAttribute(C4SSA_TexCoord) != -1)
+					glEnableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices1));
 #undef VERTEX_OFFSET
+			}
 
 			// Bind textures
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
@@ -821,15 +840,10 @@ namespace
 			}
 
 			size_t vertex_count = 3 * instance.GetNumFaces();
-			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, instance.GetFaces());
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices1));
+			assert (vertex_buffer_offset % sizeof(StdMeshVertex) == 0);
+			size_t base_vertex = vertex_buffer_offset / sizeof(StdMeshVertex);
+			glDrawElementsBaseVertex(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, reinterpret_cast<void*>(index_buffer_offset), base_vertex);
+			glBindVertexArray(0);
 			call.Finish();
 
 			if(!pass.DepthCheck)
@@ -869,14 +883,9 @@ namespace
 		for (; attach_iter != instance.AttachedMeshesEnd() && ((*attach_iter)->GetFlags() & StdMeshInstance::AM_DrawBefore); ++attach_iter)
 			RenderAttachedMesh(projectionMatrix, modelviewMatrix, *attach_iter, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, outRect, parity);
 
-		GLint modes[2];
 		// Check if we should draw in wireframe or normal mode
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
-		{
-			// save old mode
-			glGetIntegerv(GL_POLYGON_MODE, modes);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
@@ -884,10 +893,7 @@ namespace
 
 		// reset old mode to prevent rendering errors
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
-		{
-			glPolygonMode(GL_FRONT, modes[0]);
-			glPolygonMode(GL_BACK, modes[1]);
-		}
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)

@@ -146,14 +146,10 @@ private func InitializeMenu()
 	var prop_text = 
 	{
 		Left = Format("0%%%s", ToEmString(10 * menu_height + text_margin)),
-		Right = Format("100%%%s", ToEmString(- 5 * menu_height - text_margin)),
-		// Wrap the text again to scroll only one window instead of also scrolling e.g. the portrait.
-		text =
-		{
-			Target = this,
-			ID = 2,
-			Text = nil,
-		}
+		// 'Right' will be set on update
+		Target = this,
+		ID = 2,
+		Text = nil,
 	};	
 	prop_next =
 	{
@@ -222,8 +218,17 @@ private func ShowGuideMenu(int index)
 private func UpdateGuideMenu(string guide_message, bool has_next, bool has_prev, bool has_close)
 {
 	// Update the text message entry.
-	prop_menu.text.text.Text = guide_message;
-	GuiUpdateText(guide_message, id_menu, prop_menu.text.text.ID, this);
+	prop_menu.text.Text = guide_message;
+
+	// Don't usually leave a margin for the text - just when actually showing buttons.
+	var is_showing_buttons = has_next || has_close || has_prev;
+	
+	var text_right_side = "100%";
+	if (is_showing_buttons)
+	{
+		text_right_side = Format("100%-2.9em");
+	}
+	GuiUpdate({Right = text_right_side, Text = guide_message}, id_menu, prop_menu.text.ID, this);
 	
 	// Update the next/close button.
 	if (has_next || has_close)

@@ -24,6 +24,11 @@
 
 #ifndef USE_CONSOLE
 
+static const int REQUESTED_GL_CTX_MAJOR = 3;
+static const int REQUESTED_GL_CTX_MINOR = 2;
+
+std::list<CStdGLCtx*> CStdGLCtx::contexts;
+
 void CStdGLCtx::SelectCommon()
 {
 	pGL->pCurrCtx = this;
@@ -32,6 +37,22 @@ void CStdGLCtx::SelectCommon()
 	glDepthFunc(GL_LESS);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
+	// Delete pending VAOs
+	std::vector<GLuint> toBeDeleted;
+	if (!VAOsToBeDeleted.empty())
+	{
+		for (unsigned int i = 0; i < VAOsToBeDeleted.size(); ++i)
+		{
+			if (VAOsToBeDeleted[i] < hVAOs.size() && hVAOs[VAOsToBeDeleted[i]] != 0)
+			{
+				toBeDeleted.push_back(hVAOs[VAOsToBeDeleted[i]]);
+				hVAOs[VAOsToBeDeleted[i]] = 0;
+			}
+		}
+
+		glDeleteVertexArrays(toBeDeleted.size(), &toBeDeleted[0]);
+		VAOsToBeDeleted.clear();
+	}
 }
 
 void CStdGLCtx::Reinitialize()
@@ -214,6 +235,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 				else
 				{
 					// init extensions
+					glewExperimental = GL_TRUE;
 					GLenum err = glewInit();
 					if(err != GLEW_OK)
 					{
@@ -239,7 +261,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	return glewInitialized;
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear()
 {
@@ -250,6 +272,12 @@ void CStdGLCtx::Clear()
 		hDC=0;
 	}
 	pWindow = 0; hWindow = NULL;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
@@ -305,17 +333,23 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			else
 			{
 				// create context
-				if (Config.Graphics.DebugOpenGL && wglCreateContextAttribsARB)
+				if (wglCreateContextAttribsARB)
 				{
 					const int attribs[] = {
-						WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+						WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+						WGL_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
+						WGL_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
+						WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 						0
 					};
-					DebugLog("  gl: Creating debug context.");
+
+					if (Config.Graphics.DebugOpenGL)
+						DebugLog("  gl: Creating debug context.");
 					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
 				}
 				else
 				{
+					DebugLog("  gl: wglCreateContextAttribsARB not available; creating default context.");
 					hrc = wglCreateContext(hDC);
 				}
 
@@ -335,6 +369,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 		// After selecting the new context, we have to reinitialize GLEW to
 		// update its function pointers - the driver may elect to expose
 		// different extensions depending on the context attributes
+		glewExperimental = GL_TRUE;
 		GLenum err = glewInit();
 		if (err != GLEW_OK)
 		{
@@ -342,6 +377,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 			return false;
 		}
+
+		this_context = contexts.insert(contexts.end(), this);
 		return true;
 	}
 
@@ -417,7 +454,7 @@ void InitGLXPointers()
 }
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear()
 {
@@ -429,6 +466,12 @@ void CStdGLCtx::Clear()
 		ctx = 0;
 	}
 	pWindow = 0;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
@@ -448,6 +491,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	GLXContext dummy_ctx = glXCreateContext(dpy, vis_info, 0, True);
 	XFree(vis_info);
 	glXMakeCurrent(dpy, pWindow->renderwnd, dummy_ctx);
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (err != GLEW_OK)
 	{
@@ -456,7 +500,10 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	const int attribs[] = {
+		GLX_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
+		GLX_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
 		GLX_CONTEXT_FLAGS_ARB, (Config.Graphics.DebugOpenGL ? GLX_CONTEXT_DEBUG_BIT_ARB : 0),
+		GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
 		None
 	};
 	GLXContext share_context = (pGL->pMainCtx != this) ? static_cast<GLXContext>(pGL->pMainCtx->ctx) : 0;
@@ -479,12 +526,15 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
+	glewExperimental = GL_TRUE;
 	err = glewInit();
 	if (GLEW_OK != err)
 	{
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 	}
+
+	this_context = contexts.insert(contexts.end(), this);
 	return true;
 }
 
@@ -538,11 +588,17 @@ bool CStdGLCtx::PageFlip()
 
 #elif defined(USE_SDL_MAINLOOP)
 
-CStdGLCtx::CStdGLCtx(): pWindow(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear()
 {
 	pWindow = 0;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
@@ -554,12 +610,15 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 	}
+
+	this_context = contexts.insert(contexts.end(), this);
 	return true;
 }
 

@@ -62,7 +62,7 @@ protected func HoldingEnabled() { return true; }
 
 func RejectUse(object clonk)
 {
-	return !clonk->HasHandAction();
+	return !clonk->HasHandAction(false, false, true);
 }
 
 func ControlUseStart(object clonk, int x, int y)
@@ -192,3 +192,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
+local ForceFreeHands = true;

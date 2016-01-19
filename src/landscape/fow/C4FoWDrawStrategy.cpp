@@ -109,14 +109,20 @@ void C4FoWDrawTriangulator::Reset()
 }
 
 C4FoWDrawLightTextureStrategy::C4FoWDrawLightTextureStrategy(const C4FoWLight* light)
- : light(light), region(NULL), vbo_size(0)
+ : light(light), region(NULL), vbo_size(0), ibo_size(0)
 {
-	glGenBuffers(1, &vbo);
+	glGenBuffers(2, bo);
+	vaoids[0] = pGL->GenVAOID();
+	vaoids[1] = pGL->GenVAOID();
+	vaoids[2] = pGL->GenVAOID();
 }
 
 C4FoWDrawLightTextureStrategy::~C4FoWDrawLightTextureStrategy()
 {
-	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(2, bo);
+	pGL->FreeVAOID(vaoids[2]);
+	pGL->FreeVAOID(vaoids[1]);
+	pGL->FreeVAOID(vaoids[0]);
 }
 
 void C4FoWDrawLightTextureStrategy::Begin(const C4FoWRegion* regionPar)
@@ -129,6 +135,9 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	// If we have nothing to draw (e.g. directly after initialization), abort early.
 	if (vertices.empty()) return;
 
+	const GLuint vbo = bo[0];
+	const GLuint ibo = bo[1];
+
 	// Upload vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	if (vbo_size < vertices.size())
@@ -140,6 +149,20 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	{
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 	}
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Upload indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	if (ibo_size < triangulator.GetNIndices())
+	{
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangulator.GetNIndices() * 3 * sizeof(GLuint), triangulator.GetIndices(), GL_DYNAMIC_DRAW);
+		ibo_size = triangulator.GetNIndices();
+	}
+	else
+	{
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, triangulator.GetNIndices() * 3 * sizeof(GLuint), triangulator.GetIndices());
+	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Region dimensions
 	const float width = region->getSurfaceWidth();
@@ -154,10 +177,18 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glScissor(0, height, width, height);
 
 	// Setup state for 1st pass
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
+	GLuint vao1, vao2, vao3;
+	const bool has_vao1 = pGL->GetVAO(vaoids[0], vao1);
+	glBindVertexArray(vao1);
+	if (!has_vao1)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
+	}
 
 	// Set up blend equation, see C4FoWDrawLightTextureStrategy::DrawVertex
 	// for details.
@@ -165,31 +196,51 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
 	// Render 1st pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
 
 	// Prepare state for 2nd pass
-	glBlendFunc(GL_ONE, GL_ONE);
+	//glBlendFunc(GL_ONE, GL_ONE);
 	glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
 
+	const bool has_vao2 = pGL->GetVAO(vaoids[1], vao2);
+	glBindVertexArray(vao2);
+	if (!has_vao2)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
+	}
+	
 	// Render 2nd pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
 
 	// Prepare state for 3rd pass (color pass)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
 	glScissor(0, 0, width, height);
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
 	y_offset[1] = height;
 	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
+
+	const bool has_vao3 = pGL->GetVAO(vaoids[2], vao3);
+	glBindVertexArray(vao3);
+	if (!has_vao3)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
+	}
 	
 	// Render 3rd pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
 
 	// Reset GL state
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 	glDisable(GL_SCISSOR_TEST);
 
 	// Assume the capacity stays the same:
@@ -283,14 +334,16 @@ void C4FoWDrawLightTextureStrategy::DrawLightVertex(float x, float y)
 }
 
 C4FoWDrawWireframeStrategy::C4FoWDrawWireframeStrategy(const C4FoWLight* light, const C4TargetFacet *screen) :
-  light(light), screen(screen), vbo_size(0)
+  light(light), screen(screen), vbo_size(0), ibo_size(0)
 {
-	glGenBuffers(1, &vbo);
+	glGenBuffers(2, bo);
+	vaoid = pGL->GenVAOID();
 }
 
 C4FoWDrawWireframeStrategy::~C4FoWDrawWireframeStrategy()
 {
-	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(2, bo);
+	pGL->FreeVAOID(vaoid);
 }
 
 void C4FoWDrawWireframeStrategy::Begin(const C4FoWRegion* region)
@@ -301,6 +354,9 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 {
 	// If we have nothing to draw (e.g. directly after initialization), abort early.
 	if (vertices.empty()) return;
+
+	const GLuint vbo = bo[0];
+	const GLuint ibo = bo[1];
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -316,22 +372,40 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 	}
 
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+	// Upload indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	if (ibo_size < triangulator.GetNIndices())
+	{
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangulator.GetNIndices() * 3 * sizeof(GLuint), triangulator.GetIndices(), GL_STREAM_DRAW);
+		ibo_size = triangulator.GetNIndices();
+	}
+	else
+	{
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, triangulator.GetNIndices() * 3 * sizeof(GLuint), triangulator.GetIndices());
+	}
 
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r)));
+	GLuint vao;
+	const bool has_vao = pGL->GetVAO(vaoid, vao);
+	glBindVertexArray(vao);
+	if (!has_vao)
+	{
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r)));
+	}
 
 	// Set Y offset for vertex
 	const float y_offset[] = { 0.0f, 0.0f };
 	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
 
 	// Reset GL state
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// Assume the capacity stays the same:

@@ -18,17 +18,17 @@
 uniform mat4 projectionMatrix;
 uniform mat4 modelviewMatrix;
 
-attribute vec2 oc_Position;
-attribute vec4 oc_Color;
+in vec2 oc_Position;
+in vec4 oc_Color;
 
 #ifdef OC_HAVE_BASE
-attribute vec2 oc_TexCoord;
+in vec2 oc_TexCoord;
 #endif
 
-varying vec4 vtxColor;
+out vec4 vtxColor;
 
 #ifdef OC_HAVE_BASE
-varying vec2 texcoord;
+out vec2 texcoord;
 #endif
 
 slice(position)

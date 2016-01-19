@@ -616,6 +616,9 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 		// but still catch command
 		return true;
 	}
+
+	// Disable climb/hangle actions for the duration of this use
+	if (obj.ForceFreeHands && !GetEffect("IntControlFreeHands", this)) AddEffect("IntControlFreeHands", this, 130, 0, this);
 	
 	obj->SetController(GetController());
 	this.control.current_object = obj;
@@ -665,6 +668,9 @@ func StartUseDelayedControl(int ctrl, object obj)
 		return true;
 	}
 	
+	// Disable climb/hangle actions for the duration of this use
+	if (obj.ForceFreeHands && !GetEffect("IntControlFreeHands", this)) AddEffect("IntControlFreeHands", this, 130, 0, this);
+
 	this.control.current_object = obj;
 	this.control.using_type = DetermineUsageType(obj);
 	this.control.alt = ctrl != CON_UseDelayed;
@@ -718,6 +724,8 @@ func StopUseControl(int x, int y, object obj, bool cancel)
 				if (removal_helper.CommandTarget != this) continue;
 				break;
 			} while (true);
+
+			RemoveEffect("IntControlFreeHands", this); // make sure we can climb again
 			
 			this.control.current_object = nil;
 			this.control.using_type = nil;
@@ -916,6 +924,31 @@ func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		}
 	}
 
+}
+
+// Effect to free/unfree hands by disabling/enabling scale and hangle procedures
+public func FxIntControlFreeHandsStart(object target, proplist fx, int temp)
+{
+	// Process on non-temp as well in case scale/handle effects need to stack
+	// Stop current action
+	var proc = GetProcedure();
+	if (proc == "SCALE" || proc == "HANGLE") SetAction("Walk");
+	// Make sure ActMap is writable
+	if (this.ActMap == this.Prototype.ActMap) this.ActMap = new this.ActMap{};
+	// Kill scale/hangle effects
+	fx.act_scale = this.ActMap.Scale;
+	this.ActMap.Scale = nil;
+	fx.act_hangle = this.ActMap.Hangle;
+	this.ActMap.Hangle = nil;
+	return FX_OK;
+}
+
+public func FxIntControlFreeHandsStop(object target, proplist fx, int reason, bool temp)
+{
+	// Restore scale/hangle effects (engine will handle re-grabbing walls if needed)
+	if (fx.act_scale) this.ActMap.Scale = fx.act_scale;
+	if (fx.act_hangle) this.ActMap.Hangle = fx.act_hangle;
+	return FX_OK;
 }
 
 // returns true if the clonk is able to enter a building (procedurewise)
@@ -1174,11 +1207,6 @@ public func ControlJump()
 		}
 	}
 	return false;
-}
-
-func FxIsWallKickStart(object target, int num, bool temp)
-{
-	return 1;
 }
 
 // Interaction with clonks is special:

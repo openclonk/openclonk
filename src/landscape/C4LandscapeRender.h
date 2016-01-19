@@ -72,9 +72,6 @@ const int C4LR_BytesPerPx = 3;
 const int C4LR_BytesPerSurface = 4;
 const int C4LR_SurfaceCount = (C4LR_ByteCount + C4LR_BytesPerSurface - 1) / C4LR_BytesPerSurface;
 
-// How many mip-map levels should be used at maximum?
-const int C4LR_MipMapCount = 6;
-
 class C4Landscape; class C4TextureMap;
 
 class C4LandscapeRender
@@ -122,10 +119,13 @@ private:
 	static const char *UniformNames[];
 	// VBO for landscape vertex data
 	GLuint hVBO;
+	// VAO IDs for rendering landscape w/ and w/o light
+	unsigned int hVAOIDNoLight;
+	unsigned int hVAOIDLight;
 
-	// 3D texture of material textures
-	GLuint hMaterialTexture[C4LR_MipMapCount];
-	// material texture positions in 3D texture
+	// 2D texture array of material textures
+	GLuint hMaterialTexture;
+	// material texture positions in texture array
 	std::vector<StdCopyStrBuf> MaterialTextureMap;
 	// depth of material texture in layers
 	int32_t iMaterialTextureDepth;

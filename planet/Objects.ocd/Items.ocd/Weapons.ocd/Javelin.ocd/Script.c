@@ -42,7 +42,7 @@ public func GetCarryTransform() { if(aiming == 1) return Trans_Rotate(180, 0, 0,
 
 public func RejectUse(object clonk)
 {
-	return !clonk->HasHandAction();
+	return !clonk->HasHandAction(false, false, true);
 }
 
 public func ControlUseStart(object clonk, int x, int y)
@@ -229,3 +229,4 @@ func Definition(def) {
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local ForceFreeHands = true;

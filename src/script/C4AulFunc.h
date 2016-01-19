@@ -79,10 +79,14 @@ public:
 	virtual C4V_Type GetRetType() const = 0;
 	C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false)
 	{
+		// Every parameter type allows conversion from nil, so no parameters are always allowed
+		if (!pPars)
+			return Exec(p, C4AulParSet().Par, fPassErrors);
+		if (!CheckParTypes(pPars->Par, fPassErrors)) return C4Value();
 		return Exec(p, pPars->Par, fPassErrors);
 	}
 	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false) = 0;
-	void CheckParTypes(const C4Value pPars[]) const;
+	bool CheckParTypes(const C4Value pPars[], bool fPassErrors) const;
 };
 
 #endif

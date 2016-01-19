@@ -1,14 +1,14 @@
 
 // Interpolated texture coordinates
-varying vec2 landscapeTexCoord;
+in vec2 landscapeTexCoord;
 #ifdef OC_DYNAMIC_LIGHT
-varying vec2 lightTexCoord;
+in vec2 lightTexCoord;
 #endif
 
 // Input textures
 uniform sampler2D landscapeTex[2];
 uniform sampler2D scalerTex;
-uniform sampler3D materialTex;
+uniform sampler2DArray materialTex;
 
 // Resolution of the landscape texture
 uniform vec2 resolution;
@@ -20,6 +20,8 @@ uniform sampler1D matMapTex;
 uniform float materialDepth;
 uniform vec2 materialSize;
 
+out vec4 fragColor;
+
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
 const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
@@ -28,7 +30,7 @@ const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
 vec4 queryMatMap(int pix)
 {
-	return texture1D(matMapTex, float(pix) / 2.0 / 256.0 + 0.5 / 2.0 / 256.0);
+	return texture(matMapTex, float(pix) / 2.0 / 256.0 + 0.5 / 2.0 / 256.0);
 }
 
 slice(init)
@@ -67,8 +69,8 @@ slice(coordinate)
 slice(texture)
 {
 	// our pixel color (without/with interpolation)
-	vec4 landscapePx = texture2D(landscapeTex[0], centerCoo);
-	vec4 realLandscapePx = texture2D(landscapeTex[0], texCoo);
+	vec4 landscapePx = texture(landscapeTex[0], centerCoo);
+	vec4 realLandscapePx = texture(landscapeTex[0], texCoo);
 
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
@@ -77,12 +79,12 @@ slice(texture)
 	scalerCoo.y += float(iScaler / 8) / 32.0;
 
 	// query scaler texture
-	vec4 scalerPx = texture2D(scalerTex, scalerCoo);
+	vec4 scalerPx = texture(scalerTex, scalerCoo);
 
 	// Get "second" landscape pixel
 	vec2 centerCoo2 = centerCoo + fullStep * floor(vec2(-0.5, -0.5) +
 	                                               scalerPx.gb * 255.0 / 64.0);
-	vec4 landscapePx2 = texture2D(landscapeTex[0], centerCoo2);
+	vec4 landscapePx2 = texture(landscapeTex[0], centerCoo2);
 
 }
 
@@ -95,30 +97,31 @@ slice(texture+4)
 
 slice(material)
 {
+
 	// Get material properties from material map
 	int matMapIx = f2i(landscapePx.r);
 	vec4 matMap = queryMatMap(2*matMapIx);
 	vec4 matMapX = queryMatMap(2*matMapIx+1);
-	float materialIx = float(f2i(matMap.a)) / 256.0 + 0.5 / materialDepth;
+	float materialIx = f2i(matMap.a) / 256.0 * materialDepth;
 	vec3 matEmit = matMap.rgb;
 	vec3 matSpot = matMapX.rgb * 255.9f / 16.0f;
 	float matAngle = matMapX.a;
 
 	// Query material texture pixels
-	vec4 materialPx = texture3D(materialTex, vec3(materialCoo, materialIx));
-	vec4 normalPx = texture3D(materialTex, vec3(materialCoo, materialIx+0.5));
+	vec4 materialPx = texture(materialTex, vec3(materialCoo, materialIx));
+	vec4 normalPx = texture(materialTex, vec3(materialCoo, materialIx+0.5 * materialDepth));
 	// Same for second pixel
 	int matMapIx2 = f2i(landscapePx2.r);
 	vec4 matMap2 = queryMatMap(2*matMapIx2);
 	vec4 matMapX2 = queryMatMap(2*matMapIx2+1);
-	float materialIx2 = float(f2i(matMap2.a)) / 256.0 + 0.5 / materialDepth;
+	float materialIx2 = f2i(matMap2.a) / 256.0 * materialDepth;
 	vec3 matEmit2 = matMap2.rgb;
 	vec3 matSpot2 = matMapX2.rgb * 255.9f / 16.0f;
 	float matAngle2 = matMapX2.a;
 
 	// Query material texture pixels
-	vec4 materialPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2));
-	vec4 normalPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2+0.5));
+	vec4 materialPx2 = texture(materialTex, vec3(materialCoo, materialIx2));
+	vec4 normalPx2 = texture(materialTex, vec3(materialCoo, materialIx2+0.5 * materialDepth));
 }
 
 slice(normal)
@@ -144,12 +147,11 @@ slice(normal)
 }
 
 slice(color) {
-#define color gl_FragColor
-	color = materialPx;
+	fragColor = materialPx;
 	vec4 color2 = materialPx2;
 }
 
 slice(color+10) {
 	// Mix second color into main color according to scaler
-	color = mix(color2, color, scalerPx.r);
+	fragColor = mix(color2, fragColor, scalerPx.r);
 }

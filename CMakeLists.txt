@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.8.10)
+cmake_minimum_required (VERSION 3.0.2)
 project (openclonk CXX C)
 
 # CMP0054: Only interpret if() arguments as variables or keywords when unquoted
@@ -55,9 +55,6 @@ separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
 CHECK_CXX_COMPILER_FLAG("-std=gnu++14" USE_GCC_STD_14)
 if(USE_GCC_STD_14)
-	if(OC_CXX_FLAGS MATCHES \\-std=gnu\\+\\+0x)
-		list(REMOVE_ITEM OC_CXX_FLAGS "-std=gnu++0x")
-	endif()
 	list(APPEND OC_CXX_FLAGS "-std=gnu++14")
 endif()
 
@@ -1142,7 +1139,7 @@ endif()
 
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
-	set_property(TARGET mape APPEND PROPERTY COMPILE_FLAGS ${GTK3_COMPILE_DEFINITIONS})
+	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
 	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
 	target_link_libraries(mape
 		${GTK3_LIBRARIES}
@@ -1172,18 +1169,8 @@ if(WIN32)
 	target_link_libraries(c4script ws2_32)
 endif()
 
-if(NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.10")
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
-else()
-	# CMake started supporting generator expressions in 2.8.10. Earlier
-	# versions pass most of this through unmodified, which confuses make.
-	# Once we stop supporting old versions of CMake, this case can be removed.
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELEASE NDEBUG)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELWITHDEBINFO NDEBUG)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_MINSIZEREL NDEBUG)
-endif()
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
@@ -1493,9 +1480,4 @@ set(CPACK_PACKAGE_VERSION_MINOR "${C4XVER2}")
 set(CPACK_PACKAGE_FILE_NAME "openclonk-${C4XVER1}.${C4XVER2}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "openclonk-src-${C4XVER1}.${C4XVER2}")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
-# Somebody who uses Debian/Ubuntu should set this
-#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
-set(CPACK_RPM_PACKAGE_LICENSE "MIT")
-set(CPACK_RPM_PACKAGE_REQUIRES "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
-
 include(CPack)

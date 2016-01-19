@@ -159,8 +159,8 @@ func FxIntCheckObjectsTimer(target, effect fx)
 	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 20), container_restriction, Find_Layer(target->GetObjectLayer()),
 		// Find all containers and objects with a custom menu.
 		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")),
-		// Do not show objects with an extra slot though - even if they are containers. They count as items here.
-		Find_Not(Find_And(Find_Category(C4D_Object), Find_Func("HasExtraSlots"))),
+		// Do not show objects with an extra slot though - even if they are containers. They count as items here and can be accessed via the surroundings tab.
+		Find_Not(Find_And(Find_Property("Collectible"), Find_Func("HasExtraSlot"))),
 		// Show only objects that the player can see.
 		Find_Func("CheckVisibility", GetOwner()),
 		// Normally sorted by z-order. But some objects may have a lower priority.
@@ -531,7 +531,7 @@ public func OnMoveAllToClicked(int menu_id)
 	for (obj in contents)
 	{
 		// Sanity, can actually happen if an item merges with others during the transfer etc.
-		if (!obj) continue;
+		if (!obj || !target) continue;
 		
 		var collected = target->Collect(obj, true);
 		if (collected)
@@ -750,7 +750,7 @@ func CreateMainMenu(object obj, int slot)
 			{
 				Priority = 1,
 				Style = GUI_TextVCenter | GUI_TextHCenter,
-				Bottom = "+0.75em",
+				Bottom = "+1em",
 				Text = menu.title,
 				BackgroundColor = 0xa0000000,
 				//Decoration = menu.decoration

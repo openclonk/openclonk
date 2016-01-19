@@ -36,12 +36,12 @@
 
 #define MAX_BONE_COUNT 80
 
-attribute vec3 oc_Position;
-attribute vec3 oc_Normal;
-attribute vec2 oc_TexCoord;
+in vec3 oc_Position;
+in vec3 oc_Normal;
+in vec2 oc_TexCoord;
 
-varying vec3 vtxNormal;
-varying vec2 texcoord;
+out vec3 vtxNormal;
+out vec2 texcoord;
 
 uniform mat4 projectionMatrix;
 uniform mat4 modelviewMatrix;
@@ -58,12 +58,12 @@ uniform mat3x4 bones[MAX_BONE_COUNT];
 // respectively. (Or we could split it even further.)
 #define BONE_COUNT 8
 
-attribute vec4 oc_BoneIndices0;
-attribute vec4 oc_BoneWeights0;
+in vec4 oc_BoneIndices0;
+in vec4 oc_BoneWeights0;
 
 #if BONE_COUNT > 4
-attribute vec4 oc_BoneIndices1;
-attribute vec4 oc_BoneWeights1;
+in vec4 oc_BoneIndices1;
+in vec4 oc_BoneWeights1;
 #endif
 
 #ifndef OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS
