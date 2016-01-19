@@ -1,6 +1,6 @@
 /* Automatically created objects file */
 
-static g_flagpole, npc_dagobert, npc_tarzan, g_golden_shovel, g_golden_idol, g_last_stone_door;
+static g_flagpole, g_golden_idol, npc_dagobert, npc_tarzan, g_golden_shovel, g_last_stone_door;
 
 func InitializeObjects()
 {
@@ -11,14 +11,20 @@ func InitializeObjects()
 	CreateObjectAbove(Grass, 1564, 493);
 	CreateObjectAbove(Grass, 1537, 525);
 	CreateObjectAbove(Grass, 1585, 486);
-	CreateObject(Grass, 1739, 429);
+	CreateObjectAbove(Grass, 1739, 430);
 
-	var Torch001 = CreateObjectAbove(Torch, 1869, 1454);
+	var Torch001 = CreateObjectAbove(Torch, 1201, 1549);
 	Torch001->AttachToWall(true);
-	var Torch002 = CreateObjectAbove(Torch, 562, 1126);
+	var Torch002 = CreateObjectAbove(Torch, 1109, 1146);
 	Torch002->AttachToWall(true);
+	var Torch003 = CreateObjectAbove(Torch, 923, 1144);
+	Torch003->AttachToWall(true);
+	var Torch004 = CreateObjectAbove(Torch, 1869, 1454);
+	Torch004->AttachToWall(true);
+	var Torch005 = CreateObjectAbove(Torch, 562, 1126);
+	Torch005->AttachToWall(true);
 
-	var Chest001 = CreateObjectAbove(Chest, 1002, 313);
+	var Chest001 = CreateObject(Chest, 1002, 302);
 	Chest001.Plane = 50;
 
 	var Column001 = CreateObjectAbove(Column, 779, 591);
@@ -104,10 +110,10 @@ func InitializeObjects()
 	var Lichen001 = CreateObjectAbove(Lichen, 2694, 706);
 	Lichen001->SetAction("Grown");
 
-	CreateObjectAbove(BigRock, 1301, 500);
+	CreateObject(BigRock, 1301, 497);
 	CreateObjectAbove(BigRock, 1207, 282);
 	CreateObject(BigRock, 1291, 260);
-	var Amethyst001 = CreateObjectAbove(Amethyst, 803, 583);
+	var Amethyst001 = CreateObject(Amethyst, 803, 579);
 	Amethyst001.Plane = 190;
 
 	var Chest002 = CreateObjectAbove(Chest, 515, 967);
@@ -139,84 +145,11 @@ func InitializeObjects()
 	var Chest019 = CreateObjectAbove(Chest, 730, 135);
 	var Chest020 = CreateObjectAbove(Chest, 1626, 1591);
 
-	var StoneDoor001 = CreateObject(StoneDoor, 940, 1132);
-	StoneDoor001->SetComDir(COMD_Down);
-	StoneDoor001->MakeInvincible();
-	var StoneDoor002 = CreateObject(StoneDoor, 1084, 1132);
-	StoneDoor002->SetComDir(COMD_Down);
-	StoneDoor002->MakeInvincible();
-	var StoneDoor003 = CreateObject(StoneDoor, 564, 436);
-	StoneDoor003->SetComDir(COMD_Down);
-	StoneDoor003->MakeInvincible();
-	var StoneDoor004 = CreateObject(StoneDoor, 843, 716);
-	StoneDoor004->SetComDir(COMD_Down);
-	StoneDoor004->MakeInvincible();
-	var StoneDoor005 = CreateObject(StoneDoor, 1058, 700);
-	StoneDoor005->SetComDir(COMD_Down);
-	StoneDoor005->MakeInvincible();
-	var StoneDoor006 = CreateObject(StoneDoor, 1092, 1028);
-	StoneDoor006->SetComDir(COMD_Down);
-	StoneDoor006->MakeInvincible();
-	var StoneDoor007 = CreateObject(StoneDoor, 1892, 932);
-	StoneDoor007->SetComDir(COMD_Down);
-	StoneDoor007->MakeInvincible();
-	var StoneDoor008 = CreateObject(StoneDoor, 813, 716);
-	StoneDoor008->SetComDir(COMD_Down);
-	StoneDoor008->MakeInvincible();
-	g_last_stone_door = CreateObject(StoneDoor, 781, 716);
-	g_last_stone_door.StaticSaveVar = "g_last_stone_door";
-	g_last_stone_door->SetComDir(COMD_Down);
-	g_last_stone_door->SetClrModulation(0xffa0a0a0);
-	var StoneDoor010 = CreateObject(StoneDoor, 692, 748);
-	StoneDoor010->SetComDir(COMD_Down);
-	StoneDoor010->MakeInvincible();
-	var StoneDoor011 = CreateObject(StoneDoor, 684, 332);
-	StoneDoor011->SetComDir(COMD_Down);
-	StoneDoor011->MakeInvincible();
-
-	var SpinWheel001 = CreateObjectAbove(SpinWheel, 589, 457);
-	SpinWheel001->SetMeshMaterial("SpinWheelGearRed", 0);
-	SpinWheel001->SetStoneDoor(StoneDoor001);
-	var SpinWheel002 = CreateObjectAbove(SpinWheel, 611, 456);
-	SpinWheel002->SetMeshMaterial("SpinWheelGearBlue", 0);
-	SpinWheel002->SetStoneDoor(StoneDoor002);
-	var SpinWheel003 = CreateObjectAbove(SpinWheel, 619, 410);
-	SpinWheel003->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel003->SetStoneDoor(StoneDoor003);
-	var SpinWheel004 = CreateObjectAbove(SpinWheel, 1223, 1553);
-	SpinWheel004->SetStoneDoor(StoneDoor005);
-	var SpinWheel005 = CreateObjectAbove(SpinWheel, 1117, 1048);
-	SpinWheel005->SetStoneDoor(StoneDoor006);
-	var SpinWheel006 = CreateObjectAbove(SpinWheel, 2761, 690);
-	SpinWheel006->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel006->SetStoneDoor(StoneDoor008);
-	var SpinWheel007 = CreateObjectAbove(SpinWheel, 1850, 1463);
-	SpinWheel007->SetMeshMaterial("SpinWheelGearRed", 0);
-	SpinWheel007->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel007->SetStoneDoor(StoneDoor004);
-	var SpinWheel008 = CreateObjectAbove(SpinWheel, 2793, 1521);
-	SpinWheel008->SetMeshMaterial("SpinWheelGearRed", 0);
-	SpinWheel008->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel008->SetStoneDoor(StoneDoor007);
-	var SpinWheel009 = CreateObjectAbove(SpinWheel, 830, 735);
-	SpinWheel009->SetStoneDoor(StoneDoor010);
-	var SpinWheel010 = CreateObjectAbove(SpinWheel, 703, 352);
-	SpinWheel010->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel010->SetStoneDoor(StoneDoor011);
-
 	CreateObjectAbove(Pump, 1027, 1152);
 
 	CreateObjectAbove(Sawmill, 1259, 1047);
 
 	var ToolsWorkshop001 = CreateObjectAbove(ToolsWorkshop, 1169, 903);
-
-	var Column002 = CreateObject(Column, 779, 488);
-	Column002->SetR(180);
-	Column002->SetClrModulation(0xffffd0d0);
-	Column002->SetMeshMaterial("AncientColumn", 0);
-	var Column003 = CreateObject(Column, 1419, 217);
-	Column003->SetMeshMaterial("AncientColumn", 0);
-	CreateObject(Column, 1386, 616);
 
 	CreateObjectAbove(Ruin_Windmill, 1678, 375);
 
@@ -225,17 +158,18 @@ func InitializeObjects()
 	var Idol001 = CreateObjectAbove(Idol, 1045, 721);
 	Idol001->SetMeshMaterial("IdolGrayColor", 0);
 
-	g_flagpole = CreateObjectAbove(Flagpole, 210, 1185);
+	g_flagpole = CreateObject(Flagpole, 210, 1151);
 	g_flagpole.StaticSaveVar = "g_flagpole";
+	g_flagpole->SetName("Respawn");
 	g_flagpole->SetNeutral(true);
 
 	var LotsOfCoins001 = CreateObject(LotsOfCoins, 805, 583);
 	LotsOfCoins001.Plane = 200;
 
 	g_golden_idol = CreateObject(Idol, 824, 568);
-	g_golden_idol.StaticSaveVar = "g_golden_idol";
 	g_golden_idol->SetR(-4);
 	g_golden_idol.Plane = 220;
+	g_golden_idol.StaticSaveVar = "g_golden_idol";
 
 	var Lorry002 = CreateObjectAbove(Lorry, 200, 1183);
 	var Lorry001 = CreateObjectAbove(Lorry, 708, 1407);
@@ -291,7 +225,7 @@ func InitializeObjects()
 	Clonk007->SetColor(0x802000);
 	Clonk007->SetName("Jane");
 	Clonk007->SetSkin(1);
-	npc_tarzan = CreateObjectAbove(Clonk, 754, 879);
+	npc_tarzan = CreateObjectAbove(Clonk, 750, 859);
 	npc_tarzan->SetXDir(3);
 	npc_tarzan->SetYDir(27);
 	npc_tarzan->SetColor(0x402000);
@@ -345,10 +279,8 @@ func InitializeObjects()
 	Bone004->SetYDir(8);
 	var Bone005 = CreateObject(Bone, 479, 964);
 	Bone005->SetR(-51);
-	Bone005->SetYDir(8);
 	var Bone006 = CreateObject(Bone, 464, 965);
 	Bone006->SetR(-51);
-	Bone006->SetYDir(8);
 
 	Lorry002->CreateContents(Loam, 4);
 	CreateObject(Loam, 153, 1232);
@@ -401,24 +333,24 @@ func InitializeObjects()
 	ToolsWorkshop001->CreateContents(GoldBar);
 	CreateObject(GoldBar, 72, 1463);
 	CreateObject(GoldBar, 2746, 736);
-	CreateObject(GoldBar, 2507, 1262);
+	CreateObjectAbove(GoldBar, 2507, 1262);
 	Chest020->CreateContents(GoldBar);
 	var GoldBar003 = CreateObject(GoldBar, 972, 1277);
 	GoldBar003->SetR(55);
 
 	CreateObject(Ruby, 864, 581);
 	CreateObject(Ruby, 806, 583);
-	CreateObjectAbove(Ruby, 849, 582);
+	CreateObject(Ruby, 849, 578);
 	CreateObject(Ruby, 856, 584);
 
 	var Amethyst002 = CreateObject(Amethyst, 793, 584);
 	Amethyst002->SetR(22);
 	CreateObject(Amethyst, 885, 557);
-	CreateObject(Amethyst, 828, 581);
+	CreateObjectAbove(Amethyst, 828, 585);
 
 	Lorry002->CreateContents(Dynamite, 2);
 	Chest006->CreateContents(Dynamite, 3);
-	CreateObjectAbove(Dynamite, 1046, 722);
+	CreateObjectAbove(Dynamite, 790, 736);
 	Chest005->CreateContents(Dynamite, 2);
 	Chest004->CreateContents(Dynamite, 2);
 	Chest002->CreateContents(Dynamite);
@@ -426,9 +358,14 @@ func InitializeObjects()
 	Chest014->CreateContents(Dynamite, 3);
 
 	var Bow001 = Clonk001->CreateContents(Bow);
+	Chest003->CreateContents(Bow);
 
 	Bow001->CreateContents(Arrow);
 	Clonk001->CreateContents(Arrow);
+	var Arrow001 = CreateObject(Arrow, 313, 431);
+	Arrow001->SetR(90);
+	var Arrow002 = CreateObject(Arrow, 313, 431);
+	Arrow002->SetR(90);
 	var Arrow003 = CreateObject(Arrow, 313, 431);
 	Arrow003->SetR(90);
 	var Arrow004 = CreateObject(Arrow, 313, 431);
@@ -443,13 +380,19 @@ func InitializeObjects()
 	Arrow008->SetR(90);
 	var Arrow009 = CreateObject(Arrow, 313, 431);
 	Arrow009->SetR(90);
-	var Arrow010 = CreateObject(Arrow, 313, 431);
-	Arrow010->SetR(90);
-	var Arrow011 = CreateObject(Arrow, 313, 431);
-	Arrow011->SetR(90);
+	Chest003->CreateContents(Arrow);
 
 	Chest021->CreateContents(Bread, 2);
 	Lorry001->CreateContents(Bread, 3);
+	Chest004->CreateContents(Bread);
+	Chest017->CreateContents(Bread);
+	Chest009->CreateContents(Bread);
+	ToolsWorkshop001->CreateContents(Bread);
+	Chest011->CreateContents(Bread);
+	Chest012->CreateContents(Bread);
+	Chest018->CreateContents(Bread);
+	Chest007->CreateContents(Bread);
+	Chest002->CreateContents(Bread);
 
 	Chest021->CreateContents(DynamiteBox, 2);
 	Chest017->CreateContents(DynamiteBox, 2);
@@ -462,6 +405,7 @@ func InitializeObjects()
 	Chest006->CreateContents(Sword);
 	Clonk004->CreateContents(Sword, 2);
 	Lorry001->CreateContents(Sword);
+	Chest003->CreateContents(Sword);
 
 	CreateObjectAbove(Seaweed, 2494, 1263);
 	CreateObjectAbove(Seaweed, 2508, 1263);
@@ -482,16 +426,16 @@ func InitializeObjects()
 	CreateObjectAbove(Seaweed, 2395, 1239);
 	CreateObjectAbove(Seaweed, 2396, 1239);
 	CreateObjectAbove(Seaweed, 2332, 1145);
-	CreateObjectAbove(Seaweed, 2407, 1246);
+	CreateObject(Seaweed, 2407, 1239);
 
-	CreateObjectAbove(Mushroom, 1580, 759);
-	CreateObjectAbove(Mushroom, 1613, 775);
-	CreateObjectAbove(Mushroom, 1525, 846);
-	CreateObjectAbove(Mushroom, 1612, 862);
+	CreateObjectAbove(Mushroom, 1580, 758);
+	CreateObjectAbove(Mushroom, 1613, 776);
+	CreateObjectAbove(Mushroom, 1525, 847);
+	CreateObjectAbove(Mushroom, 1612, 864);
 	CreateObjectAbove(Mushroom, 1321, 895);
-	CreateObjectAbove(Mushroom, 1315, 894);
-	CreateObjectAbove(Mushroom, 1343, 903);
-	CreateObjectAbove(Mushroom, 1347, 901);
+	CreateObjectAbove(Mushroom, 1315, 895);
+	CreateObjectAbove(Mushroom, 1343, 902);
+	CreateObjectAbove(Mushroom, 1347, 903);
 
 	CreateObjectAbove(Balloon, 491, 383);
 
@@ -552,5 +496,78 @@ func InitializeObjects()
 	CreateObject(Firestone, 2161, 942);
 	CreateObject(Firestone, 2073, 861);
 	CreateObject(Firestone, 2064, 851);
+
+	var StoneDoor001 = CreateObject(StoneDoor, 940, 1132);
+	StoneDoor001->SetComDir(COMD_Down);
+	StoneDoor001->MakeInvincible();
+	var StoneDoor002 = CreateObject(StoneDoor, 1084, 1132);
+	StoneDoor002->SetComDir(COMD_Down);
+	StoneDoor002->MakeInvincible();
+	var StoneDoor003 = CreateObject(StoneDoor, 564, 436);
+	StoneDoor003->SetComDir(COMD_Down);
+	StoneDoor003->MakeInvincible();
+	var StoneDoor004 = CreateObject(StoneDoor, 843, 716);
+	StoneDoor004->SetComDir(COMD_Down);
+	StoneDoor004->MakeInvincible();
+	var StoneDoor005 = CreateObject(StoneDoor, 1058, 700);
+	StoneDoor005->SetComDir(COMD_Down);
+	StoneDoor005->MakeInvincible();
+	var StoneDoor006 = CreateObject(StoneDoor, 1092, 1028);
+	StoneDoor006->SetComDir(COMD_Down);
+	StoneDoor006->MakeInvincible();
+	var StoneDoor007 = CreateObject(StoneDoor, 1892, 932);
+	StoneDoor007->SetComDir(COMD_Down);
+	StoneDoor007->MakeInvincible();
+	var StoneDoor008 = CreateObject(StoneDoor, 813, 716);
+	StoneDoor008->SetComDir(COMD_Down);
+	StoneDoor008->MakeInvincible();
+	g_last_stone_door = CreateObject(StoneDoor, 781, 716);
+	g_last_stone_door->SetComDir(COMD_Down);
+	g_last_stone_door->SetClrModulation(0xffa0a0a0);
+	g_last_stone_door.StaticSaveVar = "g_last_stone_door";
+	var StoneDoor009 = CreateObject(StoneDoor, 692, 748);
+	StoneDoor009->SetComDir(COMD_Down);
+	StoneDoor009->MakeInvincible();
+	var StoneDoor010 = CreateObject(StoneDoor, 684, 332);
+	StoneDoor010->SetComDir(COMD_Down);
+	StoneDoor010->MakeInvincible();
+
+	var SpinWheel001 = CreateObjectAbove(SpinWheel, 589, 457);
+	SpinWheel001->SetMeshMaterial("SpinWheelGearRed", 0);
+	SpinWheel001->SetStoneDoor(StoneDoor001);
+	var SpinWheel002 = CreateObjectAbove(SpinWheel, 611, 456);
+	SpinWheel002->SetMeshMaterial("SpinWheelGearBlue", 0);
+	SpinWheel002->SetStoneDoor(StoneDoor002);
+	var SpinWheel003 = CreateObjectAbove(SpinWheel, 619, 410);
+	SpinWheel003->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel003->SetStoneDoor(StoneDoor003);
+	var SpinWheel004 = CreateObject(SpinWheel, 1223, 1545);
+	SpinWheel004->SetStoneDoor(StoneDoor005);
+	var SpinWheel005 = CreateObjectAbove(SpinWheel, 1117, 1048);
+	SpinWheel005->SetStoneDoor(StoneDoor006);
+	var SpinWheel006 = CreateObjectAbove(SpinWheel, 2761, 690);
+	SpinWheel006->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel006->SetStoneDoor(StoneDoor008);
+	var SpinWheel007 = CreateObjectAbove(SpinWheel, 1850, 1463);
+	SpinWheel007->SetMeshMaterial("SpinWheelGearRed", 0);
+	SpinWheel007->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel007->SetStoneDoor(StoneDoor004);
+	var SpinWheel008 = CreateObjectAbove(SpinWheel, 2793, 1521);
+	SpinWheel008->SetMeshMaterial("SpinWheelGearRed", 0);
+	SpinWheel008->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel008->SetStoneDoor(StoneDoor007);
+	var SpinWheel009 = CreateObjectAbove(SpinWheel, 830, 735);
+	SpinWheel009->SetStoneDoor(StoneDoor009);
+	var SpinWheel010 = CreateObjectAbove(SpinWheel, 703, 352);
+	SpinWheel010->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel010->SetStoneDoor(StoneDoor010);
+
+	var Column002 = CreateObject(Column, 779, 488);
+	Column002->SetR(180);
+	Column002->SetClrModulation(0xffffd0d0);
+	Column002->SetMeshMaterial("AncientColumn", 0);
+	var Column003 = CreateObject(Column, 1419, 217);
+	Column003->SetMeshMaterial("AncientColumn", 0);
+	CreateObject(Column, 1386, 616);
 	return true;
 }
