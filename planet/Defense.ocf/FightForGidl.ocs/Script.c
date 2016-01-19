@@ -386,9 +386,8 @@ func Statue_Death()
 	while (i--) EliminatePlayer(GetPlayerByIndex(i, C4PT_User));
 	// Statue down :(
 	CastObjects(Nugget, 5, 10);
-	Explode(10);
 	ScheduleCall(nil, Global.GameOver, 50, 1);
-	return true;
+	return Explode(10);
 }
 
 /* Developer commands */
