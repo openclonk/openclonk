@@ -1,2 +1,2 @@
-Name=HeavyCrumb
-Description=Hurts Clonks and buildings!
+Name=Boulder
+Description=Hurts Clonks and damages buildings.
