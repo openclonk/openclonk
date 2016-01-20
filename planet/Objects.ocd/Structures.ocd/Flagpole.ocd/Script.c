@@ -4,6 +4,7 @@
 #include Library_Structure
 #include Library_Flag
 #include Library_Base // Needed for DoBuy...
+#include Library_PowerDisplay
 
 local ActMap = {
 	Fly = {

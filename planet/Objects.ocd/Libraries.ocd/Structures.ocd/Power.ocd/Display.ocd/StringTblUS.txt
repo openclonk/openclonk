@@ -1,0 +1,11 @@
+MsgPowerOverview=Power Overview
+MsgPowerProduction=Power production:
+MsgPowerProductionCapacity=total capacity
+MsgPowerConsumption=Power consumption:
+MsgPowerConsumptionDemand=total demand
+MsgPowerStored=Stored power:
+MsgPowerStoredCapacity=total capacity
+
+DescPowerProduction=All the power producers in this network together have a capacity of producing %d {{Icon_Lightbulb}}, currently %d {{Icon_Lightbulb}} is being produced.
+DescPowerConsumption=Currently the consumers in this network demand %d {{Icon_Lightbulb}} in total to operate, %d {{Icon_Lightbulb}} is currently being supplied.
+DescPowerStored=Power storages are currently holding %s {{Icon_Lightbulb}} out of their total capacity of  %s {{Icon_Lightbulb}}. This is equivalent of powering a consumer using up one {{Icon_Lightbulb}} for %s minutes.
