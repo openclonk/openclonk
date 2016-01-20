@@ -133,13 +133,19 @@ public func Set(id def, int dir, object stick)
 	definition = def;
 	direction = dir;
 	stick_to = stick;
+	
+	// Set the shape of the construction site.
+	var w = def->~GetSiteWidth(direction, stick_to) ?? def->GetDefWidth();
+	var h = def->~GetSiteHeight(direction, stick_to) ?? def->GetDefHeight();
+	// Height of construction site needs to exceed 12 pixels for the clonk to be able to add materials.
+	var site_h = Max(12, h);
+	SetShape(-w/2, -site_h, w, site_h);
+	// Increase shape for below surface constructions to allow for adding materials.
+	if (definition->~IsBelowSurfaceConstruction())
+		SetShape(-w/2, -2 * site_h, w, 2 * site_h);
 
-	var xw = (1 - dir * 2) * 1000;
-	var w, h;
-	w = def->GetDefWidth();
-	h = def->GetDefHeight();
 	// Draw the building with a wired frame and large alpha unless site graphics is overloaded by definition
-	if (!def->~SetConstructionSiteOverlay(this, direction, stick_to))
+	if (!definition->~SetConstructionSiteOverlay(this, direction, stick_to))
 	{
 		SetGraphics(nil, nil, 0);
 		SetGraphics(nil, def, 1, GFXOV_MODE_Base);
@@ -151,22 +157,14 @@ public func Set(id def, int dir, object stick)
 			SetClrModulation(RGBa(255, 255, 255, 50), 1);
 			SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
 		}
-		SetGraphics("", GetID(), 3, GFXOV_MODE_ExtraGraphics);
+		SetObjDrawTransform((1 - dir * 2) * 1000, 0, 0, 0, 1000, -h * 500, 1);
+		SetObjDrawTransform((1 - dir * 2) * 1000, 0, 0, 0, 1000, -h * 500, 2);
 	}
-	SetObjDrawTransform(xw,0,0,0,1000, -h*500,1);
-	SetObjDrawTransform(xw,0,0,0,1000, -h*500,2);
-	// Height of construction site needs to exceed 12 pixels for the clonk to be able to add materials.
-	h = Max(12, h);
-	SetShape(-w/2, -h, w, h);
-	// Increase shape for below surface constructions to allow for adding materials.
-	if (definition->~IsBelowSurfaceConstruction())
-		SetShape(-w/2, -2 * h, w, 2 * h);
-	
-	SetName(Format(Translate("TxtConstruction"),def->GetName()));
-	
-	this.visibility = VIS_Owner | VIS_Allies;
-	
+
+	SetName(Format(Translate("TxtConstruction"), def->GetName()));
+	this.visibility = VIS_Owner | VIS_Allies;	
 	ShowMissingComponents();
+	return;
 }
 
 // Scenario saving

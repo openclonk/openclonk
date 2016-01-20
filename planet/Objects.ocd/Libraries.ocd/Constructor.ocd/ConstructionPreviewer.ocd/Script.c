@@ -31,11 +31,12 @@ func Set(id to_construct, object constructing_clonk)
 	extra_overlay = to_construct->~ConstructionPreview(this, GFX_PreviewerPictureOverlay, direction);
 	dimension_x = to_construct->GetDefWidth();
 	dimension_y = to_construct->GetDefHeight();
-
 	clonk = constructing_clonk;
 	structure = to_construct;
 	direction = DIR_Left;
 	blocked = true;
+	// Allow the definition to draw an alternative preview.
+	to_construct->~AlternativeConstructionPreview(this, direction);
 	AdjustPreview(structure->~IsBelowSurfaceConstruction());
 	return;
 }
@@ -160,7 +161,8 @@ func Reposition(int x, int y)
 			dir = 0;
 		SetObjDrawTransform(1000, 0, dimension_x/2 * 1000 * dir, 0, 1000, 0, GFX_CombineIconOverlay);
 	}
-
+	// Update alternative preview in the definition to be placed.
+	structure->~AlternativeConstructionPreview(this, direction, stick_to);
 	SetPosition(x, y);
 	AdjustPreview(structure->~IsBelowSurfaceConstruction());
 }

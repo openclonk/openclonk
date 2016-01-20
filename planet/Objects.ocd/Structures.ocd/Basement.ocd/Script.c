@@ -54,7 +54,7 @@ public func CombineWith(object stick_to)
 	return;
 }
 
-public func  SetParent(object to_parent)
+public func SetParent(object to_parent)
 {
 	parent = to_parent;
 	SetWidth(BoundBy(parent->GetObjWidth(), 8, 120));
@@ -73,6 +73,30 @@ public func ConstructionCombineWith() { return "IsStructureWithoutBasement"; }
 public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Bottom; }
 
 public func NoConstructionFlip() { return true; }
+
+public func AlternativeConstructionPreview(object previewer, int direction, object combine_with)
+{
+	var wdt = GetSiteWidth(direction, combine_with);
+	previewer->SetObjDrawTransform(1000 * wdt / 40, 0, 0, 0, 1000, 0, previewer.GFX_StructureOverlay);
+	return;
+}
+
+public func GetSiteWidth(int direction, object combine_with)
+{
+	var wdt = GetDefWidth();
+	if (combine_with)
+		wdt = combine_with->GetObjWidth();
+	return BoundBy(wdt, 8, 120);
+}
+
+public func SetConstructionSiteOverlay(object site, int direction, object combine_with)
+{
+	var wdt = GetSiteWidth(direction, combine_with);
+	site->SetGraphics(nil, Basement, 1, GFXOV_MODE_Base);
+	site->SetClrModulation(RGBa(255, 255, 255, 128), 1);
+	site->SetObjDrawTransform(1000 * wdt / 40, 0, 0, 0, 1000, -4000, 1);
+	return true;
+}
 
 // Don't stick to itself, so it should not be a structure.
 public func IsStructure() { return false; }
