@@ -1,6 +1,7 @@
 [Head]
 Version=6,0
 NoInitialize=true
+Title=PXS and Smoke
 
 [Player1]
 

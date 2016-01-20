@@ -1,5 +1,5 @@
 [Head]
-Title=AITest
+Title=AI Test
 Version=6,0
 
 [Landscape]

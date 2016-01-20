@@ -1,6 +1,6 @@
 [Head]
 Icon=36
-Title=ColorfulLights
+Title=Colorful Lights
 Version=6,0
 Difficulty=45
 NoInitialize=true
