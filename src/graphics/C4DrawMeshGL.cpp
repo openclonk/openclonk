@@ -281,9 +281,13 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 			StdMeshMaterialPass& pass = technique.Passes[j];
 
 			GLint max_texture_units;
-			glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
-			assert(max_texture_units >= 1);
-			
+			glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_texture_units);
+
+			// OpenGL 3.x guarantees at least 16 TIUs. If the above returns
+			// less it's probably a driver bug. So just keep going.
+			assert(max_texture_units >= 16);
+			max_texture_units = std::min<GLint>(max_texture_units, 16);
+
 			unsigned int active_texture_units = 0;
 			for(unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
 				if(pass.TextureUnits[k].HasTexture())
