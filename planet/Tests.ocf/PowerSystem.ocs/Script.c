@@ -201,7 +201,7 @@ global func Test2_OnStart(int plr)
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 100, 160, plr);
 	var coal = engine->CreateContents(Coal, 1);
-	coal->SetCon(10);
+	coal->SetCon(12);
 	
 	// Power consumer: sawmill.
 	CreateObjectAbove(Sawmill, 40, 160, plr);
@@ -634,6 +634,7 @@ global func Test11_OnStart(int plr)
 	var shipyard = CreateObjectAbove(Shipyard, 450, 248, script_plr);
 	shipyard->CreateContents(Wood, 8);
 	shipyard->CreateContents(Metal, 8);
+	shipyard->CreateContents(Cloth, 4);
 	shipyard->AddToQueue(Airship, 2);
 	
 	// Networks are disconnected so let the script player bridge the gap.
