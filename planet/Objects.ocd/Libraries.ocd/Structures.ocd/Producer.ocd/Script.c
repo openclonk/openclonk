@@ -112,14 +112,28 @@ public func GetProductionMenuEntries(object clonk)
 		PushBack(menu_entries, {symbol = product, extra_data = nil, custom = entry});
 	}
 	
-	// At the bottom of the menu, we add some helpful information about the additional features.
+	// Below the symbols, we leave some space for a progress bar to indicate the current product progress.
 	var entry = 
 	{
-		Style = GUI_TextBottom,
-		Bottom = "2em", BackgroundColor = RGBa(0, 0, 0, 100),
+		Bottom = "1em", BackgroundColor = RGBa(0, 0, 0, 50),
+		Priority = 999998,
+		bar = 
+		{
+			BackgroundColor = RGBa(200, 200, 200, 100),
+			Right = "0%"
+		}
+	};
+	var updating_effect = AddEffect("IntUpgradeProductProgressBar", this, 1, 2, this);
+	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry, fx = updating_effect});
+	// At the bottom of the menu, we add some helpful information about the additional features.
+	entry = 
+	{
+		Style = GUI_TextBottom | GUI_FitChildren,
+		Bottom = "1em", BackgroundColor = RGBa(0, 0, 0, 100),
 		Priority = 999999,
 		Text = Format("<c 666666>%s + $Click$: $InfiniteProduction$</c>", GetPlayerControlAssignment(clonk->GetOwner(), CON_ModifierMenu1, true))
 	};
+
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry});
 	return menu_entries;
 }
@@ -178,6 +192,43 @@ private func GetCostString(int amount, bool available)
 	// Format amount to colored string; make it red if it's not available
 	if (available) return Format("%dx", amount);
 	return Format("<c ff0000>%dx</c>", amount);
+}
+
+public func FxIntUpgradeProductProgressBarOnMenuOpened(object target, effect fx, int main_ID, int entry_ID, proplist menu_target)
+{
+	fx.main_ID = main_ID;
+	fx.entry_ID = entry_ID;
+	fx.menu_target = menu_target;
+	// Force update on first 'Timer' call.
+	fx.is_showing = true;
+	EffectCall(target, fx, "Timer");
+}
+
+public func FxIntUpgradeProductProgressBarTimer(object target, effect fx, int time)
+{
+	if (fx.menu_target == nil) return FX_OK;
+	// Find (new?) production effect if not already given.
+	if (fx.production_effect == nil)
+	{
+		fx.production_effect = GetEffect("ProcessProduction", this);
+		if (fx.production_effect == nil)
+		{
+			if (fx.is_showing)
+			{
+				fx.is_showing = false;
+				GuiUpdate({Text = "<c 777777>$Producing$: -</c>", bar = {Right = "0%"}}, fx.main_ID, fx.entry_ID, fx.menu_target);
+			}
+			return FX_OK;
+		}
+	}
+	
+	fx.is_showing = true;
+	var max = ProductionTime(fx.production_effect.Product);
+	var current = Min(max, fx.production_effect.Duration);
+	var percent = 1000 * current / max;
+	var percent_string = Format("%d.%d%%", percent / 10, percent % 10);
+	GuiUpdate({Text = Format("<c aaaaaa>$Producing$: %s</c>", fx.production_effect.Product->GetName()), bar = {Right = percent_string}}, fx.main_ID, fx.entry_ID, fx.menu_target);
+	return FX_OK;
 }
 
 /*-- Production  properties --*/
