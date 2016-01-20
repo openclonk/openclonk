@@ -1,0 +1,4 @@
+[Teams]
+Active=false
+Custom=false
+AllowHostilityChange=true
