@@ -1710,6 +1710,12 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 			const int32_t actualTextHeight = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), rcBounds.Wdt - pScrollBar->rcBounds.Wdt, &sText, true);
 			minRequiredTextHeight = actualTextHeight;
 		}
+		else
+		{
+			// Otherwise, still set the minimum size to the text height (without scrollbar).
+			// This is necessary so that e.g. Style::FitChildren works properly with pure text windows.
+			minRequiredTextHeight = rawTextHeight;
+		}
 	}
 
 	UpdateChildLayout(cgo, width, height);
