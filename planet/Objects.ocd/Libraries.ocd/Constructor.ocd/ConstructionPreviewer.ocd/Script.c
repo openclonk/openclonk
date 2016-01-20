@@ -74,7 +74,7 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 	// intersection-check with all other construction sites... bah
 	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if (!(other_site->GetLeftEdge() > GetX()+dimension_x/2 || other_site->GetRightEdge() < GetX()-dimension_x/2 || other_site->GetTopEdge() < GetY()+half_y || other_site->GetBottomEdge() > GetY()-half_y))
+		if (!(other_site->GetLeftEdge() > GetX()+dimension_x/2 || other_site->GetRightEdge() < GetX()-dimension_x/2 || other_site->GetTopEdge() > GetY()+half_y || other_site->GetBottomEdge() < GetY()-half_y))
 			blocked = true;
 	}
 	
