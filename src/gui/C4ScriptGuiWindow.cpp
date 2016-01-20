@@ -1487,10 +1487,10 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 	int32_t clipX1(0), clipX2(0), clipY1(0), clipY2(0);
 	bool clipping = GetClippingRect(clipX1, clipY1, clipX2, clipY2);
 	
-	const int32_t targetClipX1 = cgo.TargetX + clipX1;
-	const int32_t targetClipY1 = cgo.TargetY + clipY1;
-	const int32_t targetClipX2 = cgo.TargetX + clipX2;
-	const int32_t targetClipY2 = cgo.TargetY + clipY2;
+	const int32_t targetClipX1 = cgo.X + cgo.TargetX + clipX1;
+	const int32_t targetClipY1 = cgo.Y + cgo.TargetY + clipY1;
+	const int32_t targetClipX2 = cgo.X + cgo.TargetX + clipX2;
+	const int32_t targetClipY2 = cgo.Y + cgo.TargetY + clipY2;
 
 	if (clipping)
 	{
