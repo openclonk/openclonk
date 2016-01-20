@@ -1,4 +1,5 @@
 Production=Production
+Producing=Producing
 QueueRemove=Produce one less.
 InfiniteProduction=Infinite production
 Click=Click
