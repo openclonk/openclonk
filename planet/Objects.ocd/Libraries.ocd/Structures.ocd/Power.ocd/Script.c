@@ -440,6 +440,8 @@ public func CheckPowerBalance()
 	// The producers may be underproducing, however, still producing too much for the 
 	// active consumer need. Deactivate producers to correct for this.
 	PostRefreshProducers(GetActivePowerAvailable() - GetPowerConsumption());
+	// Notify other objects depending on the power system the balance has changed.		
+	NotifyOnPowerBalanceChange();
 	// Debugging logs.
 	//LogState(Format("balance_end nd_power = %d, av_power = %d", needed_power, GetActivePowerAvailable()));
 	return;
@@ -477,13 +479,13 @@ public func GetBarePowerAvailable()
 }
 
 // Returns the total active power available in the network.
-public func GetActivePowerAvailable()
+public func GetActivePowerAvailable(bool exclude_storages)
 {
 	var total = 0;
 	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
 	{
 		var link = lib_power.active_producers[index];
-		if (!link)
+		if (!link || (exclude_storages && link.obj->~IsPowerStorage()))
 			continue;
 		total += link.prod_amount;
 	}
@@ -491,14 +493,14 @@ public func GetActivePowerAvailable()
 }
 
 // Returns the amount of power the currently active power consumers need.
-public func GetPowerConsumption()
+public func GetPowerConsumption(bool exclude_storages)
 {
 	var total = 0;
 	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
 	{
 		var link = lib_power.active_consumers[index];
 		// If the link does not exist or has no power need, just continue.
-		if (!link || !link.obj->HasPowerNeed())
+		if (!link || !link.obj->HasPowerNeed() || (exclude_storages && link.obj->~IsPowerStorage()))
 			continue;
 		total += link.cons_amount;
 	}
@@ -519,6 +521,34 @@ public func GetPowerConsumptionNeed()
 		total += link.cons_amount;
 	}
 	return total;	
+}
+
+// Returns the total stored power of all power storages in the network (in power frames).
+public func GetStoredPower()
+{
+	var total = 0;
+	var all_links = GetAllPowerLinks();
+	for (var index = GetLength(all_links) - 1; index >= 0; index--)
+	{
+		var link = all_links[index];
+		if (link && link.obj->~IsPowerStorage())
+			total += link.obj->GetStoredPower();
+	}
+	return total;
+}
+
+// Returns the total capacity for storing power of all power storages in the network (in power frames).
+public func GetStoredPowerCapacity()
+{
+	var total = 0;
+	var all_links = GetAllPowerLinks();
+	for (var index = GetLength(all_links) - 1; index >= 0; index--)
+	{
+		var link = all_links[index];
+		if (link && link.obj->~IsPowerStorage())
+			total += link.obj->GetStorageCapacity();
+	}
+	return total;
 }
 
 // Activates producers according to priotrity from all producers in the network until needed power is met.
@@ -731,6 +761,18 @@ private func UpdatePriorities(array link_list, bool for_consumers)
 	return;
 }
 
+// Called when the power balance of this network changes: notify other objects depending on this.
+private func NotifyOnPowerBalanceChange()
+{
+	// Notify all power display objects a balance change has occured.
+	for (var display_obj in FindObjects(Find_Func("IsPowerDisplay")))
+	{
+		if (Library_Power->GetPowerNetwork(display_obj) == this)
+			display_obj->~OnPowerBalanceChange(this);
+	}
+	return;
+}
+
 
 /*-- Network State --*/
 
@@ -765,6 +807,29 @@ public func GetConsumerLink(object link)
 		if (test_link.obj == link)
 			return test_link;
 	return;
+}
+
+// Returns a list of all the power links in this network.
+public func GetAllPowerLinks()
+{
+	// Combine producers and consumers into a list of all links.
+	var all_producers = Concatenate(lib_power.idle_producers, lib_power.active_producers);
+	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
+	var all_links = Concatenate(all_producers, all_consumers);
+	// Remove duplicate entries with the same link object.
+	for (var index = GetLength(all_links) - 1; index >= 1; index--)
+	{
+		var obj = all_links[index].obj;
+		for (var test_index = index - 1; test_index >= 0; test_index--)
+		{
+			if (obj == all_links[test_index].obj)
+			{
+				RemoveArrayIndex(all_links, index);
+				break;
+			}
+		}
+	}
+	return all_links;
 }
 
 
