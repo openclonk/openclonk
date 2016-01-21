@@ -1533,8 +1533,12 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 		if (oneDrawn && (withMultipleFlag == 0)) break;
 	}
 
-	// scrolling obviously does not affect the scroll bar
+	// Scrolling obviously does not affect the scroll bar.
 	cgo.TargetY += iScrollY;
+	// The scroll bar does not correct for the cgo offset (i.e. the upper board).
+	cgo.TargetX += cgo.X;
+	cgo.TargetY += cgo.Y;
+
 	if (pScrollBar->IsVisible())
 		pScrollBar->DrawElement(cgo);
 	
