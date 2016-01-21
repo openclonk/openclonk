@@ -59,7 +59,7 @@ public func GetConnectedObject(object obj)
 
 private func LineBreak(bool no_msg)
 {
-	Sound("LineBreak");
+	Sound("Objects::LineSnap");
 	if (!no_msg)
 		BreakMessage();
 
