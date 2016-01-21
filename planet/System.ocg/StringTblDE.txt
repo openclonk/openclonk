@@ -9,6 +9,9 @@ CON_Roll_Desc=Eine Vorwärtsrolle machen.
 CON_Jump=Springen
 CON_Jump_Desc=Im Laufen abspringen, aus dem Wasser springen oder sich von einer Wand abstoßen.
 
+CON_FallThrough=Herabsteigen
+CON_FallThrough_Desc=Nach unten durch eine durchlässige Platform fallen lassen.
+
 CON_AimAxisLeft=Zielen - Links (Analog Stick)
 CON_AimAxisRight=Zielen - Rechts (Analog Stick)
 CON_AimAxisUp=Zielen - Hoch (Analog Stick)

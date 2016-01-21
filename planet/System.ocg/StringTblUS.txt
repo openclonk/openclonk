@@ -9,6 +9,9 @@ CON_Roll_Desc=Do an ordinary roll forward.
 CON_Jump=Jump
 CON_Jump_Desc=Jump while running, jump out of the water or leap from a wall.
 
+CON_FallThrough=Descend
+CON_FallThrough_Desc=Move downwards when standing on a permeable platform.
+
 CON_AimAxisLeft=Aim - Left (Analog Stick)
 CON_AimAxisRight=Aim - Right (Analog Stick)
 CON_AimAxisUp=Aim - Up (Analog Stick)
