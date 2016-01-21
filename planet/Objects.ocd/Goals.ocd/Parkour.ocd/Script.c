@@ -24,7 +24,8 @@ local respawn_list; // List of last reached respawn CP per player.
 local plr_list; // Number of checkpoints the player completed.
 local team_list; // Number of checkpoints the team completed.
 local time_store; // String for best time storage in player file.
-local no_respawn_handling; // set to true if this goal should not handle respawn
+local no_respawn_handling; // Set to true if this goal should not handle respawn.
+local transfer_contents; // Set to true if contents should be transferred on respawn.
 
 /*-- General --*/
 
@@ -32,6 +33,7 @@ protected func Initialize()
 {
 	finished = false;
 	no_respawn_handling = false;
+	transfer_contents = false;
 	cp_list = [];
 	cp_count = 0;
 	respawn_list = [];
@@ -122,6 +124,12 @@ public func DisableRespawnHandling()
 	return true;
 }
 
+public func TransferContentsOnRelaunch(bool on)
+{
+	transfer_contents = on;
+	return;
+}
+
 /*-- Scenario saving --*/
 
 public func SaveScenarioObject(props)
@@ -131,6 +139,7 @@ public func SaveScenarioObject(props)
 	var restart_rule = FindObject(Find_ID(Rule_Restart));
 	if (restart_rule) restart_rule->MakeScenarioSaveName();
 	if (no_respawn_handling) props->AddCall("Goal", this, "DisableRespawnHandling");
+	if (transfer_contents) props->AddCall("Goal", this, "TransferContentsOnRelaunch", true);
 	return true;
 }
 
@@ -387,13 +396,18 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 	return;
 }
 
-protected func RelaunchPlayer(int plr)
+protected func OnClonkDeath(object clonk, int killed_by)
 {
-	if (no_respawn_handling) return;
-	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
+	if (no_respawn_handling) 
+		return;
+	var plr = clonk->GetOwner();
+	var new_clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+	new_clonk->MakeCrewMember(plr);
+	SetCursor(plr, new_clonk);
 	JoinPlayer(plr);
+	// Transfer contents if active.
+	if (transfer_contents)
+		Rule_BaseRespawn->TransferInventory(clonk, new_clonk);	
 	// Scenario script callback.
 	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	// Log message.
