@@ -398,9 +398,10 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 
 protected func OnClonkDeath(object clonk, int killed_by)
 {
-	if (no_respawn_handling) 
-		return;
 	var plr = clonk->GetOwner();
+	// Only respawn if required and if the player still exists.
+	if (no_respawn_handling || !GetPlayerName(plr)) 
+		return;
 	var new_clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	new_clonk->MakeCrewMember(plr);
 	SetCursor(plr, new_clonk);
@@ -423,7 +424,7 @@ private func RndRespawnMsg()
 protected func JoinPlayer(int plr)
 {
 	var clonk = GetCrew(plr);
-	clonk->DoEnergy(100000);
+	clonk->DoEnergy(clonk.MaxEnergy / 1000);
 	var pos = FindRespawnPos(plr);
 	clonk->SetPosition(pos[0], pos[1]);
 	AddEffect("IntDirNextCP", clonk, 100, 1, this);
