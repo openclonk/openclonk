@@ -376,13 +376,13 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contact
 				VtxContactCNAT[cvtx]|=CNAT_Center;
 				ContactCount++;
 				// Vertex center contact, now check top,bottom,left,right
-				if (CheckTouchableMaterial(x,y-1,cvtx))
+				if (CheckTouchableMaterial(x,y-1,cvtx, collide_halfvehic ? 1 : 0))
 					VtxContactCNAT[cvtx]|=CNAT_Top;
-				if (CheckTouchableMaterial(x,y+1,cvtx))
+				if (CheckTouchableMaterial(x,y+1,cvtx, collide_halfvehic ? 1 : 0))
 					VtxContactCNAT[cvtx]|=CNAT_Bottom;
-				if (CheckTouchableMaterial(x-1,y,cvtx))
+				if (CheckTouchableMaterial(x-1,y,cvtx, collide_halfvehic ? 1 : 0))
 					VtxContactCNAT[cvtx]|=CNAT_Left;
-				if (CheckTouchableMaterial(x+1,y,cvtx))
+				if (CheckTouchableMaterial(x+1,y,cvtx, collide_halfvehic ? 1 : 0))
 					VtxContactCNAT[cvtx]|=CNAT_Right;
 			}
 			if (border_hack_contacts)
