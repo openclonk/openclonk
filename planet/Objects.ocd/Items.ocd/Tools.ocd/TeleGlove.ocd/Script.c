@@ -227,12 +227,12 @@ global func FxTeleGloveReleasedStart(object target, effect)
 	return;
 }
 
-global func FxTeleGloveWeightStart(object target, int num)
+global func FxTeleGloveWeightStart(object target, proplist effect)
 {
 	target->SetMass(target->GetMass()/2);
 }
 
-global func FxTeleGloveWeightStop(object target, int num, int reason, bool temp)
+global func FxTeleGloveWeightStop(object target, proplist effect, int reason, bool temp)
 {
 	target->SetMass(target->GetDefCoreVal("Mass", "DefCore"));
 }
