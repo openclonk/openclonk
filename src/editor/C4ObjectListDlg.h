@@ -19,9 +19,9 @@
 #ifndef INC_C4ObjectListDlg
 #define INC_C4ObjectListDlg
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
-#endif // WITH_DEVELOPER_MODE
+#endif // USE_GTK
 
 #include "C4ObjectList.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk);
 	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk);
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 private:
 	GtkWidget * window;
 	GtkWidget * treeview;
@@ -48,7 +48,7 @@ private:
 	static void OnDestroy(GtkWidget * widget, C4ObjectListDlg * dlg);
 	static void OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg);
 	static void OnSelectionChanged(GtkTreeSelection * selection, C4ObjectListDlg * dlg);
-#endif // WITH_DEVELOPER_MODE
+#endif // USE_GTK
 };
 
 #endif //INC_C4ObjectListDlg

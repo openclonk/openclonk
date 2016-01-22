@@ -19,15 +19,15 @@
 #ifndef INC_C4DevmodeDlg
 #define INC_C4DevmodeDlg
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
-#endif // WITH_DEVELOPER_MODE
+#endif // USE_GTK
 
 // TODO: Threadsafety?
 class C4DevmodeDlg
 {
 	// Make sure all developer tools are held in the same window
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 private:
 	static GtkWidget* window;
 	static GtkWidget* notebook;
@@ -43,7 +43,7 @@ public:
 	static void SwitchPage(GtkWidget* widget);
 
 	static void SetTitle(GtkWidget* widget, const char* title);
-#endif // WITH_DEVELOPER_MODE
+#endif // USE_GTK
 };
 
 #endif //INC_C4DevmodeDlg

@@ -23,7 +23,7 @@
 #include <C4GameObjects.h>
 
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
 
 

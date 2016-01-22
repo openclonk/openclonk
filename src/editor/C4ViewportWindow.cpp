@@ -25,7 +25,7 @@
 #include <C4Landscape.h>
 #include <C4PlayerList.h>
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
 #endif
 
@@ -97,7 +97,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	return true;
 }
 
-#elif defined(WITH_DEVELOPER_MODE)
+#elif defined(USE_GTK)
 bool C4Viewport::TogglePlayerLock()
 {
 	if (PlayerLock)
@@ -160,7 +160,7 @@ bool C4Viewport::ViewPositionByScrollBars()
 	return true;
 }
 
-#endif // WITH_DEVELOPER_MODE
+#endif // USE_GTK
 
 void C4ViewportWindow::PerformUpdate()
 {

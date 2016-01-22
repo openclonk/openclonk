@@ -557,7 +557,7 @@ void C4Console::RegisterRecentInput(const char *input, RecentScriptInputLists se
 		mru.erase(mru.begin());
 }
 
-#if !(defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(WITH_DEVELOPER_MODE))
+#if !(defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(USE_GTK))
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 	public: State(C4ConsoleGUI *console): Super(console) {}

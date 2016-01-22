@@ -289,7 +289,6 @@ SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 
 find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
 if(USE_GTK)
-	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
 	SET(WITH_GLIB ${GTK3_FOUND})
 	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
 	# Set GTK link directory. This needs to be done before add_executable,

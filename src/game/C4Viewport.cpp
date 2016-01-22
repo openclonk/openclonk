@@ -50,7 +50,7 @@ bool C4Viewport::UpdateOutputSize()
 	// Output size
 	C4Rect rect;
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 	GtkAllocation allocation;
 	gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
 

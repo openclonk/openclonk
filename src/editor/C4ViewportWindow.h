@@ -22,7 +22,7 @@
 
 #include <C4Window.h>
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
 #endif
 #define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
@@ -33,7 +33,7 @@ class C4ViewportWindow: public C4Window
 public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
-#if defined(WITH_DEVELOPER_MODE)
+#if defined(USE_GTK)
 	GtkWidget* h_scrollbar;
 	GtkWidget* v_scrollbar;
 #endif

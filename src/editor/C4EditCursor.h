@@ -25,7 +25,7 @@
 #include "C4Rect.h"
 #include <vector>
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
 #endif
 
@@ -47,14 +47,14 @@ protected:
 		StdCopyStrBuf Command;
 #if defined(USE_WIN32_WINDOWS)
 		UINT_PTR ItemId;
-#elif defined(WITH_DEVELOPER_MODE)
+#elif defined(USE_GTK)
 		GtkWidget* MenuItem;
 #endif
 	};
 	std::vector<ObjselItemDt> itemsObjselect;
 #ifdef USE_WIN32_WINDOWS
 	HMENU hMenu;
-#elif defined(WITH_DEVELOPER_MODE)
+#elif defined(USE_GTK)
 	GtkWidget* menuContext;
 	GtkWidget* itemDelete;
 	GtkWidget* itemDuplicate;
@@ -116,7 +116,7 @@ protected:
 	bool RemoveFromSelection(C4Object *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
 	void ClearSelection(C4Object *next_selection=NULL);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);
 	static void OnGrabContents(GtkWidget* widget, gpointer data);

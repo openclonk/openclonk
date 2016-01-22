@@ -36,10 +36,8 @@
 #include "resource.h"
 #endif
 
-#ifdef WITH_DEVELOPER_MODE
-# include <C4Language.h>
-
-# include <gtk/gtk.h>
+#ifdef USE_GTK
+#include <gtk/gtk.h>
 #endif
 
 C4EditCursor::C4EditCursor()
@@ -84,8 +82,7 @@ bool C4EditCursor::Init()
 #ifdef USE_WIN32_WINDOWS
 	if (!(hMenu = LoadMenu(Application.GetInstance(),MAKEINTRESOURCE(IDR_CONTEXTMENUS))))
 		return false;
-#else // _WIN32
-#ifdef WITH_DEVELOPER_MODE
+#elif defined(USE_GTK)
 	menuContext = gtk_menu_new();
 
 	itemDelete = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DELETE"));
@@ -101,8 +98,7 @@ bool C4EditCursor::Init()
 	g_signal_connect(G_OBJECT(itemGrabContents), "activate", G_CALLBACK(OnGrabContents), this);
 
 	gtk_widget_show_all(menuContext);
-#endif // WITH_DEVELOPER_MODe
-#endif // _WIN32
+#endif
 	Console.UpdateModeCtrls(Mode);
 
 	return true;
@@ -741,7 +737,7 @@ void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
 		AppendMenu(GetSubMenu(hMenu,0), MF_STRING, IDM_VPORTDYN_FIRST + num, label.GetWideChar());
 	else
 		AppendMenu(GetSubMenu(hMenu,0), MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
-#elif defined(WITH_DEVELOPER_MODE)
+#elif defined(USE_GTK)
 	GtkWidget * wdg;
 	if (num)
 		wdg = gtk_menu_item_new_with_label(label.getData());
@@ -766,7 +762,7 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
-#elif defined(WITH_DEVELOPER_MODE)
+#elif defined(USE_GTK)
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
@@ -873,7 +869,7 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 		break;
 	}
 	ObjselectDelItems();
-#elif defined(WITH_DEVELOPER_MODE)
+#elif defined(USE_GTK)
 	gtk_widget_show_all(menuContext);
 	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, gtk_get_current_event_time());
 #endif
@@ -1035,7 +1031,7 @@ void C4EditCursor::EMControl(C4PacketType eCtrlType, C4ControlPacket *pCtrl)
 	::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
 }
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 // GTK+ callbacks
 void C4EditCursor::OnDelete(GtkWidget* widget, gpointer data)
 {
@@ -1079,7 +1075,7 @@ void C4EditCursor::ObjselectDelItems() {
 	if(!itemsObjselect.size()) return;
 	std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin();
 	while(it != itemsObjselect.end()) {
-		#if defined(WITH_DEVELOPER_MODE)
+		#if defined(USE_GTK)
 		gtk_widget_destroy(it->MenuItem);
 		#elif defined(USE_WIN32_WINDOWS)
 		if(!it->ItemId) { ++it; continue; }

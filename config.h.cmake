@@ -94,15 +94,13 @@
 
 /* Define to 1 if the X Window System is used */
 #cmakedefine USE_X11 1
+#cmakedefine USE_GTK 1
 
 /* Use Apple Cocoa for the UI */
 #cmakedefine USE_COCOA 1
 
 /* Enable automatic update system */
 #cmakedefine WITH_AUTOMATIC_UPDATE 1
-
-/* Developer mode */
-#cmakedefine WITH_DEVELOPER_MODE 1
 
 /* Define to 1 if the userParam parameter to GLDEBUGPROCARB is const, as the
    spec requires. */
@@ -131,8 +129,8 @@
 #undef USE_COCOA
 #undef USE_SDL_MAINLOOP
 #undef USE_X11
+#undef USE_GTK 1
 #undef WITH_AUTOMATIC_UPDATE
-#undef WITH_DEVELOPER_MODE
 
 #undef AUDIO_TK
 #define AUDIO_TK AUDIO_TK_NONE

@@ -20,7 +20,7 @@
 #ifndef INC_C4ToolsDlg
 #define INC_C4ToolsDlg
 
-#ifdef WITH_DEVELOPER_MODE
+#ifdef USE_GTK
 #include <gtk/gtk.h>
 #endif
 
