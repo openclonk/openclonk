@@ -29,7 +29,7 @@
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
 
 // generic C4Aul error class
-class C4AulError
+class C4AulError : public std::exception
 {
 protected:
 	StdCopyStrBuf sMessage;
@@ -38,6 +38,7 @@ public:
 	bool shown;
 	C4AulError();
 	virtual ~C4AulError() { } // destructor
+	virtual const char *what() const noexcept;
 	void show(); // present error message
 };
 

@@ -36,6 +36,11 @@ void C4AulError::show()
 		DebugLog(sMessage.getData());
 }
 
+const char *C4AulError::what() const noexcept
+{
+	return sMessage ? sMessage.getData() : "(unknown error)";
+}
+
 C4AulScript::C4AulScript()
 {
 	// not compiled
