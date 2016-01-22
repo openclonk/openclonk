@@ -341,7 +341,6 @@ public:
 protected:
 	bool FindFBConfig(int samples, GLXFBConfig *info);
 
-	unsigned long wnd;
 	unsigned long renderwnd;
 	// The GLXFBConfig the window was created with
 	GLXFBConfig Info;

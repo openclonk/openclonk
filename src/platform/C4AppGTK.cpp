@@ -141,7 +141,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth,
 	if (Priv->xrandr_major_version >= 0 && !(iXRes == -1 && iYRes == -1))
 	{
 		// randr spec says to always get fresh info, so don't cache.
-		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
+		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->renderwnd);
 		if (Priv->xrandr_oldmode == -1)
 			Priv->xrandr_oldmode = XRRConfigCurrentConfiguration (conf, &Priv->xrandr_rot);
 		int n;
@@ -153,7 +153,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth,
 #ifdef _DEBUG
 				LogF("XRRSetScreenConfig %d", i);
 #endif
-				fDspModeSet = XRRSetScreenConfig(dpy, conf, pWindow->wnd, i, Priv->xrandr_rot, CurrentTime) == RRSetConfigSuccess;
+				fDspModeSet = XRRSetScreenConfig(dpy, conf, pWindow->renderwnd, i, Priv->xrandr_rot, CurrentTime) == RRSetConfigSuccess;
 				break;
 			}
 		}
@@ -169,11 +169,11 @@ void C4AbstractApp::RestoreVideoMode()
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (fDspModeSet && Priv->xrandr_major_version >= 0 && Priv->xrandr_oldmode != -1)
 	{
-		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
+		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->renderwnd);
 #ifdef _DEBUG
 		LogF("XRRSetScreenConfig %d (back)", Priv->xrandr_oldmode);
 #endif
-		XRRSetScreenConfig (dpy, conf, pWindow->wnd, Priv->xrandr_oldmode, Priv->xrandr_rot, CurrentTime);
+		XRRSetScreenConfig (dpy, conf, pWindow->renderwnd, Priv->xrandr_oldmode, Priv->xrandr_rot, CurrentTime);
 		Priv->xrandr_oldmode = -1;
 		XRRFreeScreenConfigInfo(conf);
 		fDspModeSet = false;
@@ -225,20 +225,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return gtk_clipboard_wait_is_text_available(gtk_clipboard_get(fClipboard ? GDK_SELECTION_CLIPBOARD : GDK_SELECTION_PRIMARY));
 }
 
-#if 0
-void C4AbstractApp::OnXInput()
-{
-	while (XEventsQueued(dpy, QueuedAfterReading))
-	{
-		HandleXMessage();
-	}
-	// At least the _NET_WM_PING reply needs to be flushed,
-	// and having received events is a good heuristic for
-	// having issued X11 commands, even if most events
-	// are mouse moves that don't generate X11 commands.
-	XFlush(dpy);
-}
-#endif
 void C4AbstractApp::MessageDialog(const char * message)
 {
 	GtkWidget * dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", message);

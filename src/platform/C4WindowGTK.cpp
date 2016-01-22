@@ -533,7 +533,8 @@ static gboolean OnConfigureGD(GtkWidget* widget, GdkEventConfigure* event, gpoin
 }
 
 C4Window::C4Window ():
-		Active(false), pSurface(0), wnd(0), renderwnd(0), Info(0), window(NULL)
+		Active(false), pSurface(0),
+		renderwnd(0), Info(0), window(NULL)
 {
 }
 
@@ -768,7 +769,6 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(GTK_WIDGET(window));
-	wnd = GDK_WINDOW_XID(window_wnd);
 
 	if (GTK_IS_LAYOUT(render_widget))
 	{
@@ -859,7 +859,7 @@ void C4Window::Clear()
 	}
 
 	// Avoid that the base class tries to free these
-	wnd = renderwnd = 0;
+	renderwnd = 0;
 
 	window = NULL;
 	Active = false;
