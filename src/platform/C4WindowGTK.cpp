@@ -49,8 +49,6 @@
 
 // Some helper functions for choosing a proper visual
 
-#ifndef USE_CONSOLE
-
 namespace {
 static const std::map<int, int> base_attrib_map {
 	{GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT},
@@ -118,7 +116,6 @@ GLXFBConfig PickGLXFBConfig(Display* dpy, int multisampling)
 }
 }
 
-#endif // #ifndef USE_CONSOLE
 static void OnDestroyStatic(GtkWidget* widget, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
@@ -545,7 +542,6 @@ C4Window::~C4Window ()
 
 bool C4Window::FindFBConfig(int samples, GLXFBConfig *info)
 {
-#ifndef USE_CONSOLE
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	GLXFBConfig config = PickGLXFBConfig(dpy, samples);
 	if (info)
@@ -553,16 +549,12 @@ bool C4Window::FindFBConfig(int samples, GLXFBConfig *info)
 		*info = config;
 	}
 	return config != NULL;
-#else
-	// TODO: Do we need to handle this case?
-#endif // #ifndef USE_CONSOLE
 
 	return false;
 }
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-#ifndef USE_CONSOLE
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	std::map<int, int> attribs = base_attrib_map;
 	attribs[GLX_SAMPLE_BUFFERS_ARB] = 1;
@@ -580,7 +572,6 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 
 	XFree(configs);
 	samples.assign(multisamples.cbegin(), multisamples.cend());
-#endif
 }
 
 bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
@@ -797,14 +788,11 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// Check whether multisampling settings was changed. If not then we
 	// don't need to ReInit anything.
-#ifndef USE_CONSOLE
 	int value;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	glXGetFBConfigAttrib(dpy, Info, GLX_SAMPLES, &value);
 	if(value == Config.Graphics.MultiSampling) return true;
-#else
-	return true;
-#endif
+
 	// Check whether we have a visual with the requested number of samples
 	GLXFBConfig new_info;
 	if(!FindFBConfig(Config.Graphics.MultiSampling, &new_info)) return false;

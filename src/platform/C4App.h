@@ -170,21 +170,12 @@ public:
 private:
 	CStdMessageProc MessageProc;
 public:
-/*	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
-	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
-	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }*/
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
 	HMONITOR hMon; // monitor handle of used monitor
 	RECT MonitorRect;     // output window rect
 protected:
 	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 	DEVMODEW dspMode, OldDspMode;// display mode for fullscreen
-#else
-public:
-/*	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
-	bool IsControlDown() { return KeyMask & MK_CONTROL; }
-	bool IsAltDown() { return KeyMask & MK_ALT; }
-	unsigned int KeyMask;*/
 #endif
 
 protected:
