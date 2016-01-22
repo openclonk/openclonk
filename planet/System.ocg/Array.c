@@ -188,3 +188,27 @@ global func RandomElement(array arr)
 {
 	return arr[Random(GetLength(arr))];
 }
+
+// Returns the maximum value in an array.
+global func ArrayMax(array arr)
+{
+	if (GetLength(arr) == 0)
+		return nil;
+	var max = arr[0];
+	for (var elem in arr)
+		if (elem > max)
+			max = elem;
+	return max;
+}
+
+// Returns the minimum value in an array.
+global func ArrayMin(array arr)
+{
+	if (GetLength(arr) == 0)
+		return nil;
+	var min = arr[0];
+	for (var elem in arr)
+		if (elem < min)
+			min = elem;
+	return min;
+}
