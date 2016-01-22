@@ -28,7 +28,7 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-#ifdef USE_X11
+#ifdef GDK_WINDOWING_X11
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
 #include <gdk/gdkx.h>

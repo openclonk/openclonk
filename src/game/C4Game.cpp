@@ -1873,7 +1873,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 
 bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog, bool fPlrCtrlOnly, int32_t iStrength)
 {
-#ifdef USE_X11
+#ifdef USE_GTK
 	static std::map<C4KeyCode, bool> PressedKeys;
 	// Keyrepeats are send as down, down, ..., down, up, where all downs are not distinguishable from the first.
 	if (eEventType == KEYEV_Down)

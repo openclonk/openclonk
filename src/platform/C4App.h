@@ -27,7 +27,7 @@
 #include <pthread.h>
 #endif
 
-#if defined(USE_X11)
+#if defined(USE_GTK)
 // from X.h:
 //#define ShiftMask   (1<<0)
 //#define ControlMask   (1<<2)
@@ -148,7 +148,7 @@ public:
 	pthread_t MainThread;
 #endif
 
-#if defined(USE_X11)
+#if defined(USE_GTK)
 protected:
 	class C4X11AppImpl * Priv;
 

@@ -32,11 +32,10 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
 ############################################################################
 include(CMakeDependentOption)
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
-option(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF)
-CMAKE_DEPENDENT_OPTION(USE_X11 "Use X11 to create windows etc." ON
-	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP" OFF)
-CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF)
-CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_COCOA         "Use Apple Cocoa widgets." ON "APPLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_WIN32_WINDOWS "Use Microsoft Desktop App User Interface widgets." ON "WIN32" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GTK           "Use GTK+ widgets." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS" OFF)
+CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. No editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS AND NOT USE_GTK" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
@@ -263,7 +262,7 @@ add_definitions(${GLEW_DEFINITIONS})
 set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
 CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 
-if(USE_X11)
+if(USE_GTK AND UNIX)
 	FINDLIB(X11_LIBRARIES X11)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
 endif()
@@ -904,7 +903,7 @@ elseif(USE_SDL_MAINLOOP)
 		src/platform/C4AppSDL.cpp
 		src/platform/C4WindowSDL.cpp
 	)
-elseif(WIN32)
+elseif(USE_WIN32_WINDOWS)
 	list(APPEND OC_GUI_SOURCES
 		src/editor/C4ConsoleWin32.cpp
 		src/platform/C4WindowWin32.cpp

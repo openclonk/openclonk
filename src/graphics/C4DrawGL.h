@@ -132,7 +132,7 @@ protected:
 	HWND hWindow; // used if pWindow==NULL
 	HDC hDC;                    // device context handle
 	static bool InitGlew(HINSTANCE hInst);
-#elif defined(USE_X11)
+#elif defined(USE_GTK)
 	/*GLXContext*/void * ctx;
 #endif
 

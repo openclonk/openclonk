@@ -89,19 +89,6 @@
 /* MP3 music */
 #cmakedefine USE_MP3 1
 
-/* Define to 1 if SDL is used for the main loop */
-#cmakedefine USE_SDL_MAINLOOP 1
-
-/* Define to 1 if the X Window System is used */
-#cmakedefine USE_X11 1
-#cmakedefine USE_GTK 1
-
-/* Use Apple Cocoa for the UI */
-#cmakedefine USE_COCOA 1
-
-/* Enable automatic update system */
-#cmakedefine WITH_AUTOMATIC_UPDATE 1
-
 /* Define to 1 if the userParam parameter to GLDEBUGPROCARB is const, as the
    spec requires. */
 #cmakedefine GLDEBUGPROCARB_USERPARAM_IS_CONST 1
@@ -115,24 +102,25 @@
 /* Define to 1 if you have support for precompiled headers */
 #cmakedefine HAVE_PRECOMPILED_HEADERS 1
 
+#ifndef USE_CONSOLE
+/* The widgets for the windows and the editor GUI */
+#cmakedefine USE_SDL_MAINLOOP 1
+#cmakedefine USE_WIN32_WINDOWS 1
+#cmakedefine USE_COCOA 1
+#cmakedefine USE_GTK 1
+
+/* Enable automatic update system */
+#cmakedefine WITH_AUTOMATIC_UPDATE 1
+
 /* Select an audio provider */
+#define AUDIO_TK AUDIO_TK_${Audio_TK_UPPER}
+#else
+#define AUDIO_TK AUDIO_TK_NONE
+#endif
+
 #define AUDIO_TK_NONE 0
 #define AUDIO_TK_OPENAL 1
 #define AUDIO_TK_SDL_MIXER 3
-#define AUDIO_TK AUDIO_TK_${Audio_TK_UPPER}
 
 /* Include OpenAL extensions (alext.h) for sound modifiers */
 #cmakedefine HAVE_ALEXT 1
-
-#ifdef USE_CONSOLE
-/* FIXME: Sort this out in CMake instead of here */
-#undef USE_COCOA
-#undef USE_SDL_MAINLOOP
-#undef USE_X11
-#undef USE_GTK 1
-#undef WITH_AUTOMATIC_UPDATE
-
-#undef AUDIO_TK
-#define AUDIO_TK AUDIO_TK_NONE
-
-#endif

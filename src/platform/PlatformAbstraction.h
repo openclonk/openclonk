@@ -48,10 +48,6 @@
 #endif
 #endif
 
-#if defined(_WIN32) && !defined(USE_CONSOLE) && !defined(USE_SDL_MAINLOOP) && !defined(USE_X11) && !defined(USE_COCOA)
-#define USE_WIN32_WINDOWS
-#endif
-
 #ifdef _MSC_VER
 #define DEPRECATED __declspec(deprecated)
 #elif defined(__GNUC__)

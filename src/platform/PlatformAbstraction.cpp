@@ -60,7 +60,7 @@ bool EraseItemSafe(const char *szFilename)
 	return false;
 }
 
-#if !defined(USE_X11)
+#if !defined(USE_GTK)
 bool OpenURL(char const*) {return 0;}
 #endif
 

@@ -22,10 +22,12 @@
 #include <C4Game.h>
 #include <C4Window.h>
 
-#ifdef USE_X11
-#include <gdk/gdkx.h>
+#ifdef USE_GTK
 #include <gtk/gtk.h>
+#ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
 #include <X11/XKBlib.h>
+#endif
 #endif
 
 #include <algorithm>
@@ -100,7 +102,7 @@ struct C4KeyCodeMapEntry
 	const char *szShortName;
 };
 
-#if defined(USE_WIN32_WINDOWS) || defined(USE_X11)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_GTK)
 const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_ESCAPE,		"Escape",	"Esc"},
     {K_1,			"1",			NULL},
@@ -329,7 +331,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		}
 
 	}
-#if defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(USE_X11)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(USE_GTK)
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
 	while (pCheck->szName) {
@@ -448,7 +450,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 			if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
 	// not found: Compose as direct code
 	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
-#elif defined(USE_X11)
+#elif defined(USE_GTK)
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	KeySym keysym = (KeySym)XkbKeycodeToKeysym(dpy,wCode+8,0,0);
 	char* name = NULL;

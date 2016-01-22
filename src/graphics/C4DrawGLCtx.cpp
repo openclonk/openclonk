@@ -439,7 +439,7 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-#elif defined(USE_X11)
+#elif defined(USE_GTK)
 #include <GL/glxew.h>
 #include <GL/glx.h>
 #include <gtk/gtk.h>
@@ -654,6 +654,6 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-#endif //USE_X11/USE_SDL_MAINLOOP
+#endif //USE_GTK/USE_SDL_MAINLOOP
 
 #endif // USE_CONSOLE

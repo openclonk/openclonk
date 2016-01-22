@@ -21,7 +21,7 @@
 
 #include <StdBuf.h>
 
-#if defined(USE_WIN32_WINDOWS) || defined(USE_X11) || defined(USE_CONSOLE)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_GTK) || defined(USE_CONSOLE)
 #define K_ESCAPE 1
 #define K_1 2
 #define K_2 3
@@ -274,10 +274,8 @@ extern C4KeyCode K_X;
 extern C4KeyCode K_A;
 #endif
 
-#ifdef USE_X11
-// Forward declarations because xlib.h is evil
-typedef union _XEvent XEvent;
-typedef struct _XDisplay Display;
+#ifdef USE_GTK
+// Forward declaration because xlib.h is evil
 typedef struct __GLXFBConfigRec *GLXFBConfig;
 #endif
 
@@ -334,14 +332,12 @@ public:
 	HWND hWindow;
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-#elif defined(WITH_GLIB)
+#elif defined(USE_GTK)
 public:
 	/*GtkWidget*/void * window;
 	// Set by Init to the widget which is used as a
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
-#endif
-#ifdef USE_X11
 protected:
 	bool FindFBConfig(int samples, GLXFBConfig *info);
 
