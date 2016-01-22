@@ -64,6 +64,7 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
 
+#ifdef GDK_WINDOWING_X11
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	int xrandr_error_base;
 	if (!XRRQueryExtension(dpy, &Priv->xrandr_event, &xrandr_error_base)
@@ -78,6 +79,7 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	}
 	else
 		Log("The Xrandr extension is missing. Resolution switching will not work.");
+#endif
 
 	// Custom initialization
 	return DoInit (argc, argv);
@@ -129,6 +131,7 @@ bool C4AbstractApp::FlushMessages()
 
 bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
+#ifdef GDK_WINDOWING_X11
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (!fFullScreen)
 	{
@@ -161,10 +164,12 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth,
 	}
 	gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
 	return fDspModeSet || (iXRes == -1 && iYRes == -1);
+#endif
 }
 
 void C4AbstractApp::RestoreVideoMode()
 {
+#ifdef GDK_WINDOWING_X11
 	// Restore resolution
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (fDspModeSet && Priv->xrandr_major_version >= 0 && Priv->xrandr_oldmode != -1)
@@ -182,10 +187,12 @@ void C4AbstractApp::RestoreVideoMode()
 	// initialization code, before a window has been created
 	if (pWindow)
 		gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
+#endif
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
+#ifdef GDK_WINDOWING_X11
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	int n;
 	XRRScreenSize * sizes = XRRSizes(dpy, XDefaultScreen(dpy), &n);
@@ -197,6 +204,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 		return true;
 	}
 	return false;
+#endif
 }
 
 // Copy the text to the clipboard or the primary selection

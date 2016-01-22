@@ -39,13 +39,12 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#include "C4AppGTKImpl.h"
+
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
-#endif
-
-#include "C4AppGTKImpl.h"
 
 // Some helper functions for choosing a proper visual
 
@@ -115,6 +114,7 @@ GLXFBConfig PickGLXFBConfig(Display* dpy, int multisampling)
 	return config;
 }
 }
+#endif // GDK_WINDOWING_X11
 
 static void OnDestroyStatic(GtkWidget* widget, gpointer data)
 {
@@ -540,6 +540,7 @@ C4Window::~C4Window ()
 	Clear();
 }
 
+#ifdef GDK_WINDOWING_X11
 bool C4Window::FindFBConfig(int samples, GLXFBConfig *info)
 {
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
@@ -552,9 +553,11 @@ bool C4Window::FindFBConfig(int samples, GLXFBConfig *info)
 
 	return false;
 }
+#endif
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
+#ifdef GDK_WINDOWING_X11
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	std::map<int, int> attribs = base_attrib_map;
 	attribs[GLX_SAMPLE_BUFFERS_ARB] = 1;
@@ -572,6 +575,7 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 
 	XFree(configs);
 	samples.assign(multisamples.cbegin(), multisamples.cend());
+#endif
 }
 
 bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
@@ -590,7 +594,7 @@ void C4Window::FlashWindow()
 C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
-
+#ifdef GDK_WINDOWING_X11
 	if(!FindFBConfig(Config.Graphics.MultiSampling, &Info))
 	{
 		// Disable multisampling if we don't find a visual which
@@ -598,6 +602,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		if(!FindFBConfig(0, &Info)) return NULL;
 		Config.Graphics.MultiSampling = 0;
 	}
+#endif
 
 	assert(!window);
 
@@ -733,7 +738,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	// It would be nice to have smooth scrolling also e.g. for zooming
 	// ingame, but it probably requires the notion of smooth scrolling
 	// other parts of the engine as well.
-
+#ifdef GDK_WINDOWING_X11
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	XVisualInfo *vis_info = glXGetVisualFromFBConfig(dpy, Info);
@@ -741,6 +746,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, vis_info->visualid);
 	XFree(vis_info);
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
+#endif
 	gtk_widget_show_all(GTK_WIDGET(window));
 
 //  XVisualInfo vitmpl; int blub;
@@ -760,20 +766,15 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(GTK_WIDGET(window));
-
+	GdkWindow* render_gdk_wnd;
 	if (GTK_IS_LAYOUT(render_widget))
-	{
-		GdkWindow* bin_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
-
-		renderwnd = GDK_WINDOW_XID(bin_wnd);
-	}
+		render_gdk_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
 	else
-	{
-		GdkWindow* render_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
+		render_gdk_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
 
-		renderwnd = GDK_WINDOW_XID(render_wnd);
-	}
-
+#ifdef GDK_WINDOWING_X11
+	renderwnd = GDK_WINDOW_XID(render_gdk_wnd);
+#endif
 	// Make sure the window is shown and ready to be rendered into,
 	// this avoids an async X error.
 	gdk_flush();
@@ -788,6 +789,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// Check whether multisampling settings was changed. If not then we
 	// don't need to ReInit anything.
+#ifdef GDK_WINDOWING_X11
 	int value;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	glXGetFBConfigAttrib(dpy, Info, GLX_SAMPLES, &value);
@@ -835,6 +837,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)),
 	                      gdk_cursor_new_for_display(gdk_display_get_default(), GDK_BLANK_CURSOR));
 	return true;
+#endif
 }
 
 void C4Window::Clear()
