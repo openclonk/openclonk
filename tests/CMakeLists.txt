@@ -110,7 +110,9 @@ if (GTEST_FOUND AND GMOCK_FOUND)
 
     create_test(aul_test
         SOURCES
-            aul/aul_test.cpp
+            aul/AulTest.cpp
+			aul/AulTest.h
+			aul/AulMathTest.cpp
             ../src/script/C4ScriptStandaloneStubs.cpp
         LIBRARIES
             libmisc
