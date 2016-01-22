@@ -70,6 +70,9 @@ C4Value AulTest::RunExpr(const char *expr)
 	return RunCode(code.c_str());
 }
 
+const C4Value AulTest::C4VINT_MIN = C4VInt(-2147483647 - 1);
+const C4Value AulTest::C4VINT_MAX = C4VInt(2147483647);
+
 TEST_F(AulTest, ValueReturn)
 {
 	// Make sure primitive value returns work.

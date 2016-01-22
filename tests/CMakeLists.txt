@@ -113,6 +113,7 @@ if (GTEST_FOUND AND GMOCK_FOUND)
             aul/AulTest.cpp
 			aul/AulTest.h
 			aul/AulMathTest.cpp
+			aul/AulPredefinedFunctionTest.cpp
             ../src/script/C4ScriptStandaloneStubs.cpp
         LIBRARIES
             libmisc

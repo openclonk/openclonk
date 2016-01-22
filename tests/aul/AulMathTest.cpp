@@ -21,13 +21,7 @@
 #include "script/C4Aul.h"
 
 class AulMathTest : public AulTest
-{
-protected:
-	static const C4Value C4VINT_MIN;
-	static const C4Value C4VINT_MAX;
-};
-const C4Value AulMathTest::C4VINT_MIN = C4VInt(-2147483647 - 1);
-const C4Value AulMathTest::C4VINT_MAX = C4VInt(2147483647);
+{};
 
 TEST_F(AulMathTest, Addition)
 {

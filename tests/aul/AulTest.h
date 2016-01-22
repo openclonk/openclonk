@@ -31,6 +31,9 @@ class AulTest : public ::testing::Test
 protected:
 	C4Value RunCode(const char *code, bool wrap = true);
 	C4Value RunExpr(const char *expr);
+
+	static const C4Value C4VINT_MIN;
+	static const C4Value C4VINT_MAX;
 };
 
 namespace aul_test {
