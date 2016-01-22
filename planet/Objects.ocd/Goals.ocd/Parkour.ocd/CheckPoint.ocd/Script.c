@@ -62,6 +62,8 @@ public func SetCPController(object con)
 	return;
 }
 
+public func GetCPController() { return cp_con; }
+
 /*-- Checkpoint number --*/
 local cp_num;
 

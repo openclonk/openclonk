@@ -347,6 +347,18 @@ private func GetParkourLength()
 	return length;
 }	
 
+// Returns the number of checkpoints cleared by the player.
+public func GetPlayerClearedCheckpoints(int plr)
+{
+	var plrid = GetPlayerID(plr);
+	return plr_list[plrid];
+}
+
+public func GetLeaderClearedCheckpoints()
+{
+	return ArrayMax(plr_list);
+}
+
 private func IsWinner(int plr)
 {
 	var team = GetPlayerTeam(plr);
