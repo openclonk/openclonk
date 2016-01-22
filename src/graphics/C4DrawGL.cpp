@@ -346,37 +346,6 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	return pCtx;
 }
 
-#ifdef USE_WIN32_WINDOWS
-CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
-{
-	// safety
-	if (!hWindow) return NULL;
-	// create it
-	CStdGLCtx *pCtx = new CStdGLCtx();
-	if (!pCtx->Init(NULL, pApp, hWindow))
-	{
-		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
-	}
-	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
-	{
-		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-	}
-	if (!pMainCtx)
-	{
-		pMainCtx = pCtx;
-	}
-	else
-	{
-		// creation selected the new context - switch back to previous context
-		RenderTarget = NULL;
-		pCurrCtx = NULL;
-	}
-	// done
-	return pCtx;
-}
-#endif
-
 bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, unsigned int)
 {
 	// store options

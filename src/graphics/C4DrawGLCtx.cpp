@@ -280,7 +280,7 @@ void CStdGLCtx::Clear()
 	}
 }
 
-bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	// safety
 	if (!pGL) return false;
@@ -290,11 +290,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 
 	// store window
 	this->pWindow = pWindow;
-	// default HWND
-	if (pWindow)
-		hWindow = pWindow->renderwnd;
-	else
-		this->hWindow = hWindow;
+	hWindow = pWindow->renderwnd;
 
 	// get DC
 	hDC = GetDC(hWindow);

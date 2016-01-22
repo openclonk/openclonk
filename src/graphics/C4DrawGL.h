@@ -110,11 +110,9 @@ public:
 	void Clear();               // clear objects
 
 #ifdef USE_WIN32_WINDOWS
-	bool Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow = NULL);
 	std::vector<int> EnumerateMultiSamples() const;
-#else
-	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
 #endif
+	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
 
 	bool Select(bool verbose = false);              // select this context
 	void Deselect();              // select this context
@@ -241,9 +239,6 @@ public:
 	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices);
 
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
-#ifdef USE_WIN32_WINDOWS
-	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
-#endif
 	// Blit
 	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdProjectionMatrix* out_modelview);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
