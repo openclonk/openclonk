@@ -327,28 +327,26 @@ public:
 	// Invokes actual drawing code - should not be called directly
 	virtual void PerformUpdate();
 
-#ifdef USE_WIN32_WINDOWS
 public:
+#if defined(USE_WIN32_WINDOWS)
 	HWND hWindow;
-	HWND hRenderWindow;
+	HWND renderwnd;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_GTK)
-public:
 	/*GtkWidget*/void * window;
 	// Set by Init to the widget which is used as a
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
+#endif
 protected:
+#if defined(USE_GTK)
 	bool FindFBConfig(int samples, GLXFBConfig *info);
 
 	unsigned long renderwnd;
 	// The GLXFBConfig the window was created with
 	GLXFBConfig Info;
 	unsigned long handlerDestroy;
-
-	friend class C4X11AppImpl;
 #endif
-protected:
 	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
 	friend class C4Draw;
 	friend class CStdGL;

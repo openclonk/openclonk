@@ -225,7 +225,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		case SIZE_MAXIMIZED:
 			::Application.OnResolutionChanged(p.x, p.y);
 			if(Application.pWindow) // this might be called from C4Window::Init in which case Application.pWindow is not yet set
-				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, p.x, p.y, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+				::SetWindowPos(Application.pWindow->renderwnd, NULL, 0, 0, p.x, p.y, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 			break;
 		}
 		break;
@@ -588,7 +588,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 
 		// We don't re-init viewport windows currently, so we don't need a child window
 		// for now: Render into main window.
-		hRenderWindow = hWindow;
+		renderwnd = hWindow;
 	}
 	else if (windowKind == W_Fullscreen)
 	{
@@ -616,11 +616,11 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 
 		RECT rc;
 		GetClientRect(hWindow, &rc);
-		hRenderWindow = CreateWindowExW(0, L"STATIC", NULL, WS_CHILD,
+		renderwnd = CreateWindowExW(0, L"STATIC", NULL, WS_CHILD,
 		                                0, 0, rc.right - rc.left, rc.bottom - rc.top,
 		                                hWindow, NULL, pApp->GetInstance(), NULL);
-		if(!hRenderWindow) { DestroyWindow(hWindow); return NULL; }
-		ShowWindow(hRenderWindow, SW_SHOW);
+		if(!renderwnd) { DestroyWindow(hWindow); return NULL; }
+		ShowWindow(renderwnd, SW_SHOW);
 
 	#ifndef USE_CONSOLE
 		// Show & focus
@@ -667,13 +667,13 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            ConsoleDlgWindowStyle,
 		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
 					::Console.hWindow,NULL,pApp->GetInstance(),NULL);
-		hRenderWindow = hWindow;
+		renderwnd = hWindow;
 		return hWindow ? this : 0;
 	}
 	else if (windowKind == W_Control)
 	{
 		// controlled externally
-		hWindow = hRenderWindow = NULL;
+		hWindow = renderwnd = NULL;
 	}
 	return this;
 }
@@ -695,8 +695,8 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 	CStdGLCtx::Reinitialize();
 	ShowWindow(hNewRenderWindow, SW_SHOW);
-	DestroyWindow(hRenderWindow);
-	hRenderWindow = hNewRenderWindow;
+	DestroyWindow(renderwnd);
+	renderwnd = hNewRenderWindow;
 
 	return true;
 }
@@ -706,10 +706,10 @@ void C4Window::Clear()
 	// Destroy window if we own it
 	if (eKind != W_Control)
 	{
-		if (hRenderWindow) DestroyWindow(hRenderWindow);
-		if (hWindow && hWindow != hRenderWindow) DestroyWindow(hWindow);
+		if (renderwnd) DestroyWindow(renderwnd);
+		if (hWindow && hWindow != renderwnd) DestroyWindow(hWindow);
 	}
-	hRenderWindow = NULL;
+	renderwnd = NULL;
 	hWindow = NULL;
 }
 
@@ -754,7 +754,7 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 
 		// Also resize child window
 		GetClientRect(hWindow, &rect);
-		::SetWindowPos(hRenderWindow, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+		::SetWindowPos(renderwnd, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
 

@@ -823,7 +823,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	UpdateWindow(hWindow);
 	SetFocus(hWindow);
 	ShowCursor(true);
-	hRenderWindow = hWindow;
+	renderwnd = hWindow;
 	// Success
 	return this;
 }
@@ -1129,7 +1129,7 @@ public:
 	C4ConsoleGUIPreviewWindow(HWND hwndControl)
 	{
 		Init(C4Window::WindowKind::W_Control, &Application, NULL, NULL);
-		this->hWindow = this->hRenderWindow = hwndControl;
+		this->hWindow = this->renderwnd = hwndControl;
 		pSurface = new C4Surface(&Application, this);
 	}
 

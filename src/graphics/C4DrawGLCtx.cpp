@@ -268,7 +268,7 @@ void CStdGLCtx::Clear()
 	Deselect();
 	if (hDC)
 	{
-		ReleaseDC(pWindow ? pWindow->hRenderWindow : hWindow, hDC);
+		ReleaseDC(pWindow ? pWindow->renderwnd : hWindow, hDC);
 		hDC=0;
 	}
 	pWindow = 0; hWindow = NULL;
@@ -292,7 +292,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 	this->pWindow = pWindow;
 	// default HWND
 	if (pWindow)
-		hWindow = pWindow->hRenderWindow;
+		hWindow = pWindow->renderwnd;
 	else
 		this->hWindow = hWindow;
 
