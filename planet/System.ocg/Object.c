@@ -340,26 +340,26 @@ global func RootSurface()
 	}
 }
 
-// Buys an object.
-global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pToBase, bool fShowErrors)
+// Buys an object. Returns the object if it could be bought.
+global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pFromVendor, bool fShowErrors)
 {
-	// if no base is given try this
-	if(!pToBase) pToBase = this;
-	// not a base?
-	if( !pToBase->~IsBase() )
-		return 0;
-	return pToBase->DoBuy(idBuyObj, iForPlr, iPayPlr, 0, 0, fShowErrors);
+	// if no vendor is given try this
+	if (!pFromVendor) pFromVendor = this;
+	// not a vendor?
+	if (!pFromVendor->~IsVendor())
+		return nil;
+	return pFromVendor->DoBuy(idBuyObj, iForPlr, iPayPlr, 0, 0, fShowErrors);
 }
 
-// Sells an object.
-global func Sell (int iPlr, object pObj, object pToBase)
+// Sells an object. Returns true if it could be sold.
+global func Sell (int iPlr, object pObj, object pToVendor)
 {
-	// if no base is given try this
-	if(!pToBase) pToBase = this;
-	// not a base?
-	if( !pToBase->~IsBase() )
-		return 0;
-	return pToBase->DoSell(pObj, iPlr);
+	// if no vendor is given try this
+	if(!pToVendor) pToVendor = this;
+	// not a vendor?
+	if (!pToVendor->~IsVendor())
+		return false;
+	return pToVendor->DoSell(pObj, iPlr);
 }
 
 // Returns the owner if this is a base.

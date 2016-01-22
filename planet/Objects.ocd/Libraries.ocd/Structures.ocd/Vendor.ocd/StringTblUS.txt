@@ -1,0 +1,4 @@
+MsgBuy=Buy Stuff
+MsgSell=Sell Stuff
+YourWealth=Your wealth
+MsgNotEnoughWealth=Not enough wealth!

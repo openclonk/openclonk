@@ -1,0 +1,4 @@
+MsgBuy=Einkaufen
+MsgSell=Verkaufen
+YourWealth=Dein Kontostand
+MsgNotEnoughWealth=Kontostand zu gering!
