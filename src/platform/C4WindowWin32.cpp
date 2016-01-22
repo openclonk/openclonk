@@ -802,7 +802,6 @@ C4AbstractApp::C4AbstractApp() :
 		Active(false), pWindow(NULL), fQuitMsgReceived(false),
 		hInstance(NULL), fDspModeSet(false)
 {
-	ZeroMemory(&pfd, sizeof(pfd)); pfd.nSize = sizeof(pfd);
 	ZeroMemory(&dspMode, sizeof(dspMode)); dspMode.dmSize =  sizeof(dspMode);
 	ZeroMemory(&OldDspMode, sizeof(OldDspMode)); OldDspMode.dmSize =  sizeof(OldDspMode);
 	idMainThread = 0;

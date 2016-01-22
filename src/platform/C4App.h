@@ -170,11 +170,9 @@ public:
 private:
 	CStdMessageProc MessageProc;
 public:
-	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
 	HMONITOR hMon; // monitor handle of used monitor
 	RECT MonitorRect;     // output window rect
 protected:
-	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 	DEVMODEW dspMode, OldDspMode;// display mode for fullscreen
 #endif
 

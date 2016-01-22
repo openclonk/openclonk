@@ -71,6 +71,7 @@ void CStdGLCtx::Reinitialize()
 #include <GL/wglew.h>
 
 decltype(CStdGLCtx::hrc) CStdGLCtx::hrc = 0;
+static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 
 // Enumerate available pixel formats. Choose the best pixel format in
 // terms of color and depth buffer bits and then return all formats with
@@ -301,7 +302,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	}
 	if (hrc)
 	{
-		SetPixelFormat(hDC, pGL->iPixelFormat, &pApp->GetPFD());
+		SetPixelFormat(hDC, pGL->iPixelFormat, &pfd);
 	}
 	else
 	{
@@ -311,13 +312,13 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 			if((pixel_format = GetPixelFormatForMS(hDC, 0)) != 0)
 				Config.Graphics.MultiSampling = 0;
 
-		PIXELFORMATDESCRIPTOR pfd;
 		if (!pixel_format)
 		{
 			pGL->Error("  gl: Error choosing pixel format");
 		}
 		else
 		{
+			ZeroMemory(&pfd, sizeof(pfd)); pfd.nSize = sizeof(pfd);
 			if(!DescribePixelFormat(hDC, pixel_format, sizeof(pfd), &pfd))
 			{
 				pGL->Error("  gl: Error describing chosen pixel format");
@@ -355,7 +356,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 				}
 
 				pGL->iPixelFormat = pixel_format;
-				pApp->GetPFD() = pfd;
 			}
 		}
 	}
