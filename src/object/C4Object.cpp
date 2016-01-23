@@ -1222,8 +1222,14 @@ void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 
 void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr)
 {
-	// iChange 100% = Physical 100000
-	if (!fExact) iChange=iChange*C4MaxPhysical/100;
+	if (!fExact)
+	{
+		// Clamp range of change to prevent integer overflow errors
+		// Do not clamp directly to (0...MaxEnergy)-current_energy, because
+		// the change value calculated here may be reduced by effect callbacks
+		int32_t scale = C4MaxPhysical / 100; // iChange 100% = Physical 100000
+		iChange = Clamp<int32_t>(iChange, std::numeric_limits<int32_t>::min()/scale, std::numeric_limits<int32_t>::max()/scale)*scale;
+	}
 	// Was zero?
 	bool fWasZero=(Energy==0);
 	// Mark last damage causing player to trace kills
