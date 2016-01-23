@@ -356,7 +356,7 @@ public func GetPlayerClearedCheckpoints(int plr)
 
 public func GetLeaderClearedCheckpoints()
 {
-	return ArrayMax(plr_list);
+	return Max(plr_list);
 }
 
 private func IsWinner(int plr)
