@@ -192,7 +192,12 @@ private func MakeInfoBar()
 		Left = "4em",
 		Top = "1em",
 		Bottom = "5em",
-		Text = ""	
+		text = 
+		{
+			ID = 10004,	
+			Target = menu_target,
+			Text = ""
+		}	
 	};
 	// Add the grid to the menu.
 	menu.info_bar = bar;
@@ -229,7 +234,7 @@ private func MenuShowCategory(proplist category)
 			Symbol = item,
 			BackgroundColor = {Std = 0, Hover = SPAWNMENU_HoverColor},
 			OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "MenuShowInformation", item)],
-			OnMouseOut = [GuiAction_SetTag("Std"), GuiAction_Call(this, "MenuHideInformation", item)],
+			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "MenuSpawnObject", item)
 		};
 		menu.object_grid[item_id] = item_menu;
@@ -259,25 +264,8 @@ public func MenuShowInformation(id obj_id)
 	var desc = "";
 	if (obj_id && obj_id.Description)
 		desc = Format("$MsgDescription$", SPAWNMENU_DescColor, obj_id.Description);
-	menu.info_bar.description.Text = desc;
-	GuiUpdate(menu.info_bar.description, menu_id, menu.info_bar.description.ID, menu_target);
-	return;
-}
-
-public func MenuHideInformation(id obj_id)
-{
-	if (obj_id != menu.info_bar.icon.Symbol)
-		return;
-		
-	// Reset information submenu properties.	
-	menu.info_bar.header.Text = "";
-	menu.info_bar.icon.Symbol = nil;
-	menu.info_bar.description.Text = "";
-	
-	// Update information submenus.
-	GuiUpdate(menu.info_bar.header, menu_id, menu.info_bar.header.ID, menu_target);
-	GuiUpdate(menu.info_bar.icon, menu_id, menu.info_bar.icon.ID, menu_target);
-	GuiUpdate(menu.info_bar.description, menu_id, menu.info_bar.description.ID, menu_target);
+	menu.info_bar.description.text.Text = desc;
+	GuiUpdate(menu.info_bar.description.text, menu_id, menu.info_bar.description.text.ID, menu_target);
 	return;
 }
 
