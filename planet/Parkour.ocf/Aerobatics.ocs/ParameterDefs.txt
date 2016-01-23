@@ -1,0 +1,47 @@
+[ParameterDef]
+Name=$ScenParNrCheckPoint$
+Description=$ScenParNrCheckPointDesc$
+ID=NrCheckPoints
+Default=8
+
+	[Options]
+		
+		[Option]
+		Name=6
+		Value=6
+		
+		[Option]
+		Name=8
+		Value=8
+		
+		[Option]
+		Name=10
+		Value=10
+		
+		[Option]
+		Name=12
+		Value=12
+		
+		[Option]
+		Name=16
+		Value=16
+		
+		[Option]
+		Name=20
+		Value=20
+		
+[ParameterDef]
+Name=$ScenParGameMode$
+Description=$ScenParGameModeDesc$
+ID=GameMode
+Default=1
+
+	[Options]
+	
+		[Option]
+		Name=$ScenParGameModeZigZag$
+		Value=1
+		
+		#[Option]
+		#Name=$ScenParGameModeHorizontal$
+		#Value=2

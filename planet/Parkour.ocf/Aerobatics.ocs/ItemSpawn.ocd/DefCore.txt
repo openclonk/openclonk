@@ -1,0 +1,3 @@
+[DefCore]
+id=ItemSpawn
+Category=C4D_StaticBack | C4D_Environment

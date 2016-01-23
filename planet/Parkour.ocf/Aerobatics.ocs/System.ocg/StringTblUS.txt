@@ -1,0 +1,5 @@
+# Intro sequence messages
+MsgLetAerobaticsBegin=Dear contestants, in this challenge you will need to take some risks to win. Dig, climb, jump or blast yourself from island to island and be the first to meet me at the finish. Let the aerobatics begin!
+
+# Wind bag description
+MsgWindBagUsageCount=In this round you can only use the wind bag a limited number of times.

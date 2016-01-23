@@ -1,0 +1,10 @@
+Aerobatics
+
+High up in the skies a challenge awaits! Move from island to island by jumping, blasting yourself, flying, catapulting, constructing bridges, or your imagination. The first one to arrive on the final sky island wins this round.
+
+Goal: Race
+
+Hints:
+- You can get items at the spawn points, the item reappears when it has been used.
+- More powerful tools can be produced at the inventor's lab if you find the resources.
+- The use of the wind bag is limited, the number of available wind bursts is shown in the HUD.
