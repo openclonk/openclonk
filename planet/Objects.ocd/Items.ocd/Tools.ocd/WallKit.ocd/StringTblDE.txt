@@ -1,3 +1,2 @@
 Name=Wandbausatz
-Description=Mit dem Wandbausatz koennen stabile Waende errichtet werden.
-UsageHelp=Halte [Benutzen] gedrückt, um eine Vorschau für die Brücke zu erhalten. Lasse los, um die Brücke am gewünschten Ort zu errichten.
+Description=Mit dem Wandbausatz koennen stabile Waende errichtet werden. Halte [Benutzen] gedrÃ¼ckt, um eine Vorschau fÃ¼r die BrÃ¼cke zu erhalten. Lasse los, um die BrÃ¼cke am gewÃ¼nschten Ort zu errichten.

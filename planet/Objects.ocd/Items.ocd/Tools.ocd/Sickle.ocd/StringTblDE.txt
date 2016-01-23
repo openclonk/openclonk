@@ -1,3 +1,2 @@
 Name=Sichel
-UsageHelp=Halte [Benutzen] gedrückt, um Pflanzen zu ernten.
-Description=Die Sichel wird zum Ernten hartnäckiger Pflanzen (wie Weizen und Baumwolle) benötigt.
+Description=Die Sichel wird zum Ernten hartnÃ¤ckiger Pflanzen (wie Weizen und Baumwolle) benÃ¶tigt. Halte [Benutzen] gedrÃ¼ckt, um Pflanzen zu ernten.

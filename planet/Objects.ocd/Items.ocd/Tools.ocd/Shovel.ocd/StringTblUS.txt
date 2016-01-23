@@ -1,3 +1,2 @@
 Name=Shovel
-UsageHelp=Hold down the [Use] key to dig through the earth.
-Description=Even a clonk can't dig without a shovel.
+Description=Even a clonk can't dig without a shovel. Hold down the [Use] key to dig through the earth.

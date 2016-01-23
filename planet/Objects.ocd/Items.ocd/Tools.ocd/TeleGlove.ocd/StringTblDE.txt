@@ -1,3 +1,2 @@
 Name=Telehandschuh
-Description=Dieser experimentelle Handschuh ermöglicht es, kleine Objekte telekinetisch durch die Luft zu bewegen und sogar zu verschleudern.
-UsageHelp=Ziele auf ein kleines Objekt in deiner Nähe und halte [Benutzen] gedrückt um es durch die Luft zu bewegen.
+Description=Dieser experimentelle Handschuh ermÃ¶glicht es, kleine Objekte telekinetisch durch die Luft zu bewegen und sogar zu verschleudern. Ziele auf ein kleines Objekt in deiner NÃ¤he und halte [Benutzen] gedrÃ¼ckt um es durch die Luft zu bewegen.

@@ -289,5 +289,4 @@ func Definition(def) {
 
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local Collectible = 1;

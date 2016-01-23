@@ -1,4 +1,3 @@
 ﻿Name=Pilz
 PickMushroom=Pilz pflücken
-Description=Gibt dem Clonk ein paar Lebenspunkte zurück. Koche ihn um ihn nahrhafter zu machen.
-UsageHelp=Drücke [Benutzen] um den Pilz zu essen.
+Description=Gibt dem Clonk ein paar Lebenspunkte zurück. Koche ihn um ihn nahrhafter zu machen. Drücke [Benutzen] um den Pilz zu essen.

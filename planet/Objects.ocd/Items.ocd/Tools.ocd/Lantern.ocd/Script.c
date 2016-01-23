@@ -74,5 +74,4 @@ public func IsToolProduct() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local Collectible = true;

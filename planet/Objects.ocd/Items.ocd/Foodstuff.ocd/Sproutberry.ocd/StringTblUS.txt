@@ -1,3 +1,2 @@
 Name=Sprout Berry
-Description=Sweet. Sprouts very fast and is difficult to store.
-UsageHelp=Press [Use] to eat the berry.
+Description=Sweet. Sprouts very fast and is difficult to store. Press [Use] to eat the berry.

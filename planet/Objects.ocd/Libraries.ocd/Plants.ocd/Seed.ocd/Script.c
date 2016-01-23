@@ -148,4 +148,4 @@ public func ControlUse(object clonk, int x, int y, bool box)
 	return true;
 }
 
-local UsageHelp = "$UsageHelp$";
+local Description = "$Description$";

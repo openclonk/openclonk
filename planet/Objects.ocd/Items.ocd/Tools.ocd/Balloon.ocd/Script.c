@@ -55,4 +55,3 @@ public func IsInventorProduct() { return true; }
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";

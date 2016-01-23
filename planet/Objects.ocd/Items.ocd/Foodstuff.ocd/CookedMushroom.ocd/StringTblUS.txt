@@ -1,3 +1,2 @@
 Name=Cooked Mushroom
-Description=This fantastic meal restores some of the clonk's health.
-UsageHelp=Press [Use] to eat the mushroom.
+Description=This fantastic meal restores some of the clonk's health. Press [Use] to eat the mushroom.

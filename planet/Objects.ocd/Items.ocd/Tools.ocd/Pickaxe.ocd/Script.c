@@ -226,6 +226,5 @@ public func IsToolProduct() { return true; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local MaxPickDensity = 70; // can't pick granite
 local ForceFreeHands = true;

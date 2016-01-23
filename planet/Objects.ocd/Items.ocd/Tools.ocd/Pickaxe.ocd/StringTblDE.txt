@@ -1,3 +1,2 @@
 Name=Spitzhacke
-Description=Mit der Spitzhacke kann man auch ohne Sprengstoff Gestein durchdringen.
-UsageHelp=Halte [Benutzen] gedrückt, um langsam in Gesteinsformationen vorzudringen.
+Description=Mit der Spitzhacke kann man auch ohne Sprengstoff Gestein durchdringen. Halte [Benutzen] gedrÃ¼ckt, um langsam in Gesteinsformationen vorzudringen.

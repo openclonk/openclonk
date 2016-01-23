@@ -1,3 +1,2 @@
 Name=Bogen
-Description=Klassische Fernkampfwaffe. Der Bogen benötigt Pfeile als Munition.
-UsageHelp=Ziele und schieße mit [Benutzen]. Der Bogen benötigt Pfeile als Munition.
+Description=Klassische Fernkampfwaffe. Der Bogen benÃ¶tigt Pfeile als Munition. Ziele und schieÃŸe mit [Benutzen].

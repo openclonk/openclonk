@@ -1,2 +1,2 @@
 Name=Sprühdose
-UsageHelp=Lasse den kleinen Künstler in dir heraus!
+Description=Lasse den kleinen Künstler in dir heraus!

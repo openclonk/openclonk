@@ -1,4 +1,3 @@
 Name=Baumwollsamen
-Description=Baumwollsamen können angepflanzt oder zu Stoff verarbeitet werden. Sie eigenen sich auch als Brennstoff.
-UsageHelp=Drücke [Benutzen] um hier eine Baumwollpflanze anzupflanzen.
+Description=Baumwollsamen kÃ¶nnen angepflanzt oder zu Stoff verarbeitet werden. Sie eigenen sich auch als Brennstoff. DrÃ¼cke [Benutzen] um hier eine Baumwollpflanze anzupflanzen.
 NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!

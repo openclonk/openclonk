@@ -1,3 +1,2 @@
 Name=Ropeladder
-Description=Makes descending and ascending cliffs easier.
-UsageHelp=Press [Use] at a cliff to unroll.
+Description=Makes descending and ascending cliffs easier. Press [Use] at a cliff to unroll.

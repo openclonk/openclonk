@@ -296,6 +296,5 @@ public func Definition(def)
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;

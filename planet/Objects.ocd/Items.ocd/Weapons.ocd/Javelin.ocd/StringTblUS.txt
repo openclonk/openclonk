@@ -1,3 +1,2 @@
 Name=Javelin
-Description=Throwing weapon. Can be recollected after it is thrown.
-UsageHelp=Press [Use] to aim and throw one of the javelins.
+Description=Throwing weapon. Can be recollected after it is thrown. Press [Use] to aim and throw one of the javelins.

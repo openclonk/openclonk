@@ -191,18 +191,9 @@ private func MakeInfoBar()
 		ID = 10003,	
 		Left = "4em",
 		Top = "1em",
-		Bottom = "3em",
-		Text = ""	
-	};
-	bar.usage = 
-	{
-		Target = menu_target,
-		ID = 10004,	
-		Left = "4em",
-		Top = "3em",
 		Bottom = "5em",
 		Text = ""	
-	};	
+	};
 	// Add the grid to the menu.
 	menu.info_bar = bar;
 }
@@ -270,13 +261,6 @@ public func MenuShowInformation(id obj_id)
 		desc = Format("$MsgDescription$", SPAWNMENU_DescColor, obj_id.Description);
 	menu.info_bar.description.Text = desc;
 	GuiUpdate(menu.info_bar.description, menu_id, menu.info_bar.description.ID, menu_target);
-	
-	// Update usage.
-	var usage = "";
-	if (obj_id && obj_id.UsageHelp)
-		usage = Format("$MsgUsage$", SPAWNMENU_DescColor, obj_id.UsageHelp);
-	menu.info_bar.usage.Text = usage;
-	GuiUpdate(menu.info_bar.usage, menu_id, menu.info_bar.usage.ID, menu_target);
 	return;
 }
 
@@ -289,13 +273,11 @@ public func MenuHideInformation(id obj_id)
 	menu.info_bar.header.Text = "";
 	menu.info_bar.icon.Symbol = nil;
 	menu.info_bar.description.Text = "";
-	menu.info_bar.usage.Text = "";
 	
 	// Update information submenus.
 	GuiUpdate(menu.info_bar.header, menu_id, menu.info_bar.header.ID, menu_target);
 	GuiUpdate(menu.info_bar.icon, menu_id, menu.info_bar.icon.ID, menu_target);
 	GuiUpdate(menu.info_bar.description, menu_id, menu.info_bar.description.ID, menu_target);
-	GuiUpdate(menu.info_bar.usage, menu_id, menu.info_bar.usage.ID, menu_target);
 	return;
 }
 

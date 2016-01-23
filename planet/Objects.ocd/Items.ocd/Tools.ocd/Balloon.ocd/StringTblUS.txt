@@ -1,3 +1,2 @@
 Name=Balloon
-Description=Acts like a parachute to slow the fall of your clonk.
-UsageHelp=Press the use key while falling.
+Description=Acts like a parachute to slow the fall of your clonk. Press the use key while falling.

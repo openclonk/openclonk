@@ -53,7 +53,6 @@ public func NutritionalValue() { return GetCon() / 10; }
 
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local Collectible = true;
 local BlastIncinerate = 5;
 local ContactIncinerate = 1;

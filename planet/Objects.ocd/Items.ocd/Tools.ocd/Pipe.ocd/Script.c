@@ -5,7 +5,6 @@
 
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local PipeState = nil;
 

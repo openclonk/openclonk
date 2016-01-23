@@ -1,3 +1,2 @@
 Name=Wurfspeer
-Description=Wurfwaffe, kann nach dem Wurf wieder aufgesammelt werden.
-UsageHelp=Ziele und werfe einen der Wurfspeere mit [Benutzen].
+Description=Wurfwaffe, kann nach dem Wurf wieder aufgesammelt werden. Ziele und werfe einen der Wurfspeere mit [Benutzen].

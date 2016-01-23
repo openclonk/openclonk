@@ -1,3 +1,2 @@
 Name=Schaufel
-UsageHelp=Halte [Benutzen] gedrückt, um durch die Erde zu graben.
-Description=Ohne Schaufeln können selbst Clonks nicht durch die Erde graben.
+Description=Ohne Schaufeln kÃ¶nnen selbst Clonks nicht durch die Erde graben. Halte [Benutzen] gedrÃ¼ckt, um durch die Erde zu graben.

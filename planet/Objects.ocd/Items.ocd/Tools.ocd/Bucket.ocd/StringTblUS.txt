@@ -1,4 +1,3 @@
 Name=Bucket
-Description=The bucket gathers earth automatically as you dig through earth with the shovel. Use it as a material for bridges or other similar tasks.
-UsageHelp=Shovel through earth to automatically fill the bucket. Press [Use] to dump earth.
+Description=The bucket gathers earth automatically as you dig through earth with the shovel. Use it as a material for bridges or other similar tasks. Shovel through earth to automatically fill the bucket. Press [Use] to dump earth.
 UsageHotTip=The bucket is empty. Use the shovel to dig through earth to fill it.

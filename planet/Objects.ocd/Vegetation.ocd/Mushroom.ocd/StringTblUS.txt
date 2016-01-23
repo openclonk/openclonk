@@ -1,4 +1,3 @@
 ﻿Name=Mushroom
 PickMushroom=Pick mushroom
-Description=Restores a few health points. Cook it to make it more nutritious.
-UsageHelp=Press [Use] to eat the mushroom.
+Description=Restores a few health points. Cook it to make it more nutritious. Press [Use] to eat the mushroom.

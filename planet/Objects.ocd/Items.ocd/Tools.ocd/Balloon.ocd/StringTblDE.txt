@@ -1,3 +1,2 @@
 Name=Ballon
-Description=Kann den Fall eines Clonks wie ein Fallschirm abbremsen.
-UsageHelp=Benutze den Ballon um deinen Fall abzubremsen.
+Description=Kann den Fall eines Clonks wie ein Fallschirm abbremsen. Benutze den Ballon um deinen Fall abzubremsen.

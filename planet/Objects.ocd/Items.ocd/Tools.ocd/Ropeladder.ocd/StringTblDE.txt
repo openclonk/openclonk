@@ -1,3 +1,2 @@
 Name=Strickleiter
-Description=Erleichtert den Auf- und Abstieg an Klippen.
-UsageHelp=Drücke an einem Abgrund [Benutzen], um die Strickleiter auszurollen.
+Description=Erleichtert den Auf- und Abstieg an Klippen. DrÃ¼cke an einem Abgrund [Benutzen], um die Strickleiter auszurollen.

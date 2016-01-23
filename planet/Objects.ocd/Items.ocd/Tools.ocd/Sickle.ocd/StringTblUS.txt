@@ -1,3 +1,2 @@
 Name=Sickle
-UsageHelp=Hold down the [Use] key to harvest plants.
-Description=Clonks require sickles to harvest particularly stubborn plants, such as wheat or cotton.
+Description=Clonks require sickles to harvest particularly stubborn plants, such as wheat or cotton. Hold down the [Use] key to harvest plants.

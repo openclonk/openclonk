@@ -209,6 +209,5 @@ func Definition(def) {
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 2;

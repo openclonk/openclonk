@@ -1,3 +1,2 @@
 Name=Laterne
-Description=Dient als einfache Lichtquelle. Vorsicht, beim Zerbrechen brandgefährlich!
-UsageHelp=Drücke [Benutzen] die Laterne ein- oder auszuschalten.
+Description=Dient als einfache Lichtquelle. Vorsicht, beim Zerbrechen brandgefÃ¤hrlich! DrÃ¼cke [Benutzen] die Laterne ein- oder auszuschalten.

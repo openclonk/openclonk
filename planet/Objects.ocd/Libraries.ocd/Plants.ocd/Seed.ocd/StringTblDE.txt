@@ -1,2 +1,2 @@
 TxtBadGround=%s kann hier|nicht gepflanzt werden!
-UsageHelp=Drücke [Benutzen] zum Anpflanzen.
+Description=Drücke [Benutzen] zum Anpflanzen.

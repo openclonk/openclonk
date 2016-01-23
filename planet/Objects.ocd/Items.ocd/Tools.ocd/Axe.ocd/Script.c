@@ -399,7 +399,6 @@ public func IsToolProduct() { return true; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local UsageHelp = "$UsageHelp$";
 // Damage dealt to trees when chopping.
 local ChopStrength = 10;
 // Damage dealt to living beings when hit with an axe.

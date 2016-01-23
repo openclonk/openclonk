@@ -1,3 +1,2 @@
 Name=Schild
-Description=Bietet dem Clonk einigen Schutz.
-UsageHelp=Halte [Benutzen] gedrückt um dich vor heranfliegenden Dingen aus einer Richtung zu schützen.
+Description=Bietet dem Clonk einigen Schutz. Halte [Benutzen] gedrÃ¼ckt um dich vor heranfliegenden Dingen aus einer Richtung zu schÃ¼tzen.

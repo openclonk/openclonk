@@ -1,4 +1,3 @@
-Name=Schlüssel
-Description=Öffnet Tore.
-UsageHelp=Benutze den Schlüssel, um Maves geheimes Öllager zu öffnen.
-KeyNoLock=Der Schlüssel zu Maves Öllager. Jetzt muss ich nur noch das Eingangstor unter den Lavaseen finden.
+Name=SchlÃ¼ssel
+Description=Ã–ffnet Tore. Benutze den SchlÃ¼ssel, um Maves geheimes Ã–llager zu Ã¶ffnen.
+KeyNoLock=Der SchlÃ¼ssel zu Maves Ã–llager. Jetzt muss ich nur noch das Eingangstor unter den Lavaseen finden.

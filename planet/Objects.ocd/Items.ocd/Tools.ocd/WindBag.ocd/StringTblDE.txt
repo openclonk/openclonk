@@ -1,5 +1,3 @@
 Name=Windbeutel
-Description=Enthält komprimierten Wind der in einem Stoß entfesselt werden kann.
-UsageHelp=Ziele und drücke [Benutzen], um einen Windstoß in diese Richtung zu entfesseln.
-
+Description=Enthält komprimierten Wind der in einem Stoß entfesselt werden kann. Ziele und drücke [Benutzen], um einen Windstoß in diese Richtung zu entfesseln.
 MsgReloading=Lädt nach!

@@ -1,3 +1,2 @@
 Name=Boompack
-UsageHelp=Aim and ignite the rocket to fly with it in that direction. Jump off before the rocket explodes!
-Description=Single-use transport for daring clonks.
+Description=Single-use transport for daring clonks. Aim and ignite the rocket to fly with it in that direction. Jump off before the rocket explodes!

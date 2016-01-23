@@ -1,3 +1,2 @@
 Name=Grenade Launcher
-Description=Firearm. The grenade launcher needs iron bombs for ammunition.
-UsageHelp=Aim and shoot with [Use]. The grenade launcher needs iron bombs for ammunition.
+Description=Firearm. The grenade launcher needs iron bombs for ammunition. Aim and shoot with [Use].

@@ -1,5 +1,4 @@
 Name=Moss
-Description=Useful fuel. Can be grown near water.
-UsageHelp=Press [Use] to plant near water. Keep away from water to dry.
+Description=Useful fuel. Can be grown near water. Press [Use] to plant near water. Keep away from water to dry.
 NoSuitableGround=Ground not suitable|for planting!
 Dry=Dry

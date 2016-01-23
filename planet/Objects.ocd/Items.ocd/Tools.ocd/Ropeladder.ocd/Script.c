@@ -499,6 +499,5 @@ local ActMap = {
 	},
 };
 local Name = "$Name$";
-local UsageHelp = "$UsageHelp$";
 local Description = "$Description$";
 local Collectible = true;

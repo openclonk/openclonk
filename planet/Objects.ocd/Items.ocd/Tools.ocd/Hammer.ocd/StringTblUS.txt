@@ -2,5 +2,4 @@ TxtNoconstructionplansa=No construction plans available
 TxtConstructions=Construction: %s
 TxtCantConstruct=%s can't build.
 Name=Hammer
-Description=Basic tool for constructing new buildings.
-UsageHelp=Press [Use] to construct a building.
+Description=Basic tool for constructing new buildings. Press [Use] to construct a building.

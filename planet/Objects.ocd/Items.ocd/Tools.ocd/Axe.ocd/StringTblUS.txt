@@ -1,3 +1,2 @@
 Name=Axe
-Description=A woodcutter's tool.
-UsageHelp=Use to chop down a tree.
+Description=A woodcutter's tool. Use to chop down a tree.

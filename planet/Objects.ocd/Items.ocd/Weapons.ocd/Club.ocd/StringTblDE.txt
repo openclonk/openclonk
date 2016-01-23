@@ -1,3 +1,2 @@
 Name=Keule
-Description=Groﬂer Bruder des Baseballschl‰gers.
-UsageHelp=Zielen und Schlagen mit [Benutzen].
+Description=Gro√üer Bruder des Baseballschl√§gers. Zielen und Schlagen mit [Benutzen].

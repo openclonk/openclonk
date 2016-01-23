@@ -1,3 +1,2 @@
 Name=Enterhaken
-Description=Sehr nützliches Werkzeug zum Erklimmen von schwierigem Terrain.
-UsageHelp=Schieße den Enterhaken an eine Decke, um Dich daran zu sichern.
+Description=Sehr nÃ¼tzliches Werkzeug zum Erklimmen von schwierigem Terrain. SchieÃŸe den Enterhaken an eine Decke, um Dich daran zu sichern.
