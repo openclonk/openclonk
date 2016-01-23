@@ -59,20 +59,18 @@ if(USE_GCC_STD_14)
 	list(APPEND OC_CXX_FLAGS "-std=gnu++14")
 endif()
 
-if(MSVC_VERSION GREATER 1499)
+if(MSVC)
 	list(APPEND OC_CXX_FLAGS /MP)
 	list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
 
-	if (NOT CMAKE_CL_64 OR NOT MSVC_VERSION VERSION_LESS 1900)
-		# Activate edit-and-continue
-		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
-		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
-	endif()
+	# Activate edit-and-continue
+	list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
+	list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
+
 	# do not link the release CRT in debug builds
 	list(APPEND OC_EXE_LINKER_FLAGS_DEBUG "/NODEFAULTLIB:MSVCRT")
 	set(HAVE_PRECOMPILED_HEADERS ON CACHE INTERNAL "Compiler supports precompiled headers")
-endif()
-if(MSVC_VERSION)
+
 	# Suppress warnings about "non-secure" functions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
 	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
@@ -1217,7 +1215,7 @@ endif()
 # Precompiled header support for MSVC
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
-	if(MSVC_VERSION)
+	if(MSVC)
 		get_property(OC_SOURCES TARGET openclonk PROPERTY SOURCES)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
@@ -1273,14 +1271,6 @@ endif()
 add_subdirectory(tests)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-# CMake support for MSVC 2010 is broken. Change the .sln file to avoid
-# millions of "reload X project?" dialog boxes.
-# For best results, also change CMake's ReloadProjects macro to only
-# call StopBuild().
-if(MSVC_VERSION EQUAL 1600)
-	file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.sln" "\n# reload me\n")
-endif()
 
 # For MSVC 2015, add a Solution Items folder to the solution that contains
 # a reference to the debugger visualization file.
