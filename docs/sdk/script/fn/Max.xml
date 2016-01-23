@@ -23,11 +23,29 @@
       </params>
     </syntax>
     <desc>Returns the greater of two values.</desc>
+  </func>
+  <func>
+    <title>Max</title>
+    <category>Arithmetics</category>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>values</name>
+          <desc>array of integers</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Returns the largest value from an array. All array elements must be
+      integers (or convertible to integer).
+    </desc>
     <related>
       <funclink>Min</funclink>
       <funclink>Inside</funclink>
       <funclink>BoundBy</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>2001-12</date>
 </funcs>

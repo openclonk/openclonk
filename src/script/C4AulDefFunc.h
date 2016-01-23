@@ -47,6 +47,7 @@ class Nillable
 public:
 	inline Nillable(const T &value) : _nil(!value && !C4Value::IsNullableType(C4ValueConv<T>::Type())), _val(value) {}
 	inline Nillable() : _nil(true), _val(T()) {}
+	inline Nillable(std::nullptr_t) : _nil(true), _val(T()) {}
 	template <typename T2> inline Nillable(const Nillable<T2> & n2) : _nil(n2._nil), _val(n2._val) {}
 	inline Nillable(const Nillable<void> & n2) : _nil(true), _val(T()) {}
 	inline bool IsNil() const { return _nil; }

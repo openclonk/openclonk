@@ -458,14 +458,56 @@ static long FnArcCos(C4PropList * _this, long iVal, long iRadius)
 	return (long) floor(f1+0.5);
 }
 
-static long FnMin(C4PropList * _this, long iVal1, long iVal2)
+static std::pair<Nillable<int32_t>, Nillable<int32_t>> minmax(const char *func, const C4Value &a_val, const Nillable<int32_t> &b_opt)
 {
-	return std::min(iVal1,iVal2);
+	if (a_val.CheckConversion(C4V_Int))
+	{
+		int32_t a = a_val.getInt();
+		int32_t b = b_opt;
+		if (a > b)
+			std::swap(a, b);
+		return std::make_pair(a, b);
+	}
+	else if (a_val.CheckConversion(C4V_Array))
+	{
+		const C4ValueArray *a = a_val.getArray();
+		if (a->GetSize() == 0)
+			return std::make_pair(nullptr, nullptr);
+		
+		if (!a->GetItem(0).CheckConversion(C4V_Int))
+		{
+			throw C4AulExecError(FormatString("%s: argument 1 must be int or array-of-int, but element %d of array is of type %s", func, 0, a->GetItem(0).GetTypeName()).getData());
+		}
+		int32_t min, max;
+		min = max = a->GetItem(0).getInt();
+
+		for (int32_t i = 1; i < a->GetSize(); ++i)
+		{
+			if (!a->GetItem(i).CheckConversion(C4V_Int))
+			{
+				throw C4AulExecError(FormatString("%s: argument 1 must be int or array-of-int, but element %d of array is of type %s", func, i, a->GetItem(i).GetTypeName()).getData());
+			}
+			int32_t value = a->GetItem(i).getInt();
+			min = std::min(min, value);
+			max = std::max(max, value);
+		}
+
+		return std::make_pair(min, max);
+	}
+	else
+	{
+		throw C4AulExecError(FormatString("%s: argument 1 must be int or array-of-int, but is of type %s", func, a_val.GetTypeName()).getData());
+	}
 }
 
-static long FnMax(C4PropList * _this, long iVal1, long iVal2)
+static Nillable<int32_t> FnMin(C4PropList * _this, const C4Value &a, Nillable<int32_t> b)
 {
-	return std::max(iVal1,iVal2);
+	return minmax("Min", a, b).first;
+}
+
+static Nillable<int32_t> FnMax(C4PropList * _this, const C4Value &a, Nillable<int32_t> b)
+{
+	return minmax("Max", a, b).second;
 }
 
 static long FnDistance(C4PropList * _this, long iX1, long iY1, long iX2, long iY2)
