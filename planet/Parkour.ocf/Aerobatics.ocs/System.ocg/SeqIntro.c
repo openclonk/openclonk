@@ -2,10 +2,14 @@
 
 #appendto Sequence
 
-public func Intro_Start()
+public func Intro_Start(array start, array finish)
 {
-	this.airship = CreateObjectAbove(Airship, LandscapeWidth() / 4 + 40, LandscapeHeight() / 2 - 40);
-	this.host = CreateObjectAbove(Clonk, LandscapeWidth() / 4 + 40, LandscapeHeight() / 2 - 50);
+	var map_zoom = GetScenarioVal("MapZoom", "Landscape");
+	var start_x = start[0] * map_zoom + 40;
+	var start_y = start[1] * map_zoom - 20;
+	this.finish_x = finish[0] * map_zoom;
+	this.airship = CreateObjectAbove(Airship, start_x, start_y);
+	this.host = CreateObjectAbove(Clonk, start_x, start_y - 10);
 	this.host->SetAlternativeSkin("Mime");
 	this.host->SetName("Mr. Aerobat");
 	this.host->SetDir(DIR_Left);
@@ -31,7 +35,7 @@ public func Intro_1()
 
 public func Intro_2()
 {
-	AddEffect("IntroControlAirship", nil, 100, 5, nil, this->GetID(), this.airship, this.host);
+	AddEffect("IntroControlAirship", nil, 100, 5, nil, this->GetID(), this.airship, this.host, this.finish_x);
 	return ScheduleNext(12);
 }
 
@@ -54,7 +58,7 @@ public func Intro_Stop()
 	return true;
 }
 
-public func FxIntroControlAirshipStart(object target, proplist effect, int temp, object airship, object host)
+public func FxIntroControlAirshipStart(object target, proplist effect, int temp, object airship, object host, int finish_x)
 {
 	if (temp)
 		return FX_OK;
@@ -62,13 +66,14 @@ public func FxIntroControlAirshipStart(object target, proplist effect, int temp,
 	effect.host = host;
 	effect.host->SetCommand("Grab", effect.airship);
 	effect.airship->ControlRight(effect.host);
+	effect.finish_x = finish_x;
 	effect.state = 1;
 	return FX_OK;
 }
 
 public func FxIntroControlAirshipTimer(object target, proplist effect, int time)
 {
-	if (effect.state == 1 && effect.host->GetX() > 4 * LandscapeWidth() / 5 - 30)
+	if (effect.state == 1 && effect.host->GetX() > effect.finish_x - 30)
 	{
 		effect.airship->ControlStop(effect.host);
 		effect.airship->ControlDown(effect.host);

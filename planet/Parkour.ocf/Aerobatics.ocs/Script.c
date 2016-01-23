@@ -37,13 +37,14 @@ protected func Initialize()
 		if (index == GetLength(checkpoint_locations) - 1)
 		{
 			goal->SetFinishpoint(x, y);
-			ItemSpawn->Create(Balloon, x + 30, y);			
+			if (SCENPAR_GameMode == 1)
+				ItemSpawn->Create(Balloon, x + 30, y);			
 			continue;
 		}		
 		var mode = PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Respawn | PARKOUR_CP_Bonus;
 		goal->AddCheckpoint(x - 10, y, mode);
-		var spawn_items = [Dynamite, Loam, DynamiteBox, IronBomb, Javelin];
-		ItemSpawn->Create(spawn_items[Random(Min(index, GetLength(spawn_items)))], x + 20, y);
+		var spawn_id = GetItemSpawnType(index, y);
+		ItemSpawn->Create(spawn_id, x + 20, y);
 	}
 	
 	// Rules.
@@ -57,16 +58,39 @@ protected func Initialize()
 	InitAnimals(amount);
 	
 	// Start the intro sequence.
-	StartSequence("Intro", 0);
+	StartSequence("Intro", 0, checkpoint_locations[0], checkpoint_locations[-1]);
 	return;
+}
+
+private func GetItemSpawnType(int cp_number, int height)
+{
+	// For normal checkpoints the item type depends on the height and is random.
+	var spawn_items = [Dynamite, Loam];
+	if (cp_number >= 3)
+	{
+		if (height < LandscapeHeight() / 2)
+			var spawn_items = [Dynamite, Loam, DynamiteBox];
+		else
+			var spawn_items = [Dynamite, Loam, Loam, Boompack];
+	}
+	return RandomElement(spawn_items);
 }
 
 private func InitMaterials(int amount)
 {
+	// In material objects.
 	PlaceObjects(Dynamite, 4 * amount, "Earth");
 	PlaceObjects(Loam, 4 * amount, "Earth");
 	PlaceObjects(Metal, 2 * amount, "Earth");
-	
+	// Additional item spawns.
+	if (SCENPAR_GameMode == 2)
+	{
+		// There is no balloon in the horizontal mode at the finish so place one randomly in the first part of the map.
+		var pos = FindLocation(Loc_Sky(), Loc_Space(30), Loc_InRect(LandscapeWidth() / 6, 150, LandscapeWidth() / 6, LandscapeHeight() - 300));
+		if (pos)
+			ItemSpawn->Create(Balloon, pos.x, pos.y);
+		
+	}
 	// Place chests on several of the sky islands.
 	for (var count = 0; count < amount / 2; count++)
 	{
@@ -76,6 +100,7 @@ private func InitMaterials(int amount)
 		var chest = CreateObjectAbove(Chest, pos.x, pos.y);
 		chest->CreateContents(Dynamite, 4);
 		chest->CreateContents(Club);
+		chest->CreateContents(Javelin);
 		chest->CreateContents(Musket)->CreateContents(LeadShot);
 		chest->CreateContents(Bow)->CreateContents(Arrow);
 		chest->CreateContents(Bread, 2);
@@ -107,14 +132,6 @@ private func InitMaterials(int amount)
 			var cannon = CreateObjectAbove(Cannon, pos.x, pos.y);
 			cannon->CreateContents(PowderKeg, 1);
 		}
-	}
-	// Place some ropeladders.
-	for (var count = 0; count < 2; count++)
-	{
-		var pos = FindLocation(Loc_Sky(), Loc_Wall(CNAT_Top));	
-		if (!pos)
-			continue;
-		CreateObject(Ropeladder, pos.x, pos.y)->Unroll(-1, COMD_Up);
 	}
 	// An inventor's lab on its island.
 	var map_zoom = GetScenarioVal("MapZoom", "Landscape");
@@ -184,6 +201,7 @@ protected func InitializePlayer(int plr)
 	// Give the player knowledge for items in the inventor's lab.
 	SetPlrKnowledge(plr, WindBag);
 	SetPlrKnowledge(plr, WallKit);
+	SetPlrKnowledge(plr, Balloon);	
 	return;
 }
 

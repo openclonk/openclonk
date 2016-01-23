@@ -42,6 +42,6 @@ Default=1
 		Name=$ScenParGameModeZigZag$
 		Value=1
 		
-		#[Option]
-		#Name=$ScenParGameModeHorizontal$
-		#Value=2
+		[Option]
+		Name=$ScenParGameModeHorizontal$
+		Value=2
