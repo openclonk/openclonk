@@ -23,6 +23,11 @@
 class AulPredefFunctionTest : public AulTest
 {};
 
+TEST_F(AulPredefFunctionTest, Translate)
+{
+	EXPECT_EQ(C4VString("a"), RunExpr("Translate(\"a\")"));
+}
+
 TEST_F(AulPredefFunctionTest, Min)
 {
 	EXPECT_EQ(C4VInt(0), RunExpr("Min(0, 1)"));

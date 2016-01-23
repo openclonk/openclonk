@@ -95,8 +95,3 @@ TEST_F(AulTest, ValueReturn)
 		C4VPropList("a", C4VInt(1), "b", C4VArray()),
 		RunExpr("{\"a\": 1, \"b\"=[]}"));
 }
-
-TEST_F(AulTest, Translate)
-{
-	EXPECT_EQ(C4VString("a"), RunExpr("Translate(\"a\")"));
-}
