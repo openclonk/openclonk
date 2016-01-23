@@ -33,12 +33,12 @@ Function nsMusicPage
 	${NSD_CreateLabel} 0 0 100% 24u "Do you want to download and install an additional music package by David Oerther?"
 	Pop $Label
 
-	${NSD_CreateCheckbox} 0 24u 100% 10u "&Download and install music (130MB)"
+	${NSD_CreateCheckbox} 0 24u 100% 10u "&Download and install music (155MB)"
 	Pop $MusicCheckbox
 	
 	${NSD_CreateLabel} 0 48u 100% 24u "License: Music by David Oerther © Copyright 2015. All rights reserved, note that the soundtrack does not use the creative common or similar licenses."
 	
-	${NSD_CreateLabel} 0 72u 100% 36u "The game Open Clonk (http://www.openclonk.org/) and all derived works may use and distribute the soundtrack, as long as credit is given. Open Clonk modifications and ingame-videos don't require credits."
+	${NSD_CreateLabel} 0 72u 100% 36u "The game Open Clonk ( http://www.openclonk.org/ ) may use and distribute the soundtrack, as long as credit is given. This explicitly includes packaged distributions of the game. In-game videos of Open Clonk and game modifications and extensions based on the Open Clonk file-types (.ocd, .ocs and .ocf) don't require credits."
 
 	${NSD_CreateLabel} 0 108u 100% 24u "For all other usage (f.e. commercial) please contact: david.oerther@directbox.com"
 
