@@ -494,8 +494,8 @@ private func InitScoreboard()
 {
 	Scoreboard->Init(
 		[
-		{key = "checkpoints", title = ParkourCheckpoint, sorted = true, desc = true, default = 0, priority = 80},
-		{key = "besttime", title = "T", sorted = true, desc = true, default = 0, priority = 70}
+		{key = "checkpoints", title = "#", sorted = true, desc = true, default = 0, priority = 80},
+		{key = "besttime", title = GUI_Clock, sorted = true, desc = true, default = 0, priority = 70}
 		]
 		);
 	UpdateScoreboardTitle();
