@@ -88,9 +88,15 @@ function(create_test testName)
     set(oneValueArgs "")
     set(multiValueArgs SOURCES LIBRARIES)
     CMAKE_PARSE_ARGUMENTS(CT "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    add_executable("${testName}" EXCLUDE_FROM_ALL ${CT_SOURCES} main.cpp)
+    add_executable("${testName}" EXCLUDE_FROM_ALL
+		${CT_SOURCES}
+		TestLog.cpp
+		TestLog.h
+		main.cpp
+	)
+	target_include_directories("${testName}" PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
 	set_property(TARGET "${testName}" PROPERTY FOLDER "Testing")
-    target_link_libraries("${testName}" gtest ${CT_LIBRARIES})
+    target_link_libraries("${testName}" gtest gmock ${CT_LIBRARIES})
     add_test(NAME "${testName}" COMMAND "${testName}")
 endfunction()
 

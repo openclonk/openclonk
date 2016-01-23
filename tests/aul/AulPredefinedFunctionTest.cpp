@@ -17,14 +17,24 @@
 
 #include "C4Include.h"
 #include "AulTest.h"
+#include "TestLog.h"
 
 #include "script/C4Aul.h"
 
 class AulPredefFunctionTest : public AulTest
 {};
 
+using ::testing::StartsWith;
+using ::testing::AnyNumber;
+using ::testing::_;
+
 TEST_F(AulPredefFunctionTest, Translate)
 {
+	// Expect the engine to warn when it can't find a translation
+	LogMock log;
+	EXPECT_CALL(log, DebugLogF(R"(WARNING: Translate: no translation for string "%s")", _));
+	EXPECT_CALL(log, DebugLog(StartsWith(" by: "))).Times(AnyNumber()); // ignore stack trace
+
 	EXPECT_EQ(C4VString("a"), RunExpr("Translate(\"a\")"));
 }
 
