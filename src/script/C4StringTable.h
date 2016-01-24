@@ -125,6 +125,11 @@ template<typename T> class C4Set
 		*p = std::move(e);
 		return p;
 	}
+	void ClearTable()
+	{
+		for (unsigned int i = 0; i < Capacity; ++i)
+			Table[i] = 0;
+	}
 	void MaintainCapacity()
 	{
 		if (Capacity - Size < std::max(2u, Capacity / 4))
@@ -133,7 +138,7 @@ template<typename T> class C4Set
 			Capacity *= 2;
 			T * OTable = Table;
 			Table = new T[Capacity];
-			Clear();
+			ClearTable();
 			for (unsigned int i = 0; i < OCapacity; ++i)
 			{
 				if (OTable[i])
@@ -148,7 +153,7 @@ public:
 	static bool Equals(const T & a, const T & b) { return a == b; }
 	C4Set(): Capacity(2), Size(0), Table(new T[Capacity])
 	{
-		Clear();
+		ClearTable();
 	}
 	~C4Set()
 	{
@@ -171,8 +176,8 @@ public:
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void Clear()
 	{
-		for (unsigned int i = 0; i < Capacity; ++i)
-			Table[i] = 0;
+		ClearTable();
+		Size = 0;
 	}
 	template<typename H> T & Get(H e) const
 	{
