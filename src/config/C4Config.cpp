@@ -142,6 +142,7 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Comment,                 "Comment",              ""            ,false, true));
 	pComp->Value(mkNamingAdapt(PortTCP,                 "PortTCP",              C4NetStdPortTCP       ,false, true));
 	pComp->Value(mkNamingAdapt(PortUDP,                 "PortUDP",              C4NetStdPortUDP       ,false, true));
+	pComp->Value(mkNamingAdapt(EnableUPnP,              "EnableUPnP",           1             , false, true));
 	pComp->Value(mkNamingAdapt(PortDiscovery,           "PortDiscovery",        C4NetStdPortDiscovery ,false, true));
 	pComp->Value(mkNamingAdapt(PortRefServer,           "PortRefServer",        C4NetStdPortRefServer ,false, true));
 	pComp->Value(mkNamingAdapt(ControlMode,             "ControlMode",          0             ));

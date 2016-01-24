@@ -154,6 +154,7 @@ public:
 	int32_t LeagueServerSignUp;
 	int32_t UseAlternateServer;
 	int32_t PortTCP,PortUDP,PortDiscovery,PortRefServer;
+	int32_t EnableUPnP;
 	int32_t ControlMode;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> Nick;
 	int32_t MaxLoadFileSize;

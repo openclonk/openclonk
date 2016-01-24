@@ -63,7 +63,7 @@ C4Network2IO::~C4Network2IO()
 	Clear();
 }
 
-bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscover, int16_t iPortRefServer, bool fBroadcast) // by main thread
+bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscover, int16_t iPortRefServer, bool fBroadcast, bool enable_upnp) // by main thread
 {
 	// Already initialized? Clear first
 	if (pNetIO_TCP || pNetIO_UDP) Clear();
@@ -80,7 +80,7 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 	Thread.SetCallback(Ev_Net_Packet, this);
 
 	// initialize UPnP manager
-	if (iPortTCP > 0 || iPortUDP > 0)
+	if (enable_upnp && (iPortTCP > 0 || iPortUDP > 0))
 	{
 		assert(!UPnPMgr);
 		UPnPMgr = new C4Network2UPnP;
@@ -105,7 +105,7 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 		{
 			Thread.AddProc(pNetIO_TCP);
 			pNetIO_TCP->SetCallback(this);
-			UPnPMgr->AddMapping(P_TCP, iPortTCP, iPortTCP);
+			if (UPnPMgr) UPnPMgr->AddMapping(P_TCP, iPortTCP, iPortTCP);
 		}
 
 	}
@@ -128,7 +128,7 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 		{
 			Thread.AddProc(pNetIO_UDP);
 			pNetIO_UDP->SetCallback(this);
-			UPnPMgr->AddMapping(P_UDP, iPortUDP, iPortUDP);
+			if (UPnPMgr) UPnPMgr->AddMapping(P_UDP, iPortUDP, iPortUDP);
 		}
 	}
 
@@ -214,7 +214,7 @@ void C4Network2IO::Clear() // by main thread
 	if (pNetIO_TCP) { Thread.RemoveProc(pNetIO_TCP); delete pNetIO_TCP; pNetIO_TCP = NULL; }
 	if (pNetIO_UDP) { Thread.RemoveProc(pNetIO_UDP); delete pNetIO_UDP; pNetIO_UDP = NULL; }
 	if (pRefServer) { Thread.RemoveProc(pRefServer); delete pRefServer; pRefServer = NULL; }
-	delete UPnPMgr; UPnPMgr = NULL;
+	if (UPnPMgr) { delete UPnPMgr; UPnPMgr = NULL; }
 	// remove auto-accepts
 	ClearAutoAccept();
 	// reset flags

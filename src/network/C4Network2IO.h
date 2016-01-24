@@ -101,7 +101,7 @@ public:
 	bool hasUDP() const { return !! pNetIO_UDP; }
 
 	// initialization
-	bool Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscovery = -1, int16_t iPortRefServer = -1, bool fBroadcast = false); // by main thread
+	bool Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscovery = -1, int16_t iPortRefServer = -1, bool fBroadcast = false, bool enable_upnp = true); // by main thread
 	void Clear(); // by main thread
 	void SetLocalCCore(const C4ClientCore &CCore); // by main thread
 

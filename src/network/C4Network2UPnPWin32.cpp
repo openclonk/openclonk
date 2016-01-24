@@ -69,10 +69,12 @@ struct C4Network2UPnPP
 C4Network2UPnP::C4Network2UPnP()
 	: p(new C4Network2UPnPP)
 {
+	Log("UPnP init...");
 	// Make sure COM is available
 	if (FAILED(CoInitializeEx(0, COINIT_APARTMENTTHREADED)))
 	{
 		// Didn't work, don't do UPnP then
+		Log("UPnP fail (no COM).");
 		return;
 	}
 	p->MustReleaseCOM = true;
@@ -80,7 +82,10 @@ C4Network2UPnP::C4Network2UPnP()
 	// Get the NAT service
 	IUPnPNAT *nat = NULL;
 	if (FAILED(CoCreateInstance(CLSID_UPnPNAT, NULL, CLSCTX_INPROC_SERVER, IID_IUPnPNAT, reinterpret_cast<void**>(&nat))))
+	{
+		Log("UPnP fail (no service).");
 		return;
+	}
 
 	// Fetch NAT mappings
 	for (int ctr = 0; ctr < 10; ++ctr)
@@ -91,10 +96,13 @@ C4Network2UPnP::C4Network2UPnP()
 			LogF("UPnP: Got NAT port mapping table after %d tries", ctr+1);
 			break;
 		}
+		if (ctr == 2) Log(LoadResStr("IDS_MSG_UPNPHINT"));
 		Sleep(1000);
 	}
 
 	SafeRelease(nat);
+
+	if (!p->mappings) Log("UPnP fail (no mapping).");
 }
 
 C4Network2UPnP::~C4Network2UPnP()
