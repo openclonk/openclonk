@@ -102,7 +102,9 @@ struct C4ValueArraySortStringscomp
 {
 	bool operator ()(const C4Value &v1, const C4Value &v2)
 	{
-		return v1.getStr() && v2.getStr() && v1._getStr()->GetData() < v2._getStr()->GetData();
+		if (v1.getStr() && v2.getStr())
+			return std::strcmp(v1._getStr()->GetCStr(), v2._getStr()->GetCStr()) < 0;
+		return v2.getStr();
 	}
 };
 
