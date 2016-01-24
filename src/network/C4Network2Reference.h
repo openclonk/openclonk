@@ -39,6 +39,7 @@ private:
 	// General information
 	int32_t Icon;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameExNoEmpty> Title;
+	StdCopyStrBuf GameMode; // Game mode (e.g. "Melee") to decide the correct league for evaluation
 	C4Network2Status GameStatus;
 	int32_t Time;
 	int32_t Frame;
@@ -71,6 +72,7 @@ public:
 	int32_t getSortOrder() const;
 	int32_t getTime() const { return Time; }
 	int32_t getStartTime() const { return StartTime; }
+	StdStrBuf getGameGoalString() const;
 
 	void SetSourceIP(in_addr ip);
 

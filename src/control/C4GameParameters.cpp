@@ -543,7 +543,7 @@ void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 
 }
 
-StdStrBuf C4GameParameters::GetGameGoalString()
+StdStrBuf C4GameParameters::GetGameGoalString() const
 {
 	// getting game goals from the ID list
 	// unfortunately, names cannot be deduced before object definitions are loaded

@@ -212,9 +212,10 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapePushPull),         "LandscapePushPull",   false));
 	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapeInsertThrust),     "LandscapeInsertThrust",true));
 
-	pComp->Value(mkNamingAdapt(Goals,                    "Goals",               C4IDList()));
-	pComp->Value(mkNamingAdapt(Rules,                    "Rules",               C4IDList()));
-	pComp->Value(mkNamingAdapt(FoWEnabled,               "FoWEnabled",          true));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Mode, StdCompiler::RCT_IdtfAllowEmpty), "Mode",        StdCopyStrBuf()));
+	pComp->Value(mkNamingAdapt(Goals,                                             "Goals",       C4IDList()));
+	pComp->Value(mkNamingAdapt(Rules,                                             "Rules",       C4IDList()));
+	pComp->Value(mkNamingAdapt(FoWEnabled,                                        "FoWEnabled",  true));
 }
 
 void C4SPlrStart::Default()

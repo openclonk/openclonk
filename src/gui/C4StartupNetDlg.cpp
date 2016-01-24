@@ -397,7 +397,7 @@ void C4StartupNetListEntry::SetReference(C4Network2Reference *pRef)
 	sInfoText[1].Format( LoadResStr("IDS_NET_INFOPLRSGOALDESC"),
 	                     (int)iPlrCnt,
 	                     (int)pRef->Parameters.MaxPlayers,
-	                     pRef->Parameters.GetGameGoalString().getData(),
+	                     pRef->getGameGoalString().getData(),
 	                     StdStrBuf(pRef->getGameStatus().getDescription(), true).getData() );
 	if (pRef->getTime() > 0)
 	{

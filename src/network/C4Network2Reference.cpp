@@ -27,7 +27,7 @@
 // *** C4Network2Reference
 
 C4Network2Reference::C4Network2Reference()
-		: Icon(0), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
+		: Icon(0), GameMode(), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
 		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
 		iAddrCnt(0)
 {
@@ -66,6 +66,7 @@ void C4Network2Reference::InitLocal()
 	// Special additional information in reference
 	Icon = ::Game.C4S.Head.Icon;
 	Title.CopyValidated(::Game.ScenarioTitle);
+	GameMode = ::Game.C4S.Game.Mode;
 	GameStatus = ::Network.Status;
 	Time = ::Game.Time;
 	Frame = ::Game.FrameCounter;
@@ -105,6 +106,7 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(Icon,              "Icon",             0));
 	pComp->Value(mkNamingAdapt(Title,             "Title",            "No title"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(GameMode, StdCompiler::RCT_IdtfAllowEmpty), "GameMode", ""));
 	pComp->Value(mkParAdapt(GameStatus, true));
 	pComp->Value(mkNamingAdapt(Time,              "Time",             0));
 	pComp->Value(mkNamingAdapt(Frame,             "Frame",            0));
@@ -140,6 +142,20 @@ int32_t C4Network2Reference::getSortOrder() const // Don't go over 100, because 
 	if (!isPasswordNeeded()) iOrder += 1;
 	// Done
 	return iOrder;
+}
+
+StdStrBuf C4Network2Reference::getGameGoalString() const
+{
+	if (GameMode.getLength() > 0)
+	{
+		// Prefer to derive string from game mode
+		return FormatString("%s: %s", LoadResStr("IDS_MENU_CPGOALS"), GameMode.getData());
+	}
+	else
+	{
+		// If not defined, fall back to goal string
+		return Parameters.GetGameGoalString();
+	}
 }
 
 

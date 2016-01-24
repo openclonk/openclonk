@@ -101,6 +101,11 @@
         <col>Description</col>
       </rowh>
       <row>
+        <col>Mode</col>
+        <col>String</col>
+        <col>General game mode of this scenario. Used by network and league servers to determine which league to host the game in. Currently suggested identifiers are: Melee, Parkour, Settlement, Defense. Strings should be valid identifiers.</col>
+      </row>
+      <row>
         <col>Rules</col>
         <col>ID list</col>
         <col>Game rules.</col>

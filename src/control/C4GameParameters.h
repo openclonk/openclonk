@@ -143,7 +143,7 @@ public:
 	bool isLeague() const { return !!LeagueAddress.getLength(); }
 	bool doStreaming() const { return !!StreamAddress.getLength(); }
 	const char* getLeague() { return League.getData(); }
-	StdStrBuf GetGameGoalString();
+	StdStrBuf GetGameGoalString() const;
 	void EnforceLeagueRules(class C4Scenario *pScenario);
 
 	void Clear();

@@ -115,6 +115,7 @@ public:
 class C4SGame
 {
 public:
+	StdCopyStrBuf Mode; // Game mode used by league to determine correct evaluation
 	C4IDList Goals;
 	C4IDList Rules;
 
