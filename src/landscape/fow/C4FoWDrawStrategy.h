@@ -51,7 +51,7 @@ private:
 		M_Quads
 	};
 
-	std::vector<unsigned int> indices;
+	std::vector<unsigned int> indices; // TODO should be GLuint?
 	unsigned int begin_vertices;
 	unsigned int cur_vertices;
 	Mode mode;
