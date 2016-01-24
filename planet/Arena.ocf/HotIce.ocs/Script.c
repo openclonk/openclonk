@@ -16,8 +16,7 @@ func Initialize()
 				chest->CreateContents(Firestone,5);
 				chest->CreateContents(Bread,1);
 				chest->CreateContents(Bow,1);
-				//chest->CreateContents(Arrow,1); - avoid extra layer in ring menu
-				chest->CreateContents(FireArrow,1);
+				chest->CreateContents(FireArrow,1)->SetStackCount(5);
 				chest->CreateContents(BombArrow,1)->SetStackCount(5);
 				chest->CreateContents(Shield,1);
 				chest->CreateContents(IronBomb,3);
