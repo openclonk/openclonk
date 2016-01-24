@@ -5,6 +5,9 @@ Version=6,0
 MinPlayer=2
 Difficulty=90
 
+[Game]
+Mode=Melee
+
 [Definitions]
 Definition1=Objects.ocd
 

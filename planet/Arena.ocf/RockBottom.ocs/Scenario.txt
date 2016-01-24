@@ -4,11 +4,11 @@ Version=6,0
 MinPlayer=2
 Difficulty=20
 
+[Game]
+Mode=Melee
+
 [Definitions]
 Definition1=Objects.ocd
-
-[Game]
-Goals=MELE
 
 [Player1]
 Crew=Clonk=1

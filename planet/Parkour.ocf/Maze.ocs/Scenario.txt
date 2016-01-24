@@ -4,11 +4,12 @@ Title=Maze
 Version=6,0
 Difficulty=20
 
+[Game]
+Mode=Parkour
+Goals=Goal_RubyHunt=1;
+
 [Definitions]
 Definition1=Objects.ocd
-
-[Game]
-Goals=Goal_RubyHunt=1;
 
 [Player1]
 Crew=Clonk=1

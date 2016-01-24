@@ -4,6 +4,9 @@ Title=Aerobatics
 Version=7,0
 Difficulty=80
 
+[Game]
+Mode=Parkour
+
 [Definitions]
 Definition1=Objects.ocd
 Definition2=Decoration.ocd

@@ -4,6 +4,9 @@ Title=Boomrace
 Version=6,0
 Difficulty=30
 
+[Game]
+Mode=Parkour
+
 [Definitions]
 Definition1=Objects.ocd
 

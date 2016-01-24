@@ -4,11 +4,12 @@ Title=VolcanoEscapeEx
 Version=6,0
 Difficulty=70
 
+[Game]
+Mode=Parkour
+Goals=Goal_Parkour=1;
+
 [Definitions]
 Definition1=Objects.ocd
-
-[Game]
-Goals=Goal_Parkour=1;
 
 [Player1]
 Crew=Clonk=1

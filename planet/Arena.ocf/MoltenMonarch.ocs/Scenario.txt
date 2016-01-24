@@ -5,6 +5,9 @@ Icon=23
 MinPlayer=2
 Difficulty=70
 
+[Game]
+Mode=Melee
+
 [Definitions]
 Definition1=Objects.ocd
 

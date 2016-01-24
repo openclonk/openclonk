@@ -7,6 +7,9 @@ MaxPlayer=2
 MinPlayer=2
 NoInitialize=true
 
+[Game]
+Mode=Parkour
+
 [Definitions]
 Definition2=Decoration.ocd
 

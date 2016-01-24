@@ -5,7 +5,7 @@ MinPlayer=2
 Icon=15
 
 [Game]
-Goals=MELE=1
+Mode=Melee
 
 [Definitions]
 Definition1=Objects.ocd
