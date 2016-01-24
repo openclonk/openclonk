@@ -2426,9 +2426,6 @@ bool C4Game::LinkScriptEngine()
 
 	// update material pointers
 	::MaterialMap.UpdateScriptPointers();
-
-	// Set name list for globals
-	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 	
 	if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		if (!pDebug->Listen(DebugPort, !!DebugWait))

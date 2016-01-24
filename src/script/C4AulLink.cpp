@@ -194,7 +194,8 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		err.show();
 	}
 
-
+	// Set name list for globals (FIXME: is this necessary?)
+	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 }
 
 

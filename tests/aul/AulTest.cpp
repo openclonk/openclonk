@@ -58,7 +58,6 @@ C4Value AulTest::RunCode(const char *code, bool wrap)
 
 	GameScript.LoadData(src.c_str(), wrapped.c_str(), NULL);
 	ScriptEngine.Link(NULL);
-	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 		
 	return GameScript.Call("Main", nullptr, true);
 }
