@@ -654,8 +654,7 @@ static bool FnFatalError(C4PropList * _this, C4String *pErrorMsg)
 
 static bool FnStartCallTrace(C4PropList * _this)
 {
-	extern void C4AulStartTrace();
-	C4AulStartTrace();
+	AulExec.StartTrace();
 	return true;
 }
 

@@ -906,11 +906,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 }
 
-void C4AulStartTrace()
-{
-	AulExec.StartTrace();
-}
-
 void C4AulExec::StartTrace()
 {
 	if (iTraceStart < 0)
