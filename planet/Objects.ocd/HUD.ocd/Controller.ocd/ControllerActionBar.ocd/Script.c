@@ -177,7 +177,7 @@ public func UpdateInteractionObject()
 	}
 
 	var interactables = cursor->~GetInteractableObjects();
-	if (!GetLength(interactables))
+	if (!interactables || !GetLength(interactables))
 	{
 		HideInteraction();
 		return;

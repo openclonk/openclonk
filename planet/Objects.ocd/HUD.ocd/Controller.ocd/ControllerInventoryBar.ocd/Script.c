@@ -118,7 +118,7 @@ private func UpdateInventory()
 	UpdateInventoryButtons(clonk);
 
 	// update inventory-slots
-	var hand_item_pos = clonk->GetHandItemPos(0);
+	var hand_item_pos = clonk->~GetHandItemPos(0);
 
 	for (var slot_info in inventory_slots)
 	{
