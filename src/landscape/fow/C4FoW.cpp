@@ -145,6 +145,8 @@ C4Shader *C4FoW::GetRenderShader()
 void C4FoW::Add(C4Object *pObj)
 {
 #ifndef USE_CONSOLE
+	// Safety
+	if (!pObj->Status) return;
 	// No view range? Probably want to remove instead
 	if(!pObj->lightRange && !pObj->lightFadeoutRange)
 	{
