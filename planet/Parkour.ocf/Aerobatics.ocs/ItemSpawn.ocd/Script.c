@@ -105,7 +105,7 @@ public func FxProcessSpawnTimer(object target, proplist effect, int time)
 			effect.spawn_list[plrid] = {};
 		if (!effect.spawn_list[plrid].item)
 		{
-			if (crew->ContentsCount() < crew.MaxContentsCount)	
+			if (crew->ContentsCount() < crew.MaxContentsCount || (effect.spawn_id->~IsCarryHeavy() && !crew->IsCarryingHeavy()))	
 			{
 				var spawned = crew->CreateContents(effect.spawn_id);
 				effect.spawn_list[plrid].item = spawned;

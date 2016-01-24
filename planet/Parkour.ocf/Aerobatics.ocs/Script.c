@@ -47,8 +47,12 @@ protected func Initialize()
 		ItemSpawn->Create(spawn_id, x + 20, y);
 	}
 	
-	// Rules.
+	// Rules: no power and restart with keeping inventory.
 	CreateObject(Rule_NoPowerNeed);
+	var restart = FindObject(Find_ID(Rule_Restart));
+	if (!restart)
+		restart = CreateObject(Rule_Restart);
+	restart->SetRemoveContents(false);
 	
 	// Initialize parts of the scenario.
 	var amount = BoundBy(SCENPAR_NrCheckPoints, 6, 20);
@@ -159,10 +163,13 @@ private func InitEnvironment(int amount)
 {
 	for (var count = 0; count < amount / 2; count++)
 	{
-		var pos = FindLocation(Loc_Sky(), Loc_Space(40), Loc_InRect(100, 100, LandscapeWidth() - 200, LandscapeHeight() - 200));
+		var pos = FindLocation(Loc_Sky(), Loc_Space(60), Loc_InRect(100, 100, LandscapeWidth() - 200, LandscapeHeight() - 200));
 		if (!pos)
 			return;
-		AddEffect("WindStream", nil, 100, 1, nil, nil, RandomX(-10, 10), pos.x, pos.y);
+		var pos2 = FindLocation(Loc_Sky(), Loc_Space(40), Loc_InRect(pos.x - 20, pos.y - 60, 40, 40));
+		if (!pos2)
+			return;
+		JetStream->CreateLine([[pos.x, pos.y + 20], [pos.x + RandomX(-8, 8), pos.y - 30 - RandomX(-8, 8)], [pos2.x, pos2.y - 10]], nil, RandomX(32, 48), RandomX(40, 60));
 	}
 	return;
 }
@@ -250,57 +257,3 @@ public func GivePlrBonus(int plr, object cp)
 	}
 	return;
 }
-
-
-/*-- Wind Streams --*/
-
-global func FxWindStreamStart(object target, effect, int temp, angle, x, y)
-{
-	if (temp)
-		return FX_OK;
-	effect.xdir = Sin(angle, 32);
-	effect.ydir = -Cos(angle, 32);
-	effect.x = x + Sin(angle, 43);
-	effect.y = y - Cos(angle, 43);
-	effect.particles =
-	{
-		Prototype = Particles_Air(),
-		Size = PV_Random(2, 5)
-	};
-	return FX_OK;
-}
-
-global func FxWindStreamTimer(object target, proplist effect, int time)
-{
-	var xdir = effect.xdir;
-	var ydir = effect.ydir;
-	var x = effect.x;
-	var y = effect.y;
-	
-	if(time<36)
-	{
-		var r=Random(360);
-		var d=Random(40);
-		CreateParticle("Air", Sin(r,d)+x,-Cos(r,d)+y, xdir/3, ydir/3, PV_Random(10, 30), effect.particles, 1);
-		return FX_OK;
-	}
-	CreateParticle("Air", PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), xdir/2, ydir/2, PV_Random(10, 30), effect.particles, 5);
-	
-	for(var obj in FindObjects(Find_Distance(40,x,y), Find_Not(Find_Category(C4D_Structure)), Find_Layer()))
-	{
-		if(PathFree(x,y,obj->GetX(),obj->GetY()))
-		{
-			if(xdir<0)
-			{if(obj->GetXDir() > xdir) obj->SetXDir(obj->GetXDir(100) + (xdir*3)/2,100); }
-			else 
-			{if(obj->GetXDir() < xdir) obj->SetXDir(obj->GetXDir(100) + (xdir*3)/2,100); }
-			
-			if(ydir<0)
-			{if(obj->GetYDir() > ydir) obj->SetYDir(obj->GetYDir(100) + (ydir*3)/2,100); }
-			else 
-			{if(obj->GetYDir() < ydir) obj->SetYDir(obj->GetYDir(100) + (ydir*3)/2,100); }
-		}
-	}
-	return FX_OK;
-}
-
