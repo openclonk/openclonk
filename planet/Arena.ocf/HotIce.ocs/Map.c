@@ -52,7 +52,7 @@ func DrawBigIslandMap(proplist map)
 		map->Draw("^Ice-ice2", nil, [x,y,1,1]);
 	}
 	// Player spawns simply in middle of big island
-	var plrcnt = GetStartupPlayerCount();
+	var plrcnt = Max(GetStartupPlayerCount(), 2);
 	g_player_spawn_positions = CreateArray(plrcnt);
 	for (var i = 0; i < plrcnt; ++i)
 	{
@@ -78,7 +78,7 @@ func DrawSmallIslandsMap(proplist map)
 		map->Draw("^Ice-ice2", nil, [x-szx,y,1+2*szx,szy]);
 	}
 	// Starting islands for player spawns
-	var spawn_island_count = GetStartupPlayerCount();
+	var spawn_island_count = Max(GetStartupPlayerCount(), 2);
 	g_player_spawn_positions = CreateArray(spawn_island_count);
 	for (var i = 0; i < spawn_island_count; ++i)
 	{
