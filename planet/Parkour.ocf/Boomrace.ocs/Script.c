@@ -28,11 +28,16 @@ protected func Initialize()
 protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
+	// Jump to instantly collect the boompack.
+	clonk->SetAction("Jump");
 	clonk->CreateContents(Boompack);
 }
 
 global func FxRespawnBoomTimer(object target, effect, int time)
 {
+	// Jump to instantly collect the boompack.
+	if (target->GetAction() == "Walk")
+		target->SetAction("Jump");	
 	target->CreateContents(Boompack);
 	return -1;
 }
