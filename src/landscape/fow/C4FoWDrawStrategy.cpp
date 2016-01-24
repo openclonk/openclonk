@@ -376,12 +376,12 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	if (ibo_size < triangulator.GetNIndices())
 	{
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangulator.GetNIndices() * 3 * sizeof(GLuint), triangulator.GetIndices(), GL_STREAM_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangulator.GetNIndices() * sizeof(GLuint), triangulator.GetIndices(), GL_STREAM_DRAW);
 		ibo_size = triangulator.GetNIndices();
 	}
 	else
 	{
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, triangulator.GetNIndices() * 3 * sizeof(GLuint), triangulator.GetIndices());
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, triangulator.GetNIndices() * sizeof(GLuint), triangulator.GetIndices());
 	}
 
 	GLuint vao;
