@@ -28,7 +28,7 @@
 #undef DrawText
 
 // implemented in StdBuf.cpp
-StdStrBuf::wchar_t_holder GetWideChar(const char * utf8);
+StdStrBuf::wchar_t_holder GetWideChar(const char * utf8, bool double_null_terminate = false);
 StdBuf GetWideCharBuf(const char * utf8);
 
 #define ADDL2(s) L##s

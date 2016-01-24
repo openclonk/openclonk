@@ -169,11 +169,13 @@ StdBuf StdStrBuf::GetWideCharBuf()
 	MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), getMBufPtr<wchar_t>(r), len);
 	return r;
 }
-StdStrBuf::wchar_t_holder GetWideChar(const char * utf8)
+StdStrBuf::wchar_t_holder GetWideChar(const char * utf8, bool double_null_terminate)
 {
 	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+	if (double_null_terminate) ++len;
 	wchar_t * p = new wchar_t[len];
 	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, p, len);
+	if (double_null_terminate) p[len - 1] = wchar_t(0);
 	return StdStrBuf::wchar_t_holder(p);
 }
 StdBuf GetWideCharBuf(const char * utf8)

@@ -29,16 +29,18 @@ bool EraseItemSafe(const char *szFilename)
 	char Filename[_MAX_PATH+1];
 	SCopy(szFilename, Filename, _MAX_PATH);
 	Filename[SLen(Filename)+1]=0;
+	auto wide_filename = GetWideChar(Filename, true); // wide_filename holds the buffer
 	SHFILEOPSTRUCTW shs;
 	shs.hwnd=0;
 	shs.wFunc=FO_DELETE;
-	shs.pFrom=GetWideChar(Filename);
+	shs.pFrom = wide_filename;
 	shs.pTo=NULL;
 	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
 	shs.fAnyOperationsAborted=false;
 	shs.hNameMappings=0;
 	shs.lpszProgressTitle=NULL;
-	return !SHFileOperationW(&shs);
+	auto error = SHFileOperationW(&shs);
+	return !error;
 }
 
 bool IsGermanSystem()
