@@ -136,14 +136,11 @@ bool C4AulExec::FnLogCallStack(C4PropList * _this)
 
 void C4AulExec::ClearPointers(C4Object * obj)
 {
-#if 0
-	// FIXME: reactivate this code and remove the checks from Call once scripts are fixed
 	for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
 	{
 		if (pCtx->Obj == obj)
 			pCtx->Obj = NULL;
 	}
-#endif
 }
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors)
