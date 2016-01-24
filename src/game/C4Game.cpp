@@ -2021,9 +2021,9 @@ bool C4Game::ReloadFile(const char *szFile)
 	if ((pDef = ::Definitions.GetByPath(szRelativePath)))
 		return ReloadDef(pDef->id);
 	// script?
-	if (ScriptEngine.ReloadScript(szRelativePath, &::Definitions, Config.General.LanguageEx))
+	if (ScriptEngine.ReloadScript(szRelativePath, Config.General.LanguageEx))
 	{
-		return true;
+		ReLinkScriptEngine();
 	}
 	return true;
 }
@@ -2050,6 +2050,8 @@ bool C4Game::ReloadDef(C4ID id)
 	// Reload def
 	if (::Definitions.Reload(pDef,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem))
 	{
+		// update script engine - this will also do include callbacks and Freeze() pDef
+		ReLinkScriptEngine();
 		// Success, update all concerned object faces
 		// may have been done by graphics-update already - but not for objects using graphics of another def
 		// better update everything :)
@@ -2422,6 +2424,9 @@ bool C4Game::LinkScriptEngine()
 		ScriptEngine.warnCnt, (ScriptEngine.warnCnt != 1 ? "s" : ""),
 		ScriptEngine.errCnt, (ScriptEngine.errCnt != 1 ? "s" : ""));
 
+	// update material pointers
+	::MaterialMap.UpdateScriptPointers();
+
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 	
@@ -2432,6 +2437,18 @@ bool C4Game::LinkScriptEngine()
 	return true;
 }
 
+bool C4Game::ReLinkScriptEngine()
+{
+	::ScriptEngine.ReLink(&::Definitions);
+
+	// update effect pointers
+	::Objects.UpdateScriptPointers();
+
+	// update material pointers
+	::MaterialMap.UpdateScriptPointers();
+
+	return true;
+}
 
 bool C4Game::InitPlayers(C4ValueNumbers * numbers)
 {
@@ -3079,7 +3096,7 @@ bool C4Game::DoGameOver()
 	// Flag, log, call
 	GameOver=true;
 	Log(LoadResStr("IDS_PRC_GAMEOVER"));
-	::GameScript.GRBroadcast(PSF_OnGameOver);
+	GRBroadcast(PSF_OnGameOver);
 	// Flag all surviving players as winners
 	for (C4Player *pPlayer = Players.First; pPlayer; pPlayer = pPlayer->Next)
 		if (!pPlayer->Eliminated)
@@ -3725,6 +3742,16 @@ bool C4Game::SlowDown()
 bool C4Game::ToggleChat()
 {
 	return C4ChatDlg::ToggleChat();
+}
+
+C4Value C4Game::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
+{
+	// call objects first - scenario script might overwrite hostility, etc...
+	C4Value vResult = ::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	// rejection tests abort on first nonzero result
+	if (fRejectTest) if (!!vResult) return vResult;
+	// scenario script call
+	return ::GameScript.Call(szFunction, pPars, fPassError);
 }
 
 void C4Game::SetDefaultGamma()

@@ -21,7 +21,6 @@
 #include <C4ScriptHost.h>
 
 #include <C4Def.h>
-#include <C4GameObjects.h>
 
 /*--- C4ScriptHost ---*/
 
@@ -278,16 +277,6 @@ C4PropListStatic * C4GameScriptHost::GetPropList()
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
 {
 	return ScenPropList._getPropList()->Call(szFunction, Pars, fPassError);
-}
-
-C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
-{
-	// call objects first - scenario script might overwrite hostility, etc...
-	C4Value vResult = ::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
-	// rejection tests abort on first nonzero result
-	if (fRejectTest) if (!!vResult) return vResult;
-	// scenario script call
-	return Call(szFunction, pPars, fPassError);
 }
 
 C4GameScriptHost GameScript;

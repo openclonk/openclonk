@@ -227,7 +227,7 @@ bool C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 
 	// inform script
 	if (!fNoCalls)
-		::GameScript.GRBroadcast(PSF_RemovePlayer, &C4AulParSet(C4VInt(pPlr->Number), C4VInt(pPlr->Team)));
+		::Game.GRBroadcast(PSF_RemovePlayer, &C4AulParSet(C4VInt(pPlr->Number), C4VInt(pPlr->Team)));
 
 	// Transfer ownership of other objects to team members
 	if (!fNoCalls) pPlr->NotifyOwnedObjects();

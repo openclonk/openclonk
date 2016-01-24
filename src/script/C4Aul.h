@@ -371,10 +371,10 @@ public:
 	~C4AulScriptEngine(); // destructor
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
-	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
+	void ReLink(C4DefList *rDefs); // unlink, link and parse all scripts
 	virtual C4PropListStatic * GetPropList();
 	using C4AulScript::ReloadScript;
-	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
+	bool ReloadScript(const char *szScript, const char *szLanguage); // search script and reload, if found
 	C4AulFunc * GetFirstFunc(C4String * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)

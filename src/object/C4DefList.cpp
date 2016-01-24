@@ -406,8 +406,6 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	BuildTable();
 	// handle skeleton appends and includes
 	AppendAndIncludeSkeletons();
-	// update script engine - this will also do include callbacks and Freeze() this
-	::ScriptEngine.ReLink(this);
 	// restore graphics
 	GfxBackup.AssignUpdate();
 	// Success

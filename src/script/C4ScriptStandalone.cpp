@@ -21,8 +21,15 @@
 #include "c4group/C4Group.h"
 #include "gamescript/C4Script.h"
 #include "script/C4Aul.h"
-#include "object/C4DefList.h"
 #include "script/C4ScriptHost.h"
+#include <C4DefList.h>
+
+/* StandaloneStubs.cpp is shared with mape, which has a real implementation of these */
+C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
+C4Def * C4DefList::GetDef(int) {return 0;}
+int C4DefList::GetDefCount() {return 0;}
+void C4DefList::CallEveryDefinition() {}
+void C4DefList::ResetIncludeDependencies() {}
 
 void InitializeC4Script()
 {
@@ -35,7 +42,7 @@ void InitializeC4Script()
 C4Value RunLoadedC4Script()
 {
 	// Link script engine (resolve includes/appends, generate code)
-	ScriptEngine.Link(&::Definitions);
+	ScriptEngine.Link(NULL);
 
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);

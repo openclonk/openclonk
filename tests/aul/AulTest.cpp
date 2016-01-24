@@ -57,7 +57,7 @@ C4Value AulTest::RunCode(const char *code, bool wrap)
 	src += ">";
 
 	GameScript.LoadData(src.c_str(), wrapped.c_str(), NULL);
-	ScriptEngine.Link(&::Definitions);
+	ScriptEngine.Link(NULL);
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 		
 	return GameScript.Call("Main", nullptr, true);
@@ -78,8 +78,8 @@ TEST_F(AulTest, ValueReturn)
 	// Make sure primitive value returns work.
 	EXPECT_EQ(C4VNull, RunCode("return;"));
 	EXPECT_EQ(C4VNull, RunExpr("nil"));
-	EXPECT_EQ(C4VTrue, RunExpr("true"));
-	EXPECT_EQ(C4VFalse, RunExpr("false"));
+	EXPECT_EQ(C4Value(true), RunExpr("true"));
+	EXPECT_EQ(C4Value(false), RunExpr("false"));
 	EXPECT_EQ(C4VInt(42), RunExpr("42"));
 	EXPECT_EQ(C4VString("Hello World!"), RunExpr("\"Hello World!\""));
 
@@ -94,4 +94,30 @@ TEST_F(AulTest, ValueReturn)
 	EXPECT_EQ(
 		C4VPropList("a", C4VInt(1), "b", C4VArray()),
 		RunExpr("{\"a\": 1, \"b\"=[]}"));
+}
+
+TEST_F(AulTest, Loops)
+{
+	EXPECT_EQ(C4VInt(5), RunCode("var i = 0; do ++i; while (i < 5); return i;"));
+	EXPECT_EQ(C4VInt(5), RunCode("var i = 0; while (i < 5) ++i; return i;"));
+	EXPECT_EQ(C4VInt(5), RunCode("for(var i = 0; i < 5; ++i); return i;"));
+	EXPECT_EQ(C4VInt(6), RunCode("var i = 0, b; do { b = i++ >= 5; } while (!b); return i;"));
+	EXPECT_EQ(C4VInt(6), RunCode("var i = 0, b; while (!b) { b = i++ >= 5; } return i;"));
+	EXPECT_EQ(C4Value(), RunCode("var a = [], sum; for(var i in a) sum += i; return sum;"));
+	EXPECT_EQ(C4VInt(1), RunCode("var a = [1], sum; for(var i in a) sum += i; return sum;"));
+	EXPECT_EQ(C4VInt(6), RunCode("var a = [1,2,3], sum; for(var i in a) sum += i; return sum;"));
+}
+
+TEST_F(AulTest, Locals)
+{
+	EXPECT_EQ(C4VInt(42), RunCode("local i = 42; func Main() { return i; }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local i; func Main() { i = 42; return i; }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("func Main() { local i = 42; return i; }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local i = [42]; func Main() { return i[0]; }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local p = { i = 42 }; func Main() { return p.i; }", false));
+}
+
+TEST_F(AulTest, Eval)
+{
+	EXPECT_EQ(C4VInt(42), RunExpr("eval(\"42\")"));
 }

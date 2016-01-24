@@ -118,3 +118,5 @@ bool C4Def::Load(C4Group& hGroup, StdMeshSkeletonLoader& loader, DWORD dwLoadWha
 
 	return true;
 }
+
+C4DefList Definitions;

@@ -632,6 +632,13 @@ C4MaterialReaction *C4MaterialMap::GetReaction(int32_t iPXSMat, int32_t iLandsca
 	return GetReactionUnsafe(iPXSMat, iLandscapeMat);
 }
 
+static void Smoke(int32_t tx, int32_t ty, int32_t level)
+{
+	// Use scripted function (global func Smoke) to create smoke
+	// Caution: This makes engine internal smoking a synced call.
+	C4AulParSet pars(C4VInt(tx), C4VInt(ty), C4VInt(level));
+	::ScriptEngine.GetPropList()->Call(P_Smoke, &pars);
+}
 
 bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int32_t &iPxsMat, int32_t iLsMat, bool *pfPosChanged)
 {

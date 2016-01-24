@@ -16,7 +16,6 @@
 #ifndef INC_C4Value
 #define INC_C4Value
 
-#include "C4Id.h"
 #include "C4StringTable.h"
 
 // C4Value type
@@ -106,8 +105,6 @@ public:
 	C4ValueArray *_getArray() const { return Data.Array; }
 	C4AulFunc *_getFunction() const { return Data.Fn; }
 	C4PropList *_getPropList() const { return Data.PropList; }
-
-	// Template versions
 
 	bool operator ! () const { return !GetData(); }
 	inline operator const void* () const { return GetData() ? this : 0; }  // To allow use of C4Value in conditions
@@ -232,9 +229,6 @@ inline C4Value C4VFunction(C4AulFunc * pFn) { return C4Value(pFn); }
 
 C4Value C4VString(StdStrBuf strString);
 C4Value C4VString(const char *strString);
-
-#define C4VFalse C4VBool(false)
-#define C4VTrue C4VBool(true)
 
 extern const C4Value C4VNull;
 
