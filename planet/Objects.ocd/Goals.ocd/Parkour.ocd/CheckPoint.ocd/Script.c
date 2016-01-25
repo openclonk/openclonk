@@ -53,6 +53,7 @@ public func GetCPMode() { return cp_mode; }
 
 public func FindCPMode(int mode) { return cp_mode & mode; }
 
+
 /*-- Checkpoint controller --*/
 local cp_con;
 
@@ -63,6 +64,7 @@ public func SetCPController(object con)
 }
 
 public func GetCPController() { return cp_con; }
+
 
 /*-- Checkpoint number --*/
 local cp_num;
@@ -75,6 +77,7 @@ public func SetCPNumber(int num)
 
 public func GetCPNumber() { return cp_num; }
 
+
 /*-- Checkpoint size --*/
 local cp_size;
 
@@ -85,6 +88,7 @@ public func SetCPSize(int size)
 }
 
 public func GetCPSize() { return cp_size; }
+
 
 /*-- Initialize --*/
 
@@ -106,6 +110,7 @@ protected func Initialize()
 	AddEffect("IntCheckpoint", this, 100, 1, this);
 	return;
 }
+
 
 /*-- Checkpoint status --*/
 
@@ -190,6 +195,7 @@ public func IsActiveForTeam(int team)
 	return false;
 }
 
+
 /*-- Checkpoint activity --*/
 
 protected func FxIntCheckpointTimer(object target, effect, int fxtime)
@@ -225,9 +231,7 @@ protected func CheckForClonks()
 		if (cp_mode & PARKOUR_CP_Check)
 		{
 			var team_clear = !ClearedByTeam(team);
-			cleared_by_plr[plrid] = true;
-			Sound("UI::Cleared", false, 100, plr);
-			cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
+			ClearCPForPlr(plr);
 			if (ClearedByTeam(team) && team_clear)
 				cp_con->AddTeamClearedCP(team, this); // Notify parkour goal.
 		}
@@ -254,6 +258,34 @@ protected func CheckForClonks()
 	}
 	return;
 }
+
+// Clear this checkpoint for the player, and possibly its team members.
+private func ClearCPForPlr(int plr)
+{
+	if (!(cp_mode & PARKOUR_CP_Check))	
+		return;
+	var plrid = GetPlayerID(plr);
+	cleared_by_plr[plrid] = true;
+	Sound("UI::Cleared", false, 100, plr);
+	cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
+	// Also clear for team members if the checkpoint is not PARKOUR_CP_Team.
+	var team = GetPlayerTeam(plr);
+	if (team && !(cp_mode & PARKOUR_CP_Team))
+	{
+		for (var test_plr in GetPlayers())
+		{
+			if (test_plr != plr && GetPlayerTeam(test_plr) == team)
+			{
+				var test_plr_id = GetPlayerID(test_plr);
+				cleared_by_plr[test_plr_id] = true;
+				Sound("UI::Cleared", false, 100, test_plr);
+				cp_con->AddPlayerClearedCP(test_plr, this); // Notify parkour goal.
+			}
+		}
+	}	
+	return;
+}
+
 
 /*-- Checkpoint appearance --*/
 
@@ -328,6 +360,7 @@ protected func GetColorByAngle(int angle)
 	// Should not happen...
 	return RGBa(255, 255, 255, 192);
 }
+
 
 /*-- Misc --*/
 

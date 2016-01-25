@@ -1,6 +1,5 @@
-/*--
+/**
 	Parkour
-	Authors: Maikel
 	
 	The goal is to be the first to reach the finish, the team or player to do so wins the round.
 	Checkpoints can be added to make the path more interesting and more complex.
@@ -9,10 +8,9 @@
 		* Check: On/Off - The clonk must pass through these checkpoints before being able to finish.
 		* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
 		* The start and finish are also checkpoints.
-		
-	TODO:
-		* Update CP Graphics -> looks satisfactory atm but cpu intensive.
---*/
+	
+	@author Maikel
+*/
 
 
 #include Library_Goal
@@ -26,6 +24,7 @@ local team_list; // Number of checkpoints the team completed.
 local time_store; // String for best time storage in player file.
 local no_respawn_handling; // Set to true if this goal should not handle respawn.
 local transfer_contents; // Set to true if contents should be transferred on respawn.
+
 
 /*-- General --*/
 
@@ -49,6 +48,7 @@ protected func Initialize()
 	InitScoreboard();
 	return _inherited(...);
 }
+
 
 /*-- Checkpoint creation --*/
 
@@ -116,10 +116,9 @@ public func AddCheckpoint(int x, int y, int mode)
 
 public func DisableRespawnHandling()
 {
-	// Call this to disable respawn handling by goal
-	// This might be useful if
-	// a) you don't want any respawns or
-	// b) the scenario already provides an alternate respawn handling
+	// Call this to disable respawn handling by goal. This might be useful if
+	// a) you don't want any respawns, or
+	// b) the scenario already provides an alternate respawn handling.
 	no_respawn_handling = true;
 	return true;
 }
@@ -128,19 +127,6 @@ public func TransferContentsOnRelaunch(bool on)
 {
 	transfer_contents = on;
 	return;
-}
-
-/*-- Scenario saving --*/
-
-public func SaveScenarioObject(props)
-{
-	if (!inherited(props, ...)) return false;
-	// force dependency on restartr rule
-	var restart_rule = FindObject(Find_ID(Rule_Restart));
-	if (restart_rule) restart_rule->MakeScenarioSaveName();
-	if (no_respawn_handling) props->AddCall("Goal", this, "DisableRespawnHandling");
-	if (transfer_contents) props->AddCall("Goal", this, "TransferContentsOnRelaunch", true);
-	return true;
 }
 
 
@@ -194,6 +180,7 @@ public func AddTeamClearedCP(int team, object cp)
 		team_list[team]++;
 	return;
 }
+
 
 /*-- Goal interface --*/
 
@@ -443,24 +430,11 @@ protected func JoinPlayer(int plr)
 	return;
 }
 
+// You always respawn at the last completed checkpoint you passed by.
+// More complicated behavior should be set by the scenario. 
 private func FindRespawnCP(int plr)
 {
-	var best_cp = respawn_list[plr];
-	var team = GetPlayerTeam(plr);
-	if (!team)
-		return best_cp;
-	// Loop over team members to find a better checkpoint.
-	for (var i = 0; i < GetPlayerCount(); i++)
-	{
-		var test_plr = GetPlayerByIndex(i);
-		if (GetPlayerTeam(test_plr) == team)
-		{
-			var test_cp = respawn_list[test_plr];
-			if (test_cp->GetCPNumber() && test_cp->GetCPNumber() > best_cp->GetCPNumber())
-				best_cp = test_cp;
-		}
-	}
-	return best_cp;
+	return respawn_list[plr];
 }
 
 private func FindRespawnPos(int plr)
@@ -475,6 +449,25 @@ protected func RemovePlayer(int plr)
 		AddEvalData(plr);
 	return;
 }
+
+
+/*-- Scenario saving --*/
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) 
+		return false;
+	// Force dependency on restart rule.
+	var restart_rule = FindObject(Find_ID(Rule_Restart));
+	if (restart_rule)
+		restart_rule->MakeScenarioSaveName();
+	if (no_respawn_handling)
+		props->AddCall("Goal", this, "DisableRespawnHandling");
+	if (transfer_contents)
+		props->AddCall("Goal", this, "TransferContentsOnRelaunch", true);
+	return true;
+}
+
 
 /*-- Scoreboard --*/
 
@@ -512,6 +505,7 @@ private func UpdateScoreboard(int plr)
 	Scoreboard->SetPlayerData(plr, "besttime", TimeToString(bt), bt);
 	return;
 }
+
 
 /*-- Direction indication --*/
 
@@ -579,6 +573,7 @@ protected func FxIntDirNextCPStop(object target, effect)
 	return;
 }
 
+
 /*-- Time tracker --*/
 
 // Store the best time in the player file, same for teammembers.
@@ -625,6 +620,7 @@ private func TimeToString(int time)
 		return Format("%d.%.1d", (time / 36) % 60, (10 * time / 36) % 10);
 }
 
+
 /*-- Evaluation data --*/
 
 private func SetEvalData(int winner)
@@ -662,5 +658,7 @@ private func AddEvalData(int plr)
 	return;
 }
 
+
 /*-- Proplist --*/
+
 local Name = "$Name$";
