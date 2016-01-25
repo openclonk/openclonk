@@ -474,5 +474,11 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 
 bool C4SGame::IsMelee()
 {
-	return !!(Goals.GetIDCount(C4ID::Melee));
+	// Check for game modes known to be melees
+	// Also allow it in parkours by default because that works fine
+	if (Mode == "Melee" || Mode == "Parkour") return true;
+	// Game mode not present or unknown? Check for old MELE goal which was still used by some scenarios.
+	if (Goals.GetIDCount(C4ID::Melee, 1)) return true;
+	// Nothing looks like melee here
+	return false;
 }

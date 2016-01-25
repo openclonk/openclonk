@@ -612,7 +612,7 @@ bool C4TeamList::Load(C4Group &hGroup, class C4Scenario *pInitDefault, class C4L
 		if (!pInitDefault) return false;
 		// no teams defined: Activate default melee teams if a melee rule is found
 		// default: FFA for anything that looks like melee
-		if ( pInitDefault->Game.Goals.GetIDCount(C4ID::Melee, 1))
+		if ( pInitDefault->Game.IsMelee())
 		{
 			fAllowHostilityChange = true;
 			fActive = true;
