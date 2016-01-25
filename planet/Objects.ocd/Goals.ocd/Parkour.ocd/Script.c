@@ -41,6 +41,8 @@ protected func Initialize()
 	// Best time tracking.
 	time_store = Format("Parkour_%s_BestTime", GetScenTitle());
 	AddEffect("IntBestTime", this, 100, 1, this);
+	// Add a message board command "/resetpb" to reset the pb for this round.
+	AddMsgBoardCmd("resetpb", "Goal_Parkour->~ResetPersonalBest(%player%)");
 	// Activate restart rule, if there isn't any.
 	if (!ObjectCount(Find_ID(Rule_Restart)))
 		CreateObject(Rule_Restart, 0, 0, NO_OWNER);
@@ -618,6 +620,24 @@ private func TimeToString(int time)
 		return Format("%d:%.2d.%.1d", (time / 60 / 36) % 60, (time / 36) % 60, (10 * time / 36) % 10);
 	else // Only seconds.
 		return Format("%d.%.1d", (time / 36) % 60, (10 * time / 36) % 10);
+}
+
+// Resets the personal best (call from message board).
+public func ResetPersonalBest(int plr)
+{
+	if (!GetPlayerName(plr))
+		return;
+	// Forward call to actual goal.
+	if (this == Goal_Parkour)
+	{
+		var goal = FindObject(Find_ID(Goal_Parkour));
+		if (goal)
+			goal->ResetPersonalBest(plr);
+	}
+	SetPlrExtraData(plr, time_store, nil);
+	// Also update the scoreboard.
+	UpdateScoreboard(plr);
+	return;
 }
 
 
