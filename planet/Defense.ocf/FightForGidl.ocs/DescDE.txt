@@ -2,7 +2,7 @@
 
 Beschützt die Statue vor immer größeren Wellen von Angreifern!
 
-Zusätzliche Waffen können an den Flaggen gekauft werden.
+Zusätzliche Waffen und Verbesserungen können im Kaufmenü auf [P] erworben werden.
 
 Ziel: Statue beschützen
 
