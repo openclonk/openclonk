@@ -97,6 +97,13 @@ public func ControlUseHolding(object clonk, int x, int y)
 public func ControlUseStop(object clonk, int x, int y)
 {
 	DoFire(clonk, DefinePower(x,y));
+	return true;
+}
+
+public func ControlUseCancel(object clonk)
+{
+	Trajectory->Remove(this);
+	return true;
 }
 
 public func ContainedUseStart(object clonk, int x, int y)
@@ -115,6 +122,13 @@ public func ContainedUseHolding(object clonk, int x, int y)
 public func ContainedUseStop(object clonk, int x, int y)
 {
 	DoFire(clonk, DefinePower(x, y, CATAPULT_MaxPower_SelfLaunch));
+	return true;
+}
+
+public func ContainedUseCancel(object clonk)
+{
+	Trajectory->Remove(this);
+	return true;
 }
 
 
