@@ -245,8 +245,8 @@ protected func Pumping()
 	{
 		// get new materials
 		var source_obj = GetSourceObject();
-		var mat = source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, GetPumpSpeed() / 10, true);
-	
+		var mat = this->ExtractMaterialFromSource(source_obj, GetPumpSpeed() / 10);
+
 		// no material to pump?
 		if (mat)
 		{
@@ -265,7 +265,7 @@ protected func Pumping()
 		while (i > 0)
 		{
 			var drain_obj = GetDrainObject();
-			if (GetDrainObject()->InsertMaterial(stored_material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+			if (this->InsertMaterialAtDrain(drain_obj, stored_material_index, 1))
 			{
 				i--;
 			}
@@ -297,6 +297,21 @@ protected func Pumping()
 	}
 	return;
 }
+
+
+// interface for the extraction logic
+func ExtractMaterialFromSource(object source_obj, int amount)
+{
+	return source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, amount, true);
+}
+
+// interface for the insertion logic
+func InsertMaterialAtDrain(object drain_obj, int material_index, int amount)
+{
+	while (--amount >= 0)
+		GetDrainObject()->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+}
+
 
 /** Re check state and change the state if needed */
 func CheckState()
