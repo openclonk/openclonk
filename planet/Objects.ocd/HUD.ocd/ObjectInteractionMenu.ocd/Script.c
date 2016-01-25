@@ -904,6 +904,8 @@ private func OnContentsSelection(symbol, extra_data)
 	for (var obj in to_transfer)
 	{
 		if (!obj) continue;
+		// Our target might have disappeared (e.g. a construction site completing after the first item).
+		if (!other_target) break;
 		
 		var handled = false;
 		// Does the object not want to leave the other container anyway?
@@ -924,7 +926,7 @@ private func OnContentsSelection(symbol, extra_data)
 			// More special handling for Stackable items..
 			handled = obj->~TryPutInto(other_target);
 			// Try to normally collect the object otherwise.
-			if (!handled)
+			if (!handled && other_target && obj)
 				handled = other_target->Collect(obj, true);
 		}
 		if (handled)
