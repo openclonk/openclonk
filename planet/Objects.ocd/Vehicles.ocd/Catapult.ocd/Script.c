@@ -134,13 +134,25 @@ public func ContainedUseCancel(object clonk)
 
 /*-- Shooting --*/
 
+// Define the catapult power according to where the player aims.
+// Power will try to match such that the trajectory goes through (x, y).
 public func DefinePower(int x, int y, int max_power)
 {
 	if (max_power == nil)
 		max_power = CATAPULT_MaxPower;
-	var power = 2 * Distance(x, y) / 3 - 24;
-	power = BoundBy(power, 20, max_power);
-	return power;
+	var min_power = 20;
+	// Correct coordinates for the projectile exit.	
+	var exit = GetProjectileExit();
+	x -= exit[0];
+	y -= exit[1];
+	// Ensure max_power if aiming above the diagonal line.
+	if (y + (2 * dir - 1) * x <= 0)
+		return max_power;
+	// Calculate the exit speed using a 45 degree angle.
+	var vsquared = x**2 * GetGravity() / (y + (2 * dir - 1) * x);
+	if (vsquared < 0)
+		return min_power;
+	return BoundBy(Sqrt(vsquared), min_power, max_power);
 }
 
 public func DoArmAnimation(int power)
