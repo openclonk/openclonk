@@ -47,15 +47,24 @@ private func DeflateEffect()
 {
 	var act_time = GetActTime();
 	CreateParticle("Air", PV_Random(-1, 1), PV_Random(-1, 5), PV_Random(-act_time, act_time), PV_Random(-act_time, act_time), 18, Particles_Air(), act_time);
+	// Release rider before being fully deflated, so the he/she can start scaling/walking right away.
+	if (act_time >= 4 && rider)
+	{
+		rider->SetAction("Jump");
+		rider->SetSpeed(GetXDir(), GetYDir());
+		rider->SetComDir(COMD_Stop);
+	}
+	return;
 }
 
 private func Pack()
 {
+	// Ensure the rider is released from the balloon.
 	if (rider)
 	{
 		rider->SetAction("Jump");
 		rider->SetSpeed(GetXDir(), GetYDir());
-		rider->SetComDir(COMD_Down);
+		rider->SetComDir(COMD_Stop);
 	}
 	RemoveObject();
 }
@@ -136,9 +145,9 @@ public func FxControlFloatTimer(object target, proplist effect, int time)
 protected func OnUnmount(object clonk)
 {
 	// Assume that if the clonk is now tumbling he could not have held on to the balloon.
-	// Therefore we drop the balloon.
 	if (clonk == rider && clonk->GetAction() == "Tumble")
 	{
+		// Therefore we drop the balloon.
 		if (parent)
 			parent->Exit(0, 0, 0, clonk->GetXDir(), clonk->GetYDir());
 		rider = nil;
@@ -160,6 +169,7 @@ public func OnProjectileHit(object projectile)
 	// Pop the balloon and tumble the rider.
 	CreateParticle("Air", 0, -10, PV_Random(-10, 10), PV_Random(-10, 10), 10, Particles_Air(), 30);
 	Sound("Objects::Balloon::Pop");
+	// Remove the parent balloon object as it is destroyed. 
 	if (parent)
 		parent->RemoveObject();
 	// Drop the rider and set its killer in case it tumbles out of the map.
