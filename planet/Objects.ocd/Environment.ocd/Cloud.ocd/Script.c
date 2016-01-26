@@ -29,6 +29,7 @@ local rain_mat_frozen; // Material currently frozen to.
 
 local cloud_shade; // Cloud shade.
 local cloud_alpha; // Cloud alpha.
+local cloud_color; // Cloud color proplist.
 
 // This is an environment object (e.g., shouldn't be a target for the lift tower)
 public func IsEnvironment() { return true; }
@@ -47,6 +48,7 @@ protected func Initialize()
 	lightning_chance = 0;
 	cloud_shade = 0;
 	cloud_alpha = 255;
+	cloud_color = {r = 255, g = 255, b = 255};
 	evap_x = 0;
 
 	DoCon(Random(75));
@@ -135,6 +137,27 @@ public func SetRain(int to_rain)
 	rain = BoundBy(to_rain, 0, rain_max);
 	return;
 }
+
+
+// Changes the color of this cloud.
+// Also an id call: Changes all clouds to this settings.
+public func SetCloudRGB(r, g, b)
+{
+	// Called to proplist: change all clouds.
+	if (this == Cloud)
+	{
+		for (var cloud in FindObjects(Find_ID(Cloud)))
+			cloud->SetCloudRGB(r, g, b);
+	}
+	else // Otherwise change the clouds color.
+	{
+		cloud_color.r = r ?? 255;
+		cloud_color.g = g ?? 255;
+		cloud_color.b = b ?? 255;
+	}
+	return;
+}
+
 
 /*-- Cloud processing --*/
 
@@ -319,8 +342,9 @@ private func ShadeCloud()
 	var alpha = (cloud_alpha + ((rain + 40) * 255) / 960) / 2;
 	var alpha = Min(alpha, 255);
 	var shade = BoundBy(cloud_shade, 0, 255);
+	var factor = 255 - shade;
 
-	SetClrModulation(RGBa(255-shade, 255-shade, 255-shade, alpha));
+	SetClrModulation(RGBa(factor * cloud_color.r / 255, factor * cloud_color.g / 255, factor * cloud_color.b / 255, alpha));
 }
 
 // Utilized by time to make clouds invisible at night
