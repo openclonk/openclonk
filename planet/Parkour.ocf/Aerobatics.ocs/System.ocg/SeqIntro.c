@@ -42,7 +42,7 @@ public func Intro_2()
 public func Intro_3()
 {
 	// Add a countdown for this attempt.
-	GUI_Clock->CreateCountdown(10);
+	GUI_Clock->CreateCountdown(10, nil, nil, true);
 	return ScheduleNext(10 * 36);
 }
 

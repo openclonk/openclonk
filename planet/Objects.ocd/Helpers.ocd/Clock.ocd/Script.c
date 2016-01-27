@@ -23,7 +23,6 @@ public func Construction()
 	var y_end = y_begin + GUI_Controller_Clock_IconSize;
 	var x_begin = y_end + GUI_Controller_Goal_IconSize + GUI_Controller_Goal_IconMargin + GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
 	var x_end = y_begin + GUI_Controller_Goal_IconSize + GUI_Controller_Goal_IconMargin + GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
-
 	clock_gui_menu = 
 	{
 		Target = this,
@@ -77,7 +76,7 @@ public func SetTime(int to_time)
 // If for_plr == nil the clock is visible for all players.
 // The game call OnCountdownFinished(int for_plr) is made when the clock runs out.
 // The same call will be made to the callback object if given.
-public func CreateCountdown(int total_time, int for_plr, object callback_obj)
+public func CreateCountdown(int total_time, int for_plr, object callback_obj, bool show_inscreen)
 {
 	if (this != GUI_Clock)
 		return;
@@ -93,7 +92,7 @@ public func CreateCountdown(int total_time, int for_plr, object callback_obj)
 	if (for_plr != nil)
 		clock.Visibility = VIS_Owner;
 	// Add a countdown effect.
-	AddEffect("IntCountdown", clock, 100, 36, clock, nil, total_time, for_plr, callback_obj);
+	AddEffect("IntCountdown", clock, 100, 36, clock, nil, total_time, for_plr, callback_obj, show_inscreen);
 	return clock;
 }
 
@@ -108,14 +107,33 @@ public func RemoveCountdown(int for_plr)
 	return;
 }
 
-protected func FxIntCountdownStart(object target, proplist effect, int temporary, int total_time, int for_plr, object callback_obj)
+protected func FxIntCountdownStart(object target, proplist effect, int temporary, int total_time, int for_plr, object callback_obj, bool show_inscreen)
 {
 	if (temporary)
 		return FX_OK;
 	effect.time = total_time;
 	effect.for_plr = for_plr;
 	effect.callback_obj = callback_obj;
+	effect.show_inscreen = show_inscreen;
+	// Set the time to the countdown value and decrease it in the timer call.
 	SetTime(effect.time);
+	// Add a count down menu for the last seconds, show in the middle of the screen.
+	if (effect.show_inscreen)
+	{
+		effect.countdown_menu = 
+		{
+			Target = this,
+			Style = GUI_Multiple | GUI_IgnoreMouse,
+			Left = "50%-2em",
+			Right = "50%+2em",
+			Top = "50%-2em",
+			Bottom = "50%+2em",
+			Priority = 2,
+			Symbol = Icon_Number,
+			GraphicsName = nil,
+		};
+		effect.countdown_menu_id = GuiOpen(effect.countdown_menu);
+	}
 	return FX_OK;
 }
 
@@ -123,6 +141,12 @@ protected func FxIntCountdownTimer(object target, proplist effect, int time)
 {
 	effect.time--;
 	SetTime(effect.time);
+	// Display the last seconds of the countdown in the middle of the screen.
+	if (effect.show_inscreen && effect.time < 10)
+	{
+		effect.countdown_menu.GraphicsName = Format("%d", effect.time);
+		GuiUpdate(effect.countdown_menu, effect.countdown_menu_id);
+	}
 	if (effect.time <= 0)
 		return FX_Execute_Kill;
 	return FX_OK;
