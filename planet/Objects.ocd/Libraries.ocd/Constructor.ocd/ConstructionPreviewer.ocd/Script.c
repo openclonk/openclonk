@@ -9,9 +9,10 @@ static const CONSTRUCTION_STICK_Left = 1;
 static const CONSTRUCTION_STICK_Right = 2;
 static const CONSTRUCTION_STICK_Bottom = 4;
 
-local dimension_x, dimension_y, clonk, structure, direction, stick_to, blocked;
+local extra_overlay, dimension_x, dimension_y, clonk, structure, direction, stick_to, blocked;
 local GFX_StructureOverlay = 1;
 local GFX_CombineIconOverlay = 2;
+local GFX_PreviewerPictureOverlay = 2;
 
 public func GetFlipDescription() { return "$TxtFlipDesc$"; }
 
@@ -23,7 +24,11 @@ func Initialize()
 func Set(id to_construct, object constructing_clonk)
 {
 	SetGraphics(nil, to_construct, GFX_StructureOverlay, GFXOV_MODE_Base);
-	SetGraphics(nil, to_construct, 3, GFXOV_MODE_Picture, nil, GFX_BLIT_Wireframe);
+	SetGraphics(nil, to_construct, GFX_PreviewerPictureOverlay, GFXOV_MODE_Picture, nil, GFX_BLIT_Wireframe);
+	// Buildings may add something to the preview and can do so on GFX_PreviewerPictureOverlay
+	// This is used by the elevator to preview the case
+	// The definition should return true
+	extra_overlay = to_construct->~ConstructionPreview(this, GFX_PreviewerPictureOverlay, direction);
 	dimension_x = to_construct->GetDefWidth();
 	dimension_y = to_construct->GetDefHeight();
 	clonk = constructing_clonk;
@@ -61,7 +66,10 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 		if (blocked && !no_call)
 			return AdjustPreview(below_surface, !look_up, true);
 		if (blocked)
+		{
+			if (extra_overlay) SetClrModulation(RGBa(255,50,50, 100), GFX_PreviewerPictureOverlay);
 			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
+		}
 		// Position depends on whether the object should below surface.
 		if (!below_surface)
 			SetPosition(GetX(), GetY() + y);
@@ -81,12 +89,21 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 	if(!blocked)
 	{
 		if (!stick_to)
+		{
+			SetClrModulation(RGBa(50,255,50, 100), GFX_PreviewerPictureOverlay);
 			SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);
+		}
 		else
+		{
+			SetClrModulation(RGBa(255,255,50, 200), GFX_PreviewerPictureOverlay);
 			SetClrModulation(RGBa(255,255,50, 200), GFX_StructureOverlay);
+		}
 	}
 	else
+	{
+		SetClrModulation(RGBa(255,50,50, 100), GFX_PreviewerPictureOverlay);
 		SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
+	}
 }
 
 // Positions the preview according to the mouse cursor, calls AdjustPreview afterwards
@@ -135,7 +152,7 @@ func Reposition(int x, int y)
 		stick_to = nil;
 		SetGraphics(nil, nil, GFX_CombineIconOverlay);
 	} 
-	else if (stick_to) 
+	else if (stick_to)
 	{
 		SetGraphics(nil, ConstructionPreviewer_IconCombine, GFX_CombineIconOverlay, GFXOV_MODE_Base);
 		var dir = 1;
@@ -164,6 +181,8 @@ func Flip()
 		direction = DIR_Left;
 		SetObjDrawTransform(1000,0,0, 0,1000,0, GFX_StructureOverlay);
 	}
+	if (extra_overlay)
+			structure->~ConstructionPreview(this, GFX_PreviewerPictureOverlay, direction);
 }
 
 // UI not saved.
