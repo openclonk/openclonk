@@ -46,7 +46,6 @@
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
 #include <C4GameParameters.h>
-#include <C4ObjectMenu.h>
 #include <C4GameLobby.h>
 #include <C4ChatDlg.h>
 #include <C4PlayerControl.h>

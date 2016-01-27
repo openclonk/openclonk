@@ -33,7 +33,6 @@
 #include <C4Log.h>
 #include <C4FullScreen.h>
 #include <C4GameOverDlg.h>
-#include <C4ObjectMenu.h>
 #include <C4MouseControl.h>
 #include <C4GameMessage.h>
 #include <C4GraphicsResource.h>
@@ -112,8 +111,6 @@ void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
 	if (ViewCursor==pObj) ViewCursor = NULL;
 	// View
 	if (ViewTarget==pObj) ViewTarget=NULL;
-	// Menu
-	Menu.ClearPointers(pObj);
 	// messageboard-queries
 	RemoveMessageBoardQuery(pObj);
 }

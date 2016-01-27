@@ -26,7 +26,6 @@
 #include <C4Application.h>
 #include <C4Game.h>
 #include <C4Menu.h>
-#include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4Log.h>
 #include <C4Material.h>
@@ -490,12 +489,6 @@ void C4DefGraphicsPtrBackupEntry::AssignUpdate()
 						// looped through w/o removal?
 						if (!pGfxOverlay) break;
 					}
-					// update menu frame decorations - may do multiple updates to the same deco if multiple menus share it...
-					C4GUI::FrameDecoration *pDeco;
-					if (pDef && pObj->Menu && (pDeco = pObj->Menu->GetFrameDecoration()))
-						if (pDeco->idSourceDef == pDef->id)
-							if (!pDeco->UpdateGfx())
-								pObj->Menu->SetFrameDeco(NULL);
 				}
 		}
 		// done; reset field to indicate finished update
@@ -545,11 +538,6 @@ void C4DefGraphicsPtrBackupEntry::AssignRemoval()
 						// looped through w/o removal?
 						if (!pGfxOverlay) break;
 					}
-					// remove menu frame decorations
-					C4GUI::FrameDecoration *pDeco;
-					if (pDef && pObj->Menu && (pDeco = pObj->Menu->GetFrameDecoration()))
-						if (pDeco->idSourceDef == pDef->id)
-							pObj->Menu->SetFrameDeco(NULL);
 				}
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;

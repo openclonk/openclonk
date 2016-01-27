@@ -120,18 +120,6 @@
                 <literal_col>MenuLeft / MenuUp / MenuRight / MenuDown</literal_col>
                 <col>Navigation in the player menu (asynchronous command).</col>
               </row>
-              <row>
-                <literal_col>ObjectMenuOK / ObjectMenuSelect / ObjectMenuOKAll</literal_col>
-                <col>Confirmation of the selected item in a menu (synchronous command).</col>
-              </row>
-              <row>
-                <literal_col>ObjectMenuCancel</literal_col>
-                <col>Close a menu (synchronous command).</col>
-              </row>
-              <row>
-                <literal_col>ObjectMenuLeft / ObjectMenuUp / ObjectMenuRight / ObjectMenuDown</literal_col>
-                <col>Navigation in a menu (synchronous command).</col>
-              </row>
             </table>
           </col>
         </row>

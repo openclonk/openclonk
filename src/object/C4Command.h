@@ -49,12 +49,10 @@ enum C4CMD
 	C4CMD_Retry,
 	C4CMD_Home,
 	C4CMD_Call,
-	C4CMD_Take,
-	C4CMD_Take2,
 };
 
 const int32_t C4CMD_First     = C4CMD_Follow,
-              C4CMD_Last      = C4CMD_Take2; // carlo
+              C4CMD_Last      = C4CMD_Call;
 
 const int32_t C4CMD_Mode_SilentSub  = 0, // subcommand; failure will cause base to fail (no message in case of failure)
               C4CMD_Mode_Base       = 1, // regular base command
@@ -118,8 +116,6 @@ protected:
 	void Throw();
 	void Jump();
 	void Wait();
-	void Take();
-	void Take2();
 	bool GetTryEnter(); // at object pos during get-command: Try entering it
 	void Get();
 	void Put();

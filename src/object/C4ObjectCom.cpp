@@ -26,7 +26,6 @@
 #include <C4Command.h>
 #include <C4Random.h>
 #include <C4GameMessage.h>
-#include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4GraphicsResource.h>
 #include <C4Material.h>
@@ -225,7 +224,6 @@ bool ObjectComUnGrab(C4Object *cObj)
 		C4Object *pTarget = cObj->Action.Target;
 		if (ObjectActionStand(cObj))
 		{
-			if (!cObj->CloseMenu(false)) return false;
 			cObj->Call(PSF_Grab, &C4AulParSet(C4VObj(pTarget), C4VBool(false)));
 			// clear action target
 			cObj->Action.Target = NULL;
@@ -405,29 +403,8 @@ bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing) // by
 	// Has thing, put to target
 	if (pThing)
 		return ObjectComPut(cObj,pTarget,pThing);
-	// If target is own container, activate activation menu
-	if (pTarget==cObj->Contained)
-		return ObjectComTake(cObj); // carlo
-	// Assuming target is grabbed, check for grab get
-	if (pTarget->Def->GrabPutGet & C4D_Grab_Get)
-	{
-		// Activate get menu
-		return cObj->ActivateMenu(C4MN_Get,0,0,0,pTarget);
-	}
 	// Failure
 	return false;
-}
-
-// carlo
-bool ObjectComTake(C4Object *cObj) // by C4CMD_Take
-{
-	return cObj->ActivateMenu(C4MN_Activate);
-}
-
-// carlo
-bool ObjectComTake2(C4Object *cObj) // by C4CMD_Take2
-{
-	return cObj->ActivateMenu(C4MN_Get,0,0,0,cObj->Contained);
 }
 
 bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)

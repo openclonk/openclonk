@@ -717,13 +717,6 @@ void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo) const
 		cLnk->Obj->DrawSelectMark(cgo);
 }
 
-void C4ObjectList::CloseMenus()
-{
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->CloseMenu(true);
-}
-
 void C4ObjectList::Copy(const C4ObjectList &rList)
 {
 	Clear(); Default();

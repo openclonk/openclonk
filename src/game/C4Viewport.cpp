@@ -26,7 +26,6 @@
 #include <C4FullScreen.h>
 #include <C4Stat.h>
 #include <C4Player.h>
-#include <C4ObjectMenu.h>
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4GameMessage.h>
@@ -151,22 +150,6 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 		return;
 	}
 
-	// Player cursor object menu
-	if (pPlr && pPlr->Cursor && pPlr->Cursor->Menu)
-	{
-		if (ResetMenuPositions) pPlr->Cursor->Menu->ResetLocation();
-		// if mouse is dragging, make it transparent to easy construction site drag+drop
-		bool fDragging=false;
-		if (::MouseControl.IsDragging() && ::MouseControl.IsViewport(this))
-		{
-			fDragging = true;
-			pDraw->ActivateBlitModulation(0x4fffffff);
-		}
-		// draw menu
-		pPlr->Cursor->Menu->Draw(cgo);
-		// reset modulation for dragging
-		if (fDragging) pDraw->DeactivateBlitModulation();
-	}
 	// Player menu
 	if (pPlr && pPlr->Menu.IsActive())
 	{
@@ -798,8 +781,6 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 	C4Player *pPlr = ::Players.Get(Player);
 	// Player eliminated: No menu
 	if (pPlr && pPlr->Eliminated) return false;
-	// Player cursor object menu
-	if (pPlr && pPlr->Cursor && pPlr->Cursor->Menu == pMenu) return true;
 	// Player menu
 	if (pPlr && pPlr->Menu.IsActive() && &(pPlr->Menu) == pMenu) return true;
 	// Fullscreen menu (if active, only one viewport can exist)

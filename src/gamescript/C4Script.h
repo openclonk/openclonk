@@ -96,7 +96,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CalcValue           "~CalcValue" // C4Object *pInBase, int iForPlayer
 #define PSF_CalcDefValue        "~CalcDefValue" // C4Object *pInBase, int iForPlayer
 #define PSF_InputCallback       "InputCallback" // const char *szText
-#define PSF_MenuQueryCancel     "~MenuQueryCancel" // int iSelection
 #define PSF_IsFulfilled         "~IsFulfilled" // int for_plr
 #define PSF_AttachTargetLost    "~AttachTargetLost"
 #define PSF_CrewSelection       "~CrewSelection" // bool fDeselect
@@ -149,7 +148,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 // On* Callbacks
 
 #define PSF_OnGameOver               "~OnGameOver"
-#define PSF_MenuSelection            "~OnMenuSelection" // int iItemIndex, C4Object *pMenuObject
 #define PSF_OnActionJump             "~OnActionJump" // int iXDir100, iYDir100
 #define PSF_OnOwnerChanged           "~OnOwnerChanged" // iNewOwner, iOldOwner
 #define PSF_EnergyChange             "~OnEnergyChange" // int iChange, int iCause, int iCausedByPlayer

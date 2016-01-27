@@ -713,8 +713,6 @@ set(OC_CLONK_SOURCES
 	src/object/C4ObjectInfoList.h
 	src/object/C4ObjectList.cpp
 	src/object/C4ObjectList.h
-	src/object/C4ObjectMenu.cpp
-	src/object/C4ObjectMenu.h
 	src/object/C4ObjectPtr.cpp
 	src/object/C4ObjectPtr.h
 	src/object/C4ObjectScript.cpp

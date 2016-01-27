@@ -109,7 +109,6 @@ public:
 	void DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert); // draw all objects that match dwCat (or don't match if fInvert)
 	void Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPlane); // draw all objects
 	void DrawSelectMark(C4TargetFacet &cgo) const;
-	void CloseMenus();
 	void UpdateGraphics(bool fGraphicsChanged);
 	void UpdateFaces(bool bUpdateShape);
 	void ClearInfo(C4ObjectInfo *pInfo);

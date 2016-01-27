@@ -34,17 +34,10 @@ enum
 {
 	C4MN_Style_Normal  = 0,
 	C4MN_Style_Context = 1,
-	C4MN_Style_Info    = 2,
-	C4MN_Style_Dialog  = 3,
-	C4MN_Style_BaseMask = 127,
-	C4MN_Style_EqualItemHeight = 128
 };
 enum
 {
 	C4MN_Extra_None       = 0,
-	C4MN_Extra_Components = 1,
-	C4MN_Extra_Value      = 2,
-	C4MN_Extra_Info       = 4,
 };
 enum
 {
@@ -52,15 +45,10 @@ enum
 	C4MN_Align_Right  = 2,
 	C4MN_Align_Top    = 4,
 	C4MN_Align_Bottom = 8,
-	C4MN_Align_Free   = 16
 };
 enum
 {
 	C4MN_Item_NoCount = 12345678
-};
-enum
-{
-	C4MN_AdjustPosition = 1<<31
 };
 
 class C4MenuItem : public C4GUI::Element
@@ -73,25 +61,15 @@ protected:
 	char Command[_MAX_FNAME+30+1];
 	char Command2[_MAX_FNAME+30+1];
 	char InfoCaption[2*C4MaxTitle+1];
-	int32_t Count;
-	C4ID id;
-	C4Object *Object;
 	C4FacetSurface Symbol;
-	C4Object* pSymbolObj; // drawn instead of symbol, if non-null
 	C4DefGraphics* pSymbolGraphics; // drawn instead of symbol, if non-null
 	uint32_t dwSymbolClr;
-	bool fOwnValue;   // if set, a specific value is to be shown
-	int32_t iValue;       // specific value to be shown
 	bool fSelected;  // item is selected; set by menu
 	int32_t iStyle;
 	class C4Menu *pMenu;
 	int32_t iIndex;
-	bool IsSelectable;
-	int32_t TextDisplayProgress; // dialog menus only: Amount of text which is to be displayed already (-1 for everything)
-	C4IDList Components; // components to be displayed in info line if item is selected
 
 private:
-	bool IsDragElement();
 	int32_t GetSymbolWidth(int32_t iForHeight);
 
 protected:
@@ -102,19 +80,12 @@ protected:
 	           int32_t iCount, C4Object *pObject, const char *szInfoCaption,
 	           C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable);
 	void GrabSymbol(C4FacetSurface &fctSymbol) { Symbol.GrabFrom(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
-	void SetGraphics(C4Object* pObj) { pSymbolObj = pObj; }
 	void SetGraphics(C4DefGraphics* pGfx) { pSymbolGraphics = pGfx; }
 	void RefSymbol(const C4Facet &fctSymbol) { Symbol.Set(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
 	void SetSelected(bool fToVal) { fSelected = fToVal; }
-	void DoTextProgress(int32_t &riByVal); // progress number of shown characters by given amount
 
 public:
-	C4ID GetC4ID() const { return id; }
-	int32_t GetValue() const { return iValue; }
-	C4Object *GetObject() const { return Object; }
 	const char *GetCommand() const { return Command; }
-
-	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = NULL; if(pObj == pSymbolObj) pSymbolObj = NULL; }
 
 	// GUI calls
 	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
@@ -139,23 +110,16 @@ protected:
 	int32_t Selection,TimeOnSelection;
 	int32_t ItemCount;
 	int32_t ItemWidth,ItemHeight;
-	int32_t Extra,ExtraData;
 	int32_t Identification;
 	int32_t Columns; // sync
 	int32_t Lines; // async
 	int32_t Alignment;
-	int32_t VisibleCount;
 	StdStrBuf CloseCommand; // script command that will be executed on menu close
 	char Caption[C4MaxTitle+1];
 	C4FacetSurface Symbol;
 	C4GUI::ScrollWindow *pClientWindow; // window containing the menu items
-	bool fHasPortrait; // if set, first menu item is used at a portrait at topleft of menu
-	bool fTextProgressing; // if true, text is being shown progressively (dialog menus)
-	bool fEqualIconItemHeight; // for dialog menus only: If set, all options with an icon are forced to have the same height
 	bool fActive; // set if menu is shown - independant of GUI to keep synchronized when there's no GUI
 public:
-	bool ConvertCom(int32_t &rCom, int32_t &rData, bool fAsyncConversion);
-	void ClearPointers(C4Object *pObj);
 	bool Refill();
 	void Execute();
 	void SetPermanent(bool fPermanent);
@@ -165,7 +129,6 @@ public:
 	int32_t GetPosition();
 	int32_t GetSelection();
 	bool IsContextMenu() { return Style == C4MN_Style_Context; }
-	int GetSymbolSize() { return (Style == C4MN_Style_Dialog) ? 64 : C4SymbolSize; }
 	int32_t GetItemHeight() { return ItemHeight; }
 	C4MenuItem* GetSelectedItem();
 	C4MenuItem* GetItem(int32_t iIndex);
@@ -186,22 +149,11 @@ public:
 	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
 	         const char *szInfoCaption=NULL,
 	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
-	bool Add(const char *szCaption, C4Object* pGfxObj, const char *szCommand,
-	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	         const char *szInfoCaption=NULL,
-	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
-	bool Add(const char *szCaption, C4DefGraphics* pGfx, const char *szCommand,
-	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	         const char *szInfoCaption=NULL,
-	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	void ClearItems();
 	void ResetLocation() { LocationSet = false; }
 	bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport
-	bool SetTextProgress(int32_t iToProgress, bool fAdd); // enable/disable progressive text display and set starting pos
-	void SetEqualItemHeight(bool fToVal) { fEqualIconItemHeight = fToVal; } // enable/disable equal item heights
 	bool TryClose(bool fOK, bool fControl);
 	void SetCloseCommand(const char *strCommand);
-	bool IsTextProgressing() const { return fTextProgressing; }
 
 #ifdef _DEBUG
 	void AssertSurfaceNotUsed(C4Surface *sfc);
@@ -242,8 +194,6 @@ protected:
 
 	virtual const char *GetID() { return 0; } // no ID needed, because it's a viewport dlg
 
-	bool HasPortrait() { return fHasPortrait; } // dialog menus only: Whether a portrait is shown in the topleft
-
 protected:
 	// C4GUI
 	virtual C4Viewport *GetViewport();              // return associated viewport
@@ -253,12 +203,11 @@ protected:
 	void UpdateElementPositions();            // reposition list items so they are stacked vertically
 	virtual int32_t GetZOrdering() { return -1; }
 	virtual void Draw(C4TargetFacet &cgo);
-	virtual void DrawElement(C4TargetFacet &cgo); // draw menu
 	virtual bool IsOwnPtrElement() { return true; }
 	virtual void UserClose(bool fOK);
 
 	// bottom area needed for extra info
-	virtual int32_t GetMarginBottom() { return ((Extra) ? C4MN_SymbolSize : 0) + C4MN_FrameWidth + BaseClass::GetMarginBottom(); }
+	virtual int32_t GetMarginBottom() { return C4MN_FrameWidth + BaseClass::GetMarginBottom(); }
 	virtual int32_t GetMarginLeft() { return C4MN_FrameWidth + BaseClass::GetMarginLeft(); }
 	virtual int32_t GetMarginRight() { return C4MN_FrameWidth + BaseClass::GetMarginRight(); }
 

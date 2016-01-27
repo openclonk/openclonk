@@ -26,7 +26,6 @@
 #include <C4ObjectInfo.h>
 #include <C4Random.h>
 #include <C4GameMessage.h>
-#include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4SoundSystem.h>
 #include <C4Landscape.h>
@@ -72,8 +71,6 @@ const char *CommandName(int32_t iCommand)
 		case C4CMD_Retry: return "Retry";
 		case C4CMD_Home: return "Home";
 		case C4CMD_Call: return "Call";
-		case C4CMD_Take: return "Take";
-		case C4CMD_Take2: return "Take2";
 		default: return "None";
 	}
 }
@@ -106,8 +103,6 @@ const char* CommandNameID(int32_t iCommand)
 		case C4CMD_Retry: return "IDS_COMM_RETRY";
 		case C4CMD_Home: return "IDS_CON_HOME";
 		case C4CMD_Call: return "IDS_COMM_CALL";
-		case C4CMD_Take: return "IDS_COMM_TAKE";
-		case C4CMD_Take2: return "IDS_COMM_TAKE2";
 		default: return "IDS_COMM_NONE";
 	}
 }
@@ -824,18 +819,6 @@ void C4Command::Throw()
 	Finish(true);
 }
 
-void C4Command::Take()
-{
-	ObjectComTake(cObj);
-	Finish(true);
-}
-
-void C4Command::Take2()
-{
-	ObjectComTake2(cObj);
-	Finish(true);
-}
-
 void C4Command::Drop()
 {
 
@@ -948,14 +931,6 @@ bool C4Command::GetTryEnter()
 
 void C4Command::Get()
 {
-
-	// Data set and target specified: open get menu & done (old style)
-	if (((Data.getInt()==1) || (Data.getInt()==2)) && Target)
-	{
-		cObj->ActivateMenu((Data.getInt()==1) ? C4MN_Get : C4MN_Contents,0,0,0,Target);
-		Finish(true); return;
-	}
-
 	// Get target specified by container and type
 	if (!Target && Target2 && Data)
 		if (!(Target = Target2->Contents.Find(Data.getDef())))
@@ -1098,15 +1073,6 @@ void C4Command::Get()
 
 void C4Command::Activate()
 {
-
-	// Container specified, but no Target & no type: open activate menu for container
-	if (Target2 && !Target && !Data)
-	{
-		cObj->ActivateMenu(C4MN_Activate,0,0,0,Target2);
-		Finish(true);
-		return;
-	}
-
 	// Target object specified & outside: success
 	if (Target)
 		if (!Target->Contained)
@@ -1349,8 +1315,6 @@ void C4Command::Execute()
 	case C4CMD_Retry: Retry(); break;
 	case C4CMD_Home: Home(); break;
 	case C4CMD_Call: Call(); break;
-	case C4CMD_Take: Take(); break; // carlo
-	case C4CMD_Take2: Take2(); break; // carlo
 	default: Finish(); break;
 	}
 
@@ -1954,8 +1918,6 @@ int32_t C4Command::GetExpGain()
 	case C4CMD_Dig:
 	case C4CMD_Buy:
 	case C4CMD_Sell:
-	case C4CMD_Take:
-	case C4CMD_Take2:
 		return 1;
 
 		// not that simple

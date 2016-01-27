@@ -969,8 +969,6 @@ const char * GetRecordChunkTypeName(C4RecordChunkType eType)
 	case RCT_MatScan: return "MatScan";  // landscape scan execute
 	case RCT_MatScanDo: return "MatScanDo";  // landscape scan mat change
 	case RCT_Area: return "Area";  // object area change
-	case RCT_MenuAdd: return "MenuAdd";  // add menu item
-	case RCT_MenuAddC: return "MenuAddC";  // add menu item: Following commands
 	case RCT_OCF: return "OCF";  // OCF setting of updating
 	case RCT_DirectExec: return "DirectExec";  // a DirectExec-script
 	case RCT_Definition: return "Definition";  // Definition callback

@@ -194,8 +194,7 @@ const BYTE
 	COM_CursorLeft = 30,
 	COM_CursorRight = 31;
 
-const BYTE 
-//	COM_Help = 35, (obsolete, was: help-mode button)
+const BYTE
 	COM_PlayerMenu = 36,
 	COM_Chat = 37;
 
@@ -203,18 +202,10 @@ const BYTE
 	COM_MenuEnter = 38,
 	COM_MenuEnterAll = 39,
 	COM_MenuClose = 40,
-	COM_MenuShowText = 42,
 	COM_MenuLeft = 52,
 	COM_MenuRight = 53,
 	COM_MenuUp = 54,
-	COM_MenuDown = 55,
-	COM_MenuSelect = 60,
-
-	COM_MenuFirst = COM_MenuEnter,
-	COM_MenuLast = COM_MenuSelect,
-
-	COM_MenuNavigation1 = COM_MenuShowText,
-	COM_MenuNavigation2 = COM_MenuSelect;
+	COM_MenuDown = 55;
 
 //=================================== SendCommand ========================================
 const int32_t 

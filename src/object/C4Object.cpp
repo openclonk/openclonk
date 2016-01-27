@@ -35,7 +35,6 @@
 #include <C4Random.h>
 #include <C4Log.h>
 #include <C4Player.h>
-#include <C4ObjectMenu.h>
 #include <C4RankSystem.h>
 #include <C4GameMessage.h>
 #include <C4GraphicsResource.h>
@@ -209,7 +208,6 @@ void C4Object::Default()
 	Command=NULL;
 	Contained=NULL;
 	TopFace.Default();
-	Menu=NULL;
 	MaterialContents=NULL;
 	Marker=0;
 	ColorMod=0xffffffff;
@@ -1064,8 +1062,6 @@ void C4Object::Execute()
 	// Animation. If the mesh is attached, then don't execute animation here but let the parent object do it to make sure it is only executed once a frame.
 	if (pMeshInstance && !pMeshInstance->GetAttachParent())
 		pMeshInstance->ExecuteAnimation(1.0f/37.0f /* play smoothly at 37 FPS */);
-	// Menu
-	if (Menu) Menu->Execute();
 }
 
 bool C4Object::At(int32_t ctx, int32_t cty) const
@@ -1366,7 +1362,6 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	// Misc updates
 	Mobile=1;
 	InLiquid=0;
-	CloseMenu(true);
 	UpdateFace(true);
 	SetOCF();
 	// Engine calls
@@ -1406,12 +1401,6 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	if (Contained) if (!Exit(GetX(),GetY())) return false;
 	if (Contained || !Status || !pTarget->Status) return false;
 	// Failsafe updates
-	if (Menu)
-	{
-		CloseMenu(true);
-		// CloseMenu might do bad stuff
-		if (Contained || !Status || !pTarget->Status) return false;
-	}
 	SetOCF();
 	// Set container
 	Contained=pTarget;
@@ -1565,132 +1554,6 @@ bool C4Object::CreateContentsByList(C4IDList &idlist)
 		for (cnt2=0; cnt2<idlist.GetCount(cnt); cnt2++)
 			if (!CreateContents(C4Id2Def(idlist.GetID(cnt))))
 				return false;
-	return true;
-}
-
-static void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner)
-{
-	C4Facet ccgo;
-
-	DWORD dwColor=0;
-	if (ValidPlr(iOwner)) dwColor=::Players.Get(iOwner)->ColorDw;
-
-	switch (iMenu)
-	{
-	case C4MN_Buy:
-		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 0);
-		break;
-	case C4MN_Sell:
-		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 1);
-		break;
-	}
-}
-
-bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
-                            int32_t iMenuData, int32_t iMenuPosition,
-                            C4Object *pTarget)
-{
-	// Variables
-	C4FacetSurface fctSymbol;
-	C4IDList ListItems;
-	// Close any other menu
-	if (Menu && Menu->IsActive()) if (!Menu->TryClose(true, false)) return false;
-	// Create menu
-	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems();
-	// Open menu
-	switch (iMenu)
-	{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Activate:
-		// No target specified: use own container as target
-		if (!pTarget) if (!(pTarget=Contained)) break;
-		// Opening contents menu blocked by RejectContents
-		if (!!pTarget->Call(PSF_RejectContents)) return false;
-		// Create symbol
-		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
-		// Init
-		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_None,0,iMenu);
-		Menu->SetPermanent(true);
-		Menu->SetRefillObject(pTarget);
-		// Success
-		return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Buy:
-		// No target specified: container is base
-		if (!pTarget) if (!(pTarget=Contained)) break;
-		// Create symbol
-		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		DrawMenuSymbol(C4MN_Buy, fctSymbol, pTarget->Owner);
-		// Init menu
-		Menu->Init(fctSymbol,LoadResStr("IDS_PLR_NOBUY"),this,C4MN_Extra_Value,0,iMenu);
-		Menu->SetPermanent(true);
-		Menu->SetRefillObject(pTarget);
-		// Success
-		return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Sell:
-		// No target specified: container is base
-		if (!pTarget) if (!(pTarget=Contained)) break;
-		// Create symbol & init
-		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		DrawMenuSymbol(C4MN_Sell, fctSymbol, pTarget->Owner);
-		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_Value,0,iMenu);
-		Menu->SetPermanent(true);
-		Menu->SetRefillObject(pTarget);
-		// Success
-		return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Get:
-	case C4MN_Contents:
-		// No target specified
-		if (!pTarget) break;
-		// Opening contents menu blocked by RejectContents
-		if (!!pTarget->Call(PSF_RejectContents)) return false;
-		// Create symbol & init
-		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
-		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_None,0,iMenu);
-		Menu->SetPermanent(true);
-		Menu->SetRefillObject(pTarget);
-		// Success
-		return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Info:
-		// Target by parameter
-		if (!pTarget) break;
-		// Create symbol & init menu
-		fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,0,1);
-		Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
-		Menu->SetPermanent(true);
-		Menu->SetAlignment(C4MN_Align_Free);
-		C4Viewport *pViewport = ::Viewports.GetViewport(Controller); // Hackhackhack!!!
-		if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->GetViewX()) * pViewport->GetZoom(),
-			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->GetViewY()) * pViewport->GetZoom());
-		// Add info item
-		fctSymbol.Create(C4PictureSize, C4PictureSize); pTarget->Def->Draw(fctSymbol, false, pTarget->Color, pTarget);
-		Menu->Add(pTarget->GetName(), fctSymbol, "", C4MN_Item_NoCount, NULL, pTarget->GetInfoString().getData());
-		fctSymbol.Default();
-		// Success
-		return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	}
-	// Invalid menu identification
-	CloseMenu(true);
-	return false;
-}
-
-bool C4Object::CloseMenu(bool fForce)
-{
-	if (Menu)
-	{
-		if (Menu->IsActive()) if (!Menu->TryClose(fForce, false)) return false;
-		if (!Menu->IsCloseQuerying()) { delete Menu; Menu=NULL; } // protect menu deletion from recursive menu operation calls
-	}
 	return true;
 }
 
@@ -1870,8 +1733,6 @@ void C4Object::ClearPointers(C4Object *pObj)
 	C4Command *cCom;
 	for (cCom=Command; cCom; cCom=cCom->Next)
 		cCom->ClearPointers(pObj);
-	// Menu
-	if (Menu) Menu->ClearPointers(pObj);
 	// Layer
 	if (Layer==pObj) Layer=NULL;
 	// gfx overlays
@@ -2549,7 +2410,6 @@ void C4Object::Clear()
 
 	if (pEffects) { delete pEffects; pEffects=NULL; }
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
-	if (Menu) delete Menu; Menu=NULL;
 	if (MaterialContents) delete MaterialContents; MaterialContents=NULL;
 	// clear commands!
 	C4Command *pCom, *pNext;
@@ -2657,8 +2517,6 @@ void C4Object::SyncClearance()
 	t_contact = 0;
 	// Update OCF
 	SetOCF();
-	// Menu
-	CloseMenu(true);
 	// Material contents
 	if (MaterialContents) delete MaterialContents; MaterialContents=NULL;
 	// reset speed of staticback-objects
@@ -2759,9 +2617,6 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 {
 	// Clear stack
 	ClearCommands();
-	// Close menu
-	if (fControl)
-		if (!CloseMenu(false)) return;
 	// Script overload
 	if (fControl)
 		if (!!Call(PSF_ControlCommand,&C4AulParSet(C4VString(CommandName(iCommand)),
@@ -4410,13 +4265,6 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	if (!(Contents.ShiftContents(pTarget))) return;
 	// Selection sound
 	if (fDoCalls) if (!Contents.GetObject()->Call("~Selection", &C4AulParSet(C4VObj(this)))) StartSoundEffect("Clonk::Action::Grab",false,100,this);
-	// update menu with the new item in "put" entry
-	if (Menu && Menu->IsActive() && Menu->IsContextMenu())
-	{
-		Menu->Refill();
-	}
-	// Done
-	return;
 }
 
 void C4Object::GetParallaxity(int32_t *parX, int32_t *parY) const

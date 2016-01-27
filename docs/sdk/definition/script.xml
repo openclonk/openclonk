@@ -158,11 +158,6 @@
           <col></col>
           <col>When an object is loaded from a savegame or network synchronization is performed. Objects with a transfer zone should reset the zone in this call. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
         </row>
-        <row id="MenuQueryCancel">
-          <literal_col>MenuQueryCancel</literal_col>
-          <col>int selection, object menu_object</col>
-          <col>When the player wants to close a user defined object menu. Return value <code>true</code> will keep the menu open.</col>
-        </row>
         <row id="IsFulfilled">
           <literal_col>IsFulfilled</literal_col>
           <col></col>
@@ -212,11 +207,6 @@
           <literal_col>GetObject2Drop</literal_col>
           <col>object for_collection_of_object</col>
           <col>Called to determine the least needed inventory object when a clonk tries to collect a new object and his inventory is full. The function should return the object to be dropped to gain space, or <code>nil</code> if none.</col>
-        </row>
-        <row id="OnMenuSelection">
-          <literal_col>OnMenuSelection</literal_col>
-          <col>int index, object menu_object</col>
-          <col>When an object menu entry is selected.</col>
         </row>
         <row id="CalcValue">
           <literal_col>CalcValue</literal_col>

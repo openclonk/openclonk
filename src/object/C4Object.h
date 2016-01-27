@@ -153,10 +153,6 @@ public:
 	uint32_t Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
 	C4ObjectPtr Layer;
 	C4DrawTransform *pDrawTransform; // assigned drawing transformation
-
-	// Menu
-	class C4ObjectMenu *Menu; // SyncClearance-NoSave //
-
 	C4Facet TopFace; // NoSave //
 	C4Def *Def;
 	C4ObjectPtr Contained;
@@ -268,8 +264,6 @@ public:
 	bool At(int32_t ctx, int32_t cty) const;
 	bool At(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
-	bool CloseMenu(bool fForce);
-	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
 	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
 	bool Contact(int32_t cnat);
 	void StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat);

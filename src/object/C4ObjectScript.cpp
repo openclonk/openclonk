@@ -28,7 +28,6 @@
 #include <C4MeshAnimation.h>
 #include <C4ObjectCom.h>
 #include <C4ObjectInfo.h>
-#include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4Random.h>
@@ -786,358 +785,6 @@ static C4PropList* FnGetID(C4Object *Obj)
 	return Obj->GetPrototype();
 }
 
-static Nillable<C4ID> FnGetMenu(C4Object *Obj)
-{
-	if (Obj->Menu && Obj->Menu->IsActive())
-		return C4ID(Obj->Menu->GetIdentification());
-	return C4Void();
-}
-
-static bool FnCreateMenu(C4Object *Obj, C4Def *pDef, C4Object *pCommandObj,
-                         long iExtra, C4String *szCaption, long iExtraData,
-                         long iStyle, bool fPermanent, C4ID idMenuID)
-{
-	if (pCommandObj)
-		// object menu: Validate object
-		if (!pCommandObj->Status) return false;
-	// else scenario script callback: No command object OK
-
-	// Create symbol
-	C4FacetSurface fctSymbol;
-	fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-	if (pDef) pDef->Draw(fctSymbol);
-
-	// Clear any old menu, init new menu
-	if (!Obj->CloseMenu(false)) return false;
-	if (!Obj->Menu) Obj->Menu = new C4ObjectMenu; else Obj->Menu->ClearItems();
-	Obj->Menu->Init(fctSymbol,FnStringPar(szCaption),pCommandObj,iExtra,iExtraData,(idMenuID ? idMenuID : pDef ? pDef->id : C4ID::None).GetHandle(),iStyle,true);
-
-	// Set permanent
-	Obj->Menu->SetPermanent(fPermanent);
-
-	return true;
-}
-
-const int C4MN_Add_ImgRank         =   1,
-          C4MN_Add_ImgIndexed      =   2,
-          C4MN_Add_ImgObjRank      =   3,
-          C4MN_Add_ImgObject       =   4,
-          C4MN_Add_ImgTextSpec     =   5,
-          C4MN_Add_ImgColor        =   6,
-          C4MN_Add_ImgPropListSpec =   7,
-          C4MN_Add_MaxImage        = 127, // mask for param which decides what to draw as the menu symbol
-          C4MN_Add_PassValue       = 128,
-          C4MN_Add_ForceCount      = 256,
-          C4MN_Add_ForceNoDesc     = 512;
-
-#ifndef _MSC_VER
-#define _snprintf snprintf
-#endif
-
-static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szCommand, C4Def * pDef, int iCount, const C4Value & Parameter, C4String * szInfoCaption, int iExtra, const C4Value & XPar, const C4Value & XPar2)
-{
-	if (!Obj->Menu) return false;
-
-	char caption[256+1];
-	char parameter[256+1];
-	char dummy[256+1];
-	char command[512+1];
-	char command2[512+1];
-	char infocaption[C4MaxTitle+1];
-
-	// get needed symbol size
-	int iSymbolSize = Obj->Menu->GetSymbolSize();
-
-	// Compose caption with def name
-	if (szCaption)
-	{
-		const char * s = FnStringPar(szCaption);
-		const char * sep = strstr(s, "%s");
-		if (sep && pDef)
-		{
-			strncpy(caption, s, std::min<intptr_t>(sep - s,256));
-			caption[std::min<intptr_t>(sep - s,256)] = 0;
-			strncat(caption, pDef->GetName(), 256);
-			strncat(caption, sep + 2, 256);
-		}
-		else
-		{
-			strncpy(caption, s, 256);
-			caption[256] = 0;
-		}
-	}
-	else
-		caption[0] = 0;
-
-	// create string to include type-information in command
-	switch (Parameter.GetType())
-	{
-	case C4V_Int:
-		sprintf(parameter, "%d", Parameter.getInt());
-		break;
-	case C4V_Bool:
-		SCopy(Parameter.getBool() ? "true" : "false", parameter);
-		break;
-	case C4V_PropList:
-		if (Parameter.getPropList()->GetObject())
-			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetObject()->Number);
-		else if (Parameter.getPropList()->GetDef())
-			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
-		else
-			throw C4AulExecError("proplist as parameter to AddMenuItem");
-		break;
-	case C4V_String:
-		// note this breaks if there is '"' in the string.
-		parameter[0] = '"';
-		SCopy(Parameter.getStr()->GetCStr(), parameter + 1, sizeof(command)-3);
-		SAppendChar('"', command);
-		break;
-	case C4V_Nil:
-		SCopy("nil", parameter);
-		break;
-	case C4V_Array:
-		// Arrays were never allowed, so tell the scripter
-		throw C4AulExecError("array as parameter to AddMenuItem");
-	default:
-		return false;
-	}
-
-	// own value
-	bool fOwnValue = false; long iValue=0;
-	if (iExtra & C4MN_Add_PassValue)
-	{
-		fOwnValue = true;
-		iValue = XPar2.getInt();
-	}
-
-	// New Style: native script command
-	size_t i = 0;
-	for (; i < SLen(FnStringPar(szCommand)); i++)
-		if (!IsIdentifier(FnStringPar(szCommand)[i]))
-			break;
-	if (i < SLen(FnStringPar(szCommand)))
-	{
-		// Search for "%d" an replace it by "%s" for insertion of formatted parameter
-		SCopy(FnStringPar(szCommand), dummy, 256);
-		char* pFound = const_cast<char*>(SSearch(dummy, "%d"));
-		if (pFound != 0)
-			*(pFound - 1) = 's';
-		// Compose left-click command
-		sprintf(command, dummy, parameter, 0);
-		// Compose right-click command
-		sprintf(command2, dummy, parameter, 1);
-	}
-
-	// Old style: function name with id and parameter
-	else
-	{
-		const char *szScriptCom = FnStringPar(szCommand);
-		if (szScriptCom && *szScriptCom)
-		{
-			if (iExtra & C4MN_Add_PassValue)
-			{
-				// with value
-				sprintf(command,"%s(%s,%s,0,%ld)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter,iValue);
-				sprintf(command2,"%s(%s,%s,1,%ld)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter,iValue);
-			}
-			else
-			{
-				// without value
-				sprintf(command,"%s(%s,%s)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter);
-				sprintf(command2,"%s(%s,%s,1)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter);
-			}
-		}
-		else
-		{
-			// no command
-			*command = *command2 = '\0';
-		}
-	}
-
-	// Info caption
-	SCopy(FnStringPar(szInfoCaption),infocaption,C4MaxTitle);
-
-	// Create symbol
-	C4FacetSurface fctSymbol;
-	C4DefGraphics* pGfx = NULL;
-	C4Object* pGfxObj = NULL;
-	switch (iExtra & C4MN_Add_MaxImage)
-	{
-	case C4MN_Add_ImgRank:
-	{
-		// symbol by rank
-		C4Facet *pfctRankSym = &::GraphicsResource.fctRank;
-		int32_t iRankSymNum = ::GraphicsResource.iNumRanks;
-		if (pDef && pDef->pRankSymbols)
-		{
-			pfctRankSym = pDef->pRankSymbols;
-			iRankSymNum = pDef->iNumRankSymbols;
-		}
-		C4RankSystem::DrawRankSymbol(&fctSymbol, iCount, pfctRankSym, iRankSymNum, true);
-		iCount=0;
-		break;
-	}
-	case C4MN_Add_ImgIndexed:
-		// draw indexed facet
-		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		if (pDef)
-			pDef->Draw(fctSymbol, false, 0, NULL, XPar.getInt());
-		break;
-	case C4MN_Add_ImgObjRank:
-	{
-		// draw current gfx of XPar_C4V including rank
-		if (!XPar.CheckConversion(C4V_Object)) return false;
-		C4Object *pGfxObj = XPar.getObj();
-		if (pGfxObj && pGfxObj->Status)
-		{
-			// create graphics
-			// get rank gfx
-			C4Facet *pRankRes=&::GraphicsResource.fctRank;
-			long iRankCnt=::GraphicsResource.iNumRanks;
-			C4Def *pDef=pGfxObj->Def;
-			if (pDef->pRankSymbols)
-			{
-				pRankRes=pDef->pRankSymbols;
-				iRankCnt=pDef->iNumRankSymbols;
-			}
-			// context menu
-			C4Facet fctRank;
-			if (Obj->Menu->IsContextMenu())
-			{
-				// context menu entry: left object gfx
-				long C4MN_SymbolSize = Obj->Menu->GetItemHeight();
-				fctSymbol.Create(C4MN_SymbolSize * 2,C4MN_SymbolSize);
-				fctSymbol.Wdt = C4MN_SymbolSize;
-				pGfxObj->Def->Draw(fctSymbol, false, pGfxObj->Color, pGfxObj);
-				// right of it the rank
-				fctRank = fctSymbol;
-				fctRank.X = C4MN_SymbolSize;
-				fctSymbol.Wdt *= 2;
-			}
-			else
-			{
-				// regular menu: draw object picture
-				fctSymbol.Create(iSymbolSize,iSymbolSize);
-				pGfxObj->Def->Draw(fctSymbol, false, pGfxObj->Color, pGfxObj);
-				// rank at top-right corner
-				fctRank = fctSymbol;
-				fctRank.X = fctRank.Wdt - pRankRes->Wdt;
-				fctRank.Wdt = pRankRes->Wdt;
-				fctRank.Hgt = pRankRes->Hgt;
-			}
-			// draw rank
-			if (pGfxObj->Info)
-			{
-				C4Facet fctBackup = (const C4Facet &) fctSymbol;
-				fctSymbol.Set(fctRank);
-				C4RankSystem::DrawRankSymbol(&fctSymbol, pGfxObj->Info->Rank, pRankRes, iRankCnt, true);
-				fctSymbol.Set(fctBackup);
-			}
-		}
-	}
-	break;
-	case C4MN_Add_ImgObject:
-	{
-		// draw object picture
-		if (!XPar.CheckConversion(C4V_Object))
-			throw C4AulExecError(FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
-			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
-			                                     ).getData());
-		pGfxObj = XPar.getObj();
-	}
-	break;
-
-	case C4MN_Add_ImgTextSpec:
-	{
-		C4Def* pDef = C4Id2Def(C4ID(std::string(caption)));
-		if(pDef)
-		{
-			pGfx = &pDef->Graphics;
-		}
-		else
-		{
-			fctSymbol.Create(iSymbolSize,iSymbolSize);
-			uint32_t dwClr = XPar.getInt();
-			if (!szCaption || !Game.DrawTextSpecImage(fctSymbol, caption, NULL, dwClr ? dwClr : 0xff))
-				return false;
-		}
-		*caption = '\0';
-	}
-	break;
-
-	case C4MN_Add_ImgPropListSpec:
-	{
-		C4PropList *gfx_proplist = XPar.getPropList();
-		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		if (!Game.DrawPropListSpecImage(fctSymbol, gfx_proplist))
-			return false;
-	}
-	break;
-
-	case C4MN_Add_ImgColor:
-		// draw colored def facet
-		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		if (pDef)
-			pDef->Draw(fctSymbol, false, XPar.getInt());
-		break;
-
-	default:
-		// default: by def, if it is not specifically NONE
-		if (pDef)
-		{
-			fctSymbol.Create(iSymbolSize,iSymbolSize);
-			pDef->Draw(fctSymbol);
-		}
-		else
-		{
-			// otherwise: Clear symbol!
-		}
-		break;
-	}
-
-	// Convert default zero count to no count
-	if (iCount==0 && !(iExtra & C4MN_Add_ForceCount)) iCount=C4MN_Item_NoCount;
-
-	// menuitems without commands are never selectable
-	bool fIsSelectable = !!*command;
-
-	// Add menu item
-	if(pGfxObj)
-		Obj->Menu->Add(caption,pGfxObj,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
-	else if(pGfx)
-		Obj->Menu->Add(caption,pGfx,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
-	else
-		Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
-
-	return true;
-}
-
-static bool FnSelectMenuItem(C4Object *Obj, long iItem)
-{
-	if (!Obj->Menu) return false;
-	return !!Obj->Menu->SetSelection(iItem, false, true);
-}
-
-static bool FnSetMenuDecoration(C4Object *Obj, C4ID idNewDeco)
-{
-	if (!Obj->Menu) return false;
-	C4GUI::FrameDecoration *pNewDeco = new C4GUI::FrameDecoration();
-	if (!pNewDeco->SetByDef(idNewDeco))
-	{
-		delete pNewDeco;
-		return false;
-	}
-	Obj->Menu->SetFrameDeco(pNewDeco);
-	return true;
-}
-
-static bool FnSetMenuTextProgress(C4Object *Obj, long iNewProgress)
-{
-	if (!Obj->Menu) return false;
-	return Obj->Menu->SetTextProgress(iNewProgress, false);
-}
-
-
 // Check / Status
 
 static C4Object *FnContained(C4Object *Obj)
@@ -1299,12 +946,6 @@ static long FnObjectNumber(C4Object *Obj)
 	// See FnObject
 }
 
-static long FnShowInfo(C4Object *Obj, C4Object *pObj)
-{
-	if (!pObj) pObj=Obj; if (!pObj) return false;
-	return Obj->ActivateMenu(C4MN_Info,0,0,0,pObj);
-}
-
 static C4Void FnSetMass(C4Object *Obj, long iValue)
 {
 	Obj->OwnMass=iValue-Obj->Def->Mass;
@@ -1421,17 +1062,6 @@ static Nillable<long> FnGetClrModulation(C4Object *Obj, long iOverlayID)
 		return Obj->ColorMod;
 }
 
-static bool FnCloseMenu(C4Object *Obj)
-{
-	return !!Obj->CloseMenu(true);
-}
-
-static Nillable<long> FnGetMenuSelection(C4Object *Obj)
-{
-	if (!Obj->Menu || !Obj->Menu->IsActive()) return C4Void();
-	return Obj->Menu->GetSelection();
-}
-
 static bool FnCanConcatPictureWith(C4Object *Obj, C4Object *pObj)
 {
 	// safety
@@ -1536,15 +1166,6 @@ static long FnGetDefBottom(C4PropList * _this)
 		return 0;
 }
 
-static bool FnSetMenuSize(C4Object *Obj, long iCols, long iRows)
-{
-	// get menu
-	C4Menu *pMnu=Obj->Menu;
-	if (!pMnu || !pMnu->IsActive()) return false;
-	pMnu->SetSize(Clamp<long>(iCols, 0, 50), Clamp<long>(iRows, 0, 50));
-	return true;
-}
-
 static bool FnGetCrewEnabled(C4Object *Obj)
 {
 	// return status
@@ -1591,16 +1212,6 @@ static C4Void FnDoCrewExp(C4Object *Obj, long iChange)
 	Obj->DoExperience(iChange);
 	// success
 	return C4Void();
-}
-
-static bool FnClearMenuItems(C4Object *Obj)
-{
-	// check menu
-	if (!Obj->Menu) return false;
-	// clear the items
-	Obj->Menu->ClearItems();
-	// success
-	return true;
 }
 
 static C4Object *FnGetObjectLayer(C4Object *Obj)
@@ -2476,28 +2087,6 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "VIS_LayerToggle"        ,C4V_Int,          VIS_LayerToggle},
 	{ "VIS_OverlayOnly"        ,C4V_Int,          VIS_OverlayOnly},
 
-	{ "C4MN_Style_Normal"      ,C4V_Int,          C4MN_Style_Normal},
-	{ "C4MN_Style_Context"     ,C4V_Int,          C4MN_Style_Context},
-	{ "C4MN_Style_Info"        ,C4V_Int,          C4MN_Style_Info},
-	{ "C4MN_Style_Dialog"      ,C4V_Int,          C4MN_Style_Dialog},
-	{ "C4MN_Style_EqualItemHeight",C4V_Int,       C4MN_Style_EqualItemHeight},
-
-	{ "C4MN_Extra_None"        ,C4V_Int,          C4MN_Extra_None},
-	{ "C4MN_Extra_Components"  ,C4V_Int,          C4MN_Extra_Components},
-	{ "C4MN_Extra_Value"       ,C4V_Int,          C4MN_Extra_Value},
-	{ "C4MN_Extra_Info"        ,C4V_Int,          C4MN_Extra_Info},
-
-	{ "C4MN_Add_ImgRank"       ,C4V_Int,          C4MN_Add_ImgRank},
-	{ "C4MN_Add_ImgIndexed"    ,C4V_Int,          C4MN_Add_ImgIndexed},
-	{ "C4MN_Add_ImgObjRank"    ,C4V_Int,          C4MN_Add_ImgObjRank},
-	{ "C4MN_Add_ImgObject"     ,C4V_Int,          C4MN_Add_ImgObject},
-	{ "C4MN_Add_ImgTextSpec"   ,C4V_Int,          C4MN_Add_ImgTextSpec},
-	{ "C4MN_Add_ImgPropListSpec",C4V_Int,         C4MN_Add_ImgPropListSpec},
-	{ "C4MN_Add_ImgColor"      ,C4V_Int,          C4MN_Add_ImgColor},
-	{ "C4MN_Add_PassValue"     ,C4V_Int,          C4MN_Add_PassValue},
-	{ "C4MN_Add_ForceCount"    ,C4V_Int,          C4MN_Add_ForceCount},
-	{ "C4MN_Add_ForceNoDesc"   ,C4V_Int,          C4MN_Add_ForceNoDesc},
-
 	{ "GFXOV_MODE_None"           ,C4V_Int,      C4GraphicsOverlay::MODE_None },    // gfx overlay modes
 	{ "GFXOV_MODE_Base"           ,C4V_Int,      C4GraphicsOverlay::MODE_Base },    //
 	{ "GFXOV_MODE_Action"         ,C4V_Int,      C4GraphicsOverlay::MODE_Action },  //
@@ -2612,7 +2201,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetOwner", FnGetOwner);
 	AddFunc(pEngine, "GetMass", FnGetMass);
 	AddFunc(pEngine, "GetBreath", FnGetBreath);
-	AddFunc(pEngine, "GetMenu", FnGetMenu);
 	AddFunc(pEngine, "GetVertexNum", FnGetVertexNum);
 	AddFunc(pEngine, "GetVertex", FnGetVertex);
 	AddFunc(pEngine, "SetVertex", FnSetVertex);
@@ -2670,11 +2258,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetComponent", FnSetComponent);
 	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
-	AddFunc(pEngine, "CreateMenu", FnCreateMenu);
-	AddFunc(pEngine, "AddMenuItem", FnAddMenuItem);
-	AddFunc(pEngine, "SelectMenuItem", FnSelectMenuItem);
-	AddFunc(pEngine, "SetMenuDecoration", FnSetMenuDecoration);
-	AddFunc(pEngine, "SetMenuTextProgress", FnSetMenuTextProgress);
 	AddFunc(pEngine, "ObjectDistance", FnObjectDistance);
 	AddFunc(pEngine, "GetValue", FnGetValue);
 	AddFunc(pEngine, "GetRank", FnGetRank);
@@ -2690,18 +2273,13 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CanConcatPictureWith", FnCanConcatPictureWith);
 	AddFunc(pEngine, "SetGraphics", FnSetGraphics);
 	AddFunc(pEngine, "ObjectNumber", FnObjectNumber);
-	AddFunc(pEngine, "ShowInfo", FnShowInfo);
 	AddFunc(pEngine, "CheckVisibility", FnCheckVisibility);
 	AddFunc(pEngine, "SetClrModulation", FnSetClrModulation);
 	AddFunc(pEngine, "GetClrModulation", FnGetClrModulation);
-	AddFunc(pEngine, "CloseMenu", FnCloseMenu);
-	AddFunc(pEngine, "GetMenuSelection", FnGetMenuSelection);
 	AddFunc(pEngine, "GetDefBottom", FnGetDefBottom);
-	AddFunc(pEngine, "SetMenuSize", FnSetMenuSize);
 	AddFunc(pEngine, "GetCrewEnabled", FnGetCrewEnabled);
 	AddFunc(pEngine, "SetCrewEnabled", FnSetCrewEnabled);
 	AddFunc(pEngine, "DoCrewExp", FnDoCrewExp);
-	AddFunc(pEngine, "ClearMenuItems", FnClearMenuItems);
 	AddFunc(pEngine, "GetObjectLayer", FnGetObjectLayer);
 	AddFunc(pEngine, "SetObjectLayer", FnSetObjectLayer);
 	AddFunc(pEngine, "SetShape", FnSetShape);

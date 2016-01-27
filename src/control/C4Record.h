@@ -78,8 +78,6 @@ enum C4RecordChunkType // record file chunk type
 	RCT_MatScan = 0x9E,  // landscape scan execute
 	RCT_MatScanDo= 0x9F,  // landscape scan mat change
 	RCT_Area    = 0xA0,  // object area change
-	RCT_MenuAdd  = 0xA1,  // add menu item
-	RCT_MenuAddC = 0xA2,  // add menu item: Following commands
 	RCT_OCF      = 0xA3,  // OCF setting of updating
 	RCT_DirectExec = 0xA4,  // a DirectExec-script
 	RCT_Definition = 0xA5,  // Definition callback
