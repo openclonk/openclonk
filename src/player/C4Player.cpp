@@ -185,7 +185,7 @@ void C4Player::Execute()
 			C4MenuItem *pSelectedTeamItem;
 			if ((pSelectedTeamItem = Menu.GetSelectedItem()))
 			{
-				int32_t idSelectedTeam = pSelectedTeamItem->GetValue();
+				int32_t idSelectedTeam = atoi(pSelectedTeamItem->GetCommand()+8);
 				if (idSelectedTeam)
 				{
 					C4Team *pSelectedTeam;
