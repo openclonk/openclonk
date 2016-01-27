@@ -37,18 +37,10 @@ enum
 };
 enum
 {
-	C4MN_Extra_None       = 0,
-};
-enum
-{
 	C4MN_Align_Left   = 1,
 	C4MN_Align_Right  = 2,
 	C4MN_Align_Top    = 4,
 	C4MN_Align_Bottom = 8,
-};
-enum
-{
-	C4MN_Item_NoCount = 12345678
 };
 
 class C4MenuItem : public C4GUI::Element
@@ -75,9 +67,7 @@ protected:
 	virtual void DrawElement(C4TargetFacet &cgo); // draw menu item
 
 	// ctor
-	C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption, const char *szCommand,
-	           int32_t iCount, C4Object *pObject, const char *szInfoCaption,
-	           C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable);
+	C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption, const char *szCommand, const char *szInfoCaption, int32_t iStyle);
 	void GrabSymbol(C4FacetSurface &fctSymbol) { Symbol.GrabFrom(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
 	void SetGraphics(C4DefGraphics* pGfx) { pSymbolGraphics = pGfx; }
 	void RefSymbol(const C4Facet &fctSymbol) { Symbol.Set(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
@@ -140,14 +130,8 @@ public:
 	bool IsActive();
 	bool Control(BYTE byCom, int32_t iData);
 	bool KeyControl(BYTE byCom); // direct keyboard callback
-	bool AddRefSym(const char *szCaption, const C4Facet &fctSymbol, const char *szCommand,
-	               int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	               const char *szInfoCaption=NULL,
-	               C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
-	bool Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *szCommand,
-	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	         const char *szInfoCaption=NULL,
-	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	bool AddRefSym(const char *szCaption, const C4Facet &fctSymbol, const char *szCommand, const char *szInfoCaption=NULL);
+	bool Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *szCommand, const char *szInfoCaption=NULL);
 	void ClearItems();
 	void ResetLocation() { LocationSet = false; }
 	bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport
@@ -159,13 +143,11 @@ public:
 #endif
 
 private:
-	bool AddItem(C4MenuItem *pNew, const char *szCaption, const char *szCommand,
-	             int32_t iCount, C4Object *pObject, const char *szInfoCaption,
-	             C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable);
-	bool InitMenu(const char *szEmpty, int32_t iExtra, int32_t iExtraData, int32_t iId, int32_t iStyle);
+	bool AddItem(C4MenuItem *pNew, const char *szCaption, const char *szCommand, const char *szInfoCaption);
+	bool InitMenu(const char *szEmpty, int32_t iId, int32_t iStyle);
 protected:
-	bool DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
-	bool DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
+	bool DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
+	bool DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
 	void DrawBuffer(C4Facet &cgo);
 	void AdjustSelection();
 	void AdjustPosition();

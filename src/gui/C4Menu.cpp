@@ -35,9 +35,7 @@ const int32_t C4MN_InfoCaption_Delay = 90;
 // -----------------------------------------------------------
 // C4MenuItem
 
-C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption,
-                       const char *szCommand, int32_t iCount, C4Object *pObject, const char *szInfoCaption,
-                       C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable)
+C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption, const char *szCommand, const char *szInfoCaption, int32_t iStyle)
 		: C4GUI::Element(), pSymbolGraphics(NULL), dwSymbolClr(0u), fSelected(false),
 		  iStyle(iStyle), pMenu(pMenu), iIndex(iIndex)
 {
@@ -182,21 +180,21 @@ bool C4Menu::TryClose(bool fOK, bool fControl)
 	return true;
 }
 
-bool C4Menu::DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iExtra, int32_t iExtraData, int32_t iId, int32_t iStyle)
+bool C4Menu::DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iId, int32_t iStyle)
 {
 	Clear(); Default();
 	Symbol.GrabFrom(fctSymbol);
-	return InitMenu(szEmpty, iExtra, iExtraData, iId, iStyle);
+	return InitMenu(szEmpty, iId, iStyle);
 }
 
-bool C4Menu::DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iExtra, int32_t iExtraData, int32_t iId, int32_t iStyle)
+bool C4Menu::DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iId, int32_t iStyle)
 {
 	Clear(); Default();
 	Symbol.Set(fctSymbol);
-	return InitMenu(szEmpty, iExtra, iExtraData, iId, iStyle);
+	return InitMenu(szEmpty, iId, iStyle);
 }
 
-bool C4Menu::InitMenu(const char *szEmpty, int32_t iExtra, int32_t iExtraData, int32_t iId, int32_t iStyle)
+bool C4Menu::InitMenu(const char *szEmpty, int32_t iId, int32_t iStyle)
 {
 	SCopy(szEmpty,Caption,C4MaxTitle);
 	Identification=iId;
@@ -213,35 +211,29 @@ bool C4Menu::InitMenu(const char *szEmpty, int32_t iExtra, int32_t iExtraData, i
 	return true;
 }
 
-bool C4Menu::AddRefSym(const char *szCaption, const C4Facet &fctSymbol, const char *szCommand,
-                       int32_t iCount, C4Object *pObject, const char *szInfoCaption,
-                       C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+bool C4Menu::AddRefSym(const char *szCaption, const C4Facet &fctSymbol, const char *szCommand,  const char *szInfoCaption)
 {
 	if (!IsActive()) return false;
 	// Create new menu item
-	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,iCount,pObject,szInfoCaption,idID,szCommand2,fOwnValue,iValue,Style,fIsSelectable);
+	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,szInfoCaption,Style);
 	// Ref Symbol
 	pNew->RefSymbol(fctSymbol);
 	// Add
-	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
+	return AddItem(pNew, szCaption, szCommand, szInfoCaption);
 }
 
-bool C4Menu::Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *szCommand,
-                 int32_t iCount, C4Object *pObject, const char *szInfoCaption,
-                 C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+bool C4Menu::Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *szCommand, const char *szInfoCaption)
 {
 	if (!IsActive()) return false;
 	// Create new menu item
-	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,iCount,pObject,szInfoCaption,idID,szCommand2,fOwnValue,iValue,Style,fIsSelectable);
+	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,szInfoCaption,Style);
 	// Set Symbol
 	pNew->GrabSymbol(fctSymbol);
 	// Add
-	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
+	return AddItem(pNew, szCaption, szCommand, szInfoCaption);
 }
 
-bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szCommand,
-                     int32_t iCount, C4Object *pObject, const char *szInfoCaption,
-                     C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szCommand, const char *szInfoCaption)
 {
 	// Add it to the list
 	pClientWindow->AddElement(pNew);

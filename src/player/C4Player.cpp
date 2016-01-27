@@ -1214,7 +1214,7 @@ bool C4Player::ActivateMenuTeamSelection(bool fFromMain)
 {
 	// Menu symbol/init
 	bool fSwitch = !(Status==PS_TeamSelection);
-	Menu.InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team),LoadResStr("IDS_MSG_SELTEAM"),Number, C4MN_Extra_None, 0, fSwitch ? C4MN_TeamSwitch : C4MN_TeamSelection);
+	Menu.InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team),LoadResStr("IDS_MSG_SELTEAM"),Number, fSwitch ? C4MN_TeamSwitch : C4MN_TeamSelection);
 	Menu.SetAlignment(fSwitch ? C4MN_Align_Left | C4MN_Align_Bottom : 0);
 	Menu.Refill();
 	// Go back to options menu on close
