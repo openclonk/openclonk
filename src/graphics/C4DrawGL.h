@@ -124,10 +124,8 @@ protected:
 	// this handles are declared as pointers to structs
 	C4Window * pWindow; // window to draw in
 #ifdef USE_WIN32_WINDOWS
-	static HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
 	HDC hDC;                    // device context handle
-	static bool InitGlew(HINSTANCE hInst);
 #elif defined(USE_GTK)
 	/*GLXContext*/void * ctx;
 #endif
