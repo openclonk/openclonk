@@ -7,16 +7,13 @@
 
 #include Library_Insect
 
-func Construction()
+local fly_anim, fly_anim_len;
+
+public func Construction(...)
 {
 	StartGrowth(15);
-}
-
-local fly_anim;
-
-protected func Initialize()
-{
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	fly_anim_len = GetAnimationLength("Fly");
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, fly_anim_len, 10, ANIM_Loop), Anim_Const(1000));
 	this.MeshTransformation = Trans_Rotate(270,1,1,1);
 	SetAction("Fly");
 
@@ -25,7 +22,7 @@ protected func Initialize()
 
 	lib_insect_max_dist = 300;
 	lib_insect_shy = true;
-	_inherited();
+	return _inherited(...);
 }
 
 /* Insect library */
@@ -62,7 +59,9 @@ private func MissionComplete()
 	if (!attraction) return _inherited();
 	var wait = 20 + Random(80);
 	// Slow animation speed
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly"), 20, ANIM_Loop), Anim_Const(1000));
+	var pos = GetAnimationPosition(fly_anim);
+	StopAnimation(fly_anim);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len, 20, ANIM_Loop), Anim_Const(1000));
 	ScheduleCall(this, "RegularSpeed", wait);
 	SetCommand("Wait", nil,nil,nil,nil, wait);
 }
@@ -74,20 +73,26 @@ private func MissionCompleteFailed()
 
 private func RegularSpeed()
 {
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	var pos = GetAnimationPosition(fly_anim);
+	StopAnimation(fly_anim);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len, 10, ANIM_Loop), Anim_Const(1000));
 }
 
 // Hold the animation
 private func SleepComplete()
 {
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly")/2, 10, ANIM_Hold), Anim_Const(1000));
+	var pos = GetAnimationPosition(fly_anim);
+	StopAnimation(fly_anim);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len/2, 10, ANIM_Hold), Anim_Const(1000));
 	_inherited();
 }
 
 // Restart the animation
 private func WakeUp()
 {
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	var pos = GetAnimationPosition(fly_anim);
+	StopAnimation(fly_anim);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len, 10, ANIM_Loop), Anim_Const(1000));
 	_inherited();
 }
 
@@ -108,10 +113,12 @@ private func GetRestingPlace(proplist coordinates)
 	return false;
 }
 
-private func Death()
+private func Death(...)
 {
-	_inherited();
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly")/2, 10, ANIM_Hold), Anim_Const(1000));
+	_inherited(...);
+	var pos = GetAnimationPosition(fly_anim);
+	StopAnimation(fly_anim);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len/2, 10, ANIM_Hold), Anim_Const(1000));
 	SetAction("Dead");
 }
 
