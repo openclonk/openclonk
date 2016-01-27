@@ -214,6 +214,16 @@ private func UpdateTurnSpeed()
 
 /* Construction preview */
 
+// Definition call by the construction previewer
+public func ConstructionPreview(object previewer, int overlay, int dir)
+{
+	if (GetType(this) != C4V_Def) return;
+
+	previewer->SetGraphics(nil, Elevator_Case_Front, overlay, GFXOV_MODE_Base);
+	previewer->SetObjDrawTransform(1000, 0, -19000 * (dir*2-1), 0, 1000, 17000, overlay);
+	return true;
+}
+
 // Sticking to other elevators
 public func ConstructionCombineWith() { return "IsElevator"; }
 public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right; }
