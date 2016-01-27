@@ -200,7 +200,6 @@ const BYTE
 
 const BYTE 
 	COM_MenuEnter = 38,
-	COM_MenuEnterAll = 39,
 	COM_MenuClose = 40,
 	COM_MenuLeft = 52,
 	COM_MenuRight = 53,

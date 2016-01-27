@@ -64,7 +64,7 @@ protected:
 
 	virtual void OnSelectionChanged(int32_t iNewSelection);
 	virtual void OnUserSelectItem(int32_t Player, int32_t iIndex);
-	virtual void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight);
+	virtual void OnUserEnter(int32_t Player, int32_t iIndex);
 	virtual void OnUserClose();
 	virtual int32_t GetControllingPlayer() { return Player; }
 

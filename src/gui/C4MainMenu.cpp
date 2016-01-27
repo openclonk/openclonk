@@ -288,12 +288,12 @@ void C4MainMenu::OnUserSelectItem(int32_t Player, int32_t iIndex)
 	SetSelection(iIndex, true, true);
 }
 
-void C4MainMenu::OnUserEnter(int32_t Player, int32_t iIndex, bool fRight)
+void C4MainMenu::OnUserEnter(int32_t Player, int32_t iIndex)
 {
 	// direct menu control
 	// but ensure selection is Okay before
 	SetSelection(iIndex, true, false);
-	Enter(fRight);
+	Enter();
 }
 
 void C4MainMenu::OnUserClose()

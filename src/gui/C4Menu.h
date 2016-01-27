@@ -59,7 +59,6 @@ public:
 protected:
 	char Caption[C4MaxTitle+1];
 	char Command[_MAX_FNAME+30+1];
-	char Command2[_MAX_FNAME+30+1];
 	char InfoCaption[2*C4MaxTitle+1];
 	C4FacetSurface Symbol;
 	C4DefGraphics* pSymbolGraphics; // drawn instead of symbol, if non-null
@@ -137,7 +136,7 @@ public:
 	bool SetSelection(int32_t iSelection, bool fAdjustPosition, bool fDoCalls);
 	bool SetPosition(int32_t iPosition);
 	void SetSize(int32_t iToWdt, int32_t iToHgt);
-	bool Enter(bool fRight=false);
+	bool Enter();
 	bool IsActive();
 	bool Control(BYTE byCom, int32_t iData);
 	bool KeyControl(BYTE byCom); // direct keyboard callback
@@ -179,7 +178,7 @@ protected:
 	void InitSize();
 	void UpdateScrollBar(); // call InitSize if a scroll bar is needed but not present or vice vera
 	void UserSelectItem(int32_t Player, C4MenuItem *pItem); // select item (direct) or do control (object menus)
-	void UserEnter(int32_t Player, C4MenuItem *pItem, bool fRight); // enter on an item
+	void UserEnter(int32_t Player, C4MenuItem *pItem); // enter on an item
 	bool HasMouse(); // returns whether the controlling player has mouse control
 
 	virtual bool DoRefillInternal(bool &rfRefilled) { return true; };
@@ -187,7 +186,7 @@ protected:
 	virtual void OnSelectionChanged(int32_t iNewSelection) {} // do object callbacks if selection changed in user menus
 	virtual bool IsCloseDenied() { return false; } // do MenuQueryCancel-callbacks for user menus
 	virtual void OnUserSelectItem(int32_t Player, int32_t iIndex) {}
-	virtual void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight) {}
+	virtual void OnUserEnter(int32_t Player, int32_t iIndex) {}
 	virtual void OnUserClose() {};
 	virtual bool IsReadOnly() { return false; } // determine whether the menu is just viewed by an observer, and should not issue any calls
 	virtual int32_t GetControllingPlayer() { return NO_OWNER; }

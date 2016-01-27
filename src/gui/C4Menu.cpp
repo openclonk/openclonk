@@ -41,11 +41,10 @@ C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption,
 		: C4GUI::Element(), pSymbolGraphics(NULL), dwSymbolClr(0u), fSelected(false),
 		  iStyle(iStyle), pMenu(pMenu), iIndex(iIndex)
 {
-	*Caption=*Command=*Command2=*InfoCaption=0;
+	*Caption=*Command=*InfoCaption=0;
 	Symbol.Default();
 	SCopy(szCaption,Caption,C4MaxTitle);
 	SCopy(szCommand,Command,_MAX_FNAME+30);
-	SCopy(szCommand2,Command2,_MAX_FNAME+30);
 	SCopy(szInfoCaption,InfoCaption,C4MaxTitle);
 	// some info caption corrections
 	SReplaceChar(InfoCaption, 10, ' '); SReplaceChar(InfoCaption, 13, '|');
@@ -105,16 +104,9 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 void C4MenuItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 {
 	// clicky clicky!
-	if (iButton == C4MC_Button_LeftUp)
+	if (iButton == C4MC_Button_LeftUp || iButton == C4MC_Button_RightUp)
 	{
-		// left-click performed
-		pMenu->UserEnter(::MouseControl.GetPlayer(), this, false);
-		return;
-	}
-	else if (iButton == C4MC_Button_RightUp)
-	{
-		// right-up: Alternative enter command
-		pMenu->UserEnter(::MouseControl.GetPlayer(), this, true);
+		pMenu->UserEnter(::MouseControl.GetPlayer(), this);
 		return;
 	}
 	// inherited; this is just setting some vars
@@ -272,7 +264,6 @@ bool C4Menu::Control(BYTE byCom, int32_t iData)
 	switch (byCom)
 	{
 	case COM_MenuEnter: Enter(); break;
-	case COM_MenuEnterAll: Enter(true); break;
 	case COM_MenuClose: TryClose(false, true); break;
 
 		// organize with nicer subfunction...
@@ -323,7 +314,7 @@ bool C4Menu::IsActive()
 	return fActive;
 }
 
-bool C4Menu::Enter(bool fRight)
+bool C4Menu::Enter()
 {
 	// Not active
 	if (!IsActive()) return false;
@@ -334,7 +325,6 @@ bool C4Menu::Enter(bool fRight)
 	// Copy command to buffer (menu might be cleared)
 	char szCommand[_MAX_FNAME+30+1];
 	SCopy(pItem->Command,szCommand);
-	if (fRight && pItem->Command2[0]) SCopy(pItem->Command2,szCommand);
 
 	// Close if not permanent
 	if (!Permanent) { Close(true); fActive = false; }
@@ -731,13 +721,13 @@ void C4Menu::UserSelectItem(int32_t Player, C4MenuItem *pItem)
 	OnUserSelectItem(Player, pItem->iIndex);
 }
 
-void C4Menu::UserEnter(int32_t Player, C4MenuItem *pItem, bool fRight)
+void C4Menu::UserEnter(int32_t Player, C4MenuItem *pItem)
 {
 	// not if user con't control anything
 	if (IsReadOnly()) return;
 	if (!pItem) return;
 	// queue or direct enter
-	OnUserEnter(Player, pItem->iIndex, fRight);
+	OnUserEnter(Player, pItem->iIndex);
 }
 
 void C4Menu::UserClose(bool fOK)
