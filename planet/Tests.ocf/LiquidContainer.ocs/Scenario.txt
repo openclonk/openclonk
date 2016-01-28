@@ -1,0 +1,5 @@
+[Head]
+Title=Liquid Container
+
+[Landscape]
+NoScan=1

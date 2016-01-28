@@ -36,7 +36,7 @@ func GetLiquidContainerMaxFillLevel()
 
 func LiquidContainerIsEmpty()
 {
-	return GetLiquidFillLevel() == 0;
+	return (GetLiquidFillLevel() == 0);
 }
 
 func LiquidContainerIsFull()
@@ -59,8 +59,8 @@ func LiquidContainerAccepts(string liquid_name)
 
 func GetLiquidName()
 {
-	if (LiquidContainerIsEmpty())
-		return nil; // TODO: was "", this was inconsistent throughout the barrel
+	//if (LiquidContainerIsEmpty())
+	//	return nil; // TODO: was "", this was inconsistent throughout the barrel
 	return lib_liquid_container.liquid;
 }
 
@@ -116,6 +116,11 @@ Extracts liquid from the container.
 */
 func RemoveLiquid(string liquid_name, int amount, object destination)
 {
+	if (amount < 0)
+	{
+		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
+	}
+
 	// default parameters if nothing is provided: the current material and level
 	liquid_name = liquid_name ?? GetLiquidName();
 	amount = amount ?? GetLiquidFillLevel();
@@ -137,6 +142,11 @@ Inserts liquid into the container.
 */
 func PutLiquid(string liquid_name, int amount, object source)
 {
+	if (amount < 0)
+	{
+		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
+	}
+
 	if (LiquidContainerAccepts(liquid_name))
 	{
 		SetLiquidName(liquid_name);
