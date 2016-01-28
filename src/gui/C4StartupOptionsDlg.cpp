@@ -1198,7 +1198,7 @@ const char * C4StartupOptionsDlg::GetWindowedName(int32_t mode /* = -1*/)
 {
 	if(mode == -1)
 		mode = Config.Graphics.Windowed;
-	     if(mode == 0) return LoadResStr("IDS_MSG_FULLSCREEN");
+	if(mode == 0) return LoadResStr("IDS_MSG_FULLSCREEN");
 	else if(mode == 1) return LoadResStr("IDS_MSG_WINDOWED");
 	else if(mode == 2) return LoadResStr("IDS_MSG_AUTOWINDOWED");
 	assert(!"Requested name for config value which does not exist");
