@@ -72,7 +72,7 @@ private func FillBarrel(string szMat) // TODO: change the input to material inde
 	if (!LiquidContainerAccepts(szMat)) return;
 
 	var intake = this->GetBarrelIntakeY();
-	var remaining_volume = GetLiquidMaxFillLevel() - GetLiquidFillLevel();
+	var remaining_volume = GetLiquidContainerMaxFillLevel() - GetLiquidFillLevel();
 	var extracted = 0;
 	while(extracted < remaining_volume && GetMaterial(0, intake) == Material(szMat))
 	{
@@ -122,14 +122,24 @@ private func UpdateLiquidContainer()
 		this.Name = this.Prototype.Name;
 		//Value. Base value is 10.
 		SetProperty("Value", 10); // TODO: this is a bug! The value is shared by barrel (value:12) and metal barrel (value:16)!
-		}
+	}
 	else
 	{
-		var tex = GetMaterialVal("TextureOverlay","Material", Material(GetLiquidName()));
-		var color = GetAverageTextureColor(tex);
+		var liquid_name, color;
+		var material = Material(GetLiquidName());
+		if (material >= 0)
+		{
+			var liquid_name = Translate(Format("Material%s", GetLiquidName()));
+			var tex = GetMaterialVal("TextureOverlay", "Material", material);
+			color = GetAverageTextureColor(tex);
+		}
+		else
+		{
+			liquid_name = GetLiquidName();
+			color = RGB(0, 0, 0);
+		}
 		SetColor(color);
-		var materialTranslation = Translate(Format("Material%s", GetLiquidName()));
-		this.Name = Format("%s $NameWith$ %s", this.Prototype.Name, materialTranslation);
+		this.Name = Format("%s $NameWith$ %s", this.Prototype.Name, liquid_name);
 	}
 	return;
 }
@@ -187,10 +197,10 @@ public func IsToolProduct() { return true; }
 
 public func BarrelMaxFillLevel() // TODO: deprecated
 {
-	return GetLiquidMaxFillLevel();
+	return GetLiquidContainerMaxFillLevel();
 }
 
-public func GetLiquidMaxFillLevel()
+public func GetLiquidContainerMaxFillLevel()
 {
 	return 300;
 }
@@ -248,7 +258,7 @@ public func CalcValue(object in_base, int for_player)
 	var val = GetDefValue();
 	if (!LiquidContainerIsEmpty())
 	{
-		val += GetValueOf(GetLiquidName()) * GetLiquidFillLevel() / GetLiquidMaxFillLevel();
+		val += GetValueOf(GetLiquidName()) * GetLiquidFillLevel() / GetLiquidContainerMaxFillLevel();
 	}
 	return val;
 }
