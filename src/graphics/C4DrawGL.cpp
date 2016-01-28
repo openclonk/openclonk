@@ -286,7 +286,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	if (first_ctx)
 	{
 		pMainCtx = pCtx;
-		Log("  gl: Create first context...");
+		LogF("  gl: Create first %scontext...", Config.Graphics.DebugOpenGL ? "debug " : "");
 	}
 	bool success = pCtx->Init(pWindow, pApp);
 	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)

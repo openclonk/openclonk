@@ -336,8 +336,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 						0
 					};
 
-					if (Config.Graphics.DebugOpenGL)
-						DebugLog("  gl: Creating debug context.");
 					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
 				}
 				else
@@ -502,7 +500,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	if (glXCreateContextAttribsARB)
 	{
-		DebugLogF("  gl: Creating %s context", Config.Graphics.DebugOpenGL ? "debug" : "standard");
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
 	}
 	else
