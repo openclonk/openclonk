@@ -27,10 +27,6 @@ protected func Initialize()
 	// init graphics
 	propanim = PlayAnimation("Flight", 5, Anim_Const(0), Anim_Const(1000));
 
-	//Create Hitbox
-	var hitbox = CreateObjectAbove(Airship_Hitbox);
-	hitbox->SetAction("Attach", this);
-
 	// The airship starts facing left; so default to that value
 	SetDir(DIR_Left);
 
@@ -294,6 +290,18 @@ private func AirshipPilot()
 	// Looks for a clonk within the gondola.
 	return FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), Find_InRect(gondola[0], gondola[1], gondola[2], gondola[3]));
 }
+
+/*-- Projectile Target --*/
+
+// Only is a projectile target if the projectile hits the balloon part of the airship.
+public func IsProjectileTarget(object projectile, object shooter)
+{
+	// Ensure the hitbox overlaps roughly with the balloon part.
+	var dx = GetX() - projectile->GetX();
+	var dy = GetY() - projectile->GetY();
+	return Abs(dx) <= 21 && dy > 0;
+}
+
 
 /* -- Airship Destruction --*/
 
