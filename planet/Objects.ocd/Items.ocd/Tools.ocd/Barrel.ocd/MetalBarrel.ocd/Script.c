@@ -7,28 +7,15 @@
 
 #include Barrel
 
-private func Hit()
+func PlayBarrelHitSound()
 {
 	Sound("Hits::Materials::Metal::DullMetalHit?");
-	if (iVolume >= 1)
-	{
-		if (GBackLiquid(0, 7) && GetMaterial(0, 7) != szLiquid)
-			return 0;
-		EmptyBarrel(GetR());
-		Sound("Liquids::Splash1");
-	}
 }
 
-private func AcceptMaterial(int material)
-{
-	// Accepts all fluids
-	return true;
-}
-
-public func IsBarrelForMaterial(string sznMaterial)
+public func IsLiquidContainerForMaterial(string liquid_name)
 {
 	// anything liquid
-	var density = GetMaterialVal("Density","Material",Material(sznMaterial));
+	var density = GetMaterialVal("Density", "Material", Material(liquid_name));
 	return density < 50 && density >= 25;
 }
 

@@ -6,9 +6,7 @@
 --*/
 
 #include Library_CarryHeavy
-
-local szLiquid;
-local iVolume;
+#include Libary_LiquidContainer
 
 public func GetCarryTransform(clonk)
 {
@@ -24,74 +22,70 @@ public func GetCarryPhase()
 
 protected func Initialize()
 {
-	iVolume = 0;
 	AddTimer("Check", 5);
 }
 
 private func Hit()
 {
-	Sound("Hits::Materials::Wood::DullWoodHit?");
-	if (iVolume >= 1)
+	this->PlayBarrelHitSound();
+	if (!LiquidContainerIsEmpty())
 	{
-		if (GBackLiquid(0, 3) && GetMaterial(0, 3) != szLiquid)
-			return 0;
+		if (GBackLiquid(0, this->GetBarrelIntakeY())
+		 && GetMaterial(0, this->GetBarrelIntakeY()) != GetLiquidName())
+			return;
+
 		EmptyBarrel(GetR());
 		Sound("Liquids::Splash1");
 	}
 }
 
+func GetBarrelIntakeY()
+{
+	return 3;
+}
+
+func PlayBarrelHitSound()
+{
+	Sound("Hits::Materials::Wood::DullWoodHit?");
+}
+
 private func Check()
 {
 	//Fills Barrel with specified liquid from if submerged
-	var iSource = 3;
-	
-	if (GBackLiquid(0, iSource))
+	if (GBackLiquid(0, this->GetBarrelIntakeY()))
 	{
 		FillWithLiquid();
 	}
-	
-	if (iVolume == 0)
-	{
-		SetColor(RGB(0,0,0));
-		szLiquid = nil;
-	}
-	
-	//Value. Base value is 10.
-	if (iVolume == 0)
-		SetProperty("Value", 10);
 	
 	//Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
 }
 
 private func FillWithLiquid()
 {
-	var mat = GetMaterial();
-	if (AcceptMaterial(mat))
-	{
-		FillBarrel(MaterialName(mat));
-		UpdateBarrel();
-	}
+	var mat = MaterialName(GetMaterial());
+	FillBarrel(mat);
 }
 
-private func AcceptMaterial(int material)
-{
-	// Accepts only water.
-	return material == Material("Water");
-}
 
-private func FillBarrel(string szMat)
+private func FillBarrel(string szMat) // TODO: change the input to material index, instead of name. This makes more sense for this function
 {
-	var iCapacity = BarrelMaxFillLevel();
-	var intake = 3;
-	
-	if (iVolume >= 1 && szMat != szLiquid)
-		return 0;
-	while (iVolume != iCapacity && GetMaterial(0, intake) == Material(szMat))
+	if (!LiquidContainerAccepts(szMat)) return;
+
+	var intake = this->GetBarrelIntakeY();
+	var remaining_volume = GetLiquidMaxFillLevel() - GetLiquidFillLevel();
+	var extracted = 0;
+	while(extracted < remaining_volume && GetMaterial(0, intake) == Material(szMat))
 	{
+		extracted += 1;
 		ExtractLiquid(0, intake);
-		iVolume = ++iVolume;
 	}
-	szLiquid = szMat;
+	
+	var inserted = PutLiquid(szMat, extracted);
+
+	if (inserted < extracted)
+	{
+		CastPXS(szMat, extracted - inserted, 1, 0, intake);
+	}
 }
 
 private func EmptyBarrel(int angle, int strength, object clonk)
@@ -100,31 +94,41 @@ private func EmptyBarrel(int angle, int strength, object clonk)
 		angle = 0;
 	if (!strength)
 		strength = 30;
-	CastPXS(szLiquid, iVolume, strength, 0, 0, angle, 30);
+	
+	var current_liquid = RemoveLiquid(nil, nil, this);
+	var material = current_liquid[0];
+	var volume = current_liquid[1];
+
+	CastPXS(material, volume, strength, 0, 0, angle, 30);
 	var spray = {};
-	spray.Liquid = szLiquid;
-	spray.Volume = iVolume;
+	spray.Liquid = material;
+	spray.Volume = volume;
 	spray.Strength = strength;
 	spray.Angle = angle;
 	spray.Clonk = clonk;
 	AddEffect("ExtinguishingSpray", clonk, 100, 1, this, nil, spray);
-	iVolume = 0;
-	UpdateBarrel();
 }
 
-private func UpdateBarrel()
+private func UpdateBarrel() // TODO: deprecated
 {
-	if (iVolume == 0)
+	UpdateLiquidContainer();
+}
+
+private func UpdateLiquidContainer()
+{
+	if (LiquidContainerIsEmpty())
 	{
-		SetColor(RGB(0,0,0));
+		SetColor(RGB(0, 0, 0));
 		this.Name = this.Prototype.Name;
-	}
+		//Value. Base value is 10.
+		SetProperty("Value", 10); // TODO: this is a bug! The value is shared by barrel (value:12) and metal barrel (value:16)!
+		}
 	else
 	{
-		var tex = GetMaterialVal("TextureOverlay","Material",Material(szLiquid));
+		var tex = GetMaterialVal("TextureOverlay","Material", Material(GetLiquidName()));
 		var color = GetAverageTextureColor(tex);
 		SetColor(color);
-		var materialTranslation = Translate(Format("Material%s",szLiquid));
+		var materialTranslation = Translate(Format("Material%s", GetLiquidName()));
 		this.Name = Format("%s $NameWith$ %s", this.Prototype.Name, materialTranslation);
 	}
 	return;
@@ -133,7 +137,7 @@ private func UpdateBarrel()
 public func ControlUse(object clonk, int iX, int iY)
 {
 	var AimAngle = Angle(0, 0, iX, iY);
-	if (iVolume >= 1)
+	if (!LiquidContainerIsEmpty())
 	{
 		EmptyBarrel(AimAngle, 50, clonk);
 		if (iX > 1)
@@ -181,14 +185,19 @@ protected func FxExtinguishingSprayTimer(object target, proplist effect, int tim
 
 public func IsToolProduct() { return true; }
 
-public func BarrelMaxFillLevel()
+public func BarrelMaxFillLevel() // TODO: deprecated
+{
+	return GetLiquidMaxFillLevel();
+}
+
+public func GetLiquidMaxFillLevel()
 {
 	return 300;
 }
 
-public func GetFillLevel()
+public func GetFillLevel() // TODO: deprecated
 {
-	return iVolume;
+	return GetLiquidFillLevel();
 }
 
 public func IsBarrel()
@@ -196,30 +205,32 @@ public func IsBarrel()
 	return true;
 }
 
-public func BarrelIsEmpty()
+public func BarrelIsEmpty() // TODO: deprecated
 {
-	return iVolume == 0;
+	return LiquidContainerIsEmpty();
 }
 
-public func BarrelIsFull()
+public func BarrelIsFull() // TODO: deprecated
 {
-	return iVolume == BarrelMaxFillLevel();
+	return LiquidContainerIsFull();
 }
 
 //returns the contained liquid
-public func GetBarrelMaterial()
+public func GetBarrelMaterial() // TODO: deprecated
 {
-	if (iVolume == 0)
-		return "";
-	return szLiquid;
+	return GetLiquidName();
 }
 
-public func IsBarrelForMaterial(string sznMaterial)
+public func IsBarrelForMaterial(string sznMaterial) // TODO: deprecated
+{
+	return IsLiquidContainerForMaterial(sznMaterial);
+}
+
+public func IsLiquidContainerForMaterial(string sznMaterial)
 {
 	return WildcardMatch("Water",sznMaterial);
 }
 
-public func IsLiquidContainer() { return true; }
 
 public func CanBeStackedWith(object other)
 {
@@ -227,19 +238,17 @@ public func CanBeStackedWith(object other)
 	return inherited(other, ...) && (other->~GetBarrelMaterial() == this->GetBarrelMaterial());
 }
 
-public func SetFilled(material, volume)
+public func SetFilled(material, volume) // TODO: deprecated, and let's hope that the input types are correct
 {
-	szLiquid = material;
-	iVolume = volume;
-	UpdateBarrel();
+	SetLiquidContainer(material, volume);
 }
 
 public func CalcValue(object in_base, int for_player)
 {
 	var val = GetDefValue();
-	if (iVolume > 0)
+	if (!LiquidContainerIsEmpty())
 	{
-		val += GetValueOf(szLiquid) * iVolume / 300;
+		val += GetValueOf(GetLiquidName()) * GetLiquidFillLevel() / GetLiquidMaxFillLevel();
 	}
 	return val;
 }
@@ -256,53 +265,6 @@ private func GetValueOf(string szMaterial) // 300 px of...
 	return 0;
 }
 
-public func SaveScenarioObject(props)
-{
-	if (!inherited(props, ...)) return false;
-	if (szLiquid) props->AddCall("Fill", this, "SetFilled", Format("%v", szLiquid), iVolume);
-	return true;
-}
-
-/**
-Extract liquid from barrel
-@param sznMaterial: Material to extract; Wildcardsupport
-@param inMaxAmount: Max Amount of Material being extracted 
-@param pnTarget: Object which extracts the liquid
-@return [irMaterial,irAmount]
-	-irMaterial: Material being extracted
-	-irAmount: Amount being extracted
-*/
-public func GetLiquid(string sznMaterial, int inMaxAmount, object pnTarget)
-{
-	//Wrong material?
-	if (!WildcardMatch(szLiquid, sznMaterial))
-		inMaxAmount = 0;
-	inMaxAmount = Min(inMaxAmount, iVolume);
-	iVolume -= inMaxAmount;
-	UpdateBarrel();
-	return [szLiquid, inMaxAmount];
-}
-
-/** 
-Insert liquid to barrel
-	@param sznMaterial: Material to insert
-	@param inMaxAmount: Max Amount of Material being inserted 
-	@param pnSource: Object which inserts the liquid
-	@return inAmount: The inserted amount
-*/
-public func PutLiquid(string sznMaterial, int inMaxAmount, object pnSource)
-{
-	//Wrong material?
-	if (sznMaterial != szLiquid)
-		if (iVolume > 0)
-			return 0;
-		else if (IsBarrelForMaterial(sznMaterial))
-			szLiquid = sznMaterial;
-	inMaxAmount = BoundBy(BarrelMaxFillLevel() - iVolume, 0, inMaxAmount);
-	iVolume += inMaxAmount;
-	UpdateBarrel();
-	return inMaxAmount;
-}
 
 public func Definition(proplist def)
 {
