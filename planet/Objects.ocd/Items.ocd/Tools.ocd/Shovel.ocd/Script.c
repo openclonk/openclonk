@@ -134,7 +134,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 	{
 		// Adjust speed at current animation position
 		var speed = clonk.ActMap.Dig.Speed*2;
-		speed = GetModifiedDigSpeed(clonk, speed);
+		speed = this->GetModifiedDigSpeed(clonk, speed);
 
 		// limit angle
 		DigAngle = BoundBy(DigAngle,65,300);
