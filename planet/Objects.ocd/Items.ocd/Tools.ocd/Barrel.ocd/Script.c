@@ -52,38 +52,33 @@ func PlayBarrelHitSound()
 private func Check()
 {
 	//Fills Barrel with specified liquid from if submerged
-	if (GBackLiquid(0, this->GetBarrelIntakeY()))
-	{
-		FillWithLiquid();
-	}
+	FillWithLiquid();
 	
 	//Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
 }
 
 private func FillWithLiquid()
 {
-	var mat = MaterialName(GetMaterial());
-	FillBarrel(mat);
-}
-
-private func FillBarrel(string szMat) // TODO: change the input to material index, instead of name. This makes more sense for this function
-{
-	if (!LiquidContainerAccepts(szMat)) return;
-
 	var intake = this->GetBarrelIntakeY();
+	if (!GBackLiquid(0, intake)) return;
+
+	var mat = GetMaterial(0, intake);
+	var mat_name = MaterialName(mat);
+	if (!LiquidContainerAccepts(mat_name)) return;
+
 	var remaining_volume = GetLiquidContainerMaxFillLevel() - GetLiquidFillLevel();
 	var extracted = 0;
-	while(extracted < remaining_volume && GetMaterial(0, intake) == Material(szMat))
+	while(extracted < remaining_volume && GetMaterial(0, intake) == mat)
 	{
 		extracted += 1;
 		ExtractLiquid(0, intake);
 	}
 	
-	var inserted = PutLiquid(szMat, extracted);
+	var inserted = PutLiquid(mat_name, extracted);
 
 	if (inserted < extracted)
 	{
-		CastPXS(szMat, extracted - inserted, 1, 0, intake);
+		CastPXS(mat_name, extracted - inserted, 1, 0, intake);
 	}
 }
 
