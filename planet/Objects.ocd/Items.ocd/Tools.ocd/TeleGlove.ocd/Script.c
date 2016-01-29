@@ -73,8 +73,8 @@ private func StartUsage(object clonk)
 
 	//Animations and effects for TeleGlove
 	Sound("Objects::Electrical",nil,nil,nil,+1);
-	PlayAnimation("Opening", -5, Anim_Linear(0,0,GetAnimationLength("Opening"), 10, ANIM_Hold), Anim_Const(1000));
-	anim_spin = PlayAnimation("Spin",5, Anim_Linear(0,0,GetAnimationLength("Spin"), 40, ANIM_Loop), Anim_Const(1000));
+	PlayAnimation("Opening", -5, Anim_Linear(0,0,GetAnimationLength("Opening"), 10, ANIM_Hold));
+	anim_spin = PlayAnimation("Spin",5, Anim_Linear(0,0,GetAnimationLength("Spin"), 40, ANIM_Loop));
 	
 	// Light effects
 	SetLightRange(50, 10);
@@ -257,7 +257,7 @@ protected func CancelUse(object clonk)
 {
 	EndUsage(clonk);
 	Sound("Objects::Electrical",nil,nil,nil,-1);
-	if(aiming = 1) PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold), Anim_Const(1000));
+	if(aiming = 1) PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold));
 	StopAnimation(anim_spin);
 	aiming = 0;
 	if(target_object) LostTargetObject(target_object);

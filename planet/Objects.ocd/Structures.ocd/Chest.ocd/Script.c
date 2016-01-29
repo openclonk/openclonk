@@ -13,7 +13,7 @@ local is_open;
 
 protected func Construction()
 {
-	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold));
 	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
 	is_open = false;
 	return _inherited(...);
@@ -49,7 +49,7 @@ private func Open()
 	if (is_open)
 		return;
 	is_open = true;	
-	PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold));
 	Sound("Structures::Chest::Open");
 }
 
@@ -58,7 +58,7 @@ private func Close()
 	if (!is_open)
 		return;
 	is_open = false;	
-	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold));
 	Sound("Structures::Chest::Close");
 }
 

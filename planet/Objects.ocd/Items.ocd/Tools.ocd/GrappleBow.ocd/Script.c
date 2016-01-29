@@ -132,7 +132,7 @@ public func FinishedAiming(object clonk, int angle)
 	Sound("Objects::Weapons::Bow::Shoot?");
 
 	// Open the hand to let the string go and play the fire animation.
-	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold));
 	clonk->StartShoot(this);
 	return true;
 }
@@ -167,7 +167,7 @@ public func OnRopeBreak()
 	EnsureHook();
 	hook->Enter(this);
 	hook_attach = AttachMesh(hook, "bolt", "main");
-	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")), Anim_Const(1000));
+	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")));
 }
 
 public func DrawRopeIn()

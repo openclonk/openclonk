@@ -287,7 +287,7 @@ public func FxIntGrappleControlTimer(object target, proplist effect, int time)
 			{
 				effect.ani_mode = 2;
 				effect.Climb = target->PlayAnimation("RopeClimb", CLONK_ANIM_SLOT_Arms, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-        		effect.speedCounter = 0;
+				effect.speedCounter = 0;
 			}
 		}
 		else if (effect.mv_down)

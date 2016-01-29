@@ -320,8 +320,7 @@ private func SetRandomDirection()
 private func Fly()
 {
 	// Stop current animation and start flying.
-	StopAnimation(1);
-	PlayAnimation("Fly", 1, Anim_Linear(0, 0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	PlayAnimation("Fly", 1, Anim_Linear(0, 0, GetAnimationLength("Fly"), 10, ANIM_Loop));
 	SetAction("Flight");
 	SetComDir(COMD_None);			
 	SetRandomDirection();
@@ -331,8 +330,7 @@ private func Fly()
 private func Hang()
 {
 	// Stop current animation and start hanging.
-	StopAnimation(1);
-	PlayAnimation("Hang", 1, Anim_Linear(0, 0, GetAnimationLength("Hang"), 50, ANIM_Loop), Anim_Const(1000));
+	PlayAnimation("Hang", 1, Anim_Linear(0, 0, GetAnimationLength("Hang"), 50, ANIM_Loop));
 	// Set the action and stop moving.
 	SetAction("Hang");
 	SetComDir(COMD_Stop);
@@ -415,7 +413,7 @@ private func ContactBottom()
 {
 	// The dead bat changes it animation once it has touched the ground.
 	if (!GetAlive())
-		PlayAnimation("Dead", 1, Anim_Linear(0, 0, GetAnimationLength("Dead"), 1, ANIM_Hold), Anim_Const(1000));
+		PlayAnimation("Dead", 1, Anim_Linear(0, 0, GetAnimationLength("Dead"), 1, ANIM_Hold));
 	return UpdateMovementDirectionOnContact();
 }
 
@@ -471,8 +469,7 @@ private func UpdateMovementDirectionOnContact()
 private func Death()
 {
 	// Stop current animation and play dying animation.
-	StopAnimation(1);
-	PlayAnimation("Land", 1, Anim_Linear(0, 0, GetAnimationLength("Land"), 19, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Land", 1, Anim_Linear(0, 0, GetAnimationLength("Land"), 19, ANIM_Hold));
 	this.MeshTransformation = Trans_Rotate(Random(360), 0, 1, 0);
 	
 	// Remove behavior effect and play dead animation.
