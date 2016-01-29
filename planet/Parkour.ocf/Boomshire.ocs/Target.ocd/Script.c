@@ -5,7 +5,7 @@ local gate;
 protected func Initialize()
 {
 	SetAction("Attach");
-	PlayAnimation("idle", 1, Anim_Linear(0, 0, GetAnimationLength("idle"), 1000, ANIM_Loop), Anim_Const(1000));
+	PlayAnimation("idle", 1, Anim_Linear(0, 0, GetAnimationLength("idle"), 1000, ANIM_Loop));
 }
 
 public func IsProjectileTarget(target,shooter)

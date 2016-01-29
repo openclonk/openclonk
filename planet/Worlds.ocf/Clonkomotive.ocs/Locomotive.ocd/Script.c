@@ -23,7 +23,7 @@ protected func Initialize()
 	// Entrance is always open.
 	SetEntrance(true);
 	// Start driving animation.
-	drive_anim = PlayAnimation("Main TrainAction", 1, Anim_Const(0), Anim_Const(1000));
+	drive_anim = PlayAnimation("Main TrainAction", 1, Anim_Const(0));
 	return;
 }
 

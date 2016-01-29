@@ -25,12 +25,12 @@ protected func Initialize()
 	throttle = 0;
 
 	// init graphics
-	propanim = PlayAnimation("Flight", 5, Anim_Const(0), Anim_Const(1000));
+	propanim = PlayAnimation("Flight", 5, Anim_Const(0));
 
 	// The airship starts facing left; so default to that value
 	SetDir(DIR_Left);
 
-	turnanim = PlayAnimation("TurnLeft", 10, Anim_Const(GetAnimationLength("TurnLeft")), Anim_Const(1000));
+	turnanim = PlayAnimation("TurnLeft", 10, Anim_Const(GetAnimationLength("TurnLeft")));
 
 	// Start the Airship behaviour
 	AddEffect("IntAirshipMovement", this, 1, 1, this);
@@ -167,8 +167,7 @@ func TurnAirship(int to_dir)
 	if (to_dir == DIR_Right)
 		animName = "TurnRight";
 
-	StopAnimation(turnanim);
-	turnanim = PlayAnimation(animName, 10, Anim_Linear(0, 0, GetAnimationLength(animName), 36, ANIM_Hold), Anim_Const(1000));
+	turnanim = PlayAnimation(animName, 10, Anim_Linear(0, 0, GetAnimationLength(animName), 36, ANIM_Hold));
 	
 	SetAnimDir(to_dir);
 	
@@ -313,9 +312,9 @@ func AirshipDeath()
 	//Now let's copy it's animation, and hold it there
 	var animspot;
 	animspot = GetAnimationPosition(turnanim);
-	if(turnanim == -1) burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot), Anim_Const(1000));
+	if(turnanim == -1) burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot)); // this doesn't make sense
 	else
-		burntairship->PlayAnimation("TurnRight", 10, Anim_Const(animspot), Anim_Const(1000));
+		burntairship->PlayAnimation("TurnRight", 10, Anim_Const(animspot));
 
 	// Set ruin on fire: set controller of the fire to the cause of the death (which is the current controller of the airship).
 	burntairship->Incinerate(100, GetController());

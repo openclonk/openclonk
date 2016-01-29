@@ -22,8 +22,8 @@ protected func Initialize()
 {
 	turnDir = 1;
 	SetAction("Roll");
-	animAim = PlayAnimation("Aim", 1,  Anim_Const(0),Anim_Const(1000));
-	animTurn = PlayAnimation("TurnRight", 5, Anim_Const(0), Anim_Const(1000));
+	animAim = PlayAnimation("Aim", 1,  Anim_Const(0));
+	animTurn = PlayAnimation("TurnRight", 5, Anim_Const(0));
 }
 
 //some left-overs from Lorry script. Not sure of it's purpose...

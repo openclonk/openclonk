@@ -34,7 +34,7 @@ public func FindTeam(int find_team)
 
 protected func Initialize()
 {
-	PlayAnimation("Wave", 1, Anim_Linear(0, 0, GetAnimationLength("Wave"), 78, ANIM_Loop), Anim_Const(1000));
+	PlayAnimation("Wave", 1, Anim_Linear(0, 0, GetAnimationLength("Wave"), 78, ANIM_Loop));
 	AddEffect("FlagAutoPickup", this, 100, 2, this);
 	return;
 }

@@ -26,8 +26,8 @@ protected func Initialize()
 	dir = DIR_Right;
 	olddir = DIR_Right;
 	SetAction("Roll");
-	aim_anim =  PlayAnimation("ArmPosition", 1,  Anim_Const(0), Anim_Const(1000));
-	turn_anim = PlayAnimation("TurnRight", 5, Anim_Const(GetAnimationLength("TurnRight")), Anim_Const(1000));
+	aim_anim =  PlayAnimation("ArmPosition", 1,  Anim_Const(0));
+	turn_anim = PlayAnimation("TurnRight", 5, Anim_Const(GetAnimationLength("TurnRight")));
 }
 
 protected func ContactLeft()
@@ -57,8 +57,7 @@ func ControlLeft(object clonk)
 		if (GetAnimationPosition(turn_anim) != GetAnimationLength("TurnRight"))
 			animstart = GetAnimationLength("TurnRight") - GetAnimationPosition(turn_anim);
 
-		StopAnimation(turn_anim);
-		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnLeft"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold), Anim_Const(1000));
+		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnLeft"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold));
 	}
 }
 
@@ -74,8 +73,7 @@ func ControlRight(object clonk)
 		if (GetAnimationPosition(turn_anim) != GetAnimationLength("TurnLeft"))
 			animstart = GetAnimationLength("TurnLeft") - GetAnimationPosition(turn_anim);
 
-		StopAnimation(turn_anim);
-		turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnRight"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold), Anim_Const(1000));
+		turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnRight"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold));
 	}
 }
 
@@ -176,7 +174,7 @@ public func ShowTrajectory(int power)
 protected func DoFire(object clonk, int power)
 {
 	// Play the fire animation.
-	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim), 0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
+	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim), 0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold));
 
 	// Sound.
 	Sound("Objects::Catapult_Launch");
@@ -286,7 +284,7 @@ public func ActivateEntrance(object clonk)
 
 public func CatapultDismount(object clonk)
 {
-	clonk->StopAnimation(clonk->GetRootAnimation(15));
+	clonk->StopAnimation(clonk->GetRootAnimation(CLONK_ANIM_SLOT_Movement));
 	DetachMesh(clonkmesh);
 	clonkmesh = nil;
 	return true;

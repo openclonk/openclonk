@@ -21,7 +21,7 @@ public func Construction()
 
 public func Initialize()
 {
-	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0), Anim_Const(1000));
+	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0));
 	AddTimer("CollectTrees", 4);
 	return _inherited(...);
 }

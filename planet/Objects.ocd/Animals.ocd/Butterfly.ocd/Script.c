@@ -13,7 +13,7 @@ public func Construction(...)
 {
 	StartGrowth(15);
 	fly_anim_len = GetAnimationLength("Fly");
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, fly_anim_len, 10, ANIM_Loop), Anim_Const(1000));
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, fly_anim_len, 10, ANIM_Loop));
 	this.MeshTransformation = Trans_Rotate(270,1,1,1);
 	SetAction("Fly");
 
@@ -59,9 +59,7 @@ private func MissionComplete()
 	if (!attraction) return _inherited();
 	var wait = 20 + Random(80);
 	// Slow animation speed
-	var pos = GetAnimationPosition(fly_anim);
-	StopAnimation(fly_anim);
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len, 20, ANIM_Loop), Anim_Const(1000));
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len, 20, ANIM_Loop));
 	ScheduleCall(this, "RegularSpeed", wait);
 	SetCommand("Wait", nil,nil,nil,nil, wait);
 }
@@ -73,26 +71,20 @@ private func MissionCompleteFailed()
 
 private func RegularSpeed()
 {
-	var pos = GetAnimationPosition(fly_anim);
-	StopAnimation(fly_anim);
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len, 10, ANIM_Loop), Anim_Const(1000));
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len, 10, ANIM_Loop));
 }
 
 // Hold the animation
 private func SleepComplete()
 {
-	var pos = GetAnimationPosition(fly_anim);
-	StopAnimation(fly_anim);
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len/2, 10, ANIM_Hold), Anim_Const(1000));
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len/2, 10, ANIM_Hold));
 	_inherited();
 }
 
 // Restart the animation
 private func WakeUp()
 {
-	var pos = GetAnimationPosition(fly_anim);
-	StopAnimation(fly_anim);
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len, 10, ANIM_Loop), Anim_Const(1000));
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len, 10, ANIM_Loop));
 	_inherited();
 }
 
@@ -116,9 +108,7 @@ private func GetRestingPlace(proplist coordinates)
 private func Death(...)
 {
 	_inherited(...);
-	var pos = GetAnimationPosition(fly_anim);
-	StopAnimation(fly_anim);
-	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(pos, 0, fly_anim_len/2, 10, ANIM_Hold), Anim_Const(1000));
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, fly_anim_len/2, 10, ANIM_Hold));
 	SetAction("Dead");
 }
 

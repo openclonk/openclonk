@@ -25,7 +25,7 @@ func Anim(string anim_name)
 	}
 
 	StopAnimation(hatch_anim);
-	hatch_anim = PlayAnimation(anim_name, 5, Anim_Linear(animstart, 0, GetAnimationLength(anim_name), 14, ANIM_Hold), Anim_Const(1000));
+	hatch_anim = PlayAnimation(anim_name, 5, Anim_Linear(animstart, 0, GetAnimationLength(anim_name), 14, ANIM_Hold));
 }
 
 local ActMap = {

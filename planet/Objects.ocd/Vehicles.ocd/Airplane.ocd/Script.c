@@ -21,7 +21,7 @@ protected func Construction(object byobj)
 
 protected func Initialize()
 {
-	propanim = PlayAnimation("Propellor", 15,  Anim_Const(0),Anim_Const(1000));
+	propanim = PlayAnimation("Propellor", 15,  Anim_Const(0));
 	AddEffect("IntPlane",this,1,1,this);
 	SetAction("Land");
 	throttle = 0;
@@ -348,8 +348,7 @@ public func RollPlane(int rolldir, bool instant)
 	{
 		var i = 36;
 		if(instant) i = 1;
-		if(newrot) StopAnimation(newrot);
-		newrot = PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), i, ANIM_Hold), Anim_Const(1000));
+		newrot = PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), i, ANIM_Hold));
 		dir = rolldir;
 	}
 }

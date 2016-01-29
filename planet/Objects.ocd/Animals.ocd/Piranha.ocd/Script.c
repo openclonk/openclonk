@@ -89,7 +89,7 @@ func DoEat(object obj)
 {
 	BiteEffect();
 	var len = GetAnimationLength("Bite");
-	PlayAnimation("Bite", 5,  Anim_Linear(0, 0, len, 36, ANIM_Remove), Anim_Const(1000));
+	PlayAnimation("Bite", 5,  Anim_Linear(0, 0, len, 36, ANIM_Remove), Anim_Const(1000)); // temp overrides Swim animation in same slot
 	if (obj->GetAlive())
 		obj->DoEnergy(-BiteStrength);
 	hunger -= 20;

@@ -99,7 +99,7 @@ func PlayRandomGrowAnimation(int start, int max)
 	var growActions = 2;
 	grow_anim = Format("Grow%d", Random(growActions)+1);
 	var len = GetAnimationLength(grow_anim);
-	PlayAnimation(grow_anim, 1, Anim_Linear(start, 0, len, max,  ANIM_Hold), Anim_Const(1000)); 
+	PlayAnimation(grow_anim, 1, Anim_Linear(start, 0, len, max,  ANIM_Hold)); 
 }
 
 func Init(object bush)
@@ -251,7 +251,7 @@ func Die(bool natural_cause)
 	
 	var time = 20 + Random(20);
 	var len = GetAnimationLength(grow_anim);
-	PlayAnimation(grow_anim, 6, Anim_Linear(len, len, 0, time,  ANIM_Hold), Anim_Const(1000)); 
+	PlayAnimation(grow_anim, 6, Anim_Linear(len, len, 0, time,  ANIM_Hold)); 
 	AddEffect("QuickFade", this, 1, 1, this, nil, time/2);
 	
 	if(this.isDead)

@@ -74,7 +74,7 @@ public func OnMount(clonk)
 	rider = clonk;
 	var iDir = -1;
 	if (GetX() > LandscapeWidth()/2) iDir = 1;
-	clonk->PlayAnimation("PosRocket", CLONK_ANIM_SLOT_Arms, Anim_Const(0), Anim_Const(1000));
+	clonk->PlayAnimation("PosRocket", CLONK_ANIM_SLOT_Arms, Anim_Const(0));
 	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000,2000*iDir,2000)));
 
 	return true;

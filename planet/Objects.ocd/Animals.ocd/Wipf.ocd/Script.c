@@ -595,7 +595,7 @@ protected func Death(int killed_by)
 
 public func StartDead()
 {
-	PlayAnimation("Dead", 5, Anim_Linear(0, 0, GetAnimationLength("Dead"), 16, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Dead", 5, Anim_Linear(0, 0, GetAnimationLength("Dead"), 16, ANIM_Hold));
 	return;
 }
 

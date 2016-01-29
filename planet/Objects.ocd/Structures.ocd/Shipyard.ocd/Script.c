@@ -12,7 +12,7 @@ public func LampPosition(id def) { return [GetCalcDir()*-6,30]; }
 
 func Initialize()
 {
-	animWork = PlayAnimation("Work", 1, Anim_Const(0), Anim_Const(1000));
+	animWork = PlayAnimation("Work", 1, Anim_Const(0));
 	return _inherited(...);
 }
 

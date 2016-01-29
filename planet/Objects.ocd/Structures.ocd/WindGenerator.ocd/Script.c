@@ -39,7 +39,7 @@ protected func Initialize()
 	wheel = CreateObject(WindGenerator_Wheel, 0, 0, NO_OWNER);
 	wheel->SetParent(this);
 	// Start the animation for the wheel.
-	PlayAnimation(TurnAnimation(), 5, wheel->Anim_R(0, GetAnimationLength(TurnAnimation())), Anim_Const(1000));
+	PlayAnimation(TurnAnimation(), 5, wheel->Anim_R(0, GetAnimationLength(TurnAnimation())));
 	// Initialize a regular check of the wheel's position and speed, also handles power updates.
 	last_power = 0;
 	AddTimer("Wind2Turn", 4);

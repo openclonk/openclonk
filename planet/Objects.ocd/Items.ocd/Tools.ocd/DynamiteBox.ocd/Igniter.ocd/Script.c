@@ -41,7 +41,7 @@ public func ControlUse(object clonk, int x, int y)
 
 	var ignite_time = 40;
 	clonk->PlayAnimation("DoIgnite", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("DoIgnite"), ignite_time, ANIM_Hold), Anim_Const(1000));
-	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"), ignite_time, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"), ignite_time, ANIM_Hold));
 
 	ScheduleCall(this, "Ignite", ignite_time, 1, clonk);
 	return true;

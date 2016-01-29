@@ -21,7 +21,7 @@ private func Construction()
 	StartGrowth(this.growth);
 	AddTimer("WaterCheck", 70+Random(10));
 	AddTimer("WindCheck", 350);
-	swing_anim = PlayAnimation("Swing", 1, Anim_Const(0), Anim_Const(1000));
+	swing_anim = PlayAnimation("Swing", 1, Anim_Const(0));
 	return _inherited(...);
 }
 

@@ -47,7 +47,7 @@ func Initialize()
 	switched_on = true;
 	var start = 0;
 	var end = GetAnimationLength("pump");
-	animation = PlayAnimation("pump", 5, Anim_Linear(GetAnimationPosition(animation), start, end, 35, ANIM_Loop), Anim_Const(1000));
+	animation = PlayAnimation("pump", 5, Anim_Linear(GetAnimationPosition(animation), start, end, 35, ANIM_Loop));
 	SetState("Wait");
 	return _inherited(...);
 }

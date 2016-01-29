@@ -41,7 +41,7 @@ func Footstep()
 func TestAnimation(anim) // run dig poke walk
 {
 	if (this.test_anim) StopAnimation(this.test_anim);
-	this.test_anim = PlayAnimation(anim, 1, Anim_Linear(0, 0, GetAnimationLength(anim), 40, ANIM_Loop), Anim_Const(1000));
+	this.test_anim = PlayAnimation(anim, 1, Anim_Linear(0, 0, GetAnimationLength(anim), 40, ANIM_Loop));
 	Message("@%s", anim);
 	return true;
 }

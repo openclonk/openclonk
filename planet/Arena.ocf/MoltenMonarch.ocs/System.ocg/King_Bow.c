@@ -29,8 +29,8 @@ public func FinishedAiming(object clonk, int angle)
 	}
 
 	// Open the hand to let the string go and play the fire animation
-	PlayAnimation("Fire", CLONK_ANIM_SLOT_Hands, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));
-	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
+	PlayAnimation("Fire", CLONK_ANIM_SLOT_Hands, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold));
+	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0));
 	clonk->StartShoot(this);
 	return true;
 }

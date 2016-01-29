@@ -18,7 +18,7 @@ protected func Initialize()
 {
 	OnRopeBreak();
 	hook_pos = CreateArray();
-	anim_no = PlayAnimation("Turn", 10, Anim_Const(0), Anim_Const(1000));
+	anim_no = PlayAnimation("Turn", 10, Anim_Const(0));
 	stopped = true;
 	AddEffect("SpinWheel", this, 0, 5);
 }
@@ -146,9 +146,9 @@ protected func FxSpinWheelTimer()
 	if (!new_direction) return;
 
 	if (direction < 0)
-		anim_no = PlayAnimation("Turn", 10, Anim_Linear(GetAnimationPosition(anim_no), GetAnimationLength("Turn"), 0, 40, ANIM_Loop), Anim_Const(1000));
+		anim_no = PlayAnimation("Turn", 10, Anim_Linear(GetAnimationPosition(anim_no), GetAnimationLength("Turn"), 0, 40, ANIM_Loop));
 	else
-		anim_no = PlayAnimation("Turn", 10, Anim_Linear(GetAnimationPosition(anim_no), 0, GetAnimationLength("Turn"), 40, ANIM_Loop), Anim_Const(1000));
+		anim_no = PlayAnimation("Turn", 10, Anim_Linear(GetAnimationPosition(anim_no), 0, GetAnimationLength("Turn"), 40, ANIM_Loop));
 }
 
 private func StopWheel()

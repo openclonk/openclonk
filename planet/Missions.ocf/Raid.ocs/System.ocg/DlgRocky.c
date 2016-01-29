@@ -77,10 +77,10 @@ func FxRockyPickaxeingTimer(object c, proplist fx, int time)
 	if (FrameCounter() < this.anim_continue_frame) { fx.phase=false; return FX_OK; }
 	c->SetDir(DIR_Right);
 	var len = c->GetAnimationLength("StrikePickaxe");
-	this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0,len, Rocky_Pickaxe_SwingTime, ANIM_Remove), Anim_Const(1000));
+	this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0,len, Rocky_Pickaxe_SwingTime, ANIM_Remove));
 	c->Sound("Objects::Pickaxe::Clang?");
 	var x = (c->GetDir()*2-1) * 9;
-	var y = 16;
+	var y = 9;
 	c->CreateParticle("StarSpark", x,y, PV_Random(-20, 20), PV_Random(-20, 20), 20, c.pickaxe_particle, Random(10)+3);
 	return FX_OK;
 }
