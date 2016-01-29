@@ -39,17 +39,17 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func Incineration()
+protected func Incineration(int caused_by)
 {
 	if (GetStoredPower() == 0)
 		return Extinguish();
-	
+		
+	// Set controller for correct kill tracing.
+	SetController(caused_by);
 	for (var i = 0; i < 2; ++i)
 	{
 		var x = -7 + 14 * i;
-		var b = CreateObject(Compensator_BurningBattery, x, 6, NO_OWNER);
-		// Set controller for correct kill tracing.
-		b->SetController(GetController()); 
+		var b = CreateObject(Compensator_BurningBattery, x, 6, NO_OWNER); 
 		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));
 	}
 	return Explode(30);
