@@ -9,12 +9,15 @@ public func Intro_Start(array start, array finish)
 	var start_y = start[1] * map_zoom - 20;
 	this.finish_x = finish[0] * map_zoom;
 	this.airship = CreateObjectAbove(Airship, start_x, start_y);
-	this.host = CreateObjectAbove(Clonk, start_x, start_y - 10);
+	this.host = CreateObjectAbove(Clonk, start_x, start_y - 12);
 	this.host->SetAlternativeSkin("Mime");
 	this.host->SetName("Mr. Aerobat");
 	this.host->SetDir(DIR_Left);
 	this.airship->SetObjectLayer(this.host);
 	this.host->SetObjectLayer(this.host);
+	// Set contact density to 85 for ship and pilot to avoid collisions with the landscape, except brick and solidmasks.
+	this.airship->SetContactDensity(85);
+	this.host->SetContactDensity(85);
 	return ScheduleNext(4);
 }
 
@@ -30,20 +33,21 @@ public func Intro_1()
 {
 	// Display intro message for all players.
 	MessageBoxAll("$MsgLetAerobaticsBegin$", this.host, true);
-	return ScheduleNext(12);
+	return ScheduleNext(24);
 }
 
 public func Intro_2()
 {
-	AddEffect("IntroControlAirship", nil, 100, 5, nil, this->GetID(), this.airship, this.host, this.finish_x);
-	return ScheduleNext(12);
+	// Add a countdown for this attempt.
+	GUI_Clock->CreateCountdown(10, nil, nil, true);
+	return ScheduleNext(5 * 36);
 }
 
 public func Intro_3()
 {
-	// Add a countdown for this attempt.
-	GUI_Clock->CreateCountdown(10, nil, nil, true);
-	return ScheduleNext(10 * 36);
+	// Start moving airship to the right later, such that a well times dynamite jump gets you on the airship.
+	AddEffect("IntroControlAirship", nil, 100, 5, nil, this->GetID(), this.airship, this.host, this.finish_x);
+	return ScheduleNext(5 * 36);
 }
 
 public func Intro_4()
@@ -54,7 +58,7 @@ public func Intro_4()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 600, nil, PLRZOOM_Set);
+	SetPlayerZoomByViewRange(NO_OWNER, 720, nil, PLRZOOM_Set);
 	return true;
 }
 
@@ -73,6 +77,8 @@ public func FxIntroControlAirshipStart(object target, proplist effect, int temp,
 
 public func FxIntroControlAirshipTimer(object target, proplist effect, int time)
 {
+	if (!effect.host || !effect.airship)
+		return FX_Execute_Kill;	
 	if (effect.state == 1 && effect.host->GetX() > effect.finish_x - 30)
 	{
 		effect.airship->ControlStop(effect.host);
@@ -91,6 +97,12 @@ public func FxIntroControlAirshipStop(object target, proplist effect, int reason
 {
 	if (temp)
 		return FX_OK;
-	effect.host->SetCommand("UnGrab");
+	if (effect.airship)
+		effect.airship->SetContactDensity(C4M_Solid);
+	if (effect.host)
+	{
+		effect.host->SetCommand("UnGrab");
+		effect.host->SetContactDensity(C4M_Solid);
+	}
 	return FX_OK;
 }
