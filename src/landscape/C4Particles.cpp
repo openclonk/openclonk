@@ -1006,10 +1006,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 		// glVertexAttribPointer requires a valid GL_ARRAY_BUFFER to be bound and we need the buffer to be created for glObjectLabel.
 		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
 
-#ifdef GL_KHR_debug
-		if (glObjectLabel)
-			glObjectLabel(GL_BUFFER, drawingDataVertexBufferObject, -1, "<particles>/VBO");
-#endif
+		pGL->ObjectLabel(GL_BUFFER, drawingDataVertexBufferObject, -1, "<particles>/VBO");
 
 		// generate new VAO ID
 		drawingDataVertexArraysObject = pGL->GenVAOID();
@@ -1034,10 +1031,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO());
-#ifdef GL_KHR_debug
-		if (glObjectLabel)
-			glObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
-#endif
+		pGL->ObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
 
 		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
 		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));

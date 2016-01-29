@@ -275,6 +275,14 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	return true;
 }
 
+void CStdGL::ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label)
+{
+#ifdef GL_KHR_debug
+	if (glObjectLabel)
+		glObjectLabel(identifier, name, length, label);
+#endif
+}
+
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	// safety

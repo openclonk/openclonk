@@ -256,6 +256,7 @@ public:
 	{
 		bool LowMaxVertexUniformCount;
 	} Workarounds;
+	void ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label);
 
 protected:
 	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
