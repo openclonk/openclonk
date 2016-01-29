@@ -767,7 +767,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetSkeleton().GetAnimationByName(AnimationName->GetData());
 			if (!Animation) return;
 
-			pMeshInstance->PlayAnimation(*Animation, 0, NULL, new C4ValueProviderRef<int32_t>(iPhase, ftofix(Animation->Length / action->GetPropertyInt(P_Length))), new C4ValueProviderConst(itofix(1)));
+			pMeshInstance->PlayAnimation(*Animation, 0, NULL, new C4ValueProviderRef<int32_t>(iPhase, ftofix(Animation->Length / action->GetPropertyInt(P_Length))), new C4ValueProviderConst(itofix(1)), true);
 		}
 
 		break;

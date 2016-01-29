@@ -28,7 +28,8 @@
         <param>
           <type>array</type>
           <name>weight</name>
-          <desc>Specifies how to compute the weight of the animation in case the animation is combined with another animation in the given slot. The value needs to be created with one of the "Anim_" animation functions.</desc>
+          <desc>Specifies how to compute the weight of the animation in case the animation is combined with another animation in the given slot. The value needs to be created with one of the "Anim_" animation functions.<br />If nil, the animation is created with constant weight 1000 and other animations in the same slot are removed.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
@@ -45,6 +46,7 @@
       </params>
     </syntax>
     <desc>Starts playing a new animation. The return value of this function is the animation number of the animation node inserted which can be used to manipulate or remove the animation later. If there are already animations in the given slot then additionally a combination node is created. This combination node is assigned the returned number plus 1.</desc>
+    <remark>If a weight is specified, other animations remain in the slot and are automatically combined. Scripters are responsible for removing animations either by replacing them (pass nil as weight), calling <funclink>StopAnimation</funclink> or using the ANIM_Remove flag in the <funclink>Anim_Linear</funclink> function.</remark>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>

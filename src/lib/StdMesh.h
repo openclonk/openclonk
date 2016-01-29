@@ -541,9 +541,9 @@ public:
 	void SetCompletion(float completion);
 	float GetCompletion() const { return Completion; }
 
-	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
-	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
-	AnimationNode* PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight);
+	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight, bool stop_previous_animation);
+	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight, bool stop_previous_animation);
+	AnimationNode* PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight, bool stop_previous_animation);
 	void StopAnimation(AnimationNode* node);
 
 	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
@@ -627,7 +627,7 @@ protected:
 	typedef std::vector<AnimationNode*> AnimationNodeList;
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
-	void InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight);
+	void InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight, bool stop_previous_animation);
 	bool ExecuteAnimationNode(AnimationNode* node);
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
 	void SetBoneTransformsDirty(bool value);

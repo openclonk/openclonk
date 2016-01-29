@@ -1177,26 +1177,26 @@ void StdMeshInstance::SetCompletion(float completion)
 #endif
 }
 
-StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
+StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight, bool stop_previous_animation)
 {
 	const StdMeshAnimation* animation = Mesh->GetSkeleton().GetAnimationByName(animation_name);
 	if (!animation) { delete position; delete weight; return NULL; }
 
-	return PlayAnimation(*animation, slot, sibling, position, weight);
+	return PlayAnimation(*animation, slot, sibling, position, weight, stop_previous_animation);
 }
 
-StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
+StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight, bool stop_previous_animation)
 {
 	position->Value = Clamp(position->Value, Fix0, ftofix(animation.Length));
 	AnimationNode* child = new AnimationNode(&animation, position);
-	InsertAnimationNode(child, slot, sibling, weight);
+	InsertAnimationNode(child, slot, sibling, weight, stop_previous_animation);
 	return child;
 }
 
-StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight)
+StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight, bool stop_previous_animation)
 {
 	AnimationNode* child = new AnimationNode(bone, trans);
-	InsertAnimationNode(child, slot, sibling, weight);
+	InsertAnimationNode(child, slot, sibling, weight, stop_previous_animation);
 	return child;
 }
 
@@ -1750,11 +1750,19 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 		return AnimationStack.insert(AnimationStack.end(), NULL);
 }
 
-void StdMeshInstance::InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight)
+void StdMeshInstance::InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight, bool stop_previous_animation)
 {
+	assert(!sibling || !stop_previous_animation);
 	// Default
 	if (!sibling) sibling = GetRootAnimationForSlot(slot);
 	assert(!sibling || sibling->Slot == slot);
+	
+	// Stop any animation already running in this slot?
+	if (sibling && stop_previous_animation)
+	{
+		StopAnimation(sibling);
+		sibling = NULL;
+	}
 
 	// Find two subsequent numbers in case we need to create two nodes, so
 	// script can deduce the second node.

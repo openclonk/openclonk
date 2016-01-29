@@ -1806,13 +1806,16 @@ static long FnGetUnusedOverlayID(C4Object *Obj, long iBaseIndex)
 	return iBaseIndex;
 }
 
-static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, C4ValueArray* WeightProvider, Nillable<int> iSibling, Nillable<int> iAttachNumber)
+static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, Nillable<C4ValueArray*> WeightProvider, Nillable<int> iSibling, Nillable<int> iAttachNumber)
 {
 	if (!Obj) return C4Void();
 	if (!Obj->pMeshInstance) return C4Void();
 	if (iSlot == 0) return C4Void(); // Reserved for ActMap animations
 	if (!PositionProvider) return C4Void();
-	if (!WeightProvider) return C4Void();
+	// If no weight provider is passed, this animation should be played exclusively.
+	bool stop_previous_animations = WeightProvider.IsNil();
+	// Exclusive mode cannot work with a sibling
+	if (!iSibling.IsNil() && stop_previous_animations) return C4Void();
 
 	StdMeshInstance* Instance = Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
@@ -1834,7 +1837,15 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 	if (!animation) return C4Void();
 
 	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(Obj, *PositionProvider, animation);
-	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(Obj, *WeightProvider);
+	StdMeshInstance::ValueProvider* w_provider;
+	if (stop_previous_animations)
+	{
+		w_provider = new C4ValueProviderConst(Fix1);
+	}
+	else
+	{
+		w_provider = CreateValueProviderFromArray(Obj, *WeightProvider);
+	}
 	if (!p_provider || !w_provider)
 	{
 		delete p_provider;
@@ -1842,7 +1853,7 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 		return C4Void();
 	}
 
-	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(*animation, iSlot, s_node, p_provider, w_provider);
+	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(*animation, iSlot, s_node, p_provider, w_provider, stop_previous_animations);
 	if (!n_node) return C4Void();
 
 	return n_node->GetNumber();
@@ -1892,7 +1903,7 @@ static Nillable<int> FnTransformBone(C4Object *Obj, C4String *szBoneName, C4Valu
 	// a check here and return nil if the matrix cannot be decomposed.
 	StdMeshTransformation trans = matrix.Decompose();
 
-	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(bone, trans, iSlot, s_node, w_provider);
+	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(bone, trans, iSlot, s_node, w_provider, false);
 	if (!n_node) return C4Void();
 
 	return n_node->GetNumber();

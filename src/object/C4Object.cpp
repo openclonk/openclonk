@@ -2863,7 +2863,7 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 		if (Animation)
 		{
 			// note that weight is ignored
-			Action.Animation = pMeshInstance->PlayAnimation(Animation->GetData(), 0, NULL, new C4ValueProviderAction(this), new C4ValueProviderConst(itofix(1)));
+			Action.Animation = pMeshInstance->PlayAnimation(Animation->GetData(), 0, NULL, new C4ValueProviderAction(this), new C4ValueProviderConst(itofix(1)), true);
 		}
 	}
 	// Stop previous act sound
