@@ -220,7 +220,7 @@ int32_t C4SolidMask::DensityProvider::GetDensity(int32_t x, int32_t y) const
 		pix=pSolidMask->_GetPix(x+rSolidMaskData.pForObject->SolidMask.x+rSolidMaskData.MaskPutRect.tx,
 		                        y+rSolidMaskData.pForObject->SolidMask.y+rSolidMaskData.MaskPutRect.ty);
 		if (pix == 0xff)
-			return C4M_Solid;
+			return C4M_Vehicle;
 		else
 			return 0;
 	}
@@ -232,7 +232,7 @@ int32_t C4SolidMask::DensityProvider::GetDensity(int32_t x, int32_t y) const
 		if (IsSomeVehicle(pix))
 			return 0;
 		else
-			return C4M_Solid;
+			return C4M_Vehicle;
 	}
 }
 
