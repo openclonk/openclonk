@@ -136,7 +136,9 @@ protected func Initialize()
 // a consumer anymore, it must always be unregistered from the power network.
 protected func Destruction()
 {
-	UnregisterPowerRequest();
+	// Only unregister if this object actually is a consumer.
+	if (IsPowerConsumer())
+		UnregisterPowerRequest();
 	return _inherited(...);
 }
 
