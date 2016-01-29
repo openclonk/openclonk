@@ -286,11 +286,16 @@ private func CreateNewInventoryButton(int max_slots)
 	var slot =
 	{
 		Target = this,
-		Style = GUI_NoCrop | GUI_TextBottom,
+		slot_number =
+		{
+			Priority = 3, // Make sure the slot number is drawn above the icon.
+			Style = GUI_TextTop,
+			Text = Format("%2d", slot_info.slot + 1)
+		},
+		Style = GUI_NoCrop,
 		ID = slot_info.ID,
 		Symbol = {Std = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
 		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
-		Text = Format("%2d", slot_info.slot + 1),
 		count =
 		{
 			ID = 1000 + slot_info.ID,
