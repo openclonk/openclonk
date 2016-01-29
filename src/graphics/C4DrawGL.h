@@ -107,7 +107,7 @@ public:
 	CStdGLCtx();  // ctor
 	~CStdGLCtx() { Clear(); } // dtor
 
-	void Clear();               // clear objects
+	void Clear(bool multisample_change = false);               // clear objects
 
 #ifdef USE_WIN32_WINDOWS
 	std::vector<int> EnumerateMultiSamples() const;
@@ -118,8 +118,6 @@ public:
 	void Deselect();              // select this context
 
 	bool PageFlip();            // present scene
-
-	static void Reinitialize();
 
 protected:
 	void SelectCommon();

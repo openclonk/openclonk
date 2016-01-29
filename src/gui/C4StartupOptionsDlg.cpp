@@ -1060,7 +1060,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 	// Note: This assumes there is only one GL context (the main context). This
 	// is true in fullscreen mode, and since the startup dlg is only shown in
 	// fullscreen mode we are safe this way.
-	if(pGL) pGL->pMainCtx->Clear();
+	if(pGL) pGL->pMainCtx->Clear(true);
 #endif
 	int32_t PrevMultiSampling = Config.Graphics.MultiSampling;
 	Config.Graphics.MultiSampling = idNewSelection;

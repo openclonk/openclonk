@@ -55,17 +55,6 @@ void CStdGLCtx::SelectCommon()
 	}
 }
 
-void CStdGLCtx::Reinitialize()
-{
-	assert(!pGL->pCurrCtx);
-#ifdef USE_WIN32_WINDOWS
-	if (hrc)
-		wglDeleteContext(hrc);
-	hrc = 0;
-#endif
-}
-
-
 #ifdef USE_WIN32_WINDOWS
 
 #include <GL/wglew.h>
@@ -264,7 +253,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	if (hDC)
@@ -278,6 +267,13 @@ void CStdGLCtx::Clear()
 	{
 		contexts.erase(this_context);
 		this_context = contexts.end();
+	}
+	if (multisample_change)
+	{
+		assert(!pGL->pCurrCtx);
+		if (hrc)
+			wglDeleteContext(hrc);
+		hrc = 0;
 	}
 }
 
@@ -452,7 +448,7 @@ void InitGLXPointers()
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), this_context(contexts.end()) { }
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	if (ctx)
@@ -586,7 +582,7 @@ bool CStdGLCtx::PageFlip()
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	pWindow = 0;
 
