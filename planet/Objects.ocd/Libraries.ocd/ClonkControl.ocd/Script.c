@@ -60,6 +60,7 @@ static const ELEVATOR_CALL_DISTANCE = 30;
 	this.control.noholdingcallbacks: whether to do HoldingUseControl callbacks
 	this.control.shelved_command: command (function) with condition that will be executed when the condition is met
 		used for example to re-call *Use/Throw commands when the Clonk finished scaling
+	this.control.menu: the menu that is currently assigned to the Clonk. Use the methods SetMenu/GetMenu/etc to access it.
 */
 
 
@@ -76,14 +77,12 @@ protected func Construction()
 	if(this.control == nil)
 		this.control = {};
 	this.control.hotkeypressed = false;
-	
-	menu = nil;
 
 	this.control.alt = false;
 	this.control.current_object = nil;
 	this.control.using_type = nil;
 	this.control.shelved_command = nil;
-	
+	this.control.menu = nil;
 	return _inherited(...);
 }
 
@@ -268,7 +267,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		vehicle = nil;
 	
 	// menu
-	if (menu)
+	if (this.control.menu)
 	{
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
@@ -982,8 +981,6 @@ public func IsMounted() { return GetProcedure() == "ATTACH"; }
 
 /* +++++++++++++++++++++++ Menu control +++++++++++++++++++++++ */
 
-local menu;
-
 func HasMenuControl()
 {
 	return true;
@@ -1002,18 +999,19 @@ When you call SetMenu with a menu ID, you should also call clonk->MenuClosed(), 
 func SetMenu(new_menu, bool unclosable)
 {
 	unclosable = unclosable ?? false;
+	var current_menu = this.control.menu;
 	
 	// no news?
 	if (new_menu) // if new_menu==nil, it is important that we still do the cleaning-up below even if we didn't have a menu before (see MenuClosed())
-		if (menu == new_menu) return;
+		if (current_menu == new_menu) return;
 	
 	// close old one!
-	if (menu != nil)
+	if (current_menu != nil)
 	{
-		if (GetType(menu) == C4V_C4Object)
-			menu->Close();
-		else if (GetType(menu) == C4V_PropList)
-			GuiClose(menu.ID);
+		if (GetType(current_menu) == C4V_C4Object)
+			current_menu->Close();
+		else if (GetType(current_menu) == C4V_PropList)
+			GuiClose(current_menu.ID);
 		else
 			FatalError("Library_ClonkControl::SetMenu() was called with invalid parameter.");
 	}
@@ -1043,12 +1041,12 @@ func SetMenu(new_menu, bool unclosable)
 	{
 		if (GetType(new_menu) == C4V_C4Object)
 		{
-			menu = new_menu;
+			this.control.menu = new_menu;
 		}
 		else if (GetType(new_menu) == C4V_Int)
 		{
 			// add a proplist, so that it is always safe to call functions on clonk->GetMenu()
-			menu =
+			this.control.menu =
 			{
 				ID = new_menu
 			};
@@ -1059,7 +1057,7 @@ func SetMenu(new_menu, bool unclosable)
 		// make sure the menu is unclosable even if it is just a GUI ID
 		if (unclosable)
 		{
-			menu.Unclosable = Library_ClonkControl.GetTrue;
+			this.control.menu.Unclosable = Library_ClonkControl.GetTrue;
 		}
 	}
 	else
@@ -1070,15 +1068,15 @@ func SetMenu(new_menu, bool unclosable)
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
 
-		menu = nil;
+		this.control.menu = nil;
 	}
-	return menu;
+	return this.control.menu;
 }
 
 func MenuClosed()
 {
 	// make sure not to clean up the menu again
-	menu = nil;
+	this.control.menu = nil;
 	// and remove cursors etc.
 	SetMenu(nil);
 }
@@ -1093,18 +1091,18 @@ func GetMenu()
 	// No new-style menu set? Return the classic menu ID. This is deprecated and should be removed in some future.
 	// This function must return a proplist, but clashes with the engine-defined "GetMenu".
 	// This workaround here at least allows developers to reach the Clonk's menu ID.
-	if (menu == nil)
+	if (this.control.menu == nil)
 	{
 		var menu_id = inherited(...);
 		if (menu_id) return {ID = menu_id};
 	}
-	return menu;
+	return this.control.menu;
 }
 
 // Returns true when an existing menu was closed
 func CancelMenu()
 {
-	if (menu)
+	if (this.control.menu)
 	{
 		SetMenu(nil);
 		return true;
@@ -1116,15 +1114,15 @@ func CancelMenu()
 // Tries to cancel a non-unclosable menu. Returns true when there is no menu left after this call (even if there never was one).
 func TryCancelMenu()
 {
-	if (!menu) return true;
-	if (menu->~Unclosable()) return false;
+	if (!this.control.menu) return true;
+	if (this.control.menu->~Unclosable()) return false;
 	CancelMenu();
 	return true;
 }
 
 public func RejectShiftCursor()
 {
-	if (menu && menu->~Unclosable()) return true;
+	if (this.control.menu && this.control.menu->~Unclosable()) return true;
 	return _inherited(...);
 }
 
