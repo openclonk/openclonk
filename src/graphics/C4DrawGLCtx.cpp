@@ -464,6 +464,11 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
+static int GLXErrorHandler(Display * dpy, XErrorEvent * ev)
+{
+    return 0;
+}
+
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
@@ -500,11 +505,13 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	if (glXCreateContextAttribsARB)
 	{
+		int (*oldErrorHandler) (Display *, XErrorEvent *) = XSetErrorHandler(GLXErrorHandler);
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
+		XSync(dpy, False);
+		XSetErrorHandler(oldErrorHandler);
 	}
-	else
-	{
-		DebugLog("  gl: glXCreateContextAttribsARB not supported; falling back to attribute-less context creation");
+	if(!ctx) {
+		Log("  gl: falling back to attribute-less context creation.");
 		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
 	}
 
