@@ -131,14 +131,14 @@ global func Test1_OnStart(int plr){ return true;}
 global func Test1_OnFinish(){ return; }
 global func Test1_Execute()
 {
-	Log("Test the behaviour of IsBarrelForMaterial");
+	Log("Test the behaviour of IsLiquidContainerForMaterial");
 
 	// a loop would be cool, but that would work only with runtime overloadable functions
 	var container = CreateObject(Barrel);
 	
-	var test1 = container->IsBarrelForMaterial("Water");
-	var test2 = !container->IsBarrelForMaterial("Sky");
-	var test3 = !container->IsBarrelForMaterial();
+	var test1 = container->IsLiquidContainerForMaterial("Water");
+	var test2 = !container->IsLiquidContainerForMaterial("Sky");
+	var test3 = !container->IsLiquidContainerForMaterial();
 	
 	Log("- Container returns 'true' if liquid parameter is correct: %v", test1);
 	Log("- Container returns 'false' if liquid parameter is incorrect: %v", test2);

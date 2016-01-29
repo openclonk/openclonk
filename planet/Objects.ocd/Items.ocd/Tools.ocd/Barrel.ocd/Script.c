@@ -66,7 +66,6 @@ private func FillWithLiquid()
 	FillBarrel(mat);
 }
 
-
 private func FillBarrel(string szMat) // TODO: change the input to material index, instead of name. This makes more sense for this function
 {
 	if (!LiquidContainerAccepts(szMat)) return;
@@ -107,11 +106,6 @@ private func EmptyBarrel(int angle, int strength, object clonk)
 	spray.Angle = angle;
 	spray.Clonk = clonk;
 	AddEffect("ExtinguishingSpray", clonk, 100, 1, this, nil, spray);
-}
-
-private func UpdateBarrel() // TODO: deprecated
-{
-	UpdateLiquidContainer();
 }
 
 private func UpdateLiquidContainer()
@@ -195,19 +189,9 @@ protected func FxExtinguishingSprayTimer(object target, proplist effect, int tim
 
 public func IsToolProduct() { return true; }
 
-public func BarrelMaxFillLevel() // TODO: deprecated
-{
-	return GetLiquidContainerMaxFillLevel();
-}
-
 public func GetLiquidContainerMaxFillLevel()
 {
 	return 300;
-}
-
-public func GetFillLevel() // TODO: deprecated
-{
-	return GetLiquidFillLevel();
 }
 
 public func IsBarrel()
@@ -215,42 +199,15 @@ public func IsBarrel()
 	return true;
 }
 
-public func BarrelIsEmpty() // TODO: deprecated
-{
-	return LiquidContainerIsEmpty();
-}
-
-public func BarrelIsFull() // TODO: deprecated
-{
-	return LiquidContainerIsFull();
-}
-
-//returns the contained liquid
-public func GetBarrelMaterial() // TODO: deprecated
-{
-	return GetLiquidName();
-}
-
-public func IsBarrelForMaterial(string sznMaterial) // TODO: deprecated
-{
-	return IsLiquidContainerForMaterial(sznMaterial);
-}
-
 public func IsLiquidContainerForMaterial(string sznMaterial)
 {
 	return WildcardMatch("Water",sznMaterial);
 }
 
-
 public func CanBeStackedWith(object other)
 {
 	// Does not take into account the fill level for now.
 	return inherited(other, ...) && (other->~GetBarrelMaterial() == this->GetBarrelMaterial());
-}
-
-public func SetFilled(material, volume) // TODO: deprecated, and let's hope that the input types are correct
-{
-	SetLiquidContainer(material, volume);
 }
 
 public func CalcValue(object in_base, int for_player)
@@ -274,7 +231,6 @@ private func GetValueOf(string szMaterial) // 300 px of...
 	if (szMaterial == "Firefluid") return 10;
 	return 0;
 }
-
 
 public func Definition(proplist def)
 {

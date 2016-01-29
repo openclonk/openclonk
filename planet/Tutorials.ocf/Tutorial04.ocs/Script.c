@@ -354,7 +354,7 @@ global func FxTutorialFilledBarrelTimer(object target, proplist effect)
 	if (!foundry)
 		return FX_OK;
 	var barrel = FindObject(Find_ID(Barrel), Find_Container(foundry));
-	if (barrel && barrel->GetFillLevel() >= 100)
+	if (barrel && barrel->GetLiquidFillLevel() >= 100)
 	{
 		var contents = GetPlayerControlAssignment(effect.plr, CON_Contents, true);
 		guide->AddGuideMessage(Format("$MsgTutorialProduceLoam$", contents));
