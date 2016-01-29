@@ -139,7 +139,7 @@ private func UpdateFuel()
 private func GetBarrel()
 {
 	for (var barrel in FindObjects(Find_Func("IsBarrel"), Find_Container(this)))
-		if (barrel->GetFillLevel() > 0)
+		if (barrel->GetLiquidFillLevel() > 0)
 			return barrel;
 	return;
 }

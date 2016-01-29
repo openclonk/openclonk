@@ -23,17 +23,17 @@ public func LiquidOutput(string sznMaterial, int inMaxAmount, object pnPump, obj
 	//Search liquid to pump
 	if (bnWildcard)
 	{
-		var ptBarrel = FindObject(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsBarrelForMaterial", sznMaterial), Find_Not(Find_Func("BarrelIsEmpty")));
+		var ptBarrel = FindObject(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsLiquidContainerForMaterial", sznMaterial), Find_Not(Find_Func("LiquidContainerIsEmpty")));
 		var sztMaterial="";
 		if (ptBarrel)
-			sztMaterial = ptBarrel->GetBarrelMaterial();
+			sztMaterial = ptBarrel->GetLiquidName();
 		//Nothing to pump
 		if (sztMaterial == "")
 			return ["", 0];
 		sznMaterial = sztMaterial;
 	}
 	var itFound = 0;
-	for (var ptBarrel in FindObjects(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsBarrelForMaterial", sznMaterial), Find_Not(Find_Func("BarrelIsEmpty")))) 
+	for (var ptBarrel in FindObjects(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsLiquidContainerForMaterial", sznMaterial), Find_Not(Find_Func("LiquidContainerIsEmpty")))) 
 	{
 		var atFound = ptBarrel->GetLiquid(sznMaterial, inMaxAmount - itFound, this);
 		//Crazy stuff happend?
@@ -56,14 +56,14 @@ public func LiquidInput(string sznMaterial, int inMaxAmount, object pnPump, obje
 {
 	var itAmount = inMaxAmount;
 	//Fill liquids into already existing barrels
-	for (var ptBarrel in FindObjects(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsContainerForMaterial", sznMaterial), Find_Not(Find_Func("BarrelIsEmpty")), Find_Not(Find_Func("BarrelIsFull")))) 
+	for (var ptBarrel in FindObjects(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsContainerForMaterial", sznMaterial), Find_Not(Find_Func("LiquidContainerIsEmpty")), Find_Not(Find_Func("LiquidContainerIsFull")))) 
 	{
 		itAmount -= BoundBy(ptBarrel->PutLiquid(sznMaterial, itAmount, this), 0, itAmount);
 		if (!itAmount)
 			return inMaxAmount;
 	}
 	//Fill liquids into empty barrels
-	for (var ptBarrel in FindObjects(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsContainerForMaterial", sznMaterial), Find_Func("BarrelIsEmpty"))) 
+	for (var ptBarrel in FindObjects(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsContainerForMaterial", sznMaterial), Find_Func("LiquidContainerIsEmpty"))) 
 	{
 		itAmount -= BoundBy(ptBarrel->PutLiquid(sznMaterial, itAmount, this), 0, itAmount);
 		if (!itAmount)

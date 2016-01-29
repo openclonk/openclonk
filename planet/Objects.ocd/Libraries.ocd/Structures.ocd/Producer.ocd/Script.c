@@ -605,8 +605,8 @@ public func CheckLiquids(id product, bool remove)
 		var need = liq_need[1];
 		// Find liquid containers in this producer.
 		for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
-			if (liq_container->~GetBarrelMaterial() == liquid)
-				liquid_amount += liq_container->~GetFillLevel();
+			if (liq_container->~GetLiquidName() == liquid)
+				liquid_amount += liq_container->~GetLiquidFillLevel();
 		// Find objects that "are" liquid (e.g. ice)
 		for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
 			if (liq_object->~IsLiquid() == liquid)
