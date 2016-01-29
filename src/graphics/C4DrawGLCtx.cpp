@@ -57,7 +57,7 @@ void CStdGLCtx::SelectCommon()
 
 #ifdef USE_WGL
 
-#include <GL/wglew.h>
+#include <epoxy/wgl.h>
 
 static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 static HGLRC hrc = 0;
@@ -70,7 +70,7 @@ static HGLRC hrc = 0;
 static std::vector<int> EnumeratePixelFormats(HDC hdc)
 {
 	std::vector<int> result;
-	if(!wglGetPixelFormatAttribivARB) return result;
+	if(!epoxy_has_wgl_extension(hdc, "WGL_ARB_pixel_format")) return result;
 
 	int n_formats;
 	int attributes = WGL_NUMBER_PIXEL_FORMATS_ARB;
@@ -262,14 +262,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 		try
 		{
 			tempContext.reset(new GLTempContext);
-			glewExperimental = GL_TRUE;
-			GLenum err = glewInit();
-			if(err != GLEW_OK)
-			{
-				// Problem: glewInit failed, something is seriously wrong.
-				pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-				return false;
-			}
 		}
 		catch (const WinAPIError &e)
 		{
@@ -318,7 +310,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 			else
 			{
 				// create context
-				if (wglCreateContextAttribsARB)
+				if (epoxy_has_wgl_extension(hDC, "WGL_ARB_create_context"))
 				{
 					const int attribs[] = {
 						WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
@@ -348,17 +340,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	if (hrc)
 	{
 		Select();
-		// After selecting the new context, we have to reinitialize GLEW to
-		// update its function pointers - the driver may elect to expose
-		// different extensions depending on the context attributes
-		glewExperimental = GL_TRUE;
-		GLenum err = glewInit();
-		if (err != GLEW_OK)
-		{
-			// Uh. This is a problem.
-			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-			return false;
-		}
 
 		this_context = contexts.insert(contexts.end(), this);
 		return true;
@@ -370,6 +351,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 
 std::vector<int> CStdGLCtx::EnumerateMultiSamples() const
 {
+	assert(hrc != 0);
 	std::vector<int> result;
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
 	for(unsigned int i = 0; i < vec.size(); ++i)
@@ -422,19 +404,9 @@ bool CStdGLCtx::PageFlip()
 }
 
 #elif defined(USE_GTK)
-#include <GL/glxew.h>
-#include <GL/glx.h>
+#include <epoxy/glx.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-
-namespace {
-void InitGLXPointers()
-{
-	glXGetVisualFromFBConfig = (PFNGLXGETVISUALFROMFBCONFIGPROC)(glXGetProcAddress((const GLubyte*)"glXGetVisualFromFBConfig"));
-	glXChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)(glXGetProcAddress((const GLubyte*)"glXChooseFBConfig"));
-	glXCreateNewContext = (PFNGLXCREATENEWCONTEXTPROC)(glXGetProcAddress((const GLubyte*)"glXCreateNewContext"));
-}
-}
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), this_context(contexts.end()) { }
 
@@ -468,22 +440,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// store window
 	this->pWindow = pWindow;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	InitGLXPointers();
-	if (!glXGetVisualFromFBConfig || !glXChooseFBConfig || !glXCreateNewContext)
-	{
-		return pGL->Error("  gl: Unable to retrieve GLX 1.4 entry points");
-	}
-	XVisualInfo *vis_info = glXGetVisualFromFBConfig(dpy, pWindow->Info);
-	// Create base context so we can initialize GLEW
-	GLXContext dummy_ctx = glXCreateContext(dpy, vis_info, 0, True);
-	XFree(vis_info);
-	glXMakeCurrent(dpy, pWindow->renderwnd, dummy_ctx);
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
-	{
-		return pGL->Error((const char*)glewGetErrorString(err));
-	}
 
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	const int attribs[] = {
@@ -495,7 +451,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	};
 	GLXContext share_context = (pGL->pMainCtx != this) ? static_cast<GLXContext>(pGL->pMainCtx->ctx) : 0;
 
-	if (glXCreateContextAttribsARB)
+	if (epoxy_has_glx_extension(dpy, gdk_x11_get_default_screen(), "GLX_ARB_create_context"))
 	{
 		int (*oldErrorHandler) (Display *, XErrorEvent *) = XSetErrorHandler(GLXErrorHandler);
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
@@ -507,20 +463,9 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
 	}
 
-	glXMakeCurrent(dpy, None, NULL);
-	glXDestroyContext(dpy, dummy_ctx);
-
 	// No luck?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
-	// init extensions
-	glewExperimental = GL_TRUE;
-	err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 
 	this_context = contexts.insert(contexts.end(), this);
 	return true;
@@ -600,14 +545,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	ctx = SDL_GL_CreateContext(pWindow->window);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
-	// init extensions
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 
 	this_context = contexts.insert(contexts.end(), this);
 	return true;

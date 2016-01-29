@@ -13,12 +13,12 @@
  * for the above references.
  */
 
-#include <GL/glew.h>
-
 #include <C4Include.h>
 #include <C4Console.h>
 #include <C4Viewport.h>
 #include <C4GraphicsSystem.h>
+
+#include <epoxy/gl.h>
 
 #import "C4AppDelegate+MainMenuActions.h"
 #import "C4DrawGLMac.h"

@@ -588,14 +588,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	setObjectiveCObject(ctx);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
-	// init extensions
-	glewExperimental = GL_TRUE; // Init GL 3.0+ function pointers
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-	}
 	// set the openglview's context
 	auto controller = pWindow->objectiveCObject<C4WindowController>();
 	if (controller && controller.openGLView)

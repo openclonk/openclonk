@@ -22,11 +22,7 @@
 #include "StdMeshMath.h"
 #include "C4Surface.h"
 
-#ifdef _WIN32
-#include <C4windowswrapper.h>
-#endif
-
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 
 // Shader version
 const int C4Shader_Version = 150; // GLSL 1.50 / OpenGL 3.2

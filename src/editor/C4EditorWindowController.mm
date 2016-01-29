@@ -12,14 +12,14 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
- 
-#include <GL/glew.h>
 
 #include <C4Include.h>
 #include <C4Console.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4Game.h>
+
+#include <epoxy/gl.h>
 
 #import <Cocoa/Cocoa.h>
 #import <C4EditorWindowController.h>

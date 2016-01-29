@@ -13,8 +13,6 @@
  * for the above references.
  */
 
-#include <GL/glew.h>
-
 #include <C4Include.h>
 #include <C4Console.h>
 #include <C4Application.h>
@@ -33,6 +31,8 @@
 
 #include <StdFile.h>
 #include <StdRegistry.h>
+
+#include <epoxy/gl.h>
 
 #import <Cocoa/Cocoa.h>
 #import "C4AppDelegate.h"

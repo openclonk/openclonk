@@ -23,7 +23,7 @@ _otool="${OTOOL:-otool}"
 _install_name_tool="${INSTALL_NAME_TOOL:-install_name_tool}"
 
 # This regexp should match every lib we want to bundle.
-_libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|alut)\.[^ ]+\.dylib"
+_libs_to_bundle=".*?/lib(jpeg|epoxy|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|alut)\.[^ ]+\.dylib"
 
 if [ -n "${TARGET_BUILD_DIR}" ]; then
 	cd "${TARGET_BUILD_DIR}"

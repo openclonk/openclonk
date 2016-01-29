@@ -16,14 +16,14 @@
 
 // based on SDL implementation
 
-#include <GL/glew.h>
-#include <string>
-
 #include <C4Include.h>
+#include "C4App.h"
+
 #include <C4Window.h>
 #include <C4Draw.h>
 
-#include "C4App.h"
+#include <epoxy/gl.h>
+
 #import <Cocoa/Cocoa.h>
 
 #ifndef USE_CONSOLE

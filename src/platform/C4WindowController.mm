@@ -13,14 +13,14 @@
  * for the above references.
  */
 
-#include <GL/glew.h>
-
 #include <C4Include.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
 #include <C4ViewportWindow.h>
 #include <C4FullScreen.h>
 #include <C4Landscape.h>
+
+#include <epoxy/gl.h>
 
 #import "C4WindowController.h"
 #import "C4DrawGLMac.h"
