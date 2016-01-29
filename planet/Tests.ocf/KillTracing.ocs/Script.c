@@ -26,6 +26,9 @@ protected func Initialize()
 	CreateScriptPlayer("Victim", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 	CreateScriptPlayer("Killer", RGB(0, 255, 0), nil, CSPF_NoEliminationCheck);
 	CreateScriptPlayer("KillerFake", RGB(255, 0, 0), nil, CSPF_NoEliminationCheck);
+	
+	// No power required in these tests.
+	CreateObject(Rule_NoPowerNeed);
 	return;
 }
 
@@ -169,7 +172,7 @@ global func FxIntTestControlOnDeath(object target, proplist effect, int killer, 
 global func InitTest()
 {
 	// Remove all objects except the player crew members and relaunch container they are in.
-	for (var obj in FindObjects(Find_Not(Find_ID(RelaunchContainer))))
+	for (var obj in FindObjects(Find_Not(Find_Or(Find_ID(RelaunchContainer), Find_Category(C4D_Rule)))))
 		if (!((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User || obj->GetOwner() == plr_victim)))
 			obj->RemoveObject();
 
@@ -370,7 +373,7 @@ global func Test10_OnStart()
 	return true;
 }
 
-global func Test11_Log() { return "K explodes firestone material, one of the cascade firestones kills V"; }
+global func Test11_Log() { return "K explodes firestone material, one of the cascading firestones kills V"; }
 global func Test11_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -605,10 +608,10 @@ global func Test24_OnStart()
 	victim->SetPosition(240, 150);
 	victim->DoEnergy(-45);
 
-	var cannon = killer->CreateObject(Catapult);
+	var catapult = killer->CreateObject(Catapult);
 	killer->CreateContents(Shield);
-	cannon->ControlUseStart(killer, 120, 0);
-	cannon->ControlUseStop(killer, 120, 0);
+	catapult->ControlUseStart(killer, 240 - catapult->GetX(), 0);
+	catapult->ControlUseStop(killer, 240 - catapult->GetX(), 0);
 	return true;
 }
 
@@ -736,8 +739,8 @@ global func Test31_OnStart()
 	victim->DoEnergy(-45);
 
 	var boompack = killer->CreateContents(Boompack);
-	ScheduleCall(boompack, "ControlUse", 12, 0, killer, 20, -2);
-	ScheduleCall(boompack, "ControlJump", 16, 0, killer);
+	ScheduleCall(boompack, "ControlUse", 52, 0, killer, 20, -2);
+	ScheduleCall(boompack, "ControlJump", 56, 0, killer);
 	return true;
 }
 
@@ -902,9 +905,327 @@ global func Test39_OnStart()
 	return true;
 }
 
+global func Test40_Log() { return "K creates a fire which fuses a dynamite box, the explosion kills V"; }
+global func Test40_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(166, 150);
+	victim->DoEnergy(-45);
+
+	CreateObjectAbove(DynamiteBox, 146, 150);
+	var lantern = killer->CreateContents(Lantern);
+	killer->ObjectCommand("Throw", lantern, 20, -10);
+	return true;
+}
+
+global func Test41_Log() { return "K digs out a piece of coal which kills V"; }
+global func Test41_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Coal", 120, 80, 180, 80, 180, 100, 120, 100);
+	
+	victim->SetPosition(150, 150);
+	victim->DoEnergy(-49);
+	killer->SetPosition(150, 70);
+
+	var shovel = killer->CreateContents(Shovel);
+	shovel->ControlUseStart(killer, 0, 10);
+	ScheduleCall(shovel, "ControlUseHolding", 1, 50, killer, 0, 10);
+	ScheduleCall(shovel, "ControlUseStop", 51, 0, killer, 0, 10);
+	return true;
+}
+
+global func Test42_Log() { return "K hacks out (with the pickaxe) a piece of ore which kills V"; }
+global func Test42_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Ore", 130, 72, 130, 50, 160, 50, 160, 72);
+	DrawMaterialQuad("Brick", 135, 80, 142, 80, 148, 160, 135, 160);
+	DrawMaterialQuad("Brick", 158, 80, 165, 80, 165, 160, 152, 160);
+
+	victim->SetPosition(150, 150);
+	victim->DoEnergy(-49);
+	killer->SetPosition(140, 70);
+
+	var pickaxe = killer->CreateContents(Pickaxe);
+	pickaxe->ControlUseStart(killer, RandomX(8, 12), RandomX(-10, 2));
+	ScheduleCall(pickaxe, "ControlUseHolding", 1, 280, killer, RandomX(8, 12), RandomX(-10, 2));
+	ScheduleCall(pickaxe, "ControlUseStop", 281, 0, killer, RandomX(8, 12), RandomX(-10, 2));
+	return true;
+}
+
+global func Test43_Log() { return "K digs and moves a piece of rock (controlled by F) which kills V"; }
+global func Test43_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Earth", 120, 80, 180, 80, 180, 100, 120, 100);
+	
+	victim->SetPosition(150, 150);
+	victim->DoEnergy(-49);
+	killer->SetPosition(150, 70);
+	
+	CreateObject(Rock, 150, 80)->SetController(plr_killer_fake);
+	var shovel = killer->CreateContents(Shovel);
+	shovel->ControlUseStart(killer, 0, 10);
+	ScheduleCall(shovel, "ControlUseHolding", 1, 50, killer, 0, 10);
+	ScheduleCall(shovel, "ControlUseStop", 51, 0, killer, 0, 10);
+	return true;
+}
+
+global func Test44_Log() { return "K pushes a tree into the sawmill, the sawn wood kills V"; }
+global func Test44_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Brick", 40, 80, 120, 80, 120, 100, 40, 100);
+	
+	victim->SetPosition(172, 150);
+	victim->DoEnergy(-49);
+	killer->SetPosition(80, 70);
+	
+	CreateObjectAbove(Sawmill, 100, 80);
+	var tree = CreateObjectAbove(Tree_Deciduous, 60, 80);
+	tree->ChopDown();
+	killer->SetCommand("Grab", tree);
+	killer->SetCommand("PushTo", tree, killer->GetX() + 30, killer->GetY()); 
+	return true;
+}
+
+global func Test45_Log() { return "K produces metal in the foundry which falls down and kills V"; }
+global func Test45_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Brick", 40, 80, 120, 80, 120, 100, 40, 100);
+	
+	victim->SetPosition(126, 150);
+	victim->DoEnergy(-49);
+	killer->SetPosition(80, 70);
+	
+	var foundry = CreateObjectAbove(Foundry, 108, 80);
+	foundry->SetDir(DIR_Right);
+	foundry->CreateContents(Coal);
+	foundry->CreateContents(Ore);
+	foundry->AddToQueue(Metal, 1);
+	return true;
+}
+
+global func Test46_Log() { return "K throws snow on V (V dies of asphyxiation)"; }
+global func Test46_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	ClearFreeRect(120, 160, 10, 15);
+	
+	victim->SetPosition(125, 170);
+	victim->DoEnergy(-49);
+	victim.MaxBreath = 5 * victim.MaxBreath / 100;
+	victim->DoBreath(- 95 * victim.MaxBreath / 100);
+
+	var throwing_obj = killer->CreateContents(Snow);
+	killer->ObjectCommand("Throw", throwing_obj, 20, -14);
+	return true;
+}
+
+global func Test47_Log() { return "K pushed the container (lorry) holding V out of landscape"; }
+global func Test47_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	ClearFreeRect(120, 0, LandscapeWidth() - 120, LandscapeHeight());
+	
+	var lorry = CreateObjectAbove(Lorry, 100, 160);
+	victim->Enter(lorry);
+	killer->SetPosition(100, 150);
+	killer->SetCommand("PushTo", lorry, killer->GetX() + 40, killer->GetY());
+	return true;
+}
+
+global func Test48_Log() { return "K blasts the container (wooden cabin) holding V"; }
+global func Test48_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->DoEnergy(-40);
+	
+	var cabin = CreateObjectAbove(WoodenCabin, 100, 160);
+	cabin->DoDamage(60);
+	victim->Enter(cabin);
+
+	var firestone = killer->CreateContents(Firestone);
+	killer->ObjectCommand("Throw", firestone, 20, -10);
+	return true;
+}
+
+global func Test49_Log() { return "K blasts V into lava where V dies"; }
+global func Test49_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Lava", 110, 160, 450, 160, 450, 200, 110, 200);
+	
+	victim->SetPosition(100, 150);
+	killer->SetPosition(95, 150);
+
+	var dynamite = killer->CreateContents(Dynamite);
+	dynamite->ControlUse(killer);
+	dynamite->ControlUse(killer, 0, 12);
+	killer->SetCommand("MoveTo", nil, killer->GetX() - 40, killer->GetX());
+	return true;
+}
+
+global func Test50_Log() { return "K blasts V into acid where V dies"; }
+global func Test50_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Acid", 110, 160, 450, 160, 450, 200, 110, 200);
+	
+	victim->SetPosition(100, 150);
+	killer->SetPosition(95, 150);
+
+	var dynamite = killer->CreateContents(Dynamite);
+	dynamite->ControlUse(killer);
+	dynamite->ControlUse(killer, 0, 12);
+	killer->SetCommand("MoveTo", nil, killer->GetX() - 40, killer->GetX());
+	return true;
+}
+
+global func Test51_Log() { return "K uses windbag to shoot V into lava where V dies"; }
+global func Test51_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Lava", 110, 160, 450, 160, 450, 200, 110, 200);
+	
+	victim->SetPosition(100, 150);
+	killer->SetPosition(90, 150);
+	
+	ScheduleCall(victim, "ControlJump", 4, 1);
+
+	var windbag = killer->CreateContents(WindBag);
+	windbag->DoFullLoad();
+	ScheduleCall(windbag, "ControlUse", 12, 0, killer, 20, -30);
+	return true;
+}
+
+global func Test52_Log() { return "K uses windbag to shoot V into acid where V dies"; }
+global func Test52_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Acid", 110, 160, 450, 160, 450, 200, 110, 200);
+	
+	victim->SetPosition(100, 150);
+	killer->SetPosition(90, 150);
+	
+	ScheduleCall(victim, "ControlJump", 4, 1);
+
+	var windbag = killer->CreateContents(WindBag);
+	windbag->DoFullLoad();
+	ScheduleCall(windbag, "ControlUse", 12, 0, killer, 20, -30);
+	return true;
+}
+
+global func Test53_Log() { return "K uses club to fling V into lava where V dies"; }
+global func Test53_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Lava", 110, 160, 450, 160, 450, 200, 110, 200);
+	
+	victim->SetPosition(100, 150);
+	killer->SetPosition(94, 150);
+	
+	ScheduleCall(victim, "ControlJump", 4, 1);
+
+	var club = killer->CreateContents(Club);
+	ScheduleCall(club, "ControlUseStart", 2, 0, killer, 20, -10);
+	ScheduleCall(club, "ControlUseHolding", 3, 0, killer, 20, -10);
+	ScheduleCall(club, "ControlUseStop", 4, 0, killer, 20, -10);
+	return true;
+}
+
+global func Test54_Log() { return "K uses club to fling V into acid where V dies"; }
+global func Test54_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Acid", 110, 160, 450, 160, 450, 200, 110, 200);
+	
+	victim->SetPosition(100, 150);
+	killer->SetPosition(94, 150);
+	
+	ScheduleCall(victim, "ControlJump", 4, 1);
+
+	var club = killer->CreateContents(Club);
+	ScheduleCall(club, "ControlUseStart", 2, 0, killer, 20, -10);
+	ScheduleCall(club, "ControlUseHolding", 3, 0, killer, 20, -10);
+	ScheduleCall(club, "ControlUseStop", 4, 0, killer, 20, -10);
+	return true;
+}
+
+global func Test55_Log() { return "K blasts a compensator and its explosion kills V"; }
+global func Test55_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(150, 150);
+	victim->DoEnergy(-40);
+	
+	var compensator = CreateObjectAbove(Compensator, 130, 160);
+	compensator->SetStoredPower(compensator->GetStorageCapacity());
+
+	var throwing_obj = killer->CreateContents(Firestone);
+	killer->ObjectCommand("Throw", throwing_obj, 20, -14);
+	return true;
+}
+
+global func Test56_Log() { return "K blasts a bridge and a rock drops which kills V"; }
+global func Test56_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	ClearFreeRect(120, 160, 60, 80);
+	
+	victim->SetPosition(170, 230);
+	victim->DoEnergy(-40);
+	
+	CreateObjectAbove(Rock, 170, 160);
+	var bridge = CreateObject(WoodenBridge, 150, 164);
+	bridge->DoDamage(65);
+
+	var throwing_obj = killer->CreateContents(Firestone);
+	killer->ObjectCommand("Throw", throwing_obj, 20, -20);
+	return true;
+}
+
 
 /*-- Wiki Overview Table --*/
 
+// This function creates a string in the log which can be copied onto the OC wiki page for these tests and gives
+// an overview of all tests. Upload this anew after a test has been added (http://wiki.openclonk.org/w/Kill_Tracing).
 global func CreateWikiOverviewTable(array results)
 {
 	var table = "{| border=\"1\" class=\"wikitable\" style=\"margin: 1em auto 1em auto;\"\n|-\n! #\n! Kill Description\n! Traced?\n";
