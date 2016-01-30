@@ -56,7 +56,7 @@ const int C4S_MaxPlayer = 4;
 const int C4D_MaxVertex = 30;
 
 const int 
-	C4SymbolSize = 35,
+	C4SymbolSize = 40,
 	C4SymbolBorder = 5,
 	C4UpperBoardHeight = 50,
 	C4PictureSize = 64,
