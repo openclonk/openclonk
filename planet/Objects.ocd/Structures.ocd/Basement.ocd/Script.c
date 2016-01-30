@@ -19,12 +19,16 @@ protected func Construction()
 
 protected func Initialize()
 {
-	var wdt = BoundBy(GetObjWidth(), 8, 120);
+	var wdt = GetObjWidth();
 	if (parent)
-		wdt = BoundBy(parent->GetObjWidth(), 8, 120);
-	SetWidth(wdt);
+	{
+		wdt = parent->~GetBasementWidth();
+		if (wdt == nil)
+			wdt = parent->GetObjWidth();
+	}
+	SetWidth(BoundBy(wdt, 8, 120));
 	// Move objects out of the basement.
-	 MoveOutOfSolidMask();
+	MoveOutOfSolidMask();
 	return _inherited(...);
 }
 
@@ -57,7 +61,10 @@ public func CombineWith(object stick_to)
 public func SetParent(object to_parent)
 {
 	parent = to_parent;
-	SetWidth(BoundBy(parent->GetObjWidth(), 8, 120));
+	var wdt = parent->~GetBasementWidth();
+	if (wdt == nil)
+		wdt = parent->GetObjWidth();
+	SetWidth(BoundBy(wdt, 8, 120));
 	// Notify the parent.
 	parent->~SetBasement(this);
 	return;
@@ -71,6 +78,11 @@ public func IsBelowSurfaceConstruction() { return true; }
 // Sticking to other structures, at the bottom of that structure.
 public func ConstructionCombineWith() { return "IsStructureWithoutBasement"; }
 public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Bottom; }
+public func ConstructionCombineOffset(object other)
+{
+	// Some structures like the elevator require the basement to have an offset.
+	return other->~GetBasementOffset();
+}
 
 public func NoConstructionFlip() { return true; }
 
@@ -85,7 +97,11 @@ public func GetSiteWidth(int direction, object combine_with)
 {
 	var wdt = GetDefWidth();
 	if (combine_with)
-		wdt = combine_with->GetObjWidth();
+	{
+		wdt = combine_with->~GetBasementWidth();
+		if (wdt == nil)
+			wdt = combine_with->GetObjWidth();
+	}
 	return BoundBy(wdt, 8, 120);
 }
 

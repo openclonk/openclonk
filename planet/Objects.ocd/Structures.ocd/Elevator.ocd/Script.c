@@ -251,6 +251,11 @@ public func CombineWith(object other)
 	partner = other;
 }
 
+// Special requirements for the basement of the elevator.
+public func GetBasementWidth() { return 36; }
+public func GetBasementOffset() { return [11 * (2 * GetDir() - 1), 0]; }
+
+
 /* Combination */
 
 // Called by a new elevator next to this one
