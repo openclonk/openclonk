@@ -137,6 +137,14 @@ func Reposition(int x, int y)
 				x = other->GetX() + other->GetObjWidth()/2 + dimension_x / 2;
 			if ((stick_dir & CONSTRUCTION_STICK_Bottom))
 				y = other->GetY() + other->GetObjHeight()/2 + dimension_y / 2;
+			// Add an additional offset if needed, for example a basement can be place
+			// only under a part of the structure.
+			var stick_offset = structure->~ConstructionCombineOffset(other);
+			if (stick_offset)
+			{
+				x += stick_offset[0];
+				y += stick_offset[1];
+			}
 			stick_to = other;
 			found = true;
 		}
