@@ -183,13 +183,6 @@ bool C4Menu::TryClose(bool fOK, bool fControl)
 	return true;
 }
 
-bool C4Menu::DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iId, int32_t iStyle)
-{
-	Clear(); Default();
-	Symbol.GrabFrom(fctSymbol);
-	return InitMenu(szEmpty, iId, iStyle);
-}
-
 bool C4Menu::DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iId, int32_t iStyle)
 {
 	Clear(); Default();

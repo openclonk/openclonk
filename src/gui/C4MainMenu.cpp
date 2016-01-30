@@ -47,13 +47,6 @@ void C4MainMenu::Default()
 	Player=NO_OWNER;
 }
 
-bool C4MainMenu::Init(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iPlayer, int32_t iId, int32_t iStyle)
-{
-	if (!DoInit(fctSymbol, szEmpty, iId, iStyle)) return false;
-	Player=iPlayer;
-	return true;
-}
-
 bool C4MainMenu::InitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iPlayer, int32_t iId, int32_t iStyle)
 {
 	if (!DoInitRefSym(fctSymbol, szEmpty, iId, iStyle)) return false;
@@ -490,27 +483,20 @@ bool C4MainMenu::ActivateHost(int32_t iPlayer)
 
 bool C4MainMenu::ActivateClient(int32_t iPlayer)
 {
-	// Menu symbol/init
-	C4FacetSurface fctSymbol;
 	InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Disconnect), LoadResStr("IDS_MENU_DISCONNECTFROMSERVER"), iPlayer, 0, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
-	fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,3,0);
-	Add(LoadResStr("IDS_BTN_YES"), fctSymbol, "Part");
-	fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,1,0);
-	Add(LoadResStr("IDS_BTN_NO"), fctSymbol, "");
+	AddRefSym(LoadResStr("IDS_BTN_YES"), GfxR->fctOKCancel.GetPhase(3,0), "Part");
+	AddRefSym(LoadResStr("IDS_BTN_NO"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Close), "");
 	SetCloseCommand("ActivateMenu:Main");
 	return true;
 }
 
 bool C4MainMenu::ActivateSurrender(int32_t iPlayer)
 {
-	C4FacetSurface fctSymbol;
 	InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Surrender), LoadResStr("IDS_MENU_SURRENDER"), iPlayer, 0, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
-	fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,3,0);
-	Add(LoadResStr("IDS_BTN_YES"), fctSymbol, "Surrender");
-	fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,1,0);
-	Add(LoadResStr("IDS_BTN_NO"), fctSymbol, "");
+	AddRefSym(LoadResStr("IDS_BTN_YES"), GfxR->fctOKCancel.GetPhase(3), "Surrender");
+	AddRefSym(LoadResStr("IDS_BTN_NO"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Close), "");
 	SetCloseCommand("ActivateMenu:Main");
 	return true;
 }
@@ -521,12 +507,9 @@ bool C4MainMenu::ActivateOptions(int32_t iPlayer, int32_t selection)
 	InitRefSym(GfxR->fctOptions.GetPhase(0), LoadResStr("IDS_MNU_OPTIONS"), iPlayer, 0, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 	SetPermanent(true);
-	// Sound
 	AddRefSym(LoadResStr("IDS_DLG_SOUND"), GfxR->fctOptions.GetPhase(17 + Config.Sound.RXSound),"Options:Sound");
-	// Music
 	AddRefSym(LoadResStr("IDS_MNU_MUSIC"), GfxR->fctOptions.GetPhase(1 + Config.Sound.RXMusic),"Options:Music");
-	// Music
-	AddRefSym(LoadResStr("IDS_MENU_DISPLAY"), GfxR->fctMenu.GetPhase(8), "ActivateMenu:Display");
+	AddRefSym(LoadResStr("IDS_MENU_DISPLAY"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_View), "ActivateMenu:Display");
 	// Restore selection
 	SetSelection(selection, false, true);
 	// Go back to main menu on close
@@ -538,7 +521,7 @@ bool C4MainMenu::ActivateOptions(int32_t iPlayer, int32_t selection)
 bool C4MainMenu::ActivateDisplay(int32_t iPlayer, int32_t selection)
 {
 	// Menu symbol/init
-	InitRefSym(GfxR->fctMenu.GetPhase(8), LoadResStr("IDS_MENU_DISPLAY"), iPlayer, 0, C4MN_Style_Context);
+	InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_View), LoadResStr("IDS_MENU_DISPLAY"), iPlayer, 0, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 	SetPermanent(true);
 	// Crew player names
@@ -569,10 +552,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 	// Determine player
 	C4Player *pPlr = ::Players.Get(iPlayer);
 	// Menu symbol/init
-	C4FacetSurface fctSymbol;
-	fctSymbol.Create(C4SymbolSize, C4SymbolSize);
-	GfxR->fctOKCancel.Draw(fctSymbol, true, 1, 1);
-	Init(fctSymbol, LoadResStr(pPlr ? "IDS_MENU_CPMAIN" : "IDS_MENU_OBSERVER"), iPlayer, 0, C4MN_Style_Context);
+	InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_Player), LoadResStr(pPlr ? "IDS_MENU_CPMAIN" : "IDS_MENU_OBSERVER"), iPlayer, 0, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 	// Goals+Rules (player menu only)
 	// Goal menu can't be shown because of script callbacks
@@ -594,7 +574,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 	if (pPlr && (::Players.GetCount() > 1))
 	{
 		GfxR->fctFlagClr.Surface->SetClr(0xff0000);
-		AddRefSym(LoadResStr("IDS_MENU_CPATTACK"),GfxR->fctMenu.GetPhase(7),"ActivateMenu:Hostility",LoadResStr("IDS_MENU_CPATTACKINFO"));
+		AddRefSym(LoadResStr("IDS_MENU_CPATTACK"),C4GUI::Icon::GetIconFacet(C4GUI::Ico_MeleeLeague),"ActivateMenu:Hostility",LoadResStr("IDS_MENU_CPATTACKINFO"));
 	}
 	// Team change
 	if (pPlr && Game.Teams.IsTeamSwitchAllowed())
@@ -639,10 +619,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 bool C4MainMenu::ActivateHostility(int32_t iPlayer)
 {
 	// Init menu
-	C4FacetSurface fctSymbol;
-	fctSymbol.Create(C4SymbolSize, C4SymbolSize);
-	GfxR->fctMenu.GetPhase(7).Draw(fctSymbol);
-	Init(fctSymbol, LoadResStr("IDS_MENU_CPATTACK"), iPlayer, C4MN_Hostility);
+	InitRefSym(GfxR->fctMenu.GetPhase(7), LoadResStr("IDS_MENU_CPATTACK"), iPlayer, C4MN_Hostility);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 	SetPermanent(true);
 	Refill();

@@ -41,7 +41,6 @@ protected:
 	int32_t Player;
 
 public:
-	bool Init(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iPlayer, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
 	bool InitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iPlayer, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
 
 	bool ActivateMain(int32_t iPlayer);

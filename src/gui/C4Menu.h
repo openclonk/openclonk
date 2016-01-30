@@ -146,7 +146,6 @@ private:
 	bool InitMenu(const char *szEmpty, int32_t iId, int32_t iStyle);
 protected:
 	bool DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
-	bool DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
 	void DrawBuffer(C4Facet &cgo);
 	void AdjustSelection();
 	void AdjustPosition();
