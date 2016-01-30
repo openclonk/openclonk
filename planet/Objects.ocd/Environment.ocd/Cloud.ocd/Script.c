@@ -252,23 +252,163 @@ private func Precipitation()
 // Raindrop somewhere from the cloud.
 private func RainDrop()
 {
-	// Find Random Position.
-	var con = GetCon();
-	var wdt = GetDefWidth() * con / 500;
-	var hgt = GetDefHeight() * con / 700;
-	var x = RandomX(-wdt, wdt);
-	var y = RandomX(-hgt, hgt);
-	if (!GBackSky(x, y))
-		return false;
-	// Check if liquid is maybe in frozen form.
-	var mat;
-	if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
-		mat = rain_mat_frozen;
-	else
-		mat = rain_mat;
-	// Create rain drop.	
-	CastPXS(mat, 1, 1, x, y);
+	var count = 10; // TODO: some concept of rain strength
+	for (var i = 0; i < count; i++)
+	{
+		// Find Random Position.
+		var con = GetCon();
+		var wdt = GetDefWidth() * con / 500;
+		var hgt = GetDefHeight() * con / 700;
+		var x = RandomX(-wdt, wdt);
+		var y = RandomX(-hgt, hgt);
+		var xdir = RandomX(GetWind(0,0,1)-5, GetWind(0,0,1)+5)/5;
+		var ydir = 30;
+		if (!GBackSky(x, y))
+			continue;
+		// Check if liquid is maybe in frozen form.
+		var mat;
+		if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
+			mat = rain_mat_frozen;
+		else
+			mat = rain_mat;
+
+		if (i)
+		{
+			// Create rain particles.
+			var particle_name = "Raindrop";
+			var color = GetMaterialColor(mat);
+			if(mat == "Lava" || mat == "DuroLava")
+				particle_name = "RaindropLava";
+
+			// Snow is special.
+			if(mat == "Snow")
+			{
+				CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), Particles_Snow(RandomX(0,3), color), 0);
+				continue;
+			}		
+
+			var particle = Particles_Rain(RandomX(10,30), color);
+			if(Random(2)) // TODO: Why doesn't this apply to Ice?
+				particle.Attach = ATTACH_Back;
+			if(mat == "Ice")
+				particle = Particles_Ice(RandomX(10,30), color);
+			CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
+
+			// TODO: Splash.
+		}
+		else
+		{
+			// Create rain drop.	
+			CastPXS(mat, 1, 1, x, y, Angle(0, 0, xdir, ydir));
+		}
+	}
 	return true;
+}
+
+private func GetMaterialColor(string name)
+{
+	// A Material's color is actually defined by its texture.
+	var texture = GetMaterialVal("TextureOverlay", "Material", Material(name));
+	var color = GetAverageTextureColor(texture);
+	return [GetRGBaValue(color, 1), GetRGBaValue(color, 2), GetRGBaValue(color, 3)];
+}
+
+private func Particles_Rain(iSize, color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = GetGravity()/10,//PV_Gravity(100),
+		Size = iSize,
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,
+		Stretch = 3000,
+	};
+}
+private func Particles_Ice(iSize, color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = GetGravity(),//PV_Gravity(100),
+		Size = iSize,
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,
+		Stretch = 3000,
+	};
+}
+private func Particles_Snow(iSize, color)
+{
+	return
+	{
+		Phase = PV_Random(0, 16),
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		DampingY = 1000,//PV_Cos(PV_Linear(0,1800),5,990),
+		ForceY = 0,//GetGravity()/100,//PV_Gravity(100),
+		ForceX = PV_Sin(PV_Step(RandomX(5,10), Random(180)),RandomX(5,8),0),
+		Size = iSize,
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Random(360),
+		CollisionDensity = 25,
+		Stretch = 1000,
+	};
+}
+private func Particles_Rain2(iSize, color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = PV_Gravity(60),
+		Size = iSize,
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,		
+		Stretch = PV_KeyFrames(0, 0, 1000, 500, 1000, 1000, 0),
+	};
+}
+private func Particles_Splash(iSize, color)
+{
+	return
+	{
+		Phase = PV_Linear(0, 4),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 255, 1000, 0),
+		Size = iSize,
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Random(-5,5),
+		Strech = 500+Random(500),
+	};
+}
+private func Particles_SplashWater(iSize, color)
+{
+	return
+	{
+		Phase = PV_Linear(0, 13),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 255, 1000, 0),
+		Size = iSize,
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Random(-5,5),
+		Stretch = PV_Linear(3000, 3000),
+		Attach = ATTACH_Back,
+	};
+}
+private func Particles_Ice2(iSize, color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		ForceY = PV_Gravity(60),
+		OnCollision = PC_Stop(),
+		Size = iSize,
+		Alpha = PV_KeyFrames(255, 0, 255, 500, 255, 1000, 0),
+		R = color[0], G = color[1], B = color[2],
+		Rotation = PV_Random(360),
+	};
 }
 
 // Launches possibly one thunder strike from the cloud.
