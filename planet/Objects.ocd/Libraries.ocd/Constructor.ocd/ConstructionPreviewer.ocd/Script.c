@@ -90,18 +90,18 @@ public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 	{
 		if (!stick_to)
 		{
-			SetClrModulation(RGBa(50,255,50, 100), GFX_PreviewerPictureOverlay);
+			if (extra_overlay) SetClrModulation(RGBa(50,255,50, 100), GFX_PreviewerPictureOverlay);
 			SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);
 		}
 		else
 		{
-			SetClrModulation(RGBa(255,255,50, 200), GFX_PreviewerPictureOverlay);
+			if (extra_overlay) SetClrModulation(RGBa(255,255,50, 200), GFX_PreviewerPictureOverlay);
 			SetClrModulation(RGBa(255,255,50, 200), GFX_StructureOverlay);
 		}
 	}
 	else
 	{
-		SetClrModulation(RGBa(255,50,50, 100), GFX_PreviewerPictureOverlay);
+		if (extra_overlay) SetClrModulation(RGBa(255,50,50, 100), GFX_PreviewerPictureOverlay);
 		SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
 	}
 }
@@ -169,6 +169,8 @@ func Reposition(int x, int y)
 			dir = 0;
 		SetObjDrawTransform(1000, 0, dimension_x/2 * 1000 * dir, 0, 1000, 0, GFX_CombineIconOverlay);
 	}
+	// Update the extra overlay possibly added to the preview.
+	extra_overlay = structure->~ConstructionPreview(this, GFX_PreviewerPictureOverlay, direction);
 	// Update alternative preview in the definition to be placed.
 	structure->~AlternativeConstructionPreview(this, direction, stick_to);
 	SetPosition(x, y);
