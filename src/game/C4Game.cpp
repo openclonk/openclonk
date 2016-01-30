@@ -1113,7 +1113,8 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 	return pObj;
 }
 
-C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t Plane)
+// Finds an object (OCF_Exclusive) that blocks a potential construction site in the given rectangle 
+C4Object* C4Game::FindConstuctionSiteBlock(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
 {
 	C4Rect rect1,rect2;
 	rect1.x=tx; rect1.y=ty; rect1.Wdt=wdt; rect1.Hgt=hgt;
@@ -1121,7 +1122,7 @@ C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 	for (C4ObjectList *pObjs = Area.FirstObjectShapes(&pSector); pSector; pObjs = Area.NextObjectShapes(pObjs, &pSector))
 		for (C4Object *cObj : *pObjs)
 			if (cObj->Status && !cObj->Contained)
-				if (cObj->GetPlane() == Plane)
+				if (cObj->OCF & OCF_Exclusive)
 				{
 					rect2=cObj->Shape; rect2.x+=cObj->GetX(); rect2.y+=cObj->GetY();
 					if (rect1.Overlap(rect2)) return cObj;

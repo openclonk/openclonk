@@ -191,7 +191,7 @@ public:
 	                                   int32_t con=1, bool terrain=false);
 	C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
 	                           int32_t tx=50, int32_t ty=50);
-	C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t Plane);
+	C4Object *FindConstuctionSiteBlock(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
 	C4Object *FindObject(C4Def * pDef,
 	                     int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
 	                     DWORD ocf=OCF_All,

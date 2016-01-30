@@ -128,7 +128,7 @@
         <row>
           <literal_col>Exclusive</literal_col>
           <col>Integer</col>
-          <col>0 or 1. Determines whether the object blocks objects behind it.</col>
+          <col>0 or 1. Determines whether the object blocks objects behind it. Exclusive objects also block the placement of a construction site at an overlapping location.</col>
         </row>
         <row>
           <literal_col>Line</literal_col>

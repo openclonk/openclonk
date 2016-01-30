@@ -219,10 +219,7 @@ static C4ValueArray *FnFindConstructionSite(C4PropList * _this, C4PropList * Pro
 	if (ConstructionCheck(PropList,v1,v2))
 		return NULL;
 	// Search for real
-	bool result = !!FindConSiteSpot(v1, v2,
-	                                pDef->Shape.Wdt,pDef->Shape.Hgt,
-	                                pDef->GetPlane(),
-	                                20);
+	bool result = !!FindConSiteSpot(v1, v2, pDef->Shape.Wdt,pDef->Shape.Hgt, 20);
 	if(!result) return 0;
 	C4ValueArray *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(v1));
