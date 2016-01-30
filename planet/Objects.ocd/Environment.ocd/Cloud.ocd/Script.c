@@ -272,37 +272,80 @@ private func RainDrop()
 		else
 			mat = rain_mat;
 
-		if (i)
+		if(mat == "Ice")
 		{
-			// Create rain particles.
-			var particle_name = "Raindrop";
-			var color = GetMaterialColor(mat);
-			if(mat == "Lava" || mat == "DuroLava")
-				particle_name = "RaindropLava";
-
-			// Snow is special.
-			if(mat == "Snow")
-			{
-				CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), Particles_Snow(RandomX(0,3), color), 0);
-				continue;
-			}		
-
-			var particle = Particles_Rain(RandomX(10,30), color);
-			if(Random(2)) // TODO: Why doesn't this apply to Ice?
-				particle.Attach = ATTACH_Back;
-			if(mat == "Ice")
-				particle = Particles_Ice(RandomX(10,30), color);
-			CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
-
-			// TODO: Splash.
+			// Ice (-> hail) falls faster.
+			xdir *= 4;
+			ydir *= 4;
 		}
-		else
+
+		// Create rain particles.
+		var particle_name = "Raindrop";
+		var color = GetMaterialColor(mat);
+		if(mat == "Lava" || mat == "DuroLava")
+			particle_name = "RaindropLava";
+
+		// Snow is special.
+		if(mat == "Snow")
 		{
-			// Create rain drop.	
-			CastPXS(mat, 1, 1, x, y, Angle(0, 0, xdir, ydir));
+			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), Particles_Snow(RandomX(0,3), color), 0);
+			continue;
+		}		
+
+		var particle = Particles_Rain(RandomX(10,30), color);
+		if(Random(2))
+			particle.Attach = ATTACH_Back;
+		CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
+
+		// Splash.
+		var hit = SimFlight(x, y, xdir, ydir, 25 /* Liquid */, nil, nil, 3);
+		var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
+		if (time_passed > 0)
+		{
+			ScheduleCall(this, "DropHit", time_passed, 0, mat, AbsX(x_final), AbsY(y_final), !i);
 		}
 	}
 	return true;
+}
+
+private func DropHit(string material_name, int x_orig, int y_orig, bool create_material)
+{
+	// Adjust position so that it's in the air.
+	var x = x_orig, y = y_orig;
+	while (GBackSemiSolid(x, y - 1)) y--;
+
+	if (create_material)
+	{
+		InsertMaterial(Material(material_name), x, y);
+	}
+
+	// Don't always create a splash.
+	if (Random(5)) return;
+
+	var color = GetMaterialColor(material_name);
+	// Some material combinations cast smoke
+	// TODO: Figure out some generic way to do this?
+	if(GBackLiquid(x,y) && (material_name == "Acid" || material_name == "Lava" || material_name == "DuroLava") && GetMaterial(x,y) == Material("Water"))
+	{
+		Smoke(x, y, 3, RGB(150,160,150));
+	}
+	// Liquid? liquid splash!
+	else if(GBackLiquid(x,y))
+	{
+		if(!GBackLiquid(x-1,y) || !GBackLiquid(x+1,y)) y += 1;
+		CreateParticle("RaindropSplashLiquid", x, y, 0, 0, 50, Particles_SplashWater(RandomX(2,5), color), 0);
+	}
+	// Solid? normal splash!
+	else
+	{
+		if( (material_name == "Acid" && GetMaterial(x,y) == Material("Earth")) || material_name == "Lava" || material_name == "DuroLava")
+			Smoke(x, y, 3, RGB(150,160,150));
+		CreateParticle("RaindropSplash", x, y-1, 0, 0, 5, Particles_Splash(RandomX(5,10), color), 0);
+		if(material_name == "Ice")
+			CreateParticle("Hail", x, y, RandomX(-2,2), -Random(10), PV_Random(300, 300), Particles_Ice2(2, color), 0);
+		else
+			CreateParticle("RaindropSmall", x, y, RandomX(-4, 4), -Random(10), PV_Random(300, 300), Particles_Rain2(20, color), 0);
+	}
 }
 
 private func GetMaterialColor(string name)
@@ -320,20 +363,6 @@ private func Particles_Rain(iSize, color)
 		CollisionVertex = 0,
 		OnCollision = PC_Die(),
 		ForceY = GetGravity()/10,//PV_Gravity(100),
-		Size = iSize,
-		R = color[0], G = color[1], B = color[2],
-		Rotation = PV_Direction(),
-		CollisionDensity = 25,
-		Stretch = 3000,
-	};
-}
-private func Particles_Ice(iSize, color)
-{
-	return
-	{
-		CollisionVertex = 0,
-		OnCollision = PC_Die(),
-		ForceY = GetGravity(),//PV_Gravity(100),
 		Size = iSize,
 		R = color[0], G = color[1], B = color[2],
 		Rotation = PV_Direction(),
