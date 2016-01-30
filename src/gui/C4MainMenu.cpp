@@ -64,7 +64,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 	// Menu symbol/init
 	if (GfxR->fctPlayerClr.Surface)
 		GfxR->fctPlayerClr.Surface->SetClr(0xff);
-	InitRefSym(GfxR->fctPlayerClr, LoadResStr("IDS_MENU_NOPLRFILES"), iPlayer);
+	InitRefSym(GfxR->fctPlayerClr, LoadResStr("IDS_MENU_CPNEWPLAYER"), iPlayer, 0, C4MN_Style_Context);
 	for (DirectoryIterator iter(Config.General.UserDataPath); *iter; ++iter)
 		if (WildcardMatch("*.ocp", *iter))
 		{
@@ -78,13 +78,22 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 			// Load player info
 			C4PlayerInfoCore C4P;
 			if (!C4P.Load(hGroup)) { hGroup.Close(); continue; }
+			// Load custom portrait
+			C4FacetSurface fctSymbol;
+			if (!fctSymbol.Load(hGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, true))
+				fctSymbol.Load(hGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, true);
 			// Close group
 			hGroup.Close();
 			// Add player item
 			sprintf(szCommand, "JoinPlayer:%s", szFilename);
 			StdStrBuf sItemText;
 			sItemText.Format(LoadResStr("IDS_MENU_NEWPLAYER"), C4P.PrefName);
-			C4FacetSurface fctSymbol;
+			// No custom portrait: use default player image
+			if (!fctSymbol.Surface)
+			{
+				fctSymbol.Create(C4SymbolSize, C4SymbolSize);
+				GfxR->fctPlayerClr.DrawClr(fctSymbol, true, C4P.PrefColorDw);
+			}
 			// Add menu item
 			Add(sItemText.getData(), fctSymbol, szCommand);
 			// Reset symbol facet (menu holds on to the surface)
