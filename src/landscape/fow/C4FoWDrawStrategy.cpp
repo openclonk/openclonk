@@ -371,6 +371,7 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 	{
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 	}
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Upload indices
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -383,12 +384,15 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 	{
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, triangulator.GetNIndices() * sizeof(GLuint), triangulator.GetIndices());
 	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	GLuint vao;
 	const bool has_vao = pGL->GetVAO(vaoid, vao);
 	glBindVertexArray(vao);
 	if (!has_vao)
 	{
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
 		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
 
@@ -404,8 +408,6 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 
 	// Reset GL state
 	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// Assume the capacity stays the same:
