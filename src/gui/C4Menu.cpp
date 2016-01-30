@@ -438,9 +438,9 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 	{
 		ItemHeight = std::max<int32_t>(ItemHeight, ::GraphicsResource.FontRegular.GetLineHeight());
 		int32_t iWdt, iHgt;
-		::GraphicsResource.FontRegular.GetTextExtent(Caption, ItemWidth, iHgt, true);
+		::GraphicsResource.FontRegular.GetTextExtent(Caption, iWdt, iHgt, true);
 		// FIXME: Blah. This stuff should be calculated correctly by pTitle.
-		ItemWidth += ItemHeight + 16;
+		ItemWidth += iWdt + 20 + C4GUI_IconLabelSpacing;
 		C4MenuItem *pItem;
 		for (int i = 0; (pItem = GetItem(i)); ++i)
 		{

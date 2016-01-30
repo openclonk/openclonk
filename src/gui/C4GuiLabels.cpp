@@ -139,11 +139,11 @@ namespace C4GUI
 		// draw symbol
 		if (fctIcon.Surface)
 		{
-			C4Facet cgoSymbol(cgo.Surface, cgo.TargetX + rcBounds.x + 1, cgo.TargetY + rcBounds.y + 1, rcBounds.Hgt-2, rcBounds.Hgt-2);
+			C4Facet cgoSymbol(cgo.Surface, cgo.TargetX + rcBounds.x, cgo.TargetY + rcBounds.y, rcBounds.Hgt, rcBounds.Hgt);
 			fctIcon.Draw(cgoSymbol);
 		}
 		// calculations for automatic scrolling
-		int32_t iXOff = 0;
+		int32_t iXOff = 0, iYOff;
 		if (iAlign == ALeft) iXOff += C4GUI_IconLabelSpacing;
 		if (iAutoScrollDelay)
 		{
@@ -168,14 +168,17 @@ namespace C4GUI
 		// print out text; clipped
 		pDraw->StorePrimaryClipper();
 		pDraw->SetPrimaryClipper(rcBounds.x + GetLeftIndent() + cgo.TargetX, rcBounds.y + cgo.TargetY, rcBounds.x+rcBounds.Wdt - GetRightIndent() + cgo.TargetX, rcBounds.y+rcBounds.Hgt + cgo.TargetY);
-		pDraw->TextOut(sText.getData(), *pFont, 1.0f, cgo.Surface, x0 + cgo.TargetX + iXOff, rcBounds.y + cgo.TargetY + (rcBounds.Hgt-pFont->GetLineHeight())/2-1, dwFgClr, iAlign);
+		iYOff = (rcBounds.Hgt-pFont->GetLineHeight())/2-1;
+		// even border all around the text
+		if (!fctIcon.Surface) iXOff += iYOff;
+		pDraw->TextOut(sText.getData(), *pFont, 1.0f, cgo.Surface, x0 + cgo.TargetX + iXOff, rcBounds.y + cgo.TargetY + iYOff, dwFgClr, iAlign);
 		pDraw->RestorePrimaryClipper();
 	}
 
 	int32_t WoodenLabel::GetDefaultHeight(CStdFont *pUseFont)
 	{
 		if (!pUseFont) pUseFont = &(::GraphicsResource.TextFont);
-		return std::max<int32_t>(pUseFont->GetLineHeight(), C4GUI_MinWoodBarHgt);
+		return std::max<int32_t>(pUseFont->GetLineHeight(), C4SymbolSize);
 	}
 
 	void WoodenLabel::SetIcon(const C4Facet &rfctIcon)
