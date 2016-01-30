@@ -27,7 +27,6 @@
 
 enum
 {
-	C4MN_SymbolSize   = 16,
 	C4MN_FrameWidth   = 2
 };
 enum

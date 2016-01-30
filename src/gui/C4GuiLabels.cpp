@@ -144,7 +144,7 @@ namespace C4GUI
 		}
 		// calculations for automatic scrolling
 		int32_t iXOff = 0;
-		if (iAlign == ALeft) iXOff += 5;
+		if (iAlign == ALeft) iXOff += C4GUI_IconLabelSpacing;
 		if (iAutoScrollDelay)
 		{
 			C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();

@@ -95,7 +95,10 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	// Draw item text
 	pDraw->StorePrimaryClipper(); pDraw->SubPrimaryClipper(cgoItemText.X, cgoItemText.Y, cgoItemText.X+cgoItemText.Wdt-1, cgoItemText.Y+cgoItemText.Hgt-1);
 	if (iStyle == C4MN_Style_Context)
-		pDraw->TextOut(Caption,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,C4Draw::DEFAULT_MESSAGE_COLOR,ALeft);
+		pDraw->TextOut(Caption, ::GraphicsResource.FontRegular, 1.0f, cgoItemText.Surface,
+		               cgoItemText.X + C4GUI_IconLabelSpacing,
+		               cgoItemText.Y + round((cgoItemText.Hgt - ::GraphicsResource.FontRegular.GetLineHeight())/2)-1,
+		               C4GUI_ContextFontClr);
 	pDraw->RestorePrimaryClipper();
 }
 
@@ -437,16 +440,10 @@ void C4Menu::SetSize(int32_t iToWdt, int32_t iToHgt)
 
 void C4Menu::InitLocation(C4Facet &cgoArea)
 {
-
-	// Item size by style
-	switch (Style)
+	ItemWidth=ItemHeight=C4SymbolSize;
+	if (Style == C4MN_Style_Context)
 	{
-	case C4MN_Style_Normal:
-		ItemWidth=ItemHeight=C4SymbolSize;
-		break;
-	case C4MN_Style_Context:
-	{
-		ItemHeight = std::max<int32_t>(C4MN_SymbolSize, ::GraphicsResource.FontRegular.GetLineHeight());
+		ItemHeight = std::max<int32_t>(ItemHeight, ::GraphicsResource.FontRegular.GetLineHeight());
 		int32_t iWdt, iHgt;
 		::GraphicsResource.FontRegular.GetTextExtent(Caption, ItemWidth, iHgt, true);
 		// FIXME: Blah. This stuff should be calculated correctly by pTitle.
@@ -455,11 +452,9 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 		for (int i = 0; (pItem = GetItem(i)); ++i)
 		{
 			::GraphicsResource.FontRegular.GetTextExtent(pItem->Caption, iWdt, iHgt, true);
-			ItemWidth = std::max(ItemWidth, iWdt + pItem->GetSymbolWidth(ItemHeight));
+			ItemWidth = std::max(ItemWidth, iWdt + pItem->GetSymbolWidth(ItemHeight) + C4GUI_IconLabelSpacing);
 		}
 		ItemWidth += 3; // Add some extra space so text doesn't touch right border frame...
-		break;
-	}
 	}
 
 	Lines = ItemCount/Columns+std::min<int32_t>(ItemCount%Columns,1);
