@@ -84,6 +84,7 @@ func DrawSmallIslandsMap(proplist map)
 	{
 		var x = w*2/10 + i * (w*6/10) / (spawn_island_count - 1);
 		var y = Max(1, h/10) + Abs(x-w/2) * 3*h/10/w;
+		if (SCENPAR_Weapons) y += 3; // Grenade launcher mode needs lower starting islands to prevent camping
 		map->Draw("^Ice-ice2", nil, [x,y,1,1]);
 		g_player_spawn_positions[i] = [x, y-1];
 	}

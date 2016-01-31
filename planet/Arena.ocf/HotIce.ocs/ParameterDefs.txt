@@ -15,3 +15,21 @@ Default=0
 		Name=$MapTypeSpots$
 		Description=$DescMapTypeSpots$
 		Value=1
+
+[ParameterDef]
+Name=$Weapons$
+Description=$DescWeapons$
+ID=Weapons
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$WeaponsClassic$
+		Description=$DescWeaponsClassic$
+		Value=0
+		
+		[Option]
+		Name=$WeaponsExplosive$
+		Description=$DescWeaponsExplosive$
+		Value=1

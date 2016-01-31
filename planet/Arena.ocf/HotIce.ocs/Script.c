@@ -7,19 +7,28 @@ func Initialize()
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var chest_area_y = ls_hgt*[0,30][SCENPAR_MapType]/100;
 	var chest_area_hgt = ls_hgt/2;
-	for (i=0; i<6; ++i)
+	// Chests in regular mode. Boom packs in grenade launcher mode.
+	var num_extras = [6,12][SCENPAR_Weapons];
+	for (i=0; i<num_extras; ++i)
 		if (pos=FindLocation(Loc_InRect(0,chest_area_y,ls_wdt,chest_area_hgt-100), Loc_Wall(CNAT_Bottom))) // Loc_Wall adds us 100 pixels...
 		{
-			var chest = CreateObjectAbove(Chest,pos.x,pos.y);
-			if (chest)
+			if (SCENPAR_Weapons == 0)
 			{
-				chest->CreateContents(Firestone,5);
-				chest->CreateContents(Bread,1);
-				chest->CreateContents(Bow,1);
-				chest->CreateContents(FireArrow,1)->SetStackCount(5);
-				chest->CreateContents(BombArrow,1)->SetStackCount(5);
-				chest->CreateContents(Shield,1);
-				chest->CreateContents(IronBomb,3);
+				var chest = CreateObjectAbove(Chest,pos.x,pos.y);
+				if (chest)
+				{
+					chest->CreateContents(Firestone,5);
+					chest->CreateContents(Bread,1);
+					chest->CreateContents(Bow,1);
+					chest->CreateContents(FireArrow,1)->SetStackCount(5);
+					chest->CreateContents(BombArrow,1)->SetStackCount(5);
+					chest->CreateContents(Shield,1);
+					chest->CreateContents(IronBomb,3);
+				}
+			}
+			else
+			{
+				var boompack= CreateObjectAbove(Boompack,pos.x,pos.y);
 			}
 		}
 	// Materials: Firestones
@@ -60,12 +69,34 @@ func InitializePlayer(int plr)
 	}
 	crew->SetPosition(start_pos.x, start_pos.y-10);
 	// initial material
-	crew->CreateContents(Shovel);
-	crew->CreateContents(Club);
-	crew->CreateContents(WindBag);
-	crew->CreateContents(Firestone,2);
+	if (SCENPAR_Weapons == 0)
+	{
+		crew->CreateContents(Shovel);
+		crew->CreateContents(Club);
+		crew->CreateContents(WindBag);
+		crew->CreateContents(Firestone,2);
+	}
+	else
+	{
+		// Grenade launcher mode
+		crew.MaxContentsCount = 2;
+		crew->CreateContents(WindBag);
+		var launcher = crew->CreateContents(GrenadeLauncher);
+		if (launcher)
+		{
+			var ammo = launcher->CreateContents(IronBomb);
+			launcher->AddTimer(Scenario.ReplenishLauncherAmmo, 10);
+		}
+	}
 	crew.MaxEnergy = 100000;
 	crew->DoEnergy(1000);
+	return true;
+}
+
+/* Called periodically in grenade launcher */
+func ReplenishLauncherAmmo()
+{
+	if (!ContentsCount()) CreateContents(IronBomb);
 	return true;
 }
 
