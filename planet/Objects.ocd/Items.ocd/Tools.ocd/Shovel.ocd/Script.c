@@ -8,7 +8,7 @@ private func Hit()
 private func Destruction()
 {
 	if (Contained())
-		if (Contained()->GetAction("Dig"))
+		if (Contained()->GetAction())
 		{
 			// We assume that the clonk digs with this shovel. If not, too bad. You stop shoveling.
 			Contained()->SetAction("Walk");
