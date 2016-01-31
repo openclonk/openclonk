@@ -139,10 +139,10 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
 		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
 
-		// limit angle
-		DigAngle = BoundBy(DigAngle,65,300);
-		var dig_xdir = Sin(DigAngle,+speed);
-		var dig_ydir = Cos(DigAngle,-speed);
+		// Limit the digging angle: one can dig maximally 30 degrees upwards.
+		DigAngle = BoundBy(DigAngle, 60, 300);
+		var dig_xdir = Sin(DigAngle, speed);
+		var dig_ydir = -Cos(DigAngle, speed);
 
 		// Stuck-check: When player wants to go horizontally while standing on the ground but can't, add a vertical redirect
 		// This helps with Clonks getting "stuck" not moving on certain terrain when dig speed is not sufficient to push him up a slope
