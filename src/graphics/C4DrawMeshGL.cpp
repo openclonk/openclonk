@@ -655,6 +655,9 @@ namespace
 			}
 		}
 
+		// Don't render with degenerate matrix
+		if (fabs(modelviewMatrix.Determinant()) < 1e-6)
+			return;
 		// Modelview matrix does not change between passes, so cache it here
 		const StdMeshMatrix normalMatrixTranspose = StdMeshMatrix::Inverse(modelviewMatrix);
 
