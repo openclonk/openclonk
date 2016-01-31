@@ -179,6 +179,11 @@ protected func Damage(int change, int type, int by_player)
 	return;
 }
 
+public func OnCannonShot(object cannon)
+{
+	Incinerate(nil, cannon->GetController());
+}
+
 public func FxFuseTimer(object target, effect, int timer)
 {
 	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);

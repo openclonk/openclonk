@@ -81,6 +81,11 @@ public func Fuse()
 	}
 }
 
+public func OnCannonShot(object cannon)
+{
+	Fuse();
+}
+
 // returns true if there is a wall in direction in which "clonk" looks
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
 private func GetWall(int angle)

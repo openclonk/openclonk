@@ -28,6 +28,11 @@ func Fuse(bool explode_on_hit)
 	AddEffect("FuseBurn", this, 1,1, this);
 }
 
+public func OnCannonShot(object cannon)
+{
+	Fuse(true);
+}
+
 func FxFuseBurnTimer(object bomb, proplist effect, int timer)
 {
 	var i = 3;

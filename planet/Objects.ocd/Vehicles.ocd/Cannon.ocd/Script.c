@@ -251,7 +251,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 	iammo->LaunchProjectile(r, 17, Fire_Velocity, 0,0, angPrec);
 	if (clonk)
 		iammo->SetController(clonk->GetController());
-	iammo->~Fuse();
+	iammo->~OnCannonShot(this);
 
 	//Particles
 	var dist = 25;
