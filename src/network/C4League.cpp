@@ -617,19 +617,23 @@ void C4LeagueSignupDialog::UserClose(bool fOK)
 		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 	}
-	// Username contains invalid characters
-	if (SCharCountEx(szAccount, C4League_Name_Valid_Characters) != SLen(szAccount))
+	// Check for valid username if this is registration
+	if (pEdtPass2)
 	{
-		SetFocus(pEdtAccount->GetEdit(), false);
-		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEINVALIDUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-		return;
-	}
-	// Username is too short
-	if (SLen(szAccount) < 3)
-	{
-		SetFocus(pEdtAccount->GetEdit(), false);
-		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEUSERNAMETOOSHORT"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-		return;
+		// Username contains invalid characters
+		if (SCharCountEx(szAccount, C4League_Name_Valid_Characters) != SLen(szAccount))
+		{
+			SetFocus(pEdtAccount->GetEdit(), false);
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEINVALIDUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			return;
+		}
+		// Username is too short
+		if (SLen(szAccount) < 3)
+		{
+			SetFocus(pEdtAccount->GetEdit(), false);
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEUSERNAMETOOSHORT"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			return;
+		}
 	}
 	// Check password
 	if (!pChkPassword || pChkPassword->GetChecked())
