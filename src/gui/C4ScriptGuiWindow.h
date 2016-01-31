@@ -337,6 +337,8 @@ public:
 	// called by this window, sets the mouse focus; the offset is used to set the correct tooltip rectangle for ::MouseControl
 	void OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t parentOffsetY);
 	bool HasMouseFocus() { return currentMouseState & MouseState::Focus; }
+	// Returns whether the menu can be seen (and interacted with) by a player. This includes checking the target's visibility.
+	bool IsVisibleTo(int32_t player);
 private:
 	// Use the currently loaded font to determine on-screen size of 1 EM.
 	static float Em2Pix(float em);

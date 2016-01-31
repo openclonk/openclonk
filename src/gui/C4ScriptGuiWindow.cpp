@@ -1797,11 +1797,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	assert(!IsRoot()); // not root, root needs to receive DrawAll
 
 	// message hidden?
-	const int32_t &myPlayer = props[C4ScriptGuiWindowPropertyName::player].GetInt();
-	if (!IsVisible() || (myPlayer != ANY_OWNER && player != myPlayer) || (target && !target->IsVisible(player, false)))
-	{
-		return false;
-	}
+	if (!IsVisibleTo(player)) return false;
 	
 	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 
@@ -2010,6 +2006,9 @@ bool C4ScriptGuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouse
 {
 	// only called on root
 	assert(IsRoot());
+	// This is only called during a mouse move event, where the MouseControl's player is available.
+	const int32_t &player = ::MouseControl.GetPlayer();
+	assert(player != NO_OWNER);
 	// Only allow one window to catch the mouse input.
 	// Do not simply return, however, since other windows might need OnMouseOut().
 	bool oneActionAlreadyExecuted = false;
@@ -2025,6 +2024,9 @@ bool C4ScriptGuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouse
 			if ((withMultipleFlag == 0) && (style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
 			if ((withMultipleFlag == 1) && !(style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
 			
+			// Do the visibility check first. The child itself won't do it, because we are handling mouse in/out here, too.
+			if (!child->IsVisibleTo(player)) continue;
+
 			// we are root, we have to adjust the position for the "main" windows that are centered
 			int32_t adjustedMouseX = 0, adjustedMouseY = mouseY;
 			int32_t offsetX = 0, offsetY = 0;
@@ -2076,13 +2078,7 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 	if (style & C4ScriptGuiWindowStyleFlag::IgnoreMouse)
 		return false;
-
-	// if the window belongs to an invisible object, don't show
-	// the "normal" visibility will be handed by the parent callback
-	if (target)
-		if (!target->IsVisible(player, false))
-			return false;
-
+	
 	// we have mouse focus! Is this new?
 	if (!HasMouseFocus())
 		OnMouseIn(player, parentOffsetX, parentOffsetY);
@@ -2098,6 +2094,10 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	for (auto iter = rbegin(); iter != rend(); ++iter)
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(*iter);
+
+		// Do the visibility check first. The child itself won't do it, because we are handling mouse in/out here, too.
+		if (!child->IsVisibleTo(player)) continue;
+
 		const int32_t childLeft = child->rcBounds.x;
 		const int32_t childRight = child->rcBounds.x + child->rcBounds.Wdt;
 		const int32_t childTop = child->rcBounds.y;
@@ -2246,4 +2246,17 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 bool C4ScriptGuiWindow::IsRoot()
 {
 	return this == Game.ScriptGuiRoot.get();
+}
+
+bool C4ScriptGuiWindow::IsVisibleTo(int32_t player)
+{
+	// Not visible at all?
+	if (!IsVisible()) return false;
+	// We have a player assigned and it's a different one?
+	const int32_t &myPlayer = props[C4ScriptGuiWindowPropertyName::player].GetInt();
+	if (myPlayer != ANY_OWNER && player != myPlayer) return false;
+	// We have a target object which is invisible to the player?
+	if (target && !target->IsVisible(player, false)) return false;
+	// Default to visible!
+	return true;
 }
