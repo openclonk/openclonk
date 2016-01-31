@@ -130,8 +130,6 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 		ScriptEngine.Link(&::Definitions);
 		if(c4_log_handle_get_n_log_messages() > 1)
 			throw std::runtime_error(c4_log_handle_get_first_log_message());
-		// Set name list for globals
-		ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 
 		// Generate map, fail if return error occurs
 		c4_log_handle_clear();
@@ -248,8 +246,6 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 			ScriptEngine.Link(&::Definitions);
 			if(c4_log_handle_get_n_log_messages() > 1)
 				throw std::runtime_error(c4_log_handle_get_first_log_message());
-			// Set name list for globals
-			ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 		}
 
 		c4_log_handle_clear();

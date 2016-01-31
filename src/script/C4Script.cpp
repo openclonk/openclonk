@@ -107,38 +107,10 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 	return StringBuf;
 }
 
-bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix)
+C4AulDefFunc::C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef):
+		C4AulFunc(Parent, pDef->Identifier), Def(pDef)
 {
-	const C4ValueArray* array = value.getArray();
-	if (!array) return false;
-	return C4ValueToMatrix(*array, matrix);
-}
-
-bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
-{
-	if (array.GetSize() != 12) return false;
-
-	StdMeshMatrix& trans = *matrix;
-	trans(0,0) = array[0].getInt()/1000.0f;
-	trans(0,1) = array[1].getInt()/1000.0f;
-	trans(0,2) = array[2].getInt()/1000.0f;
-	trans(0,3) = array[3].getInt()/1000.0f;
-	trans(1,0) = array[4].getInt()/1000.0f;
-	trans(1,1) = array[5].getInt()/1000.0f;
-	trans(1,2) = array[6].getInt()/1000.0f;
-	trans(1,3) = array[7].getInt()/1000.0f;
-	trans(2,0) = array[8].getInt()/1000.0f;
-	trans(2,1) = array[9].getInt()/1000.0f;
-	trans(2,2) = array[10].getInt()/1000.0f;
-	trans(2,3) = array[11].getInt()/1000.0f;
-
-	return true;
-}
-
-C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef):
-		C4AulFunc(pOwner, pDef->Identifier), Def(pDef)
-{
-	Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+	Parent->SetPropertyByS(Name, C4VFunction(this));
 }
 
 C4AulDefFunc::~C4AulDefFunc()
@@ -329,7 +301,8 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) _this = ::ScriptEngine.GetPropList();
-	C4AulParSet ParSet(&Pars[1], C4AUL_MAX_Par - 1);
+	C4AulParSet ParSet;
+	ParSet.Copy(&Pars[1], C4AUL_MAX_Par - 1);
 	C4AulFunc * fn = Pars[0].getFunction();
 	C4String * name;
 	if (!fn)
@@ -582,7 +555,7 @@ static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & 
 	return v1 == v2;
 }
 
-static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
+static void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
 {
 	// safety
 	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
@@ -590,7 +563,6 @@ static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize
 
 	// set new size
 	pArray->SetSize(iNewSize);
-	return C4Void();
 }
 
 static Nillable<long> FnGetChar(C4PropList * _this, C4String *pString, long iIndex)
@@ -609,13 +581,7 @@ static Nillable<long> FnGetChar(C4PropList * _this, C4String *pString, long iInd
 
 static C4Value Fneval(C4PropList * _this, C4String *strScript)
 {
-	// execute script in the same object
-	if (Object(_this))
-		return Object(_this)->Def->Script.DirectExec(Object(_this), FnStringPar(strScript), "eval", true);
-	else if (_this && _this->GetDef())
-		return _this->GetDef()->Script.DirectExec(0, FnStringPar(strScript), "eval", true);
-	else
-		return ::GameScript.DirectExec(0, FnStringPar(strScript), "eval", true);
+	return ::AulExec.DirectExec(_this, FnStringPar(strScript), "eval", true);
 }
 
 static bool FnLocateFunc(C4PropList * _this, C4String *funcname, C4PropList * p)
@@ -688,8 +654,7 @@ static bool FnFatalError(C4PropList * _this, C4String *pErrorMsg)
 
 static bool FnStartCallTrace(C4PropList * _this)
 {
-	extern void C4AulStartTrace();
-	C4AulStartTrace();
+	AulExec.StartTrace();
 	return true;
 }
 
@@ -810,10 +775,11 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
 
+	C4PropListStatic * p = pEngine->GetPropList();
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
-		new C4AulDefFunc(pEngine, pDef);
-#define F(f) AddFunc(pEngine, #f, Fn##f)
+		new C4AulDefFunc(p, pDef);
+#define F(f) ::AddFunc(p, #f, Fn##f)
 	F(Abs);
 	F(Min);
 	F(Max);
@@ -860,7 +826,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(eval);
 	F(GetConstantNameByValue);
 
-	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
-	AddFunc(pEngine, "LogCallStack", C4AulExec::FnLogCallStack);
+	::AddFunc(p, "Translate", C4AulExec::FnTranslate);
+	::AddFunc(p, "LogCallStack", C4AulExec::FnLogCallStack);
 #undef F
 }

@@ -15,16 +15,14 @@
 
 #include <C4Include.h>
 #include "script/C4Aul.h"
+#include "script/C4AulExec.h"
 
 #include <gtest/gtest.h>
 
 TEST(DirectExecTest, SanityTests)
 {
-	C4AulScript * pScript = new C4AulScript();
-	ASSERT_TRUE(pScript);
-	C4Value rVal(pScript->DirectExec(nullptr, "5*8", "unit test script", false, nullptr));
+	C4Value rVal(AulExec.DirectExec(nullptr, "5*8", "unit test script", false, nullptr));
 	EXPECT_EQ(rVal, C4Value(5*8));
-	delete pScript;
 }
 
 template<typename T>
@@ -83,7 +81,7 @@ TEST(DirectExecTest, HostUnmodifedByParseTest)
 	TestHost host2 = host;
 	host.test_equality(host2);
 	char szScript[] = "8*5";
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(&host, host.GetScriptHost(), 0, szScript);
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(host.GetPropList(), host.GetScriptHost(), 0, szScript);
 	host.test_equality(host2);
 	pFunc->ParseFn();
 	host.test_equality(host2);

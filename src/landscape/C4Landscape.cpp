@@ -473,11 +473,11 @@ void C4Landscape::PostFreeShape(C4ValueArray *dig_objects, C4Object *by_object)
 				if (dig_object != by_object)
 					if (!dig_object->Contained && dig_object->Status)
 					{
-						C4AulParSet pars(C4VObj(by_object));
+						C4AulParSet pars(by_object);
 						dig_object->Call(PSF_OnDugOut, &pars);
 						if (dig_object->Status && by_object->Status)
 						{
-							C4AulParSet pars(C4VObj(dig_object));
+							C4AulParSet pars(dig_object);
 							by_object->Call(PSF_DigOutObject, &pars);
 						}
 					}
@@ -602,7 +602,7 @@ void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *
 
 void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect)
 {
-	C4AulParSet pars(C4VObj(pCollect));
+	C4AulParSet pars(pCollect);
 	for (int32_t mat=0; mat< ::MaterialMap.Num; mat++)
 	{
 		if (mat_list->Amount[mat])

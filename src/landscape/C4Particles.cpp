@@ -22,9 +22,8 @@
 #include <C4Config.h>
 
 #ifndef USE_CONSOLE
-// headers for particle excution
+// headers for particle execution
 #include <C4Application.h>
-#include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
 #include <C4Material.h>
@@ -33,6 +32,7 @@
 #include <C4Random.h>
 #include <C4Landscape.h>
 #include <C4Weather.h>	
+#include <C4Object.h>
 #endif
 
 

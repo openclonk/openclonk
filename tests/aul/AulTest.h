@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "gamescript/C4Script.h"
 #include "script/C4Value.h"
 
 inline std::ostream &operator<<(std::ostream &os, const C4Value &val)

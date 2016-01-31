@@ -20,7 +20,7 @@
 #define INC_C4ValueList
 
 // reference counted array of C4Values
-class C4ValueArray
+class C4ValueArray: public C4RefCnt
 {
 public:
 	enum { MaxSize = 1000000 }; // ye shalt not create arrays larger than that!
@@ -65,11 +65,6 @@ public:
 	// Compilation
 	void CompileFunc(class StdCompiler *pComp, C4ValueNumbers *);
 
-
-	// Add/Remove Reference
-	void IncRef() { iRefCnt++; }
-	void DecRef() { if (!--iRefCnt) delete this;  }
-
 	// Return sub-array [startIndex, endIndex). Throws C4AulExecError.
 	C4ValueArray * GetSlice(int32_t startIndex, int32_t endIndex);
 	// Sets sub-array [startIndex, endIndex). Might resize the array.
@@ -82,8 +77,6 @@ public:
 	bool SortByArrayElement(int32_t array_idx, bool descending=false); // checks that this is an array of all arrays and sorts by array elements at index. returns false if an element is not an array or smaller than array_idx+1
 
 private:
-	// Reference counter
-	unsigned int iRefCnt;
 	int32_t iSize, iCapacity;
 	C4Value* pData;
 };

@@ -29,7 +29,7 @@
 #include "C4Game.h"
 #include "C4PlayerList.h"
 #include "C4GameObjects.h"
-
+#include "C4AulExec.h"
 
 // -----------------------------------------------------------
 // C4ObjectMenu
@@ -56,7 +56,7 @@ bool C4ObjectMenu::IsCloseDenied()
 	{
 		CloseQuerying = true;
 		bool fResult = false;
-		C4AulParSet pars(C4VInt(Selection), C4VObj(ParentObject));
+		C4AulParSet pars(Selection, ParentObject);
 		if (eCallbackType == CB_Object)
 		{
 			if (Object) fResult = !!Object->Call(PSF_MenuQueryCancel, &pars);
@@ -97,7 +97,7 @@ void C4ObjectMenu::OnSelectionChanged(int32_t iNewSelection)
 	// do selection callback
 	if (UserMenu)
 	{
-		C4AulParSet pars(C4VInt(iNewSelection), C4VObj(ParentObject));
+		C4AulParSet pars(iNewSelection, ParentObject);
 		if (eCallbackType == CB_Object && Object)
 			Object->Call(PSF_MenuSelection, &pars);
 		else if (eCallbackType == CB_Scenario)
@@ -206,7 +206,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				if (!(pObj->OCF & OCF_Carryable)) fGet = false; // not a carryable item
 				if (Identification == C4MN_Contents)
 				{
-					if (Object && !!Object->Call(PSF_RejectCollection, &C4AulParSet(C4VPropList(pObj->Def), C4VObj(pObj)))) fGet = false; // collection rejected
+					if (Object && !!Object->Call(PSF_RejectCollection, &C4AulParSet(pObj->Def, pObj))) fGet = false; // collection rejected
 				}
 				if (!(pTarget->OCF & OCF_Entrance)) fGet = true; // target object has no entrance: cannot activate - force get
 				// Caption
@@ -304,7 +304,7 @@ bool C4ObjectMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 
 	case CB_Scenario:
 		// Object menu with scenario script callback
-		::GameScript.DirectExec(NULL, szCommand, "MenuCommand");
+		::AulExec.DirectExec(NULL, szCommand, "MenuCommand");
 		break;
 
 	case CB_None:

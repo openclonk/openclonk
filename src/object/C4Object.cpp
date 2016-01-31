@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
+#include <C4AulExec.h>
 #include <C4DefList.h>
 #include <C4Effect.h>
 #include <C4ObjectInfo.h>
@@ -349,7 +350,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// Destruction call in container
 	if (Contained)
 	{
-		C4AulParSet pars(C4VObj(this));
+		C4AulParSet pars(this);
 		Contained->Call(PSF_ContentsDestruction, &pars);
 		if (!Status) return;
 	}
@@ -764,7 +765,7 @@ void C4Object::UpdateInMat()
 	// mat changed?
 	if (newmat != InMat)
 	{
-		Call(PSF_OnMaterialChanged,&C4AulParSet(C4VInt(newmat),C4VInt(InMat)));
+		Call(PSF_OnMaterialChanged,&C4AulParSet(newmat,InMat));
 		InMat = newmat;
 	}
 }
@@ -997,11 +998,7 @@ bool C4Object::ExecLife()
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (GetPropertyInt(P_ContactIncinerate) > 0)
 				{
-					C4AulFunc *pCallFunc = GetFunc(PSF_OnInIncendiaryMaterial);
-					if (pCallFunc)
-					{
-						pCallFunc->Exec(this, &C4AulParSet());
-					}
+					Call(PSF_OnInIncendiaryMaterial, &C4AulParSet());
 				}
 
 	// birthday
@@ -1140,7 +1137,7 @@ void C4Object::AssignDeath(bool fForced)
 	// Remove from light sources
 	SetLightRange(0,0);
 	// Engine script call
-	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
+	C4AulParSet pars(iDeathCausingPlayer);
 	Call(PSF_Death, &pars);
 	// Lose contents
 	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
@@ -1153,7 +1150,7 @@ void C4Object::AssignDeath(bool fForced)
 	if(pPlr)
 		if(!pPlr->Crew.ObjectCount())
 			::Game.GRBroadcast(PSF_RelaunchPlayer,
-			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer),Status ? C4VObj(this) : C4VNull));
+			                   &C4AulParSet(Owner, iDeathCausingPlayer, Status ? this : NULL));
 	if (pInfo)
 		pInfo->HasDied = false;
 }
@@ -1218,7 +1215,7 @@ void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 	// Change value
 	Damage = std::max<int32_t>( Damage+iChange, 0 );
 	// Engine script call
-	Call(PSF_Damage,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedBy)));
+	Call(PSF_Damage,&C4AulParSet(iChange, iCause, iCausedBy));
 }
 
 void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr)
@@ -1242,7 +1239,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
 	// call to object
-	Call(PSF_EnergyChange,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedByPlr)));
+	Call(PSF_EnergyChange,&C4AulParSet(iChange, iCause, iCausedByPlr));
 	// Alive and energy reduced to zero: death
 	if (Alive) if (Energy==0) if (!fWasZero) AssignDeath(false);
 }
@@ -1264,7 +1261,7 @@ void C4Object::DoBreath(int32_t iChange)
 	iChange = Clamp<int32_t>(iChange, -Breath, GetPropertyInt(P_MaxBreath) - Breath);
 	Breath += iChange;
 	// call to object
-	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
+	Call(PSF_BreathChange,&C4AulParSet(iChange));
 }
 
 void C4Object::DoCon(int32_t iChange, bool grow_from_center)
@@ -1370,8 +1367,8 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	UpdateFace(true);
 	SetOCF();
 	// Engine calls
-	if (fCalls) pContainer->Call(PSF_Ejection,&C4AulParSet(C4VObj(this)));
-	if (fCalls) Call(PSF_Departure,&C4AulParSet(C4VObj(pContainer)));
+	if (fCalls) pContainer->Call(PSF_Ejection,&C4AulParSet(this));
+	if (fCalls) Call(PSF_Departure,&C4AulParSet(pContainer));
 	// Success (if the obj wasn't "re-entered" by script)
 	return !Contained;
 }
@@ -1388,14 +1385,14 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// No valid target or target is self
 	if (!pTarget || (pTarget==this)) return false;
 	// check if entrance is allowed
-	if (!! Call(PSF_RejectEntrance, &C4AulParSet(C4VObj(pTarget)))) return false;
+	if (!! Call(PSF_RejectEntrance, &C4AulParSet(pTarget))) return false;
 	// check if we end up in an endless container-recursion
 	for (C4Object *pCnt=pTarget->Contained; pCnt; pCnt=pCnt->Contained)
 		if (pCnt==this) return false;
 	// Check RejectCollect, if desired
 	if (pfRejectCollect)
 	{
-		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(C4VPropList(Def), C4VObj(this))))
+		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(Def, this)))
 		{
 			*pfRejectCollect = true;
 			return false;
@@ -1441,10 +1438,10 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	Contained->UpdateMass();
 	Contained->SetOCF();
 	// Collection call
-	if (fCalls) pTarget->Call(PSF_Collection2,&C4AulParSet(C4VObj(this)));
+	if (fCalls) pTarget->Call(PSF_Collection2,&C4AulParSet(this));
 	if (!Contained || !Contained->Status || !pTarget->Status) return true;
 	// Entrance call
-	if (fCalls) Call(PSF_Entrance,&C4AulParSet(C4VObj(Contained)));
+	if (fCalls) Call(PSF_Entrance,&C4AulParSet(Contained));
 	if (!Contained || !Contained->Status || !pTarget->Status) return true;
 	// Success
 	return true;
@@ -1467,7 +1464,7 @@ bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
 
 	// Try entrance activation
 	if (OCF & OCF_Entrance)
-		if (!! Call(PSF_ActivateEntrance,&C4AulParSet(C4VObj(by_obj))))
+		if (!! Call(PSF_ActivateEntrance,&C4AulParSet(by_obj)))
 			return true;
 	// Failure
 	return false;
@@ -1802,7 +1799,7 @@ void C4Object::SetName(const char * NewName)
 
 int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 {
-	C4Value r = Call(PSF_CalcValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer)));
+	C4Value r = Call(PSF_CalcValue, &C4AulParSet(pInBase, iForPlayer));
 	int32_t iValue;
 	if (r != C4VNull)
 		iValue = r.getInt();
@@ -1818,7 +1815,7 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		r = pInBase->Call(PSF_CalcSellValue, &C4AulParSet(C4VObj(this), C4VInt(iValue)));
+		r = pInBase->Call(PSF_CalcSellValue, &C4AulParSet(this, iValue));
 		if (r != C4VNull)
 			iValue = r.getInt();
 	}
@@ -2568,7 +2565,7 @@ bool C4Object::MenuCommand(const char *szCommand)
 {
 	// Native script execution
 	if (!Def || !Status) return false;
-	return !! Def->Script.DirectExec(this, szCommand, "MenuCommand");
+	return !! ::AulExec.DirectExec(this, szCommand, "MenuCommand");
 }
 
 C4Object *C4Object::ComposeContents(C4ID id)
@@ -2597,7 +2594,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	if (fInsufficient)
 	{
 		// BuildNeedsMaterial call to object...
-		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4VPropList(C4Id2Def(idNeeded)), C4VInt(iNeeded))))
+		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4Id2Def(idNeeded), iNeeded)))
 			// ...game message if not overloaded
 			GameMsgObjectError(Needs.getData(),this);
 		// Return
@@ -2764,11 +2761,11 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 		if (!CloseMenu(false)) return;
 	// Script overload
 	if (fControl)
-		if (!!Call(PSF_ControlCommand,&C4AulParSet(C4VString(CommandName(iCommand)),
-		           C4VObj(pTarget),
+		if (!!Call(PSF_ControlCommand,&C4AulParSet(CommandName(iCommand),
+		           pTarget,
 		           iTx,
-		           C4VInt(iTy),
-		           C4VObj(pTarget2),
+		           iTy,
+		           pTarget2,
 		           iData)))
 			return;
 	// Inside vehicle control overload
@@ -2776,13 +2773,13 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 		if (Contained->Def->VehicleControl & C4D_VehicleControl_Inside)
 		{
 			Contained->Controller=Controller;
-			if (!!Contained->Call(PSF_ControlCommand,&C4AulParSet(C4VString(CommandName(iCommand)),
-			                      C4VObj(pTarget),
+			if (!!Contained->Call(PSF_ControlCommand,&C4AulParSet(CommandName(iCommand),
+			                      pTarget,
 			                      iTx,
-			                      C4VInt(iTy),
-			                      C4VObj(pTarget2),
+			                      iTy,
+			                      pTarget2,
 			                      iData,
-			                      C4VObj(this))))
+			                      this)))
 				return;
 		}
 	// Outside vehicle control overload
@@ -2790,11 +2787,11 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 		if (Action.Target)  if (Action.Target->Def->VehicleControl & C4D_VehicleControl_Outside)
 			{
 				Action.Target->Controller=Controller;
-				if (!!Action.Target->Call(PSF_ControlCommand,&C4AulParSet(C4VString(CommandName(iCommand)),
-				                          C4VObj(pTarget),
+				if (!!Action.Target->Call(PSF_ControlCommand,&C4AulParSet(CommandName(iCommand),
+				                          pTarget,
 				                          iTx,
-				                          C4VInt(iTy),
-				                          C4VObj(pTarget2),
+				                          iTy,
+				                          pTarget2,
 				                          iData)))
 					return;
 			}
@@ -2817,7 +2814,7 @@ bool C4Object::ExecuteCommand()
 	if (Command) Command->Execute();
 	// Command finished: engine call
 	if (Command && Command->Finished)
-		Call(PSF_ControlCommandFinished,&C4AulParSet(C4VString(CommandName(Command->Command)), C4VObj(Command->Target), Command->Tx, C4VInt(Command->Ty), C4VObj(Command->Target2), Command->Data));
+		Call(PSF_ControlCommandFinished,&C4AulParSet(CommandName(Command->Command), Command->Target, Command->Tx, Command->Ty, Command->Target2, Command->Data));
 	// Clear finished commands
 	while (Command && Command->Finished) ClearCommand(Command);
 	// Done
@@ -2928,7 +2925,7 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				if (pLastTarget && !pLastTarget->Status) pLastTarget = NULL;
 				if (pLastTarget2 && !pLastTarget2->Status) pLastTarget2 = NULL;
-				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase), C4VObj(pLastTarget), C4VObj(pLastTarget2)));
+				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(iLastPhase, pLastTarget, pLastTarget2));
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return true;
 			}
@@ -2947,7 +2944,7 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 		}
 
 	C4Def *pOldDef = Def;
-	Call(PSF_OnActionChanged, &C4AulParSet(C4VString(LastAction ? LastAction->GetName() : "Idle")));
+	Call(PSF_OnActionChanged, &C4AulParSet(LastAction ? LastAction->GetName() : "Idle"));
 	if (Def != pOldDef || !Status) return true;
 
 	return true;
@@ -4008,7 +4005,7 @@ void C4Object::ExecAction()
 			if (!Action.Target2 || (Action.Target2->Con<FullCon)) fBroke=true;
 			if (fBroke)
 			{
-				Call(PSF_LineBreak,&C4AulParSet(C4VBool(true)));
+				Call(PSF_LineBreak,&C4AulParSet(true));
 				AssignRemoval();
 				return;
 			}
@@ -4157,7 +4154,7 @@ bool C4Object::SetOwner(int32_t iOwner)
 	// this automatically updates controller
 	Controller = Owner;
 	// script callback
-	Call(PSF_OnOwnerChanged, &C4AulParSet(C4VInt(Owner), C4VInt(iOldOwner)));
+	Call(PSF_OnOwnerChanged, &C4AulParSet(Owner, iOldOwner));
 	// done
 	return true;
 }
@@ -4329,7 +4326,7 @@ bool C4Object::Collect(C4Object *pObj)
 	// Cancel attach (hacky)
 	ObjectComCancelAttach(pObj);
 	// Container Collection call
-	Call(PSF_Collection,&C4AulParSet(C4VObj(pObj)));
+	Call(PSF_Collection,&C4AulParSet(pObj));
 	// Object Hit call
 	if (pObj->Status && pObj->OCF & OCF_HitSpeed1) pObj->Call(PSF_Hit);
 	if (pObj->Status && pObj->OCF & OCF_HitSpeed2) pObj->Call(PSF_Hit2);
@@ -4404,12 +4401,12 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	if (Contents.GetObject() == pTarget) return;
 	// select object via script?
 	if (fDoCalls)
-		if (Call("~ControlContents", &C4AulParSet(C4VPropList(pTarget))))
+		if (Call("~ControlContents", &C4AulParSet(pTarget)))
 			return;
 	// default action
 	if (!(Contents.ShiftContents(pTarget))) return;
 	// Selection sound
-	if (fDoCalls) if (!Contents.GetObject()->Call("~Selection", &C4AulParSet(C4VObj(this)))) StartSoundEffect("Clonk::Action::Grab",false,100,this);
+	if (fDoCalls) if (!Contents.GetObject()->Call("~Selection", &C4AulParSet(this))) StartSoundEffect("Clonk::Action::Grab",false,100,this);
 	// update menu with the new item in "put" entry
 	if (Menu && Menu->IsActive() && Menu->IsContextMenu())
 	{
@@ -4456,7 +4453,7 @@ bool C4Object::DoSelect()
 	// selection allowed?
 	if (CrewDisabled) return false;
 	// do callback
-	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(false)));
+	Call(PSF_CrewSelection, &C4AulParSet(false));
 	// done
 	return true;
 }
@@ -4464,7 +4461,7 @@ bool C4Object::DoSelect()
 void C4Object::UnSelect()
 {
 	// do callback
-	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true)));
+	Call(PSF_CrewSelection, &C4AulParSet(true));
 }
 
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
@@ -4548,7 +4545,7 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 	C4Object *pUnusedObject;
 	C4AulFunc *pFnObj2Drop = GetFunc(PSF_GetObject2Drop);
 	if (pFnObj2Drop)
-		pUnusedObject = pFnObj2Drop->Exec(this, pToMakeRoomForObject ? &C4AulParSet(C4VObj(pToMakeRoomForObject)) : NULL).getObj();
+		pUnusedObject = pFnObj2Drop->Exec(this, &C4AulParSet(pToMakeRoomForObject)).getObj();
 	else
 	{
 		// is there any unused object to put away?

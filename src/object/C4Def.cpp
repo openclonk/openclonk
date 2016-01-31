@@ -599,14 +599,14 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 {
-	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer)));
+	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(pInBase, iBuyPlayer));
 	int32_t iValue = Value;
 	if (r != C4VNull)
 		iValue = r.getInt();
 	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		r = pInBase->Call(PSF_CalcBuyValue, &C4AulParSet(C4VPropList(this), C4VInt(iValue)));
+		r = pInBase->Call(PSF_CalcBuyValue, &C4AulParSet(this, iValue));
 		if (r != C4VNull)
 			iValue = r.getInt();
 	}

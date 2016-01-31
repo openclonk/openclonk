@@ -186,6 +186,7 @@ public:
 	bool ObjectInCrew(C4Object *tobj);
 	bool DoWealth(int32_t change);
 	bool SetWealth(int32_t val);
+	bool SetKnowledge(C4ID id, bool fRemove);
 	bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);

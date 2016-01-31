@@ -34,29 +34,56 @@
 #include <C4Random.h>
 #include <C4RankSystem.h>
 #include <C4Teams.h>
+#include <StdMeshMath.h>
+
+bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix)
+{
+	const C4ValueArray* array = value.getArray();
+	if (!array) return false;
+	return C4ValueToMatrix(*array, matrix);
+}
+
+bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
+{
+	if (array.GetSize() != 12) return false;
+
+	StdMeshMatrix& trans = *matrix;
+	trans(0,0) = array[0].getInt()/1000.0f;
+	trans(0,1) = array[1].getInt()/1000.0f;
+	trans(0,2) = array[2].getInt()/1000.0f;
+	trans(0,3) = array[3].getInt()/1000.0f;
+	trans(1,0) = array[4].getInt()/1000.0f;
+	trans(1,1) = array[5].getInt()/1000.0f;
+	trans(1,2) = array[6].getInt()/1000.0f;
+	trans(1,3) = array[7].getInt()/1000.0f;
+	trans(2,0) = array[8].getInt()/1000.0f;
+	trans(2,1) = array[9].getInt()/1000.0f;
+	trans(2,2) = array[10].getInt()/1000.0f;
+	trans(2,3) = array[11].getInt()/1000.0f;
+
+	return true;
+}
 
 static bool FnChangeDef(C4Object *Obj, C4ID to_id)
 {
 	return !!Obj->ChangeDef(to_id);
 }
 
-static C4Void FnSetSolidMask(C4Object *Obj, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
+static void FnSetSolidMask(C4Object *Obj, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
 {
 	Obj->SetSolidMask(iX,iY,iWdt,iHgt,iTX,iTY);
-	return C4Void();
 }
 
-static C4Void FnSetHalfVehicleSolidMask(C4Object *Obj, bool set)
+static void FnSetHalfVehicleSolidMask(C4Object *Obj, bool set)
 {
 	Obj->SetHalfVehicleSolidMask(set);
-	return C4Void();
 }
 
-static C4Void FnDeathAnnounce(C4Object *Obj)
+static void FnDeathAnnounce(C4Object *Obj)
 {
 	const long MaxDeathMsg=7;
 	if (Game.C4S.Head.Film)
-		return C4Void();
+		return;
 	// Check if crew member has an own death message
 	if (Obj->Info && *(Obj->Info->DeathMessage))
 	{
@@ -67,7 +94,6 @@ static C4Void FnDeathAnnounce(C4Object *Obj)
 		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
 		GameMsgObject(FormatString(LoadResStr(idDeathMsg), Obj->GetName()).getData(), Obj);
 	}
-	return C4Void();
 }
 
 static bool FnGrabContents(C4Object *Obj, C4Object *from)
@@ -96,14 +122,13 @@ static bool FnKill(C4PropList * _this, C4Object *pObj, bool fForced)
 	return true;
 }
 
-static C4Void FnFling(C4Object *Obj, long iXDir, long iYDir, long iPrec, bool fAddSpeed)
+static void FnFling(C4Object *Obj, long iXDir, long iYDir, long iPrec, bool fAddSpeed)
 {
 	if (!iPrec) iPrec=1;
 	Obj->Fling(itofix(iXDir, iPrec),itofix(iYDir, iPrec),fAddSpeed);
 	// unstick from ground, because Fling command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	Obj->Action.t_attach=0;
-	return C4Void();
 }
 
 static bool FnJump(C4Object *Obj)
@@ -140,13 +165,12 @@ static bool FnCollect(C4Object *Obj, C4Object *pItem, bool ignoreOCF)
 	return false;
 }
 
-static C4Void FnRemoveObject(C4Object *Obj, bool fEjectContents)
+static void FnRemoveObject(C4Object *Obj, bool fEjectContents)
 {
 	Obj->AssignRemoval(fEjectContents);
-	return C4Void();
 }
 
-static C4Void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, long iPrec)
+static void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, long iPrec)
 {
 	if (!iPrec) iPrec = 1;
 	C4Real i_x = itofix(iX, iPrec), i_y = itofix(iY, iPrec);
@@ -158,14 +182,12 @@ static C4Void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, 
 	Obj->ForcePosition(i_x, i_y);
 	// update liquid
 	Obj->UpdateInLiquid();
-	return C4Void();
 }
 
-static C4Void FnDoCon(C4Object *Obj, long iChange, long iPrec, bool bGrowFromCenter)
+static void FnDoCon(C4Object *Obj, long iChange, long iPrec, bool bGrowFromCenter)
 {
 	if (!iPrec) iPrec = 100;
 	Obj->DoCon(FullCon*iChange / iPrec, bGrowFromCenter);
-	return C4Void();
 }
 
 static long FnGetCon(C4Object *Obj, long iPrec)
@@ -225,13 +247,13 @@ static bool FnSetName(C4PropList * _this, C4String *pNewName, bool fSetInInfo, b
 				}
 			SCopy(szName, pInfo->Name, C4MaxName);
 			Object(_this)->SetName(); // make sure object uses info name
-			Object(_this)->Call(PSF_NameChange,&C4AulParSet(C4VBool(true)));
+			Object(_this)->Call(PSF_NameChange,&C4AulParSet(true));
 		}
 		else
 		{
 			if (!pNewName) Object(_this)->SetName();
 			else Object(_this)->SetName(pNewName->GetCStr());
-			Object(_this)->Call(PSF_NameChange,&C4AulParSet(C4VBool(false)));
+			Object(_this)->Call(PSF_NameChange,&C4AulParSet(false));
 		}
 	}
 	return true;
@@ -284,75 +306,63 @@ static C4Value FnGetCrewExtraData(C4Object *Obj, C4String * DataName)
 	return pInfo->ExtraData[ival];
 }
 
-static C4Void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)
+static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)
 {
 	if (iEngType.IsNil()) iEngType = C4FxCall_EngScript;
 	if (iCausedBy.IsNil())
 		iCausedBy = NO_OWNER;
 	Obj->DoEnergy(iChange, fExact, iEngType, iCausedBy);
-	return C4Void();
 }
 
-static C4Void FnDoBreath(C4Object *Obj, long iChange)
+static void FnDoBreath(C4Object *Obj, long iChange)
 {
 	Obj->DoBreath(iChange);
-	return C4Void();
 }
 
-static C4Void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
+static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
 {
 	if (iDmgType.IsNil()) iDmgType = C4FxCall_DmgScript;
 	if (iCausedBy.IsNil())
 		iCausedBy = NO_OWNER;
 	Obj->DoDamage(iChange, iCausedBy, iDmgType);
-	return C4Void();
 }
 
-static C4Void FnSetEntrance(C4Object *Obj, bool e_status)
+static void FnSetEntrance(C4Object *Obj, bool e_status)
 {
 	Obj->EntranceStatus = e_status;
-	return C4Void();
 }
 
 
-static C4Void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
+static void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update xdir
 	Obj->xdir=itofix(nxdir, iPrec);
 	Obj->Mobile=1;
-	// success
-	return C4Void();
 }
 
-static C4Void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
+static void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update rdir
 	Obj->rdir=itofix(nrdir, iPrec);
 	Obj->Mobile=1;
-	// success
-	return C4Void();
 }
 
-static C4Void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
+static void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update ydir
 	Obj->ydir=itofix(nydir, iPrec);
 	Obj->Mobile=1;
-	return C4Void();
 }
 
-static C4Void FnSetR(C4Object *Obj, long nr)
+static void FnSetR(C4Object *Obj, long nr)
 {
-	// set rotation
 	Obj->SetRotation(nr);
-	// success
-	return C4Void();
 }
 
 static bool FnSetAction(C4Object *Obj, C4String *szAction,
@@ -391,28 +401,24 @@ static bool FnSetActionData(C4Object *Obj, long iData)
 	return true;
 }
 
-static C4Void FnSetComDir(C4Object *Obj, long ncomdir)
+static void FnSetComDir(C4Object *Obj, long ncomdir)
 {
 	Obj->Action.ComDir=ncomdir;
-	return C4Void();
 }
 
-static C4Void FnSetDir(C4Object *Obj, long ndir)
+static void FnSetDir(C4Object *Obj, long ndir)
 {
 	Obj->SetDir(ndir);
-	return C4Void();
 }
 
-static C4Void FnSetCategory(C4Object *Obj, long iCategory)
+static void FnSetCategory(C4Object *Obj, long iCategory)
 {
 	Obj->SetCategory(iCategory);
-	return C4Void();
 }
 
-static C4Void FnSetAlive(C4Object *Obj, bool nalv)
+static void FnSetAlive(C4Object *Obj, bool nalv)
 {
 	Obj->SetAlive(nalv);
-	return C4Void();
 }
 
 static bool FnSetOwner(C4Object *Obj, long iOwner)
@@ -535,12 +541,11 @@ static C4Object *FnGetActionTarget(C4Object *Obj, long target_index)
 	return NULL;
 }
 
-static C4Void FnSetActionTargets(C4Object *Obj, C4Object *pTarget1, C4Object *pTarget2)
+static void FnSetActionTargets(C4Object *Obj, C4Object *pTarget1, C4Object *pTarget2)
 {
 	// set targets
 	Obj->Action.Target=pTarget1;
 	Obj->Action.Target2=pTarget2;
-	return C4Void();
 }
 
 static long FnGetDir(C4Object *Obj)
@@ -693,10 +698,9 @@ static bool FnRemoveVertex(C4Object *Obj, long iIndex)
 	return !!Obj->Shape.RemoveVertex(iIndex);
 }
 
-static C4Void FnSetContactDensity(C4Object *Obj, long iDensity)
+static void FnSetContactDensity(C4Object *Obj, long iDensity)
 {
 	Obj->Shape.ContactDensity = iDensity;
-	return C4Void();
 }
 
 static bool FnGetAlive(C4Object *Obj)
@@ -786,10 +790,10 @@ static C4PropList* FnGetID(C4Object *Obj)
 	return Obj->GetPrototype();
 }
 
-static Nillable<C4ID> FnGetMenu(C4Object *Obj)
+static Nillable<C4Def*> FnGetMenu(C4Object *Obj)
 {
 	if (Obj->Menu && Obj->Menu->IsActive())
-		return C4ID(Obj->Menu->GetIdentification());
+		return C4Id2Def(C4ID(Obj->Menu->GetIdentification()));
 	return C4Void();
 }
 
@@ -1305,11 +1309,10 @@ static long FnShowInfo(C4Object *Obj, C4Object *pObj)
 	return Obj->ActivateMenu(C4MN_Info,0,0,0,pObj);
 }
 
-static C4Void FnSetMass(C4Object *Obj, long iValue)
+static void FnSetMass(C4Object *Obj, long iValue)
 {
 	Obj->OwnMass=iValue-Obj->Def->Mass;
 	Obj->UpdateMass();
-	return C4Void();
 }
 
 static long FnGetColor(C4Object *Obj)
@@ -1317,15 +1320,14 @@ static long FnGetColor(C4Object *Obj)
 	return Obj->Color;
 }
 
-static C4Void FnSetColor(C4Object *Obj, long iValue)
+static void FnSetColor(C4Object *Obj, long iValue)
 {
 	Obj->Color=iValue;
 	Obj->UpdateGraphics(false);
 	Obj->UpdateFace(false);
-	return C4Void();
 }
 
-static C4Void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeoutRange)
+static void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeoutRange)
 {
 	if (iFadeoutRange.IsNil())
 	{
@@ -1336,8 +1338,6 @@ static C4Void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeou
 	}
 	// set range
 	Obj->SetLightRange(iRange, iFadeoutRange);
-	// success
-	return C4Void();
 }
 
 static long FnGetLightColor(C4Object *Obj)
@@ -1347,18 +1347,15 @@ static long FnGetLightColor(C4Object *Obj)
 }
 
 
-static C4Void FnSetLightColor(C4Object *Obj, long iValue)
+static void FnSetLightColor(C4Object *Obj, long iValue)
 {
 	Obj->SetLightColor(iValue);
-	return C4Void();
 }
 
-static C4Void FnSetPicture(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
+static void FnSetPicture(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 {
 	// set new picture rect
 	Obj->PictureRect.Set(iX, iY, iWdt, iHgt);
-	// success
-	return C4Void();
 }
 
 static C4String *FnGetProcedure(C4Object *Obj)
@@ -1551,7 +1548,7 @@ static bool FnGetCrewEnabled(C4Object *Obj)
 	return !Obj->CrewDisabled;
 }
 
-static C4Void FnSetCrewEnabled(C4Object *Obj, bool fEnabled)
+static void FnSetCrewEnabled(C4Object *Obj, bool fEnabled)
 {
 	bool change = (Obj->CrewDisabled == fEnabled) ? true : false;
 
@@ -1580,17 +1577,12 @@ static C4Void FnSetCrewEnabled(C4Object *Obj, bool fEnabled)
 		else
 			Obj->Call(PSF_CrewDisabled);
 	}
-
-	// success
-	return C4Void();
 }
 
-static C4Void FnDoCrewExp(C4Object *Obj, long iChange)
+static void FnDoCrewExp(C4Object *Obj, long iChange)
 {
 	// do exp
 	Obj->DoExperience(iChange);
-	// success
-	return C4Void();
 }
 
 static bool FnClearMenuItems(C4Object *Obj)
@@ -1609,7 +1601,7 @@ static C4Object *FnGetObjectLayer(C4Object *Obj)
 	return Obj->Layer;
 }
 
-static C4Void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
+static void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
 {
 	// set layer object
 	Obj->Layer = pNewLayer;
@@ -1617,11 +1609,9 @@ static C4Void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
 	for (C4Object* contentObj : Obj->Contents)
 		if (contentObj && contentObj->Status)
 			contentObj->Layer = pNewLayer;
-	// success
-	return C4Void();
 }
 
-static C4Void FnSetShape(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
+static void FnSetShape(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 {
 	// update shape
 	Obj->Shape.x = iX;
@@ -1630,8 +1620,6 @@ static C4Void FnSetShape(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 	Obj->Shape.Hgt = iHgt;
 	// section list needs refresh
 	Obj->UpdatePos();
-	// done, success
-	return C4Void();
 }
 
 static bool FnSetObjDrawTransform(C4Object *Obj, long iA, long iB, long iC, long iD, long iE, long iF, long iOverlayID)
@@ -2593,167 +2581,170 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 		assert(pCDef->ValType == C4V_Int); // only int supported currently
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
+	C4PropListStatic * p = pEngine->GetPropList();
+#define F(f) ::AddFunc(p, #f, Fn##f)
 
-	AddFunc(pEngine, "DoCon", FnDoCon);
-	AddFunc(pEngine, "GetCon", FnGetCon);
-	AddFunc(pEngine, "DoDamage", FnDoDamage);
-	AddFunc(pEngine, "DoEnergy", FnDoEnergy);
-	AddFunc(pEngine, "DoBreath", FnDoBreath);
-	AddFunc(pEngine, "GetEnergy", FnGetEnergy);
-	AddFunc(pEngine, "OnFire", FnOnFire);
-	AddFunc(pEngine, "Stuck", FnStuck);
-	AddFunc(pEngine, "InLiquid", FnInLiquid);
-	AddFunc(pEngine, "SetAction", FnSetAction);
-	AddFunc(pEngine, "SetActionData", FnSetActionData);
+	F(DoCon);
+	F(GetCon);
+	F(DoDamage);
+	F(DoEnergy);
+	F(DoBreath);
+	F(GetEnergy);
+	F(OnFire);
+	F(Stuck);
+	F(InLiquid);
+	F(SetAction);
+	F(SetActionData);
 
-	AddFunc(pEngine, "SetBridgeActionData", FnSetBridgeActionData);
-	AddFunc(pEngine, "GetAction", FnGetAction);
-	AddFunc(pEngine, "GetActTime", FnGetActTime);
-	AddFunc(pEngine, "GetOwner", FnGetOwner);
-	AddFunc(pEngine, "GetMass", FnGetMass);
-	AddFunc(pEngine, "GetBreath", FnGetBreath);
-	AddFunc(pEngine, "GetMenu", FnGetMenu);
-	AddFunc(pEngine, "GetVertexNum", FnGetVertexNum);
-	AddFunc(pEngine, "GetVertex", FnGetVertex);
-	AddFunc(pEngine, "SetVertex", FnSetVertex);
-	AddFunc(pEngine, "AddVertex", FnAddVertex);
-	AddFunc(pEngine, "RemoveVertex", FnRemoveVertex);
-	AddFunc(pEngine, "SetContactDensity", FnSetContactDensity, false);
-	AddFunc(pEngine, "GetController", FnGetController);
-	AddFunc(pEngine, "SetController", FnSetController);
-	AddFunc(pEngine, "GetName", FnGetName);
-	AddFunc(pEngine, "SetName", FnSetName);
-	AddFunc(pEngine, "GetKiller", FnGetKiller);
-	AddFunc(pEngine, "SetKiller", FnSetKiller);
-	AddFunc(pEngine, "GetPhase", FnGetPhase);
-	AddFunc(pEngine, "SetPhase", FnSetPhase);
-	AddFunc(pEngine, "GetCategory", FnGetCategory);
-	AddFunc(pEngine, "GetOCF", FnGetOCF);
-	AddFunc(pEngine, "SetAlive", FnSetAlive);
-	AddFunc(pEngine, "GetAlive", FnGetAlive);
-	AddFunc(pEngine, "GetDamage", FnGetDamage);
-	AddFunc(pEngine, "ComponentAll", FnComponentAll, false);
-	AddFunc(pEngine, "SetComDir", FnSetComDir);
-	AddFunc(pEngine, "GetComDir", FnGetComDir);
-	AddFunc(pEngine, "SetDir", FnSetDir);
-	AddFunc(pEngine, "GetDir", FnGetDir);
-	AddFunc(pEngine, "SetEntrance", FnSetEntrance);
-	AddFunc(pEngine, "GetEntrance", FnGetEntrance);
-	AddFunc(pEngine, "SetCategory", FnSetCategory);
-	AddFunc(pEngine, "FinishCommand", FnFinishCommand);
-	AddFunc(pEngine, "ActIdle", FnActIdle);
-	AddFunc(pEngine, "SetRDir", FnSetRDir);
-	AddFunc(pEngine, "GetRDir", FnGetRDir);
-	AddFunc(pEngine, "GetXDir", FnGetXDir);
-	AddFunc(pEngine, "GetYDir", FnGetYDir);
-	AddFunc(pEngine, "GetR", FnGetR);
-	AddFunc(pEngine, "SetXDir", FnSetXDir);
-	AddFunc(pEngine, "SetYDir", FnSetYDir);
-	AddFunc(pEngine, "SetR", FnSetR);
-	AddFunc(pEngine, "SetOwner", FnSetOwner);
-	AddFunc(pEngine, "MakeCrewMember", FnMakeCrewMember);
-	AddFunc(pEngine, "GrabObjectInfo", FnGrabObjectInfo);
-	AddFunc(pEngine, "CreateContents", FnCreateContents);
-	AddFunc(pEngine, "ShiftContents", FnShiftContents);
-	AddFunc(pEngine, "ComposeContents", FnComposeContents);
-	AddFunc(pEngine, "GetNeededMatStr", FnGetNeededMatStr);
-	AddFunc(pEngine, "GetID", FnGetID);
-	AddFunc(pEngine, "Contents", FnContents);
-	AddFunc(pEngine, "ScrollContents", FnScrollContents);
-	AddFunc(pEngine, "Contained", FnContained);
-	AddFunc(pEngine, "ContentsCount", FnContentsCount);
-	AddFunc(pEngine, "FindContents", FnFindContents, false);
-	AddFunc(pEngine, "FindOtherContents", FnFindOtherContents, false);
-	AddFunc(pEngine, "RemoveObject", FnRemoveObject);
-	AddFunc(pEngine, "GetActionTarget", FnGetActionTarget);
-	AddFunc(pEngine, "SetActionTargets", FnSetActionTargets);
-	AddFunc(pEngine, "SetComponent", FnSetComponent);
-	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
-	AddFunc(pEngine, "SetPosition", FnSetPosition);
-	AddFunc(pEngine, "CreateMenu", FnCreateMenu);
-	AddFunc(pEngine, "AddMenuItem", FnAddMenuItem);
-	AddFunc(pEngine, "SelectMenuItem", FnSelectMenuItem);
-	AddFunc(pEngine, "SetMenuDecoration", FnSetMenuDecoration);
-	AddFunc(pEngine, "SetMenuTextProgress", FnSetMenuTextProgress);
-	AddFunc(pEngine, "ObjectDistance", FnObjectDistance);
-	AddFunc(pEngine, "GetValue", FnGetValue);
-	AddFunc(pEngine, "GetRank", FnGetRank);
-	AddFunc(pEngine, "SetTransferZone", FnSetTransferZone);
-	AddFunc(pEngine, "SetMass", FnSetMass);
-	AddFunc(pEngine, "GetColor", FnGetColor);
-	AddFunc(pEngine, "SetColor", FnSetColor);
-	AddFunc(pEngine, "SetLightRange", FnSetLightRange);
-	AddFunc(pEngine, "GetLightColor", FnGetLightColor);
-	AddFunc(pEngine, "SetLightColor", FnSetLightColor);
-	AddFunc(pEngine, "SetPicture", FnSetPicture);
-	AddFunc(pEngine, "GetProcedure", FnGetProcedure);
-	AddFunc(pEngine, "CanConcatPictureWith", FnCanConcatPictureWith);
-	AddFunc(pEngine, "SetGraphics", FnSetGraphics);
-	AddFunc(pEngine, "ObjectNumber", FnObjectNumber);
-	AddFunc(pEngine, "ShowInfo", FnShowInfo);
-	AddFunc(pEngine, "CheckVisibility", FnCheckVisibility);
-	AddFunc(pEngine, "SetClrModulation", FnSetClrModulation);
-	AddFunc(pEngine, "GetClrModulation", FnGetClrModulation);
-	AddFunc(pEngine, "CloseMenu", FnCloseMenu);
-	AddFunc(pEngine, "GetMenuSelection", FnGetMenuSelection);
-	AddFunc(pEngine, "GetDefBottom", FnGetDefBottom);
-	AddFunc(pEngine, "SetMenuSize", FnSetMenuSize);
-	AddFunc(pEngine, "GetCrewEnabled", FnGetCrewEnabled);
-	AddFunc(pEngine, "SetCrewEnabled", FnSetCrewEnabled);
-	AddFunc(pEngine, "DoCrewExp", FnDoCrewExp);
-	AddFunc(pEngine, "ClearMenuItems", FnClearMenuItems);
-	AddFunc(pEngine, "GetObjectLayer", FnGetObjectLayer);
-	AddFunc(pEngine, "SetObjectLayer", FnSetObjectLayer);
-	AddFunc(pEngine, "SetShape", FnSetShape);
-	AddFunc(pEngine, "SetObjDrawTransform", FnSetObjDrawTransform);
-	AddFunc(pEngine, "SetObjDrawTransform2", FnSetObjDrawTransform2, false);
-	AddFunc(pEngine, "SetObjectStatus", FnSetObjectStatus, false);
-	AddFunc(pEngine, "GetObjectStatus", FnGetObjectStatus, false);
-	AddFunc(pEngine, "AdjustWalkRotation", FnAdjustWalkRotation, false);
-	AddFunc(pEngine, "GetContact", FnGetContact);
-	AddFunc(pEngine, "SetObjectBlitMode", FnSetObjectBlitMode);
-	AddFunc(pEngine, "GetObjectBlitMode", FnGetObjectBlitMode);
-	AddFunc(pEngine, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
-	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
+	F(SetBridgeActionData);
+	F(GetAction);
+	F(GetActTime);
+	F(GetOwner);
+	F(GetMass);
+	F(GetBreath);
+	F(GetMenu);
+	F(GetVertexNum);
+	F(GetVertex);
+	F(SetVertex);
+	F(AddVertex);
+	F(RemoveVertex);
+	::AddFunc(p, "SetContactDensity", FnSetContactDensity, false);
+	F(GetController);
+	F(SetController);
+	F(GetName);
+	F(SetName);
+	F(GetKiller);
+	F(SetKiller);
+	F(GetPhase);
+	F(SetPhase);
+	F(GetCategory);
+	F(GetOCF);
+	F(SetAlive);
+	F(GetAlive);
+	F(GetDamage);
+	::AddFunc(p, "ComponentAll", FnComponentAll, false);
+	F(SetComDir);
+	F(GetComDir);
+	F(SetDir);
+	F(GetDir);
+	F(SetEntrance);
+	F(GetEntrance);
+	F(SetCategory);
+	F(FinishCommand);
+	F(ActIdle);
+	F(SetRDir);
+	F(GetRDir);
+	F(GetXDir);
+	F(GetYDir);
+	F(GetR);
+	F(SetXDir);
+	F(SetYDir);
+	F(SetR);
+	F(SetOwner);
+	F(MakeCrewMember);
+	F(GrabObjectInfo);
+	F(CreateContents);
+	F(ShiftContents);
+	F(ComposeContents);
+	F(GetNeededMatStr);
+	F(GetID);
+	F(Contents);
+	F(ScrollContents);
+	F(Contained);
+	F(ContentsCount);
+	::AddFunc(p, "FindContents", FnFindContents, false);
+	::AddFunc(p, "FindOtherContents", FnFindOtherContents, false);
+	F(RemoveObject);
+	F(GetActionTarget);
+	F(SetActionTargets);
+	F(SetComponent);
+	::AddFunc(p, "SetCrewStatus", FnSetCrewStatus, false);
+	F(SetPosition);
+	F(CreateMenu);
+	F(AddMenuItem);
+	F(SelectMenuItem);
+	F(SetMenuDecoration);
+	F(SetMenuTextProgress);
+	F(ObjectDistance);
+	F(GetValue);
+	F(GetRank);
+	F(SetTransferZone);
+	F(SetMass);
+	F(GetColor);
+	F(SetColor);
+	F(SetLightRange);
+	F(GetLightColor);
+	F(SetLightColor);
+	F(SetPicture);
+	F(GetProcedure);
+	F(CanConcatPictureWith);
+	F(SetGraphics);
+	F(ObjectNumber);
+	F(ShowInfo);
+	F(CheckVisibility);
+	F(SetClrModulation);
+	F(GetClrModulation);
+	F(CloseMenu);
+	F(GetMenuSelection);
+	F(GetDefBottom);
+	F(SetMenuSize);
+	F(GetCrewEnabled);
+	F(SetCrewEnabled);
+	F(DoCrewExp);
+	F(ClearMenuItems);
+	F(GetObjectLayer);
+	F(SetObjectLayer);
+	F(SetShape);
+	F(SetObjDrawTransform);
+	::AddFunc(p, "SetObjDrawTransform2", FnSetObjDrawTransform2, false);
+	::AddFunc(p, "SetObjectStatus", FnSetObjectStatus, false);
+	::AddFunc(p, "GetObjectStatus", FnGetObjectStatus, false);
+	::AddFunc(p, "AdjustWalkRotation", FnAdjustWalkRotation, false);
+	F(GetContact);
+	F(SetObjectBlitMode);
+	F(GetObjectBlitMode);
+	::AddFunc(p, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
+	F(ExecuteCommand);
 
-	AddFunc(pEngine, "PlayAnimation", FnPlayAnimation);
-	AddFunc(pEngine, "TransformBone", FnTransformBone);
-	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
-	AddFunc(pEngine, "GetRootAnimation", FnGetRootAnimation);
-	AddFunc(pEngine, "GetAnimationList", FnGetAnimationList);
-	AddFunc(pEngine, "GetAnimationLength", FnGetAnimationLength);
-	AddFunc(pEngine, "GetAnimationName", FnGetAnimationName);
-	AddFunc(pEngine, "GetAnimationPosition", FnGetAnimationPosition);
-	AddFunc(pEngine, "GetAnimationWeight", FnGetAnimationWeight);
-	AddFunc(pEngine, "SetAnimationPosition", FnSetAnimationPosition);
-	AddFunc(pEngine, "SetAnimationBoneTransform", FnSetAnimationBoneTransform);
-	AddFunc(pEngine, "SetAnimationWeight", FnSetAnimationWeight);
-	AddFunc(pEngine, "AttachMesh", FnAttachMesh);
-	AddFunc(pEngine, "DetachMesh", FnDetachMesh);
-	AddFunc(pEngine, "SetAttachBones", FnSetAttachBones);
-	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
-	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
-	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
-	AddFunc(pEngine, "CreateParticleAtBone", FnCreateParticleAtBone);
-	AddFunc(pEngine, "ChangeDef", FnChangeDef);
-	AddFunc(pEngine, "GrabContents", FnGrabContents);
-	AddFunc(pEngine, "Punch", FnPunch);
-	AddFunc(pEngine, "Kill", FnKill);
-	AddFunc(pEngine, "Fling", FnFling);
-	AddFunc(pEngine, "Jump", FnJump, false);
-	AddFunc(pEngine, "Enter", FnEnter);
-	AddFunc(pEngine, "DeathAnnounce", FnDeathAnnounce);
-	AddFunc(pEngine, "SetSolidMask", FnSetSolidMask);
-	AddFunc(pEngine, "SetHalfVehicleSolidMask", FnSetHalfVehicleSolidMask);
-	AddFunc(pEngine, "Exit", FnExit);
-	AddFunc(pEngine, "Collect", FnCollect);
+	F(PlayAnimation);
+	F(TransformBone);
+	F(StopAnimation);
+	F(GetRootAnimation);
+	F(GetAnimationList);
+	F(GetAnimationLength);
+	F(GetAnimationName);
+	F(GetAnimationPosition);
+	F(GetAnimationWeight);
+	F(SetAnimationPosition);
+	F(SetAnimationBoneTransform);
+	F(SetAnimationWeight);
+	F(AttachMesh);
+	F(DetachMesh);
+	F(SetAttachBones);
+	F(SetAttachTransform);
+	F(GetMeshMaterial);
+	F(SetMeshMaterial);
+	F(CreateParticleAtBone);
+	F(ChangeDef);
+	F(GrabContents);
+	F(Punch);
+	F(Kill);
+	F(Fling);
+	::AddFunc(p, "Jump", FnJump, false);
+	F(Enter);
+	F(DeathAnnounce);
+	F(SetSolidMask);
+	F(SetHalfVehicleSolidMask);
+	F(Exit);
+	F(Collect);
 
-	AddFunc(pEngine, "SetCommand", FnSetCommand);
-	AddFunc(pEngine, "AddCommand", FnAddCommand);
-	AddFunc(pEngine, "AppendCommand", FnAppendCommand);
-	AddFunc(pEngine, "GetCommand", FnGetCommand);
-	AddFunc(pEngine, "SetCrewExtraData", FnSetCrewExtraData);
-	AddFunc(pEngine, "GetCrewExtraData", FnGetCrewExtraData);
-	AddFunc(pEngine, "GetDefWidth", FnGetDefWidth);
-	AddFunc(pEngine, "GetDefHeight", FnGetDefHeight);
+	F(SetCommand);
+	F(AddCommand);
+	F(AppendCommand);
+	F(GetCommand);
+	F(SetCrewExtraData);
+	F(GetCrewExtraData);
+	F(GetDefWidth);
+	F(GetDefHeight);
+#undef F
 }

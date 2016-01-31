@@ -25,6 +25,7 @@
 #include <C4GameObjects.h>
 #include <C4Object.h>
 #include <C4Log.h>
+#include <C4Effect.h>
 
 const C4Value C4VNull;
 
@@ -59,10 +60,10 @@ const char* GetC4VName(const C4V_Type Type)
 	}
 }
 
-C4Value::C4Value(C4Object *pObj): NextRef(NULL), Type(pObj ? C4V_PropList : C4V_Nil)
-{
-	Data.PropList = pObj; AddDataRef();
-}
+C4Value::C4Value(C4PropListStatic * p): C4Value(static_cast<C4PropList *>(p)) {}
+C4Value::C4Value(C4Def * p): C4Value(static_cast<C4PropList *>(p)) {}
+C4Value::C4Value(C4Object * p): C4Value(static_cast<C4PropList *>(p)) {}
+C4Value::C4Value(C4Effect * p): C4Value(static_cast<C4PropList *>(p)) {}
 
 C4Object * C4Value::getObj() const
 {
@@ -177,20 +178,6 @@ StdStrBuf C4Value::GetDataString(int depth) const
 	default:
 		return StdStrBuf("-unknown type- ");
 	}
-}
-
-C4Value C4VString(const char *strString)
-{
-	// safety
-	if (!strString) return C4Value();
-	return C4Value(::Strings.RegString(strString));
-}
-
-C4Value C4VString(StdStrBuf Str)
-{
-	// safety
-	if (Str.isNull()) return C4Value();
-	return C4Value(::Strings.RegString(Str));
 }
 
 const C4Value & C4ValueNumbers::GetValue(uint32_t n)
@@ -327,10 +314,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	{
 		if (!pComp->isCompiler())
 		{
-			C4PropList * p = getPropList();
+			const C4PropList * p = getPropList();
 			if (getFunction())
 			{
-				p = Data.Fn->Owner->GetPropList();
+				p = Data.Fn->Parent;
 				assert(p);
 				assert(p->GetFunc(Data.Fn->GetName()) == Data.Fn);
 				assert(p->IsStatic());

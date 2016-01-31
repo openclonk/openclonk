@@ -386,7 +386,7 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1,
 	// compose function name
 	char fn[C4AUL_MAX_Identifier+1];
 	sprintf(fn, PSF_FxCustom, GetName(), szFn);
-	return p->Call(fn, &C4AulParSet(C4VObj(pObj), C4VPropList(this), rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	return p->Call(fn, &C4AulParSet(pObj, this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
 }
 
 void C4Effect::OnObjectChangedDef(C4Object *pObj)

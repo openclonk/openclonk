@@ -111,46 +111,6 @@ std::string C4AulScript::Translate(const std::string &text) const
 	throw C4LangStringTable::NoSuchTranslation(text);
 }
 
-C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
-		C4AulFunc(pOwner, pName),
-		OwnerOverloaded(NULL),
-		ParCount(0),
-		Script(Script),
-		pOrgScript(pOrgScript),
-		tProfileTime(0)
-{
-	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
-	AddBCC(AB_EOFN);
-}
-
-C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
-		C4AulFunc(pOwner, FromFunc.GetName()),
-		OwnerOverloaded(NULL),
-		ParCount(FromFunc.ParCount),
-		Script(FromFunc.Script),
-		VarNamed(FromFunc.VarNamed),
-		ParNamed(FromFunc.ParNamed),
-		pOrgScript(FromFunc.pOrgScript),
-		tProfileTime(0)
-{
-	for (int i = 0; i < C4AUL_MAX_Par; i++)
-		ParType[i] = FromFunc.ParType[i];
-	AddBCC(AB_EOFN);
-}
-
-C4AulScriptFunc::~C4AulScriptFunc()
-{
-	if (OwnerOverloaded) OwnerOverloaded->DecRef();
-	ClearCode();
-}
-
-void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
-{
-	if (OwnerOverloaded) OwnerOverloaded->DecRef();
-	OwnerOverloaded = f;
-	if (f) f->IncRef();
-}
-
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():

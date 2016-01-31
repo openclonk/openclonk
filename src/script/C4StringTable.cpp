@@ -40,7 +40,6 @@ bool C4Set<C4String *>::Equals<const char *>(C4String * const & a, const char * 
 // *** C4String
 
 C4String::C4String(StdStrBuf strString)
-: RefCnt(0)
 {
 	// take string
 	Data.Take(std::move(strString));
@@ -50,7 +49,6 @@ C4String::C4String(StdStrBuf strString)
 }
 
 C4String::C4String()
-: RefCnt(0)
 {
 }
 

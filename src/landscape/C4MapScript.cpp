@@ -23,6 +23,7 @@
 #include <C4Landscape.h>
 #include <C4Texture.h>
 #include <C4Random.h>
+#include <C4GameScript.h>
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 
@@ -676,19 +677,20 @@ void C4MapScriptHost::InitFunctionMap(C4AulScriptEngine *pEngine)
 void C4MapScriptHost::AddEngineFunctions()
 {
 	// adds all engine functions to the MapLayer context
-	::AddFunc(this, "Draw", FnLayerDraw);
-	::AddFunc(this, "Blit", FnLayerBlit);
-	::AddFunc(this, "CreateLayer", FnCreateLayer);
-	::AddFunc(this, "Duplicate", FnLayerDuplicate);
-	::AddFunc(this, "GetMaterialTextureIndex", FnLayerGetMaterialTextureIndex);
-	::AddFunc(this, "GetDefaultBackgroundIndex", FnLayerGetDefaultBackgroundIndex);
-	::AddFunc(this, "GetPixel", FnLayerGetPixel);
-	::AddFunc(this, "GetBackPixel", FnLayerGetBackPixel);
-	::AddFunc(this, "SetPixel", FnLayerSetPixel);
-	::AddFunc(this, "GetPixelCount", FnLayerGetPixelCount);
-	::AddFunc(this, "Resize", FnLayerResize);
-	::AddFunc(this, "FindPosition", FnLayerFindPosition);
-	::AddFunc(this, "CreateMatTexMask", FnLayerCreateMatTexMask);
+	C4PropListStatic * p = GetPropList();
+	::AddFunc(p, "Draw", FnLayerDraw);
+	::AddFunc(p, "Blit", FnLayerBlit);
+	::AddFunc(p, "CreateLayer", FnCreateLayer);
+	::AddFunc(p, "Duplicate", FnLayerDuplicate);
+	::AddFunc(p, "GetMaterialTextureIndex", FnLayerGetMaterialTextureIndex);
+	::AddFunc(p, "GetDefaultBackgroundIndex", FnLayerGetDefaultBackgroundIndex);
+	::AddFunc(p, "GetPixel", FnLayerGetPixel);
+	::AddFunc(p, "GetBackPixel", FnLayerGetBackPixel);
+	::AddFunc(p, "SetPixel", FnLayerSetPixel);
+	::AddFunc(p, "GetPixelCount", FnLayerGetPixelCount);
+	::AddFunc(p, "Resize", FnLayerResize);
+	::AddFunc(p, "FindPosition", FnLayerFindPosition);
+	::AddFunc(p, "CreateMatTexMask", FnLayerCreateMatTexMask);
 }
 
 bool C4MapScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)

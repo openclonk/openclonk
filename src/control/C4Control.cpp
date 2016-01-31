@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4Control.h>
 
+#include <C4AulExec.h>
 #include <C4Object.h>
 #include <C4GameSave.h>
 #include <C4GameLobby.h>
@@ -233,18 +234,16 @@ void C4ControlScript::Execute() const
 	if (!Game.Parameters.AllowDebug) return;
 
 	// execute
-	C4Object *pObj = NULL;
+	C4PropList *pPropList = NULL;
 	C4AulScript *pScript;
 	if (iTargetObj == SCOPE_Console)
-		pScript = &::GameScript;
+		pPropList = ::GameScript.GetPropList();
 	else if (iTargetObj == SCOPE_Global)
-		pScript = &::ScriptEngine;
-	else if ((pObj = ::Objects.SafeObjectPointer(iTargetObj)))
-		pScript = &(pObj->Def->Script);
-	else
+		pPropList = ::ScriptEngine.GetPropList();
+	else if (!(pPropList = ::Objects.SafeObjectPointer(iTargetObj)))
 		// default: Fallback to global context
-		pScript = &::ScriptEngine;
-	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
+		pPropList = ::ScriptEngine.GetPropList();
+	C4Value rVal(AulExec.DirectExec(pPropList, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
 	if ( (pDebug = C4AulDebug::GetDebugger()) )
@@ -254,10 +253,7 @@ void C4ControlScript::Execute() const
 #endif
 	// show messages
 	// print script
-	if (pObj)
-		LogF("-> %s::%s", pObj->Def->GetName(), szScript);
-	else
-		LogF("-> %s", szScript);
+	LogF("-> %s::%s", pPropList->GetName(), szScript);
 	// print result
 	if (!LocalControl())
 	{
@@ -293,7 +289,7 @@ void C4ControlMsgBoardReply::Execute() const
 
 	// execute callback if answer present
 	if (!reply) return;
-	C4AulParSet pars(C4VString(reply), C4VInt(player));
+	C4AulParSet pars(C4VString(reply), player);
 	if (target_object)
 		target_object->Call(PSF_InputCallback, &pars);
 	else
@@ -330,7 +326,7 @@ void C4ControlMsgBoardCmd::Execute() const
 	}
 
 	// Run script
-	C4Value rv(::ScriptEngine.DirectExec(nullptr, script.getData(), "message board command"));
+	C4Value rv(::AulExec.DirectExec(::ScriptEngine.GetPropList(), script.getData(), "message board command"));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug = C4AulDebug::GetDebugger();
 	if (pDebug)
@@ -374,9 +370,9 @@ void C4ControlPlayerSelect::Execute() const
 			if (pObj->Category & C4D_MouseSelect)
 			{
 				if (fIsAlt)
-					pObj->Call(PSF_MouseSelectionAlt, &C4AulParSet(C4VInt(iPlr)));
+					pObj->Call(PSF_MouseSelectionAlt, &C4AulParSet(iPlr));
 				else
-					pObj->Call(PSF_MouseSelection, &C4AulParSet(C4VInt(iPlr)));
+					pObj->Call(PSF_MouseSelection, &C4AulParSet(iPlr));
 			}
 		}
 	// count
@@ -464,7 +460,7 @@ C4ControlPlayerMouse *C4ControlPlayerMouse::DragDrop(const C4Player *player, con
 void C4ControlPlayerMouse::Execute() const
 {
 	const char *callback_name = nullptr;
-	C4AulParSet pars(C4VInt(player));
+	C4AulParSet pars(player);
 
 	switch (action)
 	{
@@ -489,10 +485,7 @@ void C4ControlPlayerMouse::Execute() const
 	
 	// Do call
 	if (!callback_name) return;
-	if (callback_name[0] == '~') ++callback_name;
-	C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
-	if (!callback) return;
-	callback->Exec(nullptr, &pars);
+	::ScriptEngine.Call(callback_name, &pars);
 }
 
 void C4ControlPlayerMouse::CompileFunc(StdCompiler *pComp)
@@ -683,7 +676,7 @@ void C4ControlPlayerAction::Execute() const
 		C4Object *goal = ::Objects.SafeObjectPointer(target);
 		if (!goal) return;
 		// Call it
-		C4AulParSet pars(C4VInt(source_player->Number));
+		C4AulParSet pars(source_player->Number);
 		goal->Call("Activate", &pars);
 		break;
 	}
@@ -700,10 +693,8 @@ void C4ControlPlayerAction::Execute() const
 		if (!target_player) return;
 		
 		// Proxy the hostility change through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target_player->Number), C4VBool(param_int != 0));
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetHostility"));
-		assert(callback); // this should always exist since the engine provides a default implementation
-		callback->Exec(nullptr, &pars);
+		C4AulParSet pars(source_player->Number, target_player->Number, param_int != 0);
+		::ScriptEngine.Call("SetHostility", &pars);
 		break;
 	}
 
@@ -717,20 +708,16 @@ void C4ControlPlayerAction::Execute() const
 		if (!team && target != TEAMID_New) return;
 
 		// Proxy the team switch through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetPlayerTeam"));
-		assert(callback);
-		callback->Exec(nullptr, &pars);
+		C4AulParSet pars(source_player->Number, target);
+		::ScriptEngine.Call("SetPlayerTeam", &pars);
 		break;
 	}
 
 	case CPA_InitScenarioPlayer:
 	{
 		// Proxy the call through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("InitScenarioPlayer"));
-		assert(callback);
-		callback->Exec(nullptr, &pars);
+		C4AulParSet pars(source_player->Number, target);
+		::ScriptEngine.Call("InitScenarioPlayer", &pars);
 		break;
 	}
 
@@ -738,11 +725,8 @@ void C4ControlPlayerAction::Execute() const
 	{
 		// Notify scripts about player control selection
 		const char *callback_name = PSF_InitializePlayerControl;
-		if (callback_name[0] == '~') ++callback_name;
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
-		if (!callback) return;
 		
-		C4AulParSet pars(C4VInt(source_player->Number));
+		C4AulParSet pars(source_player->Number);
 		// If the player is using a control set, its name is stored in param_str
 		if (param_str)
 		{
@@ -751,7 +735,7 @@ void C4ControlPlayerAction::Execute() const
 			pars[3] = C4VBool(CPA_IPC_HasMouse == (param_int & CPA_IPC_HasMouse));
 			pars[4] = C4VBool(CPA_IPC_HasGamepad == (param_int & CPA_IPC_HasGamepad));
 		}
-		callback->Exec(nullptr, &pars);
+		::ScriptEngine.Call(callback_name, &pars);
 		break;
 	}
 

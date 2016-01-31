@@ -22,12 +22,12 @@
 #include <C4Object.h>
 
 C4ValueArray::C4ValueArray()
-		: iRefCnt(0), iSize(0), iCapacity(0), pData(NULL)
+		: iSize(0), iCapacity(0), pData(NULL)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iRefCnt(0), iSize(0), iCapacity(0), pData(NULL)
+		: iSize(0), iCapacity(0), pData(NULL)
 {
 	SetSize(inSize);
 }
@@ -102,7 +102,9 @@ struct C4ValueArraySortStringscomp
 {
 	bool operator ()(const C4Value &v1, const C4Value &v2)
 	{
-		return v1.getStr() && v2.getStr() && v1._getStr()->GetData() < v2._getStr()->GetData();
+		if (v1.getStr() && v2.getStr())
+			return std::strcmp(v1._getStr()->GetCStr(), v2._getStr()->GetCStr()) < 0;
+		return v2.getStr();
 	}
 };
 

@@ -1009,7 +1009,7 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
 	if (!Objects.Add(pObj)) { delete pObj; return NULL; }
 	// ---- From now on, object is ready to be used in scripts!
 	// Construction callback
-	C4AulParSet pars(C4VObj(pCreator));
+	C4AulParSet pars(pCreator);
 	pObj->Call(PSF_Construction, &pars);
 	// AssignRemoval called? (Con 0)
 	if (!pObj->Status) { return NULL; }
@@ -1803,7 +1803,7 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool 
 
 		// Save objects to file using system scripts
 		int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
-		C4AulParSet pars(C4VInt(objects_file_handle));
+		C4AulParSet pars(objects_file_handle);
 		C4Value result_c4v(::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars));
 		bool result = !!result_c4v;
 		if (result_c4v.GetType() == C4V_Nil)
@@ -2427,9 +2427,6 @@ bool C4Game::LinkScriptEngine()
 
 	// update material pointers
 	::MaterialMap.UpdateScriptPointers();
-
-	// Set name list for globals
-	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 	
 	if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		if (!pDebug->Listen(DebugPort, !!DebugWait))

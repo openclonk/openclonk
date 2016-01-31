@@ -58,7 +58,6 @@ C4Value AulTest::RunCode(const char *code, bool wrap)
 
 	GameScript.LoadData(src.c_str(), wrapped.c_str(), NULL);
 	ScriptEngine.Link(NULL);
-	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 		
 	return GameScript.Call("Main", nullptr, true);
 }
@@ -115,9 +114,12 @@ TEST_F(AulTest, Locals)
 	EXPECT_EQ(C4VInt(42), RunCode("func Main() { local i = 42; return i; }", false));
 	EXPECT_EQ(C4VInt(42), RunCode("local i = [42]; func Main() { return i[0]; }", false));
 	EXPECT_EQ(C4VInt(42), RunCode("local p = { i = 42 }; func Main() { return p.i; }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local p1 = { i = 42 }, p2 = new p1 {}; func Main() { return p2.i; }", false));
 }
 
 TEST_F(AulTest, Eval)
 {
 	EXPECT_EQ(C4VInt(42), RunExpr("eval(\"42\")"));
+	EXPECT_EQ(C4VInt(42), RunCode("local i = 42; func Main() { return eval(\"this.i\"); }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local i; func Main() { eval(\"this.i = 42\"); return i; }", false));
 }

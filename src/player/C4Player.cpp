@@ -321,14 +321,14 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			C4Def *pDefCallback;
 			if (idCallback && (pDefCallback = C4Id2Def(idCallback)))
 			{
-				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(C4VInt(Number), C4VInt(Team)));
+				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(Number, Team));
 			}
 		}
 		else
 		{
 			// player preinit: In case a team needs to be chosen first, no InitializePlayer-broadcast is done
 			// this callback shall give scripters a chance to do stuff like starting an intro or enabling FoW, which might need to be done
-			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(C4VInt(Number)));
+			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(Number));
 			// direct init
 			if (Status != PS_TeamSelection) if (!ScenarioInit()) return false;
 		}
@@ -494,7 +494,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 #if !defined(DEBUGREC_RECRUITMENT)
 					C4DebugRecOff DbgRecOff;
 #endif
-					C4AulParSet parset(C4VInt(Number));
+					C4AulParSet parset(Number);
 					nobj->Call(PSF_OnJoinCrew, &parset);
 				}
 			}
@@ -658,12 +658,12 @@ bool C4Player::ScenarioInit()
 	if (Team) SetTeamHostility();
 
 	// Scenario script initialization
-	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(C4VInt(Number),
-	                        C4VInt(ptx),
-	                        C4VInt(pty),
-	                        C4VObj(FirstBase),
-	                        C4VInt(Team),
-	                        C4VPropList(C4Id2Def(GetInfo()->GetScriptPlayerExtraID()))));
+	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(Number,
+	                        ptx,
+	                        pty,
+	                        FirstBase,
+	                        Team,
+	                        C4Id2Def(GetInfo()->GetScriptPlayerExtraID())));
 	return true;
 }
 
@@ -715,9 +715,24 @@ bool C4Player::SetWealth(int32_t iVal)
 
 	Wealth=Clamp<int32_t>(iVal,0,1000000000);
 
-	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
+	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(Number));
 
 	return true;
+}
+
+bool C4Player::SetKnowledge(C4ID id, bool fRemove)
+{
+	if (fRemove)
+	{
+		long iIndex = Knowledge.GetIndex(id);
+		if (iIndex<0) return false;
+		return Knowledge.DeleteItem(iIndex);
+	}
+	else
+	{
+		if (!C4Id2Def(id)) return false;
+		return Knowledge.SetIDCount(id, 1, true);
+	}
 }
 
 void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_position)
@@ -1000,7 +1015,7 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 	// OnJoinCrew callback
 	if (fDoCalls)
 	{
-		C4AulParSet parset(C4VInt(Number));
+		C4AulParSet parset(Number);
 		pObj->Call(PSF_OnJoinCrew, &parset);
 	}
 
@@ -1299,7 +1314,7 @@ void C4Player::NotifyOwnedObjects()
 				C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 				if (pFn)
 				{
-					C4AulParSet pars(C4VInt(iNewOwner));
+					C4AulParSet pars(iNewOwner);
 					pFn->Exec(cobj, &pars);
 				}
 				else
@@ -1526,7 +1541,7 @@ bool C4Player::SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus)
 		if (!Crew.IsContained(pCrew)) return true;
 		// ...or remove
 		Crew.Remove(pCrew);
-		C4AulParSet parset(C4VInt(Number));
+		C4AulParSet parset(Number);
 		pCrew->Call(PSF_OnRemoveCrew, &parset);
 		// remove info, if assigned to this player
 		// theoretically, info objects could remain when the player is deleted

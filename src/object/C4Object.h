@@ -29,6 +29,7 @@
 #include "C4PropList.h"
 #include "C4ObjectPtr.h"
 #include "StdMesh.h"
+#include <C4GameScript.h>
 
 /* Object status */
 
