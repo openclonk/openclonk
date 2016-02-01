@@ -210,11 +210,11 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 	return h;
 }
 
-C4AulFunc * C4AulFuncMap::GetFirstFunc(C4String * Name)
+C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 {
 	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name->GetCStr()) % HashSize];
-	while (Func && Name->GetCStr() != Func->GetName())
+	C4AulFunc * Func = Funcs[Hash(Name) % HashSize];
+	while (Func && !SEqual(Name, Func->GetName()))
 		Func = Func->MapNext;
 	return Func;
 }

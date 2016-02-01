@@ -61,7 +61,7 @@ class C4AulFuncMap
 public:
 	C4AulFuncMap();
 	~C4AulFuncMap();
-	C4AulFunc * GetFirstFunc(C4String * Name);
+	C4AulFunc * GetFirstFunc(const char * Name);
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After);
 private:
 	enum { HashSize = 1025 };
@@ -97,7 +97,7 @@ class C4AulScriptEngine: public C4PropListStaticMember
 {
 protected:
 	C4AulFuncMap FuncLookUp;
-	C4AulFunc * GetFirstFunc(C4String * Name)
+	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
 	{ return FuncLookUp.GetNextSNFunc(After); }

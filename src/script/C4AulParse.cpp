@@ -1036,7 +1036,7 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 	case AB_CALL: case AB_CALLFS:
 	{
 		C4String * pName = Fn->GetLastCode()->Par.s;
-		C4AulFunc * pFunc2 = Engine->GetFirstFunc(pName);
+		C4AulFunc * pFunc2 = Engine->GetFirstFunc(pName->GetCStr());
 		bool allwarn = true;
 		from = C4V_Any;
 		while (pFunc2 && allwarn)
@@ -1711,7 +1711,7 @@ void C4AulParse::Parse_Statement()
 
 int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 {
-	int size = 0;
+	int size = 0, WarnCnt = iMaxCnt;
 	// so it's a regular function; force "("
 	Match(ATT_BOPEN);
 	bool fDone = false;
@@ -1751,14 +1751,18 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 	default:
 		// get a parameter
 		Parse_Expression();
-		if (pFunc && (Type == PARSER) && size < iMaxCnt)
+		C4AulFunc * pFunc2 = pFunc ? pFunc : Engine->GetFirstFunc(sWarn);
+		if (pFunc2 && (Type == PARSER) && size < iMaxCnt)
 		{
-			C4V_Type to = pFunc->GetParType()[size];
-			// pFunc either is the return value from a GetFirstFunc-Call or
-			// the only function that could be called. When in doubt, don't warn.
-			C4AulFunc * pFunc2 = pFunc;
-			while ((pFunc2 = Engine->GetNextSNFunc(pFunc2)))
+			WarnCnt = pFunc2->GetParCount();
+			C4V_Type to = pFunc2->GetParType()[size];
+			// While script can arrange to call any function by changing proplists, the parser has
+			// no hope of anticipating that, so checking functions of the same name will have to do.
+			if(!pFunc) while ((pFunc2 = Engine->GetNextSNFunc(pFunc2)))
+			{
+				WarnCnt = std::max(WarnCnt, pFunc2->GetParCount());
 				if (pFunc2->GetParType()[size] != to) to = C4V_Any;
+			}
 			C4V_Type from = GetLastRetType(to);
 			if (C4Value::WarnAboutConversion(from, to))
 			{
@@ -1776,8 +1780,8 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 		break;
 	} while (!fDone);
 	// too many parameters?
-	if (sWarn && size > iMaxCnt && Type == PARSER)
-		Warn(FormatString("call to %s gives %d parameters, but only %d are used", sWarn, size, iMaxCnt).getData(), NULL);
+	if (sWarn && size > WarnCnt && Type == PARSER && !SEqual(sWarn, C4AUL_Inherited) && (pFunc || Config.Developer.ExtraWarnings))
+		Warn(FormatString("call to %s gives %d parameters, but only %d are used", sWarn, size, WarnCnt).getData(), NULL);
 	// Balance stack// FIXME: not for CALL/FUNC
 	if (size != iMaxCnt)
 		AddBCC(AB_STACK, iMaxCnt - size);
@@ -2278,7 +2282,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			if (Fn->OwnerOverloaded)
 			{
 				// add direct call to byte code
-				Parse_Params(Fn->OwnerOverloaded->GetParCount(), NULL, Fn->OwnerOverloaded);
+				Parse_Params(Fn->OwnerOverloaded->GetParCount(), C4AUL_Inherited, Fn->OwnerOverloaded);
 				AddBCC(AB_FUNC, (intptr_t) Fn->OwnerOverloaded);
 			}
 			else
@@ -2300,7 +2304,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			// will be defined: if no '(' follows, it must be a variable or constant,
 			// otherwise a function with parameters
 			if (TokenType == ATT_BOPEN)
-				Parse_Params(10, NULL);
+				Parse_Params(C4AUL_MAX_Par, NULL);
 		}
 		else if ((FoundFn = Fn->Parent->GetFunc(Idtf)))
 		{
@@ -2560,7 +2564,6 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		break;
 	case ATT_CALL: case ATT_CALLFS:
 		{
-			C4AulFunc *pFunc = NULL;
 			C4String *pName = NULL;
 			C4AulBCCType eCallType = (TokenType == ATT_CALL) ? AB_CALL : AB_CALLFS;
 			Shift();
@@ -2570,10 +2573,9 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			if (Type == PARSER)
 			{
 				pName = ::Strings.RegString(Idtf);
-				pFunc = Engine->GetFirstFunc(pName);
 			}
 			Shift();
-			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, pFunc);
+			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, NULL);
 			AddBCC(eCallType, reinterpret_cast<intptr_t>(pName));
 		}
 		break;
