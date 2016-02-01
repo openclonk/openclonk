@@ -1739,10 +1739,10 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 		// Push all unnamed parameters of the current function as parameters
 		for (int i = Fn->ParNamed.iSize; i < C4AUL_MAX_Par; ++i)
 		{
-			AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
-			++size;
 			if (size >= iMaxCnt)
 				break;
+			AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
+			++size;
 		}
 		// Do not allow more parameters even if there is place left
 		fDone = true;
