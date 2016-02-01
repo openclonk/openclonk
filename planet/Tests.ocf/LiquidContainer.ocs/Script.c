@@ -176,7 +176,7 @@ global func Test3_OnStart(int plr){ return true;}
 global func Test3_OnFinish(){ return; }
 global func Test3_Execute()
 {
-	Log("Test the behaviour of GetLiquidName and SetLiquidName");
+	Log("Test the behaviour of GetLiquidType and SetLiquidType");
 
 	var container = CreateObject(Barrel);
 	var passed = true;
@@ -184,8 +184,8 @@ global func Test3_Execute()
 	
 	for (var value in test_data)
 	{
-		container->SetLiquidName(value);
-		var returned = container->GetLiquidName();
+		container->SetLiquidType(value);
+		var returned = container->GetLiquidType();
 		var test = (value == returned); passed &= test;
 		Log("- Container returns %s if liquid name is set to %s, values should be equal", returned, value);
 	}
@@ -268,7 +268,7 @@ global func Test6_Execute()
 
 	// fill level
 
-	//container->SetLiquidName("Water");
+	//container->SetLiquidType("Water");
 	container->SetLiquidFillLevel(0);
 	test = container->LiquidContainerAccepts("Water");	passed &= test;
 	Log("- Container returns 'true' if liquid fill level is 0% and material is ok: %v", test);
@@ -286,21 +286,21 @@ global func Test6_Execute()
 
  	// material
  	Log("Setting container to be filled with a material");
- 	container->SetLiquidName("Lava");
- 	Log("- Fill material is %s", container->GetLiquidName());
+ 	container->SetLiquidType("Lava");
+ 	Log("- Fill material is %s", container->GetLiquidType());
 
 	container->SetLiquidFillLevel(0);
- 	container->SetLiquidName("Lava");
+ 	container->SetLiquidType("Lava");
 	test = container->LiquidContainerAccepts("Water");	passed &= test;
 	Log("- Container returns 'true' if filled with material and liquid fill level is 0% and other material is ok: %v", test);
 
 	container->SetLiquidFillLevel(container->GetLiquidContainerMaxFillLevel() / 2);
- 	container->SetLiquidName("Lava");
+ 	container->SetLiquidType("Lava");
 	test = !container->LiquidContainerAccepts("Water");	passed &= test;
 	Log("- Container returns 'false' if filled with material and liquid fill level is 50% and other material is ok: %v", test);
 	
 	container->SetLiquidFillLevel(container->GetLiquidContainerMaxFillLevel() / 2);
- 	container->SetLiquidName("Water");
+ 	container->SetLiquidType("Water");
 	test = container->LiquidContainerAccepts("Water");	passed &= test;
 // 	Log("-- Debug: %v", container->IsLiquidContainerForMaterial("Lava"));
 // 	Log("-- Debug: %v", container->LiquidContainerIsEmpty());
@@ -324,15 +324,15 @@ global func Test7_Execute()
 	var test = (container->PutLiquid("Lava", 1, nil) == 0);
 	passed &= test;
 	Log("- Container returns '0' when inserting 1 pixel of incompatible material: %v", test);
-	test = container->GetLiquidName() == nil; passed &= test;
-	Log("- Container returns 'nil' for material name: %v, %v", test, container->GetLiquidName());
+	test = container->GetLiquidType() == nil; passed &= test;
+	Log("- Container returns 'nil' for material name: %v, %v", test, container->GetLiquidType());
 	test = container->GetLiquidFillLevel() == 0; passed &= test;
 	Log("- Container returns '0' for fill level: %v", test);
 
 	// compatible material
 	test = (container->PutLiquid("Water", 1, nil) == 1);
 	Log("- Container returns '1' when inserting 1 pixel of compatible material: %v", test);
-	test = container->GetLiquidName() == "Water"; passed &= test;
+	test = container->GetLiquidType() == "Water"; passed &= test;
 	Log("- Container returns the liquid name when inserting 1 pixel of compatible material: %v", test);
 	test = container->GetLiquidFillLevel() == 1; passed &= test;
 	Log("- Container returns the fill level when inserting 1 pixel of compatible material: %v", test);

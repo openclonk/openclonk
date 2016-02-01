@@ -31,7 +31,7 @@ private func Hit()
 	if (!LiquidContainerIsEmpty())
 	{
 		if (GBackLiquid(0, this->GetBarrelIntakeY())
-		 && GetMaterial(0, this->GetBarrelIntakeY()) != GetLiquidName())
+		 && GetMaterial(0, this->GetBarrelIntakeY()) != GetLiquidType())
 			return;
 
 		EmptyBarrel(GetR());
@@ -115,16 +115,16 @@ private func UpdateLiquidContainer()
 	else
 	{
 		var liquid_name, color;
-		var material = Material(GetLiquidName());
+		var material = Material(GetLiquidType());
 		if (material >= 0)
 		{
-			var liquid_name = Translate(Format("Material%s", GetLiquidName()));
+			var liquid_name = Translate(Format("Material%s", GetLiquidType()));
 			var tex = GetMaterialVal("TextureOverlay", "Material", material);
 			color = GetAverageTextureColor(tex);
 		}
 		else
 		{
-			liquid_name = GetLiquidName();
+			liquid_name = GetLiquidType();
 			color = RGB(0, 0, 0);
 		}
 		SetColor(color);
@@ -210,7 +210,7 @@ public func CalcValue(object in_base, int for_player)
 	var val = GetDefValue();
 	if (!LiquidContainerIsEmpty())
 	{
-		val += GetValueOf(GetLiquidName()) * GetLiquidFillLevel() / GetLiquidContainerMaxFillLevel();
+		val += GetValueOf(GetLiquidType()) * GetLiquidFillLevel() / GetLiquidContainerMaxFillLevel();
 	}
 	return val;
 }
