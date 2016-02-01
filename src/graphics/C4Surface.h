@@ -79,7 +79,6 @@ public:
 	CStdGLCtx * pCtx;
 #endif
 	std::vector<C4TexRef> textures;              // textures
-	BYTE byBytesPP;               // bytes per pixel (2 or 4)
 	C4Surface *pMainSfc;          // main surface for simple ColorByOwner-surfaces
 	C4Surface *pNormalSfc;        // normal map; can be NULL
 	DWORD ClrByOwnerClr;          // current color to be used for ColorByOwner-blits
@@ -193,11 +192,7 @@ public:
 	void Unlock();        // unlock texture
 	bool ClearRect(C4Rect &rtClear); // clear rect in texture to transparent
 	bool FillBlack(); // fill complete texture in black
-	void SetPix2(int iX, int iY, WORD v)
-	{
-		*((WORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 2)) = v;
-	}
-	void SetPix4(int iX, int iY, DWORD v)
+	void SetPix(int iX, int iY, DWORD v)
 	{
 		*((DWORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
 	}

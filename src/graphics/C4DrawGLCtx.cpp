@@ -207,7 +207,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 			              PFD_SUPPORT_OPENGL |
 			              PFD_DRAW_TO_WINDOW ;
 		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.cColorBits = pGL->iClrDpt;
+		pfd.cColorBits = C4Draw::COLOR_DEPTH;
 		pfd.cDepthBits = 0;
 		pfd.iLayerType = PFD_MAIN_PLANE;
 		int temp_fmt = ChoosePixelFormat(dc, &pfd);

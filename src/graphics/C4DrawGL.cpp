@@ -107,7 +107,6 @@ CStdGL::CStdGL():
 {
 	GenericVBOs[0] = 0;
 	Default();
-	byByteCnt=4;
 	// global ptr
 	pGL = this;
 	lines_tex = 0;
@@ -346,7 +345,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	return pCtx;
 }
 
-bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, unsigned int)
+bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, unsigned int)
 {
 	// store options
 	bool ok = RestoreDeviceObjects();
@@ -763,8 +762,8 @@ bool CStdGL::RestoreDeviceObjects()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
+	static const char * linedata = "\xff\xff\xff\x00\xff\xff\xff\xff";
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 2, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 
 	MaxTexSize = 64;
 	GLint s = 0;
@@ -906,7 +905,6 @@ void CStdGL::Default()
 	pCurrCtx = NULL;
 	iPixelFormat=0;
 	sfcFmt=0;
-	iClrDpt=0;
 	Workarounds.LowMaxVertexUniformCount = false;
 }
 

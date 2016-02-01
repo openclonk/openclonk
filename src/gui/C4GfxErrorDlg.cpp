@@ -25,6 +25,8 @@
 #include <C4windowswrapper.h>
 #include <C4GfxErrorDlg.h>
 
+#include "graphics/C4Draw.h"
+
 static int edittext_toi(HWND hWnd, int field)
 {
 	WCHAR buf[512]; buf[511] = 0;
@@ -85,7 +87,7 @@ static INT_PTR CALLBACK GfxErrProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
 					bool found = false;
 					int32_t idx = 0, iXRes, iYRes, iBitDepth;
 					while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, NULL, Config.Graphics.Monitor))
-						if (iBitDepth == Config.Graphics.BitDepth)
+						if (iBitDepth == C4Draw::COLOR_DEPTH)
 							if(iXRes == resx && iYRes == resy)
 							{
 								found = true;

@@ -803,19 +803,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGfxResCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
 	pGfxResCombo->SetText(GetGfxResString(Config.Graphics.ResX, Config.Graphics.ResY).getData());
 	pGroupResolution->AddElement(pGfxResCombo);
-	// color depth checkboxes
-	C4GUI::ComponentAligner cdBox(caGroupResolution.GetGridCell(0,1,iOpt++,iNumGfxOptions), 0, 0, false);
-	w=20; q=12; pUseFont->GetTextExtent(LoadResStr("IDS_CTL_BITDEPTH"), w,q, true);
-	pGroupResolution->AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_BITDEPTH"), cdBox.GetFromLeft(w+C4GUI_DefDlgSmallIndent,q), ALeft, C4StartupFontClr, pUseFont, false, false));
-	pUseFont->GetTextExtent("32bit", w,q,true); w = std::min<int32_t>(caGroupResolution.GetInnerWidth(), w+40);
-	C4GUI::ComboBox *pGfxClrDepthCombo = new C4GUI::ComboBox(cdBox.GetFromLeft(w+40,C4GUI::ComboBox::GetDefaultHeight()));
-	pGfxClrDepthCombo->SetToolTip(LoadResStr("IDS_CTL_BITDEPTHC"));
-	pGfxClrDepthCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxClrDepthComboFill, &C4StartupOptionsDlg::OnGfxClrDepthComboSelChange));
-	pGfxClrDepthCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
-	pGfxClrDepthCombo->SetFont(pUseFont);
-	pGfxClrDepthCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
-	pGfxClrDepthCombo->SetText(FormatString("%d Bit", (int)Config.Graphics.BitDepth).getData());
-	pGroupResolution->AddElement(pGfxClrDepthCombo);
 	// fullscreen combobox
 	C4GUI::ComponentAligner fsBox(caGroupResolution.GetGridCell(0,1,iOpt++,iNumGfxOptions), 0, 0, false);
 	w=20; q=12; pUseFont->GetTextExtent(LoadResStr("IDS_CTL_FULLSCREENMODE"), w,q, true);
@@ -1085,7 +1072,7 @@ void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)
 	int32_t idx = 0, iXRes, iYRes, iBitDepth;
 	while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, NULL, Config.Graphics.Monitor))
 #ifdef _WIN32 // why only WIN32?
-		if (iBitDepth == Config.Graphics.BitDepth)
+		if (iBitDepth == C4Draw::COLOR_DEPTH)
 #endif
 		{
 			StdStrBuf sGfxString = GetGfxResString(iXRes, iYRes);
@@ -1124,7 +1111,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	else if (iResY > 800)
 		iNewFontSize = 16;
 	// call application to set it
-	if (!Application.SetVideoMode(iResX, iResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true))
+	if (!Application.SetVideoMode(iResX, iResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true))
 	{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
 		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
@@ -1150,7 +1137,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	if (!pScreen->ShowModalDlg(pConfirmDlg, true))
 	{
 		// abort: Restore screen, if this was not some program abort
-		if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+		if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 		{
 			if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
 			RecreateDialog(false);
@@ -1162,7 +1149,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	Config.Graphics.ResX = iResX;
 	Config.Graphics.ResY = iResY;
 	if(Config.Graphics.Windowed)
-		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
+		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 	return true;
 }
 
@@ -1172,26 +1159,6 @@ StdStrBuf C4StartupOptionsDlg::GetGfxResString(int32_t iResX, int32_t iResY)
 	if (iResX == -1)
 		return StdStrBuf(LoadResStr("IDS_MNU_DEFAULTRESOLUTION"));
 	return FormatString("%d x %d", (int)iResX, (int)iResY);
-}
-
-void C4StartupOptionsDlg::OnGfxClrDepthComboFill(C4GUI::ComboBox_FillCB *pFiller)
-{
-	pFiller->ClearEntries();
-	for (int32_t iBitDepthIdx = 0; iBitDepthIdx<2; ++iBitDepthIdx)
-	{
-		int iBitDepth = (iBitDepthIdx+1) * 16;
-		pFiller->AddEntry(FormatString("%d Bit", (int)iBitDepth).getData(), iBitDepthIdx);
-	}
-}
-
-bool C4StartupOptionsDlg::OnGfxClrDepthComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
-{
-	// change config
-	Config.Graphics.BitDepth = (idNewSelection+1) * 16;
-	// notify user that he has to restart to see any changes
-	StdStrBuf sTitle; sTitle.Copy(LoadResStrNoAmp("IDS_CTL_BITDEPTH"));
-	GetScreen()->ShowMessage(LoadResStr("IDS_MSG_RESTARTCHANGECFG"), sTitle.getData(), C4GUI::Ico_Notify, &Config.Startup.HideMsgGfxBitDepthChange);
-	return true;
 }
 
 const char * C4StartupOptionsDlg::GetWindowedName(int32_t mode /* = -1*/)
@@ -1215,7 +1182,7 @@ void C4StartupOptionsDlg::OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFille
 bool C4StartupOptionsDlg::OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
 {
 	Config.Graphics.Windowed = idNewSelection;
-	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 	pForCombo->SetText(GetWindowedName(idNewSelection));
 	return true;
 }

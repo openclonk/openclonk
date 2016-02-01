@@ -362,7 +362,7 @@ static bool fullscreen_needs_restore = false;
 static gboolean fullscreen_restore(gpointer data)
 {
 	if (fullscreen_needs_restore)
-		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, Application.FullScreenMode());
+		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, Application.FullScreenMode());
 	fullscreen_needs_restore = false;
 	return FALSE;
 }

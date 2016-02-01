@@ -104,7 +104,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ShowClock,             "ShowClock",            0             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowCrewNames,         "ShowCrewNames",        1             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowCrewCNames,        "ShowCrewCNames",       0             ,false, true));
-	pComp->Value(mkNamingAdapt(BitDepth,              "BitDepth",             32            ,false, true));
 	pComp->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	pComp->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
 	pComp->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
@@ -353,11 +352,6 @@ bool C4Config::Load(const char *szConfigFile)
 	if (fWinSock) WSACleanup();
 #endif
 	General.DefaultLanguage();
-	// bit depth sanity check (might be corrupted by resolution check bug in old version)
-	if (Graphics.BitDepth < 16)
-	{
-		Graphics.BitDepth = 32;
-	}
 	// Warning against invalid ports
 	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 	{

@@ -22,11 +22,9 @@ CStdNoGfx::CStdNoGfx()
 	Default();
 }
 
-bool CStdNoGfx::CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdNoGfx::CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor)
 {
 	Log("Graphics disabled.");
-	// Save back color depth
-	byByteCnt = iColorDepth / 8;
 	MaxTexSize = 2147483647;
 	return true;
 }

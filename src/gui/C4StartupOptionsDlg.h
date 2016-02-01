@@ -128,8 +128,6 @@ private:
 	bool OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
-	void OnGfxClrDepthComboFill(C4GUI::ComboBox_FillCB *pFiller);
-	bool OnGfxClrDepthComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	bool TryNewResolution(int32_t iResX, int32_t iResY);

@@ -42,7 +42,7 @@ public:
 	virtual bool InvalidateDeviceObjects() { return true; }
 	virtual bool DeleteDeviceObjects() { return true; }
 	virtual bool DeviceReady() { return true; }
-	virtual bool CreatePrimarySurfaces(unsigned int, unsigned int, int, unsigned int);
+	virtual bool CreatePrimarySurfaces(unsigned int, unsigned int, unsigned int);
 	virtual bool SetOutputAdapter(unsigned int) { return true; }
 
 	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) {}

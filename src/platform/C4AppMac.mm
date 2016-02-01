@@ -152,7 +152,7 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
 	C4WindowController* controller = pWindow->objectiveCObject<C4WindowController>();

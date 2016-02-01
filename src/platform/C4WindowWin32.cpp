@@ -112,7 +112,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				// restore textures
 				if (Application.FullScreenMode())
 				{
-					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
+					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 				}
 			}
 			else
@@ -888,7 +888,7 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 #ifndef USE_CONSOLE
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
@@ -950,7 +950,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth,
 		int i=0;
 		if (!fFound) while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
 				// compare enumerated mode with requested settings
-				if (static_cast<int>(dmode.dmPelsWidth) == iXRes && static_cast<int>(dmode.dmPelsHeight) == iYRes && dmode.dmBitsPerPel == iColorDepth && dmode.dmDisplayOrientation == orientation
+				if (static_cast<int>(dmode.dmPelsWidth) == iXRes && static_cast<int>(dmode.dmPelsHeight) == iYRes && dmode.dmBitsPerPel == C4Draw::COLOR_DEPTH && dmode.dmDisplayOrientation == orientation
 				        && (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
 				{
 					fFound=true;

@@ -126,7 +126,6 @@ void C4Surface::MoveFrom(C4Surface *psfcFrom)
 	ClrByOwnerClr=psfcFrom->ClrByOwnerClr;
 	iTexSize=psfcFrom->iTexSize;
 	iTexX=psfcFrom->iTexX; iTexY=psfcFrom->iTexY;
-	byBytesPP=psfcFrom->byBytesPP;
 #ifndef USE_CONSOLE
 	Format=psfcFrom->Format;
 #endif
@@ -185,7 +184,6 @@ bool C4Surface::Create(int iWdt, int iHgt, int iFlags)
 #ifndef USE_CONSOLE
 	Format=pGL->sfcFmt;
 #endif
-	byBytesPP=pDraw->byByteCnt;
 	// create textures
 	if (!CreateTextures(iFlags)) { Clear(); return false; }
 	// update clipping
@@ -606,18 +604,8 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 	}
 	// get pix of surface
 	DWORD dwPix;
-	if (byBytesPP == 4)
-	{
-		// 32 bit
-		DWORD *pPix=(DWORD *) (pBuf+iY*iPitch+iX*4);
-		dwPix = *pPix;
-	}
-	else
-	{
-		// 16 bit
-		WORD *pPix=(WORD *) (pBuf+iY*iPitch+iX*2);
-		dwPix = ClrW2Dw(*pPix);
-	}
+	DWORD *pPix=(DWORD *) (pBuf+iY*iPitch+iX*4);
+	dwPix = *pPix;
 	// this is a ColorByOwner-surface?
 	if (pMainSfc)
 	{
@@ -693,17 +681,7 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 		if (!pTexRef->texLock.pBits)
 		{
 			glBindTexture(GL_TEXTURE_2D, pTexRef->texName);
-			if (byBytesPP == 4)
-			{
-				// 32 Bit
-				glTexSubImage2D(GL_TEXTURE_2D, 0, iX, iY, 1, 1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, &dwClr);
-			}
-			else
-			{
-				// 16 bit
-				uint16_t wClr=ClrDw2W(dwClr);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, iX, iY, 1, 1, GL_BGRA, GL_UNSIGNED_SHORT_4_4_4_4_REV, &wClr);
-			}
+			glTexSubImage2D(GL_TEXTURE_2D, 0, iX, iY, 1, 1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, &dwClr);
 			const bool fMipMap = (pTexRef->iFlags & C4SF_MipMap) != 0;
 			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 			return true;
@@ -723,16 +701,7 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 		if (!GetLockTexAt(&pTexRef, iX, iY)) return false;
 	}
 	// ...and set in actual surface
-	if (byBytesPP == 4)
-	{
-		// 32 bit
-		pTexRef->SetPix4(iX, iY, dwClr);
-	}
-	else
-	{
-		// 16 bit
-		pTexRef->SetPix2(iX, iY, ClrDw2W(dwClr));
-	}
+	pTexRef->SetPix(iX, iY, dwClr);
 	// success
 	return true;
 }
@@ -746,66 +715,31 @@ bool C4Surface::SetPixAlpha(int iX, int iY, BYTE byAlpha)
 	C4TexRef *pTexRef;
 	if (!GetLockTexAt(&pTexRef, iX, iY)) return false;
 	// set alpha value of pix in surface
-	if (byBytesPP == 4)
-		// 32 bit
-		*(((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*4+3)=byAlpha;
-	else
-	{
-		// 16 bit
-		BYTE *pPix=((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*2+1;
-		*pPix = (*pPix & 0x0f) | (byAlpha & 0xf0);
-	}
+	*(((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*4+3)=byAlpha;
 	// success
 	return true;
 }
 
 bool C4Surface::BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency)
 {
-	// 16- or 32bit-blit. lock target
+	// 32bit-blit. lock target
 	C4TexRef *pTexRef;
 	if (!GetLockTexAt(&pTexRef, iX, iY)) return false;
-	if (byBytesPP == 4)
+	DWORD *pPix32=(DWORD *) (((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*4);
+	// get source pix as dword
+	DWORD srcPix=sfcSource->GetPixDw(iSrcX, iSrcY, true);
+	// merge
+	if (!fTransparency)
 	{
-		// 32 bit
-		DWORD *pPix32=(DWORD *) (((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*4);
-		// get source pix as dword
-		DWORD srcPix=sfcSource->GetPixDw(iSrcX, iSrcY, true);
-		// merge
-		if (!fTransparency)
-		{
-			// set it
-			*pPix32=srcPix;
-		}
-		else
-		{
-			if (pDraw->dwBlitMode & C4GFXBLIT_ADDITIVE)
-				BltAlphaAdd(*pPix32, srcPix);
-			else
-				BltAlpha(*pPix32, srcPix);
-		}
+		// set it
+		*pPix32=srcPix;
 	}
 	else
 	{
-		// 16 bit
-		WORD *pPix16=(WORD *) (((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*2);
-		// get source pix as dword
-		DWORD srcPix=sfcSource->GetPixDw(iSrcX, iSrcY, true);
-		if (!fTransparency)
-		{
-			// set it
-			*pPix16=ClrDw2W(srcPix);
-		}
+		if (pDraw->dwBlitMode & C4GFXBLIT_ADDITIVE)
+			BltAlphaAdd(*pPix32, srcPix);
 		else
-		{
-			// merge in 32 bit
-			DWORD dwDst=ClrW2Dw(*pPix16);
-			if (pDraw->dwBlitMode & C4GFXBLIT_ADDITIVE)
-				BltAlphaAdd(dwDst, srcPix);
-			else
-				BltAlpha(dwDst, srcPix);
-			// set
-			*pPix16=ClrDw2W(dwDst);
-		}
+			BltAlpha(*pPix32, srcPix);
 	}
 	// done
 	return true;
@@ -860,7 +794,7 @@ bool C4Surface::CopyBytes(BYTE *pImageData)
 {
 	// copy image data directly into textures
 	auto pTex = textures.begin();
-	int iSrcPitch = Wdt * byBytesPP; int iLineTotal = 0;
+	int iSrcPitch = Wdt * C4Draw::COLOR_DEPTH_BYTES; int iLineTotal = 0;
 	for (int iY=0; iY<iTexY; ++iY)
 	{
 		BYTE *pSource = pImageData + iSrcPitch * iLineTotal;
@@ -870,14 +804,14 @@ bool C4Surface::CopyBytes(BYTE *pImageData)
 			++pTex;
 			if (!pTex->Lock()) return false;
 			BYTE *pTarget = (BYTE*)pTex->texLock.pBits;
-			int iCpyNum = std::min(pTex->iSizeX, Wdt-iXImgPos)*byBytesPP;
+			int iCpyNum = std::min(pTex->iSizeX, Wdt-iXImgPos) * C4Draw::COLOR_DEPTH_BYTES;
 			int iYMax = std::min(pTex->iSizeY, Hgt-iLineTotal);
 			for (int iLine = 0; iLine < iYMax; ++iLine)
 			{
 				memcpy(pTarget, pSource, iCpyNum);
 				pSource += iSrcPitch;
 				// FIXME: use pTex->texLock.Pitch here?
-				pTarget += pTex->iSizeX*byBytesPP;
+				pTarget += pTex->iSizeX * C4Draw::COLOR_DEPTH_BYTES;
 			}
 			pSource += iCpyNum - iSrcPitch*iYMax;
 			iXImgPos += pTex->iSizeX;
@@ -910,8 +844,8 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 
 	if ((iFlags & C4SF_Unlocked) == 0 && pDraw)
 	{
-		texLock.pBits = new unsigned char[iSizeX*iSizeY*pDraw->byByteCnt];
-		texLock.Pitch = iSizeX*pDraw->byByteCnt;
+		texLock.pBits = new unsigned char[iSizeX * iSizeY * C4Draw::COLOR_DEPTH_BYTES];
+		texLock.Pitch = iSizeX * C4Draw::COLOR_DEPTH_BYTES;
 		memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
 		// Always locked
 		LockSize.x = LockSize.y = 0;
@@ -945,7 +879,7 @@ void C4TexRef::CreateTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
 	if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
@@ -969,8 +903,8 @@ bool C4TexRef::LockForUpdate(C4Rect & rtUpdate)
 	// lock
 #ifndef USE_CONSOLE
 	// prepare texture data
-	texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * pGL->byByteCnt];
-	texLock.Pitch = rtUpdate.Wdt * pGL->byByteCnt;
+	texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * C4Draw::COLOR_DEPTH_BYTES];
+	texLock.Pitch = rtUpdate.Wdt * C4Draw::COLOR_DEPTH_BYTES;
 	LockSize = rtUpdate;
 	return true;
 #endif
@@ -990,10 +924,10 @@ bool C4TexRef::Lock()
 			{
 				if (!pGL->pCurrCtx) return false;
 				// get texture
-				texLock.pBits = new unsigned char[iSizeX*iSizeY*pGL->byByteCnt];
-				texLock.Pitch = iSizeX * pGL->byByteCnt;
+				texLock.pBits = new unsigned char[iSizeX * iSizeY * C4Draw::COLOR_DEPTH_BYTES];
+				texLock.Pitch = iSizeX * C4Draw::COLOR_DEPTH_BYTES;
 				glBindTexture(GL_TEXTURE_2D, texName);
-				glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+				glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 				return true;
 			}
 #endif
@@ -1025,7 +959,7 @@ void C4TexRef::Unlock()
 			glBindTexture(GL_TEXTURE_2D, texName);
 			glTexSubImage2D(GL_TEXTURE_2D, 0,
 			                LockSize.x, LockSize.y, LockSize.Wdt, LockSize.Hgt,
-			                GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+			                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 
 			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
 			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
@@ -1038,22 +972,10 @@ bool C4TexRef::ClearRect(C4Rect &rtClear)
 	if (!LockForUpdate(rtClear)) return false;
 	// clear pixels
 	int y;
-	switch (pDraw->byByteCnt)
+	for (y = rtClear.y; y < rtClear.y + rtClear.Hgt; ++y)
 	{
-	case 2:
-		for (y = rtClear.y; y < rtClear.y + rtClear.Hgt; ++y)
-		{
-			for (int x = rtClear.x; x < rtClear.x + rtClear.Wdt; ++x)
-				SetPix2(x, y, 0x0000);
-		}
-		break;
-	case 4:
-		for (y = rtClear.y; y < rtClear.y + rtClear.Hgt; ++y)
-		{
-			for (int x = rtClear.x; x < rtClear.x + rtClear.Wdt; ++x)
-				SetPix4(x, y, 0x00000000);
-		}
-		break;
+		for (int x = rtClear.x; x < rtClear.x + rtClear.Wdt; ++x)
+			SetPix(x, y, 0x00000000);
 	}
 	// success
 	return true;
@@ -1065,22 +987,10 @@ bool C4TexRef::FillBlack()
 	if (!Lock()) return false;
 	// clear pixels
 	int y;
-	switch (pDraw->byByteCnt)
+	for (y=0; y<iSizeY; ++y)
 	{
-	case 2:
-		for (y=0; y<iSizeY; ++y)
-		{
-			for (int x = 0; x < iSizeX; ++x)
-				SetPix2(x, y, 0xf000);
-		}
-		break;
-	case 4:
-		for (y=0; y<iSizeY; ++y)
-		{
-			for (int x = 0; x < iSizeX; ++x)
-				SetPix4(x, y, 0xff000000);
-		}
-		break;
+		for (int x = 0; x < iSizeX; ++x)
+			SetPix(x, y, 0xff000000);
 	}
 	// success
 	return true;

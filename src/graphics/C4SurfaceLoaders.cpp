@@ -184,7 +184,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 				// The global, not texture-relative position
 				int rY = iY + tY * iTexSize;
 #ifndef __BIG_ENDIAN__
-				if (byBytesPP == 4 && png.iClrType == PNG_COLOR_TYPE_RGB_ALPHA)
+				if (png.iClrType == PNG_COLOR_TYPE_RGB_ALPHA)
 				{
 					// Optimize the easy case of a png in the same format as the display
 					// 32 bit
@@ -203,16 +203,8 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 						// if color is fully transparent, ensure it's black
 						if (dwCol>>24 == 0x00) dwCol=0x00000000;
 						// set pix in surface
-						if (byBytesPP == 4)
-						{
-							DWORD *pPix=(DWORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch + iX * 4);
-							*pPix=dwCol;
-						}
-						else
-						{
-							WORD *pPix=(WORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch + iX * 2);
-							*pPix=ClrDw2W(dwCol);
-						}
+						DWORD *pPix=(DWORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch + iX * 4);
+						*pPix=dwCol;
 					}
 				}
 			}

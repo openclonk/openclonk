@@ -160,7 +160,6 @@ protected:
 	GLenum sfcFmt;              // texture surface format
 	CStdGLCtx * pMainCtx;         // main GL context
 	CStdGLCtx *pCurrCtx;        // current context (owned if fullscreen)
-	int iClrDpt;                // color depth
 	// texture for smooth lines
 	GLuint lines_tex;
 
@@ -262,7 +261,7 @@ public:
 	} Workarounds;
 
 protected:
-	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
+	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor);
 
 	bool CheckGLError(const char *szAtOp);
 	const char* GLErrorString(GLenum code);

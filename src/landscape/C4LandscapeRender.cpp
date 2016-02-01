@@ -229,8 +229,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	iMaterialHeight = iTexHgt;
 
 	// Compose together data of all textures
-	const int iBytesPP = pRefSfc->byBytesPP;
-	const int iTexSize = iTexWdt * iTexHgt * iBytesPP;
+	const int iTexSize = iTexWdt * iTexHgt * C4Draw::COLOR_DEPTH_BYTES;
 	const int iSize = iTexSize * iMaterialTextureDepth;
 	BYTE *pData = new BYTE [iSize];
 	for(int i = 0; i < iMaterialTextureDepth; i++)
@@ -321,13 +320,13 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 
 	// Make it happen!
 	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, iTexWdt, iTexHgt, iMaterialTextureDepth, 0, GL_BGRA,
-				iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
+				GL_UNSIGNED_INT_8_8_8_8_REV,
 				pData);
 
 	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 	   
 	// Statistics
-	iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * iBytesPP;
+	iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * C4Draw::COLOR_DEPTH_BYTES;
 	
 	// Dispose of data
 	delete [] pData;
@@ -455,7 +454,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			data[C4LR_Place] = placement;
 
 			for(int i = 0; i < C4LR_SurfaceCount; i++)
-				texture[i]->SetPix4(To.x+x, To.y+y, 
+				texture[i]->SetPix(To.x+x, To.y+y, 
 					RGBA(data[i*4+0], data[i*4+1], data[i*4+2], data[i*4+3]));
 
 			// Update sums (last column would be out-of-bounds, and not

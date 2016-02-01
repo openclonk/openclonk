@@ -818,7 +818,7 @@ void C4Draw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
+bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor)
 {
 	// create engine
     #ifndef USE_CONSOLE
@@ -828,7 +828,7 @@ bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int
     #endif
 	if (!pDraw) return false;
 	// init it
-	if (!pDraw->Init(pApp, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!pDraw->Init(pApp, iXRes, iYRes, iMonitor))
 	{
 		delete pDraw;
 		return false;
@@ -837,13 +837,13 @@ bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int
 	return true;
 }
 
-bool C4Draw::Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
+bool C4Draw::Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor)
 {
 	this->pApp = pApp;
 
 	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 
-	if (!CreatePrimarySurfaces(iXRes, iYRes, iBitDepth, iMonitor))
+	if (!CreatePrimarySurfaces(iXRes, iYRes, iMonitor))
 		return false;
 
 	if (!CreatePrimaryClipper(iXRes, iYRes))

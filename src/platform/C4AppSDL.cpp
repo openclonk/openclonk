@@ -169,7 +169,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;
-			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 			pDraw->InvalidateDeviceObjects();
 			pDraw->RestoreDeviceObjects();
 
@@ -249,13 +249,13 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	return true;
 }
 
-bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
 {
 	//RECT r;
 	//pWindow->GetSize(&r);
 	// FIXME: optimize redundant calls away. maybe make all platforms implicitely call SetVideoMode in C4Window::Init?
 	// SDL doesn't support multiple monitors.
-	if (!SDL_SetVideoMode(iXRes == -1 ? 0 : iXRes, iYRes == -1 ? 0 : iYRes, iColorDepth,
+	if (!SDL_SetVideoMode(iXRes == -1 ? 0 : iXRes, iYRes == -1 ? 0 : iYRes, C4Draw::COLOR_DEPTH,
 		SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
 	{
 		sLastError.Copy(SDL_GetError());

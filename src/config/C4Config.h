@@ -106,7 +106,6 @@ public:
 	int32_t Windowed; // 0: fullscreen, 1: windowed, 2: fullscreen in game, windowed in menu
 	int32_t ShowCrewNames; // show player name above clonks?
 	int32_t ShowCrewCNames; // show clonk names above clonks?
-	int32_t BitDepth; // used bit depth for newgfx
 	int32_t PXSGfx;     // show PXS-graphics (instead of sole pixels)
 	int32_t Gamma; // gamma value
 	int32_t Currency;   // default wealth symbolseb
