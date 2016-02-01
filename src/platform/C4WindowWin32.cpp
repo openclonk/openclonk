@@ -110,7 +110,6 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			if (Application.Active)
 			{
 				// restore textures
-				if (pTexMgr) pTexMgr->IntUnlock();
 				if (Application.FullScreenMode())
 				{
 					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
@@ -118,8 +117,6 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			}
 			else
 			{
-				if (pTexMgr)
-					pTexMgr->IntLock();
 				if (Application.FullScreenMode())
 				{
 					::ChangeDisplaySettings(NULL, 0);
