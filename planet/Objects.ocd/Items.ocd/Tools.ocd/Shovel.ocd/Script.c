@@ -7,12 +7,14 @@ private func Hit()
 
 private func Destruction()
 {
-	if (Contained())
-		if (Contained()->GetAction())
+	// Stop shoveling when using the shovel when it's destroyed.
+	var user = Contained();
+	if (user)
+		if (user->GetAction() == "Dig" && user->~GetUsedObject() == this)
 		{
-			// We assume that the clonk digs with this shovel. If not, too bad. You stop shoveling.
-			Contained()->SetAction("Walk");
-			Contained()->SetComDir(COMD_Stop);
+			user->CancelUse();
+			user->SetAction("Walk");
+			user->SetComDir(COMD_Stop);
 		}
 }
 
