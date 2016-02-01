@@ -60,13 +60,16 @@ public:
 	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom);
 	inline void InvalidateBg() { iRedrawBackground=2; }
 	inline void OverwriteBg() { InvalidateBg(); }
-protected:
+
+private:
 	char FlashMessageText[C4MaxTitle+1];
 	int32_t FlashMessageTime,FlashMessageX,FlashMessageY;
 	void DrawHelp();
 	void DrawFlashMessage();
 	void DrawHoldMessages();
 	void ClearFullscreenBackground();
+
+	C4TimeMilliseconds lastFrame;
 
 public:
 	bool ToggleShow8BitSurface();

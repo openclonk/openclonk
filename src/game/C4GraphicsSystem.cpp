@@ -34,6 +34,8 @@
 
 #include <StdPNG.h>
 
+static const int MAX_BACKGROUND_FPS = 5;
+
 C4GraphicsSystem::C4GraphicsSystem()
 {
 	Default();
@@ -68,9 +70,10 @@ bool C4GraphicsSystem::StartDrawing()
 	if (!pDraw) return false;
 	if (!pDraw->Active) return false;
 
-	// only if application is active or windowed (if config allows)
-	if (!Application.Active && (!Application.isEditor || !Config.Graphics.RenderInactiveEM)) return false;
-
+	// if the window is not focused, draw no more than MAX_BACKGROUND_FPS frames per second
+	if (!Application.Active && (C4TimeMilliseconds::Now() - lastFrame) < 1000 / MAX_BACKGROUND_FPS)
+		return false;
+	
 	// drawing OK
 	return true;
 }
@@ -78,6 +81,7 @@ bool C4GraphicsSystem::StartDrawing()
 void C4GraphicsSystem::FinishDrawing()
 {
 	if (!Application.isEditor) FullScreen.pSurface->PageFlip();
+	lastFrame = C4TimeMilliseconds::Now();
 }
 
 void C4GraphicsSystem::Execute()
