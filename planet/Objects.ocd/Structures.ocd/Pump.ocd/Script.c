@@ -13,6 +13,13 @@
 #include Library_PowerConsumer
 #include Library_PowerProducer
 
+static const PUMP_Menu_Action_Switch_On = "on";
+static const PUMP_Menu_Action_Switch_Off = "off";
+static const PUMP_Menu_Action_Switch_Cut_Drain = "cutdrain";
+static const PUMP_Menu_Action_Switch_Cut_Source = "cutsource";
+static const PUMP_Menu_Action_Switch_Description = "description";
+
+
 local animation; // animation handle
 
 local switched_on; // controlled by Interaction. Indicates whether the user wants to pump or not
@@ -77,7 +84,7 @@ public func GetPumpControlMenuEntries(object clonk)
 		status = last_status_message;
 		lightbulb_graphics = "Red";
 	}
-	PushBack(menu_entries, {symbol = this, extra_data = "description",
+	PushBack(menu_entries, {symbol = this, extra_data = PUMP_Menu_Action_Switch_Description,
 			custom =
 			{
 				Prototype = custom_entry,
@@ -89,7 +96,7 @@ public func GetPumpControlMenuEntries(object clonk)
 			}});
 	
 	if (!switched_on)
-		PushBack(menu_entries, {symbol = Icon_Play, extra_data = "on", 
+		PushBack(menu_entries, {symbol = Icon_Play, extra_data = PUMP_Menu_Action_Switch_On, 
 			custom =
 			{
 				Prototype = custom_entry,
@@ -98,7 +105,7 @@ public func GetPumpControlMenuEntries(object clonk)
 				image = {Prototype = custom_entry.image, Symbol = Icon_Play}
 			}});
 	else
-		PushBack(menu_entries, {symbol = Icon_Stop, extra_data = "off", 
+		PushBack(menu_entries, {symbol = Icon_Stop, extra_data = PUMP_Menu_Action_Switch_Off, 
 			custom =
 			{
 				Prototype = custom_entry,
@@ -107,7 +114,7 @@ public func GetPumpControlMenuEntries(object clonk)
 				image = {Prototype = custom_entry.image, Symbol = Icon_Stop}
 			}});
 	if (source_pipe)
-		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutsource", 
+		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = PUMP_Menu_Action_Switch_Cut_Source, 
 			custom =
 			{
 				Prototype = custom_entry,
@@ -116,7 +123,7 @@ public func GetPumpControlMenuEntries(object clonk)
 				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
 			}});
 	if (drain_pipe)
-		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutdrain", 
+		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = PUMP_Menu_Action_Switch_Cut_Drain, 
 			custom =
 			{
 				Prototype = custom_entry,
@@ -147,21 +154,21 @@ public func GetInteractionMenus(object clonk)
 public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "";
-	if (action == "on") text = "$DescTurnOn$";
-	else if (action == "off") text = "$DescTurnOff$";
-	else if (action == "cutdrain") text = "$DescCutDrain$";
-	else if (action == "cutsource") text = "$DescCutSource$";
-	else if (action == "description") text = this.Description;
+	if (action == PUMP_Menu_Action_Switch_On) text = "$DescTurnOn$";
+	else if (action == PUMP_Menu_Action_Switch_Off) text = "$DescTurnOff$";
+	else if (action == PUMP_Menu_Action_Switch_Cut_Drain) text = "$DescCutDrain$";
+	else if (action == PUMP_Menu_Action_Switch_Cut_Source) text = "$DescCutSource$";
+	else if (action == PUMP_Menu_Action_Switch_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
 public func OnPumpControl(id symbol, string action, bool alt)
 {
-	if (action == "on" || action == "off")
+	if (action == PUMP_Menu_Action_Switch_On || action == PUMP_Menu_Action_Switch_Off)
 		ToggleOnOff(true);
-	else if (action == "cutsource" && source_pipe)
+	else if (action == PUMP_Menu_Action_Switch_Cut_Source && source_pipe)
 		source_pipe->RemoveObject();
-	else if (action == "cutdrain" && drain_pipe)
+	else if (action == PUMP_Menu_Action_Switch_Cut_Drain && drain_pipe)
 		drain_pipe->RemoveObject();
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
 }
