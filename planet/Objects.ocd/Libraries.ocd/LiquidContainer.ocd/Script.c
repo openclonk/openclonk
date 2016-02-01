@@ -170,6 +170,8 @@ func Construction()
 	lib_liquid_container = {
 		liquid = nil,	// the liquid - this should be a string, so that the container may contain liquids that are not materials
 	    volume = 0};	// the stored amount
+	    
+	_inherited(...);
 }
 
 func SaveScenarioObject(props)
