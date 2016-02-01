@@ -614,6 +614,9 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
 						if (!pObj || !pObj->Status) continue;
+						// Set controller to the controller of the object responsible for digging out
+						if (pCollect && pCollect->Status)
+							pObj->Controller = pCollect->Controller;
 						// Do callbacks to dug object and digger
 						pObj->Call(PSF_OnDugOut, &pars);
 						if (!pObj->Status || !pCollect || !pCollect->Status || pObj->Contained) continue;
