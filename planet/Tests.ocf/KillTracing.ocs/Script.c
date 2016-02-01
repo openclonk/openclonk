@@ -721,7 +721,7 @@ global func Test30_OnStart()
 	ClearFreeRect(100, 0, LandscapeWidth() - 100, LandscapeHeight());
 	
 	victim->SetPosition(60, 150);
-	ScheduleCall(victim, "ControlJump", 4, 1);
+	ScheduleCall(victim, "ControlJump", 4, 0);
 
 	var windbag = killer->CreateContents(WindBag);
 	windbag->DoFullLoad();
@@ -954,9 +954,9 @@ global func Test42_OnStart()
 	killer->SetPosition(140, 70);
 
 	var pickaxe = killer->CreateContents(Pickaxe);
-	pickaxe->ControlUseStart(killer, RandomX(8, 12), RandomX(-10, 2));
-	ScheduleCall(pickaxe, "ControlUseHolding", 1, 280, killer, RandomX(8, 12), RandomX(-10, 2));
-	ScheduleCall(pickaxe, "ControlUseStop", 281, 0, killer, RandomX(8, 12), RandomX(-10, 2));
+	pickaxe->ControlUseStart(killer, RandomX(8, 12), RandomX(-12, 2));
+	ScheduleCall(pickaxe, "ControlUseHolding", 1, 280, killer, RandomX(8, 12), RandomX(-12, 2));
+	ScheduleCall(pickaxe, "ControlUseStop", 281, 0, killer, RandomX(8, 12), RandomX(-12, 2));
 	return true;
 }
 
@@ -1218,6 +1218,26 @@ global func Test56_OnStart()
 
 	var throwing_obj = killer->CreateContents(Firestone);
 	killer->ObjectCommand("Throw", throwing_obj, 20, -20);
+	return true;
+}
+
+global func Test57_Log() { return "K blasts free a stuck piece of rock (controlled by F) which kills V"; }
+global func Test57_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Earth", 120, 90, 180, 90, 180, 100, 120, 100);
+	
+	victim->SetPosition(150, 150);
+	victim->DoEnergy(-49);
+	killer->SetPosition(150, 80);
+	
+	var rock = CreateObject(Rock, 150, 95);
+	rock->SetController(plr_killer_fake);
+	var firestone = killer->CreateContents(Firestone);
+	ScheduleCall(killer, "ControlJump", 4, 0);
+	ScheduleCall(killer, "AddCommand", 8, 0, "Drop", firestone);
 	return true;
 }
 
