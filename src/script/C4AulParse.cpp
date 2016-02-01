@@ -1714,13 +1714,8 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 	int size = 0, WarnCnt = iMaxCnt;
 	// so it's a regular function; force "("
 	Match(ATT_BOPEN);
-	bool fDone = false;
-	do switch (TokenType)
+	while(TokenType != ATT_BCLOSE) switch(TokenType)
 	{
-	case ATT_BCLOSE:
-		Shift();
-		fDone = true;
-		break;
 	case ATT_COMMA:
 		// got no parameter before a ","
 		if (sWarn && Config.Developer.ExtraWarnings)
@@ -1744,9 +1739,8 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 			AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
 			++size;
 		}
-		// Do not allow more parameters even if there is place left
-		fDone = true;
-		Match(ATT_BCLOSE);
+		// Do not allow more parameters even if there is space left
+		Check(ATT_BCLOSE);
 		break;
 	default:
 		// get a parameter
@@ -1771,14 +1765,11 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 		}
 		++size;
 		// end of parameter list?
-		if (TokenType == ATT_BCLOSE)
-		{
-			Shift();
-			fDone = true;
-		}
-		else Match(ATT_COMMA, "',' or ')'");
+		if (TokenType != ATT_BCLOSE)
+			Match(ATT_COMMA, "',' or ')'");
 		break;
-	} while (!fDone);
+	}
+	Match(ATT_BCLOSE);
 	// too many parameters?
 	if (sWarn && size > WarnCnt && Type == PARSER && !SEqual(sWarn, C4AUL_Inherited) && (pFunc || Config.Developer.ExtraWarnings))
 		Warn(FormatString("call to %s gives %d parameters, but only %d are used", sWarn, size, WarnCnt).getData(), NULL);
