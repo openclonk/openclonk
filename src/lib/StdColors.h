@@ -81,37 +81,6 @@ inline void ModulateClrMOD2(DWORD &dwDst, DWORD dwMod) // clr1+clr2-0.5
 	        (std::max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
 }
 
-inline void ModulateClrMono(DWORD &dwDst, BYTE byMod)
-{
-	// darken a color value by constant modulation
-	// More exact calculation, but might be slightly slower:
-	dwDst = ((dwDst     & 0xff) * byMod / 0xff)      | // blue
-	        ((dwDst>> 8 & 0xff) * byMod / 0xff) << 8 | // green
-	        ((dwDst>>16 & 0xff) * byMod / 0xff) << 16| // red
-	        (dwDst & 0xff000000);                     // alpha
-}
-
-inline void ModulateClrMonoA(DWORD &dwDst, BYTE byMod, BYTE byA)
-{
-	// darken a color value by constant modulation and add an alpha value
-	dwDst = ((dwDst     & 0xff) * byMod / 0xff)      | // blue
-	        ((dwDst>> 8 & 0xff) * byMod / 0xff) << 8 | // green
-	        ((dwDst>>16 & 0xff) * byMod / 0xff) << 16| // red
-	        (std::max<uint32_t>((dwDst>>24) + byA, 0xff) - 0xff) << 24; // alpha
-}
-
-
-inline DWORD LightenClr(DWORD &dwDst) // enlight a color
-{
-	// enlight a color
-	DWORD dw = dwDst;
-	dwDst=(dw&0xff808080)|((dw<<1)&0xfefefe);
-	if (dw & 0x80) dwDst |= 0xff;
-	if (dw & 0x8000) dwDst |= 0xff00;
-	if (dw & 0x800000) dwDst |= 0xff0000;
-	return dwDst;
-}
-
 inline DWORD LightenClrBy(DWORD &dwDst, int iBy) // enlight a color
 {
 	// enlight a color
@@ -121,12 +90,6 @@ inline DWORD LightenClrBy(DWORD &dwDst, int iBy) // enlight a color
 	        std::min<int>((dwDst>>16 & 0xff) + iBy, 255) << 16 | // red
 	        (dwDst & 0xff000000);                     // alpha
 	return dwDst;
-}
-
-inline DWORD DarkenClr(DWORD &dwDst) // make it half as bright
-{
-	// darken a color
-	return dwDst=(dwDst&0xff000000)|((dwDst>>1)&0x7f7f7f);
 }
 
 inline DWORD DarkenClrBy(DWORD &dwDst, int iBy) // darken a color
@@ -182,37 +145,6 @@ inline DWORD GetClrModulation(DWORD dwSrcClr, DWORD dwDstClr, DWORD &dwBack)
 	return RGBA(std::min((int)dR*256/sR, 255), std::min((int)dG*256/sG, 255), std::min((int)dB*256/sB, 255), 255-diffN);
 }
 
-inline DWORD NormalizeColors(DWORD &dwClr1, DWORD &dwClr2, DWORD &dwClr3, DWORD &dwClr4)
-{
-	// normalize the colors to a color in the middle
-	// combine clr1 and clr2 to clr1
-	ModulateClr(dwClr1, dwClr2); LightenClr(dwClr1);
-	// combine clr3 and clr4 to clr3
-	ModulateClr(dwClr3, dwClr4); LightenClr(dwClr3);
-	// combine clr1 and clr3 to clr1
-	ModulateClr(dwClr1, dwClr3); LightenClr(dwClr1);
-	// set other colors, return combined color
-	return dwClr2=dwClr3=dwClr4=dwClr1;
-}
-
-inline WORD ClrDw2W(DWORD dwClr)
-{
-	return
-	  WORD((dwClr & 0x000000f0) >> 4)
-	  | WORD((dwClr & 0x0000f000) >> 8)
-	  | WORD((dwClr & 0x00f00000) >> 12)
-	  | WORD((dwClr & 0xf0000000) >> 16);
-}
-
-inline DWORD ClrW2Dw(WORD wClr)
-{
-	return (DWORD)
-	       ((wClr & 0x000f) << 4)
-	       | ((wClr & 0x00f0) << 8)
-	       | ((wClr & 0x0f00) << 12)
-	       | ((wClr & 0xf000) << 16);
-}
-
 inline bool rgb2xyY(double r, double g, double b, double *px, double *py, double *pY) // linear rgb to CIE xyY
 {
 	double X = 0.412453*r + 0.357580*g + 0.180423*b;
@@ -237,16 +169,6 @@ inline bool xy2upvp(double x, double y, double *pu, double *pv) // CIE xy to u'v
 	if (!n) return false;
 	*pu = 4.0*x / n;
 	*pv = 9.0*y / n;
-	return true;
-}
-
-inline bool upvp2xy(double u, double v, double *px, double *py) // u'v' to CIE xy
-{
-	if (!v) return false;
-	double n = 1.5*u/v + 3.0/v - 4.0;
-	if (!n) return false;
-	*py = 1.0 / n;
-	*px =(6.0 - 4.5/v) * *py + 1.5;
 	return true;
 }
 
