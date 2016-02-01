@@ -47,7 +47,7 @@ func LiquidContainerIsFull()
 func LiquidContainerAccepts(string liquid_name)
 {
 	return IsLiquidContainerForMaterial(liquid_name)
-	   && (LiquidContainerIsEmpty() || GetLiquidName() == liquid_name);
+	   && (LiquidContainerIsEmpty() || GetLiquidType() == liquid_name);
 }
 
 // -------------- Getters
@@ -57,7 +57,7 @@ func LiquidContainerAccepts(string liquid_name)
 //
 // naming scheme: GetLiquid[attribute], because it concerns the liquid
 
-func GetLiquidName()
+func GetLiquidType()
 {
 	//if (LiquidContainerIsEmpty())
 	//	return nil; // TODO: was "", this was inconsistent throughout the barrel
@@ -76,7 +76,7 @@ func GetLiquidFillLevel()
 //
 // naming scheme: SetLiquid[attribute], because it concerns the liquid
 
-func SetLiquidName(string liquid_name)
+func SetLiquidType(string liquid_name)
 {
 	lib_liquid_container.liquid = liquid_name;
 }
@@ -93,7 +93,7 @@ func ChangeLiquidFillLevel(int amount)
 	// Empty the liquid container
 	if (LiquidContainerIsEmpty())
 	{
-		SetLiquidName(nil);
+		SetLiquidType(nil);
 	}
 	
 	this->UpdateLiquidContainer();
@@ -122,15 +122,15 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 	}
 
 	// default parameters if nothing is provided: the current material and level
-	liquid_name = liquid_name ?? GetLiquidName();
+	liquid_name = liquid_name ?? GetLiquidType();
 	amount = amount ?? GetLiquidFillLevel();
 
 	//Wrong material?
-	if (!WildcardMatch(GetLiquidName(), liquid_name))
+	if (!WildcardMatch(GetLiquidType(), liquid_name))
 		amount = 0;
 	amount = Min(amount, GetLiquidFillLevel());
 	ChangeLiquidFillLevel(-amount);
-	return [GetLiquidName(), amount];
+	return [GetLiquidType(), amount];
 }
 
 /** 
@@ -149,7 +149,7 @@ func PutLiquid(string liquid_name, int amount, object source)
 
 	if (LiquidContainerAccepts(liquid_name))
 	{
-		SetLiquidName(liquid_name);
+		SetLiquidType(liquid_name);
 		amount = BoundBy(GetLiquidContainerMaxFillLevel() - GetLiquidFillLevel(), 0, amount);
 		ChangeLiquidFillLevel(+amount);
 		return amount;
@@ -175,15 +175,15 @@ func Construction()
 func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	if (GetLiquidName())
-		props->AddCall("Fill", this, "SetLiquidContainer", Format("%v", GetLiquidName()), GetLiquidFillLevel());
+	if (GetLiquidType())
+		props->AddCall("Fill", this, "SetLiquidContainer", Format("%v", GetLiquidType()), GetLiquidFillLevel());
 	return true;
 }
 
 // set the current state, without sanity checks
 func SetLiquidContainer(string liquid_name, int amount)
 {
-	SetLiquidName(liquid_name);
+	SetLiquidType(liquid_name);
 	SetLiquidFillLevel(amount);
 }
 

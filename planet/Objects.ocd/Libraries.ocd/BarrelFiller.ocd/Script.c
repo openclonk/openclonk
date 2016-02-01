@@ -26,7 +26,7 @@ public func LiquidOutput(string sznMaterial, int inMaxAmount, object pnPump, obj
 		var ptBarrel = FindObject(Find_Container(this), Find_Func("IsBarrel"), Find_Func("IsLiquidContainerForMaterial", sznMaterial), Find_Not(Find_Func("LiquidContainerIsEmpty")));
 		var sztMaterial="";
 		if (ptBarrel)
-			sztMaterial = ptBarrel->GetLiquidName();
+			sztMaterial = ptBarrel->GetLiquidType();
 		//Nothing to pump
 		if (sztMaterial == "")
 			return ["", 0];
