@@ -72,7 +72,6 @@ protected func InitializePlayer(int plr)
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
 	effect.testnr = TEST_START_NR;
 	effect.launched = false;
-	effect.plr = plr;
 	return;
 }
 
@@ -90,7 +89,6 @@ global func LaunchTest(int nr)
 		effect = AddEffect("IntTestControl", nil, 100, 2);
 		effect.testnr = nr;
 		effect.launched = false;
-		effect.plr = GetPlayerByIndex(0, C4PT_User);
 		return;
 	}
 	// Start the requested test by just setting the test number and setting 
@@ -182,6 +180,12 @@ global func InitTest()
 	ClearFreeRect(0, 0, LandscapeWidth(), 160);
 	
 	// Give script players new crew.
+	var victim_crew = GetCrew(plr_victim);
+	if (victim_crew)
+	{
+		victim_crew.no_kill_tracing = true;
+		victim_crew->RemoveObject();	
+	}
 	for (var plr in [plr_victim, plr_killer, plr_killer_fake])
 	{	
 		if (!GetCrew(plr))
@@ -190,7 +194,7 @@ global func InitTest()
 			clonk->MakeCrewMember(plr);
 			clonk->SetDir(DIR_Right);
 			SetCursor(plr, clonk);
-			clonk->DoEnergy(100000);
+			clonk->DoEnergy(clonk.MaxEnergy / 1000);
 		}
 	}
 	GetCrew(plr_victim)->SetPosition(100, 150);
@@ -208,7 +212,7 @@ global func GetPlayerName(int plr)
 
 public func OnClonkDeath(object clonk, int killer)
 {
-	if (clonk->GetOwner() != plr_victim)
+	if (clonk->GetOwner() != plr_victim || clonk.no_kill_tracing)
 		return;
 	var effect = GetEffect("IntTestControl");
 	EffectCall(nil, effect, "OnDeath", killer, clonk);
