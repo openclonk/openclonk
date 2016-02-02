@@ -231,12 +231,10 @@ CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
 void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
-	if (hDC)
-	{
-		ReleaseDC(pWindow ? pWindow->renderwnd : hWindow, hDC);
-		hDC=0;
-	}
-	pWindow = 0; hWindow = NULL;
+	if (hDC && pWindow)
+		ReleaseDC(pWindow->renderwnd, hDC);
+	hDC = 0;
+	pWindow = 0;
 
 	if (this_context != contexts.end())
 	{
@@ -255,7 +253,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	// safety
-	if (!pGL) return false;
+	if (!pGL || !pWindow) return false;
 
 	std::unique_ptr<GLTempContext> tempContext;
 	if (hrc == 0)
@@ -282,10 +280,9 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 
 	// store window
 	this->pWindow = pWindow;
-	hWindow = pWindow->renderwnd;
 
 	// get DC
-	hDC = GetDC(hWindow);
+	hDC = GetDC(pWindow->renderwnd);
 	if(!hDC)
 	{
 		pGL->Error("  gl: Error getting DC");
@@ -367,7 +364,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 		return true;
 	}
 
-	ReleaseDC(hWindow, hDC); hDC = NULL;
+	ReleaseDC(pWindow->renderwnd, hDC); hDC = NULL;
 	return false;
 }
 
