@@ -274,6 +274,14 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	return true;
 }
 
+void CStdGL::ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label)
+{
+#ifdef GL_KHR_debug
+	if (glObjectLabel)
+		glObjectLabel(identifier, name, length, label);
+#endif
+}
+
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	// safety
@@ -285,7 +293,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	if (first_ctx)
 	{
 		pMainCtx = pCtx;
-		Log("  gl: Create first context...");
+		LogF("  gl: Create first %scontext...", Config.Graphics.DebugOpenGL ? "debug " : "");
 	}
 	bool success = pCtx->Init(pWindow, pApp);
 	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)

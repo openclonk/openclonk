@@ -55,23 +55,12 @@ void CStdGLCtx::SelectCommon()
 	}
 }
 
-void CStdGLCtx::Reinitialize()
-{
-	assert(!pGL->pCurrCtx);
-#ifdef USE_WIN32_WINDOWS
-	if (hrc)
-		wglDeleteContext(hrc);
-	hrc = 0;
-#endif
-}
-
-
 #ifdef USE_WIN32_WINDOWS
 
 #include <GL/wglew.h>
 
-decltype(CStdGLCtx::hrc) CStdGLCtx::hrc = 0;
 static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
+static HGLRC hrc = 0;
 
 // Enumerate available pixel formats. Choose the best pixel format in
 // terms of color and depth buffer bits and then return all formats with
@@ -170,101 +159,76 @@ static int GetPixelFormatForMS(HDC hDC, int samples)
 	return 0;
 }
 
-// Initialize GLEW. We need to choose a pixel format for this, however we need
-// GLEW initialized to enumerate pixel formats. So this creates a temporary
-// window with a default pixel format, initializes glew and removes that temp
-// window again. Then we can enumerate pixel formats and choose a proper one
-// for the main window in CStdGLCtx::Init.
-bool CStdGLCtx::InitGlew(HINSTANCE hInst)
+class WinAPIError : public std::runtime_error
 {
-	static bool glewInitialized = false;
-	if(glewInitialized) return true;
+public:
+	typedef DWORD error_code;
 
-	// Create window
-	HWND hWnd = CreateWindowExW  (
-	            0,
-	            L"STATIC",
-	            NULL,
-	            WS_OVERLAPPEDWINDOW,
-	            CW_USEDEFAULT,CW_USEDEFAULT,0,0,
-	            NULL,NULL,hInst,NULL);
+	WinAPIError() : WinAPIError(GetLastError()) {}
+	WinAPIError(error_code err) : std::runtime_error(format_error(err)) {}
 
-	if(!hWnd)
+private:
+	static std::string format_error(error_code err)
 	{
-		pGL->Error("  gl: Failed to create temporary window to choose pixel format");
+		LPWSTR buffer = 0;
+		FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
+			0, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
+		StdStrBuf str(buffer);
+		LocalFree(buffer);
+		return std::string(str.getData(), str.getLength());
 	}
-	else
+};
+
+class GLTempContext
+{
+	HWND wnd;
+	HDC dc;
+	HGLRC glrc;
+public:
+	GLTempContext()
 	{
-		HDC dc = GetDC(hWnd);
-
-		PIXELFORMATDESCRIPTOR pfd;
-
-		// pixel format
-		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR)) ;
-		pfd.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
-		pfd.nVersion   = 1 ;
-		pfd.dwFlags    = PFD_DOUBLEBUFFER |
-			              PFD_SUPPORT_OPENGL |
-			              PFD_DRAW_TO_WINDOW ;
+		wnd = CreateWindowExW(0, L"STATIC", 0, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
+		if (!wnd)
+			throw WinAPIError();
+		dc = GetDC(wnd);
+		auto pfd = PIXELFORMATDESCRIPTOR();
+		pfd.nSize = sizeof(pfd);
+		pfd.nVersion = 1;
+		pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
 		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.cColorBits = C4Draw::COLOR_DEPTH;
-		pfd.cDepthBits = 0;
 		pfd.iLayerType = PFD_MAIN_PLANE;
-		int temp_fmt = ChoosePixelFormat(dc, &pfd);
-
-		if(!temp_fmt)
+		int format = ChoosePixelFormat(dc, &pfd);
+		if (!format ||
+			!SetPixelFormat(dc, format, &pfd) ||
+			(glrc = wglCreateContext(dc)) == 0)
 		{
-			pGL->Error("  gl: Error choosing temp pixel format");
+			DWORD err = GetLastError();
+			ReleaseDC(wnd, dc);
+			DestroyWindow(wnd);
+			throw WinAPIError(err);
 		}
-		else if(!SetPixelFormat(dc, temp_fmt, &pfd))
+		if (!wglMakeCurrent(dc, glrc))
 		{
-			pGL->Error("  gl: Error setting temp pixel format");
+			DWORD err = GetLastError();
+			wglDeleteContext(glrc);
+			ReleaseDC(wnd, dc);
+			DestroyWindow(wnd);
+			throw WinAPIError(err);
 		}
-		else
-		{
-			HGLRC hrc = wglCreateContext(dc);
-			if(!hrc)
-			{
-				pGL->Error("  gl: Error creating temp context");
-			}
-			else
-			{
-				if(!wglMakeCurrent(dc, hrc))
-				{
-					pGL->Error("  gl: Error making temp context current");
-				}
-				else
-				{
-					// init extensions
-					glewExperimental = GL_TRUE;
-					GLenum err = glewInit();
-					if(err != GLEW_OK)
-					{
-						// Problem: glewInit failed, something is seriously wrong.
-						pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-					}
-					else
-					{
-						glewInitialized = true;
-					}
-
-					wglMakeCurrent(NULL, NULL);
-				}
-
-				wglDeleteContext(hrc);
-			}
-		}
-
-		ReleaseDC(hWnd, dc);
-		DestroyWindow(hWnd);
 	}
-
-	return glewInitialized;
-}
+	~GLTempContext()
+	{
+		if (glrc == wglGetCurrentContext())
+			wglMakeCurrent(dc, 0);
+		wglDeleteContext(glrc);
+		ReleaseDC(wnd, dc);
+		DestroyWindow(wnd);
+	}
+};
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	if (hDC)
@@ -279,6 +243,13 @@ void CStdGLCtx::Clear()
 		contexts.erase(this_context);
 		this_context = contexts.end();
 	}
+	if (multisample_change)
+	{
+		assert(!pGL->pCurrCtx);
+		if (hrc)
+			wglDeleteContext(hrc);
+		hrc = 0;
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
@@ -286,8 +257,28 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	// safety
 	if (!pGL) return false;
 
-	// Initialize GLEW so that we can choose a pixel format later
-	if(!InitGlew(pApp->hInstance)) return false;
+	std::unique_ptr<GLTempContext> tempContext;
+	if (hrc == 0)
+	{
+		// Create a temporary context to be able to fetch GL extension pointers
+		try
+		{
+			tempContext.reset(new GLTempContext);
+			glewExperimental = GL_TRUE;
+			GLenum err = glewInit();
+			if(err != GLEW_OK)
+			{
+				// Problem: glewInit failed, something is seriously wrong.
+				pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+				return false;
+			}
+		}
+		catch (const WinAPIError &e)
+		{
+			pGL->Error((std::string("  gl: Unable to create temporary context: ") + e.what()).c_str());
+			return false;
+		}
+	}
 
 	// store window
 	this->pWindow = pWindow;
@@ -340,8 +331,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 						0
 					};
 
-					if (Config.Graphics.DebugOpenGL)
-						DebugLog("  gl: Creating debug context.");
 					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
 				}
 				else
@@ -452,7 +441,7 @@ void InitGLXPointers()
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), this_context(contexts.end()) { }
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	if (ctx)
@@ -468,6 +457,11 @@ void CStdGLCtx::Clear()
 		contexts.erase(this_context);
 		this_context = contexts.end();
 	}
+}
+
+static int GLXErrorHandler(Display * dpy, XErrorEvent * ev)
+{
+    return 0;
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
@@ -506,12 +500,13 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	if (glXCreateContextAttribsARB)
 	{
-		DebugLogF("  gl: Creating %s context", Config.Graphics.DebugOpenGL ? "debug" : "standard");
+		int (*oldErrorHandler) (Display *, XErrorEvent *) = XSetErrorHandler(GLXErrorHandler);
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
+		XSync(dpy, False);
+		XSetErrorHandler(oldErrorHandler);
 	}
-	else
-	{
-		DebugLog("  gl: glXCreateContextAttribsARB not supported; falling back to attribute-less context creation");
+	if(!ctx) {
+		Log("  gl: falling back to attribute-less context creation.");
 		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
 	}
 
@@ -586,7 +581,7 @@ bool CStdGLCtx::PageFlip()
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	pWindow = 0;
 

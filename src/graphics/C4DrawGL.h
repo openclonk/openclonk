@@ -107,7 +107,7 @@ public:
 	CStdGLCtx();  // ctor
 	~CStdGLCtx() { Clear(); } // dtor
 
-	void Clear();               // clear objects
+	void Clear(bool multisample_change = false);               // clear objects
 
 #ifdef USE_WIN32_WINDOWS
 	std::vector<int> EnumerateMultiSamples() const;
@@ -119,17 +119,13 @@ public:
 
 	bool PageFlip();            // present scene
 
-	static void Reinitialize();
-
 protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
 	C4Window * pWindow; // window to draw in
 #ifdef USE_WIN32_WINDOWS
-	static HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
 	HDC hDC;                    // device context handle
-	static bool InitGlew(HINSTANCE hInst);
 #elif defined(USE_GTK)
 	/*GLXContext*/void * ctx;
 #endif
@@ -259,6 +255,7 @@ public:
 	{
 		bool LowMaxVertexUniformCount;
 	} Workarounds;
+	void ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label);
 
 protected:
 	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor);

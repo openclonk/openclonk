@@ -558,7 +558,7 @@ static NSOpenGLContext* MainContext;
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) {}
 
-void CStdGLCtx::Clear()
+void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	setObjectiveCObject(nil);

@@ -329,10 +329,7 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 	// Link program
 	const GLuint hNewProg = glCreateProgram();
-#ifdef GL_KHR_debug
-	if (glObjectLabel)
-		glObjectLabel(GL_PROGRAM, hNewProg, -1, szWhat);
-#endif
+	pGL->ObjectLabel(GL_PROGRAM, hNewProg, -1, szWhat);
 	glAttachShader(hNewProg, hVert);
 	glAttachShader(hNewProg, hFrag);
 	glLinkProgram(hNewProg);
@@ -523,10 +520,7 @@ GLuint C4Shader::Create(GLenum iShaderType, const char *szWhat, const char *szSh
 {
 	// Create shader
 	GLuint hShader = glCreateShader(iShaderType);
-#ifdef GL_KHR_debug
-	if (glObjectLabel)
-		glObjectLabel(GL_SHADER, hShader, -1, szWhat);
-#endif
+	pGL->ObjectLabel(GL_SHADER, hShader, -1, szWhat);
 
 	// Compile
 	glShaderSource(hShader, 1, &szShader, 0);
