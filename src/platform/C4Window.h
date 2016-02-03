@@ -330,7 +330,6 @@ public:
 public:
 #if defined(USE_WIN32_WINDOWS)
 	HWND hWindow;
-	HWND renderwnd;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_GTK)
 	/*GtkWidget*/void * window;
@@ -338,11 +337,15 @@ public:
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
 #endif
+#ifdef USE_WGL
+	HWND renderwnd;
+#elif defined(USE_GTK)
+	unsigned long renderwnd;
+#endif
 protected:
 #if defined(USE_GTK)
 	bool FindFBConfig(int samples, GLXFBConfig *info);
 
-	unsigned long renderwnd;
 	// The GLXFBConfig the window was created with
 	GLXFBConfig Info;
 	unsigned long handlerDestroy;

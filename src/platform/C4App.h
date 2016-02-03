@@ -28,6 +28,10 @@
 #endif
 
 #if defined(USE_GTK)
+#ifdef _WIN32
+#undef MK_CONTROL
+#undef MK_SHIFT
+#endif
 // from X.h:
 //#define ShiftMask   (1<<0)
 //#define ControlMask   (1<<2)

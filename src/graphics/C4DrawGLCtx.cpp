@@ -55,7 +55,7 @@ void CStdGLCtx::SelectCommon()
 	}
 }
 
-#ifdef USE_WIN32_WINDOWS
+#ifdef USE_WGL
 
 #include <GL/wglew.h>
 

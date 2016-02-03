@@ -109,7 +109,7 @@ public:
 
 	void Clear(bool multisample_change = false);               // clear objects
 
-#ifdef USE_WIN32_WINDOWS
+#ifdef USE_WGL
 	std::vector<int> EnumerateMultiSamples() const;
 #endif
 	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
@@ -123,7 +123,7 @@ protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
 	C4Window * pWindow; // window to draw in
-#ifdef USE_WIN32_WINDOWS
+#ifdef USE_WGL
 	HDC hDC;                    // device context handle
 #elif defined(USE_GTK)
 	/*GLXContext*/void * ctx;

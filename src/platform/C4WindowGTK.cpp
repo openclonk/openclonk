@@ -112,6 +112,9 @@ GLXFBConfig PickGLXFBConfig(Display* dpy, int multisampling)
 	return config;
 }
 }
+#elif defined(GDK_WINDOWING_WIN32)
+#include <C4windowswrapper.h>
+#include <gdk/gdkwin32.h>
 #endif // GDK_WINDOWING_X11
 
 static void OnDestroyStatic(GtkWidget* widget, gpointer data)
@@ -127,21 +130,31 @@ static gboolean OnDelete(GtkWidget* widget, GdkEvent* event, gpointer data)
 	return true;
 }
 
+#ifdef GDK_WINDOWING_X11
+static constexpr int x11scancodeoffset = 8;
+#else
+static constexpr int x11scancodeoffset = 0;
+#endif
+
 static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
-	// keycode = scancode + 8
-	if (event->hardware_keycode <= 8) return false;
-	Game.DoKeyboardInput(event->hardware_keycode-8, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	if (event->hardware_keycode <= x11scancodeoffset) return false;
+	Game.DoKeyboardInput(event->hardware_keycode - x11scancodeoffset, KEYEV_Down,
+	                     !!(event->state & GDK_MOD1_MASK),
+	                     !!(event->state & GDK_CONTROL_MASK),
+	                     !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	wnd->CharIn(event->string); // FIXME: Use GtkIMContext somehow
 	return true;
 }
 
 static gboolean OnKeyRelease(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	// keycode = scancode + 8
-	if (event->hardware_keycode <= 8) return false;
-	Game.DoKeyboardInput(event->hardware_keycode-8, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	if (event->hardware_keycode <= x11scancodeoffset) return false;
+	Game.DoKeyboardInput(event->hardware_keycode - x11scancodeoffset, KEYEV_Up,
+	                     !!(event->state & GDK_MOD1_MASK),
+	                     !!(event->state & GDK_CONTROL_MASK),
+	                     !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	return true;
 }
 
@@ -189,15 +202,15 @@ static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 		return true;
 	}
-	if (event->hardware_keycode <= 8) return false;
-	Console.EditCursor.KeyDown(event->hardware_keycode - 8, event->state);
+	if (event->hardware_keycode <= x11scancodeoffset) return false;
+	Console.EditCursor.KeyDown(event->hardware_keycode - x11scancodeoffset, event->state);
 	return false;
 }
 
 static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	if (event->hardware_keycode <= 8) return false;
-	Console.EditCursor.KeyUp(event->hardware_keycode - 8, event->state);
+	if (event->hardware_keycode <= x11scancodeoffset) return false;
+	Console.EditCursor.KeyUp(event->hardware_keycode - x11scancodeoffset, event->state);
 	return false;
 }
 
@@ -573,6 +586,9 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 
 	XFree(configs);
 	samples.assign(multisamples.cbegin(), multisamples.cend());
+#else
+	if(pGL && pGL->pMainCtx)
+		samples = pGL->pMainCtx->EnumerateMultiSamples();
 #endif
 }
 
@@ -772,6 +788,8 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 #ifdef GDK_WINDOWING_X11
 	renderwnd = GDK_WINDOW_XID(render_gdk_wnd);
+#elif defined(GDK_WINDOWING_WIN32)
+	renderwnd = reinterpret_cast<HWND>(gdk_win32_window_get_handle(render_gdk_wnd));
 #endif
 	// Make sure the window is shown and ready to be rendered into,
 	// this avoids an async X error.

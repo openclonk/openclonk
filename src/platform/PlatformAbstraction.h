@@ -24,6 +24,10 @@
 #include <config.h>
 #endif // HAVE_CONFIG_H
 
+#if defined(USE_WIN32_WINDOWS) || (defined(_WIN32) && defined(USE_GTK))
+#define USE_WGL
+#endif
+
 // We need to #define the target Windows version selector macros before we
 // including any MinGW header.
 #ifdef _WIN64

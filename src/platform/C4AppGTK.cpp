@@ -44,7 +44,11 @@ public:
 	}
 
 	GMainContext *context;
+#ifdef STDSCHEDULER_USE_EVENTS
+	std::vector<GPollFD> fds;
+#else
 	std::vector<pollfd> fds;
+#endif
 	C4TimeMilliseconds query_time;
 	int timeout;
 	int max_priority;
@@ -108,11 +112,18 @@ public:
 	}
 
 	// StdSchedulerProc override
+#ifdef STDSCHEDULER_USE_EVENTS
+	virtual HANDLE GetEvent()
+	{
+		return reinterpret_cast<HANDLE>(fds[0].fd);
+	}
+#else
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{
 		if (query_time.IsInfinite()) query(C4TimeMilliseconds::Now());
 		rfds.insert(rfds.end(), fds.begin(), fds.end());
 	}
+#endif
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds Now)
 	{
 		query(Now);
@@ -160,7 +171,10 @@ public:
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
 		// main thread
-#ifdef HAVE_PTHREAD
+#ifdef _WIN32
+		hInstance(NULL),
+		idMainThread(::GetCurrentThreadId()),
+#elif defined(HAVE_PTHREAD)
 		MainThread (pthread_self()),
 #endif
 		Priv(new C4X11AppImpl(this)), fDspModeSet(false)
@@ -253,8 +267,6 @@ bool C4AbstractApp::FlushMessages()
 
 bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
-#ifdef GDK_WINDOWING_X11
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (!fFullScreen)
 	{
 		RestoreVideoMode();
@@ -263,6 +275,8 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		return true;
 	}
 
+#ifdef GDK_WINDOWING_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (Priv->xrandr_major_version >= 0 && !(iXRes == -1 && iYRes == -1))
 	{
 		// randr spec says to always get fresh info, so don't cache.
@@ -284,9 +298,9 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		}
 		XRRFreeScreenConfigInfo(conf);
 	}
+#endif
 	gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
 	return fDspModeSet || (iXRes == -1 && iYRes == -1);
-#endif
 }
 
 void C4AbstractApp::RestoreVideoMode()
@@ -305,11 +319,11 @@ void C4AbstractApp::RestoreVideoMode()
 		XRRFreeScreenConfigInfo(conf);
 		fDspModeSet = false;
 	}
+#endif
 	// pWindow may be unset when C4AbstractApp gets destroyed during the
 	// initialization code, before a window has been created
 	if (pWindow)
 		gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
-#endif
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
