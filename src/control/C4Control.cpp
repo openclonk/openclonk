@@ -235,7 +235,6 @@ void C4ControlScript::Execute() const
 
 	// execute
 	C4PropList *pPropList = NULL;
-	C4AulScript *pScript;
 	if (iTargetObj == SCOPE_Console)
 		pPropList = ::GameScript.GetPropList();
 	else if (iTargetObj == SCOPE_Global)
