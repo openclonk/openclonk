@@ -120,6 +120,13 @@ func ControlUseHolding(object clonk, ix, iy)
 
 	clonk->SetAimPosition(angle);
 	
+	// Show and update trajectory preview only when loaded.
+	if (loaded)
+	{
+		var shot_x = Sin(180 - angle, MuzzleFront);
+		var shot_y = Cos(180 - angle, MuzzleUp) + MuzzleOffset;
+		Trajectory->Create(clonk, GetX() + shot_x, GetY() + shot_y, Cos(angle - 90, shooting_strength), Sin(angle - 90, shooting_strength));
+	}
 	return true;
 }
 
@@ -138,6 +145,7 @@ public func FinishedAiming(object clonk, int angle)
 	// Fire
 	if(Contents(0) && Contents(0)->~IsGrenadeLauncherAmmo())
 		FireWeapon(clonk, angle);
+	Trajectory->Remove(clonk);
 	clonk->StartShoot(this);
 	return true;
 }
@@ -145,6 +153,7 @@ public func FinishedAiming(object clonk, int angle)
 protected func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming(this);
+	Trajectory->Remove(clonk);
 	return true;
 }
 
