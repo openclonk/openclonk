@@ -22,6 +22,7 @@
 #include "script/C4ScriptHost.h"
 #include "lib/C4Random.h"
 #include "object/C4DefList.h"
+#include "TestLog.h"
 
 C4Value AulTest::RunCode(const char *code, bool wrap)
 {
@@ -128,4 +129,20 @@ TEST_F(AulTest, Vars)
 {
 	EXPECT_EQ(C4VInt(42), RunCode("var i = 21; i = i + i; return i;"));
 	EXPECT_EQ(C4VInt(42), RunCode("var i = -42; i = Abs(i); return i;"));
+}
+
+TEST_F(AulTest, Warnings)
+{
+	LogMock log;
+	EXPECT_CALL(log, DebugLog(testing::StartsWith("WARNING:"))).Times(3);
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { Sin(s); }", false));
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { Sin(o); }", false));
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { Sin(a); }", false));
+}
+
+TEST_F(AulTest, NoWarnings)
+{
+	LogMock log;
+	EXPECT_CALL(log, DebugLog(testing::StartsWith("WARNING:"))).Times(0);
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { var x; Sin(x); }", false));
 }

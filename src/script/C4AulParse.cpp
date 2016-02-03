@@ -1057,6 +1057,15 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 	case AB_Not: case AB_LessThan: case AB_LessThanEqual: case AB_GreaterThan: case AB_GreaterThanEqual:
 	case AB_Equal: case AB_NotEqual:
 		from = C4V_Bool; break;
+	case AB_DUP:
+	{
+		int pos = Fn->GetLastCode()->Par.i + iStack - 2 + Fn->VarNamed.iSize + Fn->GetParCount();
+		if (pos < Fn->GetParCount())
+			from = Fn->GetParType()[pos];
+		else
+			from = C4V_Any;
+		break;
+	}
 	default:
 		from = C4V_Any; break;
 	}
