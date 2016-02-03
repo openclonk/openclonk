@@ -1,0 +1,13 @@
+MenuPipeControl=Leitungen
+MsgPipeControl=TODO
+
+MsgConnectSource=Zufluss anschlieﬂen
+MsgConnectDrain=Abfluss anschlieﬂen
+DescConnectSource=Schlieﬂt ein Zuflussrohr an.
+DescConnectDrain=Schlieﬂt ein Abflussrohr an.
+
+MsgCutSource=Zufluss trennen
+MsgCutDrain=Abfluss trennen
+DescCutSource=Entfernt das Zuflussrohr. Die Pumpe kann dann nicht mehr pumpen.
+DescCutDrain=Entfernt das Abflussrohr. Es wird dann direkt zur Pumpe gepumpt.
+
