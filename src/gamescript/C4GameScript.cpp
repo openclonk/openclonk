@@ -60,22 +60,6 @@ static long FnGetGravity(C4PropList * _this)
 	return fixtoi(::Landscape.Gravity * 100);
 }
 
-// undocumented!
-static bool FnPlayerObjectCommand(C4PropList * _this, int iPlr, C4String * szCommand,
-                                  C4Object * pTarget, int iTx, int iTy,
-                                  C4Object * pTarget2, const C4Value & Data)
-{
-	// Player
-	if (!ValidPlr(iPlr) || !szCommand) return false;
-	C4Player *pPlr = ::Players.Get(iPlr);
-	// Command
-	long iCommand = CommandByName(FnStringPar(szCommand)); if (!iCommand) return false;
-	// Set
-	pPlr->ObjectCommand(iCommand, pTarget, iTx, iTy, pTarget2, Data, C4P_Command_Set);
-	// Success
-	return true;
-}
-
 static C4String *FnGetPlayerName(C4PropList * _this, long iPlayer)
 {
 	if (!ValidPlr(iPlayer)) return NULL;
@@ -2909,7 +2893,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerControlAssignment);
 	F(GetStartupPlayerCount);
 	F(GetStartupTeamCount);
-	F(PlayerObjectCommand);
 	F(EditCursor);
 	F(GainScenarioAchievement);
 	F(GetPXSCount);
