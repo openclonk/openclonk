@@ -1042,28 +1042,6 @@ void C4Player::AdjustCursorCommand()
 	}
 }
 
-bool C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
-{
-	// Eliminated
-	if (Eliminated) return false;
-	// Hide startup
-	if (ShowStartup) ShowStartup=false;
-	// Always apply to cursor, even if it's not in the crew
-	if (Cursor && Cursor->Status && Cursor != pTarget)
-		ObjectCommand2Obj(Cursor, iCommand, pTarget, iX, iY, pTarget2, iData, iMode);
-
-	// Success
-	return true;
-}
-
-void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
-{
-	// forward to object
-	if (iMode & C4P_Command_Append) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,true,iData,true,0,NULL,C4CMD_Mode_Base); // append: by Shift-click and for dragging of multiple objects (all independant; thus C4CMD_Mode_Base)
-	else if (iMode & C4P_Command_Add) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,true,iData,false,0,NULL,C4CMD_Mode_Base); // append: by context menu and keyboard throw command (all independant; thus C4CMD_Mode_Base)
-	else if (iMode & C4P_Command_Set) cObj->SetCommand(iCommand,pTarget,iX,iY,pTarget2,true,iData);
-}
-
 void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	assert(ID);

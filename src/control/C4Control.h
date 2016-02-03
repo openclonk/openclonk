@@ -259,19 +259,6 @@ public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
-class C4ControlPlayerCommand : public C4ControlPacket // sync
-{
-public:
-	C4ControlPlayerCommand()
-			: iPlr(-1), iCmd(-1) { }
-	C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
-	                       C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode);
-protected:
-	int32_t iPlr, iCmd, iX, iY, iTarget, iTarget2, iData, iAddMode;
-public:
-	DECLARE_C4CONTROL_VIRTUALS
-};
-
 class C4ControlMenuCommand : public C4ControlPacket // sync
 {
 public:

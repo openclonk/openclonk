@@ -729,47 +729,6 @@ void C4MouseControl::Wheel(DWORD dwFlags)
 {
 }
 
-bool C4MouseControl::IsValidMenu(C4Menu *pMenu)
-{
-	// Local control fullscreen menu
-	if (pMenu == FullScreen.pMenu)
-		if (pMenu->IsActive())
-			return true;
-	// Local control player menu
-	C4Player *pPlr;
-	for (int32_t cnt=0; (pPlr=::Players.Get(cnt)); cnt++)
-		if (pMenu == &(pPlr->Menu))
-			if (pMenu->IsActive())
-				return true;
-	// No match found
-	return false;
-}
-
-bool C4MouseControl::SendControl(int32_t iCom, int32_t iData)
-{
-	// Activate player menu / fullscreen main menu (local control)
-	if (iCom==COM_PlayerMenu)
-	{
-		if (IsPassive() && FullScreen.Active)
-			FullScreen.ActivateMenuMain();
-		else
-			pPlayer->ActivateMenuMain();
-		return true;
-	}
-	// Open chat
-	if (iCom==COM_Chat)
-	{
-		C4ChatDlg::ShowChat();
-		return true;
-	}
-	// other controls not valid in passive mode
-	if (IsPassive()) return false;
-	// Player control queue
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,iCom,iData));
-	// Done
-	return true;
-}
-
 void C4MouseControl::DragScript()
 {
 	// script drag should update target and selection so selection highlight on drop target is visible
@@ -822,19 +781,6 @@ void C4MouseControl::ButtonUpDragScript()
 	// todo: Perform drag/drop validity check
 	// now drag/drop is handled by script
 	Game.Input.Add(CID_PlrMouseMove, C4ControlPlayerMouse::DragDrop(::Players.Get(Player), DropObject, DragObject));
-}
-
-void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
-{
-	// no commands in passive mode
-	if (IsPassive()) return;
-	// no commands if player is eliminated or doesn't exist any more
-	C4Player *pPlr = ::Players.Get(Player);
-	if (!pPlr || pPlr->Eliminated) return;
-	// User add multiple command mode
-	if (ShiftDown) iAddMode|=C4P_Command_Append;
-	// Command to control queue
-	Game.Input.Add(CID_PlrCommand, new C4ControlPlayerCommand(Player,iCommand,iX,iY,pTarget,pTarget2,iData,iAddMode));
 }
 
 void C4MouseControl::RightUpDragNone()

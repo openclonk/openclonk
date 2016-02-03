@@ -119,7 +119,6 @@ public:
 	void SetTooltipText(const StdStrBuf &text);
 	void SetTooltipRectangle(const C4Rect &rectangle);
 protected:
-	void SendPlayerSelectNext();
 	void UpdateFogOfWar();
 	void RightUpDragNone();
 	void ButtonUpDragScript();
@@ -134,13 +133,7 @@ protected:
 	void LeftDown();
 	void UpdateScrolling();
 	void UpdateCursorTarget();
-	void SendCommand(int32_t iCommand, int32_t iX=0, int32_t iY=0, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iData=0, int32_t iAddMode=C4P_Command_Set);
-	int32_t UpdateObjectSelection();
-	int32_t UpdateCrewSelection();
 	int32_t UpdateSingleSelection();
-	bool SendControl(int32_t iCom, int32_t iData=0);
-	bool IsValidMenu(C4Menu *pMenu);
-	bool UpdatePutTarget(bool fVehicle);
 	C4Object *GetTargetObject(); // get MouseSelection object at position
 	bool IsPassive(); // return whether mouse is only used to look around
 	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates

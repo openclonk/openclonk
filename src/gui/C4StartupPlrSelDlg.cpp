@@ -1329,7 +1329,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		C4P.PrefColorDw = C4P.GetPrefColorValue(C4P.PrefColor);
 		C4P.OldPrefControlStyle = 1;
 		C4P.OldPrefAutoContextMenu = 1;
-		C4P.OldPrefControl = C4P_Control_Keyboard1;
+		C4P.OldPrefControl = 0;
 	}
 	const int32_t BetweenElementDist = 2;
 	// use black fonts here

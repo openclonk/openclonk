@@ -58,7 +58,7 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	PrefColor=0;
 	PrefColorDw=0xff;
 	PrefColor2Dw=0;
-	OldPrefControl=C4P_Control_Keyboard1;
+	OldPrefControl=0;
 	PrefPosition=0;
 	PrefMouse=1;
 	OldPrefControlStyle = 0;
@@ -163,7 +163,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PrefColor2Dw,             "AlternateColorDw", 0u));
 	pComp->Value(mkNamingAdapt(PrefPosition,             "Position",         0));
 	pComp->Value(mkNamingAdapt(PrefMouse,                "Mouse",            1));
-	pComp->Value(mkNamingAdapt(OldPrefControl,           "Control",          C4P_Control_Keyboard2));
+	pComp->Value(mkNamingAdapt(OldPrefControl,           "Control",          1));
 	pComp->Value(mkNamingAdapt(OldPrefControlStyle,      "AutoStopControl",  0));
 	pComp->Value(mkNamingAdapt(OldPrefAutoContextMenu,   "AutoContextMenu",  -1)); // compiling default is -1  (if this is detected, AutoContextMenus will be defaulted by control style)
 	pComp->Value(mkNamingAdapt(PrefControl,              "ControlSet",       StdStrBuf()));

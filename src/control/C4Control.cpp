@@ -497,44 +497,6 @@ void C4ControlPlayerMouse::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(old_obj, "OldObj"));
 }
 
-// *** C4ControlPlayerCommand
-
-C4ControlPlayerCommand::C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
-    C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
-		: iPlr(iPlr), iCmd(iCmd), iX(iX), iY(iY),
-		iTarget(pTarget ? pTarget->Number : 0), iTarget2(pTarget2 ? pTarget2->Number : 0),
-		iData(iData), iAddMode(iAddMode)
-{
-
-}
-
-void C4ControlPlayerCommand::Execute() const
-{
-	C4Player *pPlr=::Players.Get(iPlr);
-	if (pPlr)
-	{
-		pPlr->CountControl(C4Player::PCID_Command, iCmd+iX+iY+iTarget+iTarget2);
-		pPlr->ObjectCommand(iCmd,
-		                    ::Objects.ObjectPointer(iTarget),
-		                    iX,iY,
-		                    ::Objects.ObjectPointer(iTarget2),
-		                    C4Value(iData),
-		                    iAddMode);
-	}
-}
-
-void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCmd), "Cmd", 0));
-	pComp->Value(mkNamingAdapt(iX, "X", 0));
-	pComp->Value(mkNamingAdapt(iY, "Y", 0));
-	pComp->Value(mkNamingAdapt(iTarget, "Target", 0));
-	pComp->Value(mkNamingAdapt(iTarget2, "Target2", 0));
-	pComp->Value(mkNamingAdapt(iData, "Data", 0));
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddMode), "AddMode", 0));
-	C4ControlPacket::CompileFunc(pComp);
-}
 // *** C4ControlMenuCommand
 
 C4ControlMenuCommand::C4ControlMenuCommand(int32_t actionID, int32_t player, int32_t menuID, int32_t subwindowID, C4Object *target, int32_t actionType)

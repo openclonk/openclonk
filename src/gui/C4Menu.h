@@ -154,7 +154,6 @@ protected:
 	bool fEqualIconItemHeight; // for dialog menus only: If set, all options with an icon are forced to have the same height
 	bool fActive; // set if menu is shown - independant of GUI to keep synchronized when there's no GUI
 public:
-	bool ConvertCom(int32_t &rCom, int32_t &rData, bool fAsyncConversion);
 	void ClearPointers(C4Object *pObj);
 	bool Refill();
 	void Execute();

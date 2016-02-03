@@ -170,8 +170,6 @@ public:
 	void DrawHostility(C4Facet &cgo, int32_t iIndex);
 	void AdjustCursorCommand();
 
-	bool ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
-	void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
 	bool DoScore(int32_t iChange);
 	bool Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName, const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo, C4ValueNumbers *);
 	bool ScenarioAndTeamInit(int32_t idTeam);

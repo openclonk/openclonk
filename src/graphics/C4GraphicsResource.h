@@ -105,7 +105,6 @@ public:
 	// achievement graphics
 	C4AchievementGraphics Achievements;
 public:
-	int32_t GetColorIndex(int32_t iColor, bool fLast=false);
 	CStdFont &GetFontByHeight(int32_t iHgt, float *pfZoom=NULL); // get optimal font for given control size
 	void Default();
 	void Clear();

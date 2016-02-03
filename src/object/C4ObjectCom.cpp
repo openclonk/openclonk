@@ -35,7 +35,6 @@
 #include <C4GameObjects.h>
 
 bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir);
-bool CreateConstructionSite(int32_t ctx, int32_t bty, C4ID strid, int32_t owner, C4Object *pByObj);
 
 bool ObjectActionWalk(C4Object *cObj)
 {
@@ -179,25 +178,6 @@ bool ObjectActionCornerScale(C4Object *cObj)
 	return true;
 }
 
-bool ObjectComMovement(C4Object *cObj, int32_t comdir)
-{
-	cObj->Action.ComDir=comdir;
-
-	PlayerObjectCommand(cObj->Owner,C4CMD_Follow,cObj);
-	// direkt turnaround if standing still
-	if (!cObj->xdir && (cObj->GetProcedure() == DFA_WALK || cObj->GetProcedure() == DFA_HANGLE))
-		switch (comdir)
-		{
-		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			cObj->SetDir(DIR_Left);
-			break;
-		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			cObj->SetDir(DIR_Right);
-			break;
-		}
-	return true;
-}
-
 bool ObjectComStop(C4Object *cObj)
 {
 	// Cease current action
@@ -268,42 +248,6 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 bool ObjectComLetGo(C4Object *cObj, int32_t xdirf)
 { // by ACTSCALE, ACTHANGLE or ExecCMDFMoveTo
 	return ObjectActionJump(cObj,itofix(xdirf),Fix0,true);
-}
-
-bool ObjectComEnter(C4Object *cObj) // by pusher
-{
-	if (!cObj) return false;
-
-	// NoPushEnter
-	if (cObj->Def->NoPushEnter) return false;
-
-	// Check object entrance, try command enter
-	C4Object *pTarget;
-	DWORD ocf=OCF_Entrance;
-	if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-		if (ocf & OCF_Entrance)
-			{ cObj->SetCommand(C4CMD_Enter,pTarget); return true; }
-
-	return false;
-}
-
-
-bool ObjectComUp(C4Object *cObj) // by DFA_WALK or DFA_SWIM
-{
-	if (!cObj) return false;
-
-	// Check object entrance, try command enter
-	C4Object *pTarget;
-	DWORD ocf=OCF_Entrance;
-	if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-		if (ocf & OCF_Entrance)
-			return PlayerObjectCommand(cObj->Owner,C4CMD_Enter,pTarget);
-
-	// Try jump
-	if (cObj->GetProcedure()==DFA_WALK)
-		return PlayerObjectCommand(cObj->Owner,C4CMD_Jump);
-
-	return false;
 }
 
 bool ObjectComDig(C4Object *cObj) // by DFA_WALK
@@ -486,13 +430,3 @@ bool ComDirLike(int32_t iComDir, int32_t iSample)
 	return false;
 }
 
-bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t tx, int32_t ty)
-{
-	C4Player *pPlr=::Players.Get(plr);
-	if (!pPlr) return false;
-	int32_t iAddMode = C4P_Command_Set;
-	// Adjust for old-style keyboard throw/drop control: add & in range
-	if (cmdf==C4CMD_Throw || cmdf==C4CMD_Drop) iAddMode = C4P_Command_Add | C4P_Command_Range;
-	// Route to player
-	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,C4VNull,iAddMode);
-}

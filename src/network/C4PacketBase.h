@@ -158,7 +158,7 @@ enum C4PacketType
 
 	CID_PlrSelect     = CID_First | 0x20,
 	CID_PlrControl    = CID_First | 0x21,
-	CID_PlrCommand    = CID_First | 0x22,
+
 	CID_Message       = CID_First | 0x23,
 	CID_PlrAction     = CID_First | 0x24,
 	CID_PlrMouseMove  = CID_First | 0x25,

@@ -442,40 +442,6 @@ CStdFont &C4GraphicsResource::GetFontByHeight(int32_t iHgt, float *pfZoom)
 	return *pUseFont;
 }
 
-int32_t C4GraphicsResource::GetColorIndex(int32_t iColor, bool fLast)
-{
-	// Returns first or last (hardcoded) index into the clonk color palette.
-
-	// Not a valid index
-	if (!Inside<int32_t>(iColor,0,C4MaxColor-1)) return 32;
-
-	// Last index for this color
-	if (fLast)
-	{
-		// Colors with 8 shades
-		if (iColor<10) return GetColorIndex(iColor,false)+7;
-		// Colors with 4 shades
-		else return GetColorIndex(iColor,false)+3;
-	}
-
-	// First index for this color
-	switch (iColor)
-	{
-		// Blue, red, green, yellow, light brown, dark brown, red brown, orange
-	case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-		return 32+8*iColor;
-		// Black, white
-	case 8: case 9:
-		return 16+8*(iColor-8);
-		// Cyan, purple
-	case 10: case 11:
-		return 96+4*(iColor-10);
-	}
-
-	// Unreachable code
-	return 0;
-}
-
 bool C4GraphicsResource::ReloadResolutionDependantFiles()
 {
 	if(!fInitialized) return false;
