@@ -893,7 +893,6 @@ if(USE_GTK)
 		src/editor/C4ConsoleGTKDlg.cpp
 		src/editor/C4ConsoleGTKDlg.h
 		src/platform/C4AppGTK.cpp
-		src/platform/C4AppGTKImpl.h
 		src/platform/C4WindowGTK.cpp
 		engine-resource.c
 	)
