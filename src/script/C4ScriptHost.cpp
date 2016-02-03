@@ -48,7 +48,7 @@ C4ScriptHost::~C4ScriptHost()
 
 void C4ScriptHost::Clear()
 {
-	ComponentHost.Clear();
+	C4ComponentHost::Clear();
 	Script.Clear();
 	LocalNamed.Reset();
 	LocalValues.Clear();
@@ -97,7 +97,7 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
                         const char *szLanguage, class C4LangStringTable *pLocalTable)
 {
 	// Base load
-	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
+	bool fSuccess = C4ComponentHost::Load(hGroup,szFilename,szLanguage);
 	// String Table
 	if (stringTable != pLocalTable)
 	{
@@ -106,7 +106,7 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 		if (stringTable) stringTable->AddRef();
 	}
 	// set name
-	ScriptName.Ref(ComponentHost.GetFilePath());
+	ScriptName.Ref(GetFilePath());
 	// preparse script
 	MakeScript();
 	// Success
@@ -145,11 +145,11 @@ void C4ScriptHost::MakeScript()
 	// create script
 	if (stringTable)
 	{
-		stringTable->ReplaceStrings(ComponentHost.GetDataBuf(), Script);
+		stringTable->ReplaceStrings(GetDataBuf(), Script);
 	}
 	else
 	{
-		Script.Ref(ComponentHost.GetDataBuf());
+		Script.Ref(GetDataBuf());
 	}
 
 	// preparse script
@@ -159,7 +159,7 @@ void C4ScriptHost::MakeScript()
 bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// this?
-	if (SEqualNoCase(szPath, ComponentHost.GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
+	if (SEqualNoCase(szPath, GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
 	{
 		// try reload
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;

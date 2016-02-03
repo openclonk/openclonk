@@ -33,7 +33,7 @@ enum C4AulScriptState
 };
 
 // generic script host for objects
-class C4ScriptHost
+class C4ScriptHost: public C4ComponentHost
 {
 public:
 	virtual ~C4ScriptHost();
@@ -56,7 +56,6 @@ protected:
 	void Unreg(); // remove from list
 	void MakeScript();
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage);
-	C4ComponentHost ComponentHost;
 
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
