@@ -13,6 +13,12 @@ global func SetSpeed(int x_dir, int y_dir, int prec)
 	return;
 }
 
+// Returns the speed of an object.
+global func GetSpeed(int prec)
+{
+	return Sqrt(GetXDir(prec)**2 + GetYDir(prec)**2);
+}
+
 // Sets an objects's speed and its direction, doesn't it?
 // Can set either speed or angle of velocity, or both
 global func SetVelocity(int angle, int speed, int precAng, int precSpd)
