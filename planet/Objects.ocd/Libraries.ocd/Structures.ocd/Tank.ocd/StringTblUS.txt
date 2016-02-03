@@ -1,0 +1,13 @@
+MenuPipeControl=Pump Control
+MsgPipeControl=TODO
+
+MsgConnectSource=Connect source
+MsgConnectDrain=Connect drain
+DescConnectSource=Connects a source pipe.
+DescConnectDrain=Connects a drain pipe.
+
+MsgCutSource=Cut off source
+MsgCutDrain=Cut off drain
+DescCutSource=Removes the source pipe.
+DescCutDrain=Removes the drain pipe.
+
