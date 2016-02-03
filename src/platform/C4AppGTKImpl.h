@@ -124,7 +124,6 @@ public:
 	C4GLibProc GLibProc;
 	C4X11AppImpl(C4AbstractApp *pApp):
 			GLibProc(g_main_context_default()),
-			gammasize(0),
 			xrandr_major_version(-1), xrandr_minor_version(-1),
 			xrandr_oldmode(-1),
 			xrandr_rot(0),
@@ -132,8 +131,6 @@ public:
 			argc(0), argv(0)
 	{
 	}
-
-	int gammasize; // Size of gamma ramps
 
 	int xrandr_major_version, xrandr_minor_version;
 	int xrandr_oldmode;
