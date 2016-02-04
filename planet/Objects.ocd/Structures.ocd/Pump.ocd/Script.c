@@ -114,7 +114,7 @@ public func GetPumpControlMenuEntries(object clonk)
 	// handle drain pipe connection
 	if (drain_pipe)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutDrain$", 3, PUMP_Menu_Action_Cut_Drain));
-	else
+	else if (available_pipe)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, available_pipe, "$MsgConnectDrain$", 3, PUMP_Menu_Action_Connect_Drain));
 
 	return menu_entries;
