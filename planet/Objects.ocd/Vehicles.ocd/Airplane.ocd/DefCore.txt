@@ -16,7 +16,6 @@ ColorByOwner=1
 Components=Metal=6;Wood=4;
 Rotate=1
 Entrance=-12,-12,24,24
-Exclusive=1
 RotatedEntrance=1
 VehicleControl=1
 NoStabilize=1
