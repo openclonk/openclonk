@@ -29,7 +29,7 @@ local switched_on; // controlled by Interaction. Indicates whether the user want
 local powered; // whether the pump has enough power as a consumer, always true if producing
 local power_used; // the amount of power currently consumed or (if negative) produced
 
-local stored_material_index; //contained liquid
+local stored_material_name; //contained liquid
 local stored_material_amount;
 
 local source_pipe;
@@ -296,7 +296,7 @@ protected func Pumping()
 		// no material to pump?
 		if (mat)
 		{
-			stored_material_index = mat[0];
+			stored_material_name = mat[0];
 			stored_material_amount = mat[1];
 		}
 		else
@@ -311,7 +311,7 @@ protected func Pumping()
 		while (i > 0)
 		{
 			var drain_obj = GetDrainObject();
-			if (this->InsertMaterialAtDrain(drain_obj, stored_material_index, 1))
+			if (this->InsertMaterialAtDrain(drain_obj, stored_material_name, 1))
 			{
 				i--;
 			}
@@ -326,7 +326,7 @@ protected func Pumping()
 		
 		stored_material_amount = i;
 		if (stored_material_amount <= 0)
-			stored_material_index = nil;
+			stored_material_name = nil;
 	}
 	
 	if (pump_ok)
@@ -348,14 +348,38 @@ protected func Pumping()
 // interface for the extraction logic
 func ExtractMaterialFromSource(object source_obj, int amount)
 {
-	return source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, amount, true);
+	if (source_obj->~IsLiquidContainer())
+	{
+		return source_obj->RemoveLiquid(nil, amount, this);
+	}
+	else
+	{
+		var mat = source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, amount, true);
+		if (mat)
+			return [MaterialName(mat[0]), mat[1]];
+		else
+			return nil;
+	}
 }
 
 // interface for the insertion logic
-func InsertMaterialAtDrain(object drain_obj, int material_index, int amount)
+func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 {
-	while (--amount >= 0)
-		drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+	// insert material into containers, if possible
+	if (drain_obj->~IsLiquidContainer())
+	{
+		amount -= drain_obj->PutLiquid(, amount, this);
+	}
+
+	// convert to actual material, and insert remaining
+	var material_index = Material(material_name);
+	if (material_index != -1)
+	{
+		while (--amount >= 0)
+			drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+	}
+	
+	return amount <= 0;
 }
 
 
