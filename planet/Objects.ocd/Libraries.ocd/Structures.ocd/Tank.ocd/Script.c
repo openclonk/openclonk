@@ -105,15 +105,27 @@ public func GetInteractionMenus(object clonk)
 
 func CanConnectPipe(){ return this->CanConnectSourcePipe() || this->CanConnectDrainPipe();}
 
+func FindAvailablePipe(object container, string pipe_state)
+{
+	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectToLiquidTank", pipe_state)))
+	{
+		if (!pipe_state
+		  || pipe_state == PIPE_STATE_Drain && !QueryConnectDrainPipe(pipe)
+		  || pipe_state == PIPE_STATE_Source && !QueryConnectSourcePipe(pipe))
+			return pipe;
+	}
+	return nil;
+}
+
 func CanConnectDrainPipe(){ return false;}
 func CanConnectSourcePipe(){ return false;}
 
-func QueryConnectDrainPipe()
+func QueryConnectDrainPipe(object pipe)
 {
 	return !this->CanConnectDrainPipe() || GetDrainPipe();
 }
 
-func QueryConnectSourcePipe()
+func QueryConnectSourcePipe(object pipe)
 {
 	return !this->CanConnectSourcePipe() || GetSourcePipe();
 }
@@ -154,45 +166,22 @@ public func GetPipeControlMenuEntries(object clonk)
 				image = {Prototype = lib_tank.custom_entry.image, Symbol = Pipe}
 			}});
 
-	var index = 0;
+	var source_pipe = FindAvailablePipe(clonk, PIPE_STATE_Source);
+	var drain_pipe = FindAvailablePipe(clonk, PIPE_STATE_Drain);
 
 	if (GetSourcePipe())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", ++index, LIBRARY_TANK_Menu_Action_Cut_Source));
-
-	for (var pipe in FindSourcePipes(clonk))
-	{
-		PushBack(menu_entries, GetTankMenuEntry(pipe, "$MsgConnectSource$", ++index, LIBRARY_TANK_Menu_Action_Add_Source));
-	}
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source));
+	else if (source_pipe)
+		PushBack(menu_entries, GetTankMenuEntry(source_pipe, "$MsgConnectSource$", 1, LIBRARY_TANK_Menu_Action_Add_Source));
 	
 	if (GetDrainPipe())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", ++index, LIBRARY_TANK_Menu_Action_Cut_Drain));
-
-	for (var pipe in FindDrainPipes(clonk))
-	{
-		PushBack(menu_entries, GetTankMenuEntry(pipe, "$MsgConnectDrain$", ++index, LIBRARY_TANK_Menu_Action_Add_Drain));
-	}
-
-
-	//var entry_source_pipe = GetSourceMenuEntry(clonk);
-	//var entry_drain_pipe = GetDrainMenuEntry(clonk);
-
-	//if (entry_source_pipe) PushBack(menu_entries, entry_source_pipe);
-	//if (entry_drain_pipe)  PushBack(menu_entries, entry_drain_pipe);
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain));
+	else if (drain_pipe)
+		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, "$MsgConnectDrain$", 2, LIBRARY_TANK_Menu_Action_Add_Drain));
 
 	return menu_entries;
 }
 
-
-func FindSourcePipes(object container)
-{
-	return FindObjects(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectAsSourcePipe"));
-}
-
-
-func FindDrainPipes(object container)
-{
-	return FindObjects(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectAsDrainPipe"));
-}
 
 func GetTankMenuEntry(symbol, string text, int priority, extra_data)
 {
@@ -222,43 +211,32 @@ public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_
 public func OnPipeControl(symbol_or_object, string action, bool alt)
 {
 	if (action == LIBRARY_TANK_Menu_Action_Add_Source)
-		this->DoConnectSourcePipe(symbol_or_object);
+		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Source);
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Source)
-		this->DoCutSourcePipe();
+		this->DoCutPipe(GetSourcePipe());
 	else if (action == LIBRARY_TANK_Menu_Action_Add_Drain)
-		this->DoConnectDrainPipe(symbol_or_object);
+		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Drain);
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Drain)
-		this->DoCutDrainPipe();
+		this->DoCutPipe(GetDrainPipe());
 
 	UpdateInteractionMenus(this.GetPipeControlMenuEntries);	
 }
 
-func DoConnectSourcePipe(object pipe)
+func DoConnectPipe(object pipe, string pipe_state)
 {
-	pipe->ConnectTo(pipe->Contained(), this, PIPE_STATE_Source);
+	var clonk = pipe->Contained();
+	pipe->ConnectPipeToLiquidTank(clonk, this);
 }
 
-func DoConnectDrainPipe(object pipe)
+func DoCutPipe(object pipe_line)
 {
-	pipe->ConnectTo(pipe->Contained(), this, PIPE_STATE_Drain);
-}
-
-
-func DoCutSourcePipe()
-{
-	DoCutPipe(GetSourcePipe());
-}
-
-func DoCutDrainPipe()
-{
-	DoCutPipe(GetDrainPipe());
-}
-
-func DoCutPipe(object pipe)
-{
-	if (pipe) 
+	if (pipe_line) 
 	{
-		var pipe_kit = pipe->GetPipeKit();
+		var pipe_kit = pipe_line->GetPipeKit();
 		pipe_kit->CutConnection(this);
+		
+		// pipe objects have to be reset!
+		if (pipe_line == GetDrainPipe()) SetDrainPipe();
+		if (pipe_line == GetSourcePipe()) SetSourcePipe();
 	}
 }
