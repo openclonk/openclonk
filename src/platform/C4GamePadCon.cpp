@@ -173,7 +173,7 @@ void C4GamePadOpener::SetGamePad(int iNewGamePad)
 	C4GamePadControl::pInstance->OpenGamepad(iGamePad = iNewGamePad);
 }
 
-#elif defined(HAVE_SDL)
+#elif defined(HAVE_SDL) && !defined(USE_CONSOLE)
 
 #include <SDL.h>
 

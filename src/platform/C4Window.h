@@ -172,9 +172,10 @@
 
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
-// FIXME
 #define K_SHIFT_L SDLK_LSHIFT
 #define K_SHIFT_R SDLK_RSHIFT
+#define K_CONTROL_L SDLK_LCTRL
+#define K_CONTROL_R SDLK_RCTRL
 #define K_ALT_L SDLK_LALT
 #define K_ALT_R SDLK_RALT
 #define K_F1 SDLK_F1
