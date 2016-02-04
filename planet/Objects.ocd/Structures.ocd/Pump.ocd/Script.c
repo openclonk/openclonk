@@ -355,7 +355,7 @@ func ExtractMaterialFromSource(object source_obj, int amount)
 func InsertMaterialAtDrain(object drain_obj, int material_index, int amount)
 {
 	while (--amount >= 0)
-		GetDrainObject()->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+		drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
 }
 
 
