@@ -10,7 +10,12 @@
 global func GivePlayerAllKnowledge(int plr)
 {
 	GivePlayerBasicKnowledge(plr);
-
+	GivePlayerPumpingKnowledge(plr);
+	GivePlayerFarmingKnowledge(plr);
+	GivePlayerWeaponryKnowledge(plr);
+	GivePlayerArtilleryKnowledge(plr);
+	GivePlayerAdvancedKnowledge(plr);
+	GivePlayerAirKnowledge(plr);
 	return;
 }
 
@@ -35,9 +40,9 @@ global func GivePlayerBasicKnowledge(int plr)
 {
 	var knowledge = [
 		// Basic structures for a settlement and production of tools and explosives.
-		Flagpole, Basement, WindGenerator, SteamEngine, Compensator, Sawmill, Foundry, Elevator, ToolsWorkshop, ChemicalLab, Chest,
+		Flagpole, Basement, WindGenerator, SteamEngine, Compensator, Sawmill, Foundry, Elevator, ToolsWorkshop, ChemicalLab, Chest, WoodenBridge,
 		// Basic tools for mining and tree chopping and loam production.
-		Shovel, Hammer, Axe, Pickaxe, Barrel, Bucket, Torch,
+		Shovel, Hammer, Axe, Pickaxe, Barrel, Bucket, Torch, Lantern,
 		// The basic resources.
 		Metal, Loam, GoldBar,
 		// Some of the basic explosives.
@@ -64,11 +69,11 @@ global func GivePlayerPumpingKnowledge(int plr)
 global func GivePlayerFarmingKnowledge(int plr)
 {
 	var knowledge = [
-		// Structures needed to process farming materials
+		// Structures needed to process farming materials.
 		Kitchen, Loom,
-		// Basic tools for farming
+		// Basic tools for farming.
 		Sickle,
-		// Processed goods
+		// Processed goods.
 		Cloth, Flour, Bread
 	];
 	for (var plan in knowledge)
@@ -82,7 +87,7 @@ global func GivePlayerWeaponryKnowledge(int plr)
 		// Armory to construct the weapons.
 		Armory,
 		// Weapons and explosives.
-		Bow, Arrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher, PowderKeg,
+		Bow, Arrow, FireArrow, BombArrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher, PowderKeg,
 		// Artillery vehicles.
 		Catapult, Cannon
 	];
@@ -106,9 +111,9 @@ global func GivePlayerAdvancedKnowledge(int plr)
 {
 	var knowledge = [
 		// Inventors lab to construct the items.
-		InventorsLab,
-		// Advanced items in tools workshop.
-		Ropeladder, MetalBarrel, PowderKeg, WallKit,
+		InventorsLab, Loom,
+		// Advanced items in tools workshop and needed materials.
+		Ropeladder, MetalBarrel, PowderKeg, WallKit, Cloth,
 		// Advanced items in inventors lab.
 		TeleGlove, WindBag, GrappleBow, Boompack, Balloon,
 	];
@@ -121,7 +126,9 @@ global func GivePlayerAirKnowledge(int plr)
 {
 	var knowledge = [
 		// Shipyard to construct the vehicles.
-		Shipyard,
+		Shipyard, Loom,
+		// Materials needed.
+		Cloth,
 		// Airship and plane.
 		Airship, Airplane
 	];
