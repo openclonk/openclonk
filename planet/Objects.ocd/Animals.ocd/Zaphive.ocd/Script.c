@@ -38,15 +38,29 @@ local tree;
 public func AttachToTree(object to_attach)
 {
 	tree = to_attach;
-	// Move down (this might break placement by the tree but...yeah!)
-	SetPosition(GetX(), GetY()+4);
+	// Constant offset. The old comment didn't say why this was necessary.
+	var additional_y_offset = 4;
+	// Calculate the offset from the tree, taking into account the target vertex' offset.
+	var offset_x = GetX() - to_attach->GetX() - to_attach->GetVertex(0, VTX_X);
+	var offset_y = GetY() - to_attach->GetY() - to_attach->GetVertex(0, VTX_Y) + additional_y_offset;
+	SetAction("Attach", to_attach);
+	// And specify/set the vertex to attach.
+	SetActionData(4 << 8);
+	SetVertexXY(4, -offset_x, -offset_y);
 }
 
 // Called by trees
 public func DetachFromTree()
 {
+	AttachTargetLost();
+}
+
+public func AttachTargetLost()
+{
 	// Fall down
-	SetCategory(GetCategory() & ~C4D_StaticBack);
+	SetAction("Idle");
+	SetVertexXY(4, 0, 0);
+	SetRDir(RandomX(-3, 3));
 }
 
 /* Creation */
@@ -74,5 +88,15 @@ private func Hit2()
 	CreateParticle("WoodChip", 0,0, PV_Random(-2,2), -4, PV_Random(36 * 3, 36 * 10), Particles_Straw(), 5);
 	RemoveObject();
 }
+
+local ActMap = {
+	Attach = {
+		Prototype = Action,
+		Procedure = DFA_ATTACH,
+		FacetBase = 1,
+		Length = 1,
+		Delay = 0
+	},
+};
 
 local Name = "$Name$";
