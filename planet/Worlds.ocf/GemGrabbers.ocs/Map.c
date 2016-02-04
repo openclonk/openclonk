@@ -84,19 +84,19 @@ public func DrawMainIsland(proplist map, int size)
 	Draw("Sand", sand_border);
 	Draw("Earth-earth_root", topsoil_border);	
 	
-	// Draw a bottom border out of granite and rock.
+	// Draw a bottom border out of granite and rock (or everrock on insane).
 	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-4, 3]};
-	Draw("Granite", granite_border);
-	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
-	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
-	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	Draw(["Rock", "Granite", "Everrock"][SCENPAR_Difficulty - 1], granite_border);
+	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 25, Wdt = 2, Hgt = 2};
+	Draw(["Granite", "Rock", "Rock"][SCENPAR_Difficulty - 1], {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	Draw(["Granite", "Rock", "Granite"][SCENPAR_Difficulty - 1], {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
 	
 	// Draw some gems attached at the bottom of the island.
+	var full_island = {Algo = MAPALGO_Or, Op = [island, granite_border]};
 	var rect = [x - size / 2, y - size / 3, size / 2, 3 * size / 4];
-	DrawGems("Ruby", rect, 3, map);
+	DrawGems("Ruby", rect, 3, map, full_island);
 	rect = [x, y - size / 3, size / 2, 3 * size / 4];
-	DrawGems("Amethyst", rect, 3, map);
-	
+	DrawGems("Amethyst", rect, 3, map, full_island);
 	return;
 }
 
@@ -129,22 +129,22 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 	Draw("Sand", sand_border);
 	Draw("Earth-earth", topsoil_border);	
 	
-	// Draw a bottom border out of granite and rock.
+	// Draw a bottom border out of granite and rock (or everrock on insane).
 	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-2,3]};
-	Draw("Granite", granite_border);
+	Draw(["Rock", "Granite", "Everrock"][SCENPAR_Difficulty - 1], granite_border);
 	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
-	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
-	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	Draw(["Granite", "Rock", "Granite"][SCENPAR_Difficulty - 1], {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	Draw(["Granite", "Rock", "Granite"][SCENPAR_Difficulty - 1], {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
 		
 	// Draw some gems attached at the bottom of the island.
 	var gem = ["Ruby", "Amethyst"][Random(2)];
-	DrawGems(gem, rect, 3, map);
-	
+	var full_island = {Algo = MAPALGO_Or, Op = [island, granite_border]};
+	DrawGems(gem, rect, 3, map, full_island);
 	return true;
 }
 
 // Looks for a location at the bottom of a sky islands and places some gems.
-public func DrawGems(string gem_mat, array rect, int size, proplist map)
+public func DrawGems(string gem_mat, array rect, int size, proplist map, proplist island)
 {
 	// Adapt rect to find at least a spot 8 * MapZoom pixel distance from the map borders.
 	rect[2] -= Max(0, 8 - rect[0]); rect[0] = Max(8, rect[0]); // Left boundary.
@@ -160,14 +160,25 @@ public func DrawGems(string gem_mat, array rect, int size, proplist map)
 			low_spot = spot;
 		}
 	}
+	
+	// Sometimes draw a large patch of tunnel behind the gems.
+	if (!Random(3))
+	{
+		var gem_tunnel = {Algo = MAPALGO_Ellipsis, X = low_spot.X, Y = low_spot.Y + 2, Wdt = size * 3, Hgt = 2 * size};
+		gem_tunnel = {Algo = MAPALGO_And, Op = [gem_tunnel, {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Lines, X = 1, Y = 0, OffX = Random(6), Distance = RandomX(4, 6)}}]};
+		gem_tunnel = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = 14, Scale = 8, Seed = Random(65536), Op = gem_tunnel};
+		gem_tunnel = {Algo = MAPALGO_And, Op = [gem_tunnel, {Algo = MAPALGO_Not, Op = island}]};
+		Draw("Tunnel", gem_tunnel);
+	}
+	
+	// Draw the gems.
 	var gems = {Algo = MAPALGO_Ellipsis, X = low_spot.X, Y = low_spot.Y + 1, Wdt = size - 1, Hgt = size};
 	gems = {Algo = MAPALGO_Turbulence, Amplitude = 5, Scale = 5, Iterations = 2, Op = gems};
 	Draw(gem_mat, gems);
 	
-	// Some granite border above the gems to be sure.
+	// Some rock/granite/everrock border above the gems to make it harder to reach.
 	var gem_border = {Algo = MAPALGO_Border, Top = -4, Op = gems};
-	Draw("Granite", gem_border);
-	
+	Draw(["Rock", "Granite", "Everrock"][SCENPAR_Difficulty - 1], gem_border);
 	return;
 }
 
@@ -184,6 +195,5 @@ public func DrawIslandMat(string mat, proplist onto_mask, int speck_size, int ra
 	var mask_border = {Algo = MAPALGO_Border, Op = onto_mask, Wdt = 3};
 	var algo = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Xor, Op = [onto_mask, mask_border]}, rnd_checker]};
 	Draw(mat, algo);
-	 
 	return;
 }
