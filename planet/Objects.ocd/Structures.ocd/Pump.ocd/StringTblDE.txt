@@ -8,6 +8,10 @@ DescTurnOff=Schaltet die Pumpe ab, so dass keine Flüssigkeiten mehr transportier
 DescTurnOn=Aktiviert das Pumpen wieder. Dafür muss mindestens ein Zufluss angeschlossen sein.
 DescCutSource=Entfernt das Zuflussrohr. Die Pumpe kann dann nicht mehr pumpen.
 DescCutDrain=Entfernt das Abflussrohr. Es wird dann direkt zur Pumpe gepumpt.
+MsgConnectSource=Zufluss anschließen
+MsgConnectDrain=Abfluss anschließen
+DescConnectSource=Schließt ein Zuflussrohr an die Pumpe an. Die Pumpe bezieht dann Flüssigkeiten von diesem Rohr.
+DescConnectDrain=Schließt ein Abflussrohr an die Pumpe an. Die Pumpe pumpt dann in dieses Rohr.
 Control=Pumpensteuerung
 
 StateOk=Die Pumpe läuft.

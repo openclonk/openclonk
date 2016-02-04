@@ -15,9 +15,11 @@
 
 static const PUMP_Menu_Action_Switch_On = "on";
 static const PUMP_Menu_Action_Switch_Off = "off";
-static const PUMP_Menu_Action_Switch_Cut_Drain = "cutdrain";
-static const PUMP_Menu_Action_Switch_Cut_Source = "cutsource";
-static const PUMP_Menu_Action_Switch_Description = "description";
+static const PUMP_Menu_Action_Connect_Drain = "connectdrain";
+static const PUMP_Menu_Action_Cut_Drain = "cutdrain";
+static const PUMP_Menu_Action_Connect_Source = "connectsource";
+static const PUMP_Menu_Action_Cut_Source = "cutsource";
+static const PUMP_Menu_Action_Description = "description";
 
 
 local animation; // animation handle
@@ -84,7 +86,7 @@ public func GetPumpControlMenuEntries(object clonk)
 		status = last_status_message;
 		lightbulb_graphics = "Red";
 	}
-	PushBack(menu_entries, {symbol = this, extra_data = PUMP_Menu_Action_Switch_Description,
+	PushBack(menu_entries, {symbol = this, extra_data = PUMP_Menu_Action_Description,
 			custom =
 			{
 				Prototype = custom_entry,
@@ -94,44 +96,40 @@ public func GetPumpControlMenuEntries(object clonk)
 				text = {Prototype = custom_entry.text, Text = status},
 				image = {Prototype = custom_entry.image, Symbol = Icon_Lightbulb, GraphicsName = lightbulb_graphics}
 			}});
+			
+	var available_pipe = FindAvailablePipe(clonk);
 	
+	// switch on and off
 	if (!switched_on)
-		PushBack(menu_entries, {symbol = Icon_Play, extra_data = PUMP_Menu_Action_Switch_On, 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 1,
-				text = {Prototype = custom_entry.text, Text = "$MsgTurnOn$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Play}
-			}});
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Play, "$MsgTurnOn$", 1, PUMP_Menu_Action_Switch_On));
 	else
-		PushBack(menu_entries, {symbol = Icon_Stop, extra_data = PUMP_Menu_Action_Switch_Off, 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 1,
-				text = {Prototype = custom_entry.text, Text = "$MsgTurnOff$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Stop}
-			}});
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Stop, "$MsgTurnOff$", 1, PUMP_Menu_Action_Switch_Off));
+		
+	// handle source pipe connection
 	if (source_pipe)
-		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = PUMP_Menu_Action_Switch_Cut_Source, 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 2,
-				text = {Prototype = custom_entry.text, Text = "$MsgCutSource$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
-			}});
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutSource$", 2, PUMP_Menu_Action_Cut_Source));
+	else if (available_pipe)
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, available_pipe, "$MsgConnectSource$", 2, PUMP_Menu_Action_Connect_Source));
+		
+	// handle drain pipe connection
 	if (drain_pipe)
-		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = PUMP_Menu_Action_Switch_Cut_Drain, 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 3,
-				text = {Prototype = custom_entry.text, Text = "$MsgCutDrain$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
-			}});
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutDrain$", 3, PUMP_Menu_Action_Cut_Drain));
+	else
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, available_pipe, "$MsgConnectDrain$", 3, PUMP_Menu_Action_Connect_Drain));
+
 	return menu_entries;
+}
+
+func GetPumpMenuEntry(proplist custom_entry, symbol, string text, int priority, extra_data)
+{
+	return {symbol = symbol, extra_data = extra_data, 
+		custom =
+		{
+			Prototype = custom_entry,
+			Priority = priority,
+			text = {Prototype = custom_entry.text, Text = text},
+			image = {Prototype = custom_entry.image, Symbol = symbol}
+		}};
 }
 
 public func GetInteractionMenus(object clonk)
@@ -156,20 +154,32 @@ public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_
 	var text = "";
 	if (action == PUMP_Menu_Action_Switch_On) text = "$DescTurnOn$";
 	else if (action == PUMP_Menu_Action_Switch_Off) text = "$DescTurnOff$";
-	else if (action == PUMP_Menu_Action_Switch_Cut_Drain) text = "$DescCutDrain$";
-	else if (action == PUMP_Menu_Action_Switch_Cut_Source) text = "$DescCutSource$";
-	else if (action == PUMP_Menu_Action_Switch_Description) text = this.Description;
+	else if (action == PUMP_Menu_Action_Cut_Drain) text = "$DescCutDrain$";
+	else if (action == PUMP_Menu_Action_Cut_Source) text = "$DescCutSource$";
+	else if (action == PUMP_Menu_Action_Connect_Drain) text = "$DescConnectDrain$";
+	else if (action == PUMP_Menu_Action_Connect_Source) text = "$DescConnectSource$";
+	else if (action == PUMP_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
-public func OnPumpControl(id symbol, string action, bool alt)
+func FindAvailablePipe(object container)
+{
+	return FindObject(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectToLiquidPump"));
+}
+
+public func OnPumpControl(symbol_or_object, string action, bool alt)
 {
 	if (action == PUMP_Menu_Action_Switch_On || action == PUMP_Menu_Action_Switch_Off)
 		ToggleOnOff(true);
-	else if (action == PUMP_Menu_Action_Switch_Cut_Source && source_pipe)
-		source_pipe->RemoveObject();
-	else if (action == PUMP_Menu_Action_Switch_Cut_Drain && drain_pipe)
-		drain_pipe->RemoveObject();
+	else if (action == PUMP_Menu_Action_Cut_Source && source_pipe)
+		DoCutPipe(source_pipe);
+	else if (action == PUMP_Menu_Action_Cut_Drain && drain_pipe)
+		DoCutPipe(drain_pipe);
+	else if (action == PUMP_Menu_Action_Connect_Source && !source_pipe)
+		DoConnectPipe(symbol_or_object, PIPE_STATE_Source);
+	else if (action == PUMP_Menu_Action_Connect_Drain && !drain_pipe)
+		DoConnectPipe(symbol_or_object, PIPE_STATE_Drain);
+
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
 }
 
@@ -190,6 +200,35 @@ public func SetSource(object pipe)
 {
 	source_pipe = pipe;
 	CheckState();
+}
+
+func DoConnectPipe(object pipe, string pipe_state)
+{
+	var clonk = pipe->Contained();
+	
+	if (pipe_state == PIPE_STATE_Source)
+		pipe->ConnectSourcePipeToPump(this, clonk);
+	else if (pipe_state == PIPE_STATE_Drain)
+		pipe->ConnectDrainPipeToPump(this, clonk);
+	else
+		pipe->ConnectPipeToPump(clonk);
+}
+
+func DoCutPipe(object pipe_line)
+{
+	if (pipe_line)
+	{
+		var pipe_kit = pipe_line->GetPipeKit();
+		pipe_kit->CutConnection(this);
+
+		// pipe objects have to be reset!
+		// in the former implementation the pipe object
+		// was removed when the connection is cut.
+		// this time the pipe may still be there,
+		// connected to the steam engine etc.
+		if (pipe_line == GetDrain()) SetDrain();
+		if (pipe_line == GetSource()) SetSource();
+	}
 }
 
 /*-- Power stuff --*/
