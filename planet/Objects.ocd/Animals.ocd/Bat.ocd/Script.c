@@ -32,7 +32,8 @@ private func Place(int amount, proplist rectangle, proplist settings)
 		loc_area = Loc_InArea(rectangle);
 	var bats = [];
 	var loc_bkg = Loc_Tunnel();
-	if (Time->IsNight())
+	// Place in sky as well if at night unless tunnel only is required.
+	if (Time->IsNight() && (!settings || !settings.tunnel_only))
 		loc_bkg = Loc_Or(Loc_Tunnel(), Loc_Sky());
 	
 	while ((amount > 0) && (--max_tries > 0))
