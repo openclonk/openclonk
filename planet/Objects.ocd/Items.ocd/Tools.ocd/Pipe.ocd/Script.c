@@ -1,7 +1,10 @@
 /*-- Pipe
 
-	Author: ST-DDT
+	Author: ST-DDT, Marky
 --*/
+
+static const PIPE_STATE_Source = "Source";
+static const PIPE_STATE_Drain = "Drain";
 
 local Name = "$Name$";
 local Description = "$Description$";
@@ -21,11 +24,17 @@ public func IsToolProduct() { return true; }
 protected func ControlUse(object clonk, int x, int y)
 {
 	// Is this already connected to a liquid pump?
-	if (FindObject(Find_Func("IsConnectedTo",this)))
-		return false;
+	var pipe = FindObject(Find_Func("IsConnectedTo", this));
+	if (pipe) return ConnectPipeToLiquidTank(clonk, pipe);
 		
-	// Is there an object which accepts power lines?
+	return ConnectPipeToPump(clonk);
+}
+
+func ConnectPipeToPump(object clonk)
+{
+	// Is there an object which accepts pipes?
 	var liquid_pump = FindObject(Find_AtPoint(), Find_Func("IsLiquidPump"));
+
 	// No liquid pump, display message.
 	if (!liquid_pump)
 	{
@@ -39,7 +48,7 @@ protected func ControlUse(object clonk, int x, int y)
 		clonk->Message("$MsgHasPipes$");
 		return true;
 	}
-	
+
 	// Create and connect pipe.
 	var pipe = CreateObjectAbove(PipeLine, 0, 0, NO_OWNER);
 	pipe->SetActionTargets(this, liquid_pump);
@@ -54,7 +63,7 @@ protected func ControlUse(object clonk, int x, int y)
 		Description = "$DescriptionSource$";
 		Name = "$NameSource$";
 		pipe->SetSource();
-		PipeState = "Source";
+		PipeState = PIPE_STATE_Source;
 	}
 	// Otherwise if liquid pump has no drain, create one.
 	else
@@ -65,8 +74,38 @@ protected func ControlUse(object clonk, int x, int y)
 		Description = "$DescriptionDrain$";
 		Name = "$NameDrain$";
 		pipe->SetDrain();
-		PipeState = "Drain";
+		PipeState = PIPE_STATE_Drain;
 	}
+	return true;
+}
+
+
+func ConnectPipeToLiquidTank(object clonk, object pipe)
+{
+	// Is there an object that accepts pipes?
+	var tank = FindObject(Find_AtPoint(), Find_Func("IsLiquidTank"));
+	
+	if (!tank)
+	{
+		clonk->Message("$MsgNoNewPipeToTank$");
+		return true;
+	}
+	
+	if (PipeState == PIPE_STATE_Source && tank->QueryConnectSourcePipe(pipe))
+	{
+		clonk->Message("$MsgHasSourcePipe$");
+		return true;
+	}
+	else if (PipeState == PIPE_STATE_Drain && tank->QueryConnectDrainPipe(pipe))
+	{
+		clonk->Message("$MsgHasDrainPipe$");
+		return true;
+	}
+
+	pipe->SwitchConnection(this, tank);
+	pipe->SetPipeKit(this);
+	Sound("Objects::Connect");
+	clonk->Message("$MsgConnectedToTank$", Name, tank->GetName());
 	return true;
 }
 

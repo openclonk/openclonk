@@ -6,6 +6,11 @@ DescriptionSource=Source pipe from which liquid is pulled into the pump.
 DescriptionDrain=Drain pipe where liquids are pumped to.
 
 MsgNoNewPipe=There is no pump here.
+MsgNoNewPipeToTank=Connection is not possible here.
 MsgCreatedSource=Connected source pipe.
 MsgCreatedDrain=Connected drain pipe.
 MsgHasPipes=Pump already has a source and a drain pipe.
+MsgHasSourcePipe=Unable to connect source pipe.
+MsgHasDrainPipe=Unable to connect drain pipe.
+
+MsgConnectedToTank=Connected %s to %s.

@@ -30,6 +30,13 @@ protected func InitializePlayer(int plr)
 	effect.testnr = 1;
 	effect.launched = false;
 	effect.plr = plr;
+	
+	// Add pump
+	CreateObjectAbove(Pump, 100, 200);
+	CreateObjectAbove(SteamEngine, 150, 200);
+	GetCrew(plr)->CreateContents(Pipe);
+	GetCrew(plr)->CreateContents(Pipe);
+	GetCrew(plr)->CreateContents(Pipe);
 	return true;
 }
 
