@@ -23,16 +23,32 @@ public func IsToolProduct() { return true; }
 /** Will connect power line to building at the clonk's position. */
 protected func ControlUse(object clonk, int x, int y)
 {
-	// Is this already connected to a liquid pump?
-	var pipe = GetConnectedPipe();
-	if (pipe) return ConnectPipeToLiquidTank(clonk, pipe);
-		
-	return ConnectPipeToPump(clonk);
+	// try connecting to a liquid tank first
+	if (ConnectPipeToLiquidTank(clonk, nil))
+	{
+		return true;
+	}
+	else
+	{
+		return ConnectPipeToPump(clonk);
+	}
 }
 
 func CanConnectToLiquidPump()
 {
 	return PipeState == nil;
+}
+
+func CanConnectToLiquidTank(string pipe_state)
+{
+	if (pipe_state == nil)
+	{
+		return PipeState != nil;
+	}
+	else
+	{
+		return PipeState == pipe_state;
+	}
 }
 
 func ConnectPipeToPump(object clonk)
@@ -59,26 +75,43 @@ func ConnectPipeToPump(object clonk)
 }
 
 
-func ConnectPipeToLiquidTank(object clonk, object pipe)
+func ConnectPipeToLiquidTank(object clonk, object tank)
 {
+	// Is this already connected to a liquid pump?
+	var pipe = GetConnectedPipe();
+	if (!pipe) return false;
+
 	// Is there an object that accepts pipes?
-	var tank = FindObject(Find_AtPoint(), Find_Func("IsLiquidTank"));
-	
+	if (!tank) tank = FindObject(Find_AtPoint(), Find_Func("IsLiquidTank"));
 	if (!tank)
 	{
 		clonk->Message("$MsgNoNewPipeToTank$");
 		return true;
 	}
 	
-	if (PipeState == PIPE_STATE_Source && tank->QueryConnectSourcePipe(pipe))
+	if (PipeState == PIPE_STATE_Source)
 	{
-		clonk->Message("$MsgHasSourcePipe$");
-		return true;
+		if (tank->QueryConnectSourcePipe(pipe))
+		{
+			clonk->Message("$MsgHasSourcePipe$");
+			return true;
+		}
+		
+		tank->SetSourcePipe(pipe);
 	}
-	else if (PipeState == PIPE_STATE_Drain && tank->QueryConnectDrainPipe(pipe))
+	else if (PipeState == PIPE_STATE_Drain)
 	{
-		clonk->Message("$MsgHasDrainPipe$");
-		return true;
+		if (tank->QueryConnectDrainPipe(pipe))
+		{
+			clonk->Message("$MsgHasDrainPipe$");
+			return true;
+		}
+		
+		tank->SetDrainPipe(pipe);
+	}
+	else
+	{
+		FatalError("This code should never be reached");
 	}
 
 	pipe->SwitchConnection(this, tank);
