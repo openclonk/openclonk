@@ -1074,7 +1074,7 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 
 C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 {
-	if(Type != PARSER) { C4AulBCC Dummy; Dummy.bccType = AB_ERR; return Dummy; }
+	if(Type != PARSER) { return C4AulBCC(AB_ERR, 0); }
 	C4AulBCC Value = *(Fn->GetLastCode()), Setter = Value;
 	// Check type
 	switch (Value.bccType)
@@ -1089,11 +1089,9 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 	case AB_STACK_SET: Setter.bccType = AB_STACK_SET; break;
 	case AB_LOCALN:
 		Setter.bccType = AB_LOCALN_SET;
-		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
 		break;
 	case AB_PROP:
 		Setter.bccType = AB_PROP_SET;
-		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
 		break;
 	case AB_GLOBALN: Setter.bccType = AB_GLOBALN_SET; break;
 	default: 
@@ -2390,15 +2388,17 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 				Fn->GetLastCode()->Par.i = - Fn->GetLastCode()->Par.i;
 				break;
 			}
-		// changer? make a setter BCC, leave value for operator
-		C4AulBCC Changer;
-		if(op->Changer)
-			Changer = MakeSetter(true);
-		// write byte code
-		AddBCC(op->Code, 0);
-		// writter setter
-		if(op->Changer)
-			AddBCC(Changer.bccType, Changer.Par.X);
+		{
+			// changer? make a setter BCC, leave value for operator
+			C4AulBCC Changer;
+			if(op->Changer)
+				Changer = MakeSetter(true);
+			// write byte code
+			AddBCC(op->Code, 0);
+			// writter setter
+			if(op->Changer)
+				AddBCC(Changer.bccType, Changer.Par.X);
+		}
 		break;
 	case ATT_BOPEN:
 		Shift();
