@@ -6,6 +6,11 @@ DescriptionSource=Zuflussrohr von dem aus Flüssigkeit in die Pumpe gepumpt wird
 DescriptionDrain=Abflusssrohr aus dem Flüssigkeit aus der Pumpe heraus läuft.
 
 MsgNoNewPipe=Hier ist keine Pumpe.
+MsgNoNewPipeToTank=Anschluss hier nicht m�glich.
 MsgCreatedSource=Zuflussrohr angeschlossen.
 MsgCreatedDrain=Abflussrohr angeschlossen.
 MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
+MsgHasSourcePipe=Zuflussrohr kann nicht angeschlossen werden.
+MsgHasDrainPipe=Abflussrohr kann nicht angeschlossen werden.
+
+MsgConnectedToTank=%s an %s angeschlossen.

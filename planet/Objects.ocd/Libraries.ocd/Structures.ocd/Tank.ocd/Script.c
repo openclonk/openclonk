@@ -3,7 +3,7 @@
 #include Libary_LiquidContainer
 
 /*
-Author: ST-DDT
+Author: ST-DDT, Marky
 Import this to allow the structures to 
 -fill liquids which has been pumped into the building into the internal contained 
 -extract liquids from internal contained and pump it somewhere else
@@ -79,6 +79,8 @@ func Construction()
 	
 	_inherited(...);
 }
+
+func IsLiquidTank(){ return true;}
 
 public func GetInteractionMenus(object clonk)
 {

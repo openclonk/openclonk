@@ -11,6 +11,7 @@
 #include Library_Ownable
 #include Library_PowerProducer
 #include Library_Flag
+#include Library_Tank
 
 local DefaultFlagRadius = 200;
 
@@ -33,6 +34,10 @@ protected func Initialize()
 }
 
 public func IsContainer() { return true; }
+
+// can connect a drain pipe that is connected to a pump
+public func CanConnectDrainPipe(){ return true;}
+
 
 protected func RejectCollect(id item, object obj)
 {
