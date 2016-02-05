@@ -12,6 +12,7 @@
 #include Library_Ownable
 #include Library_PowerConsumer
 #include Library_PowerProducer
+#include Library_Tank
 
 static const PUMP_Menu_Action_Switch_On = "on";
 static const PUMP_Menu_Action_Switch_Off = "off";
@@ -29,6 +30,7 @@ local switched_on; // controlled by Interaction. Indicates whether the user want
 local powered; // whether the pump has enough power as a consumer, always true if producing
 local power_used; // the amount of power currently consumed or (if negative) produced
 
+// TODO: Replace with liquid tank internals
 local stored_material_name; //contained liquid
 local stored_material_amount;
 
@@ -104,7 +106,8 @@ public func GetPumpControlMenuEntries(object clonk)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Play, "$MsgTurnOn$", 1, PUMP_Menu_Action_Switch_On));
 	else
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Stop, "$MsgTurnOff$", 1, PUMP_Menu_Action_Switch_Off));
-		
+
+/* TODO: Delete commented code
 	// handle source pipe connection
 	if (source_pipe)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutSource$", 2, PUMP_Menu_Action_Cut_Source));
@@ -116,7 +119,7 @@ public func GetPumpControlMenuEntries(object clonk)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutDrain$", 3, PUMP_Menu_Action_Cut_Drain));
 	else if (available_pipe)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, available_pipe, "$MsgConnectDrain$", 3, PUMP_Menu_Action_Connect_Drain));
-
+*/
 	return menu_entries;
 }
 
@@ -154,14 +157,17 @@ public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_
 	var text = "";
 	if (action == PUMP_Menu_Action_Switch_On) text = "$DescTurnOn$";
 	else if (action == PUMP_Menu_Action_Switch_Off) text = "$DescTurnOff$";
+/* TODO: : Delete commented code
 	else if (action == PUMP_Menu_Action_Cut_Drain) text = "$DescCutDrain$";
 	else if (action == PUMP_Menu_Action_Cut_Source) text = "$DescCutSource$";
 	else if (action == PUMP_Menu_Action_Connect_Drain) text = "$DescConnectDrain$";
 	else if (action == PUMP_Menu_Action_Connect_Source) text = "$DescConnectSource$";
+*/
 	else if (action == PUMP_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
+// TODO: Check if this is still necessary
 func FindAvailablePipe(object container)
 {
 	return FindObject(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectToLiquidPump"));
@@ -171,6 +177,7 @@ public func OnPumpControl(symbol_or_object, string action, bool alt)
 {
 	if (action == PUMP_Menu_Action_Switch_On || action == PUMP_Menu_Action_Switch_Off)
 		ToggleOnOff(true);
+/* TODO: Delete commented code
 	else if (action == PUMP_Menu_Action_Cut_Source && source_pipe)
 		DoCutPipe(source_pipe);
 	else if (action == PUMP_Menu_Action_Cut_Drain && drain_pipe)
@@ -179,7 +186,7 @@ public func OnPumpControl(symbol_or_object, string action, bool alt)
 		DoConnectPipe(symbol_or_object, PIPE_STATE_Source);
 	else if (action == PUMP_Menu_Action_Connect_Drain && !drain_pipe)
 		DoConnectPipe(symbol_or_object, PIPE_STATE_Drain);
-
+*/
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
 }
 
@@ -191,7 +198,7 @@ private func SetInfoMessage(string msg)
 }
 
 /*-- Pipe connection --*/
-
+/* TODO: Delete commented code
 public func GetSourcePipe() { return source_pipe; }
 public func SetDrainPipe(object pipe) { drain_pipe = pipe; }
 public func GetDrainPipe() { return drain_pipe; }
@@ -201,7 +208,15 @@ public func SetSourcePipe(object pipe)
 	source_pipe = pipe;
 	CheckState();
 }
+*/
 
+public func SetSourcePipe(object pipe)
+{
+	_inherited(pipe);
+	CheckState();
+}
+
+// TODO: Remove overload
 func DoConnectPipe(object pipe, string pipe_state)
 {
 	var clonk = pipe->Contained();
@@ -214,6 +229,7 @@ func DoConnectPipe(object pipe, string pipe_state)
 		pipe->ConnectPipeToPump(clonk);
 }
 
+/* TODO: Delete commented code
 func DoCutPipe(object pipe_line)
 {
 	if (pipe_line)
@@ -230,6 +246,7 @@ func DoCutPipe(object pipe_line)
 		if (pipe_line == GetSourcePipe()) SetSourcePipe();
 	}
 }
+*/
 
 /*-- Power stuff --*/
 
@@ -252,6 +269,8 @@ public func OnEnoughPower()
 	CheckState();
 	return _inherited(...);
 }
+
+// TODO: these functions may be useful in the liquid tank, maybe move it to that library
 
 /** Returns object to which the liquid is pumped */
 private func GetDrainObject()
@@ -527,6 +546,7 @@ private func PumpHeight2Power(int pump_height)
 	return used_power;
 }
 
+// TODO: check usage of this, probably has to return true if the source is a container
 // Returns whether there is liquid at the source pipe to pump.
 private func IsLiquidSourceOk()
 {
@@ -540,6 +560,7 @@ private func IsLiquidSourceOk()
 	return true;
 }
 
+// TODO: check usage of this, probably has to return true if the drain is a container
 // Returns whether the drain pipe is free.
 private func IsLiquidDrainOk()
 {
