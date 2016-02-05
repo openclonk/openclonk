@@ -34,9 +34,6 @@ local power_used; // the amount of power currently consumed or (if negative) pro
 local stored_material_name; //contained liquid
 local stored_material_amount;
 
-local source_pipe;
-local drain_pipe;
-
 local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
 local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
 
@@ -275,15 +272,15 @@ public func OnEnoughPower()
 /** Returns object to which the liquid is pumped */
 private func GetDrainObject()
 {
-	if (drain_pipe) return drain_pipe->GetConnectedObject(this) ?? this;
+	if (GetDrainPipe()) return GetDrainPipe()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
 /** Returns object from which the liquid is pumped */
 private func GetSourceObject()
 {
-	if (source_pipe) 
-		return source_pipe->GetConnectedObject(this) ?? this;
+	if (GetSourcePipe()) 
+		return GetSourcePipe()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
@@ -300,9 +297,9 @@ protected func Pumping()
 	
 	// something went wrong in the meantime?
 	// let the central function handle that on next check
-	if (!source_pipe) 
+	if (!GetSourcePipe()) 
 		return;
-	
+
 	var pump_ok = true;
 	
 	// is empty? -> try to get liquid
@@ -406,12 +403,12 @@ func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 func CheckState()
 {
 	var is_fullcon = GetCon() >= 100;
-	var can_pump = source_pipe && is_fullcon && switched_on;
+	var can_pump = GetSourcePipe() && is_fullcon && switched_on;
 	
 	// can't pump at all -> wait
 	if (!can_pump)
 	{
-		if (!source_pipe && switched_on)
+		if (!GetSourcePipe() && switched_on)
 			SetInfoMessage("$StateNoSource$");
 		SetState("Wait");
 	}
