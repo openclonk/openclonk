@@ -30,10 +30,6 @@ local switched_on; // controlled by Interaction. Indicates whether the user want
 local powered; // whether the pump has enough power as a consumer, always true if producing
 local power_used; // the amount of power currently consumed or (if negative) produced
 
-// TODO: Replace with liquid tank internals
-local stored_material_name; //contained liquid
-local stored_material_amount;
-
 local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
 local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
 
@@ -303,7 +299,7 @@ protected func Pumping()
 	var pump_ok = true;
 	
 	// is empty? -> try to get liquid
-	if (!stored_material_amount)
+	if (!GetLiquidType())
 	{
 		// get new materials
 		var source_obj = GetSourceObject();
@@ -312,8 +308,8 @@ protected func Pumping()
 		// no material to pump?
 		if (mat)
 		{
-			stored_material_name = mat[0];
-			stored_material_amount = mat[1];
+			SetLiquidType(mat[0]);
+			SetLiquidFillLevel(mat[1]);
 		}
 		else
 		{
@@ -323,11 +319,11 @@ protected func Pumping()
 	}
 	if (pump_ok)
 	{
-		var i = stored_material_amount;
+		var i = GetLiquidFillLevel();
 		while (i > 0)
 		{
 			var drain_obj = GetDrainObject();
-			if (this->InsertMaterialAtDrain(drain_obj, stored_material_name, 1))
+			if (this->InsertMaterialAtDrain(drain_obj, GetLiquidType(), 1))
 			{
 				i--;
 			}
@@ -340,9 +336,7 @@ protected func Pumping()
 			}
 		}
 		
-		stored_material_amount = i;
-		if (stored_material_amount <= 0)
-			stored_material_name = nil;
+		SetLiquidFillLevel(i);
 	}
 	
 	if (pump_ok)
