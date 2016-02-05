@@ -134,9 +134,8 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 	}
 	if(fDigging)
 	{
-		// Adjust speed at current animation position
-		var speed = clonk.ActMap.Dig.Speed*2;
-		speed = this->GetModifiedDigSpeed(clonk, speed);
+		// Get animation-adjusted dig speed.
+		var speed = this->GetDigSpeed(clonk);
 
 		// Limit the digging angle: one can dig maximally 30 degrees upwards.
 		DigAngle = BoundBy(DigAngle, 60, 300);
@@ -167,8 +166,10 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 	}
 }
 
-func GetModifiedDigSpeed(object clonk, int speed)
+private func GetDigSpeed(object clonk)
 {
+	var speed = clonk.ActMap.Dig.Speed * 2;
+	// Adjust speed at current animation position.
 	var iAnimation = GetEffect("IntDig", clonk).var1;
 	var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
 	speed = speed*(Cos(iPosition-45, 50)**2)/2500;
