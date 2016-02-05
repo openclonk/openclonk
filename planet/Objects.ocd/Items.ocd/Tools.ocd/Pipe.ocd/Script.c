@@ -64,7 +64,7 @@ func ConnectPipeToPump(object clonk)
 	}
 	
 	// already two pipes connected
-	if(liquid_pump->GetSource() && liquid_pump->GetDrain())
+	if(liquid_pump->GetSourcePipe() && liquid_pump->GetDrainPipe())
 	{
 		clonk->Message("$MsgHasPipes$");
 		return true;
@@ -142,10 +142,10 @@ func CreatePipe(object liquid_pump)
 func ConnectSourcePipeToPump(object liquid_pump, object clonk)
 {
 	// If liquid pump has no source yet, create one.
-	if (liquid_pump->GetSource()) return false;
+	if (liquid_pump->GetSourcePipe()) return false;
 	var pipe = CreatePipe(liquid_pump);
 	
-	liquid_pump->SetSource(pipe);
+	liquid_pump->SetSourcePipe(pipe);
 	clonk->Message("$MsgCreatedSource$");
 	SetGraphics("Source", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
 	Description = "$DescriptionSource$";
@@ -160,10 +160,10 @@ func ConnectSourcePipeToPump(object liquid_pump, object clonk)
 func ConnectDrainPipeToPump(object liquid_pump, object clonk)
 {
 	// If liquid pump has no drain yet, create one.
-	if (liquid_pump->GetDrain()) return false;
+	if (liquid_pump->GetDrainPipe()) return false;
 	var pipe = CreatePipe(liquid_pump);
 
-	liquid_pump->SetDrain(pipe);
+	liquid_pump->SetDrainPipe(pipe);
 	clonk->Message("$MsgCreatedDrain$");
 	SetGraphics("Drain", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
 	Description = "$DescriptionDrain$";

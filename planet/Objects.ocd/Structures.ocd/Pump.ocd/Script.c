@@ -192,11 +192,11 @@ private func SetInfoMessage(string msg)
 
 /*-- Pipe connection --*/
 
-public func GetSource() { return source_pipe; }
-public func SetDrain(object pipe) { drain_pipe = pipe; }
-public func GetDrain() { return drain_pipe; }
+public func GetSourcePipe() { return source_pipe; }
+public func SetDrainPipe(object pipe) { drain_pipe = pipe; }
+public func GetDrainPipe() { return drain_pipe; }
 
-public func SetSource(object pipe)
+public func SetSourcePipe(object pipe)
 {
 	source_pipe = pipe;
 	CheckState();
@@ -226,8 +226,8 @@ func DoCutPipe(object pipe_line)
 		// was removed when the connection is cut.
 		// this time the pipe may still be there,
 		// connected to the steam engine etc.
-		if (pipe_line == GetDrain()) SetDrain();
-		if (pipe_line == GetSource()) SetSource();
+		if (pipe_line == GetDrainPipe()) SetDrainPipe();
+		if (pipe_line == GetSourcePipe()) SetSourcePipe();
 	}
 }
 
