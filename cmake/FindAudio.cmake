@@ -91,10 +91,6 @@ endmacro()
 
 if(Audio_TK)
 	# Already chosen, don't do anything
-elseif(USE_CONSOLE)
-	# Dedicated servers don't need audio output
-	set(Audio_TK "none")
-	set(Audio_FOUND TRUE)
 else()
 	# Test for OpenAL
 	__FINDAUDIO_FINDOPENAL()
