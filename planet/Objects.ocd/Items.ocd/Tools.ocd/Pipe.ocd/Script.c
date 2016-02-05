@@ -1,6 +1,29 @@
 /*-- Pipe
 
 	Author: ST-DDT, Marky
+
+	The pipe has several states:
+	- neutral
+	- source (green line)
+	- drain (red line)
+
+	By default a pipe is neutral, and stays neutral if you connect it to a liquid tank.
+	- Connected neutral pipes cannot be connected to another (neutral) liquid tank
+	  (this would not make any sense, or maybe it does if you want to have a liquid
+	   tank array, but this would lead to all kinds of complications and special
+	   cases eventually).
+
+	However, a pipe can be connected to a liquid transferring structure (pump), too.
+	- Neutral pipes can be connected to a pump. They then become a drain or source pipe.
+	- Connected neutral pipes can be connected to a pump. See above.
+	- Source pipes can be connected to liquid tanks only.
+	- Drain pipes can be connected to liquid tanks only.
+
+	Logic for object use from inventory and interaction menu:
+	- Both know the using Clonk (interaction menu: the container of the pipe)
+	- The user may want to connect a drain pipe before connecting a source pipe
+	- The user may want to connect a neutral pipe
+	=> separate functions are necessary	
 --*/
 
 static const PIPE_STATE_Source = "Source";
