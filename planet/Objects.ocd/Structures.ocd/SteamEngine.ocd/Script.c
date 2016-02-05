@@ -35,9 +35,6 @@ protected func Initialize()
 
 public func IsContainer() { return true; }
 
-// can connect a drain pipe that is connected to a pump
-public func CanConnectDrainPipe(){ return true;}
-
 
 protected func RejectCollect(id item, object obj)
 {
@@ -208,3 +205,35 @@ local BlastIncinerate = 130;
 local HitPoints = 100;
 local Name = "$Name$";
 local Description = "$Description$";
+
+
+
+
+
+
+
+func QueryConnectPipe(object pipe)
+{
+	if (GetNeutralPipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
+
+	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	{
+		return false;
+	}
+	else
+	{
+		pipe->Report("$MsgPipeProhibited$");
+		return true;
+	}
+}
+
+
+func OnPipeConnect(object pipe, object line, string specific_pipe_state)
+{
+	SetNeutralPipe(line);
+	pipe->Report("$MsgConnectedPipe$");
+}

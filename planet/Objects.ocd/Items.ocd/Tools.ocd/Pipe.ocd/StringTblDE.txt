@@ -12,5 +12,3 @@ MsgCreatedDrain=Abflussrohr angeschlossen.
 MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
 MsgHasSourcePipe=Zuflussrohr kann nicht angeschlossen werden.
 MsgHasDrainPipe=Abflussrohr kann nicht angeschlossen werden.
-
-MsgConnectedToTank=%s an %s angeschlossen.

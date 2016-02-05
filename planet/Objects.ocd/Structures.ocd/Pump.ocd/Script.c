@@ -16,10 +16,6 @@
 
 static const PUMP_Menu_Action_Switch_On = "on";
 static const PUMP_Menu_Action_Switch_Off = "off";
-static const PUMP_Menu_Action_Connect_Drain = "connectdrain";
-static const PUMP_Menu_Action_Cut_Drain = "cutdrain";
-static const PUMP_Menu_Action_Connect_Source = "connectsource";
-static const PUMP_Menu_Action_Cut_Source = "cutsource";
 static const PUMP_Menu_Action_Description = "description";
 
 
@@ -92,27 +88,12 @@ public func GetPumpControlMenuEntries(object clonk)
 				image = {Prototype = custom_entry.image, Symbol = Icon_Lightbulb, GraphicsName = lightbulb_graphics}
 			}});
 			
-	var available_pipe = FindAvailablePipe(clonk);
-	
 	// switch on and off
 	if (!switched_on)
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Play, "$MsgTurnOn$", 1, PUMP_Menu_Action_Switch_On));
 	else
 		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Stop, "$MsgTurnOff$", 1, PUMP_Menu_Action_Switch_Off));
 
-/* TODO: Delete commented code
-	// handle source pipe connection
-	if (source_pipe)
-		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutSource$", 2, PUMP_Menu_Action_Cut_Source));
-	else if (available_pipe)
-		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, available_pipe, "$MsgConnectSource$", 2, PUMP_Menu_Action_Connect_Source));
-		
-	// handle drain pipe connection
-	if (drain_pipe)
-		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Cancel, "$MsgCutDrain$", 3, PUMP_Menu_Action_Cut_Drain));
-	else if (available_pipe)
-		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, available_pipe, "$MsgConnectDrain$", 3, PUMP_Menu_Action_Connect_Drain));
-*/
 	return menu_entries;
 }
 
@@ -150,36 +131,16 @@ public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_
 	var text = "";
 	if (action == PUMP_Menu_Action_Switch_On) text = "$DescTurnOn$";
 	else if (action == PUMP_Menu_Action_Switch_Off) text = "$DescTurnOff$";
-/* TODO: : Delete commented code
-	else if (action == PUMP_Menu_Action_Cut_Drain) text = "$DescCutDrain$";
-	else if (action == PUMP_Menu_Action_Cut_Source) text = "$DescCutSource$";
-	else if (action == PUMP_Menu_Action_Connect_Drain) text = "$DescConnectDrain$";
-	else if (action == PUMP_Menu_Action_Connect_Source) text = "$DescConnectSource$";
-*/
 	else if (action == PUMP_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
-// TODO: Check if this is still necessary
-func FindAvailablePipe(object container)
-{
-	return FindObject(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectToLiquidPump"));
-}
 
 public func OnPumpControl(symbol_or_object, string action, bool alt)
 {
 	if (action == PUMP_Menu_Action_Switch_On || action == PUMP_Menu_Action_Switch_Off)
 		ToggleOnOff(true);
-/* TODO: Delete commented code
-	else if (action == PUMP_Menu_Action_Cut_Source && source_pipe)
-		DoCutPipe(source_pipe);
-	else if (action == PUMP_Menu_Action_Cut_Drain && drain_pipe)
-		DoCutPipe(drain_pipe);
-	else if (action == PUMP_Menu_Action_Connect_Source && !source_pipe)
-		DoConnectPipe(symbol_or_object, PIPE_STATE_Source);
-	else if (action == PUMP_Menu_Action_Connect_Drain && !drain_pipe)
-		DoConnectPipe(symbol_or_object, PIPE_STATE_Drain);
-*/
+
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
 }
 
@@ -190,18 +151,71 @@ private func SetInfoMessage(string msg)
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
-/*-- Pipe connection --*/
-/* TODO: Delete commented code
-public func GetSourcePipe() { return source_pipe; }
-public func SetDrainPipe(object pipe) { drain_pipe = pipe; }
-public func GetDrainPipe() { return drain_pipe; }
+/*-- Pipe control --*/
 
-public func SetSourcePipe(object pipe)
+
+func QueryConnectPipe(object pipe)
 {
-	source_pipe = pipe;
-	CheckState();
+	if (GetDrainPipe() && GetSourcePipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
+	else if (pipe->IsSourcePipe())
+	{
+		pipe->Report("$MsgSourcePipeProhibited$");
+		return true;
+	}
+	else if (pipe->IsDrainPipe())
+	{
+		pipe->Report("$MsgDrainPipeProhibited$");
+		return true;
+	}
+	return false;
 }
-*/
+
+
+func OnPipeConnect(object pipe, object line, string specific_pipe_state)
+{
+	if (PIPE_STATE_Source == specific_pipe_state)
+	{
+		SetSourcePipe(line);
+		pipe->SetSourcePipe();
+		pipe->Report("$MsgCreatedSource$");
+	}
+	else if (PIPE_STATE_Drain == specific_pipe_state)
+	{
+		SetDrainPipe(line);
+		pipe->SetDrainPipe();
+		pipe->Report("$MsgCreatedDrain$");
+	}
+	else
+	{
+		// add a drain if we already connected a source pipe,
+		// or if the line is already connected to a container
+		var pump_target = line->GetConnectedObject(this);
+		if (pump_target) pump_target = pump_target->~IsLiquidContainer();		
+		if (GetSourcePipe() || pump_target)
+		{
+			OnPipeConnect(pipe, line, PIPE_STATE_Drain);
+		}
+		// otherwise create a source first
+		else
+		{
+			OnPipeConnect(pipe, line, PIPE_STATE_Source);
+		}
+	}
+}
+
+
+func OnPipeDisconnect(object pipe, object line)
+{
+	var pump_target = line->GetConnectedObject(this);
+	if (pump_target) pipe->SetNeutralPipe();		
+	
+	_inherited(pipe, line);
+}
+
 
 public func SetSourcePipe(object pipe)
 {
@@ -209,37 +223,6 @@ public func SetSourcePipe(object pipe)
 	CheckState();
 }
 
-// TODO: Remove overload
-func DoConnectPipe(object pipe, string pipe_state)
-{
-	var clonk = pipe->Contained();
-	
-	if (pipe_state == PIPE_STATE_Source)
-		pipe->ConnectSourcePipeToPump(this, clonk);
-	else if (pipe_state == PIPE_STATE_Drain)
-		pipe->ConnectDrainPipeToPump(this, clonk);
-	else
-		pipe->ConnectPipeToPump(clonk);
-}
-
-/* TODO: Delete commented code
-func DoCutPipe(object pipe_line)
-{
-	if (pipe_line)
-	{
-		var pipe_kit = pipe_line->GetPipeKit();
-		pipe_kit->CutConnection(this);
-
-		// pipe objects have to be reset!
-		// in the former implementation the pipe object
-		// was removed when the connection is cut.
-		// this time the pipe may still be there,
-		// connected to the steam engine etc.
-		if (pipe_line == GetDrainPipe()) SetDrainPipe();
-		if (pipe_line == GetSourcePipe()) SetSourcePipe();
-	}
-}
-*/
 
 /*-- Power stuff --*/
 

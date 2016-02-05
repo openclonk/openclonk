@@ -20,3 +20,9 @@ StateNoInput=Es gibt keine Flüssigkeiten zu pumpen.
 StateNoOutput=Der Abfluss ist verstopft.
 StateNoPower=Die Pumpe hat keinen Strom.
 StateTurnedOff=Die Pumpe wurde ausgeschaltet.
+
+MsgSourcePipeProhibited=Zuflussrohre können nicht an die Pumpe angeschlossen werden.
+MsgDrainPipeProhibited=Abflussrohre können nicht an die Pumpe angeschlossen werden.
+MsgCreatedSource=Zuflussrohr angeschlossen.
+MsgCreatedDrain=Abflussrohr angeschlossen.
+MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
