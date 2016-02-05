@@ -12,5 +12,3 @@ MsgCreatedDrain=Connected drain pipe.
 MsgHasPipes=Pump already has a source and a drain pipe.
 MsgHasSourcePipe=Unable to connect source pipe.
 MsgHasDrainPipe=Unable to connect drain pipe.
-
-MsgConnectedToTank=Connected %s to %s.

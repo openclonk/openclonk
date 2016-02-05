@@ -21,8 +21,13 @@ private func Initialize()
 	SetAction("Connect");
 	SetVertexXY(0, GetX(), GetY());
 	SetVertexXY(1, GetX(), GetY());
+	SetNeutral();
+}
+
+// Greyish colour
+public func SetNeutral()
+{
 	SetProperty("LineColors", [RGB(80, 80, 120), RGB(80, 80, 120)]);
-	return;
 }
 
 // Reddish colour
@@ -76,7 +81,6 @@ public func SwitchConnection(object connected_to, object obj)
 public func SetPipeKit(object obj)
 {
 	pipe_kit = obj;
-	obj->Enter(this);
 }
 
 public func GetPipeKit()
@@ -102,21 +106,21 @@ private func LineBreak(bool no_msg)
 		BreakMessage();
 
 	var line_end = GetPipeKit();
-	if (line_end) line_end->~ResetPicture();
+	if (line_end) line_end->SetNeutralPipe();
 	return;
 }
 
 private func Destruction()
 {
 	var line_end = GetPipeKit();
-	if (line_end) line_end->~ResetPicture();
+	if (line_end) line_end->SetNeutralPipe();
 	return;
 }
 
 private func BreakMessage()
 {
 	var line_end = GetPipeKit();
-	if (line_end) line_end->Message("$TxtPipeBroke$");
+	if (line_end) line_end->Report("$TxtPipeBroke$");
 	return;
 }
 

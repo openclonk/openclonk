@@ -11,8 +11,10 @@ Import this to allow the structures to
 
 static const LIBRARY_TANK_Menu_Action_Add_Drain = "adddrain";
 static const LIBRARY_TANK_Menu_Action_Add_Source = "addsource";
+static const LIBRARY_TANK_Menu_Action_Add_Neutral = "addneutral";
 static const LIBRARY_TANK_Menu_Action_Cut_Drain = "cutdrain";
 static const LIBRARY_TANK_Menu_Action_Cut_Source = "cutsource";
+static const LIBRARY_TANK_Menu_Action_Cut_Neutral = "cutneutral";
 static const LIBRARY_TANK_Menu_Action_Description = "description";
 
 
@@ -63,11 +65,14 @@ static const LIBRARY_TANK_Menu_Action_Description = "description";
 
 local lib_tank; // proplist for local variables
 
+/* ---------- Callbacks ---------- */
+
 func Construction()
 {
 	lib_tank = {
 		drain_pipe = nil,
 		source_pipe = nil,
+		neutral_pipe = nil,
 		custom_entry = 
 		{
 			Right = "100%", Bottom = "2em",
@@ -81,6 +86,8 @@ func Construction()
 }
 
 func IsLiquidTank(){ return true;}
+
+/* ---------- Menu Entries ---------- */
 
 public func GetInteractionMenus(object clonk)
 {
@@ -103,53 +110,6 @@ public func GetInteractionMenus(object clonk)
 	return menus;
 }
 
-func CanConnectPipe(){ return this->CanConnectSourcePipe() || this->CanConnectDrainPipe();}
-
-func FindAvailablePipe(object container, string pipe_state)
-{
-	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), Find_Func("CanConnectToLiquidTank", pipe_state)))
-	{
-		if (!pipe_state
-		  || pipe_state == PIPE_STATE_Drain && !QueryConnectDrainPipe(pipe)
-		  || pipe_state == PIPE_STATE_Source && !QueryConnectSourcePipe(pipe))
-			return pipe;
-	}
-	return nil;
-}
-
-func CanConnectDrainPipe(){ return false;}
-func CanConnectSourcePipe(){ return false;}
-
-func QueryConnectDrainPipe(object pipe)
-{
-	return !this->CanConnectDrainPipe() || GetDrainPipe();
-}
-
-func QueryConnectSourcePipe(object pipe)
-{
-	return !this->CanConnectSourcePipe() || GetSourcePipe();
-}
-
-
-func GetDrainPipe(){ return lib_tank.drain_pipe;}
-func GetSourcePipe(){ return lib_tank.source_pipe;}
-
-func SetDrainPipe(object drain_pipe)
-{
-	if (!this->CanConnectDrainPipe()) FatalError("This object cannot have a drain pipe!");
-
-	lib_tank.drain_pipe = drain_pipe;
-	return lib_tank.drain_pipe;
-}
-
-func SetSourcePipe(object source_pipe)
-{
-	if (!this->CanConnectSourcePipe()) FatalError("This object cannot have a source pipe!");
-
-	lib_tank.source_pipe = source_pipe;
-	return lib_tank.source_pipe;
-}
-
 public func GetPipeControlMenuEntries(object clonk)
 {
 	var menu_entries = [];
@@ -162,22 +122,28 @@ public func GetPipeControlMenuEntries(object clonk)
 				Bottom = "1.2em",
 				Priority = -1,
 				BackgroundColor = RGB(25, 100, 100),
-				text = {Prototype = lib_tank.custom_entry.text, Text = "$MsgPipeControl$"},
+				text = {Prototype = lib_tank.custom_entry.text, Text = "$MenuPipeControl$"},
 				image = {Prototype = lib_tank.custom_entry.image, Symbol = Pipe}
 			}});
 
-	var source_pipe = FindAvailablePipe(clonk, PIPE_STATE_Source);
-	var drain_pipe = FindAvailablePipe(clonk, PIPE_STATE_Drain);
+	var source_pipe = FindAvailablePipe(clonk, Find_Func("IsSourcePipe"));
+	var drain_pipe = FindAvailablePipe(clonk, Find_Func("IsDrainPipe"));
+	var neutral_pipe = FindAvailablePipe(clonk, Find_Func("IsNeutralPipe"));
 
 	if (GetSourcePipe())
 		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source));
 	else if (source_pipe)
 		PushBack(menu_entries, GetTankMenuEntry(source_pipe, "$MsgConnectSource$", 1, LIBRARY_TANK_Menu_Action_Add_Source));
-	
+
 	if (GetDrainPipe())
 		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain));
 	else if (drain_pipe)
 		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, "$MsgConnectDrain$", 2, LIBRARY_TANK_Menu_Action_Add_Drain));
+
+	if (GetNeutralPipe())
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutNeutral$", 3, LIBRARY_TANK_Menu_Action_Cut_Neutral));
+	else if (neutral_pipe)
+		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral));
 
 	return menu_entries;
 }
@@ -218,14 +184,45 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Drain);
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Drain)
 		this->DoCutPipe(GetDrainPipe());
+	else if (action == LIBRARY_TANK_Menu_Action_Add_Neutral)
+		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Neutral);
+	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral)
+		this->DoCutPipe(GetNeutralPipe());
 
 	UpdateInteractionMenus(this.GetPipeControlMenuEntries);	
 }
 
-func DoConnectPipe(object pipe, string pipe_state)
+
+/* ---------- Handle connections ---------- */
+
+func GetDrainPipe(){ return lib_tank.drain_pipe;}
+func GetSourcePipe(){ return lib_tank.source_pipe;}
+func GetNeutralPipe(){ return lib_tank.neutral_pipe;}
+
+func SetDrainPipe(object drain_pipe)
 {
-	var clonk = pipe->Contained();
-	pipe->ConnectPipeToLiquidTank(clonk, this);
+	lib_tank.drain_pipe = drain_pipe;
+	return lib_tank.drain_pipe;
+}
+
+func SetSourcePipe(object source_pipe)
+{
+	lib_tank.source_pipe = source_pipe;
+	return lib_tank.source_pipe;
+}
+
+func SetNeutralPipe(object neutral_pipe)
+{
+	lib_tank.neutral_pipe = neutral_pipe;
+	return lib_tank.neutral_pipe;
+}
+
+
+/* ---------- Menu callbacks ---------- */
+
+func DoConnectPipe(object pipe, string specific_pipe_state)
+{
+	pipe->ConnectPipeTo(this, specific_pipe_state);
 }
 
 func DoCutPipe(object pipe_line)
@@ -233,10 +230,28 @@ func DoCutPipe(object pipe_line)
 	if (pipe_line) 
 	{
 		var pipe_kit = pipe_line->GetPipeKit();
-		pipe_kit->CutConnection(this);
-		
-		// pipe objects have to be reset!
-		if (pipe_line == GetDrainPipe()) SetDrainPipe();
-		if (pipe_line == GetSourcePipe()) SetSourcePipe();
+		pipe_kit->CutLineConnection(this);		
 	}
+}
+
+func FindAvailablePipe(object container, find_state)
+{
+	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), find_state))
+	{
+		if (!this->~QueryConnectPipe(pipe))
+			return pipe;
+	}
+	return nil;
+}
+
+/* ---------- Pipe callbacks ---------- */
+
+func CanConnectPipe(){ return true;}
+
+func OnPipeDisconnect(object pipe, object line)
+{
+	// pipe objects have to be reset!
+	if (line == GetDrainPipe()) SetDrainPipe();
+	if (line == GetSourcePipe()) SetSourcePipe();
+	if (line == GetNeutralPipe()) SetNeutralPipe();
 }
