@@ -36,15 +36,13 @@ private func CloseEntrance()
 
 private func SoundOpenDoor()
 {
-	// TODO: Get sound
-	Sound("DoorOpen");
+	Sound("Structures::DoorOpen?");
 	return;
 }
 
 private func SoundCloseDoor()
 {
-	// TODO: get sound
-	Sound("DoorClose");
+	Sound("Structures::DoorClose?");
 	return;
 }
 	

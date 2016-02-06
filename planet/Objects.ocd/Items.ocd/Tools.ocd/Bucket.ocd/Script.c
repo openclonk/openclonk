@@ -113,7 +113,7 @@ private func Spill(int angle)
 
 protected func Hit()
 {
-	Sound("Hits::Materials::Wood::DullWoodHit?");
+	Sound("Hits::BucketHit?");
 }
 
 // Can collect IsBucketMaterial?
