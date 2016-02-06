@@ -598,8 +598,12 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// store window
 	this->pWindow = pWindow;
 	ctx = SDL_GL_CreateContext(pWindow->window);
+	if (!ctx)
+	{
+		return pGL->Error(FormatString("SDL_GL_CreateContext: %s", SDL_GetError()).getData());
+	}
 	// No luck at all?
-	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
+	if (!Select(true)) return false;
 	// init extensions
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
@@ -615,7 +619,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 bool CStdGLCtx::Select(bool verbose)
 {
-	SDL_GL_MakeCurrent(pWindow->window, ctx);
+	if (SDL_GL_MakeCurrent(pWindow->window, ctx) != 0)
+		return pGL->Error(FormatString("SDL_GL_MakeCurrent: %s", SDL_GetError()).getData());
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
