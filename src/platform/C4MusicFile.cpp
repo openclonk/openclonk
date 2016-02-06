@@ -122,7 +122,7 @@ bool C4MusicFileSDL::Play(bool loop, double max_resume_time)
 			return false;
 		}
 		// Mix_FreeMusic frees the RWop
-		Music = Mix_LoadMUS_RW(SDL_RWFromConstMem(Data, filesize));
+		Music = Mix_LoadMUS_RW(SDL_RWFromConstMem(Data, filesize), 1);
 		if (!Music)
 		{
 			LogF("SDL_mixer: %s", SDL_GetError());
