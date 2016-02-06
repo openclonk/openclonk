@@ -196,10 +196,6 @@ protected func InitializePlayer(int plr)
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
 	effect.to_x = 300;
 	effect.to_y = 374;
-	
-	// Add an effect to the clonk to track the goal.
-	var goal_effect = AddEffect("TrackGoal", nil, 100, 2);
-	goal_effect.plr = plr;
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);

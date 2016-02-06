@@ -1,5 +1,5 @@
 /** 
-	Tutorial 03: 
+	Tutorial 03: Carry & Construct
 	Author: Maikel
 	
 	Construct sawmill and flagpole: explains contents menu, dynamite, chopping, foundry and construction site.

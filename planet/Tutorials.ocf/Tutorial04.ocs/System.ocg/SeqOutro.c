@@ -315,7 +315,7 @@ public func Outro_22()
 
 public func Outro_Stop()
 {
-	// Fulfill the wormhole destruction goal.
+	// Fulfill the tutorial goal.
 	var goal = FindObject(Find_ID(Goal_Tutorial));
 	if (goal)
 		goal->Fulfill();

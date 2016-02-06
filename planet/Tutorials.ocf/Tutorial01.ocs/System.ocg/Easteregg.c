@@ -59,7 +59,7 @@ public func Collection(object collected)
 	{
 		// Only perform events on first wall jump.
 		if (GetEffect("IntAwardedAchievement", this))
-			return _inherited(...);
+			return _inherited(collected, ...);
 		AddEffect("IntAwardedAchievement", this, 100);
 		// Add some stars effect to the clonk indicating the easteregg.
 		CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 25, Particles_Magic(), 20);		

@@ -1,5 +1,5 @@
 /** 
-	Tutorial 04: 
+	Tutorial 04: Mining Tools
 	Author: Maikel
 	
 	Produce loam, transport lorry, produce pickaxe and mine ore.
