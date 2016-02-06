@@ -302,9 +302,12 @@ endif()
 # SDL
 if(USE_SDL_MAINLOOP)
 	find_package(SDL2 REQUIRED)
-	include_directories(${SDL2_INCLUDE_DIRS})
+elseif(NOT WIN32)
+	# for gamepads
+	find_package(SDL2)
 endif()
 set(HAVE_SDL ${SDL2_FOUND})
+include_directories(SYSTEM ${SDL2_INCLUDE_DIRS})
 
 ############################################################################
 # generated source files

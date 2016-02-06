@@ -69,9 +69,9 @@ bool C4MusicSystem::InitializeMOD()
 	LogF("SDL_mixer runtime version is %d.%d.%d (compiled with %d.%d.%d)",
 	     link_version->major, link_version->minor, link_version->patch,
 	     compile_version.major, compile_version.minor, compile_version.patch);
-	if (!SDL_WasInit(SDL_INIT_AUDIO) && SDL_Init(SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE))
+	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
 	{
-		LogF("SDL: %s", SDL_GetError());
+		LogF("SDL_InitSubSystem(SDL_INIT_AUDIO): %s", SDL_GetError());
 		return false;
 	}
 	//frequency, format, stereo, chunksize
@@ -112,7 +112,7 @@ void C4MusicSystem::DeinitializeMOD()
 {
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_CloseAudio();
-	SDL_Quit();
+	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 #ifndef __APPLE__
 	alutExit();

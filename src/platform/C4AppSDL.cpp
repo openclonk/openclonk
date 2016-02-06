@@ -116,9 +116,9 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	// Set locale
 	setlocale(LC_ALL,"");
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		Log("Error initializing SDL.");
+		LogF("SDL_Init: %s", SDL_GetError());
 		return false;
 	}
 
