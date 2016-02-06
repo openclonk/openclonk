@@ -137,8 +137,8 @@ func ConnectPipeTo(object target, string specific_pipe_state)
 {
 	if (!target || target->~QueryConnectPipe(this)) return false;
 	var line = AddLineConnectionTo(target);
-	Sound("Objects::Connect");
 	target->OnPipeConnect(this, line, specific_pipe_state);
+	Sound("Objects::Connect");
 	return true;
 }
 
@@ -174,7 +174,7 @@ func AddLineConnectionTo(object target)
 		if (line->IsConnectedTo(this, true))
 		{
 			line->SwitchConnection(this, target);
-			Enter(line);
+			ScheduleCall(this, this.Enter, 1, nil, line); // delayed entrance, so that the message is still displayed above the clonk
 			return line;
 		}
 		else
