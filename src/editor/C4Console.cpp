@@ -577,7 +577,11 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) { return this; }
+C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
+{
+	C4Rect r(0, 0, 400, 350);
+	return C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
+}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}

@@ -27,7 +27,7 @@
 #include <C4Application.h>
 #include <C4Gui.h>
 #include <C4GamePadCon.h>
-// SDL version
+#include <C4Version.h>
 
 static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& flags)
 {
@@ -79,14 +79,14 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 		else
 			button = C4MC_Button_MiddleUp;
 		break;
-	case SDL_BUTTON_WHEELUP:
+	/*case SDL_BUTTON_WHEELUP:
 		button = C4MC_Button_Wheel;
 		flags = (+32) << 16;
 		break;
 	case SDL_BUTTON_WHEELDOWN:
 		button = C4MC_Button_Wheel;
 		flags = (-32) << 16;
-		break;
+		break;*/
 	}
 	lastX = e.x;
 	lastY = e.y;
@@ -122,8 +122,7 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 		return false;
 	}
 
-	SDL_EnableUNICODE(1);
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	// Custom initialization
 	return DoInit (argc, argv);
@@ -163,24 +162,12 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 	case SDL_QUIT:
 		Quit();
 		break;
+	case SDL_TEXTINPUT:
+		::pGUI->CharIn(e.text.text);
+		break;
 	case SDL_KEYDOWN:
 	{
-#ifndef USE_CONSOLE
-		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
-		{
-			Config.Graphics.Windowed = !Config.Graphics.Windowed;
-			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
-			pDraw->InvalidateDeviceObjects();
-			pDraw->RestoreDeviceObjects();
-
-			break;
-		}
-#endif
-
-		StdStrBuf c;
-		c.AppendCharacter(e.key.keysym.unicode);
-		::pGUI->CharIn(c.getData());
-		Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Down,
+		Game.DoKeyboardInput(e.key.keysym.scancode, KEYEV_Down,
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
 		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT),
@@ -188,7 +175,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		break;
 	}
 	case SDL_KEYUP:
-		Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Up,
+		Game.DoKeyboardInput(e.key.keysym.scancode, KEYEV_Up,
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
 		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT), false, NULL);
@@ -211,87 +198,120 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		Application.pGamePadControl->FeedEvent(e);
 		break;
 	}
-
-#ifdef __APPLE__
-	MacUtility::ensureWindowInFront();
-#endif
 }
+
+static int modeCount = 0;
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
-	// No support for multiple monitors.
-	if (iMonitor != 0)
-		return false;
-
-	static SDL_Rect** modes = 0;
-	static int modeCount = 0;
-	if (!modes)
+	if (!modeCount)
 	{
-		modes = SDL_ListModes(NULL, SDL_OPENGL | SDL_FULLSCREEN);
-		// -1 means "all modes allowed". Clonk is not prepared
-		// for this; should probably give some random resolutions
-		// then.
-		assert(reinterpret_cast<intptr_t>(modes) != -1);
-		if (!modes)
-			modeCount = 0;
-		else
-			// Count available modes.
-			for (SDL_Rect** iter = modes; *iter; ++iter)
-				++modeCount;
+		modeCount = SDL_GetNumDisplayModes(iMonitor);
 	}
 
 	if (iIndex >= modeCount)
 		return false;
 
-	*piXRes = modes[iIndex]->w;
-	*piYRes = modes[iIndex]->h;
-	*piBitDepth = SDL_GetVideoInfo()->vfmt->BitsPerPixel;
+	SDL_DisplayMode mode;
+	SDL_GetDisplayMode(iMonitor, iIndex, &mode);
+	*piXRes = mode.w;
+	*piYRes = mode.h;
+	*piBitDepth = SDL_BITSPERPIXEL(mode.format);
+	*piRefreshRate = mode.refresh_rate;
 	return true;
 }
 
 bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
 {
-	//RECT r;
-	//pWindow->GetSize(&r);
-	// FIXME: optimize redundant calls away. maybe make all platforms implicitely call SetVideoMode in C4Window::Init?
-	// SDL doesn't support multiple monitors.
-	if (!SDL_SetVideoMode(iXRes == -1 ? 0 : iXRes, iYRes == -1 ? 0 : iYRes, C4Draw::COLOR_DEPTH,
-		SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
+	int res;
+	if (!fFullScreen)
 	{
-		sLastError.Copy(SDL_GetError());
-		return false;
+		res = SDL_SetWindowFullscreen(pWindow->window, 0);
+		if (res)
+		{
+			LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
+			return false;
+		}
+		if (iXRes != -1)
+			pWindow->SetSize(iXRes, iYRes);
+		C4Rect r;
+		pWindow->GetSize(&r);
+		OnResolutionChanged(r.Wdt, r.Hgt);
+		return true;
 	}
-	SDL_ShowCursor(SDL_DISABLE);
-	const SDL_VideoInfo * info = SDL_GetVideoInfo();
-	OnResolutionChanged(info->current_w, info->current_h);
-	return true;
+	SDL_DisplayMode mode;
+	if (iXRes < 0 || iYRes < 0)
+	{
+		res = SDL_SetWindowFullscreen(pWindow->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		if (res)
+		{
+			LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
+			return false;
+		}
+		res = SDL_GetDesktopDisplayMode(iMonitor, &mode);
+		if (res)
+		{
+			LogF("SDL_GetDesktopDisplayMode: %s", SDL_GetError());
+			return false;
+		}
+		OnResolutionChanged(mode.w, mode.h);
+		return true;
+	}
+	for (int i = 0; i < modeCount; ++i)
+	{
+		res = SDL_GetDisplayMode(iMonitor, i, &mode);
+		if (res)
+		{
+			LogF("SDL_GetDisplayMode: %s", SDL_GetError());
+			return false;
+		}
+		if (mode.w == iXRes && mode.h == iYRes && mode.refresh_rate == RefreshRate && SDL_BITSPERPIXEL(mode.format) == C4Draw::COLOR_DEPTH)
+		{
+			res = SDL_SetWindowDisplayMode(pWindow->window, &mode);
+			if (res)
+			{
+				LogF("SDL_SetWindowDisplayMode: %s", SDL_GetError());
+				return false;
+			}
+			res = SDL_SetWindowFullscreen(pWindow->window, SDL_WINDOW_FULLSCREEN);
+			if (res)
+			{
+				LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
+				return false;
+			}
+			OnResolutionChanged(mode.w, mode.h);
+			return true;
+		}
+	}
+	return false;
 }
 
 void C4AbstractApp::RestoreVideoMode()
 {
+	if (pWindow && pWindow->window)
+		SDL_SetWindowFullscreen(pWindow->window, 0);
 }
 
-// For Max OS X, the implementation resides in StdMacApp.mm
-#ifndef __APPLE__
-
-// stubs
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
-	return false;
+	return SDL_SetClipboardText(text.getData()) == 0;
 }
 
 StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
-	return StdStrBuf("");
+	char * text = SDL_GetClipboardText();
+	StdStrBuf buf;
+	buf.Copy(text);
+	SDL_free(text);
+	return buf;
 }
 
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
-	return false;
+	return SDL_HasClipboardText();
 }
 
 void C4AbstractApp::MessageDialog(const char * message)
 {
+	SDL_ShowSimpleMessageBox(0, C4ENGINECAPTION, message, pWindow ? pWindow->window : 0);
 }
-
-#endif

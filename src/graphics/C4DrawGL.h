@@ -127,6 +127,8 @@ protected:
 	HDC hDC;                    // device context handle
 #elif defined(USE_GTK)
 	/*GLXContext*/void * ctx;
+#elif defined(USE_SDL_MAINLOOP)
+	void * ctx;
 #endif
 
 	// Global list of all OpenGL contexts in use

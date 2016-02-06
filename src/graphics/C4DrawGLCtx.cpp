@@ -580,6 +580,8 @@ CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
+	SDL_GL_DeleteContext(ctx);
+	ctx = 0;
 	pWindow = 0;
 
 	if (this_context != contexts.end())
@@ -595,6 +597,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	if (!pGL) return false;
 	// store window
 	this->pWindow = pWindow;
+	ctx = SDL_GL_CreateContext(pWindow->window);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
@@ -612,6 +615,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 bool CStdGLCtx::Select(bool verbose)
 {
+	SDL_GL_MakeCurrent(pWindow->window, ctx);
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
@@ -638,7 +642,7 @@ bool CStdGLCtx::PageFlip()
 	// flush GL buffer
 	glFlush();
 	if (!pWindow) return false;
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(pWindow->window);
 	return true;
 }
 

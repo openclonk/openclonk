@@ -82,19 +82,12 @@ macro(__FINDAUDIO_FINDOPENAL)
 	endif()
 endmacro()
 
-macro(__FINDAUDIO_FINDSDLMIXER)
-	find_package(PkgConfig QUIET)
-	if(PKG_CONFIG_FOUND)
-		pkg_check_modules(SDLMixer "SDL_mixer>=1.2.11")
-	endif()
-endmacro()
-
 if(Audio_TK)
 	# Already chosen, don't do anything
 else()
 	# Test for OpenAL
 	__FINDAUDIO_FINDOPENAL()
-	__FINDAUDIO_FINDSDLMIXER()
+	find_package(SDL2Mixer)
 
 	if(OpenAL_FOUND AND Alut_FOUND AND OggVorbis_FOUND)
 		# Prefer OpenAL

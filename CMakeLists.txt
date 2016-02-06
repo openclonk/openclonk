@@ -300,11 +300,11 @@ if(Audio_FOUND)
 endif()
 
 # SDL
-if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
-	find_package(SDL)
-	SET(HAVE_SDL ${SDL_FOUND})
-	include_directories(${SDL_INCLUDE_DIR})
+if(USE_SDL_MAINLOOP)
+	find_package(SDL2 REQUIRED)
+	include_directories(${SDL2_INCLUDE_DIRS})
 endif()
+set(HAVE_SDL ${SDL2_FOUND})
 
 ############################################################################
 # generated source files
@@ -1093,7 +1093,7 @@ target_link_libraries(openclonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${EXECINFO_LIBRARY}
-	${SDL_LIBRARY}
+	${SDL2_LIBRARIES}
 	${Audio_LIBRARIES}
 	${GETOPT_LIBRARIES}
 	${GLEW_LIBRARIES}

@@ -34,31 +34,6 @@
 
 #ifdef USE_SDL_MAINLOOP
 #include <SDL.h>
-#include <string>
-#include <vector>
-
-#include <SDL_keysym.h>
-
-namespace
-{
-	std::string getKeyName(C4KeyCode k)
-	{
-		std::string result = SDL_GetKeyName(static_cast<SDLKey>(k));
-		// unknown key
-		if (result == "unknown key")
-			result = FormatString("\\x%x", (DWORD) k).getData();
-		// some special cases
-		if (result == "world 0") result = "´";
-		if (result == "world 1") result = "ß";
-		if (result == "world 2") result = "Ü";
-		if (result == "world 3") result = "Ä";
-		if (result == "world 4") result = "Ö";
-		// capitalize first letter
-		result[0] = toupper(result[0]);
-		// return key name
-		return result;
-	}
-}
 #endif
 
 /* ----------------- Key maps ------------------ */
@@ -102,7 +77,9 @@ struct C4KeyCodeMapEntry
 	const char *szShortName;
 };
 
-#if defined(USE_WIN32_WINDOWS) || defined(USE_GTK)
+#if defined(USE_COCOA)
+#include "CocoaKeycodeMap.h"
+#else
 const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_ESCAPE,		"Escape",	"Esc"},
     {K_1,			"1",			NULL},
@@ -211,8 +188,6 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_PRINT,		"Print",		NULL},
     {0x00,	NULL, 			NULL}
 };
-#elif defined(USE_COCOA)
-#include "CocoaKeycodeMap.h"
 #endif
 
 void C4KeyCodeEx::FixShiftKeys()
@@ -331,7 +306,6 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		}
 
 	}
-#if defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(USE_GTK)
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
 	while (pCheck->szName) {
@@ -340,17 +314,11 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		}
 		++pCheck;
 	}
-	return KEY_Undefined;
-#elif defined(USE_SDL_MAINLOOP)
-	for (C4KeyCode k = 0; k < SDLK_LAST; ++k)
-	{
-		if (SEqualNoCase(sName.getData(), getKeyName(k).c_str()))
-			return k;
-	}
-	return KEY_Undefined;
-#else
-	return KEY_Undefined;
+#if defined(USE_SDL_MAINLOOP)
+	SDL_Scancode s = SDL_GetScancodeFromName(sName.getData());
+	if (s != SDL_SCANCODE_UNKNOWN) return s;
 #endif
+	return KEY_Undefined;
 }
 
 StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool fShort)
@@ -465,7 +433,10 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		return buf;
 	}
 #elif defined(USE_SDL_MAINLOOP)
-	return StdStrBuf(getKeyName(wCode).c_str());
+	StdStrBuf buf;
+	buf.Copy(SDL_GetScancodeName(static_cast<SDL_Scancode>(wCode)));
+	if (!buf.getLength()) buf.Format("\\x%x", wCode);
+	return buf;
 #endif
 	return FormatString("$%x", static_cast<unsigned int>(wCode));
 }
