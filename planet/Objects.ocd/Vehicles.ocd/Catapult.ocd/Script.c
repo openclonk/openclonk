@@ -42,6 +42,21 @@ protected func ContactRight()
 		SetRDir(RandomX(-7, +7));
 }
 
+public func SetDir(int to_dir)
+{
+	if (to_dir == DIR_Left)
+	{
+		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Const(GetAnimationLength("TurnLeft")));
+		dir = DIR_Left;
+	}
+	if (to_dir == DIR_Right)
+	{
+		turn_anim = PlayAnimation("TurnRight", 5, Anim_Const(GetAnimationLength("TurnRight")));
+		dir = DIR_Right;
+	}
+	return inherited(dir, ...);
+}
+
 /*-- Controls --*/
 
 // Activate turn animations
