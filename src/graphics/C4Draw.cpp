@@ -843,7 +843,7 @@ bool C4Draw::Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, 
 
 	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 
-	if (!CreatePrimarySurfaces(iXRes, iYRes, iMonitor))
+	if (!RestoreDeviceObjects())
 		return false;
 
 	if (!CreatePrimaryClipper(iXRes, iYRes))

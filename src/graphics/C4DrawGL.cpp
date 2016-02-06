@@ -353,13 +353,6 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	return pCtx;
 }
 
-bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, unsigned int)
-{
-	// store options
-	bool ok = RestoreDeviceObjects();
-	return ok;
-}
-
 void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdProjectionMatrix* out_modelview)
 {
 	// Initialize multi blit shader.

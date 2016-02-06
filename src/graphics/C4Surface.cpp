@@ -706,20 +706,6 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 	return true;
 }
 
-bool C4Surface::SetPixAlpha(int iX, int iY, BYTE byAlpha)
-{
-	// clip
-	if ((iX<ClipX) || (iX>ClipX2) || (iY<ClipY) || (iY>ClipY2)) return true;
-	// get+lock affected texture
-	if (textures.empty()) return false;
-	C4TexRef *pTexRef;
-	if (!GetLockTexAt(&pTexRef, iX, iY)) return false;
-	// set alpha value of pix in surface
-	*(((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*4+3)=byAlpha;
-	// success
-	return true;
-}
-
 bool C4Surface::BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency)
 {
 	// 32bit-blit. lock target
@@ -788,37 +774,6 @@ void C4Surface::ClearBoxDw(int iX, int iY, int iWdt, int iHgt)
 			pTex->ClearRect(rtClear);
 		}
 	}
-}
-
-bool C4Surface::CopyBytes(BYTE *pImageData)
-{
-	// copy image data directly into textures
-	auto pTex = textures.begin();
-	int iSrcPitch = Wdt * C4Draw::COLOR_DEPTH_BYTES; int iLineTotal = 0;
-	for (int iY=0; iY<iTexY; ++iY)
-	{
-		BYTE *pSource = pImageData + iSrcPitch * iLineTotal;
-		int iLastHeight=pTex->iSizeY; int iXImgPos=0;
-		for (int iX=0; iX<iTexX; ++iX)
-		{
-			++pTex;
-			if (!pTex->Lock()) return false;
-			BYTE *pTarget = (BYTE*)pTex->texLock.pBits;
-			int iCpyNum = std::min(pTex->iSizeX, Wdt-iXImgPos) * C4Draw::COLOR_DEPTH_BYTES;
-			int iYMax = std::min(pTex->iSizeY, Hgt-iLineTotal);
-			for (int iLine = 0; iLine < iYMax; ++iLine)
-			{
-				memcpy(pTarget, pSource, iCpyNum);
-				pSource += iSrcPitch;
-				// FIXME: use pTex->texLock.Pitch here?
-				pTarget += pTex->iSizeX * C4Draw::COLOR_DEPTH_BYTES;
-			}
-			pSource += iCpyNum - iSrcPitch*iYMax;
-			iXImgPos += pTex->iSizeX;
-		}
-		iLineTotal += iLastHeight;
-	}
-	return true;
 }
 
 C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)

@@ -259,8 +259,6 @@ public:
 	void ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label);
 
 protected:
-	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor);
-
 	bool CheckGLError(const char *szAtOp);
 	const char* GLErrorString(GLenum code);
 	virtual bool Error(const char *szMsg);

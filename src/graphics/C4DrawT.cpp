@@ -22,7 +22,7 @@ CStdNoGfx::CStdNoGfx()
 	Default();
 }
 
-bool CStdNoGfx::CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor)
+bool CStdNoGfx::RestoreDeviceObjects()
 {
 	Log("Graphics disabled.");
 	MaxTexSize = 2147483647;

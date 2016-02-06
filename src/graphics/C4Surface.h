@@ -115,7 +115,6 @@ public:
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
 	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
-	bool SetPixAlpha(int iX, int iY, BYTE byAlpha);   // adjust alpha value of pixel
 	bool BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)
 	bool Create(int iWdt, int iHgt, int iFlags = 0);
 	bool Copy(C4Surface &fromSfc);
@@ -149,7 +148,6 @@ public:
 	bool GetSurfaceSize(int &irX, int &irY); // get surface size
 	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr; }
 	DWORD GetClr() { return ClrByOwnerClr; }
-	bool CopyBytes(BYTE *pImageData); // assumes an array of wdt*hgt*bitdepth/8 and copies data directly from it
 private:
 	void MapBytes(BYTE *bpMap);
 	bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);

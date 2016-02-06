@@ -37,12 +37,10 @@ public:
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
 	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
 	virtual void PerformPix(C4Surface *, float, float, DWORD) { }
-	virtual bool InitDeviceObjects() { return true; }
-	virtual bool RestoreDeviceObjects() { return true; }
+	virtual bool RestoreDeviceObjects();
 	virtual bool InvalidateDeviceObjects() { return true; }
 	virtual bool DeleteDeviceObjects() { return true; }
 	virtual bool DeviceReady() { return true; }
-	virtual bool CreatePrimarySurfaces(unsigned int, unsigned int, unsigned int);
 	virtual bool SetOutputAdapter(unsigned int) { return true; }
 
 	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) {}

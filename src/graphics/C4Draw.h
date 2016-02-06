@@ -255,7 +255,6 @@ public:
 protected:
 	bool StringOut(const char *szText, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom);
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
-	virtual bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
 
 	friend class C4Surface;
