@@ -11,7 +11,7 @@
 
 19=DuroLava-lava_red
 20=Water-water
-#21=Oil-oil
+21=Oil-oil
 22=Acid-acid
 23=Lava-lava_red
 25=Water-water
