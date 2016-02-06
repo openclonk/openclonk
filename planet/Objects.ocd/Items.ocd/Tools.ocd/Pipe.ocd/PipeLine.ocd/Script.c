@@ -102,8 +102,13 @@ private func LineBreak(bool no_msg)
 	if (!no_msg)
 		BreakMessage();
 
-	var line_end = GetPipeKit();
-	if (line_end) line_end->SetNeutralPipe();
+	if (GetPipeKit())
+	{
+		GetPipeKit()->SetNeutralPipe();
+		if (GetActionTarget(0)) GetActionTarget(0)->OnPipeDisconnect(GetPipeKit());
+		if (GetActionTarget(1)) GetActionTarget(1)->OnPipeDisconnect(GetPipeKit());
+	}
+	
 	return;
 }
 

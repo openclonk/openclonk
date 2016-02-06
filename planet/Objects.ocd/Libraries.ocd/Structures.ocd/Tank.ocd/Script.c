@@ -225,12 +225,11 @@ func DoConnectPipe(object pipe, string specific_pipe_state)
 	pipe->ConnectPipeTo(this, specific_pipe_state);
 }
 
-func DoCutPipe(object pipe_line)
+func DoCutPipe(object pipe)
 {
-	if (pipe_line) 
+	if (pipe)
 	{
-		var pipe_kit = pipe_line->GetPipeKit();
-		pipe_kit->CutLineConnection(this);		
+		pipe->CutLineConnection(this);		
 	}
 }
 
@@ -248,10 +247,10 @@ func FindAvailablePipe(object container, find_state)
 
 func CanConnectPipe(){ return true;}
 
-func OnPipeDisconnect(object pipe, object line)
+func OnPipeDisconnect(object pipe)
 {
 	// pipe objects have to be reset!
-	if (line == GetDrainPipe()) SetDrainPipe();
-	if (line == GetSourcePipe()) SetSourcePipe();
-	if (line == GetNeutralPipe()) SetNeutralPipe();
+	if (pipe == GetDrainPipe()) SetDrainPipe();
+	if (pipe == GetSourcePipe()) SetSourcePipe();
+	if (pipe == GetNeutralPipe()) SetNeutralPipe();
 }
