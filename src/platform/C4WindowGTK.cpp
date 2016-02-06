@@ -776,8 +776,6 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 	SetTitle(Title);
 
-	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
-
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(GTK_WIDGET(window));
 	GdkWindow* render_gdk_wnd;
