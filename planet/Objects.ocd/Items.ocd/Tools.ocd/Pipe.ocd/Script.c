@@ -45,6 +45,14 @@ protected func Hit()
 	Sound("Hits::GeneralHit?");
 }
 
+private func Destruction()
+{
+	// remove the line first, so that it does not provoke errors on destruction
+	var line = GetConnectedLine();
+	if (line) line->RemoveObject();
+}
+
+
 public func IsToolProduct() { return true;}
 
 public func CanBeStackedWith(object other)

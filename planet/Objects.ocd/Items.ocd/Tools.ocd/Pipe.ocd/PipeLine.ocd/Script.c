@@ -91,9 +91,6 @@ public func GetPipeKit()
 	}
 	else
 	{
-		if (GetActionTarget(0)->GetID() == Pipe) return GetActionTarget(0);
-		if (GetActionTarget(1)->GetID() == Pipe) return GetActionTarget(1);
-		
 		FatalError("Unexpected error: This pipe has lost its pipe kit!");
 	}
 }
