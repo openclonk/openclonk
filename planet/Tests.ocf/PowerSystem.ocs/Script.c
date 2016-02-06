@@ -246,16 +246,9 @@ global func Test3_OnStart(int plr)
 		var pump = CreateObjectAbove(Pump, 80 + i * 20, 160, plr);
 		var source = CreateObjectAbove(Pipe, 176, 292, plr);
 		source->ConnectPipeTo(pump, PIPE_STATE_Source);
-//		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->SetSourcePipe(source_pipe);
 		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
 		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 		drain->GetConnectedLine()->AddVertex(208, 48);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//		drain_pipe->AddVertex(208, 48);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->SetDrainPipe(drain_pipe);
 	}
 	
 	// Log what the test is about.
@@ -294,14 +287,7 @@ global func Test4_OnStart(int plr)
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
 	var source = CreateObjectAbove(Pipe, 176, 292, plr);
 	source->ConnectPipeTo(pump, PIPE_STATE_Source);
-//	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//	source_pipe->SetActionTargets(source, pump);
-//	pump->SetSourcePipe(source_pipe);
 	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-//	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//	drain_pipe->AddVertex(208, 48);
-//	drain_pipe->SetActionTargets(drain, pump);
-//	pump->SetDrainPipe(drain_pipe);
 	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	drain->GetConnectedLine()->AddVertex(208, 48);
 
@@ -349,15 +335,8 @@ global func Test5_OnStart(int plr)
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
 	var source = CreateObjectAbove(Pipe, 176, 292, plr);
-//	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//	source_pipe->SetActionTargets(source, pump);
-//	pump->SetSourcePipe(source_pipe);
 	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-//	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//	drain_pipe->AddVertex(208, 48);
-//	drain_pipe->SetActionTargets(drain, pump);
-//	pump->SetDrainPipe(drain_pipe);
 	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	drain->GetConnectedLine()->AddVertex(208, 48);
 	
@@ -493,15 +472,8 @@ global func Test8_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 92 + i * 20, 160, plr);
 		var source = CreateObjectAbove(Pipe, 176, 292, plr);
-//		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->SetSourcePipe(source_pipe);
 		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//		drain_pipe->AddVertex(208, 48);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->SetDrainPipe(drain_pipe);
 		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
@@ -577,15 +549,8 @@ global func Test10_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 80 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 168, 292, plr);
-//		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->SetSourcePipe(source_pipe);
 		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 240, 100, plr);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//		drain_pipe->AddVertex(208, 48);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->SetDrainPipe(drain_pipe);
 		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
@@ -595,20 +560,11 @@ global func Test10_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 228 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 256, 100, plr);
-//		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
-//		source_pipe->AddVertex(288, 24);
-//		source_pipe->AddVertex(288, 114);
-//		source_pipe->AddVertex(282, 120);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->SetSourcePipe(source_pipe);
 		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		source->GetConnectedLine()->AddVertex(288, 24);
 		source->GetConnectedLine()->AddVertex(288, 114);
 		source->GetConnectedLine()->AddVertex(288, 120);
 		var drain = CreateObjectAbove(Pipe, 184, 292, plr);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 208, 160, plr);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->SetDrainPipe(drain_pipe);
 		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	}
 	
@@ -827,15 +783,8 @@ global func Test14_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 84 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 168, 292, plr);
-//		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->SetSourcePipe(source_pipe);
 		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		var drain = CreateObjectAbove(Pipe, 240, 100, plr);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//		drain_pipe->AddVertex(208, 48);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->SetDrainPipe(drain_pipe);
 		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
@@ -845,17 +794,11 @@ global func Test14_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 228 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 256, 100, plr);
-//		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
 		source->ConnectPipeTo(pump, PIPE_STATE_Source);
 		source->GetConnectedLine()->AddVertex(288, 24);
 		source->GetConnectedLine()->AddVertex(288, 114);
 		source->GetConnectedLine()->AddVertex(282, 120);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->SetSourcePipe(source_pipe);
 		var drain = CreateObjectAbove(Pipe, 184, 292, plr);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 208, 160, plr);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->SetDrainPipe(drain_pipe);
 		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	}
 
@@ -947,15 +890,8 @@ global func Test15_OnStart(int plr)
 	// Power consumer: a single pump.	
 	var pump = CreateObjectAbove(Pump, 84, 160, plr);
 	var source = CreateObjectAbove(Pipe, 168, 292, plr);
-//	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//	source_pipe->SetActionTargets(source, pump);
-//	pump->SetSourcePipe(source_pipe);
 	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
-//	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//	drain_pipe->AddVertex(208, 48);
-//	drain_pipe->SetActionTargets(drain, pump);
-//	pump->SetDrainPipe(drain_pipe);
 	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	drain->GetConnectedLine()->AddVertex(208, 48);
 
@@ -1127,15 +1063,8 @@ global func Test19_OnStart(int plr)
 	{
 		var pump = CreateObjectAbove(Pump, 80 + i * 30, 160, plr);
 		var source = CreateObjectAbove(Pipe, 176, 292, plr);
-//		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-//		source_pipe->SetActionTargets(source, pump);
-//		pump->Call(["SetSource", "SetDrain"][i], source_pipe);
 		source->ConnectPipeTo(pump, [PIPE_STATE_Source, PIPE_STATE_Drain][i]);
 		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-//		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-//		drain_pipe->AddVertex(208, 48);
-//		drain_pipe->SetActionTargets(drain, pump);
-//		pump->Call(["SetDrain", "SetSource"][i], drain_pipe);
 		drain->ConnectPipeTo(pump, [PIPE_STATE_Drain, PIPE_STATE_Source][i]);
 		drain->GetConnectedLine()->AddVertex(208, 48);
 	}
