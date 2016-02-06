@@ -175,17 +175,17 @@ func QueryConnectPipe(object pipe)
 }
 
 
-func OnPipeConnect(object pipe, object line, string specific_pipe_state)
+func OnPipeConnect(object pipe, string specific_pipe_state)
 {
 	if (PIPE_STATE_Source == specific_pipe_state)
 	{
-		SetSourcePipe(line);
+		SetSourcePipe(pipe);
 		pipe->SetSourcePipe();
 		pipe->Report("$MsgCreatedSource$");
 	}
 	else if (PIPE_STATE_Drain == specific_pipe_state)
 	{
-		SetDrainPipe(line);
+		SetDrainPipe(pipe);
 		pipe->SetDrainPipe();
 		pipe->Report("$MsgCreatedDrain$");
 	}
@@ -193,27 +193,27 @@ func OnPipeConnect(object pipe, object line, string specific_pipe_state)
 	{
 		// add a drain if we already connected a source pipe,
 		// or if the line is already connected to a container
-		var pump_target = line->GetConnectedObject(this);
+		var line = pipe->GetConnectedLine();
+		var pump_target = !line || line->GetConnectedObject(this);
 		if (pump_target) pump_target = pump_target->~IsLiquidContainer();		
 		if (GetSourcePipe() || pump_target)
 		{
-			OnPipeConnect(pipe, line, PIPE_STATE_Drain);
+			OnPipeConnect(pipe, PIPE_STATE_Drain);
 		}
 		// otherwise create a source first
 		else
 		{
-			OnPipeConnect(pipe, line, PIPE_STATE_Source);
+			OnPipeConnect(pipe, PIPE_STATE_Source);
 		}
 	}
 }
 
 
-func OnPipeDisconnect(object pipe, object line)
+func OnPipeDisconnect(object pipe)
 {
-	var pump_target = line->GetConnectedObject(this);
-	if (pump_target) pipe->SetNeutralPipe();		
+	pipe->SetNeutralPipe();		
 	
-	_inherited(pipe, line);
+	_inherited(pipe);
 }
 
 
@@ -251,7 +251,7 @@ public func OnEnoughPower()
 /** Returns object to which the liquid is pumped */
 private func GetDrainObject()
 {
-	if (GetDrainPipe()) return GetDrainPipe()->GetConnectedObject(this) ?? this;
+	if (GetDrainPipe()) return GetDrainPipe()->GetConnectedLine()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
@@ -259,7 +259,7 @@ private func GetDrainObject()
 private func GetSourceObject()
 {
 	if (GetSourcePipe()) 
-		return GetSourcePipe()->GetConnectedObject(this) ?? this;
+		return GetSourcePipe()->GetConnectedLine()->GetConnectedObject(this) ?? this;
 	return this;
 }
 

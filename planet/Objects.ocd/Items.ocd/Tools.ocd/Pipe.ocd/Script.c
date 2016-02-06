@@ -145,7 +145,7 @@ func ConnectPipeTo(object target, string specific_pipe_state)
 {
 	if (!target || target->~QueryConnectPipe(this)) return false;
 	var line = AddLineConnectionTo(target);
-	target->OnPipeConnect(this, line, specific_pipe_state);
+	target->OnPipeConnect(this, specific_pipe_state);
 	Sound("Objects::Connect");
 	return true;
 }
@@ -213,13 +213,13 @@ func CutLineConnection(object target)
 	// connected only to the kit and a structure
 	if (line->IsConnectedTo(this, true)) 
 	{
-		target->OnPipeDisconnect(this, line);
+		target->OnPipeDisconnect(this);
 		line->RemoveObject();
 	}
 	// connected to the target and another structure
 	else if (line->IsConnectedTo(target, true))
 	{
-		target->OnPipeDisconnect(this, line);
+		target->OnPipeDisconnect(this);
 		Exit(); // the kit was inside the line at this point.
 		SetPosition(target->GetX(), target->GetY());
 		line->SwitchConnection(target, this);

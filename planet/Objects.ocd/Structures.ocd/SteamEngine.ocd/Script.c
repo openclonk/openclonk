@@ -232,8 +232,8 @@ func QueryConnectPipe(object pipe)
 }
 
 
-func OnPipeConnect(object pipe, object line, string specific_pipe_state)
+func OnPipeConnect(object pipe, string specific_pipe_state)
 {
-	SetNeutralPipe(line);
+	SetNeutralPipe(pipe);
 	pipe->Report("$MsgConnectedPipe$");
 }
