@@ -260,11 +260,11 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
           </row><row>
             <col>OffX</col>
             <col>0</col>
-            <col>X position of fixed point that remains in position.</col>
+            <col>X position of fixed point that remains in position. Actual fixed point is translated left by -0.5 pixels to achieve proper pixel mapping.</col>
           </row><row>
             <col>OffY</col>
             <col>0</col>
-            <col>Y position of fixed point that remains in position.</col>
+            <col>Y position of fixed point that remains in position. Actual fixed point is translated up by -0.5 pixels to achieve proper pixel mapping.</col>
           </row>
        </table></text></part>
     <h>MAPALGO_Rotate</h><part>

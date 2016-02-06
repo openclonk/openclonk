@@ -343,8 +343,8 @@ bool C4MapScriptAlgoScale::operator () (int32_t x, int32_t y, uint8_t& fg, uint8
 {
 	// Evaluate MAPALGO_Scale at x,y: 
 	assert(operands.size()==1);
-	// Return base layer scaled by sx,sy percent from fixed point cx,cy
-	return (*operands[0])((x-cx)*100/sx+cx,(y-cy)*100/sy+cy, fg, bg);
+	// Return base layer scaled by sx,sy percent from fixed point cx-.5,cy-.5
+	return (*operands[0])((((x-cx)*2+1)*50-sx/2)/sx+cx,(((y-cy)*2+1)*50-sy/2)/sy+cy, fg, bg);
 }
 
 C4MapScriptAlgoRotate::C4MapScriptAlgoRotate(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
