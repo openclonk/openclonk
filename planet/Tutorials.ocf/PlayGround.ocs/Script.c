@@ -109,7 +109,8 @@ protected func InitializePlayer(int plr)
 
 	// Create tutorial guide, add messages, show first.
 	var guide = CreateObject(TutorialGuide, 0, 0 , plr);
-	guide->AddGuideMessage("$MsgPlaygroundWelcome$");
+	var con_spawnmenu = GetPlayerControlAssignment(plr, CON_SpawnMenu, true, true);
+	guide->AddGuideMessage(Format("$MsgPlaygroundWelcome$", con_spawnmenu));
 	guide->ShowGuideMessage();
 	AddEffect("RemoveGuide", clonk, 100, 36 * 10);
 	

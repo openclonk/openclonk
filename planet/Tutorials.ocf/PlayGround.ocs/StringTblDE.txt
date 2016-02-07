@@ -7,14 +7,11 @@ MsgGoalName=Spielplatz
 MsgGoalDescription=Nur expirementieren und Spass haben! You can spawn items from a menu opened by pressing [I].
 
 # Tutorial messages
-MsgPlaygroundWelcome=Welcome to the playground. You have mastered all tutorials, which gives you access to all items in OpenClonk! Open a menu with [I] from which you can choose any item to spawn.
+MsgPlaygroundWelcome=Welcome to the playground. You have mastered all tutorials, which gives you access to all items in OpenClonk! Open a menu with [%s] from which you can choose any item to spawn.
 
 # Scenario options
-Animals=Animals
-DescAnimals=Choose whether and what kind of animals you want in this round.
-AnimalsNone=No Animals
-DescAnimalsNone=
-AnimalsFriendly=Friendly Animals
-DescAnimalsFriendly=
-AnimalsAll=All Animals
-DescAnimalsAll=
+Animals=Tiere
+DescAnimals=Wähle ob und welche Tiere in dieser Runde anwesend sind.
+AnimalsNone=Keine Tiere
+AnimalsFriendly=Freundliche Tiere
+AnimalsAll=Alle Tiere

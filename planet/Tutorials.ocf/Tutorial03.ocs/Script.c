@@ -276,7 +276,7 @@ protected func InitializePlayer(int plr)
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
-	var interact = GetPlayerControlAssignment(plr, CON_Interact, true);
+	var interact = GetPlayerControlAssignment(plr, CON_Interact, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialWipfville$", interact));
 	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToLumberjack", nil, 100, 5);
@@ -353,7 +353,8 @@ global func FxTutorialFoundLorryTimer(object target, proplist effect)
 {
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr), Find_InRect(168, 576, 104, 72)))
 	{
-		guide->AddGuideMessage(Format("$MsgTutorialDynamiteLorry$", GetPlayerControlAssignment(effect.plr, CON_Contents, true)));
+		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialDynamiteLorry$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialObtainedDynamite", nil, 100, 5);
 		new_effect.plr = effect.plr;
@@ -394,7 +395,8 @@ global func FxTutorialObtainedRockTimer(object target, proplist effect)
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr));
 	if (clonk && ObjectCount(Find_ID(Rock), Find_Container(clonk)) >= 3)
 	{
-		guide->AddGuideMessage(Format("$MsgTutorialSawmill$",  GetPlayerControlAssignment(effect.plr, CON_Contents, true)));
+		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialSawmill$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialSawmillFinished", nil, 100, 5);
 		new_effect.plr = effect.plr;
@@ -503,7 +505,8 @@ global func FxTutorialHasOreCoalTimer(object target, proplist effect)
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr));
 	if (FindObject(Find_ID(Ore), Find_Container(clonk)) && FindObject(Find_ID(Coal), Find_Container(clonk)))
 	{
-		guide->AddGuideMessage(Format("$MsgTutorialProduceMetal$", GetPlayerControlAssignment(effect.plr, CON_Contents, true)));
+		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialProduceMetal$", interaction_menu));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialMetalFinished", nil, 100, 5);
 		new_effect.plr = effect.plr;

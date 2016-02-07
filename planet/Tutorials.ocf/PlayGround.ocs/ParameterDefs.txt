@@ -28,15 +28,12 @@ Default=3
 		
 		[Option]
 		Name=$AnimalsNone$
-		Description=$DescAnimalsNone$
 		Value=1
 		
 		[Option]
 		Name=$AnimalsFriendly$
-		Description=$DescAnimalsFriendly$
 		Value=2
 		
 		[Option]
 		Name=$AnimalsAll$
-		Description=$DescAnimalsAll$
 		Value=3

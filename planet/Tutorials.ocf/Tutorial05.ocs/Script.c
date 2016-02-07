@@ -238,7 +238,7 @@ global func FxTutorialTalkedToVillageHeadStop(object target, proplist effect, in
 {
 	if (temp)
 		return FX_OK;
-	var use = GetPlayerControlAssignment(effect.plr, CON_Use, true);
+	var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
 	guide->AddGuideMessage(Format("$MsgTutorialNotHelpful$", use));
 	guide->ShowGuideMessage();
 	var new_effect = AddEffect("TutorialDestroyedStrawMen", nil, 100, 5);
@@ -291,7 +291,7 @@ global func FxTutorialKilledSecondRobberTimer(object target, proplist effect)
 {
 	if (!FindObject(Find_OCF(OCF_CrewMember), Find_Property("second_robber")))
 	{
-		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true);
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialKilledSecond$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialKilledLastRobbers", nil, 100, 5);
