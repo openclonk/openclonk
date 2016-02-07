@@ -480,17 +480,7 @@ private func Death()
 	this.BorderBound = 0;
 	this.ContactCalls = false;
 	
-	// Decay the dead bat.	
-	AddTimer(this.Decaying, 100);
-	return;
-}
-
-private func Decaying()
-{
-	if (GetCon() < 20) 
-		return RemoveObject(); 
-	DoCon(-1);
-	return;
+	Decay();
 }
 
 

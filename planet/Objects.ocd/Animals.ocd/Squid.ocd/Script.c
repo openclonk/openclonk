@@ -136,7 +136,7 @@ public func Death()
 {
 	RemoveTimer(this.UpdateSwim);
 	RemoveTimer(this.Activity);
-	AddTimer(this.Decaying, 500);
+	Decay();
 	this.Collectible = true;
 	this.MeshTransformation = base_transform;
 	
@@ -153,12 +153,6 @@ public func CatchBlow()
 		DoInk();
 	else if (ink_level > 500 && !Random(5))
 		DoInk();
-}
-
-private func Decaying()
-{
-	if (GetCon()<20) RemoveObject(); else DoCon(-5);
-	return true;
 }
 
 public func ControlUse(object clonk, int iX, int iY)

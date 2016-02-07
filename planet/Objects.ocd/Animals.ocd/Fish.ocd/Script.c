@@ -93,7 +93,7 @@ func Death()
 	this.MeshTransformation = Trans_Rotate(160 + Random(41), 1, 0, 0);
 	if (base_transform) this.MeshTransformation = Trans_Mul(base_transform, this.MeshTransformation);
 	StopAnimation(swim_animation);
-	AddTimer(this.Decaying, 500);
+	Decay();
 	this.Collectible = true;
 	
 	// maybe respawn a new fish if roe is near
@@ -102,12 +102,6 @@ func Death()
 		roe->Hatch(GetID());
 	
 	return _inherited(...);
-}
-
-func Decaying()
-{
-	if (GetCon()<20) RemoveObject(); else DoCon(-5);
-	return true;
 }
 
 protected func ControlUse(object clonk, int iX, int iY)
