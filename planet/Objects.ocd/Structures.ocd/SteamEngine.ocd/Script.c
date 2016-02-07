@@ -177,6 +177,12 @@ func Smoking()
 	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 10);
 }
 
+func GetFuelValue(string liquid, int amount)
+{
+	if (liquid == "Oil") return amount;
+	return 0;
+}
+
 /*-- Properties --*/
 
 local ActMap = {
