@@ -1,0 +1,11 @@
+# Dialogue: village head
+DlgVillageHeadGrateful=I am grateful you managed to get us here to Skyville.
+DlgVillageHeadWhatToDo=Yes, it is good that these villagers want to help us.
+DlgVillageHeadPower=Indeed, please help them restoring their power production.
+DlgVillageHeadIWill=I will!
+DlgVillageHeadAfterwards=Okay, then we can get some clunkers afterwards.
+
+# Sequence: intro
+
+
+# Sequence: outro

@@ -1,0 +1,7 @@
+Power Problems
+
+Together with Archibald you reach the friendly and calm sky village. It is a bit too calm though as their power supply is gone due to the absence of wind. They agree to help you if there power supply is restored and you construct them an airplane.
+
+Goal: Restore the power supply and produce an airplane.
+
+Tutorial explains: power system, buying, catapult.
