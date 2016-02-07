@@ -144,6 +144,10 @@ public func FxShovelDigTimer(object clonk, effect fx, int time)
 		
 		// Limit the digging angle: one can dig maximally 30 degrees upwards.
 		fx.dig_angle = BoundBy(fx.dig_angle, 60, 300);
+		// Also snap the dig angle to straight lines at 0, 90, 180 and 270 degrees with a 5 degree margin.
+		var margin = 5;
+		if (Inside(fx.dig_angle % 90, 0, margin) || Inside(fx.dig_angle % 90, 90 - margin, 90))
+			fx.dig_angle = 90 * ((fx.dig_angle + margin) / 90);
 		
 		var dig_xdir = Sin(fx.dig_angle, speed);
 		var dig_ydir = -Cos(fx.dig_angle, speed);
