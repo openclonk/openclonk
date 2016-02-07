@@ -5,3 +5,4 @@ MaterialDuroLava=lava
 MaterialWater=water
 MaterialFirefluid=fire stuff
 MaterialAcid=acid
+MaterialOil=oil

@@ -2,3 +2,4 @@ Name=Wooden Barrel
 Description=Container for transporting liquids.
 NameWith=with
 MaterialWater=water
+MaterialOil=oil
