@@ -214,15 +214,25 @@ func ControlRight(object clonk)
 	}
 }
 
-func TurnCannon(int dir)
+public func TurnCannon(int dir, bool instant)
 {
 	turnDir = dir;
 	//Remove any old effect
 	if(GetEffect("IntTurnCannon", this)) RemoveEffect("IntTurnCannon", this);
-	//Add a new one
-	return AddEffect("IntTurnCannon", this, 1, 1, this);
+	// Instant turn?
+	if (instant)
+	{
+		// Simply set anim position to desired side
+		var target = 0;
+		if (dir == DIR_Left) target = GetAnimationLength("TurnRight");
+		SetAnimationPosition(animTurn, Anim_Const(target));
+	}
+	else
+	{
+		// Non-instant turn: Add timer to adjust animation (I wonder why it's not just using Anim_Linear?)
+		return AddEffect("IntTurnCannon", this, 1, 1, this);
+	}
 }
-	
 
 func FxIntTurnCannonTimer(object cannon, proplist effect, int timer)
 {

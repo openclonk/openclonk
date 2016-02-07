@@ -77,6 +77,15 @@ func ControlRight(object clonk)
 	}
 }
 
+public func TurnLeft()
+{
+	// Instantly set catapult orientation to face left
+	var len = GetAnimationLength("TurnLeft");
+	turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(len, 0, len, 1, ANIM_Hold));
+	dir = olddir = DIR_Left;
+	return true;
+}
+
 public func HoldingEnabled() { return true; }
 
 public func ControlUseStart(object clonk)
