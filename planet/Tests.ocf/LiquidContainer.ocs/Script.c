@@ -414,6 +414,15 @@ global func Test8_Execute()
 	test = (container->GetLiquidFillLevel() == 0);
 	Log("- Container is empty after removing amount 'nil': %v", test);
 
+	container->SetLiquidContainer("Lava", 100);
+
+	returned = container->RemoveLiquid(nil, nil, nil);
+	test = (returned[0] == "Lava");
+	Log("- Container returns the contained material when extracting material and amount 'nil': %v", test);
+	test = returned[1] == 100; passed &= test;
+	Log("- Container returns the contained amount when extracting material and amount 'nil': %v", test);
+	test = (container->GetLiquidFillLevel() == 0);
+	Log("- Container is empty after removing amount material and amount 'nil': %v", test);
 
 	container->RemoveObject();
 	return passed;

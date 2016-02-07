@@ -127,10 +127,11 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 
 	//Wrong material?
 	if (!WildcardMatch(GetLiquidType(), liquid_name))
-		amount = 0;
+		return [GetLiquidType(), 0];
+
 	amount = Min(amount, GetLiquidFillLevel());
 	ChangeLiquidFillLevel(-amount);
-	return [GetLiquidType(), amount];
+	return [liquid_name, amount];
 }
 
 /** 

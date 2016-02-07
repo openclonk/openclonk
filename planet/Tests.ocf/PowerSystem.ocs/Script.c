@@ -1131,6 +1131,56 @@ global func Test20_OnFinished()
 	return;
 }
 
+// Test for steam engine fueled by oil field and pump.
+global func Test21_OnStart(int plr)
+{
+	// Oil field
+	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
+
+	// Power source: one steam engine.
+	var engine = CreateObjectAbove(SteamEngine, 70, 160, plr);
+	engine.fuel_amount = 100; // give some fuel so that the pump can start working
+	
+	// Power consumer: one pump.
+	var pump = CreateObjectAbove(Pump, 124, 160, plr);
+	var source = CreateObjectAbove(Pipe, 176, 292, plr);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
+	var drain = CreateObjectAbove(Pipe, 100, 160, plr);
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->ConnectPipeTo(engine);
+	
+	// Power consumer: armory.
+	var armory = CreateObjectAbove(Armory, 280, 160, plr);
+	armory->CreateContents(Firestone, 10);
+	armory->CreateContents(Metal, 10);
+	armory->AddToQueue(IronBomb, 10);
+
+	// Power connection: flagpole.
+	CreateObjectAbove(Flagpole, 304, 140, plr);	 
+
+	// Log what the test is about.
+	Log("A steam engine fueled by an oil field via pump.");
+	return true;
+}
+
+global func Test21_Completed()
+{
+	// One wood is being burned as fuel by the steam engine.
+	if (ObjectCount(Find_ID(IronBomb)) >= 10)
+		return true;
+	return false;
+}
+
+global func Test21_OnFinished()
+{
+	// Restore water
+	RestoreWaterLevels();
+	// Remove steam engine, armory, pump.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Armory), Find_ID(Pipe), Find_ID(Pump)));
+	return;
+}
+
+
 /*-- Helper Functions --*/
 
 global func SetWindFixed(int strength)
