@@ -1,0 +1,5 @@
+TeamLeft=Red (left)
+TeamRight=Green (right)
+FlagDownMsg=Team %s lost their flag - they will no longer respawn!
+IntroMsg=Blast the enemy flag down into the lava to stop them from respawning and then eliminate your opponents!
+IntroName=Melting Castle

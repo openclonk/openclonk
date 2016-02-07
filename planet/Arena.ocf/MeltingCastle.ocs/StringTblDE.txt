@@ -1,0 +1,5 @@
+TeamLeft=Rot (links)
+TeamRight=Gruen (rechts)
+FlagDownMsg=Team %s hat die Flagge verloren - sie werden nicht mehr wiederbelebt!
+IntroMsg=Sprengt die gegnerische Flagge in die Lava und eliminiert dann die Gegner!
+IntroName=Schmelzendes Schloss

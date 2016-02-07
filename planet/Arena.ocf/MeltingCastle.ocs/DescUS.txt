@@ -1,0 +1,5 @@
+ Melting Castle
+
+Teamwork-Melee high in the skies. Infinite respawn at the flagpole, until the opposing team (or melting ice) has dropped it down.
+
+Goal: Blast opponent flag into the abyss. Afterwards, be the last team to have a clonk alive.
