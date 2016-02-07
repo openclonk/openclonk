@@ -653,6 +653,11 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 		handled = obj->Call(GetUseCallString(),this,x,y);
 		this.control.noholdingcallbacks = handled;
 	}
+	else
+	{
+		// *Start was handled. So clean up possible old noholdingcallbacks-values.
+		this.control.noholdingcallbacks = false;
+	}
 	
 	if (!handled)
 	{
