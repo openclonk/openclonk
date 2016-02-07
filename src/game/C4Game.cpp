@@ -2407,6 +2407,9 @@ bool C4Game::InitScriptEngine()
 	// Prepare host for Objects.c script
 	pScenarioObjectsScript = new C4ScenarioObjectsScriptHost();
 	pScenarioObjectsScript->Reg2List(&::ScriptEngine);
+	C4Value scen_obj_script_val;
+	scen_obj_script_val.SetPropList(pScenarioObjectsScript->GetPropList());
+	::ScriptEngine.RegisterGlobalConstant("ScenarioObjects", scen_obj_script_val);
 
 	// load standard clonk names
 	Names.Load(File, C4CFN_Names);
