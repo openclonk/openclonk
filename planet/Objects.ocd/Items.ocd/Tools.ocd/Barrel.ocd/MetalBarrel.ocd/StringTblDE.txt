@@ -5,3 +5,4 @@ MaterialDuroLava=Lava
 MaterialWater=Wasser
 MaterialFirefluid=Feuerdings
 MaterialAcid=Säure
+MaterialOil=Öl
