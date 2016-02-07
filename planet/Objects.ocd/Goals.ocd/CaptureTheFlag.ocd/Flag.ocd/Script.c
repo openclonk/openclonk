@@ -39,6 +39,12 @@ protected func Initialize()
 	return;
 }
 
+public func DisablePickup()
+{
+	// Disable pickup search in case flag is used outside the regular CTF goal
+	return RemoveEffect("FlagAutoPickup", this);
+}
+
 // Handles automatic picking up of the flag.
 protected func FxFlagAutoPickupTimer(object target, effect)
 {
