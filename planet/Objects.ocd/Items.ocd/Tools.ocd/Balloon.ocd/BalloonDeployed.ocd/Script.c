@@ -62,7 +62,7 @@ public func SetCargo(object new_cargo, int attach_vertex, int xoff, int yoff, in
 			FacetBase = 1,
 			};
 		cargo->SetAction("BalloonDeployedAttach", this);
-		cargo->SetActionData(attach_vertex);
+		cargo->SetActionData(attach_vertex<<8);
 		SetVertex(0, VTX_X, xoff);
 		SetVertex(0, VTX_Y, yoff + 30);
 		deployment_yoffset = deploy_yoff + 50;
