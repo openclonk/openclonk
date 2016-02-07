@@ -138,10 +138,26 @@ func RefillFuel(bool cancel)
 	// Check if there is still enough fuel available.
 	if (fuel_amount <= 0)
 	{
+		
+		var fuel_extracted;
+	
 		// Search for new fuel among the contents.
 		var fuel = GetFuelContents();
 
 		if (!fuel)
+		{
+			// Extract the fuel amount from stored liquids
+			var fuel_stored = RemoveLiquid(nil, nil);
+			fuel_extracted = GetFuelValue(fuel_stored[0], fuel_stored[1]);
+		}
+		else
+		{
+			// Extract the fuel amount from the new piece of fuel.
+			fuel_extracted = fuel->~GetFuelAmount(true);
+			if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
+		}
+
+		if (!fuel_extracted)
 		{
 			// Set action to idle and unregister this producer as available from the network.
 			if (cancel)
@@ -152,10 +168,8 @@ func RefillFuel(bool cancel)
 			}
 			return false;
 		}
-		// Extract the fuel amount from the new piece of fuel.
-		var extracted = fuel->~GetFuelAmount(true);
-		fuel_amount += extracted * 18;
-		if (!fuel->~OnFuelRemoved(extracted)) fuel->RemoveObject();
+
+		fuel_amount += fuel_extracted * 18;
 	}
 }
 
@@ -182,6 +196,19 @@ func GetFuelValue(string liquid, int amount)
 	if (liquid == "Oil") return amount;
 	return 0;
 }
+
+
+func IsLiquidContainerForMaterial(string liquid)
+{
+	return WildcardMatch("Oil", liquid);
+}
+
+func GetLiquidContainerMaxFillLevel()
+{
+	return 300; // can store one barrel - this should be enough, so that the pump does not fill too much oil into the engine
+}
+
+
 
 /*-- Properties --*/
 

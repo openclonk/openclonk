@@ -31,6 +31,8 @@ local max_clog_count = 5; // note that even when max_clog_count is reached, the 
 
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
+public func IsLiquidContainer() { return false; }
+public func IsLiquidTank() { return false; }
 
 // The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
 local last_status_message;
@@ -361,15 +363,17 @@ func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 	// insert material into containers, if possible
 	if (drain_obj->~IsLiquidContainer())
 	{
-		amount -= drain_obj->PutLiquid(, amount, this);
+		amount -= drain_obj->PutLiquid(material_name, amount, this);
 	}
-
-	// convert to actual material, and insert remaining
-	var material_index = Material(material_name);
-	if (material_index != -1)
+	else
 	{
-		while (--amount >= 0)
-			drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+		// convert to actual material, and insert remaining
+		var material_index = Material(material_name);
+		if (material_index != -1)
+		{
+			while (--amount >= 0)
+				drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+		}
 	}
 	
 	return amount <= 0;
