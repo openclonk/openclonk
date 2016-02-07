@@ -361,7 +361,7 @@ global func SaveScenarioObject(props)
 	v = GetName();          if (v != def->GetName())              props->AddCall("Name",          this, "SetName", Format("%v", v)); // TODO: Escape quotation marks, backslashes, etc. in name
 	v = this.MaxEnergy;     if (v != def.MaxEnergy)               props->AddSet ("MaxEnergy",     this, "MaxEnergy", this.MaxEnergy);
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
-	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", GetBitmaskNameByValue(v, "VIS_"));
+	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", SaveScenarioValue2String(v, "VIS_", true));
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
 	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
 	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
@@ -409,17 +409,17 @@ global func FxFireSaveScen(object obj, proplist fx, proplist props)
 /* Helper functions for value formatting */
 
 // Helper function to turn values of several types into a strings to be written to Objects.c
-global func SaveScenarioValue2String(v, bitmask_prefix)
+global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitmask)
 {
 	var rval;
-	if (bitmask_prefix) return GetConstantNameByValueSafe(v, bitmask_prefix);
 	if (GetType(v) == C4V_C4Object) return v->MakeScenarioSaveName();
 	if (GetType(v) == C4V_Array) // save procedure for arrays: recurse into contents (cannot save arrays pointing into itself that way)
 	{
 		for (var el in v)
 		{
-			if (rval) rval = Format("%s,%s", rval, SaveScenarioValue2String(el));
-			else rval = SaveScenarioValue2String(el);
+			if (rval) rval = Format("%s,%s", rval, SaveScenarioValue2String(el, constant_prefix, allow_bitmask));
+			else rval = SaveScenarioValue2String(el, constant_prefix, allow_bitmask);
+			constant_prefix = nil; // Only first element is actual bitmask (at least or VIS_, and that's the only user for this case)
 		}
 		if (rval) rval = Format("[%s]", rval); else rval = "[]";
 		return rval;
@@ -429,6 +429,12 @@ global func SaveScenarioValue2String(v, bitmask_prefix)
 		rval = v->~ToString();
 		if (rval) return rval;
 	}
+	// int as constant? (treat nil as 0 in this case)
+	if (constant_prefix)
+		if (allow_bitmask)
+			return GetBitmaskNameByValue(v, constant_prefix);
+		else
+			return GetConstantNameByValueSafe(v, constant_prefix);
 	// Otherwise, rely on the default %v formatting
 	return Format("%v", v);
 }

@@ -28,6 +28,12 @@ public func SetSpawnObject(id def)
 {
 	spawn_id = def;
 	SetGraphics(nil, spawn_id, GFX_Overlay, GFXOV_MODE_Base);
+	// Changing the spawn id also resets all collected items to make the spawn available again
+	for (var plr in GetPlayers())
+	{
+		spawn_list[plr] = nil;
+		UpdateVisibility(plr);
+	}
 	return true;
 }
 
@@ -55,7 +61,7 @@ public func Construction()
 			B = PV_Random(200, 255)
 		};
 	// Initial visibility for all players
-	Visibility = [VIS_Select,false,false,false,false];
+	Visibility = [VIS_Select | VIS_God, false,false,false,false];
 	for (var plr in GetPlayers()) UpdateVisibility(plr);
 	// Timer effect
 	AddEffect("Spawn", this, 1, 2, this);
@@ -120,10 +126,14 @@ public func OnTeamSwitch(int plr, int new_team, int old_team)
 func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	var fx_spawn = GetEffect("ProcessSpawn", this);
-	if (!fx_spawn) return true; // effects lost? Just save the unused object then; maybe someone wants to assign it an item later.
+	// Visibility is handled by us
+	props->Remove("Visibility");
 	// Item spawner has its own creation procedure
-	props->RemoveCreation();
-	props->Add(SAVEOBJ_Creation, "%i->Create(%i,%d,%d,%i)", GetID() /* to allow overloads */, fx_spawn.spawn_id, GetX(), GetY());
+	if (spawn_id)
+	{
+		props->RemoveCreation();
+		props->Add(SAVEOBJ_Creation, "%i->Create(%i,%d,%d)", GetID() /* to allow overloads */, spawn_id, GetX(), GetY());
+	}
+	if (team) props->AddCall("Team", this, "SetTeam", team);
 	return true;
 }
