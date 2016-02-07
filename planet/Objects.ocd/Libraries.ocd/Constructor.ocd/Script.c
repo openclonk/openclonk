@@ -13,18 +13,10 @@ func RejectUse(object clonk)
 	return !clonk->IsWalking();
 }
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUse(object clonk, int x, int y)
 {
 	// Otherwise create a menu with possible structures to build.
 	OpenConstructionMenu(clonk);
-	clonk->CancelUse();
-	return true;
-}
-
-public func HoldingEnabled() { return true; }
-
-public func ControlUseHolding(object clonk, int x, int y)
-{
 	return true;
 }
 
