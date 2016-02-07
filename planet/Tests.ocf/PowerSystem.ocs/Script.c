@@ -1079,7 +1079,7 @@ global func Test19_OnStart(int plr)
 
 global func Test19_Completed()
 {
-	if (GetMaterial(248, 48) == Material("Water"))
+	if (GetMaterial(248, 97) == Material("Water") && ObjectCount(Find_ID(Pump), Find_Action("Pump")) == 2)
 		return true;
 	return false;
 }
@@ -1093,6 +1093,43 @@ global func Test19_OnFinished()
 	return;
 }
 
+// Test for steam engine fueled by oil barrels.
+global func Test20_OnStart(int plr)
+{
+	// Power source: one steam engine.
+	var engine = CreateObjectAbove(SteamEngine, 100, 160, plr);
+
+	for (var i = 0; i < 3; ++i)
+	{
+		var barrel = engine->CreateContents(Barrel, 1);
+		barrel->SetLiquidContainer("Oil", 10);
+	}
+	
+	// Power consumer: armory.
+	var armory = CreateObjectAbove(Armory, 280, 160, plr);
+	armory->CreateContents(Firestone, 5);
+	armory->CreateContents(Metal, 5);
+	armory->AddToQueue(IronBomb, 5);
+
+	// Log what the test is about.
+	Log("A steam engine fueled by oil barrels.");
+	return true;
+}
+
+global func Test20_Completed()
+{
+	// One wood is being burned as fuel by the steam engine.
+	if (ObjectCount(Find_ID(Barrel), Find_NoContainer()) >= 3 && ObjectCount(Find_ID(IronBomb)) >= 5)
+		return true;
+	return false;
+}
+
+global func Test20_OnFinished()
+{
+	// Remove steam engine, barrels, armory.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Barrel), Find_ID(Armory)));
+	return;
+}
 
 /*-- Helper Functions --*/
 
