@@ -1228,21 +1228,31 @@ func FxRollingStop(object target, proplist effect, int reason, temp)
 	The effect just is responsible for the sound and the termination of digging.
 --*/
 
-func StartDigging()
+public func StartDigging()
 {
-	if(!GetEffect("IntDig", this))
+	if (!GetEffect("IntDig", this))
 		AddEffect("IntDig", this, 1, 1, this);
 }
 
-func StopDigging()
+public func StopDigging()
 {
-	if(GetAction() != "Dig") RemoveEffect("IntDig", this);
+	if (GetAction() != "Dig")
+		RemoveEffect("IntDig", this);
 }
 
-func FxIntDigStart(pTarget, effect, fTmp)
+public func GetDiggingAnimation()
 {
-	if(fTmp) return;
-	effect.var1 = PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	var dig_effect = GetEffect("IntDig", this);
+	if (dig_effect)
+		return dig_effect.animation;
+	return;
+}
+
+public func FxIntDigStart(object target, effect fx, int temp)
+{
+	if (temp)
+		return FX_OK;
+	fx.animation = PlayAnimation("Dig", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	// Update carried items
 	UpdateAttach();
@@ -1252,26 +1262,29 @@ func FxIntDigStart(pTarget, effect, fTmp)
 
 	// Set proper turn type
 	SetTurnType(0);
+	return FX_OK;
 }
 
-func FxIntDigTimer(pTarget, effect, iTime)
+public func FxIntDigTimer(object target, effect fx, int time)
 {
-	if(iTime % 36 == 0)
+	if (time % 36 == 0)
 	{
 		Sound("Clonk::Action::Dig::Dig?");
 	}
-	if( (iTime-18) % 36 == 0 ||  iTime > 35)
+	if (time == 18 || time >= 36)
 	{
-		var noDig = 1;
-		for(var pShovel in FindObjects(Find_ID(Shovel), Find_Container(this)))
-			if(pShovel->IsDigging()) noDig = 0;
-		if(noDig)
+		var no_dig = true;
+		for (var shovel in FindObjects(Find_ID(Shovel), Find_Container(this)))
+			if (shovel->IsDigging()) 
+				no_dig = false;
+		if (no_dig)
 		{
 			SetAction("Walk");
 			SetComDir(COMD_Stop);
-			return -1;
+			return FX_Execute_Kill;
 		}
 	}
+	return FX_OK;
 }
 
 /*--
