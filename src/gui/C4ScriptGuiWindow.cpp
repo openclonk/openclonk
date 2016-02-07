@@ -2083,6 +2083,14 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	if (!HasMouseFocus())
 		OnMouseIn(player, parentOffsetX, parentOffsetY);
 
+	// Make sure the UI does not catch release events without matching key-down events.
+	// Otherwise, you could e.g. open a menu on left-down and then the menu would block the left-up event, leading to issues.
+	if (button == C4MC_Button_LeftUp)
+	{
+		// Do not catch up-events without prior down-events!
+		if (!(currentMouseState & MouseState::MouseDown)) return false;
+	}
+
 	// do not simply break the loop since some OnMouseOut might go missing
 	bool oneActionAlreadyExecuted = false;
 
@@ -2133,8 +2141,9 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	if (button == C4MC_Button_LeftDown || button == C4MC_Button_LeftDouble)
 		currentMouseState |= MouseState::MouseDown;
 	// trigger!
-	if (button == C4MC_Button_LeftUp && (currentMouseState & MouseState::MouseDown))
+	if (button == C4MC_Button_LeftUp)
 	{
+		currentMouseState = currentMouseState & ~MouseState::MouseDown;
 		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onClickAction].GetAction();
 		if (action)
 		{

@@ -322,8 +322,9 @@ public:
 	virtual void MouseEnter(C4GUI::CMouse &rMouse);
 	// called when mouse cursor leaves element region
 	virtual void MouseLeave(C4GUI::CMouse &rMouse);
-	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
-	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
+	// This remembers whether the window currently has mouse focus and whether it has been mouse-down-ed.
+	// All windows with mouse focus set are remembered by their parents and notified when the mouse left.
+	// The state is also used to make sure that button-up events without button-downs are not caught by the UI.
 	enum MouseState // values of this enum will be bit-wise combined
 	{
 		None = 0,
