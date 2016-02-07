@@ -97,6 +97,8 @@ public func FxIntJetStreamTimer(object target, proplist effect, int time)
 		var find_lines = Find_Or(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5], lines[6]);
 		for (var obj in FindObjects(Find_Category(C4D_Object | C4D_Vehicle | C4D_Living), Find_Layer(), find_lines))
 		{
+			if (obj->Stuck())
+				continue;
 			var factor = 6;
 			var dx = factor * xdir - obj->GetXDir(100);
 			var dy = factor * ydir - obj->GetYDir(100);
