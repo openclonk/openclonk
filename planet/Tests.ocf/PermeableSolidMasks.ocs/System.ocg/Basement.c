@@ -1,5 +1,6 @@
 #appendto Basement
 #appendto WoodenBridge
+#appendto ElevatorCase
 
 protected func Initialize()
 {
