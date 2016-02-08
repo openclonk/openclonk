@@ -1,13 +1,19 @@
-/* --- Tank --- */
+/* --- Tank ---
 
-#include Libary_LiquidContainer
+	A structure that can contain liquids. Connecting pipes to the
+	structure can be allowed, but this has to be implemented by the
+	object.
+	This is controlled with the callbacks
+	- QueryConnectPipe
+	- OnPipeConnect
+	- OnPipeDisconnect
+	in that structure.
 
-/*
-Author: ST-DDT, Marky
-Import this to allow the structures to 
--fill liquids which has been pumped into the building into the internal contained 
--extract liquids from internal contained and pump it somewhere else
-*/
+ Author: Marky
+ */
+
+#include Library_LiquidContainer
+
 
 static const LIBRARY_TANK_Menu_Action_Add_Drain = "adddrain";
 static const LIBRARY_TANK_Menu_Action_Add_Source = "addsource";
@@ -17,51 +23,6 @@ static const LIBRARY_TANK_Menu_Action_Cut_Source = "cutsource";
 static const LIBRARY_TANK_Menu_Action_Cut_Neutral = "cutneutral";
 static const LIBRARY_TANK_Menu_Action_Description = "description";
 
-
-///**
-//Extract liquid from this
-//@param sznMaterial: Material to extract
-//@param inMaxAmount: Max Amount of Material being extracted 
-//@param pnPump: Object which extracts the liquid
-//@param pnPipe: Pipe which extracts the liquid (connected to pnPump)
-//@param bnWildcard: Usefull to extract random liquids; use '*' for sznMaterial for all Materials
-//@return [irMaterial,irAmount]
-//	-irMaterial: Material being extracted
-//	-irAmount: Amount being extracted
-//*/
-//public func LiquidOutput(string sznMaterial, int inMaxAmount, object pnPump, object pnPipe, bool bnWildcard)
-//{
-//	//Search liquid to pump
-//	if (bnWildcard)
-//	{
-//		if (WildcardMatch(szLiquid, sznMaterial))
-//			sznMaterial = szLiquid;
-//	}
-//	//Wrong material?
-//	if (szLiquid != sznMaterial)
-//		return ["", 0];
-//	inMaxAmount = Min(inMaxAmount, iLiquidAmount);
-//	iLiquidAmount -= inMaxAmount;
-//	return [szLiquid, inMaxAmount];
-//}
-//
-///** 
-//Insert liquid to this
-//	@param sznMaterial: Material to insert
-//	@param inMaxAmount: Max Amount of Material being inserted 
-//	@param pnPump: Object which inserts the liquid
-//	@param pnPipe: Pipe which inserts the liquid (connected to pnPump)
-//	@return irAmount: The inserted amount
-//*/
-//public func LiquidInput(string sznMaterial, int inMaxAmount, object pnPump, object pnPipe)
-//{
-//	//wrong material?
-//	if (szLiquid != sznMaterial)
-//		return 0;
-//	inMaxAmount = Min(MaxFillLevel() - iLiquidAmount, inMaxAmount);
-//	iLiquidAmount += inMaxAmount;
-//	return inMaxAmount;
-//}
 
 local lib_tank; // proplist for local variables
 

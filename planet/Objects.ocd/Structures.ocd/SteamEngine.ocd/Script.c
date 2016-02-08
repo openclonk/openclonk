@@ -208,7 +208,30 @@ func GetLiquidContainerMaxFillLevel()
 	return 300; // can store one barrel - this should be enough, so that the pump does not fill too much oil into the engine
 }
 
+func QueryConnectPipe(object pipe)
+{
+	if (GetNeutralPipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
 
+	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	{
+		return false;
+	}
+	else
+	{
+		pipe->Report("$MsgPipeProhibited$");
+		return true;
+	}
+}
+
+func OnPipeConnect(object pipe, string specific_pipe_state)
+{
+	SetNeutralPipe(pipe);
+	pipe->Report("$MsgConnectedPipe$");
+}
 
 /*-- Properties --*/
 
@@ -253,35 +276,3 @@ local BlastIncinerate = 130;
 local HitPoints = 100;
 local Name = "$Name$";
 local Description = "$Description$";
-
-
-
-
-
-
-
-func QueryConnectPipe(object pipe)
-{
-	if (GetNeutralPipe())
-	{
-		pipe->Report("$MsgHasPipes$");
-		return true;
-	}
-
-	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
-	{
-		return false;
-	}
-	else
-	{
-		pipe->Report("$MsgPipeProhibited$");
-		return true;
-	}
-}
-
-
-func OnPipeConnect(object pipe, string specific_pipe_state)
-{
-	SetNeutralPipe(pipe);
-	pipe->Report("$MsgConnectedPipe$");
-}
