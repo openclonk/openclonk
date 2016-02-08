@@ -23,6 +23,7 @@
 #include <C4FacetEx.h>
 #include <C4Landscape.h>
 #include <C4GameObjects.h>
+#include "lib/StdColors.h"
 
 C4TransferZone::C4TransferZone()
 {

@@ -27,6 +27,7 @@
 #include <C4GameControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Startup.h>
+#include "lib/StdColors.h"
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>

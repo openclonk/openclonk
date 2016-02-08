@@ -18,7 +18,6 @@
 #ifndef INC_StdSurface2
 #define INC_StdSurface2
 
-#include <StdColors.h>
 #include <C4Rect.h>
 
 #include <list>

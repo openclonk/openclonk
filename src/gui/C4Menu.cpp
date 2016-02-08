@@ -29,6 +29,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
+#include "lib/StdColors.h"
 
 const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
                   C4MN_DlgWdt         = 270, // default width of dialog windows

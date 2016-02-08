@@ -18,6 +18,7 @@
 #include "C4LandscapeRender.h"
 #include "C4Landscape.h"
 #include "C4Texture.h"
+#include "lib/StdColors.h"
 
 const int C4LS_MaxLightDistY = 8;
 const int C4LS_MaxLightDistX = 1;

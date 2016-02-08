@@ -23,6 +23,7 @@
 #include "C4FoWDrawStrategy.h"
 #include "C4PlayerList.h"
 #include "C4Player.h"
+#include "lib/StdColors.h"
 
 #include <vector>
 

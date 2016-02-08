@@ -30,6 +30,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4FullScreen.h>
+#include "lib/StdColors.h"
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
 

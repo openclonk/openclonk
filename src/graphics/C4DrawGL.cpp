@@ -25,6 +25,7 @@
 #include "C4Rect.h"
 #include "C4Config.h"
 #include <C4App.h>
+#include "lib/StdColors.h"
 
 #ifndef USE_CONSOLE
 

@@ -27,6 +27,7 @@
 #include <C4Log.h>
 #include <C4Markup.h>
 #include <C4Surface.h>
+#include "StdColors.h"
 
 #include <stdexcept>
 #include <string>

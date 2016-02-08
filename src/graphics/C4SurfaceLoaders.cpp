@@ -24,6 +24,7 @@
 #include <C4Group.h>
 #include <C4Log.h>
 #include <StdPNG.h>
+#include "lib/StdColors.h"
 
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound, int iFlags)
 {

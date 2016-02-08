@@ -32,6 +32,7 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include <C4RoundResults.h>
+#include "lib/StdColors.h"
 
 C4PlayerList::C4PlayerList()
 {

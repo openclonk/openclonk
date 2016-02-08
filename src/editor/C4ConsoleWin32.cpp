@@ -30,6 +30,7 @@
 #include <C4Version.h>
 #include "C4Viewport.h"
 #include <StdRegistry.h>
+#include "lib/StdColors.h"
 
 #include <C4windowswrapper.h>
 #include <mmsystem.h>

@@ -40,6 +40,7 @@
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4Viewport.h>
+#include "lib/StdColors.h"
 
 #include <cmath>
 

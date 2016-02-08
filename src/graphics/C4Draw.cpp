@@ -29,6 +29,7 @@
 #include <C4Config.h>
 #include "StdMesh.h"
 #include <CSurface8.h>
+#include "lib/StdColors.h"
 
 #include <stdio.h>
 

@@ -31,6 +31,7 @@
 #include <C4GraphicsResource.h>
 #include <C4RankSystem.h>
 #include "gui/C4MouseControl.h"
+#include "lib/StdColors.h"
 #include <cctype>
 #include <algorithm>
 

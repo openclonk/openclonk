@@ -31,6 +31,7 @@
 #include <C4SoundSystem.h>
 #include <C4SolidMask.h>
 #include <CSurface8.h>
+#include "lib/StdColors.h"
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.

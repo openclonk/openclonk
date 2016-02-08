@@ -29,6 +29,7 @@
 #include <Bitmap256.h>
 #include <StdPNG.h>
 #include <C4Config.h>
+#include "lib/StdColors.h"
 
 
 #ifdef HAVE_IO_H

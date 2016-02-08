@@ -48,6 +48,7 @@
 
 #include <C4FacetEx.h>
 #include <C4GraphicsSystem.h>
+#include "lib/StdColors.h"
 
 const int32_t C4PF_MaxDepth        = 35,
               C4PF_MaxCrawl        = 800,
