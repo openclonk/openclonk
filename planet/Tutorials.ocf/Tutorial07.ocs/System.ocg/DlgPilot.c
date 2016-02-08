@@ -54,7 +54,7 @@ public func Dlg_Pilot_7(object clonk)
 
 public func Dlg_Pilot_Closed(object clonk)
 {
-	GameCall("OnHasTalkedToFireman", clonk);
+	GameCall("OnHasTalkedToPilot", clonk);
 	return true;
 }
 

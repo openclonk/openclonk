@@ -181,18 +181,17 @@ protected func InitializePlayer(int plr)
 	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	
 	// Determine player movement keys.
-	var left = GetPlayerControlAssignment(plr, CON_Left, true, true);
-	var right = GetPlayerControlAssignment(plr, CON_Right, true, true);
-	var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
-	var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
-	var interact = GetPlayerControlAssignment(plr, CON_Interact, true, true);
-	var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
+	var interact_prev = GetPlayerControlAssignment(plr, CON_InteractNext_Right, true, true);
+	var interact_next = GetPlayerControlAssignment(plr, CON_InteractNext_Left, true, true);
+	var interact_cycle = GetPlayerControlAssignment(plr, CON_InteractNext_CycleObject, true, true);
+	var interact_cancel = GetPlayerControlAssignment(plr, CON_InteractNext_Stop, true, true);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObjectAbove(TutorialGuide, 0, 0, plr);
-	guide->AddGuideMessage(Format("$MsgTutorialFindRubies$", interact, control_keys));
+	guide->AddGuideMessage(Format("$MsgTutorialTalkToPilot$", interact_prev, interact_next, interact_cycle, interact_cancel));
 	guide->ShowGuideMessage();
-	AddEffect("TutorialFindStalactite", nil, 100, 2);
+	var effect = AddEffect("TutorialTalkedToPilot", nil, 100, 2);
+	effect.plr = plr;
 	return;
 }
 
@@ -240,9 +239,39 @@ global func FxGoalOutroStop(object target, proplist effect, int reason, bool tem
 
 
 /*-- Guide Messages --*/
-// Finds when the Clonk has done 'X', and changes the message.
 
-global func FxTutorialFindStalactiteTimer(object target, proplist effect, int timer)
+public func OnHasTalkedToPilot()
+{
+	RemoveEffect("TutorialTalkedToPilot");
+	return;
+}
+
+global func FxTutorialTalkedToPilotTimer()
+{
+	return FX_OK;
+}
+
+global func FxTutorialTalkedToPilotStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+
+	// Determine player movement keys.
+	var left = GetPlayerControlAssignment(effect.plr, CON_Left, true, true);
+	var right = GetPlayerControlAssignment(effect.plr, CON_Right, true, true);
+	var up = GetPlayerControlAssignment(effect.plr, CON_Up, true, true);
+	var down = GetPlayerControlAssignment(effect.plr, CON_Down, true, true);
+	var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
+	var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
+	
+	guide->AddGuideMessage(Format("$MsgTutorialFindRubies$", interact, control_keys));
+	guide->ShowGuideMessage();
+	var new_effect = AddEffect("TutorialFoundStalactite", nil, 100, 2);
+	new_effect.plr = effect.plr;
+	return FX_OK;
+}
+
+global func FxTutorialFoundStalactiteTimer(object target, proplist effect, int timer)
 {
 	var clonk = FindObject(Find_ID(Clonk), Find_Distance(150, 780, 200));
 	if (clonk)
@@ -298,10 +327,10 @@ global func FxTutorialCollectGemsTimer(object target, proplist effect, int timer
 protected func OnGuideMessageShown(int plr, int index)
 {
 	// Show airship parking space.
-	if (index == 1)
+	if (index == 2)
 		TutArrowShowPos(688, 220, 135);
 	// Show dynamite placement location.
-	if (index == 3)
+	if (index == 4)
 		TutArrowShowPos(800, 200, 60);	
 	return;
 }
