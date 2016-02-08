@@ -476,8 +476,9 @@ private func Death()
 	// Remove behavior effect and play dead animation.
 	RemoveEffect("CoreBehaviour", this);
 	SetAction("Dead");
-	// Set border bound to zero when dead.
+	// Set border bound to zero when dead, also disable contactcalls.
 	this.BorderBound = 0;
+	this.ContactCalls = false;
 	
 	// Decay the dead bat.	
 	AddTimer(this.Decaying, 100);
