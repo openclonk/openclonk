@@ -95,22 +95,22 @@ bool C4FoWRegion::BindFramebuf()
 				if (y < pSurface->Hgt / 2 && x < pSurface->Wdt)
 				{
 					// Normals and intensity
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y, pSurface->GetPixDw(x, pSurface->Hgt/2 - y, false));
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y, false));
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y - 1, pSurface->GetPixDw(x, pSurface->Hgt/2 - y - 1, false));
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y - 1, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y - 1, false));
 
 					// Color
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2, pSurface->GetPixDw(x, pSurface->Hgt/2 - y + pSurface->Hgt / 2, false));
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y + pBackSurface->Hgt / 2, false));
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2 - 1, pSurface->GetPixDw(x, pSurface->Hgt/2 - y + pSurface->Hgt / 2 - 1, false));
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2 - 1, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y + pBackSurface->Hgt / 2 - 1, false));
 				}
 				else
 				{
 					// Normals and intensity
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y, 0x000000ff);
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y, 0x000000ff);
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y - 1, 0x000000ff);
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y - 1, 0x000000ff);
 
 					// Color
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2, 0x000000ff);
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2, 0x000000ff);
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2 - 1, 0x000000ff);
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2 - 1, 0x000000ff);
 				}
 			}
 		}
