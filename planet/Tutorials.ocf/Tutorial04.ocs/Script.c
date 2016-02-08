@@ -81,7 +81,7 @@ private func InitVillageMain()
 		
 	// Elevator, and grain production on the right.
 	var elevator = CreateObjectAbove(Elevator, 601, 392);
-	elevator->CreateShaft(264);
+	elevator->CreateShaft(262);
 	elevator->MakeInvincible();
 	CreateObjectAbove(Windmill, 816, 392)->MakeInvincible();
 	CreateObjectAbove(Kitchen, 904, 376)->MakeInvincible();
@@ -497,7 +497,11 @@ protected func OnGuideMessageShown(int plr, int index)
 	}
 	// Show ore to mine.
 	if (index == 8)
+	{
+		TutArrowShowPos(620, 400, 0);
+		TutArrowShowPos(400, 398, 240);
 		TutArrowShowPos(306, 628, 90);
+	}
 	return;
 }
 
