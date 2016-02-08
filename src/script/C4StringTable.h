@@ -354,6 +354,7 @@ enum C4PropertyName
 	P_IncineratingObj,		// unused?
 	P_Plane,
 	P_BorderBound,
+	P_ContactCalls,
 	P_SolidMaskPlane,
 	P_Tooltip,
 	P_Placement,

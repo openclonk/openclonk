@@ -111,7 +111,6 @@ void C4Def::DefaultDefCore()
 	LiftTop=0;
 	GrabPutGet=0;
 	UprightAttach=0;
-	ContactFunctionCalls=0;
 	Line=0;
 	LineIntersect=0;
 	IncompleteActivity=0;
@@ -209,7 +208,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(Category, Categories),
 	                           "Category",           0             ));
 
-	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
 	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(NULL)));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));

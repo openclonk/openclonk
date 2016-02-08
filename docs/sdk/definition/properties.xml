@@ -180,6 +180,11 @@ Stand = {
           <col>Integer</col>
           <col>Bit mask indicating object boundaries: stop at map sides (C4D_Border_Sides), stop at map top (C4D_Border_Top), stop at map bottom (C4D_Border_Sides), stop at object layer boundaries (C4D_Border_Layer). For example BorderBound = C4D_Border_Top | C4D_Border_Bottom.</col>
         </row>
+        <row>
+          <literal_col>ContactCalls</literal_col>
+          <col>bool</col>
+          <col>True or false. If true, <emlink href="definition/cnat.html">ContactCalls</emlink> are called in the object script.</col>
+        </row>
       </table>
     </text>
   </part>

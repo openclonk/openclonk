@@ -2,7 +2,6 @@
 id=Mosquito
 Version=6,1
 Category=C4D_Living
-ContactCalls=1
 Width=2
 Height=2
 Offset=-1,-1

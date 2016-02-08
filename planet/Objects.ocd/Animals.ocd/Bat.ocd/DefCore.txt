@@ -11,7 +11,6 @@ VertexY=0,-4,2,0
 VertexFriction=25,25,25,25
 VertexCNAT=1,4,8,2
 Mass=3
-ContactCalls=1
 StretchGrowth=1
 Oversize=1
 IncompleteActivity=1

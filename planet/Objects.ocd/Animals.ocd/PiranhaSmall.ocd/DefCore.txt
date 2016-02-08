@@ -2,7 +2,6 @@
 id=PiranhaSmall
 Version=6,0
 Category=C4D_Living
-ContactCalls=1
 Width=4
 Height=2
 Offset=-2,-1

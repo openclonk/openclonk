@@ -2,7 +2,6 @@
 id=Lorry
 Version=6,0
 Category=C4D_Vehicle
-ContactCalls=1
 Width=22
 Height=16
 Offset=-11,-8

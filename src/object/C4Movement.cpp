@@ -113,7 +113,7 @@ const char *CNATName(int32_t cnat)
 
 bool C4Object::Contact(int32_t iCNAT)
 {
-	if (Def->ContactFunctionCalls)
+	if (GetPropertyInt(P_ContactCalls))
 	{
 		return !! Call(FormatString(PSF_Contact, CNATName(iCNAT)).getData());
 	}

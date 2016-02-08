@@ -207,3 +207,4 @@ local PictureTransformation = [0, -940, -342, -18000, 1000, 0, 0, 27000, 0, -342
 local Name = "$Name$";
 local Description = "$Description$";
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;

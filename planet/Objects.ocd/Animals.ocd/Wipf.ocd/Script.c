@@ -651,6 +651,7 @@ local NoBurnDecay = true;
 local Collectible = true;
 local ContactIncinerate = 10;
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;
 
 protected func Definition(proplist def)
 {

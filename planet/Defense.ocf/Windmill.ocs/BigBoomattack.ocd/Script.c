@@ -109,4 +109,5 @@ local ActMap =  {
 		Hgt = 100
 	},
 };
+local ContactCalls = true;
 */

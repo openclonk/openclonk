@@ -529,6 +529,7 @@ local MaxBreath = 180;
 local NoBurnDecay = 1;
 local ContactIncinerate = 10;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
 local ActMap = {
 	Hang = {

@@ -301,4 +301,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
-
+local ContactCalls = true;
