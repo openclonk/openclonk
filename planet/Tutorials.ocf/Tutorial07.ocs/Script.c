@@ -172,6 +172,9 @@ protected func InitializePlayer(int plr)
 	SetPlrKnowledge(plr, Bow);
 	SetPlrKnowledge(plr, Arrow);
 	
+	// Add an interaction to call the airship.
+	Helper_CallAirship->Create(clonk, Dialogue->FindByName("Pilot")->GetDialogueTarget(), FindObject(Find_ID(Airship)));
+	
 	// Add an effect to the clonk to track the goal.
 	var track_goal = AddEffect("TrackGoal", nil, 100, 2);
 	track_goal.plr = plr;
@@ -374,6 +377,8 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		Rule_BaseRespawn->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
+		// Add an interaction to call the airship.
+		Helper_CallAirship->Create(clonk, Dialogue->FindByName("Pilot")->GetDialogueTarget(), FindObject(Find_ID(Airship)));
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return FX_OK;
