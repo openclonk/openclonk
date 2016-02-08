@@ -60,6 +60,9 @@ if(USE_GCC_STD_14)
 endif()
 
 if(MSVC)
+	# Disable non-standard conversion from string literal to (nonconst) char*
+	list(APPEND OC_CXX_FLAGS /Zc:strictStrings)
+
 	list(APPEND OC_CXX_FLAGS /MP)
 	list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
 
