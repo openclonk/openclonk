@@ -8,6 +8,7 @@
 /*
 	used properties:
 	this.control.is_interacting: whether interaction is in progress (user is holding [space])
+	this.control.interaction_start_time: frame counter at the time of the selection process
 	this.control.interaction_hud_controller: hud object that takes the callbacks. Updated when starting interaction.
 */
 
@@ -112,23 +113,44 @@ private func FxIntHighlightInteractionStart(object target, proplist fx, temp, pr
 	
 	if (!custom_selector)
 	{
-		// Draw a nice selector particle on item change.
-		var selector =
-		{
-			Size = PV_Step(3, 2, 1, Max(fx.width, fx.height)),
-			Attach = ATTACH_Front,
-			Rotation = PV_Step(1, PV_Random(0, 360), 1),
-			Alpha = 200
-		};
-	
-		fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1);
+		fx.scheduled_selection_particle = (FrameCounter() - this.control.interaction_start_time) < 10;
+		if (!fx.scheduled_selection_particle)
+			EffectCall(nil, fx, "CreateSelectorParticle");
 	}
+	else
+	{
+		// Note that custom selectors are displayed immediately - particle because they might e.g. move the dummy.
+		fx.scheduled_selection_particle = false;
+	}
+}
+
+private func FxIntHighlightInteractionCreateSelectorParticle(object target, effect fx)
+{
+	// Failsafe.
+	if (!fx.dummy) return;
+	
+	// Draw a nice selector particle on item change.
+	var selector =
+	{
+		Size = PV_Step(5, 2, 1, Max(fx.width, fx.height)),
+		Attach = ATTACH_Front,
+		Rotation = PV_Step(1, PV_Random(0, 360), 1),
+		Alpha = 200
+	};
+
+	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1);
 }
 
 private func FxIntHighlightInteractionTimer(object target, proplist fx, int time)
 {
 	if (!fx.dummy) return -1;
 	if (!fx.obj) return -1;
+	
+	if (fx.scheduled_selection_particle && time > 10)
+	{
+		EffectCall(nil, fx, "CreateSelectorParticle");
+		fx.scheduled_selection_particle = false;
+	}
 }
 
 private func FxIntHighlightInteractionStop(object target, proplist fx, int reason, temp)
@@ -247,6 +269,7 @@ private func BeginInteract()
 {
 	this.control.interaction_hud_controller = this->GetHUDController();
 	this.control.is_interacting = true;
+	this.control.interaction_start_time = FrameCounter();
 	
 	// Force update the HUD controller, which is responsible for pre-selecting the "best" object.
 	this.control.interaction_hud_controller->UpdateInteractionObject();
