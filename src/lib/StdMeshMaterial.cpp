@@ -968,9 +968,8 @@ double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 }
 
 StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface)
-	: RefCount(1), Surf(Surface), Texture(Surface->textures[0])
+	: RefCount(1), Surf(Surface), Texture(*Surface->texture)
 {
-	assert(!Surface->textures.empty());
 }
 
 StdMeshMaterialTextureUnit::Tex::~Tex()
@@ -1029,8 +1028,6 @@ void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, cons
 
 	if (surface->Wdt != surface->Hgt)
 		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is not quadratic");
-	if (surface->iTexX > 1 || surface->iTexY > 1)
-		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is too large");
 
 	Textures.push_back(TexPtr(surface.release()));
 }

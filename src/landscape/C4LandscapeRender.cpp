@@ -254,26 +254,21 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 					*texdata++ = RGBA((iTex & 48), (iTex & 3) * 16, (i & 12) * 4, 255);
 			continue;
 #else
-			if(pSurface->iTexX != 1 || pSurface->iTexY != 1)
-				Log("   gl: Halp! Material texture is fragmented!");
-			else
-			{
-				// Size recheck. It's fine if this texture's size is a divisor
-				// of the maximum texture size, because then we can just tile
-				// the smaller texture.
-				if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
-					if (iTexWdt % pSurface->Wdt != 0 || iTexHgt % pSurface->Hgt != 0)
-						LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", Texture.getData(), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+			// Size recheck. It's fine if this texture's size is a divisor
+			// of the maximum texture size, because then we can just tile
+			// the smaller texture.
+			if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
+				if (iTexWdt % pSurface->Wdt != 0 || iTexHgt % pSurface->Hgt != 0)
+					LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", Texture.getData(), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
 
-				// Copy bytes
-				DWORD *texdata = reinterpret_cast<DWORD *>(p);
-				pSurface->Lock();
-				for (int y = 0; y < iTexHgt; ++y)
-					for (int x = 0; x < iTexWdt; ++x)
-						*texdata++ = pSurface->GetPixDw(x % pSurface->Wdt, y % pSurface->Hgt, false);
-				pSurface->Unlock();
-				continue;
-			}
+			// Copy bytes
+			DWORD *texdata = reinterpret_cast<DWORD *>(p);
+			pSurface->Lock();
+			for (int y = 0; y < iTexHgt; ++y)
+				for (int x = 0; x < iTexWdt; ++x)
+					*texdata++ = pSurface->GetPixDw(x % pSurface->Wdt, y % pSurface->Hgt, false);
+			pSurface->Unlock();
+			continue;
 #endif
 		}
 		// Seperator texture?
@@ -393,7 +388,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	C4TexRef *texture[C4LR_SurfaceCount];
 	x = y = 0;
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
-		Surfaces[i]->GetTexAt(&texture[i], x, y);
+		texture[i] = Surfaces[i]->texture.get();
 
 	// Go through it from top to bottom
 	for(y = 0; y < To.Hgt; y++)
@@ -976,7 +971,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		for(int i = 0; i < C4LR_SurfaceCount; i++)
 		{
 			iLandscapeUnits[i] = ShaderCall.AllocTexUnit(-1) - GL_TEXTURE0;
-			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->textures[0].texName);
+			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->texture->texName);
 			if (pGL->Zoom != 1.0)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1002,7 +997,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	}
 	if(ShaderCall.AllocTexUnit(C4LRU_ScalerTex))
 	{
-		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->textures[0].texName);
+		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->texture->texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}

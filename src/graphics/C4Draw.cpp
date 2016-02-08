@@ -349,7 +349,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return false;
 	// texture present?
-	if (sfcSource->textures.empty())
+	if (!sfcSource->texture)
 	{
 		// primary surface?
 		if (sfcSource->fPrimary)
@@ -361,83 +361,47 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	}
 	// blit with basesfc?
 	bool fBaseSfc=false;
-	if (sfcSource->pMainSfc) if (!sfcSource->pMainSfc->textures.empty()) fBaseSfc = true;
+	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->texture) fBaseSfc = true;
 	// get involved texture offsets
 	int iTexSizeX=sfcSource->iTexSize;
 	int iTexSizeY=sfcSource->iTexSize;
-	int iTexX=std::max(int(fx/iTexSizeX), 0);
-	int iTexY=std::max(int(fy/iTexSizeY), 0);
-	int iTexX2=std::min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
-	int iTexY2=std::min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
-	// blit from all these textures
-	for (int iY=iTexY; iY<iTexY2; ++iY)
+
+	C4TexRef *pTex = sfcSource->texture.get();
+	// set up blit data
+	C4BltVertex vertices[6];
+	vertices[0].ftx = tx; vertices[0].fty = ty;
+	vertices[1].ftx = tx + twdt; vertices[1].fty = ty;
+	vertices[2].ftx = tx + twdt; vertices[2].fty = ty + thgt;
+	vertices[3].ftx = tx; vertices[3].fty = ty + thgt;
+	vertices[0].tx = fx / pTex->iSizeX; vertices[0].ty = fy / pTex->iSizeY;
+	vertices[1].tx = (fx + fwdt) / pTex->iSizeX; vertices[1].ty = fy / pTex->iSizeY;
+	vertices[2].tx = (fx + fwdt) / pTex->iSizeX; vertices[2].ty = (fy + fhgt) / pTex->iSizeY;
+	vertices[3].tx = fx / pTex->iSizeX; vertices[3].ty = (fy + fhgt) / pTex->iSizeY;
+	DwTo4UB(0xffffffff, vertices[0].color);
+	DwTo4UB(0xffffffff, vertices[1].color);
+	DwTo4UB(0xffffffff, vertices[2].color);
+	DwTo4UB(0xffffffff, vertices[3].color);
+
+	// duplicate vertices
+	vertices[4] = vertices[0]; vertices[5] = vertices[2];
+
+	C4TexRef * pBaseTex = pTex;
+	// is there a base-surface to be blitted first?
+	if (fBaseSfc)
 	{
-		for (int iX=iTexX; iX<iTexX2; ++iX)
-		{
-			C4TexRef *pTex = &sfcSource->textures[iY * sfcSource->iTexX + iX];
-			// get current blitting offset in texture
-			int iBlitX=sfcSource->iTexSize*iX;
-			int iBlitY=sfcSource->iTexSize*iY;
-			// size changed? recalc dependant, relevant (!) values
-			if (iTexSizeX != pTex->iSizeX)
-			{
-				iTexSizeX = pTex->iSizeX;
-			}
-			if (iTexSizeY != pTex->iSizeY)
-			{
-				iTexSizeY = pTex->iSizeY;
-			}
-
-			// get new texture source bounds
-			FLOAT_RECT fTexBlt;
-			fTexBlt.left  = std::max<float>(fx - iBlitX, 0);
-			fTexBlt.top   = std::max<float>(fy - iBlitY, 0);
-			fTexBlt.right = std::min<float>(fx + fwdt - (float)iBlitX, (float)iTexSizeX);
-			fTexBlt.bottom= std::min<float>(fy + fhgt - (float)iBlitY, (float)iTexSizeY);
-			// get new dest bounds
-			FLOAT_RECT tTexBlt;
-			tTexBlt.left  = (fTexBlt.left  + iBlitX - fx) * scaleX + tx;
-			tTexBlt.top   = (fTexBlt.top   + iBlitY - fy) * scaleY + ty;
-			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * scaleX + tx;
-			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * scaleY + ty;
-
-			// set up blit data as rect
-			C4BltVertex vertices[6];
-			vertices[0].ftx = tTexBlt.left;  vertices[0].fty = tTexBlt.top;
-			vertices[1].ftx = tTexBlt.right; vertices[1].fty = tTexBlt.top;
-			vertices[2].ftx = tTexBlt.right; vertices[2].fty = tTexBlt.bottom;
-			vertices[3].ftx = tTexBlt.left;  vertices[3].fty = tTexBlt.bottom;
-			vertices[0].tx = fTexBlt.left / iTexSizeX;  vertices[0].ty = fTexBlt.top / iTexSizeY;
-			vertices[1].tx = fTexBlt.right / iTexSizeX; vertices[1].ty = fTexBlt.top / iTexSizeY;
-			vertices[2].tx = fTexBlt.right / iTexSizeX; vertices[2].ty = fTexBlt.bottom / iTexSizeY;
-			vertices[3].tx = fTexBlt.left / iTexSizeX;  vertices[3].ty = fTexBlt.bottom / iTexSizeY;
-			DwTo4UB(0xffffffff, vertices[0].color);
-			DwTo4UB(0xffffffff, vertices[1].color);
-			DwTo4UB(0xffffffff, vertices[2].color);
-			DwTo4UB(0xffffffff, vertices[3].color);
-
-			// duplicate vertices
-			vertices[4] = vertices[0]; vertices[5] = vertices[2];
-
-			C4TexRef * pBaseTex = pTex;
-			// is there a base-surface to be blitted first?
-			if (fBaseSfc)
-			{
-				// then get this surface as same offset as from other surface
-				// assuming this is only valid as long as there's no texture management,
-				// organizing partially used textures together!
-				pBaseTex = &sfcSource->pMainSfc->textures[iY * sfcSource->iTexX + iX];
-			}
-
-			C4TexRef* pNormalTex = NULL;
-			if (sfcSource->pNormalSfc)
-				pNormalTex = &sfcSource->pNormalSfc->textures[iY * sfcSource->iTexX + iX];
-
-			// ClrByOwner is always fully opaque
-			const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
-			PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, pNormalTex, dwOverlayClrMod, NULL);
-		}
+		// then get this surface as same offset as from other surface
+		// assuming this is only valid as long as there's no texture management,
+		// organizing partially used textures together!
+		pBaseTex = sfcSource->pMainSfc->texture.get();
 	}
+
+	C4TexRef* pNormalTex = NULL;
+	if (sfcSource->pNormalSfc)
+		pNormalTex = sfcSource->pNormalSfc->texture.get();
+
+	// ClrByOwner is always fully opaque
+	const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
+	PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, pNormalTex, dwOverlayClrMod, NULL);
 	// success
 	return true;
 }
@@ -578,8 +542,7 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 {
 	// Only direct rendering from single, tileable, texture
 	if (!sfcTarget->IsRenderTarget()) return false;
-	if (!sfcSurface->IsSingleSurface()) return false;
-	if ((sfcSurface->textures[0].iFlags & C4SF_Tileable) == 0) return false;
+	if ((sfcSurface->texture->iFlags & C4SF_Tileable) == 0) return false;
 
 	// source surface dimensions
 	const float sourceWdt = sfcSurface->Wdt;
@@ -603,7 +566,7 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 	vertices[4] = vertices[0]; vertices[5] = vertices[2];
 
 	// Draw
-	PerformMultiTris(sfcTarget, vertices, 6, NULL, &sfcSurface->textures[0], NULL, NULL, 0, shader_call);
+	PerformMultiTris(sfcTarget, vertices, 6, NULL, sfcSurface->texture.get(), NULL, NULL, 0, shader_call);
 	return true;
 }
 

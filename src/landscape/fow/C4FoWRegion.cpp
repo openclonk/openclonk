@@ -137,11 +137,11 @@ bool C4FoWRegion::BindFramebuf()
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, hFrameBufRead);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
 		GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-		pSurface->textures[0].texName, 0);
-	if (!pBackSurface->textures.empty())
+		pSurface->texture->texName, 0);
+	if (pBackSurface->texture)
 		glFramebufferTexture2D(GL_READ_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-			pBackSurface->textures[0].texName, 0);
+			pBackSurface->texture->texName, 0);
 
 	// Check status, unbind if something was amiss
 	GLenum status1 = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER),
@@ -171,10 +171,10 @@ int32_t C4FoWRegion::getSurfaceWidth() const
 #ifndef USE_CONSOLE
 GLuint C4FoWRegion::getSurfaceName() const
 {
-	assert(!pSurface->textures.empty());
-	if (pSurface->textures.empty())
+	assert(pSurface->texture);
+	if (!pSurface->texture)
 		return 0;
-	return pSurface->textures[0].texName;
+	return pSurface->texture->texName;
 }
 #endif
 
@@ -301,7 +301,7 @@ bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		C4ShaderCall Call(pShader);
 		Call.Start();
 		if (Call.AllocTexUnit(C4FoWFSU_Texture))
-			glBindTexture(GL_TEXTURE_2D, pBackSurface->textures[0].texName);
+			glBindTexture(GL_TEXTURE_2D, pBackSurface->texture->texName);
 		Call.SetUniformMatrix4x4(C4FoWFSU_ProjectionMatrix, projectionMatrix);
 		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly
