@@ -54,8 +54,8 @@ const int C4SF_Unlocked = 4;
 class C4Surface
 {
 private:
-	C4Surface(const C4Surface &cpy); // do NOT copy
-	C4Surface &operator = (const C4Surface &rCpy);  // do NOT copy
+	C4Surface(const C4Surface &cpy) = delete;
+	C4Surface &operator = (const C4Surface &rCpy) = delete;
 
 public:
 	C4Surface();
