@@ -19,7 +19,7 @@ MsgTutorialBlastedRock=Gut gemacht, du hast den Stein gesprengt und deinen Freun
 MsgTutorialFedWipf=Das hat ihm gut getan! Und schon ist er wieder weg... Versuch auch einen Weg heraus zu finden.
 MsgTutorialDigOutLoam=Hier lang! Die orangenen Objekte vor dir sind Lehmklumpen. Grab ein paar aus und nimm sie mit, denn Lehm kann benutzt werden um Brücken aus Erde zu bauen. Halte dafür [%s] gedrückt um eine Brücke in die Richtung des Mauszeigers zu bauen.
 MsgTutorialFragileBridge=Warte mal... Die Brücke sieht sehr zerbrechlich aus und unter ihr ist gefährliche Säure. Du solltest deinen Wipf vorschicken um die Brücke zu testen.
-MsgTutorialMakeLoamBridge=Ich hab's gesagt: Sie war zerbrechlich! Zum Glück hat dein Freund es geschafft. Benutze die Lehmklumpen um eine Brücke zu bauen und über die Säure zu deinem felligen Freund zu kommen.
+MsgTutorialMakeLoamBridge=Ich hab's gesagt: Sie war zerbrechlich! Zum Glück hat dein Freund es geschafft. Benutze die Lehmklumpen um eine Brücke zu bauen und über die Säure zu deinem felligen Freund zu kommen. Halte [%s] gedrückt um eine Lehmbrücke in die Richtung des Mauszeigers zu bauen.
 MsgTutorialCompleted=Klasse! Lass uns mit dem nächsten Tutorial weitermachen.
 
 # Wipf name
