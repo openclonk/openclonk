@@ -97,7 +97,7 @@ void C4Surface::Default()
 	iTexSize=iTexX=iTexY=0;
 	fIsBackground=false;
 #ifdef _DEBUG
-	dbg_idx = NULL;
+	dbg_idx = 0;
 #endif
 }
 
@@ -149,8 +149,7 @@ void C4Surface::Clear()
 #endif
 	FreeTextures();
 #ifdef _DEBUG
-	delete dbg_idx;
-	dbg_idx = NULL;
+	dbg_idx = 0;
 #endif
 }
 
@@ -235,10 +234,8 @@ bool C4Surface::CreateTextures(int Flags)
 	}
 
 #ifdef _DEBUG
-	static int dbg_counter = 0;
-	if (dbg_idx) delete dbg_idx;
-	dbg_idx = new int;
-	*dbg_idx = dbg_counter++;
+	static unsigned int dbg_counter = 0;
+	dbg_idx = ++dbg_counter;
 #endif
 	// success
 	return true;

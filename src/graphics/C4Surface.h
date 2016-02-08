@@ -71,7 +71,7 @@ public:
 	int ClipX,ClipY,ClipX2,ClipY2;
 	bool fIsBackground; // background surfaces fill unused pixels with black, rather than transparency - must be set prior to loading
 #ifdef _DEBUG
-	int *dbg_idx;
+	unsigned int dbg_idx;
 #endif
 #ifndef USE_CONSOLE
 	unsigned int Format;                // used color format in textures
