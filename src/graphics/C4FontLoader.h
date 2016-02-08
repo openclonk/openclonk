@@ -98,8 +98,7 @@ protected:
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
-	C4Surface **psfcFontData; // font recource surfaces - additional surfaces created as needed
-	int iNumFontSfcs;       // number of created font surfaces
+	std::vector<std::unique_ptr<C4Surface>> psfcFontData; // font resource surfaces - additional surfaces created as needed
 	int iSfcSizes;          // size for font surfaces
 	int iFontZoom;          // zoom of font in texture
 
