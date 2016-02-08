@@ -116,8 +116,12 @@ static INT_PTR CALLBACK GfxErrProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
 			memset(&siStartupInfo, 0, sizeof(siStartupInfo));
 			memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 			siStartupInfo.cb = sizeof(siStartupInfo);
-			CreateProcessW(selfpath, NULL,
-				NULL, NULL, FALSE, 0, NULL, Config.General.ExePath.GetWideChar(), &siStartupInfo, &piProcessInfo);
+			if (CreateProcessW(selfpath, NULL,
+				NULL, NULL, FALSE, 0, NULL, Config.General.ExePath.GetWideChar(), &siStartupInfo, &piProcessInfo))
+			{
+				CloseHandle(piProcessInfo.hProcess);
+				CloseHandle(piProcessInfo.hThread);
+			}
 			EndDialog(hWnd,2);
 			return TRUE;
 		}
