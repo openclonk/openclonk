@@ -30,13 +30,6 @@ protected func InitializePlayer(int plr)
 	effect.testnr = 1;
 	effect.launched = false;
 	effect.plr = plr;
-	
-	// Add pump
-	CreateObjectAbove(Pump, 100, 200);
-	CreateObjectAbove(SteamEngine, 150, 200);
-	GetCrew(plr)->CreateContents(Pipe);
-	GetCrew(plr)->CreateContents(Pipe);
-	GetCrew(plr)->CreateContents(Pipe);
 	return true;
 }
 
@@ -135,7 +128,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 }
 
 global func Test1_OnStart(int plr){ return true;}
-global func Test1_OnFinish(){ return; }
+global func Test1_OnFinished(){ return; }
 global func Test1_Execute()
 {
 	Log("Test the behaviour of IsLiquidContainerForMaterial");
@@ -156,7 +149,7 @@ global func Test1_Execute()
 }
 
 global func Test2_OnStart(int plr){ return true;}
-global func Test2_OnFinish(){ return; }
+global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {
 	Log("Test the behaviour of GetFillLevel and SetFillLevel");
@@ -180,7 +173,7 @@ global func Test2_Execute()
 
 
 global func Test3_OnStart(int plr){ return true;}
-global func Test3_OnFinish(){ return; }
+global func Test3_OnFinished(){ return; }
 global func Test3_Execute()
 {
 	Log("Test the behaviour of GetLiquidType and SetLiquidType");
@@ -204,7 +197,7 @@ global func Test3_Execute()
 
 
 global func Test4_OnStart(int plr){ return true;}
-global func Test4_OnFinish(){ return; }
+global func Test4_OnFinished(){ return; }
 global func Test4_Execute()
 {
 	Log("Test the behaviour of LiquidContainerIsEmpty");
@@ -233,7 +226,7 @@ global func Test4_Execute()
 }
 
 global func Test5_OnStart(int plr){ return true;}
-global func Test5_OnFinish(){ return; }
+global func Test5_OnFinished(){ return; }
 global func Test5_Execute()
 {
 	Log("Test the behaviour of LiquidContainerIsFull");
@@ -260,7 +253,7 @@ global func Test5_Execute()
 
 
 global func Test6_OnStart(int plr){ return true;}
-global func Test6_OnFinish(){ return; }
+global func Test6_OnFinished(){ return; }
 global func Test6_Execute()
 {
 	Log("Test the behaviour of LiquidContainerAccepts");
@@ -319,7 +312,7 @@ global func Test6_Execute()
 }
 
 global func Test7_OnStart(int plr){ return true;}
-global func Test7_OnFinish(){ return; }
+global func Test7_OnFinished(){ return; }
 global func Test7_Execute()
 {
 	Log("Test the behaviour of PutLiquid");
@@ -356,7 +349,7 @@ global func Test7_Execute()
 }
 
 global func Test8_OnStart(int plr){ return true;}
-global func Test8_OnFinish(){ return; }
+global func Test8_OnFinished(){ return; }
 global func Test8_Execute()
 {
 	Log("Test the behaviour of RemoveLiquid");
@@ -426,4 +419,175 @@ global func Test8_Execute()
 
 	container->RemoveObject();
 	return passed;
+}
+
+global func Test9_OnStart(int plr)
+{
+	var effect = GetEffect("IntTestControl", nil);
+
+	effect.pump = CreateObjectAbove(Pump, 100, 200);
+	effect.engine = CreateObjectAbove(SteamEngine, 150, 200);
+	return true;
+}
+
+global func Test9_Execute()
+{
+	var effect = GetEffect("IntTestControl", nil);
+	
+	Log("Test the behaviour of connections between pipe and pump");
+
+	var passed = true;
+	var pipeA, pipeB, returned, test;
+	
+	Log("No connection");
+	passed &= Test9_CheckConnections(effect, effect.pump, effect.pump);
+
+	Log("1. Connecting pipe A to pump, pipe B to pump, pipe B to engine");
+	pipeA = CreateObject(Pipe);
+	pipeB = CreateObject(Pipe);
+
+	pipeA->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	pipeB->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, pipeA, pipeB);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
+	pipeB->ConnectPipeTo(effect.engine);
+	
+	pipeA->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.engine);
+	
+	pipeA->RemoveObject();
+	pipeB->RemoveObject();
+
+	Log("2. Connecting pipe A to pump, pipe B to engine, pipe B to pump");
+	
+	pipeA = CreateObject(Pipe);
+	pipeB = CreateObject(Pipe);
+
+	pipeA->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	pipeB->ConnectPipeTo(effect.engine);
+	passed &= Test9_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	pipeB->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, pipeA, effect.engine);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
+	
+	pipeA->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.engine);
+	
+	pipeA->RemoveObject();
+	pipeB->RemoveObject();
+
+	Log("3. Connecting pipe A to engine, pipe A to pump, pipe B to pump");
+
+	pipeA = CreateObject(Pipe);
+	pipeB = CreateObject(Pipe);
+
+	pipeA->ConnectPipeTo(effect.engine);
+	passed &= Test9_CheckConnections(effect, effect.pump, effect.pump);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Neutral, pipeB, PIPE_STATE_Neutral);
+	pipeA->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, effect.pump, effect.engine);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Neutral);
+	pipeB->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, pipeB, effect.engine);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
+	
+	pipeA->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.engine);
+	
+	pipeA->RemoveObject();
+	pipeB->RemoveObject();
+	
+	Log("4. Connecting pipe A to pump (drain via menu), pipe B to pump, pipe A to engine");
+	
+	pipeA = CreateObject(Pipe);
+	pipeB = CreateObject(Pipe);
+
+	pipeA->ConnectPipeTo(effect.pump, PIPE_STATE_Drain);
+	passed &= Test9_CheckConnections(effect, effect.pump, pipeA);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Neutral);
+	pipeB->ConnectPipeTo(effect.pump);
+	passed &= Test9_CheckConnections(effect, pipeB, pipeA);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
+	pipeA->ConnectPipeTo(effect.engine);
+	passed &= Test9_CheckConnections(effect, pipeB, effect.engine);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
+	
+	pipeA->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.pump);
+	pipeB->CutLineConnection(effect.engine);
+	
+	pipeA->RemoveObject();
+	pipeB->RemoveObject();
+
+	Log("5. Connecting pipe A to pump (source), pipe A to engine");
+	
+	pipeA = CreateObject(Pipe);
+
+	pipeA->ConnectPipeTo(effect.pump, PIPE_STATE_Source);
+	passed &= Test9_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
+	pipeA->ConnectPipeTo(effect.engine);
+	passed &= Test9_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test9_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
+	
+	pipeA->CutLineConnection(effect.pump);
+	pipeA->RemoveObject();
+
+	return passed;
+}
+
+global func Test9_CheckConnections(proplist effect, object expected_source, object expected_drain)
+{
+	var passed = true;
+	var returned = effect.pump->GetSourceObject();
+	var test = returned == expected_source ; passed &= test;
+	Log("- Pump returns source object %v: %v (returned %v)", expected_source, test, returned);
+	returned = effect.pump->GetDrainObject();
+	test = returned == expected_drain ; passed &= test;
+	Log("- Pump returns drain object %v: %v (returned %v)", expected_drain, test, returned);
+	return passed;
+}
+
+global func Test9_CheckPipes(object pipeA, string stateA, object pipeB, string stateB)
+{
+	var functionA, functionB;
+	var passed = true;
+
+	if (pipeA != nil)
+	{
+		     if (stateA == PIPE_STATE_Source)  functionA = pipeA.IsSourcePipe;
+		else if (stateA == PIPE_STATE_Drain)   functionA = pipeA.IsDrainPipe;
+		else if (stateA == PIPE_STATE_Neutral) functionA = pipeA.IsNeutralPipe;
+		
+		var test = pipeA->Call(functionA);
+		passed &= test;
+		Log("- Pipe A is %s pipe: %v", stateA, test);
+	}
+	
+	if (pipeB != nil)
+	{
+		     if (stateB == PIPE_STATE_Source)  functionB = pipeB.IsSourcePipe;
+		else if (stateB == PIPE_STATE_Drain)   functionB = pipeB.IsDrainPipe;
+		else if (stateB == PIPE_STATE_Neutral) functionB = pipeB.IsNeutralPipe;
+	
+	
+		test = pipeB->Call(functionB);
+		passed &= test;
+		Log("- Pipe B is %s pipe: %v", stateB, test);
+	}
+	return passed;
+}
+
+global func Test9_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Pump), Find_ID(SteamEngine), Find_ID(Pipe)));
+	return true;
 }

@@ -144,7 +144,7 @@ func SetSourcePipe()
 func ConnectPipeTo(object target, string specific_pipe_state)
 {
 	if (!target || target->~QueryConnectPipe(this)) return false;
-	var line = AddLineConnectionTo(target);
+	AddLineConnectionTo(target);
 	target->OnPipeConnect(this, specific_pipe_state);
 	Sound("Objects::Connect");
 	return true;
