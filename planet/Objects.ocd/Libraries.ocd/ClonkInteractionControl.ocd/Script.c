@@ -92,7 +92,16 @@ private func FxIntHighlightInteractionStart(object target, proplist fx, temp, pr
 		}
 	};
 	fx.dummy.Visibility = VIS_Owner;
-	fx.dummy.Plane = 1000;
+	// The selector's plane should be just behind the Clonk for stuff that usually is behind the Clonk.
+	// Otherwise, it looks rather odd when the catapult shines through the Clonk.
+	if (fx.obj.Plane < this.Plane)
+	{
+		fx.dummy.Plane = this.Plane - 1;
+	}
+	else
+	{
+		fx.dummy.Plane = 1000;
+	}
 	var multiple_interactions_hint = "";
 	if (fx.interaction.has_multiple_interactions)
 		multiple_interactions_hint = Format("<c 999999>[%s] $More$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Up, true, false));
