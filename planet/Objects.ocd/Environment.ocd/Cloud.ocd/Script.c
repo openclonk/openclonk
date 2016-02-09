@@ -180,6 +180,19 @@ protected func FxProcessCloudTimer()
 		// Change mode, reset timer.
 		mode = (mode + 1) % 3;
 		mode_time = 480 + RandomX(-90, 90);
+
+		// Start or stop the rain sound.
+		// TODO: Sound should play where the rain hits the ground, not where the cloud is.
+		if (mode == CLOUD_ModeRaining)
+		{
+			var mat = RainMat();
+			if (mat == "Water" || mat == "Acid")
+				Sound("Liquids::StereoRain", false, 80, nil, +1, 1000);
+		}
+		else
+		{
+			Sound("Liquids::StereoRain",,,, -1);
+		}
 	}
 	// Process modes.
 	/*if (mode == CLOUD_ModeIdle)
@@ -249,6 +262,15 @@ private func Precipitation()
 	return;
 }
 
+// Check if liquid is maybe in frozen form.
+private func RainMat()
+{
+	if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
+		return rain_mat_frozen;
+	else
+		return rain_mat;
+}
+
 local last_raindrop_color = -1;
 local particle_cache;
 
@@ -268,12 +290,7 @@ private func RainDrop()
 		var ydir = 30;
 		if (!GBackSky(x, y))
 			continue;
-		// Check if liquid is maybe in frozen form.
-		var mat;
-		if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
-			mat = rain_mat_frozen;
-		else
-			mat = rain_mat;
+		var mat = RainMat();
 
 		if(mat == "Ice")
 		{
