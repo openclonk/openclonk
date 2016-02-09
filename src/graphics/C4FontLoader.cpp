@@ -304,7 +304,7 @@ CStdFont::CStdFont()
 bool CStdFont::AddSurface()
 {
 	// add new surface as render target
-	auto sfcNew = std::make_unique<C4Surface>(iSfcSizes, iSfcSizes);
+	auto sfcNew = std::make_unique<C4Surface>(iSfcSizes, iSfcSizes, 0);
 	// If old surface was locked, unlock it and lock the new one in its stead
 	if (sfcCurrent && sfcCurrent->IsLocked())
 	{
