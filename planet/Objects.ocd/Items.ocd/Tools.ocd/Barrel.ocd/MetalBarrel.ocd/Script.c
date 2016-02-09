@@ -19,6 +19,18 @@ public func IsLiquidContainerForMaterial(string liquid_name)
 	return density < 50 && density >= 25;
 }
 
+
+
+local LiquidNames = {
+	Acid = "$MaterialAcid$",
+	DuroLava = "$MaterialDuroLava$",
+	Firefluid = "$MaterialFirefluid$",
+	Lava = "$MaterialLava$",
+	Oil = "$MaterialOil$",
+	Water = "$MaterialWater$",
+};
+
+
 local Name = "$Name$";
 local Description = "$Description$";
 local ContactIncinerate = 0;
