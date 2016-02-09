@@ -289,7 +289,7 @@ private func RainMat()
 		return rain_mat;
 }
 
-local last_raindrop_color = -1;
+local last_raindrop_color = nil;
 local particle_cache;
 
 // Raindrop somewhere from the cloud.
