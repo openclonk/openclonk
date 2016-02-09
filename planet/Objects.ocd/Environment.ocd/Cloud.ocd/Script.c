@@ -26,6 +26,7 @@ local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
 local rain_mat_freeze_temp; // Freezing temperature of current rain material.
 local rain_mat_frozen; // Material currently frozen to.
+local rain_visual_strength; // Amount of rain particles
 
 local cloud_shade; // Cloud shade.
 local cloud_alpha; // Cloud alpha.
@@ -43,6 +44,7 @@ protected func Initialize()
 	// Default values for rain.
 	rain = 0;
 	rain_max = 960;
+	rain_visual_strength = 10;
 	
 	// Cloud defaults
 	lightning_chance = 0;
@@ -136,6 +138,22 @@ public func SetRain(int to_rain)
 {
 	rain = BoundBy(to_rain, 0, rain_max);
 	return;
+}
+
+// Sets the strength of the visual particle rain.
+// Also an id call: Changes all clouds to this settings.
+public func SetVisualRainStrength(int to)
+{
+	// Called to proplist: change all clouds.
+	if (this == Cloud)
+	{
+		for (var cloud in FindObjects(Find_ID(Cloud)))
+			cloud->SetVisualRainStrength(to);
+	}
+	else
+	{
+		rain_visual_strength = to;
+	}
 }
 
 
@@ -277,7 +295,7 @@ local particle_cache;
 // Raindrop somewhere from the cloud.
 private func RainDrop()
 {
-	var count = 10; // TODO: some concept of rain strength
+	var count = Max(rain_visual_strength, 1);
 	for (var i = 0; i < count; i++)
 	{
 		// Find Random Position.
