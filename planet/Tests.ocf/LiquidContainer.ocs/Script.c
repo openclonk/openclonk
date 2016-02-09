@@ -591,3 +591,60 @@ global func Test9_OnFinished()
 	RemoveAll(Find_Or(Find_ID(Pump), Find_ID(SteamEngine), Find_ID(Pipe)));
 	return true;
 }
+
+global func Test10_OnStart(int plr){ return true;}
+global func Test10_OnFinished(){ return; }
+global func Test10_Execute()
+{
+	Log("Test the behaviour of barrels getting stacked");
+
+	var container1 = CreateObject(Barrel);
+	var container2 = CreateObject(Barrel);
+	
+	// can stack filled barrel with other filled barrel of the same liquid
+	container1->SetLiquidContainer("Water", 100);
+	container2->SetLiquidContainer("Water", 300);
+
+	var passed = true;
+	var returned = container1->CanBeStackedWith(container2);
+	var test = returned == true; passed &= test;
+	Log("- Barrel can be stacked with other barrel that contains the same liquid: %v", test);
+	returned = container2->CanBeStackedWith(container1);
+	test = returned == true; passed &= test;
+	Log("- Barrel can be stacked with other barrel that contains the same liquid: %v", test);
+
+	// cannot stack filled barrel with other empty barrel
+	container1->SetLiquidContainer("Water", 100);
+	container2->SetLiquidFillLevel(0);
+
+	returned = container1->CanBeStackedWith(container2);
+	test = returned == false; passed &= test;
+	Log("- Filled barrel cannot be stacked with empty barrel: %v", test);
+	returned = container2->CanBeStackedWith(container1);
+	test = returned == false; passed &= test;
+	Log("- Empty barrel cannot be stacked with filled barrel: %v", test);
+
+	// can stack empty barrel with other empty barrel
+	container1->SetLiquidFillLevel(0);
+	container2->SetLiquidFillLevel(0);
+
+	returned = container1->CanBeStackedWith(container2);
+	test = returned == true; passed &= test;
+	Log("- Empty barrel can be stacked with empty barrel: %v", test);
+
+	// cannot stack filled barrel with other filled barrel of different liquid
+	container1->SetLiquidContainer("Water", 100);
+	container2->SetLiquidContainer("Oil", 100);
+
+	returned = container1->CanBeStackedWith(container2);
+	test = returned == false; passed &= test;
+	Log("- Liquid A barrel cannot be stacked with liquid B barrel: %v", test);
+	returned = container2->CanBeStackedWith(container1);
+	test = returned == false; passed &= test;
+	Log("- Liquid B barrel cannot be stacked with liquid A barrel: %v", test);
+	
+	container1->RemoveObject();
+	container2->RemoveObject();
+
+	return passed;
+}
