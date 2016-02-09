@@ -63,7 +63,7 @@ public func ContentsCheck()
 		return;
 
 	// If there is fuel available let the network know.
-	if (fuel_amount > 0 || FindObject(Find_Container(this), Find_Func("IsFuel")))
+	if (fuel_amount > 0 || GetFuelContents())
 		RegisterPowerProduction(SteamEngine_produced_power);
 	return;
 }
