@@ -289,6 +289,10 @@ private func RainDrop()
 		if(mat == "Snow")
 		{
 			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), Particles_Snow(color), 0);
+			if (!i)
+			{
+				CastPXS(mat, 1, 0, x, y);
+			}
 			continue;
 		}		
 
