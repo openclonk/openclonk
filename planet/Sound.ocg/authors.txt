@@ -5,7 +5,7 @@ Author        Work(s)
 ===============================================================================
 
 ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Action/Munch2, Clonk/Movement/DivingLoop1&2&3, Animals/Wipf/Snuff3
-                  Structures/DoorOpen*, Structures/DoorClose*, Hits/BucketHit*
+                  Structures/DoorOpen*, Structures/DoorClose*, Hits/BucketHit*, Objects/Lorry/Dump*
                   Structures/Repair, Structures/FinishBuilding made from following resources:
                       - JoelAudio: https://www.freesound.org/people/JoelAudio/sounds/135860/ - CC-By 3.0
                       - cmusounddesign: https://www.freesound.org/people/cmusounddesign/sounds/84696 - CC-By 3.0

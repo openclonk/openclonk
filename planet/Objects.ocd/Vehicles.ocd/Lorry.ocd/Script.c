@@ -89,6 +89,9 @@ public func FxDumpContentsStart(object target, proplist effect, int temp, int di
 	if (effect.dump_dir == DIR_Right)
 		rdir = effect.dump_strength;
 	SetRDir(rdir);
+	// Start dump sounds together.
+	Sound("Objects::Lorry::Dump1", false, 100, nil, +1);
+	Sound("Objects::Lorry::Dump2", false, 100, nil, +1);
 	return FX_OK;
 }
 
@@ -128,6 +131,9 @@ public func FxDumpContentsStop(object target, proplist effect, int reason, bool 
 		return FX_OK;
 	// Stop rotating the lorry.
 	SetRDir(0);
+	// Stop dump sounds.
+	Sound("Objects::Lorry::Dump1", false, 100, nil, -1);
+	Sound("Objects::Lorry::Dump2", false, 100, nil, -1);
 	return FX_OK;
 }
 
