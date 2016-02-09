@@ -202,7 +202,7 @@ public func IsLiquidContainerForMaterial(string sznMaterial)
 public func CanBeStackedWith(object other)
 {
 	// Does not take into account the fill level for now.
-	return inherited(other, ...) && (other->~GetBarrelMaterial() == this->GetBarrelMaterial());
+	return inherited(other, ...) && (other->~GetLiquidType() == this->GetLiquidType());
 }
 
 public func CalcValue(object in_base, int for_player)
