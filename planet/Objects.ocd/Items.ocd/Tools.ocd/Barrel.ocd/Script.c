@@ -103,28 +103,25 @@ private func UpdateLiquidContainer()
 	if (LiquidContainerIsEmpty())
 	{
 		SetColor(RGB(0, 0, 0));
-		this.Name = this.Prototype.Name;
 		//Value. Base value is 10.
 		SetProperty("Value", 10); // TODO: this is a bug! The value is shared by barrel (value:12) and metal barrel (value:16)!
 	}
 	else
 	{
-		var liquid_name, color;
+		var color;
 		var material = Material(GetLiquidType());
 		if (material >= 0)
 		{
-			var liquid_name = Translate(Format("Material%s", GetLiquidType()));
 			var tex = GetMaterialVal("TextureOverlay", "Material", material);
 			color = GetAverageTextureColor(tex);
 		}
 		else
 		{
-			liquid_name = GetLiquidType();
 			color = RGB(0, 0, 0);
 		}
 		SetColor(color);
-		this.Name = Format("%s $NameWith$ %s", this.Prototype.Name, liquid_name);
 	}
+	this.Name = GetNameForBarrel(GetLiquidType());
 	return;
 }
 
@@ -247,7 +244,19 @@ func OnFuelRemoved(int amount)
 	return true;
 }
 
+func GetNameForBarrel(string liquid)
+{
+	if (liquid == nil) return this.Prototype.Name;
 
+	var liquid_name = LiquidNames[liquid] ?? "$MaterialUnknown$";
+	var name = Format("%s $NameWith$ %s", this.Prototype.Name, liquid_name);
+	return name;
+}
+
+local LiquidNames = {
+	Oil = "$MaterialOil$",
+	Water = "$MaterialWater$",
+};
 
 public func Definition(proplist def)
 {
