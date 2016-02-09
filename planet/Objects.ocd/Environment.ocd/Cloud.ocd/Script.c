@@ -249,6 +249,9 @@ private func Precipitation()
 	return;
 }
 
+local last_raindrop_color = nil;
+local particle_cache;
+
 // Raindrop somewhere from the cloud.
 private func RainDrop()
 {
@@ -282,13 +285,20 @@ private func RainDrop()
 		// Create rain particles.
 		var particle_name = "Raindrop";
 		var color = GetMaterialColor(mat);
+		if (color != last_raindrop_color)
+		{
+			particle_cache = {};
+			last_raindrop_color = color;
+		}
+
 		if(mat == "Lava" || mat == "DuroLava")
 			particle_name = "RaindropLava";
 
 		// Snow is special.
 		if(mat == "Snow")
 		{
-			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), Particles_Snow(color), 0);
+			particle_cache.snow = particle_cache.snow ?? Particles_Snow(color);
+			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), particle_cache.snow, 0);
 			if (!i)
 			{
 				CastPXS(mat, 1, 0, x, y);
@@ -296,7 +306,8 @@ private func RainDrop()
 			continue;
 		}		
 
-		var particle = Particles_Rain(color);
+		particle_cache.rain = particle_cache.rain ?? Particles_Rain(color);
+		var particle = new particle_cache.rain {};
 		if(Random(2))
 			particle.Attach = ATTACH_Back;
 		CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
@@ -306,13 +317,15 @@ private func RainDrop()
 		var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
 		if (time_passed > 0)
 		{
-			ScheduleCall(this, "DropHit", time_passed, 0, mat, AbsX(x_final), AbsY(y_final), !i);
+			// Don't always create a splash.
+			if (!Random(5) || !i)
+				ScheduleCall(this, "DropHit", time_passed, 0, mat, color, AbsX(x_final), AbsY(y_final), !i);
 		}
 	}
 	return true;
 }
 
-private func DropHit(string material_name, int x_orig, int y_orig, bool create_material)
+private func DropHit(string material_name, int color, int x_orig, int y_orig, bool create_material)
 {
 	// Adjust position so that it's in the air.
 	var x = x_orig, y = y_orig;
@@ -323,10 +336,6 @@ private func DropHit(string material_name, int x_orig, int y_orig, bool create_m
 		InsertMaterial(Material(material_name), x, y);
 	}
 
-	// Don't always create a splash.
-	if (Random(5)) return;
-
-	var color = GetMaterialColor(material_name);
 	// Some material combinations cast smoke
 	// TODO: Figure out some generic way to do this?
 	if(GBackLiquid(x,y) && (material_name == "Acid" || material_name == "Lava" || material_name == "DuroLava") && GetMaterial(x,y) == Material("Water"))
@@ -337,7 +346,8 @@ private func DropHit(string material_name, int x_orig, int y_orig, bool create_m
 	else if(GBackLiquid(x,y))
 	{
 		if(!GBackLiquid(x-1,y) || !GBackLiquid(x+1,y)) y += 1;
-		CreateParticle("RaindropSplashLiquid", x, y, 0, 0, 50, Particles_SplashWater(color), 0);
+		particle_cache.splash_water = particle_cache.splash_water ?? Particles_SplashWater(color);
+		CreateParticle("RaindropSplashLiquid", x, y, 0, 0, 50, particle_cache.splash_water, 0);
 	}
 	// Solid? normal splash!
 	else
@@ -346,9 +356,15 @@ private func DropHit(string material_name, int x_orig, int y_orig, bool create_m
 			Smoke(x, y, 3, RGB(150,160,150));
 		CreateParticle("RaindropSplash", x, y-1, 0, 0, 5, Particles_Splash(color), 0);
 		if(material_name == "Ice")
-			CreateParticle("Hail", x, y, RandomX(-2,2), -Random(10), PV_Random(300, 300), Particles_Hail(color), 0);
+		{
+			particle_cache.hail = particle_cache.hail ?? Particles_Hail(color);
+			CreateParticle("Hail", x, y, RandomX(-2,2), -Random(10), PV_Random(300, 300), particle_cache.hail, 0);
+		}
 		else
-			CreateParticle("RaindropSmall", x, y, RandomX(-4, 4), -Random(10), PV_Random(300, 300), Particles_RainSmall(color), 0);
+		{
+			particle_cache.small_rain = particle_cache.small_rain ?? Particles_RainSmall(color);
+			CreateParticle("RaindropSmall", x, y, RandomX(-4, 4), -Random(10), PV_Random(300, 300), particle_cache.small_rain, 0);
+		}
 	}
 }
 
