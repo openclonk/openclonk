@@ -275,15 +275,22 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 			::PXS.Draw(cgo);
 		C4ST_STOP(PXSStat)
 
-			// draw objects
-			C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-			::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
+		// Draw objects which are behind the particle plane.
+		const int particlePlane = 900;
+		C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects (1)")
+			::Objects.Draw(cgo, Player, 1, particlePlane);
 		C4ST_STOP(ObjStat)
 
-			// draw global dynamic particles
-			C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
+		// Draw global dynamic particles on a specific Plane
+		// to enable scripters to put objects both behind and in front of particles.
+		C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
 			::Particles.DrawGlobalParticles(cgo);
 		C4ST_STOP(PartStat)
+
+		// Now the remaining objects in front of the particles (e.g. GUI elements)
+		C4ST_STARTNEW(Obj2Stat, "C4Viewport::Draw: Objects (2)")
+			::Objects.Draw(cgo, Player, particlePlane + 1, 2147483647 /* INT32_MAX */);
+		C4ST_STOP(Obj2Stat)
 
 			// Draw everything else without FoW
 			pDraw->SetFoW(NULL);

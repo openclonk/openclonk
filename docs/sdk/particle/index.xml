@@ -149,7 +149,7 @@
 		<row>
           <col>Attach</col>
           <col>bit mask</col>
-          <col>Defines the attachment of the particles to the calling object. Can be a combination of ATTACH_Front, ATTACH_Back, and ATTACH_MoveRelative. For example <code>ATTACH_Front | ATTACH_MoveRelative</code></col>
+          <col>Defines the attachment of the particles to the calling object. Can be a combination of ATTACH_Front, ATTACH_Back, and ATTACH_MoveRelative. For example <code>ATTACH_Front | ATTACH_MoveRelative. Non-attached particles are drawn on plane 900 (i.e. before most objects).</code></col>
         </row>
       </table>
     </text>
