@@ -123,7 +123,7 @@ void C4MaterialCore::Clear()
 	MaxSlide = 0;
 	WindDrift = 0;
 	Inflammable = 0;
-	Incindiary = 0;
+	Incendiary = 0;
 	Extinguisher = 0;
 	Corrosive = 0;
 	Corrode = 0;
@@ -183,6 +183,7 @@ bool C4MaterialCore::Load(C4Group &hGroup,
 
 void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 {
+	assert(pComp->hasNaming());
 	if (pComp->isCompiler()) Clear();
 	pComp->Name("Material");
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),      "Name",                ""));
@@ -214,7 +215,27 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MaxSlide,            "MaxSlide",            0));
 	pComp->Value(mkNamingAdapt(WindDrift,           "WindDrift",           0));
 	pComp->Value(mkNamingAdapt(Inflammable,         "Inflammable",         0));
-	pComp->Value(mkNamingAdapt(Incindiary,          "Incindiary",          0));
+	if (pComp->isCompiler())
+	{
+		// The value used to have a wrong spelling ("Incindiary"). If there's
+		// no "Incendiary" value, use the wrong spelling instead
+		try
+		{
+			pComp->Value(mkNamingAdapt(Incendiary, "Incendiary"));
+		}
+		catch (StdCompiler::NotFoundException *ex)
+		{
+			delete ex;
+			pComp->Value(mkNamingAdapt(Incendiary, "Incindiary", 0));
+		}
+	}
+	else
+	{
+		// When serializing, write both spellings because some script might be
+		// calling GetMaterialVal with the wrong one
+		pComp->Value(mkNamingAdapt(Incendiary, "Incendiary"));
+		pComp->Value(mkNamingAdapt(Incendiary, "Incindiary"));
+	}
 	pComp->Value(mkNamingAdapt(Corrode,             "Corrode",             0));
 	pComp->Value(mkNamingAdapt(Corrosive,           "Corrosive",           0));
 	pComp->Value(mkNamingAdapt(Extinguisher,        "Extinguisher",        0));
@@ -371,10 +392,10 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 			else if (pMatPXS && pMatLS)
 			{
 				// incindiary vs extinguisher
-				if ((pMatPXS->Incindiary && pMatLS->Extinguisher) || (pMatPXS->Extinguisher && pMatLS->Incindiary))
+				if ((pMatPXS->Incendiary && pMatLS->Extinguisher) || (pMatPXS->Extinguisher && pMatLS->Incendiary))
 					pReaction = &DefReactPoof;
 				// incindiary vs inflammable
-				else if ((pMatPXS->Incindiary && pMatLS->Inflammable) || (pMatPXS->Inflammable && pMatLS->Incindiary))
+				else if ((pMatPXS->Incendiary && pMatLS->Inflammable) || (pMatPXS->Inflammable && pMatLS->Incendiary))
 					pReaction = &DefReactIncinerate;
 				// corrosive vs corrode
 				else if (pMatPXS->Corrosive && pMatLS->Corrode)
@@ -476,11 +497,11 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 				else
 					for (int32_t cnt2=0; cnt2<Num; cnt2++) SetMatReaction(cnt, cnt2, pReact);
 			}
-			else if (SEqualNoCase(pReact->TargetSpec.getData(), "Incindiary"))
+			else if (SEqualNoCase(pReact->TargetSpec.getData(), "Incendiary") || SEqualNoCase(pReact->TargetSpec.getData(), "Incindiary"))
 			{
 				// add to all incendiary materials
 				if (pReact->fInverseSpec) SetMatReaction(cnt, -1, pReact);
-				for (int32_t cnt2=0; cnt2<Num; cnt2++) if (!Map[cnt2].Incindiary == pReact->fInverseSpec) SetMatReaction(cnt, cnt2, pReact);
+				for (int32_t cnt2=0; cnt2<Num; cnt2++) if (!Map[cnt2].Incendiary == pReact->fInverseSpec) SetMatReaction(cnt, cnt2, pReact);
 			}
 			else if (SEqualNoCase(pReact->TargetSpec.getData(), "Extinguisher"))
 			{
@@ -667,8 +688,8 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 	// Contact: Stop
 	fYDir = -GravAccel;
 
-	// Incindiary mats smoke on contact even before doing their slide
-	if (::MaterialMap.Map[iPxsMat].Incindiary)
+	// Incendiary mats smoke on contact even before doing their slide
+	if (::MaterialMap.Map[iPxsMat].Incendiary)
 		if (!Random(25))
 		{
 			Smoke(iX, iY, 4 + Random(3));

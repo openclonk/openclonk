@@ -995,7 +995,7 @@ bool C4Object::ExecLife()
 	// InMat incineration
 	if (!::Game.iTick10)
 		if (InMat!=MNone)
-			if (::MaterialMap.Map[InMat].Incindiary)
+			if (::MaterialMap.Map[InMat].Incendiary)
 				if (GetPropertyInt(P_ContactIncinerate) > 0)
 				{
 					Call(PSF_OnInIncendiaryMaterial, &C4AulParSet());

@@ -106,7 +106,7 @@ public:
 	int32_t  MaxSlide;
 	int32_t  WindDrift;
 	int32_t  Inflammable;
-	int32_t  Incindiary;
+	int32_t  Incendiary;
 	int32_t  Extinguisher;
 	int32_t  Corrosive;
 	int32_t  Corrode;
