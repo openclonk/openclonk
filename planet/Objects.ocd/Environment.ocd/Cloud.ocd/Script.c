@@ -360,6 +360,13 @@ private func RainDrop()
 	return true;
 }
 
+// Checks whether the given material might smoke when in contact with water.
+private func SmokeyMaterial(string material_name)
+{
+	var mat = Material(material_name);
+	return GetMaterialVal("Corrosive", "Material", mat) || GetMaterialVal("Incindiary", "Material", mat);
+}
+
 private func DropHit(string material_name, int color, int x_orig, int y_orig, bool create_material)
 {
 	// Adjust position so that it's in the air.
@@ -371,9 +378,8 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig, bo
 		InsertMaterial(Material(material_name), x, y);
 	}
 
-	// Some material combinations cast smoke
-	// TODO: Figure out some generic way to do this?
-	if(GBackLiquid(x,y) && (material_name == "Acid" || material_name == "Lava" || material_name == "DuroLava") && GetMaterial(x,y) == Material("Water"))
+	// Some materials cast smoke when hitting water.
+	if (GetMaterial(x,y) == Material("Water") && SmokeyMaterial(material_name))
 	{
 		Smoke(x, y, 3, RGB(150,160,150));
 	}
