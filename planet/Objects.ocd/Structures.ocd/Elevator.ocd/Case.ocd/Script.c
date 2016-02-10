@@ -639,7 +639,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	if (IsSlave()) 
 		return Control2Master("ControlUseStart", clonk, x, y);
 	MoveTo(GetY() + y, 0, nil, true);
-	Sound("UI::Click", nil, nil, clonk->GetOwner());
+	Sound("UI::Click", {player = clonk->GetOwner()});
 	// Do not trigger a UseStop-callback.
 	return false;
 }
@@ -669,7 +669,7 @@ public func ControlUp(object clonk)
 	// what is that player even doing
 	if (GetY() <= elevator->GetY() + 20)
 	{
-		Sound("UI::Click", nil, nil, clonk->GetOwner());
+		Sound("UI::Click", {player = clonk->GetOwner()});
 		return true;
 	}
 	

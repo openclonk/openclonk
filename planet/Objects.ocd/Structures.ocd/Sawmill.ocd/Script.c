@@ -244,8 +244,8 @@ private func SpinOn(int diff)
 		rotate = 0;
 		SetMeshMaterial("SawmillBlade.Spin", 2);
 		running = true;
-		Sound("Structures::SawmillRipcut", nil, nil, nil, +1);
-		Sound("Sawmill::EngineLoop", nil, nil, nil, +1);
+		Sound("Structures::SawmillRipcut", {loop_count = +1});
+		Sound("Sawmill::EngineLoop", {loop_count = +1});
 	}
 
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(-20, 0, 1, 0), Trans_Rotate(rotate, 1, 0, 0)));
@@ -260,14 +260,14 @@ private func SpinOff(int call)
 		running = false;
 		spin = 50;
 		SetMeshMaterial("SawmillBlade", 2);
-		Sound("Structures::SawmillRipcut", nil, nil, nil, -1);
+		Sound("Structures::SawmillRipcut", {loop_count = -1});
 		SetProperty("MeshTransformation", Trans_Rotate(-20, 0, 1, 0));
 	}
 	if (call == 1) spin = 75;
 	if (call == 2)
 	{
 		spin = 100;
-		Sound("Sawmill::EngineLoop", nil, nil, nil, -1);
+		Sound("Sawmill::EngineLoop", {loop_count = -1});
 		Sound("Sawmill::EngineStop");
 	}
 	if (call == 3) spin = 150;
