@@ -231,24 +231,6 @@ func IsFuel()
 	return WildcardMatch("Oil", GetLiquidType());
 }
 
-// Gets the amount of fuel that is stored in the barrel
-func GetFuelAmount(bool partial)
-{
-	if (partial)
-	{
-		return SteamEngine->GetFuelValue(GetLiquidType(), GetLiquidFillLevel());
-	}
-
-	return SteamEngine->GetFuelValue(GetLiquidType(), GetLiquidContainerMaxFillLevel());
-}
-
-// Callback from the steam engine: if this returns true, then the barrel is not removed
-func OnFuelRemoved(int amount)
-{
-	RemoveLiquid(nil, amount);
-	return true;
-}
-
 func GetNameForBarrel(string liquid)
 {
 	if (liquid == nil) return this.Prototype.Name;

@@ -144,15 +144,15 @@ func RefillFuel(bool cancel)
 		// Search for new fuel among the contents.
 		var fuel = GetFuelContents();
 
-		if (!fuel)
+		if (!fuel || fuel->~IsLiquidContainer())
 		{
+			fuel = fuel ?? this;
 			// Extract the fuel amount from stored liquids
-			var fuel_stored = RemoveLiquid(nil, nil);
+			var fuel_stored = fuel->RemoveLiquid(nil, nil);
 			fuel_extracted = GetFuelValue(fuel_stored[0], fuel_stored[1]);
 		}
 		else
 		{
-			// Extract the fuel amount from the new piece of fuel.
 			fuel_extracted = fuel->~GetFuelAmount(true);
 			if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
 		}
