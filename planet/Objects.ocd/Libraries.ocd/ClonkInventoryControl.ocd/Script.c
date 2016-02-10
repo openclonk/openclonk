@@ -63,79 +63,88 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
-	if (ctrl == CON_Use && !this->GetHandItem(0) && !release)
+	// Collection and dropping is only allowed when the Clonk is not contained.
+	if (!Contained())
 	{
-		var sort = Sort_Distance(x, y);
-		var items = FindAllPickupItems(sort);
-		for (var item in items)
+		// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
+		if (ctrl == CON_Use && !this->GetHandItem(0) && !release)
 		{
-			if (item && TryToCollect(item)) return true;
+			var sort = Sort_Distance(x, y);
+			var items = FindAllPickupItems(sort);
+			for (var item in items)
+			{
+				if (item && TryToCollect(item)) return true;
+			}
 		}
-	}
-	
-	// Begin picking up objects.
-	if (ctrl == CON_PickUp && !release)
-	{
-		this->CancelUse();
-		BeginPickingUp();
-		return true;
-	}
-	
-	// Drop the mouse item?
-	if (ctrl == CON_Drop && !release)
-	{
-		// Do not immediately collect another thing unless chosen with left/right.
+		
+		// Begin picking up objects.
+		if (ctrl == CON_PickUp && !release)
+		{
+			this->CancelUse();
+			BeginPickingUp();
+			return true;
+		}
+		
+		// Drop the mouse item?
+		if (ctrl == CON_Drop && !release)
+		{
+			// Do not immediately collect another thing unless chosen with left/right.
+			if (this.inventory.is_picking_up)
+			{
+				SetNextPickupItem(nil);
+			}
+			
+			var item = this->GetHandItem(0);
+			if (item)
+				this->DropInventoryItem(this->GetHandItemPos(0));
+			return true;
+		}
+		
+		
+		// Switching pickup object or finish pickup?
 		if (this.inventory.is_picking_up)
 		{
-			SetNextPickupItem(nil);
+			// Stop picking up.
+			if (ctrl == CON_PickUpNext_Stop)
+			{
+				AbortPickingUp();
+				return true;
+			}
+			
+			// Quickly pick up everything possible.
+			if (ctrl == CON_PickUpNext_All)
+			{
+				PickUpAll();
+				AbortPickingUp();
+				return true;
+			}
+			
+			// Finish picking up (aka "collect").
+			if (ctrl == CON_PickUp && release)
+			{
+				EndPickingUp();
+				return true;
+			}
+			
+			// Switch left/right through objects.
+			var dir = nil;
+			if (ctrl == CON_PickUpNext_Left) dir = -1;
+			else if (ctrl == CON_PickUpNext_Right) dir = 1;
+			
+			if (dir != nil)
+			{
+				var item = FindNextPickupObject(this.inventory.pickup_item, dir);
+				if (item)
+					SetNextPickupItem(item);
+				return true;
+			}
 		}
-		
-		var item = this->GetHandItem(0);
-		if (item)
-			this->DropInventoryItem(this->GetHandItemPos(0));
-		return true;
 	}
-	
-	// Switching pickup object or finish pickup?
-	if (this.inventory.is_picking_up)
+	else // Contained
 	{
-		// Stop picking up.
-		if (ctrl == CON_PickUpNext_Stop)
-		{
-			AbortPickingUp();
-			return true;
-		}
-		
-		// Quickly pick up everything possible.
-		if (ctrl == CON_PickUpNext_All)
-		{
-			PickUpAll();
-			AbortPickingUp();
-			return true;
-		}
-		
-		// Finish picking up (aka "collect").
-		if (ctrl == CON_PickUp && release)
-		{
-			EndPickingUp();
-			return true;
-		}
-		
-		// Switch left/right through objects.
-		var dir = nil;
-		if (ctrl == CON_PickUpNext_Left) dir = -1;
-		else if (ctrl == CON_PickUpNext_Right) dir = 1;
-		
-		if (dir != nil)
-		{
-			var item = FindNextPickupObject(this.inventory.pickup_item, dir);
-			if (item)
-				SetNextPickupItem(item);
-			return true;
-		}
+		// If we are contained, have a picking up process running, and issue another command we first stop the selection.
+		if (this.inventory.is_picking_up) AbortPickingUp();
 	}
-	
 	
 	// shift inventory
 	var inventory_shift = 0;
