@@ -1150,13 +1150,10 @@ global func Test21_OnStart(int plr)
 	drain->ConnectPipeTo(engine);
 	
 	// Power consumer: armory.
-	var armory = CreateObjectAbove(Armory, 280, 160, plr);
+	var armory = CreateObjectAbove(Armory, 255, 160, plr);
 	armory->CreateContents(Firestone, 10);
 	armory->CreateContents(Metal, 10);
 	armory->AddToQueue(IronBomb, 10);
-
-	// Power connection: flagpole.
-	CreateObjectAbove(Flagpole, 304, 140, plr);	 
 
 	// Log what the test is about.
 	Log("A steam engine fueled by an oil field via pump.");
