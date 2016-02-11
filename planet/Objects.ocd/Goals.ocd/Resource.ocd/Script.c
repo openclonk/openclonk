@@ -29,8 +29,7 @@ public func SetResource(string resource)
 	resource_list[list_end] = resource;
 	var material = Material(resource);
 	var mat_cnt = GetMaterialCount(material);
-	var blast_ratio = GetBlastRatio(material);
-	tolerance_list[list_end] = Max(1, mat_cnt / blast_ratio / 20);
+	tolerance_list[list_end] = Max(1, ExploitableObjectCount(mat_cnt, material) / 20);
 	return;
 }
 
@@ -92,8 +91,7 @@ public func GetDescription(int plr)
 			var mat_cnt = GetMaterialCount(material);
 			var res_id = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
-			var blast_ratio = GetBlastRatio(material);
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - ObjectCount2MaterialCount(tol, material)) / blast_ratio), available_object_count);
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, ExploitableObjectCount(mat_cnt - ObjectCount2MaterialCount(tol, material))), available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -127,8 +125,7 @@ public func Activate(int plr)
 			var mat_cnt = GetMaterialCount(material) * 10 / 11; // subtract some that gets lost on blasting
 			var res_id = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
-			var blast_ratio = GetBlastRatio(material);
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - ObjectCount2MaterialCount(tol, material)) / blast_ratio), available_object_count);
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, ExploitableObjectCount(mat_cnt - ObjectCount2MaterialCount(tol, material))), available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -149,8 +146,7 @@ public func GetShortDescription(int plr)
 		var mat_cnt = GetMaterialCount(material);
 		var res_id = GetBlastID(material);
 		var available_object_count = AvailableObjectCount(material);
-		var blast_ratio = GetBlastRatio(material);
-		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - ObjectCount2MaterialCount(tol, material)) / blast_ratio) + available_object_count);
+		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, ExploitableObjectCount(mat_cnt - ObjectCount2MaterialCount(tol, material), material)) + available_object_count);
 	}	
 	return msg;
 }
@@ -169,6 +165,12 @@ func GetBlastID(int material)
 func AvailableObjectCount(int material)
 {
 	return ObjectCount(Find_ID(GetBlastID(material)));
+}
+
+/** Gets the number of objects that can be exploited from a material, based on material count. */
+func ExploitableObjectCount(int material_count, int material)
+{
+	return material_count / GetBlastRatio(material);
 }
 
 /** Converts a number of objects to the amount of material
