@@ -136,6 +136,11 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 	[controller setContentSize:NSMakeSize(cx, cy)];
 }
 
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
+}
+
 void C4Window::RequestUpdate()
 {
 	[ctrler.openGLView display];
