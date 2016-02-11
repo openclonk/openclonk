@@ -66,8 +66,9 @@ public func IsFulfilled()
 		var material = Material(resource_list[i]);
 		var tol = tolerance_list[i];
 		var exploitable_units = GetMaterialCount(material);
+		var tolerance_units = ObjectCount2MaterialCount(tol, material);
 		// Still solid material to be mined.
-		if (exploitable_units == -1 || exploitable_units > ObjectCount2MaterialCount(tol, material))
+		if (exploitable_units == -1 || exploitable_units > tolerance_units)
 			return false; 
 		// Still objects of material to be collected.
 		if (AvailableObjectCount(material) > 0)
@@ -93,9 +94,11 @@ public func GetDescription(int plr)
 			var material = Material(resource_list[i]);
 			var tol = tolerance_list[i];
 			var exploitable_units = GetMaterialCount(material);
+			var tolerance_units = ObjectCount2MaterialCount(tol, material);
 			var res_id = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, ExploitableObjectCount(exploitable_units - ObjectCount2MaterialCount(tol, material))), available_object_count);
+			var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units));
+			var add_msg = Format("$MsgGoalResource$", res_id, exploitable_object_count, available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -127,9 +130,11 @@ public func Activate(int plr)
 			var material = Material(resource_list[i]);
 			var tol = tolerance_list[i];
 			var exploitable_units = GetMaterialCount(material) * 10 / 11; // subtract some that gets lost on blasting
+			var tolerance_units = ObjectCount2MaterialCount(tol, material);
 			var res_id = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, ExploitableObjectCount(exploitable_units - ObjectCount2MaterialCount(tol, material))), available_object_count);
+			var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units));
+			var add_msg = Format("$MsgGoalResource$", res_id, exploitable_object_count, available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -148,9 +153,11 @@ public func GetShortDescription(int plr)
 		var material = Material(resource_list[i]);
 		var tol = tolerance_list[i];
 		var exploitable_units = GetMaterialCount(material);
+		var tolerance_units = ObjectCount2MaterialCount(tol, material);
 		var res_id = GetBlastID(material);
 		var available_object_count = AvailableObjectCount(material);
-		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, ExploitableObjectCount(exploitable_units - ObjectCount2MaterialCount(tol, material), material)) + available_object_count);
+		var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units, material));
+		msg = Format("%s{{%i}}: %d ", msg, res_id, exploitable_object_count + available_object_count);
 	}	
 	return msg;
 }
