@@ -12,7 +12,7 @@
 #include Library_Goal
 
 local resource_list; // List of materials to be mined.
-local tolerance_list; // List of initial counts of materials.
+local tolerance_list; // List of ignorable amounts of available objects.
 
 protected func Initialize()
 {
@@ -36,11 +36,11 @@ public func SetResource(string resource)
 
 /*-- Scenario saving --*/
 
-public func SaveResource(string resource, int init_cnt)
+public func SaveResource(string resource, int tolerance_count)
 {
 	var list_end = GetLength(resource_list);
 	resource_list[list_end] = resource;
-	tolerance_list[list_end] = init_cnt;
+	tolerance_list[list_end] = tolerance_count;
 	return;
 }
 
@@ -63,9 +63,8 @@ public func IsFulfilled()
 		var material = Material(resource_list[i]);
 		var tol = tolerance_list[i];
 		var mat_cnt = GetMaterialCount(material);
-		var blast_ratio = GetBlastRatio(material);
 		// Still solid material to be mined.
-		if (mat_cnt == -1 || mat_cnt > (2 * tol + 1) * blast_ratio / 2)
+		if (mat_cnt == -1 || mat_cnt > ObjectCount2MaterialCount(tol, material))
 			return false; 
 		// Still objects of material to be collected.
 		if (AvailableObjectCount(material) > 0)
@@ -94,7 +93,7 @@ public func GetDescription(int plr)
 			var res_id = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
 			var blast_ratio = GetBlastRatio(material);
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), available_object_count);
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - ObjectCount2MaterialCount(tol, material)) / blast_ratio), available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -129,7 +128,7 @@ public func Activate(int plr)
 			var res_id = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
 			var blast_ratio = GetBlastRatio(material);
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), available_object_count);
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - ObjectCount2MaterialCount(tol, material)) / blast_ratio), available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -151,7 +150,7 @@ public func GetShortDescription(int plr)
 		var res_id = GetBlastID(material);
 		var available_object_count = AvailableObjectCount(material);
 		var blast_ratio = GetBlastRatio(material);
-		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio) + available_object_count);
+		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - ObjectCount2MaterialCount(tol, material)) / blast_ratio) + available_object_count);
 	}	
 	return msg;
 }
@@ -170,6 +169,14 @@ func GetBlastID(int material)
 func AvailableObjectCount(int material)
 {
 	return ObjectCount(Find_ID(GetBlastID(material)));
+}
+
+/** Converts a number of objects to the amount of material
+    that would have to be exploited in order to receive that
+    amount of objects. */
+func ObjectCount2MaterialCount(int count, int material)
+{
+	return (2 * count + 1) * GetBlastRatio(material) / 2;
 }
 
 /*-- Proplist --*/
