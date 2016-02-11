@@ -119,3 +119,8 @@ void C4Window::RequestUpdate()
 void C4Window::FlashWindow()
 {
 }
+
+void C4Window::GrabMouse(bool grab)
+{
+	SDL_SetWindowGrab(window, grab ? SDL_TRUE : SDL_FALSE);
+}

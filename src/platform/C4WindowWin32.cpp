@@ -761,6 +761,11 @@ void C4Window::FlashWindow()
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
 }
 
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
+}
+
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
 #ifndef USE_CONSOLE
