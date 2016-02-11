@@ -27,8 +27,9 @@ public func SetResource(string resource)
 {
 	var pos = GetLength(resource_list);
 	resource_list[pos] = resource;
-	var mat_cnt = GetMaterialCount(Material(resource));
-	var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(resource));
+	var material = Material(resource);
+	var mat_cnt = GetMaterialCount(material);
+	var blast_ratio = GetBlastRatio(material);
 	tolerance_list[pos] = Max(1, mat_cnt / blast_ratio / 20);
 	return;
 }
@@ -61,12 +62,13 @@ public func IsFulfilled()
 	{
 		var mat = resource_list[i];
 		var tol = tolerance_list[i];
-		var mat_cnt = GetMaterialCount(Material(mat));
-		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+		var material = Material(mat);
+		var mat_cnt = GetMaterialCount(material);
+		var blast_ratio = GetBlastRatio(material);
 		// Still solid material to be mined.
 		if (mat_cnt == -1 || mat_cnt > (2 * tol + 1) * blast_ratio / 2)
 			return false; 
-		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
+		var res_id = GetBlastID(material);
 		// Still objects of material to be collected.
 		if (ObjectCount(Find_ID(res_id)) > 0)
 			return false; 
@@ -90,10 +92,11 @@ public func GetDescription(int plr)
 		{
 			var mat = resource_list[i];
 			var tol = tolerance_list[i];
-			var mat_cnt = GetMaterialCount(Material(mat));
-			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
+			var material = Material(mat);
+			var mat_cnt = GetMaterialCount(material);
+			var res_id = GetBlastID(material);
 			var res_cnt = ObjectCount(Find_ID(res_id));
-			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+			var blast_ratio = GetBlastRatio(material);
 			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), res_cnt);
 			message = Format("%s%s", message, add_msg);
 		}
@@ -125,10 +128,11 @@ public func Activate(int plr)
 		{
 			var mat = resource_list[i];
 			var tol = tolerance_list[i];
-			var mat_cnt = GetMaterialCount(Material(mat)) * 10 / 11; // subtract some that gets lost on blasting
-			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
+			var material = Material(mat);
+			var mat_cnt = GetMaterialCount(material) * 10 / 11; // subtract some that gets lost on blasting
+			var res_id = GetBlastID(material);
 			var res_cnt = ObjectCount(Find_ID(res_id));
-			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+			var blast_ratio = GetBlastRatio(material);
 			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), res_cnt);
 			message = Format("%s%s", message, add_msg);
 		}
@@ -147,13 +151,24 @@ public func GetShortDescription(int plr)
 	{
 		var mat = resource_list[i];
 		var tol = tolerance_list[i];
-		var mat_cnt = GetMaterialCount(Material(mat));
-		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
+		var material = Material(mat);
+		var mat_cnt = GetMaterialCount(material);
+		var res_id = GetBlastID(material);
 		var res_cnt = ObjectCount(Find_ID(res_id));
-		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+		var blast_ratio = GetBlastRatio(material);
 		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio) + res_cnt);
 	}	
 	return msg;
+}
+
+func GetBlastRatio(int material)
+{
+	return GetMaterialVal("Blast2ObjectRatio", "Material", material);
+}
+
+func GetBlastID(int material)
+{
+	return GetMaterialVal("Blast2Object", "Material", material);
 }
 
 /*-- Proplist --*/
