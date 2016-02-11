@@ -1,9 +1,13 @@
 /*-- 
 	Resource Extraction
-	Author: Maikel
+	Author: Maikel, Marky
 	
 	Player must extract the resources of the specified type, the
-	tolerance of this goal is 5% currently.
+	tolerance of this goal is 5% currently, if no percentage of
+	exploitation is specified.
+	
+	Additionally, the scenario designer can specify a percentage
+	of material to be exploited, between 5% and 95%.
 		
 	TODO: Expand to liquids and digable materials.
 --*/
@@ -23,17 +27,22 @@ protected func Initialize()
 
 /*-- Resources --*/
 
-public func SetResource(string resource)
+public func SetResource(string resource, int percent)
 {
 	var list_end = GetLength(resource_list);
 	resource_list[list_end] = resource;
+	
+	// Assume that all objects, with 5% tolerance, have to be exploited if no percentage is specified 
+	percent = BoundBy(percent ?? 95, 5, 95);
 
 	var material = Material(resource);
 	var exploitable_units = GetMaterialCount(material);
 	var exploitable_objects = ExploitableObjectCount(exploitable_units, material);
+	
+	var target_objects = percent * exploitable_objects / 100;
 
 	// Calculate 100 / 20 = 5% of the exploitable objects as tolerance
-	tolerance_list[list_end] = Max(1, exploitable_objects / 20);
+	tolerance_list[list_end] = Max(1, exploitable_objects - target_objects);
 	return;
 }
 
