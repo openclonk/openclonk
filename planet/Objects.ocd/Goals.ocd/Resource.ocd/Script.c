@@ -25,12 +25,12 @@ protected func Initialize()
 
 public func SetResource(string resource)
 {
-	var pos = GetLength(resource_list);
-	resource_list[pos] = resource;
+	var list_end = GetLength(resource_list);
+	resource_list[list_end] = resource;
 	var material = Material(resource);
 	var mat_cnt = GetMaterialCount(material);
 	var blast_ratio = GetBlastRatio(material);
-	tolerance_list[pos] = Max(1, mat_cnt / blast_ratio / 20);
+	tolerance_list[list_end] = Max(1, mat_cnt / blast_ratio / 20);
 	return;
 }
 
@@ -38,9 +38,9 @@ public func SetResource(string resource)
 
 public func SaveResource(string resource, int init_cnt)
 {
-	var pos = GetLength(resource_list);
-	resource_list[pos] = resource;
-	tolerance_list[pos] = init_cnt;
+	var list_end = GetLength(resource_list);
+	resource_list[list_end] = resource;
+	tolerance_list[list_end] = init_cnt;
 	return;
 }
 
@@ -60,9 +60,8 @@ public func IsFulfilled()
 {
 	for (var i = 0; i < GetLength(resource_list); i++)
 	{
-		var mat = resource_list[i];
+		var material = Material(resource_list[i]);
 		var tol = tolerance_list[i];
-		var material = Material(mat);
 		var mat_cnt = GetMaterialCount(material);
 		var blast_ratio = GetBlastRatio(material);
 		// Still solid material to be mined.
@@ -90,9 +89,8 @@ public func GetDescription(int plr)
 		message = "$MsgGoalExtraction$";
 		for (var i = 0; i < GetLength(resource_list); i++)
 		{
-			var mat = resource_list[i];
+			var material = Material(resource_list[i]);
 			var tol = tolerance_list[i];
-			var material = Material(mat);
 			var mat_cnt = GetMaterialCount(material);
 			var res_id = GetBlastID(material);
 			var res_cnt = ObjectCount(Find_ID(res_id));
@@ -126,9 +124,8 @@ public func Activate(int plr)
 		message = "@$MsgGoalExtraction$";
 		for (var i = 0; i < GetLength(resource_list); i++)
 		{
-			var mat = resource_list[i];
+			var material = Material(resource_list[i]);
 			var tol = tolerance_list[i];
-			var material = Material(mat);
 			var mat_cnt = GetMaterialCount(material) * 10 / 11; // subtract some that gets lost on blasting
 			var res_id = GetBlastID(material);
 			var res_cnt = ObjectCount(Find_ID(res_id));
@@ -149,9 +146,8 @@ public func GetShortDescription(int plr)
 	var msg = "";
 	for (var i = 0; i < GetLength(resource_list); i++)
 	{
-		var mat = resource_list[i];
+		var material = Material(resource_list[i]);
 		var tol = tolerance_list[i];
-		var material = Material(mat);
 		var mat_cnt = GetMaterialCount(material);
 		var res_id = GetBlastID(material);
 		var res_cnt = ObjectCount(Find_ID(res_id));
