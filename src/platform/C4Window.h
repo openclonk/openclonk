@@ -381,6 +381,7 @@ public:
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
+	void GrabMouse(bool grab);
 	// request that this window be redrawn in the near future (including immediately)
 	virtual void RequestUpdate();
 	// Invokes actual drawing code - should not be called directly

@@ -31,45 +31,20 @@
 
 static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& flags)
 {
-	C4TimeMilliseconds lastLeftClick = C4TimeMilliseconds::Now();
-	C4TimeMilliseconds lastRightClick = C4TimeMilliseconds::Now();
-	static int lastX = 0, lastY = 0;
-	
-	static const int clickDist = 2;
-	static const int clickDelay = 400;
-	
 	button = C4MC_Button_None;
-	flags = 0;
+	flags = SDL_GetModState();
 
 	switch (e.button)
 	{
 	case SDL_BUTTON_LEFT:
 		if (e.state == SDL_PRESSED)
-			if (C4TimeMilliseconds::Now() - lastLeftClick < clickDelay && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
-			{
-				lastLeftClick = 0;
-				button = C4MC_Button_LeftDouble;
-			}
-			else
-			{
-				lastLeftClick = C4TimeMilliseconds::Now();
-				button = C4MC_Button_LeftDown;
-			}
+			button = e.clicks == 2 ? C4MC_Button_LeftDouble : C4MC_Button_LeftDown;
 		else
 			button = C4MC_Button_LeftUp;
 		break;
 	case SDL_BUTTON_RIGHT:
 		if (e.state == SDL_PRESSED)
-			if (C4TimeMilliseconds::Now() - lastRightClick < clickDelay)
-			{
-				lastRightClick = 0;
-				button = C4MC_Button_RightDouble;
-			}
-			else
-			{
-				lastRightClick = C4TimeMilliseconds::Now();
-				button = C4MC_Button_RightDown;
-			}
+			button = e.clicks == 2 ? C4MC_Button_RightDouble : C4MC_Button_RightDown;
 		else
 			button = C4MC_Button_RightUp;
 		break;
@@ -79,17 +54,7 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 		else
 			button = C4MC_Button_MiddleUp;
 		break;
-	/*case SDL_BUTTON_WHEELUP:
-		button = C4MC_Button_Wheel;
-		flags = (+32) << 16;
-		break;
-	case SDL_BUTTON_WHEELDOWN:
-		button = C4MC_Button_Wheel;
-		flags = (-32) << 16;
-		break;*/
 	}
-	lastX = e.x;
-	lastY = e.y;
 }
 
 /* C4AbstractApp */
@@ -156,6 +121,7 @@ bool C4AbstractApp::FlushMessages()
 
 void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 {
+	DWORD flags;
 	// Directly handle QUIT messages.
 	switch (e.type)
 	{
@@ -186,9 +152,15 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 	case SDL_MOUSEBUTTONUP:
 	case SDL_MOUSEBUTTONDOWN:
 		int32_t button;
-		DWORD flags;
 		sdlToC4MCBtn(e.button, button, flags);
 		C4GUI::MouseMove(button, e.button.x, e.button.y, flags, NULL);
+		break;
+	case SDL_MOUSEWHEEL:
+		flags = e.wheel.y > 0 ? (+32) << 16 : (DWORD) (-32) << 16;
+		flags += SDL_GetModState();
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		C4GUI::MouseMove(C4MC_Button_Wheel, x, y, flags, NULL);
 		break;
 	case SDL_JOYAXISMOTION:
 	case SDL_JOYHATMOTION:

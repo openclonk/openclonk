@@ -695,12 +695,16 @@ void C4Application::GameTick()
 		}
 		if(Config.Graphics.Windowed == 2 && FullScreenMode())
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
+		if (!isEditor)
+			pWindow->GrabMouse(true);
 		break;
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
 		if(Config.Graphics.Windowed == 2 && !NextMission && !isEditor)
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
+		if (!isEditor)
+			pWindow->GrabMouse(false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
 		if (NextMission)

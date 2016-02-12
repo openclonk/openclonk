@@ -605,6 +605,11 @@ void C4Window::FlashWindow()
 	//FIXME - how is this reset? gtk_window_set_urgency_hint(window, true);
 }
 
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
+}
+
 C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
