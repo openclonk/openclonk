@@ -456,11 +456,6 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
-static int GLXErrorHandler(Display * dpy, XErrorEvent * ev)
-{
-    return 0;
-}
-
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
@@ -497,10 +492,9 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	if (glXCreateContextAttribsARB)
 	{
-		int (*oldErrorHandler) (Display *, XErrorEvent *) = XSetErrorHandler(GLXErrorHandler);
+		gdk_x11_display_error_trap_push(gdk_display_get_default());
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
-		XSync(dpy, False);
-		XSetErrorHandler(oldErrorHandler);
+		gdk_x11_display_error_trap_pop_ignored(gdk_display_get_default());
 	}
 	if(!ctx) {
 		Log("  gl: falling back to attribute-less context creation.");
