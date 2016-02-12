@@ -50,7 +50,6 @@
 #define C4AUL_Return        "return"
 #define C4AUL_Var           "Var"
 #define C4AUL_Par           "Par"
-#define C4AUL_Goto          "goto"
 #define C4AUL_Break         "break"
 #define C4AUL_Continue      "continue"
 #define C4AUL_Inherited     "inherited"
