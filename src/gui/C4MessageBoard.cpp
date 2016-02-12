@@ -215,9 +215,12 @@ void C4MessageBoard::LogNotify()
 	// Reset
 	iBackScroll=0;
 	// Draw
-	Draw(Output);
-	// startup: Draw message board only and do page flip
-	if (Startup) FullScreen.pSurface->PageFlip();
+	if (pDraw)
+	{
+		Draw(Output);
+		// startup: Draw message board only and do page flip
+		if (Startup) FullScreen.pSurface->PageFlip();
+	}
 }
 
 C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
