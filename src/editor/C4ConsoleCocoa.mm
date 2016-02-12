@@ -171,7 +171,7 @@ void C4ConsoleGUI::PropertyDlgClose()
 	[ctrler(this).objectsPanel orderOut:nil];
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update)
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *)
 {	
 	if (![ctrler(this).objectsPanel isVisible])
 		return;

@@ -23,6 +23,7 @@
 #include "C4ObjectList.h"
 #include "C4Control.h"
 #include "C4Rect.h"
+#include "C4Value.h"
 #include <vector>
 
 #ifdef USE_GTK
@@ -61,7 +62,9 @@ protected:
 	GtkWidget* itemGrabContents;
 	GtkWidget* itemProperties;
 #endif
+	// Selection may either be any number of objects or a single non-object prop list
 	C4ObjectList Selection;
+	C4Value proplist_selection;
 public:
 	void Default();
 	void Clear();

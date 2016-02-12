@@ -1,0 +1,990 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>955</width>
+    <height>578</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>EDITOR</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QComboBox" name="foregroundMatTexComboBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QComboBox::AdjustToContents</enum>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="backgroundMatTexComboBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QComboBox::AdjustToContents</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="drawSizeSlider">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>10</y>
+      <width>100</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>100</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="drawSizeLabel">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>10</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string comment="res">IDS_CTL_SIZE</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>955</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string comment="res">IDS_MNU_FILE</string>
+    </property>
+    <addaction name="actionFileOpen"/>
+    <addaction name="actionFileOpenWithPlayers"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileRecord"/>
+    <addaction name="actionFileSaveScenario"/>
+    <addaction name="actionFileSaveScenarioAs"/>
+    <addaction name="actionFileSaveGameAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileClose"/>
+    <addaction name="actionFileQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuPlayers">
+    <property name="title">
+     <string comment="res">IDS_MNU_PLAYER</string>
+    </property>
+    <addaction name="actionPlayerJoin"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string comment="res">?</string>
+    </property>
+    <addaction name="actionHelpAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string comment="res">IDS_MNU_WINDOWS</string>
+    </property>
+    <addaction name="actionViewportNew"/>
+   </widget>
+   <widget class="QMenu" name="menuNet">
+    <property name="title">
+     <string comment="res">IDS_MNU_NET</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuPlayers"/>
+   <addaction name="menuWindows"/>
+   <addaction name="menuNet"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="propertyDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>PROPERTIES</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QFrame" name="userPropertyFrame">
+       <property name="frameShape">
+        <enum>QFrame::HLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="multiSelInfoLabel">
+       <property name="text">
+        <string>SELECTION</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableView" name="propertyTable"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="propertyInputBox">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="logDockWidget">
+   <property name="windowTitle">
+    <string>LOG</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTextEdit" name="logView"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="consoleInputBox">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="creatorDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>CREATOR</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="creatorTreeView"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="creatorModeComboBox"/>
+     </item>
+    </layout>
+    <zorder>creatorModeComboBox</zorder>
+    <zorder>creatorTreeView</zorder>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPlay"/>
+   <addaction name="actionPause"/>
+   <addaction name="separator"/>
+   <addaction name="actionCursorGame"/>
+   <addaction name="actionCursorSelect"/>
+   <addaction name="separator"/>
+   <addaction name="actionCursorDrawPen"/>
+   <addaction name="actionCursorDrawLine"/>
+   <addaction name="actionCursorDrawRect"/>
+   <addaction name="actionCursorFill"/>
+   <addaction name="actionCursorPicker"/>
+   <addaction name="separator"/>
+   <addaction name="actionDynamicLandscape"/>
+   <addaction name="actionStaticLandscape"/>
+   <addaction name="actionExactLandscape"/>
+   <addaction name="separator"/>
+  </widget>
+  <widget class="QDockWidget" name="objectListDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>OBJECTS</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="objectListView"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionPlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Play_Trans.png</normaloff>
+     <normalon>:/editor/res/Play_Trans.png</normalon>:/editor/res/Play_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>PLAY</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_UNPAUSETHEGAME</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Halt_Trans.png</normaloff>:/editor/res/Halt_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>PAUSE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_TEXT_PAUSETHEGAME</string>
+   </property>
+  </action>
+  <action name="actionCursorGame">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Mouse_Trans.png</normaloff>:/editor/res/Mouse_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_GAME</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_GAME_TIP</string>
+   </property>
+  </action>
+  <action name="actionCursorSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Cursor_Trans.png</normaloff>:/editor/res/Cursor_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_SELECT</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_SELECT_TIP</string>
+   </property>
+  </action>
+  <action name="actionCursorDrawPen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Brush_Trans.png</normaloff>:/editor/res/Brush_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_DRAWPEN</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_DRAWPEN_TIP</string>
+   </property>
+  </action>
+  <action name="actionCursorDrawLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Line_Trans.png</normaloff>:/editor/res/Line_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_DRAWLINE</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_DRAWLINETIP</string>
+   </property>
+  </action>
+  <action name="actionCursorDrawRect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Rect_Trans.png</normaloff>:/editor/res/Rect_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_DRAWRECT</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_DRAWRECT_TIP</string>
+   </property>
+  </action>
+  <action name="actionCursorPicker">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Picker_Trans.png</normaloff>:/editor/res/Picker_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_DRAWPICKER</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_DRAWPICKER_TIP</string>
+   </property>
+  </action>
+  <action name="actionDynamicLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Dynamic_Trans.png</normaloff>:/editor/res/Dynamic_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>MAP_DYNAMIC</string>
+   </property>
+   <property name="toolTip">
+    <string>MAP_DYNAMIC_TIP</string>
+   </property>
+  </action>
+  <action name="actionStaticLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Static_Trans.png</normaloff>:/editor/res/Static_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>MAP_STATIC</string>
+   </property>
+   <property name="toolTip">
+    <string>MAP_STATIC_TIP</string>
+   </property>
+  </action>
+  <action name="actionExactLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Exact_Trans.png</normaloff>:/editor/res/Exact_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>MAP_EXACT</string>
+   </property>
+   <property name="toolTip">
+    <string>MAP_EXACT_TIP</string>
+   </property>
+  </action>
+  <action name="actionCursorFill">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/Fill_Trans.png</normaloff>:/editor/res/Fill_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_DRAWFILL</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_DRAWFILL_TIP</string>
+   </property>
+  </action>
+  <action name="actionViewportNew">
+   <property name="text">
+    <string comment="res">IDS_MNU_NEWVIEWPORT</string>
+   </property>
+  </action>
+  <action name="actionFileOpen">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPEN</string>
+   </property>
+   <property name="toolTip">
+    <string>IDS_MNU_OPEN</string>
+   </property>
+  </action>
+  <action name="actionFileOpenWithPlayers">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPENWPLRS</string>
+   </property>
+  </action>
+  <action name="actionFileRecord">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_MNU_RECORD</string>
+   </property>
+  </action>
+  <action name="actionFileSaveScenario">
+   <property name="text">
+    <string comment="res">IDS_MNU_SAVESCENARIO</string>
+   </property>
+  </action>
+  <action name="actionFileSaveScenarioAs">
+   <property name="text">
+    <string comment="res">IDS_MNU_SAVESCENARIOAS</string>
+   </property>
+  </action>
+  <action name="actionFileSaveGameAs">
+   <property name="text">
+    <string comment="res">IDS_MNU_SAVEGAMEAS</string>
+   </property>
+  </action>
+  <action name="actionFileClose">
+   <property name="text">
+    <string comment="res">IDS_MNU_CLOSE</string>
+   </property>
+  </action>
+  <action name="actionFileQuit">
+   <property name="text">
+    <string comment="res">IDS_MNU_QUIT</string>
+   </property>
+  </action>
+  <action name="actionPlayerJoin">
+   <property name="text">
+    <string comment="res">IDS_MNU_JOIN</string>
+   </property>
+  </action>
+  <action name="actionHelpAbout">
+   <property name="text">
+    <string comment="res">IDS_MENU_ABOUT</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionPlay</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>PlayPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPause</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>PausePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorGame</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorGamePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorSelect</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorSelectPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorDrawPen</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorDrawPenPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorDrawLine</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorDrawLinePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorDrawRect</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorDrawRectPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorPicker</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorPickerPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDynamicLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DynamicLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionStaticLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>StaticLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExactLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ExactLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCursorFill</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorFillPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>drawSizeSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>DrawSizeChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>499</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionViewportNew</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ViewportNew()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlayerJoin</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>PlayerJoin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileSaveScenarioAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileSaveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileSaveScenario</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileSave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileSaveGameAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileSaveGameAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileRecord</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileRecord()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileQuit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileClose</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileClose()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileOpenWithPlayers</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileOpenWithPlayers()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHelpAbout</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>HelpAbout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>PlayPressed(bool)</slot>
+  <slot>PausePressed(bool)</slot>
+  <slot>CursorGamePressed(bool)</slot>
+  <slot>CursorSelectPressed(bool)</slot>
+  <slot>CursorDrawPenPressed(bool)</slot>
+  <slot>CursorDrawLinePressed(bool)</slot>
+  <slot>CursorDrawRectPressed(bool)</slot>
+  <slot>CursorPickerPressed(bool)</slot>
+  <slot>DynamicLandscapePressed(bool)</slot>
+  <slot>StaticLandscapePressed(bool)</slot>
+  <slot>ExactLandscapePressed(bool)</slot>
+  <slot>CursorFillPressed(bool)</slot>
+  <slot>DrawSizeChanged(int)</slot>
+  <slot>FileOpen()</slot>
+  <slot>FileOpenWithPlayers()</slot>
+  <slot>FileRecord()</slot>
+  <slot>FileSave()</slot>
+  <slot>FileSaveAs()</slot>
+  <slot>FileSaveGameAs()</slot>
+  <slot>FileClose()</slot>
+  <slot>FileQuit()</slot>
+  <slot>PlayerJoin()</slot>
+  <slot>ViewportNew()</slot>
+  <slot>HelpAbout()</slot>
+  <slot>ConsoleEnter(QString)</slot>
+ </slots>
+</ui>

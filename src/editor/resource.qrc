@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/editor">
+        <file>../res/Brush_Trans.png</file>
+        <file>../res/Cursor_Trans.png</file>
+        <file>../res/Dynamic_Trans.png</file>
+        <file>../res/Exact_Trans.png</file>
+        <file>../res/Fill_Trans.png</file>
+        <file>../res/Halt_Trans.png</file>
+        <file>../res/Line_Trans.png</file>
+        <file>../res/Mouse_Trans.png</file>
+        <file>../res/oc64.png</file>
+        <file>../res/Picker_Trans.png</file>
+        <file>../res/Play_Trans.png</file>
+        <file>../res/Rect_Trans.png</file>
+        <file>../res/Static_Trans.png</file>
+    </qresource>
+</RCC>

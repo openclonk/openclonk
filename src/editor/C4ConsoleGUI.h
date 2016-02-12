@@ -79,6 +79,16 @@ public:
 	C4ConsoleGUI();
 	~C4ConsoleGUI();
 
+#ifdef WITH_QT_EDITOR
+	void Execute();
+	void AddViewport(C4ViewportWindow *cvp);
+	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active);
+#else
+	void Execute() { }
+	void AddViewport(C4ViewportWindow *cvp) { }
+	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active) { }
+#endif
+
 	void SetCursor(Cursor cursor);
 	void RecordingEnabled();
 	void ShowAboutWithCopyright(StdStrBuf &copyright);
@@ -120,7 +130,7 @@ public:
 	
 	bool PropertyDlgOpen();
 	void PropertyDlgClose();
-	void PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update);
+	void PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *);
 	C4Object * PropertyDlgObject;
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);
@@ -138,6 +148,7 @@ public:
 
 	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	friend INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+	friend class C4ToolsDlg;
 #endif
 };
 

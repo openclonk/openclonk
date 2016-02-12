@@ -131,3 +131,10 @@ tests/openclonk_unittest.sln
 
 # Packed groups created directly in root path
 /*.oc*
+
+# QMake stuff
+*_automoc.cpp
+moc_*.cpp
+qrc_resource.cpp
+ui_C4ConsoleQtMainWindow.h
+resource.qrc.depends

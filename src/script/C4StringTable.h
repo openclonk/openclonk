@@ -92,6 +92,7 @@ public:
 	const T* operator -> () const { return p; }
 	operator T * () { return p; }
 	operator const T * () const { return p; }
+	T *Get() const { return p; }
 private:
 	void IncRef() { if (p) p->IncRef(); }
 	void DecRef() { if (p) p->DecRef(); }
@@ -173,7 +174,7 @@ public:
 			Table[i] = b.Table[i];
 		return *this;
 	}
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
+	void CompileFunc(class StdCompiler *pComp, class C4ValueNumbers *);
 	void Clear()
 	{
 		ClearTable();

@@ -309,6 +309,22 @@ endif()
 set(HAVE_SDL ${SDL2_FOUND})
 include_directories(SYSTEM ${SDL2_INCLUDE_DIRS})
 
+# Qt5 for editor
+find_path(Qt5DIR qt.pro PATHS ${CMAKE_ADDITIONAL_DEPS_PATH}/qt-5.5.0)
+find_package(Qt5Widgets PATHS ${Qt5DIR}/qtbase/lib/cmake/Qt5Widgets)
+if(Qt5Widgets_FOUND)
+	SET(WITH_QT_EDITOR ${Qt5Widgets_FOUND} "Qt editor dialogues available")
+	add_definitions(-DWITH_QT_EDITOR)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTOUIC ON)
+	# As moc files are generated in the binary dir, tell CMake
+	# to always look for includes there:
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+else()
+	message("Qt5Widgets not found. Building openclonk without editor.")		
+	UNSET(WITH_QT_EDITOR)
+endif()
+
 ############################################################################
 # generated source files
 ############################################################################
@@ -905,8 +921,25 @@ elseif(USE_SDL_MAINLOOP)
 		src/platform/C4WindowSDL.cpp
 	)
 elseif(USE_WIN32_WINDOWS)
+	if(WITH_QT_EDITOR)
+		qt5_add_resources(qt_editor_resources "src/editor/resource.qrc")
+		list(APPEND OC_GUI_SOURCES
+			src/editor/C4ConsoleQt.cpp
+			src/editor/C4ConsoleQt.h
+			src/editor/C4ConsoleQtState.cpp
+			src/editor/C4ConsoleQtState.h
+			src/editor/C4ConsoleQtPropListViewer.cpp
+			src/editor/C4ConsoleQtPropListViewer.h
+			src/editor/C4ConsoleQtMainWindow.ui
+			src/editor/resource.qrc
+			${qt_editor_resources}
+		)
+	else()
+		list(APPEND OC_GUI_SOURCES
+			src/editor/C4ConsoleWin32.cpp
+		)
+	endif()
 	list(APPEND OC_GUI_SOURCES
-		src/editor/C4ConsoleWin32.cpp
 		src/platform/C4WindowWin32.cpp
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
@@ -1116,6 +1149,10 @@ if(USE_COCOA)
 	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
 endif()
 
+if(WITH_QT_EDITOR)
+	qt5_use_modules(openclonk Widgets)
+endif()
+
 add_executable(openclonk-server
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
@@ -1225,9 +1262,10 @@ if(HAVE_PRECOMPILED_HEADERS)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
 			get_filename_component(FILE_NAME_WE ${FILE} NAME_WE)
-			if(FILE_EXT STREQUAL ".cpp")
-				# This check is necessary since gzio.c gets compiled as C
-				# code, which can't use C++ PCH.
+			if(FILE_EXT STREQUAL ".cpp" AND NOT FILE STREQUAL qt_editor_resources)
+				# The check for .cpp is necessary since gzio.c gets compiled as C
+				# code, which can't use C++ PCH. Also, the auto-generated file
+				# qt_editor_resources does not include the PCH.
 				set_property(SOURCE ${FILE} PROPERTY COMPILE_FLAGS /YuC4Include.h)
 			endif()
 		endforeach()

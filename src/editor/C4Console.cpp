@@ -371,6 +371,7 @@ void C4Console::HelpAbout()
 
 void C4Console::ViewportNew()
 {
+	if (!fGameOpen) return;
 	::Viewports.CreateViewport(NO_OWNER);
 }
 
@@ -492,6 +493,7 @@ void C4Console::SetCaptionToFilename(const char* szFilename)
 
 void C4Console::Execute()
 {
+	C4ConsoleGUI::Execute();
 	EditCursor.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
@@ -590,7 +592,7 @@ bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
 void C4ConsoleGUI::Out(char const*) {}
 bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}
 void C4ConsoleGUI::PropertyDlgClose() {}
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &, bool) {}
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &, bool, class C4PropList *) {}
 void C4ConsoleGUI::RecordingEnabled() {}
 void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
 void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}

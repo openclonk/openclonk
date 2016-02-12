@@ -994,7 +994,7 @@ void C4ConsoleGUI::PropertyDlgClose()
 {
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update)
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *)
 {
 	if (!state->propertydlg) return;
 	if (!C4DevmodeDlg::GetWindow()) return;

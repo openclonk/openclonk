@@ -354,6 +354,10 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		return 0;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_ACTIVATE:
+#ifdef WITH_QT_EDITOR
+		// Notify editor that viewport needs to be drawn in activated state
+		::Console.OnViewportActiveChanged(cvp->GetWindow(), LOWORD(wParam) != WA_INACTIVE);
+#endif
 		// Keep editing dialogs on top of the current viewport, but don't make them
 		// float on other windows (i.e., no HWND_TOPMOST).
 		// Also, don't use SetParent, since that activates the window, which in turn

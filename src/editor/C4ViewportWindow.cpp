@@ -181,8 +181,13 @@ C4Window * C4ViewportWindow::Init(int32_t Player)
 	if (!result) return result;
 
 	pSurface = new C4Surface(&Application, this);
+#ifdef WITH_QT_EDITOR
+	// embed into editor
+	::Console.AddViewport(this);
+#else
 	// Position and size
 	RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
+#endif
 	return result;
 }
 

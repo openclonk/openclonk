@@ -73,7 +73,7 @@ void C4EditCursor::Execute()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 	if (!::Game.iTick35)
-		Console.PropertyDlgUpdate(Selection, false);
+		Console.PropertyDlgUpdate(Selection, false, proplist_selection.getPropList());
 }
 
 bool C4EditCursor::Init()
@@ -106,6 +106,7 @@ bool C4EditCursor::Init()
 
 void C4EditCursor::ClearPointers(C4Object *pObj)
 {
+	if (proplist_selection.getObj() == pObj) proplist_selection.Set0(); // update immediately to ensure it's cleared before update
 	if (Target==pObj) Target=NULL;
 	if (Selection.ClearPointers(pObj))
 		OnSelectionChanged();
@@ -200,7 +201,7 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged()
 {
-	Console.PropertyDlgUpdate(Selection, false);
+	Console.PropertyDlgUpdate(Selection, false, proplist_selection.getPropList());
 	Console.ObjectListDlg.Update(Selection);
 }
 
@@ -208,6 +209,7 @@ void C4EditCursor::AddToSelection(C4Object *add_obj)
 {
 	if (!add_obj || !add_obj->Status) return;
 	// add object to selection and do script callback
+	if (!proplist_selection) proplist_selection.SetPropList(add_obj);
 	Selection.Add(add_obj, C4ObjectList::stNone);
 	::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Select, Fix0, Fix0, add_obj), CDT_Decide);
 }
@@ -217,6 +219,11 @@ bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
 	if (!remove_obj || !remove_obj->Status) return false;
 	// remove object from selection and do script callback
 	if (!Selection.Remove(remove_obj)) return false;
+	if (proplist_selection.getObj() == remove_obj)
+		if (Selection.First && Selection.First->Obj && Selection.First->Obj->Status)
+			proplist_selection.SetPropList(Selection.First->Obj);
+		else
+			proplist_selection.Set0();
 	::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, remove_obj), CDT_Decide);
 	return true;
 }
@@ -243,6 +250,7 @@ void C4EditCursor::ClearSelection(C4Object *next_selection)
 		}
 	}
 	Selection.Clear();
+	proplist_selection.Set0();
 }
 
 bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
@@ -476,7 +484,7 @@ bool C4EditCursor::OpenPropTools()
 	{
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
 		Console.PropertyDlgOpen();
-		Console.PropertyDlgUpdate(Selection, false);
+		Console.PropertyDlgUpdate(Selection, false, proplist_selection.getPropList());
 		break;
 	case C4CNS_ModeDraw:
 		Console.ToolsDlg.Open();
@@ -607,7 +615,7 @@ bool C4EditCursor::In(const char *szText)
 {
 	::Console.RegisterRecentInput(szText, C4Console::MRU_Object);
 	EMMoveObject(EMMO_Script, Fix0, Fix0, NULL, &Selection, szText);
-	::Console.PropertyDlgUpdate(Selection, true);
+	::Console.PropertyDlgUpdate(Selection, true, proplist_selection.getPropList());
 	return true;
 }
 
