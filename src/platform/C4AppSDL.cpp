@@ -162,11 +162,9 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		SDL_GetMouseState(&x, &y);
 		C4GUI::MouseMove(C4MC_Button_Wheel, x, y, flags, NULL);
 		break;
-	case SDL_JOYAXISMOTION:
-	case SDL_JOYHATMOTION:
-	case SDL_JOYBALLMOTION:
-	case SDL_JOYBUTTONDOWN:
-	case SDL_JOYBUTTONUP:
+	case SDL_CONTROLLERAXISMOTION:
+	case SDL_CONTROLLERBUTTONDOWN:
+	case SDL_CONTROLLERBUTTONUP:
 		Application.pGamePadControl->FeedEvent(e);
 		break;
 	}
