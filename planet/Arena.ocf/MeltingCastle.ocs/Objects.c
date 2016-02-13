@@ -13,6 +13,7 @@ func InitializeObjects()
 	ItemSpawn->Create(PowderKeg,669,261);
 	ItemSpawn->Create(Bread,407,258);
 	ItemSpawn->Create(IronBomb,441,389);
+	ItemSpawn->Create(IceWallKit,990,400);
 
 	var Chest001 = CreateObjectAbove(Chest, 1047, 359);
 
