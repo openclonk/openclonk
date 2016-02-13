@@ -909,6 +909,7 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 			const StdMeshBone* bone = Mesh->GetSkeleton().GetBoneByName(bone_name);
 			if(!bone) pComp->excCorrupt("No such bone: \"%s\"", bone_name.getData());
 			Custom.BoneIndex = bone->Index;
+			Custom.Transformation = new StdMeshTransformation;
 		}
 		else
 		{
