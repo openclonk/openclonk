@@ -1126,7 +1126,7 @@ add_executable(openclonk-server
 	src/platform/C4StdInProc.cpp
 	src/platform/C4StdInProc.h
 )
-set_property(TARGET openclonk-server APPEND PROPERTY COMPILE_DEFINITIONS "USE_CONSOLE")
+target_compile_definitions(openclonk-server PRIVATE "USE_CONSOLE")
 
 target_link_libraries(openclonk-server
 	${PNG_LIBRARIES}
