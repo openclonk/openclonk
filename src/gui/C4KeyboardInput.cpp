@@ -31,8 +31,10 @@
 #endif
 
 #include <algorithm>
+#include <regex>
+#include <string>
 
-#ifdef USE_SDL_MAINLOOP
+#ifdef HAVE_SDL
 #include <SDL.h>
 #endif
 
@@ -215,47 +217,32 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		// scan code
 		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
-#ifdef _WIN32
-		if (!strnicmp(sName.getData(), "Joy", 3))
-#else
-		if (!strncasecmp(sName.getData(), "Joy", 3))
-#endif
+		std::regex controller_re(R"/(^Controller(\d+)(Axis)?([a-z]+)(Min|Max)?$)/");
+		std::cmatch matches;
+		if (std::regex_match(sName.getData(), matches, controller_re))
 		{
-			int iGamepad;
-			if (sscanf(sName.getData(), "Joy%d",  &iGamepad) == 1)
+#ifdef HAVE_SDL
+			int iGamepad = std::stoi(matches[1]);
+			if (matches[2] == "Axis")
 			{
-				// skip Joy[number]
-				const char *key_str = sName.getData()+4;
-				while (isdigit(*key_str)) ++key_str;
-				// check for button (single, uppercase letter) (e.g. Joy1A)
-				if (*key_str && !key_str[1])
+				int axis = SDL_GameControllerGetAxisFromString(matches[3].str().c_str());
+				if (axis != SDL_CONTROLLER_AXIS_INVALID)
 				{
-					char cGamepadButton = toupper(*key_str);
-					if (Inside(cGamepadButton, 'A', 'Z'))
-					{
-						cGamepadButton = cGamepadButton - 'A';
-						return KEY_Gamepad(iGamepad-1, KEY_JOY_Button(cGamepadButton));
-					}
-				}
-				else
-				{
-					// check for standard axis (e.g. Joy1Left)
-					if (!stricmp(key_str, "Left")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Left);
-					if (!stricmp(key_str, "Up")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Up);
-					if (!stricmp(key_str, "Down")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Down);
-					if (!stricmp(key_str, "Right")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Right);
-					// check for specific axis (e.g. Joy1Axis1Min)
-					int iAxis;
-					if (sscanf(key_str, "Axis%d", &iAxis) == 1 && iAxis>0)
-					{
-						--iAxis; // axis is 0-based internally but written 1-based in config
-						key_str += 5;
-						while (isdigit(*key_str)) ++key_str;
-						if (!stricmp(key_str, "Min")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, false));
-						if (!stricmp(key_str, "Max")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, true));
-					}
+					if (matches[4] == "Min") return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(axis, false));
+					if (matches[4] == "Max") return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(axis, true));
 				}
 			}
+			else
+			{
+				int gamepad_button = SDL_GameControllerGetButtonFromString(matches[3].str().c_str());
+				if (gamepad_button != SDL_CONTROLLER_BUTTON_INVALID)
+				{
+					return KEY_Gamepad(iGamepad-1, KEY_JOY_Button(gamepad_button));
+				}
+			}
+#else
+			return KEY_Undefined;
+#endif
 		}
 		bool is_mouse_key;
 #ifdef _WIN32
@@ -327,30 +314,69 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	if (Key_IsGamepad(wCode))
 	{
 		int iGamepad = Key_GetGamepad(wCode);
-		int gamepad_event = Key_GetGamepadEvent(wCode);
-		switch (gamepad_event)
+		if (Key_IsGamepadAxis(wCode))
 		{
-		case KEY_JOY_Left:  return FormatString("Joy%dLeft", iGamepad+1);
-		case KEY_JOY_Up:    return FormatString("Joy%dUp", iGamepad+1);
-		case KEY_JOY_Down:  return FormatString("Joy%dDown", iGamepad+1);
-		case KEY_JOY_Right: return FormatString("Joy%dRight", iGamepad+1);
-		default:
-			if (Key_IsGamepadAxis(wCode))
+			int index = Key_GetGamepadAxisIndex(wCode);
+			const char *axis = "Unknown";
+			if (fHumanReadable)
 			{
-				if (fHumanReadable)
-					// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
-					return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-				else
-					return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
+#ifdef HAVE_SDL
+				switch (index)
+				{
+				case SDL_CONTROLLER_AXIS_LEFTX: axis = "Left Stick X"; break;
+				case SDL_CONTROLLER_AXIS_LEFTY: axis = "Left Stick Y"; break;
+				case SDL_CONTROLLER_AXIS_RIGHTX: axis = "Right Stick X"; break;
+				case SDL_CONTROLLER_AXIS_RIGHTY: axis = "Right Stick Y"; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: axis = "Left Trigger"; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: axis = "Right Trigger"; break;
+				}
+#endif
+				// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
+				return FormatString("[%s] %s", axis, Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
 			}
 			else
 			{
-				// button
-				if (fHumanReadable)
-					// If there should be gamepads around with A B C D... on the buttons, we might create a display option to show letters instead...
-					return FormatString("< %d >", int(1 + Key_GetGamepadButtonIndex(wCode)));
-				else
-					return FormatString("Joy%d%c", iGamepad+1, static_cast<char>(Key_GetGamepadButtonIndex(wCode) + 'A'));
+#ifdef HAVE_SDL
+				axis = SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis) index);
+#endif
+				return FormatString("Controller%dAxis%s%s", iGamepad+1, axis, Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
+			}
+		}
+		else
+		{
+			// button
+			const char *button = "Unknown";
+			int index = Key_GetGamepadButtonIndex(wCode);
+			if (fHumanReadable)
+			{
+#ifdef HAVE_SDL
+				switch (index)
+				{
+				case SDL_CONTROLLER_BUTTON_A: button = "A"; break;
+				case SDL_CONTROLLER_BUTTON_B: button = "B"; break;
+				case SDL_CONTROLLER_BUTTON_X: button = "X"; break;
+				case SDL_CONTROLLER_BUTTON_Y: button = "Y"; break;
+				case SDL_CONTROLLER_BUTTON_BACK: button = "Back"; break;
+				case SDL_CONTROLLER_BUTTON_GUIDE: button = "Guide"; break;
+				case SDL_CONTROLLER_BUTTON_START: button = "Start"; break;
+				case SDL_CONTROLLER_BUTTON_LEFTSTICK: button = "Left Stick Click"; break;
+				case SDL_CONTROLLER_BUTTON_RIGHTSTICK: button = "Right Stick Click"; break;
+				case SDL_CONTROLLER_BUTTON_LEFTSHOULDER: button = "Left Shoulder"; break;
+				case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: button = "Right Shoulder"; break;
+				case SDL_CONTROLLER_BUTTON_DPAD_UP: button = "D-pad Up"; break;
+				case SDL_CONTROLLER_BUTTON_DPAD_DOWN: button = "D-pad Down"; break;
+				case SDL_CONTROLLER_BUTTON_DPAD_LEFT: button = "D-pad Left"; break;
+				case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: button = "D-pad Right"; break;
+				}
+#endif
+				return FormatString("< %s >", button);
+			}
+			else
+			{
+#ifdef HAVE_SDL
+				button = SDL_GameControllerGetStringForButton((SDL_GameControllerButton) index);
+#endif
+				return FormatString("Controller%d%s", iGamepad+1, button);
 			}
 		}
 	}
