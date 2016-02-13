@@ -734,21 +734,6 @@ void C4PlayerControlAssignmentSets::CompileFunc(StdCompiler *pComp)
 	}
 	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
 	pComp->Value(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE));
-
-	// Remove all sets that have gamepad controls, since gamepad
-	// support is broken at the moment. Disable this once we have gamepad
-	// support again!
-	if (pComp->isCompiler())
-	{
-		AssignmentSetList::iterator iter = Sets.begin();
-		for (AssignmentSetList::iterator iter = Sets.begin(); iter != Sets.end(); )
-		{
-			if (iter->HasGamepad())
-				iter = Sets.erase(iter);
-			else
-				++iter;
-		}
-	}
 }
 
 bool C4PlayerControlAssignmentSets::operator ==(const C4PlayerControlAssignmentSets &cmp) const
