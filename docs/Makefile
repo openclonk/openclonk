@@ -71,21 +71,21 @@ clean:
 
 sdk/content.xml: sdk/content.xml.in $(xmlfiles) build_contents.py experimental.py
 	@echo generate $@
-	@python build_contents.py $(xmlfiles)
+	@python2 build_contents.py $(xmlfiles)
 
 chm/en/Output.hhp: $(xmlfiles) chm/en/. build_hhp.py Template.hhp
 	@echo generate $@
-	@python build_hhp.py $@ Template.hhp $(xmlfiles)
+	@python2 build_hhp.py $@ Template.hhp $(xmlfiles)
 chm/de/Output.hhp: $(xmlfiles) chm/de/. build_hhp.py Template.de.hhp
 	@echo generate $@
-	@python build_hhp.py $@ Template.de.hhp $(xmlfiles)
+	@python2 build_hhp.py $@ Template.de.hhp $(xmlfiles)
 
 $(sdk-de-dirs) $(online-dirs) $(chm-dirs):
 	mkdir -p $@
 
 doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
 	@echo extract strings to $@
-	@python xml2po.py -e -m clonk -o $@ $(xmlfiles) extra-strings.xml sdk/content.xml.in
+	@python2 xml2po.py -e -m clonk -o $@ $(xmlfiles) extra-strings.xml sdk/content.xml.in
 
 %.po: doku.pot
 	@echo update $@
@@ -98,7 +98,7 @@ doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
 
 sdk-de/%.xml: sdk/%.xml de.mo xml2po.py clonk.py
 	@echo generate $@
-	@python xml2po.py -e -m clonk -t de.mo -o $@ $<
+	@python2 xml2po.py -e -m clonk -t de.mo -o $@ $<
 
 define run-xslt
 @echo generate $@
