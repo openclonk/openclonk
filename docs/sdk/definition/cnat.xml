@@ -40,6 +40,10 @@
         <col>CNAT_NoCollision</col>
         <col>Extra flag: non-colliding vertex</col>
       </row>
+      <row>
+        <col>CNAT_PhaseHalfVehicle</col>
+        <col>Extra flag: Entirely suppress collisions with HalfVehicle</col>
+      </row>
       <bitmask>CNAT</bitmask>
     </table>
   </text>
