@@ -3079,6 +3079,12 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "GUI_Multiple"             ,C4V_Int,      C4ScriptGuiWindowStyleFlag::Multiple },
 	{ "GUI_IgnoreMouse"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::IgnoreMouse },
 	{ "GUI_NoCrop"               ,C4V_Int,      C4ScriptGuiWindowStyleFlag::NoCrop },
+
+	// control states
+	{ "CONS_Down"                ,C4V_Int,      C4PlayerControl::CONS_Down },
+	{ "CONS_Up"                  ,C4V_Int,      C4PlayerControl::CONS_Up },
+	{ "CONS_Moved"               ,C4V_Int,      C4PlayerControl::CONS_Moved },
+
 	{ NULL, C4V_Nil, 0}
 };
 

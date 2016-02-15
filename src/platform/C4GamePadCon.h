@@ -23,6 +23,7 @@
 #ifdef HAVE_SDL
 #include <C4KeyboardInput.h>
 #include <set>
+#include <map>
 #endif
 
 struct _SDL_GameController;
@@ -35,16 +36,22 @@ class C4GamePadControl
 {
 #ifdef HAVE_SDL
 public:
-	void FeedEvent(SDL_Event& e);
+	enum {
+		FEED_BUTTONS = 1,
+		FEED_MOVED   = 2,
+	};
+	// Called from C4AppSDL
+	void FeedEvent(const SDL_Event& e, int feed);
 private:
-	std::set<C4KeyCode> PressedAxis;
+	std::set<C4KeyCode> PressedAxis; // for button emulation
+	std::map<C4KeyCode, SDL_Event> AxisEvents; // for analog movement events
 #endif
 public:
 	C4GamePadControl();
 	~C4GamePadControl();
 	void Clear();
 	int GetGamePadCount();
-	void Execute(bool send_axis_strength_changes=false);
+	void Execute();
 	void DoAxisInput(); // period axis strength update controls sent on each control frame creation
 	static bool AnyButtonDown();
 };

@@ -333,6 +333,12 @@ class C4PlayerControl
 public:
 	enum { MaxRecentKeyLookback = 3000, MaxSequenceKeyDelay = 800 }; // milliseconds: Time to press key combos
 
+	enum ControlState {
+		CONS_Down = 0,
+		CONS_Up,
+		CONS_Moved,
+	};
+
 private:
 	C4PlayerControlDefs &ControlDefs; // shortcut
 
@@ -386,14 +392,15 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, ControlState state, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
+	bool ProcessKeyMoved(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 
 	// execute single control. return if handled.
-	bool ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly);
-	bool ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
-	bool ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
+	bool ExecuteControl(int32_t iControl, ControlState state, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly);
+	bool ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, ControlState state, const C4KeyEventData &rKeyExtraData, bool fRepeated);
+	bool ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, ControlState state, const C4KeyEventData &rKeyExtraData, bool fRepeated);
 
 	// init
 	void AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32_t idx);

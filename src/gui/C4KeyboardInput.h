@@ -46,7 +46,8 @@ enum C4KeyEventType
 	KEYEV_None    =  0, // no event
 	KEYEV_Down    =  1, // in response to WM_KEYDOWN or joypad button pressed
 	KEYEV_Up      =  2, // in response to WM_KEYUP or joypad button released
-	KEYEV_Pressed =  3 // in response to WM_KEYPRESSED
+	KEYEV_Pressed =  3, // in response to WM_KEYPRESSED
+	KEYEV_Moved   =  4, // when moving a gamepad stick
 };
 
 // keyboard code
@@ -265,7 +266,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 
 protected:
 	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
@@ -276,6 +277,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)() : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)() : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)() : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)() : false;
 		default: return false;
 		}
 	}
@@ -283,8 +285,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCB(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed) {}
+	C4KeyCB(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved) {}
 };
 
 // callback interface that passes the pressed key as a parameter
@@ -295,7 +297,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 
 protected:
 	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
@@ -306,6 +308,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(key) : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(key) : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(key) : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)(key) : false;
 		default: return false;
 		}
 	}
@@ -313,8 +316,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCBPassKey(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed) {}
+	C4KeyCBPassKey(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved) {}
 };
 
 // parameterized callback interface
@@ -325,7 +328,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 	ParameterType par;
 
 protected:
@@ -337,6 +340,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(par) : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(par) : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(par) : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)(par) : false;
 		default: return false;
 		}
 	}
@@ -344,8 +348,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCBEx(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), par(par) {}
+	C4KeyCBEx(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved), par(par) {}
 };
 
 template <class TargetClass, class ParameterType> class C4KeyCBExPassKey : public C4KeyboardCallbackInterface
@@ -355,7 +359,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 	ParameterType par;
 
 protected:
@@ -367,6 +371,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(key, par) : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(key, par) : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(key, par) : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)(key, par) : false;
 		default: return false;
 		}
 	}
@@ -374,8 +379,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCBExPassKey(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), par(par) {}
+	C4KeyCBExPassKey(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved), par(par) {}
 };
 
 // one mapped keyboard entry

@@ -25,13 +25,6 @@
 #include <C4Log.h>
 #include <C4Game.h>
 
-// regardless of WIN32 or SDL
-void C4GamePadControl::DoAxisInput()
-{
-	// Send axis strength changes
-	Execute(true);
-}
-
 #if defined(HAVE_SDL) && !defined(USE_CONSOLE)
 
 #include <SDL.h>
@@ -54,7 +47,7 @@ C4GamePadControl::~C4GamePadControl()
 	SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS);
 }
 
-void C4GamePadControl::Execute(bool)
+void C4GamePadControl::Execute()
 {
 #ifndef USE_SDL_MAINLOOP
 	SDL_Event event;
@@ -65,7 +58,7 @@ void C4GamePadControl::Execute(bool)
 		case SDL_CONTROLLERAXISMOTION:
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
-			FeedEvent(event);
+			FeedEvent(event, FEED_BUTTONS);
 			break;
 		}
 	}
@@ -74,19 +67,10 @@ void C4GamePadControl::Execute(bool)
 
 namespace
 {
-	const int deadZone = 13337;
-
-	int amplify(int i)
-	{
-		if (i < 0)
-			return -(deadZone + 1);
-		if (i > 0)
-			return deadZone + 1;
-		return 0;
-	}
+	const int deadZone = 8000;
 }
 
-void C4GamePadControl::FeedEvent(SDL_Event& event)
+void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 {
 	switch (event.type)
 	{
@@ -94,61 +78,60 @@ void C4GamePadControl::FeedEvent(SDL_Event& event)
 	{
 		C4KeyCode minCode = KEY_Gamepad(event.caxis.which, KEY_JOY_Axis(event.caxis.axis, false));
 		C4KeyCode maxCode = KEY_Gamepad(event.caxis.which, KEY_JOY_Axis(event.caxis.axis, true));
+		int32_t value = std::abs(event.caxis.value);
+		uint8_t which = event.caxis.which;
+		C4KeyCode keyCode = event.caxis.value >= 0 ? maxCode : minCode;
 
-		// FIXME: This assumes that the axis really rests around (0, 0) if it is not used, which is not always true.
-		if (event.caxis.value < -deadZone)
+		auto doInput = [&](C4KeyEventType event, int32_t strength)
 		{
-			if (PressedAxis.count(minCode) == 0)
+			Game.DoKeyboardInput(
+			  KEY_Gamepad(which, keyCode), event,
+			  false, false, false, false, NULL, false, strength);
+		};
+
+		if (feed & FEED_BUTTONS)
+		{
+			// Also emulate button presses.
+			if (PressedAxis.count(keyCode) && value <= deadZone)
 			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.caxis.which, minCode),
-				  KEYEV_Down, false, false, false, false);
-				PressedAxis.insert(minCode);
+				PressedAxis.erase(keyCode);
+				doInput(KEYEV_Up, -1);
+			}
+			else if (!PressedAxis.count(keyCode) && value > deadZone)
+			{
+				PressedAxis.insert(keyCode);
+				doInput(KEYEV_Down, -1);
 			}
 		}
-		else
-		{
-			if (PressedAxis.count(minCode) != 0)
-			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.caxis.which, minCode),
-				  KEYEV_Up, false, false, false, false);
-				PressedAxis.erase(minCode);
-			}
-		}
-		if (event.caxis.value > +deadZone)
-		{
-			if (PressedAxis.count(maxCode) == 0)
-			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.caxis.which, maxCode),
-				  KEYEV_Down, false, false, false, false);
-				PressedAxis.insert(maxCode);
-			}
-		}
-		else
-		{
-			if (PressedAxis.count(maxCode) != 0)
-			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.caxis.which, maxCode),
-				  KEYEV_Up, false, false, false, false);
-				PressedAxis.erase(maxCode);
-			}
-		}
+		if (feed & FEED_MOVED)
+			doInput(KEYEV_Moved, value);
+
+		AxisEvents[keyCode] = event;
+
 		break;
 	}
 	case SDL_CONTROLLERBUTTONDOWN:
-		Game.DoKeyboardInput(
-		  KEY_Gamepad(event.cbutton.which, KEY_JOY_Button(event.cbutton.button)),
-		  KEYEV_Down, false, false, false, false);
+		if (feed & FEED_BUTTONS)
+			Game.DoKeyboardInput(
+			  KEY_Gamepad(event.cbutton.which, KEY_JOY_Button(event.cbutton.button)),
+			  KEYEV_Down, false, false, false, false);
 		break;
 	case SDL_CONTROLLERBUTTONUP:
-		Game.DoKeyboardInput(
-		  KEY_Gamepad(event.cbutton.which, KEY_JOY_Button(event.cbutton.button)),
-		  KEYEV_Up, false, false, false, false);
+		if (feed & FEED_BUTTONS)
+			Game.DoKeyboardInput(
+			  KEY_Gamepad(event.cbutton.which, KEY_JOY_Button(event.cbutton.button)),
+			  KEYEV_Up, false, false, false, false);
 		break;
 	}
+}
+
+void C4GamePadControl::DoAxisInput()
+{
+	for (auto const &e : AxisEvents)
+	{
+		FeedEvent(e.second, FEED_MOVED);
+	}
+	AxisEvents.clear();
 }
 
 int C4GamePadControl::GetGamePadCount()
@@ -192,7 +175,8 @@ void C4GamePadOpener::SetGamePad(int iGamepad)
 
 C4GamePadControl::C4GamePadControl() { Log("WARNING: Engine without Gamepad support"); }
 C4GamePadControl::~C4GamePadControl() { }
-void C4GamePadControl::Execute(bool) { }
+void C4GamePadControl::Execute() { }
+void C4GamePadControl::DoAxisInput() { }
 int C4GamePadControl::GetGamePadCount() { return 0; }
 bool C4GamePadControl::AnyButtonDown() { return false; }
 

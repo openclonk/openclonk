@@ -165,7 +165,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 	case SDL_CONTROLLERAXISMOTION:
 	case SDL_CONTROLLERBUTTONDOWN:
 	case SDL_CONTROLLERBUTTONUP:
-		Application.pGamePadControl->FeedEvent(e);
+		Application.pGamePadControl->FeedEvent(e, C4GamePadControl::FEED_BUTTONS);
 		break;
 	}
 }
