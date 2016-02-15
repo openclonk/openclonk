@@ -893,14 +893,18 @@ void C4PlayerControl::CSync::ControlDownState::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(DownState);
 	pComp->Separator();
+	pComp->Value(MovedState);
+	pComp->Separator();
 	pComp->Value(iDownFrame);
+	pComp->Separator();
+	pComp->Value(iMovedFrame);
 	pComp->Separator();
 	pComp->Value(fDownByUser);
 }
 
 bool C4PlayerControl::CSync::ControlDownState::operator ==(const ControlDownState &cmp) const
 {
-	return DownState == cmp.DownState && iDownFrame == cmp.iDownFrame && fDownByUser == cmp.fDownByUser;
+	return DownState == cmp.DownState && MovedState == cmp.MovedState && iDownFrame == cmp.iDownFrame && iMovedFrame == cmp.iMovedFrame && fDownByUser == cmp.fDownByUser;
 }
 
 const C4PlayerControl::CSync::ControlDownState *C4PlayerControl::CSync::GetControlDownState(int32_t iControl) const
@@ -928,6 +932,16 @@ void C4PlayerControl::CSync::SetControlDownState(int32_t iControl, const C4KeyEv
 	rState.fDownByUser = fDownByUser;
 }
 
+void C4PlayerControl::CSync::SetControlMovedState(int32_t iControl, const C4KeyEventData &rMovedState, int32_t iMovedFrame)
+{
+	// update state
+	if (iControl < 0) return;
+	if (iControl >= int32_t(ControlDownStates.size())) ControlDownStates.resize(iControl+1);
+	ControlDownState &rState = ControlDownStates[iControl];
+	rState.MovedState = rMovedState;
+	rState.iMovedFrame = iMovedFrame;
+}
+
 bool  C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 {
 	// disable control
@@ -948,6 +962,7 @@ void C4PlayerControl::CSync::ResetControlDownState(int32_t iControl)
 		C4KeyEventData KeyDownState = pDownState->DownState;
 		KeyDownState.iStrength = 0;
 		SetControlDownState(iControl, KeyDownState, 0, false);
+		SetControlMovedState(iControl, KeyDownState, 0);
 	}
 }
 
@@ -1186,7 +1201,10 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, ControlState state, const
 	else if (pControlDef->IsHoldKey())
 	{
 		if (state == CONS_Moved)
+		{
+			Sync.SetControlMovedState(iControl, KeyExtraData, Game.FrameCounter);
 			fRepeated = true;
+		}
 		else
 		{
 			// regular ControlDown on Hold Key: Set in down list

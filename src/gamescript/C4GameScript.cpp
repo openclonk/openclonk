@@ -2588,7 +2588,7 @@ static bool FnSetNextMission(C4PropList * _this, C4String *szNextMission, C4Stri
 	return true;
 }
 
-static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl)
+static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl, bool fMovedState)
 {
 	// get control set to check
 	C4PlayerControl *pCheckCtrl = NULL;
@@ -2606,8 +2606,8 @@ static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl
 	const C4PlayerControl::CSync::ControlDownState *pControlState = pCheckCtrl->GetControlDownState(iControl);
 	// no state means not down
 	if (!pControlState) return 0;
-	// otherwise take down-value
-	return pControlState->DownState.iStrength;
+	// otherwise take either down-value or moved-value
+	return fMovedState ? pControlState->MovedState.iStrength : pControlState->DownState.iStrength;
 }
 
 // undocumented!

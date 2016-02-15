@@ -359,8 +359,8 @@ public:
 	{
 		struct ControlDownState
 		{
-			C4KeyEventData DownState; // control is down if DownState.iStrength>0
-			int32_t iDownFrame; // frame when control was pressed
+			C4KeyEventData DownState, MovedState; // control is down if DownState.iStrength>0
+			int32_t iDownFrame, iMovedFrame; // frame when control was pressed
 			bool fDownByUser;  // if true, the key is actually pressed. Otherwise, it's triggered as down by another key
 			ControlDownState(const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser)
 					: DownState(rDownState), iDownFrame(iDownFrame), fDownByUser(fDownByUser) {}
@@ -379,6 +379,7 @@ public:
 		int32_t GetControlDisabled(int32_t iControl) const;
 		bool IsControlDisabled(int32_t iControl) const { return GetControlDisabled(iControl)>0; }
 		void SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser);
+		void SetControlMovedState(int32_t iControl, const C4KeyEventData &rMovedState, int32_t iMovedFrame);
 		void ResetControlDownState(int32_t iControl);
 		bool SetControlDisabled(int32_t iControl, int32_t iVal);
 
