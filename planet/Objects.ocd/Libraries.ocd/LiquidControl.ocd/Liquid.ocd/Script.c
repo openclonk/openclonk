@@ -22,6 +22,14 @@ protected func Construction()
 	SetStackCount(1); // not max stack!
 }
 
+protected func RejectEntrance(object into)
+{
+	// enter liquid containers only
+	if (!into->~IsLiquidContainer()) return true;
+	return _inherited(into, ...);
+}
+
+
 
 // 10 liquid items count as 1 mass unit
 // this may have to be tuned or made object-specific?
