@@ -30,8 +30,8 @@ private func Hit()
 	this->PlayBarrelHitSound();
 	if (!LiquidContainerIsEmpty())
 	{
-		if (GBackLiquid(0, this->GetBarrelIntakeY())
-		 && GetMaterial(0, this->GetBarrelIntakeY()) != GetLiquidType())
+		if (GBackLiquid(0, this.BarrelIntakeY)
+		 && GetMaterial(0, this.BarrelIntakeY) != GetLiquidType())
 			return;
 
 		EmptyBarrel(GetR());
@@ -59,7 +59,7 @@ private func Check()
 
 private func FillWithLiquid()
 {
-	var intake = this->GetBarrelIntakeY();
+	var intake = this.BarrelIntakeY;
 	if (!GBackLiquid(0, intake)) return;
 
 	var mat = GetMaterial(0, intake);
@@ -254,3 +254,4 @@ local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local ContactIncinerate = 2;
+local BarrelIntakeY = 3;
