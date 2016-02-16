@@ -169,8 +169,9 @@ func Construction()
 {
 	// use proplist to avoid name clashes
 	lib_liquid_container = {
-		liquid = nil,	// the liquid - this should be a string, so that the container may contain liquids that are not materials
-	    volume = 0};	// the stored amount
+		liquid = nil, // the liquid - this should be a string, so that the container may contain liquids that are not materials
+	    volume = 0,	  // the stored amount
+	    icon = nil};  // the display object
 	    
 	_inherited(...);
 }
@@ -193,5 +194,28 @@ func SetLiquidContainer(string liquid_name, int amount)
 // interface for updating graphics, etc
 func UpdateLiquidContainer()
 {
-	// do nothing by default
+	if (this->HasLiquidDisplay())
+	{
+		var liquid_id = Library_Liquid->GetLiquidID(GetLiquidType());
+		if (liquid_id)
+		{
+			if (lib_liquid_container.icon
+			 && lib_liquid_container.icon->GetID() != liquid_id)
+			    lib_liquid_container.icon->RemoveObject();
+			    
+			if (!lib_liquid_container.icon)
+			     lib_liquid_container.icon = CreateContents(liquid_id);
+			
+			lib_liquid_container.icon->~SetStackCount(GetLiquidFillLevel());
+		}
+		else
+		{
+			if (lib_liquid_container.icon)
+			{
+				lib_liquid_container.icon->RemoveObject();
+			}
+		}
+	}
 }
+
+func HasLiquidDisplay(){ return true;}
