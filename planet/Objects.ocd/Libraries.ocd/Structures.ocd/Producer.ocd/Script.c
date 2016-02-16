@@ -617,7 +617,9 @@ public func CheckLiquids(id product, bool remove)
 		{
 			// Remove the liquid needed.
 			var extracted = 0;
-			for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
+			var liq_containers = FindObjects(Find_Container(this), Find_Func("IsLiquidContainer"));
+			if (this->~IsLiquidContainer()) PushBack(liq_containers, this);
+			for (var liq_container in liq_containers)
 			{
 				var val = liq_container->~GetLiquid(liquid, need - extracted);
 				extracted += val[1];
