@@ -33,6 +33,8 @@ local max_clog_count = 5; // note that even when max_clog_count is reached, the 
 public func IsLiquidPump() { return true; }
 public func IsLiquidContainer() { return false; }
 public func IsLiquidTank() { return false; }
+public func HasLiquidDisplay(){ return false;}
+
 
 // The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
 local last_status_message;
