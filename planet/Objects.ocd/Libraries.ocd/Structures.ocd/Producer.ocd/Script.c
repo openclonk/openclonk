@@ -621,7 +621,7 @@ public func CheckLiquids(id product, bool remove)
 			if (this->~IsLiquidContainer()) PushBack(liq_containers, this);
 			for (var liq_container in liq_containers)
 			{
-				var val = liq_container->RemoveLiquid(liquid, need - extracted);
+				var val = liq_container->RemoveLiquid(liquid, need - extracted, this);
 				extracted += val[1];
 				if (extracted >= need)
 					return true;
@@ -629,8 +629,19 @@ public func CheckLiquids(id product, bool remove)
 			for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
 			{
 				if (liq_object->~IsLiquid() != liquid) continue;
-				extracted += liq_object->~GetLiquidAmount();
-				liq_object->RemoveObject();
+				
+				var val = liq_object->~RemoveLiquid(liquid, need - extracted, this);
+				
+				if (val)
+				{
+					extracted += val[1];
+				}
+				else
+				{
+					extracted += liq_object->~GetLiquidAmount();
+					liq_object->RemoveObject();
+				}
+
 				if (extracted >= need)
 					break;
 			}
