@@ -77,7 +77,7 @@ public func Move()
 		return Message("$MsgStuck$");
 		
 	fuel_amount--;
-	barrel->GetLiquid("Water", 1, this);
+	barrel->RemoveLiquid("Water", 1, this);
 	if (move_dir == -1)
 		SetDir(DIR_Left);
 	if (move_dir == 1)

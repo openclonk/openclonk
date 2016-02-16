@@ -621,7 +621,7 @@ public func CheckLiquids(id product, bool remove)
 			if (this->~IsLiquidContainer()) PushBack(liq_containers, this);
 			for (var liq_container in liq_containers)
 			{
-				var val = liq_container->~GetLiquid(liquid, need - extracted);
+				var val = liq_container->RemoveLiquid(liquid, need - extracted);
 				extracted += val[1];
 				if (extracted >= need)
 					return true;
