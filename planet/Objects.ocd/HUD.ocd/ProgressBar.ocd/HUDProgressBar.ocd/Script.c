@@ -119,7 +119,7 @@ public func RemoveBar(int subwindow_id, int height)
 {
 	total_height -= height;
 	GuiClose(window_id, subwindow_id, this);
-	GuiUpdate({Top = CalculateTop()}, window_id);
+	GuiUpdate({Top = ToEmString(CalculateTop())}, window_id);
 }
 
 private func CalculateTop()
