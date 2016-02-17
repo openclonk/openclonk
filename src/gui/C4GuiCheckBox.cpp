@@ -45,7 +45,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_SPACE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(Keys);
 		}
 		pKeyCheck = new C4KeyBinding(Keys, "GUICheckboxToggle", KEYSCOPE_Gui,
 		                             new ControlKeyCB<CheckBox>(*this, &CheckBox::KeyCheck), C4CustomKey::PRIO_Ctrl);

@@ -94,7 +94,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_UP));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+			ControllerKeys::Up(Keys);
 		}
 		pKeySelUp = new C4KeyBinding(Keys, "GUIContextSelUp", KEYSCOPE_Gui,
 		                             new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeySelUp), C4CustomKey::PRIO_Context);
@@ -103,7 +103,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_DOWN));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+			ControllerKeys::Down(Keys);
 		}
 		pKeySelDown = new C4KeyBinding(Keys, "GUIContextSelDown", KEYSCOPE_Gui,
 		                               new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeySelDown), C4CustomKey::PRIO_Context);
@@ -112,7 +112,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_RIGHT));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Right)));
+			ControllerKeys::Right(Keys);
 		}
 		pKeySubmenu = new C4KeyBinding(Keys, "GUIContextSubmenu", KEYSCOPE_Gui,
 		                               new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeySubmenu), C4CustomKey::PRIO_Context);
@@ -121,7 +121,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_LEFT));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Left)));
+			ControllerKeys::Left(Keys);
 		}
 		pKeyBack = new C4KeyBinding(Keys, "GUIContextBack", KEYSCOPE_Gui,
 		                            new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeyBack), C4CustomKey::PRIO_Context);
@@ -130,7 +130,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_ESCAPE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(Keys);
 		}
 		pKeyAbort = new C4KeyBinding(Keys, "GUIContextAbort", KEYSCOPE_Gui,
 		                             new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeyAbort), C4CustomKey::PRIO_Context);
@@ -139,7 +139,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_RETURN));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(Keys);
 		}
 		pKeyConfirm = new C4KeyBinding(Keys, "GUIContextConfirm", KEYSCOPE_Gui,
 		                               new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeyConfirm), C4CustomKey::PRIO_Context);

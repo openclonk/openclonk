@@ -67,7 +67,7 @@ void C4GamePadControl::Execute()
 
 namespace
 {
-	const int deadZone = 8000;
+	const int deadZone = 16000;
 }
 
 void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
@@ -76,8 +76,8 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 	{
 	case SDL_CONTROLLERAXISMOTION:
 	{
-		C4KeyCode minCode = KEY_Gamepad(event.caxis.which, KEY_JOY_Axis(event.caxis.axis, false));
-		C4KeyCode maxCode = KEY_Gamepad(event.caxis.which, KEY_JOY_Axis(event.caxis.axis, true));
+		C4KeyCode minCode = KEY_Gamepad(event.caxis.which, KEY_CONTROLLER_Axis(event.caxis.axis, false));
+		C4KeyCode maxCode = KEY_Gamepad(event.caxis.which, KEY_CONTROLLER_Axis(event.caxis.axis, true));
 		int32_t value = std::abs(event.caxis.value);
 		uint8_t which = event.caxis.which;
 		C4KeyCode keyCode = event.caxis.value >= 0 ? maxCode : minCode;
@@ -113,13 +113,13 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 	case SDL_CONTROLLERBUTTONDOWN:
 		if (feed & FEED_BUTTONS)
 			Game.DoKeyboardInput(
-			  KEY_Gamepad(event.cbutton.which, KEY_JOY_Button(event.cbutton.button)),
+			  KEY_Gamepad(event.cbutton.which, KEY_CONTROLLER_Button(event.cbutton.button)),
 			  KEYEV_Down, false, false, false, false);
 		break;
 	case SDL_CONTROLLERBUTTONUP:
 		if (feed & FEED_BUTTONS)
 			Game.DoKeyboardInput(
-			  KEY_Gamepad(event.cbutton.which, KEY_JOY_Button(event.cbutton.button)),
+			  KEY_Gamepad(event.cbutton.which, KEY_CONTROLLER_Button(event.cbutton.button)),
 			  KEYEV_Up, false, false, false, false);
 		break;
 	}

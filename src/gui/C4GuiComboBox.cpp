@@ -76,8 +76,8 @@ namespace C4GUI
 		cbKeys.push_back(C4KeyCodeEx(K_SPACE, KEYS_Alt));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+			ControllerKeys::Ok(cbKeys);
+			ControllerKeys::Down(cbKeys);
 		}
 		pKeyOpenCombo = new C4KeyBinding(cbKeys, "GUIComboOpen", KEYSCOPE_Gui,
 		                                 new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyDropDown), C4CustomKey::PRIO_Ctrl);
@@ -85,7 +85,7 @@ namespace C4GUI
 		cbKeys.push_back(C4KeyCodeEx(K_ESCAPE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(cbKeys);
 		}
 		pKeyCloseCombo = new C4KeyBinding(cbKeys, "GUIComboClose", KEYSCOPE_Gui,
 		                                  new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyAbortDropDown), C4CustomKey::PRIO_Ctrl);

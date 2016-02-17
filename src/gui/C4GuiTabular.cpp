@@ -181,7 +181,7 @@ namespace C4GUI
 			Keys.push_back(C4KeyCodeEx(K_UP));
 			if (Config.Controls.GamepadGuiControl)
 			{
-				Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+				ControllerKeys::Up(Keys);
 			}
 			pKeySelUp = new C4KeyBinding(Keys, "GUITabularSelUp", KEYSCOPE_Gui,
 			                             new ControlKeyCB<Tabular>(*this, &Tabular::KeySelUp), C4CustomKey::PRIO_Ctrl);
@@ -190,7 +190,7 @@ namespace C4GUI
 			Keys.push_back(C4KeyCodeEx(K_DOWN));
 			if (Config.Controls.GamepadGuiControl)
 			{
-				Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+				ControllerKeys::Down(Keys);
 			}
 			pKeySelDown = new C4KeyBinding(Keys, "GUITabularSelDown", KEYSCOPE_Gui,
 			                               new ControlKeyCB<Tabular>(*this, &Tabular::KeySelDown), C4CustomKey::PRIO_Ctrl);

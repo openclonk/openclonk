@@ -228,8 +228,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				int axis = SDL_GameControllerGetAxisFromString(matches[3].str().c_str());
 				if (axis != SDL_CONTROLLER_AXIS_INVALID)
 				{
-					if (matches[4] == "Min") return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(axis, false));
-					if (matches[4] == "Max") return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(axis, true));
+					if (matches[4] == "Min") return KEY_Gamepad(iGamepad-1, KEY_CONTROLLER_Axis(axis, false));
+					if (matches[4] == "Max") return KEY_Gamepad(iGamepad-1, KEY_CONTROLLER_Axis(axis, true));
 				}
 			}
 			else
@@ -237,7 +237,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				int gamepad_button = SDL_GameControllerGetButtonFromString(matches[3].str().c_str());
 				if (gamepad_button != SDL_CONTROLLER_BUTTON_INVALID)
 				{
-					return KEY_Gamepad(iGamepad-1, KEY_JOY_Button(gamepad_button));
+					return KEY_Gamepad(iGamepad-1, KEY_CONTROLLER_Button(gamepad_button));
 				}
 			}
 #else
@@ -839,27 +839,12 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	if (Key_IsGamepadButton(InKey.Key))
 	{
 		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
-		uint8_t byBtnIndex = Key_GetGamepadButtonIndex(InKey.Key);
-		// even/odd button events: Add even button indices as odd events, because byBtnIndex is zero-based and the event naming scheme is for one-based button indices
-		if (byBtnIndex % 2) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyEvenButton);
-		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton);
-		// high/low button events
-		if (byBtnIndex < 4) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyLowButton);
-		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton);
 		// "any gamepad button"-event
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyButton);
+		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_CONTROLLER_AnyButton);
 	}
 	else if (Key_IsGamepadAxis(InKey.Key))
 	{
-		// xy-axis-events for all even/odd axises
-		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
-		uint8_t byAxis = Key_GetGamepadAxisIndex(InKey.Key);
-		bool fHigh = Key_IsGamepadAxisHigh(InKey.Key);
-		C4KeyCode keyAxisDir;
-		if (byAxis % 2)
-				if (fHigh) keyAxisDir = KEY_JOY_Down; else keyAxisDir = KEY_JOY_Up;
-		else if (fHigh) keyAxisDir = KEY_JOY_Right; else keyAxisDir = KEY_JOY_Left;
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, (uint8_t)keyAxisDir);
+		// TODO: do we need "any axis" events?
 	}
 	if (InKey.Key != KEY_Any) FallbackKeys[iKeyRangeCnt++] = KEY_Any;
 	// now get key ranges for fallback chain
