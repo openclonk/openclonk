@@ -8,42 +8,153 @@
  * Author: Marky
  */
 
-#include Library_Stackable
+local volume;
 
+func IsLiquid() { return "undefined"; } // Default: undefined liquid
 
-func IsLiquid() { return "undefined"; }
-func GetLiquidAmount() { return GetStackCount(); }
-func MaxStackCount() { return 999; } // was 1000000, but the stackable_max_count is hindering here. Copying the whole stackable library does not seem useful, though
-
+// -------------- Callbacks
+//
+// Engine callbacks
 
 protected func Construction()
 {
 	_inherited(...);
-	SetStackCount(1); // not max stack!
+}
+
+func Destruction()
+{
+	var container = Contained();
+	if (container)
+	{
+		// has an extra slot
+		if (container->~HasExtraSlot())
+			container->~NotifyHUD();
+	}
+	return _inherited(...);
 }
 
 protected func RejectEntrance(object into)
 {
-	// enter liquid containers only
-	if (!into->~IsLiquidContainer()) return true;
+	if (CannotEnter(into)) return true;
 	return _inherited(into, ...);
 }
 
-
-
-// 10 liquid items count as 1 mass unit
-// this may have to be tuned or made object-specific?
-private func UpdateMass()
+func CannotEnter(object into)
 {
-	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / 10);
+	// Enters liquid containers only
+	if (into->~IsLiquidContainer())
+	{
+		for (var liquid in FindObjects(Find_Func("IsLiquid"), Find_Container(into)))
+		{
+			if (MergeWith(liquid))
+			{
+				return true; // Cannot enter
+			}
+
+			return false; // Enter this object
+		}
+	}
+	else
+	{
+		return true; // Cannot enter
+	}
 }
 
-// 100 liquid items count as 1 wealth unit
-// this may have to be tuned or made object-specific?
-public func CalcValue(object in_base, int for_plr)
+// -------------- Manipulation of liquid amount
+
+func GetLiquidAmount() { return volume; }
+
+func SetLiquidAmount(int amount)
 {
-	return GetID()->GetValue() * Max(GetStackCount(), 1) / 100;
+	if (amount < 0)
+	{
+		FatalError(Format("Only positive liquid amounts are allowed, got %d", amount));
+	}
+	
+	volume = amount;
+
+	UpdateLiquidObject();
 }
+
+func DoLiquidAmount(int change)
+{
+	volume += change;
+	UpdateLiquidObject();
+}
+
+func MergeWith(object liquid_object)
+{
+	if (WildcardMatch(IsLiquid(), liquid_object->~IsLiquid()))
+	{
+		liquid_object->DoLiquidAmount(GetLiquidAmount());
+		return true;
+	}
+	return false;
+}
+
+// -------------- Status updates
+//
+
+func UpdateLiquidObject()
+{
+	UpdatePicture();
+	UpdateMass();
+	UpdateName();
+
+	// notify hud
+	var container = Contained();
+	if (container)
+	{
+		// has an extra slot
+		if (container->~HasExtraSlot())
+		{
+			container->~NotifyHUD();
+		}
+		// is a clonk with new inventory system
+		else
+		{
+			container->~OnInventoryChange();
+		}
+	}
+}
+
+func UpdatePicture()
+{
+	// Allow other objects to adjust their picture.
+	return _inherited(...);
+}
+
+func UpdateName()
+{
+	var container = Contained();
+	
+	if (container && container->~IsLiquidContainer())
+	{
+		SetName(Format("%d/%d %s", GetLiquidAmount(), container->GetLiquidContainerMaxFillLevel(), GetID()->GetName()));
+	}
+	else
+	{
+		SetName(Format("%dx %s", GetLiquidAmount(), GetID()->GetName()));
+	}
+}
+
+// 1000 liquid items count as 1 mass unit
+// this may have to be tuned or made object-specific?
+func UpdateMass()
+{
+	SetMass(GetID()->GetMass() * Max(1, GetLiquidAmount()) / 1000);
+}
+
+// 1000 liquid items count as 1 wealth unit
+// this may have to be tuned or made object-specific?
+func CalcValue(object in_base, int for_plr)
+{
+	return GetID()->GetValue() * Max(1, GetLiquidAmount()) / 1000;
+}
+
+// -------------- Interaction
+//
+// Interfaces for interaction with other objects
 
 
 /** 
@@ -62,8 +173,7 @@ func PutLiquid(string liquid_name, int amount, object source)
 
 	if (IsLiquid() == liquid_name)
 	{
-		amount = Max(amount, MaxStackCount() - GetStackCount());
-		DoStackCount(amount);
+		DoLiquidAmount(amount);
 		return amount;
 	}
 	else //Wrong material?
@@ -100,11 +210,18 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 		return [IsLiquid(), 0];
 
 	amount = Min(amount, GetLiquidAmount());
-	DoStackCount(-amount);
+	DoLiquidAmount(-amount);
 	return [liquid_name, amount];
 }
 
 
+/**
+ Converts a liquid name to a definition
+ that represents that liquid.
+ @par liquid_name the name of the liquid
+ @return the Id of the liquid object, 
+         or nil if no such object exists
+ */
 func GetLiquidID(string liquid_name)
 {
 	if (liquid_name == "Acid") return Liquid_Acid;
