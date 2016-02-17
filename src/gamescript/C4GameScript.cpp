@@ -29,6 +29,7 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include <C4GameMessage.h>
+#include <C4GamePadCon.h>
 #include <C4GraphicsSystem.h>
 #include <C4Log.h>
 #include <C4MessageInput.h>
@@ -2664,6 +2665,46 @@ static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, l
 	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
 }
 
+// strength: 0-1000, length: milliseconds
+static bool FnPlayRumble(C4PropList * _this, long player, long strength, long length)
+{
+	// Check parameters.
+	if (strength <= 0 || strength > 1000) return false;
+	if (length <= 0) return false;
+	// NO_OWNER: play rumble for all players (e.g. earthquakes)
+	if (player == NO_OWNER)
+	{
+		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
+			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnPlayRumble(_this, plr->Number, strength, length);
+		return true;
+	}
+	C4Player *plr = ::Players.Get(player);
+	if (!plr) return false;
+	if (plr->pGamepad)
+		plr->pGamepad->PlayRumble(strength / 1000.f, length);
+	// We can't return whether the rumble was actually played.
+	return true;
+}
+
+static bool FnStopRumble(C4PropList * _this, long player)
+{
+	// NO_OWNER: stop rumble for all players
+	// Not sure whether this makes sense to do - mainly provided for symmetry with PlayRumble().
+	if (player == NO_OWNER)
+	{
+		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
+			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnStopRumble(_this, plr->Number);
+		return true;
+	}
+	C4Player *plr = ::Players.Get(player);
+	if (!plr) return false;
+	if (plr->pGamepad)
+		plr->pGamepad->StopRumble();
+	return true;
+}
+
 static int32_t FnGetStartupPlayerCount(C4PropList * _this)
 {
 	// returns number of players when game was initially started
@@ -2891,6 +2932,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetPlayerControlEnabled);
 	F(GetPlayerControlEnabled);
 	F(GetPlayerControlAssignment);
+	F(PlayRumble);
+	F(StopRumble);
 	F(GetStartupPlayerCount);
 	F(GetStartupTeamCount);
 	F(EditCursor);

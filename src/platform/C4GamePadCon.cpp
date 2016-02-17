@@ -31,7 +31,7 @@
 
 C4GamePadControl::C4GamePadControl()
 {
-	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS) != 0)
+	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC | SDL_INIT_EVENTS) != 0)
 		LogF("SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER): %s", SDL_GetError());
 	SDL_GameControllerEventState(SDL_ENABLE);
 	if (!GetGamePadCount()) Log("No Gamepad found");
@@ -147,6 +147,14 @@ C4GamePadOpener::C4GamePadOpener(int iGamepad)
 		{
 			controller = SDL_GameControllerOpen(i);
 			if (!controller) LogF("SDL: %s", SDL_GetError());
+			haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(controller));
+			if (haptic)
+			{
+				if (SDL_HapticRumbleSupported(haptic))
+					SDL_HapticRumbleInit(haptic);
+			}
+			else
+				LogF("SDL: %s", SDL_GetError());
 			break;
 		}
 
@@ -155,7 +163,20 @@ C4GamePadOpener::C4GamePadOpener(int iGamepad)
 
 C4GamePadOpener::~C4GamePadOpener()
 {
+	if (haptic) SDL_HapticClose(haptic);
 	if (controller) SDL_GameControllerClose(controller);
+}
+
+void C4GamePadOpener::PlayRumble(float strength, uint32_t length)
+{
+	if (SDL_HapticRumbleSupported(haptic))
+		SDL_HapticRumblePlay(haptic, strength, length);
+}
+
+void C4GamePadOpener::StopRumble()
+{
+	if (SDL_HapticRumbleSupported(haptic))
+		SDL_HapticRumbleStop(haptic);
 }
 
 #else
@@ -170,5 +191,7 @@ int C4GamePadControl::GetGamePadCount() { return 0; }
 
 C4GamePadOpener::C4GamePadOpener(int iGamepad) { }
 C4GamePadOpener::~C4GamePadOpener() {}
+void C4GamePadOpener::PlayRumble(float strength, uint32_t length) { }
+void C4GamePadOpener::StopRumble() { }
 
 #endif

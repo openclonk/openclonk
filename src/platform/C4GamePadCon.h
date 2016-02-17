@@ -29,6 +29,9 @@
 struct _SDL_GameController;
 typedef struct _SDL_GameController SDL_GameController;
 
+struct _SDL_Haptic;
+typedef struct _SDL_Haptic SDL_Haptic;
+
 union SDL_Event;
 typedef union SDL_Event SDL_Event;
 
@@ -60,8 +63,14 @@ class C4GamePadOpener
 public:
 	C4GamePadOpener(int iGamePad);
 	~C4GamePadOpener();
+
+	// Force feedback: simple rumbling
+	void PlayRumble(float strength, uint32_t length); // strength: 0-1, length: milliseconds
+	void StopRumble();
+
 #ifdef HAVE_SDL
 	SDL_GameController *controller;
+	SDL_Haptic *haptic;
 #endif
 };
 
