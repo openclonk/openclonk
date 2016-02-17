@@ -53,7 +53,6 @@ public:
 	int GetGamePadCount();
 	void Execute();
 	void DoAxisInput(); // period axis strength update controls sent on each control frame creation
-	static bool AnyButtonDown();
 };
 
 class C4GamePadOpener
@@ -61,7 +60,6 @@ class C4GamePadOpener
 public:
 	C4GamePadOpener(int iGamePad);
 	~C4GamePadOpener();
-	void SetGamePad(int iNewGamePad);
 #ifdef HAVE_SDL
 	SDL_GameController *controller;
 #endif

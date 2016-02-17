@@ -29,11 +29,6 @@
 
 #include <SDL.h>
 
-bool C4GamePadControl::AnyButtonDown()
-{
-	return false;
-}
-
 C4GamePadControl::C4GamePadControl()
 {
 	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS) != 0)
@@ -163,12 +158,6 @@ C4GamePadOpener::~C4GamePadOpener()
 	if (controller) SDL_GameControllerClose(controller);
 }
 
-void C4GamePadOpener::SetGamePad(int iGamepad)
-{
-	// TODO: why do we need this?
-	LogF("SetGamePad: Not implemented yet");
-}
-
 #else
 
 // Dedicated server and everything else with neither Win32 nor SDL.
@@ -178,10 +167,8 @@ C4GamePadControl::~C4GamePadControl() { }
 void C4GamePadControl::Execute() { }
 void C4GamePadControl::DoAxisInput() { }
 int C4GamePadControl::GetGamePadCount() { return 0; }
-bool C4GamePadControl::AnyButtonDown() { return false; }
 
 C4GamePadOpener::C4GamePadOpener(int iGamepad) { }
 C4GamePadOpener::~C4GamePadOpener() {}
-void C4GamePadOpener::SetGamePad(int iGamepad) { }
 
 #endif
