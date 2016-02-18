@@ -273,7 +273,7 @@
   return true;
 }</code>
     <text>most commands (except for asynchronous commands in the player menu) call a global script function:</text>
-    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)</code>
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, int state)</code>
     <text>For an explanation of the parameters see <funclink>PlayerControl</funclink>. Amongst others, the function receives the calling player in player as well as the command to be executed in control.</text>
     <text>As a simple example let's assume that in the global <em>PlayerControls.txt</em> the following command has been defined:</text>
     <code>[ControlDefs]
@@ -293,11 +293,11 @@
     Control=Jump
     Priority=50</code>
     <text>This defines a Jump key and the corresponding standard mapping on the keyboard for the first player. The following script is used to handle the control:</text>
-    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, int state)
 {
   // Which command has been issued?
   // The constant CON_Jump has been declared automatically through the definition in PlayerControls.txt
-  if (control == CON_Jump &amp;&amp; !release)
+  if (control == CON_Jump &amp;&amp; state == CONS_Down)
   {
     // pressed the jump button. The clonk selected by the player shall jump
     var player_clonk = GetCursor(player);
@@ -319,17 +319,17 @@
   GUIDesc=Going underground
   ExtraData=Shovel</code>
     <text>Let shovel be the ID of a shovel object. In the global script there could be the following, generic handling for unknown commands, for example:</text>
-    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, int state)
 {
   // Handling of known controls
   // [...]
   // control with own handling
-  if (control_extra) return control_extra-&gt;PlayerControl(player, control, x, y, strength, repeat, release);
+  if (control_extra) return control_extra-&gt;PlayerControl(player, control, x, y, strength, repeat, state);
   // unkown control
   return false;
 }</code>
     <text>And in the script of the shovel:</text>
-    <code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated, bool release)
+    <code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated, int state)
 {
   // Handling of known controls
   // Control dig directly in the shovel
@@ -353,6 +353,7 @@
         <li>Mappings can emulate permanent key presses using the <em>Hold</em>/<em>Release</em> flags.</li>
         <li><emlink href="playercontrols.xml#Repeat">Key repeats</emlink> are generated.</li>
         <li>The held state of the key can be queried in the script via <funclink>GetPlayerControlState</funclink>.</li>
+        <li>If the command is bound to an analog stick or trigger on a controller, every change in position causes in a call to PlayerControl() with state = CONS_Moved.</li>
       </ul>
     </text>
     <text>A good example for this functionality is a directional command:</text>
@@ -362,7 +363,7 @@
   GUIDesc=Walk left
   Hold=1</code>
     <text>In the script the direction is transferred to the Clonk:</text>
-    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, int state)
 {
   if (control == CON_Left) return UpdateControlDir(player);
   // ...
