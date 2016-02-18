@@ -742,7 +742,16 @@ func SetPortrait(proplist custom_portrait)
 	return true;
 }
 
-public func CommandFailure() { return PlaySoundDoubt(); } // Callback from the engine when a command failed
+// Callback from the engine when a command failed.
+public func CommandFailure(string command, object target)
+{
+	// Don't play a sound when an exit command fails (this is a hotfix, because exiting fails all the time).
+	if (command == "Exit")
+		return; 
+	// Otherwise play a sound that the clonk is doubting this command.
+	PlaySoundDoubt();
+	return;
+}
 
 /* Magic */
 
