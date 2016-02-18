@@ -648,7 +648,7 @@ void C4ObjectListDlg::OnSelectionChanged(GtkTreeSelection* selection, C4ObjectLi
 	dlg->updating_selection = false;
 }
 
-void C4ObjectListDlg::Update(C4ObjectList &rSelection)
+void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
 {
 	if (updating_selection) return;
 	if (!window) return;
@@ -660,14 +660,16 @@ void C4ObjectListDlg::Update(C4ObjectList &rSelection)
 
 	gtk_tree_selection_unselect_all(selection);
 
-	for (C4ObjectLink * pLnk = rSelection.First; pLnk; pLnk = pLnk->Next)
+	for (auto val : rSelection)
 	{
+		C4Object *obj = val.getObj();
+		if (!obj) continue; // it's a non-object proplist or deleted object
 		GtkTreeIter iter;
 		C4List * c4_list = C4_LIST(model);
 		C4ObjectList * pList = c4_list->data;
-		if (pLnk->Obj->Contained)
-			pList = &pLnk->Obj->Contained->Contents;
-		c4_list_iter_for_C4Object(GTK_TREE_MODEL(model), &iter, pList, pLnk->Obj);
+		if (obj->Contained)
+			pList = &obj->Contained->Contents;
+		c4_list_iter_for_C4Object(GTK_TREE_MODEL(model), &iter, pList, obj);
 		gtk_tree_selection_select_iter(selection, &iter);
 	}
 
@@ -838,7 +840,34 @@ void C4ObjectListDlg::Open()
 {
 }
 
-void C4ObjectListDlg::Update(C4ObjectList &rSelection)
+#ifdef WITH_QT_EDITOR
+
+#include <C4ConsoleQtObjectListViewer.h>
+
+void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
+{
+	if (view_model) view_model->SetSelection(rSelection);
+}
+
+void C4ObjectListDlg::OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk)
+{
+	if (view_model) view_model->Invalidate();
+}
+
+void C4ObjectListDlg::OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk)
+{
+	if (view_model) view_model->Invalidate();
+}
+
+void C4ObjectListDlg::OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk)
+{
+	if (view_model) view_model->Invalidate();
+}
+
+
+#else
+
+void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
 {
 }
 
@@ -853,6 +882,8 @@ void C4ObjectListDlg::OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk)
 void C4ObjectListDlg::OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk)
 {
 }
+
+#endif WITH_QT_EDITOR
 
 #endif
 

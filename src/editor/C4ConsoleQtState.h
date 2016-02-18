@@ -158,6 +158,7 @@ public:
 	std::unique_ptr<QApplication> application;
 	std::unique_ptr<C4ConsoleQtMainWindow> window;
 	std::unique_ptr<class C4ConsoleQtPropListModel> property_model;
+	std::unique_ptr<class C4ConsoleQtObjectListModel> object_list_model;
 	std::list<C4ConsoleViewportWidget *> viewports;
 	std::list<std::unique_ptr<C4ConsoleClientAction> > client_actions;
 	std::list<std::unique_ptr<C4ConsoleRemovePlayerAction> > player_actions;
@@ -207,7 +208,7 @@ public:
 	void AddViewport(class C4ViewportWindow *cvp);
 	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active);
 	void SetInputFunctions(std::list<const char*> &functions);
-	void PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *proplist_selection);
+	void PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update);
 };
 
 class C4ConsoleGUI::State : public C4ConsoleGUIState

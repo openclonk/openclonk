@@ -30,11 +30,25 @@
 #include <gtk/gtk.h>
 #endif
 
+// Currently selected elements in editcursor. May be objects and other prop lists.
+class C4EditCursorSelection : public std::list<C4Value>
+{
+public:
+	StdStrBuf GetDataString() const; // Return a string like "n objects".
+	C4Object *GetObject(int32_t index=0) const; // Get indexed C4Object * in list
+	C4Object *GetLastObject() const;
+	void ConsolidateEmpty(); // remove NULLed entries that may happen because objects got deleted
+	bool ClearPointers(C4Object *obj);
+	bool IsContained(C4PropList *obj) const;
+	int32_t ObjectCount() const; // count only C4Object *
+};
+
 class C4EditCursor
 {
 public:
 	C4EditCursor();
 	~C4EditCursor();
+
 protected:
 	bool fAltWasDown;
 	bool fShiftWasDown;
@@ -63,8 +77,7 @@ protected:
 	GtkWidget* itemProperties;
 #endif
 	// Selection may either be any number of objects or a single non-object prop list
-	C4ObjectList Selection;
-	C4Value proplist_selection;
+	C4EditCursorSelection selection;
 public:
 	void Default();
 	void Clear();
@@ -89,9 +102,9 @@ public:
 	bool Move(float iX, float iY, DWORD dwKeyState);
 	bool Init();
 	bool EditingOK();
-	C4ObjectList &GetSelection() { return Selection; }
+	C4EditCursorSelection &GetSelection() { return selection; }
 	void SetHold(bool fToState) { Hold = fToState; }
-	void OnSelectionChanged();
+	void OnSelectionChanged(bool by_objectlist=false);
 	bool AltDown();
 	bool AltUp();
 protected:
@@ -109,15 +122,11 @@ protected:
 	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r);
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
-	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
+	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 	void DoContextObjsel(C4Object *, bool clear);
 	void DoContextObjCommand(C4Object *, const char *cmd);
 	void ObjselectDelItems();
-
-	void AddToSelection(C4Object *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
-	bool RemoveFromSelection(C4Object *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
-	void ClearSelection(C4Object *next_selection=NULL);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
 
 #ifdef USE_GTK
 	static void OnDelete(GtkWidget* widget, gpointer data);
@@ -125,6 +134,11 @@ protected:
 	static void OnGrabContents(GtkWidget* widget, gpointer data);
 	static void OnObjselect(GtkWidget* widget, gpointer data);
 #endif
+public:
+	void AddToSelection(C4PropList *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
+	bool RemoveFromSelection(C4PropList *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
+	void ClearSelection(C4PropList *next_selection=NULL);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
+
 };
 
 #endif

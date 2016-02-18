@@ -1074,7 +1074,7 @@ static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 	}
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *proplist_selection)
+void C4ConsoleGUI::PropertyDlgUpdate(C4EditCursor::Selection &rSelection, bool force_function_update)
 {
 	HWND hDialog = state->hPropertyDlg;
 	if (!hDialog) return;

@@ -27,16 +27,23 @@
 
 class C4ObjectListDlg: public C4ObjectListChangeListener
 {
+#ifdef WITH_QT_EDITOR
+	class C4ConsoleQtObjectListModel *view_model; // forward into Qt object list model
+#endif
 public:
 	C4ObjectListDlg();
 	virtual ~C4ObjectListDlg();
+#ifdef WITH_QT_EDITOR
+	void SetModel(C4ConsoleQtObjectListModel *new_view_model) { view_model = new_view_model;  }
+#endif
+	
 	void Execute();
 	void Open();
-	void Update(C4ObjectList &rSelection);
+	void Update(class C4EditCursorSelection &rSelection);
 
-	virtual void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk);
-	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk);
-	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk);
+	virtual void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk) override;
+	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) override;
+	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) override;
 
 #ifdef USE_GTK
 private:

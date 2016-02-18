@@ -19,6 +19,7 @@
 #include <C4Include.h>
 #include <C4ConsoleQtState.h>
 #include <C4ConsoleQtPropListViewer.h>
+#include <C4ConsoleQtObjectListViewer.h>
 #include <C4Console.h>
 #include <StdRegistry.h>
 #include <C4ViewportWindow.h>
@@ -90,8 +91,10 @@ void C4ConsoleOpenViewportAction::Execute()
 /* Console viewports */
 
 C4ConsoleViewportWidget::C4ConsoleViewportWidget(QMainWindow *parent, C4ViewportWindow *cvp)
-	: QDockWidget("VIEWPORT", parent), cvp(cvp)
+	: QDockWidget("", parent), cvp(cvp)
 {
+	// Translated title
+	setWindowTitle(LoadResStr("IDS_CNS_VIEWPORT"));
 #ifdef USE_WIN32_WINDOWS
 	// hack
 	window = QWindow::fromWinId(reinterpret_cast<WId>(cvp->hWindow));
@@ -382,10 +385,11 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	window->setDockNestingEnabled(true);
 	viewport_area->setDockNestingEnabled(true);
 
-	// Property view model
+	// View models
 	property_model.reset(new C4ConsoleQtPropListModel());
 	ui.propertyTable->setModel(property_model.get());
-
+	object_list_model.reset(new C4ConsoleQtObjectListModel(ui.objectListView));
+	
 	window->showNormal();
 #ifdef USE_WIN32_WINDOWS
 	// Restore window position
@@ -553,24 +557,26 @@ void C4ConsoleGUIState::SetInputFunctions(std::list<const char*> &functions)
 	SetComboItems(ui.consoleInputBox, functions);
 }
 
-void C4ConsoleGUIState::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *proplist_selection)
+void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update)
 {
-	int sel_count = rSelection.ObjectCount();
+	int sel_count = rSelection.size();
 	if (sel_count != 1)
 	{
 		// Multi object selection: Hide property view; show info label
 		ui.propertyTable->setVisible(false);
-		ui.multiSelInfoLabel->setText(rSelection.GetDataString().getData());
-		ui.multiSelInfoLabel->setVisible(true);
+		ui.selectionInfoLabel->setText(rSelection.GetDataString().getData());
 	}
 	else
 	{
-		// Single object selection: Show property view
-		property_model->SetPropList(proplist_selection);
-		ui.multiSelInfoLabel->setVisible(false);
+		// Single object selection: Show property view + Object info in label
+		property_model->SetPropList(rSelection.front().getPropList());
+		ui.selectionInfoLabel->setText(rSelection.front().GetDataString().getData());
 		ui.propertyTable->setVisible(true);
 	}
 	// Function update in script combo box
 	if (force_function_update)
 		SetComboItems(ui.propertyInputBox, ::Console.GetScriptSuggestions(::Console.PropertyDlgObject, C4Console::MRU_Object));
+	// Update object list on timer update
+	if (!force_function_update)
+		object_list_model->Invalidate();
 }

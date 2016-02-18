@@ -123,7 +123,6 @@ public:
 	virtual bool AssignInfo();
 	virtual bool ValidateOwners();
 	StdStrBuf GetNameList(C4DefList &rDefs) const;
-	StdStrBuf GetDataString();
 	bool IsClear() const;
 	bool DenumeratePointers();
 	bool Write(char *szTarget);

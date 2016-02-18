@@ -249,9 +249,9 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 bool C4ConsoleGUI::PropertyDlgOpen() { /* Always open */ return true; }
 void C4ConsoleGUI::PropertyDlgClose() { /* Always open */ }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update, class C4PropList *proplist_selection)
+void C4ConsoleGUI::PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update)
 {
-	if (Active) state->PropertyDlgUpdate(rSelection, force_function_update, proplist_selection);
+	if (Active) state->PropertyDlgUpdate(rSelection, force_function_update);
 }
 
 bool C4ConsoleGUI::ToolsDlgOpen(class C4ToolsDlg *dlg) { /* Always open */ return true; }

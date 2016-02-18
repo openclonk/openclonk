@@ -1273,7 +1273,7 @@ void C4ControlEMMoveObject::Execute() const
 				{
 					// local call? adjust selection then
 					// do callbacks for all clients for sync reasons
-					if (fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
+					if (fLocalCall) Console.EditCursor.GetSelection().push_back(C4VObj(pObj));
 					C4AulParSet pars(C4VObj(pObj));
 					if (pOldObj->Status) pOldObj->Call(PSF_EditCursorDeselection, &pars);
 					if (pObj->Status) pObj->Call(PSF_EditCursorSelection);
@@ -1285,7 +1285,7 @@ void C4ControlEMMoveObject::Execute() const
 			if (fLocalCall)
 				for (int i = 0; i<iObjectNum; ++i)
 					if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
-						Console.EditCursor.GetSelection().Remove(pOldObj);
+						Console.EditCursor.GetSelection().remove(C4VObj(pOldObj));
 			Console.EditCursor.SetHold(true);
 			Console.EditCursor.OnSelectionChanged();
 		}
