@@ -38,7 +38,7 @@ public func IsContainer() { return true; }
 
 protected func RejectCollect(id item, object obj)
 {
-	if (item == lib_liquid_container.icon) return false;
+	if (item == GetLiquidItem()) return false;
 	if (obj->~IsFuel())
 		return false;
 	return true;
@@ -53,7 +53,7 @@ public func ContentsCheck()
 {
 	// Ejects non fuel items immediately
 	var fuel;
-	if(fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel")), Find_Exclude(lib_liquid_container.icon))) 
+	if(fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel")), Find_Exclude(GetLiquidItem()))) 
 	{
 		fuel->Exit(-45, 21, -20, -1, -1, -30);
 		Sound("Chuff");

@@ -6,8 +6,7 @@
  * Author: Ringwaul, ST-DDT, Marky
  */
 
-
-local lib_liquid_container;
+local liquid_container_item;
 
 // -------------- Properties
 //
@@ -57,16 +56,39 @@ func LiquidContainerAccepts(string liquid_name)
 //
 // naming scheme: GetLiquid[attribute], because it concerns the liquid
 
+func GetLiquidItem()
+{
+	return liquid_container_item;
+}
+
+func SetLiquidItem(object item)
+{
+	if (item && (item->~IsLiquid() || item.IsLiquid != nil))
+	{
+		liquid_container_item = item;
+	}
+	else
+	{
+		FatalError(Format("Object %v is not a liquid", item));
+	}
+}
+
 func GetLiquidType()
 {
-	//if (LiquidContainerIsEmpty())
-	//	return nil; // TODO: was "", this was inconsistent throughout the barrel
-	return lib_liquid_container.liquid;
+	if (GetLiquidItem())
+	{
+		return GetLiquidItem()->IsLiquid();
+	}
+	return nil;
 }
 
 func GetLiquidFillLevel()
 {
-	return lib_liquid_container.volume;
+	if (GetLiquidItem())
+	{
+		return GetLiquidItem()->GetLiquidAmount();
+	}
+	return 0;
 }
 
 // -------------- Setters
@@ -78,25 +100,42 @@ func GetLiquidFillLevel()
 
 func SetLiquidType(string liquid_name)
 {
-	lib_liquid_container.liquid = liquid_name;
+	var amount = 0; // for new items only
+	if (GetLiquidItem())
+	{
+		amount = GetLiquidItem()->GetLiquidAmount();
+		if (!WildcardMatch(liquid_name, GetLiquidItem()->IsLiquid()))
+			GetLiquidItem()->RemoveObject();
+	}
+
+	if (!GetLiquidItem())
+	{
+		var item = Library_Liquid->CreateLiquid(liquid_name, amount);
+		SetLiquidItem(item);
+		if (amount > 0) item->UpdateLiquidObject();
+		// if not removed because of amount
+		if (item) item->Enter(this);
+	}
 }
 
 func SetLiquidFillLevel(int amount)
 {
+	if (!GetLiquidItem())
+	{
+		SetLiquidType(nil);
+	}
+
 	ChangeLiquidFillLevel(amount - GetLiquidFillLevel());
 }
 
 func ChangeLiquidFillLevel(int amount)
 {
-	lib_liquid_container.volume += amount;
-	
-	// Empty the liquid container
-	if (LiquidContainerIsEmpty())
+	if (GetLiquidItem())
 	{
-		SetLiquidType(nil);
+		GetLiquidItem()->DoLiquidAmount(amount);
 	}
 	
-	this->UpdateLiquidContainer();
+	this->~UpdateLiquidContainer();
 }
 
 // -------------- Interaction
@@ -165,16 +204,6 @@ func PutLiquid(string liquid_name, int amount, object source)
 //
 // Internal stuff
 
-func Construction()
-{
-	// use proplist to avoid name clashes
-	lib_liquid_container = {
-		liquid = nil, // the liquid - this should be a string, so that the container may contain liquids that are not materials
-	    volume = 0,	  // the stored amount
-	    icon = nil};  // the display object
-	    
-	_inherited(...);
-}
 
 func SaveScenarioObject(props)
 {
@@ -191,31 +220,3 @@ func SetLiquidContainer(string liquid_name, int amount)
 	SetLiquidFillLevel(amount);
 }
 
-// interface for updating graphics, etc
-func UpdateLiquidContainer()
-{
-	if (this->HasLiquidDisplay())
-	{
-		var liquid_id = Library_Liquid->GetLiquidID(GetLiquidType());
-		if (liquid_id)
-		{
-			if (lib_liquid_container.icon
-			 && lib_liquid_container.icon->GetID() != liquid_id)
-			    lib_liquid_container.icon->RemoveObject();
-			    
-			if (!lib_liquid_container.icon)
-			     lib_liquid_container.icon = CreateContents(liquid_id);
-			
-			lib_liquid_container.icon->~SetStackCount(GetLiquidFillLevel());
-		}
-		else
-		{
-			if (lib_liquid_container.icon)
-			{
-				lib_liquid_container.icon->RemoveObject();
-			}
-		}
-	}
-}
-
-func HasLiquidDisplay(){ return true;}

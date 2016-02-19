@@ -8,9 +8,10 @@
  * Author: Marky
  */
 
+local liquid;
 local volume;
 
-func IsLiquid() { return "undefined"; } // Default: undefined liquid
+func IsLiquid() { return liquid; } // Default: undefined liquid
 
 // -------------- Callbacks
 //
@@ -18,6 +19,7 @@ func IsLiquid() { return "undefined"; } // Default: undefined liquid
 
 protected func Construction()
 {
+	liquid = liquid ?? "undefined";
 	_inherited(...);
 }
 
@@ -42,7 +44,7 @@ protected func RejectEntrance(object into)
 func CannotEnter(object into)
 {
 	// Enters liquid containers only
-	if (into->~IsLiquidContainer())
+	if (into->~IsLiquidContainer() || into->~IsLiquidPump())
 	{
 		for (var liquid in FindObjects(Find_Func("IsLiquid"), Find_Container(into)))
 		{
@@ -50,9 +52,9 @@ func CannotEnter(object into)
 			{
 				return true; // Cannot enter
 			}
-
-			return false; // Enter this object
 		}
+
+		return false; // Enter this object
 	}
 	else
 	{
@@ -61,6 +63,11 @@ func CannotEnter(object into)
 }
 
 // -------------- Manipulation of liquid amount
+
+func SetLiquidType(string liquid_name)
+{
+	liquid = liquid_name;
+}
 
 func GetLiquidAmount() { return volume; }
 
@@ -103,6 +110,12 @@ func UpdateLiquidObject()
 
 	// notify hud
 	var container = Contained();
+	
+	if (volume <= 0)
+	{
+		RemoveObject();
+	}
+	
 	if (container)
 	{
 		// has an extra slot
@@ -228,5 +241,19 @@ func GetLiquidID(string liquid_name)
 	if (liquid_name == "Lava") return Liquid_Lava;
 	if (liquid_name == "Oil") return Liquid_Oil;
 	if (liquid_name == "Water") return Liquid_Water;
-	return nil;	
+	return Library_Liquid;	
+}
+
+
+/**
+ Creates a liquid object with the specified name
+ and amount. Liquids with amount 0 can be created
+ that way.
+ */
+func CreateLiquid(string liquid_name, int amount)
+{
+	var item = CreateObject(GetLiquidID(liquid_name));
+	item->SetLiquidType(liquid_name);
+	item.volume = amount;
+	return item;
 }
