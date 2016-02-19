@@ -212,7 +212,7 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 // --- C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel
 
 C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds)
-	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, false), assignment(assignment), assignment_set(assignment_set)
+	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, true), assignment(assignment), assignment_set(assignment_set)
 {
 	UpdateAssignmentString();
 }

@@ -75,6 +75,8 @@
 #include <C4SolidMask.h>
 #include <C4FoW.h>
 
+#include <unordered_map>
+
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
 public:
@@ -3609,6 +3611,33 @@ void C4Game::Abort(bool fApproved)
 	Application.QuitGame();
 }
 
+static const std::unordered_map<std::string, C4GUI::Icons> str_to_icon =
+{
+	{ "Locked",      C4GUI::Ico_Ex_LockedFrontal },
+	{ "League",      C4GUI::Ico_Ex_League        },
+	{ "GameRunning", C4GUI::Ico_GameRunning      },
+	{ "Lobby",       C4GUI::Ico_Lobby            },
+	{ "RuntimeJoin", C4GUI::Ico_RuntimeJoin      },
+
+	{ "A",             C4GUI::Ico_Controller_A             },
+	{ "B",             C4GUI::Ico_Controller_B             },
+	{ "X",             C4GUI::Ico_Controller_X             },
+	{ "Y",             C4GUI::Ico_Controller_Y             },
+	{ "Back",          C4GUI::Ico_Controller_Back          },
+	{ "Start",         C4GUI::Ico_Controller_Start         },
+	{ "Dpad",          C4GUI::Ico_Controller_Dpad          },
+	{ "DpadLeft",      C4GUI::Ico_Controller_DpadLeft      },
+	{ "DpadRight",     C4GUI::Ico_Controller_DpadRight     },
+	{ "DpadDown",      C4GUI::Ico_Controller_DpadDown      },
+	{ "DpadUp",        C4GUI::Ico_Controller_DpadUp        },
+	{ "LeftShoulder",  C4GUI::Ico_Controller_LeftShoulder  },
+	{ "RightShoulder", C4GUI::Ico_Controller_RightShoulder },
+	{ "LeftTrigger",   C4GUI::Ico_Controller_LeftTrigger   },
+	{ "RightTrigger",  C4GUI::Ico_Controller_RightTrigger  },
+	{ "LeftStick",     C4GUI::Ico_Controller_LeftStick     },
+	{ "RightStick",    C4GUI::Ico_Controller_RightStick    },
+};
+
 bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 {
 	// safety
@@ -3618,19 +3647,12 @@ bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 	if (SEqual2(szSpec, "@Ico:"))
 	{
 		szSpec += 5;
-		if (SEqual2(szSpec, "Locked"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
-		else if (SEqual2(szSpec, "League"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
-		else if (SEqual2(szSpec, "GameRunning"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
-		else if (SEqual2(szSpec, "Lobby"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
-		else if (SEqual2(szSpec, "RuntimeJoin"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-		else
-			return false;
-		return true;
+		auto it = str_to_icon.find(szSpec);
+		if (it != str_to_icon.end())
+		{
+			fct = C4GUI::Icon::GetIconFacet(it->second);
+			return true;
+		}
 	}
 
 	return false;

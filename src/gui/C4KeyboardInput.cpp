@@ -333,32 +333,32 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		{
 			switch (Key_GetGamepadEvent(wCode))
 			{
-			case KEY_CONTROLLER_ButtonA             : return StdStrBuf("A");
-			case KEY_CONTROLLER_ButtonB             : return StdStrBuf("B");
-			case KEY_CONTROLLER_ButtonX             : return StdStrBuf("X");
-			case KEY_CONTROLLER_ButtonY             : return StdStrBuf("Y");
-			case KEY_CONTROLLER_ButtonBack          : return StdStrBuf("Back");
+			case KEY_CONTROLLER_ButtonA             : return StdStrBuf("{{@Ico:A}}");
+			case KEY_CONTROLLER_ButtonB             : return StdStrBuf("{{@Ico:B}}");
+			case KEY_CONTROLLER_ButtonX             : return StdStrBuf("{{@Ico:X}}");
+			case KEY_CONTROLLER_ButtonY             : return StdStrBuf("{{@Ico:Y}}");
+			case KEY_CONTROLLER_ButtonBack          : return StdStrBuf("{{@Ico:Back}}");
 			case KEY_CONTROLLER_ButtonGuide         : return StdStrBuf("Guide");
-			case KEY_CONTROLLER_ButtonStart         : return StdStrBuf("Start");
-			case KEY_CONTROLLER_ButtonLeftStick     : return StdStrBuf("Left Stick Click");
-			case KEY_CONTROLLER_ButtonRightStick    : return StdStrBuf("Right Stick Click");
-			case KEY_CONTROLLER_ButtonLeftShoulder  : return StdStrBuf("Left Shoulder");
-			case KEY_CONTROLLER_ButtonRightShoulder : return StdStrBuf("Right Shoulder");
-			case KEY_CONTROLLER_ButtonDpadUp        : return StdStrBuf("Dpad Up");
-			case KEY_CONTROLLER_ButtonDpadDown      : return StdStrBuf("Dpad Down");
-			case KEY_CONTROLLER_ButtonDpadLeft      : return StdStrBuf("Dpad Left");
-			case KEY_CONTROLLER_ButtonDpadRight     : return StdStrBuf("Dpad Right");
+			case KEY_CONTROLLER_ButtonStart         : return StdStrBuf("{{@Ico:Start}}");
+			case KEY_CONTROLLER_ButtonLeftStick     : return StdStrBuf("{{@Ico:LeftStick}}");
+			case KEY_CONTROLLER_ButtonRightStick    : return StdStrBuf("{{@Ico:RightStick}}");
+			case KEY_CONTROLLER_ButtonLeftShoulder  : return StdStrBuf("{{@Ico:LeftShoulder}}");
+			case KEY_CONTROLLER_ButtonRightShoulder : return StdStrBuf("{{@Ico:RightShoulder}}");
+			case KEY_CONTROLLER_ButtonDpadUp        : return StdStrBuf("{{@Ico:DpadUp}}");
+			case KEY_CONTROLLER_ButtonDpadDown      : return StdStrBuf("{{@Ico:DpadDown}}");
+			case KEY_CONTROLLER_ButtonDpadLeft      : return StdStrBuf("{{@Ico:DpadLeft}}");
+			case KEY_CONTROLLER_ButtonDpadRight     : return StdStrBuf("{{@Ico:DpadRight}}");
 			case KEY_CONTROLLER_AnyButton           : return StdStrBuf("Any Button");
-			case KEY_CONTROLLER_AxisLeftXLeft       : return StdStrBuf("Left Stick Left");
-			case KEY_CONTROLLER_AxisLeftXRight      : return StdStrBuf("Left Stick Right");
-			case KEY_CONTROLLER_AxisLeftYUp         : return StdStrBuf("Left Stick Up");
-			case KEY_CONTROLLER_AxisLeftYDown       : return StdStrBuf("Left Stick Down");
-			case KEY_CONTROLLER_AxisRightXLeft      : return StdStrBuf("Right Stick Left");
-			case KEY_CONTROLLER_AxisRightXRight     : return StdStrBuf("Right Stick Right");
-			case KEY_CONTROLLER_AxisRightYUp        : return StdStrBuf("Right Stick Up");
-			case KEY_CONTROLLER_AxisRightYDown      : return StdStrBuf("Right Stick Down");
-			case KEY_CONTROLLER_AxisTriggerLeft     : return StdStrBuf("Left Trigger");
-			case KEY_CONTROLLER_AxisTriggerRight    : return StdStrBuf("Right Trigger");
+			case KEY_CONTROLLER_AxisLeftXLeft       : return StdStrBuf("{{@Ico:LeftStick}} Left");
+			case KEY_CONTROLLER_AxisLeftXRight      : return StdStrBuf("{{@Ico:LeftStick}} Right");
+			case KEY_CONTROLLER_AxisLeftYUp         : return StdStrBuf("{{@Ico:LeftStick}} Up");
+			case KEY_CONTROLLER_AxisLeftYDown       : return StdStrBuf("{{@Ico:LeftStick}} Down");
+			case KEY_CONTROLLER_AxisRightXLeft      : return StdStrBuf("{{@Ico:RightStick}} Left");
+			case KEY_CONTROLLER_AxisRightXRight     : return StdStrBuf("{{@Ico:RightStick}} Right");
+			case KEY_CONTROLLER_AxisRightYUp        : return StdStrBuf("{{@Ico:RightStick}} Up");
+			case KEY_CONTROLLER_AxisRightYDown      : return StdStrBuf("{{@Ico:RightStick}} Down");
+			case KEY_CONTROLLER_AxisTriggerLeft     : return StdStrBuf("{{@Ico:LeftTrigger}}");
+			case KEY_CONTROLLER_AxisTriggerRight    : return StdStrBuf("{{@Ico:RightTrigger}}");
 			}
 		}
 		else

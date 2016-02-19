@@ -428,12 +428,18 @@ namespace C4GUI
 	C4Facet Icon::GetIconFacet(Icons icoIconIndex)
 	{
 		if (icoIconIndex == Ico_None) return C4Facet();
-		C4Facet &rFacet = (icoIconIndex & Ico_Extended) ? ::GraphicsResource.fctIconsEx : ::GraphicsResource.fctIcons;
-		icoIconIndex = Icons(icoIconIndex & (Ico_Extended-1));
+		C4Facet *rFacet;
+		switch (icoIconIndex & ~0xff)
+		{
+		case Ico_Extended:    rFacet = &::GraphicsResource.fctIconsEx; break;
+		case Ico_Controller:  rFacet = &::GraphicsResource.fctControllerIcons; break;
+		default:              rFacet = &::GraphicsResource.fctIcons;
+		}
+		icoIconIndex = Icons(icoIconIndex & 0xff);
 		int32_t iXMax, iYMax;
-		rFacet.GetPhaseNum(iXMax, iYMax);
+		rFacet->GetPhaseNum(iXMax, iYMax);
 		if (!iXMax) iXMax = 6;
-		return rFacet.GetPhase(icoIconIndex % iXMax, icoIconIndex / iXMax);
+		return rFacet->GetPhase(icoIconIndex % iXMax, icoIconIndex / iXMax);
 	}
 
 
