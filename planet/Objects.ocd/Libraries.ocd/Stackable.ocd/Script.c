@@ -282,3 +282,13 @@ public func SaveScenarioObject(props)
 		props->AddCall("Stack", this, "SetStackCount", GetStackCount());
 	return true;
 }
+
+// Tell the interaction menu as how many objects this object should be displayed
+func GetInteractionMenuAmount()
+{
+	var object_amount = this->GetStackCount() ?? 1;
+	// Infinite stacks work differently - showing an arbitrary amount would not make sense.
+	if (object_amount > 1 && this->IsInfiniteStackCount())
+		object_amount = 1;
+	return object_amount;
+}

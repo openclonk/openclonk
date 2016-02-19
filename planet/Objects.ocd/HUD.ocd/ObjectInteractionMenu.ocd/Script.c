@@ -994,10 +994,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			}
 		}
 		// How many objects are this object?!
-		var object_amount = obj->~GetStackCount() ?? 1;
-		// Infinite stacks work differently - showing an arbitrary amount would not make sense.
-		if (object_amount > 1 && obj->~IsInfiniteStackCount())
-			object_amount = 1;
+		var object_amount = obj->~GetInteractionMenuAmount() ?? 1;
 		// Empty containers can be stacked.
 		for (var inv in inventory)
 		{

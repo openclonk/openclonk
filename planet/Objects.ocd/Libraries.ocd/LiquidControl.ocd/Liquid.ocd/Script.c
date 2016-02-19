@@ -62,6 +62,13 @@ func CannotEnter(object into)
 	}
 }
 
+// Tell the interaction menu as how many objects this object should be displayed
+func GetInteractionMenuAmount()
+{
+	return GetLiquidAmount();
+}
+
+
 // -------------- Manipulation of liquid amount
 
 func SetLiquidType(string liquid_name)
