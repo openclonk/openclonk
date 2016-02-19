@@ -836,41 +836,41 @@
 		# Contents Menu
 
 		[Assignment]
-		Key=Controller1b
+		Key=ControllerButtonB
 		GUIGroup=50
 		Control=Contents
 
 		[Assignment]
-		Key=Controller1leftshoulder
+		Key=ControllerButtonLeftShoulder
 		GUIGroup=50
 		Control=InventoryShiftBackward
 
 		[Assignment]
-		Key=Controller1rightshoulder
+		Key=ControllerButtonRightShoulder
 		GUIGroup=50
 		Control=InventoryShiftForward
 
 		# Menu
 
 		[Assignment]
-		Key=Controller1y
+		Key=ControllerButtonY
 		GUIGroup=50
 		Control=PlayerMenu
 
 		[Assignment]
-		Key=Controller1a
+		Key=ControllerButtonA
 		GUIGroup=50
 		Control=MenuOK
 
 		[Assignment]
-		Key=Controller1b
+		Key=ControllerButtonB
 		GUIGroup=50
 		Control=MenuCancel
 
 		# Movement
 
 		[Assignment]
-		Key=Controller1AxisleftxMin
+		Key=ControllerLeftStickLeft
 		Priority=50
 		GUIName=$KEY_Left$
 		GUIDesc=$KEY_Left_Desc$
@@ -878,7 +878,7 @@
 		Control=Left
 
 		[Assignment]
-		Key=Controller1AxisleftxMax
+		Key=ControllerLeftStickRight
 		Priority=50
 		GUIName=$KEY_Right$
 		GUIDesc=$KEY_Right_Desc$
@@ -886,7 +886,7 @@
 		Control=Right
 
 		[Assignment]
-		Key=Controller1AxisleftyMax
+		Key=ControllerLeftStickDown
 		Priority=50
 		GUIName=$KEY_Down$
 		GUIDesc=$KEY_Down_Desc$
@@ -894,7 +894,7 @@
 		Control=Down
 
 		[Assignment]
-		Key=Controller1AxisleftyMin
+		Key=ControllerLeftStickUp
 		Priority=50
 		GUIName=$KEY_Up$
 		GUIDesc=$KEY_Up_Desc$
@@ -902,40 +902,40 @@
 		Control=Up
 
 		[Assignment]
-		Key=Controller1rightstick
+		Key=ControllerButtonRightStick
 		Priority=10
 		GUIGroup=10
 		Control=Jump
 
 		[Assignment]
-		Key=Controller1dpdown
+		Key=ControllerButtonDpadDown
 		Priority=10
 		GUIGroup=10
 		Control=FallThrough
 
 		[Assignment]
-		Key=Controller1AxisrightxMin
+		Key=ControllerRightStickLeft
 		GUIDesc=$KEY_AimAxis_Desc$
 		Priority=80
 		GUIGroup=30
 		Control=AimAxisLeft
 
 		[Assignment]
-		Key=Controller1AxisrightxMax
+		Key=ControllerRightStickRight
 		GUIDesc=$KEY_AimAxis_Desc$
 		Priority=80
 		GUIGroup=30
 		Control=AimAxisRight
 
 		[Assignment]
-		Key=Controller1AxisrightyMax
+		Key=ControllerRightStickDown
 		GUIDesc=$KEY_AimAxis_Desc$
 		Priority=80
 		GUIGroup=30
 		Control=AimAxisDown
 
 		[Assignment]
-		Key=Controller1AxisrightyMin
+		Key=ControllerRightStickUp
 		GUIDesc=$KEY_AimAxis_Desc$
 		Priority=80
 		GUIGroup=30
@@ -944,32 +944,32 @@
 		# Object interaction
 
 		[Assignment]
-		Key=Controller1a
+		Key=ControllerButtonA
 		Priority=35
 		GUIGroup=40
 		Control=Interact
 
 		[Assignment]
-		Key=Controller1x
+		Key=ControllerButtonX
 		Control=PickUp
 		GUIGroup=50
 
 		# Crew
 
 		[Assignment]
-		Key=Controller1dpright
+		Key=ControllerButtonDpadRight
 		Control=NextCrew
 		GUIGroup=70
 
 		[Assignment]
-		Key=Controller1dpleft
+		Key=ControllerButtonDpadLeft
 		Control=PreviousCrew
 		GUIGroup=70
 
 		# Use, Throw, Drop
 
 		[Assignment]
-		Key=Controller1AxisrighttriggerMax
+		Key=ControllerRightTrigger
 		GUIName=$KEY_GamepadUse$
 		GUIDesc=$KEY_GamepadUse_Desc$
 		GUIGroup=20
@@ -977,7 +977,7 @@
 		Control=UseDelayed
 
 		[Assignment]
-		Key=Controller1AxislefttriggerMax
+		Key=ControllerLeftTrigger
 		GUIGroup=20
 		Priority=100
 		Control=ThrowDelayed

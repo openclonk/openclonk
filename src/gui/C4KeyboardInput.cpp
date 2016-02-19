@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <regex>
 #include <string>
+#include <unordered_map>
 
 #ifdef HAVE_SDL
 #include <SDL.h>
@@ -207,6 +208,36 @@ C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
 	return scan_code_int;
 }
 
+static const std::unordered_map<std::string, C4KeyCode> controllercodes =
+{
+		{ "ButtonA",               KEY_CONTROLLER_ButtonA             },
+		{ "ButtonB",               KEY_CONTROLLER_ButtonB             },
+		{ "ButtonX",               KEY_CONTROLLER_ButtonX             },
+		{ "ButtonY",               KEY_CONTROLLER_ButtonY             },
+		{ "ButtonBack",            KEY_CONTROLLER_ButtonBack          },
+		{ "ButtonGuide",           KEY_CONTROLLER_ButtonGuide         },
+		{ "ButtonStart",           KEY_CONTROLLER_ButtonStart         },
+		{ "ButtonLeftStick",       KEY_CONTROLLER_ButtonLeftStick     },
+		{ "ButtonRightStick",      KEY_CONTROLLER_ButtonRightStick    },
+		{ "ButtonLeftShoulder",    KEY_CONTROLLER_ButtonLeftShoulder  },
+		{ "ButtonRightShoulder",   KEY_CONTROLLER_ButtonRightShoulder },
+		{ "ButtonDpadUp",          KEY_CONTROLLER_ButtonDpadUp        },
+		{ "ButtonDpadDown",        KEY_CONTROLLER_ButtonDpadDown      },
+		{ "ButtonDpadLeft",        KEY_CONTROLLER_ButtonDpadLeft      },
+		{ "ButtonDpadRight",       KEY_CONTROLLER_ButtonDpadRight     },
+		{ "AnyButton",             KEY_CONTROLLER_AnyButton           },
+		{ "LeftStickLeft",         KEY_CONTROLLER_AxisLeftXLeft       },
+		{ "LeftStickRight",        KEY_CONTROLLER_AxisLeftXRight      },
+		{ "LeftStickUp",           KEY_CONTROLLER_AxisLeftYUp         },
+		{ "LeftStickDown",         KEY_CONTROLLER_AxisLeftYDown       },
+		{ "RightStickLeft",        KEY_CONTROLLER_AxisRightXLeft      },
+		{ "RightStickRight",       KEY_CONTROLLER_AxisRightXRight     },
+		{ "RightStickUp",          KEY_CONTROLLER_AxisRightYUp        },
+		{ "RightStickDown",        KEY_CONTROLLER_AxisRightYDown      },
+		{ "LeftTrigger",           KEY_CONTROLLER_AxisTriggerLeft     },
+		{ "RightTrigger",          KEY_CONTROLLER_AxisTriggerRight    },
+};
+
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
 	// direct key code?
@@ -217,32 +248,17 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		// scan code
 		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
-		std::regex controller_re(R"/(^Controller(\d+)(Axis)?([a-z]+)(Min|Max)?$)/");
+		std::regex controller_re(R"/(^Controller(\w+)$)/");
 		std::cmatch matches;
 		if (std::regex_match(sName.getData(), matches, controller_re))
 		{
-#ifdef HAVE_SDL
-			int iGamepad = std::stoi(matches[1]);
-			if (matches[2] == "Axis")
-			{
-				int axis = SDL_GameControllerGetAxisFromString(matches[3].str().c_str());
-				if (axis != SDL_CONTROLLER_AXIS_INVALID)
-				{
-					if (matches[4] == "Min") return KEY_Gamepad(iGamepad-1, KEY_CONTROLLER_Axis(axis, false));
-					if (matches[4] == "Max") return KEY_Gamepad(iGamepad-1, KEY_CONTROLLER_Axis(axis, true));
-				}
-			}
+			int iGamepad = 0; // TODO: Gamepad code selected later on.
+			auto keycode_it = controllercodes.find(matches[1].str());
+			if (keycode_it != controllercodes.end())
+				return KEY_Gamepad(iGamepad, keycode_it->second);
 			else
-			{
-				int gamepad_button = SDL_GameControllerGetButtonFromString(matches[3].str().c_str());
-				if (gamepad_button != SDL_CONTROLLER_BUTTON_INVALID)
-				{
-					return KEY_Gamepad(iGamepad-1, KEY_CONTROLLER_Button(gamepad_button));
-				}
-			}
-#else
-			return KEY_Undefined;
-#endif
+				return KEY_Undefined;
+
 		}
 		bool is_mouse_key;
 #ifdef _WIN32
@@ -313,73 +329,51 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	// Gamepad keys
 	if (Key_IsGamepad(wCode))
 	{
-		int iGamepad = Key_GetGamepad(wCode);
-		if (Key_IsGamepadAxis(wCode))
+		if (fHumanReadable)
 		{
-			int index = Key_GetGamepadAxisIndex(wCode);
-			const char *axis = "Unknown";
-			if (fHumanReadable)
+			switch (Key_GetGamepadEvent(wCode))
 			{
-#ifdef HAVE_SDL
-				switch (index)
-				{
-				case SDL_CONTROLLER_AXIS_LEFTX: axis = "Left Stick X"; break;
-				case SDL_CONTROLLER_AXIS_LEFTY: axis = "Left Stick Y"; break;
-				case SDL_CONTROLLER_AXIS_RIGHTX: axis = "Right Stick X"; break;
-				case SDL_CONTROLLER_AXIS_RIGHTY: axis = "Right Stick Y"; break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: axis = "Left Trigger"; break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: axis = "Right Trigger"; break;
-				}
-#endif
-				// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
-				return FormatString("[%s] %s", axis, Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-			}
-			else
-			{
-#ifdef HAVE_SDL
-				axis = SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis) index);
-#endif
-				return FormatString("Controller%dAxis%s%s", iGamepad+1, axis, Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
+			case KEY_CONTROLLER_ButtonA             : return StdStrBuf("A");
+			case KEY_CONTROLLER_ButtonB             : return StdStrBuf("B");
+			case KEY_CONTROLLER_ButtonX             : return StdStrBuf("X");
+			case KEY_CONTROLLER_ButtonY             : return StdStrBuf("Y");
+			case KEY_CONTROLLER_ButtonBack          : return StdStrBuf("Back");
+			case KEY_CONTROLLER_ButtonGuide         : return StdStrBuf("Guide");
+			case KEY_CONTROLLER_ButtonStart         : return StdStrBuf("Start");
+			case KEY_CONTROLLER_ButtonLeftStick     : return StdStrBuf("Left Stick Click");
+			case KEY_CONTROLLER_ButtonRightStick    : return StdStrBuf("Right Stick Click");
+			case KEY_CONTROLLER_ButtonLeftShoulder  : return StdStrBuf("Left Shoulder");
+			case KEY_CONTROLLER_ButtonRightShoulder : return StdStrBuf("Right Shoulder");
+			case KEY_CONTROLLER_ButtonDpadUp        : return StdStrBuf("Dpad Up");
+			case KEY_CONTROLLER_ButtonDpadDown      : return StdStrBuf("Dpad Down");
+			case KEY_CONTROLLER_ButtonDpadLeft      : return StdStrBuf("Dpad Left");
+			case KEY_CONTROLLER_ButtonDpadRight     : return StdStrBuf("Dpad Right");
+			case KEY_CONTROLLER_AnyButton           : return StdStrBuf("Any Button");
+			case KEY_CONTROLLER_AxisLeftXLeft       : return StdStrBuf("Left Stick Left");
+			case KEY_CONTROLLER_AxisLeftXRight      : return StdStrBuf("Left Stick Right");
+			case KEY_CONTROLLER_AxisLeftYUp         : return StdStrBuf("Left Stick Up");
+			case KEY_CONTROLLER_AxisLeftYDown       : return StdStrBuf("Left Stick Down");
+			case KEY_CONTROLLER_AxisRightXLeft      : return StdStrBuf("Right Stick Left");
+			case KEY_CONTROLLER_AxisRightXRight     : return StdStrBuf("Right Stick Right");
+			case KEY_CONTROLLER_AxisRightYUp        : return StdStrBuf("Right Stick Up");
+			case KEY_CONTROLLER_AxisRightYDown      : return StdStrBuf("Right Stick Down");
+			case KEY_CONTROLLER_AxisTriggerLeft     : return StdStrBuf("Left Trigger");
+			case KEY_CONTROLLER_AxisTriggerRight    : return StdStrBuf("Right Trigger");
 			}
 		}
 		else
 		{
-			// button
-			const char *button = "Unknown";
-			int index = Key_GetGamepadButtonIndex(wCode);
-			if (fHumanReadable)
+			// A linear search in our small map is probably fast enough.
+			auto it = std::find_if(controllercodes.begin(), controllercodes.end(), [wCode](const auto &p)
 			{
-#ifdef HAVE_SDL
-				switch (index)
-				{
-				case SDL_CONTROLLER_BUTTON_A: button = "A"; break;
-				case SDL_CONTROLLER_BUTTON_B: button = "B"; break;
-				case SDL_CONTROLLER_BUTTON_X: button = "X"; break;
-				case SDL_CONTROLLER_BUTTON_Y: button = "Y"; break;
-				case SDL_CONTROLLER_BUTTON_BACK: button = "Back"; break;
-				case SDL_CONTROLLER_BUTTON_GUIDE: button = "Guide"; break;
-				case SDL_CONTROLLER_BUTTON_START: button = "Start"; break;
-				case SDL_CONTROLLER_BUTTON_LEFTSTICK: button = "Left Stick Click"; break;
-				case SDL_CONTROLLER_BUTTON_RIGHTSTICK: button = "Right Stick Click"; break;
-				case SDL_CONTROLLER_BUTTON_LEFTSHOULDER: button = "Left Shoulder"; break;
-				case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: button = "Right Shoulder"; break;
-				case SDL_CONTROLLER_BUTTON_DPAD_UP: button = "D-pad Up"; break;
-				case SDL_CONTROLLER_BUTTON_DPAD_DOWN: button = "D-pad Down"; break;
-				case SDL_CONTROLLER_BUTTON_DPAD_LEFT: button = "D-pad Left"; break;
-				case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: button = "D-pad Right"; break;
-				}
-#endif
-				return FormatString("< %s >", button);
-			}
-			else
-			{
-#ifdef HAVE_SDL
-				button = SDL_GameControllerGetStringForButton((SDL_GameControllerButton) index);
-#endif
-				return FormatString("Controller%d%s", iGamepad+1, button);
-			}
+				return p.second == Key_GetGamepadEvent(wCode);
+			});
+			if (it != controllercodes.end())
+				return FormatString("Controller%s", it->first.c_str());
 		}
+		return StdStrBuf("Unknown");
 	}
+
 	// Mouse keys
 	if (Key_IsMouse(wCode))
 	{
