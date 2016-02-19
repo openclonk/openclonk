@@ -34,10 +34,10 @@ const int32_t C4StartupScenSel_DefaultIcon_Scenario  = 14,
               C4StartupScenSel_DefaultIcon_WinFolder = 44,
               C4StartupScenSel_DefaultIcon_OldIconBG = 18,
               C4StartupScenSel_IconCount             = 45,
-              C4StartupScenSel_TitlePictureWdt       = 200,
-              C4StartupScenSel_TitlePictureHgt       = 150,
+              C4StartupScenSel_TitlePictureWdt       = 640,
+              C4StartupScenSel_TitlePictureHgt       = 480,
               C4StartupScenSel_TitlePicturePadding   = 10,
-              C4StartupScenSel_TitleOverlayMargin    = 10, // number of pixels to each side of title overlay picture
+              C4StartupScenSel_TitleOverlayMargin    = 20, // number of pixels to each side of title overlay picture
               C4StartupScenSel_MaxAchievements       = 3; // maximum number of achievements shown next to entry
 
 // a list of loaded scenarios
