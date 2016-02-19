@@ -1070,6 +1070,22 @@ global func Test57_OnStart(object victim, object killer, object fake_killer)
 	return true;
 }
 
+global func Test58_Log() { return "K uses bomb arrow to shoot V out of map"; }
+global func Test58_OnStart(object victim, object killer, object fake_killer)
+{
+	DrawMaterialQuad("Sky:Sky", 100, 0, LandscapeWidth(), 0, LandscapeWidth(), LandscapeHeight(), 100, LandscapeHeight());
+	ClearFreeRect(100, 0, LandscapeWidth() - 100, LandscapeHeight());
+	
+	victim->SetPosition(96, 150);
+	ScheduleCall(victim, "ControlJump", 8, 0);
+
+	var bow = killer->CreateContents(Bow);
+	bow->CreateContents(BombArrow);
+	bow->ControlUseStart(killer, 20, -20);
+	bow->ControlUseStop(killer, 20, -20);
+	return true;
+}
+
 
 /*-- Wiki Overview Table --*/
 
