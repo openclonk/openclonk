@@ -702,3 +702,71 @@ global func Test11_Execute()
 
 	return passed;
 }
+
+global func Test12_OnStart(int plr){ return true;}
+global func Test12_OnFinished(){ return; }
+global func Test12_Execute()
+{
+	Log("Test the behaviour of liquid objects entering liquid containers");
+
+	var container = CreateObject(Barrel);
+	var liquid = CreateObject(Liquid_Water);
+	
+	// can fill empty barrel with the liquid
+	liquid->SetLiquidAmount(100);
+	liquid->Enter(container);
+	
+	var passed = true;
+	var returned = liquid->Contained();
+	var test = (returned == container); passed &= test;
+	Log("- Liquid can enter empty barrel: %v", test);
+	returned = container->GetLiquidFillLevel();
+	test = (100 == returned); passed &= test;
+	Log("- Barrel contains %d units, expected %d: %v", returned, 100, test);
+	
+	// can fill barrel with more liquid, liquid object gets removed
+	liquid = CreateObject(Liquid_Water);
+	liquid->SetLiquidAmount(100);
+	liquid->Enter(container);
+	
+	var returned = liquid;
+	var test = (returned == nil); passed &= test;
+	Log("- Liquid can enter filled barrel, liquid got removed: %v", test);
+	returned = container->GetLiquidFillLevel();
+	test = (200 == returned); passed &= test;
+	Log("- Barrel contains %d units, expected %d: %v", returned, 200, test);
+
+	// cannot fill in more than the allowed amount
+	liquid = CreateObject(Liquid_Water);
+	liquid->SetLiquidAmount(200);
+	liquid->Enter(container);
+	
+	var returned = liquid->Contained();
+	var test = (returned == nil); passed &= test;
+	Log("- Liquid cannot enter filled barrel if the capacity is exceeded: %v", test);
+	returned = container->GetLiquidFillLevel();
+	test = (300 == returned); passed &= test;
+	Log("- Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d: %v", returned, 300, test);
+
+	liquid->RemoveObject();
+	Log("- Retting liquid amount to 200");
+	container->SetLiquidFillLevel(200);
+	
+	// cannot fill in a different liquid
+	liquid = CreateObject(Liquid_Oil);
+	liquid->SetLiquidAmount(50);
+	liquid->Enter(container);
+	
+	var returned = liquid->Contained();
+	var test = (returned == nil); passed &= test;
+	Log("- Liquid cannot enter filled barrel of a different liquid type: %v", test);
+	returned = container->GetLiquidFillLevel();
+	test = (200 == returned); passed &= test;
+	Log("- Barrel does not increase fill level, contains %d units, expected %d: %v", returned, 200, test);
+
+	liquid->RemoveObject();
+	
+	container->RemoveObject();
+
+	return passed;
+}

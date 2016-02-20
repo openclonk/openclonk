@@ -220,3 +220,13 @@ func SetLiquidContainer(string liquid_name, int amount)
 	SetLiquidFillLevel(amount);
 }
 
+
+func Collection2(object item)
+{
+	if (item->~IsLiquid() && !GetLiquidItem())
+	{
+		SetLiquidItem(item);
+	}
+
+	_inherited(...);
+}

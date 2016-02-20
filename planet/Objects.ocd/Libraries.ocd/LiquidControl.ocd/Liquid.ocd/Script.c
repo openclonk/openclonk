@@ -48,14 +48,19 @@ func CannotEnter(object into)
 	// Enters liquid containers only
 	if (into->~IsLiquidContainer() || into->~IsLiquidPump())
 	{
-		for (var liquid in FindObjects(Find_Func("IsLiquid"), Find_Container(into)))
+		if (!into->~LiquidContainerAccepts(IsLiquid()))
 		{
-			if (MergeWith(liquid))
+			return true; // Cannot enter
+		}
+		
+		for (var other_liquid in FindObjects(Find_Func("IsLiquid"), Find_Container(into)))
+		{
+			if (MergeWith(other_liquid))
 			{
 				return true; // Cannot enter
 			}
 		}
-
+		
 		return false; // Enter this object
 	}
 	else
@@ -157,7 +162,8 @@ func MergeWith(object liquid_object)
 {
 	if (WildcardMatch(IsLiquid(), liquid_object->~IsLiquid()))
 	{
-		liquid_object->DoLiquidAmount(GetLiquidAmount());
+		var transferred = liquid_object->PutLiquid(IsLiquid(), GetLiquidAmount(), this);
+		DoLiquidAmount(-transferred);
 		return true;
 	}
 	return false;
@@ -247,6 +253,11 @@ func PutLiquid(string liquid_name, int amount, object source)
 	{
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
 	}
+	
+	if (Contained() && Contained()->~IsLiquidContainer())
+	{
+		return Contained()->PutLiquid(liquid_name, amount, source);
+	}
 
 	if (IsLiquid() == liquid_name)
 	{
@@ -277,6 +288,12 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 	{
 		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
 	}
+	
+	if (Contained() && Contained()->~IsLiquidContainer())
+	{
+		return Contained()->RemoveLiquid(liquid_name, amount, destination);
+	}
+	
 
 	// default parameters if nothing is provided: the current material and level
 	liquid_name = liquid_name ?? IsLiquid();
