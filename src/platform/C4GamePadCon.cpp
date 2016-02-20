@@ -39,6 +39,8 @@ C4GamePadControl::C4GamePadControl()
 
 C4GamePadControl::~C4GamePadControl()
 {
+	// All gamepads have to be released before quitting SDL.
+	Gamepads.clear();
 	SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS);
 }
 
@@ -71,8 +73,8 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 	{
 	case SDL_CONTROLLERAXISMOTION:
 	{
-		C4KeyCode minCode = KEY_Gamepad(event.caxis.which, KEY_CONTROLLER_Axis(event.caxis.axis, false));
-		C4KeyCode maxCode = KEY_Gamepad(event.caxis.which, KEY_CONTROLLER_Axis(event.caxis.axis, true));
+		C4KeyCode minCode = KEY_Gamepad(KEY_CONTROLLER_Axis(event.caxis.axis, false));
+		C4KeyCode maxCode = KEY_Gamepad(KEY_CONTROLLER_Axis(event.caxis.axis, true));
 		int32_t value = std::abs(event.caxis.value);
 		uint8_t which = event.caxis.which;
 		C4KeyCode keyCode = event.caxis.value >= 0 ? maxCode : minCode;
@@ -80,8 +82,8 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 		auto doInput = [&](C4KeyEventType event, int32_t strength)
 		{
 			Game.DoKeyboardInput(
-			  KEY_Gamepad(which, keyCode), event,
-			  false, false, false, false, NULL, false, strength);
+			  C4KeyCodeEx(KEY_Gamepad(keyCode), KEYS_None, false, which),
+			  event, NULL, false, strength);
 		};
 
 		if (feed & FEED_BUTTONS)
@@ -108,14 +110,14 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 	case SDL_CONTROLLERBUTTONDOWN:
 		if (feed & FEED_BUTTONS)
 			Game.DoKeyboardInput(
-			  KEY_Gamepad(event.cbutton.which, KEY_CONTROLLER_Button(event.cbutton.button)),
-			  KEYEV_Down, false, false, false, false);
+			  C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_Button(event.cbutton.button)), KEYS_None, false, event.cbutton.which),
+			  KEYEV_Down);
 		break;
 	case SDL_CONTROLLERBUTTONUP:
 		if (feed & FEED_BUTTONS)
 			Game.DoKeyboardInput(
-			  KEY_Gamepad(event.cbutton.which, KEY_CONTROLLER_Button(event.cbutton.button)),
-			  KEYEV_Up, false, false, false, false);
+			  C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_Button(event.cbutton.button)), KEYS_None, false, event.cbutton.which),
+			  KEYEV_Up);
 		break;
 	}
 }

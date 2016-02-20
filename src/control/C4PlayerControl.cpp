@@ -24,6 +24,7 @@
 #include "C4PlayerList.h"
 #include "C4Control.h"
 #include "C4Game.h"
+#include "C4GamePadCon.h"
 #include "C4Log.h"
 #include "C4GraphicsResource.h"
 #include "C4MouseControl.h"
@@ -1011,6 +1012,13 @@ void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 
 bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, ControlState state, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only, bool *clear_recent_keys)
 {
+	if (Key_IsGamepad(pressed_key.Key))
+	{
+		// We have to filter gamepad events here.
+		C4Player *plr = ::Players.Get(iPlr);
+		if (!plr || !plr->pGamepad || plr->pGamepad->GetID() != pressed_key.deviceId)
+			return false;
+	}
 	// collect all matching keys
 	C4PlayerControlAssignmentPVec Matches;
 	assert(pControlSet); // shouldn't get this callback for players without control set

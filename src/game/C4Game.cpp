@@ -1891,6 +1891,12 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 #endif
 	// compose key
 	C4KeyCodeEx Key(vk_code, C4KeyShiftState(fAlt*KEYS_Alt + fCtrl*KEYS_Control + fShift*KEYS_Shift), fRepeated);
+	return DoKeyboardInput(Key, eEventType, pForDialog, fPlrCtrlOnly, iStrength);
+}
+
+
+bool C4Game::DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog, bool fPlrCtrlOnly, int32_t iStrength)
+{
 	Key.FixShiftKeys();
 	// compose keyboard scope
 	DWORD InScope = 0;

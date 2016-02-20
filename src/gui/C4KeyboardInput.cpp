@@ -193,6 +193,11 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 };
 #endif
 
+C4KeyCodeEx::C4KeyCodeEx(C4KeyCode key, C4KeyShiftState Shift, bool fIsRepeated, int32_t deviceId)
+: Key(key), dwShift(Shift), fRepeated(fIsRepeated), deviceId(deviceId)
+{
+}
+
 void C4KeyCodeEx::FixShiftKeys()
 {
 	// reduce stuff like Ctrl+RightCtrl to simply RightCtrl
@@ -252,10 +257,9 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		std::cmatch matches;
 		if (std::regex_match(sName.getData(), matches, controller_re))
 		{
-			int iGamepad = 0; // TODO: Gamepad code selected later on.
 			auto keycode_it = controllercodes.find(matches[1].str());
 			if (keycode_it != controllercodes.end())
-				return KEY_Gamepad(iGamepad, keycode_it->second);
+				return KEY_Gamepad(keycode_it->second);
 			else
 				return KEY_Undefined;
 
@@ -622,6 +626,15 @@ C4CustomKey::~C4CustomKey()
 		(*i)->Deref();
 }
 
+bool C4CustomKey::IsCodeMatched(const C4KeyCodeEx &key) const
+{
+	const CodeList &codes = GetCodes();
+	for (const auto &code : codes)
+		if (code == key)
+			return true;
+	return false;
+}
+
 void C4CustomKey::Update(const C4CustomKey *pByKey)
 {
 	assert(pByKey);
@@ -832,9 +845,8 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	FallbackKeys[iKeyRangeCnt++] = InKey.Key;
 	if (Key_IsGamepadButton(InKey.Key))
 	{
-		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
 		// "any gamepad button"-event
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_CONTROLLER_AnyButton);
+		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(KEY_CONTROLLER_AnyButton);
 	}
 	else if (Key_IsGamepadAxis(InKey.Key))
 	{
