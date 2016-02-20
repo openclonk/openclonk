@@ -73,6 +73,12 @@ func SetLiquidItem(object item)
 	}
 }
 
+func ResetLiquidItem()
+{
+	liquid_container_item = nil;
+	this->~UpdateLiquidContainer();
+}
+
 func GetLiquidType()
 {
 	if (GetLiquidItem())
@@ -218,4 +224,12 @@ func SetLiquidContainer(string liquid_name, int amount)
 {
 	SetLiquidType(liquid_name);
 	SetLiquidFillLevel(amount);
+}
+
+// lose the liquid item if it exits the container
+func Ejection(object item)
+{
+	if (item == GetLiquidItem())
+		ResetLiquidItem();
+	_inherited(...);
 }

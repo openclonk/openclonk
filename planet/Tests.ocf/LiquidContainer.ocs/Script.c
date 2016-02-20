@@ -730,7 +730,7 @@ global func Test12_Execute()
 	liquid->Enter(container);
 	
 	returned = liquid;
-	var test = (returned == nil); passed &= test;
+	test = (returned == nil); passed &= test;
 	Log("- Liquid can enter filled barrel, liquid got removed: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (200 == returned); passed &= test;
@@ -742,7 +742,7 @@ global func Test12_Execute()
 	liquid->Enter(container);
 	
 	returned = liquid->Contained();
-	var test = (returned == nil); passed &= test;
+	test = (returned == nil); passed &= test;
 	Log("- Liquid cannot enter filled barrel if the capacity is exceeded: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (300 == returned); passed &= test;
@@ -760,8 +760,8 @@ global func Test12_Execute()
 	liquid->SetLiquidAmount(50);
 	liquid->Enter(container);
 	
-	var returned = liquid->Contained();
-	var test = (returned == nil); passed &= test;
+	returned = liquid->Contained();
+	test = (returned == nil); passed &= test;
 	Log("- Liquid cannot enter filled barrel of a different liquid type: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (200 == returned); passed &= test;
@@ -769,6 +769,17 @@ global func Test12_Execute()
 
 	liquid->RemoveObject();
 	
+	// barrel gets emptied when liquid exits it
+	liquid = container->GetLiquidItem();
+	liquid->Exit();
+	
+	returned = container->LiquidContainerIsEmpty();
+	test = returned; passed &= test;
+	Log("- Liquid container should be empty when liquid leaves it: %v", test);
+	test = (liquid != nil); passed &= test;
+	Log("- Liquid exists after leaving the container: %v", test);
+	
+	liquid->RemoveObject();
 	container->RemoveObject();
 
 	return passed;
