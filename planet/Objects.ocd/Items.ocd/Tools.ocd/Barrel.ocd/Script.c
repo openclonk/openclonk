@@ -84,16 +84,14 @@ private func FillWithLiquid()
 
 private func EmptyBarrel(int angle, int strength, object clonk)
 {
-	if (!angle)
-		angle = 0;
-	if (!strength)
-		strength = 30;
-	
-	var current_liquid = RemoveLiquid(nil, nil, this);
-	var material = current_liquid[0];
-	var volume = current_liquid[1];
+	var material = GetLiquidType();
+	var volume = GetLiquidFillLevel();
 
-	CastPXS(material, volume, strength, 0, 0, angle, 30);
+	if (GetLiquidItem())
+	{
+		GetLiquidItem()->Disperse(angle, strength);
+	}
+
 	var spray = {};
 	spray.Liquid = material;
 	spray.Volume = volume;

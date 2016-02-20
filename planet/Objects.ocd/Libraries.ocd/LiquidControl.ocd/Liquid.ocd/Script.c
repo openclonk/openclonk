@@ -7,6 +7,8 @@
  *
  * Author: Marky
  */
+ 
+static const FX_LIQUID_Dispersion = "IntLiquidDispersion";
 
 local liquid;
 local volume;
@@ -68,6 +70,61 @@ func GetInteractionMenuAmount()
 	return GetLiquidAmount();
 }
 
+
+func Departure(object container)
+{
+	var fx = GetEffect(FX_LIQUID_Dispersion, this);
+	if (!fx)
+	{
+		AddEffect(FX_LIQUID_Dispersion, this, 1, 1, this);
+	}
+}
+
+func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
+{
+	if (!(target->Contained()))
+	{
+		target->Disperse();
+	}
+
+	return FX_Execute_Kill;
+}
+
+// -------------- Dispersion
+
+func Disperse(int angle, int strength)
+{
+	// does nothing but remove the object - overload if you want special effects
+	RemoveObject();
+}
+
+func DisperseMaterial(string material_name, int amount, int strength, int angle, int angle_variance)
+{
+	angle = angle ?? 0;
+	strength = strength ?? 30;
+	angle_variance = angle_variance ?? 30;
+	
+	CastPXS(material_name, amount, strength, 0, 0, angle, 30);
+}
+
+func DisperseParticles(string particle_name, int amount, int strength, int angle, int angle_variance, proplist template, int lifetime)
+{
+	angle = angle ?? 0;
+	strength = strength ?? 30;
+	angle_variance = angle_variance ?? 30;
+	lifetime = lifetime ?? 30;
+	template = template ?? Particles_Material(RGB(255, 255, 255));
+	
+	for (var i = 0; i < amount; ++i)
+	{
+		var p_strength = RandomX(strength / 2, strength);
+		var p_angle = RandomX(angle - angle_variance, angle + angle_variance);
+		var v_x = +Sin(p_angle, p_strength);
+		var v_y = -Cos(p_angle, p_strength);
+		
+		CreateParticle(particle_name, 0, 0, v_x, v_y, 30, template, 1);
+	}
+}
 
 // -------------- Manipulation of liquid amount
 
