@@ -10,15 +10,17 @@ local attached_mesh;
 local last_free;
 local mat_color;
 
-public func Place(int amount, proplist area)
+public func Place(int amount, proplist area, proplist settings)
 {
 	area = area ?? Shape->LandscapeRectangle();
-	
+	var diamond_sockets = [];
 	var failsafe = amount * 100;
 	while((amount > 0) && (--failsafe > 0))
 	{
 		// select cluster
-		var c_size = Min(5 + RandomX(-1, 1), amount);
+		var c_size = Min(RandomX(4, 6), amount);
+		if (settings != nil && settings.cluster_size != nil)
+			c_size = Min(settings.cluster_size, amount);
 		
 		// look for random in-earth position
 		var failsafe2 = 500;
@@ -27,11 +29,12 @@ public func Place(int amount, proplist area)
 		{
 			if (!area->GetRandomPoint(pt)) break;
 			
-			if(!GBackSolid(pt.x, pt.y)) continue;
+			if (!GBackSolid(pt.x, pt.y)) continue;
 			
 			// must be diggable
 			var mat = GetMaterial(pt.x, pt.y);
-			if(!GetMaterialVal("DigFree","Material",mat)) continue;
+			if (!GetMaterialVal("DigFree","Material",mat))
+				continue;
 			break;
 		}
 		
@@ -58,10 +61,12 @@ public func Place(int amount, proplist area)
 			++i;
 			var socket = CreateObject(this, mx, my, NO_OWNER);
 			socket->Set(r2, g2, b2);
+			PushBack(diamond_sockets, socket);
 		}
 		
 		amount -= i;
 	}
+	return diamond_sockets;
 }
 
 public func Construction()

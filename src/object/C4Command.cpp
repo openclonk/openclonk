@@ -895,12 +895,16 @@ void C4Command::Drop()
 
 void C4Command::Jump()
 {
-	// Already in air and target position given
-	if (cObj->GetProcedure()==DFA_FLIGHT && Tx._getInt())
+	// Already in air?
+	if (cObj->GetProcedure()==DFA_FLIGHT)
 	{
-		if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
-		else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
-		else cObj->Action.ComDir=COMD_Stop;
+		// Check whether target position is given
+		if (Tx._getInt())
+		{
+			if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
+			else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
+			else cObj->Action.ComDir=COMD_Stop;
+		}
 	}
 	else
 	{
