@@ -39,11 +39,6 @@ private func Hit()
 	}
 }
 
-func GetBarrelIntakeY()
-{
-	return 3;
-}
-
 func PlayBarrelHitSound()
 {
 	Sound("Hits::Materials::Wood::DullWoodHit?");
