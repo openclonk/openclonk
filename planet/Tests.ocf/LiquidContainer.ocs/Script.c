@@ -717,9 +717,9 @@ global func Test12_Execute()
 	liquid->Enter(container);
 	
 	var passed = true;
-	var returned = liquid->Contained();
-	var test = (returned == container); passed &= test;
-	Log("- Liquid can enter empty barrel: %v", test);
+	var returned = liquid;
+	var test = (returned == nil); passed &= test;
+	Log("- Liquid can fill empty barrel: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (100 == returned); passed &= test;
 	Log("- Barrel contains %d units, expected %d: %v", returned, 100, test);
@@ -729,7 +729,7 @@ global func Test12_Execute()
 	liquid->SetLiquidAmount(100);
 	liquid->Enter(container);
 	
-	var returned = liquid;
+	returned = liquid;
 	var test = (returned == nil); passed &= test;
 	Log("- Liquid can enter filled barrel, liquid got removed: %v", test);
 	returned = container->GetLiquidFillLevel();
@@ -741,15 +741,18 @@ global func Test12_Execute()
 	liquid->SetLiquidAmount(200);
 	liquid->Enter(container);
 	
-	var returned = liquid->Contained();
+	returned = liquid->Contained();
 	var test = (returned == nil); passed &= test;
 	Log("- Liquid cannot enter filled barrel if the capacity is exceeded: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (300 == returned); passed &= test;
 	Log("- Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d: %v", returned, 300, test);
+	returned = liquid->GetLiquidAmount();
+	test = (100 == returned); passed &= test;
+	Log("- Liquid object still contains %d units, expected %d: %v", returned, 100, test);
 
+	Log("- Resetting liquid amount to 200");
 	liquid->RemoveObject();
-	Log("- Retting liquid amount to 200");
 	container->SetLiquidFillLevel(200);
 	
 	// cannot fill in a different liquid

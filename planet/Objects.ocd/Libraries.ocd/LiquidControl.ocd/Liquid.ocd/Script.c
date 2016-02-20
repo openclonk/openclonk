@@ -45,28 +45,20 @@ protected func RejectEntrance(object into)
 
 func CannotEnter(object into)
 {
-	// Enters liquid containers only
+	// Enters liquid containers only, will be removed anyway if the liquid object is "empty"
 	if (into->~IsLiquidContainer() || into->~IsLiquidPump())
 	{
-		if (!into->~LiquidContainerAccepts(IsLiquid()))
+		if (!GetLiquidAmount()) // the object is "empty", because it was just created
 		{
-			return true; // Cannot enter
+			return false;
 		}
-		
-		for (var other_liquid in FindObjects(Find_Func("IsLiquid"), Find_Container(into)))
-		{
-			if (MergeWith(other_liquid))
-			{
-				return true; // Cannot enter
-			}
-		}
-		
-		return false; // Enter this object
+
+		var exists = this;
+		var transferred = into->PutLiquid(IsLiquid(), GetLiquidAmount(), this);
+		if (exists) DoLiquidAmount(-transferred);
 	}
-	else
-	{
-		return true; // Cannot enter
-	}
+
+	return true; // Cannot enter
 }
 
 // Tell the interaction menu as how many objects this object should be displayed
@@ -156,17 +148,6 @@ func DoLiquidAmount(int change)
 {
 	volume += change;
 	UpdateLiquidObject();
-}
-
-func MergeWith(object liquid_object)
-{
-	if (WildcardMatch(IsLiquid(), liquid_object->~IsLiquid()))
-	{
-		var transferred = liquid_object->PutLiquid(IsLiquid(), GetLiquidAmount(), this);
-		DoLiquidAmount(-transferred);
-		return true;
-	}
-	return false;
 }
 
 // -------------- Status updates
