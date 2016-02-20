@@ -57,6 +57,11 @@ void C4GamePadControl::Execute()
 		case SDL_CONTROLLERBUTTONUP:
 			FeedEvent(event, FEED_BUTTONS);
 			break;
+		case SDL_JOYDEVICEADDED:
+		case SDL_CONTROLLERDEVICEADDED:
+		case SDL_CONTROLLERDEVICEREMOVED:
+			CheckGamePad(event);
+			break;
 		}
 	}
 #endif
@@ -122,6 +127,29 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 	}
 }
 
+void C4GamePadControl::CheckGamePad(const SDL_Event& e)
+{
+	switch (e.type)
+	{
+	case SDL_JOYDEVICEADDED:
+		// Report that an unsupported joystick device has been detected, to help with controller issues.
+		if (!SDL_IsGameController(e.jdevice.which))
+			LogF("Gamepad %s isn't supported.", SDL_JoystickNameForIndex(e.jdevice.which));
+		break;
+	case SDL_CONTROLLERDEVICEADDED:
+	{
+		auto device = std::make_shared<C4GamePadOpener>(e.cdevice.which);
+		Gamepads[device->GetID()] = device;
+		LogF("Gamepad #%d connected: %s", device->GetID(), SDL_JoystickNameForIndex(e.cdevice.which));
+		break;
+	}
+	case SDL_CONTROLLERDEVICEREMOVED:
+		LogF("Gamepad #%d disconnected.", e.cdevice.which);
+		Gamepads.erase(e.cdevice.which);
+		break;
+	}
+}
+
 void C4GamePadControl::DoAxisInput()
 {
 	for (auto const &e : AxisEvents)
@@ -141,6 +169,31 @@ int C4GamePadControl::GetGamePadCount()
 	return count;
 }
 
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePad(int gamepad)
+{
+	if (gamepad >= 0)
+		for (const auto& p : Gamepads)
+			if (gamepad-- == 0)
+				return p.second;
+	return nullptr;
+}
+
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePadByID(int32_t id)
+{
+	auto it = Gamepads.find(id);
+	if (it != Gamepads.end())
+		return it->second;
+	return nullptr;
+}
+
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetAvailableGamePad()
+{
+	for (const auto& p : Gamepads)
+		if (p.second->GetPlayer() < 0)
+			return p.second;
+	return nullptr;
+}
+
 C4GamePadOpener::C4GamePadOpener(int iGamepad)
 {
 	int n = iGamepad;
@@ -149,14 +202,12 @@ C4GamePadOpener::C4GamePadOpener(int iGamepad)
 		{
 			controller = SDL_GameControllerOpen(i);
 			if (!controller) LogF("SDL: %s", SDL_GetError());
-			haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(controller));
-			if (haptic)
-			{
-				if (SDL_HapticRumbleSupported(haptic))
-					SDL_HapticRumbleInit(haptic);
-			}
+			SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+			haptic = SDL_HapticOpenFromJoystick(joystick);
+			if (haptic && SDL_HapticRumbleSupported(haptic))
+				SDL_HapticRumbleInit(haptic);
 			else
-				LogF("SDL: %s", SDL_GetError());
+				LogF("Gamepad #%d %s does not support rumbling.", SDL_JoystickInstanceID(joystick), SDL_JoystickName(joystick));
 			break;
 		}
 
@@ -167,6 +218,16 @@ C4GamePadOpener::~C4GamePadOpener()
 {
 	if (haptic) SDL_HapticClose(haptic);
 	if (controller) SDL_GameControllerClose(controller);
+}
+
+int32_t C4GamePadOpener::GetID()
+{
+	return SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+}
+
+bool C4GamePadOpener::IsAttached()
+{
+	return SDL_GameControllerGetAttached(controller);
 }
 
 void C4GamePadOpener::PlayRumble(float strength, uint32_t length)
@@ -190,9 +251,14 @@ C4GamePadControl::~C4GamePadControl() { }
 void C4GamePadControl::Execute() { }
 void C4GamePadControl::DoAxisInput() { }
 int C4GamePadControl::GetGamePadCount() { return 0; }
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePad(int gamepad) { return nullptr; }
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePadByID(int32_t id) { return nullptr; }
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetAvailableGamePad() { return nullptr; }
 
 C4GamePadOpener::C4GamePadOpener(int iGamepad) { }
 C4GamePadOpener::~C4GamePadOpener() {}
+int32_t C4GamePadOpener::GetID() { return -1; }
+bool C4GamePadOpener::IsAttached() { return false; }
 void C4GamePadOpener::PlayRumble(float strength, uint32_t length) { }
 void C4GamePadOpener::StopRumble() { }
 

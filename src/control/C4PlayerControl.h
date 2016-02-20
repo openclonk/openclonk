@@ -277,7 +277,6 @@ public:
 	bool HasMouse() const { return has_mouse; }
 	bool HasGamepad() const { return has_gamepad; }
 	int32_t GetLayoutOrder() const { return 0; } // returns position on keyboard (increasing from left to right) for viewport sorting
-	int32_t GetGamepadIndex() const { return 0; }
 	bool IsMouseControlAssigned(int32_t mouseevent) const;
 };
 

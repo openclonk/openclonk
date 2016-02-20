@@ -66,7 +66,6 @@ C4Player::C4Player() : C4PlayerInfoCore()
 	LastControlType = PCID_None;
 	LastControlID = 0;
 	pMsgBoardQuery = NULL;
-	pGamepad = NULL;
 	NoEliminationCheck = false;
 	Evaluated = false;
 	ZoomLimitMinWdt = ZoomLimitMinHgt = ZoomLimitMaxWdt = ZoomLimitMaxHgt = ZoomWdt = ZoomHgt = 0;
@@ -86,7 +85,6 @@ C4Player::~C4Player()
 		delete pMsgBoardQuery;
 		pMsgBoardQuery = pNext;
 	}
-	delete pGamepad; pGamepad = NULL;
 	ClearControl();
 }
 
@@ -210,6 +208,30 @@ void C4Player::Execute()
 	else if (Menu.IsActive() && Menu.GetIdentification() == C4MN_TeamSelection)
 	{
 		Menu.TryClose(false, false);
+	}
+
+	// Do we have a gamepad?
+	if (pGamepad)
+	{
+		// Check whether it's still connected.
+		if (!pGamepad->IsAttached())
+		{
+			// Allow the player to plug the gamepad back in. This allows
+			// battery replacement or plugging the controller back
+			// in after someone tripped over the wire.
+			if (!FindGamepad())
+			{
+				LogF("%s: No gamepad available.", Name.getData());
+				::Game.Pause();
+			}
+		}
+	}
+	// Should we have one? The player may have started the game
+	// without turning their controller on, only noticing this
+	// after the game started.
+	else if (LocalControl && ControlSet && ControlSet->HasGamepad())
+	{
+		FindGamepad();
 	}
 
 	// Tick1
@@ -1349,8 +1371,12 @@ void C4Player::ClearControl()
 	LocalControl = false;
 	ControlSetName.Clear();
 	ControlSet=NULL;
-	if (pGamepad) { delete pGamepad; pGamepad=NULL; }
 	MouseControl = false;
+	if (pGamepad)
+	{
+		pGamepad->SetPlayer(NO_OWNER);
+		pGamepad.reset();
+	}
 	// no controls issued yet
 	ControlCount = ActionCount = 0;
 	LastControlType = PCID_None;
@@ -1382,7 +1408,11 @@ void C4Player::InitControl()
 		// init gamepad
 		if (ControlSet && ControlSet->HasGamepad())
 		{
-			pGamepad = new C4GamePadOpener(ControlSet->GetGamepadIndex());
+			if (!FindGamepad())
+			{
+				LogF("No gamepad available for %s, please plug one in!", Name.getData());
+				::Game.Pause();
+			}
 		}
 		// Mouse
 		if (ControlSet && ControlSet->HasMouse() && PrefMouse)
@@ -1394,6 +1424,18 @@ void C4Player::InitControl()
 	}
 	// clear old control method and register new
 	Control.RegisterKeyset(Number, ControlSet);
+}
+
+bool C4Player::FindGamepad()
+{
+	auto newPad = Application.pGamePadControl->GetAvailableGamePad();
+	if (!newPad) return false;
+	newPad->SetPlayer(ID);
+	// Release the old gamepad.
+	if (pGamepad) pGamepad->SetPlayer(NO_OWNER);
+	pGamepad = newPad;
+	LogF("%s: Using gamepad #%d.", Name.getData(), pGamepad->GetID());
+	return true;
 }
 
 int igOffX, igOffY;

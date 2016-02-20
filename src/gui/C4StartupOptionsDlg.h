@@ -227,7 +227,6 @@ private:
 		int32_t iSelectedCtrlSet; // keyboard or gamepad set that is currently being configured
 		class C4GUI::IconButton ** ppKeyControlSetBtns; // buttons to select configured control set - array in length of iMaxControlSets
 		class KeySelButton * KeyControlBtns[C4MaxKey];  // buttons to configure individual kbd set buttons
-		C4GamePadOpener *pGamepadOpener; // opened gamepad for configuration
 		C4StartupOptionsDlg *pOptionsDlg;
 		ControlConfigListBox *control_list;
 		class C4GUI::CheckBox *pGUICtrl;

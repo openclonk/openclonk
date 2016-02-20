@@ -2590,7 +2590,6 @@ namespace C4GUI
 		ContextMenu *pContext; // currently opened context menu (lowest submenu)
 		bool fExclusive;       // default true. if false, input is shared with the game
 		C4Rect PreferredDlgRect; // rectangle in which dialogs should be placed
-		C4GamePadOpener * pGamePadOpener;
 		float fZoom;
 
 		static Screen *pScreen; // static singleton var
