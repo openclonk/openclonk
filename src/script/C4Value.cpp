@@ -147,8 +147,9 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		const C4PropListStatic * Def = Data.PropList->IsStatic();
 		if (Def)
 			return Def->GetDataString();
+		C4Effect * fx = Data.PropList->GetEffect();
 		StdStrBuf DataString;
-		DataString = "{";
+		DataString = (fx ? "effect {" : "{");
 		Data.PropList->AppendDataString(&DataString, ", ", depth);
 		DataString.AppendChar('}');
 		return DataString;

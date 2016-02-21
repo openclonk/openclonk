@@ -36,6 +36,7 @@
 // * mattex pictures in dropdown
 // * mat drawing cursor size preview in active viewports
 // * proper viewport focus when clicked
+// * crash when viewport closes on player elimination
 // -----------------------------------------------
 
 void C4ConsoleGUI::Execute() { state->Execute(); }
@@ -184,7 +185,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 		if (!filenames.length()) return false;
 		for (auto fn : filenames)
 		{
-			sFilename->Append(fn.toStdString().c_str());
+			sFilename->Append(fn.toUtf8());
 			sFilename->AppendChar('\0');
 		}
 		return true;
@@ -192,7 +193,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	// Cancelled?
 	if (filename.length() <= 0) return false;
 	// File selected!
-	sFilename->Copy(filename.toStdString().c_str());
+	sFilename->Copy(filename.toUtf8());
 	sFilename->AppendChar('\0');
 	return true;
 }

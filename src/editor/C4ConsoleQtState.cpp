@@ -114,9 +114,9 @@ void C4ConsoleViewportWidget::OnActiveChanged(bool active)
 	QColor bgclr = QApplication::palette(this).color(QPalette::Highlight);
 	QColor fontclr = QApplication::palette(this).color(QPalette::HighlightedText);
 	if (active)
-		setStyleSheet(FormatString("QDockWidget::title { background: %s; padding: 5px; } QDockWidget { color: %s; font-weight: bold; }",
-			bgclr.name().toStdString().c_str(),
-			fontclr.name().toStdString().c_str()).getData());
+		setStyleSheet(QString(
+			"QDockWidget::title { background: %1; padding: 5px; } QDockWidget { color: %2; font-weight: bold; }")
+			.arg(bgclr.name(), fontclr.name()));
 	else
 		setStyleSheet("");
 }
@@ -306,17 +306,14 @@ void C4ConsoleQtMainWindow::HelpAbout() { ::Console.HelpAbout(); }
 void C4ConsoleQtMainWindow::MainConsoleEditEnter()
 {
 	QLineEdit *main_console_edit = state->ui.consoleInputBox->lineEdit();
-	std::string script = main_console_edit->text().toStdString();
-	::Console.RegisterRecentInput(script.c_str(), C4Console::MRU_Scenario);
-	::Console.In(script.c_str());
+	::Console.RegisterRecentInput(main_console_edit->text().toUtf8(), C4Console::MRU_Scenario);
+	::Console.In(main_console_edit->text().toUtf8());
 }
 
 void C4ConsoleQtMainWindow::PropertyConsoleEditEnter()
 {
 	QLineEdit *property_console_edit = state->ui.propertyInputBox->lineEdit();
-	std::string script = property_console_edit->text().toStdString();
-	//::Console.RegisterRecentInput(script.c_str(), C4Console::MRU_Object); - done by EditCursor
-	::Console.EditCursor.In(script.c_str());
+	::Console.EditCursor.In(property_console_edit->text().toUtf8());
 }
 
 
@@ -570,13 +567,10 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	{
 		// Single object selection: Show property view + Object info in label
 		property_model->SetPropList(rSelection.front().getPropList());
-		ui.selectionInfoLabel->setText(rSelection.front().GetDataString().getData());
+		ui.selectionInfoLabel->setText(rSelection.front().GetDataString(0).getData());
 		ui.propertyTable->setVisible(true);
 	}
 	// Function update in script combo box
 	if (force_function_update)
 		SetComboItems(ui.propertyInputBox, ::Console.GetScriptSuggestions(::Console.PropertyDlgObject, C4Console::MRU_Object));
-	// Update object list on timer update
-	if (!force_function_update)
-		object_list_model->Invalidate();
 }

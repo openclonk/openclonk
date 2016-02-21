@@ -24,18 +24,17 @@
 #include <C4ConsoleGUI.h> // for glew.h
 #include <C4Value.h>
 #include <C4ConsoleQt.h>
-#include <qabstractitemmodel.h>
 
 // Prop list view implemented as a model view
 class C4ConsoleQtObjectListModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
-	class Node;
-	std::unique_ptr<Node> root;
 	class QItemSelectionModel *selection_model;
 	QTreeView *view;
 	int32_t is_updating;
+	mutable int32_t last_row_count;
+	QBrush clr_deleted, clr_effect;
 
 public:
 	C4ConsoleQtObjectListModel(class QTreeView *view);
@@ -48,8 +47,6 @@ public:
 	void SetSelection(class C4EditCursorSelection &rSelection);
 
 private:
-	Node *GetNodeByIndex(const QModelIndex &index) const;
-	bool GetNodeByItem(class C4PropList *item, Node **out_parent_node, int32_t *out_index) const;
 	QModelIndex GetModelIndexByItem(class C4PropList *item) const;
 
 protected:

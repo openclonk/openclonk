@@ -129,6 +129,8 @@ C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, i
 	// Update OnFire cache
 	if (!pEffect->IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, szName->GetCStr()))
 		pForObj->SetOnFire(true);
+	// Creation callback
+	if (!pEffect->IsDead()) ObjectListChangeListener.OnEffectAdded(pEffect);
 	return pEffect;
 }
 
@@ -179,6 +181,12 @@ void C4Effect::ClearPointers(C4Object *pObj)
 			pEff->CommandTarget=NULL;
 		}
 	while ((pEff=pEff->pNext));
+}
+
+void C4Effect::SetDead()
+{
+	iPriority = 0;
+	ObjectListChangeListener.OnEffectRemoved(this);
 }
 
 C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority)

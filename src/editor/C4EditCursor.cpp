@@ -44,8 +44,7 @@ StdStrBuf C4EditCursorSelection::GetDataString() const
 {
 	StdStrBuf Output;
 	// Compose info text by selected object(s)
-	// Only care for objects, not other proplists, because the function is relevant for the non-qt-editor only anyway
-	int32_t obj_count = ObjectCount();
+	int32_t obj_count = size();
 	switch (obj_count)
 	{
 		// No selection
@@ -54,8 +53,14 @@ StdStrBuf C4EditCursorSelection::GetDataString() const
 		break;
 		// One selected object
 	case 1:
-		Output.Take(GetObject()->GetDataString());
+	{
+		C4Object *obj = GetObject();
+		if (obj)
+			Output.Take(obj->GetDataString());
+		else
+			Output.Take(front().GetDataString());
 		break;
+	}
 		// Multiple selected objects
 	default:
 		Output.Format(LoadResStr("IDS_CNS_MULTIPLEOBJECTS"), obj_count);
@@ -105,7 +110,7 @@ bool C4EditCursorSelection::ClearPointers(C4Object *obj)
 
 bool C4EditCursorSelection::IsContained(C4PropList *obj) const
 {
-	for (const C4Value &v : (*this)) if (obj == v.getObj()) return true;
+	for (const C4Value &v : (*this)) if (obj == v.getPropList()) return true;
 	return false;
 }
 

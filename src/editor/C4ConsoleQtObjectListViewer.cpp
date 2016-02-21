@@ -29,71 +29,12 @@
 
 /* Object list information cache */
 
-// Cached copy of displayed tree
-// (Leaf nodes only validated on demand)
-class C4ConsoleQtObjectListModel::Node
-{
-	Node *parent;
-	C4Value data; // root data
-	std::vector<class Node> children; // child vector - is kept around and usually only increased on query because most updates will just re-set the same object
-	int32_t num_children; // children valid until this point
-	bool valid; // if false, re-fill node (and all children) on next data query
-
-public:
-	Node(Node *parent) : parent(parent), valid(false), num_children(0) {}
-
-	void Validate();
-	void Invalidate() { valid = false; }
-	bool IsValid() const { return valid; }
-
-	void SetData(class C4PropList *to_data) { data.SetPropList(to_data); Invalidate(); }
-	C4PropList *GetData() const { return data.getPropList(); }
-	Node *_GetChild(int32_t idx) { return &children[idx]; } // unchecked child access
-	Node *GetParent() const { return parent; }
-	int32_t GetNumChildren() const { return num_children; }
-	void EnsureValid() { if (!valid) Validate(); }
-
-	void AddChild(C4PropList *p)
-	{
-		if (num_children >= children.size()) children.resize(num_children + 1, Node(this));
-		children[num_children++].SetData(p);
-	}
-
-	int32_t GetChildIndex(class C4PropList *data)
-	{
-		for (int32_t idx = 0; idx < num_children; ++idx)
-			if (_GetChild(idx)->GetData() == data)
-				return idx;
-		return -1; // not found
-	}
-};
-
-void C4ConsoleQtObjectListModel::Node::Validate()
-{
-	num_children = 0;
-	// Fill from object list (either main list or contents)
-	C4Object *obj = data.getObj();
-	C4ObjectList *list = NULL;
-	if (!parent)
-		list = &::Objects;
-	else if (obj)
-		list = &obj->Contents;
-	if (list)
-		for (auto cobj : *list)
-			if (cobj && cobj->Contained == obj)
-				AddChild(cobj);
-	// Add object effects
-	if (obj)
-	{
-		// TODO
-	}
-	valid = true;
-}
-
 C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel(class QTreeView *view)
-	: selection_model(NULL), view(view), is_updating(0)
+	: selection_model(NULL), view(view), is_updating(0), last_row_count(0)
 {
-	root.reset(new Node(NULL));
+	// default font colors
+	clr_deleted.setColor(QApplication::palette(view).color(QPalette::Mid));
+	clr_effect.setColor(QApplication::palette(view).color(QPalette::Dark));
 	// install the item model
 	view->setModel(this);
 	// get the selection model to control it
@@ -110,12 +51,9 @@ C4ConsoleQtObjectListModel::~C4ConsoleQtObjectListModel()
 
 void C4ConsoleQtObjectListModel::Invalidate()
 {
-	// Invalidate everything
-	int32_t num_invalid = root->GetNumChildren();
-	root->Invalidate();
 	// Force redraw
 	QModelIndex topLeft = index(0, 0, QModelIndex());
-	QModelIndex bottomRight = index(num_invalid, columnCount() - 1, QModelIndex());
+	QModelIndex bottomRight = index(last_row_count, columnCount() - 1, QModelIndex());
 	emit dataChanged(topLeft, bottomRight);
 	emit layoutChanged();
 }
@@ -141,10 +79,32 @@ void C4ConsoleQtObjectListModel::SetSelection(class C4EditCursorSelection &rSele
 
 int C4ConsoleQtObjectListModel::rowCount(const QModelIndex & parent) const
 {
-	Node *parent_node = this->GetNodeByIndex(parent);
-	if (!parent_node) return 0;
-	parent_node->Validate();
-	return parent_node->GetNumChildren();
+	int result = 0;
+	if (parent.isValid())
+	{
+		// Child row count of object
+		C4PropList *parent_item = static_cast<C4PropList *>(parent.internalPointer());
+		if (!parent_item) return result;
+		C4Object *obj = parent_item->GetObject();
+		if (!obj) return result;
+		// Contained objects plus effects
+		for (C4Object *contents : obj->Contents)
+			if (contents && contents->Status)
+				++result;
+		for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext) if (fx->IsActive())
+			++result;
+	}
+	else
+	{
+		// Main object + effect count
+		for (C4Object *obj : ::Objects)
+			if (obj && obj->Status && !obj->Contained)
+				++result;
+		for (C4Effect *fx = ::Game.pGlobalEffects; fx; fx = fx->pNext) if (fx->IsActive())
+			++result;
+		last_row_count = result;
+	}
+	return result;
 }
 
 int C4ConsoleQtObjectListModel::columnCount(const QModelIndex & parent) const
@@ -155,12 +115,10 @@ int C4ConsoleQtObjectListModel::columnCount(const QModelIndex & parent) const
 QVariant C4ConsoleQtObjectListModel::data(const QModelIndex & index, int role) const
 {
 	// Object list lookup is done in index(). Here we just use the pointer.
-	Node *node = static_cast<Node *>(index.internalPointer());
-	if (!node) return QVariant();
+	C4PropList *data = static_cast<C4PropList *>(index.internalPointer());
 	if (role == Qt::DisplayRole)
 	{
 		// Deleted proplist?
-		C4PropList *data = node->GetData();
 		if (!data) return QString("<deleted>");
 		// Prefer own name
 		const char *name = data->GetName();
@@ -171,51 +129,76 @@ QVariant C4ConsoleQtObjectListModel::data(const QModelIndex & index, int role) c
 		// Fallback to effect names for effects
 		return QString("Fx???");
 	}
+	else if (role == Qt::ForegroundRole)
+	{
+		// Deleted proplist?
+		if (!data) return clr_deleted;
+		// Object?
+		C4Object *obj = data->GetObject();
+		if (obj) return QVariant(); // default
+		// Effect
+		return clr_effect;
+	}
 	// Nothing to show
 	return QVariant();
 }
 
-C4ConsoleQtObjectListModel::Node *C4ConsoleQtObjectListModel::GetNodeByIndex(const QModelIndex &index) const
-{
-	// Find node recursively
-	if (!index.isValid()) return root.get();
-	Node *parent = GetNodeByIndex(index.parent());
-	// Out of range
-	if (index.row() < 0 || index.column() != 0) return NULL;
-	// Get indexed child node
-	parent->EnsureValid();
-	if (index.row() >= parent->GetNumChildren()) return NULL;
-	return parent->_GetChild(index.row());
-}
-
 QModelIndex C4ConsoleQtObjectListModel::index(int row, int column, const QModelIndex &parent) const
 {
-	Node *parent_node = GetNodeByIndex(parent);
-	// Parent out of range?
-	if (!parent_node) return QModelIndex();
-	// Make sure it's updated
-	parent_node->EnsureValid();
 	// Current index out of range?
-	if (row < 0 || column != 0 || row >= parent_node->GetNumChildren()) return QModelIndex();
-	// This item is OK. Create an index!
-	return createIndex(row, column, parent_node->_GetChild(row));
+	if (row < 0 || column != 0) return QModelIndex();
+	int index = row;
+	// Child element or main list?
+	if (parent.isValid())
+	{
+		// Child of valid object?
+		C4PropList *parent_item = static_cast<C4PropList *>(parent.internalPointer());
+		if (!parent_item) return QModelIndex();
+		C4Object *obj = parent_item->GetObject();
+		if (!obj) return QModelIndex();
+		// Contained objects plus effects
+		for (C4Object *contents : obj->Contents)
+			if (contents && contents->Status)
+				if (!index--)
+					return createIndex(row, column, contents);
+		for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext) if (fx->IsActive())
+			if (!index--)
+				return createIndex(row, column, fx);
+	}
+	else
+	{
+		// Main object list
+		for (C4Object *obj : ::Objects)
+			if (obj && obj->Status && !obj->Contained)
+				if (!index--)
+					return createIndex(row, column, obj);
+	}
+	return QModelIndex(); // out of range
 }
 
 QModelIndex C4ConsoleQtObjectListModel::parent(const QModelIndex &index) const
 {
-	// Look up parent through node structure
+	// Find parent of object or effect
 	if (!index.isValid()) return QModelIndex();
-	Node *node = static_cast<Node *>(index.internalPointer());
-	if (!node) return QModelIndex();
-	Node *parent = node->GetParent();
-	if (!parent) return QModelIndex();
-	// Parent must not be the root
-	Node *grandparent = parent->GetParent();
-	if (!grandparent) return QModelIndex();
-	// Find index of parent
-	for (int idx = 0; idx < grandparent->GetNumChildren(); ++idx)
-		if (grandparent->_GetChild(idx) == parent)
-			return createIndex(idx, 0, parent);
+	C4PropList *data = static_cast<C4PropList *>(index.internalPointer());
+	if (!data) return QModelIndex();
+	C4Object *obj = data->GetObject();
+	if (obj) return GetModelIndexByItem(obj->Contained);
+	// Parent object of effect
+	// TODO: Effects currently don't keep track of their owners.
+	// If this ever changes, lookup can be much more efficient...
+	C4Effect *fx = data->GetEffect();
+	if (fx)
+	{
+		for (C4Object *cobj : ::Objects) if (cobj && cobj->Status)
+		{
+			for (C4Effect *cfx = cobj->pEffects; cfx; cfx = cfx->pNext)
+				if (cfx == fx) { obj = cobj; break; }
+			if (obj) break;
+		}
+		return GetModelIndexByItem(obj); // returns root index for obj==NULL, i.e. global effects
+	}
+	// Can't happen
 	return QModelIndex();
 }
 
@@ -223,72 +206,58 @@ void C4ConsoleQtObjectListModel::OnSelectionChanged(const QItemSelection & selec
 {
 	if (is_updating) return;
 	// Forward to EditCursor
-	Node *node; C4PropList *p;
-	for (const QItemSelectionRange &item_range : deselected)
-		if (item_range.isValid())
-			for (const QModelIndex &item : item_range.indexes())
-				if ((node = static_cast<Node *>(item.internalPointer())))
-					if ((p = node->GetData()))
-						::Console.EditCursor.RemoveFromSelection(p);
-	for (const QItemSelectionRange &item_range : selected)
-		if (item_range.isValid())
-			for (const QModelIndex &item : item_range.indexes())
-				if ((node = static_cast<Node *>(item.internalPointer())))
-					if ((p = node->GetData()))
-						::Console.EditCursor.AddToSelection(p);
+	C4PropList *p;
+	for (const QModelIndex &item : deselected.indexes())
+		if ((p = static_cast<C4PropList *>(item.internalPointer())))
+			::Console.EditCursor.RemoveFromSelection(p);
+	for (const QModelIndex &item : selected.indexes())
+		if ((p = static_cast<C4PropList *>(item.internalPointer())))
+			::Console.EditCursor.AddToSelection(p);
 	::Console.EditCursor.OnSelectionChanged(true);
-}
-
-bool C4ConsoleQtObjectListModel::GetNodeByItem(class C4PropList *item, C4ConsoleQtObjectListModel::Node **out_parent_node, int32_t *out_index) const
-{
-	// Deduce node and parent index from item pointer
-	if (!item) return false;
-	Node *parent_node;
-	int32_t idx;
-	C4Object *obj = item->GetObject();
-	if (obj)
-	{
-		if (!obj->Contained)
-		{
-			// Uncontained object
-			parent_node = root.get();
-		}
-		else
-		{
-			// Contained object
-			if (!GetNodeByItem(obj->Contained, &parent_node, &idx)) return false;
-			parent_node = parent_node->_GetChild(idx);
-		}
-	}
-	else
-	{
-		// Effect
-		C4Effect *fx = item->GetEffect();
-		if (!fx) return false;
-		// Parent object of effect
-		// TODO: Effects currently don't keep track of their owners.
-		// If this ever changes, lookup can be much faster
-		for (C4Object *cobj : ::Objects)
-		{
-			for (C4Effect *cfx = obj->pEffects; cfx; cfx = cfx->pNext)
-				if (cfx == fx) { obj = cobj; break; }
-			if (obj) break;
-		}
-		if (!GetNodeByItem(obj, &parent_node, &idx)) return false;
-		parent_node = parent_node->_GetChild(idx);
-	}
-	parent_node->EnsureValid();
-	idx = parent_node->GetChildIndex(obj);
-	if (idx < 0) return false;
-	*out_index = idx;
-	*out_parent_node = parent_node;
-	return true;			
 }
 
 QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) const
 {
 	// Deduce position in model list from item pointer
-	Node *parent_node=NULL; int32_t row=0;
-	if (!GetNodeByItem(item, &parent_node, &row)) return QModelIndex();
-	return createIndex(row, 0, parent_node->_GetChild(row));
+	if (!item) return QModelIndex();
+	C4Object *obj; C4Effect *fx;
+	int row=0;
+	if ((obj = item->GetObject()))
+	{
+		const C4ObjectList *list = &::Objects;
+		if (obj->Contained) list = &(obj->Contained->Contents);
+		for (C4Object *cobj : *list)
+		{
+			if (cobj == obj) break;
+			if (cobj && cobj->Status) ++row;
+		}
+	}
+	else if ((fx = item->GetEffect()))
+	{
+		// TODO: Effects currently don't keep track of their owners.
+		// If this ever changes, lookup can be much more efficient...
+		bool found = false;
+		for (C4Object *cobj : ::Objects) if (cobj && cobj->Status)
+		{
+			row = 0;
+			for (C4Effect *cfx = cobj->pEffects; cfx; cfx = cfx->pNext)
+				if (cfx == fx) { obj = cobj; found = true; break; } else ++row;
+			if (obj) break;
+		}
+		// Also search global effect list
+		if (!found)
+		{
+			row = 0;
+			for (C4Effect *cfx = ::Game.pGlobalEffects; cfx; cfx = cfx->pNext) if (cfx->IsActive())
+				if (cfx == fx) { found = true; break; } else ++row;
+			if (!found) return QModelIndex();
+		}
+		// Add other objects on top of this index
+		const C4ObjectList *list = &::Objects;
+		if (obj) list = &obj->Contents;
+		for (C4Object *cobj : *list)
+			if (cobj && cobj->Status)
+				++row;
+	}
+	return createIndex(row, 0, item);
 }

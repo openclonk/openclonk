@@ -822,6 +822,19 @@ void C4ObjectListDlg::Open()
 	}
 }
 
+void C4ObjectListDlg::OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container)
+{
+}
+
+void C4ObjectListDlg::OnEffectAdded(C4Effect *fx)
+{
+}
+
+void C4ObjectListDlg::OnEffectRemoved(C4Effect *fx)
+{
+}
+
+
 #else
 
 C4ObjectListDlg::C4ObjectListDlg()
@@ -849,6 +862,7 @@ void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
 	if (view_model) view_model->SetSelection(rSelection);
 }
 
+// Could do some crazy fine-grained updates. But updating is cheap enough...
 void C4ObjectListDlg::OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk)
 {
 	if (view_model) view_model->Invalidate();
@@ -860,6 +874,21 @@ void C4ObjectListDlg::OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk)
 }
 
 void C4ObjectListDlg::OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk)
+{
+	if (view_model) view_model->Invalidate();
+}
+
+void C4ObjectListDlg::OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container)
+{
+	if (view_model) view_model->Invalidate();
+}
+
+void C4ObjectListDlg::OnEffectAdded(C4Effect *fx)
+{
+	if (view_model) view_model->Invalidate();
+}
+
+void C4ObjectListDlg::OnEffectRemoved(C4Effect *fx)
 {
 	if (view_model) view_model->Invalidate();
 }
@@ -882,6 +911,19 @@ void C4ObjectListDlg::OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk)
 void C4ObjectListDlg::OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk)
 {
 }
+
+void C4ObjectListDlg::OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container)
+{
+}
+
+void C4ObjectListDlg::OnEffectAdded(C4Effect *fx)
+{
+}
+
+void C4ObjectListDlg::OnEffectRemoved(C4Effect *fx)
+{
+}
+
 
 #endif WITH_QT_EDITOR
 

@@ -24,6 +24,7 @@
 // Avoid some name conflicts
 #undef LineFeed
 #undef new
+#undef delete
 // disable OPENGL_ES
 // (not necessery if Qt is compiled with -opengl desktop)
 //#define QT_OPENGL_ES_2
@@ -31,6 +32,8 @@
 //#define QT_OPENGL_ES
 //#define QT_NO_OPENGL_ES
 #include <QtWidgets>
+#include <qabstractitemmodel.h>
+#include <QAbstractTableModel>
 #include <memory>
 
 // TODO: If we remove the other editors, state and consolegui can be merged and the relevant header go into this file

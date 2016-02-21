@@ -1366,6 +1366,8 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	CloseMenu(true);
 	UpdateFace(true);
 	SetOCF();
+	// Object list callback (before script callbacks, because script callbacks may enter again)
+	ObjectListChangeListener.OnObjectContainerChanged(this, pContainer, NULL);
 	// Engine calls
 	if (fCalls) pContainer->Call(PSF_Ejection,&C4AulParSet(this));
 	if (fCalls) Call(PSF_Departure,&C4AulParSet(pContainer));
@@ -1437,6 +1439,8 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// Update container
 	Contained->UpdateMass();
 	Contained->SetOCF();
+	// Object list callback (before script callbacks, because script callbacks may exit again)
+	ObjectListChangeListener.OnObjectContainerChanged(this, NULL, Contained);
 	// Collection call
 	if (fCalls) pTarget->Call(PSF_Collection2,&C4AulParSet(this));
 	if (!Contained || !Contained->Status || !pTarget->Status) return true;

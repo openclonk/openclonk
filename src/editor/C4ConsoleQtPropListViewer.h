@@ -23,7 +23,6 @@
 #include <C4Include.h> // needed for automoc
 #include <C4ConsoleGUI.h> // for glew.h
 #include <C4ConsoleQt.h>
-#include <QAbstractTableModel>
 
 // Prop list view implemented as a model view
 class C4ConsoleQtPropListModel : public QAbstractTableModel

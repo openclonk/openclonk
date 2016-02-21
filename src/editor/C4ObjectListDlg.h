@@ -44,6 +44,9 @@ public:
 	virtual void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk) override;
 	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) override;
 	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) override;
+	virtual void OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container) override;
+	virtual void OnEffectAdded(class C4Effect *fx) override;
+	virtual void OnEffectRemoved(class C4Effect *fx) override;
 
 #ifdef USE_GTK
 private:
