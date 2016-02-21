@@ -42,6 +42,7 @@ func Initialize()
 		flag.Destruction = Scenario.OnFlagDestruction;
 		flag.team = 1;
 		flag.Plane = 274; // cannot be moved by airship
+		flag.RejectWindbagForce = Clonk.IsClonk;
 		if (flag->GetX() > LandscapeWidth()/2) ++flag.team;
 		g_respawn_flags[flag.team] = flag;
 	}
@@ -56,14 +57,17 @@ local weapon_list = [ // id, vertex, offx, offy, deployy
 	[IceWallKit, 2, 0, -5, -10],
 	[DynamiteBox, 0, 3, -5, -10],
 	[BombArrow, 2, 0, -8, -10],
-	[Boompack, 0, 0, 0, 0],
-	[GrenadeLauncher, 3, 0, -4, -10]
+	[GrenadeLauncher, 3, 0, -4, -10],
+	[Boompack, 0, 0, 0, 0]
 ];
+
+local num_avail_weapons = 6; // boompack available later
 
 func DoBalloonDrop()
 {
 	// Random weapon
-	var wp = Scenario.weapon_list[Random(GetLength(Scenario.weapon_list))];
+	if (FrameCounter() > 36*60*4) num_avail_weapons = 7; // enable boompacks after some time
+	var wp = Scenario.weapon_list[Random(num_avail_weapons)];
 	var x = LandscapeWidth()/4 + Random(LandscapeWidth()/2);
 	var y = 0;
 	var balloon = CreateObject(BalloonDeployed, x, y);
@@ -153,6 +157,8 @@ func RelaunchPlayer(int plr)
 		crew->MakeCrewMember(plr);
 		SetCursor(plr, crew, false);
 	}
+	// Reset available items in spawns
+	for (var item_spawn in FindObjects(Find_ID(ItemSpawn))) item_spawn->Reset(plr);
 	// Relaunch near current flag pos (will be adjusted on actual relaunch)
 	crew->SetPosition(start_x, start_y);
 	var relaunch = CreateObjectAbove(RelaunchContainer, start_x, start_y, plr);
