@@ -47,6 +47,7 @@ func Initialize()
 		g_respawn_flags[flag.team] = flag;
 	}
 	// Weapon drops timer
+	g_num_avail_weapons = 6;
 	ScheduleCall(nil, Scenario.DoBalloonDrop, 36*8, 99999);
 	return true;
 }
@@ -61,13 +62,13 @@ local weapon_list = [ // id, vertex, offx, offy, deployy
 	[Boompack, 0, 0, 0, 0]
 ];
 
-local num_avail_weapons = 6; // boompack available later
+static g_num_avail_weapons; // boompack available later
 
 func DoBalloonDrop()
 {
 	// Random weapon
-	if (FrameCounter() > 36*60*4) num_avail_weapons = 7; // enable boompacks after some time
-	var wp = Scenario.weapon_list[Random(num_avail_weapons)];
+	if (FrameCounter() > 36*60*4) g_num_avail_weapons = 7; // enable boompacks after some time
+	var wp = Scenario.weapon_list[Random(g_num_avail_weapons)];
 	var x = LandscapeWidth()/4 + Random(LandscapeWidth()/2);
 	var y = 0;
 	var balloon = CreateObject(BalloonDeployed, x, y);
