@@ -21,9 +21,9 @@ public func FixTo(object station)
 	SetCursor(GetOwner(), this, true);
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
-	if (release) return false;
+	if (status != CONS_Down) return false;
 
 	if (ctrl == CON_Left)
 		return cable_car->ShiftSelection(-1, this);

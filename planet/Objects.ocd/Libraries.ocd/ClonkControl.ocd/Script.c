@@ -178,13 +178,13 @@ public func GetExtraInteractions()
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
 
 /* Main control function */
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) 
 		return false;
 	
 	// Contents menu
-	if (ctrl == CON_Contents && !release)
+	if (ctrl == CON_Contents && status == CONS_Down)
 	{
 		// Close any menu if open.
 		if (GetMenu())
@@ -221,10 +221,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		else     ctrl = CON_Use;
 				
 		repeat = true;
-		release = false;
+		status = CONS_Down;
 	}
 	// controls except a few reset a previously given command
-	else SetCommand("None");
+	else if (status != CONS_Moved)
+		SetCommand("None");
 	
 	/* aiming with analog pad or keys:
 	   This works completely different. There are CON_AimAxis* and CON_Aim*,
@@ -241,7 +242,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight
 	 || ctrl == CON_AimUp     || ctrl == CON_AimDown     || ctrl == CON_AimLeft     || ctrl == CON_AimRight)
 	{
-		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,release);
+		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,status);
 		// in any case, CON_Aim* is called but it is only successful if the virtual cursor is aiming
 		return success && VirtualCursor()->IsAiming();
 	}
@@ -269,7 +270,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// menu
 	if (this.control.menu)
 	{
-		return Control2Menu(ctrl, x,y,strength, repeat, release);
+		return Control2Menu(ctrl, x,y,strength, repeat, status);
 	}
 	
 	var contents = this->GetHandItem(0);	
@@ -280,12 +281,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if (house)
 		{
-			return ControlUse2Script(ctrl, x, y, strength, repeat, release, house);
+			return ControlUse2Script(ctrl, x, y, strength, repeat, status, house);
 		}
 		// control to grabbed vehicle
 		else if (vehicle && proc == "PUSH")
 		{
-			return ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle);
+			return ControlUse2Script(ctrl, x, y, strength, repeat, status, vehicle);
 		}
 		else if (vehicle && proc == "ATTACH")
 		{
@@ -301,7 +302,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			   usage via CancelUse().
 			  */
 
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle))
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, status, vehicle))
 				return true;
 			else
 			{
@@ -310,16 +311,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				// object returns true on that callback. Exactly what we want)
 				if (this.control.current_object == vehicle) return true;
 				// has been cancelled (it is not the start of the usage but no object is used)
-				if (!this.control.current_object && (repeat || release)) return true;
+				if (!this.control.current_object && (repeat || status == CONS_Up)) return true;
 			}
 		}
 		// releasing the use-key always cancels shelved commands (in that case no this.control.current_object exists)
-		if(release) StopShelvedCommand();
+		if(status == CONS_Up) StopShelvedCommand();
 		// Release commands are always forwarded even if contents is 0, in case we
 		// need to cancel use of an object that left inventory
-		if (contents || (release && this.control.current_object))
+		if (contents || (status == CONS_Up && this.control.current_object))
 		{
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents))
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, status, contents))
 				return true;
 		}
 	}
@@ -327,7 +328,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// A click on throw can also just abort usage without having any other effects.
 	// todo: figure out if wise.
 	var currently_in_use = this.control.current_object != nil;
-	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && currently_in_use && !release)
+	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && currently_in_use && status == CONS_Down)
 	{
 		CancelUse();
 		return true;
@@ -336,7 +337,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	// only act on press, not release
-	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && !house && (!vehicle || proc == "ATTACH") && !release)
+	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && !house && (!vehicle || proc == "ATTACH") && status == CONS_Down)
 	{		
 		if (contents)
 		{
@@ -368,7 +369,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_ThrowDelayed)
 			{
 				CancelUse();
-				if (release)
+				if (status == CONS_Up)
 				{
 					VirtualCursor()->StopAim();
 				
@@ -392,14 +393,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// forward to script...
 		if (house)
 		{
-			return ControlMovement2Script(ctrl, x, y, strength, repeat, release, house);
+			return ControlMovement2Script(ctrl, x, y, strength, repeat, status, house);
 		}
 		else if (vehicle)
 		{
-			if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, vehicle)) return true;
+			if (ControlMovement2Script(ctrl, x, y, strength, repeat, status, vehicle)) return true;
 		}
 	
-		return ObjectControlMovement(plr, ctrl, strength, release);
+		return ObjectControlMovement(plr, ctrl, strength, status);
 	}
 	
 	// Do a roll on landing or when standing. This means that the CON_Down was not handled previously.
@@ -423,7 +424,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Fall through half-solid mask
 	if (ctrl == CON_FallThrough)
 	{
-		if(!release)
+		if(status == CONS_Down)
 		{
 			if (this->IsWalking())
 			{
@@ -459,7 +460,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Unhandled control
-	return _inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+	return _inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }
 
 // A wrapper to SetCommand to catch special behaviour for some actions.
@@ -866,16 +867,16 @@ func FxItemRemovalCheckStop(object target, proplist effect, int reason, bool tem
 
 
 // Control use redirected to script
-func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
+func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int status, object obj)
 {	
 	// standard use
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
-		if (!release && !repeat)
+		if (status == CONS_Down && !repeat)
 		{
 			return StartUseControl(ctrl,x, y, obj);
 		}
-		else if (release && obj == this.control.current_object)
+		else if (status == CONS_Up && obj == this.control.current_object)
 		{
 			return StopUseControl(x, y, obj);
 		}
@@ -883,11 +884,11 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 	// gamepad use
 	else if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
-		if (!release && !repeat)
+		if (status == CONS_Down && !repeat)
 		{
 			return StartUseDelayedControl(ctrl, obj);
 		}
-		else if (release && obj == this.control.current_object)
+		else if (status == CONS_Up && obj == this.control.current_object)
 		{
 			return StopUseDelayedControl(obj);
 		}
@@ -896,7 +897,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 	// more use (holding)
 	if (ctrl == CON_Use || ctrl == CON_UseAlt || ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
-		if (release)
+		if (status == CONS_Up)
 		{
 			// leftover use release
 			CancelUse();
@@ -912,7 +913,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 }
 
 // Control use redirected to script
-func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
+func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, int status, object obj)
 {
 	// overloads of movement commandos
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
@@ -921,7 +922,7 @@ func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		if (Contained() == obj) 
 			control_string = "Contained";
 	
-		if (release)
+		if (status == CONS_Up)
 		{
 			// if any movement key has been released, ControlStop is called
 			if (obj->Call(Format("~%sStop", control_string), this, ctrl))

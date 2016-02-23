@@ -311,13 +311,13 @@ public func FxIntClimbControlStop(target, effect)
 	SetHandAction(0);
 }
 
-public func FxIntClimbControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func FxIntClimbControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	// Only handle movement controls.
 	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) 
 		return false;
 	// Perform actions on key down and not on release.
-	if (release) 
+	if (status != CONS_Down) 
 		return false;
 			
 	if (ctrl == CON_Up)

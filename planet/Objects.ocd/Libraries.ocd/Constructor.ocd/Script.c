@@ -68,12 +68,12 @@ public func FxControlConstructionPreviewStart(object clonk, effect, int temp, id
 }
 
 // Called by Control2Effect
-public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (ctrl != CON_Aim)
 	{
 		// CON_Use is accept, but don't remove the preview, this is done on releasing the button.
-		if (ctrl == CON_Use && !release)
+		if (ctrl == CON_Use && status == CONS_Down)
 		{
 			var ok = CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.blocked, effect.preview.direction, effect.preview.stick_to);
 			if (ok)
@@ -90,7 +90,7 @@ public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, 
 		// (yes, this means that actionbar-hotkeys wont work for it. However clicking the button will.)
 		else if (IsInteractionControl(ctrl))
 		{
-			if (release)
+			if (status == CONS_Up)
 				effect.preview->Flip();
 			return true;
 		}

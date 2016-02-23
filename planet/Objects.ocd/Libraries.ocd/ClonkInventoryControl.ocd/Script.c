@@ -46,17 +46,17 @@ func RejectCollect(id objid, object obj)
 	return false;
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) 
-		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 		
 	// Quickswitch changes the active slot to the last selected one
 	if (ctrl == CON_QuickSwitch)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
 		if(this.HandObjects > 1)
-			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
+			return inherited(plr, ctrl, x, y, strength, repeat, status, ...);;
 		
 		// select last slot
 		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
@@ -67,7 +67,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!Contained())
 	{
 		// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
-		if (ctrl == CON_Use && !this->GetHandItem(0) && !release)
+		if (ctrl == CON_Use && !this->GetHandItem(0) && status == CONS_Down)
 		{
 			var sort = Sort_Distance(x, y);
 			var items = FindAllPickupItems(sort);
@@ -78,7 +78,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		
 		// Begin picking up objects.
-		if (ctrl == CON_PickUp && !release)
+		if (ctrl == CON_PickUp && status == CONS_Down)
 		{
 			this->CancelUse();
 			BeginPickingUp();
@@ -86,7 +86,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		
 		// Drop the mouse item?
-		if (ctrl == CON_Drop && !release)
+		if (ctrl == CON_Drop && status == CONS_Down)
 		{
 			// Do not immediately collect another thing unless chosen with left/right.
 			if (this.inventory.is_picking_up)
@@ -120,7 +120,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			}
 			
 			// Finish picking up (aka "collect").
-			if (ctrl == CON_PickUp && release)
+			if (ctrl == CON_PickUp && status == CONS_Up)
 			{
 				EndPickingUp();
 				return true;
@@ -208,7 +208,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+	return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }
 
 private func FxIntHighlightItemStart(object target, proplist fx, temp, object item)

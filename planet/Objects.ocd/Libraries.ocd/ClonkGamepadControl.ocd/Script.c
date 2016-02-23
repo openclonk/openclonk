@@ -19,7 +19,7 @@ local virtual_cursor;
 
 /* This part of gamepad control handles only object-style menus.
 Fullscreen menus are handled differently. */
-func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
+func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 
 	/* all this stuff is already done on a higher layer - in playercontrol.c
@@ -40,7 +40,7 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool releas
 			this->GetMenu()->~UpdateCursor(mex,mey);
 	}
 	// click on menu
-	if (release)
+	if (status == CONS_Up)
 	{
 		// select
 		if (ctrl == CON_UseDelayed)
@@ -50,13 +50,13 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool releas
 	return true;
 }
 
-public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
+public func ObjectControlMovement(int plr, int ctrl, int strength, int status)
 {
 	// from PlayerControl.c
-	var result = inherited(plr,ctrl,strength,release,...);
+	var result = inherited(plr,ctrl,strength,status,...);
 
 	// do the following only if strength >= CON_Gamepad_Deadzone
-	if(!release)
+	if(status == CONS_Down)
 		if(strength != nil && strength < CON_Gamepad_Deadzone)
 			return result;
 
@@ -66,7 +66,7 @@ public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 	if(!virtual_cursor) return result;
 
 	// change direction of virtual_cursor
-	if(!release)
+	if(status == CONS_Down)
 		virtual_cursor->Direction(ctrl);
 
 	return result;
