@@ -950,9 +950,52 @@
 		Control=Interact
 
 		[Assignment]
+		Key=CON_Interact,CON_Left
+		Control=InteractNext_Left
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Right
+		Control=InteractNext_Right
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Up
+		Control=InteractNext_CycleObject
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Down
+		Control=InteractNext_Stop
+		Priority=75
+
+		[Assignment]
 		Key=ControllerButtonX
 		Control=PickUp
 		GUIGroup=50
+
+		[Assignment]
+		Key=CON_PickUp,CON_Left
+		Control=PickUpNext_Left
+
+		[Assignment]
+		Key=CON_PickUp,CON_Right
+		Control=PickUpNext_Right
+
+		[Assignment]
+		Key=CON_PickUp,CON_Up
+		Control=PickUpNext_All
+		Priority=75
+
+		[Assignment]
+		Key=CON_PickUp,CON_Down
+		Control=PickUpNext_Stop
+		Priority=75
+
+		[Assignment]
+		Key=CON_PickUp,CON_ThrowDelayed
+		Control=Drop
+		Priority=75
 
 		# Crew
 
@@ -1004,46 +1047,6 @@
 
 	[ControlSet]
 	Name=*_GamepadCon_*
-
-		[Assignment]
-		Key=CON_AimAxisLeft
-		Priority=50
-		Control=Left
-
-		[Assignment]
-		Key=CON_AimAxisRight
-		Priority=50
-		Control=Right
-
-		[Assignment]
-		Key=CON_AimAxisDown
-		Priority=50
-		Control=Down
-
-		[Assignment]
-		Key=CON_AimAxisUp
-		Priority=50
-		Control=Up
-
-		[Assignment]
-		Key=CON_Left
-		Priority=70
-		Control=AimLeft
-
-		[Assignment]
-		Key=CON_Right
-		Priority=70
-		Control=AimRight
-
-		[Assignment]
-		Key=CON_Down
-		Priority=70
-		Control=AimDown
-
-		[Assignment]
-		Key=CON_Up
-		Priority=70
-		Control=AimUp
 
 		[Assignment]
 		Key=CON_Down,CON_UseDelayed
