@@ -54,7 +54,7 @@ const char *const SEPERATOR_TEXTURE = "--SEP--";
 C4LandscapeRenderGL::C4LandscapeRenderGL()
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
-	hMaterialTexture = 0;
+	hMaterialTexture = matMapTexture = 0;
 	hVBO = 0;
 	hVAOIDNoLight = 0;
 	hVAOIDLight = 0;
@@ -146,6 +146,8 @@ void C4LandscapeRenderGL::Clear()
 	}
 	if (hMaterialTexture) glDeleteTextures(1, &hMaterialTexture);
 	hMaterialTexture = 0;
+	if (matMapTexture) glDeleteTextures(1, &matMapTexture);
+	matMapTexture = 0;
 
 	if (hVBO != 0)
 	{
@@ -297,6 +299,9 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	// Clear error error(s?)
 	while(glGetError()) {}
 	
+	// Alloc 1D matmap texture
+	glGenTextures(1, &matMapTexture);
+
 	// Alloc 2D texture array
 	glGenTextures(1, &hMaterialTexture);
 
@@ -1009,6 +1014,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	{
 		uint32_t MatMap[2*256];
 		BuildMatMap(MatMap);
+		glBindTexture(GL_TEXTURE_1D, matMapTexture);
 		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, 2*256, 0, GL_RGBA, GL_UNSIGNED_BYTE, MatMap);
 		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
