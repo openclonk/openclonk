@@ -182,6 +182,8 @@ global func Test3_Execute()
 	var container = CreateObject(Barrel);
 	var passed = true;
 	var test_data = [nil, "Water", "Lava", "123", "#24942fwijvri"];
+	// set a special test function that accepts other material, too
+	container.IsLiquidContainerForMaterial = Barrel.Test3_IsLiquidContainerForMaterial;
 	
 	for (var value in test_data)
 	{
@@ -194,6 +196,8 @@ global func Test3_Execute()
 	container->RemoveObject();
 	return passed;
 }
+
+
 
 
 
@@ -296,16 +300,13 @@ global func Test6_Execute()
 	Log("- Container returns 'true' if filled with material and liquid fill level is 0% and other material is ok: %v", test);
 
 	container->SetLiquidFillLevel(container->GetLiquidContainerMaxFillLevel() / 2);
- 	container->SetLiquidType("Lava");
+ 	container->SetLiquidType("Oil");
 	test = !container->LiquidContainerAccepts("Water");	passed &= test;
 	Log("- Container returns 'false' if filled with material and liquid fill level is 50% and other material is ok: %v", test);
 	
 	container->SetLiquidFillLevel(container->GetLiquidContainerMaxFillLevel() / 2);
  	container->SetLiquidType("Water");
 	test = container->LiquidContainerAccepts("Water");	passed &= test;
-// 	Log("-- Debug: %v", container->IsLiquidContainerForMaterial("Lava"));
-// 	Log("-- Debug: %v", container->LiquidContainerIsEmpty());
-// 	Log("-- Debug: %v, %s", container->GetLiquidName() == "Lava", container->GetLiquidName());
 	Log("- Container returns 'true' if liquid fill level is 50% and material is ok: %v", test);
 
 	container->RemoveObject();
@@ -388,30 +389,31 @@ global func Test8_Execute()
 	Log("- Container contents do change when removing compatible material: %v", test);
 
 	// request everything
-	container->SetLiquidContainer("Lava", 100);
+	var material_alternative = "Oil";
+	container->SetLiquidContainer(material_alternative, 100);
 	
 	returned = container->RemoveLiquid(nil, 50, nil);
-	test = (returned[0] == "Lava");
+	test = (returned[0] == material_alternative);
 	Log("- Container returns the contained material when extracting material 'nil': %v", test);
 	test = returned[1] == 50; passed &= test;
 	Log("- Container returns the correct amount when removing compatible material: %v", test);
 	test = (container->GetLiquidFillLevel() == 50);
 	Log("- Container contents do change when removing compatible material: %v", test);
 
-	container->SetLiquidContainer("Lava", 100);
+	container->SetLiquidContainer(material_alternative, 100);
 
-	returned = container->RemoveLiquid("Lava", nil, nil);
-	test = (returned[0] == "Lava");
+	returned = container->RemoveLiquid(material_alternative, nil, nil);
+	test = (returned[0] == material_alternative);
 	Log("- Container returns the contained material when extracting amount 'nil': %v", test);
 	test = returned[1] == 100; passed &= test;
 	Log("- Container returns the contained amount when extracting amount 'nil': %v", test);
 	test = (container->GetLiquidFillLevel() == 0);
 	Log("- Container is empty after removing amount 'nil': %v", test);
 
-	container->SetLiquidContainer("Lava", 100);
+	container->SetLiquidContainer(material_alternative, 100);
 
 	returned = container->RemoveLiquid(nil, nil, nil);
-	test = (returned[0] == "Lava");
+	test = (returned[0] == material_alternative);
 	Log("- Container returns the contained material when extracting material and amount 'nil': %v", test);
 	test = returned[1] == 100; passed &= test;
 	Log("- Container returns the contained amount when extracting material and amount 'nil': %v", test);
@@ -717,8 +719,8 @@ global func Test12_Execute()
 	liquid->Enter(container);
 	
 	var passed = true;
-	var returned = liquid;
-	var test = (returned == nil); passed &= test;
+	var returned = container->GetLiquidItem();
+	var test = (returned == liquid); passed &= test;
 	Log("- Liquid can fill empty barrel: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (100 == returned); passed &= test;
@@ -728,9 +730,8 @@ global func Test12_Execute()
 	liquid = CreateObject(Liquid_Water);
 	liquid->SetLiquidAmount(100);
 	liquid->Enter(container);
-	
-	returned = liquid;
-	test = (returned == nil); passed &= test;
+
+	test = (liquid == nil); passed &= test;
 	Log("- Liquid can enter filled barrel, liquid got removed: %v", test);
 	returned = container->GetLiquidFillLevel();
 	test = (200 == returned); passed &= test;

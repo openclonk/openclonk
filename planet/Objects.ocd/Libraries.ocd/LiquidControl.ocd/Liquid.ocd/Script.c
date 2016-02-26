@@ -48,14 +48,7 @@ func CannotEnter(object into)
 	// Enters liquid containers only, will be removed anyway if the liquid object is "empty"
 	if (into->~IsLiquidContainer() || into->~IsLiquidPump())
 	{
-		if (!GetLiquidAmount()) // the object is "empty", because it was just created
-		{
-			return false;
-		}
-
-		var exists = this;
-		var transferred = into->PutLiquid(IsLiquid(), GetLiquidAmount(), this);
-		if (exists) DoLiquidAmount(-transferred);
+		return !(into->TransferLiquidItem(this));
 	}
 
 	return true; // Cannot enter
@@ -237,7 +230,7 @@ func PutLiquid(string liquid_name, int amount, object source)
 	
 	if (Contained() && Contained()->~IsLiquidContainer())
 	{
-		return Contained()->PutLiquid(liquid_name, amount, source);
+		amount = BoundBy(Contained()->~GetLiquidContainerMaxFillLevel() - GetLiquidAmount(), 0, amount);
 	}
 
 	if (IsLiquid() == liquid_name)
