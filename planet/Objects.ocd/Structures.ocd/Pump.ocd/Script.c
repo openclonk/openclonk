@@ -29,29 +29,13 @@ local power_used; // the amount of power currently consumed or (if negative) pro
 local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
 local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
 
+local stored_material_name; //contained liquid
+local stored_material_amount;
+
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
 public func IsLiquidContainer() { return false; }
-public func LiquidContainerAccepts(string liquid_name){	return !!GetSourceObject();} // Pump accepts every liquid as long as it has a source object.
-public func TransferLiquidItem(object source)
-{
-	if (source && source.IsLiquid != nil)
-	{
-		if (!GetLiquidItem())
-		{
-			SetLiquidItem(source);
-		}
-		else
-		{
-			var extracted = source->RemoveLiquid(nil, nil, this);
-			PutLiquid(extracted[0], extracted[1]);
-		}
-		return true;
-	}
-	return false;
-}
 public func IsLiquidTank() { return false; }
-public func HasLiquidDisplay(){ return false;}
 
 
 // The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
@@ -304,7 +288,7 @@ protected func Pumping()
 	var pump_ok = true;
 	
 	// is empty? -> try to get liquid
-	if (!GetLiquidType())
+	if (!stored_material_name)
 	{
 		// get new materials
 		var source_obj = GetSourceObject();
@@ -313,8 +297,8 @@ protected func Pumping()
 		// no material to pump?
 		if (mat)
 		{
-			SetLiquidType(mat[0]);
-			SetLiquidFillLevel(mat[1]);
+			stored_material_name = mat[0];
+			stored_material_amount = mat[1];
 		}
 		else
 		{
@@ -324,11 +308,11 @@ protected func Pumping()
 	}
 	if (pump_ok)
 	{
-		var i = GetLiquidFillLevel();
+		var i = stored_material_amount;
 		while (i > 0)
 		{
 			var drain_obj = GetDrainObject();
-			if (this->InsertMaterialAtDrain(drain_obj, GetLiquidType(), 1))
+			if (this->InsertMaterialAtDrain(drain_obj, stored_material_name, 1))
 			{
 				i--;
 			}
@@ -340,7 +324,10 @@ protected func Pumping()
 				break;
 			}
 		}
-		SetLiquidFillLevel(i);
+		
+		stored_material_amount = i;
+		if (stored_material_amount <= 0)
+			stored_material_name = nil;
 	}
 	
 	if (pump_ok)

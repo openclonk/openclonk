@@ -46,7 +46,7 @@ protected func RejectEntrance(object into)
 func CannotEnter(object into)
 {
 	// Enters liquid containers only, will be removed anyway if the liquid object is "empty"
-	if (into->~IsLiquidContainer() || into->~IsLiquidPump())
+	if (into->~IsLiquidContainer())
 	{
 		return !(into->TransferLiquidItem(this));
 	}
