@@ -273,16 +273,12 @@ global func Test6_Execute()
 
 	// fill level
 
-	//container->SetLiquidType("Water");
 	container->SetLiquidFillLevel(0);
 	test = container->LiquidContainerAccepts("Water");	passed &= test;
 	Log("- Container returns 'true' if liquid fill level is 0% and material is ok: %v", test);
 
 	container->SetLiquidFillLevel(container->GetLiquidContainerMaxFillLevel() / 2);
 	test = !container->LiquidContainerAccepts("Water");	passed &= test;
-// 	Log("-- Debug: %v", container->IsLiquidContainerForMaterial("Water"));
-// 	Log("-- Debug: %v", container->LiquidContainerIsEmpty());
-// 	Log("-- Debug: %v, %s", container->GetLiquidName() == "Water", container->GetLiquidName());
 	Log("- Container returns 'false' if liquid fill level is 50% and contained material is 'nil': %v", test);
 	
 	container->SetLiquidFillLevel(container->GetLiquidContainerMaxFillLevel());
@@ -291,11 +287,11 @@ global func Test6_Execute()
 
  	// material
  	Log("Setting container to be filled with a material");
- 	container->SetLiquidType("Lava");
+ 	container->SetLiquidType("Oil");
  	Log("- Fill material is %s", container->GetLiquidType());
 
 	container->SetLiquidFillLevel(0);
- 	container->SetLiquidType("Lava");
+ 	container->SetLiquidType("Oil");
 	test = container->LiquidContainerAccepts("Water");	passed &= test;
 	Log("- Container returns 'true' if filled with material and liquid fill level is 0% and other material is ok: %v", test);
 
@@ -344,7 +340,6 @@ global func Test7_Execute()
 	Log("- Container returns 'the actually inserted material' when inserting more than the volume: %v", test);
 	test = container->GetLiquidFillLevel() == container->GetLiquidContainerMaxFillLevel(); passed &= test;
 	Log("- Container returns the fill level when inserting more than the volume: %v", test);
-
 
 	container->RemoveObject();
 	return passed;

@@ -230,7 +230,7 @@ func PutLiquid(string liquid_name, int amount, object source)
 	}
 
 	TransferLiquidItem(source);
-	if (!GetLiquidItem())
+	if (!GetLiquidItem() && LiquidContainerAccepts(liquid_name))
 	{
 		SetLiquidType(liquid_name);
 	}
