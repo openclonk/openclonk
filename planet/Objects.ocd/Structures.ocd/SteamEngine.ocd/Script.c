@@ -64,7 +64,7 @@ public func ContentsCheck()
 		return;
 
 	// If there is fuel available let the network know.
-	if (fuel_amount > 0 || GetFuelContents())
+	if (GetFuelAmount() > 0 || GetFuelContents())
 		RegisterPowerProduction(SteamEngine_produced_power);
 	return;
 }
@@ -137,7 +137,7 @@ protected func WorkAbort()
 func RefillFuel(bool cancel)
 {
 	// Check if there is still enough fuel available.
-	if (fuel_amount <= 0)
+	if (GetFuelAmount() <= 0)
 	{
 		
 		var fuel_extracted;
