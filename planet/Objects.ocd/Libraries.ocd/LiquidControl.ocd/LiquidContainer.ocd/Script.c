@@ -64,8 +64,6 @@ func GetLiquidItem()
 
 func TransferLiquidItem(object source)
 {
-	if (source) Log("     Transfer Liquid item %v? already has item: %v, is liquid %v", source, GetLiquidItem(), source->~IsLiquid());
-
 	if (source && source.IsLiquid != nil)
 	{
 		var liquid = source->IsLiquid();
@@ -73,10 +71,8 @@ func TransferLiquidItem(object source)
 		if (liquid && !LiquidContainerAccepts(liquid)) return false;
 		
 		var remaining = GetLiquidFillLevelRemaining();
-		Log("     Transfer? %d %d", source->GetLiquidAmount(), remaining);
 		if (source->GetLiquidAmount() <= remaining)
 		{
-			Log("     Transferred complete item");
 			if (!GetLiquidItem())
 			{
 				SetLiquidItem(source);
@@ -90,9 +86,7 @@ func TransferLiquidItem(object source)
 		}
 		else
 		{
-			Log("     Will create new item and transfer partial");
 			var extracted = source->RemoveLiquid(nil, remaining, this);
-			Log("     Transfer partial: %v %d", extracted[0], extracted[1]);
 			if (!GetLiquidItem()) SetLiquidType(extracted[0]); // create liquid item if necessary
 			PutLiquid(extracted[0], extracted[1]);
 			return false;
@@ -106,7 +100,6 @@ func SetLiquidItem(object item)
 {
 	if (item && (item->~IsLiquid() || item.IsLiquid != nil))
 	{
-		Log("     Set Liquid item %v", item);
 		liquid_container_item = item;
 	}
 	else
@@ -164,14 +157,9 @@ func SetLiquidType(string liquid_name)
 	if (!GetLiquidItem())
 	{
 		var item = Library_Liquid->CreateLiquid(liquid_name, amount);
-		Log("     Created liquid item %v", item);
 		if (amount > 0) item->UpdateLiquidObject();
 		// if not removed because of amount
-		if (item)
-		{
-			Log("     Liquid item %v shall enter container %v", item, this);
-			item->Enter(this);
-		}
+		if (item) item->Enter(this);
 	}
 }
 
@@ -182,7 +170,6 @@ func SetLiquidFillLevel(int amount)
 		SetLiquidType(nil);
 	}
 
-	Log("     Set fill level: Change by %d", amount);
 	ChangeLiquidFillLevel(amount - GetLiquidFillLevel());
 }
 
@@ -248,7 +235,6 @@ func PutLiquid(string liquid_name, int amount, object source)
 	TransferLiquidItem(source);
 	if (!GetLiquidItem())
 	{
-		Log("     Does not have liquid item yet");
 		SetLiquidType(liquid_name);
 	}
 
