@@ -205,17 +205,14 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
 	}
 
-	// default parameters if nothing is provided: the current material and level
-	liquid_name = liquid_name ?? GetLiquidType();
-	amount = amount ?? GetLiquidFillLevel();
-
-	//Wrong material?
-	if (!WildcardMatch(GetLiquidType(), liquid_name))
-		return [GetLiquidType(), 0];
-
-	amount = Min(amount, GetLiquidFillLevel());
-	ChangeLiquidFillLevel(-amount);
-	return [liquid_name, amount];
+	if (GetLiquidItem())
+	{
+		return GetLiquidItem()->RemoveLiquid(liquid_name, amount, destination);
+	}
+	else
+	{
+		return [nil, 0];
+	}
 }
 
 /** 

@@ -263,12 +263,6 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
 	}
 	
-	if (Contained() && Contained()->~IsLiquidContainer())
-	{
-		return Contained()->RemoveLiquid(liquid_name, amount, destination);
-	}
-	
-
 	// default parameters if nothing is provided: the current material and level
 	liquid_name = liquid_name ?? IsLiquid();
 	amount = amount ?? GetLiquidAmount();
