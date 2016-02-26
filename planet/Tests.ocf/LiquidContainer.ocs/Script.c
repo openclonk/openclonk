@@ -752,10 +752,29 @@ global func Test12_Execute()
 	test = (100 == returned); passed &= test;
 	Log("- Liquid object still contains %d units, expected %d: %v", returned, 100, test);
 
+	Log("- Resetting liquid amount to 0");
+	liquid->RemoveObject();
+	container->GetLiquidItem()->RemoveObject();
+
+	// cannot fill in empty barrel and empty liquid object partially
+	liquid = CreateObject(Liquid_Water);
+	liquid->SetLiquidAmount(500);
+	liquid->Enter(container);
+	
+	returned = liquid->Contained();
+	test = (returned == nil); passed &= test;
+	Log("- Liquid cannot enter empty barrel if the capacity is exceeded: %v", test);
+	returned = container->GetLiquidFillLevel();
+	test = (300 == returned); passed &= test;
+	Log("- Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d: %v", returned, 300, test);
+	returned = liquid->GetLiquidAmount();
+	test = (200 == returned); passed &= test;
+	Log("- Liquid object still contains %d units, expected %d: %v", returned, 200, test);
+
 	Log("- Resetting liquid amount to 200");
 	liquid->RemoveObject();
 	container->SetLiquidFillLevel(200);
-	
+
 	// cannot fill in a different liquid
 	liquid = CreateObject(Liquid_Oil);
 	liquid->SetLiquidAmount(50);
@@ -777,6 +796,9 @@ global func Test12_Execute()
 	returned = container->LiquidContainerIsEmpty();
 	test = returned; passed &= test;
 	Log("- Liquid container should be empty when liquid leaves it: %v", test);
+	returned = container->GetLiquidItem();
+	test = (returned == nil); passed &= test;
+	Log("- Liquid container should not have a liquid item when liquid leaves it: %v", test);
 	test = (liquid != nil); passed &= test;
 	Log("- Liquid exists after leaving the container: %v", test);
 	

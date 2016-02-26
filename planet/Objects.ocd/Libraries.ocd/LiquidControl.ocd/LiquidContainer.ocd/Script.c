@@ -66,7 +66,7 @@ func TransferLiquidItem(object source)
 {
 	if (source) Log("     Transfer Liquid item %v? already has item: %v, is liquid %v", source, GetLiquidItem(), source->~IsLiquid());
 
-	if (!GetLiquidItem() && source && source.IsLiquid != nil)
+	if (source && source.IsLiquid != nil)
 	{
 		var liquid = source->IsLiquid();
 		
@@ -77,14 +77,23 @@ func TransferLiquidItem(object source)
 		if (source->GetLiquidAmount() <= remaining)
 		{
 			Log("     Transferred complete item");
-			SetLiquidItem(source);
+			if (!GetLiquidItem())
+			{
+				SetLiquidItem(source);
+			}
+			else
+			{
+				var extracted = source->RemoveLiquid(nil, nil, this);
+				PutLiquid(extracted[0], extracted[1]);
+			}
 			return true;
 		}
 		else
 		{
 			Log("     Will create new item and transfer partial");
-			SetLiquidType(nil);
 			var extracted = source->RemoveLiquid(nil, remaining, this);
+			Log("     Transfer partial: %v %d", extracted[0], extracted[1]);
+			if (!GetLiquidItem()) SetLiquidType(extracted[0]); // create liquid item if necessary
 			PutLiquid(extracted[0], extracted[1]);
 			return false;
 		}
