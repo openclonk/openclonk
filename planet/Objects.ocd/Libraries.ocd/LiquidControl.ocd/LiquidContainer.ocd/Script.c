@@ -45,7 +45,7 @@ func LiquidContainerIsFull()
 
 func LiquidContainerAccepts(string liquid_name)
 {
-	return IsLiquidContainerForMaterial(liquid_name)
+	return this->IsLiquidContainerForMaterial(liquid_name)
 	   && (LiquidContainerIsEmpty() || GetLiquidType() == liquid_name);
 }
 
