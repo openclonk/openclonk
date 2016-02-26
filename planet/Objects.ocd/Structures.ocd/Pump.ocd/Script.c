@@ -32,6 +32,24 @@ local max_clog_count = 5; // note that even when max_clog_count is reached, the 
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
 public func IsLiquidContainer() { return false; }
+public func LiquidContainerAccepts(string liquid_name){	return !!GetSourceObject();} // Pump accepts every liquid as long as it has a source object.
+public func TransferLiquidItem(object source)
+{
+	if (source && source.IsLiquid != nil)
+	{
+		if (!GetLiquidItem())
+		{
+			SetLiquidItem(source);
+		}
+		else
+		{
+			var extracted = source->RemoveLiquid(nil, nil, this);
+			PutLiquid(extracted[0], extracted[1]);
+		}
+		return true;
+	}
+	return false;
+}
 public func IsLiquidTank() { return false; }
 public func HasLiquidDisplay(){ return false;}
 
@@ -322,7 +340,6 @@ protected func Pumping()
 				break;
 			}
 		}
-		
 		SetLiquidFillLevel(i);
 	}
 	
