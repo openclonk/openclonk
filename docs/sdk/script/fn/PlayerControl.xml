@@ -38,7 +38,7 @@
         <param>
           <type>int</type>
           <name>strength</name>
-          <desc>Current strength of the control. For key presses: 0 or 100. For analog stick or trigger movement (state = CONS_Moved): 0-32768.</desc>
+          <desc>Current strength of the control. For key presses: 0 or 100. For analog stick or trigger movement (state = CONS_Moved): 0 to <code>PLRCON_MaxStrength</code>.</desc>
         </param>
         <param>
           <type>bool</type>

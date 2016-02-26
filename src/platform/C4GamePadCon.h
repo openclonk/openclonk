@@ -49,6 +49,8 @@ private:
 	std::map<int32_t, std::shared_ptr<C4GamePadOpener> > Gamepads; // gamepad instance id -> gamepad
 #endif
 public:
+	static const int32_t MaxStrength = 32767; // 2^15 - 1
+
 	C4GamePadControl();
 	~C4GamePadControl();
 	void Clear();

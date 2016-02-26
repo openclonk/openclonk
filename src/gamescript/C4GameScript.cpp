@@ -3128,6 +3128,8 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "CONS_Up"                  ,C4V_Int,      C4PlayerControl::CONS_Up },
 	{ "CONS_Moved"               ,C4V_Int,      C4PlayerControl::CONS_Moved },
 
+	{ "PLRCON_MaxStrength"       ,C4V_Int,      C4GamePadControl::MaxStrength },
+
 	{ NULL, C4V_Nil, 0}
 };
 

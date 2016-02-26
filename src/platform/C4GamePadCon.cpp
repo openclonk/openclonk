@@ -70,6 +70,14 @@ void C4GamePadControl::Execute()
 namespace
 {
 	const int deadZone = 16000;
+
+	// Axis strength uses the full signed 16 bit integer range. As we're
+	// splitting axes in left/right and up/down, it's preferable to have
+	// symmetrical ranges [0, 2^15 - 1] in both directions.
+	inline int32_t abs_strength(int32_t strength)
+	{
+		return strength >= 0 ? strength : -(strength + 1);
+	}
 }
 
 void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
@@ -80,7 +88,7 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 	{
 		C4KeyCode minCode = KEY_Gamepad(KEY_CONTROLLER_Axis(event.caxis.axis, false));
 		C4KeyCode maxCode = KEY_Gamepad(KEY_CONTROLLER_Axis(event.caxis.axis, true));
-		int32_t value = std::abs(event.caxis.value);
+		int32_t value = abs_strength(event.caxis.value);
 		uint8_t which = event.caxis.which;
 		C4KeyCode keyCode = event.caxis.value >= 0 ? maxCode : minCode;
 
