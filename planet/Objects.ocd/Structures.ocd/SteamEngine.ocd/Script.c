@@ -167,7 +167,7 @@ func RefillFuel()
 			{
 				// Extract the fuel amount from stored liquids
 				var fuel_stored = fuel->RemoveLiquid(nil, max_extracted);
-				fuel_extracted = GetFuelValue(fuel_stored[0], fuel_stored[1]);
+				fuel_extracted = Library_Liquid->GetFuelValue(fuel_stored[0], fuel_stored[1]);
 			}
 			else
 			{
@@ -205,7 +205,7 @@ func Smoking()
 func PutLiquid(string liquid_name, int amount, object source)
 {
 	// Convert to fuel on insertion
-	var fuel_value = GetFuelValue(liquid_name, amount);
+	var fuel_value = Library_Liquid->GetFuelValue(liquid_name, amount);
 	if (_inherited("Fuel", fuel_value, source) != 0)
 	{
 		return amount; // return the requested amount, so that the correct value is deducted from the source
@@ -215,13 +215,6 @@ func PutLiquid(string liquid_name, int amount, object source)
 		return 0;
 	}
 }
-
-func GetFuelValue(string liquid, int amount)
-{
-	if (liquid == "Oil") return amount;
-	return 0;
-}
-
 
 func IsLiquidContainerForMaterial(string liquid)
 {

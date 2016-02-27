@@ -583,11 +583,28 @@ public func CheckFuel(id product, bool remove)
 		{
 			// Remove the fuel needed.
 			fuel_amount = 0;
+			var fuel_needed = FuelNeed(product);
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
-				fuel_amount += fuel->~GetFuelAmount(false);
-				fuel->RemoveObject();
-				if (fuel_amount >= FuelNeed(product))
+				var fuel_extracted = 0;
+				var max_extracted = fuel_needed - fuel_amount;
+				if (fuel->~IsLiquidContainer())
+				{
+					// Extract the fuel amount from stored liquids
+					var fuel_stored = fuel->RemoveLiquid(nil, max_extracted);
+					fuel_extracted = Library_Liquid->GetFuelValue(fuel_stored[0], fuel_stored[1]);
+				}
+				else
+				{
+					fuel_extracted = Min(max_extracted, fuel->~GetFuelAmount(true));
+					if (fuel_extracted > 0)
+					{
+						if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
+					}
+				}
+				fuel_amount += fuel_extracted;
+				
+				if (fuel_amount >= fuel_needed)
 					break;
 			}			
 		}

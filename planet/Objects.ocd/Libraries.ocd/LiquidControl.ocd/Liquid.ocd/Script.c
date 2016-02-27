@@ -307,3 +307,12 @@ func CreateLiquid(string liquid_name, int amount)
 	item.volume = amount;
 	return item;
 }
+
+/**
+ Gets the amount of fuel that a specific type of liquid is worth.
+ */
+func GetFuelValue(string liquid, int amount)
+{
+	if (liquid == "Oil") return amount;
+	return 0;
+}
