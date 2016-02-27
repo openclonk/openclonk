@@ -1812,13 +1812,14 @@ static C4ValueArray* FnPV_Linear(C4PropList * _this, C4Value startValue, C4Value
 	return pArray;
 }
 
-static C4ValueArray* FnPV_Random(C4PropList * _this, C4Value startValue, C4Value endValue, C4Value rerollInterval)
+static C4ValueArray* FnPV_Random(C4PropList * _this, C4Value startValue, C4Value endValue, C4Value rerollInterval, C4Value seed)
 {
 	C4ValueArray *pArray = new C4ValueArray(4);
 	pArray->SetItem(0, C4VInt(C4PV_Random));
 	pArray->SetItem(1, startValue);
 	pArray->SetItem(2, endValue);
 	pArray->SetItem(3, rerollInterval);
+	pArray->SetItem(4, seed);
 	return pArray;
 }
 
