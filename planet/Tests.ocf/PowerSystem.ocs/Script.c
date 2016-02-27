@@ -1141,7 +1141,6 @@ global func Test21_OnStart(int plr)
 	var engine = CreateObjectAbove(SteamEngine, 70, 160, plr);
 	var barrel = engine->CreateContents(Barrel, 1);
 	barrel->SetLiquidContainer("Oil", 10);
-	//engine->CreateContents(Coal); // give some fuel so that the pump can start working
 	
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
@@ -1153,9 +1152,9 @@ global func Test21_OnStart(int plr)
 	
 	// Power consumer: armory.
 	var armory = CreateObjectAbove(Armory, 255, 160, plr);
-	armory->CreateContents(Firestone, 10);
-	armory->CreateContents(Metal, 10);
-	armory->AddToQueue(IronBomb, 10);
+	armory->CreateContents(Firestone, 20);
+	armory->CreateContents(Metal, 20);
+	armory->AddToQueue(IronBomb, 20);
 
 	// Log what the test is about.
 	Log("A steam engine fueled by an oil field via pump.");
@@ -1165,7 +1164,7 @@ global func Test21_OnStart(int plr)
 global func Test21_Completed()
 {
 	// One wood is being burned as fuel by the steam engine.
-	if (ObjectCount(Find_ID(IronBomb)) >= 10)
+	if (ObjectCount(Find_ID(IronBomb)) >= 20)
 		return true;
 	return false;
 }

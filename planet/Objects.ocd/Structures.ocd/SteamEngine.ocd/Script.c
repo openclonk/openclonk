@@ -151,7 +151,9 @@ protected func WorkAbort()
 func RefillFuel()
 {
 	// Check if there is still enough fuel available.
-	if (GetFuelAmount() <= 0) // || IsWorking() && GetFuelAmount() < GetLiquidContainerMaxFillLevel() / 2)
+	var no_fuel = GetFuelAmount() <= 0;
+	var should_keep_reserve = IsWorking() && GetNeutralPipe() && GetFuelAmount() < GetLiquidContainerMaxFillLevel() / 2;
+	if (no_fuel || should_keep_reserve)
 	{
 		var max_extracted = GetLiquidFillLevelRemaining();
 		var fuel_extracted;
@@ -197,6 +199,20 @@ func Smoking()
 	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -26, 10);
 	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 8);
 	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 10);
+}
+
+func PutLiquid(string liquid_name, int amount, object source)
+{
+	// Convert to fuel on insertion
+	var fuel_value = GetFuelValue(liquid_name, amount);
+	if (_inherited("Fuel", fuel_value, source) != 0)
+	{
+		return amount; // return the requested amount, so that the correct value is deducted from the source
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 func GetFuelValue(string liquid, int amount)
