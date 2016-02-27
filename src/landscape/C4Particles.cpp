@@ -376,18 +376,57 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
-	else if (valueFunction == &C4ParticleValueProvider::Sin)
+	else if (valueFunction == &C4ParticleValueProvider::Sin || valueFunction == &C4ParticleValueProvider::Cos)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::parameterValue, 1.0f);
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
 }
 
-void C4ParticleValueProvider::RollRandom()
+void C4ParticleValueProvider::RollRandom(const C4Particle *forParticle)
+{
+	if (randomSeed == -1) return RollRandomUnseeded();
+	return RollRandomSeeded(forParticle);
+}
+
+void C4ParticleValueProvider::RollRandomUnseeded()
 {
 	float range = endValue - startValue;
 	float rnd = (float)(rand()) / (float)(RAND_MAX); 
 	currentValue = startValue + rnd * range;
+}
+
+void C4ParticleValueProvider::RollRandomSeeded(const C4Particle *forParticle)
+{
+	// We need a particle-local additional seed.
+	// Since this is by no means synchronisation relevant and since the particles lie on the heap
+	// we just use the address here.
+	// These conversion steps here just make it explicit that we do not care about the upper 32bit
+	// of a pointer in case it's too long.
+	const std::uintptr_t ourAddress = reinterpret_cast<std::uintptr_t>(forParticle);
+	const unsigned long mostSignificantBits = ourAddress & 0xffffffff;
+	const unsigned long particleLocalSeed = mostSignificantBits;
+	// The actual seed is then calculated from the last random value (or initial seed) and the local seed.
+	unsigned long seed = static_cast<unsigned long>(randomSeed) + particleLocalSeed;
+	// This is a simple linear congruential generator which should suffice for our graphical effects.
+	// https://en.wikipedia.org/wiki/Linear_congruential_generator
+	const unsigned long maxRandomValue = 32767;
+
+	auto roll = [&seed, &maxRandomValue]()
+	{
+		const unsigned long value = seed * 1103515245l + 12345l;
+		return static_cast<unsigned int>(value / 65536) % (maxRandomValue + 1);
+	};
+	const unsigned int randomNumber = roll();
+	assert(randomNumber >= 0 && randomNumber <= maxRandomValue);
+
+	// Now force the integer-random-value into our float-range.
+	const float range = endValue - startValue;
+	const float rnd = static_cast<float>(randomNumber) / static_cast<float>(maxRandomValue);
+	currentValue = startValue + rnd * range;
+
+	// Finally update our seed to the new random value.
+	randomSeed = static_cast<int> (randomNumber);
 }
 
 float C4ParticleValueProvider::GetValue(C4Particle *forParticle)
@@ -408,10 +447,19 @@ float C4ParticleValueProvider::Const(C4Particle *forParticle)
 
 float C4ParticleValueProvider::Random(C4Particle *forParticle)
 {
-	if ((rerollInterval != 0 && ((int)forParticle->GetAge() % rerollInterval == 0)) || alreadyRolled == 0)
+	// We need to roll again if..
+	const bool needToReevaluate =
+		// .. we haven't rolled yet
+		alreadyRolled == 0
+		// .. we are still in the intialization stage (and thus, this value provider could be an intialization term for multiple particles)
+		|| (forParticle->lifetime == forParticle->startingLifetime)
+		// .. or the reroll interval is set and expired.
+		|| (rerollInterval != 0 && ((int)forParticle->GetAge() % rerollInterval == 0));
+
+	if (needToReevaluate)
 	{
 		alreadyRolled = 1;
-		RollRandom();
+		RollRandom(forParticle);
 	}
 	return currentValue;
 }
@@ -465,6 +513,11 @@ float C4ParticleValueProvider::Sin(C4Particle *forParticle)
 	return sin(parameterValue * M_PI / 180.0f) * maxValue + startValue;
 }
 
+float C4ParticleValueProvider::Cos(C4Particle *forParticle)
+{
+	return cos(parameterValue * M_PI / 180.0f) * maxValue + startValue;
+}
+
 float C4ParticleValueProvider::Speed(C4Particle *forParticle)
 {
 	float distX = forParticle->currentSpeedX;
@@ -508,6 +561,9 @@ void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		break;
 	case C4PV_Sin:
 		valueFunction = &C4ParticleValueProvider::Sin;
+		break;
+	case C4PV_Cos:
+		valueFunction = &C4ParticleValueProvider::Cos;
 		break;
 	case C4PV_Speed:
 		valueFunction = &C4ParticleValueProvider::Speed;
@@ -562,8 +618,10 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 			SetType(C4PV_Random);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::startValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::endValue);
-			if (arraySize >= 4)
+			if (arraySize >= 4 && fromArray[3].GetType() != C4V_Type::C4V_Nil)
 				SetParameterValue(VAL_TYPE_INT, fromArray[3], 0, &C4ParticleValueProvider::rerollInterval);
+			if (arraySize >= 5 && fromArray[4].GetType() != C4V_Type::C4V_Nil)
+				SetParameterValue(VAL_TYPE_INT, fromArray[4], 0, &C4ParticleValueProvider::randomSeed);
 			alreadyRolled = 0;
 		}
 		break;
@@ -612,10 +670,11 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 
 		}
 		break;
-	case C4PV_Sin:
+	case C4PV_Sin: // fallthrough
+	case C4PV_Cos:
 		if (arraySize >= 3)
 		{
-			SetType(C4PV_Sin); // Sin(parameterValue) * maxValue + startValue
+			SetType(static_cast<C4ParticleValueProviderID> (type)); // Sin(parameterValue) * maxValue + startValue
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::parameterValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::maxValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4ParticleValueProvider::startValue);
@@ -1373,13 +1432,7 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 	chunk->ReserveSpace(static_cast<uint32_t>(amount));
 
 	while (amount--)
-	{
-		if (x.IsRandom()) x.RollRandom();
-		if (y.IsRandom()) y.RollRandom();
-		if (speedX.IsRandom()) speedX.RollRandom();
-		if (speedY.IsRandom()) speedY.RollRandom();
-		if (lifetime.IsRandom()) lifetime.RollRandom();
-		
+	{	
 		// create a particle in the fitting chunk (note that we tell the particle list, we already locked it)
 		C4Particle *particle = chunk->AddNewParticle();
 
@@ -1389,9 +1442,13 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 		particle->properties.Floatify();
 
 		// setup some more non-property attributes of the particle
-		float lifetime_value = lifetime.GetValue(particle);
-		if (lifetime_value < 0.0f) lifetime_value = 0.0f; // negative values not allowed (would crash later); using a value of 0 is most likely visible to the scripter
-		particle->lifetime = particle->startingLifetime = lifetime_value;
+		// The particle having lifetime == startingLifetime will force all random values to alway-reevaluate.
+		// Thus we need to guarantee that even before setting the lifetime (to allow a PV_Random for the lifetime).
+		particle->lifetime = particle->startingLifetime = 0.0f;
+		const float lifetime_value = lifetime.GetValue(particle);
+		// Negative values are not allowed (would crash later); using a value of 0 is most likely visible to the scripter.
+		if (lifetime_value >= 0.0f)
+			particle->lifetime = particle->startingLifetime = lifetime_value;
 
 		particle->currentSpeedX = speedX.GetValue(particle);
 		particle->currentSpeedY = speedY.GetValue(particle);

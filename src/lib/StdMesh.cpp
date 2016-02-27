@@ -647,6 +647,7 @@ void StdMesh::UpdateIBO()
 		glDeleteBuffers(1, &ibo);
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	pGL->ObjectLabel(GL_BUFFER, ibo, -1, (Label + "/IBO").c_str());
 
 	size_t total_faces = 0;
 	for (auto &submesh : SubMeshes)

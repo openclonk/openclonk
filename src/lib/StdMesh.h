@@ -45,8 +45,8 @@ private:
 	StdMeshBone* Parent; // Parent bone
 	std::vector<StdMeshBone*> Children; // Children. Not owned.
 
-	StdMeshBone(const StdMeshBone&); // non-copyable
-	StdMeshBone& operator=(const StdMeshBone&); // non-assignable
+	StdMeshBone(const StdMeshBone&) = delete;
+	StdMeshBone& operator=(const StdMeshBone&) = delete;
 };
 
 class StdMeshVertexBoneAssignment
@@ -133,8 +133,8 @@ public:
 private:
 	void AddMasterBone(StdMeshBone* bone);
 
-	StdMeshSkeleton(const StdMeshSkeleton& other); // non-copyable
-	StdMeshSkeleton& operator=(const StdMeshSkeleton& other); // non-assignable
+	StdMeshSkeleton(const StdMeshSkeleton& other) = delete;
+	StdMeshSkeleton& operator=(const StdMeshSkeleton& other) = delete;
 
 	std::vector<StdMeshBone*> Bones; // Master Bone Table
 
@@ -220,8 +220,8 @@ private:
 	void UpdateIBO();
 #endif
 
-	StdMesh(const StdMesh& other); // non-copyable
-	StdMesh& operator=(const StdMesh& other); // non-assignable
+	StdMesh(const StdMesh& other) = delete;
+	StdMesh& operator=(const StdMesh& other) = delete;
 
 	std::vector<Vertex> SharedVertices;
 
@@ -298,8 +298,8 @@ protected:
 	// TODO: GLuint texenv_list; // NoSave, texture environment setup could be stored in a display list (w/ and w/o ClrMod). What about PlayerColor?
 
 private:
-	StdSubMeshInstance(const StdSubMeshInstance& other); // noncopyable
-	StdSubMeshInstance& operator=(const StdSubMeshInstance& other); // noncopyable
+	StdSubMeshInstance(const StdSubMeshInstance& other) = delete;
+	StdSubMeshInstance& operator=(const StdSubMeshInstance& other) = delete;
 };
 
 class StdMeshInstance
@@ -659,8 +659,8 @@ protected:
 	unsigned int vaoid;
 #endif
 private:
-	StdMeshInstance(const StdMeshInstance& other); // noncopyable
-	StdMeshInstance& operator=(const StdMeshInstance& other); // noncopyable
+	StdMeshInstance(const StdMeshInstance& other) = delete;
+	StdMeshInstance& operator=(const StdMeshInstance& other) = delete;
 };
 
 inline void CompileNewFuncCtx(StdMeshInstance::SerializableValueProvider *&pStruct, StdCompiler *pComp, const StdMeshInstance::SerializableValueProvider::IDBase& rID)

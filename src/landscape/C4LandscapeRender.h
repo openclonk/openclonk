@@ -123,6 +123,8 @@ private:
 	unsigned int hVAOIDNoLight;
 	unsigned int hVAOIDLight;
 
+	// 1D texture for material map
+	GLuint matMapTexture;
 	// 2D texture array of material textures
 	GLuint hMaterialTexture;
 	// material texture positions in texture array

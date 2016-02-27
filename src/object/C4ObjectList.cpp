@@ -384,7 +384,7 @@ void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPl
 	// Draw objects (base)
 	for (clnk=first; clnk; clnk=clnk->Prev)
 	{
-		if (first->Obj->GetPlane() > MaxPlane)
+		if (clnk->Obj->GetPlane() > MaxPlane)
 			break;
 		if (clnk->Obj->Category & C4D_Foreground)
 			continue;
@@ -393,7 +393,7 @@ void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPl
 	// Draw objects (top face)
 	for (clnk=first; clnk; clnk=clnk->Prev)
 	{
-		if (first->Obj->GetPlane() > MaxPlane)
+		if (clnk->Obj->GetPlane() > MaxPlane)
 			break;
 		if (clnk->Obj->Category & C4D_Foreground)
 			continue;
