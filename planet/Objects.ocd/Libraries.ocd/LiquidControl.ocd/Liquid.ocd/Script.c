@@ -290,6 +290,7 @@ func GetLiquidID(string liquid_name)
 	if (liquid_name == "Lava") return Liquid_Lava;
 	if (liquid_name == "Oil") return Liquid_Oil;
 	if (liquid_name == "Water") return Liquid_Water;
+	if (liquid_name == "Fuel") return Liquid_Fuel;
 	return Library_Liquid;	
 }
 

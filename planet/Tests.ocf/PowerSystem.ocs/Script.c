@@ -961,7 +961,7 @@ global func Test16_Completed()
 		return false;
 	// Completed if the engine still has its fuel after 20 seconds.
 	if (FrameCounter() > 20 * 36 + POWER_SYSTEM_Test16_Start)
-		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 1800 / 2)
+		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 100 / 2)
 			return true;
 	return false;
 }
@@ -1139,7 +1139,9 @@ global func Test21_OnStart(int plr)
 
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 70, 160, plr);
-	engine.fuel_amount = 100; // give some fuel so that the pump can start working
+	var barrel = engine->CreateContents(Barrel, 1);
+	barrel->SetLiquidContainer("Oil", 10);
+	//engine->CreateContents(Coal); // give some fuel so that the pump can start working
 	
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
