@@ -376,7 +376,7 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
-	else if (valueFunction == &C4ParticleValueProvider::Sin)
+	else if (valueFunction == &C4ParticleValueProvider::Sin || valueFunction == &C4ParticleValueProvider::Cos)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::parameterValue, 1.0f);
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
@@ -465,6 +465,11 @@ float C4ParticleValueProvider::Sin(C4Particle *forParticle)
 	return sin(parameterValue * M_PI / 180.0f) * maxValue + startValue;
 }
 
+float C4ParticleValueProvider::Cos(C4Particle *forParticle)
+{
+	return cos(parameterValue * M_PI / 180.0f) * maxValue + startValue;
+}
+
 float C4ParticleValueProvider::Speed(C4Particle *forParticle)
 {
 	float distX = forParticle->currentSpeedX;
@@ -508,6 +513,9 @@ void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		break;
 	case C4PV_Sin:
 		valueFunction = &C4ParticleValueProvider::Sin;
+		break;
+	case C4PV_Cos:
+		valueFunction = &C4ParticleValueProvider::Cos;
 		break;
 	case C4PV_Speed:
 		valueFunction = &C4ParticleValueProvider::Speed;
@@ -612,10 +620,11 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 
 		}
 		break;
-	case C4PV_Sin:
+	case C4PV_Sin: // fallthrough
+	case C4PV_Cos:
 		if (arraySize >= 3)
 		{
-			SetType(C4PV_Sin); // Sin(parameterValue) * maxValue + startValue
+			SetType(static_cast<C4ParticleValueProviderID> (type)); // Sin(parameterValue) * maxValue + startValue
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::parameterValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::maxValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4ParticleValueProvider::startValue);

@@ -28,6 +28,7 @@ enum C4ParticleValueProviderID
 	C4PV_Random,
 	C4PV_KeyFrames,
 	C4PV_Sin,
+	C4PV_Cos,
 	C4PV_Direction,
 	C4PV_Step,
 	C4PV_Speed,
@@ -178,6 +179,7 @@ private:
 	float Random(C4Particle *forParticle);
 	float KeyFrames(C4Particle *forParticle);
 	float Sin(C4Particle *forParticle);
+	float Cos(C4Particle *forParticle);
 	float Direction(C4Particle *forParticle);
 	float Step(C4Particle *forParticle);
 	float Speed(C4Particle *forParticle);
