@@ -152,6 +152,7 @@ func RefillFuel()
 {
 	// Check if there is still enough fuel available.
 	var no_fuel = GetFuelAmount() <= 0;
+	// The reserve is probably not necessary
 	var should_keep_reserve = IsWorking() && GetNeutralPipe() && GetFuelAmount() < GetLiquidContainerMaxFillLevel() / 2;
 	if (no_fuel || should_keep_reserve)
 	{
