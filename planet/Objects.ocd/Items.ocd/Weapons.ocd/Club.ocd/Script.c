@@ -117,7 +117,7 @@ public func FinishedAiming(object clonk, int angle)
 	// aaaand, a cooldown
 	AddEffect("ClubWeaponCooldown", clonk, 1, 5, this);
 	
-	Sound("Objects::Weapons::WeaponSwing?", nil, nil, nil, nil, nil, -50);
+	Sound("Objects::Weapons::WeaponSwing?", {pitch = -50});
 	return true;
 }
 
@@ -235,7 +235,7 @@ func DoStrike(clonk, angle)
 	if (found)
 	{
 		RemoveEffect("DuringClubShoot", clonk);
-		Sound("Hits::Materials::Wood::WoodHit?", nil, nil, nil, nil, nil, -10);
+		Sound("Hits::Materials::Wood::WoodHit?", {pitch = -10});
 	}
 }
 

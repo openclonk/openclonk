@@ -170,7 +170,7 @@ private func CheckTurn()
 
 private func AngryBuzz()
 {
-	Sound("Animals::Zap::Zap?", nil,nil,nil,nil, nil, -Random(100));
+	Sound("Animals::Zap::Zap?", {pitch = -Random(100)});
 }
 
 /*-- Saving --*/

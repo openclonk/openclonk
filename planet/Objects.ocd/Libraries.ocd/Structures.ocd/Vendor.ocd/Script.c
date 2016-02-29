@@ -80,14 +80,14 @@ func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_al
 		{
 			if(show_errors)
 			{
-				Sound("UI::Error", nil, nil, for_player + 1);
+				Sound("UI::Error", {player = for_player + 1});
 				PlayerMessage(for_player, "$MsgNotEnoughWealth$");
 			}
 			break;
 		}
 		// Take the cash
 		DoWealth(wealth_player, -price);
-		Sound("UI::UnCash", nil, nil, for_player + 1); // TODO: get sound
+		Sound("UI::UnCash", {player = for_player + 1}); // TODO: get sound
 		// Decrease the base material, allow runtime overload
 		this->ChangeBuyableAmount(wealth_player, item, -1);
 		// Deliver the object
@@ -113,7 +113,7 @@ func DoSell(object obj, int wealth_player)
 
 	// Give the player the cash
 	DoWealth(wealth_player, this->GetSellValue(obj));
-	Sound("UI::Cash", nil, nil, wealth_player + 1);
+	Sound("UI::Cash", {player = wealth_player + 1});
 
 	// OnSale callback to object e.g. for goal updates
 	obj->~OnSale(wealth_player, this);

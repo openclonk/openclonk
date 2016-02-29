@@ -315,7 +315,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	if (!hammer)
 	{
 		PlayerMessage(cursor->GetOwner(), "$YouNeedAHammer$");
-		Sound("UI::Click2", nil, nil, cursor->GetOwner());
+		Sound("UI::Click2", {player = cursor->GetOwner()});
 		return;
 	}
 	
@@ -340,7 +340,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	if (total_repair_value == 0)
 	{
 		PlayerMessage(cursor->GetOwner(), "$YouNeedMaterials$");
-		Sound("UI::Click2", nil, nil, cursor->GetOwner());
+		Sound("UI::Click2", {player = cursor->GetOwner()});
 		return;
 	}
 	
