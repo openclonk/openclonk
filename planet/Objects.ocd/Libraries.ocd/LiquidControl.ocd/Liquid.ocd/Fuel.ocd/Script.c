@@ -1,7 +1,6 @@
 #include Library_Liquid
 
-func IsLiquid() { return "Fuel"; }
-func IsFuel(){ return GetLiquidAmount();}
+func GetLiquidType() { return "Fuel"; }
 
 func Disperse()
 {

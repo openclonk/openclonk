@@ -1,6 +1,6 @@
 #include Library_Liquid
 
-func IsLiquid() { return "Lava"; }
+func GetLiquidType() { return "Lava"; }
 
 func Disperse()
 {

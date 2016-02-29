@@ -41,7 +41,8 @@
 local count, count_is_infinite;
 
 // Max size of stack
-static const Stackable_Max_Count = 999;
+static const Stackable_Max_Count = 2147483647;
+static const Stackable_Max_Display_Count = 999;
 
 // What GetStackCount should return if the count is set to infinite
 // Set this to a fairly large number and not e.g. -1, so naive
@@ -290,5 +291,5 @@ func GetInteractionMenuAmount()
 	// Infinite stacks work differently - showing an arbitrary amount would not make sense.
 	if (object_amount > 1 && this->IsInfiniteStackCount())
 		object_amount = 1;
-	return object_amount;
+	return Min(object_amount, Stackable_Max_Display_Count);
 }

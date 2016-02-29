@@ -8,58 +8,31 @@
  * Author: Marky
  */
  
+#include Library_Stackable
+ 
 static const FX_LIQUID_Dispersion = "IntLiquidDispersion";
 
-local liquid;
-local volume;
+func IsLiquid() { return true;}
+func MaxStackCount() { return Stackable_Max_Count; }
 
-func IsLiquid() { return liquid; } // Default: undefined liquid
-
-// -------------- Callbacks
+// -------------- Getters
 //
-// Engine callbacks
+// Getters for stored liquid and amount
+// - these should be used primarily by objects that include this library
+//
+// naming scheme: GetLiquid[attribute], because it concerns the liquid
 
-protected func Construction()
+func GetLiquidType()
 {
-	liquid = liquid ?? "undefined";
-	_inherited(...);
+	return "undefined";
 }
 
-func Destruction()
+func GetLiquidAmount()
 {
-	var container = Contained();
-	if (container)
-	{
-		// has an extra slot
-		if (container->~HasExtraSlot())
-			container->~NotifyHUD();
-	}
-	return _inherited(...);
+	return GetStackCount();
 }
 
-protected func RejectEntrance(object into)
-{
-	if (CannotEnter(into)) return true;
-	return _inherited(into, ...);
-}
-
-func CannotEnter(object into)
-{
-	// Enters liquid containers only, will be removed anyway if the liquid object is "empty"
-	if (into->~IsLiquidContainer())
-	{
-		return !(into->TransferLiquidItem(this));
-	}
-
-	return true; // Cannot enter
-}
-
-// Tell the interaction menu as how many objects this object should be displayed
-func GetInteractionMenuAmount()
-{
-	return GetLiquidAmount();
-}
-
+// -------------- Dispersion
 
 func Departure(object container)
 {
@@ -68,6 +41,7 @@ func Departure(object container)
 	{
 		AddEffect(FX_LIQUID_Dispersion, this, 1, 1, this);
 	}
+	_inherited(...);
 }
 
 func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
@@ -79,8 +53,6 @@ func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
 
 	return FX_Execute_Kill;
 }
-
-// -------------- Dispersion
 
 func Disperse(int angle, int strength)
 {
@@ -116,70 +88,9 @@ func DisperseParticles(string particle_name, int amount, int strength, int angle
 	}
 }
 
-// -------------- Manipulation of liquid amount
 
-func SetLiquidType(string liquid_name)
-{
-	liquid = liquid_name;
-}
+// -------------- Status
 
-func GetLiquidAmount() { return volume; }
-
-func SetLiquidAmount(int amount)
-{
-	if (amount < 0)
-	{
-		FatalError(Format("Only positive liquid amounts are allowed, got %d", amount));
-	}
-	
-	volume = amount;
-
-	UpdateLiquidObject();
-}
-
-func DoLiquidAmount(int change)
-{
-	volume += change;
-	UpdateLiquidObject();
-}
-
-// -------------- Status updates
-//
-
-func UpdateLiquidObject()
-{
-	UpdatePicture();
-	UpdateMass();
-	UpdateName();
-
-	// notify hud
-	var container = Contained();
-	
-	if (volume <= 0)
-	{
-		RemoveObject();
-	}
-	
-	if (container)
-	{
-		// has an extra slot
-		if (container->~HasExtraSlot())
-		{
-			container->~NotifyHUD();
-		}
-		// is a clonk with new inventory system
-		else
-		{
-			container->~OnInventoryChange();
-		}
-	}
-}
-
-func UpdatePicture()
-{
-	// Allow other objects to adjust their picture.
-	return _inherited(...);
-}
 
 func UpdateName()
 {
@@ -195,6 +106,7 @@ func UpdateName()
 	}
 }
 
+
 // 1000 liquid items count as 1 mass unit
 // this may have to be tuned or made object-specific?
 func UpdateMass()
@@ -202,12 +114,14 @@ func UpdateMass()
 	SetMass(GetID()->GetMass() * Max(1, GetLiquidAmount()) / 1000);
 }
 
+
 // 1000 liquid items count as 1 wealth unit
 // this may have to be tuned or made object-specific?
 func CalcValue(object in_base, int for_plr)
 {
 	return GetID()->GetValue() * Max(1, GetLiquidAmount()) / 1000;
 }
+
 
 // -------------- Interaction
 //
@@ -227,15 +141,11 @@ func PutLiquid(string liquid_name, int amount, object source)
 	{
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
 	}
-	
-	if (Contained() && Contained()->~IsLiquidContainer())
-	{
-		amount = BoundBy(Contained()->~GetLiquidContainerMaxFillLevel() - GetLiquidAmount(), 0, amount);
-	}
 
-	if (IsLiquid() == liquid_name)
+	if (liquid_name == GetLiquidType())
 	{
-		DoLiquidAmount(amount);
+		amount = BoundBy(MaxStackCount() - GetLiquidAmount(), 0, amount);
+		DoStackCount(+amount);
 		return amount;
 	}
 	else //Wrong material?
@@ -262,57 +172,17 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 	{
 		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
 	}
-	
+
 	// default parameters if nothing is provided: the current material and level
-	liquid_name = liquid_name ?? IsLiquid();
+	liquid_name = liquid_name ?? GetLiquidType();
 	amount = amount ?? GetLiquidAmount();
 
 	//Wrong material?
-	if (!WildcardMatch(IsLiquid(), liquid_name))
-		return [IsLiquid(), 0];
+	if (!WildcardMatch(GetLiquidType(), liquid_name))
+		return [GetLiquidType(), 0];
 
 	amount = Min(amount, GetLiquidAmount());
-	DoLiquidAmount(-amount);
+	DoStackCount(-amount);
 	return [liquid_name, amount];
 }
 
-
-/**
- Converts a liquid name to a definition
- that represents that liquid.
- @par liquid_name the name of the liquid
- @return the Id of the liquid object, 
-         or nil if no such object exists
- */
-func GetLiquidID(string liquid_name)
-{
-	if (liquid_name == "Acid") return Liquid_Acid;
-	if (liquid_name == "Lava") return Liquid_Lava;
-	if (liquid_name == "Oil") return Liquid_Oil;
-	if (liquid_name == "Water") return Liquid_Water;
-	if (liquid_name == "Fuel") return Liquid_Fuel;
-	return Library_Liquid;	
-}
-
-
-/**
- Creates a liquid object with the specified name
- and amount. Liquids with amount 0 can be created
- that way.
- */
-func CreateLiquid(string liquid_name, int amount)
-{
-	var item = CreateObject(GetLiquidID(liquid_name));
-	item->SetLiquidType(liquid_name);
-	item.volume = amount;
-	return item;
-}
-
-/**
- Gets the amount of fuel that a specific type of liquid is worth.
- */
-func GetFuelValue(string liquid, int amount)
-{
-	if (liquid == "Oil") return amount;
-	return 0;
-}
