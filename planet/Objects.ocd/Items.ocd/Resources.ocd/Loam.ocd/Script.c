@@ -245,7 +245,6 @@ public func GetInventoryIconOverlay()
 }
 
 public func IsFoundryProduct() { return true; }
-public func GetLiquidNeed() { return ["Water", 60]; }
 
 local Collectible = 1;
 local Name = "$Name$";

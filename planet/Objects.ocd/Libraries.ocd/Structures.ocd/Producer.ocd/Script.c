@@ -500,9 +500,6 @@ private func Produce(id product)
 	// Check need for fuel.
 	if (!CheckFuel(product))
 		return false;
-	// Check need for liquids.
-	if (!CheckLiquids(product))
-		return false;
 	// Check need for power.
 	if (!CheckForPower())
 		return false;
@@ -512,7 +509,6 @@ private func Produce(id product)
 	// Power will be substracted during the production process.
 	CheckComponents(product, true);
 	CheckFuel(product, true);
-	CheckLiquids(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -569,103 +565,43 @@ public func CheckComponent(id component, int amount)
 	return GetAvailableComponentAmount(component) >= amount;
 }
 
+
 public func CheckFuel(id product, bool remove)
 {
-	if (FuelNeed(product) > 0)
+	var fuel_needed = FuelNeed(product);
+	if (fuel_needed > 0)
 	{
 		var fuel_amount = 0;
 		// Find fuel in this producer.
 		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
-			fuel_amount += fuel->~GetFuelAmount(false);
-		if (fuel_amount < FuelNeed(product))
+			fuel_amount += fuel->~GetFuelAmount();
+		if (fuel_amount < fuel_needed)
+		{
 			return false;
+		}
 		else if (remove)
 		{
-			// Remove the fuel needed.
-			fuel_amount = 0;
-			var fuel_needed = FuelNeed(product);
+			// Convert existing objects.
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
-				var fuel_extracted = 0;
-				var max_extracted = fuel_needed - fuel_amount;
-				if (fuel->~IsLiquidContainer())
-				{
-					// Extract the fuel amount from stored liquids
-					var fuel_stored = fuel->RemoveLiquid(nil, max_extracted);
-					fuel_extracted = Library_Liquid->GetFuelValue(fuel_stored[0], fuel_stored[1]);
-				}
-				else
-				{
-					fuel_extracted = Min(max_extracted, fuel->~GetFuelAmount(true));
-					if (fuel_extracted > 0)
-					{
-						if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
-					}
-				}
-				fuel_amount += fuel_extracted;
+				// Extract the fuel amount from stored objects
+				var fuel_extracted = fuel->~GetFuelAmount(true, fuel_needed);
 				
-				if (fuel_amount >= fuel_needed)
+				if (fuel_extracted > 0)
+				{
+					if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
+					fuel_needed -= fuel_extracted;
+				}
+				
+				// Converted enough? Stop here.
+				if (fuel_needed <= 0)
 					break;
-			}			
+			}
 		}
 	}
 	return true;
 }
 
-public func CheckLiquids(id product, bool remove)
-{
-	var liq_need = LiquidNeed(product);
-	if (liq_need)
-	{
-		var liquid_amount = 0;
-		var liquid = liq_need[0];
-		var need = liq_need[1];
-		// Find liquid containers in this producer.
-		for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
-			if (liq_container->~GetLiquidType() == liquid)
-				liquid_amount += liq_container->~GetLiquidFillLevel();
-		// Find objects that "are" liquid (e.g. ice)
-		for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
-			if (liq_object->~IsLiquid() == liquid)
-				liquid_amount += liq_object->~GetLiquidAmount();
-		if (liquid_amount < need)
-			return false;
-		else if (remove)
-		{
-			// Remove the liquid needed.
-			var extracted = 0;
-			var liq_containers = FindObjects(Find_Container(this), Find_Func("IsLiquidContainer"));
-			if (this->~IsLiquidContainer()) PushBack(liq_containers, this);
-			for (var liq_container in liq_containers)
-			{
-				var val = liq_container->RemoveLiquid(liquid, need - extracted, this);
-				extracted += val[1];
-				if (extracted >= need)
-					return true;
-			}
-			for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
-			{
-				if (liq_object->~IsLiquid() != liquid) continue;
-				
-				var val = liq_object->~RemoveLiquid(liquid, need - extracted, this);
-				
-				if (val)
-				{
-					extracted += val[1];
-				}
-				else
-				{
-					extracted += liq_object->~GetLiquidAmount();
-					liq_object->RemoveObject();
-				}
-
-				if (extracted >= need)
-					break;
-			}
-		}		
-	}
-	return true;
-}
 
 private func CheckForPower()
 {
