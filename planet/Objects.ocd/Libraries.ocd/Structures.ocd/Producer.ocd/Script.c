@@ -583,7 +583,7 @@ public func CheckFuel(id product, bool remove)
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
 				// Extract the fuel amount from stored objects
-				var fuel_extracted = fuel->~GetFuelAmount(true, fuel_needed);
+				var fuel_extracted = fuel->~GetFuelAmount(fuel_needed);
 				
 				if (fuel_extracted > 0)
 				{

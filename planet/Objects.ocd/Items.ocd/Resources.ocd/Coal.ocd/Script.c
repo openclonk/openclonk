@@ -14,10 +14,9 @@ protected func Hit(x, y)
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial) 
+public func GetFuelAmount() 
 { 
-	if (get_partial)
-		return GetCon();
+	if (this != Coal) return GetCon();
 	return 100;
 }
 

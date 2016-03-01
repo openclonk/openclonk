@@ -18,10 +18,9 @@ private func Hit()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial)
+public func GetFuelAmount()
 { 
-	if (get_partial)
-		return GetCon()/2;
+	if (this != CottonSeed)	return GetCon()/2;
 	return 50;
 }
 

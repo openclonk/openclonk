@@ -16,7 +16,7 @@ public func Incineration()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial) { return 30; }
+public func GetFuelAmount() { return 30; }
 
 // Main bridge object is saved.
 func SaveScenarioObject() { return false; }

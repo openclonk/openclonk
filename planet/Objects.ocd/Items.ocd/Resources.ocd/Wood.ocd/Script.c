@@ -12,10 +12,9 @@ func Incineration()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial) 
+public func GetFuelAmount() 
 { 
-	if (get_partial)
-		return GetCon() / 2;
+	if (this != Wood) return GetCon() / 2;
 	return 50;
 }
 public func IsSawmillProduct() { return true; }
