@@ -179,8 +179,6 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
 	if (this->~FuelNeed(product_id))
 		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
-	if (liquid = this->~LiquidNeed(product_id))
-		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], CheckLiquids(product_id)), liquid[0]);
 	if (this->~PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 	new_box.requirements.Text = cost_msg;
