@@ -17,13 +17,13 @@ local DefaultFlagRadius = 200;
 
 static const SteamEngine_produced_power = 120;
 
-local burning_counter;
+local fuel_amount;
 
 protected func Initialize()
 {
+	fuel_amount = 0;
 	SetAction("Idle");
 	AddTimer("ContentsCheck", 10);
-	AddTimer("BurnFuel", 1);
 	return _inherited(...);
 }
 
@@ -32,7 +32,7 @@ public func IsContainer() { return true; }
 
 protected func RejectCollect(id item, object obj)
 {
-	if (obj->~IsFuel() || obj->~IsLiquid() == "Fuel")
+	if (obj->~IsFuel() || obj->~GetLiquidType() == "Oil")
 		return false;
 	return true;
 }
@@ -62,23 +62,10 @@ public func ContentsCheck()
 	return;
 }
 
-public func BurnFuel()
-{
-	if (IsWorking()) 
-	{
-		++burning_counter;
-		if (burning_counter >= 18) // Can burn up to 18 frames from one fuel unit.
-		{
-			burning_counter = 0;
-			DoFuelAmount(-1); // Reduce the fuel amount by 1.
-			RefillFuel(); // Check if there is still enough fuel available.
-		}
-	}
-}
 
 public func GetFuelAmount()
 {
-	return GetLiquidFillLevel();
+	return fuel_amount;
 }
 
 
@@ -123,6 +110,9 @@ protected func IsWorking(){ return GetAction() == "Work";}
 // Phase call from working action, every two frames.
 protected func Working()
 {
+	DoFuelAmount(-2); // Reduce the fuel amount by 1 per frame
+	RefillFuel(); // Check if there is still enough fuel available.
+
 	if (!GetFuelAmount())
 	{
 		// Set action to idle and unregister this producer as available from the network.
@@ -153,27 +143,17 @@ func RefillFuel()
 	// Check if there is still enough fuel available.
 	var no_fuel = GetFuelAmount() <= 0;
 	// The reserve is probably not necessary
-	var should_keep_reserve = IsWorking() && GetNeutralPipe() && GetFuelAmount() < GetLiquidContainerMaxFillLevel() / 2;
+	var should_keep_reserve = IsWorking() && GetNeutralPipe() && GetFuelAmount() < 100;
 	if (no_fuel || should_keep_reserve)
 	{
-		var max_extracted = GetLiquidFillLevelRemaining();
 		var fuel_extracted;
 	
 		// Search for new fuel among the contents.
 		var fuel = GetFuelContents();
 		if (fuel)
 		{
-			if (fuel->~IsLiquidContainer())
-			{
-				// Extract the fuel amount from stored liquids
-				var fuel_stored = fuel->RemoveLiquid(nil, max_extracted);
-				fuel_extracted = Library_Liquid->GetFuelValue(fuel_stored[0], fuel_stored[1]);
-			}
-			else
-			{
-				fuel_extracted = Min(max_extracted, fuel->~GetFuelAmount(true));
-				if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
-			}
+			fuel_extracted = fuel->~GetFuelAmount(true);
+			if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
 	
 			DoFuelAmount(fuel_extracted);
 		}
@@ -182,16 +162,12 @@ func RefillFuel()
 
 func GetFuelContents()
 {
-	return FindObject(Find_Container(this), Find_Func("IsFuel"), Find_Exclude(GetLiquidItem()));
+	return FindObject(Find_Container(this), Find_Func("IsFuel"));
 }
 
 func DoFuelAmount(int amount)
 {
-	if (!GetLiquidItem())
-	{
-		SetLiquidType("Fuel");
-	}
-	ChangeLiquidFillLevel(amount);
+	fuel_amount += amount;
 }
 
 func Smoking()
@@ -202,23 +178,10 @@ func Smoking()
 	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 10);
 }
 
-func PutLiquid(string liquid_name, int amount, object source)
-{
-	// Convert to fuel on insertion
-	var fuel_value = Library_Liquid->GetFuelValue(liquid_name, amount);
-	if (_inherited("Fuel", fuel_value, source) != 0)
-	{
-		return amount; // return the requested amount, so that the correct value is deducted from the source
-	}
-	else
-	{
-		return 0;
-	}
-}
 
 func IsLiquidContainerForMaterial(string liquid)
 {
-	return WildcardMatch("Fuel", liquid);
+	return WildcardMatch("Oil", liquid);
 }
 
 func GetLiquidContainerMaxFillLevel()
