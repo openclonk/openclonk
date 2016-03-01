@@ -248,7 +248,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		}
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
-		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next)
+		for (C4ScriptHost* script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			SendLine(RelativePath(script->ScriptName));
 		}
@@ -266,14 +266,14 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		int line = atoi(&scriptPath[colonPos+1]);
 		scriptPath.erase(colonPos);
 
-		C4AulScript *script;
+		C4ScriptHost *script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.c_str()))
 				break;
 		}
 
-		auto sh = script ? script->GetScriptHost() : NULL;
+		auto sh = script;
 		if (sh)
 		{
 			C4AulBCC * found = NULL;
@@ -333,7 +333,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 			}
 			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != -1)
 			{
-				val = &pCtx->Vars[varIndex];
+				val = &pCtx->Pars[pCtx->Func->GetParCount() + varIndex];
 			}
 		}
 		const char* typeName = val ? GetC4VName(val->GetType()) : "any";

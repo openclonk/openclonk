@@ -221,6 +221,8 @@ public:
 		pFunc(pFunc), ParType {C4ValueConv<ParTypes>::Type()...}, Public(Public)
 	{
 		Parent->SetPropertyByS(Name, C4VFunction(this));
+		for(int i = GetParCount(); i < C4AUL_MAX_Par; ++i)
+			ParType[i] = C4V_Any;
 	}
 
 	virtual int GetParCount() const
@@ -250,7 +252,7 @@ public:
 	}
 protected:
 	Func pFunc;
-	C4V_Type ParType[10];// type of the parameters
+	C4V_Type ParType[C4AUL_MAX_Par];// type of the parameters
 	bool Public;
 };
 

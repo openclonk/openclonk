@@ -123,3 +123,9 @@ TEST_F(AulTest, Eval)
 	EXPECT_EQ(C4VInt(42), RunCode("local i = 42; func Main() { return eval(\"this.i\"); }", false));
 	EXPECT_EQ(C4VInt(42), RunCode("local i; func Main() { eval(\"this.i = 42\"); return i; }", false));
 }
+
+TEST_F(AulTest, Vars)
+{
+	EXPECT_EQ(C4VInt(42), RunCode("var i = 21; i = i + i; return i;"));
+	EXPECT_EQ(C4VInt(42), RunCode("var i = -42; i = Abs(i); return i;"));
+}

@@ -28,7 +28,6 @@ class C4AulDefFunc;
 class C4AulExec;
 class C4AulFunc;
 struct C4AulParSet;
-class C4AulScript;
 struct C4AulScriptContext;
 class C4AulScriptEngine;
 class C4AulScriptFunc;

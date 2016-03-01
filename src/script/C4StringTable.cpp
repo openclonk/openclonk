@@ -303,7 +303,7 @@ C4String *C4StringTable::RegString(StdStrBuf String)
 		return new C4String(String);
 }
 
-C4String *C4StringTable::FindString(const char *strString)
+C4String *C4StringTable::FindString(const char *strString) const
 {
 	return Set.Get(strString);
 }

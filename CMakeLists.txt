@@ -467,20 +467,14 @@ set(OC_CLONK_SOURCES
 	src/game/C4FullScreen.h
 	src/game/C4Game.cpp
 	src/game/C4Game.h
+	src/game/C4GameScript.cpp
+	src/game/C4GameScript.h
 	src/game/C4GameVersion.h
 	src/game/C4GraphicsSystem.cpp
 	src/game/C4GraphicsSystem.h
 	src/game/C4Physics.h
 	src/game/C4Viewport.cpp
 	src/game/C4Viewport.h
-	src/gamescript/C4Effect.cpp
-	src/gamescript/C4Effect.h
-	src/gamescript/C4FindObject.cpp
-	src/gamescript/C4FindObject.h
-	src/gamescript/C4GameScript.cpp
-	src/gamescript/C4GameScript.h
-	src/gamescript/C4TransferZone.cpp
-	src/gamescript/C4TransferZone.h
 	src/graphics/Bitmap256.cpp
 	src/graphics/Bitmap256.h
 	src/graphics/C4Draw.cpp
@@ -627,6 +621,8 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4Texture.h
 	src/landscape/C4TextureShape.cpp
 	src/landscape/C4TextureShape.h
+	src/landscape/C4TransferZone.cpp
+	src/landscape/C4TransferZone.h
 	src/landscape/C4Weather.cpp
 	src/landscape/C4Weather.h
 	src/lib/C4LogBuf.cpp
@@ -697,6 +693,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4Def.h
 	src/object/C4DefList.cpp
 	src/object/C4DefList.h
+	src/object/C4FindObject.cpp
+	src/object/C4FindObject.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
 	src/object/C4Id.cpp
@@ -1057,6 +1055,8 @@ src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
 src/script/C4AulScriptFunc.cpp
 src/script/C4AulScriptFunc.h
+src/script/C4Effect.cpp
+src/script/C4Effect.h
 src/script/C4PropList.cpp
 src/script/C4PropList.h
 src/script/C4Script.cpp
