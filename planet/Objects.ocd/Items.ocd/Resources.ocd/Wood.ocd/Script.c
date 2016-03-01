@@ -12,8 +12,9 @@ func Incineration()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount() 
+public func GetFuelAmount(int requested_amount) 
 { 
+    // disregard the parameter, because only a complete chunk should be removed 
 	if (this != Wood) return GetCon() / 2;
 	return 50;
 }

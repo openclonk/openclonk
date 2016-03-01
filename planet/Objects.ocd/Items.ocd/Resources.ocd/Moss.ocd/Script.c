@@ -130,7 +130,7 @@ private func FindNearWater()
 /*-- Status --*/
 
 public func IsFuel() { return !wetness; }
-public func GetFuelAmount() { return 100; }
+public func GetFuelAmount(int requested_amount) { return 100; }    // disregard the parameter, because only a complete chunk should be removed 
 
 local Collectible = 1;
 local Name = "$Name$";

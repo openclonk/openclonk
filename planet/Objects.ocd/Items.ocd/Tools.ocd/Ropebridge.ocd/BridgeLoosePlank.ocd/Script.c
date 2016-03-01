@@ -16,7 +16,7 @@ public func Incineration()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount() { return 30; }
+public func GetFuelAmount(int requested_amount) { return 30; }     // disregard the parameter, because only a complete chunk should be removed 
 
 // Main bridge object is saved.
 func SaveScenarioObject() { return false; }
