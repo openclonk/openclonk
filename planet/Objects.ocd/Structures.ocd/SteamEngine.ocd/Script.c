@@ -155,7 +155,7 @@ func RefillFuel()
 			fuel_extracted = fuel->~GetFuelAmount(true);
 			if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
 	
-			DoFuelAmount(fuel_extracted);
+			DoFuelAmount(fuel_extracted * 18);
 		}
 	}
 }
