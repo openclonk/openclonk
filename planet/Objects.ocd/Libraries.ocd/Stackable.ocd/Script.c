@@ -245,7 +245,6 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 	// then check this object
 	for (var content in contents)
 	{
-		var howmany = 0;
 		if (!content)
 			continue;
 		TryAddToStack(content);

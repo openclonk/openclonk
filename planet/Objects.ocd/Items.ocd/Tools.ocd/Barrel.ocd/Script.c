@@ -7,6 +7,7 @@
 
 #include Library_CarryHeavy
 #include Library_LiquidContainer
+#include Library_HasExtraSlot
 
 public func GetCarryTransform(clonk)
 {
@@ -25,13 +26,25 @@ protected func Initialize()
 	AddTimer("Check", 5);
 }
 
+func RejectCollect(id def, object item)
+{
+	if (item && item->~IsLiquid() && this->~IsLiquidContainerForMaterial(item->~GetLiquidType()))
+	{
+		return false; // Collect it!
+	}
+	else
+	{
+		return true; // Reject it!
+	}
+}
+
 private func Hit()
 {
 	this->PlayBarrelHitSound();
-	if (!LiquidContainerIsEmpty())
+	if (Contents())
 	{
 		if (GBackLiquid(0, this.BarrelIntakeY)
-		 && GetMaterial(0, this.BarrelIntakeY) != GetLiquidType())
+		 && GetMaterial(0, this.BarrelIntakeY) != Contents()->GetLiquidType())
 			return;
 
 		EmptyBarrel(GetR());
@@ -59,9 +72,9 @@ private func FillWithLiquid()
 
 	var mat = GetMaterial(0, intake);
 	var mat_name = MaterialName(mat);
-	if (!LiquidContainerAccepts(mat_name)) return;
+	if (!IsLiquidContainerForMaterial(mat_name)) return;
 
-	var remaining_volume = GetLiquidContainerMaxFillLevel() - GetLiquidFillLevel();
+	var remaining_volume = GetLiquidContainerMaxFillLevel() - GetLiquidAmount();
 	var extracted = 0;
 	while(extracted < remaining_volume && GetMaterial(0, intake) == mat)
 	{
@@ -79,35 +92,29 @@ private func FillWithLiquid()
 
 private func EmptyBarrel(int angle, int strength, object clonk)
 {
-	var material = GetLiquidType();
-	var volume = GetLiquidFillLevel();
-
-	if (GetLiquidItem())
+	if (Contents())
 	{
-		GetLiquidItem()->Disperse(angle, strength);
-	}
+		var material = Contents()->~GetLiquidType();
+		var volume = Contents()->~GetLiquidAmount();
+	
+		Contents()->~Disperse(angle, strength);
 
-	var spray = {};
-	spray.Liquid = material;
-	spray.Volume = volume;
-	spray.Strength = strength;
-	spray.Angle = angle;
-	spray.Clonk = clonk;
-	AddEffect("ExtinguishingSpray", clonk, 100, 1, this, nil, spray);
+		var spray = {};
+		spray.Liquid = material;
+		spray.Volume = volume;
+		spray.Strength = strength;
+		spray.Angle = angle;
+		spray.Clonk = clonk;
+		AddEffect("ExtinguishingSpray", clonk, 100, 1, this, nil, spray);
+	}
 }
 
 private func UpdateLiquidContainer()
 {
-	if (LiquidContainerIsEmpty())
-	{
-		SetColor(RGB(0, 0, 0));
-		//Value. Base value is 10.
-		SetProperty("Value", 10); // TODO: this is a bug! The value is shared by barrel (value:12) and metal barrel (value:16)!
-	}
-	else
+	if (Contents())
 	{
 		var color;
-		var material = Material(GetLiquidType());
+		var material = Material(Contents()->GetLiquidType());
 		if (material >= 0)
 		{
 			var tex = GetMaterialVal("TextureOverlay", "Material", material);
@@ -119,14 +126,21 @@ private func UpdateLiquidContainer()
 		}
 		SetColor(color);
 	}
-	this.Name = GetNameForBarrel(GetLiquidType());
+	else
+	{
+		SetColor(RGB(0, 0, 0));
+		//Value. Base value is 10.
+		SetProperty("Value", 10); // TODO: this is a bug! The value is shared by barrel (value:12) and metal barrel (value:16)!
+	}
+
+	this.Name = GetNameForBarrel();
 	return;
 }
 
 public func ControlUse(object clonk, int iX, int iY)
 {
 	var AimAngle = Angle(0, 0, iX, iY);
-	if (!LiquidContainerIsEmpty())
+	if (Contents())
 	{
 		EmptyBarrel(AimAngle, 50, clonk);
 		if (iX > 1)
@@ -134,7 +148,7 @@ public func ControlUse(object clonk, int iX, int iY)
 		if (iX < -1)
 			Contained()->SetDir(0);
 	}
-	return 1;
+	return true;
 }
 
 protected func FxExtinguishingSprayStart(object target, proplist effect, int temp, proplist spray)
@@ -184,53 +198,35 @@ public func IsBarrel()
 	return true;
 }
 
-public func IsLiquidContainerForMaterial(string sznMaterial)
+public func IsLiquidContainerForMaterial(string liquid_name)
 {
-	return WildcardMatch("Water", sznMaterial) || WildcardMatch("Oil", sznMaterial);
+	return WildcardMatch("Water", liquid_name) || WildcardMatch("Oil", liquid_name);
 }
 
 public func CanBeStackedWith(object other)
 {
 	// Does not take into account the fill level for now.
-	return inherited(other, ...) && (other->~GetLiquidType() == this->GetLiquidType());
+	var liquid = other->Contents();
+	var both_filled = Contents() && liquid;
+	var both_empty = !Contents() && !liquid;
+
+	if (both_filled) both_filled = liquid->~GetLiquidType() == Contents()->~GetLiquidType();
+	
+	return inherited(other, ...) && (both_empty || both_filled);
 }
 
-public func CalcValue(object in_base, int for_player)
+
+func GetNameForBarrel()
 {
-	var val = GetDefValue();
-	if (!LiquidContainerIsEmpty())
+	if (Contents())
 	{
-		val += GetValueOf(GetLiquidType()) * GetLiquidFillLevel() / GetLiquidContainerMaxFillLevel();
+		var name = Format("%s $NameWith$ %s", this.Prototype.Name, Contents()->GetName());
+		return name;
 	}
-	return val;
-}
-
-private func GetValueOf(string szMaterial) // 300 px of...
-{
-	// just some provisional values, feel free to change them
-	// for gameplay reasons
-	if (szMaterial == "Water") return -6;
-	if (szMaterial == "Lava") return -10;
-	if (szMaterial == "DuroLava") return -10;
-	if (szMaterial == "Acid") return -8;
-	if (szMaterial == "Firefluid") return 10;
-	return 0;
-}
-
-
-// When is this considered as fuel for the steam engine?
-func IsFuel()
-{
-	return WildcardMatch("Oil", GetLiquidType());
-}
-
-func GetNameForBarrel(string liquid)
-{
-	if (liquid == nil) return this.Prototype.Name;
-
-	var liquid_name = LiquidNames[liquid] ?? "$MaterialUnknown$";
-	var name = Format("%s $NameWith$ %s", this.Prototype.Name, liquid_name);
-	return name;
+	else
+	{
+		return this.Prototype.Name;
+	}
 }
 
 local LiquidNames = {

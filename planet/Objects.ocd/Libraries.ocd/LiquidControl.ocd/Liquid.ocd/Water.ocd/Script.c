@@ -4,7 +4,7 @@ func GetLiquidType() { return "Water"; }
 
 func Disperse()
 {
-	DisperseMaterial(IsLiquid(), GetLiquidAmount());
+	DisperseMaterial(GetLiquidType(), GetLiquidAmount());
 	_inherited(...);
 }
 

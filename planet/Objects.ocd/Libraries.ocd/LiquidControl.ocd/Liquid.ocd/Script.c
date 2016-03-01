@@ -13,7 +13,24 @@
 static const FX_LIQUID_Dispersion = "IntLiquidDispersion";
 
 func IsLiquid() { return true;}
-func MaxStackCount() { return Stackable_Max_Count; }
+func MaxStackCount()
+{
+	if (this)
+	{
+		var container = Contained();
+		var limit = GetContainerLimit(container);
+		if (limit) return limit;
+	}
+	
+	return Stackable_Max_Count;
+}
+
+protected func Construction()
+{
+	_inherited(...);
+	SetStackCount(1); // this should be a single object, not the whole stack
+}
+
 
 // -------------- Getters
 //
@@ -186,3 +203,67 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 	return [liquid_name, amount];
 }
 
+
+/**
+ Converts a liquid name to a definition
+ that represents that liquid.
+ @par liquid_name the name of the liquid
+ @return the Id of the liquid object, 
+         or nil if no such object exists
+ */
+func GetLiquidID(string liquid_name)
+{
+	if (liquid_name == "Acid") return Liquid_Acid;
+	if (liquid_name == "Lava") return Liquid_Lava;
+	if (liquid_name == "Oil") return Liquid_Oil;
+	if (liquid_name == "Water") return Liquid_Water;
+	return Library_Liquid;	
+}
+
+
+/**
+ Creates a liquid object with the specified name
+ and amount. Liquids with amount 0 can be created
+ that way.
+ */
+func CreateLiquid(string liquid_name, int amount)
+{
+	var item = CreateObject(GetLiquidID(liquid_name));
+	item->SetStackCount(amount);
+	return item;
+}
+
+public func CanBeStackedWith(object other)
+{
+	var is_same_liquid = other->~GetLiquidType() == this->~GetLiquidType();
+	
+	return _inherited(other, ...) && is_same_liquid;
+}
+
+public func TryPutInto(object into, bool only_add_to_existing_stacks)
+{
+	if (!_inherited(into, only_add_to_existing_stacks, ...))
+	{
+		var container_limit = GetContainerLimit(into);
+		
+		if (container_limit && GetStackCount() > container_limit)
+		{
+			var sample = TakeObject();
+			sample->Enter(into);
+			if (sample)
+			{
+				return _inherited(into, only_add_to_existing_stacks, ...);
+			}
+		}
+	}
+	return false;
+}
+
+func GetContainerLimit(object container)
+{
+	if (container && container->~IsLiquidContainer())
+	{
+		return container->~GetLiquidContainerMaxFillLevel();
+	}
+	return 0;
+}
