@@ -28,6 +28,12 @@ protected func Initialize()
 
 func RejectCollect(id def, object item)
 {
+	Log("***** Barrel: Called reject collect");
+	if (Contents() && def != Contents()->GetID())
+	{
+		Log("***** Barrel: Reject collection because contents");
+		return true;
+	}
 	if (item && item->~IsLiquid() && this->~IsLiquidContainerForMaterial(item->~GetLiquidType()))
 	{
 		return false; // Collect it!

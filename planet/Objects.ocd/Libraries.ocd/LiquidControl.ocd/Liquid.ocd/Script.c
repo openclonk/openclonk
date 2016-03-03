@@ -19,7 +19,11 @@ func MaxStackCount()
 	{
 		var container = Contained();
 		var limit = GetContainerLimit(container);
-		if (limit) return limit;
+		if (limit)
+		{
+			var other = container->~GetLiquidAmount() - GetStackCount();
+			return limit - other;
+		}
 	}
 	
 	return Stackable_Max_Count;
@@ -240,24 +244,53 @@ public func CanBeStackedWith(object other)
 	return _inherited(other, ...) && is_same_liquid;
 }
 
+
 public func TryPutInto(object into, bool only_add_to_existing_stacks)
 {
 	if (!_inherited(into, only_add_to_existing_stacks, ...))
 	{
 		var container_limit = GetContainerLimit(into);
 		
-		if (container_limit && GetStackCount() > container_limit)
+		if (container_limit)
 		{
-			var sample = TakeObject();
-			sample->Enter(into);
-			if (sample)
+			if (into->~RejectCollect(GetID(), this))
 			{
-				return _inherited(into, only_add_to_existing_stacks, ...);
+				return true;
+			}
+		
+			if (GetStackCount() > container_limit)
+			{
+				Log("***** Retry entrance with container limit");
+				var sample = TakeObject();
+				sample->Enter(into);
+				if (sample)
+				{
+					if (sample->Contained())
+					{
+						_inherited(into, true, ...); // no return value, so that we cannot enter the object as a second object
+					}
+					else
+					{
+						Stack(sample);
+					}
+				}
+				return true; // prevent entering the object			
+			}
+
+			if (GetStackCount() > container_limit - into->~GetLiquidAmount())
+			{
+				Log ("***** Default container limit shit");
+				return true;
 			}
 		}
+		return false;
 	}
-	return false;
+	else
+	{
+		return true; // the inherited call returned true
+	}
 }
+
 
 func GetContainerLimit(object container)
 {

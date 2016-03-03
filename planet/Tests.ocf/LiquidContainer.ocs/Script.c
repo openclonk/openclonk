@@ -157,7 +157,9 @@ global func Test2_Execute()
 	var container = CreateObject(Barrel);
 	var liquid = CreateObject(Liquid_Water);
 	
-	// can fill empty barrel with the liquid
+    // -----
+
+	Log("Can fill empty barrel with the liquid");
 	liquid->SetStackCount(100);
 	liquid->Enter(container);
 	
@@ -168,8 +170,13 @@ global func Test2_Execute()
 	returned = container->GetLiquidAmount("Water");
 	test = (100 == returned); passed &= test;
 	Log("- Barrel contains %d units, expected %d: %v", returned, 100, test);
+	returned = container->Contents()->MaxStackCount();
+	test = (300 == returned); passed &= test;
+	Log("- The liquid returns a max stack count of %d, expected %d: %v", returned, 300, test);
 	
-	// can fill barrel with more liquid, liquid object gets removed
+    // -----
+
+	Log("Can fill barrel with more liquid, liquid object gets removed");
 	liquid = CreateObject(Liquid_Water);
 	liquid->SetStackCount(100);
 	liquid->Enter(container);
@@ -180,7 +187,9 @@ global func Test2_Execute()
 	test = (200 == returned); passed &= test;
 	Log("- Barrel contains %d units, expected %d: %v", returned, 200, test);
 
-	// cannot fill in more than the allowed amount
+    // -----
+
+	Log("Cannot fill in more than the allowed amount");
 	liquid = CreateObject(Liquid_Water);
 	liquid->SetStackCount(200);
 	liquid->Enter(container);
@@ -188,6 +197,9 @@ global func Test2_Execute()
 	returned = liquid->Contained();
 	test = (returned == nil); passed &= test;
 	Log("- Liquid cannot enter filled barrel if the capacity is exceeded: %v", test);
+	returned = container->ContentsCount();
+	test = (1 == returned); passed &= test;
+	Log("- Barrel contains %d items, expected %d: %v", returned, 1, test);
 	returned = container->GetLiquidAmount();
 	test = (300 == returned); passed &= test;
 	Log("- Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d: %v", returned, 300, test);
@@ -199,7 +211,9 @@ global func Test2_Execute()
 	liquid->RemoveObject();
 	container->Contents()->RemoveObject();
 
-	// cannot fill in empty barrel and empty liquid object partially
+    // -----
+
+	Log("Cannot fill in empty barrel and empty liquid object partially");
 	liquid = CreateObject(Liquid_Water);
 	liquid->SetStackCount(500);
 	liquid->Enter(container);
@@ -218,7 +232,9 @@ global func Test2_Execute()
 	liquid->RemoveObject();
 	container->Contents()->SetStackCount(200);
 
-	// cannot fill in a different liquid
+    // -----
+
+	Log("Cannot fill in a different liquid");
 	liquid = CreateObject(Liquid_Oil);
 	liquid->SetStackCount(50);
 	liquid->Enter(container);
@@ -232,7 +248,9 @@ global func Test2_Execute()
 
 	liquid->RemoveObject();
 	
-	// barrel gets emptied when liquid exits it
+    // -----
+
+	Log("Barrel gets emptied when liquid exits it");
 	liquid = container->Contents();
 	liquid->Exit();
 	
@@ -261,14 +279,18 @@ global func Test3_Execute()
 	var container = CreateObject(Barrel);
 	var passed = true;
 	
-	// incompatible material
+    // -----
+
+	Log("Incompatible material");
 	var test = (container->PutLiquid("Lava", 1, nil) == 0);
 	passed &= test;
 	Log("- Container returns '0' when inserting 1 pixel of incompatible material: %v", test);
 	test = container->Contents() == nil; passed &= test;
 	Log("- Container returns 'nil' for contents: %v, %v", test, container->Contents());
 
-	// compatible material
+    // -----
+
+	Log("Compatible material");
 	test = (container->PutLiquid("Water", 1, nil) == 1);
 	Log("- Container returns '1' when inserting 1 pixel of compatible material: %v", test);
 	test = container->FindContents(Liquid_Water) != nil; passed &= test;
@@ -279,11 +301,15 @@ global func Test3_Execute()
 		Log("- Container returns the fill level 1 when inserting 1 pixel of compatible material: %d, %v", container->FindContents(Liquid_Water)->GetLiquidAmount(), test);
 	}
 	
-	test = (container->PutLiquid("Water", container->GetLiquidContainerMaxFillLevel(), nil)  == (container->GetLiquidContainerMaxFillLevel() - 1));
+	var returned = container->PutLiquid("Water", container->GetLiquidContainerMaxFillLevel(), nil);
+	var expected = (container->GetLiquidContainerMaxFillLevel() - 1);
+	test = (returned == expected);
 	passed &= test;
-	Log("- Container returns 'the actually inserted material' when inserting more than the volume: %v", test);
-	test = container->GetLiquidAmount("Water") == container->GetLiquidContainerMaxFillLevel(); passed &= test;
-	Log("- Container returns the fill level when inserting more than the volume: %v", test);
+	Log("- Container returns 'the actually inserted amount of material' %d when inserting more than the volume, returned %d: %v", expected, returned, test);
+	returned = container->GetLiquidAmount("Water");
+	expected = container->GetLiquidContainerMaxFillLevel();
+	test = (returned == expected); passed &= test;
+	Log("- Container returns the fill level %d, expected %d, when inserting more than the volume: %v", returned, expected, test);
 
 	container->RemoveObject();
 	return passed;
@@ -298,66 +324,89 @@ global func Test4_Execute()
 	var container = CreateObject(Barrel);
 	var passed = true;
 	
-	container->CreateContents(Liquid_Water, 100);
+	container->PutLiquid("Water", 100);
 
-	// incompatible material
+    // -----
+
+	Log("Incompatible material");
 	var returned = container->RemoveLiquid("Lava", 0, nil);
-	var test = (returned[0] == "Water");
+	var expected = ["Lava", 0];
+	var test = (returned[0] == expected[0]);
 	passed &= test;
-	Log("- Container returns the contained material when removing incompatible material: %v", test);
-	test = (returned[1] == 0); passed &= test;
-	Log("- Container returns no amount when removing incompatible material: %v", test);
-	test = (container->GetLiquidAmount() == 100);
-	Log("- Container contents do not change when removing incompatible material: %v", test);
+	Log("- Container returns the requested material (was %s, expected %s) when removing incompatible material: %v", returned[0], expected[0], test);
+	test = (returned[1] == expected[1]); passed &= test;
+	Log("- Container returns no amount when removing incompatible material (was %d, expected %d) : %v", returned[1], expected[1], test);
+	returned = container->GetLiquidAmount();
+	expected = 100;
+	test = (returned == expected); passed &= test;
+	Log("- Container contents do not change when removing incompatible material (was %d, expected %d): %v", returned, expected, test);
 
-	// compatible material
+    // -----
+
+	Log("Compatible material");
 	returned = container->RemoveLiquid("Water", 1, nil);
-	test = (returned[0] == "Water");
-	Log("- Container returns the extracted material name: %v", test);
-	test = returned[1] == 1; passed &= test;
-	Log("- Container returns the correct amount when removing 1 pixel of compatible material: %v", test);
-	test = (container->GetLiquidAmount() == 99);
-	Log("- Container contents do change when removing compatible material: %v", test);
+	expected = ["Water", 1];
+	test = (returned[0] == expected[0]);
+	Log("- Container returns the extracted material name (was %s, expected %s): %v", returned[0], expected[0], test);
+	test = returned[1] == expected[1]; passed &= test;
+	Log("- Container returns the correct amount (was %d, expected %d) when removing 1 pixel of compatible material: %v", returned[1], expected[1], test);
+	returned = container->GetLiquidAmount();
+	expected = 99;
+	test = (returned == expected); passed &= test;
+	Log("- Container contents do change when removing compatible material (was %d, expected %d): %v", returned, expected, test);
 	
 	returned = container->RemoveLiquid("Water", 100, nil);
-	test = (returned[0] == "Water");
-	Log("- Container returns the extracted material name: %v", test);
-	test = returned[1] == 99; passed &= test;
-	Log("- Container returns the correct amount when removing compatible material: %v", test);
-	test = (container->GetLiquidAmount() == 0);
-	Log("- Container contents do change when removing compatible material: %v", test);
+	expected = ["Water", 99];
+	test = (returned[0] == expected[0]);
+	Log("- Container returns the extracted material name (was %s, expected %s): %v", returned[0], expected[0], test);
+	test = returned[1] == expected[1]; passed &= test;
+	Log("- Container returns the correct amount (was %d, expected %d) when removing compatible material: %v", returned[1], expected[1], test);
+	returned = container->GetLiquidAmount();
+	expected = 0;
+	test = (returned == expected); passed &= test;
+	Log("- Container contents do change when removing compatible material (was %d, expected %d): %v", returned, expected, test);
 
-	// request everything
-	var material_alternative = "Oil";
-	container->CreateContents(Liquid_Oil, 100);
+    // -----
+
+	Log("Request everything");
+	container->PutLiquid("Oil", 100);
 	
 	returned = container->RemoveLiquid(nil, 50, nil);
-	test = (returned[0] == material_alternative);
-	Log("- Container returns the contained material when extracting material 'nil': %v", test);
-	test = returned[1] == 50; passed &= test;
-	Log("- Container returns the correct amount when removing compatible material: %v", test);
-	test = (container->GetLiquidAmount() == 50);
-	Log("- Container contents do change when removing compatible material: %v", test);
+	expected = ["Oil", 50];
+	test = (returned[0] == expected[0]);
+	Log("- Container returns the contained material (was %s, expected %s) when extracting material 'nil': %v", returned[0], expected[0], test);
+	test = returned[1] == expected[1]; passed &= test;
+	Log("- Container returns the correct amount (was %d, expected %d) when removing compatible material: %v", returned[1], expected[1], test);
+	returned = container->GetLiquidAmount();
+	expected = 50;
+	test = (returned == expected); passed &= test;
+	Log("- Container contents do change when removing compatible material (was %d, expected %d): %v", returned, expected, test);
 
-	container->CreateContents(Liquid_Oil, 100);
+	container->PutLiquid("Oil", 50);
 
-	returned = container->RemoveLiquid(material_alternative, nil, nil);
-	test = (returned[0] == material_alternative);
-	Log("- Container returns the contained material when extracting amount 'nil': %v", test);
-	test = returned[1] == 100; passed &= test;
-	Log("- Container returns the contained amount when extracting amount 'nil': %v", test);
-	test = (container->GetLiquidAmount() == 0);
-	Log("- Container is empty after removing amount 'nil': %v", test);
+	returned = container->RemoveLiquid("Oil", nil, nil);
+	expected = ["Oil", 100];
+	test = (returned[0] == expected[0]);
+	Log("- Container returns the contained material (was %s, expected %s) when extracting amount 'nil': %v", returned[0], expected[0], test);
+	test = returned[1] == expected[1]; passed &= test;
+	Log("- Container returns the contained amount (was %d, expected %d) when extracting amount 'nil': %v", returned[1], expected[1], test);
+	returned = container->GetLiquidAmount();
+	expected = 0;
+	test = (returned == expected); passed &= test;
+	Log("- Container is empty after removing amount 'nil' (was %d, expected %d): %v", returned, expected, test);
 
-	container->CreateContents(Liquid_Oil, 100);
+	container->PutLiquid("Oil", 100);
 
 	returned = container->RemoveLiquid(nil, nil, nil);
-	test = (returned[0] == material_alternative);
-	Log("- Container returns the contained material when extracting material and amount 'nil': %v", test);
-	test = returned[1] == 100; passed &= test;
-	Log("- Container returns the contained amount when extracting material and amount 'nil': %v", test);
-	test = (container->GetLiquidAmount() == 0);
-	Log("- Container is empty after removing amount material and amount 'nil': %v", test);
+	expected = ["Oil", 100];
+	test = (returned[0] == returned[0]);
+	Log("- Container returns the contained material (was %s, expected %s) when extracting material and amount 'nil': %v", returned[0], expected[0], test);
+	test = returned[1] == expected[1]; passed &= test;
+	Log("- Container returns the contained amount (was %d, expected %d) when extracting material and amount 'nil': %v", returned[1], expected[1], test);
+	returned = container->GetLiquidAmount();
+	expected = 0;
+	test = (returned == expected); passed &= test;
+	Log("- Container is empty after removing amount material and amount 'nil' (was %d, expected %d): %v", returned, expected, test);
 
 	container->RemoveObject();
 	return passed;

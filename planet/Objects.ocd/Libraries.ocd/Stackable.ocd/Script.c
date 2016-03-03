@@ -92,6 +92,8 @@ public func Stack(object obj)
 	
 	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
 	
+	Log("******* Added %d objects to stack", howmany);
+	
 	if (howmany <= 0 || count + howmany > Stackable_Max_Count)
 		return 0;
 	
@@ -188,8 +190,14 @@ private func UpdateMass()
 */
 protected func RejectEntrance(object into)
 {
-	if (TryPutInto(into))
+	var try_put = TryPutInto(into);
+	Log("***** TryPutInto did in fact return %v", try_put);
+	if (try_put)
+	{
+		Log("****** Rejected entrance into %s!!", into->GetName());
 		return true;
+	}
+	Log("***** Entered %v %s!!", this, into->GetName());
 	return _inherited(into, ...);
 }
 
@@ -209,15 +217,15 @@ public func TryAddToStack(object other)
 	// Is a stack possible in theory?
 	if (other->~IsStackable() && other->GetID() == GetID())
 	{
-			var howmany = other->Stack(this);
-			if (howmany > 0)
-			{
-				count -= howmany;
-				if(count <= 0) RemoveObject();
-				// Stack succesful! No matter how many items were transfered.
-				return true;
-			}
+		var howmany = other->Stack(this);
+		if (howmany > 0)
+		{
+			count -= howmany;
+			if(count <= 0) RemoveObject();
+			// Stack succesful! No matter how many items were transfered.
+			return true;
 		}
+	}
 	return false;
 }
 
@@ -242,19 +250,25 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 		}
 	}
 	
+	var added_to_stack = false;
+	
 	// then check this object
 	for (var content in contents)
 	{
 		if (!content)
 			continue;
-		TryAddToStack(content);
+		added_to_stack = TryAddToStack(content) || added_to_stack;
 		if (!this) return true;
 	}
 	
+	Log("***** Stack can enter the object %s? TryPutInto will return %v", into->GetName(), added_to_stack);
+	
 	// IFF anything changed, we need to update the display.
 	if (before != count)
+	{
 		UpdateStackDisplay();
-	return false;
+	}
+	return added_to_stack;
 }
 
 // Infinite stacks can only be stacked on top of others.
