@@ -3,7 +3,7 @@
  *
  * Basic interface for anything that can contain liquids.
  *
- * Author: Ringwaul, ST-DDT, Marky
+ * Author: Marky
  */
 
 
@@ -56,6 +56,8 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 	{
 		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
 	}
+
+	amount = amount ?? GetLiquidAmount();
 	
 	var removed = 0;
 	for (var liquid in GetLiquidContents())
@@ -87,10 +89,16 @@ func PutLiquid(string liquid_name, int amount, object source)
 	{
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
 	}
-	
+
 	var before = GetLiquidAmount(liquid_name);
 	var type = Library_Liquid->GetLiquidID(liquid_name);
-	CreateContents(type, amount);
+	
+	var liquid = CreateObject(type);
+	liquid->SetStackCount(amount);
+	liquid->Enter(this);
+	if (liquid && !(liquid->Contained())) liquid->RemoveObject();
+
+	//CreateContents(type, amount);
 	var after = GetLiquidAmount(liquid_name);
 	return after - before;
 }
