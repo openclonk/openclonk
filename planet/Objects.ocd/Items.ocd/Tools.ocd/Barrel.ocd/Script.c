@@ -213,12 +213,13 @@ public func CanBeStackedWith(object other)
 {
 	// Does not take into account the fill level for now.
 	var liquid = other->Contents();
-	var both_filled = Contents() && liquid;
-	var both_empty = !Contents() && !liquid;
+	var my_liquid = this->Contents();
+	var both_filled = (my_liquid != nil) && (liquid != nil);
+	var both_empty = !my_liquid && !liquid;
 
-	if (both_filled) both_filled = liquid->~GetLiquidType() == Contents()->~GetLiquidType();
+	if (both_filled) both_filled = (liquid->~GetLiquidType() == Contents()->~GetLiquidType());
 	
-	return inherited(other, ...) && (both_empty || both_filled);
+	return _inherited(other, ...) && (both_empty || both_filled);
 }
 
 
@@ -235,14 +236,22 @@ func GetNameForBarrel()
 	}
 }
 
-local LiquidNames = {
-	Oil = "$MaterialOil$",
-	Water = "$MaterialWater$",
-};
 
 public func Definition(proplist def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 0), Trans_Rotate(-40, 1, 0, 0), Trans_Rotate(20, 0, 0, 1)), def);
+}
+
+func Collection2(object item)
+{
+	UpdateLiquidContainer();
+	return _inherited(item, ...);
+}
+
+func Ejection(object item)
+{
+	UpdateLiquidContainer();
+	return _inherited(item, ...);
 }
 
 local Collectible = true;
