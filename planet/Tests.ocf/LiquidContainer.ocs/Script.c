@@ -264,6 +264,32 @@ global func Test2_Execute()
 	Log("- Liquid exists after leaving the container: %v", test);
 	
 	liquid->RemoveObject();
+
+	// -----
+	
+	Log("Adding single objects via create contents is not possible beyond the container limit");
+	
+	RemoveAll(Find_ID(Liquid_Water));
+	
+	container->PutLiquid("Water", 299);
+	container->CreateContents(Liquid_Water, 2);
+	
+	returned = container->GetLiquidAmount();
+	var expected = 300;
+	test = (returned == expected); passed &= test;
+	Log("- Liquid container contains %d, should contain %d, when filling in 299 water and adding 2 water contents: %v", returned, expected, test);
+	returned = ObjectCount(Find_ID(Liquid_Water), Find_NoContainer());
+	expected = 0;
+	test = (returned == expected); passed &= test;
+	Log("- A total of %d water objects exist outside the container, expected %d: %v", returned, expected, test);
+	returned = container->ContentsCount();
+	expected = 1;
+	test = (returned == expected); passed &= test;
+	Log("- A total of %d water objects exist in the container, expected %d: %v", returned, expected, test);
+
+	// Clean up
+
+	RemoveAll(Find_ID(Liquid_Water));
 	container->RemoveObject();
 
 	return passed;
@@ -416,7 +442,7 @@ global func Test4_Execute()
 
 
 
-global func Test10_OnStart(int plr)
+global func Test5_OnStart(int plr)
 {
 	var effect = GetEffect("IntTestControl", nil);
 
@@ -425,7 +451,7 @@ global func Test10_OnStart(int plr)
 	return true;
 }
 
-global func Test10_Execute()
+global func Test5_Execute()
 {
 	var effect = GetEffect("IntTestControl", nil);
 	
@@ -435,18 +461,18 @@ global func Test10_Execute()
 	var pipeA, pipeB;
 	
 	Log("No connection");
-	passed &= Test10_CheckConnections(effect, effect.pump, effect.pump);
+	passed &= Test5_CheckConnections(effect, effect.pump, effect.pump);
 
 	Log("1. Connecting pipe A to pump, pipe B to pump, pipe B to engine");
 	pipeA = CreateObject(Pipe);
 	pipeB = CreateObject(Pipe);
 
 	pipeA->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, pipeA, effect.pump);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
 	pipeB->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, pipeA, pipeB);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
+	passed &= Test5_CheckConnections(effect, pipeA, pipeB);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
 	pipeB->ConnectPipeTo(effect.engine);
 	
 	pipeA->CutLineConnection(effect.pump);
@@ -462,14 +488,14 @@ global func Test10_Execute()
 	pipeB = CreateObject(Pipe);
 
 	pipeA->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, pipeA, effect.pump);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
 	pipeB->ConnectPipeTo(effect.engine);
-	passed &= Test10_CheckConnections(effect, pipeA, effect.pump);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
 	pipeB->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, pipeA, effect.engine);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
+	passed &= Test5_CheckConnections(effect, pipeA, effect.engine);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
 	
 	pipeA->CutLineConnection(effect.pump);
 	pipeB->CutLineConnection(effect.pump);
@@ -484,14 +510,14 @@ global func Test10_Execute()
 	pipeB = CreateObject(Pipe);
 
 	pipeA->ConnectPipeTo(effect.engine);
-	passed &= Test10_CheckConnections(effect, effect.pump, effect.pump);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Neutral, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckConnections(effect, effect.pump, effect.pump);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Neutral, pipeB, PIPE_STATE_Neutral);
 	pipeA->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, effect.pump, effect.engine);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckConnections(effect, effect.pump, effect.engine);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Neutral);
 	pipeB->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, pipeB, effect.engine);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
+	passed &= Test5_CheckConnections(effect, pipeB, effect.engine);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
 	
 	pipeA->CutLineConnection(effect.pump);
 	pipeB->CutLineConnection(effect.pump);
@@ -506,14 +532,14 @@ global func Test10_Execute()
 	pipeB = CreateObject(Pipe);
 
 	pipeA->ConnectPipeTo(effect.pump, PIPE_STATE_Drain);
-	passed &= Test10_CheckConnections(effect, effect.pump, pipeA);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckConnections(effect, effect.pump, pipeA);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Neutral);
 	pipeB->ConnectPipeTo(effect.pump);
-	passed &= Test10_CheckConnections(effect, pipeB, pipeA);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
+	passed &= Test5_CheckConnections(effect, pipeB, pipeA);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
 	pipeA->ConnectPipeTo(effect.engine);
-	passed &= Test10_CheckConnections(effect, pipeB, effect.engine);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
+	passed &= Test5_CheckConnections(effect, pipeB, effect.engine);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Drain, pipeB, PIPE_STATE_Source);
 	
 	pipeA->CutLineConnection(effect.pump);
 	pipeB->CutLineConnection(effect.pump);
@@ -527,11 +553,11 @@ global func Test10_Execute()
 	pipeA = CreateObject(Pipe);
 
 	pipeA->ConnectPipeTo(effect.pump, PIPE_STATE_Source);
-	passed &= Test10_CheckConnections(effect, pipeA, effect.pump);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
+	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
 	pipeA->ConnectPipeTo(effect.engine);
-	passed &= Test10_CheckConnections(effect, pipeA, effect.pump);
-	passed &= Test10_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
+	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
 	
 	pipeA->CutLineConnection(effect.pump);
 	pipeA->RemoveObject();
@@ -539,7 +565,7 @@ global func Test10_Execute()
 	return passed;
 }
 
-global func Test10_CheckConnections(proplist effect, object expected_source, object expected_drain)
+global func Test5_CheckConnections(proplist effect, object expected_source, object expected_drain)
 {
 	var passed = true;
 	var returned = effect.pump->GetSourceObject();
@@ -551,7 +577,7 @@ global func Test10_CheckConnections(proplist effect, object expected_source, obj
 	return passed;
 }
 
-global func Test10_CheckPipes(object pipeA, string stateA, object pipeB, string stateB)
+global func Test5_CheckPipes(object pipeA, string stateA, object pipeB, string stateB)
 {
 	var functionA, functionB;
 	var passed = true;
@@ -581,7 +607,7 @@ global func Test10_CheckPipes(object pipeA, string stateA, object pipeB, string 
 	return passed;
 }
 
-global func Test10_OnFinished()
+global func Test5_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(Pump), Find_ID(SteamEngine), Find_ID(Pipe)));
 	return true;
