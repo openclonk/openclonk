@@ -21,6 +21,7 @@
 #include <C4Console.h>
 #include <C4Object.h>
 #include <C4GameObjects.h>
+#include <C4Effect.h>
 
 
 #ifdef USE_GTK
@@ -865,7 +866,7 @@ void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
 // Could do some crazy fine-grained updates. But updating is cheap enough...
 void C4ObjectListDlg::OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk)
 {
-	if (view_model) view_model->Invalidate();
+	if (view_model) view_model->OnItemRemoved(pLnk->Obj);
 }
 
 void C4ObjectListDlg::OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk)
@@ -890,7 +891,7 @@ void C4ObjectListDlg::OnEffectAdded(C4Effect *fx)
 
 void C4ObjectListDlg::OnEffectRemoved(C4Effect *fx)
 {
-	if (view_model) view_model->Invalidate();
+	if (view_model) view_model->OnItemRemoved(fx);
 }
 
 

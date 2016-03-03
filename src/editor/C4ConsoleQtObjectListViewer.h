@@ -42,6 +42,7 @@ public:
 
 	// Refresh object list on next redraw
 	void Invalidate();
+	void OnItemRemoved(C4PropList *p);
 
 	// Callback from EditCursor when selection was changed e.g. from viewport
 	void SetSelection(class C4EditCursorSelection &rSelection);

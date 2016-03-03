@@ -182,8 +182,8 @@ public:
 
 	void AddToolbarSpacer(int space);
 	bool CreateConsoleWindow(C4AbstractApp *app);
-	void Execute();
-	void Redraw();
+	void Execute(bool redraw_only=false);
+	void Redraw() { Execute(true); }
 	void UpdateActionStates();
 	void UpdateMatTex();
 	void UpdateBackMatTex();

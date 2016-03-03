@@ -58,6 +58,14 @@ void C4ConsoleQtObjectListModel::Invalidate()
 	emit layoutChanged();
 }
 
+void C4ConsoleQtObjectListModel::OnItemRemoved(C4PropList *p)
+{
+	for (auto idx : this->persistentIndexList())
+		if (idx.internalPointer() == p)
+			this->changePersistentIndex(idx, QModelIndex());
+	Invalidate();
+}
+
 void C4ConsoleQtObjectListModel::SetSelection(class C4EditCursorSelection &rSelection)
 {
 	// Reflect selection change in view
@@ -132,12 +140,12 @@ QVariant C4ConsoleQtObjectListModel::data(const QModelIndex & index, int role) c
 	else if (role == Qt::ForegroundRole)
 	{
 		// Deleted proplist?
-		if (!data) return clr_deleted;
+		if (!data) return QVariant(clr_deleted);
 		// Object?
 		C4Object *obj = data->GetObject();
 		if (obj) return QVariant(); // default
 		// Effect
-		return clr_effect;
+		return QVariant(clr_effect);
 	}
 	// Nothing to show
 	return QVariant();

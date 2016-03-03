@@ -150,6 +150,22 @@ void C4ConsoleViewportWidget::closeEvent(QCloseEvent * event)
 }
 
 
+/* Recursion check to avoid some crashing Qt re-entry */
+
+class ExecRecursionCheck
+{
+	static int counter;
+public:
+	ExecRecursionCheck() { ++counter; }
+	~ExecRecursionCheck() { --counter; }
+
+	bool IsRecursion() const { return counter > 1; }
+};
+
+int ExecRecursionCheck::counter = 0;
+
+
+
 /* Console main window */
 
 C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUIState *state)
@@ -339,6 +355,8 @@ void C4ConsoleGUIState::AddToolbarSpacer(int space)
 	
 bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 {
+	// No Qt main loop execution during console creation
+	ExecRecursionCheck no_qt_recursion;
 	// Basic Qt+Main window setup from .ui file
 	int fake_argc = 0;
 	application.reset(new QApplication(fake_argc, NULL));
@@ -396,20 +414,26 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	return true;
 }
 
-void C4ConsoleGUIState::Execute()
+void C4ConsoleGUIState::Execute(bool redraw_only)
 {
+	// Avoid recursion in message processing; it's causing random crashes
+	ExecRecursionCheck recursion_check;
+	if (recursion_check.IsRecursion()) return;
 	// Qt window message handling and object cleanup
 	if (application)
 	{
-		application->processEvents();
-		application->sendPostedEvents(0, QEvent::DeferredDelete);
+		if (redraw_only)
+		{
+			// process only non-critical events
+			application->processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
+		else
+		{
+			// process everything
+			application->processEvents();
+			application->sendPostedEvents(0, QEvent::DeferredDelete);
+		}
 	}
-}
-
-void C4ConsoleGUIState::Redraw()
-{
-	// process only non-critical events
-	if (application) application->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 // Set action pressed/checked and enabled states
