@@ -13,6 +13,7 @@
 static const FX_LIQUID_Dispersion = "IntLiquidDispersion";
 
 func IsLiquid() { return true;}
+func InitialStackCount(){ return 1; }
 func MaxStackCount()
 {
 	if (this)
@@ -29,11 +30,6 @@ func MaxStackCount()
 	return Stackable_Max_Count;
 }
 
-protected func Construction()
-{
-	_inherited(...);
-	SetStackCount(1); // this should be a single object, not the whole stack
-}
 
 
 // -------------- Getters

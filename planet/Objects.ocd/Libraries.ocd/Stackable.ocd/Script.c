@@ -56,12 +56,13 @@ static const Stackable_Infinite_Count = 50;
 public func IsStackable() { return true; }
 public func GetStackCount() { return Max(1, count); }
 public func MaxStackCount() { return 20; }
+public func InitialStackCount() { return MaxStackCount(); }
 public func IsFullStack() { return IsInfiniteStackCount() || (GetStackCount() >= MaxStackCount()); }
 public func IsInfiniteStackCount() { return count_is_infinite; }
 
 protected func Construction()
 {
-	count = MaxStackCount();
+	count = InitialStackCount();
 	return _inherited(...);
 }
 
