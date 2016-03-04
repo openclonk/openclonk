@@ -1339,6 +1339,10 @@ void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
 	pFiller->AddEntry("16", 16);
 	pFiller->AddEntry("18", 18);
 	pFiller->AddEntry("20", 20);
+	pFiller->AddEntry("22", 22);
+	pFiller->AddEntry("24", 24);
+	pFiller->AddEntry("26", 26);
+	pFiller->AddEntry("28", 28);
 }
 
 bool C4StartupOptionsDlg::OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
