@@ -157,6 +157,7 @@ global func Test1_Execute()
 	return passed;
 }
 
+
 global func Test2_OnStart(int plr){ return true;}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
@@ -191,6 +192,75 @@ global func Test2_Execute()
 	stackable->RemoveObject();
 	return passed;
 }
+
+
+global func Test3_OnStart(int plr){ return true;}
+global func Test3_OnFinished(){ return; }
+global func Test3_Execute()
+{
+	Log("Test the behaviour of CalcValue()");
+
+	var stackable = CreateObject(Arrow);
+	var passed = true;
+	
+	for (var i = 1; i < 11; ++i)
+	{	
+		stackable->SetStackCount(i);
+		var comparison = "Got %d, expected %d.";
+		var description = Format("A stack with %d object(s) should have %d times the value of the definition. %s", i, i, comparison);
+		var passed = doTest(description, stackable->CalcValue(), (Arrow->GetValue() * i) / Arrow->MaxStackCount());
+	}
+
+	stackable->RemoveObject();
+	return passed;
+}
+
+global func Test4_OnStart(int plr){ return true;}
+global func Test4_OnFinished(){ return; }
+global func Test4_Execute()
+{
+	Log("Test the behaviour of TakeObject");
+
+	var container = CreateObject(Dummy);
+
+	var stackable = CreateObject(Arrow);
+	stackable->Enter(container);
+	stackable->SetStackCount(3);
+	var item = stackable->TakeObject();
+	
+	var passed = doTest("The stackable object is contained. Got %v, expected %v.", stackable->Contained(), container);
+
+	passed &= doTest("Taking an object from a stack should return an object. Got %v, expected %v.", !!item, true);
+	passed &= doTest("Taking an object from a stack should return a new object. Got %v, expected %v.", item != stackable, true);
+	passed &= doTest("Taking an object should reduce the stack count. Got %d, expected %d.", stackable->GetStackCount(), 2);
+	passed &= doTest("The taken object should not contained. Got %v, expected %v.", item->Contained(), nil);
+	passed &= doTest("The taken object should be a single object. Got %v, expected %v.", item->GetStackCount(), 1);
+
+	item->RemoveObject();
+	stackable->SetStackCount(1);
+	var item = stackable->TakeObject();
+	
+	passed &= doTest("Taking an object from a one-object stack should return the stack itself. Got %v, expected %v.", item, stackable);	
+	passed &= doTest("The taken object should not be contained. Got %v, expected %v.", item->Contained(), nil);
+	passed &= doTest("The taken object should be a single object. Got %v, expected %v.", item->GetStackCount(), 1);
+
+    item->DoStackCount(1);
+    passed &= doTest("The taken object should not have an internal stack count of 0. It increases the stack count correctly. Got %d, expected %d.", item->GetStackCount(), 2);
+
+	stackable->Enter(container);
+	stackable->SetStackCount(0);
+	item = stackable->TakeObject();
+
+	passed &= doTest("The stackable object should be in a container when moving it there. Got %v, expected %v.", stackable->Contained(), container);
+	passed &= doTest("Taking an object from a stack with 0 objects should not return an object. Got %v, expected %v.", item, nil);
+	passed &= doTest("Taking an object from a stack with 0 objects should preserve the stack. Got %v, expected %v.", !!stackable, true);
+	passed &= doTest("Taking an object from a stack with 0 objects should not eject the stack from the container. Got %v, expected %v.", stackable->Contained(), container);
+
+	stackable->RemoveObject();
+	container->RemoveObject();
+	return passed;
+}
+
 
 global func doTest(description, returned, expected)
 {
