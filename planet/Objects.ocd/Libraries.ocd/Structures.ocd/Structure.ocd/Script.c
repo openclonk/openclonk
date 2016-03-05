@@ -28,6 +28,12 @@ protected func Construction()
 	return _inherited(...);
 }
 
+// This object is a structure.
+public func IsStructure() { return true; }
+
+
+/*-- Damage Handling --*/
+
 public func GetHitPoints()
 {
 	return this.HitPoints;
@@ -45,18 +51,44 @@ public func Damage(int change, int cause, int cause_plr)
 	{
 		if (GetDamage() >= this.HitPoints)
 		{		
+			// Remove contents from the building depending on the type of damage.
+			EjectContentsOnDestruction(cause, cause_plr);
 			// Destruction callback is made by the engine.
 			return RemoveObject();
 		}
-		
 		// Update all interaction menus with the new hitpoints.
 		UpdateInteractionMenus(this.GetDamageMenuEntries);
 	}
 	return _inherited(change, cause, cause_plr, ...);
 }
 
-// This object is a structure.
-public func IsStructure() { return true; }
+private func EjectContentsOnDestruction(int cause, int by_player)
+{
+	// Exit all objects in this structure.
+	for (obj in FindObjects(Find_Container(this)))
+	{
+		// For a non-blast destruction just place the objects at the bottom of the structure.
+		var angle = Random(360);
+		var x = RandomX(GetLeft(), GetRight());
+		var y = GetBottom();
+		var dx = 0;
+		var dy = 0;
+		var dr = 0;
+		// Scatter objects around if the destruction is caused by a blast.
+		if (cause == FX_Call_DmgBlast)
+		{
+			var speed = RandomX(3, 4);
+			x = RandomX(-4, 4);
+			y = RandomX(-4, 4);
+			dx = Cos(angle, speed);
+			dy = Sin(angle, speed);
+			dr = RandomX(-20, 20);
+		}
+		obj->Exit(x, y, Random(360), dx, dy, dr);
+		obj->SetController(by_player);	
+	}
+	return;
+}
 
 
 /*-- Basement Handling --*/
