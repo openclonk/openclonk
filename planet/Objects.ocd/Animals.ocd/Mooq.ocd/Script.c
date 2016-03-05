@@ -3,31 +3,29 @@
 	Author: jok
 */
 
-local Name = "$Name$";
-local Description = "$Description$";
-
-
-// Animations.
+// Animations
 local turn_angle;
-// Color.
+// Color
 local color;
-
 // The closest enemy that has been found.
 local enemy;
 // Closest food that has been found.
 local food;
 
-public func Place(int amount, proplist rectangle, proplist settings) {
+public func Place(int amount, proplist rectangle, proplist settings)
+{
 	var max_tries = 3 * amount;
 	var loc_area = nil;
 	if (rectangle) loc_area = Loc_InArea(rectangle);
 	var animal;
 
-	while ((amount > 0) && (--max_tries > 0)) {
+	while ((amount > 0) && (--max_tries > 0))
+	{
 		// Try to find walkable ground near lava.
 		var lava_spot = FindLocation(Loc_Material("DuroLava"));
 		var ground_spot = nil;
-		if (lava_spot) {
+		if (lava_spot)
+		{
 			var lava_rectangle = Shape->Rectangle(lava_spot.x - 200, lava_spot.y - 200, 400, 400);
 			// Make sure the position is inside the required target rectangle.
 			lava_rectangle = Shape->Intersect(lava_rectangle, rectangle)->GetBoundingRectangle();
@@ -41,7 +39,8 @@ public func Place(int amount, proplist rectangle, proplist settings) {
 		animal = CreateObjectAbove(this, ground_spot.x, ground_spot.y, NO_OWNER);
 		if (!animal) continue;
 
-		if (animal->Stuck()) {
+		if (animal->Stuck())
+		{
 			animal->RemoveObject();
 			continue;
 		}
@@ -50,7 +49,8 @@ public func Place(int amount, proplist rectangle, proplist settings) {
 	return animal;
 }
 
-public func Construction() {
+func Construction()
+{
 	turn_angle = -60;
 	color = 255;
 
@@ -59,152 +59,191 @@ public func Construction() {
 	AddTimer("UpdateFood", 60);
 
 	Stop();
-    CheckTurn(GetDir());
+	CheckTurn(GetDir());
 
-    SetTailOnFire();
+	SetTailOnFire();
 
 	SetCreatureControlled();
-
-	return true;
 }
 
-public func CatchBlow(int damage, object from) {
+func Death()
+{
+	RemoveTimer("UpdateEnemy");
+	RemoveTimer("UpdateFood");
+	RemoveEffect("IntActivity", this);
+
+	Sound("MooqDie*");
+}
+
+func CatchBlow(int damage, object from)
+{
 	Schedule(this, "Sound(\"MooqHurt*\")", RandomX(5, 20));
 }
 
-/* ActionCallBacks */
+/* Action Callbacks */
 
-protected func CheckStuck() {
+func CheckStuck()
+{
 	// Prevents getting stuck on middle vertex
-	if(!GetXDir()) if(Abs(GetYDir()) < 5)
-		if(GBackSolid(0, 3)) SetPosition(GetX(), GetY() - 1);
+	if(!GetXDir())
+		if(Abs(GetYDir()) < 5)
+			if(GBackSolid(0, 3))
+				SetPosition(GetX(), GetY() - 1);
 }
 
-private func ClearActivity() {
+func ClearActivity()
+{
 	this.Activity = nil;
 }
 
-private func StartSwim() {
+func StartSwim()
+{
 	this.Activity = this.ActivitySwimming;
 }
 
-private func StartWalk() {
-    SetTailOnFire();
+func StartWalk()
+{
+	SetTailOnFire();
 	this.Activity = this.ActivityWalking;
 }
 
-public func Death() {
-	SoundAt("MooqDie*");
+func SpitPhase()
+{
+	if(GetActTime() > 45 && GetActTime() < 65)
+	{
+		if(!Random(4))
+		{
+			var iX, iY;
+			iX = 5;
+			if (!GetDir()) iX = -iX;
+			iY = -4;
+			Smoke(iX,iY,5);
+		}
+	}
+	if(GetActTime() == 58)
+	{
+		var iX, iY, iXDir, iYDir;
+		iX = 10;
+		if (!GetDir()) iX = -iX;
+		iY = -4;
+		iXDir = 300;
+		if (!GetDir()) iXDir = -iXDir;
+		iYDir = -300;
+
+		Sound("MooqSpit*");
+
+		var obj = CreateContents(Mooq_Firebomb);
+		obj->Exit(iX, iY);
+		obj->SetXDir(iXDir,100);
+		obj->SetYDir(iYDir,100);
+	}
 }
 
-private func SpitPhase() {
-    if(GetActTime() > 45 && GetActTime() < 65) {
-        if(!Random(4)) {
-            var iX, iY;
-            iX = 5; if (!GetDir()) iX = -iX;
-            iY = -4;
-            Smoke(iX,iY,5);
-        }
-    }
-    if(GetActTime() == 58) {
-        var iX, iY, iXDir, iYDir;
-        iX = 10; if (!GetDir()) iX = -iX;
-        iY = -4;
-        iXDir = 300; if (!GetDir()) iXDir = -iXDir;
-        iYDir = -300;
+func EatPhase()
+{
+	var actt = GetActTime();
 
-        Sound("MooqSpit*");
-        var obj = CreateContents(Mooq_Firebomb);
-        obj->Exit(iX, iY);
-        obj->SetXDir(iXDir,100);
-        obj->SetYDir(iYDir,100);
-    }
-}
+	if(actt > 13 && actt < 25)
+	{
+		if(!Random(4))
+		{
+			var iX, iY;
+			iX = 5;
+			if (!GetDir()) iX = -iX;
+			iY = 4;
+			Smoke(iX,iY,5);
+		}
+	}
+	if(actt == 22)
+	{
+		if (!food) return;
 
-private func EatPhase() {
-    var actt = GetActTime();
-    if(actt > 13 && actt < 25) {
-        if(!Random(4)) {
-            var iX, iY;
-            iX = 5; if (!GetDir()) iX = -iX;
-            iY = 4;
-            Smoke(iX,iY,5);
-        }
-    }
-    if(actt == 22) {
-        Sound("MooqMunch*");
+		Sound("MooqMunch*");
 		DoEnergy(food->GetMass());
 		food->RemoveObject();
-    }
-    if(actt > 43 && actt < 55) {
-        if(!Random(4)) {
-            var iX, iY;
-            iX = 5; if (!GetDir()) iX = -iX;
-            iY = 1;
-            Smoke(iX,iY,5);
-        }
-    }
+	}
+	if(actt > 43 && actt < 55)
+	{
+		if(!Random(4))
+		{
+			var iX, iY;
+			iX = 5;
+			if (!GetDir()) iX = -iX;
+			iY = 1;
+			Smoke(iX,iY,5);
+		}
+	}
 }
 
 /* Activity */
 
-private func ActivitySwimming() {
-    CheckBreathe();
-    if(GetMaterial() == Material("Water")) CheckFossilize();
+func ActivitySwimming()
+{
+	CheckBreathe();
+	if(GetMaterial() == Material("Water"))
+		CheckFossilize();
 
-    // Stuck?
-    if (GetComDir() && !GetXDir() && !GetYDir()) {
-        DoJump(true);
-        return Swim(Random(2));
-    }
+	// Stuck?
+	if (GetComDir() && !GetXDir() && !GetYDir())
+	{
+		DoJump(true);
+		return Swim(Random(2));
+	}
 
-    // Fossilizing?
-    if(GetEffect("IntFossilizing", this)) {
-        var lava_spot = FindLava();
-        if (lava_spot) return TaskSwimTo(lava_spot);
-    }
+	// Fossilizing?
+	if(GetEffect("IntFossilizing", this))
+	{
+		var lava_spot = FindLava();
+		if (lava_spot)
+			return TaskSwimTo(lava_spot);
+	}
 
-    if (enemy)
-        if (Random(2)) return TaskSwimTo(enemy);
+	if (enemy && Random(2)) return TaskSwimTo(enemy);
 
-    if (!enemy && food) return TaskSwimTo(food);
+	if (!enemy && food) return TaskSwimTo(food);
 
 	if (!Random(6)) return Swim(Random(2));
 
 	if (!Random(6)) return DoJump(true);
 }
 
-private func ActivityWalking() {
-    // Stuck?
-    if (GetComDir() && !GetXDir() && !GetYDir()) {
-        if(GetDir())
-            Walk(0);
-        else
-            Walk(1);
-        return DoJump();
-    }
+func ActivityWalking()
+{
+	// Stuck?
+	if (GetComDir() && !GetXDir() && !GetYDir())
+	{
+		if(GetDir())
+			Walk(0);
+		else
+			Walk(1);
+		return DoJump();
+	}
 
-    // Fossilizing?
-    if(GetEffect("IntFossilizing", this)) {
-        var lava_spot = FindLava();
-        if (lava_spot) return TaskWalkTo(lava_spot);
-    }
+	// Fossilizing?
+	if(GetEffect("IntFossilizing", this))
+	{
+		var lava_spot = FindLava();
+		if (lava_spot) return TaskWalkTo(lava_spot);
+	}
 
-    // If enemy, hopefully attack!
-	if (enemy) {
+	// If enemy, hopefully attack!
+	if (enemy)
+	{
 		var distance = ObjectDistance(this, enemy);
 
 		if (distance < 50 && Random(2)) return TaskHeadbutt(distance);
 
-        if (Inside(distance, 85, 145) && !Random(5)) return TaskSpit();
+		if (Inside(distance, 85, 145) && !Random(5)) return TaskSpit();
 	}
 
-    // If no enemy, go to food and eat.
+	// If no enemy, go to food and eat.
 	if (!enemy && food) return TaskFood();
 
 	// If not walking, randomly idle.
-	if (GetAction() == "Stand") {
-		if (!enemy && !food) {
+	if (GetAction() == "Stand")
+	{
+		if (!enemy && !food)
+		{
 			// Idle?
 			if (!Random(15)) return TaskIdle();
 		}
@@ -218,137 +257,157 @@ private func ActivityWalking() {
 
 	if (!Random(5)) return Walk(Random(2));
 
-    if (GetAction() == "Walk") {
-        if (!Random(5)) return DoJump();
-    }
+	if (GetAction() == "Walk")
+	{
+		if (!Random(5)) return DoJump();
+	}
 
 	// Anticipate holes in the landscape while walking.
 
 }
 
-private func FxIntActivityTimer(target, effect, time) {
+func FxIntActivityTimer(target, effect, time)
+{
 	if (this.Activity) this->Activity();
 	if (!GetAlive()) return -1;
 	return 1;
 }
 
-private func FxIntActivityDamage(target, effect, dmg) {
-	if(dmg > 0) return dmg;
+func FxIntActivityDamage(target, effect, dmg)
+{
+	if (dmg > 0) return dmg;
 	return dmg;
 }
 
 /* Tasks */
 
-private func TaskIdle() {
-    Sound("MooqSnorting*");
-    if(!Random(3)) return SetAction("IdleSit");
-    if(!Random(2)) return SetAction("IdleStand");
-    return SetAction("IdleTailwave");
+func TaskIdle()
+{
+	Sound("MooqSnorting*");
+
+	if (!Random(3)) return SetAction("IdleSit");
+	if (!Random(2)) return SetAction("IdleStand");
+
+	return SetAction("IdleTailwave");
 }
 
-private func TaskFood() {
-    var distance = ObjectDistance(this, food);
-    if (distance < 11) return Eat();
+func TaskFood()
+{
+	var distance = ObjectDistance(this, food);
+	if (distance < 11) return Eat();
 
-    return TaskWalkTo(food);
+	return TaskWalkTo(food);
 }
 
-private func TaskHeadbutt(distance) {
-    if (distance < 11) return Headbutt();
+func TaskHeadbutt(distance)
+{
+	if (distance < 11) return Headbutt();
 
-    return TaskWalkTo(enemy);
+	return TaskWalkTo(enemy);
 }
 
-private func TaskSpit() {
-    var eX = enemy->GetX();
-    var iX = GetX();
+func TaskSpit()
+{
+	var eX = enemy->GetX();
+	var iX = GetX();
 
-    if (iX < eX) {
-        if (GetDir() != DIR_Right) return Turn(DIR_Right);
-        Stop();
-        return Spit();
-    }
-    else {
-        if (GetDir() != DIR_Left) return Turn(DIR_Left);
-        Stop();
-        return Spit();
-    }
+	if (iX < eX)
+	{
+		if (GetDir() != DIR_Right) return Turn(DIR_Right);
+		Stop();
+		return Spit();
+	} else {
+		if (GetDir() != DIR_Left) return Turn(DIR_Left);
+		Stop();
+		return Spit();
+	}
 }
 
-private func TaskWalkTo(spot) {
-    var iX = GetX();
-    var iY = GetY();
+func TaskWalkTo(spot)
+{
+	var iX = GetX();
+	var iY = GetY();
 
-    if (GetType(spot) == C4V_C4Object) {
-        var sX = spot->GetX();
-        var sY = spot->GetY();
-    }
-    else if (GetType(spot) == C4V_PropList) {
-        var sX = spot.x;
-        var sY = spot.y;
-    }
-    else return;
+	if (GetType(spot) == C4V_C4Object)
+	{
+		var sX = spot->GetX();
+		var sY = spot->GetY();
+	}
+	else if (GetType(spot) == C4V_PropList)
+	{
+		var sX = spot.x;
+		var sY = spot.y;
+	}
+	else return;
 
-    if (iX < sX) {
-        if (GetDir() == DIR_Right)
-            if(iY > sY + 6)
-                if(Random(2)) if(DoJump())
-                    return true;
+	if (iX < sX)
+	{
+		if (GetDir() == DIR_Right)
+			if (iY > sY + 6)
+				if (Random(2)) if(DoJump())
+					return true;
 
-        return Walk(DIR_Right);
-    }
-    else {
-        if (GetDir() == DIR_Left)
-            if(iY > sY + 6)
-                if(Random(2)) if(DoJump())
-                    return true;
-        return Walk(DIR_Left);
-    }
+		return Walk(DIR_Right);
+	} else {
+		if (GetDir() == DIR_Left)
+			if(iY > sY + 6)
+				if(Random(2)) if(DoJump())
+					return true;
+		return Walk(DIR_Left);
+	}
 }
 
-private func TaskSwimTo(spot) {
-    var iX = GetX();
-    var iY = GetY();
+func TaskSwimTo(spot)
+{
+	var iX = GetX();
+	var iY = GetY();
 
-    if (GetType(spot) == C4V_C4Object) {
-        var sX = spot->GetX();
-        var sY = spot->GetY();
-    }
-    else if (GetType(spot) == C4V_PropList) {
-        var sX = spot.x;
-        var sY = spot.y;
-    }
-    else return;
+	if (GetType(spot) == C4V_C4Object)
+	{
+		var sX = spot->GetX();
+		var sY = spot->GetY();
+	}
+	else if (GetType(spot) == C4V_PropList)
+	{
+		var sX = spot.x;
+		var sY = spot.y;
+	}
+	else return;
 
-    if (iX < sX) {
-        if (GetDir() == DIR_Right)
-            if(iY > sY)
-                if(DoJump(true))
-                    return true;
+	if (iX < sX)
+	{
+		if (GetDir() == DIR_Right)
+			if(iY > sY)
+				if(DoJump(true))
+					return true;
 
-        return Swim(DIR_Right);
-    }
-    else {
-        if (GetDir() == DIR_Left)
-            if(iY > sY)
-                if(DoJump(true))
-                    return true;
-        return Swim(DIR_Left);
-    }
+		return Swim(DIR_Right);
+	} else {
+		if (GetDir() == DIR_Left)
+			if(iY > sY)
+				if(DoJump(true))
+					return true;
+		return Swim(DIR_Left);
+	}
 }
 
 /* Actions */
 
-private func Stop() {
-    SetComDir(COMD_Stop);
-    SetXDir(0);
-    return SetAction("Stand");
+func Stop()
+{
+	SetComDir(COMD_Stop);
+	SetXDir(0);
+	return SetAction("Stand");
 }
 
-private func Turn(int dir, bool move) {
-	if (dir == nil) {
-		if (GetDir() == DIR_Left) dir = DIR_Right;
-		else dir = DIR_Left;
+func Turn(int dir, bool move)
+{
+	if (dir == nil)
+	{
+		if (GetDir() == DIR_Left)
+			dir = DIR_Right;
+		else
+			dir = DIR_Left;
 	}
 
 	if(GetDir() == dir) return;
@@ -356,71 +415,90 @@ private func Turn(int dir, bool move) {
 	return CheckTurn(dir, move);
 }
 
-private func Walk(int dir) {
-    if (GetAction() != "Stand" && GetAction() != "Walk") return;
+func Walk(int dir)
+{
+	if (GetAction() != "Stand" && GetAction() != "Walk") return;
 
-    if(GetDir() == dir) {
-        SetAction("Walk");
-        if (GetDir()) return SetComDir(COMD_Right);
-        else return SetComDir(COMD_Left);
-    }
+	if (GetDir() == dir)
+	{
+		SetAction("Walk");
+		if (GetDir())
+			return SetComDir(COMD_Right);
+		else
+			return SetComDir(COMD_Left);
+	}
 
-    return Turn(dir, true);
+	return Turn(dir, true);
 }
 
-private func Swim(int dir) {
-    if (GetAction() != "Swim") return;
+func Swim(int dir)
+{
+	if (GetAction() != "Swim") return;
 
-    if(GetDir() == dir) {
-        SetAction("Swim");
-        if (GetDir()) return SetComDir(COMD_UpRight);
-        else return SetComDir(COMD_UpLeft);
-    }
+	if (GetDir() == dir)
+	{
+		SetAction("Swim");
+		if (GetDir())
+			return SetComDir(COMD_UpRight);
+		else
+			return SetComDir(COMD_UpLeft);
+	}
 
-    return Turn(dir, true);
+	return Turn(dir, true);
 }
 
-private func DoJump(bool swimming) {
-    if (GetAction() != "Walk" && GetAction() != "Stand" && GetAction() != "Swim") return;
+func DoJump(bool swimming)
+{
+	if (GetAction() != "Walk" && GetAction() != "Stand" && GetAction() != "Swim") return;
 
-    if (swimming) {
-        if(GBackSky(0, -2)) SetPosition(GetX(), GetY() - 2 );
-        else return;
+	if (swimming)
+	{
+		if (GBackSky(0, -2))
+			SetPosition(GetX(), GetY() - 2);
+		else
+			return;
 
-        var iX, iY, iXDir, iYDir;
-        iX = 10; if (!GetDir()) iX = -iX;
-        iY = -4;
-        iXDir = 200; if (!GetDir()) iXDir = -iXDir;
-        iYDir = -200;
+		var iX, iY, iXDir, iYDir;
+		iX = 10;
+		if (!GetDir()) iX = -iX;
+		iY = -4;
+		iXDir = 200;
+		if (!GetDir()) iXDir = -iXDir;
+		iYDir = -200;
 
-        if (Random(2)) Sound("MooqSnort*");
+		if (Random(2)) Sound("MooqSnort*");
 
-        SetSpeed(iXDir + GetXDir(100), iYDir + GetYDir(100), 100);
-        return true;
-    }
-    if (Random(2)) Sound("MooqSnort*");
-    return Jump();
+		SetSpeed(iXDir + GetXDir(100), iYDir + GetYDir(100), 100);
+		return true;
+	}
+
+	if (Random(2)) Sound("MooqSnort*");
+	return Jump();
 }
 
-private func Spit() {
-    if (GetAction() == "Stand") return SetAction("Spit");
+func Spit()
+{
+	if (GetAction() == "Stand") return SetAction("Spit");
 }
 
-public func Eat(object food) {
-    Stop();
-	if(GetAction() == "Stand") return SetAction("Eat");
+func Eat(object food)
+{
+	Stop();
+	if (GetAction() == "Stand") return SetAction("Eat");
 }
 
-private func Headbutt() {
-    if (GetAction() != "Walk") return;
+func Headbutt()
+{
+	if (GetAction() != "Walk") return;
 
-    Punch(enemy, 10);
-    return SetAction("Headbutt");
+	Punch(enemy, 10);
+	return SetAction("Headbutt");
 }
 
 /* FindEnemy */
 
-private func UpdateEnemy() {
+func UpdateEnemy()
+{
 	// Already disposed of the last one?
 	if (enemy && !enemy->GetAlive()) enemy = nil;
 	// Last one too far away now?
@@ -430,7 +508,8 @@ private func UpdateEnemy() {
 
 	var x = GetX();
 	var y = GetY();
-	for (var obj in FindObjects(Find_Distance(200), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance())) {
+	for (var obj in FindObjects(Find_Distance(200), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
+	{
 		if (!PathFree(x, y, obj->GetX(), obj->GetY())) continue;
 		if (obj->GBackLiquid()) continue;
 		enemy = obj;
@@ -440,18 +519,20 @@ private func UpdateEnemy() {
 
 /* FindFood */
 
-private func UpdateFood() {
-    // Need food?
-    if (GetEnergy() >= MaxEnergy/1000) return food = nil;
+func UpdateFood()
+{
+	// Need food?
+	if (GetEnergy() >= MaxEnergy/1000) return food = nil;
 	// Last one too far away now?
 	if (food && ObjectDistance(this, food) > 150) food = nil;
-    // Slid in water?
+	// Slid in water?
 	if (food && food->GBackLiquid()) food = nil;
 
 	var x = GetX();
 	var y = GetY();
 	var Find_FoodIDs = Find_Or(Find_ID(Rock), Find_ID(Coal), Find_ID(Ore));
-	for (var obj in FindObjects(Find_Distance(100), Find_FoodIDs, Sort_Distance())) {
+	for (var obj in FindObjects(Find_Distance(100), Find_FoodIDs, Sort_Distance()))
+	{
 		if (!PathFree(x, y, obj->GetX(), obj->GetY())) continue;
 		if (obj->GBackLiquid()) continue;
 		food = obj;
@@ -461,48 +542,56 @@ private func UpdateFood() {
 
 /* FindLava */
 
-private func FindLava() {
-    var lava_spot = FindLocation(Loc_Material("DuroLava"), Loc_Space(20));
-    if (lava_spot) return lava_spot;
+func FindLava()
+{
+	var lava_spot = FindLocation(Loc_Material("DuroLava"), Loc_Space(20));
+	if (lava_spot) return lava_spot;
 
-    var lava_spot = FindLocation(Loc_Material("Lava"), Loc_Space(20));
-    if (lava_spot) return lava_spot;
+	var lava_spot = FindLocation(Loc_Material("Lava"), Loc_Space(20));
+	if (lava_spot) return lava_spot;
 
-    return;
+	return;
 }
 
 /* Turning */
 
-private func CheckTurn(int dir, bool move) {
-    if(!GetEffect("IntTurning", this)) {
-        SetDir(dir);
-        AddEffect("IntTurning", this, 1, 1, this, nil, move);
-        return true;
-    }
+func CheckTurn(int dir, bool move)
+{
+	if (!GetEffect("IntTurning", this))
+	{
+		SetDir(dir);
+		AddEffect("IntTurning", this, 1, 1, this, nil, move);
+		return true;
+	}
 	return false;
 }
 
-private func FxIntTurningStart(object target, effect fx, temp, move) {
-    fx.mvmn = move;
+func FxIntTurningStart(object target, effect fx, temp, move)
+{
+	fx.mvmn = move;
 
-    if(!InLiquid()) {
-        Stop();
-        SetAction("Turn");
-    }
-    else {
-        SetComDir(COMD_Stop);
-        SetXDir(0);
-        SetAction("SwimTurn");
-    }
+	if (!InLiquid())
+	{
+		Stop();
+		SetAction("Turn");
+	} else {
+		SetComDir(COMD_Stop);
+		SetXDir(0);
+		SetAction("SwimTurn");
+	}
 
-	if(temp) return true;
+	if (temp) return true;
 }
 
-private func FxIntTurningTimer(object target, effect fx, int time) {
-	if(GetDir() == DIR_Left) turn_angle += 15;
-	else turn_angle -= 15;
+func FxIntTurningTimer(object target, effect fx, int time)
+{
+	if (GetDir() == DIR_Left)
+		turn_angle += 15;
+	else
+		turn_angle -= 15;
 
-	if(turn_angle < -60 || turn_angle > 180) {
+	if (turn_angle < -60 || turn_angle > 180)
+	{
 		turn_angle = BoundBy(turn_angle, -60, 180);
 		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
 		return -1;
@@ -511,31 +600,37 @@ private func FxIntTurningTimer(object target, effect fx, int time) {
 	return 1;
 }
 
-private func FxIntTurningStop(object target, effect fx, temp) {
-    if(fx.mvmn) {
-        if(!InLiquid()) {
-            if (GetDir()) SetComDir(COMD_Right);
-            else SetComDir(COMD_Left);
-            return SetAction("Walk");
-        }
+func FxIntTurningStop(object target, effect fx, temp)
+{
+	if (fx.mvmn)
+	{
+		if (!InLiquid())
+		{
+			if (GetDir()) SetComDir(COMD_Right);
+			else SetComDir(COMD_Left);
+			return SetAction("Walk");
+		}
 
-        if (GetDir()) SetComDir(COMD_UpRight);
-        else SetComDir(COMD_UpLeft);
-        return SetAction("Swim");
-    }
+		if (GetDir()) SetComDir(COMD_UpRight);
+		else SetComDir(COMD_UpLeft);
+		return SetAction("Swim");
+	}
 }
 
 /* Breathing */
 
-private func CheckBreathe() {
-    if(!GetEffect("IntBreathing", this)) AddEffect("IntBreathing", this, 1, 1, this, nil);
+func CheckBreathe()
+{
+	if (!GetEffect("IntBreathing", this)) AddEffect("IntBreathing", this, 1, 1, this, nil);
 }
 
-private func FxIntBreathingStart(object target, effect fx, temp) {
-    if(temp) return true;
+func FxIntBreathingStart(object target, effect fx, temp)
+{
+	if (temp) return true;
 }
 
-private func FxIntBreathingTimer(object target, effect fx, int time) {
+func FxIntBreathingTimer(object target, effect fx, int time)
+{
 	DoBreath(MaxBreath - GetBreath());
 	if (!InLiquid()) return -1;
 
@@ -544,34 +639,40 @@ private func FxIntBreathingTimer(object target, effect fx, int time) {
 
 /* Fossilizing */
 
-private func CheckFossilize() {
-    if(!GetEffect("IntFossilizing", this))
-        // Ca. 60 seconds till death without lava
-        AddEffect("IntFossilizing", this, 1, 11, this, nil);
+func CheckFossilize()
+{
+	if (!GetEffect("IntFossilizing", this))
+		// Ca. 60 seconds till death without lava
+		AddEffect("IntFossilizing", this, 1, 11, this, nil);
 }
 
-private func FxIntFossilizingStart(object target, effect fx, temp) {
-    if(temp) return true;
+func FxIntFossilizingStart(object target, effect fx, temp)
+{
+	if (temp) return true;
 }
 
-private func FxIntFossilizingTimer(object target, effect fx, int time) {
-    if(GetMaterial() == Material("DuroLava") || GetMaterial() == Material("Lava")) {
-        color++;
-        if(Speed < MaxSpeed) Speed += Random(2);
-        if(JumpSpeed < MaxJumpSpeed) {
-            JumpSpeed += Random(3);
-            if(JumpSpeed > MaxJumpSpeed) JumpSpeed = MaxJumpSpeed;
-        }
-    }
-    else { // if(GetMaterial() == Material("Water"))
-        color--;
-        if(Speed > 0) Speed -= Random(2);
-        if(JumpSpeed > 0) {
-            JumpSpeed -= Random(3);
-            if(JumpSpeed < 0) JumpSpeed = 0;
-        }
-    }
-    if(color < 45 || color > 255) {
+func FxIntFossilizingTimer(object target, effect fx, int time)
+{
+	if (GetMaterial() == Material("DuroLava") || GetMaterial() == Material("Lava"))
+	{
+		color++;
+		if (Speed < MaxSpeed) Speed += Random(2);
+		if (JumpSpeed < MaxJumpSpeed)
+		{
+			JumpSpeed += Random(3);
+			if(JumpSpeed > MaxJumpSpeed) JumpSpeed = MaxJumpSpeed;
+		}
+	} else {
+		color--;
+		if (Speed > 0) Speed -= Random(2);
+		if (JumpSpeed > 0)
+		{
+			JumpSpeed -= Random(3);
+			if(JumpSpeed < 0) JumpSpeed = 0;
+		}
+	}
+	if (color < 45 || color > 255)
+	{
 		color = BoundBy(color, 45, 255);
 		SetClrModulation(RGBa(color, color, color, 255));
 		return -1;
@@ -581,64 +682,61 @@ private func FxIntFossilizingTimer(object target, effect fx, int time) {
 	return 1;
 }
 
-private func FxIntFossilizingStop(object target, effect fx, temp) {
-    if(GetMaterial() == Material("DuroLava") || GetMaterial() == Material("Lava")) return SetAction("Swim");
-    else return Kill();// if(GetMaterial() == Material("Water"))
+func FxIntFossilizingStop(object target, effect fx, temp)
+{
+	if (GetMaterial() == Material("DuroLava") || GetMaterial() == Material("Lava")) return SetAction("Swim");
+	else return Kill();
 }
 
 /* Burning Tail */
 
-private func SetTailOnFire() {
-    if(!GetEffect("IntTailBurning", this)) {
-        AddEffect("IntTailBurning", this, 1, 2, this, nil);
-    }
+func SetTailOnFire()
+{
+	if (!GetEffect("IntTailBurning", this))
+		AddEffect("IntTailBurning", this, 1, 2, this, nil);
 }
 
-private func FxIntTailBurningStart(object target, effect fx, temp) {
-    fx.fire = {
-        R = 200 + Random(55),
-        G = 200 + Random(55),
-        B = 200 + Random(55),
-        Alpha = PV_Linear(255, 0),
-        Size = 4,
-        Phase = PV_Linear(0, 9),
-        DampingX = 1000,
-        DampingY = 1000,
-        Attach = ATTACH_MoveRelative
-    };
+func FxIntTailBurningStart(object target, effect fx, temp)
+{
+	fx.fire = {
+		R = 200 + Random(55),
+		G = 200 + Random(55),
+		B = 200 + Random(55),
+		Alpha = PV_Linear(255, 0),
+		Size = 4,
+		Phase = PV_Linear(0, 9),
+		DampingX = 1000,
+		DampingY = 1000,
+		Attach = ATTACH_MoveRelative
+	};
 
-	if(temp) return true;
+	if (temp) return true;
 }
 
-private func FxIntTailBurningTimer(object target, effect fx, int time) {
-    if (!GetAlive() || InLiquid()) {
-        var level;
-        level = 5 ?? 10;
-        var particles = Particles_Smoke();
-        particles.Size = PV_Linear(PV_Random(level/2, level), PV_Random(2 * level, 3 * level));
-        var pos = [3, -1, 0];
-        var dir = [PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), 0];
-        CreateParticleAtBone("Smoke", "tail_3", pos, dir, PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
-        return -1;
-    }
+func FxIntTailBurningTimer(object target, effect fx, int time)
+{
+	if (!GetAlive() || InLiquid())
+	{
+		var level;
+		level = 5 ?? 10;
+		var particles = Particles_Smoke();
+		particles.Size = PV_Linear(PV_Random(level/2, level), PV_Random(2 * level, 3 * level));
+		var pos = [3, -1, 0];
+		var dir = [PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), 0];
+		CreateParticleAtBone("Smoke", "tail_3", pos, dir, PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
+		return -1;
+	}
 
-    var pos = [3, -1, 0];
-    var dir = [0, 0, 0];
-    CreateParticleAtBone("Fire", "tail_3", pos, dir, 5, fx.fire, 1);
+	var pos = [3, -1, 0];
+	var dir = [0, 0, 0];
+	CreateParticleAtBone("Fire", "tail_3", pos, dir, 5, fx.fire, 1);
 	return 1;
 }
 
 /* ActMap */
 
-local MaxEnergy = 250000;
-local MaxBreath = 720; // Mooq can breathe for 20 seconds under water. // But it haz special effects ignoring MaxBreath.
-local MaxSpeed = 100;
-local Speed = MaxSpeed;
-local MaxJumpSpeed = 300;
-local JumpSpeed = MaxJumpSpeed;
-local NoBurnDecay = 1;
-
 local ActMap = {
+
 Walk = {
 	Prototype = Action,
 	Name = "Walk",
@@ -815,3 +913,13 @@ IdleTailwave = {
 	StartCall = "ClearActivity",
 },
 };
+
+local Name = "$Name$";
+local Description = "$Description$";
+local MaxEnergy = 250000;
+local MaxBreath = 720; // Mooq can breathe for 20 seconds under water. // But it haz special effects ignoring MaxBreath.
+local MaxSpeed = 100;
+local Speed = MaxSpeed;
+local MaxJumpSpeed = 300;
+local JumpSpeed = MaxJumpSpeed;
+local NoBurnDecay = 1;
