@@ -571,7 +571,7 @@ global func Test8_Execute()
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
-	var ammo = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
 	
 	stackable->SetStackCount(5);
 	other->SetStackCount(5);
@@ -595,7 +595,7 @@ global func Test8_Execute()
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
-	var ammo = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
 	
 	stackable->SetStackCount(stackable->MaxStackCount() + 5);
 	other->SetStackCount(5);
@@ -619,7 +619,7 @@ global func Test8_Execute()
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
-	var ammo = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
 	
 	stackable->SetStackCount(stackable->MaxStackCount() + 5);
 	other->SetStackCount(5);
@@ -644,6 +644,171 @@ global func Test8_Execute()
 	return passed;
 }
 
+
+
+global func Test9_OnStart(int plr){ return true;}
+global func Test9_OnFinished(){ return; }
+global func Test9_Execute()
+{
+	Log("Test the behaviour of TryPutInto() with objects that contain an object without extra slot");
+	var container = CreateObject(Dummy);
+	var lorry = container->CreateContents(Lorry);
+
+	Log("****** TryPutInto() a single object stack into an object");
+
+	var stackable = CreateObject(Arrow);
+	stackable->SetStackCount(1);
+
+	var passed = doTest("TryPutInto() a single object stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), 1);
+
+	stackable->RemoveObject();
+	
+	Log("****** TryPutInto() a full stack into an object");
+	
+	stackable = CreateObject(Arrow);
+	stackable->SetStackCount(stackable->MaxStackCount());
+
+	passed = doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
+
+	stackable->RemoveObject();
+
+	Log("****** TryPutInto() a partial stack into an object that contains a full stack");
+
+	stackable = CreateObject(Arrow);
+	var other = CreateObject(Arrow);
+	stackable->SetStackCount(5);
+	other->SetStackCount(other->MaxStackCount());
+	other->Enter(container);
+
+	passed = doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
+	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
+
+	other->RemoveObject();
+	stackable->RemoveObject();
+
+	Log("****** TryPutInto() a full stack into an object that contains a partial stack");
+
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	stackable->SetStackCount(stackable->MaxStackCount());
+	other->SetStackCount(5);
+	other->Enter(container);
+
+	passed = doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
+	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
+
+	other->RemoveObject();
+	stackable->RemoveObject();
+
+	Log("****** TryPutInto() a partial stack into a container that contains a partial stack");
+	
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	var ammo = CreateObject(Arrow);
+	
+	stackable->SetStackCount(5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+	
+	other->Enter(container);
+	ammo->Enter(lorry);
+
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
+	passed &= doTest("The stack inside the weapon inside the container is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
+	passed &= doTest("The stack inside the container is served. Got %d, expected %d.", other->GetStackCount(), 10);
+
+	other->RemoveObject();
+	ammo->RemoveObject();
+
+	Log("****** TryPutInto() a partial stack into an object inside a container that contains a partial stack");
+	
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
+	
+	stackable->SetStackCount(5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+	
+	other->Enter(container);
+	ammo->Enter(lorry);
+	
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
+	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), 10);
+	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
+
+	other->RemoveObject();
+	ammo->RemoveObject();
+
+	Log("****** TryPutInto() an overfull stack into a container that contains a partial stack");
+	
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
+	
+	stackable->SetStackCount(stackable->MaxStackCount() + 5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+	
+	other->Enter(container);
+	ammo->Enter(lorry);
+	
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The stack inside the weapon inside the container is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
+	passed &= doTest("The stack inside the container is served. Got %d, expected %d.", other->GetStackCount(), other->MaxStackCount());
+	passed &= doTest("The stack changed correctly. Got %d, expected %d.", stackable->GetStackCount(), 10);
+
+	other->RemoveObject();
+	ammo->RemoveObject();
+	stackable->RemoveObject();
+
+	Log("****** TryPutInto() an overfull stack into an object inisde a container that contains a partial stack");
+	
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
+	
+	stackable->SetStackCount(stackable->MaxStackCount() + 5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+
+	other->Enter(container);
+	ammo->Enter(lorry);
+	
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), true);
+	passed &= doTest("The object did not get removed and is not contained. Got %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
+	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
+	passed &= doTest("The stack changes amount correctly. Got %d, expected %d.", stackable->GetStackCount(), 10);
+
+	other->RemoveObject();
+	ammo->RemoveObject();
+	stackable->RemoveObject();
+
+	return passed;
+}
 
 
 global func doTest(description, returned, expected)
