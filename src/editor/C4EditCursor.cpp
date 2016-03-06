@@ -274,6 +274,10 @@ void C4EditCursor::UpdateStatusBar()
 		str.Format("%i/%i (%s)",X,Y,Target ? (Target->GetName()) : LoadResStr("IDS_CNS_NOTHING") );
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeCreateObject:
+		str.Format(LoadResStr("IDS_CNS_CREATESTATUS"), creator_def ? (creator_def->GetName()) : LoadResStr("IDS_CNS_NOTHING"));
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
 		str.Format("%i/%i (fg: %s, bg: %s)",X,Y,
                            MatValid(::Landscape.GetMat(X,Y)) ? ::MaterialMap.Map[::Landscape.GetMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING"),
@@ -286,8 +290,8 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged(bool by_objectlist)
 {
-	Console.PropertyDlgUpdate(selection, false);
-	if (!by_objectlist) Console.ObjectListDlg.Update(selection);
+	::Console.PropertyDlgUpdate(selection, false);
+	if (!by_objectlist) ::Console.ObjectListDlg.Update(selection);
 }
 
 void C4EditCursor::AddToSelection(C4PropList *add_proplist)
@@ -378,6 +382,11 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 			if (!Target)
 				{ ClearSelection(); DragFrame=true; X2=X; Y2=Y; }
 		}
+		OnSelectionChanged();
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeCreateObject:
+		ApplyCreateObject(!!(dwKeyState & MK_SHIFT));
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
@@ -398,7 +407,6 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 
 	DropTarget=NULL;
 
-	OnSelectionChanged();
 	return true;
 }
 
@@ -432,11 +440,11 @@ bool C4EditCursor::RightButtonDown(DWORD dwKeyState)
 				if (!Target) ClearSelection();
 			}
 		}
+		OnSelectionChanged();
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
-	OnSelectionChanged();
 	return true;
 }
 
@@ -718,6 +726,7 @@ void C4EditCursor::Default()
 #endif
 	Hold=DragFrame=DragLine=false;
 	selection.clear();
+	creator_def = NULL;
 }
 
 void C4EditCursor::Clear()
@@ -746,7 +755,7 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	// Update prop tools by mode
 	switch (Mode)
 	{
-	case C4CNS_ModeEdit: case C4CNS_ModePlay:
+	case C4CNS_ModeEdit: case C4CNS_ModePlay: case C4CNS_ModeCreateObject:
 		Console.ToolsDlgClose();
 		break;
 	case C4CNS_ModeDraw:
@@ -780,7 +789,12 @@ bool C4EditCursor::ToggleMode()
 	switch (Mode)
 	{
 	case C4CNS_ModePlay: iNewMode=C4CNS_ModeEdit; break;
-	case C4CNS_ModeEdit: iNewMode=C4CNS_ModeDraw; break;
+#ifdef WITH_QT_EDITOR
+	case C4CNS_ModeEdit: iNewMode=C4CNS_ModeCreateObject; break;
+#else
+	case C4CNS_ModeEdit: iNewMode = C4CNS_ModeDraw; break;
+#endif
+	case C4CNS_ModeCreateObject: iNewMode = C4CNS_ModeDraw; break;
 	case C4CNS_ModeDraw: iNewMode=C4CNS_ModePlay; break;
 	default:             iNewMode=C4CNS_ModePlay; break;
 	}
@@ -789,7 +803,15 @@ bool C4EditCursor::ToggleMode()
 	SetMode(iNewMode);
 
 	return true;
+}
 
+void C4EditCursor::ApplyCreateObject(bool container)
+{
+	if (!EditingOK()) return;
+	if (!creator_def) return;
+	if (container && !Target) return;
+	// execute/send control
+	EMControl(CID_EMMoveObj, C4ControlEMMoveObject::CreateObject(creator_def->id, ftofix(X), ftofix(Y), container ? Target : NULL));
 }
 
 void C4EditCursor::ApplyToolBrush()

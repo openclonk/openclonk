@@ -83,10 +83,12 @@ public:
 	void Execute();
 	void AddViewport(C4ViewportWindow *cvp);
 	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active);
+	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
 #else
 	void Execute() { }
 	void AddViewport(C4ViewportWindow *cvp) { }
 	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active) { }
+	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
 #endif
 
 	void SetCursor(Cursor cursor);

@@ -932,6 +932,8 @@ elseif(USE_WIN32_WINDOWS)
 			src/editor/C4ConsoleQtPropListViewer.h
 			src/editor/C4ConsoleQtObjectListViewer.cpp
 			src/editor/C4ConsoleQtObjectListViewer.h
+			src/editor/C4ConsoleQtDefinitionListViewer.cpp
+			src/editor/C4ConsoleQtDefinitionListViewer.h
 			src/editor/C4ConsoleQtMainWindow.ui
 			src/editor/resource.qrc
 			${qt_editor_resources}

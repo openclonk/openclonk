@@ -1196,9 +1196,9 @@ C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4
 
 }
 
-C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Real x, C4Real y)
+C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Real x, C4Real y, C4Object *container)
 {
-	auto ctl = new C4ControlEMMoveObject(EMMO_Create, x, y, nullptr);
+	auto ctl = new C4ControlEMMoveObject(EMMO_Create, x, y, container);
 	ctl->StringParam = id.ToString();
 	return ctl;
 }
@@ -1346,12 +1346,21 @@ void C4ControlEMMoveObject::Execute() const
 	break;
 	case EMMO_Create:
 	{
-		::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
+		// Create object outside or contained
+		// If container is desired but not valid, do nothing (don't create object outside instead)
+		C4Object *container = NULL;
+		if (iTargetObj)
+		{
+			container = ::Objects.SafeObjectPointer(iTargetObj);
+			if (!container || !container->Status) return;
+		}
+		C4Object *obj = ::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
+		if (container && obj && container->Status && obj->Status) obj->Enter(container);
 	}
 	break;
 	}
 	// update property dlg & status bar
-	if (fLocalCall)
+	if (fLocalCall && eAction != eAction)
 		Console.EditCursor.OnSelectionChanged();
 }
 

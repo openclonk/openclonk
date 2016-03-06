@@ -34,6 +34,7 @@ IDS_CHAT_SERVER=Server
 IDS_CNS_ACTION=Action: 
 IDS_CNS_CONSOLE=Editor
 IDS_CNS_CONTENTS=Contents: 
+IDS_CNS_CREATESTATUS=Place new %s
 IDS_CNS_CREATOR=Create objects
 IDS_CNS_DROPNODEF=Object invalid or not loaded: %s
 IDS_CNS_EFFECTS=Effects: 

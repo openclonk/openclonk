@@ -27,19 +27,11 @@
 #include <C4GameObjects.h>
 
 
-/* Object list information cache */
-
-C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel(class QTreeView *view)
-	: selection_model(NULL), view(view), is_updating(0), last_row_count(0)
+C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel() : last_row_count(0)
 {
 	// default font colors
-	clr_deleted.setColor(QApplication::palette(view).color(QPalette::Mid));
-	clr_effect.setColor(QApplication::palette(view).color(QPalette::Dark));
-	// install the item model
-	view->setModel(this);
-	// get the selection model to control it
-	selection_model = view->selectionModel();
-	connect(selection_model, &QItemSelectionModel::selectionChanged, this, &C4ConsoleQtObjectListModel::OnSelectionChanged);
+	clr_deleted.setColor(QApplication::palette().color(QPalette::Mid));
+	clr_effect.setColor(QApplication::palette().color(QPalette::Dark));
 	// install self for callbacks from ObjectListDlg
 	::Console.ObjectListDlg.SetModel(this);
 }
@@ -64,25 +56,6 @@ void C4ConsoleQtObjectListModel::OnItemRemoved(C4PropList *p)
 		if (idx.internalPointer() == p)
 			this->changePersistentIndex(idx, QModelIndex());
 	Invalidate();
-}
-
-void C4ConsoleQtObjectListModel::SetSelection(class C4EditCursorSelection &rSelection)
-{
-	// Reflect selection change in view
-	++is_updating;
-	selection_model->clearSelection();
-	QModelIndex last_idx;
-	for (C4Value &v : rSelection)
-	{
-		QModelIndex idx = GetModelIndexByItem(v.getPropList());
-		if (idx.isValid())
-		{
-			selection_model->select(idx, QItemSelectionModel::Select);
-			last_idx = idx;
-		}
-	}
-	if (last_idx.isValid()) view->scrollTo(last_idx);
-	--is_updating;
 }
 
 int C4ConsoleQtObjectListModel::rowCount(const QModelIndex & parent) const
@@ -208,20 +181,6 @@ QModelIndex C4ConsoleQtObjectListModel::parent(const QModelIndex &index) const
 	}
 	// Can't happen
 	return QModelIndex();
-}
-
-void C4ConsoleQtObjectListModel::OnSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
-{
-	if (is_updating) return;
-	// Forward to EditCursor
-	C4PropList *p;
-	for (const QModelIndex &item : deselected.indexes())
-		if ((p = static_cast<C4PropList *>(item.internalPointer())))
-			::Console.EditCursor.RemoveFromSelection(p);
-	for (const QModelIndex &item : selected.indexes())
-		if ((p = static_cast<C4PropList *>(item.internalPointer())))
-			::Console.EditCursor.AddToSelection(p);
-	::Console.EditCursor.OnSelectionChanged(true);
 }
 
 QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) const

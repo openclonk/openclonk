@@ -20,6 +20,7 @@
 #include <C4ConsoleQtState.h>
 #include <C4ConsoleQtPropListViewer.h>
 #include <C4ConsoleQtObjectListViewer.h>
+#include <C4ConsoleQtDefinitionListViewer.h>
 #include <C4Console.h>
 #include <StdRegistry.h>
 #include <C4ViewportWindow.h>
@@ -217,6 +218,14 @@ void C4ConsoleQtMainWindow::CursorSelectPressed(bool down)
 		state->ui.actionCursorSelect->setChecked(true);
 }
 
+void C4ConsoleQtMainWindow::CursorCreateObjPressed(bool down)
+{
+	if (down)
+		::Console.EditCursor.SetMode(C4CNS_ModeCreateObject);
+	else // cannot un-check by pressing again
+		state->ui.actionCursorCreateObj->setChecked(true);
+}
+
 void C4ConsoleQtMainWindow::CursorDrawPenPressed(bool down)
 {
 	if (down)
@@ -332,13 +341,30 @@ void C4ConsoleQtMainWindow::PropertyConsoleEditEnter()
 	::Console.EditCursor.In(property_console_edit->text().toUtf8());
 }
 
+// View selection changes
+void C4ConsoleQtMainWindow::OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+	state->OnCreatorSelectionChanged(selected, deselected);
+}
+
+void C4ConsoleQtMainWindow::OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous)
+{
+	state->OnCreatorCurrentChanged(current, previous);
+}
+
+void C4ConsoleQtMainWindow::OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+	state->OnObjectListSelectionChanged(selected, deselected);
+}
+
+
 
 
 /* Common C4ConsoleGUI interface */
 
 C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(NULL),
 		enabled(false), recording(false), net_enabled(false), landscape_mode(C4LSC_Dynamic),
-	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush)
+	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0)
 {
 }
 
@@ -403,7 +429,13 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// View models
 	property_model.reset(new C4ConsoleQtPropListModel());
 	ui.propertyTable->setModel(property_model.get());
-	object_list_model.reset(new C4ConsoleQtObjectListModel(ui.objectListView));
+	object_list_model.reset(new C4ConsoleQtObjectListModel());
+	ui.objectListView->setModel(object_list_model.get());
+	window->connect(ui.objectListView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnObjectListSelectionChanged);
+	definition_list_model.reset(new C4ConsoleQtDefinitionListModel());
+	ui.creatorTreeView->setModel(definition_list_model.get());
+	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
+	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);
 	
 	window->showNormal();
 #ifdef USE_WIN32_WINDOWS
@@ -447,6 +479,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionPause->setEnabled(enabled);
 	ui.actionCursorGame->setEnabled(enabled);
 	ui.actionCursorSelect->setEnabled(enabled);
+	ui.actionCursorCreateObj->setEnabled(enabled);
 	ui.actionCursorDrawPen->setEnabled(has_draw_tools);
 	ui.actionCursorDrawLine->setEnabled(has_draw_tools);
 	ui.actionCursorDrawRect->setEnabled(has_draw_tools);
@@ -472,6 +505,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	// Checked states
 	ui.actionCursorGame->setChecked(editcursor_mode == C4CNS_ModePlay);
 	ui.actionCursorSelect->setChecked(editcursor_mode == C4CNS_ModeEdit);
+	ui.actionCursorCreateObj->setChecked(editcursor_mode == C4CNS_ModeCreateObject);
 	ui.actionCursorDrawPen->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Brush));
 	ui.actionCursorDrawLine->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Line));
 	ui.actionCursorDrawRect->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Rect));
@@ -597,4 +631,130 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	// Function update in script combo box
 	if (force_function_update)
 		SetComboItems(ui.propertyInputBox, ::Console.GetScriptSuggestions(::Console.PropertyDlgObject, C4Console::MRU_Object));
+}
+
+void C4ConsoleGUIState::ReInitDefinitions()
+{
+	if (definition_list_model) definition_list_model->ReInit();
+}
+
+void C4ConsoleGUIState::OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+	if (is_object_selection_updating || !definition_list_model) return; // only process callbacks from users interacting with widget
+	// Forward to EditCursor
+	C4Def *def;
+	for (const QModelIndex &item : deselected.indexes())
+		if ((def = definition_list_model->GetDefByModelIndex(item)))
+			::Console.EditCursor.RemoveFromSelection(def);
+	for (const QModelIndex &item : selected.indexes())
+		if ((def = definition_list_model->GetDefByModelIndex(item)))
+			::Console.EditCursor.AddToSelection(def);
+	::Console.EditCursor.OnSelectionChanged(true);
+	// Switching to def selection mode: Remove any non-defs from selection
+	if (!selected.empty())
+	{
+		C4EditCursorSelection sel_copy = ::Console.EditCursor.GetSelection();
+		for (C4Value & v : sel_copy)
+		{
+			C4PropList *p = v.getPropList();
+			if (!p) continue;
+			if (p->GetObject() || !p->GetDef())
+			{
+				QModelIndex desel_index = object_list_model->GetModelIndexByItem(p);
+				if (desel_index.isValid()) ui.objectListView->selectionModel()->select(desel_index, QItemSelectionModel::Deselect);
+			}
+		}
+		// ...and switch to creator mode
+		::Console.EditCursor.SetMode(C4CNS_ModeCreateObject);
+	}
+}
+
+void C4ConsoleGUIState::OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+	if (is_object_selection_updating) return; // only process callbacks from users interacting with widget
+	// Forward to EditCursor
+	C4PropList *p;
+	for (const QModelIndex &item : deselected.indexes())
+		if ((p = static_cast<C4PropList *>(item.internalPointer())))
+			::Console.EditCursor.RemoveFromSelection(p);
+	for (const QModelIndex &item : selected.indexes())
+		if ((p = static_cast<C4PropList *>(item.internalPointer())))
+			::Console.EditCursor.AddToSelection(p);
+	::Console.EditCursor.OnSelectionChanged(true);
+	// Switching to object/effect selection mode: Remove any non-objects/effects from selection
+	if (!selected.empty())
+	{
+		C4EditCursorSelection sel_copy = ::Console.EditCursor.GetSelection();
+		for (C4Value & v : sel_copy)
+		{
+			C4PropList *p = v.getPropList();
+			if (!p) continue;
+			C4Def *def = p->GetDef();
+			if (def && !p->GetObject() && !p->GetEffect())
+			{
+				QModelIndex desel_index = definition_list_model->GetModelIndexByItem(def);
+				if (desel_index.isValid()) ui.creatorTreeView->selectionModel()->select(desel_index, QItemSelectionModel::Deselect);
+			}
+		}
+		// ...and switch to editing mode
+		::Console.EditCursor.SetMode(C4CNS_ModeEdit);
+	}
+}
+
+void C4ConsoleGUIState::SetObjectSelection(class C4EditCursorSelection &rSelection)
+{
+	if (!window.get()) return;
+	// Callback from EditCursor when selection was changed e.g. from viewport
+	// Reflect selection change in object and definition view
+	C4Def *creator_def = ::Console.EditCursor.GetCreatorDef();
+	++is_object_selection_updating;
+	ui.objectListView->selectionModel()->clearSelection();
+	ui.creatorTreeView->selectionModel()->clearSelection();
+	QModelIndex last_idx_obj, last_idx_def, creator_idx;
+	for (C4Value &v : rSelection)
+	{
+		C4PropList *p = v.getPropList();
+		if (!p) continue;
+		C4Def *def = p->GetDef();
+		if (def && !p->GetObject())
+		{
+			
+			QModelIndex idx = definition_list_model->GetModelIndexByItem(def);
+			if (idx.isValid())
+			{
+				ui.creatorTreeView->selectionModel()->select(idx, QItemSelectionModel::Select);
+				last_idx_def = idx;
+				if (def == creator_def) creator_idx = idx;
+			}
+		}
+		else
+		{
+			QModelIndex idx = object_list_model->GetModelIndexByItem(v.getPropList());
+			if (idx.isValid())
+			{
+				ui.objectListView->selectionModel()->select(idx, QItemSelectionModel::Select);
+				last_idx_obj = idx;
+			}
+		}
+	}
+	if (last_idx_obj.isValid()) ui.objectListView->scrollTo(last_idx_obj);
+	if (last_idx_def.isValid()) ui.creatorTreeView->scrollTo(last_idx_def);
+	else if (::Console.EditCursor.GetMode() == C4CNS_ModeCreateObject)
+	{
+		// Switch away from creator tool if user selected a non-definition
+		::Console.EditCursor.SetMode(C4CNS_ModeEdit);
+	}
+	// Sync creator selection
+	if (creator_idx.isValid()) ui.creatorTreeView->selectionModel()->select(creator_idx, QItemSelectionModel::Current);
+	--is_object_selection_updating;
+}
+
+void C4ConsoleGUIState::OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous)
+{
+	// A new definition was selected from the creator definition view
+	// Reflect in selection and auto-switch to creation mode if necessery
+	if (!definition_list_model) return;
+	C4Def *new_def = definition_list_model->GetDefByModelIndex(current);
+	//if (new_def) ::Console.EditCursor.SetMode(C4CNS_ModeCreateObject); - done by selection change
+	::Console.EditCursor.SetCreatorDef(new_def); // set or clear def in EditCursor
 }

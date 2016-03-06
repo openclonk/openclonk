@@ -30,24 +30,17 @@ class C4ConsoleQtObjectListModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
-	class QItemSelectionModel *selection_model;
-	QTreeView *view;
-	int32_t is_updating;
 	mutable int32_t last_row_count;
 	QBrush clr_deleted, clr_effect;
 
 public:
-	C4ConsoleQtObjectListModel(class QTreeView *view);
+	C4ConsoleQtObjectListModel();
 	~C4ConsoleQtObjectListModel();
 
 	// Refresh object list on next redraw
 	void Invalidate();
 	void OnItemRemoved(C4PropList *p);
 
-	// Callback from EditCursor when selection was changed e.g. from viewport
-	void SetSelection(class C4EditCursorSelection &rSelection);
-
-private:
 	QModelIndex GetModelIndexByItem(class C4PropList *item) const;
 
 protected:
@@ -56,9 +49,6 @@ protected:
 	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	QModelIndex parent(const QModelIndex &index) const override;
-
-	// signal callback when user changed selection in dialogue
-	void OnSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 };
 
 #endif // WITH_QT_EDITOR

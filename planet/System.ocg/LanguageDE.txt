@@ -34,6 +34,7 @@ IDS_CHAT_SERVER=Server
 IDS_CNS_ACTION=Aktivität: 
 IDS_CNS_CONSOLE=Editor
 IDS_CNS_CONTENTS=Inhalt: 
+IDS_CNS_CREATESTATUS=Platzierung: %s
 IDS_CNS_CREATOR=Objekte erstellen
 IDS_CNS_DROPNODEF=Ungültiges oder nicht geladenes Objekt: %s
 IDS_CNS_EFFECTS=Effekte: 

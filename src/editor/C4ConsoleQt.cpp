@@ -341,6 +341,13 @@ void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTr
 	 state->OnViewportActiveChanged(cvp, is_active);
  }
 
+ void C4ConsoleGUI::OnObjectSelectionChanged(class C4EditCursorSelection &selection)
+ {
+	 // selection changed (through other means than creator or object list view)
+	 // reflect selection change in dialogues
+	 state->SetObjectSelection(selection);
+ }
+
 void C4ToolsDlg::UpdateToolCtrls()
 {
 	// Set selected drawing tool

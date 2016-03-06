@@ -462,7 +462,7 @@ public:
 	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
-	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y);
+	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y, C4Object *container);
 	~C4ControlEMMoveObject();
 protected:
 	C4ControlEMObjectAction eAction; // action to be performed

@@ -19,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>131</width>
+      <width>74</width>
       <height>20</height>
      </rect>
     </property>
@@ -35,7 +35,7 @@
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>131</width>
+      <width>74</width>
       <height>20</height>
      </rect>
     </property>
@@ -265,7 +265,11 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeView" name="creatorTreeView"/>
+      <widget class="QTreeView" name="creatorTreeView">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
      </item>
      <item>
       <widget class="QComboBox" name="creatorModeComboBox"/>
@@ -290,6 +294,7 @@
    <addaction name="separator"/>
    <addaction name="actionCursorGame"/>
    <addaction name="actionCursorSelect"/>
+   <addaction name="actionCursorCreateObj"/>
    <addaction name="separator"/>
    <addaction name="actionCursorDrawPen"/>
    <addaction name="actionCursorDrawLine"/>
@@ -584,6 +589,21 @@
     <string comment="res">IDS_MENU_ABOUT</string>
    </property>
   </action>
+  <action name="actionCursorCreateObj">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/CreateObj_Trans.png</normaloff>:/editor/res/CreateObj_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>CURSOR_CREATEOBJ</string>
+   </property>
+   <property name="toolTip">
+    <string>CURSOR_CREATEOBJ_TIP</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -596,8 +616,8 @@
    <slot>PlayPressed(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>523</x>
-     <y>299</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>523</x>
@@ -973,6 +993,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionCursorCreateObj</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>CursorCreateObjPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1000,5 +1036,6 @@
   <slot>ViewportNew()</slot>
   <slot>HelpAbout()</slot>
   <slot>ConsoleEnter(QString)</slot>
+  <slot>CursorCreateObjPressed(bool)</slot>
  </slots>
 </ui>

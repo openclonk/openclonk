@@ -860,7 +860,8 @@ void C4ObjectListDlg::Open()
 
 void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
 {
-	if (view_model) view_model->SetSelection(rSelection);
+	// Update done through console
+	::Console.OnObjectSelectionChanged(rSelection);
 }
 
 // Could do some crazy fine-grained updates. But updating is cheap enough...

@@ -120,6 +120,7 @@ public:
 	void PausePressed(bool down);
 	void CursorGamePressed(bool down);
 	void CursorSelectPressed(bool down);
+	void CursorCreateObjPressed(bool down);
 	void CursorDrawPenPressed(bool down);
 	void CursorDrawLinePressed(bool down);
 	void CursorDrawRectPressed(bool down);
@@ -147,6 +148,10 @@ public:
 	// Console edits enter pressed events
 	void MainConsoleEditEnter(); // console edit below log
 	void PropertyConsoleEditEnter(); // console edit of property window
+	// View selection changes
+	void OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
+	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 };
 
 
@@ -159,6 +164,7 @@ public:
 	std::unique_ptr<C4ConsoleQtMainWindow> window;
 	std::unique_ptr<class C4ConsoleQtPropListModel> property_model;
 	std::unique_ptr<class C4ConsoleQtObjectListModel> object_list_model;
+	std::unique_ptr<class C4ConsoleQtDefinitionListModel> definition_list_model;
 	std::list<C4ConsoleViewportWidget *> viewports;
 	std::list<std::unique_ptr<C4ConsoleClientAction> > client_actions;
 	std::list<std::unique_ptr<C4ConsoleRemovePlayerAction> > player_actions;
@@ -177,6 +183,9 @@ public:
 	int32_t landscape_mode, editcursor_mode, drawing_tool;
 	StdCopyStrBuf material, texture, back_material, back_texture;
 
+	// Updating states to prevent callbacks on internal selection updates
+	int32_t is_object_selection_updating;
+
 	C4ConsoleGUIState(C4ConsoleGUI *console);
 	~C4ConsoleGUIState();
 
@@ -188,7 +197,7 @@ public:
 	void UpdateMatTex();
 	void UpdateBackMatTex();
 	// Set modes and tools
-	void SetEnabled(bool to_enabled) { enabled = to_enabled; UpdateActionStates(); }
+	void SetEnabled(bool to_enabled) { enabled = to_enabled; UpdateActionStates(); if (enabled) ReInitDefinitions(); }
 	void SetLandscapeMode(int32_t to_landscape_mode) { landscape_mode = to_landscape_mode; UpdateActionStates(); }
 	void SetEditCursorMode(int32_t to_editcursor_mode) { editcursor_mode = to_editcursor_mode; UpdateActionStates(); }
 	void SetDrawingTool(int32_t to_drawing_tool) { drawing_tool = to_drawing_tool; UpdateActionStates(); }
@@ -209,6 +218,11 @@ public:
 	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active);
 	void SetInputFunctions(std::list<const char*> &functions);
 	void PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update);
+	void ReInitDefinitions();
+	void OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	void SetObjectSelection(class C4EditCursorSelection &rSelection);
+	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
 };
 
 class C4ConsoleGUI::State : public C4ConsoleGUIState
