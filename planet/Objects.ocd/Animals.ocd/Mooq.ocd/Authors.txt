@@ -1,14 +1,3 @@
 Model by pluto
 --------------
 Model, texture and animations.
-
-Sounds by ala
--------------
-CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/).
-
-MooqSnort1-3
-MooqSnorting1-2
-MooqDie1-5/Fat
-MooqHurt1-2
-MooqMunch1-4
-MooqSpit1-2

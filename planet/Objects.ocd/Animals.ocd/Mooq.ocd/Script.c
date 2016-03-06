@@ -72,12 +72,12 @@ func Death()
 	RemoveTimer("UpdateFood");
 	RemoveEffect("IntActivity", this);
 
-	Sound("MooqDie*");
+	Sound("Animals::Mooq::Die*");
 }
 
 func CatchBlow(int damage, object from)
 {
-	Schedule(this, "Sound(\"MooqHurt*\")", RandomX(5, 20));
+	Schedule(this, "Sound(\"Animals::Mooq::Hurt*\")", RandomX(5, 20));
 }
 
 /* Action Callbacks */
@@ -130,7 +130,7 @@ func SpitPhase()
 		if (!GetDir()) iXDir = -iXDir;
 		iYDir = -300;
 
-		Sound("MooqSpit*");
+		Sound("Animals::Mooq::Spit*");
 
 		var obj = CreateContents(Mooq_Firebomb);
 		obj->Exit(iX, iY);
@@ -158,7 +158,7 @@ func EatPhase()
 	{
 		if (!food) return;
 
-		Sound("MooqMunch*");
+		Sound("Animals::Mooq::Munch*");
 		DoEnergy(food->GetMass());
 		food->RemoveObject();
 	}
@@ -283,7 +283,7 @@ func FxIntActivityDamage(target, effect, dmg)
 
 func TaskIdle()
 {
-	Sound("MooqSnorting*");
+	Sound("Animals::Mooq::Snorting*");
 
 	if (!Random(3)) return SetAction("IdleSit");
 	if (!Random(2)) return SetAction("IdleStand");
@@ -466,13 +466,13 @@ func DoJump(bool swimming)
 		if (!GetDir()) iXDir = -iXDir;
 		iYDir = -200;
 
-		if (Random(2)) Sound("MooqSnort*");
+		if (Random(2)) Sound("Animals::Mooq::Snort*");
 
 		SetSpeed(iXDir + GetXDir(100), iYDir + GetYDir(100), 100);
 		return true;
 	}
 
-	if (Random(2)) Sound("MooqSnort*");
+	if (Random(2)) Sound("Animals::Mooq::Snort*");
 	return Jump();
 }
 
