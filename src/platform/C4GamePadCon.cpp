@@ -235,7 +235,7 @@ int32_t C4GamePadOpener::GetID()
 
 bool C4GamePadOpener::IsAttached()
 {
-	return SDL_GameControllerGetAttached(controller);
+	return !!SDL_GameControllerGetAttached(controller);
 }
 
 void C4GamePadOpener::PlayRumble(float strength, uint32_t length)
