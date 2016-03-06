@@ -51,6 +51,9 @@ func Sparkle() {
     CreateParticle("Clusterflight", 0, 0, RandomX(-2,2),RandomX(-2,2), 36, clusterflight, 1);
 }
 
+
+local BorderBound = C4D_Border_Sides;
+
 /* Act Map */
 
 local ActMap = {

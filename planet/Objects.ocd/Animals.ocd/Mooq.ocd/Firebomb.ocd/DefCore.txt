@@ -10,4 +10,3 @@ Mass=10
 Vertices=1
 VertexY=1
 VertexFriction=20
-BorderBound=1
