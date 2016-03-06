@@ -417,6 +417,67 @@ global func Test6_Execute()
 	return passed;
 }
 
+global func Test7_OnStart(int plr){ return true;}
+global func Test7_OnFinished(){ return; }
+global func Test7_Execute()
+{
+	Log("Test the behaviour of TryPutInto() with empty objects");
+	var container = CreateObject(Dummy);
+	
+	Log("****** TryPutInto() a single object stack into an object");
+
+	var stackable = CreateObject(Arrow);
+	stackable->SetStackCount(1);
+
+	var passed = doTest("TryPutInto() a single object stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), 1);
+
+	stackable->RemoveObject();
+	
+	Log("****** TryPutInto() a full stack into an object");
+	
+	stackable = CreateObject(Arrow);
+	stackable->SetStackCount(stackable->MaxStackCount());
+
+	passed = doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
+
+	stackable->RemoveObject();
+
+	Log("****** TryPutInto() a partial stack into an object that contains a full stack");
+
+	stackable = CreateObject(Arrow);
+	var other = CreateObject(Arrow);
+	stackable->SetStackCount(5);
+	other->SetStackCount(other->MaxStackCount());
+	other->Enter(container);
+
+	passed = doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
+	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
+
+	stackable->RemoveObject();
+
+	Log("****** TryPutInto() a full stack into an object that contains a partial stack");
+
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	stackable->SetStackCount(stackable->MaxStackCount());
+	other->SetStackCount(5);
+	other->Enter(container);
+
+	passed = doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
+	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
+	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
+
+	stackable->RemoveObject();
+
+	return passed;
+}
 
 global func doTest(description, returned, expected)
 {
