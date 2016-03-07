@@ -915,6 +915,112 @@ global func Test10_Execute()
 }
 
 
+global func Test11_OnStart(int plr){ return true;}
+global func Test11_OnFinished(){ return; }
+global func Test11_Execute()
+{
+	Log("Test the use case #1: Clonk collects stack while having an incomplete stack in the inventory.");
+
+	var crew = CreateObject(Clonk);
+	var stackable = CreateObject(Arrow);
+	var arrows = crew->CreateContents(Arrow);
+	
+	var diff = 5;
+	arrows->SetStackCount(arrows->InitialStackCount() - diff);
+	stackable->SetStackCount(diff);
+	
+	crew->Collect(stackable);
+	var passed = doTest("Arrow object is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->InitialStackCount());
+	passed &= doTest("Stackable object is removed. Got %v, expected %v.", stackable, nil);
+	
+	arrows->RemoveObject();
+	crew->RemoveObject();
+	return passed;
+}
+
+
+global func Test12_OnStart(int plr){ return true;}
+global func Test12_OnFinished(){ return; }
+global func Test12_Execute()
+{
+	Log("Test the use case #2: Clonk collects stack and it fills his incomplete stacks.");
+
+	var crew = CreateObject(Clonk);
+	var stackable = CreateObject(Arrow);
+	var arrows = crew->CreateContents(Arrow);
+	var bow = crew->CreateContents(Bow);
+	var ammo = bow->CreateContents(Arrow);
+	
+	var to_ammo = 5;
+	var to_arrows = 2;
+	var remaining = arrows->InitialStackCount() - to_ammo - to_arrows;
+	
+	ammo->SetStackCount(ammo->MaxStackCount() - to_ammo);
+	arrows->SetStackCount(arrows->MaxStackCount() - to_arrows);
+
+	Log("****** Prerequisites");
+	
+	var passed = doTest("Ammo is in the bow. Got %v, expected %v.", ammo->Contained(), bow);
+	passed &= doTest("Arrows are in the crew member. Got %v, expected %v.", arrows->Contained(), crew);
+	
+	Log("****** Collect stackable");
+	
+	crew->Collect(stackable);
+	passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
+	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
+	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), remaining);
+	passed &= doTest("The arrow stack is in the crew member inventory. Got %v, expected %v.", stackable->Contained(), crew);
+	
+	ammo->RemoveObject();
+	bow->RemoveObject();
+	arrows->RemoveObject();
+	stackable->RemoveObject();
+	crew->RemoveObject();
+}
+
+
+global func Test13_OnStart(int plr){ return true;}
+global func Test13_OnFinished(){ return; }
+global func Test13_Execute()
+{
+	Log("Test the use case #2: Clonk collects stack and it fills his incomplete stacks, but does not enter the inventory.");
+
+	var crew = CreateObject(Clonk);
+	var stackable = CreateObject(Arrow);
+	var arrows = crew->CreateContents(Arrow);
+	var bow = crew->CreateContents(Bow);
+	var ammo = bow->CreateContents(Arrow);
+	
+	var to_ammo = 5;
+	var to_arrows = 2;
+	var remaining = arrows->InitialStackCount() - to_ammo - to_arrows;
+	
+	ammo->SetStackCount(ammo->MaxStackCount() - to_ammo);
+	arrows->SetStackCount(arrows->MaxStackCount() - to_arrows);
+	
+	crew->CreateContents(Rock, 3);
+
+	Log("****** Prerequisites");
+	
+	var passed = doTest("Ammo is in the bow. Got %v, expected %v.", ammo->Contained(), bow);
+	passed &= doTest("Arrows are in the crew member. Got %v, expected %v.", arrows->Contained(), crew);
+	
+	Log("****** Collect stackable");
+	
+	crew->Collect(stackable);
+	passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
+	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
+	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), remaining);
+	passed &= doTest("The arrow stack is not in the crew member inventory. Got %v, expected %v.", stackable->Contained(), nil);
+	
+	ammo->RemoveObject();
+	bow->RemoveObject();
+	arrows->RemoveObject();
+	stackable->RemoveObject();
+	crew->RemoveObject();
+}
+
+
 global func doTest(description, returned, expected)
 {
 	var test = (returned == expected);
