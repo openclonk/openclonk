@@ -135,10 +135,10 @@ public func TakeObject()
 	}
 	else if (count > 1)
 	{
-		if (!count_is_infinite) SetStackCount(count - 1);
+		if (!IsInfiniteStackCount()) SetStackCount(count - 1);
 		var take = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
-		if (!count_is_infinite) UpdateStackDisplay();
+		if (!IsInfiniteStackCount()) UpdateStackDisplay();
 		return take;
 	}
 }
@@ -275,14 +275,15 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 // Infinite stacks can only be stacked on top of others.
 public func CanBeStackedWith(object other)
 {
-	if (other.count_is_infinite != this.count_is_infinite) return false;
+	//if (other.count_is_infinite != this.count_is_infinite) return false;
+	if (other->~IsInfiniteStackCount() != this->IsInfiniteStackCount()) return false;
 	return _inherited(other, ...);
 }
 
 // Infinite stacks show a little symbol in their corner.
 public func GetInventoryIconOverlay()
 {
-	if (!count_is_infinite) return nil;
+	if (!IsInfiniteStackCount()) return nil;
 	return {Left = "50%", Bottom="50%", Symbol=Icon_Number, GraphicsName="Inf"};
 }
 
