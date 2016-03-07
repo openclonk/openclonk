@@ -811,6 +811,110 @@ global func Test9_Execute()
 }
 
 
+global func Test10_OnStart(int plr){ return true;}
+global func Test10_OnFinished(){ return; }
+global func Test10_Execute()
+{
+	Log("Test the behaviour of TryPutInto() with deeply nested extra-slot objects");
+	var container = CreateObject(Dummy);
+	var cannon = container->CreateContents(Cannon);
+	var bow = cannon->CreateContents(Bow);
+
+
+	Log("****** TryPutInto() a partial stack -> container");
+
+	var stackable = CreateObject(Arrow);
+	var other = CreateObject(Arrow);
+	var ammo = CreateObject(Arrow);
+	var arrows = CreateObject(Arrow);
+	
+	stackable->SetStackCount(5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+	arrows->SetStackCount(5);
+	
+	other->Enter(container);
+	ammo->Enter(cannon);
+	arrows->Enter(bow);
+
+	var passed = doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
+	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
+	passed &= doTest("The bow stack is served. Got %d, expected %d.", arrows->GetStackCount(), 10);
+	passed &= doTest("The cannon stack is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
+	passed &= doTest("The container stack is not served. Got %d, expected %d.", other->GetStackCount(), 5);
+
+	arrows->RemoveObject();
+	other->RemoveObject();
+	ammo->RemoveObject();
+
+	Log("****** TryPutInto() a partial stack -> cannon");
+
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
+	arrows = CreateObject(Arrow);
+	
+	stackable->SetStackCount(5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+	arrows->SetStackCount(5);
+	
+	other->Enter(container);
+	ammo->Enter(cannon);
+	arrows->Enter(bow);
+
+	passed = doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
+	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(cannon), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
+	passed &= doTest("The bow stack is served. Got %d, expected %d.", arrows->GetStackCount(), 10);
+	passed &= doTest("The cannon stack is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
+	passed &= doTest("The container stack is not served. Got %d, expected %d.", other->GetStackCount(), 5);
+
+	arrows->RemoveObject();
+	other->RemoveObject();
+	ammo->RemoveObject();
+
+	Log("****** TryPutInto() a partial stack -> bow");
+
+	stackable = CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	ammo = CreateObject(Arrow);
+	arrows = CreateObject(Arrow);
+	
+	stackable->SetStackCount(5);
+	other->SetStackCount(5);
+	ammo->SetStackCount(5);
+	arrows->SetStackCount(5);
+	
+	other->Enter(container);
+	ammo->Enter(cannon);
+	arrows->Enter(bow);
+
+	passed = doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
+	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
+	passed &= doTest("The bow stack is served. Got %d, expected %d.", arrows->GetStackCount(), 10);
+	passed &= doTest("The cannon stack is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
+	passed &= doTest("The container stack is not served. Got %d, expected %d.", other->GetStackCount(), 5);
+
+	arrows->RemoveObject();
+	other->RemoveObject();
+	ammo->RemoveObject();
+
+	return passed;
+}
+
+
 global func doTest(description, returned, expected)
 {
 	var test = (returned == expected);
