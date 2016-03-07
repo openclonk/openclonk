@@ -287,7 +287,6 @@ global func Test4_Execute()
 	return passed;
 }
 
-// Test for stackable inside extra slot inside extra slot: arrow in bow in cannon, arrow in bow in barrel in cannon
 
 global func Test5_OnStart(int plr){ return true;}
 global func Test5_OnFinished(){ return; }
@@ -314,8 +313,10 @@ global func Test5_Execute()
 	passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
 	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 	
+	
 	Log("****** Stack() a stack with 0 items onto a stack with 1 items");
 
+	other->RemoveObject();
 	other = CreateObject(Arrow);
 	other->SetStackCount(0);
 	stackable->SetStackCount(1);
@@ -325,6 +326,7 @@ global func Test5_Execute()
 
 	Log("****** Stack() a stack with negative items onto a full stack");
 
+	other->RemoveObject();
 	other = CreateObject(Arrow);
 	other->SetStackCount(-5);
 	stackable->SetStackCount(stackable->MaxStackCount());
@@ -334,6 +336,7 @@ global func Test5_Execute()
 
 	Log("****** Stack() a full stack onto a partial stack");
 
+	other->RemoveObject();
 	other = CreateObject(Arrow);
 	other->SetStackCount(other->MaxStackCount());
 	stackable->SetStackCount(8);
@@ -380,6 +383,7 @@ global func Test6_Execute()
 	
 	Log("****** TryAddToStack() a stack with 0 items onto a stack with 1 items");
 
+	other->RemoveObject();
 	other = CreateObject(Arrow);
 	other->SetStackCount(0);
 	stackable->SetStackCount(1);
@@ -389,6 +393,7 @@ global func Test6_Execute()
 
 	Log("****** TryAddToStack() a stack with negative items onto a full stack");
 
+	if (other) other->RemoveObject();
 	other = CreateObject(Arrow);
 	other->SetStackCount(-5);
 	stackable->SetStackCount(stackable->MaxStackCount());
@@ -398,6 +403,7 @@ global func Test6_Execute()
 
 	Log("****** TryAddToStack() a full stack onto a partial stack");
 
+	if (other) other->RemoveObject();
 	other = CreateObject(Arrow);
 	other->SetStackCount(other->MaxStackCount());
 	stackable->SetStackCount(8);
@@ -566,6 +572,7 @@ global func Test8_Execute()
 
 	other->RemoveObject();
 	ammo->RemoveObject();
+	if (stackable) stackable->RemoveObject();
 
 	Log("****** TryPutInto() a partial stack into an object inside a container that contains a partial stack");
 	
@@ -590,6 +597,7 @@ global func Test8_Execute()
 
 	other->RemoveObject();
 	ammo->RemoveObject();
+	if (stackable) stackable->RemoveObject();
 
 	Log("****** TryPutInto() an overfull stack into a container that contains a partial stack");
 	
@@ -614,6 +622,7 @@ global func Test8_Execute()
 
 	other->RemoveObject();
 	ammo->RemoveObject();
+	if (stackable) stackable->RemoveObject();
 
 	Log("****** TryPutInto() an overfull stack into an object inisde a container that contains a partial stack");
 	
@@ -639,7 +648,7 @@ global func Test8_Execute()
 
 	other->RemoveObject();
 	ammo->RemoveObject();
-	stackable->RemoveObject();
+	if (stackable) stackable->RemoveObject();
 
 	return passed;
 }
@@ -1013,6 +1022,7 @@ global func Test13_Execute()
 	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), remaining);
 	passed &= doTest("The arrow stack is not in the crew member inventory. Got %v, expected %v.", stackable->Contained(), nil);
 	
+	RemoveAll(Find_ID(Rock));
 	ammo->RemoveObject();
 	bow->RemoveObject();
 	arrows->RemoveObject();
@@ -1020,6 +1030,13 @@ global func Test13_Execute()
 	crew->RemoveObject();
 }
 
+
+global func Test14_OnStart(int plr){ return true;}
+global func Test14_OnFinished(){ return; }
+global func Test14_Execute()
+{
+	return false;
+}
 
 global func doTest(description, returned, expected)
 {
