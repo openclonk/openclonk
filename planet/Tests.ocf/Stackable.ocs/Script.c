@@ -1035,7 +1035,74 @@ global func Test14_OnStart(int plr){ return true;}
 global func Test14_OnFinished(){ return; }
 global func Test14_Execute()
 {
-	return false;
+	Log("Test infinite stack count: Basics");
+
+	var stackable = CreateObject(Arrow);
+	var expected_infinite_count = 50;
+
+	var passed = doTest("Object starts with finite stack count. Got %v, expected %v.", stackable->IsInfiniteStackCount(), false);
+	
+	Log("****** Set infinite stack count");
+	
+	stackable->SetInfiniteStackCount();
+	
+	var expected_value = (stackable->GetID()->GetValue() * expected_infinite_count) / (stackable->InitialStackCount());
+	var expected_mass = (stackable->GetID()->GetMass() * expected_infinite_count) / (stackable->InitialStackCount());
+
+	passed &= doTest("Object should have infinite stack count. Got %v, expected %v.", stackable->IsInfiniteStackCount(), true);
+	passed &= doTest("Get the stack count. Got %d, expected %d.", stackable->GetStackCount(), expected_infinite_count);
+	passed &= doTest("Get the object mass. Got %d, expected %d.", stackable->GetMass(), expected_mass);
+	passed &= doTest("Get the value of the object. Got %d, expected %d.", stackable->CalcValue(), expected_value);
+	passed &= doTest("The infinite stack counts as full. Got %v, expected %v.", stackable->IsFullStack(), true);
+
+	Log("****** Take objects");
+	
+	var limit = 5000;
+	for (var i = 0; i < limit; ++i)
+	{
+		var taken = stackable->TakeObject();
+		
+		if (!taken || taken == stackable)
+		{
+			passed &= doTest("It should be possible to take %d objects from an infinite stack, got %d", limit, i);
+			break;
+		}
+	}
+
+	Log("****** SetStackCount() sets the stack count to finite.");
+	
+	var max = 2147483647;
+	stackable->SetStackCount(max);
+	passed &= doTest("Object should not have an infinite stack count. Got %v, expected %v.", stackable->IsInfiniteStackCount(), false);
+	passed &= doTest("Object should return the correct stack count. Got %d, expected %d.", stackable->GetStackCount(), max);
+	
+	Log("****** DoStackCount() does not set the stack count to finite.");
+	
+	stackable->SetInfiniteStackCount();
+	passed &= doTest("Object should have an infinite stack count. Got %v, expected %v.", stackable->IsInfiniteStackCount(), true);
+
+	stackable->DoStackCount(-1);
+	passed &= doTest("Object should still have an infinite stack count. Got %d, expected %d.", stackable->IsInfiniteStackCount(), true);
+	passed &= doTest("Get the stack count. Got %d, expected %d.", stackable->GetStackCount(), expected_infinite_count);
+
+	Log("****** DoStackCount(-GetStackCount()) does not remove the object.");
+
+	stackable->DoStackCount(-(stackable->GetStackCount()));
+	passed &= doTest("Object should still exist. Got %v, expected %v.", !!stackable, true);
+	if (stackable) passed &= doTest("Get the stack count. Got %d, expected %d.", stackable->GetStackCount(), expected_infinite_count);
+
+	Log("****** ");
+
+	// stack finite object onto infinite object -> can take everything
+	// stack infinite object onto finite object -> object becomes infinite
+	
+	// Get interaction menu amount
+	
+	// Can be stacked with
+	
+	if (stackable) stackable->RemoveObject();
+
+	return passed;
 }
 
 global func doTest(description, returned, expected)
