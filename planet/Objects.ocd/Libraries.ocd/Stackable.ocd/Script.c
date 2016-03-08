@@ -181,7 +181,7 @@ private func UpdateName()
 
 private func UpdateMass()
 {
-	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / MaxStackCount());
+	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / InitialStackCount());
 }
 
 /*
@@ -206,7 +206,7 @@ protected func RejectEntrance(object into)
 
 public func CalcValue(object in_base, int for_plr)
 {
-	return GetID()->GetValue() * Max(GetStackCount(), 1) / MaxStackCount();
+	return GetID()->GetValue() * Max(GetStackCount(), 1) / InitialStackCount();
 }
 
 /* Tries to add this object to another stack. Returns true if successful.
@@ -294,7 +294,7 @@ public func SaveScenarioObject(props)
 	props->Remove("Name");
 	if (IsInfiniteStackCount())
 		props->AddCall("Stack", this, "SetInfiniteStackCount");
-	else if (GetStackCount() != MaxStackCount())
+	else if (GetStackCount() != InitialStackCount())
 		props->AddCall("Stack", this, "SetStackCount", GetStackCount());
 	return true;
 }

@@ -218,7 +218,7 @@ global func Test3_OnStart(int plr){ return true;}
 global func Test3_OnFinished(){ return; }
 global func Test3_Execute()
 {
-	Log("Test the behaviour of CalcValue()");
+	Log("Test the behaviour of CalcValue() and UpdateMass()");
 
 	var stackable = CreateObject(Arrow);
 	var passed = true;
@@ -227,8 +227,11 @@ global func Test3_Execute()
 	{	
 		stackable->SetStackCount(i);
 		var comparison = "Got %d, expected %d.";
-		var description = Format("A stack with %d object(s) should have %d times the value of the definition. %s", i, i, comparison);
-		var passed = doTest(description, stackable->CalcValue(), (Arrow->GetValue() * i) / Arrow->MaxStackCount());
+		var description = Format("A stack with %d object(s) should have value proportional to the value of the definition. %s", i, comparison);
+		passed &= doTest(description, stackable->CalcValue(), (Arrow->GetValue() * i) / Arrow->InitialStackCount());
+
+		description = Format("A stack with %d object(s) should have mass proportional to that of the definition. %s", i, comparison);
+		passed &= doTest(description, stackable->GetMass(), Max(1, (Arrow->GetMass() * i) / Arrow->InitialStackCount()));
 	}
 
 	stackable->RemoveObject();
