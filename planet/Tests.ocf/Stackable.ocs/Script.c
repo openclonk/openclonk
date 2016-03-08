@@ -449,7 +449,7 @@ global func Test7_Execute()
 	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(stackable->MaxStackCount());
 
-	passed = doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
 
@@ -463,7 +463,7 @@ global func Test7_Execute()
 	other->SetStackCount(other->MaxStackCount());
 	other->Enter(container);
 
-	passed = doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -479,7 +479,7 @@ global func Test7_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed = doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -514,7 +514,7 @@ global func Test8_Execute()
 	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(stackable->MaxStackCount());
 
-	passed = doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
 
@@ -528,7 +528,7 @@ global func Test8_Execute()
 	other->SetStackCount(other->MaxStackCount());
 	other->Enter(container);
 
-	passed = doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -544,7 +544,7 @@ global func Test8_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed = doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -682,7 +682,7 @@ global func Test9_Execute()
 	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(stackable->MaxStackCount());
 
-	passed = doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
 
@@ -696,7 +696,7 @@ global func Test9_Execute()
 	other->SetStackCount(other->MaxStackCount());
 	other->Enter(container);
 
-	passed = doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -712,7 +712,7 @@ global func Test9_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed = doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -879,7 +879,7 @@ global func Test10_Execute()
 	ammo->Enter(cannon);
 	arrows->Enter(bow);
 
-	passed = doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
 	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
 
@@ -909,7 +909,7 @@ global func Test10_Execute()
 	ammo->Enter(cannon);
 	arrows->Enter(bow);
 
-	passed = doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
 	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
 
@@ -1068,8 +1068,11 @@ global func Test14_Execute()
 		if (!taken || taken == stackable)
 		{
 			passed &= doTest("It should be possible to take %d objects from an infinite stack, got %d", limit, i);
+			if (taken) taken->RemoveObject();
 			break;
 		}
+		
+		taken->RemoveObject();
 	}
 
 	Log("****** SetStackCount() sets the stack count to finite.");
@@ -1161,6 +1164,201 @@ global func Test15_Execute()
 
 	return passed;
 }
+
+global func Test16_OnStart(int plr){ return true;}
+global func Test16_OnFinished(){ return; }
+global func Test16_Execute()
+{		
+	Log("Test infinite stack count: TryPutInto() with objects that contain an object with a useable extra slot");
+	var container = CreateObject(Dummy);
+	var bow = container->CreateContents(Bow);
+
+	Log("****** TryPutInto() an infinite stack into an object");
+
+	var infinite = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+
+	var passed = doTest("TryPutInto() an infinite stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(container), false);
+	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", infinite->Contained(), nil);
+	passed &= doTest("The stack count does not change. Got %v, expected %v", infinite->IsInfiniteStackCount(), true);
+
+	infinite->RemoveObject();
+	
+	Log("****** TryPutInto() an infinite stack into an object that contains an infinite stack");
+
+	infinite = CreateObject(Arrow);
+	var other = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+	other->SetInfiniteStackCount();
+	other->Enter(container);
+
+	passed &= doTest("TryPutInto() an infinite stack into an object with an infinite stack. Got %v, expected %v.", infinite->TryPutInto(container), true);
+	passed &= doTest("The added stack is removed. Got %v, expected %v.", infinite, nil);
+	passed &= doTest("The stack count of the original stack does not change. Got %v, expected %v", other->IsInfiniteStackCount(), true);
+
+	other->RemoveObject();
+	if (infinite) infinite->RemoveObject();
+
+	Log("****** TryPutInto() an infinite stack into an object that contains a container that contains an infinite stack");
+	
+	infinite= CreateObject(Arrow);
+	other = CreateObject(Arrow);
+	var ammo = CreateObject(Arrow);
+	
+	infinite->SetInfiniteStackCount();
+	other->SetInfiniteStackCount();
+	ammo->SetInfiniteStackCount();
+	
+	other->Enter(container);
+	ammo->Enter(bow);
+	
+	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(container), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", infinite, nil);
+	passed &= doTest("The stack inside the weapon inside the container is served. Got %v, expected %v.", ammo->IsInfiniteStackCount(), true);
+	passed &= doTest("The stack inside the container is not served. Got %v, expected %v.", other->IsInfiniteStackCount(), true);
+
+	other->RemoveObject();
+	ammo->RemoveObject();
+	if (infinite) infinite->RemoveObject();
+
+	return passed;
+}
+
+
+global func Test17_OnStart(int plr){ return true;}
+global func Test17_OnFinished(){ return; }
+global func Test17_Execute()
+{		
+	Log("Test infinite stack count: TryPutInto() with objects that contain an object with a useable extra slot");
+	var container = CreateObject(Dummy);
+	var bow = container->CreateContents(Bow);
+	
+	Log("****** TryPutInto() an infinite stack into an object that contains a finite stack");
+
+	var infinite = CreateObject(Arrow);
+	var finite = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+	finite->Enter(container);
+
+	var passed = doTest("TryPutInto() an infinite stack into an object with a finite stack. Got %v, expected %v.", infinite->TryPutInto(container), true);
+	passed &= doTest("The added stack is removed. Got %v, expected %v.", infinite, nil);
+	passed &= doTest("The original stack becomes infinite. Got %v, expected %v", finite->IsInfiniteStackCount(), true);
+
+	finite->RemoveObject();
+	if (infinite) infinite->RemoveObject();
+
+	Log("****** TryPutInto() an infinite stack into an object inside a container that contains a finite stack");
+	
+	infinite = CreateObject(Arrow);
+	finite = CreateObject(Arrow);
+	var ammo = CreateObject(Arrow);
+	
+	infinite->SetInfiniteStackCount();
+	
+	finite->Enter(container);
+	ammo->Enter(bow);
+	
+	passed &= doTest("Prerequisite: Finite object is in %v, expected %v.", finite->Contained(), container);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(bow), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", infinite, nil);
+	passed &= doTest("The stack inside the weapon inside the container is not infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), false);
+	passed &= doTest("The stack inside the container is infinite. Got %v, expected %v.", finite->IsInfiniteStackCount(), true);
+
+	finite->RemoveObject();
+	ammo->RemoveObject();
+	if (infinite) infinite->RemoveObject();
+
+	Log("****** TryPutInto() a finite stack into an object that contains an infinite stack");
+
+	infinite = CreateObject(Arrow);
+	finite = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+	infinite->Enter(container);
+
+	passed &= doTest("TryPutInto() a finite stack into an object with an infinite stack. Got %v, expected %v.", finite->TryPutInto(container), true);
+	passed &= doTest("The added stack is removed. Got %v, expected %v.", finite, nil);
+	passed &= doTest("The original stack stays infinite. Got %v, expected %v", infinite->IsInfiniteStackCount(), true);
+
+	if (finite) finite->RemoveObject();
+	infinite->RemoveObject();
+
+	Log("****** TryPutInto() a finite stack into an object inside a container that contains an infinite stack");
+	
+	infinite = CreateObject(Arrow);
+	finite = CreateObject(Arrow);
+	var ammo = CreateObject(Arrow);
+	
+	infinite->SetInfiniteStackCount();
+	
+	ammo->Enter(container);
+	infinite->Enter(bow);
+	
+	passed &= doTest("Prerequisite: Infinite object is in %v, expected %v.", infinite->Contained(), bow);
+	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), container);
+
+	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", finite->TryPutInto(container), true);
+	passed &= doTest("The object got removed. Got %v, expected %v.", finite, nil);
+	passed &= doTest("The stack inside the weapon inside the container is infinite. Got %v, expected %v.", infinite->IsInfiniteStackCount(), true);
+	passed &= doTest("The stack inside the container is not infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), false);
+
+	if (finite) finite->RemoveObject();
+	ammo->RemoveObject();
+	infinite->RemoveObject();
+
+	return passed;
+}
+
+
+global func Test18_OnStart(int plr){ return true;}
+global func Test18_OnFinished(){ return; }
+global func Test18_Execute()
+{
+	Log("Test the use case #1 with infinite objects");
+
+	Log("****** Clonk collects an infinite stack while having a incomplete finite stack in the inventory.");
+
+	var crew = CreateObject(Clonk);
+	var infinite = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+	var arrows = crew->CreateContents(Arrow);
+	
+	var diff = 5;
+	arrows->SetStackCount(arrows->InitialStackCount() - diff);
+	
+	crew->Collect(infinite);
+	var passed = doTest("Arrow object is not filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->InitialStackCount() - diff);
+	passed &= doTest("Infinite object is not removed. Got %v, expected %v.", !!infinite, true);
+	if (infinite) passed &= doTest("Infinite object is in the clonk. Got %v, expected %v.", infinite->Contained(), crew);
+
+	if (infinite) infinite->RemoveObject();
+	arrows->RemoveObject();
+	crew->RemoveObject();
+
+	Log("****** Clonk collects a finite stack while having an infinite stack in the inventory.");
+
+	crew = CreateObject(Clonk);
+	infinite = crew->CreateContents(Arrow);
+	infinite->SetInfiniteStackCount();
+	arrows = CreateObject(Arrow);
+
+	arrows->SetStackCount(arrows->InitialStackCount() - diff);
+
+	crew->Collect(arrows);
+	var passed = doTest("Infinite stack stays infinite. Got %v, expected %v.", infinite->IsInfiniteStackCount(), true);
+	passed &= doTest("Arrow object is removed. Got %v, expected %v.", arrows, nil);
+
+	infinite->RemoveObject();
+	if (arrows) arrows->RemoveObject();
+	crew->RemoveObject();
+
+	return passed;
+}
+
 
 global func doTest(description, returned, expected)
 {
