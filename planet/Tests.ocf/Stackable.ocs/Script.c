@@ -1091,16 +1091,70 @@ global func Test14_Execute()
 	passed &= doTest("Object should still exist. Got %v, expected %v.", !!stackable, true);
 	if (stackable) passed &= doTest("Get the stack count. Got %d, expected %d.", stackable->GetStackCount(), expected_infinite_count);
 
-	Log("****** ");
-
-	// stack finite object onto infinite object -> can take everything
-	// stack infinite object onto finite object -> object becomes infinite
-	
-	// Get interaction menu amount
-	
-	// Can be stacked with
-	
 	if (stackable) stackable->RemoveObject();
+	// Get interaction menu amount
+
+	return passed;
+}
+	
+
+global func Test15_OnStart(int plr){ return true;}
+global func Test15_OnFinished(){ return; }
+global func Test15_Execute()
+{
+	Log("Test infinite stack count: Stacking");
+
+	Log("****** Stack finite object onto an infinite object");
+
+	var infinite = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+	var finite = CreateObject(Arrow);
+
+	var passed = doTest("Get everything from the finite object. Got %d, expected %d.", infinite->Stack(finite), Arrow->InitialStackCount());
+	passed &= doTest("The finite stack is not removed. Got %v, expected %v.", !!finite, true);
+	passed &= doTest("The infinite object is still infinite. Got %v, expected %v.", infinite->IsInfiniteStackCount(), true);
+
+	if (infinite) infinite->RemoveObject();
+	if (finite) finite->RemoveObject();
+
+	Log("****** Stack infinite object onto a finite object");
+
+	infinite = CreateObject(Arrow);
+	infinite->SetInfiniteStackCount();
+	finite = CreateObject(Arrow);
+
+	passed &= doTest("Get everything from the infinite object. Got %d, expected %d.", finite->Stack(infinite), 50);
+	passed &= doTest("The infinite stack is not removed. Got %v, expected %v.", !!infinite, true);
+	passed &= doTest("The finite object is now infinite. Got %v, expected %v.", finite->IsInfiniteStackCount(), true);
+
+	if (infinite) infinite->RemoveObject();
+	if (finite) finite->RemoveObject();
+
+	Log("****** CanBeStackedWith() ?");
+	
+	var infinite_one = CreateObject(Arrow);
+	infinite_one->SetInfiniteStackCount();
+	var infinite_two = CreateObject(Arrow);
+	infinite_two->SetInfiniteStackCount();
+	var finite_one = CreateObject(Arrow);
+	var finite_two = CreateObject(Arrow);
+
+	passed &= doTest("Can stack infinite stack with itself? Got %v, expected %v.", infinite_one->CanBeStackedWith(infinite_one), true);
+	passed &= doTest("Can stack infinite stack with infinite stack? Got %v, expected %v.", infinite_one->CanBeStackedWith(infinite_two), true);
+	passed &= doTest("Can stack infinite stack with finite stack? Got %v, expected %v.", infinite_one->CanBeStackedWith(finite_one), false);
+
+	passed &= doTest("Can stack finite stack with itself? Got %v, expected %v.", finite_one->CanBeStackedWith(finite_one), true);
+	passed &= doTest("Can stack finite stack with infinite stack? Got %v, expected %v.", finite_one->CanBeStackedWith(infinite_one), false);
+	passed &= doTest("Can stack finite stack with finite stack? Got %v, expected %v.", finite_one->CanBeStackedWith(finite_two), true);
+
+	if (infinite_one) infinite_one->RemoveObject();
+	if (infinite_two) infinite_two->RemoveObject();
+	if (finite_one) finite_one->RemoveObject();
+	if (finite_two) finite_two->RemoveObject();
+
+
+	
+	if (infinite) infinite->RemoveObject();
 
 	return passed;
 }
