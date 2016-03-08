@@ -7,10 +7,15 @@
 
 static g_player_spawn_positions;
 static g_map_width;
+static g_seed;
 
 // Called be the engine: draw the complete map here.
 public func InitializeMap(proplist map)
 {
+	// Reloading the scenario section also resets the RNG. Call Random() a few times to get a new map each round.
+	var i = g_seed++;
+	while (i--) Random(2);
+
 	// Map type 0: One big island; more small islands above
 	// Map type 1: Only many small islands
 	var t = SCENPAR_MapType;

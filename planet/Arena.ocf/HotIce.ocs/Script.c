@@ -1,7 +1,51 @@
 /* Hot ice */
 
+static g_remaining_rounds, g_winners, g_check_victory_effect;
+
 func Initialize()
 {
+	g_remaining_rounds = SCENPAR_Rounds;
+	g_winners = [];
+	InitializeRound();
+}
+
+// Resets the scenario, redrawing the map.
+func ResetRound()
+{
+	// Retrieve all Clonks.
+	var clonks = FindObjects(Find_OCF(OCF_CrewMember));
+	for (var clonk in clonks)
+	{
+		var container = clonk->Contained();
+		if (container)
+		{
+			clonk->Exit();
+			container->RemoveObject();
+		}
+		clonk->SetObjectStatus(C4OS_INACTIVE);
+	}
+	// Clear and redraw the map.
+	LoadScenarioSection("Empty");
+	LoadScenarioSection("main");
+	InitializeRound();
+	// Re-enable the players.
+	for (var clonk in clonks)
+	{
+		clonk->SetObjectStatus(C4OS_NORMAL);
+		SetCursor(clonk->GetOwner(), clonk);
+		// Select the first item. This fixes item ordering.
+		clonk->SetHandItemPos(0, 0);
+		InitializePlayer(clonk->GetOwner());
+	}
+}
+
+func InitializeRound()
+{
+	// Checking for victory: Only active after a Clonk dies.
+	g_check_victory_effect = AddEffect("CheckVictory", nil, 1, 0);
+	g_player_spawn_index = 0;
+	ShuffleArray(g_player_spawn_positions);
+
 	// Materials: Chests
 	var i,pos;
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
@@ -91,6 +135,110 @@ func InitializePlayer(int plr)
 	crew.MaxEnergy = 100000;
 	crew->DoEnergy(1000);
 	return true;
+}
+
+func OnClonkDeath(object clonk)
+{
+	var plr = clonk->GetOwner();
+	// Skip eliminated players, NO_OWNER, etc.
+	if (!GetPlayerName(plr)) 
+		return true; 
+
+	var crew = CreateObject(Clonk, 0, 0, plr);
+	crew->MakeCrewMember(plr);
+	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
+	// We just use the relaunch object as a dumb container.
+	crew->Enter(relaunch);
+
+	// Check for victory after three seconds to allow stalemates.
+	g_check_victory_effect.Interval = 36 * 3;
+}
+
+// Returns a list of colored player names, for example "Sven2, Maikel, Luchs"
+global func GetTeamPlayerNames(int team)
+{
+	var str = "";
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(plr) == team)
+		{
+			var comma = "";
+			if (str != "") comma = ", ";
+			str = Format("%s%s<c %x>%s</c>", str, comma, GetPlayerColor(plr), GetPlayerName(plr));
+		}
+	}
+	return str;
+}
+
+global func FxCheckVictoryTimer(_, proplist effect)
+{
+	var find_living = Find_And(Find_OCF(OCF_CrewMember), Find_NoContainer());
+	var clonk = FindObject(find_living);
+	if (!clonk)
+	{
+		// Stalemate!
+		Log("$Stalemate$");
+		GameCall("ResetRound");
+	}
+	else if (!FindObject(find_living, Find_Hostile(clonk->GetOwner())))
+	{
+		// We have a winner!
+		var team = GetPlayerTeam(clonk->GetOwner());
+		PushBack(g_winners, team);
+		// Announce the winning team.
+		Log("$WinningTeam$", GetTeamPlayerNames(team));
+		if (--g_remaining_rounds > 0 || GetLeadingTeam() == nil)
+		{
+			if (g_remaining_rounds == 1)
+				Log("$LastRound$");
+			else if (g_remaining_rounds > 1)
+				Log("$RemainingRounds$", g_remaining_rounds);
+			else
+				Log("$Tiebreak$");
+			GameCall("ResetRound");
+		}
+		else
+		{
+			GameCall("EliminateLosers");
+		}
+	}
+	// Go to sleep again.
+	effect.Interval = 0;
+	return FX_OK;
+}
+
+// Returns the team which won the most rounds, or nil if there is a tie.
+global func GetLeadingTeam()
+{
+	var teams = [], winning_team = g_winners[0];
+	for (var w in g_winners)
+	{
+		teams[w] += 1;
+		if (teams[w] > teams[winning_team])
+			winning_team = w;
+	}
+	// Detect a tie.
+	for (var i = 0; i < GetLength(teams); i++)
+	{
+		if (i != winning_team && teams[i] == teams[winning_team])
+			return nil;
+	}
+	return winning_team;
+}
+
+func EliminateLosers()
+{
+	// Determine the winning team.
+	var winning_team = GetLeadingTeam();
+	// Eliminate everybody who isn't on the winning team.
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(plr) != winning_team)
+			EliminatePlayer(plr);
+	}
+	// The scenario goal will end the scenario.
 }
 
 /* Called periodically in grenade launcher */
