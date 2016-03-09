@@ -113,6 +113,7 @@ protected:
 	void BlitOutput();
 	void AdjustZoomAndPosition();
 public:
+	float GetZoom() const { return Zoom; }
 	void AdjustPosition(bool immediate = false);
 	C4ViewportWindow* GetWindow() {return pWindow.get();}
 	bool UpdateOutputSize();
@@ -124,6 +125,7 @@ public:
 	friend class C4ViewportWindow;
 	friend class C4ViewportList;
 	friend class C4GraphicsSystem;
+	friend class C4ConsoleQtViewportView;
 };
 
 class C4ViewportList {

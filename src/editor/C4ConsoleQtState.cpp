@@ -21,13 +21,13 @@
 #include <C4ConsoleQtPropListViewer.h>
 #include <C4ConsoleQtObjectListViewer.h>
 #include <C4ConsoleQtDefinitionListViewer.h>
+#include <C4ConsoleQtViewport.h>
 #include <C4Console.h>
 #include <StdRegistry.h>
-#include <C4ViewportWindow.h>
 #include <C4Landscape.h>
 #include <C4PlayerList.h>
-#include <C4Viewport.h>
 #include <C4Object.h>
+#include <C4Viewport.h>
 
 /* String translation */
 
@@ -89,68 +89,6 @@ void C4ConsoleOpenViewportAction::Execute()
 }
 
 
-/* Console viewports */
-
-C4ConsoleViewportWidget::C4ConsoleViewportWidget(QMainWindow *parent, C4ViewportWindow *cvp)
-	: QDockWidget("", parent), cvp(cvp)
-{
-	// Translated title
-	setWindowTitle(LoadResStr("IDS_CNS_VIEWPORT"));
-#ifdef USE_WIN32_WINDOWS
-	// hack
-	window = QWindow::fromWinId(reinterpret_cast<WId>(cvp->hWindow));
-	QWidget *window_container = QWidget::createWindowContainer(window, parent, Qt::Widget);
-	window_container->setFocusPolicy(Qt::TabFocus);
-	setWidget(window_container);
-#else
-	TODO
-#endif
-	connect(this, SIGNAL(dockLocationChanged(bool)), this, SLOT(DockLocationChanged(bool)));
-	OnActiveChanged(true);
-}
-
-void C4ConsoleViewportWidget::OnActiveChanged(bool active)
-{
-	// set color schemes for inactive / active viewport headers
-	QColor bgclr = QApplication::palette(this).color(QPalette::Highlight);
-	QColor fontclr = QApplication::palette(this).color(QPalette::HighlightedText);
-	if (active)
-		setStyleSheet(QString(
-			"QDockWidget::title { background: %1; padding: 5px; } QDockWidget { color: %2; font-weight: bold; }")
-			.arg(bgclr.name(), fontclr.name()));
-	else
-		setStyleSheet("");
-}
-
-void C4ConsoleViewportWidget::focusInEvent(QFocusEvent * event)
-{
-	OnActiveChanged(true);
-	QDockWidget::focusInEvent(event);
-}
-
-void C4ConsoleViewportWidget::focusOutEvent(QFocusEvent * event)
-{
-	OnActiveChanged(false);
-	QDockWidget::focusOutEvent(event);
-}
-
-void C4ConsoleViewportWidget::DockLocationChanged(Qt::DockWidgetArea new_area)
-{
-	// Re-docked: 
-}
-
-void C4ConsoleViewportWidget::closeEvent(QCloseEvent * event)
-{
-	QDockWidget::closeEvent(event);
-	if (event->isAccepted())
-	{
-		if (cvp) cvp->Close();
-		cvp = NULL;
-		deleteLater();
-	}
-}
-
-
 /* Recursion check to avoid some crashing Qt re-entry */
 
 class ExecRecursionCheck
@@ -178,6 +116,22 @@ C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUISta
 	SendMessage(hWindow, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(app->GetInstance(), MAKEINTRESOURCE(IDI_00_C4X)));
 	SendMessage(hWindow, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(app->GetInstance(), MAKEINTRESOURCE(IDI_00_C4X)));
 #endif
+}
+
+#ifdef USE_WIN32_WINDOWS
+bool ConsoleHandleWin32KeyboardMessage(MSG *msg); // in C4WindowWin32.cpp
+#endif
+
+bool C4ConsoleQtMainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
+{
+#ifdef USE_WIN32_WINDOWS
+	MSG *msg = static_cast<MSG*>(message);
+	if (ConsoleHandleWin32KeyboardMessage(msg)) return true;
+#else
+	TODO: Should implement this through native Qt keyboard signals instead of Win32 only
+#endif
+	// Handle by Qt
+	return false;
 }
 
 void C4ConsoleQtMainWindow::closeEvent(QCloseEvent *event)
@@ -425,6 +379,9 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	window->setCentralWidget(viewport_area);
 	window->setDockNestingEnabled(true);
 	viewport_area->setDockNestingEnabled(true);
+	QWidget *foo = new QWidget(viewport_area);
+	viewport_area->setCentralWidget(foo);
+	foo->hide();
 
 	// View models
 	property_model.reset(new C4ConsoleQtPropListModel());
@@ -591,7 +548,7 @@ void C4ConsoleGUIState::ClearViewportMenu()
 void C4ConsoleGUIState::AddViewport(C4ViewportWindow *cvp)
 {
 	if (!viewport_area) return;
-	C4ConsoleViewportWidget *new_viewport = new C4ConsoleViewportWidget(viewport_area, cvp);
+	C4ConsoleQtViewportDockWidget *new_viewport = new C4ConsoleQtViewportDockWidget(viewport_area, cvp);
 	viewport_area->addDockWidget(Qt::BottomDockWidgetArea, new_viewport);
 	viewports.push_back(new_viewport);
 	new_viewport->setFocus();

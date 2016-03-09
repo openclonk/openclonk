@@ -25,7 +25,11 @@
 #ifdef USE_GTK
 #include <gtk/gtk.h>
 #endif
+#ifdef WITH_QT_EDITOR
+#define C4ViewportWindowStyle (WS_VISIBLE)
+#else
 #define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
+#endif
 enum { ViewportScrollSpeed=10 };
 
 class C4ViewportWindow: public C4Window

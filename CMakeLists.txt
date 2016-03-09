@@ -314,7 +314,6 @@ find_path(Qt5DIR qt.pro PATHS ${CMAKE_ADDITIONAL_DEPS_PATH}/qt-5.5.0)
 find_package(Qt5Widgets PATHS ${Qt5DIR}/qtbase/lib/cmake/Qt5Widgets)
 if(Qt5Widgets_FOUND)
 	SET(WITH_QT_EDITOR ${Qt5Widgets_FOUND} "Qt editor dialogues available")
-	add_definitions(-DWITH_QT_EDITOR)
 	set(CMAKE_AUTOMOC ON)
 	set(CMAKE_AUTOUIC ON)
 	# As moc files are generated in the binary dir, tell CMake
@@ -934,6 +933,8 @@ elseif(USE_WIN32_WINDOWS)
 			src/editor/C4ConsoleQtObjectListViewer.h
 			src/editor/C4ConsoleQtDefinitionListViewer.cpp
 			src/editor/C4ConsoleQtDefinitionListViewer.h
+			src/editor/C4ConsoleQtViewport.cpp
+			src/editor/C4ConsoleQtViewport.h
 			src/editor/C4ConsoleQtMainWindow.ui
 			src/editor/resource.qrc
 			${qt_editor_resources}
@@ -1154,6 +1155,7 @@ if(USE_COCOA)
 endif()
 
 if(WITH_QT_EDITOR)
+	set_target_properties(openclonk PROPERTIES COMPILE_DEFINITIONS WITH_QT_EDITOR)
 	qt5_use_modules(openclonk Widgets)
 endif()
 

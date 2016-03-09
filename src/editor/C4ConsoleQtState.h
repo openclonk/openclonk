@@ -81,33 +81,13 @@ public:
 	void Execute();
 };
 
-class C4ConsoleViewportWidget : public QDockWidget
-{
-	Q_OBJECT
-
-	class C4ViewportWindow *cvp;
-	QWindow *window;
-	QPalette pal_inactive, pal_active;
-
-protected:
-	virtual void focusInEvent(QFocusEvent * event);
-	virtual void focusOutEvent(QFocusEvent * event);
-	virtual QObject *focusObject() const { return window; }
-
-public:
-	C4ConsoleViewportWidget(class QMainWindow *parent, class C4ViewportWindow *window);
-	virtual void closeEvent(QCloseEvent * event);
-	void OnActiveChanged(bool active);
-	class C4ViewportWindow *GetViewportWindow() const { return cvp; }
-
-private slots:
-	void DockLocationChanged(Qt::DockWidgetArea new_area);
-};
-
 class C4ConsoleQtMainWindow : public QMainWindow
 {
 	Q_OBJECT
 	class C4ConsoleGUIState *state;
+
+protected:
+	bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
 public:
 	C4ConsoleQtMainWindow(class C4AbstractApp *app, class C4ConsoleGUIState *state);
@@ -165,7 +145,7 @@ public:
 	std::unique_ptr<class C4ConsoleQtPropListModel> property_model;
 	std::unique_ptr<class C4ConsoleQtObjectListModel> object_list_model;
 	std::unique_ptr<class C4ConsoleQtDefinitionListModel> definition_list_model;
-	std::list<C4ConsoleViewportWidget *> viewports;
+	std::list<class C4ConsoleQtViewportDockWidget *> viewports;
 	std::list<std::unique_ptr<C4ConsoleClientAction> > client_actions;
 	std::list<std::unique_ptr<C4ConsoleRemovePlayerAction> > player_actions;
 	std::list<std::unique_ptr<C4ConsoleOpenViewportAction> > viewport_actions;
@@ -223,6 +203,10 @@ public:
 	void SetObjectSelection(class C4EditCursorSelection &rSelection);
 	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
+
+#ifdef USE_WIN32_WINDOWS
+	bool HandleWin32KeyboardMessage(MSG *msg);
+#endif
 };
 
 class C4ConsoleGUI::State : public C4ConsoleGUIState

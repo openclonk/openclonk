@@ -240,6 +240,34 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 }
 
+static C4KeyCode msg2scancode(MSG *msg)
+{
+	// compute scancode
+	C4KeyCode scancode = (((unsigned int)msg->lParam) >> 16) & 0xFF;
+	bool extended = ((msg->lParam & 0x01000000) != 0);
+	ConvertToUnixScancode(msg->wParam, &scancode, extended);
+	return scancode;
+}
+
+bool ConsoleHandleWin32KeyboardMessage(MSG *msg)
+{
+	switch (msg->message)
+	{
+	case WM_KEYDOWN:
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), NULL)) return true;
+		break;
+	case WM_KEYUP:
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Up, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL)) return 0;
+		break;
+	case WM_SYSKEYDOWN:
+		if (msg->wParam == 18) break; // VK_MENU (Alt)
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), NULL)) return 0;
+		break;
+	}
+	return false;
+
+}
+
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// Determine viewport
@@ -354,10 +382,6 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		return 0;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_ACTIVATE:
-#ifdef WITH_QT_EDITOR
-		// Notify editor that viewport needs to be drawn in activated state
-		::Console.OnViewportActiveChanged(cvp->GetWindow(), LOWORD(wParam) != WA_INACTIVE);
-#endif
 		// Keep editing dialogs on top of the current viewport, but don't make them
 		// float on other windows (i.e., no HWND_TOPMOST).
 		// Also, don't use SetParent, since that activates the window, which in turn
@@ -559,6 +583,10 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	eKind = windowKind;
 	if (windowKind == W_Viewport)
 	{
+#ifdef WITH_QT_EDITOR
+		// embed into editor: Viewport widget creation handled by C4ConsoleQt
+		::Console.AddViewport(static_cast<C4ViewportWindow *>(this));
+#else
 		static bool fViewportClassRegistered = false;
 		if (!fViewportClassRegistered)
 		{
@@ -586,7 +614,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            CW_USEDEFAULT,CW_USEDEFAULT, size->Wdt, size->Hgt,
 		            Console.hWindow,NULL,pApp->GetInstance(),NULL);
 		if(!hWindow) return NULL;
-
+#endif
 		// We don't re-init viewport windows currently, so we don't need a child window
 		// for now: Render into main window.
 		renderwnd = hWindow;

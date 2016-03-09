@@ -515,6 +515,8 @@ void C4Console::InitGame()
 	EnableControls(fGameOpen);
 	UpdatePlayerMenu();
 	UpdateViewportMenu();
+	// Initial neutral viewport unless started with players
+	if (!Game.PlayerInfos.GetStartupCount()) ::Viewports.CreateViewport(NO_OWNER);
 }
 
 void C4Console::CloseGame()
@@ -592,7 +594,7 @@ bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
 void C4ConsoleGUI::Out(char const*) {}
 bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}
 void C4ConsoleGUI::PropertyDlgClose() {}
-void C4ConsoleGUI::PropertyDlgUpdate(C4EditCursor::Selection &, bool) {}
+void C4ConsoleGUI::PropertyDlgUpdate(class C4EditCursorSelection &, bool) {}
 void C4ConsoleGUI::RecordingEnabled() {}
 void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
 void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}

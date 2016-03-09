@@ -151,6 +151,7 @@ public:
 	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	friend INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	friend class C4ToolsDlg;
+	friend class C4ConsoleQtMainWindow;
 #endif
 };
 
