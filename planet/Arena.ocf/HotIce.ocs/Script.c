@@ -1,7 +1,61 @@
 /* Hot ice */
 
+static g_remaining_rounds, g_winners, g_check_victory_effect;
+static g_gameover;
+
 func Initialize()
 {
+	g_remaining_rounds = SCENPAR_Rounds;
+	g_winners = [];
+	InitializeRound();
+
+	Scoreboard->Init([
+		// Invisible team column for sorting players under their teams.
+		{key = "team", title = "", sorted = true, desc = false, default = "", priority = 90},
+		{key = "wins", title = "Wins", sorted = true, desc = true, default = 0, priority = 100},
+		{key = "death", title = "", sorted = false, default = "", priority = 0},
+	]);
+}
+
+// Resets the scenario, redrawing the map.
+func ResetRound()
+{
+	// Retrieve all Clonks.
+	var clonks = FindObjects(Find_OCF(OCF_CrewMember));
+	for (var clonk in clonks)
+	{
+		var container = clonk->Contained();
+		if (container)
+		{
+			clonk->Exit();
+			container->RemoveObject();
+		}
+		clonk->SetObjectStatus(C4OS_INACTIVE);
+	}
+	// Clear and redraw the map.
+	g_no_map = true;
+	LoadScenarioSection("Empty");
+	g_no_map = false;
+	LoadScenarioSection("main");
+	InitializeRound();
+	// Re-enable the players.
+	for (var clonk in clonks)
+	{
+		clonk->SetObjectStatus(C4OS_NORMAL);
+		SetCursor(clonk->GetOwner(), clonk);
+		// Select the first item. This fixes item ordering.
+		clonk->SetHandItemPos(0, 0);
+		InitPlayerRound(clonk->GetOwner());
+	}
+}
+
+func InitializeRound()
+{
+	// Checking for victory: Only active after a Clonk dies.
+	g_check_victory_effect = AddEffect("CheckVictory", nil, 1, 0);
+	g_player_spawn_index = 0;
+	ShuffleArray(g_player_spawn_positions);
+
 	// Materials: Chests
 	var i,pos;
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
@@ -46,10 +100,28 @@ func Initialize()
 
 static g_player_spawn_positions, g_map_width, g_player_spawn_index;
 
+global func ScoreboardTeam(int team) { return team * 100; }
+
 func InitializePlayer(int plr)
 {
+	// Add the player and their team to the scoreboard.
+	Scoreboard->NewPlayerEntry(plr);
+	Scoreboard->SetPlayerData(plr, "wins", "");
+	var team = GetPlayerTeam(plr);
+	Scoreboard->NewEntry(ScoreboardTeam(team), GetTeamName(team));
+	Scoreboard->SetData(ScoreboardTeam(team), "team", "", ScoreboardTeam(team));
+	Scoreboard->SetPlayerData(plr, "team", "", ScoreboardTeam(team) + 1);
+
+	return InitPlayerRound(plr);
+}
+
+func InitPlayerRound(int plr)
+{
+	// Unmark death on scoreboard.
+	Scoreboard->SetPlayerData(plr, "death", "");
 	// everything visible
 	SetFoW(false, plr);
+	SetPlayerViewLock(plr, true);
 	// Player positioning. 
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr), start_pos;
@@ -91,6 +163,156 @@ func InitializePlayer(int plr)
 	crew.MaxEnergy = 100000;
 	crew->DoEnergy(1000);
 	return true;
+}
+
+func OnClonkDeath(object clonk)
+{
+	var plr = clonk->GetOwner();
+	// Mark death on scoreboard.
+	Scoreboard->SetPlayerData(plr, "death", "{{Scoreboard_Death}}");
+	// Skip eliminated players, NO_OWNER, etc.
+	if (GetPlayerName(plr)) 
+	{
+		var crew = CreateObject(Clonk, 0, 0, plr);
+		crew->MakeCrewMember(plr);
+		var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
+		// We just use the relaunch object as a dumb container.
+		crew->Enter(relaunch);
+		// Allow scrolling around the landscape.
+		SetPlayerViewLock(plr, false);
+	}
+
+	// Check for victory after three seconds to allow stalemates.
+	if (!g_gameover)
+		g_check_victory_effect.Interval = 36 * 5;
+}
+
+// Returns a list of colored player names, for example "Sven2, Maikel, Luchs"
+global func GetTeamPlayerNames(int team)
+{
+	var str = "";
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(plr) == team)
+		{
+			var comma = "";
+			if (str != "") comma = ", ";
+			str = Format("%s%s<c %x>%s</c>", str, comma, GetPlayerColor(plr), GetPlayerName(plr));
+		}
+	}
+	return str;
+}
+
+global func FxCheckVictoryTimer(_, proplist effect)
+{
+	var find_living = Find_And(Find_OCF(OCF_CrewMember), Find_NoContainer());
+	var clonk = FindObject(find_living);
+	var msg;
+	if (!clonk)
+	{
+		// Stalemate!
+		msg = "$Stalemate$";
+		Log(msg);
+		GameCall("ResetRound");
+	}
+	else if (!FindObject(find_living, Find_Hostile(clonk->GetOwner())))
+	{
+		// We have a winner!
+		var team = GetPlayerTeam(clonk->GetOwner());
+		PushBack(g_winners, team);
+		// Announce the winning team.
+		msg = Format("$WinningTeam$", GetTeamPlayerNames(team));
+		Log(msg);
+
+		// Update the scoreboard.
+		UpdateScoreboardWins(team);
+
+		if (--g_remaining_rounds > 0 || GetLeadingTeam() == nil)
+		{
+			var msg2 = CurrentRoundStr();
+			Log(msg2);
+			msg = Format("%s|%s", msg, msg2);
+			GameCall("ResetRound");
+		}
+		else
+		{
+			GameCall("EliminateLosers");
+		}
+	}
+	// Switching scenario sections makes the Log() messages hard to see, so announce them using a message as well.
+	CustomMessage(msg);
+	// Go to sleep again.
+	effect.Interval = 0;
+	return FX_OK;
+}
+
+global func CurrentRoundStr()
+{
+	if (g_remaining_rounds == 1)
+		return "$LastRound$";
+	else if (g_remaining_rounds > 1)
+		return Format("$RemainingRounds$", g_remaining_rounds);
+	else
+		return "$Tiebreak$";
+}
+
+global func UpdateScoreboardWins(int team)
+{
+	var wins = GetTeamWins(team);
+	Scoreboard->SetData(ScoreboardTeam(team), "wins", wins, wins);
+	// We have to update each player as well to make the sorting work.
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(plr) == team)
+		{
+			Scoreboard->SetPlayerData(plr, "wins", "", wins);
+		}
+	}
+}
+
+global func GetTeamWins(int team)
+{
+	var wins = 0;
+	for (var w in g_winners)
+		if (w == team)
+			wins++;
+	return wins;
+}
+
+// Returns the team which won the most rounds, or nil if there is a tie.
+global func GetLeadingTeam()
+{
+	var teams = [], winning_team = g_winners[0];
+	for (var w in g_winners)
+	{
+		teams[w] += 1;
+		if (teams[w] > teams[winning_team])
+			winning_team = w;
+	}
+	// Detect a tie.
+	for (var i = 0; i < GetLength(teams); i++)
+	{
+		if (i != winning_team && teams[i] == teams[winning_team])
+			return nil;
+	}
+	return winning_team;
+}
+
+func EliminateLosers()
+{
+	g_gameover = true;
+	// Determine the winning team.
+	var winning_team = GetLeadingTeam();
+	// Eliminate everybody who isn't on the winning team.
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(plr) != winning_team)
+			EliminatePlayer(plr);
+	}
+	// The scenario goal will end the scenario.
 }
 
 /* Called periodically in grenade launcher */

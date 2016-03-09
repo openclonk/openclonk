@@ -33,3 +33,31 @@ Default=0
 		Name=$WeaponsExplosive$
 		Description=$DescWeaponsExplosive$
 		Value=1
+
+[ParameterDef]
+Name=$Rounds$
+Description=$DescRounds$
+ID=Rounds
+Default=1
+
+	[Options]
+		
+		[Option]
+		Name=1
+		Value=1
+		
+		[Option]
+		Name=2
+		Value=2
+		
+		[Option]
+		Name=3
+		Value=3
+		
+		[Option]
+		Name=5
+		Value=5
+		
+		[Option]
+		Name=7
+		Value=7
