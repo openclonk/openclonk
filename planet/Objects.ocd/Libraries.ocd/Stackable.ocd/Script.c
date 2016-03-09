@@ -54,7 +54,7 @@ static const Stackable_Max_Display_Count = 999;
 static const Stackable_Infinite_Count = 50;
 
 public func IsStackable() { return true; }
-public func GetStackCount() { return Max(1, count); }
+public func GetStackCount() { return count; }
 public func MaxStackCount() { return 20; }
 public func InitialStackCount() { return MaxStackCount(); }
 public func IsFullStack() { return IsInfiniteStackCount() || (GetStackCount() >= MaxStackCount()); }
@@ -105,7 +105,7 @@ public func Stack(object obj)
 
 public func SetStackCount(int amount)
 {
-	count = BoundBy(amount, 0, Stackable_Max_Count);
+	count = BoundBy(amount, 0, Stackable_Max_Count); // allow 0, so that the object can be removed in UpdateStackDisplay
 	count_is_infinite = false;
 	UpdateStackDisplay();
 	return true;
@@ -114,8 +114,7 @@ public func SetStackCount(int amount)
 public func DoStackCount(int change)
 {
 	count += change;
-	if (count <= 0) RemoveObject();
-	else UpdateStackDisplay();
+	UpdateStackDisplay();
 }
 
 public func SetInfiniteStackCount()
@@ -145,6 +144,13 @@ public func TakeObject()
 
 public func UpdateStackDisplay()
 {
+	// empty stacks have to be removed
+	if (count <= 0)
+	{
+		RemoveObject();
+		return;
+	}
+	// otherwise update the object
 	UpdatePicture();
 	UpdateMass();
 	UpdateName();

@@ -153,16 +153,23 @@ global func Test1_Execute()
 
 	Log("****** Setting the stack count to 0 with SetStackCount()");
 
+	stackable->SetStackCount(1);
+	passed &= doTest("SetStackCount() can set the minimum value. Got %d, expected %d.", stackable->GetStackCount(), 1);
+
+	Log("****** Setting the stack count to 0 with SetStackCount()");
+
 	stackable->SetStackCount(0);
-	passed &= doTest("Setting SetStackCount() to 0 should not remove the object. Got %d, expected %d", !!stackable, true);
-	passed &= doTest("An object with stack count 0 returns a value nonetheless. Got %d, expected %d", stackable->GetStackCount(), 1);
+	passed &= doTest("Setting SetStackCount() to 0 should remove the object. Got %v, expected %v", stackable, nil);
+
+	if (stackable) stackable->RemoveObject();
 
 	Log("****** Setting negative values with SetStackCount()");
 
+	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(-1);
-	passed &= doTest("SetStackCount() cannot set negative values. Got %d, expected %d", stackable->GetStackCount(), 1);
+	passed &= doTest("SetStackCount() cannot to negative values removes the object. Got %v, expected %v", stackable, nil);
 	
-	stackable->RemoveObject();
+	if (stackable) stackable->RemoveObject();
 
 	return passed;
 }
@@ -198,18 +205,18 @@ global func Test2_Execute()
 	Log("****** Decreasing the stack count below 0 with DoStackCount()");
 
 	stackable = CreateObject(Arrow);
-	stackable->SetStackCount(0);
-	stackable->DoStackCount(-1);
+	stackable->SetStackCount(1);
+	stackable->DoStackCount(-2);
 	passed &= doTest("DoStackCount() removes the object if the stack is reduced to less than 0 items. Got %v, expected %v", !stackable, true);
 
-	Log("****** Consistency of SetStackCount() and GetStackCount()");
-
-	stackable = CreateObject(Arrow);
-	stackable->SetStackCount(0);
-	stackable->DoStackCount(1);
-	passed &= doTest("SetStackCount(0) should actually set the stack count to 0. After adding to the stack with DoStackCount(+1) we get %d, expected %d", stackable->GetStackCount(), 1);
+	//Log("****** Consistency of SetStackCount() and GetStackCount()");
+    //
+	//stackable = CreateObject(Arrow);
+	//stackable->SetStackCount(0);
+	//stackable->DoStackCount(1);
+	//passed &= doTest("SetStackCount(1) should actually set the stack count to 0. After adding to the stack with DoStackCount(+1) we get %d, expected %d", stackable->GetStackCount(), 1);
 	
-	stackable->RemoveObject();
+	if (stackable) stackable->RemoveObject();
 	return passed;
 }
 
@@ -274,16 +281,16 @@ global func Test4_Execute()
     item->DoStackCount(1);
     passed &= doTest("The taken object should not have an internal stack count of 0. It increases the stack count correctly. Got %d, expected %d.", item->GetStackCount(), 2);
 
-	Log("****** Taking an object from a stack with 0 objects");
-
-	stackable->Enter(container);
-	stackable->SetStackCount(0);
-	item = stackable->TakeObject();
-
-	passed &= doTest("The stackable object should be in a container when moving it there. Got %v, expected %v.", stackable->Contained(), container);
-	passed &= doTest("Taking an object from a stack with 0 objects should not return an object. Got %v, expected %v.", item, nil);
-	passed &= doTest("Taking an object from a stack with 0 objects should preserve the stack. Got %v, expected %v.", !!stackable, true);
-	passed &= doTest("Taking an object from a stack with 0 objects should not eject the stack from the container. Got %v, expected %v.", stackable->Contained(), container);
+	//Log("****** Taking an object from a stack with 0 objects");
+    //
+	//stackable->Enter(container);
+	//stackable->SetStackCount(0);
+	//item = stackable->TakeObject();
+    //
+	//passed &= doTest("The stackable object should be in a container when moving it there. Got %v, expected %v.", stackable->Contained(), container);
+	//passed &= doTest("Taking an object from a stack with 0 objects should not return an object. Got %v, expected %v.", item, nil);
+	//passed &= doTest("Taking an object from a stack with 0 objects should preserve the stack. Got %v, expected %v.", !!stackable, true);
+	//passed &= doTest("Taking an object from a stack with 0 objects should not eject the stack from the container. Got %v, expected %v.", stackable->Contained(), container);
 
 	stackable->RemoveObject();
 	container->RemoveObject();
@@ -308,34 +315,34 @@ global func Test5_Execute()
 	passed &= doTest("Stack count of original object should not change. Got %d, expected %d.", stackable->GetStackCount(), stackable->InitialStackCount());
 	passed &= doTest("Stack count of other object should not change. Got %d, expected %d.", other->GetStackCount(), other->InitialStackCount());
 	
-	Log("****** Stack() a full stack onto a stack with 0 items");
-
-	other->SetStackCount(other->MaxStackCount());
-	stackable->SetStackCount(0);
-	passed &= doTest("Stacking an full stack onto a stack with stack count 0 should transfer everything. Got %d, expected %d.", stackable->Stack(other), stackable->InitialStackCount());
-	passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
-	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
+	//Log("****** Stack() a full stack onto a stack with 0 items");
+    //
+	//other->SetStackCount(other->MaxStackCount());
+	//stackable->SetStackCount(0);
+	//passed &= doTest("Stacking an full stack onto a stack with stack count 1 should transfer everything. Got %d, expected %d.", stackable->Stack(other), stackable->InitialStackCount());
+	//passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
+	//passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 	
 	
-	Log("****** Stack() a stack with 0 items onto a stack with 1 items");
+	Log("****** Stack() a stack with 1 items onto a stack with 1 items");
 
 	other->RemoveObject();
 	other = CreateObject(Arrow);
-	other->SetStackCount(0);
+	other->SetStackCount(1);
 	stackable->SetStackCount(1);
-	passed &= doTest("Stacking an empty object onto a full stack should transfer everything. Got %d, expected %d.", stackable->Stack(other), 0);
-	passed &= doTest("The original object should not change. Got %d, expected %d.", stackable->GetStackCount(), 1);
+	passed &= doTest("Stacking an single object onto a sinlge stack should transfer everything. Got %d, expected %d.", stackable->Stack(other), 1);
+	passed &= doTest("The original object should increase its stack count. Got %d, expected %d.", stackable->GetStackCount(), 2);
 	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 
-	Log("****** Stack() a stack with negative items onto a full stack");
-
-	other->RemoveObject();
-	other = CreateObject(Arrow);
-	other->SetStackCount(-5);
-	stackable->SetStackCount(stackable->MaxStackCount());
-	passed &= doTest("Stacking an negative amount object onto a full stack should transfer everything. Got %d, expected %d.", stackable->Stack(other), 0);
-	passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
-	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
+	//Log("****** Stack() a stack with negative items onto a full stack");
+    //
+	//other->RemoveObject();
+	//other = CreateObject(Arrow);
+	//other->SetStackCount(-5);
+	//stackable->SetStackCount(stackable->MaxStackCount());
+	//passed &= doTest("Stacking an negative amount object onto a full stack should transfer everything. Got %d, expected %d.", stackable->Stack(other), 0);
+	//passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
+	//passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 
 	Log("****** Stack() a full stack onto a partial stack");
 
@@ -376,33 +383,33 @@ global func Test6_Execute()
 	passed &= doTest("Stack count of original object should not change. Got %d, expected %d.", stackable->GetStackCount(), stackable->InitialStackCount());
 	passed &= doTest("Stack count of other object should not change. Got %d, expected %d.", other->GetStackCount(), other->InitialStackCount());
 	
-	Log("****** TryAddToStack() a full stack onto a stack with 0 items");
-
-	other->SetStackCount(other->MaxStackCount());
-	stackable->SetStackCount(0);
-	passed &= doTest("Stacking an full stack onto a stack with stack count 0 should transfer everything. Got %d, expected %d.", other->TryAddToStack(stackable), true);
-	passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->InitialStackCount());
-	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
+	//Log("****** TryAddToStack() a full stack onto a stack with 0 items");
+    //
+	//other->SetStackCount(other->MaxStackCount());
+	//stackable->SetStackCount(0);
+	//passed &= doTest("Stacking an full stack onto a stack with stack count 0 should transfer everything. Got %d, expected %d.", other->TryAddToStack(stackable), true);
+	//passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->InitialStackCount());
+	//passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 	
-	Log("****** TryAddToStack() a stack with 0 items onto a stack with 1 items");
+	Log("****** TryAddToStack() a stack with 1 items onto a stack with 1 items");
 
 	other->RemoveObject();
 	other = CreateObject(Arrow);
-	other->SetStackCount(0);
+	other->SetStackCount(1);
 	stackable->SetStackCount(1);
-	passed &= doTest("Stacking an empty object onto a full stack should transfer everything. Got %d, expected %d.", other->TryAddToStack(stackable), true);
-	passed &= doTest("The original object should not change. Got %d, expected %d.", stackable->GetStackCount(), 1);
+	passed &= doTest("Stacking an single stack onto a single stack should transfer everything. Got %v, expected %v.", other->TryAddToStack(stackable), true);
+	passed &= doTest("The original object should change. Got %d, expected %d.", stackable->GetStackCount(), 2);
 	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 
-	Log("****** TryAddToStack() a stack with negative items onto a full stack");
-
-	if (other) other->RemoveObject();
-	other = CreateObject(Arrow);
-	other->SetStackCount(-5);
-	stackable->SetStackCount(stackable->MaxStackCount());
-	passed &= doTest("Stacking an negative amount object onto a full stack should transfer everything. Got %d, expected %d.", other->TryAddToStack(stackable), true);
-	passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
-	passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
+	//Log("****** TryAddToStack() a stack with negative items onto a full stack");
+    //
+	//if (other) other->RemoveObject();
+	//other = CreateObject(Arrow);
+	//other->SetStackCount(-5);
+	//stackable->SetStackCount(stackable->MaxStackCount());
+	//passed &= doTest("Stacking an negative amount object onto a full stack should transfer everything. Got %d, expected %d.", other->TryAddToStack(stackable), true);
+	//passed &= doTest("The original object should be full. Got %d, expected %d.", stackable->GetStackCount(), stackable->MaxStackCount());
+	//passed &= doTest("The other object should be removed. Got %v, expected %v.", other, nil);
 
 	Log("****** TryAddToStack() a full stack onto a partial stack");
 
