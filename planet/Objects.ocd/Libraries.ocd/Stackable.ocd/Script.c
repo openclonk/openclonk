@@ -57,7 +57,7 @@ public func IsStackable() { return true; }
 public func GetStackCount() { return count; }
 public func MaxStackCount() { return 20; }
 public func InitialStackCount() { return MaxStackCount(); }
-public func IsFullStack() { return IsInfiniteStackCount() || (GetStackCount() >= MaxStackCount()); }
+public func IsFullStack() { return this->IsInfiniteStackCount() || (GetStackCount() >= MaxStackCount()); }
 public func IsInfiniteStackCount() { return count_is_infinite; }
 
 protected func Construction()
@@ -84,7 +84,7 @@ public func Stack(object obj)
 		return 0;
 	
 	// Infinite stacks can always take everything
-	if (IsInfiniteStackCount()) return obj->GetStackCount();
+	if (this->IsInfiniteStackCount()) return obj->GetStackCount();
 	if (obj->~IsInfiniteStackCount())
 	{
 		SetInfiniteStackCount();
@@ -93,7 +93,7 @@ public func Stack(object obj)
 	
 	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
 	
-	//Log("******* Added %d objects to stack", howmany);
+	//Log("*** Added %d objects to stack", howmany);
 	
 	if (howmany <= 0 || count + howmany > Stackable_Max_Count)
 		return 0;
@@ -113,8 +113,11 @@ public func SetStackCount(int amount)
 
 public func DoStackCount(int change)
 {
-	count += change;
-	UpdateStackDisplay();
+	if (!(this->IsInfiniteStackCount()))
+	{
+		count += change;
+		UpdateStackDisplay();
+	}
 }
 
 public func SetInfiniteStackCount()
@@ -134,10 +137,10 @@ public func TakeObject()
 	}
 	else if (count > 1)
 	{
-		if (!IsInfiniteStackCount()) SetStackCount(count - 1);
+		if (!(this->IsInfiniteStackCount())) SetStackCount(count - 1);
 		var take = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
-		if (!IsInfiniteStackCount()) UpdateStackDisplay();
+		if (!(this->IsInfiniteStackCount())) UpdateStackDisplay(); // TODO: this is redundant
 		return take;
 	}
 }
@@ -179,7 +182,7 @@ private func UpdatePicture()
 
 private func UpdateName()
 {
-	if (IsInfiniteStackCount())
+	if (this->IsInfiniteStackCount())
 		SetName(Format("$Infinite$ %s", GetID()->GetName()));
 	else
 		SetName(Format("%dx %s", GetStackCount(), GetID()->GetName()));
@@ -227,8 +230,9 @@ public func TryAddToStack(object other)
 		var howmany = other->Stack(this);
 		if (howmany > 0)
 		{
-			count -= howmany;
-			if(count <= 0) RemoveObject();
+			var stack = this;
+			DoStackCount(-howmany);
+			if (stack && stack->IsInfiniteStackCount()) stack->RemoveObject(); 
 			// Stack succesful! No matter how many items were transfered.
 			return true;
 		}
@@ -281,7 +285,6 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 // Infinite stacks can only be stacked on top of others.
 public func CanBeStackedWith(object other)
 {
-	//if (other.count_is_infinite != this.count_is_infinite) return false;
 	if (other->~IsInfiniteStackCount() != this->IsInfiniteStackCount()) return false;
 	return _inherited(other, ...);
 }
@@ -289,7 +292,7 @@ public func CanBeStackedWith(object other)
 // Infinite stacks show a little symbol in their corner.
 public func GetInventoryIconOverlay()
 {
-	if (!IsInfiniteStackCount()) return nil;
+	if (!(this->IsInfiniteStackCount())) return nil;
 	return {Left = "50%", Bottom="50%", Symbol=Icon_Number, GraphicsName="Inf"};
 }
 
@@ -298,7 +301,7 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	props->Remove("Name");
-	if (IsInfiniteStackCount())
+	if (this->IsInfiniteStackCount())
 		props->AddCall("Stack", this, "SetInfiniteStackCount");
 	else if (GetStackCount() != InitialStackCount())
 		props->AddCall("Stack", this, "SetStackCount", GetStackCount());
