@@ -988,6 +988,8 @@ global func Test12_Execute()
 	arrows->RemoveObject();
 	stackable->RemoveObject();
 	crew->RemoveObject();
+	
+	return passed;
 }
 
 
@@ -1356,6 +1358,54 @@ global func Test18_Execute()
 	if (arrows) arrows->RemoveObject();
 	crew->RemoveObject();
 
+	return passed;
+}
+
+
+global func Test19_OnStart(int plr){ return true;}
+global func Test19_OnFinished(){ return; }
+global func Test19_Execute()
+{
+	Log("Test the use case #2 with infinite objects");
+
+	Log("****** Infinite stack collected by Clonk");
+
+	var crew = CreateObject(Clonk);
+	var infinite = CreateObject(Arrow);
+	var arrows = crew->CreateContents(Arrow);
+	var bow = crew->CreateContents(Bow);
+	var ammo = bow->CreateContents(Arrow);
+
+	var to_ammo = 5;
+	var to_arrows = 2;
+	var remaining = arrows->InitialStackCount() - to_ammo - to_arrows;
+	
+	ammo->SetStackCount(ammo->MaxStackCount() - to_ammo);
+	arrows->SetStackCount(arrows->MaxStackCount() - to_arrows);
+	infinite->SetInfiniteStackCount();
+
+	var passed = doTest("Prerequisites: Ammo is in the bow. Got %v, expected %v.", ammo->Contained(), bow);
+	passed &= doTest("Prerequisites: Arrows are in the crew member. Got %v, expected %v.", arrows->Contained(), crew);
+	
+	crew->Collect(infinite);
+	passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
+	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
+	if (infinite)
+	{
+		passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", infinite->GetStackCount(), remaining);
+		passed &= doTest("The arrow stack is in the crew member inventory. Got %v, expected %v.", infinite->Contained(), crew);
+	}
+	else
+	{
+		passed = false; Log("[Failed] The infinite stack was removed, but should not be removed");
+	}
+
+	ammo->RemoveObject();
+	bow->RemoveObject();
+	arrows->RemoveObject();
+	if (infinite) infinite->RemoveObject();
+	crew->RemoveObject();
+	
 	return passed;
 }
 
