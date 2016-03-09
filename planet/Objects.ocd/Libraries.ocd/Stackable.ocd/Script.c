@@ -93,7 +93,7 @@ public func Stack(object obj)
 	
 	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
 	
-	Log("******* Added %d objects to stack", howmany);
+	//Log("******* Added %d objects to stack", howmany);
 	
 	if (howmany <= 0 || count + howmany > Stackable_Max_Count)
 		return 0;
@@ -192,13 +192,13 @@ private func UpdateMass()
 protected func RejectEntrance(object into)
 {
 	var try_put = TryPutInto(into);
-	Log("***** TryPutInto did in fact return %v", try_put);
+	//Log("***** TryPutInto did in fact return %v", try_put);
 	if (try_put)
 	{
-		Log("****** Rejected entrance into %s!!", into->GetName());
+		//Log("****** Rejected entrance into %s!!", into->GetName());
 		return true;
 	}
-	Log("***** Entered %v %s!!", this, into->GetName());
+	//Log("***** Entered %v %s!!", this, into->GetName());
 	return _inherited(into, ...);
 }
 
@@ -262,7 +262,7 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 		if (!this) return true;
 	}
 	
-	Log("***** Stack can enter the object %s? TryPutInto will return %v", into->GetName(), added_to_stack);
+	//Log("***** Stack can enter the object %s? TryPutInto will return %v", into->GetName(), added_to_stack);
 	
 	// IFF anything changed, we need to update the display.
 	if (before != count)
