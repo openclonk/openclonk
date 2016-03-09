@@ -121,6 +121,7 @@ func InitPlayerRound(int plr)
 	Scoreboard->SetPlayerData(plr, "death", "");
 	// everything visible
 	SetFoW(false, plr);
+	SetPlayerViewLock(plr, true);
 	// Player positioning. 
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr), start_pos;
@@ -177,6 +178,8 @@ func OnClonkDeath(object clonk)
 		var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
 		// We just use the relaunch object as a dumb container.
 		crew->Enter(relaunch);
+		// Allow scrolling around the landscape.
+		SetPlayerViewLock(plr, false);
 	}
 
 	// Check for victory after three seconds to allow stalemates.
