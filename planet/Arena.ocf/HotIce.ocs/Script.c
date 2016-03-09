@@ -1,12 +1,20 @@
 /* Hot ice */
 
 static g_remaining_rounds, g_winners, g_check_victory_effect;
+static g_gameover;
 
 func Initialize()
 {
 	g_remaining_rounds = SCENPAR_Rounds;
 	g_winners = [];
 	InitializeRound();
+
+	Scoreboard->Init([
+		// Invisible team column for sorting players under their teams.
+		{key = "team", title = "", sorted = true, desc = false, default = "", priority = 90},
+		{key = "wins", title = "Wins", sorted = true, desc = true, default = 0, priority = 100},
+		{key = "death", title = "", sorted = false, default = "", priority = 0},
+	]);
 }
 
 // Resets the scenario, redrawing the map.
@@ -25,7 +33,9 @@ func ResetRound()
 		clonk->SetObjectStatus(C4OS_INACTIVE);
 	}
 	// Clear and redraw the map.
+	g_no_map = true;
 	LoadScenarioSection("Empty");
+	g_no_map = false;
 	LoadScenarioSection("main");
 	InitializeRound();
 	// Re-enable the players.
@@ -35,7 +45,7 @@ func ResetRound()
 		SetCursor(clonk->GetOwner(), clonk);
 		// Select the first item. This fixes item ordering.
 		clonk->SetHandItemPos(0, 0);
-		InitializePlayer(clonk->GetOwner());
+		InitPlayerRound(clonk->GetOwner());
 	}
 }
 
@@ -90,8 +100,25 @@ func InitializeRound()
 
 static g_player_spawn_positions, g_map_width, g_player_spawn_index;
 
+global func ScoreboardTeam(int team) { return team * 100; }
+
 func InitializePlayer(int plr)
 {
+	// Add the player and their team to the scoreboard.
+	Scoreboard->NewPlayerEntry(plr);
+	Scoreboard->SetPlayerData(plr, "wins", "");
+	var team = GetPlayerTeam(plr);
+	Scoreboard->NewEntry(ScoreboardTeam(team), GetTeamName(team));
+	Scoreboard->SetData(ScoreboardTeam(team), "team", "", ScoreboardTeam(team));
+	Scoreboard->SetPlayerData(plr, "team", "", ScoreboardTeam(team) + 1);
+
+	return InitPlayerRound(plr);
+}
+
+func InitPlayerRound(int plr)
+{
+	// Unmark death on scoreboard.
+	Scoreboard->SetPlayerData(plr, "death", "");
 	// everything visible
 	SetFoW(false, plr);
 	// Player positioning. 
@@ -140,18 +167,21 @@ func InitializePlayer(int plr)
 func OnClonkDeath(object clonk)
 {
 	var plr = clonk->GetOwner();
+	// Mark death on scoreboard.
+	Scoreboard->SetPlayerData(plr, "death", "{{Scoreboard_Death}}");
 	// Skip eliminated players, NO_OWNER, etc.
-	if (!GetPlayerName(plr)) 
-		return true; 
-
-	var crew = CreateObject(Clonk, 0, 0, plr);
-	crew->MakeCrewMember(plr);
-	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
-	// We just use the relaunch object as a dumb container.
-	crew->Enter(relaunch);
+	if (GetPlayerName(plr)) 
+	{
+		var crew = CreateObject(Clonk, 0, 0, plr);
+		crew->MakeCrewMember(plr);
+		var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
+		// We just use the relaunch object as a dumb container.
+		crew->Enter(relaunch);
+	}
 
 	// Check for victory after three seconds to allow stalemates.
-	g_check_victory_effect.Interval = 36 * 3;
+	if (!g_gameover)
+		g_check_victory_effect.Interval = 36 * 5;
 }
 
 // Returns a list of colored player names, for example "Sven2, Maikel, Luchs"
@@ -175,10 +205,12 @@ global func FxCheckVictoryTimer(_, proplist effect)
 {
 	var find_living = Find_And(Find_OCF(OCF_CrewMember), Find_NoContainer());
 	var clonk = FindObject(find_living);
+	var msg;
 	if (!clonk)
 	{
 		// Stalemate!
-		Log("$Stalemate$");
+		msg = "$Stalemate$";
+		Log(msg);
 		GameCall("ResetRound");
 	}
 	else if (!FindObject(find_living, Find_Hostile(clonk->GetOwner())))
@@ -187,15 +219,17 @@ global func FxCheckVictoryTimer(_, proplist effect)
 		var team = GetPlayerTeam(clonk->GetOwner());
 		PushBack(g_winners, team);
 		// Announce the winning team.
-		Log("$WinningTeam$", GetTeamPlayerNames(team));
+		msg = Format("$WinningTeam$", GetTeamPlayerNames(team));
+		Log(msg);
+
+		// Update the scoreboard.
+		UpdateScoreboardWins(team);
+
 		if (--g_remaining_rounds > 0 || GetLeadingTeam() == nil)
 		{
-			if (g_remaining_rounds == 1)
-				Log("$LastRound$");
-			else if (g_remaining_rounds > 1)
-				Log("$RemainingRounds$", g_remaining_rounds);
-			else
-				Log("$Tiebreak$");
+			var msg2 = CurrentRoundStr();
+			Log(msg2);
+			msg = Format("%s|%s", msg, msg2);
 			GameCall("ResetRound");
 		}
 		else
@@ -203,9 +237,45 @@ global func FxCheckVictoryTimer(_, proplist effect)
 			GameCall("EliminateLosers");
 		}
 	}
+	// Switching scenario sections makes the Log() messages hard to see, so announce them using a message as well.
+	CustomMessage(msg);
 	// Go to sleep again.
 	effect.Interval = 0;
 	return FX_OK;
+}
+
+global func CurrentRoundStr()
+{
+	if (g_remaining_rounds == 1)
+		return "$LastRound$";
+	else if (g_remaining_rounds > 1)
+		return Format("$RemainingRounds$", g_remaining_rounds);
+	else
+		return "$Tiebreak$";
+}
+
+global func UpdateScoreboardWins(int team)
+{
+	var wins = GetTeamWins(team);
+	Scoreboard->SetData(ScoreboardTeam(team), "wins", wins, wins);
+	// We have to update each player as well to make the sorting work.
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(plr) == team)
+		{
+			Scoreboard->SetPlayerData(plr, "wins", "", wins);
+		}
+	}
+}
+
+global func GetTeamWins(int team)
+{
+	var wins = 0;
+	for (var w in g_winners)
+		if (w == team)
+			wins++;
+	return wins;
 }
 
 // Returns the team which won the most rounds, or nil if there is a tie.
@@ -229,6 +299,7 @@ global func GetLeadingTeam()
 
 func EliminateLosers()
 {
+	g_gameover = true;
 	// Determine the winning team.
 	var winning_team = GetLeadingTeam();
 	// Eliminate everybody who isn't on the winning team.
