@@ -61,6 +61,14 @@ public func FxIntActivityTimer(object target, proplist effect, int time)
 	if (Contained())
 		return FX_OK;
 
+	// Start digging if stuck.
+	if (Stuck())
+	{
+		SetAction("Dig");
+		SetDigDirection(Random(2) * 2 - 1, Random(2) * 2 - 1);
+		return FX_OK;
+	}
+
 	// Actions when standing.
 	if (IsStanding())
 	{
@@ -115,6 +123,10 @@ public func FxIntActivityTimer(object target, proplist effect, int time)
 	// Actions on digging.
 	if (IsDigging())
 	{
+		// If the wipf if stuck while digging digfree the full wipf's shape.
+		if (Stuck())
+			DigFree(GetX(), GetY(), 8);
+		
 		// Change digging direction.
 		if (!Random(3))
 		{
