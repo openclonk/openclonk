@@ -58,7 +58,7 @@ public func GetStackCount() { return count; }
 public func MaxStackCount() { return 20; }
 public func InitialStackCount() { return MaxStackCount(); }
 public func IsFullStack() { return this->IsInfiniteStackCount() || (GetStackCount() >= MaxStackCount()); }
-public func IsInfiniteStackCount() { return count_is_infinite; }
+public func IsInfiniteStackCount() { return !!count_is_infinite; }
 
 protected func Construction()
 {
