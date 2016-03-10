@@ -1040,6 +1040,8 @@ global func Test13_Execute()
 	arrows->RemoveObject();
 	stackable->RemoveObject();
 	crew->RemoveObject();
+	
+	return passed;
 }
 
 
@@ -1340,9 +1342,13 @@ global func Test18_Execute()
 	arrows->SetStackCount(arrows->InitialStackCount() - diff);
 	
 	crew->Collect(infinite);
-	var passed = doTest("Arrow object is not filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->InitialStackCount() - diff);
-	passed &= doTest("Infinite object is not removed. Got %v, expected %v.", !!infinite, true);
-	if (infinite) passed &= doTest("Infinite object is in the clonk. Got %v, expected %v.", infinite->Contained(), crew);
+	// TODO: This was an old idea
+	//var passed = doTest("Arrow object is not filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->InitialStackCount() - diff);
+	//passed &= doTest("Infinite object is not removed. Got %v, expected %v.", !!infinite, true);
+	//if (infinite) passed &= doTest("Infinite object is in the clonk. Got %v, expected %v.", infinite->Contained(), crew);
+
+	var passed = doTest("Arrow object is infinite. Got %v, expected %v.", arrows->IsInfiniteStackCount(), true);
+	passed &= doTest("Infinite object is removed. Got %v, expected %v.", infinite, nil);
 
 	if (infinite) infinite->RemoveObject();
 	arrows->RemoveObject();
@@ -1358,7 +1364,7 @@ global func Test18_Execute()
 	arrows->SetStackCount(arrows->InitialStackCount() - diff);
 
 	crew->Collect(arrows);
-	var passed = doTest("Infinite stack stays infinite. Got %v, expected %v.", infinite->IsInfiniteStackCount(), true);
+	passed &= doTest("Infinite stack stays infinite. Got %v, expected %v.", infinite->IsInfiniteStackCount(), true);
 	passed &= doTest("Arrow object is removed. Got %v, expected %v.", arrows, nil);
 
 	infinite->RemoveObject();
@@ -1394,18 +1400,25 @@ global func Test19_Execute()
 	var passed = doTest("Prerequisites: Ammo is in the bow. Got %v, expected %v.", ammo->Contained(), bow);
 	passed &= doTest("Prerequisites: Arrows are in the crew member. Got %v, expected %v.", arrows->Contained(), crew);
 	
+	// TODO: this was the old idea - infinite object fills the contents, but stays where it is. Sort of like an infinite ammo dispenser
+	// crew->Collect(infinite);
+	// passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
+	// passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
+	// if (infinite)
+	// {
+	// 	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", infinite->GetStackCount(), remaining);
+	// 	passed &= doTest("The arrow stack is in the crew member inventory. Got %v, expected %v.", infinite->Contained(), crew);
+	// }
+	// else
+	// {
+	// 	passed = false; Log("[Fail] The infinite stack was removed, but should not be removed");
+	// }
+
 	crew->Collect(infinite);
-	passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
-	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
-	if (infinite)
-	{
-		passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", infinite->GetStackCount(), remaining);
-		passed &= doTest("The arrow stack is in the crew member inventory. Got %v, expected %v.", infinite->Contained(), crew);
-	}
-	else
-	{
-		passed = false; Log("[Failed] The infinite stack was removed, but should not be removed");
-	}
+	passed &= doTest("The arrow stack in the bow is infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), true);
+	passed &= doTest("The arrow stack in the inventory is not filled. Got %d, expected %d.", arrows->GetStackCount(), 13);
+	passed &= doTest("The arrow stack in the inventory is finite. Got %v, expected %v.", arrows->IsInfiniteStackCount(), false);
+	passed &= doTest("The arrow stack that was collected is removed. Got %v, expected %v.", infinite, nil);
 
 	ammo->RemoveObject();
 	bow->RemoveObject();
