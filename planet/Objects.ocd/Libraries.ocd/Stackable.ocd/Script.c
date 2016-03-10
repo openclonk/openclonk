@@ -78,20 +78,27 @@ func Destruction()
 	return _inherited(...);
 }
 
-public func Stack(object obj)
+
+/**
+ * Puts the stack count of another object on top of this stack.
+ * The stack count of the other object is not modified.
+ * @par other the other object. Must be of the same ID as the stack.
+ * @return the amount of objects that could be stacked.
+ */
+public func Stack(object other)
 {
-	if (obj->GetID() != GetID())
-		return 0;
-	
+	if (other->GetID() != GetID()) return 0;
+	if (other == this) return 0; 
+
 	// Infinite stacks can always take everything
-	if (this->IsInfiniteStackCount()) return obj->GetStackCount();
-	if (obj->~IsInfiniteStackCount())
+	if (this->IsInfiniteStackCount()) return other->GetStackCount();
+	if (other->~IsInfiniteStackCount())
 	{
 		SetInfiniteStackCount();
-		return obj->GetStackCount();
+		return other->GetStackCount();
 	}
-	
-	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
+
+	var howmany = Min(other->GetStackCount(), MaxStackCount() - GetStackCount());
 	var future_count = GetStackCount() + howmany;
 	//Log("*** Added %d objects to stack", howmany);
 	
