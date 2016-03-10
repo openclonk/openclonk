@@ -1275,8 +1275,8 @@ global func Test17_Execute()
 
 	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(bow), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", infinite, nil);
-	passed &= doTest("The stack inside the weapon inside the container is not infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), false);
-	passed &= doTest("The stack inside the container is infinite. Got %v, expected %v.", finite->IsInfiniteStackCount(), true);
+	passed &= doTest("The stack inside the weapon inside the container is not infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), true);
+	passed &= doTest("The stack inside the container is infinite. Got %v, expected %v.", finite->IsInfiniteStackCount(), false);
 
 	finite->RemoveObject();
 	ammo->RemoveObject();
