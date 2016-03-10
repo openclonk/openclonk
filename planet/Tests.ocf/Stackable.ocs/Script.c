@@ -626,9 +626,9 @@ global func Test8_Execute()
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
 	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
-	passed &= doTest("The object is not removed. Got %v, expected %v.", !!stackable, true); // TODO: expected the object to be removed
+	passed &= doTest("The object is not removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The stack inside the weapon inside the container is served first. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
-	passed &= doTest("The stack inside the container is not served second. Got %d, expected %d.", other->GetStackCount(), 5); // TODO: expected 15, because of recursive filling
+	passed &= doTest("The stack inside the container is not served second. Got %d, expected %d.", other->GetStackCount(), 15);
 
 	other->RemoveObject();
 	ammo->RemoveObject();
@@ -986,9 +986,9 @@ global func Test12_Execute()
 	
 	crew->Collect(stackable);
 	passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
-	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), 13); //TODO: was, arrows->MaxStackCount());
-	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), 10); //TODO: was, remaining);
-	passed &= doTest("The arrow stack is not in the crew member inventory. Got %v, expected %v.", stackable->Contained(), nil); // TODO: was, crew);
+	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
+	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), remaining);
+	passed &= doTest("The arrow stack is in the crew member inventory. Got %v, expected %v.", stackable->Contained(), crew);
 	
 	ammo->RemoveObject();
 	bow->RemoveObject();
@@ -1030,8 +1030,8 @@ global func Test13_Execute()
 	
 	crew->Collect(stackable);
 	passed &= doTest("The arrow stack in the bow is filled. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
-	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), 13); // TODO: was, arrows->MaxStackCount());
-	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), 10); // TODO: was, remaining);
+	passed &= doTest("The arrow stack in the inventory is filled. Got %d, expected %d.", arrows->GetStackCount(), arrows->MaxStackCount());
+	passed &= doTest("The arrow stack that was collected has the correct count. Got %d, expected %d.", stackable->GetStackCount(), remaining);
 	passed &= doTest("The arrow stack is not in the crew member inventory. Got %v, expected %v.", stackable->Contained(), nil);
 	
 	RemoveAll(Find_ID(Rock));
