@@ -92,14 +92,13 @@ public func Stack(object obj)
 	}
 	
 	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
-	
+	var future_count = GetStackCount() + howmany;
 	//Log("*** Added %d objects to stack", howmany);
 	
-	if (howmany <= 0 || count + howmany > Stackable_Max_Count)
+	if (howmany <= 0 || future_count > Stackable_Max_Count)
 		return 0;
-	
-	SetStackCount(count + howmany);
 
+	SetStackCount(future_count);
 	return howmany;
 }
 
@@ -130,15 +129,15 @@ public func SetInfiniteStackCount()
 
 public func TakeObject()
 {
-	if (count == 1)
+	if (GetStackCount() == 1)
 	{
 		Exit();
 		return this;
 	}
-	else if (count > 1)
+	else
 	{
 		DoStackCount(-1);
-		var take = CreateObjectAbove(GetID(), 0, 0, GetOwner());
+		var take = CreateObject(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
 		return take;
 	}
@@ -147,7 +146,7 @@ public func TakeObject()
 public func UpdateStackDisplay()
 {
 	// empty stacks have to be removed
-	if (count <= 0)
+	if (GetStackCount() <= 0)
 	{
 		RemoveObject();
 		return;
@@ -244,7 +243,7 @@ public func TryAddToStack(object other)
 public func TryPutInto(object into, bool only_add_to_existing_stacks)
 {
 	only_add_to_existing_stacks = only_add_to_existing_stacks ?? false;
-	var before = count;
+	var before = GetStackCount();
 	var contents = FindObjects(Find_Container(into));
 
 	if (!only_add_to_existing_stacks)
@@ -274,7 +273,7 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 	//Log("***** Stack can enter the object %s? TryPutInto will return %v", into->GetName(), added_to_stack);
 	
 	// IFF anything changed, we need to update the display.
-	if (before != count)
+	if (before != GetStackCount())
 	{
 		UpdateStackDisplay();
 	}
