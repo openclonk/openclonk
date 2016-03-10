@@ -137,7 +137,7 @@ public func TakeObject()
 	}
 	else if (count > 1)
 	{
-		if (!(this->IsInfiniteStackCount())) DoStackCount(-1);
+		DoStackCount(-1);
 		var take = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
 		return take;
