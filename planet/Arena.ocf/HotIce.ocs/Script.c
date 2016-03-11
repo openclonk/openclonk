@@ -95,6 +95,10 @@ func InitializeRound()
 		if (pos=FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid()))
 			if (IsFirestoneSpot(pos.x,pos.y))
 				CreateObjectAbove([Firestone,IronBomb][Random(Random(3))],pos.x,pos.y-1);
+
+	// The game starts after a delay to ensure that everyone is ready.
+	GUI_Clock->CreateCountdown(3);
+
 	return true;
 }
 
@@ -158,11 +162,31 @@ func InitPlayerRound(int plr)
 		{
 			var ammo = launcher->CreateContents(IronBomb);
 			launcher->AddTimer(Scenario.ReplenishLauncherAmmo, 10);
+			// Start reloading the launcher during the countdown.
+			crew->SetHandItemPos(0, crew->GetItemPos(launcher));
+			// This doesn't play the animation properly - simulate a click instead.
+			/* crew->StartLoad(launcher); */
+			crew->StartUseControl(CON_Use, 0, 0, launcher);
+			crew->StopUseControl(0, 0, launcher);
 		}
 	}
 	crew.MaxEnergy = 100000;
 	crew->DoEnergy(1000);
+	// Disable the Clonk during the countdown.
+	crew->SetCrewEnabled(false);
+	crew->SetComDir(COMD_Stop);
 	return true;
+}
+
+// Called by the round start countdown.
+func OnCountdownFinished()
+{
+	// Re-enable all Clonks.
+	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
+	{
+		clonk->SetCrewEnabled(true);
+		SetCursor(clonk->GetOwner(), clonk);
+	}
 }
 
 func OnClonkDeath(object clonk)
