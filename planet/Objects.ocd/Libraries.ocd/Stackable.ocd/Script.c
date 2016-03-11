@@ -68,13 +68,7 @@ protected func Construction()
 
 func Destruction()
 {
-	var container = Contained();
-	if (container)
-	{
-		// has an extra slot
-		if (container->~HasExtraSlot())
-			container->~NotifyHUD();
-	}
+	NotifyContainer();
 	return _inherited(...);
 }
 
@@ -162,21 +156,7 @@ public func UpdateStackDisplay()
 	UpdatePicture();
 	UpdateMass();
 	UpdateName();
-	// notify hud
-	var container = Contained();
-	if (container)
-	{
-		// has an extra slot
-		if (container->~HasExtraSlot())
-		{
-			container->~NotifyHUD();
-		}
-		// is a clonk with new inventory system
-		else
-		{
-			container->~OnInventoryChange();
-		}
-	}
+	NotifyContainer();
 }
 
 private func UpdatePicture()
@@ -196,6 +176,25 @@ private func UpdateName()
 private func UpdateMass()
 {
 	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / InitialStackCount());
+}
+
+private func NotifyContainer()
+{
+	// notify hud
+	var container = Contained();
+	if (container)
+	{
+		// has an extra slot
+		if (container->~HasExtraSlot())
+		{
+			container->~NotifyHUD();
+		}
+		// is a clonk with new inventory system
+		else
+		{
+			container->~OnInventoryChange();
+		}
+	}
 }
 
 /*
