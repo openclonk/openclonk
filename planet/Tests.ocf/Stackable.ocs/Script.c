@@ -486,7 +486,7 @@ global func Test7_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("TryPutInto() counts the operation as not handled. Got %v, expected %v.", stackable->TryPutInto(container), false); // TODO: was true, but this prevents recursive stacking
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -551,7 +551,7 @@ global func Test8_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("TryPutInto() does not handled the operation. Got %v, expected %v.", stackable->TryPutInto(container), false); //TODO
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -650,7 +650,8 @@ global func Test8_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), true);
+//	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), true); // TODO: this prevents recursive stacking
+	passed &= doTest("The entrance is not handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), false);
 	passed &= doTest("The object did not get removed and is not contained. Got %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
@@ -719,7 +720,8 @@ global func Test9_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	//passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("TryPutInto() counts the operation as not handled. Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -791,7 +793,8 @@ global func Test9_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	//passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The entrance is not handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
 	passed &= doTest("The stack inside the weapon inside the container is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
 	passed &= doTest("The stack inside the container is served. Got %d, expected %d.", other->GetStackCount(), other->MaxStackCount());
 	passed &= doTest("The stack changed correctly. Got %d, expected %d.", stackable->GetStackCount(), 10);
@@ -816,7 +819,8 @@ global func Test9_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), true);
+	//passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), true);
+	passed &= doTest("The entrance is not handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), false);
 	passed &= doTest("The object did not get removed and is not contained. Got %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);

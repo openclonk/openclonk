@@ -245,46 +245,41 @@ public func TryAddToStack(object other)
 	return false;
 }
 
-/* Attempts to add this stack either to existing stacks in an object or
-	if only_add_to_existing_stacks is not set, also recursively into HasExtraSlot containers in that object.*/
+/**
+ * Attempts to add this stack either to existing stacks in an object.
+ * If only_add_to_existing_stacks is false, it will also 
+ * try to stack recursively into containers with HasExtraSlot in that object.
+ */
 public func TryPutInto(object into, bool only_add_to_existing_stacks)
 {
 	only_add_to_existing_stacks = only_add_to_existing_stacks ?? false;
-	var before = GetStackCount();
 	var contents = FindObjects(Find_Container(into));
 
 	if (!only_add_to_existing_stacks)
 	{
 		// first check if stackable can be put into object with extra slot
-		for (var content in contents)
+		for (var container in contents)
 		{
-			if (!content)
+			if (!container)
 				continue;
-			if (content->~HasExtraSlot())
-				if (TryPutInto(content))
+			if (container->~HasExtraSlot())
+				if (TryPutInto(container))
 					return true;
 		}
 	}
 	
-	var added_to_stack = false;
-	
 	// then check this object
-	for (var content in contents)
+	for (var stack in contents)
 	{
-		if (!content)
+		if (!stack)
 			continue;
-		added_to_stack = TryAddToStack(content) || added_to_stack;
+		//added_to_stack = TryAddToStack(content) || added_to_stack;
+		TryAddToStack(stack); // TODO: This is the original implementation. Maybe the function should be structured differently?
 		if (!this) return true;
 	}
-	
+
 	//Log("***** Stack can enter the object %s? TryPutInto will return %v", into->GetName(), added_to_stack);
-	
-	// IFF anything changed, we need to update the display.
-	if (before != GetStackCount())
-	{
-		UpdateStackDisplay();
-	}
-	return added_to_stack;
+	return false; // TODO was: added_to_stack
 }
 
 // Infinite stacks can only be stacked on top of others.
