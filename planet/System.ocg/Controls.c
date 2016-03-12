@@ -21,9 +21,8 @@ global func IsMovementControl(int ctrl)
 /** Control throws selected item */
 global func IsThrowControl(int ctrl)
 {
-	// left mouse button
-	if(ctrl == CON_Throw
-	|| ctrl == CON_ThrowDelayed)
+	// right mouse button
+	if(ctrl == CON_Throw)
 		return true;
 	
 	return false;

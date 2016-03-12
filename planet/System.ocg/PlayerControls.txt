@@ -37,7 +37,6 @@
 	#
 	# Gamepad controls
 	# -------------------------------------
-	# ThrowDelayed
 	# UseDelayed
 	# AimUp AimDown AimLeft AimRight
 	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
@@ -141,12 +140,6 @@
 	GUIDesc=$CON_Throw_Desc$
 	Hold=1
 	SendCursorPos=1
-
-	[ControlDef]
-	Identifier=ThrowDelayed
-	GUIName=$CON_Throw$
-	GUIDesc=$CON_Throw_Desc$
-	Hold=1
 
 	[ControlDef]
 	Identifier=Drop
@@ -973,7 +966,7 @@
 		Priority=75
 
 		[Assignment]
-		Key=CON_PickUp,CON_ThrowDelayed
+		Key=CON_PickUp,CON_Throw
 		Control=Drop
 		Priority=75
 
@@ -1003,7 +996,7 @@
 		Key=ControllerLeftTrigger
 		GUIGroup=20
 		Priority=100
-		Control=ThrowDelayed
+		Control=Throw
 
 		# TODO: Zoom
 
@@ -1029,17 +1022,11 @@
 	Name=*_GamepadCon_*
 
 		[Assignment]
-		Key=CON_Down,CON_UseDelayed
+		Key=CON_Down,CON_Throw
 		GUIDisabled=1
 		GUIGroup=20
 		Priority=150
 		Control=Drop
-
-		[Assignment]
-		Key=CON_UseDelayed
-		GUIName=None
-		Priority=50
-		Control=ThrowDelayed
 
 	# ======================================================================= #
 	#                           Default mouse control                         #

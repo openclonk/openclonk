@@ -246,15 +246,22 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return success && VirtualCursor()->IsAiming();
 	}
 	
+	// Simulate a mouse cursor for gamepads.
+	if (PlayerHasVirtualCursor(GetOwner()))
+	{
+		x = this.control.mlastx;
+		y = this.control.mlasty;
+	}
+		
 	// save last mouse position:
 	// if the using has to be canceled, no information about the current x,y
 	// is available. Thus, the last x,y position needs to be saved
-	if (ctrl == CON_Use || ctrl == CON_UseAlt)
+	else if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		this.control.mlastx = x;
 		this.control.mlasty = y;
 	}
-		
+
 	var proc = GetProcedure();
 	
 	// building, vehicle, mount, contents, menu control
@@ -327,7 +334,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// A click on throw can also just abort usage without having any other effects.
 	// todo: figure out if wise.
 	var currently_in_use = this.control.current_object != nil;
-	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && currently_in_use && status == CONS_Down)
+	if (ctrl == CON_Throw && currently_in_use && status == CONS_Down)
 	{
 		CancelUse();
 		return true;
@@ -336,7 +343,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	// only act on press, not release
-	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && !house && (!vehicle || proc == "ATTACH") && status == CONS_Down)
+	if (ctrl == CON_Throw && !house && (!vehicle || proc == "ATTACH") && status == CONS_Down)
 	{		
 		if (contents)
 		{
@@ -363,25 +370,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					return ObjectCommand("Drop", contents);
 				else
 					return ObjectCommand("Throw", contents, x, y);
-			}
-			// throw delayed
-			if (ctrl == CON_ThrowDelayed)
-			{
-				CancelUse();
-				if (status == CONS_Up)
-				{
-					VirtualCursor()->StopAim();
-				
-					if (only_drop)
-						return ObjectCommand("Drop", contents);
-					else
-						return ObjectCommand("Throw", contents, this.control.mlastx, this.control.mlasty);
-				}
-				else
-				{
-					VirtualCursor()->StartAim(this);
-					return true;
-				}
 			}
 		}
 	}
