@@ -239,8 +239,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	   CON_Left is still called afterwards. So if the clonk finally starts to
 	   aim, the virtual cursor already aims into the direction in which he ran
 	*/
-	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight
-	 || ctrl == CON_AimUp     || ctrl == CON_AimDown     || ctrl == CON_AimLeft     || ctrl == CON_AimRight)
+	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
 	{
 		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,status);
 		// in any case, CON_Aim* is called but it is only successful if the virtual cursor is aiming

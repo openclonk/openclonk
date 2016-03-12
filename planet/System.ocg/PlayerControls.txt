@@ -60,26 +60,6 @@
 	CoordinateSpace=Viewport
 
 	[ControlDef]
-	Identifier=AimUp
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
-	Identifier=AimDown
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
-	Identifier=AimLeft
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
-	Identifier=AimRight
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
 	Identifier=AimAxisUp
 	GUIName=$CON_AimAxisUp$
 	Hold=1
