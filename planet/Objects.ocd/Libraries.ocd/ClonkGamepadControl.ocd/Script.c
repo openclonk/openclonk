@@ -24,7 +24,7 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, int status)
 
 	/* all this stuff is already done on a higher layer - in playercontrol.c
 	   now this is just the same for gamepad control */
-	if (!PlayerHasVirtualCursor(GetOwner()))
+	if (!HasVirtualCursor())
 		return true;
 		
 	if (!this->GetMenu()) return false;
@@ -36,14 +36,14 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, int status)
 	// update angle for visual effect on the menu
 	if (repeat)
 	{
-		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+		if (ctrl == CON_Use || ctrl == CON_UseAlt)
 			this->GetMenu()->~UpdateCursor(mex,mey);
 	}
 	// click on menu
 	if (status == CONS_Up)
 	{
 		// select
-		if (ctrl == CON_UseDelayed)
+		if (ctrl == CON_Use)
 			this->GetMenu()->~OnMouseClick(mex,mey);
 	}
 	
@@ -91,6 +91,9 @@ func ReinitializeControls()
 
 /* Virtual cursor stuff */
 
+// Helper function.
+private func HasVirtualCursor() { return PlayerHasVirtualCursor(GetOwner()); }
+
 // get virtual cursor, if noone is there, create it
 private func VirtualCursor()
 {
@@ -122,19 +125,12 @@ public func UpdateVirtualCursorPos()
 
 public func TriggerHoldingControl()
 {
-	// using has been commented because it must be possible to use the virtual
-	// cursor aim also without a used object - for menus
-	// However, I think the check for 'this.control.current_object' here is just an unecessary safeguard
-	// since there is always a using-object if the clonk is aiming for a throw
-	// or a use. If the clonk uses it, there will be callbacks that cancel the
-	// callbacks to the virtual cursor
-	// - Newton
-	if (/*this.control.current_object && */!this.control.noholdingcallbacks)
+	if (this.control.current_object && !this.control.noholdingcallbacks)
 	{
-		var ctrl = CON_UseDelayed;
+		var ctrl = CON_Use;
 		if (this.control.alt)
-			ctrl = CON_UseAltDelayed;
-		ObjectControl(GetOwner(), ctrl, 0, 0, 0, true, false);
+			ctrl = CON_UseAlt;
+		ObjectControl(GetOwner(), ctrl, 0, 0, 0, true, CONS_Down);
 	}
 
 }

@@ -247,7 +247,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Simulate a mouse cursor for gamepads.
-	if (PlayerHasVirtualCursor(GetOwner()))
+	if (HasVirtualCursor())
 	{
 		x = this.control.mlastx;
 		y = this.control.mlasty;
@@ -282,7 +282,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var contents = this->GetHandItem(0);	
 	
 	// usage
-	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
+	var use = (ctrl == CON_Use || ctrl == CON_UseAlt);
 	if (use)
 	{
 		if (house)
@@ -595,18 +595,12 @@ func CanReIssueCommand(proplist data)
 	
 	if(data.ctrl == CON_Use)
 		return !data.obj->~RejectUse(this);
-	
-	if(data.ctrl == CON_UseDelayed)
-		return !data.obj->~RejectUse(this);
 }
 
 func ReIssueCommand(proplist data)
 {
 	if(data.ctrl == CON_Use)
 		return StartUseControl(data.ctrl, this.control.mlastx, this.control.mlasty, data.obj);
-	
-	if(data.ctrl == CON_UseDelayed)
-		return StartUseDelayedControl(data.ctrl, data.obj);
 }
 
 func StartUseControl(int ctrl, int x, int y, object obj)
@@ -629,6 +623,9 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 	this.control.using_type = DetermineUsageType(obj);
 	this.control.alt = ctrl != CON_Use;
 	
+	if (HasVirtualCursor())
+		VirtualCursor()->StartAim(this);
+
 	var hold_enabled = obj->Call("~HoldingEnabled");
 	
 	if (hold_enabled)
@@ -661,37 +658,6 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 		// add helper effect that prevents errors when objects are suddenly deleted by quickly cancelling their use beforehand
 		AddEffect("ItemRemovalCheck", this.control.current_object, 1, 100, this, nil); // the slow timer is arbitrary and will just clean up the effect if necessary
 	}
-		
-	return handled;
-}
-
-func StartUseDelayedControl(int ctrl, object obj)
-{
-	this.control.started_use = false;
-	
-	if(obj->~RejectUse(this))
-	{
-		// remember for later:
-		ShelveCommand(this, "CanReIssueCommand", this, "ReIssueCommand", {obj = obj, ctrl = ctrl});
-		// but still catch command
-		return true;
-	}
-	
-	// Disable climb/hangle actions for the duration of this use
-	if (obj.ForceFreeHands && !GetEffect("IntControlFreeHands", this)) AddEffect("IntControlFreeHands", this, 130, 0, this);
-
-	this.control.current_object = obj;
-	this.control.using_type = DetermineUsageType(obj);
-	this.control.alt = ctrl != CON_UseDelayed;
-				
-	VirtualCursor()->StartAim(this);
-			
-	// call UseStart
-	var handled = obj->Call(GetUseCallString("Start"),this,this.control.mlastx,this.control.mlasty);
-	this.control.noholdingcallbacks = !handled;
-	
-	if(handled)
-		this.control.started_use = true;
 		
 	return handled;
 }
@@ -760,11 +726,6 @@ func HoldingUseControl(int ctrl, int x, int y, object obj)
 {
 	var mex = x;
 	var mey = y;
-	if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-	{
-		mex = this.control.mlastx;
-		mey = this.control.mlasty;
-	}
 	
 	//Message("%d,%d",this,mex,mey);
 
@@ -807,29 +768,6 @@ func HoldingUseControl(int ctrl, int x, int y, object obj)
 	return handled;
 }
 
-func StopUseDelayedControl(object obj)
-{
-	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
-	var handled = obj->Call(GetUseCallString("Stop"), this, this.control.mlastx, this.control.mlasty);
-	if (!handled)
-		handled = obj->Call(GetUseCallString(), this, this.control.mlastx, this.control.mlasty);
-	
-	if (obj == this.control.current_object)
-	{
-		VirtualCursor()->StopAim();
-		// see StopUseControl
-		if(handled != -1)
-		{
-			this.control.current_object = nil;
-			this.control.using_type = nil;
-			this.control.alt = false;
-		}
-		this.control.noholdingcallbacks = false;
-	}
-		
-	return handled;
-}
-
 // very infrequent timer to prevent dangling effects, this is not necessary for correct functioning
 func FxItemRemovalCheckTimer(object target, proplist effect, int time)
 {
@@ -868,21 +806,9 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int st
 			return StopUseControl(x, y, obj);
 		}
 	}
-	// gamepad use
-	else if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-	{
-		if (status == CONS_Down && !repeat)
-		{
-			return StartUseDelayedControl(ctrl, obj);
-		}
-		else if (status == CONS_Up && obj == this.control.current_object)
-		{
-			return StopUseDelayedControl(obj);
-		}
-	}
 	
 	// more use (holding)
-	if (ctrl == CON_Use || ctrl == CON_UseAlt || ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		if (status == CONS_Up)
 		{
@@ -890,7 +816,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int st
 			CancelUse();
 			return true;
 		}
-		else if (repeat && !this.control.noholdingcallbacks)
+		else if (status == CONS_Down && repeat && !this.control.noholdingcallbacks)
 		{
 			return HoldingUseControl(ctrl, x, y, obj);
 		}

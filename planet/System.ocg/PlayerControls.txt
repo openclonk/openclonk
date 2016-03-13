@@ -37,7 +37,6 @@
 	#
 	# Gamepad controls
 	# -------------------------------------
-	# UseDelayed
 	# AimUp AimDown AimLeft AimRight
 	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
 	#
@@ -248,21 +247,7 @@
 	SendCursorPos=1
 
 	[ControlDef]
-	Identifier=UseDelayed
-	GUIName=$CON_Use$
-	GUIDesc=$CON_Use_Desc$
-	Hold=1
-	SendCursorPos=1
-
-	[ControlDef]
 	Identifier=UseAlt
-	GUIName=$CON_UseAlt$
-	GUIDesc=$CON_UseAlt_Desc$
-	Hold=1
-	SendCursorPos=1
-
-	[ControlDef]
-	Identifier=UseAltDelayed
 	GUIName=$CON_UseAlt$
 	GUIDesc=$CON_UseAlt_Desc$
 	Hold=1
@@ -990,7 +975,7 @@
 		GUIDesc=$KEY_GamepadUse_Desc$
 		GUIGroup=20
 		Priority=100
-		Control=UseDelayed
+		Control=Use
 
 		[Assignment]
 		Key=ControllerLeftTrigger
