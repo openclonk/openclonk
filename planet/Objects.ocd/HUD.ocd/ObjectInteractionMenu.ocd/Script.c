@@ -924,7 +924,7 @@ private func OnContentsSelection(symbol, extra_data)
 			}
 			
 			// More special handling for Stackable items..
-			handled = obj->~TryPutInto(other_target);
+			handled = obj->~MergeWithStacksIn(other_target);
 			// Try to normally collect the object otherwise.
 			if (!handled && other_target && obj)
 				handled = other_target->Collect(obj, true);

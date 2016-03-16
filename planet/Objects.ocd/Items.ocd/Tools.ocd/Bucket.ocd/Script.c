@@ -122,7 +122,7 @@ public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
 // When trying to put into a producer that can't take the item but its contents, just transfer the contents.
-public func TryPutInto(object to_building, ...)
+public func MergeWithStacksIn(object to_building, ...)
 {
 	if (to_building && to_building->~IsProducer() && !to_building->~IsCollectionAllowed(this))
 	{

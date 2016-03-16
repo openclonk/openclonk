@@ -241,9 +241,9 @@ public func CanBeStackedWith(object other)
 }
 
 
-public func TryPutInto(object into, bool only_add_to_existing_stacks)
+public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
 {
-	if (!_inherited(into, only_add_to_existing_stacks, ...))
+	if (!_inherited(into, ignore_extra_slot_containers, ...))
 	{
 		var container_limit = GetContainerLimit(into);
 		

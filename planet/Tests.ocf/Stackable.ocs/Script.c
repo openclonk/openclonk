@@ -437,32 +437,32 @@ global func Test7_OnStart(int plr){ return true;}
 global func Test7_OnFinished(){ return; }
 global func Test7_Execute()
 {
-	Log("Test the behaviour of TryPutInto() with empty objects");
+	Log("Test the behaviour of MergeWithStacksIn() with empty objects");
 	var container = CreateObject(Dummy);
 	
-	Log("****** TryPutInto() a single object stack into an object");
+	Log("****** MergeWithStacksIn() a single object stack into an object");
 
 	var stackable = CreateObject(Arrow);
 	stackable->SetStackCount(1);
 
-	var passed = doTest("TryPutInto() a single object stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
+	var passed = doTest("MergeWithStacksIn() a single object stack into an object. The collection should not be handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), 1);
 
 	stackable->RemoveObject();
 	
-	Log("****** TryPutInto() a full stack into an object");
+	Log("****** MergeWithStacksIn() a full stack into an object");
 	
 	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(stackable->MaxStackCount());
 
-	passed &= doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("MergeWithStacksIn() an empty stack into an object. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
 
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into an object that contains a full stack");
+	Log("****** MergeWithStacksIn() a partial stack into an object that contains a full stack");
 
 	stackable = CreateObject(Arrow);
 	var other = CreateObject(Arrow);
@@ -470,7 +470,7 @@ global func Test7_Execute()
 	other->SetStackCount(other->MaxStackCount());
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("MergeWithStacksIn() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -478,7 +478,7 @@ global func Test7_Execute()
 	other->RemoveObject();
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a full stack into an object that contains a partial stack");
+	Log("****** MergeWithStacksIn() a full stack into an object that contains a partial stack");
 
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -486,7 +486,7 @@ global func Test7_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() counts the operation as not handled. Got %v, expected %v.", stackable->TryPutInto(container), false); // TODO: was true, but this prevents recursive stacking
+	passed &= doTest("MergeWithStacksIn() counts the operation as not handled. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false); // TODO: was true, but this prevents recursive stacking
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -501,33 +501,33 @@ global func Test8_OnStart(int plr){ return true;}
 global func Test8_OnFinished(){ return; }
 global func Test8_Execute()
 {
-	Log("Test the behaviour of TryPutInto() with objects that contain an object with a useable extra slot");
+	Log("Test the behaviour of MergeWithStacksIn() with objects that contain an object with a useable extra slot");
 	var container = CreateObject(Dummy);
 	var bow = container->CreateContents(Bow);
 
-	Log("****** TryPutInto() a single object stack into an object");
+	Log("****** MergeWithStacksIn() a single object stack into an object");
 
 	var stackable = CreateObject(Arrow);
 	stackable->SetStackCount(1);
 
-	var passed = doTest("TryPutInto() a single object stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
+	var passed = doTest("MergeWithStacksIn() a single object stack into an object. The collection should not be handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), 1);
 
 	stackable->RemoveObject();
 	
-	Log("****** TryPutInto() a full stack into an object");
+	Log("****** MergeWithStacksIn() a full stack into an object");
 	
 	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(stackable->MaxStackCount());
 
-	passed &= doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("MergeWithStacksIn() an empty stack into an object. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
 
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into an object that contains a full stack");
+	Log("****** MergeWithStacksIn() a partial stack into an object that contains a full stack");
 
 	stackable = CreateObject(Arrow);
 	var other = CreateObject(Arrow);
@@ -535,7 +535,7 @@ global func Test8_Execute()
 	other->SetStackCount(other->MaxStackCount());
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("MergeWithStacksIn() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -543,7 +543,7 @@ global func Test8_Execute()
 	other->RemoveObject();
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a full stack into an object that contains a partial stack");
+	Log("****** MergeWithStacksIn() a full stack into an object that contains a partial stack");
 
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -551,7 +551,7 @@ global func Test8_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() does not handled the operation. Got %v, expected %v.", stackable->TryPutInto(container), false); //TODO
+	passed &= doTest("MergeWithStacksIn() does not handled the operation. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false); //TODO
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -559,7 +559,7 @@ global func Test8_Execute()
 	other->RemoveObject();
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() a partial stack into a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -575,7 +575,7 @@ global func Test8_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The stack inside the weapon inside the container is served first. Got %d, expected %d.", ammo->GetStackCount(), 10);
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
@@ -584,7 +584,7 @@ global func Test8_Execute()
 	ammo->RemoveObject();
 	if (stackable) stackable->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into an object inside a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() a partial stack into an object inside a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -600,7 +600,7 @@ global func Test8_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(bow), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), 10);
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
@@ -609,7 +609,7 @@ global func Test8_Execute()
 	ammo->RemoveObject();
 	if (stackable) stackable->RemoveObject();
 
-	Log("****** TryPutInto() an overfull stack into a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() an overfull stack into a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -625,7 +625,7 @@ global func Test8_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), true);
 	passed &= doTest("The object is not removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The stack inside the weapon inside the container is served first. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
 	passed &= doTest("The stack inside the container is not served second. Got %d, expected %d.", other->GetStackCount(), 15);
@@ -634,7 +634,7 @@ global func Test8_Execute()
 	ammo->RemoveObject();
 	if (stackable) stackable->RemoveObject();
 
-	Log("****** TryPutInto() an overfull stack into an object inisde a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() an overfull stack into an object inisde a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -650,8 +650,8 @@ global func Test8_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-//	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), true); // TODO: this prevents recursive stacking
-	passed &= doTest("The entrance is not handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), false);
+//	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(bow), true); // TODO: this prevents recursive stacking
+	passed &= doTest("The entrance is not handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(bow), false);
 	passed &= doTest("The object did not get removed and is not contained. Got %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
@@ -670,33 +670,33 @@ global func Test9_OnStart(int plr){ return true;}
 global func Test9_OnFinished(){ return; }
 global func Test9_Execute()
 {
-	Log("Test the behaviour of TryPutInto() with objects that contain an object without extra slot");
+	Log("Test the behaviour of MergeWithStacksIn() with objects that contain an object without extra slot");
 	var container = CreateObject(Dummy);
 	var lorry = container->CreateContents(Lorry);
 
-	Log("****** TryPutInto() a single object stack into an object");
+	Log("****** MergeWithStacksIn() a single object stack into an object");
 
 	var stackable = CreateObject(Arrow);
 	stackable->SetStackCount(1);
 
-	var passed = doTest("TryPutInto() a single object stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
+	var passed = doTest("MergeWithStacksIn() a single object stack into an object. The collection should not be handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), 1);
 
 	stackable->RemoveObject();
 	
-	Log("****** TryPutInto() a full stack into an object");
+	Log("****** MergeWithStacksIn() a full stack into an object");
 	
 	stackable = CreateObject(Arrow);
 	stackable->SetStackCount(stackable->MaxStackCount());
 
-	passed &= doTest("TryPutInto() an empty stack into an object. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("MergeWithStacksIn() an empty stack into an object. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %d, expected %d", stackable->GetStackCount(), stackable->MaxStackCount());
 
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into an object that contains a full stack");
+	Log("****** MergeWithStacksIn() a partial stack into an object that contains a full stack");
 
 	stackable = CreateObject(Arrow);
 	var other = CreateObject(Arrow);
@@ -704,7 +704,7 @@ global func Test9_Execute()
 	other->SetStackCount(other->MaxStackCount());
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	passed &= doTest("MergeWithStacksIn() a partial stack into an object with a full stack. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %d, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does not change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does not change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -712,7 +712,7 @@ global func Test9_Execute()
 	other->RemoveObject();
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a full stack into an object that contains a partial stack");
+	Log("****** MergeWithStacksIn() a full stack into an object that contains a partial stack");
 
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -720,8 +720,8 @@ global func Test9_Execute()
 	other->SetStackCount(5);
 	other->Enter(container);
 
-	//passed &= doTest("TryPutInto() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->TryPutInto(container), true);
-	passed &= doTest("TryPutInto() counts the operation as not handled. Got %v, expected %v.", stackable->TryPutInto(container), false);
+	//passed &= doTest("MergeWithStacksIn() a full stack into an object with a partial stack. Got %v, expected %v.", stackable->MergeWithStacksIn(container), true);
+	passed &= doTest("MergeWithStacksIn() counts the operation as not handled. Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The container of the stack is %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack count of the added stack does change. Got %d, expected %d", stackable->GetStackCount(), 5);
 	passed &= doTest("The stack count of the original stack does change. Got %d, expected %d", other->GetStackCount(), other->MaxStackCount());
@@ -729,7 +729,7 @@ global func Test9_Execute()
 	other->RemoveObject();
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() a partial stack into a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -745,7 +745,7 @@ global func Test9_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The stack inside the weapon inside the container is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
 	passed &= doTest("The stack inside the container is served. Got %d, expected %d.", other->GetStackCount(), 10);
@@ -753,7 +753,7 @@ global func Test9_Execute()
 	other->RemoveObject();
 	ammo->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack into an object inside a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() a partial stack into an object inside a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -769,7 +769,7 @@ global func Test9_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(lorry), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), 10);
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
@@ -777,7 +777,7 @@ global func Test9_Execute()
 	other->RemoveObject();
 	ammo->RemoveObject();
 
-	Log("****** TryPutInto() an overfull stack into a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() an overfull stack into a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -793,8 +793,8 @@ global func Test9_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
 
-	//passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
-	passed &= doTest("The entrance is not handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), false);
+	//passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), true);
+	passed &= doTest("The entrance is not handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), false);
 	passed &= doTest("The stack inside the weapon inside the container is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
 	passed &= doTest("The stack inside the container is served. Got %d, expected %d.", other->GetStackCount(), other->MaxStackCount());
 	passed &= doTest("The stack changed correctly. Got %d, expected %d.", stackable->GetStackCount(), 10);
@@ -803,7 +803,7 @@ global func Test9_Execute()
 	ammo->RemoveObject();
 	stackable->RemoveObject();
 
-	Log("****** TryPutInto() an overfull stack into an object inisde a container that contains a partial stack");
+	Log("****** MergeWithStacksIn() an overfull stack into an object inisde a container that contains a partial stack");
 	
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -819,8 +819,8 @@ global func Test9_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), lorry);
 
-	//passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), true);
-	passed &= doTest("The entrance is not handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(lorry), false);
+	//passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(lorry), true);
+	passed &= doTest("The entrance is not handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(lorry), false);
 	passed &= doTest("The object did not get removed and is not contained. Got %v, expected %v.", stackable->Contained(), nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %d, expected %d.", ammo->GetStackCount(), ammo->MaxStackCount());
 	passed &= doTest("The stack inside the container is not served. Got %d, expected %d.", other->GetStackCount(), 5);
@@ -838,13 +838,13 @@ global func Test10_OnStart(int plr){ return true;}
 global func Test10_OnFinished(){ return; }
 global func Test10_Execute()
 {
-	Log("Test the behaviour of TryPutInto() with deeply nested extra-slot objects");
+	Log("Test the behaviour of MergeWithStacksIn() with deeply nested extra-slot objects");
 	var container = CreateObject(Dummy);
 	var cannon = container->CreateContents(Cannon);
 	var bow = cannon->CreateContents(Bow);
 
 
-	Log("****** TryPutInto() a partial stack -> container");
+	Log("****** MergeWithStacksIn() a partial stack -> container");
 
 	var stackable = CreateObject(Arrow);
 	var other = CreateObject(Arrow);
@@ -864,7 +864,7 @@ global func Test10_Execute()
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
 	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(container), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(container), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The bow stack is served. Got %d, expected %d.", arrows->GetStackCount(), 10);
 	passed &= doTest("The cannon stack is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
@@ -874,7 +874,7 @@ global func Test10_Execute()
 	other->RemoveObject();
 	ammo->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack -> cannon");
+	Log("****** MergeWithStacksIn() a partial stack -> cannon");
 
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -894,7 +894,7 @@ global func Test10_Execute()
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
 	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(cannon), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(cannon), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The bow stack is served. Got %d, expected %d.", arrows->GetStackCount(), 10);
 	passed &= doTest("The cannon stack is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
@@ -904,7 +904,7 @@ global func Test10_Execute()
 	other->RemoveObject();
 	ammo->RemoveObject();
 
-	Log("****** TryPutInto() a partial stack -> bow");
+	Log("****** MergeWithStacksIn() a partial stack -> bow");
 
 	stackable = CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -924,7 +924,7 @@ global func Test10_Execute()
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), cannon);
 	passed &= doTest("Prerequisite: Arrows object is in %v, expected %v.", arrows->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", stackable->TryPutInto(bow), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", stackable->MergeWithStacksIn(bow), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", stackable, nil);
 	passed &= doTest("The bow stack is served. Got %d, expected %d.", arrows->GetStackCount(), 10);
 	passed &= doTest("The cannon stack is not served. Got %d, expected %d.", ammo->GetStackCount(), 5);
@@ -1184,22 +1184,22 @@ global func Test16_OnStart(int plr){ return true;}
 global func Test16_OnFinished(){ return; }
 global func Test16_Execute()
 {		
-	Log("Test infinite stack count: TryPutInto() with objects that contain an object with a useable extra slot");
+	Log("Test infinite stack count: MergeWithStacksIn() with objects that contain an object with a useable extra slot");
 	var container = CreateObject(Dummy);
 	var bow = container->CreateContents(Bow);
 
-	Log("****** TryPutInto() an infinite stack into an object");
+	Log("****** MergeWithStacksIn() an infinite stack into an object");
 
 	var infinite = CreateObject(Arrow);
 	infinite->SetInfiniteStackCount();
 
-	var passed = doTest("TryPutInto() an infinite stack into an object. The collection should not be handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(container), false);
+	var passed = doTest("MergeWithStacksIn() an infinite stack into an object. The collection should not be handled by MergeWithStacksIn(). Got %v, expected %v.", infinite->MergeWithStacksIn(container), false);
 	passed &= doTest("The function should not actually make an object enter the container. The container of the stack is %v, expected %v.", infinite->Contained(), nil);
 	passed &= doTest("The stack count does not change. Got %v, expected %v", infinite->IsInfiniteStackCount(), true);
 
 	infinite->RemoveObject();
 	
-	Log("****** TryPutInto() an infinite stack into an object that contains an infinite stack");
+	Log("****** MergeWithStacksIn() an infinite stack into an object that contains an infinite stack");
 
 	infinite = CreateObject(Arrow);
 	var other = CreateObject(Arrow);
@@ -1207,14 +1207,14 @@ global func Test16_Execute()
 	other->SetInfiniteStackCount();
 	other->Enter(container);
 
-	passed &= doTest("TryPutInto() an infinite stack into an object with an infinite stack. Got %v, expected %v.", infinite->TryPutInto(container), true);
+	passed &= doTest("MergeWithStacksIn() an infinite stack into an object with an infinite stack. Got %v, expected %v.", infinite->MergeWithStacksIn(container), true);
 	passed &= doTest("The added stack is removed. Got %v, expected %v.", infinite, nil);
 	passed &= doTest("The stack count of the original stack does not change. Got %v, expected %v", other->IsInfiniteStackCount(), true);
 
 	other->RemoveObject();
 	if (infinite) infinite->RemoveObject();
 
-	Log("****** TryPutInto() an infinite stack into an object that contains a container that contains an infinite stack");
+	Log("****** MergeWithStacksIn() an infinite stack into an object that contains a container that contains an infinite stack");
 	
 	infinite= CreateObject(Arrow);
 	other = CreateObject(Arrow);
@@ -1230,7 +1230,7 @@ global func Test16_Execute()
 	passed &= doTest("Prerequisite: Other object is in %v, expected %v.", other->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(container), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", infinite->MergeWithStacksIn(container), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", infinite, nil);
 	passed &= doTest("The stack inside the weapon inside the container is served. Got %v, expected %v.", ammo->IsInfiniteStackCount(), true);
 	passed &= doTest("The stack inside the container is not served. Got %v, expected %v.", other->IsInfiniteStackCount(), true);
@@ -1247,25 +1247,25 @@ global func Test17_OnStart(int plr){ return true;}
 global func Test17_OnFinished(){ return; }
 global func Test17_Execute()
 {		
-	Log("Test infinite stack count: TryPutInto() with objects that contain an object with a useable extra slot");
+	Log("Test infinite stack count: MergeWithStacksIn() with objects that contain an object with a useable extra slot");
 	var container = CreateObject(Dummy);
 	var bow = container->CreateContents(Bow);
 	
-	Log("****** TryPutInto() an infinite stack into an object that contains a finite stack");
+	Log("****** MergeWithStacksIn() an infinite stack into an object that contains a finite stack");
 
 	var infinite = CreateObject(Arrow);
 	var finite = CreateObject(Arrow);
 	infinite->SetInfiniteStackCount();
 	finite->Enter(container);
 
-	var passed = doTest("TryPutInto() an infinite stack into an object with a finite stack. Got %v, expected %v.", infinite->TryPutInto(container), true);
+	var passed = doTest("MergeWithStacksIn() an infinite stack into an object with a finite stack. Got %v, expected %v.", infinite->MergeWithStacksIn(container), true);
 	passed &= doTest("The added stack is removed. Got %v, expected %v.", infinite, nil);
 	passed &= doTest("The original stack becomes infinite. Got %v, expected %v", finite->IsInfiniteStackCount(), true);
 
 	finite->RemoveObject();
 	if (infinite) infinite->RemoveObject();
 
-	Log("****** TryPutInto() an infinite stack into an object inside a container that contains a finite stack");
+	Log("****** MergeWithStacksIn() an infinite stack into an object inside a container that contains a finite stack");
 	
 	infinite = CreateObject(Arrow);
 	finite = CreateObject(Arrow);
@@ -1279,7 +1279,7 @@ global func Test17_Execute()
 	passed &= doTest("Prerequisite: Finite object is in %v, expected %v.", finite->Contained(), container);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), bow);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", infinite->TryPutInto(bow), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", infinite->MergeWithStacksIn(bow), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", infinite, nil);
 	passed &= doTest("The stack inside the weapon inside the container is not infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), true);
 	passed &= doTest("The stack inside the container is infinite. Got %v, expected %v.", finite->IsInfiniteStackCount(), false);
@@ -1288,21 +1288,21 @@ global func Test17_Execute()
 	ammo->RemoveObject();
 	if (infinite) infinite->RemoveObject();
 
-	Log("****** TryPutInto() a finite stack into an object that contains an infinite stack");
+	Log("****** MergeWithStacksIn() a finite stack into an object that contains an infinite stack");
 
 	infinite = CreateObject(Arrow);
 	finite = CreateObject(Arrow);
 	infinite->SetInfiniteStackCount();
 	infinite->Enter(container);
 
-	passed &= doTest("TryPutInto() a finite stack into an object with an infinite stack. Got %v, expected %v.", finite->TryPutInto(container), true);
+	passed &= doTest("MergeWithStacksIn() a finite stack into an object with an infinite stack. Got %v, expected %v.", finite->MergeWithStacksIn(container), true);
 	passed &= doTest("The added stack is removed. Got %v, expected %v.", finite, nil);
 	passed &= doTest("The original stack stays infinite. Got %v, expected %v", infinite->IsInfiniteStackCount(), true);
 
 	if (finite) finite->RemoveObject();
 	infinite->RemoveObject();
 
-	Log("****** TryPutInto() a finite stack into an object inside a container that contains an infinite stack");
+	Log("****** MergeWithStacksIn() a finite stack into an object inside a container that contains an infinite stack");
 	
 	infinite = CreateObject(Arrow);
 	finite = CreateObject(Arrow);
@@ -1316,7 +1316,7 @@ global func Test17_Execute()
 	passed &= doTest("Prerequisite: Infinite object is in %v, expected %v.", infinite->Contained(), bow);
 	passed &= doTest("Prerequisite: Ammo object is in %v, expected %v.", ammo->Contained(), container);
 
-	passed &= doTest("The entrance gets handled by TryPutInto(). Got %v, expected %v.", finite->TryPutInto(container), true);
+	passed &= doTest("The entrance gets handled by MergeWithStacksIn(). Got %v, expected %v.", finite->MergeWithStacksIn(container), true);
 	passed &= doTest("The object got removed. Got %v, expected %v.", finite, nil);
 	passed &= doTest("The stack inside the weapon inside the container is infinite. Got %v, expected %v.", infinite->IsInfiniteStackCount(), true);
 	passed &= doTest("The stack inside the container is not infinite. Got %v, expected %v.", ammo->IsInfiniteStackCount(), false);

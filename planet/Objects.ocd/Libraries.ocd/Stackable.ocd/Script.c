@@ -270,9 +270,9 @@ private func NotifyContainer()
  */
 protected func RejectEntrance(object into)
 {
-	var try_put = TryPutInto(into);
-	//Log("***** TryPutInto did in fact return %v", try_put);
-	if (try_put)
+	var merged = MergeWithStacksIn(into);
+	//Log("***** MergeWithStacksIn did in fact return %v", try_put);
+	if (merged)
 	{
 		//Log("****** Rejected entrance into %s!!", into->GetName());
 		return true;
@@ -333,7 +333,7 @@ public func TryAddToStack(object other)
  * @par ignore_extra_slot_containers if set to true the stacks in
         contents with HasExtraSlot() will not be considered.
  */
-public func TryPutInto(object into, bool ignore_extra_slot_containers)
+public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
 {
 	ignore_extra_slot_containers = ignore_extra_slot_containers ?? false;
 	var contents = FindObjects(Find_Container(into));
@@ -346,7 +346,7 @@ public func TryPutInto(object into, bool ignore_extra_slot_containers)
 			if (!container)
 				continue;
 			if (container->~HasExtraSlot())
-				if (TryPutInto(container))
+				if (MergeWithStacksIn(container))
 					return true;
 		}
 	}
@@ -361,7 +361,7 @@ public func TryPutInto(object into, bool ignore_extra_slot_containers)
 		if (!this) return true;
 	}
 
-	//Log("***** Stack can enter the object %s? TryPutInto will return %v", into->GetName(), added_to_stack);
+	//Log("***** Stack can enter the object %s? MergeWithStacksIn will return %v", into->GetName(), added_to_stack);
 	return false; // TODO was: added_to_stack
 }
 
