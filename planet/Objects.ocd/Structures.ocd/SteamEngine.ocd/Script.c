@@ -46,7 +46,7 @@ public func ContentsCheck()
 {
 	// Ejects non fuel items immediately
 	var fuel;
-	if(fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel"))))
+	if (fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel"))))
 	{
 		fuel->Exit(-45, 21, -20, -1, -1, -30);
 		Sound("Chuff");
