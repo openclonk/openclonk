@@ -19,6 +19,7 @@
 #include <C4Include.h>
 #include <C4Value.h>
 #include <C4ConsoleQtViewport.h>
+#include <C4ConsoleQtState.h>
 #include <C4Viewport.h>
 #include <C4ViewportWindow.h>
 #include <C4Console.h>
@@ -35,7 +36,7 @@ C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWi
 	setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_ShowWithoutActivating, true);
 	setWindowFlags(Qt::FramelessWindowHint);
-	setFocusPolicy(Qt::TabFocus);
+	setFocusPolicy(Qt::WheelFocus);
 	setMouseTracking(true);
 	// Register for viewport
 #ifdef USE_WIN32_WINDOWS
@@ -123,6 +124,7 @@ void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
 	}
 	else
 	{
+		this->setCursor(Qt::CrossCursor);
 		cvp->pWindow->EditCursorMove(eventMove->x(), eventMove->y(), GetShiftWParam());
 	}
 
@@ -203,46 +205,162 @@ void C4ConsoleQtViewportView::wheelEvent(QWheelEvent *event)
 	}
 }
 
-C4ConsoleQtViewportDockWidget::C4ConsoleQtViewportDockWidget(QMainWindow *parent, C4ViewportWindow *cvp)
-	: QDockWidget("", parent), cvp(cvp)
+void C4ConsoleQtViewportView::focusInEvent(QFocusEvent * event)
 {
-	// Translated title
-	setWindowTitle(LoadResStr("IDS_CNS_VIEWPORT"));
-	// Actual view container
-	view = new C4ConsoleQtViewportView(this);
-	setWidget(view);
-	connect(this, SIGNAL(dockLocationChanged(bool)), this, SLOT(DockLocationChanged(bool)));
-	OnActiveChanged(true);
+	dock->OnActiveChanged(true);
+	QWidget::focusInEvent(event);
 }
 
-void C4ConsoleQtViewportDockWidget::OnActiveChanged(bool active)
+void C4ConsoleQtViewportView::focusOutEvent(QFocusEvent * event)
+{
+	dock->OnActiveChanged(false);
+	QWidget::focusOutEvent(event);
+}
+
+
+
+/* Keyboard scan code mapping from Qt to our keys */
+
+/** Convert certain keys to (unix(?)) scancodes (those that differ from scancodes on Windows. Sometimes. Maybe.) */
+
+static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
+{
+	//LogF("VK: %x   SC: %x    key: %x", event.nativeVirtualKey(), event.nativeScanCode(), event.key());
+	// Map some special keys
+	switch (event.key())
+	{
+	case Qt::Key_Home:		return K_HOME;
+	case Qt::Key_End:		return K_END;
+	case Qt::Key_PageUp:	return K_PAGEUP;
+	case Qt::Key_PageDown:	return K_PAGEDOWN;
+	case Qt::Key_Up:		return K_UP;
+	case Qt::Key_Down:		return K_DOWN;
+	case Qt::Key_Left:		return K_LEFT;
+	case Qt::Key_Right:		return K_RIGHT;
+	case Qt::Key_Clear:		return K_CENTER;
+	case Qt::Key_Insert:	return K_INSERT;
+	case Qt::Key_Delete:	return K_DELETE;
+	case Qt::Key_Menu:		return K_MENU;
+	case Qt::Key_Pause:		return K_PAUSE;
+	case Qt::Key_Print:		return K_PRINT;
+	case Qt::Key_NumLock:	return K_NUM;
+	default:
+		// Some native Win32 key mappings...
+#ifdef USE_WIN32_WINDOWS
+		switch (event.nativeVirtualKey())
+		{
+		case VK_LWIN:		return K_WIN_L;
+		case VK_RWIN:		return K_WIN_R;
+		case VK_NUMPAD1:	return K_NUM1;
+		case VK_NUMPAD2:	return K_NUM2;
+		case VK_NUMPAD3:	return K_NUM3;
+		case VK_NUMPAD4:	return K_NUM4;
+		case VK_NUMPAD5:	return K_NUM5;
+		case VK_NUMPAD6:	return K_NUM6;
+		case VK_NUMPAD7:	return K_NUM7;
+		case VK_NUMPAD8:	return K_NUM8;
+		case VK_NUMPAD9:	return K_NUM9;
+		case VK_NUMPAD0:	return K_NUM0;
+		}
+		switch (event.nativeScanCode())
+		{
+		case 285: return K_CONTROL_R;
+		}
+#endif
+		// Otherwise rely on native scan code to be the same on all platforms
+		return event.nativeScanCode();
+	}
+}
+
+void C4ConsoleQtViewportView::keyPressEvent(QKeyEvent * event)
+{
+	// Convert key to our internal mapping
+	C4KeyCode code = QtKeyToUnixScancode(*event);
+	// Handled if handled as player control or main editor
+	bool handled = Game.DoKeyboardInput(code, KEYEV_Down, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
+	if (!handled) handled = dock->main_window->HandleEditorKeyDown(event);
+	event->setAccepted(handled);
+}
+
+void C4ConsoleQtViewportView::keyReleaseEvent(QKeyEvent * event)
+{
+	// Convert key to our internal mapping
+	C4KeyCode code = QtKeyToUnixScancode(*event);
+	// Handled if handled as player control
+	bool handled = Game.DoKeyboardInput(code, KEYEV_Up, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
+	if (!handled) handled = dock->main_window->HandleEditorKeyUp(event);
+	event->setAccepted(handled);
+}
+
+
+
+C4ConsoleQtViewportLabel::C4ConsoleQtViewportLabel(const QString &title, C4ConsoleQtViewportDockWidget *dock)
+	: QLabel(dock), dock(dock)
+{
+	OnActiveChanged(false);
+	setText(title);
+}
+
+void C4ConsoleQtViewportLabel::OnActiveChanged(bool active)
 {
 	// set color schemes for inactive / active viewport headers
 	QColor bgclr = QApplication::palette(this).color(QPalette::Highlight);
 	QColor fontclr = QApplication::palette(this).color(QPalette::HighlightedText);
 	if (active)
 		setStyleSheet(QString(
-			"QDockWidget::title { background: %1; padding: 5px; } QDockWidget { color: %2; font-weight: bold; }")
+			"QLabel { background: %1; padding: 3px; color: %2; font-weight: bold; }")
 			.arg(bgclr.name(), fontclr.name()));
 	else
-		setStyleSheet("");
+		setStyleSheet(QString(
+			"QLabel { padding: 3px; }"));
 }
 
-void C4ConsoleQtViewportDockWidget::focusInEvent(QFocusEvent * event)
+void C4ConsoleQtViewportLabel::mousePressEvent(QMouseEvent *eventPress)
 {
-	OnActiveChanged(true);
-	QDockWidget::focusInEvent(event);
+	dock->view->setFocus();
+	QLabel::mousePressEvent(eventPress);
 }
 
-void C4ConsoleQtViewportDockWidget::focusOutEvent(QFocusEvent * event)
+
+
+C4ConsoleQtViewportDockWidget::C4ConsoleQtViewportDockWidget(C4ConsoleQtMainWindow *main_window, QMainWindow *parent, C4ViewportWindow *cvp)
+	: QDockWidget("", parent), main_window(main_window), cvp(cvp)
 {
-	OnActiveChanged(false);
-	QDockWidget::focusOutEvent(event);
+	// Translated title
+	setWindowTitle(LoadResStr("IDS_CNS_VIEWPORT"));
+	// Actual view container
+	view = new C4ConsoleQtViewportView(this);
+	setTitleBarWidget((title_label = new C4ConsoleQtViewportLabel(windowTitle(), this)));
+	setWidget(view);
+	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(TopLevelChanged(bool)));
 }
 
-void C4ConsoleQtViewportDockWidget::DockLocationChanged(Qt::DockWidgetArea new_area)
+void C4ConsoleQtViewportDockWidget::mousePressEvent(QMouseEvent *eventPress)
 {
-	// Re-docked: 
+	// Clicking the dock focuses the viewport
+	view->setFocus();
+	QDockWidget::mousePressEvent(eventPress);
+}
+
+void C4ConsoleQtViewportDockWidget::OnActiveChanged(bool active)
+{
+	title_label->OnActiveChanged(active);
+}
+
+void C4ConsoleQtViewportDockWidget::TopLevelChanged(bool is_floating)
+{
+	if (!is_floating)
+	{
+		// docked has custom title
+		setTitleBarWidget(title_label);
+	}
+	else
+	{
+		// undocked using OS title
+		setTitleBarWidget(NULL);
+	}
+	// Ensure focus after undock and after re-docking floating viewport window
+	view->setFocus();
 }
 
 void C4ConsoleQtViewportDockWidget::closeEvent(QCloseEvent * event)
@@ -254,22 +372,4 @@ void C4ConsoleQtViewportDockWidget::closeEvent(QCloseEvent * event)
 		cvp = NULL;
 		deleteLater();
 	}
-}
-
-#ifdef USE_WIN32_WINDOWS
-bool ConsoleHandleWin32KeyboardMessage(MSG *msg); // in C4WindowWin32.cpp
-#endif
-
-
-bool C4ConsoleQtViewportDockWidget::nativeEvent(const QByteArray &eventType, void *message, long *result)
-{
-	// Handle keyboard messages on detached viewport windows
-#ifdef USE_WIN32_WINDOWS
-	MSG *msg = static_cast<MSG*>(message);
-	if (ConsoleHandleWin32KeyboardMessage(msg)) return true;
-#else
-TODO: Should implement this through native Qt keyboard signals
-#endif
-	// Handle by Qt
-	return false;
 }

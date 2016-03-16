@@ -335,12 +335,6 @@ void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTr
 	state->AddViewport(cvp);
 }
 
- void C4ConsoleGUI::OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active)
- {
-	 // Reflect viewport activation in GUI
-	 state->OnViewportActiveChanged(cvp, is_active);
- }
-
  void C4ConsoleGUI::OnObjectSelectionChanged(class C4EditCursorSelection &selection)
  {
 	 // selection changed (through other means than creator or object list view)

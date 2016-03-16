@@ -87,7 +87,8 @@ class C4ConsoleQtMainWindow : public QMainWindow
 	class C4ConsoleGUIState *state;
 
 protected:
-	bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+	void keyPressEvent(QKeyEvent * event) override;
+	void keyReleaseEvent(QKeyEvent * event) override;
 
 public:
 	C4ConsoleQtMainWindow(class C4AbstractApp *app, class C4ConsoleGUIState *state);
@@ -132,6 +133,9 @@ public:
 	void OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
 	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	// Global editor key processing
+	bool HandleEditorKeyDown(QKeyEvent *event);
+	bool HandleEditorKeyUp(QKeyEvent *event);
 };
 
 
@@ -195,7 +199,6 @@ public:
 	void AddPlayerViewportMenuItem(int32_t plr, const char *text);
 	void ClearViewportMenu();
 	void AddViewport(class C4ViewportWindow *cvp);
-	void OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active);
 	void SetInputFunctions(std::list<const char*> &functions);
 	void PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update);
 	void ReInitDefinitions();

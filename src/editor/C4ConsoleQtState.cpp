@@ -42,8 +42,6 @@ QString C4ConsoleQtTranslator::translate(const char * context, const char * sour
 
 C4ConsoleQtTranslator qt_translator;
 
-
-
 /* Kick client action */
 
 C4ConsoleClientAction::C4ConsoleClientAction(int32_t client_id, const char *text, QObject *parent)
@@ -118,21 +116,18 @@ C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUISta
 #endif
 }
 
-#ifdef USE_WIN32_WINDOWS
-bool ConsoleHandleWin32KeyboardMessage(MSG *msg); // in C4WindowWin32.cpp
-#endif
-
-bool C4ConsoleQtMainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
+void C4ConsoleQtMainWindow::keyPressEvent(QKeyEvent * event)
 {
-#ifdef USE_WIN32_WINDOWS
-	MSG *msg = static_cast<MSG*>(message);
-	if (ConsoleHandleWin32KeyboardMessage(msg)) return true;
-#else
-	TODO: Should implement this through native Qt keyboard signals instead of Win32 only
-#endif
-	// Handle by Qt
-	return false;
+	if (HandleEditorKeyDown(event)) event->setAccepted(true);
+	QMainWindow::keyPressEvent(event);
 }
+
+void C4ConsoleQtMainWindow::keyReleaseEvent(QKeyEvent * event)
+{
+	if (HandleEditorKeyUp(event)) event->setAccepted(true);
+	QMainWindow::keyPressEvent(event);
+}
+
 
 void C4ConsoleQtMainWindow::closeEvent(QCloseEvent *event)
 {
@@ -309,6 +304,34 @@ void C4ConsoleQtMainWindow::OnCreatorCurrentChanged(const QModelIndex & current,
 void C4ConsoleQtMainWindow::OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
 	state->OnObjectListSelectionChanged(selected, deselected);
+}
+
+bool C4ConsoleQtMainWindow::HandleEditorKeyDown(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_Delete:
+		::Console.EditCursor.Delete();
+		return true;
+	}
+	uint32_t shift = 0;
+	if (event->modifiers() & Qt::AltModifier) shift |= MK_ALT;
+	if (event->modifiers() & Qt::ControlModifier) shift |= MK_CONTROL;
+	if (event->modifiers() & Qt::ShiftModifier) shift |= MK_SHIFT;
+	::Console.EditCursor.KeyDown(event->nativeScanCode(), shift);
+	// key not handled (ignore shift handling done in EditCursor)
+	return false;
+}
+
+bool C4ConsoleQtMainWindow::HandleEditorKeyUp(QKeyEvent *event)
+{
+	uint32_t shift = 0;
+	if (event->modifiers() & Qt::AltModifier) shift |= MK_ALT;
+	if (event->modifiers() & Qt::ControlModifier) shift |= MK_CONTROL;
+	if (event->modifiers() & Qt::ShiftModifier) shift |= MK_SHIFT;
+	::Console.EditCursor.KeyUp(event->nativeScanCode(), shift);
+	// key not handled (ignore shift handling done in EditCursor)
+	return false;
 }
 
 
@@ -548,20 +571,10 @@ void C4ConsoleGUIState::ClearViewportMenu()
 void C4ConsoleGUIState::AddViewport(C4ViewportWindow *cvp)
 {
 	if (!viewport_area) return;
-	C4ConsoleQtViewportDockWidget *new_viewport = new C4ConsoleQtViewportDockWidget(viewport_area, cvp);
+	C4ConsoleQtViewportDockWidget *new_viewport = new C4ConsoleQtViewportDockWidget(window.get(), viewport_area, cvp);
 	viewport_area->addDockWidget(Qt::BottomDockWidgetArea, new_viewport);
 	viewports.push_back(new_viewport);
 	new_viewport->setFocus();
-}
-
-void C4ConsoleGUIState::OnViewportActiveChanged(C4ViewportWindow *cvp, bool is_active)
-{
-	// Viewport active state changed: Forward to appropriate viewport window
-	for (auto vp : viewports)
-		if (vp->GetViewportWindow() == cvp)
-		{
-			vp->OnActiveChanged(is_active);
-		}
 }
 
 void C4ConsoleGUIState::SetInputFunctions(std::list<const char*> &functions)
