@@ -103,6 +103,16 @@ public func Stack(object other)
 	return howmany;
 }
 
+
+/**
+ * Defines how many objects are contained in this stack.
+ * If the stack count is set to a value less than 1
+ * the object gets removed.
+ * If the stack was infinite, then it will be finite
+ * after setting the stack count.
+ * @par amount this many objects are in the stack.
+ * @return always returns true.             
+ */
 public func SetStackCount(int amount)
 {
 	count = BoundBy(amount, 0, Stackable_Max_Count); // allow 0, so that the object can be removed in UpdateStackDisplay
@@ -111,6 +121,15 @@ public func SetStackCount(int amount)
 	return true;
 }
 
+
+/**
+ * Changes the stack count.
+ * If the stack count is set to a value less than 1
+ * the object gets removed.
+ * Does not affect infinite stacks.
+ * @par change the stack count will be changed by this
+        amount.
+ */
 public func DoStackCount(int change)
 {
 	if (!(this->IsInfiniteStackCount()))
@@ -120,6 +139,14 @@ public func DoStackCount(int change)
 	}
 }
 
+
+/**
+ * Defines the stack as infinite:
+ * - one can always TakeObject() from the stack
+ * - always accepts stacking other stacks
+ * - if put into a container the first contained
+ *   stack becomes infinite, this object gets removed
+ */
 public func SetInfiniteStackCount()
 {
 	count = Stackable_Infinite_Count;
@@ -128,6 +155,13 @@ public func SetInfiniteStackCount()
 	return true;
 }
 
+
+/**
+ * Takes one object from the stack, the
+ * stack count is reduced by 1.
+ * @return the object that was taken.
+ *         This object is not contained.
+ */
 public func TakeObject()
 {
 	if (GetStackCount() == 1)
@@ -144,6 +178,12 @@ public func TakeObject()
 	}
 }
 
+
+/**
+ * Updates the stack, concerning information
+ * that is required by other objects and the GUI.
+ * The stack is removed if the stack count is <= 0. 
+ */
 public func UpdateStackDisplay()
 {
 	// empty stacks have to be removed
@@ -159,12 +199,23 @@ public func UpdateStackDisplay()
 	NotifyContainer();
 }
 
+
+/**
+ * Updates the picture. Called by UpdateStack().
+ */
 private func UpdatePicture()
 {
 	// Allow other objects to adjust their picture.
 	return _inherited(...);
 }
 
+
+/**
+ * Updates the name. Called by UpdateStack().
+ * By default the name is changed to e.g. "5x Name"
+ * if the stack count is 5, or "Infinite Name" if
+ * the stack is infinite.
+ */
 private func UpdateName()
 {
 	if (this->IsInfiniteStackCount())
@@ -173,11 +224,25 @@ private func UpdateName()
 		SetName(Format("%dx %s", GetStackCount(), GetID()->GetName()));
 }
 
+
+/**
+ * Updates the mass. Called by UpdateStack().
+ * The mass is proportional to the mass of the definition.
+ * It is assumed that the mass of the definition is that of
+ * InitialStackCount() objects in one stack.
+ */
 private func UpdateMass()
 {
 	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / InitialStackCount());
 }
 
+
+/**
+ * Tells a possible container that the stack was
+ * changed.
+ * Calls NotifyHUD() in containers with extra slots,
+ * or OnInventoryChange() otherwise. 
+ */
 private func NotifyContainer()
 {
 	// notify hud
@@ -197,11 +262,12 @@ private func NotifyContainer()
 	}
 }
 
-/*
-	Try to merge packs BEFORE entering the container.
-	That means that a container can not prevent objects stacking into it.
-	However, the other way round (after the object has entered) presents more issues.
-*/
+
+/**
+ * Tries merging packs BEFORE entering the container.
+ * That means that a container can not prevent objects stacking into it.
+ * However, the other way round (after the object has entered) presents more issues.
+ */
 protected func RejectEntrance(object into)
 {
 	var try_put = TryPutInto(into);
@@ -215,15 +281,28 @@ protected func RejectEntrance(object into)
 	return _inherited(into, ...);
 }
 
-/* Value */
 
+/**
+ * Value calculation. The value is proportional to the value of the definition.
+ * It is assumed that the definition value defines the value for InitialStackCount()
+ * objects in one stack.
+ */
 public func CalcValue(object in_base, int for_plr)
 {
 	return GetID()->GetValue() * Max(GetStackCount(), 1) / InitialStackCount();
 }
 
-/* Tries to add this object to another stack. Returns true if successful.
-	This call might remove this item. */
+
+/**
+ * Tries to add this object to another stack.
+ * This call removes this item if its stack
+ * count is reduced to 0, or if it is an
+ * infinite stack.
+ * @par other the other stack.
+ * @return true if successful. That is, if
+ *         one or more objects were transferred
+ *         to the other stack.
+ */
 public func TryAddToStack(object other)
 {
 	if (other == this) return false;
@@ -244,8 +323,9 @@ public func TryAddToStack(object other)
 	return false;
 }
 
+
 /**
- * Attempts to add this stack either to existing stacks in an object.
+ * Attempts to add this stack to existing stacks in an object.
  * If only_add_to_existing_stacks is false, it will also 
  * try to stack recursively into containers with HasExtraSlot in that object.
  */
@@ -281,21 +361,32 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 	return false; // TODO was: added_to_stack
 }
 
-// Infinite stacks can only be stacked on top of others.
+
+/**
+ * Relevant for the GUI only. Infinite stacks can be stacked on top of other infinite
+ * stacks only.
+ * This does not affect the functions Stack() or TryAddToStack().
+ */
 public func CanBeStackedWith(object other)
 {
 	if (other->~IsInfiniteStackCount() != this->IsInfiniteStackCount()) return false;
 	return _inherited(other, ...);
 }
 
-// Infinite stacks show a little symbol in their corner.
+
+/**
+ * Infinite stacks show a little symbol in their corner.
+ */
 public func GetInventoryIconOverlay()
 {
 	if (!(this->IsInfiniteStackCount())) return nil;
 	return {Left = "50%", Bottom="50%", Symbol=Icon_Number, GraphicsName="Inf"};
 }
 
-// Save stack counts in saved scenarios
+
+/**
+ * Saves stack counts in saved scenarios.
+ */
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
@@ -307,7 +398,10 @@ public func SaveScenarioObject(props)
 	return true;
 }
 
-// Tell the interaction menu as how many objects this object should be displayed
+
+/**
+ * Tells the interaction menu as how many objects this object should be displayed.
+ */
 func GetInteractionMenuAmount()
 {
 	var object_amount = this->GetStackCount() ?? 1;
