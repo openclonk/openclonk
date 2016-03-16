@@ -18,12 +18,10 @@ func MaxStackCount()
 {
 	if (this)
 	{
-		var container = Contained();
-		var limit = GetContainerLimit(container);
-		if (limit)
+		if (Contained() && Contained()->~IsLiquidContainer())
 		{
-			var other = container->~GetLiquidAmount() - GetStackCount();
-			return limit - other;
+			// Stack limit is: [what is already inside the stack] + [free space in the container].
+			return GetLiquidAmount() + Contained()->~GetLiquidAmountRemaining();
 		}
 	}
 	
@@ -238,61 +236,4 @@ public func CanBeStackedWith(object other)
 	var is_same_liquid = other->~GetLiquidType() == this->~GetLiquidType();
 	
 	return _inherited(other, ...) && is_same_liquid;
-}
-
-
-public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
-{
-	if (!_inherited(into, ignore_extra_slot_containers, ...))
-	{
-		var container_limit = GetContainerLimit(into);
-		
-		if (container_limit)
-		{
-			if (into->~RejectCollect(GetID(), this))
-			{
-				return true;
-			}
-		
-			if (GetStackCount() > container_limit)
-			{
-				Log("***** Retry entrance with container limit");
-				var sample = TakeObject();
-				sample->Enter(into);
-				if (sample)
-				{
-					if (sample->Contained())
-					{
-						_inherited(into, true, ...); // no return value, so that we cannot enter the object as a second object
-					}
-					else
-					{
-						Stack(sample);
-					}
-				}
-				return true; // prevent entering the object			
-			}
-
-			if (GetStackCount() > container_limit - into->~GetLiquidAmount())
-			{
-				Log ("***** Default container limit shit");
-				return true;
-			}
-		}
-		return false;
-	}
-	else
-	{
-		return true; // the inherited call returned true
-	}
-}
-
-
-func GetContainerLimit(object container)
-{
-	if (container && container->~IsLiquidContainer())
-	{
-		return container->~GetLiquidContainerMaxFillLevel();
-	}
-	return 0;
 }

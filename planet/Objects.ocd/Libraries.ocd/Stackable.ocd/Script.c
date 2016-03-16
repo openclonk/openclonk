@@ -94,7 +94,6 @@ public func Stack(object other)
 
 	var howmany = Min(other->GetStackCount(), MaxStackCount() - GetStackCount());
 	var future_count = GetStackCount() + howmany;
-	//Log("*** Added %d objects to stack", howmany);
 	
 	if (howmany <= 0 || future_count > Stackable_Max_Count)
 		return 0;
@@ -270,14 +269,18 @@ private func NotifyContainer()
  */
 protected func RejectEntrance(object into)
 {
-	var merged = MergeWithStacksIn(into);
-	//Log("***** MergeWithStacksIn did in fact return %v", try_put);
-	if (merged)
-	{
-		//Log("****** Rejected entrance into %s!!", into->GetName());
-		return true;
-	}
-	//Log("***** Entered %v %s!!", this, into->GetName());
+	// The object may grab contents first. The implementation of CollectFromStack()
+	// should ensure that no loop is created, however.
+	// This is used in the barrel from example: If the liquid stack that enters is too large,
+	// then the barrel grabs a single liquid item
+	into->~CollectFromStack(this);
+	// Merge the stack into existing stacks.
+	if (MergeWithStacksIn(into)) return true;
+	// Finally, allow the object to reject the stack, if it filled existing stacks but still should
+	// not be allowed to enter. This is the case in the barrel: It contains a stack, fills that to
+	// the maximum and then prevents the remaining liquid from forming a second stack in the barrel
+	if (this && into->~RejectStack(this)) return true;
+	
 	return _inherited(into, ...);
 }
 
@@ -329,9 +332,13 @@ public func TryAddToStack(object other)
  * By default the function considers stacks that are contained
  * directly in the object 'into', as well as stacks that are
  * contained in contents with HasExtraSlot() in 'into'.
+ * 
  * @par into stacks in this object are considered.
- * @par ignore_extra_slot_containers if set to true the stacks in
-        contents with HasExtraSlot() will not be considered.
+ * @par ignore_extra_slot_containers if set to 'true' the stacks in
+ *      contents with HasExtraSlot() will not be considered.
+ *      The default value is 'false'.
+ * @par continue_on_limit_reached containers may have a stack size limit.
+ *      RejectEntrance() should return 'true' to prevent 
  */
 public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
 {
@@ -356,12 +363,10 @@ public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
 	{
 		if (!stack)
 			continue;
-		//added_to_stack = TryAddToStack(content) || added_to_stack;
-		TryAddToStack(stack); // TODO: This is the original implementation. Maybe the function should be structured differently?
+		TryAddToStack(stack);
 		if (!this) return true;
 	}
-
-	//Log("***** Stack can enter the object %s? MergeWithStacksIn will return %v", into->GetName(), added_to_stack);
+	
 	return false; // TODO was: added_to_stack
 }
 

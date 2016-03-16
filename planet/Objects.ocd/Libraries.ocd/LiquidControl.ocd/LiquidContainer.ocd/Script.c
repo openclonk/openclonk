@@ -30,6 +30,11 @@ func GetLiquidAmount(string liquid_name)
 	return amount;
 }
 
+func GetLiquidAmountRemaining()
+{
+	return GetLiquidContainerMaxFillLevel() - GetLiquidAmount();
+}
+
 func GetLiquidContents()
 {
 	return FindObjects(Find_Container(this), Find_Func("IsLiquid"));

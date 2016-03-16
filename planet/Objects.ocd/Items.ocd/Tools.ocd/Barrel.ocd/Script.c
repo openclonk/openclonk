@@ -26,21 +26,40 @@ protected func Initialize()
 	AddTimer("Check", 5);
 }
 
-func RejectCollect(id def, object item)
+func CollectFromStack(object item)
 {
-	Log("***** Barrel: Called reject collect");
-	if (Contents() && def != Contents()->GetID())
+	// Callback from stackable object: Try grabbing partial objects from this stack, if the stack is too large
+	if (item->GetStackCount() > GetLiquidAmountRemaining() && !this->RejectStack(item))
 	{
-		Log("***** Barrel: Reject collection because contents");
+		// Get one sample object and try to insert it into the barrel
+		var candidate = item->TakeObject();
+		candidate->Enter(this);
+		
+		// Put it back if it was not collected
+		if (candidate && !(candidate->Contained()))
+		{
+			item->TryAddToStack(candidate);
+		}
+	}
+}
+
+func RejectStack(object item)
+{
+	// Callback from stackable object: When should a stack entrance be rejected, if the object was not merged into the existing stacks?
+	if (Contents())
+	{
+		// The barrel can hold only one type of liquid
 		return true;
 	}
-	if (item && item->~IsLiquid() && this->~IsLiquidContainerForMaterial(item->~GetLiquidType()))
+	if (item->~IsLiquid() && this->~IsLiquidContainerForMaterial(item->~GetLiquidType()))
 	{
-		return false; // Collect it!
+		// The liquid is suitable, collect it!
+		return false;
 	}
 	else
 	{
-		return true; // Reject it!
+		// Reject anything else
+		return true;
 	}
 }
 
