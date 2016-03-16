@@ -326,15 +326,19 @@ public func TryAddToStack(object other)
 
 /**
  * Attempts to add this stack to existing stacks in an object.
- * If only_add_to_existing_stacks is false, it will also 
- * try to stack recursively into containers with HasExtraSlot in that object.
+ * By default the function considers stacks that are contained
+ * directly in the object 'into', as well as stacks that are
+ * contained in contents with HasExtraSlot() in 'into'.
+ * @par into stacks in this object are considered.
+ * @par ignore_extra_slot_containers if set to true the stacks in
+        contents with HasExtraSlot() will not be considered.
  */
-public func TryPutInto(object into, bool only_add_to_existing_stacks)
+public func TryPutInto(object into, bool ignore_extra_slot_containers)
 {
-	only_add_to_existing_stacks = only_add_to_existing_stacks ?? false;
+	ignore_extra_slot_containers = ignore_extra_slot_containers ?? false;
 	var contents = FindObjects(Find_Container(into));
 
-	if (!only_add_to_existing_stacks)
+	if (!ignore_extra_slot_containers)
 	{
 		// first check if stackable can be put into object with extra slot
 		for (var container in contents)
