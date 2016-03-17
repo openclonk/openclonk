@@ -184,9 +184,11 @@ global func Test2_OnStart(int plr)
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
 	producer->CreateContents(Earth, 10);
-	var barrel = producer->CreateContents(Barrel);
+	var barrel = CreateObject(Barrel);
 	barrel->PutLiquid("Water", 300); // contains 300 water
 	producer->AddToQueue(Loam, 5); // needs 300 water
+	//barrel->Enter(producer);
+	producer->Collect(barrel);
 
 	// Log what the test is about.
 	Log("Objects with liquid need (loam), can be produced with liquid containers (barrel). The liquid container must not be removed.");
@@ -219,6 +221,7 @@ global func Test3_OnStart(int plr)
 	var water = CreateObject(Liquid_Water);
 	water->SetStackCount(400);
 	producer->AddToQueue(Loam, 5); // needs 300 water
+	water->Enter(producer);
 
 	// Log what the test is about.
 	Log("Objects with liquid need (loam), can be produced with liquid containers (barrel). The liquid container must not be removed.");
