@@ -269,11 +269,6 @@ private func NotifyContainer()
  */
 protected func RejectEntrance(object into)
 {
-	// The object may grab contents first. The implementation of CollectFromStack()
-	// should ensure that no loop is created, however.
-	// This is used in the barrel from example: If the liquid stack that enters is too large,
-	// then the barrel grabs a single liquid item
-	into->~CollectFromStack(this);
 	// Merge the stack into existing stacks.
 	if (MergeWithStacksIn(into)) return true;
 	// Finally, allow the object to reject the stack, if it filled existing stacks but still should
@@ -342,6 +337,12 @@ public func TryAddToStack(object other)
  */
 public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
 {
+	// The object may grab contents first. The implementation of CollectFromStack()
+	// should ensure that no loop is created, however.
+	// This is used in the barrel from example: If the liquid stack that enters is too large,
+	// then the barrel grabs a single liquid item
+	into->~CollectFromStack(this);
+
 	ignore_extra_slot_containers = ignore_extra_slot_containers ?? false;
 	var contents = FindObjects(Find_Container(into));
 

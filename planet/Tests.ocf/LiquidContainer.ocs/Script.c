@@ -518,6 +518,57 @@ global func Test5_OnFinished()
 	return true;
 }
 
+global func Test6_OnStart(int plr){ return true;}
+global func Test6_OnFinished(){ return; }
+global func Test6_Execute()
+{
+	Log("Test the behaviour of liquid entering a Clonk (for example from a producer)");
+	
+	var crew = CreateObject(Clonk);
+	var barrel1 = crew->CreateContents(Barrel);
+	var barrel2 = crew->CreateContents(Barrel);
+	var barrel3 = crew->CreateContents(Barrel);
+	
+	barrel3->PutLiquid("Oil", 100);
+
+	barrel1->Enter(crew);
+	barrel2->Enter(crew);
+	barrel3->Enter(crew);
+	
+	var liquid = CreateObject(Liquid_Water);
+	liquid->SetStackCount(1000);
+	
+	// -----
+	
+	var passed = doTest("Prerequisites: Barrel 3 has contents. Got %v, expected %v.", !!(barrel3->Contents()), true);
+	passed &= doTest("Barrel 1 is in the Clonk. Got %v, epxected %v.", barrel1->Contained(), crew);
+	passed &= doTest("Barrel 2 is in the Clonk. Got %v, epxected %v.", barrel2->Contained(), crew);
+	passed &= doTest("Barrel 3 is in the Clonk. Got %v, epxected %v.", barrel3->Contained(), crew);
+	
+	liquid->Enter(crew);
+	
+	passed &= doTest("Liquid cannot enter the Clonk. Container is %v, expected %v.", liquid->Contained(), nil);
+	passed &= doTest("Barrel 1 is filled. Got %d, expected %d.", barrel1->GetLiquidAmount(), barrel1->GetLiquidContainerMaxFillLevel());
+	passed &= doTest("Barrel 2 is filled. Got %d, expected %d.", barrel2->GetLiquidAmount(), barrel2->GetLiquidContainerMaxFillLevel());
+	if (barrel1->Contents()) passed &= doTest("Barrel 1 contains water. Got %s, expected %s.", barrel1->Contents()->GetLiquidType(), "Water");
+	if (barrel1->Contents()) passed &= doTest("Barrel 2 contains water. Got %s, expected %s.", barrel2->Contents()->GetLiquidType(), "Water");
+	
+	passed &= doTest("Barrel 3 does not change. Got %d, expected %d.", barrel3->GetLiquidAmount(), 100);
+	passed &= doTest("Barrel 3 contains oil. Got %s, expected %s.", barrel3->Contents()->GetLiquidType(), "Oil");
+
+	passed &= doTest("Liquid amount does change. Got %d, expected %d.", liquid->GetLiquidAmount(), 400);
+
+	barrel1->RemoveObject();
+	barrel2->RemoveObject();
+	barrel3->RemoveObject();
+	liquid->RemoveObject();
+	
+	passed &= doTest("Liquid objects get removed with the barrels. Got %d, expected %d.", ObjectCount(Find_Func("IsLiquid")), 0);
+	
+	crew->RemoveObject();
+	return passed;
+}
+
 // Deactivated: for some reason the (inherited) stacking function returns false
 global func Test6_deactivated_OnStart(int plr){ return true;}
 global func Test6_deactivated_OnFinished(){ return; }
