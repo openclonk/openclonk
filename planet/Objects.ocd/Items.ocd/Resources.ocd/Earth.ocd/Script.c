@@ -8,6 +8,7 @@ protected func Construction()
 	var graphic = Random(5);
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
+	_inherited(...);
 }
 
 protected func Hit()
@@ -40,6 +41,7 @@ func RejectEntrance(object into)
 
 // Only X earth objects fit in one bucket.
 public func MaxStackCount() { return 5; }
+public func InitialStackCount() { return 1;}
 // Can only be collected with a bucket! The Clonk will put this into a bucket or directly remove it when digging.
 public func IsBucketMaterial() { return true; }
 // When using the bucket, you will create this material.
