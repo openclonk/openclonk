@@ -225,7 +225,7 @@ public func IsBarrel()
 
 public func IsLiquidContainerForMaterial(string liquid_name)
 {
-	return WildcardMatch("Water", liquid_name) || WildcardMatch("Oil", liquid_name);
+	return !!WildcardMatch("Water", liquid_name) || !!WildcardMatch("Oil", liquid_name);
 }
 
 public func CanBeStackedWith(object other)

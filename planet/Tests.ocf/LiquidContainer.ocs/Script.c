@@ -135,17 +135,13 @@ global func Test1_Execute()
 
 	// a loop would be cool, but that would work only with runtime overloadable functions
 	var container = CreateObject(Barrel);
-	
-	var test1 = container->IsLiquidContainerForMaterial("Water");
-	var test2 = !container->IsLiquidContainerForMaterial("Sky");
-	var test3 = !container->IsLiquidContainerForMaterial();
-	
-	Log("- Container returns 'true' if liquid parameter is correct: %v", test1);
-	Log("- Container returns 'false' if liquid parameter is incorrect: %v", test2);
-	Log("- Container returns 'false' if liquid parameter is nil: %v", test3);
+	var passed = true;
+	passed &= doTest("Container accepts correct material. Got %v, expected %v.", container->IsLiquidContainerForMaterial("Water"), true);
+	passed &= doTest("Container does not accept incorrect material. Got %v, expected %v.", container->IsLiquidContainerForMaterial("Sky"), false);
+	passed &= doTest("Container does not accept material 'nil'. Got %v, expected %v.", container->IsLiquidContainerForMaterial(), false);
 	
 	container->RemoveObject();
-	return test1 && test2 && test3;
+	return passed;
 }
 
 global func Test2_OnStart(int plr){ return true;}
@@ -164,15 +160,9 @@ global func Test2_Execute()
 	liquid->Enter(container);
 	
 	var passed = true;
-	var returned = container->Contents();
-	var test = (returned == liquid); passed &= test;
-	Log("- Liquid can fill empty barrel: %v", test);
-	returned = container->GetLiquidAmount("Water");
-	test = (100 == returned); passed &= test;
-	Log("- Barrel contains %d units, expected %d: %v", returned, 100, test);
-	returned = container->Contents()->MaxStackCount();
-	test = (300 == returned); passed &= test;
-	Log("- The liquid returns a max stack count of %d, expected %d: %v", returned, 300, test);
+	passed &= doTest("Liquid can fill empty barrel. Got %v, expected %v.", container->Contents(), liquid);
+	passed &= doTest("Barrel contains %d units, expected %d.", container->GetLiquidAmount("Water"), 100);
+	passed &= doTest("The liquid returns a max stack count of %d, expected %d.", container->Contents()->MaxStackCount(), 300);
 	
     // -----
 
@@ -181,11 +171,8 @@ global func Test2_Execute()
 	liquid->SetStackCount(100);
 	liquid->Enter(container);
 
-	test = (liquid == nil); passed &= test;
-	Log("- Liquid can enter filled barrel, liquid got removed: %v", test);
-	returned = container->GetLiquidAmount();
-	test = (200 == returned); passed &= test;
-	Log("- Barrel contains %d units, expected %d: %v", returned, 200, test);
+	passed &= doTest("Liquid can enter barrel and gets removed. Got %v, expected %v.", liquid, nil);
+	passed &= doTest("Barrel contains %d units, expected %d.", container->GetLiquidAmount(), 200);
 
     // -----
 
@@ -194,18 +181,10 @@ global func Test2_Execute()
 	liquid->SetStackCount(200);
 	liquid->Enter(container);
 	
-	returned = liquid->Contained();
-	test = (returned == nil); passed &= test;
-	Log("- Liquid cannot enter filled barrel if the capacity is exceeded: %v", test);
-	returned = container->ContentsCount();
-	test = (1 == returned); passed &= test;
-	Log("- Barrel contains %d items, expected %d: %v", returned, 1, test);
-	returned = container->GetLiquidAmount();
-	test = (300 == returned); passed &= test;
-	Log("- Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d: %v", returned, 300, test);
-	returned = liquid->GetLiquidAmount();
-	test = (100 == returned); passed &= test;
-	Log("- Liquid object still contains %d units, expected %d: %v", returned, 100, test);
+	passed &= doTest("Liquid cannot enter filled barrel if the capacity is exceeded. Got %v, expected %v.", liquid->Contained(), nil);
+	passed &= doTest("Barrel contains %d items, expected %d.", container->ContentsCount(), 1);
+	passed &= doTest("Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d.", container->GetLiquidAmount(), 300);
+	passed &= doTest("Liquid object still contains %d units, expected %d", liquid->GetLiquidAmount(), 100);
 
 	Log("- Resetting liquid amount to 0");
 	liquid->RemoveObject();
@@ -218,15 +197,9 @@ global func Test2_Execute()
 	liquid->SetStackCount(500);
 	liquid->Enter(container);
 	
-	returned = liquid->Contained();
-	test = (returned == nil); passed &= test;
-	Log("- Liquid cannot enter empty barrel if the capacity is exceeded: %v", test);
-	returned = container->GetLiquidAmount();
-	test = (300 == returned); passed &= test;
-	Log("- Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d: %v", returned, 300, test);
-	returned = liquid->GetLiquidAmount();
-	test = (200 == returned); passed &= test;
-	Log("- Liquid object still contains %d units, expected %d: %v", returned, 200, test);
+	passed &= doTest("Liquid cannot enter empty barrel if the capacity is exceeded. Got %v, expected %v.", liquid->Contained(), nil);
+	passed &= doTest("Barrel does increase fill level, up to the allowed amount, contains %d units, expected %d.", container->GetLiquidAmount(), 300);
+	passed &= doTest("Liquid object still contains %d units, expected %d.", liquid->GetLiquidAmount(), 200);
 
 	Log("- Resetting liquid amount to 200");
 	liquid->RemoveObject();
@@ -239,12 +212,8 @@ global func Test2_Execute()
 	liquid->SetStackCount(50);
 	liquid->Enter(container);
 	
-	returned = liquid->Contained();
-	test = (returned == nil); passed &= test;
-	Log("- Liquid cannot enter filled barrel of a different liquid type: %v", test);
-	returned = container->GetLiquidAmount();
-	test = (200 == returned); passed &= test;
-	Log("- Barrel does not increase fill level, contains %d units, expected %d: %v", returned, 200, test);
+	passed &= doTest("Liquid cannot enter filled barrel of a different liquid type. Got %v, epxected %v.", liquid->Contained(), nil);
+	passed &= doTest("Barrel does not increase fill level, contains %d units, expected %d.", container->GetLiquidAmount(), 200);
 
 	liquid->RemoveObject();
 	
@@ -254,14 +223,9 @@ global func Test2_Execute()
 	liquid = container->Contents();
 	liquid->Exit();
 	
-	returned = container->Contents();
-	test = (returned == nil); passed &= test;
-	Log("- Liquid container should be empty when liquid leaves it: %v", test);
-	returned = container->GetLiquidAmount();
-	test = (returned == 0); passed &= test;
-	Log("- Liquid container return a liquid amount of 0 when liquid leaves it: %v", test);
-	test = (liquid != nil); passed &= test;
-	Log("- Liquid exists after leaving the container: %v", test);
+	passed &= doTest("Liquid container should be empty when liquid leaves it. Got %v, expected %v.", container->Contents(), nil);
+	passed &= doTest("Liquid container return a liquid amount of 0 when liquid leaves it. Got %v, expected %v.", container->GetLiquidAmount(), 0);
+	passed &= doTest("Liquid exists after leaving the container. Got %v, expected %v.", !!liquid , true);
 	
 	liquid->RemoveObject();
 
@@ -274,18 +238,9 @@ global func Test2_Execute()
 	container->PutLiquid("Water", 299);
 	container->CreateContents(Liquid_Water, 2);
 	
-	returned = container->GetLiquidAmount();
-	var expected = 300;
-	test = (returned == expected); passed &= test;
-	Log("- Liquid container contains %d, should contain %d, when filling in 299 water and adding 2 water contents: %v", returned, expected, test);
-	returned = ObjectCount(Find_ID(Liquid_Water), Find_NoContainer());
-	expected = 0;
-	test = (returned == expected); passed &= test;
-	Log("- A total of %d water objects exist outside the container, expected %d: %v", returned, expected, test);
-	returned = container->ContentsCount();
-	expected = 1;
-	test = (returned == expected); passed &= test;
-	Log("- A total of %d water objects exist in the container, expected %d: %v", returned, expected, test);
+	passed &= doTest("Liquid container contains %d, should contain %d, when filling in 299 water and adding 2 water contents", container->GetLiquidAmount(), 300);
+	passed &= doTest("A total of %d water objects exist outside the container, expected %d", ObjectCount(Find_ID(Liquid_Water), Find_NoContainer()), 0);
+	passed &= doTest("A total of %d water objects exist in the container, expected %d", container->ContentsCount(), 1);
 
 	// Clean up
 
@@ -308,34 +263,21 @@ global func Test3_Execute()
     // -----
 
 	Log("Incompatible material");
-	var test = (container->PutLiquid("Lava", 1, nil) == 0);
-	passed &= test;
-	Log("- Container returns '0' when inserting 1 pixel of incompatible material: %v", test);
-	test = container->Contents() == nil; passed &= test;
-	Log("- Container returns 'nil' for contents: %v, %v", test, container->Contents());
+	passed &= doTest("Container returns '0' when inserting 1 pixel of incompatible material. Got %d, expected %d.", container->PutLiquid("Lava", 1, nil), 0);
+	passed &= doTest("Container returns 'nil' for contents. Got %v, expected %v.", container->Contents(), nil);
 
     // -----
 
 	Log("Compatible material");
-	test = (container->PutLiquid("Water", 1, nil) == 1);
-	Log("- Container returns '1' when inserting 1 pixel of compatible material: %v", test);
-	test = container->FindContents(Liquid_Water) != nil; passed &= test;
-	Log("- Container has contents Liquid_Water when inserting 1 pixel of compatible material: %v", test);
+	passed &= doTest("Container returns '1' when inserting 1 pixel of compatible material. Got %d, expected %d.", container->PutLiquid("Water", 1, nil), 1);
+	passed &= doTest("Container has contents Liquid_Water after inserting 1 pixel of compatible material. Got %v, expected %v.", !!container->FindContents(Liquid_Water), true);
 	if (passed)
 	{
-		test = container->FindContents(Liquid_Water)->GetLiquidAmount() == 1; passed &= test;
-		Log("- Container returns the fill level 1 when inserting 1 pixel of compatible material: %d, %v", container->FindContents(Liquid_Water)->GetLiquidAmount(), test);
+		passed &= doTest("Container returns the fill level 1 when inserting 1 pixel of compatible material. Got %d, expected %d.", container->FindContents(Liquid_Water)->GetLiquidAmount(), 1);
 	}
 	
-	var returned = container->PutLiquid("Water", container->GetLiquidContainerMaxFillLevel(), nil);
-	var expected = (container->GetLiquidContainerMaxFillLevel() - 1);
-	test = (returned == expected);
-	passed &= test;
-	Log("- Container returns 'the actually inserted amount of material' %d when inserting more than the volume, returned %d: %v", expected, returned, test);
-	returned = container->GetLiquidAmount("Water");
-	expected = container->GetLiquidContainerMaxFillLevel();
-	test = (returned == expected); passed &= test;
-	Log("- Container returns the fill level %d, expected %d, when inserting more than the volume: %v", returned, expected, test);
+	passed &= doTest("Container returns 'the actually inserted amount of material' when inserting more than the volume. Got %d, expected %d.", container->PutLiquid("Water", container->GetLiquidContainerMaxFillLevel(), nil), container->GetLiquidContainerMaxFillLevel() - 1);
+	passed &= doTest("Container returns the max fill level when inserting more than the allowed volume. Got %d, expected %d", container->GetLiquidAmount("Water"), container->GetLiquidContainerMaxFillLevel());
 
 	container->RemoveObject();
 	return passed;
@@ -348,8 +290,6 @@ global func Test4_Execute()
 	Log("Test the behaviour of RemoveLiquid");
 
 	var container = CreateObject(Barrel);
-	var passed = true;
-	
 	container->PutLiquid("Water", 100);
 
     // -----
@@ -357,40 +297,27 @@ global func Test4_Execute()
 	Log("Incompatible material");
 	var returned = container->RemoveLiquid("Lava", 0, nil);
 	var expected = ["Lava", 0];
-	var test = (returned[0] == expected[0]);
-	passed &= test;
-	Log("- Container returns the requested material (was %s, expected %s) when removing incompatible material: %v", returned[0], expected[0], test);
-	test = (returned[1] == expected[1]); passed &= test;
-	Log("- Container returns no amount when removing incompatible material (was %d, expected %d) : %v", returned[1], expected[1], test);
-	returned = container->GetLiquidAmount();
-	expected = 100;
-	test = (returned == expected); passed &= test;
-	Log("- Container contents do not change when removing incompatible material (was %d, expected %d): %v", returned, expected, test);
+
+	var passed = doTest("Container returns the requested material when removing incompatible material. Got %s, expected %s.", returned[0], expected[0]);
+	passed &= doTest("Container returns no amount when removing incompatible material. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container contents do not change when removing incompatible material. Got %d, expected %d.", container->GetLiquidAmount(), 100);
 
     // -----
 
 	Log("Compatible material");
 	returned = container->RemoveLiquid("Water", 1, nil);
 	expected = ["Water", 1];
-	test = (returned[0] == expected[0]);
-	Log("- Container returns the extracted material name (was %s, expected %s): %v", returned[0], expected[0], test);
-	test = returned[1] == expected[1]; passed &= test;
-	Log("- Container returns the correct amount (was %d, expected %d) when removing 1 pixel of compatible material: %v", returned[1], expected[1], test);
-	returned = container->GetLiquidAmount();
-	expected = 99;
-	test = (returned == expected); passed &= test;
-	Log("- Container contents do change when removing compatible material (was %d, expected %d): %v", returned, expected, test);
-	
+
+	passed &= doTest("Container returns the extracted material name. Got %s, expected %s.", returned[0], expected[0]);
+	passed &= doTest("Container returns the correct amount when removing 1 pixel of compatible material. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container contents do change when removing compatible material. Got %d, expected %d.", container->GetLiquidAmount(), 99);
+
 	returned = container->RemoveLiquid("Water", 100, nil);
 	expected = ["Water", 99];
-	test = (returned[0] == expected[0]);
-	Log("- Container returns the extracted material name (was %s, expected %s): %v", returned[0], expected[0], test);
-	test = returned[1] == expected[1]; passed &= test;
-	Log("- Container returns the correct amount (was %d, expected %d) when removing compatible material: %v", returned[1], expected[1], test);
-	returned = container->GetLiquidAmount();
-	expected = 0;
-	test = (returned == expected); passed &= test;
-	Log("- Container contents do change when removing compatible material (was %d, expected %d): %v", returned, expected, test);
+
+	passed &= doTest("Container returns the extracted material name. Got %s, expected %s.", returned[0], expected[0]);
+	passed &= doTest("Container returns the correct amount when removing compatible material. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container contents do change when removing compatible material. Got %d, expected %d.", container->GetLiquidAmount(), 0);
 
     // -----
 
@@ -399,47 +326,32 @@ global func Test4_Execute()
 	
 	returned = container->RemoveLiquid(nil, 50, nil);
 	expected = ["Oil", 50];
-	test = (returned[0] == expected[0]);
-	Log("- Container returns the contained material (was %s, expected %s) when extracting material 'nil': %v", returned[0], expected[0], test);
-	test = returned[1] == expected[1]; passed &= test;
-	Log("- Container returns the correct amount (was %d, expected %d) when removing compatible material: %v", returned[1], expected[1], test);
-	returned = container->GetLiquidAmount();
-	expected = 50;
-	test = (returned == expected); passed &= test;
-	Log("- Container contents do change when removing compatible material (was %d, expected %d): %v", returned, expected, test);
+
+	passed &= doTest("Container returns the contained material when extracting material 'nil'. Got %s, expected %s.", returned[0], expected[0]);
+	passed &= doTest("Container returns the correct amount when removing compatible material. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container contents do change when removing compatible material. Got %d, expected %d.", container->GetLiquidAmount(), 50);
 
 	container->PutLiquid("Oil", 50);
 
 	returned = container->RemoveLiquid("Oil", nil, nil);
 	expected = ["Oil", 100];
-	test = (returned[0] == expected[0]);
-	Log("- Container returns the contained material (was %s, expected %s) when extracting amount 'nil': %v", returned[0], expected[0], test);
-	test = returned[1] == expected[1]; passed &= test;
-	Log("- Container returns the contained amount (was %d, expected %d) when extracting amount 'nil': %v", returned[1], expected[1], test);
-	returned = container->GetLiquidAmount();
-	expected = 0;
-	test = (returned == expected); passed &= test;
-	Log("- Container is empty after removing amount 'nil' (was %d, expected %d): %v", returned, expected, test);
+
+	passed &= doTest("Container returns the contained material when extracting material. Got %s, expected %s.", returned[0], expected[0]);
+	passed &= doTest("Container returns the correct amount when extracting amount 'nil'. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container is empty after removing amount 'nil'. Got %d, expected %d.", container->GetLiquidAmount(), 0);
 
 	container->PutLiquid("Oil", 100);
 
 	returned = container->RemoveLiquid(nil, nil, nil);
 	expected = ["Oil", 100];
-	test = (returned[0] == returned[0]);
-	Log("- Container returns the contained material (was %s, expected %s) when extracting material and amount 'nil': %v", returned[0], expected[0], test);
-	test = returned[1] == expected[1]; passed &= test;
-	Log("- Container returns the contained amount (was %d, expected %d) when extracting material and amount 'nil': %v", returned[1], expected[1], test);
-	returned = container->GetLiquidAmount();
-	expected = 0;
-	test = (returned == expected); passed &= test;
-	Log("- Container is empty after removing amount material and amount 'nil' (was %d, expected %d): %v", returned, expected, test);
+
+	passed &= doTest("Container returns the contained material when extracting material and amount 'nil'. Got %s, expected %s.", returned[0], expected[0]);
+	passed &= doTest("Container returns the correct amount when extracting material and amount 'nil'. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container is empty after removing material and amount 'nil'. Got %d, expected %d.", container->GetLiquidAmount(), 0);
 
 	container->RemoveObject();
 	return passed;
 }
-
-
-
 
 
 global func Test5_OnStart(int plr)
@@ -567,13 +479,8 @@ global func Test5_Execute()
 
 global func Test5_CheckConnections(proplist effect, object expected_source, object expected_drain)
 {
-	var passed = true;
-	var returned = effect.pump->GetSourceObject();
-	var test = returned == expected_source ; passed &= test;
-	Log("- Pump returns source object %v: %v (returned %v)", expected_source, test, returned);
-	returned = effect.pump->GetDrainObject();
-	test = returned == expected_drain ; passed &= test;
-	Log("- Pump returns drain object %v: %v (returned %v)", expected_drain, test, returned);
+	var passed = doTest("Pump returns source object. Got %v, expected %v.", effect.pump->GetSourceObject(), expected_source);
+	passed &= doTest("Pump returns drain object. Got %v, expected %v.", effect.pump->GetDrainObject(), expected_drain);
 	return passed;
 }
 
@@ -589,8 +496,7 @@ global func Test5_CheckPipes(object pipeA, string stateA, object pipeB, string s
 		else if (stateA == PIPE_STATE_Neutral) functionA = pipeA.IsNeutralPipe;
 		
 		var test = pipeA->Call(functionA);
-		passed &= test;
-		Log("- Pipe A is %s pipe: %v", stateA, test);
+		passed &= doTest(Format("Pipe A is a %s pipe? %s", stateA, "Got %v, expected %v.", test, true));
 	}
 	
 	if (pipeB != nil)
@@ -601,8 +507,7 @@ global func Test5_CheckPipes(object pipeA, string stateA, object pipeB, string s
 	
 	
 		test = pipeB->Call(functionB);
-		passed &= test;
-		Log("- Pipe B is %s pipe: %v", stateB, test);
+		passed &= doTest(Format("Pipe B is a %s pipe? %s", stateB, "Got %v, expected %v."), test, true);
 	}
 	return passed;
 }
@@ -627,45 +532,42 @@ global func Test6_deactivated_Execute()
 	container1->PutLiquid("Water", 100);
 	container2->PutLiquid("Water", 300);
 
-	var passed = true;
-	var returned = container1->CanBeStackedWith(container2);
-	var test = returned == true; passed &= test;
-	Log("- Barrel can be stacked with other barrel that contains the same liquid: %v", test);
-	returned = container2->CanBeStackedWith(container1);
-	test = returned == true; passed &= test;
-	Log("- Barrel can be stacked with other barrel that contains the same liquid: %v", test);
+	var passed = doTest("Barrel can be stacked with other barrel that contains the same liquid. Got %v, expected %v.", container1->CanBeStackedWith(container2), true);
+	passed &= doTest("Barrel can be stacked with other barrel that contains the same liquid. Got %v, expected %v.", container2->CanBeStackedWith(container1), true);
 
 	// cannot stack filled barrel with other empty barrel
 	container1->Contents()->SetStackCount(100);
 	container2->Contents()->RemoveObject();
 
-	returned = container1->CanBeStackedWith(container2);
-	test = returned == false; passed &= test;
-	Log("- Filled barrel cannot be stacked with empty barrel: %v", test);
-	returned = container2->CanBeStackedWith(container1);
-	test = returned == false; passed &= test;
-	Log("- Empty barrel cannot be stacked with filled barrel: %v", test);
+	passed &= doTest("Filled barrel cannot be stacked with empty barrel. Got %v, expected %v.", container1->CanBeStackedWith(container2), false);
+	passed &= doTest("Empty barrel cannot be stacked with filled barrel. Got %v, expected %v.", container2->CanBeStackedWith(container1), false);
+
 
 	// can stack empty barrel with other empty barrel
 	container1->Contents()->RemoveObject();
 
-	returned = container1->CanBeStackedWith(container2);
-	test = returned == true; passed &= test;
-	Log("- Empty barrel can be stacked with empty barrel: %v", test);
+	passed &= doTest("Empty barrel can be stacked with empty barrel. Got %v, expected %v", container1->CanBeStackedWith(container2), true);
 
 	// cannot stack filled barrel with other filled barrel of different liquid
 	container1->PutLiquid("Water", 100);
 	container2->PutLiquid("Oil", 100);
 
-	returned = container1->CanBeStackedWith(container2);
-	test = returned == false; passed &= test;
-	Log("- Liquid A barrel cannot be stacked with liquid B barrel: %v", test);
-	returned = container2->CanBeStackedWith(container1);
-	test = returned == false; passed &= test;
-	Log("- Liquid B barrel cannot be stacked with liquid A barrel: %v", test);
+	passed &= doTest("Liquid A barrel cannot be stacked with liquid B barrel. Got %v, expected %v.", container1->CanBeStackedWith(container2), false);
+	passed &= doTest("Liquid B barrel cannot be stacked with liquid A barrel. Got %v, expected %v.", container2->CanBeStackedWith(container1), false);
 	
 	container1->RemoveObject();
 	container2->RemoveObject();
 
 	return passed;
+}
+
+global func doTest(description, returned, expected)
+{
+	var test = (returned == expected);
+	
+	var predicate = "[Fail]";
+	if (test) predicate = "[Pass]";
+	
+	Log(Format("%s %s", predicate, description), returned, expected);
+	return test;
 }
