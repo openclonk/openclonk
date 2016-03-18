@@ -913,6 +913,8 @@ private func OnContentsSelection(symbol, extra_data)
 		{
 			// If stackable, always try to grab a full stack.
 			// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
+			// TODO: 200 stacks of 1 arrow would each merge into the stacks that are already in the target
+			//       when they enter the target. For this reason that special case is, imo, not needed here.    
 			if (obj->~IsStackable())
 			{
 				var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
