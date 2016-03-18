@@ -1434,6 +1434,27 @@ global func Test19_Execute()
 }
 
 
+global func Test20_OnStart(int plr){ return true;}
+global func Test20_OnFinished(){ return; }
+global func Test20_Execute()
+{
+	Log("Test the initialization of all stackable objects");
+	
+	var passed = true;
+	var def;
+	for (var i = 0; def = GetDefinition(i); ++i)
+	{
+		if (def->~IsStackable())
+		{
+			var instance = CreateObject(def);
+			passed &= doTest(Format("Definition %i has the correct stack count after initialization? %s", def, "Got %d, expected %d."), instance->GetStackCount(), def->InitialStackCount());
+			if (instance) instance->RemoveObject();
+		}
+	}
+	return passed;
+}
+
+
 global func doTest(description, returned, expected)
 {
 	var test = (returned == expected);
