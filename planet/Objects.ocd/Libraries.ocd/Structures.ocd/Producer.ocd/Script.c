@@ -174,7 +174,6 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 	var product_id = symbol;
 	var costs = ProductionCosts(product_id);
 	var cost_msg = "";
-	var liquid;
 	for (var comp in costs)
 		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
 	if (this->~FuelNeed(product_id))
@@ -480,7 +479,6 @@ private func ProcessQueue()
 // These functions may be overloaded by the actual producer.
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
-private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
 
 public func PowerNeed() { return 80; }
 
@@ -786,19 +784,38 @@ public func IsCollectionAllowed(object obj)
 				return true;
 	}
 	// Liquid objects may be collected if a product needs them.
-	if (obj->~IsLiquid())
+	if (obj->~GetLiquidType())
 	{
 		for (var product in products)
-			if (LiquidNeed(product))
-				if (LiquidNeed(product)[0] == obj->~IsLiquid())
+		{
+			var i = 0, comp_id;
+			while (comp_id = GetComponent(nil, i, nil, product))
+			{
+				if (comp_id->~GetLiquidType() == obj->~GetLiquidType())
 					return true;
+				i++;
+			}
+		}
 	}
-	// Liquid containers may be collected if a product needs them.
+	// Liquid containers may not be collected, but we take their contents if a product needs them.
 	if (obj->~IsLiquidContainer())
 	{
 		for (var product in products)
-			if (LiquidNeed(product))
-				return true;
+		{
+			var i = 0, comp_id;
+			while (comp_id = GetComponent(nil, i, nil, product))
+			{
+				for (var liquid in FindObjects(Find_Container(obj)))
+				{
+					if (liquid->~GetLiquidType() == comp_id->~GetLiquidType())
+					{
+						liquid->Enter(this);
+					}
+				}
+				i++;
+			}
+		}
+		return false;
 	}
 	return false;
 }
