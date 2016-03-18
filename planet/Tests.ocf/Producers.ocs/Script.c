@@ -48,18 +48,6 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-protected func RemovePlayer(int plr)
-{
-	// Remove script player.
-	if (GetPlayerType(plr) == C4PT_Script)
-	{
-		if (plr == script_plr)
-			script_plr = nil;
-		return;	
-	}
-	return;
-}
-
 
 /*-- Test Control --*/
 
@@ -187,8 +175,7 @@ global func Test2_OnStart(int plr)
 	var barrel = CreateObject(Barrel);
 	barrel->PutLiquid("Water", 300); // contains 300 water
 	producer->AddToQueue(Loam, 5); // needs 300 water
-	//barrel->Enter(producer);
-	producer->Collect(barrel);
+	producer->Collect(barrel, true);
 
 	// Log what the test is about.
 	Log("Objects with liquid need (loam), can be produced with liquid containers (barrel). The liquid container must not be removed.");
@@ -209,7 +196,6 @@ global func Test2_OnFinished()
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Barrel)));
 	return;
 }
-
 
 
 // Producer with liquid need and liquid object.
@@ -241,6 +227,73 @@ global func Test3_OnFinished()
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Liquid_Water)));
 	return;
 }
+
+
+// Producer with fuel need, fuel object
+global func Test4_OnStart(int plr)
+{
+	// Producer: Foundry
+	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
+	producer->CreateContents(Wood, 10);
+	producer->CreateContents(Ore, 5);
+	producer->AddToQueue(Metal, 5);
+
+	// Log what the test is about.
+	Log("Objects with fuel need (metal), can be produced with fuel objects (wood). The fuel is used up.");
+	return true;
+}
+
+global func Test4_Completed()
+{
+	if (ObjectCount(Find_ID(Metal)) >= 5 && ObjectCount(Find_ID(Wood)) <= 0)
+		return true;
+	return false;
+}
+
+global func Test4_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal)));
+	return;
+}
+
+
+// Producer with fuel need, liquid container
+global func Test5_OnStart(int plr)
+{
+	// Producer: Foundry
+	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
+	producer->CreateContents(Ore, 5);
+	producer->AddToQueue(Metal, 5);
+	
+	var barrelA = CreateObject(Barrel);
+	var barrelB = CreateObject(Barrel);
+	barrelA->PutLiquid("Oil", 300);
+	barrelB->PutLiquid("Oil", 300);
+
+	producer->Collect(barrelA, true);
+	producer->Collect(barrelB, true);
+
+	// Log what the test is about.
+	Log("Objects with fuel need (metal), can be produced with fuel from a liquid container (barrel with oil). The fuel is used up.");
+	return true;
+}
+
+global func Test5_Completed()
+{
+	if (ObjectCount(Find_ID(Metal)) >= 5 // metal is produced
+	 && ObjectCount(Find_ID(Barrel)) == 2 // barrels stay
+	 && FindObject(Find_ID(Liquid_Oil)) // oil remains
+	 && FindObject(Find_ID(Liquid_Oil))->GetLiquidAmount() == 100) // the correct amount was used
+		return true;
+	return false;
+}
+
+global func Test5_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal), Find_ID(Barrel), Find_ID(Liquid_Oil)));
+	return;
+}
+
 
 /*-- Helper Functions --*/
 
