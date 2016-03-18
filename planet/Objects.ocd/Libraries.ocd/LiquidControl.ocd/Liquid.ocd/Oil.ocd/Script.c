@@ -11,6 +11,7 @@ func Disperse()
 func IsFuel(){ return true;}
 func GetFuelAmount(int requested_amount)
 {
+	requested_amount = requested_amount ?? GetLiquidAmount();
 	return Min(requested_amount, GetLiquidAmount());
 }
 

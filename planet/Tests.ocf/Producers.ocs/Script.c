@@ -295,6 +295,43 @@ global func Test5_OnFinished()
 }
 
 
+// Fuel functions behave correclty
+global func Test6_OnStart(int plr)
+{
+	// Log what the test is about.
+	Log("Objects that are fuel should return a value > 0 if no parameter is passed to GetFuelAmount().");
+	// Get the control effect.
+	var effect = GetEffect("IntTestControl", nil);
+	if (!effect) return false;
+
+	var passed = true;
+	var def;
+	for (var i = 0; def = GetDefinition(i); ++i)
+	if (def->~IsFuel())
+	{
+		var instance = CreateObject(def);
+		var amount = instance->~GetFuelAmount();
+		Log("Default fuel amount in %i: %d > 0?", def, amount);
+		passed &= (amount > 0);
+		if (instance) instance->RemoveObject();
+	}
+	
+	effect.passed_test_6 = passed;
+
+	return true;
+}
+
+global func Test6_Completed()
+{
+	return GetEffect("IntTestControl", nil).passed_test_6;
+}
+
+global func Test6_OnFinished()
+{
+	return;
+}
+
+
 /*-- Helper Functions --*/
 
 global func SetWindFixed(int strength)
