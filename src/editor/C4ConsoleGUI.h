@@ -83,6 +83,9 @@ public:
 	void Execute();
 	void AddViewport(C4ViewportWindow *cvp);
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
+
+	friend class C4ConsoleQtMainWindow;
+	friend class C4ToolsDlg;
 #else
 	void Execute() { }
 	void AddViewport(C4ViewportWindow *cvp) { }
@@ -148,8 +151,6 @@ public:
 
 	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	friend INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
-	friend class C4ToolsDlg;
-	friend class C4ConsoleQtMainWindow;
 #endif
 };
 

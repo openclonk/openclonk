@@ -325,9 +325,11 @@ void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 void C4ConsoleGUI::ToolsDlgSelectBackTexture(C4ToolsDlg *dlg, const char *texture) { if (!Active) return; state->SetBackTexture(texture); }
 void C4ConsoleGUI::ToolsDlgSelectBackMaterial(C4ToolsDlg *dlg, const char *material) { if (!Active) return; state->SetBackMaterial(material); }
 
+#ifdef USE_WIN32_WINDOWS
 void C4ConsoleGUI::Win32KeepDialogsFloating(HWND hwnd) { /* Dialogues float nicely */ }
 bool C4ConsoleGUI::Win32DialogMessageHandling(MSG *msg) { return false; /* message handling done through Qt (somehow?) */ }
 void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTranslator */ }
+#endif
 
  void C4ConsoleGUI::AddViewport(C4ViewportWindow *cvp)
 {

@@ -631,7 +631,10 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	}
 	// Function update in script combo box
 	if (force_function_update)
-		SetComboItems(ui.propertyInputBox, ::Console.GetScriptSuggestions(::Console.PropertyDlgObject, C4Console::MRU_Object));
+	{
+		auto suggestions = ::Console.GetScriptSuggestions(::Console.PropertyDlgObject, C4Console::MRU_Object);
+		SetComboItems(ui.propertyInputBox, suggestions);
+	}
 }
 
 void C4ConsoleGUIState::ReInitDefinitions()
