@@ -136,6 +136,9 @@ public:
 	// Global editor key processing
 	bool HandleEditorKeyDown(QKeyEvent *event);
 	bool HandleEditorKeyUp(QKeyEvent *event);
+	// Material changed in landscape drawing mode
+	void ForegroundMaterialChanged(const QString &new_selection);
+	void BackgroundMaterialChanged(const QString &new_selection);
 };
 
 

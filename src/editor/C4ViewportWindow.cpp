@@ -166,7 +166,9 @@ void C4ViewportWindow::PerformUpdate()
 {
 	if (cvp)
 	{
+#ifndef WITH_QT_EDITOR // done by callback
 		cvp->UpdateOutputSize();
+#endif
 		cvp->Execute();
 	}
 }

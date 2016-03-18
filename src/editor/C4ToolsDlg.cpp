@@ -212,6 +212,7 @@ bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 
 void C4ToolsDlg::AssertValidTexture()
 {
+#ifndef WITH_QT_EDITOR // Qt Editor textures are always valid, because MatTex entries are selected directly
 	// Static map mode only
 	if (::Landscape.Mode!=C4LSC_Static) return;
 	// Ignore if sky
@@ -226,6 +227,7 @@ void C4ToolsDlg::AssertValidTexture()
 			{ SelectTexture(szTexture); return; }
 	}
 	// No valid texture found
+#endif
 }
 
 void C4ToolsDlg::AssertValidBackTexture()
@@ -248,30 +250,30 @@ void C4ToolsDlg::AssertValidBackTexture()
 	// No valid texture found
 }
 
-bool C4ToolsDlg::SelectTexture(const char *szTexture)
+bool C4ToolsDlg::SelectTexture(const char *szTexture, bool by_console_gui)
 {
-	Console.ToolsDlgSelectTexture(this, szTexture);
+	if (!by_console_gui) Console.ToolsDlgSelectTexture(this, szTexture);
 	SetTexture(szTexture);
 	return true;
 }
 
-bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
+bool C4ToolsDlg::SelectMaterial(const char *szMaterial, bool by_console_gui)
 {
-	Console.ToolsDlgSelectMaterial(this, szMaterial);
+	if (!by_console_gui) Console.ToolsDlgSelectMaterial(this, szMaterial);
 	SetMaterial(szMaterial);
 	return true;
 }
 
-bool C4ToolsDlg::SelectBackTexture(const char *szTexture)
+bool C4ToolsDlg::SelectBackTexture(const char *szTexture, bool by_console_gui)
 {
-	Console.ToolsDlgSelectBackTexture(this, szTexture);
+	if (!by_console_gui) Console.ToolsDlgSelectBackTexture(this, szTexture);
 	SetBackTexture(szTexture);
 	return true;
 }
 
-bool C4ToolsDlg::SelectBackMaterial(const char *szMaterial)
+bool C4ToolsDlg::SelectBackMaterial(const char *szMaterial, bool by_console_gui)
 {
-	Console.ToolsDlgSelectBackMaterial(this, szMaterial);
+	if (!by_console_gui) Console.ToolsDlgSelectBackMaterial(this, szMaterial);
 	SetBackMaterial(szMaterial);
 	return true;
 }

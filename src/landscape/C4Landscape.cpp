@@ -1413,8 +1413,12 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 		// Dynamic map by scenario
 		if (!sfcMap && !fOverloadCurrent)
-			if ((!CreateMap(sfcMap, sfcMapBkg)))
-				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
+			if ((CreateMap(sfcMap, sfcMapBkg)))
+			{
+				// Although this is a dynamic map, it's probably just the empty default map.
+				// Set the mode to static so people can start drawing directly in the editor.
+				if (!fLandscapeModeSet) Mode = C4LSC_Static;
+			}
 
 		// No map failure
 		if (!sfcMap)

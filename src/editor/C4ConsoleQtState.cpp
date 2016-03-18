@@ -334,6 +334,37 @@ bool C4ConsoleQtMainWindow::HandleEditorKeyUp(QKeyEvent *event)
 	return false;
 }
 
+void SplitMaterialTexture(const QString &mat_tex, QString *mat, QString *tex)
+{
+	int sep = mat_tex.indexOf('-');
+	if (sep < 0)
+	{
+		*mat = mat_tex;
+		*tex = QString();
+	}
+	else
+	{
+		*mat = mat_tex.mid(0, sep);
+		*tex = mat_tex.mid(sep + 1);
+	}
+}
+
+void C4ConsoleQtMainWindow::ForegroundMaterialChanged(const QString &new_selection)
+{
+	QString mat, tex;
+	SplitMaterialTexture(new_selection, &mat, &tex);
+	if (mat.size() > 0) ::Console.ToolsDlg.SelectMaterial(mat.toUtf8(), true);
+	if (tex.size() > 0) ::Console.ToolsDlg.SelectTexture(tex.toUtf8(), true);
+}
+
+void C4ConsoleQtMainWindow::BackgroundMaterialChanged(const QString &new_selection)
+{
+	QString mat, tex;
+	SplitMaterialTexture(new_selection, &mat, &tex);
+	if (mat.size() > 0) ::Console.ToolsDlg.SelectBackMaterial(mat.toUtf8(), true);
+	if (tex.size() > 0) ::Console.ToolsDlg.SelectBackTexture(tex.toUtf8(), true);
+}
+
 
 
 
@@ -574,7 +605,7 @@ void C4ConsoleGUIState::AddViewport(C4ViewportWindow *cvp)
 	C4ConsoleQtViewportDockWidget *new_viewport = new C4ConsoleQtViewportDockWidget(window.get(), viewport_area, cvp);
 	viewport_area->addDockWidget(Qt::BottomDockWidgetArea, new_viewport);
 	viewports.push_back(new_viewport);
-	new_viewport->setFocus();
+	new_viewport->SetFocus();
 }
 
 void C4ConsoleGUIState::SetInputFunctions(std::list<const char*> &functions)

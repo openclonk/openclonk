@@ -1009,6 +1009,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>foregroundMatTexComboBox</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>ForegroundMaterialChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>backgroundMatTexComboBox</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>BackgroundMaterialChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>91</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1037,5 +1069,7 @@
   <slot>HelpAbout()</slot>
   <slot>ConsoleEnter(QString)</slot>
   <slot>CursorCreateObjPressed(bool)</slot>
+  <slot>ForegroundMaterialChanged(QString)</slot>
+  <slot>BackgroundMaterialChanged(QString)</slot>
  </slots>
 </ui>

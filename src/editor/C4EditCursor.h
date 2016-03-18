@@ -52,6 +52,7 @@ public:
 protected:
 	bool fAltWasDown;
 	bool fShiftWasDown;
+	bool has_mouse_hover;
 	int32_t Mode;
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
@@ -102,12 +103,13 @@ public:
 	bool KeyUp(C4KeyCode KeyCode, DWORD dwKeyState);
 	bool Move(float iX, float iY, DWORD dwKeyState);
 	bool Init();
-	bool EditingOK();
+	bool EditingOK(bool for_landscape_drawing=false);
 	C4EditCursorSelection &GetSelection() { return selection; }
 	void SetHold(bool fToState) { Hold = fToState; }
 	void OnSelectionChanged(bool by_objectlist=false);
 	bool AltDown();
 	bool AltUp();
+	void SetMouseHover(bool h) { has_mouse_hover = h; }
 protected:
 	void UpdateStatusBar();
 	void ApplyCreateObject(bool contained);
@@ -121,7 +123,7 @@ protected:
 	void ApplyToolRect();
 	void ApplyToolLine();
 	void ApplyToolBrush();
-	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r);
+	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r, float width);
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);

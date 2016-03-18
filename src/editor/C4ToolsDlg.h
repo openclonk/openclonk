@@ -73,10 +73,10 @@ public:
 	bool SetLandscapeMode(int32_t iMode, bool fThroughControl=false);
 	bool SetIFT(bool fIFT);
 	bool ToggleIFT() { return !!SetIFT(!ModeIFT); }
-	bool SelectTexture(const char *szTexture);
-	bool SelectMaterial(const char *szMaterial);
-	bool SelectBackTexture(const char *szTexture);
-	bool SelectBackMaterial(const char *szMaterial);
+	bool SelectTexture(const char *szTexture, bool by_console_gui=false);
+	bool SelectMaterial(const char *szMaterial, bool by_console_gui = false);
+	bool SelectBackTexture(const char *szTexture, bool by_console_gui = false);
+	bool SelectBackMaterial(const char *szMaterial, bool by_console_gui = false);
 	void SetAlternateTool();
 	void ResetAlternateTool();
 protected:

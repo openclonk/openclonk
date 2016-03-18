@@ -116,7 +116,7 @@ public:
 	float GetZoom() const { return Zoom; }
 	void AdjustPosition(bool immediate = false);
 	C4ViewportWindow* GetWindow() {return pWindow.get();}
-	bool UpdateOutputSize();
+	bool UpdateOutputSize(int32_t new_width=0, int32_t new_height=0);
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();
 #ifdef _WIN32

@@ -46,6 +46,8 @@ protected:
 	void wheelEvent(QWheelEvent *event) override;
 	void keyPressEvent(QKeyEvent * event) override;
 	void keyReleaseEvent(QKeyEvent * event) override;
+	void enterEvent(QEvent *) override;
+	void leaveEvent(QEvent *) override;
 
 public:
 	C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock);
@@ -84,6 +86,7 @@ public:
 	C4ConsoleQtViewportDockWidget(class C4ConsoleQtMainWindow *main_window, QMainWindow *parent, class C4ViewportWindow *window);
 	virtual void closeEvent(QCloseEvent * event);
 	class C4ViewportWindow *GetViewportWindow() const { return cvp; }
+	void SetFocus() { view->setFocus(); } // forward focus to view
 
 private slots :
 	void TopLevelChanged(bool is_floating);

@@ -55,7 +55,7 @@ bool C4ConsoleQtViewportView::IsPlayViewport() const
 void C4ConsoleQtViewportView::resizeEvent(QResizeEvent *resize_event)
 {
 	QWidget::resizeEvent(resize_event);
-	if (cvp) dock->cvp->cvp->UpdateOutputSize();
+	if (cvp) dock->cvp->cvp->UpdateOutputSize(resize_event->size().width(), resize_event->size().height());
 }
 
 bool C4ConsoleQtViewportView::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -244,6 +244,7 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 	case Qt::Key_Pause:		return K_PAUSE;
 	case Qt::Key_Print:		return K_PRINT;
 	case Qt::Key_NumLock:	return K_NUM;
+	case Qt::Key_ScrollLock:return K_SCROLL;
 	default:
 		// Some native Win32 key mappings...
 #ifdef USE_WIN32_WINDOWS
@@ -276,8 +277,15 @@ void C4ConsoleQtViewportView::keyPressEvent(QKeyEvent * event)
 {
 	// Convert key to our internal mapping
 	C4KeyCode code = QtKeyToUnixScancode(*event);
+	// Viewport-only handling
+	bool handled = false;
+	if (code == K_SCROLL)
+	{
+		cvp->TogglePlayerLock();
+		handled = true;
+	}
 	// Handled if handled as player control or main editor
-	bool handled = Game.DoKeyboardInput(code, KEYEV_Down, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
+	if (!handled) handled = Game.DoKeyboardInput(code, KEYEV_Down, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
 	if (!handled) handled = dock->main_window->HandleEditorKeyDown(event);
 	event->setAccepted(handled);
 }
@@ -292,6 +300,19 @@ void C4ConsoleQtViewportView::keyReleaseEvent(QKeyEvent * event)
 	event->setAccepted(handled);
 }
 
+void C4ConsoleQtViewportView::enterEvent(QEvent *)
+{
+	// TODO: This should better be managed by the viewport
+	// looks weird when there's multiple viewports open
+	// but for some reason, the EditCursor drawing stuff is not associated with the viewport (yet)
+	::Console.EditCursor.SetMouseHover(true);
+}
+
+void C4ConsoleQtViewportView::leaveEvent(QEvent *)
+{
+	// TODO: This should better be managed by the viewport
+	::Console.EditCursor.SetMouseHover(false);
+}
 
 
 C4ConsoleQtViewportLabel::C4ConsoleQtViewportLabel(const QString &title, C4ConsoleQtViewportDockWidget *dock)

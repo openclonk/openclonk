@@ -44,24 +44,32 @@ void C4Viewport::DropFile(const char* fileName, float x, float y)
 	Game.DropFile(fileName, GetViewX()+x/Zoom, GetViewY()+y/Zoom);
 }
 
-bool C4Viewport::UpdateOutputSize()
+bool C4Viewport::UpdateOutputSize(int32_t new_width, int32_t new_height)
 {
 	if (!pWindow) return false;
 	// Output size
 	C4Rect rect;
-
+	if (new_width)
+	{
+		rect.x = rect.y = 0;
+		rect.Wdt = new_width;
+		rect.Hgt = new_height;
+	}
+	else
+	{
 #ifdef USE_GTK
-	GtkAllocation allocation;
-	gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
+		GtkAllocation allocation;
+		gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
 
-	// Use only size of drawing area without scrollbars
-	rect.x = allocation.x;
-	rect.y = allocation.y;
-	rect.Wdt = allocation.width;
-	rect.Hgt = allocation.height;
+		// Use only size of drawing area without scrollbars
+		rect.x = allocation.x;
+		rect.y = allocation.y;
+		rect.Wdt = allocation.width;
+		rect.Hgt = allocation.height;
 #else
-	if (!pWindow->GetSize(&rect)) return false;
+		if (!pWindow->GetSize(&rect)) return false;
 #endif
+	}
 	OutX=rect.x; OutY=rect.y;
 	ViewWdt=rect.Wdt; ViewHgt=rect.Hgt;
 	ScrollView(0,0);
@@ -72,6 +80,9 @@ bool C4Viewport::UpdateOutputSize()
 	// update internal GL size
 	if (pWindow && pWindow->pSurface)
 		pWindow->pSurface->UpdateSize(ViewWdt, ViewHgt);
+	// Update zoom limits based on new size
+	C4Player *plr = ::Players.Get(Player);
+	if (plr) plr->ZoomLimitsToViewport(this);
 	// Done
 	return true;
 }

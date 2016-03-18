@@ -594,6 +594,7 @@ bool C4EditCursor::Duplicate()
 void C4EditCursor::Draw(C4TargetFacet &cgo)
 {
 	ZoomDataStackItem zdsi(cgo.X, cgo.Y, cgo.Zoom);
+	float line_width = std::max<float>(1.0f, 1.0f / cgo.Zoom);
 	// Draw selection marks
 	for (C4Value &obj : selection)
 	{
@@ -610,7 +611,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			offY+cobj->Shape.y,
 			offY+cobj->Shape.y + cobj->Shape.Hgt
 		};
-		DrawSelectMark(cgo, frame);
+		DrawSelectMark(cgo, frame, line_width);
 		// highlight selection if shift is pressed
 		if (fShiftWasDown)
 		{
@@ -636,21 +637,26 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	if (DragFrame)
 		pDraw->DrawFrameDw(cgo.Surface,
 		                               std::min(X, X2) + cgo.X - cgo.TargetX, std::min(Y, Y2) + cgo.Y - cgo.TargetY,
-		                               std::max(X, X2) + cgo.X - cgo.TargetX, std::max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff);
+		                               std::max(X, X2) + cgo.X - cgo.TargetX, std::max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff, line_width);
 	// Draw drag line
 	if (DragLine)
 		pDraw->DrawLineDw(cgo.Surface,
 		                              X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
-		                              X2 + cgo.X - cgo.TargetX, Y2 + cgo.Y - cgo.TargetY, 0xffffffff);
+		                              X2 + cgo.X - cgo.TargetX, Y2 + cgo.Y - cgo.TargetY, 0xffffffff, line_width);
 	// Draw drop target
 	if (DropTarget)
 		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,
 		                                      DropTarget->GetX() + cgo.X - cgo.TargetX - ::GraphicsResource.fctDropTarget.Wdt / 2,
 		                                      DropTarget->GetY() + DropTarget->Shape.y + cgo.Y - cgo.TargetY - ::GraphicsResource.fctDropTarget.Hgt);
+	// Draw paint circle
+	if (Mode == C4CNS_ModeDraw && has_mouse_hover && ::Console.ToolsDlg.Grade>0)
+	{
+		pDraw->DrawCircleDw(cgo.Surface, X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY, ::Console.ToolsDlg.Grade, 0xffffffff, line_width);
+	}
 }
 
 
-void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
+void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width)
 {
 	if ((cgo.Wdt<1) || (cgo.Hgt<1)) return;
 
@@ -682,7 +688,7 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 	const unsigned int n_vertices = sizeof(vertices) / sizeof(vertices[0]);
 
-	pDraw->PerformMultiLines(cgo.Surface, vertices, n_vertices, 1., NULL);
+	pDraw->PerformMultiLines(cgo.Surface, vertices, n_vertices, width, NULL);
 }
 
 
@@ -727,6 +733,7 @@ void C4EditCursor::Default()
 	Hold=DragFrame=DragLine=false;
 	selection.clear();
 	creator_def = NULL;
+	has_mouse_hover = false;
 }
 
 void C4EditCursor::Clear()
@@ -816,7 +823,7 @@ void C4EditCursor::ApplyCreateObject(bool container)
 
 void C4EditCursor::ApplyToolBrush()
 {
-	if (!EditingOK()) return;
+	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
@@ -824,7 +831,7 @@ void C4EditCursor::ApplyToolBrush()
 
 void C4EditCursor::ApplyToolLine()
 {
-	if (!EditingOK()) return;
+	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material,pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
@@ -832,7 +839,7 @@ void C4EditCursor::ApplyToolLine()
 
 void C4EditCursor::ApplyToolRect()
 {
-	if (!EditingOK()) return;
+	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
@@ -840,7 +847,7 @@ void C4EditCursor::ApplyToolRect()
 
 void C4EditCursor::ApplyToolFill()
 {
-	if (!EditingOK()) return;
+	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
@@ -1037,7 +1044,7 @@ C4Object *C4EditCursor::GetTarget()
 	return Target;
 }
 
-bool C4EditCursor::EditingOK()
+bool C4EditCursor::EditingOK(bool for_landscape_drawing)
 {
 	if (!Console.Editing)
 	{

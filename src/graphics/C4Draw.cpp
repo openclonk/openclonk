@@ -663,7 +663,24 @@ void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, flo
 	PerformMultiLines(sfcTarget, vertices, 2, width, NULL);
 }
 
-void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
+void C4Draw::DrawCircleDw(C4Surface * sfcTarget, float cx, float cy, float r, DWORD dwClr, float width)
+{
+	// Draw as line segments
+	int32_t num_lines = 12 + int32_t(r / 10);
+	std::unique_ptr<C4BltVertex[]> vertices(new C4BltVertex[num_lines * 2]);
+	for (int32_t i = 0; i < num_lines; ++i)
+	{
+		float ang = float(i) * 2 * M_PI / num_lines;
+		int32_t iv = i * 2 + 1;
+		vertices[iv].ftx = cx + sin(ang) * r;
+		vertices[iv].fty = cy + cos(ang) * r;
+		DwTo4UB(dwClr, vertices[iv].color);
+		vertices[(iv + 1) % (num_lines * 2)] = vertices[iv];
+	}
+	PerformMultiLines(sfcTarget, vertices.get(), num_lines * 2, width, NULL);
+}
+
+void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr, float width) // make these parameters float...?
 {
 	C4BltVertex vertices[8];
 	vertices[0].ftx = x1; vertices[0].fty = y1;
@@ -678,7 +695,7 @@ void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DW
 	for(int i = 0; i < 8; ++i)
 		DwTo4UB(dwClr, vertices[i].color);
 
-	PerformMultiLines(sfcDest, vertices, 8, 1.0f, NULL);
+	PerformMultiLines(sfcDest, vertices, 8, width, NULL);
 }
 
 void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call)
