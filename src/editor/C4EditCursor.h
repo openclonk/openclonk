@@ -25,6 +25,7 @@
 #include "C4Rect.h"
 #include "C4Value.h"
 #include <vector>
+#include "C4DefGraphics.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>
@@ -58,6 +59,7 @@ protected:
 	bool Hold,DragFrame,DragLine;
 	C4Object *Target,*DropTarget;
 	class C4Def *creator_def;
+	std::unique_ptr<C4GraphicsOverlay> creator_overlay;
 	struct ObjselItemDt {
 		C4EditCursor* EditCursor;
 		C4Object* Object;
@@ -143,7 +145,7 @@ public:
 	bool RemoveFromSelection(C4PropList *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
 	void ClearSelection(C4PropList *next_selection=NULL);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
 	// Type of object to create in object creation mode
-	void SetCreatorDef(C4Def *new_def) { creator_def = new_def; }
+	void SetCreatorDef(C4Def *new_def) { creator_def = new_def; creator_overlay.reset(NULL); }
 	C4Def *GetCreatorDef() { return creator_def; }
 };
 

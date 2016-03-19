@@ -605,6 +605,8 @@ void C4Application::Clear()
 	MusicSystem.Clear();
 	SoundSystem.Clear();
 	RestoreVideoMode();
+	// clear editcursor holding graphics before clearing draw
+	::Console.EditCursor.Clear();
 	// Clear direct draw (late, because it's needed for e.g. Log)
 	if (pDraw) { delete pDraw; pDraw=NULL; }
 	// Close window

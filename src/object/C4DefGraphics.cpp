@@ -882,16 +882,29 @@ void C4GraphicsOverlay::DenumeratePointers()
 void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer)
 {
 	assert(!IsPicture());
-	assert(pForObj);
+	// note: Also called with pForObj==NULL for editor placement preview
 	// get target pos
 	float offX, offY;
 	float newzoom;
-	pForObj->GetDrawPosition(cgo, offX, offY, newzoom);
+	if (pForObj)
+	{
+		pForObj->GetDrawPosition(cgo, offX, offY, newzoom);
+	}
+	else
+	{
+		// offset in editor mode preview
+		offX = cgo.X;
+		offY = cgo.Y;
+		newzoom = cgo.Zoom;
+	}
 	ZoomDataStackItem zdsi(newzoom);
 
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)
+	{
+		assert(pForObj);
 		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->PrepareDrawing();
+	}
 	else
 	{
 		pDraw->SetBlitMode(dwBlitMode);
@@ -902,6 +915,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	}
 	if (eMode == MODE_Rank)
 	{
+		assert(pForObj);
 		C4TargetFacet ccgo;
 		ccgo.Set(cgo.Surface, offX+pForObj->Shape.x,offY+pForObj->Shape.y,pForObj->Shape.Wdt,pForObj->Shape.Hgt, cgo.TargetX, cgo.TargetY);
 		DrawRankSymbol(ccgo, OverlayObj);
@@ -909,6 +923,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	// drawing specific object?
 	else if (OverlayObj)
 	{
+		assert(pForObj);
 		// TODO: Shouldn't have called PrepareDrawing/set ClrModulation here, since 
 		// OverlayObj drawing will do it on its own.
 		if (eMode == MODE_ObjectPicture)
@@ -927,6 +942,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	}
 	else if (eMode == MODE_ExtraGraphics)
 	{
+		assert(pForObj);
 		// draw self with specified gfx
 		if (pSourceGfx)
 		{
@@ -952,6 +968,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	}
 	else if(eMode == MODE_Picture || eMode == MODE_IngamePicture)
 	{
+		assert(pForObj);
 		float twdt, thgt;
 		if (fZoomToShape)
 		{
@@ -975,7 +992,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	{
 		// no object specified: Draw from fctBlit
 		// update by object color
-		if (fctBlit.Surface) fctBlit.Surface->SetClr(pForObj->Color);
+		if (fctBlit.Surface && pForObj) fctBlit.Surface->SetClr(pForObj->Color);
 
 		if (!pMeshInstance)
 		{
@@ -983,6 +1000,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			C4DrawTransform trf(Transform, offX, offY);
 			if (fZoomToShape)
 			{
+				assert(pForObj);
 				float fZoom = std::min(pForObj->Shape.Wdt / std::max(fctBlit.Wdt, 1.0f), pForObj->Shape.Hgt / std::max(fctBlit.Hgt, 1.0f));
 				trf.ScaleAt(fZoom, fZoom, offX, offY);
 			}
@@ -997,6 +1015,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			C4DrawTransform trf(Transform, offX, offY);
 			if (fZoomToShape)
 			{
+				assert(pForObj);
 				float fZoom = std::min((float)pForObj->Shape.Wdt / std::max(pDef->Shape.Wdt, 1), (float)pForObj->Shape.Hgt / std::max(pDef->Shape.Hgt, 1));
 				trf.ScaleAt(fZoom, fZoom,  offX, offY);
 			}
@@ -1007,7 +1026,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			if (C4ValueToMatrix(value, &matrix))
 				pDraw->SetMeshTransform(&matrix);
 
-			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
+			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj ? pForObj->Color : 0xff, &trf);
 			pDraw->SetMeshTransform(NULL);
 		}
 	}

@@ -1198,6 +1198,9 @@ C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4
 
 C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Real x, C4Real y, C4Object *container)
 {
+#ifdef WITH_QT_EDITOR
+	::StartSoundEffect("UI::Click2");
+#endif
 	auto ctl = new C4ControlEMMoveObject(EMMO_Create, x, y, container);
 	ctl->StringParam = id.ToString();
 	return ctl;
@@ -1354,7 +1357,12 @@ void C4ControlEMMoveObject::Execute() const
 			container = ::Objects.SafeObjectPointer(iTargetObj);
 			if (!container || !container->Status) return;
 		}
-		C4Object *obj = ::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
+		bool create_centered = false;
+#ifdef WITH_QT_EDITOR
+		// Qt editor: Object creation is done through creator; centered creation is usually more convenient
+		create_centered = true;
+#endif
+		C4Object *obj = ::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty), 0, create_centered);
 		if (container && obj && container->Status && obj->Status) obj->Enter(container);
 	}
 	break;

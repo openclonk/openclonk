@@ -653,6 +653,19 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	{
 		pDraw->DrawCircleDw(cgo.Surface, X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY, ::Console.ToolsDlg.Grade, 0xffffffff, line_width);
 	}
+	// Draw creator preview
+	if (Mode == C4CNS_ModeCreateObject && has_mouse_hover && creator_def)
+	{
+		C4TargetFacet cgo_creator;
+		cgo_creator.Set(cgo.Surface, X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
+			creator_def->Shape.Wdt, creator_def->Shape.Hgt, 0, 0, cgo.Zoom, 0, 0);
+		if (!creator_overlay)
+		{
+			creator_overlay.reset(new C4GraphicsOverlay());
+			creator_overlay->SetAsBase(&creator_def->Graphics, C4GFXBLIT_ADDITIVE);
+		}
+		creator_overlay->Draw(cgo_creator, NULL, NO_OWNER);
+	}
 }
 
 
@@ -733,6 +746,7 @@ void C4EditCursor::Default()
 	Hold=DragFrame=DragLine=false;
 	selection.clear();
 	creator_def = NULL;
+	creator_overlay = NULL;
 	has_mouse_hover = false;
 }
 
@@ -745,6 +759,7 @@ void C4EditCursor::Clear()
 	ObjselectDelItems();
 #endif
 	selection.clear();
+	creator_overlay.reset(NULL);
 }
 
 bool C4EditCursor::SetMode(int32_t iMode)
