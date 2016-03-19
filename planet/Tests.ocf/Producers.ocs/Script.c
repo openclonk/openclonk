@@ -331,6 +331,7 @@ global func Test6_OnFinished()
 	return;
 }
 
+
 // Producer stops production on insufficient material
 global func Test7_OnStart(int plr)
 {
@@ -348,25 +349,65 @@ global func Test7_OnStart(int plr)
 
 global func Test7_Completed()
 {
-	if (ObjectCount(Find_ID(Barrel)) >= 5) return true;
-
 	var fx = GetEffect("IntTestControl", nil);
 	fx.timer++;
-	
-	if (fx.timer >= 250)
-	{
-		FindObject(Find_ID(ToolsWorkshop))->CreateContents(Metal);
-		fx.timer = 200;
-	}
+
+	if (fx.timer < 50) return false; // it would take this long to produce 5 barrels
+
+	if (ObjectCount(Find_ID(Barrel)) == 1
+	 && ObjectCount(Find_ID(Wood)) == 8) return true;
 	
 	return false;
 }
 
 global func Test7_OnFinished()
 {
-	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal), Find_ID(Barrel), Find_ID(Liquid_Oil)));
+	RemoveAll(Find_Or(Find_ID(ToolsWorkshop), Find_ID(Barrel)));
 	return;
 }
+
+
+
+// Producer stops production on insufficient material
+global func Test8_OnStart(int plr)
+{
+	var producer = CreateObjectAbove(ToolsWorkshop, 75, 160, plr);
+	producer->CreateContents(Wood, 10);
+	producer->CreateContents(Metal, 1);
+	producer->AddToQueue(Barrel, 5);
+
+	// Log what the test is about.
+	Log("Producer halts production if materials are insufficient, continues when new material comes in.");
+
+	GetEffect("IntTestControl", nil).timer = 0;
+	return true;
+}
+
+global func Test8_Completed()
+{
+	if (ObjectCount(Find_ID(Barrel)) >= 5) return true;
+
+	var fx = GetEffect("IntTestControl", nil);
+	fx.timer++;
+	
+	if (fx.timer >= 120)
+	{
+		FindObject(Find_ID(ToolsWorkshop))->CreateContents(Metal);
+		fx.timer = 100;
+	}
+	
+	return false;
+}
+
+global func Test8_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(ToolsWorkshop), Find_ID(Barrel), Find_ID(Wood)));
+	return;
+}
+
+
+
+
 
 
 /*-- Helper Functions --*/
