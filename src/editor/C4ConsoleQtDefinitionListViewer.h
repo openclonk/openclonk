@@ -44,6 +44,7 @@ class C4ConsoleQtDefinitionListModel : public QAbstractItemModel
 		DefListNode *parent;
 
 		DefListNode() : def(NULL), idx(0), parent(NULL) {}
+		void SortByName(); // sort self and children
 	};
 	std::unique_ptr<DefListNode> root;
 

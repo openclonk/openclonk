@@ -27,6 +27,15 @@
 
 /* Defintion tree */
 
+void C4ConsoleQtDefinitionListModel::DefListNode::SortByName()
+{
+	// sort self
+	std::sort(items.begin(), items.end(),
+		[](const std::unique_ptr<DefListNode> & a, const std::unique_ptr<DefListNode> & b) -> bool
+		{ return a->name.Compare(b->name) < 0; });
+	// sort children recursively
+	for (auto & child : items) child->SortByName();
+}
 
 /* Defintion view model */
 
@@ -100,6 +109,8 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 		std::unique_ptr<DefListNode> tmp(new_root->items[0].release());
 		root.reset(tmp.release());
 	}
+	// Sort everything by display name (recursively)
+	root->SortByName();
 	// Model reset to invalidate all indexes
 	beginResetModel();
 	endResetModel();
