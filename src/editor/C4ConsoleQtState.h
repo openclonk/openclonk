@@ -39,7 +39,7 @@ class C4ConsoleQtTranslator : public QTranslator
 {
 	Q_OBJECT
 public:
-	bool isEmpty() { return false; }
+	bool isEmpty() const { return false; }
 	QString translate(const char * context, const char * sourceText, const char * disambiguation = 0, int n = -1) const;
 };
 
@@ -93,7 +93,7 @@ protected:
 public:
 	C4ConsoleQtMainWindow(class C4AbstractApp *app, class C4ConsoleGUIState *state);
 
-	void closeEvent(class QCloseEvent *event);
+	void closeEvent(class QCloseEvent *event) override;
 
 	public slots:
 	// Toolbar items
