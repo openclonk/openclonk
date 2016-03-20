@@ -102,15 +102,12 @@ bool C4ConsoleQtViewportView::nativeEvent(const QByteArray &eventType, void *mes
 // Get Shift state as Win32 wParam
 uint32_t GetShiftWParam()
 {
-#ifdef USE_WIN32_WINDOWS
+	auto modifiers = QGuiApplication::keyboardModifiers();
 	uint32_t result = 0;
-	if (GetKeyState(VK_CONTROL) < 0) result |= MK_CONTROL;
-	if (GetKeyState(VK_SHIFT) < 0) result |= MK_SHIFT;
-	if (GetKeyState(VK_MENU) < 0) result |= MK_ALT;
+	if (modifiers & Qt::ShiftModifier) result |= MK_SHIFT;
+	if (modifiers & Qt::ControlModifier) result |= MK_CONTROL;
+	if (modifiers & Qt::AltModifier) result |= MK_ALT;
 	return result;
-#else
-	TODO Get shift state
-#endif
 }
 
 void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
