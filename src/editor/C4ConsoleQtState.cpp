@@ -391,6 +391,22 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 {
 	// No Qt main loop execution during console creation
 	ExecRecursionCheck no_qt_recursion;
+
+	// Initialize OpenGL.
+	QSurfaceFormat format;
+	format.setMajorVersion(/*REQUESTED_GL_CTX_MAJOR*/ 3);
+	format.setMinorVersion(/*REQUESTED_GL_CTX_MINOR*/ 2);
+	format.setRedBufferSize(8);
+	format.setGreenBufferSize(8);
+	format.setBlueBufferSize(8);
+	format.setDepthBufferSize(8);
+	format.setProfile(QSurfaceFormat::CoreProfile);
+	if (Config.Graphics.DebugOpenGL)
+		format.setOption(QSurfaceFormat::DebugContext);
+	QSurfaceFormat::setDefaultFormat(format);
+	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+
 	// Basic Qt+Main window setup from .ui file
 	int fake_argc = 0;
 	application.reset(new QApplication(fake_argc, NULL));

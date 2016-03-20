@@ -162,6 +162,12 @@ bool C4Viewport::ViewPositionByScrollBars()
 
 #endif // USE_GTK
 
+#if (defined(USE_SDL_MAINLOOP) && defined(WITH_QT_EDITOR))
+// TODO
+bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
+bool C4Viewport::TogglePlayerLock() {return 0;}
+#endif
+
 void C4ViewportWindow::PerformUpdate()
 {
 	if (cvp)

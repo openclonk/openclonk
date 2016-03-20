@@ -66,6 +66,9 @@ bool C4Viewport::UpdateOutputSize(int32_t new_width, int32_t new_height)
 		rect.y = allocation.y;
 		rect.Wdt = allocation.width;
 		rect.Hgt = allocation.height;
+#elif defined(WITH_QT_EDITOR)
+		// Never query the window - size is always passed from Qt.
+		return false;
 #else
 		if (!pWindow->GetSize(&rect)) return false;
 #endif

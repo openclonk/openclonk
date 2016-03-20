@@ -105,19 +105,19 @@ class CStdGLCtx
 {
 public:
 	CStdGLCtx();  // ctor
-	~CStdGLCtx() { Clear(); } // dtor
+	virtual ~CStdGLCtx() { Clear(); } // dtor
 
-	void Clear(bool multisample_change = false);               // clear objects
+	virtual void Clear(bool multisample_change = false);               // clear objects
 
 #ifdef USE_WGL
 	std::vector<int> EnumerateMultiSamples() const;
 #endif
-	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
+	virtual bool Init(C4Window * pWindow, C4AbstractApp *pApp);
 
-	bool Select(bool verbose = false);              // select this context
-	void Deselect();              // select this context
+	virtual bool Select(bool verbose = false);              // select this context
+	virtual void Deselect();              // select this context
 
-	bool PageFlip();            // present scene
+	virtual bool PageFlip();            // present scene
 
 protected:
 	void SelectCommon();
@@ -143,6 +143,26 @@ protected:
 	friend class CStdGL;
 	friend class C4Surface;
 };
+
+#ifdef WITH_QT_EDITOR
+// OpenGL context with Qt as backend. Implemented as subclass to allow co-existance with a different backend for fullscreen.
+class CStdGLCtxQt : public CStdGLCtx
+{
+public:
+	CStdGLCtxQt();
+	//~CStdGLCtxQt();
+
+	void Clear(bool multisample_change = false) override;               // clear objects
+	bool Init(C4Window * pWindow, C4AbstractApp *pApp) override;
+	bool Select(bool verbose = false) override;              // select this context
+	void Deselect() override;              // select this context
+	bool PageFlip() override;            // present scene
+
+private:
+	class QOpenGLContext *context = nullptr;
+	class QOffscreenSurface *surface = nullptr;
+};
+#endif
 
 // OpenGL encapsulation
 class CStdGL : public C4Draw
@@ -272,6 +292,9 @@ protected:
 	friend class C4Window;
 	friend class C4ShaderCall;
 	friend class C4FoWRegion;
+#ifdef WITH_QT_EDITOR
+	friend class CStdGLCtxQt;
+#endif
 };
 
 // Global access pointer

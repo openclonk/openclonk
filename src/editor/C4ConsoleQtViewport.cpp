@@ -28,21 +28,23 @@
 /* Console viewports */
 
 C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock)
-	: QWidget(dock), dock(dock), cvp(dock->cvp ? dock->cvp->cvp : NULL)
+	: QOpenGLWidget(dock), dock(dock), cvp(dock->cvp ? dock->cvp->cvp : NULL)
 {
 	setAutoFillBackground(false);
 	setAttribute(Qt::WA_NoSystemBackground, true);
-	setAttribute(Qt::WA_PaintOnScreen, true);
+#ifdef USE_WIN32_WINDOWS
 	setAttribute(Qt::WA_NativeWindow, true);
+#endif
 	setAttribute(Qt::WA_ShowWithoutActivating, true);
 	setWindowFlags(Qt::FramelessWindowHint);
 	setFocusPolicy(Qt::WheelFocus);
 	setMouseTracking(true);
 	// Register for viewport
+	C4ViewportWindow *window = dock->cvp;
 #ifdef USE_WIN32_WINDOWS
-	dock->cvp->hWindow = reinterpret_cast<HWND>(this->winId());
+	window->hWindow = reinterpret_cast<HWND>(this->winId());
 #else
-	TODO
+	window->glwidget = this;
 #endif
 }
 
@@ -50,12 +52,6 @@ bool C4ConsoleQtViewportView::IsPlayViewport() const
 {
 	return (cvp && ::MouseControl.IsViewport(cvp)
 		&& (::Console.EditCursor.GetMode() == C4CNS_ModePlay));
-}
-
-void C4ConsoleQtViewportView::resizeEvent(QResizeEvent *resize_event)
-{
-	QWidget::resizeEvent(resize_event);
-	if (cvp) dock->cvp->cvp->UpdateOutputSize(resize_event->size().width(), resize_event->size().height());
 }
 
 bool C4ConsoleQtViewportView::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -234,7 +230,7 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 	case Qt::Key_Down:		return K_DOWN;
 	case Qt::Key_Left:		return K_LEFT;
 	case Qt::Key_Right:		return K_RIGHT;
-	case Qt::Key_Clear:		return K_CENTER;
+	/* case Qt::Key_Clear:		return K_CENTER; */
 	case Qt::Key_Insert:	return K_INSERT;
 	case Qt::Key_Delete:	return K_DELETE;
 	case Qt::Key_Menu:		return K_MENU;
@@ -309,6 +305,19 @@ void C4ConsoleQtViewportView::leaveEvent(QEvent *)
 {
 	// TODO: This should better be managed by the viewport
 	::Console.EditCursor.SetMouseHover(false);
+}
+
+void C4ConsoleQtViewportView::initializeGL() { }
+
+void C4ConsoleQtViewportView::resizeGL(int w, int h)
+{
+	cvp->UpdateOutputSize(w, h);
+}
+
+void C4ConsoleQtViewportView::paintGL()
+{
+	// Painting is done regularily elsewhere anyways.
+	/* cvp->Execute(); */
 }
 
 

@@ -403,6 +403,9 @@ public:
 #elif defined(USE_GTK)
 	unsigned long renderwnd;
 #endif
+#ifdef WITH_QT_EDITOR
+	class QOpenGLWidget *glwidget;
+#endif
 protected:
 #if defined(USE_GTK)
 	bool FindFBConfig(int samples, GLXFBConfig *info);

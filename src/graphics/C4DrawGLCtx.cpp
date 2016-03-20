@@ -653,4 +653,98 @@ bool CStdGLCtx::PageFlip()
 
 #endif //USE_GTK/USE_SDL_MAINLOOP
 
+#ifdef WITH_QT_EDITOR
+#undef LineFeed // conflicts with Qt
+#include <QOpenGLWidget>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+
+CStdGLCtxQt::CStdGLCtxQt() { }
+
+void CStdGLCtxQt::Clear(bool multisample_change)
+{
+	pWindow = nullptr;
+	if (context)
+	{
+		delete context;
+		delete surface;
+	}
+}
+
+bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
+{
+	if (!pGL) return false;
+	pWindow = window;
+
+	if (!pWindow->glwidget)
+	{
+		surface = new QOffscreenSurface();
+		surface->create();
+		context = new QOpenGLContext();
+		if (!context->create())
+			return false;
+	}
+
+	if (!Select(true)) return false;
+
+	// init extensions
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		// Problem: glewInit failed, something is seriously wrong.
+		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+	}
+
+	this_context = contexts.insert(contexts.end(), this);
+	return true;
+}
+
+bool CStdGLCtxQt::Select(bool verbose)
+{
+	if (context)
+	{
+		if (!context->makeCurrent(surface))
+			return false;
+	}
+	else
+		pWindow->glwidget->makeCurrent();
+	SelectCommon();
+	// update clipper - might have been done by UpdateSize
+	// however, the wrong size might have been assumed
+	if (!pGL->UpdateClipper())
+	{
+		if (verbose) pGL->Error("  gl: UpdateClipper failed");
+		return false;
+	}
+	// success
+	return true;
+}
+
+void CStdGLCtxQt::Deselect()
+{
+	if (context)
+		context->doneCurrent();
+	else
+		pWindow->glwidget->doneCurrent();
+	if (pGL && pGL->pCurrCtx == this)
+	{
+		pGL->pCurrCtx = 0;
+		pGL->RenderTarget = 0;
+	}
+}
+
+bool CStdGLCtxQt::PageFlip()
+{
+	// flush GL buffer
+	glFlush();
+	if (!pWindow) return false;
+	if (context)
+		return false;
+	pWindow->glwidget->update();
+	return true;
+}
+
+#endif
+
 #endif // USE_CONSOLE
