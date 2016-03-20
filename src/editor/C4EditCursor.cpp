@@ -651,6 +651,9 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	// Draw paint circle
 	if (Mode == C4CNS_ModeDraw && has_mouse_hover && ::Console.ToolsDlg.Grade>0)
 	{
+		// shadow for recognition on white background/material
+		pDraw->DrawCircleDw(cgo.Surface, X + cgo.X - cgo.TargetX + 1.0f/cgo.Zoom, Y + cgo.Y - cgo.TargetY + 1.0f / cgo.Zoom, ::Console.ToolsDlg.Grade, 0xff000000, line_width);
+		// actual circle
 		pDraw->DrawCircleDw(cgo.Surface, X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY, ::Console.ToolsDlg.Grade, 0xffffffff, line_width);
 	}
 	// Draw creator preview
