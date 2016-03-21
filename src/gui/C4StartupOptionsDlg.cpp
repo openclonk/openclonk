@@ -212,7 +212,7 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 // --- C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel
 
 C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds)
-	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, false), assignment(assignment), assignment_set(assignment_set)
+	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, true), assignment(assignment), assignment_set(assignment_set)
 {
 	UpdateAssignmentString();
 }
@@ -391,7 +391,7 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(class C4PlayerControl
 // --- C4StartupOptionsDlg::ControlConfigArea
 
 C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg)
-		: C4GUI::Window(), fGamepad(fGamepad), pGamepadOpener(NULL), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
+		: C4GUI::Window(), fGamepad(fGamepad), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
 {
 	CStdFont *pUseFontSmall = &(C4Startup::Get()->Graphics.BookSmallFont);
 	SetBounds(rcArea);
@@ -436,7 +436,6 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 C4StartupOptionsDlg::ControlConfigArea::~ControlConfigArea()
 {
 	delete [] ppKeyControlSetBtns;
-	if (pGamepadOpener) delete pGamepadOpener;
 }
 
 void C4StartupOptionsDlg::ControlConfigArea::OnCtrlSetBtn(C4GUI::Control *btn)

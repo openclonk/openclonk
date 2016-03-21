@@ -43,22 +43,22 @@ namespace C4GUI
 		                               new ControlKeyCB<ListBox>(*this, &ListBox::KeyContext), C4CustomKey::PRIO_Ctrl);
 		C4CustomKey::CodeList keys;
 		keys.push_back(C4KeyCodeEx(K_UP));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Up(keys);
 		pKeyUp = new C4KeyBinding(keys, "GUIListBoxUp", KEYSCOPE_Gui,
 		                          new ControlKeyCB<ListBox>(*this, &ListBox::KeyUp), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
 		keys.push_back(C4KeyCodeEx(K_DOWN));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Down(keys);
 		pKeyDown = new C4KeyBinding(keys, "GUIListBoxDown", KEYSCOPE_Gui,
 		                            new ControlKeyCB<ListBox>(*this, &ListBox::KeyDown), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
 		keys.push_back(C4KeyCodeEx(K_LEFT));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Left)));
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Left(keys);
 		pKeyLeft = new C4KeyBinding(keys, "GUIListBoxLeft", KEYSCOPE_Gui,
 		                            new ControlKeyCB<ListBox>(*this, &ListBox::KeyLeft), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
 		keys.push_back(C4KeyCodeEx(K_RIGHT));
-		if (Config.Controls.GamepadGuiControl) keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Right)));
+		if (Config.Controls.GamepadGuiControl) ControllerKeys::Right(keys);
 		pKeyRight = new C4KeyBinding(keys, "GUIListBoxRight", KEYSCOPE_Gui,
 		                             new ControlKeyCB<ListBox>(*this, &ListBox::KeyRight), C4CustomKey::PRIO_Ctrl);
 		pKeyPageUp = new C4KeyBinding(C4KeyCodeEx(K_PAGEUP), "GUIListBoxPageUp", KEYSCOPE_Gui,
@@ -75,7 +75,7 @@ namespace C4GUI
 		keys.push_back(C4KeyCodeEx(K_RETURN, KEYS_Alt));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(keys);
 		}
 		pKeyActivate = new C4KeyBinding(keys, "GUIListActivate", KEYSCOPE_Gui,
 		                                new ControlKeyCB<ListBox>(*this, &ListBox::KeyActivate), C4CustomKey::PRIO_Ctrl);

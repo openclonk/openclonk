@@ -31,8 +31,11 @@
 #endif
 
 #include <algorithm>
+#include <regex>
+#include <string>
+#include <unordered_map>
 
-#ifdef USE_SDL_MAINLOOP
+#ifdef HAVE_SDL
 #include <SDL.h>
 #endif
 
@@ -190,6 +193,11 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 };
 #endif
 
+C4KeyCodeEx::C4KeyCodeEx(C4KeyCode key, C4KeyShiftState Shift, bool fIsRepeated, int32_t deviceId)
+: Key(key), dwShift(Shift), fRepeated(fIsRepeated), deviceId(deviceId)
+{
+}
+
 void C4KeyCodeEx::FixShiftKeys()
 {
 	// reduce stuff like Ctrl+RightCtrl to simply RightCtrl
@@ -205,6 +213,36 @@ C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
 	return scan_code_int;
 }
 
+static const std::unordered_map<std::string, C4KeyCode> controllercodes =
+{
+		{ "ButtonA",               KEY_CONTROLLER_ButtonA             },
+		{ "ButtonB",               KEY_CONTROLLER_ButtonB             },
+		{ "ButtonX",               KEY_CONTROLLER_ButtonX             },
+		{ "ButtonY",               KEY_CONTROLLER_ButtonY             },
+		{ "ButtonBack",            KEY_CONTROLLER_ButtonBack          },
+		{ "ButtonGuide",           KEY_CONTROLLER_ButtonGuide         },
+		{ "ButtonStart",           KEY_CONTROLLER_ButtonStart         },
+		{ "ButtonLeftStick",       KEY_CONTROLLER_ButtonLeftStick     },
+		{ "ButtonRightStick",      KEY_CONTROLLER_ButtonRightStick    },
+		{ "ButtonLeftShoulder",    KEY_CONTROLLER_ButtonLeftShoulder  },
+		{ "ButtonRightShoulder",   KEY_CONTROLLER_ButtonRightShoulder },
+		{ "ButtonDpadUp",          KEY_CONTROLLER_ButtonDpadUp        },
+		{ "ButtonDpadDown",        KEY_CONTROLLER_ButtonDpadDown      },
+		{ "ButtonDpadLeft",        KEY_CONTROLLER_ButtonDpadLeft      },
+		{ "ButtonDpadRight",       KEY_CONTROLLER_ButtonDpadRight     },
+		{ "AnyButton",             KEY_CONTROLLER_AnyButton           },
+		{ "LeftStickLeft",         KEY_CONTROLLER_AxisLeftXLeft       },
+		{ "LeftStickRight",        KEY_CONTROLLER_AxisLeftXRight      },
+		{ "LeftStickUp",           KEY_CONTROLLER_AxisLeftYUp         },
+		{ "LeftStickDown",         KEY_CONTROLLER_AxisLeftYDown       },
+		{ "RightStickLeft",        KEY_CONTROLLER_AxisRightXLeft      },
+		{ "RightStickRight",       KEY_CONTROLLER_AxisRightXRight     },
+		{ "RightStickUp",          KEY_CONTROLLER_AxisRightYUp        },
+		{ "RightStickDown",        KEY_CONTROLLER_AxisRightYDown      },
+		{ "LeftTrigger",           KEY_CONTROLLER_AxisTriggerLeft     },
+		{ "RightTrigger",          KEY_CONTROLLER_AxisTriggerRight    },
+};
+
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
 	// direct key code?
@@ -215,47 +253,16 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		// scan code
 		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
-#ifdef _WIN32
-		if (!strnicmp(sName.getData(), "Joy", 3))
-#else
-		if (!strncasecmp(sName.getData(), "Joy", 3))
-#endif
+		std::regex controller_re(R"/(^Controller(\w+)$)/");
+		std::cmatch matches;
+		if (std::regex_match(sName.getData(), matches, controller_re))
 		{
-			int iGamepad;
-			if (sscanf(sName.getData(), "Joy%d",  &iGamepad) == 1)
-			{
-				// skip Joy[number]
-				const char *key_str = sName.getData()+4;
-				while (isdigit(*key_str)) ++key_str;
-				// check for button (single, uppercase letter) (e.g. Joy1A)
-				if (*key_str && !key_str[1])
-				{
-					char cGamepadButton = toupper(*key_str);
-					if (Inside(cGamepadButton, 'A', 'Z'))
-					{
-						cGamepadButton = cGamepadButton - 'A';
-						return KEY_Gamepad(iGamepad-1, KEY_JOY_Button(cGamepadButton));
-					}
-				}
-				else
-				{
-					// check for standard axis (e.g. Joy1Left)
-					if (!stricmp(key_str, "Left")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Left);
-					if (!stricmp(key_str, "Up")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Up);
-					if (!stricmp(key_str, "Down")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Down);
-					if (!stricmp(key_str, "Right")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Right);
-					// check for specific axis (e.g. Joy1Axis1Min)
-					int iAxis;
-					if (sscanf(key_str, "Axis%d", &iAxis) == 1 && iAxis>0)
-					{
-						--iAxis; // axis is 0-based internally but written 1-based in config
-						key_str += 5;
-						while (isdigit(*key_str)) ++key_str;
-						if (!stricmp(key_str, "Min")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, false));
-						if (!stricmp(key_str, "Max")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, true));
-					}
-				}
-			}
+			auto keycode_it = controllercodes.find(matches[1].str());
+			if (keycode_it != controllercodes.end())
+				return KEY_Gamepad(keycode_it->second);
+			else
+				return KEY_Undefined;
+
 		}
 		bool is_mouse_key;
 #ifdef _WIN32
@@ -326,34 +333,51 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	// Gamepad keys
 	if (Key_IsGamepad(wCode))
 	{
-		int iGamepad = Key_GetGamepad(wCode);
-		int gamepad_event = Key_GetGamepadEvent(wCode);
-		switch (gamepad_event)
+		if (fHumanReadable)
 		{
-		case KEY_JOY_Left:  return FormatString("Joy%dLeft", iGamepad+1);
-		case KEY_JOY_Up:    return FormatString("Joy%dUp", iGamepad+1);
-		case KEY_JOY_Down:  return FormatString("Joy%dDown", iGamepad+1);
-		case KEY_JOY_Right: return FormatString("Joy%dRight", iGamepad+1);
-		default:
-			if (Key_IsGamepadAxis(wCode))
+			switch (Key_GetGamepadEvent(wCode))
 			{
-				if (fHumanReadable)
-					// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
-					return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-				else
-					return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-			}
-			else
-			{
-				// button
-				if (fHumanReadable)
-					// If there should be gamepads around with A B C D... on the buttons, we might create a display option to show letters instead...
-					return FormatString("< %d >", int(1 + Key_GetGamepadButtonIndex(wCode)));
-				else
-					return FormatString("Joy%d%c", iGamepad+1, static_cast<char>(Key_GetGamepadButtonIndex(wCode) + 'A'));
+			case KEY_CONTROLLER_ButtonA             : return StdStrBuf("{{@Ico:A}}");
+			case KEY_CONTROLLER_ButtonB             : return StdStrBuf("{{@Ico:B}}");
+			case KEY_CONTROLLER_ButtonX             : return StdStrBuf("{{@Ico:X}}");
+			case KEY_CONTROLLER_ButtonY             : return StdStrBuf("{{@Ico:Y}}");
+			case KEY_CONTROLLER_ButtonBack          : return StdStrBuf("{{@Ico:Back}}");
+			case KEY_CONTROLLER_ButtonGuide         : return StdStrBuf("Guide");
+			case KEY_CONTROLLER_ButtonStart         : return StdStrBuf("{{@Ico:Start}}");
+			case KEY_CONTROLLER_ButtonLeftStick     : return StdStrBuf("{{@Ico:LeftStick}}");
+			case KEY_CONTROLLER_ButtonRightStick    : return StdStrBuf("{{@Ico:RightStick}}");
+			case KEY_CONTROLLER_ButtonLeftShoulder  : return StdStrBuf("{{@Ico:LeftShoulder}}");
+			case KEY_CONTROLLER_ButtonRightShoulder : return StdStrBuf("{{@Ico:RightShoulder}}");
+			case KEY_CONTROLLER_ButtonDpadUp        : return StdStrBuf("{{@Ico:DpadUp}}");
+			case KEY_CONTROLLER_ButtonDpadDown      : return StdStrBuf("{{@Ico:DpadDown}}");
+			case KEY_CONTROLLER_ButtonDpadLeft      : return StdStrBuf("{{@Ico:DpadLeft}}");
+			case KEY_CONTROLLER_ButtonDpadRight     : return StdStrBuf("{{@Ico:DpadRight}}");
+			case KEY_CONTROLLER_AnyButton           : return StdStrBuf("Any Button");
+			case KEY_CONTROLLER_AxisLeftXLeft       : return StdStrBuf("{{@Ico:LeftStick}} Left");
+			case KEY_CONTROLLER_AxisLeftXRight      : return StdStrBuf("{{@Ico:LeftStick}} Right");
+			case KEY_CONTROLLER_AxisLeftYUp         : return StdStrBuf("{{@Ico:LeftStick}} Up");
+			case KEY_CONTROLLER_AxisLeftYDown       : return StdStrBuf("{{@Ico:LeftStick}} Down");
+			case KEY_CONTROLLER_AxisRightXLeft      : return StdStrBuf("{{@Ico:RightStick}} Left");
+			case KEY_CONTROLLER_AxisRightXRight     : return StdStrBuf("{{@Ico:RightStick}} Right");
+			case KEY_CONTROLLER_AxisRightYUp        : return StdStrBuf("{{@Ico:RightStick}} Up");
+			case KEY_CONTROLLER_AxisRightYDown      : return StdStrBuf("{{@Ico:RightStick}} Down");
+			case KEY_CONTROLLER_AxisTriggerLeft     : return StdStrBuf("{{@Ico:LeftTrigger}}");
+			case KEY_CONTROLLER_AxisTriggerRight    : return StdStrBuf("{{@Ico:RightTrigger}}");
 			}
 		}
+		else
+		{
+			// A linear search in our small map is probably fast enough.
+			auto it = std::find_if(controllercodes.begin(), controllercodes.end(), [wCode](const auto &p)
+			{
+				return p.second == Key_GetGamepadEvent(wCode);
+			});
+			if (it != controllercodes.end())
+				return FormatString("Controller%s", it->first.c_str());
+		}
+		return StdStrBuf("Unknown");
 	}
+
 	// Mouse keys
 	if (Key_IsMouse(wCode))
 	{
@@ -602,6 +626,15 @@ C4CustomKey::~C4CustomKey()
 		(*i)->Deref();
 }
 
+bool C4CustomKey::IsCodeMatched(const C4KeyCodeEx &key) const
+{
+	const CodeList &codes = GetCodes();
+	for (const auto &code : codes)
+		if (code == key)
+			return true;
+	return false;
+}
+
 void C4CustomKey::Update(const C4CustomKey *pByKey)
 {
 	assert(pByKey);
@@ -812,28 +845,12 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	FallbackKeys[iKeyRangeCnt++] = InKey.Key;
 	if (Key_IsGamepadButton(InKey.Key))
 	{
-		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
-		uint8_t byBtnIndex = Key_GetGamepadButtonIndex(InKey.Key);
-		// even/odd button events: Add even button indices as odd events, because byBtnIndex is zero-based and the event naming scheme is for one-based button indices
-		if (byBtnIndex % 2) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyEvenButton);
-		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton);
-		// high/low button events
-		if (byBtnIndex < 4) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyLowButton);
-		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton);
 		// "any gamepad button"-event
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyButton);
+		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(KEY_CONTROLLER_AnyButton);
 	}
 	else if (Key_IsGamepadAxis(InKey.Key))
 	{
-		// xy-axis-events for all even/odd axises
-		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
-		uint8_t byAxis = Key_GetGamepadAxisIndex(InKey.Key);
-		bool fHigh = Key_IsGamepadAxisHigh(InKey.Key);
-		C4KeyCode keyAxisDir;
-		if (byAxis % 2)
-				if (fHigh) keyAxisDir = KEY_JOY_Down; else keyAxisDir = KEY_JOY_Up;
-		else if (fHigh) keyAxisDir = KEY_JOY_Right; else keyAxisDir = KEY_JOY_Left;
-		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, (uint8_t)keyAxisDir);
+		// TODO: do we need "any axis" events?
 	}
 	if (InKey.Key != KEY_Any) FallbackKeys[iKeyRangeCnt++] = KEY_Any;
 	// now get key ranges for fallback chain

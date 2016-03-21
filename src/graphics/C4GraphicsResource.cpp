@@ -128,6 +128,7 @@ void C4GraphicsResource::Clear()
 	idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
 	barCaption.Clear(); barButton.Clear(); barButtonD.Clear();
 	fctButtonHighlight.Clear(); fctIcons.Clear(); fctIconsEx.Clear();
+	fctControllerIcons.Clear();
 	fctButtonHighlightRound.Clear();
 	fctSubmenu.Clear();
 	fctCheckbox.Clear();
@@ -218,6 +219,8 @@ bool C4GraphicsResource::Init()
 	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
 	if (!LoadFile(fctIconsEx, "GUIIcons2", Files, C4FCT_Full, C4FCT_Full, false, 0)) return false;
 	fctIconsEx.Set(fctIconsEx.Surface,0,0,C4GUI_IconExWdt,C4GUI_IconExHgt);
+	if (!LoadFile(fctControllerIcons, "ControllerIcons", Files, C4FCT_Full, C4FCT_Full, false, 0)) return false;
+	fctControllerIcons.Set(fctControllerIcons.Surface,0,0,C4GUI_ControllerIconWdt,C4GUI_ControllerIconHgt);
 	if (!LoadFile(sfcScroll, "GUIScroll", Files, idSfcScroll, 0)) return false;
 	sfctScroll.Set(C4Facet(&sfcScroll,0,0,32,32));
 	if (!LoadFile(sfcContext, "GUIContext", Files, idSfcContext, 0)) return false;

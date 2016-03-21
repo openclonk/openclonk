@@ -28,6 +28,7 @@
 #include "C4PlayerControl.h"
 #include <C4Value.h>
 #include <set>
+#include <memory>
 
 const int32_t C4PVM_Cursor    = 0,
               C4PVM_Target    = 1,
@@ -130,7 +131,7 @@ public:
 	C4PlayerControl Control;
 	C4ObjectPtr Cursor, ViewCursor;
 	int32_t CursorFlash;
-	class C4GamePadOpener *pGamepad;
+	std::shared_ptr<class C4GamePadOpener> pGamepad;
 	// Message
 	int32_t MessageStatus;
 	char MessageBuf[256+1];
@@ -264,6 +265,9 @@ public:
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);
 	bool AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease);
+
+	// Finds a new gamepad to use, returning true on success.
+	bool FindGamepad();
 
 public:
 	// custom scenario achievements

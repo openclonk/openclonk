@@ -710,7 +710,7 @@ namespace C4GUI
 		keys.push_back(C4KeyCodeEx(K_ESCAPE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(keys);
 		}
 		pKeyAbort = new C4KeyBinding(keys, "GUIRenameEditAbort", KEYSCOPE_Gui,
 		                             new ControlKeyCB<RenameEdit>(*this, &RenameEdit::KeyAbort), C4CustomKey::PRIO_FocusCtrl);

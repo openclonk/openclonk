@@ -75,6 +75,8 @@
 #include <C4SolidMask.h>
 #include <C4FoW.h>
 
+#include <unordered_map>
+
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
 public:
@@ -1889,6 +1891,12 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 #endif
 	// compose key
 	C4KeyCodeEx Key(vk_code, C4KeyShiftState(fAlt*KEYS_Alt + fCtrl*KEYS_Control + fShift*KEYS_Shift), fRepeated);
+	return DoKeyboardInput(Key, eEventType, pForDialog, fPlrCtrlOnly, iStrength);
+}
+
+
+bool C4Game::DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog, bool fPlrCtrlOnly, int32_t iStrength)
+{
 	Key.FixShiftKeys();
 	// compose keyboard scope
 	DWORD InScope = 0;
@@ -2966,25 +2974,25 @@ bool C4Game::InitKeyboard()
 
 	// fullscreen menu
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_LEFT));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Left)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Left(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuLeft",     KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuLeft, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_RIGHT));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Right)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Right(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuRight",    KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuRight, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_UP));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Up(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuUp",       KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuUp, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_DOWN));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Down(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuDown",     KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuDown, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE)); Keys.push_back(C4KeyCodeEx(K_RETURN));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Ok(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOK",       KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuEnter, &C4FullScreen::MenuKeyControl))); // name used by PlrControlKeyName
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_ESCAPE));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Cancel(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuCancel",   KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuClose, &C4FullScreen::MenuKeyControl))); // name used by PlrControlKeyName
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyButton)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Any(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOpen",     KEYSCOPE_FreeView,   new C4KeyCB  <C4FullScreen>   (FullScreen, &C4FullScreen::ActivateMenuMain))); // name used by C4MainMenu!
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FilmNextPlayer",         KEYSCOPE_FilmView,   new C4KeyCB  <C4ViewportList>(::Viewports, &C4ViewportList::ViewportNextPlayer)));
 
@@ -3609,6 +3617,33 @@ void C4Game::Abort(bool fApproved)
 	Application.QuitGame();
 }
 
+static const std::unordered_map<std::string, C4GUI::Icons> str_to_icon =
+{
+	{ "Locked",      C4GUI::Ico_Ex_LockedFrontal },
+	{ "League",      C4GUI::Ico_Ex_League        },
+	{ "GameRunning", C4GUI::Ico_GameRunning      },
+	{ "Lobby",       C4GUI::Ico_Lobby            },
+	{ "RuntimeJoin", C4GUI::Ico_RuntimeJoin      },
+
+	{ "A",             C4GUI::Ico_Controller_A             },
+	{ "B",             C4GUI::Ico_Controller_B             },
+	{ "X",             C4GUI::Ico_Controller_X             },
+	{ "Y",             C4GUI::Ico_Controller_Y             },
+	{ "Back",          C4GUI::Ico_Controller_Back          },
+	{ "Start",         C4GUI::Ico_Controller_Start         },
+	{ "Dpad",          C4GUI::Ico_Controller_Dpad          },
+	{ "DpadLeft",      C4GUI::Ico_Controller_DpadLeft      },
+	{ "DpadRight",     C4GUI::Ico_Controller_DpadRight     },
+	{ "DpadDown",      C4GUI::Ico_Controller_DpadDown      },
+	{ "DpadUp",        C4GUI::Ico_Controller_DpadUp        },
+	{ "LeftShoulder",  C4GUI::Ico_Controller_LeftShoulder  },
+	{ "RightShoulder", C4GUI::Ico_Controller_RightShoulder },
+	{ "LeftTrigger",   C4GUI::Ico_Controller_LeftTrigger   },
+	{ "RightTrigger",  C4GUI::Ico_Controller_RightTrigger  },
+	{ "LeftStick",     C4GUI::Ico_Controller_LeftStick     },
+	{ "RightStick",    C4GUI::Ico_Controller_RightStick    },
+};
+
 bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 {
 	// safety
@@ -3618,19 +3653,12 @@ bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 	if (SEqual2(szSpec, "@Ico:"))
 	{
 		szSpec += 5;
-		if (SEqual2(szSpec, "Locked"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
-		else if (SEqual2(szSpec, "League"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
-		else if (SEqual2(szSpec, "GameRunning"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
-		else if (SEqual2(szSpec, "Lobby"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
-		else if (SEqual2(szSpec, "RuntimeJoin"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-		else
-			return false;
-		return true;
+		auto it = str_to_icon.find(szSpec);
+		if (it != str_to_icon.end())
+		{
+			fct = C4GUI::Icon::GetIconFacet(it->second);
+			return true;
+		}
 	}
 
 	return false;

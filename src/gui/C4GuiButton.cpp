@@ -39,7 +39,7 @@ namespace C4GUI
 		keys.push_back(C4KeyCodeEx(K_SPACE));
 		keys.push_back(C4KeyCodeEx(K_RETURN));
 		if (Config.Controls.GamepadGuiControl)
-			keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(keys);
 		pKeyButton = new C4KeyBinding(keys, "GUIButtonPress", KEYSCOPE_Gui,
 		                              new ControlKeyCB<Button>(*this, &Button::KeyButtonDown, &Button::KeyButtonUp), C4CustomKey::PRIO_Ctrl);
 		sText = "";

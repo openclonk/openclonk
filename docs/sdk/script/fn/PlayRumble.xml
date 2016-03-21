@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PlayRumble</title>
+    <category>Player</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose controller should rumble. Can be NO_OWNER to make all controllers rumble.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>strength</name>
+          <desc>Strength of the rumble, between 0 and 1000.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>length</name>
+          <desc>Duration of the rumble in milliseconds.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Plays a haptic effect on the given player's gamepad. Returns true if all parameters are valid; there is no way to know whether the rumble was actually played.</desc>
+    <examples>
+      <example>
+<code>
+<funclink>ShakeObjects</funclink>(<funclink>LandscapeWidth</funclink>()/2, <funclink>LandscapeHeight</funclink>()/2, <funclink>Distance</funclink>(<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>())/2);
+PlayRumble(NO_OWNER, 1000, 2000);
+</code>
+        <text>Earthquake: Shakes all Clonks and rumbles all controllers at full strength for two seconds.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>StopRumble</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-02</date>
+</funcs>

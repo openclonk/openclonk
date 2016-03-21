@@ -304,7 +304,7 @@ endif()
 # SDL
 if(USE_SDL_MAINLOOP)
 	find_package(SDL2 REQUIRED)
-elseif(NOT WIN32)
+else()
 	# for gamepads
 	find_package(SDL2)
 endif()
@@ -908,8 +908,6 @@ elseif(USE_WIN32_WINDOWS)
 	list(APPEND OC_GUI_SOURCES
 		src/editor/C4ConsoleWin32.cpp
 		src/platform/C4WindowWin32.cpp
-		src/platform/StdJoystick.cpp
-		src/platform/StdJoystick.h
 	)
 elseif(USE_COCOA)
 	list(APPEND OC_GUI_SOURCES
@@ -1131,6 +1129,7 @@ target_link_libraries(openclonk-server
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${EXECINFO_LIBRARY}
+	${SDL2_LIBRARIES}
 	${READLINE_LIBRARIES}
 	${Audio_LIBRARIES}
 	${GETOPT_LIBRARIES}
