@@ -21,6 +21,7 @@
 #include <C4ConsoleQtPropListViewer.h>
 #include <C4ConsoleQtObjectListViewer.h>
 #include <C4ConsoleQtDefinitionListViewer.h>
+#include <C4ConsoleQtNewScenario.h>
 #include <C4ConsoleQtViewport.h>
 #include <C4Console.h>
 #include <StdRegistry.h>
@@ -261,6 +262,7 @@ void C4ConsoleQtMainWindow::DrawSizeChanged(int newval)
 }
 
 // File menu
+void C4ConsoleQtMainWindow::FileNew() { ::Console.FileNew(); }
 void C4ConsoleQtMainWindow::FileOpen() { ::Console.FileOpen(); }
 void C4ConsoleQtMainWindow::FileOpenWithPlayers() { Console.FileOpenWPlrs(); }
 void C4ConsoleQtMainWindow::FileRecord() { ::Console.FileRecord(); }
@@ -269,6 +271,7 @@ void C4ConsoleQtMainWindow::FileSaveAs() { ::Console.FileSaveAs(false); }
 void C4ConsoleQtMainWindow::FileSaveGameAs() { ::Console.FileSaveAs(true); }
 void C4ConsoleQtMainWindow::FileClose() { ::Console.FileClose(); }
 void C4ConsoleQtMainWindow::FileQuit() { ::Console.FileQuit(); }
+
 // Player menu
 void C4ConsoleQtMainWindow::PlayerJoin() { ::Console.PlayerJoin(); }
 // Window menu
@@ -486,6 +489,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	bool has_draw_tools = enabled && landscape_mode != C4LSC_Dynamic;
 	bool has_exact_draw_tools = enabled && landscape_mode == C4LSC_Exact;
 	bool is_drawing = has_draw_tools && editcursor_mode == C4CNS_ModeDraw;
+	ui.actionFileNew->setEnabled(!enabled);
 	ui.actionPlay->setEnabled(enabled);
 	ui.actionPause->setEnabled(enabled);
 	ui.actionCursorGame->setEnabled(enabled);
@@ -761,4 +765,14 @@ void C4ConsoleGUIState::OnCreatorCurrentChanged(const QModelIndex & current, con
 	C4Def *new_def = definition_list_model->GetDefByModelIndex(current);
 	//if (new_def) ::Console.EditCursor.SetMode(C4CNS_ModeCreateObject); - done by selection change
 	::Console.EditCursor.SetCreatorDef(new_def); // set or clear def in EditCursor
+}
+
+bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename)
+{
+	// Show dialogue
+	std::unique_ptr<C4ConsoleQtNewScenarioDlg> dlg(new C4ConsoleQtNewScenarioDlg(window.get()));
+	if (!dlg->exec()) return false;
+	// Dlg said OK! Scenario created
+	out_filename->Copy(dlg->GetFilename());
+	return true;
 }

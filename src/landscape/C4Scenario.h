@@ -32,6 +32,7 @@ public:
 public:
 	void Default();
 	void Set(int32_t std=0, int32_t rnd=0, int32_t min=0, int32_t max=100);
+	void SetConstant(int32_t val);
 	int32_t Evaluate();
 	void CompileFunc(StdCompiler *pComp);
 public:

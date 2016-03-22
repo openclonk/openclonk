@@ -935,6 +935,9 @@ elseif(USE_WIN32_WINDOWS)
 			src/editor/C4ConsoleQtDefinitionListViewer.h
 			src/editor/C4ConsoleQtViewport.cpp
 			src/editor/C4ConsoleQtViewport.h
+			src/editor/C4ConsoleQtNewScenario.cpp
+			src/editor/C4ConsoleQtNewScenario.h
+			src/editor/C4ConsoleQtNewScenario.ui
 			src/editor/C4ConsoleQtMainWindow.ui
 			src/editor/resource.qrc
 			${qt_editor_resources}

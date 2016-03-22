@@ -76,6 +76,7 @@ public:
 	bool SaveScenario(const char * path);
 	bool FileSaveAs(bool fSaveGame);
 	bool FileSave();
+	bool FileNew();
 	bool FileOpen();
 	bool FileOpenWPlrs();
 	bool FileCommand();

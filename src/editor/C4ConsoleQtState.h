@@ -95,7 +95,7 @@ public:
 
 	void closeEvent(class QCloseEvent *event) override;
 
-	public slots:
+public slots:
 	// Toolbar items
 	void PlayPressed(bool down);
 	void PausePressed(bool down);
@@ -112,6 +112,7 @@ public:
 	void ExactLandscapePressed(bool down);
 	void DrawSizeChanged(int newval);
 	// File menu
+	void FileNew();
 	void FileOpen();
 	void FileOpenWithPlayers();
 	void FileRecord();
@@ -209,6 +210,8 @@ public:
 	void SetObjectSelection(class C4EditCursorSelection &rSelection);
 	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
+
+	bool CreateNewScenario(StdStrBuf *out_filename); // show "new scenario" dialogue; return true if new scenario is created
 
 #ifdef USE_WIN32_WINDOWS
 	bool HandleWin32KeyboardMessage(MSG *msg);

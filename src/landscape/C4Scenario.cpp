@@ -38,6 +38,15 @@ void C4SVal::Set(int32_t std, int32_t rnd, int32_t min, int32_t max)
 	Std=std; Rnd=rnd; Min=min; Max=max;
 }
 
+void C4SVal::SetConstant(int32_t val)
+{
+	// Set to constant value and ensure limits allow it
+	Std = val;
+	Rnd = 0;
+	Min = std::min<int32_t>(Min, val);
+	Max = std::max<int32_t>(Max, val);
+}
+
 int32_t C4SVal::Evaluate()
 {
 	return Clamp(Std+Random(2*Rnd+1)-Rnd,Min,Max);

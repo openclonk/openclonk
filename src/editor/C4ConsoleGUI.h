@@ -83,6 +83,7 @@ public:
 	void Execute();
 	void AddViewport(C4ViewportWindow *cvp);
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
+	bool CreateNewScenario(StdStrBuf *out_filename);
 
 	friend class C4ConsoleQtMainWindow;
 	friend class C4ToolsDlg;

@@ -14,5 +14,6 @@
     <file>../res/Play_Trans.png</file>
     <file>../res/Rect_Trans.png</file>
     <file>../res/Static_Trans.png</file>
+    <file>../res/ocs.ico</file>
   </qresource>
 </RCC>

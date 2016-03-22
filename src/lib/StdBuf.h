@@ -548,6 +548,7 @@ public:
 	StdStrBuf &operator += (const char *szString) { Append(szString); return *this; }
 	StdStrBuf operator + (const StdStrBuf &Buf2) const { StdStrBuf Buf = getRef(); Buf.Append(Buf2); return Buf; }
 	StdStrBuf operator + (const char *szString) const { StdStrBuf Buf = getRef(); Buf.Append(szString); return Buf; }
+	StdStrBuf operator + (char c) const { StdStrBuf Buf = getRef(); Buf.AppendChar(c); return Buf; }
 
 	bool operator == (const StdStrBuf &Buf2) const
 	{

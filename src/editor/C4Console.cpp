@@ -248,6 +248,20 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 	return C4ConsoleGUI::Message(szMessage, fQuery);
 }
 
+bool C4Console::FileNew()
+{
+	StdCopyStrBuf filename;
+#ifdef WITH_QT_EDITOR
+	if (!C4ConsoleGUI::CreateNewScenario(&filename)) return false;
+	Application.ClearCommandLine();
+	Application.OpenGame(filename.getData());
+	return true;
+#endif
+	// Not implemented
+	return false;
+
+}
+
 bool C4Console::FileOpen()
 {
 	// Get scenario file name

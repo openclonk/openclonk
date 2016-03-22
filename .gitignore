@@ -136,5 +136,5 @@ tests/openclonk_unittest.sln
 *_automoc.cpp
 moc_*.cpp
 qrc_resource.cpp
-ui_C4ConsoleQtMainWindow.h
+ui_C4ConsoleQt*.h
 resource.qrc.depends

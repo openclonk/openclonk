@@ -337,6 +337,15 @@ void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTr
 	state->AddViewport(cvp);
 }
 
+bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename)
+{
+#ifdef WITH_QT_EDITOR
+	return state->CreateNewScenario(out_filename);
+#else
+	return false
+#endif
+}
+
  void C4ConsoleGUI::OnObjectSelectionChanged(class C4EditCursorSelection &selection)
  {
 	 // selection changed (through other means than creator or object list view)
