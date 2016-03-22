@@ -37,7 +37,7 @@ public func FxMoveTimer()
 		else
 			angle = target_angle;
 	}
-	else if (!aiming)
+	else if (!aiming && Visible())
 	{
 		// The player doesn't touch the stick and no item is using the crosshair right now.
 		SetVisibility(false);
@@ -66,7 +66,7 @@ private func SetVisibility(bool visible)
 
 public func StartAim(object clonk, bool stealth, object GUImenu)
 {
-	aiming = true;
+	aiming = !stealth;
 
 	// only reinitialize angle if the crosshair hasn't been there before
 	if(!GetEffect("Move",this))
@@ -89,7 +89,7 @@ public func StartAim(object clonk, bool stealth, object GUImenu)
 	}
 
 	// Aim somewhere useful if the crosshair wasn't visible before.
-	if (SetVisibility(true))
+	if (!stealth && SetVisibility(true))
 		angle = 800*(clonk->GetDir()*2-1);
 	
 	crew = clonk;
