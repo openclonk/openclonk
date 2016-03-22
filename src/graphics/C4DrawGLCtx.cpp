@@ -683,17 +683,17 @@ bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
 		context = new QOpenGLContext();
 		if (!context->create())
 			return false;
-	}
 
-	if (!Select(true)) return false;
+		if (!Select(true)) return false;
 
-	// init extensions
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+		// init extensions
+		glewExperimental = GL_TRUE;
+		GLenum err = glewInit();
+		if (GLEW_OK != err)
+		{
+			// Problem: glewInit failed, something is seriously wrong.
+			return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+		}
 	}
 
 	this_context = contexts.insert(contexts.end(), this);
@@ -708,7 +708,10 @@ bool CStdGLCtxQt::Select(bool verbose)
 			return false;
 	}
 	else
-		pWindow->glwidget->makeCurrent();
+	{
+		// done automatically
+		/* pWindow->glwidget->makeCurrent(); */
+	}
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
@@ -726,7 +729,10 @@ void CStdGLCtxQt::Deselect()
 	if (context)
 		context->doneCurrent();
 	else
-		pWindow->glwidget->doneCurrent();
+	{
+		// done automatically
+		/* pWindow->glwidget->doneCurrent(); */
+	}
 	if (pGL && pGL->pCurrCtx == this)
 	{
 		pGL->pCurrCtx = 0;
@@ -741,7 +747,6 @@ bool CStdGLCtxQt::PageFlip()
 	if (!pWindow) return false;
 	if (context)
 		return false;
-	pWindow->glwidget->update();
 	return true;
 }
 

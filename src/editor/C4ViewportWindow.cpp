@@ -170,13 +170,13 @@ bool C4Viewport::TogglePlayerLock() {return 0;}
 
 void C4ViewportWindow::PerformUpdate()
 {
+#ifndef WITH_QT_EDITOR // done by callback
 	if (cvp)
 	{
-#ifndef WITH_QT_EDITOR // done by callback
 		cvp->UpdateOutputSize();
-#endif
 		cvp->Execute();
 	}
+#endif
 }
 
 C4Window * C4ViewportWindow::Init(int32_t Player)

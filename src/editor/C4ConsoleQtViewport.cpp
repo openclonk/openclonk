@@ -307,7 +307,17 @@ void C4ConsoleQtViewportView::leaveEvent(QEvent *)
 	::Console.EditCursor.SetMouseHover(false);
 }
 
-void C4ConsoleQtViewportView::initializeGL() { }
+void C4ConsoleQtViewportView::initializeGL()
+{
+	// init extensions
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		// Problem: glewInit failed, something is seriously wrong.
+		LogF("glewInit: %s", reinterpret_cast<const char*>(glewGetErrorString(err)));
+	}
+}
 
 void C4ConsoleQtViewportView::resizeGL(int w, int h)
 {
@@ -316,8 +326,7 @@ void C4ConsoleQtViewportView::resizeGL(int w, int h)
 
 void C4ConsoleQtViewportView::paintGL()
 {
-	// Painting is done regularily elsewhere anyways.
-	/* cvp->Execute(); */
+	cvp->Execute();
 }
 
 
