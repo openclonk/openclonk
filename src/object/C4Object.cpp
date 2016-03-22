@@ -3999,6 +3999,7 @@ void C4Object::ExecAction()
 	case DFA_CONNECT:
 		{
 			bool fBroke=false;
+			bool fLineChange = false;
 
 			// Line destruction check: Target missing or incomplete
 			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
@@ -4032,6 +4033,8 @@ void C4Object::ExecAction()
 				// No-intersection line
 				if (Def->LineIntersect == 1)
 					{ Shape.VtxX[0]=iConnectX1; Shape.VtxY[0]=iConnectY1; }
+					
+				fLineChange = true;
 			}
 
 			// Movement by Target2
@@ -4055,6 +4058,8 @@ void C4Object::ExecAction()
 				// No-intersection line
 				if (Def->LineIntersect == 1)
 					{ Shape.VtxX[Shape.VtxNum-1]=iConnectX2; Shape.VtxY[Shape.VtxNum-1]=iConnectY2; }
+					
+				fLineChange = true;
 			}
 
 			// Check max length
@@ -4063,7 +4068,9 @@ void C4Object::ExecAction()
 			if (max_dist)
 			{
 				int32_t dist_x = iConnectX2 - iConnectX1, dist_y = iConnectY2 - iConnectY1;
-				int64_t dist_x2 = int64_t(dist_x)*dist_x, dist_y2 = int64_t(dist_y)*dist_y, max_dist2 = int64_t(max_dist)*max_dist;
+				int64_t dist_x2 = int64_t(dist_x)*dist_x;
+				int64_t dist_y2 = int64_t(dist_y)*dist_y;
+				int64_t max_dist2 = int64_t(max_dist)*max_dist;
 				if (dist_x2+dist_y2 > max_dist2) fBroke = true;
 			}
 
@@ -4077,7 +4084,12 @@ void C4Object::ExecAction()
 
 			// Reduce line segments
 			if (!::Game.iTick35)
-				ReduceLineSegments(Shape, !::Game.iTick2);
+				if (ReduceLineSegments(Shape, !::Game.iTick2))
+					fLineChange = true;
+					
+			// Line change callback
+			if (fLineChange)
+				Call(PSF_OnLineChange);
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
