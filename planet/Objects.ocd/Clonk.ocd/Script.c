@@ -109,6 +109,13 @@ protected func CatchBlow()
 	if (GetAction() == "Dead") return;
 	if (!Random(5)) PlaySoundHurt();
 }
+
+protected func OnEnergyChange(int change, int cause, int caused_by)
+{
+	if (change < 0 && GetCursor(GetOwner()) == this)
+		PlayRumble(GetOwner(), Min(300 + 1000 * -change / this.MaxEnergy, 1000), 150);
+	return _inherited(...);
+}
 	
 protected func Grab(object pTarget, bool fGrab)
 {
