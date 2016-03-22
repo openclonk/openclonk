@@ -57,7 +57,7 @@ public func GetConnectedObject(object obj)
 	return;
 }
 
-private func LineBreak(bool no_msg)
+private func OnLineBreak(bool no_msg)
 {
 	Sound("Objects::LineSnap");
 	if (!no_msg)

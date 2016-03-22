@@ -4005,7 +4005,7 @@ void C4Object::ExecAction()
 			if (!Action.Target2 || (Action.Target2->Con<FullCon)) fBroke=true;
 			if (fBroke)
 			{
-				Call(PSF_LineBreak,&C4AulParSet(true));
+				Call(PSF_OnLineBreak,&C4AulParSet(true));
 				AssignRemoval();
 				return;
 			}
@@ -4070,7 +4070,7 @@ void C4Object::ExecAction()
 			// Line fBroke
 			if (fBroke)
 			{
-				Call(PSF_LineBreak,0);
+				Call(PSF_OnLineBreak,0);
 				AssignRemoval();
 				return;
 			}
