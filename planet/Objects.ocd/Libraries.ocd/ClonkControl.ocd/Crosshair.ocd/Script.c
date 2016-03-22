@@ -20,6 +20,12 @@ protected func Initialize()
 
 public func FxMoveTimer()
 {
+	if (!crew)
+	{
+		RemoveObject();
+		return FX_Execute_Kill;
+	}
+
 	var target_angle = Angle(0,0,xpos,ypos)*10;
 
 	if (!Visible() && !InDeadzone())
@@ -37,10 +43,12 @@ public func FxMoveTimer()
 		else
 			angle = target_angle;
 	}
-	else if (!aiming && Visible())
+	else if (!aiming)
 	{
 		// The player doesn't touch the stick and no item is using the crosshair right now.
 		SetVisibility(false);
+		// Aim somewhere useful. Note that this can be overwritten by objects and isn't used for throwing.
+		angle = 800*(crew->GetDir()*2-1);
 	}
 	
 	UpdatePosition();
@@ -64,17 +72,18 @@ private func SetVisibility(bool visible)
 	return newvis != oldvis;
 }
 
-public func StartAim(object clonk, bool stealth, object GUImenu)
+private func CreateMoveEffect(object clonk)
 {
-	aiming = !stealth;
+	crew = clonk;
+	UpdatePosition();
+	RemoveEffect("Move",this);
+	AddEffect("Move",this,1,1,this);
+}
 
-	// only reinitialize angle if the crosshair hasn't been there before
-	if(!GetEffect("Move",this))
-	{
-		// which should basically be only the case on the first time aiming
-		angle = 800*(clonk->GetDir()*2-1);
-	}
-	
+public func StartAim(object clonk, int default_angle, object GUImenu)
+{
+	aiming = true;
+
 	// gui or landscape mode:
 	if (GUImenu)
 	{
@@ -88,14 +97,11 @@ public func StartAim(object clonk, bool stealth, object GUImenu)
 		menu = nil;
 	}
 
-	// Aim somewhere useful if the crosshair wasn't visible before.
-	if (!stealth && SetVisibility(true))
-		angle = 800*(clonk->GetDir()*2-1);
-	
-	crew = clonk;
-	UpdatePosition();
-	RemoveEffect("Move",this);
-	AddEffect("Move",this,1,1,this);
+	// Use the given angle if the player wasn't aiming before.
+	if (SetVisibility(true) && default_angle)
+		angle = default_angle;
+
+	CreateMoveEffect(clonk);
 }
 
 private func UpdatePosition()
@@ -122,16 +128,23 @@ public func StopAim()
 	aiming = false;
 }
 
+// Aiming means that some object is currently actively using the crosshair.
 public func IsAiming()
 {
 	return aiming;
+}
+
+// The crosshair is also active when the player is holding the aiming stick.
+public func IsActive()
+{
+	return aiming || Visible();
 }
 
 public func Aim(int ctrl, object clonk, int strength, int repeat, int status)
 {
 	// start (stealth) aiming
 	if(!GetEffect("Move",this))
-		StartAim(clonk,true);
+		CreateMoveEffect(clonk);
 
 	// aiming with analog pad
 	if (status == CONS_Moved &&

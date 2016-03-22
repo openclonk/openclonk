@@ -47,6 +47,14 @@ func ReadyToBeUsed(proplist data)
 	return !RejectUse(clonk) && !GetEffect("IntReload", this);
 }
 
+public func DefaultCrosshairAngle(object clonk, int d)
+{
+	// Easy mode for gamepad users: automatically boost a jump.
+	if (clonk->GetYDir() < -10)
+		return Angle(0, 0, -clonk->GetXDir(), -clonk->GetYDir(), 10);
+	return 0;
+}
+
 protected func ControlUse(object clonk, x, y)
 {
 	if (!GetEffect("IntReload", this) && !GetEffect("IntBurstWind", this))

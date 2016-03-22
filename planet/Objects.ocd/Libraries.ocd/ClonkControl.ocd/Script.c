@@ -46,6 +46,9 @@ static const ACTIONTYPE_EXTRA = 4;
 // elevators within this range (x) can be called
 static const ELEVATOR_CALL_DISTANCE = 30;
 
+// default throwing angle used while the Clonk isn't aiming
+static const DEFAULT_THROWING_ANGLE = 500;
+
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
 /*
@@ -362,14 +365,19 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (only_drop || Distance(0, 0, x, y) < 10 || (Abs(x) < 10 && y > 10))
 				only_drop = true;
 			// throw
-			if (ctrl == CON_Throw)
+			CancelUse();
+
+			if (only_drop)
+				return ObjectCommand("Drop", contents);
+			else
 			{
-				CancelUse();
-				
-				if (only_drop)
-					return ObjectCommand("Drop", contents);
-				else
-					return ObjectCommand("Throw", contents, x, y);
+				if (HasVirtualCursor() && !VirtualCursor()->IsActive())
+				{
+					var angle = DEFAULT_THROWING_ANGLE * (GetDir()*2 - 1);
+					x = +Sin(angle, CURSOR_Radius, 10);
+					y = -Cos(angle, CURSOR_Radius, 10);
+				}
+				return ObjectCommand("Throw", contents, x, y);
 			}
 		}
 	}
@@ -624,7 +632,15 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 	this.control.alt = ctrl != CON_Use;
 	
 	if (HasVirtualCursor())
-		VirtualCursor()->StartAim(this);
+	{
+		var cursor = VirtualCursor(), angle;
+		if (!cursor->IsActive() && (angle = obj->~DefaultCrosshairAngle(this, GetDir()*2 - 1)))
+		{
+			x = +Sin(angle, CURSOR_Radius, 10);
+			y = -Cos(angle, CURSOR_Radius, 10);
+		}
+		cursor->StartAim(this, angle);
+	}
 
 	var hold_enabled = obj->Call("~HoldingEnabled");
 	
@@ -944,7 +960,7 @@ func SetMenu(new_menu, bool unclosable)
 			SetComDir(COMD_Stop);
 		
 			if (PlayerHasVirtualCursor(GetOwner()))
-				VirtualCursor()->StartAim(this,false, new_menu);
+				VirtualCursor()->StartAim(this, 0, new_menu);
 			else
 			{
 				if (GetType(new_menu) == C4V_C4Object && new_menu->~CursorUpdatesEnabled()) 

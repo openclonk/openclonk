@@ -37,6 +37,8 @@ public func IsDigging() { return is_digging; }
 
 public func HoldingEnabled() { return true; }
 
+public func DefaultCrosshairAngle(object clonk, int d) { return 900 * d; }
+
 public func ControlUseStart(object clonk, int x, int y)
 {
 	AddEffect("ShovelDig", clonk, 1, 1, this);

@@ -79,7 +79,7 @@ func ReinitializeControls()
 		// if is aiming or in menu and no virtual cursor is there, create one
 		if (!virtual_cursor)
 			if (this.menu || this.control.current_object) // properties declared in ClonkControl.ocd
-				VirtualCursor()->StartAim(this,false,this.menu);
+				VirtualCursor()->StartAim(this,0,this.menu);
 	}
 	else
 	{
