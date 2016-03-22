@@ -518,6 +518,8 @@ void C4Viewport::AdjustZoomAndPosition()
 		// we reach ZoomTarget in finite time.
 		float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f / 8.0f);
 
+		if (Zoom == 0)
+			Zoom = ZoomTarget;
 		if (Zoom < ZoomTarget)
 			Zoom = std::min(Zoom * ZoomAdjustFactor, ZoomTarget);
 		if (Zoom > ZoomTarget)
