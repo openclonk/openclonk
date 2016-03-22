@@ -345,3 +345,107 @@ global func Particles_ElectroSpark2()
 		Phase = PV_Linear(6, 11),
 	};
 }
+
+/* weather particles */
+
+global func Particles_Rain(int color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = PV_Gravity(100),
+		Size = PV_Random(10, 30),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,
+		Stretch = 3000,
+	};
+}
+
+global func Particles_Snow(int color)
+{
+	return
+	{
+		Phase = PV_Random(0, 16),
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		DampingY = 1000,//PV_Cos(PV_Linear(0,1800),5,990),
+		ForceY = 0,//GetGravity()/100,//PV_Gravity(100),
+		// TODO: PV_Random() here?
+		ForceX = PV_Sin(PV_Step(PV_Random(5, 10), PV_Random(0, 180)), PV_Random(5, 8), 0),
+		Size = PV_Random(0, 3),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(360),
+		CollisionDensity = 25,
+		Stretch = 1000,
+	};
+}
+
+global func Particles_RainSmall(int color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		ForceY = PV_Gravity(60),
+		Size = 20,
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Direction(),
+		CollisionDensity = 25,		
+		Stretch = PV_KeyFrames(0, 0, 1000, 500, 1000, 1000, 0),
+	};
+}
+
+global func Particles_Splash(int color)
+{
+	return
+	{
+		Phase = PV_Linear(0, 4),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 255, 1000, 0),
+		Size = PV_Random(5, 10),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(-5,5),
+		Strech = 500+Random(500),
+	};
+}
+
+global func Particles_SplashWater(int color)
+{
+	return
+	{
+		Phase = PV_Linear(0, 13),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 255, 1000, 0),
+		Size = PV_Random(2, 5),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(-5,5),
+		Stretch = PV_Linear(3000, 3000),
+		Attach = ATTACH_Back,
+	};
+}
+
+global func Particles_Hail(int color)
+{
+	return
+	{
+		CollisionVertex = 0,
+		ForceY = PV_Gravity(60),
+		OnCollision = PC_Stop(),
+		Size = 2,
+		Alpha = PV_KeyFrames(255, 0, 255, 500, 255, 1000, 0),
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Rotation = PV_Random(360),
+	};
+}
