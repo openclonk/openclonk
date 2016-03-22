@@ -4062,18 +4062,6 @@ void C4Object::ExecAction()
 				fLineChange = true;
 			}
 
-			// Check max length
-			int32_t max_dist;
-			max_dist = GetPropertyInt(P_LineMaxDistance);
-			if (max_dist)
-			{
-				int32_t dist_x = iConnectX2 - iConnectX1, dist_y = iConnectY2 - iConnectY1;
-				int64_t dist_x2 = int64_t(dist_x)*dist_x;
-				int64_t dist_y2 = int64_t(dist_y)*dist_y;
-				int64_t max_dist2 = int64_t(max_dist)*max_dist;
-				if (dist_x2+dist_y2 > max_dist2) fBroke = true;
-			}
-
 			// Line fBroke
 			if (fBroke)
 			{
