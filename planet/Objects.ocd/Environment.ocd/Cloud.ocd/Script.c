@@ -295,20 +295,35 @@ local particle_cache;
 // Raindrop somewhere from the cloud.
 private func RainDrop()
 {
+	var con = GetCon();
+	var wdt = GetDefWidth() * con / 500;
+	var hgt = GetDefHeight() * con / 700;
+
+	var mat = RainMat();
+	var particle_name = "Raindrop";
+	var color = GetMaterialColor(mat);
+	if (color != last_raindrop_color)
+	{
+		particle_cache = {};
+		last_raindrop_color = color;
+	}
+
+	if (mat == "Lava" || mat == "DuroLava")
+		particle_name = "RaindropLava";
+	if (mat == "Snow")
+		particle_cache.snow = particle_cache.snow ?? Particles_Snow(color);
+	else
+		particle_cache.rain = particle_cache.rain ?? Particles_Rain(color);
+
 	var count = Max(rain_visual_strength, 1);
 	for (var i = 0; i < count; i++)
 	{
-		// Find Random Position.
-		var con = GetCon();
-		var wdt = GetDefWidth() * con / 500;
-		var hgt = GetDefHeight() * con / 700;
 		var x = RandomX(-wdt, wdt);
 		var y = RandomX(-hgt, hgt);
 		var xdir = RandomX(GetWind(0,0,1)-5, GetWind(0,0,1)+5)/5;
 		var ydir = 30;
 		if (!GBackSky(x, y))
 			continue;
-		var mat = RainMat();
 
 		if(mat == "Ice")
 		{
@@ -317,44 +332,29 @@ private func RainDrop()
 			ydir *= 4;
 		}
 
-		// Create rain particles.
-		var particle_name = "Raindrop";
-		var color = GetMaterialColor(mat);
-		if (color != last_raindrop_color)
-		{
-			particle_cache = {};
-			last_raindrop_color = color;
-		}
-
-		if(mat == "Lava" || mat == "DuroLava")
-			particle_name = "RaindropLava";
-
 		// Snow is special.
 		if(mat == "Snow")
 		{
-			particle_cache.snow = particle_cache.snow ?? Particles_Snow(color);
 			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), particle_cache.snow, 0);
 			if (!i)
-			{
 				CastPXS(mat, 1, 0, x, y);
-			}
 			continue;
 		}		
 
-		particle_cache.rain = particle_cache.rain ?? Particles_Rain(color);
 		var particle = new particle_cache.rain {};
 		if(Random(2))
 			particle.Attach = ATTACH_Back;
 		CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
 
 		// Splash.
-		var hit = SimFlight(x, y, xdir, ydir, 25 /* Liquid */, nil, nil, 3);
-		var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
-		if (time_passed > 0)
+		if (!i)
 		{
-			// Don't always create a splash.
-			if (!Random(5) || !i)
-				ScheduleCall(this, "DropHit", time_passed, 0, mat, color, AbsX(x_final), AbsY(y_final), !i);
+			var hit = SimFlight(x, y, xdir, ydir, 25 /* Liquid */, nil, nil, 3);
+			var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
+			if (time_passed > 0)
+			{
+					ScheduleCall(this, "DropHit", time_passed, 0, mat, color, AbsX(x_final), AbsY(y_final));
+			}
 		}
 	}
 	return true;
@@ -367,16 +367,13 @@ private func SmokeyMaterial(string material_name)
 	return GetMaterialVal("Corrosive", "Material", mat) || GetMaterialVal("Incendiary", "Material", mat);
 }
 
-private func DropHit(string material_name, int color, int x_orig, int y_orig, bool create_material)
+private func DropHit(string material_name, int color, int x_orig, int y_orig)
 {
 	// Adjust position so that it's in the air.
 	var x = x_orig, y = y_orig;
 	while (GBackSemiSolid(x, y - 1)) y--;
 
-	if (create_material)
-	{
-		InsertMaterial(Material(material_name), x, y);
-	}
+	InsertMaterial(Material(material_name), x, y);
 
 	// Some materials cast smoke when hitting water.
 	if (GetMaterial(x,y) == Material("Water") && SmokeyMaterial(material_name))
