@@ -2,9 +2,9 @@
 
 func GetLiquidType() { return "Oil"; }
 
-func Disperse()
+func Disperse(int angle, int strength)
 {
-	DisperseMaterial(GetLiquidType(), GetLiquidAmount());
+	DisperseMaterial(GetLiquidType(), GetLiquidAmount(), strength, angle);
 	_inherited(...);
 }
 
