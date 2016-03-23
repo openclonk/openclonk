@@ -26,6 +26,7 @@ local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
 local rain_mat_freeze_temp; // Freezing temperature of current rain material.
 local rain_mat_frozen; // Material currently frozen to.
+local rain_visual_strength; // Amount of rain particles
 
 local cloud_shade; // Cloud shade.
 local cloud_alpha; // Cloud alpha.
@@ -43,6 +44,7 @@ protected func Initialize()
 	// Default values for rain.
 	rain = 0;
 	rain_max = 960;
+	rain_visual_strength = 10;
 	
 	// Cloud defaults
 	lightning_chance = 0;
@@ -138,6 +140,22 @@ public func SetRain(int to_rain)
 	return;
 }
 
+// Sets the strength of the visual particle rain.
+// Also an id call: Changes all clouds to this settings.
+public func SetVisualRainStrength(int to)
+{
+	// Called to proplist: change all clouds.
+	if (this == Cloud)
+	{
+		for (var cloud in FindObjects(Find_ID(Cloud)))
+			cloud->SetVisualRainStrength(to);
+	}
+	else
+	{
+		rain_visual_strength = to;
+	}
+}
+
 
 // Changes the color of this cloud.
 // Also an id call: Changes all clouds to this settings.
@@ -180,6 +198,19 @@ protected func FxProcessCloudTimer()
 		// Change mode, reset timer.
 		mode = (mode + 1) % 3;
 		mode_time = 480 + RandomX(-90, 90);
+
+		// Start or stop the rain sound.
+		// TODO: Sound should play where the rain hits the ground, not where the cloud is.
+		if (mode == CLOUD_ModeRaining)
+		{
+			var mat = RainMat();
+			if (mat == "Water" || mat == "Acid")
+				Sound("Liquids::StereoRain", false, 80, nil, +1, 1000);
+		}
+		else
+		{
+			Sound("Liquids::StereoRain",,,, -1);
+		}
 	}
 	// Process modes.
 	/*if (mode == CLOUD_ModeIdle)
@@ -249,26 +280,136 @@ private func Precipitation()
 	return;
 }
 
+// Check if liquid is maybe in frozen form.
+private func RainMat()
+{
+	if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
+		return rain_mat_frozen;
+	else
+		return rain_mat;
+}
+
+local last_raindrop_color = nil;
+local particle_cache;
+
 // Raindrop somewhere from the cloud.
 private func RainDrop()
 {
-	// Find Random Position.
 	var con = GetCon();
 	var wdt = GetDefWidth() * con / 500;
 	var hgt = GetDefHeight() * con / 700;
-	var x = RandomX(-wdt, wdt);
-	var y = RandomX(-hgt, hgt);
-	if (!GBackSky(x, y))
-		return false;
-	// Check if liquid is maybe in frozen form.
-	var mat;
-	if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
-		mat = rain_mat_frozen;
+
+	var mat = RainMat();
+	var particle_name = "Raindrop";
+	var color = GetMaterialColor(mat);
+	if (color != last_raindrop_color)
+	{
+		particle_cache = {};
+		last_raindrop_color = color;
+	}
+
+	if (mat == "Lava" || mat == "DuroLava")
+		particle_name = "RaindropLava";
+	if (mat == "Snow")
+		particle_cache.snow = particle_cache.snow ?? Particles_Snow(color);
 	else
-		mat = rain_mat;
-	// Create rain drop.	
-	CastPXS(mat, 1, 1, x, y);
+		particle_cache.rain = particle_cache.rain ?? Particles_Rain(color);
+
+	var count = Max(rain_visual_strength, 1);
+	for (var i = 0; i < count; i++)
+	{
+		var x = RandomX(-wdt, wdt);
+		var y = RandomX(-hgt, hgt);
+		var xdir = RandomX(GetWind(0,0,1)-5, GetWind(0,0,1)+5)/5;
+		var ydir = 30;
+		if (!GBackSky(x, y))
+			continue;
+
+		if(mat == "Ice")
+		{
+			// Ice (-> hail) falls faster.
+			xdir *= 4;
+			ydir *= 4;
+		}
+
+		// Snow is special.
+		if(mat == "Snow")
+		{
+			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), particle_cache.snow, 0);
+			if (!i)
+				CastPXS(mat, 1, 0, x, y);
+			continue;
+		}		
+
+		var particle = new particle_cache.rain {};
+		if(Random(2))
+			particle.Attach = ATTACH_Back;
+		CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
+
+		// Splash.
+		if (!i)
+		{
+			var hit = SimFlight(x, y, xdir, ydir, 25 /* Liquid */, nil, nil, 3);
+			var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
+			if (time_passed > 0)
+			{
+					ScheduleCall(this, "DropHit", time_passed, 0, mat, color, x_final, y_final);
+			}
+		}
+	}
 	return true;
+}
+
+// Checks whether the given material might smoke when in contact with water.
+private func SmokeyMaterial(string material_name)
+{
+	var mat = Material(material_name);
+	return GetMaterialVal("Corrosive", "Material", mat) || GetMaterialVal("Incendiary", "Material", mat);
+}
+
+private func DropHit(string material_name, int color, int x_orig, int y_orig)
+{
+	// Adjust position so that it's in the air.
+	var x = AbsX(x_orig), y = AbsY(y_orig);
+	while (GBackSemiSolid(x, y - 1)) y--;
+
+	InsertMaterial(Material(material_name), x, y);
+
+	// Some materials cast smoke when hitting water.
+	if (GetMaterial(x,y) == Material("Water") && SmokeyMaterial(material_name))
+	{
+		Smoke(x, y, 3, RGB(150,160,150));
+	}
+	// Liquid? liquid splash!
+	else if(GBackLiquid(x,y))
+	{
+		particle_cache.splash_water = particle_cache.splash_water ?? Particles_SplashWater(color);
+		CreateParticle("RaindropSplashLiquid", x, y - 3, 0, 0, 20, particle_cache.splash_water);
+	}
+	// Solid? normal splash!
+	else
+	{
+		if( (material_name == "Acid" && GetMaterial(x,y) == Material("Earth")) || material_name == "Lava" || material_name == "DuroLava")
+			Smoke(x, y, 3, RGB(150,160,150));
+		CreateParticle("RaindropSplash", x, y-1, 0, 0, 5, Particles_Splash(color), 0);
+		if(material_name == "Ice")
+		{
+			particle_cache.hail = particle_cache.hail ?? Particles_Hail(color);
+			CreateParticle("Hail", x, y, RandomX(-2,2), -Random(10), PV_Random(300, 300), particle_cache.hail, 0);
+		}
+		else
+		{
+			particle_cache.small_rain = particle_cache.small_rain ?? Particles_RainSmall(color);
+			CreateParticle("RaindropSmall", x, y, RandomX(-4, 4), -Random(10), PV_Random(300, 300), particle_cache.small_rain, 0);
+		}
+	}
+}
+
+private func GetMaterialColor(string name)
+{
+	// A Material's color is actually defined by its texture.
+	var texture = GetMaterialVal("TextureOverlay", "Material", Material(name));
+	return GetAverageTextureColor(texture);
 }
 
 // Launches possibly one thunder strike from the cloud.
