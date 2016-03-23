@@ -373,7 +373,7 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 	var x = AbsX(x_orig), y = AbsY(y_orig);
 	while (GBackSemiSolid(x, y - 1)) y--;
 
-	InsertMaterial(Material(material_name), x, y);
+	InsertMaterial(Material(material_name), x, y - 1);
 
 	// Some materials cast smoke when hitting water.
 	if (GetMaterial(x,y) == Material("Water") && SmokeyMaterial(material_name))
