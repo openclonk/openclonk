@@ -353,7 +353,7 @@ private func RainDrop()
 			var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
 			if (time_passed > 0)
 			{
-					ScheduleCall(this, "DropHit", time_passed, 0, mat, color, AbsX(x_final), AbsY(y_final));
+					ScheduleCall(this, "DropHit", time_passed, 0, mat, color, x_final, y_final);
 			}
 		}
 	}
@@ -370,7 +370,7 @@ private func SmokeyMaterial(string material_name)
 private func DropHit(string material_name, int color, int x_orig, int y_orig)
 {
 	// Adjust position so that it's in the air.
-	var x = x_orig, y = y_orig;
+	var x = AbsX(x_orig), y = AbsY(y_orig);
 	while (GBackSemiSolid(x, y - 1)) y--;
 
 	InsertMaterial(Material(material_name), x, y);
@@ -383,9 +383,8 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 	// Liquid? liquid splash!
 	else if(GBackLiquid(x,y))
 	{
-		if(!GBackLiquid(x-1,y) || !GBackLiquid(x+1,y)) y += 1;
 		particle_cache.splash_water = particle_cache.splash_water ?? Particles_SplashWater(color);
-		CreateParticle("RaindropSplashLiquid", x, y, 0, 0, 50, particle_cache.splash_water, 0);
+		CreateParticle("RaindropSplashLiquid", x, y - 3, 0, 0, 20, particle_cache.splash_water);
 	}
 	// Solid? normal splash!
 	else
