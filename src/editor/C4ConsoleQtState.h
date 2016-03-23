@@ -27,12 +27,6 @@
 #include <C4ConsoleQt.h>
 #include <ui_C4ConsoleQtMainWindow.h>
 
-#ifdef USE_WIN32_WINDOWS
-#include <WinUser.h>
-#include <resource.h>
-#endif
-
-
 /* Forward string translation to GetResStr */
 
 class C4ConsoleQtTranslator : public QTranslator

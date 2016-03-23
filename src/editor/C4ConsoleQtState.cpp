@@ -30,6 +30,10 @@
 #include <C4Object.h>
 #include <C4Viewport.h>
 
+#ifdef USE_WIN32_WINDOWS
+#include <resource.h> // for setting the icon
+#endif
+
 /* String translation */
 
 QString C4ConsoleQtTranslator::translate(const char * context, const char * sourceText, const char * disambiguation, int n) const
