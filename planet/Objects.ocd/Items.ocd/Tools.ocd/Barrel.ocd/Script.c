@@ -94,7 +94,8 @@ private func FillWithLiquid()
 {
 	var intake = this.BarrelIntakeY;
 	if (!GBackLiquid(0, intake)) return;
-
+	if (GetLiquidAmount() >= GetLiquidContainerMaxFillLevel()) return;
+	
 	var mat = GetMaterial(0, intake);
 	var mat_name = MaterialName(mat);
 	if (!IsLiquidContainerForMaterial(mat_name)) return;
@@ -107,7 +108,8 @@ private func FillWithLiquid()
 		ExtractLiquid(0, intake);
 	}
 	
-	var inserted = PutLiquid(mat_name, extracted);
+	var inserted = 0;
+	if (extracted > 0) inserted = PutLiquid(mat_name, extracted);
 
 	if (inserted < extracted)
 	{
@@ -131,6 +133,8 @@ private func EmptyBarrel(int angle, int strength, object clonk)
 		spray.Angle = angle;
 		spray.Clonk = clonk;
 		AddEffect("ExtinguishingSpray", clonk, 100, 1, this, nil, spray);
+
+		UpdateLiquidContainer();
 	}
 }
 
@@ -246,7 +250,7 @@ func GetNameForBarrel()
 {
 	if (Contents())
 	{
-		var name = Format("%s $NameWith$ %s", this.Prototype.Name, Contents()->GetName());
+		var name = Format("%s $NameWith$ %s", this.Prototype.Name, Contents().Prototype.Name);
 		return name;
 	}
 	else
