@@ -854,26 +854,6 @@ public func IsCollectionAllowed(object item)
 			}
 		}
 	}
-	// Liquid containers may not be collected, but we take their contents if a product needs them.
-	if (item->~IsLiquidContainer())
-	{
-		for (var product in products)
-		{
-			var i = 0, component_id;
-			while (component_id = GetComponent(nil, i, nil, product))
-			{
-				for (var liquid in FindObjects(Find_Container(item)))
-				{
-					if (liquid->~GetLiquidType() == component_id->~GetLiquidType())
-					{
-						liquid->Enter(this);
-					}
-				}
-				i++;
-			}
-		}
-		return false;
-	}
 	return false;
 }
 
@@ -881,7 +861,7 @@ public func IsCollectionAllowed(object item)
 public func RejectCollect(id item_id, object item)
 {
 	// Is the object a container? If so, try to empty it.
-	if (item->~IsContainer())
+	if (item->~IsContainer() || item->~IsLiquidContainer())
 	{
 		var count = item->ContentsCount(), contents;
 		while (--count >= 0)
