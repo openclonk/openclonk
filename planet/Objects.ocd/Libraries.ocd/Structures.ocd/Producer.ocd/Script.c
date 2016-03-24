@@ -807,6 +807,7 @@ public func IsCollectionAllowed(object item)
 		{
 			if (component_id == item_id)
 				return true;
+
 			i++;
 		}
 	}
@@ -816,20 +817,6 @@ public func IsCollectionAllowed(object item)
 		for (var product in products)
 			if (FuelNeed(product) > 0)
 				return true;
-	}
-	// Liquid objects may be collected if a product needs them.
-	if (item->~GetLiquidType())
-	{
-		for (var product in products)
-		{
-			var i = 0, component_id;
-			while (component_id = GetComponent(nil, i, nil, product))
-			{
-				if (component_id->~GetLiquidType() == item->~GetLiquidType())
-					return true;
-				i++;
-			}
-		}
 	}
 	// Convertable liquid objects (ice is the only one so far) may be collected if a product needs them.
 	// This uses the queue instead of the product list, because other items may need the original object.
