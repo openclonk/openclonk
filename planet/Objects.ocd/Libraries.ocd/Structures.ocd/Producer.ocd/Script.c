@@ -44,6 +44,7 @@ public func IsContainer() { return true; }
 // Provides an own interaction menu, even if it wouldn't be a container.
 public func HasInteractionMenu() { return true; }
 
+
 public func GetProductionMenuEntries(object clonk)
 {
 	var products = GetProducts(clonk);
@@ -157,6 +158,7 @@ public func GetInteractionMenus(object clonk)
 	return menus;
 }
 
+
 public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 {
 	if (symbol == nil) return;
@@ -184,12 +186,14 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 	GuiUpdate(new_box, menu_id, 1, desc_menu_target);
 }
 
+
 private func GetCostString(int amount, bool available)
 {
 	// Format amount to colored string; make it red if it's not available
 	if (available) return Format("%dx", amount);
 	return Format("<c ff0000>%dx</c>", amount);
 }
+
 
 public func FxIntUpgradeProductProgressBarOnMenuOpened(object target, effect fx, int main_ID, int entry_ID, proplist menu_target)
 {
@@ -200,6 +204,7 @@ public func FxIntUpgradeProductProgressBarOnMenuOpened(object target, effect fx,
 	fx.is_showing = true;
 	EffectCall(target, fx, "Timer");
 }
+
 
 public func FxIntUpgradeProductProgressBarTimer(object target, effect fx, int time)
 {
@@ -228,11 +233,13 @@ public func FxIntUpgradeProductProgressBarTimer(object target, effect fx, int ti
 	return FX_OK;
 }
 
+
 /*-- Production  properties --*/
 
 // This function may be overloaded by the actual producer.
 // If set to true, the producer will show every product which is assigned to it instead of checking the knowledge base of its owner.
 private func IgnoreKnowledge() { return false; }
+
 
 /** Determines whether the product specified can be produced. Should be overloaded by the producer.
 	@param product_id item's id of which to determine if it is producible.
@@ -242,6 +249,7 @@ private func IsProduct(id product_id)
 {
 	return false;
 }
+
 
 /** Returns an array with the ids of products which can be produced at this producer.
 	@return array with products.
@@ -282,6 +290,7 @@ public func GetProducts(object for_clonk)
 	return products;
 }
 
+
 /**
 	Determines the production costs for an item.
 	@param item_id id of the item under consideration.
@@ -301,7 +310,9 @@ public func ProductionCosts(id item_id)
 	return comp_list;
 }
 
+
 /*-- Production queue --*/
+
 
 /** Returns the queue index corresponding to a product id or nil.
 */
@@ -314,6 +325,7 @@ public func GetQueueIndex(id product_id)
 	}
 	return nil;
 }
+
 
 /** Modifies an item in the queue. The index can be retrieved via GetQueueIndex.
 	@param position index in the queue
@@ -345,6 +357,8 @@ public func ModifyQueueIndex(int position, int amount, bool infinite_production)
 	}
 	return true;
 }
+
+
 /** Adds an item to the production queue.
 	@param product_id id of the item.
 	@param amount the amount of items of \c item_id which should be produced. Amount must not be negative.
@@ -388,6 +402,7 @@ public func CycleQueue()
 	queue[-1] = first;
 }
 
+
 /** Clears the complete production queue.
 */
 public func ClearQueue(bool abort) // TODO: parameter is never used
@@ -396,6 +411,7 @@ public func ClearQueue(bool abort) // TODO: parameter is never used
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	return;
 }
+
 
 /** Modifies a certain production item arbitrarily. This is only used by the interaction menu.
 	This also creates a new production order if none exists yet.
@@ -433,6 +449,7 @@ private func ModifyProduction(proplist info, int player)
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
 
+
 /** Returns the current queue.
 	@return an array containing the queue elements (.Product for id, .Amount for amount).
 */
@@ -440,6 +457,7 @@ public func GetQueue()
 {
 	return queue;
 }
+
 
 private func ProcessQueue()
 {
@@ -474,6 +492,7 @@ private func ProcessQueue()
 	return FX_OK;
 }
 
+
 /*-- Production --*/
 
 // These functions may be overloaded by the actual producer.
@@ -483,6 +502,7 @@ private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 public func PowerNeed() { return 80; }
 
 public func GetConsumerPriority() { return 50; }
+
 
 private func Produce(id product)
 {
@@ -512,6 +532,7 @@ private func Produce(id product)
 	return true;
 }
 
+
 private func CheckComponents(id product, bool remove)
 {
 	for (var item in ProductionCosts(product))
@@ -540,6 +561,7 @@ private func CheckComponents(id product, bool remove)
 	return true;
 }
 
+
 public func GetAvailableComponentAmount(id material)
 {
 	// Normal object?
@@ -555,6 +577,7 @@ public func GetAvailableComponentAmount(id material)
 	}
 	return real_amount;
 }
+
 
 public func CheckComponent(id component, int amount)
 {
@@ -604,12 +627,14 @@ private func CheckForPower()
 	return true; // always assume that power is available
 }
 
+
 private func IsProducing()
 {
 	if (GetEffect("ProcessProduction", this))
 		return true;
 	return false;
 }
+
 
 protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product)
 {
@@ -640,6 +665,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	return FX_OK;
 }
 
+
 public func OnNotEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
@@ -653,6 +679,7 @@ public func OnNotEnoughPower()
 	return _inherited(...);
 }
 
+
 public func OnEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
@@ -665,6 +692,7 @@ public func OnEnoughPower()
 		FatalError("Producer effect removed when power still active!");
 	return _inherited(...);
 }
+
 
 protected func FxProcessProductionTimer(object target, proplist effect, int time)
 {
@@ -680,6 +708,7 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	
 	return FX_OK;
 }
+
 
 protected func FxProcessProductionStop(object target, proplist effect, int reason, bool temp)
 {
@@ -702,6 +731,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	OnProductEjection(product);
 	return FX_OK;
 }
+
 
 // Standard behaviour for product ejection.
 public func OnProductEjection(object product)
@@ -727,7 +757,9 @@ public func OnProductEjection(object product)
 	return;
 }
 
+
 /*-- --*/
+
 
 /**
 	Requests the necessary material from the cable network if available.
@@ -745,12 +777,14 @@ private func RequestAllMissingComponents(id item_id)
 	return true;
 }
 
+
 // Must exist if Library_CableStation is not included by either this
 // library or the structure including this library.
 public func RequestObject(id obj_id, int amount)
 {
 	return _inherited(obj_id, amount, ...);
 }
+
 
 /*-- Storage --*/
 
@@ -842,6 +876,7 @@ public func IsCollectionAllowed(object obj)
 	}
 	return false;
 }
+
 
 public func RejectCollect(id obj_id, object obj)
 {
