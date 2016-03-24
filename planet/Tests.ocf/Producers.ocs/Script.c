@@ -219,12 +219,86 @@ global func Test1_OnStart(int plr)
 global func Test1_Completed(){	return true; }
 global func Test1_OnFinished(){	return; }
 
-// CycleQueue
-// GetQueueIndex
-// ModifyQueueIndex
+
 global func Test2_OnStart(int plr)
 {
 	var passed = true;
+	var producer = CreateObject(Foundry);
+
+	var amount_gold = 123, amount_loam = 456, amount_metal = 789;
+
+	producer->AddToQueue(GoldBar, amount_gold);
+	producer->AddToQueue(Loam, amount_loam);
+	producer->AddToQueue(Metal, amount_metal);
+	
+	Log("Testing the behaviour of CycleQueue(), GetQueueIndex(), ModifyQueueIndex()");
+	
+	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, amount_gold, false);
+	passed &= doTestQueueEntry(producer->GetQueue()[1], Loam, amount_loam, false);
+	passed &= doTestQueueEntry(producer->GetQueue()[2], Metal, amount_metal, false);
+	
+	Log("****** GetQueueIndex()");
+	
+	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 0);
+	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 1);
+	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 2);
+	passed &= doTest("The product 'Barrel' is not in the queue. Got %d, expected %d.", producer->GetQueueIndex(Barrel), nil);
+
+	Log("****** CycleQueue(), should move the first item to the end");
+	
+	producer->CycleQueue();
+	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 2);
+	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 0);
+	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 1);
+
+	Log("****** CycleQueue()");
+	
+	producer->CycleQueue();
+	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 1);
+	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 2);
+	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 0);
+
+	Log("****** CycleQueue(), queue should be in the original order again");
+	
+	producer->CycleQueue();
+	passed &= doTest("The product 'GoldBar' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(GoldBar), 0);
+	passed &= doTest("The product 'Loam' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Loam), 1);
+	passed &= doTest("The product 'Metal' has the correct index. Got %d, expected %d.", producer->GetQueueIndex(Metal), 2);
+
+	Log("Testing ModifyQueueIndex()");
+	
+	Log("****** Modify amount +1");
+	
+	producer->ModifyQueueIndex(0, +1, nil);
+	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, amount_gold + 1, false);
+
+	Log("****** Modify amount -2");
+
+	producer->ModifyQueueIndex(0, -2, nil);
+	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, amount_gold - 1, false);
+
+	Log("****** Set infinity to true");
+
+	producer->ModifyQueueIndex(0, nil, true);
+	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, amount_gold - 1, true);
+
+	Log("****** Modify amount so that it is -1, while infinite");
+
+	producer->ModifyQueueIndex(0, -amount_gold, nil);
+	passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, -1, true);
+
+	Log("****** Modify infinity to false, product should be removed from the queue");
+
+	producer->ModifyQueueIndex(0, nil, false);
+	passed &= doTestQueueEntry(producer->GetQueue()[0], Loam, amount_loam, false);
+	passed &= doTestQueueEntry(producer->GetQueue()[1], Metal, amount_metal, false);
+
+	Log("****** Modify amount of item so that it is 0, while finite");
+
+	producer->ModifyQueueIndex(0, - amount_loam, nil);
+	passed &= doTestQueueEntry(producer->GetQueue()[0], Metal, amount_metal, false);
+
+	producer->RemoveObject();
 	return passed;
 }
 global func Test2_Completed(){	return true; }
