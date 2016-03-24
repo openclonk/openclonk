@@ -304,11 +304,49 @@ global func Test2_OnStart(int plr)
 global func Test2_Completed(){	return true; }
 global func Test2_OnFinished(){	return; }
 
-// CheckComponent
-// GetAvailableComponentAmount
+
 global func Test3_OnStart(int plr)
 {
 	var passed = true;
+	
+	var producer = CreateObject(Foundry);
+	
+	Log("Testing the behaviour of CheckComponent() and GetAvailableComponentAmount()");
+	
+	Log("****** Asking amount of material that is not contained.");
+	
+	passed &= doTest("Got %d, expected %d.", producer->GetAvailableComponentAmount(Metal), 0);
+	
+	Log("****** Asking amount of ordinary material.");
+	
+	producer->CreateContents(Ore, 3);
+	passed &= doTest("Got %d ore, expected %d.", producer->GetAvailableComponentAmount(Ore), 3);
+
+	producer->CreateContents(Cloth, 5);
+	passed &= doTest("Got %d cloth, expected %d.", producer->GetAvailableComponentAmount(Ore), 3);
+
+	Log("****** Asking amount of stackable material.");
+
+	producer->CreateContents(Arrow);
+	passed &= doTest("Got %d arrows, expected %d.", producer->GetAvailableComponentAmount(Arrow), 15);
+
+	Log("****** Checking components");
+
+	passed &= doTest("Checking non-available component with amount -1. Got %v, expected %v.", producer->CheckComponent(Metal, -1), true);
+	passed &= doTest("Checking non-available component with amount 0. Got %v, expected %v.", producer->CheckComponent(Metal, 0), true);
+	passed &= doTest("Checking non-available component with amount 1. Got %v, expected %v.", producer->CheckComponent(Metal, 1), false);
+
+	passed &= doTest("Checking available component with amount -1. Got %v, expected %v.", producer->CheckComponent(Cloth, -1), true);
+	passed &= doTest("Checking available component with amount 0. Got %v, expected %v.", producer->CheckComponent(Cloth, 0), true);
+	passed &= doTest("Checking available component with actual amount. Got %v, expected %v.", producer->CheckComponent(Cloth, 5), true);
+	passed &= doTest("Checking available component with actual amount +1. Got %v, expected %v.", producer->CheckComponent(Cloth, 6), false);
+
+	passed &= doTest("Checking stackable component with amount -1. Got %v, expected %v.", producer->CheckComponent(Arrow, -1), true);
+	passed &= doTest("Checking stackable component with amount 0. Got %v, expected %v.", producer->CheckComponent(Arrow, 0), true);
+	passed &= doTest("Checking stackable component with actual amount. Got %v, expected %v.", producer->CheckComponent(Arrow, 15), true);
+	passed &= doTest("Checking stackable component with actual amount +1. Got %v, expected %v.", producer->CheckComponent(Arrow, 16), false);
+
+	producer->RemoveObject();
 	return passed;
 }
 global func Test3_Completed(){	return true; }
