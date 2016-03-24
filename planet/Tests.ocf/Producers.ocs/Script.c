@@ -353,10 +353,66 @@ global func Test3_Completed(){	return true; }
 global func Test3_OnFinished(){	return; }
 
 
-// CheckFuel
 global func Test4_OnStart(int plr)
 {
 	var passed = true;
+	
+	Log("Testing the behaviour of CheckFuel()");
+	
+	var producer = CreateObject(Foundry);
+	
+	Log("****** Without fuel");
+	
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), false);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
+	
+	Log("****** With single object fuel");
+	
+	producer->CreateContents(Wood);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
+
+	producer->CreateContents(Wood);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), true);
+
+	Log("****** Removing the fuel");
+
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, true), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, true), false);
+	passed &= doTest("Only the necessary fuel was removed. Got %d, expected %d.", producer->ContentsCount(Wood), 1);
+
+	producer->FindContents(Wood)->RemoveObject();
+
+	Log("****** With stackable object fuel");
+	
+	producer->CreateContents(Liquid_Oil);
+	producer->FindContents(Liquid_Oil)->SetStackCount(49);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), false);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
+
+	producer->FindContents(Liquid_Oil)->SetStackCount(50);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
+
+	producer->FindContents(Liquid_Oil)->SetStackCount(99);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
+
+	producer->FindContents(Liquid_Oil)->SetStackCount(100);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), true);
+
+	Log("****** Removing the fuel");
+
+	producer->FindContents(Liquid_Oil)->SetStackCount(149);
+	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, true), true);
+	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, true), false);
+	passed &= doTest("Only the necessary fuel was removed. Got %d, expected %d.", producer->FindContents(Liquid_Oil)->GetLiquidAmount(), 99);
+
+	producer->FindContents(Liquid_Oil)->RemoveObject();
+
+	producer->RemoveObject();
 	return passed;
 }
 global func Test4_Completed(){	return true; }
