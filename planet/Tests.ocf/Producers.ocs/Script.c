@@ -13,6 +13,7 @@
 	@author Maikel (unit test logic), Marky (tests)
 */
 
+static const EXPECTED_TESTS = 14;
 
 protected func Initialize()
 {
@@ -115,7 +116,11 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		{
 			Log("Test %d not available, the previous test was the last test.", effect.testnr);
 			Log("=====================================");
-			Log("All tests have been successfully completed!");
+			effect.testnr--;
+			if (effect.testnr == EXPECTED_TESTS)
+				Log("All tests have been successfully completed!");
+			else
+				Log("Executed %d of %d tests.", effect.testnr, EXPECTED_TESTS);
 			return -1;
 		}
 		effect.launched = true;
@@ -137,8 +142,135 @@ global func FxIntTestControlTimer(object target, proplist effect)
 
 /*-- Producer Tests --*/
 
-// Producer with liquid need and pseudo liquid object.
 global func Test1_OnStart(int plr)
+{
+	var passed = true;
+	var producer = CreateObject(Foundry);
+	
+	Log("Test behaviour of AddToQueue(), ClearQueue() and GetQueue()");
+	
+	passed &= doTest("The queue should be empty on initialization. Got %v, expected %v.", GetLength(producer->GetQueue()), 0);
+
+	Log("****** Adding items to the queue");
+
+	producer->AddToQueue(GoldBar, 2);
+	passed &= doTest("The queue gets filled when adding things to the queue. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
+	if (GetLength(producer->GetQueue()) > 0)
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 2, false);
+	
+	Log("****** Queueing the same product again increases the existing queue");
+	
+	producer->AddToQueue(GoldBar, 2);
+	passed &= doTest("Entries stay the same. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
+	if (GetLength(producer->GetQueue()) > 0)
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 4, false);
+	
+	Log("****** Queueing the same product again with an infinite count increases the existing queue.");
+	
+	producer->AddToQueue(GoldBar, 2, true);
+	passed &= doTest("Entries stay the same. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
+	if (GetLength(producer->GetQueue()) > 0)
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 6, true);
+
+	Log("****** Queueing the same product without onto an existing infinite product in the queue");
+
+	producer->AddToQueue(GoldBar, 2, false);
+	passed &= doTest("Entries stay the same. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
+	if (GetLength(producer->GetQueue()) > 0)
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 8, false);
+	
+	Log("****** Adding more items to the queue, next item should be added to the end.");
+
+	producer->AddToQueue(Loam, 4, false);
+	passed &= doTest("Entries increase. Got %d, expected %d.", GetLength(producer->GetQueue()), 2);
+	if (GetLength(producer->GetQueue()) > 1)
+	{
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 8, false);
+		passed &= doTestQueueEntry(producer->GetQueue()[1], Loam, 4, false);
+	}
+	
+	Log("****** Adding more infinite items to the queue, next item should be added to the end.");
+
+	producer->AddToQueue(Metal, 0, true);
+	passed &= doTest("Entries increase. Got %d, expected %d.", GetLength(producer->GetQueue()), 3);
+	if (GetLength(producer->GetQueue()) > 2)
+	{
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 8, false);
+		passed &= doTestQueueEntry(producer->GetQueue()[1], Loam, 4, false);
+		passed &= doTestQueueEntry(producer->GetQueue()[2], Metal, 0, true);
+	}
+	
+	Log("****** Clearing the queue");
+	
+	producer->ClearQueue();
+	passed &= doTest("Queue is empty. Got %d entries, expected %d.", GetLength(producer->GetQueue()), 0);
+
+	Log("****** Adding a product with amount 0 to the queue");
+
+	producer->AddToQueue(GoldBar, 0);
+	passed &= doTest("The queue gets filled. Got %d, expected %d.", GetLength(producer->GetQueue()), 1);
+	if (GetLength(producer->GetQueue()) > 0)
+		passed &= doTestQueueEntry(producer->GetQueue()[0], GoldBar, 0, false);
+
+	producer->RemoveObject();
+
+	return passed;
+}
+global func Test1_Completed(){	return true; }
+global func Test1_OnFinished(){	return; }
+
+// CycleQueue
+// GetQueueIndex
+// ModifyQueueIndex
+global func Test2_OnStart(int plr)
+{
+	var passed = true;
+	return passed;
+}
+global func Test2_Completed(){	return true; }
+global func Test2_OnFinished(){	return; }
+
+// CheckComponent
+// GetAvailableComponentAmount
+global func Test3_OnStart(int plr)
+{
+	var passed = true;
+	return passed;
+}
+global func Test3_Completed(){	return true; }
+global func Test3_OnFinished(){	return; }
+
+
+// CheckFuel
+global func Test4_OnStart(int plr)
+{
+	var passed = true;
+	return passed;
+}
+global func Test4_Completed(){	return true; }
+global func Test4_OnFinished(){	return; }
+
+// ProductionCosts
+global func Test5_OnStart(int plr)
+{
+	var passed = true;
+	return passed;
+}
+global func Test5_Completed(){	return true; }
+global func Test5_OnFinished(){	return; }
+
+// IsCollectionAllowed
+global func Test6_OnStart(int plr)
+{
+	var passed = true;
+	return passed;
+}
+global func Test6_Completed(){	return true; }
+global func Test6_OnFinished(){	return; }
+
+
+// Producer with liquid need and pseudo liquid object.
+global func Test7_OnStart(int plr)
 {
 	// Producer: Foundry
 	var passed = true;
@@ -176,7 +308,7 @@ global func Test1_OnStart(int plr)
 	return passed;
 }
 
-global func Test1_Completed()
+global func Test7_Completed()
 {
 	SetTemperature(-10);
 	if (ObjectCount(Find_ID(Loam)) >= 5 // the loam was created
@@ -186,7 +318,7 @@ global func Test1_Completed()
 	return false;
 }
 
-global func Test1_OnFinished()
+global func Test7_OnFinished()
 {
 	// Remove the created objects
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam)));
@@ -194,7 +326,7 @@ global func Test1_OnFinished()
 }
 
 // Producer with liquid need and liquid container.
-global func Test2_OnStart(int plr)
+global func Test8_OnStart(int plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -209,7 +341,7 @@ global func Test2_OnStart(int plr)
 	return true;
 }
 
-global func Test2_Completed()
+global func Test8_Completed()
 {
     // The barrel must not be removed.
 	if (ObjectCount(Find_ID(Loam)) >= 5 && ObjectCount(Find_ID(Barrel)) >= 1)
@@ -217,7 +349,7 @@ global func Test2_Completed()
 	return false;
 }
 
-global func Test2_OnFinished()
+global func Test8_OnFinished()
 {
 	// Remove wind generator, compensator and workshop.
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Barrel)));
@@ -226,7 +358,7 @@ global func Test2_OnFinished()
 
 
 // Producer with liquid need and liquid object.
-global func Test3_OnStart(int plr)
+global func Test9_OnStart(int plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -241,7 +373,7 @@ global func Test3_OnStart(int plr)
 	return true;
 }
 
-global func Test3_Completed()
+global func Test9_Completed()
 {
     // The liquid must not be removed.
 	if (ObjectCount(Find_ID(Loam)) >= 5 && ObjectCount(Find_ID(Liquid_Water)) >= 1)
@@ -249,7 +381,7 @@ global func Test3_Completed()
 	return false;
 }
 
-global func Test3_OnFinished()
+global func Test9_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Liquid_Water)));
 	return;
@@ -257,7 +389,7 @@ global func Test3_OnFinished()
 
 
 // Producer with fuel need, fuel object
-global func Test4_OnStart(int plr)
+global func Test10_OnStart(int plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -270,14 +402,14 @@ global func Test4_OnStart(int plr)
 	return true;
 }
 
-global func Test4_Completed()
+global func Test10_Completed()
 {
 	if (ObjectCount(Find_ID(Metal)) >= 5 && ObjectCount(Find_ID(Wood)) <= 0)
 		return true;
 	return false;
 }
 
-global func Test4_OnFinished()
+global func Test10_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal)));
 	return;
@@ -285,7 +417,7 @@ global func Test4_OnFinished()
 
 
 // Producer with fuel need, liquid container
-global func Test5_OnStart(int plr)
+global func Test11_OnStart(int plr)
 {
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
@@ -305,7 +437,7 @@ global func Test5_OnStart(int plr)
 	return true;
 }
 
-global func Test5_Completed()
+global func Test11_Completed()
 {
 	if (ObjectCount(Find_ID(Metal)) >= 5 // metal is produced
 	 && ObjectCount(Find_ID(Barrel)) == 2 // barrels stay
@@ -315,7 +447,7 @@ global func Test5_Completed()
 	return false;
 }
 
-global func Test5_OnFinished()
+global func Test11_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal), Find_ID(Barrel), Find_ID(Liquid_Oil)));
 	return;
@@ -323,7 +455,7 @@ global func Test5_OnFinished()
 
 
 // Fuel functions behave correclty
-global func Test6_OnStart(int plr)
+global func Test12_OnStart(int plr)
 {
 	// Log what the test is about.
 	Log("Objects that are fuel should return a value > 0 if no parameter is passed to GetFuelAmount().");
@@ -348,19 +480,19 @@ global func Test6_OnStart(int plr)
 	return true;
 }
 
-global func Test6_Completed()
+global func Test12_Completed()
 {
 	return GetEffect("IntTestControl", nil).passed_test_6;
 }
 
-global func Test6_OnFinished()
+global func Test12_OnFinished()
 {
 	return;
 }
 
 
 // Producer stops production on insufficient material
-global func Test7_OnStart(int plr)
+global func Test13_OnStart(int plr)
 {
 	var producer = CreateObjectAbove(ToolsWorkshop, 75, 160, plr);
 	producer->CreateContents(Wood, 10);
@@ -374,7 +506,7 @@ global func Test7_OnStart(int plr)
 	return true;
 }
 
-global func Test7_Completed()
+global func Test13_Completed()
 {
 	var fx = GetEffect("IntTestControl", nil);
 	fx.timer++;
@@ -387,7 +519,7 @@ global func Test7_Completed()
 	return false;
 }
 
-global func Test7_OnFinished()
+global func Test13_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(ToolsWorkshop), Find_ID(Barrel)));
 	return;
@@ -396,7 +528,7 @@ global func Test7_OnFinished()
 
 
 // Producer stops production on insufficient material
-global func Test8_OnStart(int plr)
+global func Test14_OnStart(int plr)
 {
 	var producer = CreateObjectAbove(ToolsWorkshop, 75, 160, plr);
 	producer->CreateContents(Wood, 10);
@@ -410,7 +542,7 @@ global func Test8_OnStart(int plr)
 	return true;
 }
 
-global func Test8_Completed()
+global func Test14_Completed()
 {
 	if (ObjectCount(Find_ID(Barrel)) >= 5) return true;
 
@@ -426,15 +558,11 @@ global func Test8_Completed()
 	return false;
 }
 
-global func Test8_OnFinished()
+global func Test14_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(ToolsWorkshop), Find_ID(Barrel), Find_ID(Wood)));
 	return;
 }
-
-
-
-
 
 
 /*-- Helper Functions --*/
@@ -448,4 +576,13 @@ global func doTest(description, returned, expected)
 	
 	Log(Format("%s %s", predicate, description), returned, expected);
 	return test;
+}
+
+global func doTestQueueEntry(proplist entry, id product, int amount, bool infinite)
+{
+	var passed = true;
+	passed &= doTest("The queued product is as expected. Got %i, expected %i.", entry.Product, product);
+	passed &= doTest("The queued amount is as expected. Got %d, expected %d.", entry.Amount, amount);
+	passed &= doTest("The queued infinity setting is as expected. Got %v, expected %v.", entry.Infinite ?? false, infinite);
+	return passed;
 }

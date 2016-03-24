@@ -390,7 +390,7 @@ public func CycleQueue()
 
 /** Clears the complete production queue.
 */
-public func ClearQueue(bool abort)
+public func ClearQueue(bool abort) // TODO: parameter is never used
 {
 	queue = [];
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
