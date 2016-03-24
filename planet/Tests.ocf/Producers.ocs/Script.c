@@ -422,15 +422,25 @@ global func Test4_OnFinished(){	return; }
 global func Test5_OnStart(int plr)
 {
 	var passed = true;
+	
+	var producer = CreateObject(Foundry);
+	
+	Log("Testing the behaviour of ProductionCosts()");
+	
+	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1]]);
+	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Wood, 1], [Metal, 1]]);
+	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1], [Liquid_Water, 50]]);
+	
+	producer->RemoveObject();
 	return passed;
 }
 global func Test5_Completed(){	return true; }
 global func Test5_OnFinished(){	return; }
 
-// IsCollectionAllowed
 global func Test6_OnStart(int plr)
 {
 	var passed = true;
+	Log("Skipping this test because it is tested in the use cases anyway.");
 	return passed;
 }
 global func Test6_Completed(){	return true; }
@@ -737,6 +747,18 @@ global func Test14_OnFinished()
 
 global func doTest(description, returned, expected)
 {
+	if (GetType(returned) == C4V_Array
+	 || GetType(expected) == C4V_Array)
+	{
+		var passed = doTest(Format("Array length should be equal. %s", description), GetLength(returned), GetLength(expected));
+		
+		for (var i = 0; i < GetLength(expected); ++i)
+		{
+			passed &= doTest(Format("*%s", description), returned[i], expected[i]);
+		}		
+		return passed;
+	}
+
 	var test = (returned == expected);
 	
 	var predicate = "[Fail]";
