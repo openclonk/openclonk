@@ -440,7 +440,66 @@ global func Test5_OnFinished(){	return; }
 global func Test6_OnStart(int plr)
 {
 	var passed = true;
-	Log("Skipping this test because it is tested in the use cases anyway.");
+	Log("Testing the behavior of collection");	
+	var producer = CreateObject(Foundry);
+	
+	Log("****** Collect an object that is not a component for one of the products");
+	
+	// Loam: Earth, Liquid_Water; Metal: Ore; GoldBar: Nugget
+	var item = CreateObject(Seeds);
+	producer->Collect(item, true);
+	passed &= doTest("Item can not be collected. Container is %v, expected %v.", item->Contained(), nil);
+	if (item) item->RemoveObject();
+
+	Log("****** Collect raw items for the products");
+	
+	for (var product in producer->GetProducts())
+	{
+		var i = 0, component;
+		while (component = GetComponent(nil, i, nil, product))
+		{
+			item = CreateObject(component);
+			producer->Collect(item, true);
+			passed &= doTest("Item can be collected. Container is %v, expected %v.", item->Contained(), producer);
+			if (item) item->RemoveObject();
+			i++;
+		}
+	}
+	
+	Log("****** Collect items from a bucket");
+
+	var container = CreateObject(Bucket);
+	item = container->CreateContents(Earth);
+	producer->Collect(item, true);
+	passed &= doTest("Container can not be collected. Container is %v, expected %v.", container->Contained(), nil);
+	passed &= doTest("Item can be collected. Container is %v, expected %v.", item->Contained(), producer);
+	if (item) item->RemoveObject();
+	if (container) container->RemoveObject();
+	
+	Log("****** Collect items from a barrel");
+
+	container = CreateObject(Barrel);
+	item = container->CreateContents(Liquid_Water);
+	producer->Collect(item, true);
+	passed &= doTest("Container can not be collected. Container is %v, expected %v.", container->Contained(), nil);
+	passed &= doTest("Item can be collected. Container is %v, expected %v.", item->Contained(), producer);
+	if (item) item->RemoveObject();
+	if (container) container->RemoveObject();
+
+	Log("****** Collect items from a container with mixed items. The container contains items that are not used as components for the product.");
+
+	container = CreateObject(Crate);
+	item = container->CreateContents(Ore);
+	var not_allowed = container->CreateContents(Cloth);
+	producer->Collect(item, true);
+	passed &= doTest("Container can not be collected. Container is %v, expected %v.", container->Contained(), nil);
+	passed &= doTest("Other contents can not be collected. Container is %v, expected %v.", not_allowed->Contained(), container);
+	passed &= doTest("Item can be collected. Container is %v, expected %v.", item->Contained(), producer);
+	if (item) item->RemoveObject();
+	if (not_allowed) not_allowed->RemoveObject();
+	if (container) container->RemoveObject();
+
+	producer->RemoveObject();
 	return passed;
 }
 global func Test6_Completed(){	return true; }
