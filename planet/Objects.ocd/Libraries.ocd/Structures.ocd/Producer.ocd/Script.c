@@ -300,11 +300,11 @@ public func ProductionCosts(id item_id)
 {
 	/* NOTE: This may be overloaded by the producer */
 	var comp_list = [];
-	var comp_id, index = 0;
-	while (comp_id = GetComponent(nil, index, nil, item_id))
+	var component_id, index = 0;
+	while (component_id = GetComponent(nil, index, nil, item_id))
 	{
-		var amount = GetComponent(comp_id, index, nil, item_id);
-		comp_list[index] = [comp_id, amount];
+		var amount = GetComponent(component_id, index, nil, item_id);
+		comp_list[index] = [component_id, amount];
 		index++;		
 	}
 	return comp_list;
@@ -780,9 +780,9 @@ private func RequestAllMissingComponents(id item_id)
 
 // Must exist if Library_CableStation is not included by either this
 // library or the structure including this library.
-public func RequestObject(id obj_id, int amount)
+public func RequestObject(id item_id, int amount)
 {
-	return _inherited(obj_id, amount, ...);
+	return _inherited(item_id, amount, ...);
 }
 
 
@@ -790,42 +790,42 @@ public func RequestObject(id obj_id, int amount)
 
 
 // Whether an object could enter this storage.
-public func IsCollectionAllowed(object obj)
+public func IsCollectionAllowed(object item)
 {
 	// Some objects might just bypass this check
-	if (obj->~ForceEntry(this))
+	if (item->~ForceEntry(this))
 		return false;
-	var obj_id = obj->GetID();
+	var item_id = item->GetID();
 	// Products itself may be collected.
-	if (IsProduct(obj_id)) return true;
+	if (IsProduct(item_id)) return true;
 	var products = GetProducts();
 	// Components of products may be collected.
 	for (var product in products)
 	{
-		var i = 0, comp_id;
-		while (comp_id = GetComponent(nil, i, nil, product))
+		var i = 0, component_id;
+		while (component_id = GetComponent(nil, i, nil, product))
 		{
-			if (comp_id == obj_id)
+			if (component_id == item_id)
 				return true;
 			i++;
 		}
 	}
 	// Fuel for products may be collected.
-	if (obj->~IsFuel())
+	if (item->~IsFuel())
 	{
 		for (var product in products)
 			if (FuelNeed(product) > 0)
 				return true;
 	}
 	// Liquid objects may be collected if a product needs them.
-	if (obj->~GetLiquidType())
+	if (item->~GetLiquidType())
 	{
 		for (var product in products)
 		{
-			var i = 0, comp_id;
-			while (comp_id = GetComponent(nil, i, nil, product))
+			var i = 0, component_id;
+			while (component_id = GetComponent(nil, i, nil, product))
 			{
-				if (comp_id->~GetLiquidType() == obj->~GetLiquidType())
+				if (component_id->~GetLiquidType() == item->~GetLiquidType())
 					return true;
 				i++;
 			}
@@ -836,18 +836,18 @@ public func IsCollectionAllowed(object obj)
 	// This extremely special case is used by the ice object only, and should be removed in my opinion,
 	// but it is included for compatibility reasons at the moment.
 	// TODO 
-	if (obj->~CanConvertToLiquidType())
+	if (item->~CanConvertToLiquidType())
 	{
 		for (var queued in queue)
 		{
 			var product = queued.Product;
 		
-			var i = 0, comp_id;
-			while (comp_id = GetComponent(nil, i, nil, product))
+			var i = 0, component_id;
+			while (component_id = GetComponent(nil, i, nil, product))
 			{
-				if (comp_id->~GetLiquidType() == obj->~CanConvertToLiquidType())
+				if (component_id->~GetLiquidType() == item->~CanConvertToLiquidType())
 				{
-					ConvertToLiquid(obj);
+					ConvertToLiquid(item);
 					return true;
 				}
 				i++;
@@ -855,16 +855,16 @@ public func IsCollectionAllowed(object obj)
 		}
 	}
 	// Liquid containers may not be collected, but we take their contents if a product needs them.
-	if (obj->~IsLiquidContainer())
+	if (item->~IsLiquidContainer())
 	{
 		for (var product in products)
 		{
-			var i = 0, comp_id;
-			while (comp_id = GetComponent(nil, i, nil, product))
+			var i = 0, component_id;
+			while (component_id = GetComponent(nil, i, nil, product))
 			{
-				for (var liquid in FindObjects(Find_Container(obj)))
+				for (var liquid in FindObjects(Find_Container(item)))
 				{
-					if (liquid->~GetLiquidType() == comp_id->~GetLiquidType())
+					if (liquid->~GetLiquidType() == component_id->~GetLiquidType())
 					{
 						liquid->Enter(this);
 					}
@@ -878,18 +878,18 @@ public func IsCollectionAllowed(object obj)
 }
 
 
-public func RejectCollect(id obj_id, object obj)
+public func RejectCollect(id item_id, object item)
 {
 	// Is the object a container? If so, try to empty it.
-	if (obj->~IsContainer())
+	if (item->~IsContainer())
 	{
-		var count = obj->ContentsCount(), cont;
+		var count = item->ContentsCount(), contents;
 		while (--count >= 0)
-			if (cont = obj->Contents(count))
-				cont->Enter(this);
+			if (contents = item->Contents(count))
+				contents->Enter(this);
 	}
 	// Can we collect the object itself?
-	if (IsCollectionAllowed(obj)) 
+	if (IsCollectionAllowed(item)) 
 		return false;
 	return true;
 }
