@@ -141,20 +141,47 @@ global func FxIntTestControlTimer(object target, proplist effect)
 global func Test1_OnStart(int plr)
 {
 	// Producer: Foundry
+	var passed = true;
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
 	producer->CreateContents(Earth, 10);
-	producer->CreateContents(Ice, 2); // contain a total of 400 water
-	producer->AddToQueue(Loam, 5); // needs 300 water
 
 	// Log what the test is about.
 	Log("Objects with liquid need (loam), can be produced with pseudo liquid objects (ice)");
-	return true;
+
+	var ice1, ice2;
+	ice1 = CreateObject(Ice);
+	ice2 = CreateObject(Ice);
+	producer->Collect(ice1, true);
+	producer->Collect(ice2, true);
+	passed &= doTest("Producer contains no ice chunks. Got %d, expected %d.", producer->ContentsCount(Ice), 0);
+	passed &= doTest("Producer contains no water. Got %d, expected %d.", producer->ContentsCount(Liquid_Water), 0);
+
+	ice1->Enter(producer);
+	ice2->Enter(producer);
+	passed &= doTest("Producer contains ice chunks when forced. Got %d, expected %d.", producer->ContentsCount(Ice), 2);
+
+
+	producer->AddToQueue(Loam, 5); // needs 300 water
+	passed &= doTest("Producer contains ice chunks. Got %d, expected %d.", producer->ContentsCount(Ice), 2);
+	passed &= doTest("Producer contains no water. Got %d, expected %d.", producer->ContentsCount(Liquid_Water), 0);
+
+	ice1 = CreateObject(Ice);
+	ice2 = CreateObject(Ice);
+	producer->Collect(ice1, true);
+	producer->Collect(ice2, true);
+
+	passed &= doTest("Producer contains ice chunks. Got %d, expected %d.", producer->ContentsCount(Ice), 2);
+	passed &= doTest("Producer contains water. Got %d, expected %d.", producer->FindContents(Liquid_Water)->GetLiquidAmount(), 400);
+
+	return passed;
 }
 
 global func Test1_Completed()
 {
 	SetTemperature(-10);
-	if (ObjectCount(Find_ID(Loam)) >= 5)
+	if (ObjectCount(Find_ID(Loam)) >= 5 // the loam was created
+	 && ObjectCount(Find_ID(Ice)) == 2 // and exactly the two ice objects that were in the producer before stayed there
+	 && (FindObject(Find_ID(Liquid_Water))->GetLiquidAmount() == 100)) // not all water was used up
 		return true;
 	return false;
 }
@@ -412,48 +439,13 @@ global func Test8_OnFinished()
 
 /*-- Helper Functions --*/
 
-global func SetWindFixed(int strength)
+global func doTest(description, returned, expected)
 {
-	strength = BoundBy(strength, -100, 100);
-	var effect = GetEffect("IntFixedWind");
-	if (!effect)
-		effect = AddEffect("IntFixedWind", nil, 100, 1);
-	effect.strength = strength;
-	return;
-}
-
-global func RestoreWaterLevels()
-{
-	// Restore water levels.
-	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
-	for (var x = 216; x <= 280; x++)
-		for (var y = 24; y <= 120; y++)
-			if (GetMaterial(x, y) == Material("Water"))
-				ClearFreeRect(x, y, 1, 1);
-	return;
-}
-
-global func RemoveWater()
-{
-	for (var x = 144; x <= 208 + 1; x++)
-		for (var y = 168; y <= 304; y++)
-			if (GetMaterial(x, y) == Material("Water"))
-				ClearFreeRect(x, y, 1, 1);
-	return;
-}
-
-global func FxIntFixedWindTimer(object target, proplist effect)
-{
-	SetWind(effect.strength);
-	return FX_OK;
-}
-
-global func FxIntAlternatingWindTimer(object target, proplist effect, int time)
-{
-	if (((time / effect.Interval) % 2) == 0)
-		SetWindFixed(effect.strength);
-	else
-		SetWindFixed(0);
-	return FX_OK;
-}
+	var test = (returned == expected);
 	
+	var predicate = "[Fail]";
+	if (test) predicate = "[Pass]";
+	
+	Log(Format("%s %s", predicate, description), returned, expected);
+	return test;
+}

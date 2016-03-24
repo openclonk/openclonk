@@ -34,36 +34,8 @@ private func Freeze()
 	DoCon(1);
 }
 
-func GetLiquidType() { return "Water"; }
+func CanConvertToLiquidType() { return "Water"; }
 func GetLiquidAmount() { return GetCon()*2; }
-
-// Insertion of liquid into ice is not possible
-func PutLiquid(string liquid_name, int amount, object source)
-{
-	return 0;
-}
-
-// Removes liquid for production, for example.
-func RemoveLiquid(string liquid_name, int amount, object destination)
-{
-	if (amount < 0)
-	{
-		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
-	}
-
-	// default parameters if nothing is provided: the current material and level
-	liquid_name = liquid_name ?? GetLiquidType();
-	amount = amount ?? GetLiquidAmount();
-
-	//Wrong material?
-	if (!WildcardMatch(GetLiquidType(), liquid_name))
-		return [GetLiquidType(), 0];
-
-	amount = Min(amount, GetLiquidAmount());
-	DoCon(-(amount + 1)/2);
-	return [liquid_name, amount];
-}
-
 
 local Collectible = 1;
 local Name = "$Name$";

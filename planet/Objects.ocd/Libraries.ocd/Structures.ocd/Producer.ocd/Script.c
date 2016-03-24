@@ -797,6 +797,29 @@ public func IsCollectionAllowed(object obj)
 			}
 		}
 	}
+	// Convertable liquid objects (ice is the only one so far) may be collected if a product needs them.
+	// This uses the queue instead of the product list, because other items may need the original object.
+	// This extremely special case is used by the ice object only, and should be removed in my opinion,
+	// but it is included for compatibility reasons at the moment.
+	// TODO 
+	if (obj->~CanConvertToLiquidType())
+	{
+		for (var queued in queue)
+		{
+			var product = queued.Product;
+		
+			var i = 0, comp_id;
+			while (comp_id = GetComponent(nil, i, nil, product))
+			{
+				if (comp_id->~GetLiquidType() == obj->~CanConvertToLiquidType())
+				{
+					ConvertToLiquid(obj);
+					return true;
+				}
+				i++;
+			}
+		}
+	}
 	// Liquid containers may not be collected, but we take their contents if a product needs them.
 	if (obj->~IsLiquidContainer())
 	{
@@ -834,4 +857,21 @@ public func RejectCollect(id obj_id, object obj)
 	if (IsCollectionAllowed(obj)) 
 		return false;
 	return true;
+}
+
+
+// Converts a convertable object to the liquid.
+// Currently the only convertable object is ice,
+// and this functionality may be removed in
+// the near future.
+// TODO
+private func ConvertToLiquid(object obj)
+{
+	var liquid = Library_Liquid->CreateLiquid(obj->CanConvertToLiquidType(), obj->GetLiquidAmount());
+	
+	if (liquid)
+	{
+		liquid->Enter(this);
+		obj->RemoveObject();
+	}
 }
