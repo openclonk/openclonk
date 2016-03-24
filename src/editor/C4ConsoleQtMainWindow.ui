@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>EDITOR</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/editor/res/oc.ico</normaloff>:/editor/res/oc.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QComboBox" name="foregroundMatTexComboBox">
     <property name="geometry">

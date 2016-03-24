@@ -30,10 +30,6 @@
 #include <C4Object.h>
 #include <C4Viewport.h>
 
-#ifdef USE_WIN32_WINDOWS
-#include <resource.h> // for setting the icon
-#endif
-
 /* String translation */
 
 QString C4ConsoleQtTranslator::translate(const char * context, const char * sourceText, const char * disambiguation, int n) const
@@ -113,12 +109,6 @@ int ExecRecursionCheck::counter = 0;
 C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUIState *state)
 	: QMainWindow(NULL), state(state)
 {
-#ifdef USE_WIN32_WINDOWS
-	HWND hWindow = reinterpret_cast<HWND>(winId());
-	// Set icon
-	SendMessage(hWindow, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(app->GetInstance(), MAKEINTRESOURCE(IDI_00_C4X)));
-	SendMessage(hWindow, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(app->GetInstance(), MAKEINTRESOURCE(IDI_00_C4X)));
-#endif
 }
 
 void C4ConsoleQtMainWindow::keyPressEvent(QKeyEvent * event)
