@@ -41,86 +41,12 @@ const char *C4AulError::what() const noexcept
 	return sMessage ? sMessage.getData() : "(unknown error)";
 }
 
-C4AulScript::C4AulScript()
-{
-	// not compiled
-	State = ASS_NONE;
-
-	// prepare lists
-	Prev = Next = NULL;
-	Engine = NULL;
-}
-
-C4AulScript::~C4AulScript()
-{
-	// clear
-	Clear();
-	// unreg
-	Unreg();
-}
-
-
-void C4AulScript::Unreg()
-{
-	// remove from list
-	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
-	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
-	Prev = Next = NULL;
-	Engine = NULL;
-}
-
-
-void C4AulScript::Clear()
-{
-	// reset flags
-	State = ASS_NONE;
-}
-
-
-void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
-{
-	// already regged? (def reloaded)
-	if (Engine) return;
-	// reg to list
-	if ((Engine = pEngine))
-	{
-		if ((Prev = Engine->ChildL))
-			Prev->Next = this;
-		else
-			Engine->Child0 = this;
-		Engine->ChildL = this;
-	}
-	else
-		Prev = NULL;
-	Next = NULL;
-}
-
-std::string C4AulScript::Translate(const std::string &text) const
-{
-	try
-	{
-		if (stringTable)
-			return stringTable->Translate(text);
-	}
-	catch (C4LangStringTable::NoSuchTranslation &)
-	{
-		// Ignore, soldier on
-	}
-	if (Engine && Engine != this)
-		return Engine->Translate(text);
-	throw C4LangStringTable::NoSuchTranslation(text);
-}
-
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
+		C4PropListStaticMember(NULL, NULL, ::Strings.RegString("Global")),
 		warnCnt(0), errCnt(0), lineCnt(0)
 {
-	// /me r b engine
-	Engine = this;
-	ScriptName.Ref(C4CFN_System);
-
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
@@ -128,12 +54,7 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
 	Child0 = ChildL = NULL;
-	RegisterGlobalConstant("Global", GlobalPropList);
-}
-
-C4PropListStatic * C4AulScriptEngine::GetPropList()
-{
-	return GlobalPropList._getPropList()->IsStatic();
+	RegisterGlobalConstant("Global", C4VPropList(this));
 }
 
 C4AulScriptEngine::~C4AulScriptEngine()
@@ -151,9 +72,7 @@ void C4AulScriptEngine::Clear()
 		if (Child0->Delete()) delete Child0;
 		else Child0->Unreg();
 	// clear own stuff
-	GlobalPropList._getPropList()->Clear();
-	// clear inherited
-	C4AulScript::Clear();
+	C4PropListStaticMember::Clear();
 	// reset values
 	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
@@ -162,7 +81,7 @@ void C4AulScriptEngine::Clear()
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
-	RegisterGlobalConstant("Global", GlobalPropList);
+	RegisterGlobalConstant("Global", C4VPropList(this));
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 	UserFiles.clear();
@@ -190,12 +109,12 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 	return true;
 }
 
-bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
+void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
 	GameScript.ScenPropList.Denumerate(numbers);
-	return true;
+	C4PropListStaticMember::Denumerate(numbers);
 }
 
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
@@ -291,11 +210,11 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 	return h;
 }
 
-C4AulFunc * C4AulFuncMap::GetFirstFunc(C4String * Name)
+C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 {
 	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name->GetCStr()) % HashSize];
-	while (Func && Name->GetCStr() != Func->GetName())
+	C4AulFunc * Func = Funcs[Hash(Name) % HashSize];
+	while (Func && !SEqual(Name, Func->GetName()))
 		Func = Func->MapNext;
 	return Func;
 }

@@ -56,24 +56,23 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		Dump.AppendChar('(');
 		int iNullPars = 0;
 		for (int i = 0; i < Func->GetParCount(); i++)
-			if (Pars + i < Vars)
+		{
+			if (!Pars[i])
+				iNullPars++;
+			else
 			{
-				if (!Pars[i])
-					iNullPars++;
-				else
+				if (i > iNullPars)
+					Dump.AppendChar(',');
+				// Insert missing null parameters
+				while (iNullPars > 0)
 				{
-					if (i > iNullPars)
-						Dump.AppendChar(',');
-					// Insert missing null parameters
-					while (iNullPars > 0)
-					{
-						Dump.Append("0,");
-						iNullPars--;
-					}
-					// Insert parameter
-					Dump.Append(Pars[i].GetDataString());
+					Dump.Append("0,");
+					iNullPars--;
 				}
+				// Insert parameter
+				Dump.Append(Pars[i].GetDataString());
 			}
+		}
 		Dump.AppendChar(')');
 	}
 	else
@@ -146,37 +145,52 @@ void C4AulExec::ClearPointers(C4Object * obj)
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors)
 {
-	// Push parameters
-	C4Value *pPars = pCurVal + 1;
-	if (pnPars)
-		for (int i = 0; i < C4AUL_MAX_Par; i++)
-			PushValue(pnPars[i]);
-	if (pCurVal + 1 - pPars > pSFunc->GetParCount())
-		PopValues(pCurVal + 1 - pPars - pSFunc->GetParCount());
-	else
-		PushNullVals(pSFunc->GetParCount() - (pCurVal + 1 - pPars));
-
-	// Push a new context
-	C4AulScriptContext ctx;
-	ctx.tTime = 0;
-	ctx.Obj = p;
-	ctx.Return = NULL;
-	ctx.Pars = pPars;
-	ctx.Vars = pCurVal + 1;
-	ctx.Func = pSFunc;
-	ctx.CPos = NULL;
-	PushContext(ctx);
-
-	// Execute
-	return Exec(pSFunc->GetCode(), fPassErrors);
-}
-
-C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
-{
-
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
+	C4Value *pPars = pCurVal + 1;
+	try
+	{
+		// Push parameters
+		assert(pnPars);
+		for (int i = 0; i < pSFunc->GetParCount(); i++)
+			PushValue(pnPars[i]);
 
+		// Push a new context
+		C4AulScriptContext ctx;
+		ctx.tTime = 0;
+		ctx.Obj = p;
+		ctx.Return = NULL;
+		ctx.Pars = pPars;
+		ctx.Func = pSFunc;
+		ctx.CPos = NULL;
+		PushContext(ctx);
+
+		// Execute
+		return Exec(pSFunc->GetCode());
+	}
+	catch (C4AulError &e)
+	{
+		if(!e.shown) e.show();
+		// Unwind stack
+		while (pCurCtx > pOldCtx)
+		{
+			pCurCtx->dump(StdStrBuf(" by: "));
+			PopContext();
+		}
+		PopValuesUntil(pPars - 1);
+		// Pass?
+		if (fPassErrors)
+			throw;
+		// Trace
+		LogCallStack();
+	}
+
+	// Return nothing
+	return C4VNull;
+}
+
+C4Value C4AulExec::Exec(C4AulBCC *pCPos)
+{
 	try
 	{
 
@@ -231,12 +245,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			case AB_ERR:
 				throw C4AulExecError("syntax error: see above for details");
 
-			case AB_PARN_CONTEXT:
+			case AB_DUP_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
-				break;
-
-			case AB_VARN_CONTEXT:
-				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Vars[pCPos->Par.i]);
 				break;
 
 			case AB_LOCALN:
@@ -717,7 +727,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (pCurVal->_getInt() >= pArray->GetSize())
 					break;
 				// Get next
-				pCurCtx->Vars[pCPos->Par.i] = pArray->GetItem(iItem);
+				pCurVal[pCPos->Par.i] = pArray->GetItem(iItem);
 				// Save position
 				pCurVal->SetInt(iItem + 1);
 				// Jump over next instruction
@@ -792,29 +802,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	}
 	catch (C4AulError &e)
 	{
-		if(!e.shown) e.show();
 		// Save current position
 		assert(pCurCtx->Func->GetCode() <= pCPos);
 		pCurCtx->CPos = pCPos;
-		// Unwind stack
-		C4Value *pUntil = NULL;
-		while (pCurCtx >= pOldCtx)
-		{
-			pCurCtx->dump(StdStrBuf(" by: "));
-			pUntil = pCurCtx->Pars - 1;
-			PopContext();
-		}
-		if (pUntil)
-			PopValuesUntil(pUntil);
-		// Pass?
-		if (fPassErrors)
-			throw;
-		// Trace
-		LogCallStack();
+		throw;
 	}
-
-	// Return nothing
-	return C4VNull;
 }
 
 C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList *pContext)
@@ -839,7 +831,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			throw C4AulExecError("using removed object");
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
-		ctx.Vars = pCurVal + 1;
 		ctx.Func = pSFunc;
 		ctx.CPos = NULL;
 		PushContext(ctx);
@@ -912,31 +903,18 @@ void C4AulExec::StartTrace()
 		iTraceStart = ContextStackSize();
 }
 
-void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
+void C4AulExec::StartProfiling(C4ScriptHost *pProfiledScript)
 {
 	// stop previous profiler run
-	if (fProfiling) AbortProfiling();
+	if (fProfiling) StopProfiling();
 	fProfiling = true;
 	// resets profling times and starts recording the times
 	this->pProfiledScript = pProfiledScript;
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	tDirectExecStart = tNow; // in case profiling is started from DirectExec
 	tDirectExecTotal = 0;
-	pProfiledScript->ResetProfilerTimes();
 	for (C4AulScriptContext *pCtx = Contexts; pCtx <= pCurCtx; ++pCtx)
 		pCtx->tTime = tNow;
-}
-
-void C4AulExec::StopProfiling()
-{
-	// stop the profiler and displays results
-	if (!fProfiling) return;
-	fProfiling = false;
-	// collect profiler times
-	C4AulProfiler Profiler;
-	Profiler.CollectEntry(NULL, tDirectExecTotal);
-	pProfiledScript->CollectProfilerTimes(Profiler);
-	Profiler.Show();
 }
 
 void C4AulExec::PushContext(const C4AulScriptContext &rContext)
@@ -977,19 +955,27 @@ void C4AulExec::PopContext()
 	pCurCtx--;
 }
 
-void C4AulProfiler::StartProfiling(C4AulScript *pScript)
+void C4AulProfiler::StartProfiling(C4ScriptHost *pScript)
 {
 	AulExec.StartProfiling(pScript);
+	if(pScript)
+		ResetTimes(pScript->GetPropList());
+	else
+		ResetTimes();
 }
 
 void C4AulProfiler::StopProfiling()
 {
+	if (!AulExec.IsProfiling()) return;
 	AulExec.StopProfiling();
-}
-
-void C4AulProfiler::Abort()
-{
-	AulExec.AbortProfiling();
+	// collect profiler times
+	C4AulProfiler Profiler;
+	Profiler.CollectEntry(NULL, AulExec.tDirectExecTotal);
+	if(AulExec.pProfiledScript)
+		Profiler.CollectTimes(AulExec.pProfiledScript->GetPropList());
+	else
+		Profiler.CollectTimes();
+	Profiler.Show();
 }
 
 void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime)
@@ -1032,65 +1018,66 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 #endif
 	// profiler
 	StartDirectExec();
-	C4AulScript * script = &::GameScript;
-	if (p == ::ScriptEngine.GetPropList())
-		script = &::ScriptEngine;
+	C4PropListStatic * script = ::GameScript.GetPropList();
+	if (p && p->IsStatic())
+		script = p->IsStatic();
 	else if (p && p->GetDef())
-		script = &p->GetDef()->Script;
+		script = p->GetDef();
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(script->GetPropList(), script->GetScriptHost(), 0, szScript);
+	auto pFunc = std::make_unique<C4AulScriptFunc>(script, nullptr, nullptr, szScript);
 	// Parse function
 	try
 	{
-		pFunc->ParseFn(context);
-		C4Value vRetVal(Exec(pFunc, p, NULL, fPassErrors));
-		delete pFunc; pFunc = 0;
+		pFunc->ParseFn(&::ScriptEngine, context);
+		C4AulParSet Pars;
+		C4Value vRetVal(Exec(pFunc.get(), p, Pars.Par, fPassErrors));
 		// profiler
 		StopDirectExec();
 		return vRetVal;
 	}
 	catch (C4AulError &ex)
 	{
-		delete pFunc;
 		if(fPassErrors)
 			throw;
 		ex.show();
+		LogCallStack();
+		StopDirectExec();
 		return C4VNull;
 	}
 }
 
-void C4AulScript::ResetProfilerTimes()
+void C4AulProfiler::ResetTimes(C4PropListStatic * p)
 {
 	// zero all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
-		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
+	for (C4String *pFn = p->EnumerateOwnFuncs(); pFn; pFn = p->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = p->GetFunc(pFn)->SFunc()))
 			pSFunc->tProfileTime = 0;
 }
 
-void C4AulScript::CollectProfilerTimes(C4AulProfiler &rProfiler)
+void C4AulProfiler::CollectTimes(C4PropListStatic * p)
 {
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
-		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
-			rProfiler.CollectEntry(pSFunc, pSFunc->tProfileTime);
+	for (C4String *pFn = p->EnumerateOwnFuncs(); pFn; pFn = p->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = p->GetFunc(pFn)->SFunc()))
+			CollectEntry(pSFunc, pSFunc->tProfileTime);
 }
 
-void C4AulScriptEngine::ResetProfilerTimes()
+void C4AulProfiler::ResetTimes()
 {
 	// zero all profiler times of owned functions
-	C4AulScript::ResetProfilerTimes();
+	ResetTimes(::ScriptEngine.GetPropList());
 	// reset sub-scripts
-	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
-		pScript->ResetProfilerTimes();
+	for (C4ScriptHost *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
+		ResetTimes(pScript->GetPropList());
 }
 
-void C4AulScriptEngine::CollectProfilerTimes(C4AulProfiler &rProfiler)
+void C4AulProfiler::CollectTimes()
 {
 	// collect all profiler times of owned functions
-	C4AulScript::CollectProfilerTimes(rProfiler);
+	CollectTimes(::ScriptEngine.GetPropList());
 	// collect sub-scripts
-	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
-		pScript->CollectProfilerTimes(rProfiler);
+	for (C4ScriptHost *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
+		CollectTimes(pScript->GetPropList());
 }

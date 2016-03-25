@@ -131,7 +131,6 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = "Parallaxity";
 	P[P_LineColors] = "LineColors";
 	P[P_LineAttach] = "LineAttach";
-	P[P_LineMaxDistance] = "LineMaxDistance";
 	P[P_MouseDrag] = "MouseDrag";
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
@@ -303,7 +302,7 @@ C4String *C4StringTable::RegString(StdStrBuf String)
 		return new C4String(String);
 }
 
-C4String *C4StringTable::FindString(const char *strString)
+C4String *C4StringTable::FindString(const char *strString) const
 {
 	return Set.Get(strString);
 }

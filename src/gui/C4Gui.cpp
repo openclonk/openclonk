@@ -569,7 +569,7 @@ namespace C4GUI
 		}
 	}
 
-	Screen::Screen() : Window(), Mouse(0, 0), pContext(NULL), fExclusive(true), pGamePadOpener(NULL), fZoom(1.0f)
+	Screen::Screen() : Window(), Mouse(0, 0), pContext(NULL), fExclusive(true), fZoom(1.0f)
 	{
 		// no dialog active
 		pActiveDlg = NULL;
@@ -585,9 +585,6 @@ namespace C4GUI
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));
-		// GamePad
-		if (Application.pGamePadControl && Config.Controls.GamepadGuiControl)
-			pGamePadOpener = new C4GamePadOpener(0);
 	}
 
 	void Screen::Clear()
@@ -595,8 +592,6 @@ namespace C4GUI
 		Container::Clear();
 		// dtor: Close context menu
 		AbortContext(false);
-		// GamePad
-		if (pGamePadOpener) delete pGamePadOpener;
 		// fields reset
 		fExclusive = true;
 		fZoom = 1.0f;
@@ -1055,15 +1050,7 @@ namespace C4GUI
 
 	void Screen::UpdateGamepadGUIControlEnabled()
 	{
-		// update pGamePadOpener to config value
-		if (pGamePadOpener && (!Config.Controls.GamepadGuiControl || !Application.pGamePadControl))
-		{
-			delete pGamePadOpener; pGamePadOpener = NULL;
-		}
-		else if (!pGamePadOpener && (Config.Controls.GamepadGuiControl && Application.pGamePadControl))
-		{
-			pGamePadOpener = new C4GamePadOpener(0);
-		}
+		// Gamepad is always kept open now.
 	}
 
 	Screen TheScreen;

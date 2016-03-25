@@ -430,6 +430,8 @@ public:
 	// Set by Init to the widget which is used as a
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
+	// Mouse grabbing has to be restored when the window gains focus.
+	bool mouse_was_grabbed = false;
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
 #endif

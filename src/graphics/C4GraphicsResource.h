@@ -83,6 +83,7 @@ public:
 	C4FacetID fctButtonHighlight;
 	C4FacetID fctButtonHighlightRound;
 	C4FacetID fctIcons, fctIconsEx;
+	C4FacetID fctControllerIcons;
 	C4FacetID fctSubmenu;
 	C4FacetID fctCheckbox;
 	C4FacetID fctBigArrows;

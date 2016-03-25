@@ -1105,6 +1105,35 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		}
 	}
 	
+	// Add a contents counter on top.
+	var contents_count_bar = 
+	{
+		BackgroundColor = RGBa(0, 0, 0, 100),
+		Priority = -1,
+		Bottom = "1em",
+		text  = 
+		{
+			Priority = 2,
+			Style = GUI_TextRight | GUI_TextVCenter
+		}
+	};
+	
+	if (effect.obj.MaxContentsCount)
+	{
+		var count = effect.obj->ContentsCount();
+		var max = effect.obj.MaxContentsCount;
+		contents_count_bar.text.Text = Format("<c eeeeee>%3d / %3d</c>", count, max);
+		contents_count_bar.bar = 
+		{
+			Priority = 1,
+			BackgroundColor = RGBa(0, 255, 0, 50),
+			Right = ToPercentString(1000 * count / max, 10)
+		}; 
+	}
+	else contents_count_bar.text.Text = Format("<c eeeeee>%3d</c>", effect.obj->ContentsCount());
+	
+	PushBack(inventory, {symbol = nil, text = nil, custom = contents_count_bar});
+	
 	// Check if nothing changed. If so, we don't need to update.
 	if (GetLength(inventory) == GetLength(effect.last_inventory))
 	{

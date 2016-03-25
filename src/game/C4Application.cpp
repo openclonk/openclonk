@@ -677,6 +677,7 @@ void C4Application::GameTick()
 	case C4AS_Startup:
 		SoundSystem.Execute();
 		MusicSystem.Execute();
+		if (pGamePadControl) pGamePadControl->Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
@@ -697,6 +698,10 @@ void C4Application::GameTick()
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 		if (!isEditor)
 			pWindow->GrabMouse(true);
+		// Gamepad events have to be polled here so that the controller
+		// connection state is always up-to-date before players are
+		// joining.
+		if (pGamePadControl) pGamePadControl->Execute();
 		break;
 	case C4AS_AfterGame:
 		// stop game

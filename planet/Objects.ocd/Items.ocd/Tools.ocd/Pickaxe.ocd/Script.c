@@ -142,7 +142,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 				spark.OnCollision = PC_Bounce();
 			}
 			CreateParticle("StarSpark", x2*9/10,y2*9/10, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(10, 50), spark, 30);
-			Sound(sound, nil, nil, nil, nil, nil, pitch);
+			Sound(sound, {pitch = pitch});
 		}
 		
 		// Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"

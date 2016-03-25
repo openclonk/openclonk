@@ -87,7 +87,7 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 	{
 		if (effect.sound)
 		{
-			Sound("Objects::Windbag::Charge", false, nil, nil, -1);
+			Sound("Objects::Windbag::Charge", {loop_count = -1});
 			Sound("Objects::Windbag::ChargeStop");
 			effect.sound = false;
 		}
@@ -104,7 +104,7 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 	{
 		if (!effect.sound)
 		{
-			Sound("Objects::Windbag::Charge", false, nil, nil, 1);
+			Sound("Objects::Windbag::Charge", {loop_count = 1});
 			effect.sound = true;
 		}
 		
@@ -127,7 +127,7 @@ public func FxIntReloadStop(object target, proplist effect, int reason, bool tem
 		return FX_OK;
 	if (effect.sound)
 	{
-		Sound("Objects::Windbag::Charge", false, nil, nil, -1);	
+		Sound("Objects::Windbag::Charge", {loop_count = -1});
 		Sound("Objects::Windbag::ChargeStop");
 	}
 	return FX_OK;

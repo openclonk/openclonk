@@ -23,47 +23,68 @@
 #include <C4ComponentHost.h>
 #include <C4Aul.h>
 
+// aul script state
+enum C4AulScriptState
+{
+	ASS_NONE,       // nothing
+	ASS_PREPARSED,  // function list built; CodeSize set
+	ASS_LINKED,     // includes and appends resolved
+	ASS_PARSED      // byte code generated
+};
+
 // generic script host for objects
-class C4ScriptHost : public C4AulScript
+class C4ScriptHost
 {
 public:
-	~C4ScriptHost();
-	bool Delete() { return false; } // do NOT delete this - it's just a class member!
+	virtual ~C4ScriptHost();
+	virtual bool Delete() { return false; } // do NOT delete this - it's just a class member!
 
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
 	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
+	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
+	virtual C4PropListStatic * GetPropList() { return 0; }
 	const char *GetScript() const { return Script.getData(); }
-	virtual C4ScriptHost * GetScriptHost() { return this; }
+	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
+	// Translate a string using the script's lang table
+	std::string Translate(const std::string &text) const;
 	std::list<C4ScriptHost *> SourceScripts;
+	StdCopyStrBuf ScriptName; // script name
 protected:
 	C4ScriptHost();
-	void SetError(const char *szMessage);
+	void Unreg(); // remove from list
 	void MakeScript();
-	bool ReloadScript(const char *szPath, const char *szLanguage);
+	virtual bool ReloadScript(const char *szPath, const char *szLanguage);
 	C4ComponentHost ComponentHost;
 
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
 	virtual void UnLink(); // reset to unlinked state
 
+	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
+
+	C4AulScriptEngine *Engine; //owning engine
+	C4ScriptHost *Prev, *Next; // tree structure
 
 	std::list<StdCopyStrBuf> Includes; // include list
 	std::list<StdCopyStrBuf> Appends; // append list
 
 	virtual void AddEngineFunctions() {}; // add any engine functions specific to this script host
 	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
-	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
-	bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	virtual bool ResolveIncludes(C4DefList *rDefs); // resolve includes
+	virtual bool ResolveAppends(C4DefList *rDefs); // resolve appends
 	bool Resolving; // set while include-resolving, to catch circular includes
 	bool IncludesResolved;
 
 	StdStrBuf Script; // script
+	C4LangStringTable *stringTable;
 	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
+	C4AulScriptState State; // script state
 	friend class C4AulParse;
-	friend class C4AulScriptFunc;
+	friend class C4AulProfiler;
+	friend class C4AulScriptEngine;
 	friend class C4AulDebug;
 };
 

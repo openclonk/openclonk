@@ -58,7 +58,7 @@ protected func UpdateDraw2()
 	var Length = ObjectDistance(GetActionTarget(0), GetActionTarget(1));
 	if (GetVertexNum() > 2 || Length > max_distance)
 	{
-		LineBreak();
+		OnLineBreak();
 		return RemoveObject();
 	}
 
@@ -150,7 +150,7 @@ public func SetConnectedObjects(obj1, obj2)
   obj1->AddCableConnection(this);
 }
 
-protected func LineBreak(bool no_msg)
+protected func OnLineBreak(bool no_msg)
 {
 	Sound("Objects::Connect");
 	if (!no_msg) 

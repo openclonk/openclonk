@@ -378,6 +378,36 @@ static gboolean fullscreen_restore(gpointer data)
 	return FALSE;
 }
 
+static bool grab_mouse(GtkWidget *widget)
+{
+	// This should be possible with pure GTK code as well, using
+	// gdk_device_grab(). However, while gdk_device_grab() will prevent clicks
+	// outside of the game window, the mouse gets stuck near the edge of the
+	// window when trying to move outside.
+#ifdef GDK_WINDOWING_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	Window xwindow = gdk_x11_window_get_xid(gtk_widget_get_window(widget));
+	int result = XGrabPointer(dpy, xwindow, true, 0, GrabModeAsync, GrabModeAsync, xwindow, None, CurrentTime);
+	return result == GrabSuccess;
+#endif
+	return true;
+}
+
+static void ungrab_mouse()
+{
+#ifdef GDK_WINDOWING_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	XUngrabPointer(dpy, CurrentTime);
+#endif
+}
+
+static gboolean grab_mouse_fn(gpointer user_data)
+{
+	// Grabbing may not be possible immediately after focusing the window, so
+	// try again if we don't succeed.
+	return !grab_mouse((GtkWidget*) user_data);
+}
+
 static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = true;
@@ -386,6 +416,9 @@ static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_d
 		fullscreen_needs_restore = true;
 		gdk_threads_add_idle(fullscreen_restore, NULL);
 	}
+	C4Window *window = (C4Window*) user_data;
+	if (window->mouse_was_grabbed)
+		gdk_threads_add_timeout(50, grab_mouse_fn, widget);
 	return false;
 }
 static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
@@ -397,6 +430,7 @@ static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_
 		gtk_window_iconify(GTK_WINDOW(widget));
 		fullscreen_needs_restore = false;
 	}
+	ungrab_mouse();
 	return false;
 }
 
@@ -607,7 +641,18 @@ void C4Window::FlashWindow()
 
 void C4Window::GrabMouse(bool grab)
 {
-	// TODO
+	if (grab)
+	{
+		// Don't grab the mouse while the game window isn't focused.
+		if (Application.Active)
+			grab_mouse(GTK_WIDGET(window));
+		mouse_was_grabbed = true;
+	}
+	else
+	{
+		ungrab_mouse();
+		mouse_was_grabbed = false;
+	}
 }
 
 C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)

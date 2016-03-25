@@ -12,13 +12,24 @@ local current_objects;
 // Overload contents callback for the interaction menu.
 public func Contents(int index)
 {
+	RefreshIfNecessary();
+	if (index < 0 || index >= GetLength(current_objects)) return nil;
+	return current_objects[index];
+}
+
+public func ContentsCount()
+{
+	RefreshIfNecessary();
+	return GetLength(current_objects);
+}
+
+private func RefreshIfNecessary()
+{
 	if (last_search_frame != FrameCounter())
 	{
 		current_objects = GetPossibleObjects();
 		last_search_frame = FrameCounter();
 	}
-	if (index < 0 || index >= GetLength(current_objects)) return nil;
-	return current_objects[index];
 }
 
 private func GetPossibleObjects(id limit_definition)

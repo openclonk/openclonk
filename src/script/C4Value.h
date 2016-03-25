@@ -141,13 +141,6 @@ public:
 	// Change and set Type to int in case it was nil or bool before
 	// Use with care: These don't handle int32_t overflow
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
-	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
-	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }
-	C4Value & operator /= (int32_t by) { Data.Int /= by; Type=C4V_Int; return *this; }
-	C4Value & operator %= (int32_t by) { Data.Int %= by; Type=C4V_Int; return *this; }
-	C4Value & operator &= (int32_t by) { Data.Int &= by; Type=C4V_Int; return *this; }
-	C4Value & operator ^= (int32_t by) { Data.Int ^= by; Type=C4V_Int; return *this; }
-	C4Value & operator |= (int32_t by) { Data.Int |= by; Type=C4V_Int; return *this; }
 	C4Value & operator ++ ()           { Data.Int++;     Type=C4V_Int; return *this; }
 	C4Value operator ++ (int)          { C4Value old = *this; ++(*this); return old; }
 	C4Value & operator -- ()           { Data.Int--;     Type=C4V_Int; return *this; }

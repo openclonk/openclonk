@@ -302,7 +302,6 @@ enum C4PropertyName
 	P_Parallaxity,
 	P_LineColors,
 	P_LineAttach,
-	P_LineMaxDistance,		// unused?
 	P_PictureTransformation,
 	P_MeshTransformation,
 	P_Procedure,
@@ -483,7 +482,7 @@ public:
 	C4String *RegString(StdStrBuf String);
 	C4String *RegString(const char * s) { return RegString(StdStrBuf(s)); }
 	// Find existing C4String
-	C4String *FindString(const char *strString);
+	C4String *FindString(const char *strString) const;
 
 private:
 	C4Set<C4String *> Set;

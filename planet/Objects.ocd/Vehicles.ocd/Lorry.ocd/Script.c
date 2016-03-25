@@ -220,12 +220,12 @@ public func TurnWheels()
 	if (Abs(GetXDir()) > 1 && !wheel_sound)
 	{
 		if (!wheel_sound) 
-			Sound("Structures::WheelsTurn", false, nil, nil, 1);
+			Sound("Structures::WheelsTurn", {loop_count = 1});
 		wheel_sound = true;
 	}
 	else if (wheel_sound && !GetXDir())
 	{
-		Sound("Structures::WheelsTurn", false, nil, nil, -1);
+		Sound("Structures::WheelsTurn", {loop_count = -1});
 		wheel_sound = false;
 	}
 }
