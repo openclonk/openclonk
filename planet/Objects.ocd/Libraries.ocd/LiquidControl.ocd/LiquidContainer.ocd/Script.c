@@ -96,19 +96,20 @@ func PutLiquid(string liquid_name, int amount, object source)
 	}
 
 	var before = GetLiquidAmount(liquid_name);
-	var type = Library_Liquid->GetLiquidID(liquid_name);
-	
+	if (before >= this->GetLiquidContainerMaxFillLevel()) return 0;
+
+	var type = Library_Liquid->GetLiquidID(liquid_name);	
 	var liquid = CreateObject(type);
+
 	if (liquid)
 	{
 		liquid->SetStackCount(amount);
-		liquid->Enter(this);
+		Collect(liquid, true);
 		// the check is necessary here, because the liquid may get removed if the barrel already
 		// has a stack inside
 		if (liquid && !(liquid->Contained())) liquid->RemoveObject();
 	}
 
-	//CreateContents(type, amount);
 	var after = GetLiquidAmount(liquid_name);
 	return after - before;
 }
