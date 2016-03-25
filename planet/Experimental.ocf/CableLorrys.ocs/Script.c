@@ -10,23 +10,23 @@
 
 protected func Initialize()
 {
-	var workshop = CreateObjectAbove(ToolsWorkshop, 835, 360);
-	var c1 = CreateObjectAbove(CableCrossing, 765, 355);
-	var c2 = CreateObjectAbove(CableCrossing, 695, 415);
-	var c3 = CreateObjectAbove(CableCrossing, 585, 415);
-	var c4 = CreateObjectAbove(CableCrossing, 555, 385);
-	var cabin = CreateObjectAbove(WoodenCabin, 490, 390);
+	//var workshop = CreateObjectAbove(ToolsWorkshop, 835, 360);
+	//var c1 = CreateObjectAbove(CableCrossing, 765, 355);
+	//var c2 = CreateObjectAbove(CableCrossing, 695, 415);
+	//var c3 = CreateObjectAbove(CableCrossing, 585, 415);
+	//var c4 = CreateObjectAbove(CableCrossing, 555, 385);
+	//var cabin = CreateObjectAbove(WoodenCabin, 490, 390);
 //	CreateObjectAbove(LiftTower, 935, 360);
 
 //	CreateObjectAbove(CableLine)->SetConnectedObjects(workshop, c1);
-	CreateObjectAbove(CableLine)->SetConnectedObjects(c1, c2);
-	CreateObjectAbove(CableLine)->SetConnectedObjects(c2, c3);
-	CreateObjectAbove(CableLine)->SetConnectedObjects(c3, c4);
+	//CreateObjectAbove(CableLine)->SetConnectedObjects(c1, c2);
+	//CreateObjectAbove(CableLine)->SetConnectedObjects(c2, c3);
+	//CreateObjectAbove(CableLine)->SetConnectedObjects(c3, c4);
 //	CreateObjectAbove(CableLine)->SetConnectedObjects(c4, cabin);
 
-	CreateObjectAbove(Lorry, 835, 360);
+	//CreateObjectAbove(Lorry, 835, 360);
 
-	CreateConstruction(Elevator, 160, 390, NO_OWNER, 100, true)->CreateShaft(150);
+	//CreateConstruction(Elevator, 160, 390, NO_OWNER, 100, true)->CreateShaft(150);
 
 	// Forest on the left side of the map, with sawmill.
 /*	for (var i = 0; i < 20; i++)
@@ -148,7 +148,7 @@ protected func Initialize()
 protected func InitializePlayer(int plr)
 {
 	// No FOW here.
-	SetFoW(false, plr);
+	//SetFoW(false, plr);
 	JoinPlayer(plr);
 	return;
 }

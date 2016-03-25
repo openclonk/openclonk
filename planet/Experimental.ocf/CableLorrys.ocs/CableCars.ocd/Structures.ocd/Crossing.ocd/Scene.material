@@ -1,0 +1,65 @@
+material CableCarStation 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 0.9 0.9 0.9 1.0
+            diffuse 0.9 0.9 0.9 1.0
+            specular 0.0 0.0 0.0 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture CableCarStation.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
+
+material CableCarStation_Sign
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.0 0.0 0.0 1.0 12.5
+            emissive 1.0 1.0 1.0 1.0
+
+            texture_unit
+            {
+                texture CableCarStation_sign.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
+
+material CableCarStation_SignStation
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.0 0.0 0.0 1.0 12.5
+            emissive 1.0 1.0 1.0 1.0
+
+            texture_unit
+            {
+                texture CableCarStation_station.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
