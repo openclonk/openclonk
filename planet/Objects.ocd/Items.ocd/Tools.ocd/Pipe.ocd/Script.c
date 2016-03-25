@@ -53,6 +53,7 @@ public func IsToolProduct() { return true;}
 
 public func OnPipeLineRemoval()
 {
+	SetNeutralPipe();
 	OnPipeLengthChange();
 	return;
 }
@@ -69,9 +70,8 @@ public func OnPipeLengthChange()
 // Display the line length bar over the pipe icon.
 public func GetInventoryIconOverlay()
 {
-	var pipe = FindObject(Find_ID(PipeLine), Find_Func("IsConnectedTo", this));
-	if (!pipe)
-		return;
+	var pipe = GetConnectedLine();
+	if (!pipe) return;
 
 	var percentage = 100 * pipe->GetPipeLength() / pipe.PipeMaxLength;
 	var red = percentage * 255 / 100;

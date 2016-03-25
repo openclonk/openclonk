@@ -131,8 +131,8 @@ public func GetPipeLength()
 
 private func Destruction()
 {
-	var line_end = GetPipeKit();
-	if (line_end) line_end->SetNeutralPipe();
+	if (GetActionTarget(0)) GetActionTarget(0)->~OnPipeLineRemoval();
+	if (GetActionTarget(1)) GetActionTarget(1)->~OnPipeLineRemoval();
 	return;
 }
 
