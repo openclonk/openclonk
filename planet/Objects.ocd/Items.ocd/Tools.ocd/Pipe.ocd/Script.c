@@ -1,4 +1,5 @@
-/*-- Pipe
+/**
+	Pipe
 
 	Author: ST-DDT, Marky
 
@@ -24,16 +25,11 @@
 	- The user may want to connect a drain pipe before connecting a source pipe
 	- The user may want to connect a neutral pipe
 	=> separate functions are necessary	
---*/
+*/
 
 static const PIPE_STATE_Neutral = nil;
 static const PIPE_STATE_Source = "Source";
 static const PIPE_STATE_Drain = "Drain";
-
-local Name = "$Name$";
-local Description = "$Description$";
-local Collectible = 1;
-local PipeState = nil;
 
 local ApertureOffsetX = 0;
 local ApertureOffsetY = 3;
@@ -54,6 +50,50 @@ private func Destruction()
 
 
 public func IsToolProduct() { return true;}
+
+public func OnPipeLineRemoval()
+{
+	OnPipeLengthChange();
+	return;
+}
+
+public func OnPipeLengthChange()
+{
+	// Update usage bar for a possible carrier (the clonk).
+	var carrier = Contained();
+	if (carrier)
+		carrier->~OnInventoryChange();
+	return;
+}
+
+// Display the line length bar over the pipe icon.
+public func GetInventoryIconOverlay()
+{
+	var pipe = FindObject(Find_ID(PipeLine), Find_Func("IsConnectedTo", this));
+	if (!pipe)
+		return;
+
+	var percentage = 100 * pipe->GetPipeLength() / pipe.PipeMaxLength;
+	var red = percentage * 255 / 100;
+	var green = 255 - red;
+	// Overlay a usage bar.
+	var overlay = 
+	{
+		Bottom = "0.75em",
+		Margin = ["0.1em", "0.25em"],
+		BackgroundColor = RGB(0, 0, 0),
+		margin = 
+		{
+			Margin = "0.05em",
+			bar = 
+			{
+				BackgroundColor = RGB(red, green, 0),
+				Right = Format("%d%%", percentage),
+			}
+		}
+	};
+	return overlay;
+}
 
 public func CanBeStackedWith(object other)
 {
@@ -275,3 +315,11 @@ func Report(string message)
 	
 	reporter->Message(message, ...);
 }
+
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Collectible = 1;
+local PipeState = nil;
