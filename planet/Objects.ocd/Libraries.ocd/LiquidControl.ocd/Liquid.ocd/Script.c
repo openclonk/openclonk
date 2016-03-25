@@ -237,3 +237,10 @@ public func CanBeStackedWith(object other)
 	
 	return _inherited(other, ...) && is_same_liquid;
 }
+
+protected func RejectEntrance(object into)
+{
+	if (_inherited(into, ...)) return true;
+	if (into->GetAlive()) return true;
+	return !(into->~IsLiquidContainer() || into->~IsContainer());
+}
