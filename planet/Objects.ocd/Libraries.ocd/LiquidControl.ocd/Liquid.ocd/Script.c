@@ -216,14 +216,23 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
  and amount. Liquids with amount 0 can be created
  that way.
  */
-func CreateLiquid(int amount)
+func CreateLiquid(int amount, object in_container)
 {
 	if (GetType(this) != C4V_Def)
 	{
 		FatalError("Must be called from definition context!");
 	}
 
-	var item = CreateObject(this);
+	var item;
+
+	if (in_container)
+	{
+		item = in_container->CreateContents(this);
+	}
+	else
+	{
+		item = CreateObject(this);	
+	}
 	item->SetStackCount(amount);
 	return item;
 }
