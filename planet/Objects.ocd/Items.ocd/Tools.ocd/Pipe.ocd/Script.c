@@ -151,6 +151,7 @@ func SetDrainPipe()
 	PipeState = PIPE_STATE_Drain;
 	
 	SetGraphics("Drain", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+	SetObjDrawTransform(1000, 0, 0, 0, 1000, 10000, GFX_Overlay);
 	Description = "$DescriptionDrain$";
 	Name = "$NameDrain$";
 
@@ -166,6 +167,7 @@ func SetSourcePipe()
 	PipeState = PIPE_STATE_Source;
 
 	SetGraphics("Source", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+	SetObjDrawTransform(1000, 0, 0, 0, 1000, 10000, GFX_Overlay);
 	Description = "$DescriptionSource$";
 	Name = "$NameSource$";
 
