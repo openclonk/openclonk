@@ -134,6 +134,8 @@ public slots:
 	// Material changed in landscape drawing mode
 	void ForegroundMaterialChanged(const QString &new_selection);
 	void BackgroundMaterialChanged(const QString &new_selection);
+	// Links on welcome page
+	void WelcomeLinkActivated(const QString &link);
 };
 
 
@@ -210,6 +212,10 @@ public:
 #ifdef USE_WIN32_WINDOWS
 	bool HandleWin32KeyboardMessage(MSG *msg);
 #endif
+
+	void InitWelcomeScreen();
+	void ShowWelcomeScreen();
+	void HideWelcomeScreen();
 };
 
 class C4ConsoleGUI::State : public C4ConsoleGUIState

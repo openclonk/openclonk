@@ -685,6 +685,10 @@ void C4Application::GameTick()
 		// immediate progress to next state; OpenGame will enter HandleMessage-loops in startup and lobby!
 		C4Startup::CloseStartup();
 		AppState = C4AS_Game;
+#ifdef WITH_QT_EDITOR
+		// Notify console
+		::Console.OnStartGame();
+#endif
 		// first-time game initialization
 		if (!Game.Init())
 		{

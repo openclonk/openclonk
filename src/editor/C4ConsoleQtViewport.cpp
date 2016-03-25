@@ -55,7 +55,8 @@ bool C4ConsoleQtViewportView::IsPlayViewport() const
 void C4ConsoleQtViewportView::resizeEvent(QResizeEvent *resize_event)
 {
 	QWidget::resizeEvent(resize_event);
-	if (cvp) dock->cvp->cvp->UpdateOutputSize(resize_event->size().width(), resize_event->size().height());
+	if (cvp && dock->cvp->cvp)
+		dock->cvp->cvp->UpdateOutputSize(resize_event->size().width(), resize_event->size().height());
 }
 
 bool C4ConsoleQtViewportView::nativeEvent(const QByteArray &eventType, void *message, long *result)

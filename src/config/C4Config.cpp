@@ -86,6 +86,24 @@ void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(AltTodoFilename), "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
 	pComp->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                  , false, false));
 	pComp->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                   , false, true));
+	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
+		pComp->Value(mkNamingAdapt(s(RecentlyEditedSzenarios[i]), FormatString("EditorMRU%02d", (int)i).getData(), "", false, false));
+}
+
+void C4ConfigDeveloper::AddRecentlyEditedScenario(const char *fn)
+{
+	if (!fn || !*fn) return;
+	// Put given scenario first in list by moving all other scenarios down
+	// Check how many scenarios to move down the list. Stop moving down when the given scenario is in the list
+	int32_t move_down_num;
+	for (move_down_num = 0; move_down_num < CFG_MaxEditorMRU - 1; ++move_down_num)
+		if (!strncmp(fn, RecentlyEditedSzenarios[move_down_num], CFG_MaxString))
+			break;
+	// Move them down
+	for (int32_t i = move_down_num; i > 0; --i)
+		strcpy(RecentlyEditedSzenarios[i], RecentlyEditedSzenarios[i - 1]);
+	// Put current scenario in
+	strncpy(RecentlyEditedSzenarios[0], fn, CFG_MaxString);
 }
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)

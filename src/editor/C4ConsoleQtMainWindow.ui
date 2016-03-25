@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>955</width>
-    <height>578</height>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,6 +84,256 @@
     <property name="text">
      <string comment="res">IDS_CTL_SIZE</string>
     </property>
+   </widget>
+   <widget class="QDockWidget" name="welcomeDockWidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>60</y>
+      <width>311</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="windowTitle">
+     <string comment="res">IDS_CNS_WELCOME</string>
+    </property>
+    <widget class="QWidget" name="welcomeDockWidgetContents">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QScrollArea" name="welcomeScrollArea">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>251</green>
+              <blue>241</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>251</green>
+              <blue>241</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Base">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>251</green>
+              <blue>241</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>251</green>
+              <blue>241</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="welcomeScrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>311</width>
+           <height>191</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="welcomeScrollLayout">
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Maximum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="welcomeTitleLabel">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string comment="res">IDS_CNS_EDITOR</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Maximum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="welcomeStartLabel">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string comment="res">IDS_MNU_START</string>
+            </property>
+            <property name="indent">
+             <number>15</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="welcomeNewLabel">
+            <property name="text">
+             <string comment="res">IDS_MNU_NEW</string>
+            </property>
+            <property name="indent">
+             <number>25</number>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextBrowserInteraction</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="welcomeOpenLabel">
+            <property name="text">
+             <string comment="res">IDS_MNU_OPEN</string>
+            </property>
+            <property name="indent">
+             <number>25</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Maximum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="welcomeRecentLabel">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string comment="res">IDS_MNU_RECENT</string>
+            </property>
+            <property name="indent">
+             <number>15</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -276,12 +526,7 @@
        </attribute>
       </widget>
      </item>
-     <item>
-      <widget class="QComboBox" name="creatorModeComboBox"/>
-     </item>
     </layout>
-    <zorder>creatorModeComboBox</zorder>
-    <zorder>creatorTreeView</zorder>
    </widget>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -1073,6 +1318,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>welcomeNewLabel</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>WelcomeLinkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>445</x>
+     <y>218</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welcomeOpenLabel</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>WelcomeLinkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>445</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1104,5 +1381,6 @@
   <slot>ForegroundMaterialChanged(QString)</slot>
   <slot>BackgroundMaterialChanged(QString)</slot>
   <slot>FileNew()</slot>
+  <slot>WelcomeLinkActivated(QString)</slot>
  </slots>
 </ui>

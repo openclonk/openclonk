@@ -77,7 +77,7 @@ public:
 	bool FileSaveAs(bool fSaveGame);
 	bool FileSave();
 	bool FileNew();
-	bool FileOpen();
+	bool FileOpen(const char *filename=NULL);
 	bool FileOpenWPlrs();
 	bool FileCommand();
 	bool FileClose();

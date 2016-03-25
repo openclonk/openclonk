@@ -235,6 +235,7 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
+	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
 	if (fSaveGame)
 		// Save game
 		return SaveGame(filename.getData());
@@ -254,6 +255,7 @@ bool C4Console::FileNew()
 #ifdef WITH_QT_EDITOR
 	if (!C4ConsoleGUI::CreateNewScenario(&filename)) return false;
 	Application.ClearCommandLine();
+	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
 	Application.OpenGame(filename.getData());
 	return true;
 #endif
@@ -262,17 +264,22 @@ bool C4Console::FileNew()
 
 }
 
-bool C4Console::FileOpen()
+bool C4Console::FileOpen(const char *filename)
 {
 	// Get scenario file name
 	StdCopyStrBuf c4sfile("");
-	if (!FileSelect(&c4sfile,
-	                FILE_SELECT_FILTER_FOR_C4S,
-	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
-		return false;
+	if (!filename)
+	{
+		if (!FileSelect(&c4sfile,
+			FILE_SELECT_FILTER_FOR_C4S,
+			OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
+			return false;
+		filename = c4sfile.getData();
+	}
 	Application.ClearCommandLine();
+	::Config.Developer.AddRecentlyEditedScenario(filename);
 	// Open game
-	Application.OpenGame(c4sfile.getData());
+	Application.OpenGame(filename);
 	return true;
 }
 
@@ -309,6 +316,7 @@ bool C4Console::FileOpenWPlrs()
 	{
 		SAddModule(Game.PlayerFilenames, c4pfile.getData());
 	}
+	::Config.Developer.AddRecentlyEditedScenario(c4sfile.getData());
 	// Open game
 	Application.OpenGame(c4sfile.getData());
 	return true;

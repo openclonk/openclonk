@@ -362,6 +362,18 @@ void C4ConsoleQtMainWindow::BackgroundMaterialChanged(const QString &new_selecti
 	if (tex.size() > 0) ::Console.ToolsDlg.SelectBackTexture(tex.toUtf8(), true);
 }
 
+void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
+{
+	// Default links
+	if (link == "new") FileNew();
+	else if (link == "open") FileOpen();
+	// Open recent link
+	else if (link.startsWith("open:"))
+	{
+		QString open_file = link.mid(5);
+		::Console.FileOpen(open_file.toUtf8());
+	}
+}
 
 
 
@@ -444,6 +456,13 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.creatorTreeView->setModel(definition_list_model.get());
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);
+
+	// Welcome page
+	InitWelcomeScreen();
+	ShowWelcomeScreen();
+
+	// Initial empty property page
+	PropertyDlgUpdate(C4EditCursorSelection(), false);
 	
 	window->showNormal();
 #ifdef USE_WIN32_WINDOWS
@@ -769,4 +788,40 @@ bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename)
 	// Dlg said OK! Scenario created
 	out_filename->Copy(dlg->GetFilename());
 	return true;
+}
+
+void C4ConsoleGUIState::InitWelcomeScreen()
+{
+	// Init links
+	ui.welcomeNewLabel->setText(QString("<a href=\"new\">%1</a>").arg(ui.welcomeNewLabel->text()));
+	ui.welcomeOpenLabel->setText(QString("<a href=\"open\">%1</a>").arg(ui.welcomeOpenLabel->text()));
+	// Recently opened scenarios
+	bool any_file = false;
+	int recent_idx = ui.welcomeScrollLayout->indexOf(ui.welcomeRecentLabel);
+	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
+	{
+		const char *filename = ::Config.Developer.RecentlyEditedSzenarios[i];
+		if (*filename && ::ItemExists(filename))
+		{
+			const char *basename = GetFilenameOnly(filename);
+			QLabel *link = new QLabel(ui.welcomeScrollAreaWidgetContents);
+			ui.welcomeScrollLayout->insertWidget(++recent_idx, link);
+			link->setIndent(ui.welcomeOpenLabel->indent());
+			link->setTextInteractionFlags(ui.welcomeOpenLabel->textInteractionFlags());
+			link->setText(QString("<a href=\"open:%1\">%2</a>").arg(filename).arg(basename)); // let's hope file names never contain "
+			any_file = true;
+			window->connect(link, SIGNAL(linkActivated(QString)), window.get(), SLOT(WelcomeLinkActivated(QString)));
+		}
+	}
+	if (!any_file) ui.welcomeRecentLabel->hide();
+}
+
+void C4ConsoleGUIState::ShowWelcomeScreen()
+{
+	viewport_area->addDockWidget(Qt::BottomDockWidgetArea, ui.welcomeDockWidget);
+}
+
+void C4ConsoleGUIState::HideWelcomeScreen()
+{
+	ui.welcomeDockWidget->close();
 }

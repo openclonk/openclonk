@@ -26,7 +26,7 @@
 #include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"
-enum { CFG_MaxString  = 1024 };
+enum { CFG_MaxString  = 1024, CFG_MaxEditorMRU = 8 };
 
 class C4ConfigGeneral
 {
@@ -87,7 +87,9 @@ public:
 	char AltTodoFilename[CFG_MaxString + 1];
 	int32_t MaxScriptMRU; // maximum number of remembered elements in recently used scripts
 	int32_t DebugShapeTextures; // if nonzero, show messages about loaded shape textures
+	char RecentlyEditedSzenarios[CFG_MaxEditorMRU][CFG_MaxString + 1];
 	void CompileFunc(StdCompiler *pComp);
+	void AddRecentlyEditedScenario(const char *fn);
 };
 
 class C4ConfigGraphics
