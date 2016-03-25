@@ -32,8 +32,18 @@ public func IsContainer() { return true; }
 
 protected func RejectCollect(id item, object obj)
 {
-	if (obj->~IsFuel() || obj->~GetLiquidType() == "Oil")
+	// Accept fuel only
+	if (obj->~IsFuel())
 		return false;
+
+	// Is the object a container? If so, try to empty it.
+	if (obj->~IsContainer() || obj->~IsLiquidContainer())
+	{
+		var count = obj->ContentsCount(), contents;
+		while (--count >= 0)
+			if (contents = obj->Contents(count))
+				contents->Enter(this);
+	}
 	return true;
 }
 

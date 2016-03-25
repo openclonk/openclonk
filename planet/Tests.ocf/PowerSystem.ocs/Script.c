@@ -1101,8 +1101,9 @@ global func Test20_OnStart(int plr)
 
 	for (var i = 0; i < 3; ++i)
 	{
-		var barrel = engine->CreateContents(Barrel, 1);
+		var barrel = CreateObject(Barrel, 1);
 		barrel->CreateContents(Liquid_Oil, 10);
+		engine->Collect(barrel, true);
 	}
 	
 	// Power consumer: armory.
@@ -1139,8 +1140,7 @@ global func Test21_OnStart(int plr)
 
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 70, 160, plr);
-	var barrel = engine->CreateContents(Barrel, 1);
-	barrel->CreateContents(Liquid_Oil, 10);
+	engine->CreateContents(Liquid_Oil, 10);
 	
 	// Power consumer: one pump.
 	var pump = CreateObjectAbove(Pump, 124, 160, plr);
