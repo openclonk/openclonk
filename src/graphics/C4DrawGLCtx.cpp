@@ -681,6 +681,8 @@ bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
 		surface = new QOffscreenSurface();
 		surface->create();
 		context = new QOpenGLContext();
+		QOpenGLContext* share_context = QOpenGLContext::globalShareContext();
+		if (share_context) context->setShareContext(share_context);
 		if (!context->create())
 			return false;
 
