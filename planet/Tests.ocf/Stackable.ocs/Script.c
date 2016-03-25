@@ -1455,6 +1455,50 @@ global func Test20_Execute()
 }
 
 
+global func Test21_OnStart(int plr){ return true;}
+global func Test21_OnFinished(){ return; }
+global func Test21_Execute()
+{
+	Log("Test use case: Clonk gets liquid from a producer, the liquid the liquid should fill empty barrels in the Clonk, but not enter the Clonk.");
+
+	var passed = true;
+
+	var producer = CreateObject(Kitchen);
+	var crew = CreateObject(Clonk);
+	
+	
+	Log("****** Clonk tries to collect liquid without having a barrel");
+	var liquid = producer->CreateContents(Liquid_Water);
+	liquid->SetStackCount(300);
+	
+	crew->Collect(liquid, true);
+	
+	passed &= doTest("Liquid is in the producer. Got %v, expected %v.", liquid->Contained(), producer);
+	passed &= doTest("Liquid is not in the Clonk. Got %v, expected %v.", !!crew->FindContents(Liquid_Water), false);
+	
+	if (liquid) liquid->RemoveObject();
+
+	Log("****** Clonk tries to collect liquid with a barrel");
+	
+	var barrel = crew->CreateContents(Barrel);
+	liquid = producer->CreateContents(Liquid_Water);
+	liquid->SetStackCount(600);
+	
+	crew->Collect(liquid, true);
+	
+	passed &= doTest("Liquid is in the producer. Got %v, expected %v.", liquid->Contained(), producer);
+	passed &= doTest("Liquid is in the barrel. Got %v, expected %v.", !!barrel->FindContents(Liquid_Water), true);
+	passed &= doTest("Liquid is not in the Clonk. Got %v, expected %v.", !!crew->FindContents(Liquid_Water), false);
+
+	if (barrel) barrel->RemoveObject();
+	if (liquid) liquid->RemoveObject();
+	if (crew) crew->RemoveObject();
+	if (producer) producer->RemoveObject();
+
+	return passed;
+}
+
+
 global func doTest(description, returned, expected)
 {
 	var test = (returned == expected);
