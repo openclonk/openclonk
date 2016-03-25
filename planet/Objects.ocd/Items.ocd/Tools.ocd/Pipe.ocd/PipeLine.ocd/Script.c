@@ -96,8 +96,8 @@ private func OnLineBreak(bool no_msg)
 	if (GetPipeKit())
 	{
 		GetPipeKit()->SetNeutralPipe();
-		if (GetActionTarget(0)) GetActionTarget(0)->OnPipeDisconnect(GetPipeKit());
-		if (GetActionTarget(1)) GetActionTarget(1)->OnPipeDisconnect(GetPipeKit());
+		if (GetActionTarget(0)) GetActionTarget(0)->~OnPipeDisconnect(GetPipeKit());
+		if (GetActionTarget(1)) GetActionTarget(1)->~OnPipeDisconnect(GetPipeKit());
 	}
 	
 	return;
@@ -163,4 +163,3 @@ local ActMap = {
 		NextAction = "Connect"
 	}
 };
-
