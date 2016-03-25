@@ -850,10 +850,7 @@ public func RejectCollect(id item_id, object item)
 	// Is the object a container? If so, try to empty it.
 	if (item->~IsContainer() || item->~IsLiquidContainer())
 	{
-		var count = item->ContentsCount(), contents;
-		while (--count >= 0)
-			if (contents = item->Contents(count))
-				contents->Enter(this);
+	 	GrabContents(item);
 	}
 	// Can we collect the object itself?
 	if (IsCollectionAllowed(item)) 

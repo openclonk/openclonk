@@ -39,10 +39,7 @@ protected func RejectCollect(id item, object obj)
 	// Is the object a container? If so, try to empty it.
 	if (obj->~IsContainer() || obj->~IsLiquidContainer())
 	{
-		var count = obj->ContentsCount(), contents;
-		while (--count >= 0)
-			if (contents = obj->Contents(count))
-				contents->Enter(this);
+		GrabContents(obj);
 	}
 	return true;
 }
