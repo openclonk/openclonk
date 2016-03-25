@@ -866,8 +866,8 @@ public func RejectCollect(id item_id, object item)
 // TODO
 private func ConvertToLiquid(object obj)
 {
-	var liquid = Library_Liquid->CreateLiquid(obj->CanConvertToLiquidType(), obj->GetLiquidAmount());
-	
+	var liquid = GetDefinition(obj->CanConvertToLiquidType())->CreateLiquid(obj->GetLiquidAmount());
+
 	if (liquid)
 	{
 		liquid->Enter(this);

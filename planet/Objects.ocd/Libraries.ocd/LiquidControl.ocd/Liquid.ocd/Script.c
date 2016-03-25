@@ -28,7 +28,11 @@ func MaxStackCount()
 	return Stackable_Max_Count;
 }
 
-
+func Construction()
+{
+	TriggerDispersion();
+	return _inherited(...);
+}
 
 // -------------- Getters
 //
@@ -51,12 +55,17 @@ func GetLiquidAmount()
 
 func Departure(object container)
 {
+	TriggerDispersion();
+	_inherited(...);
+}
+
+func TriggerDispersion()
+{
 	var fx = GetEffect(FX_LIQUID_Dispersion, this);
 	if (!fx)
 	{
 		AddEffect(FX_LIQUID_Dispersion, this, 1, 1, this);
 	}
-	_inherited(...);
 }
 
 func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
@@ -203,30 +212,18 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 
 
 /**
- Converts a liquid name to a definition
- that represents that liquid.
- @par liquid_name the name of the liquid
- @return the Id of the liquid object, 
-         or nil if no such object exists
- */
-func GetLiquidID(string liquid_name)
-{
-	if (liquid_name == "Acid") return Acid;
-	if (liquid_name == "Lava") return Lava;
-	if (liquid_name == "Oil") return Oil;
-	if (liquid_name == "Water") return Water;
-	return Library_Liquid;	
-}
-
-
-/**
  Creates a liquid object with the specified name
  and amount. Liquids with amount 0 can be created
  that way.
  */
-func CreateLiquid(string liquid_name, int amount)
+func CreateLiquid(int amount)
 {
-	var item = CreateObject(GetLiquidID(liquid_name));
+	if (GetType(this) != C4V_Def)
+	{
+		FatalError("Must be called from definition context!");
+	}
+
+	var item = CreateObject(this);
 	item->SetStackCount(amount);
 	return item;
 }
