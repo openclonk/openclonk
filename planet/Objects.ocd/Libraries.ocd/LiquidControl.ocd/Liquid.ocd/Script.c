@@ -211,10 +211,10 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
  */
 func GetLiquidID(string liquid_name)
 {
-	if (liquid_name == "Acid") return Liquid_Acid;
-	if (liquid_name == "Lava") return Liquid_Lava;
-	if (liquid_name == "Oil") return Liquid_Oil;
-	if (liquid_name == "Water") return Liquid_Water;
+	if (liquid_name == "Acid") return Acid;
+	if (liquid_name == "Lava") return Lava;
+	if (liquid_name == "Oil") return Oil;
+	if (liquid_name == "Water") return Water;
 	return Library_Liquid;	
 }
 

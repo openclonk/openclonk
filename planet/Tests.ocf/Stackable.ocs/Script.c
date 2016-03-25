@@ -1468,27 +1468,27 @@ global func Test21_Execute()
 	
 	
 	Log("****** Clonk tries to collect liquid without having a barrel");
-	var liquid = producer->CreateContents(Liquid_Water);
+	var liquid = producer->CreateContents(Water);
 	liquid->SetStackCount(300);
 	
 	crew->Collect(liquid, true);
 	
 	passed &= doTest("Liquid is in the producer. Got %v, expected %v.", liquid->Contained(), producer);
-	passed &= doTest("Liquid is not in the Clonk. Got %v, expected %v.", !!crew->FindContents(Liquid_Water), false);
+	passed &= doTest("Liquid is not in the Clonk. Got %v, expected %v.", !!crew->FindContents(Water), false);
 	
 	if (liquid) liquid->RemoveObject();
 
 	Log("****** Clonk tries to collect liquid with a barrel");
 	
 	var barrel = crew->CreateContents(Barrel);
-	liquid = producer->CreateContents(Liquid_Water);
+	liquid = producer->CreateContents(Water);
 	liquid->SetStackCount(600);
 	
 	crew->Collect(liquid, true);
 	
 	passed &= doTest("Liquid is in the producer. Got %v, expected %v.", liquid->Contained(), producer);
-	passed &= doTest("Liquid is in the barrel. Got %v, expected %v.", !!barrel->FindContents(Liquid_Water), true);
-	passed &= doTest("Liquid is not in the Clonk. Got %v, expected %v.", !!crew->FindContents(Liquid_Water), false);
+	passed &= doTest("Liquid is in the barrel. Got %v, expected %v.", !!barrel->FindContents(Water), true);
+	passed &= doTest("Liquid is not in the Clonk. Got %v, expected %v.", !!crew->FindContents(Water), false);
 
 	if (barrel) barrel->RemoveObject();
 	if (liquid) liquid->RemoveObject();

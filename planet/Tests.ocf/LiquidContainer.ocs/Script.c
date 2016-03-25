@@ -151,7 +151,7 @@ global func Test2_Execute()
 	Log("Test the behaviour of liquid objects entering liquid containers");
 
 	var container = CreateObject(Barrel);
-	var liquid = CreateObject(Liquid_Water);
+	var liquid = CreateObject(Water);
 	
     // -----
 
@@ -167,7 +167,7 @@ global func Test2_Execute()
     // -----
 
 	Log("Can fill barrel with more liquid, liquid object gets removed");
-	liquid = CreateObject(Liquid_Water);
+	liquid = CreateObject(Water);
 	liquid->SetStackCount(100);
 	liquid->Enter(container);
 
@@ -177,7 +177,7 @@ global func Test2_Execute()
     // -----
 
 	Log("Cannot fill in more than the allowed amount");
-	liquid = CreateObject(Liquid_Water);
+	liquid = CreateObject(Water);
 	liquid->SetStackCount(200);
 	liquid->Enter(container);
 	
@@ -193,7 +193,7 @@ global func Test2_Execute()
     // -----
 
 	Log("Cannot fill in empty barrel and empty liquid object partially");
-	liquid = CreateObject(Liquid_Water);
+	liquid = CreateObject(Water);
 	liquid->SetStackCount(500);
 	liquid->Enter(container);
 	
@@ -208,7 +208,7 @@ global func Test2_Execute()
     // -----
 
 	Log("Cannot fill in a different liquid");
-	liquid = CreateObject(Liquid_Oil);
+	liquid = CreateObject(Oil);
 	liquid->SetStackCount(50);
 	liquid->Enter(container);
 	
@@ -233,18 +233,18 @@ global func Test2_Execute()
 	
 	Log("Adding single objects via create contents is not possible beyond the container limit");
 	
-	RemoveAll(Find_ID(Liquid_Water));
+	RemoveAll(Find_ID(Water));
 	
 	container->PutLiquid("Water", 299);
-	container->CreateContents(Liquid_Water, 2);
+	container->CreateContents(Water, 2);
 	
 	passed &= doTest("Liquid container contains %d, should contain %d, when filling in 299 water and adding 2 water contents", container->GetLiquidAmount(), 300);
-	passed &= doTest("A total of %d water objects exist outside the container, expected %d", ObjectCount(Find_ID(Liquid_Water), Find_NoContainer()), 0);
+	passed &= doTest("A total of %d water objects exist outside the container, expected %d", ObjectCount(Find_ID(Water), Find_NoContainer()), 0);
 	passed &= doTest("A total of %d water objects exist in the container, expected %d", container->ContentsCount(), 1);
 
 	// Clean up
 
-	RemoveAll(Find_ID(Liquid_Water));
+	RemoveAll(Find_ID(Water));
 	container->RemoveObject();
 
 	return passed;
@@ -270,10 +270,10 @@ global func Test3_Execute()
 
 	Log("Compatible material");
 	passed &= doTest("Container returns '1' when inserting 1 pixel of compatible material. Got %d, expected %d.", container->PutLiquid("Water", 1, nil), 1);
-	passed &= doTest("Container has contents Liquid_Water after inserting 1 pixel of compatible material. Got %v, expected %v.", !!container->FindContents(Liquid_Water), true);
+	passed &= doTest("Container has contents Water after inserting 1 pixel of compatible material. Got %v, expected %v.", !!container->FindContents(Water), true);
 	if (passed)
 	{
-		passed &= doTest("Container returns the fill level 1 when inserting 1 pixel of compatible material. Got %d, expected %d.", container->FindContents(Liquid_Water)->GetLiquidAmount(), 1);
+		passed &= doTest("Container returns the fill level 1 when inserting 1 pixel of compatible material. Got %d, expected %d.", container->FindContents(Water)->GetLiquidAmount(), 1);
 	}
 	
 	passed &= doTest("Container returns 'the actually inserted amount of material' when inserting more than the volume. Got %d, expected %d.", container->PutLiquid("Water", container->GetLiquidContainerMaxFillLevel(), nil), container->GetLiquidContainerMaxFillLevel() - 1);
@@ -535,7 +535,7 @@ global func Test6_Execute()
 	barrel2->Enter(crew);
 	barrel3->Enter(crew);
 	
-	var liquid = CreateObject(Liquid_Water);
+	var liquid = CreateObject(Water);
 	liquid->SetStackCount(1000);
 	
 	// -----

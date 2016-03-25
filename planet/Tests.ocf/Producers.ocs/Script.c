@@ -386,31 +386,31 @@ global func Test4_OnStart(int plr)
 
 	Log("****** With stackable object fuel");
 	
-	producer->CreateContents(Liquid_Oil);
-	producer->FindContents(Liquid_Oil)->SetStackCount(49);
+	producer->CreateContents(Oil);
+	producer->FindContents(Oil)->SetStackCount(49);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), false);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
 
-	producer->FindContents(Liquid_Oil)->SetStackCount(50);
+	producer->FindContents(Oil)->SetStackCount(50);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
 
-	producer->FindContents(Liquid_Oil)->SetStackCount(99);
+	producer->FindContents(Oil)->SetStackCount(99);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), false);
 
-	producer->FindContents(Liquid_Oil)->SetStackCount(100);
+	producer->FindContents(Oil)->SetStackCount(100);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, false), true);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, false), true);
 
 	Log("****** Removing the fuel");
 
-	producer->FindContents(Liquid_Oil)->SetStackCount(149);
+	producer->FindContents(Oil)->SetStackCount(149);
 	passed &= doTest("Has 50 fuel? Got %v, expected %v.", producer->CheckFuel(Bread, true), true);
 	passed &= doTest("Has 100 fuel? Got %v, expected %v.", producer->CheckFuel(GoldBar, true), false);
-	passed &= doTest("Only the necessary fuel was removed. Got %d, expected %d.", producer->FindContents(Liquid_Oil)->GetLiquidAmount(), 99);
+	passed &= doTest("Only the necessary fuel was removed. Got %d, expected %d.", producer->FindContents(Oil)->GetLiquidAmount(), 99);
 
-	producer->FindContents(Liquid_Oil)->RemoveObject();
+	producer->FindContents(Oil)->RemoveObject();
 
 	producer->RemoveObject();
 	return passed;
@@ -429,7 +429,7 @@ global func Test5_OnStart(int plr)
 	
 	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1]]);
 	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Wood, 1], [Metal, 1]]);
-	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1], [Liquid_Water, 50]]);
+	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1], [Water, 50]]);
 	
 	producer->RemoveObject();
 	return passed;
@@ -445,7 +445,7 @@ global func Test6_OnStart(int plr)
 	
 	Log("****** Collect an object that is not a component for one of the products");
 	
-	// Loam: Earth, Liquid_Water; Metal: Ore; GoldBar: Nugget
+	// Loam: Earth, Water; Metal: Ore; GoldBar: Nugget
 	var item = CreateObject(Seeds);
 	producer->Collect(item, true);
 	passed &= doTest("Item can not be collected. Container is %v, expected %v.", item->Contained(), nil);
@@ -479,7 +479,7 @@ global func Test6_OnStart(int plr)
 	Log("****** Collect items from a barrel");
 
 	container = CreateObject(Barrel);
-	item = container->CreateContents(Liquid_Water);
+	item = container->CreateContents(Water);
 	producer->Collect(item, true);
 	passed &= doTest("Container can not be collected. Container is %v, expected %v.", container->Contained(), nil);
 	passed &= doTest("Item can be collected. Container is %v, expected %v.", item->Contained(), producer);
@@ -523,7 +523,7 @@ global func Test7_OnStart(int plr)
 	producer->Collect(ice1, true);
 	producer->Collect(ice2, true);
 	passed &= doTest("Producer contains no ice chunks. Got %d, expected %d.", producer->ContentsCount(Ice), 0);
-	passed &= doTest("Producer contains no water. Got %d, expected %d.", producer->ContentsCount(Liquid_Water), 0);
+	passed &= doTest("Producer contains no water. Got %d, expected %d.", producer->ContentsCount(Water), 0);
 
 	ice1->Enter(producer);
 	ice2->Enter(producer);
@@ -532,7 +532,7 @@ global func Test7_OnStart(int plr)
 
 	producer->AddToQueue(Loam, 5); // needs 300 water
 	passed &= doTest("Producer contains ice chunks. Got %d, expected %d.", producer->ContentsCount(Ice), 2);
-	passed &= doTest("Producer contains no water. Got %d, expected %d.", producer->ContentsCount(Liquid_Water), 0);
+	passed &= doTest("Producer contains no water. Got %d, expected %d.", producer->ContentsCount(Water), 0);
 
 	ice1 = CreateObject(Ice);
 	ice2 = CreateObject(Ice);
@@ -540,7 +540,7 @@ global func Test7_OnStart(int plr)
 	producer->Collect(ice2, true);
 
 	passed &= doTest("Producer contains ice chunks. Got %d, expected %d.", producer->ContentsCount(Ice), 2);
-	passed &= doTest("Producer contains water. Got %d, expected %d.", producer->FindContents(Liquid_Water)->GetLiquidAmount(), 400);
+	passed &= doTest("Producer contains water. Got %d, expected %d.", producer->FindContents(Water)->GetLiquidAmount(), 400);
 
 	return passed;
 }
@@ -550,7 +550,7 @@ global func Test7_Completed()
 	SetTemperature(-10);
 	if (ObjectCount(Find_ID(Loam)) >= 5 // the loam was created
 	 && ObjectCount(Find_ID(Ice)) == 2 // and exactly the two ice objects that were in the producer before stayed there
-	 && (FindObject(Find_ID(Liquid_Water))->GetLiquidAmount() == 100)) // not all water was used up
+	 && (FindObject(Find_ID(Water))->GetLiquidAmount() == 100)) // not all water was used up
 		return true;
 	return false;
 }
@@ -600,7 +600,7 @@ global func Test9_OnStart(int plr)
 	// Producer: Foundry
 	var producer = CreateObjectAbove(Foundry, 75, 160, plr);
 	producer->CreateContents(Earth, 10);
-	var water = CreateObject(Liquid_Water);
+	var water = CreateObject(Water);
 	water->SetStackCount(400);
 	producer->AddToQueue(Loam, 5); // needs 300 water
 	water->Enter(producer);
@@ -613,14 +613,14 @@ global func Test9_OnStart(int plr)
 global func Test9_Completed()
 {
     // The liquid must not be removed.
-	if (ObjectCount(Find_ID(Loam)) >= 5 && ObjectCount(Find_ID(Liquid_Water)) >= 1)
+	if (ObjectCount(Find_ID(Loam)) >= 5 && ObjectCount(Find_ID(Water)) >= 1)
 		return true;
 	return false;
 }
 
 global func Test9_OnFinished()
 {
-	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Liquid_Water)));
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Loam), Find_ID(Water)));
 	return;
 }
 
@@ -678,15 +678,15 @@ global func Test11_Completed()
 {
 	if (ObjectCount(Find_ID(Metal)) >= 5 // metal is produced
 	 && ObjectCount(Find_ID(Barrel)) == 2 // barrels stay
-	 && FindObject(Find_ID(Liquid_Oil)) // oil remains
-	 && FindObject(Find_ID(Liquid_Oil))->GetLiquidAmount() == 100) // the correct amount was used
+	 && FindObject(Find_ID(Oil)) // oil remains
+	 && FindObject(Find_ID(Oil))->GetLiquidAmount() == 100) // the correct amount was used
 		return true;
 	return false;
 }
 
 global func Test11_OnFinished()
 {
-	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal), Find_ID(Barrel), Find_ID(Liquid_Oil)));
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal), Find_ID(Barrel), Find_ID(Oil)));
 	return;
 }
 
