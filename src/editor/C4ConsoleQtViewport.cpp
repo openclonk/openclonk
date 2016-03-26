@@ -230,7 +230,7 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 	case Qt::Key_Down:		return K_DOWN;
 	case Qt::Key_Left:		return K_LEFT;
 	case Qt::Key_Right:		return K_RIGHT;
-	/* case Qt::Key_Clear:		return K_CENTER; */
+	case Qt::Key_Clear:		return K_CENTER;
 	case Qt::Key_Insert:	return K_INSERT;
 	case Qt::Key_Delete:	return K_DELETE;
 	case Qt::Key_Menu:		return K_MENU;
@@ -262,7 +262,13 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 		}
 #endif
 		// Otherwise rely on native scan code to be the same on all platforms
+#ifdef Q_OS_LINUX
+		return event.nativeScanCode() - 8;
+#elif defined(Q_OS_DARWIN)
+		TODO: nativeScanCode() apparently doesn't work on OS X.
+#else
 		return event.nativeScanCode();
+#endif
 	}
 }
 
