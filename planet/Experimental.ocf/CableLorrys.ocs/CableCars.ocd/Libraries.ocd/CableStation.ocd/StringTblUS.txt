@@ -1,5 +1,0 @@
-Name=Cable Crossing
-SetStation=Set station
-SetStationDesc=Change crossing to station
-UnsetStation=Reset station
-UnsetStationDesc=Change station to crossing

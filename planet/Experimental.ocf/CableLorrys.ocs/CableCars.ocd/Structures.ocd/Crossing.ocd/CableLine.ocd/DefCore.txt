@@ -1,9 +1,0 @@
-[DefCore]
-id=CableLine
-Version=6,0
-Category=C4D_StaticBack
-Width=12
-Height=8
-Offset=-6,-4
-Vertices=2
-#Line=1
