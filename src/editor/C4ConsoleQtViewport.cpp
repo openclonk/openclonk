@@ -369,6 +369,8 @@ C4ConsoleQtViewportDockWidget::C4ConsoleQtViewportDockWidget(C4ConsoleQtMainWind
 	setTitleBarWidget((title_label = new C4ConsoleQtViewportLabel(windowTitle(), this)));
 	setWidget(view);
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(TopLevelChanged(bool)));
+	// Register viewport widget for periodic rendering updates.
+	cvp->viewport_widget = view;
 }
 
 void C4ConsoleQtViewportDockWidget::mousePressEvent(QMouseEvent *eventPress)

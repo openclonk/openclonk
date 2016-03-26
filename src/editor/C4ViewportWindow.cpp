@@ -29,6 +29,11 @@
 #include <gtk/gtk.h>
 #endif
 
+#ifdef WITH_QT_EDITOR
+#undef LineFeed
+#include <QWidget>
+#endif
+
 #ifdef USE_WIN32_WINDOWS
 
 void UpdateWindowLayout(HWND hwnd)
@@ -170,7 +175,10 @@ bool C4Viewport::TogglePlayerLock() {return 0;}
 
 void C4ViewportWindow::PerformUpdate()
 {
-#ifndef WITH_QT_EDITOR // done by callback
+#ifdef WITH_QT_EDITOR
+	if (viewport_widget)
+		viewport_widget->update();
+#else
 	if (cvp)
 	{
 		cvp->UpdateOutputSize();
