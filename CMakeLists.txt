@@ -780,26 +780,29 @@ set(OC_CLONK_SOURCES
 	thirdparty/timsort/sort.h
 )
 
-set(QT_EDITOR_SOURCES
-	src/editor/C4ConsoleQt.cpp
-	src/editor/C4ConsoleQt.h
-	src/editor/C4ConsoleQtState.cpp
-	src/editor/C4ConsoleQtState.h
-	src/editor/C4ConsoleQtPropListViewer.cpp
-	src/editor/C4ConsoleQtPropListViewer.h
-	src/editor/C4ConsoleQtObjectListViewer.cpp
-	src/editor/C4ConsoleQtObjectListViewer.h
-	src/editor/C4ConsoleQtDefinitionListViewer.cpp
-	src/editor/C4ConsoleQtDefinitionListViewer.h
-	src/editor/C4ConsoleQtViewport.cpp
-	src/editor/C4ConsoleQtViewport.h
-	src/editor/C4ConsoleQtNewScenario.cpp
-	src/editor/C4ConsoleQtNewScenario.h
-	src/editor/C4ConsoleQtNewScenario.ui
-	src/editor/C4ConsoleQtMainWindow.ui
-	src/editor/resource.qrc
-	${qt_editor_resources}
-)
+if(WITH_QT_EDITOR)
+  qt5_add_resources(qt_editor_resources "src/editor/resource.qrc")
+  set(QT_EDITOR_SOURCES
+	  src/editor/C4ConsoleQt.cpp
+	  src/editor/C4ConsoleQt.h
+	  src/editor/C4ConsoleQtState.cpp
+	  src/editor/C4ConsoleQtState.h
+	  src/editor/C4ConsoleQtPropListViewer.cpp
+	  src/editor/C4ConsoleQtPropListViewer.h
+	  src/editor/C4ConsoleQtObjectListViewer.cpp
+	  src/editor/C4ConsoleQtObjectListViewer.h
+	  src/editor/C4ConsoleQtDefinitionListViewer.cpp
+	  src/editor/C4ConsoleQtDefinitionListViewer.h
+	  src/editor/C4ConsoleQtViewport.cpp
+	  src/editor/C4ConsoleQtViewport.h
+	  src/editor/C4ConsoleQtNewScenario.cpp
+	  src/editor/C4ConsoleQtNewScenario.h
+	  src/editor/C4ConsoleQtNewScenario.ui
+	  src/editor/C4ConsoleQtMainWindow.ui
+	  src/editor/resource.qrc
+	  ${qt_editor_resources}
+  )
+endif()
 
 set(MAPE_BASE_SOURCES
 	src/C4Include.cpp
@@ -941,12 +944,10 @@ elseif(USE_SDL_MAINLOOP)
 		src/platform/C4WindowSDL.cpp
 	)
 	if(WITH_QT_EDITOR)
-		qt5_add_resources(qt_editor_resources "src/editor/resource.qrc")
 		list(APPEND OC_GUI_SOURCES ${QT_EDITOR_SOURCES})
 	endif()
 elseif(USE_WIN32_WINDOWS)
 	if(WITH_QT_EDITOR)
-		qt5_add_resources(qt_editor_resources "src/editor/resource.qrc")
 		list(APPEND OC_GUI_SOURCES ${QT_EDITOR_SOURCES})
 	else()
 		list(APPEND OC_GUI_SOURCES
