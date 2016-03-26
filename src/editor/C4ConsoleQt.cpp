@@ -91,12 +91,6 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	if (!state->CreateConsoleWindow(application)) return NULL;
-#ifdef USE_WIN32_WINDOWS
-	hWindow = reinterpret_cast<HWND>(state->window->winId());
-	renderwnd = hWindow;
-#else
-	// nothing to do
-#endif
 	Active = true;
 	EnableControls(fGameOpen);
 	return this;

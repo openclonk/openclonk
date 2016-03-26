@@ -586,6 +586,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 #ifdef WITH_QT_EDITOR
 		// embed into editor: Viewport widget creation handled by C4ConsoleQt
 		::Console.AddViewport(static_cast<C4ViewportWindow *>(this));
+		return this;
 #else
 		static bool fViewportClassRegistered = false;
 		if (!fViewportClassRegistered)

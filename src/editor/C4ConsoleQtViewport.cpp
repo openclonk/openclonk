@@ -30,22 +30,12 @@
 C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock)
 	: QOpenGLWidget(dock), dock(dock), cvp(dock->cvp ? dock->cvp->cvp : NULL)
 {
-	setAutoFillBackground(false);
-	setAttribute(Qt::WA_NoSystemBackground, true);
-#ifdef USE_WIN32_WINDOWS
-	setAttribute(Qt::WA_NativeWindow, true);
-#endif
 	setAttribute(Qt::WA_ShowWithoutActivating, true);
-	setWindowFlags(Qt::FramelessWindowHint);
 	setFocusPolicy(Qt::WheelFocus);
 	setMouseTracking(true);
 	// Register for viewport
 	C4ViewportWindow *window = dock->cvp;
-#ifdef USE_WIN32_WINDOWS
-	window->hWindow = reinterpret_cast<HWND>(this->winId());
-#else
 	window->glwidget = this;
-#endif
 }
 
 bool C4ConsoleQtViewportView::IsPlayViewport() const
