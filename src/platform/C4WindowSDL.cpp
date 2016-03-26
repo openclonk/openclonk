@@ -20,7 +20,9 @@
 #include <C4Window.h>
 
 #include <C4Application.h>
+#include <C4Console.h>
 #include <C4DrawGL.h>
+#include <C4ViewportWindow.h>
 #include <StdFile.h>
 #include <StdBuf.h>
 
@@ -42,6 +44,14 @@ C4Window::~C4Window ()
 
 C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
+#ifdef WITH_QT_EDITOR
+	if (windowKind == W_Viewport)
+	{
+		// embed into editor: Viewport widget creation handled by C4ConsoleQt
+		::Console.AddViewport(static_cast<C4ViewportWindow *>(this));
+		return this;
+	}
+#endif
 /*	    SDL_GL_MULTISAMPLEBUFFERS,
 	    SDL_GL_MULTISAMPLESAMPLES,*/
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);

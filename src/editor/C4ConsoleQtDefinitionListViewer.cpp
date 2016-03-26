@@ -108,6 +108,7 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 	{
 		std::unique_ptr<DefListNode> tmp(new_root->items[0].release());
 		root.reset(tmp.release());
+		new_root = root.get();
 	}
 	// Sort everything by display name (recursively)
 	root->SortByName();

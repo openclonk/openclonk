@@ -46,6 +46,10 @@ public:
 	C4Window * Init(int32_t iPlayer);
 	virtual void Close();
 	virtual void PerformUpdate();
+
+#ifdef WITH_QT_EDITOR
+	class QWidget *viewport_widget;
+#endif
 };
 
 #endif

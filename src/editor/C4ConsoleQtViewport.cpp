@@ -28,35 +28,20 @@
 /* Console viewports */
 
 C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock)
-	: QWidget(dock), dock(dock), cvp(dock->cvp ? dock->cvp->cvp : NULL)
+	: QOpenGLWidget(dock), dock(dock), cvp(dock->cvp ? dock->cvp->cvp : NULL)
 {
-	setAutoFillBackground(false);
-	setAttribute(Qt::WA_NoSystemBackground, true);
-	setAttribute(Qt::WA_PaintOnScreen, true);
-	setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_ShowWithoutActivating, true);
-	setWindowFlags(Qt::FramelessWindowHint);
 	setFocusPolicy(Qt::WheelFocus);
 	setMouseTracking(true);
 	// Register for viewport
-#ifdef USE_WIN32_WINDOWS
-	dock->cvp->hWindow = reinterpret_cast<HWND>(this->winId());
-#else
-	TODO
-#endif
+	C4ViewportWindow *window = dock->cvp;
+	window->glwidget = this;
 }
 
 bool C4ConsoleQtViewportView::IsPlayViewport() const
 {
 	return (cvp && ::MouseControl.IsViewport(cvp)
 		&& (::Console.EditCursor.GetMode() == C4CNS_ModePlay));
-}
-
-void C4ConsoleQtViewportView::resizeEvent(QResizeEvent *resize_event)
-{
-	QWidget::resizeEvent(resize_event);
-	if (cvp && dock->cvp->cvp)
-		dock->cvp->cvp->UpdateOutputSize(resize_event->size().width(), resize_event->size().height());
 }
 
 bool C4ConsoleQtViewportView::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -195,6 +180,7 @@ void C4ConsoleQtViewportView::wheelEvent(QWheelEvent *event)
 		int delta = event->delta() / 8;
 		if (!delta) delta = event->delta(); // abs(delta)<8?
 		uint32_t shift = (delta>0) ? (delta<<16) : uint32_t(delta<<16);
+		shift += GetShiftWParam();
 		C4GUI::MouseMove(C4MC_Button_Wheel, event->x(), event->y(), shift, cvp);
 	}
 	else
@@ -267,7 +253,13 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 		}
 #endif
 		// Otherwise rely on native scan code to be the same on all platforms
+#ifdef Q_OS_LINUX
+		return event.nativeScanCode() - 8;
+#elif defined(Q_OS_DARWIN)
+		TODO: nativeScanCode() apparently doesn't work on OS X.
+#else
 		return event.nativeScanCode();
+#endif
 	}
 }
 
@@ -312,6 +304,28 @@ void C4ConsoleQtViewportView::leaveEvent(QEvent *)
 	::Console.EditCursor.SetMouseHover(false);
 }
 
+void C4ConsoleQtViewportView::initializeGL()
+{
+	// init extensions
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		// Problem: glewInit failed, something is seriously wrong.
+		LogF("glewInit: %s", reinterpret_cast<const char*>(glewGetErrorString(err)));
+	}
+}
+
+void C4ConsoleQtViewportView::resizeGL(int w, int h)
+{
+	cvp->UpdateOutputSize(w, h);
+}
+
+void C4ConsoleQtViewportView::paintGL()
+{
+	cvp->Execute();
+}
+
 
 C4ConsoleQtViewportLabel::C4ConsoleQtViewportLabel(const QString &title, C4ConsoleQtViewportDockWidget *dock)
 	: QLabel(dock), dock(dock)
@@ -352,6 +366,8 @@ C4ConsoleQtViewportDockWidget::C4ConsoleQtViewportDockWidget(C4ConsoleQtMainWind
 	setTitleBarWidget((title_label = new C4ConsoleQtViewportLabel(windowTitle(), this)));
 	setWidget(view);
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(TopLevelChanged(bool)));
+	// Register viewport widget for periodic rendering updates.
+	cvp->viewport_widget = view;
 }
 
 void C4ConsoleQtViewportDockWidget::mousePressEvent(QMouseEvent *eventPress)

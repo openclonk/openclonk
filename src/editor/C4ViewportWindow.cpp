@@ -29,6 +29,11 @@
 #include <gtk/gtk.h>
 #endif
 
+#ifdef WITH_QT_EDITOR
+#undef LineFeed
+#include <QWidget>
+#endif
+
 #ifdef USE_WIN32_WINDOWS
 
 void UpdateWindowLayout(HWND hwnd)
@@ -162,15 +167,24 @@ bool C4Viewport::ViewPositionByScrollBars()
 
 #endif // USE_GTK
 
+#if (defined(USE_SDL_MAINLOOP) && defined(WITH_QT_EDITOR))
+// TODO
+bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
+bool C4Viewport::TogglePlayerLock() {return 0;}
+#endif
+
 void C4ViewportWindow::PerformUpdate()
 {
+#ifdef WITH_QT_EDITOR
+	if (viewport_widget)
+		viewport_widget->update();
+#else
 	if (cvp)
 	{
-#ifndef WITH_QT_EDITOR // done by callback
 		cvp->UpdateOutputSize();
-#endif
 		cvp->Execute();
 	}
+#endif
 }
 
 C4Window * C4ViewportWindow::Init(int32_t Player)

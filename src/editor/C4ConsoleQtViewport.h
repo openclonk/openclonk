@@ -24,7 +24,7 @@
 #include <C4ConsoleGUI.h> // for glew.h
 #include <C4ConsoleQt.h>
 
-class C4ConsoleQtViewportView : public QWidget
+class C4ConsoleQtViewportView : public QOpenGLWidget
 {
 	Q_OBJECT
 
@@ -37,7 +37,6 @@ private:
 protected:
 	void focusInEvent(QFocusEvent * event) override;
 	void focusOutEvent(QFocusEvent * event) override;
-	void resizeEvent(QResizeEvent *resize_event) override;
 	bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 	void mouseMoveEvent(QMouseEvent *eventMove) override;
 	void mousePressEvent(QMouseEvent *eventPress) override;
@@ -51,6 +50,11 @@ protected:
 
 public:
 	C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock);
+
+	// QOpenGLWidget functions
+	void initializeGL() override;
+	void resizeGL(int w, int h) override;
+	void paintGL() override;
 };
 
 class C4ConsoleQtViewportLabel : public QLabel

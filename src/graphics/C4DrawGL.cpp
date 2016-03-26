@@ -24,7 +24,7 @@
 #include <C4FoWRegion.h>
 #include "C4Rect.h"
 #include "C4Config.h"
-#include <C4App.h>
+#include <C4Application.h>
 
 #ifndef USE_CONSOLE
 
@@ -288,7 +288,14 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	if (!pWindow) return NULL;
 
 	// create it
-	CStdGLCtx *pCtx = new CStdGLCtx();
+	CStdGLCtx *pCtx;
+#ifdef WITH_QT_EDITOR
+	auto app = dynamic_cast<C4Application*>(pApp);
+	if (app->isEditor)
+		pCtx = new CStdGLCtxQt();
+	else
+#endif
+	pCtx = new CStdGLCtx();
 	bool first_ctx = !pMainCtx;
 	if (first_ctx)
 	{
