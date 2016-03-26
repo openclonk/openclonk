@@ -655,16 +655,16 @@ bool CStdGLCtx::PageFlip()
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
 
-CStdGLCtxQt::CStdGLCtxQt() { }
+CStdGLCtxQt::CStdGLCtxQt() { context = NULL; surface = NULL; }
 
 void CStdGLCtxQt::Clear(bool multisample_change)
 {
-	pWindow = nullptr;
 	if (context)
 	{
-		delete context;
+		if (!pWindow->glwidget) delete context;
 		delete surface;
 	}
+	pWindow = nullptr;
 }
 
 bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
@@ -693,6 +693,11 @@ bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
 			return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 		}
 	}
+	else
+	{
+		// The Qt GL widget has its own context
+		context = pWindow->glwidget->context();
+	}
 
 	this_context = contexts.insert(contexts.end(), this);
 	return true;
@@ -700,7 +705,7 @@ bool CStdGLCtxQt::Init(C4Window *window, C4AbstractApp *app)
 
 bool CStdGLCtxQt::Select(bool verbose)
 {
-	if (context)
+	if (!pWindow->glwidget)
 	{
 		if (!context->makeCurrent(surface))
 			return false;
@@ -724,7 +729,7 @@ bool CStdGLCtxQt::Select(bool verbose)
 
 void CStdGLCtxQt::Deselect()
 {
-	if (context)
+	if (!pWindow->glwidget)
 		context->doneCurrent();
 	else
 	{
@@ -743,7 +748,7 @@ bool CStdGLCtxQt::PageFlip()
 	// flush GL buffer
 	glFlush();
 	if (!pWindow) return false;
-	if (context)
+	if (!pWindow->glwidget)
 		return false;
 	return true;
 }
