@@ -29,6 +29,11 @@
 #include <C4PlayerList.h>
 #include <C4Object.h>
 #include <C4Viewport.h>
+#include <C4Config.h>
+
+#ifdef USE_WIN32_WINDOWS
+#include <shellapi.h>
+#endif
 
 /* String translation */
 
@@ -367,6 +372,16 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 	// Default links
 	if (link == "new") FileNew();
 	else if (link == "open") FileOpen();
+	else if (link == "exploreuserpath")
+	{
+#ifdef USE_WIN32_WINDOWS
+		StdStrBuf path(::Config.General.UserDataPath);
+		intptr_t iError = (intptr_t) ::ShellExecute(NULL, L"open", path.GetWideChar(), NULL, path.GetWideChar(), SW_SHOW);
+		if (iError <= 32) QMessageBox::critical(this, LoadResStr("IDS_MNU_EXPLOREUSERPATH"), LoadResStr("IDS_ERR_EXPLOREUSERPATH"));
+#else
+		TODO explore user path
+#endif
+	}
 	// Open recent link
 	else if (link.startsWith("open:"))
 	{
@@ -795,6 +810,7 @@ void C4ConsoleGUIState::InitWelcomeScreen()
 	// Init links
 	ui.welcomeNewLabel->setText(QString("<a href=\"new\">%1</a>").arg(ui.welcomeNewLabel->text()));
 	ui.welcomeOpenLabel->setText(QString("<a href=\"open\">%1</a>").arg(ui.welcomeOpenLabel->text()));
+	ui.welcomeExploreUserPathLabel->setText(QString("<a href=\"exploreuserpath\">%1</a>").arg(ui.welcomeExploreUserPathLabel->text()));
 	// Recently opened scenarios
 	bool any_file = false;
 	int recent_idx = ui.welcomeScrollLayout->indexOf(ui.welcomeRecentLabel);

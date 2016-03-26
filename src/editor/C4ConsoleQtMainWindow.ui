@@ -282,6 +282,22 @@
             <property name="indent">
              <number>25</number>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextBrowserInteraction</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="welcomeExploreUserPathLabel">
+            <property name="text">
+             <string comment="res">IDS_MNU_EXPLOREUSERPATH</string>
+            </property>
+            <property name="indent">
+             <number>25</number>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextBrowserInteraction</set>
+            </property>
            </widget>
           </item>
           <item>
@@ -1325,8 +1341,8 @@
    <slot>WelcomeLinkActivated(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>445</x>
-     <y>218</y>
+     <x>591</x>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1341,8 +1357,24 @@
    <slot>WelcomeLinkActivated(QString)</slot>
    <hints>
     <hint type="sourcelabel">
+     <x>591</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>welcomeExploreUserPathLabel</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>WelcomeLinkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
      <x>445</x>
-     <y>237</y>
+     <y>248</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
