@@ -33,7 +33,7 @@
 #include <C4Language.h>
 #include <C4GraphicsResource.h>
 
-#ifdef USE_WIN32_WINDOWS
+#ifdef _WIN32
 #include <shellapi.h>
 #else
 #include <unistd.h>
@@ -261,7 +261,7 @@ void C4StartupMainDlg::OnEditorBtn(C4GUI::Control *btn)
 {
 	// restart in editor mode
 	bool success = false;
-#ifdef USE_WIN32_WINDOWS
+#ifdef _WIN32
 	wchar_t buf[_MAX_PATH];
 	DWORD sz = ::GetModuleFileName(::GetModuleHandle(NULL), buf, _MAX_PATH);
 	if (sz)
