@@ -33,6 +33,10 @@
 #include <C4Language.h>
 #include <C4GraphicsResource.h>
 
+#ifdef USE_WIN32_WINDOWS
+#include <shellapi.h>
+#endif
+
 
 C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; it is drawn in custom draw proc
 {
@@ -59,6 +63,11 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupMainDlg>(LoadResStr("IDS_DLG_OPTIONS"), caButtons.GetFromTop(iButtonHeight), &C4StartupMainDlg::OnOptionsBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_OPTIONS"));
 	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
+#ifdef WITH_QT_EDITOR
+	AddElement(btn = new C4GUI::CallbackButton<C4StartupMainDlg>(LoadResStr("IDS_DLG_EDITOR"), caButtons.GetFromTop(iButtonHeight), &C4StartupMainDlg::OnEditorBtn));
+	btn->SetToolTip(LoadResStr("IDS_DLGTIP_EDITOR"));
+	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
+#endif
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupMainDlg>(LoadResStr("IDS_DLG_ABOUT"), caButtons.GetFromTop(iButtonHeight), &C4StartupMainDlg::OnAboutBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_ABOUT"));
 	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
@@ -243,6 +252,28 @@ void C4StartupMainDlg::OnOptionsBtn(C4GUI::Control *btn)
 {
 	// advance to options screen
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Options);
+}
+
+void C4StartupMainDlg::OnEditorBtn(C4GUI::Control *btn)
+{
+	// restart in editor mode
+	bool success = false;
+#ifdef USE_WIN32_WINDOWS
+	wchar_t buf[_MAX_PATH];
+	DWORD sz = ::GetModuleFileName(::GetModuleHandle(NULL), buf, _MAX_PATH);
+	if (sz)
+	{
+		intptr_t iError = (intptr_t)::ShellExecute(NULL, NULL, buf, L"--editor", Config.General.ExePath.GetWideChar(), SW_SHOW);
+		if (iError > 32) success = true;
+	}
+#else
+	TODO start editor
+#endif
+	// must quit ourselves for editor to be shown
+	if (success)
+		Application.Quit();
+	else
+		C4GUI::TheScreen.ShowErrorMessage(LoadResStr("IDS_ERR_STARTEDITOR"));
 }
 
 void C4StartupMainDlg::OnAboutBtn(C4GUI::Control *btn)

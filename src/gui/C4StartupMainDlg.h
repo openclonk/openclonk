@@ -47,6 +47,7 @@ protected:
 	void OnNetJoinBtn(C4GUI::Control *btn); // callback: join net work game (direct join only for now)
 	void OnNetJoin(const StdStrBuf &rsHostAddress);
 	void OnOptionsBtn(C4GUI::Control *btn); // callback: Show options screen
+	void OnEditorBtn(C4GUI::Control *btn); // callback: Editor
 	void OnAboutBtn(C4GUI::Control *btn); // callback: Show about screen
 	void OnExitBtn(C4GUI::Control *btn); // callback: exit button pressed
 	void OnTODO(C4GUI::Control *btn); // button not yet implemented
