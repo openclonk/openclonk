@@ -190,6 +190,7 @@ void C4ConsoleQtViewportView::wheelEvent(QWheelEvent *event)
 		int delta = event->delta() / 8;
 		if (!delta) delta = event->delta(); // abs(delta)<8?
 		uint32_t shift = (delta>0) ? (delta<<16) : uint32_t(delta<<16);
+		shift += GetShiftWParam();
 		C4GUI::MouseMove(C4MC_Button_Wheel, event->x(), event->y(), shift, cvp);
 	}
 	else
