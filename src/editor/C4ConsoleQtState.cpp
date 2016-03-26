@@ -374,13 +374,16 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 	else if (link == "open") FileOpen();
 	else if (link == "exploreuserpath")
 	{
+		bool success = false;
 #ifdef USE_WIN32_WINDOWS
 		StdStrBuf path(::Config.General.UserDataPath);
 		intptr_t iError = (intptr_t) ::ShellExecute(NULL, L"open", path.GetWideChar(), NULL, path.GetWideChar(), SW_SHOW);
-		if (iError <= 32) QMessageBox::critical(this, LoadResStr("IDS_MNU_EXPLOREUSERPATH"), LoadResStr("IDS_ERR_EXPLOREUSERPATH"));
+		if (iError > 32) success = true;
 #else
-		TODO explore user path
+		success = QDesktopServices::openUrl(QUrl::fromLocalFile(::Config.General.UserDataPath));
 #endif
+		if (!success)
+			QMessageBox::critical(this, LoadResStr("IDS_MNU_EXPLOREUSERPATH"), LoadResStr("IDS_ERR_EXPLOREUSERPATH"));
 	}
 	// Open recent link
 	else if (link.startsWith("open:"))
@@ -493,7 +496,8 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ShowWelcomeScreen();
 
 	// Initial empty property page
-	PropertyDlgUpdate(C4EditCursorSelection(), false);
+	auto sel = C4EditCursorSelection();
+	PropertyDlgUpdate(sel, false);
 	
 	window->showNormal();
 #ifdef USE_WIN32_WINDOWS

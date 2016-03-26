@@ -35,6 +35,9 @@
 
 #ifdef USE_WIN32_WINDOWS
 #include <shellapi.h>
+#else
+#include <unistd.h>
+#include <stdio.h>
 #endif
 
 
@@ -267,7 +270,17 @@ void C4StartupMainDlg::OnEditorBtn(C4GUI::Control *btn)
 		if (iError > 32) success = true;
 	}
 #else
-	TODO start editor
+	pid_t pid;
+	switch (pid = fork())
+	{
+		case -1: break; // error message shown below
+		case 0:
+			execl("/proc/self/exe", "openclonk", "--editor", NULL);
+			perror("editor launch failed");
+			exit(1);
+		default:
+			success = true;
+	}
 #endif
 	// must quit ourselves for editor to be shown
 	if (success)

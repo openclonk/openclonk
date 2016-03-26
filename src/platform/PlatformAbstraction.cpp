@@ -97,6 +97,14 @@ bool OpenURL(const char *szURL)
 	}
 	return false;
 }
+#elif defined(WITH_QT_EDITOR)
+#undef LineFeed
+#include <QDesktopServices>
+#include <QUrl>
+bool OpenURL(char const* url)
+{
+	return QDesktopServices::openUrl(QUrl::fromUserInput(url));
+}
 #else
 bool OpenURL(char const*) {return 0;}
 #endif
