@@ -480,11 +480,11 @@ public:
 	StdStrBuf Duplicate() const { StdStrBuf Buf; Buf.Copy(*this); return Buf; }
 	void Move(size_t iFrom, size_t inSize, size_t iTo = 0) { StdBuf::Move(iFrom, inSize, iTo); }
 
-	// Byte-wise compare (will compare characters up to the length of the second string)
+	// Byte-wise compare (will compare characters up to the length of the shorter string)
 	int Compare(const StdStrBuf &Buf2, size_t iAt = 0) const
 	{
 		assert(iAt <= getLength());
-		return StdBuf::Compare(Buf2.getData(), Buf2.getLength(), iAt);
+		return StdBuf::Compare(Buf2.getData(), std::min(getLength(), Buf2.getLength()), iAt);
 	}
 	int Compare_(const char *pCData, size_t iAt = 0) const
 	{
