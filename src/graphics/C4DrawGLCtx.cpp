@@ -570,11 +570,12 @@ bool CStdGLCtx::PageFlip()
 
 #elif defined(USE_SDL_MAINLOOP)
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { ctx = NULL; }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
-	SDL_GL_DeleteContext(ctx);
+	Deselect();
+	if (ctx) SDL_GL_DeleteContext(ctx);
 	ctx = 0;
 	pWindow = 0;
 
@@ -659,6 +660,8 @@ CStdGLCtxQt::CStdGLCtxQt() { context = NULL; surface = NULL; }
 
 void CStdGLCtxQt::Clear(bool multisample_change)
 {
+	Deselect();
+
 	if (context)
 	{
 		if (!pWindow->glwidget) delete context;

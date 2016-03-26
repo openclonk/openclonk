@@ -152,7 +152,7 @@ class CStdGLCtxQt : public CStdGLCtx
 {
 public:
 	CStdGLCtxQt();
-	//~CStdGLCtxQt();
+	virtual ~CStdGLCtxQt() { Clear(); }
 
 	void Clear(bool multisample_change = false) override;               // clear objects
 	bool Init(C4Window * pWindow, C4AbstractApp *pApp) override;
