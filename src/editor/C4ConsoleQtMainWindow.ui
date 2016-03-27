@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>EDITOR</string>
+   <string comment="res">IDS_CNS_EDITOR</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/editor/res/oc.ico</normaloff>:/editor/res/oc.ico</iconset>
+    <normaloff>:/editor/res/oc64.png</normaloff>:/editor/res/oc64.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QComboBox" name="foregroundMatTexComboBox">
