@@ -694,6 +694,11 @@ static bool FnAddVertex(C4Object *Obj, long iX, long iY)
 	return !!Obj->Shape.AddVertex(iX,iY);
 }
 
+static bool FnInsertVertex(C4Object *Obj, long iIndex, long iX, long iY)
+{
+	return !!Obj->Shape.InsertVertex(iIndex,iX,iY);
+}
+
 static bool FnRemoveVertex(C4Object *Obj, long iIndex)
 {
 	return !!Obj->Shape.RemoveVertex(iIndex);
@@ -2608,6 +2613,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetVertex);
 	F(SetVertex);
 	F(AddVertex);
+	F(InsertVertex);
 	F(RemoveVertex);
 	::AddFunc(p, "SetContactDensity", FnSetContactDensity, false);
 	F(GetController);
