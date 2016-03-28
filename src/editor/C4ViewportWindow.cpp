@@ -30,11 +30,26 @@
 #endif
 
 #ifdef WITH_QT_EDITOR
-#undef LineFeed
-#include <QWidget>
+#include <C4ConsoleQtViewport.h>
 #endif
 
-#ifdef USE_WIN32_WINDOWS
+#ifdef WITH_QT_EDITOR
+bool C4Viewport::ScrollBarsByViewPosition()
+{
+	if (PlayerLock) return false;
+	scrollarea->ScrollBarsByViewPosition();
+	return true;
+}
+
+bool C4Viewport::TogglePlayerLock()
+{
+	PlayerLock = !PlayerLock;
+	scrollarea->setScrollBarVisibility(!PlayerLock);
+	ScrollBarsByViewPosition();
+	return true;
+}
+
+#elif defined(USE_WIN32_WINDOWS)
 
 void UpdateWindowLayout(HWND hwnd)
 {
@@ -166,12 +181,6 @@ bool C4Viewport::ViewPositionByScrollBars()
 }
 
 #endif // USE_GTK
-
-#if (defined(USE_SDL_MAINLOOP) && defined(WITH_QT_EDITOR))
-// TODO
-bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
-bool C4Viewport::TogglePlayerLock() {return 0;}
-#endif
 
 void C4ViewportWindow::PerformUpdate()
 {

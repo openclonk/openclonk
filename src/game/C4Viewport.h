@@ -119,6 +119,11 @@ public:
 	bool UpdateOutputSize(int32_t new_width=0, int32_t new_height=0);
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();
+
+#ifdef WITH_QT_EDITOR
+	class C4ConsoleQtViewportScrollArea *scrollarea;
+#endif
+
 #ifdef _WIN32
 	friend LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif

@@ -24,11 +24,12 @@
 #include <C4ViewportWindow.h>
 #include <C4Console.h>
 #include <C4MouseControl.h>
+#include <C4Landscape.h>
 
 /* Console viewports */
 
-C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock)
-	: QOpenGLWidget(dock), dock(dock), cvp(dock->cvp ? dock->cvp->cvp : NULL)
+C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportScrollArea *scrollarea)
+	: QOpenGLWidget(scrollarea->dock), dock(scrollarea->dock), cvp(scrollarea->cvp)
 {
 	setAttribute(Qt::WA_ShowWithoutActivating, true);
 	setFocusPolicy(Qt::WheelFocus);
@@ -185,7 +186,20 @@ void C4ConsoleQtViewportView::wheelEvent(QWheelEvent *event)
 	}
 	else
 	{
-		// TODO zoom?
+		auto delta = event->angleDelta();
+		auto modifiers = QGuiApplication::keyboardModifiers();
+		// Zoom with Ctrl + mouse wheel, just like for player viewports.
+		if (modifiers & Qt::ControlModifier)
+			cvp->ChangeZoom(pow(C4GFX_ZoomStep, (float) delta.y() / 120));
+		else
+		{
+			// Viewport movement.
+			float x = -ViewportScrollSpeed * delta.x() / 120, y = -ViewportScrollSpeed * delta.y() / 120;
+			// Not everyone has a vertical scroll wheel...
+			if (modifiers & Qt::ShiftModifier)
+				std::swap(x, y);
+			cvp->ScrollView(x, y);
+		}
 	}
 }
 
@@ -323,7 +337,64 @@ void C4ConsoleQtViewportView::resizeGL(int w, int h)
 
 void C4ConsoleQtViewportView::paintGL()
 {
+	cvp->ScrollBarsByViewPosition();
 	cvp->Execute();
+}
+
+
+C4ConsoleQtViewportScrollArea::C4ConsoleQtViewportScrollArea(class C4ConsoleQtViewportDockWidget *dock)
+	: QAbstractScrollArea(dock), dock(dock), cvp(dock->cvp->cvp)
+{
+	cvp->scrollarea = this;
+	// No scroll bars by default. Neutral viewports will toggle this.
+	setScrollBarVisibility(false);
+}
+
+void C4ConsoleQtViewportScrollArea::scrollContentsBy(int dx, int dy)
+{
+	// Just use the absolute position in any case.
+	cvp->SetViewX(horizontalScrollBar()->value());
+	cvp->SetViewY(verticalScrollBar()->value());
+}
+
+bool C4ConsoleQtViewportScrollArea::viewportEvent(QEvent *e)
+{
+	// Pass everything to the viewport.
+	return false;
+}
+
+void C4ConsoleQtViewportScrollArea::setupViewport(QWidget *viewport)
+{
+	// Don't steal focus from the viewport. This is necessary to make keyboard input work.
+	viewport->setFocusProxy(NULL);
+	ScrollBarsByViewPosition();
+}
+
+void C4ConsoleQtViewportScrollArea::ScrollBarsByViewPosition()
+{
+	int x = viewport()->width() / cvp->GetZoom();
+	horizontalScrollBar()->setRange(0, GBackWdt - x);
+	horizontalScrollBar()->setPageStep(x);
+	horizontalScrollBar()->setValue(cvp->GetViewX());
+
+	int y = viewport()->height() / cvp->GetZoom();
+	verticalScrollBar()->setRange(0, GBackHgt - y);
+	verticalScrollBar()->setPageStep(y);
+	verticalScrollBar()->setValue(cvp->GetViewY());
+}
+
+void C4ConsoleQtViewportScrollArea::setScrollBarVisibility(bool visible)
+{
+	if (visible)
+	{
+		setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+		setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	}
+	else
+	{
+		setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	}
 }
 
 
@@ -361,10 +432,12 @@ C4ConsoleQtViewportDockWidget::C4ConsoleQtViewportDockWidget(C4ConsoleQtMainWind
 {
 	// Translated title
 	setWindowTitle(LoadResStr("IDS_CNS_VIEWPORT"));
-	// Actual view container
-	view = new C4ConsoleQtViewportView(this);
+	// Actual view container, wrapped in scrolling area
+	auto scrollarea = new C4ConsoleQtViewportScrollArea(this);
+	view = new C4ConsoleQtViewportView(scrollarea);
+	scrollarea->setViewport(view);
 	setTitleBarWidget((title_label = new C4ConsoleQtViewportLabel(windowTitle(), this)));
-	setWidget(view);
+	setWidget(scrollarea);
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(TopLevelChanged(bool)));
 	// Register viewport widget for periodic rendering updates.
 	cvp->viewport_widget = view;

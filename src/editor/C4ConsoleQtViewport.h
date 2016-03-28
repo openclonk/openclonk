@@ -49,12 +49,33 @@ protected:
 	void leaveEvent(QEvent *) override;
 
 public:
-	C4ConsoleQtViewportView(class C4ConsoleQtViewportDockWidget *dock);
+	C4ConsoleQtViewportView(class C4ConsoleQtViewportScrollArea *scrollarea);
 
 	// QOpenGLWidget functions
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
+};
+
+class C4ConsoleQtViewportScrollArea : public QAbstractScrollArea
+{
+	Q_OBJECT
+	
+	class C4ConsoleQtViewportDockWidget *dock;
+	class C4Viewport *cvp;
+
+protected:
+	void scrollContentsBy(int dx, int dy) override;
+	bool viewportEvent(QEvent *e) override;
+
+public:
+	C4ConsoleQtViewportScrollArea(class C4ConsoleQtViewportDockWidget *dock);
+
+	void setupViewport(QWidget *viewport) override;
+	void ScrollBarsByViewPosition();
+	void setScrollBarVisibility(bool visible);
+
+	friend C4ConsoleQtViewportView;
 };
 
 class C4ConsoleQtViewportLabel : public QLabel
@@ -96,6 +117,7 @@ private slots :
 	void TopLevelChanged(bool is_floating);
 
 	friend C4ConsoleQtViewportView;
+	friend C4ConsoleQtViewportScrollArea;
 	friend C4ConsoleQtViewportLabel;
 };
 
