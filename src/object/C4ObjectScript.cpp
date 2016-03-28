@@ -638,6 +638,7 @@ enum VertexUpdateMode
 static Nillable<long> FnGetVertex(C4Object *Obj, long iIndex, long iValueToGet)
 {
 	if (Obj->Shape.VtxNum<1) return C4Void();
+	if (iIndex < 0 || iIndex >= Obj->Shape.VtxNum) return C4Void();
 	iIndex=std::min<long>(iIndex,Obj->Shape.VtxNum-1);
 	switch (static_cast<VertexDataIndex>(iValueToGet))
 	{
