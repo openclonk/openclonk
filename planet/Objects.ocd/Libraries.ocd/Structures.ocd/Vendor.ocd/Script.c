@@ -103,7 +103,7 @@ func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_al
 
 func DoSell(object obj, int wealth_player)
 {
-	if (obj->~QueryOnSell(wealth_player)) return;
+	if (obj->~QueryOnSell(wealth_player, this)) return;
 
 	// Sell contents first
 	for(var contents in FindObjects(Find_Container(obj)))
