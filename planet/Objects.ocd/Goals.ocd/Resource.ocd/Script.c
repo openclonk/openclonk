@@ -107,7 +107,7 @@ public func GetDescription(int plr)
 			// Put the message together
 			var icon = GetBlastID(material);
 			var available_object_count = AvailableObjectCount(material);
-			var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units));
+			var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units, material));
 			var add_msg = Format("$MsgGoalResource$", icon, exploitable_object_count, available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}

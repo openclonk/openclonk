@@ -115,6 +115,8 @@ private func Enrage(proplist coordinates)
 {
 	if (!enrage_target)
 		CheckTarget();
+	if (!this)
+		return false;
 	if (!enrage_target)
 		return false;
 	if (ObjectDistance(enrage_target) < 10)

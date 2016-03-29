@@ -354,3 +354,41 @@ private func StartConstructing()
 		}
 	}
 }
+
+func TakeConstructionMaterials(object from_clonk)
+{
+	// check for material
+	var comp, index = 0;
+	var mat;
+	var w = definition->GetDefWidth() + 10;
+	var h = definition->GetDefHeight() + 10;
+
+	while (comp = GetComponent(nil, index, nil, definition))
+	{
+		// find material
+		var count_needed = GetComponent(comp, nil, nil, definition);
+		index++;
+		
+		mat = CreateArray();
+		// 1. look for stuff in the clonk
+		mat[0] = FindObjects(Find_ID(comp), Find_Container(from_clonk));
+		// 2. look for stuff lying around
+		mat[1] = from_clonk->FindObjects(Find_ID(comp), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
+		// 3. look for stuff in nearby lorries/containers
+		var i = 2;
+		for(var cont in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
+			mat[i] = FindObjects(Find_ID(comp), Find_Container(cont));
+		// move it
+		for(var mat2 in mat)
+		{
+			for(var o in mat2)
+			{
+				if(count_needed <= 0)
+					break;
+				o->Exit();
+				o->Enter(this);
+				count_needed--;
+			}
+		}
+	}
+}

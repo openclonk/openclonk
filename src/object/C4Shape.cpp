@@ -316,6 +316,7 @@ out:
 bool C4Shape::InsertVertex(int32_t iPos, int32_t tx, int32_t ty)
 {
 	if (VtxNum+1>C4D_MaxVertex) return false;
+	if (iPos < 0 || iPos > VtxNum) return false;
 	// Insert vertex before iPos
 	for (int32_t cnt=VtxNum; cnt>iPos; cnt--)
 		{ VtxX[cnt]=VtxX[cnt-1]; VtxY[cnt]=VtxY[cnt-1]; }

@@ -638,6 +638,7 @@ enum VertexUpdateMode
 static Nillable<long> FnGetVertex(C4Object *Obj, long iIndex, long iValueToGet)
 {
 	if (Obj->Shape.VtxNum<1) return C4Void();
+	if (iIndex < 0 || iIndex >= Obj->Shape.VtxNum) return C4Void();
 	iIndex=std::min<long>(iIndex,Obj->Shape.VtxNum-1);
 	switch (static_cast<VertexDataIndex>(iValueToGet))
 	{
@@ -691,6 +692,11 @@ static bool FnSetVertex(C4Object *Obj, long iIndex, long iValueToSet, long iValu
 static bool FnAddVertex(C4Object *Obj, long iX, long iY)
 {
 	return !!Obj->Shape.AddVertex(iX,iY);
+}
+
+static bool FnInsertVertex(C4Object *Obj, long iIndex, long iX, long iY)
+{
+	return !!Obj->Shape.InsertVertex(iIndex,iX,iY);
 }
 
 static bool FnRemoveVertex(C4Object *Obj, long iIndex)
@@ -2607,6 +2613,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetVertex);
 	F(SetVertex);
 	F(AddVertex);
+	F(InsertVertex);
 	F(RemoveVertex);
 	::AddFunc(p, "SetContactDensity", FnSetContactDensity, false);
 	F(GetController);

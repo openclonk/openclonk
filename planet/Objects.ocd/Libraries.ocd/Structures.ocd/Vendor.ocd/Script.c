@@ -266,21 +266,29 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 	// Buy
 	DoBuy(def, for_player, wealth_player, clonk);
 	// Excess objects exit flag (can't get them out...)
+	EjectAllContents();
+	UpdateInteractionMenus(this.GetBuyMenuEntries);
+}
+
+private func EjectAllContents()
+{
 	var i = ContentsCount();
 	var obj;
 	while (i--) 
 		if (obj = Contents(i))
-		{
-			obj->Exit(0, GetDefHeight() / 2);
-			// newly bought items do not fade out until they've been collected once
-			if (obj && ObjectCount(Find_ID(Rule_ObjectFade)) && !obj.HasNoFadeOut)
-			{
-				obj.HasNoFadeOut = this.BuyItem_HasNoFadeout;
-				obj.BuyOverload_Entrance = obj.Entrance;
-				obj.Entrance = this.BuyItem_Entrance;
-			}
-		}
-	UpdateInteractionMenus(this.GetBuyMenuEntries);
+			EjectContents(obj);
+}
+
+private func EjectContents(object contents)
+{
+	contents->Exit(0, GetDefHeight() / 2);
+	// newly bought items do not fade out until they've been collected once
+	if (contents && ObjectCount(Find_ID(Rule_ObjectFade)) && !contents.HasNoFadeOut)
+	{
+		contents.HasNoFadeOut = this.BuyItem_HasNoFadeout;
+		contents.BuyOverload_Entrance = contents.Entrance;
+		contents.Entrance = this.BuyItem_Entrance;
+	}
 }
 
 // ----- Menu updates, misc
