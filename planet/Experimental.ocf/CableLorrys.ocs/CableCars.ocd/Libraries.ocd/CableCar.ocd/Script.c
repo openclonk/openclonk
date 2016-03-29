@@ -38,7 +38,7 @@ func Disengaged() {}
 func GetCableOffset(array position, int prec) {}
 
 // To add custom interaction menu entries after the regular cable car entries
-// custom_entry is prototype for proper spacing of buttons
+// custom_entry is a prototype for proper spacing of buttons
 // Use priorities > 2000 just to be sure
 func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk) {}
 
@@ -78,6 +78,7 @@ public func DoMovement()
 	var position = CreateArray(2);
 	if (lib_ccar_progress >= lib_ccar_max_progress)
 	{
+		lib_ccar_rail->~Deactivation(1);
 		lib_ccar_rail = lib_ccar_rail->GetActionTarget(end);
 		lib_ccar_rail->GetCablePosition(position);
 		GetCableOffset(position);
@@ -135,13 +136,15 @@ public func GetCableCarMenuEntries(object clonk)
 	{
 		BackgroundColor = { Std = 0, Selected = RGB(100, 30, 30) },
 		OnMouseIn = GuiAction_SetTag("Selected"),
-		OnMouseOut = GuiAction_SetTag("Std")
+		OnMouseOut = GuiAction_SetTag("Std"),
+		Right = "2em"
 	};
 
 	var custom_entry =
 	{
 		Right = "3em", Bottom = "2em",
-		image = { Prototype = control_prototype }
+		image = { Prototype = control_prototype },
+		icon = { Left = "2em" }
 	};
 
 	var menu_entries = [];
@@ -158,9 +161,10 @@ public func GetCableCarMenuEntries(object clonk)
 			var engage = new custom_entry {
 				Priority = 1000 + i,
 				Tooltip = "$TooltipEngage$",
-				OnClick = GuiAction_Call(this, "EngageRail", station)
+				OnClick = GuiAction_Call(this, "EngageRail", station),
+				image = { Prototype = custom_entry.image, Symbol = station },
+				icon = { Prototype = custom_entry.icon, Symbol = Icon_LibraryCableCar, GraphicsName = "Engage" }
 			};
-			engage.image.Symbol = station;
 			PushBack(menu_entries, { symbol = station, extra_data = "Engage", custom = engage });
 			i++;
 		}
@@ -181,10 +185,19 @@ public func GetCableCarMenuEntries(object clonk)
 			var go = new custom_entry {
 				Priority = 1000,
 				Tooltip = "$TooltipGo$",
-				OnClick = GuiAction_Call(this, "OpenDestinationSelection", clonk)
+				OnClick = GuiAction_Call(this, "OpenDestinationSelection", clonk),
+				image = { Prototype = custom_entry.image, Symbol = Icon_Play }
 			};
-			go.image.Symbol = Icon_Play;
 			PushBack(menu_entries, { symbol = this, extra_data = "Go", custom = go });
+
+			var disengage = new custom_entry {
+				Priority = 1001,
+				Tooltip = "$TooltipDisengage$",
+				OnClick = GuiAction_Call(this, "DisengageRail"),
+				image = { Prototype = custom_entry.image, Symbol = GetRailTarget() },
+				icon = { Prototype = custom_entry.icon, Symbol = Icon_LibraryCableCar, GraphicsName = "Disengage" }
+			};
+			PushBack(menu_entries, { symbol = GetRailTarget(), extra_data = "Disengage", custom = disengage });
 		}
 	}
 	// Add custom entries
@@ -329,6 +342,7 @@ func MoveTo(dest)
 	var origin = CreateArray(2), ending = CreateArray(2);
 	rail->GetActionTarget(0)->GetCablePosition(origin);
 	rail->GetActionTarget(1)->GetCablePosition(ending);
+	rail->~Activation(1);
 	lib_ccar_max_progress = Distance(origin[0], origin[1], ending[0], ending[1]);
 	lib_ccar_rail = rail;
 }

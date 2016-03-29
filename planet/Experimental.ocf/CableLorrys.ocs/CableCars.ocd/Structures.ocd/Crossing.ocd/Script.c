@@ -9,6 +9,14 @@
 
 #include Library_CableStation
 
+local turn_anim;
+
+func Initialize()
+{
+	turn_anim = PlayAnimation("Engine", 1, Anim_Const(0), Anim_Const(1000));
+	return _inherited(...);
+}
+
 // Prevents the automatic change of the station status when manually set to station mode
 local manual_setting = false;
 
@@ -110,6 +118,22 @@ func CheckStationStatus()
 		SetMeshMaterial("CableCarStation_SignStation", 1);
 	else
 		SetMeshMaterial("CableCarStation_Sign", 1);
+}
+
+local activations = 0;
+
+func CableActivation(int count)
+{
+	if (activations <= 0)
+		SetAnimationPosition(turn_anim, Anim_Linear(GetAnimationPosition(turn_anim), 0, GetAnimationLength("Engine"), 175, ANIM_Loop));
+	activations += count;
+}
+
+func CableDeactivation(int count)
+{
+	activations -= count;
+	if (activations <= 0)
+		SetAnimationPosition(turn_anim, Anim_Const(GetAnimationPosition(turn_anim)));
 }
 
 public func NoConstructionFlip() { return true; }

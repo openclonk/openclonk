@@ -29,11 +29,18 @@ func Engaged()
 	SetAction("OnRail");
 }
 
+func Disengaged()
+{
+	SetAction("Idle");
+	if (pickup)
+		DropVehicle();
+}
+
 func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk)
 {
 	if (IsTravelling()) return;
 
-	if (!pickup)
+	if (!pickup && GetRailTarget())
 	{
 		// Picking up vehicles
 		var vehicles = FindObjects(Find_AtPoint(), Find_Category(C4D_Vehicle), Find_Not(Find_Func("RejectCableHoistPickup", this)), Find_Exclude(this), Find_Func(pickup));
@@ -42,22 +49,26 @@ func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, obje
 		{
 			if (GetEffect("CableHoistPickup", vehicle)) continue;
 
-			var pickup = new custom_entry {
+			var to_pickup = new custom_entry {
 				Priority = 2000 + i,
 				Tooltip = "$TooltipPickup$",
-				OnClick = GuiAction_Call(this, "PickupVehicle", vehicle)
+				OnClick = GuiAction_Call(this, "PickupVehicle", vehicle),
+				image = { Prototype = custom_entry.image, Symbol = vehicle },
+				icon = { Prototype = custom_entry.icon, Symbol = Icon_LibraryCableCar, GraphicsName = "Engage" }
 			};
-			pickup.image.Symbol = vehicle;
-			PushBack(menu_entries, { symbol = vehicle, extra_data = "Pickup", custom = pickup });
+			PushBack(menu_entries, { symbol = vehicle, extra_data = "Pickup", custom = to_pickup });
 			i++;
 		}
-	} else {
+	} else if (pickup && GetRailTarget()) {
 		// Drop the vehicle
 		var drop = new custom_entry {
 			Priority = 2000,
 			Tooltip = "$TooltipDrop$",
-			OnClick = GuiAction_Call(this, "DropVehicle")
+			OnClick = GuiAction_Call(this, "DropVehicle"),
+			image = { Prototype = custom_entry.image, Symbol = pickup },
+			icon = { Prototype = custom_entry.icon, Symbol = Icon_LibraryCableCar, GraphicsName = "Disengage" }
 		};
+		PushBack(menu_entries, { symbol = pickup, extra_data = "Drop", custom = drop });
 	}
 }
 

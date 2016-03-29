@@ -14,6 +14,15 @@
 // This function is called whenever a change in the cable network occured, i.e. destinations have been added / removed.
 private func DestinationsUpdated() { }
 
+// Called by cable lines whenever a car starts travelling along a connected cable.
+// Can be used to start animation or sounds or similar.
+// count is a value indicating the amount of activations.
+public func CableActivation(int count) { }
+
+// Called likewise as Activation() whenever a car leaves the cable.
+// count is a value indicating the amount of deactivations (e.g. a cable with more than one car broke).
+public func CableDeactivation(int count) { }
+
 /*--- Callbacks ---*/
 
 // Be sure to always call these via _inherited();
