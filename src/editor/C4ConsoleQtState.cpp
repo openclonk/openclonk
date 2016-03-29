@@ -428,6 +428,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	format.setBlueBufferSize(8);
 	format.setDepthBufferSize(8);
 	format.setProfile(QSurfaceFormat::CoreProfile);
+	format.setSwapInterval(0); // turn off vsync because otherwise each viewport causes an extra 1/(refesh rate) delay
 	if (Config.Graphics.DebugOpenGL)
 		format.setOption(QSurfaceFormat::DebugContext);
 	QSurfaceFormat::setDefaultFormat(format);
