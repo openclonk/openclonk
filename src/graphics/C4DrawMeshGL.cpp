@@ -538,6 +538,9 @@ namespace
 			pFoW->getFoW()->Ambient.GetFragTransform(pFoW->getViewportRegion(), clipRect, outRect, ambientTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 		}
+
+		// Current frame counter
+		call.SetUniform1i(C4SSU_FrameCounter, ::Game.FrameCounter);
 	}
 
 	bool ResolveAutoParameter(C4ShaderCall& call, StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect)
