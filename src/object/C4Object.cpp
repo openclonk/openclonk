@@ -581,6 +581,11 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		if (!C4ValueToMatrix(value, &matrix))
 			matrix = StdMeshMatrix::Identity();
 
+		if (fix_r != Fix0)
+		{
+			matrix = StdMeshMatrix::Rotate(fixtof(fix_r) * (M_PI / 180.0f), 0.0f, 0.0f, 1.0f) * matrix;
+		}
+
 		if(twdt != fwdt || thgt != fhgt)
 		{
 			// Also scale Z so that the mesh is not totally distorted and
@@ -623,8 +628,8 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		fhgt = thgt;
 	}
 
-	// Straight
-	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
+	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
 	{
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
@@ -696,8 +701,8 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		fhgt -= offset_from_top;
 	}
 
-	// Straight
-	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
+	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 	}
