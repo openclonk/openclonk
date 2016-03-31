@@ -12,6 +12,11 @@
 # for the above references.
 
 cmake_minimum_required (VERSION 3.0.2)
+
+# Don't allow people to build "Release" builds because there's no reason to do that.
+# Use one of RelWithDebInfo or MinSizeRel instead.
+set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo MinSizeRel CACHE STRING "List of supported configuration types." FORCE)
+
 project (openclonk CXX C)
 
 # CMP0054: Only interpret if() arguments as variables or keywords when unquoted
