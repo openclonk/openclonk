@@ -55,12 +55,76 @@ if(USE_GCC_STD_14)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif()
 
+# Enable link-time code generation. We have to do this manually because while
+# there is a INTERPROCEDURAL_OPTIMIZATION cmake flag, it's only implemented
+# for icc so far; https://cmake.org/Bug/view.php?id=15939
+function(add_linker_flags)
+	include(CMakeParseArguments)
+	set(options optimized debug)
+	set(oneValueArgs FLAGS)
+	set(multiValueArgs MODULES)
+
+	cmake_parse_arguments(_alf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	# Adds some linker flags to all optimized build configurations
+	set(_configurations "")
+	if(_alf_optimized)
+		list(APPEND _configurations MINSIZEREL RELWITHDEBINFO RELEASE)
+	endif()
+	if(_alf_debug)
+		list(APPEND _configurations DEBUG)
+	endif()
+
+	foreach(_module ${_alf_MODULES})
+		string(TOUPPER "${_module}" _obj_type)
+		foreach(_config ${_configurations})
+			set(CMAKE_${_obj_type}_LINKER_FLAGS_${_config} "${CMAKE_${_obj_type}_LINKER_FLAGS_${_config}} ${_alf_FLAGS}" PARENT_SCOPE)
+		endforeach()
+	endforeach()
+endfunction()
+
+CHECK_CXX_COMPILER_FLAG("-flto" USE_GCC_STYLE_LTCG)
+if(USE_GCC_STYLE_LTCG)
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -flto")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -flto")
+	add_linker_flags(optimized MODULES exe shared FLAGS -flto)
+
+	# Use GCC's ar and ranlib wrappers if necessary, because the plain ones 
+	# don't understand lto objects without an explicit plugin parameter
+	if(CMAKE_C_COMPILER MATCHES "gcc$")
+		set(LTCG_NEEDS_AR_WRAPPER 1)
+		set(LTCG_AR_WRAPPER_PREFIX "${CMAKE_C_COMPILER}")
+	elseif(CMAKE_C_COMPILER MATCHES "cc$")
+		set(LTCG_NEEDS_AR_WRAPPER 1)
+		set(LTCG_AR_WRAPPER_PREFIX "gcc")
+	else()
+		set(LTCG_NEEDS_AR_WRAPPER 0)
+	endif()
+
+	if(LTCG_NEEDS_AR_WRAPPER)
+		find_program(AR_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ar")
+		if (AR_WRAPPER)
+			message("Using ${AR_WRAPPER} instead of ${CMAKE_AR} to support lto objects.")
+			set(CMAKE_AR "${AR_WRAPPER}" CACHE FILEPATH "Path to an ar that supports lto objects." FORCE)
+		endif()
+		find_program(RANLIB_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ranlib")
+		if (RANLIB_WRAPPER)
+			message("Using ${RANLIB_WRAPPER} instead of ${CMAKE_RANLIB} to support lto objects.")
+			set(CMAKE_RANLIB "${RANLIB_WRAPPER}" CACHE FILEPATH "Path to a ranlib that supports lto objects." FORCE)
+		endif()
+	endif()
+endif()
+
 if(MSVC)
 	# Disable non-standard conversion from string literal to (nonconst) char*
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:strictStrings")
 
 	# Enable multi-core builds
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+
+	# Enable LTCG for release builds
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
+	add_linker_flags(optimized MODULES exe shared static FLAGS /LTCG)
 
 	# Activate edit-and-continue
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /ZI /Gy")
