@@ -588,7 +588,6 @@ set(OC_CLONK_SOURCES
 	src/landscape/fow/C4FoWBeamTriangle.h
 	src/landscape/C4Landscape.cpp
 	src/landscape/C4Landscape.h
-	src/landscape/C4LandscapeRenderClassic.cpp
 	src/landscape/C4LandscapeRender.cpp
 	src/landscape/C4LandscapeRender.h
 	src/landscape/C4Map.cpp

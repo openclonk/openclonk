@@ -166,25 +166,4 @@ private:
 };
 #endif
 
-class C4LandscapeRenderClassic : public C4LandscapeRender
-{
-public:
-	C4LandscapeRenderClassic();
-	~C4LandscapeRenderClassic();
-
-private:
-	C4Surface *Surface32;
-
-public:
-	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
-	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
-	virtual void Clear();
-
-	virtual C4Rect GetAffectedRect(C4Rect Rect);
-	virtual void Update(C4Rect Rect, C4Landscape *pSource);
-
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
-
-};
-
 #endif // C4LANDSCAPE_RENDER_H
