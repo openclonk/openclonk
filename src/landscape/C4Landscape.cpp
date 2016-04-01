@@ -1413,7 +1413,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 		// Dynamic map by scenario
 		if (!sfcMap && !fOverloadCurrent)
-			if ((!CreateMap(sfcMap, sfcMapBkg)))
+			if (CreateMap(sfcMap, sfcMapBkg))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// No map failure
