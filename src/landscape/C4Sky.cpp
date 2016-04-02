@@ -215,7 +215,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 
 DWORD C4Sky::GetSkyFadeClr(int32_t iY)
 {
-	int32_t iPos2=(iY*256)/GBackHgt; int32_t iPos1=256-iPos2;
+	int32_t iPos2=(iY*256)/::Landscape.GetHeight(); int32_t iPos1=256-iPos2;
 	return (((((FadeClr1&0xff00ff)*iPos1 + (FadeClr2&0xff00ff)*iPos2) & 0xff00ff00)
 	         | (((FadeClr1&0x00ff00)*iPos1 + (FadeClr2&0x00ff00)*iPos2) & 0x00ff0000))>>8)
 	       | (FadeClr1 & 0xff000000);

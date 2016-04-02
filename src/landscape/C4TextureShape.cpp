@@ -175,7 +175,7 @@ void C4TextureShapeActivationMap::Add(int32_t block_x, int32_t block_y, int32_t 
 }
 
 
-void C4TextureShape::Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio)
+void C4TextureShape::Draw(const CSurface8 &sfcMap, const CSurface8 &sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio)
 {
 	// Safety
 	if (!num_shapes) return;
@@ -183,8 +183,8 @@ void C4TextureShape::Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMap
 	// Add max polygon size because polygons may extent far onto outside pixels
 	int32_t x0 = std::max<int32_t>(0, iMapX*MapZoom + iOffX - GetMaxPolyWidth()),
 		y0 = std::max<int32_t>(0, iMapY*MapZoom + iOffY - GetMaxPolyHeight());
-	int32_t x1 = std::min<int32_t>(::Landscape.Width, x0 + iMapWdt*MapZoom + GetMaxPolyWidth() * 2),
-		y1 = std::min<int32_t>(::Landscape.Height, y0 + iMapHgt*MapZoom + GetMaxPolyHeight() * 2);
+	int32_t x1 = std::min<int32_t>(::Landscape.GetWidth(), x0 + iMapWdt*MapZoom + GetMaxPolyWidth() * 2),
+		y1 = std::min<int32_t>(::Landscape.GetHeight(), y0 + iMapHgt*MapZoom + GetMaxPolyHeight() * 2);
 	// Range in shape blocks.
 	// A shape block is the coverage of the size of one loaded shape data surface
 	int32_t rblock_x0 = x0 / data.Wdt;
@@ -202,11 +202,11 @@ void C4TextureShape::Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMap
 	{
 		for (int32_t map_x = iMapX; map_x < iMapX + iMapWdt; ++map_x)
 		{
-			if (sfcMap->GetPix(map_x, map_y) == iTexture)
+			if (sfcMap.GetPix(map_x, map_y) == iTexture)
 			{
 				// Here we have a pixel of the texture drawn in this shape
 				// Find all shapes covered by this map pixel and remember background pixel for them
-				const BYTE pixBkg = sfcMapBkg->GetPix(map_x, map_y);
+				const BYTE pixBkg = sfcMapBkg.GetPix(map_x, map_y);
 				// Find all shape blocks to be checked
 				int32_t px_check_rate = 1; // sample rate to check coverage, in pixels. Could also increase this if it turns out to be a bottleneck
 				for (int32_t pxo_y = 0; pxo_y < MapZoom; pxo_y += px_check_rate)

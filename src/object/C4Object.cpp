@@ -4190,7 +4190,7 @@ bool C4Object::SetLightColor(uint32_t iValue)
 
 void C4Object::UpdateLight()
 {
-	if (Landscape.pFoW) Landscape.pFoW->Add(this);
+	if (Landscape.HasFoW()) Landscape.GetFoW()->Add(this);
 }
 
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY, int32_t player)
@@ -4696,7 +4696,7 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	// put into inactive list
 	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
-	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
+	if (Landscape.HasFoW()) Landscape.GetFoW()->Remove(this);
 	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)

@@ -139,12 +139,12 @@ bool C4GameSave::SaveScenarioSections()
 bool C4GameSave::SaveLandscape()
 {
 	// exact?
-	if (::Landscape.Mode == C4LSC_Exact || GetForceExactLandscape())
+	if (::Landscape.GetMode() ==  LandscapeMode::Exact || GetForceExactLandscape())
 	{
 		C4DebugRecOff DBGRECOFF;
 		// Landscape
 		bool fSuccess;
-		if (::Landscape.Mode == C4LSC_Exact)
+		if (::Landscape.GetMode() ==  LandscapeMode::Exact)
 			fSuccess = !!::Landscape.Save(*pSaveGroup);
 		else
 			fSuccess = !!::Landscape.SaveDiff(*pSaveGroup, !IsSynced());
@@ -160,7 +160,7 @@ bool C4GameSave::SaveLandscape()
 		if (!::MaterialMap.SaveEnumeration(*pSaveGroup)) return false;
 	}
 	// static / dynamic
-	if (::Landscape.Mode == C4LSC_Static)
+	if (::Landscape.GetMode() ==  LandscapeMode::Static)
 	{
 		// static map
 		// remove old-style landscape.bmp
@@ -174,7 +174,7 @@ bool C4GameSave::SaveLandscape()
 			if (!::Landscape.SaveTextures(*pSaveGroup)) return false;
 		}
 	}
-	else if (::Landscape.Mode != C4LSC_Exact)
+	else if (::Landscape.GetMode() !=  LandscapeMode::Exact)
 	{
 		// dynamic map by landscape.txt or scenario core: nothing to save
 		// in fact, it doesn't even make much sense to save the Objects.txt

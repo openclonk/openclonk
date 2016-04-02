@@ -28,6 +28,7 @@
 #include <C4LoaderScreen.h>
 #include <C4GraphicsResource.h>
 #include <C4Landscape.h>
+#include "landscape/C4Sky.h"
 #include <C4Network2.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
@@ -229,7 +230,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landscape
 		std::unique_ptr<CPNGFile> png(new CPNGFile());
-		int32_t lWdt = GBackWdt * zoom, lHgt = GBackHgt * zoom;
+		int32_t lWdt = ::Landscape.GetWidth() * zoom, lHgt = ::Landscape.GetHeight() * zoom;
 		if (!png->Create(lWdt, lHgt, false)) return false;
 		// get backbuffer size
 		int32_t bkWdt=C4GUI::GetScreenWdt(), bkHgt=C4GUI::GetScreenHgt();
@@ -241,8 +242,8 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		// draw on one big viewport
 		pVP->SetOutputSize(0,0,0,0, bkWdt, bkHgt);
 		// backup and clear sky parallaxity
-		int32_t iParX=::Landscape.Sky.ParX; ::Landscape.Sky.ParX=10;
-		int32_t iParY=::Landscape.Sky.ParY; ::Landscape.Sky.ParY=10;
+		int32_t iParX=::Landscape.GetSky().ParX; ::Landscape.GetSky().ParX=10;
+		int32_t iParY=::Landscape.GetSky().ParY; ::Landscape.GetSky().ParY=10;
 		// backup and clear viewport borders
 		FLOAT_RECT vp_borders = { pVP->BorderLeft, pVP->BorderRight, pVP->BorderTop, pVP->BorderBottom };
 		pVP->BorderLeft = pVP->BorderRight = pVP->BorderTop = pVP->BorderBottom = 0.0f;
@@ -288,8 +289,8 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		pVP->BorderRight = vp_borders.right;
 		pVP->BorderBottom = vp_borders.bottom;
 		// restore parallaxity
-		::Landscape.Sky.ParX=iParX;
-		::Landscape.Sky.ParY=iParY;
+		::Landscape.GetSky().ParX=iParX;
+		::Landscape.GetSky().ParY=iParY;
 		// restore viewport size
 		::Viewports.RecalculateViewports();
 		// save!

@@ -143,7 +143,7 @@ bool FreeMoveTo(C4Object *cObj)
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
-	int32_t iY=std::min(rY, GBackHgt);
+	int32_t iY=std::min(rY, ::Landscape.GetHeight());
 	while ((iY>=0) && GBackSolid(rX,iY)) iY--;
 	if (iY>=0) rY=iY;
 	// No-free-move adjustments (i.e. if walking)
@@ -152,8 +152,8 @@ void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShape
 		// Drop down to bottom of free space
 		if (!GBackSemiSolid(rX,rY))
 		{
-			for (iY=rY; (iY<GBackHgt) && !GBackSemiSolid(rX,iY+1); iY++) {}
-			if (iY<GBackHgt) rY=iY;
+			for (iY=rY; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(rX,iY+1); iY++) {}
+			if (iY<::Landscape.GetHeight()) rY=iY;
 		}
 		// Vertical shape offset above solid
 		if (GBackSolid(rX,rY+1) || GBackSolid(rX,rY+5))

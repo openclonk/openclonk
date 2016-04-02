@@ -192,7 +192,7 @@ void CSurface8::MapBytes(BYTE *bpMap)
 	for (int cnt=0; cnt<Wdt*Hgt; cnt++) SetPix(cnt%Wdt, cnt/Wdt, bpMap[GetPix(cnt%Wdt, cnt/Wdt)]);
 }
 
-void CSurface8::GetSurfaceSize(int &irX, int &irY)
+void CSurface8::GetSurfaceSize(int &irX, int &irY) const
 {
 	// simply assign stored values
 	irX=Wdt;

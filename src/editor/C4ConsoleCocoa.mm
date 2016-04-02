@@ -26,6 +26,7 @@
 #include <C4Language.h>
 #include <C4Player.h>
 #include <C4Landscape.h>
+#include "landscape/C4Sky.h"
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
@@ -221,7 +222,7 @@ void C4ToolsDlg::UpdateTextures()
 	[texturesPopup removeAllItems];
 	// bottom-most: any invalid textures
 	bool fAnyEntry = false; int32_t cnt; const char *szTexture;
-	if (::Landscape.Mode!=C4LSC_Exact)
+	if (::Landscape.GetMode()!=LandscapeMode::Exact)
 		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 		{
 			if (!::TextureMap.GetIndex(Material, szTexture, false))
@@ -240,7 +241,7 @@ void C4ToolsDlg::UpdateTextures()
 	for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 	{
 		// Current material-texture valid? Always valid for exact mode
-		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
+		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.GetMode()==LandscapeMode::Exact)
 		{
 			[texturesPopup insertItemWithTitle:[NSString stringWithUTF8String:szTexture] atIndex:0];
 		}
@@ -295,7 +296,7 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 	// Sky material: sky as pattern only
 	if (SEqual(GetOwner()->Material,C4TLS_MatSky))
 	{
-		Pattern.Set(::Landscape.Sky.Surface, 0);
+		Pattern.Set(::Landscape.GetSky().Surface, 0);
 	}
 	// Material-Texture
 	else

@@ -100,7 +100,7 @@ void C4MassMoverSet::Draw()
 bool C4MassMover::Init(int32_t tx, int32_t ty)
 {
 	// Out of bounds check
-	if (!Inside<int32_t>(tx,0,GBackWdt-1) || !Inside<int32_t>(ty,0,GBackHgt-1))
+	if (!Inside<int32_t>(tx,0,::Landscape.GetWidth()-1) || !Inside<int32_t>(ty,0,::Landscape.GetHeight()-1))
 		return false;
 	// Check mat
 	Mat=GBackMat(tx,ty);
