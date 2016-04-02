@@ -524,6 +524,11 @@ private:
 	typedef std::map<StdCopyStrBuf, StdMeshMaterial> MaterialMap;
 
 public:
+	enum ShaderLoadFlag {
+		SMM_AcceptExisting = 1,
+		SMM_ForceReload = 2
+	};
+
 	class Iterator
 	{
 		friend class StdMeshMatManager;
@@ -550,16 +555,18 @@ public:
 	// filename may be NULL if the source is not a file. It will only be used
 	// for error messages.
 	// Throws StdMeshMaterialError.
-	void Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
+	// Returns a set of all loaded materials.
+	std::set<StdCopyStrBuf> Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
 
 	// Get material by name. NULL if there is no such material with this name.
 	const StdMeshMaterial* GetMaterial(const char* material_name) const;
 
 	Iterator Begin() { return Iterator(Materials.begin()); }
 	Iterator End() { return Iterator(Materials.end()); }
+	void Remove(const StdStrBuf& name, class StdMeshMaterialUpdate* update);
 	Iterator Remove(const Iterator& iter, class StdMeshMaterialUpdate* update);
 
-	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, bool success_if_exists); // if pass_if_exists is TRUE, the function returns the existing shader, otherwise returns NULL.
+	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, uint32_t load_flags); // if load_flags & SMM_AcceptExisting, the function returns the existing shader, otherwise returns NULL.
 	const StdMeshMaterialProgram* AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader); // returns NULL if shader code cannot be compiled
 
 	const StdMeshMaterialShader* GetFragmentShader(const char* name) const;
