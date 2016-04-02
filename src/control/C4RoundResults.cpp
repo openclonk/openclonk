@@ -20,6 +20,7 @@
 
 #include <C4Player.h>
 #include <C4Game.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>

@@ -21,9 +21,11 @@
 #include <C4Include.h>
 #include <C4Effect.h>
 
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Game.h>
+#include "script/C4Aul.h"
 
 void C4Effect::AssignCallbackFunctions()
 {

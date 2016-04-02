@@ -23,6 +23,7 @@
 
 #ifndef USE_CONSOLE
 // headers for particle execution
+#include "script/C4Aul.h"
 #include <C4Application.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>

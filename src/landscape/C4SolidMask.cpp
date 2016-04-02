@@ -19,6 +19,7 @@
 #include <C4Include.h>
 #include <C4SolidMask.h>
 
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include <C4Landscape.h>
 #include <C4Game.h>

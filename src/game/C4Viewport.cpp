@@ -22,6 +22,7 @@
 
 #include <C4ViewportWindow.h>
 #include <C4Console.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include <C4FullScreen.h>
 #include <C4Stat.h>

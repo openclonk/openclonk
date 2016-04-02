@@ -37,11 +37,13 @@
 #include <C4GameMessage.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include "game/C4GameScript.h"
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include <C4ScriptGuiWindow.h>
 #include "gui/C4MessageInput.h"
+#include "object/C4Def.h"
 #include "object/C4DefList.h"
 
 #ifndef NOAULDEBUG

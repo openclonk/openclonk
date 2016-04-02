@@ -18,6 +18,7 @@
 /* Object motion, collision, friction */
 
 #include <C4Include.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 
 #include <C4Effect.h>

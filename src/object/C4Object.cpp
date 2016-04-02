@@ -21,6 +21,7 @@
 #include <C4Object.h>
 
 #include <C4AulExec.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Effect.h>
 #include <C4ObjectInfo.h>
@@ -4469,6 +4470,11 @@ void C4Object::UnSelect()
 	Call(PSF_CrewSelection, &C4AulParSet(true));
 }
 
+void C4Object::GetViewPos(float & riX, float & riY, float tx, float ty, const C4Facet & fctViewport) const       // get position this object is seen at (for given scroll)
+{
+	if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX = float(GetX()); riY = float(GetY()); }
+}
+
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
 	float & resultx, float & resulty, float & resultzoom) const
 {
@@ -4931,6 +4937,15 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject) const
 	}
 	// concat OK
 	return true;
+}
+
+bool C4Object::IsMoveableBySolidMask(int ComparisonPlane) const
+{
+	return (Status == C4OS_NORMAL)
+		&& !(Category & C4D_StaticBack)
+		&& (ComparisonPlane < GetPlane())
+		&& !Contained
+		;
 }
 
 void C4Object::UpdateScriptPointers()

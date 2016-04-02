@@ -21,6 +21,7 @@
 #include <C4MouseControl.h>
 
 #include <C4Viewport.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4FullScreen.h>

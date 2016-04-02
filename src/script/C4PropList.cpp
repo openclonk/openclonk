@@ -17,6 +17,8 @@
 
 #include <C4Include.h>
 #include <C4PropList.h>
+
+#include "script/C4Aul.h"
 #include <C4GameObjects.h>
 #include <C4Game.h>
 #include <C4Object.h>

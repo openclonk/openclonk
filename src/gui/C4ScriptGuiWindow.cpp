@@ -30,6 +30,7 @@
 #include <C4ScriptGuiWindow.h>
 
 #include <C4Application.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4GraphicsSystem.h>
 #include <C4GraphicsResource.h>

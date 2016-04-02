@@ -22,6 +22,7 @@
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4Log.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include "C4AulExec.h"
 

@@ -21,6 +21,7 @@
 #include <C4Game.h>
 
 #include <C4AulDebug.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Effect.h>
 #include <C4FileMonitor.h>

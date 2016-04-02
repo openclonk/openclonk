@@ -20,16 +20,16 @@
 #ifndef INC_C4Object
 #define INC_C4Object
 
-#include "C4Facet.h"
-#include "C4Id.h"
-#include "C4Def.h"
-#include "C4Sector.h"
-#include "C4Value.h"
-#include "C4Particles.h"
-#include "C4PropList.h"
-#include "C4ObjectPtr.h"
-#include "StdMesh.h"
-#include <C4GameScript.h>
+#include "game/C4GameScript.h"
+#include "graphics/C4Facet.h"
+#include "landscape/C4Particles.h"
+#include "lib/StdMesh.h"
+#include "object/C4Id.h"
+#include "object/C4ObjectPtr.h"
+#include "object/C4Sector.h"
+#include "object/C4Shape.h"
+#include "script/C4PropList.h"
+#include "script/C4Value.h"
 
 /* Object status */
 
@@ -359,8 +359,7 @@ public:
 
 	bool DoSelect(); // cursor callback if not disabled
 	void UnSelect(); // unselect callback
-	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport) const       // get position this object is seen at (for given scroll)
-	{ if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX=float(GetX()); riY=float(GetY()); } }
+	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport) const;
 	void GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport) const;   // get position this object is seen at, calculating parallaxity
 	bool PutAwayUnusedObject(C4Object *pToMakeRoomForObject); // either directly put the least-needed object away, or add a command to do it - return whether successful
 
@@ -385,14 +384,7 @@ public:
 
 	bool CanConcatPictureWith(C4Object *pOtherObject) const; // return whether this object should be grouped with the other in activation lists, contents list, etc.
 
-	bool IsMoveableBySolidMask(int ComparisonPlane) const
-	{
-		return (Status == C4OS_NORMAL)
-		       && !(Category & C4D_StaticBack)
-		       && (ComparisonPlane < GetPlane())
-		       && !Contained
-		       ;
-	}
+	bool IsMoveableBySolidMask(int ComparisonPlane) const;
 
 	StdStrBuf GetNeededMatStr() const;
 

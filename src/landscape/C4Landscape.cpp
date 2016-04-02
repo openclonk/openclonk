@@ -44,6 +44,7 @@
 #include "landscape/C4Weather.h"
 #include "lib/C4Random.h"
 #include "lib/StdColors.h"
+#include "object/C4Def.h"
 #include "object/C4FindObject.h"
 #include "object/C4GameObjects.h"
 
