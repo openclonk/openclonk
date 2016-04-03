@@ -111,6 +111,9 @@ public func SetPrecipitation(string mat, int amount)
 		rain = BoundBy(amount * rain_max / 100, 0, 960); 
 		// Store snow/water conversion
 		rain_mat_freeze_temp = GetMaterialVal("BelowTempConvert", "Material", Material(rain_mat));
+		// Hack: material val does not return nil for materials that do not freeze, so fix those explicitly.
+		if (mat == "Snow" || mat == "Ice")
+			rain_mat_freeze_temp = nil;		
 		rain_mat_frozen = GetMaterialVal("BelowTempConvertTo", "Material", Material(rain_mat));
 		if (rain_mat_frozen == "Ice") rain_mat_frozen = "Snow";
 	}
