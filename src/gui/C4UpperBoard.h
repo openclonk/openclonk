@@ -16,7 +16,7 @@
 #ifndef INC_C4UpperBoard
 #define INC_C4UpperBoard
 
-#include <C4Facet.h>
+#include "graphics/C4Facet.h"
 
 class C4UpperBoard
 {

@@ -15,22 +15,22 @@
  */
 // game saving functionality
 
-#include <C4Include.h>
-#include <C4GameSave.h>
+#include "C4Include.h"
+#include "control/C4GameSave.h"
 
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4Landscape.h>
-#include <C4PXS.h>
-#include <C4MassMover.h>
-#include <C4PlayerList.h>
-#include <C4RoundResults.h>
-#include <C4Record.h>
-#include <C4Version.h>
-#include <C4GameParameters.h>
-#include <C4Value.h>
-#include <C4Network2.h>
+#include "c4group/C4Components.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4PXS.h"
+#include "landscape/C4MassMover.h"
+#include "player/C4PlayerList.h"
+#include "control/C4RoundResults.h"
+#include "control/C4Record.h"
+#include "C4Version.h"
+#include "control/C4GameParameters.h"
+#include "script/C4Value.h"
+#include "network/C4Network2.h"
 
 // *** C4GameSave main class
 

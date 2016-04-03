@@ -17,12 +17,12 @@
 
 /* Drawing tools dialog for landscape editing in console mode */
 
-#include <C4Include.h>
-#include <C4ToolsDlg.h>
-#include <C4Console.h>
-#include <C4Texture.h>
-#include <C4Landscape.h>
-#include <C4GameControl.h>
+#include "C4Include.h"
+#include "editor/C4ToolsDlg.h"
+#include "editor/C4Console.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Landscape.h"
+#include "control/C4GameControl.h"
 
 bool C4ToolsDlg::Open()
 {

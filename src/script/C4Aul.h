@@ -17,10 +17,10 @@
 #ifndef INC_C4Aul
 #define INC_C4Aul
 
-#include <C4Id.h>
-#include <C4StringTable.h>
-#include <C4Value.h>
-#include <C4ValueMap.h>
+#include "object/C4Id.h"
+#include "script/C4StringTable.h"
+#include "script/C4Value.h"
+#include "script/C4ValueMap.h"
 #include <string>
 #include <vector>
 

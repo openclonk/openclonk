@@ -18,7 +18,7 @@
 #ifndef INC_C4PlayerInfoListBox
 #define INC_C4PlayerInfoListBox
 
-#include "C4Gui.h"
+#include "gui/C4Gui.h"
 
 class C4PlayerInfoListBox : public C4GUI::ListBox
 {

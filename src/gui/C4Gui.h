@@ -23,14 +23,14 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
-#include <C4FontLoader.h>
-#include "C4Rect.h"
-#include "C4FacetEx.h"
-#include "C4LogBuf.h"
-#include "C4KeyboardInput.h"
-#include <StdScheduler.h>
-#include <C4Id.h>
-#include <C4Window.h>
+#include "graphics/C4FontLoader.h"
+#include "lib/C4Rect.h"
+#include "graphics/C4FacetEx.h"
+#include "lib/C4LogBuf.h"
+#include "gui/C4KeyboardInput.h"
+#include "platform/StdScheduler.h"
+#include "object/C4Id.h"
+#include "platform/C4Window.h"
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque

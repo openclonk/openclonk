@@ -16,7 +16,7 @@
 // statistics
 
 #include "C4Include.h"
-#include <C4Stat.h>
+#include "lib/C4Stat.h"
 
 // ** implemetation of C4MainStat
 

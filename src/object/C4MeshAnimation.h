@@ -19,8 +19,8 @@
 #ifndef INC_C4MeshAnimation
 #define INC_C4MeshAnimation
 
-#include "StdMesh.h"
-#include "C4ObjectPtr.h"
+#include "lib/StdMesh.h"
+#include "object/C4ObjectPtr.h"
 
 enum C4AnimationValueProviderID
 {

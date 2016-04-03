@@ -17,23 +17,23 @@
 
 /* Operates viewports, message board and draws the game */
 
-#include <C4Include.h>
-#include <C4GraphicsSystem.h>
+#include "C4Include.h"
+#include "game/C4GraphicsSystem.h"
 
-#include <C4Viewport.h>
-#include <C4Application.h>
-#include <C4Console.h>
-#include <C4FullScreen.h>
-#include <C4Gui.h>
-#include <C4LoaderScreen.h>
-#include <C4GraphicsResource.h>
-#include <C4Landscape.h>
+#include "game/C4Viewport.h"
+#include "game/C4Application.h"
+#include "editor/C4Console.h"
+#include "game/C4FullScreen.h"
+#include "gui/C4Gui.h"
+#include "gui/C4LoaderScreen.h"
+#include "graphics/C4GraphicsResource.h"
+#include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
-#include <C4Network2.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
+#include "network/C4Network2.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
 
-#include <StdPNG.h>
+#include "graphics/StdPNG.h"
 
 static const int MAX_BACKGROUND_FPS = 5;
 

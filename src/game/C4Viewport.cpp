@@ -17,29 +17,29 @@
 
 /* A viewport to each player */
 
-#include <C4Include.h>
-#include <C4Viewport.h>
+#include "C4Include.h"
+#include "game/C4Viewport.h"
 
-#include <C4ViewportWindow.h>
-#include <C4Console.h>
+#include "editor/C4ViewportWindow.h"
+#include "editor/C4Console.h"
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include <C4FullScreen.h>
-#include <C4Stat.h>
-#include <C4Player.h>
-#include <C4ObjectMenu.h>
-#include <C4MouseControl.h>
-#include <C4PXS.h>
-#include <C4GameMessage.h>
-#include <C4ScriptGuiWindow.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Landscape.h>
+#include "object/C4Object.h"
+#include "game/C4FullScreen.h"
+#include "lib/C4Stat.h"
+#include "player/C4Player.h"
+#include "object/C4ObjectMenu.h"
+#include "gui/C4MouseControl.h"
+#include "landscape/C4PXS.h"
+#include "gui/C4GameMessage.h"
+#include "gui/C4ScriptGuiWindow.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Network2.h>
-#include <C4FoWRegion.h>
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "network/C4Network2.h"
+#include "landscape/fow/C4FoWRegion.h"
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {

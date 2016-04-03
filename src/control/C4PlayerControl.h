@@ -18,10 +18,10 @@
 #ifndef INC_C4PlayerControl
 #define INC_C4PlayerControl
 
-#include "C4KeyboardInput.h"
-#include "C4LangStringTable.h"
-#include "C4Id.h"
-#include "C4TimeMilliseconds.h"
+#include "gui/C4KeyboardInput.h"
+#include "c4group/C4LangStringTable.h"
+#include "object/C4Id.h"
+#include "platform/C4TimeMilliseconds.h"
 
 #include <list>
 

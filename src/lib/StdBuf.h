@@ -18,7 +18,7 @@
 #ifndef STDBUF_H
 #define STDBUF_H
 
-#include "PlatformAbstraction.h"
+#include "platform/PlatformAbstraction.h"
 
 #include <zlib.h>
 

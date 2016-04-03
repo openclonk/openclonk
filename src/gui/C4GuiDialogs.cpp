@@ -17,19 +17,19 @@
 // generic user interface
 // dialog base classes and some user dialogs
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4DefList.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4Def.h>
-#include <C4GraphicsResource.h>
-#include <C4Application.h>
-#include <C4GameScript.h>
+#include "object/C4DefList.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "object/C4Def.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Application.h"
+#include "game/C4GameScript.h"
 
-#include <C4DrawGL.h>
-#include <StdRegistry.h>
+#include "graphics/C4DrawGL.h"
+#include "platform/StdRegistry.h"
 
 namespace C4GUI
 {

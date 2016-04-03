@@ -15,13 +15,13 @@
  */
 
 #include "C4Include.h"
-#include "C4Network2IRC.h"
+#include "network/C4Network2IRC.h"
 
-#include <C4Application.h>
-#include "C4Config.h"
+#include "game/C4Application.h"
+#include "config/C4Config.h"
 #include "C4Version.h"
-#include "C4InteractiveThread.h"
-#include "C4Gui.h" // for clearly visi
+#include "network/C4InteractiveThread.h"
+#include "gui/C4Gui.h" // for clearly visi
 
 #include <cctype> // for isdigit
 

@@ -17,15 +17,15 @@
 
 /* Pixel Sprite system for tiny bits of moving material */
 
-#include <C4Include.h>
-#include <C4PXS.h>
+#include "C4Include.h"
+#include "landscape/C4PXS.h"
 
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4Physics.h>
-#include <C4Random.h>
-#include <C4Weather.h>
-#include <C4Record.h>
+#include "c4group/C4Components.h"
+#include "config/C4Config.h"
+#include "game/C4Physics.h"
+#include "lib/C4Random.h"
+#include "landscape/C4Weather.h"
+#include "control/C4Record.h"
 #include "lib/StdColors.h"
 
 static const C4Real WindDrift_Factor = itofix(1, 800);

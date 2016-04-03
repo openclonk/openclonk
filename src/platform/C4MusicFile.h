@@ -18,8 +18,8 @@
 #ifndef INC_C4MusicFile
 #define INC_C4MusicFile
 
-#include <C4SoundIncludes.h>
-#include <C4SoundLoaders.h>
+#include "platform/C4SoundIncludes.h"
+#include "platform/C4SoundLoaders.h"
 
 /* Base class */
 

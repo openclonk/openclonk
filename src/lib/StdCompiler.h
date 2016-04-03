@@ -16,8 +16,8 @@
 #ifndef STDCOMPILER_H
 #define STDCOMPILER_H
 
-#include "StdBuf.h"
-#include "C4Log.h"
+#include "lib/StdBuf.h"
+#include "lib/C4Log.h"
 
 #include <assert.h>
 #include <memory>

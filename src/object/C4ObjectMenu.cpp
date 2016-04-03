@@ -17,20 +17,20 @@
 // Menus attached to objects; script created or internal
 
 #include "C4Include.h"
-#include "C4ObjectMenu.h"
+#include "object/C4ObjectMenu.h"
 
-#include "C4Control.h"
+#include "control/C4Control.h"
 #include "object/C4Def.h"
-#include "C4Object.h"
-#include "C4ObjectCom.h"
-#include "C4Player.h"
-#include "C4Viewport.h"
-#include "C4MouseControl.h"
-#include "C4GraphicsResource.h"
-#include "C4Game.h"
-#include "C4PlayerList.h"
-#include "C4GameObjects.h"
-#include "C4AulExec.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "player/C4Player.h"
+#include "game/C4Viewport.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "script/C4AulExec.h"
 
 // -----------------------------------------------------------
 // C4ObjectMenu

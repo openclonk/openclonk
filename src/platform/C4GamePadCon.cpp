@@ -17,13 +17,13 @@
 
 /* Gamepad control */
 
-#include <C4Include.h>
-#include <C4GamePadCon.h>
+#include "C4Include.h"
+#include "platform/C4GamePadCon.h"
 
-#include <C4Config.h>
-#include <C4ObjectCom.h>
-#include <C4Log.h>
-#include <C4Game.h>
+#include "config/C4Config.h"
+#include "object/C4ObjectCom.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
 
 #if defined(HAVE_SDL) && !defined(USE_CONSOLE)
 

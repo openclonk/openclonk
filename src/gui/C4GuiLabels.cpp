@@ -16,11 +16,11 @@
 // generic user interface
 // eye candy
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 namespace C4GUI
 {

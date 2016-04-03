@@ -23,10 +23,10 @@
 #ifndef INC_C4RoundResults
 #define INC_C4RoundResults
 
-#include "C4Components.h"
-#include "C4IDList.h"
-#include "C4PacketBase.h"
-#include "C4FacetEx.h"
+#include "c4group/C4Components.h"
+#include "object/C4IDList.h"
+#include "network/C4PacketBase.h"
+#include "graphics/C4FacetEx.h"
 
 // Contains additional data not present in C4PlayerInfo
 class C4RoundResultsPlayer

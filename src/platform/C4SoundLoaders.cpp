@@ -14,11 +14,11 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4SoundLoaders.h"
-#include <C4MusicFile.h>
+#include "C4Include.h"
+#include "platform/C4SoundLoaders.h"
+#include "platform/C4MusicFile.h"
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 
 
 using namespace C4SoundLoaders;

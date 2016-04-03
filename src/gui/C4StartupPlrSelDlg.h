@@ -20,8 +20,8 @@
 #define INC_C4StartupPlrSelDlg
 
 #include <utility>
-#include "C4Startup.h"
-#include "C4InfoCore.h"
+#include "gui/C4Startup.h"
+#include "object/C4InfoCore.h"
 
 // startup dialog: Player selection
 class C4StartupPlrSelDlg : public C4StartupDlg

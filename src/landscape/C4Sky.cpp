@@ -17,14 +17,14 @@
 
 /* Small member of the landscape class to handle the sky background */
 
-#include <C4Include.h>
-#include <C4Sky.h>
+#include "C4Include.h"
+#include "landscape/C4Sky.h"
 
-#include <C4Game.h>
-#include <C4Random.h>
-#include <C4Components.h>
-#include <C4Weather.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Game.h"
+#include "lib/C4Random.h"
+#include "c4group/C4Components.h"
+#include "landscape/C4Weather.h"
+#include "graphics/C4GraphicsResource.h"
 #include "lib/StdColors.h"
 
 void C4Sky::SetFadePalette(int32_t *ipColors)

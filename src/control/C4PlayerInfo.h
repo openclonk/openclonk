@@ -32,11 +32,11 @@
 #ifndef INC_C4PlayerInfo
 #define INC_C4PlayerInfo
 
-#include "C4PacketBase.h"
-#include "C4Network2Res.h"
-#include "C4Constants.h"
-#include "C4InputValidation.h"
-#include "C4Id.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Network2Res.h"
+#include "config/C4Constants.h"
+#include "lib/C4InputValidation.h"
+#include "object/C4Id.h"
 
 // information about one player at a client
 class C4PlayerInfo

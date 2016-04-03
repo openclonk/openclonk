@@ -17,21 +17,21 @@
 
 /* Dynamic list to hold runtime player data */
 
-#include <C4Include.h>
-#include <C4PlayerList.h>
+#include "C4Include.h"
+#include "player/C4PlayerList.h"
 
-#include <C4Components.h>
-#include <C4FullScreen.h>
-#include <C4Console.h>
-#include <C4League.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4Object.h>
-#include <C4Game.h>
-#include <C4Viewport.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4RoundResults.h>
+#include "c4group/C4Components.h"
+#include "game/C4FullScreen.h"
+#include "editor/C4Console.h"
+#include "network/C4League.h"
+#include "lib/C4Log.h"
+#include "player/C4Player.h"
+#include "object/C4Object.h"
+#include "game/C4Game.h"
+#include "game/C4Viewport.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "control/C4RoundResults.h"
 #include "lib/StdColors.h"
 
 C4PlayerList::C4PlayerList()

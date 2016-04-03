@@ -18,12 +18,12 @@
 #ifndef INC_C4DefGraphics
 #define INC_C4DefGraphics
 
-#include "C4FacetEx.h"
-#include "C4Surface.h"
-#include "C4ObjectPtr.h"
-#include "C4InputValidation.h"
-#include "C4Id.h"
-#include "StdMeshUpdate.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Surface.h"
+#include "object/C4ObjectPtr.h"
+#include "lib/C4InputValidation.h"
+#include "object/C4Id.h"
+#include "lib/StdMeshUpdate.h"
 
 // defintion graphics
 class C4AdditionalDefGraphics;

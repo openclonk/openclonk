@@ -15,15 +15,15 @@
 
 /* Functions for displaying a settings dialogue to users when the graphics system failed */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
 #ifdef _WIN32
 
-#include <resource.h>
-#include <C4Version.h>
-#include <C4Application.h>
-#include <C4windowswrapper.h>
-#include <C4GfxErrorDlg.h>
+#include "res/resource.h"
+#include "C4Version.h"
+#include "game/C4Application.h"
+#include "platform/C4windowswrapper.h"
+#include "gui/C4GfxErrorDlg.h"
 
 #include "graphics/C4Draw.h"
 

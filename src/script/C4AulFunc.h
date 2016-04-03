@@ -21,7 +21,7 @@
 #error Include C4Value.h instead of C4AulFunc.h
 #endif
 
-#include <C4StringTable.h>
+#include "script/C4StringTable.h"
 
 #define C4AUL_MAX_Par         10  // max number of parameters
 

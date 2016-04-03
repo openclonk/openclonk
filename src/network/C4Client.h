@@ -16,9 +16,9 @@
 #ifndef C4CLIENT_H
 #define C4CLIENT_H
 
-#include "C4NetIO.h"
-#include "C4PacketBase.h"
-#include "C4InputValidation.h"
+#include "network/C4NetIO.h"
+#include "network/C4PacketBase.h"
+#include "lib/C4InputValidation.h"
 
 // special ids
 const int32_t C4ClientIDUnknown = -1,

@@ -18,7 +18,7 @@
 #ifndef INC_C4GameDialogs
 #define INC_C4GameDialogs
 
-#include <C4Gui.h>
+#include "gui/C4Gui.h"
 
 class C4AbortGameDialog : public C4GUI::ConfirmationDialog
 {

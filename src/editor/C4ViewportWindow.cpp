@@ -17,13 +17,13 @@
 
 /* A viewport to each player */
 
-#include <C4Include.h>
-#include <C4ViewportWindow.h>
+#include "C4Include.h"
+#include "editor/C4ViewportWindow.h"
 
-#include <C4Viewport.h>
-#include <C4Console.h>
-#include <C4Landscape.h>
-#include <C4PlayerList.h>
+#include "game/C4Viewport.h"
+#include "editor/C4Console.h"
+#include "landscape/C4Landscape.h"
+#include "player/C4PlayerList.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>

@@ -17,16 +17,16 @@
 
 /* Dynamic object list */
 
-#include <C4Include.h>
-#include <C4ObjectList.h>
+#include "C4Include.h"
+#include "object/C4ObjectList.h"
 
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4Application.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
 
 static const C4ObjectLink NULL_LINK = { NULL, NULL, NULL };
 

@@ -13,11 +13,11 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Reloc.h>
+#include "C4Include.h"
+#include "config/C4Reloc.h"
 
-#include <C4Config.h>
-#include <C4Application.h>
+#include "config/C4Config.h"
+#include "game/C4Application.h"
 
 C4Reloc Reloc; // singleton
 

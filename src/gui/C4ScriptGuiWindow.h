@@ -18,10 +18,10 @@
 #ifndef INC_C4ScriptGuiWindow
 #define INC_C4ScriptGuiWindow
 
-#include <C4Surface.h>
-#include <C4Gui.h>
+#include "graphics/C4Surface.h"
+#include "gui/C4Gui.h"
 
-#include <C4Value.h>
+#include "script/C4Value.h"
 
 #include <map>
 

@@ -16,20 +16,20 @@
 // Startup screen for non-parameterized engine start: Player selection dialog
 // Also contains player creation, editing and crew management
 
-#include <C4Include.h>
+#include "C4Include.h"
 
 #include <utility>
 
-#include <C4StartupPlrSelDlg.h>
+#include "gui/C4StartupPlrSelDlg.h"
 
-#include <C4StartupMainDlg.h>
-#include <C4Random.h>
-#include <C4Game.h>
-#include <C4Language.h>
-#include <C4FileSelDlg.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4RankSystem.h>
+#include "gui/C4StartupMainDlg.h"
+#include "lib/C4Random.h"
+#include "game/C4Game.h"
+#include "c4group/C4Language.h"
+#include "gui/C4FileSelDlg.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "player/C4RankSystem.h"
 #include "gui/C4MouseControl.h"
 #include "lib/StdColors.h"
 #include <cctype>

@@ -18,8 +18,8 @@
 #ifndef INC_C4FileSelDlg
 #define INC_C4FileSelDlg
 
-#include <C4Gui.h>
-#include <C4Components.h>
+#include "gui/C4Gui.h"
+#include "c4group/C4Components.h"
 
 // callback handler for file selection dialog
 class C4FileSel_BaseCB

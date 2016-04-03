@@ -16,8 +16,8 @@
 #ifndef C4INTERACTIVETHREAD_H
 #define C4INTERACTIVETHREAD_H
 
-#include "StdScheduler.h"
-#include "StdSync.h"
+#include "platform/StdScheduler.h"
+#include "platform/StdSync.h"
 
 // Event types
 enum C4InteractiveEventType

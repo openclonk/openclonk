@@ -14,8 +14,8 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include <C4DrawT.h>
-#include <StdMeshMaterial.h>
+#include "graphics/C4DrawT.h"
+#include "lib/StdMeshMaterial.h"
 
 CStdNoGfx::CStdNoGfx()
 {

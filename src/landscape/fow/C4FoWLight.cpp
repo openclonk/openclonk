@@ -17,12 +17,12 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4FoWLight.h"
-#include "C4FoWLightSection.h"
-#include "C4FoWBeamTriangle.h"
-#include "C4FoWDrawStrategy.h"
-#include "C4PlayerList.h"
-#include "C4Player.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWLightSection.h"
+#include "landscape/fow/C4FoWBeamTriangle.h"
+#include "landscape/fow/C4FoWDrawStrategy.h"
+#include "player/C4PlayerList.h"
+#include "player/C4Player.h"
 #include "lib/StdColors.h"
 
 #include <vector>

@@ -15,12 +15,12 @@
 
 #include <GL/glew.h>
 
-#include <C4Include.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <C4FullScreen.h>
-#include <C4Landscape.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4FullScreen.h"
+#include "landscape/C4Landscape.h"
 
 #import "C4WindowController.h"
 #import "C4DrawGLMac.h"

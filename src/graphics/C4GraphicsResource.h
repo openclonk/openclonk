@@ -20,11 +20,11 @@
 #ifndef INC_C4GraphicsResource
 #define INC_C4GraphicsResource
 
-#include <C4GroupSet.h>
-#include <C4Surface.h>
-#include <C4FacetEx.h>
-#include <C4Gui.h>
-#include <C4ScenarioParameters.h>
+#include "c4group/C4GroupSet.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4FacetEx.h"
+#include "gui/C4Gui.h"
+#include "player/C4ScenarioParameters.h"
 
 class C4GraphicsResource
 {

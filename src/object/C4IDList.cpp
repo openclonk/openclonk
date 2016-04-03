@@ -17,12 +17,12 @@
 
 /* At static list of C4IDs */
 
-#include <C4Include.h>
-#include <C4IDList.h>
+#include "C4Include.h"
+#include "object/C4IDList.h"
 
-#include <C4Def.h>
-#include <C4DefList.h>
-#include <C4GraphicsResource.h>
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "graphics/C4GraphicsResource.h"
 
 C4IDListChunk::C4IDListChunk()
 {

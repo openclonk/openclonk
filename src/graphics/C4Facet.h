@@ -20,7 +20,7 @@
 #ifndef INC_C4Facet
 #define INC_C4Facet
 
-#include <C4Draw.h>
+#include "graphics/C4Draw.h"
 
 const int32_t C4FCT_None   = 0,
 

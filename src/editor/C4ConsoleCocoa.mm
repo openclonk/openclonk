@@ -15,25 +15,25 @@
 
 #include <GL/glew.h>
 
-#include <C4Include.h>
-#include <C4Console.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
+#include "game/C4Application.h"
 
-#include <C4GameSave.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Version.h>
-#include <C4Language.h>
-#include <C4Player.h>
-#include <C4Landscape.h>
+#include "control/C4GameSave.h"
+#include "game/C4Game.h"
+#include "gui/C4MessageInput.h"
+#include "C4Version.h"
+#include "c4group/C4Language.h"
+#include "player/C4Player.h"
+#include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
-#include <C4GraphicsSystem.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4Texture.h>
+#include "game/C4GraphicsSystem.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
+#include "landscape/C4Texture.h"
 
-#include <StdFile.h>
-#include <StdRegistry.h>
+#include "platform/StdFile.h"
+#include "platform/StdRegistry.h"
 
 #import <Cocoa/Cocoa.h>
 #import "C4AppDelegate.h"
@@ -454,4 +454,4 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 }
 
 #define CONSOLEGUICOMMONINCLUDE
-#include "C4ConsoleGUICommon.h"
+#include "editor/C4ConsoleGUICommon.h"

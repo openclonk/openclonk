@@ -17,37 +17,37 @@
 
 /* That which fills the world with life */
 
-#include <C4Include.h>
-#include <C4Object.h>
+#include "C4Include.h"
+#include "object/C4Object.h"
 
-#include <C4AulExec.h>
+#include "script/C4AulExec.h"
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4Effect.h>
-#include <C4ObjectInfo.h>
-#include <C4Physics.h>
-#include <C4PXS.h>
-#include <C4ObjectCom.h>
-#include <C4Command.h>
-#include <C4Viewport.h>
-#include <C4MaterialList.h>
-#include <C4Record.h>
-#include <C4SolidMask.h>
-#include <C4SoundSystem.h>
-#include <C4Random.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4ObjectMenu.h>
-#include <C4RankSystem.h>
-#include <C4GameMessage.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Record.h>
-#include <C4MeshAnimation.h>
-#include <C4FoW.h>
+#include "object/C4DefList.h"
+#include "script/C4Effect.h"
+#include "object/C4ObjectInfo.h"
+#include "game/C4Physics.h"
+#include "landscape/C4PXS.h"
+#include "object/C4ObjectCom.h"
+#include "object/C4Command.h"
+#include "game/C4Viewport.h"
+#include "landscape/C4MaterialList.h"
+#include "control/C4Record.h"
+#include "landscape/C4SolidMask.h"
+#include "platform/C4SoundSystem.h"
+#include "lib/C4Random.h"
+#include "lib/C4Log.h"
+#include "player/C4Player.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4RankSystem.h"
+#include "gui/C4GameMessage.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4Record.h"
+#include "object/C4MeshAnimation.h"
+#include "landscape/fow/C4FoW.h"
 
 namespace
 {

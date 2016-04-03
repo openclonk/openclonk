@@ -17,29 +17,29 @@
 
 /* Main class to initialize configuration and execute the game */
 
-#include <C4Include.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
 
-#include <C4Version.h>
+#include "C4Version.h"
 #ifdef _WIN32
-#include <C4UpdateDlg.h>
+#include "gui/C4UpdateDlg.h"
 #endif
-#include "C4Game.h"
-#include <C4GfxErrorDlg.h>
-#include "C4GraphicsSystem.h"
-#include "C4GraphicsResource.h"
-#include "C4MessageInput.h"
-#include <C4FullScreen.h>
-#include <C4Language.h>
-#include <C4Console.h>
-#include <C4Startup.h>
-#include <C4Log.h>
-#include <C4GamePadCon.h>
-#include <C4GameLobby.h>
-#include <C4Network2.h>
-#include <C4Network2IRC.h>
-#include <C4Particles.h>
-#include <StdPNG.h>
+#include "game/C4Game.h"
+#include "gui/C4GfxErrorDlg.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MessageInput.h"
+#include "game/C4FullScreen.h"
+#include "c4group/C4Language.h"
+#include "editor/C4Console.h"
+#include "gui/C4Startup.h"
+#include "lib/C4Log.h"
+#include "platform/C4GamePadCon.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2IRC.h"
+#include "landscape/C4Particles.h"
+#include "graphics/StdPNG.h"
 
 #include <getopt.h>
 

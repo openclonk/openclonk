@@ -17,8 +17,8 @@
 #ifndef INC_StdMesh
 #define INC_StdMesh
 
-#include <StdMeshMath.h>
-#include <StdMeshMaterial.h>
+#include "lib/StdMeshMath.h"
+#include "lib/StdMeshMaterial.h"
 
 #include <string>
 

@@ -17,13 +17,13 @@
 
 /* Textures used by the landscape */
 
-#include <C4Include.h>
-#include <C4TextureShape.h>
+#include "C4Include.h"
+#include "landscape/C4TextureShape.h"
 
-#include <C4Group.h>
-#include <C4Landscape.h>
-#include <C4Log.h>
-#include <StdPNG.h>
+#include "c4group/C4Group.h"
+#include "landscape/C4Landscape.h"
+#include "lib/C4Log.h"
+#include "graphics/StdPNG.h"
 
 // -------------------------------------- C4TextureShape
 

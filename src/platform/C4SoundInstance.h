@@ -17,9 +17,9 @@
 
 /* Helper classes for individual sounds and effects in sound system. */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4SoundSystem.h>
+#include "platform/C4SoundSystem.h"
 
 class C4Object; 
 class C4SoundModifier;

@@ -17,16 +17,16 @@
 
 /* Handles Music.ocg and randomly plays songs */
 
-#include <C4Include.h>
-#include <C4MusicSystem.h>
+#include "C4Include.h"
+#include "platform/C4MusicSystem.h"
 
-#include <C4Window.h>
-#include <C4MusicFile.h>
-#include <C4Application.h>
-#include <C4Random.h>
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4GraphicsSystem.h>
+#include "platform/C4Window.h"
+#include "platform/C4MusicFile.h"
+#include "game/C4Application.h"
+#include "lib/C4Random.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
+#include "game/C4GraphicsSystem.h"
 
 C4MusicSystem::C4MusicSystem():
 		Songs(NULL),

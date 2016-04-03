@@ -17,7 +17,7 @@
 /* Load strings from a primitive memory string table */
 
 #include "C4Include.h"
-#include "C4Language.h"
+#include "c4group/C4Language.h"
 
 const int ResStrMaxLen = 4096;
 static char strResult[ResStrMaxLen + 1];

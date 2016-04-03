@@ -14,12 +14,12 @@
  */
 
 #include "C4Include.h"
-#include <C4MapScript.h>
-#include <C4MapCreatorS2.h>
-#include <C4ScriptHost.h>
-#include <C4DefList.h>
-#include <C4Def.h>
-#include <C4Aul.h>
+#include "landscape/C4MapScript.h"
+#include "landscape/C4MapCreatorS2.h"
+#include "script/C4ScriptHost.h"
+#include "object/C4DefList.h"
+#include "object/C4Def.h"
+#include "script/C4Aul.h"
 
 #include "mape/cpp-handles/material-handle.h"
 #include "mape/cpp-handles/texture-handle.h"

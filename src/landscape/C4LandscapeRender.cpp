@@ -14,17 +14,17 @@
  */
 
 #include "C4Include.h"
-#include "C4LandscapeRender.h"
+#include "landscape/C4LandscapeRender.h"
 
-#include "C4Landscape.h"
-#include "C4Texture.h"
-#include "C4FoWRegion.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Texture.h"
+#include "landscape/fow/C4FoWRegion.h"
 
-#include "C4GroupSet.h"
-#include "C4Components.h"
+#include "c4group/C4GroupSet.h"
+#include "c4group/C4Components.h"
 
-#include "C4DrawGL.h"
-#include "StdColors.h"
+#include "graphics/C4DrawGL.h"
+#include "lib/StdColors.h"
 
 #include <algorithm>
 

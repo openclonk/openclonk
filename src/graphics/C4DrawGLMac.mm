@@ -13,20 +13,20 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4Gui.h>
-#include <C4Game.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <C4Console.h>
-#include <C4FullScreen.h>
-#include <C4PlayerList.h>
-#include <C4Gui.h>
-#include <C4Landscape.h>
+#include "C4Include.h"
+#include "game/C4GraphicsSystem.h"
+#include "gui/C4MouseControl.h"
+#include "gui/C4Gui.h"
+#include "game/C4Game.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "editor/C4Console.h"
+#include "game/C4FullScreen.h"
+#include "player/C4PlayerList.h"
+#include "gui/C4Gui.h"
+#include "landscape/C4Landscape.h"
 
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
 #import "C4DrawGLMac.h"
 #import "C4WindowController.h"

@@ -17,12 +17,12 @@
 /* OpenGL implementation of Mesh Rendering */
 
 #include "C4Include.h"
-#include <C4Object.h>
-#include <C4DrawGL.h>
-#include <C4FoWRegion.h>
-#include <SHA1.h>
+#include "object/C4Object.h"
+#include "graphics/C4DrawGL.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "lib/SHA1.h"
 
-#include "StdMesh.h"
+#include "lib/StdMesh.h"
 #include "graphics/C4GraphicsResource.h"
 #include <locale.h>
 #include <stdexcept>

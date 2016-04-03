@@ -15,20 +15,20 @@
  */
 // Startup screen for non-parameterized engine start: Options dialog
 
-#include <C4Include.h>
-#include <C4StartupOptionsDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupOptionsDlg.h"
 
-#include <C4Application.h>
-#include <C4StartupMainDlg.h>
-#include <C4Language.h>
-#include <C4GamePadCon.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4Network2.h>
-#include <C4MouseControl.h>
+#include "game/C4Application.h"
+#include "gui/C4StartupMainDlg.h"
+#include "c4group/C4Language.h"
+#include "platform/C4GamePadCon.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "network/C4Network2.h"
+#include "gui/C4MouseControl.h"
 
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::SmallButton

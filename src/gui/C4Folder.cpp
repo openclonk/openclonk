@@ -16,11 +16,11 @@
 
 /* Core component of a folder */
 
-#include <C4Include.h>
-#include <C4Folder.h>
+#include "C4Include.h"
+#include "gui/C4Folder.h"
 
-#include <C4Group.h>
-#include <C4Components.h>
+#include "c4group/C4Group.h"
+#include "c4group/C4Components.h"
 
 
 //================= C4FolderHead ====================

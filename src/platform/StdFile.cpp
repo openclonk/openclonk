@@ -18,8 +18,8 @@
 /* Lots of file helpers */
 
 #include "C4Include.h"
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
 #include <stdio.h>
 #ifdef HAVE_IO_H
@@ -32,7 +32,7 @@
 #include <unistd.h>
 #endif
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 #include <errno.h>
 #include <stdlib.h>

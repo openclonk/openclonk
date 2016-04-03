@@ -13,18 +13,18 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4AulDebug.h"
+#include "C4Include.h"
+#include "script/C4AulDebug.h"
 
-#include <C4Application.h>
-#include <C4Version.h>
-#include <C4GameControl.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Log.h>
+#include "game/C4Application.h"
+#include "C4Version.h"
+#include "control/C4GameControl.h"
+#include "game/C4Game.h"
+#include "gui/C4MessageInput.h"
+#include "lib/C4Log.h"
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include "C4AulExec.h"
+#include "object/C4Object.h"
+#include "script/C4AulExec.h"
 
 #ifndef NOAULDEBUG
 

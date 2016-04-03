@@ -16,8 +16,8 @@
 #ifndef INC_StdMeshUpdate
 #define INC_StdMeshUpdate
 
-#include <StdMesh.h>
-#include <StdMeshMaterial.h>
+#include "lib/StdMesh.h"
+#include "lib/StdMeshMaterial.h"
 
 // This is a helper class to fix pointers after an update of StdMeshMaterials.
 // To update one or more materials, remove them from the MaterialManager with

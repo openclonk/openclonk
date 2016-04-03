@@ -20,8 +20,8 @@
 #ifndef INC_C4MouseControl
 #define INC_C4MouseControl
 
-#include <C4Facet.h>
-#include "C4ObjectList.h"
+#include "graphics/C4Facet.h"
+#include "object/C4ObjectList.h"
 
 const int32_t C4MC_Button_None        = 0,
               C4MC_Button_LeftDown    = 1,

@@ -15,16 +15,16 @@
  */
 // Miscellaneous script engine bits
 
-#include <C4Include.h>
-#include <C4Aul.h>
-#include <C4AulExec.h>
-#include <C4AulDebug.h>
+#include "C4Include.h"
+#include "script/C4Aul.h"
+#include "script/C4AulExec.h"
+#include "script/C4AulDebug.h"
 
-#include <C4Config.h>
-#include <C4Def.h>
-#include <C4Log.h>
-#include <C4Components.h>
-#include <C4LangStringTable.h>
+#include "config/C4Config.h"
+#include "object/C4Def.h"
+#include "lib/C4Log.h"
+#include "c4group/C4Components.h"
+#include "c4group/C4LangStringTable.h"
 
 C4AulError::C4AulError(): shown(false) {}
 

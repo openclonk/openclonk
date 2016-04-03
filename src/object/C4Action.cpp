@@ -17,8 +17,8 @@
 
 /* The C4Action class is merely a simple data structure */
 
-#include <C4Include.h>
-#include <C4Object.h>
+#include "C4Include.h"
+#include "object/C4Object.h"
 
 C4Action::C4Action()
 {

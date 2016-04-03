@@ -14,7 +14,7 @@
  * for the above references.
  */
 
-#include "C4Value.h"
+#include "script/C4Value.h"
 
 #ifndef INC_C4ValueList
 #define INC_C4ValueList

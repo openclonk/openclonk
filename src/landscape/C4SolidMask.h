@@ -19,8 +19,8 @@
 #ifndef INC_C4SolidMask
 #define INC_C4SolidMask
 
-#include <C4ObjectList.h>
-#include <C4Shape.h>
+#include "object/C4ObjectList.h"
+#include "object/C4Shape.h"
 
 class C4SolidMask
 {

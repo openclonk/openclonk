@@ -20,7 +20,7 @@
 #ifndef INC_C4GameScript
 #define INC_C4GameScript
 
-#include <C4Value.h>
+#include "script/C4Value.h"
 
 // add functions to engine
 void InitGameFunctionMap(C4AulScriptEngine *pEngine);

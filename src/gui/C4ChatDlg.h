@@ -18,8 +18,8 @@
 #ifndef INC_C4ChatDlg
 #define INC_C4ChatDlg
 
-#include "C4Gui.h"
-#include "C4InteractiveThread.h"
+#include "gui/C4Gui.h"
+#include "network/C4InteractiveThread.h"
 
 // a GUI control to chat in
 class C4ChatControl : public C4GUI::Window, private C4InteractiveThread::Callback

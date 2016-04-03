@@ -20,7 +20,7 @@
 #ifndef INC_C4ObjectList
 #define INC_C4ObjectList
 
-#include <C4Id.h>
+#include "object/C4Id.h"
 
 class C4ObjectLink
 {

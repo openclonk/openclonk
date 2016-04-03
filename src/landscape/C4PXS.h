@@ -20,7 +20,7 @@
 #ifndef INC_C4PXS
 #define INC_C4PXS
 
-#include <C4Material.h>
+#include "landscape/C4Material.h"
 
 class C4PXS
 {

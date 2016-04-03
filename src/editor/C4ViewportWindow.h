@@ -20,7 +20,7 @@
 #ifndef INC_C4ViewportWindow
 #define INC_C4ViewportWindow
 
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>

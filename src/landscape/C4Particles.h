@@ -13,9 +13,9 @@
  * for the above references.
  */
 
-#include <C4FacetEx.h>
+#include "graphics/C4FacetEx.h"
 
-#include <StdScheduler.h>
+#include "platform/StdScheduler.h"
 
 
 #ifndef INC_C4Particles

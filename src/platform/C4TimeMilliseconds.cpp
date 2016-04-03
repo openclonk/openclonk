@@ -14,13 +14,13 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4TimeMilliseconds.h"
+#include "C4Include.h"
+#include "platform/C4TimeMilliseconds.h"
 #include <limits>
 
 #ifdef _WIN32
 
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 
 C4TimeMilliseconds C4TimeMilliseconds::Now()

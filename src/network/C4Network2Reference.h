@@ -16,12 +16,12 @@
 #ifndef C4NETWORK2REFERENCE_H
 #define C4NETWORK2REFERENCE_H
 
-#include "C4Network2.h"
-#include "C4Network2Client.h"
-#include "C4GameParameters.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Client.h"
+#include "control/C4GameParameters.h"
 #include "C4Version.h"
-#include "C4GameVersion.h"
-#include "C4InputValidation.h"
+#include "game/C4GameVersion.h"
+#include "lib/C4InputValidation.h"
 
 const int C4Network2HTTPQueryTimeout = 10; // (s)
 

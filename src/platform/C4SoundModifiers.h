@@ -20,8 +20,8 @@
 #ifndef INC_C4SoundModifiers
 #define INC_C4SoundModifiers
 
-#include <C4SoundIncludes.h>
-#include <C4PropList.h>
+#include "platform/C4SoundIncludes.h"
+#include "script/C4PropList.h"
 
 class C4SoundModifier
 {

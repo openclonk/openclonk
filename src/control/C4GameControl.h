@@ -18,8 +18,8 @@
 #ifndef INC_C4GameControl
 #define INC_C4GameControl
 
-#include "C4Control.h"
-#include "C4Record.h"
+#include "control/C4Control.h"
+#include "control/C4Record.h"
 
 enum C4ControlMode
 {
@@ -45,7 +45,7 @@ enum C4ControlDeliveryType
 //   the control is actually executed within a fixed time.
 // * CDT_Decide is guesswork, control isn't garantueed to be faster.
 
-#include "C4GameControlNetwork.h"
+#include "network/C4GameControlNetwork.h"
 
 #ifdef _DEBUG
 const int32_t C4SyncCheckRate = 1,

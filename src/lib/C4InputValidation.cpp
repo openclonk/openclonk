@@ -16,9 +16,9 @@
 // user input validation functions
 
 #include "C4Include.h"
-#include <C4InputValidation.h>
-#include <C4Log.h>
-#include "C4Markup.h"
+#include "lib/C4InputValidation.h"
+#include "lib/C4Log.h"
+#include "lib/C4Markup.h"
 
 #include <cctype>
 

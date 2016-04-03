@@ -16,27 +16,27 @@
 // Input to player control mapping
 
 #include "C4Include.h"
-#include "C4PlayerControl.h"
+#include "control/C4PlayerControl.h"
 
-#include <C4DefList.h>
-#include "C4LangStringTable.h"
-#include "C4Player.h"
-#include "C4PlayerList.h"
-#include "C4Control.h"
-#include "C4Game.h"
-#include "C4GamePadCon.h"
-#include "C4Log.h"
-#include "C4GraphicsResource.h"
-#include "C4MouseControl.h"
-#include "C4GraphicsSystem.h"
-#include "C4Viewport.h"
-#include "C4Object.h"
-#include "C4ObjectMenu.h"
+#include "object/C4DefList.h"
+#include "c4group/C4LangStringTable.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "control/C4Control.h"
+#include "game/C4Game.h"
+#include "platform/C4GamePadCon.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectMenu.h"
 #include "script/C4Aul.h"
 
 #include <algorithm>
 
-#include "C4Record.h"
+#include "control/C4Record.h"
 
 /* C4PlayerControlDef */
 

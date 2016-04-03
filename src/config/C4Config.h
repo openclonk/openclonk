@@ -20,9 +20,9 @@
 #ifndef INC_C4Config
 #define INC_C4Config
 
-#include "C4Constants.h"
-#include "C4InputValidation.h"
-#include "C4PlayerControl.h"
+#include "config/C4Constants.h"
+#include "lib/C4InputValidation.h"
+#include "control/C4PlayerControl.h"
 #include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"

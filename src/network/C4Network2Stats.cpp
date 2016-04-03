@@ -15,15 +15,15 @@
  */
 // network statistics and information dialogs
 
-#include <C4Include.h>
-#include <C4Network2Stats.h>
+#include "C4Include.h"
+#include "network/C4Network2Stats.h"
 
-#include <C4Game.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Network2.h>
-#include <C4GameControl.h>
+#include "game/C4Game.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "network/C4Network2.h"
+#include "control/C4GameControl.h"
 
 C4Graph::C4Graph()
 		: szTitle(LoadResStr("IDS_NET_GRAPH")), dwColor(0x7fff0000)

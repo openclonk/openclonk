@@ -16,24 +16,24 @@
 
 /* A wrapper class to OS dependent event and window interfaces, GTK+ version */
 
-#include <C4Include.h>
-#include <C4Window.h>
+#include "C4Include.h"
+#include "platform/C4Window.h"
 
-#include <C4App.h>
+#include "platform/C4App.h"
 #include "C4Version.h"
-#include <C4Config.h>
+#include "config/C4Config.h"
 
-#include <C4DrawGL.h>
-#include <C4Draw.h>
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4Draw.h"
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
-#include <C4Rect.h>
+#include "lib/C4Rect.h"
 
-#include <C4Console.h>
-#include <C4ViewportWindow.h>
-#include <C4Viewport.h>
-#include "C4MouseControl.h"
+#include "editor/C4Console.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4Viewport.h"
+#include "gui/C4MouseControl.h"
 
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
@@ -113,7 +113,7 @@ GLXFBConfig PickGLXFBConfig(Display* dpy, int multisampling)
 }
 }
 #elif defined(GDK_WINDOWING_WIN32)
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <gdk/gdkwin32.h>
 #endif // GDK_WINDOWING_X11
 

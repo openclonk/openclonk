@@ -18,8 +18,8 @@
 #ifndef INC_C4GameOverDlg
 #define INC_C4GameOverDlg
 
-#include <C4Gui.h>
-#include <C4RoundResults.h>
+#include "gui/C4Gui.h"
+#include "control/C4RoundResults.h"
 
 // horizontal display of goal symbols; filfilled goals marked
 // maybe to be reused for a game goal dialog?

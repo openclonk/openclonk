@@ -15,10 +15,10 @@
 
 /* A convenient way to (de)serialize object pointers */
 
-#include <C4Include.h>
-#include <C4ObjectPtr.h>
-#include <C4Object.h>
-#include <C4GameObjects.h>
+#include "C4Include.h"
+#include "object/C4ObjectPtr.h"
+#include "object/C4Object.h"
+#include "object/C4GameObjects.h"
 
 #include <limits>
 

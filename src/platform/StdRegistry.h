@@ -21,8 +21,8 @@
 #define INC_STDREGISTRY
 
 #ifdef _WIN32
-#include "StdCompiler.h"
-#include <C4windowswrapper.h>
+#include "lib/StdCompiler.h"
+#include "platform/C4windowswrapper.h"
 
 StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName);
 bool SetRegistryString(const char *szSubKey, const char *szValueName, const char *szValue);

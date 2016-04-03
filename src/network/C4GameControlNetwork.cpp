@@ -16,13 +16,13 @@
 /* control managament: network part */
 
 #include "C4Include.h"
-#include <C4GameControlNetwork.h>
+#include "network/C4GameControlNetwork.h"
 
-#include <C4Application.h>
-#include <C4GameControl.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4GraphicsSystem.h>
+#include "game/C4Application.h"
+#include "control/C4GameControl.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "game/C4GraphicsSystem.h"
 
 // *** C4GameControlNetwork
 

@@ -15,28 +15,28 @@
  */
 // graphics used by object definitions (object and portraits)
 
-#include <C4Include.h>
-#include <C4DefGraphics.h>
+#include "C4Include.h"
+#include "object/C4DefGraphics.h"
 
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4ObjectInfo.h>
-#include <C4Config.h>
-#include <C4Components.h>
-#include <C4Application.h>
-#include <C4Game.h>
-#include <C4Menu.h>
-#include <C4ObjectMenu.h>
-#include <C4Player.h>
-#include <C4Log.h>
-#include <C4Material.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4RankSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4MeshAnimation.h>
-#include "StdMeshLoader.h"
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectInfo.h"
+#include "config/C4Config.h"
+#include "c4group/C4Components.h"
+#include "game/C4Application.h"
+#include "game/C4Game.h"
+#include "gui/C4Menu.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4Player.h"
+#include "lib/C4Log.h"
+#include "landscape/C4Material.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "player/C4RankSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "object/C4MeshAnimation.h"
+#include "lib/StdMeshLoader.h"
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
 

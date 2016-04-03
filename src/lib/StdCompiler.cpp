@@ -14,12 +14,12 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "StdCompiler.h"
+#include "lib/StdCompiler.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <C4Log.h>
+#include "lib/C4Log.h"
 
 // *** StdCompiler
 

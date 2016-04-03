@@ -20,7 +20,7 @@
 #ifndef INC_C4Id
 #define INC_C4Id
 
-#include "StdAdaptors.h"
+#include "lib/StdAdaptors.h"
 #include <map>
 #include <string>
 #include <vector>

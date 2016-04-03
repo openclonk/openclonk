@@ -17,40 +17,40 @@
 
 /* Control packets contain all player input in the message queue */
 
-#include <C4Include.h>
-#include <C4Control.h>
+#include "C4Include.h"
+#include "control/C4Control.h"
 
-#include <C4AulExec.h>
-#include <C4Object.h>
-#include <C4GameSave.h>
-#include <C4GameLobby.h>
-#include <C4Network2Dialogs.h>
-#include <C4Random.h>
-#include <C4Console.h>
-#include <C4Log.h>
-#include <C4GraphicsSystem.h>
-#include <C4Player.h>
-#include <C4RankSystem.h>
-#include <C4RoundResults.h>
-#include <C4PXS.h>
-#include <C4MassMover.h>
-#include <C4GameMessage.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
+#include "script/C4AulExec.h"
+#include "object/C4Object.h"
+#include "control/C4GameSave.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2Dialogs.h"
+#include "lib/C4Random.h"
+#include "editor/C4Console.h"
+#include "lib/C4Log.h"
+#include "game/C4GraphicsSystem.h"
+#include "player/C4Player.h"
+#include "player/C4RankSystem.h"
+#include "control/C4RoundResults.h"
+#include "landscape/C4PXS.h"
+#include "landscape/C4MassMover.h"
+#include "gui/C4GameMessage.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
 #include "game/C4GameScript.h"
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4ScriptGuiWindow.h>
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "gui/C4ScriptGuiWindow.h"
 #include "gui/C4MessageInput.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 
 #ifndef NOAULDEBUG
-#include <C4AulDebug.h>
+#include "script/C4AulDebug.h"
 #endif
 
-#include <C4AulExec.h>
+#include "script/C4AulExec.h"
 
 // *** C4ControlPacket
 C4ControlPacket::C4ControlPacket()

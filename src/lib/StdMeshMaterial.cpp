@@ -15,9 +15,9 @@
  */
 
 #include "C4Include.h"
-#include <StdMeshMaterial.h>
-#include <StdMeshUpdate.h>
-#include <C4DrawGL.h>
+#include "lib/StdMeshMaterial.h"
+#include "lib/StdMeshUpdate.h"
+#include "graphics/C4DrawGL.h"
 
 #include <cctype>
 #include <memory>

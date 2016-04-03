@@ -14,10 +14,10 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4Network2Reference.h"
+#include "network/C4Network2Reference.h"
 
-#include <C4Game.h>
-#include <C4RoundResults.h>
+#include "game/C4Game.h"
+#include "control/C4RoundResults.h"
 #include "C4Version.h"
 
 #include <utility>

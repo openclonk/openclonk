@@ -17,11 +17,11 @@
 
 /* A piece of a DirectDraw surface */
 
-#include <C4Include.h>
-#include <C4Facet.h>
-#include <C4GraphicsResource.h>
+#include "C4Include.h"
+#include "graphics/C4Facet.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <StdAdaptors.h>
+#include "lib/StdAdaptors.h"
 
 #ifdef WITH_GLIB
 #include <glib.h>

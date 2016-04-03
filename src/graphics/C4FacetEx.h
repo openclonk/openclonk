@@ -20,8 +20,8 @@
 #ifndef INC_C4FacetEx
 #define INC_C4FacetEx
 
-#include <C4Facet.h>
-#include <C4Surface.h>
+#include "graphics/C4Facet.h"
+#include "graphics/C4Surface.h"
 
 const int C4FCT_Full   = -1,
           C4FCT_Height = -2,

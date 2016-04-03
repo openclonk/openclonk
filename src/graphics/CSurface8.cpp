@@ -17,11 +17,11 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
-#include <CSurface8.h>
+#include "graphics/CSurface8.h"
 
-#include <Bitmap256.h>
-#include <CStdFile.h>
-#include <StdColors.h>
+#include "graphics/Bitmap256.h"
+#include "c4group/CStdFile.h"
+#include "lib/StdColors.h"
 
 CSurface8::CSurface8()
 {

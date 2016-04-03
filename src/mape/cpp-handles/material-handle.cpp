@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "C4Material.h"
-#include "C4Texture.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Texture.h"
 #include "mape/cpp-handles/material-handle.h"
 
 #define MATERIAL_MAP_TO_HANDLE(material_map) (reinterpret_cast<C4MaterialMapHandle*>(material_map))

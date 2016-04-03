@@ -20,8 +20,8 @@
 #ifndef INC_C4GraphicsSystem
 #define INC_C4GraphicsSystem
 
-#include <C4MessageBoard.h>
-#include <C4UpperBoard.h>
+#include "gui/C4MessageBoard.h"
+#include "gui/C4UpperBoard.h"
 
 #include <memory>
 

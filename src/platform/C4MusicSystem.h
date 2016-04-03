@@ -20,8 +20,8 @@
 #ifndef INC_C4MusicSystem
 #define INC_C4MusicSystem
 
-#include <C4Group.h>
-#include <C4SoundIncludes.h>
+#include "c4group/C4Group.h"
+#include "platform/C4SoundIncludes.h"
 
 class C4MusicFileInfoNode;
 class C4MusicFile;

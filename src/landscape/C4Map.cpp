@@ -17,12 +17,12 @@
 
 /* Create map from dynamic landscape data in scenario */
 
-#include <C4Include.h>
-#include <C4Map.h>
+#include "C4Include.h"
+#include "landscape/C4Map.h"
 
-#include <C4Random.h>
-#include <C4Texture.h>
-#include <CSurface8.h>
+#include "lib/C4Random.h"
+#include "landscape/C4Texture.h"
+#include "graphics/CSurface8.h"
 
 C4MapCreator::C4MapCreator()
 {

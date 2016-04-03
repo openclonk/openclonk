@@ -14,7 +14,7 @@
  */
 
 #include "C4Include.h"
-#include "C4Texture.h"
+#include "landscape/C4Texture.h"
 #include "mape/cpp-handles/texture-handle.h"
 
 #define TEXTURE_MAP_TO_HANDLE(texture_map) (reinterpret_cast<C4TextureMapHandle*>(texture_map))

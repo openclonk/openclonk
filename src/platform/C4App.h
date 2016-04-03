@@ -19,9 +19,9 @@
 #ifndef INC_STDAPP
 #define INC_STDAPP
 
-#include <StdScheduler.h>
-#include <StdSync.h>
-#include <C4StdInProc.h>
+#include "platform/StdScheduler.h"
+#include "platform/StdSync.h"
+#include "platform/C4StdInProc.h"
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

@@ -20,8 +20,8 @@
 #ifndef INC_C4Command
 #define INC_C4Command
 
-#include "C4ObjectPtr.h"
-#include "C4Value.h"
+#include "object/C4ObjectPtr.h"
+#include "script/C4Value.h"
 
 enum C4CMD
 {

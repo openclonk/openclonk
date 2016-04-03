@@ -14,10 +14,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <shellapi.h>
 bool OpenURL(const char *szURL)
 {

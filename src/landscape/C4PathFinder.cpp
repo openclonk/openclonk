@@ -43,11 +43,11 @@
 
 */
 
-#include <C4Include.h>
-#include <C4PathFinder.h>
+#include "C4Include.h"
+#include "landscape/C4PathFinder.h"
 
-#include <C4FacetEx.h>
-#include <C4GraphicsSystem.h>
+#include "graphics/C4FacetEx.h"
+#include "game/C4GraphicsSystem.h"
 #include "lib/StdColors.h"
 
 const int32_t C4PF_MaxDepth        = 35,

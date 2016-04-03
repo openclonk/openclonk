@@ -15,8 +15,8 @@
 
 #include "C4Include.h"
 
-#include "C4Def.h"
-#include "C4DefList.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
 
 /* This is a simple implementation of C4DefList for what is required by
  * mape. We cannot link the full implementation since it would introduce

@@ -19,7 +19,7 @@
 #ifndef INC_STDWINDOW
 #define INC_STDWINDOW
 
-#include <StdBuf.h>
+#include "lib/StdBuf.h"
 
 #if defined(USE_GTK)
 #ifdef _WIN32
@@ -49,7 +49,7 @@ extern int MK_SHIFT;
 extern int MK_CONTROL;
 extern int MK_ALT;
 #elif defined(USE_WIN32_WINDOWS)
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #ifndef MK_ALT
 #define MK_ALT 0x20 // as defined in oleidl.h
 #endif

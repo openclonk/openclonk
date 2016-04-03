@@ -20,12 +20,12 @@
 #ifndef INC_C4Console
 #define INC_C4Console
 
-#include "C4ConsoleGUI.h"
-#include "C4ToolsDlg.h"
-#include "C4ObjectListDlg.h"
-#include "C4EditCursor.h"
+#include "editor/C4ConsoleGUI.h"
+#include "editor/C4ToolsDlg.h"
+#include "editor/C4ObjectListDlg.h"
+#include "editor/C4EditCursor.h"
 
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 const int C4CNS_ModePlay = 0,
           C4CNS_ModeEdit = 1,

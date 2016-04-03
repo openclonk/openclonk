@@ -16,11 +16,11 @@
 // A loader for the OGRE .mesh binary file format
 
 #include "C4Include.h"
-#include "StdMesh.h"
-#include "StdMeshLoader.h"
-#include "StdMeshLoaderBinaryChunks.h"
-#include "StdMeshLoaderDataStream.h"
-#include "StdMeshMaterial.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoader.h"
+#include "lib/StdMeshLoaderBinaryChunks.h"
+#include "lib/StdMeshLoaderDataStream.h"
+#include "lib/StdMeshMaterial.h"
 #include <cassert>
 #include <vector>
 

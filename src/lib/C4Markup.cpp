@@ -16,8 +16,8 @@
 // markup tags for fonts
 
 #include "C4Include.h"
-#include <C4Markup.h>
-#include <C4Draw.h>
+#include "lib/C4Markup.h"
+#include "graphics/C4Draw.h"
 
 void C4MarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {

@@ -16,7 +16,7 @@
 #ifndef INC_C4STDINPROC
 #define INC_C4STDINPROC
 
-#include <StdScheduler.h>
+#include "platform/StdScheduler.h"
 
 // A simple alertable proc
 class C4StdInProc : public StdSchedulerProc

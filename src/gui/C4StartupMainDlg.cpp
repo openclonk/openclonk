@@ -15,23 +15,23 @@
  */
 // Startup screen for non-parameterized engine start (stub)
 
-#include <C4Include.h>
-#include <C4StartupMainDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupMainDlg.h"
 
-#include <C4Application.h>
-#include <C4Components.h>
-#include <C4UpdateDlg.h>
-#include <C4Version.h>
-#include <C4StartupNetDlg.h>
-#include <C4StartupScenSelDlg.h>
-#include <C4StartupOptionsDlg.h>
-#include <C4StartupAboutDlg.h>
-#include <C4StartupPlrSelDlg.h>
-#include <C4Startup.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4Language.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Application.h"
+#include "c4group/C4Components.h"
+#include "gui/C4UpdateDlg.h"
+#include "C4Version.h"
+#include "gui/C4StartupNetDlg.h"
+#include "gui/C4StartupScenSelDlg.h"
+#include "gui/C4StartupOptionsDlg.h"
+#include "gui/C4StartupAboutDlg.h"
+#include "gui/C4StartupPlrSelDlg.h"
+#include "gui/C4Startup.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "c4group/C4Language.h"
+#include "graphics/C4GraphicsResource.h"
 
 
 C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; it is drawn in custom draw proc

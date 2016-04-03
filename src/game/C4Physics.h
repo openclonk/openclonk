@@ -20,7 +20,7 @@
 #ifndef INC_C4Physics
 #define INC_C4Physics
 
-#include "C4Real.h"
+#include "lib/C4Real.h"
 
 const int StableRange=10;
 const int AttachRange=5;

@@ -20,8 +20,8 @@
 #ifndef INC_C4SoundSystem
 #define INC_C4SoundSystem
 
-#include <C4Group.h>
-#include <C4SoundModifiers.h>
+#include "c4group/C4Group.h"
+#include "platform/C4SoundModifiers.h"
 
 const int32_t
 	C4MaxSoundName=100,

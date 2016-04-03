@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 #endif // USE_GTK
 
-#include "C4ObjectList.h"
+#include "object/C4ObjectList.h"
 
 class C4ObjectListDlg: public C4ObjectListChangeListener
 {

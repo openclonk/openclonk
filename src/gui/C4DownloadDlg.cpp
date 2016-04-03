@@ -16,10 +16,10 @@
 // HTTP download dialog; downloads a file
 
 #include "C4Include.h"
-#include "C4DownloadDlg.h"
+#include "gui/C4DownloadDlg.h"
 
-#include "C4Log.h"
-#include "C4GraphicsResource.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
 
 C4Network2HTTPClient HTTPClient;
 

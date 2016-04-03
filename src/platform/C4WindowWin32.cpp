@@ -18,24 +18,24 @@
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
 #include "C4Include.h"
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
-#include <C4Application.h>
-#include <C4AppWin32Impl.h>
-#include <C4Config.h>
-#include <C4Console.h>
-#include <C4DrawGL.h>
-#include <C4FullScreen.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4Rect.h>
-#include <C4Version.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <StdRegistry.h>
-#include "resource.h"
+#include "game/C4Application.h"
+#include "platform/C4AppWin32Impl.h"
+#include "config/C4Config.h"
+#include "editor/C4Console.h"
+#include "graphics/C4DrawGL.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "gui/C4MouseControl.h"
+#include "lib/C4Rect.h"
+#include "C4Version.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "platform/StdRegistry.h"
+#include "res/resource.h"
 
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 #include <shellapi.h>
 

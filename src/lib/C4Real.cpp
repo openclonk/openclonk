@@ -16,10 +16,10 @@
 // fixed numbers - sine functions
 
 #include "C4Include.h"
-#include "C4Real.h"
+#include "lib/C4Real.h"
 
-#include "StdCompiler.h"
-#include "StdAdaptors.h"
+#include "lib/StdCompiler.h"
+#include "lib/StdAdaptors.h"
 
 #ifdef C4REAL_USE_FIXNUM
 

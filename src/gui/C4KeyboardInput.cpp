@@ -15,12 +15,12 @@
  */
 // Keyboard input mapping to engine functions
 
-#include <C4Include.h>
-#include <C4KeyboardInput.h>
+#include "C4Include.h"
+#include "gui/C4KeyboardInput.h"
 
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4Window.h>
+#include "c4group/C4Components.h"
+#include "game/C4Game.h"
+#include "platform/C4Window.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>
@@ -81,7 +81,7 @@ struct C4KeyCodeMapEntry
 };
 
 #if defined(USE_COCOA)
-#include "CocoaKeycodeMap.h"
+#include "platform/CocoaKeycodeMap.h"
 #else
 const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_ESCAPE,        "Escape",       "Esc"},

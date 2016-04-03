@@ -18,8 +18,8 @@
 /* Value to identify object definitions */
 
 #include "C4Include.h"
-#include "C4Id.h"
-#include "StdCompiler.h"
+#include "object/C4Id.h"
+#include "lib/StdCompiler.h"
 
 #include <utility>
 

@@ -19,8 +19,8 @@
 #ifndef INC_C4Sector
 #define INC_C4Sector
 
-#include <C4ObjectList.h>
-#include <C4Rect.h>
+#include "object/C4ObjectList.h"
+#include "lib/C4Rect.h"
 
 // class predefs
 class C4LSector;

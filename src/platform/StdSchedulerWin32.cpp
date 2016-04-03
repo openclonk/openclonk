@@ -15,8 +15,8 @@
  */
 
 // Events are Windows-specific
-#include <C4Include.h>
-#include <StdScheduler.h>
+#include "C4Include.h"
+#include "platform/StdScheduler.h"
 #ifdef STDSCHEDULER_USE_EVENTS
 
 #include <mmsystem.h>

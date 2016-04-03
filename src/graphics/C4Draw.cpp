@@ -17,18 +17,18 @@
 
 /* NewGfx interfaces */
 #include "C4Include.h"
-#include <C4Draw.h>
+#include "graphics/C4Draw.h"
 
-#include "C4App.h"
-#include <C4FontLoader.h>
-#include <C4Window.h>
-#include <C4DrawGL.h>
-#include <C4DrawT.h>
-#include <C4Markup.h>
-#include "C4Rect.h"
-#include <C4Config.h>
-#include "StdMesh.h"
-#include <CSurface8.h>
+#include "platform/C4App.h"
+#include "graphics/C4FontLoader.h"
+#include "platform/C4Window.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4DrawT.h"
+#include "lib/C4Markup.h"
+#include "lib/C4Rect.h"
+#include "config/C4Config.h"
+#include "lib/StdMesh.h"
+#include "graphics/CSurface8.h"
 #include "lib/StdColors.h"
 
 #include <stdio.h>

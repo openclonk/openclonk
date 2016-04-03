@@ -17,8 +17,8 @@
 
 #include <memory>
 
-#include "C4Value.h"
-#include "C4StringTable.h"
+#include "script/C4Value.h"
+#include "script/C4StringTable.h"
 
 #ifndef C4PROPLIST_H
 #define C4PROPLIST_H

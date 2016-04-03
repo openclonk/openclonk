@@ -14,7 +14,7 @@
  */
 
 // A loader for the OGRE .mesh binary file format
-#include <StdMesh.h>
+#include "lib/StdMesh.h"
 
 #ifndef INC_StdMeshLoader
 #define INC_StdMeshLoader

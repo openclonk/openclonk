@@ -20,7 +20,7 @@
 #ifndef INC_C4IDList
 #define INC_C4IDList
 
-#include <C4Id.h>
+#include "object/C4Id.h"
 
 // note that setting the chunk size for ID-Lists so low looks like an enormous waste
 // at first glance - however, due there's an incredibly large number of small ID-Lists

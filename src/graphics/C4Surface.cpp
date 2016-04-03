@@ -17,18 +17,18 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
-#include <C4Surface.h>
+#include "graphics/C4Surface.h"
 
-#include <StdFile.h>
-#include <CStdFile.h>
-#include "C4App.h"
-#include <C4DrawGL.h>
-#include <C4Window.h>
-#include <StdRegistry.h>
-#include <C4Draw.h>
-#include <Bitmap256.h>
-#include <StdPNG.h>
-#include <C4Config.h>
+#include "platform/StdFile.h"
+#include "c4group/CStdFile.h"
+#include "platform/C4App.h"
+#include "graphics/C4DrawGL.h"
+#include "platform/C4Window.h"
+#include "platform/StdRegistry.h"
+#include "graphics/C4Draw.h"
+#include "graphics/Bitmap256.h"
+#include "graphics/StdPNG.h"
+#include "config/C4Config.h"
 #include "lib/StdColors.h"
 
 

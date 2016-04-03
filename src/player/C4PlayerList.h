@@ -20,7 +20,7 @@
 #ifndef INC_C4PlayerList
 #define INC_C4PlayerList
 
-#include "C4PlayerInfo.h"
+#include "control/C4PlayerInfo.h"
 
 class C4PlayerList
 {

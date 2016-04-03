@@ -16,8 +16,8 @@
 #ifndef INC_C4Value
 #define INC_C4Value
 
-#include "C4StringTable.h"
-#include <C4ObjectPtr.h>
+#include "script/C4StringTable.h"
+#include "object/C4ObjectPtr.h"
 
 // C4Value type
 enum C4V_Type
@@ -261,9 +261,9 @@ private:
  in common situations because the Type of the new value is known. In any case,
  inlining them does speed up the script engine on at least one artificial benchmark. */
 
-#include "C4ValueArray.h"
-#include "C4PropList.h"
-#include "C4AulFunc.h"
+#include "script/C4ValueArray.h"
+#include "script/C4PropList.h"
+#include "script/C4AulFunc.h"
 
 ALWAYS_INLINE void C4Value::AddDataRef()
 {

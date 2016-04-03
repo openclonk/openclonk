@@ -20,7 +20,7 @@
 #ifndef INC_C4Weather
 #define INC_C4Weather
 
-#include <C4Landscape.h>
+#include "landscape/C4Landscape.h"
 class C4Weather
 {
 public:

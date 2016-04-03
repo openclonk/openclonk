@@ -15,10 +15,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Scenario.h>
-#include <C4Components.h>
-#include <C4ScriptHost.h>
+#include "C4Include.h"
+#include "landscape/C4Scenario.h"
+#include "c4group/C4Components.h"
+#include "script/C4ScriptHost.h"
 
 // scenario sections
 

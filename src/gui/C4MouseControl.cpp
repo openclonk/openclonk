@@ -17,23 +17,23 @@
 
 /* Mouse input */
 
-#include <C4Include.h>
-#include <C4MouseControl.h>
+#include "C4Include.h"
+#include "gui/C4MouseControl.h"
 
-#include <C4Viewport.h>
+#include "game/C4Viewport.h"
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include <C4Application.h>
-#include <C4FullScreen.h>
-#include <C4Gui.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4Player.h>
-#include "C4ChatDlg.h"
-#include <C4GraphicsResource.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4ScriptGuiWindow.h>
+#include "object/C4Object.h"
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "gui/C4Gui.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "player/C4Player.h"
+#include "gui/C4ChatDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
+#include "gui/C4ScriptGuiWindow.h"
 
 const int32_t C4MC_Drag_None            = 0,
               C4MC_Drag_Script          = 6,

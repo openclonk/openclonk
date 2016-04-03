@@ -16,14 +16,14 @@
 
 /* C4Group command line executable */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4Group.h>
-#include <C4Version.h>
-#include <C4Update.h>
-#include <StdRegistry.h>
+#include "c4group/C4Group.h"
+#include "C4Version.h"
+#include "c4group/C4Update.h"
+#include "platform/StdRegistry.h"
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 int globalArgC;

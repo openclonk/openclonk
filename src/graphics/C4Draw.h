@@ -19,8 +19,8 @@
 #ifndef INC_STDDDRAW2
 #define INC_STDDDRAW2
 
-#include <C4Surface.h>
-#include <StdMeshMaterial.h>
+#include "graphics/C4Surface.h"
+#include "lib/StdMeshMaterial.h"
 
 // Global Draw access pointer
 extern C4Draw *pDraw;

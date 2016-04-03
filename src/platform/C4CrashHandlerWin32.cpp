@@ -22,8 +22,8 @@
 #ifdef HAVE_DBGHELP
 
 // Dump generation on crash
-#include <C4Version.h>
-#include <C4windowswrapper.h>
+#include "C4Version.h"
+#include "platform/C4windowswrapper.h"
 #include <dbghelp.h>
 #include <fcntl.h>
 #include <string.h>

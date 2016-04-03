@@ -13,17 +13,17 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include "C4Update.h"
+#include "C4Include.h"
+#include "c4group/C4Update.h"
 #include "C4Version.h"
-#include "C4Components.h"
-#include "C4Group.h"
-#include "C4Log.h"
+#include "c4group/C4Components.h"
+#include "c4group/C4Group.h"
+#include "lib/C4Log.h"
 
 C4Config *GetCfg();
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <direct.h>
 #endif
 

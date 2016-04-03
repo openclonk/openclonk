@@ -14,11 +14,11 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4InteractiveThread.h"
-#include "C4Application.h"
-#include "C4Log.h"
+#include "network/C4InteractiveThread.h"
+#include "game/C4Application.h"
+#include "lib/C4Log.h"
 
-#include <C4Game.h>
+#include "game/C4Game.h"
 
 // *** C4InteractiveThread
 

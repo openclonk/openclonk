@@ -17,12 +17,12 @@
 
 /* Functions mapped by C4Script */
 
-#include <C4Include.h>
-#include <C4AulDefFunc.h>
+#include "C4Include.h"
+#include "script/C4AulDefFunc.h"
 
-#include <C4AulExec.h>
-#include <C4Random.h>
-#include <C4Version.h>
+#include "script/C4AulExec.h"
+#include "lib/C4Random.h"
+#include "C4Version.h"
 
 //========================== Some Support Functions =======================================
 

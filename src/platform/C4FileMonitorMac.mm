@@ -15,11 +15,11 @@
 
 #ifdef __APPLE__
 
-#include <C4Include.h>
-#include <C4FileMonitor.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "platform/C4FileMonitor.h"
+#include "game/C4Application.h"
 
-#include <StdFile.h>
+#include "platform/StdFile.h"
 
 #import <Foundation/Foundation.h>
 

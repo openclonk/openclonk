@@ -16,7 +16,7 @@
 #ifndef INC_StdMeshLoaderDataStream
 #define INC_StdMeshLoaderDataStream
 
-#include "StdMeshLoader.h"
+#include "lib/StdMeshLoader.h"
 
 namespace Ogre
 {

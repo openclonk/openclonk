@@ -18,7 +18,7 @@
 #ifndef INC_C4GameOptions
 #define INC_C4GameOptions
 
-#include "C4Gui.h"
+#include "gui/C4Gui.h"
 
 // options dialog: created as listbox inside another dialog
 // used to configure some standard runtime options, as well as custom game options

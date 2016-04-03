@@ -20,12 +20,12 @@
 #ifndef INC_C4MapScript
 #define INC_C4MapScript
 
-#include <C4ComponentHost.h>
-#include <C4Aul.h>
-#include <C4ScriptHost.h>
-#include <C4Rect.h>
-#include <CSurface8.h>
-#include <C4Landscape.h>
+#include "c4group/C4ComponentHost.h"
+#include "script/C4Aul.h"
+#include "script/C4ScriptHost.h"
+#include "lib/C4Rect.h"
+#include "graphics/CSurface8.h"
+#include "landscape/C4Landscape.h"
 
 // mattex masks: Array of bools for each possible material-texture index
 class C4MapScriptMatTexMask

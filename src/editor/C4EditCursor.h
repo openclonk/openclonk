@@ -20,9 +20,9 @@
 #ifndef INC_C4EditCursor
 #define INC_C4EditCursor
 
-#include "C4ObjectList.h"
-#include "C4Control.h"
-#include "C4Rect.h"
+#include "object/C4ObjectList.h"
+#include "control/C4Control.h"
+#include "lib/C4Rect.h"
 #include <vector>
 
 #ifdef USE_GTK

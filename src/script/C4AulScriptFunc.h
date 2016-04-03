@@ -16,8 +16,8 @@
 #ifndef C4AULSCRIPTFUNC_H_
 #define C4AULSCRIPTFUNC_H_
 
-#include <C4Value.h>
-#include <C4ValueMap.h>
+#include "script/C4Value.h"
+#include "script/C4ValueMap.h"
 
 // byte code chunk type
 // some special script functions defined hard-coded to reduce the exec context

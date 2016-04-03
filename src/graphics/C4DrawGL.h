@@ -21,7 +21,7 @@
 #define INC_StdGL
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 #include <GL/glew.h>
@@ -29,8 +29,8 @@
 #ifdef USE_COCOA
 #import "ObjectiveCAssociated.h"
 #endif
-#include <C4Draw.h>
-#include <C4Shader.h>
+#include "graphics/C4Draw.h"
+#include "graphics/C4Shader.h"
 
 class C4Window;
 

@@ -17,23 +17,23 @@
 
 /* The command stack controls an object's complex and independent behavior */
 
-#include <C4Include.h>
-#include <C4Command.h>
+#include "C4Include.h"
+#include "object/C4Command.h"
 
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4ObjectCom.h>
-#include <C4ObjectInfo.h>
-#include <C4Random.h>
-#include <C4GameMessage.h>
-#include <C4ObjectMenu.h>
-#include <C4Player.h>
-#include <C4SoundSystem.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "object/C4ObjectInfo.h"
+#include "lib/C4Random.h"
+#include "gui/C4GameMessage.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4Player.h"
+#include "platform/C4SoundSystem.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
 const int32_t FollowRange=6,PushToRange=10,DigOutPositionRange=15;

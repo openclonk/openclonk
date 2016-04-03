@@ -41,7 +41,7 @@ inline InplaceReconstruct(T *obj)
 }
 #pragma pop_macro("new")
 
-#include "PlatformAbstraction.h"
+#include "platform/PlatformAbstraction.h"
 
 // Small helpers
 template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }

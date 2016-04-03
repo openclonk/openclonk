@@ -20,8 +20,8 @@
 #ifndef INC_C4GameMessage
 #define INC_C4GameMessage
 
-#include <StdColors.h>
-#include <C4Value.h>
+#include "lib/StdColors.h"
+#include "script/C4Value.h"
 
 const int32_t C4GM_MaxText = 256,
               C4GM_MinDelay = 20;

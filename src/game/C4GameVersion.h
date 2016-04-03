@@ -18,7 +18,7 @@
 #define C4GAMEVERSION_H
 
 #include "C4Version.h"
-#include "C4InputValidation.h"
+#include "lib/C4InputValidation.h"
 
 struct C4GameVersion
 {

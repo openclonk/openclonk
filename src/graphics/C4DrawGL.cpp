@@ -17,14 +17,14 @@
 /* OpenGL implementation of NewGfx */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
-#include <C4Surface.h>
-#include <C4Window.h>
-#include <C4FoWRegion.h>
-#include "C4Rect.h"
-#include "C4Config.h"
-#include <C4App.h>
+#include "graphics/C4Surface.h"
+#include "platform/C4Window.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "lib/C4Rect.h"
+#include "config/C4Config.h"
+#include "platform/C4App.h"
 #include "lib/StdColors.h"
 
 #ifndef USE_CONSOLE

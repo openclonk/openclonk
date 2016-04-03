@@ -18,7 +18,7 @@
 #ifndef INC_StdNoGfx
 #define INC_StdNoGfx
 
-#include <C4Draw.h>
+#include "graphics/C4Draw.h"
 
 class CStdNoGfx : public C4Draw
 {

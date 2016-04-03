@@ -20,9 +20,9 @@
 #ifndef INC_C4Shape
 #define INC_C4Shape
 
-#include "C4FacetEx.h"
-#include "C4Constants.h"
-#include "C4Rect.h"
+#include "graphics/C4FacetEx.h"
+#include "config/C4Constants.h"
+#include "lib/C4Rect.h"
 
 #define C4D_VertexCpyPos (C4D_MaxVertex/2)
 

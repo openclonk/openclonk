@@ -17,32 +17,32 @@
 
 /* Functions mapped by C4Script */
 
-#include <C4Include.h>
-#include <C4GameScript.h>
+#include "C4Include.h"
+#include "game/C4GameScript.h"
 
-#include <C4Application.h>
-#include <C4AulDefFunc.h>
-#include <C4Command.h>
-#include <C4DefList.h>
-#include <C4Console.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4GameMessage.h>
-#include <C4GamePadCon.h>
-#include <C4GraphicsSystem.h>
-#include <C4Log.h>
-#include <C4MessageInput.h>
-#include <C4ScriptGuiWindow.h>
-#include <C4MouseControl.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4PXS.h>
-#include <C4RoundResults.h>
-#include <C4Texture.h>
-#include <C4Weather.h>
-#include <C4Viewport.h>
-#include <C4FoW.h>
+#include "game/C4Application.h"
+#include "script/C4AulDefFunc.h"
+#include "object/C4Command.h"
+#include "object/C4DefList.h"
+#include "editor/C4Console.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "gui/C4GameMessage.h"
+#include "platform/C4GamePadCon.h"
+#include "game/C4GraphicsSystem.h"
+#include "lib/C4Log.h"
+#include "gui/C4MessageInput.h"
+#include "gui/C4ScriptGuiWindow.h"
+#include "gui/C4MouseControl.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "landscape/C4PXS.h"
+#include "control/C4RoundResults.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Weather.h"
+#include "game/C4Viewport.h"
+#include "landscape/fow/C4FoW.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
 

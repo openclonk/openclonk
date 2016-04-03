@@ -16,11 +16,11 @@
 
 // An inotify wrapper
 
-#include <C4Include.h>
-#include <C4FileMonitor.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "platform/C4FileMonitor.h"
+#include "game/C4Application.h"
 
-#include <StdFile.h>
+#include "platform/StdFile.h"
 
 #ifdef HAVE_SYS_INOTIFY_H
 #include <sys/inotify.h>
@@ -103,7 +103,7 @@ void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)
 }
 
 #elif defined(_WIN32)
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
 		: fStarted(false), pCallback(pCallback), pWatches(NULL)

@@ -17,23 +17,23 @@
 
 /* Handles viewport editing in console mode */
 
-#include <C4Include.h>
-#include <C4EditCursor.h>
+#include "C4Include.h"
+#include "editor/C4EditCursor.h"
 
-#include <C4Console.h>
-#include <C4Object.h>
-#include <C4Application.h>
-#include <C4Random.h>
-#include <C4MouseControl.h>
-#include <C4Landscape.h>
-#include <C4Texture.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
+#include "editor/C4Console.h"
+#include "object/C4Object.h"
+#include "game/C4Application.h"
+#include "lib/C4Random.h"
+#include "gui/C4MouseControl.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Texture.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
 
 #ifdef _WIN32
-#include "resource.h"
+#include "res/resource.h"
 #endif
 
 #ifdef USE_GTK

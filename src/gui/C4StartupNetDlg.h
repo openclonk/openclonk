@@ -18,9 +18,9 @@
 #ifndef INC_C4StartupNetDlg
 #define INC_C4StartupNetDlg
 
-#include "C4Startup.h"
-#include "C4Network2Discover.h"
-#include "C4Network2Reference.h"
+#include "gui/C4Startup.h"
+#include "network/C4Network2Discover.h"
+#include "network/C4Network2Reference.h"
 
 // -----------------------------------------------
 

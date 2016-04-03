@@ -18,10 +18,10 @@
 /* Some wrappers for easier access to the Windows registry */
 
 #include "C4Include.h"
-#include <StdRegistry.h>
+#include "platform/StdRegistry.h"
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <stdio.h>
 
 StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)

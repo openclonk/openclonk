@@ -16,10 +16,10 @@
 // generic user interface
 // container for a dynamic number of vertically stacked controls
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4MouseControl.h>
+#include "gui/C4MouseControl.h"
 #include <algorithm>
 
 namespace C4GUI

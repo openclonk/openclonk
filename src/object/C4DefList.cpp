@@ -17,19 +17,19 @@
 
 /* Object definition */
 
-#include <C4Include.h>
-#include <C4DefList.h>
+#include "C4Include.h"
+#include "object/C4DefList.h"
 
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4Def.h>
-#include <C4FileMonitor.h>
-#include <C4GameVersion.h>
-#include <C4Language.h>
-#include <C4GameScript.h>
-#include <C4Record.h>
+#include "c4group/C4Components.h"
+#include "config/C4Config.h"
+#include "object/C4Def.h"
+#include "platform/C4FileMonitor.h"
+#include "game/C4GameVersion.h"
+#include "c4group/C4Language.h"
+#include "game/C4GameScript.h"
+#include "control/C4Record.h"
 
-#include <StdMeshLoader.h>
+#include "lib/StdMeshLoader.h"
 
 namespace
 {

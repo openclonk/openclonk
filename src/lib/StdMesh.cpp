@@ -15,8 +15,8 @@
  */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
-#include <StdMesh.h>
+#include "graphics/C4DrawGL.h"
+#include "lib/StdMesh.h"
 #include <algorithm>
 
 namespace

@@ -16,7 +16,7 @@
 #ifndef INC_C4PacketBase
 #define INC_C4PacketBase
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
 // *** packet base class
 

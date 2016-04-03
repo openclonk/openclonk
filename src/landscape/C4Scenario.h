@@ -20,8 +20,8 @@
 #ifndef INC_C4Scenario
 #define INC_C4Scenario
 
-#include <C4NameList.h>
-#include <C4IDList.h>
+#include "lib/C4NameList.h"
+#include "object/C4IDList.h"
 
 class C4SVal
 {

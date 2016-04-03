@@ -17,8 +17,8 @@
 // A loader for the OGRE .mesh XML file format
 
 #include "C4Include.h"
-#include "StdMesh.h"
-#include "StdMeshLoader.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoader.h"
 #include <tinyxml.h>
 
 // Helper class to load things from an XML file with error checking

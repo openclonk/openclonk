@@ -21,12 +21,12 @@
 #ifdef _WIN32
 #	include "platform/C4windowswrapper.h"
 #endif
-#include <StdFile.h>
-#include <CStdFile.h>
-#include <SHA1.h>
+#include "platform/StdFile.h"
+#include "c4group/CStdFile.h"
+#include "lib/SHA1.h"
 
 #include <zlib.h>
-#include <zlib/gzio.h>
+#include "zlib/gzio.h"
 #include <stdio.h>
 
 #include <sys/stat.h>

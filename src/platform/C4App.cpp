@@ -14,9 +14,9 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4App.h"
-#include "C4Window.h"
+#include "C4Include.h"
+#include "platform/C4App.h"
+#include "platform/C4Window.h"
 
 void C4AbstractApp::Run()
 {

@@ -16,8 +16,8 @@
 
 /* Common window for drawing and property tool dialogs in console mode */
 
-#include <C4Include.h>
-#include <C4ConsoleGTKDlg.h>
+#include "C4Include.h"
+#include "editor/C4ConsoleGTKDlg.h"
 
 #include <gtk/gtk.h>
 

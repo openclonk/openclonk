@@ -15,14 +15,14 @@
  */
 // complex dynamic landscape creator
 
-#include <C4Include.h>
-#include <C4MapCreatorS2.h>
-#include <C4Random.h>
-#include <C4Material.h>
-#include <C4ScriptHost.h>
-#include <C4Texture.h>
-#include <C4Record.h>
-#include <CSurface8.h>
+#include "C4Include.h"
+#include "landscape/C4MapCreatorS2.h"
+#include "lib/C4Random.h"
+#include "landscape/C4Material.h"
+#include "script/C4ScriptHost.h"
+#include "landscape/C4Texture.h"
+#include "control/C4Record.h"
+#include "graphics/CSurface8.h"
 
 namespace {
 	// node attribute entry for SetField search

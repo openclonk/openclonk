@@ -17,13 +17,13 @@
 
 /* Main program entry point */
 
-#include <C4Include.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
 
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4Version.h>
-#include "C4Network2.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
+#include "C4Version.h"
+#include "network/C4Network2.h"
 
 #ifdef _WIN32
 #include <shellapi.h>

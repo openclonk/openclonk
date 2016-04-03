@@ -15,10 +15,10 @@
 
 #include <GL/glew.h>
 
-#include <C4Include.h>
-#include <C4Console.h>
-#include <C4Viewport.h>
-#include <C4GraphicsSystem.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
+#include "game/C4Viewport.h"
+#include "game/C4GraphicsSystem.h"
 
 #import "C4AppDelegate+MainMenuActions.h"
 #import "C4DrawGLMac.h"

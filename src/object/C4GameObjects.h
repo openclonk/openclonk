@@ -18,9 +18,9 @@
 #ifndef INC_C4GameObjects
 #define INC_C4GameObjects
 
-#include <C4ObjectList.h>
-#include <C4FindObject.h>
-#include <C4Sector.h>
+#include "object/C4ObjectList.h"
+#include "object/C4FindObject.h"
+#include "object/C4Sector.h"
 
 // main object list class
 class C4GameObjects : public C4NotifyingObjectList

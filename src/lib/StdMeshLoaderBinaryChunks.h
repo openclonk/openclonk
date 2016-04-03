@@ -16,8 +16,8 @@
 #ifndef INC_StdMeshLoaderChunks
 #define INC_StdMeshLoaderChunks
 
-#include "StdMesh.h"
-#include "StdMeshLoaderDataStream.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoaderDataStream.h"
 
 // ==== Ogre file format ====
 // The Ogre file format is a chunked format similar to PNG.
