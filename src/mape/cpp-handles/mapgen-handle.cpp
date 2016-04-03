@@ -133,16 +133,13 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 
 		// Generate map, fail if return error occurs
 		c4_log_handle_clear();
-		CSurface8* out_ptr_fg = NULL;
-		CSurface8* out_ptr_bg = NULL;
+		std::unique_ptr<CSurface8> out_ptr_fg, out_ptr_bg;
 		const bool result = ::MapScript.InitializeMap(
 			&landscape,
 			HANDLE_TO_TEXTURE_MAP(texture_map),
 			HANDLE_TO_MATERIAL_MAP(material_map),
 			1,
 			&out_ptr_fg, &out_ptr_bg);
-		std::auto_ptr<CSurface8> out(out_ptr_fg);
-		delete out_ptr_bg; // We don't show the background map... maybe should include a toggle to switch between fg and bg...
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();
@@ -153,12 +150,12 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 			throw std::runtime_error("No InitializeMap() function present in the script, or it returns false");
 
 		C4MapgenHandle* handle = new C4MapgenHandle;
-		handle->width = out->Wdt;
-		handle->height = out->Hgt;
-		handle->rowstride = out->Wdt;
+		handle->width = out_ptr_fg->Wdt;
+		handle->height = out_ptr_fg->Hgt;
+		handle->rowstride = out_ptr_fg->Wdt;
 		handle->error_message = NULL;
-		handle->data = out->Bits;
-		out->ReleaseBuffer();
+		handle->data = out_ptr_fg->Bits;
+		out_ptr_fg->ReleaseBuffer();
 
 		return handle;
 	}
