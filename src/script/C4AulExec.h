@@ -4,7 +4,7 @@
  * Copyright (c) 2001, 2006-2007, Sven Eberhardt
  * Copyright (c) 2006, Peter Wortmann
  * Copyright (c) 2007, Günther Brammer
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
