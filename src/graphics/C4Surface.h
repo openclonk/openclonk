@@ -18,7 +18,7 @@
 #ifndef INC_StdSurface2
 #define INC_StdSurface2
 
-#include <C4Rect.h>
+#include "lib/C4Rect.h"
 
 #include <list>
 

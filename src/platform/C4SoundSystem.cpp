@@ -17,18 +17,18 @@
 
 /* Handles the sound bank and plays effects using DSoundX */
 
-#include <C4Include.h>
-#include <C4SoundSystem.h>
+#include "C4Include.h"
+#include "platform/C4SoundSystem.h"
 
-#include <C4SoundInstance.h>
-#include <C4Random.h>
-#include <C4Object.h>
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4SoundIncludes.h>
-#include <C4SoundLoaders.h>
+#include "platform/C4SoundInstance.h"
+#include "lib/C4Random.h"
+#include "object/C4Object.h"
+#include "game/C4Game.h"
+#include "config/C4Config.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "platform/C4SoundIncludes.h"
+#include "platform/C4SoundLoaders.h"
 
 C4SoundSystem::C4SoundSystem():
 		FirstSound (NULL)

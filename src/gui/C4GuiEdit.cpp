@@ -16,12 +16,12 @@
 // generic user interface
 // room for textual deconvolution
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4Application.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Application.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 namespace C4GUI
 {

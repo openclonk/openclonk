@@ -22,8 +22,8 @@
 
 #include <vector>
 
-#include <C4Include.h>
-#include <C4KeyboardInput.h>
+#include "C4Include.h"
+#include "gui/C4KeyboardInput.h"
 
 #import <Cocoa/Cocoa.h>
 #ifdef USE_COCOA

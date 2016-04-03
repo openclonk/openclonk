@@ -18,8 +18,8 @@
 #ifndef INC_C4GameLobby
 #define INC_C4GameLobby
 
-#include "C4Gui.h"
-#include <C4PacketBase.h>
+#include "gui/C4Gui.h"
+#include "network/C4PacketBase.h"
 
 namespace C4GameLobby
 {

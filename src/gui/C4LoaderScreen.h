@@ -18,7 +18,7 @@
 #ifndef INC_C4LoaderScreen
 #define INC_C4LoaderScreen
 
-#include <C4FacetEx.h>
+#include "graphics/C4FacetEx.h"
 
 class C4LoaderScreen
 {

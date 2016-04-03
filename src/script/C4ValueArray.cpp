@@ -13,13 +13,13 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4ValueArray.h>
+#include "C4Include.h"
+#include "script/C4ValueArray.h"
 #include <algorithm>
 
-#include <C4Aul.h>
-#include <C4FindObject.h>
-#include <C4Object.h>
+#include "script/C4Aul.h"
+#include "object/C4FindObject.h"
+#include "object/C4Object.h"
 
 C4ValueArray::C4ValueArray()
 		: iSize(0), iCapacity(0), pData(NULL)

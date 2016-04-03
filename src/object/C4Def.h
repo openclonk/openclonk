@@ -20,19 +20,19 @@
 #ifndef INC_C4Def
 #define INC_C4Def
 
-#include <C4Shape.h>
-#include <C4InfoCore.h>
-#include <C4IDList.h>
-#include <C4ValueMap.h>
-#include <C4Facet.h>
-#include <C4Surface.h>
-#include <C4ComponentHost.h>
-#include <C4PropList.h>
+#include "object/C4Shape.h"
+#include "object/C4InfoCore.h"
+#include "object/C4IDList.h"
+#include "script/C4ValueMap.h"
+#include "graphics/C4Facet.h"
+#include "graphics/C4Surface.h"
+#include "c4group/C4ComponentHost.h"
+#include "script/C4PropList.h"
 
-#include <C4ScriptHost.h>
-#include <C4DefGraphics.h>
-#include "C4LangStringTable.h"
-#include "C4InputValidation.h"
+#include "script/C4ScriptHost.h"
+#include "object/C4DefGraphics.h"
+#include "c4group/C4LangStringTable.h"
+#include "lib/C4InputValidation.h"
 
 #include <functional>
 #include <set>

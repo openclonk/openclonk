@@ -17,20 +17,20 @@
 
 /* Object definition */
 
-#include <C4Include.h>
-#include <C4Def.h>
-#include <C4DrawGL.h>
-#include <C4GraphicsResource.h>
+#include "C4Include.h"
+#include "object/C4Def.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4FileMonitor.h>
-#include <C4Language.h>
-#include <C4Object.h>
-#include <C4RankSystem.h>
-#include <C4SoundSystem.h>
-#include <C4SolidMask.h>
-#include <CSurface8.h>
+#include "c4group/C4Components.h"
+#include "config/C4Config.h"
+#include "platform/C4FileMonitor.h"
+#include "c4group/C4Language.h"
+#include "object/C4Object.h"
+#include "player/C4RankSystem.h"
+#include "platform/C4SoundSystem.h"
+#include "landscape/C4SolidMask.h"
+#include "graphics/CSurface8.h"
 #include "lib/StdColors.h"
 
 // Helper class to load additional resources required for meshes from

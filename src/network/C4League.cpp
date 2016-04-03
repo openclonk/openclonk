@@ -16,12 +16,12 @@
 
 /* engine handler of league system */
 
-#include <C4Include.h>
-#include <C4League.h>
+#include "C4Include.h"
+#include "network/C4League.h"
 
-#include <C4Game.h>
-#include <C4RoundResults.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Game.h"
+#include "control/C4RoundResults.h"
+#include "graphics/C4GraphicsResource.h"
 
 // *** C4LeagueRequestHead
 

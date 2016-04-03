@@ -17,26 +17,26 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Console.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
 
-#include <C4AppWin32Impl.h>
-#include "C4ConsoleGUI.h"
-#include <C4DrawGL.h>
-#include <C4Landscape.h>
-#include <C4Object.h>
-#include <C4PlayerList.h>
-#include <C4Texture.h>
-#include <C4Version.h>
-#include "C4Viewport.h"
-#include <StdRegistry.h>
+#include "platform/C4AppWin32Impl.h"
+#include "editor/C4ConsoleGUI.h"
+#include "graphics/C4DrawGL.h"
+#include "landscape/C4Landscape.h"
+#include "object/C4Object.h"
+#include "player/C4PlayerList.h"
+#include "landscape/C4Texture.h"
+#include "C4Version.h"
+#include "game/C4Viewport.h"
+#include "platform/StdRegistry.h"
 #include "lib/StdColors.h"
 #include "landscape/C4Sky.h"
 
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 #include <commdlg.h>
-#include "resource.h"
+#include "res/resource.h"
 #define GetWideLPARAM(c) reinterpret_cast<LPARAM>(static_cast<wchar_t*>(GetWideChar(c)))
 
 inline StdStrBuf::wchar_t_holder LoadResStrW(const char *id) { return GetWideChar(LoadResStr(id)); }
@@ -1426,4 +1426,4 @@ void C4ToolsDlg::EnableControls()
 	NeedPreviewUpdate();
 }
 
-#include "C4ConsoleGUICommon.h"
+#include "editor/C4ConsoleGUICommon.h"

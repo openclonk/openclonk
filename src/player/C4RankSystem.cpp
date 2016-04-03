@@ -17,17 +17,17 @@
 
 /* Rank list for players or crew members */
 
-#include <C4Include.h>
-#include <C4RankSystem.h>
+#include "C4Include.h"
+#include "player/C4RankSystem.h"
 
-#include <C4Log.h>
-#include <C4Group.h>
-#include <C4ComponentHost.h>
-#include <C4FacetEx.h>
-#include <C4Game.h>
-#include <C4GraphicsResource.h>
+#include "lib/C4Log.h"
+#include "c4group/C4Group.h"
+#include "c4group/C4ComponentHost.h"
+#include "graphics/C4FacetEx.h"
+#include "game/C4Game.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <StdRegistry.h>
+#include "platform/StdRegistry.h"
 
 C4RankSystem::C4RankSystem()
 	: pszRankNames(NULL), szRankNames(NULL), pszRankExtensions(NULL)

@@ -16,10 +16,10 @@
 // png file reading functionality
 
 #include "C4Include.h"
-#include <StdPNG.h>
+#include "graphics/StdPNG.h"
 
-#include <StdColors.h>
-#include <StdScheduler.h>
+#include "lib/StdColors.h"
+#include "platform/StdScheduler.h"
 
 // png reading proc
 void PNGAPI CPNGFile::CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)

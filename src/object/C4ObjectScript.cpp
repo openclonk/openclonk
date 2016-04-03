@@ -15,26 +15,26 @@
  * for the above references.
  */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4Aul.h>
-#include <C4AulDefFunc.h>
-#include <C4Command.h>
-#include <C4DefList.h>
-#include <C4Draw.h>
-#include <C4GameMessage.h>
-#include <C4GraphicsResource.h>
-#include <C4Material.h>
-#include <C4MeshAnimation.h>
-#include <C4ObjectCom.h>
-#include <C4ObjectInfo.h>
-#include <C4ObjectMenu.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4Random.h>
-#include <C4RankSystem.h>
-#include <C4Teams.h>
-#include <StdMeshMath.h>
+#include "script/C4Aul.h"
+#include "script/C4AulDefFunc.h"
+#include "object/C4Command.h"
+#include "object/C4DefList.h"
+#include "graphics/C4Draw.h"
+#include "gui/C4GameMessage.h"
+#include "graphics/C4GraphicsResource.h"
+#include "landscape/C4Material.h"
+#include "object/C4MeshAnimation.h"
+#include "object/C4ObjectCom.h"
+#include "object/C4ObjectInfo.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "lib/C4Random.h"
+#include "player/C4RankSystem.h"
+#include "control/C4Teams.h"
+#include "lib/StdMeshMath.h"
 
 bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix)
 {

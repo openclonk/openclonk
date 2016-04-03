@@ -16,10 +16,10 @@
 
 #include "C4Include.h"
 #include "script/C4Aul.h"
-#include "C4MeshAnimation.h"
-#include "C4Object.h"
-#include "C4ValueArray.h"
-#include "C4Game.h"
+#include "object/C4MeshAnimation.h"
+#include "object/C4Object.h"
+#include "script/C4ValueArray.h"
+#include "game/C4Game.h"
 
 namespace
 {

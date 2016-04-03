@@ -15,15 +15,15 @@
  */
 // player team management for teamwork melees
 
-#include <C4Include.h>
-#include <C4Teams.h>
+#include "C4Include.h"
+#include "control/C4Teams.h"
 
-#include <C4Game.h>
-#include <C4Random.h>
-#include <C4Components.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
+#include "game/C4Game.h"
+#include "lib/C4Random.h"
+#include "c4group/C4Components.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
 
 // ---------------------------------------------------------------
 // C4Team

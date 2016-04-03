@@ -18,12 +18,12 @@
 #ifndef INC_C4Shader
 #define INC_C4Shader
 
-#include "StdBuf.h"
-#include "StdMeshMath.h"
-#include "C4Surface.h"
+#include "lib/StdBuf.h"
+#include "lib/StdMeshMath.h"
+#include "graphics/C4Surface.h"
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 #include <GL/glew.h>

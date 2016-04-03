@@ -17,34 +17,34 @@
 
 /* Player data at runtime */
 
-#include <C4Include.h>
-#include <C4Player.h>
+#include "C4Include.h"
+#include "player/C4Player.h"
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4ObjectInfo.h>
-#include <C4Command.h>
-#include <C4League.h>
-#include <C4Network2Stats.h>
-#include <C4MessageInput.h>
-#include <C4GamePadCon.h>
-#include <C4Random.h>
-#include <C4Log.h>
-#include <C4FullScreen.h>
-#include <C4GameOverDlg.h>
-#include <C4ObjectMenu.h>
-#include <C4MouseControl.h>
-#include <C4GameMessage.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4Viewport.h>
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectInfo.h"
+#include "object/C4Command.h"
+#include "network/C4League.h"
+#include "network/C4Network2Stats.h"
+#include "gui/C4MessageInput.h"
+#include "platform/C4GamePadCon.h"
+#include "lib/C4Random.h"
+#include "lib/C4Log.h"
+#include "game/C4FullScreen.h"
+#include "gui/C4GameOverDlg.h"
+#include "object/C4ObjectMenu.h"
+#include "gui/C4MouseControl.h"
+#include "gui/C4GameMessage.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "game/C4Viewport.h"
 
 C4Player::C4Player() : C4PlayerInfoCore()
 {

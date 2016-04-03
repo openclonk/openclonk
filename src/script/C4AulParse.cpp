@@ -15,17 +15,17 @@
  */
 // parses scripts
 
-#include <C4Include.h>
+#include "C4Include.h"
 #include <utility>
 
-#include <C4Aul.h>
-#include <C4AulDebug.h>
-#include <C4AulExec.h>
-#include <C4AulScriptFunc.h>
-#include <C4Def.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4Config.h>
+#include "script/C4Aul.h"
+#include "script/C4AulDebug.h"
+#include "script/C4AulExec.h"
+#include "script/C4AulScriptFunc.h"
+#include "object/C4Def.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "config/C4Config.h"
 
 #define DEBUG_BYTECODE_DUMP 0
 #include <iomanip>

@@ -16,8 +16,8 @@
 #ifndef STDADAPTORS_H
 #define STDADAPTORS_H
 
-#include "Standard.h"
-#include "StdCompiler.h"
+#include "lib/Standard.h"
+#include "lib/StdCompiler.h"
 
 // * Wrappers for C4Compiler-types
 

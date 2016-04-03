@@ -17,10 +17,10 @@
 #ifndef C4CONSOLEGUI_INC
 #define C4CONSOLEGUI_INC
 
-#include "C4Application.h"
-#include "C4Player.h"
-#include "C4GameControl.h"
-#include "StdBuf.h"
+#include "game/C4Application.h"
+#include "player/C4Player.h"
+#include "control/C4GameControl.h"
+#include "lib/StdBuf.h"
 
 namespace OpenFileFlags
 {

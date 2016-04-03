@@ -16,17 +16,17 @@
 
 /* A wrapper class to OS dependent event and window interfaces, SDL version */
 
-#include <C4Include.h>
-#include <C4Window.h>
+#include "C4Include.h"
+#include "platform/C4Window.h"
 
-#include <C4Application.h>
-#include <C4DrawGL.h>
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "game/C4Application.h"
+#include "graphics/C4DrawGL.h"
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
 #include "C4Version.h"
-#include <C4Rect.h>
-#include <C4Config.h>
+#include "lib/C4Rect.h"
+#include "config/C4Config.h"
 
 /* C4Window */
 

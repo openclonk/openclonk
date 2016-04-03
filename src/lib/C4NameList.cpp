@@ -18,7 +18,7 @@
 /* A static list of strings and integer values, i.e. for material amounts */
 
 #include "C4Include.h"
-#include <C4NameList.h>
+#include "lib/C4NameList.h"
 
 void C4NameList::Clear()
 {

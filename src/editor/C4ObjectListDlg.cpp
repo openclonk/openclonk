@@ -16,11 +16,11 @@
 
 /* A window listing all objects in the game */
 
-#include <C4Include.h>
-#include <C4ObjectListDlg.h>
-#include <C4Console.h>
-#include <C4Object.h>
-#include <C4GameObjects.h>
+#include "C4Include.h"
+#include "editor/C4ObjectListDlg.h"
+#include "editor/C4Console.h"
+#include "object/C4Object.h"
+#include "object/C4GameObjects.h"
 
 
 #ifdef USE_GTK

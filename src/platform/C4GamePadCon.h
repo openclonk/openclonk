@@ -23,7 +23,7 @@
 #include <memory>
 
 #ifdef HAVE_SDL
-#include <C4KeyboardInput.h>
+#include "gui/C4KeyboardInput.h"
 #include <set>
 #include <map>
 

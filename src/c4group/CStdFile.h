@@ -21,7 +21,7 @@
 #define INC_CSTDFILE
 
 #include <stdio.h>
-#include <StdSync.h> // for StdThreadCheck
+#include "platform/StdSync.h" // for StdThreadCheck
 #include <zlib.h> // for gzFile
 
 const int CStdFileBufSize = 4096;

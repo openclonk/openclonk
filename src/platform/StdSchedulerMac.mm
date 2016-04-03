@@ -13,8 +13,8 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <StdScheduler.h>
+#include "C4Include.h"
+#include "platform/StdScheduler.h"
 #import <Cocoa/Cocoa.h>
 
 using namespace std;

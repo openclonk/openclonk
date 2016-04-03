@@ -14,10 +14,10 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
-#include "C4Constants.h"
-#include "C4Config.h"
+#include "config/C4Constants.h"
+#include "config/C4Config.h"
 
 #include <utility>
 #include <assert.h>

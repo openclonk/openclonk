@@ -18,10 +18,10 @@
 #ifndef INC_C4AulDefFunc
 #define INC_C4AulDefFunc
 
-#include <C4Aul.h>
-#include <C4Def.h>
-#include <C4DefList.h>
-#include <C4Effect.h>
+#include "script/C4Aul.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "script/C4Effect.h"
 #include <utility>
 
 inline const static char *FnStringPar(C4String *pString)

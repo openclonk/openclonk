@@ -18,7 +18,7 @@
 #ifndef INC_C4Teams
 #define INC_C4Teams
 
-#include "C4InputValidation.h"
+#include "lib/C4InputValidation.h"
 
 // constant used by lobby to indicate invisible, random team
 const int32_t TEAMID_Unknown = -1;

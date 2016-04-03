@@ -18,7 +18,7 @@
 #ifndef INC_C4StartupOptionsDlg
 #define INC_C4StartupOptionsDlg
 
-#include "C4Startup.h"
+#include "gui/C4Startup.h"
 
 // startup dialog: Options
 class C4StartupOptionsDlg : public C4StartupDlg

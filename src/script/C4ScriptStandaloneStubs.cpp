@@ -13,15 +13,15 @@
  * for the above references.
  */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4Aul.h>
-#include <C4AulDebug.h>
-#include <C4Config.h>
-#include <C4Def.h>
-#include <C4PropList.h>
-#include <C4Record.h>
-#include <C4Reloc.h>
+#include "script/C4Aul.h"
+#include "script/C4AulDebug.h"
+#include "config/C4Config.h"
+#include "object/C4Def.h"
+#include "script/C4PropList.h"
+#include "control/C4Record.h"
+#include "config/C4Reloc.h"
 
 /* Parts of the ScriptEngine that are normally in C4Globals for initialization order reasons. */
 #ifdef _DEBUG

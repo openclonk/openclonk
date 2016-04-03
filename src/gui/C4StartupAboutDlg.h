@@ -18,7 +18,7 @@
 #ifndef INC_C4StartupAboutDlg
 #define INC_C4StartupAboutDlg
 
-#include "C4Startup.h"
+#include "gui/C4Startup.h"
 
 // startup dialog: credits
 class C4StartupAboutDlg : public C4StartupDlg

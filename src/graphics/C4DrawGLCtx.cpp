@@ -17,10 +17,10 @@
 /* OpenGL implementation of NewGfx, the context */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
-#include <C4Window.h>
-#include <C4App.h>
+#include "platform/C4Window.h"
+#include "platform/C4App.h"
 
 #ifndef USE_CONSOLE
 

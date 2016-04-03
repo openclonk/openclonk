@@ -15,16 +15,16 @@
  */
 // Round result information to be displayed in game over dialog
 
-#include <C4Include.h>
-#include <C4RoundResults.h>
+#include "C4Include.h"
+#include "control/C4RoundResults.h"
 
-#include <C4Player.h>
-#include <C4Game.h>
+#include "player/C4Player.h"
+#include "game/C4Game.h"
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4DefList.h>
+#include "object/C4Object.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "object/C4DefList.h"
 
 // *** C4RoundResultsPlayer
 

@@ -18,7 +18,7 @@
 #ifndef INC_C4LangStringTable
 #define INC_C4LangStringTable
 
-#include "C4ComponentHost.h"
+#include "c4group/C4ComponentHost.h"
 
 #include <map>
 #include <string>

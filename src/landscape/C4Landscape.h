@@ -21,7 +21,7 @@
 #define INC_C4Landscape
 
 #include "C4Prototypes.h"
-#include "C4Constants.h"
+#include "config/C4Constants.h"
 
 const int32_t C4MaxMaterial = 125;
 

@@ -15,14 +15,14 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4NetIO.h>
+#include "C4Include.h"
+#include "network/C4NetIO.h"
 
 #include <iostream>
 #include <sstream>
 #include <time.h>
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 #else
 #include <arpa/inet.h>

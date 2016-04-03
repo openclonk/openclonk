@@ -18,9 +18,9 @@
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
-#include <C4Markup.h>
-#include <C4Facet.h>
-#include <StdBuf.h>
+#include "lib/C4Markup.h"
+#include "graphics/C4Facet.h"
+#include "lib/StdBuf.h"
 #include <stdio.h>
 #include <map>
 

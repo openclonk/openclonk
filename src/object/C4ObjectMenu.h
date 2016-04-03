@@ -20,7 +20,7 @@
 #ifndef INC_C4ObjectMenu
 #define INC_C4ObjectMenu
 
-#include "C4Menu.h"
+#include "gui/C4Menu.h"
 
 enum
 {

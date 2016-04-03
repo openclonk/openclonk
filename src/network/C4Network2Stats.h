@@ -18,8 +18,8 @@
 #ifndef INC_C4Network2Stats
 #define INC_C4Network2Stats
 
-#include "C4Application.h"
-#include "StdBuf.h"
+#include "game/C4Application.h"
+#include "lib/StdBuf.h"
 
 #include <algorithm>
 

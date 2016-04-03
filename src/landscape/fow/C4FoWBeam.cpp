@@ -16,7 +16,7 @@
 #include "C4Include.h"
 
 #ifndef USE_CONSOLE
-#include "C4FoWBeam.h"
+#include "landscape/fow/C4FoWBeam.h"
 
 // Maximum error allowed while merging beams.
 const int32_t C4FoWMergeThreshold = 10; // (in landscape pixels * 2)

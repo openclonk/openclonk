@@ -18,7 +18,7 @@
 #ifndef INC_C4Startup
 #define INC_C4Startup
 
-#include "C4Gui.h"
+#include "gui/C4Gui.h"
 
 #define C4CFN_StartupBackgroundMain    "StartupMainMenuBG"
 

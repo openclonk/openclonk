@@ -17,21 +17,21 @@
 
 /* Material definitions used by the landscape */
 
-#include <C4Include.h>
-#include <C4Material.h>
-#include <C4Components.h>
+#include "C4Include.h"
+#include "landscape/C4Material.h"
+#include "c4group/C4Components.h"
 
-#include <C4Group.h>
-#include <C4PXS.h>
-#include <C4Random.h>
-#include <C4ToolsDlg.h> // For C4TLS_MatSky...
-#include <C4Texture.h>
-#include <C4Aul.h>
-#include <C4Landscape.h>
-#include <C4SoundSystem.h>
-#include <C4Effect.h>
-#include <C4Log.h>
-#include <C4Physics.h> // For GravAccel
+#include "c4group/C4Group.h"
+#include "landscape/C4PXS.h"
+#include "lib/C4Random.h"
+#include "editor/C4ToolsDlg.h" // For C4TLS_MatSky...
+#include "landscape/C4Texture.h"
+#include "script/C4Aul.h"
+#include "landscape/C4Landscape.h"
+#include "platform/C4SoundSystem.h"
+#include "script/C4Effect.h"
+#include "lib/C4Log.h"
+#include "game/C4Physics.h" // For GravAccel
 
 
 int32_t MVehic=MNone,MHalfVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;

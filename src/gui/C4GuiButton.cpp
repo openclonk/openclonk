@@ -16,12 +16,12 @@
 // generic user interface
 // that which can be pressed
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-#include <C4Draw.h>
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 
 namespace C4GUI
 {

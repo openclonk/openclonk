@@ -18,8 +18,8 @@
 /* A structure for handling 256-color bitmap files */
 
 #include "C4Include.h"
-#include <Bitmap256.h>
-#include <StdColors.h>
+#include "graphics/Bitmap256.h"
+#include "lib/StdColors.h"
 
 void C4BMPInfo::Default()
 {

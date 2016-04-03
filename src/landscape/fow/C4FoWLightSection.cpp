@@ -17,12 +17,12 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4FoWLightSection.h"
-#include "C4FoWBeamTriangle.h"
-#include "C4FoWBeam.h"
-#include "C4FoWLight.h"
-#include "C4FoWRegion.h"
-#include "C4Landscape.h"
+#include "landscape/fow/C4FoWLightSection.h"
+#include "landscape/fow/C4FoWBeamTriangle.h"
+#include "landscape/fow/C4FoWBeam.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "landscape/C4Landscape.h"
 
 #include "float.h"
 

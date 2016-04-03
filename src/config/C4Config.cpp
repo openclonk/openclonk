@@ -16,19 +16,19 @@
 
 /* Game configuration as stored in registry */
 
-#include <C4Include.h>
-#include <C4Config.h>
+#include "C4Include.h"
+#include "config/C4Config.h"
 
-#include <C4Version.h>
-#include <C4Log.h>
-#include <C4Components.h>
-#include <C4Network2.h>
-#include <C4Language.h>
+#include "C4Version.h"
+#include "lib/C4Log.h"
+#include "c4group/C4Components.h"
+#include "network/C4Network2.h"
+#include "c4group/C4Language.h"
 
 #include <utility>
-#include <StdFile.h>
-#include <C4Window.h>
-#include <StdRegistry.h>
+#include "platform/StdFile.h"
+#include "platform/C4Window.h"
+#include "platform/StdRegistry.h"
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -40,7 +40,7 @@
 #include <locale.h>
 #endif
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 {

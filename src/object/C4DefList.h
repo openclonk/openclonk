@@ -20,9 +20,9 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
-#include <C4FontLoader.h>
-#include <StdMesh.h>
-#include <StdMeshLoader.h>
+#include "graphics/C4FontLoader.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoader.h"
 
 class C4DefList: public CStdFont::CustomImages
 {

@@ -15,7 +15,7 @@
  */
 
 #include "C4Include.h"
-#include "StdScheduler.h"
+#include "platform/StdScheduler.h"
 
 #ifdef HAVE_POLL_H
 #include <stdio.h>

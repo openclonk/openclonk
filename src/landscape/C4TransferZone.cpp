@@ -17,12 +17,12 @@
 
 /* Special regions to extend the pathfinder */
 
-#include <C4Include.h>
-#include <C4TransferZone.h>
+#include "C4Include.h"
+#include "landscape/C4TransferZone.h"
 
-#include <C4FacetEx.h>
-#include <C4Landscape.h>
-#include <C4GameObjects.h>
+#include "graphics/C4FacetEx.h"
+#include "landscape/C4Landscape.h"
+#include "object/C4GameObjects.h"
 #include "lib/StdColors.h"
 
 C4TransferZone::C4TransferZone()

@@ -22,8 +22,8 @@
 
 const int C4MaxNameList = 10;
 
-#include "C4Constants.h"
-#include "C4InputValidation.h"
+#include "config/C4Constants.h"
+#include "lib/C4InputValidation.h"
 
 #include <cstring>
 class C4NameList

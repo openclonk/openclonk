@@ -17,14 +17,14 @@
 
 /* Core component of a scenario file */
 
-#include <C4Include.h>
-#include <C4Scenario.h>
+#include "C4Include.h"
+#include "landscape/C4Scenario.h"
 
-#include <C4InputValidation.h>
-#include <C4Random.h>
-#include <C4Group.h>
-#include <C4Components.h>
-#include <StdColors.h>
+#include "lib/C4InputValidation.h"
+#include "lib/C4Random.h"
+#include "c4group/C4Group.h"
+#include "c4group/C4Components.h"
+#include "lib/StdColors.h"
 
 //==================================== C4SVal ==============================================
 

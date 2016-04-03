@@ -20,7 +20,7 @@
 #ifndef INC_C4MaterialList
 #define INC_C4MaterialList
 
-#include <C4Landscape.h>
+#include "landscape/C4Landscape.h"
 
 class C4MaterialList
 {

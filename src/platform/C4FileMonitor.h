@@ -19,8 +19,8 @@
 #ifndef STD_FILE_MONITOR_H_INC
 #define STD_FILE_MONITOR_H_INC
 
-#include <StdScheduler.h>
-#include <C4InteractiveThread.h>
+#include "platform/StdScheduler.h"
+#include "network/C4InteractiveThread.h"
 #include <map>
 
 #ifdef __APPLE__

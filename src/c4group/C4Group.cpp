@@ -19,11 +19,11 @@
 
 /* Needs to be compilable as Objective C++ on OS X */
 
-#include <C4Include.h>
-#include <C4Group.h>
+#include "C4Include.h"
+#include "c4group/C4Group.h"
 
-#include <C4Components.h>
-#include <C4InputValidation.h>
+#include "c4group/C4Components.h"
+#include "lib/C4InputValidation.h"
 #include <zlib.h>
 
 

@@ -17,10 +17,10 @@
 
 /* Handles script file components (calls, inheritance, function maps) */
 
-#include <C4Include.h>
-#include <C4ScriptHost.h>
+#include "C4Include.h"
+#include "script/C4ScriptHost.h"
 
-#include <C4Def.h>
+#include "object/C4Def.h"
 
 /*--- C4ScriptHost ---*/
 

@@ -16,14 +16,14 @@
 // Custom game options and configuration dialog
 
 #include "C4Include.h"
-#include "C4GameOptions.h"
+#include "gui/C4GameOptions.h"
 
-#include <C4Application.h>
-#include <C4Game.h>
-#include <C4GameControl.h>
-#include "C4GraphicsResource.h"
-#include "C4GameLobby.h"
-#include "C4Startup.h"
+#include "game/C4Application.h"
+#include "game/C4Game.h"
+#include "control/C4GameControl.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4GameLobby.h"
+#include "gui/C4Startup.h"
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 

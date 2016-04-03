@@ -26,8 +26,8 @@
 #ifndef INC_C4GameSave
 #define INC_C4GameSave
 
-#include <C4Scenario.h>
-#include <C4Components.h>
+#include "landscape/C4Scenario.h"
+#include "c4group/C4Components.h"
 
 class C4GameSave
 {

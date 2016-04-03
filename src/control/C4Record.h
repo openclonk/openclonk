@@ -20,8 +20,8 @@
 
 class C4Record;
 
-#include "C4Group.h"
-#include "C4Control.h"
+#include "c4group/C4Group.h"
+#include "control/C4Control.h"
 
 extern int DoNoDebugRec; // debugrec disable counter in C4Record.cpp
 

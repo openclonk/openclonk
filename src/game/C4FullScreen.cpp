@@ -17,21 +17,21 @@
 
 /* Main class to execute the game fullscreen mode */
 
-#include <C4Include.h>
-#include <C4FullScreen.h>
+#include "C4Include.h"
+#include "game/C4FullScreen.h"
 
-#include <C4Game.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4Language.h>
-#include <C4Gui.h>
-#include <C4GameDialogs.h>
-#include <C4Player.h>
-#include <C4GameOverDlg.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4PlayerList.h>
-#include <C4Version.h>
+#include "game/C4Game.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "c4group/C4Language.h"
+#include "gui/C4Gui.h"
+#include "gui/C4GameDialogs.h"
+#include "player/C4Player.h"
+#include "gui/C4GameOverDlg.h"
+#include "game/C4GraphicsSystem.h"
+#include "gui/C4MouseControl.h"
+#include "player/C4PlayerList.h"
+#include "C4Version.h"
 
 void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 

@@ -17,9 +17,9 @@
 
 /* Handles scripted map creation */
 
-#include <C4Include.h>
-#include <C4MapScript.h>
-#include <C4Random.h>
+#include "C4Include.h"
+#include "landscape/C4MapScript.h"
+#include "lib/C4Random.h"
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 

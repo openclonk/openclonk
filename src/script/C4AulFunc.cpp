@@ -14,10 +14,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4AulFunc.h>
-#include <C4Aul.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "script/C4AulFunc.h"
+#include "script/C4Aul.h"
 
 C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
 		Parent(Parent),

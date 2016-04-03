@@ -13,17 +13,17 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4Network2Res.h>
+#include "C4Include.h"
+#include "network/C4Network2Res.h"
 
-#include <C4Application.h>
-#include <C4Random.h>
-#include <C4Config.h>
-#include <C4Log.h>
-#include <C4Group.h>
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4GameControl.h>
+#include "game/C4Application.h"
+#include "lib/C4Random.h"
+#include "config/C4Config.h"
+#include "lib/C4Log.h"
+#include "c4group/C4Group.h"
+#include "c4group/C4Components.h"
+#include "game/C4Game.h"
+#include "control/C4GameControl.h"
 
 #include <fcntl.h>
 #include <sys/types.h>

@@ -20,9 +20,9 @@
 
 #ifdef WITH_AUTOMATIC_UPDATE
 
-#include "C4Gui.h"
-#include "C4GameVersion.h"
-#include "C4Network2Reference.h"
+#include "gui/C4Gui.h"
+#include "game/C4GameVersion.h"
+#include "network/C4Network2Reference.h"
 
 // dialog showing info about a connected client
 class C4UpdateDlg : public C4GUI::InfoDialog

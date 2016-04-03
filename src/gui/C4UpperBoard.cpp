@@ -13,12 +13,12 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4UpperBoard.h>
+#include "C4Include.h"
+#include "gui/C4UpperBoard.h"
 
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Game.h"
+#include "config/C4Config.h"
+#include "graphics/C4GraphicsResource.h"
 
 C4UpperBoard::C4UpperBoard()
 {

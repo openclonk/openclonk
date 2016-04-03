@@ -14,14 +14,14 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4GameParameters.h"
+#include "control/C4GameParameters.h"
 
-#include "C4Log.h"
-#include "C4Components.h"
-#include "C4Def.h"
-#include <C4DefList.h>
-#include <C4Game.h>
-#include <C4Network2.h>
+#include "lib/C4Log.h"
+#include "c4group/C4Components.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "game/C4Game.h"
+#include "network/C4Network2.h"
 
 // *** C4GameRes
 

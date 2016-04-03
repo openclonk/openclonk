@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "C4FoWAmbient.h"
-#include "C4FoW.h"
+#include "landscape/fow/C4FoWAmbient.h"
+#include "landscape/fow/C4FoW.h"
 
 namespace
 {

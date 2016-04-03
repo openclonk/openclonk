@@ -17,12 +17,12 @@
 // is only compiled WITH_AUTOMATIC_UPDATE
 
 #include "C4Include.h"
-#include "C4UpdateDlg.h"
+#include "gui/C4UpdateDlg.h"
 
-#include <C4Application.h>
-#include <C4Components.h>
-#include "C4DownloadDlg.h"
-#include <C4Log.h>
+#include "game/C4Application.h"
+#include "c4group/C4Components.h"
+#include "gui/C4DownloadDlg.h"
+#include "lib/C4Log.h"
 
 #ifdef _WIN32
 #include <shellapi.h>

@@ -19,8 +19,8 @@
 // C4Log.cpp into the small utility programs because it pulls in a whole
 // lot of other dependencies.
 
-#include <C4Include.h>
-#include <C4Log.h>
+#include "C4Include.h"
+#include "lib/C4Log.h"
 
 bool fQuiet = false;
 

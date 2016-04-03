@@ -18,8 +18,8 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4DrawGL.h"
-#include "C4Shader.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4Shader.h"
 #include <list>
 
 class C4FoWRegion;

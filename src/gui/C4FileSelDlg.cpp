@@ -15,12 +15,12 @@
  */
 // file selection dialogs
 
-#include <C4Include.h>
-#include <C4FileSelDlg.h>
+#include "C4Include.h"
+#include "gui/C4FileSelDlg.h"
 
-#include <C4GraphicsResource.h> // only for single use of ::GraphicsResource.fctOKCancel below...
-#include <C4Version.h>
-#include <C4Draw.h>
+#include "graphics/C4GraphicsResource.h" // only for single use of ::GraphicsResource.fctOKCancel below...
+#include "C4Version.h"
+#include "graphics/C4Draw.h"
 
 #ifdef _WIN32
 #ifndef _WIN32_IE

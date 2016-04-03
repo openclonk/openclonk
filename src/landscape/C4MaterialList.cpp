@@ -17,8 +17,8 @@
 
 /* A primitive list to store one amount value per mapped material */
 
-#include <C4Include.h>
-#include <C4MaterialList.h>
+#include "C4Include.h"
+#include "landscape/C4MaterialList.h"
 
 C4MaterialList::C4MaterialList()
 {

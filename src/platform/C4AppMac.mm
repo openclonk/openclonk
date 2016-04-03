@@ -19,11 +19,11 @@
 #include <GL/glew.h>
 #include <string>
 
-#include <C4Include.h>
-#include <C4Window.h>
-#include <C4Draw.h>
+#include "C4Include.h"
+#include "platform/C4Window.h"
+#include "graphics/C4Draw.h"
 
-#include "C4App.h"
+#include "platform/C4App.h"
 #import <Cocoa/Cocoa.h>
 
 #ifndef USE_CONSOLE

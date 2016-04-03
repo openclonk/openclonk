@@ -13,11 +13,11 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4AulScriptFunc.h>
+#include "C4Include.h"
+#include "script/C4AulScriptFunc.h"
 
-#include <C4AulExec.h>
-#include <C4ScriptHost.h>
+#include "script/C4AulExec.h"
+#include "script/C4ScriptHost.h"
 
 C4AulScriptFunc::C4AulScriptFunc(C4PropListStatic * Parent, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
 		C4AulFunc(Parent, pName),

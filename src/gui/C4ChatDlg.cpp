@@ -16,13 +16,13 @@
 // IRC client dialog
 
 #include "C4Include.h"
-#include "C4ChatDlg.h"
+#include "gui/C4ChatDlg.h"
 
-#include <C4Application.h>
-#include "C4InputValidation.h"
-#include "C4Network2IRC.h"
-#include "C4MessageInput.h"
-#include "C4GraphicsResource.h"
+#include "game/C4Application.h"
+#include "lib/C4InputValidation.h"
+#include "network/C4Network2IRC.h"
+#include "gui/C4MessageInput.h"
+#include "graphics/C4GraphicsResource.h"
 
 /* C4ChatControl::ChatSheet::NickItem */
 

@@ -14,10 +14,10 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4ScenarioParameters.h"
-#include "C4Components.h"
-#include "C4Aul.h"
-#include "C4FacetEx.h"
+#include "player/C4ScenarioParameters.h"
+#include "c4group/C4Components.h"
+#include "script/C4Aul.h"
+#include "graphics/C4FacetEx.h"
 
 
 /* C4AchievementGraphics */

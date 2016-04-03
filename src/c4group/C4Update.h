@@ -19,7 +19,7 @@
 
 #define INC_C4GroupEx
 
-#include "C4InputValidation.h"
+#include "lib/C4InputValidation.h"
 
 const int C4UP_MaxUpGrpCnt = 50;
 

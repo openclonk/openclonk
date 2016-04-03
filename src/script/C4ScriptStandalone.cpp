@@ -15,13 +15,13 @@
 
 #include "../../include/c4script/c4script.h"
 
-#include <C4Include.h>
+#include "C4Include.h"
 
 #include "lib/C4Random.h"
 #include "c4group/C4Group.h"
 #include "script/C4Aul.h"
 #include "script/C4ScriptHost.h"
-#include <C4DefList.h>
+#include "object/C4DefList.h"
 
 /* StandaloneStubs.cpp is shared with mape, which has a real implementation of these */
 C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}

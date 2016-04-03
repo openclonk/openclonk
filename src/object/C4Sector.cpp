@@ -15,14 +15,14 @@
  */
 // landscape sector base class
 
-#include <C4Include.h>
-#include <C4Sector.h>
+#include "C4Include.h"
+#include "object/C4Sector.h"
 
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4Log.h>
-#include <C4Record.h>
-#include <C4GameObjects.h>
+#include "game/C4Game.h"
+#include "object/C4Object.h"
+#include "lib/C4Log.h"
+#include "control/C4Record.h"
+#include "object/C4GameObjects.h"
 
 /* sector */
 

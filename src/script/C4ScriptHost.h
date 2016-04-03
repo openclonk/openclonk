@@ -20,8 +20,8 @@
 #ifndef INC_C4ScriptHost
 #define INC_C4ScriptHost
 
-#include <C4ComponentHost.h>
-#include <C4Aul.h>
+#include "c4group/C4ComponentHost.h"
+#include "script/C4Aul.h"
 
 // aul script state
 enum C4AulScriptState

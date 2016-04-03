@@ -976,23 +976,6 @@ endif()
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_SOURCE_DIR}/src/c4group
-	${CMAKE_CURRENT_SOURCE_DIR}/src/config
-	${CMAKE_CURRENT_SOURCE_DIR}/src/control
-	${CMAKE_CURRENT_SOURCE_DIR}/src/editor
-	${CMAKE_CURRENT_SOURCE_DIR}/src/game
-	${CMAKE_CURRENT_SOURCE_DIR}/src/gamescript
-	${CMAKE_CURRENT_SOURCE_DIR}/src/graphics
-	${CMAKE_CURRENT_SOURCE_DIR}/src/gui
-	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape
-	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape/fow
-	${CMAKE_CURRENT_SOURCE_DIR}/src/lib
-	${CMAKE_CURRENT_SOURCE_DIR}/src/network
-	${CMAKE_CURRENT_SOURCE_DIR}/src/object
-	${CMAKE_CURRENT_SOURCE_DIR}/src/platform
-	${CMAKE_CURRENT_SOURCE_DIR}/src/player
-	${CMAKE_CURRENT_SOURCE_DIR}/src/res
-	${CMAKE_CURRENT_SOURCE_DIR}/src/script
 )
 
 # Mark thirdparty as system headers so we don't get warnings from them

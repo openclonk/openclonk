@@ -24,8 +24,8 @@
 #ifndef INC_C4Effects
 #define INC_C4Effects
 
-#include <C4ObjectPtr.h>
-#include <C4PropList.h>
+#include "object/C4ObjectPtr.h"
+#include "script/C4PropList.h"
 
 // callback return values
 #define C4Fx_OK                      0 // generic standard behaviour for all effect callbacks

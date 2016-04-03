@@ -18,7 +18,7 @@
 #ifndef INC_C4MainMenu
 #define INC_C4MainMenu
 
-#include "C4Menu.h"
+#include "gui/C4Menu.h"
 
 // Menu identification constants for main menus
 enum

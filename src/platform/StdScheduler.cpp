@@ -14,7 +14,7 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "StdScheduler.h"
+#include "platform/StdScheduler.h"
 
 #include <stdio.h>
 

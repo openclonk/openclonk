@@ -20,10 +20,10 @@
 #ifndef INC_C4ObjectInfo
 #define INC_C4ObjectInfo
 
-#include <C4Surface.h>
-#include <C4InfoCore.h>
-#include <C4Object.h>
-#include <C4FacetEx.h>
+#include "graphics/C4Surface.h"
+#include "object/C4InfoCore.h"
+#include "object/C4Object.h"
+#include "graphics/C4FacetEx.h"
 
 class C4ObjectInfo: public C4ObjectInfoCore
 {

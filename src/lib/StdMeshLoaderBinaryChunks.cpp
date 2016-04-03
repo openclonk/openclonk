@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "StdMeshLoaderBinaryChunks.h"
-#include "StdMeshLoaderDataStream.h"
+#include "lib/StdMeshLoaderBinaryChunks.h"
+#include "lib/StdMeshLoaderDataStream.h"
 #include <cassert>
 #include <string>
 #include <utility>

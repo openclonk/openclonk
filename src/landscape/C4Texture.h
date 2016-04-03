@@ -20,10 +20,10 @@
 #ifndef INC_C4Texture
 #define INC_C4Texture
 
-#include <C4TextureShape.h>
-#include <C4Surface.h>
-#include <C4Constants.h>
-#include <C4Material.h>
+#include "landscape/C4TextureShape.h"
+#include "graphics/C4Surface.h"
+#include "config/C4Constants.h"
+#include "landscape/C4Material.h"
 
 class C4Texture
 {

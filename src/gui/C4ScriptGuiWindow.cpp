@@ -26,21 +26,21 @@
 	serialized correctly and cleaned up if necessary when a menu window is closed or the property is overwritten by a script call!
 */
 
-#include <C4Include.h>
-#include <C4ScriptGuiWindow.h>
+#include "C4Include.h"
+#include "gui/C4ScriptGuiWindow.h"
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4Control.h>
-#include <C4MouseControl.h>
-#include <C4Object.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4Viewport.h>
+#include "object/C4DefList.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "control/C4Control.h"
+#include "gui/C4MouseControl.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "game/C4Viewport.h"
 #include "lib/StdColors.h"
 
 #include <cmath>

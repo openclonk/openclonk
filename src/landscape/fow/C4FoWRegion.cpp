@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "C4FoWRegion.h"
-#include "C4DrawGL.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "graphics/C4DrawGL.h"
 
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)

@@ -20,7 +20,7 @@
 #ifndef INC_C4ObjectCom
 #define INC_C4ObjectCom
 
-#include "C4Real.h"
+#include "lib/C4Real.h"
 
 bool ComDirLike(int32_t iComDir, int32_t iSample);
 

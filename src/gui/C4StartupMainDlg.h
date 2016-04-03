@@ -18,7 +18,7 @@
 #ifndef INC_C4StartupMainDlg
 #define INC_C4StartupMainDlg
 
-#include "C4Startup.h"
+#include "gui/C4Startup.h"
 
 class C4StartupMainDlg : public C4StartupDlg
 {

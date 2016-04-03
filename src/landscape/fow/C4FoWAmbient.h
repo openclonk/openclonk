@@ -16,7 +16,7 @@
 #ifndef C4FOWAMBIENT_H
 #define C4FOWAMBIENT_H
 
-#include <C4Landscape.h>
+#include "landscape/C4Landscape.h"
 #ifndef USE_CONSOLE
 #include <GL/glew.h>
 #endif

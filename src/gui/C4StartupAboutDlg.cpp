@@ -15,12 +15,12 @@
  */
 // About/credits screen
 
-#include <C4Include.h>
-#include <C4StartupAboutDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupAboutDlg.h"
 
-#include <C4UpdateDlg.h>
-#include <C4GraphicsResource.h>
-#include <C4Version.h>
+#include "gui/C4UpdateDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "C4Version.h"
 
 // ------------------------------------------------
 // --- C4StartupAboutDlg

@@ -14,7 +14,7 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include "C4Network2Discover.h"
+#include "network/C4Network2Discover.h"
 
 // *** C4Network2IODiscover
 

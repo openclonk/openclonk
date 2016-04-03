@@ -16,10 +16,10 @@
 #ifndef C4FOWREGION_H
 #define C4FOWREGION_H
 
-#include "C4Rect.h"
-#include "C4FacetEx.h"
-#include "C4Player.h"
-#include "C4FoW.h"
+#include "lib/C4Rect.h"
+#include "graphics/C4FacetEx.h"
+#include "player/C4Player.h"
+#include "landscape/fow/C4FoW.h"
 
 class C4Surface;
 

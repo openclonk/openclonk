@@ -18,7 +18,7 @@
 
 #ifndef NOAULDEBUG
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
 // manages a debugging interface
 class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass

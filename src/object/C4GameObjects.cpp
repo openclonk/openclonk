@@ -16,20 +16,20 @@
  */
 // game object lists
 
-#include <C4Include.h>
-#include <C4GameObjects.h>
+#include "C4Include.h"
+#include "object/C4GameObjects.h"
 
-#include <C4Effect.h>
+#include "script/C4Effect.h"
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include <C4ObjectCom.h>
-#include <C4Physics.h>
-#include <C4Random.h>
-#include <C4Network2Stats.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4PlayerList.h>
-#include <C4Record.h>
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "game/C4Physics.h"
+#include "lib/C4Random.h"
+#include "network/C4Network2Stats.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "player/C4PlayerList.h"
+#include "control/C4Record.h"
 
 C4GameObjects::C4GameObjects()
 {

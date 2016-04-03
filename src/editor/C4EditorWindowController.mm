@@ -15,11 +15,11 @@
  
 #include <GL/glew.h>
 
-#include <C4Include.h>
-#include <C4Console.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4Game.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "game/C4Game.h"
 
 #import <Cocoa/Cocoa.h>
 #import <C4EditorWindowController.h>

@@ -20,7 +20,7 @@
 #ifndef INC_C4RankSystem
 #define INC_C4RankSystem
 
-#include "C4InputValidation.h"
+#include "lib/C4InputValidation.h"
 
 class C4RankSystem
 {

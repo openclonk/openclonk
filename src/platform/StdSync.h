@@ -19,7 +19,7 @@
 #define INC_StdSync
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 
 class CStdCSec
 {

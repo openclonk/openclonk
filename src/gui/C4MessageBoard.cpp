@@ -17,19 +17,19 @@
 
 /* Fullscreen startup log and chat type-in */
 
-#include <C4Include.h>
-#include <C4MessageBoard.h>
+#include "C4Include.h"
+#include "gui/C4MessageBoard.h"
 
-#include <C4Application.h>
-#include <C4LoaderScreen.h>
-#include <C4Gui.h>
-#include <C4Player.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4MessageInput.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4FullScreen.h>
+#include "game/C4Application.h"
+#include "gui/C4LoaderScreen.h"
+#include "gui/C4Gui.h"
+#include "player/C4Player.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MessageInput.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "game/C4FullScreen.h"
 #include "lib/StdColors.h"
 
 const int C4LogSize=30000, C4LogMaxLines=1000;

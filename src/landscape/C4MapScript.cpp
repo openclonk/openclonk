@@ -17,13 +17,13 @@
 
 /* Handles scripted map creation */
 
-#include <C4Include.h>
-#include <C4MapScript.h>
-#include <C4AulDefFunc.h>
-#include <C4Landscape.h>
-#include <C4Texture.h>
-#include <C4Random.h>
-#include <C4GameScript.h>
+#include "C4Include.h"
+#include "landscape/C4MapScript.h"
+#include "script/C4AulDefFunc.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Texture.h"
+#include "lib/C4Random.h"
+#include "game/C4GameScript.h"
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 

@@ -15,10 +15,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4StdInProc.h"
+#include "C4Include.h"
+#include "platform/C4StdInProc.h"
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 
 #ifdef HAVE_LIBREADLINE
 #include <readline.h>

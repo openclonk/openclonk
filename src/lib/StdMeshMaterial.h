@@ -17,9 +17,9 @@
 #ifndef INC_StdMeshMaterial
 #define INC_StdMeshMaterial
 
-#include <StdBuf.h>
-#include <C4Surface.h>
-#include <C4Shader.h>
+#include "lib/StdBuf.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4Shader.h"
 
 #include <vector>
 #include <map>

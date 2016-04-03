@@ -20,13 +20,13 @@
 #ifndef INC_C4Player
 #define INC_C4Player
 
-#include "C4MainMenu.h"
-#include "C4ObjectInfoList.h"
-#include "C4InfoCore.h"
-#include "C4ObjectList.h"
-#include "C4ObjectPtr.h"
-#include "C4PlayerControl.h"
-#include <C4Value.h>
+#include "gui/C4MainMenu.h"
+#include "object/C4ObjectInfoList.h"
+#include "object/C4InfoCore.h"
+#include "object/C4ObjectList.h"
+#include "object/C4ObjectPtr.h"
+#include "control/C4PlayerControl.h"
+#include "script/C4Value.h"
 #include <set>
 #include <memory>
 

@@ -17,14 +17,14 @@
 
 /* Text messages drawn inside the viewport */
 
-#include <C4Include.h>
-#include <C4GameMessage.h>
+#include "C4Include.h"
+#include "gui/C4GameMessage.h"
 
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include <C4GraphicsResource.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
+#include "object/C4Object.h"
+#include "graphics/C4GraphicsResource.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 const int32_t ObjectMsgDelayFactor = 2, GlobalMsgDelayFactor = 3; // frames per char message display time
 

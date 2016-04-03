@@ -14,15 +14,15 @@
  */
 /* Linux implementation of a UPnP port mapper (using libupnp) */
 
-#include <C4Include.h>
-#include <C4Application.h>
-#include <C4Version.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "C4Version.h"
 
 #include <netdb.h>
 #include <upnp.h>
 #include <upnptools.h>
 
-#include <C4Network2UPnP.h> // must come after upnp.h
+#include "network/C4Network2UPnP.h" // must come after upnp.h
 
 namespace
 {

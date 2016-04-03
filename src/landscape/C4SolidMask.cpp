@@ -16,16 +16,16 @@
 
 /* Solid areas of objects, put into the landscape */
 
-#include <C4Include.h>
-#include <C4SolidMask.h>
+#include "C4Include.h"
+#include "landscape/C4SolidMask.h"
 
 #include "object/C4Def.h"
-#include <C4Object.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4DrawGL.h>
-#include <StdPNG.h>
+#include "object/C4Object.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/StdPNG.h"
 #include "graphics/CSurface8.h"
 #include "landscape/C4Material.h"
 

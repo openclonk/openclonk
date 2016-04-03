@@ -24,7 +24,7 @@
 #include <gtk/gtk.h>
 #endif
 
-#include "C4Constants.h"
+#include "config/C4Constants.h"
 #include "landscape/C4Landscape.h"
 
 const int32_t

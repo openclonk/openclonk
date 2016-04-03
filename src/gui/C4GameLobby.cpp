@@ -15,20 +15,20 @@
  */
 // the ingame-lobby
 
-#include <C4Include.h>
-#include <C4GameLobby.h>
+#include "C4Include.h"
+#include "gui/C4GameLobby.h"
 
-#include <C4Application.h>
-#include <C4Components.h>
-#include "C4Network2Dialogs.h"
-#include "C4GameOptions.h"
-#include "C4ChatDlg.h"
-#include "C4PlayerInfoListBox.h"
-#include <C4MessageInput.h>
-#include <C4Game.h>
-#include <C4Network2.h>
-#include "C4GraphicsResource.h"
-#include "C4GameControl.h"
+#include "game/C4Application.h"
+#include "c4group/C4Components.h"
+#include "network/C4Network2Dialogs.h"
+#include "gui/C4GameOptions.h"
+#include "gui/C4ChatDlg.h"
+#include "gui/C4PlayerInfoListBox.h"
+#include "gui/C4MessageInput.h"
+#include "game/C4Game.h"
+#include "network/C4Network2.h"
+#include "graphics/C4GraphicsResource.h"
+#include "control/C4GameControl.h"
 
 namespace C4GameLobby
 {

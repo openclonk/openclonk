@@ -15,16 +15,16 @@
  */
 // startup screen
 
-#include <C4Include.h>
-#include <C4LoaderScreen.h>
+#include "C4Include.h"
+#include "gui/C4LoaderScreen.h"
 
-#include <C4Components.h>
-#include <C4LogBuf.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4Random.h>
-#include <C4GroupSet.h>
-#include <C4Game.h>
+#include "c4group/C4Components.h"
+#include "lib/C4LogBuf.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "lib/C4Random.h"
+#include "c4group/C4GroupSet.h"
+#include "game/C4Game.h"
 
 C4LoaderScreen::C4LoaderScreen()
 {

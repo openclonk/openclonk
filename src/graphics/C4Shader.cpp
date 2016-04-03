@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "C4Shader.h"
-#include "C4Application.h"
+#include "graphics/C4Shader.h"
+#include "game/C4Application.h"
 #include "graphics/C4DrawGL.h"
 
 // How often we check whether shader files got updated

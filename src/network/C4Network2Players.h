@@ -30,7 +30,7 @@
 #ifndef INC_C4Network2Players
 #define INC_C4Network2Players
 
-#include "C4PacketBase.h"
+#include "network/C4PacketBase.h"
 
 // class predefs
 class C4Network2Players;

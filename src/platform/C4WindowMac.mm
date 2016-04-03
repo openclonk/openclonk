@@ -13,13 +13,13 @@
  * for the above references.
  */
  
-#include <C4Include.h>
-#include <C4DrawGL.h>
-#include <C4Window.h>
-#include <C4Version.h>
-#include <C4Application.h>
-#include <C4Rect.h>
-#include <C4FullScreen.h>
+#include "C4Include.h"
+#include "graphics/C4DrawGL.h"
+#include "platform/C4Window.h"
+#include "C4Version.h"
+#include "game/C4Application.h"
+#include "lib/C4Rect.h"
+#include "game/C4FullScreen.h"
 
 #import <AppKit/AppKit.h>
 #import <C4WindowController.h>

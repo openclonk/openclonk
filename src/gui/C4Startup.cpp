@@ -15,21 +15,21 @@
  */
 // Startup screen for non-parameterized engine start
 
-#include <C4Include.h>
-#include <C4Startup.h>
+#include "C4Include.h"
+#include "gui/C4Startup.h"
 
-#include <C4FontLoader.h>
-#include <C4StartupMainDlg.h>
-#include <C4StartupScenSelDlg.h>
-#include <C4StartupNetDlg.h>
-#include <C4StartupOptionsDlg.h>
-#include <C4StartupAboutDlg.h>
-#include <C4StartupPlrSelDlg.h>
-#include <C4Game.h>
-#include <C4Application.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
+#include "graphics/C4FontLoader.h"
+#include "gui/C4StartupMainDlg.h"
+#include "gui/C4StartupScenSelDlg.h"
+#include "gui/C4StartupNetDlg.h"
+#include "gui/C4StartupOptionsDlg.h"
+#include "gui/C4StartupAboutDlg.h"
+#include "gui/C4StartupPlrSelDlg.h"
+#include "game/C4Game.h"
+#include "game/C4Application.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {

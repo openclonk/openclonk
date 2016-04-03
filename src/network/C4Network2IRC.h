@@ -16,7 +16,7 @@
 #ifndef C4NETWORK2IRC_H
 #define C4NETWORK2IRC_H
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 #include <time.h>
 
 enum C4Network2IRCMessageType

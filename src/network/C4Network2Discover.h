@@ -16,7 +16,7 @@
 #ifndef INC_C4Network2Discover
 #define INC_C4Network2Discover
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
 const int C4NetMaxDiscover = 64;
 

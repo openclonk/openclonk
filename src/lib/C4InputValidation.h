@@ -18,9 +18,9 @@
 #ifndef INC_C4InputValidation
 #define INC_C4InputValidation
 
-#include "StdBuf.h"
-#include "StdFile.h"
-#include "StdAdaptors.h"
+#include "lib/StdBuf.h"
+#include "platform/StdFile.h"
+#include "lib/StdAdaptors.h"
 
 const unsigned int C4MaxName = 30; // player names, etc.
 const unsigned int C4MaxLongName = 120; // scenario titles, etc. - may include markup

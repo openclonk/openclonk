@@ -17,14 +17,14 @@
 // dropdown box
 // implemented via context menu
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FacetEx.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "graphics/C4FacetEx.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 namespace C4GUI
 {

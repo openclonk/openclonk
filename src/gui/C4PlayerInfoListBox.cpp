@@ -15,20 +15,20 @@
  */
 // player listbox used in lobby and game over dlg
 
-#include <C4Include.h>
-#include <C4PlayerInfoListBox.h>
+#include "C4Include.h"
+#include "gui/C4PlayerInfoListBox.h"
 
-#include <C4PlayerInfo.h>
-#include <C4Network2Dialogs.h>
-#include <C4Teams.h>
-#include <C4Game.h>
-#include <C4FileSelDlg.h>
-#include <C4GraphicsResource.h>
-#include <C4MouseControl.h>
-#include <C4Network2.h>
-#include <C4GameControl.h>
-#include <C4RoundResults.h>
-#include <C4GameLobby.h>
+#include "control/C4PlayerInfo.h"
+#include "network/C4Network2Dialogs.h"
+#include "control/C4Teams.h"
+#include "game/C4Game.h"
+#include "gui/C4FileSelDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "network/C4Network2.h"
+#include "control/C4GameControl.h"
+#include "control/C4RoundResults.h"
+#include "gui/C4GameLobby.h"
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
 

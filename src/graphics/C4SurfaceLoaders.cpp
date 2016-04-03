@@ -17,13 +17,13 @@
 
 /* Extension to C4Surface that handles bitmaps in C4Group files */
 
-#include <C4Include.h>
-#include <C4Surface.h>
+#include "C4Include.h"
+#include "graphics/C4Surface.h"
 
-#include <C4GroupSet.h>
-#include <C4Group.h>
-#include <C4Log.h>
-#include <StdPNG.h>
+#include "c4group/C4GroupSet.h"
+#include "c4group/C4Group.h"
+#include "lib/C4Log.h"
+#include "graphics/StdPNG.h"
 #include "lib/StdColors.h"
 
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound, int iFlags)

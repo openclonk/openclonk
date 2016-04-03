@@ -19,8 +19,8 @@
 #ifndef INC_C4DownloadDlg
 #define INC_C4DownloadDlg
 
-#include "C4Gui.h"
-#include "C4Network2Reference.h" // includes HTTP client
+#include "gui/C4Gui.h"
+#include "network/C4Network2Reference.h" // includes HTTP client
 
 // dialog to download a file
 class C4DownloadDlg : public C4GUI::Dialog

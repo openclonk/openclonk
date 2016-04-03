@@ -16,9 +16,9 @@
 #ifndef INC_C4Network2IO
 #define INC_C4Network2IO
 
-#include "C4NetIO.h"
-#include "C4Client.h"
-#include "C4InteractiveThread.h"
+#include "network/C4NetIO.h"
+#include "network/C4Client.h"
+#include "network/C4InteractiveThread.h"
 
 class C4Network2IOConnection;
 

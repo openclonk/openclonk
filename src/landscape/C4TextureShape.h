@@ -20,7 +20,7 @@
 #ifndef INC_C4TextureShape
 #define INC_C4TextureShape
 
-#include <CSurface8.h>
+#include "graphics/CSurface8.h"
 
 // Custom texture drawing shape for Map2Landscape zooming
 class C4TextureShape

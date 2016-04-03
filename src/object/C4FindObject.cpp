@@ -13,16 +13,16 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4FindObject.h>
+#include "C4Include.h"
+#include "object/C4FindObject.h"
 
 #include "object/C4Def.h"
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4Game.h>
-#include <C4Random.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "game/C4Game.h"
+#include "lib/C4Random.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
 
 // *** C4FindObject
 
