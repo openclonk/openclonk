@@ -16,10 +16,10 @@
 
 /* "New scenario" editor dialogue */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4Config.h>
-#include <C4ConsoleQtNewScenario.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "config/C4Config.h"
+#include "editor/C4ConsoleQtNewScenario.h"
 
 
 /* Definition file list model for new scenario definition selection */

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,14 +16,14 @@
 #ifndef INC_C4Network2
 #define INC_C4Network2
 
-#include "C4NetIO.h"
-#include "C4Network2Players.h"
-#include "C4Network2IO.h"
-#include "C4Network2Res.h"
-#include "C4Network2Client.h"
-#include "C4Control.h"
-#include "C4Gui.h"
-#include "C4GameParameters.h"
+#include "network/C4NetIO.h"
+#include "network/C4Network2Players.h"
+#include "network/C4Network2IO.h"
+#include "network/C4Network2Res.h"
+#include "network/C4Network2Client.h"
+#include "control/C4Control.h"
+#include "gui/C4Gui.h"
+#include "control/C4GameParameters.h"
 
 // standard ports
 const int16_t C4NetStdPortTCP = 11112,

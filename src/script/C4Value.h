@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,8 @@
 #ifndef INC_C4Value
 #define INC_C4Value
 
-#include "C4StringTable.h"
-#include <C4ObjectPtr.h>
+#include "script/C4StringTable.h"
+#include "object/C4ObjectPtr.h"
 
 // C4Value type
 enum C4V_Type
@@ -141,13 +141,6 @@ public:
 	// Change and set Type to int in case it was nil or bool before
 	// Use with care: These don't handle int32_t overflow
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
-	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
-	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }
-	C4Value & operator /= (int32_t by) { Data.Int /= by; Type=C4V_Int; return *this; }
-	C4Value & operator %= (int32_t by) { Data.Int %= by; Type=C4V_Int; return *this; }
-	C4Value & operator &= (int32_t by) { Data.Int &= by; Type=C4V_Int; return *this; }
-	C4Value & operator ^= (int32_t by) { Data.Int ^= by; Type=C4V_Int; return *this; }
-	C4Value & operator |= (int32_t by) { Data.Int |= by; Type=C4V_Int; return *this; }
 	C4Value & operator ++ ()           { Data.Int++;     Type=C4V_Int; return *this; }
 	C4Value operator ++ (int)          { C4Value old = *this; ++(*this); return old; }
 	C4Value & operator -- ()           { Data.Int--;     Type=C4V_Int; return *this; }
@@ -268,9 +261,9 @@ private:
  in common situations because the Type of the new value is known. In any case,
  inlining them does speed up the script engine on at least one artificial benchmark. */
 
-#include "C4ValueArray.h"
-#include "C4PropList.h"
-#include "C4AulFunc.h"
+#include "script/C4ValueArray.h"
+#include "script/C4PropList.h"
+#include "script/C4AulFunc.h"
 
 ALWAYS_INLINE void C4Value::AddDataRef()
 {

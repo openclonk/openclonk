@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,14 +16,14 @@
 
 /* C4Group command line executable */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4Group.h>
-#include <C4Version.h>
-#include <C4Update.h>
-#include <StdRegistry.h>
+#include "c4group/C4Group.h"
+#include "C4Version.h"
+#include "c4group/C4Update.h"
+#include "platform/StdRegistry.h"
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 int globalArgC;

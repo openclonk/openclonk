@@ -100,3 +100,4 @@ local PerspectiveTheta = 25;
 local PerspectivePhi = 30;
 local FlySpeed = 100;
 local Name = "$Name$";
+local ContactCalls = true;

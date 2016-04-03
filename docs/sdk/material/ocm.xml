@@ -106,9 +106,12 @@
           <col>Inflammability.</col>
         </row>
         <row>
-          <col>Incindiary</col>
+          <col>Incendiary</col>
           <col>Integer</col>
-          <col>This material incinerates objects.</col>
+          <col>
+            This material incinerates objects.
+            <em>Note: For compatibility reasons, the misspelling &quot;Incindiary&quot; is also accepted if (and only if) no value with the correct spelling is set.</em>
+          </col>
         </row>
         <row>
           <col>Corrode</col>
@@ -372,8 +375,11 @@
           <col>The background material.</col>
         </row>
         <row>
-          <col>Incindiary</col>
-          <col>All materials to be incinerated.</col>
+          <col>Incendiary</col>
+          <col>
+            All materials that can incinerate objects.
+            <em>Note: For compatibility reasons, the misspelling &quot;Incindiary&quot; is also accepted.</em>
+          </col>
         </row>
         <row>
           <col>Extinguisher</col>

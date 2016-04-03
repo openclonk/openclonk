@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef C4GAMEPARAMETERS_H
 #define C4GAMEPARAMETERS_H
 
-#include "C4IDList.h"
-#include "C4PlayerInfo.h"
-#include "C4Teams.h"
-#include "C4InfoCore.h"
+#include "object/C4IDList.h"
+#include "control/C4PlayerInfo.h"
+#include "control/C4Teams.h"
+#include "object/C4InfoCore.h"
 
 class C4GameRes
 {

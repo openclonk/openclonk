@@ -177,4 +177,4 @@ local ActMap = {
 };
 local Name = "$Name$";
 local EditCursorCommands = ["OpenDoor()", "CloseDoor()"];
-local Plane = 600;
+local Plane = 200;

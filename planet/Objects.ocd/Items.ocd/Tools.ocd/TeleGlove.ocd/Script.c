@@ -155,7 +155,8 @@ public func ControlUseHolding(object clonk, ix, iy)
 	if(target_object)
 	{
 		if(Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy) > radius ||
-		Distance(target_object->GetX(), target_object->GetY(), clonk->GetX(), clonk->GetY()) > GetTeleGloveReach())
+		Distance(target_object->GetX(), target_object->GetY(), clonk->GetX(), clonk->GetY()) > GetTeleGloveReach() ||
+		target_object->~RejectTeleGloveControl(this))
 		{
 			LostTargetObject(target);
 			target_object = nil;
@@ -169,6 +170,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 					Find_Category(C4D_Object),
 					Find_And(Find_Distance(radius, ix, iy),
 					Find_Distance(GetTeleGloveReach() - 15)),
+					Find_Not(Find_Func("RejectTeleGloveControl", this)),
 					Sort_Distance(ix,iy));
 
 		if(target)

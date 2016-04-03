@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,14 +20,15 @@
 #ifndef INC_C4Player
 #define INC_C4Player
 
-#include "C4MainMenu.h"
-#include "C4ObjectInfoList.h"
-#include "C4InfoCore.h"
-#include "C4ObjectList.h"
-#include "C4ObjectPtr.h"
-#include "C4PlayerControl.h"
-#include <C4Value.h>
+#include "gui/C4MainMenu.h"
+#include "object/C4ObjectInfoList.h"
+#include "object/C4InfoCore.h"
+#include "object/C4ObjectList.h"
+#include "object/C4ObjectPtr.h"
+#include "control/C4PlayerControl.h"
+#include "script/C4Value.h"
 #include <set>
+#include <memory>
 
 const int32_t C4PVM_Cursor    = 0,
               C4PVM_Target    = 1,
@@ -130,7 +131,7 @@ public:
 	C4PlayerControl Control;
 	C4ObjectPtr Cursor, ViewCursor;
 	int32_t CursorFlash;
-	class C4GamePadOpener *pGamepad;
+	std::shared_ptr<class C4GamePadOpener> pGamepad;
 	// Message
 	int32_t MessageStatus;
 	char MessageBuf[256+1];
@@ -264,6 +265,9 @@ public:
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);
 	bool AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease);
+
+	// Finds a new gamepad to use, returning true on success.
+	bool FindGamepad();
 
 public:
 	// custom scenario achievements

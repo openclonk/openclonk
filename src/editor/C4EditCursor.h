@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,12 +20,12 @@
 #ifndef INC_C4EditCursor
 #define INC_C4EditCursor
 
-#include "C4ObjectList.h"
-#include "C4Control.h"
-#include "C4Rect.h"
-#include "C4Value.h"
+#include "object/C4ObjectList.h"
+#include "control/C4Control.h"
+#include "lib/C4Rect.h"
+#include "script/C4Value.h"
 #include <vector>
-#include "C4DefGraphics.h"
+#include "object/C4DefGraphics.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>

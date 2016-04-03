@@ -16,9 +16,9 @@
 
 /* Proplist table view */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4ConsoleQtPropListViewer.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "editor/C4ConsoleQtPropListViewer.h"
 
 C4ConsoleQtPropListModel::C4ConsoleQtPropListModel()
 {

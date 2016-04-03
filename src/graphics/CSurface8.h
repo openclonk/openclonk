@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -62,7 +62,7 @@ public:
 	void NoClip();
 	bool Read(class CStdStream &hGroup);
 	bool Save(const char *szFilename, CStdPalette * = NULL);
-	void GetSurfaceSize(int &irX, int &irY); // get surface size
+	void GetSurfaceSize(int &irX, int &irY) const; // get surface size
 	void AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero=false);
 	void SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch);
 	void ReleaseBuffer();

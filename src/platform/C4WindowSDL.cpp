@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,19 +16,18 @@
 
 /* A wrapper class to OS dependent event and window interfaces, SDL version */
 
-#include <C4Include.h>
-#include <C4Window.h>
+#include "C4Include.h"
+#include "platform/C4Window.h"
 
-#include <C4Application.h>
-#include <C4Console.h>
-#include <C4DrawGL.h>
-#include <C4ViewportWindow.h>
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "game/C4Application.h"
+#include "graphics/C4DrawGL.h"
+#include "editor/C4ViewportWindow.h"
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
 #include "C4Version.h"
-#include <C4Rect.h>
-#include <C4Config.h>
+#include "lib/C4Rect.h"
+#include "config/C4Config.h"
 
 /* C4Window */
 
@@ -128,4 +127,9 @@ void C4Window::RequestUpdate()
 
 void C4Window::FlashWindow()
 {
+}
+
+void C4Window::GrabMouse(bool grab)
+{
+	SDL_SetWindowGrab(window, grab ? SDL_TRUE : SDL_FALSE);
 }

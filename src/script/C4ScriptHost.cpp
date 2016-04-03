@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,18 @@
 
 /* Handles script file components (calls, inheritance, function maps) */
 
-#include <C4Include.h>
-#include <C4ScriptHost.h>
+#include "C4Include.h"
+#include "script/C4ScriptHost.h"
 
-#include <C4Def.h>
+#include "object/C4Def.h"
 
 /*--- C4ScriptHost ---*/
 
-C4ScriptHost::C4ScriptHost()
+C4ScriptHost::C4ScriptHost():
+	// prepare lists
+	Prev(NULL), Next(NULL),
+	Engine(NULL),
+	State(ASS_NONE) // not compiled
 {
 	Script = NULL;
 	stringTable = 0;
@@ -38,12 +42,12 @@ C4ScriptHost::C4ScriptHost()
 }
 C4ScriptHost::~C4ScriptHost()
 {
+	Unreg();
 	Clear();
 }
 
 void C4ScriptHost::Clear()
 {
-	C4AulScript::Clear();
 	ComponentHost.Clear();
 	Script.Clear();
 	LocalNamed.Reset();
@@ -58,6 +62,35 @@ void C4ScriptHost::Clear()
 	// remove includes
 	Includes.clear();
 	Appends.clear();
+	// reset flags
+	State = ASS_NONE;
+}
+
+void C4ScriptHost::Unreg()
+{
+	// remove from list
+	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
+	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
+	Prev = Next = NULL;
+	Engine = NULL;
+}
+
+void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
+{
+	// already regged? (def reloaded)
+	if (Engine) return;
+	// reg to list
+	if ((Engine = pEngine))
+	{
+		if ((Prev = Engine->ChildL))
+			Prev->Next = this;
+		else
+			Engine->Child0 = this;
+		Engine->ChildL = this;
+	}
+	else
+		Prev = NULL;
+	Next = NULL;
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
@@ -138,11 +171,12 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 	return false;
 }
 
-void C4ScriptHost::SetError(const char *szMessage)
+std::string C4ScriptHost::Translate(const std::string &text) const
 {
-
+	if (stringTable)
+		return stringTable->Translate(text);
+	throw C4LangStringTable::NoSuchTranslation(text);
 }
-
 
 /*--- C4ExtraScriptHost ---*/
 

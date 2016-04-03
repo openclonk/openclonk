@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,18 +17,19 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
-#include <C4Surface.h>
+#include "graphics/C4Surface.h"
 
-#include <StdFile.h>
-#include <CStdFile.h>
-#include "C4App.h"
-#include <C4DrawGL.h>
-#include <C4Window.h>
-#include <StdRegistry.h>
-#include <C4Draw.h>
-#include <Bitmap256.h>
-#include <StdPNG.h>
-#include <C4Config.h>
+#include "platform/StdFile.h"
+#include "c4group/CStdFile.h"
+#include "platform/C4App.h"
+#include "graphics/C4DrawGL.h"
+#include "platform/C4Window.h"
+#include "platform/StdRegistry.h"
+#include "graphics/C4Draw.h"
+#include "graphics/Bitmap256.h"
+#include "graphics/StdPNG.h"
+#include "config/C4Config.h"
+#include "lib/StdColors.h"
 
 
 #ifdef HAVE_IO_H
@@ -85,7 +86,6 @@ void C4Surface::Default()
 	Locked=0;
 	Attached=false;
 	fPrimary=false;
-	textures.clear();
 	pMainSfc=NULL;
 	pNormalSfc=NULL;
 #ifndef USE_CONSOLE
@@ -93,10 +93,10 @@ void C4Surface::Default()
 #endif
 	pWindow=NULL;
 	ClrByOwnerClr=0;
-	iTexSize=iTexX=iTexY=0;
+	iTexSize=0;
 	fIsBackground=false;
 #ifdef _DEBUG
-	dbg_idx = NULL;
+	dbg_idx = 0;
 #endif
 }
 
@@ -119,13 +119,11 @@ void C4Surface::MoveFrom(C4Surface *psfcFrom)
 	Locked=psfcFrom->Locked;
 	Attached=psfcFrom->Attached;
 	fPrimary=psfcFrom->fPrimary; // shouldn't be true!
-	textures.swap(psfcFrom->textures);
-	psfcFrom->textures.clear();
+	texture = std::move(psfcFrom->texture);
 	pMainSfc=psfcFrom->pMainSfc;
 	pNormalSfc=psfcFrom->pNormalSfc;
 	ClrByOwnerClr=psfcFrom->ClrByOwnerClr;
 	iTexSize=psfcFrom->iTexSize;
-	iTexX=psfcFrom->iTexX; iTexY=psfcFrom->iTexY;
 #ifndef USE_CONSOLE
 	Format=psfcFrom->Format;
 #endif
@@ -146,10 +144,9 @@ void C4Surface::Clear()
 		pCtx = 0;
 	}
 #endif
-	FreeTextures();
+	texture.reset();
 #ifdef _DEBUG
-	delete dbg_idx;
-	dbg_idx = NULL;
+	dbg_idx = 0;
 #endif
 }
 
@@ -184,8 +181,9 @@ bool C4Surface::Create(int iWdt, int iHgt, int iFlags)
 #ifndef USE_CONSOLE
 	Format=pGL->sfcFmt;
 #endif
-	// create textures
-	if (!CreateTextures(iFlags)) { Clear(); return false; }
+	// create texture
+	iTexSize = std::max(iWdt, iHgt);
+	texture = std::make_unique<C4TexRef>(iWdt, iHgt, iFlags);
 	// update clipping
 	NoClip();
 	// success
@@ -205,47 +203,6 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 		{ Clear(); return false; }
 	// Success
 	return true;
-}
-
-bool C4Surface::CreateTextures(int Flags)
-{
-	// free previous
-	FreeTextures();
-	iTexSize=std::min(std::max(Wdt, Hgt), pDraw->MaxTexSize);
-	// get the number of textures needed for this size
-	iTexX=(Wdt-1)/iTexSize +1;
-	iTexY=(Hgt-1)/iTexSize +1;
-	// get mem for texture array
-	textures.reserve(iTexX * iTexY);
-	// create textures
-	for (int y = 0; y < iTexY; ++y)
-	{
-		for(int x = 0; x < iTexX; ++x)
-		{
-			int sizeX = iTexSize;
-			int sizeY = iTexSize;
-			if(x == iTexX-1) sizeX = (Wdt - 1) % iTexSize + 1;
-			if(y == iTexY-1) sizeY = (Hgt - 1) % iTexSize + 1;
-
-			textures.emplace_back(sizeX, sizeY, Flags);
-			
-			if (fIsBackground) textures.rbegin()->FillBlack();
-		}
-	}
-
-#ifdef _DEBUG
-	static int dbg_counter = 0;
-	if (dbg_idx) delete dbg_idx;
-	dbg_idx = new int;
-	*dbg_idx = dbg_counter++;
-#endif
-	// success
-	return true;
-}
-
-void C4Surface::FreeTextures()
-{
-	textures.clear();
 }
 
 #define  RANGE    255
@@ -308,7 +265,7 @@ bool C4Surface::CreateColorByOwner(C4Surface *pBySurface)
 {
 	// safety
 	if (!pBySurface) return false;
-	if (pBySurface->textures.empty()) return false;
+	if (!pBySurface->texture) return false;
 	// create in same size
 	if (!Create(pBySurface->Wdt, pBySurface->Hgt)) return false;
 	// copy scale
@@ -507,7 +464,7 @@ bool C4Surface::Lock()
 	// lock main sfc
 	if (pMainSfc) if (!pMainSfc->Lock()) return false;
 	// lock texture
-	if (!Locked && !fPrimary && textures.empty())
+	if (!Locked && !fPrimary && !texture)
 		return false;
 	// count lock
 	Locked++; return true;
@@ -533,44 +490,10 @@ bool C4Surface::Unlock()
 		else
 		{
 			// non-primary unlock: unlock all texture surfaces (if locked)
-			for (auto &texture : textures)
-				texture.Unlock();
+			if (texture)
+				texture->Unlock();
 		}
 	}
-	return true;
-}
-
-bool C4Surface::GetTexAtImpl(C4TexRef **ppTexRef, int &rX, int &rY)
-{
-	// get pos
-	int iX=rX/iTexSize;
-	int iY=rY/iTexSize;
-	// get texture by pos
-	*ppTexRef = &textures[iY*iTexX + iX];
-	// adjust pos
-	rX-=iX*iTexSize;
-	rY-=iY*iTexSize;
-	// success
-	return true;
-}
-
-bool C4Surface::GetLockTexAt(C4TexRef **ppTexRef, int &rX, int &rY)
-{
-	// texture present?
-	if (!GetTexAt(ppTexRef, rX, rY)) return false;
-	// Already partially locked
-	if ((*ppTexRef)->texLock.pBits)
-	{
-		// But not for the requested pixel
-		C4Rect & r = (*ppTexRef)->LockSize;
-		if (r.x > rX || r.y > rY || (r.x + r.Wdt) < rX || (r.y + r.Hgt) < rY)
-			// Unlock, then relock the whole thing
-			(*ppTexRef)->Unlock();
-		else return true;
-	}
-	// ensure it's locked
-	if (!(*ppTexRef)->Lock()) return false;
-	// success
 	return true;
 }
 
@@ -596,11 +519,10 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 	else
 	{
 		// get+lock affected texture
-		if (textures.empty()) return 0;
-		C4TexRef *pTexRef;
-		if (!GetLockTexAt(&pTexRef, iX, iY)) return 0;
-		pBuf=(BYTE *) pTexRef->texLock.pBits;
-		iPitch=pTexRef->texLock.Pitch;
+		if (!texture) return 0;
+		texture->Lock();
+		pBuf=(BYTE *) texture->texLock.pBits;
+		iPitch=texture->texLock.Pitch;
 	}
 	// get pix of surface
 	DWORD dwPix;
@@ -665,43 +587,12 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 	// clip
 	if ((iX<ClipX) || (iX>ClipX2) || (iY<ClipY) || (iY>ClipY2)) return true;
 	// get+lock affected texture
-	if (textures.empty()) return false;
+	if (!texture) return false;
+	texture->Lock();
 	// if color is fully transparent, ensure it's black
 	if (dwClr>>24 == 0x00) dwClr=0x00000000;
-	C4TexRef *pTexRef;
-#ifndef USE_CONSOLE
-	// openGL: use glTexSubImage2D
-	// This optimization was moved to LockForUpdate, as it only slows down mass updates here
-	// Keep this code in case there is a need for fast single pixel updates again
-	if (0 && pGL->pCurrCtx)
-	{
-		if (!GetTexAt(&pTexRef, iX, iY))
-			return false;
-		// If the texture is not copied into system memory, modify it directly in the video memory
-		if (!pTexRef->texLock.pBits)
-		{
-			glBindTexture(GL_TEXTURE_2D, pTexRef->texName);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, iX, iY, 1, 1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, &dwClr);
-			const bool fMipMap = (pTexRef->iFlags & C4SF_MipMap) != 0;
-			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
-			return true;
-		}
-		// Otherwise, make sure that the texlock covers the new pixel
-		C4Rect & r = pTexRef->LockSize;
-		if (r.x > iX || r.y > iY || (r.x + r.Wdt) < iX || (r.y + r.Hgt) < iY)
-		{
-			// Unlock, then relock the whole thing
-			pTexRef->Unlock();
-			if (!pTexRef->Lock()) return false;
-		}
-	}
-	else
-#endif
-	{
-		if (!GetLockTexAt(&pTexRef, iX, iY)) return false;
-	}
 	// ...and set in actual surface
-	pTexRef->SetPix(iX, iY, dwClr);
+	texture->SetPix(iX, iY, dwClr);
 	// success
 	return true;
 }
@@ -709,9 +600,9 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 bool C4Surface::BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency)
 {
 	// 32bit-blit. lock target
-	C4TexRef *pTexRef;
-	if (!GetLockTexAt(&pTexRef, iX, iY)) return false;
-	DWORD *pPix32=(DWORD *) (((BYTE *) pTexRef->texLock.pBits)+iY*pTexRef->texLock.Pitch+iX*4);
+	if (!texture) return false;
+	texture->Lock();
+	DWORD *pPix32 = (DWORD *)(((BYTE *)texture->texLock.pBits) + iY*texture->texLock.Pitch + iX * 4);
 	// get source pix as dword
 	DWORD srcPix=sfcSource->GetPixDw(iSrcX, iSrcY, true);
 	// merge
@@ -741,39 +632,15 @@ void C4Surface::ClearBoxDw(int iX, int iY, int iWdt, int iHgt)
 	int iOver;
 	iOver=Wdt-(iX+iWdt); if (iOver<0) iWdt+=iOver;
 	iOver=Hgt-(iY+iHgt); if (iOver<0) iHgt+=iOver;
-	// get textures involved
-	int iTexX1=iX/iTexSize;
-	int iTexY1=iY/iTexSize;
-	int iTexX2=std::min((iX+iWdt-1)/iTexSize +1, iTexX);
-	int iTexY2=std::min((iY+iHgt-1)/iTexSize +1, iTexY);
-	// clear basesfc?
-	bool fBaseSfc=false;
-	if (pMainSfc) if (!pMainSfc->textures.empty()) fBaseSfc = true;
-	// clear all these textures
-	for (int y=iTexY1; y<iTexY2; ++y)
+	C4Rect rtClear{ iX, iY, iWdt, iHgt };
+	if (pMainSfc && pMainSfc->texture)
 	{
-		for (int x=iTexX1; x<iTexX2; ++x)
-		{
-			C4TexRef *pTex = &textures[y * iTexX + x];
-			// get current offset in texture
-			int iBlitX=iTexSize*x;
-			int iBlitY=iTexSize*y;
-			// get clearing bounds in texture
-			C4Rect rtClear = C4Rect(0, 0, pTex->iSizeX, pTex->iSizeY);
-			rtClear.Intersect(C4Rect(iX - iBlitX, iY - iBlitY, iWdt, iHgt));
-			// is there a base-surface to be cleared first?
-			if (fBaseSfc)
-			{
-				// then get this surface as same offset as from other surface
-				// assuming this is only valid as long as there's no texture management,
-				// organizing partially used textures together!
-				C4TexRef *pBaseTex = &pMainSfc->textures[y * iTexX + x];
-				pBaseTex->ClearRect(rtClear);
-			}
-			// clear this texture
-			pTex->ClearRect(rtClear);
-		}
+		// assuming this is only valid as long as there's no texture management,
+		// organizing partially used textures together!
+		pMainSfc->texture->ClearRect(rtClear);
 	}
+	// clear this texture
+	texture->ClearRect(rtClear);
 }
 
 C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)

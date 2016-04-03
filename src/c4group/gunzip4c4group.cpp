@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2007, Günther Brammer
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -12,8 +12,8 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <CStdFile.h>
+#include "C4Include.h"
+#include "c4group/CStdFile.h"
 #include <stdio.h>
 
 bool EraseItemSafe(const char *szFilename)

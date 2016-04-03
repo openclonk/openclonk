@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -22,14 +22,14 @@
 
 */
 
-#include <C4Include.h>
-#include <C4Language.h>
+#include "C4Include.h"
+#include "c4group/C4Language.h"
 
-#include <C4Application.h>
-#include <C4Components.h>
-#include <C4Log.h>
-#include <C4Config.h>
-#include <C4Game.h>
+#include "game/C4Application.h"
+#include "c4group/C4Components.h"
+#include "lib/C4Log.h"
+#include "config/C4Config.h"
+#include "game/C4Game.h"
 
 C4Language Languages;
 

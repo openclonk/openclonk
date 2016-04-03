@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,63 +17,67 @@
 
 /* Main class to run the game */
 
-#include <C4Include.h>
-#include <C4Game.h>
+#include "C4Include.h"
+#include "game/C4Game.h"
 
-#include <C4AulDebug.h>
-#include <C4DefList.h>
-#include <C4Effect.h>
-#include <C4FileMonitor.h>
-#include <C4GameSave.h>
-#include <C4Record.h>
-#include <C4Application.h>
-#include <C4Object.h>
-#include <C4ObjectInfo.h>
-#include <C4Random.h>
-#include <C4ObjectCom.h>
-#include <C4FullScreen.h>
-#include <C4Startup.h>
-#include <C4Viewport.h>
-#include <C4Command.h>
-#include <C4Stat.h>
-#include <C4League.h>
-#include <C4PlayerInfo.h>
-#include <C4LoaderScreen.h>
-#include <C4Network2Dialogs.h>
-#include <C4Console.h>
-#include <C4Network2Stats.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4GameOverDlg.h>
-#include <C4GameParameters.h>
-#include <C4ObjectMenu.h>
-#include <C4GameLobby.h>
-#include <C4ChatDlg.h>
-#include <C4PlayerControl.h>
-#include <C4MouseControl.h>
-#include <C4PXS.h>
-#include <C4MessageInput.h>
-#include <C4MassMover.h>
-#include <C4RankSystem.h>
-#include <C4RoundResults.h>
-#include <C4GameMessage.h>
-#include <C4ScriptGuiWindow.h>
-#include <C4Material.h>
-#include <C4Network2Reference.h>
-#include <C4Weather.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Texture.h>
-#include <C4Landscape.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4Version.h>
-#include <C4AulExec.h>
-#include <StdFile.h>
-#include <C4MapScript.h>
-#include <C4SolidMask.h>
-#include <C4FoW.h>
+#include "script/C4AulDebug.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "script/C4Effect.h"
+#include "platform/C4FileMonitor.h"
+#include "control/C4GameSave.h"
+#include "control/C4Record.h"
+#include "game/C4Application.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectInfo.h"
+#include "lib/C4Random.h"
+#include "object/C4ObjectCom.h"
+#include "game/C4FullScreen.h"
+#include "gui/C4Startup.h"
+#include "game/C4Viewport.h"
+#include "object/C4Command.h"
+#include "lib/C4Stat.h"
+#include "network/C4League.h"
+#include "control/C4PlayerInfo.h"
+#include "gui/C4LoaderScreen.h"
+#include "network/C4Network2Dialogs.h"
+#include "editor/C4Console.h"
+#include "network/C4Network2Stats.h"
+#include "lib/C4Log.h"
+#include "player/C4Player.h"
+#include "gui/C4GameOverDlg.h"
+#include "control/C4GameParameters.h"
+#include "object/C4ObjectMenu.h"
+#include "gui/C4GameLobby.h"
+#include "gui/C4ChatDlg.h"
+#include "control/C4PlayerControl.h"
+#include "gui/C4MouseControl.h"
+#include "landscape/C4PXS.h"
+#include "gui/C4MessageInput.h"
+#include "landscape/C4MassMover.h"
+#include "player/C4RankSystem.h"
+#include "control/C4RoundResults.h"
+#include "gui/C4GameMessage.h"
+#include "gui/C4ScriptGuiWindow.h"
+#include "landscape/C4Material.h"
+#include "network/C4Network2Reference.h"
+#include "landscape/C4Weather.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Sky.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "C4Version.h"
+#include "script/C4AulExec.h"
+#include "platform/StdFile.h"
+#include "landscape/C4MapScript.h"
+#include "landscape/C4SolidMask.h"
+#include "landscape/fow/C4FoW.h"
+
+#include <unordered_map>
 
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
@@ -911,7 +915,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
-	if (::Landscape.pFoW) ::Landscape.pFoW->Remove(pObj);
+	::Landscape.ClearPointers(pObj);
 }
 
 bool C4Game::TogglePause()
@@ -1678,7 +1682,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	{
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
 		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
-		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
+		pComp->Value(mkNamingAdapt(Landscape.GetSky(), "Sky"));
 
 		// save custom GUIs only if a real savegame and not for editor-scenario-saves or section changes
 		if (!comp.fScenarioSection)
@@ -1889,6 +1893,12 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 #endif
 	// compose key
 	C4KeyCodeEx Key(vk_code, C4KeyShiftState(fAlt*KEYS_Alt + fCtrl*KEYS_Control + fShift*KEYS_Shift), fRepeated);
+	return DoKeyboardInput(Key, eEventType, pForDialog, fPlrCtrlOnly, iStrength);
+}
+
+
+bool C4Game::DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog, bool fPlrCtrlOnly, int32_t iStrength)
+{
 	Key.FixShiftKeys();
 	// compose keyboard scope
 	DWORD InScope = 0;
@@ -2003,7 +2013,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 bool LandscapeFree(int32_t x, int32_t y)
 {
-	if (!Inside<int32_t>(x,0,GBackWdt-1) || !Inside<int32_t>(y,0,GBackHgt-1)) return false;
+	if (!Inside<int32_t>(x,0,::Landscape.GetWidth()-1) || !Inside<int32_t>(y,0,::Landscape.GetHeight()-1)) return false;
 	return !DensitySolid(GBackDensity(x,y));
 }
 
@@ -2235,7 +2245,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (fLoadSection && fLandscapeLoaded) { PXS.Clear(); MassMover.Clear(); }
 	SetInitProgress(89);
 	// Init main object list
-	Objects.Init(Landscape.Width, Landscape.Height);
+	Objects.Init(Landscape.GetWidth(), Landscape.GetHeight());
 
 	// Pathfinder
 	if (!fLoadSection) PathFinder.Init( &LandscapeFree, &TransferZones );
@@ -2610,7 +2620,7 @@ bool C4Game::PlaceInEarth(C4ID id)
 	int32_t cnt,tx,ty;
 	for (cnt=0; cnt<35; cnt++) // cheap trys
 	{
-		tx=Random(GBackWdt); ty=Random(GBackHgt);
+		tx=Random(::Landscape.GetWidth()); ty=Random(::Landscape.GetHeight());
 		if (GBackMat(tx,ty)==MEarth)
 			if (CreateObject(id,NULL,NO_OWNER,tx,ty,Random(360)))
 				return true;
@@ -2679,7 +2689,7 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 			// Above tunnel
 			while ((iTy>0) && Landscape.GetBackPix(iTx,iTy) == 0) iTy--;
 			// Above semi solid
-			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
+			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,::Landscape.GetHeight()-50))
 				continue;
 			// Still inside bounds?
 			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, iX, iY, iWdt, iHgt, shape_proplist)) continue;
@@ -2748,7 +2758,7 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 			// Random hit within target area
 			if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Above semi solid
-			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
+			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,::Landscape.GetHeight()-50))
 				continue;
 			// Free above
 			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
@@ -2785,12 +2795,12 @@ C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 	{
 		// Running free
 	case C4D_Place_Surface:
-		iX=Random(GBackWdt); iY=Random(GBackHgt);
+		iX=Random(::Landscape.GetWidth()); iY=Random(::Landscape.GetHeight());
 		if (!FindSolidGround(iX,iY,pDef->Shape.Wdt)) return NULL;
 		break;
 		// In liquid
 	case C4D_Place_Liquid:
-		iX=Random(GBackWdt); iY=Random(GBackHgt);
+		iX=Random(::Landscape.GetWidth()); iY=Random(::Landscape.GetHeight());
 		if (!FindSurfaceLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
 			if (!FindLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
 				return NULL;
@@ -2798,8 +2808,8 @@ C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 		break;
 		// Floating in air
 	case C4D_Place_Air:
-		iX=Random(GBackWdt);
-		for (iY=0; (iY<GBackHgt) && !GBackSemiSolid(iX,iY); iY++) {}
+		iX=Random(::Landscape.GetWidth());
+		for (iY=0; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(iX,iY); iY++) {}
 		if (iY<=0) return NULL;
 		iY=Random(iY);
 		break;
@@ -2816,7 +2826,7 @@ void C4Game::InitInEarth()
 	int32_t cnt,vidnum;
 	C4ID vidlist[maxvid];
 	// Amount
-	int32_t amt=(GBackWdt*GBackHgt/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
+	int32_t amt=(::Landscape.GetWidth()*::Landscape.GetHeight()/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
 	// List all valid IDs from C4S
 	vidnum=ListExpandValids(C4S.Landscape.InEarth,vidlist,maxvid);
 	// Place
@@ -2832,13 +2842,13 @@ void C4Game::InitVegetation()
 	int32_t cnt,vidnum;
 	C4ID vidlist[maxvid];
 	// Amount
-	int32_t amt=(GBackWdt/50)*C4S.Landscape.VegLevel.Evaluate()/100;
+	int32_t amt=(::Landscape.GetWidth()/50)*C4S.Landscape.VegLevel.Evaluate()/100;
 	// Get percentage vidlist from C4S
 	vidnum=ListExpandValids(C4S.Landscape.Vegetation,vidlist,maxvid);
 	// Place vegetation
 	if (vidnum>0)
 		for (cnt=0; cnt<amt; cnt++)
-			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,GBackWdt,GBackHgt,-1,NULL,NULL);
+			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,::Landscape.GetWidth(),::Landscape.GetHeight(),-1,NULL,NULL);
 }
 
 void C4Game::InitAnimals()
@@ -2966,25 +2976,25 @@ bool C4Game::InitKeyboard()
 
 	// fullscreen menu
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_LEFT));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Left)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Left(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuLeft",     KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuLeft, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_RIGHT));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Right)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Right(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuRight",    KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuRight, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_UP));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Up(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuUp",       KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuUp, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_DOWN));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Down(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuDown",     KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuDown, &C4FullScreen::MenuKeyControl)));
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE)); Keys.push_back(C4KeyCodeEx(K_RETURN));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Ok(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOK",       KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuEnter, &C4FullScreen::MenuKeyControl))); // name used by PlrControlKeyName
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_ESCAPE));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Cancel(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuCancel",   KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuClose, &C4FullScreen::MenuKeyControl))); // name used by PlrControlKeyName
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE));
-	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyButton)));
+	if (Config.Controls.GamepadGuiControl) ControllerKeys::Any(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOpen",     KEYSCOPE_FreeView,   new C4KeyCB  <C4FullScreen>   (FullScreen, &C4FullScreen::ActivateMenuMain))); // name used by C4MainMenu!
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FilmNextPlayer",         KEYSCOPE_FilmView,   new C4KeyCB  <C4ViewportList>(::Viewports, &C4ViewportList::ViewportNextPlayer)));
 
@@ -3609,6 +3619,33 @@ void C4Game::Abort(bool fApproved)
 	Application.QuitGame();
 }
 
+static const std::unordered_map<std::string, C4GUI::Icons> str_to_icon =
+{
+	{ "Locked",      C4GUI::Ico_Ex_LockedFrontal },
+	{ "League",      C4GUI::Ico_Ex_League        },
+	{ "GameRunning", C4GUI::Ico_GameRunning      },
+	{ "Lobby",       C4GUI::Ico_Lobby            },
+	{ "RuntimeJoin", C4GUI::Ico_RuntimeJoin      },
+
+	{ "A",             C4GUI::Ico_Controller_A             },
+	{ "B",             C4GUI::Ico_Controller_B             },
+	{ "X",             C4GUI::Ico_Controller_X             },
+	{ "Y",             C4GUI::Ico_Controller_Y             },
+	{ "Back",          C4GUI::Ico_Controller_Back          },
+	{ "Start",         C4GUI::Ico_Controller_Start         },
+	{ "Dpad",          C4GUI::Ico_Controller_Dpad          },
+	{ "DpadLeft",      C4GUI::Ico_Controller_DpadLeft      },
+	{ "DpadRight",     C4GUI::Ico_Controller_DpadRight     },
+	{ "DpadDown",      C4GUI::Ico_Controller_DpadDown      },
+	{ "DpadUp",        C4GUI::Ico_Controller_DpadUp        },
+	{ "LeftShoulder",  C4GUI::Ico_Controller_LeftShoulder  },
+	{ "RightShoulder", C4GUI::Ico_Controller_RightShoulder },
+	{ "LeftTrigger",   C4GUI::Ico_Controller_LeftTrigger   },
+	{ "RightTrigger",  C4GUI::Ico_Controller_RightTrigger  },
+	{ "LeftStick",     C4GUI::Ico_Controller_LeftStick     },
+	{ "RightStick",    C4GUI::Ico_Controller_RightStick    },
+};
+
 bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 {
 	// safety
@@ -3618,19 +3655,12 @@ bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 	if (SEqual2(szSpec, "@Ico:"))
 	{
 		szSpec += 5;
-		if (SEqual2(szSpec, "Locked"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
-		else if (SEqual2(szSpec, "League"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
-		else if (SEqual2(szSpec, "GameRunning"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
-		else if (SEqual2(szSpec, "Lobby"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
-		else if (SEqual2(szSpec, "RuntimeJoin"))
-			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-		else
-			return false;
-		return true;
+		auto it = str_to_icon.find(szSpec);
+		if (it != str_to_icon.end())
+		{
+			fct = C4GUI::Icon::GetIconFacet(it->second);
+			return true;
+		}
 	}
 
 	return false;

@@ -2,7 +2,6 @@
 id=Squid
 Version=5,2,0,1
 Category=C4D_Living
-ContactCalls=1
 Width=20
 Height=15
 Offset=-10,-7

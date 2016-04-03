@@ -394,7 +394,8 @@ global func FxTutorialWaitForBridgeTimer(object target, proplist effect, int tim
 {
 	if (time > 2 * 36)
 	{
-		guide->AddGuideMessage("$MsgTutorialMakeLoamBridge$");
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialMakeLoamBridge$", use));
 		guide->ShowGuideMessage();
 		// Start the controls of the clonk again.
 		EnablePlrControls(effect.plr);

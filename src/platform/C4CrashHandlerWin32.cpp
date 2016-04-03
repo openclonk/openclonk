@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -22,8 +22,8 @@
 #ifdef HAVE_DBGHELP
 
 // Dump generation on crash
-#include <C4Version.h>
-#include <C4windowswrapper.h>
+#include "C4Version.h"
+#include "platform/C4windowswrapper.h"
 #include <dbghelp.h>
 #include <fcntl.h>
 #include <string.h>

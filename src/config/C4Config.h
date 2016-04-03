@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,9 +20,9 @@
 #ifndef INC_C4Config
 #define INC_C4Config
 
-#include "C4Constants.h"
-#include "C4InputValidation.h"
-#include "C4PlayerControl.h"
+#include "config/C4Constants.h"
+#include "lib/C4InputValidation.h"
+#include "control/C4PlayerControl.h"
 #include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"
@@ -98,7 +98,6 @@ public:
 	int32_t SplitscreenDividers;
 	int32_t ShowStartupMessages;
 	int32_t VerboseObjectLoading;
-	int32_t HighResLandscape;
 	int32_t MenuTransparency;
 	int32_t UpperBoard;
 	int32_t ShowClock;

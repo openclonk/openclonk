@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,8 +18,8 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4DrawGL.h"
-#include "C4Shader.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4Shader.h"
 #include <list>
 
 class C4FoWRegion;

@@ -103,7 +103,7 @@ global func ShuffleArray(array arr)
   
 	while (--len >= 0)
 	{
-		var i = Random(len);
+		var i = Random(len + 1);
 		arr[len] = working[i];
 		working[i] = working[len];
 	}

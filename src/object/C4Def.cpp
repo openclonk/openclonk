@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,20 +17,21 @@
 
 /* Object definition */
 
-#include <C4Include.h>
-#include <C4Def.h>
-#include <C4DrawGL.h>
-#include <C4GraphicsResource.h>
+#include "C4Include.h"
+#include "object/C4Def.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4FileMonitor.h>
-#include <C4Language.h>
-#include <C4Object.h>
-#include <C4RankSystem.h>
-#include <C4SoundSystem.h>
-#include <C4SolidMask.h>
-#include <CSurface8.h>
+#include "c4group/C4Components.h"
+#include "config/C4Config.h"
+#include "platform/C4FileMonitor.h"
+#include "c4group/C4Language.h"
+#include "object/C4Object.h"
+#include "player/C4RankSystem.h"
+#include "platform/C4SoundSystem.h"
+#include "landscape/C4SolidMask.h"
+#include "graphics/CSurface8.h"
+#include "lib/StdColors.h"
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.
@@ -110,7 +111,6 @@ void C4Def::DefaultDefCore()
 	LiftTop=0;
 	GrabPutGet=0;
 	UprightAttach=0;
-	ContactFunctionCalls=0;
 	Line=0;
 	LineIntersect=0;
 	IncompleteActivity=0;
@@ -208,7 +208,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(Category, Categories),
 	                           "Category",           0             ));
 
-	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
 	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(NULL)));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));
@@ -333,10 +332,12 @@ void C4Def::Clear()
 }
 
 bool C4Def::Load(C4Group &hGroup,
-				 StdMeshSkeletonLoader &loader,
-                 DWORD dwLoadWhat,
-                 const char *szLanguage,
-                 C4SoundSystem *pSoundSystem)
+	StdMeshSkeletonLoader &loader,
+	DWORD dwLoadWhat,
+	const char *szLanguage,
+	C4SoundSystem *pSoundSystem,
+	C4DefGraphicsPtrBackup *gfx_backup
+	)
 {
 	bool AddFileMonitoring = false;
 	if (Game.pFileMonitor && !SEqual(hGroup.GetFullName().getData(),Filename) && !hGroup.IsPacked())
@@ -355,7 +356,7 @@ bool C4Def::Load(C4Group &hGroup,
 	hGroup.PreCacheEntries(C4CFN_ShaderFiles);
 	hGroup.PreCacheEntries(C4CFN_ImageFiles);
 
-	LoadMeshMaterials(hGroup);
+	LoadMeshMaterials(hGroup, gfx_backup);
 	bool fSuccess = LoadParticleDef(hGroup);
 
 	// Read DefCore
@@ -401,12 +402,18 @@ bool C4Def::Load(C4Group &hGroup,
 	return true;
 }
 
-void C4Def::LoadMeshMaterials(C4Group &hGroup)
+void C4Def::LoadMeshMaterials(C4Group &hGroup, C4DefGraphicsPtrBackup *gfx_backup)
 {
 	// Load all mesh materials from this folder
 	C4DefAdditionalResourcesLoader loader(hGroup);
 	hGroup.ResetSearch();
 	char MaterialFilename[_MAX_PATH + 1]; *MaterialFilename = 0;
+	
+	for (const auto &mat : mesh_materials)
+	{
+		::MeshMaterialManager.Remove(mat, &gfx_backup->GetUpdater());
+	}
+	mesh_materials.clear();
 	while (hGroup.FindNextEntry(C4CFN_DefMaterials, MaterialFilename, NULL, !!*MaterialFilename))
 	{
 		StdStrBuf material;
@@ -417,7 +424,8 @@ void C4Def::LoadMeshMaterials(C4Group &hGroup)
 				StdStrBuf buf;
 				buf.Copy(hGroup.GetName());
 				buf.Append("/"); buf.Append(MaterialFilename);
-				::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
+				auto new_materials = ::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
+				mesh_materials.insert(new_materials.begin(), new_materials.end());
 			}
 			catch (const StdMeshMaterialError& ex)
 			{

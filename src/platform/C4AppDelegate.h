@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006-2007, Julian Raschke
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -22,8 +22,8 @@
 
 #include <vector>
 
-#include <C4Include.h>
-#include <C4KeyboardInput.h>
+#include "C4Include.h"
+#include "gui/C4KeyboardInput.h"
 
 #import <Cocoa/Cocoa.h>
 #ifdef USE_COCOA

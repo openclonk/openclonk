@@ -16,15 +16,15 @@
 
 /* Editor windows using Qt*/
 
-#include <C4Include.h>
-#include <C4ConsoleQtState.h>
-#include <C4Console.h>
-#include <C4ConsoleGUI.h>
-#include <C4Texture.h>
-#include <C4Landscape.h>
-#include <C4Version.h>
+#include "C4Include.h"
+#include "editor/C4ConsoleQtState.h"
+#include "editor/C4Console.h"
+#include "editor/C4ConsoleGUI.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Landscape.h"
+#include "C4Version.h"
 
-#include <C4ConsoleQt.h>
+#include "editor/C4ConsoleQt.h"
 
 // todo:
 // * viewport subwindow hack causes alt+tab entry to disappear
@@ -235,7 +235,7 @@ void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
 	if (!Active) return;
 	state->SetEnabled(fEnable);
-	state->SetLandscapeMode(::Landscape.Mode); // initial setting
+	state->SetLandscapeMode(::Landscape.GetMode()); // initial setting
 }
 
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
@@ -391,10 +391,10 @@ void C4ToolsDlg::UpdateIFTControls() { /* not using IFT */ }
 void C4ToolsDlg::UpdateLandscapeModeCtrls()
 {
 	// Update button down states for landscape mode
-	if (::Console.Active) ::Console.state->SetLandscapeMode(::Landscape.Mode);
+	if (::Console.Active) ::Console.state->SetLandscapeMode(::Landscape.GetMode());
 }
 
 
 void C4ToolsDlg::EnableControls() { /* Handled internally by tool selection */ }
 
-#include "C4ConsoleGUICommon.h"
+#include "editor/C4ConsoleGUICommon.h"

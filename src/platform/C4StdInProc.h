@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,7 +16,7 @@
 #ifndef INC_C4STDINPROC
 #define INC_C4STDINPROC
 
-#include <StdScheduler.h>
+#include "platform/StdScheduler.h"
 
 // A simple alertable proc
 class C4StdInProc : public StdSchedulerProc

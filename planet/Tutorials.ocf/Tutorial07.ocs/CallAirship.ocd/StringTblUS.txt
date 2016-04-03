@@ -1,0 +1,3 @@
+Name=Call Airship
+MsgCallAirship=Call Airship
+MsgStopAirship=Stop Airship

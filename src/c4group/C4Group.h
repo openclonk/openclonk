@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,8 +23,8 @@
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
-#include <CStdFile.h>
-#include <StdBuf.h>
+#include "c4group/CStdFile.h"
+#include "lib/StdBuf.h"
 
 // C4Group-Rewind-warning:
 // The current C4Group-implementation cannot handle random file access very well,

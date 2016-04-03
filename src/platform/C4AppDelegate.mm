@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,9 +16,9 @@
 // Roughly adapted from the original C4AppDelegate.m; haxxed to death by teh Gurkendoktor.
 // Look at main() to get an idea for what happens here.
 
-#include <C4Include.h>
-#include <C4Application.h>
-#include <C4Game.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "game/C4Game.h"
 
 #import "C4AppDelegate.h"
 #import "C4AppDelegate+MainMenuActions.h"

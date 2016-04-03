@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,12 +15,12 @@
 
 #include <GL/glew.h>
 
-#include <C4Include.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <C4FullScreen.h>
-#include <C4Landscape.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4FullScreen.h"
+#include "landscape/C4Landscape.h"
 
 #import "C4WindowController.h"
 #import "C4DrawGLMac.h"
@@ -245,16 +245,16 @@ bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
 	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	[scrollView.horizontalScroller setToLandscapeCoordinate:GetViewX() size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
-	[scrollView.verticalScroller setToLandscapeCoordinate:GetViewY() size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
+	[scrollView.horizontalScroller setToLandscapeCoordinate:GetViewX() size:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()];
+	[scrollView.verticalScroller setToLandscapeCoordinate:GetViewY() size:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
 	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()]);
-	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()]);
+	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()]);
+	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()]);
 	return true;
 }
 

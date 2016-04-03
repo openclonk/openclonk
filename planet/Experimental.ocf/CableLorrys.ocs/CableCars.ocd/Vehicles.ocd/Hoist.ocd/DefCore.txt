@@ -1,0 +1,15 @@
+[DefCore]
+id=CableHoist
+Version=7,0
+Category=C4D_Vehicle
+Width=26
+Height=18
+Offset=-13,-9
+Vertices=5
+VertexX=0,-8,8,-9,9
+VertexY=-6,-5,-5,7,7
+VertexCNAT=5,6,9,10
+VertexFriction=50,80,80,30,30
+Value=20
+Mass=150
+Components=Metal=1

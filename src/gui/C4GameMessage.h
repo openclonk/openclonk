@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4GameMessage
 #define INC_C4GameMessage
 
-#include <StdColors.h>
-#include <C4Value.h>
+#include "lib/StdColors.h"
+#include "script/C4Value.h"
 
 const int32_t C4GM_MaxText = 256,
               C4GM_MinDelay = 20;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2005, Peter Wortmann
  * Copyright (c) 2005-2006, Günther Brammer
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,10 +15,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4StdInProc.h"
+#include "C4Include.h"
+#include "platform/C4StdInProc.h"
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 
 #ifdef HAVE_LIBREADLINE
 #include <readline.h>

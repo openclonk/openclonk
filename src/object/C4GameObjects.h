@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,9 +18,9 @@
 #ifndef INC_C4GameObjects
 #define INC_C4GameObjects
 
-#include <C4ObjectList.h>
-#include <C4FindObject.h>
-#include <C4Sector.h>
+#include "object/C4ObjectList.h"
+#include "object/C4FindObject.h"
+#include "object/C4Sector.h"
 
 // main object list class
 class C4GameObjects : public C4NotifyingObjectList

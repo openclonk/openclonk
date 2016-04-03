@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,9 +17,9 @@
 
 /* Handles scripted map creation */
 
-#include <C4Include.h>
-#include <C4MapScript.h>
-#include <C4Random.h>
+#include "C4Include.h"
+#include "landscape/C4MapScript.h"
+#include "lib/C4Random.h"
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 

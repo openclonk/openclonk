@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,20 +15,20 @@
  */
 // game over dialog showing winners and losers
 
-#include <C4Include.h>
-#include <C4GameOverDlg.h>
+#include "C4Include.h"
+#include "gui/C4GameOverDlg.h"
 
-#include <C4Application.h>
-#include <C4Def.h>
-#include <C4DefList.h>
-#include <C4Game.h>
-#include <C4FullScreen.h>
-#include <C4Player.h>
-#include <C4PlayerInfoListBox.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include "C4GraphicsResource.h"
+#include "game/C4Application.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "game/C4Game.h"
+#include "game/C4FullScreen.h"
+#include "player/C4Player.h"
+#include "gui/C4PlayerInfoListBox.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 
 // ---------------------------------------------------

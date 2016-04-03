@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,8 +14,8 @@
  */
 
 #include "C4Include.h"
-#include "C4FoWRegion.h"
-#include "C4DrawGL.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "graphics/C4DrawGL.h"
 
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)
@@ -95,22 +95,22 @@ bool C4FoWRegion::BindFramebuf(GLuint prev_fb)
 				if (y < pSurface->Hgt / 2 && x < pSurface->Wdt)
 				{
 					// Normals and intensity
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y, pSurface->GetPixDw(x, pSurface->Hgt/2 - y, false));
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y, false));
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y - 1, pSurface->GetPixDw(x, pSurface->Hgt/2 - y - 1, false));
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y - 1, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y - 1, false));
 
 					// Color
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2, pSurface->GetPixDw(x, pSurface->Hgt/2 - y + pSurface->Hgt / 2, false));
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y + pBackSurface->Hgt / 2, false));
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2 - 1, pSurface->GetPixDw(x, pSurface->Hgt/2 - y + pSurface->Hgt / 2 - 1, false));
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2 - 1, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y + pBackSurface->Hgt / 2 - 1, false));
 				}
 				else
 				{
 					// Normals and intensity
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y, 0x000000ff);
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y, 0x000000ff);
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y - 1, 0x000000ff);
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y - 1, 0x000000ff);
 
 					// Color
-					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2, 0x000000ff);
-					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2, 0x000000ff);
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2 - 1, 0x000000ff);
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2 - 1, 0x000000ff);
 				}
 			}
 		}
@@ -137,11 +137,11 @@ bool C4FoWRegion::BindFramebuf(GLuint prev_fb)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, hFrameBufRead);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
 		GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-		pSurface->textures[0].texName, 0);
-	if (!pBackSurface->textures.empty())
+		pSurface->texture->texName, 0);
+	if (pBackSurface->texture)
 		glFramebufferTexture2D(GL_READ_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-			pBackSurface->textures[0].texName, 0);
+			pBackSurface->texture->texName, 0);
 
 	// Check status, unbind if something was amiss
 	GLenum status1 = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER),
@@ -171,10 +171,10 @@ int32_t C4FoWRegion::getSurfaceWidth() const
 #ifndef USE_CONSOLE
 GLuint C4FoWRegion::getSurfaceName() const
 {
-	assert(!pSurface->textures.empty());
-	if (pSurface->textures.empty())
+	assert(pSurface->texture);
+	if (!pSurface->texture)
 		return 0;
-	return pSurface->textures[0].texName;
+	return pSurface->texture->texName;
 }
 #endif
 
@@ -304,7 +304,7 @@ bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		C4ShaderCall Call(pShader);
 		Call.Start();
 		if (Call.AllocTexUnit(C4FoWFSU_Texture))
-			glBindTexture(GL_TEXTURE_2D, pBackSurface->textures[0].texName);
+			glBindTexture(GL_TEXTURE_2D, pBackSurface->texture->texName);
 		Call.SetUniformMatrix4x4(C4FoWFSU_ProjectionMatrix, projectionMatrix);
 		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly

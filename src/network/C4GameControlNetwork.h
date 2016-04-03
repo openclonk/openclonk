@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,14 +13,14 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include "C4GameControl.h"
+#include "control/C4GameControl.h"
 
 #ifndef INC_C4GameControlNetwork
 #define INC_C4GameControlNetwork
 
-#include "C4Control.h"
-#include "C4PacketBase.h"
-#include "C4Network2.h"
+#include "control/C4Control.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Network2.h"
 
 // constants
 const int32_t C4ControlBacklog = 100, // (ctrl ticks)

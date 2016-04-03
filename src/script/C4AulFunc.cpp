@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001, 2007, Sven Eberhardt
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,10 +14,10 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4AulFunc.h>
-#include <C4Aul.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "script/C4AulFunc.h"
+#include "script/C4Aul.h"
 
 C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
 		Parent(Parent),

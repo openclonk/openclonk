@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,11 +15,11 @@
  */
 /* Handles Music Files */
 
-#include <C4Include.h>
-#include <C4MusicFile.h>
+#include "C4Include.h"
+#include "platform/C4MusicFile.h"
 
-#include <C4Application.h>
-#include <C4Log.h>
+#include "game/C4Application.h"
+#include "lib/C4Log.h"
 
 #if AUDIO_TK == AUDIO_TK_OPENAL
 #if defined(__APPLE__)

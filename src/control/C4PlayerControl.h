@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef INC_C4PlayerControl
 #define INC_C4PlayerControl
 
-#include "C4KeyboardInput.h"
-#include "C4LangStringTable.h"
-#include "C4Id.h"
-#include "C4TimeMilliseconds.h"
+#include "gui/C4KeyboardInput.h"
+#include "c4group/C4LangStringTable.h"
+#include "object/C4Id.h"
+#include "platform/C4TimeMilliseconds.h"
 
 #include <list>
 
@@ -277,7 +277,6 @@ public:
 	bool HasMouse() const { return has_mouse; }
 	bool HasGamepad() const { return has_gamepad; }
 	int32_t GetLayoutOrder() const { return 0; } // returns position on keyboard (increasing from left to right) for viewport sorting
-	int32_t GetGamepadIndex() const { return 0; }
 	bool IsMouseControlAssigned(int32_t mouseevent) const;
 };
 
@@ -333,6 +332,12 @@ class C4PlayerControl
 public:
 	enum { MaxRecentKeyLookback = 3000, MaxSequenceKeyDelay = 800 }; // milliseconds: Time to press key combos
 
+	enum ControlState {
+		CONS_Down = 0,
+		CONS_Up,
+		CONS_Moved,
+	};
+
 private:
 	C4PlayerControlDefs &ControlDefs; // shortcut
 
@@ -353,8 +358,8 @@ public:
 	{
 		struct ControlDownState
 		{
-			C4KeyEventData DownState; // control is down if DownState.iStrength>0
-			int32_t iDownFrame; // frame when control was pressed
+			C4KeyEventData DownState, MovedState; // control is down if DownState.iStrength>0
+			int32_t iDownFrame, iMovedFrame; // frame when control was pressed
 			bool fDownByUser;  // if true, the key is actually pressed. Otherwise, it's triggered as down by another key
 			ControlDownState(const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser)
 					: DownState(rDownState), iDownFrame(iDownFrame), fDownByUser(fDownByUser) {}
@@ -373,6 +378,7 @@ public:
 		int32_t GetControlDisabled(int32_t iControl) const;
 		bool IsControlDisabled(int32_t iControl) const { return GetControlDisabled(iControl)>0; }
 		void SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser);
+		void SetControlMovedState(int32_t iControl, const C4KeyEventData &rMovedState, int32_t iMovedFrame);
 		void ResetControlDownState(int32_t iControl);
 		bool SetControlDisabled(int32_t iControl, int32_t iVal);
 
@@ -386,14 +392,15 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, ControlState state, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
+	bool ProcessKeyMoved(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 
 	// execute single control. return if handled.
-	bool ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly);
-	bool ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
-	bool ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
+	bool ExecuteControl(int32_t iControl, ControlState state, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly);
+	bool ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, ControlState state, const C4KeyEventData &rKeyExtraData, bool fRepeated);
+	bool ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, ControlState state, const C4KeyEventData &rKeyExtraData, bool fRepeated);
 
 	// init
 	void AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32_t idx);

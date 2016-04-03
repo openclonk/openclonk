@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,9 +17,9 @@
 #ifndef C4LANDSCAPE_RENDER_H
 #define C4LANDSCAPE_RENDER_H
 
-#include "C4Surface.h"
-#include "C4FacetEx.h"
-#include "C4Shader.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Shader.h"
 
 // Data we want to store per landscape pixel
 enum C4LR_Byte {
@@ -123,6 +123,8 @@ private:
 	unsigned int hVAOIDNoLight;
 	unsigned int hVAOIDLight;
 
+	// 1D texture for material map
+	GLuint matMapTexture;
 	// 2D texture array of material textures
 	GLuint hMaterialTexture;
 	// material texture positions in texture array
@@ -163,26 +165,5 @@ private:
 	void BuildMatMap(uint32_t *pTex);
 };
 #endif
-
-class C4LandscapeRenderClassic : public C4LandscapeRender
-{
-public:
-	C4LandscapeRenderClassic();
-	~C4LandscapeRenderClassic();
-
-private:
-	C4Surface *Surface32;
-
-public:
-	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
-	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
-	virtual void Clear();
-
-	virtual C4Rect GetAffectedRect(C4Rect Rect);
-	virtual void Update(C4Rect Rect, C4Landscape *pSource);
-
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
-
-};
 
 #endif // C4LANDSCAPE_RENDER_H

@@ -94,7 +94,7 @@ local ActMap = {
 local Name = "$Name$";
 local Touchable = 2;
 local EditCursorCommands = ["ControlUp()", "ControlDown()", "ConnectNearestDoor()"];
-local Plane = 600;
+local Plane = 200;
 
 func Definition(def)
 {

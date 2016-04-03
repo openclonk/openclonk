@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,19 +17,19 @@
 // generic user interface
 // dialog base classes and some user dialogs
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4DefList.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4Def.h>
-#include <C4GraphicsResource.h>
-#include <C4Application.h>
-#include <C4GameScript.h>
+#include "object/C4DefList.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "object/C4Def.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Application.h"
+#include "game/C4GameScript.h"
 
-#include <C4DrawGL.h>
-#include <StdRegistry.h>
+#include "graphics/C4DrawGL.h"
+#include "platform/StdRegistry.h"
 
 namespace C4GUI
 {
@@ -281,7 +281,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_TAB));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Right)));
+			ControllerKeys::Right(Keys);
 		}
 		pKeyAdvanceControl = new C4KeyBinding(Keys, "GUIAdvanceFocus", KEYSCOPE_Gui,
 		                                      new DlgKeyCBEx<Dialog, bool>(*this, false, &Dialog::KeyAdvanceFocus), C4CustomKey::PRIO_Dlg);
@@ -289,7 +289,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_TAB, KEYS_Shift));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Left)));
+			ControllerKeys::Left(Keys);
 		}
 		pKeyAdvanceControlB = new C4KeyBinding(Keys, "GUIAdvanceFocusBack", KEYSCOPE_Gui,
 		                                       new DlgKeyCBEx<Dialog, bool>(*this, true, &Dialog::KeyAdvanceFocus), C4CustomKey::PRIO_Dlg);
@@ -302,7 +302,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_RETURN));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
+			ControllerKeys::Ok(Keys);
 		}
 		pKeyEnter = new C4KeyBinding(Keys, "GUIDialogOkay", KEYSCOPE_Gui,
 		                             new DlgKeyCB<Dialog>(*this, &Dialog::KeyEnter), C4CustomKey::PRIO_Dlg);
@@ -310,7 +310,7 @@ namespace C4GUI
 		Keys.push_back(C4KeyCodeEx(K_ESCAPE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(Keys);
 		}
 		pKeyEscape = new C4KeyBinding(Keys, "GUIDialogAbort", KEYSCOPE_Gui,
 		                              new DlgKeyCB<Dialog>(*this, &Dialog::KeyEscape), C4CustomKey::PRIO_Dlg);

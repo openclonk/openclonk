@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,21 +15,21 @@
  */
 // handles input dialogs, last-message-buffer, MessageBoard-commands
 
-#include <C4Include.h>
-#include <C4MessageInput.h>
+#include "C4Include.h"
+#include "gui/C4MessageInput.h"
 
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4Gui.h>
-#include <C4Console.h>
-#include <C4Application.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4GameLobby.h>
-#include <C4GraphicsSystem.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Game.h"
+#include "object/C4Object.h"
+#include "gui/C4Gui.h"
+#include "editor/C4Console.h"
+#include "game/C4Application.h"
+#include "lib/C4Log.h"
+#include "player/C4Player.h"
+#include "gui/C4GameLobby.h"
+#include "game/C4GraphicsSystem.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 // --------------------------------------------------
 // C4ChatInputDialog

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef INC_C4AulDefFunc
 #define INC_C4AulDefFunc
 
-#include <C4Aul.h>
-#include <C4Def.h>
-#include <C4DefList.h>
-#include <C4Effect.h>
+#include "script/C4Aul.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "script/C4Effect.h"
 #include <utility>
 
 inline const static char *FnStringPar(C4String *pString)
@@ -221,6 +221,8 @@ public:
 		pFunc(pFunc), ParType {C4ValueConv<ParTypes>::Type()...}, Public(Public)
 	{
 		Parent->SetPropertyByS(Name, C4VFunction(this));
+		for(int i = GetParCount(); i < C4AUL_MAX_Par; ++i)
+			ParType[i] = C4V_Any;
 	}
 
 	virtual int GetParCount() const
@@ -250,7 +252,7 @@ public:
 	}
 protected:
 	Func pFunc;
-	C4V_Type ParType[10];// type of the parameters
+	C4V_Type ParType[C4AUL_MAX_Par];// type of the parameters
 	bool Public;
 };
 

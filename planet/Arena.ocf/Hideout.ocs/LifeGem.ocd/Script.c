@@ -28,7 +28,7 @@ func FxSparkleStart(target, effect, temp)
 
 func FxSparkleTimer(target, effect, effect_time)
 {
-	if(this()->Contained() || !Random(2)) return FX_OK;
+	if(this->Contained() || !Random(2)) return FX_OK;
 	CreateParticle("MagicRing", 0, 0, 0, 0, effect.Interval, effect.particles, 1);
 	return FX_OK;
 }

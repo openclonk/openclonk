@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -33,10 +33,7 @@ public:
 	void Create(CSurface8 *sfcMap,
 	            C4SLandscape &rLScape, C4TextureMap &rTexMap,
 	            bool fLayers=false, int32_t iPlayerNum=1);
-	bool Load(BYTE **pbypBuffer,
-	          int32_t &rBufWdt, int32_t &rMapWdt, int32_t &rMapHgt,
-	          C4Group &hGroup, const char *szEntryName,
-	          C4TextureMap &rTexMap);
+
 protected:
 	void Reset();
 	void SetPix(int32_t x, int32_t y, BYTE col);

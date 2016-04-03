@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,7 +16,10 @@
 #ifndef C4FOWAMBIENT_H
 #define C4FOWAMBIENT_H
 
-#include <C4Landscape.h>
+#include "landscape/C4Landscape.h"
+#ifndef USE_CONSOLE
+#include <GL/glew.h>
+#endif
 
 /**
 	This class manages a texture that holds the ambient light intensity
@@ -62,7 +65,7 @@ public:
 	void UpdateFromLandscape(const C4Landscape& landscape, const C4Rect& update);
 
 	// Fills a 2x3 matrix to transform fragment coordinates to ambient map texture coordinates
-	void GetFragTransform(const FLOAT_RECT& vpRect, const C4Rect& clipRect, const C4Rect& outRect, float ambientTransform[6]) const;
+	void GetFragTransform(const struct FLOAT_RECT& vpRect, const C4Rect& clipRect, const C4Rect& outRect, float ambientTransform[6]) const;
 
 	unsigned int GetLandscapeWidth() const { return LandscapeX; }
 	unsigned int GetLandscapeHeight() const { return LandscapeY; }

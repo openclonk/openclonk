@@ -115,6 +115,8 @@ private func Enrage(proplist coordinates)
 {
 	if (!enrage_target)
 		CheckTarget();
+	if (!this)
+		return false;
 	if (!enrage_target)
 		return false;
 	if (ObjectDistance(enrage_target) < 10)
@@ -170,7 +172,7 @@ private func CheckTurn()
 
 private func AngryBuzz()
 {
-	Sound("Animals::Zap::Zap?", nil,nil,nil,nil, nil, -Random(100));
+	Sound("Animals::Zap::Zap?", {pitch = -Random(100)});
 }
 
 /*-- Saving --*/
@@ -248,3 +250,4 @@ local MaxBreath = 250;
 local Placement = 2;
 local NoBurnDecay = 1;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;

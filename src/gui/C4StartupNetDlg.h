@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,9 +18,9 @@
 #ifndef INC_C4StartupNetDlg
 #define INC_C4StartupNetDlg
 
-#include "C4Startup.h"
-#include "C4Network2Discover.h"
-#include "C4Network2Reference.h"
+#include "gui/C4Startup.h"
+#include "network/C4Network2Discover.h"
+#include "network/C4Network2Reference.h"
 
 // -----------------------------------------------
 

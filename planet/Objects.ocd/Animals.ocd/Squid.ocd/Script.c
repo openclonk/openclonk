@@ -136,7 +136,7 @@ public func Death()
 {
 	RemoveTimer(this.UpdateSwim);
 	RemoveTimer(this.Activity);
-	AddTimer(this.Decaying, 500);
+	Decay();
 	this.Collectible = true;
 	this.MeshTransformation = base_transform;
 	
@@ -153,12 +153,6 @@ public func CatchBlow()
 		DoInk();
 	else if (ink_level > 500 && !Random(5))
 		DoInk();
-}
-
-private func Decaying()
-{
-	if (GetCon()<20) RemoveObject(); else DoCon(-5);
-	return true;
 }
 
 public func ControlUse(object clonk, int iX, int iY)
@@ -556,6 +550,7 @@ local Placement = 1;
 local NoBurnDecay = 1;
 local BreatheWater = 1;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
 
 public func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);

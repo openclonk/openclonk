@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,8 +18,8 @@
 #ifndef INC_C4ChatDlg
 #define INC_C4ChatDlg
 
-#include "C4Gui.h"
-#include "C4InteractiveThread.h"
+#include "gui/C4Gui.h"
+#include "network/C4InteractiveThread.h"
 
 // a GUI control to chat in
 class C4ChatControl : public C4GUI::Window, private C4InteractiveThread::Callback

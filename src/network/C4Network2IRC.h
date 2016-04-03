@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,7 +16,7 @@
 #ifndef C4NETWORK2IRC_H
 #define C4NETWORK2IRC_H
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 #include <time.h>
 
 enum C4Network2IRCMessageType

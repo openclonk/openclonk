@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,12 @@
 // e.g., changing colors if two players have the same
 // "There must be some easier way to do it"(tm)
 
-#include <C4Include.h>
-#include <C4PlayerInfo.h>
-#include <C4Game.h>
-#include <C4Teams.h>
-#include <StdColors.h>
-#include <C4Random.h>
+#include "C4Include.h"
+#include "control/C4PlayerInfo.h"
+#include "game/C4Game.h"
+#include "control/C4Teams.h"
+#include "lib/StdColors.h"
+#include "lib/C4Random.h"
 
 // number of times trying new player colors
 const int32_t C4MaxPlayerColorChangeTries = 100;

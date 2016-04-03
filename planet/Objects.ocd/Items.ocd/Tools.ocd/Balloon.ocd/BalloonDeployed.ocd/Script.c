@@ -291,3 +291,4 @@ local ActMap = {
 };
 local Name = "$Name$";
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;

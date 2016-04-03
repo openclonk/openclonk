@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,8 +18,8 @@
 #ifndef INC_C4GameOverDlg
 #define INC_C4GameOverDlg
 
-#include <C4Gui.h>
-#include <C4RoundResults.h>
+#include "gui/C4Gui.h"
+#include "control/C4RoundResults.h"
 
 // horizontal display of goal symbols; filfilled goals marked
 // maybe to be reused for a game goal dialog?

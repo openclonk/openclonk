@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,10 +14,10 @@
  */
 
 #include "C4Include.h"
-#include <StdMesh.h>
-#include <StdMeshMaterial.h>
-#include <StdMeshUpdate.h>
-#include <StdMeshLoader.h>
+#include "lib/StdMesh.h"
+#include "lib/StdMeshMaterial.h"
+#include "lib/StdMeshUpdate.h"
+#include "lib/StdMeshLoader.h"
 
 StdMeshMaterialUpdate::StdMeshMaterialUpdate(StdMeshMatManager& manager):
 	MaterialManager(manager)

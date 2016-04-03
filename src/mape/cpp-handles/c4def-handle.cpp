@@ -15,8 +15,8 @@
 
 #include "C4Include.h"
 
-#include "C4Def.h"
-#include "C4DefList.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
 
 /* This is a simple implementation of C4DefList for what is required by
  * mape. We cannot link the full implementation since it would introduce
@@ -102,7 +102,7 @@ bool C4DefList::Add(C4Def* def, bool fOverload)
 	return true;
 }
 
-bool C4Def::Load(C4Group& hGroup, StdMeshSkeletonLoader& loader, DWORD dwLoadWhat, const char* szLanguage, C4SoundSystem* pSoundSystem)
+bool C4Def::Load(C4Group& hGroup, StdMeshSkeletonLoader& loader, DWORD dwLoadWhat, const char* szLanguage, C4SoundSystem* pSoundSystem, C4DefGraphicsPtrBackup *)
 {
 	// Assume ID has been set already!
 

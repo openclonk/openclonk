@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,8 +18,8 @@
 #ifndef INC_C4Network2Stats
 #define INC_C4Network2Stats
 
-#include "C4Application.h"
-#include "StdBuf.h"
+#include "game/C4Application.h"
+#include "lib/StdBuf.h"
 
 #include <algorithm>
 

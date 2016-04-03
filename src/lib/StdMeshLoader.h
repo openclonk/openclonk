@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,7 +14,7 @@
  */
 
 // A loader for the OGRE .mesh binary file format
-#include <StdMesh.h>
+#include "lib/StdMesh.h"
 
 #ifndef INC_StdMeshLoader
 #define INC_StdMeshLoader

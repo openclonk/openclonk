@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,13 +16,12 @@
 
 /* A window listing all objects in the game */
 
-#include <C4Include.h>
-#include <C4ObjectListDlg.h>
-#include <C4Console.h>
-#include <C4Object.h>
-#include <C4GameObjects.h>
-#include <C4Effect.h>
-
+#include "C4Include.h"
+#include "editor/C4ObjectListDlg.h"
+#include "editor/C4Console.h"
+#include "object/C4Object.h"
+#include "object/C4GameObjects.h"
+#include "script/C4Effect.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>
@@ -856,7 +855,7 @@ void C4ObjectListDlg::Open()
 
 #ifdef WITH_QT_EDITOR
 
-#include <C4ConsoleQtObjectListViewer.h>
+#include "editor/C4ConsoleQtObjectListViewer.h"
 
 void C4ObjectListDlg::Update(C4EditCursorSelection &rSelection)
 {

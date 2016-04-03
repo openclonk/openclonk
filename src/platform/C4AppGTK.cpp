@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,14 +16,14 @@
 
 /* A wrapper class to OS dependent event and window interfaces, X11 version */
 
-#include <C4Include.h>
-#include <C4App.h>
+#include "C4Include.h"
+#include "platform/C4App.h"
 
-#include <C4Window.h>
-#include <C4DrawGL.h>
-#include <C4Draw.h>
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "platform/C4Window.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4Draw.h"
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
 #include <glib.h>
 #include <gtk/gtk.h>

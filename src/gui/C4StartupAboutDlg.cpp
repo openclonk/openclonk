@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2014, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,12 +15,12 @@
  */
 // About/credits screen
 
-#include <C4Include.h>
-#include <C4StartupAboutDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupAboutDlg.h"
 
-#include <C4UpdateDlg.h>
-#include <C4GraphicsResource.h>
-#include <C4Version.h>
+#include "gui/C4UpdateDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "C4Version.h"
 
 // ------------------------------------------------
 // --- C4StartupAboutDlg

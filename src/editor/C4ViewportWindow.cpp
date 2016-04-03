@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,20 +17,20 @@
 
 /* A viewport to each player */
 
-#include <C4Include.h>
-#include <C4ViewportWindow.h>
+#include "C4Include.h"
+#include "editor/C4ViewportWindow.h"
 
-#include <C4Viewport.h>
-#include <C4Console.h>
-#include <C4Landscape.h>
-#include <C4PlayerList.h>
+#include "game/C4Viewport.h"
+#include "editor/C4Console.h"
+#include "landscape/C4Landscape.h"
+#include "player/C4PlayerList.h"
 
 #ifdef USE_GTK
 #include <gtk/gtk.h>
 #endif
 
 #ifdef WITH_QT_EDITOR
-#include <C4ConsoleQtViewport.h>
+#include "editor/C4ConsoleQtViewport.h"
 #endif
 
 #ifdef WITH_QT_EDITOR
@@ -103,14 +103,14 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	// Vertical
 	scroll.fMask=SIF_ALL;
 	scroll.nMin=0;
-	scroll.nMax = GBackHgt * Zoom;
+	scroll.nMax = ::Landscape.GetHeight() * Zoom;
 	scroll.nPage=ViewHgt;
 	scroll.nPos=int(GetViewY() * Zoom);
 	SetScrollInfo(pWindow->hWindow,SB_VERT,&scroll,true);
 	// Horizontal
 	scroll.fMask=SIF_ALL;
 	scroll.nMin=0;
-	scroll.nMax=GBackWdt * Zoom;
+	scroll.nMax=::Landscape.GetWidth() * Zoom;
 	scroll.nPage=ViewWdt;
 	scroll.nPos = int(GetViewX() * Zoom);
 	SetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll,true);
@@ -149,7 +149,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	gtk_adjustment_configure(adjustment,
 	                         GetViewX(), // value
 	                         0, // lower
-	                         GBackWdt, // upper
+	                         ::Landscape.GetWidth(), // upper
 	                         ViewportScrollSpeed, // step_increment
 	                         allocation.width / Zoom, // page_increment
 	                         allocation.width / Zoom // page_size
@@ -159,7 +159,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	gtk_adjustment_configure(adjustment,
 	                         GetViewY(), // value
 	                         0, // lower
-	                         GBackHgt, // upper
+	                         ::Landscape.GetHeight(), // upper
 	                         ViewportScrollSpeed, // step_increment
 	                         allocation.height / Zoom, // page_increment
 	                         allocation.height / Zoom // page_size

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -303,7 +303,6 @@ enum C4PropertyName
 	P_Parallaxity,
 	P_LineColors,
 	P_LineAttach,
-	P_LineMaxDistance,		// unused?
 	P_PictureTransformation,
 	P_MeshTransformation,
 	P_Procedure,
@@ -355,6 +354,7 @@ enum C4PropertyName
 	P_IncineratingObj,		// unused?
 	P_Plane,
 	P_BorderBound,
+	P_ContactCalls,
 	P_SolidMaskPlane,
 	P_Tooltip,
 	P_Placement,
@@ -483,7 +483,7 @@ public:
 	C4String *RegString(StdStrBuf String);
 	C4String *RegString(const char * s) { return RegString(StdStrBuf(s)); }
 	// Find existing C4String
-	C4String *FindString(const char *strString);
+	C4String *FindString(const char *strString) const;
 
 private:
 	C4Set<C4String *> Set;

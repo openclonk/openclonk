@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,26 +17,26 @@
 
 /* Handles engine execution in developer mode */
 
-#include <C4Include.h>
-#include <C4Console.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
 
-#include <C4Application.h>
-#include <C4Def.h>
-#include <C4GameSave.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Version.h>
-#include <C4Language.h>
-#include <C4Player.h>
-#include <C4Landscape.h>
-#include <C4GraphicsSystem.h>
-#include <C4Viewport.h>
-#include <C4ScriptHost.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
+#include "game/C4Application.h"
+#include "object/C4Def.h"
+#include "control/C4GameSave.h"
+#include "game/C4Game.h"
+#include "gui/C4MessageInput.h"
+#include "C4Version.h"
+#include "c4group/C4Language.h"
+#include "player/C4Player.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "script/C4ScriptHost.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
 
-#include <StdFile.h>
-#include <StdRegistry.h>
+#include "platform/StdFile.h"
+#include "platform/StdRegistry.h"
 
 #define FILE_SELECT_FILTER_FOR_C4S "OpenClonk Scenario\0"         \
                                    "*.ocs;*.ocf;Scenario.txt\0" \
@@ -189,7 +189,7 @@ bool C4Console::SaveScenario(const char * path)
 	SetCursor(C4ConsoleGUI::CURSOR_Wait);
 
 	bool fOkay=true;
-	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
+	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.GetMode() == LandscapeMode::Exact, false);
 	if (!pGameSave->Save(Game.ScenarioFile, false))
 		{ Out("Game::Save failed"); fOkay=false; }
 	delete pGameSave;
@@ -640,5 +640,5 @@ void C4ToolsDlg::UpdateTextures() {}
 void C4ToolsDlg::UpdateToolCtrls() {}
 bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
 bool C4Viewport::TogglePlayerLock() {return 0;}
-#include "C4ConsoleGUICommon.h"
+#include "editor/C4ConsoleGUICommon.h"
 #endif

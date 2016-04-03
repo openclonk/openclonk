@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,8 +15,8 @@
  */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
-#include <StdMesh.h>
+#include "graphics/C4DrawGL.h"
+#include "lib/StdMesh.h"
 #include <algorithm>
 
 namespace
@@ -647,6 +647,7 @@ void StdMesh::UpdateIBO()
 		glDeleteBuffers(1, &ibo);
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	pGL->ObjectLabel(GL_BUFFER, ibo, -1, (Label + "/IBO").c_str());
 
 	size_t total_faces = 0;
 	for (auto &submesh : SubMeshes)
@@ -909,6 +910,7 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 			const StdMeshBone* bone = Mesh->GetSkeleton().GetBoneByName(bone_name);
 			if(!bone) pComp->excCorrupt("No such bone: \"%s\"", bone_name.getData());
 			Custom.BoneIndex = bone->Index;
+			Custom.Transformation = new StdMeshTransformation;
 		}
 		else
 		{

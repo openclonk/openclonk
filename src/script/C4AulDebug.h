@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,7 +18,7 @@
 
 #ifndef NOAULDEBUG
 
-#include "C4NetIO.h"
+#include "network/C4NetIO.h"
 
 // manages a debugging interface
 class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass

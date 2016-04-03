@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,11 +17,11 @@
 
 /* A facet that can hold its own surface and also target coordinates */
 
-#include <C4Include.h>
-#include <C4FacetEx.h>
+#include "C4Include.h"
+#include "graphics/C4FacetEx.h"
 
-#include <C4Rect.h>
-#include <C4Group.h>
+#include "lib/C4Rect.h"
+#include "c4group/C4Group.h"
 
 void C4TargetFacet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom)
 {

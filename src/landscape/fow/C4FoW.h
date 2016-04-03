@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,13 +16,13 @@
 #ifndef C4FOW_H
 #define C4FOW_H
 
-#include "C4Surface.h"
-#include "C4FacetEx.h"
-#include "C4Rect.h"
-#include "C4Object.h"
-#include "C4FoWLight.h"
-#include "C4FoWAmbient.h"
-#include "C4Shader.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4FacetEx.h"
+#include "lib/C4Rect.h"
+#include "object/C4Object.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWAmbient.h"
+#include "graphics/C4Shader.h"
 
 /** Simple transformation class which allows translation and scales in x and y.
  * This is typically used to initialize shader uniforms to transform fragment

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -43,11 +43,12 @@
 
 */
 
-#include <C4Include.h>
-#include <C4PathFinder.h>
+#include "C4Include.h"
+#include "landscape/C4PathFinder.h"
 
-#include <C4FacetEx.h>
-#include <C4GraphicsSystem.h>
+#include "graphics/C4FacetEx.h"
+#include "game/C4GraphicsSystem.h"
+#include "lib/StdColors.h"
 
 const int32_t C4PF_MaxDepth        = 35,
               C4PF_MaxCrawl        = 800,

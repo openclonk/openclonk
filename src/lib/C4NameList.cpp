@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,7 +18,7 @@
 /* A static list of strings and integer values, i.e. for material amounts */
 
 #include "C4Include.h"
-#include <C4NameList.h>
+#include "lib/C4NameList.h"
 
 void C4NameList::Clear()
 {

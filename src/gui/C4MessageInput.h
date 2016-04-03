@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,8 +18,8 @@
 #ifndef INC_C4MessageInput
 #define INC_C4MessageInput
 
-#include "C4Gui.h"
-#include "C4ObjectPtr.h"
+#include "gui/C4Gui.h"
+#include "object/C4ObjectPtr.h"
 
 const int32_t C4MSGB_BackBufferMax  = 20;
 

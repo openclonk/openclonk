@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,11 +16,11 @@
 
 // An inotify wrapper
 
-#include <C4Include.h>
-#include <C4FileMonitor.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "platform/C4FileMonitor.h"
+#include "game/C4Application.h"
 
-#include <StdFile.h>
+#include "platform/StdFile.h"
 
 #ifdef HAVE_SYS_INOTIFY_H
 #include <sys/inotify.h>
@@ -103,7 +103,7 @@ void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)
 }
 
 #elif defined(_WIN32)
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
 		: fStarted(false), pCallback(pCallback), pWatches(NULL)

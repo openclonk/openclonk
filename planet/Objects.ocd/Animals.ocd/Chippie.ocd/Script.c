@@ -274,6 +274,7 @@ local NoBurnDecay = 1;
 local ContactIncinerate = 15;
 local CorrosionResist = 1;
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;
 
 local ActMap = {
 Walk = {

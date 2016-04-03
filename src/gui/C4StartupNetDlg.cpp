@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,16 +15,16 @@
  */
 // Startup screen for non-parameterized engine start: Network game selection dialog
 
-#include <C4Include.h>
-#include <C4StartupNetDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupNetDlg.h"
 
-#include <C4Application.h>
-#include <C4UpdateDlg.h>
-#include <C4StartupScenSelDlg.h>
-#include <C4Game.h>
-#include "C4ChatDlg.h"
-#include <C4GraphicsResource.h>
-#include <C4Network2Reference.h>
+#include "game/C4Application.h"
+#include "gui/C4UpdateDlg.h"
+#include "gui/C4StartupScenSelDlg.h"
+#include "game/C4Game.h"
+#include "gui/C4ChatDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "network/C4Network2Reference.h"
 
 // ----------- C4StartupNetListEntry -----------------------------------------------------------------------
 

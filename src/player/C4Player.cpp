@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,33 +17,34 @@
 
 /* Player data at runtime */
 
-#include <C4Include.h>
-#include <C4Player.h>
+#include "C4Include.h"
+#include "player/C4Player.h"
 
-#include <C4Application.h>
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4ObjectInfo.h>
-#include <C4Command.h>
-#include <C4League.h>
-#include <C4Network2Stats.h>
-#include <C4MessageInput.h>
-#include <C4GamePadCon.h>
-#include <C4Random.h>
-#include <C4Log.h>
-#include <C4FullScreen.h>
-#include <C4GameOverDlg.h>
-#include <C4ObjectMenu.h>
-#include <C4MouseControl.h>
-#include <C4GameMessage.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4Viewport.h>
+#include "game/C4Application.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectInfo.h"
+#include "object/C4Command.h"
+#include "network/C4League.h"
+#include "network/C4Network2Stats.h"
+#include "gui/C4MessageInput.h"
+#include "platform/C4GamePadCon.h"
+#include "lib/C4Random.h"
+#include "lib/C4Log.h"
+#include "game/C4FullScreen.h"
+#include "gui/C4GameOverDlg.h"
+#include "object/C4ObjectMenu.h"
+#include "gui/C4MouseControl.h"
+#include "gui/C4GameMessage.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "game/C4Viewport.h"
 
 C4Player::C4Player() : C4PlayerInfoCore()
 {
@@ -66,7 +67,6 @@ C4Player::C4Player() : C4PlayerInfoCore()
 	LastControlType = PCID_None;
 	LastControlID = 0;
 	pMsgBoardQuery = NULL;
-	pGamepad = NULL;
 	NoEliminationCheck = false;
 	Evaluated = false;
 	ZoomLimitMinWdt = ZoomLimitMinHgt = ZoomLimitMaxWdt = ZoomLimitMaxHgt = ZoomWdt = ZoomHgt = 0;
@@ -86,7 +86,6 @@ C4Player::~C4Player()
 		delete pMsgBoardQuery;
 		pMsgBoardQuery = pNext;
 	}
-	delete pGamepad; pGamepad = NULL;
 	ClearControl();
 }
 
@@ -198,8 +197,8 @@ void C4Player::Execute()
 							{
 								// player has selected a team that has a valid start position assigned
 								// set view to this position!
-								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.MapZoom;
-								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.MapZoom;
+								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.GetMapZoom();
+								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.GetMapZoom();
 							}
 						}
 					}
@@ -210,6 +209,30 @@ void C4Player::Execute()
 	else if (Menu.IsActive() && Menu.GetIdentification() == C4MN_TeamSelection)
 	{
 		Menu.TryClose(false, false);
+	}
+
+	// Do we have a gamepad?
+	if (pGamepad)
+	{
+		// Check whether it's still connected.
+		if (!pGamepad->IsAttached())
+		{
+			// Allow the player to plug the gamepad back in. This allows
+			// battery replacement or plugging the controller back
+			// in after someone tripped over the wire.
+			if (!FindGamepad())
+			{
+				LogF("%s: No gamepad available.", Name.getData());
+				::Game.Pause();
+			}
+		}
+	}
+	// Should we have one? The player may have started the game
+	// without turning their controller on, only noticing this
+	// after the game started.
+	else if (LocalControl && ControlSet && ControlSet->HasGamepad())
+	{
+		FindGamepad();
 	}
 
 	// Tick1
@@ -267,7 +290,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	Name.Copy(pInfo->GetName());
 
 	// view pos init: Start at center pos
-	ViewX = GBackWdt/2; ViewY = GBackHgt/2;
+	ViewX = ::Landscape.GetWidth()/2; ViewY = ::Landscape.GetHeight()/2;
 
 	// Scenario init
 	if (fScenarioInit)
@@ -610,8 +633,8 @@ bool C4Player::ScenarioInit()
 	pty = Game.C4S.PlrStart[PlrStartIndex].Position[1];
 
 	// Zoomed position
-	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackWdt-1 );
-	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackHgt-1 );
+	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetWidth()-1 );
+	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetHeight()-1 );
 
 	// Standard position (PrefPosition)
 	if (ptx<0)
@@ -631,12 +654,12 @@ bool C4Player::ScenarioInit()
 			}
 			Position=iPosition;
 			// Set x position
-			ptx=Clamp(16+Position*(GBackWdt-32)/(iMaxPos-1),0,GBackWdt-16);
+			ptx=Clamp(16+Position*(::Landscape.GetWidth()-32)/(iMaxPos-1),0,::Landscape.GetWidth()-16);
 		}
 
 	// All-random position
-	if (ptx<0) ptx=16+Random(GBackWdt-32);
-	if (pty<0) pty=16+Random(GBackHgt-32);
+	if (ptx<0) ptx=16+Random(::Landscape.GetWidth()-32);
+	if (pty<0) pty=16+Random(::Landscape.GetHeight()-32);
 
 	// Place to solid ground
 	if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
@@ -1337,8 +1360,8 @@ void C4Player::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt)
 	if (ViewLock) return;
 	SetViewMode(C4PVM_Scrolling);
 	float ViewportScrollBorder = Application.isEditor ? 0 : C4ViewportScrollBorder;
-	ViewX = Clamp<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(GBackWdt+ViewportScrollBorder-ViewWdt/2.0f) );
-	ViewY = Clamp<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(GBackHgt+ViewportScrollBorder-ViewHgt/2.0f) );
+	ViewX = Clamp<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(::Landscape.GetWidth()+ViewportScrollBorder-ViewWdt/2.0f) );
+	ViewY = Clamp<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(::Landscape.GetHeight()+ViewportScrollBorder-ViewHgt/2.0f) );
 }
 
 void C4Player::ClearControl()
@@ -1349,8 +1372,12 @@ void C4Player::ClearControl()
 	LocalControl = false;
 	ControlSetName.Clear();
 	ControlSet=NULL;
-	if (pGamepad) { delete pGamepad; pGamepad=NULL; }
 	MouseControl = false;
+	if (pGamepad)
+	{
+		pGamepad->SetPlayer(NO_OWNER);
+		pGamepad.reset();
+	}
 	// no controls issued yet
 	ControlCount = ActionCount = 0;
 	LastControlType = PCID_None;
@@ -1382,7 +1409,11 @@ void C4Player::InitControl()
 		// init gamepad
 		if (ControlSet && ControlSet->HasGamepad())
 		{
-			pGamepad = new C4GamePadOpener(ControlSet->GetGamepadIndex());
+			if (!FindGamepad())
+			{
+				LogF("No gamepad available for %s, please plug one in!", Name.getData());
+				::Game.Pause();
+			}
 		}
 		// Mouse
 		if (ControlSet && ControlSet->HasMouse() && PrefMouse)
@@ -1394,6 +1425,18 @@ void C4Player::InitControl()
 	}
 	// clear old control method and register new
 	Control.RegisterKeyset(Number, ControlSet);
+}
+
+bool C4Player::FindGamepad()
+{
+	auto newPad = Application.pGamePadControl->GetAvailableGamePad();
+	if (!newPad) return false;
+	newPad->SetPlayer(ID);
+	// Release the old gamepad.
+	if (pGamepad) pGamepad->SetPlayer(NO_OWNER);
+	pGamepad = newPad;
+	LogF("%s: Using gamepad #%d.", Name.getData(), pGamepad->GetID());
+	return true;
 }
 
 int igOffX, igOffY;

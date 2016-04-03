@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,12 +21,12 @@
 #ifdef _WIN32
 #	include "platform/C4windowswrapper.h"
 #endif
-#include <StdFile.h>
-#include <CStdFile.h>
-#include <SHA1.h>
+#include "platform/StdFile.h"
+#include "c4group/CStdFile.h"
+#include "lib/SHA1.h"
 
 #include <zlib.h>
-#include <zlib/gzio.h>
+#include "zlib/gzio.h"
 #include <stdio.h>
 
 #include <sys/stat.h>

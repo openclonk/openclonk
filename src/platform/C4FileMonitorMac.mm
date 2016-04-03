@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,11 +15,11 @@
 
 #ifdef __APPLE__
 
-#include <C4Include.h>
-#include <C4FileMonitor.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "platform/C4FileMonitor.h"
+#include "game/C4Application.h"
 
-#include <StdFile.h>
+#include "platform/StdFile.h"
 
 #import <Foundation/Foundation.h>
 

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,8 +20,8 @@
 #ifndef INC_C4Sky
 #define INC_C4Sky
 
-#include "C4Real.h"
-#include "C4Shader.h"
+#include "lib/C4Real.h"
+#include "graphics/C4Shader.h"
 
 #define C4SkyPM_Fixed     0   // sky parallax mode: fixed
 #define C4SkyPM_Wind      1   // sky parallax mode: blown by the wind

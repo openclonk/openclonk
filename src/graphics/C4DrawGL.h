@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,7 +21,7 @@
 #define INC_StdGL
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 #include <GL/glew.h>
@@ -29,8 +29,8 @@
 #ifdef USE_COCOA
 #import "ObjectiveCAssociated.h"
 #endif
-#include <C4Draw.h>
-#include <C4Shader.h>
+#include "graphics/C4Draw.h"
+#include "graphics/C4Shader.h"
 
 class C4Window;
 
@@ -76,6 +76,8 @@ enum C4SS_Uniforms
 
 	C4SSU_Bones, // for meshes
 	C4SSU_CullMode, // for meshes
+
+	C4SSU_FrameCounter, // for custom shaders
 
 	C4SSU_Count
 };

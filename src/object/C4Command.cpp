@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,22 +17,23 @@
 
 /* The command stack controls an object's complex and independent behavior */
 
-#include <C4Include.h>
-#include <C4Command.h>
+#include "C4Include.h"
+#include "object/C4Command.h"
 
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4ObjectCom.h>
-#include <C4ObjectInfo.h>
-#include <C4Random.h>
-#include <C4GameMessage.h>
-#include <C4ObjectMenu.h>
-#include <C4Player.h>
-#include <C4SoundSystem.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "object/C4ObjectInfo.h"
+#include "lib/C4Random.h"
+#include "gui/C4GameMessage.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4Player.h"
+#include "platform/C4SoundSystem.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
 const int32_t FollowRange=6,PushToRange=10,DigOutPositionRange=15;
@@ -143,7 +144,7 @@ bool FreeMoveTo(C4Object *cObj)
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
-	int32_t iY=std::min(rY, GBackHgt);
+	int32_t iY=std::min(rY, ::Landscape.GetHeight());
 	while ((iY>=0) && GBackSolid(rX,iY)) iY--;
 	if (iY>=0) rY=iY;
 	// No-free-move adjustments (i.e. if walking)
@@ -152,8 +153,8 @@ void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShape
 		// Drop down to bottom of free space
 		if (!GBackSemiSolid(rX,rY))
 		{
-			for (iY=rY; (iY<GBackHgt) && !GBackSemiSolid(rX,iY+1); iY++) {}
-			if (iY<GBackHgt) rY=iY;
+			for (iY=rY; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(rX,iY+1); iY++) {}
+			if (iY<::Landscape.GetHeight()) rY=iY;
 		}
 		// Vertical shape offset above solid
 		if (GBackSolid(rX,rY+1) || GBackSolid(rX,rY+5))
@@ -895,12 +896,16 @@ void C4Command::Drop()
 
 void C4Command::Jump()
 {
-	// Already in air and target position given
-	if (cObj->GetProcedure()==DFA_FLIGHT && Tx._getInt())
+	// Already in air?
+	if (cObj->GetProcedure()==DFA_FLIGHT)
 	{
-		if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
-		else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
-		else cObj->Action.ComDir=COMD_Stop;
+		// Check whether target position is given
+		if (Tx._getInt())
+		{
+			if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
+			else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
+			else cObj->Action.ComDir=COMD_Stop;
+		}
 	}
 	else
 	{

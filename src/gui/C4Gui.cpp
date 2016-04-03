@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,18 +16,18 @@
 // generic user interface
 // all generic classes that do not fit into other C4Gui*-files
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
-#include <C4Application.h>
-#include <C4Viewport.h>
-#include <C4Log.h>
-#include <C4GamePadCon.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
+#include "game/C4FullScreen.h"
+#include "gui/C4LoaderScreen.h"
+#include "game/C4Application.h"
+#include "game/C4Viewport.h"
+#include "lib/C4Log.h"
+#include "platform/C4GamePadCon.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
 
 namespace C4GUI
 {
@@ -569,7 +569,7 @@ namespace C4GUI
 		}
 	}
 
-	Screen::Screen() : Window(), Mouse(0, 0), pContext(NULL), fExclusive(true), pGamePadOpener(NULL), fZoom(1.0f)
+	Screen::Screen() : Window(), Mouse(0, 0), pContext(NULL), fExclusive(true), fZoom(1.0f)
 	{
 		// no dialog active
 		pActiveDlg = NULL;
@@ -585,9 +585,6 @@ namespace C4GUI
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));
-		// GamePad
-		if (Application.pGamePadControl && Config.Controls.GamepadGuiControl)
-			pGamePadOpener = new C4GamePadOpener(0);
 	}
 
 	void Screen::Clear()
@@ -595,8 +592,6 @@ namespace C4GUI
 		Container::Clear();
 		// dtor: Close context menu
 		AbortContext(false);
-		// GamePad
-		if (pGamePadOpener) delete pGamePadOpener;
 		// fields reset
 		fExclusive = true;
 		fZoom = 1.0f;
@@ -1055,15 +1050,7 @@ namespace C4GUI
 
 	void Screen::UpdateGamepadGUIControlEnabled()
 	{
-		// update pGamePadOpener to config value
-		if (pGamePadOpener && (!Config.Controls.GamepadGuiControl || !Application.pGamePadControl))
-		{
-			delete pGamePadOpener; pGamePadOpener = NULL;
-		}
-		else if (!pGamePadOpener && (Config.Controls.GamepadGuiControl && Application.pGamePadControl))
-		{
-			pGamePadOpener = new C4GamePadOpener(0);
-		}
+		// Gamepad is always kept open now.
 	}
 
 	Screen TheScreen;

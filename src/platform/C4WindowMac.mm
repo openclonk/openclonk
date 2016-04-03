@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,13 +13,13 @@
  * for the above references.
  */
  
-#include <C4Include.h>
-#include <C4DrawGL.h>
-#include <C4Window.h>
-#include <C4Version.h>
-#include <C4Application.h>
-#include <C4Rect.h>
-#include <C4FullScreen.h>
+#include "C4Include.h"
+#include "graphics/C4DrawGL.h"
+#include "platform/C4Window.h"
+#include "C4Version.h"
+#include "game/C4Application.h"
+#include "lib/C4Rect.h"
+#include "game/C4FullScreen.h"
 
 #import <AppKit/AppKit.h>
 #import <C4WindowController.h>
@@ -134,6 +134,11 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
 	C4WindowController* controller = ctrler;
 	[controller setContentSize:NSMakeSize(cx, cy)];
+}
+
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
 }
 
 void C4Window::RequestUpdate()

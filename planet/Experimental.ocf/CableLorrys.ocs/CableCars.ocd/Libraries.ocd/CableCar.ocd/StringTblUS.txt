@@ -1,0 +1,9 @@
+CableCarOptions=Cable Car Options
+
+TooltipEngage=Put the car on the rail
+DescEngage=Put %s on the rail at %s.
+
+TooltipGo=Select a destination for the car.
+DescGo=Opens the destination selection menu for this cable car. When you select a destination, the car will start going there.
+
+NoStation=Push the cable car in front of a station to set it up.

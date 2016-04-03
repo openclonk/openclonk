@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -32,11 +32,11 @@
 #ifndef INC_C4PlayerInfo
 #define INC_C4PlayerInfo
 
-#include "C4PacketBase.h"
-#include "C4Network2Res.h"
-#include "C4Constants.h"
-#include "C4InputValidation.h"
-#include "C4Id.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Network2Res.h"
+#include "config/C4Constants.h"
+#include "lib/C4InputValidation.h"
+#include "object/C4Id.h"
 
 // information about one player at a client
 class C4PlayerInfo

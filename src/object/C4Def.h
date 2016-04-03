@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,19 +20,19 @@
 #ifndef INC_C4Def
 #define INC_C4Def
 
-#include <C4Shape.h>
-#include <C4InfoCore.h>
-#include <C4IDList.h>
-#include <C4ValueMap.h>
-#include <C4Facet.h>
-#include <C4Surface.h>
-#include <C4ComponentHost.h>
-#include <C4PropList.h>
+#include "object/C4Shape.h"
+#include "object/C4InfoCore.h"
+#include "object/C4IDList.h"
+#include "script/C4ValueMap.h"
+#include "graphics/C4Facet.h"
+#include "graphics/C4Surface.h"
+#include "c4group/C4ComponentHost.h"
+#include "script/C4PropList.h"
 
-#include <C4ScriptHost.h>
-#include <C4DefGraphics.h>
-#include "C4LangStringTable.h"
-#include "C4InputValidation.h"
+#include "script/C4ScriptHost.h"
+#include "object/C4DefGraphics.h"
+#include "c4group/C4LangStringTable.h"
+#include "lib/C4InputValidation.h"
 
 #include <functional>
 #include <set>
@@ -127,7 +127,6 @@ public:
 	int32_t LiftTop;
 	int32_t GrabPutGet;
 	int32_t UprightAttach;
-	int32_t ContactFunctionCalls;
 	int32_t Line;
 	int32_t LineIntersect;
 	int32_t IncompleteActivity;
@@ -160,7 +159,7 @@ protected:
 	bool Compile(const char *szSource, const char *szName);
 	bool Decompile(StdStrBuf *pOut, const char *szName);
 private:
-	void LoadMeshMaterials(C4Group &hGroup);
+	void LoadMeshMaterials(C4Group &hGroup, C4DefGraphicsPtrBackup *gfx_backup);
 	bool LoadParticleDef(C4Group &hGroup);
 	bool LoadSolidMask(C4Group &hGroup);
 	bool LoadGraphics(C4Group &hGroup, StdMeshSkeletonLoader &loader);
@@ -170,6 +169,7 @@ private:
 	void LoadRankFaces(C4Group &hGroup);
 	void LoadSounds(C4Group &hGroup, C4SoundSystem* pSoundSystem);
 
+	std::set<StdCopyStrBuf> mesh_materials;
 
 // Here begins the C4Def
 	friend class C4DefList;
@@ -204,9 +204,10 @@ public:
 	void Clear();
 	void Default();
 	bool Load(C4Group &hGroup,
-		      StdMeshSkeletonLoader &loader,
-	          DWORD dwLoadWhat, const char *szLanguage,
-	          class C4SoundSystem *pSoundSystem = NULL);
+		StdMeshSkeletonLoader &loader,
+		DWORD dwLoadWhat, const char *szLanguage,
+		class C4SoundSystem *pSoundSystem = nullptr,
+		C4DefGraphicsPtrBackup *gfx_backup = nullptr);
 	void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0, C4DrawTransform* trans=NULL, const char * graphicsName=NULL);
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }

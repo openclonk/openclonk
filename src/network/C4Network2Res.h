@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef INC_C4Network2Res
 #define INC_C4Network2Res
 
-#include <StdAdaptors.h>
-#include <StdSync.h>
+#include "lib/StdAdaptors.h"
+#include "platform/StdSync.h"
 
-#include <SHA1.h>
+#include "lib/SHA1.h"
 
 const uint32_t C4NetResChunkSize = 10U * 1024U;
 
@@ -57,8 +57,8 @@ const StdEnumEntry<C4Network2ResType> C4Network2ResType_EnumMap[] =
 };
 
 // damn circular dependencies
-#include "C4PacketBase.h"
-#include "C4Network2IO.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Network2IO.h"
 class C4Network2ResList;
 class C4Network2ResChunk;
 

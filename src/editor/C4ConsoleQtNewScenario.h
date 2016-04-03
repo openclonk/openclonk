@@ -20,11 +20,11 @@
 #define INC_C4ConsoleQtNewScenario
 #ifdef WITH_QT_EDITOR
 
-#include <C4Include.h> // needed for automoc
-#include <C4ConsoleGUI.h> // for glew.h
-#include <C4ConsoleQt.h>
-#include <ui_C4ConsoleQtNewScenario.h>
-#include <C4Scenario.h>
+#include "C4Include.h" // needed for automoc
+#include "editor/C4ConsoleGUI.h" // for glew.h
+#include "editor/C4ConsoleQt.h"
+#include "ui_C4ConsoleQtNewScenario.h"
+#include "landscape/C4Scenario.h"
 
 // Definition file view for selection in New Scenario dialogue
 class C4ConsoleQtDefinitionFileListModel : public QAbstractItemModel

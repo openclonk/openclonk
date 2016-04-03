@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,8 +19,8 @@
 #ifndef INC_C4DownloadDlg
 #define INC_C4DownloadDlg
 
-#include "C4Gui.h"
-#include "C4Network2Reference.h" // includes HTTP client
+#include "gui/C4Gui.h"
+#include "network/C4Network2Reference.h" // includes HTTP client
 
 // dialog to download a file
 class C4DownloadDlg : public C4GUI::Dialog

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,16 +14,16 @@
  * for the above references.
  */
 #include "C4Include.h"
-#include <StdBuf.h>
-#include <StdCompiler.h>
-#include <StdAdaptors.h>
-#include <StdFile.h>
+#include "lib/StdBuf.h"
+#include "lib/StdCompiler.h"
+#include "lib/StdAdaptors.h"
+#include "platform/StdFile.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #ifdef _WIN32
 #include <io.h>
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #define vsnprintf _vsnprintf
 #else
 #define O_BINARY 0

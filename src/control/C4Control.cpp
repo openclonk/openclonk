@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,38 +17,40 @@
 
 /* Control packets contain all player input in the message queue */
 
-#include <C4Include.h>
-#include <C4Control.h>
+#include "C4Include.h"
+#include "control/C4Control.h"
 
-#include <C4AulExec.h>
-#include <C4Object.h>
-#include <C4GameSave.h>
-#include <C4GameLobby.h>
-#include <C4Network2Dialogs.h>
-#include <C4Random.h>
-#include <C4Console.h>
-#include <C4Log.h>
-#include <C4GraphicsSystem.h>
-#include <C4Player.h>
-#include <C4RankSystem.h>
-#include <C4RoundResults.h>
-#include <C4PXS.h>
-#include <C4MassMover.h>
-#include <C4GameMessage.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
-#include <C4ScriptGuiWindow.h>
+#include "script/C4AulExec.h"
+#include "object/C4Object.h"
+#include "control/C4GameSave.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2Dialogs.h"
+#include "lib/C4Random.h"
+#include "editor/C4Console.h"
+#include "lib/C4Log.h"
+#include "game/C4GraphicsSystem.h"
+#include "player/C4Player.h"
+#include "player/C4RankSystem.h"
+#include "control/C4RoundResults.h"
+#include "landscape/C4PXS.h"
+#include "landscape/C4MassMover.h"
+#include "gui/C4GameMessage.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "game/C4GameScript.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
+#include "gui/C4ScriptGuiWindow.h"
 #include "gui/C4MessageInput.h"
+#include "object/C4Def.h"
 #include "object/C4DefList.h"
 
 #ifndef NOAULDEBUG
-#include <C4AulDebug.h>
+#include "script/C4AulDebug.h"
 #endif
 
-#include <C4AulExec.h>
+#include "script/C4AulExec.h"
 
 // *** C4ControlPacket
 C4ControlPacket::C4ControlPacket()
@@ -423,7 +425,7 @@ void C4ControlPlayerControl::ControlItem::CompileFunc(StdCompiler *pComp)
 void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
-	pComp->Value(mkNamingAdapt(fRelease, "Release", false));
+	pComp->Value(mkNamingAdapt(mkIntAdapt(state), "State", 0));
 	pComp->Value(mkNamingAdapt(ExtraData, "ExtraData", C4KeyEventData()));
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(ControlItems), "Controls", ControlItemVec()));
 	C4ControlPacket::CompileFunc(pComp);
@@ -1390,7 +1392,7 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlEMDrawTool
 
-C4ControlEMDrawTool::C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
+C4ControlEMDrawTool::C4ControlEMDrawTool(C4ControlEMDrawAction eAction, LandscapeMode iMode,
     int32_t iX, int32_t iY, int32_t iX2, int32_t iY2, int32_t iGrade,
     const char *szMaterial, const char *szTexture, const char *szBackMaterial, const char *szBackTexture)
 		: eAction(eAction), iMode(iMode), iX(iX), iY(iY), iX2(iX2), iY2(iY2), iGrade(iGrade),
@@ -1409,8 +1411,8 @@ void C4ControlEMDrawTool::Execute() const
 		return;
 	}
 	// check current mode
-	assert(::Landscape.Mode == iMode);
-	if (::Landscape.Mode != iMode) return;
+	assert(::Landscape.GetMode() == iMode);
+	if (::Landscape.GetMode() != iMode) return;
 	// assert validity of parameters
 	if (!Material.getSize()) return;
 	const char *szMaterial = Material.getData(),
@@ -1453,7 +1455,7 @@ void C4ControlEMDrawTool::Execute() const
 void C4ControlEMDrawTool::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eAction), "Action"));
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iMode), "Mode", 0));
+	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(iMode), "Mode", LandscapeMode::Undefined));
 	pComp->Value(mkNamingAdapt(iX, "X", 0));
 	pComp->Value(mkNamingAdapt(iY, "Y", 0));
 	pComp->Value(mkNamingAdapt(iX2, "X2", 0));

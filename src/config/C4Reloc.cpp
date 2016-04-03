@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,11 +13,11 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Reloc.h>
+#include "C4Include.h"
+#include "config/C4Reloc.h"
 
-#include <C4Config.h>
-#include <C4Application.h>
+#include "config/C4Config.h"
+#include "game/C4Application.h"
 
 C4Reloc Reloc; // singleton
 

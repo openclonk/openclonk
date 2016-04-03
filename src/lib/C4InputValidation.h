@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,9 +18,9 @@
 #ifndef INC_C4InputValidation
 #define INC_C4InputValidation
 
-#include "StdBuf.h"
-#include "StdFile.h"
-#include "StdAdaptors.h"
+#include "lib/StdBuf.h"
+#include "platform/StdFile.h"
+#include "lib/StdAdaptors.h"
 
 const unsigned int C4MaxName = 30; // player names, etc.
 const unsigned int C4MaxLongName = 120; // scenario titles, etc. - may include markup

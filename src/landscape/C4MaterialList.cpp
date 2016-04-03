@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,8 +17,8 @@
 
 /* A primitive list to store one amount value per mapped material */
 
-#include <C4Include.h>
-#include <C4MaterialList.h>
+#include "C4Include.h"
+#include "landscape/C4MaterialList.h"
 
 C4MaterialList::C4MaterialList()
 {

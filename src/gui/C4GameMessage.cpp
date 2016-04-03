@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,13 +17,14 @@
 
 /* Text messages drawn inside the viewport */
 
-#include <C4Include.h>
-#include <C4GameMessage.h>
+#include "C4Include.h"
+#include "gui/C4GameMessage.h"
 
-#include <C4Object.h>
-#include <C4GraphicsResource.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "graphics/C4GraphicsResource.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 const int32_t ObjectMsgDelayFactor = 2, GlobalMsgDelayFactor = 3; // frames per char message display time
 

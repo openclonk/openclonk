@@ -1,9 +1,13 @@
 /*-- 
 	Resource Extraction
-	Author: Maikel
+	Author: Maikel, Marky
 	
 	Player must extract the resources of the specified type, the
-	tolerance of this goal is 5% currently.
+	tolerance of this goal is 5% currently, if no percentage of
+	exploitation is specified.
+	
+	Additionally, the scenario designer can specify a percentage
+	of material to be exploited, between 5% and 95%.
 		
 	TODO: Expand to liquids and digable materials.
 --*/
@@ -12,7 +16,7 @@
 #include Library_Goal
 
 local resource_list; // List of materials to be mined.
-local tolerance_list; // List of initial counts of materials.
+local tolerance_list; // List of ignorable amounts of available objects.
 
 protected func Initialize()
 {
@@ -23,23 +27,32 @@ protected func Initialize()
 
 /*-- Resources --*/
 
-public func SetResource(string resource)
+public func SetResource(string resource, int percent)
 {
-	var pos = GetLength(resource_list);
-	resource_list[pos] = resource;
-	var mat_cnt = GetMaterialCount(Material(resource));
-	var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(resource));
-	tolerance_list[pos] = Max(1, mat_cnt / blast_ratio / 20);
+	var list_end = GetLength(resource_list);
+	resource_list[list_end] = resource;
+	
+	// Assume that all objects, with 5% tolerance, have to be exploited if no percentage is specified 
+	percent = BoundBy(percent ?? 95, 5, 95);
+
+	var material = Material(resource);
+	var exploitable_units = GetMaterialCount(material);
+	var exploitable_objects = ExploitableObjectCount(exploitable_units, material);
+	
+	var target_objects = percent * exploitable_objects / 100;
+
+	// Calculate 100 / 20 = 5% of the exploitable objects as tolerance
+	tolerance_list[list_end] = Max(1, exploitable_objects - target_objects);
 	return;
 }
 
 /*-- Scenario saving --*/
 
-public func SaveResource(string resource, int init_cnt)
+public func SaveResource(string resource, int tolerance_count)
 {
-	var pos = GetLength(resource_list);
-	resource_list[pos] = resource;
-	tolerance_list[pos] = init_cnt;
+	var list_end = GetLength(resource_list);
+	resource_list[list_end] = resource;
+	tolerance_list[list_end] = tolerance_count;
 	return;
 }
 
@@ -59,16 +72,15 @@ public func IsFulfilled()
 {
 	for (var i = 0; i < GetLength(resource_list); i++)
 	{
-		var mat = resource_list[i];
-		var tol = tolerance_list[i];
-		var mat_cnt = GetMaterialCount(Material(mat));
-		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+		var material = Material(resource_list[i]);
+		var exploitable_units = GetMaterialCount(material);
+		var tolerance_units = ObjectCount2MaterialCount(tolerance_list[i], material);
+
 		// Still solid material to be mined.
-		if (mat_cnt == -1 || mat_cnt > (2 * tol + 1) * blast_ratio / 2)
+		if (exploitable_units == -1 || exploitable_units > tolerance_units)
 			return false; 
-		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 		// Still objects of material to be collected.
-		if (ObjectCount(Find_ID(res_id)) > 0)
+		if (AvailableObjectCount(material) > 0)
 			return false; 
 	}
 	// Goal fulfilled.
@@ -88,13 +100,15 @@ public func GetDescription(int plr)
 		message = "$MsgGoalExtraction$";
 		for (var i = 0; i < GetLength(resource_list); i++)
 		{
-			var mat = resource_list[i];
-			var tol = tolerance_list[i];
-			var mat_cnt = GetMaterialCount(Material(mat));
-			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
-			var res_cnt = ObjectCount(Find_ID(res_id));
-			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), res_cnt);
+			// Current data
+			var material = Material(resource_list[i]);
+			var exploitable_units = GetMaterialCount(material);
+			var tolerance_units = ObjectCount2MaterialCount(tolerance_list[i], material);
+			// Put the message together
+			var icon = GetBlastID(material);
+			var available_object_count = AvailableObjectCount(material);
+			var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units, material));
+			var add_msg = Format("$MsgGoalResource$", icon, exploitable_object_count, available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -123,13 +137,15 @@ public func Activate(int plr)
 		message = "@$MsgGoalExtraction$";
 		for (var i = 0; i < GetLength(resource_list); i++)
 		{
-			var mat = resource_list[i];
-			var tol = tolerance_list[i];
-			var mat_cnt = GetMaterialCount(Material(mat)) * 10 / 11; // subtract some that gets lost on blasting
-			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
-			var res_cnt = ObjectCount(Find_ID(res_id));
-			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), res_cnt);
+			// Current data
+			var material = Material(resource_list[i]);
+			var exploitable_units = GetMaterialCount(material) * 10 / 11; // subtract some that gets lost on blasting
+			var tolerance_units = ObjectCount2MaterialCount(tolerance_list[i], material);
+			// Put the message together
+			var icon = GetBlastID(material);
+			var available_object_count = AvailableObjectCount(material);
+			var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units));
+			var add_msg = Format("$MsgGoalResource$", icon, exploitable_object_count, available_object_count);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -145,15 +161,47 @@ public func GetShortDescription(int plr)
 	var msg = "";
 	for (var i = 0; i < GetLength(resource_list); i++)
 	{
-		var mat = resource_list[i];
-		var tol = tolerance_list[i];
-		var mat_cnt = GetMaterialCount(Material(mat));
-		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
-		var res_cnt = ObjectCount(Find_ID(res_id));
-		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio) + res_cnt);
+		// Current data
+		var material = Material(resource_list[i]);
+		var exploitable_units = GetMaterialCount(material);
+		var tolerance_units = ObjectCount2MaterialCount(tolerance_list[i], material);
+		// Put the message together
+		var icon = GetBlastID(material);
+		var available_object_count = AvailableObjectCount(material);
+		var exploitable_object_count = Max(0, ExploitableObjectCount(exploitable_units - tolerance_units, material));
+		msg = Format("%s{{%i}}: %d ", msg, icon, exploitable_object_count + available_object_count);
 	}	
 	return msg;
+}
+
+func GetBlastRatio(int material)
+{
+	return GetMaterialVal("Blast2ObjectRatio", "Material", material);
+}
+
+func GetBlastID(int material)
+{
+	return GetMaterialVal("Blast2Object", "Material", material);
+}
+
+/** Get number of objects that are lying around freely. */
+func AvailableObjectCount(int material)
+{
+	return ObjectCount(Find_ID(GetBlastID(material)));
+}
+
+/** Gets the number of objects that can be exploited from a material, based on material count. */
+func ExploitableObjectCount(int material_count, int material)
+{
+	return material_count / GetBlastRatio(material);
+}
+
+/** Converts a number of objects to the amount of material
+    that would have to be exploited in order to receive that
+    amount of objects. */
+func ObjectCount2MaterialCount(int count, int material)
+{
+	return (2 * count + 1) * GetBlastRatio(material) / 2;
 }
 
 /*-- Proplist --*/

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,14 +14,14 @@
  * for the above references.
  */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
 #ifdef _MSC_VER
 # define _USE_MATH_DEFINES
 # include <math.h>
 #endif
 
-#include <StdMeshMath.h>
+#include "lib/StdMeshMath.h"
 
 StdMeshVector StdMeshVector::Zero()
 {

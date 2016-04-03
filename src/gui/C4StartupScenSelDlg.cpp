@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,23 +15,23 @@
  */
 // Startup screen for non-parameterized engine start: Scenario selection dialog
 
-#include <C4Include.h>
-#include <C4StartupScenSelDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupScenSelDlg.h"
 
-#include <C4Application.h>
-#include <C4GameOptions.h>
-#include <C4Network2Dialogs.h>
-#include <C4StartupMainDlg.h>
-#include <C4StartupNetDlg.h>
-#include <C4ComponentHost.h>
-#include <C4Components.h>
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4GameDialogs.h>
-#include <C4Language.h>
-#include <C4FileSelDlg.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Application.h"
+#include "gui/C4GameOptions.h"
+#include "network/C4Network2Dialogs.h"
+#include "gui/C4StartupMainDlg.h"
+#include "gui/C4StartupNetDlg.h"
+#include "c4group/C4ComponentHost.h"
+#include "c4group/C4Components.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
+#include "gui/C4GameDialogs.h"
+#include "c4group/C4Language.h"
+#include "gui/C4FileSelDlg.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 #include <set>
 
 // singleton

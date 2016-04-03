@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,15 @@
 /* OpenGL implementation of NewGfx */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
-#include <C4Surface.h>
-#include <C4Window.h>
-#include <C4FoWRegion.h>
-#include "C4Rect.h"
-#include "C4Config.h"
-#include <C4Application.h>
+#include "graphics/C4Surface.h"
+#include "platform/C4Window.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "lib/C4Rect.h"
+#include "config/C4Config.h"
+#include "game/C4Application.h"
+#include "lib/StdColors.h"
 
 #ifndef USE_CONSOLE
 
@@ -226,6 +227,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_MaterialShininess] = "materialShininess"; // unused
 	uniformNames[C4SSU_Bones] = "bones"; // unused
 	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
+	uniformNames[C4SSU_FrameCounter] = "frameCounter";
 	uniformNames[C4SSU_Count] = NULL;
 
 	const char* attributeNames[C4SSA_Count + 1];

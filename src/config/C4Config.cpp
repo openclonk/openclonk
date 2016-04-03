@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,19 +16,19 @@
 
 /* Game configuration as stored in registry */
 
-#include <C4Include.h>
-#include <C4Config.h>
+#include "C4Include.h"
+#include "config/C4Config.h"
 
-#include <C4Version.h>
-#include <C4Log.h>
-#include <C4Components.h>
-#include <C4Network2.h>
-#include <C4Language.h>
+#include "C4Version.h"
+#include "lib/C4Log.h"
+#include "c4group/C4Components.h"
+#include "network/C4Network2.h"
+#include "c4group/C4Language.h"
 
 #include <utility>
-#include <StdFile.h>
-#include <C4Window.h>
-#include <StdRegistry.h>
+#include "platform/StdFile.h"
+#include "platform/C4Window.h"
+#include "platform/StdRegistry.h"
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -40,7 +40,7 @@
 #include <locale.h>
 #endif
 
-#include <C4Application.h>
+#include "game/C4Application.h"
 
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 {
@@ -115,7 +115,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
-	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
 	pComp->Value(mkNamingAdapt(MenuTransparency,      "MenuTransparency",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(UpperBoard,            "UpperBoard",           1             ,false, true));

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,8 @@
 #ifndef INC_StdMeshUpdate
 #define INC_StdMeshUpdate
 
-#include <StdMesh.h>
-#include <StdMeshMaterial.h>
+#include "lib/StdMesh.h"
+#include "lib/StdMeshMaterial.h"
 
 // This is a helper class to fix pointers after an update of StdMeshMaterials.
 // To update one or more materials, remove them from the MaterialManager with

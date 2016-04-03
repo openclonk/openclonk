@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,14 @@
 
 /* Core component of a scenario file */
 
-#include <C4Include.h>
-#include <C4Scenario.h>
+#include "C4Include.h"
+#include "landscape/C4Scenario.h"
 
-#include <C4InputValidation.h>
-#include <C4Random.h>
-#include <C4Group.h>
-#include <C4Components.h>
-#include <StdColors.h>
+#include "lib/C4InputValidation.h"
+#include "lib/C4Random.h"
+#include "c4group/C4Group.h"
+#include "c4group/C4Components.h"
+#include "lib/StdColors.h"
 
 //==================================== C4SVal ==============================================
 

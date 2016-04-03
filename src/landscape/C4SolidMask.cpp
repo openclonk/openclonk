@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,15 +16,18 @@
 
 /* Solid areas of objects, put into the landscape */
 
-#include <C4Include.h>
-#include <C4SolidMask.h>
+#include "C4Include.h"
+#include "landscape/C4SolidMask.h"
 
-#include <C4Object.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4DrawGL.h>
-#include <StdPNG.h>
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
+#include "graphics/C4DrawGL.h"
+#include "graphics/StdPNG.h"
+#include "graphics/CSurface8.h"
+#include "landscape/C4Material.h"
 
 
 void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment)
@@ -75,8 +78,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.y = oy;
 			if (MaskPutRect.y < 0) { MaskPutRect.ty = -MaskPutRect.y; MaskPutRect.y = 0; }
 			else MaskPutRect.ty = 0;
-			MaskPutRect.Wdt = std::min<int32_t>(ox + pForObject->SolidMask.Wdt, GBackWdt) - MaskPutRect.x;
-			MaskPutRect.Hgt = std::min<int32_t>(oy + pForObject->SolidMask.Hgt, GBackHgt) - MaskPutRect.y;
+			MaskPutRect.Wdt = std::min<int32_t>(ox + pForObject->SolidMask.Wdt, ::Landscape.GetWidth()) - MaskPutRect.x;
+			MaskPutRect.Hgt = std::min<int32_t>(oy + pForObject->SolidMask.Hgt, ::Landscape.GetHeight()) - MaskPutRect.y;
 		}
 		// fill rect with mask
 		for (ycnt=0; ycnt<pClipRect->Hgt; ++ycnt)
@@ -93,7 +96,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 					if (!MaskPut)
 					{
 						// get background pixel
-						byPixel=GBackPix(iTx,iTy);
+						byPixel=::Landscape.GetPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
 						if (!IsSomeVehicle(byPixel) || RegularPut)
@@ -128,8 +131,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.y = ystart;
 			if (MaskPutRect.y < 0) { MaskPutRect.ty = -MaskPutRect.y; MaskPutRect.Hgt = MaskPutRect.y; MaskPutRect.y = 0; }
 			else { MaskPutRect.ty = 0; MaskPutRect.Hgt = 0; }
-			MaskPutRect.Wdt = std::min<int32_t>(xstart + MatBuffPitch, GBackWdt) - MaskPutRect.x;
-			MaskPutRect.Hgt = std::min<int32_t>(ystart + MatBuffPitch, GBackHgt) - MaskPutRect.y;
+			MaskPutRect.Wdt = std::min<int32_t>(xstart + MatBuffPitch, ::Landscape.GetWidth()) - MaskPutRect.x;
+			MaskPutRect.Hgt = std::min<int32_t>(ystart + MatBuffPitch, ::Landscape.GetHeight()) - MaskPutRect.y;
 		}
 		// go through clipping rect
 		const C4Real y0 = itofix(pClipRect->ty - MatBuffPitch/2);
@@ -159,7 +162,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 					if (!MaskPut)
 					{
 						// get background pixel
-						byPixel=_GBackPix(iTx,iTy);
+						byPixel=::Landscape._GetPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
 						if (!IsSomeVehicle(byPixel) || RegularPut)
@@ -259,7 +262,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 				// The pPix-check ensures that only pixels that hads been overwritten by this SolidMask are restored
 				// Non-SolidMask-pixels should not happen here, because all relevant landscape change routines should
 				// temp remove SolidMasks before
-				assert(IsSomeVehicle(_GBackPix(iTx,iTy)));
+				assert(IsSomeVehicle(::Landscape._GetPix(iTx,iTy)));
 				if (IsSomeVehicle(::Landscape._GetPix(iTx, iTy)))
 					::Landscape._SetPix2(iTx, iTy, *pPix, ::Landscape.Transparent);
 				// Instability
@@ -353,7 +356,7 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 			if (*pPix != MCVehic) //
 			{
 				// restore
-				assert(IsSomeVehicle(GBackPix(x,y)));
+				assert(IsSomeVehicle(::Landscape.GetPix(x,y)));
 				::Landscape._SetPix2Tmp(x, y, *pPix, ::Landscape.Transparent);
 			}
 		}
@@ -374,7 +377,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 			if (*pPix != MCVehic)
 			{
 				// put
-				assert(GBackPix(x,y)==*pPix);
+				assert(::Landscape.GetPix(x,y)==*pPix);
 				::Landscape._SetPix2Tmp(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
 		}
@@ -395,7 +398,7 @@ void C4SolidMask::Repair(C4Rect where)
 			if (*pPix != MCVehic)
 			{
 				// record changed landscape in MatBuff
-				*pPix = GBackPix(x,y);
+				*pPix = ::Landscape.GetPix(x,y);
 				// put
 				::Landscape.SetPix2(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
@@ -439,7 +442,7 @@ C4SolidMask::~C4SolidMask()
 
 void C4SolidMask::RemoveSolidMasks()
 {
-	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{
@@ -449,7 +452,7 @@ void C4SolidMask::RemoveSolidMasks()
 
 void C4SolidMask::PutSolidMasks()
 {
-	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
@@ -467,7 +470,7 @@ C4SolidMask * C4SolidMask::Last = 0;
 bool C4SolidMask::CheckConsistency()
 {
 	assert(IsSomeVehicle(MaskMaterial));
-	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{

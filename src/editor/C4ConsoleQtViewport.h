@@ -20,9 +20,9 @@
 #define INC_C4ConsoleQtViewport
 #ifdef WITH_QT_EDITOR
 
-#include <C4Include.h> // needed for automoc
-#include <C4ConsoleGUI.h> // for glew.h
-#include <C4ConsoleQt.h>
+#include "C4Include.h" // needed for automoc
+#include "editor/C4ConsoleGUI.h" // for glew.h
+#include "editor/C4ConsoleQt.h"
 
 class C4ConsoleQtViewportView : public QOpenGLWidget
 {

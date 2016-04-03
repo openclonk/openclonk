@@ -37,6 +37,18 @@ public func SetSpawnObject(id def)
 	return true;
 }
 
+// Re-enable spawning for given player
+public func Reset(plr)
+{
+	if (!GetType(plr)) plr = GetPlayers(); else plr = [plr];
+		for (p in plr)
+		{
+			spawn_list[p] = nil;
+			UpdateVisibility(p);
+		}
+	return true;
+}
+
 // If called, items can only be collected by members of this team
 public func SetTeam(int new_team)
 {

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,20 +15,20 @@
  */
 // Startup screen for non-parameterized engine start: Options dialog
 
-#include <C4Include.h>
-#include <C4StartupOptionsDlg.h>
+#include "C4Include.h"
+#include "gui/C4StartupOptionsDlg.h"
 
-#include <C4Application.h>
-#include <C4StartupMainDlg.h>
-#include <C4Language.h>
-#include <C4GamePadCon.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4Network2.h>
-#include <C4MouseControl.h>
+#include "game/C4Application.h"
+#include "gui/C4StartupMainDlg.h"
+#include "c4group/C4Language.h"
+#include "platform/C4GamePadCon.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "network/C4Network2.h"
+#include "gui/C4MouseControl.h"
 
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::SmallButton
@@ -212,7 +212,7 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 // --- C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel
 
 C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds)
-	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, false), assignment(assignment), assignment_set(assignment_set)
+	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, true), assignment(assignment), assignment_set(assignment_set)
 {
 	UpdateAssignmentString();
 }
@@ -391,7 +391,7 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(class C4PlayerControl
 // --- C4StartupOptionsDlg::ControlConfigArea
 
 C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg)
-		: C4GUI::Window(), fGamepad(fGamepad), pGamepadOpener(NULL), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
+		: C4GUI::Window(), fGamepad(fGamepad), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
 {
 	CStdFont *pUseFontSmall = &(C4Startup::Get()->Graphics.BookSmallFont);
 	SetBounds(rcArea);
@@ -436,7 +436,6 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 C4StartupOptionsDlg::ControlConfigArea::~ControlConfigArea()
 {
 	delete [] ppKeyControlSetBtns;
-	if (pGamepadOpener) delete pGamepadOpener;
 }
 
 void C4StartupOptionsDlg::ControlConfigArea::OnCtrlSetBtn(C4GUI::Control *btn)
@@ -854,11 +853,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// fire particles
 	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FIREPARTICLES"), NULL, &Config.Graphics.FireParticles);
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_FIREPARTICLES_DESC"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupOptions->AddElement(pCheck);
-	// high resolution landscape
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_HIGHRESLANDSCAPE"), NULL, &Config.Graphics.HighResLandscape);
-	pCheck->SetToolTip(LoadResStr("IDS_MSG_HIGHRESLANDSCAPE_DESC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupOptions->AddElement(pCheck);
 	// automatic gfx frame skip
@@ -1339,6 +1333,10 @@ void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
 	pFiller->AddEntry("16", 16);
 	pFiller->AddEntry("18", 18);
 	pFiller->AddEntry("20", 20);
+	pFiller->AddEntry("22", 22);
+	pFiller->AddEntry("24", 24);
+	pFiller->AddEntry("26", 26);
+	pFiller->AddEntry("28", 28);
 }
 
 bool C4StartupOptionsDlg::OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)

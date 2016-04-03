@@ -28,11 +28,36 @@
           <desc>Interval in frames after which a new random number will be drawn.</desc>
 		  <optional />
         </param>
+		<param>
+          <type>int</type>
+          <name>seed</name>
+          <desc>Particle-local seed that is used for the random rool. Can be used to draw the same random number two times (see example).</desc>
+		  <optional />
+        </param>
       </params>
     </syntax>
     <desc>The value will be a random number in the interval from start_value to (not including) end_value. The values in between are not whole integers, but are also in fraction of integers. This means that PV_Random(0, 1) can not only return one value (the 0) but a lot of different values in the interval between 0 and 1.</desc>
     <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
-    <related>
+    <examples>
+      <example>
+        <code><funclink>CreateParticle</funclink>("MagicRing", 0, 0, PV_Random(-100, 100), -20, 100, {Prototype = Particles_Glimmer(), Size = PV_Random(0, 3, 10)}, 100);</code>
+        <text>Creates 100 particles with a random speed in X direction and a random size (which changes every ten frames).</text>
+      </example>
+	  <example>
+        <code>
+var min_speed = 50;
+var max_speed = 100;
+var min_angle = 0;
+var max_angle = 360;
+<funclink>CreateParticle</funclink>("SphereSpark", 0, 0, 
+	<funclink>PV_Sin</funclink>(<funclink>PV_Random</funclink>(min_angle, max_angle, 0, 1), <funclink>PV_Random</funclink>(min_speed, max_speed, 0, 2)),
+	<funclink>PV_Cos</funclink>(<funclink>PV_Random</funclink>(min_angle, max_angle, 0, 1), <funclink>PV_Random</funclink>(min_speed, max_speed, 0, 2)),
+	PV_Random(10, 200),
+	Particles_Glimmer(), 400);</code>
+        <text>Uses the particle-local seed to draw the same angle and radius for the X and Y speed of the particle. This leads to a radial distribution (instead of a square). The seed parameter is set to the same number (here 1 and 2) where the same result should be drawn.</text>
+      </example>
+    </examples>
+	<related>
       <funclink>CreateParticle</funclink>
       <funclink>PV_Linear</funclink>
       <funclink>PV_Direction</funclink>
@@ -40,6 +65,7 @@
       <funclink>PV_Speed</funclink>
       <funclink>PV_KeyFrames</funclink>
       <funclink>PV_Sin</funclink>
+      <funclink>PV_Cos</funclink>
       <funclink>PC_Die</funclink>
       <funclink>PC_Bounce</funclink>
     </related>

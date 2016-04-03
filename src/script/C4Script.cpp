@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,12 @@
 
 /* Functions mapped by C4Script */
 
-#include <C4Include.h>
-#include <C4AulDefFunc.h>
+#include "C4Include.h"
+#include "script/C4AulDefFunc.h"
 
-#include <C4AulExec.h>
-#include <C4Random.h>
-#include <C4Version.h>
+#include "script/C4AulExec.h"
+#include "lib/C4Random.h"
+#include "C4Version.h"
 
 //========================== Some Support Functions =======================================
 
@@ -661,11 +661,11 @@ static bool FnStartCallTrace(C4PropList * _this)
 static bool FnStartScriptProfiler(C4PropList * _this, C4Def * pDef)
 {
 	// get script to profile
-	C4AulScript *pScript;
+	C4ScriptHost *pScript;
 	if (pDef)
 		pScript = &pDef->Script;
 	else
-		pScript = &::ScriptEngine;
+		pScript = NULL;
 	// profile it
 	C4AulProfiler::StartProfiling(pScript);
 	return true;

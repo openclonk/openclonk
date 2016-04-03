@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,12 +16,12 @@
 // generic user interface
 // tab control
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FacetEx.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "graphics/C4FacetEx.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 namespace C4GUI
 {
@@ -181,7 +181,7 @@ namespace C4GUI
 			Keys.push_back(C4KeyCodeEx(K_UP));
 			if (Config.Controls.GamepadGuiControl)
 			{
-				Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up)));
+				ControllerKeys::Up(Keys);
 			}
 			pKeySelUp = new C4KeyBinding(Keys, "GUITabularSelUp", KEYSCOPE_Gui,
 			                             new ControlKeyCB<Tabular>(*this, &Tabular::KeySelUp), C4CustomKey::PRIO_Ctrl);
@@ -190,7 +190,7 @@ namespace C4GUI
 			Keys.push_back(C4KeyCodeEx(K_DOWN));
 			if (Config.Controls.GamepadGuiControl)
 			{
-				Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+				ControllerKeys::Down(Keys);
 			}
 			pKeySelDown = new C4KeyBinding(Keys, "GUITabularSelDown", KEYSCOPE_Gui,
 			                               new ControlKeyCB<Tabular>(*this, &Tabular::KeySelDown), C4CustomKey::PRIO_Ctrl);

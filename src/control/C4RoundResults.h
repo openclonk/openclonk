@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,10 +23,10 @@
 #ifndef INC_C4RoundResults
 #define INC_C4RoundResults
 
-#include "C4Components.h"
-#include "C4IDList.h"
-#include "C4PacketBase.h"
-#include "C4FacetEx.h"
+#include "c4group/C4Components.h"
+#include "object/C4IDList.h"
+#include "network/C4PacketBase.h"
+#include "graphics/C4FacetEx.h"
 
 // Contains additional data not present in C4PlayerInfo
 class C4RoundResultsPlayer

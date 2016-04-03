@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,23 +17,24 @@
 
 /* Handles viewport editing in console mode */
 
-#include <C4Include.h>
-#include <C4EditCursor.h>
+#include "C4Include.h"
+#include "editor/C4EditCursor.h"
 
-#include <C4Console.h>
-#include <C4Object.h>
-#include <C4Application.h>
-#include <C4Random.h>
-#include <C4MouseControl.h>
-#include <C4Landscape.h>
-#include <C4Texture.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
-#include <C4GameControl.h>
+#include "editor/C4Console.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "game/C4Application.h"
+#include "lib/C4Random.h"
+#include "gui/C4MouseControl.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Texture.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameControl.h"
 
 #ifdef _WIN32
-#include "resource.h"
+#include "res/resource.h"
 #endif
 
 #ifdef USE_GTK
@@ -844,7 +845,7 @@ void C4EditCursor::ApplyToolBrush()
 	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.GetMode(), X,Y,0,0, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolLine()
@@ -852,7 +853,7 @@ void C4EditCursor::ApplyToolLine()
 	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material,pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.GetMode(), X,Y,X2,Y2, pTools->Grade, pTools->Material,pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolRect()
@@ -860,7 +861,7 @@ void C4EditCursor::ApplyToolRect()
 	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.GetMode(), X,Y,X2,Y2, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolFill()
@@ -868,7 +869,7 @@ void C4EditCursor::ApplyToolFill()
 	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.GetMode(), X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
 }
 
 void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
@@ -898,9 +899,9 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 #ifdef USE_WIN32_WINDOWS
 	POINT point; GetCursorPos(&point);
 	HMENU hContext = GetSubMenu(hMenu,0);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_DUPLICATE, fObjectSelected && Console.Editing);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_CONTENTS, fObjectSelected && selection.GetObject()->Contents.ObjectCount() && Console.Editing);
+	SetMenuItemEnable(hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
+	SetMenuItemEnable(hContext, IDM_VIEWPORT_DUPLICATE, fObjectSelected && Console.Editing);
+	SetMenuItemEnable(hContext, IDM_VIEWPORT_CONTENTS, fObjectSelected && selection.GetObject()->Contents.ObjectCount() && Console.Editing);
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
@@ -1089,13 +1090,13 @@ void C4EditCursor::ApplyToolPicker()
 {
 	int32_t iMaterial;
 	BYTE byIndex;
-	switch (::Landscape.Mode)
+	switch (::Landscape.GetMode())
 	{
-	case C4LSC_Static:
+	case LandscapeMode::Static:
 		{
 			bool material_set = false;
-			int32_t x = X/::Landscape.MapZoom;
-			int32_t y = Y/::Landscape.MapZoom;
+			int32_t x = X/::Landscape.GetMapZoom();
+			int32_t y = Y/::Landscape.GetMapZoom();
 			// Material-texture from map
 			if ((byIndex = ::Landscape.GetMapIndex(x, y)))
 			{
@@ -1132,7 +1133,7 @@ void C4EditCursor::ApplyToolPicker()
 			if (!material_set) Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
 			break;
 		}
-	case C4LSC_Exact:
+	case LandscapeMode::Exact:
 		// Material only from landscape
 		if (MatValid(iMaterial=GBackMat(X,Y)))
 		{

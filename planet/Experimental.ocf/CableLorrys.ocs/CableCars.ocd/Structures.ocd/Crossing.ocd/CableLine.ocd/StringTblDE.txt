@@ -1,2 +1,0 @@
-TxtLinebroke=Leitung gerissen
-Name=Kabelverbindung

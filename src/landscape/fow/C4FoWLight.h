@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,12 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4Object.h"
-#include "C4Surface.h"
-#include "C4FacetEx.h"
-#include "C4FoWLightSection.h"
-#include "C4FoWDrawStrategy.h"
-#include "C4Rect.h"
+#include "object/C4Object.h"
+#include "graphics/C4Surface.h"
+#include "graphics/C4FacetEx.h"
+#include "landscape/fow/C4FoWLightSection.h"
+#include "landscape/fow/C4FoWDrawStrategy.h"
+#include "lib/C4Rect.h"
 
 #include <vector>
 

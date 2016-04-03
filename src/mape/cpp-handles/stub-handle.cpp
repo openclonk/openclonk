@@ -15,20 +15,21 @@
 
 #include "C4Include.h"
 
-#include "C4Aul.h"
-#include "C4AulDebug.h"
-#include "C4GameControl.h"
-#include "C4Def.h"
-#include "C4DefList.h"
-#include "C4Facet.h"
-#include "C4GameObjects.h"
-#include "C4GameParameters.h"
-#include "C4GraphicsResource.h"
-#include "C4Landscape.h"
-#include "C4PXS.h"
-#include "C4Record.h"
-#include "C4RoundResults.h"
-#include "C4TextureShape.h"
+#include "script/C4Aul.h"
+#include "script/C4AulDebug.h"
+#include "control/C4GameControl.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "graphics/C4Facet.h"
+#include "object/C4GameObjects.h"
+#include "control/C4GameParameters.h"
+#include "graphics/C4GraphicsResource.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4PXS.h"
+#include "control/C4Record.h"
+#include "control/C4RoundResults.h"
+#include "landscape/C4TextureShape.h"
+#include "landscape/C4Sky.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. */
@@ -75,15 +76,6 @@ void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }
 float C4DefList::GetFontImageAspect(const char* szImageTag) { return -1.0f; }
-
-C4Landscape::C4Landscape() {}
-C4Landscape::~C4Landscape() {}
-bool C4Landscape::FindMatSlide(int&, int&, int, int, int) const { return false; }
-int32_t C4Landscape::ExtractMaterial(int32_t, int32_t, bool) { return 0; }
-bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t, bool) { return false; }
-bool C4Landscape::Incinerate(int32_t, int32_t, int32_t) { return false; }
-bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }
-void C4Landscape::CheckInstabilityRange(int32_t, int32_t) {}
 
 void C4Sky::Default() {}
 C4Sky::~C4Sky() {}

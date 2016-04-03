@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,17 +13,18 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4AulDebug.h"
+#include "C4Include.h"
+#include "script/C4AulDebug.h"
 
-#include <C4Application.h>
-#include <C4Version.h>
-#include <C4GameControl.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Log.h>
-#include <C4Object.h>
-#include "C4AulExec.h"
+#include "game/C4Application.h"
+#include "C4Version.h"
+#include "control/C4GameControl.h"
+#include "game/C4Game.h"
+#include "gui/C4MessageInput.h"
+#include "lib/C4Log.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "script/C4AulExec.h"
 
 #ifndef NOAULDEBUG
 
@@ -248,7 +249,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		}
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
-		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next)
+		for (C4ScriptHost* script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			SendLine(RelativePath(script->ScriptName));
 		}
@@ -266,14 +267,14 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		int line = atoi(&scriptPath[colonPos+1]);
 		scriptPath.erase(colonPos);
 
-		C4AulScript *script;
+		C4ScriptHost *script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.c_str()))
 				break;
 		}
 
-		auto sh = script ? script->GetScriptHost() : NULL;
+		auto sh = script;
 		if (sh)
 		{
 			C4AulBCC * found = NULL;
@@ -333,7 +334,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 			}
 			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != -1)
 			{
-				val = &pCtx->Vars[varIndex];
+				val = &pCtx->Pars[pCtx->Func->GetParCount() + varIndex];
 			}
 		}
 		const char* typeName = val ? GetC4VName(val->GetType()) : "any";

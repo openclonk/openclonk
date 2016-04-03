@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,15 +13,15 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4Network2IO.h>
-#include <C4Network2Reference.h>
+#include "C4Include.h"
+#include "network/C4Network2IO.h"
+#include "network/C4Network2Reference.h"
 
-#include <C4Network2Discover.h>
-#include <C4Application.h>
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4GameControl.h>
+#include "network/C4Network2Discover.h"
+#include "game/C4Application.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
+#include "control/C4GameControl.h"
 
 #include "network/C4Network2UPnP.h"
 

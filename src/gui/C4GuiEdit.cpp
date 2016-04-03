@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,12 +16,12 @@
 // generic user interface
 // room for textual deconvolution
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4Application.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Application.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 namespace C4GUI
 {
@@ -710,7 +710,7 @@ namespace C4GUI
 		keys.push_back(C4KeyCodeEx(K_ESCAPE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(keys);
 		}
 		pKeyAbort = new C4KeyBinding(keys, "GUIRenameEditAbort", KEYSCOPE_Gui,
 		                             new ControlKeyCB<RenameEdit>(*this, &RenameEdit::KeyAbort), C4CustomKey::PRIO_FocusCtrl);

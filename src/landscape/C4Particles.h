@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,9 +13,9 @@
  * for the above references.
  */
 
-#include <C4FacetEx.h>
+#include "graphics/C4FacetEx.h"
 
-#include <StdScheduler.h>
+#include "platform/StdScheduler.h"
 
 
 #ifndef INC_C4Particles
@@ -28,6 +28,7 @@ enum C4ParticleValueProviderID
 	C4PV_Random,
 	C4PV_KeyFrames,
 	C4PV_Sin,
+	C4PV_Cos,
 	C4PV_Direction,
 	C4PV_Step,
 	C4PV_Speed,
@@ -121,6 +122,8 @@ private:
 		float maxValue; // for Step & Sin
 	};
 
+	int randomSeed = -1; // for Random
+
 	size_t keyFrameCount;
 	std::vector<float> keyFrames;
 
@@ -156,7 +159,11 @@ public:
 	}
 	C4ParticleValueProvider(const C4ParticleValueProvider &other) { *this = other; }
 	C4ParticleValueProvider & operator= (const C4ParticleValueProvider &other);
-	void RollRandom();
+	// The random roll is implemented in two variants, one using the default RNG and one using an own implementation that makes use of a seed.
+	// RollRandom is a wrapper that will select the approprate function to call.
+	void RollRandom(const C4Particle *forParticle);
+	void RollRandomUnseeded();
+	void RollRandomSeeded(const C4Particle *forParticle);
 
 	// divides by denominator
 	void Floatify(float denominator);
@@ -178,6 +185,7 @@ private:
 	float Random(C4Particle *forParticle);
 	float KeyFrames(C4Particle *forParticle);
 	float Sin(C4Particle *forParticle);
+	float Cos(C4Particle *forParticle);
 	float Direction(C4Particle *forParticle);
 	float Step(C4Particle *forParticle);
 	float Speed(C4Particle *forParticle);

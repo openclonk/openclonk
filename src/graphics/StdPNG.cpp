@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,10 +16,10 @@
 // png file reading functionality
 
 #include "C4Include.h"
-#include <StdPNG.h>
+#include "graphics/StdPNG.h"
 
-#include <StdColors.h>
-#include <StdScheduler.h>
+#include "lib/StdColors.h"
+#include "platform/StdScheduler.h"
 
 // png reading proc
 void PNGAPI CPNGFile::CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)

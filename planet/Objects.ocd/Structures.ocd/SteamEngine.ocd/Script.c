@@ -112,7 +112,7 @@ public func OnPowerProductionStop(int amount)
 // Start call from working action.
 protected func WorkStart()
 {
-	Sound("Structures::SteamEngine", false, nil, nil, 1);
+	Sound("Structures::SteamEngine", {loop_count = 1});
 	return;
 }
 
@@ -155,7 +155,7 @@ protected func WorkStop()
 protected func WorkAbort()
 {
 	// Sound can be safely stopped here since this action will always end with an abort call.
-	Sound("Structures::SteamEngine", false, nil, nil, -1);
+	Sound("Structures::SteamEngine", {loop_count = -1});
 	return;	
 }
 

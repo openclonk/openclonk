@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,7 +16,7 @@
 #include "C4Include.h"
 
 #ifndef USE_CONSOLE
-#include "C4FoWBeam.h"
+#include "landscape/fow/C4FoWBeam.h"
 
 // Maximum error allowed while merging beams.
 const int32_t C4FoWMergeThreshold = 10; // (in landscape pixels * 2)

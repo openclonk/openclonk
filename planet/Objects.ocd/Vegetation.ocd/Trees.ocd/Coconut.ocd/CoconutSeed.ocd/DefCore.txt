@@ -13,7 +13,6 @@ VertexCNAT=4,2,1
 Value=4
 Mass=4
 Components=Coconut=1
-ContactCalls=1
 Projectile=1
 Float=1
 Rotate=1

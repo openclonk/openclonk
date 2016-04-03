@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,13 +18,13 @@
 #ifndef C4NETIO_H
 #define C4NETIO_H
 
-#include "StdSync.h"
-#include "StdBuf.h"
-#include "StdCompiler.h"
-#include "StdScheduler.h"
+#include "platform/StdSync.h"
+#include "lib/StdBuf.h"
+#include "lib/StdCompiler.h"
+#include "platform/StdScheduler.h"
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #ifndef WINSOCK_VERSION

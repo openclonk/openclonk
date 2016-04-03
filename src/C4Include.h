@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -25,7 +25,7 @@ don't need to include this file or any of the files it includes. */
 #ifndef INC_C4Include
 #define INC_C4Include
 
-#include "PlatformAbstraction.h"
+#include "platform/PlatformAbstraction.h"
 
 #define DEBUGREC_SCRIPT
 #define DEBUGREC_START_FRAME 0
@@ -83,16 +83,16 @@ inline void operator delete(void *p, const char *, long)
 #endif
 #include <new>
 
-#include "Standard.h"
+#include "lib/Standard.h"
 #include "C4Prototypes.h"
-#include "C4Real.h"
-#include "StdBuf.h"
-#include "StdFile.h"
-#include "C4Language.h"
-#include "C4Log.h"
-#include "C4Reloc.h"
-#include "C4Config.h"
+#include "lib/C4Real.h"
+#include "lib/StdBuf.h"
+#include "platform/StdFile.h"
+#include "c4group/C4Language.h"
+#include "lib/C4Log.h"
+#include "config/C4Reloc.h"
+#include "config/C4Config.h"
 
-#include "C4Game.h"
+#include "game/C4Game.h"
 
 #endif // INC_C4Include

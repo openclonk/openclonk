@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,17 +13,17 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
-#include <C4Include.h>
-#include <C4Network2Client.h>
+#include "C4Include.h"
+#include "network/C4Network2Client.h"
 
-#include <C4Log.h>
-#include <C4Console.h>
-#include <C4Network2.h>
-#include <C4Network2IO.h>
-#include <C4Network2Stats.h>
-#include <C4GameLobby.h> // fullscreen network lobby
-#include <C4Game.h>
-#include <C4PlayerList.h>
+#include "lib/C4Log.h"
+#include "editor/C4Console.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2IO.h"
+#include "network/C4Network2Stats.h"
+#include "gui/C4GameLobby.h" // fullscreen network lobby
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
 
 #ifndef _WIN32
 #include <arpa/inet.h>

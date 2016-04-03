@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,14 @@
 
 /* Move liquids in the landscape using individual transport spots */
 
-#include <C4Include.h>
-#include <C4MassMover.h>
+#include "C4Include.h"
+#include "landscape/C4MassMover.h"
 
-#include <C4Components.h>
-#include <C4Random.h>
-#include <C4Material.h>
-#include <C4Landscape.h>
-#include <C4Record.h>
+#include "c4group/C4Components.h"
+#include "lib/C4Random.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Landscape.h"
+#include "control/C4Record.h"
 
 // Note: creation optimized using advancing CreatePtr, so sequential
 // creation does not keep rescanning the complete set for a free
@@ -100,7 +100,7 @@ void C4MassMoverSet::Draw()
 bool C4MassMover::Init(int32_t tx, int32_t ty)
 {
 	// Out of bounds check
-	if (!Inside<int32_t>(tx,0,GBackWdt-1) || !Inside<int32_t>(ty,0,GBackHgt-1))
+	if (!Inside<int32_t>(tx,0,::Landscape.GetWidth()-1) || !Inside<int32_t>(ty,0,::Landscape.GetHeight()-1))
 		return false;
 	// Check mat
 	Mat=GBackMat(tx,ty);

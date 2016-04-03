@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,9 +18,9 @@
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
-#include <C4Markup.h>
-#include <C4Facet.h>
-#include <StdBuf.h>
+#include "lib/C4Markup.h"
+#include "graphics/C4Facet.h"
+#include "lib/StdBuf.h"
 #include <stdio.h>
 #include <map>
 
@@ -98,8 +98,7 @@ protected:
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
-	C4Surface **psfcFontData; // font recource surfaces - additional surfaces created as needed
-	int iNumFontSfcs;       // number of created font surfaces
+	std::vector<std::unique_ptr<C4Surface>> psfcFontData; // font resource surfaces - additional surfaces created as needed
 	int iSfcSizes;          // size for font surfaces
 	int iFontZoom;          // zoom of font in texture
 

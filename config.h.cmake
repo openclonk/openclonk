@@ -80,9 +80,6 @@
 /* Define to 1 if you have the <X11/extensions/Xrandr.h> header file. */
 #cmakedefine HAVE_X11_EXTENSIONS_XRANDR_H 1
 
-/* Define to 1 if you have the <X11/keysym.h> header file. */
-#cmakedefine HAVE_X11_KEYSYM_H 1
-
 /* compile without debug options */
 #cmakedefine NDEBUG 1
 

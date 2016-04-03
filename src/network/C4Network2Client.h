@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,10 +16,10 @@
 #ifndef INC_C4Network2Client
 #define INC_C4Network2Client
 
-#include "C4NetIO.h"
-#include "C4Network2IO.h"
-#include "C4PacketBase.h"
-#include "C4Client.h"
+#include "network/C4NetIO.h"
+#include "network/C4Network2IO.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Client.h"
 
 class C4Network2; class C4Network2IOConnection;
 

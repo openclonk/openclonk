@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,15 +17,16 @@
 
 /* Pixel Sprite system for tiny bits of moving material */
 
-#include <C4Include.h>
-#include <C4PXS.h>
+#include "C4Include.h"
+#include "landscape/C4PXS.h"
 
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4Physics.h>
-#include <C4Random.h>
-#include <C4Weather.h>
-#include <C4Record.h>
+#include "c4group/C4Components.h"
+#include "config/C4Config.h"
+#include "game/C4Physics.h"
+#include "lib/C4Random.h"
+#include "landscape/C4Weather.h"
+#include "control/C4Record.h"
+#include "lib/StdColors.h"
 
 static const C4Real WindDrift_Factor = itofix(1, 800);
 
@@ -47,7 +48,7 @@ void C4PXS::Execute()
 		{ Deactivate(); return; }
 
 	// Out of bounds
-	if ((x<0) || (x>=GBackWdt) || (y<-10) || (y>=GBackHgt))
+	if ((x<0) || (x>=::Landscape.GetWidth()) || (y<-10) || (y>=::Landscape.GetHeight()))
 		{ Deactivate(); return; }
 
 	// Material conversion
@@ -79,7 +80,7 @@ void C4PXS::Execute()
 	int32_t iToX = fixtoi(ctcox), iToY = fixtoi(ctcoy);
 
 	// In bounds?
-	if (Inside<int32_t>(iToX, 0, GBackWdt-1) && Inside<int32_t>(iToY, 0, GBackHgt-1))
+	if (Inside<int32_t>(iToX, 0, ::Landscape.GetWidth()-1) && Inside<int32_t>(iToY, 0, ::Landscape.GetHeight()-1))
 		// Check path
 		if (::Landscape._PathFree(iX, iY, iToX, iToY))
 		{
@@ -354,7 +355,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	for(std::map<int, std::vector<C4BltVertex> >::const_iterator iter = bltVtx.begin(); iter != bltVtx.end(); ++iter)
 	{
 		C4Material *pMat = &::MaterialMap.Map[iter->first];
-		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, &pMat->PXSFace.Surface->textures[0], NULL, NULL, 0, NULL);
+		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, pMat->PXSFace.Surface->texture.get(), NULL, NULL, 0, NULL);
 	}
 }
 

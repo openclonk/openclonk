@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -41,7 +41,7 @@ inline InplaceReconstruct(T *obj)
 }
 #pragma pop_macro("new")
 
-#include "PlatformAbstraction.h"
+#include "platform/PlatformAbstraction.h"
 
 // Small helpers
 template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }

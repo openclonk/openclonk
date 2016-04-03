@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,27 +17,29 @@
 
 /* A viewport to each player */
 
-#include <C4Include.h>
-#include <C4Viewport.h>
+#include "C4Include.h"
+#include "game/C4Viewport.h"
 
-#include <C4ViewportWindow.h>
-#include <C4Console.h>
-#include <C4Object.h>
-#include <C4FullScreen.h>
-#include <C4Stat.h>
-#include <C4Player.h>
-#include <C4ObjectMenu.h>
-#include <C4MouseControl.h>
-#include <C4PXS.h>
-#include <C4GameMessage.h>
-#include <C4ScriptGuiWindow.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Landscape.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Network2.h>
-#include <C4FoWRegion.h>
+#include "editor/C4ViewportWindow.h"
+#include "editor/C4Console.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "game/C4FullScreen.h"
+#include "lib/C4Stat.h"
+#include "player/C4Player.h"
+#include "object/C4ObjectMenu.h"
+#include "gui/C4MouseControl.h"
+#include "landscape/C4PXS.h"
+#include "gui/C4GameMessage.h"
+#include "gui/C4ScriptGuiWindow.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Sky.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "network/C4Network2.h"
+#include "landscape/fow/C4FoWRegion.h"
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {
@@ -274,7 +276,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 		pDraw->SetFoW(pFoW);
 
 		C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
-			::Landscape.Sky.Draw(cgo);
+			::Landscape.GetSky().Draw(cgo);
 		C4ST_STOP(SkyStat)
 
 			::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
@@ -289,15 +291,22 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 			::PXS.Draw(cgo);
 		C4ST_STOP(PXSStat)
 
-			// draw objects
-			C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-			::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
+		// Draw objects which are behind the particle plane.
+		const int particlePlane = 900;
+		C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects (1)")
+			::Objects.Draw(cgo, Player, 1, particlePlane);
 		C4ST_STOP(ObjStat)
 
-			// draw global dynamic particles
-			C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
+		// Draw global dynamic particles on a specific Plane
+		// to enable scripters to put objects both behind and in front of particles.
+		C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
 			::Particles.DrawGlobalParticles(cgo);
 		C4ST_STOP(PartStat)
+
+		// Now the remaining objects in front of the particles (e.g. GUI elements)
+		C4ST_STARTNEW(Obj2Stat, "C4Viewport::Draw: Objects (2)")
+			::Objects.Draw(cgo, Player, particlePlane + 1, 2147483647 /* INT32_MAX */);
+		C4ST_STOP(Obj2Stat)
 
 			// Draw everything else without FoW
 			pDraw->SetFoW(NULL);
@@ -418,7 +427,7 @@ void C4Viewport::CalculateZoom()
 	if (plr)
 		plr->ZoomLimitsToViewport(this);
 	else
-		SetZoomLimits(0.8*std::min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
+		SetZoomLimits(0.8*std::min<float>(float(ViewWdt)/::Landscape.GetWidth(),float(ViewHgt)/::Landscape.GetHeight()), 8);
 
 }
 
@@ -431,7 +440,7 @@ void C4Viewport::InitZoom()
 	}
 	else
 	{
-		ZoomTarget = std::max<float>(float(ViewWdt)/GBackWdt, 1.0f);
+		ZoomTarget = std::max<float>(float(ViewWdt)/::Landscape.GetWidth(), 1.0f);
 		Zoom = ZoomTarget;
 	}
 }
@@ -565,13 +574,13 @@ void C4Viewport::AdjustPosition(bool immediate)
 
 			// if view is close to border, allow scrolling
 			if (targetCenterViewX < ViewportScrollBorder) extraBoundsX = std::min<float>(ViewportScrollBorder - targetCenterViewX, ViewportScrollBorder);
-			else if (targetCenterViewX >= GBackWdt - ViewportScrollBorder) extraBoundsX = std::min<float>(targetCenterViewX - GBackWdt, 0) + ViewportScrollBorder;
+			else if (targetCenterViewX >= ::Landscape.GetWidth() - ViewportScrollBorder) extraBoundsX = std::min<float>(targetCenterViewX - ::Landscape.GetWidth(), 0) + ViewportScrollBorder;
 			if (targetCenterViewY < ViewportScrollBorder) extraBoundsY = std::min<float>(ViewportScrollBorder - targetCenterViewY, ViewportScrollBorder);
-			else if (targetCenterViewY >= GBackHgt - ViewportScrollBorder) extraBoundsY = std::min<float>(targetCenterViewY - GBackHgt, 0) + ViewportScrollBorder;
+			else if (targetCenterViewY >= ::Landscape.GetHeight() - ViewportScrollBorder) extraBoundsY = std::min<float>(targetCenterViewY - ::Landscape.GetHeight(), 0) + ViewportScrollBorder;
 		}
 
-		extraBoundsX = std::max(extraBoundsX, (ViewWdt/Zoom - GBackWdt)/2 + 1);
-		extraBoundsY = std::max(extraBoundsY, (ViewHgt/Zoom - GBackHgt)/2 + 1);
+		extraBoundsX = std::max(extraBoundsX, (ViewWdt/Zoom - ::Landscape.GetWidth())/2 + 1);
+		extraBoundsY = std::max(extraBoundsY, (ViewHgt/Zoom - ::Landscape.GetHeight())/2 + 1);
 
 		// add mouse auto scroll
 		if (pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAutoScroll)
@@ -588,8 +597,8 @@ void C4Viewport::AdjustPosition(bool immediate)
 			targetCenterViewY = Clamp(targetCenterViewY, targetCenterViewY - scrollRange, targetCenterViewY + scrollRange);
 		}
 		// bounds
-		targetCenterViewX = Clamp(targetCenterViewX, ViewWdt/Zoom/2 - extraBoundsX, GBackWdt - ViewWdt/Zoom/2 + extraBoundsX);
-		targetCenterViewY = Clamp(targetCenterViewY, ViewHgt/Zoom/2 - extraBoundsY, GBackHgt - ViewHgt/Zoom/2 + extraBoundsY);
+		targetCenterViewX = Clamp(targetCenterViewX, ViewWdt/Zoom/2 - extraBoundsX, ::Landscape.GetWidth() - ViewWdt/Zoom/2 + extraBoundsX);
+		targetCenterViewY = Clamp(targetCenterViewY, ViewHgt/Zoom/2 - extraBoundsY, ::Landscape.GetHeight() - ViewHgt/Zoom/2 + extraBoundsY);
 
 		targetViewX = targetCenterViewX - ViewWdt/Zoom/2 + viewOffsX;
 		targetViewY = targetCenterViewY - ViewHgt/Zoom/2 + viewOffsY;
@@ -619,20 +628,20 @@ void C4Viewport::CenterPosition()
 {
 	// center viewport position on map
 	// set center position
-	SetViewX(GBackWdt/2 + ViewWdt/Zoom/2);
-	SetViewY(GBackHgt/2 + ViewHgt/Zoom/2);
+	SetViewX(::Landscape.GetWidth()/2 + ViewWdt/Zoom/2);
+	SetViewY(::Landscape.GetHeight()/2 + ViewHgt/Zoom/2);
 }
 
 void C4Viewport::UpdateBordersX()
 {
 	BorderLeft = std::max(-GetViewX() * Zoom, 0.0f);
-	BorderRight = std::max(ViewWdt - GBackWdt * Zoom + GetViewX() * Zoom, 0.0f);
+	BorderRight = std::max(ViewWdt - ::Landscape.GetWidth() * Zoom + GetViewX() * Zoom, 0.0f);
 }
 
 void C4Viewport::UpdateBordersY()
 {
 	BorderTop = std::max(-GetViewY() * Zoom, 0.0f);
-	BorderBottom = std::max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f);
+	BorderBottom = std::max(ViewHgt - ::Landscape.GetHeight() * Zoom + GetViewY() * Zoom, 0.0f);
 }
 
 void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
@@ -682,9 +691,9 @@ void C4Viewport::DisableFoW()
 
 void C4Viewport::EnableFoW()
 {
-	if (::Landscape.pFoW && Player != NO_OWNER)
+	if (::Landscape.HasFoW() && Player != NO_OWNER)
 	{
-		pFoW.reset(new C4FoWRegion(::Landscape.pFoW, ::Players.Get(Player)));
+		pFoW.reset(new C4FoWRegion(::Landscape.GetFoW(), ::Players.Get(Player)));
 	}
 	else
 	{
@@ -731,13 +740,13 @@ void C4Viewport::SetViewX(float x)
 
 	if (fIsNoOwnerViewport)
 	{
-		if(GBackWdt < ViewWdt / Zoom)
+		if(::Landscape.GetWidth() < ViewWdt / Zoom)
 		{
-			viewX = GBackWdt/2 - ViewWdt / Zoom / 2;
+			viewX = ::Landscape.GetWidth()/2 - ViewWdt / Zoom / 2;
 		}
 		else
 		{
-			viewX = Clamp(x, 0.0f, GBackWdt - ViewWdt / Zoom);
+			viewX = Clamp(x, 0.0f, ::Landscape.GetWidth() - ViewWdt / Zoom);
 		}
 	}
 
@@ -750,13 +759,13 @@ void C4Viewport::SetViewY(float y)
 
 	if (fIsNoOwnerViewport)
 	{
-		if(GBackHgt < ViewHgt / Zoom)
+		if(::Landscape.GetHeight() < ViewHgt / Zoom)
 		{
-			viewY = GBackHgt/2 - ViewHgt / Zoom / 2;
+			viewY = ::Landscape.GetHeight()/2 - ViewHgt / Zoom / 2;
 		}
 		else
 		{
-			viewY = Clamp(y, 0.0f, GBackHgt - ViewHgt / Zoom);
+			viewY = Clamp(y, 0.0f, ::Landscape.GetHeight() - ViewHgt / Zoom);
 		}
 	}
 
