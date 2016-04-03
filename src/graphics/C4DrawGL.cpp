@@ -227,6 +227,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_MaterialShininess] = "materialShininess"; // unused
 	uniformNames[C4SSU_Bones] = "bones"; // unused
 	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
+	uniformNames[C4SSU_FrameCounter] = "frameCounter";
 	uniformNames[C4SSU_Count] = NULL;
 
 	const char* attributeNames[C4SSA_Count + 1];

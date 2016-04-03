@@ -189,7 +189,7 @@ bool C4Console::SaveScenario(const char * path)
 	SetCursor(C4ConsoleGUI::CURSOR_Wait);
 
 	bool fOkay=true;
-	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
+	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.GetMode() == LandscapeMode::Exact, false);
 	if (!pGameSave->Save(Game.ScenarioFile, false))
 		{ Out("Game::Save failed"); fOkay=false; }
 	delete pGameSave;

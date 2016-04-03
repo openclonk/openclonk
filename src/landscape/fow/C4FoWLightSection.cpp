@@ -134,7 +134,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 {
 	// Transform rectangle into our coordinate system
 	C4Rect Rect = rtransRect(RectIn);
-	C4Rect Bounds = rtransRect(C4Rect(0,0,GBackWdt,GBackHgt));
+	C4Rect Bounds = rtransRect(C4Rect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight()));
 
 #ifdef LIGHT_DEBUG
 	if (!::Game.iTick255) {

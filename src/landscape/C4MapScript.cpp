@@ -449,7 +449,7 @@ static C4ValueArray *FnLayerCreateMatTexMask(C4PropList * _this, const C4Value &
 
 // TODO: CreateBackMatTexMask? Or Return 512 bools?
 
-C4MapScriptLayer::C4MapScriptLayer(C4PropList *prototype, C4MapScriptMap *map) : C4PropListNumbered(prototype), fg_surface(NULL), bg_surface(NULL), surface_owned(false), map(map)
+C4MapScriptLayer::C4MapScriptLayer(C4PropList *prototype, C4MapScriptMap *map) : C4PropListNumbered(prototype), map(map)
 {
 	// It seems like numbered PropLists need a number. I don't know why.
 	AcquireNumber();
@@ -460,9 +460,8 @@ bool C4MapScriptLayer::CreateSurface(int32_t wdt, int32_t hgt)
 	// Create new surface of given size. Surface is filled with color 0
 	ClearSurface();
 	if (wdt<=0 || hgt<=0) return false;
-	fg_surface = new CSurface8;
-	bg_surface = new CSurface8;
-	surface_owned = true;
+	fg_surface = std::make_unique<CSurface8>();
+	bg_surface = std::make_unique<CSurface8>();
 	if (!fg_surface->Create(wdt, hgt) || !bg_surface->Create(wdt, hgt))
 	{
 		ClearSurface();
@@ -474,10 +473,7 @@ bool C4MapScriptLayer::CreateSurface(int32_t wdt, int32_t hgt)
 
 void C4MapScriptLayer::ClearSurface()
 {
-	// Delete surface if owned or just set to zero if unowned
-	if (surface_owned) { delete fg_surface; delete bg_surface; }
-	fg_surface=NULL; bg_surface=NULL;
-	surface_owned=false;
+	fg_surface.reset(); bg_surface.reset();
 	// if there is no surface, width and height parameters are undefined. no need to update them.
 }
 
@@ -723,7 +719,7 @@ C4MapScriptMap *C4MapScriptHost::CreateMap()
 	return new C4MapScriptMap(MapPrototype);
 }
 
-bool C4MapScriptHost::InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, CSurface8 **pmap_fg_surface, CSurface8** pmap_bg_surface)
+bool C4MapScriptHost::InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, std::unique_ptr<CSurface8> *pmap_fg_surface, std::unique_ptr <CSurface8>* pmap_bg_surface)
 {
 	// Init scripted map by calling InitializeMap in the proper scripts. If *pmap_surface is given, it will pass the existing map to be modified by script.
 	assert(pmap_fg_surface);
@@ -739,11 +735,12 @@ bool C4MapScriptHost::InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTex
 	}
 	// Create proplist as script context
 	std::unique_ptr<C4MapScriptMap> map(CreateMap());
+
 	// Drawing on existing map or create new?
 	if (*pmap_fg_surface && *pmap_bg_surface)
 	{
 		// Existing map
-		map->SetSurface(*pmap_fg_surface, *pmap_bg_surface);
+		map->SetSurfaces(std::move(*pmap_fg_surface), std::move(*pmap_bg_surface));
 	}
 	else
 	{
@@ -760,7 +757,7 @@ bool C4MapScriptHost::InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTex
 	if (result)
 	{
 		map->ConvertSkyToTransparent();
-		map->ReleaseSurface(*pmap_fg_surface, *pmap_bg_surface);
+		std::tie(*pmap_fg_surface, *pmap_bg_surface) = map->ReleaseSurfaces();
 	}
 	return !!result;
 }

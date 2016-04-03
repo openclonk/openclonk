@@ -21,6 +21,7 @@
 #include <C4Game.h>
 
 #include <C4AulDebug.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Effect.h>
 #include <C4FileMonitor.h>
@@ -65,6 +66,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
 #include <C4Landscape.h>
+#include "landscape/C4Sky.h"
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
@@ -913,7 +915,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
-	if (::Landscape.pFoW) ::Landscape.pFoW->Remove(pObj);
+	::Landscape.ClearPointers(pObj);
 }
 
 bool C4Game::TogglePause()
@@ -1680,7 +1682,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	{
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
 		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
-		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
+		pComp->Value(mkNamingAdapt(Landscape.GetSky(), "Sky"));
 
 		// save custom GUIs only if a real savegame and not for editor-scenario-saves or section changes
 		if (!comp.fScenarioSection)
@@ -2011,7 +2013,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 bool LandscapeFree(int32_t x, int32_t y)
 {
-	if (!Inside<int32_t>(x,0,GBackWdt-1) || !Inside<int32_t>(y,0,GBackHgt-1)) return false;
+	if (!Inside<int32_t>(x,0,::Landscape.GetWidth()-1) || !Inside<int32_t>(y,0,::Landscape.GetHeight()-1)) return false;
 	return !DensitySolid(GBackDensity(x,y));
 }
 
@@ -2243,7 +2245,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (fLoadSection && fLandscapeLoaded) { PXS.Clear(); MassMover.Clear(); }
 	SetInitProgress(89);
 	// Init main object list
-	Objects.Init(Landscape.Width, Landscape.Height);
+	Objects.Init(Landscape.GetWidth(), Landscape.GetHeight());
 
 	// Pathfinder
 	if (!fLoadSection) PathFinder.Init( &LandscapeFree, &TransferZones );
@@ -2618,7 +2620,7 @@ bool C4Game::PlaceInEarth(C4ID id)
 	int32_t cnt,tx,ty;
 	for (cnt=0; cnt<35; cnt++) // cheap trys
 	{
-		tx=Random(GBackWdt); ty=Random(GBackHgt);
+		tx=Random(::Landscape.GetWidth()); ty=Random(::Landscape.GetHeight());
 		if (GBackMat(tx,ty)==MEarth)
 			if (CreateObject(id,NULL,NO_OWNER,tx,ty,Random(360)))
 				return true;
@@ -2687,7 +2689,7 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 			// Above tunnel
 			while ((iTy>0) && Landscape.GetBackPix(iTx,iTy) == 0) iTy--;
 			// Above semi solid
-			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
+			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,::Landscape.GetHeight()-50))
 				continue;
 			// Still inside bounds?
 			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, iX, iY, iWdt, iHgt, shape_proplist)) continue;
@@ -2756,7 +2758,7 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 			// Random hit within target area
 			if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Above semi solid
-			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
+			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,::Landscape.GetHeight()-50))
 				continue;
 			// Free above
 			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
@@ -2793,12 +2795,12 @@ C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 	{
 		// Running free
 	case C4D_Place_Surface:
-		iX=Random(GBackWdt); iY=Random(GBackHgt);
+		iX=Random(::Landscape.GetWidth()); iY=Random(::Landscape.GetHeight());
 		if (!FindSolidGround(iX,iY,pDef->Shape.Wdt)) return NULL;
 		break;
 		// In liquid
 	case C4D_Place_Liquid:
-		iX=Random(GBackWdt); iY=Random(GBackHgt);
+		iX=Random(::Landscape.GetWidth()); iY=Random(::Landscape.GetHeight());
 		if (!FindSurfaceLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
 			if (!FindLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
 				return NULL;
@@ -2806,8 +2808,8 @@ C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 		break;
 		// Floating in air
 	case C4D_Place_Air:
-		iX=Random(GBackWdt);
-		for (iY=0; (iY<GBackHgt) && !GBackSemiSolid(iX,iY); iY++) {}
+		iX=Random(::Landscape.GetWidth());
+		for (iY=0; (iY<::Landscape.GetHeight()) && !GBackSemiSolid(iX,iY); iY++) {}
 		if (iY<=0) return NULL;
 		iY=Random(iY);
 		break;
@@ -2824,7 +2826,7 @@ void C4Game::InitInEarth()
 	int32_t cnt,vidnum;
 	C4ID vidlist[maxvid];
 	// Amount
-	int32_t amt=(GBackWdt*GBackHgt/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
+	int32_t amt=(::Landscape.GetWidth()*::Landscape.GetHeight()/5000)*C4S.Landscape.InEarthLevel.Evaluate()/100;
 	// List all valid IDs from C4S
 	vidnum=ListExpandValids(C4S.Landscape.InEarth,vidlist,maxvid);
 	// Place
@@ -2840,13 +2842,13 @@ void C4Game::InitVegetation()
 	int32_t cnt,vidnum;
 	C4ID vidlist[maxvid];
 	// Amount
-	int32_t amt=(GBackWdt/50)*C4S.Landscape.VegLevel.Evaluate()/100;
+	int32_t amt=(::Landscape.GetWidth()/50)*C4S.Landscape.VegLevel.Evaluate()/100;
 	// Get percentage vidlist from C4S
 	vidnum=ListExpandValids(C4S.Landscape.Vegetation,vidlist,maxvid);
 	// Place vegetation
 	if (vidnum>0)
 		for (cnt=0; cnt<amt; cnt++)
-			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,GBackWdt,GBackHgt,-1,NULL,NULL);
+			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,::Landscape.GetWidth(),::Landscape.GetHeight(),-1,NULL,NULL);
 }
 
 void C4Game::InitAnimals()

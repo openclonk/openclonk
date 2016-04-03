@@ -21,6 +21,7 @@
 #include <C4Player.h>
 
 #include <C4Application.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
@@ -196,8 +197,8 @@ void C4Player::Execute()
 							{
 								// player has selected a team that has a valid start position assigned
 								// set view to this position!
-								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.MapZoom;
-								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.MapZoom;
+								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.GetMapZoom();
+								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.GetMapZoom();
 							}
 						}
 					}
@@ -289,7 +290,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	Name.Copy(pInfo->GetName());
 
 	// view pos init: Start at center pos
-	ViewX = GBackWdt/2; ViewY = GBackHgt/2;
+	ViewX = ::Landscape.GetWidth()/2; ViewY = ::Landscape.GetHeight()/2;
 
 	// Scenario init
 	if (fScenarioInit)
@@ -632,8 +633,8 @@ bool C4Player::ScenarioInit()
 	pty = Game.C4S.PlrStart[PlrStartIndex].Position[1];
 
 	// Zoomed position
-	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackWdt-1 );
-	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackHgt-1 );
+	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetWidth()-1 );
+	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, ::Landscape.GetHeight()-1 );
 
 	// Standard position (PrefPosition)
 	if (ptx<0)
@@ -653,12 +654,12 @@ bool C4Player::ScenarioInit()
 			}
 			Position=iPosition;
 			// Set x position
-			ptx=Clamp(16+Position*(GBackWdt-32)/(iMaxPos-1),0,GBackWdt-16);
+			ptx=Clamp(16+Position*(::Landscape.GetWidth()-32)/(iMaxPos-1),0,::Landscape.GetWidth()-16);
 		}
 
 	// All-random position
-	if (ptx<0) ptx=16+Random(GBackWdt-32);
-	if (pty<0) pty=16+Random(GBackHgt-32);
+	if (ptx<0) ptx=16+Random(::Landscape.GetWidth()-32);
+	if (pty<0) pty=16+Random(::Landscape.GetHeight()-32);
 
 	// Place to solid ground
 	if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
@@ -1359,8 +1360,8 @@ void C4Player::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt)
 	if (ViewLock) return;
 	SetViewMode(C4PVM_Scrolling);
 	float ViewportScrollBorder = Application.isEditor ? 0 : C4ViewportScrollBorder;
-	ViewX = Clamp<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(GBackWdt+ViewportScrollBorder-ViewWdt/2.0f) );
-	ViewY = Clamp<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(GBackHgt+ViewportScrollBorder-ViewHgt/2.0f) );
+	ViewX = Clamp<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(::Landscape.GetWidth()+ViewportScrollBorder-ViewWdt/2.0f) );
+	ViewY = Clamp<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(::Landscape.GetHeight()+ViewportScrollBorder-ViewHgt/2.0f) );
 }
 
 void C4Player::ClearControl()

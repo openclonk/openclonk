@@ -18,6 +18,7 @@
 /* Object motion, collision, friction */
 
 #include <C4Include.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 
 #include <C4Effect.h>
@@ -169,7 +170,7 @@ void C4Object::SideBounds(C4Real &ctcox)
 	}
 	// landscape bounds
 	C4Real lbound = itofix(0 - Shape.GetX()),
-	       rbound = itofix(GBackWdt - (Shape.GetX() + Shape.Wdt));
+	       rbound = itofix(::Landscape.GetWidth() - (Shape.GetX() + Shape.Wdt));
 	if (ctcox < lbound && GetPropertyInt(P_BorderBound) & C4D_Border_Sides)
 		StopAndContact(ctcox, lbound, xdir, CNAT_Left);
 	if (ctcox > rbound && GetPropertyInt(P_BorderBound) & C4D_Border_Sides)
@@ -192,7 +193,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 	}
 	// landscape bounds
 	C4Real tbound = itofix(0 - Shape.GetY()),
-	       bbound = itofix(GBackHgt - (Shape.GetY() + Shape.Hgt));
+	       bbound = itofix(::Landscape.GetHeight() - (Shape.GetY() + Shape.Hgt));
 	if (ctcoy < tbound && GetPropertyInt(P_BorderBound) & C4D_Border_Top)
 		StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
 	if (ctcoy > bbound && GetPropertyInt(P_BorderBound) & C4D_Border_Bottom)
@@ -578,8 +579,8 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	if (!Def->Rotateable) fix_r=Fix0;
 
 	// Out of bounds check
-	if ((!Inside<int32_t>(GetX() + Shape.GetX(), -Shape.Wdt, GBackWdt) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
-	    || ((GetY() + Shape.GetY() > GBackHgt) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Bottom)))
+	if ((!Inside<int32_t>(GetX() + Shape.GetX(), -Shape.Wdt, ::Landscape.GetWidth()) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
+	    || ((GetY() + Shape.GetY() > ::Landscape.GetHeight()) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Bottom)))
 	{
 		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
@@ -593,9 +594,9 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 				int parX, parY;
 				GetParallaxity(&parX, &parY);
 				fRemove = false;
-				if (GetX()>GBackWdt || GetY()>GBackHgt) fRemove = true; // except if they are really out of the viewport to the right...
+				if (GetX()>::Landscape.GetWidth() || GetY()>::Landscape.GetHeight()) fRemove = true; // except if they are really out of the viewport to the right...
 				else if (GetX()<0 && !!parX) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
-				else if (!parX && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
+				else if (!parX && GetX()<-::Landscape.GetWidth()) fRemove = true; // ...or it's HUD horizontally and it's out to the left
 			}
 			if (fRemove)
 			{
@@ -628,7 +629,7 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 		// Movement to target
 		ctcox=fixtoi(x); ctcoy=fixtoi(y);
 		// Bounds
-		if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt))
+		if (!Inside<int32_t>(ctcox,0,::Landscape.GetWidth()) || (ctcoy>=::Landscape.GetHeight()))
 			return false;
 		// Move to target
 		do

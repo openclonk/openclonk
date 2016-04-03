@@ -15,6 +15,7 @@
  */
 
 #include "C4Include.h"
+#include "script/C4Aul.h"
 #include "C4MeshAnimation.h"
 #include "C4Object.h"
 #include "C4ValueArray.h"

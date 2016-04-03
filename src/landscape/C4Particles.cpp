@@ -23,6 +23,7 @@
 
 #ifndef USE_CONSOLE
 // headers for particle execution
+#include "script/C4Aul.h"
 #include <C4Application.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
@@ -534,7 +535,7 @@ float C4ParticleValueProvider::Wind(C4Particle *forParticle)
 
 float C4ParticleValueProvider::Gravity(C4Particle *forParticle)
 {
-	return startValue + (speedFactor * ::Landscape.Gravity);
+	return startValue + (speedFactor * ::Landscape.GetGravity());
 }
 
 void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)

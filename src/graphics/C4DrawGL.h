@@ -77,6 +77,8 @@ enum C4SS_Uniforms
 	C4SSU_Bones, // for meshes
 	C4SSU_CullMode, // for meshes
 
+	C4SSU_FrameCounter, // for custom shaders
+
 	C4SSU_Count
 };
 

@@ -702,7 +702,7 @@ void C4EditCursor::ApplyToolBrush()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.GetMode(), X,Y,0,0, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolLine()
@@ -710,7 +710,7 @@ void C4EditCursor::ApplyToolLine()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material,pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.GetMode(), X,Y,X2,Y2, pTools->Grade, pTools->Material,pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolRect()
@@ -718,7 +718,7 @@ void C4EditCursor::ApplyToolRect()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.GetMode(), X,Y,X2,Y2, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolFill()
@@ -726,7 +726,7 @@ void C4EditCursor::ApplyToolFill()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.GetMode(), X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
 }
 
 void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
@@ -756,9 +756,9 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 #ifdef USE_WIN32_WINDOWS
 	POINT point; GetCursorPos(&point);
 	HMENU hContext = GetSubMenu(hMenu,0);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_DUPLICATE, fObjectSelected && Console.Editing);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_CONTENTS, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
+	SetMenuItemEnable(hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
+	SetMenuItemEnable(hContext, IDM_VIEWPORT_DUPLICATE, fObjectSelected && Console.Editing);
+	SetMenuItemEnable(hContext, IDM_VIEWPORT_CONTENTS, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
@@ -946,13 +946,13 @@ void C4EditCursor::ApplyToolPicker()
 {
 	int32_t iMaterial;
 	BYTE byIndex;
-	switch (::Landscape.Mode)
+	switch (::Landscape.GetMode())
 	{
-	case C4LSC_Static:
+	case LandscapeMode::Static:
 		{
 			bool material_set = false;
-			int32_t x = X/::Landscape.MapZoom;
-			int32_t y = Y/::Landscape.MapZoom;
+			int32_t x = X/::Landscape.GetMapZoom();
+			int32_t y = Y/::Landscape.GetMapZoom();
 			// Material-texture from map
 			if ((byIndex = ::Landscape.GetMapIndex(x, y)))
 			{
@@ -989,7 +989,7 @@ void C4EditCursor::ApplyToolPicker()
 			if (!material_set) Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
 			break;
 		}
-	case C4LSC_Exact:
+	case LandscapeMode::Exact:
 		// Material only from landscape
 		if (MatValid(iMaterial=GBackMat(X,Y)))
 		{

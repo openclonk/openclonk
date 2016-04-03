@@ -18,10 +18,12 @@
 #include <C4Value.h>
 
 #include <C4AulExec.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4StringTable.h>
 #include <C4ValueArray.h>
 #include <C4Game.h>
+#include "game/C4GameScript.h"
 #include <C4GameObjects.h>
 #include <C4Object.h>
 #include <C4Log.h>

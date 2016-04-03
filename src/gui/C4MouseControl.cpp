@@ -21,6 +21,7 @@
 #include <C4MouseControl.h>
 
 #include <C4Viewport.h>
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4FullScreen.h>
@@ -804,7 +805,7 @@ void C4MouseControl::UpdateFogOfWar()
 	// Check for fog of war
 	// TODO: Check C4FoWRegion... should maybe be passed as a parameter?
 	// pDraw->GetFoW() might not be current at this time.
-	if (/*(pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || */GameX<0 || GameY<0 || int32_t(GameX)>=GBackWdt || int32_t(GameY)>=GBackHgt)
+	if (/*(pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || */GameX<0 || GameY<0 || int32_t(GameX)>=::Landscape.GetWidth() || int32_t(GameY)>=::Landscape.GetHeight())
 	{
 		FogOfWar=true;
 		// allow dragging, scrolling, region selection and manipulations of objects not affected by FoW

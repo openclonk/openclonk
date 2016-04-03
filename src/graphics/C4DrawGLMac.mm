@@ -397,7 +397,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	if (Application.isEditor && viewport && !viewport->GetPlayerLock())
 	{
 		NSScrollView* scrollView = self.controller.scrollView;
-		NSPoint p = NSMakePoint(2*-[event deltaX]/abs(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/abs(GBackHgt-viewport->ViewHgt));
+		NSPoint p = NSMakePoint(2*-[event deltaX]/abs(::Landscape.GetWidth()-viewport->ViewWdt), 2*-[event deltaY]/abs(::Landscape.GetHeight()-viewport->ViewHgt));
 		[scrollView.horizontalScroller setDoubleValue:scrollView.horizontalScroller.doubleValue+p.x];
 		[scrollView.verticalScroller setDoubleValue:scrollView.verticalScroller.doubleValue+p.y];
 		viewport->ViewPositionByScrollBars();

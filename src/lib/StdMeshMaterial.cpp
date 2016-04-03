@@ -625,7 +625,7 @@ void LoadShader(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShaderType type)
 	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 
-	ctx.Manager.AddShader(source.getData(), name.getData(), language.getData(), type, code.getData(), false);
+	ctx.Manager.AddShader(source.getData(), name.getData(), language.getData(), type, code.getData(), StdMeshMatManager::SMM_ForceReload);
 }
 
 StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter():
@@ -885,6 +885,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_MaterialShininess] = "materialShininess";
 	uniformNames[C4SSU_Bones] = "bones";
 	uniformNames[C4SSU_CullMode] = "cullMode";
+	uniformNames[C4SSU_FrameCounter] = "frameCounter";
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
 	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;
@@ -1514,12 +1515,15 @@ void StdMeshMatManager::Clear()
 	GeometryShaders.clear();
 }
 
-void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader)
+std::set<StdCopyStrBuf> StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader)
 {
 	StdMeshMaterialParserCtx ctx(*this, mat_script, filename, loader);
 
 	Token token;
 	StdCopyStrBuf token_name;
+
+	std::set<StdCopyStrBuf> loaded_materials;
+
 	while ((token = ctx.Advance(token_name)) == TOKEN_IDTF)
 	{
 		if (token_name == "material")
@@ -1574,6 +1578,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
 			}
 #endif
+			loaded_materials.insert(material_name);
 		}
 		else if (token_name == "vertex_program")
 		{
@@ -1593,6 +1598,8 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 	if (token != TOKEN_EOF)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
+
+	return loaded_materials;
 }
 
 const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name) const
@@ -1604,11 +1611,20 @@ const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name)
 
 StdMeshMatManager::Iterator StdMeshMatManager::Remove(const Iterator& iter, StdMeshMaterialUpdate* update)
 {
-  if(update) update->Add(&*iter);
-  Iterator next_iter = iter;
-  ++next_iter;
-  Materials.erase(iter.iter_);
-  return next_iter;
+	if(update) update->Add(&*iter);
+	Iterator next_iter = iter;
+	++next_iter;
+	Materials.erase(iter.iter_);
+	return next_iter;
+}
+
+void StdMeshMatManager::Remove(const StdStrBuf &name, StdMeshMaterialUpdate *update)
+{
+	auto it = Materials.find(StdCopyStrBuf(name));
+	if (it == Materials.end())
+		return;
+	if (update) update->Add(&it->second);
+	Materials.erase(it);
 }
 
 const StdMeshMaterialShader* StdMeshMatManager::GetFragmentShader(const char* name) const
@@ -1632,7 +1648,7 @@ const StdMeshMaterialShader* StdMeshMatManager::GetGeometryShader(const char* na
 	return iter->second.get();
 }
 
-const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, bool success_if_exists)
+const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, uint32_t load_flags)
 {
 	ShaderMap* map = NULL;
 	switch(type)
@@ -1650,23 +1666,24 @@ const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* filename, 
 
 	StdCopyStrBuf name_buf(name);
 	ShaderMap::iterator iter = map->find(name_buf);
+	
 	if(iter != map->end())
 	{
 		// Shader exists
-		if(success_if_exists)
+		if ((load_flags & SMM_ForceReload) == SMM_ForceReload)
+			map->erase(iter);
+		else if ((load_flags & SMM_AcceptExisting) == SMM_AcceptExisting)
 			return iter->second.get();
 		else
 			return NULL;
 	}
-	else
-	{
-		std::unique_ptr<StdMeshMaterialShader> shader(new StdMeshMaterialShader(filename, name, language, type, text));
-		std::pair<ShaderMap::iterator, bool> inserted = map->insert(std::make_pair(name_buf, std::move(shader)));
-		assert(inserted.second == true);
-		iter = inserted.first;
 
-		return iter->second.get();
-	}
+	std::unique_ptr<StdMeshMaterialShader> shader(new StdMeshMaterialShader(filename, name, language, type, text));
+	std::pair<ShaderMap::iterator, bool> inserted = map->insert(std::make_pair(name_buf, std::move(shader)));
+	assert(inserted.second == true);
+	iter = inserted.first;
+
+	return iter->second.get();
 }
 
 const StdMeshMaterialProgram* StdMeshMatManager::AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader)

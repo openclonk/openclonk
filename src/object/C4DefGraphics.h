@@ -135,6 +135,8 @@ public:
 	void AssignUpdate();   // update all game objects with new graphics pointers
 	void AssignRemoval();  // remove graphics of all defs from all game objects
 
+	StdMeshMaterialUpdate &GetUpdater() { return MeshMaterialUpdate; }
+
 private:
 	void UpdateMesh(StdMeshInstance* instance);
 

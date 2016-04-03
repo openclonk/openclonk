@@ -26,6 +26,8 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Record.h>
+#include "object/C4Def.h"
+#include "script/C4ScriptHost.h"
 #include <algorithm>
 
 C4AulExec AulExec;

@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4ObjectList.h>
 
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Application.h>

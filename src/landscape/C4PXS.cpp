@@ -48,7 +48,7 @@ void C4PXS::Execute()
 		{ Deactivate(); return; }
 
 	// Out of bounds
-	if ((x<0) || (x>=GBackWdt) || (y<-10) || (y>=GBackHgt))
+	if ((x<0) || (x>=::Landscape.GetWidth()) || (y<-10) || (y>=::Landscape.GetHeight()))
 		{ Deactivate(); return; }
 
 	// Material conversion
@@ -80,7 +80,7 @@ void C4PXS::Execute()
 	int32_t iToX = fixtoi(ctcox), iToY = fixtoi(ctcoy);
 
 	// In bounds?
-	if (Inside<int32_t>(iToX, 0, GBackWdt-1) && Inside<int32_t>(iToY, 0, GBackHgt-1))
+	if (Inside<int32_t>(iToX, 0, ::Landscape.GetWidth()-1) && Inside<int32_t>(iToY, 0, ::Landscape.GetHeight()-1))
 		// Check path
 		if (::Landscape._PathFree(iX, iY, iToX, iToY))
 		{

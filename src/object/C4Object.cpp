@@ -21,6 +21,7 @@
 #include <C4Object.h>
 
 #include <C4AulExec.h>
+#include "object/C4Def.h"
 #include <C4DefList.h>
 #include <C4Effect.h>
 #include <C4ObjectInfo.h>
@@ -581,6 +582,14 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		if (!C4ValueToMatrix(value, &matrix))
 			matrix = StdMeshMatrix::Identity();
 
+		if (fix_r != Fix0)
+		{
+			const auto mesh_center = pMeshInstance->GetMesh().GetBoundingBox().GetCenter();
+			matrix = StdMeshMatrix::Translate(-mesh_center.x, -mesh_center.y, -mesh_center.z) * matrix;
+			matrix = StdMeshMatrix::Rotate(fixtof(fix_r) * (M_PI / 180.0f), 0.0f, 0.0f, 1.0f) * matrix;
+			matrix = StdMeshMatrix::Translate(mesh_center.x, mesh_center.y, mesh_center.z) * matrix;
+		}
+
 		if(twdt != fwdt || thgt != fhgt)
 		{
 			// Also scale Z so that the mesh is not totally distorted and
@@ -623,8 +632,8 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		fhgt = thgt;
 	}
 
-	// Straight
-	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
+	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
 	{
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
@@ -696,8 +705,8 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		fhgt -= offset_from_top;
 	}
 
-	// Straight
-	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
+	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 	}
@@ -4185,7 +4194,7 @@ bool C4Object::SetLightColor(uint32_t iValue)
 
 void C4Object::UpdateLight()
 {
-	if (Landscape.pFoW) Landscape.pFoW->Add(this);
+	if (Landscape.HasFoW()) Landscape.GetFoW()->Add(this);
 }
 
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY, int32_t player)
@@ -4464,6 +4473,11 @@ void C4Object::UnSelect()
 	Call(PSF_CrewSelection, &C4AulParSet(true));
 }
 
+void C4Object::GetViewPos(float & riX, float & riY, float tx, float ty, const C4Facet & fctViewport) const       // get position this object is seen at (for given scroll)
+{
+	if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX = float(GetX()); riY = float(GetY()); }
+}
+
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
 	float & resultx, float & resulty, float & resultzoom) const
 {
@@ -4691,7 +4705,7 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	// put into inactive list
 	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
-	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
+	if (Landscape.HasFoW()) Landscape.GetFoW()->Remove(this);
 	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)
@@ -4926,6 +4940,15 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject) const
 	}
 	// concat OK
 	return true;
+}
+
+bool C4Object::IsMoveableBySolidMask(int ComparisonPlane) const
+{
+	return (Status == C4OS_NORMAL)
+		&& !(Category & C4D_StaticBack)
+		&& (ComparisonPlane < GetPlane())
+		&& !Contained
+		;
 }
 
 void C4Object::UpdateScriptPointers()

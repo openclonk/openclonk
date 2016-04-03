@@ -70,10 +70,14 @@ private:
 		int Position;
 		StdCopyStrBuf Text;
 		StdCopyStrBuf Source;
+		int SourceLine;
 		int SourceTime;
 	};
 	typedef std::list<ShaderSlice> ShaderSliceList;
 	ShaderSliceList VertexSlices, FragmentSlices;
+	std::vector<std::string> SourceFiles;
+
+	int GetSourceFileId(const char *file) const;
 
 	// Last refresh check
 	C4TimeMilliseconds LastRefresh;
@@ -135,7 +139,7 @@ public:
 	// Shader is composed from various slices
 	void AddDefine(const char* name);
 	void AddVertexSlice(int iPos, const char *szText);
-	void AddFragmentSlice(int iPos, const char *szText, const char *szSource = "", int iFileTime = 0);
+	void AddFragmentSlice(int iPos, const char *szText);
 	void AddVertexSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	void AddFragmentSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	bool LoadFragmentSlices(C4GroupSet *pGroupSet, const char *szFile);
@@ -149,7 +153,7 @@ public:
 	void Clear();
 
 private:
-	void AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iFileTime);
+	void AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int line, int iFileTime);
 	void AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iFileTime);
 	bool LoadSlices(ShaderSliceList& slices, C4GroupSet *pGroupSet, const char *szFile);
 	int ParsePosition(const char *szWhat, const char **ppPos);

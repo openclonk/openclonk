@@ -70,8 +70,8 @@ struct LightMapZoom {
 	bool operator()(int x, int y) const
 	{
 		// Landscape coordinates
-		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
-		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
+		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.GetWidth() - 1);
+		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.GetHeight() - 1);
 		// LightMap check
 		return ::Landscape._GetLight(lx, ly);
 	}
@@ -124,8 +124,8 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	FullCoverage = full_coverage;
 
 	// Number of zoomed pixels
-	LandscapeX = landscape.Width;
-	LandscapeY = landscape.Height;
+	LandscapeX = Landscape.GetWidth();
+	LandscapeY = Landscape.GetHeight();
 	SizeX = std::min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeX / resolution)), pDraw->MaxTexSize);
 	SizeY = std::min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeY / resolution)), pDraw->MaxTexSize);
 
@@ -139,7 +139,7 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SizeX, SizeY, 0, GL_RED, GL_FLOAT, NULL);
 
 	const C4TimeMilliseconds begin = C4TimeMilliseconds::Now();
-	UpdateFromLandscape(landscape, C4Rect(0, 0, landscape.Width, landscape.Height));
+	UpdateFromLandscape(landscape, C4Rect(0, 0, Landscape.GetWidth(), Landscape.GetHeight()));
 	uint32_t dt = C4TimeMilliseconds::Now() - begin;
 	LogF("Created %ux%u ambient map in %g secs", SizeX, SizeY, dt / 1000.);
 #endif
@@ -154,8 +154,8 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	assert(Tex != 0);
 
 	// Factor to go from zoomed to landscape coordinates
-	const double zoom_x = static_cast<double>(landscape.Width) / SizeX;
-	const double zoom_y = static_cast<double>(landscape.Height) / SizeY;
+	const double zoom_x = static_cast<double>(Landscape.GetWidth()) / SizeX;
+	const double zoom_y = static_cast<double>(Landscape.GetHeight()) / SizeY;
 	// Update region in zoomed coordinates
 	const unsigned int left = std::max(static_cast<int>( (update.x - Radius) / zoom_x), 0);
 	const unsigned int right = std::min(static_cast<unsigned int>( (update.x + update.Wdt + Radius) / zoom_x), SizeX - 1) + 1;

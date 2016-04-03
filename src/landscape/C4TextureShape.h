@@ -45,7 +45,7 @@ public:
 	int32_t GetMaxPolyWidth() const { return GetWidth() / 4; }
 	int32_t GetMaxPolyHeight() const { return GetHeight() / 4; }
 
-	void Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio);
+	void Draw(const CSurface8 &sfcMap, const CSurface8 &sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio);
 };
 
 #endif

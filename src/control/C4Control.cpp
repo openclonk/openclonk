@@ -37,11 +37,13 @@
 #include <C4GameMessage.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include "game/C4GameScript.h"
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include <C4ScriptGuiWindow.h>
 #include "gui/C4MessageInput.h"
+#include "object/C4Def.h"
 #include "object/C4DefList.h"
 
 #ifndef NOAULDEBUG
@@ -1373,7 +1375,7 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlEMDrawTool
 
-C4ControlEMDrawTool::C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
+C4ControlEMDrawTool::C4ControlEMDrawTool(C4ControlEMDrawAction eAction, LandscapeMode iMode,
     int32_t iX, int32_t iY, int32_t iX2, int32_t iY2, int32_t iGrade,
     const char *szMaterial, const char *szTexture, const char *szBackMaterial, const char *szBackTexture)
 		: eAction(eAction), iMode(iMode), iX(iX), iY(iY), iX2(iX2), iY2(iY2), iGrade(iGrade),
@@ -1392,8 +1394,8 @@ void C4ControlEMDrawTool::Execute() const
 		return;
 	}
 	// check current mode
-	assert(::Landscape.Mode == iMode);
-	if (::Landscape.Mode != iMode) return;
+	assert(::Landscape.GetMode() == iMode);
+	if (::Landscape.GetMode() != iMode) return;
 	// assert validity of parameters
 	if (!Material.getSize()) return;
 	const char *szMaterial = Material.getData(),
@@ -1436,7 +1438,7 @@ void C4ControlEMDrawTool::Execute() const
 void C4ControlEMDrawTool::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eAction), "Action"));
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iMode), "Mode", 0));
+	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(iMode), "Mode", LandscapeMode::Undefined));
 	pComp->Value(mkNamingAdapt(iX, "X", 0));
 	pComp->Value(mkNamingAdapt(iY, "Y", 0));
 	pComp->Value(mkNamingAdapt(iX2, "X2", 0));

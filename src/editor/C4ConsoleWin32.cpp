@@ -31,6 +31,7 @@
 #include "C4Viewport.h"
 #include <StdRegistry.h>
 #include "lib/StdColors.h"
+#include "landscape/C4Sky.h"
 
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
@@ -630,15 +631,15 @@ INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONMODEDYNAMIC:
-			Console.ToolsDlg.SetLandscapeMode(C4LSC_Dynamic);
+			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Dynamic);
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONMODESTATIC:
-			Console.ToolsDlg.SetLandscapeMode(C4LSC_Static);
+			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static);
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONMODEEXACT:
-			Console.ToolsDlg.SetLandscapeMode(C4LSC_Exact);
+			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Exact);
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONBRUSH:
@@ -1251,7 +1252,7 @@ void C4ToolsDlg::UpdateTextures()
 		SendDlgItemMessage(state->hDialog, box, CB_RESETCONTENT, 0, (LPARAM)0);
 		// bottom-most: any invalid textures
 		bool fAnyEntry = false; int32_t cnt; const char *szTexture;
-		if (::Landscape.Mode != C4LSC_Exact)
+		if (::Landscape.GetMode() != LandscapeMode::Exact)
 			for (cnt = 0; (szTexture = ::TextureMap.GetTexture(cnt)); cnt++)
 			{
 				if (!::TextureMap.GetIndex(material, szTexture, false))
@@ -1275,7 +1276,7 @@ void C4ToolsDlg::UpdateTextures()
 		for (cnt = 0; (szTexture = ::TextureMap.GetTexture(cnt)); cnt++)
 		{
 			// Current material-texture valid? Always valid for exact mode
-			if (::TextureMap.GetIndex(material, szTexture, false) || ::Landscape.Mode == C4LSC_Exact)
+			if (::TextureMap.GetIndex(material, szTexture, false) || ::Landscape.GetMode() == LandscapeMode::Exact)
 			{
 				SendDlgItemMessage(state->hDialog, box, CB_INSERTSTRING, 0, GetWideLPARAM(szTexture));
 			}
@@ -1311,7 +1312,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	// Sky material: sky as pattern only
 	if (SEqual(Material,C4TLS_MatSky))
 	{
-		Pattern.Set(::Landscape.Sky.Surface, 0);
+		Pattern.Set(::Landscape.GetSky().Surface, 0);
 	}
 	// Material-Texture
 	else
@@ -1375,52 +1376,52 @@ void C4ToolsDlg::UpdateIFTControls()
 
 void C4ToolsDlg::UpdateLandscapeModeCtrls()
 {
-	int32_t iMode = ::Landscape.Mode;
+	LandscapeMode iMode = ::Landscape.GetMode();
 	// Dynamic: enable only if dynamic anyway
-	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODEDYNAMIC,BM_SETSTATE,(iMode==C4LSC_Dynamic),0);
-	EnableWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODEDYNAMIC),(iMode==C4LSC_Dynamic));
+	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODEDYNAMIC,BM_SETSTATE,(iMode==LandscapeMode::Dynamic),0);
+	EnableWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODEDYNAMIC),(iMode==LandscapeMode::Dynamic));
 	UpdateWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODEDYNAMIC));
 	// Static: enable only if map available
-	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODESTATIC,BM_SETSTATE,(iMode==C4LSC_Static),0);
+	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODESTATIC,BM_SETSTATE,(iMode==LandscapeMode::Static),0);
 	EnableWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODESTATIC),(::Landscape.HasMap()));
 	UpdateWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODESTATIC));
 	// Exact: enable always
-	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODEEXACT,BM_SETSTATE,(iMode==C4LSC_Exact),0);
+	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODEEXACT,BM_SETSTATE,(iMode==LandscapeMode::Exact),0);
 	UpdateWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODEEXACT));
 	// Set dialog caption
-	SetWindowTextW(state->hDialog,LoadResStrW(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
+	SetWindowTextW(state->hDialog,LoadResStrW(iMode==LandscapeMode::Dynamic ? "IDS_DLG_DYNAMIC" : iMode==LandscapeMode::Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
 }
 
 
 void C4ToolsDlg::EnableControls()
 {
 	HWND hDialog = state->hDialog;
-	int32_t iLandscapeMode=::Landscape.Mode;
+	LandscapeMode iLandscapeMode = ::Landscape.GetMode();
 	// Set bitmap buttons
-	SendDlgItemMessage(hDialog,IDC_BUTTONBRUSH,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=C4LSC_Static) ? state->hbmBrush : state->hbmBrush2));
-	SendDlgItemMessage(hDialog,IDC_BUTTONLINE,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=C4LSC_Static) ? state->hbmLine : state->hbmLine2));
-	SendDlgItemMessage(hDialog,IDC_BUTTONRECT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=C4LSC_Static) ? state->hbmRect : state->hbmRect2));
-	SendDlgItemMessage(hDialog,IDC_BUTTONFILL,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=C4LSC_Exact) ? state->hbmFill : state->hbmFill2));
-	SendDlgItemMessage(hDialog,IDC_BUTTONPICKER,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=C4LSC_Static) ? state->hbmPicker : state->hbmPicker2));
+	SendDlgItemMessage(hDialog,IDC_BUTTONBRUSH,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=LandscapeMode::Static) ? state->hbmBrush : state->hbmBrush2));
+	SendDlgItemMessage(hDialog,IDC_BUTTONLINE,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=LandscapeMode::Static) ? state->hbmLine : state->hbmLine2));
+	SendDlgItemMessage(hDialog,IDC_BUTTONRECT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=LandscapeMode::Static) ? state->hbmRect : state->hbmRect2));
+	SendDlgItemMessage(hDialog,IDC_BUTTONFILL,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=LandscapeMode::Exact) ? state->hbmFill : state->hbmFill2));
+	SendDlgItemMessage(hDialog,IDC_BUTTONPICKER,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((iLandscapeMode>=LandscapeMode::Static) ? state->hbmPicker : state->hbmPicker2));
 	SendDlgItemMessage(hDialog,IDC_BUTTONMODEDYNAMIC,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)state->hbmDynamic);
 	SendDlgItemMessage(hDialog,IDC_BUTTONMODESTATIC,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)state->hbmStatic);
 	SendDlgItemMessage(hDialog,IDC_BUTTONMODEEXACT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)state->hbmExact);
 	// Enable drawing controls
-	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONBRUSH),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONLINE),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONRECT),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONFILL),(iLandscapeMode>=C4LSC_Exact));
-	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONPICKER),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_COMBOFGMATERIAL),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_COMBOFGTEXTURE),(iLandscapeMode>=C4LSC_Static) && !SEqual(Material,C4TLS_MatSky));
-	EnableWindow(GetDlgItem(hDialog,IDC_COMBOBGMATERIAL), (iLandscapeMode >= C4LSC_Static) && !SEqual(Material, C4TLS_MatSky));
-	EnableWindow(GetDlgItem(hDialog, IDC_COMBOBGTEXTURE), (iLandscapeMode >= C4LSC_Static) && !SEqual(Material, C4TLS_MatSky) && !SEqual(BackMaterial, C4TLS_MatSky));
-	EnableWindow(GetDlgItem(hDialog,IDC_STATICMATERIAL),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_STATICTEXTURE),(iLandscapeMode>=C4LSC_Static) && !SEqual(Material,C4TLS_MatSky));
-	EnableWindow(GetDlgItem(hDialog,IDC_STATICFOREGROUND), (iLandscapeMode >= C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_STATICBACKGROUND), (iLandscapeMode >= C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_SLIDERGRADE),(iLandscapeMode>=C4LSC_Static));
-	EnableWindow(GetDlgItem(hDialog,IDC_PREVIEW),(iLandscapeMode>=C4LSC_Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONBRUSH),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONLINE),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONRECT),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONFILL),(iLandscapeMode>=LandscapeMode::Exact));
+	EnableWindow(GetDlgItem(hDialog,IDC_BUTTONPICKER),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_COMBOFGMATERIAL),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_COMBOFGTEXTURE),(iLandscapeMode>=LandscapeMode::Static) && !SEqual(Material,C4TLS_MatSky));
+	EnableWindow(GetDlgItem(hDialog,IDC_COMBOBGMATERIAL), (iLandscapeMode >= LandscapeMode::Static) && !SEqual(Material, C4TLS_MatSky));
+	EnableWindow(GetDlgItem(hDialog, IDC_COMBOBGTEXTURE), (iLandscapeMode >= LandscapeMode::Static) && !SEqual(Material, C4TLS_MatSky) && !SEqual(BackMaterial, C4TLS_MatSky));
+	EnableWindow(GetDlgItem(hDialog,IDC_STATICMATERIAL),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_STATICTEXTURE),(iLandscapeMode>=LandscapeMode::Static) && !SEqual(Material,C4TLS_MatSky));
+	EnableWindow(GetDlgItem(hDialog,IDC_STATICFOREGROUND), (iLandscapeMode >= LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_STATICBACKGROUND), (iLandscapeMode >= LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_SLIDERGRADE),(iLandscapeMode>=LandscapeMode::Static));
+	EnableWindow(GetDlgItem(hDialog,IDC_PREVIEW),(iLandscapeMode>=LandscapeMode::Static));
 
 	NeedPreviewUpdate();
 }

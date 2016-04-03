@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4GameMessage.h>
 
+#include "object/C4Def.h"
 #include <C4Object.h>
 #include <C4GraphicsResource.h>
 #include <C4Player.h>

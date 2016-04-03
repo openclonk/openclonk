@@ -145,6 +145,11 @@ struct StdMeshBox
 {
 	float x1, y1, z1;
 	float x2, y2, z2;
+
+	StdMeshVector GetCenter() const
+	{
+		return StdMeshVector{ (x2 + x1) / 2.0f, (y2 + y1) / 2.0f, (z2 + z1) / 2.0f };
+	}
 };
 
 class StdSubMesh

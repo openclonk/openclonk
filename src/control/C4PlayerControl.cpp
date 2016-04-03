@@ -32,6 +32,7 @@
 #include "C4Viewport.h"
 #include "C4Object.h"
 #include "C4ObjectMenu.h"
+#include "script/C4Aul.h"
 
 #include <algorithm>
 

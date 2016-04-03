@@ -56,6 +56,13 @@ C4Shader::~C4Shader()
 	Clear();
 }
 
+int C4Shader::GetSourceFileId(const char *file) const
+{
+	auto it = std::find(SourceFiles.begin(), SourceFiles.end(), file);
+	if (it == SourceFiles.end()) return -1;
+	return std::distance(SourceFiles.begin(), it);
+}
+
 void C4Shader::AddDefine(const char* name)
 {
 	StdStrBuf define = FormatString("#define %s", name);
@@ -65,12 +72,12 @@ void C4Shader::AddDefine(const char* name)
 
 void C4Shader::AddVertexSlice(int iPos, const char *szText)
 {
-	AddSlice(VertexSlices, iPos, szText, NULL, 0);
+	AddSlice(VertexSlices, iPos, szText, NULL, 0, 0);
 }
 
-void C4Shader::AddFragmentSlice(int iPos, const char *szText, const char *szSource, int iSourceTime)
+void C4Shader::AddFragmentSlice(int iPos, const char *szText)
 {
-	AddSlice(FragmentSlices, iPos, szText, szSource, iSourceTime);
+	AddSlice(FragmentSlices, iPos, szText, NULL, 0, 0);
 }
 
 void C4Shader::AddVertexSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
@@ -93,26 +100,31 @@ bool C4Shader::LoadVertexSlices(C4GroupSet *pGroups, const char *szFile)
 	return LoadSlices(VertexSlices, pGroups, szFile);
 }
 
-void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iSourceTime)
+void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int line, int iSourceTime)
 {
 	ShaderSlice Slice;
 	Slice.Position = iPos;
 	Slice.Text.Copy(szText);
 	Slice.Source = szSource;
 	Slice.SourceTime = iSourceTime;
+	Slice.SourceLine = line;
 	slices.push_back(Slice);
 }
 
 void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
 {
+	if (std::find(SourceFiles.cbegin(), SourceFiles.cend(), szSource) == SourceFiles.cend())
+		SourceFiles.push_back(szSource);
+
 	const char *pStart = szText, *pPos = szText;
 	int iDepth = -1;
 	int iPosition = -1;
 	bool fGotContent = false; // Anything in the slice apart from comments and white-space?
+	
+#define SKIP_WHITESPACE do { while(isspace(*pPos)) { ++pPos; } } while (0)
 
 	// Find slices
 	while(*pPos) {
-
 		// Comment? Might seem silly, but we don't want to get confused by braces in comments...
 		if (*pPos == '/' && *(pPos + 1) == '/') {
 			pPos += 2;
@@ -121,7 +133,10 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 		}
 		if (*pPos == '/' && *(pPos + 1) == '*') {
 			pPos += 2;
-			while (*pPos && (*pPos != '*' || *(pPos+1) != '/')) pPos++;
+			while (*pPos && (*pPos != '*' || *(pPos + 1) != '/'))
+			{
+				pPos++;
+			}
 			if (*pPos) pPos += 2;
 			continue;
 		}
@@ -139,7 +154,7 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 				if (fGotContent)
 				{
 					StdStrBuf Str; Str.Copy(pStart, pPos - pStart);
-					AddSlice(slices, iPosition, Str.getData(), szSource, iSourceTime);
+					AddSlice(slices, iPosition, Str.getData(), szSource, SGetLine(szText, pStart), iSourceTime);
 				}
 
 				iPosition = -1;
@@ -158,7 +173,7 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 		if (*pPos == '\n') {
 			if (SEqual2(pPos+1, "slice") && !isalnum(*(pPos+6))) {
 				const char *pSliceEnd = pPos; pPos += 6;
-				while(isspace(*pPos)) pPos++;
+				SKIP_WHITESPACE;
 				if(*pPos != '(') { pPos++; continue; }
 				pPos++;
 
@@ -166,19 +181,19 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 				iPosition = ParsePosition(szWhat, &pPos);
 				if (iPosition != -1) {
 					// Make sure a closing parenthesis
-					while(isspace(*pPos)) pPos++;
+					SKIP_WHITESPACE;
 					if(*pPos != ')') { pPos++; continue; }
 					pPos++;
 
 					// Make sure an opening brace follows
-					while(isspace(*pPos)) pPos++;
+					SKIP_WHITESPACE;
 					if (*pPos == '{') {
 
 						// Add code before "slice" as new slice
 						if (fGotContent)
 						{
 							StdStrBuf Str; Str.Copy(pStart, pSliceEnd - pStart);
-							AddSlice(slices, -1, Str.getData(), szSource, iSourceTime);
+							AddSlice(slices, -1, Str.getData(), szSource, SGetLine(szText, pSliceEnd), iSourceTime);
 						}
 
 						iDepth = 0;
@@ -202,9 +217,9 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 	if (fGotContent)
 	{
 		StdStrBuf Str; Str.Copy(pStart, pPos - pStart);
-		AddSlice(slices, iPosition, Str.getData(), szSource, iSourceTime);
+		AddSlice(slices, iPosition, Str.getData(), szSource, SGetLine(szText, pStart), iSourceTime);
 	}
-
+#undef SKIP_WHITESPACE
 }
 
 int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
@@ -459,7 +474,6 @@ bool C4Shader::Refresh()
 
 StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 {
-
 	// At the start of the shader set the #version and number of
 	// available uniforms
 	StdStrBuf Buf;
@@ -495,9 +509,12 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 			if (fDebug)
 			{
 				if (pSlice->Source.getLength())
-					Buf.AppendFormat("\t// Slice from %s:\n", pSlice->Source.getData());
+				{
+					// GLSL below 3.30 consider the line after a #line N directive to be N + 1; 3.30 and higher consider it N
+					Buf.AppendFormat("\t// Slice from %s:\n#line %d %d\n", pSlice->Source.getData(), pSlice->SourceLine - (C4Shader_Version < 330), GetSourceFileId(pSlice->Source.getData()) + 1);
+				}
 				else
-					Buf.Append("\t// Built-in slice:\n");
+					Buf.Append("\t// Built-in slice:\n#line 1 0\n");
 				}
 			Buf.Append(pSlice->Text);
 			if (Buf[Buf.getLength()-1] != '\n')
@@ -512,6 +529,10 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 
 	// Terminate
 	Buf.Append("}\n");
+
+	Buf.Append("// File number to name mapping:\n//\t  0: <built-in shader code>\n");
+	for (int i = 0; i < SourceFiles.size(); ++i)
+		Buf.AppendFormat("//\t%3d: %s\n", i + 1, SourceFiles[i].c_str());
 	return Buf;
 }
 

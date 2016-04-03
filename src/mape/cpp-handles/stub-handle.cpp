@@ -29,6 +29,7 @@
 #include "C4Record.h"
 #include "C4RoundResults.h"
 #include "C4TextureShape.h"
+#include "landscape/C4Sky.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. */
@@ -75,15 +76,6 @@ void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }
 float C4DefList::GetFontImageAspect(const char* szImageTag) { return -1.0f; }
-
-C4Landscape::C4Landscape() {}
-C4Landscape::~C4Landscape() {}
-bool C4Landscape::FindMatSlide(int&, int&, int, int, int) const { return false; }
-int32_t C4Landscape::ExtractMaterial(int32_t, int32_t, bool) { return 0; }
-bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t, bool) { return false; }
-bool C4Landscape::Incinerate(int32_t, int32_t, int32_t) { return false; }
-bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }
-void C4Landscape::CheckInstabilityRange(int32_t, int32_t) {}
 
 void C4Sky::Default() {}
 C4Sky::~C4Sky() {}

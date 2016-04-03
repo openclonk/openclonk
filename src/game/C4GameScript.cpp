@@ -43,6 +43,8 @@
 #include <C4Weather.h>
 #include <C4Viewport.h>
 #include <C4FoW.h>
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Sky.h"
 
 // undocumented!
 static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY, long caused_by_plr)
@@ -53,12 +55,12 @@ static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY, long cau
 
 static void FnSetGravity(C4PropList * _this, long iGravity)
 {
-	::Landscape.Gravity = C4REAL100(Clamp<long>(iGravity,-1000,1000));
+	::Landscape.SetGravity(C4REAL100(Clamp<long>(iGravity,-1000,1000)));
 }
 
 static long FnGetGravity(C4PropList * _this)
 {
-	return fixtoi(::Landscape.Gravity * 100);
+	return fixtoi(::Landscape.GetGravity() * 100);
 }
 
 static C4String *FnGetPlayerName(C4PropList * _this, long iPlayer)
@@ -364,9 +366,9 @@ static long FnGetMaterialCount(C4PropList * _this, long iMaterial, bool fReal)
 {
 	if (!MatValid(iMaterial)) return -1;
 	if (fReal || !::MaterialMap.Map[iMaterial].MinHeightCount)
-		return ::Landscape.MatCount[iMaterial];
+		return ::Landscape.GetMatCount(iMaterial);
 	else
-		return ::Landscape.EffectiveMatCount[iMaterial];
+		return ::Landscape.GetEffectiveMatCount(iMaterial);
 }
 
 static long FnGetMaterial(C4PropList * _this, long x, long y)
@@ -386,7 +388,7 @@ static C4String *FnGetTexture(C4PropList * _this, long x, long y)
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 
 	// Get texture
-	int32_t iTex = PixCol2Tex(GBackPix(x, y));
+	int32_t iTex = PixCol2Tex(::Landscape.GetPix(x, y));
 	if (!iTex) return NULL;
 	// Get material-texture mapping
 	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
@@ -1211,15 +1213,15 @@ static long FnGetTemperature(C4PropList * _this)
 
 static void FnSetAmbientBrightness(C4PropList * _this, long iBrightness)
 {
-	if (::Landscape.pFoW)
-		::Landscape.pFoW->Ambient.SetBrightness(iBrightness / 100.);
+	if (::Landscape.HasFoW())
+		::Landscape.GetFoW()->Ambient.SetBrightness(iBrightness / 100.);
 }
 
 static long FnGetAmbientBrightness(C4PropList * _this)
 {
-	if (!::Landscape.pFoW)
+	if (!::Landscape.HasFoW())
 		return 100;
-	return static_cast<long>(::Landscape.pFoW->Ambient.GetBrightness() * 100. + 0.5);
+	return static_cast<long>(::Landscape.GetFoW()->Ambient.GetBrightness() * 100. + 0.5);
 }
 
 static void FnSetSeason(C4PropList * _this, long iSeason)
@@ -1244,12 +1246,12 @@ static long FnGetClimate(C4PropList * _this)
 
 static long FnLandscapeWidth(C4PropList * _this)
 {
-	return GBackWdt;
+	return ::Landscape.GetWidth();
 }
 
 static long FnLandscapeHeight(C4PropList * _this)
 {
-	return GBackHgt;
+	return ::Landscape.GetHeight();
 }
 
 static void FnShakeFree(C4PropList * _this, long x, long y, long rad)
@@ -1663,7 +1665,7 @@ static C4String *FnMaterialName(C4PropList * _this, long iMat)
 static bool FnSetSkyAdjust(C4PropList * _this, long dwAdjust, long dwBackClr)
 {
 	// set adjust
-	::Landscape.Sky.SetModulation(dwAdjust, dwBackClr);
+	::Landscape.GetSky().SetModulation(dwAdjust, dwBackClr);
 	// success
 	return true;
 }
@@ -1679,7 +1681,7 @@ static bool FnSetMatAdjust(C4PropList * _this, long dwAdjust)
 static long FnGetSkyAdjust(C4PropList * _this, bool fBackColor)
 {
 	// get adjust
-	return ::Landscape.Sky.GetModulation(!!fBackColor);
+	return ::Landscape.GetSky().GetModulation(!!fBackColor);
 }
 
 static long FnGetMatAdjust(C4PropList * _this)
@@ -1936,13 +1938,13 @@ static bool FnSetSkyParallax(C4PropList * _this, Nillable<long> iMode, Nillable<
 {
 	// set all parameters that aren't nil
 	if (!iMode.IsNil())
-		if (Inside<long>(iMode, 0, 1)) ::Landscape.Sky.ParallaxMode = iMode;
-	if (!iParX.IsNil() && iParX) ::Landscape.Sky.ParX = iParX;
-	if (!iParY.IsNil() && iParY) ::Landscape.Sky.ParY = iParY;
-	if (!iXDir.IsNil()) ::Landscape.Sky.xdir = itofix(iXDir);
-	if (!iYDir.IsNil()) ::Landscape.Sky.ydir = itofix(iYDir);
-	if (!iX.IsNil()) ::Landscape.Sky.x = itofix(iX);
-	if (!iY.IsNil()) ::Landscape.Sky.y = itofix(iY);
+		if (Inside<long>(iMode, 0, 1)) ::Landscape.GetSky().ParallaxMode = iMode;
+	if (!iParX.IsNil() && iParX) ::Landscape.GetSky().ParX = iParX;
+	if (!iParY.IsNil() && iParY) ::Landscape.GetSky().ParY = iParY;
+	if (!iXDir.IsNil()) ::Landscape.GetSky().xdir = itofix(iXDir);
+	if (!iYDir.IsNil()) ::Landscape.GetSky().ydir = itofix(iYDir);
+	if (!iX.IsNil()) ::Landscape.GetSky().x = itofix(iX);
+	if (!iY.IsNil()) ::Landscape.GetSky().y = itofix(iY);
 	// success
 	return true;
 }

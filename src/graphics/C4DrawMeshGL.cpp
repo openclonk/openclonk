@@ -395,7 +395,7 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 			{
 				StdStrBuf buf = GetVertexShaderCodeForPass(pass, Workarounds.LowMaxVertexUniformCount);
 				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-				pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
+				pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), StdMeshMatManager::SMM_AcceptExisting);
 				custom_shader = false;
 			}
 
@@ -404,7 +404,7 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 				// TODO: Should use shared_params once we introduce them
 				StdStrBuf buf = GetFragmentShaderCodeForPass(pass, pass.FragmentShader.Parameters);
 				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-				pass.FragmentShader.Shader = mat_manager.AddShader("auto-generated fragment shader", hash.getData(), "glsl", SMMS_FRAGMENT, buf.getData(), true);
+				pass.FragmentShader.Shader = mat_manager.AddShader("auto-generated fragment shader", hash.getData(), "glsl", SMMS_FRAGMENT, buf.getData(), StdMeshMatManager::SMM_AcceptExisting);
 			}
 
 			// Then, link the program, and resolve parameter locations
@@ -418,7 +418,7 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 				{
 					StdStrBuf buf = GetVertexShaderCodeForPass(pass, true);
 					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-					pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
+					pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), StdMeshMatManager::SMM_AcceptExisting);
 
 					added_program = mat_manager.AddProgram(name.getData(), loader, pass.FragmentShader, pass.VertexShader, pass.GeometryShader);
 					if(added_program)
@@ -538,6 +538,9 @@ namespace
 			pFoW->getFoW()->Ambient.GetFragTransform(pFoW->getViewportRegion(), clipRect, outRect, ambientTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 		}
+
+		// Current frame counter
+		call.SetUniform1i(C4SSU_FrameCounter, ::Game.FrameCounter);
 	}
 
 	bool ResolveAutoParameter(C4ShaderCall& call, StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect)
