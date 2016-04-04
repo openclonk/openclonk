@@ -60,6 +60,7 @@ public func IsInfiniteStackCount() { return count_is_infinite; }
 
 protected func Construction()
 {
+	count_is_infinite = false;
 	count = MaxStackCount();
 	return _inherited(...);
 }
@@ -244,7 +245,6 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 	// then check this object
 	for (var content in contents)
 	{
-		var howmany = 0;
 		if (!content)
 			continue;
 		TryAddToStack(content);
@@ -257,10 +257,16 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 	return false;
 }
 
-// Infinite stacks can only be stacked on top of others.
+// Special behavior for stacking stackable objetcs.
 public func CanBeStackedWith(object other)
 {
-	if (other.count_is_infinite != this.count_is_infinite) return false;
+	// Infinite stacks can only be stacked on top of others.
+	if (this->IsInfiniteStackCount() != other->~IsInfiniteStackCount())
+		return false;
+	// If this and other are contained in extra slots stack count must be the same for the parents to be stackable.
+	if (this->Contained() && other->Contained())
+		if (this->Contained()->~HasExtraSlot() && other->Contained()->~HasExtraSlot())
+			return this->GetStackCount() == other->~GetStackCount() && _inherited(other, ...);
 	return _inherited(other, ...);
 }
 
@@ -268,7 +274,7 @@ public func CanBeStackedWith(object other)
 public func GetInventoryIconOverlay()
 {
 	if (!count_is_infinite) return nil;
-	return {Left = "50%", Bottom="50%", Symbol=Icon_Number, GraphicsName="Inf"};
+	return {Left = "50%", Bottom = "50%", Symbol = Icon_Number, GraphicsName = "Inf"};
 }
 
 // Save stack counts in saved scenarios
