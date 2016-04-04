@@ -34,6 +34,8 @@ func Initialize()
 	MuskDown = 16;
 	MuskOffset = -8;
 	
+	loaded = false;
+	
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
 		AnimationAim   = "MusketAimArms",
@@ -179,6 +181,14 @@ func RejectCollect(id shotid, object shot)
 {
 	// Only collect musket-ammo
 	if(!(shot->~IsMusketAmmo())) return true;
+}
+
+public func IsLoaded() { return loaded; }
+
+// Can only be stacked with same state: loaded vs. non-loaded.
+public func CanBeStackedWith(object other)
+{
+	return this->IsLoaded() == other->~IsLoaded() && inherited(other, ...);
 }
 
 public func IsWeapon() { return true; }
