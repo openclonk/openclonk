@@ -22,8 +22,8 @@
 #include "game/C4FullScreen.h"
 
 #import <AppKit/AppKit.h>
-#import <C4WindowController.h>
-#import <C4DrawGLMac.h>
+#import "platform/C4WindowController.h"
+#import "graphics/C4DrawGLMac.h"
 
 #ifdef USE_COCOA
 
