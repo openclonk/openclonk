@@ -37,7 +37,6 @@ private:
 protected:
 	void focusInEvent(QFocusEvent * event) override;
 	void focusOutEvent(QFocusEvent * event) override;
-	bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 	void mouseMoveEvent(QMouseEvent *eventMove) override;
 	void mousePressEvent(QMouseEvent *eventPress) override;
 	void mouseDoubleClickEvent(QMouseEvent *eventPress) override;

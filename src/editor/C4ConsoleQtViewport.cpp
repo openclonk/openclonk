@@ -45,47 +45,6 @@ bool C4ConsoleQtViewportView::IsPlayViewport() const
 		&& (::Console.EditCursor.GetMode() == C4CNS_ModePlay));
 }
 
-bool C4ConsoleQtViewportView::nativeEvent(const QByteArray &eventType, void *message, long *result)
-{
-	// Handle native Windows messages
-#ifdef USE_WIN32_WINDOWS
-	MSG *msg = static_cast<MSG*>(message);
-	switch (msg->message)
-	{
-	//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_HSCROLL:
-		switch (LOWORD(msg->wParam))
-		{
-		case SB_THUMBTRACK:
-		case SB_THUMBPOSITION: cvp->SetViewX(float(HIWORD(msg->wParam)) / cvp->GetZoom()); break;
-		case SB_LINELEFT: cvp->ScrollView(-ViewportScrollSpeed, 0.0f); break;
-		case SB_LINERIGHT: cvp->ScrollView(+ViewportScrollSpeed, 0.0f); break;
-		case SB_PAGELEFT: cvp->ScrollView(-cvp->ViewWdt / cvp->GetZoom(), 0.0f); break;
-		case SB_PAGERIGHT: cvp->ScrollView(+cvp->ViewWdt / cvp->GetZoom(), 0.0f); break;
-		}
-		cvp->Execute();
-		cvp->ScrollBarsByViewPosition();
-		return true;
-	//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_VSCROLL:
-		switch (LOWORD(msg->wParam))
-		{
-		case SB_THUMBTRACK:
-		case SB_THUMBPOSITION: cvp->SetViewY(float(HIWORD(msg->wParam)) / cvp->GetZoom()); break;
-		case SB_LINEUP: cvp->ScrollView(0.0f, -ViewportScrollSpeed); break;
-		case SB_LINEDOWN: cvp->ScrollView(0.0f, +ViewportScrollSpeed); break;
-		case SB_PAGEUP: cvp->ScrollView(0.0f, -cvp->ViewWdt / cvp->GetZoom()); break;
-		case SB_PAGEDOWN: cvp->ScrollView(0.0f, +cvp->ViewWdt / cvp->GetZoom()); break;
-		}
-		cvp->Execute();
-		cvp->ScrollBarsByViewPosition();
-		return true;
-		//----------------------------------------------------------------------------------------------------------------------------------
-	}
-#endif
-	return false;
-}
-
 // Get Shift state as Win32 wParam
 uint32_t GetShiftWParam()
 {

@@ -104,7 +104,7 @@ struct C4ValueArraySortStringscomp
 	{
 		if (v1.getStr() && v2.getStr())
 			return std::strcmp(v1._getStr()->GetCStr(), v2._getStr()->GetCStr()) < 0;
-		return v2.getStr();
+		return !!v2.getStr();
 	}
 };
 

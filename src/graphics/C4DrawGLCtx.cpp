@@ -655,6 +655,8 @@ bool CStdGLCtx::PageFlip()
 
 #ifdef WITH_QT_EDITOR
 #undef LineFeed // conflicts with Qt
+#undef new
+#undef delete
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
