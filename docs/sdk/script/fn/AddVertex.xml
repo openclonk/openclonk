@@ -9,17 +9,17 @@
     <subcat>Vertices</subcat>
     <version>5.1 OC</version>
     <syntax>
-      <rtype>int</rtype>
+      <rtype>bool</rtype>
       <params>
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X coordinate, relative to the object center</desc>
+          <desc>X coordinate, relative to the object center.</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y coordinate, relative to the object center</desc>
+          <desc>Y coordinate, relative to the object center.</desc>
         </param>
       </params>
     </syntax>
@@ -32,6 +32,7 @@
       </example>
     </examples>
     <related>
+	  <funclink>InsertVertex</funclink>
       <funclink>GetVertex</funclink>
       <funclink>SetVertex</funclink>
       <funclink>GetVertexNum</funclink>

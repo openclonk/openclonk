@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,12 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4FoWLightSection.h"
-#include "C4FoWBeamTriangle.h"
-#include "C4FoWBeam.h"
-#include "C4FoWLight.h"
-#include "C4FoWRegion.h"
-#include "C4Landscape.h"
+#include "landscape/fow/C4FoWLightSection.h"
+#include "landscape/fow/C4FoWBeamTriangle.h"
+#include "landscape/fow/C4FoWBeam.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "landscape/C4Landscape.h"
 
 #include "float.h"
 
@@ -134,7 +134,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 {
 	// Transform rectangle into our coordinate system
 	C4Rect Rect = rtransRect(RectIn);
-	C4Rect Bounds = rtransRect(C4Rect(0,0,GBackWdt,GBackHgt));
+	C4Rect Bounds = rtransRect(C4Rect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight()));
 
 #ifdef LIGHT_DEBUG
 	if (!::Game.iTick255) {

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2012-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2012-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,15 +15,15 @@
 
 /* Functions for displaying a settings dialogue to users when the graphics system failed */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
 #ifdef _WIN32
 
-#include <resource.h>
-#include <C4Version.h>
-#include <C4Application.h>
-#include <C4windowswrapper.h>
-#include <C4GfxErrorDlg.h>
+#include "res/resource.h"
+#include "C4Version.h"
+#include "game/C4Application.h"
+#include "platform/C4windowswrapper.h"
+#include "gui/C4GfxErrorDlg.h"
 
 #include "graphics/C4Draw.h"
 
@@ -116,8 +116,12 @@ static INT_PTR CALLBACK GfxErrProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
 			memset(&siStartupInfo, 0, sizeof(siStartupInfo));
 			memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 			siStartupInfo.cb = sizeof(siStartupInfo);
-			CreateProcessW(selfpath, NULL,
-				NULL, NULL, FALSE, 0, NULL, Config.General.ExePath.GetWideChar(), &siStartupInfo, &piProcessInfo);
+			if (CreateProcessW(selfpath, NULL,
+				NULL, NULL, FALSE, 0, NULL, Config.General.ExePath.GetWideChar(), &siStartupInfo, &piProcessInfo))
+			{
+				CloseHandle(piProcessInfo.hProcess);
+				CloseHandle(piProcessInfo.hThread);
+			}
 			EndDialog(hWnd,2);
 			return TRUE;
 		}

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,24 +18,24 @@
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
 #include "C4Include.h"
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
-#include <C4Application.h>
-#include <C4AppWin32Impl.h>
-#include <C4Config.h>
-#include <C4Console.h>
-#include <C4DrawGL.h>
-#include <C4FullScreen.h>
-#include <C4GraphicsSystem.h>
-#include <C4MouseControl.h>
-#include <C4Rect.h>
-#include <C4Version.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <StdRegistry.h>
-#include "resource.h"
+#include "game/C4Application.h"
+#include "platform/C4AppWin32Impl.h"
+#include "config/C4Config.h"
+#include "editor/C4Console.h"
+#include "graphics/C4DrawGL.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "gui/C4MouseControl.h"
+#include "lib/C4Rect.h"
+#include "C4Version.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "platform/StdRegistry.h"
+#include "res/resource.h"
 
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 #include <shellapi.h>
 
@@ -792,6 +792,11 @@ void C4Window::FlashWindow()
 	// please activate me!
 	if (hWindow)
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
+}
+
+void C4Window::GrabMouse(bool grab)
+{
+	// TODO
 }
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const

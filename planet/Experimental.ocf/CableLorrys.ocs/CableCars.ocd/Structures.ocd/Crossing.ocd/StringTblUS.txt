@@ -1,1 +1,7 @@
 Name=Cable Crossing
+
+StationSettings=Cable crossing settings
+
+TooltipToggleStation=Toggle station status
+
+DescToggleStation=Manually set or unset this crossing to be a cable station. Cable stations are selectable as targets when engaging a cable car onto the cable.

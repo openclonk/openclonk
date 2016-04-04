@@ -80,14 +80,14 @@ func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_al
 		{
 			if(show_errors)
 			{
-				Sound("UI::Error", nil, nil, for_player + 1);
+				Sound("UI::Error", {player = for_player + 1});
 				PlayerMessage(for_player, "$MsgNotEnoughWealth$");
 			}
 			break;
 		}
 		// Take the cash
 		DoWealth(wealth_player, -price);
-		Sound("UI::UnCash", nil, nil, for_player + 1); // TODO: get sound
+		Sound("UI::UnCash", {player = for_player + 1}); // TODO: get sound
 		// Decrease the base material, allow runtime overload
 		this->ChangeBuyableAmount(wealth_player, item, -1);
 		// Deliver the object
@@ -113,7 +113,7 @@ func DoSell(object obj, int wealth_player)
 
 	// Give the player the cash
 	DoWealth(wealth_player, this->GetSellValue(obj));
-	Sound("UI::Cash", nil, nil, wealth_player + 1);
+	Sound("UI::Cash", {player = wealth_player + 1});
 
 	// OnSale callback to object e.g. for goal updates
 	obj->~OnSale(wealth_player, this);
@@ -266,21 +266,29 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 	// Buy
 	DoBuy(def, for_player, wealth_player, clonk);
 	// Excess objects exit flag (can't get them out...)
+	EjectAllContents();
+	UpdateInteractionMenus(this.GetBuyMenuEntries);
+}
+
+private func EjectAllContents()
+{
 	var i = ContentsCount();
 	var obj;
 	while (i--) 
 		if (obj = Contents(i))
-		{
-			obj->Exit(0, GetDefHeight() / 2);
-			// newly bought items do not fade out until they've been collected once
-			if (obj && ObjectCount(Find_ID(Rule_ObjectFade)) && !obj.HasNoFadeOut)
-			{
-				obj.HasNoFadeOut = this.BuyItem_HasNoFadeout;
-				obj.BuyOverload_Entrance = obj.Entrance;
-				obj.Entrance = this.BuyItem_Entrance;
-			}
-		}
-	UpdateInteractionMenus(this.GetBuyMenuEntries);
+			EjectContents(obj);
+}
+
+private func EjectContents(object contents)
+{
+	contents->Exit(0, GetDefHeight() / 2);
+	// newly bought items do not fade out until they've been collected once
+	if (contents && ObjectCount(Find_ID(Rule_ObjectFade)) && !contents.HasNoFadeOut)
+	{
+		contents.HasNoFadeOut = this.BuyItem_HasNoFadeout;
+		contents.BuyOverload_Entrance = contents.Entrance;
+		contents.Entrance = this.BuyItem_Entrance;
+	}
 }
 
 // ----- Menu updates, misc

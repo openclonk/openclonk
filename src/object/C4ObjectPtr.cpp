@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,10 +15,10 @@
 
 /* A convenient way to (de)serialize object pointers */
 
-#include <C4Include.h>
-#include <C4ObjectPtr.h>
-#include <C4Object.h>
-#include <C4GameObjects.h>
+#include "C4Include.h"
+#include "object/C4ObjectPtr.h"
+#include "object/C4Object.h"
+#include "object/C4GameObjects.h"
 
 #include <limits>
 

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,25 +16,27 @@
 // Input to player control mapping
 
 #include "C4Include.h"
-#include "C4PlayerControl.h"
+#include "control/C4PlayerControl.h"
 
-#include <C4DefList.h>
-#include "C4LangStringTable.h"
-#include "C4Player.h"
-#include "C4PlayerList.h"
-#include "C4Control.h"
-#include "C4Game.h"
-#include "C4Log.h"
-#include "C4GraphicsResource.h"
-#include "C4MouseControl.h"
-#include "C4GraphicsSystem.h"
-#include "C4Viewport.h"
-#include "C4Object.h"
-#include "C4ObjectMenu.h"
+#include "object/C4DefList.h"
+#include "c4group/C4LangStringTable.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
+#include "control/C4Control.h"
+#include "game/C4Game.h"
+#include "platform/C4GamePadCon.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectMenu.h"
+#include "script/C4Aul.h"
 
 #include <algorithm>
 
-#include "C4Record.h"
+#include "control/C4Record.h"
 
 /* C4PlayerControlDef */
 
@@ -706,7 +708,7 @@ C4Facet C4PlayerControlAssignmentSet::GetPicture() const
 {
 	// get image to be drawn to represent this control set
 	// picture per set not implemented yet. So just default to out standard images
-	if (HasGamepad()) return ::GraphicsResource.fctGamepad.GetPhase(GetGamepadIndex());
+	if (HasGamepad()) return ::GraphicsResource.fctGamepad.GetPhase(0);
 //	if (HasMouse()) return ::GraphicsResource.fctMouse; // might be useful again with changing control sets
 	if (HasKeyboard()) return ::GraphicsResource.fctKeyboard.GetPhase(Game.PlayerControlUserAssignmentSets.GetSetIndex(this));
 	return C4Facet();
@@ -734,21 +736,6 @@ void C4PlayerControlAssignmentSets::CompileFunc(StdCompiler *pComp)
 	}
 	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
 	pComp->Value(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE));
-
-	// Remove all sets that have gamepad controls, since gamepad
-	// support is broken at the moment. Disable this once we have gamepad
-	// support again!
-	if (pComp->isCompiler())
-	{
-		AssignmentSetList::iterator iter = Sets.begin();
-		for (AssignmentSetList::iterator iter = Sets.begin(); iter != Sets.end(); )
-		{
-			if (iter->HasGamepad())
-				iter = Sets.erase(iter);
-			else
-				++iter;
-		}
-	}
 }
 
 bool C4PlayerControlAssignmentSets::operator ==(const C4PlayerControlAssignmentSets &cmp) const
@@ -908,14 +895,18 @@ void C4PlayerControl::CSync::ControlDownState::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(DownState);
 	pComp->Separator();
+	pComp->Value(MovedState);
+	pComp->Separator();
 	pComp->Value(iDownFrame);
+	pComp->Separator();
+	pComp->Value(iMovedFrame);
 	pComp->Separator();
 	pComp->Value(fDownByUser);
 }
 
 bool C4PlayerControl::CSync::ControlDownState::operator ==(const ControlDownState &cmp) const
 {
-	return DownState == cmp.DownState && iDownFrame == cmp.iDownFrame && fDownByUser == cmp.fDownByUser;
+	return DownState == cmp.DownState && MovedState == cmp.MovedState && iDownFrame == cmp.iDownFrame && iMovedFrame == cmp.iMovedFrame && fDownByUser == cmp.fDownByUser;
 }
 
 const C4PlayerControl::CSync::ControlDownState *C4PlayerControl::CSync::GetControlDownState(int32_t iControl) const
@@ -943,6 +934,16 @@ void C4PlayerControl::CSync::SetControlDownState(int32_t iControl, const C4KeyEv
 	rState.fDownByUser = fDownByUser;
 }
 
+void C4PlayerControl::CSync::SetControlMovedState(int32_t iControl, const C4KeyEventData &rMovedState, int32_t iMovedFrame)
+{
+	// update state
+	if (iControl < 0) return;
+	if (iControl >= int32_t(ControlDownStates.size())) ControlDownStates.resize(iControl+1);
+	ControlDownState &rState = ControlDownStates[iControl];
+	rState.MovedState = rMovedState;
+	rState.iMovedFrame = iMovedFrame;
+}
+
 bool  C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 {
 	// disable control
@@ -963,6 +964,7 @@ void C4PlayerControl::CSync::ResetControlDownState(int32_t iControl)
 		C4KeyEventData KeyDownState = pDownState->DownState;
 		KeyDownState.iStrength = 0;
 		SetControlDownState(iControl, KeyDownState, 0, false);
+		SetControlMovedState(iControl, KeyDownState, 0);
 	}
 }
 
@@ -1009,12 +1011,19 @@ void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", DefaultSync));
 }
 
-bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only, bool *clear_recent_keys)
+bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, ControlState state, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only, bool *clear_recent_keys)
 {
+	if (Key_IsGamepad(pressed_key.Key))
+	{
+		// We have to filter gamepad events here.
+		C4Player *plr = ::Players.Get(iPlr);
+		if (!plr || !plr->pGamepad || plr->pGamepad->GetID() != pressed_key.deviceId)
+			return false;
+	}
 	// collect all matching keys
 	C4PlayerControlAssignmentPVec Matches;
 	assert(pControlSet); // shouldn't get this callback for players without control set
-	pControlSet->GetAssignmentsByKey(ControlDefs, matched_key, fUp, &Matches, DownKeys, RecentKeys);
+	pControlSet->GetAssignmentsByKey(ControlDefs, matched_key, state != CONS_Down, &Matches, DownKeys, RecentKeys);
 	// process async controls
 	C4ControlPlayerControl *pControlPacket = NULL;
 	for (C4PlayerControlAssignmentPVec::const_iterator i = Matches.begin(); i != Matches.end(); ++i)
@@ -1023,7 +1032,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 		assert(pAssignment);
 		int32_t iControlIndex = pAssignment->GetControl();
 		const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControlIndex);
-		if (pControlDef && pControlDef->IsValid() && !Sync.IsControlDisabled(iControlIndex) && (!fUp || pControlDef->IsHoldKey()))
+		if (pControlDef && pControlDef->IsValid() && !Sync.IsControlDisabled(iControlIndex) && (state == CONS_Down || pControlDef->IsHoldKey()))
 		{
 			// clear RecentKeys if requested by this assignment. Must be done before sync queue, so multiple combos can be issued in a single control frame.
 			if (clear_recent_keys && (pAssignment->GetTriggerMode() & C4PlayerControlAssignment::CTM_ClearRecentKeys)) *clear_recent_keys = true;
@@ -1031,7 +1040,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 			if (pControlDef->IsAsync() && !pControlPacket)
 			{
 				if (pControlDef->IsSendCursorPos()) IsCursorPosRequested = true; // async cursor pos request - doesn't really make sense to set this flag for async controls
-				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated(), reset_down_states_only))
+				if (ExecuteControl(iControlIndex, state, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated(), reset_down_states_only))
 					return true;
 			}
 			else
@@ -1041,7 +1050,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 				if (pressed_key.IsRepeated()) return false;
 				// sync control has higher priority - no more async execution then
 				// build a control packet and add control data instead. even for async controls later in chain, as they may be blocked by a sync handler
-				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, rKeyExtraData);
+				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, state, rKeyExtraData);
 				int32_t extra_trigger_mode = 0;
 				if (reset_down_states_only) extra_trigger_mode |= C4PlayerControlAssignment::CTM_HandleDownStatesOnly;
 				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode() | extra_trigger_mode);
@@ -1071,7 +1080,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 	}
 	// process!
 	bool clear_recent_keys = false;
-	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData(), false, &clear_recent_keys);
+	bool fResult = ProcessKeyEvent(pressed_key, matched_key, CONS_Down, Game.KeyboardInput.GetLastKeyExtraData(), false, &clear_recent_keys);
 	// unless assignment requests a clear, always add keys to recent list even if not handled
 	if (clear_recent_keys)
 		RecentKeys.clear();
@@ -1090,7 +1099,13 @@ bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCo
 		if (i != DownKeys.end()) DownKeys.erase(i);
 	}
 	// process!
-	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData());
+	return ProcessKeyEvent(pressed_key, matched_key, CONS_Up, Game.KeyboardInput.GetLastKeyExtraData());
+}
+
+bool C4PlayerControl::ProcessKeyMoved(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
+{
+	// process!
+	return ProcessKeyEvent(pressed_key, matched_key, CONS_Moved, Game.KeyboardInput.GetLastKeyExtraData());
 }
 
 void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl)
@@ -1111,10 +1126,10 @@ void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *p
 					AddDbgRec(RCT_PlrCom, &rItem.iControl, sizeof(rItem.iControl));
 				}
 			}
-			if (ExecuteControl(rItem.iControl, pCtrl->IsReleaseControl(), pCtrl->GetExtraData(), rItem.iTriggerMode, false, fHandleDownStateOnly))
+			if (ExecuteControl(rItem.iControl, pCtrl->GetState(), pCtrl->GetExtraData(), rItem.iTriggerMode, false, fHandleDownStateOnly))
 				if (pCtrlDef->IsSync())
 				{
-					if (pCtrl->IsReleaseControl())
+					if (pCtrl->GetState() == CONS_Up)
 					{
 						// control processed. however, for key releases, overriden keys are released silently so following down events aren't handled as key repeats
 						// note this does not affect CTM_Hold/CTM_Release, because they ignore release controls anyway
@@ -1129,7 +1144,7 @@ void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *p
 	}
 }
 
-bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly)
+bool C4PlayerControl::ExecuteControl(int32_t iControl, ControlState state, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly)
 {
 	// execute single control. return if handled
 	const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControl);
@@ -1147,7 +1162,7 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 	{
 		if (eAction != C4PlayerControlDef::CDA_Script) return false;
 		if (!pControlDef->IsHoldKey()) return false;
-		if (fUp) return false; // hold triggers have no "up"-event
+		if (state == CONS_Up) return false; // hold triggers have no "up"-event
 		// perform hold/release
 		if (fWasDown)
 		{
@@ -1157,7 +1172,7 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 				KeyExtraData.iStrength = 0;
 				Sync.SetControlDownState(iControl, KeyExtraData, Game.FrameCounter, false);
 				// now process as a regular "Up" event
-				fUp = true;
+				state = CONS_Up;
 				fRepeated = false;
 			}
 			else
@@ -1186,7 +1201,7 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 			}
 		}
 	}
-	else if (fUp)
+	else if (state == CONS_Up)
 	{
 		// regular ControlUp: Only valid if that control was down
 		if (!fWasDown) return false;
@@ -1194,14 +1209,22 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 	}
 	else if (pControlDef->IsHoldKey())
 	{
-		// regular ControlDown on Hold Key: Set in down list
-		Sync.SetControlDownState(iControl, KeyExtraData, Game.FrameCounter, true);
-		fRepeated = fWasDown;
+		if (state == CONS_Moved)
+		{
+			Sync.SetControlMovedState(iControl, KeyExtraData, Game.FrameCounter);
+			fRepeated = true;
+		}
+		else
+		{
+			// regular ControlDown on Hold Key: Set in down list
+			Sync.SetControlDownState(iControl, KeyExtraData, Game.FrameCounter, true);
+			fRepeated = fWasDown;
+		}
 	}
 	// down state handling done
 	if (fHandleDownStateOnly) return false;
 	// perform action for this control
-	bool fHandled = ExecuteControlAction(iControl, eAction, pControlDef->GetExtraData(), fUp, KeyExtraData, fRepeated);
+	bool fHandled = ExecuteControlAction(iControl, eAction, pControlDef->GetExtraData(), state, KeyExtraData, fRepeated);
 	// handled controls hide control display
 	C4Player *pPlr;
 	if ((pPlr = ::Players.Get(iPlr))) if (pPlr->ShowStartup) pPlr->ShowStartup = false;
@@ -1209,8 +1232,10 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 	return fHandled && !(iTriggerMode & C4PlayerControlAssignment::CTM_AlwaysUnhandled);
 }
 
-bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated)
+bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, ControlState state, const C4KeyEventData &rKeyExtraData, bool fRepeated)
 {
+	// moved events don't make sense for menus and are only handled by script
+	if (state == CONS_Moved && eAction != C4PlayerControlDef::CDA_Script) return false;
 	// get affected player
 	C4Player *pPlr = NULL;
 	C4Viewport *pVP;
@@ -1223,12 +1248,13 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 		pCursor = pPlr->Cursor;
 		if (pCursor && pCursor->Menu && pCursor->Menu->IsActive()) pCursorMenu = pCursor->Menu;
 	}
+	bool fUp = state == CONS_Up;
 	// exec action (on player)
 	switch (eAction)
 	{
 		// scripted player control
 	case C4PlayerControlDef::CDA_Script:
-		return ExecuteControlScript(iControl, idControlExtraData, fUp, rKeyExtraData, fRepeated);
+		return ExecuteControlScript(iControl, idControlExtraData, state, rKeyExtraData, fRepeated);
 
 		// menu controls
 	case C4PlayerControlDef::CDA_Menu: if (!pPlr || fUp) return false; if (pPlr->Menu.IsActive()) pPlr->Menu.TryClose(false, true); else pPlr->ActivateMenuMain(); return true; // toggle
@@ -1256,15 +1282,16 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	}
 }
 
-bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated)
+bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, ControlState state, const C4KeyEventData &rKeyExtraData, bool fRepeated)
 {
 	C4Player *pPlr = ::Players.Get(iPlr);
 	if (pPlr)
 	{
 		// Not for eliminated (checked again in DirectCom, but make sure no control is generated for eliminated players!)
 		if (pPlr->Eliminated) return false;
-		// control count for statistics
-		pPlr->CountControl(C4Player::PCID_DirectCom, iControl*2+fUp);
+		// control count for statistics (but don't count analog stick wiggles)
+		if (state != CONS_Moved)
+			pPlr->CountControl(C4Player::PCID_DirectCom, iControl*2+state);
 	}
 	else if (iPlr > -1)
 	{
@@ -1285,7 +1312,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 	C4Value vx = (x == C4KeyEventData::KeyPos_None) ? C4VNull : C4VInt(x);
 	C4Value vy = (y == C4KeyEventData::KeyPos_None) ? C4VNull : C4VInt(y);
 	// exec control function
-	C4AulParSet Pars(iPlr, iControl, C4Id2Def(idControlExtraData), vx, vy, rKeyExtraData.iStrength, fRepeated, fUp);
+	C4AulParSet Pars(iPlr, iControl, C4Id2Def(idControlExtraData), vx, vy, rKeyExtraData.iStrength, fRepeated, C4VInt(state));
 	return ::ScriptEngine.GetPropList()->Call(PSF_PlayerControl, &Pars).getBool();
 }
 
@@ -1310,7 +1337,7 @@ void C4PlayerControl::Execute()
 					if (!((iFrameDiff-iCtrlInitialRepeatDelay) % iCtrlRepeatDelay))
 					{
 						// it's RepeatTime for this key!
-						ExecuteControlAction(i, pCtrlDef->GetAction(), pCtrlDef->GetExtraData(), false, pControlDownState->DownState, true);
+						ExecuteControlAction(i, pCtrlDef->GetAction(), pCtrlDef->GetExtraData(), CONS_Down, pControlDownState->DownState, true);
 					}
 				}
 			}
@@ -1363,7 +1390,7 @@ void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32
 {
 	KeyBindings.push_back(new C4KeyBinding(
 	                        key, FormatString("PlrKey%02d", idx).getData(), KEYSCOPE_Control,
-	                        new C4KeyCBExPassKey<C4PlayerControl, C4KeyCodeEx>(*this, key, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL),
+	                        new C4KeyCBExPassKey<C4PlayerControl, C4KeyCodeEx>(*this, key, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL, NULL, fHoldKey ? &C4PlayerControl::ProcessKeyMoved : NULL),
 	                        C4CustomKey::PRIO_PlrControl));
 }
 
@@ -1455,7 +1482,7 @@ void C4PlayerControl::PrepareInput()
 				ev.iStrength = 0;
 				ev.vp_x = x; ev.vp_y = y;
 				ev.game_x = game_x; ev.game_y = game_y;
-				C4ControlPlayerControl *pControlPacket = new C4ControlPlayerControl(iPlr, false, ev);
+				C4ControlPlayerControl *pControlPacket = new C4ControlPlayerControl(iPlr, CONS_Down, ev);
 				pControlPacket->AddControl(ControlDefs.InternalCons.CON_CursorPos, C4PlayerControlAssignment::CTM_Default);
 				// make sure it's added at head, because controls that have SendCursorPos=1 set will follow, which will rely
 				// on the cursor pos being known

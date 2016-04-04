@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,36 +17,37 @@
 
 /* That which fills the world with life */
 
-#include <C4Include.h>
-#include <C4Object.h>
+#include "C4Include.h"
+#include "object/C4Object.h"
 
-#include <C4AulExec.h>
-#include <C4DefList.h>
-#include <C4Effect.h>
-#include <C4ObjectInfo.h>
-#include <C4Physics.h>
-#include <C4PXS.h>
-#include <C4ObjectCom.h>
-#include <C4Command.h>
-#include <C4Viewport.h>
-#include <C4MaterialList.h>
-#include <C4Record.h>
-#include <C4SolidMask.h>
-#include <C4SoundSystem.h>
-#include <C4Random.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4ObjectMenu.h>
-#include <C4RankSystem.h>
-#include <C4GameMessage.h>
-#include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Record.h>
-#include <C4MeshAnimation.h>
-#include <C4FoW.h>
+#include "script/C4AulExec.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "script/C4Effect.h"
+#include "object/C4ObjectInfo.h"
+#include "game/C4Physics.h"
+#include "landscape/C4PXS.h"
+#include "object/C4ObjectCom.h"
+#include "object/C4Command.h"
+#include "game/C4Viewport.h"
+#include "landscape/C4MaterialList.h"
+#include "control/C4Record.h"
+#include "landscape/C4SolidMask.h"
+#include "platform/C4SoundSystem.h"
+#include "lib/C4Random.h"
+#include "lib/C4Log.h"
+#include "player/C4Player.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4RankSystem.h"
+#include "gui/C4GameMessage.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "control/C4Record.h"
+#include "object/C4MeshAnimation.h"
+#include "landscape/fow/C4FoW.h"
 
 namespace
 {
@@ -581,6 +582,14 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		if (!C4ValueToMatrix(value, &matrix))
 			matrix = StdMeshMatrix::Identity();
 
+		if (fix_r != Fix0)
+		{
+			const auto mesh_center = pMeshInstance->GetMesh().GetBoundingBox().GetCenter();
+			matrix = StdMeshMatrix::Translate(-mesh_center.x, -mesh_center.y, -mesh_center.z) * matrix;
+			matrix = StdMeshMatrix::Rotate(fixtof(fix_r) * (M_PI / 180.0f), 0.0f, 0.0f, 1.0f) * matrix;
+			matrix = StdMeshMatrix::Translate(mesh_center.x, mesh_center.y, mesh_center.z) * matrix;
+		}
+
 		if(twdt != fwdt || thgt != fhgt)
 		{
 			// Also scale Z so that the mesh is not totally distorted and
@@ -623,8 +632,8 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		fhgt = thgt;
 	}
 
-	// Straight
-	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
+	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
 	{
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
@@ -696,8 +705,8 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		fhgt -= offset_from_top;
 	}
 
-	// Straight
-	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
+	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 	}
@@ -995,7 +1004,7 @@ bool C4Object::ExecLife()
 	// InMat incineration
 	if (!::Game.iTick10)
 		if (InMat!=MNone)
-			if (::MaterialMap.Map[InMat].Incindiary)
+			if (::MaterialMap.Map[InMat].Incendiary)
 				if (GetPropertyInt(P_ContactIncinerate) > 0)
 				{
 					Call(PSF_OnInIncendiaryMaterial, &C4AulParSet());
@@ -4003,13 +4012,14 @@ void C4Object::ExecAction()
 	case DFA_CONNECT:
 		{
 			bool fBroke=false;
+			bool fLineChange = false;
 
 			// Line destruction check: Target missing or incomplete
 			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
 			if (!Action.Target2 || (Action.Target2->Con<FullCon)) fBroke=true;
 			if (fBroke)
 			{
-				Call(PSF_LineBreak,&C4AulParSet(true));
+				Call(PSF_OnLineBreak,&C4AulParSet(true));
 				AssignRemoval();
 				return;
 			}
@@ -4036,6 +4046,8 @@ void C4Object::ExecAction()
 				// No-intersection line
 				if (Def->LineIntersect == 1)
 					{ Shape.VtxX[0]=iConnectX1; Shape.VtxY[0]=iConnectY1; }
+					
+				fLineChange = true;
 			}
 
 			// Movement by Target2
@@ -4059,29 +4071,26 @@ void C4Object::ExecAction()
 				// No-intersection line
 				if (Def->LineIntersect == 1)
 					{ Shape.VtxX[Shape.VtxNum-1]=iConnectX2; Shape.VtxY[Shape.VtxNum-1]=iConnectY2; }
-			}
-
-			// Check max length
-			int32_t max_dist;
-			max_dist = GetPropertyInt(P_LineMaxDistance);
-			if (max_dist)
-			{
-				int32_t dist_x = iConnectX2 - iConnectX1, dist_y = iConnectY2 - iConnectY1;
-				int64_t dist_x2 = int64_t(dist_x)*dist_x, dist_y2 = int64_t(dist_y)*dist_y, max_dist2 = int64_t(max_dist)*max_dist;
-				if (dist_x2+dist_y2 > max_dist2) fBroke = true;
+					
+				fLineChange = true;
 			}
 
 			// Line fBroke
 			if (fBroke)
 			{
-				Call(PSF_LineBreak,0);
+				Call(PSF_OnLineBreak,0);
 				AssignRemoval();
 				return;
 			}
 
 			// Reduce line segments
 			if (!::Game.iTick35)
-				ReduceLineSegments(Shape, !::Game.iTick2);
+				if (ReduceLineSegments(Shape, !::Game.iTick2))
+					fLineChange = true;
+					
+			// Line change callback
+			if (fLineChange)
+				Call(PSF_OnLineChange);
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -4189,7 +4198,7 @@ bool C4Object::SetLightColor(uint32_t iValue)
 
 void C4Object::UpdateLight()
 {
-	if (Landscape.pFoW) Landscape.pFoW->Add(this);
+	if (Landscape.HasFoW()) Landscape.GetFoW()->Add(this);
 }
 
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY, int32_t player)
@@ -4468,6 +4477,11 @@ void C4Object::UnSelect()
 	Call(PSF_CrewSelection, &C4AulParSet(true));
 }
 
+void C4Object::GetViewPos(float & riX, float & riY, float tx, float ty, const C4Facet & fctViewport) const       // get position this object is seen at (for given scroll)
+{
+	if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX = float(GetX()); riY = float(GetY()); }
+}
+
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
 	float & resultx, float & resulty, float & resultzoom) const
 {
@@ -4695,7 +4709,7 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	// put into inactive list
 	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
-	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
+	if (Landscape.HasFoW()) Landscape.GetFoW()->Remove(this);
 	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)
@@ -4930,6 +4944,15 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject) const
 	}
 	// concat OK
 	return true;
+}
+
+bool C4Object::IsMoveableBySolidMask(int ComparisonPlane) const
+{
+	return (Status == C4OS_NORMAL)
+		&& !(Category & C4D_StaticBack)
+		&& (ComparisonPlane < GetPlane())
+		&& !Contained
+		;
 }
 
 void C4Object::UpdateScriptPointers()

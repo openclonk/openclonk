@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -30,7 +30,7 @@
 #ifndef INC_C4Network2Players
 #define INC_C4Network2Players
 
-#include "C4PacketBase.h"
+#include "network/C4PacketBase.h"
 
 // class predefs
 class C4Network2Players;

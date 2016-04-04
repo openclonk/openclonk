@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,186 +17,34 @@
 
 /* Gamepad control */
 
-#include <C4Include.h>
-#include <C4GamePadCon.h>
+#include "C4Include.h"
+#include "platform/C4GamePadCon.h"
 
-#include <C4Config.h>
-#include <C4ObjectCom.h>
-#include <C4Log.h>
-#include <C4Game.h>
+#include "config/C4Config.h"
+#include "object/C4ObjectCom.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
 
-// regardless of WIN32 or SDL
-void C4GamePadControl::DoAxisInput()
-{
-	// Send axis strength changes
-	Execute(true);
-}
-
-#ifdef USE_WIN32_WINDOWS
-
-C4GamePadControl *C4GamePadControl::pInstance = NULL;
-
-C4GamePadControl::C4GamePadControl()
-{
-	for (int i=0; i<CStdGamepad_MaxGamePad; ++i)
-	{
-		Gamepads[i].pGamepad = NULL;
-		Gamepads[i].iRefCount = 0;
-	}
-	iNumGamepads = 0;
-	// singleton
-	if (!pInstance) pInstance = this;
-}
-
-C4GamePadControl::~C4GamePadControl()
-{
-	if (pInstance == this) pInstance = NULL;
-	Clear();
-}
-
-void C4GamePadControl::Clear()
-{
-	for (int i=0; i<CStdGamepad_MaxGamePad; ++i)
-		while (Gamepads[i].iRefCount) CloseGamepad(i);
-}
-
-void C4GamePadControl::OpenGamepad(int id)
-{
-	if (!Inside(id, 0, CStdGamepad_MaxGamePad-1)) return;
-	// add gamepad ref
-	if (!(Gamepads[id].iRefCount++))
-	{
-		// this is the first gamepad opening: Init it
-		Pad &rPad = Gamepads[id];
-		rPad.pGamepad = new CStdGamePad(id);
-		rPad.Buttons= 0;
-		for (int i=0; i< CStdGamepad_MaxAxis; ++i)
-		{
-			rPad.AxisPosis[i] = CStdGamePad::Mid;
-			rPad.AxisStrengths[i] = 0;
-		}
-		rPad.pGamepad->SetCalibration(&(Config.Gamepads[id].AxisMin[0]), &(Config.Gamepads[id].AxisMax[0]), &(Config.Gamepads[id].AxisCalibrated[0]));
-		++iNumGamepads;
-	}
-}
-
-void C4GamePadControl::CloseGamepad(int id)
-{
-	if (!Inside(id, 0, CStdGamepad_MaxGamePad-1)) return;
-	// del gamepad ref
-	if (!--Gamepads[id].iRefCount)
-	{
-		Gamepads[id].pGamepad->GetCalibration(&(Config.Gamepads[id].AxisMin[0]), &(Config.Gamepads[id].AxisMax[0]), &(Config.Gamepads[id].AxisCalibrated[0]));
-		delete Gamepads[id].pGamepad; Gamepads[id].pGamepad = NULL;
-		--iNumGamepads;
-	}
-}
-
-int C4GamePadControl::GetGamePadCount()
-{
-	JOYINFOEX joy;
-	ZeroMem(&joy, sizeof(JOYINFOEX)); joy.dwSize = sizeof(JOYINFOEX); joy.dwFlags = JOY_RETURNALL;
-	int iCnt=0;
-	while (iCnt<CStdGamepad_MaxGamePad && ::joyGetPosEx(iCnt, &joy) == JOYERR_NOERROR) ++iCnt;
-	return iCnt;
-}
-
-const int MaxGamePadButton=10;
-
-void C4GamePadControl::Execute(bool send_axis_strength_changes)
-{
-	// Get gamepad inputs
-	int iNum = iNumGamepads;
-	for (int idGamepad=0; iNum && idGamepad<CStdGamepad_MaxGamePad; ++idGamepad)
-	{
-		Pad &rPad = Gamepads[idGamepad];
-		if (!rPad.iRefCount) continue;
-		--iNum;
-		if (!rPad.pGamepad->Update()) continue;
-		for (int iAxis = 0; iAxis < CStdGamepad_MaxAxis; ++iAxis)
-		{
-			int32_t iStrength = 100;
-			CStdGamePad::AxisPos eAxisPos = rPad.pGamepad->GetAxisPos(iAxis, &iStrength), ePrevAxisPos = rPad.AxisPosis[iAxis];
-			int32_t iPrevStrength = rPad.AxisStrengths[iAxis];
-			// Evaluate changes and pass single controls
-			// this is a generic Gamepad-control: Create events
-			if (eAxisPos != ePrevAxisPos || (send_axis_strength_changes && Abs(iPrevStrength-iStrength) > AxisStrengthChangeThreshold))
-			{
-				rPad.AxisPosis[iAxis] = eAxisPos;
-				rPad.AxisStrengths[iAxis] = iStrength;
-				if (ePrevAxisPos != CStdGamePad::Mid && eAxisPos != ePrevAxisPos)
-					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (ePrevAxisPos==CStdGamePad::High))), KEYEV_Up, false, false, false, false);
-				// it's tempting to send fRepeated here for eAxisPos == ePrevAxisPos, but it would cause the key to be ignored for sync controls
-				// might improve the check in sync controls so they accept repeated keys if strength is updated?
-				if (eAxisPos != CStdGamePad::Mid)
-					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (eAxisPos==CStdGamePad::High))), KEYEV_Down, false, false, false, false, NULL, false, iStrength);
-			}
-		}
-		uint32_t Buttons = rPad.pGamepad->GetButtons();
-		uint32_t PrevButtons = rPad.Buttons;
-		if (Buttons != PrevButtons)
-		{
-			rPad.Buttons = Buttons;
-			for (int iButton = 0; iButton < MaxGamePadButton; ++iButton)
-				if ((Buttons & (1 << iButton)) != (PrevButtons & (1 << iButton)))
-				{
-					bool fRelease = ((Buttons & (1 << iButton)) == 0);
-					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Button(iButton)), fRelease ? KEYEV_Up : KEYEV_Down, false, false, false, false);
-				}
-		}
-	}
-}
-
-bool C4GamePadControl::AnyButtonDown()
-{
-	return false;
-}
-
-C4GamePadOpener::C4GamePadOpener(int iGamepad)
-{
-	assert(C4GamePadControl::pInstance);
-	this->iGamePad = iGamepad;
-	C4GamePadControl::pInstance->OpenGamepad(iGamePad);
-}
-
-C4GamePadOpener::~C4GamePadOpener()
-{
-	if (C4GamePadControl::pInstance)
-		C4GamePadControl::pInstance->CloseGamepad(iGamePad);
-}
-
-void C4GamePadOpener::SetGamePad(int iNewGamePad)
-{
-	if (iNewGamePad == iGamePad) return;
-	assert(C4GamePadControl::pInstance);
-	C4GamePadControl::pInstance->CloseGamepad(iGamePad);
-	C4GamePadControl::pInstance->OpenGamepad(iGamePad = iNewGamePad);
-}
-
-#elif defined(HAVE_SDL) && !defined(USE_CONSOLE)
+#if defined(HAVE_SDL) && !defined(USE_CONSOLE)
 
 #include <SDL.h>
 
-bool C4GamePadControl::AnyButtonDown()
-{
-	return false;
-}
-
 C4GamePadControl::C4GamePadControl()
 {
-	// FIXME: Port to SDL_INIT_GAMECONTROLLER
-	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_EVENTS) != 0)
-		LogF("SDL_InitSubSystem(SDL_INIT_JOYSTICK): %s", SDL_GetError());
-	SDL_JoystickEventState(SDL_ENABLE);
-	if (!SDL_NumJoysticks()) Log("No Gamepad found");
+	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC | SDL_INIT_EVENTS) != 0)
+		LogF("SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER): %s", SDL_GetError());
+	SDL_GameControllerEventState(SDL_ENABLE);
+	if (!GetGamePadCount()) Log("No Gamepad found");
 }
 
 C4GamePadControl::~C4GamePadControl()
 {
-	SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_EVENTS);
+	// All gamepads have to be released before quitting SDL.
+	Gamepads.clear();
+	SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS);
 }
 
-void C4GamePadControl::Execute(bool)
+void C4GamePadControl::Execute()
 {
 #ifndef USE_SDL_MAINLOOP
 	SDL_Event event;
@@ -204,12 +52,15 @@ void C4GamePadControl::Execute(bool)
 	{
 		switch (event.type)
 		{
-		case SDL_JOYAXISMOTION:
-		case SDL_JOYBALLMOTION:
-		case SDL_JOYHATMOTION:
-		case SDL_JOYBUTTONDOWN:
-		case SDL_JOYBUTTONUP:
-			FeedEvent(event);
+		case SDL_CONTROLLERAXISMOTION:
+		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_CONTROLLERBUTTONUP:
+			FeedEvent(event, FEED_BUTTONS);
+			break;
+		case SDL_JOYDEVICEADDED:
+		case SDL_CONTROLLERDEVICEADDED:
+		case SDL_CONTROLLERDEVICEREMOVED:
+			CheckGamePad(event);
 			break;
 		}
 	}
@@ -218,143 +69,185 @@ void C4GamePadControl::Execute(bool)
 
 namespace
 {
-	const int deadZone = 13337;
+	const int deadZone = 16000;
 
-	int amplify(int i)
+	// Axis strength uses the full signed 16 bit integer range. As we're
+	// splitting axes in left/right and up/down, it's preferable to have
+	// symmetrical ranges [0, 2^15 - 1] in both directions.
+	inline int32_t abs_strength(int32_t strength)
 	{
-		if (i < 0)
-			return -(deadZone + 1);
-		if (i > 0)
-			return deadZone + 1;
-		return 0;
+		return strength >= 0 ? strength : -(strength + 1);
 	}
 }
 
-void C4GamePadControl::FeedEvent(SDL_Event& event)
+void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 {
 	switch (event.type)
 	{
-	case SDL_JOYHATMOTION:
+	case SDL_CONTROLLERAXISMOTION:
 	{
-		SDL_Event fakeX;
-		fakeX.jaxis.type = SDL_JOYAXISMOTION;
-		fakeX.jaxis.which = event.jhat.which;
-		fakeX.jaxis.axis = event.jhat.hat * 2 + 6; /* *magic*number* */
-		fakeX.jaxis.value = 0;
-		SDL_Event fakeY = fakeX;
-		fakeY.jaxis.axis += 1;
-		switch (event.jhat.value)
-		{
-		case SDL_HAT_LEFTUP:    fakeX.jaxis.value = amplify(-1); fakeY.jaxis.value = amplify(-1); break;
-		case SDL_HAT_LEFT:      fakeX.jaxis.value = amplify(-1); break;
-		case SDL_HAT_LEFTDOWN:  fakeX.jaxis.value = amplify(-1); fakeY.jaxis.value = amplify(+1); break;
-		case SDL_HAT_UP:        fakeY.jaxis.value = amplify(-1); break;
-		case SDL_HAT_DOWN:      fakeY.jaxis.value = amplify(+1); break;
-		case SDL_HAT_RIGHTUP:   fakeX.jaxis.value = amplify(+1); fakeY.jaxis.value = amplify(-1); break;
-		case SDL_HAT_RIGHT:     fakeX.jaxis.value = amplify(+1); break;
-		case SDL_HAT_RIGHTDOWN: fakeX.jaxis.value = amplify(+1); fakeY.jaxis.value = amplify(+1); break;
-		}
-		FeedEvent(fakeX);
-		FeedEvent(fakeY);
-		return;
-	}
-	case SDL_JOYBALLMOTION:
-	{
-		SDL_Event fake;
-		fake.jaxis.type = SDL_JOYAXISMOTION;
-		fake.jaxis.which = event.jball.which;
-		fake.jaxis.axis = event.jball.ball * 2 + 12; /* *magic*number* */
-		fake.jaxis.value = amplify(event.jball.xrel);
-		FeedEvent(event);
-		fake.jaxis.axis += 1;
-		fake.jaxis.value = amplify(event.jball.yrel);
-		FeedEvent(event);
-		return;
-	}
-	case SDL_JOYAXISMOTION:
-	{
-		C4KeyCode minCode = KEY_Gamepad(event.jaxis.which, KEY_JOY_Axis(event.jaxis.axis, false));
-		C4KeyCode maxCode = KEY_Gamepad(event.jaxis.which, KEY_JOY_Axis(event.jaxis.axis, true));
+		C4KeyCode minCode = KEY_Gamepad(KEY_CONTROLLER_Axis(event.caxis.axis, false));
+		C4KeyCode maxCode = KEY_Gamepad(KEY_CONTROLLER_Axis(event.caxis.axis, true));
+		int32_t value = abs_strength(event.caxis.value);
+		uint8_t which = event.caxis.which;
+		C4KeyCode keyCode = event.caxis.value >= 0 ? maxCode : minCode;
 
-		// FIXME: This assumes that the axis really rests around (0, 0) if it is not used, which is not always true.
-		if (event.jaxis.value < -deadZone)
+		auto doInput = [&](C4KeyEventType event, int32_t strength)
 		{
-			if (PressedAxis.count(minCode) == 0)
+			Game.DoKeyboardInput(
+			  C4KeyCodeEx(KEY_Gamepad(keyCode), KEYS_None, false, which),
+			  event, NULL, false, strength);
+		};
+
+		if (feed & FEED_BUTTONS)
+		{
+			// Also emulate button presses.
+			if (PressedAxis.count(keyCode) && value <= deadZone)
 			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.jaxis.which, minCode),
-				  KEYEV_Down, false, false, false, false);
-				PressedAxis.insert(minCode);
+				PressedAxis.erase(keyCode);
+				doInput(KEYEV_Up, -1);
+			}
+			else if (!PressedAxis.count(keyCode) && value > deadZone)
+			{
+				PressedAxis.insert(keyCode);
+				doInput(KEYEV_Down, -1);
 			}
 		}
-		else
-		{
-			if (PressedAxis.count(minCode) != 0)
-			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.jaxis.which, minCode),
-				  KEYEV_Up, false, false, false, false);
-				PressedAxis.erase(minCode);
-			}
-		}
-		if (event.jaxis.value > +deadZone)
-		{
-			if (PressedAxis.count(maxCode) == 0)
-			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.jaxis.which, maxCode),
-				  KEYEV_Down, false, false, false, false);
-				PressedAxis.insert(maxCode);
-			}
-		}
-		else
-		{
-			if (PressedAxis.count(maxCode) != 0)
-			{
-				Game.DoKeyboardInput(
-				  KEY_Gamepad(event.jaxis.which, maxCode),
-				  KEYEV_Up, false, false, false, false);
-				PressedAxis.erase(maxCode);
-			}
-		}
+		if (feed & FEED_MOVED)
+			doInput(KEYEV_Moved, value);
+
+		AxisEvents[keyCode] = event;
+
 		break;
 	}
-	case SDL_JOYBUTTONDOWN:
-		Game.DoKeyboardInput(
-		  KEY_Gamepad(event.jbutton.which, KEY_JOY_Button(event.jbutton.button)),
-		  KEYEV_Down, false, false, false, false);
+	case SDL_CONTROLLERBUTTONDOWN:
+		if (feed & FEED_BUTTONS)
+			Game.DoKeyboardInput(
+			  C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_Button(event.cbutton.button)), KEYS_None, false, event.cbutton.which),
+			  KEYEV_Down);
 		break;
-	case SDL_JOYBUTTONUP:
-		Game.DoKeyboardInput(
-		  KEY_Gamepad(event.jbutton.which, KEY_JOY_Button(event.jbutton.button)),
-		  KEYEV_Up, false, false, false, false);
+	case SDL_CONTROLLERBUTTONUP:
+		if (feed & FEED_BUTTONS)
+			Game.DoKeyboardInput(
+			  C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_Button(event.cbutton.button)), KEYS_None, false, event.cbutton.which),
+			  KEYEV_Up);
 		break;
 	}
+}
+
+void C4GamePadControl::CheckGamePad(const SDL_Event& e)
+{
+	switch (e.type)
+	{
+	case SDL_JOYDEVICEADDED:
+		// Report that an unsupported joystick device has been detected, to help with controller issues.
+		if (!SDL_IsGameController(e.jdevice.which))
+			LogF("Gamepad %s isn't supported.", SDL_JoystickNameForIndex(e.jdevice.which));
+		break;
+	case SDL_CONTROLLERDEVICEADDED:
+	{
+		auto device = std::make_shared<C4GamePadOpener>(e.cdevice.which);
+		Gamepads[device->GetID()] = device;
+		LogF("Gamepad #%d connected: %s", device->GetID(), SDL_JoystickNameForIndex(e.cdevice.which));
+		break;
+	}
+	case SDL_CONTROLLERDEVICEREMOVED:
+		LogF("Gamepad #%d disconnected.", e.cdevice.which);
+		Gamepads.erase(e.cdevice.which);
+		break;
+	}
+}
+
+void C4GamePadControl::DoAxisInput()
+{
+	for (auto const &e : AxisEvents)
+	{
+		FeedEvent(e.second, FEED_MOVED);
+	}
+	AxisEvents.clear();
 }
 
 int C4GamePadControl::GetGamePadCount()
 {
-	return(SDL_NumJoysticks());
+	// Not all Joysticks are game controllers.
+	int count = 0;
+	for (int i = 0; i < SDL_NumJoysticks(); i++)
+		if (SDL_IsGameController(i))
+			count++;
+	return count;
+}
+
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePad(int gamepad)
+{
+	if (gamepad >= 0)
+		for (const auto& p : Gamepads)
+			if (gamepad-- == 0)
+				return p.second;
+	return nullptr;
+}
+
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePadByID(int32_t id)
+{
+	auto it = Gamepads.find(id);
+	if (it != Gamepads.end())
+		return it->second;
+	return nullptr;
+}
+
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetAvailableGamePad()
+{
+	for (const auto& p : Gamepads)
+		if (p.second->GetPlayer() < 0)
+			return p.second;
+	return nullptr;
 }
 
 C4GamePadOpener::C4GamePadOpener(int iGamepad)
 {
-	Joy = SDL_JoystickOpen(iGamepad);
-	if (!Joy) LogF("SDL: %s", SDL_GetError());
+	int n = iGamepad;
+	for (int i = 0; i < SDL_NumJoysticks(); i++)
+		if (SDL_IsGameController(i) && n-- == 0)
+		{
+			controller = SDL_GameControllerOpen(i);
+			if (!controller) LogF("SDL: %s", SDL_GetError());
+			SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+			haptic = SDL_HapticOpenFromJoystick(joystick);
+			if (haptic && SDL_HapticRumbleSupported(haptic))
+				SDL_HapticRumbleInit(haptic);
+			else
+				LogF("Gamepad #%d %s does not support rumbling.", SDL_JoystickInstanceID(joystick), SDL_JoystickName(joystick));
+			break;
+		}
+
+	if (!controller) LogF("Gamepad %d not available", iGamepad);
 }
 
 C4GamePadOpener::~C4GamePadOpener()
 {
-	if (Joy) SDL_JoystickClose(Joy);
+	if (haptic) SDL_HapticClose(haptic);
+	if (controller) SDL_GameControllerClose(controller);
 }
 
-void C4GamePadOpener::SetGamePad(int iGamepad)
+int32_t C4GamePadOpener::GetID()
 {
-	if (Joy)
-		SDL_JoystickClose(Joy);
-	Joy = SDL_JoystickOpen(iGamepad);
-	if (!Joy)
-		LogF("SDL: %s", SDL_GetError());
+	return SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+}
+
+bool C4GamePadOpener::IsAttached()
+{
+	return !!SDL_GameControllerGetAttached(controller);
+}
+
+void C4GamePadOpener::PlayRumble(float strength, uint32_t length)
+{
+	if (SDL_HapticRumbleSupported(haptic))
+		SDL_HapticRumblePlay(haptic, strength, length);
+}
+
+void C4GamePadOpener::StopRumble()
+{
+	if (SDL_HapticRumbleSupported(haptic))
+		SDL_HapticRumbleStop(haptic);
 }
 
 #else
@@ -363,12 +256,18 @@ void C4GamePadOpener::SetGamePad(int iGamepad)
 
 C4GamePadControl::C4GamePadControl() { Log("WARNING: Engine without Gamepad support"); }
 C4GamePadControl::~C4GamePadControl() { }
-void C4GamePadControl::Execute(bool) { }
+void C4GamePadControl::Execute() { }
+void C4GamePadControl::DoAxisInput() { }
 int C4GamePadControl::GetGamePadCount() { return 0; }
-bool C4GamePadControl::AnyButtonDown() { return false; }
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePad(int gamepad) { return nullptr; }
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePadByID(int32_t id) { return nullptr; }
+std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetAvailableGamePad() { return nullptr; }
 
 C4GamePadOpener::C4GamePadOpener(int iGamepad) { }
 C4GamePadOpener::~C4GamePadOpener() {}
-void C4GamePadOpener::SetGamePad(int iGamepad) { }
+int32_t C4GamePadOpener::GetID() { return -1; }
+bool C4GamePadOpener::IsAttached() { return false; }
+void C4GamePadOpener::PlayRumble(float strength, uint32_t length) { }
+void C4GamePadOpener::StopRumble() { }
 
-#endif //_WIN32
+#endif

@@ -131,3 +131,4 @@ local ActMap = {
 
 local FlySpeed = 100;
 local Name = "$Name$";
+local ContactCalls = true;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,13 +17,13 @@
 
 /* Basic classes for rectangles and vertex outlines */
 
-#include <C4Include.h>
-#include <C4Shape.h>
+#include "C4Include.h"
+#include "object/C4Shape.h"
 
-#include <C4Physics.h>
-#include <C4Material.h>
-#include <C4Landscape.h>
-#include <C4Record.h>
+#include "game/C4Physics.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Landscape.h"
+#include "control/C4Record.h"
 
 bool C4Shape::AddVertex(int32_t iX, int32_t iY)
 {
@@ -177,7 +177,7 @@ void C4Shape::GetVertexOutline(C4Rect &rRect)
 
 inline bool C4Shape::CheckTouchableMaterial(int32_t x, int32_t y, int32_t vtx_i, int32_t ydir, const C4DensityProvider &rDensityProvider) {
 	return rDensityProvider.GetDensity(x,y) >= ContactDensity &&
-	       ((ydir > 0 && !(CNAT_PhaseHalfVehicle & VtxCNAT[vtx_i])) || !IsMCHalfVehicle(GBackPix(x,y)));
+	       ((ydir > 0 && !(CNAT_PhaseHalfVehicle & VtxCNAT[vtx_i])) || !IsMCHalfVehicle(::Landscape.GetPix(x,y)));
 }
 
 // Adjust given position to one pixel before contact
@@ -316,6 +316,7 @@ out:
 bool C4Shape::InsertVertex(int32_t iPos, int32_t tx, int32_t ty)
 {
 	if (VtxNum+1>C4D_MaxVertex) return false;
+	if (iPos < 0 || iPos > VtxNum) return false;
 	// Insert vertex before iPos
 	for (int32_t cnt=VtxNum; cnt>iPos; cnt--)
 		{ VtxX[cnt]=VtxX[cnt-1]; VtxY[cnt]=VtxY[cnt-1]; }
@@ -388,7 +389,7 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contact
 			if (border_hack_contacts)
 			{
 				if (x == 0 && CheckTouchableMaterial(x-1, y, cvtx)) *border_hack_contacts |= CNAT_Left;
-				else if (x == ::Landscape.Width && CheckTouchableMaterial(x+1, y, cvtx)) *border_hack_contacts |= CNAT_Right;
+				else if (x == ::Landscape.GetWidth() && CheckTouchableMaterial(x+1, y, cvtx)) *border_hack_contacts |= CNAT_Right;
 			}
 		}
 

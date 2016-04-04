@@ -99,5 +99,5 @@ local ActMap = {
 };
 local Name = "$Name$";
 local Description = "$Description$";
-local Plane = 600;
+local Plane = 200;
 	

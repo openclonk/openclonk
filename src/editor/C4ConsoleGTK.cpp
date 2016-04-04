@@ -5,7 +5,7 @@
  * Copyright (c) 2002, 2005, Sven Eberhardt
  * Copyright (c) 2006-2007, Armin Burgmeier
  * Copyright (c) 2007, Günther Brammer
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,29 +17,30 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4Console.h>
+#include "C4Include.h"
+#include "editor/C4Console.h"
 
-#include <C4ConsoleGTKDlg.h>
-#include <C4Language.h>
-#include <C4Aul.h>
-#include <C4Application.h>
-#include <C4GameSave.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4Version.h>
-#include <C4Language.h>
-#include <C4Object.h>
-#include <C4Player.h>
-#include <C4Landscape.h>
-#include <C4GraphicsSystem.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4Texture.h>
-#include <C4Viewport.h>
+#include "editor/C4ConsoleGTKDlg.h"
+#include "c4group/C4Language.h"
+#include "script/C4Aul.h"
+#include "game/C4Application.h"
+#include "control/C4GameSave.h"
+#include "game/C4Game.h"
+#include "gui/C4MessageInput.h"
+#include "C4Version.h"
+#include "c4group/C4Language.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Sky.h"
+#include "game/C4GraphicsSystem.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
+#include "landscape/C4Texture.h"
+#include "game/C4Viewport.h"
 
-#include <StdFile.h>
-#include <StdRegistry.h>
+#include "platform/StdFile.h"
+#include "platform/StdRegistry.h"
 
 #include <gtk/gtk.h>
 #ifdef GDK_WINDOWING_X11
@@ -1266,7 +1267,7 @@ void C4ToolsDlg::UpdateTextures()
 
 		// bottom-most: any invalid textures
 		bool fAnyEntry = false; int32_t cnt; const char *szTexture;
-		if (::Landscape.Mode!=C4LSC_Exact)
+		if (::Landscape.GetMode()!=LandscapeMode::Exact)
 			for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 			{
 				if (!::TextureMap.GetIndex(material, szTexture, false))
@@ -1285,7 +1286,7 @@ void C4ToolsDlg::UpdateTextures()
 		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 		{
 			// Current material-texture valid? Always valid for exact mode
-			if (::TextureMap.GetIndex(material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
+			if (::TextureMap.GetIndex(material,szTexture,false) || ::Landscape.GetMode()==LandscapeMode::Exact)
 			{
 				gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(box), szTexture);
 			}
@@ -1324,7 +1325,7 @@ void C4ToolsDlg::State::UpdatePreview()
 	// Sky material: sky as pattern only
 	if (SEqual(dlg->Material,C4TLS_MatSky))
 	{
-		Pattern.Set(::Landscape.Sky.Surface, 0);
+		Pattern.Set(::Landscape.GetSky().Surface, 0);
 	}
 	// Material-Texture
 	else
@@ -1373,24 +1374,24 @@ void C4ToolsDlg::UpdateLandscapeModeCtrls()
 
 void C4ToolsDlg::State::UpdateLandscapeModeCtrls()
 {
-	int32_t iMode = ::Landscape.Mode;
+	LandscapeMode iMode = ::Landscape.GetMode();
 	g_signal_handler_block(landscape_dynamic, handlerDynamic);
 	g_signal_handler_block(landscape_static, handlerStatic);
 	g_signal_handler_block(landscape_exact, handlerExact);
 
-	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_dynamic), iMode==C4LSC_Dynamic);
-	gtk_widget_set_sensitive(landscape_dynamic, iMode==C4LSC_Dynamic);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_dynamic), iMode==LandscapeMode::Dynamic);
+	gtk_widget_set_sensitive(landscape_dynamic, iMode==LandscapeMode::Dynamic);
 
-	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_static), iMode==C4LSC_Static);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_static), iMode==LandscapeMode::Static);
 	gtk_widget_set_sensitive(landscape_static, ::Landscape.HasMap());
 
-	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_exact), iMode==C4LSC_Exact);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_exact), iMode==LandscapeMode::Exact);
 
 	g_signal_handler_unblock(landscape_dynamic, handlerDynamic);
 	g_signal_handler_unblock(landscape_static, handlerStatic);
 	g_signal_handler_unblock(landscape_exact, handlerExact);
 
-	C4DevmodeDlg::SetTitle(hbox, LoadResStr(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
+	C4DevmodeDlg::SetTitle(hbox, LoadResStr(iMode==LandscapeMode::Dynamic ? "IDS_DLG_DYNAMIC" : iMode==LandscapeMode::Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
 }
 
 void C4ToolsDlg::UpdateIFTControls()
@@ -1441,18 +1442,18 @@ void C4ConsoleGUI::SetCaptionToFileName(const char* file_name)
 
 void C4ToolsDlg::EnableControls()
 {
-	int32_t iLandscapeMode=::Landscape.Mode;
-	gtk_widget_set_sensitive(state->brush, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->line, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->rect, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->fill, iLandscapeMode>=C4LSC_Exact);
-	gtk_widget_set_sensitive(state->picker, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->fg_materials, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->fg_textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
-	gtk_widget_set_sensitive(state->bg_materials, iLandscapeMode>=C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
-	gtk_widget_set_sensitive(state->bg_textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky) && !SEqual(BackMaterial, C4TLS_MatSky));
-	gtk_widget_set_sensitive(state->scale, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->preview, iLandscapeMode>=C4LSC_Static);
+	LandscapeMode iLandscapeMode=::Landscape.GetMode();
+	gtk_widget_set_sensitive(state->brush, iLandscapeMode>=LandscapeMode::Static);
+	gtk_widget_set_sensitive(state->line, iLandscapeMode>=LandscapeMode::Static);
+	gtk_widget_set_sensitive(state->rect, iLandscapeMode>=LandscapeMode::Static);
+	gtk_widget_set_sensitive(state->fill, iLandscapeMode>=LandscapeMode::Exact);
+	gtk_widget_set_sensitive(state->picker, iLandscapeMode>=LandscapeMode::Static);
+	gtk_widget_set_sensitive(state->fg_materials, iLandscapeMode>=LandscapeMode::Static);
+	gtk_widget_set_sensitive(state->fg_textures, iLandscapeMode >= LandscapeMode::Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->bg_materials, iLandscapeMode>=LandscapeMode::Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->bg_textures, iLandscapeMode >= LandscapeMode::Static && !SEqual(Material,C4TLS_MatSky) && !SEqual(BackMaterial, C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->scale, iLandscapeMode>=LandscapeMode::Static);
+	gtk_widget_set_sensitive(state->preview, iLandscapeMode>=LandscapeMode::Static);
 	NeedPreviewUpdate();
 }
 
@@ -1588,17 +1589,17 @@ void C4ConsoleGUI::State::OnNetClient(GtkWidget* item, gpointer data)
 
 void C4ToolsDlg::State::OnButtonModeDynamic(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(C4LSC_Dynamic);
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Dynamic);
 }
 
 void C4ToolsDlg::State::OnButtonModeStatic(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(C4LSC_Static);
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Static);
 }
 
 void C4ToolsDlg::State::OnButtonModeExact(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(C4LSC_Exact);
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Exact);
 }
 
 void C4ToolsDlg::State::OnButtonBrush(GtkWidget* widget, gpointer data)
@@ -1676,4 +1677,4 @@ void C4ToolsDlg::State::OnWindowHide(GtkWidget* widget, gpointer data)
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->Active = false;
 }
 
-#include "C4ConsoleGUICommon.h"
+#include "editor/C4ConsoleGUICommon.h"

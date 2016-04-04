@@ -1,0 +1,3 @@
+[Particle]
+Name=Hail
+Face=0,0,35,35,-17,-17

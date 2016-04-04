@@ -30,6 +30,7 @@
     </syntax>
     <desc>The value will is calculates as sin(value) * amplitude + offset with value given in degrees.</desc>
     <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+	<remark>See <funclink>PV_Random</funclink> for another example with PV_Sin.</remark>
     <examples>
       <example>
         <code><funclink>CreateParticle</funclink>("MagicRing", 0, 0, 0, 0, 100, {R=0xff,G=0x00,B=0x30, Size = PV_Sin(<funclink>PV_Linear</funclink>(0,180),10,0)}, 1);</code>
@@ -38,6 +39,7 @@
     </examples>
     <related>
       <funclink>CreateParticle</funclink>
+      <funclink>PV_Cos</funclink>
       <funclink>PV_Direction</funclink>
       <funclink>PV_Random</funclink>
       <funclink>PV_Step</funclink>

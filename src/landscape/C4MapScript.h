@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,12 +20,12 @@
 #ifndef INC_C4MapScript
 #define INC_C4MapScript
 
-#include <C4ComponentHost.h>
-#include <C4Aul.h>
-#include <C4ScriptHost.h>
-#include <C4Rect.h>
-#include <CSurface8.h>
-#include <C4Landscape.h>
+#include "c4group/C4ComponentHost.h"
+#include "script/C4Aul.h"
+#include "script/C4ScriptHost.h"
+#include "lib/C4Rect.h"
+#include "graphics/CSurface8.h"
+#include "landscape/C4Landscape.h"
 
 // mattex masks: Array of bools for each possible material-texture index
 class C4MapScriptMatTexMask
@@ -269,9 +269,8 @@ public:
 // C4M_MaxTexIndex can be used to mark Sky
 class C4MapScriptLayer : public C4PropListNumbered
 {
-	CSurface8 *fg_surface;
-	CSurface8 *bg_surface;
-	bool surface_owned;
+	std::unique_ptr<CSurface8> fg_surface;
+	std::unique_ptr<CSurface8> bg_surface;
 protected:
 	class C4MapScriptMap *map;
 
@@ -284,8 +283,16 @@ public:
 	// Surface management
 	bool CreateSurface(int32_t wdt, int32_t hgt);
 	void ClearSurface();
-	void ReleaseSurface(CSurface8*& fg, CSurface8*& bg) { surface_owned=false; fg = fg_surface; bg = bg_surface; } // return surface and mark it as not owned by self
-	void SetSurface(CSurface8 *fg, CSurface8* bg) { ClearSurface(); fg_surface=fg; bg_surface=bg; UpdateSurfaceSize(); }
+	void SetSurfaces(std::unique_ptr<CSurface8> fg, std::unique_ptr<CSurface8> bg)
+	{
+		fg_surface = std::move(fg);
+		bg_surface = std::move(bg);
+		UpdateSurfaceSize();
+	}
+	std::pair<std::unique_ptr<CSurface8>, std::unique_ptr<CSurface8>> ReleaseSurfaces()
+	{
+		return std::make_pair(std::move(fg_surface), std::move(bg_surface));
+	}
 	bool HasSurface() const { return fg_surface && fg_surface->Bits && bg_surface && bg_surface->Bits; }
 
 	// Size management
@@ -340,7 +347,7 @@ public:
 	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
-	bool InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, CSurface8 **pmap_fg_surface, CSurface8** pmap_bg_surface);
+	bool InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, std::unique_ptr<CSurface8> *pmap_fg_surface, std::unique_ptr<CSurface8>* pmap_bg_surface);
 	C4PropListStatic *GetLayerPrototype() { return LayerPrototype; }
 
 	C4TextureMap* pTexMap;

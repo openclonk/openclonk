@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,10 +17,10 @@
 /* OpenGL implementation of NewGfx, the context */
 
 #include "C4Include.h"
-#include <C4DrawGL.h>
+#include "graphics/C4DrawGL.h"
 
-#include <C4Window.h>
-#include <C4App.h>
+#include "platform/C4Window.h"
+#include "platform/C4App.h"
 
 #ifndef USE_CONSOLE
 
@@ -456,11 +456,6 @@ void CStdGLCtx::Clear(bool multisample_change)
 	}
 }
 
-static int GLXErrorHandler(Display * dpy, XErrorEvent * ev)
-{
-    return 0;
-}
-
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
@@ -497,10 +492,9 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	if (glXCreateContextAttribsARB)
 	{
-		int (*oldErrorHandler) (Display *, XErrorEvent *) = XSetErrorHandler(GLXErrorHandler);
+		gdk_x11_display_error_trap_push(gdk_display_get_default());
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
-		XSync(dpy, False);
-		XSetErrorHandler(oldErrorHandler);
+		gdk_x11_display_error_trap_pop_ignored(gdk_display_get_default());
 	}
 	if(!ctx) {
 		Log("  gl: falling back to attribute-less context creation.");

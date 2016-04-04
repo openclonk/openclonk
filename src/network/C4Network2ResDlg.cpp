@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,15 +16,15 @@
 // resource display list box
 
 #include "C4Include.h"
-#include "C4Network2Dialogs.h"
+#include "network/C4Network2Dialogs.h"
 
-#include <C4Application.h>
-#include "C4GameLobby.h"
-#include "C4FullScreen.h"
-#include "C4Network2.h"
-#include "C4PlayerInfo.h"
-#include "C4Network2Players.h"
-#include <C4GraphicsResource.h>
+#include "game/C4Application.h"
+#include "gui/C4GameLobby.h"
+#include "game/C4FullScreen.h"
+#include "network/C4Network2.h"
+#include "control/C4PlayerInfo.h"
+#include "network/C4Network2Players.h"
+#include "graphics/C4GraphicsResource.h"
 
 // ----------- C4Network2ResDlg::ListItem ----------------------------------------------------------------
 

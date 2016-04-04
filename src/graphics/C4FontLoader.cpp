@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,23 +16,24 @@
 
 // text drawing facility for C4Draw
 
-#include <C4Include.h>
-#include "C4FontLoader.h"
+#include "C4Include.h"
+#include "graphics/C4FontLoader.h"
 
 #ifndef USE_CONSOLE
-#include <C4Components.h>
-#include <C4Config.h>
-#include <C4Draw.h>
-#include <C4Language.h>
-#include <C4Log.h>
-#include <C4Markup.h>
-#include <C4Surface.h>
+#include "c4group/C4Components.h"
+#include "config/C4Config.h"
+#include "graphics/C4Draw.h"
+#include "c4group/C4Language.h"
+#include "lib/C4Log.h"
+#include "lib/C4Markup.h"
+#include "graphics/C4Surface.h"
+#include "lib/StdColors.h"
 
 #include <stdexcept>
 #include <string>
 
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 
 #include <ft2build.h>
@@ -283,9 +284,7 @@ CStdFont::CStdFont()
 {
 #ifndef USE_CONSOLE
 	// set default values
-	psfcFontData = NULL;
 	sfcCurrent = NULL;
-	iNumFontSfcs = 0;
 	iSfcSizes = 64;
 	dwDefFontHeight=iLineHgt=10;
 	iFontZoom=1; // default: no internal font zooming - likely no antialiasing either...
@@ -304,21 +303,16 @@ CStdFont::CStdFont()
 #ifndef USE_CONSOLE
 bool CStdFont::AddSurface()
 {
-	// add new surface as render target; copy old ones
-	C4Surface **pNewSfcs = new C4Surface *[iNumFontSfcs+1];
-	if (iNumFontSfcs) memcpy(pNewSfcs, psfcFontData, iNumFontSfcs * sizeof (C4Surface *));
-	delete [] psfcFontData;
-	psfcFontData = pNewSfcs;
-	C4Surface *sfcNew = psfcFontData[iNumFontSfcs] = new C4Surface();
-	++iNumFontSfcs;
-	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes)) return false;
+	// add new surface as render target
+	auto sfcNew = std::make_unique<C4Surface>(iSfcSizes, iSfcSizes, 0);
 	// If old surface was locked, unlock it and lock the new one in its stead
 	if (sfcCurrent && sfcCurrent->IsLocked())
 	{
 		sfcCurrent->Unlock();
 		sfcNew->Lock();
 	}
-	sfcCurrent = sfcNew;
+	sfcCurrent = sfcNew.get();
+	psfcFontData.push_back(std::move(sfcNew));
 	iCurrentSfcX = iCurrentSfcY = 0;
 	return true;
 }
@@ -495,14 +489,8 @@ void CStdFont::Clear()
 	pVectorFont = NULL;
 
 	// clear font sfcs
-	if (psfcFontData)
-	{
-		while (iNumFontSfcs--) delete psfcFontData[iNumFontSfcs];
-		delete [] psfcFontData;
-		psfcFontData = NULL;
-	}
 	sfcCurrent = NULL;
-	iNumFontSfcs = 0;
+	psfcFontData.clear();
 	for (int c=' '; c<256; ++c) fctAsciiTexCoords[c-' '].Default();
 	fctUnicodeMap.clear();
 	// set default values

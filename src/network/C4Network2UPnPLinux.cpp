@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2012-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2012-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,15 +14,15 @@
  */
 /* Linux implementation of a UPnP port mapper (using libupnp) */
 
-#include <C4Include.h>
-#include <C4Application.h>
-#include <C4Version.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
+#include "C4Version.h"
 
 #include <netdb.h>
 #include <upnp.h>
 #include <upnptools.h>
 
-#include <C4Network2UPnP.h> // must come after upnp.h
+#include "network/C4Network2UPnP.h" // must come after upnp.h
 
 namespace
 {

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,12 +16,12 @@
 #ifndef C4NETWORK2REFERENCE_H
 #define C4NETWORK2REFERENCE_H
 
-#include "C4Network2.h"
-#include "C4Network2Client.h"
-#include "C4GameParameters.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Client.h"
+#include "control/C4GameParameters.h"
 #include "C4Version.h"
-#include "C4GameVersion.h"
-#include "C4InputValidation.h"
+#include "game/C4GameVersion.h"
+#include "lib/C4InputValidation.h"
 
 const int C4Network2HTTPQueryTimeout = 10; // (s)
 

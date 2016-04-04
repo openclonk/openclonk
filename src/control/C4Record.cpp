@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,18 +15,18 @@
  */
 // scenario record functionality
 
-#include <C4Include.h>
-#include <C4Record.h>
+#include "C4Include.h"
+#include "control/C4Record.h"
 
-#include <C4Console.h>
-#include <C4PlayerInfo.h>
-#include <C4GameSave.h>
-#include <C4Log.h>
-#include <C4Player.h>
-#include <C4Game.h>
-#include <C4GameControl.h>
+#include "editor/C4Console.h"
+#include "control/C4PlayerInfo.h"
+#include "control/C4GameSave.h"
+#include "lib/C4Log.h"
+#include "player/C4Player.h"
+#include "game/C4Game.h"
+#include "control/C4GameControl.h"
 
-#include <StdFile.h>
+#include "platform/StdFile.h"
 
 #define IMMEDIATEREC
 

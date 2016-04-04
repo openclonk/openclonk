@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -20,12 +20,12 @@
 #ifndef INC_C4Console
 #define INC_C4Console
 
-#include "C4ConsoleGUI.h"
-#include "C4ToolsDlg.h"
-#include "C4ObjectListDlg.h"
-#include "C4EditCursor.h"
+#include "editor/C4ConsoleGUI.h"
+#include "editor/C4ToolsDlg.h"
+#include "editor/C4ObjectListDlg.h"
+#include "editor/C4EditCursor.h"
 
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 const int C4CNS_ModePlay = 0,
           C4CNS_ModeEdit = 1,

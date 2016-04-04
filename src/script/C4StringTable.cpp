@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,8 +15,8 @@
  */
 /* string table: holds all strings used by script engine */
 
-#include <C4Include.h>
-#include <C4StringTable.h>
+#include "C4Include.h"
+#include "script/C4StringTable.h"
 
 
 // *** C4Set
@@ -131,7 +131,6 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = "Parallaxity";
 	P[P_LineColors] = "LineColors";
 	P[P_LineAttach] = "LineAttach";
-	P[P_LineMaxDistance] = "LineMaxDistance";
 	P[P_MouseDrag] = "MouseDrag";
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
@@ -147,6 +146,7 @@ C4StringTable::C4StringTable()
 	P[P_IncineratingObj] = "IncineratingObj";
 	P[P_Plane] = "Plane";
 	P[P_BorderBound] = "BorderBound";
+	P[P_ContactCalls] = "ContactCalls";
 	P[P_SolidMaskPlane] = "SolidMaskPlane";
 	P[P_Tooltip] = "Tooltip";
 	P[P_Placement] = "Placement";
@@ -306,7 +306,7 @@ C4String *C4StringTable::RegString(StdStrBuf String)
 		return new C4String(String);
 }
 
-C4String *C4StringTable::FindString(const char *strString)
+C4String *C4StringTable::FindString(const char *strString) const
 {
 	return Set.Get(strString);
 }

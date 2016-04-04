@@ -1,0 +1,9 @@
+CableCarOptions=Seilbahneinstellungen
+
+TooltipEngage=Das Fahrzeug auf das Seil aufsetzen.
+DescEngage=%s bei %s auf das Seil aufsetzen.
+
+TooltipGo=Wähle ein Ziel für das Fahrzeug.
+DescGo=Öffnet das Zielwahl-Menü für dieses Fahrzeug. Das Fahrzeug fährt los, sobald ein Ziel ausgewählt wurde.
+
+NoStation=Schiebe das Fahrzeug vor eine Station, um es auf ein Seil zu setzen.

@@ -16,15 +16,16 @@
 
 /* Proplist table view */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4Object.h>
-#include <C4GameObjects.h>
-#include <C4ConsoleQtObjectListViewer.h>
-#include <C4Console.h>
-#include <C4EditCursor.h>
-#include <C4Effect.h>
-#include <C4GameObjects.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "object/C4GameObjects.h"
+#include "editor/C4ConsoleQtObjectListViewer.h"
+#include "editor/C4Console.h"
+#include "editor/C4EditCursor.h"
+#include "script/C4Effect.h"
+#include "object/C4GameObjects.h"
 
 
 C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel() : last_row_count(0)

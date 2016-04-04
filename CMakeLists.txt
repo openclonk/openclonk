@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2015, The OpenClonk Team and contributors
+# Copyright (c) 2009-2016, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -12,6 +12,11 @@
 # for the above references.
 
 cmake_minimum_required (VERSION 3.0.2)
+
+# Don't allow people to build "Release" builds because there's no reason to do that.
+# Use one of RelWithDebInfo or MinSizeRel instead.
+set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo MinSizeRel CACHE STRING "List of supported configuration types." FORCE)
+
 project (openclonk CXX C)
 
 # CMP0054: Only interpret if() arguments as variables or keywords when unquoted
@@ -45,92 +50,115 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
 ############################################################################
 include(CheckCXXCompilerFlag)
 
-set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-separate_arguments(OC_CXX_FLAGS)
-set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-separate_arguments(OC_CXX_FLAGS_DEBUG)
-set(OC_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
-separate_arguments(OC_EXE_LINKER_FLAGS)
-set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
-separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
-
 CHECK_CXX_COMPILER_FLAG("-std=gnu++14" USE_GCC_STD_14)
 if(USE_GCC_STD_14)
-	list(APPEND OC_CXX_FLAGS "-std=gnu++14")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
+endif()
+
+# Enable link-time code generation. We have to do this manually because while
+# there is a INTERPROCEDURAL_OPTIMIZATION cmake flag, it's only implemented
+# for icc so far; https://cmake.org/Bug/view.php?id=15939
+function(add_linker_flags)
+	include(CMakeParseArguments)
+	set(options optimized debug)
+	set(oneValueArgs FLAGS)
+	set(multiValueArgs MODULES)
+
+	cmake_parse_arguments(_alf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	# Adds some linker flags to all optimized build configurations
+	set(_configurations "")
+	if(_alf_optimized)
+		list(APPEND _configurations MINSIZEREL RELWITHDEBINFO RELEASE)
+	endif()
+	if(_alf_debug)
+		list(APPEND _configurations DEBUG)
+	endif()
+
+	foreach(_module ${_alf_MODULES})
+		string(TOUPPER "${_module}" _obj_type)
+		foreach(_config ${_configurations})
+			set(CMAKE_${_obj_type}_LINKER_FLAGS_${_config} "${CMAKE_${_obj_type}_LINKER_FLAGS_${_config}} ${_alf_FLAGS}" PARENT_SCOPE)
+		endforeach()
+	endforeach()
+endfunction()
+
+CHECK_CXX_COMPILER_FLAG("-flto" USE_GCC_STYLE_LTCG)
+if(USE_GCC_STYLE_LTCG)
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -flto")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -flto")
+	add_linker_flags(optimized MODULES exe shared FLAGS -flto)
+
+	# Use GCC's ar and ranlib wrappers if necessary, because the plain ones 
+	# don't understand lto objects without an explicit plugin parameter
+	if(CMAKE_C_COMPILER MATCHES "gcc$")
+		set(LTCG_NEEDS_AR_WRAPPER 1)
+		set(LTCG_AR_WRAPPER_PREFIX "${CMAKE_C_COMPILER}")
+	elseif(CMAKE_C_COMPILER MATCHES "cc$")
+		set(LTCG_NEEDS_AR_WRAPPER 1)
+		set(LTCG_AR_WRAPPER_PREFIX "gcc")
+	else()
+		set(LTCG_NEEDS_AR_WRAPPER 0)
+	endif()
+
+	if(LTCG_NEEDS_AR_WRAPPER)
+		find_program(AR_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ar")
+		if (AR_WRAPPER)
+			message("Using ${AR_WRAPPER} instead of ${CMAKE_AR} to support lto objects.")
+			set(CMAKE_AR "${AR_WRAPPER}" CACHE FILEPATH "Path to an ar that supports lto objects." FORCE)
+		endif()
+		find_program(RANLIB_WRAPPER "${LTCG_AR_WRAPPER_PREFIX}-ranlib")
+		if (RANLIB_WRAPPER)
+			message("Using ${RANLIB_WRAPPER} instead of ${CMAKE_RANLIB} to support lto objects.")
+			set(CMAKE_RANLIB "${RANLIB_WRAPPER}" CACHE FILEPATH "Path to a ranlib that supports lto objects." FORCE)
+		endif()
+	endif()
 endif()
 
 if(MSVC)
-	list(APPEND OC_CXX_FLAGS /MP)
-	list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
+	# Disable non-standard conversion from string literal to (nonconst) char*
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:strictStrings")
+
+	# Enable multi-core builds
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+
+	# Enable LTCG for release builds
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
+	add_linker_flags(optimized MODULES exe shared static FLAGS /LTCG)
 
 	# Activate edit-and-continue
-	list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
-	list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Gy")
 
 	# do not link the release CRT in debug builds
-	list(APPEND OC_EXE_LINKER_FLAGS_DEBUG "/NODEFAULTLIB:MSVCRT")
+	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT")
 	set(HAVE_PRECOMPILED_HEADERS ON CACHE INTERNAL "Compiler supports precompiled headers")
 
 	# Suppress warnings about "non-secure" functions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
 	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
-	list(APPEND OC_CXX_FLAGS "/wd4244")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244")
 	# Disable warning C4267: 'var' : conversion from 'size_t' to 'type', possible loss of data (64 bit build only)
-	list(APPEND OC_CXX_FLAGS "/wd4267")
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-	list(APPEND OC_CXX_FLAGS -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-	list(APPEND OC_CXX_FLAGS -Wall -Wextra -Wextra-tokens -Wpointer-arith -Wno-cast-align -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wextra-tokens -Wpointer-arith -Wno-cast-align -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
+elseif(CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
 endif()
 
 if(WIN32 AND MINGW)
 	# Activate DEP and ASLR
-	list(APPEND OC_EXE_LINKER_FLAGS -Wl,--nxcompat -Wl,--dynamicbase)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--nxcompat -Wl,--dynamicbase")
 endif()
 
 if(UNIX)
-	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
-	# and when the path is changed both the old and new definition appears
-	# in the list of flags.
 	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
 endif()
 
 if(APPLE)
-	list(APPEND OC_CXX_FLAGS -fobjc-arc)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
 endif()
-
-if(OC_CXX_FLAGS)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
-endif()
-set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
-endforeach()
-if(OC_CXX_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
-endif()
-set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-endforeach()
-if(OC_EXE_LINKER_FLAGS)
-	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS)
-endif()
-set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Flags used by the linker." FORCE)
-foreach(FLAG ${OC_EXE_LINKER_FLAGS})
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" CACHE STRING "Flags used by the linker." FORCE)
-endforeach()
-if(OC_EXE_LINKER_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS_DEBUG)
-endif()
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
-foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the linker during debug builds." FORCE)
-endforeach()
 
 ############################################################################
 # Check for compiler quirks and features
@@ -177,7 +205,6 @@ CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
 CHECK_INCLUDE_FILE_CXX(sys/eventfd.h HAVE_SYS_EVENTFD_H)
 CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
-CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
 CHECK_CXX_SOURCE_COMPILES("#include <getopt.h>\nint main(int argc, char * argv[]) { getopt_long(argc, argv, \"\", 0, 0); }" HAVE_GETOPT_H)
 
 ############################################################################
@@ -302,7 +329,7 @@ endif()
 # SDL
 if(USE_SDL_MAINLOOP)
 	find_package(SDL2 REQUIRED)
-elseif(NOT WIN32)
+else()
 	# for gamepads
 	find_package(SDL2)
 endif()
@@ -480,20 +507,14 @@ set(OC_CLONK_SOURCES
 	src/game/C4FullScreen.h
 	src/game/C4Game.cpp
 	src/game/C4Game.h
+	src/game/C4GameScript.cpp
+	src/game/C4GameScript.h
 	src/game/C4GameVersion.h
 	src/game/C4GraphicsSystem.cpp
 	src/game/C4GraphicsSystem.h
 	src/game/C4Physics.h
 	src/game/C4Viewport.cpp
 	src/game/C4Viewport.h
-	src/gamescript/C4Effect.cpp
-	src/gamescript/C4Effect.h
-	src/gamescript/C4FindObject.cpp
-	src/gamescript/C4FindObject.h
-	src/gamescript/C4GameScript.cpp
-	src/gamescript/C4GameScript.h
-	src/gamescript/C4TransferZone.cpp
-	src/gamescript/C4TransferZone.h
 	src/graphics/Bitmap256.cpp
 	src/graphics/Bitmap256.h
 	src/graphics/C4Draw.cpp
@@ -607,7 +628,6 @@ set(OC_CLONK_SOURCES
 	src/landscape/fow/C4FoWBeamTriangle.h
 	src/landscape/C4Landscape.cpp
 	src/landscape/C4Landscape.h
-	src/landscape/C4LandscapeRenderClassic.cpp
 	src/landscape/C4LandscapeRender.cpp
 	src/landscape/C4LandscapeRender.h
 	src/landscape/C4Map.cpp
@@ -640,6 +660,8 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4Texture.h
 	src/landscape/C4TextureShape.cpp
 	src/landscape/C4TextureShape.h
+	src/landscape/C4TransferZone.cpp
+	src/landscape/C4TransferZone.h
 	src/landscape/C4Weather.cpp
 	src/landscape/C4Weather.h
 	src/lib/C4LogBuf.cpp
@@ -710,6 +732,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4Def.h
 	src/object/C4DefList.cpp
 	src/object/C4DefList.h
+	src/object/C4FindObject.cpp
+	src/object/C4FindObject.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
 	src/object/C4Id.cpp
@@ -956,8 +980,6 @@ elseif(USE_WIN32_WINDOWS)
 	endif()
 	list(APPEND OC_GUI_SOURCES
 		src/platform/C4WindowWin32.cpp
-		src/platform/StdJoystick.cpp
-		src/platform/StdJoystick.h
 	)
 elseif(USE_COCOA)
 	list(APPEND OC_GUI_SOURCES
@@ -1002,23 +1024,6 @@ endif()
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_SOURCE_DIR}/src/c4group
-	${CMAKE_CURRENT_SOURCE_DIR}/src/config
-	${CMAKE_CURRENT_SOURCE_DIR}/src/control
-	${CMAKE_CURRENT_SOURCE_DIR}/src/editor
-	${CMAKE_CURRENT_SOURCE_DIR}/src/game
-	${CMAKE_CURRENT_SOURCE_DIR}/src/gamescript
-	${CMAKE_CURRENT_SOURCE_DIR}/src/graphics
-	${CMAKE_CURRENT_SOURCE_DIR}/src/gui
-	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape
-	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape/fow
-	${CMAKE_CURRENT_SOURCE_DIR}/src/lib
-	${CMAKE_CURRENT_SOURCE_DIR}/src/network
-	${CMAKE_CURRENT_SOURCE_DIR}/src/object
-	${CMAKE_CURRENT_SOURCE_DIR}/src/platform
-	${CMAKE_CURRENT_SOURCE_DIR}/src/player
-	${CMAKE_CURRENT_SOURCE_DIR}/src/res
-	${CMAKE_CURRENT_SOURCE_DIR}/src/script
 )
 
 # Mark thirdparty as system headers so we don't get warnings from them
@@ -1103,6 +1108,8 @@ src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
 src/script/C4AulScriptFunc.cpp
 src/script/C4AulScriptFunc.h
+src/script/C4Effect.cpp
+src/script/C4Effect.h
 src/script/C4PropList.cpp
 src/script/C4PropList.h
 src/script/C4Script.cpp
@@ -1176,12 +1183,13 @@ add_executable(openclonk-server
 	src/platform/C4StdInProc.cpp
 	src/platform/C4StdInProc.h
 )
-set_property(TARGET openclonk-server APPEND PROPERTY COMPILE_DEFINITIONS "USE_CONSOLE")
+target_compile_definitions(openclonk-server PRIVATE "USE_CONSOLE")
 
 target_link_libraries(openclonk-server
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${EXECINFO_LIBRARY}
+	${SDL2_LIBRARIES}
 	${READLINE_LIBRARIES}
 	${Audio_LIBRARIES}
 	${GETOPT_LIBRARIES}

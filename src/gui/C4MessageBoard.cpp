@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,19 +17,20 @@
 
 /* Fullscreen startup log and chat type-in */
 
-#include <C4Include.h>
-#include <C4MessageBoard.h>
+#include "C4Include.h"
+#include "gui/C4MessageBoard.h"
 
-#include <C4Application.h>
-#include <C4LoaderScreen.h>
-#include <C4Gui.h>
-#include <C4Player.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4MessageInput.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4FullScreen.h>
+#include "game/C4Application.h"
+#include "gui/C4LoaderScreen.h"
+#include "gui/C4Gui.h"
+#include "player/C4Player.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MessageInput.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "game/C4FullScreen.h"
+#include "lib/StdColors.h"
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
 

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,19 +17,20 @@
 // Menus attached to objects; script created or internal
 
 #include "C4Include.h"
-#include "C4ObjectMenu.h"
+#include "object/C4ObjectMenu.h"
 
-#include "C4Control.h"
-#include "C4Object.h"
-#include "C4ObjectCom.h"
-#include "C4Player.h"
-#include "C4Viewport.h"
-#include "C4MouseControl.h"
-#include "C4GraphicsResource.h"
-#include "C4Game.h"
-#include "C4PlayerList.h"
-#include "C4GameObjects.h"
-#include "C4AulExec.h"
+#include "control/C4Control.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
+#include "player/C4Player.h"
+#include "game/C4Viewport.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "script/C4AulExec.h"
 
 // -----------------------------------------------------------
 // C4ObjectMenu

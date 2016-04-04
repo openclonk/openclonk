@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,29 +17,29 @@
 
 /* Main class to initialize configuration and execute the game */
 
-#include <C4Include.h>
-#include <C4Application.h>
+#include "C4Include.h"
+#include "game/C4Application.h"
 
-#include <C4Version.h>
+#include "C4Version.h"
 #ifdef _WIN32
-#include <C4UpdateDlg.h>
+#include "gui/C4UpdateDlg.h"
 #endif
-#include "C4Game.h"
-#include <C4GfxErrorDlg.h>
-#include "C4GraphicsSystem.h"
-#include "C4GraphicsResource.h"
-#include "C4MessageInput.h"
-#include <C4FullScreen.h>
-#include <C4Language.h>
-#include <C4Console.h>
-#include <C4Startup.h>
-#include <C4Log.h>
-#include <C4GamePadCon.h>
-#include <C4GameLobby.h>
-#include <C4Network2.h>
-#include <C4Network2IRC.h>
-#include <C4Particles.h>
-#include <StdPNG.h>
+#include "game/C4Game.h"
+#include "gui/C4GfxErrorDlg.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MessageInput.h"
+#include "game/C4FullScreen.h"
+#include "c4group/C4Language.h"
+#include "editor/C4Console.h"
+#include "gui/C4Startup.h"
+#include "lib/C4Log.h"
+#include "platform/C4GamePadCon.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2IRC.h"
+#include "landscape/C4Particles.h"
+#include "graphics/StdPNG.h"
 
 #include <getopt.h>
 
@@ -679,6 +679,7 @@ void C4Application::GameTick()
 	case C4AS_Startup:
 		SoundSystem.Execute();
 		MusicSystem.Execute();
+		if (pGamePadControl) pGamePadControl->Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
@@ -701,12 +702,20 @@ void C4Application::GameTick()
 		}
 		if(Config.Graphics.Windowed == 2 && FullScreenMode())
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
+		if (!isEditor)
+			pWindow->GrabMouse(true);
+		// Gamepad events have to be polled here so that the controller
+		// connection state is always up-to-date before players are
+		// joining.
+		if (pGamePadControl) pGamePadControl->Execute();
 		break;
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
 		if(Config.Graphics.Windowed == 2 && !NextMission && !isEditor)
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
+		if (!isEditor)
+			pWindow->GrabMouse(false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
 		if (NextMission)

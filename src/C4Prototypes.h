@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -28,7 +28,6 @@ class C4AulDefFunc;
 class C4AulExec;
 class C4AulFunc;
 struct C4AulParSet;
-class C4AulScript;
 struct C4AulScriptContext;
 class C4AulScriptEngine;
 class C4AulScriptFunc;

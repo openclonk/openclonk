@@ -1,0 +1,5 @@
+Name=Hoist
+Description=To use on a cable. Transports vehicles.
+
+TooltipPickup=Attach this vehicle to the hoist.
+TooltipDrop=Drop this vehicle from the hoist.

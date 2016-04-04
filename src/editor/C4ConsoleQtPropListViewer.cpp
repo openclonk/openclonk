@@ -14,13 +14,11 @@
 * for the above references.
 */
 
-
-
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4ConsoleQtPropListViewer.h>
-#include <C4Console.h>
-#include <C4Object.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "editor/C4ConsoleQtPropListViewer.h"
+#include "editor/C4Console.h"
+#include "object/C4Object.h"
 
 /* Property path for property setting synchronization */
 
@@ -95,11 +93,6 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 		emit EditingDoneSignal(editor);
 	});
 	return editor;
-}
-
-void C4PropertyDelegateEnumEditor::UpdateOptionIndex(int idx)
-{
-	if (!updating) parent_delegate->UpdateOptionIndex(this, idx);
 }
 
 C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, int reserve_count)
@@ -268,7 +261,7 @@ void C4PropertyDelegateEnum::SetModelData(QWidget *aeditor, const C4PropertyPath
 
 QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
 {
-	Editor *editor = new Editor(parent, this);
+	Editor *editor = new Editor(parent);
 	editor->layout = new QHBoxLayout(editor);
 	editor->layout->setContentsMargins(0, 0, 0, 0);
 	editor->layout->setMargin(0);
@@ -284,18 +277,13 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	return editor;
 }
 
-void C4PropertyDelegateEnum::UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const
-{
-	editor->setGeometry(option.rect);
-}
-
 void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *editor, int newval) const
 {
 	UpdateEditorParameter(editor);
 	emit EditorValueChangedSignal(editor);
 }
 
-C4PropertyDelegateC4Value::C4PropertyDelegateC4Value(const C4PropertyDelegateFactory *factory)
+C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory)
 	: C4PropertyDelegateEnum(factory, 10)
 {
 	// Add default C4Value selections
@@ -311,6 +299,45 @@ C4PropertyDelegateC4Value::C4PropertyDelegateC4Value(const C4PropertyDelegateFac
 	AddTypeOption(::Strings.RegString("proplist"), C4V_PropList, C4VNull, factory->GetDelegateByValue(C4VString("proplist")));
 }
 
+void C4PropertyDelegateC4ValueInput::SetEditorData(QWidget *aeditor, const C4Value &val) const
+{
+	Editor *editor = static_cast<Editor *>(aeditor);
+	editor->edit->setText(val.GetDataString().getData());
+}
+
+void C4PropertyDelegateC4ValueInput::SetModelData(QWidget *aeditor, const C4PropertyPath &property_path) const
+{
+	// Only set model data when pressing Enter explicitely; not just when leaving 
+	Editor *editor = static_cast<Editor *>(aeditor);
+	if (editor->commit_pending)
+	{
+		property_path.SetProperty(editor->edit->text().toUtf8());
+		editor->commit_pending = false;
+	}
+}
+
+QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
+{
+	// Editor is just an edit box plus a "..." button for array/proplist types
+	Editor *editor = new Editor(parent);
+	editor->layout = new QHBoxLayout(editor);
+	editor->layout->setContentsMargins(0, 0, 0, 0);
+	editor->layout->setMargin(0);
+	editor->layout->setSpacing(0);
+	editor->edit = new QLineEdit(editor);
+	editor->layout->addWidget(editor->edit);
+	editor->extended_button = new QPushButton("...", editor); // TODO imnplement extended button
+	editor->layout->addWidget(editor->extended_button);
+	editor->extended_button->hide();
+	editor->edit->setFocus();
+	// EditingDone only on Return; not just when leaving edit field
+	connect(editor->edit, &QLineEdit::returnPressed, editor, [this, editor]() {
+		editor->commit_pending = true;
+		emit EditingDoneSignal(editor);
+	});
+	return editor;
+}
+
 
 
 
@@ -322,7 +349,8 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4St
 	if (!str) return NULL;
 	// create default base types
 	if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
-	if (str->GetData() == "any") return new C4PropertyDelegateC4Value(this);
+	if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this);
+	if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this);
 	// unknown type
 	return NULL;
 }
@@ -332,7 +360,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByValue(const C4Val
 	switch (val.GetType())
 	{
 	case C4V_Nil:
-		return new C4PropertyDelegateC4Value(this);
+		return new C4PropertyDelegateC4ValueInput(this);
 	case C4V_Array:
 		return new C4PropertyDelegateEnum(this, *val.getArray());
 	case C4V_PropList:

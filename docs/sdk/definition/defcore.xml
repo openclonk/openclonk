@@ -36,11 +36,6 @@
           <col>Category of the object. Also see <emlink href="definition/category.html">object categories</emlink>.</col>
         </row>
         <row>
-          <literal_col>ContactCalls</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, Contactcalls are called in the object script.</col>
-        </row>
-        <row>
           <literal_col>Width</literal_col>
           <col>Integer</col>
           <col>Width of the object.</col>

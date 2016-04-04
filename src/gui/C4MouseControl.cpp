@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,22 +17,23 @@
 
 /* Mouse input */
 
-#include <C4Include.h>
-#include <C4MouseControl.h>
+#include "C4Include.h"
+#include "gui/C4MouseControl.h"
 
-#include <C4Viewport.h>
-#include <C4Object.h>
-#include <C4Application.h>
-#include <C4FullScreen.h>
-#include <C4Gui.h>
-#include <C4Landscape.h>
-#include <C4Game.h>
-#include <C4Player.h>
-#include "C4ChatDlg.h"
-#include <C4GraphicsResource.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4ScriptGuiWindow.h>
+#include "game/C4Viewport.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "gui/C4Gui.h"
+#include "landscape/C4Landscape.h"
+#include "game/C4Game.h"
+#include "player/C4Player.h"
+#include "gui/C4ChatDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
+#include "gui/C4ScriptGuiWindow.h"
 
 const int32_t C4MC_Drag_None            = 0,
               C4MC_Drag_Script          = 6,
@@ -804,7 +805,7 @@ void C4MouseControl::UpdateFogOfWar()
 	// Check for fog of war
 	// TODO: Check C4FoWRegion... should maybe be passed as a parameter?
 	// pDraw->GetFoW() might not be current at this time.
-	if (/*(pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || */GameX<0 || GameY<0 || int32_t(GameX)>=GBackWdt || int32_t(GameY)>=GBackHgt)
+	if (/*(pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || */GameX<0 || GameY<0 || int32_t(GameX)>=::Landscape.GetWidth() || int32_t(GameY)>=::Landscape.GetHeight())
 	{
 		FogOfWar=true;
 		// allow dragging, scrolling, region selection and manipulations of objects not affected by FoW

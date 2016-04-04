@@ -1,13 +1,11 @@
 /*-- Lorry --*/
 
 
-#include Library_CableCar
-
 local content_menu;
 
 protected func Construction()
 {
-	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold));
+	//PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold));
 	SetProperty("MeshTransformation",Trans_Rotate(13,0,1,0));
 }
 
@@ -18,15 +16,18 @@ public func IsToolProduct() { return true; }
 local drive_anim;
 local tremble_anim;
 
+local tilt_anim;
+
 protected func Initialize()
 {
-	drive_anim = PlayAnimation("Drive", 5, Anim_Const(0), Anim_Const(500) /* ignored anyway */);
-	tremble_anim = PlayAnimation("Tremble", 5, Anim_Const(0), Anim_Const(500));
+	drive_anim = PlayAnimation("Drive", 1, Anim_Const(0), Anim_Const(500));
+	//tremble_anim = PlayAnimation("Tremble", 5, Anim_Const(0), Anim_Const(500));
+
+	tilt_anim = PlayAnimation("Empty", 1, Anim_Const(0), Anim_Const(100));
 
 	iRotWheels = 0;
 	AddTimer("TurnWheels", 1);
 	iTremble = 0;
-	iMovementSpeed = 2;
 	return _inherited(...);
 }
 
@@ -92,7 +93,7 @@ func TurnWheels()
 		iTremble += 100;
 		if(iTremble < 0) iTremble += 2000;
 		if(iTremble > 2000) iTremble -= 2000;
-		SetAnimationPosition(tremble_anim, Anim_Const(iTremble));
+		//SetAnimationPosition(tremble_anim, Anim_Const(iTremble));
 	}
 }
 
@@ -139,3 +140,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
+local ContactCalls = true;

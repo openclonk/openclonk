@@ -89,6 +89,9 @@ public func FxDumpContentsStart(object target, proplist effect, int temp, int di
 	if (effect.dump_dir == DIR_Right)
 		rdir = effect.dump_strength;
 	SetRDir(rdir);
+	// Start dump sounds together.
+	Sound("Objects::Lorry::Dump1", false, 100, nil, +1);
+	Sound("Objects::Lorry::Dump2", false, 100, nil, +1);
 	return FX_OK;
 }
 
@@ -128,6 +131,9 @@ public func FxDumpContentsStop(object target, proplist effect, int reason, bool 
 		return FX_OK;
 	// Stop rotating the lorry.
 	SetRDir(0);
+	// Stop dump sounds.
+	Sound("Objects::Lorry::Dump1", false, 100, nil, -1);
+	Sound("Objects::Lorry::Dump2", false, 100, nil, -1);
 	return FX_OK;
 }
 
@@ -214,12 +220,12 @@ public func TurnWheels()
 	if (Abs(GetXDir()) > 1 && !wheel_sound)
 	{
 		if (!wheel_sound) 
-			Sound("Structures::WheelsTurn", false, nil, nil, 1);
+			Sound("Structures::WheelsTurn", {loop_count = 1});
 		wheel_sound = true;
 	}
 	else if (wheel_sound && !GetXDir())
 	{
-		Sound("Structures::WheelsTurn", false, nil, nil, -1);
+		Sound("Structures::WheelsTurn", {loop_count = -1});
 		wheel_sound = false;
 	}
 }
@@ -301,4 +307,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
-
+local ContactCalls = true;

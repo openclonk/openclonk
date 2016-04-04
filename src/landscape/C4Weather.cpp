@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,14 @@
 
 /* Controls temperature, wind, and natural disasters */
 
-#include <C4Include.h>
-#include <C4Weather.h>
+#include "C4Include.h"
+#include "landscape/C4Weather.h"
 
-#include <C4Object.h>
-#include <C4Random.h>
-#include <C4GraphicsSystem.h>
-#include <C4Game.h>
-#include <C4SoundSystem.h>
+#include "object/C4Object.h"
+#include "lib/C4Random.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Game.h"
+#include "platform/C4SoundSystem.h"
 
 C4Weather::C4Weather()
 {

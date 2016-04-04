@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,9 +17,9 @@
 
 /* Helper classes for individual sounds and effects in sound system. */
 
-#include <C4Include.h>
+#include "C4Include.h"
 
-#include <C4SoundSystem.h>
+#include "platform/C4SoundSystem.h"
 
 class C4Object; 
 class C4SoundModifier;

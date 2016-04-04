@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,8 +18,8 @@
 /* Lots of file helpers */
 
 #include "C4Include.h"
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
 #include <stdio.h>
 #ifdef HAVE_IO_H
@@ -32,7 +32,7 @@
 #include <unistd.h>
 #endif
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #endif
 #include <errno.h>
 #include <stdlib.h>

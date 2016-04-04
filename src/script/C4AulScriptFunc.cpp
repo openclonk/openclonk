@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2014, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -13,11 +13,11 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4AulScriptFunc.h>
+#include "C4Include.h"
+#include "script/C4AulScriptFunc.h"
 
-#include <C4AulExec.h>
-#include <C4ScriptHost.h>
+#include "script/C4AulExec.h"
+#include "script/C4ScriptHost.h"
 
 C4AulScriptFunc::C4AulScriptFunc(C4PropListStatic * Parent, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
 		C4AulFunc(Parent, pName),

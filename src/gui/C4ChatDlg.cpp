@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,13 +16,13 @@
 // IRC client dialog
 
 #include "C4Include.h"
-#include "C4ChatDlg.h"
+#include "gui/C4ChatDlg.h"
 
-#include <C4Application.h>
-#include "C4InputValidation.h"
-#include "C4Network2IRC.h"
-#include "C4MessageInput.h"
-#include "C4GraphicsResource.h"
+#include "game/C4Application.h"
+#include "lib/C4InputValidation.h"
+#include "network/C4Network2IRC.h"
+#include "gui/C4MessageInput.h"
+#include "graphics/C4GraphicsResource.h"
 
 /* C4ChatControl::ChatSheet::NickItem */
 

@@ -2,7 +2,6 @@
 id=BigBoomattack
 Version=6,0
 Category=C4D_Object
-ContactCalls=1
 Width=60
 Height=100
 Offset=-30,-50

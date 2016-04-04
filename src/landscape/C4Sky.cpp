@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,15 @@
 
 /* Small member of the landscape class to handle the sky background */
 
-#include <C4Include.h>
-#include <C4Sky.h>
+#include "C4Include.h"
+#include "landscape/C4Sky.h"
 
-#include <C4Game.h>
-#include <C4Random.h>
-#include <C4Components.h>
-#include <C4Weather.h>
-#include <C4GraphicsResource.h>
+#include "game/C4Game.h"
+#include "lib/C4Random.h"
+#include "c4group/C4Components.h"
+#include "landscape/C4Weather.h"
+#include "graphics/C4GraphicsResource.h"
+#include "lib/StdColors.h"
 
 void C4Sky::SetFadePalette(int32_t *ipColors)
 {
@@ -214,7 +215,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 
 DWORD C4Sky::GetSkyFadeClr(int32_t iY)
 {
-	int32_t iPos2=(iY*256)/GBackHgt; int32_t iPos1=256-iPos2;
+	int32_t iPos2=(iY*256)/::Landscape.GetHeight(); int32_t iPos1=256-iPos2;
 	return (((((FadeClr1&0xff00ff)*iPos1 + (FadeClr2&0xff00ff)*iPos2) & 0xff00ff00)
 	         | (((FadeClr1&0x00ff00)*iPos1 + (FadeClr2&0x00ff00)*iPos2) & 0x00ff0000))>>8)
 	       | (FadeClr1 & 0xff000000);

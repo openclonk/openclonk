@@ -25,5 +25,5 @@ InMatConvertDepth=1
 
 [Reaction]
 Type=Convert
-TargetSpec=Incindiary
+TargetSpec=Incendiary
 ConvertMat=Water

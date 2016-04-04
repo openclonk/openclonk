@@ -393,7 +393,10 @@ global func FxTutorialBlastedRockTimer(object target, proplist effect)
 global func FxTutorialObtainedRockTimer(object target, proplist effect)
 {
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr));
-	if (clonk && ObjectCount(Find_ID(Rock), Find_Container(clonk)) >= 3)
+	var has_three_rocks = clonk && ObjectCount(Find_ID(Rock), Find_Container(clonk)) >= 3; 
+	var finished_sawmill = FindObject(Find_ID(Sawmill));
+	// Also progress if the sawmill has been finished without the three rocks at the same time.
+	if (has_three_rocks || finished_sawmill)
 	{
 		var interaction_menu = GetPlayerControlAssignment(effect.plr, CON_Contents, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialSawmill$", interaction_menu));
@@ -408,21 +411,27 @@ global func FxTutorialObtainedRockTimer(object target, proplist effect)
 global func FxTutorialSawmillFinishedTimer(object target, proplist effect)
 {
 	if (FindObject(Find_ID(Sawmill)))
-	{
-		guide->AddGuideMessage("$MsgTutorialTalkToFireman$");
-		guide->ShowGuideMessage();
-		var new_effect = AddEffect("TutorialTalkedForFlagpole", nil, 100, 5);
-		new_effect.plr = effect.plr;
-		// Notify lumberjack the sawmill is done.
-		var dialogue_lumberjack = Dialogue->FindByName("Lumberjack");
-		if (dialogue_lumberjack)
-			dialogue_lumberjack->SetDialogueProgress(5, nil, false);
-		Dialogue->FindByName("Fireman")->AddAttention();
-		Dialogue->FindByName("Builder")->AddAttention();
 		return FX_Execute_Kill;
-	}
 	return FX_OK;
 }
+
+global func FxTutorialSawmillFinishedStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+	guide->AddGuideMessage("$MsgTutorialTalkToFireman$");
+	guide->ShowGuideMessage();
+	var new_effect = AddEffect("TutorialTalkedForFlagpole", nil, 100, 5);
+	new_effect.plr = effect.plr;
+	// Notify lumberjack the sawmill is done.
+	var dialogue_lumberjack = Dialogue->FindByName("Lumberjack");
+	if (dialogue_lumberjack)
+		dialogue_lumberjack->SetDialogueProgress(5, nil, false);
+	Dialogue->FindByName("Fireman")->AddAttention();
+	Dialogue->FindByName("Builder")->AddAttention();
+	return FX_OK;
+}
+
 
 public func OnHasTalkedToFireman()
 {

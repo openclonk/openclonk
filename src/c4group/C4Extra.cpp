@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,13 +15,13 @@
  */
 // user-customizable multimedia package Extra.ocg
 
-#include <C4Include.h>
-#include <C4Extra.h>
+#include "C4Include.h"
+#include "c4group/C4Extra.h"
 
-#include <C4Config.h>
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4Log.h>
+#include "config/C4Config.h"
+#include "c4group/C4Components.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
 
 C4Extra::C4Extra()
 {

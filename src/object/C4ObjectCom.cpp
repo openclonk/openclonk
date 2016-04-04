@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,22 +17,23 @@
 
 /* Lots of handler functions for object action */
 
-#include <C4Include.h>
-#include <C4ObjectCom.h>
+#include "C4Include.h"
+#include "object/C4ObjectCom.h"
 
-#include <C4Effect.h>
-#include <C4Object.h>
-#include <C4Physics.h>
-#include <C4Command.h>
-#include <C4Random.h>
-#include <C4GameMessage.h>
-#include <C4ObjectMenu.h>
-#include <C4Player.h>
-#include <C4GraphicsResource.h>
-#include <C4Material.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
+#include "script/C4Effect.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "game/C4Physics.h"
+#include "object/C4Command.h"
+#include "lib/C4Random.h"
+#include "gui/C4GameMessage.h"
+#include "object/C4ObjectMenu.h"
+#include "player/C4Player.h"
+#include "graphics/C4GraphicsResource.h"
+#include "landscape/C4Material.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
 
 bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir);
 

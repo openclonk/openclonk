@@ -151,7 +151,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), StrikingLength, ANIM_Remove), Anim_Const(1000));
 	clonk->UpdateAttach();
-	Sound("Objects::Weapons::WeaponSwing?", nil, nil, nil, nil, nil, -Random(10));
+	Sound("Objects::Weapons::WeaponSwing?", {pitch = -Random(10)});
 
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
 	StartWeaponHitCheckEffect(clonk, StrikingLength, 1);

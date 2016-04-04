@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -19,8 +19,8 @@
 #ifndef STD_FILE_MONITOR_H_INC
 #define STD_FILE_MONITOR_H_INC
 
-#include <StdScheduler.h>
-#include <C4InteractiveThread.h>
+#include "platform/StdScheduler.h"
+#include "network/C4InteractiveThread.h"
 #include <map>
 
 #ifdef __APPLE__

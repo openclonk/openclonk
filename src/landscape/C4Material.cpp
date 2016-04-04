@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,21 +17,21 @@
 
 /* Material definitions used by the landscape */
 
-#include <C4Include.h>
-#include <C4Material.h>
-#include <C4Components.h>
+#include "C4Include.h"
+#include "landscape/C4Material.h"
+#include "c4group/C4Components.h"
 
-#include <C4Group.h>
-#include <C4PXS.h>
-#include <C4Random.h>
-#include <C4ToolsDlg.h> // For C4TLS_MatSky...
-#include <C4Texture.h>
-#include <C4Aul.h>
-#include <C4Landscape.h>
-#include <C4SoundSystem.h>
-#include <C4Effect.h>
-#include <C4Log.h>
-#include <C4Physics.h> // For GravAccel
+#include "c4group/C4Group.h"
+#include "landscape/C4PXS.h"
+#include "lib/C4Random.h"
+#include "editor/C4ToolsDlg.h" // For C4TLS_MatSky...
+#include "landscape/C4Texture.h"
+#include "script/C4Aul.h"
+#include "landscape/C4Landscape.h"
+#include "platform/C4SoundSystem.h"
+#include "script/C4Effect.h"
+#include "lib/C4Log.h"
+#include "game/C4Physics.h" // For GravAccel
 
 
 int32_t MVehic=MNone,MHalfVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;
@@ -123,7 +123,7 @@ void C4MaterialCore::Clear()
 	MaxSlide = 0;
 	WindDrift = 0;
 	Inflammable = 0;
-	Incindiary = 0;
+	Incendiary = 0;
 	Extinguisher = 0;
 	Corrosive = 0;
 	Corrode = 0;
@@ -183,6 +183,7 @@ bool C4MaterialCore::Load(C4Group &hGroup,
 
 void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 {
+	assert(pComp->hasNaming());
 	if (pComp->isCompiler()) Clear();
 	pComp->Name("Material");
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),      "Name",                ""));
@@ -214,7 +215,27 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MaxSlide,            "MaxSlide",            0));
 	pComp->Value(mkNamingAdapt(WindDrift,           "WindDrift",           0));
 	pComp->Value(mkNamingAdapt(Inflammable,         "Inflammable",         0));
-	pComp->Value(mkNamingAdapt(Incindiary,          "Incindiary",          0));
+	if (pComp->isCompiler())
+	{
+		// The value used to have a wrong spelling ("Incindiary"). If there's
+		// no "Incendiary" value, use the wrong spelling instead
+		try
+		{
+			pComp->Value(mkNamingAdapt(Incendiary, "Incendiary"));
+		}
+		catch (StdCompiler::NotFoundException *ex)
+		{
+			delete ex;
+			pComp->Value(mkNamingAdapt(Incendiary, "Incindiary", 0));
+		}
+	}
+	else
+	{
+		// When serializing, write both spellings because some script might be
+		// calling GetMaterialVal with the wrong one
+		pComp->Value(mkNamingAdapt(Incendiary, "Incendiary"));
+		pComp->Value(mkNamingAdapt(Incendiary, "Incindiary"));
+	}
 	pComp->Value(mkNamingAdapt(Corrode,             "Corrode",             0));
 	pComp->Value(mkNamingAdapt(Corrosive,           "Corrosive",           0));
 	pComp->Value(mkNamingAdapt(Extinguisher,        "Extinguisher",        0));
@@ -371,10 +392,10 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 			else if (pMatPXS && pMatLS)
 			{
 				// incindiary vs extinguisher
-				if ((pMatPXS->Incindiary && pMatLS->Extinguisher) || (pMatPXS->Extinguisher && pMatLS->Incindiary))
+				if ((pMatPXS->Incendiary && pMatLS->Extinguisher) || (pMatPXS->Extinguisher && pMatLS->Incendiary))
 					pReaction = &DefReactPoof;
 				// incindiary vs inflammable
-				else if ((pMatPXS->Incindiary && pMatLS->Inflammable) || (pMatPXS->Inflammable && pMatLS->Incindiary))
+				else if ((pMatPXS->Incendiary && pMatLS->Inflammable) || (pMatPXS->Inflammable && pMatLS->Incendiary))
 					pReaction = &DefReactIncinerate;
 				// corrosive vs corrode
 				else if (pMatPXS->Corrosive && pMatLS->Corrode)
@@ -476,11 +497,11 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 				else
 					for (int32_t cnt2=0; cnt2<Num; cnt2++) SetMatReaction(cnt, cnt2, pReact);
 			}
-			else if (SEqualNoCase(pReact->TargetSpec.getData(), "Incindiary"))
+			else if (SEqualNoCase(pReact->TargetSpec.getData(), "Incendiary") || SEqualNoCase(pReact->TargetSpec.getData(), "Incindiary"))
 			{
 				// add to all incendiary materials
 				if (pReact->fInverseSpec) SetMatReaction(cnt, -1, pReact);
-				for (int32_t cnt2=0; cnt2<Num; cnt2++) if (!Map[cnt2].Incindiary == pReact->fInverseSpec) SetMatReaction(cnt, cnt2, pReact);
+				for (int32_t cnt2=0; cnt2<Num; cnt2++) if (!Map[cnt2].Incendiary == pReact->fInverseSpec) SetMatReaction(cnt, cnt2, pReact);
 			}
 			else if (SEqualNoCase(pReact->TargetSpec.getData(), "Extinguisher"))
 			{
@@ -667,8 +688,8 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 	// Contact: Stop
 	fYDir = -GravAccel;
 
-	// Incindiary mats smoke on contact even before doing their slide
-	if (::MaterialMap.Map[iPxsMat].Incindiary)
+	// Incendiary mats smoke on contact even before doing their slide
+	if (::MaterialMap.Map[iPxsMat].Incendiary)
 		if (!Random(25))
 		{
 			Smoke(iX, iY, 4 + Random(3));
@@ -795,7 +816,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			fDoCorrode = (d100 < ::MaterialMap.Map[iPxsMat].Corrosive) && (d100 < ::MaterialMap.Map[iLsMat].Corrode);
 		if (fDoCorrode)
 		{
-			ClearBackPix(iLSPosX,iLSPosY);
+			::Landscape.ClearPix(iLSPosX,iLSPosY);
 			//::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
 			if (!Random(5))
 			{
@@ -822,7 +843,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			fDoCorrode = (d100 < ::MaterialMap.Map[iPxsMat].Corrosive) && (d100 < ::MaterialMap.Map[iLsMat].Corrode);
 		if (fDoCorrode)
 		{
-			ClearBackPix(iLSPosX,iLSPosY);
+			::Landscape.ClearPix(iLSPosX,iLSPosY);
 			::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
 			if (!Random(5))
 			{

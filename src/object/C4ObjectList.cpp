@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,15 +17,16 @@
 
 /* Dynamic object list */
 
-#include <C4Include.h>
-#include <C4ObjectList.h>
+#include "C4Include.h"
+#include "object/C4ObjectList.h"
 
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4Application.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4GameObjects.h>
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "object/C4GameObjects.h"
 
 static const C4ObjectLink NULL_LINK = { NULL, NULL, NULL };
 
@@ -384,7 +385,7 @@ void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPl
 	// Draw objects (base)
 	for (clnk=first; clnk; clnk=clnk->Prev)
 	{
-		if (first->Obj->GetPlane() > MaxPlane)
+		if (clnk->Obj->GetPlane() > MaxPlane)
 			break;
 		if (clnk->Obj->Category & C4D_Foreground)
 			continue;
@@ -393,7 +394,7 @@ void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPl
 	// Draw objects (top face)
 	for (clnk=first; clnk; clnk=clnk->Prev)
 	{
-		if (first->Obj->GetPlane() > MaxPlane)
+		if (clnk->Obj->GetPlane() > MaxPlane)
 			break;
 		if (clnk->Obj->Category & C4D_Foreground)
 			continue;

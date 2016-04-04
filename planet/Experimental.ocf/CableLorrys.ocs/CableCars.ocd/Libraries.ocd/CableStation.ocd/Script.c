@@ -1,102 +1,159 @@
 /**
 	Cable Station
-	Library for cable stations and crossings. This is included by 
+	Library for cable stations and crossings. This is included by
 	cable crossings, and should be included by structures which
 	want to make use of the cable network.
 	
 	@author Randrian, Clonkonaut, Maikel
 */
 
-//#appendto ToolsWorkshop
+/*--- Overloads ---*/
 
-// Set to true to make this a station
-local is_station;
+// Overload these functions as you feel fit
 
-/*-- State --*/
+// This function is called whenever a change in the cable network occured, i.e. destinations have been added / removed.
+private func DestinationsUpdated() { }
 
-/** This object is a cable crossing
-* E.g. checked by whatever object wants to connect a cable (so it does not mean there is a cable connected!)
+// Called by cable lines whenever a car starts travelling along a connected cable.
+// Can be used to start animation or sounds or similar.
+// count is a value indicating the amount of activations.
+public func CableActivation(int count) { }
+
+// Called likewise as Activation() whenever a car leaves the cable.
+// count is a value indicating the amount of deactivations (e.g. a cable with more than one car broke).
+public func CableDeactivation(int count) { }
+
+/*--- Callbacks ---*/
+
+// Be sure to always call these via _inherited();
+
+func Initialize()
+{
+	destination_list = [];
+	return _inherited(...);
+}
+
+/* Removes this crossing from the network
+	It first clears every waypoint from the network and then renews the whole information.
+	Optimisation welcome!
+*/
+func Destruction()
+{
+	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
+	{
+		if (! connection->~IsCableLine()) continue;
+		var other_crossing = connection->~GetConnectedObject(this);
+		if (! other_crossing->~IsCableCrossing()) continue;
+		other_crossing->ClearConnections(this);
+	}
+	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
+	{
+		if (! connection->~IsCableLine()) continue;
+		var other_crossing = connection->~GetConnectedObject(this);
+		if (! other_crossing->~IsCableCrossing()) continue;
+		other_crossing->RenewConnections(this);
+	}
+	return _inherited(...);
+}
+
+/*--- Status ---*/
+
+local lib_crossing_is_station;
+
+/** This object is a cable crossing.
+	E.g. checked by whatever object wants to connect a cable.
+	Does not mean that there actually is a cable connected to this crossing.
 */
 public func IsCableCrossing() { return true; }
-/** Returns whether or not this object is a cable station
-* A station is a possible (i.e. selectable) destination for cable cars (whereas normal crossings do not appear in the destination selection process)
-*/
-public func IsCableStation() { return is_station; }
 
-// For setting up the cable
+/** This function should return true if this crossing is considered a station.
+	A station is selectable as a target if a lorry is sent its way.
+	Functional buildings should always be a station, the 'crossing' building only if set to.
+*/
+public func IsCableStation() { return lib_crossing_is_station; }
+
+/*--- Interface ---*/
+
+// For switching the station status
+public func SetCableStation(bool station)
+{
+	lib_crossing_is_station = station;
+}
+
+// Returns the cable hookup position for proper positioning of a car along the line.
 public func GetCablePosition(array coordinates, int prec)
 {
 	if (!prec) prec = 1;
 	coordinates[0] = GetX(prec);
 	coordinates[1] = GetY(prec);
-	if (this->~GetCableXOffset()) coordinates[0] += this->~GetCableXOffset() * prec;
-	if (this->~GetCableYOffset()) coordinates[1] += this->~GetCableYOffset() * prec;
-}
-
-/* Local */
-
-// Stores the next crossing (waypoint) to take when advancing to a certain final point
-// Scheme (2D array): [Desired final point, Next waypoint to take, Distance (not airline!) until final point]
-local destination_list;
-// According to this scheme, some constants for easy reading
-local const_finaldestination; // :D
-local const_nextwaypoint;
-local const_distance;
-
-protected func Initialize() // 
-{
-	const_finaldestination = 0;
-	const_nextwaypoint = 1;
-	const_distance = 2;
-	destination_list = [];
-	return _inherited(...);
-}
-
-/* Pathfinding for cable cars */
-
-/** Returns the waypoint to take next for the desired final point \a end
-* @param end The final destination for the information is queried
-*/
-public func GetNextWaypoint(object end)
-{
-  if (!destination_list) return nil;
-	for (var item in destination_list)
+	if (this.LineAttach)
 	{
-		if (!item) continue;
-		if (item[const_finaldestination] == end)
-			return item[const_nextwaypoint];
+		coordinates[0] += this.LineAttach[0] * prec;
+		coordinates[1] += this.LineAttach[1] * prec;
 	}
-	return nil;
 }
 
-/** Returns the actual traveling distance for the desired final point \a end
-* This is not the airline distance but the length of all cables to take via traveling
-* @param end The final destination for the information is queried
-*/
-public func GetLengthToTarget(object end)
+// Usually called by cable cars to retrieve selectable destinations for the destination selection menu.
+// Returns an array of three objects and one int, one station before and one station after the middle one and the middle one.
+// The int (fourth array value) is the overall amount of stations found.
+// If middle is not a station (anymore), the first three found objects are returned.
+public func GetDestinationList(object middle)
 {
-	if (!destination_list) return nil;
-	for (var item in destination_list)
-	{
-		if (!item) continue;
-		if (item[const_finaldestination] == end)
-			return item[const_distance];
-	}
-	return nil;
+	var list = CreateArray();
+	var ret = CreateArray(4);
+	for (var destination in destination_list)
+		if (destination[const_finaldestination]->IsCableStation())
+			PushBack(list, destination[const_finaldestination]);
+	if (GetLength(list) == 0) return ret;
+	if (GetLength(list) == 1) return [nil, list[0], nil, 1];
+	if (GetLength(list) == 2) return [list[0], list[1], nil, 2];
+	if (GetLength(list) == 3) return [list[0], list[1], list[2], 3];
+
+	var middle_index = GetIndexOf(list, middle);
+	if (middle_index == -1) middle_index = 1;
+	var left_index = middle_index - 1;
+	if (left_index < 0) left_index = GetLength(list) - 1;
+	var right_index = middle_index + 1;
+	if (right_index >= GetLength(list)) right_index = 0;
+
+	ret[0] = list[left_index];
+	ret[1] = list[middle_index];
+	ret[2] = list[right_index];
+	ret[3] = GetLength(list);
+	return ret;
 }
 
-/** Returns the destination array
+/*--- Maintaining the destination list ---*/
+
+/* Functions:
+	GetDestinations()
+	AddCableConnection(object cable)
+	AddCableDestinations(array new_list, object crossing)
+	AddCableDestination(object new_destination, object crossing, int distance_add)
+	ClearConnections(object crossing)
+	RenewConnections(object crossing)
+*/
+
+/** Returns the destination array so it can be used by other crossings.
 */
 public func GetDestinations()
 {
 	return destination_list[:];
 }
 
-/* Set up pathfinding information */
+// Stores the next crossing (waypoint) to take when advancing to a certain final point
+// Scheme (2D array): [Desired final point, Next waypoint to take, Distance (not airline!) until final point]
+local destination_list;
+
+// Constants for easier script reading
+// These correspond to the aforementioned values of destination_list
+local const_finaldestination = 0; // :D
+local const_nextwaypoint = 1;
+local const_distance = 2;
 
 /** Adds a new connection via the cable \a cable to this crossing
-* Does nothing if the other connected objects of the cable is not a cable crossing
-* @param cable The newly connected cable
+	Does nothing if the other connected object of the cable is not a cable crossing
+	@param cable The newly connected cable
 */
 public func AddCableConnection(object cable)
 {
@@ -104,7 +161,7 @@ public func AddCableConnection(object cable)
 	if (!cable || ! cable->~IsCableLine())
 		return false;
 	// Line setup finished?
-	var other_crossing = cable->~GetOtherConnection(this);
+	var other_crossing = cable->~GetConnectedObject(this);
 	if (! other_crossing->~IsCableCrossing())
 		return false;
 	// Acquire destinations of the other crossing, all these are now in reach
@@ -112,7 +169,7 @@ public func AddCableConnection(object cable)
 	// Send own destinations, now in reach for the other one
 	other_crossing->AddCableDestinations(destination_list[:], this);
 	// Awesome, more power to the network!
-	CheckRailStation();
+	DestinationsUpdated();
 	return true;
 }
 
@@ -164,7 +221,7 @@ public func AddCableDestinations(array new_list, object crossing)
 		if (list_item[const_finaldestination] != crossing)
 			list_item[const_finaldestination]->AddCableDestination(this, crossing, distance_add);
 	}
-	CheckRailStation();
+	DestinationsUpdated();
 	return true;
 }
 
@@ -193,7 +250,7 @@ public func AddCableDestination(object new_destination, object crossing, int dis
 	if (!crossing_item) return false;
 	// Save the new destination
 	destination_list[GetLength(destination_list)] = [new_destination, crossing_item[const_nextwaypoint], crossing_item[const_distance] + distance_add];
-	CheckRailStation();
+	DestinationsUpdated();
 	return true;
 }
 
@@ -223,7 +280,7 @@ public func UpdateCableDestination(object known_destination, object crossing, in
 	// Save the updated path
 	destination_list[destination_item][const_nextwaypoint] = crossing_item[const_nextwaypoint];
 	destination_list[destination_item][const_distance] = crossing_item[const_distance] + distance_add;
-	CheckRailStation();
+	DestinationsUpdated();
 	return true;
 }
 
@@ -240,7 +297,7 @@ public func ClearConnections(object crossing)
 	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
 		if (! connection->~IsCableLine()) continue;
-		var other_crossing = connection->~GetOtherConnection(this);
+		var other_crossing = connection->~GetConnectedObject(this);
 		if (! other_crossing->~IsCableCrossing()) continue;
 		other_crossing->ClearConnections();
 	}
@@ -256,7 +313,7 @@ public func RenewConnections(object crossing)
 	for(var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
 		if (! connection->~IsCableLine()) continue;
-		var other_crossing = connection->~GetOtherConnection(this);
+		var other_crossing = connection->~GetConnectedObject(this);
 		if (! other_crossing->~IsCableCrossing()) continue;
 		if (other_crossing == crossing) continue;
 		destination_list[GetLength(destination_list)] = [other_crossing, other_crossing, ObjectDistance(other_crossing)];
@@ -264,113 +321,46 @@ public func RenewConnections(object crossing)
 	}
 }
 
-/* Station behaviour */
+/*--- Pathfinding ---*/
 
-// Prevents the automatic change of the stations status when set to station mode
-local bManualSetting;
-
-// IsInteractable is stored in the appendto definitions!
-
-// A clonk wants to change my station status
-public func Interact(object pClonk)
-{
-	// Check ownership
-	if (GetOwner() != NO_OWNER && GetOwner() != pClonk->GetOwner()) return false;
-	// Clonk pushes a cable car?
-	if (pClonk->GetActionTarget() && pClonk->GetActionTarget()->~IsCableCar())
-	{
-		var car = pClonk->GetActionTarget();
-		// Disengage
-		if (car->GetRailTarget() == this)
-		{
-			car->DisengageRail();
-			return true;
-		}
-		// Engage
-		car->EngageRail(this);
-		car->SelectDestination(pClonk, this);
-		return true;
-	}
-	// Change status
-	if (is_station)
-		bManualSetting = false;
-	else
-		bManualSetting = true;
-	CheckRailStation();
-	return _inherited(...);
-}
-
-public func GetInteractionMetaInfo(object clonk)
-{
-	if (is_station)
-		return {IconID = Library_CableStation, IconName = "UnsetStation", Description = "$UnsetStationDesc$"};
-	else
-		return {IconID = Library_CableStation, IconName = "SetStation", Description = "$SetStationDesc$"};
-}
-
-/* Animation stuff */
-
-/** Overload me to do wheel animation
-	@return \c nil.
+/* Functions:
+	GetNextWaypoint(object end)
+	GetLengthToTarget(object end)
 */
-protected func TurnWheel()
-{
-	/* EMPTY: Should be overloaded */
-	return;
-}
 
-local iActiveCount;
-// Start/End animation
-// Call AddActive(0) if any next waypoint wants to start the animation (because a cable car is passing by)
-// Call AddActive(1) if the cable car passed the line, stopping the animation
-// Counts up to multiple animated connections
-public func AddActive(fRemove)
-{
-  if(!fRemove)
-   iActiveCount++;
-  else
-   iActiveCount--;
-  if(iActiveCount <= 0 && GetAction() == "Active")
-    SetAction("Wait");
-  if(iActiveCount > 0  && GetAction() == "Wait")
-    SetAction("Active");
-}
-
-/** Overload me to check station behaviour
-	@return \c nil.
+/** Returns the waypoint to take next for the desired final point \a end
+* @param end The final destination for the information is queried
 */
-private func CheckRailStation()
+public func GetNextWaypoint(object end)
 {
-	/* EMPTY: Should be overloaded */
-	return _inherited(...);
+  if (!destination_list) return nil;
+	for (var item in destination_list)
+	{
+		if (!item) continue;
+		if (item[const_finaldestination] == end)
+			return item[const_nextwaypoint];
+	}
+	return nil;
 }
 
-/* Destruction */
-
-/* Removes this crossing from the network
-It first clears every waypoint from the network and then renews the whole information.
-Optimisation welcome!
+/** Returns the actual traveling distance for the desired final point \a end
+* This is not the airline distance but the length of all cables to take via traveling
+* @param end The final destination for the information is queried
 */
-protected func Destruction()
+public func GetLengthToTarget(object end)
 {
-	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
+	if (!destination_list) return nil;
+	for (var item in destination_list)
 	{
-		if (! connection->~IsCableLine()) continue;
-		var other_crossing = connection->~GetOtherConnection(this);
-		if (! other_crossing->~IsCableCrossing()) continue;
-		other_crossing->ClearConnections(this);
+		if (!item) continue;
+		if (item[const_finaldestination] == end)
+			return item[const_distance];
 	}
-	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
-	{
-		if (! connection->~IsCableLine()) continue;
-		var other_crossing = connection->~GetOtherConnection(this);
-		if (! other_crossing->~IsCableCrossing()) continue;
-		other_crossing->RenewConnections(this);
-	}
+	return nil;
 }
 
 /*-- Auto production --*/
-
+/*
 public func CheckAcquire(id object_id, int amount)
 {
 	var container = false;
@@ -421,7 +411,7 @@ public func DeliveryDone(id object_id, int amount)
 }
 
 /*-- Object requests and deliveries --*/
-
+/*
 local reservations; // two dimensional array with ongoing deliveries: [[ID, amount]]
 
 public func CheckAvailability(id object_id, int amount)
@@ -469,4 +459,4 @@ public func RequestObjects(object requester, id request_id, int amount)
 	for (var i = 0; i < amount; i++)
 		FindContents(request_id)->Enter(requester);
 	return true;
-}
+}*/

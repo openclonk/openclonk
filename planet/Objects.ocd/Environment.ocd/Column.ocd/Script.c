@@ -36,4 +36,4 @@ protected func Damage()
 	return;
 }
 local Name = "$Name$";
-local Plane = 600;
+local Plane = 200;

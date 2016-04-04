@@ -16,15 +16,15 @@
 
 /* Player and editor viewports in console */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4ConsoleQtViewport.h>
-#include <C4ConsoleQtState.h>
-#include <C4Viewport.h>
-#include <C4ViewportWindow.h>
-#include <C4Console.h>
-#include <C4MouseControl.h>
-#include <C4Landscape.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "editor/C4ConsoleQtViewport.h"
+#include "editor/C4ConsoleQtState.h"
+#include "game/C4Viewport.h"
+#include "editor/C4ViewportWindow.h"
+#include "editor/C4Console.h"
+#include "gui/C4MouseControl.h"
+#include "landscape/C4Landscape.h"
 
 /* Console viewports */
 
@@ -332,12 +332,12 @@ void C4ConsoleQtViewportScrollArea::setupViewport(QWidget *viewport)
 void C4ConsoleQtViewportScrollArea::ScrollBarsByViewPosition()
 {
 	int x = viewport()->width() / cvp->GetZoom();
-	horizontalScrollBar()->setRange(0, GBackWdt - x);
+	horizontalScrollBar()->setRange(0, ::Landscape.GetWidth() - x);
 	horizontalScrollBar()->setPageStep(x);
 	horizontalScrollBar()->setValue(cvp->GetViewX());
 
 	int y = viewport()->height() / cvp->GetZoom();
-	verticalScrollBar()->setRange(0, GBackHgt - y);
+	verticalScrollBar()->setRange(0, ::Landscape.GetHeight() - y);
 	verticalScrollBar()->setPageStep(y);
 	verticalScrollBar()->setValue(cvp->GetViewY());
 }

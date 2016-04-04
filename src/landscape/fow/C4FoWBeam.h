@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,7 +17,7 @@
 #define C4FOWBEAM_H
 
 #ifndef USE_CONSOLE
-#include "StdBuf.h"
+#include "lib/StdBuf.h"
 
 /** This class represents one beam. A beam is a triangle spanned by two rays: one going from the origin to the
     left delimiter point, one going from the origin to the right delimiter point.

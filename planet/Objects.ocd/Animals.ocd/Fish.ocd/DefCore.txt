@@ -2,7 +2,6 @@
 id=Fish
 Version=6,0
 Category=C4D_Living
-ContactCalls=1
 Width=7
 Height=7
 Offset=-3,-3

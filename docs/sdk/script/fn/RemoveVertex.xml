@@ -9,12 +9,12 @@
     <subcat>Vertices</subcat>
     <version>5.1 OC</version>
     <syntax>
-      <rtype>int</rtype>
+      <rtype>bool</rtype>
       <params>
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Index of the vertex to be removed.</desc>
+          <desc>Index of the vertex to be removed, ranges from 0 to <funclink>GetVertexNum</funclink>.</desc>
         </param>
       </params>
     </syntax>
@@ -28,6 +28,7 @@
     </examples>
     <related>
       <funclink>AddVertex</funclink>
+	  <funclink>InsertVertex</funclink>
       <funclink>GetVertex</funclink>
       <funclink>SetVertex</funclink>
       <funclink>GetVertexNum</funclink>

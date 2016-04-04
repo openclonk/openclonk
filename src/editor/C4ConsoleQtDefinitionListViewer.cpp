@@ -16,13 +16,13 @@
 
 /* Proplist table view */
 
-#include <C4Include.h>
-#include <C4Value.h>
-#include <C4Def.h>
-#include <C4DefList.h>
-#include <C4ConsoleQtDefinitionListViewer.h>
-#include <C4Console.h>
-#include <C4EditCursor.h>
+#include "C4Include.h"
+#include "script/C4Value.h"
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "editor/C4ConsoleQtDefinitionListViewer.h"
+#include "editor/C4Console.h"
+#include "editor/C4EditCursor.h"
 
 
 /* Defintion tree */

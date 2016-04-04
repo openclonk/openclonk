@@ -20,10 +20,10 @@
 #define INC_C4ConsoleQtPropListViewer
 #ifdef WITH_QT_EDITOR
 
-#include <C4Include.h> // needed for automoc
-#include <C4ConsoleGUI.h> // for glew.h
-#include <C4ConsoleQt.h>
-#include <C4Value.h>
+#include "C4Include.h" // needed for automoc
+#include "editor/C4ConsoleGUI.h" // for glew.h
+#include "editor/C4ConsoleQt.h"
+#include "script/C4Value.h"
 
 // Path to a property, like e.g. Object(123).foo.bar[456].baz
 // Used to allow proper synchronization of property setting
@@ -88,17 +88,14 @@ class C4PropertyDelegateEnumEditor : public QWidget
 	Q_OBJECT
 
 public:
-	const class C4PropertyDelegateEnum *parent_delegate;
 	C4Value last_val;
 	QComboBox *option_box;
 	QHBoxLayout *layout;
 	QWidget *parameter_widget;
 	bool updating;
 
-	C4PropertyDelegateEnumEditor(QWidget *parent, const class C4PropertyDelegateEnum *parent_delegate)
-		: QWidget(parent), parent_delegate(parent_delegate), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false) { }
-public slots :
-	void UpdateOptionIndex(int idx);
+	C4PropertyDelegateEnumEditor(QWidget *parent)
+		: QWidget(parent), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false) { }
 };
 
 class C4PropertyDelegateEnum : public C4PropertyDelegate
@@ -138,7 +135,6 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
-	void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const override;
 
 private:
 	int32_t GetOptionByValue(const C4Value &val) const;
@@ -148,10 +144,38 @@ public slots:
 	void UpdateOptionIndex(Editor *editor, int idx) const;
 };
 
-class C4PropertyDelegateC4Value : public C4PropertyDelegateEnum
+// C4Value setting using an enum
+class C4PropertyDelegateC4ValueEnum : public C4PropertyDelegateEnum
 {
 public:
-	C4PropertyDelegateC4Value(const C4PropertyDelegateFactory *factory);
+	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory);
+};
+
+class C4PropertyDelegateC4ValueInputEditor : public QWidget
+{
+	Q_OBJECT
+
+public:
+	QHBoxLayout *layout;
+	QLineEdit *edit;
+	QPushButton *extended_button;
+	bool commit_pending;
+
+	C4PropertyDelegateC4ValueInputEditor(QWidget *parent)
+		: QWidget(parent), layout(NULL), edit(NULL), extended_button(NULL), commit_pending(false){ }
+};
+
+// C4Value setting using an input box
+class C4PropertyDelegateC4ValueInput : public C4PropertyDelegate
+{
+public:
+	typedef C4PropertyDelegateC4ValueInputEditor Editor;
+
+	C4PropertyDelegateC4ValueInput(const C4PropertyDelegateFactory *factory) : C4PropertyDelegate(factory) { }
+
+	void SetEditorData(QWidget *editor, const C4Value &val) const override;
+	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
 };
 
 class C4PropertyDelegateFactory : public QStyledItemDelegate
@@ -180,7 +204,6 @@ protected:
 	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-
 };
 
 // Prop list view implemented as a model view

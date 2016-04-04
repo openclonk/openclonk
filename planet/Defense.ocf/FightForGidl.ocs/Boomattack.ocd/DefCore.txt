@@ -2,7 +2,6 @@
 id=Boomattack
 Version=7,0
 Category=C4D_Vehicle
-ContactCalls=1
 Width=15
 Height=27
 Offset=-7,-13

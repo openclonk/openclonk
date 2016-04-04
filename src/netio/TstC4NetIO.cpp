@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2005-2006, Peter Wortmann
  * Copyright (c) 2005, Günther Brammer
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,14 +15,14 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4NetIO.h>
+#include "C4Include.h"
+#include "network/C4NetIO.h"
 
 #include <iostream>
 #include <sstream>
 #include <time.h>
 #ifdef _WIN32
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <mmsystem.h>
 #else
 #include <arpa/inet.h>

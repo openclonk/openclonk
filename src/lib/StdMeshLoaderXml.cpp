@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,8 +17,8 @@
 // A loader for the OGRE .mesh XML file format
 
 #include "C4Include.h"
-#include "StdMesh.h"
-#include "StdMeshLoader.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoader.h"
 #include <tinyxml.h>
 
 // Helper class to load things from an XML file with error checking

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,8 @@
 #ifndef INC_StdMeshLoaderChunks
 #define INC_StdMeshLoaderChunks
 
-#include "StdMesh.h"
-#include "StdMeshLoaderDataStream.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoaderDataStream.h"
 
 // ==== Ogre file format ====
 // The Ogre file format is a chunked format similar to PNG.

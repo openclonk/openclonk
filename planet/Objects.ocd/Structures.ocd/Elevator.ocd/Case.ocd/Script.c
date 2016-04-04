@@ -93,8 +93,6 @@ private func Initialize()
 	front->SetAction("Attach", this);
 	back->SetAction("Attach", this);
 
-	SetHalfVehicleSolidMask(true);
-
 	return _inherited(...);
 }
 
@@ -641,7 +639,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	if (IsSlave()) 
 		return Control2Master("ControlUseStart", clonk, x, y);
 	MoveTo(GetY() + y, 0, nil, true);
-	Sound("UI::Click", nil, nil, clonk->GetOwner());
+	Sound("UI::Click", {player = clonk->GetOwner()});
 	// Do not trigger a UseStop-callback.
 	return false;
 }
@@ -671,7 +669,7 @@ public func ControlUp(object clonk)
 	// what is that player even doing
 	if (GetY() <= elevator->GetY() + 20)
 	{
-		Sound("UI::Click", nil, nil, clonk->GetOwner());
+		Sound("UI::Click", {player = clonk->GetOwner()});
 		return true;
 	}
 	
@@ -776,3 +774,4 @@ local Touchable = 2;
 local HitPoints = 50;
 local Plane = 250;
 local BorderBound = C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;

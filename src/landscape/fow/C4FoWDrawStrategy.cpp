@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,10 +17,10 @@
 
 #ifndef USE_CONSOLE
 
-#include "C4FoWDrawStrategy.h"
-#include "C4FoWLight.h"
-#include "C4FoWRegion.h"
-#include "C4DrawGL.h"
+#include "landscape/fow/C4FoWDrawStrategy.h"
+#include "landscape/fow/C4FoWLight.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "graphics/C4DrawGL.h"
 
 C4FoWDrawTriangulator::C4FoWDrawTriangulator():
   mode(M_Fan), cur_vertices(0), begin_vertices(0)

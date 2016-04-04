@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,11 +16,11 @@
 // generic user interface
 // eye candy
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 namespace C4GUI
 {
@@ -428,12 +428,18 @@ namespace C4GUI
 	C4Facet Icon::GetIconFacet(Icons icoIconIndex)
 	{
 		if (icoIconIndex == Ico_None) return C4Facet();
-		C4Facet &rFacet = (icoIconIndex & Ico_Extended) ? ::GraphicsResource.fctIconsEx : ::GraphicsResource.fctIcons;
-		icoIconIndex = Icons(icoIconIndex & (Ico_Extended-1));
+		C4Facet *rFacet;
+		switch (icoIconIndex & ~0xff)
+		{
+		case Ico_Extended:    rFacet = &::GraphicsResource.fctIconsEx; break;
+		case Ico_Controller:  rFacet = &::GraphicsResource.fctControllerIcons; break;
+		default:              rFacet = &::GraphicsResource.fctIcons;
+		}
+		icoIconIndex = Icons(icoIconIndex & 0xff);
 		int32_t iXMax, iYMax;
-		rFacet.GetPhaseNum(iXMax, iYMax);
+		rFacet->GetPhaseNum(iXMax, iYMax);
 		if (!iXMax) iXMax = 6;
-		return rFacet.GetPhase(icoIconIndex % iXMax, icoIconIndex / iXMax);
+		return rFacet->GetPhase(icoIconIndex % iXMax, icoIconIndex / iXMax);
 	}
 
 

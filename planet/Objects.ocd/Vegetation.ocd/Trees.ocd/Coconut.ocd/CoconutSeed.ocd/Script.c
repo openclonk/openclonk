@@ -139,3 +139,4 @@ local Description = "$Description$";
 local BlastIncinerate = 8;
 local ContactIncinerate = 2;
 local Confinement;
+local ContactCalls = true;

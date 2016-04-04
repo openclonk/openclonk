@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2015, The OpenClonk Team and contributors
+ * Copyright (c) 2015-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,13 +17,13 @@
 
 /* Handles the sound bank and plays effects using DSoundX */
 
-#include <C4Include.h>
-#include <C4SoundModifiers.h>
-#include <C4SoundSystem.h>
-#include <C4SoundInstance.h>
-#include <C4SoundIncludes.h>
-#include <C4Application.h>
-#include <C4Value.h>
+#include "C4Include.h"
+#include "platform/C4SoundModifiers.h"
+#include "platform/C4SoundSystem.h"
+#include "platform/C4SoundInstance.h"
+#include "platform/C4SoundIncludes.h"
+#include "game/C4Application.h"
+#include "script/C4Value.h"
 
 #if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 static LPALGENEFFECTS alGenEffects;

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,14 +23,14 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
-#include <C4FontLoader.h>
-#include "C4Rect.h"
-#include "C4FacetEx.h"
-#include "C4LogBuf.h"
-#include "C4KeyboardInput.h"
-#include <StdScheduler.h>
-#include <C4Id.h>
-#include <C4Window.h>
+#include "graphics/C4FontLoader.h"
+#include "lib/C4Rect.h"
+#include "graphics/C4FacetEx.h"
+#include "lib/C4LogBuf.h"
+#include "gui/C4KeyboardInput.h"
+#include "platform/StdScheduler.h"
+#include "object/C4Id.h"
+#include "platform/C4Window.h"
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque
@@ -94,6 +94,8 @@
 #define C4GUI_IconHgt   40
 #define C4GUI_IconExWdt 64
 #define C4GUI_IconExHgt 64
+#define C4GUI_ControllerIconWdt 100
+#define C4GUI_ControllerIconHgt 100
 
 #define C4GUI_IconLabelSpacing   2 // space between an icon and its text
 
@@ -627,7 +629,11 @@ namespace C4GUI
 	};
 
 	// icon indices
-	enum { Ico_Extended = 0x100 }; // icon index offset for extended icons
+	enum
+	{
+		Ico_Extended   = 0x100, // icon index offset for extended icons
+		Ico_Controller = 0x200,
+	};
 	enum Icons
 	{
 		Ico_Empty          = -2, // for context menus only
@@ -705,7 +711,25 @@ namespace C4GUI
 		Ico_Ex_Update        = Ico_Extended + 14,
 		Ico_Ex_Chat          = Ico_Extended + 15,
 		Ico_Ex_GameList      = Ico_Extended + 16,
-		Ico_Ex_Comment       = Ico_Extended + 17
+		Ico_Ex_Comment       = Ico_Extended + 17,
+
+		Ico_Controller_A             = Ico_Controller + 0,
+		Ico_Controller_B             = Ico_Controller + 3,
+		Ico_Controller_X             = Ico_Controller + 17,
+		Ico_Controller_Y             = Ico_Controller + 18,
+		Ico_Controller_Back          = Ico_Controller + 1,
+		Ico_Controller_Start         = Ico_Controller + 16,
+		Ico_Controller_Dpad          = Ico_Controller + 6,
+		Ico_Controller_DpadLeft      = Ico_Controller + 5,
+		Ico_Controller_DpadRight     = Ico_Controller + 7,
+		Ico_Controller_DpadDown      = Ico_Controller + 4,
+		Ico_Controller_DpadUp        = Ico_Controller + 8,
+		Ico_Controller_LeftShoulder  = Ico_Controller + 9,
+		Ico_Controller_RightShoulder = Ico_Controller + 12,
+		Ico_Controller_LeftTrigger   = Ico_Controller + 11,
+		Ico_Controller_RightTrigger  = Ico_Controller + 14,
+		Ico_Controller_LeftStick     = Ico_Controller + 10,
+		Ico_Controller_RightStick    = Ico_Controller + 13,
 	};
 
 	// cute, litte, useless thingy
@@ -2566,7 +2590,6 @@ namespace C4GUI
 		ContextMenu *pContext; // currently opened context menu (lowest submenu)
 		bool fExclusive;       // default true. if false, input is shared with the game
 		C4Rect PreferredDlgRect; // rectangle in which dialogs should be placed
-		C4GamePadOpener * pGamePadOpener;
 		float fZoom;
 
 		static Screen *pScreen; // static singleton var

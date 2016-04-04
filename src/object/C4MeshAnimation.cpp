@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,10 +15,11 @@
  */
 
 #include "C4Include.h"
-#include "C4MeshAnimation.h"
-#include "C4Object.h"
-#include "C4ValueArray.h"
-#include "C4Game.h"
+#include "script/C4Aul.h"
+#include "object/C4MeshAnimation.h"
+#include "object/C4Object.h"
+#include "script/C4ValueArray.h"
+#include "game/C4Game.h"
 
 namespace
 {

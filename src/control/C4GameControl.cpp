@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,17 +17,17 @@
 
 #include "C4Include.h"
 
-#include <C4Application.h>
-#include <C4Game.h>
-#include <C4GameControl.h>
-#include <C4GameOverDlg.h>
-#include <C4Record.h>
-#include <C4Log.h>
-#include <C4Network2Stats.h>
-#include <C4MouseControl.h>
-#include <C4GamePadCon.h>
-#include <C4PlayerList.h>
-#include <C4Player.h>
+#include "game/C4Application.h"
+#include "game/C4Game.h"
+#include "control/C4GameControl.h"
+#include "gui/C4GameOverDlg.h"
+#include "control/C4Record.h"
+#include "lib/C4Log.h"
+#include "network/C4Network2Stats.h"
+#include "gui/C4MouseControl.h"
+#include "platform/C4GamePadCon.h"
+#include "player/C4PlayerList.h"
+#include "player/C4Player.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4355)

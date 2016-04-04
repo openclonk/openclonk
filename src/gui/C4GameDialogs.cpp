@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,11 +15,11 @@
  */
 // main game dialogs (abort game dlg, observer dlg)
 
-#include <C4Include.h>
-#include <C4GameDialogs.h>
+#include "C4Include.h"
+#include "gui/C4GameDialogs.h"
 
-#include <C4Game.h>
-#include <C4Network2.h>
+#include "game/C4Game.h"
+#include "network/C4Network2.h"
 
 bool C4AbortGameDialog::is_shown = false;
 

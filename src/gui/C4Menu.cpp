@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,18 +17,20 @@
 
 /* In-game menu as used by objects, players, and fullscreen options */
 
-#include <C4Include.h>
-#include <C4Menu.h>
+#include "C4Include.h"
+#include "gui/C4Menu.h"
 
-#include <C4DefList.h>
-#include <C4Object.h>
-#include <C4Viewport.h>
-#include <C4Player.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4Object.h"
+#include "game/C4Viewport.h"
+#include "player/C4Player.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "control/C4GameControl.h"
+#include "lib/StdColors.h"
 
 const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
                   C4MN_DlgWdt         = 270, // default width of dialog windows

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2014-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,7 +14,7 @@
  */
 
 #include "C4Include.h"
-#include "C4FoW.h"
+#include "landscape/fow/C4FoW.h"
 
 #include <float.h>
 

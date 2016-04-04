@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,8 +17,8 @@
 
 #include <memory>
 
-#include "C4Value.h"
-#include "C4StringTable.h"
+#include "script/C4Value.h"
+#include "script/C4StringTable.h"
 
 #ifndef C4PROPLIST_H
 #define C4PROPLIST_H

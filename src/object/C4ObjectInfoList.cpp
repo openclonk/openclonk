@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,16 +17,17 @@
 
 /* Dynamic list for crew member info */
 
-#include <C4Include.h>
-#include <C4ObjectInfoList.h>
+#include "C4Include.h"
+#include "object/C4ObjectInfoList.h"
 
-#include <C4DefList.h>
-#include <C4ObjectInfo.h>
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4RankSystem.h>
-#include <C4Config.h>
-#include <C4GameObjects.h>
+#include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4ObjectInfo.h"
+#include "c4group/C4Components.h"
+#include "game/C4Game.h"
+#include "player/C4RankSystem.h"
+#include "config/C4Config.h"
+#include "object/C4GameObjects.h"
 
 C4ObjectInfoList::C4ObjectInfoList()
 {

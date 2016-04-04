@@ -14,7 +14,7 @@
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Index of the vertex to be changed.</desc>
+          <desc>Index of the vertex to be changed, ranges from 0 to <funclink>GetVertexNum</funclink>.</desc>
         </param>
         <param>
           <type>int</type>

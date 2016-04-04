@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,11 +17,11 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
-#include <CSurface8.h>
+#include "graphics/CSurface8.h"
 
-#include <Bitmap256.h>
-#include <CStdFile.h>
-#include <StdColors.h>
+#include "graphics/Bitmap256.h"
+#include "c4group/CStdFile.h"
+#include "lib/StdColors.h"
 
 CSurface8::CSurface8()
 {
@@ -192,7 +192,7 @@ void CSurface8::MapBytes(BYTE *bpMap)
 	for (int cnt=0; cnt<Wdt*Hgt; cnt++) SetPix(cnt%Wdt, cnt/Wdt, bpMap[GetPix(cnt%Wdt, cnt/Wdt)]);
 }
 
-void CSurface8::GetSurfaceSize(int &irX, int &irY)
+void CSurface8::GetSurfaceSize(int &irX, int &irY) const
 {
 	// simply assign stored values
 	irX=Wdt;

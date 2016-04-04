@@ -2,7 +2,6 @@
 id=Locomotive
 Version=7,0
 Category=C4D_Vehicle
-ContactCalls=1
 Width=24
 Height=22
 Offset=-12,-11

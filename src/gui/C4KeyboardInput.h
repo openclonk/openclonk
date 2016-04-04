@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -46,14 +46,15 @@ enum C4KeyEventType
 	KEYEV_None    =  0, // no event
 	KEYEV_Down    =  1, // in response to WM_KEYDOWN or joypad button pressed
 	KEYEV_Up      =  2, // in response to WM_KEYUP or joypad button released
-	KEYEV_Pressed =  3 // in response to WM_KEYPRESSED
+	KEYEV_Pressed =  3, // in response to WM_KEYPRESSED
+	KEYEV_Moved   =  4, // when moving a gamepad stick
 };
 
 // keyboard code
 typedef unsigned long C4KeyCode;
 
-// Gamepad codes (KEY_JOY_*): Masked as 0x420000; bit 8-15 used for gamepad index
-const C4KeyCode KEY_JOY_Mask = 0x420000;
+// Gamepad codes (KEY_CONTROLLER_*): Masked as 0x420000; bit 8-15 used for gamepad index
+const C4KeyCode KEY_CONTROLLER_Mask = 0x420000;
 
 // Mouse codes (KEY_MOUSE_*): Masked as 0x430000; bit 8-15 used for mouse index
 const C4KeyCode KEY_MOUSE_Mask = 0x430000;
@@ -62,20 +63,36 @@ const C4KeyCode
 	KEY_Default                  = 0,  // no key
 	KEY_Any                      = ~0, // used for default key processing
 	KEY_Undefined                = (~0)^1, // used to indicate an unknown key
-	KEY_JOY_Left                 = 1, // joypad axis control: Any x axis min
-	KEY_JOY_Up                   = 2, // joypad axis control: Any y axis min
-	KEY_JOY_Right                = 3, // joypad axis control: Any x axis max
-	KEY_JOY_Down                 = 4, // joypad axis control: Any y axis max
-	KEY_JOY_Button1              = 0x10,   // key index of joypad buttons + button index for more buttons
-	KEY_JOY_ButtonMax            = KEY_JOY_Button1+0x1f, // maximum number of supported buttons on a gamepad
-	KEY_JOY_Axis1Min             = 0x30,
-	KEY_JOY_Axis1Max             = 0x31,
-	KEY_JOY_AxisMax              = KEY_JOY_Axis1Min + 0x20,
-	KEY_JOY_AnyButton            = 0xff, // any joypad button (not axis)
-	KEY_JOY_AnyOddButton         = 0xfe, // joypad buttons 1, 3, 5, etc.
-	KEY_JOY_AnyEvenButton        = 0xfd, // joypad buttons 2, 4, 6, etc.
-	KEY_JOY_AnyLowButton         = 0xfc, // joypad buttons 1 - 4
-	KEY_JOY_AnyHighButton        = 0xfb, // joypad buttons > 4
+	KEY_CONTROLLER_ButtonMin           = 0x10, // first button
+	KEY_CONTROLLER_ButtonA             = 0x10,
+	KEY_CONTROLLER_ButtonB             = 0x11,
+	KEY_CONTROLLER_ButtonX             = 0x12,
+	KEY_CONTROLLER_ButtonY             = 0x13,
+	KEY_CONTROLLER_ButtonBack          = 0x14,
+	KEY_CONTROLLER_ButtonGuide         = 0x15,
+	KEY_CONTROLLER_ButtonStart         = 0x16,
+	KEY_CONTROLLER_ButtonLeftStick     = 0x17,
+	KEY_CONTROLLER_ButtonRightStick    = 0x18,
+	KEY_CONTROLLER_ButtonLeftShoulder  = 0x19,
+	KEY_CONTROLLER_ButtonRightShoulder = 0x1a,
+	KEY_CONTROLLER_ButtonDpadUp        = 0x1b,
+	KEY_CONTROLLER_ButtonDpadDown      = 0x1c,
+	KEY_CONTROLLER_ButtonDpadLeft      = 0x1d,
+	KEY_CONTROLLER_ButtonDpadRight     = 0x1e,
+	KEY_CONTROLLER_ButtonMax           = 0x1e, // last button
+	KEY_CONTROLLER_AnyButton           = 0xff, // any of the buttons above
+	KEY_CONTROLLER_AxisMin             = 0x30, // first axis
+	KEY_CONTROLLER_AxisLeftXLeft       = 0x30,
+	KEY_CONTROLLER_AxisLeftXRight      = 0x31,
+	KEY_CONTROLLER_AxisLeftYUp         = 0x32,
+	KEY_CONTROLLER_AxisLeftYDown       = 0x33,
+	KEY_CONTROLLER_AxisRightXLeft      = 0x34,
+	KEY_CONTROLLER_AxisRightXRight     = 0x35,
+	KEY_CONTROLLER_AxisRightYUp        = 0x36,
+	KEY_CONTROLLER_AxisRightYDown      = 0x37,
+	KEY_CONTROLLER_AxisTriggerLeft     = 0x39, // triggers are only positive
+	KEY_CONTROLLER_AxisTriggerRight    = 0x3b,
+	KEY_CONTROLLER_AxisMax             = 0x3b, // last axis
 	KEY_MOUSE_Move               = 1,    // mouse control: mouse movement
 	KEY_MOUSE_Button1            = 0x10, // key index of mouse buttons + button index for more buttons
 	KEY_MOUSE_ButtonLeft         = KEY_MOUSE_Button1 + 0,
@@ -90,18 +107,18 @@ const C4KeyCode
 	KEY_MOUSE_Wheel1Up           = 0x40,    // mouse control: wheel up
 	KEY_MOUSE_Wheel1Down         = 0x41;    // mouse control: wheel down
 
-inline uint8_t KEY_JOY_Button(uint8_t idx) { return KEY_JOY_Button1+idx; }
-inline uint8_t KEY_JOY_Axis(uint8_t idx, bool fMax) { return KEY_JOY_Axis1Min+2*idx+fMax; }
+inline uint8_t KEY_CONTROLLER_Button(uint8_t idx) { return KEY_CONTROLLER_ButtonMin+idx; }
+inline uint8_t KEY_CONTROLLER_Axis(uint8_t idx, bool fMax) { return KEY_CONTROLLER_AxisMin+2*idx+fMax; }
 
-inline C4KeyCode KEY_Gamepad(uint8_t idGamepad, uint8_t idButton) // convert gamepad key to Clonk-gamepad-keycode
+inline C4KeyCode KEY_Gamepad(uint8_t idButton) // convert gamepad key to Clonk-gamepad-keycode
 {
-	// mask key as 0x0042ggbb, where gg is gamepad ID and bb is button ID.
-	return KEY_JOY_Mask + (idGamepad<<8) + idButton;
+	// mask key as 0x004200bb, where 00 used to be the gamepad ID and bb is button ID.
+	return KEY_CONTROLLER_Mask + idButton;
 }
 
 inline bool Key_IsGamepad(C4KeyCode key)
 {
-	return (0xff0000 & key) == KEY_JOY_Mask;
+	return (0xff0000 & key) == KEY_CONTROLLER_Mask;
 }
 
 inline uint8_t Key_GetGamepad(C4KeyCode key)
@@ -117,25 +134,25 @@ inline uint8_t Key_GetGamepadEvent(C4KeyCode key)
 inline bool Key_IsGamepadButton(C4KeyCode key)
 {
 	// whether this is a unique button event (AnyButton not included)
-	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadEvent(key), KEY_JOY_Button1, KEY_JOY_ButtonMax);
+	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadEvent(key), KEY_CONTROLLER_ButtonMin, KEY_CONTROLLER_ButtonMax);
 }
 
 inline bool Key_IsGamepadAxis(C4KeyCode key)
 {
 	// whether this is a unique button event (AnyButton not included)
-	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadEvent(key), KEY_JOY_Axis1Min, KEY_JOY_AxisMax);
+	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadEvent(key), KEY_CONTROLLER_AxisMin, KEY_CONTROLLER_AxisMax);
 }
 
 inline uint8_t Key_GetGamepadButtonIndex(C4KeyCode key)
 {
 	// get zero-based button index
-	return Key_GetGamepadEvent(key) - KEY_JOY_Button1;
+	return Key_GetGamepadEvent(key) - KEY_CONTROLLER_ButtonMin;
 }
 
 inline uint8_t Key_GetGamepadAxisIndex(C4KeyCode key)
 {
 	// get zero-based axis index
-	return (Key_GetGamepadEvent(key) - KEY_JOY_Axis1Min) / 2;
+	return (Key_GetGamepadEvent(key) - KEY_CONTROLLER_AxisMin) / 2;
 }
 
 inline bool Key_IsGamepadAxisHigh(C4KeyCode key)
@@ -188,6 +205,8 @@ struct C4KeyCodeEx
 	C4KeyCode Key; // the key
 	DWORD dwShift; // the status of Alt, Shift, Control
 
+	int32_t deviceId;
+
 	// if set, the keycode was generated by a key that has been held down
 	// this flag is ignored in comparison operations
 	bool fRepeated;
@@ -212,8 +231,7 @@ struct C4KeyCodeEx
 
 	void CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf=NULL);
 
-	C4KeyCodeEx(C4KeyCode Key = KEY_Default, C4KeyShiftState Shift = KEYS_None, bool fIsRepeated = false)
-			: Key(Key), dwShift(Shift), fRepeated(fIsRepeated) {}
+	C4KeyCodeEx(C4KeyCode Key = KEY_Default, C4KeyShiftState Shift = KEYS_None, bool fIsRepeated = false, int32_t deviceId = -1);
 
 	bool IsRepeated() const { return fRepeated; }
 
@@ -233,6 +251,21 @@ struct C4KeyEventData
 	void CompileFunc(StdCompiler *pComp);
 	bool operator ==(const struct C4KeyEventData &cmp) const;
 };
+
+// Helper functions for high-level GUI control mappings.
+namespace ControllerKeys {
+template<class T> void Any(T &keys)    { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_AnyButton))); }
+template<class T> void Cancel(T &keys) { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_ButtonB))); }
+template<class T> void Ok(T &keys)     { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_ButtonA))); }
+template<class T> void Left(T &keys)   { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_AxisLeftXLeft)));
+                                         keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_ButtonDpadLeft))); }
+template<class T> void Right(T &keys)  { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_AxisLeftXRight)));
+                                         keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_ButtonDpadRight))); }
+template<class T> void Up(T &keys)     { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_AxisLeftYUp)));
+                                         keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_ButtonDpadUp))); }
+template<class T> void Down(T &keys)   { keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_AxisLeftYDown)));
+                                         keys.push_back(C4KeyCodeEx(KEY_Gamepad(KEY_CONTROLLER_ButtonDpadDown))); }
+}
 
 // callback interface
 class C4KeyboardCallbackInterface
@@ -265,7 +298,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 
 protected:
 	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
@@ -276,6 +309,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)() : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)() : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)() : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)() : false;
 		default: return false;
 		}
 	}
@@ -283,8 +317,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCB(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed) {}
+	C4KeyCB(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved) {}
 };
 
 // callback interface that passes the pressed key as a parameter
@@ -295,7 +329,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 
 protected:
 	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
@@ -306,6 +340,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(key) : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(key) : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(key) : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)(key) : false;
 		default: return false;
 		}
 	}
@@ -313,8 +348,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCBPassKey(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed) {}
+	C4KeyCBPassKey(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved) {}
 };
 
 // parameterized callback interface
@@ -325,7 +360,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 	ParameterType par;
 
 protected:
@@ -337,6 +372,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(par) : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(par) : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(par) : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)(par) : false;
 		default: return false;
 		}
 	}
@@ -344,8 +380,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCBEx(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), par(par) {}
+	C4KeyCBEx(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved), par(par) {}
 };
 
 template <class TargetClass, class ParameterType> class C4KeyCBExPassKey : public C4KeyboardCallbackInterface
@@ -355,7 +391,7 @@ public:
 
 protected:
 	TargetClass &rTarget;
-	CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
+	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 	ParameterType par;
 
 protected:
@@ -367,6 +403,7 @@ protected:
 		case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(key, par) : false;
 		case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(key, par) : false;
 		case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(key, par) : false;
+		case KEYEV_Moved: return pFuncMoved ? (rTarget.*pFuncMoved)(key, par) : false;
 		default: return false;
 		}
 	}
@@ -374,8 +411,8 @@ protected:
 	virtual bool CheckCondition() { return true; }
 
 public:
-	C4KeyCBExPassKey(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
-			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), par(par) {}
+	C4KeyCBExPassKey(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL, CallbackFunc pFuncMoved=NULL)
+			: rTarget(rTarget), pFuncDown(pFuncDown), pFuncUp(pFuncUp), pFuncPressed(pFuncPressed), pFuncMoved(pFuncMoved), par(par) {}
 };
 
 // one mapped keyboard entry
@@ -424,7 +461,7 @@ public:
 	const StdStrBuf &GetName() const { return Name; }
 	C4KeyScope GetScope() const { return Scope; }
 	unsigned int GetPriority() const { return uiPriority; }
-	bool IsCodeMatched(const C4KeyCodeEx &key) const { const CodeList &codes = GetCodes(); return (std::find(codes.begin(),codes.end(),key) != codes.end()); }
+	bool IsCodeMatched(const C4KeyCodeEx &key) const;
 
 	void Update(const C4CustomKey *pByKey); // merge given key into this
 	bool Execute(C4KeyEventType eEv, C4KeyCodeEx key);

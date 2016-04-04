@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007, Alexander Post
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -14,9 +14,9 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include "C4App.h"
-#include "C4Window.h"
+#include "C4Include.h"
+#include "platform/C4App.h"
+#include "platform/C4Window.h"
 
 void C4AbstractApp::Run()
 {

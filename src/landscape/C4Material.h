@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -21,11 +21,11 @@
 #define INC_C4Material
 
 #include "config/C4Constants.h"
-#include "C4Real.h"
-#include <C4Id.h>
-#include <C4Shape.h>
-#include <C4Facet.h>
-#include <CSurface8.h>
+#include "lib/C4Real.h"
+#include "object/C4Id.h"
+#include "object/C4Shape.h"
+#include "graphics/C4Facet.h"
+#include "graphics/CSurface8.h"
 #include <vector>
 
 #define C4MatOv_Default     0
@@ -106,7 +106,7 @@ public:
 	int32_t  MaxSlide;
 	int32_t  WindDrift;
 	int32_t  Inflammable;
-	int32_t  Incindiary;
+	int32_t  Incendiary;
 	int32_t  Extinguisher;
 	int32_t  Corrosive;
 	int32_t  Corrode;

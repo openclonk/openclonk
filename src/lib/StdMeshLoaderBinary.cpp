@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,11 +16,11 @@
 // A loader for the OGRE .mesh binary file format
 
 #include "C4Include.h"
-#include "StdMesh.h"
-#include "StdMeshLoader.h"
-#include "StdMeshLoaderBinaryChunks.h"
-#include "StdMeshLoaderDataStream.h"
-#include "StdMeshMaterial.h"
+#include "lib/StdMesh.h"
+#include "lib/StdMeshLoader.h"
+#include "lib/StdMeshLoaderBinaryChunks.h"
+#include "lib/StdMeshLoaderDataStream.h"
+#include "lib/StdMeshMaterial.h"
 #include <cassert>
 #include <vector>
 

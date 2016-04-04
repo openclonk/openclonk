@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,10 +16,10 @@
 // HTTP download dialog; downloads a file
 
 #include "C4Include.h"
-#include "C4DownloadDlg.h"
+#include "gui/C4DownloadDlg.h"
 
-#include "C4Log.h"
-#include "C4GraphicsResource.h"
+#include "lib/C4Log.h"
+#include "graphics/C4GraphicsResource.h"
 
 C4Network2HTTPClient HTTPClient;
 

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,15 +15,16 @@
  */
 // Round result information to be displayed in game over dialog
 
-#include <C4Include.h>
-#include <C4RoundResults.h>
+#include "C4Include.h"
+#include "control/C4RoundResults.h"
 
-#include <C4Player.h>
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4DefList.h>
+#include "player/C4Player.h"
+#include "game/C4Game.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "object/C4DefList.h"
 
 // *** C4RoundResultsPlayer
 

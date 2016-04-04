@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,12 +18,12 @@
 #ifndef INC_C4DefGraphics
 #define INC_C4DefGraphics
 
-#include "C4FacetEx.h"
-#include "C4Surface.h"
-#include "C4ObjectPtr.h"
-#include "C4InputValidation.h"
-#include "C4Id.h"
-#include "StdMeshUpdate.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Surface.h"
+#include "object/C4ObjectPtr.h"
+#include "lib/C4InputValidation.h"
+#include "object/C4Id.h"
+#include "lib/StdMeshUpdate.h"
 
 // defintion graphics
 class C4AdditionalDefGraphics;
@@ -134,6 +134,8 @@ public:
 
 	void AssignUpdate();   // update all game objects with new graphics pointers
 	void AssignRemoval();  // remove graphics of all defs from all game objects
+
+	StdMeshMaterialUpdate &GetUpdater() { return MeshMaterialUpdate; }
 
 private:
 	void UpdateMesh(StdMeshInstance* instance);

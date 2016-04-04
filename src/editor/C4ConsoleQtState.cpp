@@ -16,20 +16,21 @@
 
 /* Editor windows using Qt*/
 
-#include <C4Include.h>
-#include <C4ConsoleQtState.h>
-#include <C4ConsoleQtPropListViewer.h>
-#include <C4ConsoleQtObjectListViewer.h>
-#include <C4ConsoleQtDefinitionListViewer.h>
-#include <C4ConsoleQtNewScenario.h>
-#include <C4ConsoleQtViewport.h>
-#include <C4Console.h>
-#include <StdRegistry.h>
-#include <C4Landscape.h>
-#include <C4PlayerList.h>
-#include <C4Object.h>
-#include <C4Viewport.h>
-#include <C4Config.h>
+#include "C4Include.h"
+#include "editor/C4ConsoleQtState.h"
+#include "editor/C4ConsoleQtPropListViewer.h"
+#include "editor/C4ConsoleQtObjectListViewer.h"
+#include "editor/C4ConsoleQtDefinitionListViewer.h"
+#include "editor/C4ConsoleQtNewScenario.h"
+#include "editor/C4ConsoleQtViewport.h"
+#include "editor/C4Console.h"
+#include "platform/StdRegistry.h"
+#include "landscape/C4Landscape.h"
+#include "player/C4PlayerList.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "game/C4Viewport.h"
+#include "config/C4Config.h"
 
 #ifdef USE_WIN32_WINDOWS
 #include <shellapi.h>
@@ -234,7 +235,7 @@ void C4ConsoleQtMainWindow::CursorPickerPressed(bool down)
 void C4ConsoleQtMainWindow::DynamicLandscapePressed(bool down)
 {
 	if (down)
-		::Console.ToolsDlg.SetLandscapeMode(C4LSC_Dynamic);
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Dynamic);
 	else // cannot un-check by pressing again
 		state->ui.actionDynamicLandscape->setChecked(true);
 }
@@ -242,7 +243,7 @@ void C4ConsoleQtMainWindow::DynamicLandscapePressed(bool down)
 void C4ConsoleQtMainWindow::StaticLandscapePressed(bool down)
 {
 	if (down)
-		::Console.ToolsDlg.SetLandscapeMode(C4LSC_Static);
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static);
 	else // cannot un-check by pressing again
 		state->ui.actionStaticLandscape->setChecked(true);
 }
@@ -250,7 +251,7 @@ void C4ConsoleQtMainWindow::StaticLandscapePressed(bool down)
 void C4ConsoleQtMainWindow::ExactLandscapePressed(bool down)
 {
 	if (down)
-		::Console.ToolsDlg.SetLandscapeMode(C4LSC_Exact);
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Exact);
 	else // cannot un-check by pressing again
 		state->ui.actionExactLandscape->setChecked(true);
 }
@@ -398,7 +399,7 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 /* Common C4ConsoleGUI interface */
 
 C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(NULL),
-		enabled(false), recording(false), net_enabled(false), landscape_mode(C4LSC_Dynamic),
+		enabled(false), recording(false), net_enabled(false), landscape_mode(LandscapeMode::Dynamic),
 	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0)
 {
 }
@@ -540,8 +541,8 @@ void C4ConsoleGUIState::Execute(bool redraw_only)
 void C4ConsoleGUIState::UpdateActionStates()
 {
 	// Enabled states
-	bool has_draw_tools = enabled && landscape_mode != C4LSC_Dynamic;
-	bool has_exact_draw_tools = enabled && landscape_mode == C4LSC_Exact;
+	bool has_draw_tools = enabled && landscape_mode != LandscapeMode::Dynamic;
+	bool has_exact_draw_tools = enabled && landscape_mode == LandscapeMode::Exact;
 	bool is_drawing = has_draw_tools && editcursor_mode == C4CNS_ModeDraw;
 	ui.actionFileNew->setEnabled(!enabled);
 	ui.actionPlay->setEnabled(enabled);
@@ -580,9 +581,9 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionCursorDrawRect->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Rect));
 	ui.actionCursorFill->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Fill));
 	ui.actionCursorPicker->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Picker));
-	ui.actionDynamicLandscape->setChecked(landscape_mode == C4LSC_Dynamic);
-	ui.actionStaticLandscape->setChecked(landscape_mode == C4LSC_Static);
-	ui.actionExactLandscape->setChecked(landscape_mode == C4LSC_Exact);
+	ui.actionDynamicLandscape->setChecked(landscape_mode == LandscapeMode::Dynamic);
+	ui.actionStaticLandscape->setChecked(landscape_mode == LandscapeMode::Static);
+	ui.actionExactLandscape->setChecked(landscape_mode == LandscapeMode::Exact);
 	ui.actionFileRecord->setChecked(recording);
 }
 

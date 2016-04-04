@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2004, Peter Wortmann
  * Copyright (c) 2007, Günther Brammer
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,12 +15,14 @@
  * for the above references.
  */
 
-#include <C4Include.h>
-#include <C4PropList.h>
-#include <C4GameObjects.h>
-#include <C4Game.h>
-#include <C4Object.h>
-#include <C4Record.h>
+#include "C4Include.h"
+#include "script/C4PropList.h"
+
+#include "script/C4Aul.h"
+#include "object/C4GameObjects.h"
+#include "game/C4Game.h"
+#include "object/C4Object.h"
+#include "control/C4Record.h"
 
 void C4PropList::AddRef(C4Value *pRef)
 {

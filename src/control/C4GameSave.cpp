@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,22 +15,22 @@
  */
 // game saving functionality
 
-#include <C4Include.h>
-#include <C4GameSave.h>
+#include "C4Include.h"
+#include "control/C4GameSave.h"
 
-#include <C4Components.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4Landscape.h>
-#include <C4PXS.h>
-#include <C4MassMover.h>
-#include <C4PlayerList.h>
-#include <C4RoundResults.h>
-#include <C4Record.h>
-#include <C4Version.h>
-#include <C4GameParameters.h>
-#include <C4Value.h>
-#include <C4Network2.h>
+#include "c4group/C4Components.h"
+#include "game/C4Game.h"
+#include "lib/C4Log.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4PXS.h"
+#include "landscape/C4MassMover.h"
+#include "player/C4PlayerList.h"
+#include "control/C4RoundResults.h"
+#include "control/C4Record.h"
+#include "C4Version.h"
+#include "control/C4GameParameters.h"
+#include "script/C4Value.h"
+#include "network/C4Network2.h"
 
 // *** C4GameSave main class
 
@@ -139,12 +139,12 @@ bool C4GameSave::SaveScenarioSections()
 bool C4GameSave::SaveLandscape()
 {
 	// exact?
-	if (::Landscape.Mode == C4LSC_Exact || GetForceExactLandscape())
+	if (::Landscape.GetMode() ==  LandscapeMode::Exact || GetForceExactLandscape())
 	{
 		C4DebugRecOff DBGRECOFF;
 		// Landscape
 		bool fSuccess;
-		if (::Landscape.Mode == C4LSC_Exact)
+		if (::Landscape.GetMode() ==  LandscapeMode::Exact)
 			fSuccess = !!::Landscape.Save(*pSaveGroup);
 		else
 			fSuccess = !!::Landscape.SaveDiff(*pSaveGroup, !IsSynced());
@@ -160,7 +160,7 @@ bool C4GameSave::SaveLandscape()
 		if (!::MaterialMap.SaveEnumeration(*pSaveGroup)) return false;
 	}
 	// static / dynamic
-	if (::Landscape.Mode == C4LSC_Static)
+	if (::Landscape.GetMode() ==  LandscapeMode::Static)
 	{
 		// static map
 		// remove old-style landscape.bmp
@@ -174,7 +174,7 @@ bool C4GameSave::SaveLandscape()
 			if (!::Landscape.SaveTextures(*pSaveGroup)) return false;
 		}
 	}
-	else if (::Landscape.Mode != C4LSC_Exact)
+	else if (::Landscape.GetMode() !=  LandscapeMode::Exact)
 	{
 		// dynamic map by landscape.txt or scenario core: nothing to save
 		// in fact, it doesn't even make much sense to save the Objects.txt

@@ -14,7 +14,7 @@
  */
 
 #include "C4Include.h"
-#include "C4Group.h"
+#include "c4group/C4Group.h"
 #include "mape/cpp-handles/group-handle.h"
 
 #define GROUP_TO_HANDLE(group) (reinterpret_cast<C4GroupHandle*>(group))

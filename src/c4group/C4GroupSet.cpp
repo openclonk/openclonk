@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,12 +16,12 @@
 // a set of group files
 // manages system file overwriting by scearios or folders
 
-#include <C4Include.h>
-#include <C4GroupSet.h>
+#include "C4Include.h"
+#include "c4group/C4GroupSet.h"
 
-#include <C4Components.h>
-#include <C4Group.h>
-#include <C4Log.h>
+#include "c4group/C4Components.h"
+#include "c4group/C4Group.h"
+#include "lib/C4Log.h"
 #include "c4group/C4Language.h"
 
 C4GroupSetNode::C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id)

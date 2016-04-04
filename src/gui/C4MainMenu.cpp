@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,22 +16,22 @@
  */
 // Engine internal C4Menus: Main menu, Options, Player join, Hostility, etc.
 
-#include <C4Include.h>
-#include <C4MainMenu.h>
+#include "C4Include.h"
+#include "gui/C4MainMenu.h"
 
-#include <C4Application.h>
-#include <C4DefList.h>
-#include <C4FullScreen.h>
-#include <C4Viewport.h>
-#include <C4Player.h>
-#include <C4GameOverDlg.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
-#include <C4Network2.h>
-#include <C4GameControl.h>
-#include <C4Def.h>
+#include "game/C4Application.h"
+#include "object/C4DefList.h"
+#include "game/C4FullScreen.h"
+#include "game/C4Viewport.h"
+#include "player/C4Player.h"
+#include "gui/C4GameOverDlg.h"
+#include "graphics/C4GraphicsResource.h"
+#include "game/C4Game.h"
+#include "player/C4PlayerList.h"
+#include "object/C4GameObjects.h"
+#include "network/C4Network2.h"
+#include "control/C4GameControl.h"
+#include "object/C4Def.h"
 
 // -----------------------------------------------------------
 // C4MainMenu

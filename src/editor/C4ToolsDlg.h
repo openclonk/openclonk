@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -24,7 +24,8 @@
 #include <gtk/gtk.h>
 #endif
 
-#include "C4Constants.h"
+#include "config/C4Constants.h"
+#include "landscape/C4Landscape.h"
 
 const int32_t
 	C4TLS_Brush  = 0,
@@ -40,6 +41,7 @@ const int32_t
 
 #define C4TLS_MatSky "Sky"
 
+enum class LandscapeMode;
 class C4ToolsDlg
 {
 	friend class C4ConsoleGUI;
@@ -70,7 +72,7 @@ public:
 	bool SetGrade(int32_t iGrade);
 	bool SetTool(int32_t iTool, bool fTemp);
 	bool ToggleTool() { return !!SetTool((Tool+1)%4, false); }
-	bool SetLandscapeMode(int32_t iMode, bool fThroughControl=false);
+	bool SetLandscapeMode(LandscapeMode iMode, bool fThroughControl=false);
 	bool SetIFT(bool fIFT);
 	bool ToggleIFT() { return !!SetIFT(!ModeIFT); }
 	bool SelectTexture(const char *szTexture, bool by_console_gui=false);

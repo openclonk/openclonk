@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -18,10 +18,10 @@
 #ifndef INC_C4StartupScenSelDlg
 #define INC_C4StartupScenSelDlg
 
-#include "C4Startup.h"
-#include "C4Scenario.h"
-#include "C4Folder.h"
-#include "C4ScenarioParameters.h"
+#include "gui/C4Startup.h"
+#include "landscape/C4Scenario.h"
+#include "gui/C4Folder.h"
+#include "player/C4ScenarioParameters.h"
 
 #include <list>
 #include <string>
@@ -34,10 +34,10 @@ const int32_t C4StartupScenSel_DefaultIcon_Scenario  = 14,
               C4StartupScenSel_DefaultIcon_WinFolder = 44,
               C4StartupScenSel_DefaultIcon_OldIconBG = 18,
               C4StartupScenSel_IconCount             = 45,
-              C4StartupScenSel_TitlePictureWdt       = 200,
-              C4StartupScenSel_TitlePictureHgt       = 150,
+              C4StartupScenSel_TitlePictureWdt       = 640,
+              C4StartupScenSel_TitlePictureHgt       = 480,
               C4StartupScenSel_TitlePicturePadding   = 10,
-              C4StartupScenSel_TitleOverlayMargin    = 10, // number of pixels to each side of title overlay picture
+              C4StartupScenSel_TitleOverlayMargin    = 20, // number of pixels to each side of title overlay picture
               C4StartupScenSel_MaxAchievements       = 3; // maximum number of achievements shown next to entry
 
 // a list of loaded scenarios

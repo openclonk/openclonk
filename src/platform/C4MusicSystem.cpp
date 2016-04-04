@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,16 +17,16 @@
 
 /* Handles Music.ocg and randomly plays songs */
 
-#include <C4Include.h>
-#include <C4MusicSystem.h>
+#include "C4Include.h"
+#include "platform/C4MusicSystem.h"
 
-#include <C4Window.h>
-#include <C4MusicFile.h>
-#include <C4Application.h>
-#include <C4Random.h>
-#include <C4Log.h>
-#include <C4Game.h>
-#include <C4GraphicsSystem.h>
+#include "platform/C4Window.h"
+#include "platform/C4MusicFile.h"
+#include "game/C4Application.h"
+#include "lib/C4Random.h"
+#include "lib/C4Log.h"
+#include "game/C4Game.h"
+#include "game/C4GraphicsSystem.h"
 
 C4MusicSystem::C4MusicSystem():
 		Songs(NULL),

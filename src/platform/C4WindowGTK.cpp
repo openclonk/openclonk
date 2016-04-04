@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,24 +16,24 @@
 
 /* A wrapper class to OS dependent event and window interfaces, GTK+ version */
 
-#include <C4Include.h>
-#include <C4Window.h>
+#include "C4Include.h"
+#include "platform/C4Window.h"
 
-#include <C4App.h>
+#include "platform/C4App.h"
 #include "C4Version.h"
-#include <C4Config.h>
+#include "config/C4Config.h"
 
-#include <C4DrawGL.h>
-#include <C4Draw.h>
-#include <StdFile.h>
-#include <StdBuf.h>
+#include "graphics/C4DrawGL.h"
+#include "graphics/C4Draw.h"
+#include "platform/StdFile.h"
+#include "lib/StdBuf.h"
 
-#include <C4Rect.h>
+#include "lib/C4Rect.h"
 
-#include <C4Console.h>
-#include <C4ViewportWindow.h>
-#include <C4Viewport.h>
-#include "C4MouseControl.h"
+#include "editor/C4Console.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4Viewport.h"
+#include "gui/C4MouseControl.h"
 
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
@@ -113,7 +113,7 @@ GLXFBConfig PickGLXFBConfig(Display* dpy, int multisampling)
 }
 }
 #elif defined(GDK_WINDOWING_WIN32)
-#include <C4windowswrapper.h>
+#include "platform/C4windowswrapper.h"
 #include <gdk/gdkwin32.h>
 #endif // GDK_WINDOWING_X11
 
@@ -378,6 +378,36 @@ static gboolean fullscreen_restore(gpointer data)
 	return FALSE;
 }
 
+static bool grab_mouse(GtkWidget *widget)
+{
+	// This should be possible with pure GTK code as well, using
+	// gdk_device_grab(). However, while gdk_device_grab() will prevent clicks
+	// outside of the game window, the mouse gets stuck near the edge of the
+	// window when trying to move outside.
+#ifdef GDK_WINDOWING_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	Window xwindow = gdk_x11_window_get_xid(gtk_widget_get_window(widget));
+	int result = XGrabPointer(dpy, xwindow, true, 0, GrabModeAsync, GrabModeAsync, xwindow, None, CurrentTime);
+	return result == GrabSuccess;
+#endif
+	return true;
+}
+
+static void ungrab_mouse()
+{
+#ifdef GDK_WINDOWING_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	XUngrabPointer(dpy, CurrentTime);
+#endif
+}
+
+static gboolean grab_mouse_fn(gpointer user_data)
+{
+	// Grabbing may not be possible immediately after focusing the window, so
+	// try again if we don't succeed.
+	return !grab_mouse((GtkWidget*) user_data);
+}
+
 static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = true;
@@ -386,6 +416,9 @@ static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_d
 		fullscreen_needs_restore = true;
 		gdk_threads_add_idle(fullscreen_restore, NULL);
 	}
+	C4Window *window = (C4Window*) user_data;
+	if (window->mouse_was_grabbed)
+		gdk_threads_add_timeout(50, grab_mouse_fn, widget);
 	return false;
 }
 static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
@@ -397,6 +430,7 @@ static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_
 		gtk_window_iconify(GTK_WINDOW(widget));
 		fullscreen_needs_restore = false;
 	}
+	ungrab_mouse();
 	return false;
 }
 
@@ -603,6 +637,22 @@ bool C4Window::RestorePosition(const char *, const char *, bool)
 void C4Window::FlashWindow()
 {
 	//FIXME - how is this reset? gtk_window_set_urgency_hint(window, true);
+}
+
+void C4Window::GrabMouse(bool grab)
+{
+	if (grab)
+	{
+		// Don't grab the mouse while the game window isn't focused.
+		if (Application.Active)
+			grab_mouse(GTK_WIDGET(window));
+		mouse_was_grabbed = true;
+	}
+	else
+	{
+		ungrab_mouse();
+		mouse_was_grabbed = false;
+	}
 }
 
 C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)

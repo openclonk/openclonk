@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -35,9 +35,9 @@ inline void BltAlpha(DWORD &dwDst, DWORD dwSrc)
 	// blit one color value w/alpha on another
 	if (dwDst>>24 == 0x00) { dwDst=dwSrc; return; }
 	BYTE byAlphaSrc=BYTE(dwSrc>>24); BYTE byAlphaDst=255-byAlphaSrc;
-	dwDst = std::min<uint32_t>((int(dwDst    & 0xff ) * byAlphaDst + int(dwSrc & 0xff    ) * byAlphaSrc) >>8,            0xff)      | // blue
-	        std::min<uint32_t>((int(dwDst   & 0xff00) * byAlphaDst + int(dwSrc & 0xff00  ) * byAlphaSrc) >>8 & 0xff00,   0xff00)    | // green
-	        std::min<uint32_t>((int(dwDst & 0xff0000) * byAlphaDst + int(dwSrc & 0xff0000) * byAlphaSrc) >>8 & 0xff0000, 0xff0000)  | // red
+	dwDst = std::min<uint32_t>(((dwDst    & 0xff ) * byAlphaDst + (dwSrc & 0xff    ) * byAlphaSrc) >>8,            0xff)      | // blue
+	        std::min<uint32_t>(((dwDst   & 0xff00) * byAlphaDst + (dwSrc & 0xff00  ) * byAlphaSrc) >>8 & 0xff00,   0xff00)    | // green
+	        std::min<uint32_t>(((dwDst & 0xff0000) * byAlphaDst + (dwSrc & 0xff0000) * byAlphaSrc) >>8 & 0xff0000, 0xff0000)  | // red
 	        std::min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
 }
 

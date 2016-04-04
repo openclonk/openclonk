@@ -1,0 +1,7 @@
+[DefCore]
+id=Helper_CallAirship
+Version=6,0
+Category=C4D_StaticBack
+Width=8
+Height=20
+Offset=-4,-10

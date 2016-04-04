@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,14 +17,14 @@
 // dropdown box
 // implemented via context menu
 
-#include <C4Include.h>
-#include <C4Gui.h>
+#include "C4Include.h"
+#include "gui/C4Gui.h"
 
-#include <C4FacetEx.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
+#include "graphics/C4FacetEx.h"
+#include "gui/C4MouseControl.h"
+#include "graphics/C4GraphicsResource.h"
 
-#include <C4Window.h>
+#include "platform/C4Window.h"
 
 namespace C4GUI
 {
@@ -76,8 +76,8 @@ namespace C4GUI
 		cbKeys.push_back(C4KeyCodeEx(K_SPACE, KEYS_Alt));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyLowButton)));
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down)));
+			ControllerKeys::Ok(cbKeys);
+			ControllerKeys::Down(cbKeys);
 		}
 		pKeyOpenCombo = new C4KeyBinding(cbKeys, "GUIComboOpen", KEYSCOPE_Gui,
 		                                 new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyDropDown), C4CustomKey::PRIO_Ctrl);
@@ -85,7 +85,7 @@ namespace C4GUI
 		cbKeys.push_back(C4KeyCodeEx(K_ESCAPE));
 		if (Config.Controls.GamepadGuiControl)
 		{
-			cbKeys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyHighButton)));
+			ControllerKeys::Cancel(cbKeys);
 		}
 		pKeyCloseCombo = new C4KeyBinding(cbKeys, "GUIComboClose", KEYSCOPE_Gui,
 		                                  new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyAbortDropDown), C4CustomKey::PRIO_Ctrl);

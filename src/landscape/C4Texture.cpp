@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,17 +17,18 @@
 
 /* Textures used by the landscape */
 
-#include <C4Include.h>
-#include <C4Texture.h>
-#include <C4TextureShape.h>
+#include "C4Include.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4TextureShape.h"
 
-#include <C4Group.h>
-#include <C4Game.h>
-#include <C4Config.h>
-#include <C4Components.h>
-#include <C4Material.h>
-#include <C4Landscape.h>
-#include <C4Log.h>
+#include "c4group/C4Group.h"
+#include "game/C4Game.h"
+#include "config/C4Config.h"
+#include "c4group/C4Components.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Landscape.h"
+#include "lib/C4Log.h"
+#include "lib/StdColors.h"
 
 #include <ctype.h>
 #include <algorithm>

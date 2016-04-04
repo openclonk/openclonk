@@ -188,10 +188,15 @@
           <col>object by</col>
           <col>Called before the object is hit or punched by another object. By returning <code>true</code>, QueryCatchBlow can reject physical blows.</col>
         </row>
-        <row id="LineBreak">
-          <literal_col>LineBreak</literal_col>
+        <row id="OnLineBreak">
+          <literal_col>OnLineBreak</literal_col>
           <col>int cause</col>
           <col>When a line object is broken. cause: 0 by movement, 1 because of a missing or incomplete target object.</col>
+        </row>
+        <row id="OnLineChange">
+          <literal_col>OnLineChange</literal_col>
+          <col>int cause</col>
+          <col>When a line object is changed, that is when one of it vertices changed its position.</col>
         </row>
         <row id="BuildNeedsMaterial">
           <literal_col>BuildNeedsMaterial</literal_col>

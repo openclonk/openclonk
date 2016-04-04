@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013-2015, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -17,12 +17,12 @@
 /* OpenGL implementation of Mesh Rendering */
 
 #include "C4Include.h"
-#include <C4Object.h>
-#include <C4DrawGL.h>
-#include <C4FoWRegion.h>
-#include <SHA1.h>
+#include "object/C4Object.h"
+#include "graphics/C4DrawGL.h"
+#include "landscape/fow/C4FoWRegion.h"
+#include "lib/SHA1.h"
 
-#include "StdMesh.h"
+#include "lib/StdMesh.h"
 #include "graphics/C4GraphicsResource.h"
 #include <locale.h>
 #include <stdexcept>
@@ -395,7 +395,7 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 			{
 				StdStrBuf buf = GetVertexShaderCodeForPass(pass, Workarounds.LowMaxVertexUniformCount);
 				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-				pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
+				pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), StdMeshMatManager::SMM_AcceptExisting);
 				custom_shader = false;
 			}
 
@@ -404,7 +404,7 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 				// TODO: Should use shared_params once we introduce them
 				StdStrBuf buf = GetFragmentShaderCodeForPass(pass, pass.FragmentShader.Parameters);
 				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-				pass.FragmentShader.Shader = mat_manager.AddShader("auto-generated fragment shader", hash.getData(), "glsl", SMMS_FRAGMENT, buf.getData(), true);
+				pass.FragmentShader.Shader = mat_manager.AddShader("auto-generated fragment shader", hash.getData(), "glsl", SMMS_FRAGMENT, buf.getData(), StdMeshMatManager::SMM_AcceptExisting);
 			}
 
 			// Then, link the program, and resolve parameter locations
@@ -418,7 +418,7 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 				{
 					StdStrBuf buf = GetVertexShaderCodeForPass(pass, true);
 					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-					pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
+					pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), StdMeshMatManager::SMM_AcceptExisting);
 
 					added_program = mat_manager.AddProgram(name.getData(), loader, pass.FragmentShader, pass.VertexShader, pass.GeometryShader);
 					if(added_program)
@@ -538,6 +538,9 @@ namespace
 			pFoW->getFoW()->Ambient.GetFragTransform(pFoW->getViewportRegion(), clipRect, outRect, ambientTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 		}
+
+		// Current frame counter
+		call.SetUniform1i(C4SSU_FrameCounter, ::Game.FrameCounter);
 	}
 
 	bool ResolveAutoParameter(C4ShaderCall& call, StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect)

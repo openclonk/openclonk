@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2014, The OpenClonk Team and contributors
+ * Copyright (c) 2001-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -16,8 +16,8 @@
 #ifndef C4AULSCRIPTFUNC_H_
 #define C4AULSCRIPTFUNC_H_
 
-#include <C4Value.h>
-#include <C4ValueMap.h>
+#include "script/C4Value.h"
+#include "script/C4ValueMap.h"
 
 // byte code chunk type
 // some special script functions defined hard-coded to reduce the exec context
@@ -30,6 +30,7 @@ enum C4AulBCCType
 	AB_ARRAY_SLICE, // array slicing
 	AB_ARRAY_SLICE_SET,
 	AB_DUP,     // duplicate value from stack
+	AB_DUP_CONTEXT, // duplicate value from stack of parent function
 	AB_STACK_SET, // copy top of stack to stack
 	AB_POP_TO,   // pop top of stack to stack
 	AB_LOCALN,  // a property of this
@@ -39,9 +40,6 @@ enum C4AulBCCType
 	AB_PAR,     // Par statement
 	AB_THIS,    // this()
 	AB_FUNC,    // function
-
-	AB_PARN_CONTEXT,
-	AB_VARN_CONTEXT,
 
 // prefix
 	AB_Inc,  // ++
@@ -145,7 +143,7 @@ public:
 	C4AulScriptFunc(C4PropListStatic * Parent, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 	~C4AulScriptFunc();
 
-	void ParseFn(C4AulScriptContext* context = NULL);
+	void ParseFn(C4AulScriptEngine *Engine, C4AulScriptContext* context = NULL);
 
 	virtual bool GetPublic() const { return true; }
 	virtual int GetParCount() const { return ParCount; }
