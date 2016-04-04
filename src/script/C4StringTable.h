@@ -69,6 +69,7 @@ public:
 			p = r.p;
 			r.p = 0;
 		}
+		
 		return *this;
 	}
 	~C4RefCntPointer() { DecRef(); }
@@ -454,6 +455,10 @@ enum C4PropertyName
 	P_MusicBreakChance,
 	P_MusicMaxPositionMemory,
 	P_InflameLandscape,
+	P_OptionKey,
+	P_ValueKey,
+	P_Value,
+	P_Delegate,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

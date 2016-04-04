@@ -459,6 +459,12 @@
      </item>
      <item>
       <widget class="QTableView" name="propertyTable">
+       <property name="editTriggers">
+        <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
        <attribute name="verticalHeaderVisible">
         <bool>false</bool>
        </attribute>

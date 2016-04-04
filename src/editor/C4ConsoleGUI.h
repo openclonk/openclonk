@@ -85,6 +85,7 @@ public:
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
 	bool CreateNewScenario(StdStrBuf *out_filename);
 	void OnStartGame();
+	void ClearGamePointers();
 
 	friend class C4ConsoleQtMainWindow;
 	friend class C4ToolsDlg;

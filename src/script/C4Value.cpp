@@ -561,6 +561,18 @@ bool C4Value::operator != (const C4Value& Value2) const
 	return !(*this == Value2);
 }
 
+C4V_Type C4Value::GetTypeEx() const
+{
+	// Return type including types derived from prop list types (such as C4V_Def)
+	if (Type == C4V_PropList)
+	{
+		if (FnCnvEffect()) return C4V_Effect;
+		if (FnCnvObject()) return C4V_Object;
+		if (FnCnvDef()) return C4V_Def;
+	}
+	return Type;
+}
+
 void C4Value::LogDeletedObjectWarning(C4PropList * p)
 {
 	if (p->GetPropListNumbered())

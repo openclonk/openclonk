@@ -156,6 +156,7 @@ public:
 	// getters
 	C4V_Data GetData()    const { return Data; }
 	C4V_Type GetType()    const { return Type; }
+	C4V_Type GetTypeEx()  const; // Return type including types derived from prop list types (such as C4V_Def)
 
 	const char *GetTypeName() const { return GetC4VName(GetType()); }
 

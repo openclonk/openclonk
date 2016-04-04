@@ -246,6 +246,10 @@ C4StringTable::C4StringTable()
 	P[P_MusicBreakChance] = "MusicBreakChance";
 	P[P_MusicMaxPositionMemory] = "MusicMaxPositionMemory";
 	P[P_InflameLandscape] = "InflameLandscape";
+	P[P_OptionKey] = "OptionKey";
+	P[P_ValueKey] = "ValueKey";
+	P[P_Value] = "Value";
+	P[P_Delegate] = "Delegate";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

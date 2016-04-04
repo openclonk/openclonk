@@ -762,6 +762,7 @@ void C4EditCursor::Clear()
 	ObjselectDelItems();
 #endif
 	selection.clear();
+	Console.PropertyDlgUpdate(selection, false);
 	creator_overlay.reset(NULL);
 }
 

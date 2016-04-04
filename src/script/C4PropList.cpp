@@ -459,11 +459,11 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 	}
 }
 
-std::vector< C4RefCntPointer<C4String> > C4PropList::GetSortedLocalProperties() const
+std::vector< C4String * > C4PropList::GetSortedLocalProperties() const
 {
 	// return property list without descending into prototype
 	std::list<const C4Property *> sorted_props = Properties.GetSortedListOfElementPointers();
-	std::vector< C4RefCntPointer<C4String> > result;
+	std::vector< C4String * > result;
 	result.reserve(sorted_props.size() + 1);
 	result.push_back(&::Strings.P[P_Prototype]); // implicit prototype for every prop list
 	for (auto p : sorted_props) result.push_back(p->Key);

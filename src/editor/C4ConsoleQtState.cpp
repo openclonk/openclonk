@@ -491,7 +491,12 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.creatorTreeView->setModel(definition_list_model.get());
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);
-
+	
+	// Property editor
+	property_delegate_factory.reset(new C4PropertyDelegateFactory());
+	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
+	ui.propertyTable->verticalHeader()->setDefaultSectionSize(ui.propertyTable->fontMetrics().height()+4);
+	
 	// Welcome page
 	InitWelcomeScreen();
 	ShowWelcomeScreen();
@@ -672,6 +677,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	if (sel_count != 1)
 	{
 		// Multi object selection: Hide property view; show info label
+		property_model->SetPropList(NULL);
 		ui.propertyTable->setVisible(false);
 		ui.selectionInfoLabel->setText(rSelection.GetDataString().getData());
 	}
@@ -861,4 +867,9 @@ void C4ConsoleGUIState::ShowWelcomeScreen()
 void C4ConsoleGUIState::HideWelcomeScreen()
 {
 	ui.welcomeDockWidget->close();
+}
+
+void C4ConsoleGUIState::ClearGamePointers()
+{
+	if (property_delegate_factory) property_delegate_factory->ClearDelegates();
 }

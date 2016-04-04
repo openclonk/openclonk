@@ -147,6 +147,7 @@ public:
 	std::unique_ptr<QApplication> application;
 	std::unique_ptr<C4ConsoleQtMainWindow> window;
 	std::unique_ptr<class C4ConsoleQtPropListModel> property_model;
+	std::unique_ptr<class C4PropertyDelegateFactory> property_delegate_factory;
 	std::unique_ptr<class C4ConsoleQtObjectListModel> object_list_model;
 	std::unique_ptr<class C4ConsoleQtDefinitionListModel> definition_list_model;
 	std::list<class C4ConsoleQtViewportDockWidget *> viewports;
@@ -216,6 +217,8 @@ public:
 	void InitWelcomeScreen();
 	void ShowWelcomeScreen();
 	void HideWelcomeScreen();
+
+	void ClearGamePointers();
 };
 
 class C4ConsoleGUI::State : public C4ConsoleGUIState

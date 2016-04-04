@@ -599,6 +599,12 @@ void C4Game::Clear()
 	::FontLoader.Clear();
 #endif
 
+#ifdef WITH_QT_EDITOR
+	// clear console pointers held into script engine
+	::Console.EditCursor.Clear();
+	::Console.ClearGamePointers();
+#endif
+
 	C4PropListNumbered::ClearShelve(); // may be nonempty if there was a fatal error during section load
 	ScriptEngine.Clear();
 	// delete any remaining prop lists from circular chains
