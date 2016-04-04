@@ -108,9 +108,7 @@ func ControlUseStart(object clonk, int x, int y)
 // Callback from the clonk when loading is finished
 public func FinishedLoading(object clonk)
 {
-	// Change picture to indicate being loaded.
-	this.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 3000, 4000),Trans_Rotate(-45,0,0,1),Trans_Rotate(130,0,1,0));
-	loaded = true;
+	SetLoaded();
 	if(holding) clonk->StartAim(this);
 	return holding; // false means stop here and reset the clonk
 }
@@ -197,6 +195,14 @@ func RejectCollect(id shotid, object shot)
 {
 	// Only collect grenade launcher ammo
 	if(!(shot->~IsGrenadeLauncherAmmo())) return true;
+}
+
+public func SetLoaded()
+{
+	loaded = true;
+	// Change picture to indicate being loaded.
+	this.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 3000, 4000),Trans_Rotate(-45,0,0,1),Trans_Rotate(130,0,1,0));
+	return;
 }
 
 public func IsLoaded() { return loaded; }
