@@ -530,12 +530,12 @@ public func OnMoveAllToClicked(int menu_id)
 	
 	if (transfered > 0)
 	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
+		PlaySoundTransfer();
 		return;
 	}
 	else
 	{
-		Sound("Objects::Balloon::Pop", true, nil, GetOwner());
+		PlaySoundError();
 		return;
 	}
 }
@@ -893,12 +893,12 @@ private func OnContentsSelection(symbol, extra_data)
 	// Did we at least transfer one item?
 	if (successful_transfers > 0)
 	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
+		PlaySoundTransfer();
 		return true;
 	}
 	else
 	{
-		Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
+		PlaySoundTransferIncomplete();
 		return false;
 	}
 }
@@ -1351,4 +1351,21 @@ global func UpdateInteractionMenus(callbacks)
 	if (callbacks && GetType(callbacks) != C4V_Array) callbacks = [callbacks];
 	for (var interaction_menu in FindObjects(Find_ID(GUI_ObjectInteractionMenu)))
 		interaction_menu->UpdateInteractionMenuFor(this, callbacks);
+}
+
+// Sounds
+
+func PlaySoundTransfer()
+{
+	Sound("Hits::SoftTouch*", true, nil, GetOwner());
+}
+
+func PlaySoundTransferIncomplete()
+{
+	Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
+}
+
+func PlaySoundError()
+{
+	Sound("Objects::Balloon::Pop", true, nil, GetOwner());
 }
