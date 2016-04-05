@@ -526,17 +526,7 @@ public func OnMoveAllToClicked(int menu_id)
 	var index = 0, obj;
 	while (obj = other->Contents(index++)) PushBack(contents, obj);
 	
-	// Now try transferring each item once.
-	var transfered = 0;
-	for (obj in contents)
-	{
-		// Sanity, can actually happen if an item merges with others during the transfer etc.
-		if (!obj || !target) continue;
-		
-		var collected = target->Collect(obj, true);
-		if (collected)
-			++transfered;
-	}
+	var transfered = TransferObjectsFromToSimple(contents, other, target);
 	
 	if (transfered > 0)
 	{
@@ -898,6 +888,39 @@ private func OnContentsSelection(symbol, extra_data)
 		to_transfer = extra_data.objects;
 	}
 	
+	var successful_transfers = TransferObjectsFromTo(to_transfer, target, other_target);
+	
+	// Did we at least transfer one item?
+	if (successful_transfers > 0)
+	{
+		Sound("Hits::SoftTouch*", true, nil, GetOwner());
+		return true;
+	}
+	else
+	{
+		Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
+		return false;
+	}
+}
+
+func TransferObjectsFromToSimple(array contents, object other, object target)
+{
+	// Now try transferring each item once.
+	var transfered = 0;
+	for (obj in contents)
+	{
+		// Sanity, can actually happen if an item merges with others during the transfer etc.
+		if (!obj || !target) continue;
+		
+		var collected = target->Collect(obj, true);
+		if (collected)
+			++transfered;
+	}
+	return transfered;
+}
+
+func TransferObjectsFromTo(array to_transfer, object target, object other_target)
+{
 	var successful_transfers = 0;
 	
 	// Try to transfer all the previously selected items.
@@ -934,18 +957,8 @@ private func OnContentsSelection(symbol, extra_data)
 		if (handled)
 			successful_transfers += 1;
 	}
-	
-	// Did we at least transfer one item?
-	if (successful_transfers > 0)
-	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
-		return true;
-	}
-	else
-	{
-		Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
-		return false;
-	}
+
+	return successful_transfers;
 }
 
 func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object obj, int slot, int menu_index)
