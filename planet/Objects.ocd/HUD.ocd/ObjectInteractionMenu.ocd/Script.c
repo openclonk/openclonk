@@ -903,23 +903,23 @@ private func OnContentsSelection(symbol, extra_data)
 	}
 }
 
-func TransferObjectsFromToSimple(array contents, object other, object target)
+func TransferObjectsFromToSimple(array to_transfer, object source, object destination)
 {
 	// Now try transferring each item once.
-	var transfered = 0;
-	for (obj in contents)
+	var successful_transfers = 0;
+	for (var obj in to_transfer)
 	{
 		// Sanity, can actually happen if an item merges with others during the transfer etc.
-		if (!obj || !target) continue;
+		if (!obj || !destination) continue;
 		
-		var collected = target->Collect(obj, true);
-		if (collected)
-			++transfered;
+		var handled = destination->Collect(obj, true);
+		if (handled)
+			++successful_transfers;
 	}
-	return transfered;
+	return successful_transfers;
 }
 
-func TransferObjectsFromTo(array to_transfer, object target, object other_target)
+func TransferObjectsFromTo(array to_transfer, object source, object destination)
 {
 	var successful_transfers = 0;
 	
@@ -928,11 +928,11 @@ func TransferObjectsFromTo(array to_transfer, object target, object other_target
 	{
 		if (!obj) continue;
 		// Our target might have disappeared (e.g. a construction site completing after the first item).
-		if (!other_target) break;
+		if (!destination) break;
 		
 		var handled = false;
 		// Does the object not want to leave the other container anyway?
-		if (!obj->Contained() || !obj->~QueryRejectDeparture(target))
+		if (!obj->Contained() || !obj->~QueryRejectDeparture(source))
 		{
 			// If stackable, always try to grab a full stack.
 			// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
@@ -940,7 +940,7 @@ func TransferObjectsFromTo(array to_transfer, object target, object other_target
 			//       when they enter the target. For this reason that special case is, imo, not needed here.    
 			if (obj->~IsStackable())
 			{
-				var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
+				var others = FindObjects(Find_Container(source), Find_ID(obj->GetID()), Find_Exclude(obj));
 				for (var other in others) 
 				{
 					if (obj->IsFullStack()) break;
@@ -949,10 +949,10 @@ func TransferObjectsFromTo(array to_transfer, object target, object other_target
 			}
 			
 			// More special handling for Stackable items..
-			handled = obj->~MergeWithStacksIn(other_target);
+			handled = obj->~MergeWithStacksIn(destination);
 			// Try to normally collect the object otherwise.
-			if (!handled && other_target && obj)
-				handled = other_target->Collect(obj, true);
+			if (!handled && destination && obj)
+				handled = destination->Collect(obj, true);
 		}
 		if (handled)
 			successful_transfers += 1;
