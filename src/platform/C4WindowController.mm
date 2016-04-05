@@ -22,10 +22,10 @@
 #include "game/C4FullScreen.h"
 #include "landscape/C4Landscape.h"
 
-#import "C4WindowController.h"
-#import "C4DrawGLMac.h"
-#import "C4EditorWindowController.h"
-#import "C4AppDelegate.h"
+#import "platform/C4WindowController.h"
+#import "graphics/C4DrawGLMac.h"
+#import "editor/C4EditorWindowController.h"
+#import "platform/C4AppDelegate.h"
 #import "AppKit/NSOpenGL.h"
 
 static SInt32 osVersion()

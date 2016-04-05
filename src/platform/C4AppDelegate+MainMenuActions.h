@@ -14,7 +14,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "C4AppDelegate.h"
+#import "platform/C4AppDelegate.h"
 
 @interface C4AppDelegate (MainMenuActions)
 - (IBAction) openScenario:(id)sender;

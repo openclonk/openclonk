@@ -27,7 +27,7 @@
 #include <GL/glew.h>
 
 #ifdef USE_COCOA
-#import "ObjectiveCAssociated.h"
+#import "platform/ObjectiveCAssociated.h"
 #endif
 #include "graphics/C4Draw.h"
 #include "graphics/C4Shader.h"

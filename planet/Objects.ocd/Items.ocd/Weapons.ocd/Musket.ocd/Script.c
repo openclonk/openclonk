@@ -34,6 +34,8 @@ func Initialize()
 	MuskDown = 16;
 	MuskOffset = -8;
 	
+	loaded = false;
+	
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
 		AnimationAim   = "MusketAimArms",
@@ -104,8 +106,7 @@ func ControlUseStart(object clonk, int x, int y)
 // Callback from the clonk when loading is finished
 public func FinishedLoading(object clonk)
 {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1)));
-	loaded = true;
+	SetLoaded();
 	if(holding) clonk->StartAim(this);
 	return holding; // false means stop here and reset the clonk
 }
@@ -179,6 +180,22 @@ func RejectCollect(id shotid, object shot)
 {
 	// Only collect musket-ammo
 	if(!(shot->~IsMusketAmmo())) return true;
+}
+
+public func SetLoaded()
+{
+	loaded = true;
+	// Change picture to indicate being loaded.
+	this.PictureTransformation = Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1));
+	return;
+}
+
+public func IsLoaded() { return loaded; }
+
+// Can only be stacked with same state: loaded vs. non-loaded.
+public func CanBeStackedWith(object other)
+{
+	return this->IsLoaded() == other->~IsLoaded() && inherited(other, ...);
 }
 
 public func IsWeapon() { return true; }

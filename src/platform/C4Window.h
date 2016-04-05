@@ -312,7 +312,7 @@ extern int MK_ALT;
 #define K_WIN_R SDL_SCANCODE_RGUI
 #define K_PRINT SDL_SCANCODE_PRINTSCREEN
 #elif defined(USE_COCOA)
-#import "ObjectiveCAssociated.h"
+#import "platform/ObjectiveCAssociated.h"
 // FIXME
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
