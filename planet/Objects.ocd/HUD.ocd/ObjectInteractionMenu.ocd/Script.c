@@ -930,10 +930,11 @@ func TransferObjectsFromTo(array to_transfer, object source, object destination)
 		// Our target might have disappeared (e.g. a construction site completing after the first item).
 		if (!destination) break;
 		
-		var handled = false;
 		// Does the object not want to leave the other container anyway?
 		if (!obj->Contained() || !obj->~QueryRejectDeparture(source))
 		{
+			var handled = false;
+
 			// If stackable, always try to grab a full stack.
 			// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
 			// TODO: 200 stacks of 1 arrow would each merge into the stacks that are already in the target
@@ -953,9 +954,10 @@ func TransferObjectsFromTo(array to_transfer, object source, object destination)
 			// Try to normally collect the object otherwise.
 			if (!handled && destination && obj)
 				handled = destination->Collect(obj, true);
+
+			if (handled)
+				successful_transfers += 1;
 		}
-		if (handled)
-			successful_transfers += 1;
 	}
 
 	return successful_transfers;
