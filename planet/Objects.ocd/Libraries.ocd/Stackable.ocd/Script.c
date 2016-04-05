@@ -379,7 +379,13 @@ public func MergeWithStacksIn(object into, bool ignore_extra_slot_containers)
  */
 public func CanBeStackedWith(object other)
 {
-	if (other->~IsInfiniteStackCount() != this->IsInfiniteStackCount()) return false;
+	// Infinite stacks can only be stacked on top of others.
+	if (this->IsInfiniteStackCount() != other->~IsInfiniteStackCount())
+		return false;
+	// If this and other are contained in extra slots stack count must be the same for the parents to be stackable.
+	if (this->Contained() && other->Contained())
+		if (this->Contained()->~HasExtraSlot() && other->Contained()->~HasExtraSlot())
+			return this->GetStackCount() == other->~GetStackCount() && _inherited(other, ...);
 	return _inherited(other, ...);
 }
 
@@ -390,7 +396,7 @@ public func CanBeStackedWith(object other)
 public func GetInventoryIconOverlay()
 {
 	if (!(this->IsInfiniteStackCount())) return nil;
-	return {Left = "50%", Bottom="50%", Symbol=Icon_Number, GraphicsName="Inf"};
+	return {Left = "50%", Bottom = "50%", Symbol = Icon_Number, GraphicsName = "Inf"};
 }
 
 
