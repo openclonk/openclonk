@@ -261,7 +261,8 @@ global func FxCheckVictoryTimer(_, proplist effect)
 		// Update the scoreboard.
 		UpdateScoreboardWins(team);
 
-		if (--g_remaining_rounds > 0 || GetLeadingTeam() == nil)
+		// The leading team has to win the last round.
+		if (--g_remaining_rounds > 0 || GetLeadingTeam() != team)
 		{
 			var msg2 = CurrentRoundStr();
 			Log(msg2);
@@ -286,8 +287,10 @@ global func CurrentRoundStr()
 		return "$LastRound$";
 	else if (g_remaining_rounds > 1)
 		return Format("$RemainingRounds$", g_remaining_rounds);
-	else
+	else if (GetLeadingTeam() == nil)
 		return "$Tiebreak$";
+	else
+		return "$BonusRound$";
 }
 
 global func UpdateScoreboardWins(int team)
