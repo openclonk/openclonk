@@ -217,7 +217,7 @@ func OnClonkDeath(object clonk)
 
 	// Check for victory after three seconds to allow stalemates.
 	if (!g_gameover)
-		g_check_victory_effect.Interval = 36 * 5;
+		g_check_victory_effect.Interval = g_check_victory_effect.Time + 36 * 3;
 }
 
 // Returns a list of colored player names, for example "Sven2, Maikel, Luchs"
