@@ -21,6 +21,7 @@
 
 #include "game/C4Application.h"
 #include "graphics/C4DrawGL.h"
+#include "editor/C4Console.h"
 #include "editor/C4ViewportWindow.h"
 #include "platform/StdFile.h"
 #include "lib/StdBuf.h"

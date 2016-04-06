@@ -27,6 +27,10 @@
 #include <pthread.h>
 #endif
 
+#ifdef USE_SDL_MAINLOOP
+#include <SDL.h>
+#endif
+
 #ifdef USE_WIN32_WINDOWS
 class CStdMessageProc : public StdSchedulerProc
 {
