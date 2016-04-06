@@ -352,6 +352,105 @@ global func Test2_Transfer(object menu, tested_function, object source, object d
 }
 
 
+global func Test3_OnStart(int plr){ return true;}
+global func Test3_OnFinished(){ return; }
+global func Test3_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	var source = CreateObject(Armory);
+	
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 50, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+
+	var passed = true;
+
+	// actual test
+	
+	Log("Test: Transfer 75 single arrows from one container to another, should be merged to 5 stacks of 15 arrows each.");
+
+	Log("****** Transfer from source to structure");
+
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_structure, nil);
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromTo, source, container_structure, nil);
+
+	Log("****** Transfer from source to living (Clonk)");
+
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_living, nil);
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromTo, source, container_living, nil);
+
+	Log("****** Transfer from source to vehicle (Lorry)");
+
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_vehicle, nil);
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromTo, source, container_vehicle, nil);
+
+	Log("****** Transfer from source to surrounding");
+
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_surrounding, nil);
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test3_Transfer(menu, menu.TransferObjectsFromTo, source, container_surrounding, nil);
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (source) source->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+global func Test3_Transfer(object menu, tested_function, object source, object destination, object expected_container)
+{
+	var passed = true;
+	
+	var number_stacks = 5;
+	var number_arrows = number_stacks * Arrow->MaxStackCount();
+	var to_transfer = [];
+	for (var i = 0; i < number_arrows; ++i)
+	{
+		var arrow = source->CreateContents(Arrow);
+		PushBack(to_transfer, arrow);
+	}
+	
+	// this has to happen separately, so that the objects do not get stacked when entering the container
+	for (var arrow in to_transfer)
+	{
+		arrow->SetStackCount(1);
+	}
+	
+	menu->Call(tested_function, to_transfer, source, destination);
+
+	Log("Transferring from source %v (%s) to destination %v (%s)", source, source->GetName(), destination, destination->GetName());
+
+	var count_stacks = 0;
+	var count_arrows = 0;
+	for (var i = 0; i < GetLength(to_transfer); ++i)
+	{
+		if (to_transfer[i] != nil)
+		{
+			count_stacks += 1; // count objects that got removed
+			count_arrows += to_transfer[i]->GetStackCount();
+		}
+	}
+
+	passed &= doTest("Number of arrow stack was reduced. Got %d, expected %d.", count_stacks, number_stacks);
+	passed &= doTest("Number of individual arrows stayed the same. Got %d, expected %d.", count_arrows, number_arrows);
+
+	return passed;
+}
+
 
 
 
