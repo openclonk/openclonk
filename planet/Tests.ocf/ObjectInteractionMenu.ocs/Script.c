@@ -188,9 +188,6 @@ global func Test1_Execute()
 			Log("*** Function TransferObjectsFromTo()");
 			passed &= Test1_Transfer(menu, menu.TransferObjectsFromTo, source, container_vehicle, container_vehicle);
 	
-		// this fails in for container_living, but works in the real game. Will be deactivated for now
-		if (source->GetID() != Clonk)
-		{
 		Log("****** Transfer from source to surrounding");
 		
 		
@@ -199,7 +196,7 @@ global func Test1_Execute()
 	
 			Log("*** Function TransferObjectsFromTo()");
 			passed &= Test1_Transfer(menu, menu.TransferObjectsFromTo, source, container_surrounding, nil);
-		}
+		//}
 		if (source) source->RemoveObject();
 	}
 
@@ -211,9 +208,6 @@ global func Test1_Execute()
 	if (menu) menu->RemoveObject();
 	return passed;
 }
-
-
-
 
 global func Test1_Transfer(object menu, tested_function, object source, object destination, object expected_container)
 {
@@ -227,14 +221,139 @@ global func Test1_Transfer(object menu, tested_function, object source, object d
 	
 	Log("Transferring from source %v to destination %v", source, destination);
 
-	passed &= doTest("Wood is in the destination object. Container is %v, expected %v.", wood->Contained(), expected_container);
-	passed &= doTest("Metal is in the destination object. Container is %v, expected %v.", metal->Contained(), expected_container);
-	
+	if (source->GetID() == Clonk
+	 && destination->GetID() == Helper_Surrounding
+	 && expected_container == nil)
+	{
+		passed &= doTest("The containing clonk should have a drop command. Got %s, expected %s.", source->GetCommand(0, 0), "Drop");
+		passed &= doTest("The containing clonk should have a drop command. Got %s, expected %s.", source->GetCommand(0, 1), "Drop");
+	}
+	else
+	{
+		passed &= doTest("Wood is in the destination object. Container is %v, expected %v.", wood->Contained(), expected_container);
+		passed &= doTest("Metal is in the destination object. Container is %v, expected %v.", metal->Contained(), expected_container);
+	}
 	if (wood) wood->RemoveObject();
 	if (metal) metal->RemoveObject();
 	
 	return passed;
 }
+
+
+global func Test2_OnStart(int plr){ return true;}
+global func Test2_OnFinished(){ return; }
+global func Test2_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	var sources = [CreateObjectAbove(Armory, 150, 100),
+	               CreateObjectAbove(Clonk, 150, 100),
+	               CreateObjectAbove(Lorry, 150, 100)];
+
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 50, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+	
+
+	var passed = true;
+
+	// actual test
+	
+	Log("Test transfer of stackable objects arrow and javelin, destination contains 1 item of each");
+
+	for (var source in sources)
+	{
+		Log("====== Source: %s", source->GetName());
+	
+		Log("****** Transfer from source to structure");
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_structure, container_structure);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromTo, source, container_structure, container_structure);
+	
+		Log("****** Transfer from source to living (Clonk)");
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_living, container_living);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromTo, source, container_living, container_living);
+	
+		Log("****** Transfer from source to vehicle (Lorry)");
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_vehicle, container_vehicle);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromTo, source, container_vehicle, container_vehicle);
+	
+		Log("****** Transfer from source to surrounding");
+		
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_surrounding, nil);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test2_Transfer(menu, menu.TransferObjectsFromTo, source, container_surrounding, nil);
+
+		if (source) source->RemoveObject();
+	}
+
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+global func Test2_Transfer(object menu, tested_function, object source, object destination, object expected_container)
+{
+	var passed = true;
+	
+	var arrow = source->CreateContents(Arrow);
+	var javelin = source->CreateContents(Javelin);
+	var to_transfer = [arrow, javelin];
+	
+	var dest_arrow = destination->CreateContents(Arrow);
+	var dest_javelin = destination->CreateContents(Javelin);
+	
+	dest_arrow->SetStackCount(5);
+
+	menu->Call(tested_function, to_transfer, source, destination);
+
+	Log("Transferring from source %v (%s) to destination %v (%s)", source, source->GetName(), destination, destination->GetName());
+
+	if (source->GetID() == Clonk
+	 && destination->GetID() == Helper_Surrounding
+	 && expected_container == nil)
+	{
+		passed &= doTest("The containing clonk should have a drop command. Got %s, expected %s.", source->GetCommand(0, 0), "Drop");
+		passed &= doTest("The containing clonk should have a drop command. Got %s, expected %s.", source->GetCommand(0, 1), "Drop");
+	}
+	else
+	{
+		passed &= doTest("Arrow is in the destination object. Container is %v, expected %v.", arrow->Contained(), expected_container);
+		passed &= doTest("Javelin is in the destination object. Container is %v, expected %v.", javelin->Contained(), expected_container);
+	}	
+	if (arrow) arrow->RemoveObject();
+	if (javelin) javelin->RemoveObject();
+	if (dest_arrow) dest_arrow->RemoveObject();
+	if (dest_javelin) dest_javelin->RemoveObject();
+	
+	return passed;
+}
+
+
+
+
 
 
 global func TestX_OnStart(int plr){ return true;}
