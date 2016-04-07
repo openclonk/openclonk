@@ -27,7 +27,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 4;
+	effect.testnr = 5;
 	effect.launched = false;
 	effect.plr = plr;
 	return true;
@@ -131,7 +131,6 @@ global func FxIntTestControlTimer(object target, proplist effect)
 // Object with QueryRejectDeparture(source)=true is not transferred
 // Object with QueryRejectDeparture(destination)=true is transferred
 // Transfer items to the same object
-// Transfer into an object that removes itself, such as a construction site
 
 global func Test1_OnStart(int plr){ return true;}
 global func Test1_OnFinished(){ return; }
@@ -562,6 +561,108 @@ global func Test4_Transfer(object menu, tested_function, object source, object d
 	return passed;
 }
 
+
+global func Test5_OnStart(int plr){ return true;}
+global func Test5_OnFinished(){ return; }
+global func Test5_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 150, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+
+	var sources = [container_structure,
+				   container_living,
+				   container_vehicle,
+				   container_surrounding];
+				   
+	var passed = true;
+
+	// actual test
+	
+	Log("Test: Transfer items to a construction site, only 1 item is needed to complete the site.");
+
+	for (var source in sources)
+	{
+		Log("====== Source: %s", source->GetName());
+
+		Log("****** Transfer from source to construction site");
+	
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test5_Transfer(menu, menu.TransferObjectsFromToSimple, source);
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test5_Transfer(menu, menu.TransferObjectsFromTo, source);	
+	}
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+
+global func Test5_Transfer(object menu, tested_function, object source)
+{
+	var passed = true;
+	
+	var destination = CreateObject(ConstructionSite, 50, 50);
+	destination->Set(Sawmill, 0);
+	destination->CreateContents(Rock, 4); // this leaves 1 wood remaining
+	
+	var to_transfer = [source->CreateContents(Wood),
+	                   source->CreateContents(Wood),
+	                   source->CreateContents(Wood),
+	                   source->CreateContents(Metal)];
+
+	Test5_ForceRefresh(source);
+
+	passed &= doTest("The source has the initial wood count. Got %d, expected %d.", source->ContentsCount(Wood), 3);
+	passed &= doTest("The source has the initial metal count. Got %d, expected %d.", source->ContentsCount(Metal), 1);
+
+	Log("Transferring from source %v (%s) to destination %v (%s)", source, source->GetName(), destination, destination->GetName());
+
+	menu->Call(tested_function, to_transfer, source, destination);
+
+	//Test5_ForceRefresh(source); This can be done, however it may hide an error
+
+	passed &= doTest("The source has wood remaining. Got %d, expected %d.", source->ContentsCount(Wood), 2);
+	passed &= doTest("The source has metal remaining. Got %d, expected %d.", source->ContentsCount(Metal), 1);
+	
+	if (destination)
+	{
+		passed &= doTest("The construction site received wood. Got %d, expected %d.", destination->ContentsCount(Wood), 1);
+		passed &= doTest("The construction site has the initial rocks. Got %d, expected %d.", destination->ContentsCount(Rock), 4);
+	}
+
+	if (destination) destination->RemoveObject();
+	
+	for (var item in to_transfer) if (item) item->RemoveObject();
+
+	for (var item in FindObjects(Find_Or(Find_ID(Wood), Find_ID(Metal), Find_ID(Rock)))) item->RemoveObject();
+
+	return passed;
+}
+
+global func Test5_ForceRefresh(object source)
+{
+	if (source->GetID() == Helper_Surrounding)
+	{
+		Log("... contents of surrounding: %v", source.current_objects);
+	}
+	if (source->GetID() == Helper_Surrounding)
+	{
+		source.last_search_frame = -1;
+		source->~RefreshIfNecessary();	
+	}
+}
 
 
 
