@@ -651,6 +651,8 @@ void C4AulParse::DumpByteCode()
 			{
 			case AB_FUNC:
 				fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
+			case AB_ERR:
+				if (pBCC->Par.s)
 			case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 				fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
 			case AB_STRING:
@@ -691,7 +693,7 @@ void C4AulParse::DumpByteCode()
 			case AB_DEBUG: case AB_NIL: case AB_RETURN:
 			case AB_PAR: case AB_THIS:
 			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
-			case AB_ERR: case AB_EOFN:
+			case AB_EOFN:
 				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
 			case AB_CARRAY:
 				fprintf(stderr, "\t%s\n", C4VArray(pBCC->Par.a).GetDataString().getData()); break;

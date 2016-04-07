@@ -245,7 +245,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 				throw C4AulExecError("internal error: function didn't return");
 
 			case AB_ERR:
-				throw C4AulExecError("syntax error: see above for details");
+				if (pCPos->Par.s)
+					throw C4AulExecError((std::string("syntax error: ") + pCPos->Par.s->GetCStr()).c_str());
+				else
+					throw C4AulExecError("syntax error: see above for details");
 
 			case AB_DUP_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
