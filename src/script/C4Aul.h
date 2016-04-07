@@ -44,8 +44,11 @@ public:
 // parse error
 class C4AulParseError : public C4AulError
 {
+	C4AulParseError() = default;
 public:
-	C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
+	C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false);
+	static C4AulParseError FromSPos(const C4ScriptHost *host, const char *SPos, C4AulScriptFunc *Fn, const char *msg, const char *Idtf = nullptr, bool Warn = false);
+	// constructor
 	C4AulParseError(class C4AulParse * state, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
 };
 

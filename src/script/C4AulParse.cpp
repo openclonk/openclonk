@@ -179,6 +179,35 @@ void C4AulParse::Error(const char *pMsg, ...)
 	throw C4AulParseError(this, Buf.getData());
 }
 
+C4AulParseError C4AulParseError::FromSPos(const C4ScriptHost *host, const char *SPos, C4AulScriptFunc *Fn, const char *msg, const char *Idtf, bool Warn)
+{
+	C4AulParseError e;
+	e.sMessage.Format("%s: %s%s",
+		Warn ? "WARNING" : "ERROR",
+		msg,
+		Idtf ? Idtf : "");
+
+	if (Fn && Fn->GetName())
+	{
+		e.sMessage.AppendFormat(" (in %s", Fn->GetName());
+		if (host && SPos)
+			e.sMessage.AppendFormat(", %s:%d:%d)",
+				host->ScriptName.getData(),
+				SGetLine(host->GetScript(), SPos),
+				SLineGetCharacters(host->GetScript(), SPos));
+		else
+			e.sMessage.AppendChar(')');
+	}
+	else if (host && SPos)
+	{
+		e.sMessage.AppendFormat(" (%s:%d:%d)",
+			host->ScriptName.getData(),
+			SGetLine(host->GetScript(), SPos),
+			SLineGetCharacters(host->GetScript(), SPos));
+	}
+	return e;
+}
+
 C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const char *pIdtf, bool Warn)
 		: C4AulError()
 {
