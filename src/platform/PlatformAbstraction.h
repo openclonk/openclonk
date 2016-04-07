@@ -95,10 +95,15 @@ typedef ptrdiff_t ssize_t;
 #define GNUC_FORMAT_ATTRIBUTE_O __attribute__ ((format (printf, 2, 3)))
 #define ALWAYS_INLINE inline __attribute__ ((always_inline))
 #define NORETURN __attribute__ ((noreturn))
-#else
+#elif defined(_MSC_VER)
 #define GNUC_FORMAT_ATTRIBUTE
 #define GNUC_FORMAT_ATTRIBUTE_O
 #define ALWAYS_INLINE __forceinline
+#define NORETURN __declspec(noreturn)
+#else
+#define GNUC_FORMAT_ATTRIBUTE
+#define GNUC_FORMAT_ATTRIBUTE_O
+#define ALWAYS_INLINE inline
 #define NORETURN
 #endif
 

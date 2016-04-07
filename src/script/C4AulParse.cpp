@@ -184,7 +184,7 @@ private:
 	void Shift();
 	void Match(C4AulTokenType TokenType, const char * Expected = NULL);
 	void Check(C4AulTokenType TokenType, const char * Expected = NULL);
-	void UnexpectedToken(const char * Expected) NORETURN;
+	NORETURN void UnexpectedToken(const char * Expected);
 	static const char * GetTokenName(C4AulTokenType TokenType);
 
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
