@@ -108,7 +108,6 @@ enum C4AulTokenType
 	ATT_BLCLOSE,// "}"
 	ATT_CALL,   // "->"
 	ATT_CALLFS, // "->~"
-	ATT_STAR,   // "*"
 	ATT_LDOTS,  // '...'
 	ATT_SET,    // '='
 	ATT_OPERATOR,// operator
