@@ -16,6 +16,7 @@
 // parses scripts
 
 #include "C4Include.h"
+#include "script/C4AulParse.h"
 #include <utility>
 
 #include "script/C4Aul.h"
@@ -114,118 +115,33 @@ enum C4AulTokenType
 	ATT_EOF     // end of file
 };
 
-class C4AulParse
+C4AulParse::C4AulParse(C4ScriptHost *a, enum Type Type) :
+	Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
+	SPos(a->Script.getData()), TokenSPos(SPos),
+	TokenType(ATT_INVALID),
+	Type(Type),
+	ContextToExecIn(NULL),
+	fJump(false),
+	iStack(0),
+	pLoopStack(NULL)
+{ }
+
+C4AulParse::C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine) :
+	Fn(Fn), Host(NULL), pOrgScript(NULL), Engine(Engine),
+	SPos(Fn->Script), TokenSPos(SPos),
+	TokenType(ATT_INVALID),
+	Type(C4AulParse::PARSER),
+	ContextToExecIn(context),
+	fJump(false),
+	iStack(0),
+	pLoopStack(NULL)
+{ }
+
+C4AulParse::~C4AulParse()
 {
-public:
-	enum Type { PARSER, PREPARSER };
-	C4AulParse(C4ScriptHost * a, enum Type Type):
-			Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
-			SPos(a->Script.getData()), TokenSPos(SPos),
-			TokenType(ATT_INVALID),
-			Type(Type),
-			ContextToExecIn(NULL),
-			fJump(false),
-			iStack(0),
-			pLoopStack(NULL)
-	{ }
-	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine):
-			Fn(Fn), Host(NULL), pOrgScript(NULL), Engine(Engine),
-			SPos(Fn->Script), TokenSPos(SPos),
-			TokenType(ATT_INVALID),
-			Type(C4AulParse::PARSER),
-			ContextToExecIn(context),
-			fJump(false),
-			iStack(0),
-			pLoopStack(NULL)
-	{ }
-	~C4AulParse()
-	{ while (pLoopStack) PopLoop(); ClearToken(); }
-	void Parse_DirectExec();
-	void Parse_Script(C4ScriptHost *);
-
-private:
-	C4AulScriptFunc *Fn; C4ScriptHost * Host; C4ScriptHost * pOrgScript;
-	C4AulScriptEngine *Engine;
-	const char *SPos; // current position in the script
-	const char *TokenSPos; // start of the current token in the script
-	char Idtf[C4AUL_MAX_Identifier]; // current identifier
-	C4AulTokenType TokenType; // current token type
-	int32_t cInt; // current int constant
-	C4String * cStr; // current string constant
-	enum Type Type; // emitting bytecode?
-	C4AulScriptContext* ContextToExecIn;
-	void Parse_Function();
-	void Parse_FuncBody();
-	void Parse_Statement();
-	void Parse_Block();
-	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
-	void Parse_Array();
-	void Parse_PropList();
-	void Parse_DoWhile();
-	void Parse_While();
-	void Parse_If();
-	void Parse_For();
-	void Parse_ForEach();
-	void Parse_Expression(int iParentPrio = -1);
-	void Parse_Var();
-	void Parse_Local();
-	void Parse_Static();
-	void Parse_Const();
-	C4Value Parse_ConstExpression(C4PropListStatic * parent, C4String * Name);
-	C4Value Parse_ConstPropList(C4PropListStatic * parent, C4String * Name);
-	void Store_Const(C4PropListStatic * parent, C4String * Name, const C4Value & v);
-
-	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
-	int GetOperator(const char* pScript);
-	void ClearToken(); // clear any data held with the current token
-	C4AulTokenType GetNextToken(); // get next token of SPos
-
-	void Shift();
-	void Match(C4AulTokenType TokenType, const char * Expected = NULL);
-	void Check(C4AulTokenType TokenType, const char * Expected = NULL);
-	NORETURN void UnexpectedToken(const char * Expected);
-	static const char * GetTokenName(C4AulTokenType TokenType);
-
-	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
-	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
-
-	bool fJump;
-	int iStack;
-
-	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
-	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
-	void DebugChunk();
-	void RemoveLastBCC();
-	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
-	void DumpByteCode();
-
-	C4AulBCC MakeSetter(bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
-
-	int JumpHere(); // Get position for a later jump to next instruction added
-	void SetJumpHere(int iJumpOp); // Use the next inserted instruction as jump target for the given jump operation
-	void SetJump(int iJumpOp, int iWhere);
-	void AddJump(C4AulBCCType eType, int iWhere);
-
-	// Keep track of loops and break/continue usages
-	struct Loop
-	{
-		struct Control
-		{
-			bool Break;
-			int Pos;
-			Control *Next;
-		};
-		Control *Controls;
-		int StackSize;
-		Loop *Next;
-	};
-	Loop *pLoopStack;
-
-	void PushLoop();
-	void PopLoop();
-	void AddLoopControl(bool fBreak);
-	friend class C4AulParseError;
-};
+	while (pLoopStack) PopLoop();
+	ClearToken();
+}
 
 void C4ScriptHost::Warn(const char *pMsg, ...)
 {
@@ -353,20 +269,7 @@ bool C4AulParse::AdvanceSpaces()
 }
 
 //=========================== C4Script Operator Map ===================================
-struct C4ScriptOpDef
-{
-	unsigned short Priority;
-	const char* Identifier;
-	C4AulBCCType Code;
-	bool Postfix;
-	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
-	bool NoSecondStatement; // no second statement expected (++/-- postfix)
-	C4V_Type RetType; // type returned. ignored by C4V
-	C4V_Type Type1;
-	C4V_Type Type2;
-};
-
-static C4ScriptOpDef C4ScriptOpMap[] =
+const C4ScriptOpDef C4ScriptOpMap[] =
 {
 	// priority                      postfix
 	// |  identifier                 |  changer
@@ -2152,7 +2055,7 @@ static bool GetPropertyByS(const C4PropList * p, const char * s, C4Value & v)
 void C4AulParse::Parse_Expression(int iParentPrio)
 {
 	int ndx;
-	C4ScriptOpDef * op;
+	const C4ScriptOpDef * op;
 	C4AulFunc *FoundFn = 0;
 	C4Value val;
 	switch (TokenType)
@@ -2425,12 +2328,12 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 	case ATT_OPERATOR:
 		{
 			// expect postfix operator
-			C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
+			const C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
 			if (!op->Postfix)
 			{
 				// does an operator with the same name exist?
 				// when it's a postfix-operator, it can be used instead.
-				C4ScriptOpDef * postfixop;
+				const C4ScriptOpDef * postfixop;
 				for (postfixop = op + 1; postfixop->Identifier; ++postfixop)
 					if (SEqual(op->Identifier, postfixop->Identifier))
 						if (postfixop->Postfix)
@@ -2758,7 +2661,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	case ATT_OPERATOR:
 		{
 			// -> must be a prefix operator
-			C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
+			const C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
 			if (SEqual(op->Identifier, "+"))
 			{
 				Shift();
@@ -2800,7 +2703,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	}
 	if (TokenType == ATT_OPERATOR)
 	{
-		C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
+		const C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
 		if (op->Code == AB_BitOr)
 		{
 			Shift();

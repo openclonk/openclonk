@@ -1066,6 +1066,7 @@ src/script/C4AulFunc.h
 src/script/C4Aul.h
 src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
+src/script/C4AulParse.h
 src/script/C4AulScriptFunc.cpp
 src/script/C4AulScriptFunc.h
 src/script/C4Effect.cpp
