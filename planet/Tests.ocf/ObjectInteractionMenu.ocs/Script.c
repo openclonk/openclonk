@@ -27,7 +27,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 1;
+	effect.testnr = 4;
 	effect.launched = false;
 	effect.plr = plr;
 	return true;
@@ -130,7 +130,6 @@ global func FxIntTestControlTimer(object target, proplist effect)
 // Setups:
 // Object with QueryRejectDeparture(source)=true is not transferred
 // Object with QueryRejectDeparture(destination)=true is transferred
-// Transfer an object with extra slot
 // Transfer items to the same object
 // Transfer into an object that removes itself, such as a construction site
 
@@ -458,6 +457,111 @@ global func Test3_Transfer(object menu, tested_function, object source, object d
 
 	return passed;
 }
+
+
+global func Test4_OnStart(int plr){ return true;}
+global func Test4_OnFinished(){ return; }
+global func Test4_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	var sources = [CreateObjectAbove(Armory, 150, 100),
+	               CreateObjectAbove(Clonk, 150, 100),
+	               CreateObjectAbove(Lorry, 150, 100)];
+	
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 50, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+
+	var passed = true;
+
+	// actual test
+	
+	Log("Test: Transfer a bow with incomplete arrow stack into a container with another bow and full arrow stack.");
+
+	for (var source in sources)
+	{
+		Log("====== Source: %s", source->GetName());
+
+		Log("****** Transfer from source to structure");
+	
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_structure, nil);
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromTo, source, container_structure, nil);
+	
+		Log("****** Transfer from source to living (Clonk)");
+	
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_living, nil);
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromTo, source, container_living, nil);
+	
+		Log("****** Transfer from source to vehicle (Lorry)");
+	
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_vehicle, nil);
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromTo, source, container_vehicle, nil);
+	
+		Log("****** Transfer from source to surrounding");
+	
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_surrounding, nil);
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test4_Transfer(menu, menu.TransferObjectsFromTo, source, container_surrounding, nil);
+		if (source) source->RemoveObject();
+	}
+
+
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+global func Test4_Transfer(object menu, tested_function, object source, object destination, object expected_container)
+{
+	var passed = true;
+	
+	var destination_bow = destination->CreateContents(Bow);
+	var destination_ammo = destination_bow->CreateContents(Arrow);
+	var destination_arrow = destination->CreateContents(Arrow);
+	
+	var source_bow = source->CreateContents(Bow);
+	var source_ammo = source->CreateContents(Arrow);
+	
+	source_ammo->SetStackCount(1);
+	destination_ammo->SetStackCount(2);
+	destination_arrow->SetStackCount(3);
+	
+	var to_transfer = [source_bow];
+	
+	menu->Call(tested_function, to_transfer, source, destination);
+
+	Log("Transferring from source %v (%s) to destination %v (%s)", source, source->GetName(), destination, destination->GetName());
+
+	passed &= doTest("Bow arrow count in source does not change. Got %d, expected %d.", source_ammo->GetStackCount(), 1);
+	passed &= doTest("Bow arrow in destination does not change. Got %d, expected %d.", destination_ammo->GetStackCount(), 2);
+	passed &= doTest("Arrows in destination do not change. Got %d, expected %d.", destination_arrow->GetStackCount(), 3);
+
+	if (destination_bow) destination_bow->RemoveObject();
+	if (destination_ammo) destination_ammo->RemoveObject();
+	if (destination_arrow) destination_arrow->RemoveObject();
+
+	if (source_bow) source_bow->RemoveObject();
+	if (source_ammo) source_ammo->RemoveObject();
+
+	return passed;
+}
+
 
 
 
