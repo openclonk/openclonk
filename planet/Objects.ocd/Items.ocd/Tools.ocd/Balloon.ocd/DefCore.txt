@@ -9,7 +9,7 @@ Vertices=4
 VertexX=-3,3,-3,3
 VertexY=3,-3,-3,3
 VertexFriction=50,50,50,50
-Value=10
+Value=20
 Mass=1
 Components=Cloth=2
 Float=1

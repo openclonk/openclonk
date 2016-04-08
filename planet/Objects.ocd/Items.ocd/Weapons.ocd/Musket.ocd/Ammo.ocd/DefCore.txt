@@ -10,6 +10,6 @@ VertexX=0,-3,3
 VertexY=0,1,1
 VertexFriction=50
 Picture=64,0,64,64
-Value=10
+Value=12
 Mass=5
 Components=Metal=1;Blackpowder=1;
