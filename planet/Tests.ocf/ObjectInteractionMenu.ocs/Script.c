@@ -130,7 +130,6 @@ global func FxIntTestControlTimer(object target, proplist effect)
 // Setups:
 // Object with QueryRejectDeparture(source)=true is not transferred
 // Object with QueryRejectDeparture(destination)=true is transferred
-// Transfer items to the same object
 
 global func Test1_OnStart(int plr){ return true;}
 global func Test1_OnFinished(){ return; }
@@ -759,6 +758,114 @@ global func Test6_Transfer(object menu, tested_function, object source)
 	return passed;
 }
 
+global func TestY_OnStart(int plr){ return true;}
+global func TestY_OnFinished(){ return; }
+global func TestY_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	var sources = [CreateObjectAbove(Armory, 150, 100),
+	               CreateObjectAbove(Clonk, 150, 100),
+	               CreateObjectAbove(Lorry, 150, 100)];
+
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 50, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+	
+
+	var passed = true;
+
+	// actual test
+	
+	Log("Test transfer of liquid objects, should not be possible because the items do not have a liquid container");
+
+	for (var source in sources)
+	{
+		Log("====== Source: %s", source->GetName());
+	
+		Log("****** Transfer from source to structure");
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_structure);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromTo, source, container_structure);
+	
+		Log("****** Transfer from source to living (Clonk)");
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_living);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromTo, source, container_living);
+	
+		Log("****** Transfer from source to vehicle (Lorry)");
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_vehicle);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromTo, source, container_vehicle);
+	
+		Log("****** Transfer from source to surrounding");
+		
+		
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_surrounding);
+	
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= TestY_Transfer(menu, menu.TransferObjectsFromTo, source, container_surrounding);
+
+		if (source) source->RemoveObject();
+	}
+
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+global func TestY_Transfer(object menu, tested_function, object source, object destination)
+{
+	var passed = true;
+	
+	var water = CreateObject(Water);
+	var to_transfer = [water];
+	water->Enter(source, true);
+	
+	water->SetStackCount(100);
+
+
+	Log("Transferring from source %v (%s) to destination %v (%s)", source, source->GetName(), destination, destination->GetName());
+
+	if (water == nil)
+	{
+		Log("Could not create water!");
+		return false;
+	}
+
+	passed &= doTest("Water is in the source object before transfer. Container is %v, expected %v.", water->Contained(), source);
+	menu->Call(tested_function, to_transfer, source, destination);
+	passed &= doTest("Water is in the source object after transfer. Container is %v, expected %v.", water->Contained(), source);
+
+	passed &= doTest("No water has been transferred to the destination. Got %v, expected %v.", destination->FindContents(Water), nil);
+
+	if (water) water->RemoveObject();
+	
+	return passed;
+}
+
+
+
+
+
 
 
 global func TestX_OnStart(int plr){ return true;}
@@ -805,9 +912,6 @@ global func TestX_Execute()
 	if (menu) menu->RemoveObject();
 	return passed;
 }
-
-
-
 
 
 
