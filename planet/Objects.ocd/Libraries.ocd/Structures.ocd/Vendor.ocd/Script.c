@@ -190,10 +190,10 @@ func GetBuyMenuEntry(int index, id item, int amount, int value)
 {
 	var entry = 
 	{
-		Right = "4em", Bottom = "2em",
+		Right = "2em", Bottom = "3em",
 		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-		image = {Right = "2em", Style = GUI_TextBottom | GUI_TextRight},
-		price = {Left = "2em", Priority = 3}
+		image = {Bottom = "2em", Style = GUI_TextBottom | GUI_TextRight},
+		price = {Style = GUI_TextBottom | GUI_TextRight, Priority = 3}
 	};
 	entry.image.Symbol = item;
 	entry.image.Text = Format("%dx", amount);
