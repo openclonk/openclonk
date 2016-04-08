@@ -1498,6 +1498,62 @@ global func Test21_Execute()
 	return passed;
 }
 
+global func Test22_OnStart(int plr){ return true;}
+global func Test22_OnFinished(){ return; }
+global func Test22_Execute()
+{
+	Log("Test stacking of objects with extra slots");
+
+	var passed = true;
+
+	Log("****** Muskets with various contents");
+
+	var musket_a = CreateObject(Musket);
+	var musket_b = CreateObject(Musket);
+	var musket_c = CreateObject(Musket);
+	var musket_d = CreateObject(Musket);
+	var musket_e = CreateObject(Musket);
+	
+	musket_a->CreateContents(LeadShot);
+	musket_b->CreateContents(LeadShot);
+	musket_c->CreateContents(LeadShot)->SetStackCount(7);
+	musket_d->CreateContents(LeadShot)->SetInfiniteStackCount();
+
+	passed &= doTest("Musket with 8 shots can be stacked with musket with 8 shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_b), true);
+	passed &= doTest("Musket with 8 shots cannot be stacked with musket with 7 shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_c), false);
+	passed &= doTest("Musket with 8 shots cannot be stacked with musket with infinite shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_d), false);
+	passed &= doTest("Musket with 8 shots cannot be stacked with empty musket. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_e), false);
+
+	passed &= doTest("Musket with 7 shots cannot be stacked with musket with 8 shots. Got %v, expected %v.", musket_e->CanBeStackedWith(musket_a), false);
+	passed &= doTest("Musket with infinite shots cannot be stacked with musket with 8 shots. Got %v, expected %v.", musket_d->CanBeStackedWith(musket_a), false);
+	passed &= doTest("Empty musket cannot be stacked with musket with 8 shots. Got %v, expected %v.", musket_e->CanBeStackedWith(musket_a), false);
+
+	if (musket_a) musket_a->RemoveObject();
+	if (musket_b) musket_b->RemoveObject();
+	if (musket_c) musket_c->RemoveObject();
+	if (musket_d) musket_d->RemoveObject();
+	if (musket_e) musket_e->RemoveObject();
+
+	Log("****** Grenade launcher with various contents");
+	
+	var grenade_launcher_a = CreateObject(GrenadeLauncher);
+	var grenade_launcher_b = CreateObject(GrenadeLauncher);
+	var grenade_launcher_c = CreateObject(GrenadeLauncher);
+	
+	grenade_launcher_a->CreateContents(Dynamite);
+	grenade_launcher_b->CreateContents(Dynamite);
+	grenade_launcher_c->CreateContents(IronBomb);
+
+	passed &= doTest("Grenade launcher with dynamite can be stacked with the grenade launcher with dynamite. Got %v, expected %v.", grenade_launcher_a->CanBeStackedWith(grenade_launcher_b), true);
+	passed &= doTest("Grenade launcher with dynamite cannot be stacked with grenade launcher with iron bomb. Got %v, expected %v.", grenade_launcher_a->CanBeStackedWith(grenade_launcher_c), false);
+
+	if (grenade_launcher_a) grenade_launcher_a->RemoveObject();
+	if (grenade_launcher_b) grenade_launcher_b->RemoveObject();
+	if (grenade_launcher_c) grenade_launcher_c->RemoveObject();
+	return passed;
+}
+
+
 
 global func doTest(description, returned, expected)
 {
