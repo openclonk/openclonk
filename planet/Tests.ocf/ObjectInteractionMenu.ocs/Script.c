@@ -27,7 +27,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 5;
+	effect.testnr = 6;
 	effect.launched = false;
 	effect.plr = plr;
 	return true;
@@ -665,6 +665,99 @@ global func Test5_ForceRefresh(object source)
 }
 
 
+global func Test6_OnStart(int plr){ return true;}
+global func Test6_OnFinished(){ return; }
+global func Test6_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 150, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+
+	var sources = [container_structure,
+				   container_living,
+				   container_vehicle,
+				   container_surrounding];
+
+	var passed = true;
+
+	// actual test
+	
+	Log("Test: Transfer items from one container to itself.");
+
+	for (var source in sources)
+	{
+		Log("====== Source: %s", source->GetName());
+
+		Log("****** Transfer from source to construction site");
+	
+			Log("*** Function TransferObjectsFromToSimple()");
+			passed &= Test6_Transfer(menu, menu.TransferObjectsFromToSimple, source);
+			Log("*** Function TransferObjectsFromTo()");
+			passed &= Test6_Transfer(menu, menu.TransferObjectsFromTo, source);	
+	}
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+
+global func Test6_Transfer(object menu, tested_function, object source)
+{
+	var passed = true;
+	
+	var to_transfer = [source->CreateContents(Wood),
+					   source->CreateContents(Wood),
+					   source->CreateContents(Arrow),
+					   source->CreateContents(Arrow),
+					   source->CreateContents(Arrow)];
+					   
+	for (var i = 0; i < source->ContentsCount(); ++i)
+	{
+		var item = source->Contents(i);
+		
+		if (item && item->GetID() == Arrow) item->SetStackCount(1);
+	}
+
+	Test5_ForceRefresh(source);
+
+	passed &= doTest("The source has the initial wood count. Got %d, expected %d.", source->ContentsCount(Wood), 2);
+	passed &= doTest("The source has the initial arrow count. Got %d, expected %d.", source->ContentsCount(Arrow), 3);
+
+	Log("Transferring from source %v (%s) to destination itself", source, source->GetName(), source);
+
+	menu->Call(tested_function, to_transfer, source, source);
+
+	//Test5_ForceRefresh(source); This can be done, however it may hide an error
+
+	passed &= doTest("The source has wood remaining. Got %d, expected %d.", source->ContentsCount(Wood), 2);
+	passed &= doTest("The arrows were merged. Got %d, expected %d.", source->ContentsCount(Arrow), 1);
+	var arrow = source->FindContents(Arrow);
+	
+	if (arrow)
+	{
+		passed &= doTest("The arrow stack has the correct amount. Got %d, expected %d.", arrow->GetStackCount(), 3);
+	}
+	else
+	{
+		passed = false;
+		Log("[Fail] The source has no arrows");
+	}
+	
+	for (var item in to_transfer) if (item) item->RemoveObject();
+
+	return passed;
+}
 
 
 
