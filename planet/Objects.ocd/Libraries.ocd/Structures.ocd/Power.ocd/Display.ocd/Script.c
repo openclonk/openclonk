@@ -19,7 +19,8 @@ public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];
 	// Only add a power menu if the structure is a flagpole (Library_Flag).
-	if (this->~IsFlagpole())
+	// And only if a power network is already initialized for this object.
+	if (this->~IsFlagpole() && this->GetPowerHelper())
 	{
 		var power_menu =
 		{
@@ -42,6 +43,24 @@ public func GetPowerDisplayMenuEntries(object clonk)
 	var power_network = this->GetPowerHelper();
 	if (!power_network)
 		return menu_entries;
+	
+	// If the no power need rule is active just state that.
+	if (FindObject(Find_ID(Rule_NoPowerNeed)))
+	{
+		var entry = 
+		{
+			Bottom = "1.1em",
+			BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+			Priority = 0,
+			text = 
+			{
+				Style = GUI_TextVCenter | GUI_TextLeft,
+				Text = "$MsgPowerNoNeed$"		
+			}
+		};
+		PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "nopowerneed", custom = entry});
+		return menu_entries;	
+	} 
 	
 	// Get all the power data.
 	var power_production_current = power_network->GetActivePowerAvailable(true) / 10;
@@ -121,6 +140,10 @@ public func OnPowerDisplayHover(id symbol, string extra_data, desc_menu_target, 
 			var power_stored = GetStoredPowerString(power_network->GetStoredPower());
 			var power_stored_capacity = GetStoredPowerString(power_network->GetStoredPowerCapacity());
 			text = Format("$DescPowerStored$", power_stored, power_stored_capacity, power_stored);
+		}
+		else if (extra_data == "nopowerneed")
+		{
+			text = "$DescPowerNoNeed$";
 		}
 	}
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);

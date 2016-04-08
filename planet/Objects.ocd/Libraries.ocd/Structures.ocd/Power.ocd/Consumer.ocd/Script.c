@@ -128,7 +128,7 @@ protected func Initialize()
 		lib_power = {};
 	// A single variable to keep track whether power is needed.
 	// Power is not needed when the no power need rule is active.
-	lib_power.power_need = ObjectCount(Find_ID(Rule_NoPowerNeed)) == 0;
+	lib_power.power_need = !FindObject(Find_ID(Rule_NoPowerNeed));
 	return _inherited(...);
 }
 
