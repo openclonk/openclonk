@@ -128,7 +128,6 @@ global func FxIntTestControlTimer(object target, proplist effect)
 }
 
 // Setups:
-// Object with QueryRejectDeparture(source)=true is not transferred
 // Object with QueryRejectDeparture(destination)=true is transferred
 
 global func Test1_OnStart(int plr){ return true;}
@@ -758,6 +757,94 @@ global func Test6_Transfer(object menu, tested_function, object source)
 	return passed;
 }
 
+
+
+global func Test7_OnStart(int plr){ return true;}
+global func Test7_OnFinished(){ return; }
+global func Test7_Execute()
+{
+	// setup
+	
+	var menu = CreateObject(GUI_ObjectInteractionMenu);
+
+	var source = CreateObject(Armory);
+	
+	var container_structure = CreateObjectAbove(Armory, 50, 100);
+	var container_living = CreateObjectAbove(Clonk, 50, 100);
+	var container_vehicle = CreateObjectAbove(Lorry, 50, 100);
+	var container_surrounding = CreateObjectAbove(Helper_Surrounding, 50, 100);
+	container_surrounding->InitFor(container_living, menu);
+
+	var passed = true;
+
+	// actual test
+	
+	Log("Test that object with QueryRejectDeparture(source)=true is not transferred");
+
+
+	Log("****** Transfer from source to structure");
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_structure);
+		
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromTo, source, container_structure);
+		
+	Log("****** Transfer from source to living");
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_living);
+		
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromTo, source, container_living);
+
+	Log("****** Transfer from source to vehicle");
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_vehicle);
+		
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromTo, source, container_vehicle);
+
+	Log("****** Transfer from source to surrounding");
+		Log("*** Function TransferObjectsFromToSimple()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromToSimple, source, container_surrounding);
+		
+		Log("*** Function TransferObjectsFromTo()");
+		passed &= Test7_Transfer(menu, menu.TransferObjectsFromTo, source, container_surrounding);
+
+	if (container_structure) container_structure->RemoveObject();
+	if (container_living) container_living->RemoveObject();
+	if (container_vehicle) container_vehicle->RemoveObject();
+	if (container_surrounding) container_surrounding->RemoveObject();
+	if (source) source->RemoveObject();
+	if (menu) menu->RemoveObject();
+	return passed;
+}
+
+
+global func Test7_Transfer(object menu, tested_function, object source, object destination)
+{
+	var passed = true;
+	
+	var to_transfer = [source->CreateContents(Wood)];
+	to_transfer[0].QueryRejectDeparture = Global.doReturnTrue;
+
+	Log("Transferring from source %v (%s) to destination %v (%s)", source, source->GetName(), destination, destination->GetName());
+
+	passed &= doTest("The source contains wood. Got %d, expected %d.", source->ContentsCount(Wood), 1);
+
+	menu->Call(tested_function, to_transfer, source, destination);
+
+	Test5_ForceRefresh(source);
+
+	passed &= doTest("The source has wood remaining. Got %d, expected %d.", source->ContentsCount(Wood), 1);
+	
+	for (var item in to_transfer) if (item) item->RemoveObject();
+
+	return passed;
+}
+
+
+
+
 global func TestY_OnStart(int plr){ return true;}
 global func TestY_OnFinished(){ return; }
 global func TestY_Execute()
@@ -925,3 +1012,8 @@ global func doTest(description, returned, expected)
 	Log(Format("%s %s", predicate, description), returned, expected);
 	return test;
 }
+
+
+global func doReturnTrue(){ return true;}
+global func doReturnFalse(){ return false;}
+
