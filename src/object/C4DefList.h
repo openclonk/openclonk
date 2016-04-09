@@ -49,6 +49,7 @@ public:
 	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	C4Def *ID2Def(C4ID id);
 	C4Def *GetDef(int32_t Index);
+	std::vector<C4Def*> GetAllDefs(C4String *filter_property=NULL) const;
 	C4Def *GetByPath(const char *szPath);
 	C4Def *GetByName(const StdStrBuf &);
 	int32_t GetDefCount();

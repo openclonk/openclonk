@@ -57,10 +57,22 @@ class C4RefCntPointer
 public:
 	C4RefCntPointer(T* p): p(p) { IncRef(); }
 	C4RefCntPointer(): p(0) { }
+	C4RefCntPointer(const C4RefCntPointer<T> & r) : p(r.p) { IncRef(); }
 	template <class U> C4RefCntPointer(const C4RefCntPointer<U> & r): p(r.p) { IncRef(); }
 	// Move constructor
+	C4RefCntPointer(C4RefCntPointer<T> &&r) : p(r.p) { r.p = 0; }
 	template <class U> C4RefCntPointer(C4RefCntPointer<U> &&r): p(r.p) { r.p = 0; }
 	// Move assignment
+	C4RefCntPointer& operator = (C4RefCntPointer<T> &&r)
+	{
+		if (p != r.p)
+		{
+			DecRef();
+			p = r.p;
+			r.p = 0;
+		}
+		return *this;
+	}
 	template <class U> C4RefCntPointer& operator = (C4RefCntPointer<U> &&r)
 	{
 		if (p != r.p)
@@ -69,7 +81,6 @@ public:
 			p = r.p;
 			r.p = 0;
 		}
-		
 		return *this;
 	}
 	~C4RefCntPointer() { DecRef(); }
@@ -82,6 +93,10 @@ public:
 			IncRef();
 		}
 		return *this;
+	}
+	C4RefCntPointer& operator = (const C4RefCntPointer<T>& r)
+	{
+		return *this = r.p;
 	}
 	template <class U> C4RefCntPointer& operator = (const C4RefCntPointer<U>& r)
 	{
@@ -459,6 +474,10 @@ enum C4PropertyName
 	P_ValueKey,
 	P_Value,
 	P_Delegate,
+	P_Min,
+	P_Max,
+	P_Set,
+	P_Options,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

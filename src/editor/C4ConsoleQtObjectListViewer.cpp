@@ -53,7 +53,8 @@ void C4ConsoleQtObjectListModel::Invalidate()
 
 void C4ConsoleQtObjectListModel::OnItemRemoved(C4PropList *p)
 {
-	for (auto idx : this->persistentIndexList())
+	QModelIndexList list = this->persistentIndexList();
+	for (auto idx : list)
 		if (idx.internalPointer() == p)
 			this->changePersistentIndex(idx, QModelIndex());
 	Invalidate();

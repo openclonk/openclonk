@@ -287,6 +287,25 @@ C4Def* C4DefList::GetDef(int32_t iIndex)
 	return NULL;
 }
 
+std::vector<C4Def*> C4DefList::GetAllDefs(C4String *filter_property) const
+{
+	// Collect vector of all definitions
+	// Filter for those where property evaluates to true if filter_property!=NULL
+	std::vector<C4Def*> result;
+	result.reserve(filter_property ? 32 : table.size());
+	C4Value prop_val;
+	for (C4Def *def = FirstDef; def; def = def->Next)
+	{
+		if (filter_property)
+		{
+			if (!def->GetPropertyByS(filter_property, &prop_val)) continue;
+			if (!prop_val) continue;
+		}
+		result.push_back(def);
+	}
+	return result;
+}
+
 C4Def *C4DefList::GetByPath(const char *szPath)
 {
 	// search defs

@@ -32,6 +32,7 @@ class C4PropertyPath
 	// TODO: For now just storing the path. May want to keep the path info later to allow validation/updating of values
 	StdCopyStrBuf path;
 
+public:
 	enum PathType
 	{
 		PPT_Root = 0,
@@ -56,16 +57,18 @@ class C4PropertyDelegate : public QObject
 
 protected:
 	const class C4PropertyDelegateFactory *factory;
+	C4RefCntPointer<C4String> set_function;
 
 public:
-	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory)
-		: factory(factory) { }
+	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, const C4PropList *props);
 	virtual ~C4PropertyDelegate() { }
 
 	virtual void SetEditorData(QWidget *editor, const C4Value &val) const = 0;
 	virtual void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const = 0;
 	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const = 0;
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
+
+	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : NULL; } // get name of setter function for this property
 
 signals:
 	void EditorValueChangedSignal(QWidget *editor) const;
@@ -74,8 +77,10 @@ signals:
 
 class C4PropertyDelegateInt : public C4PropertyDelegate
 {
+private:
+	int32_t min, max, step;
 public:
-	C4PropertyDelegateInt(const class C4PropertyDelegateFactory *factory, const C4PropList *props=NULL);
+	C4PropertyDelegateInt(const class C4PropertyDelegateFactory *factory, const C4PropList *props);
 
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
@@ -105,8 +110,9 @@ class C4PropertyDelegateEnum : public C4PropertyDelegate
 public:
 	typedef C4PropertyDelegateEnumEditor Editor; // qmake doesn't like nested classes
 
-	struct Option
+	class Option
 	{
+	public:
 		C4RefCntPointer<C4String> name; // Display name in Editor enum dropdown box
 		C4RefCntPointer<C4String> option_key;
 		C4RefCntPointer<C4String> value_key;
@@ -126,11 +132,14 @@ public:
 	};
 private:
 	std::vector<Option> options;
+
+protected:
+	void ReserveOptions(int32_t num);
 public:
-	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, int reserve_count = 0);
-	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, const C4ValueArray &props);
+	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, const C4PropList *props, const C4ValueArray *poptions=NULL);
 
 	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=NULL);
+	void AddConstOption(C4String *name, const C4Value &val);
 
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
@@ -144,11 +153,18 @@ public slots:
 	void UpdateOptionIndex(Editor *editor, int idx) const;
 };
 
+// Select a definition
+class C4PropertyDelegateDef : public C4PropertyDelegateEnum
+{
+public:
+	C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, const C4PropList *props);
+};
+
 // C4Value setting using an enum
 class C4PropertyDelegateC4ValueEnum : public C4PropertyDelegateEnum
 {
 public:
-	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory);
+	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, const C4PropList *props);
 };
 
 class C4PropertyDelegateC4ValueInputEditor : public QWidget
@@ -171,7 +187,7 @@ class C4PropertyDelegateC4ValueInput : public C4PropertyDelegate
 public:
 	typedef C4PropertyDelegateC4ValueInputEditor Editor;
 
-	C4PropertyDelegateC4ValueInput(const C4PropertyDelegateFactory *factory) : C4PropertyDelegate(factory) { }
+	C4PropertyDelegateC4ValueInput(const C4PropertyDelegateFactory *factory, const C4PropList *props) : C4PropertyDelegate(factory, props) { }
 
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
@@ -204,6 +220,7 @@ protected:
 	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
 // Prop list view implemented as a model view
@@ -220,19 +237,23 @@ public:
 		C4Value delegate_info;
 		C4PropertyDelegate *delegate;
 		bool about_to_edit;
+		bool is_internal;
 
-		Property() : parent_proplist(NULL), delegate(NULL), about_to_edit(false) {}
+		Property() : parent_proplist(NULL), delegate(NULL), about_to_edit(false), is_internal(false) {}
 	};
 private:
 	C4Value proplist;
-	std::vector< Property > properties;
+	std::vector< Property > published_properties; // custom properties defined by definitions
+	std::vector< Property > internal_properties;  // proplist-properties
+	QFont header_font;
 public:
 	C4ConsoleQtPropListModel();
 	~C4ConsoleQtPropListModel();
 
 	void SetPropList(class C4PropList *new_proplist);
+	class C4PropList *GetPropList() const { return proplist.getPropList(); }
 
-protected:
+public:
 	virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex & parent = QModelIndex()) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;

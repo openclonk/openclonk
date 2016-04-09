@@ -134,6 +134,7 @@ public:
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3) const;
 	std::vector< C4String * > GetSortedLocalProperties() const;
+	std::vector< C4String * > GetSortedProperties(const char *prefix) const;
 
 	bool operator==(const C4PropList &b) const;
 #ifdef _DEBUG

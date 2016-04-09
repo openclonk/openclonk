@@ -472,6 +472,28 @@ std::vector< C4String * > C4PropList::GetSortedLocalProperties() const
 	return result;
 }
 
+std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix) const
+{
+	// Return property list with descending into prototype
+	// But do not include Prototype property
+	std::vector< C4String * > result;
+	const C4PropList *p = this;
+	do
+	{
+		for (const C4Property *pp = p->Properties.First(); pp; pp = p->Properties.Next(pp))
+			if (pp->Key != &::Strings.P[P_Prototype])
+				if (!prefix || !pp->Key->GetData().Compare_(prefix))
+					result.push_back(pp->Key);
+		p = p->GetPrototype();
+	} while (p);
+	// Sort
+	std::sort(result.begin(), result.end(), [](const C4String *a, const C4String *b) -> bool
+	{
+		return strcmp(a->GetCStr(), b->GetCStr()) < 0;
+	});
+	return result;
+}
+
 const char * C4PropList::GetName() const
 {
 	C4String * s = GetPropertyStr(P_Name);

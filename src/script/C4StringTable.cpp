@@ -250,6 +250,10 @@ C4StringTable::C4StringTable()
 	P[P_ValueKey] = "ValueKey";
 	P[P_Value] = "Value";
 	P[P_Delegate] = "Delegate";
+	P[P_Min] = "Min";
+	P[P_Max] = "Max";
+	P[P_Set] = "Set";
+	P[P_Options] = "Options";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
@@ -266,7 +270,11 @@ C4StringTable::C4StringTable()
 	P[DFA_CONNECT] = "CONNECT";
 	P[DFA_PULL] = "PULL";
 	// Prevent the individual strings from being deleted, they are not created with new
-	for (unsigned int i = 0; i < P_LAST; ++i) P[i].IncRef();
+	for (unsigned int i = 0; i < P_LAST; ++i)
+	{
+		assert(P[i].GetCStr()); // all strings should be assigned
+		P[i].IncRef();
+	}
 }
 
 C4StringTable::~C4StringTable()

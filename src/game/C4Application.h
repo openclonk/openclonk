@@ -36,6 +36,8 @@ public:
 	~C4Application();
 	// Flag for restarting the engine at the end
 	bool restartAtEnd;
+	// Flag set during game tick
+	bool is_in_game_tick;
 	// main System.ocg in working folder
 	C4Group SystemGroup;
 	C4MusicSystem MusicSystem;
@@ -50,6 +52,7 @@ public:
 	void ClearCommandLine();
 	// Tick timing
 	void GameTick();
+	bool IsInGameTick() const { return is_in_game_tick; }
 	void Draw();
 	// System.ocg helper funcs
 	bool OpenSystemGroup() { return SystemGroup.IsOpen() || SystemGroup.Open(C4CFN_System); }

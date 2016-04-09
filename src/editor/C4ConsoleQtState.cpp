@@ -496,7 +496,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// Property editor
 	property_delegate_factory.reset(new C4PropertyDelegateFactory());
 	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
-	ui.propertyTable->verticalHeader()->setDefaultSectionSize(ui.propertyTable->fontMetrics().height()+4);
+	//ui.propertyTable->verticalHeader()->setDefaultSectionSize(ui.propertyTable->fontMetrics().height()+4);
 	
 	// Welcome page
 	InitWelcomeScreen();
@@ -526,7 +526,9 @@ void C4ConsoleGUIState::Execute(bool redraw_only)
 		if (redraw_only)
 		{
 			// process only non-critical events
-			application->processEvents(QEventLoop::ExcludeUserInputEvents);
+			// redrawing only allowed during GameTick; prevent callbacks within a Qt event triggered by windows messaging
+			if (::Application.IsInGameTick())
+				application->processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
 		else
 		{
@@ -679,15 +681,22 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	{
 		// Multi object selection: Hide property view; show info label
 		property_model->SetPropList(NULL);
-		ui.propertyTable->setVisible(false);
+		ui.propertyTable->setEnabled(false);
 		ui.selectionInfoLabel->setText(rSelection.GetDataString().getData());
 	}
 	else
 	{
 		// Single object selection: Show property view + Object info in label
-		property_model->SetPropList(rSelection.front().getPropList());
+		C4PropList *prev_list = property_model->GetPropList(), *new_list = rSelection.front().getPropList();
+		if (prev_list != new_list)
+		{
+			property_model->SetPropList(new_list);
+			ui.propertyTable->setFirstColumnSpanned(0, QModelIndex(), true);
+			ui.propertyTable->setFirstColumnSpanned(1, QModelIndex(), true);
+			ui.propertyTable->expand(property_model->index(0, 0, QModelIndex()));
+		}
 		ui.selectionInfoLabel->setText(rSelection.front().GetDataString(0).getData());
-		ui.propertyTable->setVisible(true);
+		ui.propertyTable->setEnabled(true);
 	}
 	// Function update in script combo box
 	if (force_function_update)
@@ -707,10 +716,12 @@ void C4ConsoleGUIState::OnCreatorSelectionChanged(const QItemSelection & selecte
 	if (is_object_selection_updating || !definition_list_model) return; // only process callbacks from users interacting with widget
 	// Forward to EditCursor
 	C4Def *def;
-	for (const QModelIndex &item : deselected.indexes())
+	auto deselected_indexes = deselected.indexes();
+	for (const QModelIndex &item : deselected_indexes)
 		if ((def = definition_list_model->GetDefByModelIndex(item)))
 			::Console.EditCursor.RemoveFromSelection(def);
-	for (const QModelIndex &item : selected.indexes())
+	auto selected_indexes = deselected.indexes();
+	for (const QModelIndex &item : selected_indexes)
 		if ((def = definition_list_model->GetDefByModelIndex(item)))
 			::Console.EditCursor.AddToSelection(def);
 	::Console.EditCursor.OnSelectionChanged(true);
