@@ -685,7 +685,7 @@ QModelIndex C4ConsoleQtPropListModel::index(int row, int column, const QModelInd
 	if (!parent.isValid())
 	{
 		// Top level has headers only
-		if (row == 0 || row == 1) return createIndex(row, column, NULL);
+		if (row == 0 || row == 1) return createIndex(row, column, nullptr);
 		return QModelIndex();
 	}
 	// Property?
@@ -710,7 +710,7 @@ QModelIndex C4ConsoleQtPropListModel::parent(const QModelIndex &index) const
 	Property *prop = static_cast<Property *>(index.internalPointer());
 	if (!prop) return QModelIndex();
 	// Find list to use
-	return createIndex(prop->is_internal ? 1 : 0, 0, NULL);
+	return createIndex(prop->is_internal ? 1 : 0, 0, nullptr);
 }
 
 Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
