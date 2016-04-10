@@ -78,9 +78,10 @@ public func OnProductionFinish(id product)
 	return _inherited(...);
 }
 
-func Definition(def){
-	SetProperty("MeshTransformation", Trans_Rotate(8, 0,1,0), def);
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-25000,50000), Trans_Scale(500)), def);
+public func Definition(def)
+{
+	def.MeshTransformation = Trans_Mul(Trans_Scale(800), Trans_Translate(2000, 0, 0), Trans_Rotate(8, 0, 1, 0));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(0, -25000, 50000), Trans_Scale(600));
 }
 
 local ActMap = {
