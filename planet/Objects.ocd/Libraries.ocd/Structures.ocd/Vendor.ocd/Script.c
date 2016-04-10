@@ -64,30 +64,27 @@ func GetSellValue(object item)
 // ------------------------ Buying -------------------------------------
 
 
-func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_all_available, bool show_errors)
+func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_all_available, bool error_sound)
 {
 	// Tries to buy an object or all available objects for bRight == true
 	// Returns the last bought object
 	var num_available = this->GetBuyableAmount(wealth_player, item);
-	if(!num_available) return; //TODO
+	if (!num_available) return; //TODO
 	var num_buy = 1, purchased = nil;
 	if (buy_all_available) num_buy = num_available;
 	while (num_buy--)
 	{
 		var price = this->GetBuyValue(item);
 		// Does the player have enough money?
-		if(price > GetWealth(wealth_player))
+		if (price > GetWealth(wealth_player))
 		{
-			if(show_errors)
-			{
+			if (error_sound)
 				Sound("UI::Error", {player = for_player});
-				PlayerMessage(for_player, "$MsgNotEnoughWealth$");
-			}
 			break;
 		}
 		// Take the cash
 		DoWealth(wealth_player, -price);
-		Sound("UI::UnCash", {player = for_player}); // TODO: get sound
+		Sound("UI::UnCash?", {player = for_player});
 		// Decrease the base material, allow runtime overload
 		this->ChangeBuyableAmount(wealth_player, item, -1);
 		// Deliver the object
@@ -264,7 +261,7 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 	var wealth_player = GetOwner();
 	var for_player = clonk->GetController();
 	// Buy
-	DoBuy(def, for_player, wealth_player, clonk);
+	DoBuy(def, for_player, wealth_player, clonk, false, true);
 	// Excess objects exit flag (can't get them out...)
 	EjectAllContents();
 	UpdateInteractionMenus(this.GetBuyMenuEntries);
