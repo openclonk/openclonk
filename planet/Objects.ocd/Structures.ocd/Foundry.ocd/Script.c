@@ -109,7 +109,7 @@ public func OnProductEjection(object product)
 	product->SetPosition(GetX() + 18 * GetCalcDir(), GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
-	Sound("Pop");
+	Sound("Structures::EjectionPop");
 	return;
 }
 

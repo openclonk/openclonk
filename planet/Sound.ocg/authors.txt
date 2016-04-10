@@ -61,7 +61,7 @@ luffy           - SmokeSizzle (https://www.freesound.org/people/luffy/sounds/172
 Pullover        - PropellerLoop (from Milch (EngineLoop))
 daveincamas		- StoneDoor/Chain (http://www.freesound.org/people/daveincamas/sounds/44076/)
 pempi			- Elevator/Start, Elevator/Moving, Elevator/Stop (http://www.freesound.org/people/pempi/sounds/33873/)
-Traveler 		- Pop (http://www.freesound.org/people/Traveler/sounds/16064/)
+Traveler 		- Structures/EjectionPop (http://www.freesound.org/people/Traveler/sounds/16064/)
 Pat 			- Clonk/Roll, Clonk/Rustle1-4, Clonk/RustleLand, (http://www.freesound.org/people/pwausc1/sounds/118259/)
 Stephen Hall 	- Clonk/Dig1-5 (http://www.freesound.org/people/shall555/sounds/72199/)
 sarge4267       - BlastFireworks (http://www.freesound.org/people/soundscalpel.com/sounds/110391)
