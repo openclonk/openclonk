@@ -484,7 +484,12 @@ public:
 	int Compare(const StdStrBuf &Buf2, size_t iAt = 0) const
 	{
 		assert(iAt <= getLength());
-		return StdBuf::Compare(Buf2.getData(), std::min(getLength(), Buf2.getLength()), iAt);
+		const int result = StdBuf::Compare(Buf2.getData(), std::min(getLength() - iAt, Buf2.getLength()), iAt);
+		if (result) return result;
+
+		if (getLength() < Buf2.getLength()) return -1;
+		else if (getLength() > Buf2.getLength()) return 1;
+		return 0;
 	}
 	int Compare_(const char *pCData, size_t iAt = 0) const
 	{
