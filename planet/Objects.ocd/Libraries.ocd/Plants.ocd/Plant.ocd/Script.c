@@ -169,3 +169,11 @@ private func DoSeed()
 	}
 	return plant;
 }
+
+private func RemoveInTunnel()
+{
+	if (GetMaterial() == Material("Tunnel") || GetMaterial(0, -10) == Material("Tunnel"))
+	{
+		RemoveObject();
+	} 
+}

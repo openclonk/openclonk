@@ -311,3 +311,15 @@ private func FxTreeFallTimer(object target, proplist effect)
 		return -1;
 	}
 }
+
+private func DoSeed()
+{
+	var plant = _inherited(...);
+
+	if (plant)
+	{
+		plant->RemoveInTunnel();
+	}
+
+	return plant;
+}
