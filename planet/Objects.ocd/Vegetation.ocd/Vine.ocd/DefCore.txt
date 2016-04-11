@@ -1,0 +1,11 @@
+[DefCore]
+id=Vine
+Version=6,0
+Category=C4D_StaticBack
+Width=10
+Height=56
+Offset=-5,-28
+Vertices=3
+VertexX=0,0,0
+VertexY=-27,0,27
+Mass=4
