@@ -127,31 +127,40 @@ private func Seed()
 	var plant;
 	if (CheckSeedChance())
 	{
-		// Apply confinement for plant placement
-		var size = SeedArea();
-		var area = Shape->Rectangle(GetX() - size / 2, GetY() - size / 2, size, size);
-		var confined_area = nil;
-		if (this.Confinement)
-		{
-			confined_area = Shape->Intersect(this.Confinement, area);
-			// Quick-check if intersection to confinement yields an empty area
-			// to avoid unnecessery search by PlaceVegetation
-			area = confined_area->GetBoundingRectangle();
-			if (area.w <= 0 || area.h <= 0) return;
-		}
-		// Place the plant...
-		plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3, confined_area);
-		if (plant)
-		{
-			// ...but check if it is not close to another one.
-			var neighbour = FindObject(Find_ID(GetID()), Find_Exclude(plant), Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()));
-			var distance = ObjectDistance(plant, neighbour);
-			// Closeness check
-			if (distance < SeedOffset())
-				plant->RemoveObject();
-			else if (this.Confinement)
-				plant->KeepArea(this.Confinement);
-		}
+		plant = DoSeed();
+	}
+	return plant;
+}
+
+/** Forcefully places a seed of the plant, without random chance
+    or other sanity checks. This is useful for testing.
+ */
+private func DoSeed()
+{
+	// Apply confinement for plant placement
+	var size = SeedArea();
+	var area = Shape->Rectangle(GetX() - size / 2, GetY() - size / 2, size, size);
+	var confined_area = nil;
+	if (this.Confinement)
+	{
+		confined_area = Shape->Intersect(this.Confinement, area);
+		// Quick-check if intersection to confinement yields an empty area
+		// to avoid unnecessery search by PlaceVegetation
+		area = confined_area->GetBoundingRectangle();
+		if (area.w <= 0 || area.h <= 0) return;
+	}
+	// Place the plant...
+	var plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3, confined_area);
+	if (plant)
+	{
+		// ...but check if it is not close to another one.
+		var neighbour = FindObject(Find_ID(GetID()), Find_Exclude(plant), Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()));
+		var distance = ObjectDistance(plant, neighbour);
+		// Closeness check
+		if (distance < SeedOffset())
+			plant->RemoveObject();
+		else if (this.Confinement)
+			plant->KeepArea(this.Confinement);
 	}
 	return plant;
 }

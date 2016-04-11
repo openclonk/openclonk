@@ -215,7 +215,7 @@ public func EjectWood()
 	if (!wood) return;
 
 	wood->Exit(-25 * GetCalcDir(), -8, 30 - Random(59), -2 * GetCalcDir(), 1);
-	Sound("Pop");
+	Sound("Structures::EjectionPop");
 	
 	// Refresh interaction menus to show the wood count.
 	UpdateInteractionMenus(this.GetInfoMenuEntries);

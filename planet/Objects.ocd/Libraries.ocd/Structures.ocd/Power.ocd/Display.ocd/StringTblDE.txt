@@ -5,7 +5,9 @@ MsgPowerConsumption=Stromverbrauch:
 MsgPowerConsumptionDemand=gesamte Nachfrage
 MsgPowerStored=Gespeicherter Strom:
 MsgPowerStoredCapacity=gesamte Kapazität
+MsgPowerNoNeed=The no power need rule is active.
 
 DescPowerProduction=All the power producers in this network together have a capacity of producing %d {{Icon_Lightbulb}}, currently %d {{Icon_Lightbulb}} is being produced.
 DescPowerConsumption=Currently the consumers in this network demand %d {{Icon_Lightbulb}} in total to operate, %d {{Icon_Lightbulb}} is currently being supplied.
 DescPowerStored=Power storages are currently holding %s {{Icon_Lightbulb}} out of their total capacity of  %s {{Icon_Lightbulb}}. This is equivalent of powering a consumer using up one {{Icon_Lightbulb}} for %s minutes.
+DescPowerNoNeed=If the no power need rule is active, none of the power consumers require power supply to operate.

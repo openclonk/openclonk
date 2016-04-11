@@ -17,10 +17,10 @@ func Hit()
 	Sound("Hits::GeneralHit?");
 }
 
-local fAiming;
+local is_aiming;
 
-public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
-public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
+public func GetCarryMode(clonk) { return CARRY_Musket; }
+public func GetCarrySpecial(clonk) { if (is_aiming) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
 public func GetCarryTransform()
 {
@@ -38,6 +38,7 @@ func Initialize()
 	MuzzleOffset = -8;
 	
 	loaded = false;
+	is_aiming = false;
 	
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
@@ -90,8 +91,7 @@ func ControlUseStart(object clonk, int x, int y)
 		return true;
 	}
 
-	fAiming = 1;
-
+	is_aiming = true;
 	holding = true;
 	
 	// reload weapon if not loaded yet
@@ -159,7 +159,7 @@ protected func ControlUseCancel(object clonk, int x, int y)
 
 public func Reset(clonk)
 {
-	fAiming = 0;
+	is_aiming = false;
 }
 
 private func FireWeapon(object clonk, int angle)

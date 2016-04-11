@@ -108,7 +108,6 @@ enum C4AulTokenType
 	ATT_BLCLOSE,// "}"
 	ATT_CALL,   // "->"
 	ATT_CALLFS, // "->~"
-	ATT_STAR,   // "*"
 	ATT_LDOTS,  // '...'
 	ATT_SET,    // '='
 	ATT_OPERATOR,// operator
@@ -184,7 +183,7 @@ private:
 	void Shift();
 	void Match(C4AulTokenType TokenType, const char * Expected = NULL);
 	void Check(C4AulTokenType TokenType, const char * Expected = NULL);
-	void UnexpectedToken(const char * Expected) NORETURN;
+	NORETURN void UnexpectedToken(const char * Expected);
 	static const char * GetTokenName(C4AulTokenType TokenType);
 
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;

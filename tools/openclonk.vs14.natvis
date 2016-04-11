@@ -62,8 +62,6 @@ for the above references.
                    bccType==AB_DUP ||
                    bccType==AB_STACK_SET ||
                    bccType==AB_POP_TO ||
-                   bccType==AB_PARN_CONTEXT ||
-                   bccType==AB_VARN_CONTEXT ||
                    bccType==AB_GLOBALN ||
                    bccType==AB_GLOBALN_SET ||
                    bccType==AB_NEW_ARRAY ||
@@ -179,7 +177,7 @@ for the above references.
   </Type>
 
   <Type Name="C4AulScriptFunc">
-    <DisplayString>{*Owner,view(name)}::{Name,sb}</DisplayString>
+    <DisplayString>{*Parent,view(name)}::{Name,sb}</DisplayString>
     <Expand>
       <Synthetic Name="[parameters]">
         <!--<DisplayString>{ParType,[ParCount]}</DisplayString>-->
@@ -238,5 +236,28 @@ for the above references.
   </Type>
   <Type Name="C4Material">
     <DisplayString>{Name,sb}</DisplayString>
+  </Type>
+
+  <Type Name="C4ValueMapNames">
+    <Expand>
+      <ArrayItems>
+        <Size>iSize</Size>
+        <ValuePointer>pNames</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="C4ValueMapData">
+    <Expand>
+      <CustomListItems>
+        <Variable Name="i" InitialValue="0"/>
+        <Size>pNames-&gt;iSize</Size>
+        <Loop>
+          <Item Name="{pNames-&gt;pNames[i],sb}">pData[i]</Item>
+          <Exec>++i</Exec>
+          <Break Condition="i == pNames-&gt;iSize"/>
+        </Loop>
+      </CustomListItems>
+    </Expand>
   </Type>
 </AutoVisualizer>

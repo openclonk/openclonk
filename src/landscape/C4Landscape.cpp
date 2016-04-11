@@ -3656,7 +3656,7 @@ void C4Landscape::SetGravity(C4Real g)
 BYTE C4Landscape::_GetPix(int32_t x, int32_t y) const
 {
 #ifdef _DEBUG
-	if (x < 0 || y < 0 || x >= Width || y >= Height) { BREAKPOINT_HERE; }
+	if (x < 0 || y < 0 || x >= p->Width || y >= p->Height) { BREAKPOINT_HERE; }
 #endif
 	return p->Surface8->_GetPix(x, y);
 }
@@ -3719,7 +3719,7 @@ int32_t C4Landscape::GetPlacement(int32_t x, int32_t y) const // get landscape m
 BYTE C4Landscape::_GetBackPix(int32_t x, int32_t y) const // get landscape pixel (bounds not checked)
 {
 #ifdef _DEBUG
-	if (x < 0 || y < 0 || x >= Width || y >= Height) { BREAKPOINT_HERE; }
+	if (x < 0 || y < 0 || x >= p->Width || y >= p->Height) { BREAKPOINT_HERE; }
 #endif
 	return p->Surface8Bkg->_GetPix(x, y);
 }

@@ -9,7 +9,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40,40
-Value=1
+Value=2
 Mass=10
 Components=Rock=1
 Projectile=1

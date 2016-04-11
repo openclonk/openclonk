@@ -10,7 +10,7 @@ Vertices=3
 VertexX=-2,+2,0
 VertexY=5,5,-5
 VertexFriction=90,90,90
-Value=3
+Value=6
 Mass=8
 Rotate=1
 Components=Coal=1;Firestone=1

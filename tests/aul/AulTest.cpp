@@ -54,6 +54,8 @@ C4Value AulTest::RunCode(const char *code, bool wrap)
 	src += test_info->test_case_name();
 	src += "::";
 	src += test_info->name();
+	src += "::";
+	src += std::to_string(test_info->result()->total_part_count());
 	src += ">";
 
 	GameScript.LoadData(src.c_str(), wrapped.c_str(), NULL);

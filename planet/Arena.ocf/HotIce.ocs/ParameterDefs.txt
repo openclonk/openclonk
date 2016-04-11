@@ -2,7 +2,7 @@
 Name=$MapType$
 Description=$DescMapType$
 ID=MapType
-Default=0
+Default=1
 
 	[Options]
 		
@@ -20,7 +20,7 @@ Default=0
 Name=$Weapons$
 Description=$DescWeapons$
 ID=Weapons
-Default=0
+Default=1
 
 	[Options]
 		
@@ -38,7 +38,7 @@ Default=0
 Name=$Rounds$
 Description=$DescRounds$
 ID=Rounds
-Default=1
+Default=7
 
 	[Options]
 		
@@ -61,3 +61,7 @@ Default=1
 		[Option]
 		Name=7
 		Value=7
+		
+		[Option]
+		Name=11
+		Value=11

@@ -2,12 +2,12 @@
 id=Shipyard
 Version=6,0
 Category=C4D_Structure
-Width=128
-Height=106
-Offset=-64,-53
+Width=96
+Height=72
+Offset=-48,-36
 Vertices=8
-VertexX=0,-64,58,-20,20,-64,59,0
-VertexY=53,53,53,53,53,3,3,-17
+VertexX=0,-48,-24,24,48,-40,46,0
+VertexY=36,36,36,36,36,3,3,-17
 VertexFriction=100,100,100,100,100,50,50,50
 Mass=4500
 Components=Wood=4;Metal=3
