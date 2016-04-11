@@ -149,8 +149,13 @@ private func DoSeed()
 		area = confined_area->GetBoundingRectangle();
 		if (area.w <= 0 || area.h <= 0) return;
 	}
+	else
+	{
+		// Place the new plant in the original area
+		confined_area = area;
+	}
 	// Place the plant...
-	var plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3, confined_area);
+	var plant = PlaceVegetation(GetID(), 0, 0, 0, 0, 3, confined_area);
 	if (plant)
 	{
 		// ...but check if it is not close to another one.
