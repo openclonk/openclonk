@@ -6,11 +6,16 @@
 */
 
 local segments;
+local leaf_particle;
 
 protected func Initialize()
 {
 	// Create vine segments to climb on.
 	CreateSegments();
+	// Initialize the leaf particle.
+	leaf_particle = Particles_Leaf(RGB(0, 255, 0));
+	leaf_particle.Phase = 2;
+	leaf_particle.Size = PV_Random(3, 5);
 	return;
 }
 
@@ -49,6 +54,7 @@ private func CreateSegments()
 public func OnLadderGrab(object clonk, object segment, int segment_index)
 {
 	segment->Sound("Environment::Vine::Grab?");
+	segment->CreateParticle("Leaf", PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 6);
 	return;
 }
 
@@ -56,8 +62,12 @@ public func OnLadderGrab(object clonk, object segment, int segment_index)
 public func OnLadderClimb(object clonk, object segment, int segment_index)
 {
 	if (clonk->GetComDir() == COMD_Up || clonk->GetComDir() == COMD_Down)
+	{
 		if (!Random(20))
 			segment->Sound("Environment::Vine::Grab?", {volume = 35});
+		if (!Random(8))
+			segment->CreateParticle("Leaf",  PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 1);
+	}
 	return;
 }
 
@@ -65,6 +75,7 @@ public func OnLadderClimb(object clonk, object segment, int segment_index)
 public func OnLadderReleased(object clonk, object segment, int segment_index)
 {
 	segment->Sound("Environment::Vine::Grab?", {volume = 50});
+	segment->CreateParticle("Leaf",  PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 3);
 	return;
 }
 
@@ -83,6 +94,8 @@ public func Place(int amount, proplist area, proplist settings)
 		settings = {};
 	if (!settings.min_dist)
 		settings.min_dist = 32;
+	if (!settings.attach_material)
+		settings.attach_material = Loc_Or(Loc_Material("Granite"), Loc_Material("Rock"), Loc_MaterialVal("Soil", "Material", nil, 1));
 	var loc_area = nil;
 	if (area) 
 		loc_area = Loc_InArea(area);
@@ -91,7 +104,7 @@ public func Place(int amount, proplist area, proplist settings)
 	var nr_created = 0;
 	for (var i = 0; i < max_tries && nr_created < amount; i++)
 	{
-		var loc = FindLocation(Loc_Sky(), Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Top, Loc_Or(Loc_Material("Granite"), Loc_Material("Rock"), Loc_MaterialVal("Soil", "Material", nil, 1))), loc_area);
+		var loc = FindLocation(Loc_Sky(), Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Top, settings.attach_material), loc_area);
 		if (!loc)
 			continue;
 		var vine = CreateObject(Vine);
