@@ -115,7 +115,7 @@ func DoSell(object obj, int wealth_player)
 	// Add the item to the homebase material.
 	if (!obj->~QueryRebuy(wealth_player, this))
 	{
-		this->ChangeBuyableAmount(wealth_player, obj, +1);
+		this->ChangeBuyableAmount(wealth_player, obj->GetID(), +1);
 	}
 
 	// OnSale callback to object e.g. for goal updates
