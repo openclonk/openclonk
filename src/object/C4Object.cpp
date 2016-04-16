@@ -632,34 +632,25 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		fhgt = thgt;
 	}
 
-	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
-	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
+	C4DrawTransform transform;
+	bool transform_active = false;
+	if (pDrawTransform)
 	{
-		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
-		      fx, fy, fwdt, fhgt,
-		      cgo.Surface, tx, ty, twdt, thgt,
-		      true, NULL);*/
+		transform.SetTransformAt(*pDrawTransform, offX, offY);
+		transform_active = true;
 	}
-	// Rotated or transformed
-	else
+
+	// Meshes aren't rotated via DrawTransform to ensure lighting is applied correctly.
+	if (GetGraphics()->Type != C4DefGraphics::TYPE_Mesh && Def->Rotateable && fix_r != Fix0)
 	{
-		C4DrawTransform rot;
 		if (pDrawTransform)
-		{
-			rot.SetTransformAt(*pDrawTransform, offX, offY);
-			if (fix_r != Fix0) rot.Rotate(fixtof(fix_r), offX, offY);
-		}
+			transform.Rotate(fixtof(fix_r), offX, offY);
 		else
-		{
-			rot.SetRotate(fixtof(fix_r), offX, offY);
-		}
-		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
-		      fx, fy, fwdt, fhgt,
-		      cgo.Surface, tx, ty, twdt, thgt,
-		      true, &rot);*/
+			transform.SetRotate(fixtof(fix_r), offX, offY);
+		transform_active = true;
 	}
+
+	DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : NULL);
 }
 
 void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
@@ -704,33 +695,26 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		fy += offset_from_top;
 		fhgt -= offset_from_top;
 	}
+	
+	C4DrawTransform transform;
+	bool transform_active = false;
+	if (pDrawTransform)
+	{
+		transform.SetTransformAt(*pDrawTransform, offX, offY);
+		transform_active = true;
+	}
 
-	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
-	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
+	// Meshes aren't rotated via DrawTransform to ensure lighting is applied correctly.
+	if (GetGraphics()->Type != C4DefGraphics::TYPE_Mesh && Def->Rotateable && fix_r != Fix0)
 	{
-		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-	}
-	// Rotated or transformed
-	else
-	{
-		// rotate midpoint of action facet around center of shape
-		// combine with existing transform if necessary
-		C4DrawTransform rot;
 		if (pDrawTransform)
-		{
-			rot.SetTransformAt(*pDrawTransform, offX, offY);
-			if (fix_r != Fix0) rot.Rotate(fixtof(fix_r), offX, offY);
-		}
+			transform.Rotate(fixtof(fix_r), offX, offY);
 		else
-		{
-			rot.SetRotate(fixtof(fix_r), offX, offY);
-		}
-		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    pDraw->Blit(Action.Facet.Surface,
-		      fx, fy, fwdt, fhgt,
-		      cgo.Surface, tx, ty, twdt, thgt,
-		      true, &rot);*/
+			transform.SetRotate(fixtof(fix_r), offX, offY);
+		transform_active = true;
 	}
+
+	DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : NULL);
 }
 
 void C4Object::UpdateMass()
