@@ -16,14 +16,16 @@ public func GetRope() { return rope; }
 
 public func New(object new_clonk, object new_rope)
 {
-	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
+	// Hook graphics are handled by rope.
+	this.Visibility = VIS_None;
 	clonk = new_clonk;
 	rope = new_rope;
 }
 
 public func Launch(int angle, int str, object shooter, object bow)
 {
-	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
+	// Hook graphics are handled by rope.
+	this.Visibility = VIS_None;
 	Exit();
 
 	pull = false;

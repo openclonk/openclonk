@@ -212,7 +212,7 @@ public func UpdateLines()
 		if (i == 1)
 		{
 			lib_rope_segments[i]->SetGraphics(nil, GrappleHook);
-			lib_rope_segments[i].MeshTransformation = Trans_Mul(Trans_Translate(1500, 0, 0), Trans_Scale(1500));
+			lib_rope_segments[i].MeshTransformation = Trans_Mul(Trans_Translate(0, -7000, 0), Trans_Scale(1500), Trans_Rotate(angle, 0, 0, 1));
 			point[0] += -Cos(diffangle, 15 * LIB_ROPE_Precision / 10) + Sin(diffangle, 4 * LIB_ROPE_Precision);
 			point[1] += -Cos(diffangle, 4 * LIB_ROPE_Precision) - Sin(diffangle, 15 * LIB_ROPE_Precision / 10);
 			length = 1000;
