@@ -83,7 +83,7 @@ public:
 	C4MeshDenumerator(C4Def* def): Def(def), Object(NULL) {}
 	C4MeshDenumerator(C4Object* object): Def(NULL), Object(object) {}
 
-	C4Object* GetObject() const { return Object; }
+	C4Object* GetObject() { return Object; }
 
 	virtual void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach);
 	virtual void DenumeratePointers(StdMeshInstance::AttachedMesh* attach);
@@ -395,6 +395,7 @@ public:
 
 	// overloaded from C4PropList
 	virtual C4Object * GetObject() { return this; }
+	virtual C4Object const * GetObject() const { return this; }
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
 	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;

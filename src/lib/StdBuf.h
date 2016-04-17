@@ -496,6 +496,11 @@ public:
 		StdStrBuf str(pCData); // GCC needs this, for some obscure reason
 		return Compare(str, iAt);
 	}
+	bool BeginsWith(const char *beginning) const
+	{
+		// Return whether string starts with beginning
+		return strncmp((const char *)pData, beginning, strlen(beginning)) == 0;
+	}
 
 	// Grows the string to contain the specified number more/less characters.
 	// Note: Will set the terminator, but won't initialize - use Append* instead.

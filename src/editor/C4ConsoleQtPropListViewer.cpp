@@ -21,6 +21,7 @@
 #include "object/C4Object.h"
 #include "object/C4DefList.h"
 #include "object/C4Def.h"
+#include "script/C4Effect.h"
 
 /* Property path for property setting synchronization */
 
@@ -64,11 +65,15 @@ void C4PropertyPath::SetProperty(const C4Value &to_val) const
 
 /* Property editing */
 
-C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory, const C4PropList *props)
+C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: QObject(), factory(factory)
 {
-	// Resolve setter callback name
-	if (props) set_function = props->GetPropertyStr(P_Set);
+	// Resolve getter+setter callback names
+	if (props)
+	{
+		set_function = props->GetPropertyStr(P_Set);
+		async_get_function = props->GetPropertyStr(P_AsyncGet);
+	}
 }
 
 void C4PropertyDelegate::UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const
@@ -76,7 +81,35 @@ void C4PropertyDelegate::UpdateEditorGeometry(QWidget *editor, const QStyleOptio
 	editor->setGeometry(option.rect);
 }
 
-C4PropertyDelegateInt::C4PropertyDelegateInt(const C4PropertyDelegateFactory *factory, const C4PropList *props)
+bool C4PropertyDelegate::GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const
+{
+	if (async_get_function)
+	{
+		*out_val = props->Call(async_get_function.Get());
+		return true;
+	}
+	else
+	{
+		return props->GetPropertyByS(key, out_val);
+	}
+}
+
+QString C4PropertyDelegate::GetDisplayString(const C4Value &v, C4Object *obj) const
+{
+	return QString(v.GetDataString().getData());
+}
+
+QColor C4PropertyDelegate::GetDisplayTextColor(const C4Value &val, class C4Object *obj) const
+{
+	return QColor(); // invalid = default
+}
+
+QColor C4PropertyDelegate::GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const
+{
+	return QColor(); // invalid = default
+}
+
+C4PropertyDelegateInt::C4PropertyDelegateInt(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props), min(std::numeric_limits<int32_t>::min()), max(std::numeric_limits<int32_t>::max()), step(1)
 {
 	// TODO min/max/step
@@ -113,7 +146,85 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 	return editor;
 }
 
-C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, const C4PropList *props, const C4ValueArray *poptions)
+C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(QWidget *parent)
+	: QWidget(parent), layout(nullptr), label(nullptr), button(nullptr)
+{
+	layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	label = new QLabel(this);
+	layout->addWidget(label);
+	button = new QPushButton(QString(LoadResStr("IDS_CNS_MORE")), this);
+	layout->addWidget(button);
+}
+
+C4PropertyDelegateColor::C4PropertyDelegateColor(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegate(factory, props)
+{
+}
+
+uint32_t GetTextColorForBackground(uint32_t background_color)
+{
+	// White text on dark background; black text on bright background
+	uint8_t r = (background_color >> 16) & 0xff;
+	uint8_t g = (background_color >> 8) & 0xff;
+	uint8_t b = (background_color >> 0) & 0xff;
+	int32_t lgt = r * 30 + g * 59 + b * 11;
+	return (lgt > 16000) ? 0 : 0xffffff;
+}
+
+void C4PropertyDelegateColor::SetEditorData(QWidget *aeditor, const C4Value &val) const
+{
+	Editor *editor = static_cast<Editor *>(aeditor);
+	uint32_t background_color = static_cast<uint32_t>(val.getInt()) & 0xffffff;
+	uint32_t foreground_color = GetTextColorForBackground(background_color);
+	QPalette palette = editor->label->palette();
+	palette.setColor(editor->label->backgroundRole(), QColor(QRgb(background_color)));
+	palette.setColor(editor->label->foregroundRole(), QColor(QRgb(foreground_color)));
+	editor->label->setPalette(palette);
+	editor->label->setAutoFillBackground(true);
+	editor->label->setText(GetDisplayString(val, NULL));
+	editor->last_value = val;
+}
+
+void C4PropertyDelegateColor::SetModelData(QWidget *aeditor, const C4PropertyPath &property_path) const
+{
+	Editor *editor = static_cast<Editor *>(aeditor);
+	property_path.SetProperty(editor->last_value);
+}
+
+QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
+{
+	Editor *editor;
+	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
+	connect(editor->button, &QPushButton::pressed, this, [editor, this]() {
+		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt()));
+		editor->last_value.SetInt(clr.rgba());
+		this->SetEditorData(editor, editor->last_value); // force update on display
+		emit EditingDoneSignal(editor);
+	});
+	return peditor.release();
+}
+
+QString C4PropertyDelegateColor::GetDisplayString(const C4Value &v, C4Object *obj) const
+{
+	return QString("#%1").arg(v.getInt(), 8, 16, QChar('0'));
+}
+
+QColor C4PropertyDelegateColor::GetDisplayTextColor(const C4Value &val, class C4Object *obj) const
+{
+	uint32_t background_color = static_cast<uint32_t>(val.getInt()) & 0xffffff;
+	uint32_t foreground_color = GetTextColorForBackground(background_color);
+	return QColor(foreground_color);
+}
+
+QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const
+{
+	return static_cast<uint32_t>(val.getInt()) & 0xffffff;
+}
+
+C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions)
 	: C4PropertyDelegate(factory, props)
 {
 	// Build enum options from C4Value definitions in script
@@ -124,7 +235,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 		for (int32_t i = 0; i < poptions->GetSize(); ++i)
 		{
 			const C4Value &v = poptions->GetItem(i);
-			const C4PropList *props = v.getPropList();
+			C4PropList *props = v.getPropList();
 			if (!props) continue;
 			Option option;
 			option.name = props->GetPropertyStr(P_Name);
@@ -175,9 +286,9 @@ void C4PropertyDelegateEnum::AddConstOption(C4String *name, const C4Value &val)
 int32_t C4PropertyDelegateEnum::GetOptionByValue(const C4Value &val) const
 {
 	int32_t iopt = 0;
+	bool match = false;
 	for (auto &option : options)
 	{
-		bool match = false;
 		switch (option.storage_type)
 		{
 		case Option::StorageByType:
@@ -203,7 +314,7 @@ int32_t C4PropertyDelegateEnum::GetOptionByValue(const C4Value &val) const
 		++iopt;
 	}
 	// If no option matches, just pick first
-	return iopt % options.size();
+	return match ? iopt : -1;
 }
 
 void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor) const
@@ -257,7 +368,8 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val)
 	editor->last_val = val;
 	editor->updating = true;
 	// Update option selection
-	editor->option_box->setCurrentIndex(GetOptionByValue(val));
+	int32_t index = std::max<int32_t>(GetOptionByValue(val), 0);
+	editor->option_box->setCurrentIndex(index);
 	// Update parameter
 	UpdateEditorParameter(editor);
 	editor->updating = false;
@@ -302,7 +414,7 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->updating = true;
 	editor->option_box = new QComboBox(editor);
 	editor->layout->addWidget(editor->option_box);
-	for (auto &option : options) editor->option_box->addItem(option.name->GetData().getData());
+	for (auto &option : options) editor->option_box->addItem(option.name->GetCStr());
 	void (QComboBox::*currentIndexChanged)(int) = &QComboBox::currentIndexChanged;
 	connect(editor->option_box, currentIndexChanged, editor, [editor, this](int newval) {
 		if (!editor->updating) this->UpdateOptionIndex(editor, newval); });
@@ -316,7 +428,39 @@ void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *e
 	emit EditorValueChangedSignal(editor);
 }
 
-C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, const C4PropList *props)
+QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Object *obj) const
+{
+	// Display string from value
+	int32_t idx = GetOptionByValue(v);
+	if (idx < 0)
+	{
+		// Value not found: Default display
+		return C4PropertyDelegate::GetDisplayString(v, obj);
+	}
+	else
+	{
+		// Value found: Display option string plus parameter
+		Option option = options[idx];
+		QString result = option.name->GetCStr();
+		// Lazy-resolve parameter delegate
+		if (!option.adelegate && option.adelegate_val.GetType() != C4V_Nil)
+			option.adelegate = factory->GetDelegateByValue(option.adelegate_val);
+		if (option.adelegate)
+		{
+			C4Value param_val = v;
+			if (option.value_key.Get())
+			{
+				C4PropList *vp = v.getPropList();
+				if (vp) vp->GetPropertyByS(option.value_key, &param_val);
+			}
+			result += " ";
+			result += option.adelegate->GetDisplayString(param_val, obj);
+		}
+		return result;
+	}
+}
+
+C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
 	// Collect sorted definitions
@@ -334,7 +478,50 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 	}
 }
 
-C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, const C4PropList *props)
+C4PropertyDelegateBool::C4PropertyDelegateBool(const C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateEnum(factory, props)
+{
+	// Add boolean options
+	ReserveOptions(2);
+	AddConstOption(::Strings.RegString(LoadResStr("IDS_CNS_FALSE")), C4VBool(false));
+	AddConstOption(::Strings.RegString(LoadResStr("IDS_CNS_TRUE")), C4VBool(true));
+}
+
+bool C4PropertyDelegateBool::GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const
+{
+	// Force value to bool
+	props->GetPropertyByS(key, out_val);
+	if (out_val->GetType() != C4V_Bool) *out_val = C4VBool(!!*out_val);
+	return true;
+}
+
+C4PropertyDelegateHasEffect::C4PropertyDelegateHasEffect(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateBool(factory, props)
+{
+	if (props) effect = props->GetPropertyStr(P_Effect);
+}
+
+bool C4PropertyDelegateHasEffect::GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const
+{
+	const C4Object *obj = props->GetObject();
+	if (obj && effect)
+	{
+		bool has_effect = false;
+		for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
+			if (!fx->IsDead())
+				if (!strcmp(fx->GetName(), effect->GetCStr()))
+				{
+					has_effect = true;
+					break;
+				}
+		*out_val = C4VBool(has_effect);
+		return true;
+	}
+	return false;
+}
+
+
+C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
 	// Add default C4Value selections
@@ -395,13 +582,17 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 
 /* Delegate factory: Create delegates based on the C4Value type */
 
-C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4String *str, const C4PropList *props) const
+C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4String *str, C4PropList *props) const
 {
 	// safety
 	if (!str) return NULL;
 	// create default base types
 	if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
+	if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);
 	if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
+	if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
+	if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
+	if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
 	if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
 	if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
 	// unknown type
@@ -474,10 +665,10 @@ void C4PropertyDelegateFactory::setEditorData(QWidget *editor, const QModelIndex
 	if (!prop || !prop->about_to_edit) return;
 	prop->about_to_edit = false;
 	C4Value val;
-	C4PropList *props = prop->parent_proplist->getPropList();
+	C4PropList *props = prop->parent_proplist.getPropList();
 	if (props)
 	{
-		props->GetPropertyByS(prop->name.Get(), &val);
+		d->GetPropertyValue(props, prop->key, &val);
 		d->SetEditorData(editor, val);
 	}
 }
@@ -488,16 +679,16 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (!d) return;
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
-	C4PropList *props = prop->parent_proplist->getPropList();
+	C4PropList *props = prop->parent_proplist.getPropList();
 	if (props)
 	{
 		// Compose set command
-		C4PropertyPath path(prop->parent_proplist->GetDataString().getData());
+		C4PropertyPath path(prop->parent_proplist.GetDataString().getData());
 		C4PropertyPath subpath;
 		if (d->GetSetFunction())
 			subpath = C4PropertyPath(path, d->GetSetFunction(), C4PropertyPath::PPT_SetFunction);
 		else
-			subpath = C4PropertyPath(path, prop->name->GetCStr());
+			subpath = C4PropertyPath(path, prop->key->GetCStr());
 		d->SetModelData(editor, subpath);
 	}
 }
@@ -536,7 +727,8 @@ QSize C4PropertyDelegateFactory::sizeHint(const QStyleOptionViewItem &option, co
 
 /* Proplist table view */
 
-C4ConsoleQtPropListModel::C4ConsoleQtPropListModel()
+C4ConsoleQtPropListModel::C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory)
+	: delegate_factory(delegate_factory)
 {
 	header_font.setBold(true);
 }
@@ -545,57 +737,94 @@ C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 {
 }
 
+bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist)
+{
+	const char *editor_prop_prefix = "EditorProp_";
+	auto new_properties = add_proplist->GetSortedLocalProperties(editor_prop_prefix, target_proplist);
+	if (!new_properties.size()) return false;
+	if (property_groups.size() == group_index) property_groups.resize(group_index + 1);
+	PropertyGroup &properties = property_groups[group_index];
+	C4PropListStatic *proplist_static = add_proplist->IsStatic();
+	properties.name = name;
+	properties.props.resize(new_properties.size());
+	for (int32_t i = 0; i < new_properties.size(); ++i)
+	{
+		properties.props[i].parent_proplist.SetPropList(target_proplist);
+		properties.props[i].key = NULL;
+		properties.props[i].display_name = NULL;
+		properties.props[i].delegate_info.Set0(); // default C4Value delegate
+		properties.props[i].delegate = NULL; // init when needed
+		properties.props[i].group_idx = group_index;
+		C4Value published_prop_val;
+		add_proplist->GetPropertyByS(new_properties[i], &published_prop_val);
+		C4PropList *published_prop = published_prop_val.getPropList();
+		if (published_prop)
+		{
+			properties.props[i].key = published_prop->GetPropertyStr(P_Key);
+			properties.props[i].display_name = published_prop->GetPropertyStr(P_Name);
+			properties.props[i].delegate_info.SetPropList(published_prop);
+		}
+		if (!properties.props[i].key) properties.props[i].key = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+		if (!properties.props[i].display_name) properties.props[i].display_name = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+	}
+	return true;
+}
+
 void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
 {
 	// Update properties
 	proplist.SetPropList(new_proplist);
+	// Determine number of property groups
+	int32_t num_groups = 0;
 	if (new_proplist)
 	{
+		// Objects only: Published properties
+		C4Object *obj = new_proplist->GetObject();
+		if (obj)
+		{
+			// Properties from effects (no inheritance supported)
+			for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
+			{
+				QString name = fx->GetName();
+				if (AddPropertyGroup(fx, num_groups, name, fx))
+					++num_groups;
+			}
+			// Properties from object
+			for (C4PropList *check_proplist = new_proplist; check_proplist; check_proplist = check_proplist->GetPrototype())
+			{
+				QString name;
+				C4PropListStatic *proplist_static = check_proplist->IsStatic();
+				if (proplist_static)
+					name = QString(proplist_static->GetDataString().getData());
+				else
+					name = check_proplist->GetName();
+				if (AddPropertyGroup(check_proplist, num_groups, name, new_proplist))
+					++num_groups;
+			}
+			// properties from global list
+			C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
+			if (editor_base)
+				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), new_proplist))
+					++num_groups;
+		}
 		// Always: Internal properties
 		auto new_properties = new_proplist->GetSortedLocalProperties();
-		internal_properties.resize(new_properties.size());
+		if (property_groups.size() == num_groups) property_groups.resize(num_groups + 1);
+		PropertyGroup &internal_properties = property_groups[num_groups];
+		internal_properties.name = LoadResStr("IDS_CNS_INTERNAL");
+		internal_properties.props.resize(new_properties.size());
 		for (int32_t i = 0; i < new_properties.size(); ++i)
 		{
-			internal_properties[i].parent_proplist = &proplist;
-			internal_properties[i].name = new_properties[i];
-			internal_properties[i].delegate_info.Set0(); // default C4Value delegate
-			internal_properties[i].delegate = NULL; // init when needed
-			internal_properties[i].is_internal = true;
+			internal_properties.props[i].parent_proplist = proplist;
+			internal_properties.props[i].key = new_properties[i];
+			internal_properties.props[i].display_name = new_properties[i];
+			internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
+			internal_properties.props[i].delegate = NULL; // init when needed
+			internal_properties.props[i].group_idx = num_groups;
 		}
-		// Objects only: Published properties
-		if (new_proplist->GetObject())
-		{
-			const char *editor_prop_prefix = "EditorProp_";
-			auto new_properties = new_proplist->GetSortedProperties(editor_prop_prefix);
-			published_properties.resize(new_properties.size());
-			for (int32_t i = 0; i < new_properties.size(); ++i)
-			{
-				published_properties[i].parent_proplist = &proplist;
-				published_properties[i].name = NULL;
-				published_properties[i].delegate_info.Set0(); // default C4Value delegate
-				published_properties[i].delegate = NULL; // init when needed
-				published_properties[i].is_internal = false;
-				C4Value published_prop_val;
-				new_proplist->GetPropertyByS(new_properties[i], &published_prop_val);
-				C4PropList *published_prop = published_prop_val.getPropList();
-				if (published_prop)
-				{
-					published_properties[i].name = published_prop->GetPropertyStr(P_Name);
-					published_properties[i].delegate_info.SetPropList(published_prop);
-				}
-				if (!published_properties[i].name) published_properties[i].name = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
-			}
-		}
-		else
-		{
-			published_properties.clear();
-		}
+		++num_groups;
 	}
-	else
-	{
-		internal_properties.clear();
-		published_properties.clear();
-	}
+	property_groups.resize(num_groups);
 	QModelIndex topLeft = index(0, 0, QModelIndex());
 	QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1, QModelIndex());
 	emit dataChanged(topLeft, bottomRight);
@@ -606,14 +835,14 @@ int C4ConsoleQtPropListModel::rowCount(const QModelIndex & parent) const
 {
 	// Nothing loaded?
 	if (!proplist.getPropList()) return 0;
-	// Top level: Published and internal properties
-	if (!parent.isValid()) return 2;
+	// Top level: Property groups
+	if (!parent.isValid()) return property_groups.size();
 	// Mid level: Descend into property lists
 	QModelIndex grandparent = parent.parent();
 	if (!grandparent.isValid())
 	{
-		if (parent.row() == 0) return published_properties.size();
-		if (parent.row() == 1) return internal_properties.size();
+		if (parent.row() >= 0 && parent.row() < property_groups.size())
+			return property_groups[parent.row()].props.size();
 	}
 	return 0;
 }
@@ -647,8 +876,8 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		{
 			if (role == Qt::DisplayRole)
 			{
-				if (index.row() == 0) return QVariant(LoadResStr("IDS_CNS_PROPERTIES"));
-				if (index.row() == 1) return QVariant(LoadResStr("IDS_CNS_INTERNAL"));
+				if (index.row() >= 0 && index.row() < property_groups.size())
+					return property_groups[index.row()].name;
 			}
 			else if (role == Qt::FontRole)
 			{
@@ -658,21 +887,36 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		return QVariant();
 	}
 	// Query latest data from prop list
+	Property *prop = static_cast<Property *>(index.internalPointer());
+	if (!prop) return QVariant();
+	if (!prop->delegate) prop->delegate = delegate_factory->GetDelegateByValue(prop->delegate_info);
 	if (role == Qt::DisplayRole)
 	{
-		Property *prop = static_cast<Property *>(index.internalPointer());
-		if (!prop) return QVariant();
 		switch (index.column())
 		{
 		case 0: // First col: Property Name
-			return QVariant(prop->name->GetCStr());
+			return QVariant(prop->display_name->GetCStr());
 		case 1: // Second col: Property value
 		{
 			C4Value v;
-			props->GetPropertyByS(prop->name, &v); // Just display nil if property is not set
-			return QVariant(v.GetDataString().getData());
+			prop->delegate->GetPropertyValue(props, prop->key, &v);
+			return QVariant(prop->delegate->GetDisplayString(v, props->GetObject()));
 		}
 		}
+	}
+	else if (role == Qt::BackgroundColorRole && index.column()==1)
+	{
+		C4Value v;
+		prop->delegate->GetPropertyValue(props, prop->key, &v);
+		QColor bgclr = prop->delegate->GetDisplayBackgroundColor(v, props->GetObject());
+		if (bgclr.isValid()) return bgclr;
+	}
+	else if (role == Qt::TextColorRole && index.column() == 1)
+	{
+		C4Value v;
+		prop->delegate->GetPropertyValue(props, prop->key, &v);
+		QColor txtclr = prop->delegate->GetDisplayTextColor(v, props->GetObject());
+		if (txtclr.isValid()) return txtclr;
 	}
 	// Nothing to show
 	return QVariant();
@@ -685,20 +929,19 @@ QModelIndex C4ConsoleQtPropListModel::index(int row, int column, const QModelInd
 	if (!parent.isValid())
 	{
 		// Top level has headers only
-		if (row == 0 || row == 1) return createIndex(row, column, nullptr);
-		return QModelIndex();
+		if (row < 0 || row >= property_groups.size()) return QModelIndex();
+		return createIndex(row, column, nullptr);
 	}
 	// Property?
 	QModelIndex grandparent = parent.parent();
 	if (!grandparent.isValid())
 	{
-		const std::vector< Property > *property_list = NULL;
-		if (parent.row() == 0) property_list = &published_properties;
-		if (parent.row() == 1) property_list = &internal_properties;
-		if (property_list)
+		const PropertyGroup *property_group = NULL;
+		if (parent.row() >= 0 && parent.row() < property_groups.size())
 		{
-			if (row < 0 || row >= property_list->size()) return QModelIndex();
-			const Property * prop = &(*property_list)[row];
+			property_group = &property_groups[parent.row()];
+			if (row < 0 || row >= property_group->props.size()) return QModelIndex();
+			const Property * prop = &(property_group->props[row]);
 			return createIndex(row, column, const_cast<Property *>(prop));
 		}
 	}
@@ -710,7 +953,7 @@ QModelIndex C4ConsoleQtPropListModel::parent(const QModelIndex &index) const
 	Property *prop = static_cast<Property *>(index.internalPointer());
 	if (!prop) return QModelIndex();
 	// Find list to use
-	return createIndex(prop->is_internal ? 1 : 0, 0, nullptr);
+	return createIndex(prop->group_idx, 0, nullptr);
 }
 
 Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
@@ -719,7 +962,7 @@ Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
 	if (index.isValid() && index.column() == 1 && index.internalPointer())
 	{
 		Property *prop = static_cast<Property *>(index.internalPointer());
-		C4PropList *parent_proplist = prop->parent_proplist->getPropList();
+		C4PropList *parent_proplist = prop->parent_proplist.getPropList();
 		// Only object properties are editable at the moment
 		if (parent_proplist && !parent_proplist->IsFrozen() && (parent_proplist->GetObject()==parent_proplist))
 			flags |= Qt::ItemIsEditable;

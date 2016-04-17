@@ -254,6 +254,9 @@ C4StringTable::C4StringTable()
 	P[P_Max] = "Max";
 	P[P_Set] = "Set";
 	P[P_Options] = "Options";
+	P[P_Key] = "Key";
+	P[P_Effect] = "Effect";
+	P[P_AsyncGet] = "AsyncGet";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

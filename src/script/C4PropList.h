@@ -73,6 +73,7 @@ public:
 	virtual C4Def const * GetDef() const;
 	virtual C4Def * GetDef();
 	virtual C4Object * GetObject();
+	virtual C4Object const * GetObject() const;
 	virtual C4Effect * GetEffect();
 	virtual C4PropListNumbered * GetPropListNumbered();
 	virtual class C4MapScriptLayer * GetMapScriptLayer();
@@ -134,6 +135,7 @@ public:
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3) const;
 	std::vector< C4String * > GetSortedLocalProperties() const;
+	std::vector< C4String * > GetSortedLocalProperties(const char *prefix, const C4PropList *ignore_overridden) const;
 	std::vector< C4String * > GetSortedProperties(const char *prefix) const;
 
 	bool operator==(const C4PropList &b) const;

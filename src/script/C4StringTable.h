@@ -478,6 +478,9 @@ enum C4PropertyName
 	P_Max,
 	P_Set,
 	P_Options,
+	P_Key,
+	P_Effect,
+	P_AsyncGet,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

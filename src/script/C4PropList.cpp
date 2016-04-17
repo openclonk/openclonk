@@ -472,6 +472,33 @@ std::vector< C4String * > C4PropList::GetSortedLocalProperties() const
 	return result;
 }
 
+std::vector< C4String * > C4PropList::GetSortedLocalProperties(const char *prefix, const C4PropList *ignore_overridden) const
+{
+	// return property list without descending into prototype
+	// ignore properties that have been overridden by proplist given in ignore_overridden or any of its prototypes up to and excluding this
+	std::vector< C4String * > result;
+	for (const C4Property *pp = Properties.First(); pp; pp = Properties.Next(pp))
+		if (pp->Key != &::Strings.P[P_Prototype])
+			if (!prefix || pp->Key->GetData().BeginsWith(prefix))
+			{
+				// Override check
+				const C4PropList *check = ignore_overridden;
+				bool overridden = false;
+				if (check && check != this)
+				{
+					if (check->HasProperty(pp->Key)) { overridden = true; break; }
+					check = check->GetPrototype();
+				}
+				result.push_back(pp->Key);
+			}
+	// Sort
+	std::sort(result.begin(), result.end(), [](const C4String *a, const C4String *b) -> bool
+	{
+		return strcmp(a->GetCStr(), b->GetCStr()) < 0;
+	});
+	return result;
+}
+
 std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix) const
 {
 	// Return property list with descending into prototype
@@ -482,7 +509,7 @@ std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix) co
 	{
 		for (const C4Property *pp = p->Properties.First(); pp; pp = p->Properties.Next(pp))
 			if (pp->Key != &::Strings.P[P_Prototype])
-				if (!prefix || !pp->Key->GetData().Compare_(prefix))
+				if (!prefix || !pp->Key->GetData().BeginsWith(prefix))
 					result.push_back(pp->Key);
 		p = p->GetPrototype();
 	} while (p);
@@ -512,8 +539,13 @@ void C4PropList::SetName(const char* NewName)
 }
 
 
-
 C4Object * C4PropList::GetObject()
+{
+	if (GetPrototype()) return GetPrototype()->GetObject();
+	return 0;
+}
+
+C4Object const * C4PropList::GetObject() const
 {
 	if (GetPrototype()) return GetPrototype()->GetObject();
 	return 0;

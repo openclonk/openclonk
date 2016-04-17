@@ -482,8 +482,12 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	viewport_area->setCentralWidget(foo);
 	foo->hide();
 
+	// Property editor
+	property_delegate_factory.reset(new C4PropertyDelegateFactory());
+	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
+
 	// View models
-	property_model.reset(new C4ConsoleQtPropListModel());
+	property_model.reset(new C4ConsoleQtPropListModel(property_delegate_factory.get()));
 	ui.propertyTable->setModel(property_model.get());
 	object_list_model.reset(new C4ConsoleQtObjectListModel());
 	ui.objectListView->setModel(object_list_model.get());
@@ -492,12 +496,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.creatorTreeView->setModel(definition_list_model.get());
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);
-	
-	// Property editor
-	property_delegate_factory.reset(new C4PropertyDelegateFactory());
-	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
-	//ui.propertyTable->verticalHeader()->setDefaultSectionSize(ui.propertyTable->fontMetrics().height()+4);
-	
+
 	// Welcome page
 	InitWelcomeScreen();
 	ShowWelcomeScreen();

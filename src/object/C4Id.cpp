@@ -29,6 +29,7 @@ C4ID::LookupTable C4ID::lookup;
 const C4ID C4ID::None(std::string("None"));
 const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
+const C4ID C4ID::EditorBase(std::string("EditorBase"));
 
 // TODO: Remove these eventually, since they are deprecated.
 const C4ID C4ID::Flag(std::string("FLAG"));

@@ -45,6 +45,7 @@ public:
 	static const C4ID Clonk;
 	static const C4ID Melee;
 	static const C4ID Bubble;
+	static const C4ID EditorBase;
 
 	C4ID(): v(None.v) {}
 	C4ID(const C4ID &other): v(other.v) {}

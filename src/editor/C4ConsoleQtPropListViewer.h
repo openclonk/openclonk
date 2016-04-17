@@ -57,16 +57,20 @@ class C4PropertyDelegate : public QObject
 
 protected:
 	const class C4PropertyDelegateFactory *factory;
-	C4RefCntPointer<C4String> set_function;
+	C4RefCntPointer<C4String> set_function, async_get_function;
 
 public:
-	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, const C4PropList *props);
+	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 	virtual ~C4PropertyDelegate() { }
 
 	virtual void SetEditorData(QWidget *editor, const C4Value &val) const = 0;
 	virtual void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const = 0;
 	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const = 0;
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
+	virtual bool GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const;
+	virtual QString GetDisplayString(const C4Value &val, class C4Object *obj) const;
+	virtual QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const;
+	virtual QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const;
 
 	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : NULL; } // get name of setter function for this property
 
@@ -80,11 +84,40 @@ class C4PropertyDelegateInt : public C4PropertyDelegate
 private:
 	int32_t min, max, step;
 public:
-	C4PropertyDelegateInt(const class C4PropertyDelegateFactory *factory, const C4PropList *props);
+	C4PropertyDelegateInt(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+};
+
+// Editor: Text displaying value plus a button that opens an extended editor
+class C4PropertyDelegateLabelAndButtonWidget : public QWidget
+{
+	Q_OBJECT
+
+public:
+	QHBoxLayout *layout;
+	QLabel *label;
+	QPushButton *button;
+	C4Value last_value;
+
+	C4PropertyDelegateLabelAndButtonWidget(QWidget *parent);
+};
+
+class C4PropertyDelegateColor : public C4PropertyDelegate
+{
+public:
+	typedef C4PropertyDelegateLabelAndButtonWidget Editor;
+
+	C4PropertyDelegateColor(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	void SetEditorData(QWidget *editor, const C4Value &val) const override;
+	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
+	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
 };
 
 // Widget holder class
@@ -136,7 +169,7 @@ private:
 protected:
 	void ReserveOptions(int32_t num);
 public:
-	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, const C4PropList *props, const C4ValueArray *poptions=NULL);
+	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=NULL);
 
 	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=NULL);
 	void AddConstOption(C4String *name, const C4Value &val);
@@ -144,6 +177,7 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+	QString GetDisplayString(const C4Value &val, class C4Object *obj) const override;
 
 private:
 	int32_t GetOptionByValue(const C4Value &val) const;
@@ -157,14 +191,34 @@ public slots:
 class C4PropertyDelegateDef : public C4PropertyDelegateEnum
 {
 public:
-	C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, const C4PropList *props);
+	C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props);
+};
+
+// true or false
+class C4PropertyDelegateBool : public C4PropertyDelegateEnum
+{
+public:
+	C4PropertyDelegateBool(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	bool GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const override;
+};
+
+// true or false depending on whether effect is present
+class C4PropertyDelegateHasEffect : public C4PropertyDelegateBool
+{
+private:
+	C4RefCntPointer<C4String> effect;
+public:
+	C4PropertyDelegateHasEffect(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	bool GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const override;
 };
 
 // C4Value setting using an enum
 class C4PropertyDelegateC4ValueEnum : public C4PropertyDelegateEnum
 {
 public:
-	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, const C4PropList *props);
+	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, C4PropList *props);
 };
 
 class C4PropertyDelegateC4ValueInputEditor : public QWidget
@@ -187,7 +241,7 @@ class C4PropertyDelegateC4ValueInput : public C4PropertyDelegate
 public:
 	typedef C4PropertyDelegateC4ValueInputEditor Editor;
 
-	C4PropertyDelegateC4ValueInput(const C4PropertyDelegateFactory *factory, const C4PropList *props) : C4PropertyDelegate(factory, props) { }
+	C4PropertyDelegateC4ValueInput(const C4PropertyDelegateFactory *factory, C4PropList *props) : C4PropertyDelegate(factory, props) { }
 
 	void SetEditorData(QWidget *editor, const C4Value &val) const override;
 	void SetModelData(QWidget *editor, const C4PropertyPath &property_path) const override;
@@ -200,7 +254,7 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 
 	mutable std::map<C4Value, std::unique_ptr<C4PropertyDelegate> > delegates;
 
-	C4PropertyDelegate *CreateDelegateByString(const C4String *str, const C4PropList *props=NULL) const;
+	C4PropertyDelegate *CreateDelegateByString(const C4String *str, C4PropList *props=NULL) const;
 	C4PropertyDelegate *CreateDelegateByValue(const C4Value &val) const;
 	C4PropertyDelegate *GetDelegateByIndex(const QModelIndex &index) const;
 public:
@@ -232,24 +286,32 @@ public:
 	struct Property
 	{
 		C4PropertyPath property_path;
-		C4Value *parent_proplist;
-		C4RefCntPointer<C4String> name;
+		C4Value parent_proplist;
+		C4RefCntPointer<C4String> display_name;
+		C4RefCntPointer<C4String> key;
 		C4Value delegate_info;
 		C4PropertyDelegate *delegate;
 		bool about_to_edit;
-		bool is_internal;
+		int32_t group_idx;
 
-		Property() : parent_proplist(NULL), delegate(NULL), about_to_edit(false), is_internal(false) {}
+		Property() : delegate(NULL), about_to_edit(false), group_idx(-1) {}
+	};
+	struct PropertyGroup
+	{
+		QString name;
+		std::vector<Property> props;
 	};
 private:
 	C4Value proplist;
-	std::vector< Property > published_properties; // custom properties defined by definitions
+	std::vector<PropertyGroup> property_groups;
 	std::vector< Property > internal_properties;  // proplist-properties
 	QFont header_font;
+	C4PropertyDelegateFactory *delegate_factory;
 public:
-	C4ConsoleQtPropListModel();
+	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
 	~C4ConsoleQtPropListModel();
 
+	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden);
 	void SetPropList(class C4PropList *new_proplist);
 	class C4PropList *GetPropList() const { return proplist.getPropList(); }
 
