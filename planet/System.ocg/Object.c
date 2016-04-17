@@ -78,6 +78,15 @@ global func MakeInvincible(bool allow_fire)
 	return true;
 }
 
+global func SetInvincibility(bool to_val)
+{
+	// Turn invincibility on or off
+	if (to_val)
+		return MakeInvincible(false);
+	else
+		return ClearInvincible();
+}
+
 global func FxIntInvincibleDamage(target)
 {
 	// avert all damage
