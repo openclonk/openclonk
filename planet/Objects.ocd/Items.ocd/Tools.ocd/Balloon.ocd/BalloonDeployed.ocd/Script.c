@@ -28,8 +28,9 @@ public func SetRider(object clonk)
 
 public func SetInflated()
 {
-	// Skip inflating animation
-	if (GetAction() == "Inflate") SetAction("Float");
+	// Skip inflating animation.
+	if (GetAction() == "Inflate") 
+		SetAction("Float");
 }
 
 // Sets a cargo object that is held by the balloon
@@ -153,15 +154,15 @@ public func ControlRight()
 
 public func ControlDown()
 {
-	var effect = GetEffect("ControlFloat", this);
-	if (effect)
-		effect.control_dir = 0;
+	Deflate();
 	return true;
 }
 
-public func ControlJump()
+public func ControlUp()
 {
-	Deflate();
+	var effect = GetEffect("ControlFloat", this);
+	if (effect)
+		effect.control_dir = 0;
 	return true;
 }
 
@@ -242,7 +243,7 @@ public func OnProjectileHit(object projectile)
 		rider->SetKiller(projectile->GetController());
 		rider->SetAction("Tumble");
 	}
-	// Drop anything being transported
+	// Drop anything being transported.
 	DropCargo();
 	// We're done.
 	RemoveObject();
@@ -282,7 +283,7 @@ local ActMap = {
 		Name = "Deflate",
 		Procedure = DFA_FLOAT,
 		Directions = 1,
-		Length = 20,
+		Length = 10,
 		Delay = 1,
 		PhaseCall = "DeflateEffect",
 		EndCall = "Pack",
