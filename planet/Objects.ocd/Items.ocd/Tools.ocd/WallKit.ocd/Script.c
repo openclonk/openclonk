@@ -42,11 +42,36 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 private func CreateBridge(object clonk, int x, int y)
 {
+	// Get the bridge coordinates.
 	var c = Offset2BridgeCoords(clonk, x, y);
 	x = clonk->GetX(); 
 	y = clonk->GetY();
+	// Get living objects near the bridge which are not stuck yet.
+	var non_stuck_living = clonk->FindObjects(Find_OCF(OCF_Alive), Find_Distance(this.BridgeLength + 8, (c.x1 + c.x2) / 2, (c.y1 + c.y2) / 2));
+	for (var index = GetLength(non_stuck_living) - 1; index >= 0; index--)
+		if (non_stuck_living[index]->Stuck())
+			RemoveArrayIndex(non_stuck_living, index);
+	// Construct the bridge.
 	DrawMaterialQuad(BridgeMaterial, x + c.x1 - c.dxm, y + c.y1 - c.dym, x + c.x1 + c.dxp, y + c.y1 + c.dyp, x + c.x2 + c.dxp, y + c.y2 + c.dyp, x + c.x2 - c.dxm, y + c.y2 - c.dym, DMQ_Bridge);
 	clonk->Sound("Objects::WallKit::Lock");
+	// Now check whether some of the living objects got stuck and try to move them out of the bridge.
+	for (var obj in non_stuck_living)
+	{
+		var nr_tries = 200;
+		var try_nr = 0;
+		var max_dist = 6;
+		var ox = obj->GetX();
+		var oy = obj->GetY();
+		// Unstuck objects by moving them in a random direction.
+		while (obj->Stuck() && try_nr++ < nr_tries)
+		{
+			var try_dist = BoundBy(try_nr * max_dist / nr_tries, 1, max_dist);
+			obj->SetPosition(ox + RandomX(-try_dist, try_dist), oy + RandomX(- 2 * try_dist, 2 * try_dist));
+		}
+		// If still stuck, keep the object at its original position.
+		if (obj->Stuck())
+			obj->SetPosition(ox, oy);
+	}
 	return true;
 }
 
