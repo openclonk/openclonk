@@ -37,7 +37,7 @@ public func IsInventorProduct() { return true; }
 
 func RejectUse(object clonk)
 {
-	return clonk->GetProcedure() == "ATTACH";
+	return false;
 }
 
 // used by this object
