@@ -455,18 +455,18 @@ void C4DefList::ResetIncludeDependencies()
 
 void C4DefList::CallEveryDefinition()
 {
-	for (Table::iterator it = table.begin(); it != table.end(); ++it)
+	for (C4Def *def = FirstDef; def; def = def->Next)
 	{
 		if (Config.General.DebugRec)
 		{
 			// TODO: Might not be synchronous on runtime join since is run by joining
 			// client but not by host. Might need to go to Synchronize().
 			char sz[32+1];
-			strncpy(sz, it->first.ToString(), 32+1);
+			strncpy(sz, def->id.ToString(), 32+1);
 			AddDbgRec(RCT_Definition, sz, 32);
 		}
-		C4AulParSet Pars(it->second);
-		it->second->Call(PSF_Definition, &Pars);
+		C4AulParSet Pars(def);
+		def->Call(PSF_Definition, &Pars);
 	}
 }
 
