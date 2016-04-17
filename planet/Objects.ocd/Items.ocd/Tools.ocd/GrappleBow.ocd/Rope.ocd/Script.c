@@ -217,8 +217,10 @@ public func UpdateLines()
 			point[1] += -Cos(diffangle, 4 * LIB_ROPE_Precision) - Sin(diffangle, 15 * LIB_ROPE_Precision / 10);
 			length = 1000;
 		}
-
-		SetLineTransform(lib_rope_segments[i], -diffangle, point[0] * 10 - GetPartX(i) * 1000, point[1] * 10 - GetPartY(i) * 1000, length);
+		
+		// Only apply line transform to the rope segments and not to the hook.
+		if (i != 1)
+			SetLineTransform(lib_rope_segments[i], -diffangle, point[0] * 10 - GetPartX(i) * 1000, point[1] * 10 - GetPartY(i) * 1000, length);
 
 		// Remember the angle.
 		oldangle = angle;
