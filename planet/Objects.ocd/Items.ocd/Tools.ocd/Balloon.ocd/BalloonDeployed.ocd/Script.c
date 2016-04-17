@@ -130,6 +130,8 @@ private func Pack()
 	RemoveObject();
 }
 
+public func RejectWindbagForce() { return true; }
+
 
 /*-- Controls --*/
 
