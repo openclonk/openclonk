@@ -84,8 +84,9 @@ protected func InitializePlayer(int plr)
 	// Additional explosives: dynamite boxes.
 	GivePlayerSpecificBaseMaterial(plr, [[DynamiteBox, 4, 2]]);
 	
-	// Set player wealth.
-	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+	// Ensure mimimum player wealth.
+	var add_wealth = Max(0, 75 - 25 * SCENPAR_Difficulty - GetWealth(plr));
+	DoWealth(plr, add_wealth);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)
