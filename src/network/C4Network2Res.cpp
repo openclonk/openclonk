@@ -1215,9 +1215,9 @@ bool C4Network2ResChunk::Set(C4Network2Res *pRes, uint32_t inChunk)
 		if (lseek(f, iOffset, SEEK_SET) != iOffset)
 			{ close(f); LogF("Network: could not read resource file %s!", pRes->getFile()); return false; }
 	// read chunk of data
-	char *pBuf = new char[iSize];
+	char *pBuf = (char *) malloc(iSize);
 	if (read(f, pBuf, iSize) != iSize)
-		{ delete [] pBuf; close(f); LogF("Network: could not read resource file %s!", pRes->getFile()); return false; }
+		{ free(pBuf); close(f); LogF("Network: could not read resource file %s!", pRes->getFile()); return false; }
 	// set
 	Data.Take(pBuf, iSize);
 	// close
