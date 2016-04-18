@@ -3548,6 +3548,11 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// remove reference to FoW from viewports, so that we can safely
 	// reload the landscape and its FoW.
 	Viewports.DisableFoW();
+	// landscape initialization resets the RNG
+	// set a new seed here to get new dynamic landscapes
+	// TODO: add an option to disable this?
+	RandomSeed = Random(2147483647);
+	FixRandom(RandomSeed);
 	// re-init game in new section
 	C4ValueNumbers numbers;
 	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
