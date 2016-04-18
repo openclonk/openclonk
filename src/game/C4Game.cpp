@@ -3416,6 +3416,13 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// would leave those values in the altered state of the previous section
 	// scenario designers should regard this and always define any values, that are defined in subsections as well
 	C4Group hGroup, *pGrp;
+	// if current section was the loaded section (maybe main, but need not for resumed savegames)
+	if (!pCurrentScenarioSection)
+	{
+		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
+		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
+		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
+	}
 	// find section to load
 	C4ScenarioSection *pLoadSect = pScenarioSections;
 	while (pLoadSect) if (SEqualNoCase(pLoadSect->szName, szSection)) break; else pLoadSect = pLoadSect->pNext;
@@ -3424,21 +3431,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		DebugLogF("LoadScenarioSection: scenario section %s not found!", szSection);
 		return false;
 	}
-	// don't load if it's current
-	if (pLoadSect == pCurrentScenarioSection)
-	{
-		DebugLogF("LoadScenarioSection: section %s is already current", szSection);
-		return false;
-	}
-	// if current section was the loaded section (maybe main, but need not for resumed savegames)
-	if (!pCurrentScenarioSection)
-	{
-		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
-		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
-		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
-	}
 	// save current section state
-	if (dwFlags & (C4S_SAVE_LANDSCAPE | C4S_SAVE_OBJECTS))
+	if (pLoadSect != pCurrentScenarioSection && dwFlags & (C4S_SAVE_LANDSCAPE | C4S_SAVE_OBJECTS))
 	{
 		// ensure that the section file does point to temp store
 		if (!pCurrentScenarioSection->EnsureTempStore(!(dwFlags & C4S_SAVE_LANDSCAPE), !(dwFlags & C4S_SAVE_OBJECTS)))
