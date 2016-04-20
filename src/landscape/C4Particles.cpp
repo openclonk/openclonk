@@ -393,7 +393,7 @@ void C4ParticleValueProvider::RollRandom(const C4Particle *forParticle)
 void C4ParticleValueProvider::RollRandomUnseeded()
 {
 	float range = endValue - startValue;
-	float rnd = (float)(rand()) / (float)(RAND_MAX); 
+	float rnd = (float)(SafeRandom(RAND_MAX)) / (float)(RAND_MAX);
 	currentValue = startValue + rnd * range;
 }
 

@@ -20,24 +20,20 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
+#include <pcg/pcg_random.hpp>
+
 extern int RandomCount;
+extern pcg32 SafeRandom;
 
-void FixedRandom(DWORD dwSeed);
+void FixedRandom(uint64_t dwSeed);
 
-int Random(int iRange);
+uint32_t Random(uint32_t iRange);
 
-inline unsigned int SeededRandom(unsigned int iSeed, unsigned int iRange)
+inline uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange)
 {
 	if (!iRange) return 0;
-	iSeed = iSeed * 214013L + 2531011L;
-	return (iSeed >> 16) % iRange;
-}
-
-
-inline int SafeRandom(int range)
-{
-	if (!range) return 0;
-	return rand()%range;
+	pcg32 rng(iSeed);
+	return rng(iRange);
 }
 
 #endif // INC_C4Random

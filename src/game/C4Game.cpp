@@ -3095,7 +3095,7 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	return pPlr;
 }
 
-void C4Game::FixRandom(int32_t iSeed)
+void C4Game::FixRandom(uint64_t iSeed)
 {
 	FixedRandom(iSeed);
 }

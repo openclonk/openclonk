@@ -40,7 +40,7 @@ void C4SVal::Set(int32_t std, int32_t rnd, int32_t min, int32_t max)
 
 int32_t C4SVal::Evaluate()
 {
-	return Clamp(Std+Random(2*Rnd+1)-Rnd,Min,Max);
+	return Clamp<int32_t>(Std+Random(2*Rnd+1)-Rnd,Min,Max);
 }
 
 void C4SVal::Default()

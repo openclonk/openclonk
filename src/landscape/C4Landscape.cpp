@@ -441,8 +441,8 @@ static std::vector<int32_t> GetRoundPolygon(int32_t x, int32_t y, int32_t size, 
 	vertices.reserve(count * 2);
 
 	// varying phase of the sin/cos waves
-	C4Real begin = itofix(360)*Random(100) / 100;
-	C4Real begin2 = itofix(360)*Random(100) / 100;
+	C4Real begin = itofix(360)*(int32_t)Random(100) / 100;
+	C4Real begin2 = itofix(360)*(int32_t)Random(100) / 100;
 
 	// parameters:
 	// the bigger the factor, the smaller the divergence from a circle
