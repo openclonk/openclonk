@@ -338,7 +338,9 @@ void C4TeamList::AddTeam(C4Team *pNewTeam)
 	// add team; grow vector if necessary
 	if (iTeamCount >= iTeamCapacity)
 	{
-		C4Team **ppNewTeams = new C4Team*[(iTeamCapacity = iTeamCount+4)&~3];
+		// grow up to the nearest multiple of 4 elements
+		// (TODO: Replace the whole thing e.g. with a simple std::vector<C4Team>)
+		C4Team **ppNewTeams = new C4Team*[(iTeamCapacity = ((iTeamCount+4)&~3))];
 		if (iTeamCount) memcpy(ppNewTeams, ppList, iTeamCount*sizeof(C4Team *));
 		delete [] ppList; ppList = ppNewTeams;
 	}
