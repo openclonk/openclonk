@@ -15,6 +15,7 @@
  */
 #include "C4Include.h"
 #include "network/C4NetIO.h"
+#include "lib/C4Random.h"
 
 #include "config/C4Constants.h"
 #include "config/C4Config.h"
@@ -1887,7 +1888,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 		{
 			// create new - random - address
 			MCAddr.sin_addr.s_addr =
-			   0x000000ef | ((rand() & 0xff) << 24) | ((rand() & 0xff) << 16) | ((rand() & 0xff) << 8);
+			   0x000000ef | (SafeRandom(0x1000000) << 8);
 			// init broadcast
 			if (!C4NetIOSimpleUDP::InitBroadcast(&MCAddr))
 				return false;
@@ -3031,7 +3032,7 @@ bool C4NetIOUDP::DoLoopbackTest()
 	if (!C4NetIOSimpleUDP::getMCLoopback()) return false;
 
 	// send test packet
-	const PacketHdr TestPacket = { uint8_t(IPID_Test | 0x80), static_cast<uint32_t>(rand()) };
+	const PacketHdr TestPacket = { uint8_t(IPID_Test | 0x80), SafeRandom(UINT32_MAX) };
 	if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&TestPacket, sizeof(TestPacket))))
 		return false;
 

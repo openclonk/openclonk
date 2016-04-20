@@ -17,6 +17,7 @@
 
 #include "C4Include.h"
 #include "network/C4NetIO.h"
+#include "lib/C4Random.h"
 
 #include <iostream>
 #include <sstream>
@@ -101,7 +102,7 @@ int main(int argc, char * argv[])
 	for (i = 0; i < sizeof(DummyData); i++)
 		DummyData[i] = 'A' + i % 100;
 
-	srand(time(NULL));
+	FixedRandom(time(NULL));
 
 #ifdef USE_UDP
 	C4NetIOUDP NetIO;
