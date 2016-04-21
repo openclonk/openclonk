@@ -40,7 +40,7 @@ void C4SVal::Set(int32_t std, int32_t rnd, int32_t min, int32_t max)
 
 int32_t C4SVal::Evaluate()
 {
-	return Clamp(Std+Random(2*Rnd+1)-Rnd,Min,Max);
+	return Clamp<int32_t>(Std+Random(2*Rnd+1)-Rnd,Min,Max);
 }
 
 void C4SVal::Default()
@@ -278,7 +278,7 @@ void C4SLandscape::Default()
 	InEarth.Default();
 	MapWdt.Set(100,0,64,250);
 	MapHgt.Set(50,0,40,250);
-	MapZoom.Set(8,0,5,15);
+	MapZoom.Set(8,0,1,15);
 	Amplitude.Set(0,0);
 	Phase.Set(50);
 	Period.Set(15);
@@ -322,7 +322,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      true));
 	pComp->Value(mkNamingAdapt(MapWdt,                  "MapWidth",              C4SVal(100,0,64,250), true));
 	pComp->Value(mkNamingAdapt(MapHgt,                  "MapHeight",             C4SVal(50,0,40,250), true));
-	pComp->Value(mkNamingAdapt(MapZoom,                 "MapZoom",               C4SVal(8,0,5,15), true));
+	pComp->Value(mkNamingAdapt(MapZoom,                 "MapZoom",               C4SVal(8,0,1,15), true));
 	pComp->Value(mkNamingAdapt(Amplitude,               "Amplitude",             C4SVal(0)));
 	pComp->Value(mkNamingAdapt(Phase,                   "Phase",                 C4SVal(50)));
 	pComp->Value(mkNamingAdapt(Period,                  "Period",                C4SVal(15)));

@@ -28,6 +28,7 @@
 #include "landscape/C4Material.h"
 #include "landscape/C4Landscape.h"
 #include "lib/C4Log.h"
+#include "lib/C4Random.h"
 #include "lib/StdColors.h"
 
 #include <ctype.h>
@@ -570,9 +571,9 @@ void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMateria
 				if (j >= i) break;
 				// change randomly
 				Palette->Colors[i] = C4RGB(
-					(rand() < RAND_MAX / 2) ? GetRedValue(Palette->Colors[i]) + 3 : GetRedValue(Palette->Colors[i]) - 3,
-					(rand() < RAND_MAX / 2) ? GetGreenValue(Palette->Colors[i]) + 3 : GetGreenValue(Palette->Colors[i]) - 3,
-					(rand() < RAND_MAX / 2) ? GetBlueValue(Palette->Colors[i]) + 3 : GetBlueValue(Palette->Colors[i]) - 3);
+					SafeRandom(2) ? GetRedValue(Palette->Colors[i]) + 3 : GetRedValue(Palette->Colors[i]) - 3,
+					SafeRandom(2) ? GetGreenValue(Palette->Colors[i]) + 3 : GetGreenValue(Palette->Colors[i]) - 3,
+					SafeRandom(2) ? GetBlueValue(Palette->Colors[i]) + 3 : GetBlueValue(Palette->Colors[i]) - 3);
 			}
 }
 
