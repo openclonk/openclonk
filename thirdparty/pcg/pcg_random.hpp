@@ -22,6 +22,11 @@
  */
 
 /*
+ * Modified by The OpenClonk.org Project to improve compatibility with
+ * Microsoft Visual C++.
+ */
+
+/*
  * This code provides the reference implementation of the PCG family of
  * random number generators.  The code is complex because it implements
  *
@@ -1203,7 +1208,7 @@ public:
         return baseclass::period_pow2() + table_size*extvalclass::period_pow2();
     }
 
-    __attribute__((always_inline)) result_type operator()()
+    PCG_ALWAYS_INLINE result_type operator()()
     {
         result_type rhs = get_extended_value();
         result_type lhs = this->baseclass::operator()();

@@ -22,6 +22,11 @@
  */
 
 /*
+ * Modified by The OpenClonk.org Project to improve compatibility with
+ * Microsoft Visual C++.
+ */
+
+/*
  * This file provides support code that is useful for random-number generation
  * but not specific to the PCG generation scheme, including:
  *      - 128-bit int support for platforms where it isn't available natively
@@ -58,8 +63,10 @@
 
 #ifdef __GNUC__
     #define PCG_NOINLINE __attribute__((noinline))
+	#define PCG_ALWAYS_INLINE __attribute__((always_inline))
 #else
     #define PCG_NOINLINE
+	#define PCG_ALWAYS_INLINE
 #endif
 
 /*
