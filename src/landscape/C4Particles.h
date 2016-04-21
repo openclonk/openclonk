@@ -14,6 +14,7 @@
  */
 
 #include "graphics/C4FacetEx.h"
+#include "lib/C4Random.h"
 
 #include "platform/StdScheduler.h"
 
@@ -122,7 +123,7 @@ private:
 		float maxValue; // for Step & Sin
 	};
 
-	int randomSeed = -1; // for Random
+	pcg32 rng; // for Random
 
 	size_t keyFrameCount;
 	std::vector<float> keyFrames;
@@ -159,11 +160,6 @@ public:
 	}
 	C4ParticleValueProvider(const C4ParticleValueProvider &other) { *this = other; }
 	C4ParticleValueProvider & operator= (const C4ParticleValueProvider &other);
-	// The random roll is implemented in two variants, one using the default RNG and one using an own implementation that makes use of a seed.
-	// RollRandom is a wrapper that will select the approprate function to call.
-	void RollRandom(const C4Particle *forParticle);
-	void RollRandomUnseeded();
-	void RollRandomSeeded(const C4Particle *forParticle);
 
 	// divides by denominator
 	void Floatify(float denominator);

@@ -30,10 +30,10 @@
 #include "landscape/C4Material.h"
 #include "object/C4MeshAnimation.h"
 #include "graphics/C4DrawGL.h"
-#include "lib/C4Random.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Weather.h"	
 #include "object/C4Object.h"
+#include <random>
 #endif
 
 
@@ -384,52 +384,6 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	}
 }
 
-void C4ParticleValueProvider::RollRandom(const C4Particle *forParticle)
-{
-	if (randomSeed == -1) return RollRandomUnseeded();
-	return RollRandomSeeded(forParticle);
-}
-
-void C4ParticleValueProvider::RollRandomUnseeded()
-{
-	float range = endValue - startValue;
-	float rnd = (float)(SafeRandom(RAND_MAX)) / (float)(RAND_MAX);
-	currentValue = startValue + rnd * range;
-}
-
-void C4ParticleValueProvider::RollRandomSeeded(const C4Particle *forParticle)
-{
-	// We need a particle-local additional seed.
-	// Since this is by no means synchronisation relevant and since the particles lie on the heap
-	// we just use the address here.
-	// These conversion steps here just make it explicit that we do not care about the upper 32bit
-	// of a pointer in case it's too long.
-	const std::uintptr_t ourAddress = reinterpret_cast<std::uintptr_t>(forParticle);
-	const unsigned long mostSignificantBits = ourAddress & 0xffffffff;
-	const unsigned long particleLocalSeed = mostSignificantBits;
-	// The actual seed is then calculated from the last random value (or initial seed) and the local seed.
-	unsigned long seed = static_cast<unsigned long>(randomSeed) + particleLocalSeed;
-	// This is a simple linear congruential generator which should suffice for our graphical effects.
-	// https://en.wikipedia.org/wiki/Linear_congruential_generator
-	const unsigned long maxRandomValue = 32767;
-
-	auto roll = [&seed, &maxRandomValue]()
-	{
-		const unsigned long value = seed * 1103515245l + 12345l;
-		return static_cast<unsigned int>(value / 65536) % (maxRandomValue + 1);
-	};
-	const unsigned int randomNumber = roll();
-	assert(randomNumber >= 0 && randomNumber <= maxRandomValue);
-
-	// Now force the integer-random-value into our float-range.
-	const float range = endValue - startValue;
-	const float rnd = static_cast<float>(randomNumber) / static_cast<float>(maxRandomValue);
-	currentValue = startValue + rnd * range;
-
-	// Finally update our seed to the new random value.
-	randomSeed = static_cast<int> (randomNumber);
-}
-
 float C4ParticleValueProvider::GetValue(C4Particle *forParticle)
 {
 	UpdateChildren(forParticle);
@@ -460,7 +414,13 @@ float C4ParticleValueProvider::Random(C4Particle *forParticle)
 	if (needToReevaluate)
 	{
 		alreadyRolled = 1;
-		RollRandom(forParticle);
+		// Even for seeded PV_Random, each particle should behave differently.  Thus, we use a different
+		// stream for each one.  Since this is by no means synchronisation relevant and since the
+		// particles lie on the heap we just use the address here.
+		const std::uintptr_t ourAddress = reinterpret_cast<std::uintptr_t>(forParticle);
+		rng.set_stream(ourAddress);
+		std::uniform_real_distribution<float> distribution(startValue, endValue);
+		currentValue = distribution(rng);
 	}
 	return currentValue;
 }
@@ -622,7 +582,16 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 			if (arraySize >= 4 && fromArray[3].GetType() != C4V_Type::C4V_Nil)
 				SetParameterValue(VAL_TYPE_INT, fromArray[3], 0, &C4ParticleValueProvider::rerollInterval);
 			if (arraySize >= 5 && fromArray[4].GetType() != C4V_Type::C4V_Nil)
-				SetParameterValue(VAL_TYPE_INT, fromArray[4], 0, &C4ParticleValueProvider::randomSeed);
+			{
+				// We don't need the seed later on, but SetParameterValue won't accept local
+				// variables. Use an unrelated member instead which is reset below.
+				SetParameterValue(VAL_TYPE_INT, fromArray[4], 0, &C4ParticleValueProvider::alreadyRolled);
+				rng.seed(alreadyRolled);
+			}
+			else
+			{
+				rng.seed(SafeRandom());
+			}
 			alreadyRolled = 0;
 		}
 		break;
