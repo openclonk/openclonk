@@ -56,6 +56,7 @@ uint32_t Random()
 
 uint32_t Random(uint32_t iRange)
 {
+	if (!iRange) return 0u;
 	uint32_t result = RandomRng(iRange);
 	RecordRandom(iRange, result);
 	return result;
