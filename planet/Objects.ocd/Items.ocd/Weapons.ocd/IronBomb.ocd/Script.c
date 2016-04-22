@@ -28,6 +28,10 @@ func Fuse(bool explode_on_hit)
 	AddEffect("FuseBurn", this, 1,1, this);
 }
 
+public func FuseTime() { return 90; }
+
+public func IsFusing() { return !!GetEffect("FuseBurn", this); }
+
 public func OnCannonShot(object cannon)
 {
 	Fuse(true);
@@ -41,7 +45,7 @@ func FxFuseBurnTimer(object bomb, proplist effect, int timer)
 	CreateParticle("Smoke", x, y, x, y, PV_Random(18, 36), Particles_Smoke(), 2);
 
 	if(timer == 1) Sound("Fire::FuseLoop",nil,nil,nil,+1);
-	if(timer >= 90)
+	if(timer >= FuseTime())
 	{
 		Sound("Fire::FuseLoop",nil,nil,nil,-1);
 		DoExplode();
