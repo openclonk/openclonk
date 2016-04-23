@@ -197,3 +197,9 @@ func Main()
 }
 )", false));
 }
+
+TEST_F(AulTest, Conditionals)
+{
+	EXPECT_EQ(C4VInt(1), RunCode("if (true) return 1; else return 2;"));
+	EXPECT_EQ(C4VInt(2), RunCode("if (false) return 1; else return 2;"));
+}
