@@ -31,7 +31,7 @@ using ::testing::_;
 TEST_F(AulPredefFunctionTest, Translate)
 {
 	// Expect the engine to warn when it can't find a translation
-	LogMock log;
+	::testing::NiceMock<LogMock> log;
 	EXPECT_CALL(log, DebugLogF(testing::StrEq(R"(WARNING: Translate: no translation for string "%s")"), _));
 	EXPECT_CALL(log, DebugLog(StartsWith(" by: "))).Times(AnyNumber()); // ignore stack trace
 
