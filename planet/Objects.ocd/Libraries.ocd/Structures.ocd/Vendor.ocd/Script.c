@@ -255,7 +255,7 @@ public func GetBuyMenuEntries(object clonk)
 	var fx = AddEffect("UpdateWealthDisplay", this, 1, 5, nil, GetID());
 	fx.lowest_greyed_out_price = lowest_greyed_out_price;
 	fx.last_wealth = wealth;
-	fx.plr = wealth_player;
+	fx.wealth_player = wealth_player;
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry, fx = fx});
 
 	return menu_entries;
@@ -298,7 +298,7 @@ private func EjectContents(object contents)
 
 private func FxUpdateWealthDisplayTimer(object target, effect fx, int time)
 {
-	if (!fx.menu_target) return -1;
+	if (!fx.menu_target) return FX_Execute_Kill;
 	if (fx.last_wealth == GetWealth(fx.wealth_player)) return FX_OK;
 	fx.last_wealth = GetWealth(fx.wealth_player);
 	// Do we need a full refresh? New objects might have become available.
