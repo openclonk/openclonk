@@ -218,6 +218,7 @@ C4ParticleValueProvider & C4ParticleValueProvider::operator= (const C4ParticleVa
 	valueFunction = other.valueFunction;
 	isConstant = other.isConstant;
 	keyFrameCount = other.keyFrameCount;
+	rng = other.rng;
 
 	if (keyFrameCount > 0)
 	{
@@ -419,7 +420,9 @@ float C4ParticleValueProvider::Random(C4Particle *forParticle)
 		// particles lie on the heap we just use the address here.
 		const std::uintptr_t ourAddress = reinterpret_cast<std::uintptr_t>(forParticle);
 		rng.set_stream(ourAddress);
-		std::uniform_real_distribution<float> distribution(startValue, endValue);
+		// We need to advance the RNG a bit to make streams with the same seed diverge.
+		rng.advance(5);
+		std::uniform_real_distribution<float> distribution(std::min(startValue, endValue), std::max(startValue, endValue));
 		currentValue = distribution(rng);
 	}
 	return currentValue;
