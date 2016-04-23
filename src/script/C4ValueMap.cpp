@@ -466,7 +466,7 @@ int32_t C4ValueMapNames::AddName(const char *pnName)
 	return iSize-1;
 }
 
-int32_t C4ValueMapNames::GetItemNr(const char *strName)
+int32_t C4ValueMapNames::GetItemNr(const char *strName) const
 {
 	for (int32_t i = 0; i < iSize; i++)
 		if (SEqual(pNames[i], strName))
