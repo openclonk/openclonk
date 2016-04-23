@@ -45,6 +45,7 @@ public:
 	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
 	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
 	virtual C4PropListStatic * GetPropList() { return 0; }
+	const C4PropListStatic *GetPropList() const { return const_cast<C4ScriptHost*>(this)->GetPropList(); }
 	const char *GetScript() const { return Script.getData(); }
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 	// Translate a string using the script's lang table
