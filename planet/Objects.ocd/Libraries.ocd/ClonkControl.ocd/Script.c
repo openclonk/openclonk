@@ -875,7 +875,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 		{
 			return StartUseControl(ctrl,x, y, obj);
 		}
-		else if (release && obj == this.control.current_object)
+		else if (release && (obj == this.control.current_object || obj == GetActionTarget()))
 		{
 			return StopUseControl(x, y, obj);
 		}
@@ -887,7 +887,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 		{
 			return StartUseDelayedControl(ctrl, obj);
 		}
-		else if (release && obj == this.control.current_object)
+		else if (release && (obj == this.control.current_object || obj == GetActionTarget()))
 		{
 			return StopUseDelayedControl(obj);
 		}

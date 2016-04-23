@@ -1,2 +1,2 @@
 Name=Ballon
-Description=Kann den Fall eines Clonks wie ein Fallschirm abbremsen. Benutze den Ballon um deinen Fall abzubremsen.
+Description=Wirkt wie ein Fallschirm, Benutze den Ballon während eines Falles um ihn zu aktiveren. While hanging on the balloon use [A] and [D] to steer left and right and [W] to stop. The balloon can be pulled in using [S].

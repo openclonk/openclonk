@@ -172,6 +172,8 @@ public func DoExplode()
 public func IsChemicalProduct() { return true; }
 public func IsGrenadeLauncherAmmo() { return true; }
 
+public func IsFusing() { return GetAction() == "Fuse"; }
+
 // Drop fusing dynamite on death to prevent explosion directly after respawn
 public func IsDroppedOnDeath(object clonk)
 {

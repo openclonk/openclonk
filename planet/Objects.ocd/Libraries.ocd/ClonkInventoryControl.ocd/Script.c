@@ -223,7 +223,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 		{
 			Name = "Attach",
 			Procedure = DFA_ATTACH,
-			FaceBase = 1
+			FacetBase = 1
 		}
 	};
 	fx.dummy.Visibility = VIS_Owner;

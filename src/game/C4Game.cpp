@@ -3095,7 +3095,7 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	return pPlr;
 }
 
-void C4Game::FixRandom(int32_t iSeed)
+void C4Game::FixRandom(uint64_t iSeed)
 {
 	FixedRandom(iSeed);
 }
@@ -3416,6 +3416,13 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// would leave those values in the altered state of the previous section
 	// scenario designers should regard this and always define any values, that are defined in subsections as well
 	C4Group hGroup, *pGrp;
+	// if current section was the loaded section (maybe main, but need not for resumed savegames)
+	if (!pCurrentScenarioSection)
+	{
+		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
+		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
+		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
+	}
 	// find section to load
 	C4ScenarioSection *pLoadSect = pScenarioSections;
 	while (pLoadSect) if (SEqualNoCase(pLoadSect->szName, szSection)) break; else pLoadSect = pLoadSect->pNext;
@@ -3424,21 +3431,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		DebugLogF("LoadScenarioSection: scenario section %s not found!", szSection);
 		return false;
 	}
-	// don't load if it's current
-	if (pLoadSect == pCurrentScenarioSection)
-	{
-		DebugLogF("LoadScenarioSection: section %s is already current", szSection);
-		return false;
-	}
-	// if current section was the loaded section (maybe main, but need not for resumed savegames)
-	if (!pCurrentScenarioSection)
-	{
-		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
-		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
-		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
-	}
 	// save current section state
-	if (dwFlags & (C4S_SAVE_LANDSCAPE | C4S_SAVE_OBJECTS))
+	if (pLoadSect != pCurrentScenarioSection && dwFlags & (C4S_SAVE_LANDSCAPE | C4S_SAVE_OBJECTS))
 	{
 		// ensure that the section file does point to temp store
 		if (!pCurrentScenarioSection->EnsureTempStore(!(dwFlags & C4S_SAVE_LANDSCAPE), !(dwFlags & C4S_SAVE_OBJECTS)))
@@ -3548,6 +3542,11 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// remove reference to FoW from viewports, so that we can safely
 	// reload the landscape and its FoW.
 	Viewports.DisableFoW();
+	// landscape initialization resets the RNG
+	// set a new seed here to get new dynamic landscapes
+	// TODO: add an option to disable this?
+	RandomSeed = Random(2147483647);
+	FixRandom(RandomSeed);
 	// re-init game in new section
 	C4ValueNumbers numbers;
 	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))

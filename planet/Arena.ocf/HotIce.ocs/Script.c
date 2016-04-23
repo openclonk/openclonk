@@ -42,9 +42,6 @@ func ResetRound()
 		clonk->SetObjectStatus(C4OS_INACTIVE);
 	}
 	// Clear and redraw the map.
-	g_no_map = true;
-	LoadScenarioSection("Empty");
-	g_no_map = false;
 	LoadScenarioSection("main");
 	InitializeRound();
 	// Re-enable the players.

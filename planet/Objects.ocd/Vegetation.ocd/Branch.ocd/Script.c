@@ -7,7 +7,7 @@
 
 protected func Initialize()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(1000, 1400, 1000), Trans_Rotate(RandomX(0, 359), 0, 1, 0)));
+	this.MeshTransformation = Trans_Mul(Trans_Scale(1000, 1400, 1000), Trans_Translate(0, 3500, 0), Trans_Rotate(RandomX(0, 359), 0, 1, 0));
 	SetR(RandomX(-30, 30));
 	return;
 }

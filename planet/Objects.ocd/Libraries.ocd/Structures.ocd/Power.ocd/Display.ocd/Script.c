@@ -49,6 +49,7 @@ public func GetPowerDisplayMenuEntries(object clonk)
 	{
 		var entry = 
 		{
+			Style = GUI_FitChildren,
 			Bottom = "1.1em",
 			BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
 			Priority = 0,
@@ -69,46 +70,38 @@ public func GetPowerDisplayMenuEntries(object clonk)
 	var power_consumption_need = power_network->GetPowerConsumptionNeed() / 10;
 	var power_stored = power_network->GetStoredPower();
 	var power_stored_capacity = power_network->GetStoredPowerCapacity();
-
+	
+	var entry_prototype = 
+	{
+		Style = GUI_FitChildren | GUI_TextVCenter | GUI_TextLeft,
+		Bottom = "1.1em",
+		BackgroundColor = {Std = 0, OnHover = 0x50ff0000}
+	};
+	
 	// Show power production.
 	var entry = 
 	{
-		Bottom = "1.1em",
-		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		Prototype = entry_prototype,
 		Priority = 0,
-		text = 
-		{
-			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = Format("$MsgPowerProduction$ %d {{Icon_Lightbulb}} ($MsgPowerProductionCapacity$ %d {{Icon_Lightbulb}})", power_production_current, power_production_capacity)		
-		}
+		Text = Format("$MsgPowerProduction$ %d {{Icon_Lightbulb}} ($MsgPowerProductionCapacity$ %d {{Icon_Lightbulb}})", power_production_current, power_production_capacity)
 	};
 	PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "production", custom = entry});
 	
 	// Show power consumption.
 	var entry = 
 	{
-		Bottom = "1.1em",
-		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		Prototype = entry_prototype,
 		Priority = 1,
-		text = 
-		{
-			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = Format("$MsgPowerConsumption$ %d {{Icon_Lightbulb}} ($MsgPowerConsumptionDemand$ %d {{Icon_Lightbulb}})", power_consumption_current, power_consumption_need)
-		}
+		Text = Format("$MsgPowerConsumption$ %d {{Icon_Lightbulb}} ($MsgPowerConsumptionDemand$ %d {{Icon_Lightbulb}})", power_consumption_current, power_consumption_need)
 	};
 	PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "consumption", custom = entry});
 	
 	// Show power storage.
 	var entry = 
 	{
-		Bottom = "1.1em",
-		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		Prototype = entry_prototype,
 		Priority = 2,
-		text = 
-		{
-			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = Format("$MsgPowerStored$ %s {{Icon_Lightbulb}} ($MsgPowerStoredCapacity$ %s {{Icon_Lightbulb}})", GetStoredPowerString(power_stored), GetStoredPowerString(power_stored_capacity))
-		}
+		Text = Format("$MsgPowerStored$ %s {{Icon_Lightbulb}} ($MsgPowerStoredCapacity$ %s {{Icon_Lightbulb}})", GetStoredPowerString(power_stored), GetStoredPowerString(power_stored_capacity))
 	};
 	PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "storage", custom = entry});
 	return menu_entries;

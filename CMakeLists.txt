@@ -124,7 +124,7 @@ if(MSVC)
 	# Enable LTCG for release builds
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
-	add_linker_flags(optimized MODULES exe shared static FLAGS /LTCG)
+	add_linker_flags(optimized MODULES exe shared static FLAGS "/LTCG:incremental")
 
 	# Activate edit-and-continue
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Gy")
@@ -1024,6 +1024,14 @@ src/platform/C4TimeMilliseconds.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
+
+	# pcg is a header-only library which we're listing solely so MSVC shows
+	# the sources in the solution explorer. We could use an INTERFACE library
+	# but there is no point to that because we don't need it for non-IDE
+	# generators and support on IDE-targetting generators is nonexistant.
+	thirdparty/pcg/pcg_extras.hpp
+	thirdparty/pcg/pcg_random.hpp
+	thirdparty/pcg/pcg_uint128.hpp
 )
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})

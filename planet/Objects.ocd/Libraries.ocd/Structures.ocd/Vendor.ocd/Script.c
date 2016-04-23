@@ -219,13 +219,13 @@ public func GetBuyMenuEntries(object clonk)
 
 	var wealth = GetWealth(wealth_player); 
 	var menu_entries = [];
-	var i = 0, item, amount;
+	var index = 0, item, amount;
 	
 	for (item in this->GetBuyableItems(for_player))
 	{
 		amount = this->GetBuyableAmount(for_player, item);
 		var value = this->GetBuyValue(item);
-		var entry = GetBuyMenuEntry(i, item, amount, value);
+		var entry = GetBuyMenuEntry(index++, item, amount, value);
 		if (value > wealth) // If the player can't afford it, the item (except for the price) is overlayed by a greyish color.
 		{
 			entry.overlay = {Priority = 2, BackgroundColor = RGBa(50, 50, 50, 150)};

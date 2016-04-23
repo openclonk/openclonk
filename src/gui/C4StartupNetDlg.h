@@ -29,7 +29,7 @@ const int C4NetRefRequestTimeout = 12; // seconds after which the reference requ
 const int C4NetReferenceTimeout = 42; // seconds after which references are removed from the list (C4NetRefRequestTimeout + C4NetMasterServerQueryInterval)
 const int C4NetErrorRefTimeout = 10; // seconds after which failed reference requestsare removed
 const int C4NetGameDiscoveryInterval = 30; // seconds
-const int C4NetMinRefreshInterval = 8; // seconds; minimum time between refreshes
+const int C4NetMinRefreshInterval = 1; // seconds; minimum time between refreshes
 
 
 class C4StartupNetListEntry : public C4GUI::Window

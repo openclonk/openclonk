@@ -2,10 +2,6 @@
 	Aerobatics
 	Several small sky islands form a chaotic parkour with lots of usable and respawning items.
 	
-	TODO:
-	horizontal mode with large map
-	reset player cp completion to killer (idea)
-	
 	@author Maikel
 */
 
@@ -187,6 +183,7 @@ private func InitVegetation(int amount)
 	Tree_Coniferous2->Place(amount / 4);
 	Tree_Coniferous3->Place(amount / 4);
 	Cotton->Place(amount / 2);
+	Vine->Place(amount);
 	return;
 }
 

@@ -140,8 +140,8 @@ struct C4RCMassMover
 struct C4RCRandom
 {
 	int Cnt; // index in seed
-	int Range; // random range query
-	int Val; // random value
+	uint32_t Range; // random range query
+	uint32_t Val; // random value
 };
 
 struct C4RCCreateObj
