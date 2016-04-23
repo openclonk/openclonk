@@ -159,3 +159,41 @@ TEST_F(AulTest, Vars)
 	EXPECT_EQ(C4VInt(42), RunCode("var i = 21; i = i + i; return i;"));
 	EXPECT_EQ(C4VInt(42), RunCode("var i = -42; i = Abs(i); return i;"));
 }
+
+TEST_F(AulTest, ParameterPassing)
+{
+	EXPECT_EQ(C4VArray(
+		C4VInt(1), C4VInt(2), C4VInt(3), C4VInt(4), C4VInt(5),
+		C4VInt(6), C4VInt(7), C4VInt(8), C4VInt(9), C4VInt(10)),
+		RunCode(R"(
+func f(...)
+{
+	return [Par(0), Par(1), Par(2), Par(3), Par(4), Par(5), Par(6), Par(7), Par(8), Par(9)];
+}
+
+func Main()
+{
+	return f(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+}
+)", false));
+
+	EXPECT_EQ(C4VArray(
+		C4VInt(1), C4VInt(2), C4VInt(3), C4VInt(4), C4VInt(5),
+		C4VInt(6), C4VInt(7), C4VInt(8), C4VInt(9), C4VInt(10)),
+		RunCode(R"(
+func f(a, b, ...)
+{
+	return g(b, a, ...);
+}
+
+func g(...)
+{
+	return [Par(0), Par(1), Par(2), Par(3), Par(4), Par(5), Par(6), Par(7), Par(8), Par(9)];
+}
+
+func Main()
+{
+	return f(2, 1, 3, 4, 5, 6, 7, 8, 9, 10);
+}
+)", false));
+}
