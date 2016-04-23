@@ -107,6 +107,34 @@ TEST_F(AulTest, Loops)
 	EXPECT_EQ(C4Value(), RunCode("var a = [], sum; for(var i in a) sum += i; return sum;"));
 	EXPECT_EQ(C4VInt(1), RunCode("var a = [1], sum; for(var i in a) sum += i; return sum;"));
 	EXPECT_EQ(C4VInt(6), RunCode("var a = [1,2,3], sum; for(var i in a) sum += i; return sum;"));
+	EXPECT_EQ(C4VInt(-6), RunCode(R"(
+var a = [-3, -2, -1, 0, 1, 2, 3], b;
+for (var i in a) {
+	if (i > 0) break;
+	b += i;
+}
+return b;
+)"));
+	EXPECT_EQ(C4VInt(0), RunCode(R"(
+var a = [-3, -2, -1, 0, 1, 2, 3], b;
+for (var i in a) {
+	if (i < -1) continue;
+	if (i > 1) break;
+	b += i;
+}
+return b;
+)"));
+	// Test nested loops
+	EXPECT_EQ(C4VInt(-6), RunCode(R"(
+var a = [[-3, -2], [-1, 0], [1, 2, 3]], b;
+for (var i in a) {
+	for (var j in i) {
+		if (j > 0) break;
+		b += j;
+	}
+}
+return b;
+)"));
 }
 
 TEST_F(AulTest, Locals)
