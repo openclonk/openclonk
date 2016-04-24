@@ -209,7 +209,7 @@ func GetBuyMenuEntry(int index, id item, int amount, int value)
 // ----- buying
 
 public func GetBuyMenuEntries(object clonk)
-{	
+{
 	// We need to know when exactly we should refresh the menu to prevent unecessary refreshs.
 	var lowest_greyed_out_price = nil;
 
@@ -257,7 +257,6 @@ public func GetBuyMenuEntries(object clonk)
 	fx.last_wealth = wealth;
 	fx.wealth_player = wealth_player;
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry, fx = fx});
-
 	return menu_entries;
 }
 
