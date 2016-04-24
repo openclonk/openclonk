@@ -195,6 +195,7 @@ private:
 
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
+	int AddVarAccess(C4AulBCCType eType, intptr_t varnum);
 	void DebugChunk();
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
@@ -1128,6 +1129,11 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 	return Setter;
 }
 
+int C4AulParse::AddVarAccess(C4AulBCCType eType, intptr_t varnum)
+{
+	return AddBCC(eType, 1 + varnum - (iStack + Fn->VarNamed.iSize));
+}
+
 int C4AulParse::JumpHere()
 {
 	// Set flag so the next generated code chunk won't get joined
@@ -1744,7 +1750,7 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 		{
 			if (size >= iMaxCnt)
 				break;
-			AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
+			AddVarAccess(AB_DUP, i - Fn->GetParCount());
 			++size;
 		}
 		// Do not allow more parameters even if there is space left
@@ -2110,7 +2116,7 @@ void C4AulParse::Parse_ForEach()
 	// push initial position (0)
 	AddBCC(AB_INT);
 	// get array element
-	int iStart = AddBCC(AB_FOREACH_NEXT, 1 + iVarID - (iStack + Fn->VarNamed.iSize));
+	int iStart = AddVarAccess(AB_FOREACH_NEXT, iVarID);
 	// jump out (FOREACH_NEXT will jump over this if
 	// we're not at the end of the array yet)
 	int iCond = AddBCC(AB_JUMP);
@@ -2148,14 +2154,14 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		if (Fn->ParNamed.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			AddBCC(AB_DUP, 1 + Fn->ParNamed.GetItemNr(Idtf) - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
+			AddVarAccess(AB_DUP, Fn->ParNamed.GetItemNr(Idtf) - Fn->GetParCount());
 			Shift();
 		}
 		// check for variable (var)
 		else if (Fn->VarNamed.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			AddBCC(AB_DUP, 1 + Fn->VarNamed.GetItemNr(Idtf) - (iStack + Fn->VarNamed.iSize));
+			AddVarAccess(AB_DUP, Fn->VarNamed.GetItemNr(Idtf));
 			Shift();
 		}
 		else if (ContextToExecIn && (ndx = ContextToExecIn->Func->ParNamed.GetItemNr(Idtf)) != -1)
@@ -2583,7 +2589,7 @@ void C4AulParse::Parse_Var()
 			// insert initialization in byte code
 			Shift();
 			Parse_Expression();
-			AddBCC(AB_POP_TO, 1 + iVarID - (iStack + Fn->VarNamed.iSize));
+			AddVarAccess(AB_POP_TO, iVarID);
 		}
 		if (TokenType == ATT_SCOLON)
 			return;
