@@ -179,6 +179,7 @@ protected:
 	int GetCodePos() const { return Code.size(); }
 	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
 	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
+	void DumpByteCode();
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
 	int ParCount;
@@ -214,6 +215,7 @@ public:
 
 	uint32_t tProfileTime; // internally set by profiler
 
+	friend class C4CodeGen;
 	friend class C4AulParse;
 	friend class C4ScriptHost;
 };

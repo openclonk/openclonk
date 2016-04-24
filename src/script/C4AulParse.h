@@ -18,9 +18,52 @@
 #define INC_C4AulParse
 
 #include "script/C4Aul.h"
+#include "script/C4AulScriptFunc.h"
 
 enum C4AulBCCType : int;
 enum C4AulTokenType : int;
+
+class C4CodeGen
+{
+public:
+	C4AulScriptFunc *Fn;
+	bool fJump = false;
+	int iStack = 0;
+
+	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
+	int AddBCC(const char * SPos, C4AulBCCType eType, intptr_t X = 0);
+	void ErrorOut(const char * SPos);
+	void RemoveLastBCC();
+	C4V_Type GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to); // for warning purposes
+
+	C4AulBCC MakeSetter(const char * TokenSPos, bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
+
+	int JumpHere(); // Get position for a later jump to next instruction added
+	void SetJumpHere(int iJumpOp); // Use the next inserted instruction as jump target for the given jump operation
+	void SetJump(int iJumpOp, int iWhere);
+	void AddJump(const char * SPos, C4AulBCCType eType, int iWhere);
+
+	// Keep track of loops and break/continue usages
+	struct Loop
+	{
+		struct Control
+		{
+			bool Break;
+			int Pos;
+			Control *Next;
+		};
+		Control *Controls;
+		int StackSize;
+		Loop *Next;
+	};
+	Loop *pLoopStack = NULL;
+
+	void PushLoop();
+	void PopLoop(int ContinueJump);
+	void AddLoopControl(const char * SPos, bool fBreak);
+	~C4CodeGen()
+	{ while (pLoopStack) PopLoop(0); }
+};
 
 struct C4ScriptOpDef
 {
@@ -94,42 +137,24 @@ private:
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void AppendPosition(StdStrBuf & Buf);
 
-	bool fJump;
-	int iStack;
-
-	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
-	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
 	int AddVarAccess(C4AulBCCType eType, intptr_t varnum);
 	void DebugChunk();
-	void RemoveLastBCC();
-	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
-	void DumpByteCode();
+	C4CodeGen codegen;
+	int AddBCC(C4AulBCCType eType, intptr_t X = 0)
+	{ if (Type == PARSER) return codegen.AddBCC(TokenSPos, eType, X); else return -1; }
+	C4V_Type GetLastRetType(C4V_Type to)
+	{ return codegen.GetLastRetType(Engine, to); }
+	C4AulBCC MakeSetter(bool fLeaveValue = false)
+	{ return Type == PARSER ? codegen.MakeSetter(TokenSPos, fLeaveValue) : C4AulBCC(AB_ERR, 0); }
+	void SetJumpHere(int iJumpOp)
+	{ if (Type == PARSER) codegen.SetJumpHere(iJumpOp); }
+	void AddJump(C4AulBCCType eType, int iWhere)
+	{ if (Type == PARSER) codegen.AddJump(TokenSPos, eType, iWhere); }
+	void PushLoop()
+	{ if (Type == PARSER) codegen.PushLoop(); }
+	void PopLoop(int Jump)
+	{ if (Type == PARSER) codegen.PopLoop(Jump); }
 
-	C4AulBCC MakeSetter(bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
-
-	int JumpHere(); // Get position for a later jump to next instruction added
-	void SetJumpHere(int iJumpOp); // Use the next inserted instruction as jump target for the given jump operation
-	void SetJump(int iJumpOp, int iWhere);
-	void AddJump(C4AulBCCType eType, int iWhere);
-
-	// Keep track of loops and break/continue usages
-	struct Loop
-	{
-		struct Control
-		{
-			bool Break;
-			int Pos;
-			Control *Next;
-		};
-		Control *Controls;
-		int StackSize;
-		Loop *Next;
-	};
-	Loop *pLoopStack;
-
-	void PushLoop();
-	void PopLoop(int ContinueJump);
-	void AddLoopControl(bool fBreak);
 	friend class C4AulParseError;
 };
 

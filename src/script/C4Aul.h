@@ -155,6 +155,7 @@ public:
 	friend class C4AulProfiler;
 	friend class C4ScriptHost;
 	friend class C4AulParse;
+	friend class C4CodeGen;
 	friend class C4AulDebug;
 };
 
