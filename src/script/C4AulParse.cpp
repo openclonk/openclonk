@@ -90,7 +90,7 @@
 #define C4AUL_CodeBufSize   16
 
 // script token type
-enum C4AulTokenType
+enum C4AulTokenType : int
 {
 	ATT_INVALID,// invalid token
 	ATT_DIR,    // directive

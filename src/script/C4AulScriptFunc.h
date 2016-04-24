@@ -21,7 +21,7 @@
 
 // byte code chunk type
 // some special script functions defined hard-coded to reduce the exec context
-enum C4AulBCCType
+enum C4AulBCCType : int
 {
 	AB_ARRAYA,  // array or proplist access
 	AB_ARRAYA_SET,
