@@ -140,7 +140,7 @@ public:
 			pLoopStack(NULL)
 	{ }
 	~C4AulParse()
-	{ while (pLoopStack) PopLoop(); ClearToken(); }
+	{ while (pLoopStack) PopLoop(0); ClearToken(); }
 	void Parse_DirectExec();
 	void Parse_Script(C4ScriptHost *);
 
@@ -223,7 +223,7 @@ private:
 	Loop *pLoopStack;
 
 	void PushLoop();
-	void PopLoop();
+	void PopLoop(int ContinueJump);
 	void AddLoopControl(bool fBreak);
 	friend class C4AulParseError;
 };
@@ -1175,9 +1175,15 @@ void C4AulParse::PushLoop()
 	pLoopStack = pNew;
 }
 
-void C4AulParse::PopLoop()
+void C4AulParse::PopLoop(int ContinueJump)
 {
 	if (Type != PARSER) return;
+	// Set targets for break/continue
+	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
+		if (pCtrl->Break)
+			SetJumpHere(pCtrl->Pos);
+		else
+			SetJump(pCtrl->Pos, ContinueJump);
 	// Delete loop controls
 	Loop *pLoop = pLoopStack;
 	while (pLoop->Controls)
@@ -1196,11 +1202,15 @@ void C4AulParse::PopLoop()
 void C4AulParse::AddLoopControl(bool fBreak)
 {
 	if (Type != PARSER) return;
+	// Insert code
+	if (pLoopStack->StackSize != iStack)
+		AddBCC(AB_STACK, pLoopStack->StackSize - iStack);
 	Loop::Control *pNew = new Loop::Control();
 	pNew->Break = fBreak;
 	pNew->Pos = Fn->GetCodePos();
 	pNew->Next = pLoopStack->Controls;
 	pLoopStack->Controls = pNew;
+	AddBCC(AB_JUMP);
 }
 
 const char * C4AulParse::GetTokenName(C4AulTokenType TokenType)
@@ -1675,11 +1685,7 @@ void C4AulParse::Parse_Statement()
 				}
 				else
 				{
-					// Insert code
-					if (pLoopStack->StackSize != iStack)
-						AddBCC(AB_STACK, pLoopStack->StackSize - iStack);
 					AddLoopControl(true);
-					AddBCC(AB_JUMP);
 				}
 			}
 		}
@@ -1695,11 +1701,7 @@ void C4AulParse::Parse_Statement()
 				}
 				else
 				{
-					// Insert code
-					if (pLoopStack->StackSize != iStack)
-						AddBCC(AB_STACK, pLoopStack->StackSize - iStack);
 					AddLoopControl(false);
-					AddBCC(AB_JUMP);
 				}
 			}
 		}
@@ -1963,13 +1965,7 @@ void C4AulParse::Parse_DoWhile()
 	// Jump back
 	AddJump(AB_COND, Start);
 	if (Type != PARSER) return;
-	// Set targets for break/continue
-	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
-		if (pCtrl->Break)
-			SetJumpHere(pCtrl->Pos);
-		else
-			SetJump(pCtrl->Pos, BeforeCond);
-	PopLoop();
+	PopLoop(BeforeCond);
 }
 
 void C4AulParse::Parse_While()
@@ -1992,13 +1988,7 @@ void C4AulParse::Parse_While()
 	AddJump(AB_JUMP, iStart);
 	// Set target for conditional jump
 	SetJumpHere(iCond);
-	// Set targets for break/continue
-	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
-		if (pCtrl->Break)
-			SetJumpHere(pCtrl->Pos);
-		else
-			SetJump(pCtrl->Pos, iStart);
-	PopLoop();
+	PopLoop(iStart);
 }
 
 void C4AulParse::Parse_If()
@@ -2090,13 +2080,7 @@ void C4AulParse::Parse_For()
 	// Set target for condition
 	if (iJumpOut != -1)
 		SetJumpHere(iJumpOut);
-	// Set targets for break/continue
-	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
-		if (pCtrl->Break)
-			SetJumpHere(pCtrl->Pos);
-		else
-			SetJump(pCtrl->Pos, iJumpBack);
-	PopLoop();
+	PopLoop(iJumpBack);
 }
 
 void C4AulParse::Parse_ForEach()
@@ -2139,13 +2123,7 @@ void C4AulParse::Parse_ForEach()
 	AddJump(AB_JUMP, iStart);
 	// set condition jump target
 	SetJumpHere(iCond);
-	// set jump targets for break/continue
-	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
-		if (pCtrl->Break)
-			SetJumpHere(pCtrl->Pos);
-		else
-			SetJump(pCtrl->Pos, iStart);
-	PopLoop();
+	PopLoop(iStart);
 	// remove array and counter from stack
 	AddBCC(AB_STACK, -2);
 }
