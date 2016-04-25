@@ -76,6 +76,7 @@
 #include "landscape/C4MapScript.h"
 #include "landscape/C4SolidMask.h"
 #include "landscape/fow/C4FoW.h"
+#include "landscape/C4Particles.h"
 
 #include <unordered_map>
 

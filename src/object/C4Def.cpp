@@ -30,6 +30,7 @@
 #include "player/C4RankSystem.h"
 #include "platform/C4SoundSystem.h"
 #include "landscape/C4SolidMask.h"
+#include "landscape/C4Particles.h"
 #include "graphics/CSurface8.h"
 #include "lib/StdColors.h"
 

@@ -25,6 +25,7 @@
 #include "gui/C4GameMessage.h"
 #include "graphics/C4GraphicsResource.h"
 #include "landscape/C4Material.h"
+#include "landscape/C4Particles.h"
 #include "object/C4MeshAnimation.h"
 #include "object/C4ObjectCom.h"
 #include "object/C4ObjectInfo.h"

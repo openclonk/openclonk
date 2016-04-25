@@ -48,6 +48,7 @@
 #include "control/C4Record.h"
 #include "object/C4MeshAnimation.h"
 #include "landscape/fow/C4FoW.h"
+#include "landscape/C4Particles.h"
 
 namespace
 {

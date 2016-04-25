@@ -45,6 +45,7 @@
 #include "landscape/fow/C4FoW.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
+#include "landscape/C4Particles.h"
 
 // undocumented!
 static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY, long caused_by_plr)
