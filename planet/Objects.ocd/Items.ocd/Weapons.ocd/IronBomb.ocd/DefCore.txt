@@ -11,6 +11,6 @@ VertexX=0,3,-3
 VertexY=-2,2,2
 VertexFriction=20,20,20
 Value=20
-Mass=10
+Mass=8
 Components=Metal=1;Firestone=1;
 Rotate=1

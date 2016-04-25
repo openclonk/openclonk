@@ -72,7 +72,7 @@ public func FxFuseBurnStop(object target, effect fx, int reason, bool temp)
 public func DoExplode()
 {
 	// Cast lots of shrapnel.
-	var shrapnel_count = 23;
+	var shrapnel_count = 20;
 	for (var cnt = 0; cnt < shrapnel_count; cnt++)
 	{
 		var shrapnel = CreateObjectAbove(Shrapnel);
@@ -86,7 +86,7 @@ public func DoExplode()
 	else
 		Sound("Fire::BlastMetal");
 	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), 0, 0, PV_Random(40, 60), Particles_Smoke(), 60);
-	Explode(30);
+	Explode(28);
 	return;
 }
 
