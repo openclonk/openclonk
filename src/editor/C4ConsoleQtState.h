@@ -88,6 +88,7 @@ public:
 	C4ConsoleQtMainWindow(class C4AbstractApp *app, class C4ConsoleGUIState *state);
 
 	void closeEvent(class QCloseEvent *event) override;
+	class C4ConsoleGUIState *GetConsoleState() const { return state; }
 
 public slots:
 	// Toolbar items
@@ -220,6 +221,8 @@ public:
 	void HideWelcomeScreen();
 
 	void ClearGamePointers();
+
+	void Draw(C4TargetFacet &cgo);
 };
 
 class C4ConsoleGUI::State : public C4ConsoleGUIState

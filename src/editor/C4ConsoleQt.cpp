@@ -353,10 +353,10 @@ bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename)
 	 state->SetObjectSelection(selection);
  }
 
- void C4ConsoleGUI::ClearGamePointers()
- {
+void C4ConsoleGUI::ClearGamePointers()
+{
 	 state->ClearGamePointers();
- }
+}
 
 void C4ToolsDlg::UpdateToolCtrls()
 {

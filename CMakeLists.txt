@@ -811,6 +811,8 @@ if(WITH_QT_EDITOR)
 	  src/editor/C4ConsoleQt.h
 	  src/editor/C4ConsoleQtState.cpp
 	  src/editor/C4ConsoleQtState.h
+	  src/editor/C4ConsoleQtShapes.cpp
+	  src/editor/C4ConsoleQtShapes.h
 	  src/editor/C4ConsoleQtPropListViewer.cpp
 	  src/editor/C4ConsoleQtPropListViewer.h
 	  src/editor/C4ConsoleQtObjectListViewer.cpp

@@ -32,6 +32,9 @@
 #include "game/C4Game.h"
 #include "object/C4GameObjects.h"
 #include "control/C4GameControl.h"
+#ifdef WITH_QT_EDITOR
+#include "editor/C4ConsoleQtShapes.h"
+#endif
 
 #ifdef _WIN32
 #include "res/resource.h"
@@ -124,7 +127,7 @@ int32_t C4EditCursorSelection::ObjectCount() const
 }
 
 
-C4EditCursor::C4EditCursor()
+C4EditCursor::C4EditCursor() : shapes(new C4ConsoleQtShapes())
 {
 	Default();
 }
@@ -223,8 +226,11 @@ bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
+#ifdef WITH_QT_EDITOR
+		shapes->MouseMove(X, Y, Hold, 3.0f /* TODO: Depend on zoom */);
+#endif
 		// Hold
-		if (!DragFrame && Hold)
+		if (!DragFrame && Hold && !DragShape)
 		{
 			MoveSelection(ftofix(xoff),ftofix(yoff));
 			UpdateDropTarget(dwKeyState);
@@ -361,6 +367,14 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 		}
 		else
 		{
+			// Click on shape?
+#ifdef WITH_QT_EDITOR
+			if (shapes->MouseDown(X, Y, 3.0f /* TODO: Depend on zoom */))
+			{
+				DragShape = true;
+				break;
+			}
+#endif
 			// Click on unselected: select single
 			if (Target)
 			{
@@ -475,9 +489,13 @@ bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 	}
 
 	// Release
+#ifdef WITH_QT_EDITOR
+	shapes->MouseUp(X, Y);
+#endif
 	Hold=false;
 	DragFrame=false;
 	DragLine=false;
+	DragShape = false;
 	DropTarget=NULL;
 	// Update
 	UpdateStatusBar();
@@ -596,6 +614,10 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 {
 	ZoomDataStackItem zdsi(cgo.X, cgo.Y, cgo.Zoom);
 	float line_width = std::max<float>(1.0f, 1.0f / cgo.Zoom);
+#ifdef WITH_QT_EDITOR
+	// Draw shapes of selection
+	shapes->Draw(cgo);
+#endif
 	// Draw selection marks
 	for (C4Value &obj : selection)
 	{
@@ -747,7 +769,7 @@ void C4EditCursor::Default()
 #ifdef USE_WIN32_WINDOWS
 	hMenu=NULL;
 #endif
-	Hold=DragFrame=DragLine=false;
+	Hold=DragFrame=DragLine=DragShape=false;
 	selection.clear();
 	creator_def = NULL;
 	creator_overlay = NULL;
@@ -765,6 +787,9 @@ void C4EditCursor::Clear()
 	selection.clear();
 	Console.PropertyDlgUpdate(selection, false);
 	creator_overlay.reset(NULL);
+#ifdef WITH_QT_EDITOR
+	shapes->ClearShapes(); // Should really be empty already
+#endif
 }
 
 bool C4EditCursor::SetMode(int32_t iMode)

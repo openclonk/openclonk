@@ -5061,7 +5061,7 @@ void C4Object::ResetProperty(C4String * k)
 	return C4PropListNumbered::ResetProperty(k);
 }
 
-bool C4Object::GetPropertyByS(C4String *k, C4Value *pResult) const
+bool C4Object::GetPropertyByS(const C4String *k, C4Value *pResult) const
 {
 	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
 	{

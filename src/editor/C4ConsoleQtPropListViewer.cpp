@@ -17,6 +17,7 @@
 #include "C4Include.h"
 #include "script/C4Value.h"
 #include "editor/C4ConsoleQtPropListViewer.h"
+#include "editor/C4ConsoleQtState.h"
 #include "editor/C4Console.h"
 #include "object/C4Object.h"
 #include "object/C4DefList.h"
@@ -127,7 +128,7 @@ void C4PropertyDelegateInt::SetEditorData(QWidget *editor, const C4Value &val) c
 	spinBox->setValue(val.getInt());
 }
 
-void C4PropertyDelegateInt::SetModelData(QWidget *editor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateInt::SetModelData(QObject *editor, const C4PropertyPath &property_path) const
 {
 	QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
 	spinBox->interpretText();
@@ -188,7 +189,7 @@ void C4PropertyDelegateColor::SetEditorData(QWidget *aeditor, const C4Value &val
 	editor->last_value = val;
 }
 
-void C4PropertyDelegateColor::SetModelData(QWidget *aeditor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateColor::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
 	property_path.SetProperty(editor->last_value);
@@ -199,7 +200,7 @@ QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFac
 	Editor *editor;
 	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
 	connect(editor->button, &QPushButton::pressed, this, [editor, this]() {
-		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt()));
+		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt()), editor, QString(), QColorDialog::ShowAlphaChannel);
 		editor->last_value.SetInt(clr.rgba());
 		this->SetEditorData(editor, editor->last_value); // force update on display
 		emit EditingDoneSignal(editor);
@@ -209,7 +210,7 @@ QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFac
 
 QString C4PropertyDelegateColor::GetDisplayString(const C4Value &v, C4Object *obj) const
 {
-	return QString("#%1").arg(v.getInt(), 8, 16, QChar('0'));
+	return QString("#%1").arg(uint32_t(v.getInt()), 8, 16, QChar('0'));
 }
 
 QColor C4PropertyDelegateColor::GetDisplayTextColor(const C4Value &val, class C4Object *obj) const
@@ -329,8 +330,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 	if (idx < 0 || idx >= options.size()) return;
 	const Option &option = options[idx];
 	// Lazy-resolve parameter delegate
-	if (!option.adelegate && option.adelegate_val.GetType() != C4V_Nil)
-		option.adelegate = factory->GetDelegateByValue(option.adelegate_val);
+	EnsureOptionDelegateResolved(option);
 	// Create editor if needed
 	if (option.adelegate)
 	{
@@ -375,7 +375,7 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val)
 	editor->updating = false;
 }
 
-void C4PropertyDelegateEnum::SetModelData(QWidget *aeditor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
 {
 	// Fetch value from editor
 	Editor *editor = static_cast<Editor*>(aeditor);
@@ -428,6 +428,13 @@ void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *e
 	emit EditorValueChangedSignal(editor);
 }
 
+void C4PropertyDelegateEnum::EnsureOptionDelegateResolved(const Option &option) const
+{
+	// Lazy-resolve parameter delegate
+	if (!option.adelegate && option.adelegate_val.GetType() != C4V_Nil)
+		option.adelegate = factory->GetDelegateByValue(option.adelegate_val);
+}
+
 QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Object *obj) const
 {
 	// Display string from value
@@ -440,11 +447,10 @@ QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Objec
 	else
 	{
 		// Value found: Display option string plus parameter
-		Option option = options[idx];
+		const Option &option = options[idx];
 		QString result = option.name->GetCStr();
 		// Lazy-resolve parameter delegate
-		if (!option.adelegate && option.adelegate_val.GetType() != C4V_Nil)
-			option.adelegate = factory->GetDelegateByValue(option.adelegate_val);
+		EnsureOptionDelegateResolved(option);
 		if (option.adelegate)
 		{
 			C4Value param_val = v;
@@ -458,6 +464,23 @@ QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Objec
 		}
 		return result;
 	}
+}
+
+const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(const C4Value &val) const
+{
+	// Does this delegate own a shape? Forward decision into selected option.
+	int32_t option_idx = GetOptionByValue(val);
+	if (option_idx < 0) return nullptr;
+	const Option &option = options[option_idx];
+	EnsureOptionDelegateResolved(option);
+	if (!option.adelegate) return nullptr;
+	C4Value param_val = val;
+	if (option.value_key.Get())
+	{
+		C4PropList *vp = val.getPropList();
+		if (vp) vp->GetPropertyByS(option.value_key, &param_val);
+	}
+	return option.adelegate->GetShapeDelegate(param_val);
 }
 
 C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props)
@@ -544,7 +567,7 @@ void C4PropertyDelegateC4ValueInput::SetEditorData(QWidget *aeditor, const C4Val
 	editor->edit->setText(val.GetDataString().getData());
 }
 
-void C4PropertyDelegateC4ValueInput::SetModelData(QWidget *aeditor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
 {
 	// Only set model data when pressing Enter explicitely; not just when leaving 
 	Editor *editor = static_cast<Editor *>(aeditor);
@@ -578,6 +601,50 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 }
 
 
+/* Areas shown in viewport */
+
+C4PropertyDelegateShape::C4PropertyDelegateShape(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegate(factory, props), clr(0xffff0000), can_move_center(false)
+{
+	if (props)
+	{
+		shape_type = props->GetPropertyStr(P_Type);
+		clr = props->GetPropertyInt(P_Color) | 0xff000000;
+		can_move_center = props->GetPropertyBool(P_CanMoveCenter);
+	}
+}
+
+void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath &property_path) const
+{
+	C4ConsoleQtShape *shape = static_cast<C4ConsoleQtShape *>(editor);
+	property_path.SetProperty(shape->GetValue());
+}
+
+void C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const
+{
+	// Background color
+	if (option.state & QStyle::State_Selected)
+		painter->fillRect(option.rect, option.palette.highlight());
+	else
+		painter->fillRect(option.rect, option.palette.base());
+	// Draw a frame in shape color
+	painter->save();
+	QColor frame_color = QColor(QRgb(clr & 0xffffff));
+	int32_t width = Clamp<int32_t>(option.rect.height() / 8, 2, 6) &~1;
+	QPen rect_pen(QBrush(frame_color), width, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
+	painter->setPen(rect_pen);
+	QRect inner_rect = option.rect.adjusted(width / 2, width / 2, -width / 2, -width / 2);
+	if (shape_type && shape_type->GetData() == "circle")
+	{
+		painter->drawEllipse(inner_rect);
+		if (can_move_center) painter->drawPoint(inner_rect.center());
+	}
+	else
+	{
+		painter->drawRect(inner_rect);
+	}
+	painter->restore();
+}
 
 
 /* Delegate factory: Create delegates based on the C4Value type */
@@ -594,6 +661,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4St
 	if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
 	if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
 	if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
+	if (str->GetData() == "rect" || str->GetData() == "circle") return new C4PropertyDelegateShape(this, props);
 	if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
 	// unknown type
 	return NULL;
@@ -679,18 +747,23 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (!d) return;
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
-	C4PropList *props = prop->parent_proplist.getPropList();
-	if (props)
-	{
-		// Compose set command
-		C4PropertyPath path(prop->parent_proplist.GetDataString().getData());
-		C4PropertyPath subpath;
-		if (d->GetSetFunction())
-			subpath = C4PropertyPath(path, d->GetSetFunction(), C4PropertyPath::PPT_SetFunction);
-		else
-			subpath = C4PropertyPath(path, prop->key->GetCStr());
-		d->SetModelData(editor, subpath);
-	}
+	SetPropertyData(d, editor, prop);
+}
+
+void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModel::Property *editor_prop) const
+{
+	// Safety: Ensure target properties still exist
+	C4PropList *target_props = editor_prop->parent_proplist.getPropList();
+	if (!target_props) return;
+	// Compose set command
+	C4PropertyPath path(editor_prop->parent_proplist.GetDataString().getData());
+	C4PropertyPath subpath;
+	if (d->GetSetFunction())
+		subpath = C4PropertyPath(path, d->GetSetFunction(), C4PropertyPath::PPT_SetFunction);
+	else
+		subpath = C4PropertyPath(path, editor_prop->key->GetCStr());
+	// Set according to delegate
+	d->SetModelData(editor, subpath);
 }
 
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -700,14 +773,17 @@ QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOp
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
 	prop->about_to_edit = true;
 	QWidget *editor = d->CreateEditor(this, parent, option);
-	// Connect value change signals
+	// Connect value change signals (if editing is possible for this property)
 	// For some reason, commitData needs a non-const pointer
-	connect(d, &C4PropertyDelegate::EditorValueChangedSignal, editor, [editor, this](QWidget *signal_editor) {
-		if (signal_editor == editor) const_cast<C4PropertyDelegateFactory *>(this)->EditorValueChanged(editor);
-	});
-	connect(d, &C4PropertyDelegate::EditingDoneSignal, editor, [editor, this](QWidget *signal_editor) {
-		if (signal_editor == editor) const_cast<C4PropertyDelegateFactory *>(this)->EditingDone(editor);
-	});
+	if (editor)
+	{
+		connect(d, &C4PropertyDelegate::EditorValueChangedSignal, editor, [editor, this](QWidget *signal_editor) {
+			if (signal_editor == editor) const_cast<C4PropertyDelegateFactory *>(this)->EditorValueChanged(editor);
+		});
+		connect(d, &C4PropertyDelegate::EditingDoneSignal, editor, [editor, this](QWidget *signal_editor) {
+			if (signal_editor == editor) const_cast<C4PropertyDelegateFactory *>(this)->EditingDone(editor);
+		});
+	}
 	return editor;
 }
 
@@ -722,6 +798,26 @@ QSize C4PropertyDelegateFactory::sizeHint(const QStyleOptionViewItem &option, co
 {
 	int height = QApplication::fontMetrics().height() + 4;
 	return QSize(100, height);
+}
+
+void C4PropertyDelegateFactory::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	// Delegate has custom painting?
+	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
+	C4PropertyDelegate *d = GetDelegateByIndex(index);
+	if (d && prop && d->HasCustomPaint())
+	{
+		C4Value val;
+		C4PropList *props = prop->parent_proplist.getPropList();
+		if (props)
+		{
+			d->GetPropertyValue(props, prop->key, &val);
+			d->Paint(painter, option, val);
+			return;
+		}
+	}
+	// Otherwise use default paint implementation
+	QStyledItemDelegate::paint(painter, option, index);
 }
 
 
@@ -749,23 +845,41 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 	properties.props.resize(new_properties.size());
 	for (int32_t i = 0; i < new_properties.size(); ++i)
 	{
-		properties.props[i].parent_proplist.SetPropList(target_proplist);
-		properties.props[i].key = NULL;
-		properties.props[i].display_name = NULL;
-		properties.props[i].delegate_info.Set0(); // default C4Value delegate
-		properties.props[i].delegate = NULL; // init when needed
-		properties.props[i].group_idx = group_index;
+		Property *prop = &properties.props[i];
+		prop->parent_proplist.SetPropList(target_proplist);
+		prop->key = NULL;
+		prop->display_name = NULL;
+		prop->delegate_info.Set0(); // default C4Value delegate
+		prop->group_idx = group_index;
 		C4Value published_prop_val;
 		add_proplist->GetPropertyByS(new_properties[i], &published_prop_val);
 		C4PropList *published_prop = published_prop_val.getPropList();
 		if (published_prop)
 		{
-			properties.props[i].key = published_prop->GetPropertyStr(P_Key);
-			properties.props[i].display_name = published_prop->GetPropertyStr(P_Name);
-			properties.props[i].delegate_info.SetPropList(published_prop);
+			prop->key = published_prop->GetPropertyStr(P_Key);
+			prop->display_name = published_prop->GetPropertyStr(P_Name);
+			prop->delegate_info.SetPropList(published_prop);
 		}
-		if (!properties.props[i].key) properties.props[i].key = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
-		if (!properties.props[i].display_name) properties.props[i].display_name = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+		if (!prop->key) properties.props[i].key = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+		if (!prop->display_name) properties.props[i].display_name = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+		prop->delegate = delegate_factory->GetDelegateByValue(prop->delegate_info);
+		C4Value v;
+		prop->delegate->GetPropertyValue(target_proplist, prop->key, &v);
+		// Connect editable shape to property
+		const C4PropertyDelegateShape *new_shape_delegate = prop->delegate->GetShapeDelegate(v);
+		if (new_shape_delegate != prop->shape_delegate)
+		{
+			prop->shape_delegate = new_shape_delegate;
+			if (new_shape_delegate)
+			{
+				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(target_proplist->GetObject(), published_prop, v);
+				C4PropertyDelegateFactory *factory = this->delegate_factory;
+				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
+					factory->SetPropertyData(new_shape_delegate, shape, prop);
+				});
+				prop->shape.Set(shape);
+			}
+		}
 	}
 	return true;
 }
@@ -821,6 +935,8 @@ void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
 			internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
 			internal_properties.props[i].delegate = NULL; // init when needed
 			internal_properties.props[i].group_idx = num_groups;
+			internal_properties.props[i].shape.Clear();
+			internal_properties.props[i].shape_delegate = nullptr;
 		}
 		++num_groups;
 	}

@@ -481,6 +481,8 @@ enum C4PropertyName
 	P_Key,
 	P_Effect,
 	P_AsyncGet,
+	P_Relative,
+	P_CanMoveCenter,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

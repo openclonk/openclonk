@@ -20,6 +20,8 @@
 #include "script/C4Value.h"
 #include "editor/C4ConsoleQtViewport.h"
 #include "editor/C4ConsoleQtState.h"
+#include "editor/C4Console.h"
+#include "editor/C4ConsoleQtShapes.h"
 #include "game/C4Viewport.h"
 #include "editor/C4ViewportWindow.h"
 #include "editor/C4Console.h"
@@ -67,8 +69,8 @@ void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
 	}
 	else
 	{
-		this->setCursor(Qt::CrossCursor);
 		cvp->pWindow->EditCursorMove(eventMove->x(), eventMove->y(), GetShiftWParam());
+		this->setCursor(::Console.EditCursor.GetShapes()->HasDragCursor() ? ::Console.EditCursor.GetShapes()->GetDragCursor() : Qt::CrossCursor);
 	}
 
 }

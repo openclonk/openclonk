@@ -87,6 +87,10 @@ public:
 	void OnStartGame();
 	void ClearGamePointers();
 
+	// TODO some qt editor stuff is in state and needs to be public
+	// Once other editors are removed, C4ConsoleGUI, C4ConsoleQt and C4ConsoleQtState should be reorganized
+	State *GetState() const { return state; }
+
 	friend class C4ConsoleQtMainWindow;
 	friend class C4ToolsDlg;
 #else

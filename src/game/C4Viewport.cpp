@@ -347,7 +347,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")
 
-		if (Application.isEditor) Console.EditCursor.Draw(cgo);
+		if (Application.isEditor) ::Console.EditCursor.Draw(cgo);
 
 		// Game messages
 		C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")

@@ -587,9 +587,8 @@ C4Effect * C4PropList::GetEffect()
 	return 0;
 }
 
-
 template<> template<>
-unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * const & e)
+unsigned int C4Set<C4Property>::Hash<const C4String *>(C4String const * const & e)
 {
 	assert(e);
 	unsigned int hash = 4, tmp;
@@ -607,6 +606,18 @@ unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * const & e)
 }
 
 template<> template<>
+unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * const & e)
+{
+	return Hash<const C4String *>(e);
+}
+
+template<> template<>
+bool C4Set<C4Property>::Equals<const C4String *>(C4Property const & a, C4String const * const & b)
+{
+	return a.Key == b;
+}
+
+template<> template<>
 bool C4Set<C4Property>::Equals<C4String *>(C4Property const & a, C4String * const & b)
 {
 	return a.Key == b;
@@ -618,7 +629,7 @@ unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property const & p)
 	return C4Set<C4Property>::Hash(p.Key);
 }
 
-bool C4PropList::GetPropertyByS(C4String * k, C4Value *pResult) const
+bool C4PropList::GetPropertyByS(const C4String * k, C4Value *pResult) const
 {
 	if (Properties.Has(k))
 	{
@@ -721,6 +732,20 @@ C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
 		return GetPrototype()->GetPropertyP(n);
 	}
 	return P_LAST;
+}
+
+int32_t C4PropList::GetPropertyBool(C4PropertyName n) const
+{
+	C4String * k = &Strings.P[n];
+	if (Properties.Has(k))
+	{
+		return Properties.Get(k).Value.getBool();
+	}
+	if (GetPrototype())
+	{
+		return GetPrototype()->GetPropertyBool(n);
+	}
+	return false;
 }
 
 int32_t C4PropList::GetPropertyInt(C4PropertyName n, int32_t default_val) const

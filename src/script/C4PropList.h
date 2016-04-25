@@ -92,7 +92,7 @@ public:
 
 	// These four operate on properties as seen by script, which can be dynamic
 	// or reflect C++ variables
-	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	virtual bool GetPropertyByS(const C4String *k, C4Value *pResult) const;
 	virtual C4ValueArray * GetProperties() const;
 	// not allowed on frozen proplists
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
@@ -113,6 +113,7 @@ public:
 	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
+	int32_t GetPropertyBool(C4PropertyName n) const;
 	int32_t GetPropertyInt(C4PropertyName k, int32_t default_val = 0) const;
 	C4PropList *GetPropertyPropList(C4PropertyName k) const;
 	bool HasProperty(C4String * k) const { return Properties.Has(k); }

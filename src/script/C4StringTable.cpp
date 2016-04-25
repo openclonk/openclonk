@@ -257,6 +257,8 @@ C4StringTable::C4StringTable()
 	P[P_Key] = "Key";
 	P[P_Effect] = "Effect";
 	P[P_AsyncGet] = "AsyncGet";
+	P[P_Relative] = "Relative";
+	P[P_CanMoveCenter] = "CanMoveCenter";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

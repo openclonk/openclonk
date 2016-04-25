@@ -23,6 +23,7 @@
 #include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4ConsoleQtNewScenario.h"
 #include "editor/C4ConsoleQtViewport.h"
+#include "editor/C4ConsoleQtShapes.h"
 #include "editor/C4Console.h"
 #include "platform/StdRegistry.h"
 #include "landscape/C4Landscape.h"

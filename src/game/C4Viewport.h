@@ -77,6 +77,10 @@ public:
 	/** Return y-position of the center of viewport in landscape coordinates */
 	float GetViewCenterY() { return viewY + ViewHgt/Zoom/2; }
 
+	// Convert window coordinates to game coordinates
+	float WindowToGameX(int32_t win_x) { return GetViewX() + float(win_x) / Zoom; }
+	float WindowToGameY(int32_t win_y) { return GetViewY() + float(win_y) / Zoom; }
+
 	/** Scroll the viewport by x,y */
 	void ScrollView(float byX, float byY);
 	/** Set the view position. */

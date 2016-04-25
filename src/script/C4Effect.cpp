@@ -535,7 +535,7 @@ void C4Effect::ResetProperty(C4String * k)
 	C4PropListNumbered::ResetProperty(k);
 }
 
-bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
+bool C4Effect::GetPropertyByS(const C4String *k, C4Value *pResult) const
 {
 	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
 	{

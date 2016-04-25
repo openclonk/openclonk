@@ -56,7 +56,7 @@ protected:
 	bool has_mouse_hover;
 	int32_t Mode;
 	float X,Y,X2,Y2;
-	bool Hold,DragFrame,DragLine;
+	bool Hold,DragFrame,DragLine,DragShape;
 	C4Object *Target,*DropTarget;
 	class C4Def *creator_def;
 	std::unique_ptr<C4GraphicsOverlay> creator_overlay;
@@ -82,6 +82,9 @@ protected:
 #endif
 	// Selection may either be any number of objects or a single non-object prop list
 	C4EditCursorSelection selection;
+#ifdef WITH_QT_EDITOR
+	std::unique_ptr<class C4ConsoleQtShapes> shapes;
+#endif
 public:
 	void Default();
 	void Clear();
@@ -112,6 +115,7 @@ public:
 	bool AltDown();
 	bool AltUp();
 	void SetMouseHover(bool h) { has_mouse_hover = h; }
+	class C4ConsoleQtShapes *GetShapes() const { return shapes.get(); }
 protected:
 	void UpdateStatusBar();
 	void ApplyCreateObject(bool contained);
