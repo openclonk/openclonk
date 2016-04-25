@@ -503,11 +503,6 @@ static long FnRandom(C4PropList * _this, long iRange)
 	return Random(iRange);
 }
 
-static long FnAsyncRandom(C4PropList * _this, long iRange)
-{
-	return SafeRandom(iRange);
-}
-
 static int FnGetType(C4PropList * _this, const C4Value & Value)
 {
 	// dynamic types
@@ -791,7 +786,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(BoundBy);
 	F(Inside);
 	F(Random);
-	F(AsyncRandom);
 
 	F(CreateArray);
 	F(CreatePropList);
