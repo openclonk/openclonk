@@ -21,14 +21,14 @@
 #include "lib/C4Random.h"
 #include "control/C4Record.h"
 
+#include <pcg/pcg_random.hpp>
+
 int RandomCount = 0;
-static pcg32 RandomRng;
-pcg32 SafeRandom;
+static pcg32 RandomRng, UnsyncedRandomRng;
 
 void FixedRandom(uint64_t seed)
 {
-	// for SafeRandom
-	SafeRandom.seed(seed);
+	UnsyncedRandomRng.seed(seed);
 	RandomRng.seed(seed);
 	RandomCount = 0;
 }
@@ -61,3 +61,22 @@ uint32_t Random(uint32_t iRange)
 	RecordRandom(iRange, result);
 	return result;
 }
+
+uint32_t SafeRandom()
+{
+	return UnsyncedRandomRng();
+}
+
+uint32_t SafeRandom(uint32_t iRange)
+{
+	if (!iRange) return 0u;
+	return UnsyncedRandomRng(iRange);
+}
+
+uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange)
+{
+	if (!iRange) return 0;
+	pcg32 rng(iSeed);
+	return rng(iRange);
+}
+

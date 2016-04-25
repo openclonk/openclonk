@@ -20,20 +20,18 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
-#include <pcg/pcg_random.hpp>
+#include <inttypes.h>
 
 extern int RandomCount;
-extern pcg32 SafeRandom;
 
+// Seeds both the synchronized and the unsynchronized RNGs.
 void FixedRandom(uint64_t dwSeed);
-
+// Synchronized RNG.
 uint32_t Random(uint32_t iRange);
-
-inline uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange)
-{
-	if (!iRange) return 0;
-	pcg32 rng(iSeed);
-	return rng(iRange);
-}
+// Unsynchronized RNG.
+uint32_t SafeRandom();
+uint32_t SafeRandom(uint32_t range);
+// Generates a single random value from a seed.
+uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange);
 
 #endif // INC_C4Random
