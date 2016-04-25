@@ -1888,7 +1888,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 		{
 			// create new - random - address
 			MCAddr.sin_addr.s_addr =
-			   0x000000ef | (SafeRandom(0x1000000) << 8);
+			   0x000000ef | (UnsyncedRandom(0x1000000) << 8);
 			// init broadcast
 			if (!C4NetIOSimpleUDP::InitBroadcast(&MCAddr))
 				return false;
@@ -3017,7 +3017,7 @@ bool C4NetIOUDP::SendDirect(C4NetIOPacket &&rPacket) // (mt-safe)
 
 #ifdef C4NETIO_SIMULATE_PACKETLOSS
 	if ((rPacket.getStatus() & 0x7F) != IPID_Test)
-		if (SafeRandom(100) < C4NETIO_SIMULATE_PACKETLOSS) return true;
+		if (UnsyncedRandom(100) < C4NETIO_SIMULATE_PACKETLOSS) return true;
 #endif
 
 	// send it
@@ -3032,7 +3032,7 @@ bool C4NetIOUDP::DoLoopbackTest()
 	if (!C4NetIOSimpleUDP::getMCLoopback()) return false;
 
 	// send test packet
-	const PacketHdr TestPacket = { uint8_t(IPID_Test | 0x80), SafeRandom(UINT32_MAX) };
+	const PacketHdr TestPacket = { uint8_t(IPID_Test | 0x80), UnsyncedRandom(UINT32_MAX) };
 	if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&TestPacket, sizeof(TestPacket))))
 		return false;
 

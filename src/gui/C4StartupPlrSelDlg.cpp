@@ -1326,7 +1326,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		C4P.Default(&::DefaultRanks);
 		// Set name, color, comment
 		SCopy(LoadResStr("IDS_PLR_NEWCOMMENT"), C4P.Comment, C4MaxComment);
-		C4P.PrefColor = SafeRandom(8);
+		C4P.PrefColor = UnsyncedRandom(8);
 		C4P.PrefColorDw = C4P.GetPrefColorValue(C4P.PrefColor);
 		C4P.OldPrefControlStyle = 1;
 		C4P.OldPrefAutoContextMenu = 1;

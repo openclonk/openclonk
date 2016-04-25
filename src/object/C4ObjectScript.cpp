@@ -91,7 +91,7 @@ static void FnDeathAnnounce(C4Object *Obj)
 	}
 	else
 	{
-		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
+		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + UnsyncedRandom(MaxDeathMsg));
 		GameMsgObject(FormatString(LoadResStr(idDeathMsg), Obj->GetName()).getData(), Obj);
 	}
 }

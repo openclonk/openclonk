@@ -181,7 +181,7 @@ public:
 
 	// assign a team ID to player info; recheck if any user-set team infos are valid within the current team options
 	// creates a new team for melee; assigns the least-used team for teamwork melee
-	// host/single-call only; using SafeRandom!
+	// host/single-call only; using UnsyncedRandom!
 	bool RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost);
 
 	// compiler

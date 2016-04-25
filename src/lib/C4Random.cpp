@@ -62,12 +62,12 @@ uint32_t Random(uint32_t iRange)
 	return result;
 }
 
-uint32_t SafeRandom()
+uint32_t UnsyncedRandom()
 {
 	return UnsyncedRandomRng();
 }
 
-uint32_t SafeRandom(uint32_t iRange)
+uint32_t UnsyncedRandom(uint32_t iRange)
 {
 	if (!iRange) return 0u;
 	return UnsyncedRandomRng(iRange);

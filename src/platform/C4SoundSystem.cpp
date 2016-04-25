@@ -116,7 +116,7 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 		// Nothing found? Abort
 		if(iNumber == 0)
 			return NULL;
-		iNumber=SafeRandom(iNumber)+1;
+		iNumber=UnsyncedRandom(iNumber)+1;
 	}
 	// Find requested sound effect in bank
 	C4SoundEffect *pSfx;

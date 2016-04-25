@@ -123,7 +123,7 @@ int C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard,
 	{
 		// loader found; choose it, if Daniel wants it that way
 		++iLocalLoaders;
-		if (!SafeRandom(++iLoaderCount))
+		if (!UnsyncedRandom(++iLoaderCount))
 		{
 			// copy group and path
 			*ppDestGrp=&rFromGrp;

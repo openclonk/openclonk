@@ -593,7 +593,7 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 			}
 			else
 			{
-				rng.seed(SafeRandom());
+				rng.seed(UnsyncedRandom());
 			}
 			alreadyRolled = 0;
 		}

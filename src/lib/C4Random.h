@@ -29,8 +29,8 @@ void FixedRandom(uint64_t dwSeed);
 // Synchronized RNG.
 uint32_t Random(uint32_t iRange);
 // Unsynchronized RNG.
-uint32_t SafeRandom();
-uint32_t SafeRandom(uint32_t range);
+uint32_t UnsyncedRandom();
+uint32_t UnsyncedRandom(uint32_t range);
 // Generates a single random value from a seed.
 uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange);
 
