@@ -1350,7 +1350,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 			}
 			else
 				// -> unknown directive
-				throw C4AulParseError(this, "unknown directive: ", Idtf);
+				Error("unknown directive: %s", Idtf);
 			break;
 		case ATT_IDTF:
 			// need a keyword here to avoid parsing random function contents
@@ -1420,7 +1420,7 @@ void C4AulParse::Parse_Function()
 
 	// check for func declaration
 	if (!SEqual(Idtf, C4AUL_Func))
-		throw C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
+		Error("Declaration expected, but found identifier: %s", Idtf);
 	Shift();
 	// get next token, must be func name
 	Check(ATT_IDTF, "function name");
@@ -1433,7 +1433,7 @@ void C4AulParse::Parse_Function()
 	if (is_global || !Host->GetPropList())
 	{
 		if (Host != pOrgScript)
-			throw C4AulParseError(this, "global func in appendto/included script: ", Idtf);
+			Error("global func in appendto/included script: %s", Idtf);
 		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			throw C4AulParseError(this, "function definition: name already in use (global variable)");
 		if (Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
@@ -2333,7 +2333,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		else
 		{
 			// identifier could not be resolved
-			throw C4AulParseError(this, "unknown identifier: ", Idtf);
+			Error("unknown identifier: %s", Idtf);
 		}
 		break;
 	case ATT_INT: // constant in cInt
@@ -2432,7 +2432,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 				// not found?
 				if (!postfixop->Identifier)
 				{
-					throw C4AulParseError(this, "unexpected prefix operator: ", op->Identifier);
+					Error("unexpected prefix operator: %s", op->Identifier);
 				}
 				// otherwise use the new-found correct postfix operator
 				op = postfixop;
