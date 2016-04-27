@@ -3716,12 +3716,16 @@ bool C4Game::ToggleChat()
 
 C4Value C4Game::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {
+	std::string func{ szFunction };
+	if (func[0] != '~')
+		func.insert(0, 1, '~');
+
 	// call objects first - scenario script might overwrite hostility, etc...
-	C4Value vResult = ::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	C4Value vResult = ::Objects.GRBroadcast(func.c_str(), pPars, fPassError, fRejectTest);
 	// rejection tests abort on first nonzero result
 	if (fRejectTest) if (!!vResult) return vResult;
 	// scenario script call
-	return ::GameScript.Call(szFunction, pPars, fPassError);
+	return ::GameScript.Call(func.c_str(), pPars, fPassError);
 }
 
 void C4Game::SetDefaultGamma()
