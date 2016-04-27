@@ -300,6 +300,20 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
+static C4PropList * FnGetPrototype(C4PropList * _this, C4PropList * p)
+{
+	if (!p) p = _this;
+	if (!p) throw NeedNonGlobalContext("GetPrototype");
+	return p->GetPrototype();
+}
+
+static void FnSetPrototype(C4PropList * _this, C4PropList * prototype, C4PropList * p)
+{
+	if (!p) p = _this;
+	if (!p) throw NeedNonGlobalContext("GetPrototype");
+	p->SetProperty(P_Prototype, C4Value(prototype));
+}
+
 static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) _this = ::ScriptEngine.GetPropList();
@@ -955,6 +969,8 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetProperties);
 	F(GetProperty);
 	F(SetProperty);
+	F(GetPrototype);
+	F(SetPrototype);
 	F(ResetProperty);
 	F(GetName);
 	F(AddEffect);
