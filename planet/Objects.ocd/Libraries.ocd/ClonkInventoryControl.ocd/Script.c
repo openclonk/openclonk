@@ -18,7 +18,7 @@ func Construction()
 {
 	if(this.inventory == nil)
 		this.inventory = {};
-	this.inventory.last_slot = 0;
+	this.inventory.last_slot = 1;
 	return _inherited(...);
 }
 
