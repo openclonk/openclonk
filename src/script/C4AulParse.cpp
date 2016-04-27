@@ -189,6 +189,7 @@ private:
 
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	void AppendPosition(StdStrBuf & Buf);
 
 	bool fJump;
 	int iStack;
@@ -233,11 +234,10 @@ void C4ScriptHost::Warn(const char *pMsg, ...)
 {
 	va_list args; va_start(args, pMsg);
 	StdStrBuf Buf;
-	Buf.FormatV(pMsg, args);
-
-	C4AulParseError warning(this, Buf.getData(), 0, true);
-	// display it
-	warning.show();
+	Buf.Ref("WARNING: ");
+	Buf.AppendFormatV(pMsg, args);
+	Buf.AppendFormat(" (%s)", ScriptName.getData());
+	DebugLog(Buf.getData());
 	// count warnings
 	++Engine->warnCnt;
 }
@@ -246,12 +246,11 @@ void C4AulParse::Warn(const char *pMsg, ...)
 {
 	va_list args; va_start(args, pMsg);
 	StdStrBuf Buf;
-	Buf.FormatV(pMsg, args);
+	Buf.Ref("WARNING: ");
+	Buf.AppendFormatV(pMsg, args);
+	AppendPosition(Buf);
+	DebugLog(Buf.getData());
 
-	C4AulParseError warning(this, Buf.getData(), 0, true);
-	warning.show();
-	if (pOrgScript != Host)
-		DebugLogF("  (as #appendto/#include to %s)", Host->ScriptName.getData());
 	// count warnings
 	++Engine->warnCnt;
 }
@@ -265,55 +264,78 @@ void C4AulParse::Error(const char *pMsg, ...)
 	throw C4AulParseError(this, Buf.getData());
 }
 
-C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const char *pIdtf, bool Warn)
+void C4AulParse::AppendPosition(StdStrBuf & Buf)
+{
+	if (Fn && Fn->GetName())
+	{
+		// Show function name
+		Buf.AppendFormat(" (in %s", Fn->GetName());
+
+		// Exact position
+		if (Fn->pOrgScript && TokenSPos)
+			Buf.AppendFormat(", %s:%d:%d)",
+			                      Fn->pOrgScript->ScriptName.getData(),
+			                      SGetLine(Fn->pOrgScript->GetScript(), TokenSPos),
+			                      SLineGetCharacters(Fn->pOrgScript->GetScript(), TokenSPos));
+		else
+			Buf.AppendChar(')');
+	}
+	else if (pOrgScript)
+	{
+		// Script name
+		Buf.AppendFormat(" (%s:%d:%d)",
+		                      pOrgScript->ScriptName.getData(),
+		                      SGetLine(pOrgScript->GetScript(), TokenSPos),
+		                      SLineGetCharacters(pOrgScript->GetScript(), TokenSPos));
+	}
+	// show a warning if the error is in a remote script
+	if (pOrgScript != Host && Host)
+		Buf.AppendFormat(" (as #appendto/#include to %s)", Host->ScriptName.getData());
+}
+
+C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg)
 		: C4AulError()
 {
 	// compose error string
-	sMessage.Format("%s: %s%s",
-	                Warn ? "WARNING" : "ERROR",
-	                pMsg,
-	                pIdtf ? pIdtf : "");
-	if (state->Fn && state->Fn->GetName())
-	{
-		// Show function name
-		sMessage.AppendFormat(" (in %s", state->Fn->GetName());
-
-		// Exact position
-		if (state->Fn->pOrgScript && state->TokenSPos)
-			sMessage.AppendFormat(", %s:%d:%d)",
-			                      state->Fn->pOrgScript->ScriptName.getData(),
-			                      SGetLine(state->Fn->pOrgScript->GetScript(), state->TokenSPos),
-			                      SLineGetCharacters(state->Fn->pOrgScript->GetScript(), state->TokenSPos));
-		else
-			sMessage.AppendChar(')');
-	}
-	else if (state->pOrgScript)
-	{
-		// Script name
-		sMessage.AppendFormat(" (%s:%d:%d)",
-		                      state->pOrgScript->ScriptName.getData(),
-		                      SGetLine(state->pOrgScript->GetScript(), state->TokenSPos),
-		                      SLineGetCharacters(state->pOrgScript->GetScript(), state->TokenSPos));
-	}
-	// show a warning if the error is in a remote script
-	if (state->pOrgScript != state->Host && state->Host)
-		sMessage.AppendFormat(" (as #appendto/#include to %s)", state->Host->ScriptName.getData());
-
+	sMessage.Ref("ERROR: ");
+	sMessage.Append(pMsg);
+	state->AppendPosition(sMessage);
 }
 
-C4AulParseError::C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf, bool Warn)
+C4AulParseError::C4AulParseError(C4ScriptHost *pScript, const char *pMsg)
 {
 	// compose error string
-	sMessage.Format("%s: %s%s",
-	                Warn ? "WARNING" : "ERROR",
-	                pMsg,
-	                pIdtf ? pIdtf : "");
+	sMessage.Ref("ERROR: ");
+	sMessage.Append(pMsg);
 	if (pScript)
 	{
 		// Script name
 		sMessage.AppendFormat(" (%s)",
 		                      pScript->ScriptName.getData());
 	}
+}
+
+C4AulParseError::C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg)
+		: C4AulError()
+{
+	// compose error string
+	sMessage.Ref("ERROR: ");
+	sMessage.Append(pMsg);
+	if (!Fn) return;
+	sMessage.Append(" (");
+	// Show function name
+	if (Fn->GetName())
+		sMessage.AppendFormat("in %s", Fn->GetName());
+	if (Fn->GetName() && Fn->pOrgScript && SPos)
+		sMessage.Append(", ");
+	// Exact position
+	if (Fn->pOrgScript && SPos)
+		sMessage.AppendFormat("%s:%d:%d)",
+				      Fn->pOrgScript->ScriptName.getData(),
+				      SGetLine(Fn->pOrgScript->GetScript(), SPos),
+				      SLineGetCharacters(Fn->pOrgScript->GetScript(), SPos));
+	else
+		sMessage.AppendChar(')');
 }
 
 bool C4AulParse::AdvanceSpaces()

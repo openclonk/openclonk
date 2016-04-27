@@ -45,8 +45,9 @@ public:
 class C4AulParseError : public C4AulError
 {
 public:
-	C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
-	C4AulParseError(class C4AulParse * state, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
+	C4AulParseError(C4ScriptHost *pScript, const char *pMsg); // constructor
+	C4AulParseError(class C4AulParse * state, const char *pMsg); // constructor
+	C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg);
 };
 
 // execution error
