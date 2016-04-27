@@ -405,15 +405,17 @@ private func PickUpAll()
 	}
 }
 
-// used in Inventory.ocd
+// Used in Inventory.ocd
 public func SetHandItemPos(int hand, int inv)
 {
-	// save current slot
-	if(hand == 0)
+	// Save the current slot as the last slot only for the first hand
+	// and if the inventory slot actually changes.
+	if (hand == 0 && this->GetHandItemPos(0) != inv)
 		this.inventory.last_slot = this->GetHandItemPos(0);
 		
 	return _inherited(hand, inv, ...);
 }
+
 /* Backpack control */
 func Selected(object mnu, object mnu_item)
 {
