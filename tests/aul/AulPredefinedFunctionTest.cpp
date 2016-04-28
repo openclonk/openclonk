@@ -141,6 +141,12 @@ TEST_F(AulPredefFunctionTest, Abs)
 	EXPECT_EQ(C4VINT_MAX, RunExpr("Abs(2147483647)"));
 }
 
+TEST_F(AulPredefFunctionTest, CreateEffect)
+{
+	EXPECT_EQ(C4VInt(3), RunCode("local A = { Start=func() { this.Magicnumber = 3; } } func Main() { return CreateEffect(A, 1).Magicnumber; }", false));
+	EXPECT_EQ(C4VInt(3), RunCode("local A = { Construction=func() { this.Magicnumber = 3; } } func Main() { return CreateEffect(A, 1).Magicnumber; }", false));
+}
+
 TEST_F(AulPredefFunctionTest, Trivial)
 {
 	EXPECT_EQ(C4VInt(100), RunExpr("Sin(900,100,10)"));
