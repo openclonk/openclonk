@@ -219,7 +219,7 @@ public:
 
 	uint32_t tProfileTime; // internally set by profiler
 
-	friend class C4CodeGen;
+	friend class C4AulCompiler;
 	friend class C4AulParse;
 	friend class C4ScriptHost;
 };

@@ -740,7 +740,7 @@ bool C4ScriptHost::Preparse()
 }
 
 
-int C4CodeGen::GetStackValue(C4AulBCCType eType, intptr_t X)
+int C4AulCompiler::GetStackValue(C4AulBCCType eType, intptr_t X)
 {
 	switch (eType)
 	{
@@ -840,7 +840,7 @@ void C4AulParse::DebugChunk()
 		AddBCC(AB_DEBUG);
 }
 
-int C4CodeGen::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X)
+int C4AulCompiler::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X)
 {
 	// Track stack size
 	iStack += GetStackValue(eType, X);
@@ -940,7 +940,7 @@ int C4CodeGen::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X)
 	return Fn->GetCodePos() - 1;
 }
 
-void C4CodeGen::RemoveLastBCC()
+void C4AulCompiler::RemoveLastBCC()
 {
 	// Security: This is unsafe on anything that might get optimized away
 	C4AulBCC *pBCC = Fn->GetLastCode();
@@ -951,7 +951,7 @@ void C4CodeGen::RemoveLastBCC()
 	Fn->RemoveLastBCC();
 }
 
-C4V_Type C4CodeGen::GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to)
+C4V_Type C4AulCompiler::GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to)
 {
 	C4V_Type from;
 	switch (Fn->GetLastCode()->bccType)
@@ -1004,7 +1004,7 @@ C4V_Type C4CodeGen::GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to)
 	return from;
 }
 
-C4AulBCC C4CodeGen::MakeSetter(const char * SPos, bool fLeaveValue)
+C4AulBCC C4AulCompiler::MakeSetter(const char * SPos, bool fLeaveValue)
 {
 	C4AulBCC Value = *(Fn->GetLastCode()), Setter = Value;
 	// Check type
@@ -1064,7 +1064,7 @@ int C4AulParse::AddVarAccess(C4AulBCCType eType, intptr_t varnum)
 	return AddBCC(eType, 1 + varnum - (codegen.iStack + Fn->VarNamed.iSize));
 }
 
-int C4CodeGen::JumpHere()
+int C4AulCompiler::JumpHere()
 {
 	// Set flag so the next generated code chunk won't get joined
 	fJump = true;
@@ -1076,7 +1076,7 @@ static bool IsJump(C4AulBCCType t)
 	return t == AB_JUMP || t == AB_JUMPAND || t == AB_JUMPOR || t == AB_JUMPNNIL || t == AB_CONDN || t == AB_COND;
 }
 
-void C4CodeGen::SetJumpHere(int iJumpOp)
+void C4AulCompiler::SetJumpHere(int iJumpOp)
 {
 	// Set target
 	C4AulBCC *pBCC = Fn->GetCodeByPos(iJumpOp);
@@ -1086,7 +1086,7 @@ void C4CodeGen::SetJumpHere(int iJumpOp)
 	fJump = true;
 }
 
-void C4CodeGen::SetJump(int iJumpOp, int iWhere)
+void C4AulCompiler::SetJump(int iJumpOp, int iWhere)
 {
 	// Set target
 	C4AulBCC *pBCC = Fn->GetCodeByPos(iJumpOp);
@@ -1094,12 +1094,12 @@ void C4CodeGen::SetJump(int iJumpOp, int iWhere)
 	pBCC->Par.i = iWhere - iJumpOp;
 }
 
-void C4CodeGen::AddJump(const char * SPos, C4AulBCCType eType, int iWhere)
+void C4AulCompiler::AddJump(const char * SPos, C4AulBCCType eType, int iWhere)
 {
 	AddBCC(SPos, eType, iWhere - Fn->GetCodePos());
 }
 
-void C4CodeGen::PushLoop()
+void C4AulCompiler::PushLoop()
 {
 	Loop *pNew = new Loop();
 	pNew->StackSize = iStack;
@@ -1108,7 +1108,7 @@ void C4CodeGen::PushLoop()
 	pLoopStack = pNew;
 }
 
-void C4CodeGen::PopLoop(int ContinueJump)
+void C4AulCompiler::PopLoop(int ContinueJump)
 {
 	// Set targets for break/continue
 	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
@@ -1131,7 +1131,7 @@ void C4CodeGen::PopLoop(int ContinueJump)
 	delete pLoop;
 }
 
-void C4CodeGen::AddLoopControl(const char * SPos, bool fBreak)
+void C4AulCompiler::AddLoopControl(const char * SPos, bool fBreak)
 {
 	// Insert code
 	if (pLoopStack->StackSize != iStack)
@@ -1144,7 +1144,7 @@ void C4CodeGen::AddLoopControl(const char * SPos, bool fBreak)
 	AddBCC(SPos, AB_JUMP);
 }
 
-void C4CodeGen::ErrorOut(const char * SPos, C4AulError & e)
+void C4AulCompiler::ErrorOut(const char * SPos, C4AulError & e)
 {
 	// make all jumps that don't have their destination yet jump here
 	for (unsigned int i = 0; i < Fn->Code.size(); i++)
@@ -1889,7 +1889,7 @@ void C4AulParse::Parse_DoWhile()
 	Parse_Statement();
 	int BeforeCond = -1;
 	if (Type == PARSER)
-		for (C4CodeGen::Loop::Control *pCtrl2 = codegen.pLoopStack->Controls; pCtrl2; pCtrl2 = pCtrl2->Next)
+		for (C4AulCompiler::Loop::Control *pCtrl2 = codegen.pLoopStack->Controls; pCtrl2; pCtrl2 = pCtrl2->Next)
 			if (!pCtrl2->Break)
 				BeforeCond = codegen.JumpHere();
 	// Execute condition

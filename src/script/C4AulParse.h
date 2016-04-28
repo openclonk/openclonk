@@ -23,7 +23,7 @@
 enum C4AulBCCType : int;
 enum C4AulTokenType : int;
 
-class C4CodeGen
+class C4AulCompiler
 {
 public:
 	C4AulScriptFunc *Fn;
@@ -61,7 +61,7 @@ public:
 	void PushLoop();
 	void PopLoop(int ContinueJump);
 	void AddLoopControl(const char * SPos, bool fBreak);
-	~C4CodeGen()
+	~C4AulCompiler()
 	{ while (pLoopStack) PopLoop(0); }
 };
 
@@ -139,7 +139,7 @@ private:
 
 	int AddVarAccess(C4AulBCCType eType, intptr_t varnum);
 	void DebugChunk();
-	C4CodeGen codegen;
+	C4AulCompiler codegen;
 	int AddBCC(C4AulBCCType eType, intptr_t X = 0)
 	{ if (Type == PARSER) return codegen.AddBCC(TokenSPos, eType, X); else return -1; }
 	C4V_Type GetLastRetType(C4V_Type to)
