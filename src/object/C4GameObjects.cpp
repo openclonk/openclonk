@@ -347,8 +347,6 @@ void C4GameObjects::UpdateScriptPointers()
 	// call in sublists
 	C4ObjectList::UpdateScriptPointers();
 	InactiveObjects.UpdateScriptPointers();
-	// adjust global effects
-	if (Game.pGlobalEffects) Game.pGlobalEffects->ReAssignAllCallbackFunctions();
 }
 
 C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)

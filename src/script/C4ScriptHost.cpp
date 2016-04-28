@@ -21,6 +21,7 @@
 #include "script/C4ScriptHost.h"
 
 #include "object/C4Def.h"
+#include "script/C4Effect.h"
 
 /*--- C4ScriptHost ---*/
 
@@ -48,7 +49,7 @@ C4ScriptHost::~C4ScriptHost()
 
 void C4ScriptHost::Clear()
 {
-	ComponentHost.Clear();
+	C4ComponentHost::Clear();
 	Script.Clear();
 	LocalNamed.Reset();
 	LocalValues.Clear();
@@ -97,7 +98,7 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
                         const char *szLanguage, class C4LangStringTable *pLocalTable)
 {
 	// Base load
-	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
+	bool fSuccess = C4ComponentHost::Load(hGroup,szFilename,szLanguage);
 	// String Table
 	if (stringTable != pLocalTable)
 	{
@@ -106,7 +107,7 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 		if (stringTable) stringTable->AddRef();
 	}
 	// set name
-	ScriptName.Ref(ComponentHost.GetFilePath());
+	ScriptName.Ref(GetFilePath());
 	// preparse script
 	MakeScript();
 	// Success
@@ -145,11 +146,11 @@ void C4ScriptHost::MakeScript()
 	// create script
 	if (stringTable)
 	{
-		stringTable->ReplaceStrings(ComponentHost.GetDataBuf(), Script);
+		stringTable->ReplaceStrings(GetDataBuf(), Script);
 	}
 	else
 	{
-		Script.Ref(ComponentHost.GetDataBuf());
+		Script.Ref(GetDataBuf());
 	}
 
 	// preparse script
@@ -159,7 +160,7 @@ void C4ScriptHost::MakeScript()
 bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// this?
-	if (SEqualNoCase(szPath, ComponentHost.GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
+	if (SEqualNoCase(szPath, GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
 	{
 		// try reload
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
@@ -300,12 +301,19 @@ void C4GameScriptHost::Clear()
 	C4ScriptHost::Clear();
 	ScenPropList.Set0();
 	ScenPrototype.Set0();
+	delete pScenarioEffects; pScenarioEffects=NULL;
 }
 
 C4PropListStatic * C4GameScriptHost::GetPropList()
 {
 	C4PropList * p = ScenPrototype._getPropList();
 	return p ? p->IsStatic() : 0;
+}
+
+void C4GameScriptHost::Denumerate(C4ValueNumbers * numbers)
+{
+	ScenPropList.Denumerate(numbers);
+	if (pScenarioEffects) pScenarioEffects->Denumerate(numbers);
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)

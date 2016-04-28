@@ -33,7 +33,7 @@ enum C4AulScriptState
 };
 
 // generic script host for objects
-class C4ScriptHost
+class C4ScriptHost: public C4ComponentHost
 {
 public:
 	virtual ~C4ScriptHost();
@@ -57,7 +57,6 @@ protected:
 	void Unreg(); // remove from list
 	void MakeScript();
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage);
-	C4ComponentHost ComponentHost;
 
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
@@ -132,9 +131,11 @@ public:
 	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
+	void Denumerate(C4ValueNumbers * numbers);
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value ScenPropList;
 	C4Value ScenPrototype;
+	C4Effect * pScenarioEffects = NULL;
 };
 
 extern C4GameScriptHost GameScript;

@@ -66,8 +66,9 @@ class C4PropList
 {
 public:
 	void Clear() { constant = false; Properties.Clear(); prototype.Set0(); }
-	const char *GetName() const;
+	virtual const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
+	virtual void SetOnFire(bool OnFire) { }
 
 	// These functions return this or a prototype.
 	virtual C4Def const * GetDef() const;
@@ -254,8 +255,9 @@ public:
 	virtual C4PropListStatic * IsStatic() { return this; }
 	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
 	StdStrBuf GetDataString() const;
+	virtual const char *GetName() const;
 	const C4PropListStatic * GetParent() { return Parent; }
-	const C4String * GetParentKeyName() { return ParentKeyName; }
+	C4String * GetParentKeyName() { return ParentKeyName; }
 protected:
 	const C4PropListStatic * Parent;
 	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in

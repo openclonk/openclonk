@@ -197,14 +197,6 @@ static long FnGetCon(C4Object *Obj, long iPrec)
 	return iPrec*Obj->GetCon()/FullCon;
 }
 
-static C4String *FnGetName(C4PropList * _this)
-{
-	if (!_this)
-		throw NeedNonGlobalContext("GetName");
-	else
-		return String(_this->GetName());
-}
-
 static bool FnSetName(C4PropList * _this, C4String *pNewName, bool fSetInInfo, bool fMakeValidIfExists)
 {
 	if (!Object(_this))
@@ -2619,7 +2611,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	::AddFunc(p, "SetContactDensity", FnSetContactDensity, false);
 	F(GetController);
 	F(SetController);
-	F(GetName);
 	F(SetName);
 	F(GetKiller);
 	F(SetKiller);

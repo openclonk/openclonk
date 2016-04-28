@@ -20,6 +20,7 @@
 
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
+#include "script/C4Effect.h"
 #include "landscape/C4Material.h"
 #include "game/C4Game.h"
 #include "object/C4GameObjects.h"
@@ -189,6 +190,10 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	// display state
 	LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
 		lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
+
+	// adjust global effects
+	if (pGlobalEffects) pGlobalEffects->ReAssignAllCallbackFunctions();
+	if (GameScript.pScenarioEffects) GameScript.pScenarioEffects->ReAssignAllCallbackFunctions();
 }
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, const char *szLanguage)

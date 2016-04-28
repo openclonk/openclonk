@@ -22,6 +22,7 @@
 #include "script/C4ScriptHost.h"
 #include "lib/C4Random.h"
 #include "object/C4DefList.h"
+#include "TestLog.h"
 
 C4Value AulTest::RunCode(const char *code, bool wrap)
 {
@@ -202,4 +203,20 @@ TEST_F(AulTest, Conditionals)
 {
 	EXPECT_EQ(C4VInt(1), RunCode("if (true) return 1; else return 2;"));
 	EXPECT_EQ(C4VInt(2), RunCode("if (false) return 1; else return 2;"));
+}
+
+TEST_F(AulTest, Warnings)
+{
+	LogMock log;
+	EXPECT_CALL(log, DebugLog(testing::StartsWith("WARNING:"))).Times(3);
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { Sin(s); }", false));
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { Sin(o); }", false));
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { Sin(a); }", false));
+}
+
+TEST_F(AulTest, NoWarnings)
+{
+	LogMock log;
+	EXPECT_CALL(log, DebugLog(testing::StartsWith("WARNING:"))).Times(0);
+	EXPECT_EQ(C4Value(), RunCode("func Main(string s, object o, array a) { var x; Sin(x); }", false));
 }

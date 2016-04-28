@@ -83,7 +83,6 @@ public:
 	C4Extra             Extra;
 	class C4ScenarioObjectsScriptHost *pScenarioObjectsScript;
 	C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
-	C4Effect            *pGlobalEffects;
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;

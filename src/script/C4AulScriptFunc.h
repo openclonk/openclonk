@@ -93,18 +93,76 @@ enum C4AulBCCType : int
 };
 
 // byte code chunk
-struct C4AulBCC
+class C4AulBCC
 {
+public:
 	C4AulBCCType bccType; // chunk type
 	union
 	{
+		intptr_t X;
 		int32_t i;
 		C4String * s;
 		C4PropList * p;
 		C4ValueArray * a;
 		C4AulFunc * f;
-		intptr_t X;
 	} Par;    // extra info
+	C4AulBCC(): bccType(AB_ERR) { }
+	C4AulBCC(C4AulBCCType bccType, intptr_t X): bccType(bccType), Par{X}
+	{
+		IncRef();
+	}
+	C4AulBCC(const C4AulBCC & from): C4AulBCC(from.bccType, from.Par.X) { }
+	C4AulBCC & operator = (const C4AulBCC & from)
+	{
+		DecRef();
+		bccType = from.bccType;
+		Par = from.Par;
+		IncRef();
+		return *this;
+	}
+	C4AulBCC(C4AulBCC && from): bccType(from.bccType), Par(from.Par)
+	{
+		from.bccType = AB_ERR;
+	}
+	C4AulBCC & operator = (C4AulBCC && from)
+	{
+		DecRef();
+		bccType = from.bccType;
+		Par = from.Par;
+		from.bccType = AB_ERR;
+		return *this;
+	}
+	~C4AulBCC()
+	{
+		DecRef();
+	}
+private:
+	void IncRef()
+	{
+		switch (bccType)
+		{
+		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
+			Par.s->IncRef();
+			break;
+		case AB_CARRAY:
+			Par.a->IncRef();
+			break;
+		default: break;
+		}
+	}
+	void DecRef()
+	{
+		switch (bccType)
+		{
+		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
+			Par.s->DecRef();
+			break;
+		case AB_CARRAY:
+			Par.a->DecRef();
+			break;
+		default: break;
+		}
+	}
 };
 
 // script function class

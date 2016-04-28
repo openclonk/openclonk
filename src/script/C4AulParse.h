@@ -92,12 +92,14 @@ private:
 
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	void AppendPosition(StdStrBuf & Buf);
 
 	bool fJump;
 	int iStack;
 
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
+	int AddVarAccess(C4AulBCCType eType, intptr_t varnum);
 	void DebugChunk();
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
@@ -126,7 +128,7 @@ private:
 	Loop *pLoopStack;
 
 	void PushLoop();
-	void PopLoop();
+	void PopLoop(int ContinueJump);
 	void AddLoopControl(bool fBreak);
 	friend class C4AulParseError;
 };

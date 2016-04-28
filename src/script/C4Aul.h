@@ -46,10 +46,10 @@ class C4AulParseError : public C4AulError
 {
 	C4AulParseError() = default;
 public:
-	C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false);
+	C4AulParseError(C4ScriptHost *pScript, const char *pMsg); // constructor
+	C4AulParseError(class C4AulParse * state, const char *pMsg); // constructor
+	C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg);
 	static C4AulParseError FromSPos(const C4ScriptHost *host, const char *SPos, C4AulScriptFunc *Fn, const char *msg, const char *Idtf = nullptr, bool Warn = false);
-	// constructor
-	C4AulParseError(class C4AulParse * state, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
 };
 
 // execution error
@@ -124,6 +124,8 @@ public:
 	C4ValueMapNames GlobalConstNames;
 	C4ValueMapData GlobalConsts;
 
+	C4Effect * pGlobalEffects = NULL;
+
 	C4AulScriptEngine(); // constructor
 	~C4AulScriptEngine(); // destructor
 	void Clear(); // clear data
@@ -142,7 +144,7 @@ public:
 	void UnLink(); // called when a script is being reloaded (clears string table)
 
 	// Compile scenario script data (without strings and constants)
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
+	void CompileFunc(StdCompiler *pComp, bool fScenarioSection, C4ValueNumbers * numbers);
 
 	// Handle user files
 	int32_t CreateUserFile(); // create new file and return handle

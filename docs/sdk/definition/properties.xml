@@ -28,7 +28,7 @@ Stand = {
         <row>
           <col><code>Prototype</code></col>
           <col>proplist</col>
-          <col></col>
+          <col>Deprecated. Use <funclink>SetPrototype</funclink> and <funclink>GetPrototype</funclink>.</col>
         </row>
         <row>
           <col><code>Name</code></col>
