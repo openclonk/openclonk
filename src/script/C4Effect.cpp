@@ -529,7 +529,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// read ID
 	if (pComp->isDecompiler())
 	{
-		const C4PropListStatic * p = CommandTarget.getPropList()->IsStatic();
+		const C4PropListStatic * p = CommandTarget.getPropList() ? CommandTarget._getPropList()->IsStatic() : NULL;
 		if (p)
 			p->RefCompileFunc(pComp, numbers);
 		else
