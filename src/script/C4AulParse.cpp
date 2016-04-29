@@ -1357,11 +1357,6 @@ void C4AulParse::Parse_Function()
 	// get next token, must be func name
 	Check(ATT_IDTF, "function name");
 	// check: symbol already in use?
-	if (!is_global)
-	{
-		if (Host->LocalNamed.GetItemNr(Idtf) != -1)
-			throw C4AulParseError(this, "function definition: name already in use (local variable)");
-	}
 	if (is_global || !Host->GetPropList())
 	{
 		if (Host != pOrgScript)
@@ -1379,6 +1374,9 @@ void C4AulParse::Parse_Function()
 		Parent = Host->GetPropList();
 	Fn = 0;
 	C4AulFunc * f = Parent->GetFunc(Idtf);
+	// check: symbol already in use?
+	if (!f && Strings.FindString(Idtf) && Parent->HasProperty(Strings.FindString(Idtf)))
+		throw C4AulParseError(this, "function definition: name already in use (local variable)");
 	while (f)
 	{
 		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Parent == Parent)
@@ -2521,6 +2519,7 @@ void C4AulParse::Parse_Local()
 	while (1)
 	{
 		Check(ATT_IDTF, "variable name");
+		C4RefCntPointer<C4String> key = ::Strings.RegString(Idtf);
 		if (Type == PREPARSER)
 		{
 			// get desired variable name
@@ -2528,19 +2527,15 @@ void C4AulParse::Parse_Local()
 			if (Host->GetPropList() && Host->GetPropList()->GetFunc(Idtf))
 				throw C4AulParseError(this, "variable definition: name already in use");
 			// insert variable
-			Host->LocalNamed.AddName(Idtf);
+			Host->GetPropList()->SetPropertyByS(key, C4VNull);
 		}
-		char Name[C4AUL_MAX_Identifier] = ""; // current identifier
-		SCopy(Idtf, Name);
 		Shift();
 		if (TokenType == ATT_SET)
 		{
 			if (!Host->GetPropList())
 				throw C4AulParseError(this, "local variables can only be initialized on proplists");
 			Shift();
-			C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
-			assert(Host->GetPropList()->IsStatic());
-			Parse_ConstExpression(Host->GetPropList()->IsStatic(), key);
+			Parse_ConstExpression(Host->GetPropList(), key);
 		}
 		if (TokenType == ATT_SCOLON)
 			return;
@@ -2623,9 +2618,8 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 				r.SetBool(false);
 			else if (SEqual(Idtf, C4AUL_Nil))
 				r.Set0();
-			else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
-				Host->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
-			else if (!Engine->GetGlobalConstant(Idtf, &r))
+			else if (!((Host && GetPropertyByS(Host->GetPropList(), Idtf, r)) ||
+			           Engine->GetGlobalConstant(Idtf, &r)))
 				if (Type == PARSER)
 					UnexpectedToken("constant value");
 			Shift();
@@ -2845,9 +2839,6 @@ bool C4ScriptHost::Parse()
 		// definition appends
 		if (GetPropList() && GetPropList()->GetDef() && (*s)->GetPropList() && (*s)->GetPropList()->GetDef())
 			GetPropList()->GetDef()->IncludeDefinition((*s)->GetPropList()->GetDef());
-		// copy local var definitions
-		for (int ivar = 0; ivar < (*s)->LocalNamed.iSize; ivar ++)
-			LocalNamed.AddName((*s)->LocalNamed.pNames[ivar]);
 	}
 
 	// parse

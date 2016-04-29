@@ -34,7 +34,6 @@ C4ScriptHost::C4ScriptHost():
 	Script = NULL;
 	stringTable = 0;
 	SourceScripts.push_back(this);
-	LocalNamed.Reset();
 	// prepare include list
 	IncludesResolved = false;
 	Resolving=false;
@@ -51,7 +50,6 @@ void C4ScriptHost::Clear()
 {
 	C4ComponentHost::Clear();
 	Script.Clear();
-	LocalNamed.Reset();
 	LocalValues.Clear();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);

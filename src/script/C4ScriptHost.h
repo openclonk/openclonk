@@ -79,7 +79,6 @@ protected:
 
 	StdStrBuf Script; // script
 	C4LangStringTable *stringTable;
-	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
 	C4AulScriptState State; // script state
 	friend class C4AulParse;
