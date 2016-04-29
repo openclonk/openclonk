@@ -375,20 +375,20 @@ void C4AulCompiler::PushLoop()
 	Loop *pNew = new Loop();
 	pNew->StackSize = iStack;
 	pNew->Controls = NULL;
-	pNew->Next = pLoopStack;
-	pLoopStack = pNew;
+	pNew->Next = active_loops;
+	active_loops = pNew;
 }
 
 void C4AulCompiler::PopLoop(int ContinueJump)
 {
 	// Set targets for break/continue
-	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
+	for (Loop::Control *pCtrl = active_loops->Controls; pCtrl; pCtrl = pCtrl->Next)
 		if (pCtrl->Break)
 			SetJumpHere(pCtrl->Pos);
 		else
 			SetJump(pCtrl->Pos, ContinueJump);
 	// Delete loop controls
-	Loop *pLoop = pLoopStack;
+	Loop *pLoop = active_loops;
 	while (pLoop->Controls)
 	{
 		// Unlink
@@ -398,20 +398,20 @@ void C4AulCompiler::PopLoop(int ContinueJump)
 		delete pCtrl;
 	}
 	// Unlink & delete
-	pLoopStack = pLoop->Next;
+	active_loops = pLoop->Next;
 	delete pLoop;
 }
 
 void C4AulCompiler::AddLoopControl(const char * SPos, bool fBreak)
 {
 	// Insert code
-	if (pLoopStack->StackSize != iStack)
-		AddBCC(SPos, AB_STACK, pLoopStack->StackSize - iStack);
+	if (active_loops->StackSize != iStack)
+		AddBCC(SPos, AB_STACK, active_loops->StackSize - iStack);
 	Loop::Control *pNew = new Loop::Control();
 	pNew->Break = fBreak;
 	pNew->Pos = Fn->GetCodePos();
-	pNew->Next = pLoopStack->Controls;
-	pLoopStack->Controls = pNew;
+	pNew->Next = active_loops->Controls;
+	active_loops->Controls = pNew;
 	AddBCC(SPos, AB_JUMP);
 }
 

@@ -1201,7 +1201,7 @@ void C4AulParse::Parse_Statement()
 			if (Type == PARSER)
 			{
 				// Must be inside a loop
-				if (!codegen.pLoopStack)
+				if (!codegen.active_loops)
 				{
 					Error("'break' is only allowed inside loops");
 				}
@@ -1217,7 +1217,7 @@ void C4AulParse::Parse_Statement()
 			if (Type == PARSER)
 			{
 				// Must be inside a loop
-				if (!codegen.pLoopStack)
+				if (!codegen.active_loops)
 				{
 					Error("'continue' is only allowed inside loops");
 				}
@@ -1474,7 +1474,7 @@ void C4AulParse::Parse_DoWhile()
 	Parse_Statement();
 	int BeforeCond = -1;
 	if (Type == PARSER)
-		for (C4AulCompiler::Loop::Control *pCtrl2 = codegen.pLoopStack->Controls; pCtrl2; pCtrl2 = pCtrl2->Next)
+		for (C4AulCompiler::Loop::Control *pCtrl2 = codegen.active_loops->Controls; pCtrl2; pCtrl2 = pCtrl2->Next)
 			if (!pCtrl2->Break)
 				BeforeCond = codegen.JumpHere();
 	// Execute condition

@@ -54,14 +54,14 @@ public:
 		int StackSize;
 		Loop *Next;
 	};
-	Loop *pLoopStack = NULL;
+	Loop *active_loops = NULL;
 
 	void PushLoop();
 	void PopLoop(int ContinueJump);
 	void AddLoopControl(const char * SPos, bool fBreak);
 	~C4AulCompiler()
 	{
-		while (pLoopStack) PopLoop(0);
+		while (active_loops) PopLoop(0);
 	}
 };
 
