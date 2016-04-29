@@ -745,7 +745,7 @@ void C4AulParse::DebugChunk()
 		AddBCC(AB_DEBUG);
 }
 
-const char * C4AulParse::GetTokenName(C4AulTokenType TokenType)
+static const char * GetTokenName(C4AulTokenType TokenType)
 {
 	switch (TokenType)
 	{
