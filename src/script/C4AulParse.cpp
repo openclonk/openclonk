@@ -56,16 +56,6 @@
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_this          "this"
 
-#define C4AUL_Image         "Image"
-#define C4AUL_Contents      "Contents"
-#define C4AUL_Condition     "Condition"
-#define C4AUL_Desc          "Desc"
-
-#define C4AUL_MethodAll                 "All"
-#define C4AUL_MethodNone                "None"
-#define C4AUL_MethodClassic             "Classic"
-#define C4AUL_MethodJumpAndRun          "JumpAndRun"
-
 #define C4AUL_GlobalNamed   "static"
 #define C4AUL_LocalNamed    "local"
 #define C4AUL_VarNamed      "var"
