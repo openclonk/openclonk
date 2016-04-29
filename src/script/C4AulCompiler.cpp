@@ -107,10 +107,8 @@ static int GetStackValue(C4AulBCCType eType, intptr_t X)
 
 	case AB_ARRAY_SLICE_SET:
 		return -3;
-
-	default:
-		assert(false);
 	}
+	assert(0 && "GetStackValue: unexpected bytecode not handled");
 	return 0;
 }
 
