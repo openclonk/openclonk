@@ -20,7 +20,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, status);
 	if (status == CONS_Moved) return false;
 	// Control handled by definition? Forward
-	if (spec_id) return spec_id->PlayerControl(plr, ctrl, x, y, strength, repeat, release);
+	if (spec_id) return spec_id->ForwardedPlayerControl(plr, ctrl, x, y, strength, repeat, release);
 
 	// Forward control to player
 	if (Control2Player(plr,ctrl, x, y, strength, repeat, release)) return true;
