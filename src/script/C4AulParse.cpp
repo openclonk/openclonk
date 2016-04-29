@@ -1154,7 +1154,7 @@ void C4CodeGen::AddLoopControl(const char * SPos, bool fBreak)
 	AddBCC(SPos, AB_JUMP);
 }
 
-void C4CodeGen::ErrorOut(const char * SPos)
+void C4CodeGen::ErrorOut(const char * SPos, C4AulError & e)
 {
 	// make all jumps that don't have their destination yet jump here
 	for (unsigned int i = 0; i < Fn->Code.size(); i++)
@@ -1165,7 +1165,9 @@ void C4CodeGen::ErrorOut(const char * SPos)
 				pBCC->Par.i = Fn->Code.size() - i;
 	}
 	// add an error chunk
-	AddBCC(SPos, AB_ERR);
+	const char * msg = e.what();
+	if (SEqual2(msg, "ERROR: ")) msg += 7;
+	AddBCC(SPos, AB_ERR, reinterpret_cast<intptr_t>(::Strings.RegString(msg)));
 }
 
 const char * C4AulParse::GetTokenName(C4AulTokenType TokenType)
@@ -1341,7 +1343,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 
 		if (Fn)
 		{
-			codegen.ErrorOut(TokenSPos);
+			codegen.ErrorOut(TokenSPos, err);
 		}
 	}
 }

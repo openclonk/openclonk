@@ -32,7 +32,7 @@ public:
 
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	int AddBCC(const char * SPos, C4AulBCCType eType, intptr_t X = 0);
-	void ErrorOut(const char * SPos);
+	void ErrorOut(const char * SPos, C4AulError & e);
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to); // for warning purposes
 

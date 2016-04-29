@@ -106,7 +106,7 @@ public:
 		C4ValueArray * a;
 		C4AulFunc * f;
 	} Par;    // extra info
-	C4AulBCC(): bccType(AB_ERR) { }
+	C4AulBCC(): bccType(AB_EOFN) { }
 	C4AulBCC(C4AulBCCType bccType, intptr_t X): bccType(bccType), Par{X}
 	{
 		IncRef();
@@ -122,14 +122,14 @@ public:
 	}
 	C4AulBCC(C4AulBCC && from): bccType(from.bccType), Par(from.Par)
 	{
-		from.bccType = AB_ERR;
+		from.bccType = AB_EOFN;
 	}
 	C4AulBCC & operator = (C4AulBCC && from)
 	{
 		DecRef();
 		bccType = from.bccType;
 		Par = from.Par;
-		from.bccType = AB_ERR;
+		from.bccType = AB_EOFN;
 		return *this;
 	}
 	~C4AulBCC()
@@ -141,6 +141,8 @@ private:
 	{
 		switch (bccType)
 		{
+		case AB_ERR:
+			if (Par.s)
 		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 			Par.s->IncRef();
 			break;
@@ -154,6 +156,8 @@ private:
 	{
 		switch (bccType)
 		{
+		case AB_ERR:
+			if (Par.s)
 		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 			Par.s->DecRef();
 			break;
