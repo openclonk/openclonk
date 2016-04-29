@@ -130,7 +130,7 @@ int C4AulCompiler::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X
 	}
 
 	// Join checks only if it's not a jump target
-	if (!fJump && Fn->GetLastCode())
+	if (!at_jump_target && Fn->GetLastCode())
 	{
 		C4AulBCC *pCPos1 = Fn->GetLastCode();
 
@@ -211,7 +211,7 @@ int C4AulCompiler::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X
 	Fn->AddBCC(eType, X, TokenSPos);
 
 	// Reset jump flag
-	fJump = false;
+	at_jump_target = false;
 
 	return Fn->GetCodePos() - 1;
 }
@@ -321,7 +321,7 @@ C4AulBCC C4AulCompiler::MakeSetter(const char * SPos, bool fLeaveValue)
 	else if (!fLeaveValue || iParCount)
 	{
 		RemoveLastBCC();
-		fJump = true; // In case the original BCC was a jump target
+		at_jump_target = true; // In case the original BCC was a jump target
 	}
 	if (fLeaveValue && iParCount)
 	{
@@ -338,7 +338,7 @@ C4AulBCC C4AulCompiler::MakeSetter(const char * SPos, bool fLeaveValue)
 int C4AulCompiler::JumpHere()
 {
 	// Set flag so the next generated code chunk won't get joined
-	fJump = true;
+	at_jump_target = true;
 	return Fn->GetCodePos();
 }
 
@@ -354,7 +354,7 @@ void C4AulCompiler::SetJumpHere(int iJumpOp)
 	assert(IsJump(pBCC->bccType));
 	pBCC->Par.i = Fn->GetCodePos() - iJumpOp;
 	// Set flag so the next generated code chunk won't get joined
-	fJump = true;
+	at_jump_target = true;
 }
 
 void C4AulCompiler::SetJump(int iJumpOp, int iWhere)

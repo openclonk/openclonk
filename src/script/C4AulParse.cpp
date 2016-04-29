@@ -1064,7 +1064,7 @@ void C4AulParse::Parse_FuncBody()
 	}
 	// return nil if the function doesn't return anything
 	C4AulBCC * CPos = Fn->GetLastCode();
-	if (!CPos || CPos->bccType != AB_RETURN || codegen.fJump)
+	if (!CPos || CPos->bccType != AB_RETURN || codegen.at_jump_target)
 	{
 		AddBCC(AB_NIL);
 		DebugChunk();

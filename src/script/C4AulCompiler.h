@@ -25,7 +25,7 @@ class C4AulCompiler
 {
 public:
 	C4AulScriptFunc *Fn;
-	bool fJump = false;
+	bool at_jump_target = false;
 	int iStack = 0;
 
 	int AddBCC(const char * SPos, C4AulBCCType eType, intptr_t X = 0);
