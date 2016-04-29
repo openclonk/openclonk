@@ -20,7 +20,7 @@
 #include "script/C4Aul.h"
 #include "script/C4AulScriptFunc.h"
 
-int C4AulCompiler::GetStackValue(C4AulBCCType eType, intptr_t X)
+static int GetStackValue(C4AulBCCType eType, intptr_t X)
 {
 	switch (eType)
 	{

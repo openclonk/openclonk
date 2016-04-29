@@ -28,7 +28,6 @@ public:
 	bool fJump = false;
 	int iStack = 0;
 
-	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	int AddBCC(const char * SPos, C4AulBCCType eType, intptr_t X = 0);
 	void ErrorOut(const char * SPos, class C4AulError & e);
 	void RemoveLastBCC();
