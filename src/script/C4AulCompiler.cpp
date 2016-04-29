@@ -114,13 +114,13 @@ static int GetStackValue(C4AulBCCType eType, intptr_t X)
 
 int C4AulCompiler::AddVarAccess(const char * TokenSPos, C4AulBCCType eType, intptr_t varnum)
 {
-	return AddBCC(TokenSPos, eType, 1 + varnum - (iStack + Fn->VarNamed.iSize));
+	return AddBCC(TokenSPos, eType, 1 + varnum - (stack_height + Fn->VarNamed.iSize));
 }
 
 int C4AulCompiler::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X)
 {
 	// Track stack size
-	iStack += GetStackValue(eType, X);
+	stack_height += GetStackValue(eType, X);
 
 	// Use stack operation instead of 0-Any (enable optimization)
 	if (eType == AB_NIL)
@@ -222,7 +222,7 @@ void C4AulCompiler::RemoveLastBCC()
 	C4AulBCC *pBCC = Fn->GetLastCode();
 	assert(pBCC->bccType != AB_STACK && pBCC->bccType != AB_STACK_SET && pBCC->bccType != AB_POP_TO);
 	// Correct stack
-	iStack -= GetStackValue(pBCC->bccType, pBCC->Par.X);
+	stack_height -= GetStackValue(pBCC->bccType, pBCC->Par.X);
 	// Remove
 	Fn->RemoveLastBCC();
 }
@@ -267,7 +267,7 @@ C4V_Type C4AulCompiler::GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to)
 		from = C4V_Bool; break;
 	case AB_DUP:
 		{
-			int pos = Fn->GetLastCode()->Par.i + iStack - 2 + Fn->VarNamed.iSize + Fn->GetParCount();
+			int pos = Fn->GetLastCode()->Par.i + stack_height - 2 + Fn->VarNamed.iSize + Fn->GetParCount();
 			if (pos < Fn->GetParCount())
 				from = Fn->GetParType()[pos];
 			else
@@ -373,7 +373,7 @@ void C4AulCompiler::AddJump(const char * SPos, C4AulBCCType eType, int iWhere)
 void C4AulCompiler::PushLoop()
 {
 	Loop *pNew = new Loop();
-	pNew->StackSize = iStack;
+	pNew->StackSize = stack_height;
 	pNew->Controls = NULL;
 	pNew->Next = active_loops;
 	active_loops = pNew;
@@ -405,8 +405,8 @@ void C4AulCompiler::PopLoop(int ContinueJump)
 void C4AulCompiler::AddLoopControl(const char * SPos, bool fBreak)
 {
 	// Insert code
-	if (active_loops->StackSize != iStack)
-		AddBCC(SPos, AB_STACK, active_loops->StackSize - iStack);
+	if (active_loops->StackSize != stack_height)
+		AddBCC(SPos, AB_STACK, active_loops->StackSize - stack_height);
 	Loop::Control *pNew = new Loop::Control();
 	pNew->Break = fBreak;
 	pNew->Pos = Fn->GetCodePos();

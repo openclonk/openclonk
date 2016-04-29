@@ -1056,11 +1056,11 @@ void C4AulParse::Parse_FuncBody()
 	// Push variables
 	if (Fn->VarNamed.iSize)
 		AddBCC(AB_STACK, Fn->VarNamed.iSize);
-	codegen.iStack = 0;
+	codegen.stack_height = 0;
 	while (TokenType != ATT_BLCLOSE)
 	{
 		Parse_Statement();
-		assert(!codegen.iStack);
+		assert(!codegen.stack_height);
 	}
 	// return nil if the function doesn't return anything
 	C4AulBCC * CPos = Fn->GetLastCode();
