@@ -96,9 +96,10 @@ private:
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void AppendPosition(StdStrBuf & Buf);
 
-	int AddVarAccess(C4AulBCCType eType, intptr_t varnum);
 	void DebugChunk();
 	C4AulCompiler codegen;
+	int AddVarAccess(C4AulBCCType eType, intptr_t varnum)
+	{ if (Type == PARSER) return codegen.AddVarAccess(TokenSPos, eType, varnum); else return -1; }
 	int AddBCC(C4AulBCCType eType, intptr_t X = 0)
 	{ if (Type == PARSER) return codegen.AddBCC(TokenSPos, eType, X); else return -1; }
 	C4V_Type GetLastRetType(C4V_Type to)

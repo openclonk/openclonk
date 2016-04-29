@@ -745,11 +745,6 @@ void C4AulParse::DebugChunk()
 		AddBCC(AB_DEBUG);
 }
 
-int C4AulParse::AddVarAccess(C4AulBCCType eType, intptr_t varnum)
-{
-	return AddBCC(eType, 1 + varnum - (codegen.iStack + Fn->VarNamed.iSize));
-}
-
 const char * C4AulParse::GetTokenName(C4AulTokenType TokenType)
 {
 	switch (TokenType)

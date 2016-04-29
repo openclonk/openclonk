@@ -33,6 +33,7 @@ public:
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to); // for warning purposes
 
+	int AddVarAccess(const char * TokenSPos, C4AulBCCType eType, intptr_t varnum);
 	C4AulBCC MakeSetter(const char * TokenSPos, bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
 
 	int JumpHere(); // Get position for a later jump to next instruction added

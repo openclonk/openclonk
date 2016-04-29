@@ -114,6 +114,11 @@ static int GetStackValue(C4AulBCCType eType, intptr_t X)
 	return 0;
 }
 
+int C4AulCompiler::AddVarAccess(const char * TokenSPos, C4AulBCCType eType, intptr_t varnum)
+{
+	return AddBCC(TokenSPos, eType, 1 + varnum - (iStack + Fn->VarNamed.iSize));
+}
+
 int C4AulCompiler::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X)
 {
 	// Track stack size
