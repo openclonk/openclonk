@@ -1058,6 +1058,8 @@ src/lib/C4Real.h
 src/lib/C4Random.cpp
 src/lib/C4Random.h
 src/script/C4Aul.cpp
+src/script/C4AulCompiler.h
+src/script/C4AulCompiler.cpp
 src/script/C4AulDefFunc.h
 src/script/C4AulExec.cpp
 src/script/C4AulExec.h

@@ -18,52 +18,11 @@
 #define INC_C4AulParse
 
 #include "script/C4Aul.h"
+#include "script/C4AulCompiler.h"
 #include "script/C4AulScriptFunc.h"
 
 enum C4AulBCCType : int;
 enum C4AulTokenType : int;
-
-class C4AulCompiler
-{
-public:
-	C4AulScriptFunc *Fn;
-	bool fJump = false;
-	int iStack = 0;
-
-	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
-	int AddBCC(const char * SPos, C4AulBCCType eType, intptr_t X = 0);
-	void ErrorOut(const char * SPos, C4AulError & e);
-	void RemoveLastBCC();
-	C4V_Type GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to); // for warning purposes
-
-	C4AulBCC MakeSetter(const char * TokenSPos, bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
-
-	int JumpHere(); // Get position for a later jump to next instruction added
-	void SetJumpHere(int iJumpOp); // Use the next inserted instruction as jump target for the given jump operation
-	void SetJump(int iJumpOp, int iWhere);
-	void AddJump(const char * SPos, C4AulBCCType eType, int iWhere);
-
-	// Keep track of loops and break/continue usages
-	struct Loop
-	{
-		struct Control
-		{
-			bool Break;
-			int Pos;
-			Control *Next;
-		};
-		Control *Controls;
-		int StackSize;
-		Loop *Next;
-	};
-	Loop *pLoopStack = NULL;
-
-	void PushLoop();
-	void PopLoop(int ContinueJump);
-	void AddLoopControl(const char * SPos, bool fBreak);
-	~C4AulCompiler()
-	{ while (pLoopStack) PopLoop(0); }
-};
 
 struct C4ScriptOpDef
 {
