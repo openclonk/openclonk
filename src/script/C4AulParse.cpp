@@ -2108,15 +2108,9 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Shift();
 		}
 		// check for variable (local)
-		else if (Host && Host->GetPropList() == Fn->Parent && Host->LocalNamed.GetItemNr(Idtf) != -1)
+		else if (GetPropertyByS(Fn->Parent, Idtf, val))
 		{
-			// insert variable by id
-			AddBCC(AB_LOCALN, (intptr_t) Strings.RegString(Idtf));
-			Shift();
-		}
-		else if ((!Host || Host->GetPropList() != Fn->Parent) && GetPropertyByS(Fn->Parent, Idtf, val))
-		{
-			if (FoundFn = val.getFunction())
+			if ((FoundFn = val.getFunction()))
 			{
 				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
 					Warn("using deprecated function %s", Idtf);
@@ -2220,15 +2214,6 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			if (TokenType == ATT_BOPEN)
 				Parse_Params(C4AUL_MAX_Par, NULL);
 		}
-		else if ((FoundFn = Fn->Parent->GetFunc(Idtf)))
-		{
-			if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
-				Warn("using deprecated function %s", Idtf);
-			Shift();
-			Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
-			AddBCC(AB_FUNC, (intptr_t) FoundFn);
-		}
-		// -> func not found
 		// check for global variables (static) or constants (static const)
 		// the global namespace has the lowest priority so that local
 		// functions and variables can overload it
