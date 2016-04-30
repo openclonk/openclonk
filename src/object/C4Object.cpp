@@ -204,7 +204,6 @@ void C4Object::Default()
 	Shape.Default();
 	fOwnVertices=0;
 	Contents.Default();
-	Component.Default();
 	SolidMask.Default();
 	PictureRect.Default();
 	Def=NULL;
@@ -284,10 +283,6 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	if (Category & C4D_Living) Alive=1;
 	if (Alive) Energy=GetPropertyInt(P_MaxEnergy);
 	Breath=GetPropertyInt(P_MaxBreath);
-
-	// Components
-	Component=Def->Component;
-	ComponentConCutoff();
 
 	// Color
 	if (Def->ColorByOwner)
@@ -727,24 +722,6 @@ void C4Object::UpdateMass()
 		Contained->Contents.MassCount();
 		Contained->UpdateMass();
 	}
-}
-
-void C4Object::ComponentConCutoff()
-{
-	// this is not ideal, since it does not know about custom builder components
-	int32_t cnt;
-	for (cnt=0; Component.GetID(cnt); cnt++)
-		Component.SetCount(cnt,
-		                   std::min(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
-}
-
-void C4Object::ComponentConGain()
-{
-	// this is not ideal, since it does not know about custom builder components
-	int32_t cnt;
-	for (cnt=0; Component.GetID(cnt); cnt++)
-		Component.SetCount(cnt,
-		                   std::max(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
 }
 
 void C4Object::UpdateInMat()
@@ -1287,14 +1264,6 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 	}
 	// Face (except for the shape)
 	UpdateFace(false);
-
-	// component update
-	// Decay: reduce components
-	if (iChange<0)
-		ComponentConCutoff();
-	// Growth: gain components
-	else
-		ComponentConGain();
 
 	// Unfullcon
 	if (fWasFull && (Con<FullCon))
@@ -2315,7 +2284,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
-	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( lightRange,                       "LightRange",         0                 ));
 	pComp->Value(mkNamingAdapt( lightFadeoutRange,                "LightFadeoutRange",  0                 ));

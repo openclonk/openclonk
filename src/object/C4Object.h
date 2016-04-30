@@ -166,7 +166,6 @@ public:
 	C4Shape Shape;
 	bool fOwnVertices; // if set, vertices aren't restored from def but from end of own vtx list
 	C4TargetRect SolidMask;
-	C4IDList Component;
 	C4Rect PictureRect;
 	C4NotifyingObjectList Contents;
 	C4MaterialList *MaterialContents; // SyncClearance-NoSave //
@@ -255,8 +254,6 @@ public:
 	void UpdatePos(); // pos/shape changed
 	void UpdateSolidMask(bool fRestoreAttachedObjects);
 	void UpdateMass();
-	void ComponentConCutoff();
-	void ComponentConGain();
 	bool ChangeDef(C4ID idNew);
 	void UpdateFace(bool bUpdateShape, bool fTemp=false);
 	void UpdateGraphics(bool fGraphicsChanged, bool fTemp=false); // recreates solidmasks (if fGraphicsChanged), validates Color

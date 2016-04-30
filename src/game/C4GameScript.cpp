@@ -987,31 +987,6 @@ static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 	return ::Definitions.GetDef(iIndex);
 }
 
-static C4Value FnGetComponent(C4PropList * _this, C4ID idComponent, int iIndex, C4Object * pObj, C4ID idDef)
-{
-	// Def component - as seen by scope object as builder
-	if (idDef)
-	{
-		// Get def
-		C4Def *pDef=C4Id2Def(idDef); if (!pDef) return C4Value();
-		// Component count
-		if (idComponent) return C4VInt(pDef->GetComponentCount(idComponent));
-		// Indexed component
-		return C4VPropList(C4Id2Def(pDef->GetIndexedComponent(iIndex)));
-	}
-	// Object component
-	else
-	{
-		// Get object
-		if (!pObj) pObj=Object(_this); if (!pObj) return C4Value();
-		// Component count
-		if (idComponent) return C4VInt(pObj->Component.GetIDCount(idComponent));
-		// Indexed component
-		return C4VPropList(C4Id2Def(pObj->Component.GetID(iIndex)));
-	}
-	return C4Value();
-}
-
 static C4Value FnGetBaseMaterial(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
 	if (!ValidPlr(iPlr)) return C4VBool(false);
@@ -2867,7 +2842,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GainScenarioAchievement);
 	F(GetPXSCount);
 	F(GetPlrKnowledge);
-	F(GetComponent);
 	F(GetBaseMaterial);
 	F(GetBaseProduction);
 	F(GetDefCoreVal);

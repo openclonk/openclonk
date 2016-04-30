@@ -1248,11 +1248,6 @@ static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
 	return !!Obj->GrabInfo(pFrom);
 }
 
-static bool FnSetComponent(C4Object *Obj, C4ID idComponent, long iCount)
-{
-	return Obj->Component.SetIDCount(idComponent,iCount,true);
-}
-
 static bool FnSetCrewStatus(C4Object *Obj, long iPlr, bool fInCrew)
 {
 	// validate player
@@ -2630,7 +2625,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(RemoveObject);
 	F(GetActionTarget);
 	F(SetActionTargets);
-	F(SetComponent);
 	::AddFunc(p, "SetCrewStatus", FnSetCrewStatus, false);
 	F(SetPosition);
 	F(CreateMenu);

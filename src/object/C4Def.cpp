@@ -94,7 +94,6 @@ void C4Def::DefaultDefCore()
 	PictureRect.Default();
 	SolidMask.Default();
 	TopFace.Default();
-	Component.Default();
 	BurnTurnTo=C4ID::None;
 	GrowthType=0;
 	CrewMember=0;
@@ -212,7 +211,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(NULL)));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));
-	pComp->Value(mkNamingAdapt(Component,                     "Components",         C4IDList()        ));
 	pComp->Value(mkNamingAdapt(SolidMask,                     "SolidMask",          TargetRect0       ));
 	pComp->Value(mkNamingAdapt(TopFace,                       "TopFace",            TargetRect0       ));
 	pComp->Value(mkNamingAdapt(PictureRect,                   "Picture",            Rect0             ));
@@ -624,27 +622,6 @@ int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 
 void C4Def::Synchronize()
 {
-}
-
-int32_t C4Def::GetComponentCount(C4ID idComponent)
-{
-	return Component.GetIDCount(idComponent);
-}
-
-C4ID C4Def::GetIndexedComponent(int32_t idx)
-{
-	return Component.GetID(idx);
-}
-
-void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance)
-{
-	assert(pOutList);
-	assert(!pOutList->GetNumberOfIDs());
-	// no valid script overload: Assume object or definition components
-	if (pObjInstance)
-		*pOutList = pObjInstance->Component;
-	else
-		*pOutList = Component;
 }
 
 void C4Def::IncludeDefinition(C4Def *pIncludeDef)
