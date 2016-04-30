@@ -1,2 +1,0 @@
-Name=Moss
-Description=Moss grows close to subterraen ponds. Place in water next to earth to cultivate. To dry, put anywhere but water. Cultivation and drying take some time.
