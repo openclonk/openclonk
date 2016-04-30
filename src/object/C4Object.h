@@ -213,7 +213,6 @@ public:
 	void SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY);
 	void SetHalfVehicleSolidMask(bool set);
 	bool CheckSolidMaskRect(); // clip bounds of SolidMask in graphics - return whether the solidmask still exists
-	C4Object *ComposeContents(C4ID id);
 	bool MenuCommand(const char *szCommand);
 
 	void Clear();

@@ -198,11 +198,6 @@
           <col>int cause</col>
           <col>When a line object is changed, that is when one of it vertices changed its position.</col>
         </row>
-        <row id="BuildNeedsMaterial">
-          <literal_col>BuildNeedsMaterial</literal_col>
-          <col>id material_definition, int amount</col>
-          <col>When the object is building another object and building material is required. The parameters are the type and amount of the first needed material. If this function returns <code>true</code>, no material message is displayed above the object.</col>
-        </row>
         <row id="AttachTargetLost">
           <literal_col>AttachTargetLost</literal_col>
           <col></col>

@@ -2556,58 +2556,11 @@ void C4Object::Clear()
 	if (pMeshInstance) { delete pMeshInstance; pMeshInstance = NULL; }
 }
 
-
-
 bool C4Object::MenuCommand(const char *szCommand)
 {
 	// Native script execution
 	if (!Def || !Status) return false;
 	return !! ::AulExec.DirectExec(this, szCommand, "MenuCommand");
-}
-
-C4Object *C4Object::ComposeContents(C4ID id)
-{
-	int32_t cnt,cnt2;
-	C4ID c_id;
-	bool fInsufficient = false;
-	C4Object *pObj;
-	C4ID idNeeded=C4ID::None;
-	int32_t iNeeded=0;
-	// Get def
-	C4Def *pDef = C4Id2Def(id); if (!pDef) return NULL;
-	// get needed contents
-	C4IDList NeededComponents;
-	pDef->GetComponents(&NeededComponents, NULL);
-	// Check for sufficient components
-	StdStrBuf Needs; Needs.Format(LoadResStr("IDS_CON_BUILDMATNEED"),pDef->GetName());
-	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
-		if (NeededComponents.GetCount(cnt) > Contents.ObjectCount(c_id))
-		{
-			Needs.AppendFormat("|%ix %s", NeededComponents.GetCount(cnt) - Contents.ObjectCount(c_id), C4Id2Def(c_id) ? C4Id2Def(c_id)->GetName() : c_id.ToString() );
-			if (!idNeeded) { idNeeded=c_id; iNeeded=NeededComponents.GetCount(cnt)-Contents.ObjectCount(c_id); }
-			fInsufficient = true;
-		}
-	// Insufficient
-	if (fInsufficient)
-	{
-		// BuildNeedsMaterial call to object...
-		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4Id2Def(idNeeded), iNeeded)))
-			// ...game message if not overloaded
-			GameMsgObjectError(Needs.getData(),this);
-		// Return
-		return NULL;
-	}
-	// Remove components
-	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
-		for (cnt2=0; cnt2<NeededComponents.GetCount(cnt); cnt2++)
-			if (!( pObj = Contents.Find(C4Id2Def(c_id)) ))
-				return NULL;
-			else
-				pObj->AssignRemoval();
-	// Create composed object
-	// the object is created with default components instead of builder components
-	// this is done because some objects (e.g. arrow packs) will set custom components during initialization, which should not be overriden
-	return CreateContents(C4Id2Def(id));
 }
 
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)

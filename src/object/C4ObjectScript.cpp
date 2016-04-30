@@ -1246,11 +1246,6 @@ static C4Object *FnCreateContents(C4Object *Obj, C4PropList * PropList, Nillable
 	return pNewObj;
 }
 
-static C4Object *FnComposeContents(C4Object *Obj, C4ID c_id)
-{
-	return Obj->ComposeContents(c_id);
-}
-
 static bool FnMakeCrewMember(C4Object *Obj, long iPlayer)
 {
 	if (!ValidPlr(iPlayer)) return false;
@@ -2639,7 +2634,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(GrabObjectInfo);
 	F(CreateContents);
 	F(ShiftContents);
-	F(ComposeContents);
 	F(GetID);
 	F(Contents);
 	F(ScrollContents);
