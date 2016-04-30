@@ -42,7 +42,6 @@ enum
 enum
 {
 	C4MN_Extra_None       = 0,
-	C4MN_Extra_Components = 1,
 	C4MN_Extra_Value      = 2,
 	C4MN_Extra_Info       = 4,
 };
@@ -88,7 +87,6 @@ protected:
 	int32_t iIndex;
 	bool IsSelectable;
 	int32_t TextDisplayProgress; // dialog menus only: Amount of text which is to be displayed already (-1 for everything)
-	C4IDList Components; // components to be displayed in info line if item is selected
 
 private:
 	bool IsDragElement();

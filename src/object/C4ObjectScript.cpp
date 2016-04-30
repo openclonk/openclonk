@@ -2448,7 +2448,6 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "C4MN_Style_EqualItemHeight",C4V_Int,       C4MN_Style_EqualItemHeight},
 
 	{ "C4MN_Extra_None"        ,C4V_Int,          C4MN_Extra_None},
-	{ "C4MN_Extra_Components"  ,C4V_Int,          C4MN_Extra_Components},
 	{ "C4MN_Extra_Value"       ,C4V_Int,          C4MN_Extra_Value},
 	{ "C4MN_Extra_Info"        ,C4V_Int,          C4MN_Extra_Info},
 

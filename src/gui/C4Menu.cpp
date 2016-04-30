@@ -61,12 +61,6 @@ C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption,
 	// some info caption corrections
 	SReplaceChar(InfoCaption, 10, ' '); SReplaceChar(InfoCaption, 13, '|');
 	SetToolTip(InfoCaption);
-	// components initialization
-	if (idID)
-	{
-		C4Def *pDef = C4Id2Def(idID);
-		if (pDef) pDef->GetComponents(&Components, NULL);
-	}
 }
 
 C4MenuItem::~C4MenuItem()
@@ -849,9 +843,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	// Draw specified extra
 	switch (Extra)
 	{
-	case C4MN_Extra_Components:
-		if (pItem) pItem->Components.Draw(cgoExtra,-1,::Definitions,C4D_All,true,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
-		break;
 	case C4MN_Extra_Value:
 	{
 		if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
