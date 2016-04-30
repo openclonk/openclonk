@@ -87,7 +87,6 @@ IDS_COMM_UNGRAB=Let go
 IDS_COMM_WAIT=Wait
 IDS_CON_BUILD=Build %s.
 IDS_CON_BUILDMATNEED=%s|needs
-IDS_CON_BUILDMATNONE=%s needs|no more material.
 IDS_CON_FAILURE=%s failed!
 IDS_CON_FAILUREOF=%s of %s failed!
 IDS_CON_HELP=Help

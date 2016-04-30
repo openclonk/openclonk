@@ -4945,42 +4945,6 @@ void C4Object::UpdateScriptPointers()
 		pEffects->ReAssignAllCallbackFunctions();
 }
 
-StdStrBuf C4Object::GetNeededMatStr() const
-{
-	C4Def* pComponent;
-	int32_t cnt, ncnt;
-	StdStrBuf NeededMats;
-
-	C4IDList NeededComponents;
-	Def->GetComponents(&NeededComponents, NULL);
-
-	C4ID idComponent;
-
-	for (cnt = 0; (idComponent=NeededComponents.GetID(cnt)); cnt ++)
-	{
-		if (NeededComponents.GetCount(cnt)!=0)
-		{
-			ncnt = NeededComponents.GetCount(cnt) - Component.GetIDCount(idComponent);
-			if (ncnt > 0)
-			{
-				NeededMats.AppendFormat("|%dx ", ncnt);
-				if ((pComponent = C4Id2Def(idComponent)))
-					NeededMats.Append(pComponent->GetName());
-				else
-					NeededMats.Append(idComponent.ToString());
-			}
-		}
-	}
-
-	StdStrBuf result;
-	if (!!NeededMats)
-		{ result.Format(LoadResStr("IDS_CON_BUILDMATNEED"), GetName()); result.Append(NeededMats.getData()); }
-	else
-		result.Format(LoadResStr("IDS_CON_BUILDMATNONE"), GetName());
-
-	return result;
-}
-
 bool C4Object::IsPlayerObject(int32_t iPlayerNumber) const
 {
 	bool fAnyPlr = (iPlayerNumber == NO_OWNER);

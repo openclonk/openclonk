@@ -381,8 +381,6 @@ public:
 
 	bool IsMoveableBySolidMask(int ComparisonPlane) const;
 
-	StdStrBuf GetNeededMatStr() const;
-
 	// This function is used for:
 	// -Objects to be removed when a player is removed
 	// -Objects that are not to be saved in "SaveScenario"-mode
