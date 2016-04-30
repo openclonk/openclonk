@@ -46,7 +46,7 @@ global func GetDefFragile()     { return GetDefCoreVal("Fragile", "DefCore"); }
 global func GetDefProjectile()  { return GetDefCoreVal("Projectile", "DefCore"); }
 global func GetDefNoPushEnter() { return GetDefCoreVal("NoPushEnter", "DefCore"); }
 global func GetDefVehicleControl()  { return GetDefCoreVal("VehicleControl", "DefCore"); }
-global func GetDefNoComponentMass() { return GetDefCoreVal("NoComponentMass", "DefCore"); }
+global func GetDefNoMassFromContents() { return GetDefCoreVal("NoMassFromContents", "DefCore"); }
 global func GetDefClosedContainer() { return GetDefCoreVal("ClosedContainer", "DefCore"); }
 global func GetDefSilentCommands() { return GetDefCoreVal("SilentCommands", "DefCore"); }
 global func GetDefTemporaryCrew() { return GetDefCoreVal("TemporaryCrew", "DefCore"); }

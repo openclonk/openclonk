@@ -721,7 +721,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 void C4Object::UpdateMass()
 {
 	Mass=std::max<int32_t>((Def->Mass+OwnMass)*Con/FullCon,1);
-	if (!Def->NoComponentMass) Mass+=Contents.Mass;
+	if (!Def->NoMassFromContents) Mass+=Contents.Mass;
 	if (Contained)
 	{
 		Contained->Contents.MassCount();

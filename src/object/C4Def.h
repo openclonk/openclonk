@@ -138,7 +138,7 @@ public:
 	int32_t VehicleControl;
 	int32_t Pathfinder;
 	int32_t MoveToRange;
-	int32_t NoComponentMass;
+	int32_t NoMassFromContents;
 	int32_t NoStabilize;
 	int32_t ClosedContainer;  // if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 	int32_t SilentCommands;   // if set, no command failure messages are printed

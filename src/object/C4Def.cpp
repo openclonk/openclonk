@@ -122,7 +122,7 @@ void C4Def::DefaultDefCore()
 	Projectile=0;
 	VehicleControl=0;
 	Pathfinder=0;
-	NoComponentMass=0;
+	NoMassFromContents=0;
 	MoveToRange=0;
 	NoStabilize=0;
 	ClosedContainer=0;
@@ -258,7 +258,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(VehicleControl,                "VehicleControl",     0                 ));
 	pComp->Value(mkNamingAdapt(Pathfinder,                    "Pathfinder",         0                 ));
 	pComp->Value(mkNamingAdapt(MoveToRange,                   "MoveToRange",        0                 ));
-	pComp->Value(mkNamingAdapt(NoComponentMass,               "NoComponentMass",    0                 ));
+	pComp->Value(mkNamingAdapt(NoMassFromContents,            "NoMassFromContents", 0                 ));
 	pComp->Value(mkNamingAdapt(NoStabilize,                   "NoStabilize",        0                 ));
 	pComp->Value(mkNamingAdapt(ClosedContainer,               "ClosedContainer",    0                 ));
 	pComp->Value(mkNamingAdapt(SilentCommands,                "SilentCommands",     0                 ));
