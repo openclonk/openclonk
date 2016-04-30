@@ -11,5 +11,4 @@ VertexY=-3,2,2
 VertexFriction=40,40,40
 Value=25
 Mass=7
-Components=Metal=2;
 Rotate=1

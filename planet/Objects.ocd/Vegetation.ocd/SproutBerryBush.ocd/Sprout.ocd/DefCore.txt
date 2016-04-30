@@ -10,7 +10,6 @@ VertexX=0
 VertexY=0
 VertexFriction=20
 Mass=50
-Components=Wood=1
 Rotate=1
 NoStabilize=1
 StretchGrowth=1

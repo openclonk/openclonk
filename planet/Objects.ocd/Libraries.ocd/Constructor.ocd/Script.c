@@ -28,7 +28,7 @@ private func ShowConstructionMaterial(object clonk, object structure)
 	while (comp = structure->GetComponent(nil, index))
 	{
 		var current_amount = structure->GetComponent(comp);
-		var max_amount = GetComponent(comp, nil, nil, structure_id);
+		var max_amount = structure_id->GetComponent(comp);
 		mat_msg = Format("%s %dx{{%i}}", mat_msg, Max(0, max_amount - current_amount), comp);
 		index++;
 	}
@@ -361,8 +361,8 @@ private func GetStructureMaterialsString(id structure)
 {
 	var comp, index = 0;
 	var components = [];
-	while (comp = GetComponent(nil, index++, nil, structure))
-		components[GetLength(components)] = [comp, GetComponent(comp, nil, nil, structure)];
+	while (comp = structure->GetComponent(nil, index++))
+		components[GetLength(components)] = [comp, structure->GetComponent(comp)];
 
 	var materials_string = "Costs: ";
 	for (comp in components)

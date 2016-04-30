@@ -10,5 +10,4 @@ VertexX=0,0
 VertexY=1,4
 VertexCNAT=16,8
 VertexFriction=10,100
-Components=Mushroom=1
 Mass=6

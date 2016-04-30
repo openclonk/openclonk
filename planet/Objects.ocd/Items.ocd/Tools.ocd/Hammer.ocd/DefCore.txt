@@ -11,6 +11,5 @@ VertexY=1,5,-2,-2
 VertexFriction=80,80,80,80
 Value=8
 Mass=15
-Components=Wood=1;Rock=1;
 Rotate=1
  

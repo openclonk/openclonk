@@ -69,6 +69,8 @@ local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local Components = [[Moss, 4]];
+
 local ActMap = {
 	Grow = {
 		Prototype = Action,

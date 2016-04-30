@@ -75,3 +75,4 @@ public func IsToolProduct() { return true; }
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
+local Components = [[Firestone, 1], [Metal, 1], [Coal, 1]];

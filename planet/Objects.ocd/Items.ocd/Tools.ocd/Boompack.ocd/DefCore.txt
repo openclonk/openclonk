@@ -11,7 +11,6 @@ VertexY=3,-6,10,10
 VertexFriction=80,60,60
 Value=20
 Mass=20
-Components=PowderKeg=1;Firestone=1;Wood=1;
 Rotate=1
 ColorByOwner=1
 NoStabilize=1

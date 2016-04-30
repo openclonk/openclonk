@@ -13,7 +13,6 @@ VertexY=-10,-10,9,9, -10,-10,9,9
 VertexCNAT=5,6,9,10, 5,6,9,10
 VertexFriction=100,100,100,100, 100,100,100,100
 Mass=30
-Components=Wood=1
 SolidMask=0,0,24,3,0,23
 Picture=24,0,128,128
 HorizontalFix=1

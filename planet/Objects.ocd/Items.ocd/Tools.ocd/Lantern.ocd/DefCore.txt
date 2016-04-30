@@ -12,4 +12,3 @@ VertexFriction=75,100
 Value=20
 Mass=4
 Rotate=1
-Components=Firestone=1;Coal=1;Metal=1;

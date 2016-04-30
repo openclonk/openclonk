@@ -12,3 +12,4 @@ local Name = "$Name$";
 local Touchable = 0;
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local Components = [[Wood, 5]];

@@ -26,3 +26,4 @@ func Definition(def)
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Components = [[Wood, 1], [Rock, 1]];

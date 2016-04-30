@@ -10,9 +10,7 @@ VertexX=-1,1,0,0
 VertexY=0,0,-2,2
 VertexCNAT=1,2
 VertexFriction=30,30
-Value=0
 Mass=6
-Components=Wood=1
 Rotate=1
 Float=1
 StretchGrowth=1

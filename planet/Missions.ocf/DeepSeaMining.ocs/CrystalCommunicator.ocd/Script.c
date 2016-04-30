@@ -18,7 +18,7 @@ public func SetConstructionSiteOverlay(object site, int dir, object stick, objec
 	// Play component-specific sound for adding stuff to the site
 	if (component_obj && !component_obj->GetDefFragile()) component_obj->~Hit();
 	// Construction site graphics by provided metal
-	var metal_completion = site->ContentsCount(Metal) * 3 / Max(GetComponent(Metal, nil, nil, this), 1);
+	var metal_completion = site->ContentsCount(Metal) * 3 / Max(GetComponent(Metal, nil), 1);
 	site->SetGraphics(["Site0", "Site1", "Site2", nil][metal_completion], CrystalCommunicator, 1, GFXOV_MODE_Base);
 	site->SetGraphics(nil, nil, 2);
 	// Add graphics of contained gems
@@ -355,3 +355,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 0;
 local Plane = 280;
+local Components = [[Ruby, 6], [Amethyst, 6], [Metal, 6]];

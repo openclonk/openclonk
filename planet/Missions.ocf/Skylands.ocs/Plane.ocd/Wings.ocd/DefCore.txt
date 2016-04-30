@@ -11,7 +11,6 @@ VertexY=-16,-16,16,16
 VertexCNAT=5,6,9,10
 VertexFriction=60,60,60,60
 Mass=50
-Components=Wood=2;Metal=1;
 Rotate=1
 Float=0
 UprightAttach=8

@@ -228,3 +228,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local MaxPickDensity = 70; // can't pick granite
 local ForceFreeHands = true;
+local Components = [[Wood, 1], [Metal, 1]];

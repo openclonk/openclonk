@@ -230,3 +230,4 @@ local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
 local ForceFreeHands = true;
+local Components = [[Wood, 2], [Metal, 1]];

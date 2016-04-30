@@ -57,3 +57,4 @@ local Description = "$Description$";
 local growth = 3;
 local degrowth = -6;
 local fastgrowth = 9;
+local Components = [[Seeds, 2]];

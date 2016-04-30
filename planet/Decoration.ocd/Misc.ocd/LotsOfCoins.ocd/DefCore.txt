@@ -6,4 +6,3 @@ Width=55
 Height=17
 Offset=-27,-8
 Mass=1000
-Components=GoldBar=20

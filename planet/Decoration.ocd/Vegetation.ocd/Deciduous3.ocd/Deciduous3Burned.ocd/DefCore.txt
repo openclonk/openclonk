@@ -10,7 +10,6 @@ VertexX=0,0,0,0,0
 VertexY=20,10,0,-10,-20
 VertexCNAT=8,16,16,16,4
 VertexFriction=50,25,25,25,50
-Components=Wood=5
 Mass=150
 StretchGrowth=1
 Oversize=1

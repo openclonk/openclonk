@@ -11,6 +11,5 @@ VertexY=-5,-4,-5,5,5
 VertexFriction=50,50,50,50,50
 Value=2
 Mass=6
-Components=Wood=1
 Rotate=1
 StretchGrowth=1

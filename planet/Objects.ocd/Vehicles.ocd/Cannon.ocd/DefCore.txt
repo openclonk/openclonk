@@ -12,7 +12,6 @@ VertexCNAT=5,6,9,10
 VertexFriction=80,80,10,10
 Value=50
 Mass=125
-Components=Metal=4;Wood=2;
 GrabPutGet=C4D_GrabGet|C4D_GrabPut
 Rotate=30
 UprightAttach=8

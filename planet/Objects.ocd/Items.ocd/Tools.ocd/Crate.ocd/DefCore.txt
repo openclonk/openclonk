@@ -10,7 +10,6 @@ VertexX=-4,-4,5,5
 VertexY=-2,5,-2,5
 VertexCNAT=5,9,6,10
 VertexFriction=25,25,25,25
-Components=Wood=3;
 Construction=1
 Value=6
 Mass=12

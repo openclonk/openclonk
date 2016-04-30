@@ -10,7 +10,6 @@ VertexX=-1,-14,8,0
 VertexY=-3,15,15,15
 VertexFriction=50,100,100,100
 Mass=400
-Components=Wood=1;Metal=3;
 Picture=3360,0,112,128,0,0
 Exclusive=1
 Construction=1

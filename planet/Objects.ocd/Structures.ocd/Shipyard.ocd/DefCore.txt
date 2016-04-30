@@ -10,7 +10,6 @@ VertexX=0,-48,-24,24,48,-40,46,0
 VertexY=36,36,36,36,36,3,3,-17
 VertexFriction=100,100,100,100,100,50,50,50
 Mass=4500
-Components=Wood=4;Metal=3
 Exclusive=1
 Construction=1
 IncompleteActivity=1

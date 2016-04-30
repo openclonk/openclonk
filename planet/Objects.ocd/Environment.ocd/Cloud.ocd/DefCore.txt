@@ -6,6 +6,5 @@ Width=512
 Height=350
 Offset=-256,-175
 Picture=0,0,220,110
-Components=Cloud=1
 Oversize=1
 StretchGrowth=1

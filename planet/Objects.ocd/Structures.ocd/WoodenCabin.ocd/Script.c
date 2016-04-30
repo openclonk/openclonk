@@ -73,3 +73,4 @@ local BlastIncinerate = 100;
 local HitPoints = 70;
 local Name = "$Name$";
 local Description = "$Description$";
+local Components = [[Wood, 5], [Rock, 4]];

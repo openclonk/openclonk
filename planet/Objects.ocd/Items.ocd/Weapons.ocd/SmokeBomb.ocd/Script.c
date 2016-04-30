@@ -117,3 +117,4 @@ public func IsArmoryProduct() { return true; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Components = [[Firestone, 1], [Coal, 1], [Metal, 1]];

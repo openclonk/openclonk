@@ -11,6 +11,5 @@ VertexY=-2,2
 VertexFriction=25,25
 Timer=1
 TimerCall=WatchUpdate
-Components=Metal=1;
 Value=6
 Mass=3

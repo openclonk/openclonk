@@ -327,3 +327,4 @@ local Description = "$Description$";
 local BlastIncinerate = 100;
 local HitPoints = 70;
 local Plane = 249;
+local Components = [[Wood, 3], [Metal, 1]];

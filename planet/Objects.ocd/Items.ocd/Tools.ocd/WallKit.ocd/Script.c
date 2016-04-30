@@ -146,3 +146,4 @@ local Description = "$Description$";
 local BridgeLength = 20;
 local BridgeThickness = 5;
 local BridgeMaterial = "Granite-granite";
+local Components = [[Metal, 2]];

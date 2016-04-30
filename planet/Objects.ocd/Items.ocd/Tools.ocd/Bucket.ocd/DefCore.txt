@@ -11,4 +11,3 @@ VertexY=3,-3,-3
 VertexFriction=75,100,100
 Value=12
 Mass=5
-Components=Metal=1;Wood=1;

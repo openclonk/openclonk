@@ -37,3 +37,4 @@ protected func Damage()
 }
 local Name = "$Name$";
 local Plane = 200;
+local Components = [[Rock, 7]];

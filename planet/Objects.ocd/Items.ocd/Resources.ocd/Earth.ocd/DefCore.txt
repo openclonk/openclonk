@@ -10,6 +10,5 @@ VertexX=0,3,-3
 VertexY=3,-2,-2
 VertexFriction=100
 Mass=12
-Components=Earth=1
 Fragile=1
 Rotate=1

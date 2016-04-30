@@ -181,7 +181,6 @@ public func IsDroppedOnDeath(object clonk)
 }
 
 
-
 /*-- Properties --*/
 
 local ActMap = {
@@ -212,3 +211,4 @@ local Collectible = 1;
 
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;
+local Components = [[Coal, 1], [Firestone, 1]];

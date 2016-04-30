@@ -150,10 +150,10 @@ public func CalcDefValue()
 {
 	var value = 0;
 	var comp, index = 0;
-	while (comp = GetComponent(nil, index++, nil, this))
+	while (comp = this->GetComponent(nil, index++))
 	{
 		var comp_value = comp->GetValue();
-		var comp_amount = GetComponent(comp, nil, nil, this);
+		var comp_amount = this->GetComponent(comp);
 		value += comp_value * comp_amount;
 	}
 	return value;

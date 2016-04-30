@@ -11,6 +11,5 @@ VertexY=1,-1,-1
 VertexFriction=75,75,75
 Value=1
 Mass=1
-Components=Moss=1
 Rotate=1
 Float=1

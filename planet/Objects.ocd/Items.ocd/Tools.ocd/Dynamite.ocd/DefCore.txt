@@ -13,4 +13,3 @@ VertexFriction=90,90,90
 Value=6
 Mass=6
 Rotate=1
-Components=Coal=1;Firestone=1

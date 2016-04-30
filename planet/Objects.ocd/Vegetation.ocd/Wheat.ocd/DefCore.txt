@@ -10,7 +10,6 @@ VertexX=0,0
 VertexY=4,2
 VertexCNAT=8,16
 VertexFriction=100,10
-Components=Seeds=2
 Mass=6
 StretchGrowth=4
 Oversize=1

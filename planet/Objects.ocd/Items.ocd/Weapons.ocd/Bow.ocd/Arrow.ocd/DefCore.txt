@@ -10,7 +10,6 @@ VertexY=-6,6,0
 VertexFriction=120,120,120
 Value=15
 Mass=6
-Components=Wood=3
 Picture=12,0,64,64
 Rotate=1
 Float=1

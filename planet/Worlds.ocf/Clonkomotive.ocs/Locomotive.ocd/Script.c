@@ -208,3 +208,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
+local Components = [[Wood, 1], [Metal, 4]];

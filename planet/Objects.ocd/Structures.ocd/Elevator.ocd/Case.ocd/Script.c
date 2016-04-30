@@ -775,3 +775,4 @@ local HitPoints = 50;
 local Plane = 250;
 local BorderBound = C4D_Border_Top | C4D_Border_Bottom;
 local ContactCalls = true;
+local Components = [[Wood, 1]];

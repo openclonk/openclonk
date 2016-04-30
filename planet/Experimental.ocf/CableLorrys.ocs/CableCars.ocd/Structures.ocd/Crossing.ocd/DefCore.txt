@@ -11,6 +11,5 @@ VertexY=-9,0,12,12,12
 VertexFriction=50,50,100,100,100
 Value=40
 Mass=5
-#Components=Metal=1
 Exclusive=1
 Construction=1

@@ -10,7 +10,6 @@ VertexX=0
 VertexY=0
 VertexFriction=50
 Mass=90
-Components=Rock=7;
 Construction=1
 Rotate=1
 Float=1

@@ -27,3 +27,4 @@ public func GetFuelNeed() { return 50; }
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
+local Components = [[Mushroom, 1]];

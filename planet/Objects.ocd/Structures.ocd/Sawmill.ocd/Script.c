@@ -127,7 +127,6 @@ public func Saw(object target)
 {
 	if (target->Contained() != this)
 		target->Enter(this);
-	var output = target->GetComponent(Wood);
 	target->Split2Components();
 	AddEffect("WoodProduction", this, 100, 3, this);
 	// Refresh interaction menus to show the wood count.
@@ -309,3 +308,4 @@ local SpinStep = 30;
 local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;
+local Components = [[Rock, 4], [Wood, 1]];

@@ -13,5 +13,4 @@ VertexFriction=30,30,30
 Value=25
 Mass=16
 Picture=0,20,64,64
-Components=Nugget=3
 Rotate=1

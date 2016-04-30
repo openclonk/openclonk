@@ -12,7 +12,6 @@ VertexFriction=20, 20, 20, 20
 VertexCNAT=0, 15, 15, 15
 Value=1
 Mass=10
-Components=Chippie_Egg=1
 Projectile=1
 Rotate=1
 IncompleteActivity=1

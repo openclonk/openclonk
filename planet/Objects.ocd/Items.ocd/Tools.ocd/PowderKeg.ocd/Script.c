@@ -149,3 +149,4 @@ local Description = "$Description$";
 local BlastIncinerate = 1;
 local NoBurnDecay = 1;
 local ContactIncinerate = 2;
+local Components = [[Barrel, 1], [Coal, 1]];

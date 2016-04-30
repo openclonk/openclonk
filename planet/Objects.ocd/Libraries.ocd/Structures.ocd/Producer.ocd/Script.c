@@ -300,11 +300,11 @@ public func ProductionCosts(id item_id)
 {
 	/* NOTE: This may be overloaded by the producer */
 	var comp_list = [];
-	var component_id, index = 0;
-	while (component_id = GetComponent(nil, index, nil, item_id))
+	var comp_id, index = 0;
+	while (comp_id = item_id->GetComponent(nil, index))
 	{
-		var amount = GetComponent(component_id, index, nil, item_id);
-		comp_list[index] = [component_id, amount];
+		var amount = item_id->GetComponent(comp_id);
+		comp_list[index] = [comp_id, amount];
 		index++;		
 	}
 	return comp_list;
@@ -803,11 +803,10 @@ public func IsCollectionAllowed(object item)
 	for (var product in products)
 	{
 		var i = 0, component_id;
-		while (component_id = GetComponent(nil, i, nil, product))
+		while (component_id = product->GetComponent(nil, i))
 		{
 			if (component_id == item_id)
 				return true;
-
 			i++;
 		}
 	}

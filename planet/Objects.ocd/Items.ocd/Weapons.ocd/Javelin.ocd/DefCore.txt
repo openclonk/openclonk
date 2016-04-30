@@ -11,6 +11,5 @@ VertexY=-12,13
 VertexFriction=100,50
 Value=12
 Mass=9
-Components=Wood=2;Metal=1;
 Rotate=1
  
