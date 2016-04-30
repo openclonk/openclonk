@@ -48,20 +48,9 @@
                 <col>Value</col>
               </row>
               <row>
-                <col>C4MN_Extra_MagicValue</col>
-                <col>3</col>
-                <col>Value as magic value. extra_data is also displayed for comparison, e.g. "50/100".</col>
-              </row>
-              <row>
                 <col>C4MN_Extra_Info</col>
                 <col>4</col>
                 <col>Display object description immediately.</col>
-              </row>
-              <row>
-                <col>C4MN_Extra_ComponentsMagic</col>
-                <col>5</col>
-                <col>Display components and magic value.</col>
-                <col></col>
               </row>
             </table>
 
