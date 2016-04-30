@@ -1222,18 +1222,6 @@ static bool FnOnFire(C4Object *Obj)
 	return !!Obj->pEffects->Get(C4Fx_AnyFire);
 }
 
-static bool FnComponentAll(C4Object *Obj, C4ID c_id)
-{
-	long cnt;
-	C4IDList Components;
-	Obj->Def->GetComponents(&Components, Obj);
-	for (cnt=0; Components.GetID(cnt); cnt++)
-		if (Components.GetID(cnt)!=c_id)
-			if (Components.GetCount(cnt)>0)
-				return false;
-	return true;
-}
-
 static C4Object *FnCreateContents(C4Object *Obj, C4PropList * PropList, Nillable<long> iCount)
 {
 	// default amount parameter
@@ -2611,7 +2599,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetAlive);
 	F(GetAlive);
 	F(GetDamage);
-	::AddFunc(p, "ComponentAll", FnComponentAll, false);
 	F(SetComDir);
 	F(GetComDir);
 	F(SetDir);
