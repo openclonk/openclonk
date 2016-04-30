@@ -185,6 +185,11 @@ Stand = {
           <col>bool</col>
           <col>True or false. If true, <emlink href="definition/cnat.html">ContactCalls</emlink> are called in the object script.</col>
         </row>
+        <row>
+          <literal_col>Components</literal_col>
+          <col>array</col>
+          <col>List of definitions and counts specifying the components of an object. Example: Components = [[Rock, 1], [Wood, 3]];</col>
+        </row>
       </table>
     </text>
   </part>

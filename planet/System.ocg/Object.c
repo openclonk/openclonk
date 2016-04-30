@@ -298,34 +298,6 @@ global func RemoveAll(p, ...)
 	return cnt;
 }
 
-// Splits the calling object into its components.
-global func Split2Components()
-{
-	if (!this)
-		return false;
-	var ctr = Contained();
-	// Transfer all contents to container.
-	while (Contents())
-		if (!ctr || !Contents()->Enter(ctr))
-			Contents()->Exit();
-	// Split components.
-	for (var i = 0, compid; compid = GetComponent(nil, i); ++i)
-		for (var j = 0; j < GetComponent(compid); ++j)
-		{
-			var comp = CreateObjectAbove(compid, nil, nil, GetOwner());
-			if (OnFire()) comp->Incinerate();
-			if (!ctr || !comp->Enter(ctr))
-			{
-				comp->SetR(Random(360));
-				comp->SetXDir(Random(3) - 1);
-				comp->SetYDir(Random(3) - 1);
-				comp->SetRDir(Random(3) - 1);
-			}
-		}
-	RemoveObject();
-	return;
-}
-
 // Pulls an object above ground if it was buried (e.g. by PlaceVegetation).
 // The object must have 'Bottom' and 'Center' CNAT to use this.
 // (bottom is the point which should be buried, center the lowest point that must not be buried)

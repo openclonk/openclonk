@@ -23,26 +23,15 @@
           <desc>Index of the component to be returned. This parameter is ignored if component is specified. Returns the id of the indicated component which can then be used to determine the count in a subsequent call to GetComponent.</desc>
           <optional />
         </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object of which to determine components. Can be <code>nil</code> in local calls. If definition is specified, this parameter is ignored.</desc>
-          <optional />
-        </param>
-        <param>
-          <type>id</type>
-          <name>definition</name>
-          <desc>Definition of which to determine components. If <code>nil</code>, the specified object is checked instead.</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
     <desc>Used to determine object components.</desc>
+    <remark>Also see <emlink href="definition/properties.html">Properties</emlink>.</remark>
     <examples>
       <example>
         <code>var i,cid,num;
-<funclink>while</funclink> (id = GetComponent(nil, i++, nil, <funclink>GetID</funclink>()))
-	if ((num = GetComponent(id) - GetComponent(id, 0, nil, <funclink>GetID</funclink>())) &gt; 0)
+<funclink>while</funclink> (id = <funclink>GetID</funclink>()->GetComponent(nil, i++))
+	if ((num = GetComponent(id) - <funclink>GetID</funclink>()->GetComponent(id)) &gt; 0)
 		<funclink>while</funclink> (num--) <funclink>CreateObject</funclink>(id);</code>
         <text>Creates all components which are still missing in the calling object (e.g. in a construction site) in front of the object.</text>
       </example>
