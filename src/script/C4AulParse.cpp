@@ -632,9 +632,8 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_ERR: return "ERR";      // parse error at this position
 	case AB_DEBUG: return "DEBUG";      // debug break
 	case AB_EOFN: return "EOFN";    // end of function
-
-	default: assert(false); return "UNKNOWN";
 	}
+	assert(false); return "UNKNOWN";
 }
 
 void C4AulScriptFunc::DumpByteCode()
@@ -644,33 +643,33 @@ void C4AulScriptFunc::DumpByteCode()
 		fprintf(stderr, "%s:\n", GetName());
 		std::map<C4AulBCC *, int> labels;
 		int labeln = 0;
-		for (C4AulBCC *pBCC = GetCode(); pBCC->bccType != AB_EOFN; pBCC++)
+		for (auto & bcc: Code)
 		{
-			switch (pBCC->bccType)
+			switch (bcc.bccType)
 			{
 			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
-				labels[pBCC + pBCC->Par.i] = ++labeln; break;
+				labels[&bcc + bcc.Par.i] = ++labeln; break;
 			default: break;
 			}
 		}
-		for (C4AulBCC *pBCC = GetCode();; pBCC++)
+		for (auto & bcc: Code)
 		{
-			C4AulBCCType eType = pBCC->bccType;
-			if (labels.find(pBCC) != labels.end())
-				fprintf(stderr, "%d:\n", labels[pBCC]);
-			fprintf(stderr, "\t%d\t%s", GetLineOfCode(pBCC), GetTTName(eType));
+			C4AulBCCType eType = bcc.bccType;
+			if (labels.find(&bcc) != labels.end())
+				fprintf(stderr, "%d:\n", labels[&bcc]);
+			fprintf(stderr, "\t%d\t%s", GetLineOfCode(&bcc), GetTTName(eType));
 			if (strlen(GetTTName(eType)) < 8) fprintf(stderr, "        ");
 			switch (eType)
 			{
 			case AB_FUNC:
-				fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
+				fprintf(stderr, "\t%s\n", bcc.Par.f->GetFullName().getData()); break;
 			case AB_ERR:
-				if (pBCC->Par.s)
+				if (bcc.Par.s)
 			case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
-				fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
+				fprintf(stderr, "\t%s\n", bcc.Par.s->GetCStr()); break;
 			case AB_STRING:
 			{
-				const StdStrBuf &s = pBCC->Par.s->GetData();
+				const StdStrBuf &s = bcc.Par.s->GetData();
 				std::string es;
 				std::for_each(s.getData(), s.getData() + s.getLength(), [&es](char c) {
 					if (std::isgraph((unsigned char)c))
@@ -707,17 +706,16 @@ void C4AulScriptFunc::DumpByteCode()
 			case AB_PAR: case AB_THIS:
 			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
 			case AB_EOFN:
-				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
+				assert(!bcc.Par.X); fprintf(stderr, "\n"); break;
 			case AB_CARRAY:
-				fprintf(stderr, "\t%s\n", C4VArray(pBCC->Par.a).GetDataString().getData()); break;
+				fprintf(stderr, "\t%s\n", C4VArray(bcc.Par.a).GetDataString().getData()); break;
 			case AB_CPROPLIST:
-				fprintf(stderr, "\t%s\n", C4VPropList(pBCC->Par.p).GetDataString().getData()); break;
+				fprintf(stderr, "\t%s\n", C4VPropList(bcc.Par.p).GetDataString().getData()); break;
 			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
-				fprintf(stderr, "\t% -d\n", labels[pBCC + pBCC->Par.i]); break;
+				fprintf(stderr, "\t% -d\n", labels[&bcc + bcc.Par.i]); break;
 			default:
-				fprintf(stderr, "\t% -d\n", pBCC->Par.i); break;
+				fprintf(stderr, "\t% -d\n", bcc.Par.i); break;
 			}
-			if (eType == AB_EOFN) break;
 		}
 	}
 }
