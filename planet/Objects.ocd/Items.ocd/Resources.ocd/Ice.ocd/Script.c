@@ -34,7 +34,7 @@ private func Freeze()
 	DoCon(1);
 }
 
-func IsLiquid() { return "Water"; }
+func CanConvertToLiquidType() { return "Water"; }
 func GetLiquidAmount() { return GetCon()*2; }
 
 local Collectible = 1;

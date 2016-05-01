@@ -14,10 +14,10 @@ protected func Hit(x, y)
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial) 
-{ 
-	if (get_partial)
-		return GetCon();
+public func GetFuelAmount(int requested_amount)
+{
+    // disregard the parameter, because only a complete chunk should be removed 
+	if (this != Coal) return GetCon();
 	return 100;
 }
 

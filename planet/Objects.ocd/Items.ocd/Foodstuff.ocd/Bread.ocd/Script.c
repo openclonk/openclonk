@@ -14,9 +14,7 @@ protected func ControlUse(object clonk, int iX, int iY)
 }
 
 public func NutritionalValue() { return 50; }
-
 public func IsKitchenProduct() { return true; }
-public func GetLiquidNeed() { return ["Water", 50]; }
 public func GetFuelNeed() { return 50; }
 
 local Name = "$Name$";

@@ -4,29 +4,24 @@
  	produces 120 units of power independent of the fuel. However, the fuel 
  	determines the amount of fuel and thereby the burn time.
  	
- 	@author Maikel
+ 	@author Maikel (orignal script), Marky (fuel liquid)
 */
 
 #include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
 #include Library_Flag
+#include Library_Tank
 
 local DefaultFlagRadius = 200;
 
 static const SteamEngine_produced_power = 120;
 
-// Variable to store the fuel amount currently held in the engine.
 local fuel_amount;
-
-protected func Construction()
-{
-	fuel_amount = 0;
-	return _inherited(...);
-}
 
 protected func Initialize()
 {
+	fuel_amount = 0;
 	SetAction("Idle");
 	AddTimer("ContentsCheck", 10);
 	return _inherited(...);
@@ -34,10 +29,18 @@ protected func Initialize()
 
 public func IsContainer() { return true; }
 
+
 protected func RejectCollect(id item, object obj)
 {
+	// Accept fuel only
 	if (obj->~IsFuel())
 		return false;
+
+	// Is the object a container? If so, try to empty it.
+	if (obj->~IsContainer() || obj->~IsLiquidContainer())
+	{
+		GrabContents(obj);
+	}
 	return true;
 }
 
@@ -50,21 +53,22 @@ public func ContentsCheck()
 {
 	// Ejects non fuel items immediately
 	var fuel;
-	if(fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel")))) 
+	if (fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel"))))
 	{
-		fuel->Exit(-53, 21, -20, -1, -1, -30);
+		fuel->Exit(-45, 21, -20, -1, -1, -30);
 		Sound("Chuff");
 	}
 	
 	// If active don't do anything.
-	if (GetAction() == "Work") 
+	if (IsWorking()) 
 		return;
 
 	// If there is fuel available let the network know.
-	if (fuel_amount > 0 || FindObject(Find_Container(this), Find_Func("IsFuel")))
+	if (GetFuelAmount() > 0 || GetFuelContents())
 		RegisterPowerProduction(SteamEngine_produced_power);
 	return;
 }
+
 
 public func GetFuelAmount()
 {
@@ -84,16 +88,7 @@ public func GetProducerPriority() { return 0; }
 public func OnPowerProductionStart(int amount) 
 { 
 	// Check if there is fuel.
-	if (fuel_amount <= 0)
-	{
-		// Search for new fuel among the contents.
-		var fuel = FindObject(Find_Container(this), Find_Func("IsFuel"));
-		if (!fuel)
-			return false;
-		// Extract the fuel amount from the new piece of fuel.	
-		fuel_amount += fuel->~GetFuelAmount(true) * 18;
-		fuel->RemoveObject();
-	}
+	RefillFuel();
 	// There is enough fuel so start producing power and notify network of this.
 	if (GetAction() == "Idle") 
 		SetAction("Work");
@@ -104,7 +99,7 @@ public func OnPowerProductionStart(int amount)
 public func OnPowerProductionStop(int amount)
 {
 	// Set action to idle when it was working.
-	if (GetAction() == "Work")
+	if (IsWorking())
 		SetAction("Idle");
 	return true;
 }
@@ -116,31 +111,22 @@ protected func WorkStart()
 	return;
 }
 
+// Status?
+protected func IsWorking(){ return GetAction() == "Work";}
+
 // Phase call from working action, every two frames.
 protected func Working()
 {
-	// Reduce the fuel amount by 1 per frame.
-	fuel_amount -= 2;
-	// Check if there is still enough fuel available.
-	if (fuel_amount <= 0)
+	DoFuelAmount(-2); // Reduce the fuel amount by 1 per frame
+	RefillFuel(); // Check if there is still enough fuel available.
+
+	if (!GetFuelAmount())
 	{
-		// Search for new fuel among the contents.
-		var fuel = FindObject(Find_Container(this), Find_Func("IsFuel"));
-		if (!fuel)
-		{
-			// Set action to idle and unregister this producer as available from the network.
-			SetAction("Idle");
-			UnregisterPowerProduction();
-			return;
-		}
-		// Extract the fuel amount from the new piece of fuel.	
-		fuel_amount += fuel->~GetFuelAmount(true) * 18;
-		fuel->RemoveObject();
+		// Set action to idle and unregister this producer as available from the network.
+		SetAction("Idle");
+		UnregisterPowerProduction();
 	}
-	// Smoke from the exhaust shaft.
-	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -26, 10);
-	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 8);
-	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 10);
+	Smoking(); // Smoke from the exhaust shaft.
 	return;
 }
 
@@ -159,6 +145,81 @@ protected func WorkAbort()
 	return;	
 }
 
+func RefillFuel()
+{
+	// Check if there is still enough fuel available.
+	var no_fuel = GetFuelAmount() <= 0;
+	// The reserve is probably not necessary
+	var should_keep_reserve = IsWorking() && GetNeutralPipe() && GetFuelAmount() < 100;
+	if (no_fuel || should_keep_reserve)
+	{
+		var fuel_extracted;
+	
+		// Search for new fuel among the contents.
+		var fuel = GetFuelContents();
+		if (fuel)
+		{
+			fuel_extracted = fuel->~GetFuelAmount();
+			if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
+	
+			DoFuelAmount(fuel_extracted * 18);
+		}
+	}
+}
+
+func GetFuelContents()
+{
+	return FindObject(Find_Container(this), Find_Func("IsFuel"));
+}
+
+func DoFuelAmount(int amount)
+{
+	fuel_amount += amount;
+}
+
+func Smoking()
+{
+	// Smoke from the exhaust shaft
+	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -26, 10);
+	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 8);
+	Smoke(-20 * GetCalcDir() + RandomX(-2, 2), -24, 10);
+}
+
+
+func IsLiquidContainerForMaterial(string liquid)
+{
+	return WildcardMatch("Oil", liquid);
+}
+
+func GetLiquidContainerMaxFillLevel()
+{
+	return 300;
+}
+
+func QueryConnectPipe(object pipe)
+{
+	if (GetNeutralPipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
+
+	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	{
+		return false;
+	}
+	else
+	{
+		pipe->Report("$MsgPipeProhibited$");
+		return true;
+	}
+}
+
+func OnPipeConnect(object pipe, string specific_pipe_state)
+{
+	SetNeutralPipe(pipe);
+	pipe->Report("$MsgConnectedPipe$");
+}
 
 /*-- Properties --*/
 

@@ -526,26 +526,16 @@ public func OnMoveAllToClicked(int menu_id)
 	var index = 0, obj;
 	while (obj = other->Contents(index++)) PushBack(contents, obj);
 	
-	// Now try transferring each item once.
-	var transfered = 0;
-	for (obj in contents)
-	{
-		// Sanity, can actually happen if an item merges with others during the transfer etc.
-		if (!obj || !target) continue;
-		
-		var collected = target->Collect(obj, true);
-		if (collected)
-			++transfered;
-	}
+	var transfered = TransferObjectsFromToSimple(contents, other, target);
 	
 	if (transfered > 0)
 	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
+		PlaySoundTransfer();
 		return;
 	}
 	else
 	{
-		Sound("Objects::Balloon::Pop", true, nil, GetOwner());
+		PlaySoundError();
 		return;
 	}
 }
@@ -898,6 +888,39 @@ private func OnContentsSelection(symbol, extra_data)
 		to_transfer = extra_data.objects;
 	}
 	
+	var successful_transfers = TransferObjectsFromTo(to_transfer, target, other_target);
+	
+	// Did we at least transfer one item?
+	if (successful_transfers > 0)
+	{
+		PlaySoundTransfer();
+		return true;
+	}
+	else
+	{
+		PlaySoundTransferIncomplete();
+		return false;
+	}
+}
+
+func TransferObjectsFromToSimple(array to_transfer, object source, object destination)
+{
+	// Now try transferring each item once.
+	var successful_transfers = 0;
+	for (var obj in to_transfer)
+	{
+		// Sanity, can actually happen if an item merges with others during the transfer etc.
+		if (!obj || !destination) continue;
+		
+		var handled = destination->Collect(obj, true);
+		if (handled)
+			++successful_transfers;
+	}
+	return successful_transfers;
+}
+
+func TransferObjectsFromTo(array to_transfer, object source, object destination)
+{
 	var successful_transfers = 0;
 	
 	// Try to transfer all the previously selected items.
@@ -905,17 +928,20 @@ private func OnContentsSelection(symbol, extra_data)
 	{
 		if (!obj) continue;
 		// Our target might have disappeared (e.g. a construction site completing after the first item).
-		if (!other_target) break;
+		if (!destination) break;
 		
-		var handled = false;
 		// Does the object not want to leave the other container anyway?
-		if (!obj->Contained() || !obj->~QueryRejectDeparture(target))
+		if (!obj->Contained() || !obj->~QueryRejectDeparture(source))
 		{
+			var handled = false;
+
 			// If stackable, always try to grab a full stack.
 			// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
+			// TODO: 200 stacks of 1 arrow would each merge into the stacks that are already in the target
+			//       when they enter the target. For this reason that special case is, imo, not needed here.    
 			if (obj->~IsStackable())
 			{
-				var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
+				var others = FindObjects(Find_Container(source), Find_ID(obj->GetID()), Find_Exclude(obj));
 				for (var other in others) 
 				{
 					if (obj->IsFullStack()) break;
@@ -924,26 +950,17 @@ private func OnContentsSelection(symbol, extra_data)
 			}
 			
 			// More special handling for Stackable items..
-			handled = obj->~TryPutInto(other_target);
+			handled = obj->~MergeWithStacksIn(destination);
 			// Try to normally collect the object otherwise.
-			if (!handled && other_target && obj)
-				handled = other_target->Collect(obj, true);
+			if (!handled && destination && obj)
+				handled = destination->Collect(obj, true);
+
+			if (handled)
+				successful_transfers += 1;
 		}
-		if (handled)
-			successful_transfers += 1;
 	}
-	
-	// Did we at least transfer one item?
-	if (successful_transfers > 0)
-	{
-		Sound("Hits::SoftTouch*", true, nil, GetOwner());
-		return true;
-	}
-	else
-	{
-		Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
-		return false;
-	}
+
+	return successful_transfers;
 }
 
 func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object obj, int slot, int menu_index)
@@ -994,10 +1011,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			}
 		}
 		// How many objects are this object?!
-		var object_amount = obj->~GetStackCount() ?? 1;
-		// Infinite stacks work differently - showing an arbitrary amount would not make sense.
-		if (object_amount > 1 && obj->~IsInfiniteStackCount())
-			object_amount = 1;
+		var object_amount = obj->~GetInteractionMenuAmount() ?? 1;
 		// Empty containers can be stacked.
 		for (var inv in inventory)
 		{
@@ -1339,4 +1353,21 @@ global func UpdateInteractionMenus(callbacks)
 	if (callbacks && GetType(callbacks) != C4V_Array) callbacks = [callbacks];
 	for (var interaction_menu in FindObjects(Find_ID(GUI_ObjectInteractionMenu)))
 		interaction_menu->UpdateInteractionMenuFor(this, callbacks);
+}
+
+// Sounds
+
+func PlaySoundTransfer()
+{
+	Sound("Hits::SoftTouch*", true, nil, GetOwner());
+}
+
+func PlaySoundTransferIncomplete()
+{
+	Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
+}
+
+func PlaySoundError()
+{
+	Sound("Objects::Balloon::Pop", true, nil, GetOwner());
 }

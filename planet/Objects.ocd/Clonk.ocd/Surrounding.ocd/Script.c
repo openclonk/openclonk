@@ -17,10 +17,25 @@ public func Contents(int index)
 	return current_objects[index];
 }
 
-public func ContentsCount()
+public func ContentsCount(id definition)
 {
 	RefreshIfNecessary();
-	return GetLength(current_objects);
+	
+	if (definition == nil)
+	{
+		return GetLength(current_objects);
+	}
+	else
+	{
+		var count = 0;
+		for (var index = 0; index < GetLength(current_objects); ++index)
+			if (current_objects[index] && current_objects[index]->GetID() == definition)
+			{
+				count += 1;
+			}
+		
+		return count;
+	}
 }
 
 private func RefreshIfNecessary()
@@ -79,7 +94,9 @@ public func Collect(object obj)
 	{
 		// Special treatment for objects that the Clonk holds. Just use the appropriate library function.
 		if (container->~IsClonk() && !obj->~IsCarryHeavy())
+		{
 			container->DropInventoryItem(container->GetItemPos(obj));
+		}
 		else
 		{
 			// Otherwise, just force-drop it at the clonks's bottom.

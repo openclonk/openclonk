@@ -12,10 +12,10 @@ func Incineration()
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount(bool get_partial) 
+public func GetFuelAmount(int requested_amount) 
 { 
-	if (get_partial)
-		return GetCon() / 2;
+    // disregard the parameter, because only a complete chunk should be removed 
+	if (this != Wood) return GetCon() / 2;
 	return 50;
 }
 public func IsSawmillProduct() { return true; }

@@ -207,7 +207,7 @@ func DigOutObject(object obj)
 	if (obj->~IsBucketMaterial())
 	{
 		// Assume we might already be carrying a filled bucket and the object is stackable, try it!
-		var handled = obj->~TryPutInto(this);
+		var handled = obj->~MergeWithStacksIn(this);
 		if (!handled)
 		{
 			// Otherwise, force into empty buckets!

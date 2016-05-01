@@ -12,6 +12,12 @@
 #include Library_Ownable
 #include Library_PowerConsumer
 #include Library_PowerProducer
+#include Library_Tank
+
+static const PUMP_Menu_Action_Switch_On = "on";
+static const PUMP_Menu_Action_Switch_Off = "off";
+static const PUMP_Menu_Action_Description = "description";
+
 
 local animation; // animation handle
 
@@ -20,17 +26,17 @@ local switched_on; // controlled by Interaction. Indicates whether the user want
 local powered; // whether the pump has enough power as a consumer, always true if producing
 local power_used; // the amount of power currently consumed or (if negative) produced
 
-local stored_material_index; //contained liquid
-local stored_material_amount;
-
-local source_pipe;
-local drain_pipe;
-
 local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
 local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
 
+local stored_material_name; //contained liquid
+local stored_material_amount;
+
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
+public func IsLiquidContainer() { return false; }
+public func IsLiquidTank() { return false; }
+
 
 // The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
 local last_status_message;
@@ -77,7 +83,7 @@ public func GetPumpControlMenuEntries(object clonk)
 		status = last_status_message;
 		lightbulb_graphics = "Red";
 	}
-	PushBack(menu_entries, {symbol = this, extra_data = "description",
+	PushBack(menu_entries, {symbol = this, extra_data = PUMP_Menu_Action_Description,
 			custom =
 			{
 				Prototype = custom_entry,
@@ -87,44 +93,26 @@ public func GetPumpControlMenuEntries(object clonk)
 				text = {Prototype = custom_entry.text, Text = status},
 				image = {Prototype = custom_entry.image, Symbol = Icon_Lightbulb, GraphicsName = lightbulb_graphics}
 			}});
-	
+			
+	// switch on and off
 	if (!switched_on)
-		PushBack(menu_entries, {symbol = Icon_Play, extra_data = "on", 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 1,
-				text = {Prototype = custom_entry.text, Text = "$MsgTurnOn$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Play}
-			}});
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Play, "$MsgTurnOn$", 1, PUMP_Menu_Action_Switch_On));
 	else
-		PushBack(menu_entries, {symbol = Icon_Stop, extra_data = "off", 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 1,
-				text = {Prototype = custom_entry.text, Text = "$MsgTurnOff$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Stop}
-			}});
-	if (source_pipe)
-		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutsource", 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 2,
-				text = {Prototype = custom_entry.text, Text = "$MsgCutSource$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
-			}});
-	if (drain_pipe)
-		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutdrain", 
-			custom =
-			{
-				Prototype = custom_entry,
-				Priority = 3,
-				text = {Prototype = custom_entry.text, Text = "$MsgCutDrain$"},
-				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
-			}});
+		PushBack(menu_entries, GetPumpMenuEntry(custom_entry, Icon_Stop, "$MsgTurnOff$", 1, PUMP_Menu_Action_Switch_Off));
+
 	return menu_entries;
+}
+
+func GetPumpMenuEntry(proplist custom_entry, symbol, string text, int priority, extra_data)
+{
+	return {symbol = symbol, extra_data = extra_data, 
+		custom =
+		{
+			Prototype = custom_entry,
+			Priority = priority,
+			text = {Prototype = custom_entry.text, Text = text},
+			image = {Prototype = custom_entry.image, Symbol = symbol}
+		}};
 }
 
 public func GetInteractionMenus(object clonk)
@@ -147,22 +135,18 @@ public func GetInteractionMenus(object clonk)
 public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "";
-	if (action == "on") text = "$DescTurnOn$";
-	else if (action == "off") text = "$DescTurnOff$";
-	else if (action == "cutdrain") text = "$DescCutDrain$";
-	else if (action == "cutsource") text = "$DescCutSource$";
-	else if (action == "description") text = this.Description;
+	if (action == PUMP_Menu_Action_Switch_On) text = "$DescTurnOn$";
+	else if (action == PUMP_Menu_Action_Switch_Off) text = "$DescTurnOff$";
+	else if (action == PUMP_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
-public func OnPumpControl(id symbol, string action, bool alt)
+
+public func OnPumpControl(symbol_or_object, string action, bool alt)
 {
-	if (action == "on" || action == "off")
+	if (action == PUMP_Menu_Action_Switch_On || action == PUMP_Menu_Action_Switch_Off)
 		ToggleOnOff(true);
-	else if (action == "cutsource" && source_pipe)
-		source_pipe->RemoveObject();
-	else if (action == "cutdrain" && drain_pipe)
-		drain_pipe->RemoveObject();
+
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
 }
 
@@ -173,17 +157,78 @@ private func SetInfoMessage(string msg)
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
-/*-- Pipe connection --*/
+/*-- Pipe control --*/
 
-public func GetSource() { return source_pipe; }
-public func SetDrain(object pipe) { drain_pipe = pipe; }
-public func GetDrain() { return drain_pipe; }
 
-public func SetSource(object pipe)
+func QueryConnectPipe(object pipe)
 {
-	source_pipe = pipe;
+	if (GetDrainPipe() && GetSourcePipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
+	else if (pipe->IsSourcePipe())
+	{
+		pipe->Report("$MsgSourcePipeProhibited$");
+		return true;
+	}
+	else if (pipe->IsDrainPipe())
+	{
+		pipe->Report("$MsgDrainPipeProhibited$");
+		return true;
+	}
+	return false;
+}
+
+
+func OnPipeConnect(object pipe, string specific_pipe_state)
+{
+	if (PIPE_STATE_Source == specific_pipe_state)
+	{
+		SetSourcePipe(pipe);
+		pipe->SetSourcePipe();
+		pipe->Report("$MsgCreatedSource$");
+	}
+	else if (PIPE_STATE_Drain == specific_pipe_state)
+	{
+		SetDrainPipe(pipe);
+		pipe->SetDrainPipe();
+		pipe->Report("$MsgCreatedDrain$");
+	}
+	else
+	{
+		// add a drain if we already connected a source pipe,
+		// or if the line is already connected to a container
+		var line = pipe->GetConnectedLine();
+		var pump_target = !line || line->GetConnectedObject(this);
+		if (pump_target) pump_target = pump_target->~IsLiquidContainer();		
+		if (GetSourcePipe() || pump_target)
+		{
+			OnPipeConnect(pipe, PIPE_STATE_Drain);
+		}
+		// otherwise create a source first
+		else
+		{
+			OnPipeConnect(pipe, PIPE_STATE_Source);
+		}
+	}
+}
+
+
+func OnPipeDisconnect(object pipe)
+{
+	pipe->SetNeutralPipe();		
+	
+	_inherited(pipe);
+}
+
+
+public func SetSourcePipe(object pipe)
+{
+	_inherited(pipe);
 	CheckState();
 }
+
 
 /*-- Power stuff --*/
 
@@ -207,18 +252,20 @@ public func OnEnoughPower()
 	return _inherited(...);
 }
 
+// TODO: these functions may be useful in the liquid tank, maybe move it to that library
+
 /** Returns object to which the liquid is pumped */
 private func GetDrainObject()
 {
-	if (drain_pipe) return drain_pipe->GetConnectedObject(this) ?? this;
+	if (GetDrainPipe()) return GetDrainPipe()->GetConnectedLine()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
 /** Returns object from which the liquid is pumped */
 private func GetSourceObject()
 {
-	if (source_pipe) 
-		return source_pipe->GetConnectedObject(this) ?? this;
+	if (GetSourcePipe()) 
+		return GetSourcePipe()->GetConnectedLine()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
@@ -235,22 +282,22 @@ protected func Pumping()
 	
 	// something went wrong in the meantime?
 	// let the central function handle that on next check
-	if (!source_pipe) 
+	if (!GetSourcePipe()) 
 		return;
-	
+
 	var pump_ok = true;
 	
 	// is empty? -> try to get liquid
-	if (!stored_material_amount)
+	if (!stored_material_name)
 	{
 		// get new materials
 		var source_obj = GetSourceObject();
-		var mat = source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, GetPumpSpeed() / 10, true);
-	
+		var mat = this->ExtractMaterialFromSource(source_obj, GetPumpSpeed() / 10);
+
 		// no material to pump?
 		if (mat)
 		{
-			stored_material_index = mat[0];
+			stored_material_name = mat[0];
 			stored_material_amount = mat[1];
 		}
 		else
@@ -265,7 +312,7 @@ protected func Pumping()
 		while (i > 0)
 		{
 			var drain_obj = GetDrainObject();
-			if (GetDrainObject()->InsertMaterial(stored_material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+			if (this->InsertMaterialAtDrain(drain_obj, stored_material_name, 1))
 			{
 				i--;
 			}
@@ -280,7 +327,7 @@ protected func Pumping()
 		
 		stored_material_amount = i;
 		if (stored_material_amount <= 0)
-			stored_material_index = nil;
+			stored_material_name = nil;
 	}
 	
 	if (pump_ok)
@@ -298,16 +345,57 @@ protected func Pumping()
 	return;
 }
 
+
+// interface for the extraction logic
+func ExtractMaterialFromSource(object source_obj, int amount)
+{
+	if (source_obj->~IsLiquidContainer())
+	{
+		return source_obj->RemoveLiquid(nil, amount, this);
+	}
+	else
+	{
+		var mat = source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, amount, true);
+		if (mat)
+			return [MaterialName(mat[0]), mat[1]];
+		else
+			return nil;
+	}
+}
+
+// interface for the insertion logic
+func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
+{
+	// insert material into containers, if possible
+	if (drain_obj->~IsLiquidContainer())
+	{
+		amount -= drain_obj->PutLiquid(material_name, amount, this);
+	}
+	else
+	{
+		// convert to actual material, and insert remaining
+		var material_index = Material(material_name);
+		if (material_index != -1)
+		{
+			while (--amount >= 0)
+				drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+		}
+	}
+	
+	return amount <= 0;
+}
+
+
 /** Re check state and change the state if needed */
 func CheckState()
 {
 	var is_fullcon = GetCon() >= 100;
-	var can_pump = source_pipe && is_fullcon && switched_on;
+	var can_pump = GetSourcePipe() && is_fullcon && switched_on;
 	
 	// can't pump at all -> wait
 	if (!can_pump)
 	{
-		if (!source_pipe && switched_on)
+		if (!GetSourcePipe() && switched_on)
 			SetInfoMessage("$StateNoSource$");
 		SetState("Wait");
 	}
@@ -442,6 +530,7 @@ private func PumpHeight2Power(int pump_height)
 	return used_power;
 }
 
+// TODO: check usage of this, probably has to return true if the source is a container
 // Returns whether there is liquid at the source pipe to pump.
 private func IsLiquidSourceOk()
 {
@@ -455,6 +544,7 @@ private func IsLiquidSourceOk()
 	return true;
 }
 
+// TODO: check usage of this, probably has to return true if the drain is a container
 // Returns whether the drain pipe is free.
 private func IsLiquidDrainOk()
 {

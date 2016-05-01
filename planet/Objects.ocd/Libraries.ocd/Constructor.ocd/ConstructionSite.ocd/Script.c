@@ -15,7 +15,7 @@ local is_constructing;
 // This should be recongnized as a container by the interaction menu independent of its category.
 public func IsContainer() { return !full_material; }
 // disallow taking stuff out
-public func RefuseTransfer(object toMove) { return true; }
+public func RefuseTransfer(object toMove) { return true; } // TODO: this is not used by another function, is this a callback?
 // disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
 public func MakeUncancellable() { no_cancel = true; return true; }
 

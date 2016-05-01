@@ -77,7 +77,7 @@ public func Move()
 		return Message("$MsgStuck$");
 		
 	fuel_amount--;
-	barrel->GetLiquid("Water", 1, this);
+	barrel->RemoveLiquid("Water", 1, this);
 	if (move_dir == -1)
 		SetDir(DIR_Left);
 	if (move_dir == 1)
@@ -139,7 +139,7 @@ private func UpdateFuel()
 private func GetBarrel()
 {
 	for (var barrel in FindObjects(Find_Func("IsBarrel"), Find_Container(this)))
-		if (barrel->GetFillLevel() > 0)
+		if (barrel->GetLiquidFillLevel() > 0)
 			return barrel;
 	return;
 }
