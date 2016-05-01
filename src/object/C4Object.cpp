@@ -1242,6 +1242,7 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 {
 	C4Real strgt_con_b = fix_y + Shape.GetBottom();
 	bool fWasFull = (Con>=FullCon);
+	int32_t old_con = Con;
 
 	// Change con
 	if (Def->Oversize)
@@ -1264,6 +1265,10 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 	}
 	// Face (except for the shape)
 	UpdateFace(false);
+
+	// Do a callback on completion change.
+	if (iChange != 0)
+		Call(PSF_OnCompletionChange, &C4AulParSet(old_con, Con));
 
 	// Unfullcon
 	if (fWasFull && (Con<FullCon))

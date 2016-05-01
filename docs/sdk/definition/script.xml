@@ -333,6 +333,11 @@
           <col>int player, int new_team, int old_team</col>
           <col>Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <funclink>SetPlayerTeam</funclink>).</col>
         </row>
+        <row id="OnCompletionChange">
+          <literal_col>OnCompletionChange</literal_col>
+          <col>int old_con, int new_con</col>
+          <col>Callback in when the completion of the object has changed (see <funclink>GetCon</funclink>, <funclink>DoCon</funclink> and <funclink>SetCon</funclink>).</col>
+        </row>     
         <row id="EditCursorSelection">
           <literal_col>EditCursorSelection</literal_col>
           <col></col>
@@ -348,7 +353,6 @@
           <col>int old_x, int old_y</col>
           <col>When object is moved in editor. Callback is also done when moved in non-network pause mode. old_x, old_y contains object position before movement.</col>
         </row>
-
         <row id="SaveScenarioObject">
           <literal_col>SaveScenarioObject</literal_col>
           <col>proplist props</col>

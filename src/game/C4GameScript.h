@@ -99,6 +99,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnDugOut            "~DugOut" //C4Object *by_obj
 #define PSF_SaveScenarioObjects "~SaveScenarioObjects" // int file_handle
 #define PSF_CommandFailure      "~CommandFailure" // string command, pTarget, iTx, iTy, pTarget2, iData
+#define PSF_OnCompletionChange  "~OnCompletionChange" // int old_con, int new_con
 
 // Effect callbacks
 
