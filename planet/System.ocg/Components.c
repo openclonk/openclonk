@@ -15,9 +15,9 @@
 // Sets the component of an object or definition.
 global func SetComponent(id component, int count)
 {
-	// Safety: can only be called from object or definition context.
-	if (!this || (GetType(this) != C4V_C4Object && GetType(this) != C4V_Def))
-		return FatalError(Format("SetComponent must be called from object or definition context and not from %v", this));
+	// Safety: can only be called from object.
+	if (!this || GetType(this) != C4V_C4Object)
+		return FatalError(Format("SetComponent must be called from object context and not from %v", this));
 		
 	// Safety: component must be specified.
 	if (!component || GetType(component) != C4V_Def)
@@ -29,6 +29,9 @@ global func SetComponent(id component, int count)
 	// Initialize Components if it does not exist yet.
 	if (!this.Components || GetType(this.Components) != C4V_Array)
 		this.Components = [];
+	// Ensure object property is different from definition property.
+	if (this.Components == GetID().Components)
+		MakePropertyWritable("Components");
 	
 	// Loop over all existing components and change count if the specified one has been found.
 	for (var entry in this.Components)
@@ -85,6 +88,24 @@ global func GetComponent(id component, int index)
 		cnt++;
 	}
 	return;
+}
+
+// Callback by the engine when the completion of an object changes.
+global func OnCompletionChange(int old_con, int new_con)
+{
+	if (!this || GetType(this) != C4V_C4Object)
+		return _inherited(old_con, new_con, ...);
+
+	// Loop over all components and set their new count.
+	var index = 0, comp;
+	while (comp = GetID()->GetComponent(nil, index))
+	{
+		var def_cnt = GetID()->GetComponent(comp);
+		var new_cnt = BoundBy(def_cnt * new_con / 100000, 0, def_cnt);
+		SetComponent(comp, new_cnt);
+		index++;
+	}
+	return _inherited(old_con, new_con, ...);
 }
 
 // Splits the calling object into its components.
