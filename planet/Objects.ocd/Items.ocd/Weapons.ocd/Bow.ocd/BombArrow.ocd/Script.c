@@ -39,4 +39,4 @@ public func HasExplosionOnImpact() { return !!GetEffect("InFlight", this); }
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local Components = [[Wood, 3], [Metal, 1], [Firestone, 2]];
+local Components = {Wood = 3, Metal = 1, Firestone = 2};

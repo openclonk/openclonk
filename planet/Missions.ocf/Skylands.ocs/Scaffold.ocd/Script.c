@@ -243,4 +243,4 @@ local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 30;
 local Plane = 120;
-local Components = [[Wood, 1]];
+local Components = {Wood = 1};

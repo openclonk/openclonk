@@ -135,4 +135,4 @@ local Description = "$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 100;
-local Components = [[Rock, 4], [Wood, 2]];
+local Components = {Rock = 4, Wood = 2};

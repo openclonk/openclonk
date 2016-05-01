@@ -70,4 +70,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
 local ContainBlast = true;
-local Components = [[Wood, 3]];
+local Components = {Wood = 3};

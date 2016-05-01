@@ -358,4 +358,4 @@ local Plane = 500;
 local SolidMaskPlane = 275;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 local HitPoints = 30;
-local Components = [[Metal, 4], [Wood, 4], [Cloth, 2]];
+local Components = {Metal = 4, Wood = 4, Cloth = 2};

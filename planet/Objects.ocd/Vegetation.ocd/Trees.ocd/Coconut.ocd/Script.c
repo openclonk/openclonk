@@ -59,4 +59,4 @@ local Touchable = 0;
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
 local MaxCoconuts = 3;
-local Components = [[Wood, 4]];
+local Components = {Wood = 4};

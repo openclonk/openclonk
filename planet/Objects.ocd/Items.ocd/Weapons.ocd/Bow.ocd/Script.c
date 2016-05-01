@@ -234,4 +234,4 @@ local Collectible = 1;
 local BlastIncinerate = 30;
 local ContactIncinerate = 5;
 local ForceFreeHands = true;
-local Components = [[Wood, 3]];
+local Components = {Wood = 3};

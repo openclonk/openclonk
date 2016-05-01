@@ -231,4 +231,4 @@ public func Definition(proplist def)
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
-local Components = [[Wood, 1], [Metal, 1]];
+local Components = {Wood = 1, Metal = 1};

@@ -95,7 +95,7 @@ local Name = "$Name$";
 local Touchable = 2;
 local EditCursorCommands = ["ControlUp()", "ControlDown()", "ConnectNearestDoor()"];
 local Plane = 200;
-local Components = [[Wood, 3], [Metal, 1]];
+local Components = {Wood = 3, Metal = 1};
 
 func Definition(def)
 {

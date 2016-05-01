@@ -247,4 +247,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local MaxIntake = 30;
-local Components = [[Cloth, 1], [Metal, 1]];
+local Components = {Cloth = 1, Metal = 1};

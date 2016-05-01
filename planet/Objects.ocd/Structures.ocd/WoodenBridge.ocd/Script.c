@@ -130,4 +130,4 @@ local BlastIncinerate = 2;
 local ContactIncinerate = 8;
 local NoBurnDecay = true;
 local HitPoints = 80;
-local Components = [[Wood, 3]];
+local Components = {Wood = 3};

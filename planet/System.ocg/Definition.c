@@ -16,7 +16,7 @@ global func GetDefinition(par)
 	{
 		if (GetDefinition_Loaded_Definition_List == nil)
 		{
-			// Fill the static list of definitions when is has not been generated yet.
+			// Fill the static list of definitions when it has not been generated yet.
 			GetDefinition_Loaded_Definition_List = {};
 			var i = 0, def;
 			while (def = GetDefinition(i++))

@@ -501,4 +501,4 @@ local ActMap = {
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
-local Components = [[Wood, 2]/*, [Rope, 1]*/];
+local Components = {Wood = 2/*, Rope = 1*/};

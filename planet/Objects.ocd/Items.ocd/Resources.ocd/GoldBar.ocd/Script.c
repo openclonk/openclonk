@@ -15,4 +15,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local Plane = 480;
-local Components = [[Nugget, 3]];
+local Components = {Nugget = 3};

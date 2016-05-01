@@ -222,4 +222,4 @@ protected func Definition(def)
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local Components = [[Wood, 1], [Coal, 1]];
+local Components = {Wood = 1, Coal = 1};

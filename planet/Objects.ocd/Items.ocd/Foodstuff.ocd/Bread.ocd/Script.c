@@ -20,4 +20,4 @@ public func GetFuelNeed() { return 50; }
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local Components = [[Flour, 1], [Water, 50]];
+local Components = {Flour = 1, Water = 50};

@@ -124,4 +124,4 @@ local Description = "$Description$";
 local Collectible = true;
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;
-local Components = [[Firestone, 1], [Metal, 1]];
+local Components = {Firestone = 1, Metal = 1};

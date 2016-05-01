@@ -24,4 +24,4 @@ local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local HitPoints = 20;
-local Components = [[Metal, 10]];
+local Components = {Metal = 10};

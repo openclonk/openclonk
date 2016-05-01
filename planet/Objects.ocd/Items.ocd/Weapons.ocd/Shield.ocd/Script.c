@@ -290,4 +290,4 @@ func Definition(def) {
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local Components = [[Wood, 1], [Metal, 1]];
+local Components = {Wood = 1, Metal = 1};

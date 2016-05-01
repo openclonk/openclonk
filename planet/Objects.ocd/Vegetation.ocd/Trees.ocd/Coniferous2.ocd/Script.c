@@ -24,4 +24,4 @@ local Touchable = 0;
 local BlastIncinerate = 2;
 local ContactIncinerate = 6;
 local NoBurnDecay = 1;
-local Components = [[Wood, 5]];
+local Components = {Wood = 5};

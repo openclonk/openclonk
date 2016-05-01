@@ -298,4 +298,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;
-local Components = [[Wood, 1], [Firestone, 1], [PowderKeg, 1]];
+local Components = {Wood = 1, Firestone = 1, PowderKeg = 1};

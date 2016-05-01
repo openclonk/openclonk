@@ -188,7 +188,7 @@ Stand = {
         <row>
           <literal_col>Components</literal_col>
           <col>array</col>
-          <col>List of definitions and counts specifying the components of an object. Example: Components = [[Rock, 1], [Wood, 3]];</col>
+          <col>List of definitions and counts specifying the components of an object. Example: Components = {Rock = 1, Wood = 3};</col>
         </row>
       </table>
     </text>

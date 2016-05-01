@@ -355,4 +355,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 0;
 local Plane = 280;
-local Components = [[Ruby, 6], [Amethyst, 6], [Metal, 6]];
+local Components = {Ruby = 6, Amethyst = 6, Metal = 6};

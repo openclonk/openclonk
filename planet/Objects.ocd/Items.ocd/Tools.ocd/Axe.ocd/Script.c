@@ -403,4 +403,4 @@ local Description = "$Description$";
 local ChopStrength = 10;
 // Damage dealt to living beings when hit with an axe.
 local WeaponStrength = 6;
-local Components = [[Wood, 1], [Metal, 1]];
+local Components = {Wood = 1, Metal = 1};

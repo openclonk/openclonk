@@ -297,4 +297,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local ContactIncinerate = 2;
 local BarrelIntakeY = 3;
-local Components = [[Wood, 2], [Metal, 1]];
+local Components = {Wood = 2, Metal = 1};

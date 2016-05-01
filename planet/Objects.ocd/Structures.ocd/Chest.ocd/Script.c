@@ -73,4 +73,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local ContainBlast = true;
 local HitPoints = 50;
-local Components = [[Wood, 2]];
+local Components = {Wood = 2};

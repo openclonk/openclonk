@@ -2,7 +2,7 @@
 	Components.c
 	Handles the components of an object, which are a property of the object / definition.
 	Components are a property of the form
-		local Components = [[def1, cnt1], [def2, cnt2], ...];
+		local Components = {Def1 = cnt1, Def2 = cnt2, ...};
 	which can be modified directly or via the script functions in this file:
 		SetComponent2(id component, int count)
 		GetComponent(id component, int index)
@@ -27,26 +27,14 @@ global func SetComponent(id component, int count)
 	count = Max(count, 0);
 	
 	// Initialize Components if it does not exist yet.
-	if (!this.Components || GetType(this.Components) != C4V_Array)
-		this.Components = [];
+	if (!this.Components || GetType(this.Components) != C4V_PropList)
+		this.Components = {};
 	// Ensure object property is different from definition property.
 	if (this.Components == GetID().Components)
 		MakePropertyWritable("Components");
 	
-	// Loop over all existing components and change count if the specified one has been found.
-	for (var entry in this.Components)
-	{
-		if (GetType(entry) != C4V_Array || GetLength(entry) < 2)
-			continue;
-		if (entry[0] == component)
-		{
-			entry[1] = count;
-			return;
-		}
-	}
-	
-	// If it did not succeed changing an existing component, then append the new component.
-	PushBack(this.Components, [component, count]);
+	// Write the new count to the components properties.
+	this.Components[Format("%i", component)] = count;
 	return;
 }
 
@@ -57,34 +45,28 @@ global func GetComponent(id component, int index)
 	// Safety: can only be called from object or definition context.
 	if (!this || (GetType(this) != C4V_C4Object && GetType(this) != C4V_Def))
 		return FatalError(Format("GetComponent must be called from object or definition context and not from %v", this));
+
+	// Safety: return nil if Components could not be found or are not a proplist.
+	if (!this.Components || GetType(this.Components) != C4V_PropList)
+		return;
 		
 	// If component is specified return the count for that definition.
 	if (GetType(component) == C4V_Def)
-	{
-		if (!this.Components || GetType(this.Components) != C4V_Array)
-			return 0;
-		for (var entry in this.Components)
-		{
-			if (GetType(entry) != C4V_Array || GetLength(entry) < 2)
-				continue;
-			if (entry[0] == component)
-				return entry[1];			
-		}	
-		return 0;
-	}
+		return this.Components[Format("%i", component)];
+
+	// Ensure the index is valid.	
+	index = Max(index, 0);
 
 	// If component is not specified return the definition of the component at the index.
-	if (!this.Components || GetType(this.Components) != C4V_Array)
-		return;
-	// Ensure index is valid.	
-	index = Max(index, 0);
 	var cnt = 0;
-	for (var entry in this.Components)
+	for (var entry in GetProperties(this.Components))
 	{
-		if (GetType(entry) != C4V_Array || GetLength(entry) < 2)
+		// Check if the entry is an actual valid definition.
+		var entry_def = GetDefinition(entry);
+		if (!entry_def)
 			continue;
 		if (index == cnt)
-			return entry[0];
+			return entry_def;
 		cnt++;
 	}
 	return;

@@ -34,4 +34,4 @@ local LiquidNames = {
 local Name = "$Name$";
 local Description = "$Description$";
 local ContactIncinerate = 0;
-local Components = [[Metal, 2]];
+local Components = {Metal = 2};

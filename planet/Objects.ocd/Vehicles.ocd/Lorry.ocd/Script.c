@@ -313,4 +313,4 @@ local Description = "$Description$";
 local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
-local Components = [[Metal, 2], [Wood, 1]];
+local Components = {Metal = 2, Wood = 1};

@@ -108,4 +108,4 @@ public func ArrowStrength() { return 3; }
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local Components = [[Wood, 3], [Firestone, 1], [Coal, 1]];
+local Components = {Wood = 3, Firestone = 1, Coal = 1};

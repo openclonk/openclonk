@@ -55,4 +55,4 @@ public func IsInventorProduct() { return true; }
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
-local Components = [[Cloth, 2]];
+local Components = {Cloth = 2};

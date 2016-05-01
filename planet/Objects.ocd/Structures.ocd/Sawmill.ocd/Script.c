@@ -308,4 +308,4 @@ local SpinStep = 30;
 local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;
-local Components = [[Rock, 4], [Wood, 1]];
+local Components = {Rock = 4, Wood = 1};
