@@ -162,8 +162,14 @@ global func GetSurfaceVector(int x, int y)
 	return normal;
 }
 
-// Proper modulo operation.
-global func Mod(a, b)
+// Mathematical modulo operation for calculations in ℤ/nℤ.
+//
+// Examples:
+// (12 % 10) == Mod(12, 10) == 2
+// (-1 % 10) == -1
+// Mod(-1, 10) == 9
+global func Mod(int dividend, int divisor)
 {
+	var a = dividend, b = divisor;
 	return (a % b + b) % b;
 }
