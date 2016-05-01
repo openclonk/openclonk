@@ -205,6 +205,13 @@ int C4AulCompiler::AddBCC(const char * TokenSPos, C4AulBCCType eType, intptr_t X
 			pCPos1->Par.i = X + 1;
 			return Fn->GetCodePos() - 1;
 		}
+
+		// Join AB_STRING + AB_ARRAYA to AB_PROP
+		if (eType == AB_ARRAYA && pCPos1->bccType == AB_STRING)
+		{
+			pCPos1->bccType = AB_PROP;
+			return Fn->GetCodePos() - 1;
+		}
 	}
 
 	// Add
