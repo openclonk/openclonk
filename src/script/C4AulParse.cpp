@@ -662,7 +662,7 @@ void C4AulScriptFunc::DumpByteCode()
 				const StdStrBuf &s = bcc.Par.s->GetData();
 				std::string es;
 				std::for_each(s.getData(), s.getData() + s.getLength(), [&es](char c) {
-					if (std::isgraph((unsigned char)c))
+					if (std::isprint((unsigned char)c))
 					{
 						es += c;
 					}
