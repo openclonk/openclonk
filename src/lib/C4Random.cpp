@@ -21,14 +21,21 @@
 #include "lib/C4Random.h"
 #include "control/C4Record.h"
 
+#include <random>
 #include <pcg/pcg_random.hpp>
 
 int RandomCount = 0;
-static pcg32 RandomRng, UnsyncedRandomRng;
+
+static pcg32 SeededRng()
+{
+	pcg_extras::seed_seq_from<std::random_device> seed_source;
+	return pcg32(seed_source);
+}
+
+static pcg32 RandomRng, UnsyncedRandomRng = SeededRng();
 
 void FixedRandom(uint64_t seed)
 {
-	UnsyncedRandomRng.seed(seed);
 	RandomRng.seed(seed);
 	RandomCount = 0;
 }

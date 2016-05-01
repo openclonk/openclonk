@@ -161,3 +161,9 @@ global func GetSurfaceVector(int x, int y)
 	
 	return normal;
 }
+
+// Proper modulo operation.
+global func Mod(a, b)
+{
+	return (a % b + b) % b;
+}
