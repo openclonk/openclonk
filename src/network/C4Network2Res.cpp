@@ -268,7 +268,7 @@ int32_t C4Network2ResChunkData::GetChunkToRetrieve(const C4Network2ResChunkData 
 	// invert to get everything that should be retrieved
 	C4Network2ResChunkData ChData2; ChData.GetNegative(ChData2);
 	// select chunk (random)
-	int32_t iRetrieveChunk = SafeRandom(ChData2.getPresentChunkCnt());
+	int32_t iRetrieveChunk = UnsyncedRandom(ChData2.getPresentChunkCnt());
 	// return
 	return ChData2.getPresentChunk(iRetrieveChunk);
 }
@@ -1029,7 +1029,7 @@ void C4Network2Res::StartNewLoads()
 	for (pChunks = pCChunks, i = 0; i < iCChunkCnt; i++, pChunks = pChunks->Next)
 	{
 		// determine position
-		int32_t iPos = SafeRandom(iCChunkCnt - i);
+		int32_t iPos = UnsyncedRandom(iCChunkCnt - i);
 		// find & set
 		for (int32_t j = 0; ; j++)
 			if (!pC[j] && !iPos--)

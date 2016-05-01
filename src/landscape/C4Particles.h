@@ -18,6 +18,7 @@
 
 #include "platform/StdScheduler.h"
 
+#include <pcg/pcg_random.hpp>
 
 #ifndef INC_C4Particles
 #define INC_C4Particles

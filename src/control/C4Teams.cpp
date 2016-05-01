@@ -446,7 +446,7 @@ C4Team *C4TeamList::GetRandomSmallestTeam() const
 			iLowestTeamCount = 1;
 		}
 		else if (pLowestTeam->GetPlayerCount() == (*ppCheck)->GetPlayerCount())
-			if (!SafeRandom(++iLowestTeamCount))
+			if (!UnsyncedRandom(++iLowestTeamCount))
 				pLowestTeam = *ppCheck;
 	}
 	return pLowestTeam;
@@ -894,7 +894,7 @@ StdStrBuf C4TeamList::GetScriptPlayerName() const
 		if (!Game.PlayerInfos.GetActivePlayerInfoByName(sOut.getData()))
 			return sOut;
 	// none are available: Return a random name
-	sScriptPlayerNames.GetSection(SafeRandom(iNameIdx-1), &sOut, '|');
+	sScriptPlayerNames.GetSection(UnsyncedRandom(iNameIdx-1), &sOut, '|');
 	return sOut;
 }
 

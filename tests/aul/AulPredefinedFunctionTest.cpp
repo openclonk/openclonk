@@ -31,7 +31,7 @@ using ::testing::_;
 TEST_F(AulPredefFunctionTest, Translate)
 {
 	// Expect the engine to warn when it can't find a translation
-	LogMock log;
+	::testing::NiceMock<LogMock> log;
 	EXPECT_CALL(log, DebugLogF(testing::StrEq(R"(WARNING: Translate: no translation for string "%s")"), _));
 	EXPECT_CALL(log, DebugLog(StartsWith(" by: "))).Times(AnyNumber()); // ignore stack trace
 
@@ -139,6 +139,12 @@ TEST_F(AulPredefFunctionTest, Abs)
 	EXPECT_EQ(C4VINT_MIN, RunExpr("Abs(2147483648)"));
 	EXPECT_EQ(C4VINT_MAX, RunExpr("Abs(-2147483647)"));
 	EXPECT_EQ(C4VINT_MAX, RunExpr("Abs(2147483647)"));
+}
+
+TEST_F(AulPredefFunctionTest, CreateEffect)
+{
+	EXPECT_EQ(C4VInt(3), RunCode("local A = { Start=func() { this.Magicnumber = 3; } } func Main() { return CreateEffect(A, 1).Magicnumber; }", false));
+	EXPECT_EQ(C4VInt(3), RunCode("local A = { Construction=func() { this.Magicnumber = 3; } } func Main() { return CreateEffect(A, 1).Magicnumber; }", false));
 }
 
 TEST_F(AulPredefFunctionTest, Trivial)

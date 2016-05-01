@@ -25,6 +25,7 @@
 #include "gui/C4GameMessage.h"
 #include "graphics/C4GraphicsResource.h"
 #include "landscape/C4Material.h"
+#include "landscape/C4Particles.h"
 #include "object/C4MeshAnimation.h"
 #include "object/C4ObjectCom.h"
 #include "object/C4ObjectInfo.h"
@@ -91,7 +92,7 @@ static void FnDeathAnnounce(C4Object *Obj)
 	}
 	else
 	{
-		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
+		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + UnsyncedRandom(MaxDeathMsg));
 		GameMsgObject(FormatString(LoadResStr(idDeathMsg), Obj->GetName()).getData(), Obj);
 	}
 }
@@ -194,14 +195,6 @@ static long FnGetCon(C4Object *Obj, long iPrec)
 {
 	if (!iPrec) iPrec = 100;
 	return iPrec*Obj->GetCon()/FullCon;
-}
-
-static C4String *FnGetName(C4PropList * _this)
-{
-	if (!_this)
-		throw NeedNonGlobalContext("GetName");
-	else
-		return String(_this->GetName());
 }
 
 static bool FnSetName(C4PropList * _this, C4String *pNewName, bool fSetInInfo, bool fMakeValidIfExists)
@@ -2618,7 +2611,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	::AddFunc(p, "SetContactDensity", FnSetContactDensity, false);
 	F(GetController);
 	F(SetController);
-	F(GetName);
 	F(SetName);
 	F(GetKiller);
 	F(SetKiller);

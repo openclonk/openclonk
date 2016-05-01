@@ -41,7 +41,7 @@ public func NoConstructionFlip() { return true; }
 public func IsContainer() { return true; }
 
 // Allow buying only if the rule is active
-public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole));}
+public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole), Find_AnyLayer());}
 
 public func RejectCollect(id def, object obj)
 {

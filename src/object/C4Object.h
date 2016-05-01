@@ -22,7 +22,6 @@
 
 #include "game/C4GameScript.h"
 #include "graphics/C4Facet.h"
-#include "landscape/C4Particles.h"
 #include "lib/StdMesh.h"
 #include "object/C4Id.h"
 #include "object/C4ObjectPtr.h"
@@ -175,7 +174,7 @@ public:
 	StdMeshInstance* pMeshInstance; // Instance for mesh-type objects
 	C4Effect *pEffects; // linked list of effects
 	// particle lists that are bound to this object (either in front of behind it)
-	C4ParticleList *FrontParticles, *BackParticles;
+	class C4ParticleList *FrontParticles, *BackParticles;
 	void ClearParticleLists();
 
 	uint32_t ColorMod; // color by which the object-drawing is modulated

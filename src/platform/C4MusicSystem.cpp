@@ -481,7 +481,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 						else if (check_file_playability == new_file_playability)
 						{
 							// Found a fit in the same playability category: Roll for it
-							if (!SafeRandom(++new_file_num_rolls)) NewFile = check_file;
+							if (!UnsyncedRandom(++new_file_num_rolls)) NewFile = check_file;
 						}
 						else
 						{
@@ -596,11 +596,11 @@ bool C4MusicSystem::ScheduleWaitTime()
 {
 	// Roll for scheduling a break after the next piece.
 	if (SCounter < 3) return false; // But not right away.
-	if (SafeRandom(100) >= music_break_chance) return false;
+	if (UnsyncedRandom(100) >= music_break_chance) return false;
 	if (music_break_max > 0)
 	{
 		int32_t music_break = music_break_min;
-		if (music_break_max > music_break_min) music_break += SafeRandom(music_break_max - music_break_min); // note that SafeRandom has limited range
+		if (music_break_max > music_break_min) music_break += UnsyncedRandom(music_break_max - music_break_min); // note that UnsyncedRandom has limited range
 		if (music_break > 0)
 		{
 			is_waiting = true;

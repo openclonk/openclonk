@@ -4,28 +4,21 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>CheckEffect</title>
+    <title>CreateEffect</title>
     <category>Effects</category>
-    <version>5.1 OC</version>
+    <version>5.5 OC</version>
     <syntax>
-      <rtype>int</rtype>
+      <rtype>proplist</rtype>
       <params>
         <param>
-          <type>string</type>
-          <name>name</name>
-          <desc>Name of the effect without prepended 'Fx'.</desc>
-        </param>
-        <param>
-          <type>object</type>
-          <name>target</name>
-          <desc>Target object of the effects to be notified. If <code>nil</code>, the global effects are notified.</desc>
-          <optional />
+          <type>proplist</type>
+          <name>prototype</name>
+	  <desc>A proplist containing the callback functions for the new Effect. The name (<funclink>GetName</funclink>) of this proplist becomes the name of the effect.</desc>
         </param>
         <param>
           <type>int</type>
           <name>priority</name>
-          <desc>Effect priority. Calls are made to all effects of equal or higher priority. If unspecified or 0, all effects are notified.</desc>
-          <optional />
+          <desc>Effect priority. Must be greater than zero.</desc>
         </param>
         <param>
           <type>int</type>
@@ -37,33 +30,34 @@
           <type>any</type>
           <name>var1</name>
           <optional />
-          <desc>First extra parameter to be passed to the effect callback.</desc>
+	  <desc>First extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var2</name>
           <optional />
-          <desc>Second extra parameter to be passed to the effect callback.</desc>
+	  <desc>Second extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var3</name>
           <optional />
-          <desc>Third extra parameter to be passed to the effect callback.</desc>
+	  <desc>Third extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var4</name>
           <optional />
-          <desc>Fourth extra parameter to be passed to the effect callback.</desc>
+	  <desc>Fourth extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Makes Fx*Effect (and in cases Fx*Add) callbacks to the specified list of effects, without actually creating any effect. The return value is -1 if another effect has rejected the call. If an effect accepts the call, the return value is the effect number of that effect.</desc>
+    <desc>Creates an effect. Returns the effect if successful or <code>nil</code> if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is probably <code>nil</code>. Effects can be created on objects, <code>Global</code> and <code>Scenario</code>. This is passed as the first parameter to the effect callbacks.
+</desc>
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
-      <funclink>CreateEffect</funclink>
+      <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>
       <funclink>GetEffect</funclink>
@@ -71,4 +65,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2004-03</date>
+  <author>Günther</author><date>2014</date>
 </funcs>
