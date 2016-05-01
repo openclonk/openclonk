@@ -2655,6 +2655,8 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 					++size;
 				}
 			}
+			if (Type == PARSER)
+				r._getArray()->Freeze();
 			Shift();
 			break;
 		}
