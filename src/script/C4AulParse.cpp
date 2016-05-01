@@ -2467,8 +2467,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			C4AulBCCType eCallType = (TokenType == ATT_CALL) ? AB_CALL : AB_CALLFS;
 			Shift();
 			// expect identifier of called function now
-			if (TokenType != ATT_IDTF)
-				throw C4AulParseError(this, "expecting func name after '->'");
+			Check(ATT_IDTF, "function name after '->'");
 			if (Type == PARSER)
 			{
 				pName = ::Strings.RegString(Idtf);
