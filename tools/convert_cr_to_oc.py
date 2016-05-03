@@ -99,6 +99,8 @@ for root, dirs, files in os.walk('.'):
 		lines = f.read().splitlines()
 	except:
 		lines = ("")
+	if lines == ("") and properties == {}:
+		continue
 	f = open(os.path.join(root, "Script.c"),"wb")
 	for i, line in enumerate(lines):
 		m = localre.match(line)
