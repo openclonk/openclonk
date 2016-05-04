@@ -76,6 +76,7 @@ public:
 
 protected:
 	C4Value CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
+	C4PropList * Target; // target the effect is contained in
 	// presearched callback functions for faster calling
 	C4AulFunc *pFnTimer;           // timer function Fx%sTimer
 	C4AulFunc *pFnStart, *pFnStop; // init/deinit-functions Fx%sStart, Fx%sStop
@@ -132,7 +133,7 @@ public:
 	}
 	void OnObjectChangedDef(C4PropList *pObj);
 
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
+	void CompileFunc(StdCompiler *pComp, C4PropList *Owner, C4ValueNumbers *);
 	virtual C4Effect * GetEffect() { return this; }
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);

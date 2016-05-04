@@ -102,6 +102,7 @@ C4Effect * C4Effect::New(C4PropList *pForObj, C4Effect **ppEffectList, C4PropLis
 
 C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
+	Target = pForObj;
 	// ask all effects with higher priority first - except for prio 1 effects, which are considered out of the priority call chain (as per doc)
 	bool fRemoveUpper = (iPrio != 1);
 	// note that apart from denying the creation of this effect, higher priority effects may also remove themselves
@@ -509,8 +510,9 @@ void C4Effect::TempReaddUpperEffects(C4PropList *pObj, C4Effect *pLastReaddEffec
 	}
 }
 
-void C4Effect::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
+void C4Effect::CompileFunc(StdCompiler *pComp, C4PropList * Owner, C4ValueNumbers * numbers)
 {
+	if (pComp->isCompiler()) Target = Owner;
 	// read name
 	pComp->Separator(StdCompiler::SEP_START); // '('
 	// read priority
@@ -561,7 +563,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		pComp->Value(fNext);
 	if (!fNext) return;
 	// read next
-	pComp->Value(mkParAdapt(mkPtrAdaptNoNull(pNext), numbers));
+	pComp->Value(mkParAdapt(mkPtrAdaptNoNull(pNext), Owner, numbers));
 	// denumeration and callback assignment will be done later
 }
 
