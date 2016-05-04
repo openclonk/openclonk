@@ -130,7 +130,7 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	C4AulFunc * pFn;
 	if (!GetCallbackScript())
 	{
-		Call(P_Construction, &C4AulParSet(pForObj, rVal1, rVal2, rVal3, rVal4)).getInt();
+		Call(P_Construction, &C4AulParSet(rVal1, rVal2, rVal3, rVal4)).getInt();
 		if (pForObj && !pForObj->Status) return 0;
 		pFn = GetFunc(P_Start);
 	}
@@ -353,7 +353,7 @@ void C4Effect::Kill()
 		if (!Get(C4Fx_AnyFire))
 			Target->SetOnFire(false);
 	if (IsDead() && !GetCallbackScript())
-		Call(P_Destruction, &C4AulParSet(Target, C4FxCall_Normal));
+		Call(P_Destruction, &C4AulParSet(C4FxCall_Normal));
 }
 
 void C4Effect::ClearAll(int32_t iClearFlag)
@@ -378,7 +378,7 @@ void C4Effect::ClearAll(int32_t iClearFlag)
 		if (!Get(C4Fx_AnyFire))
 			Target->SetOnFire(false);
 	if (IsDead() && !GetCallbackScript())
-		Call(P_Destruction, &C4AulParSet(Target, iClearFlag));
+		Call(P_Destruction, &C4AulParSet(iClearFlag));
 }
 
 void C4Effect::DoDamage(int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)
@@ -399,7 +399,7 @@ static C4Object * Obj(C4PropList * p) { return p ? p->GetObject() : NULL; }
 C4Value C4Effect::DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
 	C4PropList *p = GetCallbackScript();
-	if (!p) return Call(szFn, &C4AulParSet(pObj, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	if (!p) return Call(szFn, &C4AulParSet(rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
 	// old variant
 	// compose function name
 	char fn[C4AUL_MAX_Identifier+1];
@@ -410,7 +410,7 @@ C4Value C4Effect::DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal
 int C4Effect::CallStart(int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
 	if (!GetCallbackScript())
-		return Call(P_Start, &C4AulParSet(Target, temporary, var1, var2, var3, var4)).getInt();
+		return Call(P_Start, &C4AulParSet(temporary, var1, var2, var3, var4)).getInt();
 	if (pFnStart)
 		return pFnStart->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, temporary, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
@@ -418,7 +418,7 @@ int C4Effect::CallStart(int temporary, const C4Value &var1, const C4Value &var2,
 int C4Effect::CallStop(int reason, bool temporary)
 {
 	if (!GetCallbackScript())
-		return Call(P_Stop, &C4AulParSet(Target, reason, temporary)).getInt();
+		return Call(P_Stop, &C4AulParSet(reason, temporary)).getInt();
 	if (pFnStop)
 		return pFnStop->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, reason, temporary)).getInt();
 	return C4Fx_OK;
@@ -426,7 +426,7 @@ int C4Effect::CallStop(int reason, bool temporary)
 int C4Effect::CallTimer(int time)
 {
 	if (!GetCallbackScript())
-		return Call(P_Timer, &C4AulParSet(Target, time)).getInt();
+		return Call(P_Timer, &C4AulParSet(time)).getInt();
 	if (pFnTimer)
 		return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, time)).getInt();
 	return C4Fx_Execute_Kill;
@@ -437,7 +437,7 @@ void C4Effect::CallDamage(int32_t & damage, int damagetype, int plr)
 	{
 		C4AulFunc *pFn = GetFunc(P_Damage);
 		if (pFn)
-			damage = pFn->Exec(this, &C4AulParSet(Target, damage, damagetype, plr)).getInt();
+			damage = pFn->Exec(this, &C4AulParSet(damage, damagetype, plr)).getInt();
 	}
 	else if (pFnDamage)
 		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(Obj(Target), this, damage, damagetype, plr)).getInt();
@@ -445,7 +445,7 @@ void C4Effect::CallDamage(int32_t & damage, int damagetype, int plr)
 int C4Effect::CallEffect(const char * effect, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
 	if (!GetCallbackScript())
-		return Call(P_Effect, &C4AulParSet(effect, Target, var1, var2, var3, var4)).getInt();
+		return Call(P_Effect, &C4AulParSet(effect, var1, var2, var3, var4)).getInt();
 	if (pFnEffect)
 		return pFnEffect->Exec(GetCallbackScript(), &C4AulParSet(effect, Obj(Target), this, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
