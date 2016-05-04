@@ -419,7 +419,7 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropLis
 	if (fDoNoCalls)
 		pEffect->SetDead();
 	else
-		pEffect->Kill(pTarget);
+		pEffect->Kill();
 	// done, success
 	return true;
 }
@@ -436,7 +436,7 @@ static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4Prop
 	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
 	if (!pEffect) return C4Value();
 	// let them check
-	C4Effect * r = pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, Val1, Val2, Val3, Val4);
+	C4Effect * r = pEffect->Check(szEffect, iPrio, iTimerInterval, Val1, Val2, Val3, Val4);
 	if (r == (C4Effect *)C4Fx_Effect_Deny) return C4VInt(C4Fx_Effect_Deny);
 	if (r == (C4Effect *)C4Fx_Effect_Annul) return C4VInt(C4Fx_Effect_Annul);
 	return C4VPropList(r);
