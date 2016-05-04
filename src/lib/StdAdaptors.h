@@ -143,11 +143,11 @@ struct StdDecompileAdapt
 	}
 	
 	// make this work with in combination with StdParameterAdapt
-	template<class P>
-	inline void CompileFunc(StdCompiler* pComp, const P& par) const
+	template<typename ... P>
+	inline void CompileFunc(StdCompiler* pComp, P && ... pars) const
 	{
 		assert(pComp->isDecompiler());
-		pComp->Value(mkParAdapt(const_cast<T &>(rValue), par));
+		pComp->Value(mkParAdapt(const_cast<T &>(rValue), std::forward<P>(pars)...));
 	}
 };
 template <class T>
@@ -264,10 +264,10 @@ struct _IdFuncClass
 template <class T, class M = _IdFuncClass<T> >
 struct StdArrayAdapt
 {
-	StdArrayAdapt(T *pArray, int iSize, M map = M())
-			: pArray(pArray), iSize(iSize), map(map)
+	StdArrayAdapt(T *pArray, int iSize, M && map = M())
+			: pArray(pArray), iSize(iSize), map(std::forward<M>(map))
 	{ }
-	T *pArray; int iSize; M map;
+	T *pArray; int iSize; M && map;
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		for (int i = 0; i < iSize; i++)
@@ -308,7 +308,7 @@ template <class T>
 inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
 #define mkArrayAdaptM(A) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)))
 template <class T, class M>
-inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M map) { return StdArrayAdapt<T, M>(pArray, iSize, map); }
+inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M && map) { return StdArrayAdapt<T, M>(pArray, iSize, std::forward<M>(map)); }
 #define mkArrayAdaptMapM(A, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), M)
 
 // * Array Adaptor (defaulting)
@@ -439,51 +439,54 @@ inline StdInsertAdapt<T, I> mkInsertAdapt(T &&rObj, I &&rIns, bool fBefore = tru
 template <class T, class P>
 struct StdParameterAdapt
 {
-	StdParameterAdapt(T &rObj, const P &rPar) : rObj(rObj), Par(rPar) { }
-	T &rObj; const P Par;
+	StdParameterAdapt(T && rObj, P && rPar) : rObj(std::forward<T>(rObj)), Par(std::forward<P>(rPar)) { }
+	T && rObj; P && Par;
 	void CompileFunc(StdCompiler *pComp) const
 	{
-		rObj.CompileFunc(pComp, Par);
+		std::forward<T>(rObj).CompileFunc(pComp, std::forward<P>(Par));
 	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameterAdapt &operator = (const D &nValue) { rObj = nValue; return *this; }
 
 	// getting value
-	inline T &GetObj() { return rObj; }
+	inline T && GetObj() { return std::forward<T>(rObj); }
 };
 template <class T, class P>
-inline StdParameterAdapt<T, P> mkParAdapt(T &&rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+inline StdParameterAdapt<T, P> mkParAdapt(T && rObj, P && rPar)
+{ return StdParameterAdapt<T, P>(std::forward<T>(rObj), std::forward<P>(rPar)); }
 
 // for mkArrayAdaptMap
 template <class P>
 struct StdParameterAdaptMaker
 {
-	const P Par;
-	StdParameterAdaptMaker(const P &rPar) : Par(rPar) { }
+	P && Par;
+	StdParameterAdaptMaker(P && rPar) : Par(std::forward<P>(rPar)) { }
 	template <class T>
-	StdParameterAdapt<T, P> operator ()(T &rObj) const { return StdParameterAdapt<T, P>(rObj, Par); }
+	StdParameterAdapt<T, P> operator ()(T && rObj) const { return StdParameterAdapt<T, P>(std::forward<T>(rObj), std::forward<P>(Par)); }
 };
 template <class P>
-inline StdParameterAdaptMaker<P> mkParAdaptMaker(const P &rPar) { return StdParameterAdaptMaker<P>(rPar); }
+inline StdParameterAdaptMaker<P> mkParAdaptMaker(P && rPar) { return StdParameterAdaptMaker<P>(std::forward<P>(rPar)); }
 
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
 template <class T, class P1, class P2>
 struct StdParameter2Adapt
 {
-	StdParameter2Adapt(T &rObj, const P1 &rPar1, const P2 &rPar2) : rObj(rObj), rPar1(rPar1), rPar2(rPar2) { }
-	T &rObj; const P1 &rPar1; const P2 &rPar2;
+	StdParameter2Adapt(T && rObj, P1 && rPar1, P2 && rPar2) :
+		rObj(std::forward<T>(rObj)), rPar1(std::forward<P1>(rPar1)), rPar2(std::forward<P2>(rPar2)) { }
+	T && rObj; P1 && rPar1; P2 && rPar2;
 	void CompileFunc(StdCompiler *pComp) const
 	{
-		rObj.CompileFunc(pComp, rPar1, rPar2);
+		std::forward<T>(rObj).CompileFunc(pComp, std::forward<P1>(rPar1), std::forward<P2>(rPar2));
 	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameter2Adapt &operator = (const D &nValue) { rObj = nValue; return *this; }
 };
 template <class T, class P1, class P2>
-inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
+inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T && rObj, P1 && rPar1, P2 && rPar2)
+{ return StdParameter2Adapt<T, P1, P2>(std::forward<T>(rObj), std::forward<P1>(rPar1), std::forward<P2>(rPar2)); }
 
 template <class T>
 struct StdBasicPtrAdapt
@@ -514,10 +517,10 @@ struct StdPtrAdapt: StdBasicPtrAdapt<T>
 	}
 
 	// For use with StdParAdapt
-	template<class P>
-	void CompileFunc(StdCompiler *pComp, const P& p)
+	template<typename ... P>
+	void CompileFunc(StdCompiler *pComp, P && ...pars)
 	{
-		StdPtrAdaptCompileFunc(pComp, *this, p);
+		StdPtrAdaptCompileFunc(pComp, *this, std::forward<P>(pars)...);
 	}
 };
 
@@ -543,8 +546,8 @@ struct StdContextPtrAdapt: StdBasicPtrAdapt<T>
 	}
 };
 
-template <class T>
-void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt)
+template <class T, typename ... P>
+void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, P && ...pars)
 {
 	bool fCompiler = pComp->isCompiler(),
 		fNaming = pComp->hasNaming();
@@ -570,68 +573,28 @@ void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt)
 		assert(adapt.rpObj);
 	// Compile value
 	if(fCompiler)
-		StdPtrAdaptCompileNewFunc(adapt, pComp);
+		StdPtrAdaptCompileNewFunc(adapt, pComp, std::forward<P>(pars)...);
 	else
-		StdPtrAdaptDecompileNewFunc(adapt, pComp);
+		StdPtrAdaptDecompileNewFunc(adapt, pComp, std::forward<P>(pars)...);
 
 	// Close naming
 	if(adapt.fAllowNull && fNaming) pComp->NameEnd();
 }
 
-// TODO: Avoid code duplication with the above function
-template <class T, class P>
-void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, const P& par)
-{
-	bool fCompiler = pComp->isCompiler(),
-		fNaming = pComp->hasNaming();
-	// Compiling? Clear object before
-	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = NULL; }
-	// Null checks - different with naming support.
-	if(adapt.fAllowNull)
-		if(fNaming)
-		{
-			// Null check: just omit when writing
-			if(!fCompiler && !adapt.rpObj) return;
-			// Set up naming
-			if(!pComp->Name(adapt.szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
-		}
-		else
-		{
-			bool fNull = !! adapt.rpObj;
-			pComp->Value(fNull);
-			// Null? Nothing further to do
-			if(fNull) return;
-		}
-	else if(!fCompiler)
-		assert(adapt.rpObj);
-	// Compile value
-	if(fCompiler)
-		StdPtrAdaptCompileNewFunc(adapt, pComp, par);
-	else
-		StdPtrAdaptDecompileNewFunc(adapt, pComp, par);
 
-	// Close naming
-	if(adapt.fAllowNull && fNaming) pComp->NameEnd();
-}
-
-template <class T>
-void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp) { CompileNewFunc(adapt.rpObj, pComp); }
-template <class T, class ContextT>
-void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx); }
-template <class T, class P>
-void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, const P& par) { CompileNewFunc(adapt.rpObj, pComp, par); }
-template <class T, class ContextT, class P>
-void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, const P& par) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx, par); }
-
+template <class T, typename ... P>
+void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, P && ...pars) { CompileNewFunc(adapt.rpObj, pComp, std::forward<P>(pars)...); }
+template <class T, class ContextT, typename ... P>
+void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, P && ...pars) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx, std::forward<P>(pars)...); }
 
 template <class T>
 void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp) { pComp->Value(mkDecompileAdapt(*adapt.rpObj)); }
 template <class T, class ContextT>
 void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp) { pComp->Value(mkDecompileAdapt(*adapt.rpObj)); }
-template <class T, class P>
-void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, const P& par) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), par)); }
-template <class T, class ContextT, class P>
-void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, const P& par) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), par)); }
+template <class T, typename ... P>
+void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, P && ...pars) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), std::forward<P>(pars)...)); }
+template <class T, class ContextT, typename ... P>
+void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, P && ...pars) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), std::forward<P>(pars)...)); }
 
 template <class T>
 inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
