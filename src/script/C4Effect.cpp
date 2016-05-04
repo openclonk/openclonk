@@ -584,6 +584,8 @@ void C4Effect::SetPropertyByS(C4String * k, const C4Value & to)
 			case P_Interval: iInterval = to.getInt(); return;
 			case P_CommandTarget:
 				throw C4AulExecError("effect: CommandTarget is readonly");
+			case P_Target:
+				throw C4AulExecError("effect: Target is readonly");
 			case P_Time: iTime = to.getInt(); return;
 			case P_Prototype:
 				throw new C4AulExecError("effect: Prototype is readonly");
@@ -605,6 +607,8 @@ void C4Effect::ResetProperty(C4String * k)
 			case P_Interval: iInterval = 0; return;
 			case P_CommandTarget:
 				throw C4AulExecError("effect: CommandTarget is readonly");
+			case P_Target:
+				throw C4AulExecError("effect: Target is readonly");
 			case P_Time: iTime = 0; return;
 			case P_Prototype:
 				throw new C4AulExecError("effect: Prototype is readonly");
@@ -623,6 +627,7 @@ bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
 			case P_Priority: *pResult = C4VInt(Abs(iPriority)); return true;
 			case P_Interval: *pResult = C4VInt(iInterval); return true;
 			case P_CommandTarget: *pResult = CommandTarget; return true;
+			case P_Target: *pResult = C4Value(Target); return true;
 			case P_Time: *pResult = C4VInt(iTime); return true;
 		}
 	}
@@ -639,6 +644,7 @@ C4ValueArray * C4Effect::GetProperties() const
 	(*a)[i++] = C4VString(&::Strings.P[P_Priority]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Interval]);
 	(*a)[i++] = C4VString(&::Strings.P[P_CommandTarget]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Target]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Time]);
 	return a;
 }
