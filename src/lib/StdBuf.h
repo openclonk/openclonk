@@ -63,12 +63,10 @@ public:
 		else
 			Ref(Buf2);
 	}
-	StdBuf(StdBuf &&Buf2, bool fCopy = false)
+	StdBuf(StdBuf && Buf2) noexcept
 			: fRef(true), pData(NULL), iSize(0)
 	{
-		if (fCopy)
-			Copy(Buf2);
-		else if (!Buf2.isRef())
+		if (!Buf2.isRef())
 			Take(std::move(Buf2));
 		else
 			Ref(Buf2);
@@ -373,11 +371,11 @@ public:
 	StdCopyBuf(const StdCopyBuf &Buf2, bool fCopy = true)
 			: StdBuf(Buf2.getRef(), fCopy)
 	{ }
-	StdCopyBuf(StdBuf &&Buf2, bool fCopy = false)
-			: StdBuf(std::move(Buf2), fCopy)
+	StdCopyBuf(StdBuf & Buf2) noexcept
+			: StdBuf(std::move(Buf2))
 	{ }
-	StdCopyBuf(StdCopyBuf &&Buf2, bool fCopy = false)
-			: StdBuf(std::move(Buf2), fCopy)
+	StdCopyBuf(StdCopyBuf &&Buf2) noexcept
+			: StdBuf(std::move(Buf2))
 	{ }
 
 	// Set by constant data. Copies data by default.
@@ -414,8 +412,8 @@ public:
 	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
 			: StdBuf(Buf2, fCopy)
 	{ }
-	StdStrBuf(StdStrBuf &&Buf2, bool fCopy = false)
-			: StdBuf(std::move(Buf2), fCopy)
+	StdStrBuf(StdStrBuf && Buf2) noexcept
+			: StdBuf(std::move(Buf2))
 	{ }
 
 	// Set by constant data. References data by default, copies if specified.
@@ -692,11 +690,11 @@ public:
 	StdCopyStrBuf(const StdCopyStrBuf &Buf2, bool fCopy = true)
 			: StdStrBuf(Buf2.getRef(), fCopy)
 	{ }
-	StdCopyStrBuf(StdStrBuf &&Buf2, bool fCopy = false)
-			: StdStrBuf(std::move(Buf2), fCopy)
+	StdCopyStrBuf(StdStrBuf && Buf2) noexcept
+			: StdStrBuf(std::move(Buf2))
 	{ }
-	StdCopyStrBuf(StdCopyStrBuf &&Buf2, bool fCopy = false)
-			: StdStrBuf(std::move(Buf2), fCopy)
+	StdCopyStrBuf(StdCopyStrBuf && Buf2) noexcept
+			: StdStrBuf(std::move(Buf2))
 	{ }
 
 	// Set by constant data. Copies data if desired.
