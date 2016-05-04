@@ -726,7 +726,7 @@ bool C4Game::Execute() // Returns true if the game is over
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
 	EXEC_S_DR(  C4Effect::Execute(ScriptEngine.GetPropList(), &ScriptEngine.pGlobalEffects);
-	            C4Effect::Execute(GameScript.GetPropList(), &GameScript.pScenarioEffects);
+	            C4Effect::Execute(GameScript.ScenPropList.getPropList(), &GameScript.pScenarioEffects);
 	                                              , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")

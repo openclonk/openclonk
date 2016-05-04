@@ -39,7 +39,7 @@ C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 {
 	if (pTarget == ScriptEngine.GetPropList())
 		return &ScriptEngine.pGlobalEffects;
-	if (pTarget == GameScript.ScenPrototype.getPropList() || pTarget == GameScript.ScenPropList.getPropList())
+	if (pTarget == GameScript.ScenPropList.getPropList())
 		return &GameScript.pScenarioEffects;
 	if (pTarget) throw C4AulExecError("Only global and scenario effects are supported");
 	return &ScriptEngine.pGlobalEffects;

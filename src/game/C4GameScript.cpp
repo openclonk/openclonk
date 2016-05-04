@@ -53,7 +53,7 @@ C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 	{
 		if (pTarget == ScriptEngine.GetPropList())
 			return &ScriptEngine.pGlobalEffects;
-		if (pTarget == GameScript.ScenPrototype.getPropList() || pTarget == GameScript.ScenPropList.getPropList())
+		if (pTarget == GameScript.ScenPropList.getPropList())
 			return &GameScript.pScenarioEffects;
 		C4Object * Obj = pTarget->GetObject();
 		if (!Obj)
