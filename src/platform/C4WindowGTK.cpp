@@ -419,6 +419,9 @@ static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_d
 	C4Window *window = (C4Window*) user_data;
 	if (window->mouse_was_grabbed)
 		gdk_threads_add_timeout(50, grab_mouse_fn, widget);
+	// Reset urgency hint (does nothing if unset)
+	assert(widget == window->window && "OnFocusInFS callback used for something other than the main window.");
+	gtk_window_set_urgency_hint(GTK_WINDOW(window->window), false);
 	return false;
 }
 static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
@@ -636,7 +639,7 @@ bool C4Window::RestorePosition(const char *, const char *, bool)
 
 void C4Window::FlashWindow()
 {
-	//FIXME - how is this reset? gtk_window_set_urgency_hint(window, true);
+	gtk_window_set_urgency_hint(GTK_WINDOW(window), true);
 }
 
 void C4Window::GrabMouse(bool grab)
