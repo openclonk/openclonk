@@ -9,6 +9,7 @@
 #include Library_Ownable
 #include Library_Producer
 #include Library_LampPost
+#include Library_Tank
 
 // does not need power
 public func PowerNeed() { return 0; }
@@ -112,6 +113,44 @@ public func OnProductEjection(object product)
 	Sound("Structures::EjectionPop");
 	return;
 }
+
+/*-- Pipeline --*/
+
+func IsLiquidContainerForMaterial(string liquid)
+{
+	return WildcardMatch("Oil", liquid);
+}
+
+func GetLiquidContainerMaxFillLevel()
+{
+	return 300;
+}
+
+func QueryConnectPipe(object pipe)
+{
+	if (GetNeutralPipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
+
+	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	{
+		return false;
+	}
+	else
+	{
+		pipe->Report("$MsgPipeProhibited$");
+		return true;
+	}
+}
+
+func OnPipeConnect(object pipe, string specific_pipe_state)
+{
+	SetNeutralPipe(pipe);
+	pipe->Report("$MsgConnectedPipe$");
+}
+
 
 local ActMap = {
 		Default = {

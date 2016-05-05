@@ -13,7 +13,7 @@
 	@author Maikel (unit test logic), Marky (tests)
 */
 
-static const EXPECTED_TESTS = 14;
+static const EXPECTED_TESTS = 15;
 
 protected func Initialize()
 {
@@ -802,6 +802,49 @@ global func Test14_OnFinished()
 }
 
 
+// Foundry fueled by pump
+global func Test15_OnStart(int plr)
+{
+	// Oil field
+	DrawMaterialQuad("Oil", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
+
+	// Power source: one steam engine.
+	var producer = CreateObjectAbove(Foundry, 70, 160, plr);
+	producer->CreateContents(Ore, 5);
+	producer->AddToQueue(Metal, 5);
+	
+	// Power consumer: one pump.
+	var pump = CreateObjectAbove(Pump, 124, 160, plr);
+	var source = CreateObjectAbove(Pipe, 176, 292, plr);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
+	var drain = CreateObjectAbove(Pipe, 100, 160, plr);
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->ConnectPipeTo(producer);
+
+
+	// Log what the test is about.
+	Log("A foundry fueled by an oil field via pump.");
+
+	GetEffect("IntTestControl", nil).timer = 0;
+	return true;
+}
+
+global func Test15_Completed()
+{
+	if (ObjectCount(Find_ID(Metal)) >= 5) return true;	
+	return false;
+}
+
+global func Test15_OnFinished()
+{
+	// Restore water
+	RemoveOil();
+	// Remove steam engine, pump.
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Metal), Find_ID(Pipe), Find_ID(Pump)));
+	return;
+}
+
+
 /*-- Helper Functions --*/
 
 global func doTest(description, returned, expected)
@@ -834,4 +877,14 @@ global func doTestQueueEntry(proplist entry, id product, int amount, bool infini
 	passed &= doTest("The queued amount is as expected. Got %d, expected %d.", entry.Amount, amount);
 	passed &= doTest("The queued infinity setting is as expected. Got %v, expected %v.", entry.Infinite ?? false, infinite);
 	return passed;
+}
+
+
+global func RemoveOil()
+{
+	for (var x = 144; x <= 208 + 1; x++)
+		for (var y = 168; y <= 304; y++)
+			if (GetMaterial(x, y) == Material("Oil"))
+				ClearFreeRect(x, y, 1, 1);
+	return;
 }
