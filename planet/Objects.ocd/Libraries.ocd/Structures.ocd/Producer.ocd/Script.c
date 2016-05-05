@@ -822,6 +822,7 @@ public func IsCollectionAllowed(object item)
 	// This extremely special case is used by the ice object only, and should be removed in my opinion,
 	// but it is included for compatibility reasons at the moment.
 	// TODO 
+	Log("Checking for conversion: queue is %v", queue);
 	if (item->~CanConvertToLiquidType())
 	{
 		for (var queued in queue)
@@ -870,6 +871,10 @@ private func ConvertToLiquid(object obj)
 	if (liquid)
 	{
 		liquid->Enter(this);
+		for (var item in FindObjects(Find_Container(this)))
+		{
+			Log("* %v %s", item, item->GetName());
+		}
 		obj->RemoveObject();
 	}
 }

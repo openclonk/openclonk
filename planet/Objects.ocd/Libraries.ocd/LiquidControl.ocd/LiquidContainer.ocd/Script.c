@@ -95,8 +95,9 @@ func PutLiquid(string liquid_name, int amount, object source)
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
 	}
 
+	var max = this->GetLiquidContainerMaxFillLevel();
 	var before = GetLiquidAmount(liquid_name);
-	if (before >= this->GetLiquidContainerMaxFillLevel()) return 0;
+	if (max > 0 && before >= max) return 0;
 
 	var type = GetDefinition(liquid_name);
 	if (type)

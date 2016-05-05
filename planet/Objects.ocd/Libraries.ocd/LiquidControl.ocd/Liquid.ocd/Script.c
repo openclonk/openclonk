@@ -18,7 +18,7 @@ func MaxStackCount()
 {
 	if (this)
 	{
-		if (Contained() && Contained()->~IsLiquidContainer())
+		if (Contained() && Contained()->~IsLiquidContainer() && Contained()->~GetLiquidContainerMaxFillLevel() > 0)
 		{
 			// Stack limit is: [what is already inside the stack] + [free space in the container].
 			return GetLiquidAmount() + Contained()->~GetLiquidAmountRemaining();

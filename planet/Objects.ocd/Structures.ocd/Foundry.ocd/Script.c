@@ -121,11 +121,6 @@ func IsLiquidContainerForMaterial(string liquid)
 	return WildcardMatch("Oil", liquid);
 }
 
-func GetLiquidContainerMaxFillLevel()
-{
-	return 300;
-}
-
 func QueryConnectPipe(object pipe)
 {
 	if (GetNeutralPipe())
