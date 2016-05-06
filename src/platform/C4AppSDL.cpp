@@ -172,6 +172,11 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 	case SDL_CONTROLLERDEVICEREMOVED:
 		Application.pGamePadControl->CheckGamePad(e);
 		break;
+	case SDL_WINDOWEVENT:
+		// Forward to C4Window instance.
+		auto window = static_cast<C4Window*>(SDL_GetWindowData(SDL_GetWindowFromID(e.window.windowID), "C4Window"));
+		window->HandleSDLEvent(e.window);
+		break;
 	}
 }
 

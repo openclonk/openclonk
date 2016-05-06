@@ -28,6 +28,12 @@
 #include "lib/C4Rect.h"
 #include "config/C4Config.h"
 
+#ifdef SDL_VIDEO_DRIVER_X11
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <SDL_syswm.h>
+#endif
+
 /* C4Window */
 
 C4Window::C4Window ():
@@ -63,6 +69,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 		Log(SDL_GetError());
 		return 0;
 	}
+	SDL_SetWindowData(window, "C4Window", this);
 	Active = true;
 	SDL_ShowCursor(SDL_DISABLE);
 	return this;
@@ -116,11 +123,53 @@ void C4Window::RequestUpdate()
 	PerformUpdate();
 }
 
+static void SetUrgencyHint(SDL_Window *window, bool urgency_hint)
+{
+#ifdef SDL_VIDEO_DRIVER_X11
+	SDL_SysWMinfo wminfo;
+	SDL_VERSION(&wminfo.version);
+	if (!SDL_GetWindowWMInfo(window, &wminfo))
+	{
+		LogF("FlashWindow SDL: %s", SDL_GetError());
+		return;
+	}
+
+	if (wminfo.subsystem == SDL_SYSWM_X11)
+	{
+		auto x11 = wminfo.info.x11;
+		XWMHints *wmhints = XGetWMHints(x11.display, x11.window);
+		if (wmhints == NULL)
+			wmhints = XAllocWMHints();
+		// Set the window's urgency hint.
+		if (urgency_hint)
+			wmhints->flags |= XUrgencyHint;
+		else
+			wmhints->flags &= ~XUrgencyHint;
+		XSetWMHints(x11.display, x11.window, wmhints);
+		XFree(wmhints);
+	}
+#endif
+}
+
 void C4Window::FlashWindow()
 {
+	SetUrgencyHint(window, true);
 }
 
 void C4Window::GrabMouse(bool grab)
 {
 	SDL_SetWindowGrab(window, grab ? SDL_TRUE : SDL_FALSE);
+}
+
+void C4Window::HandleSDLEvent(SDL_WindowEvent &e)
+{
+	switch (e.event)
+	{
+	case SDL_WINDOWEVENT_FOCUS_GAINED:
+		SetUrgencyHint(window, false);
+		break;
+	default:
+		// We don't care about most events.
+		break;
+	}
 }

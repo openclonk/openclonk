@@ -434,6 +434,7 @@ public:
 	bool mouse_was_grabbed = false;
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
+	void HandleSDLEvent(SDL_WindowEvent &e);
 #endif
 #ifdef USE_WGL
 	HWND renderwnd;
