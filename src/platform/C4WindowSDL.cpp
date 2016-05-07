@@ -21,6 +21,7 @@
 
 #include "game/C4Application.h"
 #include "graphics/C4DrawGL.h"
+#include "gui/C4Gui.h"
 #include "platform/StdFile.h"
 #include "lib/StdBuf.h"
 
@@ -46,10 +47,14 @@ C4Window::~C4Window ()
 	Clear();
 }
 
+static void SetMultisamplingAttributes(int samples)
+{
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, samples > 0 ? 1 : 0);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samples);
+}
+
 C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
-/*	    SDL_GL_MULTISAMPLEBUFFERS,
-	    SDL_GL_MULTISAMPLESAMPLES,*/
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -58,6 +63,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, /*REQUESTED_GL_CTX_MINOR*/ 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, (Config.Graphics.DebugOpenGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0));
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SetMultisamplingAttributes(Config.Graphics.MultiSampling);
 	uint32_t flags = SDL_WINDOW_OPENGL;
 	if (windowKind == W_Fullscreen && size->Wdt == -1)
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -77,9 +83,10 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 
 bool C4Window::ReInit(C4AbstractApp* pApp)
 {
-	// TODO: How do we enable multisampling with SDL?
+	// TODO: Is there some way to do this without requiring a restart?
 	// Maybe re-call SDL_SetVideoMode?
-	return false;
+	C4GUI::TheScreen.ShowMessage(LoadResStr("IDS_CTL_ANTIALIASING_RESTART_MSG"), LoadResStr("IDS_CTL_ANTIALIASING_RESTART_TITLE"), C4GUI::Ico_Notify);
+	return true;
 }
 
 void C4Window::Clear()
@@ -90,7 +97,23 @@ void C4Window::Clear()
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-	// TODO: Enumerate multi samples
+	int max_samples;
+	glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+	samples.clear();
+	for (int s = 2; s <= max_samples; s *= 2)
+	{
+		// Not all multisampling options seem to work. Verify by creating a hidden window.
+		SetMultisamplingAttributes(s);
+		SDL_Window *wnd = SDL_CreateWindow("OpenClonk Test Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+		if (wnd)
+		{
+			SDL_DestroyWindow(wnd);
+			samples.push_back(s);
+		}
+		else
+			break;
+	}
+	SetMultisamplingAttributes(Config.Graphics.MultiSampling);
 }
 
 bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
