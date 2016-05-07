@@ -197,7 +197,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	*piXRes = mode.w;
 	*piYRes = mode.h;
 	*piBitDepth = SDL_BITSPERPIXEL(mode.format);
-	*piRefreshRate = mode.refresh_rate;
+	if (piRefreshRate) *piRefreshRate = mode.refresh_rate;
 	return true;
 }
 
