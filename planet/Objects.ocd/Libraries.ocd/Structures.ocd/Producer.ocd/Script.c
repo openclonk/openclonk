@@ -829,7 +829,7 @@ public func IsCollectionAllowed(object item)
 			var product = queued.Product;
 		
 			var i = 0, component_id;
-			while (component_id = GetComponent(nil, i, nil, product))
+			while (component_id = product->GetComponent(nil, i))
 			{
 				if (component_id->~GetLiquidType() == item->~CanConvertToLiquidType())
 				{
