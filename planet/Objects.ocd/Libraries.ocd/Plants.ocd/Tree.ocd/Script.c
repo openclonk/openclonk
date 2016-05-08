@@ -37,8 +37,10 @@ private func Construction()
 	_inherited(...);
 
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
-	if (!GetGrowthValue() && !IsBurnedTree()) StartGrowth(5);
-	if (IsBurnedTree()) RemoveTimer("Seed");
+	if (!GetGrowthValue() && !IsBurnedTree()) 
+		StartGrowth(5, RandomX(900, 1050));
+	if (IsBurnedTree())
+		RemoveTimer("Seed");
 
 	lib_tree_attach = CreateArray();
 }
@@ -144,11 +146,12 @@ local lib_tree_burned;
 private func Damage(int change, int cause)
 {
 	// do not grow for a few seconds
-	var g = GetGrowthValue();
-	if(g)
+	var growth = GetGrowthValue();
+	if (growth)
 	{
+		var max_size = GetGrowthMaxSize();
 		StopGrowth();
-		ScheduleCall(this, "RestartGrowth", 36 * 10, 0, g);
+		ScheduleCall(this, "RestartGrowth", 36 * 10, 0, growth, max_size);
 	}
 	// Max damage reached: burn or fall down
 	if (GetDamage() > MaxDamage())
@@ -181,12 +184,14 @@ private func Damage(int change, int cause)
 }
 
 // Restarts the growing of the tree (for example after taking damage)
-private func RestartGrowth(int old_value)
+private func RestartGrowth(int old_value, int old_size)
 {
-	var g = GetGrowthValue(); // safety
-	if(g) StopGrowth();
-	g = Max(g, old_value);
-	StartGrowth(g);
+	// Safety.
+	var g = GetGrowthValue();
+	var max_size = GetGrowthMaxSize();
+	if (g) 
+		StopGrowth();
+	return StartGrowth(Max(g, old_value), Max(max_size, old_size));
 }
 
 // Visual chopping effect

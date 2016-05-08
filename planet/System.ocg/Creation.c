@@ -170,7 +170,7 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 	var growth, y_pos, plant, x_variance, variance = 0, count, j, spot;
 	for (var i = plant_size; i < width; i += plant_size)
 	{
-		growth = 100;
+		growth = 95;
 		y_pos = y;
 		x_variance = RandomX(-plant_size/2, plant_size/2);
 		// End zone check
