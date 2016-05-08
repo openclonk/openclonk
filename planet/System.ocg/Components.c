@@ -77,13 +77,19 @@ global func OnCompletionChange(int old_con, int new_con)
 {
 	if (!this || GetType(this) != C4V_C4Object)
 		return _inherited(old_con, new_con, ...);
+	
+	// Determine whether the object allows Oversize.
+	var oversize = GetDefCoreVal("Oversize", "DefCore");
 
 	// Loop over all components and set their new count.
 	var index = 0, comp;
 	while (comp = GetID()->GetComponent(nil, index))
 	{
 		var def_cnt = GetID()->GetComponent(comp);
-		var new_cnt = BoundBy(def_cnt * new_con / 100000, 0, def_cnt);
+		var new_cnt = Max(def_cnt * new_con / 100000, 0);
+		// If the object has no Oversize then constrain the maximum number of components.
+		if (!oversize)
+			new_cnt = Min(new_cnt, def_cnt);
 		SetComponent(comp, new_cnt);
 		index++;
 	}
