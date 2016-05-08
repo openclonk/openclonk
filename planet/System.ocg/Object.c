@@ -221,13 +221,18 @@ global func GetMaxBreath()
 	return this.MaxBreath;
 }
 
-// Makes an object gain Con until it is FullCon
-global func StartGrowth(int value /* the value the object grows approx. every second, in tenths of percent */)
+// Makes an object gain Con until it is FullCon.
+// value: the object grows approx. every second, in tenths of percent.
+// max_size = the maximum object size in tenths of percent.
+global func StartGrowth(int value, int max_size)
 {
-	var effect;
-	effect = AddEffect("IntGrowth", this, 1, 35, this, nil, value);
-	effect.Time = Random(35);
-	return effect;
+	// Ensure max size is set and does not conflict with Oversize.
+	max_size = max_size ?? 1000;
+	if (!GetDefCoreVal("Oversize", "DefCore"))
+		max_size = Min(max_size, 1000);
+	var fx = AddEffect("IntGrowth", this, 1, 35, this, nil, value, max_size);
+	fx.Time = Random(35);
+	return fx;
 }
 
 global func StopGrowth()
@@ -237,22 +242,39 @@ global func StopGrowth()
 
 global func GetGrowthValue()
 {
-	var e = GetEffect("IntGrowth", this);
-	if(!e) return 0;
-	return e.growth;
+	var fx = GetEffect("IntGrowth", this);
+	if (!fx) 
+		return 0;
+	return fx.growth;
 }
 
-global func FxIntGrowthStart(object obj, effect, int temporary, int value)
+global func GetGrowthMaxSize()
 {
-	if (!temporary) effect.growth = value;
+	var fx = GetEffect("IntGrowth", this);
+	if (!fx) 
+		return 0;
+	return fx.max_size;
 }
 
-global func FxIntGrowthTimer(object obj, effect)
+global func FxIntGrowthStart(object obj, effect fx, int temporary, int value, int max_size)
 {
-	if (obj->OnFire()) return;
-	obj->DoCon(effect.growth, 1000);
-	if (!obj) return FX_Execute_Kill; // Negative growth might have removed the object
-	var done = obj->GetCon(1000) >= 1000;
+	if (!temporary)
+	{
+		fx.growth = value;
+		fx.max_size = max_size;	
+	}
+	return FX_OK;
+}
+
+global func FxIntGrowthTimer(object obj, effect fx)
+{
+	if (obj->OnFire())
+		return FX_OK;
+	obj->DoCon(fx.growth, 1000);
+	// Negative growth might have removed the object.
+	if (!obj) 
+		return FX_Execute_Kill; 
+	var done = obj->GetCon(1000) >= fx.max_size;
 	return -done;
 }
 
