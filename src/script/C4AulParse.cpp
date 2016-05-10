@@ -27,7 +27,9 @@
 #include "lib/C4Log.h"
 #include "config/C4Config.h"
 
+#ifndef DEBUG_BYTECODE_DUMP
 #define DEBUG_BYTECODE_DUMP 0
+#endif
 #include <iomanip>
 
 #define C4AUL_Include       "#include"
