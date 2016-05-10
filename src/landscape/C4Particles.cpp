@@ -1062,7 +1062,6 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	if (!has_vao)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO(particleCount));
 		pGL->ObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
 
 		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
@@ -1072,6 +1071,9 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 		glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
 	}
+
+	// We need to always bind the ibo, because it might change its size.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO(particleCount));
 
 	glDrawElements(GL_TRIANGLE_STRIP, static_cast<GLsizei> (5 * particleCount), GL_UNSIGNED_INT, 0);
 
