@@ -1062,7 +1062,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	if (!has_vao)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ::Particles.GetIBO(particleCount));
 		pGL->ObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
 
 		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
@@ -1098,7 +1098,7 @@ void C4ParticleChunk::ClearBufferObjects()
 void C4ParticleChunk::ReserveSpace(uint32_t forAmount)
 {
 	uint32_t newSize = static_cast<uint32_t>(particleCount) + forAmount + 1;
-	::Particles.PreparePrimitiveRestartIndices(newSize);
+	
 	if (particles.capacity() < newSize)
 		particles.reserve(std::max<uint32_t>(newSize, particles.capacity() * 2));
 
@@ -1260,7 +1260,6 @@ C4ParticleSystem::C4ParticleSystem() : frameCounterAdvancedEvent(false)
 	currentSimulationTime = 0;
 	globalParticles = 0;
 	ibo = 0;
-	ibo_size = 0;
 }
 
 C4ParticleSystem::~C4ParticleSystem()
@@ -1435,34 +1434,41 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 	pxList->Unlock();
 }
 
+GLuint C4ParticleSystem::GetIBO(size_t forParticleAmount)
+{
+	PreparePrimitiveRestartIndices(forParticleAmount);
+	return ibo;
+}
+
 void C4ParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 {
+	if (ibo == 0) glGenBuffers(1, &ibo);
+	// Each particle has 4 vertices and one PRI.
+	const size_t neededEntryAmount = 5 * forAmount;
+	const size_t neededIboSize = neededEntryAmount * sizeof(GLuint);
+	// Nothing to do?
+	if (ibo_size >= neededIboSize) return;
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
 	// prepare array with indices, separated by special primitive restart index
 	const uint32_t PRI = 0xffffffff;
-	size_t neededAmount = 5 * forAmount;
 
-	if (ibo == 0) glGenBuffers(1, &ibo);
+	std::vector<GLuint> ibo_data;
+	ibo_data.reserve(neededEntryAmount);
 
-	if (ibo_size < neededAmount * sizeof(GLuint))
+	unsigned int index = 0;
+	for (unsigned int i = 0; i < neededEntryAmount; ++i)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-		std::vector<GLuint> ibo_data;
-		ibo_data.reserve(neededAmount);
-
-		unsigned int index = 0;
-		for (unsigned int i = 0; i < neededAmount; ++i)
-		{
-			if ((i+1) % 5 == 0)
-				ibo_data.push_back(PRI);
-			else
-				ibo_data.push_back(index++);
-		}
-
-		ibo_size = neededAmount * sizeof(GLuint);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size, &ibo_data[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		if ((i+1) % 5 == 0)
+			ibo_data.push_back(PRI);
+		else
+			ibo_data.push_back(index++);
 	}
+
+	ibo_size = neededEntryAmount * sizeof(GLuint);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size, &ibo_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 #endif
 

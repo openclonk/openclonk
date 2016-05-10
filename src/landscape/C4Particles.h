@@ -453,6 +453,7 @@ private:
 	GLuint ibo;
 	size_t ibo_size;
 	std::list<C4ParticleList> particleLists;
+	void PreparePrimitiveRestartIndices(uint32_t forSize);
 
 	CStdCSec particleListAccessMutex;
 	CStdEvent frameCounterAdvancedEvent;
@@ -504,9 +505,9 @@ public:
 	C4ParticleSystemDefinitionList definitions;
 
 #ifndef USE_CONSOLE
-	// usually, the following methods are used for drawing
-	GLuint GetIBO() const { return ibo; }
-	void PreparePrimitiveRestartIndices(uint32_t forSize);
+	// Returns the IBO ID that contains the PRI data.
+	// This makes sure that the IBO contains enough indices for at least 'forParticleAmount' particles.
+	GLuint GetIBO(size_t forParticleAmount);
 
 	// creates a new particle
 	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
