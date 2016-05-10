@@ -78,8 +78,6 @@
 #define C4AUL_Nil           "nil"
 #define C4AUL_New           "new"
 
-#define C4AUL_CodeBufSize   16
-
 // script token type
 enum C4AulTokenType : int
 {
