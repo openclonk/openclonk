@@ -647,8 +647,7 @@ void C4AulScriptFunc::DumpByteCode()
 			C4AulBCCType eType = bcc.bccType;
 			if (labels.find(&bcc) != labels.end())
 				fprintf(stderr, "%d:\n", labels[&bcc]);
-			fprintf(stderr, "\t%d\t%s", GetLineOfCode(&bcc), GetTTName(eType));
-			if (strlen(GetTTName(eType)) < 8) fprintf(stderr, "        ");
+			fprintf(stderr, "\t%d\t%-20s", GetLineOfCode(&bcc), GetTTName(eType));
 			switch (eType)
 			{
 			case AB_FUNC:
