@@ -22,7 +22,11 @@
 #include "control/C4Record.h"
 
 #include <random>
+
+#pragma push_macro("new")
+#undef new
 #include <pcg/pcg_random.hpp>
+#pragma pop_macro("new")
 
 int RandomCount = 0;
 
