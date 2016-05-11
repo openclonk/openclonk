@@ -55,7 +55,7 @@ public:
 
 	const C4PropListStatic * Parent;
 	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
-	virtual StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
+	virtual StdStrBuf GetFullName() const; // get a fully classified name (C4ID::Name) for debug output
 
 protected:
 	C4RefCntPointer<C4String> Name; // function name
