@@ -1262,6 +1262,7 @@ C4ParticleSystem::C4ParticleSystem() : frameCounterAdvancedEvent(false)
 	currentSimulationTime = 0;
 	globalParticles = 0;
 	ibo = 0;
+	ibo_size = 0;
 }
 
 C4ParticleSystem::~C4ParticleSystem()
