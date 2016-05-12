@@ -256,7 +256,7 @@ public:
 	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
 	StdStrBuf GetDataString() const;
 	virtual const char *GetName() const;
-	const C4PropListStatic * GetParent() { return Parent; }
+	const C4PropListStatic * GetParent() const { return Parent; }
 	C4String * GetParentKeyName() { return ParentKeyName; }
 protected:
 	const C4PropListStatic * Parent;
