@@ -49,7 +49,6 @@ public:
 	C4AulParseError(C4ScriptHost *pScript, const char *pMsg); // constructor
 	C4AulParseError(class C4AulParse * state, const char *pMsg); // constructor
 	C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg);
-	static C4AulParseError FromSPos(const C4ScriptHost *host, const char *SPos, C4AulScriptFunc *Fn, const char *msg, const char *Idtf = nullptr, bool Warn = false);
 };
 
 // execution error

@@ -148,6 +148,17 @@ TEST_F(AulTest, Locals)
 	EXPECT_EQ(C4VInt(42), RunCode("local p1 = { i = 42 }, p2 = new p1 {}; func Main() { return p2.i; }", false));
 }
 
+TEST_F(AulTest, ProplistFunctions)
+{
+	EXPECT_EQ(C4VInt(1), RunCode(R"(
+local a = new Global {
+	a = func() { return b; },
+	b = 1
+};
+func Main() { return a->Call(a.a); }
+)", false));
+}
+
 TEST_F(AulTest, Eval)
 {
 	EXPECT_EQ(C4VInt(42), RunExpr("eval(\"42\")"));
