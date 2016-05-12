@@ -114,4 +114,3 @@ local Description = "$Description$";
 local HitPoints = 60;
 local neutral = false;
 local Components = {Wood = 3, Metal = 1};
-//[[Wood, 3], [Metal, 1]];
