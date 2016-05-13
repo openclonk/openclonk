@@ -310,7 +310,7 @@ const C4ScriptOpDef C4ScriptOpMap[] =
 	{ 6, "|",   AB_BitOr,            1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 5, "&&",  AB_JUMPAND,          1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
 	{ 4, "||",  AB_JUMPOR,           1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
-	{ 3, "??",  AB_JUMPNNIL,         1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
+	{ 3, "??",  AB_JUMPNNIL,         1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
 	
 	// changers
 	{ 2, "*=",  AB_Mul,              1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
