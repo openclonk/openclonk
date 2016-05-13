@@ -27,6 +27,7 @@
 void C4Effect::AssignCallbackFunctions()
 {
 	C4PropList *p = GetCallbackScript();
+	if (!p) return;
 	// compose function names and search them
 	char fn[C4AUL_MAX_Identifier+1];
 	sprintf(fn, PSF_FxStart,  GetName()); pFnStart  = p->GetFunc(fn);
@@ -64,6 +65,7 @@ C4Effect::C4Effect(C4Effect **ppEffectList, C4PropList * prototype, int32_t iPri
 	CommandTarget.Set0();
 	AcquireNumber();
 	Register(ppEffectList, iPrio);
+	SetProperty(P_Name, C4VString(prototype->GetName()));
 }
 
 void C4Effect::Register(C4Effect **ppEffectList, int32_t iPrio)
