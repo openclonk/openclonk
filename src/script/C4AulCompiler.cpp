@@ -182,6 +182,9 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 
 	std::stack<Loop> active_loops;
 
+	// The type of the variable on top of the value stack. C4V_Any if unknown.
+	C4V_Type type_of_stack_top = C4V_Any;
+	
 	constexpr static bool IsJump(C4AulBCCType t)
 	{
 		return t == AB_JUMP || t == AB_JUMPAND || t == AB_JUMPOR || t == AB_JUMPNNIL || t == AB_CONDN || t == AB_COND;
@@ -360,7 +363,6 @@ void C4AulCompiler::Compile(C4ScriptHost *host, C4ScriptHost *source_host, const
 {
 	ConstantResolver::resolve(host, script);
 
-	fprintf(stderr, "parsing %s...\n", source_host->FilePath.getData());
 	CodegenAstVisitor v(host, source_host);
 	v.visit(script);
 }
@@ -463,7 +465,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 	Fn = new C4AulScriptFunc(Parent, target_host, cname, n->loc);
 	for (const auto &param : n->params)
 	{
-		Fn->AddPar(param.name.c_str());
+		Fn->AddPar(param.name.c_str(), param.type);
 	}
 	if (n->has_unnamed_params)
 		Fn->ParCount = C4AUL_MAX_Par;
@@ -860,16 +862,19 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Noop *) {}
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::StringLit *n)
 {
 	AddBCC(n->loc, AB_STRING, (intptr_t)::Strings.RegString(n->value.c_str()));
+	type_of_stack_top = C4V_String;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::IntLit *n)
 {
 	AddBCC(n->loc, AB_INT, n->value);
+	type_of_stack_top = C4V_Int;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BoolLit *n)
 {
 	AddBCC(n->loc, AB_BOOL, n->value);
+	type_of_stack_top = C4V_Bool;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ArrayLit *n)
@@ -879,6 +884,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ArrayLit *n)
 		e->accept(this);
 	}
 	AddBCC(n->loc, AB_NEW_ARRAY, n->values.size());
+	type_of_stack_top = C4V_Array;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ProplistLit *n)
@@ -889,16 +895,19 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ProplistLit *n)
 		e.second->accept(this);
 	}
 	AddBCC(n->loc, AB_NEW_PROPLIST, n->values.size());
+	type_of_stack_top = C4V_PropList;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::NilLit *n)
 {
 	AddBCC(n->loc, AB_NIL);
+	type_of_stack_top = C4V_Nil;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ThisLit *n)
 {
 	AddBCC(n->loc, AB_THIS);
+	type_of_stack_top = C4V_PropList;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
@@ -906,13 +915,19 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 	assert(Fn);
 	const char *cname = n->identifier.c_str();
 	C4String *interned = ::Strings.FindString(cname);
+
+	// Reset known type of top of value stack so we don't keep the old one around
+	type_of_stack_top = C4V_Any;
+
 	// Lookup order: Parameters > var > local > global > global const
 	// Why parameters are considered before function-scoped variables
 	// you ask? I've no idea, but that's how it was before I started
 	// changing things.
 	if (Fn->ParNamed.GetItemNr(cname) != -1)
 	{
-		AddVarAccess(n->loc, AB_DUP, -Fn->GetParCount() + Fn->ParNamed.GetItemNr(cname));
+		int pos = Fn->ParNamed.GetItemNr(cname);
+		AddVarAccess(n->loc, AB_DUP, -Fn->GetParCount() + pos);
+		type_of_stack_top = Fn->GetParType()[pos];
 	}
 	else if (Fn->VarNamed.GetItemNr(cname) != -1)
 	{
@@ -955,6 +970,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 		default:
 			throw Error(target_host, host, n, Fn, "internal error: global constant of unexpected type: %s (of type %s)", cname, v.GetTypeName());
 		}
+		type_of_stack_top = v.GetType();
 	}
 	else
 	{
@@ -981,6 +997,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::UnOpExpr *n)
 	{
 		AddBCC(n->loc, op.Code);
 	}
+	type_of_stack_top = op.RetType;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
@@ -1009,6 +1026,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
 		n->rhs->accept(this);
 		AddBCC(n->loc, op.Code, 0);
 	}
+
+	type_of_stack_top = op.RetType;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::AssignmentExpr *n)
@@ -1017,6 +1036,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::AssignmentExpr *n
 	C4AulBCC setter = MakeSetter(n->loc, false);
 	n->rhs->accept(this);
 	AddBCC(n->loc, setter);
+
+	// Assignment does not change the type of the variable
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SubscriptExpr *n)
@@ -1024,6 +1045,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SubscriptExpr *n)
 	n->object->accept(this);
 	n->index->accept(this);
 	AddBCC(n->loc, AB_ARRAYA);
+
+	// FIXME: Check if the subscripted object is a literal and if so, retrieve type
+	type_of_stack_top = C4V_Any;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SliceExpr *n)
@@ -1032,6 +1056,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SliceExpr *n)
 	n->start->accept(this);
 	n->end->accept(this);
 	AddBCC(n->loc, AB_ARRAY_SLICE);
+
+	type_of_stack_top = C4V_Array;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
@@ -1048,6 +1074,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		AddBCC(n->loc, AB_DEBUG);
 		// Add a pseudo-nil to keep the stack balanced
 		AddBCC(n->loc, AB_NIL);
+		type_of_stack_top = C4V_Nil;
 		return;
 	}
 
@@ -1055,8 +1082,15 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 
 	if (n->context)
 		n->context->accept(this);
+
+	std::vector<C4V_Type> known_par_types;
+	known_par_types.reserve(n->args.size());
+
 	for (const auto &arg : n->args)
+	{
 		arg->accept(this);
+		known_par_types.push_back(type_of_stack_top);
+	}
 
 	C4AulFunc *callee = nullptr;
 
@@ -1077,6 +1111,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 					AddBCC(n->loc, AB_STACK, -(intptr_t)n->args.size());
 				// and "return" nil
 				AddBCC(n->loc, AB_NIL);
+				type_of_stack_top = C4V_Nil;
 				return;
 			}
 			else
@@ -1130,14 +1165,62 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		}
 	}
 
+	std::vector<C4V_Type> expected_par_types;
 	if (n->context)
 	{
 		AddBCC(n->loc, n->safe_call ? AB_CALLFS : AB_CALL, (intptr_t)::Strings.RegString(cname));
+		// Since we don't know the context in which this call will happen at
+		// runtime, we'll check whether all available functions with the same
+		// name agree on their parameters.
+		const C4AulFunc *candidate = target_host->Engine->GetFirstFunc(cname);
+		if (candidate)
+		{
+			expected_par_types.assign(candidate->GetParType(), candidate->GetParType() + candidate->GetParCount());
+			while ((candidate = target_host->Engine->GetNextSNFunc(candidate)) != nullptr)
+			{
+				if (candidate->GetParCount() > expected_par_types.size())
+				{
+					expected_par_types.resize(candidate->GetParCount(), C4V_Any);
+				}
+				for (size_t i = 0; i < std::min<size_t>(known_par_types.size(), candidate->GetParCount()); ++i)
+				{
+					C4V_Type a = known_par_types[i];
+					C4V_Type b = candidate->GetParType()[i];
+					// If we can convert one of the types into the other
+					// without a warning, use the wider one
+					bool implicit_a_to_b = !C4Value::WarnAboutConversion(a, b);
+					bool implicit_b_to_a = !C4Value::WarnAboutConversion(b, a);
+					if (implicit_a_to_b && !implicit_b_to_a)
+						expected_par_types[i] = b;
+					else if (implicit_b_to_a && !implicit_a_to_b)
+						expected_par_types[i] = a;
+					// but if we can convert neither of the types into the
+					// other, give up and assume the user will do the right
+					// thing
+					else if (!implicit_a_to_b && !implicit_b_to_a)
+						expected_par_types[i] = C4V_Any;
+				}
+			}
+		}
+		type_of_stack_top = C4V_Any;
 	}
 	else
 	{
 		assert(callee);
 		AddBCC(n->loc, AB_FUNC, (intptr_t)callee);
+		expected_par_types.assign(callee->GetParType(), callee->GetParType() + callee->GetParCount());
+		type_of_stack_top = callee->GetRetType();
+	}
+
+	// Check parameters
+	for (size_t i = 0; i < std::min(known_par_types.size(), expected_par_types.size()); ++i)
+	{
+		C4V_Type from = known_par_types[i];
+		C4V_Type to = expected_par_types[i];
+		if (C4Value::WarnAboutConversion(from, to))
+		{
+			Warn(target_host, host, n->args[i].get(), Fn, "parameter %d of %s is %s (%s expected)", i, cname, GetC4VName(from), GetC4VName(to));
+		}
 	}
 
 	// We leave one value (the return value) on the stack
@@ -1148,6 +1231,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ParExpr *n)
 {
 	n->arg->accept(this);
 	AddBCC(n->loc, AB_PAR);
+	type_of_stack_top = C4V_Any;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Block *n)
