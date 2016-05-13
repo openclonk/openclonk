@@ -80,7 +80,7 @@ global func FxIntIntroStart(object target, proplist effect)
 
 	effect.Dialog = effect.Sister->SetDialogue("Sister");
 	effect.Rock = effect.Sister->CreateContents(Rock);
-	effect.Rock->SetObjectLayer(0);
+	effect.Rock->SetObjectLayer(nil);
 	effect.Players = [];
 }
 

@@ -70,7 +70,7 @@ private func Flying() {
 			xdir *= 10;
 			ydir *= 10;
 			while(GBackSemiSolid(0, ydir)) ydir-=1;
-			SetCommand("MoveTo", 0, GetX()+xdir, GetY()+ydir);
+			SetCommand("MoveTo", nil, GetX()+xdir, GetY()+ydir);
 			if(Random(10)==0 && attracted_to)
 				SetCommand("MoveTo", attracted_to);
 		}
@@ -90,9 +90,9 @@ public func Initialize()
 {
 	SetAction("Fly");
 	
-	SetGraphics("", GetID(), 1, 1, 0, GFX_BLIT_Additive);
+	SetGraphics("", GetID(), 1, 1, nil, GFX_BLIT_Additive);
 	SetClrModulation(RGBa(200,255,100,50),1);
-	SetGraphics("", GetID(), 2, 1, 0, GFX_BLIT_Additive);
+	SetGraphics("", GetID(), 2, 1, nil, GFX_BLIT_Additive);
 	SetClrModulation(RGBa(200,255,0,255),2);
 
 	SetObjDrawTransform(300, 0, 0, 0, 300, 0, 2);

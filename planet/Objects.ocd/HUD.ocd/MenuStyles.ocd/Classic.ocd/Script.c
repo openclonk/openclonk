@@ -94,7 +94,7 @@ func Open()
 func UpdateDesc(data, int player, int ID, int subwindowID, object target)
 {
 	var update = { Text = entries[subwindowID][0] };
-	GuiUpdate(update, ID, 1, 0);
+	GuiUpdate(update, ID, 1, nil);
 }
 
 func OnClick(data, int player, int ID, int subwindowID, object target)

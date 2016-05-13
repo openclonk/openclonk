@@ -348,7 +348,7 @@ public func ApplySet(set)
 			ReplaceAction(replace[0], replace[1]);
 
 	if(set["WalkSpeed"] != nil)
-		AddEffect("IntWalkSlow", this, 1, 0, this, 0, set["WalkSpeed"]);
+		AddEffect("IntWalkSlow", this, 1, 0, this, nil, set["WalkSpeed"]);
 
 	if(set["WalkBack"] != nil)
 		SetBackwardsSpeed(set["WalkBack"]);

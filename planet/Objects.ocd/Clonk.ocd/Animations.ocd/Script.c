@@ -332,7 +332,7 @@ func UpdateBackwardsSpeed()
 {
 	if(GetComDir() != GetDirection() && lAnim.backwards != 1 && lAnim.backwardsSpeed != nil)
 	{
-		AddEffect("IntWalkBack", this, 1, 0, this, 0, lAnim.backwardsSpeed);
+		AddEffect("IntWalkBack", this, 1, 0, this, nil, lAnim.backwardsSpeed);
 		lAnim.backwards = 1;
 	}
 	if( (GetComDir() == GetDirection() && lAnim.backwards == 1) || lAnim.backwardsSpeed == nil)
@@ -1311,7 +1311,7 @@ public func ControlThrow(object target, int x, int y)
 		else SetDir(DIR_Left);
 		//SetAction("Throw");
 		this->~SetHandAction(1); // Set hands ocupied
-		AddEffect("IntThrow", this, 1, 1, this, 0, target, throwAngle);
+		AddEffect("IntThrow", this, 1, 1, this, nil, target, throwAngle);
 		return true;
 	}
 	// attached

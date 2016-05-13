@@ -39,7 +39,7 @@ public func MoveTo(int x, int y, int r)
 {
 	if (GetEffect("MoveTo", this)) 
 		RemoveEffect("MoveTo", this);
-	AddEffect("MoveTo", this, 1, 1, this, 0, x, y, r);
+	AddEffect("MoveTo", this, 1, 1, this, nil, x, y, r);
 	return;
 }
 
