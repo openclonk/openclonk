@@ -246,7 +246,7 @@ C4V_Type C4AulCompiler::GetLastRetType(C4AulScriptEngine * Engine, C4V_Type to)
 	C4V_Type from;
 	switch (Fn->GetLastCode()->bccType)
 	{
-	case AB_INT: from = Config.Developer.ExtraWarnings || Fn->GetLastCode()->Par.i ? C4V_Int : C4V_Any; break;
+	case AB_INT: from = C4V_Int; break;
 	case AB_STRING: from = C4V_String; break;
 	case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
 	case AB_CFUNCTION: from = C4V_Function; break;
