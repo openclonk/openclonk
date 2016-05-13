@@ -193,11 +193,12 @@ public:
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
-	void AddPar(const char * Idtf)
+	void AddPar(const char * Idtf, C4V_Type type = C4V_Any)
 	{
 		assert(ParCount < C4AUL_MAX_Par);
 		assert(ParCount == ParNamed.iSize);
 		ParNamed.AddName(Idtf);
+		ParType[ParCount] = type;
 		++ParCount;
 	}
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
