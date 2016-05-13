@@ -37,6 +37,7 @@ namespace aul { namespace ast {
 	class VarExpr;
 	class UnOpExpr;
 	class BinOpExpr;
+	class AssignmentExpr;
 	class SubscriptExpr;
 	class SliceExpr;
 	class CallExpr;
@@ -75,6 +76,7 @@ public:
 	virtual void visit(const ::aul::ast::VarExpr *n) {}
 	virtual void visit(const ::aul::ast::UnOpExpr *) {}
 	virtual void visit(const ::aul::ast::BinOpExpr *) {}
+	virtual void visit(const ::aul::ast::AssignmentExpr *) {}
 	virtual void visit(const ::aul::ast::SubscriptExpr *) {}
 	virtual void visit(const ::aul::ast::SliceExpr *) {}
 	virtual void visit(const ::aul::ast::CallExpr *) {}
@@ -224,9 +226,14 @@ public:
 	BinOpExpr(int op, ExprPtr &&lhs, ExprPtr &&rhs) : op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 	ExprPtr lhs, rhs;
 	int op; // TODO: Make this a proper operator type
+};
 
-	// Marker for '='
-	enum { AssignmentOp = -1 };
+class AssignmentExpr : public Expr
+{
+	AST_NODE(AssignmentExpr);
+public:
+	AssignmentExpr(ExprPtr &&lhs, ExprPtr &&rhs) : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+	ExprPtr lhs, rhs;
 };
 
 class SubscriptExpr : public Expr
@@ -452,6 +459,11 @@ public:
 		n->operand->accept(this);
 	}
 	virtual void visit(const ::aul::ast::BinOpExpr *n) override
+	{
+		n->lhs->accept(this);
+		n->rhs->accept(this);
+	}
+	virtual void visit(const ::aul::ast::AssignmentExpr *n) override
 	{
 		n->lhs->accept(this);
 		n->rhs->accept(this);

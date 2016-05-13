@@ -1460,7 +1460,7 @@ std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 				if (iParentPrio > 1)
 					return expr;
 				Shift();
-				expr = ::aul::ast::BinOpExpr::New(NodeStart, ::aul::ast::BinOpExpr::AssignmentOp, std::move(expr), Parse_Expression(1));
+				expr = ::aul::ast::AssignmentExpr::New(NodeStart, std::move(expr), Parse_Expression(1));
 				break;
 			}
 		case ATT_OPERATOR:

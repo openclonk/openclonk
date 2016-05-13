@@ -228,6 +228,7 @@ public:
 	virtual void visit(const ::aul::ast::VarExpr *n) override;
 	virtual void visit(const ::aul::ast::UnOpExpr *n) override;
 	virtual void visit(const ::aul::ast::BinOpExpr *n) override;
+	virtual void visit(const ::aul::ast::AssignmentExpr *n) override;
 	virtual void visit(const ::aul::ast::SubscriptExpr *n) override;
 	virtual void visit(const ::aul::ast::SliceExpr *n) override;
 	virtual void visit(const ::aul::ast::CallExpr *n) override;
@@ -315,6 +316,7 @@ public:
 	virtual void visit(const ::aul::ast::VarExpr *n) override;
 	virtual void visit(const ::aul::ast::UnOpExpr *n) override;
 	virtual void visit(const ::aul::ast::BinOpExpr *n) override;
+	virtual void visit(const ::aul::ast::AssignmentExpr *n) override;
 	virtual void visit(const ::aul::ast::SubscriptExpr *n) override;
 	virtual void visit(const ::aul::ast::SliceExpr *n) override;
 	virtual void visit(const ::aul::ast::CallExpr *n) override;
@@ -985,14 +987,6 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
 {
 	n->lhs->accept(this);
 
-	if (n->op == ::aul::ast::BinOpExpr::AssignmentOp)
-	{
-		C4AulBCC setter = MakeSetter(n->loc, false);
-		n->rhs->accept(this);
-		AddBCC(n->loc, setter);
-		return;
-	}
-
 	const auto &op = C4ScriptOpMap[n->op];
 	if (op.Code == AB_JUMPAND || op.Code == AB_JUMPOR || op.Code == AB_JUMPNNIL)
 	{
@@ -1015,6 +1009,14 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
 		n->rhs->accept(this);
 		AddBCC(n->loc, op.Code, 0);
 	}
+}
+
+void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::AssignmentExpr *n)
+{
+	n->lhs->accept(this);
+	C4AulBCC setter = MakeSetter(n->loc, false);
+	n->rhs->accept(this);
+	AddBCC(n->loc, setter);
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SubscriptExpr *n)
@@ -1588,9 +1590,6 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::UnOpExpr *n)
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::BinOpExpr *n)
 {
-	if (n->op == ::aul::ast::BinOpExpr::AssignmentOp)
-		nonconst(n);
-
 	assert(n->op > 0);
 	const auto &op = C4ScriptOpMap[n->op];
 	if (op.Changer)
@@ -1660,6 +1659,11 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::BinOpExpr *n)
 		throw Error(host, host, n, nullptr, "internal error: binary operator not found in operator table");
 		break;
 	}
+}
+
+void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::AssignmentExpr *n)
+{
+	nonconst(n);
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::SubscriptExpr *n)
