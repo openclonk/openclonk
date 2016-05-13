@@ -1082,7 +1082,7 @@ std::unique_ptr<::aul::ast::Stmt> C4AulParse::Parse_Statement()
 	}
 }
 
-void C4AulParse::Parse_CallParams(::aul::ast::CallExpr *call) /*int (int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)*/
+void C4AulParse::Parse_CallParams(::aul::ast::CallExpr *call)
 {
 	assert(call != nullptr);
 	assert(call->args.empty());
