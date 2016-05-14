@@ -131,14 +131,21 @@
 <![CDATA[
 (function() {
 	function navigate(url) {
+		var urlsplit = url.split("#");
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', url.split("#")[0]);
+		xhr.open('GET', urlsplit[0]);
 		xhr.onreadystatechange = function (e) {
 			if (xhr.readyState === 4) {
 				var d = parent.document;
 				var r = xhr.responseText;
 				d.getElementById("content").innerHTML = r.split('<div id="content">')[1];
 				d.title = r.slice(r.indexOf("<title>")+7, r.indexOf("</title>"));
+				if (urlsplit.length > 1) {
+					var scrolltarget = d.getElementById(urlsplit[1]);
+					if (scrolltarget) {
+						scrolltarget.scrollIntoView();
+					}
+				}
 			}
 		};
 		xhr.send();
