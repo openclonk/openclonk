@@ -398,13 +398,20 @@ static C4Object * Obj(C4PropList * p) { return p ? p->GetObject() : NULL; }
 
 C4Value C4Effect::DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
-	C4PropList *p = GetCallbackScript();
-	if (!p) return Call(szFn, &C4AulParSet(rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
-	// old variant
-	// compose function name
-	char fn[C4AUL_MAX_Identifier+1];
-	sprintf(fn, PSF_FxCustom, GetName(), szFn);
-	return p->Call(fn, &C4AulParSet(Obj(pObj), this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	C4PropList * p = GetCallbackScript();
+	if (!p)
+	{
+		C4AulFunc * fn = GetFunc(szFn);
+		if (fn) return fn->Exec(this, &C4AulParSet(rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	}
+	else
+	{
+		// old variant
+		// compose function name
+		C4AulFunc * fn = p->GetFunc(FormatString(PSF_FxCustom, GetName(), szFn).getData());
+		if (fn) return fn->Exec(p, &C4AulParSet(Obj(pObj), this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	}
+	return C4Value();
 }
 
 int C4Effect::CallStart(int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
