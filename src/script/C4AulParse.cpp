@@ -661,7 +661,7 @@ void C4AulScriptFunc::DumpByteCode()
 				const StdStrBuf &s = bcc.Par.s->GetData();
 				std::string es;
 				std::for_each(s.getData(), s.getData() + s.getLength(), [&es](char c) {
-					if (std::isgraph((unsigned char)c))
+					if (std::isprint((unsigned char)c))
 					{
 						es += c;
 					}
@@ -2051,8 +2051,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			C4AulBCCType eCallType = (TokenType == ATT_CALL) ? AB_CALL : AB_CALLFS;
 			Shift();
 			// expect identifier of called function now
-			if (TokenType != ATT_IDTF)
-				throw C4AulParseError(this, "expecting func name after '->'");
+			Check(ATT_IDTF, "function name after '->'");
 			if (Type == PARSER)
 			{
 				pName = ::Strings.RegString(Idtf);
@@ -2239,6 +2238,8 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 					++size;
 				}
 			}
+			if (Type == PARSER)
+				r._getArray()->Freeze();
 			Shift();
 			break;
 		}

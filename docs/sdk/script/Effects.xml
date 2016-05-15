@@ -70,23 +70,20 @@ func Activate(object caster, object caster2)
 	return true;
 }
 
-local InvisPSpell =
-{
-	Start = func(object target)
-	{
+local InvisPSpell = new Effect {
+	Start = func() {
 		// Save the casters previous visibility
-		this.visibility = target.Visibility;
-		this.old_mod = target-&gt;<funclink>GetClrModulation</funclink>();
+		this.visibility = Target.Visibility;
+		this.old_mod = Target-&gt;<funclink>GetClrModulation</funclink>();
 		// Make the caster invisible
-		target.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
+		Target.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
 		// Semitransparent and slightly blue for owner and allies
-		target-&gt;SetClrModulation(<funclink>ModulateColor</funclink>(this.old_mod, RGBa(127,127,255,127)));
+		Target-&gt;SetClrModulation(<funclink>ModulateColor</funclink>(this.old_mod, RGBa(127,127,255,127)));
 	},
-	Stop = func(object target)
-	{
+	Stop = func() {
 		// restore previous values
-		target-&gt;<funclink>SetClrModulation</funclink>(this.old_mod);
-		target.Visibility = this.visibility;
+		Target-&gt;<funclink>SetClrModulation</funclink>(this.old_mod);
+		Target.Visibility = this.visibility;
 	}
 }</code>
     <text>In this case, the magic spell object only starts the effect, then deletes itself immediately. The engine ensures that there are no conflicts with multiple effects modifying the visibility: effects are stored in a stack which ensures that effects are always removed in the opposite order of their addition. For this, there are a couple of extra Start and Stop calls to be made which are explained in detail later.</text>
@@ -115,11 +112,11 @@ func Activate(object caster, object caster2)
 	return true;
 }
 
-local BanBurnPSpell = {
-	Construction = func(object target)
+local BanBurnPSpell = new Effect {
+	Construction = func()
 	{
 		// On start of the effect: extinguish clonk
-		target-&gt;<funclink>Extinguish</funclink>();
+		Target-&gt;<funclink>Extinguish</funclink>();
 	},
 	Effect = func(string new_name)
 	{
@@ -131,7 +128,7 @@ local BanBurnPSpell = {
 };</code>
     <text>This effect makes the clonk fire-proof for 30 seconds. The effect is implemented without any Timer or Stop callbacks as the complete functionality is achieved by simply blocking other effects which might have "Fire" as part of their name. This especially applies to the engine internal fire which has exactly the name "Fire". Of course, you could still add a Timer callback for graphic effects so the player can see that his clonk is immune. Also, you could create special visual effects when preventing incineration in <code>Effect</code>. For the like:</text>
     <code>[...]
-Effect = func(string new_name, object target, var1, var2, var3, var4)
+Effect = func(string new_name, var1, var2, var3, var4)
 {
 	// only handle fire
 	if (!<funclink>WildcardMatch</funclink>(new_name, &quot;*Fire*&quot;)) return 0;
@@ -219,27 +216,25 @@ func Activate(object caster, object caster2)
 	return true;
 }
 
-local ReincarnationPSpell = {
-	Construction = func(object target)
-	{
+local ReincarnationPSpell = new Effect {
+	Construction = func() {
 		// Only at the first start: message
-		target-&gt;<funclink>Message</funclink>(&quot;%s gets an extra life&quot;, target-&gt;<funclink>GetName</funclink>());
+		Target-&gt;<funclink>Message</funclink>(&quot;%s gets an extra life&quot;, Target-&gt;<funclink>GetName</funclink>());
 		return true;
 	},
 
-	func Stop(object target, int reason, bool temporary)
-	{
+	func Stop(int reason, bool temporary) {
 		// only when the clonk died
 		if (reason != 4) return true;
 		
 		// the clonk has already been resurrected
-		if (target-&gt;<funclink>GetAlive</funclink>()) return -1;
+		if (Target-&gt;<funclink>GetAlive</funclink>()) return -1;
 		// resurrect clonk
-		target-&gt;<funclink>SetAlive</funclink>(true);
+		Target-&gt;<funclink>SetAlive</funclink>(true);
 		// give energy
-		target-&gt;<funclink>DoEnergy</funclink>(100);
+		Target-&gt;<funclink>DoEnergy</funclink>(100);
 		// message
-		target-&gt;<funclink>Message</funclink>(&quot;%s has been resurrected.&quot;, target-&gt;<funclink>GetName</funclink>());
+		Target-&gt;<funclink>Message</funclink>(&quot;%s has been resurrected.&quot;, Target-&gt;<funclink>GetName</funclink>());
 
 		// remove
 		return true;
@@ -333,34 +328,39 @@ func FxGravChangeUSpellAdd(object target, proplist effect, string new_name, int 
     <table>
       <caption id="PropertiesTable">Effect Properties</caption>
       <rowh>
-        <col>Data type</col>
         <col>Name</col>
+        <col>Data type</col>
         <col>Description</col>
       </rowh>
       <row>
-        <col>string</col>
         <col><code>Name</code></col>
+        <col>string</col>
         <col>Can be changed.</col>
       </row>
       <row>
-        <col>int</col>
         <col><code>Priority</code></col>
+        <col>int</col>
         <col>See <a href="Priorities">Priorities</a></col>
       </row>
       <row>
-        <col>int</col>
         <col><code>Interval</code></col>
+        <col>int</col>
         <col>Of the <a href="#TimerCallback">Timer callback</a>.</col>
       </row>
       <row>
-        <col>int</col>
         <col><code>Time</code></col>
+        <col>int</col>
         <col>The age of the effect in frames, used for the <a href="#TimerCallback">Timer callback</a>. Can be changed.</col>
       </row>
       <row>
-        <col>proplist</col>
         <col><code>CommandTarget</code></col>
-        <col>Either the command object or the command definition, depending on which is used.</col>
+        <col>proplist</col>
+	<col><code>nil</code> when created by <funclink>CreateEffect</funclink>, as the effect gets the callbacks itself. When created by <funclink>AddEffect</funclink> either the command object or the command definition, depending on which is used.</col>
+      </row>
+      <row>
+        <col><code>Target</code></col>
+        <col>proplist</col>
+	<col>The object the effect belongs to, or the proplists <code>Scenario</code> or <code>Global</code> for scenario and global effects.</col>
       </row>
     </table>
     <h id="UserCallbacks">User Defined Properties</h>
@@ -492,16 +492,15 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
     <h id="CBRef">Callback Reference</h>
     <part>
       <text>The following callbacks are made by the engine and should be implemented in your effect prototype as necessary.</text>
-      <text>All parameters receive the target as their first or second parameter. This is either an object, the <code>Global</code> or the <code>Scenario</code> proplist.</text>
       <h>Start</h>
-      <text><code>int Start (object target, int temporary, any var1, any var2, any var3, any var4);</code></text>
-      <text>Called at the start of the effect. <code>target</code> is the target object of the effect. <code>this</code> is the effect itself. It can be used to manipulate the effect, for example with <code>this.Interval=newinterval</code>.</text>
+      <text><code>int Start (int temporary, any var1, any var2, any var3, any var4);</code></text>
+      <text>Called at the start of the effect. <code>this</code> is the effect itself. It can be used to manipulate the effect, for example with <code>this.Interval=newinterval</code>.</text>
       <text>In normal operation the parameter temporary is 0. It is 1 if the effect is re-added after having been temporarily removed and 2 if the effect was temporarily removed and is now to be deleted (in this case a Remove call will follow).</text>
       <text>If temporary is 0, var1 to var4 are the additional parameters passed to <funclink>CreateEffect</funclink>().</text>
       <text>If temporary is 0 and this callback returns -1 the effect is not created and the corrsponding <funclink>CreateEffect</funclink>() call returns <code>nil</code>.</text>
       <h>Stop</h>
-      <text><code>int Stop (object target, int reason, bool temporary);</code></text>
-      <text>When the effect is temporarily or permanently removed. target again is the target object and <code>this</code> the effect itself.</text>
+      <text><code>int Stop (int reason, bool temporary);</code></text>
+      <text>When the effect is temporarily or permanently removed. <code>this</code> is the effect itself.</text>
       <text>reason contains the cause of the removal and can be one of the following values:</text>
       <text>
         <table>
@@ -539,32 +538,32 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       </text>
       <text>The effect can prevent removal by returning -1. This will not help, however, in temporary removals or if the target object has been deleted.</text>
       <h id="FxConstructionCallback">Construction</h>
-      <text><code>int Construction (object target, any var1, any var2, any var3, any var4);</code></text>
+      <text><code>int Construction (any var1, any var2, any var3, any var4);</code></text>
       <text>Called when the effect is first created, before it is started. The parameters <code>var1</code> to <code>var4</code> are passed through from <funclink>CreateEffect</funclink>.</text>
       <text>The return value is ignored.</text>
       <h id="FxDestructionCallback">Destruction</h>
-      <text><code>nil Destruction (object target, int reason);</code></text>
+      <text><code>nil Destruction (int reason);</code></text>
       <text>Callback when the effect is removed. <code>reason</code> is the same as in the preceding <code>Stop</code> call, see above.</text>
       <text>The return value is ignored.</text>
       <h id="TimerCallback">Timer</h>
-      <text><code>int Timer (object target, int time);</code></text>
+      <text><code>int Timer (int time);</code></text>
       <text>Periodic timer call, if a timer interval has been specified at effect creation.</text>
       <text>time specifies how long the effect has now been active. This might alternatively be determined using effect.Time.</text>
       <text>If this function is not implemented or returns -1, the effect will be deleted after this call.</text>
       <h>Effect</h>
-      <text><code>int Effect (string new_name, object target, any var1, any var2, any var3, any var4);</code></text>
+      <text><code>int Effect (string new_name, any var1, any var2, any var3, any var4);</code></text>
       <text>A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; <code>this</code> is the effect being called.</text>
       <text>Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set.</text>
       <text>This function can return -1 to reject the new effect. As the new effect might also be rejected by other effects, this callback should not try to add effects or similar (see gravitation spell). Generally you should not try to manipulate any effects during this callback.</text>
       <text>Return -2 or -3 to accept the new effect. As long as the new effect is not rejected by any other effect, the <code>Add</code> call is then made to the accepting effect, the new effect is not actually created, and the calling <funclink>CreateEffect</funclink> function returns the accepting effect. The return value -3 will also temporarily remove all higher prioriy effects just before the <code>Add</code> callback and re-add them later.</text>
       <text>var1 bis var4 are the parameters passed to <funclink>CreateEffect</funclink>()</text>
       <h>Add</h>
-      <text><code>int Add (object target, string new_name, int new_timer, any var1, any var2, any var3, any var4);</code></text>
-      <text>Callback to the accepting effect if that has returned -2 or -3 to a prior <code>Effect</code> call. <code>this</code> identifies the accepting effect to which the consequences of the new effect will be added; <code>target</code> is the target object (0 for global effects).</text>
+      <text><code>int Add (string new_name, int new_timer, any var1, any var2, any var3, any var4);</code></text>
+      <text>Callback to the accepting effect if that has returned -2 or -3 to a prior <code>Effect</code> call. <code>this</code> identifies the accepting effect to which the consequences of the new effect will be added.</text>
       <text>new_timer is the timer interval of the new effect; var1 to var4 are the parameters from AddEffect. Notice: in temporary calls, these parameters are not available - here they will be 0.</text>
       <text>If -1 is returned, the accepting effect is deleted also. Logically, the calling <funclink>CreateEffect</funclink> function will then return <code>nil</code>.</text>
       <h>Damage</h>
-      <text><code>int Damage (object target, int damage, int cause, int by_player);</code></text>
+      <text><code>int Damage (int damage, int cause, int by_player);</code></text>
       <text>Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return the damage to be done to the target.</text>
       <text id="damagecause">This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
       <text>

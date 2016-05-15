@@ -363,7 +363,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove all effects (extinguishes as well)
 	if (pEffects)
 	{
-		pEffects->ClearAll(this, C4FxCall_RemoveClear);
+		pEffects->ClearAll(C4FxCall_RemoveClear);
 		// Effect-callback might actually have deleted the object already
 		if (!Status) return;
 	}
@@ -1047,7 +1047,7 @@ void C4Object::Execute()
 	// effects
 	if (pEffects)
 	{
-		C4Effect::Execute(this, &pEffects);
+		C4Effect::Execute(&pEffects);
 		if (!Status) return;
 	}
 	// Life
@@ -1110,7 +1110,7 @@ void C4Object::AssignDeath(bool fForced)
 	// get death causing player before doing effect calls, because those might meddle around with the flags
 	int32_t iDeathCausingPlayer = LastEnergyLossCausePlayer;
 	Alive=0;
-	if (pEffects) pEffects->ClearAll(this, C4FxCall_RemoveDeath);
+	if (pEffects) pEffects->ClearAll(C4FxCall_RemoveDeath);
 	// if the object is alive again, abort here if the kill is not forced
 	if (Alive && !fForced) return;
 	// Action
@@ -1206,7 +1206,7 @@ void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 	// non-living: ask effects first
 	if (pEffects && !Alive)
 	{
-		pEffects->DoDamage(this, iChange, iCause, iCausedBy);
+		pEffects->DoDamage(iChange, iCause, iCausedBy);
 		if (!iChange) return;
 	}
 	// Change value
@@ -1231,7 +1231,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
 	// Living things: ask effects for change first
 	if (pEffects && Alive)
-		pEffects->DoDamage(this, iChange, iCause, iCausedByPlr);
+		pEffects->DoDamage(iChange, iCause, iCausedByPlr);
 	// Do change
 	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
@@ -2326,7 +2326,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Layer,                            "Layer",              C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( C4DefGraphicsAdapt(pGraphics),    "Graphics",           &Def->Graphics    ));
 	pComp->Value(mkNamingPtrAdapt( pDrawTransform,                "DrawTransform"                         ));
-	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), numbers));
+	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), this, numbers));
 	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)NULL));
 
 	// Serialize mesh instance if we have a mesh graphics

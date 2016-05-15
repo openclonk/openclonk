@@ -57,6 +57,11 @@ public:
 	void SetItem(int32_t iElemNr, const C4Value &Value); // interface for script
 	void SetSize(int32_t inSize); // (enlarge only!)
 
+	// for arrays declared in script constants
+	void Freeze() { constant = true; }
+	void Thaw() { constant = false; }
+	bool IsFrozen() const { return constant; }
+
 	void Denumerate(C4ValueNumbers *);
 
 	// comparison
@@ -77,8 +82,9 @@ public:
 	bool SortByArrayElement(int32_t array_idx, bool descending=false); // checks that this is an array of all arrays and sorts by array elements at index. returns false if an element is not an array or smaller than array_idx+1
 
 private:
-	int32_t iSize, iCapacity;
 	C4Value* pData;
+	int32_t iSize, iCapacity;
+	bool constant; // if true, this array is not changeable
 };
 
 #endif

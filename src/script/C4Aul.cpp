@@ -119,13 +119,13 @@ void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 	if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 }
 
-static void GlobalEffectsMergeCompileFunc(StdCompiler *pComp, C4Effect * & pEffects, const char * name, C4ValueNumbers * numbers)
+static void GlobalEffectsMergeCompileFunc(StdCompiler *pComp, C4Effect * & pEffects, const char * name, C4PropList * pForObj, C4ValueNumbers * numbers)
 {
 	C4Effect *pOldEffect, *pNextOldEffect=pEffects;
 	pEffects = NULL;
 	try
 	{
-		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pEffects, name), numbers));
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pEffects, name), pForObj, numbers));
 	}
 	catch (...)
 	{
@@ -154,14 +154,14 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, bool fScenarioSection, C
 		// loading scenario section: Merge effects
 		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
 		// and otherwise dead pointers would remain on the stack
-		GlobalEffectsMergeCompileFunc(pComp, pGlobalEffects, "Effects", numbers);
-		GlobalEffectsMergeCompileFunc(pComp, GameScript.pScenarioEffects, "ScenarioEffects", numbers);
+		GlobalEffectsMergeCompileFunc(pComp, pGlobalEffects, "Effects", this, numbers);
+		GlobalEffectsMergeCompileFunc(pComp, GameScript.pScenarioEffects, "ScenarioEffects", GameScript.ScenPropList._getPropList(), numbers);
 	}
 	else
 	{
 		// Otherwise, just compile effects
-		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
-		pComp->Value(mkParAdapt(mkNamingPtrAdapt(GameScript.pScenarioEffects, "ScenarioEffects"), numbers));
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), this, numbers));
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(GameScript.pScenarioEffects, "ScenarioEffects"), GameScript.ScenPropList._getPropList(), numbers));
 	}
 	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 }

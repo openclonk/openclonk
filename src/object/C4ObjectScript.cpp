@@ -2262,9 +2262,9 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	{
 		if(Pos->GetSize() != 3)
 			throw C4AulExecError("CreateParticleAtBone: Pos is not a three-vector");
-		x.x = (*Pos)[0].getInt();
-		x.y = (*Pos)[1].getInt();
-		x.z = (*Pos)[2].getInt();
+		x.x = (*Pos).GetItem(0).getInt();
+		x.y = (*Pos).GetItem(1).getInt();
+		x.z = (*Pos).GetItem(2).getInt();
 	}
 	else { x.x = x.y = x.z = 0.0f; }
 
@@ -2272,9 +2272,9 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	{
 		if(Dir->GetSize() != 3)
 			throw C4AulExecError("CreateParticleAtBone: Dir is not a three-vector");
-		dir.x = (*Dir)[0].getInt() / 10.0f;
-		dir.y = (*Dir)[1].getInt() / 10.0f;
-		dir.z = (*Dir)[2].getInt() / 10.0f;
+		dir.x = (*Dir).GetItem(0).getInt() / 10.0f;
+		dir.y = (*Dir).GetItem(1).getInt() / 10.0f;
+		dir.z = (*Dir).GetItem(2).getInt() / 10.0f;
 	}
 	else { dir.x = dir.y = dir.z = 0.0f; }
 	// Apply the bone transformation to them, to go from bone coordinates

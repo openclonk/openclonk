@@ -333,8 +333,8 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp)
 	pStruct = temp.release();
 }
 
-template <class T, class P>
-void CompileNewFunc(T *&pStruct, StdCompiler *pComp, const P& rPar)
+template <class T, typename ... P>
+void CompileNewFunc(T *&pStruct, StdCompiler *pComp, P && ... pars)
 {
 	// Create new object.
 	// If this line doesn't compile, you either have to
@@ -343,7 +343,7 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp, const P& rPar)
 	//    behaviour is to construct the object from compiler data
 	std::unique_ptr<T> temp(new T); // exception-safety
 	// Compile
-	pComp->Value(mkParAdapt(*temp, rPar));
+	pComp->Value(mkParAdapt(*temp, std::forward<P>(pars)...));
 	pStruct = temp.release();
 }
 

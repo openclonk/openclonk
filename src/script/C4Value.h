@@ -69,6 +69,7 @@ public:
 
 	C4Value(const C4Value &nValue) : Data(nValue.Data), NextRef(NULL), Type(nValue.Type)
 	{ AddDataRef(); }
+	C4Value(C4Value && nValue) noexcept;
 
 	explicit C4Value(bool data): NextRef(NULL), Type(C4V_Bool)
 	{ Data.Int = data; }
@@ -333,6 +334,17 @@ ALWAYS_INLINE void C4Value::Set0()
 
 	// clean up (save even if Data was 0 before)
 	DelDataRef(oData, oType, NextRef);
+}
+
+ALWAYS_INLINE C4Value::C4Value(C4Value && nValue) noexcept:
+		Data(nValue.Data), NextRef(NULL), Type(nValue.Type)
+{
+	if (Type == C4V_PropList)
+	{
+		Data.PropList->AddRef(this);
+		Data.PropList->DelRef(&nValue, nValue.NextRef);
+	}
+	nValue.Type = C4V_Nil; nValue.Data = 0; nValue.NextRef = NULL;
 }
 
 #endif

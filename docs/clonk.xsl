@@ -336,7 +336,7 @@
             </xsl:if>
             <xsl:if test="position() mod 2=0"><xsl:attribute name="class">dark</xsl:attribute></xsl:if>
             <xsl:for-each select="col|literal_col">
-              <td><xsl:apply-templates select="@colspan|node()"/></td>
+              <td><xsl:apply-templates select="@colspan|@id|node()"/></td>
             </xsl:for-each>
           </tr>
         </xsl:for-each>

@@ -1,7 +1,7 @@
 /*--
 		Action.c
-		Authors: Günther
-		
+		Authors: GÃ¼nther
+
 		Stuff for the proplist changes.
 --*/
 

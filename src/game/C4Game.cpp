@@ -725,8 +725,8 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Game
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
-	EXEC_S_DR(  C4Effect::Execute(ScriptEngine.GetPropList(), &ScriptEngine.pGlobalEffects);
-	            C4Effect::Execute(GameScript.GetPropList(), &GameScript.pScenarioEffects);
+	EXEC_S_DR(  C4Effect::Execute(&ScriptEngine.pGlobalEffects);
+	            C4Effect::Execute(&GameScript.pScenarioEffects);
 	                                              , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")
@@ -3487,12 +3487,12 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// remove global effects
 	if (::ScriptEngine.pGlobalEffects && !(dwFlags & C4S_KEEP_EFFECTS))
 	{
-		::ScriptEngine.pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
+		::ScriptEngine.pGlobalEffects->ClearAll(C4FxCall_RemoveClear);
 		// scenario section call might have been done from a global effect
 		// rely on dead effect removal for actually removing the effects; do not clear the array here!
 	}
 	if (::GameScript.pScenarioEffects && !(dwFlags & C4S_KEEP_EFFECTS))
-		::GameScript.pScenarioEffects->ClearAll(NULL, C4FxCall_RemoveClear);
+		::GameScript.pScenarioEffects->ClearAll(C4FxCall_RemoveClear);
 	// del particles as well
 	Particles.ClearAllParticles();
 	// clear transfer zones
