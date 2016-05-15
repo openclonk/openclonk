@@ -70,8 +70,7 @@ func Activate(object caster, object caster2)
 	return true;
 }
 
-local InvisPSpell =
-{
+local InvisPSpell = new Effect {
 	Start = func() {
 		// Save the casters previous visibility
 		this.visibility = Target.Visibility;
@@ -113,7 +112,7 @@ func Activate(object caster, object caster2)
 	return true;
 }
 
-local BanBurnPSpell = {
+local BanBurnPSpell = new Effect {
 	Construction = func()
 	{
 		// On start of the effect: extinguish clonk
@@ -217,7 +216,7 @@ func Activate(object caster, object caster2)
 	return true;
 }
 
-local ReincarnationPSpell = {
+local ReincarnationPSpell = new Effect {
 	Construction = func() {
 		// Only at the first start: message
 		Target-&gt;<funclink>Message</funclink>(&quot;%s gets an extra life&quot;, Target-&gt;<funclink>GetName</funclink>());
