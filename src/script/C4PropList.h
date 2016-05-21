@@ -195,7 +195,7 @@ public:
 	Iterator end() { return Iterator(); }
 };
 
-void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * && rPar);
+void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers *rPar);
 
 // Proplists that are created during a game and get saved in a savegame
 // Examples: Objects, Effects
