@@ -66,6 +66,9 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 public func AddMenuItem(string caption, string command, symbol, int count, parameter, string info_caption, int extra, XPar1, XPar2)
 {
 	var ID = GetLength(entries) + 1;
+	var text = nil;
+	if (count != nil && count != 0)
+		text = Format("%dx", count);
 	var entry =
 	{
 		Target = target, // needed for the call
@@ -74,7 +77,7 @@ public func AddMenuItem(string caption, string command, symbol, int count, param
 		Symbol = symbol,
 		Right = "+2em",
 		Bottom = "+2em",
-		Text = Format("%dx", count),
+		Text = text,
 		Priority = ID,
 		OnClick = GuiAction_Call(this, "OnClick", [symbol, ID, command, parameter]),
 		OnMouseIn = [GuiAction_SetTag("Hover", 0, nil), GuiAction_Call(this, "UpdateDesc")],
