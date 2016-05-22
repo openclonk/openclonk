@@ -137,7 +137,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
 		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT),
-		                     false, NULL);
+		                     e.key.repeat > 0, NULL);
 		break;
 	}
 	case SDL_KEYUP:
