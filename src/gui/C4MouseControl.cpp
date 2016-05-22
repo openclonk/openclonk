@@ -348,6 +348,11 @@ void C4MouseControl::DoMoveInput()
 void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 {
 	int32_t iOffsetX,iOffsetY;
+	float wdt = GfxR->fctMouseCursor.Wdt, hgt = GfxR->fctMouseCursor.Hgt;
+	// Cursor size relative to height - does not matter with current square graphics.
+	float zoom = Config.Graphics.MouseCursorSize / hgt;
+	hgt *= zoom;
+	wdt *= zoom;
 
 	ZoomData GuiZoom;
 	pDraw->GetZoom(&GuiZoom);
@@ -367,19 +372,19 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		//------------------------------------------------------------------------------------------
 	case C4MC_Drag_None: case C4MC_Drag_Script: case C4MC_Drag_Unhandled:
 		// Hotspot offset: Usually, hotspot is in center
-		iOffsetX = GfxR->fctMouseCursor.Wdt/2;
-		iOffsetY = GfxR->fctMouseCursor.Hgt/2;
+		iOffsetX = wdt/2;
+		iOffsetY = hgt/2;
 		// calculate the hotspot for the scrolling cursors
 		switch (Cursor)
 		{
-		case C4MC_Cursor_Up: iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-		case C4MC_Cursor_Down:iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-		case C4MC_Cursor_Left: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; break;
-		case C4MC_Cursor_Right: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; break;
-		case C4MC_Cursor_UpLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-		case C4MC_Cursor_UpRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-		case C4MC_Cursor_DownLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-		case C4MC_Cursor_DownRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
+		case C4MC_Cursor_Up: iOffsetY += -hgt/2; break;
+		case C4MC_Cursor_Down:iOffsetY += +hgt/2; break;
+		case C4MC_Cursor_Left: iOffsetX += -wdt/2; break;
+		case C4MC_Cursor_Right: iOffsetX += +wdt/2; break;
+		case C4MC_Cursor_UpLeft: iOffsetX += -wdt/2; iOffsetY += -hgt/2; break;
+		case C4MC_Cursor_UpRight: iOffsetX += +wdt/2; iOffsetY += -hgt/2; break;
+		case C4MC_Cursor_DownLeft: iOffsetX += -wdt/2; iOffsetY += +hgt/2; break;
+		case C4MC_Cursor_DownRight: iOffsetX += +wdt/2; iOffsetY += +hgt/2; break;
 		}
 		// Drag image
 		if (DragImageObject || DragImageDef)
@@ -462,12 +467,14 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 
 			if (fIsGameZoom) pDraw->SetZoom(GuiZoom);
 			// reset cursor hotspot offset for script drawing
-			iOffsetX = GfxR->fctMouseCursor.Wdt/2;
-			iOffsetY = GfxR->fctMouseCursor.Hgt/2;
+			iOffsetX = wdt/2;
+			iOffsetY = hgt/2;
 		}
 		// Cursor
 		if ( (!DragImageDef && !DragImageObject) || (Drag == C4MC_Drag_Script))
-			GfxR->fctMouseCursor.Draw(cgo.Surface,cgo.X+GuiX-iOffsetX,cgo.Y+GuiY-iOffsetY,Cursor);
+		{
+			GfxR->fctMouseCursor.DrawX(cgo.Surface, cgo.X+GuiX-iOffsetX, cgo.Y+GuiY-iOffsetY, wdt, hgt,  Cursor);
+		}
 		break;
 		//------------------------------------------------------------------------------------------
 	}

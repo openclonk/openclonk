@@ -115,6 +115,7 @@ public:
 	int32_t MultiSampling; // multisampling samples
 	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
 	int32_t DebugOpenGL; // if true, enables OpenGL debugging
+	int32_t MouseCursorSize; // size in pixels
 
 	void CompileFunc(StdCompiler *pComp);
 };

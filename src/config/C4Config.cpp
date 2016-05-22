@@ -113,6 +113,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
 	pComp->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        1          ));
+	pComp->Value(mkNamingAdapt(MouseCursorSize,       "MouseCursorSize",      50            ));
 }
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)
