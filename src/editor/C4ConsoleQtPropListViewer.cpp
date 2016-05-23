@@ -26,6 +26,27 @@
 
 /* Property path for property setting synchronization */
 
+C4PropertyPath::C4PropertyPath(C4PropList *target)
+{
+	// Build string to set target: supports objects only
+	if (target)
+	{
+		C4Object *obj = target->GetObject();
+		if (obj) path.Format("Object(%d)", (int)obj->Number);
+	}
+}
+
+C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj)
+{
+	// Effect property path: Represent as GetEffect("name", Object(%d), index)
+	if (!fx || !target_obj) return;
+	const char *name = fx->GetName();
+	int32_t index = 0;
+	for (C4Effect *ofx = target_obj->pEffects; ofx; ofx = ofx->pNext)
+		if (ofx == fx) break; else if (!strcmp(ofx->GetName(), name)) ++index;
+	path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
+}
+
 C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index)
 {
 	path.Format("%s[%d]", parent.GetPath(), (int)elem_index);
@@ -39,6 +60,11 @@ C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, const char *child_p
 		path.Format("%s.%s", parent.GetPath(), child_property);
 	else if (path_type == PPT_SetFunction)
 		path.Format("%s->%s", parent.GetPath(), child_property);
+	else if (path_type == PPT_GlobalSetFunction)
+	{
+		path.Copy(parent.GetPath());
+		argument.Copy(child_property);
+	}
 	else
 	{
 		assert(false);
@@ -49,13 +75,14 @@ void C4PropertyPath::SetProperty(const char *set_string) const
 {
 	// Compose script to update property
 	StdStrBuf script;
-	if (path_type != PPT_SetFunction)
-		script.Format("%s=%s", path.getData(), set_string);
-	else
+	if (path_type == PPT_SetFunction)
 		script.Format("%s(%s)", path.getData(), set_string);
+	else if (path_type == PPT_GlobalSetFunction)
+		script.Format("%s(%s,%s)", argument.getData(), path.getData(), set_string);
+	else
+		script.Format("%s=%s", path.getData(), set_string);
 	// Execute synced scripted
-	// TODO: Use silent editor control later; for now it's good to have the output shown
-	::Console.In(script.getData());
+	::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script.getData(), 0, false));
 }
 
 void C4PropertyPath::SetProperty(const C4Value &to_val) const
@@ -67,12 +94,13 @@ void C4PropertyPath::SetProperty(const C4Value &to_val) const
 /* Property editing */
 
 C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory, C4PropList *props)
-	: QObject(), factory(factory)
+	: QObject(), factory(factory), set_function_is_global(false)
 {
 	// Resolve getter+setter callback names
 	if (props)
 	{
 		set_function = props->GetPropertyStr(P_Set);
+		set_function_is_global = props->GetPropertyBool(P_Global);
 		async_get_function = props->GetPropertyStr(P_AsyncGet);
 	}
 }
@@ -756,10 +784,14 @@ void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QOb
 	C4PropList *target_props = editor_prop->parent_proplist.getPropList();
 	if (!target_props) return;
 	// Compose set command
-	C4PropertyPath path(editor_prop->parent_proplist.GetDataString().getData());
+	C4PropertyPath path;
+	if (editor_prop->property_path.IsEmpty())
+		path = C4PropertyPath(editor_prop->parent_proplist.getPropList());
+	else
+		path = editor_prop->property_path;
 	C4PropertyPath subpath;
 	if (d->GetSetFunction())
-		subpath = C4PropertyPath(path, d->GetSetFunction(), C4PropertyPath::PPT_SetFunction);
+		subpath = C4PropertyPath(path, d->GetSetFunction(), d->IsGlobalSetFunction() ? C4PropertyPath::PPT_GlobalSetFunction : C4PropertyPath::PPT_SetFunction);
 	else
 		subpath = C4PropertyPath(path, editor_prop->key->GetCStr());
 	// Set according to delegate
@@ -784,7 +816,14 @@ QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOp
 			if (signal_editor == editor) const_cast<C4PropertyDelegateFactory *>(this)->EditingDone(editor);
 		});
 	}
+	current_editor = editor;
 	return editor;
+}
+
+void C4PropertyDelegateFactory::destroyEditor(QWidget *editor, const QModelIndex &index) const
+{
+	if (editor == current_editor) current_editor = nullptr;
+	QStyledItemDelegate::destroyEditor(editor, index);
 }
 
 void C4PropertyDelegateFactory::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -820,6 +859,11 @@ void C4PropertyDelegateFactory::paint(QPainter *painter, const QStyleOptionViewI
 	QStyledItemDelegate::paint(painter, option, index);
 }
 
+void C4PropertyDelegateFactory::OnPropListChanged()
+{
+	if (current_editor) emit closeEditor(current_editor);
+}
+
 
 /* Proplist table view */
 
@@ -833,7 +877,7 @@ C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 {
 }
 
-bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist)
+bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_effect_object)
 {
 	const char *editor_prop_prefix = "EditorProp_";
 	auto new_properties = add_proplist->GetSortedLocalProperties(editor_prop_prefix, target_proplist);
@@ -846,7 +890,14 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 	for (int32_t i = 0; i < new_properties.size(); ++i)
 	{
 		Property *prop = &properties.props[i];
+		// Property access path
 		prop->parent_proplist.SetPropList(target_proplist);
+		if (base_effect_object)
+			// Access to effect
+			prop->property_path = C4PropertyPath(target_proplist->GetEffect(), base_effect_object);
+		else
+			prop->property_path.Clear();
+		// Property data
 		prop->key = NULL;
 		prop->display_name = NULL;
 		prop->delegate_info.Set0(); // default C4Value delegate
@@ -900,7 +951,7 @@ void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
 			for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
 			{
 				QString name = fx->GetName();
-				if (AddPropertyGroup(fx, num_groups, name, fx))
+				if (AddPropertyGroup(fx, num_groups, name, fx, obj))
 					++num_groups;
 			}
 			// Properties from object
@@ -912,13 +963,13 @@ void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
 					name = QString(proplist_static->GetDataString().getData());
 				else
 					name = check_proplist->GetName();
-				if (AddPropertyGroup(check_proplist, num_groups, name, new_proplist))
+				if (AddPropertyGroup(check_proplist, num_groups, name, new_proplist, nullptr))
 					++num_groups;
 			}
 			// properties from global list
 			C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
 			if (editor_base)
-				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), new_proplist))
+				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), new_proplist, nullptr))
 					++num_groups;
 		}
 		// Always: Internal properties
@@ -943,6 +994,7 @@ void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
 	property_groups.resize(num_groups);
 	QModelIndex topLeft = index(0, 0, QModelIndex());
 	QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1, QModelIndex());
+	delegate_factory->OnPropListChanged();
 	emit dataChanged(topLeft, bottomRight);
 	emit layoutChanged();
 }

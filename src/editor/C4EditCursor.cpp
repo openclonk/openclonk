@@ -159,7 +159,7 @@ void C4EditCursor::Execute()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
-	if (!::Game.iTick35)
+	if (!::Game.iTick35 || ::Console.EditCursor.IsSelectionInvalidated())
 	{
 		selection.ConsolidateEmpty();
 		Console.PropertyDlgUpdate(selection, false);
@@ -774,6 +774,7 @@ void C4EditCursor::Default()
 	creator_def = NULL;
 	creator_overlay = NULL;
 	has_mouse_hover = false;
+	selection_invalid = false;
 }
 
 void C4EditCursor::Clear()

@@ -688,12 +688,13 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	{
 		// Single object selection: Show property view + Object info in label
 		C4PropList *prev_list = property_model->GetPropList(), *new_list = rSelection.front().getPropList();
-		if (prev_list != new_list)
+		if (prev_list != new_list || ::Console.EditCursor.IsSelectionInvalidated())
 		{
 			property_model->SetPropList(new_list);
 			ui.propertyTable->setFirstColumnSpanned(0, QModelIndex(), true);
 			ui.propertyTable->setFirstColumnSpanned(1, QModelIndex(), true);
 			ui.propertyTable->expand(property_model->index(0, 0, QModelIndex()));
+			::Console.EditCursor.ValidateSelection();
 		}
 		ui.selectionInfoLabel->setText(rSelection.front().GetDataString(0).getData());
 		ui.propertyTable->setEnabled(true);

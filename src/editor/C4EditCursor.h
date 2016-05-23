@@ -54,6 +54,7 @@ protected:
 	bool fAltWasDown;
 	bool fShiftWasDown;
 	bool has_mouse_hover;
+	bool selection_invalid; // if true, the property list should be updated on next execution
 	int32_t Mode;
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine,DragShape;
@@ -133,7 +134,6 @@ protected:
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);
-	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 	void DoContextObjsel(C4Object *, bool clear);
 	void DoContextObjCommand(C4Object *, const char *cmd);
 	void ObjselectDelItems();
@@ -151,6 +151,11 @@ public:
 	// Type of object to create in object creation mode
 	void SetCreatorDef(C4Def *new_def) { creator_def = new_def; creator_overlay.reset(NULL); }
 	C4Def *GetCreatorDef() { return creator_def; }
+
+	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
+	void InvalidateSelection() { selection_invalid = true; }
+	void ValidateSelection() { selection_invalid = false; }
+	bool IsSelectionInvalidated() const { return selection_invalid; }
 };
 
 #endif

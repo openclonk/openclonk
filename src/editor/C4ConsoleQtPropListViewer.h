@@ -34,7 +34,7 @@ struct C4ConsoleQtPropListModelProperty;
 class C4PropertyPath
 {
 	// TODO: For now just storing the path. May want to keep the path info later to allow validation/updating of values
-	StdCopyStrBuf path;
+	StdCopyStrBuf path, argument;
 
 public:
 	enum PathType
@@ -43,13 +43,18 @@ public:
 		PPT_Property = 1,
 		PPT_Index = 2,
 		PPT_SetFunction = 3,
+		PPT_GlobalSetFunction = 4,
 	} path_type;
 public:
 	C4PropertyPath() {}
+	C4PropertyPath(C4PropList *target);
+	C4PropertyPath(C4Effect *fx, C4Object *target_obj);
 	C4PropertyPath(const char *path) : path(path), path_type(PPT_Root) {}
 	C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index);
 	C4PropertyPath(const C4PropertyPath &parent, const char *child_property, PathType path_type = PPT_Property);
+	void Clear() { path.Clear(); }
 	const char *GetPath() const { return path.getData(); }
+	bool IsEmpty() const { return path.getLength() <= 0; }
 
 	void SetProperty(const char *set_string) const;
 	void SetProperty(const C4Value &to_val) const;
@@ -62,6 +67,7 @@ class C4PropertyDelegate : public QObject
 protected:
 	const class C4PropertyDelegateFactory *factory;
 	C4RefCntPointer<C4String> set_function, async_get_function;
+	bool set_function_is_global;
 
 public:
 	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, C4PropList *props);
@@ -76,6 +82,7 @@ public:
 	virtual QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const;
 	virtual QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const;
 	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : nullptr; } // get name of setter function for this property
+	bool IsGlobalSetFunction() const { return set_function_is_global; }
 	virtual const class C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const { return nullptr;  }
 	virtual bool HasCustomPaint() const { return false; }
 	virtual void Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const { }
@@ -278,18 +285,20 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 	Q_OBJECT
 
 	mutable std::map<C4Value, std::unique_ptr<C4PropertyDelegate> > delegates;
+	mutable QWidget *current_editor;
 
 	C4PropertyDelegate *CreateDelegateByString(const C4String *str, C4PropList *props=NULL) const;
 	C4PropertyDelegate *CreateDelegateByValue(const C4Value &val) const;
 	C4PropertyDelegate *GetDelegateByIndex(const QModelIndex &index) const;
 public:
-	C4PropertyDelegateFactory() { }
+	C4PropertyDelegateFactory() : current_editor(nullptr) { }
 	~C4PropertyDelegateFactory() { }
 
 	C4PropertyDelegate *GetDelegateByValue(const C4Value &val) const;
 
 	void ClearDelegates();
 	void SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModelProperty *editor_prop) const;
+	void OnPropListChanged();
 
 private:
 	void EditorValueChanged(QWidget *editor);
@@ -300,6 +309,7 @@ protected:
 	void setEditorData(QWidget *editor, const QModelIndex &index) const override;
 	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+	void destroyEditor(QWidget *editor, const QModelIndex &index) const override;
 	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -348,7 +358,7 @@ public:
 	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
 	~C4ConsoleQtPropListModel();
 
-	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden);
+	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_effect_object);
 	void SetPropList(class C4PropList *new_proplist);
 	class C4PropList *GetPropList() const { return proplist.getPropList(); }
 

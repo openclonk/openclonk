@@ -65,6 +65,8 @@ class C4ConsoleQtRect : public C4ConsoleQtShape
 {
 private:
 	int32_t left, top, right, bottom;
+	bool store_as_proplist;
+	bool properties_lowercase;
 public:
 	C4ConsoleQtRect(class C4Object *for_obj, C4PropList *props, const C4Value &val);
 

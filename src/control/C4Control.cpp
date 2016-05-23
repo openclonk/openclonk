@@ -268,6 +268,7 @@ void C4ControlScript::Execute() const
 	}
 	else
 		LogF(" = %s", rVal.GetDataString().getData());
+	::Console.EditCursor.InvalidateSelection(); // refresh property view
 }
 
 void C4ControlScript::CompileFunc(StdCompiler *pComp)
