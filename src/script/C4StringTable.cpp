@@ -105,6 +105,8 @@ C4StringTable::C4StringTable()
 	P[P_y] = "y";
 	P[P_Wdt] = "Wdt";
 	P[P_Hgt] = "Hgt";
+	P[P_wdt] = "wdt";
+	P[P_hgt] = "hgt";
 	P[P_OffX] = "OffX";
 	P[P_OffY] = "OffY";
 	P[P_FacetBase] = "FacetBase";
@@ -259,6 +261,7 @@ C4StringTable::C4StringTable()
 	P[P_AsyncGet] = "AsyncGet";
 	P[P_Relative] = "Relative";
 	P[P_CanMoveCenter] = "CanMoveCenter";
+	P[P_Storage] = "Storage";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

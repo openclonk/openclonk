@@ -69,16 +69,42 @@ int32_t C4ConsoleQtShape::AbsY(int32_t rel_y) const
 /* Rectangular shape*/
 
 C4ConsoleQtRect::C4ConsoleQtRect(C4Object *for_obj, C4PropList *props, const C4Value &val)
-	: C4ConsoleQtShape(for_obj, props), left(0), top(0), right(10), bottom(10)
+	: C4ConsoleQtShape(for_obj, props), left(0), top(0), right(10), bottom(10), store_as_proplist(false), properties_lowercase(false)
 {
-	// Expect rect to be given as [left,top,width,height]
-	C4ValueArray *varr = val.getArray();
-	if (varr && varr->GetSize() >= 4)
+	// Def props
+	if (props)
 	{
-		left = varr->GetItem(0).getInt();
-		top = varr->GetItem(1).getInt();
-		right = left + varr->GetItem(2).getInt()-1; // right/bottom borders are drawn inclusively
-		bottom = top + varr->GetItem(3).getInt()-1;
+		C4String *storage = props->GetPropertyStr(P_Storage);
+		if (storage)
+		{
+			if (storage->GetData() == "proplist")
+				properties_lowercase = store_as_proplist = true;
+			else if (storage->GetData() == "Proplist")
+				store_as_proplist = true;
+		}
+	}
+	// Expect rect to be given as proplist with properties X, Y, Wdt, Hgt or array with elements [left,top,width,height]
+	if (store_as_proplist)
+	{
+		C4PropList *vprops = val.getPropList();
+		if (vprops)
+		{
+			left = vprops->GetPropertyInt(properties_lowercase ? P_x : P_X);
+			top = vprops->GetPropertyInt(properties_lowercase ? P_y : P_Y);
+			right = left + vprops->GetPropertyInt(properties_lowercase ? P_wdt : P_Wdt) - 1;
+			bottom = top + vprops->GetPropertyInt(properties_lowercase ? P_hgt : P_Hgt) - 1;
+		}
+	}
+	else
+	{
+		C4ValueArray *varr = val.getArray();
+		if (varr && varr->GetSize() >= 4)
+		{
+			left = varr->GetItem(0).getInt();
+			top = varr->GetItem(1).getInt();
+			right = left + varr->GetItem(2).getInt() - 1; // right/bottom borders are drawn inclusively
+			bottom = top + varr->GetItem(3).getInt() - 1;
+		}
 	}
 }
 
@@ -137,13 +163,25 @@ void C4ConsoleQtRect::Drag(int32_t x, int32_t y, int32_t dx, int32_t dy)
 
 C4Value C4ConsoleQtRect::GetValue() const
 {
-	// Return array: Convert left/top/right/bottom (inclusive) to left/top/width/height
-	C4ValueArray *pos_array = new C4ValueArray(4);
-	pos_array->SetItem(0, C4VInt(left));
-	pos_array->SetItem(1, C4VInt(top));
-	pos_array->SetItem(2, C4VInt(right - left + 1));
-	pos_array->SetItem(3, C4VInt(bottom - top + 1));
-	return C4VArray(pos_array);
+	// Return array or proplist: Convert left/top/right/bottom (inclusive) to left/top/width/height
+	if (store_as_proplist)
+	{
+		C4PropList *pos_proplist = new C4PropListScript();
+		pos_proplist->SetProperty(properties_lowercase ? P_x : P_X, C4VInt(left));
+		pos_proplist->SetProperty(properties_lowercase ? P_y : P_Y, C4VInt(top));
+		pos_proplist->SetProperty(properties_lowercase ? P_wdt : P_Wdt, C4VInt(right - left + 1));
+		pos_proplist->SetProperty(properties_lowercase ? P_hgt : P_Hgt, C4VInt(bottom - top + 1));
+		return C4VPropList(pos_proplist);
+	}
+	else
+	{
+		C4ValueArray *pos_array = new C4ValueArray(4);
+		pos_array->SetItem(0, C4VInt(left));
+		pos_array->SetItem(1, C4VInt(top));
+		pos_array->SetItem(2, C4VInt(right - left + 1));
+		pos_array->SetItem(3, C4VInt(bottom - top + 1));
+		return C4VArray(pos_array);
+	}
 }
 
 

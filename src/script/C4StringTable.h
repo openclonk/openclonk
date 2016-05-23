@@ -335,6 +335,8 @@ enum C4PropertyName
 	P_y,
 	P_Wdt,
 	P_Hgt,
+	P_wdt,
+	P_hgt,
 	P_OffX,
 	P_OffY,
 	P_FacetBase,
@@ -483,6 +485,7 @@ enum C4PropertyName
 	P_AsyncGet,
 	P_Relative,
 	P_CanMoveCenter,
+	P_Storage,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
