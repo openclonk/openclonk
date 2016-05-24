@@ -2175,6 +2175,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 				throw C4AulParseError(this, "global functions must be declared with 'global func'");
 			if (!Name)
 				throw C4AulParseError(this, "functions must have a name");
+			C4AulScriptFunc * prev_Fn = Fn;
 			if (Type == PREPARSER)
 			{
 				Fn = new C4AulScriptFunc(parent, pOrgScript, Name ? Name->GetCStr() : NULL, SPos);
@@ -2192,6 +2193,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			Store_Const(parent, Name, r);
 			Shift();
 			Parse_FuncBody();
+			Fn = prev_Fn;
 		}
 		else
 		{
