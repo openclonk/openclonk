@@ -448,20 +448,40 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="selectionInfoLabel">
-       <property name="baseSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="topMargin">
+        <number>0</number>
        </property>
-       <property name="text">
-        <string>SELECTION</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-      </widget>
+       <item>
+        <widget class="QLabel" name="selectionInfoLabel">
+         <property name="baseSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SELECTION</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="propertyEditAscendPathButton">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string comment="res">IDS_CNS_BACK</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QTreeView" name="propertyTable">
@@ -1394,6 +1414,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>propertyEditAscendPathButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>AscendPropertyPath()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>891</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1426,5 +1462,6 @@
   <slot>BackgroundMaterialChanged(QString)</slot>
   <slot>FileNew()</slot>
   <slot>WelcomeLinkActivated(QString)</slot>
+  <slot>AscendPropertyPath()</slot>
  </slots>
 </ui>

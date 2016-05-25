@@ -32,6 +32,7 @@ IDS_BTN_YES=Ja
 IDS_CHAT_NOTCONNECTED=nicht verbunden
 IDS_CHAT_SERVER=Server
 IDS_CNS_ACTION=Aktivität: 
+IDS_CNS_BACK=<< Zurück
 IDS_CNS_BROWSE=Durchsuchen...
 IDS_CNS_CONSOLE=Editor
 IDS_CNS_CONTENTS=Inhalt: 

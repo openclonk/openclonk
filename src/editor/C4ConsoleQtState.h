@@ -129,6 +129,7 @@ public slots:
 	void OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
 	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+	void AscendPropertyPath();
 	// Global editor key processing
 	bool HandleEditorKeyDown(QKeyEvent *event);
 	bool HandleEditorKeyUp(QKeyEvent *event);

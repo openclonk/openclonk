@@ -310,6 +310,12 @@ void C4ConsoleQtMainWindow::OnObjectListSelectionChanged(const QItemSelection & 
 	state->OnObjectListSelectionChanged(selected, deselected);
 }
 
+void C4ConsoleQtMainWindow::AscendPropertyPath()
+{
+	state->property_model->AscendPath();
+	::Console.EditCursor.InvalidateSelection();
+}
+
 bool C4ConsoleQtMainWindow::HandleEditorKeyDown(QKeyEvent *event)
 {
 	switch (event->key())
@@ -486,9 +492,11 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// Property editor
 	property_delegate_factory.reset(new C4PropertyDelegateFactory());
 	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
+	ui.propertyEditAscendPathButton->setMaximumWidth(ui.propertyEditAscendPathButton->fontMetrics().boundingRect(ui.propertyEditAscendPathButton->text()).width() + 10);
 
 	// View models
 	property_model.reset(new C4ConsoleQtPropListModel(property_delegate_factory.get()));
+	property_delegate_factory->SetPropertyModel(property_model.get());
 	ui.propertyTable->setModel(property_model.get());
 	object_list_model.reset(new C4ConsoleQtObjectListModel());
 	ui.objectListView->setModel(object_list_model.get());
@@ -680,24 +688,30 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	if (sel_count != 1)
 	{
 		// Multi object selection: Hide property view; show info label
-		property_model->SetPropList(NULL);
+		property_model->SetBasePropList(nullptr);
 		ui.propertyTable->setEnabled(false);
 		ui.selectionInfoLabel->setText(rSelection.GetDataString().getData());
+		ui.propertyEditAscendPathButton->hide();
 	}
 	else
 	{
 		// Single object selection: Show property view + Object info in label
-		C4PropList *prev_list = property_model->GetPropList(), *new_list = rSelection.front().getPropList();
-		if (prev_list != new_list || ::Console.EditCursor.IsSelectionInvalidated())
+		C4PropList *prev_list = property_model->GetBasePropList(), *new_list = rSelection.front().getPropList();
+		if (prev_list != new_list)
 		{
-			property_model->SetPropList(new_list);
+			property_model->SetBasePropList(new_list);
 			ui.propertyTable->setFirstColumnSpanned(0, QModelIndex(), true);
 			ui.propertyTable->setFirstColumnSpanned(1, QModelIndex(), true);
 			ui.propertyTable->expand(property_model->index(0, 0, QModelIndex()));
-			::Console.EditCursor.ValidateSelection();
 		}
-		ui.selectionInfoLabel->setText(rSelection.front().GetDataString(0).getData());
+		else if (::Console.EditCursor.IsSelectionInvalidated())
+		{
+			property_model->UpdatePropList();
+		}
+		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
+		ui.propertyEditAscendPathButton->setVisible(property_model->GetTargetPathStackSize() >= 1);
 		ui.propertyTable->setEnabled(true);
+		::Console.EditCursor.ValidateSelection();
 	}
 	// Function update in script combo box
 	if (force_function_update)

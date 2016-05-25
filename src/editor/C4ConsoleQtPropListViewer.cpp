@@ -23,6 +23,7 @@
 #include "object/C4DefList.h"
 #include "object/C4Def.h"
 #include "script/C4Effect.h"
+#include "script/C4AulExec.h"
 
 /* Property path for property setting synchronization */
 
@@ -90,6 +91,11 @@ void C4PropertyPath::SetProperty(const C4Value &to_val) const
 	SetProperty(to_val.GetDataString(9999999).getData());
 }
 
+C4Value C4PropertyPath::ResolveValue() const
+{
+	return AulExec.DirectExec(::ScriptEngine.GetPropList(), path.getData(), "resolve property", false, nullptr);
+}
+
 
 /* Property editing */
 
@@ -138,6 +144,21 @@ QColor C4PropertyDelegate::GetDisplayBackgroundColor(const C4Value &val, class C
 	return QColor(); // invalid = default
 }
 
+C4PropertyPath C4PropertyDelegate::GetPathForProperty(C4ConsoleQtPropListModelProperty *editor_prop) const
+{
+	C4PropertyPath path;
+	if (editor_prop->property_path.IsEmpty())
+		path = C4PropertyPath(editor_prop->parent_proplist.getPropList());
+	else
+		path = editor_prop->property_path;
+	C4PropertyPath subpath;
+	if (GetSetFunction())
+		subpath = C4PropertyPath(path, GetSetFunction(), IsGlobalSetFunction() ? C4PropertyPath::PPT_GlobalSetFunction : C4PropertyPath::PPT_SetFunction);
+	else
+		subpath = C4PropertyPath(path, editor_prop->key->GetCStr());
+	return subpath;
+}
+
 C4PropertyDelegateInt::C4PropertyDelegateInt(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props), min(std::numeric_limits<int32_t>::min()), max(std::numeric_limits<int32_t>::max()), step(1)
 {
@@ -150,7 +171,7 @@ C4PropertyDelegateInt::C4PropertyDelegateInt(const C4PropertyDelegateFactory *fa
 	}
 }
 
-void C4PropertyDelegateInt::SetEditorData(QWidget *editor, const C4Value &val) const
+void C4PropertyDelegateInt::SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
 	spinBox->setValue(val.getInt());
@@ -203,7 +224,7 @@ uint32_t GetTextColorForBackground(uint32_t background_color)
 	return (lgt > 16000) ? 0 : 0xffffff;
 }
 
-void C4PropertyDelegateColor::SetEditorData(QWidget *aeditor, const C4Value &val) const
+void C4PropertyDelegateColor::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
 	uint32_t background_color = static_cast<uint32_t>(val.getInt()) & 0xffffff;
@@ -230,7 +251,7 @@ QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFac
 	connect(editor->button, &QPushButton::pressed, this, [editor, this]() {
 		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt()), editor, QString(), QColorDialog::ShowAlphaChannel);
 		editor->last_value.SetInt(clr.rgba());
-		this->SetEditorData(editor, editor->last_value); // force update on display
+		this->SetEditorData(editor, editor->last_value, C4PropertyPath()); // force update on display
 		emit EditingDoneSignal(editor);
 	});
 	return peditor.release();
@@ -374,7 +395,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		if (editor->parameter_widget)
 		{
 			editor->layout->addWidget(editor->parameter_widget);
-			option.adelegate->SetEditorData(editor->parameter_widget, parameter_val);
+			option.adelegate->SetEditorData(editor->parameter_widget, parameter_val, editor->last_get_path);
 			// Forward editing signals
 			connect(option.adelegate, &C4PropertyDelegate::EditorValueChangedSignal, editor->parameter_widget, [this, editor](QWidget *changed_editor)
 			{
@@ -390,10 +411,11 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 	}
 }
 
-void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val) const
+void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor*>(aeditor);
 	editor->last_val = val;
+	editor->last_get_path = property_path;
 	editor->updating = true;
 	// Update option selection
 	int32_t index = std::max<int32_t>(GetOptionByValue(val), 0);
@@ -589,10 +611,36 @@ C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDel
 	AddTypeOption(::Strings.RegString("proplist"), C4V_PropList, C4VNull, factory->GetDelegateByValue(C4VString("proplist")));
 }
 
-void C4PropertyDelegateC4ValueInput::SetEditorData(QWidget *aeditor, const C4Value &val) const
+C4PropertyDelegateC4ValueInputEditor::C4PropertyDelegateC4ValueInputEditor(QWidget *parent)
+	: QWidget(parent), layout(NULL), edit(NULL), extended_button(NULL), commit_pending(false)
+{
+	layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	edit = new QLineEdit(this);
+	layout->addWidget(edit);
+	extended_button = new QPushButton("...", this);
+	extended_button->setMaximumWidth(extended_button->fontMetrics().boundingRect("...").width() + 6);
+	layout->addWidget(extended_button);
+	extended_button->hide();
+	edit->setFocus();
+	setLayout(layout);
+}
+
+void C4PropertyDelegateC4ValueInput::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
 	editor->edit->setText(val.GetDataString().getData());
+	if (val.GetType() == C4V_PropList)
+	{
+		editor->extended_button->show();
+		editor->property_path = property_path;
+	}
+	else
+	{
+		editor->extended_button->hide();
+	}
 }
 
 void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
@@ -610,20 +658,19 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 {
 	// Editor is just an edit box plus a "..." button for array/proplist types
 	Editor *editor = new Editor(parent);
-	editor->layout = new QHBoxLayout(editor);
-	editor->layout->setContentsMargins(0, 0, 0, 0);
-	editor->layout->setMargin(0);
-	editor->layout->setSpacing(0);
-	editor->edit = new QLineEdit(editor);
-	editor->layout->addWidget(editor->edit);
-	editor->extended_button = new QPushButton("...", editor); // TODO imnplement extended button
-	editor->layout->addWidget(editor->extended_button);
-	editor->extended_button->hide();
-	editor->edit->setFocus();
 	// EditingDone only on Return; not just when leaving edit field
 	connect(editor->edit, &QLineEdit::returnPressed, editor, [this, editor]() {
 		editor->commit_pending = true;
 		emit EditingDoneSignal(editor);
+	});
+	connect(editor->extended_button, &QPushButton::pressed, editor, [this, editor]() {
+		C4Value val = editor->property_path.ResolveValue();
+		C4PropList *props = val.getPropList();
+		if (props)
+		{
+			this->factory->GetPropertyModel()->DescendPath(props, props, editor->property_path);
+			::Console.EditCursor.InvalidateSelection();
+		}
 	});
 	return editor;
 }
@@ -765,7 +812,7 @@ void C4PropertyDelegateFactory::setEditorData(QWidget *editor, const QModelIndex
 	if (props)
 	{
 		d->GetPropertyValue(props, prop->key, &val);
-		d->SetEditorData(editor, val);
+		d->SetEditorData(editor, val, d->GetPathForProperty(prop));
 	}
 }
 
@@ -783,19 +830,8 @@ void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QOb
 	// Safety: Ensure target properties still exist
 	C4PropList *target_props = editor_prop->parent_proplist.getPropList();
 	if (!target_props) return;
-	// Compose set command
-	C4PropertyPath path;
-	if (editor_prop->property_path.IsEmpty())
-		path = C4PropertyPath(editor_prop->parent_proplist.getPropList());
-	else
-		path = editor_prop->property_path;
-	C4PropertyPath subpath;
-	if (d->GetSetFunction())
-		subpath = C4PropertyPath(path, d->GetSetFunction(), d->IsGlobalSetFunction() ? C4PropertyPath::PPT_GlobalSetFunction : C4PropertyPath::PPT_SetFunction);
-	else
-		subpath = C4PropertyPath(path, editor_prop->key->GetCStr());
 	// Set according to delegate
-	d->SetModelData(editor, subpath);
+	d->SetModelData(editor, d->GetPathForProperty(editor_prop));
 }
 
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -896,7 +932,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			// Access to effect
 			prop->property_path = C4PropertyPath(target_proplist->GetEffect(), base_effect_object);
 		else
-			prop->property_path.Clear();
+			prop->property_path = target_path;
 		// Property data
 		prop->key = NULL;
 		prop->display_name = NULL;
@@ -935,52 +971,112 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 	return true;
 }
 
-void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
+void C4ConsoleQtPropListModel::SetBasePropList(C4PropList *new_proplist)
 {
+	// Clear stack and select new proplist
 	// Update properties
-	proplist.SetPropList(new_proplist);
+	target_proplist.SetPropList(new_proplist);
+	base_proplist.SetPropList(new_proplist);
+	// objects derive their custom properties
+	info_proplist.SetPropList(target_proplist.getObj());
+	target_path = C4PropertyPath(new_proplist);
+	target_path_stack.clear();
+	UpdatePropList();
+}
+
+void C4ConsoleQtPropListModel::DescendPath(C4PropList *new_proplist, C4PropList *new_info_proplist, const C4PropertyPath &new_path)
+{
+	// Add previous proplist to stack
+	target_path_stack.push_back(TargetStackEntry(target_path, target_proplist, info_proplist));
+	// descend
+	target_proplist.SetPropList(new_proplist);
+	info_proplist.SetPropList(new_info_proplist);
+	target_path = new_path;
+	UpdatePropList();
+}
+
+void C4ConsoleQtPropListModel::AscendPath()
+{
+	// Go up in target stack (if possible)
+	for (;;)
+	{
+		if (!target_path_stack.size())
+		{
+			SetBasePropList(nullptr);
+			return;
+		}
+		TargetStackEntry entry = target_path_stack.back();
+		target_path_stack.pop_back();
+		if (!entry.value || !entry.info_proplist) continue; // property was removed; go up further in stack
+		// Safety: Make sure we're still on the same value
+		C4Value target = entry.path.ResolveValue();
+		if (!target.IsIdenticalTo(entry.value)) continue;
+		// Set new value
+		target_path = entry.path;
+		target_proplist = entry.value;
+		info_proplist = entry.info_proplist;
+		UpdatePropList();
+		break;
+	}
+}
+
+void C4ConsoleQtPropListModel::UpdatePropList()
+{
+	// Safe-get from C4Values in case any prop lists got deleted
+	C4PropList *target_proplist = this->target_proplist.getPropList();
+	C4PropList *base_proplist = this->base_proplist.getPropList();
+	C4PropList *info_proplist = this->info_proplist.getPropList();
 	// Determine number of property groups
 	int32_t num_groups = 0;
-	if (new_proplist)
+	if (target_proplist)
 	{
-		// Objects only: Published properties
-		C4Object *obj = new_proplist->GetObject();
-		if (obj)
+		// Published properties
+		if (info_proplist)
 		{
+			C4Object *obj = info_proplist->GetObject();
 			// Properties from effects (no inheritance supported)
-			for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
+			if (obj)
 			{
-				QString name = fx->GetName();
-				if (AddPropertyGroup(fx, num_groups, name, fx, obj))
-					++num_groups;
+				for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
+				{
+					QString name = fx->GetName();
+					if (AddPropertyGroup(fx, num_groups, name, fx, obj))
+						++num_groups;
+				}
 			}
-			// Properties from object
-			for (C4PropList *check_proplist = new_proplist; check_proplist; check_proplist = check_proplist->GetPrototype())
+			// Properties from object (but not on definition)
+			if (obj || !info_proplist->GetDef())
 			{
-				QString name;
-				C4PropListStatic *proplist_static = check_proplist->IsStatic();
-				if (proplist_static)
-					name = QString(proplist_static->GetDataString().getData());
-				else
-					name = check_proplist->GetName();
-				if (AddPropertyGroup(check_proplist, num_groups, name, new_proplist, nullptr))
-					++num_groups;
+				for (C4PropList *check_proplist = info_proplist; check_proplist; check_proplist = check_proplist->GetPrototype())
+				{
+					QString name;
+					C4PropListStatic *proplist_static = check_proplist->IsStatic();
+					if (proplist_static)
+						name = QString(proplist_static->GetDataString().getData());
+					else
+						name = check_proplist->GetName();
+					if (AddPropertyGroup(check_proplist, num_groups, name, target_proplist, nullptr))
+						++num_groups;
+				}
 			}
-			// properties from global list
-			C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
-			if (editor_base)
-				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), new_proplist, nullptr))
-					++num_groups;
+			// properties from global list for objects
+			if (obj)
+			{
+				C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
+				if (editor_base)
+					if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, nullptr))
+						++num_groups;
+			}
 		}
 		// Always: Internal properties
-		auto new_properties = new_proplist->GetSortedLocalProperties();
+		auto new_properties = target_proplist->GetSortedLocalProperties();
 		if (property_groups.size() == num_groups) property_groups.resize(num_groups + 1);
 		PropertyGroup &internal_properties = property_groups[num_groups];
 		internal_properties.name = LoadResStr("IDS_CNS_INTERNAL");
 		internal_properties.props.resize(new_properties.size());
 		for (int32_t i = 0; i < new_properties.size(); ++i)
 		{
-			internal_properties.props[i].parent_proplist = proplist;
+			internal_properties.props[i].parent_proplist = this->target_proplist;
 			internal_properties.props[i].key = new_properties[i];
 			internal_properties.props[i].display_name = new_properties[i];
 			internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
@@ -1002,7 +1098,7 @@ void C4ConsoleQtPropListModel::SetPropList(class C4PropList *new_proplist)
 int C4ConsoleQtPropListModel::rowCount(const QModelIndex & parent) const
 {
 	// Nothing loaded?
-	if (!proplist.getPropList()) return 0;
+	if (!target_proplist.getPropList()) return 0;
 	// Top level: Property groups
 	if (!parent.isValid()) return property_groups.size();
 	// Mid level: Descend into property lists
@@ -1034,7 +1130,7 @@ QVariant C4ConsoleQtPropListModel::headerData(int section, Qt::Orientation orien
 QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) const
 {
 	// Anything loaded?
-	C4PropList *props = proplist.getPropList();
+	C4PropList *props = target_proplist.getPropList();
 	if (!props) return QVariant();
 	// Headers
 	QModelIndex parent = index.parent();
