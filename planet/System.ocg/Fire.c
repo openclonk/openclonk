@@ -78,6 +78,8 @@ global func Incinerate(
 global func OnInIncendiaryMaterial()
 {
 	this->DoEnergy(-7, false, FX_Call_EngFire, NO_OWNER);
+	// The object might have removed itself.
+	if (!this) return true;
 	return this->Incinerate(15, NO_OWNER);
 }
 
