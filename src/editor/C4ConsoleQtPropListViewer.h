@@ -78,7 +78,8 @@ public:
 	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path) const = 0;
 	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const = 0;
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
-	virtual bool GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const;
+	virtual bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
+	virtual bool GetPropertyValueBase(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
 	virtual QString GetDisplayString(const C4Value &val, class C4Object *obj) const;
 	virtual QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const;
 	virtual QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const;
@@ -218,7 +219,7 @@ class C4PropertyDelegateBool : public C4PropertyDelegateEnum
 public:
 	C4PropertyDelegateBool(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
-	bool GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const override;
+	bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const override;
 };
 
 // true or false depending on whether effect is present
@@ -229,7 +230,7 @@ private:
 public:
 	C4PropertyDelegateHasEffect(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
-	bool GetPropertyValue(C4PropList *props, C4String *key, C4Value *out_val) const override;
+	bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const override;
 };
 
 // C4Value setting using an enum
@@ -325,7 +326,7 @@ protected:
 struct C4ConsoleQtPropListModelProperty
 {
 	C4PropertyPath property_path;
-	C4Value parent_proplist;
+	C4Value parent_value;
 	C4RefCntPointer<C4String> display_name;
 	C4RefCntPointer<C4String> key;
 	C4Value delegate_info;
@@ -365,13 +366,12 @@ public:
 			: path(path), value(value), info_proplist(info_proplist) {}
 	};
 private:
-	C4Value target_proplist; // Target value for which properties are listed
+	C4Value target_value; // Target value for which properties are listed (either proplist or array)
 	C4Value base_proplist; // Parent-most value, i.e. object or effect selected in editor through 
 	C4Value info_proplist; // Proplist from which available properties are derived. May differ from target_proplist in child proplists.
 	C4PropertyPath target_path; // script path to target proplist to set values
 	std::list<TargetStackEntry> target_path_stack; // stack of target paths descended into by setting child properties
 	std::vector<PropertyGroup> property_groups;
-	std::vector< Property > internal_properties;  // proplist-properties
 	QFont header_font;
 	C4PropertyDelegateFactory *delegate_factory;
 public:
@@ -380,10 +380,17 @@ public:
 
 	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_effect_object);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
-	void DescendPath(C4PropList *new_proplist, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
+	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
 	void AscendPath(); // go back one element in target path stack
-	void UpdatePropList();
-	class C4PropList *GetTargetPropList() const { return target_proplist.getPropList(); }
+	void UpdateValue();
+
+private:
+	int32_t UpdateValuePropList(C4PropList *target_proplist);
+	int32_t UpdateValueArray(C4ValueArray *target_array);
+
+public:
+	class C4PropList *GetTargetPropList() const { return target_value.getPropList(); }
+	class C4ValueArray *GetTargetArray() const { return target_value.getArray(); }
 	class C4PropList *GetBasePropList() const { return base_proplist.getPropList(); }
 	int32_t GetTargetPathStackSize() const { return target_path_stack.size(); }
 	const char *GetTargetPathText() const { return target_path.GetPath(); }

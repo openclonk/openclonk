@@ -706,7 +706,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		}
 		else if (::Console.EditCursor.IsSelectionInvalidated())
 		{
-			property_model->UpdatePropList();
+			property_model->UpdateValue();
 		}
 		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
 		ui.propertyEditAscendPathButton->setVisible(property_model->GetTargetPathStackSize() >= 1);
