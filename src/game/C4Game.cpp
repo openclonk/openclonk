@@ -575,12 +575,13 @@ void C4Game::Clear()
 	StartupScenarioParameters.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
+	// Clear the particles before cleaning up the objects.
+	Particles.Clear();
 	DeleteObjects(true);
 	::Definitions.Clear();
 	Landscape.Clear();
 	PXS.Clear();
 	ScriptGuiRoot.reset();
-	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
 	::Messages.Clear();
