@@ -21,7 +21,7 @@
 
 class C4Network2UPnP
 {
-	struct C4Network2UPnPP *p;
+	class C4Network2UPnPP *p;
 public:
 	C4Network2UPnP();
 	//noncopyable
