@@ -907,7 +907,7 @@ elseif(UPNP_STYLE STREQUAL "Win32")
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPWin32.cpp
 	)
-elseif(UPNP_STYLE STREQUAL "libupnp")
+elseif(UPNP_STYLE STREQUAL "miniupnpc")
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPLinux.cpp
 	)
