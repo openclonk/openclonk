@@ -66,14 +66,6 @@ public func GetHandItem(int i)
 	return _inherited(i, ...);
 }
 
-public func SetHandItemPos(int hand, int inv)
-{
-	// can't use anything except carryheavy if carrying heavy object.
-	if(IsCarryingHeavy())
-		return nil;
-	return _inherited(hand, inv, ...);
-}
-
 // Delete internal variables
 public func Ejection(object obj)
 {
