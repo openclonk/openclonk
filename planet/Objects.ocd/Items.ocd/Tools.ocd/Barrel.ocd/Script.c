@@ -43,7 +43,7 @@ func CollectFromStack(object item)
 	}
 }
 
-func RejectStack(object item)
+private func RejectStack(object item)
 {
 	// Callback from stackable object: When should a stack entrance be rejected, if the object was not merged into the existing stacks?
 	if (Contents())
@@ -61,6 +61,13 @@ func RejectStack(object item)
 		// Reject anything else
 		return true;
 	}
+}
+
+public func RejectCollect(id def, object new_contents)
+{
+	// The barrel can only contain liquids.
+	if (RejectStack(new_contents)) return true;
+	return _inherited(def, new_contents, ...);
 }
 
 private func Hit()
