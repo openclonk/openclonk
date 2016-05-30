@@ -3,6 +3,15 @@
 public func IsContainer() { return false; }
 public func RejectCollect() { return true; }
 
+// Start the chest closed.
+public func Construction()
+{
+	inherited(...);
+	
+	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 1, ANIM_Hold));
+	is_open = false;
+}
+
 // Never automatically open/close the chest.
 public func OnShownInInteractionMenuStart(bool last) { }
 public func OnShownInInteractionMenuStop(bool last) { }
