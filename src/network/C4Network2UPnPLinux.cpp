@@ -18,6 +18,8 @@
 #include "game/C4Application.h"
 #include "C4Version.h"
 
+#include <future>
+
 #include <miniupnpc.h>
 #include <upnpcommands.h>
 #include <upnperrors.h>
@@ -26,7 +28,7 @@
 
 static const char *description = "OpenClonk";
 
-class C4Network2UPnPP
+class C4Network2UPnPP : C4InteractiveThread
 {
 public:
 	C4Network2UPnPP();
@@ -36,6 +38,8 @@ public:
 	void ClearMappings();
 
 private:
+	void Init();
+
 	struct PortMapping {
 		uint16_t external_port;
 		uint16_t internal_port;
@@ -47,6 +51,9 @@ private:
 
 	std::vector<PortMapping> added_mappings;
 
+	// Synchronization using futures.
+	std::future<void> action;
+
 	bool initialized = false;
 	char lanaddr[64];
 	UPNPDev *devlist = nullptr;
@@ -56,23 +63,28 @@ private:
 
 C4Network2UPnPP::C4Network2UPnPP()
 {
+	action = std::async(&C4Network2UPnPP::Init, this);
+}
+
+void C4Network2UPnPP::Init()
+{
 	int error, status;
 
 	if ((devlist = upnpDiscover(2000, NULL, NULL, UPNP_LOCAL_PORT_ANY, 0, 2, &error)))
 	{
 		if ((status = UPNP_GetValidIGD(devlist, &upnp_urls, &igd_data, lanaddr, sizeof(lanaddr))))
 		{
-			LogF("UPnP: Found IGD %s (status %d)", upnp_urls.controlURL, status);
+			ThreadLogS("UPnP: Found IGD %s (status %d)", upnp_urls.controlURL, status);
 			initialized = true;
 		}
 		else
 		{
-			Log("UPnP: No IGD found.");
+			ThreadLog("UPnP: No IGD found.");
 		}
 	}
 	else
 	{
-		Log("UPnP: No UPnP device found on the network.");
+		ThreadLog("UPnP: No UPnP device found on the network.");
 	}
 
 }
@@ -80,6 +92,8 @@ C4Network2UPnPP::C4Network2UPnPP()
 C4Network2UPnPP::~C4Network2UPnPP()
 {
 	ClearMappings();
+	action.wait();
+	ProcessEvents(); // necessary for logging
 	FreeUPNPUrls(&upnp_urls);
 	freeUPNPDevlist(devlist);
 }
@@ -93,15 +107,22 @@ void C4Network2UPnPP::AddMapping(C4Network2IOProtocol protocol, uint16_t intport
 
 	added_mappings.push_back(mapping);
 
-	AddPortMapping(mapping);
+	action = std::async([this, action{std::move(action)}, mapping]() {
+		action.wait();
+		AddPortMapping(mapping);
+	});
 }
 
 void C4Network2UPnPP::ClearMappings()
 {
-	for (auto mapping : added_mappings)
-		RemovePortMapping(mapping);
+	action = std::async([this, action{std::move(action)}]() {
+		action.wait();
 
-	added_mappings.clear();
+		for (auto mapping : added_mappings)
+			RemovePortMapping(mapping);
+
+		added_mappings.clear();
+	});
 }
 
 void C4Network2UPnPP::AddPortMapping(const PortMapping& mapping)
@@ -114,8 +135,10 @@ void C4Network2UPnPP::AddPortMapping(const PortMapping& mapping)
 	int r = UPNP_AddPortMapping(upnp_urls.controlURL, igd_data.first.servicetype,
 			eport.c_str(), iport.c_str(), lanaddr, description,
 			mapping.protocol.c_str(), 0, 0);
-	if (r != UPNPCOMMAND_SUCCESS)
-		LogF("UPnP: AddPortMapping failed with code %d (%s)", r, strupnperror(r));
+	if (r == UPNPCOMMAND_SUCCESS)
+		ThreadLogS("UPnP: Added mapping %s %s -> %s:%s", mapping.protocol.c_str(), eport.c_str(), lanaddr, iport.c_str());
+	else
+		ThreadLog("UPnP: AddPortMapping failed with code %d (%s)", r, strupnperror(r));
 }
 
 void C4Network2UPnPP::RemovePortMapping(const PortMapping& mapping)
@@ -126,8 +149,10 @@ void C4Network2UPnPP::RemovePortMapping(const PortMapping& mapping)
 
 	int r = UPNP_DeletePortMapping(upnp_urls.controlURL, igd_data.first.servicetype,
 			eport.c_str(), mapping.protocol.c_str(), 0);
-	if (r != UPNPCOMMAND_SUCCESS)
-		LogF("UPnP: DeletePortMapping failed with code %d (%s)", r, strupnperror(r));
+	if (r == UPNPCOMMAND_SUCCESS)
+		ThreadLogS("UPnP: Removed mapping %s %s", mapping.protocol.c_str(), eport.c_str());
+	else
+		ThreadLog("UPnP: DeletePortMapping failed with code %d (%s)", r, strupnperror(r));
 }
 
 C4Network2UPnP::C4Network2UPnP():
