@@ -6,7 +6,7 @@ public func Intro_Start()
 {
 	var train = FindObject(Find_ID(Locomotive));
 	train->CreateContents(Coal, 2)->SetCon(20);
-	train->CreateContents(Barrel)->SetLiquidContainer("Water", 300);
+	train->CreateContents(Barrel)->PutLiquid("Water", 300);
 	train->ContainedRight();
 	return ScheduleNext(4);
 }

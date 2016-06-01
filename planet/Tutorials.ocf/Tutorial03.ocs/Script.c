@@ -200,7 +200,7 @@ private func InitAI()
 	var npc_fireman = CreateObjectAbove(Clonk, 200, 384);
 	npc_fireman->SetName("Hubert");
 	var barrel = npc_fireman->CreateContents(Barrel);
-	barrel->SetLiquidContainer("Water", 300);
+	barrel->PutLiquid("Water", 300);
 	npc_fireman->SetObjectLayer(npc_fireman);
 	npc_fireman->SetDir(DIR_Left);
 	npc_fireman->SetDialogue("Fireman", false);

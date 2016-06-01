@@ -275,7 +275,7 @@ private func InitLorries()
 		if (!Random(5)) 
 		{
 			var barrel = lorry->CreateContents(Barrel);
-			barrel->SetLiquidContainer("Water", Barrel->GetLiquidContainerMaxFillLevel());
+			barrel->PutLiquid("Water", Barrel->GetLiquidContainerMaxFillLevel());
 		}
 		// Objects which are only in one eighth of the lorries.
 		if (!Random(8))
