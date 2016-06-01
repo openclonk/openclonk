@@ -428,7 +428,7 @@ global func Test5_OnStart(int plr)
 	Log("Testing the behaviour of ProductionCosts()");
 	
 	passed &= doTest("Costs for single component object (Metal). Got %v, expected %v.", producer->ProductionCosts(Metal), [[Ore, 1]]);
-	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Wood, 1], [Metal, 1]]);
+	passed &= doTest("Costs for multi component object (Pickaxe). Got %v, expected %v.", producer->ProductionCosts(Pickaxe), [[Metal, 1], [Wood, 1]]);
 	passed &= doTest("Costs for object with liquid and fuel need (Bread). Got %v, expected %v.", producer->ProductionCosts(Bread), [[Flour, 1], [Water, 50]]);
 	
 	producer->RemoveObject();
