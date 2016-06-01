@@ -456,7 +456,7 @@ global func Test6_OnStart(int plr)
 	for (var product in producer->GetProducts())
 	{
 		var i = 0, component;
-		while (component = GetComponent(nil, i, nil, product))
+		while (component = product->GetComponent(nil, i))
 		{
 			item = CreateObject(component);
 			producer->Collect(item, true);
