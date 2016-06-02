@@ -1,1 +1,2 @@
 Name=Lava
+Description=Represents a single material pixel of lava.

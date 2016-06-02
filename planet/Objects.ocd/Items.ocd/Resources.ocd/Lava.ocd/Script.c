@@ -1,11 +1,23 @@
+/**
+	Lava
+	Represents a single material pixel of lava.
+	
+	@author Marky
+*/
+
 #include Library_Liquid
 
-func GetLiquidType() { return "Lava"; }
 
-func Disperse(int angle, int strength)
+public func GetLiquidType() { return "Lava"; }
+
+public func Disperse(int angle, int strength)
 {
 	DisperseMaterial(GetLiquidType(), GetLiquidAmount(), strength, angle);
 	_inherited(...);
 }
 
-local Name="$Name$";
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$"; 

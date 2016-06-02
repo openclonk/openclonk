@@ -1,1 +1,2 @@
-Name=�l
+Name=Öl
+Description=Stellt ein Material-Pixel Öl dar.

@@ -1,1 +1,2 @@
 Name=Water
+Description=Represents a single material pixel of water.

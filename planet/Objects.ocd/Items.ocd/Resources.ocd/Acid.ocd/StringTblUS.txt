@@ -1,1 +1,2 @@
 Name=Acid
+Description=Represents a single material pixel of acid.

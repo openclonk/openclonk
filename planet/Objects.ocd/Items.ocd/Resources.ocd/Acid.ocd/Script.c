@@ -1,11 +1,23 @@
+/**
+	Acid
+	Represents a single material pixel of acid.
+	
+	@author Marky
+*/
+
 #include Library_Liquid
 
-func GetLiquidType() { return "Acid"; }
 
-func Disperse(int angle, int strength)
+public func GetLiquidType() { return "Acid"; }
+
+public func Disperse(int angle, int strength)
 {
 	DisperseMaterial(GetLiquidType(), GetLiquidAmount(), strength, angle);
 	_inherited(...);
 }
 
-local Name="$Name$";
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$"; 

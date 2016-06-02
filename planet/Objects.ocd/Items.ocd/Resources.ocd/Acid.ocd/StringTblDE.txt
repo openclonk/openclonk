@@ -1,1 +1,2 @@
-Name=S�ure
+Name=Säure
+Description=Stellt ein Material-Pixel Säure dar.

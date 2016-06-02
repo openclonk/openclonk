@@ -1,24 +1,37 @@
+/**
+	Oil
+	Represents a single material pixel of oil.
+	
+	@author Marky
+*/
+
 #include Library_Liquid
 
-func GetLiquidType() { return "Oil"; }
 
-func Disperse(int angle, int strength)
+public func GetLiquidType() { return "Oil"; }
+
+public func Disperse(int angle, int strength)
 {
 	DisperseMaterial(GetLiquidType(), GetLiquidAmount(), strength, angle);
 	_inherited(...);
 }
 
-func IsFuel(){ return true;}
-func GetFuelAmount(int requested_amount)
+public func IsFuel() { return true; }
+
+public func GetFuelAmount(int requested_amount)
 {
 	requested_amount = requested_amount ?? GetLiquidAmount();
 	return Min(requested_amount, GetLiquidAmount());
 }
 
-func OnFuelRemoved(int amount)
+public func OnFuelRemoved(int amount)
 {
 	DoStackCount(-amount);
 	return true;
 }
 
-local Name="$Name$";
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$"; 

@@ -1,1 +1,2 @@
 Name=Oil
+Description=Represents a single material pixel of oil.
