@@ -118,7 +118,7 @@ public func OnProductEjection(object product)
 
 func IsLiquidContainerForMaterial(string liquid)
 {
-	return WildcardMatch("Oil", liquid);
+	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid);
 }
 
 func QueryConnectPipe(object pipe)
@@ -145,6 +145,14 @@ func OnPipeConnect(object pipe, string specific_pipe_state)
 	SetNeutralPipe(pipe);
 	pipe->Report("$MsgConnectedPipe$");
 }
+
+func GetLiquidContainerMaxFillLevel()
+{
+	return 300;
+}
+
+
+/*-- Properties --*/
 
 
 local ActMap = {
