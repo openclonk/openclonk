@@ -155,12 +155,16 @@ func CalcValue(object in_base, int for_plr)
 /** 
 Inserts liquid into the object.
 @param liquid_name: Material to insert
-@param amount: Max Amount of Material being inserted 
+@param amount: Max amount of material being inserted.
+               Nil parameter is treated as 0, because the
+               object can hold very much liquid. 
 @param source: Object which inserts the liquid
 @return returned_amount: The inserted amount
 */
 func PutLiquid(string liquid_name, int amount, object source)
 {
+	amount = amount ?? 0;
+
 	if (amount < 0)
 	{
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));

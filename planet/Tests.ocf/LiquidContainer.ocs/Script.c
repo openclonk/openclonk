@@ -278,6 +278,19 @@ global func Test3_Execute()
 	
 	passed &= doTest("Container returns 'the actually inserted amount of material' when inserting more than the volume. Got %d, expected %d.", container->PutLiquid("Water", container->GetLiquidContainerMaxFillLevel(), nil), container->GetLiquidContainerMaxFillLevel() - 1);
 	passed &= doTest("Container returns the max fill level when inserting more than the allowed volume. Got %d, expected %d", container->GetLiquidAmount("Water"), container->GetLiquidContainerMaxFillLevel());
+	
+    // -----
+    
+    Log("Parameters");
+    
+    if (container) container->RemoveObject();
+    container = CreateObject(Barrel);
+    
+    passed &= doTest("Container is filled fully if no amount parameter is passed and the container is empty. Got %d, expected %d.", container->PutLiquid("Water"), container->GetLiquidContainerMaxFillLevel());
+	
+	var filled = 100;
+	container->Contents()->SetStackCount(filled);
+    passed &= doTest("Container is filled fully if no amount parameter is passed and the container is filled partially. Got %d, expected %d.", container->PutLiquid("Water"), container->GetLiquidContainerMaxFillLevel() - filled);
 
 	container->RemoveObject();
 	return passed;

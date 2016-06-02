@@ -84,12 +84,16 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 /** 
 Inserts liquid into the container.
 @param liquid_name: Material to insert
-@param amount: Max Amount of Material being inserted 
+@param amount: Max amount of material being inserted.
+               Passing a nil parameter will fill the
+               container to its maximum.
 @param source: Object which inserts the liquid
 @return returned_amount: The inserted amount
 */
 func PutLiquid(string liquid_name, int amount, object source)
 {
+	amount = amount ?? this->GetLiquidAmountRemaining();
+
 	if (amount < 0)
 	{
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
