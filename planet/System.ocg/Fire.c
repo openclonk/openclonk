@@ -352,8 +352,10 @@ global func FxFireTimer(object target, proplist effect, int time)
 	// target is in liquid?
 	if (time % (20 + effect.FreqReduction) == 0)
 	{	
+		// Extinguish when in water-like materials.
 		var mat;
 		if (mat = GetMaterial())
+		{
 			if (GetMaterialVal("Extinguisher", "Material", mat))
 			{
 				var steam =
@@ -368,6 +370,10 @@ global func FxFireTimer(object target, proplist effect, int time)
 				CreateParticle("Dust", 0, -5, 0, 0, 180, steam, 2);
 				return FX_Execute_Kill;
 			}
+		}
+		
+		// Incinerate landscape if possible.
+		target->IncinerateLandscape(0, 0, effect.caused_by);
 	
 		// check spreading of fire
 		if (effect.strength > 10)
