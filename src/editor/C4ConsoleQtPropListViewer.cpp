@@ -96,6 +96,15 @@ C4Value C4PropertyPath::ResolveValue() const
 	return AulExec.DirectExec(::ScriptEngine.GetPropList(), path.getData(), "resolve property", false, nullptr);
 }
 
+void C4PropertyPath::DoCall(const char *call_string) const
+{
+	// Compose script call
+	StdStrBuf script;
+	script.Format(call_string, path.getData());
+	// Execute synced scripted
+	::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script.getData(), 0, false));
+}
+
 
 /* Property editing */
 
@@ -207,7 +216,7 @@ void C4PropertyDelegateInt::SetModelData(QObject *editor, const C4PropertyPath &
 	property_path.SetProperty(C4VInt(spinBox->value()));
 }
 
-QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
+QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
 {
 	QSpinBox *editor = new QSpinBox(parent);
 	editor->setMinimum(min);
@@ -220,7 +229,7 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 }
 
 C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(QWidget *parent)
-	: QWidget(parent), layout(nullptr), label(nullptr), button(nullptr)
+	: QWidget(parent), layout(nullptr), label(nullptr), button(nullptr), button_pending(false)
 {
 	layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -231,6 +240,58 @@ C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(Q
 	button = new QPushButton(QString(LoadResStr("IDS_CNS_MORE")), this);
 	layout->addWidget(button);
 }
+
+C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegate(factory, props), edit_on_selection(true)
+{
+	if (props)
+	{
+		info_proplist = C4VPropList(props->GetPropertyPropList(P_Elements));
+		edit_on_selection = props->GetPropertyBool(P_EditOnSelection, edit_on_selection);
+	}
+}
+
+void C4PropertyDelegateDescendPath::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
+{
+	Editor *editor = static_cast<Editor *>(aeditor);
+	editor->label->setText(GetDisplayString(val, nullptr));
+	editor->last_value = val;
+	editor->property_path = property_path;
+	if (editor->button_pending) emit editor->button->pressed();
+}
+
+QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+{
+	// Otherwise create display and button to descend path
+	Editor *editor;
+	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
+	connect(editor->button, &QPushButton::pressed, this, [editor, this]() {
+		// Value to descend into: Use last value on auto-press because it will not have been updated into the game yet
+		// (and cannot be without going async in network mode)
+		// On regular button press, re-resolve path to value
+		C4Value val = editor->button_pending ? editor->last_value : editor->property_path.ResolveValue();
+		if (val.getPropList() || val.getArray())
+		{
+			C4PropList *info_proplist = this->info_proplist.getPropList();
+			if (!info_proplist) info_proplist = val.getPropList();
+			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, editor->property_path);
+			::Console.EditCursor.InvalidateSelection();
+		}
+	});
+	if (by_selection && edit_on_selection) editor->button_pending = true;
+	return peditor.release();
+}
+
+QString C4PropertyDelegateDescendPath::GetDisplayString(const C4Value &v, C4Object *obj) const
+{
+	switch (v.GetType())
+	{
+	case C4V_PropList: return QString("{...}");
+	case C4V_Array: return QString(LoadResStr("IDS_CNS_ARRAYSHORT")).arg(uint32_t(v.getInt()));
+	default: return QString(LoadResStr("IDS_CNS_INVALID"));
+	}
+}
+
 
 C4PropertyDelegateColor::C4PropertyDelegateColor(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props)
@@ -267,7 +328,7 @@ void C4PropertyDelegateColor::SetModelData(QObject *aeditor, const C4PropertyPat
 	property_path.SetProperty(editor->last_value);
 }
 
-QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
+QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
 {
 	Editor *editor;
 	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
@@ -373,11 +434,13 @@ int32_t C4PropertyDelegateEnum::GetOptionByValue(const C4Value &val) const
 		case Option::StorageByKey: // Compare value to value in property. Assume undefined as nil.
 		{
 			C4PropList *props = val.getPropList();
-			if (props)
+			C4PropList *def_props = option.value.getPropList();
+			if (props && def_props)
 			{
-				C4Value propval;
+				C4Value propval, defval;
 				props->GetPropertyByS(option.option_key.Get(), &propval);
-				match = (val == propval);
+				def_props->GetPropertyByS(option.option_key.Get(), &defval);
+				match = (defval == propval);
 			}
 			break;
 		}
@@ -390,7 +453,7 @@ int32_t C4PropertyDelegateEnum::GetOptionByValue(const C4Value &val) const
 	return match ? iopt : -1;
 }
 
-void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor) const
+void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor, bool by_selection) const
 {
 	// Recreate parameter settings editor associated with the currently selected option of an enum
 	if (editor->parameter_widget)
@@ -407,14 +470,27 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 	if (option.adelegate)
 	{
 		// Determine value to be shown in editor
-		C4Value parameter_val = editor->last_val;
-		if (option.value_key.Get())
+		C4Value parameter_val;
+		if (!by_selection)
 		{
-			C4PropList *props = editor->last_val.getPropList();
-			if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
+			// Showing current selection: From last_val assigned in SetEditorData
+			parameter_val = editor->last_val;
+			if (option.value_key.Get())
+			{
+				C4PropList *props = editor->last_val.getPropList();
+				if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
+			}
+		}
+		else
+		{
+			// Selecting a new item: Set the default value
+			parameter_val = option.value;
+			// Although the default value is taken directly from SetEditorData, it needs to be set here to make child access into proplists and arrays possible
+			// (note that actual setting is delayed by control queue)
+			editor->last_get_path.SetProperty(parameter_val);
 		}
 		// Show it
-		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem());
+		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem(), by_selection);
 		if (editor->parameter_widget)
 		{
 			editor->layout->addWidget(editor->parameter_widget);
@@ -444,7 +520,7 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 	int32_t index = std::max<int32_t>(GetOptionByValue(val), 0);
 	editor->option_box->setCurrentIndex(index);
 	// Update parameter
-	UpdateEditorParameter(editor);
+	UpdateEditorParameter(editor, false);
 	editor->updating = false;
 }
 
@@ -464,6 +540,8 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	// Value from a parameter or directly from the enum?
 	if (option.adelegate)
 	{
+		// Default value on enum change
+		if (editor->option_changed) use_path.SetProperty(option.value);
 		// Value from a parameter.
 		// Using a setter function?
 		if (option.adelegate->GetSetFunction())
@@ -475,9 +553,10 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 		// No parameter. Use value.
 		use_path.SetProperty(option.value);
 	}
+	editor->option_changed = false;
 }
 
-QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
+QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
 {
 	Editor *editor = new Editor(parent);
 	editor->layout = new QHBoxLayout(editor);
@@ -497,7 +576,8 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 
 void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *editor, int newval) const
 {
-	UpdateEditorParameter(editor);
+	editor->option_changed = true;
+	UpdateEditorParameter(editor, true);
 	emit EditorValueChangedSignal(editor);
 }
 
@@ -677,7 +757,7 @@ void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4Prop
 	}
 }
 
-QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const
+QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
 {
 	// Editor is just an edit box plus a "..." button for array/proplist types
 	Editor *editor = new Editor(parent);
@@ -752,6 +832,8 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4St
 	if (!str) return NULL;
 	// create default base types
 	if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
+	if (str->GetData() == "array") return new C4PropertyDelegateDescendPath(this, props);
+	if (str->GetData() == "proplist") return new C4PropertyDelegateDescendPath(this, props);
 	if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);
 	if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
 	if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
@@ -825,12 +907,14 @@ void C4PropertyDelegateFactory::setEditorData(QWidget *editor, const QModelIndex
 	// Put property value from proplist into editor
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (!d) return;
-	// Fetch property only first time - ignore further updates to simplify editing
+	// Fetch property only first time - ignore further updates to the same value to simplify editing
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
-	if (!prop || !prop->about_to_edit) return;
-	prop->about_to_edit = false;
+	if (!prop) return;
 	C4Value val;
 	d->GetPropertyValue(prop->parent_value, prop->key, index.row(), &val);
+	if (!prop->about_to_edit && val == last_edited_value) return;
+	last_edited_value = val;
+	prop->about_to_edit = false;
 	d->SetEditorData(editor, val, d->GetPathForProperty(prop));
 }
 
@@ -855,7 +939,7 @@ QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOp
 	if (!d) return NULL;
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
 	prop->about_to_edit = true;
-	QWidget *editor = d->CreateEditor(this, parent, option);
+	QWidget *editor = d->CreateEditor(this, parent, option, true);
 	// Connect value change signals (if editing is possible for this property)
 	// For some reason, commitData needs a non-const pointer
 	if (editor)
@@ -915,16 +999,17 @@ void C4PropertyDelegateFactory::OnPropListChanged()
 /* Proplist table view */
 
 C4ConsoleQtPropListModel::C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory)
-	: delegate_factory(delegate_factory)
+	: delegate_factory(delegate_factory), selection_model(nullptr)
 {
 	header_font.setBold(true);
+	connect(this, &C4ConsoleQtPropListModel::ProplistChanged, this, &C4ConsoleQtPropListModel::UpdateSelection, Qt::QueuedConnection);
 }
 
 C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 {
 }
 
-bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_effect_object)
+bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_effect_object, C4String *default_selection, int32_t *default_selection_index)
 {
 	const char *editor_prop_prefix = "EditorProp_";
 	auto new_properties = add_proplist->GetSortedLocalProperties(editor_prop_prefix, target_proplist);
@@ -944,6 +1029,9 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->property_path = C4PropertyPath(target_proplist->GetEffect(), base_effect_object);
 		else
 			prop->property_path = target_path;
+		// ID for default selection memory
+		const char *prop_id = new_properties[i]->GetCStr() + strlen(editor_prop_prefix);
+		if (default_selection && default_selection->GetData() == prop_id) *default_selection_index = i;
 		// Property data
 		prop->key = NULL;
 		prop->display_name = NULL;
@@ -958,7 +1046,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->display_name = published_prop->GetPropertyStr(P_Name);
 			prop->delegate_info.SetPropList(published_prop);
 		}
-		if (!prop->key) properties.props[i].key = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+		if (!prop->key) properties.props[i].key = ::Strings.RegString(prop_id);
 		if (!prop->display_name) properties.props[i].display_name = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
 		prop->delegate = delegate_factory->GetDelegateByValue(prop->delegate_info);
 		C4Value v;
@@ -993,7 +1081,7 @@ void C4ConsoleQtPropListModel::SetBasePropList(C4PropList *new_proplist)
 	info_proplist.SetPropList(target_value.getObj());
 	target_path = C4PropertyPath(new_proplist);
 	target_path_stack.clear();
-	UpdateValue();
+	UpdateValue(true);
 	delegate_factory->OnPropListChanged();
 }
 
@@ -1005,7 +1093,7 @@ void C4ConsoleQtPropListModel::DescendPath(const C4Value &new_value, C4PropList 
 	target_value = new_value;
 	info_proplist.SetPropList(new_info_proplist);
 	target_path = new_path;
-	UpdateValue();
+	UpdateValue(true);
 	delegate_factory->OnPropListChanged();
 }
 
@@ -1029,23 +1117,25 @@ void C4ConsoleQtPropListModel::AscendPath()
 		target_path = entry.path;
 		target_value = entry.value;
 		info_proplist = entry.info_proplist;
-		UpdateValue();
+		UpdateValue(true);
 		delegate_factory->OnPropListChanged();
 		break;
 	}
 }
 
-void C4ConsoleQtPropListModel::UpdateValue()
+void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 {
+	// Update target value from path
+	target_value = target_path.ResolveValue();
 	// Safe-get from C4Values in case any prop lists or arrays got deleted
-	int32_t num_groups;
+	int32_t num_groups, default_selection_group = -1, default_selection_index = -1;
 	switch (target_value.GetType())
 	{
 	case C4V_PropList:
-		num_groups = UpdateValuePropList(target_value._getPropList());
+		num_groups = UpdateValuePropList(target_value._getPropList(), &default_selection_group, &default_selection_index);
 		break;
 	case C4V_Array:
-		num_groups = UpdateValueArray(target_value._getArray());
+		num_groups = UpdateValueArray(target_value._getArray(), &default_selection_group, &default_selection_index);
 		break;
 	default: // probably nil
 		num_groups = 0;
@@ -1057,10 +1147,30 @@ void C4ConsoleQtPropListModel::UpdateValue()
 	QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1, QModelIndex());
 	emit dataChanged(topLeft, bottomRight);
 	emit layoutChanged();
-
+	// Initial selection
+	if (select_default) emit ProplistChanged(default_selection_group, default_selection_index);
 }
 
-int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplist)
+void C4ConsoleQtPropListModel::UpdateSelection(int32_t major_sel, int32_t minor_sel) const
+{
+	if (selection_model)
+	{
+		// Select by indexed elements only
+		selection_model->clearSelection();
+		if (major_sel >= 0)
+		{
+			QModelIndex sel = index(major_sel, 0, QModelIndex());
+			if (minor_sel >= 0) sel = index(minor_sel, 0, sel);
+			selection_model->select(sel, QItemSelectionModel::SelectCurrent);
+		}
+		else
+		{
+			selection_model->select(QModelIndex(), QItemSelectionModel::SelectCurrent);
+		}
+	}
+}
+
+int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplist, int32_t *default_selection_group, int32_t *default_selection_index)
 {
 	assert(target_proplist);
 	C4PropList *base_proplist = this->base_proplist.getPropList();
@@ -1069,6 +1179,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 	// Published properties
 	if (info_proplist)
 	{
+		C4String *default_selection = info_proplist->GetPropertyStr(P_DefaultEditorProp);
 		C4Object *obj = info_proplist->GetObject();
 		// Properties from effects (no inheritance supported)
 		if (obj)
@@ -1076,7 +1187,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
 			{
 				QString name = fx->GetName();
-				if (AddPropertyGroup(fx, num_groups, name, fx, obj))
+				if (AddPropertyGroup(fx, num_groups, name, fx, obj, nullptr, nullptr))
 					++num_groups;
 			}
 		}
@@ -1091,8 +1202,14 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 					name = QString(proplist_static->GetDataString().getData());
 				else
 					name = check_proplist->GetName();
-				if (AddPropertyGroup(check_proplist, num_groups, name, target_proplist, nullptr))
+				if (AddPropertyGroup(check_proplist, num_groups, name, target_proplist, nullptr, default_selection, default_selection_index))
 					++num_groups;
+				// Assign group for default selection
+				if (*default_selection_index >= 0)
+				{
+					*default_selection_group = num_groups - 1;
+					default_selection = nullptr; // don't find any other instances
+				}
 			}
 		}
 		// properties from global list for objects
@@ -1100,7 +1217,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		{
 			C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
 			if (editor_base)
-				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, nullptr))
+				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, nullptr, nullptr, nullptr))
 					++num_groups;
 		}
 	}
@@ -1126,7 +1243,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 	return num_groups;
 }
 
-int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array)
+int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, int32_t *default_selection_group, int32_t *default_selection_index)
 {
 	if (property_groups.empty()) property_groups.resize(1);
 	PropertyGroup &properties = property_groups[0];
@@ -1303,7 +1420,7 @@ QModelIndex C4ConsoleQtPropListModel::index(int row, int column, const QModelInd
 		if (!property_groups.size()) return QModelIndex();
 		const PropertyGroup *property_group = &property_groups[0];
 		// Ensure changes are reflected immediately
-		if (property_group->props.size() != arr->GetSize()) const_cast<C4ConsoleQtPropListModel *>(this)->UpdateValueArray(arr);
+		if (property_group->props.size() != arr->GetSize()) const_cast<C4ConsoleQtPropListModel *>(this)->UpdateValueArray(arr, nullptr, nullptr);
 		if (row < 0 || row >= property_group->props.size()) return QModelIndex();
 		const Property * prop = &(property_group->props[row]);
 		return createIndex(row, column, const_cast<Property *>(prop));
@@ -1329,19 +1446,75 @@ QModelIndex C4ConsoleQtPropListModel::parent(const QModelIndex &index) const
 
 Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
 {
-	Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-	if (index.isValid() && index.column() == 1 && index.internalPointer())
+	Qt::ItemFlags flags = QAbstractItemModel::flags(index) | Qt::ItemIsDropEnabled;
+	if (index.isValid() && index.internalPointer())
 	{
+		flags &= ~Qt::ItemIsDropEnabled; // only drop between the lines
 		Property *prop = static_cast<Property *>(index.internalPointer());
-		bool readonly = false;
-		C4PropList *parent_proplist = prop->parent_value.getPropList();
-		if (parent_proplist && parent_proplist->IsFrozen()) readonly = true;
-		if (target_path.IsEmpty()) readonly = true;
-		// Only object properties are editable at the moment
-		if (!readonly)
-			flags |= Qt::ItemIsEditable;
-		else
-			flags &= ~Qt::ItemIsEnabled;
+		if (index.column() == 0)
+		{
+			// array elements can be re-arranged
+			if (prop->parent_value.GetType() == C4V_Array) flags |= Qt::ItemIsDragEnabled;
+		}
+		else if (index.column() == 1)
+		{
+			bool readonly = false;
+			C4PropList *parent_proplist = prop->parent_value.getPropList();
+			if (parent_proplist && parent_proplist->IsFrozen()) readonly = true;
+			if (target_path.IsEmpty()) readonly = true;
+			// Only object properties are editable at the moment
+			if (!readonly)
+				flags |= Qt::ItemIsEditable;
+			else
+				flags &= ~Qt::ItemIsEnabled;
+		}
 	}
 	return flags;
+}
+
+Qt::DropActions C4ConsoleQtPropListModel::supportedDropActions() const
+{
+	return Qt::MoveAction;
+}
+
+bool C4ConsoleQtPropListModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+	// Drag+Drop movement on array only
+	if (action != Qt::MoveAction) return false;
+	C4ValueArray *arr = target_value.getArray();
+	if (!arr) return false;
+	if (!data->hasFormat("application/vnd.text")) return false;
+	if (row < 0) return false; // outside range: Could be above or below. Better don't drag at all.
+	// Decode indices of rows to move
+	QByteArray encodedData = data->data("application/vnd.text");
+	StdStrBuf rearrange_call;
+	rearrange_call.Format("MoveArrayItems(%%s, [%s], %d)", encodedData.constData(), row);
+	target_path.DoCall(rearrange_call.getData());
+	return true;
+}
+
+QStringList C4ConsoleQtPropListModel::mimeTypes() const
+{
+	QStringList types;
+	types << "application/vnd.text";
+	return types;
+}
+
+QMimeData *C4ConsoleQtPropListModel::mimeData(const QModelIndexList &indexes) const
+{
+	// Add all moved indexes
+	QMimeData *mimeData = new QMimeData();
+	QByteArray encodedData;
+	int32_t count = 0;
+	for (const QModelIndex &index : indexes)
+	{
+		if (index.isValid() && !index.parent().isValid())
+		{
+			if (count) encodedData.append(",");
+			encodedData.append(QString::number(index.row()));
+			++count;
+		}
+	}
+	mimeData->setData("application/vnd.text", encodedData);
+	return mimeData;
 }

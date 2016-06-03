@@ -486,6 +486,10 @@ enum C4PropertyName
 	P_Relative,
 	P_CanMoveCenter,
 	P_Storage,
+	P_Elements,
+	P_EditOnSelection,
+	P_DefaultEditorProp,
+	P_CopyDefault,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

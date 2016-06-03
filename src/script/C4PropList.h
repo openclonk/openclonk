@@ -113,7 +113,7 @@ public:
 	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
-	int32_t GetPropertyBool(C4PropertyName n) const;
+	int32_t GetPropertyBool(C4PropertyName n, bool default_val = false) const;
 	int32_t GetPropertyInt(C4PropertyName k, int32_t default_val = 0) const;
 	C4PropList *GetPropertyPropList(C4PropertyName k) const;
 	bool HasProperty(C4String * k) const { return Properties.Has(k); }

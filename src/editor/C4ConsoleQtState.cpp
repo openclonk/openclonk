@@ -493,11 +493,14 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	property_delegate_factory.reset(new C4PropertyDelegateFactory());
 	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
 	ui.propertyEditAscendPathButton->setMaximumWidth(ui.propertyEditAscendPathButton->fontMetrics().boundingRect(ui.propertyEditAscendPathButton->text()).width() + 10);
+	ui.propertyTable->setDropIndicatorShown(true);
+	ui.propertyTable->setAcceptDrops(true);
 
 	// View models
 	property_model.reset(new C4ConsoleQtPropListModel(property_delegate_factory.get()));
 	property_delegate_factory->SetPropertyModel(property_model.get());
 	ui.propertyTable->setModel(property_model.get());
+	property_model->SetSelectionModel(ui.propertyTable->selectionModel());
 	object_list_model.reset(new C4ConsoleQtObjectListModel());
 	ui.objectListView->setModel(object_list_model.get());
 	window->connect(ui.objectListView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnObjectListSelectionChanged);
@@ -706,7 +709,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		}
 		else if (::Console.EditCursor.IsSelectionInvalidated())
 		{
-			property_model->UpdateValue();
+			property_model->UpdateValue(false);
 		}
 		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
 		ui.propertyEditAscendPathButton->setVisible(property_model->GetTargetPathStackSize() >= 1);

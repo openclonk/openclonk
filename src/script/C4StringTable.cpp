@@ -262,6 +262,10 @@ C4StringTable::C4StringTable()
 	P[P_Relative] = "Relative";
 	P[P_CanMoveCenter] = "CanMoveCenter";
 	P[P_Storage] = "Storage";
+	P[P_Elements] = "Elements";
+	P[P_EditOnSelection] = "EditOnSelection";
+	P[P_DefaultEditorProp] = "DefaultEditorProp";
+	P[P_CopyDefault] = "CopyDefault";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

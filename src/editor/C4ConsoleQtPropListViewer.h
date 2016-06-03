@@ -55,10 +55,11 @@ public:
 	void Clear() { path.Clear(); }
 	const char *GetPath() const { return path.getData(); }
 	bool IsEmpty() const { return path.getLength() <= 0; }
-	C4Value ResolveValue() const;
 
+	C4Value ResolveValue() const;
 	void SetProperty(const char *set_string) const;
 	void SetProperty(const C4Value &to_val) const;
+	void DoCall(const char *call_string) const; // Perform a script call where %s is replaced by the current path
 };
 
 class C4PropertyDelegate : public QObject
@@ -74,9 +75,9 @@ public:
 	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 	virtual ~C4PropertyDelegate() { }
 
-	virtual void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const = 0;
-	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path) const = 0;
-	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const = 0;
+	virtual void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const {};
+	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path) const {};
+	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const = 0;
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
 	virtual bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
 	virtual bool GetPropertyValueBase(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
@@ -104,7 +105,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 };
 
 // Editor: Text displaying value plus a button that opens an extended editor
@@ -117,8 +118,25 @@ public:
 	QLabel *label;
 	QPushButton *button;
 	C4Value last_value;
+	C4PropertyPath property_path;
+	bool button_pending;
 
 	C4PropertyDelegateLabelAndButtonWidget(QWidget *parent);
+};
+
+class C4PropertyDelegateDescendPath : public C4PropertyDelegate
+{
+private:
+	C4Value info_proplist;
+	bool edit_on_selection;
+public:
+	typedef C4PropertyDelegateLabelAndButtonWidget Editor;
+
+	C4PropertyDelegateDescendPath(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	void SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 };
 
 class C4PropertyDelegateColor : public C4PropertyDelegate
@@ -130,7 +148,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
@@ -147,10 +165,10 @@ public:
 	QComboBox *option_box;
 	QHBoxLayout *layout;
 	QWidget *parameter_widget;
-	bool updating;
+	bool updating, option_changed;
 
 	C4PropertyDelegateEnumEditor(QWidget *parent)
-		: QWidget(parent), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false) { }
+		: QWidget(parent), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false), option_changed(false) { }
 };
 
 class C4PropertyDelegateEnum : public C4PropertyDelegate
@@ -193,13 +211,13 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 	QString GetDisplayString(const C4Value &val, class C4Object *obj) const override;
 	const class C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const override; // Forward to parameter of selected option
 
 private:
 	int32_t GetOptionByValue(const C4Value &val) const;
-	void UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor) const;
+	void UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor, bool by_selection) const;
 	void EnsureOptionDelegateResolved(const Option &option) const;
 
 public slots:
@@ -240,7 +258,7 @@ public:
 	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, C4PropList *props);
 };
 
-class C4PropertyDelegateC4ValueInputEditor : public QWidget
+class C4PropertyDelegateC4ValueInputEditor : public QWidget // TODO: Merge with C4PropertyDelegateLabelAndButtonWidget
 {
 	Q_OBJECT
 
@@ -264,7 +282,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 };
 
 // areas shown in viewport
@@ -278,7 +296,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override { } // TODO maybe implement update?
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option) const override { return NULL; }
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override { return NULL; }
 	const C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const override { return this; }
 	bool HasCustomPaint() const override { return true; }
 	void Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
@@ -290,6 +308,7 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 
 	mutable std::map<C4Value, std::unique_ptr<C4PropertyDelegate> > delegates;
 	mutable QWidget *current_editor;
+	mutable C4Value last_edited_value;
 	class C4ConsoleQtPropListModel *property_model;
 
 	C4PropertyDelegate *CreateDelegateByString(const C4String *str, C4PropList *props=NULL) const;
@@ -303,9 +322,9 @@ public:
 
 	void ClearDelegates();
 	void SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModelProperty *editor_prop) const;
-	void OnPropListChanged();
 	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
 	class C4ConsoleQtPropListModel *GetPropertyModel() const { return property_model; }
+	void OnPropListChanged();
 
 private:
 	void EditorValueChanged(QWidget *editor);
@@ -374,19 +393,28 @@ private:
 	std::vector<PropertyGroup> property_groups;
 	QFont header_font;
 	C4PropertyDelegateFactory *delegate_factory;
+	QItemSelectionModel *selection_model;
 public:
 	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
 	~C4ConsoleQtPropListModel();
 
-	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_effect_object);
+	void SetSelectionModel(QItemSelectionModel *m) { selection_model = m; }
+
+	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_effect_object, C4String *default_selection, int32_t *default_selection_index);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
 	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
 	void AscendPath(); // go back one element in target path stack
-	void UpdateValue();
+	void UpdateValue(bool select_default);
 
 private:
-	int32_t UpdateValuePropList(C4PropList *target_proplist);
-	int32_t UpdateValueArray(C4ValueArray *target_array);
+	int32_t UpdateValuePropList(C4PropList *target_proplist, int32_t *default_selection_group, int32_t *default_selection_index);
+	int32_t UpdateValueArray(C4ValueArray *target_array, int32_t *default_selection_group, int32_t *default_selection_index);
+
+signals:
+	void ProplistChanged(int32_t major_sel, int32_t minor_sel) const;
+
+private slots:
+	void UpdateSelection(int32_t major_sel, int32_t minor_sel) const;
 
 public:
 	class C4PropList *GetTargetPropList() const { return target_value.getPropList(); }
@@ -396,13 +424,17 @@ public:
 	const char *GetTargetPathText() const { return target_path.GetPath(); }
 
 public:
-	virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
-	virtual int columnCount(const QModelIndex & parent = QModelIndex()) const;
-	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+	int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+	int columnCount(const QModelIndex & parent = QModelIndex()) const override;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	QModelIndex parent(const QModelIndex &index) const override;
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
+	Qt::DropActions supportedDropActions() const override;
+	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+	QStringList mimeTypes() const override;
+	QMimeData *mimeData(const QModelIndexList &indexes) const override;
 };
 
 #endif // WITH_QT_EDITOR

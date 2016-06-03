@@ -734,7 +734,7 @@ C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
 	return P_LAST;
 }
 
-int32_t C4PropList::GetPropertyBool(C4PropertyName n) const
+int32_t C4PropList::GetPropertyBool(C4PropertyName n, bool default_val) const
 {
 	C4String * k = &Strings.P[n];
 	if (Properties.Has(k))
@@ -745,7 +745,7 @@ int32_t C4PropList::GetPropertyBool(C4PropertyName n) const
 	{
 		return GetPrototype()->GetPropertyBool(n);
 	}
-	return false;
+	return default_val;
 }
 
 int32_t C4PropList::GetPropertyInt(C4PropertyName n, int32_t default_val) const

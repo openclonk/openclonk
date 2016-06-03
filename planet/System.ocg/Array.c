@@ -188,3 +188,38 @@ global func RandomElement(array arr)
 {
 	return arr[Random(GetLength(arr))];
 }
+
+// Move array of indexes before given element. Called from editor on item move.
+global func MoveArrayItems(array arr, array source_indices, int insert_before)
+{
+	if (!arr) return false;
+	var len = GetLength(arr), off = 0, val;
+	// make sure source indices are sorted
+	if (len > 1)
+	{
+		source_indices = source_indices[:]; 
+		SortArray(source_indices);
+	}
+	for (idx in source_indices)
+	{
+		if (idx < 0) idx += (1-(idx+1)/len)*len; // resolve negative indices
+		if (idx >= len) continue;
+		if (idx < insert_before) 
+		{
+			// Move element forward
+			idx += off; --off; // Adjust for other elements already moved
+			val = arr[idx];
+			while (++idx < insert_before) arr[idx-1] = arr[idx];
+			arr[insert_before - 1] = val;
+		}
+		else
+		{
+			// Move element backward
+			val = arr[idx];
+			while (idx-- >= insert_before) arr[idx+1] = arr[idx];
+			arr[insert_before] = val;
+			++insert_before;
+		}
+	}
+	return true;
+}
