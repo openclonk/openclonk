@@ -70,7 +70,7 @@ void C4Network2UPnPP::Init()
 {
 	int error, status;
 
-#if MINIUPNP_API_VERSION == 10
+#if MINIUPNPC_API_VERSION == 10
 	// Distributed with Debian jessie.
 	if ((devlist = upnpDiscover(2000, NULL, NULL, 0, 0, &error)))
 #else
