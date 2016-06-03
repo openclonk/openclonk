@@ -26,11 +26,6 @@
 
 #include "network/C4Network2UPnP.h"
 
-// Backwards compatibility for Debian's miniupnpc 1.9.20140610
-#ifndef UPNP_LOCAL_PORT_ANY
-#define UPNP_LOCAL_PORT_ANY     0
-#endif
-
 static const char *description = "OpenClonk";
 
 class C4Network2UPnPP : C4InteractiveThread
@@ -75,7 +70,12 @@ void C4Network2UPnPP::Init()
 {
 	int error, status;
 
+#if MINIUPNP_API_VERSION == 10
+	// Distributed with Debian jessie.
+	if ((devlist = upnpDiscover(2000, NULL, NULL, 0, 0, &error)))
+#else
 	if ((devlist = upnpDiscover(2000, NULL, NULL, UPNP_LOCAL_PORT_ANY, 0, 2, &error)))
+#endif
 	{
 		if ((status = UPNP_GetValidIGD(devlist, &upnp_urls, &igd_data, lanaddr, sizeof(lanaddr))))
 		{
