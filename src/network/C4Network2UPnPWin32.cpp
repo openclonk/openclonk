@@ -48,8 +48,9 @@ namespace
 	}
 }
 
-struct C4Network2UPnPP
+class C4Network2UPnPP
 {
+public:
 	bool MustReleaseCOM;
 
 	// NAT
