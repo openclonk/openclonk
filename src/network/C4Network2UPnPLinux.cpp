@@ -26,6 +26,11 @@
 
 #include "network/C4Network2UPnP.h"
 
+// Backwards compatibility for Debian's miniupnpc 1.9.20140610
+#ifndef UPNP_LOCAL_PORT_ANY
+#define UPNP_LOCAL_PORT_ANY     0
+#endif
+
 static const char *description = "OpenClonk";
 
 class C4Network2UPnPP : C4InteractiveThread
@@ -107,7 +112,7 @@ void C4Network2UPnPP::AddMapping(C4Network2IOProtocol protocol, uint16_t intport
 
 	added_mappings.push_back(mapping);
 
-	action = std::async([this, action{std::move(action)}, mapping]() {
+	action = std::async([this, action = std::move(action), mapping]() {
 		action.wait();
 		AddPortMapping(mapping);
 	});
@@ -115,7 +120,7 @@ void C4Network2UPnPP::AddMapping(C4Network2IOProtocol protocol, uint16_t intport
 
 void C4Network2UPnPP::ClearMappings()
 {
-	action = std::async([this, action{std::move(action)}]() {
+	action = std::async([this, action = std::move(action)]() {
 		action.wait();
 
 		for (auto mapping : added_mappings)
