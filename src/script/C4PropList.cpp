@@ -743,7 +743,7 @@ int32_t C4PropList::GetPropertyBool(C4PropertyName n, bool default_val) const
 	}
 	if (GetPrototype())
 	{
-		return GetPrototype()->GetPropertyBool(n);
+		return GetPrototype()->GetPropertyBool(n, default_val);
 	}
 	return default_val;
 }
