@@ -143,8 +143,8 @@ TEST_F(AulPredefFunctionTest, Abs)
 
 TEST_F(AulPredefFunctionTest, CreateEffect)
 {
-	EXPECT_EQ(C4VInt(3), RunCode("local A = { Start=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }", false));
-	EXPECT_EQ(C4VInt(3), RunCode("local A = { Construction=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }", false));
+	EXPECT_EQ(C4VInt(3), RunScript("local A = { Start=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }"));
+	EXPECT_EQ(C4VInt(3), RunScript("local A = { Construction=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }"));
 }
 
 TEST_F(AulPredefFunctionTest, Trivial)

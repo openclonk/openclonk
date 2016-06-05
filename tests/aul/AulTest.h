@@ -28,8 +28,9 @@ inline std::ostream &operator<<(std::ostream &os, const C4Value &val)
 class AulTest : public ::testing::Test
 {
 protected:
-	C4Value RunCode(const char *code, bool wrap = true);
-	C4Value RunExpr(const char *expr);
+	C4Value RunCode(const std::string &code);
+	C4Value RunScript(const std::string &code);
+	C4Value RunExpr(const std::string &expr);
 
 	static const C4Value C4VINT_MIN;
 	static const C4Value C4VINT_MAX;
