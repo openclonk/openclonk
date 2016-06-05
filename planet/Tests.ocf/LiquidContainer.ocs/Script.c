@@ -162,6 +162,7 @@ global func Test2_Execute()
 	var passed = true;
 	passed &= doTest("Liquid can fill empty barrel. Got %v, expected %v.", container->Contents(), liquid);
 	passed &= doTest("Barrel contains %d units, expected %d.", container->GetLiquidAmount("Water"), 100);
+	passed &= doTest("GetLiquidAmount() can be called with definitions, too. Got %d units, expected %d.", container->GetLiquidAmount(Water), 100);
 	passed &= doTest("The liquid returns a max stack count of %d, expected %d.", container->Contents()->MaxStackCount(), 300);
 	
     // -----
@@ -292,6 +293,11 @@ global func Test3_Execute()
 	container->Contents()->SetStackCount(filled);
     passed &= doTest("Container is filled fully if no amount parameter is passed and the container is filled partially. Got %d, expected %d.", container->PutLiquid("Water"), container->GetLiquidContainerMaxFillLevel() - filled);
 
+    if (container) container->RemoveObject();
+    container = CreateObject(Barrel);
+
+	passed &= doTest("Container can be filled with definition input. Got %d, expected %d.", container->PutLiquid(Oil, filled), filled);
+
 	container->RemoveObject();
 	return passed;
 }
@@ -361,6 +367,18 @@ global func Test4_Execute()
 	passed &= doTest("Container returns the contained material when extracting material and amount 'nil'. Got %s, expected %s.", returned[0], expected[0]);
 	passed &= doTest("Container returns the correct amount when extracting material and amount 'nil'. Got %d, expected %d.", returned[1], expected[1]);
 	passed &= doTest("Container is empty after removing material and amount 'nil'. Got %d, expected %d.", container->GetLiquidAmount(), 0);
+
+    // -----
+
+	Log("Parameters");
+	
+	container->PutLiquid(Oil, 100);
+	returned = container->RemoveLiquid(Oil, 50, nil);
+	expected = [Oil, 50];
+
+	passed &= doTest("Container returns the contained material when extracting material and amount 'nil'. Got %v, expected %v.", returned[0], expected[0]);
+	passed &= doTest("Container returns the correct amount when extracting material and amount 'nil'. Got %d, expected %d.", returned[1], expected[1]);
+	passed &= doTest("Container is not empty after partially removing material. Got %d, expected %d.", container->GetLiquidAmount(), 50);
 
 	container->RemoveObject();
 	return passed;

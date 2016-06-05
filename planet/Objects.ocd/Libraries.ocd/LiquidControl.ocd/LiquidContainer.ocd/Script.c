@@ -19,11 +19,21 @@ func IsLiquidContainerForMaterial(string liquid_name)
 	return true;
 }
 
-func GetLiquidAmount(string liquid_name)
+func GetLiquidAmount(liquid_name)
 {
 	var amount = 0;
+	var type = nil;
+	
+	// in case that a value was supplied, try finding the type for that
+	if (liquid_name != nil)
+	{
+		type = GetLiquidDef(liquid_name);
+		if (type == nil) FatalError(Format("No such liquid: %s", liquid_name));
+	}
+
+	// return everything if 'nil' was passed, or a specific amount if a value was passed
 	for (var liquid in GetLiquidContents())
-	if (liquid_name == nil || liquid->GetLiquidType() == liquid_name)
+	if (liquid_name == nil || liquid->GetLiquidType() == type->GetLiquidType())
 	{
 		amount += liquid->~GetLiquidAmount();
 	}
@@ -55,7 +65,7 @@ Extracts liquid from the container.
 	   - returned_liquid: Material being extracted
 	   - returned_amount: Amount being extracted
 */
-func RemoveLiquid(string liquid_name, int amount, object destination)
+func RemoveLiquid(liquid_name, int amount, object destination)
 {
 	if (amount < 0)
 	{
@@ -71,10 +81,7 @@ func RemoveLiquid(string liquid_name, int amount, object destination)
 	
 		if (!liquid_name) liquid_name = liquid->GetLiquidType();
 		
-		//if (liquid->GetLiquidType() == liquid_name)
-		//{
-			removed += liquid->RemoveLiquid(liquid_name, amount - removed, destination)[1];
-		//}
+		removed += liquid->RemoveLiquid(liquid_name, amount - removed, destination)[1];
 	}
 
 	return [liquid_name, removed];
@@ -90,7 +97,7 @@ Inserts liquid into the container.
 @param source: Object which inserts the liquid
 @return returned_amount: The inserted amount
 */
-func PutLiquid(string liquid_name, int amount, object source)
+func PutLiquid(liquid_name, int amount, object source)
 {
 	amount = amount ?? this->GetLiquidAmountRemaining();
 
@@ -99,11 +106,12 @@ func PutLiquid(string liquid_name, int amount, object source)
 		FatalError(Format("You can insert positive amounts of liquid only, got %d", amount));
 	}
 
+	var type = GetLiquidDef(liquid_name);
+	
 	var max = this->GetLiquidContainerMaxFillLevel();
 	var before = GetLiquidAmount(liquid_name);
 	if (max > 0 && before >= max) return 0;
 
-	var type = GetDefinition(liquid_name);
 	if (type)
 	{
 		var liquid = type->~CreateLiquid(amount);
@@ -115,4 +123,20 @@ func PutLiquid(string liquid_name, int amount, object source)
 
 	var after = GetLiquidAmount(liquid_name);
 	return after - before;
+}
+
+private func GetLiquidDef(liquid_name)
+{
+	if (GetType(liquid_name) == C4V_String)
+	{
+		return GetDefinition(liquid_name);
+	}
+	else if (GetType(liquid_name) == C4V_Def)
+	{
+		return liquid_name;
+	}
+	else
+	{
+		FatalError(Format("The first parameter of GetLiquidDef() must either be a string or definition. You passed %v.", liquid_name));
+	}
 }
