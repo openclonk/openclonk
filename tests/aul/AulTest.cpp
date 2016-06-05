@@ -156,6 +156,14 @@ local a = new Global {
 };
 func Main() { return a->Call(a.a); }
 )"));
+
+	EXPECT_EQ(C4VInt(1), RunScript(R"(
+static const a = { v = 1 };
+static const b = new a {
+	c = func() { return v; }
+};
+func Main() { return b->c(); }
+)"));
 }
 
 TEST_F(AulTest, Eval)

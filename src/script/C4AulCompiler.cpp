@@ -913,6 +913,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ThisLit *n)
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 {
 	assert(Fn);
+	C4Value dummy;
 	const char *cname = n->identifier.c_str();
 	C4String *interned = ::Strings.FindString(cname);
 
@@ -933,7 +934,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 	{
 		AddVarAccess(n->loc, AB_DUP, Fn->VarNamed.GetItemNr(cname));
 	}
-	else if (Fn->Parent && interned && Fn->Parent->HasProperty(interned))
+	// Can't use Fn->Parent->HasProperty here because that only returns true
+	// for immediate properties, while we also want to interrogate prototypes
+	else if (Fn->Parent && interned && Fn->Parent->GetPropertyByS(interned, &dummy))
 	{
 		AddBCC(n->loc, AB_LOCALN, (intptr_t)interned);
 	}
