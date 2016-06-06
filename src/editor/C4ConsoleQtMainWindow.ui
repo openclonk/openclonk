@@ -484,6 +484,27 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="arrayEditingLayout">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="arrayAddButton">
+         <property name="text">
+          <string comment="res">IDS_CNS_ARRAYADD</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="arrayRemoveButton">
+         <property name="text">
+          <string comment="res">IDS_CNS_ARRAYREMOVE</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="QTreeView" name="propertyTable">
        <property name="acceptDrops">
         <bool>true</bool>
@@ -1445,6 +1466,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>arrayAddButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>AddArrayElement()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>756</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>arrayRemoveButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>RemoveArrayElement()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>886</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1478,5 +1531,7 @@
   <slot>FileNew()</slot>
   <slot>WelcomeLinkActivated(QString)</slot>
   <slot>AscendPropertyPath()</slot>
+  <slot>AddArrayElement()</slot>
+  <slot>RemoveArrayElement()</slot>
  </slots>
 </ui>

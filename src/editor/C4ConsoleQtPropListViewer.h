@@ -126,7 +126,7 @@ public:
 
 class C4PropertyDelegateDescendPath : public C4PropertyDelegate
 {
-private:
+protected:
 	C4Value info_proplist;
 	bool edit_on_selection;
 public:
@@ -136,6 +136,26 @@ public:
 
 	void SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+};
+
+class C4PropertyDelegateArray : public C4PropertyDelegateDescendPath
+{
+private:
+	int32_t max_array_display;
+	mutable C4PropertyDelegate *element_delegate; // lazy eval
+public:
+	C4PropertyDelegateArray(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+};
+
+class C4PropertyDelegatePropList : public C4PropertyDelegateDescendPath
+{
+private:
+	C4RefCntPointer<C4String> display_string;
+public:
+	C4PropertyDelegatePropList(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
 	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 };
 
@@ -308,6 +328,7 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 
 	mutable std::map<C4Value, std::unique_ptr<C4PropertyDelegate> > delegates;
 	mutable QWidget *current_editor;
+	mutable C4PropertyDelegate *current_editor_delegate;
 	mutable C4Value last_edited_value;
 	class C4ConsoleQtPropListModel *property_model;
 
@@ -325,6 +346,7 @@ public:
 	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
 	class C4ConsoleQtPropListModel *GetPropertyModel() const { return property_model; }
 	void OnPropListChanged();
+	bool CheckCurrentEditor(C4PropertyDelegate *d, QWidget *editor) const;
 
 private:
 	void EditorValueChanged(QWidget *editor);
@@ -422,6 +444,10 @@ public:
 	class C4PropList *GetBasePropList() const { return base_proplist.getPropList(); }
 	int32_t GetTargetPathStackSize() const { return target_path_stack.size(); }
 	const char *GetTargetPathText() const { return target_path.GetPath(); }
+	bool IsArray() const { return !!target_value.getArray(); }
+	void AddArrayElement();
+	void RemoveArrayElement();
+	bool IsTargetReadonly() const;
 
 public:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;

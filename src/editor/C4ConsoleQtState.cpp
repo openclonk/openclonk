@@ -316,6 +316,17 @@ void C4ConsoleQtMainWindow::AscendPropertyPath()
 	::Console.EditCursor.InvalidateSelection();
 }
 
+void C4ConsoleQtMainWindow::AddArrayElement()
+{
+	if (state->property_model) state->property_model->AddArrayElement();
+}
+
+void C4ConsoleQtMainWindow::RemoveArrayElement()
+{
+	if (state->property_model) state->property_model->RemoveArrayElement();
+}
+
+
 bool C4ConsoleQtMainWindow::HandleEditorKeyDown(QKeyEvent *event)
 {
 	switch (event->key())
@@ -508,6 +519,9 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.creatorTreeView->setModel(definition_list_model.get());
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);
+	window->connect(ui.propertyTable->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), [this]() {
+		this->ui.arrayRemoveButton->setDisabled(this->property_model->IsTargetReadonly() || this->ui.propertyTable->selectionModel()->selectedRows().empty());
+	});
 
 	// Welcome page
 	InitWelcomeScreen();
@@ -688,6 +702,7 @@ void C4ConsoleGUIState::SetInputFunctions(std::list<const char*> &functions)
 void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update)
 {
 	int sel_count = rSelection.size();
+	bool is_array = false;
 	if (sel_count != 1)
 	{
 		// Multi object selection: Hide property view; show info label
@@ -713,9 +728,18 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		}
 		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
 		ui.propertyEditAscendPathButton->setVisible(property_model->GetTargetPathStackSize() >= 1);
+		is_array = property_model->IsArray();
+		if (is_array)
+		{
+			bool is_readonly = property_model->IsTargetReadonly();
+			ui.arrayAddButton->setDisabled(is_readonly);
+			ui.arrayRemoveButton->setDisabled(is_readonly || ui.propertyTable->selectionModel()->selectedRows().empty());
+		}
 		ui.propertyTable->setEnabled(true);
 		::Console.EditCursor.ValidateSelection();
 	}
+	ui.arrayAddButton->setVisible(is_array);
+	ui.arrayRemoveButton->setVisible(is_array);
 	// Function update in script combo box
 	if (force_function_update)
 	{

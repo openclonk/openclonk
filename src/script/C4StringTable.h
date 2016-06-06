@@ -490,6 +490,8 @@ enum C4PropertyName
 	P_EditOnSelection,
 	P_DefaultEditorProp,
 	P_CopyDefault,
+	P_Display,
+	P_DefaultValue,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

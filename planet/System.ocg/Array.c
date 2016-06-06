@@ -223,3 +223,14 @@ global func MoveArrayItems(array arr, array source_indices, int insert_before)
 	}
 	return true;
 }
+
+// Deletes multiple indexes from an array, does not change the order of items in the array.
+global func RemoveArrayIndices(array arr, array indices)
+{
+	indices = indices[:];
+	SortArray(indices, true);
+	for (idx in indices)
+		if (idx < GetLength(arr))
+			RemoveArrayIndex(arr, idx);
+	return true;
+}

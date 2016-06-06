@@ -250,7 +250,7 @@ C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4Prope
 		edit_on_selection = props->GetPropertyBool(P_EditOnSelection, edit_on_selection);
 	}
 }
-
+ 
 void C4PropertyDelegateDescendPath::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
@@ -282,14 +282,70 @@ QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDeleg
 	return peditor.release();
 }
 
-QString C4PropertyDelegateDescendPath::GetDisplayString(const C4Value &v, C4Object *obj) const
+C4PropertyDelegateArray::C4PropertyDelegateArray(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateDescendPath(factory, props), max_array_display(0), element_delegate(nullptr)
 {
-	switch (v.GetType())
+	if (props)
 	{
-	case C4V_PropList: return QString("{...}");
-	case C4V_Array: return QString(LoadResStr("IDS_CNS_ARRAYSHORT")).arg(uint32_t(v.getInt()));
-	default: return QString(LoadResStr("IDS_CNS_INVALID"));
+		max_array_display = props->GetPropertyInt(P_Display);
 	}
+}
+
+QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *obj) const
+{
+	C4ValueArray *arr = v.getArray();
+	if (!arr) return QString(LoadResStr("IDS_CNS_INVALID"));
+	int32_t n = v._getArray()->GetSize();
+	if (!element_delegate) element_delegate = factory->GetDelegateByValue(info_proplist);
+	if (max_array_display && n)
+	{
+		QString result = "[";
+		for (int32_t i = 0; i < std::min<int32_t>(n, max_array_display); ++i)
+		{
+			if (i) result += ",";
+			result += element_delegate->GetDisplayString(v._getArray()->GetItem(i), obj);
+		}
+		if (n > max_array_display) result += ",...";
+		result += "]";
+		return result;
+	}
+	else
+	{
+		// Default display (or display with 0 elements): Just show element number
+		return QString(LoadResStr("IDS_CNS_ARRAYSHORT")).arg(n);
+	}
+}
+
+C4PropertyDelegatePropList::C4PropertyDelegatePropList(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateDescendPath(factory, props)
+{
+	if (props)
+	{
+		display_string = props->GetPropertyStr(P_Display);
+	}
+}
+
+
+QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object *obj) const
+{
+	C4PropList *data = v.getPropList();
+	if (!data) return QString(LoadResStr("IDS_CNS_INVALID"));
+	if (!display_string) return QString("{...}");
+	// Replace all {{name}} by property values of name
+	QString result = display_string->GetCStr();
+	int32_t pos0, pos1;
+	C4Value cv;
+	while ((pos0 = result.indexOf("{{")) >= 0)
+	{
+		pos1 = result.indexOf("}}", pos0+2);
+		if (pos1 < 0) break; // placeholder not closed
+		QString substring = result.mid(pos0+2, pos1-pos0-2);
+		if (!data->GetPropertyByS(::Strings.RegString(substring.toUtf8()), &cv)) cv.Set0();
+		// TODO: May want to resolve child delegates for this in the future
+		// For now, just use GetDataString()
+		result.replace(pos0, pos1 - pos0 + 2, cv.GetDataString().getData());
+	}
+	return result;
 }
 
 
@@ -832,8 +888,8 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4St
 	if (!str) return NULL;
 	// create default base types
 	if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
-	if (str->GetData() == "array") return new C4PropertyDelegateDescendPath(this, props);
-	if (str->GetData() == "proplist") return new C4PropertyDelegateDescendPath(this, props);
+	if (str->GetData() == "array") return new C4PropertyDelegateArray(this, props);
+	if (str->GetData() == "proplist") return new C4PropertyDelegatePropList(this, props);
 	if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);
 	if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
 	if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
@@ -906,7 +962,7 @@ void C4PropertyDelegateFactory::setEditorData(QWidget *editor, const QModelIndex
 {
 	// Put property value from proplist into editor
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
-	if (!d) return;
+	if (!CheckCurrentEditor(d, editor)) return;
 	// Fetch property only first time - ignore further updates to the same value to simplify editing
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
 	if (!prop) return;
@@ -922,7 +978,7 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 {
 	// Fetch property value from editor and set it into proplist
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
-	if (!d) return;
+	if (!CheckCurrentEditor(d, editor)) return;
 	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
 	SetPropertyData(d, editor, prop);
 }
@@ -952,19 +1008,24 @@ QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOp
 		});
 	}
 	current_editor = editor;
+	current_editor_delegate = d;
 	return editor;
 }
 
 void C4PropertyDelegateFactory::destroyEditor(QWidget *editor, const QModelIndex &index) const
 {
-	if (editor == current_editor) current_editor = nullptr;
+	if (editor == current_editor)
+	{
+		current_editor = nullptr;
+		current_editor_delegate = nullptr;
+	}
 	QStyledItemDelegate::destroyEditor(editor, index);
 }
 
 void C4PropertyDelegateFactory::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
-	if (!d) return;
+	if (!CheckCurrentEditor(d, editor)) return;
 	return d->UpdateEditorGeometry(editor, option);
 }
 
@@ -993,6 +1054,17 @@ void C4PropertyDelegateFactory::paint(QPainter *painter, const QStyleOptionViewI
 void C4PropertyDelegateFactory::OnPropListChanged()
 {
 	if (current_editor) emit closeEditor(current_editor);
+}
+
+bool C4PropertyDelegateFactory::CheckCurrentEditor(C4PropertyDelegate *d, QWidget *editor) const
+{
+	if (!d || (editor && editor != current_editor) || d != current_editor_delegate)
+	{
+		//const_cast<C4PropertyDelegateFactory *>(this)->emit closeEditor(current_editor);
+		destroyEditor(current_editor, QModelIndex());
+		return false;
+	}
+	return true;
 }
 
 
@@ -1458,10 +1530,7 @@ Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
 		}
 		else if (index.column() == 1)
 		{
-			bool readonly = false;
-			C4PropList *parent_proplist = prop->parent_value.getPropList();
-			if (parent_proplist && parent_proplist->IsFrozen()) readonly = true;
-			if (target_path.IsEmpty()) readonly = true;
+			bool readonly = IsTargetReadonly();
 			// Only object properties are editable at the moment
 			if (!readonly)
 				flags |= Qt::ItemIsEditable;
@@ -1517,4 +1586,44 @@ QMimeData *C4ConsoleQtPropListModel::mimeData(const QModelIndexList &indexes) co
 	}
 	mimeData->setData("application/vnd.text", encodedData);
 	return mimeData;
+}
+
+void C4ConsoleQtPropListModel::AddArrayElement()
+{
+	C4Value new_val;
+	C4PropList *info_proplist = this->info_proplist.getPropList();
+	if (info_proplist) info_proplist->GetProperty(P_DefaultValue, &new_val);
+	target_path.DoCall(FormatString("PushBack(%%s, %s)", new_val.GetDataString(10).getData()).getData());
+}
+
+void C4ConsoleQtPropListModel::RemoveArrayElement()
+{
+	// Compose script command to remove all selected array indices
+	StdStrBuf script;
+	for (QModelIndex idx : selection_model->selectedIndexes())
+		if (idx.isValid() && idx.column() == 0)
+			if (script.getLength())
+				script.AppendFormat(",%d", idx.row());
+			else
+				script.AppendFormat("%d", idx.row());
+	if (script.getLength()) target_path.DoCall(FormatString("RemoveArrayIndices(%%s, [%s])", script.getData()).getData());
+}
+
+bool C4ConsoleQtPropListModel::IsTargetReadonly() const
+{
+	if (target_path.IsEmpty()) return true;
+	switch (target_value.GetType())
+	{
+	case C4V_Array:
+		// Arrays are never frozen
+		return false;
+	case C4V_PropList:
+	{
+		C4PropList *parent_proplist = target_value._getPropList();
+		if (parent_proplist->IsFrozen()) return true;
+		return false;
+	}
+	default:
+		return true;
+	}
 }
