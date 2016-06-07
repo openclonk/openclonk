@@ -93,6 +93,7 @@ void C4PropertyPath::SetProperty(const C4Value &to_val) const
 
 C4Value C4PropertyPath::ResolveValue() const
 {
+	if (!path.getLength()) return C4VNull;
 	return AulExec.DirectExec(::ScriptEngine.GetPropList(), path.getData(), "resolve property", false, nullptr);
 }
 
