@@ -491,7 +491,6 @@ void C4DefList::CallEveryDefinition()
 			strncpy(sz, def->id.ToString(), 32+1);
 			AddDbgRec(RCT_Definition, sz, 32);
 		}
-		LogF(def->GetName());
 		C4AulParSet Pars(def);
 		def->Call(PSF_Definition, &Pars);
 	}
