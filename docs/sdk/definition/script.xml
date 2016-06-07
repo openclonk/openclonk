@@ -34,6 +34,11 @@
           <col>Description</col>
         </rowh>
         <row id="Initialize">
+          <literal_col>Definition</literal_col>
+          <col></col>
+          <col>Called in definition context after all definitions have been loaded and before definition properties are frozen. Use this callback to initialize complex definition properties such as EditorProps or dependencies between definitions. Definition() callbacks are performed in descending order of the DefinitionPriority property or 0 if that property is not defined.</col>
+        </row>
+        <row id="Initialize">
           <literal_col>Initialize</literal_col>
           <col></col>
           <col>When the object is completed (<emlink href="script/fn/GetCon.html">Con</emlink> >= 100).</col>

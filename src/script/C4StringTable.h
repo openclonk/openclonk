@@ -492,6 +492,7 @@ enum C4PropertyName
 	P_CopyDefault,
 	P_Display,
 	P_DefaultValue,
+	P_DefinitionPriority,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

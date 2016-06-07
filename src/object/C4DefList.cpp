@@ -453,6 +453,32 @@ void C4DefList::ResetIncludeDependencies()
 		it->second->ResetIncludeDependencies();
 }
 
+void C4DefList::SortByPriority()
+{
+	// Sort all definitions by DefinitionPriority property (descending)
+	// Build vector of definitions
+	int32_t n = GetDefCount();
+	if (!n) return;
+	std::vector<C4Def *> def_vec;
+	def_vec.reserve(n);
+	for (C4Def *def = FirstDef; def; def = def->Next)
+		def_vec.push_back(def);
+	// Sort it
+	std::stable_sort(def_vec.begin(), def_vec.end(), [](C4Def *a, C4Def *b) {
+		return b->GetPropertyInt(P_DefinitionPriority) < a->GetPropertyInt(P_DefinitionPriority);
+	});
+	// Restore linked list in new definition order
+	C4Def *prev_def = nullptr;
+	for (C4Def *def : def_vec)
+	{
+		if (prev_def)
+			prev_def->Next = def;
+		else
+			FirstDef = def;
+		prev_def = def;
+	}
+}
+
 void C4DefList::CallEveryDefinition()
 {
 	for (C4Def *def = FirstDef; def; def = def->Next)
@@ -465,6 +491,7 @@ void C4DefList::CallEveryDefinition()
 			strncpy(sz, def->id.ToString(), 32+1);
 			AddDbgRec(RCT_Definition, sz, 32);
 		}
+		LogF(def->GetName());
 		C4AulParSet Pars(def);
 		def->Call(PSF_Definition, &Pars);
 	}

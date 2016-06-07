@@ -157,7 +157,10 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 			s->Parse();
 
 		if (rDefs)
+		{
+			rDefs->SortByPriority();
 			rDefs->CallEveryDefinition();
+		}
 
 		// Done modifying the proplists now
 		for (C4ScriptHost *s = Child0; s; s = s->Next)

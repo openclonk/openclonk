@@ -65,6 +65,7 @@ public:
 	void BuildTable();
 	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
 	void CallEveryDefinition();
+	void SortByPriority();
 	void Synchronize();
 	void AppendAndIncludeSkeletons();
 	StdMeshSkeletonLoader& GetSkeletonLoader();
