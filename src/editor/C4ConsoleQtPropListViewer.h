@@ -326,14 +326,13 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 {
 	Q_OBJECT
 
-	mutable std::map<C4Value, std::unique_ptr<C4PropertyDelegate> > delegates;
+	mutable std::map<C4PropList *, std::unique_ptr<C4PropertyDelegate> > delegates;
 	mutable QWidget *current_editor;
 	mutable C4PropertyDelegate *current_editor_delegate;
 	mutable C4Value last_edited_value;
 	class C4ConsoleQtPropListModel *property_model;
 
-	C4PropertyDelegate *CreateDelegateByString(const C4String *str, C4PropList *props=NULL) const;
-	C4PropertyDelegate *CreateDelegateByValue(const C4Value &val) const;
+	C4PropertyDelegate *CreateDelegateByPropList(C4PropList *props) const;
 	C4PropertyDelegate *GetDelegateByIndex(const QModelIndex &index) const;
 public:
 	C4PropertyDelegateFactory() : current_editor(nullptr), property_model(nullptr) { }
@@ -406,6 +405,11 @@ public:
 		TargetStackEntry(const C4PropertyPath &path, const C4Value &value, const C4Value &info_proplist)
 			: path(path), value(value), info_proplist(info_proplist) {}
 	};
+	struct EditedPath // Information about how to find currently edited element (to restore after model update)
+	{
+		C4PropertyPath target_path;
+		int32_t major_index, minor_index;
+	};
 private:
 	C4Value target_value; // Target value for which properties are listed (either proplist or array)
 	C4Value base_proplist; // Parent-most value, i.e. object or effect selected in editor through 
@@ -416,6 +420,7 @@ private:
 	QFont header_font;
 	C4PropertyDelegateFactory *delegate_factory;
 	QItemSelectionModel *selection_model;
+	bool layout_valid; // set to false when property numbers change
 public:
 	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
 	~C4ConsoleQtPropListModel();

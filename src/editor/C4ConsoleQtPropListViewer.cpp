@@ -237,9 +237,15 @@ C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(Q
 	layout->setMargin(0);
 	layout->setSpacing(0);
 	label = new QLabel(this);
+	QPalette palette = label->palette();
+	palette.setColor(label->foregroundRole(), palette.color(QPalette::HighlightedText));
+	palette.setColor(label->backgroundRole(), palette.color(QPalette::Highlight));
+	label->setPalette(palette);
+	setPalette(palette);
 	layout->addWidget(label);
 	button = new QPushButton(QString(LoadResStr("IDS_CNS_MORE")), this);
 	layout->addWidget(button);
+	setAutoFillBackground(true);
 }
 
 C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4PropertyDelegateFactory *factory, C4PropList *props)
@@ -420,6 +426,12 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 {
 	// Build enum options from C4Value definitions in script
 	if (!poptions && props) poptions = props->GetPropertyArray(P_Options);
+	C4String *default_option_key, *default_value_key = nullptr;
+	if (props)
+	{
+		default_option_key = props->GetPropertyStr(P_OptionKey);
+		default_value_key = props->GetPropertyStr(P_ValueKey);
+	}
 	if (poptions)
 	{
 		options.reserve(poptions->GetSize());
@@ -432,13 +444,15 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			option.name = props->GetPropertyStr(P_Name);
 			if (!option.name.Get()) option.name = ::Strings.RegString("???");
 			option.value_key = props->GetPropertyStr(P_ValueKey);
+			if (!option.value_key) option.value_key = default_value_key;
 			props->GetProperty(P_Value, &option.value);
 			option.type = C4V_Type(props->GetPropertyInt(P_Type, C4V_Any));
 			option.option_key = props->GetPropertyStr(P_OptionKey);
+			if (!option.option_key) option.option_key = default_option_key;
 			// Derive storage type from given elements in delegate definition
 			if (option.type != C4V_Any)
 				option.storage_type = Option::StorageByType;
-			else if (option.option_key.Get())
+			else if (option.option_key && option.value.GetType() != C4V_Nil)
 				option.storage_type = Option::StorageByKey;
 			else
 				option.storage_type = Option::StorageByValue;
@@ -532,7 +546,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		{
 			// Showing current selection: From last_val assigned in SetEditorData
 			parameter_val = editor->last_val;
-			if (option.value_key.Get())
+			if (option.value_key)
 			{
 				C4PropList *props = editor->last_val.getPropList();
 				if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
@@ -551,7 +565,9 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		if (editor->parameter_widget)
 		{
 			editor->layout->addWidget(editor->parameter_widget);
-			option.adelegate->SetEditorData(editor->parameter_widget, parameter_val, editor->last_get_path);
+			C4PropertyPath delegate_value_path = editor->last_get_path;
+			if (option.value_key) delegate_value_path = C4PropertyPath(delegate_value_path, option.value_key->GetCStr());
+			option.adelegate->SetEditorData(editor->parameter_widget, parameter_val, delegate_value_path);
 			// Forward editing signals
 			connect(option.adelegate, &C4PropertyDelegate::EditorValueChangedSignal, editor->parameter_widget, [this, editor](QWidget *changed_editor)
 			{
@@ -583,6 +599,7 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 
 void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
 {
+	LogF("SetModelData %s", property_path.GetPath());
 	// Fetch value from editor
 	Editor *editor = static_cast<Editor*>(aeditor);
 	int32_t idx = editor->option_box->currentIndex();
@@ -883,55 +900,39 @@ void C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewIte
 
 /* Delegate factory: Create delegates based on the C4Value type */
 
-C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByString(const C4String *str, C4PropList *props) const
+C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropList *props) const
 {
-	// safety
-	if (!str) return NULL;
-	// create default base types
-	if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
-	if (str->GetData() == "array") return new C4PropertyDelegateArray(this, props);
-	if (str->GetData() == "proplist") return new C4PropertyDelegatePropList(this, props);
-	if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);
-	if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
-	if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
-	if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
-	if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
-	if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
-	if (str->GetData() == "rect" || str->GetData() == "circle") return new C4PropertyDelegateShape(this, props);
-	if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
-	// unknown type
-	return NULL;
-}
-
-C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByValue(const C4Value &val) const
-{
-	switch (val.GetType())
+	if (props)
 	{
-	case C4V_Nil:
-		return new C4PropertyDelegateC4ValueInput(this, NULL);
-	case C4V_Array:
-		return new C4PropertyDelegateEnum(this, NULL, val.getArray());
-	case C4V_PropList:
-	{
-		C4PropList *props = val._getPropList();
-		if (!props) break;
-		return CreateDelegateByString(props->GetPropertyStr(P_Type), props);
+		const C4String *str = props->GetPropertyStr(P_Type);
+		if (str)
+		{
+			// create default base types
+			if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
+			if (str->GetData() == "array") return new C4PropertyDelegateArray(this, props);
+			if (str->GetData() == "proplist") return new C4PropertyDelegatePropList(this, props);
+			if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);
+			if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
+			if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
+			if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
+			if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
+			if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
+			if (str->GetData() == "rect" || str->GetData() == "circle") return new C4PropertyDelegateShape(this, props);
+			if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
+			// unknown type
+			LogF("Invalid delegate type: %s.", str->GetCStr());
+		}
 	}
-	case C4V_String:
-		return CreateDelegateByString(val._getStr(), NULL);
-	default:
-		// Invalid delegte: No editor.
-		break;
-	}
-	return NULL;
+	// Default fallback
+	return new C4PropertyDelegateC4ValueInput(this, props);
 }
 
 C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByValue(const C4Value &val) const
 {
-	auto iter = delegates.find(val);
+	auto iter = delegates.find(val.getPropList());
 	if (iter != delegates.end()) return iter->second.get();
-	C4PropertyDelegate *new_delegate = CreateDelegateByValue(val);
-	delegates.insert(std::make_pair(val, std::unique_ptr<C4PropertyDelegate>(new_delegate)));
+	C4PropertyDelegate *new_delegate = CreateDelegateByPropList(val.getPropList());
+	delegates.insert(std::make_pair(val.getPropList(), std::unique_ptr<C4PropertyDelegate>(new_delegate)));
 	return new_delegate;
 }
 
@@ -1076,6 +1077,7 @@ C4ConsoleQtPropListModel::C4ConsoleQtPropListModel(C4PropertyDelegateFactory *de
 {
 	header_font.setBold(true);
 	connect(this, &C4ConsoleQtPropListModel::ProplistChanged, this, &C4ConsoleQtPropListModel::UpdateSelection, Qt::QueuedConnection);
+	layout_valid = false;
 }
 
 C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
@@ -1087,11 +1089,19 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 	const char *editor_prop_prefix = "EditorProp_";
 	auto new_properties = add_proplist->GetSortedLocalProperties(editor_prop_prefix, target_proplist);
 	if (!new_properties.size()) return false;
-	if (property_groups.size() == group_index) property_groups.resize(group_index + 1);
+	if (property_groups.size() == group_index)
+	{
+		layout_valid = false;
+		property_groups.resize(group_index + 1);
+	}
 	PropertyGroup &properties = property_groups[group_index];
 	C4PropListStatic *proplist_static = add_proplist->IsStatic();
 	properties.name = name;
-	properties.props.resize(new_properties.size());
+	if (properties.props.size() != new_properties.size())
+	{
+		layout_valid = false;
+		properties.props.resize(new_properties.size());
+	}
 	for (int32_t i = 0; i < new_properties.size(); ++i)
 	{
 		Property *prop = &properties.props[i];
@@ -1215,11 +1225,16 @@ void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 		break;
 	}
 	// Update model range
-	property_groups.resize(num_groups);
+	if (num_groups != property_groups.size())
+	{
+		layout_valid = false;
+		property_groups.resize(num_groups);
+	}
 	QModelIndex topLeft = index(0, 0, QModelIndex());
 	QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1, QModelIndex());
 	emit dataChanged(topLeft, bottomRight);
-	emit layoutChanged();
+	if (!layout_valid) emit layoutChanged();
+	layout_valid = true;
 	// Initial selection
 	if (select_default) emit ProplistChanged(default_selection_group, default_selection_index);
 }
@@ -1318,9 +1333,17 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 
 int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, int32_t *default_selection_group, int32_t *default_selection_index)
 {
-	if (property_groups.empty()) property_groups.resize(1);
+	if (property_groups.empty())
+	{
+		layout_valid = false;
+		property_groups.resize(1);
+	}
 	PropertyGroup &properties = property_groups[0];
-	properties.props.resize(target_array->GetSize());
+	if (properties.props.size() != target_array->GetSize())
+	{
+		layout_valid = false;
+		properties.props.resize(target_array->GetSize());
+	}
 	C4PropertyDelegate *item_delegate = delegate_factory->GetDelegateByValue(info_proplist);
 	for (int32_t i = 0; i < properties.props.size(); ++i)
 	{
