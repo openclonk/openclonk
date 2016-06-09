@@ -245,6 +245,16 @@ bool C4ConsoleQtNewScenarioDlg::SaveScenario(C4Group &grp)
 {
 	// Save c4s
 	if (!c4s.Save(grp)) return false;
+	// Save default Objects.c with player start object
+	int32_t mid_x = c4s.Landscape.MapWdt.Std * c4s.Landscape.MapZoom.Std / 2;
+	int32_t mid_y = c4s.Landscape.MapHgt.Std * c4s.Landscape.MapZoom.Std / 2;
+	StdStrBuf objects_file;
+	objects_file.AppendFormat("public func InitializeObjects() {\n\tCreateObjectAbove(PlayerStart, %d, %d);\n}\n", (int)mid_x, (int)mid_y);
+	// grp.Add... does not work for unpacked groups
+	StdStrBuf objects_filename = grp.GetFullName();
+	objects_filename.AppendBackslash();
+	objects_filename.Append(C4CFN_ScenarioObjectsScript);
+	objects_file.SaveToFile(objects_filename.getData());
 	//return grp.Save(false); -- not needed because group is unpacked
 	return true;
 }
