@@ -1,0 +1,7 @@
+IDListEntry=ID list entry
+None=Noone
+All=All players
+Specific=Player number
+Team=Team number
+Entry=%s entry
+PlayerMask=Players

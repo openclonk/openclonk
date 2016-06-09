@@ -1,0 +1,10 @@
+Name=Spielerstart
+Description=Setzt fuer neu beitretende Spieler Position, Clonks, Bauplaene und Material fest.
+Knowledge=Bauplaene
+None=Nichts
+All=Alles
+AllExcept=Alles ausser...
+Specific=Liste...
+Crew=Crew
+StartingMaterial=Startmaterial
+Wealth=Startgold

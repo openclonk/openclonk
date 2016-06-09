@@ -1,0 +1,10 @@
+Name=Player start
+Description=Determines position, construction plans and materials for newly launching players.
+Knowledge=Construction plans
+None=Nothing
+All=Everything
+AllExcept=Everything except...
+Specific=List...
+Crew=Crew
+StartingMaterial=Start material
+Wealth=Start wealth
