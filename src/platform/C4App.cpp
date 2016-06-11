@@ -18,8 +18,31 @@
 #include "platform/C4App.h"
 #include "platform/C4Window.h"
 
+#ifdef WITH_QT_EDITOR
+#include "game/C4Application.h"
+#include "editor/C4ConsoleQt.h"
+#endif
+
 void C4AbstractApp::Run()
 {
+#ifdef WITH_QT_EDITOR
+	if (Application.isEditor)
+	{
+		// Qt has its own event loop. Use a timer to call our own event handling whenever Qt is done
+		// with its events (zero timeout). The alternative (calling Qt's event handling from
+		// C4Console::Execute) is too slow, at least on Linux.
+		QTimer timer;
+		QObject::connect(&timer, &QTimer::timeout, [this]() {
+			ScheduleProcs(0);
+			if (fQuitMsgReceived)
+				QApplication::quit();
+		});
+		timer.start();
+		QApplication::exec();
+		return;
+	}
+#endif
+
 	// Main message loop
 	while (!fQuitMsgReceived)
 		ScheduleProcs();

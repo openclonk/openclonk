@@ -537,31 +537,13 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	HWND hWindow = reinterpret_cast<HWND>(window->winId());
 	RestoreWindowPosition(hWindow, "Main", Config.GetSubkeyPath("Console"));
 #endif
+
 	return true;
 }
 
 void C4ConsoleGUIState::Execute(bool redraw_only)
 {
-	// Avoid recursion in message processing; it's causing random crashes
-	ExecRecursionCheck recursion_check;
-	if (recursion_check.IsRecursion()) return;
-	// Qt window message handling and object cleanup
-	if (application)
-	{
-		if (redraw_only)
-		{
-			// process only non-critical events
-			// redrawing only allowed during GameTick; prevent callbacks within a Qt event triggered by windows messaging
-			if (::Application.IsInGameTick())
-				application->processEvents(QEventLoop::ExcludeUserInputEvents);
-		}
-		else
-		{
-			// process everything
-			application->processEvents();
-			application->sendPostedEvents(0, QEvent::DeferredDelete);
-		}
-	}
+	// Nothing to do - Qt's event loop is handling everything.
 }
 
 // Set action pressed/checked and enabled states
