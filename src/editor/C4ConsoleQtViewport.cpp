@@ -47,6 +47,20 @@ bool C4ConsoleQtViewportView::IsPlayViewport() const
 		&& (::Console.EditCursor.GetMode() == C4CNS_ModePlay));
 }
 
+// On high-DPI screens, Qt's pixels are not equal to device pixels anymore. However, viewports
+// still work with device pixels, so we have to adjust coordinates from Qt events.
+qreal C4ConsoleQtViewportView::GetDevicePixelRatio()
+{
+	// Find the screen the viewport is on to get its pixel ratio.
+	auto desktop = QApplication::desktop();
+	auto screenNumber = desktop->screenNumber(this);
+	// This can happen while moving to a different screen.
+	if (screenNumber == -1)
+		return 1;
+	auto screen = QApplication::screens()[screenNumber];
+	return screen->devicePixelRatio();
+}
+
 // Get Shift state as Win32 wParam
 uint32_t GetShiftWParam()
 {
@@ -60,16 +74,17 @@ uint32_t GetShiftWParam()
 
 void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
 {
+	auto pr = GetDevicePixelRatio();
 	if (IsPlayViewport())
 	{
 		bool is_in_drawrange = (Inside<int32_t>(eventMove->x() - cvp->DrawX, 0, cvp->ViewWdt - 1)
 		                     && Inside<int32_t>(eventMove->y() - cvp->DrawY, 0, cvp->ViewHgt - 1));
 		this->setCursor(is_in_drawrange ? Qt::BlankCursor : Qt::CrossCursor);
-		C4GUI::MouseMove(C4MC_Button_None, eventMove->x(), eventMove->y(), GetShiftWParam(), cvp);
+		C4GUI::MouseMove(C4MC_Button_None, eventMove->x() * pr, eventMove->y() * pr, GetShiftWParam(), cvp);
 	}
 	else
 	{
-		cvp->pWindow->EditCursorMove(eventMove->x(), eventMove->y(), GetShiftWParam());
+		cvp->pWindow->EditCursorMove(eventMove->x() * pr, eventMove->y() * pr, GetShiftWParam());
 		this->setCursor(::Console.EditCursor.GetShapes()->HasDragCursor() ? ::Console.EditCursor.GetShapes()->GetDragCursor() : Qt::CrossCursor);
 	}
 
@@ -77,6 +92,7 @@ void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
 
 void C4ConsoleQtViewportView::mousePressEvent(QMouseEvent *eventPress)
 {
+	auto pr = GetDevicePixelRatio();
 	if (IsPlayViewport())
 	{
 		int32_t btn = C4MC_Button_None;
@@ -85,12 +101,12 @@ void C4ConsoleQtViewportView::mousePressEvent(QMouseEvent *eventPress)
 		case Qt::LeftButton: btn = C4MC_Button_LeftDown; break;
 		case Qt::RightButton: btn = C4MC_Button_RightDown; break;
 		}
-		C4GUI::MouseMove(btn, eventPress->x(), eventPress->y(), GetShiftWParam(), cvp);
+		C4GUI::MouseMove(btn, eventPress->x() * pr, eventPress->y() * pr, GetShiftWParam(), cvp);
 	}
 	else
 	{
 		// movement update needed before, so target is always up-to-date
-		cvp->pWindow->EditCursorMove(eventPress->x(), eventPress->y(), GetShiftWParam());
+		cvp->pWindow->EditCursorMove(eventPress->x() * pr, eventPress->y() * pr, GetShiftWParam());
 		switch (eventPress->button())
 		{
 		case Qt::LeftButton: ::Console.EditCursor.LeftButtonDown(GetShiftWParam()); break;
@@ -109,7 +125,8 @@ void C4ConsoleQtViewportView::mouseDoubleClickEvent(QMouseEvent *eventPress)
 		case Qt::LeftButton: btn = C4MC_Button_LeftDouble; break;
 		case Qt::RightButton: btn = C4MC_Button_RightDouble; break;
 		}
-		C4GUI::MouseMove(btn, eventPress->x(), eventPress->y(), GetShiftWParam(), cvp);
+		auto pr = GetDevicePixelRatio();
+		C4GUI::MouseMove(btn, eventPress->x() * pr, eventPress->y() * pr, GetShiftWParam(), cvp);
 	}
 }
 
@@ -123,7 +140,8 @@ void C4ConsoleQtViewportView::mouseReleaseEvent(QMouseEvent *releaseEvent)
 		case Qt::LeftButton: btn = C4MC_Button_LeftUp; break;
 		case Qt::RightButton: btn = C4MC_Button_RightUp; break;
 		}
-		C4GUI::MouseMove(btn, releaseEvent->x(), releaseEvent->y(), GetShiftWParam(), cvp);
+		auto pr = GetDevicePixelRatio();
+		C4GUI::MouseMove(btn, releaseEvent->x() * pr, releaseEvent->y() * pr, GetShiftWParam(), cvp);
 	}
 	else
 	{
@@ -143,7 +161,8 @@ void C4ConsoleQtViewportView::wheelEvent(QWheelEvent *event)
 		if (!delta) delta = event->delta(); // abs(delta)<8?
 		uint32_t shift = (delta>0) ? (delta<<16) : uint32_t(delta<<16);
 		shift += GetShiftWParam();
-		C4GUI::MouseMove(C4MC_Button_Wheel, event->x(), event->y(), shift, cvp);
+		auto pr = GetDevicePixelRatio();
+		C4GUI::MouseMove(C4MC_Button_Wheel, event->x() * pr, event->y() * pr, shift, cvp);
 	}
 	else
 	{
@@ -293,7 +312,8 @@ void C4ConsoleQtViewportView::initializeGL()
 
 void C4ConsoleQtViewportView::resizeGL(int w, int h)
 {
-	cvp->UpdateOutputSize(w, h);
+	auto pr = GetDevicePixelRatio();
+	cvp->UpdateOutputSize(w * pr, h * pr);
 }
 
 void C4ConsoleQtViewportView::paintGL()

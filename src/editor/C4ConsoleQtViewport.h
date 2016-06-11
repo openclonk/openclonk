@@ -33,6 +33,7 @@ class C4ConsoleQtViewportView : public QOpenGLWidget
 
 private:
 	bool IsPlayViewport() const;
+	qreal GetDevicePixelRatio();
 
 protected:
 	void focusInEvent(QFocusEvent * event) override;
