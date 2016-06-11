@@ -130,6 +130,8 @@ public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Drain) text = "$DescCutDrain$";
 	else if (action == LIBRARY_TANK_Menu_Action_Add_Source) text = "$DescConnectSource$";
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Source) text = "$DescCutSource$";
+	else if (action == LIBRARY_TANK_Menu_Action_Add_Neutral) text = "$DescConnectNeutral$";
+	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral) text = "$DescCutNeutral$";
 	else if (action == LIBRARY_TANK_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
