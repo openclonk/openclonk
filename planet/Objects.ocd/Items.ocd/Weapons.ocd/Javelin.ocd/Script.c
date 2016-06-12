@@ -110,15 +110,15 @@ public func DoThrow(object clonk, int angle)
 	var speed = clonk.ThrowSpeed * shooting_strength + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
 	var jav_x = div * xdir / 100 + Sin(angle, speed);
 	var jav_y = div * ydir / 100 - Cos(angle, speed);
-		
-	javelin->SetXDir(jav_x, 1000);
-	javelin->SetYDir(jav_y, 1000);
-	javelin->SetPosition(javelin->GetX(),javelin->GetY()+6);
 	
 	SetController(clonk->GetController());
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
-	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);
-	
+	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);	
+		
+	javelin->SetXDir(jav_x, 1000);
+	javelin->SetYDir(jav_y, 1000);
+	javelin->SetPosition(clonk->GetX(), clonk->GetY() - 6);
+		
 	Sound("Objects::Weapons::Javelin::Throw?");
 	
 	aiming = -1;
@@ -193,30 +193,42 @@ func Entrance()
 	SetVertex(2,VTX_Y,0,1);
 }
 
-protected func FxFlightStart(object pTarget, effect)
+protected func FxFlightStart(object target, effect fx, int temp)
 {
-	pTarget->SetProperty("Collectible",0);
-	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
+	if (temp)
+		return FX_OK;
+	target.Collectible = false;
+	target->SetR(Angle(0,0,target->GetXDir(),target->GetYDir()));
+	target->SetVertex(1, VTX_Y, 0, 1);
+	return FX_OK;
 }
 
-protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
+protected func FxFlightTimer(object target, effect fx, int time)
 {
-	//Using Newton's arrow rotation. This would be much easier if we had tan^-1 :(
-	var oldx = effect.x;
-	var oldy = effect.y;
+	//Using Newton's arrow rotation. This would be much easier if we had arctan :(
+	var oldx = fx.x;
+	var oldy = fx.y;
 	var newx = GetX();
 	var newy = GetY();
 
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
-	pTarget->SetRDir(anglediff/2);
-	effect.x = newx;
-	effect.y = newy;
-	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
+	target->SetRDir(anglediff/2);
+	fx.x = newx;
+	fx.y = newy;
+	target->SetR(Angle(0,0,target->GetXDir(),target->GetYDir()));
+	
+	if (time == 10)
+		target->SetVertex(1, VTX_Y, 13, 1);
+	return FX_OK;
 }
 
-protected func FxFlightStop(object pTarget, effect)
+protected func FxFlightStop(object target, effect fx, int reason, bool temp)
 {
-	pTarget->SetProperty("Collectible", 1);
+	if (temp)
+		return FX_OK;	
+	target.Collectible = true;
+	target->SetVertex(1, VTX_Y, 13, 1);
+	return FX_OK;
 }
 
 public func IsWeapon() { return true; }
