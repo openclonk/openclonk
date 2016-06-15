@@ -174,6 +174,27 @@ public:
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
 };
 
+// A combo box that can select from a model with nested elements
+// On click, descend into child elements
+class C4DeepQComboBox : public QComboBox
+{
+	Q_OBJECT
+
+	bool descending, item_clicked;
+
+public:
+	C4DeepQComboBox(QWidget *parent);
+
+	void showPopup() override;
+	void hidePopup() override;
+
+	void setCurrentModelIndex(QModelIndex new_index);
+
+protected:
+	// event filter for view: Catch mouse clicks to descend into children
+	bool eventFilter(QObject *obj, QEvent *event) override;
+};
+
 // Widget holder class
 class C4PropertyDelegateEnumEditor : public QWidget
 {
@@ -182,7 +203,7 @@ class C4PropertyDelegateEnumEditor : public QWidget
 public:
 	C4Value last_val;
 	C4PropertyPath last_get_path;
-	QComboBox *option_box;
+	C4DeepQComboBox *option_box;
 	QHBoxLayout *layout;
 	QWidget *parameter_widget;
 	bool updating, option_changed;
@@ -202,6 +223,7 @@ public:
 	{
 	public:
 		C4RefCntPointer<C4String> name; // Display name in Editor enum dropdown box
+		C4RefCntPointer<C4String> group; // Grouping in enum dropdown box; nested groups separated by '/'
 		C4RefCntPointer<C4String> option_key;
 		C4RefCntPointer<C4String> value_key;
 		C4V_Type type; // Assume this option is set when value is of given type
@@ -218,11 +240,13 @@ public:
 
 		Option() : type(C4V_Any), adelegate(NULL), storage_type(StorageNone) {}
 	};
+
 private:
 	std::vector<Option> options;
 
 protected:
 	void ReserveOptions(int32_t num);
+	QStandardItemModel *CreateOptionModel() const;
 public:
 	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=NULL);
 
@@ -236,6 +260,7 @@ public:
 	const class C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const override; // Forward to parameter of selected option
 
 private:
+	QModelIndex GetModelIndexByID(QStandardItemModel *model, QStandardItem *parent_item, int32_t id, const QModelIndex &parent) const;
 	int32_t GetOptionByValue(const C4Value &val) const;
 	void UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor, bool by_selection) const;
 	void EnsureOptionDelegateResolved(const Option &option) const;

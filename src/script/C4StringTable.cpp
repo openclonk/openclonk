@@ -269,6 +269,7 @@ C4StringTable::C4StringTable()
 	P[P_Display] = "Display";
 	P[P_DefaultValue] = "DefaultValue";
 	P[P_DefinitionPriority] = "DefinitionPriority";
+	P[P_Group] = "Group";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

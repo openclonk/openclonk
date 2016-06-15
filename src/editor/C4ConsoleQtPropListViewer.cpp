@@ -241,10 +241,11 @@ C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(Q
 	palette.setColor(label->foregroundRole(), palette.color(QPalette::HighlightedText));
 	palette.setColor(label->backgroundRole(), palette.color(QPalette::Highlight));
 	label->setPalette(palette);
-	setPalette(palette);
 	layout->addWidget(label);
 	button = new QPushButton(QString(LoadResStr("IDS_CNS_MORE")), this);
 	layout->addWidget(button);
+	// Make sure to draw over view in background
+	setPalette(palette);
 	setAutoFillBackground(true);
 }
 
@@ -421,6 +422,75 @@ QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, cl
 	return static_cast<uint32_t>(val.getInt()) & 0xffffff;
 }
 
+C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
+	: QComboBox(parent), descending(false), item_clicked(false)
+{
+	QTreeView *view = new QTreeView(this);
+	view->setFrameShape(QFrame::NoFrame);
+	view->setSelectionBehavior(QTreeView::SelectRows);
+	view->setAllColumnsShowFocus(true);
+	view->header()->hide();
+	setView(view);
+	view->viewport()->installEventFilter(this);
+}
+
+void C4DeepQComboBox::showPopup()
+{
+	// New selection: Reset to root of model
+	setRootModelIndex(QModelIndex());
+	QComboBox::showPopup();
+	view()->setMinimumWidth(200); // prevent element list from becoming too small in nested dialogues
+}
+
+void C4DeepQComboBox::hidePopup()
+{
+	QModelIndex current = view()->currentIndex();
+	setRootModelIndex(current.parent());
+	setCurrentIndex(current.row());
+	QVariant selected_data = model()->data(current, Qt::UserRole + 1);
+	if (item_clicked && selected_data.type() != QVariant::Int)
+	{
+		if (descending)
+		{
+			QTreeView *tview = static_cast<QTreeView *>(view());
+			bool expand = !tview->isExpanded(current);
+			tview->setExpanded(current, expand);
+			// Put all child elements into view if possible
+			if (expand)
+			{
+				int32_t child_row_count = model()->rowCount(current);
+				tview->scrollTo(model()->index(child_row_count - 1, 0, current), QAbstractItemView::EnsureVisible);
+				tview->scrollTo(current, QAbstractItemView::EnsureVisible);
+			}
+		}
+	}
+	else
+	{
+		// Otherwise, finish selection
+		QComboBox::hidePopup();
+	}
+	descending = item_clicked = false;
+}
+
+void C4DeepQComboBox::setCurrentModelIndex(QModelIndex new_index)
+{
+	setRootModelIndex(new_index.parent());
+	setCurrentIndex(new_index.row());
+}
+
+// event filter for view: Catch mouse clicks to descend into children
+bool C4DeepQComboBox::eventFilter(QObject *obj, QEvent *event)
+{
+	if (obj == view()->viewport() && event->type() == QEvent::MouseButtonPress)
+	{
+		QPoint pos = static_cast<QMouseEvent *>(event)->pos();
+		QModelIndex pressed_index = view()->indexAt(pos);
+		item_clicked = pressed_index.isValid();
+		descending = view()->visualRect(pressed_index).contains(pos);
+	}
+	return false;
+}
+
 C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions)
 	: C4PropertyDelegate(factory, props)
 {
@@ -443,6 +513,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			Option option;
 			option.name = props->GetPropertyStr(P_Name);
 			if (!option.name.Get()) option.name = ::Strings.RegString("???");
+			option.group = props->GetPropertyStr(P_Group);
 			option.value_key = props->GetPropertyStr(P_ValueKey);
 			if (!option.value_key) option.value_key = default_value_key;
 			props->GetProperty(P_Value, &option.value);
@@ -461,6 +532,44 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			options.push_back(option);
 		}
 	}
+}
+
+QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
+{
+	// Create a QStandardItemModel tree from all options and their groups
+	std::unique_ptr<QStandardItemModel> model(new QStandardItemModel());
+	model->setColumnCount(1);
+	int idx = 0;
+	for (const Option &opt : options)
+	{
+		QStandardItem *parent = model->invisibleRootItem();
+		if (opt.group)
+		{
+			QStringList group_names = QString(opt.group->GetCStr()).split(QString("/"));
+			for (const QString &group_name : group_names)
+			{
+				int row_index = -1;
+				for (int check_row_index = 0; check_row_index < parent->rowCount(); ++check_row_index)
+					if (parent->child(check_row_index, 0)->text() == group_name)
+					{
+						row_index = check_row_index;
+						parent = parent->child(check_row_index, 0);
+						break;
+					}
+				if (row_index < 0)
+				{
+					QStandardItem *new_group = new QStandardItem(group_name);
+					parent->appendRow(new_group);
+					parent = new_group;
+				}
+			}
+		}
+		QStandardItem *new_item = new QStandardItem(QString(opt.name->GetCStr()));
+		new_item->setData(QVariant(idx), Qt::UserRole + 1);
+		parent->appendRow(new_item);
+		++idx;
+	}
+	return model.release();
 }
 
 void C4PropertyDelegateEnum::ReserveOptions(int32_t num)
@@ -583,6 +692,23 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 	}
 }
 
+QModelIndex C4PropertyDelegateEnum::GetModelIndexByID(QStandardItemModel *model, QStandardItem *parent_item, int32_t id, const QModelIndex &parent) const
+{
+	// Resolve data stored in model to model index in tree
+	for (int row = 0; row < parent_item->rowCount(); ++row)
+	{
+		QStandardItem *child = parent_item->child(row, 0);
+		QVariant v = child->data(Qt::UserRole + 1);
+		if (v.type() == QVariant::Int && v.toInt() == id) return model->index(row, 0, parent);
+		if (child->rowCount())
+		{
+			QModelIndex child_match = GetModelIndexByID(model, child, id, model->index(row, 0, parent));
+			if (child_match.isValid()) return child_match;
+		}
+	}
+	return QModelIndex();
+}
+
 void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor*>(aeditor);
@@ -591,7 +717,8 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 	editor->updating = true;
 	// Update option selection
 	int32_t index = std::max<int32_t>(GetOptionByValue(val), 0);
-	editor->option_box->setCurrentIndex(index);
+	QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
+	editor->option_box->setCurrentModelIndex(GetModelIndexByID(model, model->invisibleRootItem(), index, QModelIndex()));
 	// Update parameter
 	UpdateEditorParameter(editor, false);
 	editor->updating = false;
@@ -599,10 +726,13 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 
 void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
 {
-	LogF("SetModelData %s", property_path.GetPath());
 	// Fetch value from editor
 	Editor *editor = static_cast<Editor*>(aeditor);
-	int32_t idx = editor->option_box->currentIndex();
+	QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
+	QModelIndex selected_model_index = model->index(editor->option_box->currentIndex(), 0, editor->option_box->rootModelIndex());
+	QVariant vidx = model->data(selected_model_index, Qt::UserRole + 1);
+	if (vidx.type() != QVariant::Int) return;
+	int32_t idx = vidx.toInt();
 	if (idx < 0 || idx >= options.size()) return;
 	const Option &option = options[idx];
 	// Store directly in value or in a proplist field?
@@ -638,13 +768,14 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->layout->setMargin(0);
 	editor->layout->setSpacing(0);
 	editor->updating = true;
-	editor->option_box = new QComboBox(editor);
+	editor->option_box = new C4DeepQComboBox(editor);
 	editor->layout->addWidget(editor->option_box);
 	for (auto &option : options) editor->option_box->addItem(option.name->GetCStr());
 	void (QComboBox::*currentIndexChanged)(int) = &QComboBox::currentIndexChanged;
 	connect(editor->option_box, currentIndexChanged, editor, [editor, this](int newval) {
 		if (!editor->updating) this->UpdateOptionIndex(editor, newval); });
 	editor->updating = false;
+	editor->option_box->setModel(CreateOptionModel());
 	return editor;
 }
 
