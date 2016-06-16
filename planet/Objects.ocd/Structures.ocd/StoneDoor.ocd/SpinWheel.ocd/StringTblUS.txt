@@ -1,2 +1,3 @@
 Name=Spin Wheel
 Description=Open and close connected castle door with [Up] and [Down] respectively.
+Target=Target

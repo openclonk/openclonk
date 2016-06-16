@@ -158,6 +158,8 @@ public func GetFloorOffset()
 	return y_off;
 }
 
+public func IsSwitchTarget() { return true; }
+
 local ActMap = {
 	Door = {
 		Prototype = Action,
