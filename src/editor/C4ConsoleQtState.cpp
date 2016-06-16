@@ -516,6 +516,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.objectListView->setModel(object_list_model.get());
 	window->connect(ui.objectListView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnObjectListSelectionChanged);
 	definition_list_model.reset(new C4ConsoleQtDefinitionListModel());
+	property_delegate_factory->SetDefinitionListModel(definition_list_model.get());
 	ui.creatorTreeView->setModel(definition_list_model.get());
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);

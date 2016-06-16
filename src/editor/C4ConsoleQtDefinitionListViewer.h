@@ -60,9 +60,10 @@ public:
 	void SetSelection(C4Def *new_selection);
 	
 	class C4Def *GetDefByModelIndex(const QModelIndex &idx);
+	const char *GetNameByModelIndex(const QModelIndex &idx);
 	QModelIndex GetModelIndexByItem(class C4Def *def) const;
 
-protected:
+public:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;
 	int columnCount(const QModelIndex & parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;

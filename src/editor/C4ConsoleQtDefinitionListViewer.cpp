@@ -131,6 +131,12 @@ class C4Def *C4ConsoleQtDefinitionListModel::GetDefByModelIndex(const QModelInde
 	if (node) return node->def; else return NULL;
 }
 
+const char *C4ConsoleQtDefinitionListModel::GetNameByModelIndex(const QModelIndex &idx)
+{
+	DefListNode *node = static_cast<DefListNode *>(idx.internalPointer());
+	if (node) return node->name.getData(); else return nullptr;
+}
+
 int C4ConsoleQtDefinitionListModel::rowCount(const QModelIndex & parent) const
 {
 	int result = 0;

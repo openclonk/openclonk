@@ -17,6 +17,7 @@
 #include "C4Include.h"
 #include "script/C4Value.h"
 #include "editor/C4ConsoleQtPropListViewer.h"
+#include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4Console.h"
 #include "object/C4Object.h"
@@ -588,10 +589,11 @@ void C4PropertyDelegateEnum::AddTypeOption(C4String *name, C4V_Type type, const 
 	options.push_back(option);
 }
 
-void C4PropertyDelegateEnum::AddConstOption(C4String *name, const C4Value &val)
+void C4PropertyDelegateEnum::AddConstOption(C4String *name, const C4Value &val, C4String *group)
 {
 	Option option;
 	option.name = name;
+	option.group = group;
 	option.value = val;
 	option.storage_type = Option::StorageByValue;
 	options.push_back(option);
@@ -845,17 +847,45 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 	: C4PropertyDelegateEnum(factory, props)
 {
 	// Collect sorted definitions
-	std::vector<C4Def *> defs = ::Definitions.GetAllDefs(props ? props->GetPropertyStr(P_Filter) : NULL);
-	std::sort(defs.begin(), defs.end(), [](C4Def *a, C4Def *b) -> bool {
-		return strcmp(a->GetName(), b->GetName()) < 0;
-	});
-	// Add them
-	ReserveOptions(defs.size() + 1);
-	AddConstOption(::Strings.RegString("nil"), C4VNull); // nil is always an option
-	for (C4Def *def : defs)
+	C4String *filter_property = props ? props->GetPropertyStr(P_Filter) : nullptr;
+	if (filter_property)
 	{
-		C4RefCntPointer<C4String> option_name = ::Strings.RegString(FormatString("%s (%s)", def->id.ToString(), def->GetName()));
-		AddConstOption(option_name, C4Value(def));
+		// With filter just create a flat list
+		std::vector<C4Def *> defs = ::Definitions.GetAllDefs(filter_property);
+		std::sort(defs.begin(), defs.end(), [](C4Def *a, C4Def *b) -> bool {
+			return strcmp(a->GetName(), b->GetName()) < 0;
+		});
+		// Add them
+		ReserveOptions(defs.size() + 1);
+		AddConstOption(::Strings.RegString("nil"), C4VNull); // nil is always an option
+		for (C4Def *def : defs)
+		{
+			C4RefCntPointer<C4String> option_name = ::Strings.RegString(FormatString("%s (%s)", def->id.ToString(), def->GetName()));
+			AddConstOption(option_name, C4Value(def), nullptr);
+		}
+	}
+	else
+	{
+		// Without filter copy tree from definition list model
+		C4ConsoleQtDefinitionListModel *def_list_model = factory->GetDefinitionListModel();
+		// Recursively add all defs from model
+		AddDefinitions(def_list_model, QModelIndex(), nullptr);
+	}
+}
+
+void C4PropertyDelegateDef::AddDefinitions(C4ConsoleQtDefinitionListModel *def_list_model, QModelIndex parent, C4String *group)
+{
+	int32_t count = def_list_model->rowCount(parent);
+	for (int32_t i = 0; i < count; ++i)
+	{
+		QModelIndex index = def_list_model->index(i, 0, parent);
+		C4Def *def = def_list_model->GetDefByModelIndex(index);
+		C4RefCntPointer<C4String> name = ::Strings.RegString(def_list_model->GetNameByModelIndex(index));
+		if (def) AddConstOption(name.Get(), C4Value(def), group);
+		if (def_list_model->rowCount(index))
+		{
+			AddDefinitions(def_list_model, index, group ? ::Strings.RegString(FormatString("%s/%s", group->GetCStr(), name->GetCStr()).getData()) : name.Get());
+		}
 	}
 }
 

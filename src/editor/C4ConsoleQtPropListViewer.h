@@ -251,7 +251,7 @@ public:
 	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=NULL);
 
 	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=NULL);
-	void AddConstOption(C4String *name, const C4Value &val);
+	void AddConstOption(C4String *name, const C4Value &val, C4String *group=nullptr);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
@@ -274,6 +274,9 @@ class C4PropertyDelegateDef : public C4PropertyDelegateEnum
 {
 public:
 	C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props);
+
+private:
+	void AddDefinitions(class C4ConsoleQtDefinitionListModel *def_list_model, QModelIndex parent, C4String *group);
 };
 
 // true or false
@@ -356,6 +359,7 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 	mutable C4PropertyDelegate *current_editor_delegate;
 	mutable C4Value last_edited_value;
 	class C4ConsoleQtPropListModel *property_model;
+	class C4ConsoleQtDefinitionListModel *def_list_model;
 
 	C4PropertyDelegate *CreateDelegateByPropList(C4PropList *props) const;
 	C4PropertyDelegate *GetDelegateByIndex(const QModelIndex &index) const;
@@ -368,6 +372,8 @@ public:
 	void ClearDelegates();
 	void SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModelProperty *editor_prop) const;
 	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
+	void SetDefinitionListModel(class C4ConsoleQtDefinitionListModel *new_def_list_model) { def_list_model = new_def_list_model; }
+	class C4ConsoleQtDefinitionListModel *GetDefinitionListModel() const { return def_list_model; }
 	class C4ConsoleQtPropListModel *GetPropertyModel() const { return property_model; }
 	void OnPropListChanged();
 	bool CheckCurrentEditor(C4PropertyDelegate *d, QWidget *editor) const;
