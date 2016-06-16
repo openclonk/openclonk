@@ -181,6 +181,7 @@ class C4DeepQComboBox : public QComboBox
 	Q_OBJECT
 
 	bool descending, item_clicked;
+	int last_popup_height;
 
 public:
 	C4DeepQComboBox(QWidget *parent);

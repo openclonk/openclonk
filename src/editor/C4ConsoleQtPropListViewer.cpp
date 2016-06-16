@@ -424,13 +424,30 @@ QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, cl
 }
 
 C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
-	: QComboBox(parent), descending(false), item_clicked(false)
+	: QComboBox(parent), descending(false), item_clicked(false), last_popup_height(0)
 {
 	QTreeView *view = new QTreeView(this);
 	view->setFrameShape(QFrame::NoFrame);
 	view->setSelectionBehavior(QTreeView::SelectRows);
 	view->setAllColumnsShowFocus(true);
 	view->header()->hide();
+	// On expansion, enlarge view if necessery
+	connect(view, &QTreeView::expanded, this, [this, view](const QModelIndex &index)
+	{
+		if (this->model() && view->parentWidget())
+		{
+			int child_row_count = this->model()->rowCount(index);
+			if (child_row_count > 0)
+			{
+				// Get space to contain expanded leaf+1 item
+				QModelIndex last_index = this->model()->index(child_row_count - 1, 0, index);
+				int needed_height = view->visualRect(last_index).bottom() - view->visualRect(index).top() + view->height() - view->parentWidget()->height() + view->visualRect(last_index).height();
+				int available_height = QApplication::desktop()->availableGeometry(view->mapToGlobal(QPoint(1, 1))).height(); // but do not expand past screen size
+				int new_height = std::min(needed_height, available_height - 20);
+				if (view->parentWidget()->height() < new_height) view->parentWidget()->resize(view->parentWidget()->width(), (this->last_popup_height=new_height));
+			}
+		}
+	});
 	setView(view);
 	view->viewport()->installEventFilter(this);
 }
@@ -441,24 +458,23 @@ void C4DeepQComboBox::showPopup()
 	setRootModelIndex(QModelIndex());
 	QComboBox::showPopup();
 	view()->setMinimumWidth(200); // prevent element list from becoming too small in nested dialogues
+	if (last_popup_height && view()->parentWidget()) view()->parentWidget()->resize(view()->parentWidget()->width(), last_popup_height);
 }
 
 void C4DeepQComboBox::hidePopup()
 {
 	QModelIndex current = view()->currentIndex();
-	setRootModelIndex(current.parent());
-	setCurrentIndex(current.row());
 	QVariant selected_data = model()->data(current, Qt::UserRole + 1);
-	if (item_clicked && selected_data.type() != QVariant::Int)
+	if (item_clicked && (selected_data.type() != QVariant::Int || !descending))
 	{
+		// Clicked somewhere into the list box: Avoid closing to allow navigation in the tree
 		if (descending)
 		{
+			// Clicked an item text in the tree: Shortcut to opening that tree
 			QTreeView *tview = static_cast<QTreeView *>(view());
-			bool expand = !tview->isExpanded(current);
-			tview->setExpanded(current, expand);
-			// Put all child elements into view if possible
-			if (expand)
+			if (!tview->isExpanded(current))
 			{
+				tview->setExpanded(current, true);
 				int32_t child_row_count = model()->rowCount(current);
 				tview->scrollTo(model()->index(child_row_count - 1, 0, current), QAbstractItemView::EnsureVisible);
 				tview->scrollTo(current, QAbstractItemView::EnsureVisible);
@@ -468,6 +484,8 @@ void C4DeepQComboBox::hidePopup()
 	else
 	{
 		// Otherwise, finish selection
+		setRootModelIndex(current.parent());
+		setCurrentIndex(current.row());
 		QComboBox::hidePopup();
 	}
 	descending = item_clicked = false;
@@ -479,14 +497,14 @@ void C4DeepQComboBox::setCurrentModelIndex(QModelIndex new_index)
 	setCurrentIndex(new_index.row());
 }
 
-// event filter for view: Catch mouse clicks to descend into children
+// event filter for view: Catch mouse clicks to prevent closing from simple mouse clicks
 bool C4DeepQComboBox::eventFilter(QObject *obj, QEvent *event)
 {
 	if (obj == view()->viewport() && event->type() == QEvent::MouseButtonPress)
 	{
 		QPoint pos = static_cast<QMouseEvent *>(event)->pos();
 		QModelIndex pressed_index = view()->indexAt(pos);
-		item_clicked = pressed_index.isValid();
+		item_clicked = true;
 		descending = view()->visualRect(pressed_index).contains(pos);
 	}
 	return false;
@@ -866,6 +884,7 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 	}
 	else
 	{
+		AddConstOption(::Strings.RegString("nil"), C4VNull); // nil is always an option
 		// Without filter copy tree from definition list model
 		C4ConsoleQtDefinitionListModel *def_list_model = factory->GetDefinitionListModel();
 		// Recursively add all defs from model
