@@ -1294,3 +1294,12 @@ void C4EditCursor::DoContextObjCommand(C4Object * obj, const char *cmd)
 	if (!obj || !cmd) return;
 	In(FormatString("Object(%d)->%s", obj->Number, cmd).getData());
 }
+
+bool C4EditCursor::GetCurrentSelectionPosition(int32_t *x, int32_t *y)
+{
+	C4Object *obj = selection.GetObject();
+	if (!obj || !obj->Status) return false;
+	*x = obj->GetX();
+	*y = obj->GetY();
+	return true;
+}

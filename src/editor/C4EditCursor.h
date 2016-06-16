@@ -156,6 +156,7 @@ public:
 	void InvalidateSelection() { selection_invalid = true; }
 	void ValidateSelection() { selection_invalid = false; }
 	bool IsSelectionInvalidated() const { return selection_invalid; }
+	bool GetCurrentSelectionPosition(int32_t *x, int32_t *y); // return center of first selected object
 };
 
 #endif

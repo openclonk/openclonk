@@ -21,6 +21,7 @@
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4Console.h"
 #include "object/C4Object.h"
+#include "object/C4GameObjects.h"
 #include "object/C4DefList.h"
 #include "object/C4Def.h"
 #include "script/C4Effect.h"
@@ -634,6 +635,11 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 	return model.release();
 }
 
+void C4PropertyDelegateEnum::ClearOptions()
+{
+	options.clear();
+}
+
 void C4PropertyDelegateEnum::ReserveOptions(int32_t num)
 {
 	options.reserve(num);
@@ -951,6 +957,85 @@ void C4PropertyDelegateDef::AddDefinitions(C4ConsoleQtDefinitionListModel *def_l
 	}
 }
 
+C4PropertyDelegateObject::C4PropertyDelegateObject(const C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateEnum(factory, props), max_nearby_objects(20)
+{
+	// Settings
+	if (props)
+	{
+		filter = props->GetPropertyStr(P_Filter);
+	}
+	// Actual object list is created/updated when the editor is created
+}
+
+C4RefCntPointer<C4String> C4PropertyDelegateObject::GetObjectEntryString(C4Object *obj) const
+{
+	// Compose object display string from containment(*), name, position (@x,y) and object number (#n)
+	return ::Strings.RegString(FormatString("%s%s @%d,%d (#%d)", obj->Contained ? "*" : "", obj->GetName(), (int)obj->GetX(), (int)obj->GetY(), (int)obj->Number));
+}
+
+void C4PropertyDelegateObject::UpdateObjectList()
+{
+	// Re-create object list from current position
+	ClearOptions();
+	// Get matching objects first
+	std::vector<C4Object *> objects;
+	for (C4Object *obj : ::Objects) if (obj->Status)
+	{
+		C4Value filter_val;
+		if (filter)
+		{
+			if (!obj->GetPropertyByS(filter, &filter_val)) continue;
+			if (!filter_val) continue;
+		}
+		objects.push_back(obj);
+	}
+	// Get list sorted by distance from selected object
+	std::vector<C4Object *> objects_by_distance;
+	int32_t cx=0, cy=0;
+	if (::Console.EditCursor.GetCurrentSelectionPosition(&cx, &cy))
+	{
+		objects_by_distance = objects;
+		auto ObjDist = [cx, cy](C4Object *o) { return (o->GetX() - cx)*(o->GetX() - cx) + (o->GetY() - cy)*(o->GetY() - cy); };
+		std::stable_sort(objects_by_distance.begin(), objects_by_distance.end(), [&ObjDist](C4Object *a, C4Object *b) { return ObjDist(a) < ObjDist(b); });
+	}
+	size_t num_nearby = objects_by_distance.size();
+	bool has_all_objects_list = (num_nearby > max_nearby_objects);
+	if (has_all_objects_list) num_nearby = max_nearby_objects;
+	// Add actual objects
+	ReserveOptions(1 + num_nearby + !!num_nearby + (has_all_objects_list ? objects.size() : 0));
+	AddConstOption(::Strings.RegString("nil"), C4VNull); // nil is always an option
+	if (num_nearby)
+	{
+		// TODO: "Select object" entry
+		//AddCallbackOption(LoadResStr("IDS_CNS_SELECTOBJECT"));
+		// Nearby list
+		C4RefCntPointer<C4String> nearby_group;
+		// If there are main objects, Create a subgroup. Otherwise, just put all elements into the main group.
+		if (has_all_objects_list) nearby_group = ::Strings.RegString(LoadResStr("IDS_CNS_NEARBYOBJECTS"));
+		for (int32_t i = 0; i < num_nearby; ++i)
+		{
+			C4Object *obj = objects_by_distance[i];
+			AddConstOption(GetObjectEntryString(obj).Get(), C4VObj(obj), nearby_group.Get());
+		}
+		// All objects
+		if (has_all_objects_list)
+		{
+			C4RefCntPointer<C4String> all_group = ::Strings.RegString(LoadResStr("IDS_CNS_ALLOBJECTS"));
+			for (C4Object *obj : objects) AddConstOption(GetObjectEntryString(obj).Get(), C4VObj(obj), all_group.Get());
+		}
+	}
+}
+
+QWidget *C4PropertyDelegateObject::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+{
+	// Update object list for created editor
+	// (This should be safe since the object delegate cannot contain nested delegates)
+	const_cast<C4PropertyDelegateObject *>(this)->UpdateObjectList();
+	return C4PropertyDelegateEnum::CreateEditor(parent_delegate, parent, option, by_selection);
+}
+
+
 C4PropertyDelegateBool::C4PropertyDelegateBool(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
@@ -1137,6 +1222,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 			if (str->GetData() == "proplist") return new C4PropertyDelegatePropList(this, props);
 			if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);
 			if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
+			if (str->GetData() == "object") return new C4PropertyDelegateObject(this, props);
 			if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
 			if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
 			if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);

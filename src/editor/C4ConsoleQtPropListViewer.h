@@ -266,6 +266,7 @@ private:
 	std::vector<Option> options;
 
 protected:
+	void ClearOptions();
 	void ReserveOptions(int32_t num);
 	QStandardItemModel *CreateOptionModel() const;
 public:
@@ -298,6 +299,21 @@ public:
 
 private:
 	void AddDefinitions(class C4ConsoleQtDefinitionListModel *def_list_model, QModelIndex parent, C4String *group);
+};
+
+// Select an object
+class C4PropertyDelegateObject : public C4PropertyDelegateEnum
+{
+private:
+	C4RefCntPointer<C4String> filter;
+	size_t max_nearby_objects; // maximum number of objects shown in "nearby" list
+
+	C4RefCntPointer<C4String> GetObjectEntryString(C4Object *obj) const;
+	void UpdateObjectList();
+public:
+	C4PropertyDelegateObject(const C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 };
 
 // true or false
