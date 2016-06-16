@@ -530,6 +530,9 @@
        <property name="indentation">
         <number>9</number>
        </property>
+       <property name="allColumnsShowFocus">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
