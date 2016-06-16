@@ -8,6 +8,7 @@ public func Construction() { RemoveObject(); }
 // Basic properties of all objects
 local EditorProp_Invincibility = { Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" };
 local EditorProp_PlayerColor = { Type = "color", AsyncGet = "GetColor", Set = "SetColor" };
+local EditorProp_Name = { Type = "string", AsyncGet = "GetName", Set = "SetName" };
 local Plane = 1;
 
 local DefinitionPriority=100; // Call this definition early to allow EditorProp initialization
