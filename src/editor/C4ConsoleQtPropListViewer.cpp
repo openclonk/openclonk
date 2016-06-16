@@ -492,6 +492,13 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
 			}
 		}
 	});
+	// On selection, highlight object in editor
+	view->setMouseTracking(true);
+	connect(view, &QTreeView::entered, this, [this](const QModelIndex &index)
+	{
+		::Console.EditCursor.SetHighlightedObject(static_cast<C4Object *>(this->model()->data(index, ObjectHighlightRole).value<void *>()));
+	});
+	// Connect view to combobox
 	setView(view);
 	view->viewport()->installEventFilter(this);
 }
@@ -508,7 +515,7 @@ void C4DeepQComboBox::showPopup()
 void C4DeepQComboBox::hidePopup()
 {
 	QModelIndex current = view()->currentIndex();
-	QVariant selected_data = model()->data(current, Qt::UserRole + 1);
+	QVariant selected_data = model()->data(current, OptionIndexRole);
 	if (item_clicked && (selected_data.type() != QVariant::Int || !descending))
 	{
 		// Clicked somewhere into the list box: Avoid closing to allow navigation in the tree
@@ -530,6 +537,7 @@ void C4DeepQComboBox::hidePopup()
 		// Otherwise, finish selection
 		setRootModelIndex(current.parent());
 		setCurrentIndex(current.row());
+		::Console.EditCursor.SetHighlightedObject(nullptr);
 		QComboBox::hidePopup();
 	}
 	descending = item_clicked = false;
@@ -628,7 +636,9 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 			}
 		}
 		QStandardItem *new_item = new QStandardItem(QString(opt.name->GetCStr()));
-		new_item->setData(QVariant(idx), Qt::UserRole + 1);
+		new_item->setData(QVariant(idx), C4DeepQComboBox::OptionIndexRole);
+		void *item_obj_data = opt.value.getObj();
+		new_item->setData(qVariantFromValue(item_obj_data), C4DeepQComboBox::ObjectHighlightRole);
 		parent->appendRow(new_item);
 		++idx;
 	}
@@ -767,7 +777,7 @@ QModelIndex C4PropertyDelegateEnum::GetModelIndexByID(QStandardItemModel *model,
 	for (int row = 0; row < parent_item->rowCount(); ++row)
 	{
 		QStandardItem *child = parent_item->child(row, 0);
-		QVariant v = child->data(Qt::UserRole + 1);
+		QVariant v = child->data(C4DeepQComboBox::OptionIndexRole);
 		if (v.type() == QVariant::Int && v.toInt() == id) return model->index(row, 0, parent);
 		if (child->rowCount())
 		{
@@ -799,7 +809,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	Editor *editor = static_cast<Editor*>(aeditor);
 	QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
 	QModelIndex selected_model_index = model->index(editor->option_box->currentIndex(), 0, editor->option_box->rootModelIndex());
-	QVariant vidx = model->data(selected_model_index, Qt::UserRole + 1);
+	QVariant vidx = model->data(selected_model_index, C4DeepQComboBox::OptionIndexRole);
 	if (vidx.type() != QVariant::Int) return;
 	int32_t idx = vidx.toInt();
 	if (idx < 0 || idx >= options.size()) return;
@@ -1330,6 +1340,7 @@ void C4PropertyDelegateFactory::destroyEditor(QWidget *editor, const QModelIndex
 	{
 		current_editor = nullptr;
 		current_editor_delegate = nullptr;
+		::Console.EditCursor.SetHighlightedObject(nullptr);
 	}
 	QStyledItemDelegate::destroyEditor(editor, index);
 }

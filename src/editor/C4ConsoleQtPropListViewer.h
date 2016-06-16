@@ -204,6 +204,12 @@ class C4DeepQComboBox : public QComboBox
 	int last_popup_height;
 
 public:
+	enum
+	{
+		OptionIndexRole = Qt::UserRole + 1,
+		ObjectHighlightRole = Qt::UserRole + 2,
+	};
+
 	C4DeepQComboBox(QWidget *parent);
 
 	void showPopup() override;

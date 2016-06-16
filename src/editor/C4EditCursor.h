@@ -59,6 +59,7 @@ protected:
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine,DragShape;
 	C4Object *Target,*DropTarget;
+	C4Value highlighted_object;
 	class C4Def *creator_def;
 	std::unique_ptr<C4GraphicsOverlay> creator_overlay;
 	struct ObjselItemDt {
@@ -130,7 +131,8 @@ protected:
 	void ApplyToolRect();
 	void ApplyToolLine();
 	void ApplyToolBrush();
-	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r, float width);
+	void DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight);
+	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r, float width, uint32_t color = 0xffffffff);
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);
@@ -157,6 +159,7 @@ public:
 	void ValidateSelection() { selection_invalid = false; }
 	bool IsSelectionInvalidated() const { return selection_invalid; }
 	bool GetCurrentSelectionPosition(int32_t *x, int32_t *y); // return center of first selected object
+	void SetHighlightedObject(C4Object *new_highlight);
 };
 
 #endif

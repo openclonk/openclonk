@@ -610,6 +610,45 @@ bool C4EditCursor::Duplicate()
 	return true;
 }
 
+void C4EditCursor::DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight)
+{
+	// target pos (parallax)
+	float line_width = std::max<float>(1.0f, 1.0f / cgo.Zoom);
+	float offX, offY, newzoom;
+	cobj->GetDrawPosition(cgo, offX, offY, newzoom);
+	ZoomDataStackItem zdsi(cgo.X, cgo.Y, newzoom);
+	if (select_mark_color)
+	{
+		FLOAT_RECT frame =
+		{
+			offX + cobj->Shape.x,
+			offX + cobj->Shape.x + cobj->Shape.Wdt,
+			offY + cobj->Shape.y,
+			offY + cobj->Shape.y + cobj->Shape.Hgt
+		};
+		DrawSelectMark(cgo, frame, line_width, select_mark_color);
+	}
+	if (highlight)
+	{
+		uint32_t dwOldMod = cobj->ColorMod;
+		uint32_t dwOldBlitMode = cobj->BlitMode;
+		cobj->ColorMod = 0xffffffff;
+		cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
+
+		if (cobj->pMeshInstance)
+			cobj->pMeshInstance->SetFaceOrdering(StdSubMeshInstance::FO_NearestToFarthest);
+
+		cobj->Draw(cgo, -1);
+		cobj->DrawTopFace(cgo, -1);
+
+		if (cobj->pMeshInstance)
+			cobj->pMeshInstance->SetFaceOrderingForClrModulation(cobj->ColorMod);
+
+		cobj->ColorMod = dwOldMod;
+		cobj->BlitMode = dwOldBlitMode;
+	}
+}
+
 void C4EditCursor::Draw(C4TargetFacet &cgo)
 {
 	ZoomDataStackItem zdsi(cgo.X, cgo.Y, cgo.Zoom);
@@ -623,38 +662,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	{
 		C4Object *cobj = obj.getObj();
 		if (!cobj) continue;
-		// target pos (parallax)
-		float offX, offY, newzoom;
-		cobj->GetDrawPosition(cgo, offX, offY, newzoom);
-		ZoomDataStackItem zdsi(cgo.X, cgo.Y, newzoom);
-		FLOAT_RECT frame =
-		{
-			offX+cobj->Shape.x,
-			offX+cobj->Shape.x + cobj->Shape.Wdt,
-			offY+cobj->Shape.y,
-			offY+cobj->Shape.y + cobj->Shape.Hgt
-		};
-		DrawSelectMark(cgo, frame, line_width);
-		// highlight selection if shift is pressed
-		if (fShiftWasDown)
-		{
-			uint32_t dwOldMod = cobj->ColorMod;
-			uint32_t dwOldBlitMode = cobj->BlitMode;
-			cobj->ColorMod = 0xffffffff;
-			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
-
-			if(cobj->pMeshInstance)
-				cobj->pMeshInstance->SetFaceOrdering(StdSubMeshInstance::FO_NearestToFarthest);
-
-			cobj->Draw(cgo,-1);
-			cobj->DrawTopFace(cgo, -1);
-
-			if(cobj->pMeshInstance)
-				cobj->pMeshInstance->SetFaceOrderingForClrModulation(cobj->ColorMod);
-
-			cobj->ColorMod = dwOldMod;
-			cobj->BlitMode = dwOldBlitMode;
-		}
+		DrawObject(cgo, cobj, 0xffffffff, fShiftWasDown); // highlight selection if shift is pressed
 	}
 	// Draw drag frame
 	if (DragFrame)
@@ -692,10 +700,13 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 		}
 		creator_overlay->Draw(cgo_creator, NULL, NO_OWNER);
 	}
+	// Draw object highlight
+	C4Object *highlight = highlighted_object.getObj();
+	if (highlight) DrawObject(cgo, highlight, 0xffff8000, true); // highlight selection if shift is pressed
 }
 
 
-void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width)
+void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width, uint32_t color)
 {
 	if ((cgo.Wdt<1) || (cgo.Hgt<1)) return;
 
@@ -703,26 +714,28 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width)
 
 	const float EDGE_WIDTH = 2.f;
 
+	unsigned char c[4] = { (color >> 16) & 0xff, (color >> 8) & 0xff , (color >> 0) & 0xff , (color >> 24) & 0xff };
+
 	const C4BltVertex vertices[] = {
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left+EDGE_WIDTH, frame.top, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.top, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.top, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.top+EDGE_WIDTH, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left + EDGE_WIDTH, frame.top, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left, frame.top, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left, frame.top, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left, frame.top+EDGE_WIDTH, 0.f },
 
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left+EDGE_WIDTH, frame.bottom-1, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.bottom-1, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.bottom-1, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.bottom-1-EDGE_WIDTH, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left+EDGE_WIDTH, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left, frame.bottom-1-EDGE_WIDTH, 0.f },
 
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1-EDGE_WIDTH, frame.top, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.top, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.top, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.top+EDGE_WIDTH, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1-EDGE_WIDTH, frame.top, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1, frame.top, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1, frame.top, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1, frame.top+EDGE_WIDTH, 0.f },
 
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1-EDGE_WIDTH, frame.bottom-1, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.bottom-1, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.bottom-1, 0.f },
-		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.bottom-1-EDGE_WIDTH, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1-EDGE_WIDTH, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.right-1, frame.bottom-1-EDGE_WIDTH, 0.f },
 	};
 
 	const unsigned int n_vertices = sizeof(vertices) / sizeof(vertices[0]);
@@ -1302,4 +1315,9 @@ bool C4EditCursor::GetCurrentSelectionPosition(int32_t *x, int32_t *y)
 	*x = obj->GetX();
 	*y = obj->GetY();
 	return true;
+}
+
+void C4EditCursor::SetHighlightedObject(C4Object *new_highlight)
+{
+	highlighted_object = C4VObj(new_highlight);
 }
