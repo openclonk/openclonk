@@ -196,7 +196,6 @@ C4PropertyPath C4PropertyDelegate::GetPathForProperty(C4ConsoleQtPropListModelPr
 C4PropertyDelegateInt::C4PropertyDelegateInt(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props), min(std::numeric_limits<int32_t>::min()), max(std::numeric_limits<int32_t>::max()), step(1)
 {
-	// TODO min/max/step
 	if (props)
 	{
 		min = props->GetPropertyInt(P_Min, min);
@@ -228,6 +227,50 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 		emit EditingDoneSignal(editor);
 	});
 	return editor;
+}
+
+C4PropertyDelegateString::C4PropertyDelegateString(const C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegate(factory, props)
+{
+}
+
+void C4PropertyDelegateString::SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const
+{
+	Editor *line_edit = static_cast<Editor*>(editor);
+	C4String *s = val.getStr();
+	line_edit->setText(QString(s ? s->GetCStr() : ""));
+}
+
+void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPath &property_path) const
+{
+	Editor *line_edit = static_cast<Editor*>(editor);
+	// Only set model data when pressing Enter explicitely; not just when leaving 
+	if (line_edit->commit_pending)
+	{
+		QString new_value = line_edit->text();
+		// TODO: Would be better to handle escaping in the C4Value-to-string code
+		new_value = new_value.replace("\\", "\\\\").replace("\"", "\\\"");
+		property_path.SetProperty(C4VString(new_value.toUtf8()));
+		line_edit->commit_pending = false;
+	}
+}
+
+QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+{
+	Editor *editor = new Editor(parent);
+	// EditingDone only on Return; not just when leaving edit field
+	connect(editor, &QLineEdit::returnPressed, editor, [this, editor]() {
+		editor->commit_pending = true;
+		emit EditingDoneSignal(editor);
+	});
+	return editor;
+}
+
+QString C4PropertyDelegateString::GetDisplayString(const C4Value &v, C4Object *obj) const
+{
+	// Raw string without ""
+	C4String *s = v.getStr();
+	return QString(s ? s->GetCStr() : "");
 }
 
 C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(QWidget *parent)
@@ -1089,6 +1132,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 		{
 			// create default base types
 			if (str->GetData() == "int") return new C4PropertyDelegateInt(this, props);
+			if (str->GetData() == "string") return new C4PropertyDelegateString(this, props);
 			if (str->GetData() == "array") return new C4PropertyDelegateArray(this, props);
 			if (str->GetData() == "proplist") return new C4PropertyDelegatePropList(this, props);
 			if (str->GetData() == "color") return new C4PropertyDelegateColor(this, props);

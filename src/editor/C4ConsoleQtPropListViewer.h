@@ -108,6 +108,26 @@ public:
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 };
 
+class C4PropertyDelegateStringEditor : public QLineEdit
+{
+public:
+	C4PropertyDelegateStringEditor(QWidget *parent) : QLineEdit(parent), commit_pending(false) {}
+	bool commit_pending;
+};
+
+class C4PropertyDelegateString : public C4PropertyDelegate
+{
+public:
+	typedef C4PropertyDelegateStringEditor Editor;
+
+	C4PropertyDelegateString(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+};
+
 // Editor: Text displaying value plus a button that opens an extended editor
 class C4PropertyDelegateLabelAndButtonWidget : public QWidget
 {
