@@ -149,3 +149,8 @@ func SaveScenarioObject(props)
 	if (team) props->AddCall("Team", this, "SetTeam", team);
 	return true;
 }
+
+
+/* Editor props */
+
+local EditorProp_spawn_id = { Type="def", Filter="Collectible", Set="SetSpawnObject" };
