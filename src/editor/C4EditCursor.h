@@ -56,8 +56,9 @@ protected:
 	bool has_mouse_hover;
 	bool selection_invalid; // if true, the property list should be updated on next execution
 	int32_t Mode;
-	float X,Y,X2,Y2;
-	bool Hold,DragFrame,DragLine,DragShape;
+	float X,Y,X2,Y2,Zoom;
+	bool Hold,DragFrame,DragLine,DragShape,DragTransform;
+	int32_t DragRot0, DragCon0, DragRotLast, DragConLast;
 	C4Object *Target,*DropTarget;
 	C4Value highlighted_object;
 	class C4Def *creator_def;
@@ -108,7 +109,7 @@ public:
 	bool RightButtonDown(DWORD dwKeyState);
 	bool KeyDown(C4KeyCode KeyCode, DWORD dwKeyState);
 	bool KeyUp(C4KeyCode KeyCode, DWORD dwKeyState);
-	bool Move(float iX, float iY, DWORD dwKeyState);
+	bool Move(float iX, float iY, float zoom, DWORD dwKeyState);
 	bool Init();
 	bool EditingOK(bool for_landscape_drawing=false);
 	C4EditCursorSelection &GetSelection() { return selection; }
@@ -118,6 +119,8 @@ public:
 	bool AltUp();
 	void SetMouseHover(bool h) { has_mouse_hover = h; }
 	class C4ConsoleQtShapes *GetShapes() const { return shapes.get(); }
+	bool HasTransformCursor() const { return DragTransform || IsHoveringTransformMarker(); }
+	bool IsHoveringTransformMarker() const;
 protected:
 	void UpdateStatusBar();
 	void ApplyCreateObject(bool contained);
@@ -131,8 +134,9 @@ protected:
 	void ApplyToolRect();
 	void ApplyToolLine();
 	void ApplyToolBrush();
-	void DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight);
+	void DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight, bool draw_transform_marker);
 	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r, float width, uint32_t color = 0xffffffff);
+	bool HasTransformMarker(float *x, float *y, float zoom) const;
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);

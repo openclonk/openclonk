@@ -1369,6 +1369,17 @@ void C4ControlEMMoveObject::Execute() const
 		if (container && obj && container->Status && obj->Status) obj->Enter(container);
 	}
 	break;
+	case EMMO_Transform:
+	{
+		C4Object *pTarget = ::Objects.SafeObjectPointer(iTargetObj);
+		if (pTarget)
+		{
+			int32_t new_rot = fixtoi(this->tx, 1);
+			int32_t new_con = fixtoi(this->ty, FullCon/100);
+			if (pTarget->Def->Rotateable) pTarget->SetRotation(new_rot);
+			if (pTarget->Def->GrowthType) pTarget->DoCon(new_con - pTarget->GetCon(), false);
+		}
+	}
 	}
 	// update property dlg & status bar
 	if (fLocalCall && eAction != eAction)

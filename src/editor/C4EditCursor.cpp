@@ -201,7 +201,7 @@ void C4EditCursor::ClearPointers(C4Object *pObj)
 		OnSelectionChanged();
 }
 
-bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
+bool C4EditCursor::Move(float iX, float iY, float iZoom, DWORD dwKeyState)
 {
 	// alt check
 	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
@@ -220,17 +220,48 @@ bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 
 	// Offset movement
 	float xoff = iX-X; float yoff = iY-Y;
-	X=iX; Y=iY;
+	X = iX; Y = iY; Zoom = iZoom;
+
+	// Drag rotation/scale of object
+	if (DragTransform)
+	{
+		C4Object *obj = selection.GetObject();
+		if (obj)
+		{
+			int32_t new_rot = (DragRot0 + int32_t(float(X - X2)*Zoom)) % 360;
+			if (new_rot < 0) new_rot += 360;
+			if (fShiftIsDown) new_rot = (new_rot + 23) / 45 * 45;
+			int32_t new_con = DragCon0 + int32_t(float(Y2 - Y)*Zoom*(FullCon / 200));
+			int32_t con_step = FullCon / 5;
+			if (fShiftIsDown) new_con = (new_con + con_step/2) / con_step * con_step;
+			if (!obj->Def->Oversize) new_con = std::min<int32_t>(new_con, FullCon);
+			new_con = std::max<int32_t>(new_con, fShiftIsDown ? 1 : con_step);
+			bool any_change = false;
+			if (obj->Def->Rotateable)
+				if (new_rot != DragRotLast)
+					any_change = true;
+			if (obj->Def->GrowthType)
+				if (new_con != DragConLast)
+					any_change = true;
+			if (any_change)
+			{
+				EMMoveObject(EMMO_Transform, itofix(new_rot, 1), itofix(new_con, FullCon/100), obj, nullptr);
+				DragRotLast = new_rot;
+				DragConLast = new_con;
+			}
+		}
+		
+	}
 
 	switch (Mode)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
 #ifdef WITH_QT_EDITOR
-		shapes->MouseMove(X, Y, Hold, 3.0f /* TODO: Depend on zoom */);
+		shapes->MouseMove(X, Y, Hold, 3.0f/Zoom);
 #endif
 		// Hold
-		if (!DragFrame && Hold && !DragShape)
+		if (!DragFrame && Hold && !DragShape && !DragTransform)
 		{
 			MoveSelection(ftofix(xoff),ftofix(yoff));
 			UpdateDropTarget(dwKeyState);
@@ -369,12 +400,22 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 		{
 			// Click on shape?
 #ifdef WITH_QT_EDITOR
-			if (shapes->MouseDown(X, Y, 3.0f /* TODO: Depend on zoom */))
+			if (shapes->MouseDown(X, Y, 3.0f/Zoom))
 			{
 				DragShape = true;
 				break;
 			}
 #endif
+			// Click rotate/scale marker?
+			if (IsHoveringTransformMarker())
+			{
+				DragTransform = true;
+				X2 = X; Y2 = Y;
+				C4Object *dragged_obj = selection.GetObject();
+				DragRot0 = DragRotLast = dragged_obj->GetR();
+				DragCon0 = DragConLast = dragged_obj->GetCon();
+				break;
+			}
 			// Click on unselected: select single
 			if (Target)
 			{
@@ -496,6 +537,7 @@ bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 	DragFrame=false;
 	DragLine=false;
 	DragShape = false;
+	DragTransform = false;
 	DropTarget=NULL;
 	// Update
 	UpdateStatusBar();
@@ -610,7 +652,7 @@ bool C4EditCursor::Duplicate()
 	return true;
 }
 
-void C4EditCursor::DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight)
+void C4EditCursor::DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight, bool draw_transform_marker)
 {
 	// target pos (parallax)
 	float line_width = std::max<float>(1.0f, 1.0f / cgo.Zoom);
@@ -647,6 +689,45 @@ void C4EditCursor::DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t selec
 		cobj->ColorMod = dwOldMod;
 		cobj->BlitMode = dwOldBlitMode;
 	}
+	// Transformer knob
+	if (draw_transform_marker)
+	{
+		float transform_marker_x = 0.0f, transform_marker_y = 0.0f;
+		if (HasTransformMarker(&transform_marker_x, &transform_marker_y, cgo.Zoom))
+		{
+			transform_marker_x += offX; transform_marker_y += offY;
+			float sz = float(::GraphicsResource.fctTransformKnob.Hgt) / cgo.Zoom;
+			C4Facet transform_target_sfc(cgo.Surface, transform_marker_x-sz/2, transform_marker_y-sz/2, sz, sz);
+			::GraphicsResource.fctTransformKnob.Draw(transform_target_sfc);
+			// Transform knob while dragging
+			if (DragTransform)
+			{
+				pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+				transform_target_sfc.X += X - X2;
+				transform_target_sfc.Y += Y - Y2;
+				::GraphicsResource.fctTransformKnob.Draw(transform_target_sfc);
+				pDraw->ResetBlitMode();
+			}
+		}
+	}
+}
+
+bool C4EditCursor::HasTransformMarker(float *x, float *y, float zoom) const
+{
+	// Single selection only (assume obj is in selection)
+	if (selection.size() != 1) return false;
+	C4Object *obj = selection.GetObject();
+	if (!obj) return false;
+	// Show knob only for objects that can be scaled or rotated
+	if (!obj->Def->GrowthType && !obj->Def->Rotateable) return false;
+	// Show knob only if the shape has a certain minimum size in either extent (so small objects can still be moved)
+	float vis_wdt = float(obj->Shape.Wdt) * zoom;
+	float vis_hgt = float(obj->Shape.Wdt) * zoom;
+	if (vis_wdt < ::GraphicsResource.fctTransformKnob.Hgt && vis_hgt < ::GraphicsResource.fctTransformKnob.Hgt) return false;
+	// It's visible: Put it to the bottom of the shape without the shape expansion through rotation
+	*x = 0;
+	*y = float(obj->Def->Shape.y + obj->Def->Shape.Hgt) * obj->GetCon() / FullCon - float(::GraphicsResource.fctTransformKnob.Hgt) / (zoom*2);
+	return true;
 }
 
 void C4EditCursor::Draw(C4TargetFacet &cgo)
@@ -662,7 +743,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	{
 		C4Object *cobj = obj.getObj();
 		if (!cobj) continue;
-		DrawObject(cgo, cobj, 0xffffffff, fShiftWasDown); // highlight selection if shift is pressed
+		DrawObject(cgo, cobj, 0xffffffff, fShiftWasDown, true); // highlight selection if shift is pressed
 	}
 	// Draw drag frame
 	if (DragFrame)
@@ -702,7 +783,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	}
 	// Draw object highlight
 	C4Object *highlight = highlighted_object.getObj();
-	if (highlight) DrawObject(cgo, highlight, 0xffff8000, true); // highlight selection if shift is pressed
+	if (highlight) DrawObject(cgo, highlight, 0xffff8000, true, false); // highlight selection if shift is pressed
 }
 
 
@@ -782,12 +863,13 @@ void C4EditCursor::Default()
 #ifdef USE_WIN32_WINDOWS
 	hMenu=NULL;
 #endif
-	Hold=DragFrame=DragLine=DragShape=false;
+	Hold=DragFrame=DragLine=DragShape=DragTransform=false;
 	selection.clear();
 	creator_def = NULL;
 	creator_overlay = NULL;
 	has_mouse_hover = false;
 	selection_invalid = false;
+	DragRot0 = DragRotLast = 0; DragCon0 = DragConLast = FullCon;
 }
 
 void C4EditCursor::Clear()
@@ -1320,4 +1402,18 @@ bool C4EditCursor::GetCurrentSelectionPosition(int32_t *x, int32_t *y)
 void C4EditCursor::SetHighlightedObject(C4Object *new_highlight)
 {
 	highlighted_object = C4VObj(new_highlight);
+}
+
+bool C4EditCursor::IsHoveringTransformMarker() const
+{
+	float trf_marker_x, trf_marker_y;
+	if (HasTransformMarker(&trf_marker_x, &trf_marker_y, Zoom))
+	{
+		C4Object *obj = selection.GetObject();
+		float dx = (float(X - obj->GetX()) - trf_marker_x) * Zoom;
+		float dy = (float(Y - obj->GetY()) - trf_marker_y) * Zoom;
+		if (dx*dx + dy*dy <= ::GraphicsResource.fctTransformKnob.Hgt * ::GraphicsResource.fctTransformKnob.Hgt / 4)
+			return true;
+	}
+	return false;
 }

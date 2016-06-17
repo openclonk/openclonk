@@ -229,7 +229,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		switch (button)
 		{
 		case C4MC_Button_LeftDown:
-			Console.EditCursor.Move(viewport->GetViewX()+x/viewport->GetZoom(), viewport->GetViewY()+y/viewport->GetZoom(), flags);
+			Console.EditCursor.Move(viewport->GetViewX()+x/viewport->GetZoom(), viewport->GetViewY()+y/viewport->GetZoom(), viewport->GetZoom(), flags);
 			Console.EditCursor.LeftButtonDown(flags);
 			break;
 		case C4MC_Button_LeftUp:

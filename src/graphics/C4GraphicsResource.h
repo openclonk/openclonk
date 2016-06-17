@@ -75,6 +75,7 @@ public:
 	C4Facet fctCommand;
 	C4Facet fctKey;
 	C4Facet fctOKCancel;
+	C4FacetID fctTransformKnob;
 	C4FacetID fctCrewClr; // ColorByOwner-surface of fctCrew
 	C4FacetID fctFlagClr; // ColorByOwner-surface of fctFlag
 	C4FacetID fctPlayerClr; // ColorByOwner-surface of fctPlayer

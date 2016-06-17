@@ -85,7 +85,14 @@ void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
 	else
 	{
 		cvp->pWindow->EditCursorMove(eventMove->x() * pr, eventMove->y() * pr, GetShiftWParam());
-		this->setCursor(::Console.EditCursor.GetShapes()->HasDragCursor() ? ::Console.EditCursor.GetShapes()->GetDragCursor() : Qt::CrossCursor);
+		Qt::CursorShape cursor;
+		if (::Console.EditCursor.HasTransformCursor())
+			cursor = Qt::SizeAllCursor;
+		else if (::Console.EditCursor.GetShapes()->HasDragCursor())
+			cursor = ::Console.EditCursor.GetShapes()->GetDragCursor();
+		else
+			cursor = Qt::CrossCursor;
+		this->setCursor(cursor);
 	}
 
 }

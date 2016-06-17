@@ -85,6 +85,8 @@ void C4GraphicsResource::Default()
 	fctOKCancel.Default();
 	fctMouse.Default();
 
+	fctTransformKnob.Default();
+
 	iNumRanks=1;
 	idRegisteredMainGroupSetFiles=-1;
 }
@@ -123,6 +125,7 @@ void C4GraphicsResource::Clear()
 	fctHand.Clear();
 	fctGamepad.Clear();
 	fctBuild.Clear();
+	fctTransformKnob.Clear();
 	// GUI data
 	sfcCaption.Clear(); sfcButton.Clear(); sfcButtonD.Clear(); sfcScroll.Clear(); sfcContext.Clear();
 	idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
@@ -135,6 +138,7 @@ void C4GraphicsResource::Clear()
 	fctBigArrows.Clear();
 	fctProgressBar.Clear();
 	fctContext.Default();
+
 
 	// unhook deflist from font
 	FontRegular.SetCustomImages(NULL);
@@ -265,6 +269,7 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctHand,        "Hand",         Files, C4FCT_Height, C4FCT_Full, false, 0))             return false;
 	if (!LoadFile(fctGamepad,     "Gamepad",      Files, 80,           C4FCT_Full, false, 0))             return false;
 	if (!LoadFile(fctBuild,       "Build",        Files, C4FCT_Full,   C4FCT_Full, false, 0))             return false;
+	if (!LoadFile(fctTransformKnob,"TransformKnob",Files,C4FCT_Full,   C4FCT_Full, false, 0))             return false;
 
 	// achievements
 	if (!Achievements.Init(Files)) return false;
