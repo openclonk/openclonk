@@ -108,7 +108,7 @@ void C4ConsoleGUI::Out(const char* message)
 	if (state->window.get())
 	{
 		// Append text
-		state->ui.logView->insertPlainText(QString(message) + "\n");
+		state->ui.logView->append(QString(message));
 		// Scroll to end to display it
 		QScrollBar *sb = state->ui.logView->verticalScrollBar();
 		if (sb) sb->setValue(sb->maximum());
