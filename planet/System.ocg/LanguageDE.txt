@@ -356,6 +356,7 @@ IDS_DLG_SELALL=Alles markieren
 IDS_DLG_SOUND=Sound
 IDS_DLG_STARTGAME=&Spiel starten
 IDS_DLG_STATIC=Statische Landschaft
+IDS_DLG_STATICFLAT=Statische Landschaft mit geraden Kanten
 IDS_DLG_TOOLS=Landschaftswerkzeuge
 IDS_DLG_VERSION=Version %s
 IDS_DLG_VOTING=Abstimmung

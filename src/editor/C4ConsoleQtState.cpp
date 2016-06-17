@@ -236,7 +236,7 @@ void C4ConsoleQtMainWindow::CursorPickerPressed(bool down)
 void C4ConsoleQtMainWindow::DynamicLandscapePressed(bool down)
 {
 	if (down)
-		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Dynamic);
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Dynamic, false);
 	else // cannot un-check by pressing again
 		state->ui.actionDynamicLandscape->setChecked(true);
 }
@@ -244,15 +244,23 @@ void C4ConsoleQtMainWindow::DynamicLandscapePressed(bool down)
 void C4ConsoleQtMainWindow::StaticLandscapePressed(bool down)
 {
 	if (down)
-		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static);
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static, false);
 	else // cannot un-check by pressing again
 		state->ui.actionStaticLandscape->setChecked(true);
+}
+
+void C4ConsoleQtMainWindow::StaticFlatLandscapePressed(bool down)
+{
+	if (down)
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static, true);
+	else // cannot un-check by pressing again
+		state->ui.actionStaticFlatLandscape->setChecked(true);
 }
 
 void C4ConsoleQtMainWindow::ExactLandscapePressed(bool down)
 {
 	if (down)
-		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Exact);
+		::Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Exact, false);
 	else // cannot un-check by pressing again
 		state->ui.actionExactLandscape->setChecked(true);
 }
@@ -417,7 +425,7 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 /* Common C4ConsoleGUI interface */
 
 C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(NULL),
-		enabled(false), recording(false), net_enabled(false), landscape_mode(LandscapeMode::Dynamic),
+		enabled(false), recording(false), net_enabled(false), landscape_mode(LandscapeMode::Dynamic), flat_chunk_shapes(false),
 	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0)
 {
 }
@@ -573,6 +581,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionCursorFill->setEnabled(has_exact_draw_tools);
 	ui.actionDynamicLandscape->setEnabled(enabled);
 	ui.actionStaticLandscape->setEnabled(enabled);
+	ui.actionStaticFlatLandscape->setEnabled(enabled);
 	ui.actionExactLandscape->setEnabled(enabled);
 	ui.foregroundMatTexComboBox->setEnabled(is_drawing);
 	ui.backgroundMatTexComboBox->setEnabled(is_drawing);
@@ -598,7 +607,8 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionCursorFill->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Fill));
 	ui.actionCursorPicker->setChecked((editcursor_mode == C4CNS_ModeDraw) && (drawing_tool == C4TLS_Picker));
 	ui.actionDynamicLandscape->setChecked(landscape_mode == LandscapeMode::Dynamic);
-	ui.actionStaticLandscape->setChecked(landscape_mode == LandscapeMode::Static);
+	ui.actionStaticLandscape->setChecked(landscape_mode == LandscapeMode::Static && !flat_chunk_shapes);
+	ui.actionStaticFlatLandscape->setChecked(landscape_mode == LandscapeMode::Static && flat_chunk_shapes);
 	ui.actionExactLandscape->setChecked(landscape_mode == LandscapeMode::Exact);
 	ui.actionFileRecord->setChecked(recording);
 }

@@ -640,6 +640,7 @@
    <addaction name="actionCursorPicker"/>
    <addaction name="separator"/>
    <addaction name="actionDynamicLandscape"/>
+   <addaction name="actionStaticFlatLandscape"/>
    <addaction name="actionStaticLandscape"/>
    <addaction name="actionExactLandscape"/>
    <addaction name="separator"/>
@@ -950,6 +951,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionStaticFlatLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/StaticFlat_Trans.png</normaloff>:/editor/res/StaticFlat_Trans.png</iconset>
+   </property>
+   <property name="text">
+    <string>MAP_STATICFLAT</string>
+   </property>
+   <property name="toolTip">
+    <string>MAP_STATICFLAT_TIP</string>
    </property>
   </action>
  </widget>
@@ -1501,6 +1517,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionStaticFlatLandscape</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>StaticFlatLandscapePressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1536,5 +1568,6 @@
   <slot>AscendPropertyPath()</slot>
   <slot>AddArrayElement()</slot>
   <slot>RemoveArrayElement()</slot>
+  <slot>StaticFlatLandscapePressed(bool)</slot>
  </slots>
 </ui>

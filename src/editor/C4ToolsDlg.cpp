@@ -177,9 +177,10 @@ bool C4ToolsDlg::ChangeGrade(int32_t iChange)
 	return true;
 }
 
-bool C4ToolsDlg::SetLandscapeMode(LandscapeMode mode, bool fThroughControl)
+bool C4ToolsDlg::SetLandscapeMode(LandscapeMode mode, bool flat_chunk_shapes, bool fThroughControl)
 {
 	auto last_mode = ::Landscape.GetMode();
+	auto last_flat_chunk_shapes = ::Game.C4S.Landscape.FlatChunkShapes;
 	// Exact to static: confirm data loss warning
 	if (last_mode == LandscapeMode::Exact)
 		if (mode == LandscapeMode::Static)
@@ -189,13 +190,14 @@ bool C4ToolsDlg::SetLandscapeMode(LandscapeMode mode, bool fThroughControl)
 	// send as control
 	if (!fThroughControl)
 	{
-		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, mode), CDT_Decide);
+		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, mode, flat_chunk_shapes ? 1 : 0), CDT_Decide);
 		return true;
 	}
 	// Set landscape mode
+	::Game.C4S.Landscape.FlatChunkShapes = flat_chunk_shapes;
 	::Landscape.SetMode(mode);
 	// Exact to static: redraw landscape from map
-	if (last_mode == LandscapeMode::Exact)
+	if (last_mode == LandscapeMode::Exact || (last_flat_chunk_shapes != flat_chunk_shapes))
 		if (mode == LandscapeMode::Static)
 			::Landscape.MapToLandscape();
 	// Assert valid tool

@@ -1589,17 +1589,17 @@ void C4ConsoleGUI::State::OnNetClient(GtkWidget* item, gpointer data)
 
 void C4ToolsDlg::State::OnButtonModeDynamic(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Dynamic);
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Dynamic, false);
 }
 
 void C4ToolsDlg::State::OnButtonModeStatic(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Static);
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Static, false);
 }
 
 void C4ToolsDlg::State::OnButtonModeExact(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Exact);
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetLandscapeMode(LandscapeMode::Exact, false);
 }
 
 void C4ToolsDlg::State::OnButtonBrush(GtkWidget* widget, gpointer data)

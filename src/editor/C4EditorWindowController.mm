@@ -160,7 +160,7 @@ int indexFromSender(id sender)
 - (IBAction) selectLandscapeMode:(id)sender
 {
 	// add one since 0 is "undefined"
-	Console.ToolsDlg.SetLandscapeMode((LandscapeMode)([sender selectedSegment]+1), NO);
+	Console.ToolsDlg.SetLandscapeMode((LandscapeMode)([sender selectedSegment]+1), NO, NO);
 }
 
 - (IBAction) setGrade:(id)sender

@@ -72,7 +72,7 @@ public:
 	bool SetGrade(int32_t iGrade);
 	bool SetTool(int32_t iTool, bool fTemp);
 	bool ToggleTool() { return !!SetTool((Tool+1)%4, false); }
-	bool SetLandscapeMode(LandscapeMode iMode, bool fThroughControl=false);
+	bool SetLandscapeMode(LandscapeMode iMode, bool flat_chunk_shapes, bool fThroughControl=false);
 	bool SetIFT(bool fIFT);
 	bool ToggleIFT() { return !!SetIFT(!ModeIFT); }
 	bool SelectTexture(const char *szTexture, bool by_console_gui=false);

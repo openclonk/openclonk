@@ -235,7 +235,7 @@ void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
 	if (!Active) return;
 	state->SetEnabled(fEnable);
-	state->SetLandscapeMode(::Landscape.GetMode()); // initial setting
+	state->SetLandscapeMode(::Landscape.GetMode(), ::Game.C4S.Landscape.FlatChunkShapes); // initial setting
 }
 
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
@@ -396,7 +396,7 @@ void C4ToolsDlg::UpdateIFTControls() { /* not using IFT */ }
 void C4ToolsDlg::UpdateLandscapeModeCtrls()
 {
 	// Update button down states for landscape mode
-	if (::Console.Active) ::Console.state->SetLandscapeMode(::Landscape.GetMode());
+	if (::Console.Active) ::Console.state->SetLandscapeMode(::Landscape.GetMode(), ::Game.C4S.Landscape.FlatChunkShapes);
 }
 
 

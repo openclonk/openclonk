@@ -631,15 +631,15 @@ INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONMODEDYNAMIC:
-			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Dynamic);
+			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Dynamic, false);
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONMODESTATIC:
-			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static);
+			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Static, false);
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONMODEEXACT:
-			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Exact);
+			Console.ToolsDlg.SetLandscapeMode(LandscapeMode::Exact, false);
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONBRUSH:

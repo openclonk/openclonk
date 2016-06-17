@@ -104,6 +104,7 @@ public slots:
 	void CursorPickerPressed(bool down);
 	void DynamicLandscapePressed(bool down);
 	void StaticLandscapePressed(bool down);
+	void StaticFlatLandscapePressed(bool down);
 	void ExactLandscapePressed(bool down);
 	void DrawSizeChanged(int newval);
 	// File menu
@@ -170,6 +171,7 @@ public:
 	// If other C4Console implementations are removed, the state could be merged and these members removed.
 	bool enabled, recording, net_enabled;
 	LandscapeMode landscape_mode;
+	bool flat_chunk_shapes;
 	int32_t editcursor_mode, drawing_tool;
 	StdCopyStrBuf material, texture, back_material, back_texture;
 
@@ -188,7 +190,7 @@ public:
 	void UpdateBackMatTex();
 	// Set modes and tools
 	void SetEnabled(bool to_enabled) { enabled = to_enabled; UpdateActionStates(); if (enabled) ReInitDefinitions(); }
-	void SetLandscapeMode(LandscapeMode to_landscape_mode) { landscape_mode = to_landscape_mode; UpdateActionStates(); }
+	void SetLandscapeMode(LandscapeMode to_landscape_mode, bool to_flat_chunk_shapes) { landscape_mode = to_landscape_mode; flat_chunk_shapes = to_flat_chunk_shapes; UpdateActionStates(); }
 	void SetEditCursorMode(int32_t to_editcursor_mode) { editcursor_mode = to_editcursor_mode; UpdateActionStates(); }
 	void SetDrawingTool(int32_t to_drawing_tool) { drawing_tool = to_drawing_tool; UpdateActionStates(); }
 	void SetMaterial(const char *new_material) { material.Copy(new_material); UpdateMatTex(); }

@@ -1419,7 +1419,7 @@ void C4ControlEMDrawTool::Execute() const
 	// set new mode
 	if (eAction == EMDT_SetMode)
 	{
-		Console.ToolsDlg.SetLandscapeMode(iMode, true);
+		Console.ToolsDlg.SetLandscapeMode(iMode, iX==1, true);
 		return;
 	}
 	// check current mode
