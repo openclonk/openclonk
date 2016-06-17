@@ -238,7 +238,9 @@ C4ConsoleQtNewScenarioDlg::C4ConsoleQtNewScenarioDlg(class QMainWindow *parent_w
 	adjustSize();
 	setMinimumSize(size());
 	ui.filenameEdit->setText(::Config.General.UserDataPath);
+	QItemSelectionModel *m = ui.definitionTreeView->selectionModel();
 	ui.definitionTreeView->setModel(&def_file_model);
+	delete m;
 }
 
 bool C4ConsoleQtNewScenarioDlg::SaveScenario(C4Group &grp)

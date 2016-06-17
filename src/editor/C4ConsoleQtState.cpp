@@ -510,14 +510,20 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// View models
 	property_model.reset(new C4ConsoleQtPropListModel(property_delegate_factory.get()));
 	property_delegate_factory->SetPropertyModel(property_model.get());
+	QItemSelectionModel *m = ui.propertyTable->selectionModel();
 	ui.propertyTable->setModel(property_model.get());
+	delete m;
 	property_model->SetSelectionModel(ui.propertyTable->selectionModel());
 	object_list_model.reset(new C4ConsoleQtObjectListModel());
+	m = ui.objectListView->selectionModel();
 	ui.objectListView->setModel(object_list_model.get());
+	delete m;
 	window->connect(ui.objectListView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnObjectListSelectionChanged);
 	definition_list_model.reset(new C4ConsoleQtDefinitionListModel());
 	property_delegate_factory->SetDefinitionListModel(definition_list_model.get());
+	m = ui.creatorTreeView->selectionModel();
 	ui.creatorTreeView->setModel(definition_list_model.get());
+	delete m;
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorSelectionChanged);
 	window->connect(ui.creatorTreeView->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), &C4ConsoleQtMainWindow::OnCreatorCurrentChanged);
 	window->connect(ui.propertyTable->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), [this]() {
@@ -745,7 +751,7 @@ void C4ConsoleGUIState::OnCreatorSelectionChanged(const QItemSelection & selecte
 	for (const QModelIndex &item : deselected_indexes)
 		if ((def = definition_list_model->GetDefByModelIndex(item)))
 			::Console.EditCursor.RemoveFromSelection(def);
-	auto selected_indexes = deselected.indexes();
+	auto selected_indexes = selected.indexes();
 	for (const QModelIndex &item : selected_indexes)
 		if ((def = definition_list_model->GetDefByModelIndex(item)))
 			::Console.EditCursor.AddToSelection(def);
@@ -753,17 +759,7 @@ void C4ConsoleGUIState::OnCreatorSelectionChanged(const QItemSelection & selecte
 	// Switching to def selection mode: Remove any non-defs from selection
 	if (!selected.empty())
 	{
-		C4EditCursorSelection sel_copy = ::Console.EditCursor.GetSelection();
-		for (C4Value & v : sel_copy)
-		{
-			C4PropList *p = v.getPropList();
-			if (!p) continue;
-			if (p->GetObject() || !p->GetDef())
-			{
-				QModelIndex desel_index = object_list_model->GetModelIndexByItem(p);
-				if (desel_index.isValid()) ui.objectListView->selectionModel()->select(desel_index, QItemSelectionModel::Deselect);
-			}
-		}
+		ui.objectListView->selectionModel()->clearSelection();
 		// ...and switch to creator mode
 		::Console.EditCursor.SetMode(C4CNS_ModeCreateObject);
 	}
@@ -782,20 +778,9 @@ void C4ConsoleGUIState::OnObjectListSelectionChanged(const QItemSelection & sele
 			::Console.EditCursor.AddToSelection(p);
 	::Console.EditCursor.OnSelectionChanged(true);
 	// Switching to object/effect selection mode: Remove any non-objects/effects from selection
-	if (!selected.empty())
+	if (!selected.empty()) 
 	{
-		C4EditCursorSelection sel_copy = ::Console.EditCursor.GetSelection();
-		for (C4Value & v : sel_copy)
-		{
-			C4PropList *p = v.getPropList();
-			if (!p) continue;
-			C4Def *def = p->GetDef();
-			if (def && !p->GetObject() && !p->GetEffect())
-			{
-				QModelIndex desel_index = definition_list_model->GetModelIndexByItem(def);
-				if (desel_index.isValid()) ui.creatorTreeView->selectionModel()->select(desel_index, QItemSelectionModel::Deselect);
-			}
-		}
+		ui.creatorTreeView->selectionModel()->clearSelection();
 		// ...and switch to editing mode
 		::Console.EditCursor.SetMode(C4CNS_ModeEdit);
 	}

@@ -30,8 +30,6 @@ class C4ConsoleQtDefinitionListModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
-	class QItemSelectionModel *selection_model;
-	QTreeView *view;
 	mutable int32_t last_row_count;
 
 	// Tree structure of definition list

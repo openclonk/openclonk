@@ -855,6 +855,7 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 		if (!editor->updating) this->UpdateOptionIndex(editor, newval); });
 	editor->updating = false;
 	editor->option_box->setModel(CreateOptionModel());
+	editor->option_box->model()->setParent(editor->option_box);
 	return editor;
 }
 
