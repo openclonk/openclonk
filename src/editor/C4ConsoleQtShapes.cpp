@@ -31,7 +31,7 @@ C4ConsoleQtShape::C4ConsoleQtShape(C4Object *for_obj, C4PropList *props)
 	rel_obj.SetPropList(for_obj);
 	if (props)
 	{
-		is_relative = props->GetPropertyBool(P_Relative);
+		is_relative = props->GetPropertyBool(P_Relative, is_relative);
 		border_color = props->GetPropertyInt(P_Color) | 0xff000000;
 	}
 }
