@@ -127,7 +127,10 @@ int32_t C4EditCursorSelection::ObjectCount() const
 }
 
 
-C4EditCursor::C4EditCursor() : shapes(new C4ConsoleQtShapes())
+C4EditCursor::C4EditCursor()
+#ifdef WITH_QT_EDITOR
+	: shapes(new C4ConsoleQtShapes())
+#endif
 {
 	Default();
 }

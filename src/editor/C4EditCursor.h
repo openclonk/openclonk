@@ -118,7 +118,9 @@ public:
 	bool AltDown();
 	bool AltUp();
 	void SetMouseHover(bool h) { has_mouse_hover = h; }
+#ifdef WITH_QT_EDITOR
 	class C4ConsoleQtShapes *GetShapes() const { return shapes.get(); }
+#endif
 	bool HasTransformCursor() const { return DragTransform || IsHoveringTransformMarker(); }
 	bool IsHoveringTransformMarker() const;
 protected:
