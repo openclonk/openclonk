@@ -1,0 +1,3 @@
+GuardRange=Guarded area
+MaxAggroDistance=Attack radius
+IgnoreAllies=Ignore allies

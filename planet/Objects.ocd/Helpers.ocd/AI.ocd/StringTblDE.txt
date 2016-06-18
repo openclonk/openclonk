@@ -1,0 +1,3 @@
+GuardRange=Bewachter Bereich
+MaxAggroDistance=Angriffsradius
+IgnoreAllies=Mitspieler ignorieren

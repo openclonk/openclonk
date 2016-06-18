@@ -823,40 +823,6 @@ func SaveScenarioObject(props)
 	return true;
 }
 
-/* AI editor helper */
-
-func EditCursorSelection(...)
-{
-	var ai = AI->GetAI(this);
-	if (ai) Call(AI.EditCursorSelection, ai, ...);
-	return _inherited(...);
-}
-
-func EditCursorDeselection(...)
-{
-	var ai = AI->GetAI(this);
-	if (ai) Call(AI.EditCursorDeselection, ai, ...);
-	return _inherited(...);
-}
-
-func AI_Add()
-{
-	// Create AI and re-select
-	AI->AddAI(this);
-	EditCursorDeselection();
-	EditCursorSelection();
-	return true;
-}
-
-func FlipDir()
-{
-	// Look the other way. If an AI is attached, also update its home position.
-	var new_dir = 1-GetDir();
-	if (this.ai) this.ai.home_dir = new_dir;
-	return SetDir(new_dir);
-}
-
-local EditCursorCommands = ["AI_Add()", "FlipDir()"];
 
 /* Act Map */
 
