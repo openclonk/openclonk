@@ -630,6 +630,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	UniformNames[C4LRU_MaterialSize]      = "materialSize";
 	UniformNames[C4LRU_AmbientBrightness] = "ambientBrightness";
 	UniformNames[C4LRU_AmbientTransform]  = "ambientTransform";
+	UniformNames[C4LRU_Modulation]        = "clrMod";
 
 	if(!LoadShader(pGroups, Shader, "landscape", 0))
 		return false;
@@ -926,7 +927,7 @@ void C4LandscapeRenderGL::BuildMatMap(uint32_t *pTex)
 	}
 }
 
-void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light)
+void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light, uint32_t clrMod)
 {
 	// Must have GL and be initialized
 	if(!pGL && !Shader.Initialised() && !ShaderLight.Initialised()) return;
@@ -957,6 +958,13 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	ShaderCall.SetUniform2f(C4LRU_MaterialSize,
 	                        float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
 	                        float(iMaterialHeight) / ::Game.C4S.Landscape.MaterialZoom);
+	const float fMod[4] = {
+		((clrMod >> 16) & 0xff) / 255.0f,
+		((clrMod >>  8) & 0xff) / 255.0f,
+		((clrMod      ) & 0xff) / 255.0f,
+		((clrMod >> 24) & 0xff) / 255.0f
+	};
+	ShaderCall.SetUniform4fv(C4LRU_Modulation, 1, fMod);
 
 	if (Light)
 	{
