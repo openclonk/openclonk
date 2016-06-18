@@ -27,6 +27,7 @@
 C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
 C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}
+void C4DefList::SortByPriority() {}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 

@@ -72,6 +72,7 @@ C4IDListChunk::~C4IDListChunk() {}
 C4DefGraphics::C4DefGraphics(C4Def*) {}
 void C4DefGraphics::Clear() {}
 
+void C4DefList::SortByPriority() {}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }
