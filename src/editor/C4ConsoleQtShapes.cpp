@@ -26,7 +26,7 @@
 /* Generic shape */
 
 C4ConsoleQtShape::C4ConsoleQtShape(C4Object *for_obj, C4PropList *props)
-	: is_relative(false), dragging_border(-1), border_color(0xffff0000)
+	: is_relative(true), dragging_border(-1), border_color(0xffff0000)
 {
 	rel_obj.SetPropList(for_obj);
 	if (props)
