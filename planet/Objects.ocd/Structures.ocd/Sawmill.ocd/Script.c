@@ -19,6 +19,8 @@ public func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func Initialize()
 {
 	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0));

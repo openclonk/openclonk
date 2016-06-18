@@ -15,6 +15,12 @@ public func GetCarryTransform()	{	return Trans_Rotate(-90,1,0,0);	}
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
+func CanBuild(id construction_plan)
+{
+	if (!construction_plan) return false;
+	if (construction_plan->~IsHammerBuildable()) return true;
+	return false;
+}
 
 /*-- Properties --*/
 

@@ -22,6 +22,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 /*-- Contents --*/
 
 public func IsContainer() { return true; }

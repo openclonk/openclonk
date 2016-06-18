@@ -78,6 +78,8 @@ private func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 private func Initialize()
 {
 	SetCategory(C4D_StaticBack);

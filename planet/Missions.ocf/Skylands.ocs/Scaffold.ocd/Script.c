@@ -12,6 +12,8 @@ public func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 func Initialize()
 {
 	return _inherited(...);

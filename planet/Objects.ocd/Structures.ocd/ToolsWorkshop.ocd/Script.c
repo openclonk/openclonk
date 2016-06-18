@@ -15,6 +15,8 @@ public func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func Initialize()
 {
 	hold_production = false;

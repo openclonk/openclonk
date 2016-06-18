@@ -41,11 +41,26 @@ public func GetConstructionPlans(int plr)
 {
 	var construction_plans = [];
 	var construct_id, index = 0;
-	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Structure))
-		construction_plans[index-1] = construct_id;
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Structure)) // Structures
+		if (CanBuild(construct_id))
+			construction_plans[GetLength(construction_plans)] = construct_id;
+	index = 0;
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Vehicle)) // Vehicles
+		if (CanBuild(construct_id))
+			construction_plans[GetLength(construction_plans)] = construct_id;
+	index = 0;
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Object)) // Objects
+		if (CanBuild(construct_id))
+			construction_plans[GetLength(construction_plans)] = construct_id;
 	return construction_plans;
 }
 
+// Checks whether a certain construction plans can be built by this constructor.
+// Overload as seem fit.
+func CanBuild(id construction_plan)
+{
+	return true;
+}
 
 /*-- Construction preview --*/
 

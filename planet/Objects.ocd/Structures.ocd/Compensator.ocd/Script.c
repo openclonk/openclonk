@@ -30,6 +30,8 @@ protected func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	leftcharge = CreateObjectAbove(Compensator_ChargeShower, 7 * GetCalcDir(), 10, NO_OWNER);

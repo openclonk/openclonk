@@ -33,6 +33,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func NoConstructionFlip() { return true; }
 
 /*-- Interaction --*/

@@ -31,6 +31,8 @@ protected func Construction()
 	return;
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	// First initialize the libraries (especially the flag library).

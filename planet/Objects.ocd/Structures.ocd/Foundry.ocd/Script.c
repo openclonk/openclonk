@@ -26,6 +26,8 @@ public func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 /*-- Production --*/
 
 private func IgnoreKnowledge() { return true; }

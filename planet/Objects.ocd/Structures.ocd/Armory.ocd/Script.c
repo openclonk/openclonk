@@ -16,6 +16,8 @@ func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 /*-- Production --*/
 
 public func IsProduct(id product_id)

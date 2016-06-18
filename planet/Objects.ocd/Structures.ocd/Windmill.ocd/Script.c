@@ -24,6 +24,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	// Create a helper object for the wheel.

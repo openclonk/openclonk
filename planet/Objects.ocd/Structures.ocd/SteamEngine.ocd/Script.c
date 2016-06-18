@@ -27,8 +27,9 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-public func IsContainer() { return true; }
+public func IsHammerBuildable() { return true; }
 
+public func IsContainer() { return true; }
 
 protected func RejectCollect(id item, object obj)
 {
