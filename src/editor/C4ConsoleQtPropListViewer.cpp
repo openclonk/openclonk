@@ -1464,7 +1464,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->shape_delegate = new_shape_delegate;
 			if (new_shape_delegate)
 			{
-				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(target_proplist->GetObject(), published_prop, v);
+				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_effect_object ? base_effect_object : target_proplist->GetObject(), published_prop, v);
 				C4PropertyDelegateFactory *factory = this->delegate_factory;
 				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
 					factory->SetPropertyData(new_shape_delegate, shape, prop);
