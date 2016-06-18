@@ -42,9 +42,9 @@ public func GetDescription(int plr)
 {
 	var message;
 	if (IsFulfilled())
-		message = "$MsgGoalFulfilled$";		
+		message = Format("$MsgGoalFulfilled$", victim_name);
 	else
-		message = "$MsgGoalUnFulfilled$";
+		message = Format("$MsgGoalUnFulfilled$", victim_name);
 	return message;
 }
 
