@@ -257,6 +257,7 @@ public:
 	struct
 	{
 		bool LowMaxVertexUniformCount;
+		bool ForceSoftwareTransform;
 	} Workarounds;
 	void ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label);
 

@@ -56,7 +56,11 @@ uniform mat3x4 bones[MAX_BONE_COUNT];
 // For more performance, this should be set by the engine, and this shader
 // should be compiled three times: with BONE_COUNT set to 0, 4, and 8,
 // respectively. (Or we could split it even further.)
+#ifndef OC_WA_FORCE_SOFTWARE_TRANSFORM
 #define BONE_COUNT 8
+#else
+#define BONE_COUNT 0
+#endif
 
 in vec4 oc_BoneIndices0;
 in vec4 oc_BoneWeights0;
