@@ -177,6 +177,8 @@ local ActMap = {
 		NextAction = "Door",
 	},
 };
+
 local Name = "$Name$";
-local EditCursorCommands = ["OpenDoor()", "CloseDoor()"];
+local EditorAction_OpenDoor = { Name="$DoorUp$", Command="OpenDoor()" };
+local EditorAction_CloseDoor = { Name="$DoorDown$", Command="CloseDoor()" };
 local Plane = 200;

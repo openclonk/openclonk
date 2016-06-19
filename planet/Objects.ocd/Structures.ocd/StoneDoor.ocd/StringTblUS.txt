@@ -1,1 +1,3 @@
 Name=Stone Door
+DoorUp=Door up
+DoorDown=Door down
