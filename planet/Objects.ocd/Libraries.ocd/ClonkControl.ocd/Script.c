@@ -336,7 +336,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	// only act on press, not release
-	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && !house && (!vehicle || proc == "ATTACH") && !release)
+	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && !house && (!vehicle || proc == "ATTACH" || proc == "PUSH") && !release)
 	{		
 		if (contents)
 		{
@@ -348,6 +348,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// The object does not want to be dropped? Still handle command.
 			if (contents->~QueryRejectDeparture(this))
 				return true;
+			
+			// Quick-stash into grabbed vehicle?
+			if (vehicle && proc == "PUSH" && vehicle->~IsContainer())
+			{
+				CancelUse();
+				vehicle->Collect(contents);
+				if (!contents || contents->Contained() != this)
+					Sound("Hits::SoftTouch*", false, nil, GetOwner());
+				return true;
+			}
 			
 			// just drop in certain situations
 			var only_drop = proc == "SCALE" || proc == "HANGLE" || proc == "SWIM";
