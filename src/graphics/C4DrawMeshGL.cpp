@@ -615,6 +615,10 @@ namespace
 
 	void RenderSubMeshImpl(const StdProjectionMatrix& projectionMatrix, const StdMeshMatrix& modelviewMatrix, const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect, bool parity)
 	{
+		// Don't render with degenerate matrix
+		if (fabs(modelviewMatrix.Determinant()) < 1e-6)
+			return;
+
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
@@ -658,9 +662,6 @@ namespace
 			}
 		}
 
-		// Don't render with degenerate matrix
-		if (fabs(modelviewMatrix.Determinant()) < 1e-6)
-			return;
 		// Modelview matrix does not change between passes, so cache it here
 		const StdMeshMatrix normalMatrixTranspose = StdMeshMatrix::Inverse(modelviewMatrix);
 
