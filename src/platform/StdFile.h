@@ -94,6 +94,9 @@ public:
 	~DirectoryIterator();
 
 	const char * operator * () const;
+	const char *GetName() const { return **this; }
+	size_t GetFileSize() const;
+
 	DirectoryIterator& operator ++ ();
 	DirectoryIterator operator ++ (int);
 	void Clear(); // put iterator into empty state and clear any cached directory listing
@@ -102,7 +105,7 @@ public:
 private:
 	void Read(const char *dirname);
 	friend struct DirectoryIteratorP;
-	typedef std::vector<std::string> FileList;
+	typedef std::vector<std::pair<std::string, size_t>> FileList;
 	DirectoryIteratorP *p;
 	FileList::iterator iter;
 };

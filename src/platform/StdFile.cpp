@@ -989,7 +989,10 @@ void DirectoryIterator::Read(const char *dirname)
 		// ...unless they're . or ..
 		if (file.cFileName[0] == '.' && (file.cFileName[1] == '\0' || (file.cFileName[1] == '.' && file.cFileName[2] == '\0')))
 			continue;
-		p->files.push_back(StdStrBuf(file.cFileName).getData());
+
+		size_t size = (file.nFileSizeHigh * (size_t(MAXDWORD) + 1)) + file.nFileSizeLow;
+
+		p->files.emplace_back(StdStrBuf(file.cFileName).getData(), size);
 	}
 	while (FindNextFileW(fh, &file));
 	FindClose(fh);
@@ -1016,14 +1019,14 @@ void DirectoryIterator::Read(const char *dirname)
 		// ...unless they're . or ..
 		if (file->d_name[0] == '.' && (file->d_name[1] == '\0' || (file->d_name[1] == '.' && file->d_name[2] == '\0')))
 			continue;
-		p->files.push_back(file->d_name);
+		p->files.emplace_back(file->d_name, 0);
 	}
 	closedir(fh);
 #endif
 	// Sort list
 	std::sort(p->files.begin(), p->files.end());
 	for (FileList::iterator it = p->files.begin(); it != p->files.end(); ++it)
-		it->insert(0, search_path); // prepend path to all file entries
+		it->first.insert(0, search_path); // prepend path to all file entries
 	iter = p->files.begin();
 	p->directory = dirname;
 }
@@ -1039,13 +1042,22 @@ const char * DirectoryIterator::operator*() const
 {
 	if (iter == p->files.end())
 		return NULL;
-	return iter->c_str();
+	return iter->first.c_str();
 }
 DirectoryIterator DirectoryIterator::operator++(int)
 {
 	DirectoryIterator tmp(*this);
 	++*this;
 	return tmp;
+}
+
+size_t DirectoryIterator::GetFileSize() const
+{
+#ifdef _WIN32
+	return iter->second;
+#else
+	return FileSize(iter->first.c_str());
+#endif
 }
 
 int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *))
