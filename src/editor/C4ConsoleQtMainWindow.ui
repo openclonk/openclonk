@@ -505,6 +505,13 @@
       </layout>
      </item>
      <item>
+      <layout class="QGridLayout" name="objectActionPanel">
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+      </layout>
+     </item>
+     <item>
       <widget class="QTreeView" name="propertyTable">
        <property name="acceptDrops">
         <bool>true</bool>

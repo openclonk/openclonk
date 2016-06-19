@@ -178,6 +178,9 @@ public:
 	// Updating states to prevent callbacks on internal selection updates
 	int32_t is_object_selection_updating;
 
+	// Currently selected single object
+	C4Value action_object;
+
 	C4ConsoleGUIState(C4ConsoleGUI *console);
 	~C4ConsoleGUIState();
 
@@ -214,6 +217,7 @@ public:
 	void SetObjectSelection(class C4EditCursorSelection &rSelection);
 	void OnObjectListSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
+	void UpdateActionObject(C4Object *new_action_object);
 
 	bool CreateNewScenario(StdStrBuf *out_filename); // show "new scenario" dialogue; return true if new scenario is created
 

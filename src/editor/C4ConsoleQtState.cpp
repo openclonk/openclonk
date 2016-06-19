@@ -709,6 +709,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		ui.propertyTable->setEnabled(false);
 		ui.selectionInfoLabel->setText(rSelection.GetDataString().getData());
 		ui.propertyEditAscendPathButton->hide();
+		UpdateActionObject(nullptr);
 	}
 	else
 	{
@@ -720,6 +721,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 			ui.propertyTable->setFirstColumnSpanned(0, QModelIndex(), true);
 			ui.propertyTable->setFirstColumnSpanned(1, QModelIndex(), true);
 			ui.propertyTable->expand(property_model->index(0, 0, QModelIndex()));
+			UpdateActionObject(new_list->GetObject());
 		}
 		else if (::Console.EditCursor.IsSelectionInvalidated())
 		{
@@ -904,4 +906,65 @@ void C4ConsoleGUIState::HideWelcomeScreen()
 void C4ConsoleGUIState::ClearGamePointers()
 {
 	if (property_delegate_factory) property_delegate_factory->ClearDelegates();
+}
+
+void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
+{
+	// No change? Do not recreate buttons then because it may interfere with their usage
+	C4Object *prev_object = action_object.getObj();
+	if (new_action_object && prev_object == new_action_object) return;
+	action_object = C4VObj(new_action_object);
+	// Clear old action buttons
+	int32_t i = ui.objectActionPanel->count();
+	while (i--)
+	{
+		ui.objectActionPanel->itemAt(i)->widget()->deleteLater();
+	}
+	// Create new buttons
+	// Actions are defined as locals prefixed EditorAction_ containing proplists
+	if (!new_action_object) return;
+	const char *editor_action_prefix = "EditorAction_";
+	auto new_properties = new_action_object->GetSortedProperties(editor_action_prefix, &::ScriptEngine);
+	int row = 0, column = 0;
+	for (C4String *action_def_id : new_properties)
+	{
+		// Get action definition proplist
+		C4Value action_def_val;
+		if (!new_action_object->GetPropertyByS(action_def_id, &action_def_val))
+		{
+			// property disappeared (cannot happen)
+			continue;
+		}
+		C4PropList *action_def = action_def_val.getPropList();
+		if (!action_def)
+		{
+			// property is of wrong type (can happen; scripter error)
+			continue;
+		}
+		// Get action name
+		C4String *action_name = action_def->GetPropertyStr(P_Name);
+		if (!action_name)
+		{
+			// Fallback to identifier for unnamed actions
+			action_name = ::Strings.RegString(action_def_id->GetCStr() + strlen(editor_action_prefix));
+		}
+		// Script command to execute
+		C4RefCntPointer<C4String> script_command = action_def->GetPropertyStr(P_Command);
+		int32_t object_number = new_action_object->Number;
+		// Create action button
+		QPushButton *btn = new QPushButton(action_name->GetCStr(), window.get());
+		if (script_command)
+		{
+			btn->connect(btn, &QPushButton::pressed, btn, [script_command, object_number]()
+			{
+				::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script_command->GetCStr(), object_number, false));
+			});
+		}
+		ui.objectActionPanel->addWidget(btn, row, column);
+		if (++column >= 3)
+		{
+			column = 0;
+			++row;
+		}
+	}
 }
