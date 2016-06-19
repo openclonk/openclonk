@@ -141,6 +141,10 @@ public slots:
 	void BackgroundMaterialChanged(const QString &new_selection);
 	// Links on welcome page
 	void WelcomeLinkActivated(const QString &link);
+	// Object context menu
+	void SelectionDelete();
+	void SelectionDuplicate();
+	void SelectionEjectContents();
 };
 
 

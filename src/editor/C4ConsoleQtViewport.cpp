@@ -23,10 +23,12 @@
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleQtShapes.h"
 #include "game/C4Viewport.h"
+#include "object/C4Object.h"
 #include "editor/C4ViewportWindow.h"
 #include "editor/C4Console.h"
 #include "gui/C4MouseControl.h"
 #include "landscape/C4Landscape.h"
+#include "object/C4GameObjects.h"
 
 /* Console viewports */
 
@@ -36,9 +38,12 @@ C4ConsoleQtViewportView::C4ConsoleQtViewportView(class C4ConsoleQtViewportScroll
 	setAttribute(Qt::WA_ShowWithoutActivating, true);
 	setFocusPolicy(Qt::WheelFocus);
 	setMouseTracking(true);
+	setContextMenuPolicy(Qt::CustomContextMenu);
 	// Register for viewport
 	C4ViewportWindow *window = dock->cvp;
 	window->glwidget = this;
+	// Enable context menu
+	connect(this, &QWidget::customContextMenuRequested, this, &C4ConsoleQtViewportView::ShowContextMenu);
 }
 
 bool C4ConsoleQtViewportView::IsPlayViewport() const
@@ -59,6 +64,82 @@ qreal C4ConsoleQtViewportView::GetDevicePixelRatio()
 		return 1;
 	auto screen = QApplication::screens()[screenNumber];
 	return screen->devicePixelRatio();
+}
+
+void C4ConsoleQtViewportView::AddSelectObjectContextEntry(C4Object *obj, QMenu *menu)
+{
+	// Add select object item for object and for all contents
+	if (!obj || !obj->Status) return;
+	int32_t object_number = obj->Number;
+	QAction *select_object_action = new QAction(QString("%1 #%2 (%3/%4)").arg(obj->GetName()).arg(object_number).arg(obj->GetX()).arg(obj->GetY()), menu);
+	connect(select_object_action, &QAction::triggered, menu, [object_number]() {
+		bool add = !!(QGuiApplication::keyboardModifiers() & Qt::ShiftModifier);
+		C4Object *obj = ::Objects.SafeObjectPointer(object_number);
+		if (obj) ::Console.EditCursor.DoContextObjsel(obj, !add);
+	});
+	menu->addAction(select_object_action);
+	if (obj->Contents.ObjectCount())
+	{
+		QMenu *submenu = menu->addMenu(FormatString(LoadResStr("IDS_CNS_SELECTCONTENTS"), obj->GetName()).getData());
+		for (C4Object *cobj : obj->Contents)
+		{
+			AddSelectObjectContextEntry(cobj, submenu);
+		}
+	}
+}
+
+void C4ConsoleQtViewportView::ShowContextMenu(const QPoint &pos)
+{
+	// Coordinates are in viewport (not adjusted by parent scroll window)
+	if (!IsPlayViewport())
+	{
+		// Show context menu in editor viewport
+		QMenu *menu = new QMenu(this);
+		// Show current object(s) as unselectable item
+		auto &ui = dock->main_window->GetConsoleState()->ui;
+		menu->addSection(ui.selectionInfoLabel->text());
+		// Object actions. Always shown but grayed out if no object is selected.
+		bool has_object = false;
+		int32_t contents_count = 0;
+		for (const C4Value &sel : ::Console.EditCursor.GetSelection())
+		{
+			C4Object *obj = sel.getObj();
+			if (obj)
+			{
+				has_object = true;
+				contents_count += obj->Contents.ObjectCount();
+			}
+		}
+		for (QAction *act : { ui.actionDeleteObject, ui.actionDuplicateObject, ui.actionEjectContents })
+		{
+			act->setEnabled(has_object);
+			menu->addAction(act);
+		}
+		if (!contents_count)
+		{
+			ui.actionEjectContents->setEnabled(false);
+		}
+		ui.actionEjectContents->setText(QString("%1 (%2)").arg(LoadResStr("IDS_MNU_CONTENTS")).arg((int)contents_count));
+		// Object selection section for overlapping objects
+		auto pr = GetDevicePixelRatio();
+		int32_t x = cvp->WindowToGameX(pr * pos.x()),
+		        y = cvp->WindowToGameY(pr * pos.y());
+		auto pFOl = new C4FindObjectAtPoint(x, y); // freed by ~C4FindObjectAnd
+		auto pFOc = new C4FindObjectContainer(nullptr);  // freed by ~C4FindObjectAnd
+		C4FindObject *pFO_conds[] = { pFOl , pFOc };
+		C4FindObjectAnd pFO(2, pFO_conds, false);
+		std::unique_ptr<C4ValueArray> atcursor(pFO.FindMany(::Objects, ::Objects.Sectors)); // needs freeing (single object ptr)
+		int itemcount = atcursor->GetSize();
+		if (itemcount)
+		{
+			menu->addSection(LoadResStr("IDS_CNS_SELECTNEARBYOBJECTS"));
+			for (int32_t i = 0; i < itemcount; ++i)
+			{
+				AddSelectObjectContextEntry(atcursor->GetItem(i).getObj(), menu);
+			}
+		}
+		menu->popup(mapToGlobal(pos));
+	}
 }
 
 // Get Shift state as Win32 wParam

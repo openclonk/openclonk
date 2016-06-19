@@ -130,8 +130,8 @@ protected:
 	void ToolFailure();
 	void PutContents();
 	void UpdateDropTarget(DWORD dwKeyState);
-	void AppendMenuItem(int num, const StdStrBuf & label);
 	bool DoContextMenu(DWORD dwKeyState);
+	void AppendMenuItem(int num, const StdStrBuf & label);
 	void ApplyToolFill();
 	void ApplyToolRect();
 	void ApplyToolLine();
@@ -142,10 +142,13 @@ protected:
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);
-	void DoContextObjsel(C4Object *, bool clear);
 	void DoContextObjCommand(C4Object *, const char *cmd);
 	void ObjselectDelItems();
 
+public:
+	void DoContextObjsel(C4Object *, bool clear);
+
+protected:
 #ifdef USE_GTK
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);

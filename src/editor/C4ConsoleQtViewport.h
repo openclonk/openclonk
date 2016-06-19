@@ -34,6 +34,8 @@ class C4ConsoleQtViewportView : public QOpenGLWidget
 private:
 	bool IsPlayViewport() const;
 	qreal GetDevicePixelRatio();
+	void ShowContextMenu(const QPoint &pos);
+	void AddSelectObjectContextEntry(C4Object *obj, QMenu *menu);
 
 protected:
 	void focusInEvent(QFocusEvent * event) override;

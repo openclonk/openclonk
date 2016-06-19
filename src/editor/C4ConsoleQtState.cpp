@@ -420,6 +420,21 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 	}
 }
 
+void C4ConsoleQtMainWindow::SelectionDelete()
+{
+	::Console.EditCursor.Delete();
+}
+
+void C4ConsoleQtMainWindow::SelectionDuplicate()
+{
+	::Console.EditCursor.Duplicate();
+}
+
+void C4ConsoleQtMainWindow::SelectionEjectContents()
+{
+	::Console.EditCursor.GrabContents();
+}
+
 
 
 /* Common C4ConsoleGUI interface */

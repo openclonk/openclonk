@@ -615,11 +615,12 @@ bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 bool C4EditCursor::RightButtonUp(DWORD dwKeyState)
 {
 	Target=NULL;
-
+#ifndef WITH_QT_EDITOR
 	DoContextMenu(dwKeyState);
-
+#endif
 	// Update
 	UpdateStatusBar();
+
 	return true;
 }
 

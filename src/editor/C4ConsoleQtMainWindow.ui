@@ -975,6 +975,33 @@
     <string>MAP_STATICFLAT_TIP</string>
    </property>
   </action>
+  <action name="actionDeleteObject">
+   <property name="text">
+    <string comment="res">IDS_MNU_DELETE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_DELETE</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionDuplicateObject">
+   <property name="text">
+    <string comment="res">IDS_MNU_DUPLICATE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_DUPLICATE</string>
+   </property>
+  </action>
+  <action name="actionEjectContents">
+   <property name="text">
+    <string comment="res">IDS_MNU_CONTENTS</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_CONTENTS</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -1540,6 +1567,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDeleteObject</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>SelectionDelete()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDuplicateObject</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>SelectionDuplicate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEjectContents</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>SelectionEjectContents()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1576,5 +1651,8 @@
   <slot>AddArrayElement()</slot>
   <slot>RemoveArrayElement()</slot>
   <slot>StaticFlatLandscapePressed(bool)</slot>
+  <slot>SelectionDelete()</slot>
+  <slot>SelectionDuplicate()</slot>
+  <slot>SelectionEjectContents()</slot>
  </slots>
 </ui>
