@@ -15,7 +15,7 @@ clonk.xsl also uses it to match the processing for it. -->
 		<div id="nav_search">
 		<form action="http://www.openclonk.org/header/search.php" id="nav_searchform" method="get" target="_top"><div>
 				<input id="nav_searchInput" name="s" type="text" value="search" onfocus="if(this.value == 'search') { this.value = ''; }" onblur="if(this.value == '') { this.value = 'search'; }"/> in the 
-				<select name="p">
+				<select value="docs" name="p">
 					<option  value="blog">blog</option>
 					<option  value="wiki">website</option>
 					<option  value="forum">forum</option>
