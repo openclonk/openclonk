@@ -1,21 +1,25 @@
 /* Scenario saving functionality */
 // Defines script function SaveScenarioObjects, which is called by the
 // engine to generate the Objects.c file for scenario saving
+// Also called for object duplication in the editor
 
-// Temp variable used by MakeScenarioSaveName() to store dependency
-static save_scenario_obj_dependencies;
-
-// Temp variable used by MakeScenarioSaveName() to generate indices in variable names
-static save_scenario_def_indices;
+// Temp variables used by MakeScenarioSaveName()
+//   These variables could be passed as a parameter through all saving functions instead.
+//   But that would include every single SaveScenarioObject call and associated functions and would be easy for scripters to forget.
+static save_scenario_obj_dependencies; // Dependency graph to ensure objects are saved in proper order
+static save_scenario_def_indices;      // Used to generate unique indices in variable names
+static save_scenario_dup_objects;      // Objects to duplicate if SaveScenarioObjects is called for object duplication.
 
 // Propert identifier of object creation
 static const SAVEOBJ_Creation = "Creation";
 static const SAVEOBJ_ContentsCreation = "ContentsCreation";
 static const SAVEOBJ_ContentsCreationEx = "ContentsCreationEx";
 
-global func SaveScenarioObjects(f)
+global func SaveScenarioObjects(f, duplicate_objects)
 {
 	// f is a handle to the Objects.c file
+	// If called for object duplication, duplicate_objects is an array of objects to duplicate
+	save_scenario_dup_objects = duplicate_objects;
 	// Prepare props saving object
 	var props_prototype = {
 		Add = Global.SaveScenP_Add,
@@ -31,8 +35,9 @@ global func SaveScenarioObjects(f)
 		HasProp = Global.SaveScenP_HasProp,
 		TakeProps = Global.SaveScenP_TakeProps
 	};
-	// Write all objects!
-	var objs = FindObjects(Find_And()), obj, i;
+	// Write all (scenario) or specified (duplication) objects!
+	var objs = duplicate_objects, obj, i;
+	if (!objs) objs = FindObjects(Find_And());
 	var n = GetLength(objs);
 	var obj_type, any_written, do_write_file = false;
 	save_scenario_def_indices = nil;
@@ -40,9 +45,10 @@ global func SaveScenarioObjects(f)
 	for (i=0; i<n/2; ++i) { obj = objs[i]; objs[i] = objs[n-i-1]; objs[n-i-1] = obj; }
 	// ...Except player crew
 	var ignore_objs = [];
-	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
-		for (var icrew = 0, crew; crew = GetCrew(GetPlayerByIndex(iplr, C4PT_User), icrew); ++icrew)
-			ignore_objs[GetLength(ignore_objs)] = crew;
+	if (!save_scenario_dup_objects)
+		for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
+			for (var icrew = 0, crew; crew = GetCrew(GetPlayerByIndex(iplr, C4PT_User), icrew); ++icrew)
+				ignore_objs[GetLength(ignore_objs)] = crew;
 	// Write creation data and properties
 	var obj_data = SaveScen_Objects(objs, ignore_objs, props_prototype);
 	// Resolve dependencies
@@ -53,7 +59,7 @@ global func SaveScenarioObjects(f)
 	FileWrite(f, "/* Automatically created objects file */\n\n");
 	// Declare static variables for objects that wish to have them
 	for (obj in objs)
-		if (obj.StaticSaveVar)
+		if (obj.StaticSaveVar && !save_scenario_dup_objects)
 		{
 			if (!any_written) FileWrite(f, "static "); else FileWrite(f, ", ");
 			FileWrite(f, obj.StaticSaveVar);
@@ -76,7 +82,7 @@ global func SaveScenarioObjects(f)
 			obj_type = obj.o->GetID();
 			any_written = false;
 		}
-		if (obj.o.StaticSaveVar)
+		if (obj.o.StaticSaveVar && !save_scenario_dup_objects)
 		{
 			if (obj.props->HasCreation()) FileWrite(f, Format("%s%s = ", spacing, obj.o.StaticSaveVar));
 		}
@@ -92,21 +98,24 @@ global func SaveScenarioObjects(f)
 		if (obj.props->~Buffer2File(f)) do_write_file = any_written = true;
 	}
 	// Write global effects
-	any_written = false;
-	var fx; i=0;
-	while (fx = GetEffect("*", nil, i++))
+	if (!save_scenario_dup_objects)
 	{
-		var fx_buffer = {Prototype=props_prototype};
-		EffectCall(nil, fx, "SaveScen", fx_buffer);
-		if (fx_buffer->HasData())
+		any_written = false;
+		var fx; i=0;
+		while (fx = GetEffect("*", nil, i++))
 		{
-			if (!any_written && do_write_file) FileWrite(f, "	\n");
-			any_written = do_write_file = true;
-			fx_buffer->~Buffer2File(f);
+			var fx_buffer = {Prototype=props_prototype};
+			EffectCall(nil, fx, "SaveScen", fx_buffer);
+			if (fx_buffer->HasData())
+			{
+				if (!any_written && do_write_file) FileWrite(f, "	\n");
+				any_written = do_write_file = true;
+				fx_buffer->~Buffer2File(f);
+			}
 		}
 	}
 	// Cleanup
-	save_scenario_def_indices = save_scenario_obj_dependencies = nil;
+	save_scenario_def_indices = save_scenario_obj_dependencies = save_scenario_dup_objects = nil;
 	// Write footer
 	FileWrite(f, "	return true;\n}\n");
 	// Done; success. Return true if any objects or effects were written to the file.
@@ -258,7 +267,7 @@ global func SaveScen_SetContainers(array obj_data)
 	for (var obj in obj_data) if ((cont = obj.o->Contained())) if (obj.props->HasProp(SAVEOBJ_ContentsCreationEx))
 	{
 		var num_contents_concat = 1;
-		if (!obj.o.StaticSaveVar && !obj.write_label)
+		if ((!obj.o.StaticSaveVar || save_scenario_dup_objects) && !obj.write_label)
 		{
 			for (var obj2 in obj_data) if (obj2 != obj && obj2.o->Contained() == cont && obj.o->GetID() == obj2.o->GetID() && obj2.props->HasProp(SAVEOBJ_ContentsCreationEx))
 			{
@@ -284,10 +293,12 @@ global func MakeScenarioSaveName()
 	if (!this) FatalError("MakeScenarioSaveName needs definition or object context!");
 	// Definitions may just use their regular name
 	if (this.Prototype == Global) return Format("%i", this);
+	// Duplication mode: If this is an object that is not being duplicated, just reference it as Object(number)
+	if (save_scenario_dup_objects && GetIndexOf(save_scenario_dup_objects, this)<0) return Format("%v", this);
 	// When the name is queried while properties are built, it means that there is a dependency. Store it.
 	if (save_scenario_obj_dependencies && GetIndexOf(save_scenario_obj_dependencies, this)<0) save_scenario_obj_dependencies[GetLength(save_scenario_obj_dependencies)] = this;
 	// Build actual name using unique number (unless there's a static save variable name for us)
-	if (this.StaticSaveVar) return this.StaticSaveVar;
+	if (this.StaticSaveVar && !save_scenario_dup_objects) return this.StaticSaveVar;
 	if (!save_scenario_def_indices) save_scenario_def_indices = {};
 	var base_name = Format("%i", GetID());
 	if (base_name == "") base_name = "Unknown";
@@ -365,7 +376,7 @@ global func SaveScenarioObject(props)
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
 	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
 	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
-	v = this.StaticSaveVar; if (v)                                props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v));
+	v = this.StaticSaveVar; if (v && !save_scenario_dup_objects) props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v)); // do not duplicate StaticSaveVar because it needs to be unique
 	// Commands: Could store the whole command stack using AppendCommand.
 	// However, usually there is one base command and the rest is derived
 	// (e.g.: A Get command may lead to multiple MoveTo commands to the

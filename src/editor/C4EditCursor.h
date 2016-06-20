@@ -147,6 +147,8 @@ protected:
 
 public:
 	void DoContextObjsel(C4Object *, bool clear);
+	void PerformDuplication(int32_t *object_numbers, int32_t object_count, bool local_call);
+	void PerformDuplicationLegacy(int32_t *pObjects, int32_t iObjectNum, bool fLocalCall);
 
 protected:
 #ifdef USE_GTK

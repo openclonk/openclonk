@@ -32,6 +32,7 @@
 #include "game/C4Game.h"
 #include "object/C4GameObjects.h"
 #include "control/C4GameControl.h"
+#include "script/C4AulExec.h"
 #ifdef WITH_QT_EDITOR
 #include "editor/C4ConsoleQtShapes.h"
 #endif
@@ -654,6 +655,111 @@ bool C4EditCursor::Duplicate()
 {
 	EMMoveObject(EMMO_Duplicate, Fix0, Fix0, NULL, &selection);
 	return true;
+}
+
+void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_count, bool local_call)
+{
+	if (!object_count) return;
+	// Remember last OEI so duplicated objects can be determined
+	int32_t prev_oei = C4PropListNumbered::GetEnumerationIndex();
+	// Get serialized objects
+	C4RefCntPointer<C4ValueArray> object_numbers_c4v = new C4ValueArray();
+	object_numbers_c4v->SetSize(object_count);
+	for (int32_t i = 0; i < object_count; ++i)
+	{
+		object_numbers_c4v->SetItem(i, C4VObj(::Objects.SafeObjectPointer(object_numbers[i])));
+	}
+	int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
+	C4AulParSet pars(C4VInt(objects_file_handle), C4VArray(object_numbers_c4v.Get()));
+	C4Value result_c4v(::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars));
+	bool result = !!result_c4v;
+	if (result_c4v.GetType() == C4V_Nil)
+	{
+		// Function returned nil: This usually means there was a script error during object writing.
+		// It could also mean the scripter overloaded global func SaveScenarioObjects and returned nil.
+		// In either case, no the objects file will contain garbage so no objects were duplicated.
+		LogF("ERROR: No valid result from global func " PSF_SaveScenarioObjects ". Regular object duplication failed.");
+	}
+	else
+	{
+		// Function completed successfully (returning true or false)
+		C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
+		if (!result || !file || !file->GetFileLength())
+		{
+			// Nothing written? Then we don't have objects.
+			// That's OK; not an error.
+		}
+		else
+		{
+			// Create copy of objects by executing duplication script
+			StdStrBuf data = file->GrabFileContents();
+			AulExec.DirectExec(&::ScriptEngine, data.getData(), "object duplication", false, nullptr, true);
+		}
+	}
+	::ScriptEngine.CloseUserFile(objects_file_handle);
+	// Did duplication work?
+	bool any_duplicates = false;
+	for (C4Object *obj : ::Objects)
+	{
+		if (obj->Number > prev_oei)
+		{
+			any_duplicates = true;
+			break;
+		}
+	}
+	// If duplication created no objects, the user probably tried to copy a non-saved object
+	// Just copy the old way then
+	if (!any_duplicates)
+	{
+		PerformDuplicationLegacy(object_numbers, object_count, local_call);
+		return;
+	}
+	// update status: Put new objects into selection
+	// do callbacks for all clients for sync reasons
+	for (const C4Value &prevsel : selection)
+	{
+		C4Object *obj = prevsel.getObj();
+		if (obj) obj->Call(PSF_EditCursorDeselection);
+	}
+	if (local_call) selection.clear();
+	for (C4Object *obj : ::Objects)
+		if (obj->Number > prev_oei)
+		{
+			obj->Call(PSF_EditCursorSelection);
+			if (local_call) selection.push_back(C4VObj(obj));
+			// TODO: Reset editor X/Y to center objects on cursor
+		}
+	SetHold(true);
+	OnSelectionChanged();
+}
+
+void C4EditCursor::PerformDuplicationLegacy(int32_t *pObjects, int32_t iObjectNum, bool fLocalCall)
+{
+	// Old-style object copying: Just create new objects at old object position with same prototype
+	C4Object *pOldObj, *pObj;
+	for (int i = 0; i<iObjectNum; ++i)
+		if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
+		{
+			pObj = Game.CreateObject(pOldObj->GetPrototype(), pOldObj, pOldObj->Owner, pOldObj->GetX(), pOldObj->GetY());
+			if (pObj && pObj->Status)
+			{
+				// local call? adjust selection then
+				// do callbacks for all clients for sync reasons
+				if (fLocalCall) selection.push_back(C4VObj(pObj));
+				C4AulParSet pars(C4VObj(pObj));
+				if (pOldObj->Status) pOldObj->Call(PSF_EditCursorDeselection, &pars);
+				if (pObj->Status) pObj->Call(PSF_EditCursorSelection);
+			}
+		}
+	// update status
+	if (fLocalCall)
+	{
+		for (int i = 0; i<iObjectNum; ++i)
+			if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
+				selection.remove(C4VObj(pOldObj));
+		SetHold(true);
+		OnSelectionChanged();
+	}
 }
 
 void C4EditCursor::DrawObject(C4TargetFacet &cgo, C4Object *cobj, uint32_t select_mark_color, bool highlight, bool draw_transform_marker)

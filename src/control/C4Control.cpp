@@ -1270,31 +1270,7 @@ void C4ControlEMMoveObject::Execute() const
 	{
 		if (!pObjects) break;
 		// perform duplication
-		C4Object *pOldObj, *pObj;
-		for (int i=0; i<iObjectNum; ++i)
-			if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
-			{
-				pObj = Game.CreateObject(pOldObj->GetPrototype(), pOldObj, pOldObj->Owner, pOldObj->GetX(), pOldObj->GetY());
-				if (pObj && pObj->Status)
-				{
-					// local call? adjust selection then
-					// do callbacks for all clients for sync reasons
-					if (fLocalCall) Console.EditCursor.GetSelection().push_back(C4VObj(pObj));
-					C4AulParSet pars(C4VObj(pObj));
-					if (pOldObj->Status) pOldObj->Call(PSF_EditCursorDeselection, &pars);
-					if (pObj->Status) pObj->Call(PSF_EditCursorSelection);
-				}
-			}
-		// update status
-		if (fLocalCall)
-		{
-			if (fLocalCall)
-				for (int i = 0; i<iObjectNum; ++i)
-					if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
-						Console.EditCursor.GetSelection().remove(C4VObj(pOldObj));
-			Console.EditCursor.SetHold(true);
-			Console.EditCursor.OnSelectionChanged();
-		}
+		::Console.EditCursor.PerformDuplication(pObjects, iObjectNum, fLocalCall);
 	}
 	break;
 	case EMMO_Script:
