@@ -344,6 +344,7 @@ public:
 	void UpdateInLiquid(); // makes splash when a liquid is entered
 	void GrabContents(C4Object *pFrom); // grab all contents that don't reject it
 	bool GetDragImage(C4Object **drag_object, C4Def **drag_id) const; // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
+	int32_t AddObjectAndContentsToArray(C4ValueArray *target_array, int32_t index=0); // add self, contents and child contents count recursively to value array. Return index after last added item.
 
 protected:
 	void SideBounds(C4Real &ctcox);       // apply bounds at side; regarding bourder bound and pLayer

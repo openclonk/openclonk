@@ -4461,6 +4461,17 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4Def **drag_def) const
 	return true;
 }
 
+int32_t C4Object::AddObjectAndContentsToArray(C4ValueArray *target_array, int32_t index)
+{
+	// add self, contents and child contents count recursively to value array. Return index after last added item.
+	target_array->SetItem(index++, C4VObj(this));
+	for (C4Object *cobj : Contents)
+	{
+		index = cobj->AddObjectAndContentsToArray(target_array, index);
+	}
+	return index;
+}
+
 bool C4Object::DoSelect()
 {
 	// selection allowed?

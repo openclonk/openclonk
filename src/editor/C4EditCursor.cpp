@@ -665,10 +665,14 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 	// Get serialized objects
 	C4RefCntPointer<C4ValueArray> object_numbers_c4v = new C4ValueArray();
 	object_numbers_c4v->SetSize(object_count);
+	int32_t total_object_count = 0;
 	for (int32_t i = 0; i < object_count; ++i)
 	{
-		object_numbers_c4v->SetItem(i, C4VObj(::Objects.SafeObjectPointer(object_numbers[i])));
+		C4Object *obj = ::Objects.SafeObjectPointer(object_numbers[i]);
+		if (!obj) continue;
+		total_object_count = obj->AddObjectAndContentsToArray(object_numbers_c4v, total_object_count);
 	}
+	object_numbers_c4v->SetSize(total_object_count);
 	int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
 	C4AulParSet pars(C4VInt(objects_file_handle), C4VArray(object_numbers_c4v.Get()));
 	C4Value result_c4v(::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars));
