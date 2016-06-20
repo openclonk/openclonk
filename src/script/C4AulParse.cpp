@@ -129,11 +129,11 @@ public:
 			iStack(0),
 			pLoopStack(NULL)
 	{ }
-	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine):
+	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine, enum Type Type = C4AulParse::PARSER):
 			Fn(Fn), Host(NULL), pOrgScript(NULL), Engine(Engine),
 			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
-			Type(C4AulParse::PARSER),
+			Type(Type),
 			ContextToExecIn(context),
 			fJump(false),
 			iStack(0),
@@ -141,7 +141,8 @@ public:
 	{ }
 	~C4AulParse()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
-	void Parse_DirectExec();
+	void Parse_DirectExecFunc();
+	void Parse_DirectExecStatement();
 	void Parse_Script(C4ScriptHost *);
 
 private:
@@ -155,7 +156,7 @@ private:
 	C4String * cStr; // current string constant
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
-	void Parse_Function();
+	void Parse_Function(bool parse_for_direct_exec);
 	void Parse_FuncBody();
 	void Parse_Statement();
 	void Parse_Block();
@@ -1244,15 +1245,33 @@ void C4AulParse::UnexpectedToken(const char * Expected)
 	throw C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
-void C4AulScriptFunc::ParseFn(C4AulScriptEngine *Engine, C4AulScriptContext* context)
+void C4AulScriptFunc::ParseDirectExecFunc(C4AulScriptEngine *Engine, C4AulScriptContext* context)
+{
+	ClearCode();
+	// preparse+parse
+	C4AulParse pre_state(this, context, Engine, C4AulParse::PREPARSER);
+	pre_state.Parse_DirectExecFunc();
+	C4AulParse parse_state(this, context, Engine, C4AulParse::PARSER);
+	parse_state.Parse_DirectExecFunc();
+}
+
+void C4AulScriptFunc::ParseDirectExecStatement(C4AulScriptEngine *Engine, C4AulScriptContext* context)
 {
 	ClearCode();
 	// parse
-	C4AulParse state(this, context, Engine);
-	state.Parse_DirectExec();
+	C4AulParse state(this, context, Engine, C4AulParse::PARSER);
+	state.Parse_DirectExecStatement();
 }
 
-void C4AulParse::Parse_DirectExec()
+void C4AulParse::Parse_DirectExecFunc()
+{
+	// get first token
+	Shift();
+	Parse_Function(true);
+	Match(ATT_EOF);
+}
+
+void C4AulParse::Parse_DirectExecStatement()
 {
 	// get first token
 	Shift();
@@ -1346,7 +1365,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 				Match(ATT_SCOLON);
 			}
 			else
-				Parse_Function();
+				Parse_Function(false);
 			break;
 		case ATT_EOF:
 			return;
@@ -1383,7 +1402,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 	}
 }
 
-void C4AulParse::Parse_Function()
+void C4AulParse::Parse_Function(bool parse_for_direct_exec)
 {
 	bool is_global = SEqual(Idtf, C4AUL_Global);
 	// skip access modifier
@@ -1401,45 +1420,48 @@ void C4AulParse::Parse_Function()
 	Shift();
 	// get next token, must be func name
 	Check(ATT_IDTF, "function name");
-	// check: symbol already in use?
-	if (!is_global)
+	if (!parse_for_direct_exec)
 	{
-		if (Host->LocalNamed.GetItemNr(Idtf) != -1)
-			throw C4AulParseError(this, "function definition: name already in use (local variable)");
-	}
-	if (is_global || !Host->GetPropList())
-	{
-		if (Host != pOrgScript)
-			throw C4AulParseError(this, "global func in appendto/included script: ", Idtf);
-		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-			throw C4AulParseError(this, "function definition: name already in use (global variable)");
-		if (Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
-			Error("function definition: name already in use (global constant)");
-	}
-	// get script fn
-	C4PropListStatic * Parent;
-	if (is_global)
-		Parent = Engine->GetPropList();
-	else
-		Parent = Host->GetPropList();
-	Fn = 0;
-	C4AulFunc * f = Parent->GetFunc(Idtf);
-	while (f)
-	{
-		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Parent == Parent)
+		// check: symbol already in use?
+		if (!is_global)
 		{
-			if (Fn)
-				Warn("Duplicate function %s", Idtf);
-			Fn = f->SFunc();
+			if (Host->LocalNamed.GetItemNr(Idtf) != -1)
+				throw C4AulParseError(this, "function definition: name already in use (local variable)");
 		}
-		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
-	}
-	// first preparser run or a new func in a reloaded script
-	if (!Fn && Type == PREPARSER)
-	{
-		Fn = new C4AulScriptFunc(Parent, pOrgScript, Idtf, SPos);
-		Fn->SetOverloaded(Parent->GetFunc(Fn->Name));
-		Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
+		if (is_global || !Host->GetPropList())
+		{
+			if (Host != pOrgScript)
+				throw C4AulParseError(this, "global func in appendto/included script: ", Idtf);
+			if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
+				throw C4AulParseError(this, "function definition: name already in use (global variable)");
+			if (Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
+				Error("function definition: name already in use (global constant)");
+		}
+		// get script fn
+		C4PropListStatic * Parent;
+		if (is_global)
+			Parent = Engine->GetPropList();
+		else
+			Parent = Host->GetPropList();
+		Fn = 0;
+		C4AulFunc * f = Parent->GetFunc(Idtf);
+		while (f)
+		{
+			if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Parent == Parent)
+			{
+				if (Fn)
+					Warn("Duplicate function %s", Idtf);
+				Fn = f->SFunc();
+			}
+			f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
+		}
+		// first preparser run or a new func in a reloaded script
+		if (!Fn && Type == PREPARSER)
+		{
+			Fn = new C4AulScriptFunc(Parent, pOrgScript, Idtf, SPos);
+			Fn->SetOverloaded(Parent->GetFunc(Fn->Name));
+			Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
+		}
 	}
 	Shift();
 	Parse_FuncBody();
