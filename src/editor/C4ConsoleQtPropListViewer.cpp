@@ -542,6 +542,10 @@ void C4DeepQComboBox::hidePopup()
 		setCurrentIndex(current.row());
 		::Console.EditCursor.SetHighlightedObject(nullptr);
 		QComboBox::hidePopup();
+		if (selected_data.type() == QVariant::Int)
+		{
+			emit NewItemSelected(selected_data.toInt());
+		}
 	}
 	descending = item_clicked = false;
 }
@@ -550,6 +554,21 @@ void C4DeepQComboBox::setCurrentModelIndex(QModelIndex new_index)
 {
 	setRootModelIndex(new_index.parent());
 	setCurrentIndex(new_index.row());
+}
+
+int32_t C4DeepQComboBox::GetCurrentSelectionIndex()
+{
+	QVariant selected_data = model()->data(model()->index(currentIndex(), 0, rootModelIndex()), OptionIndexRole);
+	if (selected_data.type() == QVariant::Int)
+	{
+		// Valid selection
+		return selected_data.toInt();
+	}
+	else
+	{
+		// Invalid selection
+		return -1;
+	}
 }
 
 // event filter for view: Catch mouse clicks to prevent closing from simple mouse clicks
@@ -723,7 +742,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		editor->parameter_widget->deleteLater();
 		editor->parameter_widget = NULL;
 	}
-	int32_t idx = editor->option_box->currentIndex();
+	int32_t idx = editor->option_box->GetCurrentSelectionIndex();
 	if (idx < 0 || idx >= options.size()) return;
 	const Option &option = options[idx];
 	// Lazy-resolve parameter delegate
@@ -853,8 +872,7 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->option_box = new C4DeepQComboBox(editor);
 	editor->layout->addWidget(editor->option_box);
 	for (auto &option : options) editor->option_box->addItem(option.name->GetCStr());
-	void (QComboBox::*currentIndexChanged)(int) = &QComboBox::currentIndexChanged;
-	connect(editor->option_box, currentIndexChanged, editor, [editor, this](int newval) {
+	connect(editor->option_box, &C4DeepQComboBox::NewItemSelected, editor, [editor, this](int32_t newval) {
 		if (!editor->updating) this->UpdateOptionIndex(editor, newval); });
 	editor->updating = false;
 	editor->option_box->setModel(CreateOptionModel());

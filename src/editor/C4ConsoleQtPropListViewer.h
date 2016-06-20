@@ -216,6 +216,10 @@ public:
 	void hidePopup() override;
 
 	void setCurrentModelIndex(QModelIndex new_index);
+	int32_t GetCurrentSelectionIndex();
+
+signals:
+	void NewItemSelected(int32_t new_item);
 
 protected:
 	// event filter for view: Catch mouse clicks to descend into children
