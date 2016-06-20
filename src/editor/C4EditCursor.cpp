@@ -905,7 +905,12 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width, u
 
 	const float EDGE_WIDTH = 2.f;
 
-	unsigned char c[4] = { (color >> 16) & 0xff, (color >> 8) & 0xff , (color >> 0) & 0xff , (color >> 24) & 0xff };
+	unsigned char c[4] = {
+		static_cast<unsigned char>((color >> 16) & 0xff),
+		static_cast<unsigned char>((color >>  8) & 0xff),
+		static_cast<unsigned char>((color >>  0) & 0xff),
+		static_cast<unsigned char>((color >> 24) & 0xff)
+	};
 
 	const C4BltVertex vertices[] = {
 		{ 0.f, 0.f, { c[0], c[1], c[2], c[3] }, frame.left + EDGE_WIDTH, frame.top, 0.f },
