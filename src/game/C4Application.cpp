@@ -690,7 +690,7 @@ void C4Application::GameTick()
 		AppState = C4AS_Game;
 #ifdef WITH_QT_EDITOR
 		// Notify console
-		::Console.OnStartGame();
+		if (isEditor) ::Console.OnStartGame();
 #endif
 		// first-time game initialization
 		if (!Game.Init())
