@@ -130,22 +130,27 @@ C4TimeMilliseconds StdSchedulerProc::GetNextTick(C4TimeMilliseconds tNow)
 	return C4TimeMilliseconds::PositiveInfinity;
 }
 
+C4TimeMilliseconds StdScheduler::GetNextTick(C4TimeMilliseconds tNow)
+{
+	C4TimeMilliseconds tProcTick = C4TimeMilliseconds::PositiveInfinity;
+	for (auto proc : procs)
+	{
+		tProcTick = std::min(tProcTick, proc->GetNextTick(tNow));
+	}
+	return tProcTick;
+}
+
 bool StdScheduler::ScheduleProcs(int iTimeout)
 {
 	// Needs at least one process to work properly
 	if (!procs.size()) return false;
 
 	// Get timeout
-	C4TimeMilliseconds tProcTick;
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
-	for (auto i = 0u; i < procs.size(); i++)
+	C4TimeMilliseconds tProcTick = GetNextTick(tNow);
+	if (iTimeout == -1 || tNow + iTimeout > tProcTick)
 	{
-		auto proc = procs[i];
-		tProcTick = proc->GetNextTick(tNow);
-		if (iTimeout == -1 || tNow + iTimeout > tProcTick)
-		{
-			iTimeout = std::max<decltype(iTimeout)>(tProcTick - tNow, 0);
-		}
+		iTimeout = std::max<decltype(iTimeout)>(tProcTick - tNow, 0);
 	}
 	
 	bool old = isInManualLoop;

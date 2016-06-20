@@ -32,10 +32,16 @@ void C4AbstractApp::Run()
 		// with its events (zero timeout). The alternative (calling Qt's event handling from
 		// C4Console::Execute) is too slow, at least on Linux.
 		QTimer timer;
-		QObject::connect(&timer, &QTimer::timeout, [this]() {
+		QObject::connect(&timer, &QTimer::timeout, [this, &timer]() {
 			ScheduleProcs(0);
 			if (fQuitMsgReceived)
+			{
 				QApplication::quit();
+				return;
+			}
+			auto now = C4TimeMilliseconds::Now();
+			auto next_tick = GetNextTick(now);
+			timer.setInterval(Clamp(next_tick - now, 0, 36/1000));
 		});
 		timer.start();
 		QApplication::exec();
