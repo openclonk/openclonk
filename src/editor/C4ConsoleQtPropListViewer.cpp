@@ -496,7 +496,10 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
 	view->setMouseTracking(true);
 	connect(view, &QTreeView::entered, this, [this](const QModelIndex &index)
 	{
-		::Console.EditCursor.SetHighlightedObject(static_cast<C4Object *>(this->model()->data(index, ObjectHighlightRole).value<void *>()));
+		C4Object *obj = nullptr;
+		int32_t obj_number = this->model()->data(index, ObjectHighlightRole).toInt();
+		if (obj_number) obj = ::Objects.SafeObjectPointer(obj_number);
+		::Console.EditCursor.SetHighlightedObject(obj);
 	});
 	// Connect view to combobox
 	setView(view);
@@ -637,8 +640,8 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 		}
 		QStandardItem *new_item = new QStandardItem(QString(opt.name->GetCStr()));
 		new_item->setData(QVariant(idx), C4DeepQComboBox::OptionIndexRole);
-		void *item_obj_data = opt.value.getObj();
-		new_item->setData(qVariantFromValue(item_obj_data), C4DeepQComboBox::ObjectHighlightRole);
+		C4Object *item_obj_data = opt.value.getObj();
+		if (item_obj_data) new_item->setData(QVariant(item_obj_data->Number), C4DeepQComboBox::ObjectHighlightRole);
 		parent->appendRow(new_item);
 		++idx;
 	}
