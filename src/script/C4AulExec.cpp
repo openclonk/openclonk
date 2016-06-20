@@ -802,7 +802,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 		}
 
 	}
-	catch (C4AulError &e)
+	catch (C4AulError &)
 	{
 		// Save current position
 		assert(pCurCtx->Func->GetCode() <= pCPos);
