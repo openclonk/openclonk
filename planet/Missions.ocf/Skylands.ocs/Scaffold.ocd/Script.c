@@ -12,6 +12,8 @@ public func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 func Initialize()
 {
 	return _inherited(...);
@@ -243,3 +245,4 @@ local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 30;
 local Plane = 120;
+local Components = {Wood = 1};

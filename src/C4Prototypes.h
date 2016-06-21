@@ -23,7 +23,7 @@
 // class declarations
 class C4AbstractApp;
 class C4Action;
-struct C4AulBCC;
+class C4AulBCC;
 class C4AulDefFunc;
 class C4AulExec;
 class C4AulFunc;

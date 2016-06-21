@@ -2,3 +2,5 @@ Name=Holzfass
 Description=Behälter zum Transport von Flüssigkeiten.
 NameWith=mit
 MaterialWater=Wasser
+MaterialOil=Öl
+MaterialUnknown=unbekanntem Inhalt

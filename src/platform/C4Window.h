@@ -209,7 +209,7 @@ extern int MK_ALT;
 #define K_CENTER 76
 
 #elif defined(USE_COCOA)
-#import "ObjectiveCAssociated.h"
+#import "platform/ObjectiveCAssociated.h"
 // FIXME
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
@@ -331,6 +331,7 @@ public:
 	bool mouse_was_grabbed = false;
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
+	void HandleSDLEvent(SDL_WindowEvent &e);
 #endif
 #ifdef USE_WGL
 	HWND renderwnd;

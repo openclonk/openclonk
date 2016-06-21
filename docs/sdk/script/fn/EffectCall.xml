@@ -37,7 +37,7 @@
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
-      <funclink>AddEffect</funclink>
+      <funclink>CreateEffect</funclink>
       <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>GetEffect</funclink>

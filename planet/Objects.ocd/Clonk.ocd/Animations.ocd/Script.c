@@ -332,7 +332,7 @@ func UpdateBackwardsSpeed()
 {
 	if(GetComDir() != GetDirection() && lAnim.backwards != 1 && lAnim.backwardsSpeed != nil)
 	{
-		AddEffect("IntWalkBack", this, 1, 0, this, 0, lAnim.backwardsSpeed);
+		AddEffect("IntWalkBack", this, 1, 0, this, nil, lAnim.backwardsSpeed);
 		lAnim.backwards = 1;
 	}
 	if( (GetComDir() == GetDirection() && lAnim.backwards == 1) || lAnim.backwardsSpeed == nil)
@@ -770,6 +770,8 @@ func FxFallEffect(string new_name, object target)
 
 func FxFallTimer(object target, effect, int timer)
 {
+	if(GetAction() != "Jump")
+	return -1;
 	//falling off ledges without jumping results in fall animation
 	if(timer == 2 && GetYDir() > 1)
 	{
@@ -785,8 +787,6 @@ func FxFallTimer(object target, effect, int timer)
 		PlayAnimation("FallLong", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("FallLong"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		return -1;
 	}
-	if(GetAction() != "Jump")
-		return -1;
 }
 
 /*--
@@ -1311,7 +1311,7 @@ public func ControlThrow(object target, int x, int y)
 		else SetDir(DIR_Left);
 		//SetAction("Throw");
 		this->~SetHandAction(1); // Set hands ocupied
-		AddEffect("IntThrow", this, 1, 1, this, 0, target, throwAngle);
+		AddEffect("IntThrow", this, 1, 1, this, nil, target, throwAngle);
 		return true;
 	}
 	// attached

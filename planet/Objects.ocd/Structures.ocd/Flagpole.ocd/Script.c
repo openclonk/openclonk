@@ -33,6 +33,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func NoConstructionFlip() { return true; }
 
 /*-- Interaction --*/
@@ -41,7 +43,7 @@ public func NoConstructionFlip() { return true; }
 public func IsContainer() { return true; }
 
 // Allow buying only if the rule is active
-public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole));}
+public func AllowBuyMenuEntries(){ return ObjectCount(Find_ID(Rule_BuyAtFlagpole), Find_AnyLayer());}
 
 public func RejectCollect(id def, object obj)
 {
@@ -107,11 +109,10 @@ public func SaveScenarioObject(props)
 	return true;
 }
 
-
-
 /*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
 local HitPoints = 60;
 local neutral = false;
+local Components = {Wood = 3, Metal = 1};

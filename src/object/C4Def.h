@@ -110,7 +110,6 @@ public:
 	C4Rect PictureRect;
 	C4TargetRect SolidMask;
 	C4TargetRect TopFace;
-	C4IDList Component;
 	C4ID BurnTurnTo;
 	int32_t GrowthType;
 	int32_t CrewMember;
@@ -138,7 +137,7 @@ public:
 	int32_t VehicleControl;
 	int32_t Pathfinder;
 	int32_t MoveToRange;
-	int32_t NoComponentMass;
+	int32_t NoMassFromContents;
 	int32_t NoStabilize;
 	int32_t ClosedContainer;  // if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 	int32_t SilentCommands;   // if set, no command failure messages are printed
@@ -221,11 +220,6 @@ protected:
 	bool LoadActMap(C4Group &hGroup);
 	void CrossMapActMap();
 public:
-	// return def components - may be overloaded by script callback
-	int32_t GetComponentCount(C4ID idComponent);
-	C4ID GetIndexedComponent(int32_t idx);
-	void GetComponents(C4IDList *pOutList, C4Object *pObjInstance=NULL);
-
 	void IncludeDefinition(C4Def *pIncludeDef); // inherit components from other definition
 	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
 

@@ -9,6 +9,7 @@
 #include Library_Ownable
 #include Library_Producer
 #include Library_LampPost
+#include Library_Tank
 
 // does not need power
 public func PowerNeed() { return 0; }
@@ -24,6 +25,8 @@ public func Construction(object creator)
 	AddTimer("CollectionZone", 1);
 	return _inherited(creator, ...);
 }
+
+public func IsHammerBuildable() { return true; }
 
 /*-- Production --*/
 
@@ -109,9 +112,50 @@ public func OnProductEjection(object product)
 	product->SetPosition(GetX() + 18 * GetCalcDir(), GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
-	Sound("Pop");
+	Sound("Structures::EjectionPop");
 	return;
 }
+
+/*-- Pipeline --*/
+
+func IsLiquidContainerForMaterial(string liquid)
+{
+	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid);
+}
+
+func QueryConnectPipe(object pipe)
+{
+	if (GetNeutralPipe())
+	{
+		pipe->Report("$MsgHasPipes$");
+		return true;
+	}
+
+	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	{
+		return false;
+	}
+	else
+	{
+		pipe->Report("$MsgPipeProhibited$");
+		return true;
+	}
+}
+
+func OnPipeConnect(object pipe, string specific_pipe_state)
+{
+	SetNeutralPipe(pipe);
+	pipe->Report("$MsgConnectedPipe$");
+}
+
+func GetLiquidContainerMaxFillLevel()
+{
+	return 300;
+}
+
+
+/*-- Properties --*/
+
 
 local ActMap = {
 		Default = {
@@ -135,3 +179,4 @@ local Description = "$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 100;
+local Components = {Rock = 4, Wood = 2};

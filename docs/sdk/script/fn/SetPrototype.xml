@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetPrototype</title>
+    <category>Objects</category>
+    <subcat>Properties</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>nil</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>prototype</name>
+          <desc>The new prototype.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>obj</name>
+          <desc>Object to be changed. Can be <code>nil</code> in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>This function changes the prototype of a proplist.
+    When properties of a proplist are read and not set on that proplist, the property is looked up in the proplist's prototype(s).
+    This can be used for inheritance.</desc>
+    <related><funclink>GetPrototype</funclink></related>
+  </func>
+  <author>Günther</author><date>2016-04</date>
+</funcs>

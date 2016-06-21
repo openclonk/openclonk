@@ -124,7 +124,7 @@ if(MSVC)
 	# Enable LTCG for release builds
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
-	add_linker_flags(optimized MODULES exe shared static FLAGS /LTCG)
+	add_linker_flags(optimized MODULES exe shared static FLAGS "/LTCG:incremental")
 
 	# Activate edit-and-continue
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Gy")
@@ -948,7 +948,7 @@ elseif(UPNP_STYLE STREQUAL "Win32")
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPWin32.cpp
 	)
-elseif(UPNP_STYLE STREQUAL "libupnp")
+elseif(UPNP_STYLE STREQUAL "miniupnpc")
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPLinux.cpp
 	)
@@ -1074,6 +1074,14 @@ src/platform/C4TimeMilliseconds.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
+
+	# pcg is a header-only library which we're listing solely so MSVC shows
+	# the sources in the solution explorer. We could use an INTERFACE library
+	# but there is no point to that because we don't need it for non-IDE
+	# generators and support on IDE-targetting generators is nonexistant.
+	thirdparty/pcg/pcg_extras.hpp
+	thirdparty/pcg/pcg_random.hpp
+	thirdparty/pcg/pcg_uint128.hpp
 )
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
@@ -1100,6 +1108,8 @@ src/lib/C4Real.h
 src/lib/C4Random.cpp
 src/lib/C4Random.h
 src/script/C4Aul.cpp
+src/script/C4AulCompiler.h
+src/script/C4AulCompiler.cpp
 src/script/C4AulDefFunc.h
 src/script/C4AulExec.cpp
 src/script/C4AulExec.h
@@ -1108,6 +1118,7 @@ src/script/C4AulFunc.h
 src/script/C4Aul.h
 src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
+src/script/C4AulParse.h
 src/script/C4AulScriptFunc.cpp
 src/script/C4AulScriptFunc.h
 src/script/C4Effect.cpp

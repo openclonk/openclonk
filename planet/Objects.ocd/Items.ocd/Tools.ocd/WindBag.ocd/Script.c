@@ -37,7 +37,7 @@ public func IsInventorProduct() { return true; }
 
 func RejectUse(object clonk)
 {
-	return clonk->GetProcedure() == "ATTACH";
+	return false;
 }
 
 // used by this object
@@ -247,3 +247,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local MaxIntake = 30;
+local Components = {Cloth = 1, Metal = 1};

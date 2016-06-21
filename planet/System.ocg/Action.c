@@ -1,7 +1,7 @@
 /*--
 		Action.c
-		Authors: Günther
-		
+		Authors: GÃ¼nther
+
 		Stuff for the proplist changes.
 --*/
 
@@ -22,6 +22,7 @@ static const DFA_ATTACH  =  "ATTACH";
 static const DFA_CONNECT =  "CONNECT";
 static const DFA_PULL    =  "PULL";
 static const Action = {
+	GetName = Global.GetName,
 	Length = 1,
 	Directions = 1,
 	Step = 1,

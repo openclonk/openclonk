@@ -85,8 +85,9 @@ protected func InitializePlayer(int plr)
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
 		
-	// Set player wealth.
-	SetWealth(plr, 20 + 20 * amount);
+	// Ensure mimimum player wealth.
+	var add_wealth = Max(0, 20 + 20 * amount - GetWealth(plr));
+	DoWealth(plr, add_wealth);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)

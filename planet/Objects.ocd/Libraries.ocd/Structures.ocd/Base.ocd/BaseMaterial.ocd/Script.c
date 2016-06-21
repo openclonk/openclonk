@@ -34,7 +34,7 @@ static const BASEMATERIAL_ProductionRate = 2160;
 
 global func GetBaseMaterial(int plr, id def, int index, int category)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(),  Find_Owner(plr));
 	if (!base) 
 		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
@@ -43,7 +43,7 @@ global func GetBaseMaterial(int plr, id def, int index, int category)
 
 global func SetBaseMaterial(int plr, id def, int cnt)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
 		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base)
@@ -52,7 +52,7 @@ global func SetBaseMaterial(int plr, id def, int cnt)
 
 global func DoBaseMaterial(int plr, id def, int change)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
 		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base)
@@ -61,7 +61,7 @@ global func DoBaseMaterial(int plr, id def, int change)
 
 global func GetBaseProduction(int plr, id def, int index, int category)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base)
 		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
@@ -70,7 +70,7 @@ global func GetBaseProduction(int plr, id def, int index, int category)
 
 global func SetBaseProduction(int plr, id def, int cnt)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
 		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base)
@@ -79,7 +79,7 @@ global func SetBaseProduction(int plr, id def, int cnt)
 
 global func DoBaseProduction(int plr, id def, int change)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
 		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 

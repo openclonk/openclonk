@@ -48,6 +48,7 @@
 #include "control/C4Record.h"
 #include "object/C4MeshAnimation.h"
 #include "landscape/fow/C4FoW.h"
+#include "landscape/C4Particles.h"
 
 namespace
 {
@@ -203,7 +204,6 @@ void C4Object::Default()
 	Shape.Default();
 	fOwnVertices=0;
 	Contents.Default();
-	Component.Default();
 	SolidMask.Default();
 	PictureRect.Default();
 	Def=NULL;
@@ -284,10 +284,6 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	if (Alive) Energy=GetPropertyInt(P_MaxEnergy);
 	Breath=GetPropertyInt(P_MaxBreath);
 
-	// Components
-	Component=Def->Component;
-	ComponentConCutoff();
-
 	// Color
 	if (Def->ColorByOwner)
 	{
@@ -362,7 +358,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove all effects (extinguishes as well)
 	if (pEffects)
 	{
-		pEffects->ClearAll(this, C4FxCall_RemoveClear);
+		pEffects->ClearAll(C4FxCall_RemoveClear);
 		// Effect-callback might actually have deleted the object already
 		if (!Status) return;
 	}
@@ -632,34 +628,25 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		fhgt = thgt;
 	}
 
-	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
-	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
+	C4DrawTransform transform;
+	bool transform_active = false;
+	if (pDrawTransform)
 	{
-		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
-		      fx, fy, fwdt, fhgt,
-		      cgo.Surface, tx, ty, twdt, thgt,
-		      true, NULL);*/
+		transform.SetTransformAt(*pDrawTransform, offX, offY);
+		transform_active = true;
 	}
-	// Rotated or transformed
-	else
+
+	// Meshes aren't rotated via DrawTransform to ensure lighting is applied correctly.
+	if (GetGraphics()->Type != C4DefGraphics::TYPE_Mesh && Def->Rotateable && fix_r != Fix0)
 	{
-		C4DrawTransform rot;
 		if (pDrawTransform)
-		{
-			rot.SetTransformAt(*pDrawTransform, offX, offY);
-			if (fix_r != Fix0) rot.Rotate(fixtof(fix_r), offX, offY);
-		}
+			transform.Rotate(fixtof(fix_r), offX, offY);
 		else
-		{
-			rot.SetRotate(fixtof(fix_r), offX, offY);
-		}
-		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
-		      fx, fy, fwdt, fhgt,
-		      cgo.Surface, tx, ty, twdt, thgt,
-		      true, &rot);*/
+			transform.SetRotate(fixtof(fix_r), offX, offY);
+		transform_active = true;
 	}
+
+	DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : NULL);
 }
 
 void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
@@ -704,62 +691,37 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		fy += offset_from_top;
 		fhgt -= offset_from_top;
 	}
+	
+	C4DrawTransform transform;
+	bool transform_active = false;
+	if (pDrawTransform)
+	{
+		transform.SetTransformAt(*pDrawTransform, offX, offY);
+		transform_active = true;
+	}
 
-	// Straight or a mesh; meshes are rotated before the draw transform is applied to ensure correct lighting
-	if (GetGraphics()->Type == C4DefGraphics::TYPE_Mesh || ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform))
+	// Meshes aren't rotated via DrawTransform to ensure lighting is applied correctly.
+	if (GetGraphics()->Type != C4DefGraphics::TYPE_Mesh && Def->Rotateable && fix_r != Fix0)
 	{
-		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-	}
-	// Rotated or transformed
-	else
-	{
-		// rotate midpoint of action facet around center of shape
-		// combine with existing transform if necessary
-		C4DrawTransform rot;
 		if (pDrawTransform)
-		{
-			rot.SetTransformAt(*pDrawTransform, offX, offY);
-			if (fix_r != Fix0) rot.Rotate(fixtof(fix_r), offX, offY);
-		}
+			transform.Rotate(fixtof(fix_r), offX, offY);
 		else
-		{
-			rot.SetRotate(fixtof(fix_r), offX, offY);
-		}
-		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    pDraw->Blit(Action.Facet.Surface,
-		      fx, fy, fwdt, fhgt,
-		      cgo.Surface, tx, ty, twdt, thgt,
-		      true, &rot);*/
+			transform.SetRotate(fixtof(fix_r), offX, offY);
+		transform_active = true;
 	}
+
+	DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : NULL);
 }
 
 void C4Object::UpdateMass()
 {
 	Mass=std::max<int32_t>((Def->Mass+OwnMass)*Con/FullCon,1);
-	if (!Def->NoComponentMass) Mass+=Contents.Mass;
+	if (!Def->NoMassFromContents) Mass+=Contents.Mass;
 	if (Contained)
 	{
 		Contained->Contents.MassCount();
 		Contained->UpdateMass();
 	}
-}
-
-void C4Object::ComponentConCutoff()
-{
-	// this is not ideal, since it does not know about custom builder components
-	int32_t cnt;
-	for (cnt=0; Component.GetID(cnt); cnt++)
-		Component.SetCount(cnt,
-		                   std::min(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
-}
-
-void C4Object::ComponentConGain()
-{
-	// this is not ideal, since it does not know about custom builder components
-	int32_t cnt;
-	for (cnt=0; Component.GetID(cnt); cnt++)
-		Component.SetCount(cnt,
-		                   std::max(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
 }
 
 void C4Object::UpdateInMat()
@@ -1062,7 +1024,7 @@ void C4Object::Execute()
 	// effects
 	if (pEffects)
 	{
-		pEffects->Execute(this);
+		C4Effect::Execute(&pEffects);
 		if (!Status) return;
 	}
 	// Life
@@ -1125,7 +1087,7 @@ void C4Object::AssignDeath(bool fForced)
 	// get death causing player before doing effect calls, because those might meddle around with the flags
 	int32_t iDeathCausingPlayer = LastEnergyLossCausePlayer;
 	Alive=0;
-	if (pEffects) pEffects->ClearAll(this, C4FxCall_RemoveDeath);
+	if (pEffects) pEffects->ClearAll(C4FxCall_RemoveDeath);
 	// if the object is alive again, abort here if the kill is not forced
 	if (Alive && !fForced) return;
 	// Action
@@ -1204,7 +1166,10 @@ bool C4Object::ChangeDef(C4ID idNew)
 	SetOCF();
 	// Any effect callbacks to this object might need to reinitialize their target functions
 	// This is ugly, because every effect there is must be updated...
-	if (Game.pGlobalEffects) Game.pGlobalEffects->OnObjectChangedDef(this);
+	if (::ScriptEngine.pGlobalEffects)
+		::ScriptEngine.pGlobalEffects->OnObjectChangedDef(this);
+	if (::GameScript.pScenarioEffects)
+		::GameScript.pScenarioEffects->OnObjectChangedDef(this);
 	for (C4Object *obj : Objects)
 		if (obj->pEffects) obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
@@ -1218,7 +1183,7 @@ void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 	// non-living: ask effects first
 	if (pEffects && !Alive)
 	{
-		pEffects->DoDamage(this, iChange, iCause, iCausedBy);
+		pEffects->DoDamage(iChange, iCause, iCausedBy);
 		if (!iChange) return;
 	}
 	// Change value
@@ -1243,7 +1208,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
 	// Living things: ask effects for change first
 	if (pEffects && Alive)
-		pEffects->DoDamage(this, iChange, iCause, iCausedByPlr);
+		pEffects->DoDamage(iChange, iCause, iCausedByPlr);
 	// Do change
 	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
@@ -1277,6 +1242,7 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 {
 	C4Real strgt_con_b = fix_y + Shape.GetBottom();
 	bool fWasFull = (Con>=FullCon);
+	int32_t old_con = Con;
 
 	// Change con
 	if (Def->Oversize)
@@ -1300,13 +1266,9 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 	// Face (except for the shape)
 	UpdateFace(false);
 
-	// component update
-	// Decay: reduce components
-	if (iChange<0)
-		ComponentConCutoff();
-	// Growth: gain components
-	else
-		ComponentConGain();
+	// Do a callback on completion change.
+	if (iChange != 0)
+		Call(PSF_OnCompletionChange, &C4AulParSet(old_con, Con));
 
 	// Unfullcon
 	if (fWasFull && (Con<FullCon))
@@ -2331,7 +2293,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
-	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( lightRange,                       "LightRange",         0                 ));
 	pComp->Value(mkNamingAdapt( lightFadeoutRange,                "LightFadeoutRange",  0                 ));
@@ -2342,7 +2303,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Layer,                            "Layer",              C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( C4DefGraphicsAdapt(pGraphics),    "Graphics",           &Def->Graphics    ));
 	pComp->Value(mkNamingPtrAdapt( pDrawTransform,                "DrawTransform"                         ));
-	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), numbers));
+	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), this, numbers));
 	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)NULL));
 
 	// Serialize mesh instance if we have a mesh graphics
@@ -2572,58 +2533,11 @@ void C4Object::Clear()
 	if (pMeshInstance) { delete pMeshInstance; pMeshInstance = NULL; }
 }
 
-
-
 bool C4Object::MenuCommand(const char *szCommand)
 {
 	// Native script execution
 	if (!Def || !Status) return false;
 	return !! ::AulExec.DirectExec(this, szCommand, "MenuCommand");
-}
-
-C4Object *C4Object::ComposeContents(C4ID id)
-{
-	int32_t cnt,cnt2;
-	C4ID c_id;
-	bool fInsufficient = false;
-	C4Object *pObj;
-	C4ID idNeeded=C4ID::None;
-	int32_t iNeeded=0;
-	// Get def
-	C4Def *pDef = C4Id2Def(id); if (!pDef) return NULL;
-	// get needed contents
-	C4IDList NeededComponents;
-	pDef->GetComponents(&NeededComponents, NULL);
-	// Check for sufficient components
-	StdStrBuf Needs; Needs.Format(LoadResStr("IDS_CON_BUILDMATNEED"),pDef->GetName());
-	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
-		if (NeededComponents.GetCount(cnt) > Contents.ObjectCount(c_id))
-		{
-			Needs.AppendFormat("|%ix %s", NeededComponents.GetCount(cnt) - Contents.ObjectCount(c_id), C4Id2Def(c_id) ? C4Id2Def(c_id)->GetName() : c_id.ToString() );
-			if (!idNeeded) { idNeeded=c_id; iNeeded=NeededComponents.GetCount(cnt)-Contents.ObjectCount(c_id); }
-			fInsufficient = true;
-		}
-	// Insufficient
-	if (fInsufficient)
-	{
-		// BuildNeedsMaterial call to object...
-		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4Id2Def(idNeeded), iNeeded)))
-			// ...game message if not overloaded
-			GameMsgObjectError(Needs.getData(),this);
-		// Return
-		return NULL;
-	}
-	// Remove components
-	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
-		for (cnt2=0; cnt2<NeededComponents.GetCount(cnt); cnt2++)
-			if (!( pObj = Contents.Find(C4Id2Def(c_id)) ))
-				return NULL;
-			else
-				pObj->AssignRemoval();
-	// Create composed object
-	// the object is created with default components instead of builder components
-	// this is done because some objects (e.g. arrow packs) will set custom components during initialization, which should not be overriden
-	return CreateContents(C4Id2Def(id));
 }
 
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
@@ -4970,42 +4884,6 @@ void C4Object::UpdateScriptPointers()
 {
 	if (pEffects)
 		pEffects->ReAssignAllCallbackFunctions();
-}
-
-StdStrBuf C4Object::GetNeededMatStr() const
-{
-	C4Def* pComponent;
-	int32_t cnt, ncnt;
-	StdStrBuf NeededMats;
-
-	C4IDList NeededComponents;
-	Def->GetComponents(&NeededComponents, NULL);
-
-	C4ID idComponent;
-
-	for (cnt = 0; (idComponent=NeededComponents.GetID(cnt)); cnt ++)
-	{
-		if (NeededComponents.GetCount(cnt)!=0)
-		{
-			ncnt = NeededComponents.GetCount(cnt) - Component.GetIDCount(idComponent);
-			if (ncnt > 0)
-			{
-				NeededMats.AppendFormat("|%dx ", ncnt);
-				if ((pComponent = C4Id2Def(idComponent)))
-					NeededMats.Append(pComponent->GetName());
-				else
-					NeededMats.Append(idComponent.ToString());
-			}
-		}
-	}
-
-	StdStrBuf result;
-	if (!!NeededMats)
-		{ result.Format(LoadResStr("IDS_CON_BUILDMATNEED"), GetName()); result.Append(NeededMats.getData()); }
-	else
-		result.Format(LoadResStr("IDS_CON_BUILDMATNONE"), GetName());
-
-	return result;
 }
 
 bool C4Object::IsPlayerObject(int32_t iPlayerNumber) const

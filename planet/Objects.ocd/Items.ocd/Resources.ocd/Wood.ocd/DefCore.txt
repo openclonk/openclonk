@@ -12,7 +12,6 @@ VertexCNAT=1,2
 VertexFriction=50,50
 Value=2
 Mass=6
-Components=Wood=1
 Picture=0,24,60,60
 Rotate=1
 Float=1

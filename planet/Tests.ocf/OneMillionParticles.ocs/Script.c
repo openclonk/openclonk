@@ -56,7 +56,8 @@ global func Test3()
 	{
 		var x = RandomX(100, LandscapeWidth() - 100);
 		var y = LandscapeHeight() / 2 - 20;
-		AddEffect("ScorchEverything", nil, 1, 1, nil, nil, x, y);
+		var fx = AddEffect("ScorchEverything", nil, 1, 1, nil, nil, x, y);
+		fx.offset = 2 * fire_count;
 	}
 }
 
@@ -65,7 +66,6 @@ global func FxScorchEverythingStart(target, effect, temp, x, y)
 	if (temp) return;
 	effect.x = x;
 	effect.y = y;
-	effect.offset = Random(180);
 	effect.glimmer = 
 	{
 		Prototype = Particles_Glimmer(),

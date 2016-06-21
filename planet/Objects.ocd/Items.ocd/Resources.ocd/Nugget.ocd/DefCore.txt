@@ -11,5 +11,4 @@ VertexY=1,-1,-1
 VertexFriction=40,40,40
 Value=5
 Mass=12
-Components=Nugget=1
 Rotate=1

@@ -15,7 +15,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Quartz/Quartz.h>
-#import <C4WindowController.h>
+#import "platform/C4WindowController.h"
 
 #ifdef USE_COCOA
 

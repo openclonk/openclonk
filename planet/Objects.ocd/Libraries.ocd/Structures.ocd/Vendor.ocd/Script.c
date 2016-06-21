@@ -64,30 +64,27 @@ func GetSellValue(object item)
 // ------------------------ Buying -------------------------------------
 
 
-func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_all_available, bool show_errors)
+func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_all_available, bool error_sound)
 {
 	// Tries to buy an object or all available objects for bRight == true
 	// Returns the last bought object
 	var num_available = this->GetBuyableAmount(wealth_player, item);
-	if(!num_available) return; //TODO
+	if (!num_available) return; //TODO
 	var num_buy = 1, purchased = nil;
 	if (buy_all_available) num_buy = num_available;
 	while (num_buy--)
 	{
 		var price = this->GetBuyValue(item);
 		// Does the player have enough money?
-		if(price > GetWealth(wealth_player))
+		if (price > GetWealth(wealth_player))
 		{
-			if(show_errors)
-			{
-				Sound("UI::Error", {player = for_player + 1});
-				PlayerMessage(for_player, "$MsgNotEnoughWealth$");
-			}
+			if (error_sound)
+				Sound("UI::Error", {player = for_player});
 			break;
 		}
 		// Take the cash
 		DoWealth(wealth_player, -price);
-		Sound("UI::UnCash", {player = for_player + 1}); // TODO: get sound
+		Sound("UI::UnCash?", {player = for_player});
 		// Decrease the base material, allow runtime overload
 		this->ChangeBuyableAmount(wealth_player, item, -1);
 		// Deliver the object
@@ -103,7 +100,7 @@ func DoBuy(id item, int for_player, int wealth_player, object buyer, bool buy_al
 
 func DoSell(object obj, int wealth_player)
 {
-	if (obj->~QueryOnSell(wealth_player)) return;
+	if (obj->~QueryOnSell(wealth_player, this)) return;
 
 	// Sell contents first
 	for(var contents in FindObjects(Find_Container(obj)))
@@ -113,7 +110,13 @@ func DoSell(object obj, int wealth_player)
 
 	// Give the player the cash
 	DoWealth(wealth_player, this->GetSellValue(obj));
-	Sound("UI::Cash", {player = wealth_player + 1});
+	Sound("UI::Cash", {player = wealth_player});
+	
+	// Add the item to the homebase material.
+	if (!obj->~QueryRebuy(wealth_player, this))
+	{
+		this->ChangeBuyableAmount(wealth_player, obj->GetID(), +1);
+	}
 
 	// OnSale callback to object e.g. for goal updates
 	obj->~OnSale(wealth_player, this);
@@ -190,10 +193,10 @@ func GetBuyMenuEntry(int index, id item, int amount, int value)
 {
 	var entry = 
 	{
-		Right = "4em", Bottom = "2em",
+		Right = "2em", Bottom = "3em",
 		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-		image = {Right = "2em", Style = GUI_TextBottom | GUI_TextRight},
-		price = {Left = "2em", Priority = 3}
+		image = {Bottom = "2em", Style = GUI_TextBottom | GUI_TextRight},
+		price = {Style = GUI_TextBottom | GUI_TextRight, Priority = 3}
 	};
 	entry.image.Symbol = item;
 	entry.image.Text = Format("%dx", amount);
@@ -206,7 +209,7 @@ func GetBuyMenuEntry(int index, id item, int amount, int value)
 // ----- buying
 
 public func GetBuyMenuEntries(object clonk)
-{	
+{
 	// We need to know when exactly we should refresh the menu to prevent unecessary refreshs.
 	var lowest_greyed_out_price = nil;
 
@@ -216,13 +219,13 @@ public func GetBuyMenuEntries(object clonk)
 
 	var wealth = GetWealth(wealth_player); 
 	var menu_entries = [];
-	var i = 0, item, amount;
+	var index = 0, item, amount;
 	
 	for (item in this->GetBuyableItems(for_player))
 	{
 		amount = this->GetBuyableAmount(for_player, item);
 		var value = this->GetBuyValue(item);
-		var entry = GetBuyMenuEntry(i, item, amount, value);
+		var entry = GetBuyMenuEntry(index++, item, amount, value);
 		if (value > wealth) // If the player can't afford it, the item (except for the price) is overlayed by a greyish color.
 		{
 			entry.overlay = {Priority = 2, BackgroundColor = RGBa(50, 50, 50, 150)};
@@ -252,9 +255,8 @@ public func GetBuyMenuEntries(object clonk)
 	var fx = AddEffect("UpdateWealthDisplay", this, 1, 5, nil, GetID());
 	fx.lowest_greyed_out_price = lowest_greyed_out_price;
 	fx.last_wealth = wealth;
-	fx.plr = wealth_player;
+	fx.wealth_player = wealth_player;
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry, fx = fx});
-
 	return menu_entries;
 }
 
@@ -264,7 +266,7 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 	var wealth_player = GetOwner();
 	var for_player = clonk->GetController();
 	// Buy
-	DoBuy(def, for_player, wealth_player, clonk);
+	DoBuy(def, for_player, wealth_player, clonk, false, true);
 	// Excess objects exit flag (can't get them out...)
 	EjectAllContents();
 	UpdateInteractionMenus(this.GetBuyMenuEntries);
@@ -295,7 +297,7 @@ private func EjectContents(object contents)
 
 private func FxUpdateWealthDisplayTimer(object target, effect fx, int time)
 {
-	if (!fx.menu_target) return -1;
+	if (!fx.menu_target) return FX_Execute_Kill;
 	if (fx.last_wealth == GetWealth(fx.wealth_player)) return FX_OK;
 	fx.last_wealth = GetWealth(fx.wealth_player);
 	// Do we need a full refresh? New objects might have become available.

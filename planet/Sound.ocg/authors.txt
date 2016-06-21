@@ -5,7 +5,7 @@ Author        Work(s)
 ===============================================================================
 
 ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Action/Munch2, Clonk/Movement/DivingLoop1&2&3, Animals/Wipf/Snuff3
-                  Structures/DoorOpen*, Structures/DoorClose*, Hits/BucketHit*, Objects/Lorry/Dump*
+                  Structures/DoorOpen*, Structures/DoorClose*, Hits/BucketHit*, Objects/Lorry/Dump*, UI/UnCash1&2&3, Environment/Vine/Grab1&2
                   Structures/Repair, Structures/FinishBuilding made from following resources:
                       - JoelAudio: https://www.freesound.org/people/JoelAudio/sounds/135860/ - CC-By 3.0
                       - cmusounddesign: https://www.freesound.org/people/cmusounddesign/sounds/84696 - CC-By 3.0
@@ -19,7 +19,7 @@ ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Acti
                      Chirp, Flutter1&2&3, Noise1&2&3
                   Animals/Mooq:
                      Die1-5, DieFat, Hurt1-2, Munch1-4, Snort1-3, Snorting1-2, Spit1-2
-K-Pone          - Objects/Pickaxe/ClangHard1
+K-Pone          - Objects/Pickaxe/ClangHard1 Fire/Blast3alt Fire/BlastLiquid3alt
 Ringwaul        - Monster/Growl1-3, Monster/Die, Wipf/Snuff1-2, Wipf/Aroof, Wipf/Whine, Chest/Open, Chest/Close
                   Winbag/Charge, Winbag/ChargeStop, Winbag/Gust, Pickaxe/Clang1-3
 
@@ -61,7 +61,7 @@ luffy           - SmokeSizzle (https://www.freesound.org/people/luffy/sounds/172
 Pullover        - PropellerLoop (from Milch (EngineLoop))
 daveincamas		- StoneDoor/Chain (http://www.freesound.org/people/daveincamas/sounds/44076/)
 pempi			- Elevator/Start, Elevator/Moving, Elevator/Stop (http://www.freesound.org/people/pempi/sounds/33873/)
-Traveler 		- Pop (http://www.freesound.org/people/Traveler/sounds/16064/)
+Traveler 		- Structures/EjectionPop (http://www.freesound.org/people/Traveler/sounds/16064/)
 Pat 			- Clonk/Roll, Clonk/Rustle1-4, Clonk/RustleLand, (http://www.freesound.org/people/pwausc1/sounds/118259/)
 Stephen Hall 	- Clonk/Dig1-5 (http://www.freesound.org/people/shall555/sounds/72199/)
 sarge4267       - BlastFireworks (http://www.freesound.org/people/soundscalpel.com/sounds/110391)

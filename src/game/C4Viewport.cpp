@@ -40,6 +40,7 @@
 #include "object/C4GameObjects.h"
 #include "network/C4Network2.h"
 #include "landscape/fow/C4FoWRegion.h"
+#include "landscape/C4Particles.h"
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {

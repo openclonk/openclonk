@@ -28,9 +28,9 @@
 
 #include "graphics/C4DrawGL.h"
 
-#import "C4DrawGLMac.h"
-#import "C4WindowController.h"
-#import "C4AppDelegate+MainMenuActions.h"
+#import "graphics/C4DrawGLMac.h"
+#import "platform/C4WindowController.h"
+#import "platform/C4AppDelegate+MainMenuActions.h"
 
 #ifdef USE_COCOA
 

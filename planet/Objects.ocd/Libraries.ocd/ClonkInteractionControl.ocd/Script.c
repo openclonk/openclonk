@@ -88,7 +88,7 @@ private func FxIntHighlightInteractionStart(object target, proplist fx, temp, pr
 		{
 			Name = "Attach",
 			Procedure = DFA_ATTACH,
-			FaceBase = 1
+			FacetBase = 1
 		}
 	};
 	fx.dummy.Visibility = VIS_Owner;

@@ -148,7 +148,7 @@ void StdCompilerBinRead::String(char **pszString, RawCompileType eType)
 		if (iPos >= Buf.getSize())
 			{ excEOF(); return; }
 	// Allocate and copy data
-	*pszString = new char [iPos - iStart];
+	*pszString = (char *) malloc(iPos - iStart);
 	memcpy(*pszString, Buf.getPtr(iStart), iPos - iStart);
 }
 

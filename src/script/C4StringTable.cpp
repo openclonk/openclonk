@@ -87,6 +87,13 @@ C4StringTable::C4StringTable()
 	P[P_Interval] = "Interval";
 	P[P_CommandTarget] = "CommandTarget";
 	P[P_Time] = "Time";
+	P[P_Construction] = "Construction";
+	P[P_Destruction] = "Destruction";
+	P[P_Start] = "Start";
+	P[P_Stop] = "Stop";
+	P[P_Timer] = "Timer";
+	P[P_Effect] = "Effect";
+	P[P_Damage] = "Damage";
 	P[P_Collectible] = "Collectible";
 	P[P_Touchable] = "Touchable";
 	P[P_ActMap] = "ActMap";
@@ -257,7 +264,6 @@ C4StringTable::C4StringTable()
 	P[P_Set] = "Set";
 	P[P_Options] = "Options";
 	P[P_Key] = "Key";
-	P[P_Effect] = "Effect";
 	P[P_AsyncGet] = "AsyncGet";
 	P[P_Relative] = "Relative";
 	P[P_CanMoveCenter] = "CanMoveCenter";

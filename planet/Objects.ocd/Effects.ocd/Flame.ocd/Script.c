@@ -9,15 +9,21 @@
 protected func Initialize()
 {
 	Incinerate(100, GetController());
-	AddTimer("Burning");
+	AddTimer("Burning", RandomX(24, 26));
 	return;
 }
 
 public func Burning()
 {
-	// TODO: Consume inflammable material
-	// Split the flame if it is large enough.
-	if (GetCon() > 50 && !Random(3))
+	// Consume inflammable material and make the flame a little bigger.
+	if (FlameConsumeMaterial() && GetCon() <= 80)
+	{
+		DoCon(6);	
+		SetXDir(RandomX(-8, 8));
+	}
+	// Split the flame if it is large enough and not too many flames are nearby.
+	var amount = ObjectCount(Find_ID(GetID()), Find_Distance(10));	
+	if (amount < 5 && GetCon() > 50 && !Random(4))
 	{
 		var x = Random(15);
 		var new_flame = CreateObjectAbove(GetID());

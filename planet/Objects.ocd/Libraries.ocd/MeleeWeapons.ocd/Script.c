@@ -360,7 +360,7 @@ func ApplyShieldFactor(pFrom, pTo, damage)
 
 func StartWeaponHitCheckEffect(pClonk, iLength, iInterval)
 {
-	AddEffect("IntWeaponCharge", pClonk, 10, iInterval, this, 0, iLength);
+	AddEffect("IntWeaponCharge", pClonk, 10, iInterval, this, nil, iLength);
 }
 
 func StopWeaponHitCheckEffect(pClonk)

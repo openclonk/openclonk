@@ -15,6 +15,8 @@ public func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 public func Initialize()
 {
 	hold_production = false;
@@ -101,3 +103,4 @@ local Description ="$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;
+local Components = {Wood = 3, Metal = 2};

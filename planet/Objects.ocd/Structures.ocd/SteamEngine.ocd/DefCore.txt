@@ -10,7 +10,6 @@ VertexX=-16,18,-19,19,-10,10
 VertexY=-4,-4,24,24,24,24
 VertexFriction=50,50,100,100,100,100
 Mass=4000
-Components=Rock=6;Metal=3
 Collection=-33,7,12,12
 Exclusive=1
 Construction=1

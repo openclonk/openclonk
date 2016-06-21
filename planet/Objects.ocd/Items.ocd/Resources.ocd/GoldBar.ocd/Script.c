@@ -9,8 +9,10 @@ protected func Hit()
 public func IsFoundryProduct() { return true; }
 public func GetFuelNeed() { return 100; }
 public func IsValuable(){ return true; }
+public func QueryRebuy(){ return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local Plane = 480;
+local Components = {Nugget = 3};

@@ -757,8 +757,8 @@ bool C4MapScriptHost::InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTex
 	if (result)
 	{
 		map->ConvertSkyToTransparent();
-		std::tie(*pmap_fg_surface, *pmap_bg_surface) = map->ReleaseSurfaces();
 	}
+	std::tie(*pmap_fg_surface, *pmap_bg_surface) = map->ReleaseSurfaces();
 	return !!result;
 }
 

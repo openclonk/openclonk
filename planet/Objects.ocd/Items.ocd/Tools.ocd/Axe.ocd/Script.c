@@ -91,7 +91,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(hand), SwingTime, ANIM_Loop), Anim_Const(1000));
 
 			//The timed effect for when the axe actually hits the tree
-			AddEffect("IntAxe", clonk, 1, 1, this, 0, tree);
+			AddEffect("IntAxe", clonk, 1, 1, this, nil, tree);
 			return true;
 		}
 		if(! tree->IsStanding())
@@ -114,7 +114,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 			clonk->SetTurnForced(clonk->GetDir());
 
 			//The timed effect for when the axe actually hits the tree
-			AddEffect("IntSplit", clonk, 1, 1, this, 0, tree);
+			AddEffect("IntSplit", clonk, 1, 1, this, nil, tree);
 			return true;
 		}
 	}
@@ -322,7 +322,7 @@ func CheckStrike(iTime)
 			// don't hit objects twice
 			if(!GetEffect(effect_name, obj))
 			{
-				AddEffect(effect_name, obj, 1, 60 /* arbitrary */, nil, 0);
+				AddEffect(effect_name, obj, 1, 60 /* arbitrary */);
 
 				if(GetEffect(axe_name, obj))
 				{
@@ -330,7 +330,7 @@ func CheckStrike(iTime)
 				}
 				else
 				{
-					AddEffect(axe_name, obj, 1, 40, nil, 0);
+					AddEffect(axe_name, obj, 1, 40);
 				}
 
 				// Reduce damage by shield
@@ -403,3 +403,4 @@ local Description = "$Description$";
 local ChopStrength = 10;
 // Damage dealt to living beings when hit with an axe.
 local WeaponStrength = 6;
+local Components = {Wood = 1, Metal = 1};

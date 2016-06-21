@@ -14,9 +14,14 @@
  */
 
 #include "graphics/C4FacetEx.h"
+#include "lib/C4Random.h"
 
 #include "platform/StdScheduler.h"
 
+#pragma push_macro("new")
+#undef new
+#include <pcg/pcg_random.hpp>
+#pragma pop_macro("new")
 
 #ifndef INC_C4Particles
 #define INC_C4Particles
@@ -122,7 +127,7 @@ private:
 		float maxValue; // for Step & Sin
 	};
 
-	int randomSeed = -1; // for Random
+	pcg32 rng; // for Random
 
 	size_t keyFrameCount;
 	std::vector<float> keyFrames;
@@ -159,11 +164,6 @@ public:
 	}
 	C4ParticleValueProvider(const C4ParticleValueProvider &other) { *this = other; }
 	C4ParticleValueProvider & operator= (const C4ParticleValueProvider &other);
-	// The random roll is implemented in two variants, one using the default RNG and one using an own implementation that makes use of a seed.
-	// RollRandom is a wrapper that will select the approprate function to call.
-	void RollRandom(const C4Particle *forParticle);
-	void RollRandomUnseeded();
-	void RollRandomSeeded(const C4Particle *forParticle);
 
 	// divides by denominator
 	void Floatify(float denominator);
@@ -456,6 +456,7 @@ private:
 	GLuint ibo;
 	size_t ibo_size;
 	std::list<C4ParticleList> particleLists;
+	void PreparePrimitiveRestartIndices(uint32_t forSize);
 
 	CStdCSec particleListAccessMutex;
 	CStdEvent frameCounterAdvancedEvent;
@@ -507,9 +508,9 @@ public:
 	C4ParticleSystemDefinitionList definitions;
 
 #ifndef USE_CONSOLE
-	// usually, the following methods are used for drawing
-	GLuint GetIBO() const { return ibo; }
-	void PreparePrimitiveRestartIndices(uint32_t forSize);
+	// Returns the IBO ID that contains the PRI data.
+	// This makes sure that the IBO contains enough indices for at least 'forParticleAmount' particles.
+	GLuint GetIBO(size_t forParticleAmount);
 
 	// creates a new particle
 	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);

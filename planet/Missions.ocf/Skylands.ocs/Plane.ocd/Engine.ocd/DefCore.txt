@@ -10,6 +10,5 @@ VertexX=-3,-3,5,5
 VertexY=-3,3,-3,3
 VertexFriction=60,60,60,60
 Mass=20
-Components=Metal=10;
 Rotate=1
 Float=1

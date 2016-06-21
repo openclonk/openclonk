@@ -35,7 +35,7 @@ C4AulFunc::~C4AulFunc()
 		::ScriptEngine.FuncLookUp.Remove(this);
 }
 
-StdStrBuf C4AulFunc::GetFullName()
+StdStrBuf C4AulFunc::GetFullName() const
 {
 	StdStrBuf r;
 	// "lost" function?

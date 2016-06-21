@@ -55,7 +55,7 @@ public func ControlUse(object clonk, int x, int y)
 	if(clonk->IsWalking())
 	{
 		if(!GetEffect("SwordStrikeStop", clonk))
-			movement_effect = AddEffect("SwordStrikeStop", clonk, 2, length, nil, GetID());
+			movement_effect = AddEffect("SwordStrikeStop", clonk, 2, length, this);
 	}
 	else
 	if(clonk->IsJumping())
@@ -206,7 +206,7 @@ func CheckStrike(iTime)
 			// don't hit objects twice
 			if(!GetEffect(effect_name, obj))
 			{
-				AddEffect(effect_name, obj, 1, Sword_Standard_StrikingLength, nil, 0);
+				AddEffect(effect_name, obj, 1, Sword_Standard_StrikingLength);
 				
 				if(GetEffect(sword_name, obj))
 				{
@@ -216,7 +216,7 @@ func CheckStrike(iTime)
 				else
 				{
 					//Log("first hit overall");
-					AddEffect(sword_name, obj, 1, 40, nil, 0);
+					AddEffect(sword_name, obj, 1, 40);
 				}
 
 				
@@ -345,3 +345,4 @@ func Definition(def) {
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
+local Components = {Wood = 1, Metal = 1};

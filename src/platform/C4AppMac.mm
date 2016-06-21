@@ -27,8 +27,8 @@
 #import <Cocoa/Cocoa.h>
 
 #ifndef USE_CONSOLE
-#import "C4WindowController.h"
-#import "C4DrawGLMac.h"
+#import "platform/C4WindowController.h"
+#import "graphics/C4DrawGLMac.h"
 
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {

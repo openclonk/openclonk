@@ -20,9 +20,9 @@
 #include "game/C4Viewport.h"
 #include "game/C4GraphicsSystem.h"
 
-#import "C4AppDelegate+MainMenuActions.h"
-#import "C4DrawGLMac.h"
-#import "C4EditorWindowController.h"
+#import "platform/C4AppDelegate+MainMenuActions.h"
+#import "graphics/C4DrawGLMac.h"
+#import "editor/C4EditorWindowController.h"
 
 @implementation C4AppDelegate (MainMenuActions)
 

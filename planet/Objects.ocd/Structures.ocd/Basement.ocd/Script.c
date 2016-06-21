@@ -17,6 +17,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	var wdt = GetObjWidth();
@@ -139,3 +141,4 @@ local Name = "$Name$";
 local Description ="$Description$";
 local HitPoints = 80;
 local Plane = 190;
+local Components = {Rock = 2};

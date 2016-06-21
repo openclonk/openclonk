@@ -12,6 +12,5 @@ VertexCNAT=1,2,16
 VertexFriction=30,30,30
 Value=8
 Mass=12
-Components=Ore=1
 Rotate=1
 Picture=0,20,64,64

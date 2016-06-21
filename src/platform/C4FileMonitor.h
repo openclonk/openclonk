@@ -26,7 +26,7 @@
 #ifdef __APPLE__
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreServices/CoreServices.h>
-#import "ObjectiveCAssociated.h"
+#import "platform/ObjectiveCAssociated.h"
 #endif
 
 class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback

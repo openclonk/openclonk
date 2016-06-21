@@ -1496,7 +1496,12 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 
 	if (clipping)
 	{
-		myClippingRect = C4Rect(targetClipX1, targetClipY1, targetClipX2, targetClipY2);
+		// Take either the parent rectangle or restrict it additionally by the child's geometry.
+		myClippingRect = C4Rect(
+			std::max(currentClippingRect->x, targetClipX1),
+			std::max(currentClippingRect->y, targetClipY1),
+			std::min(currentClippingRect->Wdt, targetClipX2),
+			std::min(currentClippingRect->Hgt, targetClipY2));
 		currentClippingRect = &myClippingRect;
 	}
 

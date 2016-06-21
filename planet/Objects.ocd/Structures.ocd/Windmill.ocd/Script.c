@@ -24,6 +24,8 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	// Create a helper object for the wheel.
@@ -171,7 +173,7 @@ public func OnProductEjection(object product)
 	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() + 40);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
-	Sound("Pop");
+	Sound("Structures::EjectionPop");
 	return;
 }
 
@@ -209,3 +211,4 @@ local BlastIncinerate = 100;
 local HitPoints = 70;
 local Name = "$Name$";
 local Description = "$Description$";
+local Components = {Rock = 6, Wood = 2};

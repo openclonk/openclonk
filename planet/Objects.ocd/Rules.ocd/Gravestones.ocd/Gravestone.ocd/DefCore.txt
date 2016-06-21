@@ -10,4 +10,3 @@ VertexX=0,0
 VertexY=-5,5
 VertexFriction=40,100
 Mass=10
-Components=Rock=1

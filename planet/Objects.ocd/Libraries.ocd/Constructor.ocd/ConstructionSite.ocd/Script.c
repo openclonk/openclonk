@@ -15,7 +15,7 @@ local is_constructing;
 // This should be recongnized as a container by the interaction menu independent of its category.
 public func IsContainer() { return !full_material; }
 // disallow taking stuff out
-public func RefuseTransfer(object toMove) { return true; }
+public func RefuseTransfer(object toMove) { return true; } // TODO: this is not used by another function, is this a callback?
 // disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
 public func MakeUncancellable() { no_cancel = true; return true; }
 
@@ -180,7 +180,7 @@ func SaveScenarioObject(props)
 // only allow collection if needed
 public func RejectCollect(id def, object obj)
 {
-	var max = GetComponent(def, nil, nil, definition);
+	var max = definition->GetComponent(def);
 	
 	// not a component?
 	if(max == 0)
@@ -248,10 +248,10 @@ private func GetMissingComponents()
 	// check for material
 	var comp, index = 0;
 	var missing_material = CreateArray();
-	while (comp = GetComponent(nil, index, nil, definition))
+	while (comp = definition->GetComponent(nil, index))
 	{
 		// find material
-		var max_amount = GetComponent(comp, nil, nil, definition);
+		var max_amount = definition->GetComponent(comp);
 		var c = ContentsCount(comp);
 		var dif = max_amount-c;
 		
@@ -363,10 +363,10 @@ func TakeConstructionMaterials(object from_clonk)
 	var w = definition->GetDefWidth() + 10;
 	var h = definition->GetDefHeight() + 10;
 
-	while (comp = GetComponent(nil, index, nil, definition))
+	while (comp = definition->GetComponent(nil, index))
 	{
 		// find material
-		var count_needed = GetComponent(comp, nil, nil, definition);
+		var count_needed = definition->GetComponent(comp);
 		index++;
 		
 		mat = CreateArray();

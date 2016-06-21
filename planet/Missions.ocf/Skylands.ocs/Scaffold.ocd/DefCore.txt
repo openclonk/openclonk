@@ -10,7 +10,6 @@ VertexX=-15,15,-15,15
 VertexY=-15,-15,15,15
 VertexFriction=50,50,100,100
 Mass=1000
-Components=Wood=1
 Exclusive=1
 Construction=1
 IncompleteActivity=1

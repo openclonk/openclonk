@@ -15,6 +15,8 @@ func Construction(object creator)
 	return _inherited(creator, ...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 /*-- Production --*/
 
 func IsProduct(id product_id)
@@ -80,3 +82,4 @@ local Description ="$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;
+local Components = {Wood = 3, Rock = 2, Metal = 1};

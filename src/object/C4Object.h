@@ -22,7 +22,6 @@
 
 #include "game/C4GameScript.h"
 #include "graphics/C4Facet.h"
-#include "landscape/C4Particles.h"
 #include "lib/StdMesh.h"
 #include "object/C4Id.h"
 #include "object/C4ObjectPtr.h"
@@ -167,7 +166,6 @@ public:
 	C4Shape Shape;
 	bool fOwnVertices; // if set, vertices aren't restored from def but from end of own vtx list
 	C4TargetRect SolidMask;
-	C4IDList Component;
 	C4Rect PictureRect;
 	C4NotifyingObjectList Contents;
 	C4MaterialList *MaterialContents; // SyncClearance-NoSave //
@@ -175,7 +173,7 @@ public:
 	StdMeshInstance* pMeshInstance; // Instance for mesh-type objects
 	C4Effect *pEffects; // linked list of effects
 	// particle lists that are bound to this object (either in front of behind it)
-	C4ParticleList *FrontParticles, *BackParticles;
+	class C4ParticleList *FrontParticles, *BackParticles;
 	void ClearParticleLists();
 
 	uint32_t ColorMod; // color by which the object-drawing is modulated
@@ -214,7 +212,6 @@ public:
 	void SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY);
 	void SetHalfVehicleSolidMask(bool set);
 	bool CheckSolidMaskRect(); // clip bounds of SolidMask in graphics - return whether the solidmask still exists
-	C4Object *ComposeContents(C4ID id);
 	bool MenuCommand(const char *szCommand);
 
 	void Clear();
@@ -257,8 +254,6 @@ public:
 	void UpdatePos(); // pos/shape changed
 	void UpdateSolidMask(bool fRestoreAttachedObjects);
 	void UpdateMass();
-	void ComponentConCutoff();
-	void ComponentConGain();
 	bool ChangeDef(C4ID idNew);
 	void UpdateFace(bool bUpdateShape, bool fTemp=false);
 	void UpdateGraphics(bool fGraphicsChanged, bool fTemp=false); // recreates solidmasks (if fGraphicsChanged), validates Color
@@ -382,8 +377,6 @@ public:
 	bool CanConcatPictureWith(C4Object *pOtherObject) const; // return whether this object should be grouped with the other in activation lists, contents list, etc.
 
 	bool IsMoveableBySolidMask(int ComparisonPlane) const;
-
-	StdStrBuf GetNeededMatStr() const;
 
 	// This function is used for:
 	// -Objects to be removed when a player is removed

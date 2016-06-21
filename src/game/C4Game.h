@@ -83,7 +83,6 @@ public:
 	C4Extra             Extra;
 	class C4ScenarioObjectsScriptHost *pScenarioObjectsScript;
 	C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
-	C4Effect            *pGlobalEffects;
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;
@@ -148,7 +147,7 @@ public:
 	bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
 	bool DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
 	void DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer);
-	void FixRandom(int32_t iSeed);
+	void FixRandom(uint64_t iSeed);
 	bool Init();
 	bool PreInit();
 	void SetScenarioFilename(const char*);

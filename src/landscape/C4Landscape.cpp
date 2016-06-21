@@ -378,7 +378,12 @@ void C4Landscape::ScanSideOpen()
 
 void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 {
-	if (p->Modulation) pDraw->ActivateBlitModulation(p->Modulation);
+	uint32_t clrMod = 0xffffffff;
+	if (p->Modulation)
+	{
+		pDraw->ActivateBlitModulation(p->Modulation);
+		clrMod = p->Modulation;
+	}
 	// blit landscape
 	if (::GraphicsSystem.Show8BitSurface == 1)
 		pDraw->Blit8Fast(p->Surface8.get(), cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
@@ -387,7 +392,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 	else if (p->pLandscapeRender)
 	{
 		DoRelights();
-		p->pLandscapeRender->Draw(cgo, pLight);
+		p->pLandscapeRender->Draw(cgo, pLight, clrMod);
 	}
 	if (p->Modulation) pDraw->DeactivateBlitModulation();
 }
@@ -441,8 +446,8 @@ static std::vector<int32_t> GetRoundPolygon(int32_t x, int32_t y, int32_t size, 
 	vertices.reserve(count * 2);
 
 	// varying phase of the sin/cos waves
-	C4Real begin = itofix(360)*Random(100) / 100;
-	C4Real begin2 = itofix(360)*Random(100) / 100;
+	C4Real begin = itofix(360)*(int32_t)Random(100) / 100;
+	C4Real begin2 = itofix(360)*(int32_t)Random(100) / 100;
 
 	// parameters:
 	// the bigger the factor, the smaller the divergence from a circle

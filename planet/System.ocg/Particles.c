@@ -243,6 +243,27 @@ global func Particles_Straw()
 	};
 }
 
+global func Particles_Leaf(int color)
+{
+	return
+	{
+		Size = PV_Random(4, 6),
+		Phase = PV_Random(0, 2),
+		Rotation = PV_Random(0, 360),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		Alpha = PV_KeyFrames(0, 0, 255, 900, 255, 1000, 0),
+		CollisionVertex = 800,
+		OnCollision = PC_Die(),
+		ForceX = PV_Wind(50),
+		ForceY = PV_Gravity(100),
+		DampingX = 975, DampingY = 975,
+		Rotation = PV_Direction(PV_Random(750, 1250)),
+		Attach = ATTACH_Front
+	};
+}
+
 global func Particles_CottonBalloon()
 {
 	return

@@ -10,4 +10,3 @@ VertexX=0,0
 VertexY=7,12
 VertexFriction=50,100
 VertexCNAT=16,8
-Components=Moss=4

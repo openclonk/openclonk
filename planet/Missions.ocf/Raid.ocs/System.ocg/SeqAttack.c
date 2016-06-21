@@ -166,10 +166,10 @@ func Attack_8()
 		npc.ActMap = Clonk.ActMap;
 		npc->SetAction("Walk");
 	}
-	npc_newton->SetCommand("MoveTo", 0, 422, 342);
-	npc_lara->SetCommand("MoveTo", 0, 455, 358);
-	npc_lisa->SetCommand("MoveTo", 0, 474, 358);
-	npc_woody->SetCommand("MoveTo", 0, 493, 358);
+	npc_newton->SetCommand("MoveTo", nil, 422, 342);
+	npc_lara->SetCommand("MoveTo", nil, 455, 358);
+	npc_lisa->SetCommand("MoveTo", nil, 474, 358);
+	npc_woody->SetCommand("MoveTo", nil, 493, 358);
 	return ScheduleNext(150);
 }
 

@@ -20,6 +20,9 @@ uniform sampler1D matMapTex;
 uniform float materialDepth;
 uniform vec2 materialSize;
 
+// for SetMatAdjust
+uniform vec4 clrMod;
+
 out vec4 fragColor;
 
 // Expected parameters for the scaler
@@ -154,4 +157,6 @@ slice(color) {
 slice(color+10) {
 	// Mix second color into main color according to scaler
 	fragColor = mix(color2, fragColor, scalerPx.r);
+	// Apply modulation
+	fragColor *= clrMod;
 }

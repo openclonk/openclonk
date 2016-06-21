@@ -74,7 +74,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_GrabLost            "~GrabLost"
 #define PSF_OnLineBreak         "~OnLineBreak" // iCause
 #define PSF_OnLineChange        "~OnLineChange" // current_length
-#define PSF_BuildNeedsMaterial  "~BuildNeedsMaterial" // idMat1, iAmount1, idMat2, iAmount2...
 #define PSF_ControlTransfer     "~ControlTransfer" // C4Object* pObj, int iTx, int iTy
 #define PSF_OnSynchronized       "~OnSynchronized"
 #define PSF_CalcValue           "~CalcValue" // C4Object *pInBase, int iForPlayer
@@ -100,6 +99,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnDugOut            "~DugOut" //C4Object *by_obj
 #define PSF_SaveScenarioObjects "~SaveScenarioObjects" // int file_handle, [array duplication_list]
 #define PSF_CommandFailure      "~CommandFailure" // string command, pTarget, iTx, iTy, pTarget2, iData
+#define PSF_OnCompletionChange  "~OnCompletionChange" // int old_con, int new_con
 
 // Effect callbacks
 

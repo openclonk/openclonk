@@ -20,8 +20,8 @@
 #include "game/C4Application.h"
 #include "game/C4Game.h"
 
-#import "C4AppDelegate.h"
-#import "C4AppDelegate+MainMenuActions.h"
+#import "platform/C4AppDelegate.h"
+#import "platform/C4AppDelegate+MainMenuActions.h"
 #ifdef USE_SDL_MAINLOOP
 #import "SDL/SDL.h"
 #endif

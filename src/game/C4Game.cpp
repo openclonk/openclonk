@@ -76,6 +76,7 @@
 #include "landscape/C4MapScript.h"
 #include "landscape/C4SolidMask.h"
 #include "landscape/fow/C4FoW.h"
+#include "landscape/C4Particles.h"
 
 #include <unordered_map>
 
@@ -574,13 +575,13 @@ void C4Game::Clear()
 	StartupScenarioParameters.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
+	// Clear the particles before cleaning up the objects.
+	Particles.Clear();
 	DeleteObjects(true);
 	::Definitions.Clear();
 	Landscape.Clear();
 	PXS.Clear();
-	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
 	ScriptGuiRoot.reset();
-	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
 	::Messages.Clear();
@@ -731,8 +732,9 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Game
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
-	if (pGlobalEffects)
-		EXEC_S_DR(  pGlobalEffects->Execute(NULL);  , GEStats             , "GEEx\0");
+	EXEC_S_DR(  C4Effect::Execute(&ScriptEngine.pGlobalEffects);
+	            C4Effect::Execute(&GameScript.pScenarioEffects);
+	                                              , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")
 	EXEC_S_DR(  Weather.Execute();                , WeatherStat         , "WtrEx")
@@ -919,8 +921,10 @@ void C4Game::ClearPointers(C4Object * pObj)
 	::MouseControl.ClearPointers(pObj);
 	ScriptGuiRoot->ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
-	if (pGlobalEffects)
-		pGlobalEffects->ClearPointers(pObj);
+	if (::ScriptEngine.pGlobalEffects)
+		::ScriptEngine.pGlobalEffects->ClearPointers(pObj);
+	if (::GameScript.pScenarioEffects)
+		::GameScript.pScenarioEffects->ClearPointers(pObj);
 	::Landscape.ClearPointers(pObj);
 }
 
@@ -1474,7 +1478,6 @@ void C4Game::Default()
 	pParentGroup=NULL;
 	pScenarioSections=pCurrentScenarioSection=NULL;
 	*CurrentScenarioSection=0;
-	pGlobalEffects=NULL;
 	fResortAnyObject=false;
 	pNetworkStatistics.reset();
 	::Application.MusicSystem.ClearGame();
@@ -1734,40 +1737,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 
 	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
 
-	pComp->Name("Script");
-	if (!comp.fScenarioSection)
-	{
-		pComp->Value(mkParAdapt(ScriptEngine, numbers));
-	}
-	if (comp.fScenarioSection && pComp->isCompiler())
-	{
-		// loading scenario section: Merge effects
-		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
-		// and otherwise dead pointers would remain on the stack
-		C4Effect *pOldGlobalEffects, *pNextOldGlobalEffects=pGlobalEffects;
-		pGlobalEffects = NULL;
-		try
-		{
-			pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
-		}
-		catch (...)
-		{
-			delete pNextOldGlobalEffects;
-			throw;
-		}
-		while ((pOldGlobalEffects=pNextOldGlobalEffects))
-		{
-			pNextOldGlobalEffects = pOldGlobalEffects->pNext;
-			pOldGlobalEffects->Register(NULL, Abs(pOldGlobalEffects->iPriority));
-		}
-	}
-	else
-	{
-		// Otherwise, just compile effects
-		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
-	}
-	pComp->Value(mkNamingAdapt(*numbers, "Values"));
-	pComp->NameEnd();
+	pComp->Value(mkNamingAdapt(mkParAdapt(ScriptEngine, comp.fScenarioSection, numbers), "Script"));
 }
 
 bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, bool sync, C4ValueNumbers * numbers)
@@ -2294,7 +2264,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 	// Denumerate game data pointers
 	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
-	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 	if (!fLoadSection) GlobalSoundModifier.Denumerate(numbers);
 	numbers->Denumerate();
 	if (!fLoadSection) ScriptGuiRoot->Denumerate(numbers);
@@ -3101,7 +3070,7 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	return pPlr;
 }
 
-void C4Game::FixRandom(int32_t iSeed)
+void C4Game::FixRandom(uint64_t iSeed)
 {
 	FixedRandom(iSeed);
 }
@@ -3422,6 +3391,13 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// would leave those values in the altered state of the previous section
 	// scenario designers should regard this and always define any values, that are defined in subsections as well
 	C4Group hGroup, *pGrp;
+	// if current section was the loaded section (maybe main, but need not for resumed savegames)
+	if (!pCurrentScenarioSection)
+	{
+		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
+		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
+		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
+	}
 	// find section to load
 	C4ScenarioSection *pLoadSect = pScenarioSections;
 	while (pLoadSect) if (SEqualNoCase(pLoadSect->szName, szSection)) break; else pLoadSect = pLoadSect->pNext;
@@ -3430,21 +3406,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		DebugLogF("LoadScenarioSection: scenario section %s not found!", szSection);
 		return false;
 	}
-	// don't load if it's current
-	if (pLoadSect == pCurrentScenarioSection)
-	{
-		DebugLogF("LoadScenarioSection: section %s is already current", szSection);
-		return false;
-	}
-	// if current section was the loaded section (maybe main, but need not for resumed savegames)
-	if (!pCurrentScenarioSection)
-	{
-		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
-		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
-		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
-	}
 	// save current section state
-	if (dwFlags & (C4S_SAVE_LANDSCAPE | C4S_SAVE_OBJECTS))
+	if (pLoadSect != pCurrentScenarioSection && dwFlags & (C4S_SAVE_LANDSCAPE | C4S_SAVE_OBJECTS))
 	{
 		// ensure that the section file does point to temp store
 		if (!pCurrentScenarioSection->EnsureTempStore(!(dwFlags & C4S_SAVE_LANDSCAPE), !(dwFlags & C4S_SAVE_OBJECTS)))
@@ -3529,12 +3492,14 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		}
 	DeleteObjects(false);
 	// remove global effects
-	if (pGlobalEffects) if (!(dwFlags & C4S_KEEP_EFFECTS))
-		{
-			pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
-			// scenario section call might have been done from a global effect
-			// rely on dead effect removal for actually removing the effects; do not clear the array here!
-		}
+	if (::ScriptEngine.pGlobalEffects && !(dwFlags & C4S_KEEP_EFFECTS))
+	{
+		::ScriptEngine.pGlobalEffects->ClearAll(C4FxCall_RemoveClear);
+		// scenario section call might have been done from a global effect
+		// rely on dead effect removal for actually removing the effects; do not clear the array here!
+	}
+	if (::GameScript.pScenarioEffects && !(dwFlags & C4S_KEEP_EFFECTS))
+		::GameScript.pScenarioEffects->ClearAll(C4FxCall_RemoveClear);
 	// del particles as well
 	Particles.ClearAllParticles();
 	// clear transfer zones
@@ -3554,6 +3519,11 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// remove reference to FoW from viewports, so that we can safely
 	// reload the landscape and its FoW.
 	Viewports.DisableFoW();
+	// landscape initialization resets the RNG
+	// set a new seed here to get new dynamic landscapes
+	// TODO: add an option to disable this?
+	RandomSeed = Random(2147483647);
+	FixRandom(RandomSeed);
 	// re-init game in new section
 	C4ValueNumbers numbers;
 	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
@@ -3783,12 +3753,16 @@ bool C4Game::ToggleChat()
 
 C4Value C4Game::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {
+	std::string func{ szFunction };
+	if (func[0] != '~')
+		func.insert(0, 1, '~');
+
 	// call objects first - scenario script might overwrite hostility, etc...
-	C4Value vResult = ::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	C4Value vResult = ::Objects.GRBroadcast(func.c_str(), pPars, fPassError, fRejectTest);
 	// rejection tests abort on first nonzero result
 	if (fRejectTest) if (!!vResult) return vResult;
 	// scenario script call
-	return ::GameScript.Call(szFunction, pPars, fPassError);
+	return ::GameScript.Call(func.c_str(), pPars, fPassError);
 }
 
 void C4Game::SetDefaultGamma()

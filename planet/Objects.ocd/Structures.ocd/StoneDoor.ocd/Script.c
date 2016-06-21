@@ -182,3 +182,4 @@ local Name = "$Name$";
 local EditorAction_OpenDoor = { Name="$DoorUp$", Command="OpenDoor()" };
 local EditorAction_CloseDoor = { Name="$DoorDown$", Command="CloseDoor()" };
 local Plane = 200;
+local Components = {Rock = 6};

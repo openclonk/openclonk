@@ -116,7 +116,7 @@ func Init(object bush)
 	// actually grow
 	SetObjDrawTransform();
 	var steps = 1000 / max_grow_time;
-	AddEffect("VirtGrow", this, 1, 1, this, 0, Max(1, steps));
+	AddEffect("VirtGrow", this, 1, 1, this, nil, Max(1, steps));
 	
 	// add two leaves
 	AddLeaves(false);

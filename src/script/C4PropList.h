@@ -66,8 +66,9 @@ class C4PropList
 {
 public:
 	void Clear() { constant = false; Properties.Clear(); prototype.Set0(); }
-	const char *GetName() const;
+	virtual const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
+	virtual void SetOnFire(bool OnFire) { }
 
 	// These functions return this or a prototype.
 	virtual C4Def const * GetDef() const;
@@ -199,7 +200,7 @@ public:
 	Iterator end() { return Iterator(); }
 };
 
-void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);
+void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers *rPar);
 
 // Proplists that are created during a game and get saved in a savegame
 // Examples: Objects, Effects
@@ -259,8 +260,9 @@ public:
 	virtual C4PropListStatic * IsStatic() { return this; }
 	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
 	StdStrBuf GetDataString() const;
-	const C4PropListStatic * GetParent() { return Parent; }
-	const C4String * GetParentKeyName() { return ParentKeyName; }
+	virtual const char *GetName() const;
+	const C4PropListStatic * GetParent() const { return Parent; }
+	C4String * GetParentKeyName() { return ParentKeyName; }
 protected:
 	const C4PropListStatic * Parent;
 	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in

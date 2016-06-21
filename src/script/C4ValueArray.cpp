@@ -22,18 +22,18 @@
 #include "object/C4Object.h"
 
 C4ValueArray::C4ValueArray()
-		: iSize(0), iCapacity(0), pData(NULL)
+		: pData(NULL), iSize(0), iCapacity(0), constant(false)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iSize(0), iCapacity(0), pData(NULL)
+		: pData(NULL), iSize(0), iCapacity(0), constant(false)
 {
 	SetSize(inSize);
 }
 
 C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
-		: iSize(0), iCapacity(0), pData(NULL)
+		: pData(NULL), iSize(0), iCapacity(0), constant(false)
 {
 	SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)
@@ -77,6 +77,7 @@ public:
 
 void C4ValueArray::Sort(class C4SortObject &rSort)
 {
+	assert(!constant);
 	if (rSort.PrepareCache(this))
 	{
 		// Initialize position array
@@ -110,6 +111,7 @@ struct C4ValueArraySortStringscomp
 
 void C4ValueArray::SortStrings()
 {
+	assert(!constant);
 	std::stable_sort(pData, pData+iSize, C4ValueArraySortStringscomp());
 }
 
@@ -126,6 +128,7 @@ struct C4ValueArraySortcomp
 
 void C4ValueArray::Sort(bool descending)
 {
+	assert(!constant);
 	// sort by whatever type the values have
 	std::stable_sort(pData, pData+iSize, C4ValueArraySortcomp());
 	if (descending) std::reverse(pData, pData+iSize);
@@ -146,6 +149,7 @@ struct C4ValueArraySortPropertycomp
 
 bool C4ValueArray::SortByProperty(C4String *prop_name, bool descending)
 {
+	assert(!constant);
 	// expect this to be an array of proplists and sort by given property
 	// make sure we're all proplists before
 	for (int32_t i=0; i<iSize; ++i)
@@ -170,6 +174,7 @@ struct C4ValueArraySortArrayElementcomp
 bool C4ValueArray::SortByArrayElement(int32_t element_idx, bool descending)
 {
 	assert(element_idx>=0);
+	assert(!constant);
 	// expect this to be an array of arrays and sort by given element
 	// make sure we're all arrays before
 	for (int32_t i=0; i<iSize; ++i)
@@ -189,6 +194,7 @@ C4Value &C4ValueArray::operator[](int32_t iElem)
 {
 	assert(iElem < MaxSize);
 	assert(iElem >= 0);
+	assert(!constant);
 	if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not get caught, but it's better than a segfault
 	assert(iElem < iSize);
@@ -198,6 +204,7 @@ C4Value &C4ValueArray::operator[](int32_t iElem)
 
 void C4ValueArray::SetItem(int32_t iElem, const C4Value &Value)
 {
+	assert(!constant);
 	// enlarge
 	if (iElem < -iSize)
 		throw C4AulExecError("array access: index out of range");
@@ -214,6 +221,7 @@ void C4ValueArray::SetItem(int32_t iElem, const C4Value &Value)
 void C4ValueArray::SetSize(int32_t inSize)
 {
 	if(inSize == iSize) return;
+	assert(!constant);
 
 	// array not larger than allocated memory? Well, just ignore the additional allocated mem then
 	if (inSize <= iCapacity)

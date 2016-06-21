@@ -20,24 +20,18 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
+#include <inttypes.h>
+
 extern int RandomCount;
 
-void FixedRandom(DWORD dwSeed);
-
-int Random(int iRange);
-
-inline unsigned int SeededRandom(unsigned int iSeed, unsigned int iRange)
-{
-	if (!iRange) return 0;
-	iSeed = iSeed * 214013L + 2531011L;
-	return (iSeed >> 16) % iRange;
-}
-
-
-inline int SafeRandom(int range)
-{
-	if (!range) return 0;
-	return rand()%range;
-}
+// Seeds both the synchronized and the unsynchronized RNGs.
+void FixedRandom(uint64_t dwSeed);
+// Synchronized RNG.
+uint32_t Random(uint32_t iRange);
+// Unsynchronized RNG.
+uint32_t UnsyncedRandom();
+uint32_t UnsyncedRandom(uint32_t range);
+// Generates a single random value from a seed.
+uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange);
 
 #endif // INC_C4Random

@@ -23,8 +23,8 @@
         </param>
       </params>
     </syntax>
-    <desc>Sets the component count of the calling object.</desc>
-    <remark>Also see <emlink href="definition/defcore.html">DefCore</emlink>.</remark>
+    <desc>Sets the component count of the calling object or definition.</desc>
+    <remark>Also see <emlink href="definition/properties.html">Properties</emlink>.</remark>
     <related>
       <funclink>GetComponent</funclink>
       <funclink>Split2Components</funclink>

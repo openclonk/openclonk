@@ -14,10 +14,10 @@ func Hit()
 	Sound("Hits::GeneralHit?");
 }
 
-local fAiming;
+local is_aiming;
 
-public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
-public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
+public func GetCarryMode(clonk) { return CARRY_Musket; }
+public func GetCarrySpecial(clonk) { if (is_aiming) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
 public func GetCarryTransform()
 {
@@ -33,6 +33,9 @@ func Initialize()
 	MuskFront = 13;
 	MuskDown = 16;
 	MuskOffset = -8;
+	
+	loaded = false;
+	is_aiming = false;
 	
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
@@ -86,7 +89,7 @@ func ControlUseStart(object clonk, int x, int y)
 		return true;
 	}
 
-	fAiming = 1;
+	is_aiming = true;
 
 	holding = true;
 	
@@ -104,8 +107,7 @@ func ControlUseStart(object clonk, int x, int y)
 // Callback from the clonk when loading is finished
 public func FinishedLoading(object clonk)
 {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1)));
-	loaded = true;
+	SetLoaded();
 	if(holding) clonk->StartAim(this);
 	return holding; // false means stop here and reset the clonk
 }
@@ -124,7 +126,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 {
 	holding = false;
 	clonk->StopAim();
-	return -1;
+	return true;
 }
 
 // Callback from the clonk, when he actually has stopped aiming
@@ -147,7 +149,7 @@ protected func ControlUseCancel(object clonk, int x, int y)
 
 public func Reset(clonk)
 {
-	fAiming = 0;
+	is_aiming = false;
 }
 
 private func FireWeapon(object clonk, int angle)
@@ -181,6 +183,22 @@ func RejectCollect(id shotid, object shot)
 	if(!(shot->~IsMusketAmmo())) return true;
 }
 
+public func SetLoaded()
+{
+	loaded = true;
+	// Change picture to indicate being loaded.
+	this.PictureTransformation = Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1));
+	return;
+}
+
+public func IsLoaded() { return loaded; }
+
+// Can only be stacked with same state: loaded vs. non-loaded.
+public func CanBeStackedWith(object other)
+{
+	return this->IsLoaded() == other->~IsLoaded() && inherited(other, ...);
+}
+
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
 
@@ -192,3 +210,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local ForceFreeHands = true;
+local Components = {Wood = 1, Metal = 2};

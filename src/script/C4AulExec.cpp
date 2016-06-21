@@ -245,7 +245,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 				throw C4AulExecError("internal error: function didn't return");
 
 			case AB_ERR:
-				throw C4AulExecError("syntax error: see above for details");
+				if (pCPos->Par.s)
+					throw C4AulExecError((std::string("syntax error: ") + pCPos->Par.s->GetCStr()).c_str());
+				else
+					throw C4AulExecError("syntax error: see above for details");
 
 			case AB_DUP_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
@@ -511,6 +514,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 				// Typcheck to determine whether it's an array or a proplist
 				if(CheckArrayAccess(pStruct, pIndex) == C4V_Array)
 				{
+					if (pStruct->_getArray()->IsFrozen())
+						throw C4AulExecError("array write: array is readonly");
 					pStruct->_getArray()->SetItem(pIndex->_getInt(), *pValue);
 				}
 				else
@@ -563,6 +568,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 					throw C4AulExecError(FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
 
 				C4ValueArray *pArray = Array._getArray();
+				if (pArray->IsFrozen()) throw C4AulExecError("array write: array is readonly");
 				pArray->SetSlice(StartIndex._getInt(), EndIndex._getInt(), Value);
 
 				// Set value as result, remove both indices and first copy of value

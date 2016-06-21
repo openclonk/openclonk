@@ -1,0 +1,5 @@
+[Head]
+Title=Stackable objects
+
+[Landscape]
+NoScan=1

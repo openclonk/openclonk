@@ -14,4 +14,3 @@ StretchGrowth=1
 Oversize=1
 Float=1
 Rotate=1
-Components=Wood=3

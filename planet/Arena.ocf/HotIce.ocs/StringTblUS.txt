@@ -17,3 +17,4 @@ WinningTeam=Winning team: %s
 RemainingRounds=%d rounds remaining.
 LastRound=Last round!
 Tiebreak=Tiebreak!
+BonusRound=Bonus round!

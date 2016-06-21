@@ -31,6 +31,8 @@ protected func Construction()
 	return;
 }
 
+public func IsHammerBuildable() { return true; }
+
 protected func Initialize()
 {
 	// First initialize the libraries (especially the flag library).
@@ -176,3 +178,4 @@ local Description = "$Description$";
 local BlastIncinerate = 60;
 local ContactIncinerate = 5;
 local HitPoints = 50;
+local Components = {Wood = 3, Metal = 1};

@@ -33,7 +33,7 @@ enum C4AulScriptState
 };
 
 // generic script host for objects
-class C4ScriptHost
+class C4ScriptHost: public C4ComponentHost
 {
 public:
 	virtual ~C4ScriptHost();
@@ -45,6 +45,7 @@ public:
 	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
 	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
 	virtual C4PropListStatic * GetPropList() { return 0; }
+	const C4PropListStatic *GetPropList() const { return const_cast<C4ScriptHost*>(this)->GetPropList(); }
 	const char *GetScript() const { return Script.getData(); }
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 	// Translate a string using the script's lang table
@@ -56,7 +57,6 @@ protected:
 	void Unreg(); // remove from list
 	void MakeScript();
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage);
-	C4ComponentHost ComponentHost;
 
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
@@ -79,7 +79,6 @@ protected:
 
 	StdStrBuf Script; // script
 	C4LangStringTable *stringTable;
-	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
 	C4AulScriptState State; // script state
 	friend class C4AulParse;
@@ -131,9 +130,11 @@ public:
 	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
+	void Denumerate(C4ValueNumbers * numbers);
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value ScenPropList;
 	C4Value ScenPrototype;
+	C4Effect * pScenarioEffects = NULL;
 };
 
 extern C4GameScriptHost GameScript;

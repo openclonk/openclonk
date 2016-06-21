@@ -11,4 +11,3 @@ VertexY=0,3,3
 VertexFriction=50,100,100
 Value=5
 Mass=2
-Components=Seeds=1

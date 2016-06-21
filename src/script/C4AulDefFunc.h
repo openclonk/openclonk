@@ -37,6 +37,7 @@ inline C4Object * Object(C4PropList * _this)
 	return _this ? _this->GetObject() : NULL;
 }
 StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
+C4Effect ** FnGetEffectsFor(C4PropList * pTarget);
 
 // Nillable: Allow integer and boolean parameters to be nil
 // pointer parameters represent nil via plain NULL
@@ -49,7 +50,7 @@ class Nillable
 	bool _nil;
 	T _val;
 public:
-	inline Nillable(const T &value) : _nil(!value && !C4Value::IsNullableType(C4ValueConv<T>::Type())), _val(value) {}
+	inline Nillable(const T &value) : _nil(!value && !C4Value::IsNullableType(C4ValueConv<T>::Type)), _val(value) {}
 	inline Nillable() : _nil(true), _val(T()) {}
 	inline Nillable(std::nullptr_t) : _nil(true), _val(T()) {}
 	template <typename T2> inline Nillable(const Nillable<T2> & n2) : _nil(n2._nil), _val(n2._val) {}
@@ -59,7 +60,7 @@ public:
 	inline Nillable<T> &operator =(const T &val)
 	{
 		_val = val;
-		_nil = !val && !C4Value::IsNullableType(C4ValueConv<T>::Type());
+		_nil = !val && !C4Value::IsNullableType(C4ValueConv<T>::Type);
 		return *this;
 	}
 	inline Nillable<T> &operator =(const Nillable<T> &val)
@@ -140,71 +141,71 @@ template <typename T>
 struct C4ValueConv<Nillable<T> >
 {
 	inline static Nillable<T> _FromC4V(C4Value &v) { if (v.GetType() == C4V_Nil) return C4Void(); else return C4ValueConv<T>::_FromC4V(v); }
-	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
+	static constexpr C4V_Type Type = C4ValueConv<T>::Type;
 };
 template <> struct C4ValueConv<void>
 {
-	inline static C4V_Type Type() { return C4V_Nil; }
+	static constexpr C4V_Type Type = C4V_Nil;
 };
 template <> struct C4ValueConv<int>
 {
-	inline static C4V_Type Type() { return C4V_Int; }
+	static constexpr C4V_Type Type = C4V_Int;
 	inline static int _FromC4V(C4Value &v) { return v._getInt(); }
 };
 template <> struct C4ValueConv<long>: public C4ValueConv<int> { };
 template <> struct C4ValueConv<bool>
 {
-	inline static C4V_Type Type() { return C4V_Bool; }
+	static constexpr C4V_Type Type = C4V_Bool;
 	inline static bool _FromC4V(C4Value &v) { return v._getBool(); }
 };
 template <> struct C4ValueConv<C4ID>
 {
-	inline static C4V_Type Type() { return C4V_PropList; }
+	static constexpr C4V_Type Type = C4V_PropList;
 	inline static C4ID _FromC4V(C4Value &v) { C4Def * def = v.getDef(); return def ? def->id : C4ID::None; }
 };
 template <> struct C4ValueConv<C4Object *>
 {
-	inline static C4V_Type Type() { return C4V_Object; }
+	static constexpr C4V_Type Type = C4V_Object;
 	inline static C4Object *_FromC4V(C4Value &v) { return v._getObj(); }
 };
 template <> struct C4ValueConv<C4String *>
 {
-	inline static C4V_Type Type() { return C4V_String; }
+	static constexpr C4V_Type Type = C4V_String;
 	inline static C4String *_FromC4V(C4Value &v) { return v._getStr(); }
 };
 template <> struct C4ValueConv<C4ValueArray *>
 {
-	inline static C4V_Type Type() { return C4V_Array; }
+	static constexpr C4V_Type Type = C4V_Array;
 	inline static C4ValueArray *_FromC4V(C4Value &v) { return v._getArray(); }
 };
 template <> struct C4ValueConv<C4AulFunc *>
 {
-	inline static C4V_Type Type() { return C4V_Function; }
+	static constexpr C4V_Type Type = C4V_Function;
 	inline static C4AulFunc *_FromC4V(C4Value &v) { return v._getFunction(); }
 };
 template <> struct C4ValueConv<C4PropList *>
 {
-	inline static C4V_Type Type() { return C4V_PropList; }
+	static constexpr C4V_Type Type = C4V_PropList;
 	inline static C4PropList *_FromC4V(C4Value &v) { return v._getPropList(); }
 };
 template <> struct C4ValueConv<C4Effect *>
 {
-	inline static C4V_Type Type() { return C4V_Effect; }
+	static constexpr C4V_Type Type = C4V_Effect;
 	inline static C4Effect *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetEffect() : 0; }
 };
 template <> struct C4ValueConv<C4Def *>
 {
-	inline static C4V_Type Type() { return C4V_Def; }
+	static constexpr C4V_Type Type = C4V_Def;
 	inline static C4Def *_FromC4V(C4Value &v) { return v._getDef(); }
 };
 template <> struct C4ValueConv<const C4Value &>
 {
-	inline static C4V_Type Type() { return C4V_Any; }
+	static constexpr C4V_Type Type = C4V_Any;
 	inline static const C4Value &_FromC4V(C4Value &v) { return v; }
 };
 template <> struct C4ValueConv<C4Value>
 {
-	inline static C4V_Type Type() { return C4V_Any; }
+	static constexpr C4V_Type Type = C4V_Any;
 	inline static C4Value _FromC4V(C4Value &v) { return v; }
 };
 
@@ -218,7 +219,7 @@ public:
 
 	C4AulEngineFunc(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public):
 		C4AulFunc(Parent, pName),
-		pFunc(pFunc), ParType {C4ValueConv<ParTypes>::Type()...}, Public(Public)
+		pFunc(pFunc), ParType {C4ValueConv<ParTypes>::Type...}, Public(Public)
 	{
 		Parent->SetPropertyByS(Name, C4VFunction(this));
 		for(int i = GetParCount(); i < C4AUL_MAX_Par; ++i)
@@ -237,7 +238,7 @@ public:
 
 	virtual C4V_Type GetRetType() const
 	{
-		return C4ValueConv<RType>::Type();
+		return C4ValueConv<RType>::Type;
 	}
 
 	virtual bool GetPublic() const

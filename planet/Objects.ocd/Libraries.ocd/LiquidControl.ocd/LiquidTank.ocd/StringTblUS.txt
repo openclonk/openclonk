@@ -1,0 +1,15 @@
+MenuPipeControl=Pipe Control
+
+MsgConnectSource=Connect source
+MsgConnectDrain=Connect drain
+MsgConnectNeutral=Connect pipe
+DescConnectSource=Connects a source pipe.
+DescConnectDrain=Connects a drain pipe.
+DescConnectNeutral=Connects a pipe.
+
+MsgCutSource=Cut off source
+MsgCutDrain=Cut off drain
+MsgCutNeutral=Cut off pipe
+DescCutSource=Removes the source pipe.
+DescCutDrain=Removes the drain pipe.
+DescCutNeutral=Removes the connected pipe.

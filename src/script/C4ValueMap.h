@@ -118,7 +118,7 @@ public:
 	// returns the nr of the given name
 	// (= nr of value in "child" data lists)
 	// returns -1 if no item with given name exists
-	int32_t GetItemNr(const char *strName);
+	int32_t GetItemNr(const char *strName) const;
 
 	// get name by index; awway bounds not checked
 	const char *GetItemUnsafe(int32_t idx) const { return pNames[idx]; }

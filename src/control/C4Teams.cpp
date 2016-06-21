@@ -338,7 +338,9 @@ void C4TeamList::AddTeam(C4Team *pNewTeam)
 	// add team; grow vector if necessary
 	if (iTeamCount >= iTeamCapacity)
 	{
-		C4Team **ppNewTeams = new C4Team*[(iTeamCapacity = iTeamCount+4)&~3];
+		// grow up to the nearest multiple of 4 elements
+		// (TODO: Replace the whole thing e.g. with a simple std::vector<C4Team>)
+		C4Team **ppNewTeams = new C4Team*[(iTeamCapacity = ((iTeamCount+4)&~3))];
 		if (iTeamCount) memcpy(ppNewTeams, ppList, iTeamCount*sizeof(C4Team *));
 		delete [] ppList; ppList = ppNewTeams;
 	}
@@ -444,7 +446,7 @@ C4Team *C4TeamList::GetRandomSmallestTeam() const
 			iLowestTeamCount = 1;
 		}
 		else if (pLowestTeam->GetPlayerCount() == (*ppCheck)->GetPlayerCount())
-			if (!SafeRandom(++iLowestTeamCount))
+			if (!UnsyncedRandom(++iLowestTeamCount))
 				pLowestTeam = *ppCheck;
 	}
 	return pLowestTeam;
@@ -892,7 +894,7 @@ StdStrBuf C4TeamList::GetScriptPlayerName() const
 		if (!Game.PlayerInfos.GetActivePlayerInfoByName(sOut.getData()))
 			return sOut;
 	// none are available: Return a random name
-	sScriptPlayerNames.GetSection(SafeRandom(iNameIdx-1), &sOut, '|');
+	sScriptPlayerNames.GetSection(UnsyncedRandom(iNameIdx-1), &sOut, '|');
 	return sOut;
 }
 

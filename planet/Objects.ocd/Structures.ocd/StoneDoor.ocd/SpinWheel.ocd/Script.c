@@ -95,6 +95,7 @@ local Name = "$Name$";
 local Touchable = 2;
 local EditCursorCommands = ["ControlUp()", "ControlDown()", "ConnectNearestDoor()"];
 local Plane = 200;
+local Components = {Wood = 3, Metal = 1};
 local EditorProp_targetdoor = { Name="$Target$", Type="object", Filter="IsSwitchTarget" };
 
 func Definition(def)

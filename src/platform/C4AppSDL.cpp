@@ -250,7 +250,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
 		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT),
-		                     false, NULL);
+		                     e.key.repeat > 0, NULL);
 		break;
 	}
 	case SDL_KEYUP:
@@ -285,6 +285,11 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 	case SDL_CONTROLLERDEVICEREMOVED:
 		Application.pGamePadControl->CheckGamePad(e);
 		break;
+	case SDL_WINDOWEVENT:
+		// Forward to C4Window instance.
+		auto window = static_cast<C4Window*>(SDL_GetWindowData(SDL_GetWindowFromID(e.window.windowID), "C4Window"));
+		window->HandleSDLEvent(e.window);
+		break;
 	}
 }
 
@@ -305,7 +310,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	*piXRes = mode.w;
 	*piYRes = mode.h;
 	*piBitDepth = SDL_BITSPERPIXEL(mode.format);
-	*piRefreshRate = mode.refresh_rate;
+	if (piRefreshRate) *piRefreshRate = mode.refresh_rate;
 	return true;
 }
 

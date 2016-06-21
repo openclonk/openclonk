@@ -7,8 +7,26 @@
     <title>GetName</title>
     <category>Objects</category>
     <version>5.1 OC</version>
-    <syntax><rtype>string</rtype></syntax>
-    <desc>Returns the name of an object or of an object definition. If the object does not have a name of its own, the definition name is returned anyway.</desc>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>truename</name>
+	  <desc>Returns only the constant in which it was defined, ignoring the <code>Name</code> property.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the name of a proplist. This is either the contents of the <code>Name</code> property, or if that doesn't exist or the true name was requested, the name of the constant in which it was defined.</desc>
+    <examples>
+      <example>
+        <code>
+static const Bee = { Buzz = func() {} };
+func Poke(proplist animal) {
+	if (animal->GetName(true) == "Bee") animal->Buzz();
+}</code>
+      </example>
+    </examples>
   </func>
-  <author>jwk</author><date>2002-06</date>
+  <author>Günther</author><date>2014</date>
 </funcs>

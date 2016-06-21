@@ -422,7 +422,7 @@ void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 
 	SCopy(GetFilename(*iter),FileName,_MAX_FNAME);
 	SCopy(*iter, DiskPath, _MAX_PATH-1);
-	Size = FileSize(*iter);
+	Size = iter.GetFileSize();
 	Status=C4GRES_OnDisk;
 	Packed=false;
 	ChildGroup=false;

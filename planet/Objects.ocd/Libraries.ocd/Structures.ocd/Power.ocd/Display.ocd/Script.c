@@ -19,7 +19,8 @@ public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];
 	// Only add a power menu if the structure is a flagpole (Library_Flag).
-	if (this->~IsFlagpole())
+	// And only if a power network is already initialized for this object.
+	if (this->~IsFlagpole() && this->GetPowerHelper())
 	{
 		var power_menu =
 		{
@@ -43,6 +44,25 @@ public func GetPowerDisplayMenuEntries(object clonk)
 	if (!power_network)
 		return menu_entries;
 	
+	// If the no power need rule is active just state that.
+	if (FindObject(Find_ID(Rule_NoPowerNeed)))
+	{
+		var entry = 
+		{
+			Style = GUI_FitChildren,
+			Bottom = "1.1em",
+			BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+			Priority = 0,
+			text = 
+			{
+				Style = GUI_TextVCenter | GUI_TextLeft,
+				Text = "$MsgPowerNoNeed$"		
+			}
+		};
+		PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "nopowerneed", custom = entry});
+		return menu_entries;	
+	} 
+	
 	// Get all the power data.
 	var power_production_current = power_network->GetActivePowerAvailable(true) / 10;
 	var power_production_capacity = power_network->GetBarePowerAvailable() / 10;
@@ -50,46 +70,38 @@ public func GetPowerDisplayMenuEntries(object clonk)
 	var power_consumption_need = power_network->GetPowerConsumptionNeed() / 10;
 	var power_stored = power_network->GetStoredPower();
 	var power_stored_capacity = power_network->GetStoredPowerCapacity();
-
+	
+	var entry_prototype = 
+	{
+		Style = GUI_FitChildren | GUI_TextVCenter | GUI_TextLeft,
+		Bottom = "1.1em",
+		BackgroundColor = {Std = 0, OnHover = 0x50ff0000}
+	};
+	
 	// Show power production.
 	var entry = 
 	{
-		Bottom = "1.1em",
-		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		Prototype = entry_prototype,
 		Priority = 0,
-		text = 
-		{
-			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = Format("$MsgPowerProduction$ %d {{Icon_Lightbulb}} ($MsgPowerProductionCapacity$ %d {{Icon_Lightbulb}})", power_production_current, power_production_capacity)		
-		}
+		Text = Format("$MsgPowerProduction$ %d {{Icon_Lightbulb}} ($MsgPowerProductionCapacity$ %d {{Icon_Lightbulb}})", power_production_current, power_production_capacity)
 	};
 	PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "production", custom = entry});
 	
 	// Show power consumption.
 	var entry = 
 	{
-		Bottom = "1.1em",
-		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		Prototype = entry_prototype,
 		Priority = 1,
-		text = 
-		{
-			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = Format("$MsgPowerConsumption$ %d {{Icon_Lightbulb}} ($MsgPowerConsumptionDemand$ %d {{Icon_Lightbulb}})", power_consumption_current, power_consumption_need)
-		}
+		Text = Format("$MsgPowerConsumption$ %d {{Icon_Lightbulb}} ($MsgPowerConsumptionDemand$ %d {{Icon_Lightbulb}})", power_consumption_current, power_consumption_need)
 	};
 	PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "consumption", custom = entry});
 	
 	// Show power storage.
 	var entry = 
 	{
-		Bottom = "1.1em",
-		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		Prototype = entry_prototype,
 		Priority = 2,
-		text = 
-		{
-			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = Format("$MsgPowerStored$ %s {{Icon_Lightbulb}} ($MsgPowerStoredCapacity$ %s {{Icon_Lightbulb}})", GetStoredPowerString(power_stored), GetStoredPowerString(power_stored_capacity))
-		}
+		Text = Format("$MsgPowerStored$ %s {{Icon_Lightbulb}} ($MsgPowerStoredCapacity$ %s {{Icon_Lightbulb}})", GetStoredPowerString(power_stored), GetStoredPowerString(power_stored_capacity))
 	};
 	PushBack(menu_entries, {symbol = Icon_Lightbulb, extra_data = "storage", custom = entry});
 	return menu_entries;
@@ -121,6 +133,10 @@ public func OnPowerDisplayHover(id symbol, string extra_data, desc_menu_target, 
 			var power_stored = GetStoredPowerString(power_network->GetStoredPower());
 			var power_stored_capacity = GetStoredPowerString(power_network->GetStoredPowerCapacity());
 			text = Format("$DescPowerStored$", power_stored, power_stored_capacity, power_stored);
+		}
+		else if (extra_data == "nopowerneed")
+		{
+			text = "$DescPowerNoNeed$";
 		}
 	}
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);

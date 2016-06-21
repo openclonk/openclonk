@@ -417,7 +417,7 @@ private func DoInk()
 	};
 	CreateParticle("SmokeThick", 0, 0, PV_Random(-40, 40), PV_Random(-40, 40), PV_Random(36, 100), particles, 64);
 	// Make squid invisible for some time. Also inverse behavior during invisibility.
-	AddEffect("Invisibility", this, 1, 2, this, 0, particles);
+	AddEffect("Invisibility", this, 1, 2, this, nil, particles);
 	// Drain Clonks' breath a bit faster when in ink.
 	AddEffect("IntInkBlob", nil, 1, 5, nil, GetID(), GetX(), GetY());
 }

@@ -13,6 +13,7 @@ public func Place(int amount, proplist area, ...)
 }
 
 public func IsValuable() { return true; }
+public func QueryRebuy() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";

@@ -211,7 +211,7 @@
           <col>1 - 10. Determines search depth of the pathfinder algorithm (default 1). Warning: higher values may slow down the game. By setting this value you can also enable non-CrewMember objects to use pathfinding when executing commands.</col>
         </row>
         <row>
-          <literal_col>NoComponentMass</literal_col>
+          <literal_col>NoMassFromContents</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the object's contents is not added to the object's total mass. This can be used to prevent small container objects from turning into killer throwing items.</col>
         </row>

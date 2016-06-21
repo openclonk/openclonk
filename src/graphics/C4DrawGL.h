@@ -27,7 +27,7 @@
 #include <GL/glew.h>
 
 #ifdef USE_COCOA
-#import "ObjectiveCAssociated.h"
+#import "platform/ObjectiveCAssociated.h"
 #endif
 #include "graphics/C4Draw.h"
 #include "graphics/C4Shader.h"
@@ -277,6 +277,7 @@ public:
 	struct
 	{
 		bool LowMaxVertexUniformCount;
+		bool ForceSoftwareTransform;
 	} Workarounds;
 	void ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, const char * label);
 

@@ -83,7 +83,7 @@ int C4ConsoleQtObjectListModel::rowCount(const QModelIndex & parent) const
 		for (C4Object *obj : ::Objects)
 			if (obj && obj->Status && !obj->Contained)
 				++result;
-		for (C4Effect *fx = ::Game.pGlobalEffects; fx; fx = fx->pNext) if (fx->IsActive())
+		for (C4Effect *fx = ::ScriptEngine.pGlobalEffects; fx; fx = fx->pNext) if (fx->IsActive())
 			++result;
 		last_row_count = result;
 	}
@@ -217,7 +217,7 @@ QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) co
 		if (!found)
 		{
 			row = 0;
-			for (C4Effect *cfx = ::Game.pGlobalEffects; cfx; cfx = cfx->pNext) if (cfx->IsActive())
+			for (C4Effect *cfx = ::ScriptEngine.pGlobalEffects; cfx; cfx = cfx->pNext) if (cfx->IsActive())
 				if (cfx == fx) { found = true; break; } else ++row;
 			if (!found) return QModelIndex();
 		}

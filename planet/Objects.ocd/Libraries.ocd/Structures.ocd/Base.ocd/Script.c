@@ -79,7 +79,7 @@ func FxIntBaseHealTimer(pClonk, effect)
 		if(GetWealth(GetOwner()) >= GetHealCost())
 		{
 			DoWealth(GetOwner(), -GetHealCost());
-			Sound("UnCash", 0, 100, pClonk->GetOwner()+1); // TODO: get sound
+			Sound("UI::UnCash?", {player =  pClonk->GetOwner()});
 			iEnergy = GetHeal()*5;
 		}
 	}

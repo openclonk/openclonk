@@ -131,6 +131,7 @@ private func InitVegetation(int amount)
 	Mushroom->Place(10 + 4 * amount);
 	Branch->Place(10 + 4 * amount);
 	Trunk->Place(4 + 2 * amount);
+	Vine->Place(8 + 3 * amount);
 	
 	// Place trees around the islands.
 	Tree_Deciduous->Place(10 + 4 * amount);

@@ -44,6 +44,7 @@ public func IsContainer() { return true; }
 // Provides an own interaction menu, even if it wouldn't be a container.
 public func HasInteractionMenu() { return true; }
 
+
 public func GetProductionMenuEntries(object clonk)
 {
 	var products = GetProducts(clonk);
@@ -157,6 +158,7 @@ public func GetInteractionMenus(object clonk)
 	return menus;
 }
 
+
 public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 {
 	if (symbol == nil) return;
@@ -174,18 +176,16 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 	var product_id = symbol;
 	var costs = ProductionCosts(product_id);
 	var cost_msg = "";
-	var liquid;
 	for (var comp in costs)
 		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
 	if (this->~FuelNeed(product_id))
 		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
-	if (liquid = this->~LiquidNeed(product_id))
-		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], CheckLiquids(product_id)), liquid[0]);
 	if (this->~PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 	new_box.requirements.Text = cost_msg;
 	GuiUpdate(new_box, menu_id, 1, desc_menu_target);
 }
+
 
 private func GetCostString(int amount, bool available)
 {
@@ -193,6 +193,7 @@ private func GetCostString(int amount, bool available)
 	if (available) return Format("%dx", amount);
 	return Format("<c ff0000>%dx</c>", amount);
 }
+
 
 public func FxIntUpgradeProductProgressBarOnMenuOpened(object target, effect fx, int main_ID, int entry_ID, proplist menu_target)
 {
@@ -203,6 +204,7 @@ public func FxIntUpgradeProductProgressBarOnMenuOpened(object target, effect fx,
 	fx.is_showing = true;
 	EffectCall(target, fx, "Timer");
 }
+
 
 public func FxIntUpgradeProductProgressBarTimer(object target, effect fx, int time)
 {
@@ -231,11 +233,13 @@ public func FxIntUpgradeProductProgressBarTimer(object target, effect fx, int ti
 	return FX_OK;
 }
 
+
 /*-- Production  properties --*/
 
 // This function may be overloaded by the actual producer.
 // If set to true, the producer will show every product which is assigned to it instead of checking the knowledge base of its owner.
 private func IgnoreKnowledge() { return false; }
+
 
 /** Determines whether the product specified can be produced. Should be overloaded by the producer.
 	@param product_id item's id of which to determine if it is producible.
@@ -245,6 +249,7 @@ private func IsProduct(id product_id)
 {
 	return false;
 }
+
 
 /** Returns an array with the ids of products which can be produced at this producer.
 	@return array with products.
@@ -285,6 +290,7 @@ public func GetProducts(object for_clonk)
 	return products;
 }
 
+
 /**
 	Determines the production costs for an item.
 	@param item_id id of the item under consideration.
@@ -295,16 +301,18 @@ public func ProductionCosts(id item_id)
 	/* NOTE: This may be overloaded by the producer */
 	var comp_list = [];
 	var comp_id, index = 0;
-	while (comp_id = GetComponent(nil, index, nil, item_id))
+	while (comp_id = item_id->GetComponent(nil, index))
 	{
-		var amount = GetComponent(comp_id, index, nil, item_id);
+		var amount = item_id->GetComponent(comp_id);
 		comp_list[index] = [comp_id, amount];
 		index++;		
 	}
 	return comp_list;
 }
 
+
 /*-- Production queue --*/
+
 
 /** Returns the queue index corresponding to a product id or nil.
 */
@@ -317,6 +325,7 @@ public func GetQueueIndex(id product_id)
 	}
 	return nil;
 }
+
 
 /** Modifies an item in the queue. The index can be retrieved via GetQueueIndex.
 	@param position index in the queue
@@ -348,6 +357,8 @@ public func ModifyQueueIndex(int position, int amount, bool infinite_production)
 	}
 	return true;
 }
+
+
 /** Adds an item to the production queue.
 	@param product_id id of the item.
 	@param amount the amount of items of \c item_id which should be produced. Amount must not be negative.
@@ -391,14 +402,16 @@ public func CycleQueue()
 	queue[-1] = first;
 }
 
+
 /** Clears the complete production queue.
 */
-public func ClearQueue(bool abort)
+public func ClearQueue(bool abort) // TODO: parameter is never used
 {
 	queue = [];
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	return;
 }
+
 
 /** Modifies a certain production item arbitrarily. This is only used by the interaction menu.
 	This also creates a new production order if none exists yet.
@@ -436,6 +449,7 @@ private func ModifyProduction(proplist info, int player)
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
 
+
 /** Returns the current queue.
 	@return an array containing the queue elements (.Product for id, .Amount for amount).
 */
@@ -443,6 +457,7 @@ public func GetQueue()
 {
 	return queue;
 }
+
 
 private func ProcessQueue()
 {
@@ -477,16 +492,17 @@ private func ProcessQueue()
 	return FX_OK;
 }
 
+
 /*-- Production --*/
 
 // These functions may be overloaded by the actual producer.
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
-private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
 
 public func PowerNeed() { return 80; }
 
 public func GetConsumerPriority() { return 50; }
+
 
 private func Produce(id product)
 {
@@ -500,9 +516,6 @@ private func Produce(id product)
 	// Check need for fuel.
 	if (!CheckFuel(product))
 		return false;
-	// Check need for liquids.
-	if (!CheckLiquids(product))
-		return false;
 	// Check need for power.
 	if (!CheckForPower())
 		return false;
@@ -512,13 +525,13 @@ private func Produce(id product)
 	// Power will be substracted during the production process.
 	CheckComponents(product, true);
 	CheckFuel(product, true);
-	CheckLiquids(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
 
 	return true;
 }
+
 
 private func CheckComponents(id product, bool remove)
 {
@@ -548,6 +561,7 @@ private func CheckComponents(id product, bool remove)
 	return true;
 }
 
+
 public func GetAvailableComponentAmount(id material)
 {
 	// Normal object?
@@ -564,83 +578,55 @@ public func GetAvailableComponentAmount(id material)
 	return real_amount;
 }
 
+
 public func CheckComponent(id component, int amount)
 {
 	return GetAvailableComponentAmount(component) >= amount;
 }
 
+
 public func CheckFuel(id product, bool remove)
 {
-	if (FuelNeed(product) > 0)
+	var fuel_needed = FuelNeed(product);
+	if (fuel_needed > 0)
 	{
 		var fuel_amount = 0;
 		// Find fuel in this producer.
 		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
-			fuel_amount += fuel->~GetFuelAmount(false);
-		if (fuel_amount < FuelNeed(product))
+			fuel_amount += fuel->~GetFuelAmount();
+		if (fuel_amount < fuel_needed)
+		{
 			return false;
+		}
 		else if (remove)
 		{
-			// Remove the fuel needed.
-			fuel_amount = 0;
+			// Convert existing objects.
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
-				fuel_amount += fuel->~GetFuelAmount(false);
-				fuel->RemoveObject();
-				if (fuel_amount >= FuelNeed(product))
+				// Extract the fuel amount from stored objects
+				var fuel_extracted = fuel->~GetFuelAmount(fuel_needed);
+				
+				if (fuel_extracted > 0)
+				{
+					if (!fuel->~OnFuelRemoved(fuel_extracted)) fuel->RemoveObject();
+					fuel_needed -= fuel_extracted;
+				}
+				
+				// Converted enough? Stop here.
+				if (fuel_needed <= 0)
 					break;
-			}			
+			}
 		}
 	}
 	return true;
 }
 
-public func CheckLiquids(id product, bool remove)
-{
-	var liq_need = LiquidNeed(product);
-	if (liq_need)
-	{
-		var liquid_amount = 0;
-		var liquid = liq_need[0];
-		var need = liq_need[1];
-		// Find liquid containers in this producer.
-		for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
-			if (liq_container->~GetBarrelMaterial() == liquid)
-				liquid_amount += liq_container->~GetFillLevel();
-		// Find objects that "are" liquid (e.g. ice)
-		for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
-			if (liq_object->~IsLiquid() == liquid)
-				liquid_amount += liq_object->~GetLiquidAmount();
-		if (liquid_amount < need)
-			return false;
-		else if (remove)
-		{
-			// Remove the liquid needed.
-			var extracted = 0;
-			for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
-			{
-				var val = liq_container->~GetLiquid(liquid, need - extracted);
-				extracted += val[1];
-				if (extracted >= need)
-					return true;
-			}
-			for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
-			{
-				if (liq_object->~IsLiquid() != liquid) continue;
-				extracted += liq_object->~GetLiquidAmount();
-				liq_object->RemoveObject();
-				if (extracted >= need)
-					break;
-			}
-		}		
-	}
-	return true;
-}
 
 private func CheckForPower()
 {
 	return true; // always assume that power is available
 }
+
 
 private func IsProducing()
 {
@@ -648,6 +634,7 @@ private func IsProducing()
 		return true;
 	return false;
 }
+
 
 protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product)
 {
@@ -678,6 +665,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	return FX_OK;
 }
 
+
 public func OnNotEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
@@ -691,6 +679,7 @@ public func OnNotEnoughPower()
 	return _inherited(...);
 }
 
+
 public func OnEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
@@ -703,6 +692,7 @@ public func OnEnoughPower()
 		FatalError("Producer effect removed when power still active!");
 	return _inherited(...);
 }
+
 
 protected func FxProcessProductionTimer(object target, proplist effect, int time)
 {
@@ -718,6 +708,7 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	
 	return FX_OK;
 }
+
 
 protected func FxProcessProductionStop(object target, proplist effect, int reason, bool temp)
 {
@@ -740,6 +731,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	OnProductEjection(product);
 	return FX_OK;
 }
+
 
 // Standard behaviour for product ejection.
 public func OnProductEjection(object product)
@@ -765,7 +757,9 @@ public func OnProductEjection(object product)
 	return;
 }
 
+
 /*-- --*/
+
 
 /**
 	Requests the necessary material from the cable network if available.
@@ -783,74 +777,104 @@ private func RequestAllMissingComponents(id item_id)
 	return true;
 }
 
+
 // Must exist if Library_CableStation is not included by either this
 // library or the structure including this library.
-public func RequestObject(id obj_id, int amount)
+public func RequestObject(id item_id, int amount)
 {
-	return _inherited(obj_id, amount, ...);
+	return _inherited(item_id, amount, ...);
 }
+
 
 /*-- Storage --*/
 
 
 // Whether an object could enter this storage.
-public func IsCollectionAllowed(object obj)
+public func IsCollectionAllowed(object item)
 {
 	// Some objects might just bypass this check
-	if (obj->~ForceEntry(this))
+	if (item->~ForceEntry(this))
 		return false;
-	var obj_id = obj->GetID();
+	var item_id = item->GetID();
 	// Products itself may be collected.
-	if (IsProduct(obj_id)) return true;
+	if (IsProduct(item_id)) return true;
 	var products = GetProducts();
 	// Components of products may be collected.
 	for (var product in products)
 	{
-		var i = 0, comp_id;
-		while (comp_id = GetComponent(nil, i, nil, product))
+		var i = 0, component_id;
+		while (component_id = product->GetComponent(nil, i))
 		{
-			if (comp_id == obj_id)
+			if (component_id == item_id)
 				return true;
 			i++;
 		}
 	}
 	// Fuel for products may be collected.
-	if (obj->~IsFuel())
+	if (item->~IsFuel())
 	{
 		for (var product in products)
 			if (FuelNeed(product) > 0)
 				return true;
 	}
-	// Liquid objects may be collected if a product needs them.
-	if (obj->~IsLiquid())
+	// Convertable liquid objects (ice is the only one so far) may be collected if a product needs them.
+	// This uses the queue instead of the product list, because other items may need the original object.
+	// This extremely special case is used by the ice object only, and should be removed in my opinion,
+	// but it is included for compatibility reasons at the moment.
+	// TODO 
+	//Log("Checking for conversion: queue is %v", queue);
+	if (item->~CanConvertToLiquidType())
 	{
-		for (var product in products)
-			if (LiquidNeed(product))
-				if (LiquidNeed(product)[0] == obj->~IsLiquid())
+		for (var queued in queue)
+		{
+			var product = queued.Product;
+		
+			var i = 0, component_id;
+			while (component_id = product->GetComponent(nil, i))
+			{
+				if (component_id->~GetLiquidType() == item->~CanConvertToLiquidType())
+				{
+					ConvertToLiquid(item);
 					return true;
-	}
-	// Liquid containers may be collected if a product needs them.
-	if (obj->~IsLiquidContainer())
-	{
-		for (var product in products)
-			if (LiquidNeed(product))
-				return true;
+				}
+				i++;
+			}
+		}
 	}
 	return false;
 }
 
-public func RejectCollect(id obj_id, object obj)
+
+public func RejectCollect(id item_id, object item)
 {
 	// Is the object a container? If so, try to empty it.
-	if (obj->~IsContainer())
+	if (item->~IsContainer() || item->~IsLiquidContainer())
 	{
-		var count = obj->ContentsCount(), cont;
-		while (--count >= 0)
-			if (cont = obj->Contents(count))
-				cont->Enter(this);
+	 	GrabContents(item);
 	}
 	// Can we collect the object itself?
-	if (IsCollectionAllowed(obj)) 
+	if (IsCollectionAllowed(item)) 
 		return false;
 	return true;
+}
+
+
+// Converts a convertable object to the liquid.
+// Currently the only convertable object is ice,
+// and this functionality may be removed in
+// the near future.
+// TODO
+private func ConvertToLiquid(object obj)
+{
+	var liquid = GetDefinition(obj->CanConvertToLiquidType())->CreateLiquid(obj->GetLiquidAmount());
+
+	if (liquid)
+	{
+		liquid->Enter(this);
+		for (var item in FindObjects(Find_Container(this)))
+		{
+			//Log("* %v %s", item, item->GetName());
+		}
+		obj->RemoveObject();
+	}
 }

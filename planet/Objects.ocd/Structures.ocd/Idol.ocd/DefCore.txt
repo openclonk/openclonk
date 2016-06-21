@@ -9,7 +9,6 @@ Vertices=4
 VertexX=-7,-7,7,7
 VertexY=-10,15,-10,15
 VertexFriction=50,100,50,100
-Components=GoldBar=3;
 Construction=1
 Value=100
 Mass=200

@@ -22,9 +22,9 @@
 #include "game/C4Game.h"
 
 #import <Cocoa/Cocoa.h>
-#import <C4EditorWindowController.h>
-#import <C4DrawGLMac.h>
-#import <C4AppDelegate.h>
+#import "editor/C4EditorWindowController.h"
+#import "graphics/C4DrawGLMac.h"
+#import "platform/C4AppDelegate.h"
 
 #ifdef USE_COCOA
 

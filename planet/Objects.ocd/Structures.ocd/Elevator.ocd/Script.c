@@ -78,6 +78,8 @@ private func Construction()
 	return _inherited(...);
 }
 
+public func IsHammerBuildable() { return true; }
+
 private func Initialize()
 {
 	SetCategory(C4D_StaticBack);
@@ -327,3 +329,4 @@ local Description = "$Description$";
 local BlastIncinerate = 100;
 local HitPoints = 70;
 local Plane = 249;
+local Components = {Wood = 3, Metal = 1};

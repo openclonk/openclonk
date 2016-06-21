@@ -21,7 +21,7 @@
 
 // byte code chunk type
 // some special script functions defined hard-coded to reduce the exec context
-enum C4AulBCCType
+enum C4AulBCCType : int
 {
 	AB_ARRAYA,  // array or proplist access
 	AB_ARRAYA_SET,
@@ -93,18 +93,80 @@ enum C4AulBCCType
 };
 
 // byte code chunk
-struct C4AulBCC
+class C4AulBCC
 {
+public:
 	C4AulBCCType bccType; // chunk type
 	union
 	{
+		intptr_t X;
 		int32_t i;
 		C4String * s;
 		C4PropList * p;
 		C4ValueArray * a;
 		C4AulFunc * f;
-		intptr_t X;
 	} Par;    // extra info
+	C4AulBCC(): bccType(AB_EOFN) { }
+	C4AulBCC(C4AulBCCType bccType, intptr_t X): bccType(bccType), Par{X}
+	{
+		IncRef();
+	}
+	C4AulBCC(const C4AulBCC & from): C4AulBCC(from.bccType, from.Par.X) { }
+	C4AulBCC & operator = (const C4AulBCC & from)
+	{
+		DecRef();
+		bccType = from.bccType;
+		Par = from.Par;
+		IncRef();
+		return *this;
+	}
+	C4AulBCC(C4AulBCC && from): bccType(from.bccType), Par(from.Par)
+	{
+		from.bccType = AB_EOFN;
+	}
+	C4AulBCC & operator = (C4AulBCC && from)
+	{
+		DecRef();
+		bccType = from.bccType;
+		Par = from.Par;
+		from.bccType = AB_EOFN;
+		return *this;
+	}
+	~C4AulBCC()
+	{
+		DecRef();
+	}
+private:
+	void IncRef()
+	{
+		switch (bccType)
+		{
+		case AB_ERR:
+			if (Par.s)
+		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
+			Par.s->IncRef();
+			break;
+		case AB_CARRAY:
+			Par.a->IncRef();
+			break;
+		default: break;
+		}
+	}
+	void DecRef()
+	{
+		switch (bccType)
+		{
+		case AB_ERR:
+			if (Par.s)
+		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
+			Par.s->DecRef();
+			break;
+		case AB_CARRAY:
+			Par.a->DecRef();
+			break;
+		default: break;
+		}
+	}
 };
 
 // script function class
@@ -121,6 +183,7 @@ protected:
 	int GetCodePos() const { return Code.size(); }
 	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
 	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
+	void DumpByteCode();
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
 	int ParCount;
@@ -157,6 +220,7 @@ public:
 
 	uint32_t tProfileTime; // internally set by profiler
 
+	friend class C4AulCompiler;
 	friend class C4AulParse;
 	friend class C4ScriptHost;
 };

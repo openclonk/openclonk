@@ -12,7 +12,6 @@ VertexCNAT=5,6,9,10
 VertexFriction=80,80,50,50
 Value=20
 Mass=500
-Components=Metal=4;Wood=1;
 Rotate=15
 UprightAttach=8
 Entrance=-8,-10,16,20

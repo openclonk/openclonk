@@ -266,6 +266,14 @@ StdStrBuf C4PropListStatic::GetDataString() const
 	return r;
 }
 
+const char *C4PropListStatic::GetName() const
+{
+	const C4String * s = GetPropertyStr(P_Name);
+	if (!s) s = ParentKeyName;
+	if (!s) return "";
+	return s->GetCStr();
+}
+
 C4PropList::C4PropList(C4PropList * prototype):
 		FirstRef(NULL), prototype(prototype),
 		constant(false), Status(1)
@@ -366,7 +374,7 @@ void C4PropList::RemoveCyclicPrototypes()
 		}
 }
 
-void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar)
+void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers *rPar)
 {
 	std::unique_ptr<C4PropList> temp(C4PropList::New()); // exception-safety
 	pComp->Value(mkParAdapt(*temp, rPar));
@@ -714,7 +722,17 @@ C4Value C4PropList::Call(const char * s, C4AulParSet *Pars, bool fPassErrors)
 	if (!Status) return C4Value();
 	assert(s && s[0]);
 	C4AulFunc *pFn = GetFunc(s);
-	if (!pFn) return C4Value();
+	if (!pFn)
+	{
+		if (s[0] != '~')
+		{
+			C4AulExecError err(FormatString("Undefined function: %s", s).getData());
+			if (fPassErrors)
+				throw err;
+			err.show();
+		}
+		return C4Value();
+	}
 	return pFn->Exec(this, Pars, fPassErrors);
 }
 

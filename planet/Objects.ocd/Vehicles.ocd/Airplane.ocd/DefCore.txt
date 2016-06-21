@@ -13,7 +13,6 @@ VertexFriction=50,50,50,15,5,5,15,5,5
 Value=60
 Mass=300
 ColorByOwner=1
-Components=Metal=6;Wood=4;
 Rotate=1
 Entrance=-12,-12,24,24
 RotatedEntrance=1

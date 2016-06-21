@@ -27,7 +27,7 @@
 
 #import <Cocoa/Cocoa.h>
 #ifdef USE_COCOA
-#import "C4EditorWindowController.h"
+#import "editor/C4EditorWindowController.h"
 #endif
 
 @interface C4AppDelegate: NSObject

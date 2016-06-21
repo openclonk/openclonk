@@ -172,12 +172,13 @@ public func DoExplode()
 public func IsChemicalProduct() { return true; }
 public func IsGrenadeLauncherAmmo() { return true; }
 
+public func IsFusing() { return GetAction() == "Fuse"; }
+
 // Drop fusing dynamite on death to prevent explosion directly after respawn
 public func IsDroppedOnDeath(object clonk)
 {
 	return (GetAction() == "Fuse");
 }
-
 
 
 /*-- Properties --*/
@@ -210,3 +211,4 @@ local Collectible = 1;
 
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;
+local Components = {Coal = 1, Firestone = 1};

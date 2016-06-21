@@ -88,8 +88,9 @@ protected func InitializePlayer(int plr)
 	SetBaseMaterial(plr, Cloth, 10);
 	SetBaseProduction(plr, Cloth, 5);
 	
-	// Set player wealth.
-	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+	// Ensure mimimum player wealth.
+	var add_wealth = Max(0, 75 - 25 * SCENPAR_Difficulty - GetWealth(plr));
+	DoWealth(plr, add_wealth);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)

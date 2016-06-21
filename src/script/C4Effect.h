@@ -24,7 +24,6 @@
 #ifndef INC_C4Effects
 #define INC_C4Effects
 
-#include "object/C4ObjectPtr.h"
 #include "script/C4PropList.h"
 
 // callback return values
@@ -70,15 +69,14 @@
 class C4Effect: public C4PropListNumbered
 {
 public:
-	C4ObjectPtr CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
-	C4ID idCommandTarget;     // ID of command target definition
-
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
 	int32_t iTime, iInterval;  // effect time; effect callback intervall
 
 	C4Effect *pNext;        // next effect in linked list
 
 protected:
+	C4Value CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
+	C4PropList * Target; // target the effect is contained in
 	// presearched callback functions for faster calling
 	C4AulFunc *pFnTimer;           // timer function Fx%sTimer
 	C4AulFunc *pFnStart, *pFnStop; // init/deinit-functions Fx%sStart, Fx%sStop
@@ -87,17 +85,26 @@ protected:
 
 	void AssignCallbackFunctions(); // resolve callback function names
 
-	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
-	C4Effect(const C4Effect &); // unimplemented, do not use
+	int CallStart(int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
+	int CallStop(int reason, bool temporary);
+	int CallTimer(int time);
+	void CallDamage(int32_t & damage, int damagetype, int plr);
+	int CallEffect(const char * effect, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
+
+	C4Effect(C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
+	C4Effect(C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval);
+	C4Effect(const C4Effect &) = delete;
 	C4Effect(); // for the StdCompiler
-	friend void CompileNewFunc<C4Effect, C4ValueNumbers *>(C4Effect *&, StdCompiler *, C4ValueNumbers * const &);
+	C4Effect * Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	template <class T, typename ... P> friend void CompileNewFunc(T *&, StdCompiler *, P && ...);
 public:
-	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	~C4Effect();                      // dtor - deletes all following effects
 
-	void Register(C4Object *pForObj, int32_t iPrio);  // add into effect list of object or global effect list
+	void Register(C4Effect **ppEffectList, int32_t iPrio);  // add into effect list of object or global effect list
 	void Denumerate(C4ValueNumbers *); // numbers to object pointers
-	void ClearPointers(C4Object *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
+	void ClearPointers(C4PropList *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
 
 	void SetDead();                      // mark effect to be removed in next execution cycle
 	bool IsDead() { return !iPriority; } // return whether effect is to be removed
@@ -107,15 +114,15 @@ public:
 
 	C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
 	int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
-	C4Effect *Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
+	C4Effect *Check(const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
 	C4PropList * GetCallbackScript(); // get script context for effect callbacks
 
-	void Execute(C4Object *pObj); // execute all effects
-	void Kill(C4Object *pObj);    // mark this effect deleted and do approprioate calls
-	void ClearAll(C4Object *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
-	void DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
+	static void Execute(C4Effect **ppEffectList); // execute all effects
+	void Kill();    // mark this effect deleted and do approprioate calls
+	void ClearAll(int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
+	void DoDamage(int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
 
-	C4Value DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
+	C4Value DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
 
 	void ReAssignCallbackFunctions()
 	{ AssignCallbackFunctions(); }
@@ -124,9 +131,9 @@ public:
 		ReAssignCallbackFunctions();
 		if (pNext) pNext->ReAssignAllCallbackFunctions();
 	}
-	void OnObjectChangedDef(C4Object *pObj);
+	void OnObjectChangedDef(C4PropList *pObj);
 
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
+	void CompileFunc(StdCompiler *pComp, C4PropList *Owner, C4ValueNumbers *);
 	virtual C4Effect * GetEffect() { return this; }
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
@@ -134,8 +141,8 @@ public:
 	virtual C4ValueArray * GetProperties() const;
 
 protected:
-	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
-	void TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
+	void TempRemoveUpperEffects(bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
+	void TempReaddUpperEffects(C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
 };
 
 // fire effect constants

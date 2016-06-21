@@ -36,9 +36,9 @@
 #include "platform/StdRegistry.h"
 
 #import <Cocoa/Cocoa.h>
-#import "C4AppDelegate.h"
-#import "C4EditorWindowController.h"
-#import "C4DrawGLMac.h"
+#import "platform/C4AppDelegate.h"
+#import "editor/C4EditorWindowController.h"
+#import "graphics/C4DrawGLMac.h"
 
 // implementation of C4Console GUI for Mac OS X
 
