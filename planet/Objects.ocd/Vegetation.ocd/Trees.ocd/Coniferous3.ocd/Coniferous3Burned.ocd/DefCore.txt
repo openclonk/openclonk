@@ -2,12 +2,12 @@
 id=Tree_Coniferous3_Burned
 Version=6,0
 Category=C4D_StaticBack
-Width=38
-Height=100
-Offset=-19,-50
+Width=27
+Height=73
+Offset=-14,-37
 Vertices=9
 VertexX=0,0,0,0,0,0,0,0,0
-VertexY=53,30,20,10,0,-10,-20,-30,-49
+VertexY=40,25,20,10,0,-10,-20,-25,-36
 VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Mass=80
