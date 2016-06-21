@@ -1,0 +1,26 @@
+material Coniferous4
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			scene_blend alpha_blend
+			depth_check on
+			alpha_rejection greater_equal 128
+
+			ambient 1.0 1.0 1.0 1.0
+			diffuse 1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0 12.500000
+			emissive 0.0 0.0 0.0 1.0
+
+			texture_unit
+			{
+				texture coniferous4.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
