@@ -32,12 +32,12 @@ public:
 class C4ObjectListChangeListener
 {
 public:
-	virtual void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk) = 0;
-	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) = 0;
-	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) = 0;
-	virtual void OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container) = 0;
-	virtual void OnEffectAdded(class C4Effect *fx) = 0;
-	virtual void OnEffectRemoved(class C4Effect *fx) = 0;
+	virtual void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk) {};
+	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) {};
+	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) {};
+	virtual void OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container) {};
+	virtual void OnEffectAdded(class C4Effect *fx) {};
+	virtual void OnEffectRemoved(class C4Effect *fx) {};
 	virtual ~C4ObjectListChangeListener() { }
 };
 
