@@ -89,6 +89,3 @@ bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex
 
 C4Shader::C4Shader() {}
 C4Shader::~C4Shader() {}
-
-C4ObjectListChangeListener listener_stub;
-class C4ObjectListChangeListener & ObjectListChangeListener = listener_stub;
