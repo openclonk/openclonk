@@ -993,6 +993,9 @@
    <property name="toolTip">
     <string comment="res">IDS_MNU_DUPLICATE</string>
    </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
   </action>
   <action name="actionEjectContents">
    <property name="text">

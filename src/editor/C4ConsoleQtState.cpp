@@ -342,6 +342,9 @@ bool C4ConsoleQtMainWindow::HandleEditorKeyDown(QKeyEvent *event)
 	case Qt::Key_Delete:
 		::Console.EditCursor.Delete();
 		return true;
+	case Qt::Key_F2:
+		::Console.EditCursor.Duplicate();
+		return true;
 	}
 	uint32_t shift = 0;
 	if (event->modifiers() & Qt::AltModifier) shift |= MK_ALT;

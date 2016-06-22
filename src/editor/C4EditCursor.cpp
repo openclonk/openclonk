@@ -726,13 +726,25 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 		if (obj) obj->Call(PSF_EditCursorDeselection);
 	}
 	if (local_call) selection.clear();
+	int64_t X_all = 0, Y_all = 0, n_selected = 0;
 	for (C4Object *obj : ::Objects)
 		if (obj->Number > prev_oei)
 		{
 			obj->Call(PSF_EditCursorSelection);
-			if (local_call) selection.push_back(C4VObj(obj));
-			// TODO: Reset editor X/Y to center objects on cursor
+			if (local_call)
+			{
+				selection.push_back(C4VObj(obj));
+				X_all += obj->GetX();
+				Y_all += obj->GetY();
+				++n_selected;
+			}
 		}
+	// Reset EditCursor pos to center of duplicated objects, so they will be dragged along with the cursor
+	if (n_selected)
+	{
+		X = X_all / n_selected;
+		Y = Y_all / n_selected;
+	}
 	SetHold(true);
 	OnSelectionChanged();
 }
