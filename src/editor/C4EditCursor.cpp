@@ -727,6 +727,7 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 	}
 	if (local_call) selection.clear();
 	int64_t X_all = 0, Y_all = 0, n_selected = 0;
+	float old_x = X, old_y = Y;
 	for (C4Object *obj : ::Objects)
 		if (obj->Number > prev_oei)
 		{
@@ -747,6 +748,14 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 	}
 	SetHold(true);
 	OnSelectionChanged();
+	if (n_selected)
+	{
+		// Ensure duplicated objects moved to the cursor without extra mouse movement
+		DWORD last_key_state = 0u;
+		if (fAltWasDown) last_key_state |= MK_ALT;
+		if (fShiftWasDown) last_key_state |= MK_SHIFT;
+		Move(old_x, old_y, Zoom, last_key_state);
+	}
 }
 
 void C4EditCursor::PerformDuplicationLegacy(int32_t *pObjects, int32_t iObjectNum, bool fLocalCall)
