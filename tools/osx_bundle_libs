@@ -31,15 +31,24 @@ echo "Bundling libraries..."
 bundle_dependencies() {
 	_object_path="$1"
 	"${_otool}" -L "${_object_path}" | \
-	awk '/^\s+\// { print $1 }' | \
+	awk '/^\t+\// { print $1 }' | \
 	grep -v '@executable_path.*' | \
 	while read _library_name; do
 		_library_path="${_library_name}"
+
 		# If the library isn't available at the stored path, it may be
 		# stored inside the sysroot (when cross-compiling for example)
 		if [ ! -e "${_library_path}" -a -n "${SYSROOT}" ]; then
 			_library_path="${SYSROOT}${_library_path}"
 		fi
+		# If the library still isn't available there, there might be a YAML
+		# stub instead in more recent SDKs; if we find one of those, the
+		# library is part of the base install and doesn't need to be bundled
+		_stub_path="${_library_path%.dylib}.tbd"
+		if [ ! -e "${_library_path}" -a -e "${_stub_path}" ]; then
+			continue
+		fi
+
 		# Stop bundling if a lib doesn't exist
 		if [ ! -e "${_library_path}" ]; then
 			echo "Cannot find ${_library_name}." >&2
