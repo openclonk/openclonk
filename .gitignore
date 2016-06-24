@@ -29,6 +29,7 @@ CPackSourceConfig.cmake
 editor-icons.h
 oc-icon.h
 NativeToolsExport.cmake
+engine-resource.c
 
 # Documentation
 *.pyc

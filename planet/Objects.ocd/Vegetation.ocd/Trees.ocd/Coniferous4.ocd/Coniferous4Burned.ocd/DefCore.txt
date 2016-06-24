@@ -1,10 +1,10 @@
 [DefCore]
-id=Tree_Coniferous3_Burned
-Version=6,0
+id=Tree_Coniferous4_Burned
+Version=8,0
 Category=C4D_StaticBack
-Width=27
-Height=73
-Offset=-14,-37
+Width=34
+Height=80
+Offset=-17,-40
 Vertices=9
 VertexX=0,0,0,0,0,0,0,0,0
 VertexY=40,25,20,10,0,-10,-20,-25,-36

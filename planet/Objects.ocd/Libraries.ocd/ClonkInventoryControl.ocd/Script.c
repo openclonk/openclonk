@@ -362,8 +362,17 @@ private func TryToCollect(object item)
 	var x = item->GetX();
 	var y = item->GetY();
 	var name = item->GetName();
-	// Try to collect the item.
-	Collect(item);
+	
+	// When pushing a lorry, try to directly collect it into the lorry first.
+	var vehicle = GetActionTarget();
+	if (vehicle && vehicle->~IsContainer() && GetProcedure() == "PUSH")
+	{
+		vehicle->Collect(item);
+	}
+	
+	// Otherwise, try to collect the item myself.
+	if (item && !item->Contained())
+		Collect(item);
 	
 	// If anything happened, assume collection.
 	if (!item || item->Contained())

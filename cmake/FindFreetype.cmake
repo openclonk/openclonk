@@ -19,11 +19,8 @@
 
 # Use pkg-config if possible instead of doing guesswork like the default CMake module does
 find_package(PkgConfig QUIET)
-if(PKG_CONFIG_FOUND AND NOT APPLE)
+if(PKG_CONFIG_FOUND)
 	set(_ft_pkgconfig_args "")
-	if(FREETYPE_FIND_REQUIRED)
-		set(_ft_pkgconfig_args "${_ft_pkgconfig_args}REQUIRED ")
-	endif()
 	if(FREETYPE_FIND_QUIET)
 		set(_ft_pkgconfig_args "${_ft_pkgconfig_args}QUIET ")
 	endif()
