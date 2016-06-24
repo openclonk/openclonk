@@ -17,6 +17,12 @@ cmake_minimum_required (VERSION 3.0.2)
 # Use one of RelWithDebInfo or MinSizeRel instead.
 set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo MinSizeRel CACHE STRING "List of supported configuration types." FORCE)
 
+# Set a default build type as the empty build type is without either debug
+# symbols or optimizations and thus completely useless.
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+endif()
+
 project (openclonk CXX C)
 
 # CMP0054: Only interpret if() arguments as variables or keywords when unquoted
