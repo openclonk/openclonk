@@ -1283,10 +1283,11 @@ if (APPLE)
 	endif()
 
 	add_custom_command(TARGET openclonk
-		POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+		POST_BUILD COMMAND
+		"${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+		"$<$<BOOL:${CMAKE_SYSROOT}>:--sysroot=${CMAKE_SYSROOT}>"
 		"$<TARGET_FILE:openclonk>"
 	)
-
 endif()
 
 ############################################################################

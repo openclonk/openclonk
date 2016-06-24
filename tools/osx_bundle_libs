@@ -2,6 +2,29 @@
 
 set -e
 
+_sysroot="${SYSROOT}"
+
+# Collect options from the command line
+for i in "$@"; do
+	case "$i" in
+		--sysroot=*)
+			_sysroot="${i#*=}"
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		--*)
+			echo "$0: Unknown option: $i" >&2
+			exit 1
+			;;
+		*)
+			break
+			;;
+	esac
+done
+
 # Grab information about the bundle from the environment (if XCode) or make
 # assumptions about the bundle layout (everywhere else)
 _executable_path="${EXECUTABLE_PATH:-$1}"
@@ -38,8 +61,8 @@ bundle_dependencies() {
 
 		# If the library isn't available at the stored path, it may be
 		# stored inside the sysroot (when cross-compiling for example)
-		if [ ! -e "${_library_path}" -a -n "${SYSROOT}" ]; then
-			_library_path="${SYSROOT}${_library_path}"
+		if [ ! -e "${_library_path}" -a -n "${_sysroot}" ]; then
+			_library_path="${_sysroot}${_library_path}"
 		fi
 		# If the library still isn't available there, there might be a YAML
 		# stub instead in more recent SDKs; if we find one of those, the
