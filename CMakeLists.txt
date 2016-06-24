@@ -287,9 +287,11 @@ add_definitions(${GLEW_DEFINITIONS})
 set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
 CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 
-if(USE_GTK AND UNIX)
+if(UNIX AND NOT APPLE)
 	FINDLIB(X11_LIBRARIES X11)
-	FINDLIB(XRANDR_LIBRARIES Xrandr)
+	if(USE_GTK)
+		FINDLIB(XRANDR_LIBRARIES Xrandr)
+	endif()
 endif()
 
 if (WIN32)
