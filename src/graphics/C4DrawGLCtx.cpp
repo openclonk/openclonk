@@ -320,15 +320,32 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 				// create context
 				if (wglCreateContextAttribsARB)
 				{
-					const int attribs[] = {
-						WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
-						WGL_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
-						WGL_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
-						WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-						0
-					};
+					{
+						const int attribs[] = {
+							WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+							WGL_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
+							WGL_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
+							WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+							0
+						};
 
-					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+						hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+					}
+
+					if (!hrc)
+					{
+						LogSilentF("  gl: OpenGL %d.%d not available; falling back to 3.1 emergency context.", REQUESTED_GL_CTX_MAJOR, REQUESTED_GL_CTX_MINOR);
+						// Some older Intel drivers don't support OpenGL 3.2; we don't use (much?) of
+						// that so we'll request a 3.1 context as a fallback.
+						const int attribs[] = {
+							WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+							WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+							WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+							0
+						};
+						pGL->Workarounds.ForceSoftwareTransform = true;
+						hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+					}
 				}
 				else
 				{
