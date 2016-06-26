@@ -664,7 +664,7 @@ namespace
 	{
 		// If the first bone assignment has a weight of 0, all others are zero
 		// as well, or the loader would have overwritten the assignment
-		if (in.bone_weight[0] == 0.0f)
+		if (in.bone_weight[0] == 0.0f || mesh_instance.GetBoneCount() == 0)
 		{
 			out->x = in.x;
 			out->y = in.y;
