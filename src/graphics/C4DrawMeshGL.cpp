@@ -194,7 +194,7 @@ namespace
 		}
 
 		if (pGL->Workarounds.ForceSoftwareTransform)
-			buf = StdCopyStrBuf("#define OC_WA_FORCE_SOFTWARE_TRANSFORM\n") + buf;
+			buf.Take(StdStrBuf("#define OC_WA_FORCE_SOFTWARE_TRANSFORM\n") + buf);
 
 		if (LowMaxVertexUniformCount)
 			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
