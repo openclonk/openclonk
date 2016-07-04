@@ -389,6 +389,7 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 	C4PropList *data = v.getPropList();
 	if (!data) return QString(LoadResStr("IDS_CNS_INVALID"));
 	if (!display_string) return QString("{...}");
+	C4PropList *info_proplist = this->info_proplist.getPropList();
 	// Replace all {{name}} by property values of name
 	QString result = display_string->GetCStr();
 	int32_t pos0, pos1;
@@ -397,11 +398,27 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 	{
 		pos1 = result.indexOf("}}", pos0+2);
 		if (pos1 < 0) break; // placeholder not closed
+		// Get child value
 		QString substring = result.mid(pos0+2, pos1-pos0-2);
 		if (!data->GetPropertyByS(::Strings.RegString(substring.toUtf8()), &cv)) cv.Set0();
-		// TODO: May want to resolve child delegates for this in the future
-		// For now, just use GetDataString()
-		result.replace(pos0, pos1 - pos0 + 2, cv.GetDataString().getData());
+		// Try to display using child delegate
+		QString display_value;
+		if (info_proplist)
+		{
+			C4Value child_delegate_val;
+			if (info_proplist->GetPropertyByS(::Strings.RegString("EditorProp_" + substring.toUtf8()), &child_delegate_val))
+			{
+				C4PropertyDelegate *child_delegate = factory->GetDelegateByValue(child_delegate_val);
+				if (child_delegate)
+				{
+					display_value = child_delegate->GetDisplayString(cv, obj);
+				}
+			}
+		}
+		// If there is no child delegate, fall back to GetDataString()
+		if (display_value.isEmpty()) display_value = cv.GetDataString().getData();
+		// Put value into display string
+		result.replace(pos0, pos1 - pos0 + 2, display_value);
 	}
 	return result;
 }
