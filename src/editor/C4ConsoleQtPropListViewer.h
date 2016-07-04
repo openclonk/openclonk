@@ -35,6 +35,7 @@ class C4PropertyPath
 {
 	// TODO: For now just storing the path. May want to keep the path info later to allow validation/updating of values
 	StdCopyStrBuf path, argument;
+	StdCopyStrBuf root;
 
 public:
 	enum PathType
@@ -49,11 +50,12 @@ public:
 	C4PropertyPath() {}
 	C4PropertyPath(C4PropList *target);
 	C4PropertyPath(C4Effect *fx, C4Object *target_obj);
-	C4PropertyPath(const char *path) : path(path), path_type(PPT_Root) {}
+	C4PropertyPath(const char *path) : path(path), root(path), path_type(PPT_Root) {}
 	C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index);
 	C4PropertyPath(const C4PropertyPath &parent, const char *child_property, PathType path_type = PPT_Property);
 	void Clear() { path.Clear(); }
 	const char *GetPath() const { return path.getData(); }
+	const char *GetRoot() const { return root.getData(); } // Parent-most path (usually the object)
 	bool IsEmpty() const { return path.getLength() <= 0; }
 
 	C4Value ResolveValue() const;
@@ -259,6 +261,7 @@ public:
 		C4RefCntPointer<C4String> value_key;
 		C4V_Type type; // Assume this option is set when value is of given type
 		C4Value value; // Value to set if this entry is selected
+		C4Value value_function; // Function to be called to set value
 		mutable C4PropertyDelegate *adelegate; // Delegate to display if this entry is selected (pointer owned by C4PropertyDelegateFactory)
 		C4Value adelegate_val; // Value to resolve adelegate from
 		// How the currently selected option is identified from the value
@@ -296,6 +299,7 @@ private:
 	int32_t GetOptionByValue(const C4Value &val) const;
 	void UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor, bool by_selection) const;
 	void EnsureOptionDelegateResolved(const Option &option) const;
+	void SetOptionValue(const C4PropertyPath &use_path, const C4PropertyDelegateEnum::Option &option) const;
 
 public slots:
 	void UpdateOptionIndex(Editor *editor, int idx) const;

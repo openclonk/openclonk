@@ -265,6 +265,7 @@ C4StringTable::C4StringTable()
 	P[P_Options] = "Options";
 	P[P_Key] = "Key";
 	P[P_AsyncGet] = "AsyncGet";
+	P[P_Get] = "Get";
 	P[P_Relative] = "Relative";
 	P[P_CanMoveCenter] = "CanMoveCenter";
 	P[P_Storage] = "Storage";

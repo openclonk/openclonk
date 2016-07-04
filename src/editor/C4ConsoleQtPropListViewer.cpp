@@ -35,7 +35,11 @@ C4PropertyPath::C4PropertyPath(C4PropList *target)
 	if (target)
 	{
 		C4Object *obj = target->GetObject();
-		if (obj) path.Format("Object(%d)", (int)obj->Number);
+		if (obj)
+		{
+			path.Format("Object(%d)", (int)obj->Number);
+			root = path;
+		}
 	}
 }
 
@@ -48,16 +52,17 @@ C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj)
 	for (C4Effect *ofx = target_obj->pEffects; ofx; ofx = ofx->pNext)
 		if (ofx == fx) break; else if (!strcmp(ofx->GetName(), name)) ++index;
 	path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
+	root.Format("Object(%d)", (int)target_obj->Number);
 }
 
-C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index)
+C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index) : root(parent.root)
 {
 	path.Format("%s[%d]", parent.GetPath(), (int)elem_index);
 	path_type = PPT_Index;
 }
 
 C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, const char *child_property, C4PropertyPath::PathType path_type)
-	: path_type(path_type)
+	: path_type(path_type), root(parent.root)
 {
 	if (path_type == PPT_Property)
 		path.Format("%s.%s", parent.GetPath(), child_property);
@@ -610,6 +615,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			option.value_key = props->GetPropertyStr(P_ValueKey);
 			if (!option.value_key) option.value_key = default_value_key;
 			props->GetProperty(P_Value, &option.value);
+			props->GetProperty(P_Get, &option.value_function);
 			option.type = C4V_Type(props->GetPropertyInt(P_Type, C4V_Any));
 			option.option_key = props->GetPropertyStr(P_OptionKey);
 			if (!option.option_key) option.option_key = default_option_key;
@@ -767,8 +773,8 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 			// Selecting a new item: Set the default value
 			parameter_val = option.value;
 			// Although the default value is taken directly from SetEditorData, it needs to be set here to make child access into proplists and arrays possible
-			// (note that actual setting is delayed by control queue)
-			editor->last_get_path.SetProperty(parameter_val);
+			// (note that actual setting is delayed by control queue and this may often the wrong value in some cases - the correct value will be shown on execution of the queue)
+			SetOptionValue(editor->last_get_path, option);
 		}
 		// Show it
 		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem(), by_selection);
@@ -846,7 +852,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	if (option.adelegate)
 	{
 		// Default value on enum change
-		if (editor->option_changed) use_path.SetProperty(option.value);
+		if (editor->option_changed) SetOptionValue(use_path, option);
 		// Value from a parameter.
 		// Using a setter function?
 		if (option.adelegate->GetSetFunction())
@@ -856,9 +862,23 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	else
 	{
 		// No parameter. Use value.
-		use_path.SetProperty(option.value);
+		SetOptionValue(use_path, option);
 	}
 	editor->option_changed = false;
+}
+
+void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, const C4PropertyDelegateEnum::Option &option) const
+{
+	// After an enum entry has been selected, set its value
+	// Either directly by value or through a function
+	if (option.value_function.GetType() == C4V_Function)
+	{
+		use_path.SetProperty(FormatString("Call(%s, %s, %s)", option.value_function.GetDataString().getData(), use_path.GetRoot(), option.value.GetDataString(20).getData()).getData());
+	}
+	else
+	{
+		use_path.SetProperty(option.value);
+	}
 }
 
 QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
