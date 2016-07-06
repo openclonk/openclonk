@@ -1,3 +1,5 @@
 Name=Winde
 Description=Öffne oder schließe die verbundene Burgtür mit [Hoch] oder [Runter].
 Target=Ziel
+UpAction=Aktion 'Hoch'
+DownAction=Aktion 'Runter'
