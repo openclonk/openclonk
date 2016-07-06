@@ -317,11 +317,11 @@ C4Def::~C4Def()
 
 void C4Def::Clear()
 {
+	Script.Clear();
 	C4PropList::Clear();
 
 	Graphics.Clear();
 
-	Script.Clear();
 	StringTable.Clear();
 	if (pClonkNames && fClonkNamesOwned) delete pClonkNames; pClonkNames=NULL;
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;

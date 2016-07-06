@@ -52,6 +52,9 @@ public:
 	std::string Translate(const std::string &text) const;
 	std::list<C4ScriptHost *> SourceScripts;
 	StdCopyStrBuf ScriptName; // script name
+
+	void UnlinkOwnedFunctions();
+
 protected:
 	C4ScriptHost();
 	void Unreg(); // remove from list
@@ -81,6 +84,10 @@ protected:
 	C4LangStringTable *stringTable;
 	C4Set<C4Property> LocalValues;
 	C4AulScriptState State; // script state
+
+	// list of all functions generated from code in this script host
+	std::set<C4AulScriptFunc*> ownedFunctions;
+
 	friend class C4AulParse;
 	friend class C4AulProfiler;
 	friend class C4AulScriptEngine;
