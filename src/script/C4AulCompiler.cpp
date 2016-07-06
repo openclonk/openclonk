@@ -463,6 +463,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 	C4AulFunc *parent_func = Parent->GetFunc(cname);
 
 	Fn = new C4AulScriptFunc(Parent, target_host, cname, n->loc);
+	host->ownedFunctions.insert(Fn);
 	for (const auto &param : n->params)
 	{
 		Fn->AddPar(param.name.c_str(), param.type);

@@ -53,7 +53,7 @@ class C4AulFunc: public C4RefCnt
 public:
 	C4AulFunc(C4PropListStatic * Parent, const char *pName);
 
-	const C4PropListStatic * Parent;
+	C4PropListStatic * Parent;
 	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
 	virtual StdStrBuf GetFullName() const; // get a fully classified name (C4ID::Name) for debug output
 

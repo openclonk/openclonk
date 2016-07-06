@@ -52,6 +52,7 @@ C4ScriptHost::~C4ScriptHost()
 
 void C4ScriptHost::Clear()
 {
+	UnlinkOwnedFunctions();
 	C4ComponentHost::Clear();
 	ast.reset();
 	Script.Clear();
@@ -68,6 +69,49 @@ void C4ScriptHost::Clear()
 	Appends.clear();
 	// reset flags
 	State = ASS_NONE;
+}
+
+void C4ScriptHost::UnlinkOwnedFunctions()
+{
+	// Remove owned functions from their parents. This solves a problem
+	// where overloading a definition would unload the C4ScriptHost, but
+	// keep around global functions, which then contained dangling pointers.
+	for (auto func : ownedFunctions)
+	{
+		C4PropList *parent = func->Parent;
+		if (parent == GetPropList())
+			continue;
+		assert(parent == &::ScriptEngine);
+		C4Value v;
+		parent->GetPropertyByS(func->Name, &v);
+		if (v.getFunction() == func)
+		{
+			// If the function we're deleting is the top-level function in
+			// the inheritance chain, promote the next one in its stead;
+			// if there is no overloaded function, remove the property.
+			if (func->OwnerOverloaded)
+				parent->SetPropertyByS(func->Name, C4VFunction(func->OwnerOverloaded));
+			else
+				parent->ResetProperty(func->Name);
+		}
+		else
+		{
+			C4AulScriptFunc *func_chain = v.getFunction()->SFunc();
+			assert(func_chain != func);
+			while (func_chain)
+			{
+				// Unlink the removed function from the inheritance chain
+				if (func_chain->OwnerOverloaded == func)
+				{
+					func_chain->OwnerOverloaded = func->OwnerOverloaded;
+					break;
+				}
+				assert(func_chain->OwnerOverloaded && "Removed function not found in inheritance chain");
+				func_chain = func_chain->OwnerOverloaded->SFunc();
+			}
+		}
+	}
+	ownedFunctions.clear();
 }
 
 void C4ScriptHost::Unreg()
