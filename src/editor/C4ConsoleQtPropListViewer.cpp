@@ -1317,7 +1317,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByValue(const C4Value 
 
 C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByIndex(const QModelIndex &index) const
 {
-	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	if (!prop) return NULL;
 	if (!prop->delegate) prop->delegate = GetDelegateByValue(prop->delegate_info);
 	return prop->delegate;
@@ -1345,7 +1345,7 @@ void C4PropertyDelegateFactory::setEditorData(QWidget *editor, const QModelIndex
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (!CheckCurrentEditor(d, editor)) return;
 	// Fetch property only first time - ignore further updates to the same value to simplify editing
-	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	if (!prop) return;
 	C4Value val;
 	d->GetPropertyValue(prop->parent_value, prop->key, index.row(), &val);
@@ -1360,7 +1360,7 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 	// Fetch property value from editor and set it into proplist
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (!CheckCurrentEditor(d, editor)) return;
-	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	SetPropertyData(d, editor, prop);
 }
 
@@ -1374,7 +1374,7 @@ QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOp
 {
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (!d) return NULL;
-	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	prop->about_to_edit = true;
 	QWidget *editor = d->CreateEditor(this, parent, option, true);
 	// Connect value change signals (if editing is possible for this property)
@@ -1420,7 +1420,7 @@ QSize C4PropertyDelegateFactory::sizeHint(const QStyleOptionViewItem &option, co
 void C4PropertyDelegateFactory::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	// Delegate has custom painting?
-	C4ConsoleQtPropListModel::Property *prop = static_cast<C4ConsoleQtPropListModel::Property *>(index.internalPointer());
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
 	if (d && prop && d->HasCustomPaint())
 	{
@@ -1581,13 +1581,15 @@ void C4ConsoleQtPropListModel::AscendPath()
 		target_value = entry.value;
 		info_proplist = entry.info_proplist;
 		UpdateValue(true);
-		delegate_factory->OnPropListChanged();
 		break;
 	}
+	// Any current editor needs to close
+	delegate_factory->OnPropListChanged();
 }
 
 void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 {
+	emit layoutAboutToBeChanged();
 	// Update target value from path
 	target_value = target_path.ResolveValue();
 	// Safe-get from C4Values in case any prop lists or arrays got deleted
@@ -1610,11 +1612,16 @@ void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 		layout_valid = false;
 		property_groups.resize(num_groups);
 	}
+	if (!layout_valid)
+	{
+		// We do not adjust persistent indices for now
+		// Usually, if layout changed, it's because the target value changed and we don't want to select/expand random stuff in the new proplist
+		layout_valid = true;
+	}
+	emit layoutChanged();
 	QModelIndex topLeft = index(0, 0, QModelIndex());
 	QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1, QModelIndex());
 	emit dataChanged(topLeft, bottomRight);
-	if (!layout_valid) emit layoutChanged();
-	layout_valid = true;
 	// Initial selection
 	if (select_default) emit ProplistChanged(default_selection_group, default_selection_index);
 }
@@ -1718,6 +1725,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		layout_valid = false;
 		property_groups.resize(1);
 	}
+	property_groups[0].name = LoadResStr("IDS_CNS_ARRAYEDIT");
 	PropertyGroup &properties = property_groups[0];
 	if (properties.props.size() != target_array->GetSize())
 	{
@@ -1742,32 +1750,35 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 	return 1; // one group for the values
 }
 
+C4ConsoleQtPropListModel::Property *C4ConsoleQtPropListModel::GetPropByIndex(const QModelIndex &index) const
+{
+	if (!index.isValid()) return nullptr;
+	// Resolve group and row
+	int32_t group_index = index.internalId(), row = index.row();
+	// Prop list access: Properties are on 2nd level
+	if (!group_index) return nullptr;
+	--group_index;
+	if (group_index >= property_groups.size()) return nullptr;
+	if (row < 0 || row >= property_groups[group_index].props.size()) return nullptr;
+	return const_cast<Property *>(&property_groups[group_index].props[row]);
+}
+
 int C4ConsoleQtPropListModel::rowCount(const QModelIndex & parent) const
 {
 	QModelIndex grandparent;
-	switch (target_value.GetType())
+	// Top level: Property groups
+	if (!parent.isValid())
 	{
-		case C4V_PropList:
-			// Top level: Property groups
-			if (!parent.isValid()) return property_groups.size();
-			// Mid level: Descend into property lists
-			grandparent = parent.parent();
-			if (!grandparent.isValid())
-			{
-				if (parent.row() >= 0 && parent.row() < property_groups.size())
-					return property_groups[parent.row()].props.size();
-			}
-			return 0; // no 3rd level depth
-		case C4V_Array:
-			// Top level rows only
-			if (!parent.isValid())
-				return target_value.getArray()->GetSize();
-			else
-				return 0;
-		default:
-			// probably deleted (=nil)
-			return 0;
+		return property_groups.size();
 	}
+	// Mid level: Descend into property lists
+	grandparent = parent.parent();
+	if (!grandparent.isValid())
+	{
+		if (parent.row() >= 0 && parent.row() < property_groups.size())
+			return property_groups[parent.row()].props.size();
+	}
+	return 0; // no 3rd level depth
 }
 
 int C4ConsoleQtPropListModel::columnCount(const QModelIndex & parent) const
@@ -1792,39 +1803,26 @@ QVariant C4ConsoleQtPropListModel::headerData(int section, Qt::Orientation orien
 
 QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) const
 {
-	// Anything loaded?
-	switch (target_value.GetType())
+	// Headers
+	int32_t group_index = index.internalId();
+	if (!group_index)
 	{
-	case C4V_PropList:
-	{
-		C4PropList *props = target_value._getPropList();
-		// Headers
-		QModelIndex parent = index.parent();
-		if (!parent.isValid())
+		if (!index.column())
 		{
-			if (!index.column())
+			if (role == Qt::DisplayRole)
 			{
-				if (role == Qt::DisplayRole)
-				{
-					if (index.row() >= 0 && index.row() < property_groups.size())
-						return property_groups[index.row()].name;
-				}
-				else if (role == Qt::FontRole)
-				{
-					return header_font;
-				}
+				if (index.row() >= 0 && index.row() < property_groups.size())
+					return property_groups[index.row()].name;
 			}
-			return QVariant();
+			else if (role == Qt::FontRole)
+			{
+				return header_font;
+			}
 		}
-		break;
-	}
-	case C4V_Array:
-		break;
-	default:
-		return QVariant(); // invalid target
+		return QVariant();
 	}
 	// Query latest data from prop list
-	Property *prop = static_cast<Property *>(index.internalPointer());
+	Property *prop = GetPropByIndex(index);
 	if (!prop) return QVariant();
 	if (!prop->delegate) prop->delegate = delegate_factory->GetDelegateByValue(prop->delegate_info);
 	if (role == Qt::DisplayRole)
@@ -1862,71 +1860,40 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 QModelIndex C4ConsoleQtPropListModel::index(int row, int column, const QModelIndex &parent) const
 {
 	if (column < 0 || column > 1) return QModelIndex();
-	switch (target_value.GetType())
+	// Top level index?
+	if (!parent.isValid())
 	{
-	case C4V_PropList:
-	{
-		// Top level index?
-		if (!parent.isValid())
-		{
-			// Top level has headers only
-			if (row < 0 || row >= property_groups.size()) return QModelIndex();
-			return createIndex(row, column, nullptr);
-		}
-		// Property?
-		QModelIndex grandparent = parent.parent();
-		if (!grandparent.isValid())
-		{
-			const PropertyGroup *property_group = NULL;
-			if (parent.row() >= 0 && parent.row() < property_groups.size())
-			{
-				property_group = &property_groups[parent.row()];
-				if (row < 0 || row >= property_group->props.size()) return QModelIndex();
-				const Property * prop = &(property_group->props[row]);
-				return createIndex(row, column, const_cast<Property *>(prop));
-			}
-		}
-		return QModelIndex();
+		// Top level has headers only
+		if (row < 0 || row >= property_groups.size()) return QModelIndex();
+		return createIndex(row, column, (quintptr)0u);
 	}
-	case C4V_Array:
+	if (parent.internalId()) return QModelIndex(); // No 3rd level depth
+	// Validate range of property
+	const PropertyGroup *property_group = NULL;
+	if (parent.row() >= 0 && parent.row() < property_groups.size())
 	{
-		if (parent.isValid()) return QModelIndex();
-		C4ValueArray *arr = target_value._getArray();
-		if (row < 0 || row >= arr->GetSize()) return QModelIndex();
-		if (!property_groups.size()) return QModelIndex();
-		const PropertyGroup *property_group = &property_groups[0];
-		// Ensure changes are reflected immediately
-		if (property_group->props.size() != arr->GetSize()) const_cast<C4ConsoleQtPropListModel *>(this)->UpdateValueArray(arr, nullptr, nullptr);
+		property_group = &property_groups[parent.row()];
 		if (row < 0 || row >= property_group->props.size()) return QModelIndex();
-		const Property * prop = &(property_group->props[row]);
-		return createIndex(row, column, const_cast<Property *>(prop));
+		return createIndex(row, column, (quintptr)parent.row()+1);
 	}
-	default:
-		return QModelIndex();
-	}
+	return QModelIndex();
 }
 
 QModelIndex C4ConsoleQtPropListModel::parent(const QModelIndex &index) const
 {
-	// Parent: Proplist only and only from 2nd level (properties) to 1st (groups)
-	C4PropList *props = target_value.getPropList();
-	if (props)
-	{
-		Property *prop = static_cast<Property *>(index.internalPointer());
-		if (!prop) return QModelIndex();
-		// Find list to use
-		return createIndex(prop->group_idx, 0, nullptr);
-	}
+	// Parent: Stored in internal ID
+	auto parent_idx = index.internalId();
+	if (parent_idx) return createIndex(parent_idx - 1, 0, (quintptr)0u);
 	return QModelIndex();
 }
 
 Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags flags = QAbstractItemModel::flags(index) | Qt::ItemIsDropEnabled;
-	if (index.isValid() && index.internalPointer())
+	Property *prop = GetPropByIndex(index);
+	if (index.isValid() && prop)
 	{
 		flags &= ~Qt::ItemIsDropEnabled; // only drop between the lines
-		Property *prop = static_cast<Property *>(index.internalPointer());
 		if (index.column() == 0)
 		{
 			// array elements can be re-arranged
@@ -1958,6 +1925,7 @@ bool C4ConsoleQtPropListModel::dropMimeData(const QMimeData *data, Qt::DropActio
 	if (!arr) return false;
 	if (!data->hasFormat("application/vnd.text")) return false;
 	if (row < 0) return false; // outside range: Could be above or below. Better don't drag at all.
+	if (!parent.isValid()) return false; // in array only
 	// Decode indices of rows to move
 	QByteArray encodedData = data->data("application/vnd.text");
 	StdStrBuf rearrange_call;
@@ -1981,7 +1949,7 @@ QMimeData *C4ConsoleQtPropListModel::mimeData(const QModelIndexList &indexes) co
 	int32_t count = 0;
 	for (const QModelIndex &index : indexes)
 	{
-		if (index.isValid() && !index.parent().isValid())
+		if (index.isValid() && index.internalId())
 		{
 			if (count) encodedData.append(",");
 			encodedData.append(QString::number(index.row()));

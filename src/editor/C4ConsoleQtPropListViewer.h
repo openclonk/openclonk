@@ -535,6 +535,7 @@ public:
 	void AddArrayElement();
 	void RemoveArrayElement();
 	bool IsTargetReadonly() const;
+	C4ConsoleQtPropListModel::Property *GetPropByIndex(const QModelIndex &index) const;
 
 public:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;
