@@ -1,3 +1,17 @@
 Name=Dialogue
 MsgSpeak=Speak to %s
 Next=Next
+Dialogue=Dialogue
+Message=Message
+Speaker=Speaker
+TargetPlayers=Target players
+ContinueAction=Continue action
+WaitForNext=Wait for 'Next'-press
+SuspendAction=Suspend action
+StopAction=Stop action
+WaitTime=Wait fixed time
+NPC=NPC
+DefaultDialogueMessage=Hi!
+DefaultMessage=Example message
+DefaultOptionText=Option text
+Options=Options

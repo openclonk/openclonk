@@ -312,7 +312,7 @@ public func MessageBoxBroadcast(string message, object clonk, object talker, arr
 
 static MessageBox_last_talker, MessageBox_last_pos;
 
-private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, array options)
+private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, array options, proplist menu_target)
 {
 	// broadcast enabled: message copy to other players
 	if (dlg_broadcast && !as_message)
@@ -334,12 +334,9 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 	// A target Clonk is given: Use a menu for this dialogue.
 	if (clonk && !as_message)
 	{
-		var menu_target, cmd;
-		if (this != Dialogue)
-		{
-			menu_target = this;
-			cmd = "MenuOK";
-		}
+		var cmd;
+		if (this != Dialogue) menu_target = this;
+		if (menu_target) cmd = "MenuOK";
 		clonk->CreateMenu(Dialogue, menu_target, C4MN_Extra_None, nil, nil, C4MN_Style_Dialog, false, Dialogue);
 		var menu_item_offset = 0;
 		
@@ -391,9 +388,9 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		// When reaching the same options set while clicking through a dialogue, pre-select the next item
 		if (options)
 		{
-			if (!dlg_last_opt_sel) dlg_last_opt_sel = [];
+			if (!menu_target.dlg_last_opt_sel) menu_target.dlg_last_opt_sel = [];
 			var found_remembered_option = false, remembered_opts, i = 0;
-			for (remembered_opts in dlg_last_opt_sel)
+			for (remembered_opts in menu_target.dlg_last_opt_sel)
 			{
 				if (DeepEqual(remembered_opts.options, options))
 				{
@@ -410,7 +407,7 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 			else
 			{
 				// First encounter of this option set: Select first item.
-				dlg_last_opt_sel[i] = { options = options[:], sel = menu_item_offset };
+				menu_target.dlg_last_opt_sel[i] = { options = options[:], sel = menu_item_offset };
 			}
 		}
 		
@@ -533,3 +530,90 @@ local ActMap = {
 	}
 };
 local Name = "$Name$";
+
+
+/* EditorProps */
+
+private func EvalObj_NPC(proplist props, proplist context) { if (context.action_object) return context.action_object.dlg_target; }
+
+private func EvalAct_Message(proplist props, proplist context)
+{
+	//Log("EvalAct_Message %v %v", props, context);
+	// Message parameters
+	var after_message = props.AfterMessage;
+	var speaker = UserAction->EvaluateValue("Object", props.Speaker, context);
+	var n_options = 0, any_message = false;
+	if (props.Options) n_options = GetLength(props.Options);
+	if (n_options && !props.options_msg)
+	{
+		var options_msg = CreateArray(n_options), i=0;
+		for (var opt in props.Options)
+		{
+			options_msg[i] = [opt.Text, Format("MenuSelectOption(%d)", i)];
+			++i;
+		}
+		props.options_msg = options_msg;
+	}
+	// Show message to desired players
+	for(var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
+	{
+		Dialogue->MessageBox(props.Text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props.options_msg, context);
+		any_message = true;
+	}
+	// After-message-option
+	if (GetType(after_message) == C4V_Int)
+	{
+		// Wait for some time
+		context.hold = props;
+		context->ScheduleCall(context, UserAction.ResumeAction, after_message, 1, context, props);
+	}
+	else if (after_message == "next" || n_options)
+	{
+		// Wait for user to press "Next" on dialogue or select an option
+		// (If there are options, suspend or stop setting does not make sense)
+		if (any_message) context.hold = props;
+	}
+	else if (after_message == "suspend")
+	{
+		// Wait for re-initiation of action
+		context.suspended = true;
+		context.hold = props;
+	}
+	else if (after_message == "stop")
+	{
+		// Reset action
+		context.suspended = true;
+		context.hold = nil;
+	}
+}
+
+public func IsDialogue() { return true; }
+
+public func Definition(def)
+{
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$Message$", "message", [def, def.EvalAct_Message], def.GetDefaultMessageProp, { Type="proplist", Display="{{Speaker}}: \"{{Text}}\" {{Options}}", Elements = {
+		EditorProp_Speaker = new UserAction.Evaluator.Object { Name = "$Speaker$" },
+		EditorProp_Text = { Type="string" },
+		EditorProp_TargetPlayers = new UserAction.Evaluator.PlayerList { Name = "$TargetPlayers$" },
+		EditorProp_AfterMessage = { Type="enum", Options = [{ Name="$ContinueAction$" }, { Name="$WaitForNext$", Value="next" }, { Name="$SuspendAction$", Value="suspend" }, { Name="$StopAction$", Value="stop" }, { Name="$WaitTime$", Value=60, Type=C4V_Int, Delegate={ Type="int", Min=1 } }] },
+		EditorProp_Options = { Name="$Options$", Type="array", Display=3, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", DefaultValue = { Text="$DefaultOptionText$", Goto=0 }, Elements = {
+			EditorProp_Text = { Type="string" },
+			EditorProp_Goto = { Type="int", Min=0 }
+			} } }
+		} } );
+	UserAction->AddEvaluator("Object", nil, "$NPC$", "npc", [def, def.EvalObj_NPC]);
+}
+
+private func GetDefaultMessageProp(object target_object)
+{
+	if (target_object && target_object->~IsDialogue())
+	{
+		// Message prop for dialogue: Default is a NPC message with a "wait for next" option
+		return { Option="message", Speaker = { Option="npc" }, TargetPlayers = { Option="triggering_player_list" }, Text="$DefaultDialogueMessage$", AfterMessage="next", Options=[] };
+	}
+	else
+	{
+		// Message prop for other dialogue: Default is a NPC message with a "wait for next" option
+		return { Option="message", Speaker = { Option="triggering_object" }, TargetPlayers = { Option="triggering_player_list" }, Text="$DefaultMessage$", AfterMessage=60, Options=[] };
+	}
+}
