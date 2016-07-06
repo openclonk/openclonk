@@ -484,8 +484,8 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// Note that QApplication needs at least one valid argument which must
 	// stay valid over the lifetime of the application.
 	static int fake_argc = 1;
-	static char *fake_argv[] = { "openclonk" };
-	application.reset(new QApplication(fake_argc, fake_argv));
+	static const char *fake_argv[] = { "openclonk" };
+	application.reset(new QApplication(fake_argc, const_cast<char **>(fake_argv)));
 	application->installTranslator(&qt_translator);
 	window.reset(new C4ConsoleQtMainWindow(app, this));
 	ui.setupUi(window.get());
