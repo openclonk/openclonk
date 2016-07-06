@@ -122,6 +122,7 @@ C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory,
 	// Resolve getter+setter callback names
 	if (props)
 	{
+		name = props->GetPropertyStr(P_Name);
 		set_function = props->GetPropertyStr(P_Set);
 		set_function_is_global = props->GetPropertyBool(P_Global);
 		async_get_function = props->GetPropertyStr(P_AsyncGet);
@@ -328,11 +329,12 @@ QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDeleg
 		// (and cannot be without going async in network mode)
 		// On regular button press, re-resolve path to value
 		C4Value val = editor->button_pending ? editor->last_value : editor->property_path.ResolveValue();
-		if (val.getPropList() || val.getArray())
+		bool is_proplist = !!val.getPropList(), is_array = !!val.getArray();
+		if (is_proplist || is_array)
 		{
 			C4PropList *info_proplist = this->info_proplist.getPropList();
 			if (!info_proplist) info_proplist = val.getPropList();
-			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, editor->property_path);
+			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, editor->property_path, is_array ? GetNameStr() : nullptr);
 			::Console.EditCursor.InvalidateSelection();
 		}
 	});
@@ -1221,7 +1223,7 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 		C4Value val = editor->property_path.ResolveValue();
 		if (val.getPropList() || val.getArray())
 		{
-			this->factory->GetPropertyModel()->DescendPath(val, val.getPropList(), editor->property_path);
+			this->factory->GetPropertyModel()->DescendPath(val, val.getPropList(), editor->property_path, nullptr);
 			::Console.EditCursor.InvalidateSelection();
 		}
 	});
@@ -1544,18 +1546,20 @@ void C4ConsoleQtPropListModel::SetBasePropList(C4PropList *new_proplist)
 	info_proplist.SetPropList(target_value.getObj());
 	target_path = C4PropertyPath(new_proplist);
 	target_path_stack.clear();
+	name_override = nullptr;
 	UpdateValue(true);
 	delegate_factory->OnPropListChanged();
 }
 
-void C4ConsoleQtPropListModel::DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path)
+void C4ConsoleQtPropListModel::DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path, C4String *new_name_override)
 {
 	// Add previous proplist to stack
-	target_path_stack.push_back(TargetStackEntry(target_path, target_value, info_proplist));
+	target_path_stack.push_back(TargetStackEntry(target_path, target_value, info_proplist, name_override.Get()));
 	// descend
 	target_value = new_value;
 	info_proplist.SetPropList(new_info_proplist);
 	target_path = new_path;
+	name_override = new_name_override;
 	UpdateValue(true);
 	delegate_factory->OnPropListChanged();
 }
@@ -1580,6 +1584,7 @@ void C4ConsoleQtPropListModel::AscendPath()
 		target_path = entry.path;
 		target_value = entry.value;
 		info_proplist = entry.info_proplist;
+		name_override = entry.name_override;
 		UpdateValue(true);
 		break;
 	}
@@ -1725,7 +1730,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		layout_valid = false;
 		property_groups.resize(1);
 	}
-	property_groups[0].name = LoadResStr("IDS_CNS_ARRAYEDIT");
+	property_groups[0].name = (name_override ? name_override->GetCStr() : LoadResStr("IDS_CNS_ARRAYEDIT"));
 	PropertyGroup &properties = property_groups[0];
 	if (properties.props.size() != target_array->GetSize())
 	{
