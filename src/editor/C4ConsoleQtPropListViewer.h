@@ -152,6 +152,7 @@ class C4PropertyDelegateDescendPath : public C4PropertyDelegate
 protected:
 	C4Value info_proplist;
 	bool edit_on_selection;
+	C4RefCntPointer<C4String> descend_path;
 public:
 	typedef C4PropertyDelegateLabelAndButtonWidget Editor;
 

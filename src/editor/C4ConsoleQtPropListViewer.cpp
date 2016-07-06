@@ -307,6 +307,7 @@ C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4Prope
 	{
 		info_proplist = C4VPropList(props->GetPropertyPropList(P_Elements));
 		edit_on_selection = props->GetPropertyBool(P_EditOnSelection, edit_on_selection);
+		descend_path = props->GetPropertyStr(P_DescendPath);
 	}
 }
  
@@ -332,9 +333,29 @@ QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDeleg
 		bool is_proplist = !!val.getPropList(), is_array = !!val.getArray();
 		if (is_proplist || is_array)
 		{
+			C4String *name_override = is_array ? GetNameStr() : nullptr;
 			C4PropList *info_proplist = this->info_proplist.getPropList();
+			// Allow descending into a sub-path
+			C4PropertyPath descend_property_path(editor->property_path);
+			if (is_proplist && descend_path)
+			{
+				val._getPropList()->GetPropertyByS(descend_path.Get(), &val);
+				if (info_proplist)
+				{
+					C4Value sub_info_proplist_val;
+					info_proplist->GetPropertyByS(::Strings.RegString(FormatString("EditorProp_%s", descend_path.Get()->GetCStr()).getData()), &sub_info_proplist_val);
+					C4PropList *sub_info_proplist = sub_info_proplist_val.getPropList();
+					if (sub_info_proplist)
+					{
+						if (val.getArray()) name_override = sub_info_proplist->GetPropertyStr(P_Name);
+						info_proplist = sub_info_proplist->GetPropertyPropList(P_Elements);
+					}
+				}
+				descend_property_path = C4PropertyPath(descend_property_path, descend_path->GetCStr());
+			}
+			// No info proplist: Fall back to regular proplist viewing mode
 			if (!info_proplist) info_proplist = val.getPropList();
-			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, editor->property_path, is_array ? GetNameStr() : nullptr);
+			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, descend_property_path, name_override);
 			::Console.EditCursor.InvalidateSelection();
 		}
 	});

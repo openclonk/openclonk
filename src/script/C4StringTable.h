@@ -502,6 +502,7 @@ enum C4PropertyName
 	P_DefinitionPriority,
 	P_Group,
 	P_Command,
+	P_DescendPath,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
