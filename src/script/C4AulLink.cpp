@@ -32,7 +32,7 @@ void C4ScriptHost::DoAppend(C4Def *def)
 		def->Script.SourceScripts.push_back(this);
 		if (!Includes.empty())
 		{
-			Warn("#appendto %s contains #include", def->id.ToString());
+			Warn("#appendto contains #include");
 			// Try to fullfil #include, but it won't work properly: #appendtos
 			// are always appended, but #includes are prepended to the script.
 			def->Script.Includes.insert(def->Script.Includes.end(), Includes.begin(), Includes.end());
