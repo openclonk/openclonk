@@ -278,6 +278,7 @@ C4StringTable::C4StringTable()
 	P[P_DefinitionPriority] = "DefinitionPriority";
 	P[P_Group] = "Group";
 	P[P_Command] = "Command";
+	P[P_Select] = "Select";
 	P[P_DescendPath] = "DescendPath";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";

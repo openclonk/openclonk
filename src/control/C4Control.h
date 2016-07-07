@@ -134,12 +134,13 @@ public:
 	C4ControlScript()
 			: iTargetObj(-1), fUseVarsFromCallerContext(false)
 	{ }
-	C4ControlScript(const char *szScript, int32_t iTargetObj, bool fUseVarsFromCallerContext = false)
-			: iTargetObj(iTargetObj), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
+	C4ControlScript(const char *szScript, int32_t iTargetObj, bool fUseVarsFromCallerContext = false, bool editor_select_result = false)
+			: iTargetObj(iTargetObj), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true), editor_select_result(editor_select_result)
 	{ }
 protected:
 	int32_t iTargetObj;
 	bool fUseVarsFromCallerContext;
+	bool editor_select_result; // if true and executed script from local client in editor mode, select the object returned by this script
 	StdStrBuf Script;
 public:
 	void SetTargetObj(int32_t iObj) { iTargetObj = iObj; }

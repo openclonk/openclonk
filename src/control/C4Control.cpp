@@ -256,11 +256,18 @@ void C4ControlScript::Execute() const
 	// print script
 	LogF("-> %s::%s", pPropList->GetName(), szScript);
 	// print result
+	bool is_local_script = true;
 	if (!LocalControl())
 	{
 		C4Network2Client *pClient = NULL;
 		if (::Network.isEnabled())
+		{
 			pClient = ::Network.Clients.GetClientByID(iByClient);
+			if (pClient != ::Network.Clients.GetLocal())
+			{
+				is_local_script = false;
+			}
+		}
 		if (pClient)
 			LogF(" = %s (by %s)", rVal.GetDataString().getData(), pClient->getName());
 		else
@@ -268,7 +275,19 @@ void C4ControlScript::Execute() const
 	}
 	else
 		LogF(" = %s", rVal.GetDataString().getData());
-	::Console.EditCursor.InvalidateSelection(); // refresh property view
+	// Editor update
+	if (::Console.Active)
+	{
+		C4Object *returned_object = rVal.getObj();
+		if (editor_select_result && is_local_script && returned_object)
+		{
+			::Console.EditCursor.ClearSelection(returned_object);
+			::Console.EditCursor.AddToSelection(returned_object);
+			::Console.EditCursor.OnSelectionChanged();
+		}
+		// Always: refresh property view after script command
+		::Console.EditCursor.InvalidateSelection();
+	}
 }
 
 void C4ControlScript::CompileFunc(StdCompiler *pComp)

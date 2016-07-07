@@ -976,9 +976,10 @@ void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
 		QPushButton *btn = new QPushButton(action_name->GetCStr(), window.get());
 		if (script_command)
 		{
-			btn->connect(btn, &QPushButton::pressed, btn, [script_command, object_number]()
+			bool select_returned_object = action_def->GetPropertyBool(P_Select);
+			btn->connect(btn, &QPushButton::pressed, btn, [script_command, object_number, select_returned_object]()
 			{
-				::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script_command->GetCStr(), object_number, false));
+				::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script_command->GetCStr(), object_number, false, select_returned_object));
 			});
 		}
 		ui.objectActionPanel->addWidget(btn, row, column);
