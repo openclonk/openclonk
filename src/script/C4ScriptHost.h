@@ -75,8 +75,9 @@ protected:
 
 	virtual void AddEngineFunctions() {}; // add any engine functions specific to this script host
 	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
-	virtual bool ResolveIncludes(C4DefList *rDefs); // resolve includes
-	virtual bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
+	bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	void DoAppend(C4Def *def);
 	bool Resolving; // set while include-resolving, to catch circular includes
 	bool IncludesResolved;
 

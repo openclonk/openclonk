@@ -25,6 +25,22 @@
 #include "game/C4Game.h"
 #include "object/C4GameObjects.h"
 
+void C4ScriptHost::DoAppend(C4Def *def)
+{
+	if (std::find(def->Script.SourceScripts.begin(), def->Script.SourceScripts.end(), this) == def->Script.SourceScripts.end())
+	{
+		def->Script.SourceScripts.push_back(this);
+		if (!Includes.empty())
+		{
+			Warn("#appendto %s contains #include", def->id.ToString());
+			// Try to fullfil #include, but it won't work properly: #appendtos
+			// are always appended, but #includes are prepended to the script.
+			def->Script.Includes.insert(def->Script.Includes.end(), Includes.begin(), Includes.end());
+		}
+
+	}
+}
+
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!
 bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
@@ -38,8 +54,7 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 			C4Def *Def = rDefs ? rDefs->GetByName(*a) : NULL;
 			if (Def)
 			{
-				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), this) == Def->Script.SourceScripts.end())
-					Def->Script.SourceScripts.push_back(this);
+				DoAppend(Def);
 			}
 			else
 			{
@@ -58,8 +73,7 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 				if (!pDef) break;
 				if (pDef == GetPropList()) continue;
 				// append
-				if (std::find(pDef->Script.SourceScripts.begin(), pDef->Script.SourceScripts.end(), this) == pDef->Script.SourceScripts.end())
-					pDef->Script.SourceScripts.push_back(this);
+				DoAppend(pDef);
 			}
 		}
 	}
