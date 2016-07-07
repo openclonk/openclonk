@@ -578,6 +578,7 @@ void C4Game::Clear()
 	// Clear the particles before cleaning up the objects.
 	Particles.Clear();
 	DeleteObjects(true);
+	::MapScript.Clear();
 	::Definitions.Clear();
 	Landscape.Clear();
 	PXS.Clear();
@@ -589,7 +590,6 @@ void C4Game::Clear()
 	Info.Clear();
 	Title.Clear();
 	pScenarioObjectsScript = NULL;
-	::MapScript.Clear();
 	::GameScript.Clear();
 	Names.Clear();
 	GameText.Clear();

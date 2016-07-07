@@ -100,6 +100,7 @@ class C4ExtraScriptHost: public C4ScriptHost
 	C4Value ParserPropList;
 public:
 	C4ExtraScriptHost(C4String *parent_key_name = NULL);
+	~C4ExtraScriptHost();
 	void Clear();
 
 	bool Delete() { return true; }

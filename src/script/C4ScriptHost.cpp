@@ -229,8 +229,14 @@ C4ExtraScriptHost::C4ExtraScriptHost(C4String *parent_key_name):
 {
 }
 
+C4ExtraScriptHost::~C4ExtraScriptHost()
+{
+	Clear();
+}
+
 void C4ExtraScriptHost::Clear()
 {
+	C4ScriptHost::Clear();
 	ParserPropList._getPropList()->Clear();
 }
 
