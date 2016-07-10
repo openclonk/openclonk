@@ -241,20 +241,13 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 
 // C4ViewportWindow
 
+#if !defined(WITH_QT_EDITOR)
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
 	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
 	[scrollView.horizontalScroller setToLandscapeCoordinate:GetViewX() size:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()];
 	[scrollView.verticalScroller setToLandscapeCoordinate:GetViewY() size:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()];
-	return true;
-}
-
-bool C4Viewport::ViewPositionByScrollBars()
-{
-	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()]);
-	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()]);
 	return true;
 }
 
@@ -282,6 +275,15 @@ bool C4Viewport::TogglePlayerLock()
 			[scrollView setAutohidesScrollers:YES];
 		}
 	}
+	return true;
+}
+#endif
+
+bool C4Viewport::ViewPositionByScrollBars()
+{
+	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
+	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:Landscape.GetWidth() viewportSize:ViewWdt zoom:GetZoom()]);
+	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:Landscape.GetHeight() viewportSize:ViewHgt zoom:GetZoom()]);
 	return true;
 }
 
