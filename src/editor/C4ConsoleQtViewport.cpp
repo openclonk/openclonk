@@ -338,7 +338,7 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 #ifdef Q_OS_LINUX
 		return event.nativeScanCode() - 8;
 #elif defined(Q_OS_DARWIN)
-		TODO: nativeScanCode() apparently doesn't work on OS X.
+		return event.nativeScanCode();
 #else
 		return event.nativeScanCode();
 #endif
