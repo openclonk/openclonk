@@ -81,7 +81,7 @@ public func FxIntSearchLadderTimer(object target, proplist effect, int time)
 	for (ladder in FindObjects(Find_AtRect(-5, -10, 10, 8), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
 		// Don't climb ladders that are blocked.
-		if (ladder->~CanNotBeClimbed() || IsBlockedLadder(ladder))
+		if (ladder->~CanNotBeClimbed(false, this) || IsBlockedLadder(ladder))
 			continue;
 		
 		SetAction("Climb");
@@ -207,7 +207,7 @@ public func FxIntClimbControlTimer(object target, effect fx, int time)
 {
 	if (GetAction() != "Climb" || Contained()) 
 		return FX_Execute_Kill;
-	if (!fx.ladder || fx.ladder->~CanNotBeClimbed(true)) 
+	if (!fx.ladder || fx.ladder->~CanNotBeClimbed(true, this)) 
 	{
 		AddLadderBlock(fx.ladder, 5);
 		SetAction("Jump");
