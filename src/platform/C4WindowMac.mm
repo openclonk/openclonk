@@ -200,6 +200,12 @@ C4KeyCode K_C = 8 + CocoaKeycodeOffset;
 C4KeyCode K_V = 9 + CocoaKeycodeOffset;
 C4KeyCode K_X = 7 + CocoaKeycodeOffset;
 C4KeyCode K_A = 0 + CocoaKeycodeOffset;
+
+// FIXME
+C4KeyCode K_PRINT = -100;
+C4KeyCode K_CENTER = -101;
+C4KeyCode K_NUM = -102;
+
 int MK_SHIFT = NSShiftKeyMask;
 int MK_CONTROL = NSControlKeyMask;
 int MK_ALT = NSAlternateKeyMask;

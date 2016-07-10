@@ -262,6 +262,9 @@ extern C4KeyCode K_C;
 extern C4KeyCode K_V;
 extern C4KeyCode K_X;
 extern C4KeyCode K_A;
+extern C4KeyCode K_NUM;
+extern C4KeyCode K_PRINT;
+extern C4KeyCode K_CENTER;
 #endif
 
 #ifdef USE_GTK
