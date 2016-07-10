@@ -17,6 +17,9 @@ local ActionEvaluation ;
 // Proplist containing callback function. Indexed by option names.
 local EvaluatorCallbacks;
 
+// Proplist containing option definitions. Indexed by option names.
+local EvaluatorDefs;
+
 // If this action is paused and will be resumed by a callback or by re-execution of the action, this property is set to the props of the holding action
 local hold;
 
@@ -55,6 +58,7 @@ func Definition(def)
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
+	EvaluatorDefs = {};
 	AddEvaluator("Action", "$Sequence$", "$Sequence$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", Display="{{Actions}}", Elements = {
 		EditorProp_Actions = { Name="$Actions$", Type="array", Elements=Evaluator.Action },
 		} } );
@@ -97,6 +101,7 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Option", Delegate=delegate, Get=default_get };
 	Evaluator[eval_type].Options[GetLength(Evaluator[eval_type].Options)] = action_def;
 	EvaluatorCallbacks[identifier] = callback_data;
+	EvaluatorDefs[identifier] = action_def;
 	return action_def;
 }
 

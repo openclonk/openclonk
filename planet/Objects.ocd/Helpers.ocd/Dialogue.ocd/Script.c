@@ -16,6 +16,9 @@ local dlg_interact;  // default true. can be set to false to deactivate the dial
 local dlg_attention; // if set, a red attention mark is put above the clonk
 local dlg_broadcast; // if set, all non-message (i.e. menu) MessageBox calls are called as MessageBoxBroadcast.
 local dlg_last_opt_sel; // may contain array with recently selected options
+local user_dialogue; // Dialogue action set by user in editor
+local user_dialogue_allow_parallel;
+local user_dialogue_progress_mode;
 
 static const DLG_Status_Active = 0; // next interaction calls progress function
 static const DLG_Status_Stop   = 1; // dialogue is done and menu closed on next interaction
@@ -30,7 +33,8 @@ global func SetDialogue(string name, bool attention)
 {
 	if (!this)
 		return;
-	var dialogue = CreateObjectAbove(Dialogue);
+	var dialogue = Dialogue->FindByTarget(this);
+	if (!dialogue) dialogue = CreateObject(Dialogue);
 	dialogue->InitDialogue(name, this, attention);
 	
 	dialogue->SetObjectLayer(nil);
@@ -141,6 +145,11 @@ public func RemoveAttention()
 	return true;
 }
 
+public func SetAttention(bool to_val)
+{
+	if (to_val) return AddAttention(); else return RemoveAttention();
+}
+
 private func AttentionEffect() { return SetAction("DialogueAttentionEffect", dlg_target); }
 
 private func UpdateDialogue()
@@ -227,7 +236,14 @@ public func Interact(object clonk)
 	
 	// Currently in a dialogue: abort that dialogue.
 	if (InDialogue(clonk))
-		clonk->CloseMenu();	
+		clonk->CloseMenu();
+		
+	// User sequence provided in editor?
+	if (user_dialogue)
+	{
+		UserAction->EvaluateAction(user_dialogue, this, clonk, user_dialogue_progress_mode, user_dialogue_allow_parallel);
+		return true;
+	}
 	
 	// No conversation context: abort.
 	if (!dlg_name)
@@ -471,6 +487,20 @@ public func SetSpeakerDirs(object speaker1, object speaker2)
 	return true;
 }
 
+public func SetUserDialogue(new_user_dialogue, new_user_dialogue_progress_mode, new_user_dialogue_allow_parallel)
+{
+	user_dialogue = new_user_dialogue;
+	user_dialogue_progress_mode = new_user_dialogue_progress_mode;
+	user_dialogue_allow_parallel = new_user_dialogue_allow_parallel;
+	return true;
+}
+
+public func SetEnabled(bool to_val)
+{
+	dlg_interact = to_val;
+	return true;
+}
+
 /* Scenario saving */
 
 // Scenario saving
@@ -482,6 +512,9 @@ func SaveScenarioObject(props)
 	props->RemoveCreation();
 	props->Remove("Plane"); // updated when setting dialogue
 	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v,%v)", dlg_target->MakeScenarioSaveName(), dlg_name, !!dlg_attention);
+	// Set properties
+	if (user_dialogue || user_dialogue_progress_mode || user_dialogue_allow_parallel) props->AddCall("UserDialogue", this, "SetUserDialogue", user_dialogue, user_dialogue_progress_mode, user_dialogue_allow_parallel);
+	if (!dlg_interact) props->AddCall("Enabled", this, "SetEnabled", dlg_interact);
 	// Force dependency on all contained objects, so dialogue initialization procedure can access them
 	var i=0, obj;
 	while (obj = dlg_target->Contents(i++)) obj->MakeScenarioSaveName();
@@ -591,6 +624,7 @@ public func IsDialogue() { return true; }
 
 public func Definition(def)
 {
+	// Actions provided by this definition
 	UserAction->AddEvaluator("Action", "$Dialogue$", "$Message$", "message", [def, def.EvalAct_Message], def.GetDefaultMessageProp, { Type="proplist", Display="{{Speaker}}: \"{{Text}}\" {{Options}}", Elements = {
 		EditorProp_Speaker = new UserAction.Evaluator.Object { Name = "$Speaker$" },
 		EditorProp_Text = { Type="string" },
@@ -602,6 +636,12 @@ public func Definition(def)
 			} } }
 		} } );
 	UserAction->AddEvaluator("Object", nil, "$NPC$", "npc", [def, def.EvalObj_NPC]);
+	// Clonks can create a dialogue
+	Clonk.EditorAction_Dialogue = { Name="$Dialogue$", Command="SetDialogue(GetName(), true, true)", Select=true };
+	// Dialogue EditorProps
+	def.EditorProp_user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Option", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
+	def.EditorProp_user_dialogue_allow_parallel = UserAction.PropParallel;
+	def.EditorProp_user_dialogue_progress_mode = UserAction.PropProgressMode;
 }
 
 private func GetDefaultMessageProp(object target_object)

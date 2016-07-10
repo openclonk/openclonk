@@ -15,3 +15,4 @@ DefaultDialogueMessage=Hi!
 DefaultMessage=Beispielnachricht
 DefaultOptionText=Auswahltext
 Options=Optionen
+NoDialogue=Kein Dialog
