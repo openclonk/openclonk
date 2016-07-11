@@ -5,3 +5,4 @@ Category=C4D_StaticBack
 Width=5
 Height=8
 Offset=-3,-4
+HideInCreator=true

@@ -2,3 +2,4 @@
 id=Library_Goal
 Version=6,0
 Category=C4D_StaticBack
+HideInCreator=true

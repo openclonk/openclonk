@@ -6,3 +6,4 @@ Width=110
 Height=19
 Offset=-55,-10
 Rotate=1
+HideInCreator=true

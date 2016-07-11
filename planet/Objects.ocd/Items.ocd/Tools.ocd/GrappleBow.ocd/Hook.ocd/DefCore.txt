@@ -13,3 +13,4 @@ Value=8
 Mass=8
 Rotate=1
 NoStabilize=1
+HideInCreator=true

@@ -10,3 +10,4 @@ Vertices=2
 VertexY=5,5
 VertexX=-2,2
 Rotate=0
+HideInCreator=true

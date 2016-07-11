@@ -7,3 +7,4 @@ Height=32
 Offset=0,0
 Vertices=1
 Mass=100
+HideInCreator=true

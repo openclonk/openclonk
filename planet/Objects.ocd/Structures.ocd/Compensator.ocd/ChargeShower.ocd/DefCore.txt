@@ -9,4 +9,4 @@ BlitMode=1
 Vertices=1
 VertexX=0
 VertexFriction=50
-
+HideInCreator=true

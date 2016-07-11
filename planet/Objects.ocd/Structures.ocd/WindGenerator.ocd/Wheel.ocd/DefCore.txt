@@ -14,3 +14,4 @@ NoStabilize=1
 IncompleteActivity=1
 StretchGrowth=1
 Oversize=1
+HideInCreator=true

@@ -17,3 +17,4 @@ SolidMask=0,0,24,3,0,23
 Picture=24,0,128,128
 HorizontalFix=1
 NoPushEnter=1
+HideInCreator=true

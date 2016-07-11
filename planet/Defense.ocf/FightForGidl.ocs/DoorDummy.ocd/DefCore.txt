@@ -7,3 +7,4 @@ Height=20
 Offset=-4,-10
 Vertices=1
 VertexY=10
+HideInCreator=true

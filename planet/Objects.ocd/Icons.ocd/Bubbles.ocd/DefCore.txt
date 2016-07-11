@@ -6,3 +6,4 @@ Picture=0,0,64,64
 Width=64
 Height=64
 Offset=-32,-32
+HideInCreator=true

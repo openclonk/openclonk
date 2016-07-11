@@ -7,3 +7,4 @@ Height=19
 Offset=-6,-19
 Vertices=1
 VertexY=14
+HideInCreator=true

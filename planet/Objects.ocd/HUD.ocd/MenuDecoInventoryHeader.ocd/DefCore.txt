@@ -4,3 +4,4 @@ Version=5,2,0,1
 Category=C4D_StaticBack
 Width=1
 Height=1
+HideInCreator=true

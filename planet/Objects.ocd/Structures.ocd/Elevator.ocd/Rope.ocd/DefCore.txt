@@ -6,3 +6,4 @@ Width=1
 Height=4
 Offset=0,-2
 Mass=0
+HideInCreator=true

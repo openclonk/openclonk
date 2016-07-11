@@ -13,3 +13,4 @@ Mass=15
 Picture=0,0,64,64
 Rotate=1
 Float=1
+HideInCreator=true

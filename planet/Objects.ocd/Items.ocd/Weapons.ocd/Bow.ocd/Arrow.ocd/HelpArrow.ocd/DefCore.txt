@@ -12,3 +12,4 @@ Value=15
 Mass=15
 Rotate=1
 Float=1
+HideInCreator=true

@@ -6,3 +6,4 @@ Width=16
 Height=16
 Offset=-8,-8
 Rotate=1
+HideInCreator=true

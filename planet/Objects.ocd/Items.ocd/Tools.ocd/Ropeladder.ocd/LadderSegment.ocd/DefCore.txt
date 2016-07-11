@@ -9,3 +9,4 @@ Vertices=2
 VertexX=0,0
 VertexY=-5,5
 Picture=0,0,50,80
+HideInCreator=true

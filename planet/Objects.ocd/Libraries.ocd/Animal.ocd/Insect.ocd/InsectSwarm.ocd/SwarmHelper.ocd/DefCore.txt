@@ -2,3 +2,4 @@
 id=Library_Swarm_Helper
 Version=6,1
 Category=C4D_StaticBack
+HideInCreator=true

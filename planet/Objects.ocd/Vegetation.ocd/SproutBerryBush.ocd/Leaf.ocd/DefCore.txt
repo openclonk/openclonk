@@ -2,4 +2,4 @@
 id=SproutBerryBush_Leaf
 Version=6,0
 Category=C4D_Object
-
+HideInCreator=true

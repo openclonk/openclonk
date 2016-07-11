@@ -9,4 +9,4 @@ Vertices=1
 VertexX=0
 VertexY=0
 VertexFriction=20
-
+HideInCreator=true

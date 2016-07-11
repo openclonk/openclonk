@@ -8,3 +8,4 @@ Height=64
 Offset=-32,-32
 Mass=100
 Value=80
+HideInCreator=true

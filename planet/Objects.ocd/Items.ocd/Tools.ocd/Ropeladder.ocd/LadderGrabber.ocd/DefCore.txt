@@ -8,3 +8,4 @@ Height=30
 Offset=-15,-15
 Vertices=1
 VertexY=0
+HideInCreator=true

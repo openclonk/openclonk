@@ -5,3 +5,4 @@ Category=C4D_StaticBack | C4D_IgnoreFoW
 Width=23
 Height=15
 Offset=-11,-7
+HideInCreator=true

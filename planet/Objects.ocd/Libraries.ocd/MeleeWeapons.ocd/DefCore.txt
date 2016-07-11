@@ -2,3 +2,4 @@
 id=Library_MeleeWeapon
 Version=6,0
 Category=1
+HideInCreator=true

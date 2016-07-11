@@ -10,3 +10,4 @@ Vertices=1
 VertexX=-12
 VertexY=-2
 VertexFriction=0
+HideInCreator=true

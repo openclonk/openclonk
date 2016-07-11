@@ -5,3 +5,4 @@ Category=C4D_None
 Width=8
 Height=8
 Offset=-4,-4
+HideInCreator=true

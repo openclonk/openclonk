@@ -14,3 +14,4 @@ Rotate=1
 NoStabilize=1
 StretchGrowth=1
 IncompleteActivity=1
+HideInCreator=true

@@ -2,3 +2,4 @@
 id=AI
 Version=6,0
 Category=C4D_None | C4D_MouseIgnore
+HideInCreator=true

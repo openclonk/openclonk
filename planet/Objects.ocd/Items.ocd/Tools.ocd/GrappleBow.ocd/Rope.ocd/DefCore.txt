@@ -6,3 +6,4 @@ Vertices=2
 Width=2
 Height=12
 Offset=-1,-6
+HideInCreator=true

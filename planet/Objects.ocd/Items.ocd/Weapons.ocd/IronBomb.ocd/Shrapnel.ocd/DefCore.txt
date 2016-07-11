@@ -11,3 +11,4 @@ VertexY=0
 VertexFriction=95
 Mass=5
 Rotate=1
+HideInCreator=true

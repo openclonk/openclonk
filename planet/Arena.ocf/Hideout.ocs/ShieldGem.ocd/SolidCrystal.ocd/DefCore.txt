@@ -9,3 +9,4 @@ SolidMask=0,0,8,7
 Value=10
 Mass=10
 Rotate=1
+HideInCreator=true
