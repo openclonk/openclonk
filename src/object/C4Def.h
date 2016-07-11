@@ -149,6 +149,7 @@ public:
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
 	int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
+	bool HideInCreator;       // If true, the definition is not visible in the object creator of the editor
 public:
 	void DefaultDefCore();
 	bool LoadDefCore(C4Group &hGroup);

@@ -63,6 +63,8 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 	int32_t index = 0; C4Def *def;
 	while (def = ::Definitions.GetDef(index++))
 	{
+		// Ignore hidden defs
+		if (def->HideInCreator) continue;
 		// Build path leading to this definition
 		DefListNode *node_parent = root.get();
 		StdCopyStrBuf fn(def->Filename), fn2;

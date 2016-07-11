@@ -132,6 +132,7 @@ void C4Def::DefaultDefCore()
 	ConSizeOff=0;
 	NoGet=0;
 	NoTransferZones=0;
+	HideInCreator = false;
 }
 
 bool C4Def::LoadDefCore(C4Group &hGroup)
@@ -279,6 +280,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),		//undocumented
 	                           "AllowPictureStack",   0                ));
+	pComp->Value(mkNamingAdapt(HideInCreator, "HideInCreator", false));
 }
 
 //-------------------------------- C4Def -------------------------------------------------------

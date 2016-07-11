@@ -275,6 +275,11 @@
           <col>Integer</col>
           <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones.</col>
         </row>
+        <row>
+          <literal_col>HideInCreator</literal_col>
+          <col>Boolean</col>
+          <col>false (default) or true. If true, the definition is not shown in the object creator window of the editor. Should be used for internal definitions, libraries, etc.</col>
+        </row>
       </table>
     </text>
   </part>
