@@ -237,6 +237,7 @@ class C4PropertyDelegateEnumEditor : public QWidget
 
 public:
 	C4Value last_val;
+	int32_t last_selection_index;
 	C4PropertyPath last_get_path;
 	C4DeepQComboBox *option_box;
 	QHBoxLayout *layout;
@@ -244,7 +245,7 @@ public:
 	bool updating, option_changed;
 
 	C4PropertyDelegateEnumEditor(QWidget *parent)
-		: QWidget(parent), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false), option_changed(false) { }
+		: QWidget(parent), last_selection_index(-1), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false), option_changed(false) { }
 };
 
 class C4PropertyDelegateEnum : public C4PropertyDelegate

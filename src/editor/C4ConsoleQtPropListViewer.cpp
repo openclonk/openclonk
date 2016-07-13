@@ -867,6 +867,7 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 	int32_t index = std::max<int32_t>(GetOptionByValue(val), 0);
 	QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
 	editor->option_box->setCurrentModelIndex(GetModelIndexByID(model, model->invisibleRootItem(), index, QModelIndex()));
+	editor->last_selection_index = index;
 	// Update parameter
 	UpdateEditorParameter(editor, false);
 	editor->updating = false;
@@ -943,9 +944,14 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 
 void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *editor, int newval) const
 {
-	editor->option_changed = true;
-	UpdateEditorParameter(editor, true);
-	emit EditorValueChangedSignal(editor);
+	// Update value and parameter delegate if selection changed
+	if (newval != editor->last_selection_index)
+	{
+		editor->option_changed = true;
+		editor->last_selection_index = newval;
+		UpdateEditorParameter(editor, true);
+		emit EditorValueChangedSignal(editor);
+	}
 }
 
 void C4PropertyDelegateEnum::EnsureOptionDelegateResolved(const Option &option) const
