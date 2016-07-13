@@ -60,16 +60,16 @@ func Definition(def)
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
-	AddEvaluator("Action", "$Sequence$", "$Sequence$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", Display="{{Actions}}", Elements = {
-		EditorProp_Actions = { Name="$Actions$", Type="array", Elements=Evaluator.Action },
+	AddEvaluator("Action", "$Sequence$", "$Sequence$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", Display="{{Actions}}", EditorProps = {
+		Actions = { Name="$Actions$", Type="array", Elements=Evaluator.Action },
 		} } );
-	AddEvaluator("Action", "$Sequence$", "$Goto$", "goto", [def, def.EvalAct_Goto], { Index=0 }, { Type="proplist", Display="{{Index}}", Elements = {
-		EditorProp_Index = { Name="$Index$", Type="int", Min=0 }
+	AddEvaluator("Action", "$Sequence$", "$Goto$", "goto", [def, def.EvalAct_Goto], { Index=0 }, { Type="proplist", Display="{{Index}}", EditorProps = {
+		Index = { Name="$Index$", Type="int", Min=0 }
 		} } );
 	AddEvaluator("Action", "$Sequence$", "$StopSequence$", "stop_sequence", [def, def.EvalAct_StopSequence]);
 	AddEvaluator("Action", "$Sequence$", "$SuspendSequence$", "suspend_sequence", [def, def.EvalAct_SuspendSequence]);
-	AddEvaluator("Action", "$Sequence$", "$Wait$", "wait", [def, def.EvalAct_Wait], { Time=60 }, { Type="proplist", Display="{{Time}}", Elements = {
-		EditorProp_Time = { Name="$Time$", Type="int", Min=1 }
+	AddEvaluator("Action", "$Sequence$", "$Wait$", "wait", [def, def.EvalAct_Wait], { Time=60 }, { Type="proplist", Display="{{Time}}", EditorProps = {
+		Time = { Name="$Time$", Type="int", Min=1 }
 		} } );
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "action_object", [def, def.EvalObj_ActionObject]);
@@ -119,10 +119,10 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Option", Delegate=delegate, Get=default_get }, n;
 	if (delegate)
 	{
-		if (delegate.Elements)
+		if (delegate.EditorProps)
 		{
 			// Proplist of array parameter for this evaluator: Descend path title should be name
-			delegate.Elements.Name = name;
+			delegate.Name = name;
 		}
 		else
 		{

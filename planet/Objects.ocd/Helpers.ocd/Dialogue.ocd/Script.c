@@ -650,33 +650,34 @@ public func IsDialogue() { return true; }
 public func Definition(def)
 {
 	// Actions provided by this definition
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$Message$", "message", [def, def.EvalAct_Message], def.GetDefaultMessageProp, { Type="proplist", Display="{{Speaker}}: \"{{Text}}\" {{Options}}", Elements = {
-		EditorProp_Speaker = new UserAction.Evaluator.Object { Name = "$Speaker$" },
-		EditorProp_Text = { Type="string" },
-		EditorProp_TargetPlayers = new UserAction.Evaluator.PlayerList { Name = "$TargetPlayers$" },
-		EditorProp_AfterMessage = { Type="enum", Options = [{ Name="$ContinueAction$" }, { Name="$WaitForNext$", Value="next" }, { Name="$SuspendAction$", Value="suspend" }, { Name="$StopAction$", Value="stop" }, { Name="$WaitTime$", Value=60, Type=C4V_Int, Delegate={ Type="int", Min=1 } }] },
-		EditorProp_Options = { Name="$Options$", Type="array", Display=3, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", DefaultValue = { Text="$DefaultOptionText$", Goto=0 }, Elements = {
-			EditorProp_Text = { Type="string" },
-			EditorProp_Goto = { Type="int", Min=0 }
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$Message$", "message", [def, def.EvalAct_Message], def.GetDefaultMessageProp, { Type="proplist", Display="{{Speaker}}: \"{{Text}}\" {{Options}}", EditorProps = {
+		Speaker = new UserAction.Evaluator.Object { Name = "$Speaker$" },
+		Text = { Type="string" },
+		TargetPlayers = new UserAction.Evaluator.PlayerList { Name = "$TargetPlayers$" },
+		AfterMessage = { Type="enum", Options = [{ Name="$ContinueAction$" }, { Name="$WaitForNext$", Value="next" }, { Name="$SuspendAction$", Value="suspend" }, { Name="$StopAction$", Value="stop" }, { Name="$WaitTime$", Value=60, Type=C4V_Int, Delegate={ Type="int", Min=1 } }] },
+		Options = { Name="$Options$", Type="array", Display=3, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", DefaultValue = { Text="$DefaultOptionText$", Goto=0 }, EditorProps = {
+			Text = { Type="string" },
+			Goto = { Type="int", Min=0 }
 			} } }
 		} } );
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", Elements = {
-		EditorProp_Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
-		EditorProp_Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+		Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
+		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
 		} } );
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", Elements = {
-		EditorProp_Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
-		EditorProp_Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+		Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
+		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
 		} } );
 	UserAction->AddEvaluator("Object", nil, "$NPC$", "npc", [def, def.EvalObj_NPC]);
 	// Clonks can create a dialogue
 	Clonk.EditorAction_Dialogue = { Name="$Dialogue$", Command="SetDialogue(GetName(), true, true)", Select=true };
 	// Dialogue EditorProps
-	def.EditorProp_user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Option", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
-	def.EditorProp_user_dialogue_allow_parallel = UserAction.PropParallel;
-	def.EditorProp_user_dialogue_progress_mode = UserAction.PropProgressMode;
-	def.EditorProp_dlg_attention = { Name="$Attention$ (!)", Type="bool", Set="SetAttention" };
-	def.EditorProp_dlg_interact = { Name="$Enabled$", Type="bool", Set="SetEnabled" };
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Option", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
+	def.EditorProps.user_dialogue_allow_parallel = UserAction.PropParallel;
+	def.EditorProps.user_dialogue_progress_mode = UserAction.PropProgressMode;
+	def.EditorProps.dlg_attention = { Name="$Attention$ (!)", Type="bool", Set="SetAttention" };
+	def.EditorProps.dlg_interact = { Name="$Enabled$", Type="bool", Set="SetEnabled" };
 }
 
 private func GetDefaultMessageProp(object target_object)

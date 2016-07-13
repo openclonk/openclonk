@@ -305,7 +305,7 @@ C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4Prope
 {
 	if (props)
 	{
-		info_proplist = C4VPropList(props->GetPropertyPropList(P_Elements));
+		info_proplist = C4VPropList(props); // Descend info is this definition
 		edit_on_selection = props->GetPropertyBool(P_EditOnSelection, edit_on_selection);
 		descend_path = props->GetPropertyStr(P_DescendPath);
 	}
@@ -333,29 +333,30 @@ QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDeleg
 		bool is_proplist = !!val.getPropList(), is_array = !!val.getArray();
 		if (is_proplist || is_array)
 		{
-			C4String *name_override = is_array ? GetNameStr() : nullptr;
 			C4PropList *info_proplist = this->info_proplist.getPropList();
 			// Allow descending into a sub-path
 			C4PropertyPath descend_property_path(editor->property_path);
 			if (is_proplist && descend_path)
 			{
+				// Descend value into sub-path
 				val._getPropList()->GetPropertyByS(descend_path.Get(), &val);
+				// Descend info_proplist into sub-path
 				if (info_proplist)
 				{
-					C4Value sub_info_proplist_val;
-					info_proplist->GetPropertyByS(::Strings.RegString(FormatString("EditorProp_%s", descend_path.Get()->GetCStr()).getData()), &sub_info_proplist_val);
-					C4PropList *sub_info_proplist = sub_info_proplist_val.getPropList();
-					if (sub_info_proplist)
+					C4PropList *info_editorprops = info_proplist->GetPropertyPropList(P_EditorProps);
+					if (info_editorprops)
 					{
-						if (val.getArray()) name_override = sub_info_proplist->GetPropertyStr(P_Name);
-						info_proplist = sub_info_proplist->GetPropertyPropList(P_Elements);
+						C4Value sub_info_proplist_val;
+						info_editorprops->GetPropertyByS(descend_path.Get(), &sub_info_proplist_val);
+						info_proplist = sub_info_proplist_val.getPropList();
 					}
 				}
+				// Descend property path into sub-path
 				descend_property_path = C4PropertyPath(descend_property_path, descend_path->GetCStr());
 			}
 			// No info proplist: Fall back to regular proplist viewing mode
 			if (!info_proplist) info_proplist = val.getPropList();
-			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, descend_property_path, name_override);
+			this->factory->GetPropertyModel()->DescendPath(val, info_proplist, descend_property_path);
 			::Console.EditCursor.InvalidateSelection();
 		}
 	});
@@ -377,7 +378,13 @@ QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *ob
 	C4ValueArray *arr = v.getArray();
 	if (!arr) return QString(LoadResStr("IDS_CNS_INVALID"));
 	int32_t n = v._getArray()->GetSize();
-	if (!element_delegate) element_delegate = factory->GetDelegateByValue(info_proplist);
+	if (!element_delegate)
+	{
+		C4Value element_delegate_value;
+		C4PropList *info_proplist = this->info_proplist.getPropList();
+		if (info_proplist) info_proplist->GetProperty(P_Elements, &element_delegate_value);
+		element_delegate = factory->GetDelegateByValue(element_delegate_value);
+	}
 	if (max_array_display && n)
 	{
 		QString result = "[";
@@ -413,6 +420,7 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 	if (!data) return QString(LoadResStr("IDS_CNS_INVALID"));
 	if (!display_string) return QString("{...}");
 	C4PropList *info_proplist = this->info_proplist.getPropList();
+	C4PropList *info_editorprops = info_proplist ? info_proplist->GetPropertyPropList(P_EditorProps) : nullptr;
 	// Replace all {{name}} by property values of name
 	QString result = display_string->GetCStr();
 	int32_t pos0, pos1;
@@ -423,13 +431,14 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 		if (pos1 < 0) break; // placeholder not closed
 		// Get child value
 		QString substring = result.mid(pos0+2, pos1-pos0-2);
-		if (!data->GetPropertyByS(::Strings.RegString(substring.toUtf8()), &cv)) cv.Set0();
+		C4RefCntPointer<C4String> psubstring = ::Strings.RegString(substring.toUtf8());
+		if (!data->GetPropertyByS(psubstring.Get(), &cv)) cv.Set0();
 		// Try to display using child delegate
 		QString display_value;
-		if (info_proplist)
+		if (info_editorprops)
 		{
 			C4Value child_delegate_val;
-			if (info_proplist->GetPropertyByS(::Strings.RegString("EditorProp_" + substring.toUtf8()), &child_delegate_val))
+			if (info_editorprops->GetPropertyByS(psubstring.Get(), &child_delegate_val))
 			{
 				C4PropertyDelegate *child_delegate = factory->GetDelegateByValue(child_delegate_val);
 				if (child_delegate)
@@ -1251,7 +1260,7 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 		C4Value val = editor->property_path.ResolveValue();
 		if (val.getPropList() || val.getArray())
 		{
-			this->factory->GetPropertyModel()->DescendPath(val, val.getPropList(), editor->property_path, nullptr);
+			this->factory->GetPropertyModel()->DescendPath(val, val.getPropList(), editor->property_path);
 			::Console.EditCursor.InvalidateSelection();
 		}
 	});
@@ -1496,8 +1505,7 @@ C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 
 bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_effect_object, C4String *default_selection, int32_t *default_selection_index)
 {
-	const char *editor_prop_prefix = "EditorProp_";
-	auto new_properties = add_proplist->GetSortedLocalProperties(editor_prop_prefix, target_proplist);
+	auto new_properties = add_proplist->GetSortedLocalProperties(false);
 	if (!new_properties.size()) return false;
 	if (property_groups.size() == group_index)
 	{
@@ -1523,8 +1531,8 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		else
 			prop->property_path = target_path;
 		// ID for default selection memory
-		const char *prop_id = new_properties[i]->GetCStr() + strlen(editor_prop_prefix);
-		if (default_selection && default_selection->GetData() == prop_id) *default_selection_index = i;
+		C4String *prop_id = new_properties[i];
+		if (default_selection == prop_id) *default_selection_index = i;
 		// Property data
 		prop->key = NULL;
 		prop->display_name = NULL;
@@ -1539,8 +1547,8 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->display_name = published_prop->GetPropertyStr(P_Name);
 			prop->delegate_info.SetPropList(published_prop);
 		}
-		if (!prop->key) properties.props[i].key = ::Strings.RegString(prop_id);
-		if (!prop->display_name) properties.props[i].display_name = ::Strings.RegString(new_properties[i]->GetCStr() + strlen(editor_prop_prefix));
+		if (!prop->key) properties.props[i].key = prop_id;
+		if (!prop->display_name) properties.props[i].display_name = prop_id;
 		prop->delegate = delegate_factory->GetDelegateByValue(prop->delegate_info);
 		C4Value v;
 		C4Value v_target_proplist = C4VPropList(target_proplist);
@@ -1574,20 +1582,18 @@ void C4ConsoleQtPropListModel::SetBasePropList(C4PropList *new_proplist)
 	info_proplist.SetPropList(target_value.getObj());
 	target_path = C4PropertyPath(new_proplist);
 	target_path_stack.clear();
-	name_override = nullptr;
 	UpdateValue(true);
 	delegate_factory->OnPropListChanged();
 }
 
-void C4ConsoleQtPropListModel::DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path, C4String *new_name_override)
+void C4ConsoleQtPropListModel::DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path)
 {
 	// Add previous proplist to stack
-	target_path_stack.push_back(TargetStackEntry(target_path, target_value, info_proplist, name_override.Get()));
+	target_path_stack.push_back(TargetStackEntry(target_path, target_value, info_proplist));
 	// descend
 	target_value = new_value;
 	info_proplist.SetPropList(new_info_proplist);
 	target_path = new_path;
-	name_override = new_name_override;
 	UpdateValue(true);
 	delegate_factory->OnPropListChanged();
 }
@@ -1612,7 +1618,6 @@ void C4ConsoleQtPropListModel::AscendPath()
 		target_path = entry.path;
 		target_value = entry.value;
 		info_proplist = entry.info_proplist;
-		name_override = entry.name_override;
 		UpdateValue(true);
 		break;
 	}
@@ -1695,22 +1700,24 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
 			{
 				QString name = fx->GetName();
-				if (AddPropertyGroup(fx, num_groups, name, fx, obj, nullptr, nullptr))
+				C4PropList *effect_editorprops = fx->GetPropertyPropList(P_EditorProps);
+				if (effect_editorprops && AddPropertyGroup(effect_editorprops, num_groups, name, fx, obj, nullptr, nullptr))
 					++num_groups;
 			}
 		}
 		// Properties from object (but not on definition)
 		if (obj || !info_proplist->GetDef())
 		{
-			for (C4PropList *check_proplist = info_proplist; check_proplist; check_proplist = check_proplist->GetPrototype())
+			C4PropList *info_editorprops = info_proplist->GetPropertyPropList(P_EditorProps);
+			if (info_editorprops)
 			{
 				QString name;
-				C4PropListStatic *proplist_static = check_proplist->IsStatic();
+				C4PropListStatic *proplist_static = info_proplist->IsStatic();
 				if (proplist_static)
 					name = QString(proplist_static->GetDataString().getData());
 				else
-					name = check_proplist->GetName();
-				if (AddPropertyGroup(check_proplist, num_groups, name, target_proplist, nullptr, default_selection, default_selection_index))
+					name = info_proplist->GetName();
+				if (AddPropertyGroup(info_editorprops, num_groups, name, target_proplist, nullptr, default_selection, default_selection_index))
 					++num_groups;
 				// Assign group for default selection
 				if (*default_selection_index >= 0)
@@ -1725,8 +1732,11 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		{
 			C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
 			if (editor_base)
-				if (AddPropertyGroup(editor_base, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, nullptr, nullptr, nullptr))
+			{
+				C4PropList *info_editorprops = editor_base->GetPropertyPropList(P_EditorProps);
+				if (AddPropertyGroup(info_editorprops, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, nullptr, nullptr, nullptr))
 					++num_groups;
+			}
 		}
 	}
 	// Always: Internal properties
@@ -1758,14 +1768,17 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		layout_valid = false;
 		property_groups.resize(1);
 	}
-	property_groups[0].name = (name_override ? name_override->GetCStr() : LoadResStr("IDS_CNS_ARRAYEDIT"));
+	C4PropList *info_proplist = this->info_proplist.getPropList();
+	C4Value elements_delegate_value;
+	if (info_proplist) info_proplist->GetProperty(P_Elements, &elements_delegate_value);
+	property_groups[0].name = (info_proplist ? info_proplist->GetName() : LoadResStr("IDS_CNS_ARRAYEDIT"));
 	PropertyGroup &properties = property_groups[0];
 	if (properties.props.size() != target_array->GetSize())
 	{
 		layout_valid = false;
 		properties.props.resize(target_array->GetSize());
 	}
-	C4PropertyDelegate *item_delegate = delegate_factory->GetDelegateByValue(info_proplist);
+	C4PropertyDelegate *item_delegate = delegate_factory->GetDelegateByValue(elements_delegate_value);
 	for (int32_t i = 0; i < properties.props.size(); ++i)
 	{
 		Property &prop = properties.props[i];
@@ -1773,7 +1786,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		prop.parent_value = target_value;
 		prop.display_name = ::Strings.RegString(FormatString("%d", (int)i).getData());
 		prop.key = nullptr;
-		prop.delegate_info = info_proplist;
+		prop.delegate_info = elements_delegate_value;
 		prop.delegate = item_delegate;
 		prop.about_to_edit = false;
 		prop.group_idx = 0;

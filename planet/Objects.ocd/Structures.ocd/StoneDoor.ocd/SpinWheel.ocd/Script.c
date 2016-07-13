@@ -108,15 +108,16 @@ local Touchable = 2;
 local EditCursorCommands = ["ControlUp()", "ControlDown()", "ConnectNearestDoor()"];
 local Plane = 200;
 local Components = {Wood = 3, Metal = 1};
-local EditorProp_targetdoor = { Name="$Target$", Type="object", Filter="IsSwitchTarget" };
 local up_action, down_action; // Custom editor-selected actions on switch handling
 
 func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(-30,0,1,0)), def);
 	SetProperty("MeshTransformation", Trans_Rotate(-13,0,1,0), def);
-	def.EditorProp_up_action = new UserAction.Prop { Name="$UpAction$" };
-	def.EditorProp_down_action = new UserAction.Prop { Name="$DownAction$" };
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.targetdoor = { Name = "$Target$", Type = "object", Filter = "IsSwitchTarget" };
+	def.EditorProps.up_action = new UserAction.Prop { Name="$UpAction$" };
+	def.EditorProps.down_action = new UserAction.Prop { Name="$DownAction$" };
 }
 
 

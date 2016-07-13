@@ -40,9 +40,10 @@ func AddAI(object clonk)
 	SetGuardRange(clonk, fx.home_x-AI_DefGuardRangeX, fx.home_y-AI_DefGuardRangeY, AI_DefGuardRangeX*2, AI_DefGuardRangeY*2);
 	SetMaxAggroDistance(clonk, AI_DefMaxAggroDistance);
 	// AI editor stuff
-	fx.EditorProp_guard_range = { Name="$GuardRange$", Type="rect", Storage="proplist", Color=0xff00, Relative=false };
-	fx.EditorProp_ignore_allies = { Name="$IgnoreAllies$", Type="bool" };
-	fx.EditorProp_max_aggro_distance = { Name="$MaxAggroDistance$", Type="circle", Color=0x808080 };
+	fx.EditorProps = {};
+	fx.EditorProps.guard_range = { Name="$GuardRange$", Type="rect", Storage="proplist", Color=0xff00, Relative=false };
+	fx.EditorProps.ignore_allies = { Name="$IgnoreAllies$", Type="bool" };
+	fx.EditorProps.max_aggro_distance = { Name="$MaxAggroDistance$", Type="circle", Color=0x808080 };
 	return fx;
 }
 
@@ -753,5 +754,6 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 
 func Definition(def)
 {
-	Clonk.EditorProp_AI = { Type = "has_effect", Effect = "AI", Set = "AI->SetAI", Global = true };
+	if (!Clonk.EditorProps) Clonk.EditorProps = {};
+	Clonk.EditorProps.AI = { Type = "has_effect", Effect = "AI", Set = "AI->SetAI", Global = true };
 }

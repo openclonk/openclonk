@@ -22,16 +22,17 @@ public func Definition(def)
 {
 	def.starting_crew = GetDefaultCrew();
 	def.starting_material = GetDefaultMaterial();
-	def.EditorProp_starting_players = EditorBase.PlayerMask;
-	def.EditorProp_starting_knowledge = { Name="$Knowledge$", Type="enum", OptionKey="Option", Options = [
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.starting_players = EditorBase.PlayerMask;
+	def.EditorProps.starting_knowledge = { Name="$Knowledge$", Type="enum", OptionKey="Option", Options = [
 		{ Name="$None$" },
 		{ Name="$All$", Value={ Option="all" } },
 		{ Name="$AllExcept$", Value={ Option="allexcept", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
 		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
 		] };
-	def.EditorProp_starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
-	def.EditorProp_starting_material = EditorBase->GetConditionalIDList("Collectible", "$StartingMaterial$", nil);
-	def.EditorProp_starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
+	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
+	def.EditorProps.starting_material = EditorBase->GetConditionalIDList("Collectible", "$StartingMaterial$", nil);
+	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
 	return true;
 }
 

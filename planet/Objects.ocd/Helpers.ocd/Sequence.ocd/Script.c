@@ -3,6 +3,8 @@
 	Cutscene to be watched by all players.
 	Start calling global func StartSequence, stop using StopSequence
 	
+	Can also be used as a trigger object for UserActions.
+	
 	@author Sven
 */
 

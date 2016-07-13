@@ -153,4 +153,4 @@ func SaveScenarioObject(props)
 
 /* Editor props */
 
-local EditorProp_spawn_id = { Type="def", Filter="Collectible", Set="SetSpawnObject" };
+local EditorProps = { spawn_id = { Type = "def", Filter = "Collectible", Set = "SetSpawnObject" } };

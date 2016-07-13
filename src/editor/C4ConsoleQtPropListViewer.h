@@ -486,10 +486,9 @@ public:
 		// TODO: Would be nice to store only path without values and info_proplist. However, info_proplist is hard to resolve when traversing up
 		// So just keep the value for now and hope that proplists do not change during selection
 		C4Value value, info_proplist;
-		C4RefCntPointer<C4String> name_override;
 
-		TargetStackEntry(const C4PropertyPath &path, const C4Value &value, const C4Value &info_proplist, C4String *name_override)
-			: path(path), value(value), info_proplist(info_proplist), name_override(name_override) {}
+		TargetStackEntry(const C4PropertyPath &path, const C4Value &value, const C4Value &info_proplist)
+			: path(path), value(value), info_proplist(info_proplist) {}
 	};
 	struct EditedPath // Information about how to find currently edited element (to restore after model update)
 	{
@@ -501,7 +500,6 @@ private:
 	C4Value base_proplist; // Parent-most value, i.e. object or effect selected in editor through 
 	C4Value info_proplist; // Proplist from which available properties are derived. May differ from target_proplist in child proplists.
 	C4PropertyPath target_path; // script path to target proplist to set values
-	C4RefCntPointer<C4String> name_override; // String to override the name on the first group instead of using info_proplist->GetName() (used only for arrays)
 	std::list<TargetStackEntry> target_path_stack; // stack of target paths descended into by setting child properties
 	std::vector<PropertyGroup> property_groups;
 	QFont header_font;
@@ -516,7 +514,7 @@ public:
 
 	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_effect_object, C4String *default_selection, int32_t *default_selection_index);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
-	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path, C4String *new_name_override); // Add proplist to stack
+	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
 	void AscendPath(); // go back one element in target path stack
 	void UpdateValue(bool select_default);
 

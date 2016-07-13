@@ -6,9 +6,11 @@ local Name = "EditorBase";
 public func Construction() { RemoveObject(); }
 
 // Basic properties of all objects
-local EditorProp_Invincibility = { Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" };
-local EditorProp_PlayerColor = { Type = "color", AsyncGet = "GetColor", Set = "SetColor" };
-local EditorProp_Name = { Type = "string", AsyncGet = "GetName", Set = "SetName" };
+local EditorProps = {
+	Invincibility = { Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" },
+	PlayerColor = { Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
+	Name = { Type = "string", AsyncGet = "GetName", Set = "SetName" }
+};
 local Plane = 1;
 
 local CountedID, IDList, AnyDef, IDSet, PlayerNumber, TeamID, PlayerMask;
@@ -17,10 +19,9 @@ local DefinitionPriority=100; // Call this definition early to allow EditorProp 
 func Definition(def)
 {
 	// Property delegate types
-	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=nil }, Elements = {
-		Name = "$IDListEntry$",
-		EditorProp_count = { Type = "int", Min = 1 },
-		EditorProp_id = { Type = "def" } } };
+	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=nil }, Name = "$IDListEntry$", EditorProps = {
+		count = { Type = "int", Min = 1 },
+		id = { Type = "def" } } };
 	IDList = { Name = "ID list", Type = "array", Display = 3, Elements = CountedID };
 	AnyDef = { Type = "def" };
 	IDSet = { Name = "ID set", Type = "array", Display = 5, Elements = AnyDef };
@@ -63,10 +64,9 @@ public func EvaluatePlayers(proplist mask)
 // Return an ID-List EditorProp with only IDs available that meet the condition
 public func GetConditionalIDList(string condition, string name, proplist default_id)
 {
-	var counted_id = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=default_id }, Elements = {
-		Name = Format("$Entry$", name),
-		EditorProp_count = { Type = "int", Min = 1 },
-		EditorProp_id = { Type = "def", Filter=condition } } };
+	var counted_id = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=default_id }, Name = Format("$Entry$", name), EditorProps = {
+		count = { Type = "int", Min = 1 },
+		id = { Type = "def", Filter=condition } } };
 	return { Name = name, Type = "array", Display = 3, Elements = counted_id };
 }
 
