@@ -802,11 +802,6 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		{
 			// Showing current selection: From last_val assigned in SetEditorData
 			parameter_val = editor->last_val;
-			if (option.value_key)
-			{
-				C4PropList *props = editor->last_val.getPropList();
-				if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
-			}
 		}
 		else
 		{
@@ -815,6 +810,12 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 			// Although the default value is taken directly from SetEditorData, it needs to be set here to make child access into proplists and arrays possible
 			// (note that actual setting is delayed by control queue and this may often the wrong value in some cases - the correct value will be shown on execution of the queue)
 			SetOptionValue(editor->last_get_path, option);
+		}
+		// Resolve parameter value
+		if (option.value_key)
+		{
+			C4PropList *props = editor->last_val.getPropList();
+			if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
 		}
 		// Show it
 		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem(), by_selection);
