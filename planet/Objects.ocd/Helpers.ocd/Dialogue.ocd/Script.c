@@ -25,6 +25,7 @@ static const DLG_Status_Stop   = 1; // dialogue is done and menu closed on next 
 static const DLG_Status_Remove = 2; // dialogue is removed on next interaction
 static const DLG_Status_Wait   = 3; // dialogue is deactivated temporarily to prevent accidental restart after dialogue end
 
+public func IsDialogue() { return true; }
 
 /*-- Dialogue creation --*/
 
@@ -620,6 +621,30 @@ private func EvalAct_Message(proplist props, proplist context)
 	}
 }
 
+private func EvalAct_SetAttention(proplist props, proplist context)
+{
+	// User action: Set dialogue attention marker
+	var target = UserAction->EvaluateValue("Object", props.Target, context);
+	var status = UserAction->EvaluateValue("Boolean", props.Status, context);
+	if (!target) return;
+	if (target->GetID() != Dialogue)
+		if (!(target = Dialogue->FindByTarget(target)))
+			return;
+	target->~SetAttention(status);
+}
+
+private func EvalAct_SetEnabled(proplist props, proplist context)
+{
+	// User action: Enable/disable dialogue
+	var target = UserAction->EvaluateValue("Object", props.Target, context);
+	var status = UserAction->EvaluateValue("Boolean", props.Status, context);
+	if (!target) return;
+	if (target->GetID() != Dialogue)
+		if (!(target = Dialogue->FindByTarget(target)))
+			return;
+	target->~SetEnabled(status);
+}
+
 public func IsDialogue() { return true; }
 
 public func Definition(def)
@@ -635,6 +660,14 @@ public func Definition(def)
 			EditorProp_Goto = { Type="int", Min=0 }
 			} } }
 		} } );
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", Elements = {
+		EditorProp_Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
+		EditorProp_Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
+		} } );
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", Elements = {
+		EditorProp_Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
+		EditorProp_Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
+		} } );
 	UserAction->AddEvaluator("Object", nil, "$NPC$", "npc", [def, def.EvalObj_NPC]);
 	// Clonks can create a dialogue
 	Clonk.EditorAction_Dialogue = { Name="$Dialogue$", Command="SetDialogue(GetName(), true, true)", Select=true };
@@ -642,6 +675,8 @@ public func Definition(def)
 	def.EditorProp_user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Option", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
 	def.EditorProp_user_dialogue_allow_parallel = UserAction.PropParallel;
 	def.EditorProp_user_dialogue_progress_mode = UserAction.PropProgressMode;
+	def.EditorProp_dlg_attention = { Name="$Attention$ (!)", Type="bool", Set="SetAttention" };
+	def.EditorProp_dlg_interact = { Name="$Enabled$", Type="bool", Set="SetEnabled" };
 }
 
 private func GetDefaultMessageProp(object target_object)
