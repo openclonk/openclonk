@@ -369,7 +369,7 @@ global func SaveScenarioObject(props)
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));
 	for (i=0; v=def->GetMeshMaterial(i); ++i)
 	                        if (GetMeshMaterial(i) != v)          props->AddCall("MeshMaterial",  this, "SetMeshMaterial", Format("%v", GetMeshMaterial(i)), i);
-	v = GetName();          if (v != def->GetName())              props->AddCall("Name",          this, "SetName", Format("%v", v)); // TODO: Escape quotation marks, backslashes, etc. in name
+	v = GetName();          if (v != def->GetName())              props->AddCall("Name",          this, "SetName", SaveScenarioValue2String(v));
 	v = this.MaxEnergy;     if (v != def.MaxEnergy)               props->AddSet ("MaxEnergy",     this, "MaxEnergy", this.MaxEnergy);
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", SaveScenarioValue2String(v, "VIS_", true));
@@ -459,6 +459,11 @@ global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitma
 			return GetBitmaskNameByValue(v, constant_prefix);
 		else
 			return GetConstantNameByValueSafe(v, constant_prefix);
+	// Strings need to be quoted and escaped
+	if (vt == C4V_String)
+	{
+		return Format("\"%s\"", ReplaceString(ReplaceString(v, "\\", "\\\\"), "\"", "\\\""));
+	}
 	// Otherwise, rely on the default %v formatting
 	return Format("%v", v);
 }
