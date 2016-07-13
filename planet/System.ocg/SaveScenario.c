@@ -422,9 +422,9 @@ global func FxFireSaveScen(object obj, proplist fx, proplist props)
 // Helper function to turn values of several types into a strings to be written to Objects.c
 global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitmask)
 {
-	var rval;
-	if (GetType(v) == C4V_C4Object) return v->MakeScenarioSaveName();
-	if (GetType(v) == C4V_Array) // save procedure for arrays: recurse into contents (cannot save arrays pointing into itself that way)
+	var rval, vt = GetType(v);
+	if (vt == C4V_C4Object) return v->MakeScenarioSaveName();
+	if (vt == C4V_Array) // save procedure for arrays: recurse into contents (cannot save arrays pointing into itself that way)
 	{
 		for (var el in v)
 		{
@@ -435,10 +435,23 @@ global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitma
 		if (rval) rval = Format("[%s]", rval); else rval = "[]";
 		return rval;
 	}
-	if (GetType(v) == C4V_PropList || GetType(v) == C4V_Def) // custom save procedure for some prop lists or definitions
+	// custom save procedure for some prop lists or definitions
+	if (vt == C4V_PropList || vt == C4V_Def)
 	{
 		rval = v->~ToString();
 		if (rval) return rval;
+		// proplist saving
+		if (vt == C4V_PropList)
+		{
+			var props = GetProperties(v);
+			for (var el in props)
+			{
+				if (rval) rval = Format("%s,%s=%s", rval, el, SaveScenarioValue2String(v[el]));
+				else rval = Format("%s=%s", el, SaveScenarioValue2String(v[el]));
+			}
+			if (rval) rval = Format("{%s}", rval); else rval = "{}";
+			return rval;
+		}
 	}
 	// int as constant? (treat nil as 0 in this case)
 	if (constant_prefix)
