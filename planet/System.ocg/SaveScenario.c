@@ -446,6 +446,7 @@ global func SaveScenarioValue2String(v, string constant_prefix, bool allow_bitma
 			var props = GetProperties(v);
 			for (var el in props)
 			{
+				if (GetChar(el) == GetChar("_")) continue; // props starting with underscore are not to be saved
 				if (rval) rval = Format("%s,%s=%s", rval, el, SaveScenarioValue2String(v[el]));
 				else rval = Format("%s=%s", el, SaveScenarioValue2String(v[el]));
 			}

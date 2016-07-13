@@ -223,9 +223,9 @@ private func EvalPlrList_All(proplist props, proplist context, fn)
 private func EvalAct_Sequence(proplist props, proplist context)
 {
 	// Sequence execution: Iterate over actions until one action puts the context on hold
-	var n = GetLength(props.Actions), sid = props.sequence_id;
-	if (!sid) sid = props.sequence_id = Format("%d", ++UserAction_SequenceIDs);
-	for (var progress = context.sequence_progress[props.sequence_id] ?? 0; progress < n; ++progress)
+	var n = GetLength(props.Actions), sid = props._sequence_id;
+	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
+	for (var progress = context.sequence_progress[sid] ?? 0; progress < n; ++progress)
 	{
 		//Log("Sequence progress exec %v %v", progress, context.hold);
 		// goto preparations
@@ -246,7 +246,7 @@ private func EvalAct_Sequence(proplist props, proplist context)
 	// Sequence finished
 	context.last_sequence = nil;
 	// Reset for next execution.
-	context.sequence_progress[props.sequence_id] = 0;
+	context.sequence_progress[sid] = 0;
 }
 
 private func EvalAct_Goto(proplist props, proplist context)
