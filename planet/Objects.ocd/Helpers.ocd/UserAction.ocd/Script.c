@@ -56,6 +56,7 @@ func Definition(def)
 	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Option", Options = [ { Name="$None$" } ] };
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
+	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Option", Options = [] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
@@ -73,10 +74,13 @@ func Definition(def)
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerObject$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
+	AddEvaluator("Object", nil, "$ConstantObject$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	// Player evaluators
 	AddEvaluator("Player", nil, "$TriggeringPlayer$", "triggering_player", [def, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "all_players", [def, def.EvalPlrList_All]);
+	// Boolean (condition) evaluators
+	AddEvaluator("Boolean", nil, "$Constant$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	// User action editor props
 	Prop = Evaluator.Action;
 	PropProgressMode = { Name="$UserActionProgressMode$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
@@ -84,8 +88,26 @@ func Definition(def)
 	return true;
 }
 
+public func GetObjectEvaluator(filter_def, name)
+{
+	// Create copy of the Evaluator.Object delegate, but with the object_constant proplist replaced by a version with filter_def
+	var object_options = Evaluator.Object.Options[:];
+	var const_option = new EvaluatorDefs["object_constant"] {};
+	const_option.Delegate = new const_option.Delegate { Filter=filter_def };
+	object_options[const_option.OptionIndex] = const_option;
+	return new Evaluator.Object { Name=name, Options=object_options };
+}
+
 public func AddEvaluator(string eval_type, string group, string name, string identifier, callback_data, default_val, proplist delegate)
 {
+	// Add an evaluator for one of the data types. Evaluators allow users to write small action sequences and scripts in the editor using dropdown lists.
+	// eval_type: Return type of the evaluator (Action, Object, Boolean, Player, etc. as defined in UserAction.Evaluator)
+	// group [optional] Localized name of sub-group for larger enums (i.e. actions)
+	// name: Localized name as it appears in the dropdown list of evaluators
+	// identifier: Unique identifier that is used to store this action in savegames and look up the action def. Identifiers must be unique among all data types.
+	// callback_data: Array of [definition, definition.Function, parameter (optional)]. Function to be called when this evaluator is called
+	// default_val [optional]: Default value to be set when this evaluator is selected. Must be a proplist. Should contain values for all properties in the delegate
+	// delegate: Parameters for this evaluator
 	if (!default_val) default_val = {};
 	var default_get;
 	if (GetType(default_val) == C4V_Function)
@@ -93,13 +115,23 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 		default_get = default_val;
 		default_val = Call(default_get);
 	}
-	if (delegate && delegate.Elements)
-	{
-		delegate.Elements.Name = name;
-	}
 	default_val.Option = identifier;
-	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Option", Delegate=delegate, Get=default_get };
-	Evaluator[eval_type].Options[GetLength(Evaluator[eval_type].Options)] = action_def;
+	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Option", Delegate=delegate, Get=default_get }, n;
+	if (delegate)
+	{
+		if (delegate.Elements)
+		{
+			// Proplist of array parameter for this evaluator: Descend path title should be name
+			delegate.Elements.Name = name;
+		}
+		else
+		{
+			// Any other parameter type: Store in value
+			action_def.ValueKey = "Value";
+		}
+	}
+	Evaluator[eval_type].Options[n = GetLength(Evaluator[eval_type].Options)] = action_def;
+	action_def.OptionIndex = n;
 	EvaluatorCallbacks[identifier] = callback_data;
 	EvaluatorDefs[identifier] = action_def;
 	return action_def;
@@ -174,6 +206,7 @@ private func FinishAction(proplist context)
 	if (!context.hold || context.temp) context->RemoveObject();
 }
 
+private func EvalConstant(proplist props, proplist context) { return props.Value; }
 private func EvalObj_ActionObject(proplist props, proplist context) { return context.action_object; }
 private func EvalObj_TriggeringObject(proplist props, proplist context) { return context.triggering_object; }
 private func EvalPlr_Trigger(proplist props, proplist context) { if (context.triggering_object) return context.triggering_object->GetOwner(); }
