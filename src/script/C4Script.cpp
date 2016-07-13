@@ -834,6 +834,23 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4PropList * _this, int val
 	return C4Void();
 }
 
+static Nillable<C4String *> FnReplaceString(C4PropList * _this, C4String *source, C4String *from, C4String *to)
+{
+	if (!from) return source;
+	if (!source) return C4Void();
+	const char *szto = to ? to->GetCStr() : "";
+	const char *szfrom = from->GetCStr();
+	StdStrBuf s(source->GetData(), true);
+	if (s.Replace(szfrom, szto))
+	{
+		return ::Strings.RegString(s.getData());
+	}
+	else
+	{
+		return source;
+	}
+}
+
 static bool FnSortArray(C4PropList * _this, C4ValueArray *pArray, bool descending)
 {
 	if (!pArray) throw C4AulExecError("SortArray: no array given");
@@ -999,9 +1016,9 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(Trans_Rotate);
 	F(LocateFunc);
 	F(FileWrite);
-
 	F(eval);
 	F(GetConstantNameByValue);
+	F(ReplaceString);
 
 	::AddFunc(p, "Translate", C4AulExec::FnTranslate);
 	::AddFunc(p, "LogCallStack", C4AulExec::FnLogCallStack);
