@@ -1699,6 +1699,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		{
 			for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext)
 			{
+				if (!fx->IsActive()) continue; // skip dead effects
 				QString name = fx->GetName();
 				C4PropList *effect_editorprops = fx->GetPropertyPropList(P_EditorProps);
 				if (effect_editorprops && AddPropertyGroup(effect_editorprops, num_groups, name, fx, obj, nullptr, nullptr))
