@@ -942,16 +942,17 @@ void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
 		ui.objectActionPanel->itemAt(i)->widget()->deleteLater();
 	}
 	// Create new buttons
-	// Actions are defined as locals prefixed EditorAction_ containing proplists
+	// Actions are defined as properties in a local proplist called EditorActions
 	if (!new_action_object) return;
-	const char *editor_action_prefix = "EditorAction_";
-	auto new_properties = new_action_object->GetSortedProperties(editor_action_prefix, &::ScriptEngine);
+	C4PropList *editor_actions_list = new_action_object->GetPropertyPropList(P_EditorActions);
+	if (!editor_actions_list) return;
+	auto new_properties = editor_actions_list->GetSortedProperties(nullptr);
 	int row = 0, column = 0;
 	for (C4String *action_def_id : new_properties)
 	{
 		// Get action definition proplist
 		C4Value action_def_val;
-		if (!new_action_object->GetPropertyByS(action_def_id, &action_def_val))
+		if (!editor_actions_list->GetPropertyByS(action_def_id, &action_def_val))
 		{
 			// property disappeared (cannot happen)
 			continue;
@@ -967,7 +968,7 @@ void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
 		if (!action_name)
 		{
 			// Fallback to identifier for unnamed actions
-			action_name = ::Strings.RegString(action_def_id->GetCStr() + strlen(editor_action_prefix));
+			action_name = action_def_id;
 		}
 		// Script command to execute
 		C4RefCntPointer<C4String> script_command = action_def->GetPropertyStr(P_Command);

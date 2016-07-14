@@ -273,6 +273,7 @@ C4StringTable::C4StringTable()
 	P[P_EditOnSelection] = "EditOnSelection";
 	P[P_EditorProps] = "EditorProps";
 	P[P_DefaultEditorProp] = "DefaultEditorProp";
+	P[P_EditorActions] = "EditorActions";
 	P[P_CopyDefault] = "CopyDefault";
 	P[P_Display] = "Display";
 	P[P_DefaultValue] = "DefaultValue";

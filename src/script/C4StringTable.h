@@ -497,6 +497,7 @@ enum C4PropertyName
 	P_EditOnSelection,
 	P_EditorProps,
 	P_DefaultEditorProp,
+	P_EditorActions,
 	P_CopyDefault,
 	P_Display,
 	P_DefaultValue,
