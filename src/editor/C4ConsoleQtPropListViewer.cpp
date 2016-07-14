@@ -1880,7 +1880,7 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		case 1: // Second col: Property value
 		{
 			C4Value v;
-			prop->delegate->GetPropertyValue(target_value, prop->key, index.row(), &v);
+			prop->delegate->GetPropertyValue(prop->parent_value, prop->key, index.row(), &v);
 			return QVariant(prop->delegate->GetDisplayString(v, target_value.getObj()));
 		}
 		}
@@ -1888,14 +1888,14 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 	else if (role == Qt::BackgroundColorRole && index.column()==1)
 	{
 		C4Value v;
-		prop->delegate->GetPropertyValue(target_value, prop->key, index.row(), &v);
+		prop->delegate->GetPropertyValue(prop->parent_value, prop->key, index.row(), &v);
 		QColor bgclr = prop->delegate->GetDisplayBackgroundColor(v, target_value.getObj());
 		if (bgclr.isValid()) return bgclr;
 	}
 	else if (role == Qt::TextColorRole && index.column() == 1)
 	{
 		C4Value v;
-		prop->delegate->GetPropertyValue(target_value, prop->key, index.row(), &v);
+		prop->delegate->GetPropertyValue(prop->parent_value, prop->key, index.row(), &v);
 		QColor txtclr = prop->delegate->GetDisplayTextColor(v, target_value.getObj());
 		if (txtclr.isValid()) return txtclr;
 	}
