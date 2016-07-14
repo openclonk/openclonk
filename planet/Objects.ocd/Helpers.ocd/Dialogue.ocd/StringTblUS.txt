@@ -21,3 +21,4 @@ Enabled=Enabled
 SetAttention=Set dialogue marker (!)
 Status=Status
 SetEnabled=Set dialogue enabled
+Target=Target object

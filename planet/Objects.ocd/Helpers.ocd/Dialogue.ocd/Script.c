@@ -161,6 +161,8 @@ private func UpdateDialogue()
 	var hgt = dlg_target->GetID()->GetDefHeight();
 	//var dir = dlg_target->GetDir();
 	SetShape(-wdt/2, -hgt/2, wdt, hgt);
+	// Transfer position immediately so it's updated in paused mode
+	SetPosition(dlg_target->GetX(), dlg_target->GetY());
 	// Transfer target name.
 	//SetName(Format("$MsgSpeak$", dlg_target->GetName()));
 	return;
@@ -195,6 +197,21 @@ public func SetDialogueStatus(int status)
 public func GetDialogueTarget()
 {
 	return dlg_target;
+}
+
+public func SetDialogueTarget(object target)
+{
+	// Change dialogue target
+	// Do not allow nil
+	if (!target) return;
+	// Update attachment and ! marker
+	var had_attention = dlg_attention;
+	RemoveAttention();
+	dlg_target = target;
+	if (had_attention) AddAttention(); else SetAction("Dialogue", dlg_target);
+	// Update shape
+	UpdateDialogue();
+	return true;
 }
 
 // to be called from within dialogue after the last message
@@ -674,6 +691,7 @@ public func Definition(def)
 	Clonk.EditorActions.Dialogue = { Name="$Dialogue$", Command="SetDialogue(GetName(), true, true)", Select=true };
 	// Dialogue EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.dlg_target = { Name="$Target$", Type="object", Filter="IsClonk", Set="SetDialogueTarget" };
 	def.EditorProps.user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Option", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
 	def.EditorProps.user_dialogue_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.user_dialogue_progress_mode = UserAction.PropProgressMode;

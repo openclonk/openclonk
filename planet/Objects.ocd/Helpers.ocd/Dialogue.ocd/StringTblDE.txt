@@ -21,3 +21,4 @@ Enabled=Aktiviert
 SetAttention=Dialogmarkierung (!)
 Status=Status
 SetEnabled=Dialogaktivierung
+Target=Zielobjekt
