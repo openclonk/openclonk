@@ -1143,6 +1143,19 @@ QWidget *C4PropertyDelegateObject::CreateEditor(const class C4PropertyDelegateFa
 	return C4PropertyDelegateEnum::CreateEditor(parent_delegate, parent, option, by_selection);
 }
 
+QString C4PropertyDelegateObject::GetDisplayString(const C4Value &v, class C4Object *obj) const
+{
+	C4Object *vobj = v.getObj();
+	if (vobj)
+	{
+		C4RefCntPointer<C4String> s = GetObjectEntryString(vobj);
+		return QString(s->GetCStr());
+	}
+	else
+	{
+		return QString(v.GetDataString().getData());
+	}
+}
 
 C4PropertyDelegateBool::C4PropertyDelegateBool(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)

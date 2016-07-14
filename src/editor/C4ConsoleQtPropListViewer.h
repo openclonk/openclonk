@@ -331,6 +331,7 @@ public:
 	C4PropertyDelegateObject(const C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QString GetDisplayString(const C4Value &v, class C4Object *obj) const override;
 };
 
 // true or false
