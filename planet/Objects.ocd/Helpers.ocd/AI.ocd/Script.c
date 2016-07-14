@@ -20,9 +20,16 @@ static const AI_DefMaxAggroDistance = 200, // lose sight to target if it is this
 func SetAI(object clonk, bool has_ai)
 {
 	if (has_ai)
-		return AddAI(clonk);
+	{
+		// Only add if it doesn't have the effect yet
+		var ai = GetAI(clonk);
+		if (!ai) ai = AddAI(clonk);
+		return ai;
+	}
 	else
+	{
 		return RemoveEffect("AI", clonk);
+	}
 }
 
 // Add AI execution timer to target Clonk
