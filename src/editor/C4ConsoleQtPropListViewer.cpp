@@ -122,6 +122,7 @@ C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory,
 	// Resolve getter+setter callback names
 	if (props)
 	{
+		creation_props = C4VPropList(props);
 		name = props->GetPropertyStr(P_Name);
 		set_function = props->GetPropertyStr(P_Set);
 		set_function_is_global = props->GetPropertyBool(P_Global);
@@ -217,7 +218,7 @@ void C4PropertyDelegateInt::SetEditorData(QWidget *editor, const C4Value &val, c
 	spinBox->setValue(val.getInt());
 }
 
-void C4PropertyDelegateInt::SetModelData(QObject *editor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateInt::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
 	QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
 	spinBox->interpretText();
@@ -248,7 +249,7 @@ void C4PropertyDelegateString::SetEditorData(QWidget *editor, const C4Value &val
 	line_edit->setText(QString(s ? s->GetCStr() : ""));
 }
 
-void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
 	Editor *line_edit = static_cast<Editor*>(editor);
 	// Only set model data when pressing Enter explicitely; not just when leaving 
@@ -485,7 +486,7 @@ void C4PropertyDelegateColor::SetEditorData(QWidget *aeditor, const C4Value &val
 	editor->last_value = val;
 }
 
-void C4PropertyDelegateColor::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateColor::SetModelData(QObject *aeditor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
 	property_path.SetProperty(editor->last_value);
@@ -636,6 +637,22 @@ bool C4DeepQComboBox::eventFilter(QObject *obj, QEvent *event)
 		descending = view()->visualRect(pressed_index).contains(pos);
 	}
 	return false;
+}
+
+void C4PropertyDelegateEnumEditor::paintEvent(QPaintEvent *ev)
+{
+	// Draw self
+	QWidget::paintEvent(ev);
+	// Draw shape widget
+	if (paint_parameter_delegate && parameter_widget)
+	{
+		QPainter p(this);
+		QStyleOptionViewItem view_item;
+		view_item.rect.setTopLeft(parameter_widget->mapToParent(parameter_widget->rect().topLeft()));
+		view_item.rect.setBottomRight(parameter_widget->mapToParent(parameter_widget->rect().bottomRight()));
+		paint_parameter_delegate->Paint(&p, view_item, last_parameter_val);
+		//p.fillRect(view_item.rect, QColor("red"));
+	}
 }
 
 C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions)
@@ -797,6 +814,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		editor->parameter_widget->deleteLater();
 		editor->parameter_widget = NULL;
 	}
+	editor->paint_parameter_delegate = nullptr;
 	int32_t idx = editor->option_box->GetCurrentSelectionIndex();
 	if (idx < 0 || idx >= options.size()) return;
 	const Option &option = options[idx];
@@ -846,6 +864,22 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 				if (changed_editor == editor->parameter_widget) emit EditingDoneSignal(editor);
 			});
 		}
+		else
+		{
+			// If the parameter widget is a shape display, show a dummy widget displaying the shape instead
+			const C4PropertyDelegateShape *shape_delegate = option.adelegate->GetDirectShapeDelegate();
+			if (shape_delegate)
+			{
+				// dummy widget that is not rendered. shape rendering is forwarded through own paint function
+				editor->parameter_widget = new QWidget(editor);
+				editor->layout->addWidget(editor->parameter_widget);
+				editor->parameter_widget->setAttribute(Qt::WA_NoSystemBackground);
+				editor->parameter_widget->setAttribute(Qt::WA_TranslucentBackground);
+				editor->parameter_widget->setAttribute(Qt::WA_TransparentForMouseEvents);
+				editor->paint_parameter_delegate = shape_delegate;
+				editor->last_parameter_val = parameter_val;
+			}
+		}
 	}
 }
 
@@ -882,7 +916,7 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 	editor->updating = false;
 }
 
-void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
 	// Fetch value from editor
 	Editor *editor = static_cast<Editor*>(aeditor);
@@ -902,13 +936,13 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	// Value from a parameter or directly from the enum?
 	if (option.adelegate)
 	{
-		// Default value on enum change
-		if (editor->option_changed) SetOptionValue(use_path, option);
+		// Default value on enum change (on main path; not use_path because the default value is always givne as the whole proplist)
+		if (editor->option_changed) SetOptionValue(property_path, option);
 		// Value from a parameter.
 		// Using a setter function?
 		if (option.adelegate->GetSetFunction())
 			use_path = C4PropertyPath(use_path, option.adelegate->GetSetFunction(), C4PropertyPath::PPT_SetFunction);
-		option.adelegate->SetModelData(editor->parameter_widget, use_path);
+		option.adelegate->SetModelData(editor->parameter_widget, use_path, prop_shape);
 	}
 	else
 	{
@@ -1001,7 +1035,7 @@ QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Objec
 	}
 }
 
-const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(const C4Value &val) const
+const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const
 {
 	// Does this delegate own a shape? Forward decision into selected option.
 	int32_t option_idx = GetOptionByValue(val);
@@ -1009,13 +1043,37 @@ const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(const C4
 	const Option &option = options[option_idx];
 	EnsureOptionDelegateResolved(option);
 	if (!option.adelegate) return nullptr;
-	C4Value param_val = val;
 	if (option.value_key.Get())
 	{
+		*shape_path = C4PropertyPath(*shape_path, option.value_key->GetCStr());
 		C4PropList *vp = val.getPropList();
-		if (vp) vp->GetPropertyByS(option.value_key, &param_val);
+		if (vp) vp->GetPropertyByS(option.value_key, &val);
 	}
-	return option.adelegate->GetShapeDelegate(param_val);
+	return option.adelegate->GetShapeDelegate(val, shape_path);
+}
+
+bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const
+{
+	// Custom painting: Forward to selected child delegate
+	int32_t option_idx = GetOptionByValue(val);
+	if (option_idx < 0) return false;
+	const Option &selected_option = options[option_idx];
+	EnsureOptionDelegateResolved(selected_option);
+	if (!selected_option.adelegate) return nullptr;
+	if (selected_option.adelegate->HasCustomPaint())
+	{
+		QStyleOptionViewItem parameter_option = QStyleOptionViewItem(option);
+		parameter_option.rect.adjust(parameter_option.rect.width()/2, 0, 0, 0);
+		C4Value parameter_val = val;
+		if (selected_option.value_key.Get())
+		{
+			C4PropList *vp = val.getPropList();
+			if (vp) vp->GetPropertyByS(selected_option.value_key, &parameter_val);
+		}
+		selected_option.adelegate->Paint(painter, parameter_option, parameter_val);
+	}
+	// Always return false to draw self using the standard method
+	return false;
 }
 
 C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props)
@@ -1249,7 +1307,7 @@ void C4PropertyDelegateC4ValueInput::SetEditorData(QWidget *aeditor, const C4Val
 	}
 }
 
-void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
 	// Only set model data when pressing Enter explicitely; not just when leaving 
 	Editor *editor = static_cast<Editor *>(aeditor);
@@ -1294,13 +1352,12 @@ C4PropertyDelegateShape::C4PropertyDelegateShape(const class C4PropertyDelegateF
 	}
 }
 
-void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath &property_path) const
+void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
-	C4ConsoleQtShape *shape = static_cast<C4ConsoleQtShape *>(editor);
-	property_path.SetProperty(shape->GetValue());
+	if (prop_shape) property_path.SetProperty(prop_shape->GetValue());
 }
 
-void C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const
+bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const
 {
 	// Background color
 	if (option.state & QStyle::State_Selected)
@@ -1324,6 +1381,7 @@ void C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewIte
 		painter->drawRect(inner_rect);
 	}
 	painter->restore();
+	return true;
 }
 
 
@@ -1419,7 +1477,7 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModel::Property *editor_prop) const
 {
 	// Set according to delegate
-	d->SetModelData(editor, d->GetPathForProperty(editor_prop));
+	d->SetModelData(editor, d->GetPathForProperty(editor_prop), editor_prop->shape.Get());
 }
 
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -1478,8 +1536,7 @@ void C4PropertyDelegateFactory::paint(QPainter *painter, const QStyleOptionViewI
 	{
 		C4Value val;
 		d->GetPropertyValue(prop->parent_value, prop->key, index.row(), &val);
-		d->Paint(painter, option, val);
-		return;
+		if (d->Paint(painter, option, val)) return;
 	}
 	// Otherwise use default paint implementation
 	QStyledItemDelegate::paint(painter, option, index);
@@ -1567,18 +1624,24 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		C4Value v_target_proplist = C4VPropList(target_proplist);
 		prop->delegate->GetPropertyValue(v_target_proplist, prop->key, 0, &v);
 		// Connect editable shape to property
-		const C4PropertyDelegateShape *new_shape_delegate = prop->delegate->GetShapeDelegate(v);
-		if (new_shape_delegate != prop->shape_delegate)
+		C4PropertyPath new_shape_property_path(prop->property_path, prop->key->GetCStr());
+		const C4PropertyDelegateShape *new_shape_delegate = prop->delegate->GetShapeDelegate(v, &new_shape_property_path);
+		if (new_shape_delegate != prop->shape_delegate || !(prop->shape_property_path == new_shape_property_path))
 		{
 			prop->shape_delegate = new_shape_delegate;
+			prop->shape_property_path = new_shape_property_path;
 			if (new_shape_delegate)
 			{
-				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_effect_object ? base_effect_object : target_proplist->GetObject(), published_prop, v);
+				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_effect_object ? base_effect_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v);
 				C4PropertyDelegateFactory *factory = this->delegate_factory;
 				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
-					factory->SetPropertyData(new_shape_delegate, shape, prop);
+					new_shape_delegate->SetModelData(nullptr, prop->shape_property_path, shape);
 				});
 				prop->shape.Set(shape);
+			}
+			else
+			{
+				prop->shape.Clear();
 			}
 		}
 	}

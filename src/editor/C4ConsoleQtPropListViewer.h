@@ -62,6 +62,8 @@ public:
 	void SetProperty(const char *set_string) const;
 	void SetProperty(const C4Value &to_val) const;
 	void DoCall(const char *call_string) const; // Perform a script call where %s is replaced by the current path
+
+	bool operator ==(const C4PropertyPath &v) const { return path == v.path; }
 };
 
 class C4PropertyDelegate : public QObject
@@ -70,6 +72,7 @@ class C4PropertyDelegate : public QObject
 
 protected:
 	const class C4PropertyDelegateFactory *factory;
+	C4Value creation_props;
 	C4RefCntPointer<C4String> set_function, async_get_function, name;
 	bool set_function_is_global;
 
@@ -78,7 +81,7 @@ public:
 	virtual ~C4PropertyDelegate() { }
 
 	virtual void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const {};
-	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path) const {};
+	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const {};
 	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const = 0;
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
 	virtual bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
@@ -88,11 +91,13 @@ public:
 	virtual QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const;
 	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : nullptr; } // get name of setter function for this property
 	bool IsGlobalSetFunction() const { return set_function_is_global; }
-	virtual const class C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const { return nullptr;  }
+	virtual const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const { return nullptr;  }
+	virtual const class C4PropertyDelegateShape *GetDirectShapeDelegate() const { return nullptr; }
 	virtual bool HasCustomPaint() const { return false; }
-	virtual void Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const { }
+	virtual bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const { return false; }
 	C4PropertyPath GetPathForProperty(struct C4ConsoleQtPropListModelProperty *editor_prop) const;
 	C4String *GetNameStr() const { return name.Get(); }
+	const C4Value &GetCreationProps() const { return creation_props; }
 
 signals:
 	void EditorValueChangedSignal(QWidget *editor) const;
@@ -107,7 +112,7 @@ public:
 	C4PropertyDelegateInt(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
-	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 };
 
@@ -126,7 +131,7 @@ public:
 	C4PropertyDelegateString(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
-	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 };
@@ -191,7 +196,7 @@ public:
 	C4PropertyDelegateColor(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
-	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
@@ -237,16 +242,35 @@ class C4PropertyDelegateEnumEditor : public QWidget
 
 public:
 	C4Value last_val;
+	C4Value last_parameter_val; // Resolved parameter of last_val - assigned for shape parameters only
 	int32_t last_selection_index;
 	C4PropertyPath last_get_path;
 	C4DeepQComboBox *option_box;
 	QHBoxLayout *layout;
 	QWidget *parameter_widget;
 	bool updating, option_changed;
+	const C4PropertyDelegate *paint_parameter_delegate; // Delegate to draw over the parameter_widget if it's an empty transparent QWidget (for shape delegates)
 
 	C4PropertyDelegateEnumEditor(QWidget *parent)
-		: QWidget(parent), last_selection_index(-1), option_box(NULL), layout(NULL), parameter_widget(NULL), updating(false), option_changed(false) { }
+		: QWidget(parent), last_selection_index(-1), option_box(NULL), layout(NULL), parameter_widget(NULL),
+		updating(false), option_changed(false), paint_parameter_delegate(nullptr) { }
+
+	void paintEvent(QPaintEvent *) override;
 };
+
+// widget shown if a shape delegate is a child of an enum delegate
+/*class C4PropertyDelegateEnumShapeParameterDisplayWidget : QWidget
+{
+	Q_OBJECT
+
+	const C4PropertyDelegateShape *shape_delegate;
+
+public:
+	C4PropertyDelegateEnumShapeParameterDisplayWidget(QWidget *parent, const C4PropertyDelegateShape *shape_delegate)
+		: shape_delegate(shape_delegate);
+
+	virtual void paintEvent(QPaintEvent *);
+};*/
 
 class C4PropertyDelegateEnum : public C4PropertyDelegate
 {
@@ -292,10 +316,12 @@ public:
 	void AddConstOption(C4String *name, const C4Value &val, C4String *group=nullptr);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
-	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 	QString GetDisplayString(const C4Value &val, class C4Object *obj) const override;
-	const class C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const override; // Forward to parameter of selected option
+	const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const override; // Forward to parameter of selected option
+	bool HasCustomPaint() const override { return true; }
+	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
 
 private:
 	QModelIndex GetModelIndexByID(QStandardItemModel *model, QStandardItem *parent_item, int32_t id, const QModelIndex &parent) const;
@@ -384,7 +410,7 @@ public:
 	C4PropertyDelegateC4ValueInput(const C4PropertyDelegateFactory *factory, C4PropList *props) : C4PropertyDelegate(factory, props) { }
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
-	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 };
 
@@ -393,16 +419,18 @@ class C4PropertyDelegateShape : public C4PropertyDelegate
 {
 	C4RefCntPointer<C4String> shape_type;
 	uint32_t clr;
-	bool can_move_center;
+	bool can_move_center; 
 public:
 	C4PropertyDelegateShape(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override { } // TODO maybe implement update?
-	void SetModelData(QObject *editor, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override { return NULL; }
-	const C4PropertyDelegateShape *GetShapeDelegate(const C4Value &val) const override { return this; }
+	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override { return nullptr; }
+	const C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const override { return this; }
+	const C4PropertyDelegateShape *GetDirectShapeDelegate() const override { return this; }
 	bool HasCustomPaint() const override { return true; }
-	void Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
+	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
+	QString GetDisplayString(const C4Value &v, class C4Object *obj) const override { return QString(); }
 };
 
 class C4PropertyDelegateFactory : public QStyledItemDelegate
@@ -465,6 +493,7 @@ struct C4ConsoleQtPropListModelProperty
 	// Each property may be connected to one shape shown in the viewport for editing
 	C4ConsoleQtShapeHolder shape;
 	const C4PropertyDelegate *shape_delegate;
+	C4PropertyPath shape_property_path;
 
 	C4ConsoleQtPropListModelProperty() : delegate(nullptr), about_to_edit(false), group_idx(-1), shape_delegate(nullptr) {}
 };
