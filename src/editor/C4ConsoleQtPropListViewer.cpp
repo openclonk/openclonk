@@ -1059,7 +1059,7 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 	if (option_idx < 0) return false;
 	const Option &selected_option = options[option_idx];
 	EnsureOptionDelegateResolved(selected_option);
-	if (!selected_option.adelegate) return nullptr;
+	if (!selected_option.adelegate) return false;
 	if (selected_option.adelegate->HasCustomPaint())
 	{
 		QStyleOptionViewItem parameter_option = QStyleOptionViewItem(option);
