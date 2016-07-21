@@ -189,10 +189,6 @@ private func UpdateViewTarget(object view_target)
 	return;
 }
 
-/*-- Saving --*/
-
-// No scenario saving.
-public func SaveScenarioObject(props) { return false; }
 
 
 /*-- Message function forwards --*/
@@ -299,4 +295,166 @@ global func GetActiveSequence()
 {
 	var seq = FindObject(Find_ID(Sequence));
 	return seq;
+}
+
+
+/* User-made sequences from the editor */
+
+local trigger, condition, action, action_progress_mode, action_allow_parallel;
+local active=true;
+local check_interval=12;
+local deactivate_after_action; // If true, finished is set to true after the first execution and the trigger deactivated
+
+// finished: Disables the trigger. true if trigger has run and deactivate_after_action is set to true.
+// Note that this flag is not saved in scenarios, so saving as scenario and reloading will re-enable all triggers (for editor mode)
+local finished;
+
+public func Definition(def)
+{
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.Test = { Name="$Test$", Command="OnTrigger(nil, nil, true)" };
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
+	def.EditorProps.finished = { Name="$Finished$", Type="bool", Set="SetFinished" };
+	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Options = [
+		{ Name="$None$" },
+		{ Name="$EnterRegionRect$", Value={ Trigger="enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Relative=true, Set="SetTriggerRect", SetRoot=true } } // TODO: Allow runtime update of search fn
+		] };
+	def.EditorProps.condition = UserAction.Evaluator.Condition;
+	def.EditorProps.action = UserAction.Prop;
+	def.EditorProps.action_progress_mode = UserAction.PropProgressMode;
+	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
+	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };
+}
+
+public func SetTrigger(new_trigger)
+{
+	trigger = new_trigger;
+	// Set trigger: Restart any specific trigger timers
+	if (active && !finished)
+	{
+		StopTrigger();
+		StartTrigger();
+	}
+	return true;
+}
+
+public func SetTriggerRect(new_trigger_rect)
+{
+	if (trigger && trigger.Rect)
+	{
+		trigger.Rect = new_trigger_rect;
+		SetTrigger(trigger); // restart trigger
+	}
+}
+
+public func SetAction(new_action, new_action_progress_mode, new_action_allow_parallel)
+{
+	action = new_action;
+	action_progress_mode = new_action_progress_mode;
+	action_allow_parallel = new_action_allow_parallel;
+	return true;
+}
+
+public func SetActive(bool new_active, bool force_triggers)
+{
+	if (active == new_active && !force_triggers) return true;
+	active = new_active;
+	if (active && !finished)
+	{
+		// Activated: Start trigger
+		StartTrigger();
+	}
+	else
+	{
+		// Inactive or inactive by editor run: Stop trigger
+		StopTrigger();
+	}
+	return true;
+}
+
+public func SetFinished(bool new_finished)
+{
+	finished = new_finished;
+	return SetActive(active, true);
+}
+
+public func SetDeactivateAfterAction(bool new_val)
+{
+	deactivate_after_action = new_val;
+	return true;
+}
+
+public func StartTrigger()
+{
+	if (!trigger) return false;
+	var fn = trigger.Trigger;
+	if (fn == "enter_region_rect")
+	{
+		this.search_mask = Find_And(Find_InRect(trigger.Rect[0], trigger.Rect[1], trigger.Rect[2], trigger.Rect[3]), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
+		AddTimer(this.EnterRegionTimer, check_interval);
+	}
+	else return false;
+	return true;
+}
+
+public func StopTrigger()
+{
+	// Remove any timers that may have been added
+	RemoveTimer(this.EnterRegionRectTimer);
+	return true;
+}
+
+private func EnterRegionTimer()
+{
+	for (var clonk in FindObjects(this.search_mask))
+	{
+		if (!clonk) continue; // deleted by previous execution
+		OnTrigger(clonk, clonk->GetOwner());
+		if (active != true) break; // deactivated by trigger
+	}
+}
+
+public func OnTrigger(object triggering_clonk, int triggering_player, bool is_editor_test)
+{
+	// Editor test: Triggered by first player
+	if (is_editor_test)
+	{
+		if (GetPlayerCount(C4PT_User)) triggering_player = GetPlayerByIndex();
+	}
+	// Check condition
+	if (!UserAction->EvaluateCondition(action, this, triggering_clonk, triggering_player)) return false;
+	// Only one action at the time
+	if (!action_allow_parallel) StopTrigger();
+	// Execute action
+	return UserAction->EvaluateAction(action, this, triggering_clonk, triggering_player, action_progress_mode, action_allow_parallel, this.OnActionFinished);
+}
+
+private func OnActionFinished(context)
+{
+	// Callback from EvaluateAction: Action finished. Deactivate action if desired.
+	if (deactivate_after_action)
+		SetFinished(true);
+	else if (active && !finished && !action_allow_parallel)
+		StartTrigger();
+	return true;
+}
+
+/*-- Saving --*/
+
+// No scenario saving.
+public func SaveScenarioObject(props, ...)
+{
+	if (!_inherited(props, ...)) return false;
+	// Do not save script-created sequences
+	if (this.seq_name) return false;
+	// Save editor-made sequences
+	if (save_scenario_dup_objects && finished) // finished flag only copied for object duplication; not saved in savegames
+		props->AddCall("Active", this, "SetFinished", finished);
+	if (!active) props->AddCall("Active", this, "SetActive", active);
+	if (trigger) props->AddCall("Trigger", this, "SetTrigger", trigger);
+	if (condition) props->AddCall("Condition", this, "SetCondition", condition);
+	if (action || action_progress_mode || action_allow_parallel) props->AddCall("Action", this, "SetAction", action, action_progress_mode, action_allow_parallel);
+	if (deactivate_after_action) props->AddCall("DeactivateAfterAction", this, "SetDeactivateAfterAction", deactivate_after_action);
+	return false;
 }

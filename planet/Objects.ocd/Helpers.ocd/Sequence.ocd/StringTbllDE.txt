@@ -1,0 +1,7 @@
+Test=Testen
+Active=Aktiv
+Finished=Sequenz beendet
+Trigger=Ausloeser
+None=Nichts
+EnterRegionRect=Spieler betritt Bereich
+DeactivateAfterAction=Nur einmal ausfuehren

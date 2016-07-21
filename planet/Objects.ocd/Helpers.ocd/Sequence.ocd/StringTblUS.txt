@@ -1,0 +1,7 @@
+Test=Test
+Active=Active
+Finished=Finished
+Trigger=Trigger
+None=None
+EnterRegionRect=Player enters region (rect)
+DeactivateAfterAction=Run once only
