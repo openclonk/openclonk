@@ -762,5 +762,5 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 func Definition(def)
 {
 	if (!Clonk.EditorProps) Clonk.EditorProps = {};
-	Clonk.EditorProps.AI = { Type = "has_effect", Effect = "AI", Set = "AI->SetAI", Global = true };
+	Clonk.EditorProps.AI = { Type = "has_effect", Effect = "AI", Set = "AI->SetAI", SetGlobal = true };
 }
