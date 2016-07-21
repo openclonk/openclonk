@@ -677,11 +677,11 @@ public func Definition(def)
 			Goto = { Type="int", Min=0 }
 			} } }
 		} } );
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
 		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
 		} } );
-	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Option="action_object" }, Status = { Option="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetEnabled$", "dialogue_set_enabled", [def, def.EvalAct_SetEnabled], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsDialogue", "$Dialogue$"),
 		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
 		} } );
@@ -692,7 +692,7 @@ public func Definition(def)
 	// Dialogue EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.dlg_target = { Name="$Target$", Type="object", Filter="IsClonk", Set="SetDialogueTarget" };
-	def.EditorProps.user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Option", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
+	def.EditorProps.user_dialogue = { Name="$Dialogue$", Type="enum", OptionKey="Function", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
 	def.EditorProps.user_dialogue_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.user_dialogue_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.dlg_attention = { Name="$Attention$ (!)", Type="bool", Set="SetAttention" };
@@ -704,11 +704,11 @@ private func GetDefaultMessageProp(object target_object)
 	if (target_object && target_object->~IsDialogue())
 	{
 		// Message prop for dialogue: Default is a NPC message with a "wait for next" option
-		return { Option="message", Speaker = { Option="npc" }, TargetPlayers = { Option="triggering_player_list" }, Text="$DefaultDialogueMessage$", AfterMessage="next", Options=[] };
+		return { Function="message", Speaker = { Function="npc" }, TargetPlayers = { Function="triggering_player_list" }, Text="$DefaultDialogueMessage$", AfterMessage="next", Options=[] };
 	}
 	else
 	{
 		// Message prop for other dialogue: Default is a NPC message with a "wait for next" option
-		return { Option="message", Speaker = { Option="triggering_object" }, TargetPlayers = { Option="triggering_player_list" }, Text="$DefaultMessage$", AfterMessage=60, Options=[] };
+		return { Function="message", Speaker = { Function="triggering_object" }, TargetPlayers = { Function="triggering_player_list" }, Text="$DefaultMessage$", AfterMessage=60, Options=[] };
 	}
 }

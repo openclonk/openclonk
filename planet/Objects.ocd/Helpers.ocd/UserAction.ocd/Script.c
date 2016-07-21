@@ -29,12 +29,12 @@ func Definition(def)
 {
 	// Typed evaluator base definitions
 	Evaluator = {};
-	Evaluator.Action = { Name="$UserAction$", Type="enum", OptionKey="Option", Options = [ { Name="$None$" } ] };
-	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Option", Options = [ { Name="$None$" } ] };
-	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
-	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
-	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Option", Options = [] };
-	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Option", Options = [ { Name="$None$" } ] };
+	Evaluator.Action = { Name="$UserAction$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
+	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
+	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
+	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
+	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [] };
+	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
@@ -93,8 +93,8 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 		default_get = default_val;
 		default_val = Call(default_get);
 	}
-	default_val.Option = identifier;
-	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Option", Delegate=delegate, Get=default_get }, n;
+	default_val.Function = identifier;
+	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Function", Delegate=delegate, Get=default_get }, n;
 	if (delegate)
 	{
 		if (delegate.EditorProps)
@@ -129,7 +129,7 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 		return context.hold_result;
 	}
 	// Not on hold: Perform evaluation
-	var cb = EvaluatorCallbacks[props.Option];
+	var cb = EvaluatorCallbacks[props.Function];
 	return cb[0]->Call(cb[1], props, context, cb[2]);
 }
 
