@@ -112,6 +112,9 @@ public:
 	// Original network game? Also set in replays of network games for sync safety
 	bool IsNetworkGame;
 
+	// Originally hosted in editor (also in replays from editor)
+	bool IsEditor;
+
 	// Control rate
 	int32_t ControlRate;
 

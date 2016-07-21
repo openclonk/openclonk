@@ -1311,6 +1311,8 @@ static C4Object * FnEditCursor(C4PropList * _this)
 
 static bool FnIsNetwork(C4PropList * _this) { return Game.Parameters.IsNetworkGame; }
 
+static bool FnIsEditor(C4PropList * _this) { return Game.Parameters.IsEditor; }
+
 // undocumented!
 static C4String *FnGetLeague(C4PropList * _this, long idx)
 {
@@ -2768,6 +2770,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(DoBaseProduction);
 	F(GainMissionAccess);
 	F(IsNetwork);
+	F(IsEditor);
 	F(GetLeague);
 	::AddFunc(p, "TestMessageBoard", FnTestMessageBoard, false);
 	::AddFunc(p, "CallMessageBoard", FnCallMessageBoard, false);

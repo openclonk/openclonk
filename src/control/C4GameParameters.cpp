@@ -21,6 +21,7 @@
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 #include "game/C4Game.h"
+#include "game/C4Application.h"
 #include "network/C4Network2.h"
 
 // *** C4GameRes
@@ -517,6 +518,7 @@ void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 	pComp->Value(mkNamingAdapt(MaxPlayers,        "MaxPlayers",       !pScenario ? 0 : pScenario->Head.MaxPlayer));
 	pComp->Value(mkNamingAdapt(AllowDebug,        "AllowDebug",       true));
 	pComp->Value(mkNamingAdapt(IsNetworkGame,     "IsNetworkGame",    false));
+	pComp->Value(mkNamingAdapt(IsEditor,          "IsEditor",         !!::Application.isEditor));
 	pComp->Value(mkNamingAdapt(ControlRate,       "ControlRate",      -1));
 	pComp->Value(mkNamingAdapt(AutoFrameSkip,     "AutoFrameSkip",    false));
 	pComp->Value(mkNamingAdapt(Rules,             "Rules",            !pScenario ? C4IDList() : pScenario->Game.Rules));
