@@ -262,6 +262,8 @@ C4StringTable::C4StringTable()
 	P[P_Min] = "Min";
 	P[P_Max] = "Max";
 	P[P_Set] = "Set";
+	P[P_SetGlobal] = "SetGlobal";
+	P[P_SetRoot] = "SetRoot";
 	P[P_Options] = "Options";
 	P[P_Key] = "Key";
 	P[P_AsyncGet] = "AsyncGet";

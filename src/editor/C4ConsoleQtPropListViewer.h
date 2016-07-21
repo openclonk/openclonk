@@ -45,6 +45,7 @@ public:
 		PPT_Index = 2,
 		PPT_SetFunction = 3,
 		PPT_GlobalSetFunction = 4,
+		PPT_RootSetFunction = 5,
 	} path_type;
 public:
 	C4PropertyPath() {}
@@ -74,7 +75,7 @@ protected:
 	const class C4PropertyDelegateFactory *factory;
 	C4Value creation_props;
 	C4RefCntPointer<C4String> set_function, async_get_function, name;
-	bool set_function_is_global;
+	C4PropertyPath::PathType set_function_type;
 
 public:
 	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, C4PropList *props);
@@ -90,12 +91,12 @@ public:
 	virtual QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const;
 	virtual QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const;
 	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : nullptr; } // get name of setter function for this property
-	bool IsGlobalSetFunction() const { return set_function_is_global; }
 	virtual const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const { return nullptr;  }
 	virtual const class C4PropertyDelegateShape *GetDirectShapeDelegate() const { return nullptr; }
 	virtual bool HasCustomPaint() const { return false; }
 	virtual bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const { return false; }
 	C4PropertyPath GetPathForProperty(struct C4ConsoleQtPropListModelProperty *editor_prop) const;
+	C4PropertyPath GetPathForProperty(const C4PropertyPath &parent_path, const char *default_subpath) const;
 	C4String *GetNameStr() const { return name.Get(); }
 	const C4Value &GetCreationProps() const { return creation_props; }
 

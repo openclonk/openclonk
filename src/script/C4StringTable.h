@@ -486,6 +486,8 @@ enum C4PropertyName
 	P_Min,
 	P_Max,
 	P_Set,
+	P_SetGlobal,
+	P_SetRoot,
 	P_Options,
 	P_Key,
 	P_AsyncGet,

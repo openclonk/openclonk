@@ -73,6 +73,10 @@ C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, const char *child_p
 		path.Copy(parent.GetPath());
 		argument.Copy(child_property);
 	}
+	else if (path_type == PPT_RootSetFunction)
+	{
+		path.Format("%s->%s", parent.GetRoot(), child_property);
+	}
 	else
 	{
 		assert(false);
@@ -83,7 +87,7 @@ void C4PropertyPath::SetProperty(const char *set_string) const
 {
 	// Compose script to update property
 	StdStrBuf script;
-	if (path_type == PPT_SetFunction)
+	if (path_type == PPT_SetFunction || path_type == PPT_RootSetFunction)
 		script.Format("%s(%s)", path.getData(), set_string);
 	else if (path_type == PPT_GlobalSetFunction)
 		script.Format("%s(%s,%s)", argument.getData(), path.getData(), set_string);
@@ -117,7 +121,7 @@ void C4PropertyPath::DoCall(const char *call_string) const
 /* Property editing */
 
 C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory, C4PropList *props)
-	: QObject(), factory(factory), set_function_is_global(false)
+	: QObject(), factory(factory), set_function_type(C4PropertyPath::PPT_SetFunction)
 {
 	// Resolve getter+setter callback names
 	if (props)
@@ -125,7 +129,18 @@ C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory,
 		creation_props = C4VPropList(props);
 		name = props->GetPropertyStr(P_Name);
 		set_function = props->GetPropertyStr(P_Set);
-		set_function_is_global = props->GetPropertyBool(P_Global);
+		if (props->GetPropertyBool(P_SetGlobal))
+		{
+			set_function_type = C4PropertyPath::PPT_GlobalSetFunction;
+		}
+		else if (props->GetPropertyBool(P_SetRoot))
+		{
+			set_function_type = C4PropertyPath::PPT_RootSetFunction;
+		}
+		else
+		{
+			set_function_type = C4PropertyPath::PPT_SetFunction;
+		}
 		async_get_function = props->GetPropertyStr(P_AsyncGet);
 	}
 }
@@ -190,14 +205,19 @@ C4PropertyPath C4PropertyDelegate::GetPathForProperty(C4ConsoleQtPropListModelPr
 		path = C4PropertyPath(editor_prop->parent_value.getPropList());
 	else
 		path = editor_prop->property_path;
+	return GetPathForProperty(path, editor_prop->key ? editor_prop->key->GetCStr() : nullptr);
+}
+
+C4PropertyPath C4PropertyDelegate::GetPathForProperty(const C4PropertyPath &parent_path, const char *default_subpath) const
+{
 	C4PropertyPath subpath;
 	if (GetSetFunction())
-		subpath = C4PropertyPath(path, GetSetFunction(), IsGlobalSetFunction() ? C4PropertyPath::PPT_GlobalSetFunction : C4PropertyPath::PPT_SetFunction);
+		subpath = C4PropertyPath(parent_path, GetSetFunction(), set_function_type);
 	else
-		if (editor_prop->key)
-			subpath = C4PropertyPath(path, editor_prop->key->GetCStr());
+		if (default_subpath && *default_subpath)
+			subpath = C4PropertyPath(parent_path, default_subpath);
 		else
-			subpath = path;
+			subpath = parent_path;
 	return subpath;
 }
 
@@ -1045,7 +1065,7 @@ const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(C4Value 
 	if (!option.adelegate) return nullptr;
 	if (option.value_key.Get())
 	{
-		*shape_path = C4PropertyPath(*shape_path, option.value_key->GetCStr());
+		*shape_path = option.adelegate->GetPathForProperty(*shape_path, option.value_key->GetCStr());
 		C4PropList *vp = val.getPropList();
 		if (vp) vp->GetPropertyByS(option.value_key, &val);
 	}
@@ -1624,7 +1644,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		C4Value v_target_proplist = C4VPropList(target_proplist);
 		prop->delegate->GetPropertyValue(v_target_proplist, prop->key, 0, &v);
 		// Connect editable shape to property
-		C4PropertyPath new_shape_property_path(prop->property_path, prop->key->GetCStr());
+		C4PropertyPath new_shape_property_path = prop->delegate->GetPathForProperty(prop);
 		const C4PropertyDelegateShape *new_shape_delegate = prop->delegate->GetShapeDelegate(v, &new_shape_property_path);
 		if (new_shape_delegate != prop->shape_delegate || !(prop->shape_property_path == new_shape_property_path))
 		{
