@@ -5,6 +5,8 @@
 local Name = "UserAction";
 local Plane=0;
 
+/* UserAction definition */
+
 // Base classes for EditorProps using actions 
 local Evaluator;
 
@@ -20,33 +22,8 @@ local EvaluatorCallbacks;
 // Proplist containing option definitions. Indexed by option names.
 local EvaluatorDefs;
 
-// If this action is paused and will be resumed by a callback or by re-execution of the action, this property is set to the props of the holding action
-local hold;
-
-// Set to true if action is on hold but waiting for re-execution
-local suspended;
-
-// Return value if a value-providing evaluator is held
-local hold_result;
-
 // Call this definition early (but after EditorBase) to allow EditorProp initialization
 local DefinitionPriority=99;
-
-// Proplist holding progress in each sequence
-local sequence_progress, sequence_had_goto;
-static UserAction_SequenceIDs;
-
-// Set to innermost sequence (for goto)
-local last_sequence;
-
-public func Initialize()
-{
-	sequence_progress = {};
-	sequence_had_goto = {};
-	return true;
-}
-
-public func SaveScenarioObject(props) { return false; } // temp. don't save.
 
 func Definition(def)
 {
@@ -57,6 +34,7 @@ func Definition(def)
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Option", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Option", Options = [] };
+	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Option", Options = [ { Name="$None$" } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
@@ -134,6 +112,9 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 	action_def.OptionIndex = n;
 	EvaluatorCallbacks[identifier] = callback_data;
 	EvaluatorDefs[identifier] = action_def;
+	// Copy most boolean props to condition prop
+	if (eval_type == "Boolean" && identifier != "bool_constant")
+		AddEvaluator("Condition", group, name, identifier, callback_data, default_val, delegate);
 	return action_def;
 }
 
@@ -152,22 +133,22 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 	return cb[0]->Call(cb[1], props, context, cb[2]);
 }
 
-public func EvaluateAction(proplist props, object action_object, object triggering_object, string progress_mode, bool allow_parallel)
+public func EvaluateAction(proplist props, object action_object, object triggering_object, int triggering_player, string progress_mode, bool allow_parallel, finish_callback)
 {
 	// Determine context
 	var context;
 	if (!progress_mode)
 	{
-		if (!(context = props.context))
-			props.context = context = CreateObject(UserAction);
+		if (!(context = props._context))
+			props._context = context = CreateObject(UserAction);
 	}
 	else if (progress_mode == "player")
 	{
-		if (!props.contexts) props.contexts = [];
+		if (!props._contexts) props._contexts = [];
 		var plr_id;
 		if (action_object) plr_id = GetPlayerID(action_object->GetOwner());
-		if (!(context = props.contexts[plr_id]))
-			props.contexts[plr_id] = context = CreateObject(UserAction);
+		if (!(context = props._contexts[plr_id]))
+			props._contexts[plr_id] = context = CreateObject(UserAction);
 	}
 	else // if (progress_mode == "session")
 	{
@@ -178,13 +159,25 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	// Prevent duplicate parallel execution
 	if (!allow_parallel && (context.hold && !context.suspended)) return nil;
 	// Init context settings
-	context.action_object = action_object;
-	context.triggering_object = triggering_object;
-	context.root_action = props;
-	context.suspended = false;
+	context->InitContext(action_object, triggering_player, triggering_object, props);
 	// Execute action
 	EvaluateValue("Action", props, context);
 	FinishAction(context);
+}
+
+public func EvaluateCondition(proplist props, object action_object, object triggering_object, int triggering_player)
+{
+	// Build temp context
+	var context = CreateObject(UserAction);
+	context.temp = true;
+	// Init context settings
+	context->InitContext(action_object, triggering_player, triggering_object, props);
+	// Execute condition evaluator
+	var result = EvaluateValue("Condition", props, context);
+	// Cleanup
+	if (context) context->RemoveObject();
+	// Done
+	return result;
 }
 
 private func ResumeAction(proplist context, proplist resume_props)
@@ -203,13 +196,17 @@ private func FinishAction(proplist context)
 	// Cleanup action object (unless it's kept around for callbacks or to store sequence progress)
 	// Note that context.root_action.contexts is checked to kill session-contexts that try to suspend
 	// There would be no way to resume so just kill the context
-	if (!context.hold || context.temp) context->RemoveObject();
+	if (!context.hold || context.temp)
+	{
+		if (context.action_object && context.finish_callback) context.action_object->Call(context.finish_callback, context);
+		context->RemoveObject();
+	}
 }
 
 private func EvalConstant(proplist props, proplist context) { return props.Value; }
 private func EvalObj_ActionObject(proplist props, proplist context) { return context.action_object; }
 private func EvalObj_TriggeringObject(proplist props, proplist context) { return context.triggering_object; }
-private func EvalPlr_Trigger(proplist props, proplist context) { if (context.triggering_object) return context.triggering_object->GetOwner(); }
+private func EvalPlr_Trigger(proplist props, proplist context) { return context.triggering_player; }
 private func EvalPlrList_Single(proplist props, proplist context, fn) { return [Call(fn, props, context)]; }
 
 private func EvalPlrList_All(proplist props, proplist context, fn)
@@ -280,6 +277,53 @@ private func EvalAct_Wait(proplist props, proplist context)
 	ScheduleCall(context, UserAction.ResumeAction, props.Time, 1, context, props);
 }
 
+
+/* Context instance */
+
+// Proplist holding progress in each sequence
+local sequence_progress, sequence_had_goto;
+static UserAction_SequenceIDs;
+
+// Set to innermost sequence (for goto)
+local last_sequence;
+
+// If this action is paused and will be resumed by a callback or by re-execution of the action, this property is set to the props of the holding action
+local hold;
+
+// Set to true if action is on hold but waiting for re-execution
+local suspended;
+
+// Return value if a value-providing evaluator is held
+local hold_result;
+
+public func Initialize()
+{
+	sequence_progress = {};
+	sequence_had_goto = {};
+	return true;
+}
+
+public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props)
+{
+	// Determine triggering player+object
+	if (!GetType(triggering_player))
+	{
+		if (triggering_object) triggering_player = triggering_object->GetController();
+	}
+	else if (!triggering_object)
+	{
+		triggering_object = GetCursor(triggering_player);
+		if (!triggering_object) triggering_object = GetCrew(triggering_player);
+	}
+	// Init context settings
+	this.action_object = action_object;
+	this.triggering_object = triggering_object;
+	this.triggering_player = triggering_player;
+	this.root_action = props;
+	this.suspended = false;
+	return true;
+}
+
 public func MenuOK(proplist menu_id, object clonk)
 {
 	// Pressed 'Next' in dialogue: Resume in user action
@@ -298,3 +342,5 @@ public func MenuSelectOption(int index)
 	}
 	UserAction->ResumeAction(this, hold);
 }
+
+public func SaveScenarioObject(props) { return false; } // temp. don't save.

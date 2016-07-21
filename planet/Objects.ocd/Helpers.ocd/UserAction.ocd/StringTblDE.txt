@@ -3,6 +3,7 @@ UserObject=Objekt
 UserPlayer=Spieler
 UserPlayerList=Spieler
 UserBoolean=Bedingung
+UserCondition=Bedingung
 None=Nichts
 Noone=Niemand
 AllPlayers=Alle Spieler

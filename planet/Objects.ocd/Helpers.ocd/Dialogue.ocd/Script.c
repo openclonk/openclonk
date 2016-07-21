@@ -259,7 +259,7 @@ public func Interact(object clonk)
 	// User sequence provided in editor?
 	if (user_dialogue)
 	{
-		UserAction->EvaluateAction(user_dialogue, this, clonk, user_dialogue_progress_mode, user_dialogue_allow_parallel);
+		UserAction->EvaluateAction(user_dialogue, this, clonk, nil, user_dialogue_progress_mode, user_dialogue_allow_parallel);
 		return true;
 	}
 	
