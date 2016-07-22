@@ -46,16 +46,44 @@ public func Start(string name, int progress, ...)
 
 protected func InitializePlayer(int plr)
 {
-	JoinPlayer(plr);
+	if (seq_name)
+	{
+		// Scripted sequence
+		JoinPlayer(plr);
+	}
+	else
+	{
+		// Editor-made sequence
+		if (trigger && trigger.Trigger == "player_join") OnTrigger(nil, plr);
+	}
+	return true;
+}
+
+protected func InitializePlayers(int plr)
+{
+	if (!seq_name)
+	{
+		// Editor-made sequence
+		if (trigger && trigger.Trigger == "game_start") OnTrigger();
+	}
 	return true;
 }
 
 public func RemovePlayer(int plr)
 {
-	// Called by sequence if it ends and by engine if player leaves.
-	var fn_remove = Format("~%s_RemovePlayer", seq_name);
-	if (!Call(fn_remove, plr))
-		GameCall(fn_remove, this, plr);
+	if (seq_name)
+	{
+		// Scripted sequence
+		// Called by sequence if it ends and by engine if player leaves.
+		var fn_remove = Format("~%s_RemovePlayer", seq_name);
+		if (!Call(fn_remove, plr))
+			GameCall(fn_remove, this, plr);
+	}
+	else
+	{
+		// Editor-made sequence
+		if (trigger && trigger.Trigger == "player_remove") OnTrigger(nil, plr);
+	}
 	return true;
 }
 
@@ -300,6 +328,8 @@ global func GetActiveSequence()
 
 /* User-made sequences from the editor */
 
+local Name="$Name$";
+local Description="$Description$";
 local trigger, condition, action, action_progress_mode, action_allow_parallel;
 local active=true;
 local check_interval=12;
@@ -311,14 +341,27 @@ local finished;
 
 public func Definition(def)
 {
+	// EditorActions
 	if (!def.EditorActions) def.EditorActions = {};
 	def.EditorActions.Test = { Name="$Test$", Command="OnTrigger(nil, nil, true)" };
+	// EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
 	def.EditorProps.finished = { Name="$Finished$", Type="bool", Set="SetFinished" };
 	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Options = [
 		{ Name="$None$" },
-		{ Name="$EnterRegionRect$", Value={ Trigger="enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Relative=true, Set="SetTriggerRect", SetRoot=true } } // TODO: Allow runtime update of search fn
+		{ Name="$EnterRegionRect$", Value={ Trigger="enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true } },
+		{ Name="$EnterRegionCircle$", Value={ Trigger="enter_region_circle", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true } },
+		{ Name="$GameStart$", Value={ Trigger="game_start" } },
+		{ Name="$PlayerJoin$", Value={ Trigger="player_join" } },
+		{ Name="$PlayerRemove$", Value={ Trigger="player_remove" } },
+		{ Name="$GoalsFulfilled$", Value={ Trigger="goals_fulfilled" } },
+		{ Group="$ClonkDeath$", Name="$AnyClonkDeath$", Value={ Trigger="any_clonk_death" } },
+		{ Group="$ClonkDeath$", Name="$PlayerClonkDeath$", Value={ Trigger="player_clonk_death" } },
+		{ Group="$ClonkDeath$", Name="$NeutralClonkDeath$", Value={ Trigger="neutral_clonk_death" } },
+		{ Group="$ClonkDeath$", Name="$SpecificClonkDeath$", Value={ Trigger="specific_clonk_death" }, ValueKey="Object", Delegate={ Type="object", Filter="IsClonk" } },
+		{ Name="$Construction$", Value={ Trigger="construction" }, ValueKey="ID", Delegate={ Type="def", Filter="IsStructure", EmptyName="$Anything$" } },
+		{ Name="$Production$", Value={ Trigger="production" }, ValueKey="ID", Delegate={ Type="def", EmptyName="$Anything$" } },
 		] };
 	def.EditorProps.condition = UserAction.Evaluator.Condition;
 	def.EditorProps.action = UserAction.Prop;
@@ -327,7 +370,7 @@ public func Definition(def)
 	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };
 }
 
-public func SetTrigger(new_trigger)
+public func SetTrigger(proplist new_trigger)
 {
 	trigger = new_trigger;
 	// Set trigger: Restart any specific trigger timers
@@ -339,13 +382,24 @@ public func SetTrigger(new_trigger)
 	return true;
 }
 
-public func SetTriggerRect(new_trigger_rect)
+public func SetTriggerRect(array new_trigger_rect)
 {
 	if (trigger && trigger.Rect)
 	{
 		trigger.Rect = new_trigger_rect;
 		SetTrigger(trigger); // restart trigger
 	}
+	return true;
+}
+
+public func SetTriggerRadius(int new_trigger_radius)
+{
+	if (trigger)
+	{
+		trigger.Radius = new_trigger_radius;
+		SetTrigger(trigger); // restart trigger
+	}
+	return true;
 }
 
 public func SetAction(new_action, new_action_progress_mode, new_action_allow_parallel)
@@ -394,6 +448,11 @@ public func StartTrigger()
 		this.search_mask = Find_And(Find_InRect(trigger.Rect[0], trigger.Rect[1], trigger.Rect[2], trigger.Rect[3]), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
 		AddTimer(this.EnterRegionTimer, check_interval);
 	}
+	else if (fn == "enter_region_circle")
+	{
+		this.search_mask = Find_And(Find_Distance(trigger.Radius), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
+		AddTimer(this.EnterRegionTimer, check_interval);
+	}
 	else return false;
 	return true;
 }
@@ -438,6 +497,57 @@ private func OnActionFinished(context)
 	else if (active && !finished && !action_allow_parallel)
 		StartTrigger();
 	return true;
+}
+
+public func OnClonkDeath(object clonk, int killer)
+{
+	// Is this a clonk death trigger?
+	if (!trigger || !clonk) return false;
+	var t = trigger.Trigger;
+	if (!WildcardMatch(t, "*_clonk_death")) return false;
+	// Specific trigger check
+	if (t == "player_clonk_death")
+	{
+		if (clonk->GetOwner() == NO_OWNER) return false;
+	}
+	else if (t == "neutral_clonk_death")
+	{
+		if (clonk->GetOwner() != NO_OWNER) return false;
+	}
+	else if (t == "specific_clonk_death")
+	{
+		if (trigger.Object != clonk) return false;
+	}
+	// OK, trigger it!
+	return OnTrigger(clonk, killer);
+}
+
+public func OnConstructionFinished(object structure, int constructing_player)
+{
+	// Is this a structure finished trigger?
+	if (!trigger || !structure) return false;
+	if (trigger.Trigger != "construction") return false;
+	if (trigger.ID) if (structure->GetID() != trigger.ID) return false;
+	// OK, trigger it!
+	return OnTrigger(structure, constructing_player);
+}
+
+public func OnProductionFinished(object product, int producing_player)
+{
+	// Is this a structure finished trigger?
+	if (!trigger || !product) return false;
+	if (trigger.Trigger != "production") return false;
+	if (trigger.ID) if (product->GetID() != trigger.ID) return false;
+	// OK, trigger it!
+	return OnTrigger(product, producing_player);
+}
+
+public func OnGoalsFulfilled()
+{
+	// All goals fulfilled: Return true if any action is executed (stops regular GameOver)
+	if (!trigger) return false;
+	if (trigger.Trigger != "goals_fulfilled") return false;
+	return OnTrigger();
 }
 
 /*-- Saving --*/

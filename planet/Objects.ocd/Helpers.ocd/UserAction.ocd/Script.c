@@ -157,12 +157,13 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 		context.temp = true;
 	}
 	// Prevent duplicate parallel execution
-	if (!allow_parallel && (context.hold && !context.suspended)) return nil;
+	if (!allow_parallel && (context.hold && !context.suspended)) return false;
 	// Init context settings
 	context->InitContext(action_object, triggering_player, triggering_object, props);
 	// Execute action
 	EvaluateValue("Action", props, context);
 	FinishAction(context);
+	return true;
 }
 
 public func EvaluateCondition(proplist props, object action_object, object triggering_object, int triggering_player)

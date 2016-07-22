@@ -208,7 +208,7 @@ public func Collection2(object obj)
 	
 	// check if we're done?
 	if(full_material)
-		StartConstructing();
+		StartConstructing(obj->GetController());
 }
 
 // component removed (e.g.: Contained wood burned down or some externel scripts went havoc)
@@ -267,7 +267,7 @@ private func GetMissingComponents()
 	return missing_material;
 }
 
-private func StartConstructing()
+private func StartConstructing(int by_player)
 {
 	if(!definition)
 		return;
@@ -308,6 +308,7 @@ private func StartConstructing()
 		// If not: Autoconstruct 2.0!
 		Schedule(site, "DoCon(2)",1,50);
 		Schedule(this,"RemoveObject()",1);
+		Global->ScheduleCall(nil, Global.GameCallEx, 51, 1, "OnConstructionFinished", site, by_player);
 		site->Sound("Structures::FinishBuilding");
 	}
 	

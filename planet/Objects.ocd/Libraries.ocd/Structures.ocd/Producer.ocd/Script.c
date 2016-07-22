@@ -25,7 +25,7 @@
 #include Library_PowerConsumer
 
 // Production queue, a list of items to be produced.
-// Contains proplists of format {Product = <objid>, Amount = <int>, Infinite = (optional)<bool>}. /Infinite/ == true -> infinite production.
+// Contains proplists of format {Product = <objid>, Amount = <int>, Infinite = (optional)<bool>, ProducingPlayer = (optional)<int>}. /Infinite/ == true -> infinite production.
 local queue;
 
 
@@ -364,7 +364,7 @@ public func ModifyQueueIndex(int position, int amount, bool infinite_production)
 	@param amount the amount of items of \c item_id which should be produced. Amount must not be negative.
 	@paramt infinite whether to enable infinite production.
 */
-public func AddToQueue(id product_id, int amount, bool infinite)
+public func AddToQueue(id product_id, int amount, bool infinite, int producing_player)
 {
 	// Check if this producer can produce the requested item.
 	if (!IsProduct(product_id))
@@ -384,7 +384,7 @@ public func AddToQueue(id product_id, int amount, bool infinite)
 
 	// Otherwise create a new entry in the queue.
 	if (!found)
-		PushBack(queue, { Product = product_id, Amount = amount, Infinite = infinite});
+		PushBack(queue, { Product = product_id, Amount = amount, Infinite = infinite, ProducingPlayer=producing_player });
 	// Notify all production menus open for this producer.
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
@@ -429,7 +429,7 @@ private func ModifyProduction(proplist info, int player)
 	
 	if (index == nil && (amount > 0 || infinite))
 	{
-		AddToQueue(product, amount, infinite);
+		AddToQueue(product, amount, infinite, player);
 	}
 	else if (index != nil)
 	{
@@ -471,8 +471,9 @@ private func ProcessQueue()
 	
 	// Produce first item in the queue.
 	var product_id = queue[0].Product;
+	var producing_player = queue[0].ProducingPlayer;
 	// Check raw material need.
-	if (!Produce(product_id))
+	if (!Produce(product_id, producing_player))
 	{
 		// No material available? request from cable network.
 		RequestAllMissingComponents(product_id);
@@ -504,7 +505,7 @@ public func PowerNeed() { return 80; }
 public func GetConsumerPriority() { return 50; }
 
 
-private func Produce(id product)
+private func Produce(id product, producing_player)
 {
 	// Already producing? Wait a little.
 	if (IsProducing())
@@ -527,7 +528,7 @@ private func Produce(id product)
 	CheckFuel(product, true);
 	
 	// Add production effect.
-	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
+	AddEffect("ProcessProduction", this, 100, 2, this, nil, product, producing_player);
 
 	return true;
 }
@@ -636,13 +637,14 @@ private func IsProducing()
 }
 
 
-protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product)
+protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product, int producing_player)
 {
 	if (temporary)
 		return FX_OK;
 		
-	// Set product.
+	// Set product information
 	effect.Product = product;
+	effect.producing_player = producing_player;
 		
 	// Set production duration to zero.
 	effect.Duration = 0;
@@ -729,6 +731,8 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	// Create product. 	
 	var product = CreateObject(effect.Product);
 	OnProductEjection(product);
+	// Global callback
+	if (product) GameCallEx("OnProductionFinished", product, effect.producing_player);
 	return FX_OK;
 }
 
