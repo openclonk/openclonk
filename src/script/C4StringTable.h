@@ -508,6 +508,7 @@ enum C4PropertyName
 	P_Command,
 	P_Select,
 	P_DescendPath,
+	P_EmptyName,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

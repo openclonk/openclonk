@@ -284,6 +284,7 @@ C4StringTable::C4StringTable()
 	P[P_Command] = "Command";
 	P[P_Select] = "Select";
 	P[P_DescendPath] = "DescendPath";
+	P[P_EmptyName] = "EmptyName";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

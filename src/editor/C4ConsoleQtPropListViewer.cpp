@@ -1099,6 +1099,9 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
+	// nil is always an option
+	C4String *empty_name = props ? props->GetPropertyStr(P_EmptyName) : nullptr;
+	AddConstOption(empty_name ? empty_name : ::Strings.RegString("nil"), C4VNull);
 	// Collect sorted definitions
 	C4String *filter_property = props ? props->GetPropertyStr(P_Filter) : nullptr;
 	if (filter_property)
@@ -1109,8 +1112,6 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 			return strcmp(a->GetName(), b->GetName()) < 0;
 		});
 		// Add them
-		ReserveOptions(defs.size() + 1);
-		AddConstOption(::Strings.RegString("nil"), C4VNull); // nil is always an option
 		for (C4Def *def : defs)
 		{
 			C4RefCntPointer<C4String> option_name = ::Strings.RegString(FormatString("%s (%s)", def->id.ToString(), def->GetName()));
@@ -1119,7 +1120,6 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 	}
 	else
 	{
-		AddConstOption(::Strings.RegString("nil"), C4VNull); // nil is always an option
 		// Without filter copy tree from definition list model
 		C4ConsoleQtDefinitionListModel *def_list_model = factory->GetDefinitionListModel();
 		// Recursively add all defs from model
