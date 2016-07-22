@@ -103,6 +103,7 @@ public:
 	int32_t StartupTeamCount;
 	int32_t FPS,cFPS;
 	int32_t HaltCount;
+	bool InitialPlayersJoined; // true after the InitializeFinal callback has been made
 	bool GameOver;
 	bool Evaluated;
 	bool GameOverDlgShown;

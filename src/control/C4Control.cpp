@@ -1063,65 +1063,71 @@ void C4ControlJoinPlayer::Execute() const
 
 	// get client
 	C4Client *pClient = Game.Clients.getClientByID(iAtClient);
-	if (!pClient) return;
-
-	// get info
-	C4PlayerInfo *pInfo = Game.PlayerInfos.GetPlayerInfoByID(idInfo);
-	if (!pInfo)
+	if (pClient)
 	{
-		LogF("ERROR: Ghost player join: No info for %d", idInfo);
-		assert(false);
-		return;
-	}
-
-	else if (LocalControl())
-	{
-		// Local player: Just join from local file
-		Game.JoinPlayer(szFilename, iAtClient, pClient->getName(), pInfo);
-	}
-	else if (!fByRes)
-	{
-		if (PlrData.getSize())
+		// get info
+		C4PlayerInfo *pInfo = Game.PlayerInfos.GetPlayerInfoByID(idInfo);
+		if (!pInfo)
 		{
-			// create temp file
-			StdStrBuf PlayerFilename; PlayerFilename.Format("%s-%s",pClient->getName(),GetFilename(szFilename));
-			PlayerFilename = Config.AtTempPath(PlayerFilename.getData());
-			// copy to it
-			if (PlrData.SaveToFile(PlayerFilename.getData()))
+			LogF("ERROR: Ghost player join: No info for %d", idInfo);
+			assert(false);
+		}
+		else if (LocalControl())
+		{
+			// Local player: Just join from local file
+			Game.JoinPlayer(szFilename, iAtClient, pClient->getName(), pInfo);
+		}
+		else if (!fByRes)
+		{
+			if (PlrData.getSize())
 			{
-				Game.JoinPlayer(PlayerFilename.getData(), iAtClient, pClient->getName(), pInfo);
-				EraseFile(PlayerFilename.getData());
+				// create temp file
+				StdStrBuf PlayerFilename; PlayerFilename.Format("%s-%s", pClient->getName(), GetFilename(szFilename));
+				PlayerFilename = Config.AtTempPath(PlayerFilename.getData());
+				// copy to it
+				if (PlrData.SaveToFile(PlayerFilename.getData()))
+				{
+					Game.JoinPlayer(PlayerFilename.getData(), iAtClient, pClient->getName(), pInfo);
+					EraseFile(PlayerFilename.getData());
+				}
+			}
+			else if (pInfo->GetType() == C4PT_Script)
+			{
+				// script players may join without data
+				Game.JoinPlayer(NULL, iAtClient, pClient->getName(), pInfo);
+			}
+			else
+			{
+				// no player data for user player present: Must not happen
+				LogF("ERROR: Ghost player join: No player data for %s", (const char*)pInfo->GetName());
+				assert(false);
 			}
 		}
-		else if (pInfo->GetType() == C4PT_Script)
+		else if (::Control.isNetwork())
 		{
-			// script players may join without data
-			Game.JoinPlayer(NULL, iAtClient, pClient->getName(), pInfo);
+			// Find resource
+			C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
+			if (pRes && pRes->isComplete())
+				Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
+		}
+		else if (::Control.isReplay())
+		{
+			// Expect player in scenario file
+			StdStrBuf PlayerFilename; PlayerFilename.Format("%s" DirSep "%d-%s", Game.ScenarioFilename, ResCore.getID(), GetFilename(ResCore.getFileName()));
+			Game.JoinPlayer(PlayerFilename.getData(), iAtClient, pClient ? pClient->getName() : "Unknown", pInfo);
 		}
 		else
 		{
-			// no player data for user player present: Must not happen
-			LogF("ERROR: Ghost player join: No player data for %s", (const char*)pInfo->GetName());
+			// Shouldn't happen
 			assert(false);
-			return;
 		}
 	}
-	else if (::Control.isNetwork())
+	// After last of the initial player joins, do a game callback
+	if (!::Game.InitialPlayersJoined && !::Game.PlayerInfos.GetJoinPendingPlayerCount())
 	{
-		// Find resource
-		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
-		if (pRes && pRes->isComplete())
-			Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
+		::Game.InitialPlayersJoined = true;
+		::Game.GRBroadcast(PSF_InitializePlayers);
 	}
-	else if (::Control.isReplay())
-	{
-		// Expect player in scenario file
-		StdStrBuf PlayerFilename; PlayerFilename.Format("%s" DirSep "%d-%s", Game.ScenarioFilename, ResCore.getID(), GetFilename(ResCore.getFileName()));
-		Game.JoinPlayer(PlayerFilename.getData(), iAtClient, pClient ? pClient->getName() : "Unknown", pInfo);
-	}
-	else
-		// Shouldn't happen
-		assert(false);
 }
 
 void C4ControlJoinPlayer::Strip()

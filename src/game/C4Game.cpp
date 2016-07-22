@@ -1435,7 +1435,7 @@ void C4Game::Default()
 	PointersDenumerated = false;
 	IsRunning = false;
 	FrameCounter=0;
-	GameOver=GameOverDlgShown=false;
+	GameOver=GameOverDlgShown=InitialPlayersJoined=false;
 	ScenarioFilename[0]=0;
 	PlayerFilenames[0]=0;
 	DefinitionFilenames[0]=0;
@@ -1665,6 +1665,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(iTick35,               "Tick35",                0));
 		pComp->Value(mkNamingAdapt(iTick255,              "Tick255",               0));
 		pComp->Value(mkNamingAdapt(iTick1000,             "Tick1000",              0));
+		pComp->Value(mkNamingAdapt(InitialPlayersJoined,  "InitialPlayersJoined", false));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
 		pComp->Value(mkNamingAdapt(StartupTeamCount,      "StartupTeamCount",      0));
 		pComp->Value(mkNamingAdapt(C4PropListNumbered::EnumerationIndex,"ObjectEnumerationIndex",0));

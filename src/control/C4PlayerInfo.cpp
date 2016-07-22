@@ -968,6 +968,21 @@ int32_t C4PlayerInfoList::GetJoinIssuedPlayerCount() const
 	return iCount;
 }
 
+int32_t C4PlayerInfoList::GetJoinPendingPlayerCount() const
+{
+	// count players of all clients
+	int32_t iCount = 0;
+	for (int32_t i = 0; i<iClientCount; ++i)
+	{
+		C4ClientPlayerInfos *pClient = ppClients[i];
+		for (int32_t j = 0; j<pClient->GetPlayerCount(); ++j)
+			if (pClient->GetPlayerInfo(j)->HasJoinPending())
+				++iCount;
+	}
+	// return it
+	return iCount;
+}
+
 int32_t C4PlayerInfoList::GetActivePlayerCount(bool fCountInvisible) const
 {
 	// count players of all clients
