@@ -484,6 +484,13 @@
       </layout>
      </item>
      <item>
+      <layout class="QGridLayout" name="objectActionPanel">
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="arrayEditingLayout">
        <property name="topMargin">
         <number>0</number>
@@ -502,13 +509,6 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QGridLayout" name="objectActionPanel">
-       <property name="verticalSpacing">
-        <number>6</number>
-       </property>
       </layout>
      </item>
      <item>
