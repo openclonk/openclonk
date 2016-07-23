@@ -29,7 +29,7 @@
 
 /* Property path for property setting synchronization */
 
-C4PropertyPath::C4PropertyPath(C4PropList *target)
+C4PropertyPath::C4PropertyPath(C4PropList *target) : get_path_type(PPT_Root), set_path_type(PPT_Root)
 {
 	// Build string to set target: supports objects only
 	if (target)
@@ -37,13 +37,13 @@ C4PropertyPath::C4PropertyPath(C4PropList *target)
 		C4Object *obj = target->GetObject();
 		if (obj)
 		{
-			path.Format("Object(%d)", (int)obj->Number);
-			root = path;
+			get_path.Format("Object(%d)", (int)obj->Number);
+			root = get_path;
 		}
 	}
 }
 
-C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj)
+C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj) : get_path_type(PPT_Root), set_path_type(PPT_Root)
 {
 	// Effect property path: Represent as GetEffect("name", Object(%d), index)
 	if (!fx || !target_obj) return;
@@ -51,31 +51,37 @@ C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj)
 	int32_t index = 0;
 	for (C4Effect *ofx = target_obj->pEffects; ofx; ofx = ofx->pNext)
 		if (ofx == fx) break; else if (!strcmp(ofx->GetName(), name)) ++index;
-	path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
+	get_path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
 	root.Format("Object(%d)", (int)target_obj->Number);
 }
 
 C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index) : root(parent.root)
 {
-	path.Format("%s[%d]", parent.GetPath(), (int)elem_index);
-	path_type = PPT_Index;
+	get_path.Format("%s[%d]", parent.GetGetPath(), (int)elem_index);
+	get_path_type = set_path_type = PPT_Index;
 }
 
-C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, const char *child_property, C4PropertyPath::PathType path_type)
-	: path_type(path_type), root(parent.root)
+C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, const char *child_property)
+	: get_path_type(PPT_Property), set_path_type(PPT_Property), root(parent.root)
 {
+	get_path.Format("%s.%s", parent.GetGetPath(), child_property);
+}
+
+void C4PropertyPath::SetSetPath(const C4PropertyPath &parent, const char *child_property, C4PropertyPath::PathType path_type)
+{
+	set_path_type = path_type;
 	if (path_type == PPT_Property)
-		path.Format("%s.%s", parent.GetPath(), child_property);
+		set_path.Format("%s.%s", parent.GetGetPath(), child_property);
 	else if (path_type == PPT_SetFunction)
-		path.Format("%s->%s", parent.GetPath(), child_property);
+		set_path.Format("%s->%s", parent.GetGetPath(), child_property);
 	else if (path_type == PPT_GlobalSetFunction)
 	{
-		path.Copy(parent.GetPath());
+		set_path.Copy(parent.GetGetPath());
 		argument.Copy(child_property);
 	}
 	else if (path_type == PPT_RootSetFunction)
 	{
-		path.Format("%s->%s", parent.GetRoot(), child_property);
+		set_path.Format("%s->%s", parent.GetRoot(), child_property);
 	}
 	else
 	{
@@ -86,13 +92,14 @@ C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, const char *child_p
 void C4PropertyPath::SetProperty(const char *set_string) const
 {
 	// Compose script to update property
+	const char *set_path_c = GetSetPath();
 	StdStrBuf script;
-	if (path_type == PPT_SetFunction || path_type == PPT_RootSetFunction)
-		script.Format("%s(%s)", path.getData(), set_string);
-	else if (path_type == PPT_GlobalSetFunction)
-		script.Format("%s(%s,%s)", argument.getData(), path.getData(), set_string);
+	if (set_path_type == PPT_SetFunction || set_path_type == PPT_RootSetFunction)
+		script.Format("%s(%s)", set_path_c, set_string);
+	else if (set_path_type == PPT_GlobalSetFunction)
+		script.Format("%s(%s,%s)", argument.getData(), set_path_c, set_string);
 	else
-		script.Format("%s=%s", path.getData(), set_string);
+		script.Format("%s=%s", set_path_c, set_string);
 	// Execute synced scripted
 	::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script.getData(), 0, false));
 }
@@ -104,15 +111,15 @@ void C4PropertyPath::SetProperty(const C4Value &to_val) const
 
 C4Value C4PropertyPath::ResolveValue() const
 {
-	if (!path.getLength()) return C4VNull;
-	return AulExec.DirectExec(::ScriptEngine.GetPropList(), path.getData(), "resolve property", false, nullptr);
+	if (!get_path.getLength()) return C4VNull;
+	return AulExec.DirectExec(::ScriptEngine.GetPropList(), get_path.getData(), "resolve property", false, nullptr);
 }
 
 void C4PropertyPath::DoCall(const char *call_string) const
 {
 	// Compose script call
 	StdStrBuf script;
-	script.Format(call_string, path.getData());
+	script.Format(call_string, get_path.getData());
 	// Execute synced scripted
 	::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script.getData(), 0, false));
 }
@@ -210,14 +217,17 @@ C4PropertyPath C4PropertyDelegate::GetPathForProperty(C4ConsoleQtPropListModelPr
 
 C4PropertyPath C4PropertyDelegate::GetPathForProperty(const C4PropertyPath &parent_path, const char *default_subpath) const
 {
+	// Get path
 	C4PropertyPath subpath;
-	if (GetSetFunction())
-		subpath = C4PropertyPath(parent_path, GetSetFunction(), set_function_type);
+	if (default_subpath && *default_subpath)
+		subpath = C4PropertyPath(parent_path, default_subpath);
 	else
-		if (default_subpath && *default_subpath)
-			subpath = C4PropertyPath(parent_path, default_subpath);
-		else
-			subpath = parent_path;
+		subpath = parent_path;
+	// Set path
+	if (GetSetFunction())
+	{
+		subpath.SetSetPath(parent_path, GetSetFunction(), set_function_type);
+	}
 	return subpath;
 }
 
@@ -960,8 +970,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 		if (editor->option_changed) SetOptionValue(property_path, option);
 		// Value from a parameter.
 		// Using a setter function?
-		if (option.adelegate->GetSetFunction())
-			use_path = C4PropertyPath(use_path, option.adelegate->GetSetFunction(), C4PropertyPath::PPT_SetFunction);
+		use_path = option.adelegate->GetPathForProperty(use_path, nullptr);
 		option.adelegate->SetModelData(editor->parameter_widget, use_path, prop_shape);
 	}
 	else
@@ -1374,7 +1383,7 @@ C4PropertyDelegateShape::C4PropertyDelegateShape(const class C4PropertyDelegateF
 
 void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
-	if (prop_shape) property_path.SetProperty(prop_shape->GetValue());
+	if (prop_shape && prop_shape->GetParentDelegate() == this) property_path.SetProperty(prop_shape->GetValue());
 }
 
 bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const
@@ -1652,7 +1661,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->shape_property_path = new_shape_property_path;
 			if (new_shape_delegate)
 			{
-				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_effect_object ? base_effect_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v);
+				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_effect_object ? base_effect_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v, new_shape_delegate);
 				C4PropertyDelegateFactory *factory = this->delegate_factory;
 				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
 					new_shape_delegate->SetModelData(nullptr, prop->shape_property_path, shape);

@@ -34,7 +34,7 @@ struct C4ConsoleQtPropListModelProperty;
 class C4PropertyPath
 {
 	// TODO: For now just storing the path. May want to keep the path info later to allow validation/updating of values
-	StdCopyStrBuf path, argument;
+	StdCopyStrBuf get_path, argument, set_path;
 	StdCopyStrBuf root;
 
 public:
@@ -46,25 +46,27 @@ public:
 		PPT_SetFunction = 3,
 		PPT_GlobalSetFunction = 4,
 		PPT_RootSetFunction = 5,
-	} path_type;
+	} get_path_type, set_path_type;
 public:
 	C4PropertyPath() {}
 	C4PropertyPath(C4PropList *target);
 	C4PropertyPath(C4Effect *fx, C4Object *target_obj);
-	C4PropertyPath(const char *path) : path(path), root(path), path_type(PPT_Root) {}
+	C4PropertyPath(const char *path) : get_path(path), root(path), get_path_type(PPT_Root), set_path_type(PPT_Root) {}
 	C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index);
-	C4PropertyPath(const C4PropertyPath &parent, const char *child_property, PathType path_type = PPT_Property);
-	void Clear() { path.Clear(); }
-	const char *GetPath() const { return path.getData(); }
+	C4PropertyPath(const C4PropertyPath &parent, const char *child_property);
+	void SetSetPath(const C4PropertyPath &parent, const char *child_property, PathType path_type);
+	void Clear() { get_path.Clear(); set_path.Clear(); }
+	const char *GetGetPath() const { return get_path.getData(); }
+	const char *GetSetPath() const { return set_path ? set_path.getData() : get_path.getData(); }
 	const char *GetRoot() const { return root.getData(); } // Parent-most path (usually the object)
-	bool IsEmpty() const { return path.getLength() <= 0; }
+	bool IsEmpty() const { return get_path.getLength() <= 0; }
 
 	C4Value ResolveValue() const;
 	void SetProperty(const char *set_string) const;
 	void SetProperty(const C4Value &to_val) const;
 	void DoCall(const char *call_string) const; // Perform a script call where %s is replaced by the current path
 
-	bool operator ==(const C4PropertyPath &v) const { return path == v.path; }
+	bool operator ==(const C4PropertyPath &v) const { return get_path == v.get_path; }
 };
 
 class C4PropertyDelegate : public QObject
@@ -564,7 +566,7 @@ public:
 	class C4ValueArray *GetTargetArray() const { return target_value.getArray(); }
 	class C4PropList *GetBasePropList() const { return base_proplist.getPropList(); }
 	int32_t GetTargetPathStackSize() const { return target_path_stack.size(); }
-	const char *GetTargetPathText() const { return target_path.GetPath(); }
+	const char *GetTargetPathText() const { return target_path.GetGetPath(); }
 	bool IsArray() const { return !!target_value.getArray(); }
 	void AddArrayElement();
 	void RemoveArrayElement();

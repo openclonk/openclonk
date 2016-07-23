@@ -33,12 +33,13 @@ protected:
 	bool is_relative;
 	int32_t dragging_border;
 	uint32_t border_color;
+	const class C4PropertyDelegateShape *parent_delegate;
 
 protected:
 	// Return shape color, or dragged border color if index is the border currently being dragged
 	uint32_t GetBorderColor(int32_t border_index, bool dragging_border_is_bitmask) const;
 public:
-	C4ConsoleQtShape(class C4Object *for_obj, C4PropList *props);
+	C4ConsoleQtShape(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate);
 
 	virtual bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border) = 0;
 	virtual void Draw(class C4TargetFacet &cgo, float line_width) = 0;
@@ -56,6 +57,8 @@ public:
 	// Return current shape as C4Value to be stored back to property
 	virtual C4Value GetValue() const = 0;
 
+	const class C4PropertyDelegateShape *GetParentDelegate() const { return parent_delegate; }
+
 signals:
 	void ShapeDragged();
 };	
@@ -68,7 +71,7 @@ private:
 	bool store_as_proplist;
 	bool properties_lowercase;
 public:
-	C4ConsoleQtRect(class C4Object *for_obj, C4PropList *props, const C4Value &val);
+	C4ConsoleQtRect(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate);
 
 	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border) override;
 	void Draw(class C4TargetFacet &cgo, float line_width) override;
@@ -85,7 +88,7 @@ private:
 	int32_t cx, cy;
 	bool can_move_center;
 public:
-	C4ConsoleQtCircle(class C4Object *for_obj, C4PropList *props, const C4Value &val);
+	C4ConsoleQtCircle(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate);
 
 	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border) override;
 	void Draw(class C4TargetFacet &cgo, float line_width) override;
@@ -105,7 +108,7 @@ class C4ConsoleQtShapes
 public:
 	C4ConsoleQtShapes() : dragging_shape(nullptr), drag_x(0), drag_y(0), drag_cursor(Qt::CursorShape::ArrowCursor) { }
 
-	C4ConsoleQtShape *CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val);
+	C4ConsoleQtShape *CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate);
 	void AddShape(C4ConsoleQtShape *shape);
 	void RemoveShape(C4ConsoleQtShape *shape);
 	void ClearShapes();

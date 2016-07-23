@@ -25,8 +25,8 @@
 
 /* Generic shape */
 
-C4ConsoleQtShape::C4ConsoleQtShape(C4Object *for_obj, C4PropList *props)
-	: is_relative(true), dragging_border(-1), border_color(0xffff0000)
+C4ConsoleQtShape::C4ConsoleQtShape(C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate)
+	: is_relative(true), dragging_border(-1), border_color(0xffff0000), parent_delegate(parent_delegate)
 {
 	rel_obj.SetPropList(for_obj);
 	if (props)
@@ -68,8 +68,8 @@ int32_t C4ConsoleQtShape::AbsY(int32_t rel_y) const
 
 /* Rectangular shape*/
 
-C4ConsoleQtRect::C4ConsoleQtRect(C4Object *for_obj, C4PropList *props, const C4Value &val)
-	: C4ConsoleQtShape(for_obj, props), left(0), top(0), right(10), bottom(10), store_as_proplist(false), properties_lowercase(false)
+C4ConsoleQtRect::C4ConsoleQtRect(C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate)
+	: C4ConsoleQtShape(for_obj, props, parent_delegate), left(0), top(0), right(10), bottom(10), store_as_proplist(false), properties_lowercase(false)
 {
 	// Def props
 	if (props)
@@ -187,8 +187,8 @@ C4Value C4ConsoleQtRect::GetValue() const
 
 /* Circle shape */
 
-C4ConsoleQtCircle::C4ConsoleQtCircle(class C4Object *for_obj, C4PropList *props, const C4Value &val)
-	: C4ConsoleQtShape(for_obj, props), radius(10), cx(0), cy(0), can_move_center(false)
+C4ConsoleQtCircle::C4ConsoleQtCircle(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate)
+	: C4ConsoleQtShape(for_obj, props, parent_delegate), radius(10), cx(0), cy(0), can_move_center(false)
 {
 	if (props)
 	{
@@ -287,13 +287,13 @@ C4Value C4ConsoleQtCircle::GetValue() const
 
 /* Shape list */
 
-C4ConsoleQtShape *C4ConsoleQtShapes::CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val)
+C4ConsoleQtShape *C4ConsoleQtShapes::CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate)
 {
 	C4String *type = props->GetPropertyStr(P_Type);
 	if (!type) return nullptr;
 	C4ConsoleQtShape *shape = nullptr;
-	if (type->GetData() == "rect") shape = new C4ConsoleQtRect(for_obj, props, val);
-	else if (type->GetData() == "circle") shape = new C4ConsoleQtCircle(for_obj, props, val);
+	if (type->GetData() == "rect") shape = new C4ConsoleQtRect(for_obj, props, val, parent_delegate);
+	else if (type->GetData() == "circle") shape = new C4ConsoleQtCircle(for_obj, props, val, parent_delegate);
 	return shape;
 }
 
