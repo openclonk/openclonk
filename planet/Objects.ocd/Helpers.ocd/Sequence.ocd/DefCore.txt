@@ -2,3 +2,6 @@
 id=Sequence
 Version=6,0
 Category=C4D_StaticBack|C4D_Environment
+Width=16
+Height=16
+Offset=-8,-8

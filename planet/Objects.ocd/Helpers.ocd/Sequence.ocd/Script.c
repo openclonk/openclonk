@@ -334,6 +334,7 @@ local trigger, condition, action, action_progress_mode, action_allow_parallel;
 local active=true;
 local check_interval=12;
 local deactivate_after_action; // If true, finished is set to true after the first execution and the trigger deactivated
+local Visibility=VIS_Editor;
 
 // finished: Disables the trigger. true if trigger has run and deactivate_after_action is set to true.
 // Note that this flag is not saved in scenarios, so saving as scenario and reloading will re-enable all triggers (for editor mode)
@@ -348,7 +349,7 @@ public func Definition(def)
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
 	def.EditorProps.finished = { Name="$Finished$", Type="bool", Set="SetFinished" };
-	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Options = [
+	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Set="SetTrigger", Options = [
 		{ Name="$None$" },
 		{ Name="$EnterRegionRect$", Value={ Trigger="enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true } },
 		{ Name="$EnterRegionCircle$", Value={ Trigger="enter_region_circle", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true } },
@@ -442,6 +443,7 @@ public func SetDeactivateAfterAction(bool new_val)
 public func StartTrigger()
 {
 	if (!trigger) return false;
+	SetGraphics("Active");
 	var fn = trigger.Trigger;
 	if (fn == "enter_region_rect")
 	{
@@ -459,6 +461,7 @@ public func StartTrigger()
 
 public func StopTrigger()
 {
+	SetGraphics();
 	// Remove any timers that may have been added
 	RemoveTimer(this.EnterRegionRectTimer);
 	return true;
@@ -548,6 +551,22 @@ public func OnGoalsFulfilled()
 	if (!trigger) return false;
 	if (trigger.Trigger != "goals_fulfilled") return false;
 	return OnTrigger();
+}
+
+public func SetName(string new_name, ...)
+{
+	if (new_name == GetID()->GetName())
+	{
+		Message("");
+	}
+	else
+	{
+		if (trigger)
+			Message(Format("@<c ff8000>%s</c>", new_name));
+		else
+			Message(Format("@<c 808080>%s</c>", new_name));
+	}
+	return inherited(new_name, ...);
 }
 
 /*-- Saving --*/
