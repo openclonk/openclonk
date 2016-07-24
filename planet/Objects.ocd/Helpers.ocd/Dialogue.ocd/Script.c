@@ -708,7 +708,7 @@ private func GetDefaultMessageProp(object target_object)
 	}
 	else
 	{
-		// Message prop for other dialogue: Default is a NPC message with a "wait for next" option
-		return { Function="message", Speaker = { Function="triggering_object" }, TargetPlayers = { Function="triggering_player_list" }, Text="$DefaultMessage$", AfterMessage=60, Options=[] };
+		// Message prop for other dialogue: Default is a triggering clonk message with a "wait for next" option
+		return { Function="message", Speaker = { Function="triggering_clonk" }, TargetPlayers = { Function="triggering_player_list" }, Text="$DefaultMessage$", AfterMessage=60, Options=[] };
 	}
 }

@@ -51,6 +51,7 @@ func Definition(def)
 		} } );
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "action_object", [def, def.EvalObj_ActionObject]);
+	AddEvaluator("Object", nil, "$TriggerClonk$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
 	AddEvaluator("Object", nil, "$TriggerObject$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
 	AddEvaluator("Object", nil, "$ConstantObject$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	// Player evaluators
@@ -135,6 +136,8 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 
 public func EvaluateAction(proplist props, object action_object, object triggering_object, int triggering_player, string progress_mode, bool allow_parallel, finish_callback)
 {
+	// No action
+	if (!props) if (finish_callback) return action_object->Call(finish_callback); else return;
 	// Determine context
 	var context;
 	if (!progress_mode)
@@ -207,6 +210,7 @@ private func FinishAction(proplist context)
 private func EvalConstant(proplist props, proplist context) { return props.Value; }
 private func EvalObj_ActionObject(proplist props, proplist context) { return context.action_object; }
 private func EvalObj_TriggeringObject(proplist props, proplist context) { return context.triggering_object; }
+private func EvalObj_TriggeringClonk(proplist props, proplist context) { return context.triggering_clonk; }
 private func EvalPlr_Trigger(proplist props, proplist context) { return context.triggering_player; }
 private func EvalPlrList_Single(proplist props, proplist context, fn) { return [Call(fn, props, context)]; }
 
@@ -252,8 +256,8 @@ private func EvalAct_Goto(proplist props, proplist context)
 	// Apply goto by jumping in most recently executed sequence
 	if (context.last_sequence)
 	{
-		context.sequence_progress[context.last_sequence.sequence_id] = props.Index;
-		context.sequence_had_goto[context.last_sequence.sequence_id] = true;
+		context.sequence_progress[context.last_sequence._sequence_id] = props.Index;
+		context.sequence_had_goto[context.last_sequence._sequence_id] = true;
 	}
 }
 
@@ -306,19 +310,25 @@ public func Initialize()
 
 public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props)
 {
-	// Determine triggering player+object
-	if (!GetType(triggering_player))
+	// Determine triggering player+objects
+	var triggering_clonk;
+	// Triggering player unknown? Try fallback to the controller of the triggering object
+	if (!GetType(triggering_player) && triggering_object)
 	{
-		if (triggering_object) triggering_player = triggering_object->GetController();
+		triggering_player = triggering_object->GetController();
 	}
-	else if (!triggering_object)
+	// Triggering clonk is the selected clonk of the triggering player
+	if (GetType(triggering_player))
 	{
-		triggering_object = GetCursor(triggering_player);
-		if (!triggering_object) triggering_object = GetCrew(triggering_player);
+		triggering_clonk = GetCursor(triggering_player);;
+		if (!triggering_clonk) triggering_clonk = GetCrew(triggering_player);
 	}
+	// Triggering object: Fallback to triggering player clonk
+	if (!triggering_object) triggering_object = triggering_clonk;
 	// Init context settings
 	this.action_object = action_object;
 	this.triggering_object = triggering_object;
+	this.triggering_clonk = triggering_clonk;
 	this.triggering_player = triggering_player;
 	this.root_action = props;
 	this.suspended = false;
@@ -338,7 +348,7 @@ public func MenuSelectOption(int index)
 	var opt = this.hold.Options[index];
 	if (opt && last_sequence)
 	{
-		sequence_progress[last_sequence.sequence_id] = opt.Goto;
+		sequence_progress[last_sequence._sequence_id] = opt.Goto;
 		hold = nil;
 	}
 	UserAction->ResumeAction(this, hold);
