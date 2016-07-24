@@ -502,10 +502,10 @@ global func MouseHover(int player, object leaving, object entering, object dragg
 {
 	// Leaving the hovering zone should be processed first.
 	if(leaving)
-		leaving->~OnMouseOut(player, dragged);
+		leaving->~OnMouseLeave(player, dragged);
 	// Then process entering a new hovering zone. 
 	if(entering)
-		entering->~OnMouseOver(player, dragged);
+		entering->~OnMouseEnter(player, dragged);
 	return true;
 }
 

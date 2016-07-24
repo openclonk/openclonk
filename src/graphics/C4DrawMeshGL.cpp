@@ -194,7 +194,7 @@ namespace
 		}
 
 		if (pGL->Workarounds.ForceSoftwareTransform)
-			buf = StdCopyStrBuf("#define OC_WA_FORCE_SOFTWARE_TRANSFORM\n") + buf;
+			buf.Take(StdStrBuf("#define OC_WA_FORCE_SOFTWARE_TRANSFORM\n") + buf);
 
 		if (LowMaxVertexUniformCount)
 			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
@@ -664,7 +664,7 @@ namespace
 	{
 		// If the first bone assignment has a weight of 0, all others are zero
 		// as well, or the loader would have overwritten the assignment
-		if (in.bone_weight[0] == 0.0f)
+		if (in.bone_weight[0] == 0.0f || mesh_instance.GetBoneCount() == 0)
 		{
 			out->x = in.x;
 			out->y = in.y;

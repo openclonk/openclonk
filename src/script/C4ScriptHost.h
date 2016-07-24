@@ -52,6 +52,9 @@ public:
 	std::string Translate(const std::string &text) const;
 	std::list<C4ScriptHost *> SourceScripts;
 	StdCopyStrBuf ScriptName; // script name
+
+	void UnlinkOwnedFunctions();
+
 protected:
 	C4ScriptHost();
 	void Unreg(); // remove from list
@@ -72,8 +75,9 @@ protected:
 
 	virtual void AddEngineFunctions() {}; // add any engine functions specific to this script host
 	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
-	virtual bool ResolveIncludes(C4DefList *rDefs); // resolve includes
-	virtual bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
+	bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	void DoAppend(C4Def *def);
 	bool Resolving; // set while include-resolving, to catch circular includes
 	bool IncludesResolved;
 
@@ -81,6 +85,10 @@ protected:
 	C4LangStringTable *stringTable;
 	C4Set<C4Property> LocalValues;
 	C4AulScriptState State; // script state
+
+	// list of all functions generated from code in this script host
+	std::set<C4AulScriptFunc*> ownedFunctions;
+
 	friend class C4AulParse;
 	friend class C4AulProfiler;
 	friend class C4AulScriptEngine;
@@ -93,6 +101,7 @@ class C4ExtraScriptHost: public C4ScriptHost
 	C4Value ParserPropList;
 public:
 	C4ExtraScriptHost(C4String *parent_key_name = NULL);
+	~C4ExtraScriptHost();
 	void Clear();
 
 	bool Delete() { return true; }

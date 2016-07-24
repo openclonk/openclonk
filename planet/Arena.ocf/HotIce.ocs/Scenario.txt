@@ -15,6 +15,9 @@ MapWidth=64
 MapHeight=40
 TopOpen=1
 BottomOpen=1
+LeftOpen=10000
+RightOpen=10000
+AutoScanSideOpen=0
 MapZoom=18,0,0,18
 
 [Weather]

@@ -995,6 +995,7 @@ void C4AulParse::Parse_Function(bool parse_for_direct_exec)
 		if (!Fn && Type == PREPARSER)
 		{
 			Fn = new C4AulScriptFunc(Parent, pOrgScript, Idtf, SPos);
+			pOrgScript->ownedFunctions.insert(Fn);
 			Fn->SetOverloaded(Parent->GetFunc(Fn->Name));
 			Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 		}

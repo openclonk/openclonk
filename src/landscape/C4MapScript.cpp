@@ -703,9 +703,9 @@ bool C4MapScriptHost::LoadData(const char * f, const char * d, C4LangStringTable
 
 void C4MapScriptHost::Clear()
 {
+	C4ScriptHost::Clear();
 	delete LayerPrototype; delete MapPrototype;
 	LayerPrototype = MapPrototype = NULL;
-	C4ScriptHost::Clear();
 }
 
 C4PropListStatic * C4MapScriptHost::GetPropList()
