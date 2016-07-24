@@ -355,7 +355,6 @@ Jump = {
 	Length = 20,
 	Delay = 2,
 	Animation = "Move",
-	PhaseCall = "CheckStuck",
 	StartCall = "StartJump",
 	EndCall = "EndJump",
 	AbortCall = "EndJump"
