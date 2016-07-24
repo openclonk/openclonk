@@ -74,7 +74,9 @@ private func Sleep()
 	}
 	// One last trip, then become invisible
 	MoveToTarget();
-	lib_insect_going2sleep = true;
+	// Insect might have been removed.
+	if (this)
+		lib_insect_going2sleep = true;
 }
 
 private func SleepComplete()
