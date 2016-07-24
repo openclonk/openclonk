@@ -4177,13 +4177,13 @@ C4FoW * C4Landscape::GetFoW()
 
 int32_t C4Landscape::GetMatCount(int material) const
 {
-	assert(material > 0 && material < p->MatCount.size());
+	assert(material >= 0 && material < p->MatCount.size());
 	return p->MatCount[material];
 }
 
 int32_t C4Landscape::GetEffectiveMatCount(int material) const
 {
-	assert(material > 0 && material < p->EffectiveMatCount.size());
+	assert(material >= 0 && material < p->EffectiveMatCount.size());
 	return p->EffectiveMatCount[material];
 }
 
