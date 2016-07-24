@@ -171,7 +171,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	if (fSave)
 		filename = QFileDialog::getSaveFileName(state->window.get(), LoadResStr("IDS_DLG_SAVE"), QString(), filter, &selected_filter);
 	else if (!has_multi)
-		filename = QFileDialog::getExistingDirectory(state->window.get(), LoadResStr("IDS_DLG_OPEN"), QString(), 0);
+		filename = QFileDialog::getOpenFileName(state->window.get(), LoadResStr("IDS_DLG_OPEN"), QString(), filter);
 	else
 		filenames = QFileDialog::getOpenFileNames(state->window.get(), LoadResStr("IDS_DLG_OPEN"), QString(), filter, &selected_filter);
 #ifdef USE_WIN32_WINDOWS
