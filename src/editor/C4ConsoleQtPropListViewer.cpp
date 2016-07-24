@@ -2112,6 +2112,17 @@ QMimeData *C4ConsoleQtPropListModel::mimeData(const QModelIndexList &indexes) co
 	return mimeData;
 }
 
+const char *C4ConsoleQtPropListModel::GetTargetPathHelp() const
+{
+	// Help text in EditorInfo prop. Fall back to description.
+	C4PropList *info_proplist = this->info_proplist.getPropList();
+	if (!info_proplist) return nullptr;
+	C4String *desc = info_proplist->GetPropertyStr(P_EditorInfo);
+	if (!desc) desc = info_proplist->GetPropertyStr(P_Description);
+	if (!desc) return nullptr;
+	return desc->GetCStr();
+}
+
 void C4ConsoleQtPropListModel::AddArrayElement()
 {
 	C4Value new_val;

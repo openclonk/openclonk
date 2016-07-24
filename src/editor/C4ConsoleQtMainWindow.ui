@@ -484,6 +484,16 @@
       </layout>
      </item>
      <item>
+      <widget class="QLabel" name="selectionHelpLabel">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QGridLayout" name="objectActionPanel">
        <property name="verticalSpacing">
         <number>6</number>

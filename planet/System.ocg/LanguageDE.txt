@@ -45,6 +45,7 @@ IDS_CNS_CREATE=Erzeugen
 IDS_CNS_CREATESTATUS=Platzierung: %s
 IDS_CNS_CREATOR=Objekte erstellen
 IDS_CNS_DEFINITIONS=Definitionen
+IDS_CNS_DESCRIPTION=Beschreibung
 IDS_CNS_DROPNODEF=Ungültiges oder nicht geladenes Objekt: %s
 IDS_CNS_EDITOR=OpenClonk Editor
 IDS_CNS_EFFECTS=Effekte: 

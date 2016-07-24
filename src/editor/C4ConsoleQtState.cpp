@@ -731,6 +731,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		ui.selectionInfoLabel->setText(rSelection.GetDataString().getData());
 		ui.propertyEditAscendPathButton->hide();
 		UpdateActionObject(nullptr);
+		ui.selectionHelpLabel->hide();
 	}
 	else
 	{
@@ -749,6 +750,16 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 			property_model->UpdateValue(false);
 		}
 		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
+		const char *help_text = property_model->GetTargetPathHelp();
+		if (help_text)
+		{
+			ui.selectionHelpLabel->setText(FormatString("%s: %s", LoadResStr("IDS_CNS_DESCRIPTION"), help_text).getData());
+			ui.selectionHelpLabel->show();
+		}
+		else
+		{
+			ui.selectionHelpLabel->hide();
+		}
 		ui.propertyEditAscendPathButton->setVisible(property_model->GetTargetPathStackSize() >= 1);
 		is_array = property_model->IsArray();
 		if (is_array)
