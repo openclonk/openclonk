@@ -208,7 +208,7 @@ public func FxIntUpgradeProductProgressBarOnMenuOpened(object target, effect fx,
 
 public func FxIntUpgradeProductProgressBarTimer(object target, effect fx, int time)
 {
-	if (fx.menu_target == nil) return FX_OK;
+	if (fx.menu_target == nil) return -1;
 	// Find (new?) production effect if not already given.
 	if (fx.production_effect == nil)
 	{
