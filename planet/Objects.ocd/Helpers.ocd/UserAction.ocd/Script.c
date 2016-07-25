@@ -38,32 +38,32 @@ func Definition(def)
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
-	AddEvaluator("Action", "$Sequence$", "$Sequence$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", Display="{{Actions}}", EditorProps = {
+	AddEvaluator("Action", "$Sequence$", "$Sequence$", "$SequenceHelp$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", Display="{{Actions}}", EditorProps = {
 		Actions = { Name="$Actions$", Type="array", Elements=Evaluator.Action },
 		} } );
-	AddEvaluator("Action", "$Sequence$", "$Goto$", "goto", [def, def.EvalAct_Goto], { Index=0 }, { Type="proplist", Display="{{Index}}", EditorProps = {
+	AddEvaluator("Action", "$Sequence$", "$Goto$", "$GotoHelp$", "goto", [def, def.EvalAct_Goto], { Index=0 }, { Type="proplist", Display="{{Index}}", EditorProps = {
 		Index = { Name="$Index$", Type="int", Min=0 }
 		} } );
-	AddEvaluator("Action", "$Sequence$", "$StopSequence$", "stop_sequence", [def, def.EvalAct_StopSequence]);
-	AddEvaluator("Action", "$Sequence$", "$SuspendSequence$", "suspend_sequence", [def, def.EvalAct_SuspendSequence]);
-	AddEvaluator("Action", "$Sequence$", "$Wait$", "wait", [def, def.EvalAct_Wait], { Time=60 }, { Type="proplist", Display="{{Time}}", EditorProps = {
+	AddEvaluator("Action", "$Sequence$", "$StopSequence$", "$StopSequenceHelp$", "stop_sequence", [def, def.EvalAct_StopSequence]);
+	AddEvaluator("Action", "$Sequence$", "$SuspendSequence$", "$SuspendSequenceHelp$", "suspend_sequence", [def, def.EvalAct_SuspendSequence]);
+	AddEvaluator("Action", "$Sequence$", "$Wait$", "$WaitHelp$", "wait", [def, def.EvalAct_Wait], { Time=60 }, { Type="proplist", Display="{{Time}}", EditorProps = {
 		Time = { Name="$Time$", Type="int", Min=1 }
 		} } );
 	// Object evaluators
-	AddEvaluator("Object", nil, "$ActionObject$", "action_object", [def, def.EvalObj_ActionObject]);
-	AddEvaluator("Object", nil, "$TriggerClonk$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
-	AddEvaluator("Object", nil, "$TriggerObject$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
-	AddEvaluator("Object", nil, "$ConstantObject$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
+	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
+	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
+	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
+	AddEvaluator("Object", nil, "$ConstantObject$", "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	// Player evaluators
-	AddEvaluator("Player", nil, "$TriggeringPlayer$", "triggering_player", [def, def.EvalPlr_Trigger]);
-	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
-	AddEvaluator("PlayerList", nil, "$AllPlayers$", "all_players", [def, def.EvalPlrList_All]);
+	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
+	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
+	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
 	// Boolean (condition) evaluators
-	AddEvaluator("Boolean", nil, "$Constant$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
+	AddEvaluator("Boolean", nil, "$Constant$", "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	// User action editor props
 	Prop = Evaluator.Action;
-	PropProgressMode = { Name="$UserActionProgressMode$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
-	PropParallel = { Name="$ParallelAction$", Type="bool" };
+	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
+	PropParallel = { Name="$ParallelAction$", EditorHelp="$ParallelActionHelp$", Type="bool" };
 	return true;
 }
 
@@ -77,7 +77,7 @@ public func GetObjectEvaluator(filter_def, name)
 	return new Evaluator.Object { Name=name, Options=object_options };
 }
 
-public func AddEvaluator(string eval_type, string group, string name, string identifier, callback_data, default_val, proplist delegate)
+public func AddEvaluator(string eval_type, string group, string name, string help, string identifier, callback_data, default_val, proplist delegate)
 {
 	// Add an evaluator for one of the data types. Evaluators allow users to write small action sequences and scripts in the editor using dropdown lists.
 	// eval_type: Return type of the evaluator (Action, Object, Boolean, Player, etc. as defined in UserAction.Evaluator)
@@ -95,13 +95,16 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 		default_val = Call(default_get);
 	}
 	default_val.Function = identifier;
-	var action_def = { Name=name, Group=group, Value=default_val, OptionKey="Function", Delegate=delegate, Get=default_get }, n;
+	var action_def = { Name=name, EditorHelp=help, Group=group, Value=default_val, OptionKey="Function", Delegate=delegate, Get=default_get }, n;
 	if (delegate)
 	{
-		if (delegate.EditorProps)
+		if (delegate.EditorProps || delegate.Elements)
 		{
 			// Proplist of array parameter for this evaluator: Descend path title should be name
 			delegate.Name = name;
+			var child_delegate = delegate;
+			if (delegate.DescendPath) child_delegate = delegate.EditorProps[delegate.DescendPath];
+			if (!child_delegate.EditorHelp) child_delegate.EditorHelp = help;
 		}
 		else
 		{
@@ -115,7 +118,7 @@ public func AddEvaluator(string eval_type, string group, string name, string ide
 	EvaluatorDefs[identifier] = action_def;
 	// Copy most boolean props to condition prop
 	if (eval_type == "Boolean" && identifier != "bool_constant")
-		AddEvaluator("Condition", group, name, identifier, callback_data, default_val, delegate);
+		AddEvaluator("Condition", group, name, help, identifier, callback_data, default_val, delegate);
 	return action_def;
 }
 
