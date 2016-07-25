@@ -552,14 +552,52 @@ QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, cl
 	return static_cast<uint32_t>(val.getInt()) & 0xffffff;
 }
 
+
+/* Enum delegate combo box item delegate */
+
+bool C4StyledItemDelegateWithHelpButton::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+	// Mouse move over a cell: Display tooltip if over help button
+	if (event->type() == QEvent::MouseMove)
+	{
+		QVariant help_btn = model->data(index, Qt::DecorationRole);
+		if (!help_btn.isNull())
+		{
+			QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
+			if (option.rect.contains(mevent->localPos().toPoint()))
+			{
+				if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
+				{
+					QString tooltip_text = model->data(index, Qt::ToolTipRole).toString();
+					QToolTip::showText(mevent->globalPos(), tooltip_text);
+				}
+			}
+		}
+	}
+	return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+void C4StyledItemDelegateWithHelpButton::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	// Paint icon on the right
+	QStyleOptionViewItem override_option = option;
+	override_option.decorationPosition = QStyleOptionViewItem::Right;
+	QStyledItemDelegate::paint(painter, override_option, index);
+}
+
+
+
+/* Enum delegate combo box */
+
 C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
-	: QComboBox(parent), descending(false), item_clicked(false), last_popup_height(0)
+	: QComboBox(parent), descending(false), item_clicked(false), last_popup_height(0), item_delegate(new C4StyledItemDelegateWithHelpButton())
 {
 	QTreeView *view = new QTreeView(this);
 	view->setFrameShape(QFrame::NoFrame);
 	view->setSelectionBehavior(QTreeView::SelectRows);
 	view->setAllColumnsShowFocus(true);
 	view->header()->hide();
+	view->setItemDelegate(item_delegate.get());
 	// On expansion, enlarge view if necessery
 	connect(view, &QTreeView::expanded, this, [this, view](const QModelIndex &index)
 	{
@@ -589,12 +627,16 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
 	// Connect view to combobox
 	setView(view);
 	view->viewport()->installEventFilter(this);
+	// No help icons in main box, unless dropped down
+	default_icon_size = iconSize();
+	setIconSize(QSize(0, 0));
 }
 
 void C4DeepQComboBox::showPopup()
 {
 	// New selection: Reset to root of model
 	setRootModelIndex(QModelIndex());
+	setIconSize(default_icon_size);
 	QComboBox::showPopup();
 	view()->setMinimumWidth(200); // prevent element list from becoming too small in nested dialogues
 	if (last_popup_height && view()->parentWidget()) view()->parentWidget()->resize(view()->parentWidget()->width(), last_popup_height);
@@ -626,6 +668,7 @@ void C4DeepQComboBox::hidePopup()
 		setRootModelIndex(current.parent());
 		setCurrentIndex(current.row());
 		::Console.EditCursor.SetHighlightedObject(nullptr);
+		setIconSize(QSize(0, 0));
 		QComboBox::hidePopup();
 		if (selected_data.type() == QVariant::Int)
 		{
@@ -707,6 +750,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			Option option;
 			option.name = props->GetPropertyStr(P_Name);
 			if (!option.name.Get()) option.name = ::Strings.RegString("???");
+			option.help = props->GetPropertyStr(P_EditorHelp);
 			option.group = props->GetPropertyStr(P_Group);
 			option.value_key = props->GetPropertyStr(P_ValueKey);
 			if (!option.value_key) option.value_key = default_value_key;
@@ -763,6 +807,8 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 		new_item->setData(QVariant(idx), C4DeepQComboBox::OptionIndexRole);
 		C4Object *item_obj_data = opt.value.getObj();
 		if (item_obj_data) new_item->setData(QVariant(item_obj_data->Number), C4DeepQComboBox::ObjectHighlightRole);
+		new_item->setData(QString((opt.help ? opt.help : opt.name)->GetCStr()), Qt::ToolTipRole);
+		if (opt.help) new_item->setData(QIcon(":/editor/res/Help.png"), Qt::DecorationRole);
 		parent->appendRow(new_item);
 		++idx;
 	}
@@ -1585,40 +1631,6 @@ bool C4PropertyDelegateFactory::CheckCurrentEditor(C4PropertyDelegate *d, QWidge
 		return false;
 	}
 	return true;
-}
-
-
-/* Property name view */
-
-void C4PropertyNameDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-	// Paint icon on the right
-	QStyleOptionViewItem override_option = option;
-	override_option.decorationPosition = QStyleOptionViewItem::Right;
-	QStyledItemDelegate::paint(painter, override_option, index);
-}
-
-bool C4PropertyNameDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
-{
-	// Mouse move over a cell: Display tooltip if over help button
-	if (event->type() == QEvent::MouseMove)
-	{
-		QVariant help_btn = property_model->data(index, Qt::DecorationRole);
-		if (!help_btn.isNull())
-		{
-			QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
-			if (option.rect.contains(mevent->localPos().toPoint()))
-			{
-				if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
-				{
-					QString tooltip_text = property_model->data(index, Qt::ToolTipRole).toString();
-					QToolTip::showText(mevent->globalPos(), tooltip_text);
-				}
-			}
-			
-		}
-	}
-	return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 
 

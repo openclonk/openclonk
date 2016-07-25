@@ -206,6 +206,20 @@ public:
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
 };
 
+// Display delegate for deep combo box. Handles the help tooltip showing.
+class C4StyledItemDelegateWithHelpButton : public QStyledItemDelegate
+{
+	Q_OBJECT
+
+public:
+	C4StyledItemDelegateWithHelpButton() { }
+
+protected:
+	// Model callbacks forwarded to actual delegates
+	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+};
+
 // A combo box that can select from a model with nested elements
 // On click, descend into child elements
 class C4DeepQComboBox : public QComboBox
@@ -214,6 +228,8 @@ class C4DeepQComboBox : public QComboBox
 
 	bool descending, item_clicked;
 	int last_popup_height;
+	std::unique_ptr<C4StyledItemDelegateWithHelpButton> item_delegate;
+	QSize default_icon_size;
 
 public:
 	enum
@@ -261,20 +277,6 @@ public:
 	void paintEvent(QPaintEvent *) override;
 };
 
-// widget shown if a shape delegate is a child of an enum delegate
-/*class C4PropertyDelegateEnumShapeParameterDisplayWidget : QWidget
-{
-	Q_OBJECT
-
-	const C4PropertyDelegateShape *shape_delegate;
-
-public:
-	C4PropertyDelegateEnumShapeParameterDisplayWidget(QWidget *parent, const C4PropertyDelegateShape *shape_delegate)
-		: shape_delegate(shape_delegate);
-
-	virtual void paintEvent(QPaintEvent *);
-};*/
-
 class C4PropertyDelegateEnum : public C4PropertyDelegate
 {
 	Q_OBJECT
@@ -286,6 +288,7 @@ public:
 	{
 	public:
 		C4RefCntPointer<C4String> name; // Display name in Editor enum dropdown box
+		C4RefCntPointer<C4String> help; // Tooltip text
 		C4RefCntPointer<C4String> group; // Grouping in enum dropdown box; nested groups separated by '/'
 		C4RefCntPointer<C4String> option_key;
 		C4RefCntPointer<C4String> value_key;
@@ -479,7 +482,9 @@ protected:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
-class C4PropertyNameDelegate : public QStyledItemDelegate
+// Delegate for the name column of the property window
+// For now, just use the default + help button
+class C4PropertyNameDelegate : public C4StyledItemDelegateWithHelpButton
 {
 	Q_OBJECT
 
@@ -489,11 +494,6 @@ public:
 	C4PropertyNameDelegate() : property_model(nullptr) { }
 
 	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
-protected:
-	// Model callbacks forwarded to actual delegates
-	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override { return nullptr; } // no editing
-	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
 // One property in the prop list model view
