@@ -90,13 +90,11 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 template<class... T>
 static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, const char *msg, T &&...args)
 {
-	std::string message = "WARNING: ";
-
-	message += sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
+	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
 	message += FormatCodePosition(host, SPos, target_host, func);
 
 	++::ScriptEngine.warnCnt;
-	DebugLog(message.c_str());
+	::ScriptEngine.GetErrorHandler()->OnWarning(message.c_str());
 }
 
 template<class... T>

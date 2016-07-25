@@ -189,7 +189,6 @@ void C4AulParse::AppendPosition(StdStrBuf & Buf)
 }
 
 C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg)
-		: C4AulError()
 {
 	// compose error string
 	sMessage.Ref("ERROR: ");
@@ -211,7 +210,6 @@ C4AulParseError::C4AulParseError(C4ScriptHost *pScript, const char *pMsg)
 }
 
 C4AulParseError::C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg)
-		: C4AulError()
 {
 	// compose error string
 	sMessage.Ref("ERROR: ");
@@ -786,7 +784,7 @@ std::unique_ptr<::aul::ast::Script> C4AulParse::Parse_Script(C4ScriptHost * scri
 	pOrgScript = scripthost;
 	SPos = pOrgScript->Script.getData();
 	const char * SPos0 = SPos;
-	bool all_ok = true;
+	bool first_error = true;
 	auto script = ::aul::ast::Script::New(SPos0);
 	while (true) try
 	{
@@ -854,19 +852,16 @@ std::unique_ptr<::aul::ast::Script> C4AulParse::Parse_Script(C4ScriptHost * scri
 		default:
 			UnexpectedToken("declaration");
 		}
-		all_ok = true;
+		first_error = true;
 	}
 	catch (C4AulError &err)
 	{
-		// damn! something went wrong, print it out
-		// but only one error per function
-		if (all_ok)
+		if (first_error)
 		{
-			err.show();
-			// and count (visible only ;) )
 			++Engine->errCnt;
+			::ScriptEngine.ErrorHandler->OnError(err.what());
 		}
-		all_ok = false;
+		first_error = false;
 	}
 }
 

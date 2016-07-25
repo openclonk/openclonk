@@ -18,6 +18,7 @@
 #include <C4Include.h>
 
 #include "AulTest.h"
+#include "ErrorHandler.h"
 
 #include "script/C4ScriptHost.h"
 #include "lib/C4Random.h"
@@ -225,8 +226,8 @@ TEST_F(AulTest, Conditionals)
 
 TEST_F(AulTest, Warnings)
 {
-	LogMock log;
-	EXPECT_CALL(log, DebugLog(testing::StartsWith("WARNING:"))).Times(3);
+	ErrorHandler errh;
+	EXPECT_CALL(errh, OnWarning(::testing::_)).Times(3);
 	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(s); }"));
 	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(o); }"));
 	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(a); }"));
@@ -234,7 +235,7 @@ TEST_F(AulTest, Warnings)
 
 TEST_F(AulTest, NoWarnings)
 {
-	LogMock log;
-	EXPECT_CALL(log, DebugLog(testing::StartsWith("WARNING:"))).Times(0);
+	ErrorHandler errh;
+	EXPECT_CALL(errh, OnWarning(::testing::_)).Times(0);
 	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { var x; Sin(x); }"));
 }
