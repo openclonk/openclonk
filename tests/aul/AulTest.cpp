@@ -165,6 +165,8 @@ static const b = new a {
 };
 func Main() { return b->c(); }
 )"));
+
+	EXPECT_THROW(RunScript("func foo() { return { bar: func() {} }; }"), C4AulError);
 }
 
 TEST_F(AulTest, Eval)

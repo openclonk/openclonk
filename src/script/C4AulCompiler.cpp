@@ -245,6 +245,7 @@ public:
 	virtual void visit(const ::aul::ast::If *n) override;
 	virtual void visit(const ::aul::ast::VarDecl *n) override;
 	virtual void visit(const ::aul::ast::FunctionDecl *n) override;
+	virtual void visit(const ::aul::ast::FunctionExpr *n) override;
 
 	template<class T>
 	void EmitFunctionCode(const T *n) { EmitFunctionCode(n, n); }
@@ -1553,6 +1554,11 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 	EmitFunctionCode(n);
 
 	Fn = nullptr;
+}
+
+void C4AulCompiler::CodegenAstVisitor::visit(const::aul::ast::FunctionExpr * n)
+{
+	throw Error(target_host, host, n, Fn, "can't define a function in a function-scoped proplist");
 }
 
 #undef ENSURE_COND
