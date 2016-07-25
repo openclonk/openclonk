@@ -160,43 +160,39 @@ private func StopHangle()
 
 public func Death()
 {
-	AddEffect("IntDeathSparks", this, 1, 1, this);
+	CreateEffect(IntDeathSparks, 1, 1);
 	SoundAt("Animals::Puka::Die");
 }
 
-private func FxIntDeathSparksStart(object target, effect fx, temp)
-{
-	if (temp) return;
-	
-	fx.particles = 
-	{
-		Prototype = Particles_ElectroSpark1(),
+local IntDeathSparks = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        this.particles = {
+        Prototype = Particles_ElectroSpark1(),
 		G = 150, B = 150, Alpha = PV_Linear(255, 0),
 		Stretch = 2000,
 		DampingX = 999, DampingY = 999,
-		ForceY = -GetGravity()
-	};
-}
-
-private func FxIntDeathSparksTimer(object target, effect fx, int time)
-{
-	CreateParticle("ElectroSpark", PV_Random(-5, 5), PV_Random(-5, 5),
+		ForceY = -GetGravity(),
+        };
+    },
+    
+    Timer = func(int time) {
+        this.Target->CreateParticle("ElectroSpark", PV_Random(-5, 5), PV_Random(-5, 5),
 		PV_Random(-20, 20), PV_Random(-5, 10),
-		PV_Random(2, 10), fx.particles, 20);
-	if (time > this.ActMap.Dead.Length) return -1;
-	return 1;
-} 
-
-private func FxIntDeathSparksStop(object target, effect fx, int reason, temp)
-{
-	if (temp) return;
-	fx.particles.Stretch *= 2;
-	CreateParticle("ElectroSpark", PV_Random(-5, 5), PV_Random(-5, 5),
-		PV_Random(-60, 60), PV_Random(-60, 60),
-		PV_Random(2, 10), fx.particles, 800);
-	if (this) RemoveObject();
-	return 1;
-} 
+		PV_Random(2, 10), this.particles, 20);
+	    if (time > this.Target.ActMap.Dead.Length) return -1;
+    },
+    
+    Stop = func(int reason, bool temp) {
+        if(temp) return;
+        this.particles.Stretch *= 2;
+	    this.Target->CreateParticle("ElectroSpark", PV_Random(-5, 5), PV_Random(-5, 5),
+		    PV_Random(-60, 60), PV_Random(-60, 60),
+		    PV_Random(2, 10), this.particles, 800);
+	    if (this) RemoveObject();
+	    return 1;
+    },
+};
 
 private func Jump()
 {
@@ -309,30 +305,28 @@ private func ActivitySleeping()
 	if (!Random(20))
 		SetAction("Walk");
 	if (!Random(5))
-		AddEffect("IntDream", this, 1, 1, this);
+		CreateEffect(IntDream, 1, 1);
 }
 
-private func FxIntDreamStart(object target, effect fx, temp)
-{
-	if (temp) return;
-	fx.x = GetX();
-	fx.y = GetY() - 5;
-	
-	fx.particles =
-	{
-		Prototype = Particles_ElectroSpark2(),
-		Size = PV_Linear(PV_Random(0, 1), PV_Random(1, 2)),
-		Rotation = PV_Random(360)
-	};
-}
-
-private func FxIntDreamTimer(object target, effect fx, int time)
-{
-	if (time > RandomX(30, 200)) return -1;
-	fx.x += RandomX(-1, 1);
-	fx.y += RandomX(-1, 1);
-	CreateParticle("ElectroSpark", fx.x - GetX(), fx.y - GetY(), 0, 0, PV_Random(5, 20), fx.particles, 2);
-}
+local IntDream = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        this.x = this.Target->GetX();
+        this.y = this.Target->GetY() - 5;
+        fx.particles = {
+	    	Prototype = Particles_ElectroSpark2(),
+		    Size = PV_Linear(PV_Random(0, 1), PV_Random(1, 2)),
+		    Rotation = PV_Random(360)
+	    };
+    },
+    
+    Timer = func(int temp) {
+        if (time > RandomX(30, 200)) return -1;
+	    this.x += RandomX(-1, 1);
+	    this.y += RandomX(-1, 1);
+	    this.Target->CreateParticle("ElectroSpark", fx.x - GetX(), fx.y - GetY(), 0, 0, PV_Random(5, 20), this.Target.IntDream.particles, 2);
+    },
+};
 
 private func ExecuteActivity()
 {
@@ -392,108 +386,107 @@ private func DoElectroCircle()
 	}
 }
 
-private func FxIntTeleportStart(object target, effect fx, temp)
-{
-	if (temp) return;
-	DoElectroCircle();
-	fx.start_x = GetX();
-	fx.start_y = GetY();
-	this.Visibility = VIS_None;
+local IntTeleport = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        this.Target->DoElectroCircle();
+	    this.start_x = this.Target->GetX();
+	    this.start_y = this.Target->GetY();
+	    this.Target.Visibility = VIS_None;
 	
-	fx.particles = 
-	{
-		Prototype = Particles_ElectroSpark1(),
-		Stretch = 6000,
-		DampingX = 999, DampingY = 999
-	};
+	    fx.particles = 
+	    {
+		    Prototype = Particles_ElectroSpark1(),
+		    Stretch = 6000,
+		    DampingX = 999, DampingY = 999
+	    };
 	
-	var xdir, ydir;
-	if (current_high_x != nil)
-	{
-		xdir = current_high_x - fx.start_x;
-		ydir = current_high_y - fx.start_y;
-	}
-	else
-	{
-		xdir = 0;
-		ydir = -30;
-	}
-	CreateParticle("ElectroSpark", PV_Random(-5, 5), PV_Random(-5, 5),
-		PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 5, ydir + 5),
-		PV_Random(1, 5), fx.particles, 200);
-		
-	SoundAt("Animals::Puka::TeleportOut");
-}
-
-private func FxIntTeleportTimer(object target, effect fx, int time)
-{
-	// Instant teleport if no midpoint set.
-	if (current_high_x == nil)
-	{
-		var old_x = GetX();
-		var old_y = GetY();
-		// Try target position if not stuck.
-		SetPosition(current_ground_x, current_ground_y);
-		var counter = 3;
-		while (Stuck() && counter > 0)
-		{
-			SetPosition(GetX(), GetY() - 5);
-		}
-		// Otherwise abort!
-		if (Stuck())
-			SetPosition(old_x, old_y);
-		return -1;
-	}
+	    var xdir, ydir;
+	    if (this.Target.current_high_x != nil)
+	    {
+	    	xdir = this.Target.current_high_x - this.start_x;
+	    	ydir = this.Target.current_high_y - this.start_y;
+	    }
+	    else
+	    {
+	    	xdir = 0;
+	    	ydir = -30;
+	    }
+	    this.Target->CreateParticle("ElectroSpark", PV_Random(-5, 5), PV_Random(-5, 5),
+	    	PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 5, ydir + 5),
+	    	PV_Random(1, 5), this.Target.IntTeleport.particles, 200);
+	    	
+	    this.Target->SoundAt("Animals::Puka::TeleportOut");
+    },
+    
+    Timer = func(int time) {
+	    // Instant teleport if no midpoint set.
+	    if (this.Target.current_high_x == nil)
+	    {
+	    	var old_x = this.Target->GetX();
+	    	var old_y = this.Target->GetY();
+	    	// Try target position if not stuck.
+	    	this.Target->SetPosition(this.Target.current_ground_x, this.Target.current_ground_y);
+	    	var counter = 3;
+	    	while (this.Target->Stuck() && counter > 0)
+	    	{
+	    		this.Target->SetPosition(this.Target->GetX(), this.Target->GetY() - 5);
+	    	}
+    		// Otherwise abort!
+    		if (this.Target->Stuck())
+	    		this.Target->SetPosition(old_x, old_y);
+	    	return -1;
+	    }
 	
-	// Actually fly the way if in "normal" mode.
-	time *= 40;
-	if (time >= 1000) return -1;
-	var half_time = 500;
-	var w0 = Max(0, half_time - time);
-	var w1 = half_time - Abs(time - half_time);
-	var w2 = Max(0, time - half_time);
+	    // Actually fly the way if in "normal" mode.
+	    time *= 40;
+	    if (time >= 1000) return -1;
+	    var half_time = 500;
+	    var w0 = Max(0, half_time - time);
+	    var w1 = half_time - Abs(time - half_time);
+	    var w2 = Max(0, time - half_time);
 	
-	var point_x = fx.start_x * w0 + current_high_x * w1 + current_ground_x * w2;
-	var point_y = fx.start_y * w0 + current_high_y * w1 + current_ground_y * w2;
-	point_x /= w0 + w1 + w2;
-	point_y /= w0 + w1 + w2;
+	    var point_x = this.start_x * w0 + this.Target.current_high_x * w1 + this.Target.current_ground_x * w2;
+	    var point_y = this.start_y * w0 + this.Target.current_high_y * w1 + this.Target.current_ground_y * w2;
+	    point_x /= w0 + w1 + w2;
+	    point_y /= w0 + w1 + w2;
 	
-	var old_stuck = Stuck();
-	var x = GetX();
-	var y = GetY();
-	SetPosition(point_x, point_y);
-	if (Stuck() && !old_stuck)
-		SetPosition(x, y);
-	SetSpeed(0, 0);
-}
-
-private func FxIntTeleportStop(object target, effect fx, int reason, temp)
-{
-	if (temp || !this) return;
-	this.Visibility = VIS_All;
-	SetAction("Jump");
-	DoElectroCircle();
-	
-	var xdir, ydir;
-	if (current_high_x != nil)
-	{
-		xdir = GetX() - current_high_x;
-		ydir = GetY() - current_high_y;
-	}
-	else
-	{
-		xdir = 0;
-		ydir = 30;
-	}
-	
-	var start_x = -xdir/2;
-	var start_y = -ydir/2;
-	CreateParticle("ElectroSpark", PV_Random(start_x - 5, start_x + 5), PV_Random(start_y - 5, start_y + 5),
-		PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 5, ydir + 5),
-		PV_Random(1, 5), fx.particles, 200);
-	
-	SoundAt("Animals::Puka::TeleportIn");
-}
+	    var old_stuck = this.Target->Stuck();
+	    var x = this.Target->GetX();
+	    var y = this.Target->GetY();
+	    this.Target->SetPosition(point_x, point_y);
+	    if (this.Target->Stuck() && !old_stuck)
+	    	this.Target->SetPosition(x, y);
+	    this.Target->SetSpeed(0, 0);
+    },
+    
+    Stop = func(int reason, bool temp) {
+        if (temp || !this.Target) return;
+	    this.Target.Visibility = VIS_All;
+	    this.Target->SetAction("Jump");
+	    this.Target->DoElectroCircle();
+	    
+	    var xdir, ydir;
+	    if (this.Target.current_high_x != nil)
+	    {
+	    	xdir = GetX() - this.Target.current_high_x;
+	    	ydir = GetY() - this.Target.current_high_y;
+	    }
+	    else
+	    {
+	    	xdir = 0;
+	    	ydir = 30;
+	    }
+	    
+	    var start_x = -xdir/2;
+	    var start_y = -ydir/2;
+	    this.Target->CreateParticle("ElectroSpark", PV_Random(start_x - 5, start_x + 5), PV_Random(start_y - 5, start_y + 5),
+		    PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 5, ydir + 5),
+		    PV_Random(1, 5), this.Target.IntTeleport.particles, 200);
+	    
+	    this.Target->SoundAt("Animals::Puka::TeleportIn");
+    },
+};
 
 public func TryStartTeleport()
 {
@@ -549,7 +542,7 @@ private func StartTeleport()
 // When the teleport action has played.	
 private func EndTeleport()
 {
-	AddEffect("IntTeleport", this, 1, 1, this);
+	CreateEffect(IntTeleport, 1, 1);
 }
 
 private func GetTeleportPosition()
@@ -632,7 +625,7 @@ private func ShockWater()
 	this.Activity = nil;
 	SetAction("ShockWater");
 	
-	AddEffect("Sparkle", this, 1, 1, this);
+	CreateEffect(Sparkle, 1, 1);
 	
 	Sound("Animals::Puka::Hiss*");
 	return true;
@@ -664,29 +657,29 @@ private func EndShockWater()
 	CreateParticle("ElectroSpark", x, y, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(1, 5), particles, 30);
 	
 	// Don't do that again immediately.
-	AddEffect("IntShockWaterCooldown", this, 1, 30);
+	CreateEffect(IntShockWaterCooldown, 1, 30);
 }
 
-private func FxSparkleStart(object target, effect fx, temp)
-{
-	if (temp) return;
-	fx.particles =
-	{
-		Prototype = Particles_ElectroSpark2(),
-		Stretch = 1000,
-		DampingX = 999, DampingY = 999
-	};
-}
-
-private func FxSparkleTimer(object target, effect fx, int time)
-{
-	if (time > 30) return -1;
-	var angle = RandomX(-90, 90);
-	var xdir = Sin(angle, 20);
-	var ydir = -Cos(angle, 20);
-	CreateParticle("ElectroSpark", xdir, ydir, xdir, ydir, 5, fx.particles, 1);
-	return;
-}
+local Sparkle = new Effect {
+    Start = func(int temp) {
+        if (temp) return;
+	    this.particles =
+	    {
+		    Prototype = Particles_ElectroSpark2(),
+		    Stretch = 1000,
+		    DampingX = 999, DampingY = 999
+	    };
+    },
+    
+    Timer = func(int time) {
+        if (time > 30) return -1;
+	    var angle = RandomX(-90, 90);
+	    var xdir = Sin(angle, 20);
+	    var ydir = -Cos(angle, 20);
+	    this.Target->CreateParticle("ElectroSpark", xdir, ydir, xdir, ydir, 5, this.Target.Sparkle.particles, 1);
+	    return; 
+    },
+};´
 
 private func CheckTurn()
 {
@@ -700,7 +693,7 @@ private func CheckTurn()
 	if(t)
 	{
 		if(!GetEffect("IntTurning", this))
-			AddEffect("IntTurning", this, 1, 1, this);
+			CreateEffect(IntTurning, 1, 1);
 	}
 }
 
@@ -725,31 +718,31 @@ private func Turn(int dir, bool move)
 	CheckTurn();
 }
 
-private func FxIntTurningStart(object target, effect fx, temp)
-{
-	if(temp)
-		return true;
-}
+local IntTurning = new Effect {
+    Start = func(int temp) {
+        if(temp) return true;
+    },
+    
+    Timer = func(int time) {
+        if(this.Target->GetDir() == DIR_Left)
+		this.Target.turn_angle += 15;
+	    else this.Target.turn_angle -= 15;
 
-private func FxIntTurningTimer(object target, effect fx, int time)
-{
-	if(GetDir() == DIR_Left)
-		turn_angle += 15;
-	else turn_angle -= 15;
-
-	if(turn_angle < 0 || turn_angle > 180)
-	{
-		turn_angle = BoundBy(turn_angle, 0, 180);
-		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
-		return -1;
-	}
-	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
-	return 1;
-}
+	    if(this.Target.turn_angle < 0 || this.Target.turn_angle > 180)
+	    {
+	    	this.Target.turn_angle = BoundBy(this.Target.turn_angle, 0, 180);
+	    	this.Target.MeshTransformation = Trans_Rotate(this.Target.turn_angle + 180 + 30,0,1,0);
+	    	return -1;
+	    }
+	    this.Target.MeshTransformation = Trans_Rotate(this.Target.turn_angle + 180 + 30,0,1,0);
+	    return 1;
+    },
+};
 
 // Immune to lightning.
 public func RejectLightningStrike() { return true; }
 
+local IntShockWaterCooldown = new Effect {};
 local MaxEnergy = 30000;
 local MaxBreath = 10000;
 local NoBurnDecay = 1;

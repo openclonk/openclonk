@@ -335,49 +335,51 @@ func DoEat(object obj)
 	
 	var effect = GetEffect("IsBeingEaten", obj);
 	if (!effect)
-		effect = AddEffect("IsBeingEaten", obj, 1, 0, nil, Fish);
+	{
+	    obj.IsBeingEaten = this.IsBeingEaten;
+		effect = obj->CreateEffect(obj.IsBeingEaten, 1, 0);
+	}
 	EffectCall(obj, effect, "Add");
 	
 	DoEnergy(2);
 	
 	// happy fishes can lay happy fish eggs
 	if (Random(2) && !GetEffect("PlacedRoe"))
-		AddEffect("PlaceRoe", this, 1, 30, this);
+		CreateEffect(PlaceRoe, 1, 30);
 }
 
-func FxPlaceRoeStart(target, effect, temp)
-{
-	if (temp) return;
-	effect.placed = false;
-}
+local PlaceRoe = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        this.placed = false;
+    },
+    
+    Timer = func(int time) {
+        if(!this.placed)
+        {
+            if(Random(4)) return FX_OK;
+            CreateObjectAbove(FishRoe, 0, 0, this.Target->GetOwner());
+            this.placed = true;
+            return FX_OK;
+        }
+        // cooldown for laying eggs!
+	    if (timer < 35 * 60) return FX_OK;
+	    return FX_Execute_Kill;
+    },
+};
 
-func FxPlaceRoeTimer(target, effect, timer)
-{
-	if (!effect.placed)
-	{
-		if (Random(4)) return FX_OK;
-		CreateObjectAbove(FishRoe, 0, 0, GetOwner());
-		effect.placed = true;
-		return FX_OK;
-	}
-	// cooldown for laying eggs!
-	if (timer < 35 * 60) return FX_OK;
-	return FX_Execute_Kill;
-}
-
-func FxIsBeingEatenStart(target, effect, temp)
-{
-	if (temp) return;
-	effect.amount = 0;
-}
-
-func FxIsBeingEatenAdd(target, effect)
-{
-	if (!target) return;
-	if (++effect.amount < target->~NutritionalValue()) return;
-	target->RemoveObject();
-}
-
+local IsBeingEaten = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        this.amount = 0;
+    },
+    
+    Add = func() {
+        if(!this.Target) return;
+        if(++this.amount < this.Target->~NutritionalValue()) return;
+        this.Target->RemoveObject();
+    },
+};
 
 func DoJump()
 {

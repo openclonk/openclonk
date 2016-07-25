@@ -106,32 +106,31 @@ public func Hit(int x, int y)
 
 private func Yoink()
 {
-	AddEffect("Wiggle", this, 1, 1, this);
+	CreateEffect(Wiggle, 1, 1);
 }
 
-private func FxWiggleStart(target, effect, temp)
-{
-	if(temp) return;
-	effect.start = Random(360);
-}
-
-private func FxWiggleTimer(target, effect, time)
-{
-	var magnitude = Abs(Sin(6 * time, 1000)); 
-	var x = Sin(effect.start + 4 * time, magnitude);
-	var y = -Cos(effect.start + 5 * time, magnitude);
-	this.MeshTransformation = Trans_Mul(transform, Trans_Scale(1000 + x/4, 1000+y/4, 1000 + Max(x, y)/4));
+local Wiggle = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        this.start = Random(360);
+    },
+    
+    Timer = func(int time) {
+        var magnitude = Abs(Sin(6 * time, 1000)); 
+        var x = Sin(this.start + 4 * time, magnitude);
+	    var y = -Cos(this.start + 5 * time, magnitude);
+	    this.Target.MeshTransformation = Trans_Mul(this.Target.transform, Trans_Scale(1000 + x/4, 1000+y/4, 1000 + Max(x, y)/4));
 	
-	if(magnitude <= 1 && Random(2))
-		return -1;
-	return 1;
-}
-
-private func FxWiggleStop(target, effect, cause, temp)
-{
-	if(temp) return;
-	this.MeshTransformation = transform;
-}
+	    if(magnitude <= 1 && Random(2))
+		    return -1;
+	    return 1;
+    },
+    
+    Stop = func(int temp) {
+        if(temp) return;
+        this.target.MeshTransformation = this.Target.transform;
+    },
+};
 
 private func RndHatch()
 {

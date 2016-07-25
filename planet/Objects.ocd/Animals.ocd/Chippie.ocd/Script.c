@@ -13,7 +13,7 @@ local energy_sucked;
 
 public func Construction()
 {
-	AddEffect("Activity", this, 1, 10, this);
+	CreateEffect(Activity, 1, 10);
 	SetAction("Walk");
 	if (GetOwner() == NO_OWNER)
 		SetCreatureControlled();
@@ -53,7 +53,7 @@ public func AttachTargetLost()
 
 private func StartClawing()
 {
-	AddEffect("Clawing", this, 1, 30, this);
+	CreateEffect(Clawing, 1, 30);
 }
 
 private func StopClawing()
@@ -65,54 +65,53 @@ private func StopClawing()
 	SetVertexXY(0, 0, -1);
 }
 
-private func FxClawingTimer(target, effect, time)
-{
-	var e = GetActionTarget();
-	if(!e) return SetAction("Jump");
-	
-	if((!e->GetAlive()) || GBackSemiSolid())
-	{
-		SetAction("Jump");
-		return;
-	}
-	
-	if(!Random(3))
-	{
-		var damage = GetCon() * 10;
-		e->DoEnergy(-damage, true, FX_Call_EngGetPunched, GetOwner());
-		energy_sucked += damage;
-		
-		if (energy_sucked > 10 * 1000)
-		{
-			LayEgg();
-			energy_sucked -= 10 * 1000;
-		}
-		
-		// Grow and prosper.
-		if (GetCon() < 150 && !Random(10))
-		{
-			DoCon(1);
-			DoEnergy(5);
-		}
-	}
-}
+local Clawing = new Effect {
+    Timer = func(int time) {
+        var e = this.Target->GetActionTarget();
+        if(!e || (!e->GetAlive()) || this.Target->GBackSemiSolid())
+        {
+            return this.Target->SetAction("Jump");
+        }
+        
+        if(!Random(3))
+        {
+            var damage = this.Target->GetCon() * 10;
+            e->DoEnergy(-damage, true, FX_Call_EngGetPunched, this.Target->GetOwner());
+            this.Target.energy_sucked += damage;
+            
+            if(this.Target.energy_sucked > 10 * 1000)
+            {
+                this.Target->LayEgg();
+                this.Target.energy_sucked -= 10 * 1000;
+            }
+            
+            //Grow and prosper.
+            if(this.Target->GetCon() < 150 && !Random(10))
+            {
+                this.Target->DoCon(1);
+                this.Target->DoEnergy(5);
+            }
+        }
+    },
+};
 
 private func StartJump()
 {
 	RotateGraphics(0, false);
 	if(!GetEffect("DmgShock", this) && !GetEffect("JumpCheck", this))
-		AddEffect("JumpCheck", this, 1, 4, this);
+		CreateEffect(JumpCheck, 1, 4);
 }
 
-private func FxJumpCheckTimer(target, effect, time)
-{
-	var e = FindObject(Find_AtPoint(), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()));
-	if(e)
-	{
-		ClawTo(e);
-		return -1;
-	}
-}
+local JumpCheck = new Effect {
+    Timer = func(int time) {
+        var e = this.Target->FindObject(Find_AtPoint(),Find_OCF(OCF_Alive), Find_Hostile(this.Target->GetOwner()));
+        if(e)
+        {
+            this.Target->ClawTo(e);
+            return -1;
+        }
+    },
+};
 
 private func ClawTo(object obj)
 {
@@ -179,84 +178,87 @@ private func Jump()
 	SetSpeed(GetXDir(), -10 - GetXDir());
 }
 
-private func FxActivityTimer(target, effect, time)
-{
-	if((GetAction() == "Jump") || (GetAction() == "Claw"))
-	{
-		return 1;
-	}
-	
-	if(GetComDir() != COMD_Stop)
-		if(!Random(5)) Jump();
-	
-	if(!GetEffect("DmgShock", this) && !GBackSemiSolid())
-	{
-		for(var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
-		{
-			if(!PathFree(GetX(), GetY(), enemy->GetX(), enemy->GetY())) continue;
-			
-			if(enemy->GetX() < GetX())
-				SetComDir(COMD_Left);
-			else SetComDir(COMD_Right);
-			
-			if(ObjectDistance(this, enemy) < 20)
-			{
-				SetAction("Jump");
-				var a = Angle(GetX(), GetY(), enemy->GetX(), enemy->GetY());
-				SetSpeed(Sin(a, 20), -Cos(a, 20) - 2);
-			}
-			
-			return 1;
-		}
-
-		if(GetEffect("DoDance", this))
-		{
-			if(GetAction() == "Walk")
-			{
-				SetComDir(COMD_Stop);
-				Jump();
-				return 1;
-			}
-		}
-		else
-		if(!Random(20) && !GetEffect("DanceCooldown", this))
-		{
-			Sound("Animals::Chippie::Talk*");
-			
-			var cnt = 0;
-			for(var obj in FindObjects(Find_Distance(100), Find_ID(GetID()), Find_Allied(GetOwner()), Sort_Distance()))
-			{
-				if(++cnt > 5) break;
-				obj->AddEffect("DoDance", obj, 1, 35*5, obj);
-				obj->AddEffect("DanceCooldown", obj, 1, 35*10, obj);
-			}
-			
-			if(!GetEffect("EggCooldown", this))
-			{
-				if(!Random(10))
-				{
-					LayEgg();
-				}
-			}
-		}
-	}
-	
-	if(!Random(5))
-	{
-		if(Random(2))
-			SetComDir(COMD_Right);
-		else SetComDir(COMD_Left);
-	} else SetComDir(COMD_Stop);
-
-	return 1;
-}
-
-private func FxActivityDamage(target, effect, dmg)
-{
-	if(dmg > 0) return dmg;
-	AddEffect("DmgShock", this, 1, 35*5, this);
-	return dmg;
-}
+local Activity = new Effect {
+    Timer = func(int time) {
+        if((this.Target->GetAction() == "Jump") || (this.Target->GetAction() == "Claw"))
+        {
+            return 1;
+        }
+        
+        if(this.Target->GetComDir() != COMD_Stop)
+        {
+            if(!Random(5)) this.Target->Jump();
+        }
+        
+        if(!GetEffect("DmgShock",this.Target) && !this.Target->GBackSemiSolid())
+        {
+            for(var enemy in this.Target->FindObjects(this.Target->Find_Distance(100),Find_OCF(OCF_Alive),Find_Hostile(this.Target->GetOwner()), Sort_Distance()))
+            {
+                if(!this.Target->PathFree(this.Target->GetX(), this.Target->GetY(), enemy->GetX(), enemy->GetY())) continue;
+                
+                if(enemy->GetX() < this.Target->GetX())
+                {
+                   this.Target->SetComDir(COMD_Left);
+                }
+                else this.Target->SetComDir(COMD_Right);
+                
+                if(ObjectDistance(this.Target,enemy) < 20)
+                {
+                    this.Target->SetAction("Jump");
+                    var a = Angle(this.Target->GetX(), this.Target->GetY(), enemy->GetX(), enemy->GetY());
+                    this.Target->SetSpeed(Sin(a, 20), -Cos(a, 20) - 2);
+                }
+                
+                return 1;
+            }
+            
+            if(GetEffect("DoDance",this.Target))
+            {
+                if(GetAction() == "Walk")
+                {
+                    this.Target->SetComDir(COMD_Stop);
+                    this.Target->Jump();
+                    return 1;
+                }
+            }
+            else if(!Random(20) && !GetEffect("DanceCooldown", this.Target))
+            {
+                this.Target->Sound("Animals::Chippie::Talk*");
+                
+                var cnt = 0;
+                for(var obj in this.Target->FindObjects(this.Target->Find_Distance(100),Find_ID(Chippie), Find_Allied(this.Target->GetOwner()), Sort_Distance()))
+                {
+                    if(++cnt > 5) break;
+                    obj->CreateEffect(obj.DoDance,1,35*5);
+                    obj->CreateEffect(obj.DanceCooldown,1,35*10);
+                }
+                
+                if(!GetEffect("EggCooldown", this.Target) && !Random(10)) this.Target->LayEgg();
+            }
+        }
+        
+        if(!Random(5))
+        {
+            if(Random(2))
+            {
+                this.Target->SetComDir(COMD_Right);
+            }
+            else
+            {
+                this.Target->SetComDir(COMD_Left);
+            }
+        }
+        else this.Target->SetComDir(COMD_Stop);
+        
+        return 1;
+    },
+    
+    Damage = func(int dmg) {
+        if(dmg > 0) return dmg;
+        CreateEffect(this.Target.DmgShock, 1, 35*5);
+        return dmg;
+    },
+};
 
 private func LayEgg()
 {
@@ -265,8 +267,12 @@ private func LayEgg()
 	o->SetSpeed(-GetXDir(), -GetYDir());
 	o->SetCon(50);
 	o->StartGrowth(10);
-	AddEffect("EggCooldown", this, 1, 35*30, this);
+	CreateEffect(EggCooldown, 1, 35*30);
 }
+local EggCooldown = new Effect {};
+local DmgShock = new Effect {};
+local DoDance = new Effect {};
+local DanceCooldown = new Effect {};
 
 local MaxEnergy = 10000;
 local MaxBreath = 10000;

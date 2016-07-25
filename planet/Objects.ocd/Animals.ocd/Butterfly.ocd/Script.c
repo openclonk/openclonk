@@ -118,48 +118,50 @@ private func CheckTurn()
 {
 	if (GetEffect("Turning", this)) return;
 	if (GetDir() == DIR_Left && GetXDir() > 0)
-		AddEffect("Turning", this, 100, 1, this);
+		CreateEffect(Turning, 100, 1);
 	if (GetDir() == DIR_Right && GetXDir() < 0)
-		AddEffect("Turning", this, 100, 1, this);
+		CreateEffect(Turning, 100, 1);
 }
 
-private func FxTurningStart(object target, proplist effect, int temp)
-{
-	if (temp) return;
-	effect.turn = 15;
-	effect.step = 0;
-	if (GetDir() == DIR_Right)
-	{
-		effect.turn = -15;
-		effect.step = 360;
-	}
-	SetAction("SlowFly");
-}
-
-private func FxTurningTimer(object target, proplist effect)
-{
-	effect.step += effect.turn;
-	if (effect.step == 0 || effect.step == 360) return FX_Execute_Kill;
-	if (effect.step == 90)
-	{
-		effect.step = 285;
-		SetDir(DIR_Right);
-	}
-	if (effect.step == 270)
-	{
-		effect.step = 75;
-		SetDir(DIR_Left);
-	}
-	this.MeshTransformation = Trans_Mul(Trans_Rotate(270,1,1,1), Trans_Rotate(effect.step,0,0,1));
-	return FX_OK;
-}
-
-private func FxTurningStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp) return;
-	this.MeshTransformation = Trans_Rotate(270,1,1,1);
-	SetAction("Fly");
-}
+local Turning = new Effect {
+    Start = func(int temp) {
+        if(temp) return;
+        if (GetDir() == DIR_Right)
+	    {
+		    this.turn = -15;
+		    this.step = 360;
+	    }
+	    else
+	    {
+	        this.turn = 15;
+	        this.step = 360;
+	    }
+	    this.Target->SetAction("SlowFly");
+    },
+    
+    Timer = func() {
+        this.step += this.turn;
+        if(this.step == 0 || this.step == 360) return FX_Execute_Kill;
+        if(this.step == 90)
+        {
+            this.step = 285;
+            this.Target->SetDir(DIR_Right);
+        }
+        if(this.step == 270)
+        {
+            this.step = 75;
+            this.Target->SetDir(DIR_Left);
+        }
+        this.Target.MeshTransformation = Trans_Mul(Trans_Rotate(270,1,1,1), Trans_Rotate(this.step,0,0,1));
+        return FX_OK;
+    },
+    
+    Stop = func(int reason, bool temp) {
+        if(temp) return;
+        this.Target.MeshTransformation = Trans_Rotate(270,1,1,1);
+        this.Target->SetAction("Fly");
+    },
+};
 
 /* Definition */
 
