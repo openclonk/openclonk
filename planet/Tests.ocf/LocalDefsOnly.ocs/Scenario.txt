@@ -1,19 +1,5 @@
 [Head]
 Title=LocalDefsOnly
-Version=8
-NoInitialize=true
 
 [Definitions]
-LocalOnly=true
-
-[Player1]
-
-[Player2]
-
-[Player3]
-
-[Player4]
-
-[Landscape]
-MapWidth=100,0,64,10000
-MapHeight=50,0,40,10000
+LocalOnly=1
