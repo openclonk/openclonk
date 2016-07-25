@@ -66,7 +66,7 @@
       </params>
     </syntax>
     <desc>Changes zoom or zoom limits vor all viewports of a player to direct values.</desc>
-    <remark>Setting zoom to a direct value causes the game to look different depending on which screen resolution the player has configured. Use this function only if you want to achieve direct pixel correspondance between the game world and the screen, e.g. because your scenario provides low resolution graphics only or because your scenario should be played in certain screen resolutions only. Regular scenarios should use <funclink>SetPlayerZoomByViewRange</funclink> to achieve visuals whcih are independent of the player's monitor size.</remark>
+    <remark>Setting zoom to a direct value causes the game to look different depending on which screen resolution the player has configured. Use this function only if you want to achieve direct pixel correspondance between the game world and the screen, e.g. because your scenario provides low resolution graphics only or because your scenario should be played in certain screen resolutions only. Regular scenarios should use <funclink>SetPlayerZoomByViewRange</funclink> to achieve visuals which are independent of the player's monitor size.</remark>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)

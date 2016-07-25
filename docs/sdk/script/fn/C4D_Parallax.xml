@@ -13,7 +13,7 @@
     <examples>
       <example>
         <code><funclink>this</funclink>.<emlink href="definition/properties.html#Plane">Plane</emlink> = -1000;
-<funclink>SetCategory</funclink>(<funclink>GetCategory</funclink>() | C4D_Parallax());
+<funclink>SetCategory</funclink>(<funclink>GetCategory</funclink>() | C4D_Parallax);
 <funclink>this</funclink>.Parallaxity = [50, 50];
 </code>
         <text>Moves the calling object into the background and adds horizontal parallaxity.</text>
