@@ -1679,7 +1679,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		{
 			prop->key = published_prop->GetPropertyStr(P_Key);
 			prop->display_name = published_prop->GetPropertyStr(P_Name);
-			prop->help_text = published_prop->GetPropertyStr(P_EditorInfo);
+			prop->help_text = published_prop->GetPropertyStr(P_EditorHelp);
 			prop->delegate_info.SetPropList(published_prop);
 		}
 		if (!prop->key) properties.props[i].key = prop_id;
@@ -2168,7 +2168,7 @@ const char *C4ConsoleQtPropListModel::GetTargetPathHelp() const
 	// Help text in EditorInfo prop. Fall back to description.
 	C4PropList *info_proplist = this->info_proplist.getPropList();
 	if (!info_proplist) return nullptr;
-	C4String *desc = info_proplist->GetPropertyStr(P_EditorInfo);
+	C4String *desc = info_proplist->GetPropertyStr(P_EditorHelp);
 	if (!desc) desc = info_proplist->GetPropertyStr(P_Description);
 	if (!desc) return nullptr;
 	return desc->GetCStr();
