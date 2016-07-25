@@ -479,12 +479,30 @@ protected:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
+class C4PropertyNameDelegate : public QStyledItemDelegate
+{
+	Q_OBJECT
+
+	class C4ConsoleQtPropListModel *property_model;
+
+public:
+	C4PropertyNameDelegate() : property_model(nullptr) { }
+
+	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
+protected:
+	// Model callbacks forwarded to actual delegates
+	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override { return nullptr; } // no editing
+	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+};
+
 // One property in the prop list model view
 struct C4ConsoleQtPropListModelProperty
 {
 	C4PropertyPath property_path;
 	C4Value parent_value;
 	C4RefCntPointer<C4String> display_name;
+	C4RefCntPointer<C4String> help_text;
 	C4RefCntPointer<C4String> key;
 	C4Value delegate_info;
 	C4PropertyDelegate *delegate;

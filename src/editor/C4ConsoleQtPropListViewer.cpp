@@ -1588,6 +1588,40 @@ bool C4PropertyDelegateFactory::CheckCurrentEditor(C4PropertyDelegate *d, QWidge
 }
 
 
+/* Property name view */
+
+void C4PropertyNameDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	// Paint icon on the right
+	QStyleOptionViewItem override_option = option;
+	override_option.decorationPosition = QStyleOptionViewItem::Right;
+	QStyledItemDelegate::paint(painter, override_option, index);
+}
+
+bool C4PropertyNameDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+	// Mouse move over a cell: Display tooltip if over help button
+	if (event->type() == QEvent::MouseMove)
+	{
+		QVariant help_btn = property_model->data(index, Qt::DecorationRole);
+		if (!help_btn.isNull())
+		{
+			QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
+			if (option.rect.contains(mevent->localPos().toPoint()))
+			{
+				if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
+				{
+					QString tooltip_text = property_model->data(index, Qt::ToolTipRole).toString();
+					QToolTip::showText(mevent->globalPos(), tooltip_text);
+				}
+			}
+			
+		}
+	}
+	return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+
 /* Proplist table view */
 
 C4ConsoleQtPropListModel::C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory)
@@ -1633,8 +1667,9 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		C4String *prop_id = new_properties[i];
 		if (default_selection == prop_id) *default_selection_index = i;
 		// Property data
-		prop->key = NULL;
-		prop->display_name = NULL;
+		prop->key = nullptr;
+		prop->display_name = nullptr;
+		prop->help_text = nullptr;
 		prop->delegate_info.Set0(); // default C4Value delegate
 		prop->group_idx = group_index;
 		C4Value published_prop_val;
@@ -1644,6 +1679,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		{
 			prop->key = published_prop->GetPropertyStr(P_Key);
 			prop->display_name = published_prop->GetPropertyStr(P_Name);
+			prop->help_text = published_prop->GetPropertyStr(P_EditorInfo);
 			prop->delegate_info.SetPropList(published_prop);
 		}
 		if (!prop->key) properties.props[i].key = prop_id;
@@ -1857,6 +1893,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		internal_properties.props[i].property_path = target_path;
 		internal_properties.props[i].key = new_properties[i];
 		internal_properties.props[i].display_name = new_properties[i];
+		internal_properties.props[i].help_text = nullptr;
 		internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
 		internal_properties.props[i].delegate = NULL; // init when needed
 		internal_properties.props[i].group_idx = num_groups;
@@ -1891,6 +1928,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		prop.property_path = C4PropertyPath(target_path, i);
 		prop.parent_value = target_value;
 		prop.display_name = ::Strings.RegString(FormatString("%d", (int)i).getData());
+		prop.help_text = nullptr;
 		prop.key = nullptr;
 		prop.delegate_info = elements_delegate_value;
 		prop.delegate = item_delegate;
@@ -2004,6 +2042,19 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		prop->delegate->GetPropertyValue(prop->parent_value, prop->key, index.row(), &v);
 		QColor txtclr = prop->delegate->GetDisplayTextColor(v, target_value.getObj());
 		if (txtclr.isValid()) return txtclr;
+	}
+	else if (role == Qt::DecorationRole && index.column() == 0 && prop->help_text)
+	{
+		// Help icons in left column
+		return QIcon(":/editor/res/Help.png");
+	}
+	else if (role == Qt::ToolTipRole && index.column() == 0)
+	{
+		// Tooltip from property description. Default to display name in case it got truncated.
+		if (prop->help_text)
+			return QString(prop->help_text->GetCStr());
+		else
+			return QString(prop->display_name->GetCStr());
 	}
 	// Nothing to show
 	return QVariant();

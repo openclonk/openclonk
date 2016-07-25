@@ -535,10 +535,14 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.propertyEditAscendPathButton->setMaximumWidth(ui.propertyEditAscendPathButton->fontMetrics().boundingRect(ui.propertyEditAscendPathButton->text()).width() + 10);
 	ui.propertyTable->setDropIndicatorShown(true);
 	ui.propertyTable->setAcceptDrops(true);
+	property_name_delegate.reset(new C4PropertyNameDelegate());
+	ui.propertyTable->setItemDelegateForColumn(0, property_name_delegate.get());
+	ui.propertyTable->setMouseTracking(true);
 
 	// View models
 	property_model.reset(new C4ConsoleQtPropListModel(property_delegate_factory.get()));
 	property_delegate_factory->SetPropertyModel(property_model.get());
+	property_name_delegate->SetPropertyModel(property_model.get());
 	QItemSelectionModel *m = ui.propertyTable->selectionModel();
 	ui.propertyTable->setModel(property_model.get());
 	delete m;
