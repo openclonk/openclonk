@@ -288,6 +288,13 @@ void C4ConsoleQtMainWindow::ViewportNew() { ::Console.ViewportNew(); }
 // Help menu
 void C4ConsoleQtMainWindow::HelpAbout() { ::Console.HelpAbout(); }
 
+void C4ConsoleQtMainWindow::HelpToggle(bool enabled)
+{
+	::Config.Developer.ShowHelp = enabled;
+	::Console.EditCursor.InvalidateSelection();
+	repaint();
+}
+
 // Script enter
 void C4ConsoleQtMainWindow::MainConsoleEditEnter()
 {
@@ -528,6 +535,8 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	QWidget *foo = new QWidget(viewport_area);
 	viewport_area->setCentralWidget(foo);
 	foo->hide();
+	// Default action state
+	ui.actionHelp->setChecked(::Config.Developer.ShowHelp);
 
 	// Property editor
 	property_delegate_factory.reset(new C4PropertyDelegateFactory());
@@ -755,7 +764,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		}
 		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
 		const char *help_text = property_model->GetTargetPathHelp();
-		if (help_text)
+		if (help_text && ::Config.Developer.ShowHelp)
 		{
 			ui.selectionHelpLabel->setText(FormatString("%s: %s", LoadResStr("IDS_CNS_DESCRIPTION"), help_text).getData());
 			ui.selectionHelpLabel->show();

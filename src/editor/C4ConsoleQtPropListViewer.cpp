@@ -558,18 +558,21 @@ QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, cl
 bool C4StyledItemDelegateWithHelpButton::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
 	// Mouse move over a cell: Display tooltip if over help button
-	if (event->type() == QEvent::MouseMove)
+	if (Config.Developer.ShowHelp)
 	{
-		QVariant help_btn = model->data(index, Qt::DecorationRole);
-		if (!help_btn.isNull())
+		if (event->type() == QEvent::MouseMove)
 		{
-			QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
-			if (option.rect.contains(mevent->localPos().toPoint()))
+			QVariant help_btn = model->data(index, Qt::DecorationRole);
+			if (!help_btn.isNull())
 			{
-				if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
+				QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
+				if (option.rect.contains(mevent->localPos().toPoint()))
 				{
-					QString tooltip_text = model->data(index, Qt::ToolTipRole).toString();
-					QToolTip::showText(mevent->globalPos(), tooltip_text);
+					if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
+					{
+						QString tooltip_text = model->data(index, Qt::ToolTipRole).toString();
+						QToolTip::showText(mevent->globalPos(), tooltip_text);
+					}
 				}
 			}
 		}
@@ -2055,7 +2058,7 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		QColor txtclr = prop->delegate->GetDisplayTextColor(v, target_value.getObj());
 		if (txtclr.isValid()) return txtclr;
 	}
-	else if (role == Qt::DecorationRole && index.column() == 0 && prop->help_text)
+	else if (role == Qt::DecorationRole && index.column() == 0 && prop->help_text && Config.Developer.ShowHelp)
 	{
 		// Help icons in left column
 		return QIcon(":/editor/res/Help.png");

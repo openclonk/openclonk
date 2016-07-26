@@ -123,6 +123,7 @@ public slots:
 	void ViewportNew();
 	// Help menu
 	void HelpAbout();
+	void HelpToggle(bool enabled);
 	// Console edits enter pressed events
 	void MainConsoleEditEnter(); // console edit below log
 	void PropertyConsoleEditEnter(); // console edit of property window

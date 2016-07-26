@@ -87,6 +87,7 @@ public:
 	char AltTodoFilename[CFG_MaxString + 1];
 	int32_t MaxScriptMRU; // maximum number of remembered elements in recently used scripts
 	int32_t DebugShapeTextures; // if nonzero, show messages about loaded shape textures
+	bool ShowHelp; // show help buttons and descriptions in editor
 	char RecentlyEditedSzenarios[CFG_MaxEditorMRU][CFG_MaxString + 1];
 	void CompileFunc(StdCompiler *pComp);
 	void AddRecentlyEditedScenario(const char *fn);

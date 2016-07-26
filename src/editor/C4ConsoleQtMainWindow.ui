@@ -387,6 +387,7 @@
     <property name="title">
      <string comment="res">?</string>
     </property>
+    <addaction name="actionHelp"/>
     <addaction name="actionHelpAbout"/>
    </widget>
    <widget class="QMenu" name="menuWindows">
@@ -1028,6 +1029,22 @@
     <string comment="res">IDS_MNU_CONTENTS</string>
    </property>
   </action>
+  <action name="actionHelp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/editor/res/HelpOff.png</normaloff>
+     <normalon>:/editor/res/Help.png</normalon>:/editor/res/HelpOff.png</iconset>
+   </property>
+   <property name="text">
+    <string comment="res">IDS_CNS_SHOWHELP</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_CNS_SHOWHELPTIP</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -1552,8 +1569,8 @@
    <slot>AddArrayElement()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>756</x>
-     <y>116</y>
+     <x>813</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1568,8 +1585,8 @@
    <slot>RemoveArrayElement()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>886</x>
-     <y>116</y>
+     <x>953</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1641,6 +1658,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionHelp</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>HelpToggle(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1680,5 +1713,6 @@
   <slot>SelectionDelete()</slot>
   <slot>SelectionDuplicate()</slot>
   <slot>SelectionEjectContents()</slot>
+  <slot>HelpToggle(bool)</slot>
  </slots>
 </ui>

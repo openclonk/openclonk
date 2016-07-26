@@ -86,6 +86,7 @@ void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(AltTodoFilename), "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
 	pComp->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                  , false, false));
 	pComp->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                   , false, true));
+	pComp->Value(mkNamingAdapt(ShowHelp,            "ShowHelp",           true                , false, false));
 	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
 		pComp->Value(mkNamingAdapt(s(RecentlyEditedSzenarios[i]), FormatString("EditorMRU%02d", (int)i).getData(), "", false, false));
 }
