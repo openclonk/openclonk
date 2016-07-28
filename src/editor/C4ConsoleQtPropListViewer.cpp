@@ -621,8 +621,8 @@ void C4StyledItemDelegateWithButton::paint(QPainter *painter, const QStyleOption
 
 /* Enum delegate combo box */
 
-C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type)
-	: QComboBox(parent), last_popup_height(0), is_next_close_blocked(false)
+C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type, bool editable)
+	: QComboBox(parent), last_popup_height(0), is_next_close_blocked(false), editable(editable)
 {
 	item_delegate.reset(new C4StyledItemDelegateWithButton(button_type));
 	QTreeView *view = new QTreeView(this);
@@ -631,6 +631,7 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton
 	view->setAllColumnsShowFocus(true);
 	view->header()->hide();
 	view->setItemDelegate(item_delegate.get());
+	setEditable(editable);
 	// On expansion, enlarge view if necessery
 	connect(view, &QTreeView::expanded, this, [this, view](const QModelIndex &index)
 	{
@@ -666,11 +667,18 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton
 		if (selected_data.type() == QVariant::Int)
 		{
 			// Finish selection
-			this->setRootModelIndex(current.parent());
-			this->setCurrentIndex(current.row());
+			setCurrentModelIndex(current);
 			emit NewItemSelected(selected_data.toInt());
 		}
 	});
+	// New text typed in
+	if (editable)
+	{
+		connect(lineEdit(), &QLineEdit::returnPressed, [this]()
+		{
+			emit TextChanged(this->lineEdit()->text());
+		});
+	}
 	// Connect view to combobox
 	setView(view);
 	view->viewport()->installEventFilter(this);
@@ -701,6 +709,11 @@ void C4DeepQComboBox::setCurrentModelIndex(QModelIndex new_index)
 {
 	setRootModelIndex(new_index.parent());
 	setCurrentIndex(new_index.row());
+	// Adjust text
+	if (editable)
+	{
+		lineEdit()->setText(this->model()->data(new_index, ValueStringRole).toString());
+	}
 }
 
 int32_t C4DeepQComboBox::GetCurrentSelectionIndex()
@@ -799,7 +812,7 @@ void C4PropertyDelegateEnumEditor::paintEvent(QPaintEvent *ev)
 /* Enumeration (dropdown list) delegate */
 
 C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions)
-	: C4PropertyDelegate(factory, props)
+	: C4PropertyDelegate(factory, props), allow_editing(false)
 {
 	// Build enum options from C4Value definitions in script
 	if (!poptions && props) poptions = props->GetPropertyArray(P_Options);
@@ -808,6 +821,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 	{
 		default_option_key = props->GetPropertyStr(P_OptionKey);
 		default_value_key = props->GetPropertyStr(P_ValueKey);
+		allow_editing = props->GetPropertyBool(P_AllowEditing);
 	}
 	if (poptions)
 	{
@@ -880,6 +894,11 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 		new_item->setData(QString((opt.help ? opt.help : opt.name)->GetCStr()), Qt::ToolTipRole);
 		if (opt.help) new_item->setData(QIcon(":/editor/res/Help.png"), Qt::DecorationRole);
 		if (opt.sound_name) new_item->setData(QIcon(":/editor/res/Sound.png"), Qt::DecorationRole);
+		if (allow_editing)
+		{
+			C4String *s = opt.value.getStr();
+			new_item->setData(QString(s ? s->GetCStr() : ""), C4DeepQComboBox::ValueStringRole);
+		}
 		parent->appendRow(new_item);
 		++idx;
 	}
@@ -1125,7 +1144,7 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->layout->setMargin(0);
 	editor->layout->setSpacing(0);
 	editor->updating = true;
-	editor->option_box = new C4DeepQComboBox(editor, GetOptionComboBoxButtonType());
+	editor->option_box = new C4DeepQComboBox(editor, GetOptionComboBoxButtonType(), allow_editing);
 	editor->layout->addWidget(editor->option_box);
 	for (auto &option : options) editor->option_box->addItem(option.name->GetCStr());
 	connect(editor->option_box, &C4DeepQComboBox::NewItemSelected, editor, [editor, this](int32_t newval) {

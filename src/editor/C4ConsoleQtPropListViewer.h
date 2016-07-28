@@ -232,6 +232,7 @@ class C4DeepQComboBox : public QComboBox
 {
 	Q_OBJECT
 
+	bool editable;
 	bool is_next_close_blocked;
 	int last_popup_height;
 	std::unique_ptr<C4StyledItemDelegateWithButton> item_delegate;
@@ -242,9 +243,10 @@ public:
 	{
 		OptionIndexRole = Qt::UserRole + 1,
 		ObjectHighlightRole = Qt::UserRole + 2,
+		ValueStringRole = Qt::UserRole + 3,
 	};
 
-	C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type);
+	C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type, bool editable);
 
 	void showPopup() override;
 	void hidePopup() override;
@@ -255,6 +257,7 @@ public:
 
 signals:
 	void NewItemSelected(int32_t new_item);
+	void TextChanged(const QString new_text);
 
 protected:
 	// event filter for view: Catch mouse clicks to descend into children
@@ -321,6 +324,7 @@ protected:
 
 private:
 	std::vector<Option> options;
+	bool allow_editing;
 
 protected:
 	void ClearOptions();
