@@ -766,7 +766,9 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 		const char *help_text = property_model->GetTargetPathHelp();
 		if (help_text && ::Config.Developer.ShowHelp)
 		{
-			ui.selectionHelpLabel->setText(FormatString("%s: %s", LoadResStr("IDS_CNS_DESCRIPTION"), help_text).getData());
+			const char *help_label = property_model->GetTargetPathName();
+			if (!help_label) help_label = LoadResStr("IDS_CNS_DESCRIPTION");
+			ui.selectionHelpLabel->setText(FormatString("%s: %s", help_label, help_text).getData());
 			ui.selectionHelpLabel->show();
 		}
 		else
