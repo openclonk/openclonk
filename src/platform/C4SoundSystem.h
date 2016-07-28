@@ -49,6 +49,7 @@ public:
 	C4SoundInstance *GetNextInstance(C4SoundInstance *prev) const;
 	bool Init();
 	void ClearPointers(C4Object *pObj);
+	C4SoundEffect *GetFirstSound() const { return FirstSound; }
 
 	C4SoundModifierList Modifiers;
 protected:

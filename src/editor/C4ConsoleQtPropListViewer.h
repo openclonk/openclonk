@@ -207,16 +207,22 @@ public:
 };
 
 // Display delegate for deep combo box. Handles the help tooltip showing.
-class C4StyledItemDelegateWithHelpButton : public QStyledItemDelegate
+class C4StyledItemDelegateWithButton : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 public:
-	C4StyledItemDelegateWithHelpButton() { }
+	enum ButtonType
+	{
+		BT_Help,
+		BT_PlaySound,
+	} button_type;
 
-protected:
-	// Model callbacks forwarded to actual delegates
+	C4StyledItemDelegateWithButton(ButtonType bt) : button_type(bt) { }
+
+public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+protected:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
@@ -226,9 +232,9 @@ class C4DeepQComboBox : public QComboBox
 {
 	Q_OBJECT
 
-	bool descending, item_clicked;
+	bool is_next_close_blocked;
 	int last_popup_height;
-	std::unique_ptr<C4StyledItemDelegateWithHelpButton> item_delegate;
+	std::unique_ptr<C4StyledItemDelegateWithButton> item_delegate;
 	QSize default_icon_size;
 
 public:
@@ -238,13 +244,14 @@ public:
 		ObjectHighlightRole = Qt::UserRole + 2,
 	};
 
-	C4DeepQComboBox(QWidget *parent);
+	C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type);
 
 	void showPopup() override;
 	void hidePopup() override;
 
 	void setCurrentModelIndex(QModelIndex new_index);
 	int32_t GetCurrentSelectionIndex();
+	void BlockNextCloseEvent() { is_next_close_blocked = true; }; // after item selection on a "play" button, the combo dropdown should stay open
 
 signals:
 	void NewItemSelected(int32_t new_item);
@@ -292,6 +299,7 @@ public:
 		C4RefCntPointer<C4String> group; // Grouping in enum dropdown box; nested groups separated by '/'
 		C4RefCntPointer<C4String> option_key;
 		C4RefCntPointer<C4String> value_key;
+		C4RefCntPointer<C4String> sound_name; // Assigned for options that have a play button
 		C4V_Type type; // Assume this option is set when value is of given type
 		C4Value value; // Value to set if this entry is selected
 		C4Value value_function; // Function to be called to set value
@@ -308,6 +316,9 @@ public:
 		Option() : type(C4V_Any), adelegate(NULL), storage_type(StorageNone) {}
 	};
 
+protected:
+	virtual C4StyledItemDelegateWithButton::ButtonType GetOptionComboBoxButtonType() const { return C4StyledItemDelegateWithButton::BT_Help; }
+
 private:
 	std::vector<Option> options;
 
@@ -319,7 +330,7 @@ public:
 	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=NULL);
 
 	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=NULL);
-	void AddConstOption(C4String *name, const C4Value &val, C4String *group=nullptr);
+	void AddConstOption(C4String *name, const C4Value &val, C4String *group=nullptr, C4String *sound_name=nullptr);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
@@ -364,6 +375,15 @@ public:
 
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
 	QString GetDisplayString(const C4Value &v, class C4Object *obj) const override;
+};
+
+// Select a sound
+class C4PropertyDelegateSound : public C4PropertyDelegateEnum
+{
+public:
+	C4PropertyDelegateSound(const C4PropertyDelegateFactory *factory, C4PropList *props);
+protected:
+	C4StyledItemDelegateWithButton::ButtonType GetOptionComboBoxButtonType() const override { return C4StyledItemDelegateWithButton::BT_PlaySound; }
 };
 
 // true or false
@@ -484,14 +504,14 @@ protected:
 
 // Delegate for the name column of the property window
 // For now, just use the default + help button
-class C4PropertyNameDelegate : public C4StyledItemDelegateWithHelpButton
+class C4PropertyNameDelegate : public C4StyledItemDelegateWithButton
 {
 	Q_OBJECT
 
 	class C4ConsoleQtPropListModel *property_model;
 
 public:
-	C4PropertyNameDelegate() : property_model(nullptr) { }
+	C4PropertyNameDelegate() : C4StyledItemDelegateWithButton(C4StyledItemDelegateWithButton::BT_Help), property_model(nullptr) { }
 
 	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
 };
@@ -586,6 +606,7 @@ public:
 	int32_t GetTargetPathStackSize() const { return target_path_stack.size(); }
 	const char *GetTargetPathText() const { return target_path.GetGetPath(); }
 	const char *GetTargetPathHelp() const;
+	const char *GetTargetPathName() const;
 	bool IsArray() const { return !!target_value.getArray(); }
 	void AddArrayElement();
 	void RemoveArrayElement();

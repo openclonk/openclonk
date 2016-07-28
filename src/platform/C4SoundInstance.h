@@ -47,6 +47,8 @@ public:
 	void ClearPointers(C4Object *pObj);
 	int32_t GetStartedInstanceCount(int32_t iX, int32_t iY, int32_t iRad); // local
 	int32_t GetStartedInstanceCount(); // global
+
+	const char *GetFullName() const { return Name; }; // return full name including the path prefix
 protected:
 	void AddInst(C4SoundInstance *pInst);
 	void RemoveInst(C4SoundInstance *pInst);

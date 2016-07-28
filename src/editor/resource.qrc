@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/editor">
+    <file>../res/Sound.png</file>
     <file>../res/HelpOff.png</file>
     <file>../res/Help.png</file>
     <file>../res/StaticFlat_Trans.png</file>

@@ -26,6 +26,8 @@
 #include "object/C4Def.h"
 #include "script/C4Effect.h"
 #include "script/C4AulExec.h"
+#include "platform/C4SoundInstance.h"
+
 
 /* Property path for property setting synchronization */
 
@@ -125,7 +127,7 @@ void C4PropertyPath::DoCall(const char *call_string) const
 }
 
 
-/* Property editing */
+/* Property delegate base class */
 
 C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: QObject(), factory(factory), set_function_type(C4PropertyPath::PPT_SetFunction)
@@ -169,7 +171,6 @@ bool C4PropertyDelegate::GetPropertyValueBase(const C4Value &container, C4String
 	default:
 		return false;
 	}
-	
 }
 
 bool C4PropertyDelegate::GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const
@@ -231,6 +232,9 @@ C4PropertyPath C4PropertyDelegate::GetPathForProperty(const C4PropertyPath &pare
 	return subpath;
 }
 
+
+/* Integer delegate */
+
 C4PropertyDelegateInt::C4PropertyDelegateInt(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props), min(std::numeric_limits<int32_t>::min()), max(std::numeric_limits<int32_t>::max()), step(1)
 {
@@ -266,6 +270,9 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 	});
 	return editor;
 }
+
+
+/* String delegate */
 
 C4PropertyDelegateString::C4PropertyDelegateString(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props)
@@ -311,6 +318,9 @@ QString C4PropertyDelegateString::GetDisplayString(const C4Value &v, C4Object *o
 	return QString(s ? s->GetCStr() : "");
 }
 
+
+/* Delegate editor: Text left and button right */
+
 C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(QWidget *parent)
 	: QWidget(parent), layout(nullptr), label(nullptr), button(nullptr), button_pending(false)
 {
@@ -330,6 +340,9 @@ C4PropertyDelegateLabelAndButtonWidget::C4PropertyDelegateLabelAndButtonWidget(Q
 	setPalette(palette);
 	setAutoFillBackground(true);
 }
+
+
+/* Descend path delegate base class for arrays and proplist */
 
 C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props), edit_on_selection(true)
@@ -395,6 +408,9 @@ QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDeleg
 	return peditor.release();
 }
 
+
+/* Array descend delegate */
+
 C4PropertyDelegateArray::C4PropertyDelegateArray(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateDescendPath(factory, props), max_array_display(0), element_delegate(nullptr)
 {
@@ -435,6 +451,9 @@ QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *ob
 	}
 }
 
+
+/* Proplist descend delegate */
+
 C4PropertyDelegatePropList::C4PropertyDelegatePropList(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateDescendPath(factory, props)
 {
@@ -443,7 +462,6 @@ C4PropertyDelegatePropList::C4PropertyDelegatePropList(const class C4PropertyDel
 		display_string = props->GetPropertyStr(P_Display);
 	}
 }
-
 
 QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object *obj) const
 {
@@ -486,6 +504,8 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 	return result;
 }
 
+
+/* Color delegate */
 
 C4PropertyDelegateColor::C4PropertyDelegateColor(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props)
@@ -555,23 +575,32 @@ QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, cl
 
 /* Enum delegate combo box item delegate */
 
-bool C4StyledItemDelegateWithHelpButton::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+bool C4StyledItemDelegateWithButton::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
 	// Mouse move over a cell: Display tooltip if over help button
-	if (Config.Developer.ShowHelp)
+	QEvent::Type trigger_type = (button_type == BT_Help) ? QEvent::MouseMove : QEvent::MouseButtonPress;
+	if (event->type() == trigger_type)
 	{
-		if (event->type() == QEvent::MouseMove)
+		QVariant btn = model->data(index, Qt::DecorationRole);
+		if (!btn.isNull())
 		{
-			QVariant help_btn = model->data(index, Qt::DecorationRole);
-			if (!help_btn.isNull())
+			QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
+			if (option.rect.contains(mevent->localPos().toPoint()))
 			{
-				QMouseEvent *mevent = static_cast<QMouseEvent *>(event);
-				if (option.rect.contains(mevent->localPos().toPoint()))
+				if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
 				{
-					if (mevent->localPos().x() >= option.rect.x() + option.rect.width() - option.rect.height())
+					switch (button_type)
 					{
-						QString tooltip_text = model->data(index, Qt::ToolTipRole).toString();
-						QToolTip::showText(mevent->globalPos(), tooltip_text);
+					case BT_Help:
+						if (Config.Developer.ShowHelp)
+						{
+							QString tooltip_text = model->data(index, Qt::ToolTipRole).toString();
+							QToolTip::showText(mevent->globalPos(), tooltip_text);
+						}
+						break;
+					case BT_PlaySound:
+						StartSoundEffect(model->data(index, Qt::ToolTipRole).toString().toUtf8());
+						return true; // handled
 					}
 				}
 			}
@@ -580,7 +609,7 @@ bool C4StyledItemDelegateWithHelpButton::editorEvent(QEvent *event, QAbstractIte
 	return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 
-void C4StyledItemDelegateWithHelpButton::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void C4StyledItemDelegateWithButton::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	// Paint icon on the right
 	QStyleOptionViewItem override_option = option;
@@ -592,9 +621,10 @@ void C4StyledItemDelegateWithHelpButton::paint(QPainter *painter, const QStyleOp
 
 /* Enum delegate combo box */
 
-C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
-	: QComboBox(parent), descending(false), item_clicked(false), last_popup_height(0), item_delegate(new C4StyledItemDelegateWithHelpButton())
+C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type)
+	: QComboBox(parent), last_popup_height(0), is_next_close_blocked(false)
 {
+	item_delegate.reset(new C4StyledItemDelegateWithButton(button_type));
 	QTreeView *view = new QTreeView(this);
 	view->setFrameShape(QFrame::NoFrame);
 	view->setSelectionBehavior(QTreeView::SelectRows);
@@ -627,6 +657,20 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent)
 		if (obj_number) obj = ::Objects.SafeObjectPointer(obj_number);
 		::Console.EditCursor.SetHighlightedObject(obj);
 	});
+	// New item selection through combo box: Update model position
+	connect(this, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated),
+		[this](int index)
+	{ 
+		QModelIndex current = this->view()->currentIndex();
+		QVariant selected_data = this->model()->data(current, OptionIndexRole);
+		if (selected_data.type() == QVariant::Int)
+		{
+			// Finish selection
+			this->setRootModelIndex(current.parent());
+			this->setCurrentIndex(current.row());
+			emit NewItemSelected(selected_data.toInt());
+		}
+	});
 	// Connect view to combobox
 	setView(view);
 	view->viewport()->installEventFilter(this);
@@ -647,38 +691,10 @@ void C4DeepQComboBox::showPopup()
 
 void C4DeepQComboBox::hidePopup()
 {
-	QModelIndex current = view()->currentIndex();
-	QVariant selected_data = model()->data(current, OptionIndexRole);
-	if (item_clicked && (selected_data.type() != QVariant::Int || !descending))
-	{
-		// Clicked somewhere into the list box: Avoid closing to allow navigation in the tree
-		if (descending)
-		{
-			// Clicked an item text in the tree: Shortcut to opening that tree
-			QTreeView *tview = static_cast<QTreeView *>(view());
-			if (!tview->isExpanded(current))
-			{
-				tview->setExpanded(current, true);
-				int32_t child_row_count = model()->rowCount(current);
-				tview->scrollTo(model()->index(child_row_count - 1, 0, current), QAbstractItemView::EnsureVisible);
-				tview->scrollTo(current, QAbstractItemView::EnsureVisible);
-			}
-		}
-	}
-	else
-	{
-		// Otherwise, finish selection
-		setRootModelIndex(current.parent());
-		setCurrentIndex(current.row());
-		::Console.EditCursor.SetHighlightedObject(nullptr);
-		setIconSize(QSize(0, 0));
-		QComboBox::hidePopup();
-		if (selected_data.type() == QVariant::Int)
-		{
-			emit NewItemSelected(selected_data.toInt());
-		}
-	}
-	descending = item_clicked = false;
+	// Cleanup tree combobox
+	::Console.EditCursor.SetHighlightedObject(nullptr);
+	setIconSize(QSize(0, 0));
+	QComboBox::hidePopup();
 }
 
 void C4DeepQComboBox::setCurrentModelIndex(QModelIndex new_index)
@@ -705,15 +721,63 @@ int32_t C4DeepQComboBox::GetCurrentSelectionIndex()
 // event filter for view: Catch mouse clicks to prevent closing from simple mouse clicks
 bool C4DeepQComboBox::eventFilter(QObject *obj, QEvent *event)
 {
-	if (obj == view()->viewport() && event->type() == QEvent::MouseButtonPress)
+	if (obj == view()->viewport())
 	{
-		QPoint pos = static_cast<QMouseEvent *>(event)->pos();
-		QModelIndex pressed_index = view()->indexAt(pos);
-		item_clicked = true;
-		descending = view()->visualRect(pressed_index).contains(pos);
+		if (event->type() == QEvent::MouseButtonPress)
+		{
+			QPoint pos = static_cast<QMouseEvent *>(event)->pos();
+			QModelIndex pressed_index = view()->indexAt(pos);
+			QRect item_rect = view()->visualRect(pressed_index);
+			// Check if a group was clicked
+			bool item_clicked = item_rect.contains(pos);
+			if (item_clicked)
+			{
+				QVariant selected_data = model()->data(pressed_index, OptionIndexRole);
+				if (selected_data.type() != QVariant::Int)
+				{
+					// This is a group. Just expand that entry.
+					QTreeView *tview = static_cast<QTreeView *>(view());
+					if (!tview->isExpanded(pressed_index))
+					{
+						tview->setExpanded(pressed_index, true);
+						int32_t child_row_count = model()->rowCount(pressed_index);
+						tview->scrollTo(model()->index(child_row_count - 1, 0, pressed_index), QAbstractItemView::EnsureVisible);
+						tview->scrollTo(pressed_index, QAbstractItemView::EnsureVisible);
+					}
+					is_next_close_blocked = true;
+					return true;
+				}
+			}
+			else
+			{
+				is_next_close_blocked = true;
+				return false;
+			}
+			// Delegate handling: The forward to delegate screws up for me sometimes and just stops randomly
+			// Prevent this by calling the event directly
+			QStyleOptionViewItem option;
+			option.rect = view()->visualRect(pressed_index);
+			if (item_delegate->editorEvent(event, model(), option, pressed_index))
+			{
+				// If the down event is taken by a music play event, ignore the following button up
+				is_next_close_blocked = true;
+				return true;
+			}
+		}
+		else if (event->type() == QEvent::MouseButtonRelease)
+		{
+			if (is_next_close_blocked)
+			{
+				is_next_close_blocked = false;
+				return true;
+			}
+		}
 	}
-	return false;
+	return QComboBox::eventFilter(obj, event);
 }
+
+
+/* Enumeration delegate editor */
 
 void C4PropertyDelegateEnumEditor::paintEvent(QPaintEvent *ev)
 {
@@ -730,6 +794,9 @@ void C4PropertyDelegateEnumEditor::paintEvent(QPaintEvent *ev)
 		//p.fillRect(view_item.rect, QColor("red"));
 	}
 }
+
+
+/* Enumeration (dropdown list) delegate */
 
 C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions)
 	: C4PropertyDelegate(factory, props)
@@ -812,6 +879,7 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 		if (item_obj_data) new_item->setData(QVariant(item_obj_data->Number), C4DeepQComboBox::ObjectHighlightRole);
 		new_item->setData(QString((opt.help ? opt.help : opt.name)->GetCStr()), Qt::ToolTipRole);
 		if (opt.help) new_item->setData(QIcon(":/editor/res/Help.png"), Qt::DecorationRole);
+		if (opt.sound_name) new_item->setData(QIcon(":/editor/res/Sound.png"), Qt::DecorationRole);
 		parent->appendRow(new_item);
 		++idx;
 	}
@@ -839,13 +907,18 @@ void C4PropertyDelegateEnum::AddTypeOption(C4String *name, C4V_Type type, const 
 	options.push_back(option);
 }
 
-void C4PropertyDelegateEnum::AddConstOption(C4String *name, const C4Value &val, C4String *group)
+void C4PropertyDelegateEnum::AddConstOption(C4String *name, const C4Value &val, C4String *group, C4String *sound_name)
 {
 	Option option;
 	option.name = name;
 	option.group = group;
 	option.value = val;
 	option.storage_type = Option::StorageByValue;
+	if (sound_name)
+	{
+		option.sound_name = sound_name;
+		option.help = sound_name;
+	}
 	options.push_back(option);
 }
 
@@ -1052,7 +1125,7 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->layout->setMargin(0);
 	editor->layout->setSpacing(0);
 	editor->updating = true;
-	editor->option_box = new C4DeepQComboBox(editor);
+	editor->option_box = new C4DeepQComboBox(editor, GetOptionComboBoxButtonType());
 	editor->layout->addWidget(editor->option_box);
 	for (auto &option : options) editor->option_box->addItem(option.name->GetCStr());
 	connect(editor->option_box, &C4DeepQComboBox::NewItemSelected, editor, [editor, this](int32_t newval) {
@@ -1154,6 +1227,9 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 	return false;
 }
 
+
+/* Definition delegate */
+
 C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
@@ -1200,6 +1276,9 @@ void C4PropertyDelegateDef::AddDefinitions(C4ConsoleQtDefinitionListModel *def_l
 		}
 	}
 }
+
+
+/* Object delegate */
 
 C4PropertyDelegateObject::C4PropertyDelegateObject(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props), max_nearby_objects(20)
@@ -1293,6 +1372,41 @@ QString C4PropertyDelegateObject::GetDisplayString(const C4Value &v, class C4Obj
 	}
 }
 
+
+/* Sound delegate */
+
+C4PropertyDelegateSound::C4PropertyDelegateSound(const C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateEnum(factory, props)
+{
+	// Add none-option
+	AddConstOption(::Strings.RegString("nil"), C4VNull);
+	// Add all sounds as options
+	for (C4SoundEffect *fx = ::Application.SoundSystem.GetFirstSound(); fx; fx = fx->Next)
+	{
+		// Extract group name as path to sound, replacing "::" by "/" for enum groups
+		StdStrBuf full_name_s(fx->GetFullName(), true);
+		RemoveExtension(&full_name_s);
+		const char *full_name = full_name_s.getData();
+		const char *base_name = full_name, *pos;
+		StdStrBuf group_string;
+		while ((pos = SSearch(base_name, "::")))
+		{
+			if (group_string.getLength()) group_string.AppendChar('/');
+			group_string.Append(base_name, pos - base_name - 2);
+			base_name = pos;
+		}
+		C4RefCntPointer<C4String> group;
+		if (group_string.getLength()) group = ::Strings.RegString(group_string);
+		// Script name: Full name (without extension)
+		C4RefCntPointer<C4String> sound_string = ::Strings.RegString(full_name_s);
+		// Add the option
+		AddConstOption(::Strings.RegString(base_name), C4VString(sound_string.Get()), group.Get(), sound_string.Get());
+	}
+}
+
+
+/* Boolean delegate */
+
 C4PropertyDelegateBool::C4PropertyDelegateBool(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
@@ -1309,6 +1423,9 @@ bool C4PropertyDelegateBool::GetPropertyValue(const C4Value &container, C4String
 	if (out_val->GetType() != C4V_Bool) *out_val = C4VBool(!!*out_val);
 	return success;
 }
+
+
+/* Has-effect delegate */
 
 C4PropertyDelegateHasEffect::C4PropertyDelegateHasEffect(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateBool(factory, props)
@@ -1336,6 +1453,8 @@ bool C4PropertyDelegateHasEffect::GetPropertyValue(const C4Value &container, C4S
 }
 
 
+/* C4Value via an enumeration delegate */
+
 C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateEnum(factory, props)
 {
@@ -1352,6 +1471,9 @@ C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDel
 	AddTypeOption(::Strings.RegString("effect"), C4V_Effect, C4VNull, factory->GetDelegateByValue(C4VString("effect")));
 	AddTypeOption(::Strings.RegString("proplist"), C4V_PropList, C4VNull, factory->GetDelegateByValue(C4VString("proplist")));
 }
+
+
+/* C4Value via an edit field delegate */
 
 C4PropertyDelegateC4ValueInputEditor::C4PropertyDelegateC4ValueInputEditor(QWidget *parent)
 	: QWidget(parent), layout(NULL), edit(NULL), extended_button(NULL), commit_pending(false)
@@ -1481,6 +1603,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 			if (str->GetData() == "def") return new C4PropertyDelegateDef(this, props);
 			if (str->GetData() == "object") return new C4PropertyDelegateObject(this, props);
 			if (str->GetData() == "enum") return new C4PropertyDelegateEnum(this, props);
+			if (str->GetData() == "sound") return new C4PropertyDelegateSound(this, props);
 			if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
 			if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
 			if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
@@ -2187,6 +2310,15 @@ const char *C4ConsoleQtPropListModel::GetTargetPathHelp() const
 	if (!desc) desc = info_proplist->GetPropertyStr(P_Description);
 	if (!desc) return nullptr;
 	return desc->GetCStr();
+}
+
+const char *C4ConsoleQtPropListModel::GetTargetPathName() const
+{
+	// Name prop of current info.
+	C4PropList *info_proplist = this->info_proplist.getPropList();
+	if (!info_proplist) return nullptr;
+	C4String *name = info_proplist->GetPropertyStr(P_Name);
+	return name ? name->GetCStr() : nullptr;
 }
 
 void C4ConsoleQtPropListModel::AddArrayElement()
