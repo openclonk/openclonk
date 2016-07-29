@@ -31,11 +31,13 @@ func Definition(def)
 	Evaluator = {};
 	Evaluator.Action = { Name="$UserAction$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
+	Evaluator.Definition = { Name="$UserDefinition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [] };
 	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [] };
 	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
+	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
@@ -62,11 +64,26 @@ func Definition(def)
 		TargetPlayers = new Evaluator.PlayerList { EditorHelp="$SoundTargetPlayersHelp$" },
 		SourceObject = new Evaluator.Object { Name="$SoundSourceObject$", EditorHelp="$SoundSourceObjectHelp$" }
 		} } );
+	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", EditorProps = {
+		ID = new Evaluator.Definition { EditorHelp="$CreateObjectDefinitionHelp$" },
+		Position = new Evaluator.Position { EditorHelp="$CreateObjectPositionHelp$" },
+		CreateAbove = { Name="$CreateObjectCreationOffset$", EditorHelp="$CreateObjectCreationOffsetHelp$", Type="enum", Options=[
+			{ Name="$Center$" },
+			{ Name="$Bottom$", Value=true }
+			]},
+		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CreateObjectOwnerHelp$" },
+		Container = new Evaluator.Object { Name="$Container$", EditorHelp="$CreateObjectContainerHelp$" },
+		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$CreateObjectSpeedXHelp$" },
+		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" }
+		} } );
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
 	AddEvaluator("Object", nil, "$ConstantObject$", "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
+	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
+	// Definition evaluators
+	AddEvaluator("Definition", nil, "$Constant$", "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
 	// Player evaluators
 	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
@@ -202,11 +219,25 @@ public func EvaluateCondition(proplist props, object action_object, object trigg
 	return result;
 }
 
+private func EvaluatePosition(proplist props, object context)
+{
+	// Execute position evaluator; fall back to position of action object
+	var position = EvaluateValue("Position", props, context);
+	if (!position)
+	{
+		if (context.action_object) position = [context.action_object->GetX(), context.action_object->GetY()];
+		else position = [0,0];
+	}
+	return position;
+}
+
 private func ResumeAction(proplist context, proplist resume_props)
 {
 	//Log("ResumeAction %v %v", context, resume_props);
 	// Resume only if on hold for the same entry
 	if (context.hold != resume_props) return;
+	// Not if owning object is dead
+	if (!context.action_object) return;
 	// Resume action
 	EvaluateValue("Action", context.root_action, context);
 	// Cleanup action object (unless it ran into another hold)
@@ -229,6 +260,7 @@ private func EvalConstant(proplist props, proplist context) { return props.Value
 private func EvalObj_ActionObject(proplist props, proplist context) { return context.action_object; }
 private func EvalObj_TriggeringObject(proplist props, proplist context) { return context.triggering_object; }
 private func EvalObj_TriggeringClonk(proplist props, proplist context) { return context.triggering_clonk; }
+private func EvalObj_LastCreatedObject(proplist props, proplist context) { return context.last_created_object; }
 private func EvalPlr_Trigger(proplist props, proplist context) { return context.triggering_player; }
 private func EvalPlrList_Single(proplist props, proplist context, fn) { return [Call(fn, props, context)]; }
 
@@ -317,6 +349,38 @@ private func EvalAct_Sound(proplist props, proplist context)
 			sound_context->Sound(props.Sound, false, volume, plr, props.Loop, nil, pitch);
 		}
 	}
+}
+
+private func EvalAct_CreateObject(proplist props, proplist context)
+{
+	// Create a new object
+	var create_id = EvaluateValue("Definition", props.ID, context);
+	if (!create_id) return;
+	var owner = EvaluateValue("Player", props.Owner, context);
+	var container = EvaluateValue("Object", props.Container, context);
+	var obj;
+	if (container)
+	{
+		// Contained object
+		obj = container->CreateContents(create_id);
+		if (obj) obj->SetOwner(owner);
+	}
+	else
+	{
+		// Uncontained object
+		var position = EvaluatePosition(props.Position, context);
+		var speed_x = EvaluateValue("Integer", props.SpeedX, context);
+		var speed_y = EvaluateValue("Integer", props.SpeedY, context);
+		if (props.CreateAbove)
+			obj = Global->CreateObjectAbove(create_id, position[0], position[1], owner);
+		else
+			obj = Global->CreateObject(create_id, position[0], position[1], owner);
+		// Default speed
+		if (obj) obj->SetXDir(speed_x, 100);
+		if (obj) obj->SetYDir(speed_y, 100);
+	}
+	// Remember object for later access
+	context.last_created_object = obj;
 }
 
 
