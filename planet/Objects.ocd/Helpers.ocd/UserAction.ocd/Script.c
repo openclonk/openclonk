@@ -34,6 +34,7 @@ func Definition(def)
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [] };
+	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [] };
 	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
@@ -49,6 +50,18 @@ func Definition(def)
 	AddEvaluator("Action", "$Sequence$", "$Wait$", "$WaitHelp$", "wait", [def, def.EvalAct_Wait], { Time=60 }, { Type="proplist", Display="{{Time}}", EditorProps = {
 		Time = { Name="$Time$", Type="int", Min=1 }
 		} } );
+	AddEvaluator("Action", "$Ambience$", "$Sound$", "$SoundHelp$", "sound", [def, def.EvalAct_Sound], { Pitch={Function="int_constant", Value=0}, Volume={Function="int_constant", Value=100}, TargetPlayers={Function="all_players"} }, { Type="proplist", Display="{{Sound}}", EditorProps = {
+		Sound = { Name="$SoundName$", EditorHelp="$SoundNameHelp$", Type="sound", AllowEditing=true },
+		Pitch = new Evaluator.Integer { Name="$SoundPitch$", EditorHelp="$SoundPitchHelp$" },
+		Volume = new Evaluator.Integer { Name="$SoundVolume$", EditorHelp="$SoundVolumeHelp$" },
+		Loop = { Name="$SoundLoop$", EditorHelp="$SoundLoopHelp$", Type="enum", Options=[
+			{ Name="$SoundLoopNone$" },
+			{ Name="$SoundLoopOn$", Value=+1 },
+			{ Name="$SoundLoopOff$", Value=-1 }
+			] },
+		TargetPlayers = new Evaluator.PlayerList { EditorHelp="$SoundTargetPlayersHelp$" },
+		SourceObject = new Evaluator.Object { Name="$SoundSourceObject$", EditorHelp="$SoundSourceObjectHelp$" }
+		} } );
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
@@ -60,6 +73,8 @@ func Definition(def)
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
 	// Boolean (condition) evaluators
 	AddEvaluator("Boolean", nil, "$Constant$", "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
+	// Integer evaluators
+	AddEvaluator("Integer", nil, "$Constant$", "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
 	// User action editor props
 	Prop = Evaluator.Action;
 	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
@@ -283,6 +298,25 @@ private func EvalAct_Wait(proplist props, proplist context)
 	// Wait for specified number of frames
 	context.hold = props;
 	ScheduleCall(context, UserAction.ResumeAction, props.Time, 1, context, props);
+}
+
+private func EvalAct_Sound(proplist props, proplist context)
+{
+	if (!props.Sound) return;
+	var sound_context = props.SourceObject ?? Global;
+	var volume = EvaluateValue("Integer", props.Volume, context);
+	var pitch = EvaluateValue("Integer", props.Pitch, context);
+	if (props.TargetPlayers == "all_players")
+	{
+		sound_context->Sound(props.Sound, true, volume, nil, props.Loop, nil, pitch);
+	}
+	else
+	{
+		for (var plr in EvaluateValue("PlayerList", props.TargetPlayers, context))
+		{
+			sound_context->Sound(props.Sound, false, volume, plr, props.Loop, nil, pitch);
+		}
+	}
 }
 
 
