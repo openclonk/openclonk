@@ -76,6 +76,13 @@ func Definition(def)
 		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$CreateObjectSpeedXHelp$" },
 		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" }
 		} } );
+	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", EditorProps = {
+		Object = new Evaluator.Object { EditorHelp="$RemoveObjectObject$" },
+		EjectContents = { Name="$EjectContents$", EditorHelp="$EjectContentsHelp$", Type="enum", Options=[
+			{ Name="$EjectContentsNo$" },
+			{ Name="$EjectContentsYes$", Value=true }
+			] },
+		} } );
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
@@ -381,6 +388,13 @@ private func EvalAct_CreateObject(proplist props, proplist context)
 	}
 	// Remember object for later access
 	context.last_created_object = obj;
+}
+
+private func EvalAct_RemoveObject(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return;
+	obj->RemoveObject(props.EjectContents);
 }
 
 
