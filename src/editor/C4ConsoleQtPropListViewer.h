@@ -587,7 +587,7 @@ public:
 
 	void SetSelectionModel(QItemSelectionModel *m) { selection_model = m; }
 
-	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_effect_object, C4String *default_selection, int32_t *default_selection_index);
+	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
 	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
 	void AscendPath(); // go back one element in target path stack

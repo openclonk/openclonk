@@ -97,6 +97,21 @@ public:
 	C4Value GetValue() const override;
 };
 
+// Single position shape
+class C4ConsoleQtPoint : public C4ConsoleQtShape
+{
+private:
+	int32_t cx, cy;
+public:
+	C4ConsoleQtPoint(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate);
+
+	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border) override;
+	void Draw(class C4TargetFacet &cgo, float line_width) override;
+	void Drag(int32_t x, int32_t y, int32_t dx, int32_t dy) override;
+
+	C4Value GetValue() const override;
+};
+
 /* List of all current editable Qt shapes */
 class C4ConsoleQtShapes
 {

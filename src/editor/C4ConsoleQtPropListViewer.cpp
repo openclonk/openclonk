@@ -1590,7 +1590,21 @@ bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewIte
 	QPen rect_pen(QBrush(frame_color), width, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
 	painter->setPen(rect_pen);
 	QRect inner_rect = option.rect.adjusted(width / 2, width / 2, -width / 2, -width / 2);
-	if (shape_type && shape_type->GetData() == "circle")
+	if (inner_rect.width() > inner_rect.height())
+	{
+		// Draw shape in right corner
+		inner_rect.adjust(inner_rect.width() - inner_rect.height(), 0, 0, 0);
+	}
+	if (shape_type && shape_type->GetData() == "point")
+	{
+
+		QPoint ctr = inner_rect.center();
+		int r = inner_rect.height() * 7 / 20;
+		painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r, +r));
+		painter->drawLine(ctr + QPoint(+r, -r), ctr + QPoint(-r, +r));
+		painter->drawEllipse(inner_rect);
+	}
+	else if (shape_type && shape_type->GetData() == "circle")
 	{
 		painter->drawEllipse(inner_rect);
 		if (can_move_center) painter->drawPoint(inner_rect.center());
@@ -1626,7 +1640,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 			if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
 			if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
 			if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
-			if (str->GetData() == "rect" || str->GetData() == "circle") return new C4PropertyDelegateShape(this, props);
+			if (str->GetData() == "rect" || str->GetData() == "circle" || str->GetData() == "point") return new C4PropertyDelegateShape(this, props);
 			if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
 			// unknown type
 			LogF("Invalid delegate type: %s.", str->GetCStr());
@@ -1793,7 +1807,7 @@ C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 {
 }
 
-bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_effect_object, C4String *default_selection, int32_t *default_selection_index)
+bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index)
 {
 	auto new_properties = add_proplist->GetSortedLocalProperties(false);
 	if (!new_properties.size()) return false;
@@ -1810,14 +1824,15 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		layout_valid = false;
 		properties.props.resize(new_properties.size());
 	}
+	C4Effect *fx = target_proplist->GetEffect();
 	for (int32_t i = 0; i < new_properties.size(); ++i)
 	{
 		Property *prop = &properties.props[i];
 		// Property access path
 		prop->parent_value.SetPropList(target_proplist);
-		if (base_effect_object)
+		if (fx)
 			// Access to effect
-			prop->property_path = C4PropertyPath(target_proplist->GetEffect(), base_effect_object);
+			prop->property_path = C4PropertyPath(fx, base_object);
 		else
 			prop->property_path = target_path;
 		// ID for default selection memory
@@ -1854,7 +1869,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->shape_property_path = new_shape_property_path;
 			if (new_shape_delegate)
 			{
-				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_effect_object ? base_effect_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v, new_shape_delegate);
+				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_object ? base_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v, new_shape_delegate);
 				C4PropertyDelegateFactory *factory = this->delegate_factory;
 				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
 					new_shape_delegate->SetModelData(nullptr, prop->shape_property_path, shape);
@@ -1985,6 +2000,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 {
 	assert(target_proplist);
 	C4PropList *base_proplist = this->base_proplist.getPropList();
+	C4Object *base_obj = this->base_proplist.getObj();
 	C4PropList *info_proplist = this->info_proplist.getPropList();
 	int32_t num_groups = 0;
 	// Published properties
@@ -2016,7 +2032,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 					name = QString(proplist_static->GetDataString().getData());
 				else
 					name = info_proplist->GetName();
-				if (AddPropertyGroup(info_editorprops, num_groups, name, target_proplist, nullptr, default_selection, default_selection_index))
+				if (AddPropertyGroup(info_editorprops, num_groups, name, target_proplist, base_obj, default_selection, default_selection_index))
 					++num_groups;
 				// Assign group for default selection
 				if (*default_selection_index >= 0)
@@ -2033,7 +2049,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			if (editor_base)
 			{
 				C4PropList *info_editorprops = editor_base->GetPropertyPropList(P_EditorProps);
-				if (AddPropertyGroup(info_editorprops, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, nullptr, nullptr, nullptr))
+				if (AddPropertyGroup(info_editorprops, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, base_obj, nullptr, nullptr))
 					++num_groups;
 			}
 		}

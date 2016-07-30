@@ -285,6 +285,65 @@ C4Value C4ConsoleQtCircle::GetValue() const
 }
 
 
+/* Point shape */
+
+C4ConsoleQtPoint::C4ConsoleQtPoint(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate)
+	: C4ConsoleQtShape(for_obj, props, parent_delegate), cx(0), cy(0)
+{
+	// Expect value as [x,y]
+	C4ValueArray *aval = val.getArray();
+	if (aval && aval->GetSize() == 2)
+	{
+		cx = aval->GetItem(0).getInt();
+		cy = aval->GetItem(1).getInt();
+	}
+}
+
+bool C4ConsoleQtPoint::IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border)
+{
+	// Get relative circle center pos
+	x -= AbsX(cx);
+	y -= AbsY(cy);
+	int32_t r = x*x + y*y;
+	// Hits point?
+	if (r <= hit_range*hit_range*6)
+	{
+		*drag_cursor = Qt::CursorShape::SizeAllCursor;
+		*drag_border = 0;
+		return true;
+	}
+	return false;
+}
+
+void C4ConsoleQtPoint::Draw(class C4TargetFacet &cgo, float line_width)
+{
+	// Circle with cross inside
+	uint32_t clr = GetBorderColor(0, false);
+	float d = line_width * 3;
+	float dc = sqrtf(2) * d;
+	int32_t x = AbsX(cx) + cgo.X - cgo.TargetX;
+	int32_t y = AbsY(cy) + cgo.Y - cgo.TargetY;
+	pDraw->DrawLineDw(cgo.Surface, x - d, y - d, x + d, y + d, clr, line_width);
+	pDraw->DrawLineDw(cgo.Surface, x - d, y + d, x + d, y - d, clr, line_width);
+	pDraw->DrawCircleDw(cgo.Surface, x, y, dc, clr, line_width);
+}
+
+void C4ConsoleQtPoint::Drag(int32_t x, int32_t y, int32_t dx, int32_t dy)
+{
+	cx += dx;
+	cy += dy;
+}
+
+C4Value C4ConsoleQtPoint::GetValue() const
+{
+	// Return [cx, cy]
+	C4ValueArray *pos_array = new C4ValueArray(2);
+	pos_array->SetItem(0, C4VInt(cx));
+	pos_array->SetItem(1, C4VInt(cy));
+	return C4VArray(pos_array);
+}
+
+
 /* Shape list */
 
 C4ConsoleQtShape *C4ConsoleQtShapes::CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate)
@@ -294,6 +353,7 @@ C4ConsoleQtShape *C4ConsoleQtShapes::CreateShape(class C4Object *for_obj, C4Prop
 	C4ConsoleQtShape *shape = nullptr;
 	if (type->GetData() == "rect") shape = new C4ConsoleQtRect(for_obj, props, val, parent_delegate);
 	else if (type->GetData() == "circle") shape = new C4ConsoleQtCircle(for_obj, props, val, parent_delegate);
+	else if (type->GetData() == "point") shape = new C4ConsoleQtPoint(for_obj, props, val, parent_delegate);
 	return shape;
 }
 
