@@ -330,6 +330,9 @@ private:
 	bool allow_editing;
 
 protected:
+	C4RefCntPointer<C4String> empty_name; // Override for name of empty option
+
+protected:
 	void ClearOptions();
 	void ReserveOptions(int32_t num);
 	QStandardItemModel *CreateOptionModel() const;

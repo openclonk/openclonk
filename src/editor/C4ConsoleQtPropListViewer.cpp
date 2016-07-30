@@ -822,6 +822,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 		default_option_key = props->GetPropertyStr(P_OptionKey);
 		default_value_key = props->GetPropertyStr(P_ValueKey);
 		allow_editing = props->GetPropertyBool(P_AllowEditing);
+		empty_name = props->GetPropertyStr(P_EmptyName);
 	}
 	if (poptions)
 	{
@@ -833,12 +834,13 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			if (!props) continue;
 			Option option;
 			option.name = props->GetPropertyStr(P_Name);
-			if (!option.name.Get()) option.name = ::Strings.RegString("???");
+			if (!option.name) option.name = ::Strings.RegString("???");
 			option.help = props->GetPropertyStr(P_EditorHelp);
 			option.group = props->GetPropertyStr(P_Group);
 			option.value_key = props->GetPropertyStr(P_ValueKey);
 			if (!option.value_key) option.value_key = default_value_key;
 			props->GetProperty(P_Value, &option.value);
+			if (option.value.GetType() == C4V_Nil && empty_name) option.name = empty_name.Get();
 			props->GetProperty(P_Get, &option.value_function);
 			option.type = C4V_Type(props->GetPropertyInt(P_Type, C4V_Any));
 			option.option_key = props->GetPropertyStr(P_OptionKey);
@@ -1262,8 +1264,7 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 	: C4PropertyDelegateEnum(factory, props)
 {
 	// nil is always an option
-	C4String *empty_name = props ? props->GetPropertyStr(P_EmptyName) : nullptr;
-	AddConstOption(empty_name ? empty_name : ::Strings.RegString("nil"), C4VNull);
+	AddConstOption(empty_name ? empty_name.Get() : ::Strings.RegString("nil"), C4VNull);
 	// Collect sorted definitions
 	C4String *filter_property = props ? props->GetPropertyStr(P_Filter) : nullptr;
 	if (filter_property)
