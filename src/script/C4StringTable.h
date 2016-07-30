@@ -509,6 +509,7 @@ enum C4PropertyName
 	P_Select,
 	P_DescendPath,
 	P_EmptyName,
+	P_ShortName,
 	P_EditorHelp,
 	P_Description,
 	P_AllowEditing,

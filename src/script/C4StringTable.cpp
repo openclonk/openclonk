@@ -285,6 +285,7 @@ C4StringTable::C4StringTable()
 	P[P_Select] = "Select";
 	P[P_DescendPath] = "DescendPath";
 	P[P_EmptyName] = "EmptyName";
+	P[P_ShortName] = "ShortName";
 	P[P_EditorHelp] = "EditorHelp";
 	P[P_Description] = "Description";
 	P[P_AllowEditing] = "AllowEditing";

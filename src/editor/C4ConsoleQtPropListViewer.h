@@ -89,7 +89,7 @@ public:
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
 	virtual bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
 	virtual bool GetPropertyValueBase(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
-	virtual QString GetDisplayString(const C4Value &val, class C4Object *obj) const;
+	virtual QString GetDisplayString(const C4Value &val, class C4Object *obj, bool short_names) const;
 	virtual QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const;
 	virtual QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const;
 	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : nullptr; } // get name of setter function for this property
@@ -136,7 +136,7 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
-	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
 };
 
 // Editor: Text displaying value plus a button that opens an extended editor
@@ -178,7 +178,7 @@ private:
 public:
 	C4PropertyDelegateArray(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
-	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
 };
 
 class C4PropertyDelegatePropList : public C4PropertyDelegateDescendPath
@@ -188,7 +188,7 @@ private:
 public:
 	C4PropertyDelegatePropList(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
-	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
 };
 
 class C4PropertyDelegateColor : public C4PropertyDelegate
@@ -201,7 +201,7 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
-	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
 	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
 };
@@ -301,6 +301,7 @@ public:
 	{
 	public:
 		C4RefCntPointer<C4String> name; // Display name in Editor enum dropdown box
+		C4RefCntPointer<C4String> short_name; // Shortened name displayed as sub-delegate
 		C4RefCntPointer<C4String> help; // Tooltip text
 		C4RefCntPointer<C4String> group; // Grouping in enum dropdown box; nested groups separated by '/'
 		C4RefCntPointer<C4String> option_key;
@@ -345,7 +346,7 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
-	QString GetDisplayString(const C4Value &val, class C4Object *obj) const override;
+	QString GetDisplayString(const C4Value &val, class C4Object *obj, bool short_names) const override;
 	const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const override; // Forward to parameter of selected option
 	bool HasCustomPaint() const override { return true; }
 	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
@@ -384,7 +385,7 @@ public:
 	C4PropertyDelegateObject(const C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
-	QString GetDisplayString(const C4Value &v, class C4Object *obj) const override;
+	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override;
 };
 
 // Select a sound
@@ -466,7 +467,7 @@ public:
 	const C4PropertyDelegateShape *GetDirectShapeDelegate() const override { return this; }
 	bool HasCustomPaint() const override { return true; }
 	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
-	QString GetDisplayString(const C4Value &v, class C4Object *obj) const override { return QString(); }
+	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override { return QString(); }
 };
 
 class C4PropertyDelegateFactory : public QStyledItemDelegate

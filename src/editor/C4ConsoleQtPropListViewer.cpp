@@ -191,7 +191,7 @@ bool C4PropertyDelegate::GetPropertyValue(const C4Value &container, C4String *ke
 	}
 }
 
-QString C4PropertyDelegate::GetDisplayString(const C4Value &v, C4Object *obj) const
+QString C4PropertyDelegate::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
 {
 	return QString(v.GetDataString().getData());
 }
@@ -311,7 +311,7 @@ QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory 
 	return editor;
 }
 
-QString C4PropertyDelegateString::GetDisplayString(const C4Value &v, C4Object *obj) const
+QString C4PropertyDelegateString::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
 {
 	// Raw string without ""
 	C4String *s = v.getStr();
@@ -358,7 +358,7 @@ C4PropertyDelegateDescendPath::C4PropertyDelegateDescendPath(const class C4Prope
 void C4PropertyDelegateDescendPath::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
-	editor->label->setText(GetDisplayString(val, nullptr));
+	editor->label->setText(GetDisplayString(val, nullptr, false));
 	editor->last_value = val;
 	editor->property_path = property_path;
 	if (editor->button_pending) emit editor->button->pressed();
@@ -420,7 +420,7 @@ C4PropertyDelegateArray::C4PropertyDelegateArray(const class C4PropertyDelegateF
 	}
 }
 
-QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *obj) const
+QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
 {
 	C4ValueArray *arr = v.getArray();
 	if (!arr) return QString(LoadResStr("IDS_CNS_INVALID"));
@@ -438,16 +438,21 @@ QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *ob
 		for (int32_t i = 0; i < std::min<int32_t>(n, max_array_display); ++i)
 		{
 			if (i) result += ",";
-			result += element_delegate->GetDisplayString(v._getArray()->GetItem(i), obj);
+			result += element_delegate->GetDisplayString(v._getArray()->GetItem(i), obj, true);
 		}
 		if (n > max_array_display) result += ",...";
 		result += "]";
 		return result;
 	}
-	else
+	else if (n || !short_names)
 	{
 		// Default display (or display with 0 elements): Just show element number
 		return QString(LoadResStr("IDS_CNS_ARRAYSHORT")).arg(n);
+	}
+	else
+	{
+		// Short display of empty array: Just leave it out.
+		return QString("");
 	}
 }
 
@@ -463,7 +468,7 @@ C4PropertyDelegatePropList::C4PropertyDelegatePropList(const class C4PropertyDel
 	}
 }
 
-QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object *obj) const
+QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
 {
 	C4PropList *data = v.getPropList();
 	if (!data) return QString(LoadResStr("IDS_CNS_INVALID"));
@@ -492,7 +497,7 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 				C4PropertyDelegate *child_delegate = factory->GetDelegateByValue(child_delegate_val);
 				if (child_delegate)
 				{
-					display_value = child_delegate->GetDisplayString(cv, obj);
+					display_value = child_delegate->GetDisplayString(cv, obj, true);
 				}
 			}
 		}
@@ -532,7 +537,7 @@ void C4PropertyDelegateColor::SetEditorData(QWidget *aeditor, const C4Value &val
 	palette.setColor(editor->label->foregroundRole(), QColor(QRgb(foreground_color)));
 	editor->label->setPalette(palette);
 	editor->label->setAutoFillBackground(true);
-	editor->label->setText(GetDisplayString(val, NULL));
+	editor->label->setText(GetDisplayString(val, nullptr, false));
 	editor->last_value = val;
 }
 
@@ -555,7 +560,7 @@ QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFac
 	return peditor.release();
 }
 
-QString C4PropertyDelegateColor::GetDisplayString(const C4Value &v, C4Object *obj) const
+QString C4PropertyDelegateColor::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
 {
 	return QString("#%1").arg(uint32_t(v.getInt()), 8, 16, QChar('0'));
 }
@@ -841,6 +846,8 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			if (!option.value_key) option.value_key = default_value_key;
 			props->GetProperty(P_Value, &option.value);
 			if (option.value.GetType() == C4V_Nil && empty_name) option.name = empty_name.Get();
+			option.short_name = props->GetPropertyStr(P_ShortName);
+			if (!option.short_name) option.short_name = option.name.Get();
 			props->GetProperty(P_Get, &option.value_function);
 			option.type = C4V_Type(props->GetPropertyInt(P_Type, C4V_Any));
 			option.option_key = props->GetPropertyStr(P_OptionKey);
@@ -921,6 +928,7 @@ void C4PropertyDelegateEnum::AddTypeOption(C4String *name, C4V_Type type, const 
 {
 	Option option;
 	option.name = name;
+	option.short_name = name;
 	option.type = type;
 	option.value = val;
 	option.storage_type = Option::StorageByType;
@@ -932,6 +940,7 @@ void C4PropertyDelegateEnum::AddConstOption(C4String *name, const C4Value &val, 
 {
 	Option option;
 	option.name = name;
+	option.short_name = name;
 	option.group = group;
 	option.value = val;
 	option.storage_type = Option::StorageByValue;
@@ -1185,20 +1194,20 @@ void C4PropertyDelegateEnum::EnsureOptionDelegateResolved(const Option &option) 
 		option.adelegate = factory->GetDelegateByValue(option.adelegate_val);
 }
 
-QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Object *obj) const
+QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const
 {
 	// Display string from value
 	int32_t idx = GetOptionByValue(v);
 	if (idx < 0)
 	{
 		// Value not found: Default display
-		return C4PropertyDelegate::GetDisplayString(v, obj);
+		return C4PropertyDelegate::GetDisplayString(v, obj, short_names);
 	}
 	else
 	{
 		// Value found: Display option string plus parameter
 		const Option &option = options[idx];
-		QString result = option.name->GetCStr();
+		QString result = (short_names ? option.short_name : option.name)->GetCStr();
 		// Lazy-resolve parameter delegate
 		EnsureOptionDelegateResolved(option);
 		if (option.adelegate)
@@ -1209,8 +1218,8 @@ QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Objec
 				C4PropList *vp = v.getPropList();
 				if (vp) vp->GetPropertyByS(option.value_key, &param_val);
 			}
-			result += " ";
-			result += option.adelegate->GetDisplayString(param_val, obj);
+			if (!result.isEmpty()) result += " ";
+			result += option.adelegate->GetDisplayString(param_val, obj, short_names);
 		}
 		return result;
 	}
@@ -1387,7 +1396,7 @@ QWidget *C4PropertyDelegateObject::CreateEditor(const class C4PropertyDelegateFa
 	return C4PropertyDelegateEnum::CreateEditor(parent_delegate, parent, option, by_selection, is_child);
 }
 
-QString C4PropertyDelegateObject::GetDisplayString(const C4Value &v, class C4Object *obj) const
+QString C4PropertyDelegateObject::GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const
 {
 	C4Object *vobj = v.getObj();
 	if (vobj)
@@ -2208,7 +2217,7 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		{
 			C4Value v;
 			prop->delegate->GetPropertyValue(prop->parent_value, prop->key, index.row(), &v);
-			return QVariant(prop->delegate->GetDisplayString(v, target_value.getObj()));
+			return QVariant(prop->delegate->GetDisplayString(v, target_value.getObj(), false));
 		}
 		}
 	}
