@@ -99,6 +99,9 @@ func Definition(def)
 	AddEvaluator("Boolean", nil, "$Constant$", "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	// Integer evaluators
 	AddEvaluator("Integer", nil, "$Constant$", "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
+	// Position evaluators
+	AddEvaluator("Position", nil, "$ConstantPositionAbsolute$", "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
+	AddEvaluator("Position", nil, "$ConstantPositionRelative$", "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
 	// User action editor props
 	Prop = Evaluator.Action;
 	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
@@ -395,6 +398,26 @@ private func EvalAct_RemoveObject(proplist props, proplist context)
 	var obj = EvaluateValue("Object", props.Object, context);
 	if (!obj) return;
 	obj->RemoveObject(props.EjectContents);
+}
+
+private func GetDefaultPosition(object target_object)
+{
+	// Default position for constant absolute position evaluator: Use selected object position
+	var value;
+	if (target_object)
+		value = [target_object->GetX(), target_object->GetY()];
+	else
+		value = [0,0];
+	return { Function="position_constant", Value=value };
+}
+
+private func EvalPositionRelative(proplist props, proplist context)
+{
+	// Return position relative to action_object
+	if (context.action_object)
+		return [props.Value[0] + context.action_object->GetX(), props.Value[1] + context.action_object->GetY()];
+	else
+		return props.Value;
 }
 
 
