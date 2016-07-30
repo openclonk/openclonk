@@ -140,3 +140,4 @@ RandomOffRectRel=Zufaellig im Rechteck
 RandomRectRelHelp=Waehlt eine zufaellige Verschiebung aus einem Rechteck (tuerkis).
 RandomOffCircleRel=Zufaellig im Kreis
 RandomCircleRelHelp=Waehlt eine zufaellige Verschiebung aus einem Kreis (lila).
+Global=Global

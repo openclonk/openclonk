@@ -140,3 +140,4 @@ RandomOffRectRel=Random in rectangle
 RandomRectRelHelp=Picks a random offset within a square (teal region).
 RandomOffCircleRel=Random in circle
 RandomCircleRelHelp=Picks a random offset within a square (purple region).
+Global=Global
