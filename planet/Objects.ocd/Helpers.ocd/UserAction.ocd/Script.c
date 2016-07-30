@@ -35,9 +35,10 @@ func Definition(def)
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [] };
-	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [] };
+	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [ {Name="0"} ] };
 	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
+	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
@@ -102,6 +103,24 @@ func Definition(def)
 	// Position evaluators
 	AddEvaluator("Position", nil, "$ConstantPositionAbsolute$", "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, "$ConstantPositionRelative$", "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
+	AddEvaluator("Position", nil, "$Coordinates$", "$CoordinatesHelp$", "position_coordinates", [def, def.EvalCoordinates], def.GetDefaultCoordinates, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
+		X = new Evaluator.Integer { Name="X", EditorHelp="$PosXHelp$" },
+		Y = new Evaluator.Integer { Name="Y", EditorHelp="$PosYHelp$" }
+		} } );
+	AddEvaluator("Position", nil, "$PositionOffset$", "$PositionOffsetHelp$", "position_offset", [def, def.EvalPositionOffset], { }, { Type="proplist", Display="{{Position}}+{{Offset}}", EditorProps = {
+		Position = new Evaluator.Position { EditorHelp="$PositionOffsetPositionHelp$" },
+		Offset = new Evaluator.Offset { EditorHelp="$PositionOffsetOffsetHelp$" }
+		} } );
+	// Offset evaluators
+	AddEvaluator("Offset", nil, "$ConstantOffsetRelative$", "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff30ff });
+	AddEvaluator("Offset", nil, "$Coordinates$", "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
+		X = new Evaluator.Integer { Name="X", EditorHelp="$OffXHelp$" },
+		Y = new Evaluator.Integer { Name="Y", EditorHelp="$OffYHelp$" },
+		} } );
+	AddEvaluator("Offset", nil, "$AddOffsets$", "$AddOffsetsHelp$", "add_offsets", [def, def.EvalOffsetsAdd], { }, { Type="proplist", Display="{{Offset1}}+{{Offset2}}", EditorProps = {
+		Offset1 = new Evaluator.Offset1 { EditorHelp="$AddOffsetOffsetHelp$" },
+		Offset2 = new Evaluator.Offset2 { EditorHelp="$AddOffsetOffsetHelp$" }
+		} } );
 	// User action editor props
 	Prop = Evaluator.Action;
 	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
@@ -239,6 +258,12 @@ private func EvaluatePosition(proplist props, object context)
 		else position = [0,0];
 	}
 	return position;
+}
+
+private func EvaluateOffset(proplist props, object context)
+{
+	// Execute offset evaluator; fall back to [0, 0]
+	return  EvaluateValue("Offset", props, context) ?? [0,0];
 }
 
 private func ResumeAction(proplist context, proplist resume_props)
@@ -411,6 +436,18 @@ private func GetDefaultPosition(object target_object)
 	return { Function="position_constant", Value=value };
 }
 
+private func GetDefaultCoordinates(object target_object)
+{
+	// Default position for constant absolute position evaluator: Use selected object position
+	var value;
+	if (target_object)
+		value = {X={Function="int_constant", Value=target_object->GetX()}, Y={Function="int_constant", Value=target_object->GetY()}};
+	else
+		value = {X=0, Y=0};
+	value.Function="position_coordinates";
+	return value;
+}
+
 private func EvalPositionRelative(proplist props, proplist context)
 {
 	// Return position relative to action_object
@@ -418,6 +455,26 @@ private func EvalPositionRelative(proplist props, proplist context)
 		return [props.Value[0] + context.action_object->GetX(), props.Value[1] + context.action_object->GetY()];
 	else
 		return props.Value;
+}
+
+private func EvalCoordinates(proplist props, proplist context)
+{
+	// Coordinate evaluation: Make array [X, Y]
+	return [EvaluateValue("Integer", props.X, context), EvaluateValue("Integer", props.Y, context)];
+}
+
+private func EvalPositionOffset(proplist props, proplist context)
+{
+	var p = EvaluatePosition(props.Position, context);
+	var o = EvaluateOffset(props.Offset, context);
+	return [p[0]+o[0], p[1]+o[1]];
+}
+
+private func EvalOffsetsAdd(proplist props, proplist context)
+{
+	var o1 = EvaluateOffset(props.Offset1, context);
+	var o2 = EvaluateOffset(props.Offset2, context);
+	return [o1[0]+o2[0], o1[1]+o2[1]];
 }
 
 
