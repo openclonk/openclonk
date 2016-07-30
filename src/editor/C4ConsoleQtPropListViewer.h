@@ -85,7 +85,7 @@ public:
 
 	virtual void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const {};
 	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const {};
-	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const = 0;
+	virtual QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const = 0;
 	virtual void UpdateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option) const;
 	virtual bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
 	virtual bool GetPropertyValueBase(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const;
@@ -116,7 +116,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 };
 
 class C4PropertyDelegateStringEditor : public QLineEdit
@@ -135,7 +135,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 };
 
@@ -167,7 +167,7 @@ public:
 	C4PropertyDelegateDescendPath(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	void SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 };
 
 class C4PropertyDelegateArray : public C4PropertyDelegateDescendPath
@@ -200,7 +200,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 	QString GetDisplayString(const C4Value &v, C4Object *obj) const override;
 	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
@@ -255,6 +255,9 @@ public:
 	int32_t GetCurrentSelectionIndex();
 	void BlockNextCloseEvent() { is_next_close_blocked = true; }; // after item selection on a "play" button, the combo dropdown should stay open
 
+public slots:
+	void doShowPopup() { showPopup(); }
+
 signals:
 	void NewItemSelected(int32_t new_item);
 	void TextChanged(const QString new_text);
@@ -277,12 +280,12 @@ public:
 	C4DeepQComboBox *option_box;
 	QHBoxLayout *layout;
 	QWidget *parameter_widget;
-	bool updating, option_changed;
+	bool updating, option_changed, dropdown_pending;
 	const C4PropertyDelegate *paint_parameter_delegate; // Delegate to draw over the parameter_widget if it's an empty transparent QWidget (for shape delegates)
 
 	C4PropertyDelegateEnumEditor(QWidget *parent)
-		: QWidget(parent), last_selection_index(-1), option_box(NULL), layout(NULL), parameter_widget(NULL),
-		updating(false), option_changed(false), paint_parameter_delegate(nullptr) { }
+		: QWidget(parent), last_selection_index(-1), option_box(nullptr), layout(nullptr), parameter_widget(nullptr),
+		updating(false), option_changed(false), dropdown_pending(false), paint_parameter_delegate(nullptr) { }
 
 	void paintEvent(QPaintEvent *) override;
 };
@@ -338,7 +341,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 	QString GetDisplayString(const C4Value &val, class C4Object *obj) const override;
 	const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const override; // Forward to parameter of selected option
 	bool HasCustomPaint() const override { return true; }
@@ -377,7 +380,7 @@ private:
 public:
 	C4PropertyDelegateObject(const C4PropertyDelegateFactory *factory, C4PropList *props);
 
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 	QString GetDisplayString(const C4Value &v, class C4Object *obj) const override;
 };
 
@@ -441,7 +444,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 };
 
 // areas shown in viewport
@@ -455,7 +458,7 @@ public:
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override { } // TODO maybe implement update?
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
-	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const override { return nullptr; }
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override { return nullptr; }
 	const C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const override { return this; }
 	const C4PropertyDelegateShape *GetDirectShapeDelegate() const override { return this; }
 	bool HasCustomPaint() const override { return true; }

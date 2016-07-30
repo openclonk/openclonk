@@ -259,7 +259,7 @@ void C4PropertyDelegateInt::SetModelData(QObject *editor, const C4PropertyPath &
 	property_path.SetProperty(C4VInt(spinBox->value()));
 }
 
-QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	QSpinBox *editor = new QSpinBox(parent);
 	editor->setMinimum(min);
@@ -300,7 +300,7 @@ void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPat
 	}
 }
 
-QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	Editor *editor = new Editor(parent);
 	// EditingDone only on Return; not just when leaving edit field
@@ -364,7 +364,7 @@ void C4PropertyDelegateDescendPath::SetEditorData(QWidget *aeditor, const C4Valu
 	if (editor->button_pending) emit editor->button->pressed();
 }
 
-QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateDescendPath::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	// Otherwise create display and button to descend path
 	Editor *editor;
@@ -542,7 +542,7 @@ void C4PropertyDelegateColor::SetModelData(QObject *aeditor, const C4PropertyPat
 	property_path.SetProperty(editor->last_value);
 }
 
-QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	Editor *editor;
 	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
@@ -1016,7 +1016,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 			if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
 		}
 		// Show it
-		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem(), by_selection);
+		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem(), by_selection, true);
 		if (editor->parameter_widget)
 		{
 			editor->layout->addWidget(editor->parameter_widget);
@@ -1085,6 +1085,13 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 	// Update parameter
 	UpdateEditorParameter(editor, false);
 	editor->updating = false;
+	// Execute pending dropdowns from creation as child enums
+	if (editor->dropdown_pending)
+	{
+		editor->dropdown_pending = false;
+		QMetaObject::invokeMethod(editor->option_box, "doShowPopup", Qt::QueuedConnection);
+		editor->option_box->showPopup();
+	}
 }
 
 void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
@@ -1136,7 +1143,7 @@ void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, cons
 	}
 }
 
-QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	Editor *editor = new Editor(parent);
 	editor->layout = new QHBoxLayout(editor);
@@ -1152,6 +1159,8 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->updating = false;
 	editor->option_box->setModel(CreateOptionModel());
 	editor->option_box->model()->setParent(editor->option_box);
+	// If created by a selection from a parent enum, show drop down immediately after value has been set
+	editor->dropdown_pending = by_selection && is_child;
 	return editor;
 }
 
@@ -1369,12 +1378,12 @@ void C4PropertyDelegateObject::UpdateObjectList()
 	}
 }
 
-QWidget *C4PropertyDelegateObject::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateObject::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	// Update object list for created editor
 	// (This should be safe since the object delegate cannot contain nested delegates)
 	const_cast<C4PropertyDelegateObject *>(this)->UpdateObjectList();
-	return C4PropertyDelegateEnum::CreateEditor(parent_delegate, parent, option, by_selection);
+	return C4PropertyDelegateEnum::CreateEditor(parent_delegate, parent, option, by_selection, is_child);
 }
 
 QString C4PropertyDelegateObject::GetDisplayString(const C4Value &v, class C4Object *obj) const
@@ -1537,7 +1546,7 @@ void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4Prop
 	}
 }
 
-QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection) const
+QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	// Editor is just an edit box plus a "..." button for array/proplist types
 	Editor *editor = new Editor(parent);
@@ -1720,7 +1729,7 @@ QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOp
 	if (!d) return NULL;
 	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	prop->about_to_edit = true;
-	QWidget *editor = d->CreateEditor(this, parent, option, true);
+	QWidget *editor = d->CreateEditor(this, parent, option, true, false);
 	// Connect value change signals (if editing is possible for this property)
 	// For some reason, commitData needs a non-const pointer
 	if (editor)
