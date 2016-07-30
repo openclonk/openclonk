@@ -173,3 +173,5 @@ CompareObject=Vergleiche Objekte
 CompareString=Vergleiche Texte
 CompareDefinition=Vergleiche Objekttypen
 ComparePlayer=Vergleiche Spieler
+ObjectExists=Objekt existiert
+ObjectExistsHelp=Wahr, wenn das die Funktion ein Objekt zurueckgibt.
