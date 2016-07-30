@@ -8,6 +8,7 @@ UserCondition=Bedingung
 UserDefinition=Objekttyp
 UserPosition=Position
 UserOffset=Verschiebung
+Structure=Gebaeude
 None=Nichts
 Noone=Niemand
 AllPlayers=Alle Spieler

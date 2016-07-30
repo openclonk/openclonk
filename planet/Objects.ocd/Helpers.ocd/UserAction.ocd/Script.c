@@ -25,6 +25,9 @@ local EvaluatorDefs;
 // Call this definition early (but after EditorBase) to allow EditorProp initialization
 local DefinitionPriority=99;
 
+// Localized group names
+local GroupNames = { Structure="$Structure$" };
+
 func Definition(def)
 {
 	// Typed evaluator base definitions
@@ -143,14 +146,14 @@ func Definition(def)
 	return true;
 }
 
-public func GetObjectEvaluator(filter_def, name)
+public func GetObjectEvaluator(filter_def, name, help)
 {
 	// Create copy of the Evaluator.Object delegate, but with the object_constant proplist replaced by a version with filter_def
 	var object_options = Evaluator.Object.Options[:];
 	var const_option = new EvaluatorDefs["object_constant"] {};
 	const_option.Delegate = new const_option.Delegate { Filter=filter_def };
 	object_options[const_option.OptionIndex] = const_option;
-	return new Evaluator.Object { Name=name, Options=object_options };
+	return new Evaluator.Object { Name=name, Options=object_options, EditorHelp=help };
 }
 
 public func AddEvaluator(string eval_type, string group, string name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
@@ -163,6 +166,7 @@ public func AddEvaluator(string eval_type, string group, string name, string hel
 	// callback_data: Array of [definition, definition.Function, parameter (optional)]. Function to be called when this evaluator is called
 	// default_val [optional]: Default value to be set when this evaluator is selected. Must be a proplist. Should contain values for all properties in the delegate
 	// delegate: Parameters for this evaluator
+	if (group) group = GroupNames[group] ?? group; // resolve localized group name
 	if (!default_val) default_val = {};
 	var default_get;
 	if (GetType(default_val) == C4V_Function)

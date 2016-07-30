@@ -8,6 +8,7 @@ UserCondition=Condition
 UserDefinition=Object type
 UserPosition=Position
 UserOffset=Offset
+Structure=Structure
 None=Nothing
 Noone=Noone
 AllPlayers=All players
