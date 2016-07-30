@@ -39,6 +39,7 @@ func Definition(def)
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [] };
 	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [ {Name="0"} ] };
+  Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Options = [] };
 	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
 	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
@@ -111,12 +112,58 @@ func Definition(def)
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
 	// Boolean (condition) evaluators
 	AddEvaluator("Boolean", nil, ["$Constant$", ""], "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
+	AddEvaluator("Boolean", "$Comparison$", "$CompareInteger$", "$ComparisonHelp$", "compare_int", [def, def.EvalComparison, "Integer"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+			{ Name="==", EditorHelp="$EqualHelp$" },
+			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
+			{ Name="<", EditorHelp="$LessThanHelp$", Value="lt" },
+			{ Name=">", EditorHelp="$GreaterThanHelp$", Value="gt" },
+			{ Name="<=", EditorHelp="$LessOrEqualHelp$", Value="le" },
+			{ Name=">=", EditorHelp="$GreaterOrEqualHelp$", Value="ge" }
+			] },
+		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
+	AddEvaluator("Boolean", "$Comparison$", "$CompareObject$", "$ComparisonHelp$", "compare_object", [def, def.EvalComparison, "Object"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+			{ Name="==", EditorHelp="$EqualHelp$" },
+			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
+			] },
+		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
+	AddEvaluator("Boolean", "$Comparison$", "$CompareString$", "$ComparisonHelp$", "compare_string", [def, def.EvalComparison, "String"], { LeftOperand={Function="string_constant", Value=""}, RightOperand={Function="string_constant", Value=""} }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+		LeftOperand = new Evaluator.String { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+			{ Name="==", EditorHelp="$EqualHelp$" },
+			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
+			] },
+		RightOperand = new Evaluator.String { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
+	AddEvaluator("Boolean", "$Comparison$", "$CompareDefinition$", "$ComparisonHelp$", "compare_definition", [def, def.EvalComparison, "Definition"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+		LeftOperand = new Evaluator.Definition { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+			{ Name="==", EditorHelp="$EqualHelp$" },
+			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
+			] },
+		RightOperand = new Evaluator.Definition { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
+	AddEvaluator("Boolean", "$Comparison$", "$ComparePlayer$", "$ComparisonHelp$", "compare_player", [def, def.EvalComparison, "Player"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+		LeftOperand = new Evaluator.Player { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+			{ Name="==", EditorHelp="$EqualHelp$" },
+			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
+			] },
+		RightOperand = new Evaluator.Player { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
 	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="Rnd({{Min}}..{{Max}})", EditorProps = {
 		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$" },
 		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$" }
 		} } );
+	// String evaluators
+	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
@@ -348,6 +395,27 @@ private func EvalPlrList_All(proplist props, proplist context, fn)
 	var result = CreateArray(n);
 	for (var i=0; i<n; ++i) result[i] = GetPlayerByIndex(i);
 	return result;
+}
+
+private func EvalComparison(proplist props, proplist context, data_type)
+{
+	var left = EvaluateValue(data_type, props.LeftOperand, context);
+	var right = EvaluateValue(data_type, props.RightOperand, context);
+	if (!left) left = nil; // 0 ==nil
+	if (!right) right = nil; // 0 == nil
+	var op = props.Operator;
+	if (!op)
+		return left == right;
+	else if (op == "ne")
+		return left != right;
+	else if (op == "lt")
+		return left < right;
+	else if (op == "gt")
+		return left > right;
+	else if (op == "le")
+		return left <= right;
+	else if (op == "ge")
+		return left >= right;
 }
 
 private func EvalAct_Sequence(proplist props, proplist context)
