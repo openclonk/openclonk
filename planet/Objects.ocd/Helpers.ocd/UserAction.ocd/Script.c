@@ -100,6 +100,10 @@ func Definition(def)
 	AddEvaluator("Boolean", nil, "$Constant$", "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	// Integer evaluators
 	AddEvaluator("Integer", nil, "$Constant$", "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
+	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalRandomInt], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="{{Min}}-{{Max}}", EditorProps = {
+		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$" },
+		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$" }
+		} } );
 	// Position evaluators
 	AddEvaluator("Position", nil, "$ConstantPositionAbsolute$", "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, "$ConstantPositionRelative$", "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
@@ -195,6 +199,9 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 	}
 	// Not on hold: Perform evaluation
 	var cb = EvaluatorCallbacks[props.Function];
+	/*var rval = cb[0]->Call(cb[1], props, context, cb[2]);
+	Log("%v <- EvaluateValue %v %v %v", rval, eval_type, props, context);
+	return rval;*/
 	return cb[0]->Call(cb[1], props, context, cb[2]);
 }
 
@@ -446,6 +453,15 @@ private func GetDefaultCoordinates(object target_object)
 		value = {X=0, Y=0};
 	value.Function="position_coordinates";
 	return value;
+}
+
+private func EvalRandomInt(proplist props, proplist context)
+{
+	// Random value between min and max. Also allow them to be swapped.
+	var min = EvaluateValue("Integer", props.Min, context);
+	var max = EvaluateValue("Integer", props.Max, context);
+	var rmin = Min(min,max);
+	return Random(Max(max,min)-rmin) + rmin;
 }
 
 private func EvalPositionRelative(proplist props, proplist context)
