@@ -122,9 +122,13 @@ func Definition(def)
 		X = new Evaluator.Integer { Name="X", EditorHelp="$OffXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$OffYHelp$" },
 		} } );
-	AddEvaluator("Offset", nil, "$AddOffsets$", "$AddOffsetsHelp$", "add_offsets", [def, def.EvalOffsetsAdd], { }, { Type="proplist", Display="{{Offset1}}+{{Offset2}}", EditorProps = {
-		Offset1 = new Evaluator.Offset1 { EditorHelp="$AddOffsetOffsetHelp$" },
-		Offset2 = new Evaluator.Offset2 { EditorHelp="$AddOffsetOffsetHelp$" }
+	AddEvaluator("Offset", nil, "$AddOffsets$", "$AddOffsetsHelp$", "add_offsets", [def, def.EvalOffsetAdd], { }, { Type="proplist", Display="{{Offset1}}+{{Offset2}}", EditorProps = {
+		Offset1 = new Evaluator.Offset { EditorHelp="$AddOffsetOffsetHelp$" },
+		Offset2 = new Evaluator.Offset { EditorHelp="$AddOffsetOffsetHelp$" }
+		} } );
+	AddEvaluator("Offset", nil, "$DiffPositions$", "$DiffPositionsHelp$", "diff_positions", [def, def.EvalOffsetDiff], { }, { Type="proplist", Display="{{PositionB}}-{{PositionA}}", EditorProps = {
+		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
+		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
 		} } );
 	// User action editor props
 	Prop = Evaluator.Action;
@@ -494,11 +498,18 @@ private func EvalPositionObject(proplist props, proplist context)
 	return [0,0]; // undefined object: Position is 0/0 default
 }
 
-private func EvalOffsetsAdd(proplist props, proplist context)
+private func EvalOffsetAdd(proplist props, proplist context)
 {
 	var o1 = EvaluateOffset(props.Offset1, context);
 	var o2 = EvaluateOffset(props.Offset2, context);
 	return [o1[0]+o2[0], o1[1]+o2[1]];
+}
+
+private func EvalOffsetDiff(proplist props, proplist context)
+{
+	var pA = EvaluatePosition(props.PositionA, context);
+	var pB = EvaluatePosition(props.PositionB, context);
+	return [pB[0]-pA[0], pB[1]-pA[1]];
 }
 
 

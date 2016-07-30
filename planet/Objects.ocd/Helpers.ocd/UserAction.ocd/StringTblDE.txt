@@ -118,3 +118,9 @@ RandomMaxHelp=Groesstmoegliche Zahl
 ObjectPosition=Objektposition
 ObjectPositionHelp=Aktuelle Position eines Objektes
 ObjectPositionObjectHelp=Das Objekt, dessen Position zurueckgegeben wird.
+DiffPositions=Differenz zwischen Positionen
+DiffPositionsHelp=Berechnet die Verschiebung von Positionen A nach Position B (Offset = B - A)
+PositionA=Position A
+PositionAHelp=Startposition
+PositionB=Position B
+PositionBHelp=Endposition
