@@ -115,6 +115,7 @@ func Definition(def)
 		Position = new Evaluator.Position { EditorHelp="$PositionOffsetPositionHelp$" },
 		Offset = new Evaluator.Offset { EditorHelp="$PositionOffsetOffsetHelp$" }
 		} } );
+	AddEvaluator("Position", nil, "$ObjectPosition$", "$ObjectPositionHelp$", "object_position", [def, def.EvalPositionObject], { Object={Function="triggering_object"} }, new Evaluator.Object { EditorHelp="$ObjectPositionObjectHelp$" }, "Object");
 	// Offset evaluators
 	AddEvaluator("Offset", nil, "$ConstantOffsetRelative$", "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff30ff });
 	AddEvaluator("Offset", nil, "$Coordinates$", "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
@@ -142,7 +143,7 @@ public func GetObjectEvaluator(filter_def, name)
 	return new Evaluator.Object { Name=name, Options=object_options };
 }
 
-public func AddEvaluator(string eval_type, string group, string name, string help, string identifier, callback_data, default_val, proplist delegate)
+public func AddEvaluator(string eval_type, string group, string name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
 {
 	// Add an evaluator for one of the data types. Evaluators allow users to write small action sequences and scripts in the editor using dropdown lists.
 	// eval_type: Return type of the evaluator (Action, Object, Boolean, Player, etc. as defined in UserAction.Evaluator)
@@ -174,7 +175,7 @@ public func AddEvaluator(string eval_type, string group, string name, string hel
 		else
 		{
 			// Any other parameter type: Store in value
-			action_def.ValueKey = "Value";
+			action_def.ValueKey = delegate_storage_key ?? "Value";
 		}
 	}
 	Evaluator[eval_type].Options[n = GetLength(Evaluator[eval_type].Options)] = action_def;
@@ -484,6 +485,13 @@ private func EvalPositionOffset(proplist props, proplist context)
 	var p = EvaluatePosition(props.Position, context);
 	var o = EvaluateOffset(props.Offset, context);
 	return [p[0]+o[0], p[1]+o[1]];
+}
+
+private func EvalPositionObject(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (obj) return [obj->GetX(), obj->GetY()];
+	return [0,0]; // undefined object: Position is 0/0 default
 }
 
 private func EvalOffsetsAdd(proplist props, proplist context)

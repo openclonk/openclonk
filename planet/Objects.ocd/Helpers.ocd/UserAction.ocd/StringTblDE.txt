@@ -115,3 +115,6 @@ Min=Minimum
 RandomMinHelp=Kleinstmoegliche Zahl
 Max=Maximum
 RandomMaxHelp=Groesstmoegliche Zahl
+ObjectPosition=Objektposition
+ObjectPositionHelp=Aktuelle Position eines Objektes
+ObjectPositionObjectHelp=Das Objekt, dessen Position zurueckgegeben wird.
