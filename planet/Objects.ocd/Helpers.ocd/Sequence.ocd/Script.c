@@ -351,8 +351,16 @@ public func Definition(def)
 	def.EditorProps.finished = { Name="$Finished$", Type="bool", Set="SetFinished" };
 	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Set="SetTrigger", Options = [
 		{ Name="$None$" },
-		{ Name="$EnterRegionRect$", Value={ Trigger="enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true } },
-		{ Name="$EnterRegionCircle$", Value={ Trigger="enter_region_circle", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true } },
+		{ Name="$PlayerEnterRegionRect$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true } },
+		{ Name="$PlayerEnterRegionCircle$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_circle", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true } },
+		{ Name="$ObjectEnterRegionRect$", EditorHelp="$ObjectEnterRegionHelp$", Value={ Trigger="object_enter_region_rect", Rect=[-20, -20, 40, 40] }, Delegate={ Name="$ObjectEnterRegionRect$", EditorHelp="$ObjectEnterRegionHelp$", Type="proplist", EditorProps = {
+			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot=true },
+			Rect = { Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true }
+			} } },
+		{ Name="$ObjectEnterRegionCircle$", EditorHelp="$ObjectEnterRegionHelp$", Value={ Trigger="object_enter_region_circle", Radius=25 }, Delegate={ Name="$ObjectEnterRegionCircle$", EditorHelp="$ObjectEnterRegionHelp$", Type="proplist", EditorProps = {
+			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot=true },
+			Radius = { Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true }
+			} } },
 		{ Name="$GameStart$", Value={ Trigger="game_start" } },
 		{ Name="$PlayerJoin$", Value={ Trigger="player_join" } },
 		{ Name="$PlayerRemove$", Value={ Trigger="player_remove" } },
@@ -403,6 +411,16 @@ public func SetTriggerRadius(int new_trigger_radius)
 	return true;
 }
 
+public func SetTriggerID(id new_id)
+{
+	if (trigger)
+	{
+		trigger.ID = new_id;
+		SetTrigger(trigger); // restart trigger
+	}
+	return true;
+}
+
 public func SetAction(new_action, new_action_progress_mode, new_action_allow_parallel)
 {
 	action = new_action;
@@ -445,14 +463,26 @@ public func StartTrigger()
 	if (!trigger) return false;
 	SetGraphics("Active");
 	var fn = trigger.Trigger;
-	if (fn == "enter_region_rect")
+	var id_search;
+	if (trigger.ID) id_search = Find_ID(trigger.ID);
+	if (fn == "player_enter_region_rect")
 	{
 		this.search_mask = Find_And(Find_InRect(trigger.Rect[0], trigger.Rect[1], trigger.Rect[2], trigger.Rect[3]), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
 		AddTimer(this.EnterRegionTimer, check_interval);
 	}
-	else if (fn == "enter_region_circle")
+	else if (fn == "player_enter_region_circle")
 	{
 		this.search_mask = Find_And(Find_Distance(trigger.Radius), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
+		AddTimer(this.EnterRegionTimer, check_interval);
+	}
+	else if (fn == "object_enter_region_rect")
+	{
+		this.search_mask = Find_And(Find_InRect(trigger.Rect[0], trigger.Rect[1], trigger.Rect[2], trigger.Rect[3]), id_search);
+		AddTimer(this.EnterRegionTimer, check_interval);
+	}
+	else if (fn == "object_enter_region_circle")
+	{
+		this.search_mask = Find_And(Find_Distance(trigger.Radius), Find_OCF(OCF_Alive), Find_Func("IsClonk"), id_search);
 		AddTimer(this.EnterRegionTimer, check_interval);
 	}
 	else return false;
