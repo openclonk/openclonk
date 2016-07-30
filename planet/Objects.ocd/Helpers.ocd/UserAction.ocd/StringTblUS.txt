@@ -175,3 +175,5 @@ CompareDefinition=Compare object types
 ComparePlayer=Compare players
 ObjectExists=Object exists
 ObjectExistsHelp=True if the function returns an object.
+TypeOfObject=Type of object
+TypeOfObjectHelp=Determines the type of the given object

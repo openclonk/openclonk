@@ -106,6 +106,7 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
 	// Definition evaluators
 	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
+	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalDef_TypeOfObject], { }, new Evaluator.Object { }, "Object");
 	// Player evaluators
 	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
@@ -420,6 +421,12 @@ private func EvalComparison(proplist props, proplist context, data_type)
 }
 
 private func EvalBool_ObjectExists(proplist props, proplist context) { return !!EvaluateValue("Object", props.Object, context); }
+
+private func EvalDef_TypeOfObject(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (obj) return obj->GetID();
+}
 
 private func EvalAct_Sequence(proplist props, proplist context)
 {
