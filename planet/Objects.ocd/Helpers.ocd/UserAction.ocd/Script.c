@@ -91,25 +91,25 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
-	AddEvaluator("Object", nil, "$ConstantObject$", "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
+	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
 	// Definition evaluators
-	AddEvaluator("Definition", nil, "$Constant$", "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
+	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
 	// Player evaluators
 	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
 	// Boolean (condition) evaluators
-	AddEvaluator("Boolean", nil, "$Constant$", "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
+	AddEvaluator("Boolean", nil, ["$Constant$", ""], "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	// Integer evaluators
-	AddEvaluator("Integer", nil, "$Constant$", "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
-	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="{{Min}}-{{Max}}", EditorProps = {
+	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
+	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="Rnd({{Min}}..{{Max}})", EditorProps = {
 		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$" },
 		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$" }
 		} } );
 	// Position evaluators
-	AddEvaluator("Position", nil, "$ConstantPositionAbsolute$", "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
-	AddEvaluator("Position", nil, "$ConstantPositionRelative$", "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
+	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
+	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
 	AddEvaluator("Position", nil, "$Coordinates$", "$CoordinatesHelp$", "position_coordinates", [def, def.EvalCoordinates], def.GetDefaultCoordinates, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
 		X = new Evaluator.Integer { Name="X", EditorHelp="$PosXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$PosYHelp$" }
@@ -124,8 +124,8 @@ func Definition(def)
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleAbs$", "$RandomCircleAbsHelp$", "random_pos_circle_abs", [def, def.EvalPos_RandomCircle, false], def.GetDefaultCircle, { Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff }, "Area");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleRel$", "$RandomCircleRelHelp$", "random_pos_circle_rel", [def, def.EvalPos_RandomCircle, true], { Area=[50,0,0] }, { Type="circle", Name="$Circle$", Relative=true, CanMoveCenter=true, Color=0xa000a0 }, "Area");
 	// Offset evaluators
-	AddEvaluator("Offset", nil, "$ConstantOffsetRelative$", "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff30ff });
-	AddEvaluator("Offset", nil, "$Coordinates$", "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
+	AddEvaluator("Offset", nil, ["$ConstantOffsetRelative$", ""], "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff30ff });
+	AddEvaluator("Offset", nil, ["$Coordinates$", ""], "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
 		X = new Evaluator.Integer { Name="X", EditorHelp="$OffXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$OffYHelp$" },
 		} } );
@@ -156,17 +156,28 @@ public func GetObjectEvaluator(filter_def, name, help)
 	return new Evaluator.Object { Name=name, Options=object_options, EditorHelp=help };
 }
 
-public func AddEvaluator(string eval_type, string group, string name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
+public func AddEvaluator(string eval_type, string group, name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
 {
 	// Add an evaluator for one of the data types. Evaluators allow users to write small action sequences and scripts in the editor using dropdown lists.
 	// eval_type: Return type of the evaluator (Action, Object, Boolean, Player, etc. as defined in UserAction.Evaluator)
 	// group [optional] Localized name of sub-group for larger enums (i.e. actions)
-	// name: Localized name as it appears in the dropdown list of evaluators
+	// name: Localized name as it appears in the dropdown list of evaluators. May also be an array [name, short_name].
 	// identifier: Unique identifier that is used to store this action in savegames and look up the action def. Identifiers must be unique among all data types.
 	// callback_data: Array of [definition, definition.Function, parameter (optional)]. Function to be called when this evaluator is called
 	// default_val [optional]: Default value to be set when this evaluator is selected. Must be a proplist. Should contain values for all properties in the delegate
 	// delegate: Parameters for this evaluator
 	if (group) group = GroupNames[group] ?? group; // resolve localized group name
+	var short_name;
+	if (GetType(name) == C4V_Array)
+	{
+		short_name = name[1];
+		name = name[0];
+	}
+	else if (delegate && delegate.Type == "proplist")
+	{
+		// Proplist delegates provide their own display string and need not show the option name
+		short_name = "";
+	}
 	if (!default_val) default_val = {};
 	var default_get;
 	if (GetType(default_val) == C4V_Function)
@@ -175,7 +186,7 @@ public func AddEvaluator(string eval_type, string group, string name, string hel
 		default_val = Call(default_get);
 	}
 	default_val.Function = identifier;
-	var action_def = { Name=name, EditorHelp=help, Group=group, Value=default_val, OptionKey="Function", Delegate=delegate, Get=default_get }, n;
+	var action_def = { Name=name, ShortName=short_name, EditorHelp=help, Group=group, Value=default_val, OptionKey="Function", Delegate=delegate, Get=default_get }, n;
 	if (delegate)
 	{
 		if (delegate.EditorProps || delegate.Elements)
