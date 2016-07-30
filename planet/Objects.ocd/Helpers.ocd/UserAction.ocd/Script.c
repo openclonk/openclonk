@@ -68,7 +68,7 @@ func Definition(def)
 		TargetPlayers = new Evaluator.PlayerList { EditorHelp="$SoundTargetPlayersHelp$" },
 		SourceObject = new Evaluator.Object { Name="$SoundSourceObject$", EditorHelp="$SoundSourceObjectHelp$", EmptyName="$Global$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", EditorProps = {
+	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
 		ID = new Evaluator.Definition { EditorHelp="$CreateObjectDefinitionHelp$" },
 		Position = new Evaluator.Position { EditorHelp="$CreateObjectPositionHelp$" },
 		CreateAbove = { Name="$CreateObjectCreationOffset$", EditorHelp="$CreateObjectCreationOffsetHelp$", Type="enum", Options=[
@@ -80,6 +80,16 @@ func Definition(def)
 		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$CreateObjectSpeedXHelp$" },
 		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" }
 		} } );
+	AddEvaluator("Action", "$Object$", "$CastObjects$", "$CastObjectsHelp$", "cast_objects", [def, def.EvalAct_CastObjects], { Amount={Function="int_constant", Value=8},Speed={Function="int_constant", Value=20},AngleDeviation={Function="int_constant", Value=360} }, { Type="proplist", Display="{{Amount}}x{{ID}}", ShowFullName=true, EditorProps = {
+		ID = new Evaluator.Definition { EditorHelp="$CastObjectsDefinitionHelp$" },
+		Position = new Evaluator.Position { EditorHelp="$CastObjectsPositionHelp$" },
+		Amount = new Evaluator.Integer { Name="$Amount$", EditorHelp="$CastObjectsAmountHelp$" },
+		Speed = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CastObjectsSpeedHelp$" },
+		MeanAngle = new Evaluator.Integer { Name="$MeanAngle$", EditorHelp="$CastObjectsMeanAngleHelp$" },
+		AngleDeviation = new Evaluator.Integer { Name="$AngleDeviation$", EditorHelp="$CastObjectsAngleDeviationHelp$" },
+		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CastObjectsOwnerHelp$" }
+		} } );
+
 	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", EditorProps = {
 		Object = new Evaluator.Object { EditorHelp="$RemoveObjectObject$" },
 		EjectContents = { Name="$EjectContents$", EditorHelp="$EjectContentsHelp$", Type="enum", Options=[
@@ -173,7 +183,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 		short_name = name[1];
 		name = name[0];
 	}
-	else if (delegate && delegate.Type == "proplist")
+	else if (delegate && delegate.Type == "proplist" && !delegate.ShowFullName)
 	{
 		// Proplist delegates provide their own display string and need not show the option name
 		short_name = "";
@@ -444,11 +454,25 @@ private func EvalAct_CreateObject(proplist props, proplist context)
 		else
 			obj = Global->CreateObject(create_id, position[0], position[1], owner);
 		// Default speed
-		if (obj) obj->SetXDir(speed_x, 100);
-		if (obj) obj->SetYDir(speed_y, 100);
+		if (obj) obj->SetXDir(speed_x);
+		if (obj) obj->SetYDir(speed_y);
 	}
 	// Remember object for later access
 	context.last_created_object = obj;
+}
+
+private func EvalAct_CastObjects(proplist props, proplist context)
+{
+	// Cast objects in multiple directions
+	var create_id = EvaluateValue("Definition", props.ID, context);
+	if (!create_id) return;
+	var owner = EvaluateValue("Player", props.Owner, context);
+	var amount = EvaluateValue("Integer", props.Amount, context);
+	var speed = EvaluateValue("Integer", props.Speed, context);
+	var mean_angle = EvaluateValue("Integer", props.MeanAngle, context);
+	var angle_deviation = EvaluateValue("Integer", props.AngleDeviation, context);
+	var position = EvaluatePosition(props.Position, context);
+	context.last_casted_objects = CastObjects(create_id, amount, speed, position[0], position[1], mean_angle, angle_deviation);
 }
 
 private func EvalAct_RemoveObject(proplist props, proplist context)
