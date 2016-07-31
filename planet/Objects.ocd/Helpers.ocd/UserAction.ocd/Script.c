@@ -202,6 +202,7 @@ func Definition(def)
 	AddEvaluator("Integer", nil, "$Variable$", "$VariableHelp$", "integer_variable", [def, def.EvalVariable, C4V_Int], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
+	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
 	AddEvaluator("String", nil, "$Variable$", "$VariableHelp$", "integer_variable", [def, def.EvalVariable, C4V_String], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
@@ -809,6 +810,11 @@ private func EvalInt_Distance(proplist props, proplist context)
 	var pA = EvaluatePosition(props.PositionA, context);
 	var pB = EvaluatePosition(props.PositionB, context);
 	return Distance(pA[0], pA[1], pB[0], pB[1]);
+}
+
+private func EvalStr_ValueToString(proplist props, proplist context)
+{
+	return Format("%v", EvaluateValue("Any", props.Value, context));
 }
 
 

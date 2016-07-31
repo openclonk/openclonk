@@ -190,3 +190,5 @@ Variable=Variable
 VariableHelp=Benutzerdefinierte Variable, in die zuvor mit der Aktion 'Variable setzen' ein Wert gespeichert wurde. Werte sollten beim Abruf den gleichen Datentyp (zum Beispiel Zahl oder Text) besitzen wie zur Zeit der Speicherung.
 Distance=Entfernung
 DistanceHelp=Berechnet die Entfernung zwischen zwei Punkten A und B.
+ValueToString=Wert zu Text
+ValueToStringHelp=Konvertiert einen beliebigen Wert zu Text

@@ -190,3 +190,5 @@ Variable=Variable
 VariableHelp=User-defined variable, into which a value was previously stored using the 'Set variable' action. Values should be queried using the same data type (e.g. Integer or Text) as they were stored.
 Distance=Distance
 DistanceHelp=Calculates the distance between two positions A and B.
+ValueToString=Value to string
+ValueToStringHelp=Konverts a value of another type to a string
