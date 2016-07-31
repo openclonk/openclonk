@@ -235,3 +235,7 @@ AllowContained=Inhaltsobjekte finden
 AllowContainedHelp=Gibt an, ob auch in anderne Objekten enthaltene Objekte (zum Beispiel Inventarobjekte oder Clonks in Flugzeugen) gefunden werden sollen.
 FindObjectsInContainer=Inhaltsobjekte
 FindObjectsInContainerHelp=Findet Objekte, die in anderen Objekten enthalten sind. Zum Beispiel Inventarobjekte, Objekte in Kisten oder Clonks in Flugzeugen.
+FindObjectInArea=Objekt im Bereich
+FindObjectInAreaHelp=Findet ein Objekt in einem Bereich der Landschaft.
+FindObjectInContainer=Inhaltsobjekt
+FindObjectInContainerHelp=Findet ein Objekt, das in einem anderen Objekt enthalten sind. Zum Beispiel Inventarobjekte, Objekte in Kisten oder Clonks in Flugzeugen.

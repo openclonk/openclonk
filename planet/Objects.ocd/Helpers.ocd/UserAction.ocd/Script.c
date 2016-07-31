@@ -149,8 +149,7 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
 	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
-	// Object list evaluators
-	AddEvaluator("ObjectList", nil, "$FindObjectsInArea$", "$FindObjectsInAreaHelp$", "find_objects_in_area", [def, def.EvalObjList_FindObjectsInArea], {}, { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
+	var find_object_in_area_delegate = { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
 		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Options=[
 			{ Name="$SearchAreaWholeMap$", EditorHelp="$SearchAreaWholeMapHelp$" },
@@ -163,11 +162,16 @@ func Definition(def)
 				} } }
 			] },
 			AllowContained = { Name="$AllowContained$", EditorHelp="$AllowContainedHelp$", Type="bool" }
-		} } );
-	AddEvaluator("ObjectList", nil, "$FindObjectsInContainer$", "$FindObjectsInContainerHelp$", "find_objects_in_container", [def, def.EvalObjList_FindObjectsInContainer], {}, { Type="proplist", Display="{{ID}} in {{Container}}", ShowFullName=true, EditorProps = {
+		} };
+	var find_object_in_container_delegate = { Type="proplist", Display="{{ID}} in {{Container}}", ShowFullName=true, EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
 		Container = new Evaluator.Object { Name="$Container$", EditorHelp="FindObjectsContainerHelp" }
-		} } );
+		} };
+	AddEvaluator("Object", nil, "$FindObjectInArea$", "$FindObjectInAreaHelp$", "find_object_in_area", [def, def.EvalObjList_FindObjectsInArea, true], {}, find_object_in_area_delegate);
+	AddEvaluator("Object", nil, "$FindObjectInContainer$", "$FindObjectInContainerHelp$", "find_object_in_container", [def, def.EvalObjList_FindObjectInContainer], {}, find_object_in_container_delegate);
+	// Object list evaluators
+	AddEvaluator("ObjectList", nil, "$FindObjectsInArea$", "$FindObjectsInAreaHelp$", "find_objects_in_area", [def, def.EvalObjList_FindObjectsInArea], {}, find_object_in_area_delegate);
+	AddEvaluator("ObjectList", nil, "$FindObjectsInContainer$", "$FindObjectsInContainerHelp$", "find_objects_in_container", [def, def.EvalObjList_FindObjectsInContainer], {}, find_object_in_container_delegate);
 	// Definition evaluators
 	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
 	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalDef_TypeOfObject], { }, new Evaluator.Object { }, "Object");
@@ -507,7 +511,7 @@ private func EvalObj_LastCreatedObject(proplist props, proplist context) { retur
 private func EvalPlr_Trigger(proplist props, proplist context) { return context.triggering_player; }
 private func EvalPlrList_Single(proplist props, proplist context, fn) { return [Call(fn, props, context)]; }
 
-private func EvalObjList_FindObjectsInArea(proplist props, proplist context)
+private func EvalObjList_FindObjectsInArea(proplist props, proplist context, bool find_one)
 {
 	var params = Find_And(), np=1;
 	// Resolve area parameter
@@ -535,7 +539,16 @@ private func EvalObjList_FindObjectsInArea(proplist props, proplist context)
 	if (idobj) params[np++] = Find_ID(idobj);
 	if (!props.AllowContained) params[np++] = Find_NoContainer();
 	// Find objects
-	return FindObjects(params);
+	var result = FindObjects(params);
+	if (find_one) return result[0]; else return result;
+}
+
+private func EvalObjList_FindObjectInContainer(proplist props, proplist context)
+{
+	var container = EvaluateValue("Object", props.Container, context);
+	var idobj = EvaluateValue("Definition", props.ID, context);
+	if (!container) return;
+	return container->Contents(idobj);
 }
 
 private func EvalObjList_FindObjectsInContainer(proplist props, proplist context)
