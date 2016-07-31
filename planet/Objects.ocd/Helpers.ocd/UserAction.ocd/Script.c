@@ -251,6 +251,8 @@ func Definition(def)
 		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
 		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
 		} } );
+	AddEvaluator("Integer", nil, "$NumberOfObjects$", "$NumberOfObjectsHelp$", "object_count", [def, def.EvalCount, "ObjectList"], { }, new Evaluator.ObjectList { }, "Array");
+	AddEvaluator("Integer", nil, "$NumberOfPlayers$", "$NumberOfPlayersHelp$", "player_count", [def, def.EvalCount, "PlayerList"], { }, new Evaluator.PlayerList { }, "Array");
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
@@ -510,6 +512,12 @@ private func EvalObj_TriggeringClonk(proplist props, proplist context) { return 
 private func EvalObj_LastCreatedObject(proplist props, proplist context) { return context.last_created_object; }
 private func EvalPlr_Trigger(proplist props, proplist context) { return context.triggering_player; }
 private func EvalPlrList_Single(proplist props, proplist context, fn) { return [Call(fn, props, context)]; }
+
+private func EvalCount(proplist props, proplist context, data_type)
+{
+	var list = EvaluateValue(data_type, props.Array, context);
+	if (list) return GetLength(list); else return 0;
+}
 
 private func EvalObjList_FindObjectsInArea(proplist props, proplist context, bool find_one)
 {

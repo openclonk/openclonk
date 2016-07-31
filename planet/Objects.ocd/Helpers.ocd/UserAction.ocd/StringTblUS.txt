@@ -239,3 +239,7 @@ FindObjectInArea=Object in area
 FindObjectInAreaHelp=Finds and object in a given area of the landscape.
 FindObjectInContainer=Contained object
 FindObjectInContainerHelp=Finds a contained object of a given type in a container.
+NumberOfObjects=Number of objects
+NumberOfObjectsHelp=Number of elements in an object list. The object list is given as a function.
+NumberOfPlayers=Number of players
+NumberOfPlayersHelp=Number of players in a player list. The player list is given as a function.

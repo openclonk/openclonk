@@ -239,3 +239,7 @@ FindObjectInArea=Objekt im Bereich
 FindObjectInAreaHelp=Findet ein Objekt in einem Bereich der Landschaft.
 FindObjectInContainer=Inhaltsobjekt
 FindObjectInContainerHelp=Findet ein Objekt, das in einem anderen Objekt enthalten sind. Zum Beispiel Inventarobjekte, Objekte in Kisten oder Clonks in Flugzeugen.
+NumberOfObjects=Anzahl Objekte
+NumberOfObjectsHelp=Anzahl der Elemente in einer Objektliste. Die Objektliste wird als Funktion angegeben.
+NumberOfPlayers=Anzahl Spieler
+NumberOfPlayersHelp=Anzahl Spieler in einer Spielerliste. Die Spielerliste wird als Funktion angegeben.
