@@ -298,8 +298,9 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	// Copy all value evaluations
 	if (eval_type != "Action" && eval_type != "Any" && callback_data[1] != UserAction.EvalVariable)
 	{
-		if (group) group = Format("%s/%s", EvaluatorTypeNames[eval_type], group); else group = EvaluatorTypeNames[eval_type];
-		AddEvaluator("Any", group, name, help, identifier, callback_data, default_val, delegate);
+		var any_group;
+		if (group) any_group = Format("%s/%s", EvaluatorTypeNames[eval_type], group); else any_group = EvaluatorTypeNames[eval_type];
+		AddEvaluator("Any", any_group, name, help, identifier, callback_data, default_val, delegate);
 	}
 	// Dissect parameters
 	if (group) group = GroupNames[group] ?? group; // resolve localized group name
