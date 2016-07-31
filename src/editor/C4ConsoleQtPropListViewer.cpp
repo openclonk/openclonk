@@ -1023,8 +1023,10 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		// Resolve parameter value
 		if (option.value_key)
 		{
+			C4Value child_val;
 			C4PropList *props = editor->last_val.getPropList();
-			if (props) props->GetPropertyByS(option.value_key.Get(), &parameter_val);
+			if (props) props->GetPropertyByS(option.value_key.Get(), &child_val);
+			parameter_val = child_val;
 		}
 		// Show it
 		editor->parameter_widget = option.adelegate->CreateEditor(factory, editor, QStyleOptionViewItem(), by_selection, true);
