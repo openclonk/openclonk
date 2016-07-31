@@ -717,6 +717,47 @@ static Nillable<long> FnGetChar(C4PropList * _this, C4String *pString, long iInd
 	return c;
 }
 
+static C4String *FnStringToIdentifier(C4PropList * _this, C4String *pString)
+{
+	// Change an arbitrary string so that it becomes an identifier
+	const char *text = FnStringPar(pString);
+	if (!text) return nullptr;
+	StdStrBuf result;
+	bool had_valid = false, had_invalid = false;
+	const char *ptext = text, *t0 = text;
+	uint32_t c = GetNextCharacter(&text);
+	while (c)
+	{
+		if (isalnum(c) || c == '_')
+		{
+			// Starting with a digit? Needs to prepend a character
+			if (isdigit(c) && !had_valid)
+			{
+				result.Append("_");
+				had_invalid = true;
+			}
+			// Valid character: Append to result string if a modification had to be done
+			if (had_invalid) result.Append(ptext, text - ptext);
+			had_valid = true;
+		}
+		else
+		{
+			// Invalid character. Make sure result is created from previous valid characters
+			if (!had_invalid)
+			{
+				result.Copy(t0, ptext - t0);
+				had_invalid = true;
+			}
+		}
+		ptext = text;
+		c = GetNextCharacter(&text);
+	}
+	// Make sure no empty string is returned
+	if (!had_valid) return ::Strings.RegString("_");
+	// Return either modified string or the original if no modifications were needed
+	return had_invalid ? ::Strings.RegString(result) : pString;
+}
+
 static C4Value Fneval(C4PropList * _this, C4String *strScript)
 {
 	return ::AulExec.DirectExec(_this, FnStringPar(strScript), "eval", true);
@@ -1017,6 +1058,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(LocateFunc);
 	F(FileWrite);
 	F(eval);
+	F(StringToIdentifier);
 	F(GetConstantNameByValue);
 	F(ReplaceString);
 
