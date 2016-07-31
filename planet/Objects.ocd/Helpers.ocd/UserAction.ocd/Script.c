@@ -866,7 +866,7 @@ public func MenuSelectOption(int index)
 	var opt = this.hold.Options[index];
 	if (opt && last_sequence)
 	{
-		sequence_progress[last_sequence._sequence_id] = opt.Goto;
+		sequence_progress[last_sequence._sequence_id] = opt._goto;
 		hold = nil;
 	}
 	UserAction->ResumeAction(this, hold);

@@ -601,15 +601,17 @@ private func EvalAct_Message(proplist props, proplist context)
 		var options_msg = CreateArray(n_options), i=0;
 		for (var opt in props.Options)
 		{
-			options_msg[i] = [opt.Text, Format("MenuSelectOption(%d)", i)];
+			opt._goto = UserAction->EvaluateValue("Integer", opt.Goto, context); // evaluated in UserAction menu callback
+			options_msg[i] = [UserAction->EvaluateValue("String", opt.Text, context), Format("MenuSelectOption(%d)", i)];
 			++i;
 		}
 		props.options_msg = options_msg;
 	}
+	var text = UserAction->EvaluateValue("String", props.Text, context);
 	// Show message to desired players
 	for(var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
 	{
-		Dialogue->MessageBox(props.Text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props.options_msg, context);
+		Dialogue->MessageBox(text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props.options_msg, context);
 		any_message = true;
 	}
 	// After-message-option
@@ -670,12 +672,12 @@ public func Definition(def)
 	// Actions provided by this definition
 	UserAction->AddEvaluator("Action", "$Dialogue$", "$Message$", "$MessageDesc$", "message", [def, def.EvalAct_Message], def.GetDefaultMessageProp, { Type="proplist", Display="{{Speaker}}: \"{{Text}}\" {{Options}}", EditorProps = {
 		Speaker = new UserAction.Evaluator.Object { Name = "$Speaker$" },
-		Text = { Type="string" },
+		Text = new UserAction.Evaluator.String { Name="$Text$", EditorHelp="$TextHelp$" },
 		TargetPlayers = new UserAction.Evaluator.PlayerList { Name = "$TargetPlayers$" },
 		AfterMessage = { Type="enum", Options = [{ Name="$ContinueAction$" }, { Name="$WaitForNext$", Value="next" }, { Name="$SuspendAction$", Value="suspend" }, { Name="$StopAction$", Value="stop" }, { Name="$WaitTime$", Value=60, Type=C4V_Int, Delegate={ Type="int", Min=1 } }] },
-		Options = { Name="$Options$", Type="array", Display=3, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", DefaultValue = { Text="$DefaultOptionText$", Goto=0 }, EditorProps = {
-			Text = { Type="string" },
-			Goto = { Type="int", Min=0 }
+		Options = { Name="$Options$", Type="array", Display=3, DefaultValue = { Text = { Function="string_constant", Value="$DefaultOptionText$" }, Goto = { Function="int_constant", Value=0 } }, Elements = { Type="proplist", Display="({{Goto}}) {{Text}}", EditorProps = {
+			Text = new UserAction.Evaluator.String { Name="$Text$", EditorHelp="$OptionTextHelp$" },
+			Goto = new UserAction.Evaluator.Integer { Name="$Goto$", EditorHelp="$GotoHelp$" }
 			} } }
 		} } );
 	UserAction->AddEvaluator("Action", "$Dialogue$", "$SetAttention$", "$SetAttentionDesc$", "dialogue_set_attention", [def, def.EvalAct_SetAttention], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
@@ -705,11 +707,11 @@ private func GetDefaultMessageProp(object target_object)
 	if (target_object && target_object->~IsDialogue())
 	{
 		// Message prop for dialogue: Default is a NPC message with a "wait for next" option
-		return { Function="message", Speaker = { Function="npc" }, TargetPlayers = { Function="triggering_player_list" }, Text="$DefaultDialogueMessage$", AfterMessage="next", Options=[] };
+		return { Function="message", Speaker = { Function="npc" }, TargetPlayers = { Function="triggering_player_list" }, Text = { Function="string_constant", Value="$DefaultDialogueMessage$" }, AfterMessage="next", Options=[] };
 	}
 	else
 	{
 		// Message prop for other dialogue: Default is a triggering clonk message with a "wait for next" option
-		return { Function="message", Speaker = { Function="triggering_clonk" }, TargetPlayers = { Function="triggering_player_list" }, Text="$DefaultMessage$", AfterMessage=60, Options=[] };
+		return { Function="message", Speaker = { Function="triggering_clonk" }, TargetPlayers = { Function="triggering_player_list" }, Text = { Function="string_constant", Value="$DefaultMessage$" }, AfterMessage=60, Options=[] };
 	}
 }
