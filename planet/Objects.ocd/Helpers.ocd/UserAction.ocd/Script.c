@@ -74,7 +74,7 @@ func Definition(def)
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [ {Name="0"} ] };
-  Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Options = [ {Name="($EmptyString$)"} ] };
+	Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Options = [ {Name="($EmptyString$)"} ] };
 	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
 	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Any = { Name="$UserAny$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
@@ -167,6 +167,14 @@ func Definition(def)
 			] },
 		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
 		} } );
+	AddEvaluator("Boolean", "$Comparison$", "$CompareBoolean$", "$ComparisonHelp$", "compare_bool", [def, def.EvalComparison, "Boolean"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+			{ Name="==", EditorHelp="$EqualHelp$" },
+			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
+			] },
+		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
 	AddEvaluator("Boolean", "$Comparison$", "$CompareObject$", "$ComparisonHelp$", "compare_object", [def, def.EvalComparison, "Object"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
 		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
@@ -198,6 +206,13 @@ func Definition(def)
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			] },
 		RightOperand = new Evaluator.Player { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		} } );
+	AddEvaluator("Boolean", "$Logic$", "$Not$", "$NotHelp$", "not", [def, def.EvalBool_Not], { }, new Evaluator.Boolean { }, "Operand");
+	AddEvaluator("Boolean", "$Logic$", "$And$", "$AndHelp$", "and", [def, def.EvalBool_And], { Operands=[] }, { Type="proplist", DescendPath="Operands", Display="{{Operands}}", EditorProps = {
+		Operands = { Name="$Operands$", Type="array", Elements=Evaluator.Boolean }
+		} } );
+	AddEvaluator("Boolean", "$Logic$", "$Or$", "$OrHelp$", "or", [def, def.EvalBool_Or], { Operands=[] }, { Type="proplist", DescendPath="Operands", Display="{{Operands}}", EditorProps = {
+		Operands = { Name="$Operands$", Type="array", Elements=Evaluator.Boolean }
 		} } );
 	AddEvaluator("Boolean", nil, "$ObjectExists$", "$ObjectExistsHelp$", "object_exists", [def, def.EvalBool_ObjectExists], { }, new Evaluator.Object { }, "Object");
 	// Integer evaluators
@@ -300,7 +315,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	{
 		var any_group;
 		if (group) any_group = Format("%s/%s", EvaluatorTypeNames[eval_type], group); else any_group = EvaluatorTypeNames[eval_type];
-		AddEvaluator("Any", any_group, name, help, identifier, callback_data, default_val, delegate);
+		AddEvaluator("Any", any_group, name, help, identifier, callback_data, default_val, delegate, delegate_storage_key);
 	}
 	// Dissect parameters
 	if (group) group = GroupNames[group] ?? group; // resolve localized group name
@@ -323,7 +338,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 		default_val = Call(default_get);
 	}
 	default_val.Function = identifier;
-	var action_def = { Name=name, ShortName=short_name, EditorHelp=help, Group=group, Value=default_val, OptionKey="Function", Delegate=delegate, Get=default_get }, n;
+	var action_def = { Name=name, ShortName=short_name, EditorHelp=help, Group=group, Value=default_val, Delegate=delegate, Get=default_get }, n;
 	if (delegate)
 	{
 		if (delegate.EditorProps || delegate.Elements)
@@ -497,6 +512,24 @@ private func EvalComparison(proplist props, proplist context, data_type)
 		return left <= right;
 	else if (op == "ge")
 		return left >= right;
+}
+
+private func EvalBool_Not(proplist props, proplist context) { return !EvaluateValue("Boolean", props.Operand, context); }
+
+private func EvalBool_And(proplist props, proplist context)
+{
+	for (cond in props.Operands)
+		if (!EvaluateValue("Boolean", cond, context))
+			return false;
+	return true;
+}
+
+private func EvalBool_Or(proplist props, proplist context)
+{
+	for (cond in props.Operands)
+		if (EvaluateValue("Boolean", cond, context))
+			return true;
+	return false;
 }
 
 private func EvalBool_ObjectExists(proplist props, proplist context) { return !!EvaluateValue("Object", props.Object, context); }
