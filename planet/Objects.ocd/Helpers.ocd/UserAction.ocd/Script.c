@@ -35,6 +35,7 @@ static g_UserAction_global_vars;
 local EvaluatorTypeNames = {
 	Action = "$UserAction$",
 	Object = "$UserObject$",
+	ObjectList = "$UserObjectList$",
 	Definition = "$UserDefinition$",
 	Player = "$UserPlayer$",
 	PlayerList = "$UserPlayerList$",
@@ -46,12 +47,13 @@ local EvaluatorTypeNames = {
 };
 
 // All evaluator types (unfortunately, EvaluatorReturnTypes->GetProperties() does not work)
-local EvaluatorTypes = ["Action", "Object", "Definition", "Player", "PlayerList", "Boolean", "Integer", "String", "Position", "Offset", "Any"];
+local EvaluatorTypes = ["Action", "Object", "ObjectList", "Definition", "Player", "PlayerList", "Boolean", "Integer", "String", "Position", "Offset", "Any"];
 
 // Evaluator return types
 local EvaluatorReturnTypes = {
 	Action = C4V_Nil,
 	Object = C4V_C4Object,
+	ObjectList = [C4V_C4Object],
 	Definition = C4V_Def,
 	Player = C4V_Int,
 	PlayerList = [C4V_Int],
@@ -69,6 +71,7 @@ func Definition(def)
 	Evaluator = {};
 	Evaluator.Action = { Name="$UserAction$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
+	Evaluator.ObjectList = { Name="$UserObjectList$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Definition = { Name="$UserDefinition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
@@ -146,6 +149,25 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
 	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
+	// Object list evaluators
+	AddEvaluator("ObjectList", nil, "$FindObjectsInArea$", "$FindObjectsInAreaHelp$", "find_objects_in_area", [def, def.EvalObjList_FindObjectsInArea], {}, { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
+		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
+		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Options=[
+			{ Name="$SearchAreaWholeMap$", EditorHelp="$SearchAreaWholeMapHelp$" },
+			{ Name="$SearchAreaInRect$", EditorHelp="$SearchAreaInRectHelp$", Value={ Function="InRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 } },
+			{ Name="$SearchAreaAtRect$", EditorHelp="$SearchAreaAtRectHelp$", Value={ Function="AtRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff80 } },
+			{ Name="$SearchAreaCircle$", EditorHelp="$SearchAreaCircleHelp$", Value={ Function="Circle" }, Get=def.GetDefaultCircle, ValueKey="Area", Delegate={ Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff } },
+			{ Name="$SearchAreaNearPosition$", EditorHelp="$SearchAreaNearPositionHelp$", Value={ Function="NearPosition", Parameters={Radius=25} }, ValueKey="Parameters", Delegate={ Type="proplist", Display="{{Object}}", ShowFullName=true, EditorProps = {
+				Position = new Evaluator.Position { EditorHelp="$SearchAreaNearPositionPositionHelp$"},
+				Radius = { Type="circle", Relative=true, Name="$Radius$", Color=0xff80ff }
+				} } }
+			] },
+			AllowContained = { Name="$AllowContained$", EditorHelp="$AllowContainedHelp$", Type="bool" }
+		} } );
+	AddEvaluator("ObjectList", nil, "$FindObjectsInContainer$", "$FindObjectsInContainerHelp$", "find_objects_in_container", [def, def.EvalObjList_FindObjectsInContainer], {}, { Type="proplist", Display="{{ID}} in {{Container}}", ShowFullName=true, EditorProps = {
+		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
+		Container = new Evaluator.Object { Name="$Container$", EditorHelp="FindObjectsContainerHelp" }
+		} } );
 	// Definition evaluators
 	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
 	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalDef_TypeOfObject], { }, new Evaluator.Object { }, "Object");
@@ -335,7 +357,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	if (GetType(default_val) == C4V_Function)
 	{
 		default_get = default_val;
-		default_val = Call(default_get);
+		default_val = Call(default_get, nil, {Function=identifier});
 	}
 	default_val.Function = identifier;
 	var action_def = { Name=name, ShortName=short_name, EditorHelp=help, Group=group, Value=default_val, Delegate=delegate, Get=default_get }, n;
@@ -484,6 +506,52 @@ private func EvalObj_TriggeringClonk(proplist props, proplist context) { return 
 private func EvalObj_LastCreatedObject(proplist props, proplist context) { return context.last_created_object; }
 private func EvalPlr_Trigger(proplist props, proplist context) { return context.triggering_player; }
 private func EvalPlrList_Single(proplist props, proplist context, fn) { return [Call(fn, props, context)]; }
+
+private func EvalObjList_FindObjectsInArea(proplist props, proplist context)
+{
+	var params = Find_And(), np=1;
+	// Resolve area parameter
+	if (props.Area)
+	{
+		var area = props.Area.Area;
+		var fn = props.Area.Function;
+		var area_criterion;
+		if (fn == "InRect")
+			area_criterion = Find_InRect(area[0], area[1], area[2], area[3]);
+		else if (fn == "AtRect")
+			area_criterion = Find_AtRect(area[0], area[1], area[2], area[3]);
+		else if (fn == "Circle")
+			area_criterion = Find_Distance(area[0], area[1], area[2]);
+		else if (fn == "NearPosition")
+		{
+			var pos_params = props.Area.Parameters;
+			var pos = EvaluatePosition(pos_params.Position, context);
+			area_criterion = Find_Distance(pos_params.Radius, pos[0], pos[1]);
+		}
+		if (area_criterion) params[np++] = area_criterion;
+	}
+	// Other parameters
+	var idobj = EvaluateValue("Definition", props.ID, context);
+	if (idobj) params[np++] = Find_ID(idobj);
+	if (!props.AllowContained) params[np++] = Find_NoContainer();
+	// Find objects
+	return FindObjects(params);
+}
+
+private func EvalObjList_FindObjectsInContainer(proplist props, proplist context)
+{
+	// Return array of all objects contained in container
+	var container = EvaluateValue("Object", props.Container, context);
+	var idobj = EvaluateValue("Definition", props.ID, context);
+	if (!container) return; // nil is treated as empty list
+	var i, n = container->ContentsCount(idobj), j;
+	if (!n) return;
+	var result = CreateArray(n), obj;
+	while ((obj = container->Contents(i++)))
+		if (!idobj || obj->GetID() == idobj)
+			result[j++] = obj;
+	return result;
+}
 
 private func EvalPlrList_All(proplist props, proplist context, fn)
 {
@@ -776,20 +844,36 @@ private func GetDefaultCoordinates(object target_object)
 	return value;
 }
 
-private func GetDefaultRect(object target_object)
+private func GetDefaultRect(object target_object, proplist props)
 {
 	// Default rectangle around target object
 	var r;
 	if (target_object) r = [target_object->GetX()-30, target_object->GetY()-30, 60, 60]; else r = [100,100,100,100];
-	return { Function="random_pos_rect_abs", Area=r };
+	return { Function=props.Function, Area=r };
 }
 
-private func GetDefaultCircle(object target_object)
+private func GetDefaultCircle(object target_object, proplist props)
 {
 	// Default circle around target object
 	var r;
 	if (target_object) r = [50, target_object->GetX(), target_object->GetY()]; else r = [50,100,100];
-	return { Function="random_pos_circle_abs", Area=r };
+	return { Function=props.Function, Area=r };
+}
+
+private func GetDefaultSearchRect(object target_object)
+{
+	// Default rectangle around target object
+	var r;
+	if (target_object) r = [target_object->GetX()-30, target_object->GetY()-30, 60, 60]; else r = [100,100,100,100];
+	return { Function="Rect", Area=r };
+}
+
+private func GetDefaultSearchCircle(object target_object)
+{
+	// Default circle around target object
+	var r;
+	if (target_object) r = [50, target_object->GetX(), target_object->GetY()]; else r = [50,100,100];
+	return { Function="Circle", Area=r };
 }
 
 private func EvalIntRandom(proplist props, proplist context)
