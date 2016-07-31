@@ -196,3 +196,6 @@ Log=Log
 LogHelp=Ausgabe einer Debugnachricht.
 LogMessage=Nachricht
 LogMessageHelp=Der auszugebende Text.
+Concat=Zusammensetzen
+ConcatHelp=Verbindet mehrere Texte zu einem langen Text.
+Substrings=Texte

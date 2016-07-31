@@ -196,3 +196,6 @@ Log=Log
 LogHelp=Output a debug log message.
 LogMessage=Message
 LogMessageHelp=The text to output.
+Concat=Concatenate
+ConcatHelp=Concatenates multiple small texts to one long text.
+Substrings=Texts

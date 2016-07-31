@@ -206,6 +206,9 @@ func Definition(def)
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
+	AddEvaluator("String", nil, "$Concat$", "$ConcatHelp$", "string_concat", [def, def.EvalStr_Concat], { Substrings=[] }, { Type="proplist", DescendPath="Substrings", Display="{{Substrings}}", EditorProps = {
+		Substrings = { Name="$Substrings$", Type="array", Elements=Evaluator.String, DefaultValue={Function="string_constant",Value=""} }
+		} } );
 	AddEvaluator("String", nil, "$Variable$", "$VariableHelp$", "integer_variable", [def, def.EvalVariable, C4V_String], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
@@ -823,6 +826,13 @@ private func EvalInt_Distance(proplist props, proplist context)
 private func EvalStr_ValueToString(proplist props, proplist context)
 {
 	return Format("%v", EvaluateValue("Any", props.Value, context));
+}
+
+private func EvalStr_Concat(proplist props, proplist context)
+{
+	var result="";
+	for (var s in props.Substrings) result = Format("%s%s", result, EvaluateValue("String", s, context));
+	return result;
 }
 
 
