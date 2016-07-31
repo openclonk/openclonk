@@ -5,18 +5,21 @@
 	@author Randrian
 */
 
+// Display the hook on the inventory HUD
+#include Library_HasExtraSlot
+// Do mind that IsContainer is set to false, so the hook can't be taken out via the interaction menu (very important)
+// See below for IsContainer
 
 local is_aiming;
 local animation_set;
 local hook;
 local hook_attach;
 
-
 private func Initialize()
 {
 	// The aiming animation is done by adjusting the animation position to fit the angle.
 	animation_set = {
-		AimMode        = AIM_Position, 
+		AimMode        = AIM_Position,
 		AnimationAim   = "CrossbowAimArms",
 		AnimationShoot = nil,
 		ShootTime      = 20,
@@ -29,8 +32,7 @@ private func Initialize()
 	return;
 }
 
-
-/*-- Animations --*/
+/*-- Clonk Animations --*/
 
 public func GetCarrySpecial(object clonk) 
 {
@@ -54,7 +56,6 @@ public func GetAnimationSet() { return animation_set; }
 /*-- Controls --*/
 
 public func HoldingEnabled() { return true; }
-
 
 public func RejectUse(object clonk)
 {
@@ -143,7 +144,6 @@ public func ControlUseCancel(object clonk, int x, int y)
 	return true;
 }
 
-
 /*-- Bow Mechanics --*/
 
 public func SetHook(object new_hook)
@@ -212,6 +212,12 @@ public func LaunchProjectile()
 	_inherited(...);
 }
 
+func RejectCollect(id whatever, object hopefully_hook)
+{
+	// The grapple bow will only its own hook, very picky thing
+	if (hopefully_hook != hook) return true;
+	return false;
+}
 
 /*-- Fire Effects --*/
 
@@ -239,7 +245,6 @@ private func Extinguishing()
 	return _inherited(...);
 }
 
-
 /*-- Animation functions --*/
 
 public func Reset(object clonk)
@@ -249,6 +254,8 @@ public func Reset(object clonk)
 	StopAnimation(GetRootAnimation(6));
 }
 
+/* Anything else */
+
 public func Hit()
 {
 	Sound("Hits::GeneralHit?");
@@ -256,6 +263,7 @@ public func Hit()
 
 public func IsInventorProduct() { return true; }
 
+func IsContainer() { return false; } // See above for explanation
 
 /*-- Properties --*/
 
