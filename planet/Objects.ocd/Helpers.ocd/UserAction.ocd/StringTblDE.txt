@@ -188,3 +188,5 @@ VariableNameHelp=Name der Variable. Gross- und Kleinschreibung ist relevant, das
 SetVariableValueHelp=Wert, der der Variablen zugewiesen wird. Wird ein Objekt zugewiesen das spaeter entfernt wird, setzt sich die Variable automatisch auf 0.
 Variable=Variable
 VariableHelp=Benutzerdefinierte Variable, in die zuvor mit der Aktion 'Variable setzen' ein Wert gespeichert wurde. Werte sollten beim Abruf den gleichen Datentyp (zum Beispiel Zahl oder Text) besitzen wie zur Zeit der Speicherung.
+Distance=Entfernung
+DistanceHelp=Berechnet die Entfernung zwischen zwei Punkten A und B.

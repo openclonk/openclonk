@@ -195,6 +195,10 @@ func Definition(def)
 		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$" },
 		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$" }
 		} } );
+	AddEvaluator("Integer", nil, "$Distance$", "$DistanceHelp$", "distance", [def, def.EvalInt_Distance], { }, { Type="proplist", Display="d({{PositionA}}..{{PositionB}})", EditorProps = {
+		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
+		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
+		} } );
 	AddEvaluator("Integer", nil, "$Variable$", "$VariableHelp$", "integer_variable", [def, def.EvalVariable, C4V_Int], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
@@ -799,6 +803,14 @@ private func EvalOffsetDiff(proplist props, proplist context)
 	var pB = EvaluatePosition(props.PositionB, context);
 	return [pB[0]-pA[0], pB[1]-pA[1]];
 }
+
+private func EvalInt_Distance(proplist props, proplist context)
+{
+	var pA = EvaluatePosition(props.PositionA, context);
+	var pB = EvaluatePosition(props.PositionB, context);
+	return Distance(pA[0], pA[1], pB[0], pB[1]);
+}
+
 
 
 /* Context instance */

@@ -188,3 +188,5 @@ VariableNameHelp=Name of the variable. Case sensitive, i.e. foo and Foo are dist
 VariableValueHelp=Value to assign to this variable. If an object is assigned and later removed, all variables pointing to this object will be emptied.
 Variable=Variable
 VariableHelp=User-defined variable, into which a value was previously stored using the 'Set variable' action. Values should be queried using the same data type (e.g. Integer or Text) as they were stored.
+Distance=Distance
+DistanceHelp=Calculates the distance between two positions A and B.
