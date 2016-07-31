@@ -199,3 +199,7 @@ LogMessageHelp=Der auszugebende Text.
 Concat=Zusammensetzen
 ConcatHelp=Verbindet mehrere Texte zu einem langen Text.
 Substrings=Texte
+ScriptHelp=Fuehrt ein benutzerdefiniertes Script aus. Achtung: Scripte werden nicht geprueft und koennen alles kaputt machen!
+ScriptCommand=Script
+ScriptCommandHelp=Scriptzeile, die auszufuehren ist. Nur ein Befehl.
+ScriptContextHelp=Ausfuehrungskontext fuer dieses Script.

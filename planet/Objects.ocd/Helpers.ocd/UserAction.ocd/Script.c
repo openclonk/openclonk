@@ -41,9 +41,26 @@ local EvaluatorTypeNames = {
 	Boolean = "$UserBoolean$",
 	Integer = "$UserInteger$",
 	String = "$UserString$",
-	Condition = "$UserCondition$",
 	Position = "$UserPosition$",
 	Offset = "$UserOffset$"
+};
+
+// All evaluator types (unfortunately, EvaluatorReturnTypes->GetProperties() does not work)
+local EvaluatorTypes = ["Action", "Object", "Definition", "Player", "PlayerList", "Boolean", "Integer", "String", "Position", "Offset", "Any"];
+
+// Evaluator return types
+local EvaluatorReturnTypes = {
+	Action = C4V_Nil,
+	Object = C4V_C4Object,
+	Definition = C4V_Def,
+	Player = C4V_Int,
+	PlayerList = [C4V_Int],
+	Boolean = C4V_Bool,
+	Integer = C4V_Int,
+	String = C4V_String,
+	Position = [C4V_Int, 2],
+	Offset = [C4V_Int, 2],
+	Any = C4V_Nil
 };
 
 func Definition(def)
@@ -55,10 +72,9 @@ func Definition(def)
 	Evaluator.Definition = { Name="$UserDefinition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
-	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [] };
+	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [ {Name="0"} ] };
   Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Options = [] };
-	Evaluator.Condition = { Name="$UserCondition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
 	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Any = { Name="$UserAny$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
@@ -121,9 +137,6 @@ func Definition(def)
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" },
 		Value = new Evaluator.Any { Name="$Value$", EditorHelp="$SetVariableValueHelp$" }
 		} } );
-	var variable_delegate = { Type="proplist", Display="{{Context}}::{{VariableName}}", EditorProps = {
-		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
-		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" } } };
 	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { Message={Function="string_constant",Value=""} }, { Type="proplist", Display="{{Message}}", ShowFullName=true, EditorProps = {
 		Message = new Evaluator.String { Name="$LogMessage$", EditorHelp="$LogMessageHelp$" },
 		} } );
@@ -133,17 +146,13 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
 	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
-	AddEvaluator("Object", nil, "$Variable$", "$VariableHelp$", "object_variable", [def, def.EvalVariable, C4V_C4Object], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Definition evaluators
 	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
 	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalDef_TypeOfObject], { }, new Evaluator.Object { }, "Object");
-	AddEvaluator("Definition", nil, "$Variable$", "$VariableHelp$", "def_variable", [def, def.EvalVariable, C4V_Def], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Player evaluators
 	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
-	AddEvaluator("Player", nil, "$Variable$", "$VariableHelp$", "player_variable", [def, def.EvalVariable, C4V_Int], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
-	AddEvaluator("PlayerList", nil, "$Variable$", "$VariableHelp$", "player_list_variable", [def, def.EvalVariable, [C4V_Int]], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Boolean (condition) evaluators
 	AddEvaluator("Boolean", nil, ["$Constant$", ""], "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	AddEvaluator("Boolean", "$Comparison$", "$CompareInteger$", "$ComparisonHelp$", "compare_int", [def, def.EvalComparison, "Integer"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
@@ -191,7 +200,6 @@ func Definition(def)
 		RightOperand = new Evaluator.Player { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
 		} } );
 	AddEvaluator("Boolean", nil, "$ObjectExists$", "$ObjectExistsHelp$", "object_exists", [def, def.EvalBool_ObjectExists], { }, new Evaluator.Object { }, "Object");
-	AddEvaluator("Boolean", nil, "$Variable$", "$VariableHelp$", "bool_variable", [def, def.EvalVariable, C4V_Bool], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
 	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="Rnd({{Min}}..{{Max}})", EditorProps = {
@@ -202,14 +210,12 @@ func Definition(def)
 		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
 		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
 		} } );
-	AddEvaluator("Integer", nil, "$Variable$", "$VariableHelp$", "integer_variable", [def, def.EvalVariable, C4V_Int], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
 	AddEvaluator("String", nil, "$Concat$", "$ConcatHelp$", "string_concat", [def, def.EvalStr_Concat], { Substrings=[] }, { Type="proplist", DescendPath="Substrings", Display="{{Substrings}}", EditorProps = {
 		Substrings = { Name="$Substrings$", Type="array", Elements=Evaluator.String, DefaultValue={Function="string_constant",Value=""} }
 		} } );
-	AddEvaluator("String", nil, "$Variable$", "$VariableHelp$", "integer_variable", [def, def.EvalVariable, C4V_String], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
@@ -226,7 +232,6 @@ func Definition(def)
 	AddEvaluator("Position", "$RandomPosition$", "$RandomRectRel$", "$RandomRectRelHelp$", "random_pos_rect_rel", [def, def.EvalPos_RandomRect, true], { Area=[-30,-30,60,60] }, { Type="rect", Name="$Rectangle$", Relative=true, Color=0x00ffff }, "Area");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleAbs$", "$RandomCircleAbsHelp$", "random_pos_circle_abs", [def, def.EvalPos_RandomCircle, false], def.GetDefaultCircle, { Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff }, "Area");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleRel$", "$RandomCircleRelHelp$", "random_pos_circle_rel", [def, def.EvalPos_RandomCircle, true], { Area=[50,0,0] }, { Type="circle", Name="$Circle$", Relative=true, CanMoveCenter=true, Color=0xa000a0 }, "Area");
-	AddEvaluator("Position", nil, "$Variable$", "$VariableHelp$", "position_variable", [def, def.EvalVariable, [C4V_Int, 2]], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
 	// Offset evaluators
 	AddEvaluator("Offset", nil, ["$ConstantOffsetRelative$", ""], "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff30ff });
 	AddEvaluator("Offset", nil, ["$Coordinates$", ""], "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
@@ -243,7 +248,26 @@ func Definition(def)
 		} } );
 	AddEvaluator("Offset", nil, "$RandomOffRectRel$", "$RandomRectRelHelp$", "random_off_rect_rel", [def, def.EvalPos_RandomRect, "rect", false], { Area=[-30,-30,60,60] }, { Type="rect", Name="$Rectangle$", Relative=true, Color=0x00ffff }, "Area");
 	AddEvaluator("Offset", nil, "$RandomOffCircleRel$", "$RandomCircleRelHelp$", "random_off_circle_rel", [def, def.EvalPos_RandomCircle, "circle", false], { Area=[0,0,50] }, { Type="circle", Name="$Circle$", Relative=true, CanMoveCenter=true, Color=0xa000a0 }, "Area");
-	AddEvaluator("Offset", nil, "$Variable$", "$VariableHelp$", "offset_variable", [def, def.EvalVariable, [C4V_Int, 2]], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
+	// Script evaluators
+	var variable_delegate = { Type="proplist", Display="{{Context}}::{{VariableName}}", EditorProps = {
+		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
+		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" } } };
+	for (var eval_type in EvaluatorTypes)
+	{
+		var data_type = EvaluatorReturnTypes[eval_type];
+		var group = nil;
+		if (eval_type != "Action")
+		{
+			AddEvaluator(eval_type, nil, "$Variable$", "$VariableHelp$", Format("%s_variable", eval_type), [def, def.EvalVariable, data_type], { VariableName={Function="string_constant",Value=""} }, variable_delegate);
+		}
+		else
+		{
+			group = "$Script$";
+		}
+		AddEvaluator(eval_type, group, "$Script$", "$ScriptHelp$", Format("%s_script", eval_type), [def, def.EvalScript, data_type], { Script={Function="string_constant",Value=""} }, { Type="proplist", Display="{{Context}}::{{Script}}", EditorProps = {
+			Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
+			Script = new Evaluator.String { Name="$ScriptCommand$", EditorHelp="$ScriptCommandHelp$" } } });
+	}
 	// User action editor props
 	Prop = Evaluator.Action;
 	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
@@ -271,13 +295,8 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	// callback_data: Array of [definition, definition.Function, parameter (optional)]. Function to be called when this evaluator is called
 	// default_val [optional]: Default value to be set when this evaluator is selected. Must be a proplist. Should contain values for all properties in the delegate
 	// delegate: Parameters for this evaluator
-	// Copy most boolean props to condition prop
-	if (eval_type == "Boolean" && identifier != "bool_constant")
-	{
-		AddEvaluator("Condition", group, name, help, identifier, callback_data, default_val, delegate);
-	}
 	// Copy all value evaluations
-	if (eval_type != "Condition" && eval_type != "Action" && eval_type != "Any")
+	if (eval_type != "Action" && eval_type != "Any" && callback_data[1] != UserAction.EvalVariable)
 	{
 		if (group) group = Format("%s/%s", EvaluatorTypeNames[eval_type], group); else group = EvaluatorTypeNames[eval_type];
 		AddEvaluator("Any", group, name, help, identifier, callback_data, default_val, delegate);
@@ -323,7 +342,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	Evaluator[eval_type].Options[n = GetLength(Evaluator[eval_type].Options)] = action_def;
 	action_def.OptionIndex = n;
 	// Remember lookup table through identifier (ignore duplicates)
-	if (eval_type != "Condition" && eval_type != "Any")
+	if (eval_type != "Any")
 	{
 		EvaluatorCallbacks[identifier] = callback_data;
 		EvaluatorDefs[identifier] = action_def;
@@ -392,7 +411,7 @@ public func EvaluateCondition(proplist props, object action_object, object trigg
 	// Init context settings
 	context->InitContext(action_object, triggering_player, triggering_object, props);
 	// Execute condition evaluator
-	var result = EvaluateValue("Condition", props, context);
+	var result = EvaluateValue("Boolean", props, context);
 	// Cleanup
 	if (context) context->RemoveObject();
 	// Done
@@ -656,9 +675,9 @@ private func EvalVariable(proplist props, proplist context, expected_type)
 	var var_context = GetVariableContext(props.Context, context);
 	var var_name = StringToIdentifier(EvaluateValue("String", props.VariableName, context));
 	var value = var_context[var_name];
-	// Check type
+	// Check type (except for C4V_Nil which means "Any" here)
 	var val_type = GetType(value);
-	if (val_type != expected_type)
+	if (val_type != expected_type && expected_type)
 	{
 		// Array types have special checking
 		if (GetType(expected_type) == C4V_Array)
@@ -691,6 +710,13 @@ private func EvalVariable(proplist props, proplist context, expected_type)
 	}
 	// Value OK. Return it.
 	return value;
+}
+
+private func EvalScript(proplist props, proplist context)
+{
+	var script_context = EvaluateValue("Object", props.Context, context) ?? Global;
+	var script = EvaluateValue("String", props.Script, context) ?? "";
+	return script_context->eval(script, true);
 }
 
 private func GetDefaultPosition(object target_object)

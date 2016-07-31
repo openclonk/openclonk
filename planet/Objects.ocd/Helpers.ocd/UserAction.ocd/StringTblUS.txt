@@ -199,3 +199,7 @@ LogMessageHelp=The text to output.
 Concat=Concatenate
 ConcatHelp=Concatenates multiple small texts to one long text.
 Substrings=Texts
+ScriptHelp=Executes a custom script. Caution: Scripts will not be checked and may ruin everything!
+ScriptCommand=Script
+ScriptCommandHelp=Script line to execute. One command only.
+ScriptContextHelp=Execution context for the script.
