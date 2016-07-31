@@ -203,3 +203,4 @@ ScriptHelp=Executes a custom script. Caution: Scripts will not be checked and ma
 ScriptCommand=Script
 ScriptCommandHelp=Script line to execute. One command only.
 ScriptContextHelp=Execution context for the script.
+EmptyString=no text
