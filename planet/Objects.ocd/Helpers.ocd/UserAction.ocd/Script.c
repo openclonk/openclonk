@@ -109,7 +109,7 @@ func Definition(def)
 		AngleDeviation = new Evaluator.Integer { Name="$AngleDeviation$", EditorHelp="$CastObjectsAngleDeviationHelp$" },
 		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CastObjectsOwnerHelp$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", EditorProps = {
+	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", ShowFullName=true, EditorProps = {
 		Object = new Evaluator.Object { EditorHelp="$RemoveObjectObject$" },
 		EjectContents = { Name="$EjectContents$", EditorHelp="$EjectContentsHelp$", Type="enum", Options=[
 			{ Name="$EjectContentsNo$" },
@@ -124,6 +124,9 @@ func Definition(def)
 	var variable_delegate = { Type="proplist", Display="{{Context}}::{{VariableName}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" } } };
+	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { Message={Function="string_constant",Value=""} }, { Type="proplist", Display="{{Message}}", ShowFullName=true, EditorProps = {
+		Message = new Evaluator.String { Name="$LogMessage$", EditorHelp="$LogMessageHelp$" },
+		} } );
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
@@ -611,6 +614,11 @@ private func EvalAct_RemoveObject(proplist props, proplist context)
 	var obj = EvaluateValue("Object", props.Object, context);
 	if (!obj) return;
 	obj->RemoveObject(props.EjectContents);
+}
+
+private func EvalAct_Log(proplist props, proplist context)
+{
+	Log(EvaluateValue("String", props.Message, context));
 }
 
 private func GetVariableContext(proplist props, proplist context)

@@ -192,3 +192,7 @@ Distance=Entfernung
 DistanceHelp=Berechnet die Entfernung zwischen zwei Punkten A und B.
 ValueToString=Wert zu Text
 ValueToStringHelp=Konvertiert einen beliebigen Wert zu Text
+Log=Log
+LogHelp=Ausgabe einer Debugnachricht.
+LogMessage=Nachricht
+LogMessageHelp=Der auszugebende Text.

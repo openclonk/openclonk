@@ -192,3 +192,7 @@ Distance=Distance
 DistanceHelp=Calculates the distance between two positions A and B.
 ValueToString=Value to string
 ValueToStringHelp=Konverts a value of another type to a string
+Log=Log
+LogHelp=Output a debug log message.
+LogMessage=Message
+LogMessageHelp=The text to output.
