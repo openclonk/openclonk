@@ -15,6 +15,11 @@
           <name>script</name>
           <desc>Script to be executed</desc>
         </param>
+        <param>
+          <type>bool</type>
+          <name>dont_pass_errors</name>
+          <desc>If true and the script causes an error, the function returns nil and does not cancel its parent script execution.</desc>
+        </param>
       </params>
     </syntax>
     <desc>Executes a string as script.</desc>

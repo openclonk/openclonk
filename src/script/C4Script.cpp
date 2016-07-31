@@ -758,9 +758,9 @@ static C4String *FnStringToIdentifier(C4PropList * _this, C4String *pString)
 	return had_invalid ? ::Strings.RegString(result) : pString;
 }
 
-static C4Value Fneval(C4PropList * _this, C4String *strScript)
+static C4Value Fneval(C4PropList * _this, C4String *strScript, bool dont_pass_errors)
 {
-	return ::AulExec.DirectExec(_this, FnStringPar(strScript), "eval", true);
+	return ::AulExec.DirectExec(_this, FnStringPar(strScript), "eval", !dont_pass_errors);
 }
 
 static bool FnLocateFunc(C4PropList * _this, C4String *funcname, C4PropList * p)
