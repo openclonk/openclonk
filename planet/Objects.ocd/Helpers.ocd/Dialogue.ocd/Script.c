@@ -602,12 +602,12 @@ private func EvalAct_Message(proplist props, proplist context)
 		for (var opt in props.Options)
 		{
 			opt._goto = UserAction->EvaluateValue("Integer", opt.Goto, context); // evaluated in UserAction menu callback
-			options_msg[i] = [UserAction->EvaluateValue("String", opt.Text, context), Format("MenuSelectOption(%d)", i)];
+			options_msg[i] = [UserAction->EvaluateValue("String", opt.Text, context) ?? "", Format("MenuSelectOption(%d)", i)];
 			++i;
 		}
 		props.options_msg = options_msg;
 	}
-	var text = UserAction->EvaluateValue("String", props.Text, context);
+	var text = UserAction->EvaluateValue("String", props.Text, context) ?? "";
 	// Show message to desired players
 	for(var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
 	{
