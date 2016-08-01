@@ -478,15 +478,15 @@ public:
 	StdStrBuf Duplicate() const { StdStrBuf Buf; Buf.Copy(*this); return Buf; }
 	void Move(size_t iFrom, size_t inSize, size_t iTo = 0) { StdBuf::Move(iFrom, inSize, iTo); }
 
-	// Byte-wise compare (will compare characters up to the length of the shorter string)
+	// Byte-wise compare (will compare this string from iAt to the full string in Buf2)
 	int Compare(const StdStrBuf &Buf2, size_t iAt = 0) const
 	{
 		assert(iAt <= getLength());
 		const int result = StdBuf::Compare(Buf2.getData(), std::min(getLength() - iAt, Buf2.getLength()), iAt);
 		if (result) return result;
 
-		if (getLength() < Buf2.getLength()) return -1;
-		else if (getLength() > Buf2.getLength()) return 1;
+		if (getLength() < Buf2.getLength() + iAt) return -1;
+		else if (getLength() > Buf2.getLength() + iAt) return 1;
 		return 0;
 	}
 	int Compare_(const char *pCData, size_t iAt = 0) const
@@ -497,7 +497,8 @@ public:
 	bool BeginsWith(const char *beginning) const
 	{
 		// Return whether string starts with beginning
-		return strncmp((const char *)pData, beginning, strlen(beginning)) == 0;
+		return strncmp((const char 
+			*)pData, beginning, strlen(beginning)) == 0;
 	}
 
 	// Grows the string to contain the specified number more/less characters.
