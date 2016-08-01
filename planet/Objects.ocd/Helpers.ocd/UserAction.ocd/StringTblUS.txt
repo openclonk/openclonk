@@ -265,3 +265,7 @@ ObjectMass=Object mass
 ObjectMassHelp=Weight of the specified object.
 ObjectSpeed=Object speed
 ObjectSpeedHelp=Velocity of the specified object in 1/10th pixels per frame.
+OwnerOfObject=Object owner
+OwnerOfObjectHelp=Player owning a specified object.
+ControllerOfObject=Controlling player
+ControllerOfObjectHelp=Player controlling a specified object. E.g. the player currentply pushing a vehicle or switch or the player who threw a firestone.

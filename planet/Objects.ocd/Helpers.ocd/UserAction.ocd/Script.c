@@ -174,9 +174,12 @@ func Definition(def)
 	AddEvaluator("ObjectList", nil, "$FindObjectsInContainer$", "$FindObjectsInContainerHelp$", "find_objects_in_container", [def, def.EvalObjList_FindObjectsInContainer], {}, find_object_in_container_delegate);
 	// Definition evaluators
 	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
-	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalDef_TypeOfObject], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalObjProp, Global.GetID], { }, new Evaluator.Object { }, "Object");
 	// Player evaluators
 	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
+	AddEvaluator("Player", nil, "$OwnerOfObject$", "$OwnerOfObjectHelp$", "owner", [def, def.EvalObjProp, Global.GetOwner], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Player", nil, "$ControllerOfObject$", "$ControllerOfObjectHelp$", "owner", [def, def.EvalObjProp, Global.GetController], { }, new Evaluator.Object { }, "Object");
+	// Player list evaluators
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
 	// Boolean (condition) evaluators
@@ -263,9 +266,9 @@ func Definition(def)
 	AddEvaluator("Integer", nil, "$NumberOfObjects$", "$NumberOfObjectsHelp$", "object_count", [def, def.EvalCount, "ObjectList"], { }, new Evaluator.ObjectList { }, "Array");
 	AddEvaluator("Integer", nil, "$NumberOfPlayers$", "$NumberOfPlayersHelp$", "player_count", [def, def.EvalCount, "PlayerList"], { }, new Evaluator.PlayerList { }, "Array");
 	AddEvaluator("Integer", nil, "$PlayerWealth$", "$PlayerWealthHelp$", "player_wealth", [def, def.EvalInt_Wealth], { }, new Evaluator.Player { }, "Player");
-	AddEvaluator("Integer", nil, "$ClonkEnergy$", "$ClonkEnergyHelp$", "clonk_energy", [def, def.EvalInt_ClonkHealth], { }, GetObjectEvaluator("IsClonk", "$Clonk$"), "Clonk");
-	AddEvaluator("Integer", nil, "$ObjectMass$", "$ObjectMassHelp$", "object_mass", [def, def.EvalInt_ObjectMass], { }, new Evaluator.Object { }, "Object");
-	AddEvaluator("Integer", nil, "$ObjectSpeed$", "$ObjectSpeedHelp$", "object_speed", [def, def.EvalInt_ObjectSpeed], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Integer", nil, "$ClonkEnergy$", "$ClonkEnergyHelp$", "clonk_energy", [def, def.EvalObjProp, Global.GetEnergy], { }, GetObjectEvaluator("IsClonk", "$Clonk$"), "Object");
+	AddEvaluator("Integer", nil, "$ObjectMass$", "$ObjectMassHelp$", "object_mass", [def, def.EvalObjProp, Global.GetMass], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Integer", nil, "$ObjectSpeed$", "$ObjectSpeedHelp$", "object_speed", [def, def.EvalObjProp, Global.GetSpeed], { }, new Evaluator.Object { }, "Object");
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
@@ -644,12 +647,6 @@ private func EvalBool_Or(proplist props, proplist context)
 
 private func EvalBool_ObjectExists(proplist props, proplist context) { return !!EvaluateValue("Object", props.Object, context); }
 
-private func EvalDef_TypeOfObject(proplist props, proplist context)
-{
-	var obj = EvaluateValue("Object", props.Object, context);
-	if (obj) return obj->GetID();
-}
-
 private func EvalAct_Sequence(proplist props, proplist context)
 {
 	// Sequence execution: Iterate over actions until one action puts the context on hold
@@ -1027,27 +1024,6 @@ private func EvalInt_Distance(proplist props, proplist context)
 
 private func EvalInt_Wealth(proplist props, proplist context) { return GetWealth(EvaluatePlayer(props.Player, context)); }
 
-private func EvalInt_ClonkHealth(proplist props, proplist context)
-{
-	var clonk = EvaluateValue("Object", props.Clonk, context);
-	if (!clonk) return 0;
-	return clonk->GetEnergy();
-}
-
-private func EvalInt_ObjectMass(proplist props, proplist context)
-{
-	var obj = EvaluateValue("Object", props.Object, context);
-	if (!obj) return 0;
-	return obj->GetMass();
-}
-
-private func EvalInt_ObjectSpeed(proplist props, proplist context)
-{
-	var obj = EvaluateValue("Object", props.Object, context);
-	if (!obj) return 0;
-	return obj->GetSpeed();
-}
-
 private func EvalStr_ValueToString(proplist props, proplist context)
 {
 	return Format("%v", EvaluateValue("Any", props.Value, context));
@@ -1058,6 +1034,13 @@ private func EvalStr_Concat(proplist props, proplist context)
 	var result="";
 	for (var s in props.Substrings) result = Format("%s%s", result, EvaluateValue("String", s, context) ?? "");
 	return result;
+}
+
+private func EvalObjProp(proplist props, proplist context, prop_fn)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return nil;
+	return obj->Call(prop_fn);
 }
 
 
