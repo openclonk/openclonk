@@ -82,6 +82,7 @@ public:
 #ifdef WITH_QT_EDITOR
 	void Execute();
 	void AddViewport(C4ViewportWindow *cvp);
+	void RemoveViewport(C4ViewportWindow *cvp);
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
 	bool CreateNewScenario(StdStrBuf *out_filename);
 	void OnStartGame();
@@ -96,6 +97,7 @@ public:
 #else
 	void Execute() { }
 	void AddViewport(C4ViewportWindow *cvp) { }
+	void RemoveViewport(C4ViewportWindow *cvp) { }
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
 	void OnStartGame() { }
 #endif

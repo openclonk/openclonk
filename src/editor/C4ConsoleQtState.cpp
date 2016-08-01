@@ -727,6 +727,19 @@ void C4ConsoleGUIState::AddViewport(C4ViewportWindow *cvp)
 	new_viewport->SetFocus();
 }
 
+void C4ConsoleGUIState::RemoveViewport(C4ViewportWindow *cvp)
+{
+	if (!viewport_area) return;
+	for (auto vp : viewports)
+	{
+		if (vp->GetViewportWindow() == cvp)
+		{
+			viewport_area->removeDockWidget(vp);
+			vp->deleteLater();
+		}
+	}
+}
+
 void C4ConsoleGUIState::SetInputFunctions(std::list<const char*> &functions)
 {
 	SetComboItems(ui.consoleInputBox, functions);

@@ -738,6 +738,13 @@ void C4Window::Clear()
 		if (renderwnd) DestroyWindow(renderwnd);
 		if (hWindow && hWindow != renderwnd) DestroyWindow(hWindow);
 	}
+#ifdef WITH_QT_EDITOR
+	if (eKind == W_Viewport)
+	{
+		// embed into editor: Viewport widget creation handled by C4ConsoleQt
+		::Console.RemoveViewport(static_cast<C4ViewportWindow *>(this));
+	}
+#endif
 	renderwnd = NULL;
 	hWindow = NULL;
 }

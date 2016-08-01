@@ -337,6 +337,12 @@ void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTr
 	state->AddViewport(cvp);
 }
 
+ void C4ConsoleGUI::RemoveViewport(C4ViewportWindow *cvp)
+ {
+	 // Add surrounding widget for viewport
+	 state->RemoveViewport(cvp);
+ }
+
 bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename)
 {
 #ifdef WITH_QT_EDITOR

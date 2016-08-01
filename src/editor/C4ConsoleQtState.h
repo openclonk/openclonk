@@ -216,6 +216,7 @@ public:
 	void AddPlayerViewportMenuItem(int32_t plr, const char *text);
 	void ClearViewportMenu();
 	void AddViewport(class C4ViewportWindow *cvp);
+	void RemoveViewport(class C4ViewportWindow *cvp);
 	void SetInputFunctions(std::list<const char*> &functions);
 	void PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update);
 	void ReInitDefinitions();
