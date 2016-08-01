@@ -262,6 +262,10 @@ func Definition(def)
 		} } );
 	AddEvaluator("Integer", nil, "$NumberOfObjects$", "$NumberOfObjectsHelp$", "object_count", [def, def.EvalCount, "ObjectList"], { }, new Evaluator.ObjectList { }, "Array");
 	AddEvaluator("Integer", nil, "$NumberOfPlayers$", "$NumberOfPlayersHelp$", "player_count", [def, def.EvalCount, "PlayerList"], { }, new Evaluator.PlayerList { }, "Array");
+	AddEvaluator("Integer", nil, "$PlayerWealth$", "$PlayerWealthHelp$", "player_wealth", [def, def.EvalInt_Wealth], { }, new Evaluator.Player { }, "Player");
+	AddEvaluator("Integer", nil, "$ClonkEnergy$", "$ClonkEnergyHelp$", "clonk_energy", [def, def.EvalInt_ClonkHealth], { }, GetObjectEvaluator("IsClonk", "$Clonk$"), "Clonk");
+	AddEvaluator("Integer", nil, "$ObjectMass$", "$ObjectMassHelp$", "object_mass", [def, def.EvalInt_ObjectMass], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Integer", nil, "$ObjectSpeed$", "$ObjectSpeedHelp$", "object_speed", [def, def.EvalInt_ObjectSpeed], { }, new Evaluator.Object { }, "Object");
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
@@ -487,6 +491,14 @@ private func EvaluateOffset(proplist props, object context)
 {
 	// Execute offset evaluator; fall back to [0, 0]
 	return  EvaluateValue("Offset", props, context) ?? [0,0];
+}
+
+private func EvaluatePlayer(proplist props, object context)
+{
+	// Execute player evaluator; nil means NO_OWNER
+	var plr = EvaluateValue("Player", props, context);
+	if (!GetType(plr)) plr = NO_OWNER;
+	return plr;
 }
 
 private func ResumeAction(proplist context, proplist resume_props)
@@ -722,7 +734,7 @@ private func EvalAct_CreateObject(proplist props, proplist context)
 	// Create a new object
 	var create_id = EvaluateValue("Definition", props.ID, context);
 	if (!create_id) return;
-	var owner = EvaluateValue("Player", props.Owner, context);
+	var owner = EvaluatePlayer(props.Owner, context);
 	var container = EvaluateValue("Object", props.Container, context);
 	var obj;
 	if (container)
@@ -754,7 +766,7 @@ private func EvalAct_CastObjects(proplist props, proplist context)
 	// Cast objects in multiple directions
 	var create_id = EvaluateValue("Definition", props.ID, context);
 	if (!create_id) return;
-	var owner = EvaluateValue("Player", props.Owner, context);
+	var owner = EvaluatePlayer(props.Owner, context);
 	var amount = EvaluateValue("Integer", props.Amount, context);
 	var speed = EvaluateValue("Integer", props.Speed, context);
 	var mean_angle = EvaluateValue("Integer", props.MeanAngle, context);
@@ -1011,6 +1023,29 @@ private func EvalInt_Distance(proplist props, proplist context)
 	var pA = EvaluatePosition(props.PositionA, context);
 	var pB = EvaluatePosition(props.PositionB, context);
 	return Distance(pA[0], pA[1], pB[0], pB[1]);
+}
+
+private func EvalInt_Wealth(proplist props, proplist context) { return GetWealth(EvaluatePlayer(props.Player, context)); }
+
+private func EvalInt_ClonkHealth(proplist props, proplist context)
+{
+	var clonk = EvaluateValue("Object", props.Clonk, context);
+	if (!clonk) return 0;
+	return clonk->GetEnergy();
+}
+
+private func EvalInt_ObjectMass(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return 0;
+	return obj->GetMass();
+}
+
+private func EvalInt_ObjectSpeed(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return 0;
+	return obj->GetSpeed();
 }
 
 private func EvalStr_ValueToString(proplist props, proplist context)
