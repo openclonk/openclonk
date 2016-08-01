@@ -243,6 +243,15 @@ func Definition(def)
 	AddEvaluator("Boolean", nil, "$ObjectExists$", "$ObjectExistsHelp$", "object_exists", [def, def.EvalBool_ObjectExists], { }, new Evaluator.Object { }, "Object");
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
+	var arithmetic_delegate = { Type="proplist", EditorProps = {
+		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftArithmeticOperandHelp$" },
+		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightArithmeticOperandHelp$" }
+		} };
+	AddEvaluator("Integer", "$Arithmetic$", "$Sum$ (+)", "$SumHelp$", "add", [def, def.EvalInt_Add], { }, new arithmetic_delegate { Display="{{LeftOperand}}+{{RightOperand}}" });
+	AddEvaluator("Integer", "$Arithmetic$", "$Sub$ (-)", "$SumHelp$", "subtract", [def, def.EvalInt_Sub], { }, new arithmetic_delegate { Display="{{LeftOperand}}-{{RightOperand}}" });
+	AddEvaluator("Integer", "$Arithmetic$", "$Mul$ (*)", "$MulHelp$", "multiply", [def, def.EvalInt_Mul], { }, new arithmetic_delegate { Display="{{LeftOperand}}*{{RightOperand}}" });
+	AddEvaluator("Integer", "$Arithmetic$", "$Div$ (/)", "$DivHelp$", "divide", [def, def.EvalInt_Div], { }, new arithmetic_delegate { Display="{{LeftOperand}}/{{RightOperand}}" });
+	AddEvaluator("Integer", "$Arithmetic$", "$Mod$ (%)", "$ModHelp$", "modulo", [def, def.EvalInt_Mod], { }, new arithmetic_delegate { Display="{{LeftOperand}}%{{RightOperand}}" });
 	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="Rnd({{Min}}..{{Max}})", EditorProps = {
 		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$" },
 		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$" }
@@ -979,6 +988,22 @@ private func EvalOffsetDiff(proplist props, proplist context)
 	var pA = EvaluatePosition(props.PositionA, context);
 	var pB = EvaluatePosition(props.PositionB, context);
 	return [pB[0]-pA[0], pB[1]-pA[1]];
+}
+
+private func EvalInt_Add(proplist props, proplist context) { return EvaluateValue("Integer", props.LeftOperand, context) + EvaluateValue("Integer", props.RightOperand, context); }
+private func EvalInt_Sub(proplist props, proplist context) { return EvaluateValue("Integer", props.LeftOperand, context) - EvaluateValue("Integer", props.RightOperand, context); }
+private func EvalInt_Mul(proplist props, proplist context) { return EvaluateValue("Integer", props.LeftOperand, context) * EvaluateValue("Integer", props.RightOperand, context); }
+
+private func EvalInt_Div(proplist props, proplist context)
+{
+	var a = EvaluateValue("Integer", props.LeftOperand, context), b = EvaluateValue("Integer", props.RightOperand, context);
+	return a/(b+!b);
+}
+
+private func EvalInt_Mod(proplist props, proplist context)
+{
+	var a = EvaluateValue("Integer", props.LeftOperand, context), b = EvaluateValue("Integer", props.RightOperand, context);
+	return a%(b+!b);
 }
 
 private func EvalInt_Distance(proplist props, proplist context)
