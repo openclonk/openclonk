@@ -57,6 +57,7 @@ static void SetMultisamplingAttributes(int samples)
 
 C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
+	eKind = windowKind;
 #ifdef WITH_QT_EDITOR
 	if (windowKind == W_Viewport)
 	{
@@ -103,8 +104,16 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 void C4Window::Clear()
 {
-	SDL_DestroyWindow(window);
-	window = 0;
+	if (window) SDL_DestroyWindow(window);
+	window = nullptr;
+
+#ifdef WITH_QT_EDITOR
+	if (eKind == W_Viewport)
+	{
+		// embed into editor: Viewport widget creation handled by C4ConsoleQt
+		::Console.RemoveViewport(static_cast<C4ViewportWindow *>(this));
+	}
+#endif
 }
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
