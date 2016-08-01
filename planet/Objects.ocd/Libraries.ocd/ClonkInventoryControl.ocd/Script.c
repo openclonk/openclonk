@@ -29,6 +29,11 @@ public func OnShiftCursor(object new_cursor)
 	return _inherited(new_cursor, ...);
 }
 
+public func GetQuickSwitchSlot()
+{
+	return this.inventory.last_slot;
+}
+
 // Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object.
 func OnDropped(object obj)
 {
