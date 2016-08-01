@@ -9,6 +9,7 @@
 	used properties:
 	this.inventory.last_slot: last inventory-slot that has been selected. Used for QuickSwitching
 	this.inventory.is_picking_up: whether currently picking up
+	this.inventory.quick_switch_hotkey: true if a quick switch hotkey (0-9) has been pressed, the next release of CON_QuickSwitch will do nothing
 	
 	other used properties of "this.inventory" might have been declared in Inventory.ocd
 */
@@ -57,16 +58,26 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 		
 	// Quickswitch changes the active slot to the last selected one
-	if (ctrl == CON_QuickSwitch)
+	if (ctrl == CON_QuickSwitch && release)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
 		if(this.HandObjects > 1)
 			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
 		
+		// Quick switch slot has been changed while CON_QuickSwitch was pressed, do not change
+		if (this.inventory.quick_switch_hotkey)
+		{
+			this.inventory.quick_switch_hotkey = false;
+			return true;
+		}
 		// select last slot
 		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
 		return true;
 	}
+	if (ctrl == CON_QuickSwitch && !release)
+		// Clean up for safety reasons
+		if (this.inventory.quick_switch_hotkey)
+			this.inventory.quick_switch_hotkey = false;
 	
 	// Collection and dropping is only allowed when the Clonk is not contained.
 	if (!Contained())
@@ -191,7 +202,26 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		this->~DropInventoryItem(hot-1);
 		return true;
 	}
-		
+	
+	// Selecting the quick switch slot
+	hot = 0;
+	if (ctrl == CON_QuickSwitchHotkey0) hot = 10;
+	if (ctrl == CON_QuickSwitchHotkey1) hot = 1;
+	if (ctrl == CON_QuickSwitchHotkey2) hot = 2;
+	if (ctrl == CON_QuickSwitchHotkey3) hot = 3;
+	if (ctrl == CON_QuickSwitchHotkey4) hot = 4;
+	if (ctrl == CON_QuickSwitchHotkey5) hot = 5;
+	if (ctrl == CON_QuickSwitchHotkey6) hot = 6;
+	if (ctrl == CON_QuickSwitchHotkey7) hot = 7;
+	if (ctrl == CON_QuickSwitchHotkey8) hot = 8;
+	if (ctrl == CON_QuickSwitchHotkey9) hot = 9;
+	
+	if (hot > 0 && hot <= this.MaxContentsCount)
+	{
+		SetQuickSwitchSlot(hot-1);
+		return true;
+	}
+	
 	// inventory
 	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -428,6 +458,21 @@ public func SetHandItemPos(int hand, int inv)
 		this.inventory.last_slot = this->GetHandItemPos(0);
 		
 	return _inherited(hand, inv, ...);
+}
+
+public func SetQuickSwitchSlot(int slot)
+{
+	// Do not set if the quick switch slot doesn't change
+	if (slot == this.inventory.last_slot) return false;
+	// Do not set if slot is currently selected
+	if (slot == this->GetHandItemPos(0)) return false;
+	this.inventory.last_slot = slot;
+	// Notify HUD
+	this->~OnInventoryChange();
+	// Supress release function of quick switch key
+	this.inventory.quick_switch_hotkey = true;
+
+	return true;
 }
 
 /* Backpack control */
