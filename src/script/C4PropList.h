@@ -138,6 +138,7 @@ public:
 	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3) const;
 	std::vector< C4String * > GetSortedLocalProperties(bool add_prototype=true) const;
 	std::vector< C4String * > GetSortedLocalProperties(const char *prefix, const C4PropList *ignore_overridden) const;
+	std::vector< C4String * > GetUnsortedProperties(const char *prefix, C4PropList *ignore_parent = nullptr) const;
 	std::vector< C4String * > GetSortedProperties(const char *prefix, C4PropList *ignore_parent = nullptr) const;
 
 	bool operator==(const C4PropList &b) const;

@@ -538,6 +538,7 @@ struct C4ConsoleQtPropListModelProperty
 	C4Value delegate_info;
 	C4PropertyDelegate *delegate;
 	bool about_to_edit;
+	int32_t priority;
 
 	// Parent group index
 	int32_t group_idx;
@@ -547,7 +548,7 @@ struct C4ConsoleQtPropListModelProperty
 	const C4PropertyDelegate *shape_delegate;
 	C4PropertyPath shape_property_path;
 
-	C4ConsoleQtPropListModelProperty() : delegate(nullptr), about_to_edit(false), group_idx(-1), shape_delegate(nullptr) {}
+	C4ConsoleQtPropListModelProperty() : delegate(nullptr), about_to_edit(false), priority(0), group_idx(-1), shape_delegate(nullptr) {}
 };
 
 // Prop list view implemented as a model view
@@ -584,7 +585,7 @@ private:
 	C4PropertyPath target_path; // script path to target proplist to set values
 	std::list<TargetStackEntry> target_path_stack; // stack of target paths descended into by setting child properties
 	std::vector<PropertyGroup> property_groups;
-	QFont header_font;
+	QFont header_font, important_property_font;
 	C4PropertyDelegateFactory *delegate_factory;
 	QItemSelectionModel *selection_model;
 	bool layout_valid; // set to false when property numbers change

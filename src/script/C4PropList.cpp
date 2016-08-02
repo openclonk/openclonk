@@ -507,7 +507,7 @@ std::vector< C4String * > C4PropList::GetSortedLocalProperties(const char *prefi
 	return result;
 }
 
-std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix, C4PropList *ignore_parent) const
+std::vector< C4String * > C4PropList::GetUnsortedProperties(const char *prefix, C4PropList *ignore_parent) const
 {
 	// Return property list with descending into prototype
 	// But do not include Prototype property
@@ -522,6 +522,14 @@ std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix, C4
 		p = p->GetPrototype();
 		if (p == ignore_parent) break;
 	} while (p);
+	return result;
+}
+
+std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix, C4PropList *ignore_parent) const
+{
+	// Return property list with descending into prototype
+	// But do not include Prototype property
+	std::vector< C4String * > result = GetUnsortedProperties(prefix, ignore_parent);
 	// Sort
 	std::sort(result.begin(), result.end(), [](const C4String *a, const C4String *b) -> bool
 	{

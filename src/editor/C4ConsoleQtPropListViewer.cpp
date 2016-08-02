@@ -1820,6 +1820,7 @@ C4ConsoleQtPropListModel::C4ConsoleQtPropListModel(C4PropertyDelegateFactory *de
 	: delegate_factory(delegate_factory), selection_model(nullptr)
 {
 	header_font.setBold(true);
+	important_property_font.setBold(true);
 	connect(this, &C4ConsoleQtPropListModel::ProplistChanged, this, &C4ConsoleQtPropListModel::UpdateSelection, Qt::QueuedConnection);
 	layout_valid = false;
 }
@@ -1830,8 +1831,10 @@ C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 
 bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index)
 {
-	auto new_properties = add_proplist->GetSortedLocalProperties(false);
-	if (!new_properties.size()) return false;
+	// Add all properties from this EditorProps group
+	std::vector<C4String *> property_names = add_proplist->GetUnsortedProperties(nullptr);
+	if (!property_names.size()) return false;
+	// Prepare group array
 	if (property_groups.size() == group_index)
 	{
 		layout_valid = false;
@@ -1839,14 +1842,46 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 	}
 	PropertyGroup &properties = property_groups[group_index];
 	C4PropListStatic *proplist_static = add_proplist->IsStatic();
+	// Resolve properties
+	struct PropAndKey
+	{
+		C4PropList *prop;
+		C4String *key;
+		int32_t priority;
+		C4String *name;
+
+		PropAndKey(C4PropList *prop, C4String *key, int32_t priority, C4String *name)
+			: prop(prop), key(key), priority(priority), name(name) {}
+	};
+	std::vector<PropAndKey> new_properties_resolved;
+	new_properties_resolved.reserve(property_names.size());
+	for (C4String *prop_name : property_names)
+	{
+		C4Value prop_val;
+		add_proplist->GetPropertyByS(prop_name, &prop_val);
+		C4PropList *prop = prop_val.getPropList();
+		if (prop)
+		{
+			C4String *name = prop->GetPropertyStr(P_Name);
+			if (!name) name = prop_name;
+			int32_t priority = prop->GetPropertyInt(P_Priority);
+			new_properties_resolved.emplace_back(PropAndKey({ prop, prop_name, priority, name }));
+		}
+	}
+	// Sort by priority primarily and name secondarily
+	std::sort(new_properties_resolved.begin(), new_properties_resolved.end(), [](const PropAndKey &a, const PropAndKey &b) -> bool {
+		if (a.priority != b.priority) return a.priority > b.priority;
+		return strcmp(a.name->GetCStr(), b.name->GetCStr()) < 0;
+	});
+	// Setup group
 	properties.name = name;
-	if (properties.props.size() != new_properties.size())
+	if (properties.props.size() != new_properties_resolved.size())
 	{
 		layout_valid = false;
-		properties.props.resize(new_properties.size());
+		properties.props.resize(new_properties_resolved.size());
 	}
 	C4Effect *fx = target_proplist->GetEffect();
-	for (int32_t i = 0; i < new_properties.size(); ++i)
+	for (int32_t i = 0; i < new_properties_resolved.size(); ++i)
 	{
 		Property *prop = &properties.props[i];
 		// Property access path
@@ -1857,26 +1892,19 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		else
 			prop->property_path = target_path;
 		// ID for default selection memory
-		C4String *prop_id = new_properties[i];
-		if (default_selection == prop_id) *default_selection_index = i;
+		const PropAndKey &prop_def = new_properties_resolved[i];
+		if (default_selection == prop_def.key) *default_selection_index = i;
 		// Property data
-		prop->key = nullptr;
-		prop->display_name = nullptr;
 		prop->help_text = nullptr;
 		prop->delegate_info.Set0(); // default C4Value delegate
 		prop->group_idx = group_index;
-		C4Value published_prop_val;
-		add_proplist->GetPropertyByS(new_properties[i], &published_prop_val);
-		C4PropList *published_prop = published_prop_val.getPropList();
-		if (published_prop)
-		{
-			prop->key = published_prop->GetPropertyStr(P_Key);
-			prop->display_name = published_prop->GetPropertyStr(P_Name);
-			prop->help_text = published_prop->GetPropertyStr(P_EditorHelp);
-			prop->delegate_info.SetPropList(published_prop);
-		}
-		if (!prop->key) properties.props[i].key = prop_id;
-		if (!prop->display_name) properties.props[i].display_name = prop_id;
+		prop->key = prop_def.prop->GetPropertyStr(P_Key);
+		if (!prop->key) properties.props[i].key = prop_def.key;
+		prop->display_name = prop_def.name;
+		if (!prop->display_name) prop->display_name = prop_def.key;
+		prop->help_text = prop_def.prop->GetPropertyStr(P_EditorHelp);
+		prop->priority = prop_def.priority;
+		prop->delegate_info.SetPropList(prop_def.prop);
 		prop->delegate = delegate_factory->GetDelegateByValue(prop->delegate_info);
 		C4Value v;
 		C4Value v_target_proplist = C4VPropList(target_proplist);
@@ -2088,6 +2116,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		internal_properties.props[i].key = new_properties[i];
 		internal_properties.props[i].display_name = new_properties[i];
 		internal_properties.props[i].help_text = nullptr;
+		internal_properties.props[i].priority = 0;
 		internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
 		internal_properties.props[i].delegate = NULL; // init when needed
 		internal_properties.props[i].group_idx = num_groups;
@@ -2124,6 +2153,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		prop.display_name = ::Strings.RegString(FormatString("%d", (int)i).getData());
 		prop.help_text = nullptr;
 		prop.key = nullptr;
+		prop.priority = 0;
 		prop.delegate_info = elements_delegate_value;
 		prop.delegate = item_delegate;
 		prop.about_to_edit = false;
@@ -2241,6 +2271,10 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 	{
 		// Help icons in left column
 		return QIcon(":/editor/res/Help.png");
+	}
+	else if (role == Qt::FontRole && index.column() == 0)
+	{
+		if (prop->priority >= 100) return important_property_font;
 	}
 	else if (role == Qt::ToolTipRole && index.column() == 0)
 	{
