@@ -26,3 +26,4 @@ ObjectEnterRegionHelp=Wird ausgeloest, wenn ein Objekt von einem bestimmten Typ 
 ID=Objekttyp
 IDHelp=Typ des Objektes, nach dem gesucht wird. Bei nichtangabe werden alle Objekte gefunden.
 ObjectEnterRegionCircle=Objektyp in Bereich (Radius)
+Condition=Bedingung

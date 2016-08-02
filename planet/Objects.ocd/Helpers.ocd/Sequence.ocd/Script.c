@@ -349,7 +349,7 @@ public func Definition(def)
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
 	def.EditorProps.finished = { Name="$Finished$", Type="bool", Set="SetFinished" };
-	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Set="SetTrigger", Options = [
+	def.EditorProps.trigger = { Name="$Trigger$", Type="enum", OptionKey="Trigger", Set="SetTrigger", Priority=110, Options = [
 		{ Name="$None$" },
 		{ Name="$PlayerEnterRegionRect$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_rect", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true, Set="SetTriggerRect", SetRoot=true } },
 		{ Name="$PlayerEnterRegionCircle$", EditorHelp="$PlayerEnterRegionHelp$", Value={ Trigger="player_enter_region_circle", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true } },
@@ -372,8 +372,8 @@ public func Definition(def)
 		{ Name="$Construction$", Value={ Trigger="construction" }, ValueKey="ID", Delegate={ Type="def", Filter="IsStructure", EmptyName="$Anything$" } },
 		{ Name="$Production$", Value={ Trigger="production" }, ValueKey="ID", Delegate={ Type="def", EmptyName="$Anything$" } },
 		] };
-	def.EditorProps.condition = UserAction.Evaluator.Condition;
-	def.EditorProps.action = UserAction.Prop;
+	def.EditorProps.condition = new UserAction.Evaluator.Boolean { Name="$Condition$" };
+	def.EditorProps.action = new UserAction.Prop { Priority=105 };
 	def.EditorProps.action_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };

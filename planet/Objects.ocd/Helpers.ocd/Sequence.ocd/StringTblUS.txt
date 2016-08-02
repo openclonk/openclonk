@@ -26,3 +26,4 @@ ObjectEnterRegionHelp=Triggered when an object of a specified type is found in t
 ID=Object type
 IDHelp=Definition of object type that triggers this sequence. If nil, any object triggers the sequence.
 ObjectEnterRegionCircle=Object of type enters radius
+Condition=Condition
