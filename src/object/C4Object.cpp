@@ -43,6 +43,7 @@
 #include "graphics/C4GraphicsResource.h"
 #include "game/C4GraphicsSystem.h"
 #include "game/C4Game.h"
+#include "game/C4Application.h"
 #include "player/C4PlayerList.h"
 #include "object/C4GameObjects.h"
 #include "control/C4Record.h"
@@ -4160,6 +4161,11 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay) const
 	{
 		if (!fAsOverlay) return false;
 		if (Visibility == VIS_OverlayOnly) return true;
+	}
+	// editor visibility
+	if (::Application.isEditor)
+	{
+		if (Visibility & VIS_Editor) return true;
 	}
 	// check visibility
 	fDraw=false;

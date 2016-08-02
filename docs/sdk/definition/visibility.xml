@@ -54,6 +54,10 @@ this.Visibility = [<funclink>VIS_Enemies</funclink>]; // This is also possible (
         <col><code>VIS_OverlayOnly</code></col>
         <col>Only overlays will be visible, other visibility-rules still apply.</col>
       </row>
+      <row id="VIS_Editor">
+        <col><code>VIS_Editor</code></col>
+        <col>Visible in editor (both neutral and player viewports).</col>
+      </row>
     </table>
     </text>
     <related>

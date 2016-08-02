@@ -69,7 +69,3 @@ public func GetConditionalIDList(string condition, string name, proplist default
 		id = { Type = "def", Filter=condition } } };
 	return { Name = name, Type = "array", Display = 3, Elements = counted_id };
 }
-
-// TODO: Implement a true VIS_Editor in the engine
-static const VIS_Editor = VIS_God;
-

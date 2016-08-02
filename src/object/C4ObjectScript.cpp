@@ -2435,6 +2435,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "VIS_God"                ,C4V_Int,          VIS_God},
 	{ "VIS_LayerToggle"        ,C4V_Int,          VIS_LayerToggle},
 	{ "VIS_OverlayOnly"        ,C4V_Int,          VIS_OverlayOnly},
+	{ "VIS_Editor"             ,C4V_Int,          VIS_Editor},
 
 	{ "C4MN_Style_Normal"      ,C4V_Int,          C4MN_Style_Normal},
 	{ "C4MN_Style_Context"     ,C4V_Int,          C4MN_Style_Context},

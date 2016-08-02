@@ -69,6 +69,7 @@
 #define VIS_God     32
 #define VIS_LayerToggle 64
 #define VIS_OverlayOnly 128
+#define VIS_Editor      256
 
 // Helper struct to serialize an object's mesh instance with other object's mesh instances attached
 class C4MeshDenumerator: public StdMeshInstance::AttachedMesh::Denumerator
