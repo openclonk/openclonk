@@ -220,7 +220,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
 	// another hotkey is already pressed
-	if (this.inventory.hotkey_down != nil && hot > 0 && hot <= this.MaxContentsCount)
+	if (this.inventory.hotkey_down != nil && hot > 0 && hot <= this.MaxContentsCount && this.inventory.hotkey_down != hot)
 	{
 		// do nothing if this is just key down
 		if (!release)
