@@ -145,6 +145,7 @@
 	GUIName=$CON_QuickSwitch$
 	GUIDesc=$CON_QuickSwitch_Desc$
 	Hold=1
+	SendCursorPos=1
 
 	[ControlDef]
 	Identifier=InventoryShiftForward
@@ -199,42 +200,52 @@
 	[ControlDef]
 	Identifier=Hotkey1
 	GUIName=$CON_Hotkey1$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey2
 	GUIName=$CON_Hotkey2$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey3
 	GUIName=$CON_Hotkey3$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey4
 	GUIName=$CON_Hotkey4$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey5
 	GUIName=$CON_Hotkey5$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey6
 	GUIName=$CON_Hotkey6$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey7
 	GUIName=$CON_Hotkey7$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey8
 	GUIName=$CON_Hotkey8$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey9
 	GUIName=$CON_Hotkey9$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey0
 	GUIName=$CON_Hotkey0$
+	Hold=1
 
 	[ControlDef]
 	Identifier=DropHotkey1
@@ -265,36 +276,6 @@
 
 	[ControlDef]
 	Identifier=DropHotkey0
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey1
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey2
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey3
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey4
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey5
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey6
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey7
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey8
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey9
-
-	[ControlDef]
-	Identifier=QuickSwitchHotkey0
 
 	# Controlling (contents, vehicles, structures)
 
@@ -613,7 +594,6 @@
 	# Interact							Space
 	#
 	# QuickSwitch						Q
-	# QuickSwitchHotkey0-9				Q+(0-9)
 	# InventoryShiftForward				MouseWheelUp
 	# InventoryShiftBackward			MouseWheelDown
 	# Contents							E
@@ -1228,56 +1208,6 @@
 		[Assignment]
 		Key=Shift+CON_Hotkey0
 		Control=DropHotkey0
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey1
-		Control=QuickSwitchHotkey1
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey2
-		Control=QuickSwitchHotkey2
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey3
-		Control=QuickSwitchHotkey3
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey4
-		Control=QuickSwitchHotkey4
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey5
-		Control=QuickSwitchHotkey5
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey6
-		Control=QuickSwitchHotkey6
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey7
-		Control=QuickSwitchHotkey7
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey8
-		Control=QuickSwitchHotkey8
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey9
-		Control=QuickSwitchHotkey9
-		Priority=75
-
-		[Assignment]
-		Key=CON_QuickSwitch,CON_Hotkey0
-		Control=QuickSwitchHotkey0
-		Priority=75
 
 		# Hotkeys for choosing clonk
 

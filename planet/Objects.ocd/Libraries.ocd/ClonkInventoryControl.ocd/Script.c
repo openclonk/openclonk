@@ -9,7 +9,8 @@
 	used properties:
 	this.inventory.last_slot: last inventory-slot that has been selected. Used for QuickSwitching
 	this.inventory.is_picking_up: whether currently picking up
-	this.inventory.quick_switch_hotkey: true if a quick switch hotkey (0-9) has been pressed, the next release of CON_QuickSwitch will do nothing
+	this.inventory.quick_switch_hotkey: the number of a hotkey being held down, in case quick switch is pressed
+	this.inventory.quick_slot_switched: true if the quick slot was switched during pressing down of a hotkey, the hotkey release will do nothing
 	
 	other used properties of "this.inventory" might have been declared in Inventory.ocd
 */
@@ -20,6 +21,7 @@ func Construction()
 	if(this.inventory == nil)
 		this.inventory = {};
 	this.inventory.last_slot = 1;
+	this.inventory.quick_switch_hotkey = nil;
 	return _inherited(...);
 }
 
@@ -54,31 +56,31 @@ func RejectCollect(id objid, object obj)
 
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	if (!this) 
+	if (!this)
 		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
-		
+
 	// Quickswitch changes the active slot to the last selected one
-	if (ctrl == CON_QuickSwitch && release)
+	if (ctrl == CON_QuickSwitch && !release)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
 		if(this.HandObjects > 1)
 			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
 		
-		// Quick switch slot has been changed while CON_QuickSwitch was pressed, do not change
-		if (this.inventory.quick_switch_hotkey)
+		// A number key (hotkey) is pressed, change quick switch slot
+		if (this.inventory.quick_switch_hotkey != nil)
 		{
-			this.inventory.quick_switch_hotkey = false;
+			if (SetQuickSwitchSlot(this.inventory.quick_switch_hotkey-1))
+				this.inventory.quick_slot_switched = true;
 			return true;
 		}
-		// select last slot
+		// Otherwise select slot
 		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
 		return true;
 	}
-	if (ctrl == CON_QuickSwitch && !release)
-		// Clean up for safety reasons
-		if (this.inventory.quick_switch_hotkey)
-			this.inventory.quick_switch_hotkey = false;
-	
+	if (ctrl == CON_QuickSwitch && release) // Do nothing for now but will be used in the future
+	{
+		return true;
+	}
 	// Collection and dropping is only allowed when the Clonk is not contained.
 	if (!Contained())
 	{
@@ -203,25 +205,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	// Selecting the quick switch slot
-	hot = 0;
-	if (ctrl == CON_QuickSwitchHotkey0) hot = 10;
-	if (ctrl == CON_QuickSwitchHotkey1) hot = 1;
-	if (ctrl == CON_QuickSwitchHotkey2) hot = 2;
-	if (ctrl == CON_QuickSwitchHotkey3) hot = 3;
-	if (ctrl == CON_QuickSwitchHotkey4) hot = 4;
-	if (ctrl == CON_QuickSwitchHotkey5) hot = 5;
-	if (ctrl == CON_QuickSwitchHotkey6) hot = 6;
-	if (ctrl == CON_QuickSwitchHotkey7) hot = 7;
-	if (ctrl == CON_QuickSwitchHotkey8) hot = 8;
-	if (ctrl == CON_QuickSwitchHotkey9) hot = 9;
-	
-	if (hot > 0 && hot <= this.MaxContentsCount)
-	{
-		SetQuickSwitchSlot(hot-1);
-		return true;
-	}
-	
 	// inventory
 	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -237,12 +220,22 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// only the last-pressed key is taken into consideration.
 	// if 2 hotkeys are held, the earlier one is being treated as released
-	if (hot > 0 && hot <= this.MaxContentsCount)
+	if (hot > 0 && hot <= this.MaxContentsCount && release)
 	{
-		SetHandItemPos(0, hot-1);
+		if (!this.inventory.quick_slot_switched) SetHandItemPos(0, hot-1);
+
+		this.inventory.quick_switch_hotkey = nil;
+		this.inventory.quick_slot_switched = false;
 		return true;
 	}
-	
+	// a hotkey is pressed, save it for now
+	if (hot > 0 && hot <= this.MaxContentsCount && !release)
+	{
+		this.inventory.quick_switch_hotkey = hot;
+		this.inventory.quick_slot_switched = false; // For safety
+		return true;
+	}
+
 	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 }
 
