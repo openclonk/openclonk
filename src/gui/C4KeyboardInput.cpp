@@ -22,13 +22,6 @@
 #include "game/C4Game.h"
 #include "platform/C4Window.h"
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#include <X11/XKBlib.h>
-#endif
-#endif
 
 #include <algorithm>
 #include <regex>
@@ -412,7 +405,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		// for config files and such: dump scancode
 		return FormatString("$%x", static_cast<unsigned int>(wCode));
 	}
-#if defined(USE_WIN32_WINDOWS) || (defined(_WIN32) && defined(USE_GTK))
+#if defined(USE_WIN32_WINDOWS)
 
 	// Query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
@@ -442,20 +435,6 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 			if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
 	// not found: Compose as direct code
 	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
-#elif defined(USE_GTK)
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	KeySym keysym = (KeySym)XkbKeycodeToKeysym(dpy,wCode+8,0,0);
-	char* name = NULL;
-	if (keysym != NoSymbol) { // is the keycode without shift modifiers mapped to a symbol?
-		name = gtk_accelerator_get_label_with_keycode(gdk_display_get_default(), keysym, wCode+8, (GdkModifierType)0);
-	}
-	if (name) { // is there a string representation of the keysym?
-		// prevent memleak
-		StdStrBuf buf;
-		buf.Copy(name);
-		g_free(name);
-		return buf;
-	}
 #elif defined(USE_SDL_MAINLOOP)
 	StdStrBuf buf;
 	buf.Copy(SDL_GetScancodeName(static_cast<SDL_Scancode>(wCode)));

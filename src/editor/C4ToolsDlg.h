@@ -20,9 +20,6 @@
 #ifndef INC_C4ToolsDlg
 #define INC_C4ToolsDlg
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#endif
 
 #include "config/C4Constants.h"
 #include "landscape/C4Landscape.h"

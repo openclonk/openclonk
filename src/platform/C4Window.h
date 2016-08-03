@@ -21,18 +21,7 @@
 
 #include "lib/StdBuf.h"
 
-#if defined(USE_GTK)
-#ifdef _WIN32
-#undef MK_CONTROL
-#undef MK_SHIFT
-#endif
-// from X.h:
-//#define ShiftMask   (1<<0)
-//#define ControlMask   (1<<2)
-#define MK_CONTROL (1<<2)
-#define MK_SHIFT (1<<0)
-#define MK_ALT (1<<3)
-#elif defined(USE_SDL_MAINLOOP)
+#if defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
 #define MK_SHIFT (KMOD_LSHIFT | KMOD_RSHIFT)
 #define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
@@ -59,7 +48,7 @@ extern int MK_ALT;
 #include <SDL.h>
 #endif
 
-#if defined(USE_WIN32_WINDOWS) || defined(USE_GTK) || defined(USE_CONSOLE) || defined(USE_SDL_MAINLOOP)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_CONSOLE) || defined(USE_SDL_MAINLOOP)
 #define K_ESCAPE 1
 #define K_1 2
 #define K_2 3
@@ -267,10 +256,6 @@ extern C4KeyCode K_PRINT;
 extern C4KeyCode K_CENTER;
 #endif
 
-#ifdef USE_GTK
-// Forward declaration because xlib.h is evil
-typedef struct __GLXFBConfigRec *GLXFBConfig;
-#endif
 
 class C4Window
 #ifdef USE_COCOA
@@ -325,33 +310,17 @@ public:
 #if defined(USE_WIN32_WINDOWS)
 	HWND hWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-#elif defined(USE_GTK)
-	/*GtkWidget*/void * window;
-	// Set by Init to the widget which is used as a
-	// render target, which can be the whole window.
-	/*GtkWidget*/void * render_widget;
-	// Mouse grabbing has to be restored when the window gains focus.
-	bool mouse_was_grabbed = false;
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
 	void HandleSDLEvent(SDL_WindowEvent &e);
 #endif
 #ifdef USE_WGL
 	HWND renderwnd;
-#elif defined(USE_GTK)
-	unsigned long renderwnd;
 #endif
 #ifdef WITH_QT_EDITOR
 	class QOpenGLWidget *glwidget;
 #endif
 protected:
-#if defined(USE_GTK)
-	bool FindFBConfig(int samples, GLXFBConfig *info);
-
-	// The GLXFBConfig the window was created with
-	GLXFBConfig Info;
-	unsigned long handlerDestroy;
-#endif
 	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
 	friend class C4Draw;
 	friend class CStdGL;

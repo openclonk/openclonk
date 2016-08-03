@@ -27,9 +27,6 @@
 #include <vector>
 #include "object/C4DefGraphics.h"
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#endif
 
 // Currently selected elements in editcursor. May be objects and other prop lists.
 class C4EditCursorSelection : public std::list<C4Value>
@@ -69,19 +66,11 @@ protected:
 		StdCopyStrBuf Command;
 #if defined(USE_WIN32_WINDOWS)
 		UINT_PTR ItemId;
-#elif defined(USE_GTK)
-		GtkWidget* MenuItem;
 #endif
 	};
 	std::vector<ObjselItemDt> itemsObjselect;
 #ifdef USE_WIN32_WINDOWS
 	HMENU hMenu;
-#elif defined(USE_GTK)
-	GtkWidget* menuContext;
-	GtkWidget* itemDelete;
-	GtkWidget* itemDuplicate;
-	GtkWidget* itemGrabContents;
-	GtkWidget* itemProperties;
 #endif
 	// Selection may either be any number of objects or a single non-object prop list
 	C4EditCursorSelection selection;
@@ -151,12 +140,6 @@ public:
 	void PerformDuplicationLegacy(int32_t *pObjects, int32_t iObjectNum, bool fLocalCall);
 
 protected:
-#ifdef USE_GTK
-	static void OnDelete(GtkWidget* widget, gpointer data);
-	static void OnDuplicate(GtkWidget* widget, gpointer data);
-	static void OnGrabContents(GtkWidget* widget, gpointer data);
-	static void OnObjselect(GtkWidget* widget, gpointer data);
-#endif
 public:
 	void AddToSelection(C4PropList *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
 	bool RemoveFromSelection(C4PropList *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().

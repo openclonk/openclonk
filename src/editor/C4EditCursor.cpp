@@ -41,9 +41,6 @@
 #include "res/resource.h"
 #endif
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#endif
 
 StdStrBuf C4EditCursorSelection::GetDataString() const
 {
@@ -176,22 +173,6 @@ bool C4EditCursor::Init()
 #ifdef USE_WIN32_WINDOWS
 	if (!(hMenu = LoadMenu(Application.GetInstance(),MAKEINTRESOURCE(IDR_CONTEXTMENUS))))
 		return false;
-#elif defined(USE_GTK)
-	menuContext = gtk_menu_new();
-
-	itemDelete = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DELETE"));
-	itemDuplicate = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DUPLICATE"));
-	itemGrabContents = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_CONTENTS"));
-
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDelete);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDuplicate);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemGrabContents);
-
-	g_signal_connect(G_OBJECT(itemDelete), "activate", G_CALLBACK(OnDelete), this);
-	g_signal_connect(G_OBJECT(itemDuplicate), "activate", G_CALLBACK(OnDuplicate), this);
-	g_signal_connect(G_OBJECT(itemGrabContents), "activate", G_CALLBACK(OnGrabContents), this);
-
-	gtk_widget_show_all(menuContext);
 #endif
 	Console.UpdateModeCtrls(Mode);
 
@@ -1142,16 +1123,6 @@ void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
 		AppendMenu(GetSubMenu(hMenu,0), MF_STRING, IDM_VPORTDYN_FIRST + num, label.GetWideChar());
 	else
 		AppendMenu(GetSubMenu(hMenu,0), MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
-#elif defined(USE_GTK)
-	GtkWidget * wdg;
-	if (num)
-		wdg = gtk_menu_item_new_with_label(label.getData());
-	else
-		wdg = gtk_separator_menu_item_new();
-	itemsObjselect[num].MenuItem = wdg;
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
-	if (num)
-		g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &itemsObjselect[num]);
 #endif
 }
 
@@ -1167,10 +1138,6 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
-#elif defined(USE_GTK)
-	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
-	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
-	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
 #endif
 
 	// Add selection and custom command entries for any objects at the cursor
@@ -1274,9 +1241,6 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 		break;
 	}
 	ObjselectDelItems();
-#elif defined(USE_GTK)
-	gtk_widget_show_all(menuContext);
-	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, gtk_get_current_event_time());
 #endif
 	return true;
 }
@@ -1439,53 +1403,12 @@ void C4EditCursor::EMControl(C4PacketType eCtrlType, C4ControlPacket *pCtrl)
 	::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
 }
 
-#ifdef USE_GTK
-// GTK+ callbacks
-void C4EditCursor::OnDelete(GtkWidget* widget, gpointer data)
-{
-	static_cast<C4EditCursor*>(data)->Delete();
-}
-
-void C4EditCursor::OnDuplicate(GtkWidget* widget, gpointer data)
-{
-	static_cast<C4EditCursor*>(data)->Duplicate();
-}
-
-void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
-{
-	static_cast<C4EditCursor*>(data)->GrabContents();
-}
-
-void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
-{
-	bool IsShiftDown = false;
-	GdkEvent* event = gtk_get_current_event();
-	if(event)
-	{
-		if(event->type == GDK_BUTTON_PRESS)
-			IsShiftDown = ( ((GdkEventButton*)event)->state & MK_SHIFT) != 0;
-		else if(event->type == GDK_KEY_PRESS)
-			IsShiftDown = ( ((GdkEventKey*)event)->state & MK_SHIFT) != 0;
-
-		gdk_event_free(event);
-	}
-	ObjselItemDt* it = static_cast<ObjselItemDt*>(data);
-	if (it->Command.getLength())
-		it->EditCursor->DoContextObjCommand(it->Object, it->Command.getData());
-	else
-		it->EditCursor->DoContextObjsel(it->Object, !IsShiftDown);
-	it->EditCursor->ObjselectDelItems();
-}
-
-#endif
 
 void C4EditCursor::ObjselectDelItems() {
 	if(!itemsObjselect.size()) return;
 	std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin();
 	while(it != itemsObjselect.end()) {
-		#if defined(USE_GTK)
-		gtk_widget_destroy(it->MenuItem);
-		#elif defined(USE_WIN32_WINDOWS)
+		#if defined(USE_WIN32_WINDOWS)
 		if(!it->ItemId) { ++it; continue; }
 		HMENU hContext = GetSubMenu(hMenu,0);
 		DeleteMenu(hContext, it->ItemId, MF_BYCOMMAND);

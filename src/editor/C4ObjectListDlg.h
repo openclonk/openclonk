@@ -19,9 +19,6 @@
 #ifndef INC_C4ObjectListDlg
 #define INC_C4ObjectListDlg
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#endif // USE_GTK
 
 #include "object/C4ObjectList.h"
 
@@ -48,17 +45,6 @@ public:
 	virtual void OnEffectAdded(class C4Effect *fx) override;
 	virtual void OnEffectRemoved(class C4Effect *fx) override;
 
-#ifdef USE_GTK
-private:
-	GtkWidget * window;
-	GtkWidget * treeview;
-	GObject * model;
-	bool updating_selection;
-
-	static void OnDestroy(GtkWidget * widget, C4ObjectListDlg * dlg);
-	static void OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg);
-	static void OnSelectionChanged(GtkTreeSelection * selection, C4ObjectListDlg * dlg);
-#endif // USE_GTK
 };
 
 #endif //INC_C4ObjectListDlg

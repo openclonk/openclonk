@@ -122,11 +122,7 @@ public:
 	pthread_t MainThread;
 #endif
 
-#if defined(USE_GTK)
-protected:
-	class C4X11AppImpl * Priv;
-
-#elif defined(USE_SDL_MAINLOOP)
+#if defined(USE_SDL_MAINLOOP)
 public:
 	void HandleSDLEvent(SDL_Event& event);
 

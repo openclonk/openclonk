@@ -25,9 +25,6 @@
 #include "landscape/C4Landscape.h"
 #include "player/C4PlayerList.h"
 
-#ifdef USE_GTK
-#include <gtk/gtk.h>
-#endif
 
 #ifdef WITH_QT_EDITOR
 #include "editor/C4ConsoleQtViewport.h"
@@ -117,70 +114,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	return true;
 }
 
-#elif defined(USE_GTK)
-bool C4Viewport::TogglePlayerLock()
-{
-	if (PlayerLock)
-	{
-		PlayerLock = false;
-		gtk_widget_show(pWindow->h_scrollbar);
-		gtk_widget_show(pWindow->v_scrollbar);
-		ScrollBarsByViewPosition();
-	}
-	else
-	{
-		PlayerLock = true;
-		gtk_widget_hide(pWindow->h_scrollbar);
-		gtk_widget_hide(pWindow->v_scrollbar);
-	}
-
-	return true;
-}
-
-bool C4Viewport::ScrollBarsByViewPosition()
-{
-	if (PlayerLock) return false;
-	
-	GtkAllocation allocation;
-	gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
-
-	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
-
-	gtk_adjustment_configure(adjustment,
-	                         GetViewX(), // value
-	                         0, // lower
-	                         ::Landscape.GetWidth(), // upper
-	                         ViewportScrollSpeed, // step_increment
-	                         allocation.width / Zoom, // page_increment
-	                         allocation.width / Zoom // page_size
-	                         );
-
-	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-	gtk_adjustment_configure(adjustment,
-	                         GetViewY(), // value
-	                         0, // lower
-	                         ::Landscape.GetHeight(), // upper
-	                         ViewportScrollSpeed, // step_increment
-	                         allocation.height / Zoom, // page_increment
-	                         allocation.height / Zoom // page_size
-	                         );
-	return true;
-}
-
-bool C4Viewport::ViewPositionByScrollBars()
-{
-	if (PlayerLock) return false;
-
-	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
-	SetViewX(gtk_adjustment_get_value(adjustment));
-
-	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-	SetViewY(gtk_adjustment_get_value(adjustment));
-
-	return true;
-}
-
-#endif // USE_GTK
+#endif
 
 void C4ViewportWindow::PerformUpdate()
 {

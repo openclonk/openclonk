@@ -46,7 +46,6 @@ option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 CMAKE_DEPENDENT_OPTION(USE_COCOA         "Use Apple Cocoa widgets." ON "APPLE" OFF)
 CMAKE_DEPENDENT_OPTION(USE_WIN32_WINDOWS "Use Microsoft Desktop App User Interface widgets." ON "WIN32" OFF)
 CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. Qt editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS" OFF)
-CMAKE_DEPENDENT_OPTION(USE_GTK           "Use GTK+ widgets." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS AND NOT USE_SDL_MAINLOOP" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
@@ -298,9 +297,6 @@ CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc
 
 if(UNIX AND NOT APPLE)
 	FINDLIB(X11_LIBRARIES X11)
-	if(USE_GTK)
-		FINDLIB(XRANDR_LIBRARIES Xrandr)
-	endif()
 endif()
 
 if (WIN32)
@@ -323,13 +319,6 @@ endif()
 SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 
 find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
-if(USE_GTK)
-	SET(WITH_GLIB ${GTK3_FOUND})
-	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
-	# Set GTK link directory. This needs to be done before add_executable,
-	# otherwise the path is not used for linking clonk
-	link_directories(${GTK3_LIBRARY_DIRS})
-endif()
 
 # Select an audio library
 find_package("Audio")
@@ -381,31 +370,6 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico
-	VERBATIM
-)
-
-add_custom_command(
-	OUTPUT engine-resource.c
-	COMMAND
-		${GLIB_COMPILE_RESOURCES} "--internal" "--generate"
-		"--target" "engine-resource.c"
-		"--sourcedir" ${CMAKE_CURRENT_SOURCE_DIR}/src/res
-		"${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.xml"
-	MAIN_DEPENDENCY src/res/engine.xml
-	DEPENDS
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Rect_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Exact_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 	VERBATIM
 )
 
@@ -966,16 +930,7 @@ elseif(UPNP_STYLE STREQUAL "miniupnpc")
 endif()
 
 # source files specific to a GUI library
-if(USE_GTK)
-	list(APPEND OC_GUI_SOURCES
-		src/editor/C4ConsoleGTK.cpp
-		src/editor/C4ConsoleGTKDlg.cpp
-		src/editor/C4ConsoleGTKDlg.h
-		src/platform/C4AppGTK.cpp
-		src/platform/C4WindowGTK.cpp
-		engine-resource.c
-	)
-elseif(USE_SDL_MAINLOOP)
+if(USE_SDL_MAINLOOP)
 	list(APPEND OC_GUI_SOURCES
 		src/platform/C4AppSDL.cpp
 		src/platform/C4WindowSDL.cpp
@@ -1188,9 +1143,6 @@ target_link_libraries(openclonk
 	libc4script
 	libmisc
 )
-if(USE_GTK)
-	target_link_libraries(openclonk ${GTK3_LIBRARIES})
-endif()
 if(USE_COCOA)
 	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
 endif()
@@ -1217,7 +1169,6 @@ target_link_libraries(openclonk-server
 	${READLINE_LIBRARIES}
 	${Audio_LIBRARIES}
 	${GETOPT_LIBRARIES}
-	${GTK3_glib_LIBRARIES}
 	${TinyXML_LIBRARIES}
 	${DBGHELP_LIBRARIES}
 	${UPNP_LIBRARIES}

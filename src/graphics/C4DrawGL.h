@@ -127,8 +127,6 @@ protected:
 	C4Window * pWindow; // window to draw in
 #ifdef USE_WGL
 	HDC hDC;                    // device context handle
-#elif defined(USE_GTK)
-	/*GLXContext*/void * ctx;
 #elif defined(USE_SDL_MAINLOOP)
 	void * ctx;
 #endif

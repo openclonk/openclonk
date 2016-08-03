@@ -60,16 +60,7 @@ bool C4Viewport::UpdateOutputSize(int32_t new_width, int32_t new_height)
 	}
 	else
 	{
-#ifdef USE_GTK
-		GtkAllocation allocation;
-		gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
-
-		// Use only size of drawing area without scrollbars
-		rect.x = allocation.x;
-		rect.y = allocation.y;
-		rect.Wdt = allocation.width;
-		rect.Hgt = allocation.height;
-#elif defined(WITH_QT_EDITOR)
+#if defined(WITH_QT_EDITOR)
 		// Never query the window - size is always passed from Qt.
 		return false;
 #else
