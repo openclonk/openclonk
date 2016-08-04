@@ -420,8 +420,10 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Spear)
 	{
+		// This is a one sided animation, so switch to back if not in the main hand
 		if(HasHandAction(sec, 1) && !sec)
 		{
+			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation("CarrySpear", CLONK_ANIM_SLOT_Hands + sec, Anim_Const(0));
 		}
 		else
