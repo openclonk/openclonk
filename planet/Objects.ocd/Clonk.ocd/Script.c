@@ -1188,5 +1188,18 @@ func Definition(def) {
 	{ Value=3, Name="Farmer"}
 	]};
 	
+	UserAction->AddEvaluator("Action", "Clonk", "$SetMaxContentsCount$", "$SetMaxContentsCountHelp$", "clonk_set_max_contents_count", [def, def.EvalAct_SetMaxContentsCount], { }, { Type="proplist", Display="{{Target}}: {{MaxContentsCount}}", EditorProps = {
+		Target = UserAction->GetObjectEvaluator("IsClonk", "Clonk"),
+		MaxContentsCount = new UserAction.Evaluator.Integer { Name="$MaxContentsCount$", EmptyName = Format("$Default$ (%d)", def.MaxContentsCount) }
+		} } );
+	
 	_inherited(def);
+}
+
+private func EvalAct_SetMaxContentsCount(proplist props, proplist context)
+{
+	// Set max contents count. nil defaults to Clonk.MaxContentsCount.
+	var clonk = UserAction->EvaluateValue("Object", props.Target, context);
+	var number = BoundBy(UserAction->EvaluateValue("Integer", props.MaxContentsCount, context) ?? clonk->GetID().MaxContentsCount, 0, 10);
+	if (clonk) clonk->~SetMaxContentsCount(number);
 }

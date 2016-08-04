@@ -517,6 +517,6 @@ public func SetMaxContentsCount(int new_count)
 		}
 	}
 	// Update GUI
-	this->~ScheduleUpdateInventory();
+	this->~OnInventoryChange();
 	return true;
 }
