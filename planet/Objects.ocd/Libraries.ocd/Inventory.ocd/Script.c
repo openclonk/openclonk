@@ -496,3 +496,27 @@ public func GrabContents(object source, ...)
 	// Grab remaining items
 	return inherited(source, ...);
 }
+
+/* Updates the maximum number of carryable items by this clonk. */
+public func SetMaxContentsCount(int new_count)
+{
+	// Update limit
+	MaxContentsCount = new_count;
+	// Make sure hands aren't beyond inventory
+	if (MaxContentsCount)
+	{
+		for(var i=0; i < HandObjects; i++)
+		{
+			if (GetHandItemPos(i) >= MaxContentsCount)
+			{
+				var new_slot = 0;
+				while (GetIndexOf(this.inventory.hand_objects, new_slot) >= 0) ++new_slot;
+				if (new_slot >= MaxContentsCount) new_slot = 0;
+				SetHandItemPos(i, new_slot);
+			}
+		}
+	}
+	// Update GUI
+	this->~ScheduleUpdateInventory();
+	return true;
+}
