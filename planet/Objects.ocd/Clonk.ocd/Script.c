@@ -309,7 +309,12 @@ public func DetachObject(object obj)
 func DetachHandItem(bool secondary)
 {
 	if(iHandMesh[secondary])
+	{
 		DetachMesh(iHandMesh[secondary]);
+		var anim = "Close2Hand";
+		if (secondary) anim = "Close1Hand";
+		PlayAnimation(anim, CLONK_ANIM_SLOT_Hands + secondary, Anim_Const(0));
+	}
 	iHandMesh[secondary] = 0;
 }
 
@@ -322,6 +327,13 @@ func AttachHandItem(bool secondary)
 func UpdateAttach()
 {
 	StopAnimation(GetRootAnimation(6));
+
+	if (iHandMesh)
+	{
+		DetachHandItem(0);
+		DetachHandItem(1);
+	}
+
 	DoUpdateAttach(0);
 	DoUpdateAttach(1);
 }
@@ -331,7 +343,7 @@ func DoUpdateAttach(bool sec)
 	var obj = GetHandItem(sec);
 	var other_obj = GetHandItem(!sec);
 	if(!obj) return;
-	var iAttachMode = obj->~GetCarryMode(this);
+	var iAttachMode = obj->~GetCarryMode(this, sec);
 	if(iAttachMode == CARRY_None) return;
 
 	if(iHandMesh[sec])
@@ -342,8 +354,8 @@ func DoUpdateAttach(bool sec)
 
 	var bone = "main";
 	var bone2;
-	if(obj->~GetCarryBone())  bone  = obj->~GetCarryBone(this);
-	if(obj->~GetCarryBone2()) bone2 = obj->~GetCarryBone2(this);
+	if(obj->~GetCarryBone())  bone  = obj->~GetCarryBone(this, sec);
+	if(obj->~GetCarryBone2()) bone2 = obj->~GetCarryBone2(this, sec);
 	else bone2 = bone;
 	var nohand = 0;
 	if(!HasHandAction(sec, 1)) nohand = 1;
@@ -355,12 +367,14 @@ func DoUpdateAttach(bool sec)
 	if(sec) pos_back = "pos_back2";
 	var closehand = "Close2Hand";
 	if(sec) closehand = "Close1Hand";
+	var pos_belt = "skeleton_leg_upper.R";
+	if (sec) pos_belt = "skeleton_leg_upper.L";
 
 	if(!sec) fBothHanded = 0;
 
 	var special = obj->~GetCarrySpecial(this);
 	var special_other;
-	if(other_obj) special_other = other_obj->~GetCarrySpecial(this);
+	if(other_obj) special_other = other_obj->~GetCarrySpecial(this, sec);
 	if(special)
 	{
 		iHandMesh[sec] = AttachMesh(obj, special, bone, trans);
@@ -372,7 +386,7 @@ func DoUpdateAttach(bool sec)
 		if(HasHandAction(sec, 1))
 		{
 			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
-			PlayAnimation(closehand, CLONK_ANIM_SLOT_Hands, Anim_Const(GetAnimationLength(closehand)));
+			PlayAnimation(closehand, CLONK_ANIM_SLOT_Hands + sec, Anim_Const(GetAnimationLength(closehand)));
 		}
 	}
 	else if(iAttachMode == CARRY_HandBack)
@@ -380,7 +394,7 @@ func DoUpdateAttach(bool sec)
 		if(HasHandAction(sec, 1))
 		{
 			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
-			PlayAnimation(closehand, CLONK_ANIM_SLOT_Hands, Anim_Const(GetAnimationLength(closehand)));
+			PlayAnimation(closehand, CLONK_ANIM_SLOT_Hands + sec, Anim_Const(GetAnimationLength(closehand)));
 		}
 		else
 			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
@@ -388,7 +402,7 @@ func DoUpdateAttach(bool sec)
 	else if(iAttachMode == CARRY_HandAlways)
 	{
 		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
-		PlayAnimation(closehand, CLONK_ANIM_SLOT_Hands, Anim_Const(GetAnimationLength(closehand)));
+		PlayAnimation(closehand, CLONK_ANIM_SLOT_Hands + sec, Anim_Const(GetAnimationLength(closehand)));
 	}
 	else if(iAttachMode == CARRY_Back)
 	{
@@ -400,7 +414,7 @@ func DoUpdateAttach(bool sec)
 		if(HasHandAction(sec, 1) && !sec && !special_other)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_tool1", bone, trans);
-			PlayAnimation("CarryArms", CLONK_ANIM_SLOT_Hands, Anim_Const(obj->~GetCarryPhase(this)));
+			PlayAnimation("CarryArms", CLONK_ANIM_SLOT_Hands + sec, Anim_Const(obj->~GetCarryPhase(this)));
 			fBothHanded = 1;
 		}
 	}
@@ -408,7 +422,7 @@ func DoUpdateAttach(bool sec)
 	{
 		if(HasHandAction(sec, 1) && !sec)
 		{
-			PlayAnimation("CarrySpear", CLONK_ANIM_SLOT_Hands, Anim_Const(0));
+			PlayAnimation("CarrySpear", CLONK_ANIM_SLOT_Hands + sec, Anim_Const(0));
 		}
 		else
 			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
@@ -418,7 +432,7 @@ func DoUpdateAttach(bool sec)
 		if(HasHandAction(sec, 1) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_hand2", bone, trans);
-			PlayAnimation("CarryMusket", CLONK_ANIM_SLOT_Hands, Anim_Const(0), Anim_Const(1000));
+			PlayAnimation("CarryMusket", CLONK_ANIM_SLOT_Hands + sec, Anim_Const(0), Anim_Const(1000));
 			fBothHanded = 1;
 		}
 		else
@@ -429,13 +443,21 @@ func DoUpdateAttach(bool sec)
 		if(HasHandAction(sec, 1) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_hand2", bone, trans);
-			PlayAnimation("CarryCrossbow", CLONK_ANIM_SLOT_Hands, Anim_Const(0), Anim_Const(1000));
+			PlayAnimation("CarryCrossbow", CLONK_ANIM_SLOT_Hands + sec, Anim_Const(0), Anim_Const(1000));
 			fBothHanded = 1;
 		}
 		else
 			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
 	}
-}//AttachMesh(DynamiteBox, "pos_tool1", "main", Trans_Translate(0,0,0));
+	else if(iAttachMode == CARRY_Belt)
+	{
+		// Do some extra transforms for this kind of carrying
+		if (trans)
+			trans = Trans_Mul(trans, Trans_Rotate(160,0,0,1), Trans_Rotate(5,0,1), Trans_Rotate(30,1), Trans_Translate(-2500,0,700), Trans_Scale(700));
+		else trans = Trans_Mul(Trans_Rotate(160,0,0,1), Trans_Rotate(5,0,1), Trans_Rotate(30,1), Trans_Translate(-2500,0,800), Trans_Scale(700));
+		iHandMesh[sec] = AttachMesh(obj, pos_belt, bone, trans);
+	}
+}
 
 public func GetHandMesh(object obj)
 {
@@ -454,6 +476,7 @@ static const CARRY_BothHands    = 5;
 static const CARRY_Spear        = 6;
 static const CARRY_Musket       = 7;
 static const CARRY_Grappler     = 8;
+static const CARRY_Belt         = 9;
 
 func HasHandAction(sec, just_wear, bool force_landscape_letgo)
 {
