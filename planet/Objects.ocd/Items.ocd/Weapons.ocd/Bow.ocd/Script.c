@@ -1,36 +1,17 @@
-/*
+/**
 	Bow
-	Author: Newton
+	The standard bow. This object is a standard projectile weapon with an extra slot.
 	
-	The standard bow. This object is a standard projectile weapon
-	with an extra slot.
+	@author: Newton
 */
 
-// has extra slot
 #include Library_HasExtraSlot
 
-// Initial velocity of the arrow
-local shooting_strength = 100;
-
-private func Hit()
-{
-	Sound("Hits::Materials::Wood::WoodHit?");
-}
-
 local fAiming;
-
 local iArrowMesh;
-
-public func GetCarryMode() { return CARRY_HandBack; }
-
-public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
-
-/* +++++++++++ Controls ++++++++++++++ */
-
-// holding callbacks are made
-public func HoldingEnabled() { return true; }
-
 local animation_set;
+
+/*-- Engine Callbacks --*/
 
 func Initialize()
 {
@@ -55,7 +36,70 @@ func Initialize()
 	};
 }
 
+func Hit()
+{
+	Sound("Hits::Materials::Wood::WoodHit?");
+}
+
+func RejectCollect(id arrowid, object arrows)
+{
+	// arrows are not arrows? decline!
+	if(!(arrows->~IsArrow())) return true;
+}
+
+/*-- Callbacks --*/
+
 public func GetAnimationSet() { return animation_set; }
+
+// Attach the arrow during the animation
+public func DuringLoad(object clonk) { return AddArrow(clonk); }
+
+// Callback from the clonk when loading is finished
+public func FinishedLoading(object clonk)
+{
+	clonk->~StartAim(this);
+	return true;
+}
+
+// Callback from the clonk, when he actually has stopped aiming
+public func FinishedAiming(object clonk, int angle)
+{
+	clonk->DetachMesh(iArrowMesh);
+	iArrowMesh = nil;
+
+	// shoot
+	if(Contents(0))
+	{
+		if(Contents(0)->~IsArrow())
+		{
+			var arrow = Contents(0)->TakeObject();
+			arrow->Launch(angle,shooting_strength,clonk);
+			Sound("Objects::Weapons::Bow::Shoot?");
+		}
+	}
+
+	// Open the hand to let the string go and play the fire animation
+	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold));
+	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
+	clonk->StartShoot(this);
+	return true;
+}
+
+/*
+func Selection()
+{
+	Sound("Objects::Weapons::Bow::Draw");
+}
+
+func Deselection()
+{
+	Sound("Objects::Weapons::Bow::PutAwayBow");
+}
+*/
+
+/*-- Usage --*/
+
+public func HoldingEnabled() { return true; }
 
 public func RejectUse(object clonk)
 {
@@ -95,23 +139,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
-// Attach the arrow during the animation
-public func DuringLoad(object clonk) { return AddArrow(clonk); }
-
-// Called during loading then the arrow is added to the animation
-public func AddArrow(object clonk)
-{
-	Sound("Objects::Weapons::Bow::Load?");
-	iArrowMesh = clonk->AttachMesh(HelpArrow, "pos_hand1", "main", nil);
-}
-
-// Callback from the clonk when loading is finished
-public func FinishedLoading(object clonk)
-{
-	clonk->~StartAim(this);
-	return true;
-}
-
 // Update the angle on mouse movement
 public func ControlUseHolding(object clonk, int x, int y)
 {
@@ -134,37 +161,18 @@ public func ControlUseStop(object clonk, int x, int y)
 	return true;
 }
 
-// Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
-{
-	clonk->DetachMesh(iArrowMesh);
-	iArrowMesh = nil;
-
-	// shoot
-	if(Contents(0))
-	{
-		if(Contents(0)->~IsArrow())
-		{
-			var arrow = Contents(0)->TakeObject();
-			arrow->Launch(angle,shooting_strength,clonk);
-			Sound("Objects::Weapons::Bow::Shoot?");
-		}
-	}
-
-	// Open the hand to let the string go and play the fire animation
-	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold));
-	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
-	clonk->StartShoot(this);
-	return true;
-}
-
 public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming(this);
 	return true;
 }
 
-/* ++++++++ Animation functions ++++++++ */
+// Called during loading then the arrow is added to the animation
+public func AddArrow(object clonk)
+{
+	Sound("Objects::Weapons::Bow::Load?");
+	iArrowMesh = clonk->AttachMesh(HelpArrow, "pos_hand1", "main", nil);
+}
 
 public func Reset(clonk)
 {
@@ -177,9 +185,7 @@ public func Reset(clonk)
 	StopAnimation(GetRootAnimation(6));
 }
 
-/* ++++++++ Helper functions ++++++++ */
-
-private func ClonkAimLimit(object clonk, int angle)
+func ClonkAimLimit(object clonk, int angle)
 {
 	angle = Normalize(angle,-180);
 	if(Abs(angle) > 160) return false;
@@ -187,8 +193,6 @@ private func ClonkAimLimit(object clonk, int angle)
 	if(clonk->GetDir() == 0 && angle > 0) return false;
 	return true;
 }
-
-/* +++++++++++ Slow walk +++++++++++ */
 
 func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
@@ -201,37 +205,39 @@ func FxIntWalkSlowStop(pTarget, effect)
 	pTarget->PopActionSpeed("Walk");
 }
 
-/* +++++++++++ Various callbacks +++++++++ */
-
-func RejectCollect(id arrowid, object arrows)
-{
-	// arrows are not arrows? decline!
-	if(!(arrows->~IsArrow())) return true;
-}
-/*
-func Selection()
-{
-	Sound("Objects::Weapons::Bow::Draw");
-}
-
-func Deselection()
-{
-	Sound("Objects::Weapons::Bow::PutAwayBow");
-}
-*/
+/*-- Production --*/
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
+
+/*-- Display --*/
+
+public func GetCarryMode(object clonk, bool idle)
+{
+	if (idle)
+		return CARRY_Back;
+
+	return CARRY_HandBack;
+}
+
+public func GetCarrySpecial(clonk)
+{
+	if(fAiming) return "pos_hand2";
+}
 
 func Definition(def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000,4000),Trans_Rotate(180,0,1,0),Trans_Rotate(-45,0,0,1));
 }
 
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Description = "$Description$";
-local Collectible = 1;
+local Collectible = true;
 local BlastIncinerate = 30;
 local ContactIncinerate = 5;
 local ForceFreeHands = true;
 local Components = {Wood = 3};
+// Initial velocity of the arrow
+local shooting_strength = 100;

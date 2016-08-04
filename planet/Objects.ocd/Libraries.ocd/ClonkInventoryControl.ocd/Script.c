@@ -489,6 +489,7 @@ public func SetQuickSwitchSlot(int slot)
 	this.inventory.quick_slot = slot;
 	// Notify HUD
 	this->~OnInventoryChange();
+	this->~UpdateAttach();
 
 	return true;
 }

@@ -2,19 +2,19 @@
 	Sickle
 	Used for harvesting (wheat, cotton, ...)
 
-	@author Clonkonaut
+	@author: Clonkonaut
 */
+
+/*-- Engine Callbacks --*/
 
 private func Hit()
 {
 	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
-public func GetCarryMode()	{	return CARRY_HandBack;	}
-public func GetCarryBone()	{	return "main";	}
-public func GetCarryTransform()	{	return Trans_Rotate(90,1,0,0);	}
+/*-- Usage --*/
 
-func RejectUse(object clonk)
+public func RejectUse(object clonk)
 {
 	return !(clonk->IsWalking() || clonk->IsJumping()) || !clonk->HasHandAction();
 }
@@ -48,14 +48,40 @@ public func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
+/*-- Production --*/
+
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
-func Definition(def) {
+/*-- Display --*/
+
+public func GetCarryMode(object clonk, bool idle)
+{
+	if (idle)
+		return CARRY_Belt;
+
+	return CARRY_HandBack;
+}
+
+public func GetCarryTransform(object clonk, bool idle, bool nohand)
+{
+	if (idle)
+		return Trans_Mul(Trans_Rotate(-45, 1, 0, 0), Trans_Rotate(180, 0, 0, 1), Trans_Translate(0,0,1000));
+
+	if (nohand)
+		return Trans_Mul(Trans_Rotate(45, 0, 1), Trans_Translate(-3000, 0, 4000));
+
+	return Trans_Rotate(90,1,0,0);
+}
+
+func Definition(def)
+{
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(15, 0, 1, 0), Trans_Rotate(320, 0,0,1)),def);
 }
 
-local Collectible = 1;
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Description = "$Description$";
+local Collectible = true;
 local Components = {Wood = 1, Metal = 1};

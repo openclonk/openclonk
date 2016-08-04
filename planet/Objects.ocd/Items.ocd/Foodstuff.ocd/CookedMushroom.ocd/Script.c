@@ -1,7 +1,11 @@
-/*-- Cooked Mushroom --*/
+/**
+	Cooked Mushroom
+	Yummier meal than an uncooked mushroom.
+*/
 
+/*-- Engine Callbacks --*/
 
-protected func Construction()
+func Construction()
 {
 	this.MeshTransformation = Trans_Rotate(RandomX(0, 359), 0, 1, 0);
 }
@@ -11,9 +15,9 @@ func Hit()
 	Sound("Hits::GeneralHit?");
 }
 
-/* Eating */
+/*-- Eating --*/
 
-protected func ControlUse(object clonk)
+public func ControlUse(object clonk)
 {
 	clonk->Eat(this);
 	return true;
@@ -21,8 +25,24 @@ protected func ControlUse(object clonk)
 
 public func NutritionalValue() { return 25; }
 
+/*-- Production --*/
+
 public func IsKitchenProduct() { return true; }
 public func GetFuelNeed() { return 50; }
+
+/*-- Display --*/
+
+public func GetCarryMode()
+{
+	return CARRY_Hand;
+}
+
+public func GetCarryTransform()
+{
+	return Trans_Scale(750);
+}
+
+/*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";

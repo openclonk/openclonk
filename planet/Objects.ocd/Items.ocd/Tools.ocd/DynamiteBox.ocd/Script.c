@@ -2,7 +2,7 @@
 	Dynamite box
 	Contains five dynamite sticks which can be placed and detonated from a distance. 
 	
-	@author Newton
+	@author: Newton
 */
 
 static const DYNA_MaxLength = 500;
@@ -13,7 +13,9 @@ local dynamite_sticks;
 local wires;
 local wire;
 
-public func Initialize()
+/*-- Engine Callbacks --*/
+
+func Initialize()
 {
 	count = DYNA_MaxCount;
 	dynamite_sticks = [];
@@ -24,20 +26,71 @@ public func Initialize()
 		wires[i] = nil;
 	}
 
-	this.PictureTransformation = Trans_Scale(); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
+	// Hide it TODO: Remove if the mesh isn't shown if there is a picture set
+	this.PictureTransformation = Trans_Scale();
 	UpdatePicture();
 	return;
 }
 
-private func Hit()
+func Hit()
 {
 	Sound("Hits::Materials::Wood::DullWoodHit?");
 }
 
-public func HoldingEnabled() { return true; }
+func Incineration(int caused_by) 
+{
+	ActivateFuse();
+	if (!GetEffect("Fuse", this)) AddEffect("Fuse", this, 100, 1, this);
+	Sound("Fire::Fuse");
+	SetController(caused_by);
+	return;
+}
 
-public func GetCarryMode() { return CARRY_BothHands; }
-public func GetCarryPhase() { return 450; }
+func Damage(int change, int type, int by_player)
+{
+	Incinerate(nil, by_player);
+	return;
+}
+
+public func OnCannonShot(object cannon)
+{
+	Incinerate(nil, cannon->GetController());
+}
+
+/*-- Callbacks --*/
+
+// Do not stack empty dynamite boxes with full ones.
+public func CanBeStackedWith(object other)
+{
+	if (this.count != other.count) return false;
+	return inherited(other, ...);
+}
+
+// Drop connected or fusing boxes
+public func IsDroppedOnDeath(object clonk)
+{
+	return GetEffect("Fuse", this) || wire;
+}
+
+public func OnFuseFinished(object fuse)
+{
+	SetController(fuse->GetController());
+	DoExplode();
+}
+
+/*-- Usage --*/
+
+public func SetDynamiteCount(int new_count)
+{
+	count = BoundBy(new_count, 1, DYNA_MaxCount);
+	UpdatePicture();
+	// Update inventory if contained in a crew member.
+	if (Contained())
+		Contained()->~OnInventoryChange();
+	return;
+}
+
+public func HoldingEnabled() { return true; }
 
 public func ControlUse(object clonk, int x, int y)
 {
@@ -84,27 +137,60 @@ public func ChangeToIgniter()
 	return true;
 }
 
-public func SetDynamiteCount(int new_count)
+public func ActivateFuse()
 {
-	count = BoundBy(new_count, 1, DYNA_MaxCount);
-	UpdatePicture();
-	// Update inventory if contained in a crew member.
-	if (Contained())
-		Contained()->~OnInventoryChange();
-	return;
+	// Activate all fuses.
+	for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
+		obj->~StartFusing(this);
 }
 
-private func UpdatePicture()
+public func DoExplode()
+{
+	// Activate all fuses.
+	ActivateFuse();
+	// Explode, calc the radius out of the area of a explosion of a single dynamite times the amount of dynamite
+	// This results to 18, 25, 31, 36, and 40
+	Explode(Sqrt(18**2*count));
+}
+
+public func FxFuseTimer(object target, effect, int timer)
+{
+	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
+	if (timer > 90)
+		DoExplode();
+	return FX_OK;
+}
+
+/*-- Production --*/
+
+public func IsTool() { return true; }
+public func IsChemicalProduct() { return true; }
+
+/*-- Display --*/
+
+public func GetCarryMode(object clonk, bool idle)
+{
+	if (idle) return CARRY_Back;
+	if (clonk->~IsWalking() || clonk->~IsJumping()) return CARRY_BothHands;
+	return CARRY_Back;
+}
+
+public func GetCarryTransform(object clonk, bool idle, bool nohand)
+{
+	if (idle)
+		return Trans_Mul(Trans_Translate(0,3000), Trans_Rotate(-45,0,1));
+	if (nohand)
+		return Trans_Mul(Trans_Translate(0,-3000), Trans_Rotate(-45,0,1));
+}
+
+public func GetCarryPhase()
+{
+	return 450;
+}
+
+func UpdatePicture()
 {
 	SetGraphics(Format("%d", 6 - count), DynamiteBox, 1, GFXOV_MODE_Picture);
-	return;
-}
-
-// Do not stack empty dynamite boxes with full ones.
-public func CanBeStackedWith(object other)
-{
-	if (this.count != other.count) return false;
-	return inherited(other, ...);
 }
 
 // Display the remaining dynamite sticks in menus.
@@ -142,73 +228,11 @@ public func GetInventoryIconOverlay()
 	return overlay;
 }
 
-public func OnFuseFinished(object fuse)
-{
-	SetController(fuse->GetController());
-	DoExplode();
-}
-
-public func ActivateFuse()
-{
-	// Activate all fuses.
-	for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
-		obj->~StartFusing(this);
-}
-
-public func DoExplode()
-{
-	// Activate all fuses.
-	ActivateFuse();
-	// Explode, calc the radius out of the area of a explosion of a single dynamite times the amount of dynamite
-	// This results to 18, 25, 31, 36, and 40
-	Explode(Sqrt(18**2*count));
-}
-
-protected func Incineration(int caused_by) 
-{
-	ActivateFuse();
-	if (!GetEffect("Fuse", this)) AddEffect("Fuse", this, 100, 1, this);
-	Sound("Fire::Fuse");
-	SetController(caused_by);
-	return;
-}
-
-protected func Damage(int change, int type, int by_player)
-{
-	Incinerate(nil, by_player);
-	return;
-}
-
-public func OnCannonShot(object cannon)
-{
-	Incinerate(nil, cannon->GetController());
-}
-
-public func FxFuseTimer(object target, effect, int timer)
-{
-	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
-	if (timer > 90)
-		DoExplode();
-	return FX_OK;
-}
-
-public func IsTool() { return true; }
-public func IsChemicalProduct() { return true; }
-
-
-/* Drop connected or fusing boxes */
-
-public func IsDroppedOnDeath(object clonk)
-{
-	return GetEffect("Fuse", this) || wire;
-}
-
-
-/*-- Properties --*/
-
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);
 }
+
+/*-- Properties --*/
 
 local Collectible = 1;
 local Name = "$Name$";
