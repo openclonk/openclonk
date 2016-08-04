@@ -803,6 +803,20 @@ public func DoMagicEnergy(int change, bool partial, int precision)
 	return true;
 }
 
+/* Max energy */
+
+func SetMaxEnergy(int new_max_energy)
+{
+	// Update max energy, inform HUD adapter and clamp current energy
+	MaxEnergy = new_max_energy;
+	var current_energy = GetEnergy();
+	if (current_energy > MaxEnergy/1000)
+		DoEnergy(MaxEnergy - current_energy*1000, true);
+	else
+		OnEnergyChange();
+	return true;
+}
+
 /* Scenario saving */
 
 func SaveScenarioObject(props)
