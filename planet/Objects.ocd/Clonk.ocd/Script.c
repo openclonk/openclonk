@@ -459,6 +459,10 @@ func DoUpdateAttach(bool sec)
 		else trans = Trans_Mul(Trans_Rotate(160,0,0,1), Trans_Rotate(5,0,1), Trans_Rotate(30,1), Trans_Translate(-2500,0,800), Trans_Scale(700));
 		iHandMesh[sec] = AttachMesh(obj, pos_belt, bone, trans);
 	}
+	else if(iAttachMode == CARRY_Sword)
+	{
+		iHandMesh[sec] = AttachMesh(obj, "skeleton_hips", bone, trans);
+	}
 }
 
 public func GetHandMesh(object obj)
@@ -479,6 +483,7 @@ static const CARRY_Spear        = 6;
 static const CARRY_Musket       = 7;
 static const CARRY_Grappler     = 8;
 static const CARRY_Belt         = 9;
+static const CARRY_Sword        = 10;
 
 func HasHandAction(sec, just_wear, bool force_landscape_letgo)
 {
