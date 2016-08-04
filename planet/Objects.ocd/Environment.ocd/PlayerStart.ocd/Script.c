@@ -13,10 +13,12 @@ local starting_knowledge = { Option="all" };
 local starting_crew; // const arrays not supported yet
 local starting_material;
 local starting_wealth = 0;
+local clonk_max_contents_count, clonk_max_energy; // Override properties for clonks
 local Name = "$Name$";
 local Description = "$Description$";
 local Visibility = VIS_Editor;
 local Plane = 311;
+local players_started; // Array of players for which this was the start point
 
 public func Definition(def)
 {
@@ -33,6 +35,10 @@ public func Definition(def)
 	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
 	def.EditorProps.starting_material = EditorBase->GetConditionalIDList("Collectible", "$StartingMaterial$", nil);
 	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
+	def.EditorProps.clonk_max_contents_count = { Name="$ClonkMaxContentsCount$", EditorHelp="$ClonkMaxContentsCountHelp$", Type="enum", Options = [
+		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
+	def.EditorProps.clonk_max_energy = { Name="$ClonkMaxEnergy$", EditorHelp="$ClonkMaxEnergyHelp$", Type="enum", Options = [
+		{ Name=Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value=Clonk.MaxEnergy/1000, Delegate={ Type="int", Min=1, Max=100000 } } ] };
 	return true;
 }
 
@@ -86,6 +92,18 @@ public func SetStartingWealth(int new_wealth)
 	return true;
 }
 
+public func SetClonkMaxContentsCount(int new_clonk_max_contents_count)
+{
+	clonk_max_contents_count = new_clonk_max_contents_count;
+	return true;
+}
+
+public func SetClonkMaxEnergy(int new_clonk_max_energy)
+{
+	clonk_max_energy = new_clonk_max_energy;
+	return true;
+}
+
 
 /* Player initialization checks */
 
@@ -127,6 +145,8 @@ public func IsStartFor(int plr)
 public func DoPlayerStart(int plr)
 {
 	// Player launch controlled by this object!
+	if (!players_started) players_started = [];
+	players_started[GetLength(players_started)] = plr;
 	// Give wealth
 	SetWealth(plr, starting_wealth);
 	// Create requested crew
@@ -138,6 +158,39 @@ public func DoPlayerStart(int plr)
 	return true;
 }
 
+public func RemovePlayer(int plr)
+{
+	// Remove number from players_started list
+	if (players_started)
+	{
+		var idx = GetIndexOf(players_started, plr);
+		if (idx >= 0)
+		{
+			var n = GetLength(players_started) - 1;
+			players_started[idx] = players_started[n];
+			SetLength(players_started, n);
+		}
+	}
+}
+
+public func OnClonkRecruitment(clonk, plr)
+{
+	// New clonk recruitment: Apply default clonk settings
+	if (players_started && GetIndexOf(players_started, plr) >= 0)
+		ApplyCrewSettings(clonk);
+}
+
+private func ApplyCrewSettings(object crew)
+{
+	if (GetType(clonk_max_contents_count)) crew->~SetMaxContentsCount(clonk_max_contents_count);
+	if (GetType(clonk_max_energy))
+	{
+		crew->~SetMaxEnergy(clonk_max_energy*1000);
+		crew->DoEnergy(clonk_max_energy);
+	}
+	return true;
+}
+
 private func InitializeCrew(int plr)
 {
 	// Collect IDs of crew to create
@@ -146,7 +199,7 @@ private func InitializeCrew(int plr)
 		for (i=0; i<idlist_entry.count; ++i)
 			requested_crew[n++] = idlist_entry.id;
 	// Match them to existing crew
-	for (i = GetCrewCount()-1; i>=0; --i)
+	for (i = GetCrewCount(plr)-1; i>=0; --i)
 		if (obj = GetCrew(plr, i))
 			if ((idx = GetIndexOf(requested_crew, obj->GetID())) >= 0)
 			{
@@ -160,6 +213,10 @@ private func InitializeCrew(int plr)
 		if (def)
 			if (obj = CreateObjectAbove(def, 0, GetDefHeight()/2, plr))
 				obj->MakeCrewMember(plr);
+	// Apply crew settings
+	for (i = GetCrewCount(plr)-1; i>=0; --i)
+		if (obj = GetCrew(plr, i))
+			ApplyCrewSettings(obj);
 	// Done!
 	return true;
 }
@@ -240,5 +297,7 @@ public func SaveScenarioObject(props, ...)
 	if (!DeepEqual(starting_crew, GetID().starting_crew)) props->AddCall("Crew", this, "SetStartingCrew", starting_crew);
 	if (!DeepEqual(starting_material, GetID().starting_material)) props->AddCall("Material", this, "SetStartingMaterial", starting_material);
 	if (starting_wealth != GetID().starting_wealth) props->AddCall("Wealth", this, "SetStartingWealth", starting_wealth);
+	if (GetType(clonk_max_contents_count)) props->AddCall("ClonkMaxContentsCount", this, "SetClonkMaxContentsCount", clonk_max_contents_count);
+	if (GetType(clonk_max_energy)) props->AddCall("ClonkMaxEnergy", this, "SetClonkMaxEnergy", clonk_max_energy);
 	return true;
 }
