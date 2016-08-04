@@ -95,3 +95,4 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility = VIS_Editor;

@@ -19,3 +19,4 @@ protected func Activate(int iByPlayer)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility = VIS_Editor;

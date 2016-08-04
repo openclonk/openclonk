@@ -89,3 +89,4 @@ protected func Activate(int byplr)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility = VIS_Editor;

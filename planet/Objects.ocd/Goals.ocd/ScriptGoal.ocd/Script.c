@@ -45,3 +45,4 @@ public func GetPictureName()
 /*-- Proplist --*/
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility = VIS_Editor;

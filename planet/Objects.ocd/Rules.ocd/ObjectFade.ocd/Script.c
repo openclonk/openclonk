@@ -110,3 +110,4 @@ public func FxIntFadeOutTimerEffect(string new_effect_name)
 
 local Name = "Object Fade";
 local Description = "$Description$";
+local Visibility = VIS_Editor;

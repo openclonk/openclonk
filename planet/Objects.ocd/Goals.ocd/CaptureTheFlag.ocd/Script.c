@@ -196,3 +196,4 @@ public func GetShortDescription(int plr)
 }
 
 local Name = "$Name$";
+local Visibility = VIS_Editor;

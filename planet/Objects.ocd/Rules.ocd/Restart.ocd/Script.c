@@ -35,3 +35,4 @@ public func SetRemoveContents(bool do_removal)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility = VIS_Editor;

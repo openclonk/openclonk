@@ -305,3 +305,4 @@ public func SaveScenarioObject(props)
 }
 
 local Name = "$Name$";
+local Visibility = VIS_Editor;
