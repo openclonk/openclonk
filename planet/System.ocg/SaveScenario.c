@@ -131,6 +131,11 @@ global func SaveScen_Objects(array objs, array ignore_objs, proplist props_proto
 	{
 		obj = objs[i];
 		obj_data[i] = { o=obj, props={Prototype=props_prototype} };
+		obj._save_scen_objdata = obj_data[i];
+	}
+	for (var i=0; i<n; ++i)
+	{
+		obj = objs[i];
 		// Skip objects on ignore list
 		if (GetIndexOf(ignore_objs, obj)>=0) continue;
 		if (WildcardMatch(Format("%i", obj->GetID()), "GUI_*")) continue; // big bunch of objects that should not be stored.
@@ -178,7 +183,6 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 			var dep = od.dependencies[od.i_dep_resolved++];
 			if (dep)
 			{
-				dep.write_label = true; // All objects that someone else depends on need to be stored in a variable
 				j = GetIndexOf(obj_data, dep);
 				if (j > i)
 				{
@@ -222,7 +226,11 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 		}
 	}
 	// Free up all dependency data
-	for (od in obj_data) od.dependencies = nil;
+	for (od in obj_data)
+	{
+		od.dependencies = nil;
+		od.o._save_scen_objdata = nil;
+	}
 	return obj_data;
 }
 
@@ -287,6 +295,12 @@ global func SaveScen_SetContainers(array obj_data)
 	return obj_data;
 }
 
+global func AddScenarioSaveDependency()
+{
+	// Remember this object in the list of dependencies for the currently processed object
+	if (save_scenario_obj_dependencies && GetIndexOf(save_scenario_obj_dependencies, this)<0) save_scenario_obj_dependencies[GetLength(save_scenario_obj_dependencies)] = this;
+}
+
 global func MakeScenarioSaveName()
 {
 	// Get name to be used to store this object in a scenario
@@ -296,7 +310,9 @@ global func MakeScenarioSaveName()
 	// Duplication mode: If this is an object that is not being duplicated, just reference it as Object(number)
 	if (save_scenario_dup_objects && GetIndexOf(save_scenario_dup_objects, this)<0) return Format("%v", this);
 	// When the name is queried while properties are built, it means that there is a dependency. Store it.
-	if (save_scenario_obj_dependencies && GetIndexOf(save_scenario_obj_dependencies, this)<0) save_scenario_obj_dependencies[GetLength(save_scenario_obj_dependencies)] = this;
+	AddScenarioSaveDependency();
+	// Write name if it had been used elsewhere
+	if (this._save_scen_objdata) this._save_scen_objdata.write_label = true;
 	// Build actual name using unique number (unless there's a static save variable name for us)
 	if (this.StaticSaveVar && !save_scenario_dup_objects) return this.StaticSaveVar;
 	if (!save_scenario_def_indices) save_scenario_def_indices = {};
