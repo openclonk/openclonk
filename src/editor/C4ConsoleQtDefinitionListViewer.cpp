@@ -197,7 +197,6 @@ QModelIndex C4ConsoleQtDefinitionListModel::parent(const QModelIndex &index) con
 
 QModelIndex C4ConsoleQtDefinitionListModel::GetModelIndexByItem(C4Def *def) const
 {
-	LogF("looking for def %s", def->GetName());
 	// Just search tree
 	DefListNode *node = root.get();
 	while (node)
@@ -222,12 +221,10 @@ QModelIndex C4ConsoleQtDefinitionListModel::GetModelIndexByItem(C4Def *def) cons
 	// Def found in tree?
 	if (node)
 	{
-		LogF("found at %d", (int)node->idx);
 		return createIndex(node->idx, 0, node);
 	}
 	else
 	{
-		LogF("not found");
 		return QModelIndex();
 	}
 }
