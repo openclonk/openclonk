@@ -68,12 +68,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
 		
 		// A number key (hotkey) is pressed, change quick switch slot
-		if (this.inventory.hotkey_down != nil)
+		/*if (this.inventory.hotkey_down != nil)
 		{
 			if (SetQuickSwitchSlot(this.inventory.hotkey_down-1))
 				this.inventory.quick_slot_switched = true;
 			return true;
-		}
+		}*/
 		// Otherwise select slot
 		SetHandItemPos(0, this.inventory.quick_slot); // quick_slot is updated in SetHandItemPos
 		return true;
@@ -227,7 +227,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		// switch the two slots
 		this->~Switch2Items(this.inventory.hotkey_down-1, hot-1);
-		this.inventory.slots_switched = true;
+		//this.inventory.slots_switched = true;
 		// This needs some explanation:
 		// In the event of the Clonk window ever losing focus, a hotkey might still be registered as being held down.
 		// If this was ever the case, the inventory would constantly switch around unless the exact same hotkey is pressed
@@ -242,14 +242,17 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// hotkey up: perform slot selection
 	if (hot > 0 && hot <= this.MaxContentsCount && release)
 	{
+		// This wasn't liked by many players, so slot selection is back to key down.
+
 		// Only perform slot selection if nothing happened in the meantime
-		if (!this.inventory.quick_slot_switched)
+		/*if (!this.inventory.quick_slot_switched)
 			if (!this.inventory.slots_switched)
-				SetHandItemPos(0, hot-1);
+				SetHandItemPos(0, hot-1);*/
 
 		this.inventory.hotkey_down = nil;
-		this.inventory.quick_slot_switched = false;
-		this.inventory.slots_switched = false;
+		//this.inventory.quick_slot_switched = false;
+		//this.inventory.slots_switched = false;
+
 		return true;
 	}
 	// a hotkey is pressed, save it for now
@@ -257,8 +260,10 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		this.inventory.hotkey_down = hot;
 		// For safety
-		this.inventory.quick_slot_switched = false;
-		this.inventory.slots_switched = false;
+		//this.inventory.quick_slot_switched = false;
+		//this.inventory.slots_switched = false;
+
+		SetHandItemPos(0, hot-1);
 		return true;
 	}
 
