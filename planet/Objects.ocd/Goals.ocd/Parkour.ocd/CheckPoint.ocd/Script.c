@@ -1,6 +1,6 @@
 /*--
 	Checkpoint
-	Author: Maikel
+	Author: Maikel, Sven2
 
 	The parkour goal uses checkpoints to allow for user defined routes.
 	A checkpoint can have different modes, indicated with a bitmask:
@@ -36,17 +36,38 @@ public func SetCPMode(int mode)
 		mode = PARKOUR_CP_Start;
 	// PARKOUR_CP_Finish only in combination with PARKOUR_CP_Team.	
 	if (mode & PARKOUR_CP_Finish)
-		mode = mode & (PARKOUR_CP_Finish | PARKOUR_CP_Team) ;
+		mode = mode & (PARKOUR_CP_Finish | PARKOUR_CP_Team);
 	// PARKOUR_CP_Ordered must have PARKOUR_CP_Check and a number.
+	var had_cp_num;
 	if (mode & PARKOUR_CP_Ordered)
 	{
 		mode = mode | PARKOUR_CP_Check;
 		// Set CP number.
-		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
+		if (!cp_num) SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
+	}
+	else
+	{
+		had_cp_num = cp_num;
+		cp_num = 0;
 	}
 	cp_mode = mode;
+	if (had_cp_num) RenumberOrderedCheckpoints();
 	DoGraphics();
+	UpdateEditorHelp();
 	return;
+}
+
+public func RenumberOrderedCheckpoints()
+{
+	// Reassign all CP numbers. Use old numbers where possible
+	var cps = FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Ordered)), i;
+	SortArrayByProperty(cps, "cp_num");
+	for (var cp in cps)
+	{
+		cp->SetCPNumber(++i);
+		cp->DoGraphics();
+	}
+	return true;
 }
 
 public func GetCPMode() { return cp_mode; }
@@ -79,7 +100,7 @@ public func GetCPNumber() { return cp_num; }
 
 
 /*-- Checkpoint size --*/
-local cp_size;
+local cp_size = 20;
 
 public func SetCPSize(int size)
 {
@@ -105,7 +126,6 @@ protected func Initialize()
 	};
 	cleared_by_plr = [];
 	cp_mode = PARKOUR_CP_Check;
-	cp_size = 20;
 	UpdateGraphics();
 	AddEffect("IntCheckpoint", this, 100, 1, this);
 	return;
@@ -381,12 +401,29 @@ public func ClearCPBack()
 	return;
 }
 
+// Checkpoint order check
+public func IsOrderedBefore(object other_cp)
+{
+	// Start before everything else. Finish after.
+	if (cp_mode & PARKOUR_CP_Start) return true;
+	if (cp_mode & PARKOUR_CP_Finish) return false;
+	if (other_cp.cp_mode & PARKOUR_CP_Start) return false;
+	if (other_cp.cp_mode & PARKOUR_CP_Finish) return true;
+	// Ordered checkpoints in order and before unordered checkpoints
+	if (cp_mode & PARKOUR_CP_Ordered)
+	{
+		if (!(other_cp.cp_mode & PARKOUR_CP_Ordered)) return true;
+		return cp_num < other_cp.cp_num;
+	}
+}
+
 // Storing checkpoints in Objects.c
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	var v = GetCPSize();
-	if (v != 20) props->AddCall("Checkpoint", this, "SetCPSize", v);
+	var v;
+	// Force dependencies to ensure proper checkpoint order
+	for (var other_cp in FindObjects(Find_ID(GetID()), Find_Func("IsOrderedBefore", this))) other_cp->AddScenarioSaveDependency();
 	// Checkpoints without a goal? Use regular saving.
 	if (!cp_con)
 	{
@@ -395,20 +432,127 @@ public func SaveScenarioObject(props)
 		if (v = GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", v);
 		return true;
 	}
-	// Special checkpoints
-	props->RemoveCreation();
-	if (cp_mode & PARKOUR_CP_Start)
-		props->AddCall(SAVEOBJ_Creation, cp_con, "SetStartpoint", GetX(), GetY());
-	else if (cp_mode & PARKOUR_CP_Finish)
-		props->AddCall(SAVEOBJ_Creation, cp_con, "SetFinishpoint", GetX(), GetY(), !!(cp_mode & PARKOUR_CP_Team));
 	else
 	{
-		var other_cp_modes = cp_mode & (~PARKOUR_CP_Finish) & (~PARKOUR_CP_Start);
-		props->AddCall(SAVEOBJ_Creation, cp_con, "AddCheckpoint", GetX(), GetY(), GetBitmaskNameByValue(other_cp_modes, "PARKOUR_CP_"));
+		// Special checkpoints
+		props->RemoveCreation();
+		if (cp_mode & PARKOUR_CP_Start)
+			props->AddCall(SAVEOBJ_Creation, cp_con, "SetStartpoint", GetX(), GetY());
+		else if (cp_mode & PARKOUR_CP_Finish)
+			props->AddCall(SAVEOBJ_Creation, cp_con, "SetFinishpoint", GetX(), GetY(), !!(cp_mode & PARKOUR_CP_Team));
+		else
+		{
+			var other_cp_modes = cp_mode & (~PARKOUR_CP_Finish) & (~PARKOUR_CP_Start);
+			props->AddCall(SAVEOBJ_Creation, cp_con, "AddCheckpoint", GetX(), GetY(), GetBitmaskNameByValue(other_cp_modes, "PARKOUR_CP_"));
+		}
 	}
+	// Checkpoint properties
+	v = GetCPSize();
+	if (v != GetID().cp_size) props->AddCall("Checkpoint", this, "SetCPSize", v);
 	return true;
+}
+
+/* Editor */
+
+// Inividual mode getting/setting functions (for editor)
+public func SetCPRespawn(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Respawn) | (PARKOUR_CP_Respawn * !!to_val)); }
+public func SetCPCheck(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Check) | (PARKOUR_CP_Check * !!to_val)); }
+public func SetCPOrdered(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Ordered) | (PARKOUR_CP_Ordered * !!to_val)); }
+public func SetCPTeam(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Team) | (PARKOUR_CP_Team * !!to_val)); }
+
+public func GetCPRespawn() { return GetCPMode() & (PARKOUR_CP_Respawn | PARKOUR_CP_Start); }
+public func GetCPCheck() { return GetCPMode() & PARKOUR_CP_Check; }
+public func GetCPOrdered() { return GetCPMode() & PARKOUR_CP_Ordered; }
+public func GetCPTeam() { return GetCPMode() & PARKOUR_CP_Team; }
+
+// Placement in editor: Auto-assign checkpoint mode
+public func EditorInitialize()
+{
+	// Auto-assign controller
+	SetCPController(FindObject(Find_ID(Goal_Parkour)));
+	// Default checkpoint mode
+	var new_mode;
+	if (!FindObject(Find_ID(GetID()), Find_Func("FindCPMode", PARKOUR_CP_Start)))
+		new_mode = PARKOUR_CP_Start;
+	else
+		new_mode = PARKOUR_CP_Finish;
+	// Change old finish point to numbered checkpoint
+	var cp = FindObject(Find_ID(GetID()), Find_Func("FindCPMode", PARKOUR_CP_Finish));
+	if (cp) cp->SetCPMode(PARKOUR_CP_Check | PARKOUR_CP_Ordered);
+	SetCPMode(new_mode);
+	UpdateEditorHelp();
+	return this;
+}
+
+public func UpdateEditorHelp()
+{
+	// EditorHelp: Include a warning if no goal has been created
+	EditorHelp = Description;
+	if (!cp_con) EditorHelp = Format("%s|%s", EditorHelp, "$NoGoalWarning$");
+	return true;
+}
+
+local EditorActions = {
+	SelectPrev = { Name="$SelectPrev$", EditorHelp="$SelectPrevHelp$", Command="SelectOther(-1)", Select=true },
+	SelectNext = { Name="$SelectNext$", EditorHelp="$SelectNextHelp$", Command="SelectOther(+1)", Select=true },
+	ReorderPrev = { Name="$ReorderPrev$", EditorHelp="$ReorderPrevHelp$", Command="MoveOrder(-1)" },
+	ReordertNext = { Name="$ReorderNext$", EditorHelp="$ReorderNextHelp$", Command="MoveOrder(+1)" }
+};
+
+public func SelectOther(int direction)
+{
+	// Traverse through numbered checkpoints or start/finish
+	var cps = FindObjects(Find_ID(GetID()), Find_Func("GetCPNumber"));
+	var ncps = GetLength(cps);
+	var next_num;
+	if (cp_mode & PARKOUR_CP_Finish)
+		next_num = ncps + 1;
+	else
+		next_num = cp_num;
+	next_num += direction;
+	if (next_num <= 0) return FindObject(Find_ID(GetID()), Find_Func("FindCPMode", PARKOUR_CP_Start));
+	SortArrayByProperty(cps, "cp_num");
+	if (next_num-1 >= ncps) return FindObject(Find_ID(GetID()), Find_Func("FindCPMode", PARKOUR_CP_Finish));
+	return cps[next_num-1];
+}
+
+public func MoveOrder(int direction)
+{
+	// Valid swap command?
+	var is_start = (cp_mode & PARKOUR_CP_Start);
+	var is_finish = (cp_mode & PARKOUR_CP_Finish);
+	if (!cp_num && !is_start && !is_finish) return false;
+	var other = SelectOther(direction);
+	if (other == this) return false;
+	// Swap them!
+	var order_flags = PARKOUR_CP_Start | PARKOUR_CP_Finish | PARKOUR_CP_Ordered;
+	var swap_num = cp_num, swap_mode = cp_mode;
+	cp_num = other.cp_num;
+	cp_mode = (cp_mode & ~order_flags) | (other.cp_mode & order_flags);
+	other.cp_num = swap_num;
+	other.cp_mode = (other.cp_mode & ~order_flags) | (swap_mode & order_flags);
+	// Force update
+	SetCPMode(cp_mode);
+	other->SetCPMode(other.cp_mode);
+	return true;
+}
+
+public func Definition(def)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.respawn = { Type="bool", Name="$Respawn$", EditorHelp="$RespawnHelp$", AsyncGet="GetCPRespawn", Set="SetCPRespawn" };
+	def.EditorProps.check = { Type="bool", Name="$Check$", EditorHelp="$CheckHelp$", AsyncGet="GetCPCheck", Set="SetCPCheck" };
+	def.EditorProps.ordered = { Type="bool", Name="$Ordered$", EditorHelp="$OrderedHelp$", AsyncGet="GetCPOrdered", Set="SetCPOrdered" };
+	def.EditorProps.team = { Type="bool", Name="$Team$", EditorHelp="$TeamHelp$", AsyncGet="GetCPTeam", Set="SetCPTeam" };
 }
 
 
 /*-- Proplist --*/
+
+
+
 local Name = "$Name$";
+local Description = "$Description$";
+local EditorHelp = "$Description$";
+
+
