@@ -19,6 +19,16 @@ public func RefuseTransfer(object toMove) { return true; } // TODO: this is not 
 // disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
 public func MakeUncancellable() { no_cancel = true; return true; }
 
+/*-- Testing / Development --*/
+
+// Builds the construction even if the required materials isn't there.
+// Use for debugging purposes (or maybe cool scenario effects)
+public func ForceConstruct()
+{
+	full_material = true;
+	StartConstructing();
+}
+
 /*-- Interaction --*/
 
 public func HasInteractionMenu() { return true; }
