@@ -1459,7 +1459,7 @@ C4PropertyDelegateBool::C4PropertyDelegateBool(const C4PropertyDelegateFactory *
 bool C4PropertyDelegateBool::GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const
 {
 	// Force value to bool
-	bool success = GetPropertyValueBase(container, key, index, out_val);
+	bool success = C4PropertyDelegateEnum::GetPropertyValue(container, key, index, out_val);
 	if (out_val->GetType() != C4V_Bool) *out_val = C4VBool(!!*out_val);
 	return success;
 }
