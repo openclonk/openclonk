@@ -8,7 +8,7 @@
   <part>
     <h>Usage</h>
     <text>A number of different sound modifiers can be attached to sounds. Sound modifiers are accessed via script by passing a prop list defining them to the <funclink>Sound</funclink> script functions. Sample prop lists are already defined in the Ambience definition in Objects.ocd. If Objects.ocd is loaded, you can for example play the "Ding" sound with a reverb-effect:</text>
-    <code>Sound("Ding",,,,,,,Ambience.CaveModifier);</code>
+    <code>Sound("Ding",nil,nil,nil,nil,nil,nil,Ambience.CaveModifier);</code>
     <text>Custom modifiers may also be created using the prototype classes provided in the ambience object:</text>
      
 <code>// Play "Ding" sound with an extra-long reverb modifier
@@ -16,7 +16,7 @@ long_reverb_modifier = new Ambience.SoundModifier {
 	Type = C4SMT_Reverb,
 	Reverb_Decay_Time = 10000,
 };
-Sound("Ding",,,,,,,long_reverb_modifier);
+Sound("Ding",nil,nil,nil,nil,nil,nil,long_reverb_modifier);
 modifier->Release();</code>
 
     <text>Sound modifiers are lazy-initialized, that is the filters are computed when the first sound with that effect is played. The engine also holds filters of any used modifiers attached to the used prop list in memory until released by the Release()-call provided by the ambience library, which wraps <funclink>ChangeSoundModifier</funclink> with appropriate parameters.</text>
@@ -33,7 +33,7 @@ func Initialize()
 		Type = C4SMT_Echo,
 		Echo_Feedback = 1000,
 	};
-	Sound("Ding",,,,1,,,reverb_modifier);
+	Sound("Ding",nil,nil,nil,1,nil,nil,reverb_modifier);
 	ScheduleCall(nil, this.Timer, 30, 99999);
 	return true;
 }

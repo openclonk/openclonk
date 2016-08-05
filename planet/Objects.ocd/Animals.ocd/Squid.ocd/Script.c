@@ -417,59 +417,58 @@ private func DoInk()
 	};
 	CreateParticle("SmokeThick", 0, 0, PV_Random(-40, 40), PV_Random(-40, 40), PV_Random(36, 100), particles, 64);
 	// Make squid invisible for some time. Also inverse behavior during invisibility.
-	AddEffect("Invisibility", this, 1, 2, this, nil, particles);
+	CreateEffect(Invisibility, 1, 2, particles);
 	// Drain Clonks' breath a bit faster when in ink.
-	AddEffect("IntInkBlob", nil, 1, 5, nil, GetID(), GetX(), GetY());
+	CreateEffect(IntInkBlob, 1, 5, GetX(), GetY());
 }
 
-private func FxIntInkBlobStart(object target, effect fx, temp, int x, int y)
-{
-	if (temp) return;
-	fx.x = x;
-	fx.y = y;
-}
+local IntInkBlob = new Effect {
+    Start = func(int temp, int x, int y) {
+        if(temp) return;
+        this.x = x;
+        this.y = y;
+    },
+    
+    Timer = func(int time) {
+        if (time > 30 + Random(20)) return -1;
+	    var max_distance = 40;
+	    for (var clonk in this.Target->FindObjects(this.Target->Find_Distance(max_distance, fx.x, fx.y), Find_OCF(OCF_Alive), Find_Func("IsClonk")))
+	    {
+		    if (!PathFree(this.x, this.y, clonk->GetX(), clonk->GetY())) continue;
+		    var distance = Distance(this.x, this.y, clonk->GetX(), clonk->GetY());
+		    var breath_penalty = 2 * (max_distance - distance);
+		    clonk->DoBreath(-breath_penalty);
+	    }
+	    return FX_OK;
+    },
+};
 
-private func FxIntInkBlobTimer(object target, effect fx, int time)
-{
-	if (time > 30 + Random(20)) return -1;
-	var max_distance = 40;
-	for (var clonk in FindObjects(Find_Distance(max_distance, fx.x, fx.y), Find_OCF(OCF_Alive), Find_Func("IsClonk")))
-	{
-		if (!PathFree(fx.x, fx.y, clonk->GetX(), clonk->GetY())) continue;
-		var distance = Distance(fx.x, fx.y, clonk->GetX(), clonk->GetY());
-		var breath_penalty = 2 * (max_distance - distance);
-		clonk->DoBreath(-breath_penalty);
-	}
-	return FX_OK;
-}
-
-private func FxInvisibilityStart(object target, effect fx, temp, particles)
-{
-	if (temp) return;
-	fx.old_visibility = this.Visibility;
-	this.Visibility = VIS_None;
-	fx.particles = particles;
-	SetInverseForceFields(true);
-}
-
-private func FxInvisibilityTimer(object target, effect fx, int time)
-{
-	if (time > 35 * 5) return FX_Execute_Kill;
-	if (time > 35 * 2) return FX_OK;
-	var size = 2 * 35 - time;
-	fx.particles.Size = size/2;
-	CreateParticle("SmokeThick", 0, 0, PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(20, 36), fx.particles, 4);
-	return FX_OK;
-}
-
-private func FxInvisibilityStop(object target, effect fx, int reason, int temp)
-{
-	if (temp) return;
-	fx.particles.Size = PV_Linear(PV_Random(15, 20), PV_Random(0, 5));
-	CreateParticle("SmokeThick", 0, 0, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(20, 36), fx.particles, 32);
-	this.Visibility = fx.old_visibility;
-	SetInverseForceFields(false);
-}
+local Invisibility = new Effect {
+    Start = func(int temp, proplist particles) {
+        if(temp) return;
+        this.old_visibility = this.Target.Visibility;
+	    this.Target.Visibility = VIS_None;
+	    this.particles = particles;
+	    this.Target->SetInverseForceFields(true);
+    },
+    
+    Timer = func(int time) {
+    	if (time > 35 * 5) return FX_Execute_Kill;
+	    if (time > 35 * 2) return FX_OK;
+	    var size = 2 * 35 - time;
+	    this.particles.Size = size/2;
+	    this.Target->CreateParticle("SmokeThick", 0, 0, PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(20, 36), this.Target.Invisibility.particles, 4);
+	    return FX_OK;
+    },
+    
+    Stop = func(int reason, bool temp) {
+        if(temp) return;
+	    this.particles.Size = PV_Linear(PV_Random(15, 20), PV_Random(0, 5));
+	    this.Target->CreateParticle("SmokeThick", 0, 0, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(20, 36), this.Target.Invisibility.particles, 32);
+	    this.Target.Visibility = this.old_visibility;
+	    this.Target->SetInverseForceFields(false);
+    }
+};
 
 // Only bleeding Squid will be eaten by other predators.
 public func IsPrey() { return GetEnergy() < this.MaxEnergy / 3000; }

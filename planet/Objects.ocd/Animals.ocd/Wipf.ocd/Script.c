@@ -12,7 +12,7 @@
 public func Initialize()
 {
 	// Add an effect to control the wipf's activities.
-	AddEffect("IntActivity", this, 1, 10, this);
+	CreateEffect(IntActivity, 1, 10);
 	return;
 }
 
@@ -43,146 +43,145 @@ public func IsPrey() { return true; }
 
 /*-- Activity --*/
 
-public func FxIntActivityStart(object target, proplist effect, int temp)
-{
-	if (temp)
+local Activity = new Effect {
+    Start = func(int temp) {
+        if (temp)
 		return FX_OK;
-	// Set the correct interval.
-	effect.Interval = 10;		
-	// Set action and a face a random direction.
-	SetAction("Stand");
-	SetDir([DIR_Left, DIR_Right][Random(2)]);
-	return FX_OK;
-}
+    	// Set the correct interval.
+	    this.Interval = 10;		
+	    // Set action and a face a random direction.
+	    this.Target->SetAction("Stand");
+	    this.Target->SetDir([DIR_Left, DIR_Right][Random(2)]);
+	    return FX_OK;
+    },
+    Timer = func(int time) {
+        // Don't do anything if contained.
+	    if (this.Target->Contained())
+		    return FX_OK;
 
-public func FxIntActivityTimer(object target, proplist effect, int time)
-{
-	// Don't do anything if contained.
-	if (Contained())
-		return FX_OK;
+	    // Start digging if stuck.
+	    if (this.Target->Stuck())
+	    {
+		    this.Target->SetAction("Dig");
+		    this.Target->SetDigDirection(Random(2) * 2 - 1, Random(2) * 2 - 1);
+		    return FX_OK;
+	    }
 
-	// Start digging if stuck.
-	if (Stuck())
-	{
-		SetAction("Dig");
-		SetDigDirection(Random(2) * 2 - 1, Random(2) * 2 - 1);
-		return FX_OK;
-	}
+	    // Actions when standing.
+	    if (this.Target->IsStanding())
+	    {
+		    // Start digging if above diggable material.
+		    var mat = this.Target->GetMaterial(0, 8);
+		    if (!Random(100) && GetMaterialVal("DigFree", "Material", mat))
+		    {
+		    	this.Target->SetAction("Dig");
+		    	this.Target->SetDigDirection(Random(2) * 2 - 1, 1);
+		    	return FX_OK;
+		    }		
+		    // Start walking from time to time.
+		    if (!Random(10))
+		    {
+		    	this.Target->SetAction("Walk");
+		    	this.Target->SetComDir([COMD_Left, COMD_Right][Random(2)]);
+		    	return FX_OK;
+		    }
+		    return FX_OK;
+	    }
 
-	// Actions when standing.
-	if (IsStanding())
-	{
-		// Start digging if above diggable material.
-		var mat = GetMaterial(0, 8);
-		if (!Random(100) && GetMaterialVal("DigFree", "Material", mat))
-		{
-			SetAction("Dig");
-			SetDigDirection(Random(2) * 2 - 1, 1);
-			return FX_OK;
-		}		
-		// Start walking from time to time.
-		if (!Random(10))
-		{
-			SetAction("Walk");
-			SetComDir([COMD_Left, COMD_Right][Random(2)]);
-			return FX_OK;
-		}
-		return FX_OK;
-	}
-
-	// Actions on walking.
-	if (IsWalking()) 
-	{
-		// Change direction of walking from time to time.
-		if (!Random(5))
-		{
-			SetComDir([COMD_Left, COMD_Right][Random(2)]);
-			return FX_OK;	
-		}
-		// Do some random jumps.
-		if (!Random(20))
-		{
-			Jump();
-			return FX_OK;		
-		}
-		// Stop walking from time to time.
-		if (!Random(20) && GetComDir() != COMD_Stop)
-		{
-			SetComDir(COMD_Stop);
-			return FX_OK;
-		}
-		// Start standing when com dir is stop and speed is zero.
-		if (GetComDir() == COMD_Stop && GetYDir() == 0)
-		{
-			SetAction("Stand");
-			return FX_OK;
-		}
-		return FX_OK;
-	}
+	    // Actions on walking.
+	    if (this.Target->IsWalking()) 
+	    {
+		    // Change direction of walking from time to time.
+		    if (!Random(5))
+		    {
+		    	this.Target->SetComDir([COMD_Left, COMD_Right][Random(2)]);
+		    	return FX_OK;	
+		    }
+		    // Do some random jumps.
+		    if (!Random(20))
+		    {
+		    	this.Target->Jump();
+		    	return FX_OK;		
+		    }
+		    // Stop walking from time to time.
+		    if (!Random(20) && this.Target->GetComDir() != COMD_Stop)
+		    {
+		    	this.Target->SetComDir(COMD_Stop);
+		    	return FX_OK;
+		    }
+		    // Start standing when com dir is stop and speed is zero.
+		    if (this.Target->GetComDir() == COMD_Stop && this.Target->GetYDir() == 0)
+		    {
+		    	this.Target->SetAction("Stand");
+		    	return FX_OK;
+		    }
+		    return FX_OK;
+	    }
 	
-	// Actions on digging.
-	if (IsDigging())
-	{
-		// If the wipf if stuck while digging digfree the full wipf's shape.
-		if (Stuck())
-			DigFree(GetX(), GetY(), 8);
+	    // Actions on digging.
+	    if (this.Target->IsDigging())
+	    {
+		    // If the wipf if stuck while digging digfree the full wipf's shape.
+		    if (this.Target->Stuck())
+			    this.Target->DigFree(GetX(), GetY(), 8);
 		
-		// Change digging direction.
-		if (!Random(3))
-		{
-			var dir = GetDigDirection();
-			if (!dir)
-				return FX_OK;
-			var xdir = dir.x + RandomX(-this.ActMap.Dig.Speed, this.ActMap.Dig.Speed) / 3;
-			var ydir = dir.y + RandomX(-this.ActMap.Dig.Speed, this.ActMap.Dig.Speed) / 3;
-			ydir = BoundBy(ydir, -Abs(xdir), Abs(xdir));
-			SetDigDirection(xdir, ydir);
-			return FX_OK;
-		}
-		// Stop digging from time to time.
-		if (!Random(3) && GetComDir() != COMD_Stop)
-		{
-			SetComDir(COMD_Stop);
-			return FX_OK;
-		}
-		// Start standing when com dir is stop and speed is zero.
-		if (GetComDir() == COMD_Stop && GetYDir() == 0)
-		{
-			SetAction("Stand");
-			return FX_OK;
-		}
-		return FX_OK;
-	}
+		    // Change digging direction.
+		    if (!Random(3))
+		    {
+			    var dir = this.Target->GetDigDirection();
+			    if (!dir)
+			    	return FX_OK;
+			    var xdir = dir.x + RandomX(-this.Target.ActMap.Dig.Speed, this.Target.ActMap.Dig.Speed) / 3;
+			    var ydir = dir.y + RandomX(-this.Target.ActMap.Dig.Speed, this.Target.ActMap.Dig.Speed) / 3;
+			    ydir = BoundBy(ydir, -Abs(xdir), Abs(xdir));
+			    this.Target->SetDigDirection(xdir, ydir);
+			    return FX_OK;
+		    }
+		    // Stop digging from time to time.
+		    if (!Random(3) && this.Target->GetComDir() != COMD_Stop)
+		    {
+		    	this.Target->SetComDir(COMD_Stop);
+		    	return FX_OK;
+		    }
+		    // Start standing when com dir is stop and speed is zero.
+		    if (this.Target->GetComDir() == COMD_Stop && this.Target->GetYDir() == 0)
+		    {
+		    	this.Target->SetAction("Stand");
+		    	return FX_OK;
+		    }
+		    return FX_OK;
+	    }
 	
-	// Actions on swimming.
-	if (IsSwimming())
-	{
-		// Swim up if under water.
-		if (GBackLiquid(0, -4))
-		{
-			SetComDir(COMD_Up);
-			return FX_OK;
-		}		
-		// Change direction of walking from time to time.
-		if (!Random(5))
-		{
-			SetComDir([COMD_Left, COMD_Right][Random(2)]);
-			return FX_OK;	
-		}
-		// If at an edge do jump out of the liquid.
-		if (!GBackLiquid(0, -6))
-		{
-			if (((GBackSolid(16, 2) || GBackSolid(24, 2)) && PathFree(GetX(), GetY(), GetX() + 16, GetY() - 16) && GetDir() == DIR_Right) ||
-			    ((GBackSolid(-16, 2) || GBackSolid(-24, 2)) && PathFree(GetX(), GetY(), GetX() - 16, GetY() - 16) && GetDir() == DIR_Left))
-			{
-				SetPosition(GetX(), GetY() - 2);
-				Jump();
-			}
-			return FX_OK;
-		}
-	}
-	return FX_OK;
-}
+	    // Actions on swimming.
+	    if (this.Target->IsSwimming())
+	    {
+		    // Swim up if under water.
+		    if (this.Target->GBackLiquid(0, -4))
+		    {
+		    	this.Target->SetComDir(COMD_Up);
+		    	return FX_OK;
+		    }		
+		    // Change direction of walking from time to time.
+		    if (!Random(5))
+		    {
+		    	this.Target->SetComDir([COMD_Left, COMD_Right][Random(2)]);
+		    	return FX_OK;	
+		    }
+		    // If at an edge do jump out of the liquid.
+		    if (!this.Target->GBackLiquid(0, -6))
+		    {
+			    if (((this.Target->GBackSolid(16, 2) || this.Target->GBackSolid(24, 2)) && PathFree(this.Target->GetX(), this.Target->GetY(), this.Target->GetX() + 16, this.Target->GetY() - 16) && this.Target->GetDir() == DIR_Right) ||
+			        ((this.Target->GBackSolid(-16, 2) || this.Target->GBackSolid(-24, 2)) && PathFree(this.Target->GetX(), this.Target->GetY(), this.Target->GetX() - 16, this.Target->GetY() - 16) && this.Target->GetDir() == DIR_Left))
+			    {
+				    this.Target->SetPosition(this.Target->GetX(), this.Target->GetY() - 2);
+				    this.Target->Jump();
+			    }
+			    return FX_OK;
+		    }
+	    }
+	    return FX_OK;
+    },
+};
 
 
 /*-- Standing --*/
@@ -195,7 +194,7 @@ public func IsStanding()
 public func StartStand()
 {
 	if (!GetEffect("IntStanding", this))
-		AddEffect("IntStanding", this, 1, 1, this);
+		CreateEffect(IntStanding, 1, 1);
 
 	return;
 }
@@ -207,29 +206,25 @@ public func StopStand()
 	return;
 }
 
-public func FxIntStandingStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	SetComDir(COMD_Stop);
-	effect.standing_anim = ["Idle", "Idle2"][Random(2)];
-	effect.anim_number = PlayAnimation(effect.standing_anim, 5, Anim_Linear(0, 0, GetAnimationLength(effect.standing_anim), 35, ANIM_Hold), Anim_Const(1000));
-	return FX_OK;
-}
-
-public func FxIntStandingTimer(object target, proplist effect, int time)
-{
-	return FX_OK;
-}
-
-public func FxIntStandingStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	StopAnimation(effect.anim_number);
-	return FX_OK;
-}
-
+local IntStanding = new Effect {
+    Start = func(int temp) {
+        if (temp)
+		    return FX_OK;
+	    this.Target->SetComDir(COMD_Stop);
+	    this.standing_anim = ["Idle", "Idle2"][Random(2)];
+	    this.anim_number = this.Target->PlayAnimation(this.Target.IntStanding.standing_anim, 5, Anim_Linear(0, 0, GetAnimationLength(this.Target.IntStanding.standing_anim), 35, ANIM_Hold), Anim_Const(1000));
+	    return FX_OK;
+    },
+    
+    Timer = func(int time) { return FX_OK; },
+    
+    Stop = func(int reason, bool temp) {
+        if(temp)
+            return FX_OK;
+        this.Target->StopAnimation(this.Target.IntStanding.anim_number);
+        return FX_OK;
+    },
+};
 
 /*-- Walking --*/
 
@@ -241,7 +236,7 @@ public func IsWalking()
 public func StartWalk()
 {
 	if (!GetEffect("IntWalking", this))
-		AddEffect("IntWalking", this, 1, 1, this);
+		CreateEffect(IntWalking, 1, 1);
 	return;
 }
 
@@ -252,31 +247,30 @@ public func StopWalk()
 	return;
 }
 
-public func FxIntWalkingStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	var dir = -1;
-	if (GetComDir() == COMD_Right) 
-		dir = +1;
-	effect.anim_number = PlayAnimation("Hop", 5, Anim_X(0, 0, GetAnimationLength("Hop"), 50 * dir), Anim_Const(1000));
-	return FX_OK;
-}
-
-public func FxIntWalkingTimer(object target, proplist effect, int time)
-{
-	if ((time % 6) == 0)
-		Footstep();
-	return FX_OK;
-}
-
-public func FxIntWalkingStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	StopAnimation(effect.anim_number);
-	return FX_OK;
-}
+local IntWalking = new Effect {
+    Start = func(int temp) {
+    	if (temp)
+		    return FX_OK;
+	    var dir = -1;
+	    if (this.Target->GetComDir() == COMD_Right) 
+		    dir = +1;
+    	this.anim_number = this.Target->PlayAnimation("Hop", 5, Anim_X(0, 0, GetAnimationLength("Hop"), 50 * dir), Anim_Const(1000));
+	    return FX_OK;
+    },
+    
+    Timer = func(int time) {
+        if ((time % 6) == 0)
+		    this.Target->Footstep();
+	    return FX_OK;
+    },
+    
+    Stop = func(int reason, bool temp) {
+        if (temp)
+		    return FX_OK;
+	    this.Target->StopAnimation(this.Target.IntWalking.anim_number);
+	    return FX_OK;
+    },
+};
 
 private func Footstep()
 {
@@ -308,7 +302,7 @@ public func IsSwimming()
 public func StartSwim()
 {
 	if (!GetEffect("IntSwimming", this))
-		AddEffect("IntSwimming", this, 1, 1, this);
+		CreateEffect(IntSwimming, 1, 1);
 	return;
 }
 
@@ -319,30 +313,26 @@ public func StopSwim()
 	return;
 }
 
-public func FxIntSwimmingStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	var dir = -1;
-	if (GetComDir() == COMD_Right) 
-		dir = +1;
-	effect.anim_number = PlayAnimation("Swim", 5, Anim_X(0, 0, GetAnimationLength("Swim"), 40 * dir), Anim_Const(1000));
-	return FX_OK;
-}
-
-public func FxIntSwimmingTimer(object target, proplist effect, int time)
-{
-	return FX_OK;
-}
-
-public func FxIntSwimmingStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	StopAnimation(effect.anim_number);
-	return FX_OK;
-}
-
+local IntSwimming = new Effect {
+    Start = func(int temp) {
+        if (temp)
+		    return FX_OK;
+	    var dir = -1;
+	    if (this.Target->GetComDir() == COMD_Right) 
+		    dir = +1;
+	    this.anim_number = this.Target->PlayAnimation("Swim", 5, Anim_X(0, 0, GetAnimationLength("Swim"), 40 * dir), Anim_Const(1000));
+	    return FX_OK;
+    },
+    
+    Timer = func(int time) { return FX_OK; },
+    
+    Stop = func(int reason, bool temp) {
+        if (temp)
+		    return FX_OK;
+	    this.Target->StopAnimation(this.Target.IntSwimming.anim_number);
+	    return FX_OK;
+    },
+};
 
 /*-- Jumping --*/
 
@@ -354,7 +344,7 @@ public func IsJumping()
 public func StartJump()
 {
 	if (!GetEffect("IntJumping", this))
-		AddEffect("IntJumping", this, 1, 1, this);
+		CreateEffect(IntJumping, 1, 1);
 	return;
 }
 
@@ -365,29 +355,26 @@ public func StopJump()
 	return;
 }
 
-public func FxIntJumpingStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	var dir = -1;
-	if (GetDir() == DIR_Right) 
-		dir = +1;
-	effect.anim_number = PlayAnimation("Hop", 5, Anim_X(0, 0, GetAnimationLength("Hop"), 50 * dir), Anim_Const(1000));
-	return FX_OK;
-}
-
-public func FxIntJumpingTimer(object target, proplist effect, int time)
-{
-	return FX_OK;
-}
-
-public func FxIntJumpingStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	StopAnimation(effect.anim_number);
-	return FX_OK;
-}
+local IntJumping = {
+    Start = func(int temp) {
+        if (temp)
+		    return FX_OK;
+        var dir = -1;
+	    if (GetDir() == DIR_Right) 
+		    dir = +1;
+	    this.anim_number = this.Target->PlayAnimation("Hop", 5, Anim_X(0, 0, GetAnimationLength("Hop"), 50 * dir), Anim_Const(1000));
+	    return FX_OK;
+    },
+    
+    Timer = func(int time) { return FX_OK; },
+    
+    Stop = func(int reason, bool temp) {
+        if (temp)
+		    return FX_OK;
+    	this.Target->StopAnimation(this.Target.IntJumping.anim_number);
+	    return FX_OK;
+    },
+};
 
 public func Jump(int xdir, int ydir)
 {
@@ -433,7 +420,7 @@ public func StartDig()
 {
 	SetComDir(COMD_None);
 	if (!GetEffect("IntDigging", this))
-		AddEffect("IntDigging", this, 1, 1, this);
+		CreateEffect(IntDigging, 1, 1);
 	return;
 }
 
@@ -465,49 +452,48 @@ public func GetDigDirection()
 	return;
 }
 
-public func FxIntDiggingStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	var dir = -1;
-	if (GetDir() == DIR_Right) 
-		dir = +1;
-	effect.anim_number = PlayAnimation("Dig", 5, Anim_X(0, 0, GetAnimationLength("Dig"), 50 * dir), Anim_Const(1000));
-	effect.x_dir = 0;
-	effect.y_dir = 0;
-	return FX_OK;
-}
-
-public func FxIntDiggingTimer(object target, proplist effect, int time)
-{
-	if (GetComDir() == COMD_Stop)
-	{
-		SetXDir(0);
-		SetYDir(0);
-		return FX_OK;
-	}
-	var xdir = effect.dig_x * this.ActMap.Dig.Speed;
-	var ydir = effect.dig_y * this.ActMap.Dig.Speed;
-	var speed = Max(1, Distance(xdir, ydir));
-	xdir = xdir * this.ActMap.Dig.Speed / speed;
-	ydir = ydir * this.ActMap.Dig.Speed / speed;
-	if (xdir != effect.x_dir || ydir != effect.y_dir)
-	{
-		effect.x_dir = xdir;
-		effect.y_dir = ydir;
-		SetXDir(xdir, 100);
-		SetYDir(ydir, 100);
-	}
-	return FX_OK;
-}
-
-public func FxIntDiggingStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	StopAnimation(effect.anim_number);
-	return FX_OK;
-}
+local IntDigging = new Effect {
+    Start = func(int temp) {
+        if (temp)
+		    return FX_OK;
+	    var dir = -1;
+	    if (this.Target->GetDir() == DIR_Right) 
+		    dir = +1;
+	    this.anim_number = this.Target->PlayAnimation("Dig", 5, Anim_X(0, 0, GetAnimationLength("Dig"), 50 * dir), Anim_Const(1000));
+	    this.x_dir = 0;
+	    this.y_dir = 0;
+	    return FX_OK;
+    },
+    
+    Timer = func(int time) {
+        if (this.Target->GetComDir() == COMD_Stop)
+	    {
+		    this.Target->SetXDir(0);
+		    this.Target->SetYDir(0);
+		    return FX_OK;
+	    }
+	    var xdir = this.dig_x * this.Target.ActMap.Dig.Speed;
+	    var ydir = this.dig_y * this.Target.ActMap.Dig.Speed;
+	    var speed = Max(1, Distance(xdir, ydir));
+	    xdir = xdir * this.Target.ActMap.Dig.Speed / speed;
+	    ydir = ydir * this.Target.ActMap.Dig.Speed / speed;
+	    if (xdir != this.x_dir || ydir != this.y_dir)
+	    {
+	    	this.x_dir = xdir;
+	    	this.y_dir = ydir;
+	    	this.Target->SetXDir(xdir, 100);
+	    	this.Target->SetYDir(ydir, 100);
+	    }
+	    return FX_OK;
+    },
+    
+    Stop = func(int reason, bool temp) {
+        if (temp)
+		    return FX_OK;
+	    this.Target->StopAnimation(this.Target.IntDigging.anim_number);
+	    return FX_OK;
+    },
+};
 
 public func DigOutObject(object obj)
 {
@@ -554,7 +540,7 @@ public func IsHanging()
 public func StartHang()
 {
 	if (!GetEffect("IntHanging", this))
-		AddEffect("IntHanging", this, 1, 1, this);
+		CreateEffect(IntHanging, 1, 1);
 
 	return;
 }
@@ -566,30 +552,27 @@ public func StopHang()
 	return;
 }
 
-public func FxIntHangingStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	SetComDir(COMD_Stop);
-	effect.current_transform = this.MeshTransformation;
-	this.MeshTransformation = Trans_Mul(this.MeshTransformation, Trans_Translate(-750, -1000, 0), Trans_Rotate(90, 0, 1, 0), Trans_Rotate(35, 0, 0, 1));
-	effect.anim_number = PlayAnimation("Idle", 5, Anim_Linear(0, 0, GetAnimationLength("Idle"), 35, ANIM_Hold), Anim_Const(1000));
-	return FX_OK;
-}
-
-public func FxIntHangingTimer(object target, proplist effect, int time)
-{
-	return FX_OK;
-}
-
-public func FxIntHangingStop(object target, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	this.MeshTransformation = effect.current_transform;
-	StopAnimation(effect.anim_number);
-	return FX_OK;
-}
+local IntHangling = new Effect {
+    Start = func(int temp) {
+        if (temp)
+		    return FX_OK;
+	    this.Target->SetComDir(COMD_Stop);
+	    this.current_transform = this.Target.MeshTransformation;
+	    this.Target.MeshTransformation = Trans_Mul(this.Target.MeshTransformation, Trans_Translate(-750, -1000, 0), Trans_Rotate(90, 0, 1, 0), Trans_Rotate(35, 0, 0, 1));
+	    this.anim_number = this.Target->PlayAnimation("Idle", 5, Anim_Linear(0, 0, GetAnimationLength("Idle"), 35, ANIM_Hold), Anim_Const(1000));
+	    return FX_OK;
+    },
+    
+    Timer = func(int time) { return FX_OK; }
+    
+    Stop = func(int reason, bool temp) {
+        if (temp)
+		    return FX_OK;
+	    this.Target.MeshTransformation = this.current_transform;
+	    this.Target->StopAnimation(this.Target.IntHangling.anim_number);
+	    return FX_OK;
+    },
+};
 
 
 /*-- Dead --*/

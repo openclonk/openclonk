@@ -54,7 +54,7 @@ func Construction()
 	turn_angle = -60;
 	color = 255;
 
-	AddEffect("IntActivity", this, 1, 10, this);
+	CreateEffect(IntActivity, 1, 10);
 	AddTimer("UpdateEnemy", 30);
 	AddTimer("UpdateFood", 60);
 
@@ -266,18 +266,18 @@ func ActivityWalking()
 
 }
 
-func FxIntActivityTimer(target, effect, time)
-{
-	if (this.Activity) this->Activity();
-	if (!GetAlive()) return -1;
-	return 1;
-}
-
-func FxIntActivityDamage(target, effect, dmg)
-{
-	if (dmg > 0) return dmg;
-	return dmg;
-}
+local IntActivity = new Effect {
+    Timer = func(int time) {
+        if(this.Target.Activity) this.Target.Activity();
+        if(!this.Target->GetAlive()) return -1;
+        return 1;
+    },
+    
+    Damage = func(int dmg) {
+        if(dmg > 0) return dmg;
+        return dmg;
+    },
+};
 
 /* Tasks */
 
@@ -560,82 +560,79 @@ func CheckTurn(int dir, bool move)
 	if (!GetEffect("IntTurning", this))
 	{
 		SetDir(dir);
-		AddEffect("IntTurning", this, 1, 1, this, nil, move);
+		CreateEffect(IntTurning, 1, 1, move);
 		return true;
 	}
 	return false;
 }
 
-func FxIntTurningStart(object target, effect fx, temp, move)
-{
-	fx.mvmn = move;
-
-	if (!InLiquid())
-	{
-		Stop();
-		SetAction("Turn");
-	} else {
-		SetComDir(COMD_Stop);
-		SetXDir(0);
-		SetAction("SwimTurn");
-	}
-
-	if (temp) return true;
-}
-
-func FxIntTurningTimer(object target, effect fx, int time)
-{
-	if (GetDir() == DIR_Left)
-		turn_angle += 15;
-	else
-		turn_angle -= 15;
-
-	if (turn_angle < -60 || turn_angle > 180)
-	{
-		turn_angle = BoundBy(turn_angle, -60, 180);
-		this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
-		return -1;
-	}
-	this.MeshTransformation = Trans_Rotate(turn_angle + 180 + 30,0,1,0);
-	return 1;
-}
-
-func FxIntTurningStop(object target, effect fx, temp)
-{
-	if (fx.mvmn)
-	{
-		if (!InLiquid())
-		{
-			if (GetDir()) SetComDir(COMD_Right);
-			else SetComDir(COMD_Left);
-			return SetAction("Walk");
-		}
-
-		if (GetDir()) SetComDir(COMD_UpRight);
-		else SetComDir(COMD_UpLeft);
-		return SetAction("Swim");
-	}
-}
+local IntTurning = new Effect {
+    Start = func(int temp, bool move) {
+        this.mvmn = move;
+        
+        if(!this.Target->InLiquid())
+        {
+            this.Target->Stop();
+            this.Target->SetAction("Turn");
+        }
+        else
+        {
+            this.Target->SetComDir(COMD_Stop);
+            this.Target->SetXDir(0);
+            this.Target->SetAction("SwimTurn");
+        }
+        if(temp) return true;
+    },
+    
+    Timer = func(int time) {
+        if(this.Target->GetDir() == DIR_Left) this.Target.turn_angle += 15;
+        else this.Target.turn_angle -= 15;
+        
+        if(this.Target.turn_angle < -60 || this.Target.turn_angle > 180)
+        {
+            this.Target.turn_angle = BoundBy(this.Target.turn_angle, -60, 180);
+		    this.Target.MeshTransformation = Trans_Rotate(this.Target.turn_angle + 180 + 30,0,1,0);
+		    return -1;
+        }
+        this.Target.MeshTransformation = Trans_Rotate(this.Target.turn_angle + 180 + 30,0,1,0);
+	    return 1;
+    },
+    
+    Stop = func(bool temp) {
+        if(this.mvmn)
+        {
+            if(!this.Target->InLiquid())
+            {
+                if(this.Target->GetDir()) this.Target->SetComDir(COMD_Right);
+                else this.Target->SetComDir(COMD_Left);
+                return SetAction("Swim");
+            }
+            
+            if (this.Target->GetDir()) this.Target->SetComDir(COMD_UpRight);
+		    else this.Target->SetComDir(COMD_UpLeft);
+		    return this.Target->SetAction("Swim");
+        }
+    }
+};
 
 /* Breathing */
 
 func CheckBreathe()
 {
-	if (!GetEffect("IntBreathing", this)) AddEffect("IntBreathing", this, 1, 1, this, nil);
+	if (!GetEffect("IntBreathing", this)) CreateEffect(IntBreathing, 1, 1);
 }
 
-func FxIntBreathingStart(object target, effect fx, temp)
-{
-	if (temp) return true;
-}
-
-func FxIntBreathingTimer(object target, effect fx, int time)
-{
-	DoBreath(MaxBreath - GetBreath());
-	if (!InLiquid()) return -1;
-
-	return 1;
-}
+local IntBreathing = new Effect {
+    Start = func(int temp) {
+        if(temp) return true;
+    },
+    
+    Timer = func(int time) {
+        this.Target->DoBreath(this.Target.MaxBreath - this.Target->GetBreath());
+        if(!this.Target->InLiquid()) return -1;
+        return 1;
+    },
+};
 
 /* Fossilizing */
 
@@ -643,95 +640,94 @@ func CheckFossilize()
 {
 	if (!GetEffect("IntFossilizing", this))
 		// Ca. 60 seconds till death without lava
-		AddEffect("IntFossilizing", this, 1, 11, this, nil);
+		CreateEffect(IntFossilizing, 1, 11);
 }
 
-func FxIntFossilizingStart(object target, effect fx, temp)
-{
-	if (temp) return true;
-}
-
-func FxIntFossilizingTimer(object target, effect fx, int time)
-{
-	if (GetMaterial() == Material("DuroLava") || GetMaterial() == Material("Lava"))
-	{
-		color++;
-		if (Speed < MaxSpeed) Speed += Random(2);
-		if (JumpSpeed < MaxJumpSpeed)
-		{
-			JumpSpeed += Random(3);
-			if(JumpSpeed > MaxJumpSpeed) JumpSpeed = MaxJumpSpeed;
-		}
-	} else {
-		color--;
-		if (Speed > 0) Speed -= Random(2);
-		if (JumpSpeed > 0)
-		{
-			JumpSpeed -= Random(3);
-			if(JumpSpeed < 0) JumpSpeed = 0;
-		}
-	}
-	if (color < 45 || color > 255)
-	{
-		color = BoundBy(color, 45, 255);
-		SetClrModulation(RGBa(color, color, color, 255));
-		return -1;
-	}
-	SetClrModulation(RGBa(color, color, color, 255));
-
-	return 1;
-}
-
-func FxIntFossilizingStop(object target, effect fx, temp)
-{
-	if (GetMaterial() == Material("DuroLava") || GetMaterial() == Material("Lava")) return SetAction("Swim");
-	else return Kill();
-}
+local FxIntFossilizing = new Effect {
+    Start = func(int temp) {
+        if(temp) return true;
+    },
+    
+    Timer = func(int time) {
+        if (this.Target->GetMaterial() == Material("DuroLava") || this.Target->GetMaterial() == Material("Lava"))
+	    {
+		    this.Target.color++;
+		    if (this.Target.Speed < this.Target.MaxSpeed) this.Target.Speed += Random(2);
+		    if (this.Target.JumpSpeed < this.Target.MaxJumpSpeed)
+		    {
+			    this.Target.JumpSpeed += Random(3);
+			    if(this.Target.JumpSpeed > this.Target.MaxJumpSpeed) this.Target.JumpSpeed = this.Target.MaxJumpSpeed;
+		    }
+	    }
+	    else
+	    {
+		    this.Target.color--;
+		    if (this.Target.Speed > 0) this.Target.Speed -= Random(2);
+		    if (this.Target.JumpSpeed > 0)
+		    {
+		    	this.Target.JumpSpeed -= Random(3);
+		    	if(this.Target.JumpSpeed < 0) this.Target.JumpSpeed = 0;
+		    }
+	    }
+	    if (this.Target.color < 45 || this.Target.color > 255)
+	    {
+	    	this.Target.color = BoundBy(this.Target.color, 45, 255);
+	    	this.Target->SetClrModulation(RGBa(this.Target.color, this.Target.color, this.Target.color, 255));
+	    	return -1;
+	    }
+	    this.Target->SetClrModulation(RGBa(this.Target.color, this.Target.color, this.Target.color, 255));
+        
+	    return 1;
+    },
+    
+    Stop = func(bool temp) {
+        if (this.Target->GetMaterial() == Material("DuroLava") || this.Target->GetMaterial() == Material("Lava")) return this.Target->SetAction("Swim");
+	    else return this.Target->Kill();
+    },
+};
 
 /* Burning Tail */
 
 func SetTailOnFire()
 {
 	if (!GetEffect("IntTailBurning", this))
-		AddEffect("IntTailBurning", this, 1, 2, this, nil);
+		CreateEffect(IntTailBurning, 1, 2);
 }
 
-func FxIntTailBurningStart(object target, effect fx, temp)
-{
-	fx.fire = {
-		R = 200 + Random(55),
-		G = 200 + Random(55),
-		B = 200 + Random(55),
-		Alpha = PV_Linear(255, 0),
-		Size = 4,
-		Phase = PV_Linear(0, 9),
-		DampingX = 1000,
-		DampingY = 1000,
-		Attach = ATTACH_MoveRelative
-	};
+local IntTailBurning = new Effect {
+    Start = func(int temp) {
+        this.fire = {
+		    R = 200 + Random(55),
+		    G = 200 + Random(55),
+		    B = 200 + Random(55),
+		    Alpha = PV_Linear(255, 0),
+		    Size = 4,
+		    Phase = PV_Linear(0, 9),
+		    DampingX = 1000,
+		    DampingY = 1000,
+		    Attach = ATTACH_MoveRelative,
+	    };
+    },
+    
+    Timer = func(int time) {
+        if (!this.Target->GetAlive() || this.Target->InLiquid())
+	    {
+	    	var level;
+    		level = 5 ?? 10;
+		    var particles = Particles_Smoke();
+		    particles.Size = PV_Linear(PV_Random(level/2, level), PV_Random(2 * level, 3 * level));
+		    var pos = [3, -1, 0];
+		    var dir = [PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), 0];
+		    this.Target->CreateParticleAtBone("Smoke", "tail_3", pos, dir, PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
+		    return -1;
+	    }
 
-	if (temp) return true;
-}
-
-func FxIntTailBurningTimer(object target, effect fx, int time)
-{
-	if (!GetAlive() || InLiquid())
-	{
-		var level;
-		level = 5 ?? 10;
-		var particles = Particles_Smoke();
-		particles.Size = PV_Linear(PV_Random(level/2, level), PV_Random(2 * level, 3 * level));
-		var pos = [3, -1, 0];
-		var dir = [PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), 0];
-		CreateParticleAtBone("Smoke", "tail_3", pos, dir, PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
-		return -1;
-	}
-
-	var pos = [3, -1, 0];
-	var dir = [0, 0, 0];
-	CreateParticleAtBone("Fire", "tail_3", pos, dir, 5, fx.fire, 1);
-	return 1;
-}
+	    var pos = [3, -1, 0];
+	    var dir = [0, 0, 0];
+	    this.Target->CreateParticleAtBone("Fire", "tail_3", pos, dir, 5, fx.fire, 1);
+	    return 1;
+    },
+};
 
 /* ActMap */
 

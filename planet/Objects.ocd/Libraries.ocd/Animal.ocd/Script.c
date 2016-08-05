@@ -13,7 +13,7 @@ public func IsAnimal() { return true; }
 protected func Construction()
 {
 	// Add a reproduction timer.
-	AddEffect("IntReproduction", this, 100, 72, this);
+	CreateEffect(IntReproduction, 100, 72);
 	// Add a growth effect.
 	StartGrowth(GrowthSpeed());
 	_inherited(...);
@@ -61,29 +61,30 @@ private func CountAnimalsInArea()
 	return ObjectCount(Find_ID(GetID()), Find_InRect(-reprod_size_half, -reprod_size_half, reprod_size , reprod_size), Find_OCF(OCF_Alive));
 }
 
-public func FxIntReproductionTimer(object target, proplist effect, int time)
-{
-	// Already dead or not full grown? Don't do anything.
-	if (!GetAlive() || GetCon() < 100) 
-		return FX_OK;
-	// Special conditions not fulfilled? Don't do anything either.
-	if (!SpecialReproductionCondition()) 
-		return FX_OK;
-	// Check whether there are already enough animals of this kind.
-	if (CountAnimalsInArea() > MaxAnimalCount())
-		return FX_OK;
-	// Then apply the reproduction rate.
-	if (Random(ReproductionRate()))
-		return FX_OK;
-	// Reproduction: first try special reproduction, otherwise normal.
-	if (!SpecialReproduction())
-	{
-		// Normal reproduction.
-		var child = CreateConstruction(GetID(), 0, 0, NO_OWNER, 40);
-		child->~Birth(this);
-	}
+local IntReproduction = new Effect {
+    Timer = func(int time) {
+        // Already dead or not full grown? Don't do anything.
+	    if (!this.Target->GetAlive() || this.Target->GetCon() < 100) 
+		    return FX_OK;
+	    // Special conditions not fulfilled? Don't do anything either.
+	    if (!this.Target->SpecialReproductionCondition()) 
+		    return FX_OK;
+	    // Check whether there are already enough animals of this kind.
+	    if (this.Target->CountAnimalsInArea() > this.Target->MaxAnimalCount())
+		    return FX_OK;
+	    // Then apply the reproduction rate.
+	    if (Random(this.Target->ReproductionRate()))
+		    return FX_OK;
+	    // Reproduction: first try special reproduction, otherwise normal.
+	    if (!this.Target->SpecialReproduction())
+	    {
+		    // Normal reproduction.
+		    var child = this.Target->CreateConstruction(GetID(), 0, 0, NO_OWNER, 40);
+		    child->~Birth(this.Target);
+	    }
 	return FX_OK;
-}
+    },
+};
 
 // Callback in the animal on its birth.
 public func Birth(object parent)

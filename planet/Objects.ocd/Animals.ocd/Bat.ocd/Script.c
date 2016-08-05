@@ -13,7 +13,7 @@
 private func Construction()
 {
 	// Add effect for the behavior of the bat.	
-	AddEffect("CoreBehavior", this, 100, 1, this);
+	CreateEffect(CoreBehavior, 100, 1);
 	// Start flying.
 	Fly();
 	// Some bats don't stick to the swarm and start their own.
@@ -61,155 +61,169 @@ private func Place(int amount, proplist rectangle, proplist settings)
 
 /*-- Behavior --*/
 
-private func FxCoreBehaviorStart(object target, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	effect.move_direction = [0, 0];
-	effect.attack_target = nil;
-	effect.last_cave = [nil, nil];
-	effect.time_since_startle = 0;
-	effect.is_expat = false;
-	return FX_OK;
-}
-
-// This time is called every frame for some basic actions.
-private func FxCoreBehaviorTimer(object target, proplist effect, int time)
-{
-	// If the bat is hanging, either start flying or do nothing.
-	if (GetAction() == "Hang")
-	{
-		// Start flying if there is nothing to hang on to.
-		if (!GBackSolid(0, -12))
-			Fly();
-		// Start flying if it is day and not hanging in a tunnel, the bat needs to find a tunnel.
-		if (GetMaterial(0, 0) != Material("Tunnel") && Time->IsDay())
-			Fly();
-		// Start flying by random.
-		if (!Random(150))
-			Fly();		
-		return FX_OK;
-	}
+local CoreBehavior = new Effect {
+    Start = func(int temp) {
+        if(temp) return FX_OK;
+        this.move_direction = [0, 0];
+        this.attack_target = nil;
+        this.last_cave = [nil, nil];
+        this.time_since_startle = 0;
+        this.is_expat = false;
+        return FX_OK;
+    },
+    
+    // This time is called every frame for some basic actions.
+    Timer = func(int time) {
+        // If the bat is hanging, either start flying or do nothing.
+        if(this.Target->GetAction() == "Hang")
+        {
+            // Start flying if there is nothing to hang on to.
+            if(!this.Target->GBackSolid(0,12))
+            {
+                this.Target->Fly();
+            }
+            // Start flying if it is day and not hanging in a tunnel, the bat needs to find a tunnel.
+            if(this.Target->GetMaterial(0, 0) != Material("Tunnel") && Time->IsDay())
+            {
+                this.Target->Fly();
+            }
+            // Start flying by random.
+            if(!Random(150))
+            {
+                this.Target->Fly();
+            }
+            return FX_OK;
+        }
+        
+        /*-- Basic actions done while flying --*/
+        
+        // Remember direction we need to fly in to get back into the home cave.
+        if(this.Target->GetMaterial(0, 0) == Material("Tunnel"))
+        {
+            this.last_cave = [this.Target->GetX(), this.Target->GetY()];
+        }
+        
+        if(!PathFree(this.Target->GetX(), this.Target->GetY(), this.last_cave[0], this.last_cave[1]) || Distance(this.Target->GetX(), this.Target->GetY(), this.last_cave[0], this.last_cave[1] > 30))
+        {
+            this.last_cave = [nil, nil];
+        }
+        
+        // Move the bat and update its in-flight appearance.
+        this.Target->ChangeMovementVelocity(this.move_direction[0], this.move_direction[1]);
+        this.Target->UpdateFlightAppearance();
+        
+        // Make flying sounds and sometimes do a sonar wave.
+        if(!Random(250))
+        {
+            this.Target->Sound("Animals::Bat::Flutter*");
+        }
+        
+        if(!Random(225))
+        {
+            this.Target->DoSonarWave(false);
+        }
+        
+        // Update the state of the bat.
+        if(this.time_since_startle > 0)
+        {
+            this.time_since_starte--;
+        }
+        
+        /*-- Random actions and actions based on events --*/
+        
+        // Only do these action updates every five frames.
+        if((time % 5) != 0) return FX_OK;
+        
+        // Stay out of water.
+        if(this.Target->GBackLiquid(0, 4) || this.Target->GBackLiquid(0, 8))
+        {
+            this.move_direction = [RandomX(-1, 1), -1];
+            return FX_OK;
+        }
+        
+        // Evade sources of light, fire and dangerous clonks (clonks are only attacked when in groups or very hungry).
+        for(var danger in this.Target->FindObjects(Find_Or(Find_OCF(OCF_CrewMember | OCF_OnFire), Find_Func("IsLightSource")), this.Target->Find_Distance(75), Find_Exclude(this), Sort_Distance()))
+        {
+            if (!PathFree(this.Target->GetX(), this.Target->GetY(), danger->GetX(), danger->GetY()))
+			    continue;
+		    if ((danger->GetOCF() & OCF_CrewMember) && this.Target->WillAttackPrey())
+			    continue;
+		    var x = -Sign(danger->GetX() - this.Target->GetX() + RandomX(-20, 20));
+		    var y = -Sign(danger->GetY() - this.Target->GetY() + RandomX(-20, 20));
+		    this.move_direction = [x, y];
+		    this.Target->DoSonarWave();
+		    // Loose the attack target, because safety is more important.
+		    this.attack_target = nil;
+		    return FX_OK;
+        }
+        // Fly towards attack target when the bat has one.
+	    if (this.attack_target)
+	    {
+		    // Give up chase after a while.
+		    if (Distance(this.Target->GetX(), this.Target->GetY(), this.attack_target->GetX(), this.attack_target->GetY()) > 200 || !PathFree(this.Target->GetX(), this.Target->GetY(),this.attack_target->GetX(), this.attack_target->GetY()))
+		    {
+		    	this.attack_target = nil;
+		    	return FX_OK;
+		    }
+		    var x = Sign(this.attack_target->GetX() - this.Target->GetX());
+		    var y = Sign(this.attack_target->GetY() - this.Target->GetY());
+		    this.move_direction = [x, y];
+            
+		    if (Distance(this.Target->GetX(), this.Target->GetY(), this.attack_target->GetX(), this.attack_target->GetY()) < 10)
+		    {
+		    	this.Target->BitePrey(this.attack_target);
+		    	this.attack_target = nil;
+		    	this.Target->SetRandomDirection();
+		    }
+		    return FX_OK;
+	    }
+	    // Look for prey to attack and bite for health.
+	    if (!Random(40))
+	    {
+		    var possible_prey = this.Target->FindObject(Find_Func("IsPrey"), Find_OCF(OCF_Alive), this.Target->Find_Distance(100), Find_NoContainer());
+		    // Check if path free and if there are enough buddies to mount an attack with.
+		    if (possible_prey && PathFree(this.Target->GetX(), this.Target->GetY(), possible_prey->GetX(), possible_prey->GetY()) && this.Target->WillAttackPrey())
+		    {
+		    	this.attack_target = possible_prey;
+	    		this.Target->DoSonarWave(true);
+		    }
+		    return FX_OK;
+	    }
 	
-	/*-- Basic actions done while flying --*/
-
-	// Remember direction we need to fly in to get back into the home cave.
-	if (GetMaterial(0, 0) == Material("Tunnel"))
-		effect.last_cave = [GetX(), GetY()];
-	if (!PathFree(GetX(), GetY(), effect.last_cave[0], effect.last_cave[1]) || Distance(GetX(), GetY(), effect.last_cave[0], effect.last_cave[1]) > 30)
-		effect.last_cave = [nil, nil];
-		
-	// Move the bat and update its in-flight appearance.
-	ChangeMovementVelocity(effect.move_direction[0], effect.move_direction[1]);
-	UpdateFlightAppearance();
+	    // Fly towards other bats to loosely make a swarm.
+	    if (!Random(70) && !this.is_expat)
+	    {
+	         var fellow = this.Target->FindObject(Find_ID(Bat), Find_OCF(OCF_Alive), this.Target->Find_Distance(200), Find_Exclude(this));
+	         if (fellow)
+	         {
+	             var x = Sign(fellow->GetX() - this.Target->GetX());
+	             var y = Sign(fellow->GetY() - this.Target->GetY());
+	             this.move_direction = [x, y];
+	         }
+	         return FX_OK;
+	    }
 	
-	// Make flying sounds and sometimes do a sonar wave.
-	if (!Random(250))
-		Sound("Animals::Bat::Flutter*");
-	if (!Random(225))
-		DoSonarWave(false);	
-		
-	// Update the state of the bat.
-	if (effect.time_since_startle > 0)
-		effect.time_since_startle--;
-		
-	/*-- Random actions and actions based on events --*/
-	
-	// Only do these action updates every five frames.
-	if ((time % 5) != 0)
-		return FX_OK;
-
-	// Stay out of water.
-	if (GBackLiquid(0, 4) || GBackLiquid(0, 8))
-	{
-		effect.move_direction = [RandomX(-1, 1), -1];
-		return FX_OK;
-	}
-	
-	// Evade sources of light, fire and dangerous clonks (clonks are only attacked when in groups or very hungry).
-	for (var danger in FindObjects(Find_Or(Find_OCF(OCF_CrewMember | OCF_OnFire), Find_Func("IsLightSource")), Find_Distance(75), Find_Exclude(this), Sort_Distance()))
-	{
-		if (!PathFree(GetX(), GetY(), danger->GetX(), danger->GetY()))
-			continue;
-		if ((danger->GetOCF() & OCF_CrewMember) && WillAttackPrey())
-			continue;
-		var x = -Sign(danger->GetX() - GetX() + RandomX(-20, 20));
-		var y = -Sign(danger->GetY() - GetY() + RandomX(-20, 20));
-		effect.move_direction = [x, y];
-		DoSonarWave();
-		// Loose the attack target, because safety is more important.
-		effect.attack_target = nil;
-		return FX_OK;
-	}
-	
-	// Fly towards attack target when the bat has one.
-	if (effect.attack_target)
-	{
-		// Give up chase after a while.
-		if (Distance(GetX(), GetY(), effect.attack_target->GetX(), effect.attack_target->GetY()) > 200 || !PathFree(GetX(), GetY(), effect.attack_target->GetX(), effect.attack_target->GetY()))
-		{
-			effect.attack_target = nil;
-			return FX_OK;
-		}
-		var x = Sign(effect.attack_target->GetX() - GetX());
-		var y = Sign(effect.attack_target->GetY() - GetY());
-		effect.move_direction = [x, y];
-
-		if (Distance(GetX(), GetY(), effect.attack_target->GetX(), effect.attack_target->GetY()) < 10)
-		{
-			BitePrey(effect.attack_target);
-			effect.attack_target = nil;
-			SetRandomDirection();
-		}
-		return FX_OK;
-	}
-	
-	// Look for prey to attack and bite for health.
-	if (!Random(40))
-	{
-		var possible_prey = FindObject(Find_Func("IsPrey"), Find_OCF(OCF_Alive), Find_Distance(100), Find_NoContainer());
-		// Check if path free and if there are enough buddies to mount an attack with.
-		if (possible_prey && PathFree(GetX(), GetY(), possible_prey->GetX(), possible_prey->GetY()) && WillAttackPrey())
-		{
-			effect.attack_target = possible_prey;
-			DoSonarWave(true);
-		}
-		return FX_OK;
-	}
-	
-	// Fly towards other bats to loosely make a swarm.
-	if (!Random(70) && !effect.is_expat)
-	{
-		var fellow = FindObject(Find_ID(Bat), Find_OCF(OCF_Alive), Find_Distance(200), Find_Exclude(this));
-		if (fellow != nil)
-		{
-			var x = Sign(fellow->GetX() - GetX());
-			var y = Sign(fellow->GetY() - GetY());
-			effect.move_direction = [x, y];
-		}
-		return FX_OK;
-	}
-	
-	// Explore.
-	if (!Random(80))
-	{
-		SetRandomDirection();
-		return FX_OK;
-	}
-	
-	// If the bat has no activity move to the last known cave.
-	if (GBackSky(0, 0))
-	{
-		if (effect.last_cave[0] != nil && effect.last_cave[1] != nil)
-		{
-			var x = Sign(effect.last_cave[0] - GetX());
-			var y = Sign(effect.last_cave[1] - GetY());
-			effect.move_direction = [x, y];
-		}
-		return FX_OK;
-	}
-	return FX_OK;
-}
+	    // Explore.
+	    if (!Random(80))
+	    {
+		    this.Target-SetRandomDirection();
+		    return FX_OK;
+	    }
+	   
+	    // If the bat has no activity move to the last known cave.
+        if (this.Target->GBackSky(0, 0))
+	    {
+		    if (this.last_cave[0] != nil && this.last_cave[1] != nil)
+		    {
+			    var x = Sign(this.last_cave[0] - this.Target->GetX());
+			    var y = Sign(this.last_cave[1] - this.Target->GetY());
+		    	this.move_direction = [x, y];
+		    }
+		    return FX_OK;
+	    }
+	    return FX_OK;
+    },
+};
 
 // An expat bat will not stay in the group.
 public func MakeExpat(bool expat)
@@ -347,7 +361,7 @@ private func DoSonarWave(bool agressive)
 	// Handle cool down for the sonar wave.
 	if (GetEffect("SonarWaveCoolDown", this))
 		return;
-	AddEffect("SonarWaveCoolDown", this, 100, 36 * 4, this);
+	CreateEffect(SonarWaveCoolDown, 100, 36 * 4,);
 	// Define sonar wave particles.
 	var sonar_particle = {
 		R = 255,
@@ -379,10 +393,7 @@ private func DoSonarWave(bool agressive)
 }
 
 // Cool down effect which is removed upon first timer call.
-public func FxSonarWaveCoolDownTimer(object target, proplist effect, int time)
-{
-	return FX_Execute_Kill;
-}
+local SonarWaveCoolDown = new Effect { Timer = func(int time) { return FX_Execute_Kill; }, };
 
 // The aggressiveness depends on the amount of health the bat is missing, ranges from 0 to 100.
 private func GetAggressiveness()
