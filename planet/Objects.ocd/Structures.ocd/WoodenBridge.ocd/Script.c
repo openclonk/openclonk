@@ -32,6 +32,8 @@ public func NoConstructionFlip() { return true; }
 // Is a construction that is built just below the surface.
 public func IsBelowSurfaceConstruction() { return true; }
 
+public func IsHammerBuildable() { return true; }
+
 public func ConstructionCombineWith()
 {
 	return "ConnectWoodenBridge";
