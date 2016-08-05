@@ -1368,6 +1368,7 @@ void C4ControlEMMoveObject::Execute() const
 #endif
 		C4Object *obj = ::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty), 0, create_centered);
 		if (container && obj && container->Status && obj->Status) obj->Enter(container);
+		if (obj && obj->Status) obj->Call(P_EditorInitialize); // specific initialization when placed in editor
 	}
 	break;
 	case EMMO_Transform:
@@ -1383,7 +1384,7 @@ void C4ControlEMMoveObject::Execute() const
 	}
 	}
 	// update property dlg & status bar
-	if (fLocalCall && eAction != eAction)
+	if (fLocalCall && eAction != EMMO_Move)
 		Console.EditCursor.OnSelectionChanged();
 }
 

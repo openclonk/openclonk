@@ -53,6 +53,11 @@
           <col></col>
           <col>When the object is removed.</col>
         </row>
+        <row id="EditorInitialize">
+          <literal_col>EditorInitialize</literal_col>
+          <col></col>
+          <col>Called after Construction and Initialize when the object is placed in the editor.</col>
+        </row>
         <row id="Hit">
           <literal_col>Hit</literal_col>
           <col></col>

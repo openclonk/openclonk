@@ -513,6 +513,7 @@ enum C4PropertyName
 	P_EditorHelp,
 	P_Description,
 	P_AllowEditing,
+	P_EditorInitialize,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
