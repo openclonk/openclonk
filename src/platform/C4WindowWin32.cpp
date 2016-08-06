@@ -571,6 +571,9 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 C4Window::C4Window (): Active(false), pSurface(0), hWindow(0)
+#ifdef WITH_QT_EDITOR
+, glwidget(nullptr)
+#endif
 {
 }
 C4Window::~C4Window ()
