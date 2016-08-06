@@ -44,6 +44,7 @@ IDS_CNS_CONTENTS=Contents:
 IDS_CNS_CREATE=Create
 IDS_CNS_CREATESTATUS=Place new %s
 IDS_CNS_CREATOR=Create objects
+IDS_CNS_CREATORTOOMANYINSTANCES=Error creating object: Maximum instance count of %d reached for this object type.
 IDS_CNS_DEFINITIONS=Definitions
 IDS_CNS_DESCRIPTION=Description
 IDS_CNS_DROPNODEF=Object invalid or not loaded: %s

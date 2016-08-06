@@ -290,6 +290,7 @@ C4StringTable::C4StringTable()
 	P[P_Description] = "Description";
 	P[P_AllowEditing] = "AllowEditing";
 	P[P_EditorInitialize] = "EditorInitialize";
+	P[P_EditorPlacementLimit] = "EditorPlacementLimit";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

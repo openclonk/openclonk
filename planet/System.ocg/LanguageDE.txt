@@ -44,6 +44,7 @@ IDS_CNS_CONTENTS=Inhalt:
 IDS_CNS_CREATE=Erzeugen
 IDS_CNS_CREATESTATUS=Platzierung: %s
 IDS_CNS_CREATOR=Objekte erstellen
+IDS_CNS_CREATORTOOMANYINSTANCES=Fehler beim Erstellen: Von diesem Objekttyp koennen maximal %d Objekte platziert werden.
 IDS_CNS_DEFINITIONS=Definitionen
 IDS_CNS_DESCRIPTION=Beschreibung
 IDS_CNS_DROPNODEF=Ungültiges oder nicht geladenes Objekt: %s

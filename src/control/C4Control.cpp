@@ -1353,6 +1353,20 @@ void C4ControlEMMoveObject::Execute() const
 	break;
 	case EMMO_Create:
 	{
+		// Check max object count
+		C4ID iddef = C4ID(StringParam);
+		C4Def *def = C4Id2Def(iddef);
+		if (!def) return;
+		int32_t placement_limit = def->GetPropertyInt(P_EditorPlacementLimit);
+		if (placement_limit)
+		{
+			if (Game.ObjectCount(iddef) >= placement_limit)
+			{
+				// Too many objects
+				::Console.Message(FormatString(LoadResStr("IDS_CNS_CREATORTOOMANYINSTANCES"), int(placement_limit)).getData());
+				return;
+			}
+		}
 		// Create object outside or contained
 		// If container is desired but not valid, do nothing (don't create object outside instead)
 		C4Object *container = NULL;
@@ -1366,7 +1380,7 @@ void C4ControlEMMoveObject::Execute() const
 		// Qt editor: Object creation is done through creator; centered creation is usually more convenient
 		create_centered = true;
 #endif
-		C4Object *obj = ::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty), 0, create_centered);
+		C4Object *obj = ::Game.CreateObject(iddef, nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty), 0, create_centered);
 		if (container && obj && container->Status && obj->Status) obj->Enter(container);
 		if (obj && obj->Status) obj->Call(P_EditorInitialize); // specific initialization when placed in editor
 	}
