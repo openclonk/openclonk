@@ -765,7 +765,7 @@ namespace C4GameLobby
 		if (!iStartTimer)
 		{
 			// Dedicated server: if there are not enough players for this game, abort and quit the application
-			if (!::Network.GetLobby() && (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()))
+			if (!::Network.GetLobby() && (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()) && !Application.isEditor)
 			{
 				Log(LoadResStr("IDS_MSG_NOTENOUGHPLAYERSFORTHISRO")); // it would also be nice to send this message to all clients...
 				Application.Quit();
