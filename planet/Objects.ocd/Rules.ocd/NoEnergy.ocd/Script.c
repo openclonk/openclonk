@@ -42,3 +42,4 @@ protected func Activate(int plr)
 local Name = "$Name$";
 local Description = "$Description$";
 local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1; // Rules are to be placed only once

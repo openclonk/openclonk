@@ -7,7 +7,6 @@
 	@author Maikel, Sven2
 */
 
-
 // Determines whether the inventory of the crew member is transfered upon respawn.
 local inventory_transfer = false;
 
@@ -173,3 +172,4 @@ public func SaveScenarioObject(props, ...)
 local Name = "$Name$";
 local Description = "$Description$";
 local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1; // Rules are to be placed only once

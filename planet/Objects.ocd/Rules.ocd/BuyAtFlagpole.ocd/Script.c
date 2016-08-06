@@ -20,3 +20,4 @@ protected func Activate(int iByPlayer)
 local Name = "$Name$";
 local Description = "$Description$";
 local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1; // Rules are to be placed only once

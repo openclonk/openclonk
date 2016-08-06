@@ -96,3 +96,4 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
 local Name = "$Name$";
 local Description = "$Description$";
 local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1; // Rules are to be placed only once
