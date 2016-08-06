@@ -248,11 +248,12 @@ protected func CheckForClonks()
 		// If already done by player -> continue.
 		if (ClearedByPlayer(plr))
 			continue;
+		var is_first_clear = (GetIndexOf(cleared_by_plr, true) < 0);
 		// Check checkpoint status.
 		if (cp_mode & PARKOUR_CP_Check)
 		{
 			var team_clear = !ClearedByTeam(team);
-			ClearCPForPlr(plr);
+			ClearCPForPlr(plr, is_first_clear);
 			if (ClearedByTeam(team) && team_clear)
 				cp_con->AddTeamClearedCP(team, this); // Notify parkour goal.
 		}
@@ -264,31 +265,40 @@ protected func CheckForClonks()
 			if (team)
 			{
 				if (ClearedByTeam(team))
-					cp_con->PlayerReachedFinishCP(plr, this); // Notify parkour goal.
+					cp_con->PlayerReachedFinishCP(plr, this, is_first_clear); // Notify parkour goal.
 				else
-					cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
+					cp_con->AddPlayerClearedCP(plr, this, is_first_clear); // Notify parkour goal.
 			}
 			else
 			{
-				cp_con->PlayerReachedFinishCP(plr, this); // Notify parkour goal.
+				cp_con->PlayerReachedFinishCP(plr, this, is_first_clear); // Notify parkour goal.
 			}
 		}
 		// Check bonus.
 		if (cp_mode & PARKOUR_CP_Bonus)
 			GameCall("GivePlrBonus", plr, this);
+		// User callback
+		if (is_first_clear) UserAction->EvaluateAction(on_first_cleared, this, clonk, plr);
+		UserAction->EvaluateAction(on_cleared, this, clonk, plr);
 	}
 	return;
 }
 
+// Checkpoint callback if someone respawns here
+private func OnPlayerRespawn(object clonk, int plr)
+{
+	return UserAction->EvaluateAction(on_respawn, this, clonk, plr);
+}
+
 // Clear this checkpoint for the player, and possibly its team members.
-private func ClearCPForPlr(int plr)
+private func ClearCPForPlr(int plr, bool is_first_clear)
 {
 	if (!(cp_mode & PARKOUR_CP_Check))	
 		return;
 	var plrid = GetPlayerID(plr);
 	cleared_by_plr[plrid] = true;
 	Sound("UI::Cleared", false, 100, plr);
-	cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
+	cp_con->AddPlayerClearedCP(plr, this, is_first_clear); // Notify parkour goal.
 	// Also clear for team members if the checkpoint is not PARKOUR_CP_Team.
 	var team = GetPlayerTeam(plr);
 	if (team && !(cp_mode & PARKOUR_CP_Team))
@@ -300,7 +310,7 @@ private func ClearCPForPlr(int plr)
 				var test_plr_id = GetPlayerID(test_plr);
 				cleared_by_plr[test_plr_id] = true;
 				Sound("UI::Cleared", false, 100, test_plr);
-				cp_con->AddPlayerClearedCP(test_plr, this); // Notify parkour goal.
+				cp_con->AddPlayerClearedCP(test_plr, this, false, true); // Notify parkour goal.
 			}
 		}
 	}	
@@ -471,6 +481,13 @@ public func SaveScenarioObject(props)
 
 /* Editor */
 
+// Editor action callbacks
+local on_cleared, on_first_cleared, on_respawn;
+
+public func SetOnCleared(v) { on_cleared=v; return true; }
+public func SetOnFirstCleared(v) { on_first_cleared=v; return true; }
+public func SetOnRespawn(v) { on_respawn=v; return true; }
+
 // Inividual mode getting/setting functions (for editor)
 public func SetCPRespawn(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Respawn) | (PARKOUR_CP_Respawn * !!to_val)); }
 public func SetCPCheck(bool to_val) { return SetCPMode((GetCPMode() & ~PARKOUR_CP_Check) | (PARKOUR_CP_Check * !!to_val)); }
@@ -561,6 +578,9 @@ public func Definition(def)
 	def.EditorProps.check = { Type="bool", Name="$Check$", EditorHelp="$CheckHelp$", AsyncGet="GetCPCheck", Set="SetCPCheck" };
 	def.EditorProps.ordered = { Type="bool", Name="$Ordered$", EditorHelp="$OrderedHelp$", AsyncGet="GetCPOrdered", Set="SetCPOrdered" };
 	def.EditorProps.team = { Type="bool", Name="$Team$", EditorHelp="$TeamHelp$", AsyncGet="GetCPTeam", Set="SetCPTeam" };
+	def.EditorProps.on_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", SaveAsCall="SetOnCleared" };
+	def.EditorProps.on_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", SaveAsCall="SetOnFirstCleared" };
+	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", SaveAsCall="SetOnRespawn" };
 }
 
 

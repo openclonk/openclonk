@@ -148,7 +148,7 @@ public func TransferContentsOnRelaunch(bool on)
 /*-- Checkpoint interaction --*/
 
 // Called from a finish CP to indicate that plr has reached it.
-public func PlayerReachedFinishCP(int plr, object cp)
+public func PlayerReachedFinishCP(int plr, object cp, bool is_first_clear)
 {
 	if (finished)
 		return;
@@ -162,6 +162,8 @@ public func PlayerReachedFinishCP(int plr, object cp)
 	SetEvalData(plr);
 	EliminatePlayers(plr);
 	finished = true;
+	if (is_first_clear) UserAction->EvaluateAction(on_checkpoint_first_cleared, this, cp, plr);
+	UserAction->EvaluateAction(on_checkpoint_cleared, this, cp, plr);
 	return;
 }
 
@@ -176,13 +178,18 @@ public func SetPlayerRespawnCP(int plr, object cp)
 }
 
 // Called from a check CP to indicate that plr has cleared it.
-public func AddPlayerClearedCP(int plr, object cp)
+public func AddPlayerClearedCP(int plr, object cp, bool is_first_clear, bool is_team_auto_clear)
 {
 	if (finished)
 		return;
 	var plrid = GetPlayerID(plr);
 	plr_list[plrid]++;
 	UpdateScoreboard(plr);
+	if (!is_team_auto_clear) // No callback if only auto-cleared for other team members after another player cleared it
+	{
+		if (is_first_clear) UserAction->EvaluateAction(on_checkpoint_first_cleared, this, cp, plr);
+		UserAction->EvaluateAction(on_checkpoint_cleared, this, cp, plr);
+	}
 	return;
 }
 
@@ -414,7 +421,7 @@ protected func OnClonkDeath(object clonk, int killed_by)
 {
 	var plr = clonk->GetOwner();
 	// Only respawn if required and if the player still exists.
-	if (no_respawn_handling || !GetPlayerName(plr)) 
+	if (no_respawn_handling || !GetPlayerName(plr) || GetCrewCount(plr)) 
 		return;
 	var new_clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	new_clonk->MakeCrewMember(plr);
@@ -427,6 +434,10 @@ protected func OnClonkDeath(object clonk, int killed_by)
 	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	// Log message.
 	Log(RndRespawnMsg(), GetPlayerName(plr));
+	// Respawn actions
+	var cp = FindRespawnCP(plr);
+	UserAction->EvaluateAction(on_respawn, this, clonk, plr);
+	if (cp) cp->OnPlayerRespawn(new_clonk, plr);
 	return;
 }
 
@@ -689,6 +700,24 @@ private func AddEvalData(int plr)
 		msg = Format("$MsgEvalPlayerX$", cps, cp_count);
 	AddEvaluationData(msg, plrid);
 	return;
+}
+
+
+/* Editor */
+
+local on_checkpoint_cleared, on_checkpoint_first_cleared, on_respawn;
+
+public func SetOnCheckpointCleared(v) { on_checkpoint_cleared=v; return true; }
+public func SetOnCheckpointFirstCleared(v) { on_checkpoint_first_cleared=v; return true; }
+public func SetOnRespawn(v) { on_respawn=v; return true; }
+
+public func Definition(def)
+{
+	_inherited(def);
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.on_checkpoint_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", SaveAsCall="SetOnCheckpointCleared" };
+	def.EditorProps.on_checkpoint_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", SaveAsCall="SetOnCheckpointFirstCleared" };
+	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", SaveAsCall="SetOnRespawn" };
 }
 
 
