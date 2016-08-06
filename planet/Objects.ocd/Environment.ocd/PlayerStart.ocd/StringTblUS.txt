@@ -14,3 +14,7 @@ Default=Default
 Custom=Custom
 ClonkMaxEnergy=Clonk life points
 ClonkMaxEnergyHelp=Maximum life points a clonk can have. Value will be used for all starting clonks and all clonks created later in the game for this player (e.g. respawns) after spawning from this spawn point.
+StartingMaterialHelp=Items carried by clonks on initial player join.
+RespawnMaterial=Respawn material
+SameAsStartingMaterial=Same as start material
+RespawnMaterialHelp=Items carried by clonks after a respawn or when newly bought.

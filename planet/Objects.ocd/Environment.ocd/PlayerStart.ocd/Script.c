@@ -13,6 +13,7 @@ local starting_knowledge = { Option="all" };
 local starting_crew; // const arrays not supported yet
 local starting_material;
 local starting_wealth = 0;
+local respawn_material;
 local clonk_max_contents_count, clonk_max_energy; // Override properties for clonks
 local Name = "$Name$";
 local Description = "$Description$";
@@ -33,12 +34,17 @@ public func Definition(def)
 		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
 		] };
 	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
-	def.EditorProps.starting_material = EditorBase->GetConditionalIDList("Collectible", "$StartingMaterial$", nil);
+	def.EditorProps.starting_material = EditorBase->GetConditionalIDList("Collectible", "$StartingMaterial$", nil, "$StartingMaterialHelp$");
 	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
 	def.EditorProps.clonk_max_contents_count = { Name="$ClonkMaxContentsCount$", EditorHelp="$ClonkMaxContentsCountHelp$", Type="enum", Options = [
 		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
 	def.EditorProps.clonk_max_energy = { Name="$ClonkMaxEnergy$", EditorHelp="$ClonkMaxEnergyHelp$", Type="enum", Options = [
 		{ Name=Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value=Clonk.MaxEnergy/1000, Delegate={ Type="int", Min=1, Max=100000 } } ] };
+	def.EditorProps.respawn_material = { Name="$RespawnMaterial$", Type="enum", SaveAsCall="SetRespawnMaterial", Options = [
+		{ Name="$None$" },
+		{ Name="$SameAsStartingMaterial$", Value="starting_material" },
+		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=EditorBase->GetConditionalIDList("Collectible", "$RespawnMaterial$", nil, "$RespawnMaterialHelp$") },
+		] };
 	return true;
 }
 
@@ -104,6 +110,11 @@ public func SetClonkMaxEnergy(int new_clonk_max_energy)
 	return true;
 }
 
+public func SetRespawnMaterial(new_material)
+{
+	respawn_material = new_material;
+}
+
 
 /* Player initialization checks */
 
@@ -142,11 +153,14 @@ public func IsStartFor(int plr)
 
 /* Actual player initialization */
 
+local is_handling_player_spawn; // temp var set to nonzero during initial player spawn (to differentiate from respawn)
+
 public func DoPlayerStart(int plr)
 {
 	// Player launch controlled by this object!
 	if (!players_started) players_started = [];
 	players_started[GetLength(players_started)] = plr;
+	++is_handling_player_spawn;
 	// Give wealth
 	SetWealth(plr, starting_wealth);
 	// Create requested crew
@@ -155,6 +169,7 @@ public func DoPlayerStart(int plr)
 	InitializeMaterial(plr);
 	// Give knowledge
 	InitializeKnowledge(plr);
+	--is_handling_player_spawn;
 	return true;
 }
 
@@ -177,7 +192,23 @@ public func OnClonkRecruitment(clonk, plr)
 {
 	// New clonk recruitment: Apply default clonk settings
 	if (players_started && GetIndexOf(players_started, plr) >= 0)
+	{
 		ApplyCrewSettings(clonk);
+		if (!is_handling_player_spawn && respawn_material)
+		{
+			if (respawn_material == "starting_material")
+			{
+				// Same as startign material
+				InitializeMaterial(plr);
+			}
+			else
+			{
+				// Array of custom respawn material
+				for (var idlist_entry in respawn_material)
+					clonk->CreateContents(idlist_entry.id, idlist_entry.count);
+			}
+		}
+	}
 }
 
 private func ApplyCrewSettings(object crew)
