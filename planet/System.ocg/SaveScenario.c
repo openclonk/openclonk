@@ -412,6 +412,30 @@ global func SaveScenarioObject(props)
 	// Effects
 	var fx; i=0;
 	while (fx = GetEffect("*", this, i++)) EffectCall(this, fx, "SaveScen", props);
+	// EditorProps
+	if (this.EditorProps)
+	{
+		var all_prop_names = GetProperties(this.EditorProps), prop_save, prop_name, prop;
+		for (prop_name in all_prop_names)
+		{
+			if ((prop=this.EditorProps[prop_name]))
+			{
+				if (GetType(prop) == C4V_PropList)
+				{
+					v = this[prop_name];
+					var default_v = GetID()[prop_name];;
+					if ((prop_save = prop.SaveAsCall))
+					{
+						if (!DeepEqual(v, default_v)) props->AddCall("EditorProp", this, prop_save, SaveScenarioValue2String(v));
+					}
+					else if (prop.SaveAsSet)
+					{
+						if (!DeepEqual(v, default_v)) props->AddSet("EditorProp", this, prop_name, SaveScenarioValue2String(v));
+					}
+				}
+			}
+		}
+	}
 	return true;
 }
 
