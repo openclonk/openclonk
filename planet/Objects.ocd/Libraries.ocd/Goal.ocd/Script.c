@@ -7,6 +7,7 @@
 		bool IsFullfilled(); - is the goal fulfilled?
 --*/
 
+local EditorPlacementLimit = 1; // Goals are to be placed only once (unless overloaded by the goal)
 
 local mission_password; // mission password to be gained when the goal is fulfilled
 
