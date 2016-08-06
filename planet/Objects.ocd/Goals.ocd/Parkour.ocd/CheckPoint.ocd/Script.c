@@ -81,6 +81,7 @@ local cp_con;
 public func SetCPController(object con)
 {
 	cp_con = con;
+	UpdateEditorHelp();
 	return;
 }
 

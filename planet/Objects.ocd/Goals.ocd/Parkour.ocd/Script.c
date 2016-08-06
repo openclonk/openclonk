@@ -28,7 +28,7 @@ local transfer_contents; // Set to true if contents should be transferred on res
 
 /*-- General --*/
 
-protected func Initialize()
+protected func Initialize(...)
 {
 	finished = false;
 	no_respawn_handling = false;
@@ -45,9 +45,22 @@ protected func Initialize()
 	AddMsgBoardCmd("resetpb", "Goal_Parkour->~ResetPersonalBest(%player%)");
 	// Activate restart rule, if there isn't any.
 	if (!ObjectCount(Find_ID(Rule_Restart)))
-		CreateObject(Rule_Restart, 0, 0, NO_OWNER);
+		CreateObject(Rule_Restart, Min(GetX()+64, LandscapeWidth()-32), 0, NO_OWNER);
 	// Scoreboard.
 	InitScoreboard();
+	// Assign unassigned checkpoints
+	for (var obj in FindObjects(Find_ID(ParkourCheckpoint)))
+		if (!obj->GetCPController())
+			obj->SetCPController(this);
+	return _inherited(...);
+}
+
+protected func Destruction(...)
+{
+	// Unassign checkpoints (updates editor help message)
+	for (var obj in FindObjects(Find_ID(ParkourCheckpoint)))
+		if (obj->GetCPController() == this)
+			obj->SetCPController(nil);
 	return _inherited(...);
 }
 
