@@ -62,10 +62,10 @@ public func EvaluatePlayers(proplist mask)
 }
 
 // Return an ID-List EditorProp with only IDs available that meet the condition
-public func GetConditionalIDList(string condition, string name, proplist default_id)
+public func GetConditionalIDList(string condition, string name, proplist default_id, string help)
 {
-	var counted_id = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=default_id }, Name = Format("$Entry$", name), EditorProps = {
+	var counted_id = { Type = "proplist", Display = "{{count}}x{{id}}", Name = Format("$Entry$", name), EditorProps = {
 		count = { Type = "int", Min = 1 },
 		id = { Type = "def", Filter=condition } } };
-	return { Name = name, Type = "array", Display = 3, Elements = counted_id };
+	return { Name = name, Type = "array", Display = 3, DefaultValue = { count=1, id=default_id }, Elements = counted_id, EditorHelp = help };
 }
