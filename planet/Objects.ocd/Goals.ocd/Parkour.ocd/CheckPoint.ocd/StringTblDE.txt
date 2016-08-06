@@ -1,5 +1,7 @@
 Name=Checkpoint
 Description=Kontrollpunkt fuer das Parkour-Spielziel.
+NameStart=Checkpoint Start
+NameFinish=Checkpoint Ziel
 
 #Log messages
 MsgClearedOrdered=%s hat Checkpoint %d passiert. Leider waren %d andere Spieler schneller.

@@ -309,6 +309,8 @@ private func ClearCPForPlr(int plr)
 
 /*-- Checkpoint appearance --*/
 
+local cp_name = "$Name$"; // auto-adjusted name. May differ from real name if another one is given in editor
+
 // Mode graphics.
 protected func DoGraphics()
 {
@@ -336,6 +338,19 @@ protected func DoGraphics()
 		SetGraphics(Format("%d", GetCPNumber()%10), Icon_Number, 2, GFXOV_MODE_Base);
 		SetObjDrawTransform(300, 0, shift * 4500, 0, 300, 0, 2);
 		SetClrModulation(RGBa(255, 255, 255, 128) , 2);
+	}
+	// Name unless it has a custom overload
+	if (GetName() == cp_name)
+	{
+		if (cp_mode & PARKOUR_CP_Ordered)
+			cp_name = Format("$Name$ %02d", cp_num);
+		else if (cp_mode & PARKOUR_CP_Start)
+			cp_name = "$NameStart$";
+		else if (cp_mode & PARKOUR_CP_Finish)
+			cp_name = "$NameFinish$";
+		else
+			cp_name = "$Name$";
+		SetName(cp_name);
 	}
 	return;
 }
@@ -449,6 +464,7 @@ public func SaveScenarioObject(props)
 	// Checkpoint properties
 	v = GetCPSize();
 	if (v != GetID().cp_size) props->AddCall("Checkpoint", this, "SetCPSize", v);
+	if (GetName() == cp_name) props->Remove("Name"); // Do not store name if given automatically
 	return true;
 }
 
