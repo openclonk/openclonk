@@ -209,6 +209,15 @@ public func AddTeamClearedCP(int team, object cp)
 	return;
 }
 
+private func ResetAllClearedCP()
+{
+	plr_list = [];
+	team_list = [];
+	for (var cp in FindObjects(Find_ID(ParkourCheckpoint)))
+		cp->ResetCleared();
+	return true;
+}
+
 
 /*-- Goal interface --*/
 
@@ -724,6 +733,8 @@ public func Definition(def)
 	def.EditorProps.on_checkpoint_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", SaveAsCall="SetOnCheckpointCleared" };
 	def.EditorProps.on_checkpoint_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", SaveAsCall="SetOnCheckpointFirstCleared" };
 	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", SaveAsCall="SetOnRespawn" };
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.reset_all_cleared = { Name="$ResetAllCleared$", EditorHelp="$ResetAllClearedHelp$", Command="ResetAllClearedCP()" };
 }
 
 

@@ -240,6 +240,13 @@ public func IsActiveForTeam(int team)
 	return false;
 }
 
+// Reset all cleared status
+public func ResetCleared()
+{
+	cleared_by_plr = [];
+	return true;
+}
+
 
 /*-- Checkpoint activity --*/
 

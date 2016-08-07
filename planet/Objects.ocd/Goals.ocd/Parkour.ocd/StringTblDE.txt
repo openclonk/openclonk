@@ -37,3 +37,5 @@ OnFirstCleared=Aktion: CP erstmals erreicht
 OnFirstClearedHelp=Aktion, die ausgefuehrt wird, wenn der erste Spieler einen Checkpoint freischaltet.
 OnRespawn=Aktion: Respawn
 OnRespawnHelp=Aktion, die ausgefuehrt wird, wenn ein Spieler an einem Checkpoint neu startet.
+ResetAllCleared=Checkpoint reset
+ResetAllClearedHelp=Setzt die Checkpoints fuer alle Spieler auf 'nicht erreicht' zurueck.
