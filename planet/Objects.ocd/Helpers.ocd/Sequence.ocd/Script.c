@@ -615,5 +615,5 @@ public func SaveScenarioObject(props, ...)
 	if (condition) props->AddCall("Condition", this, "SetCondition", condition);
 	if (action || action_progress_mode || action_allow_parallel) props->AddCall("Action", this, "SetAction", action, action_progress_mode, action_allow_parallel);
 	if (deactivate_after_action) props->AddCall("DeactivateAfterAction", this, "SetDeactivateAfterAction", deactivate_after_action);
-	return false;
+	return true;
 }
