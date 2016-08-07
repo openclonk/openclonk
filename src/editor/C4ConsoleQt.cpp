@@ -26,19 +26,6 @@
 
 #include "editor/C4ConsoleQt.h"
 
-// todo:
-// * viewport subwindow hack causes alt+tab entry to disappear
-// * script window inputs
-// * object properties
-// * object creator
-// * missing translation strings
-// * missing tooltips
-// * mattex pictures in dropdown
-// * mat drawing cursor size preview in active viewports
-// * proper viewport focus when clicked
-// * crash when viewport closes on player elimination
-// -----------------------------------------------
-
 void C4ConsoleGUI::OnStartGame()
 {
 	// Welcome screen made invisible on first game load
