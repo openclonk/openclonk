@@ -1459,8 +1459,10 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out, 
 	// prefer mouse position if this is a mouse control
 	if (pControlSet && pControlSet->HasMouse())
 	{
-		if (MouseControl.GetLastGUIPos(x_out, y_out))
+		if (MouseControl.GetLastCursorPos(x_out, y_out, game_x_out, game_y_out))
+		{
 			return true;
+		}
 		// if getting the mouse position failed, better fall back to cursor pos
 	}
 	// no mouse position known. Use cursor.

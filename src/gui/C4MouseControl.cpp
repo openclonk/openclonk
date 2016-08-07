@@ -884,11 +884,12 @@ bool C4MouseControl::IsDragging()
 	return Active && Drag == C4MC_Drag_Script;
 }
 
-bool C4MouseControl::GetLastGUIPos(int32_t *x_out, int32_t *y_out) const
+bool C4MouseControl::GetLastCursorPos(int32_t *x_out_gui, int32_t *y_out_gui, int32_t *x_out_game, int32_t *y_out_game) const
 {
 	// safety
 	if (!Active || !fMouseOwned) return false;
 	// OK; assign last known pos
-	*x_out = GuiX; *y_out = GuiY;
+	*x_out_gui = GuiX; *y_out_gui = GuiY;
+	*x_out_game = GameX; *y_out_game = GameY;
 	return true;
 }
