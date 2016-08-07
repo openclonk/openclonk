@@ -43,9 +43,8 @@ protected func Initialize(...)
 	AddEffect("IntBestTime", this, 100, 1, this);
 	// Add a message board command "/resetpb" to reset the pb for this round.
 	AddMsgBoardCmd("resetpb", "Goal_Parkour->~ResetPersonalBest(%player%)");
-	// Activate restart rule, if there isn't any.
-	if (!ObjectCount(Find_ID(Rule_Restart)))
-		CreateObject(Rule_Restart, Min(GetX()+64, LandscapeWidth()-32), 0, NO_OWNER);
+	// Activate restart rule, if there isn't any. But check delayed because it may be created later.
+	ScheduleCall(this, this.EnsureRestartRule, 1, 1);
 	// Scoreboard.
 	InitScoreboard();
 	// Assign unassigned checkpoints
@@ -53,6 +52,13 @@ protected func Initialize(...)
 		if (!obj->GetCPController())
 			obj->SetCPController(this);
 	return _inherited(...);
+}
+
+private func EnsureRestartRule()
+{
+	if (!ObjectCount(Find_ID(Rule_Restart)))
+		CreateObject(Rule_Restart, Min(64, LandscapeWidth()-GetX()-32), 0, NO_OWNER);
+	return true;
 }
 
 protected func Destruction(...)
