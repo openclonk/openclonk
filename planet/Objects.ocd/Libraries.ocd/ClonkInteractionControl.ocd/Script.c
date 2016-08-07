@@ -26,13 +26,13 @@ public func OnShiftCursor(object new_cursor)
 	return _inherited(new_cursor, ...);
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) 
-		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 	
 	// Begin interaction.
-	if (ctrl == CON_Interact && !release)
+	if (ctrl == CON_Interact && status == CONS_Down)
 	{			
 		this->CancelUse();
 		BeginInteract();
@@ -50,7 +50,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		
 		// Finish picking up (aka "collect").
-		if (ctrl == CON_Interact && release)
+		if (ctrl == CON_Interact && status == CONS_Up)
 		{
 			EndInteract();
 			return true;
@@ -71,7 +71,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 	}
 	
-	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+	return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }
 
 private func FxIntHighlightInteractionStart(object target, proplist fx, temp, proplist interaction, proplist interaction_help)

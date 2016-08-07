@@ -18,12 +18,11 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 {
 	var release = status == CONS_Up;
 	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, status);
-	if (status == CONS_Moved) return false;
 	// Control handled by definition? Forward
-	if (spec_id) return spec_id->ForwardedPlayerControl(plr, ctrl, x, y, strength, repeat, release);
+	if (spec_id) return spec_id->ForwardedPlayerControl(plr, ctrl, x, y, strength, repeat, status);
 
 	// Forward control to player
-	if (Control2Player(plr,ctrl, x, y, strength, repeat, release)) return true;
+	if (Control2Player(plr,ctrl, x, y, strength, repeat, status)) return true;
 
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
@@ -34,7 +33,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		
 		// menu controls:
 		
-		if (cursor->~GetMenu())
+		if (cursor->~GetMenu() && status != CONS_Moved)
 		{
 			// direction keys are always forwarded to the menu
 			// (because the clonk shall not move while the menu is open)
@@ -83,11 +82,11 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		}
 		
 		// Overload by effect?
-		if (cursor->Control2Effect(plr, ctrl, cursorX, cursorY, strength, repeat, release)) return true;
+		if (cursor->Control2Effect(plr, ctrl, cursorX, cursorY, strength, repeat, status)) return true;
 
-		if (cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, release))
+		if (cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, status))
 		{
-			if (cursor && !release && !repeat)
+			if (cursor && status == CONS_Down && !repeat)
 			{
 				// non-mouse controls reset view
 				if (!x && !y) ResetCursorView(plr);
@@ -127,7 +126,7 @@ global func PlayerHasVirtualCursor(int plr)
 
 // Control2Player
 // Player-wide controls
-global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	// select previous or next
 	if (ctrl == CON_PreviousCrew)
@@ -202,7 +201,7 @@ global func StopSelected(int plr)
 
 // Control2Effect
 // Call control function in all effects that have "Control" in their name
-global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	// x and y are local coordinates
 	if (!this) return false;
@@ -213,7 +212,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 		{
 		iEffect = GetEffect("*Control*", this, i);
 		if (iEffect)
-			if (EffectCall(this, iEffect, "Control", ctrl, x,y,strength, repeat, release))
+			if (EffectCall(this, iEffect, "Control", ctrl, x,y,strength, repeat, status))
 				return true;
 		}
 	// No effect handled the control
@@ -224,7 +223,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 // Called from PlayerControl when a control is issued to the cursor
 // Return whether handled
 // To be overloaded by specific objects to enable additional controls
-global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) return false;
 	
@@ -233,7 +232,7 @@ global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Movement controls
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
-		return ObjectControlMovement(plr, ctrl, strength, release, repeat);
+		return ObjectControlMovement(plr, ctrl, strength, status, repeat);
 	
 	// Unhandled control
 	return false;
@@ -276,7 +275,7 @@ global func NameComDir(comdir)
 }
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
-global func ObjectControlMovement(int plr, int ctrl, int strength, bool release, bool repeat)
+global func ObjectControlMovement(int plr, int ctrl, int strength, int status, bool repeat)
 {
 	if (!this) return false;
 	
@@ -284,13 +283,13 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 	if (Contained()) return false;
 
 	// this is for controlling movement with Analogpad
-	if(!release)
+	if(status == CONS_Down)
 		if(strength != nil && strength < CON_Gamepad_Deadzone)
 			return true;
 	
 	var proc = GetProcedure();
 	// Some specific movement controls
-	if (!release)
+	if (status == CONS_Down)
 	{
 		// Jump control
 		if (ctrl == CON_Jump)

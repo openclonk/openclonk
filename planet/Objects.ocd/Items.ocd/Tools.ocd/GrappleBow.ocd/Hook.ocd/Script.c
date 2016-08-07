@@ -169,8 +169,10 @@ public func OnRopeBreak()
 
 /*-- Grapple rope controls --*/
 
-public func FxIntGrappleControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, repeat, release)
+public func FxIntGrappleControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
+	if (status == CONS_Moved) return false;
+	var release = status == CONS_Up;
 	// Cancel this effect if clonk is now attached to something.
 	if (target->GetProcedure() == "ATTACH") 
 	{
