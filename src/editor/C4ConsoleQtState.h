@@ -200,7 +200,7 @@ public:
 	void UpdateMatTex();
 	void UpdateBackMatTex();
 	// Set modes and tools
-	void SetEnabled(bool to_enabled) { enabled = to_enabled; UpdateActionStates(); if (enabled) ReInitDefinitions(); }
+	void SetEnabled(bool to_enabled) { enabled = to_enabled; UpdateActionStates(); ReInitDefinitions(); }
 	void SetLandscapeMode(LandscapeMode to_landscape_mode, bool to_flat_chunk_shapes) { landscape_mode = to_landscape_mode; flat_chunk_shapes = to_flat_chunk_shapes; UpdateActionStates(); }
 	void SetEditCursorMode(int32_t to_editcursor_mode) { editcursor_mode = to_editcursor_mode; UpdateActionStates(); }
 	void SetDrawingTool(int32_t to_drawing_tool) { drawing_tool = to_drawing_tool; UpdateActionStates(); }
