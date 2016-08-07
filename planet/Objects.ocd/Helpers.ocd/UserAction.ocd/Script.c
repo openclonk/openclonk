@@ -269,6 +269,8 @@ func Definition(def)
 	AddEvaluator("Integer", nil, "$ClonkEnergy$", "$ClonkEnergyHelp$", "clonk_energy", [def, def.EvalObjProp, Global.GetEnergy], { }, GetObjectEvaluator("IsClonk", "$Clonk$"), "Object");
 	AddEvaluator("Integer", nil, "$ObjectMass$", "$ObjectMassHelp$", "object_mass", [def, def.EvalObjProp, Global.GetMass], { }, new Evaluator.Object { }, "Object");
 	AddEvaluator("Integer", nil, "$ObjectSpeed$", "$ObjectSpeedHelp$", "object_speed", [def, def.EvalObjProp, Global.GetSpeed], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Integer", nil, "$PositionX$", "$PositionXHelp$", "position_x", [def, def.EvalInt_PosCoord, 0], { }, new Evaluator.Position { }, "Position");
+	AddEvaluator("Integer", nil, "$PositionY$", "$PositionYHelp$", "position_y", [def, def.EvalInt_PosCoord, 1], { }, new Evaluator.Position { }, "Position");
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
@@ -1023,6 +1025,8 @@ private func EvalInt_Distance(proplist props, proplist context)
 }
 
 private func EvalInt_Wealth(proplist props, proplist context) { return GetWealth(EvaluatePlayer(props.Player, context)); }
+
+private func EvalInt_PosCoord(proplist props, proplist context, int idx) { return EvaluatePosition(props.Position, context)[idx]; }
 
 private func EvalStr_ValueToString(proplist props, proplist context)
 {

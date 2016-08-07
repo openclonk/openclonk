@@ -269,3 +269,7 @@ OwnerOfObject=Objektbesitzer
 OwnerOfObjectHelp=Spieler, dem das angegebene Objekt gehoert.
 ControllerOfObject=Kontrollierender Spieler
 ControllerOfObjectHelp=Spieler, der ein angegebenes Objekt kontrolliert. Zum Beispiel der Spieler, der zuletzt ein Fahrzeug geschoben oder einen Flint geworfen hat.
+PositionX=X-Position
+PositionXHelp=Horizontale Komponente einer Position.
+PositionY=Y-Position
+PositionYHelp=Vertikale Komponente einer Position.
