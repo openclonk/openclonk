@@ -44,6 +44,7 @@ func ResetRound()
 	// Clear and redraw the map.
 	LoadScenarioSection("main");
 	InitializeRound();
+	InitializePlayers();
 	// Re-enable the players.
 	for (var clonk in clonks)
 	{
@@ -125,6 +126,11 @@ func InitializePlayer(int plr)
 	return InitPlayerRound(plr);
 }
 
+func InitializePlayers()
+{
+	AssignHandicaps();
+}
+
 func InitPlayerRound(int plr)
 {
 	// Unmark death on scoreboard.
@@ -169,11 +175,14 @@ func InitPlayerRound(int plr)
 			var ammo = launcher->CreateContents(IronBomb);
 			launcher->AddTimer(Scenario.ReplenishLauncherAmmo, 10);
 			// Start reloading the launcher during the countdown.
-			crew->SetHandItemPos(0, crew->GetItemPos(launcher));
-			// This doesn't play the animation properly - simulate a click instead.
-			/* crew->StartLoad(launcher); */
-			crew->StartUseControl(CON_Use, 0, 0, launcher);
-			crew->StopUseControl(0, 0, launcher);
+			if (!IsHandicapped(plr))
+			{
+				crew->SetHandItemPos(0, crew->GetItemPos(launcher));
+				// This doesn't play the animation properly - simulate a click instead.
+				/* crew->StartLoad(launcher); */
+				crew->StartUseControl(CON_Use, 0, 0, launcher);
+				crew->StopUseControl(0, 0, launcher);
+			}
 		}
 	}
 	crew.MaxEnergy = 100000;
@@ -215,6 +224,48 @@ func OnClonkDeath(object clonk)
 	// Check for victory after three seconds to allow stalemates.
 	if (!g_gameover)
 		g_check_victory_effect.Interval = g_check_victory_effect.Time + 36 * 3;
+}
+
+// Returns an array of team -> number of players in team.
+func GetTeamPlayers()
+{
+	var result = CreateArray(GetTeamCount() + 1);
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i), team = GetPlayerTeam(plr);
+		SetLength(result, Max(team + 1, GetLength(result)));
+		result[team] = result[team] ?? [];
+		PushBack(result[team], plr);
+	}
+	return result;
+}
+
+static g_handicapped_players;
+
+func _MinSize(int a, array b) { if (b == nil) return a; else return Min(a, GetLength(b)); }
+
+// Assigns handicaps so that the number of not-handicapped players is the same for all teams.
+func AssignHandicaps()
+{
+	g_handicapped_players = CreateArray(GetPlayerCount());
+	var teams = GetTeamPlayers();
+	var smallest_size = Reduce(teams, Scenario._MinSize, ~(1<<31));
+	for (var team in teams) if (team != nil)
+	{
+		var to_handicap = GetLength(team) - smallest_size;
+		while (GetLength(team) > to_handicap)
+			RemoveArrayIndexUnstable(team, Random(GetLength(team)));
+		for (var plr in team)
+		{
+			SetLength(g_handicapped_players, Max(plr + 1, GetLength(g_handicapped_players)));
+			g_handicapped_players[plr] = true;
+		}
+	}
+}
+
+func IsHandicapped(int plr)
+{
+	return !!g_handicapped_players[plr];
 }
 
 // Returns a list of colored player names, for example "Sven2, Maikel, Luchs"

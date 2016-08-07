@@ -234,3 +234,18 @@ global func RemoveArrayIndices(array arr, array indices)
 			RemoveArrayIndex(arr, idx);
 	return true;
 }
+
+// Performs a left fold.
+//
+// Examples:
+//  - Reduce([1, 2, 3, 4], Min) == 1
+//  - func Add(int a, int b) { return a + b; }
+//    Reduce([1, 2, 3, 4], Add, 100) == 110
+global func Reduce(array arr, func fn, initial)
+{
+	var i = 0;
+	var result = initial ?? arr[i++];
+	while (i < GetLength(arr))
+		result = Call(fn, result, arr[i++]);
+	return result;
+}
