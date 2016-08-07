@@ -116,7 +116,7 @@ public:
 	bool UpdateModeCtrls(int iMode);
 	void AddNetMenu();
 	void ClearNetMenu();
-	void AddNetMenuItemForPlayer(int32_t client_id, const char *text, ClientOperation co);
+	void AddNetMenuItemForPlayer(int32_t client_id, const char *text, C4ConsoleGUI::ClientOperation co);
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<const char*> &functions);
 	
