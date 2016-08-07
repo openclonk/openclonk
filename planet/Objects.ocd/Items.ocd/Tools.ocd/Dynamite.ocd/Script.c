@@ -7,7 +7,7 @@
 */
 
 // time in frames until explosion
-func FuseTime() { return 140; }
+local FuseTime = 140;
 
 public func ControlUse(object clonk, int x, int y, bool box)
 {
@@ -147,10 +147,10 @@ private func Fusing()
 	}
 
 	// Effect: fire particles.
-	if (GetActTime() < FuseTime() - 20)
+	if (GetActTime() < FuseTime - 20)
 		CreateParticle("Fire", x, y, PV_Random(x - 5, x + 5), PV_Random(y - 15, y + 5), PV_Random(10, 40), Particles_Glimmer(), 3);
 	// Explosion: after fusetime is over.
-	else if (GetActTime() > FuseTime())
+	else if (GetActTime() > FuseTime)
 		DoExplode();
 	return;
 }
