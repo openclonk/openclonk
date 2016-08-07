@@ -339,7 +339,7 @@ void C4ClientList::SetLocalID(int32_t iID)
 void C4ClientList::CtrlRemove(const C4Client *pClient, const char *szReason)
 {
 	// host only
-	if (!pLocal || !pLocal->isHost()) return;
+	if (!pLocal || !pLocal->isHost() || !pClient) return;
 	// Net client? flag
 	if (pClient->getNetClient())
 		pClient->getNetClient()->SetStatus(NCS_Remove);

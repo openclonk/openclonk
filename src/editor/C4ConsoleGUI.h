@@ -68,6 +68,14 @@ public:
 		CURSOR_Wait
 	};
 
+	enum ClientOperation
+	{
+		CO_None,
+		CO_Deactivate,
+		CO_Activate,
+		CO_Kick
+	};
+
 	class State;
 
 private:
@@ -108,7 +116,7 @@ public:
 	bool UpdateModeCtrls(int iMode);
 	void AddNetMenu();
 	void ClearNetMenu();
-	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
+	void AddNetMenuItemForPlayer(int32_t client_id, const char *text, ClientOperation co);
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<const char*> &functions);
 	

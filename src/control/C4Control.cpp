@@ -939,6 +939,8 @@ void C4ControlClientUpdate::Execute() const
 		break;
 		}
 	}
+	// Update console net menu to reflect activation/etc.
+	::Console.UpdateNetMenu();
 }
 
 void C4ControlClientUpdate::CompileFunc(StdCompiler *pComp)

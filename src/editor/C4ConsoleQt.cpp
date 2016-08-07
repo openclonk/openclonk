@@ -66,9 +66,9 @@ void C4ConsoleGUI::ClearNetMenu()
 	if (Active) state->ClearNetMenu();
 }
 
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t client_id, const char *text, C4ConsoleGUI::ClientOperation op)
 {
-	if (Active) state->AddNetMenuItem(index, text.getData());
+	if (Active) state->AddNetMenuItem(client_id, text, op);
 }
 
 void C4ConsoleGUI::ClearPlayerMenu()

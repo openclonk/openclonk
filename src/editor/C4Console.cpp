@@ -492,13 +492,16 @@ void C4Console::UpdateNetMenu()
 	// Host
 	StdStrBuf str;
 	str.Format(LoadResStr("IDS_MNU_NETHOST"),Game.Clients.getLocalName(),Game.Clients.getLocalID());
-	AddNetMenuItemForPlayer(IDM_NET_CLIENT1+Game.Clients.getLocalID(), str);
+	AddNetMenuItemForPlayer(Game.Clients.getLocalID(), str.getData(), C4ConsoleGUI::CO_None);
 	// Clients
 	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 	{
-		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT" : "IDS_MNU_NETCLIENTDE"),
+		if (pClient->isHost()) continue;
+		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT_DEACTIVATE" : "IDS_MNU_NETCLIENT_ACTIVATE"),
 		           pClient->getName(), pClient->getID());
-		AddNetMenuItemForPlayer(IDM_NET_CLIENT1+pClient->getID(), str);
+		AddNetMenuItemForPlayer(pClient->getID(), str.getData(), pClient->isActivated() ? C4ConsoleGUI::CO_Deactivate : C4ConsoleGUI::CO_Activate);
+		str.Format(LoadResStr("IDS_NET_KICKCLIENTEX"), pClient->getName(), pClient->getID());
+		AddNetMenuItemForPlayer(pClient->getID(), str.getData(), C4ConsoleGUI::CO_Kick);
 	}
 	return;
 }
@@ -598,7 +601,7 @@ class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 };
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player*, StdStrBuf&, bool) {}
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&) {}
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&, C4ConsoleGUI::ClientOperation) {}
 void C4ConsoleGUI::AddNetMenu() {}
 void C4ConsoleGUI::ToolsDlgClose() {}
 bool C4ConsoleGUI::ClearLog() {return 0;}

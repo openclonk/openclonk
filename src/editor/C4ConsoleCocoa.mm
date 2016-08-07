@@ -415,7 +415,7 @@ void C4ConsoleGUI::ClearPlayerMenu()
 {
 }
 
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text, C4ConsoleGUI::ClientOperation op)
 {
 	NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding] action:@selector(kickPlayer:) keyEquivalent:[NSString string]];
 	[item setTarget:ctrler(this)];

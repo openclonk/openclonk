@@ -43,9 +43,11 @@ class C4ConsoleClientAction : public QAction
 {
 	Q_OBJECT
 
-		int32_t client_id;
+	int32_t client_id;
+	C4ConsoleGUI::ClientOperation op;
+		
 public:
-	C4ConsoleClientAction(int32_t client_id, const char *text, QObject *parent);
+	C4ConsoleClientAction(int32_t client_id, const char *text, QObject *parent, C4ConsoleGUI::ClientOperation op);
 	int32_t GetClientID() const { return client_id; }
 	private slots:
 	void Execute();
@@ -209,7 +211,7 @@ public:
 	void SetRecording(bool to_recording) { recording = to_recording; UpdateActionStates(); }
 	void SetNetEnabled(bool enabled) { net_enabled = enabled; UpdateActionStates(); }
 	
-	void AddNetMenuItem(int32_t index, const char *text);
+	void AddNetMenuItem(int32_t index, const char *text, C4ConsoleGUI::ClientOperation op);
 	void ClearNetMenu();
 	void AddKickPlayerMenuItem(int32_t plr, const char *text, bool item_enabled);
 	void ClearPlayerMenu();

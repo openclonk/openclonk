@@ -1019,7 +1019,7 @@ void C4ConsoleGUI::ClearNetMenu()
 	DrawMenuBar(hWindow);
 }
 
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t client_id, StdStrBuf &text, C4ConsoleGUI::ClientOperation op)
 {
 	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexNet), IDM_NET_CLIENT1+Game.Clients.getLocalID(), text.getData(), true);
 }

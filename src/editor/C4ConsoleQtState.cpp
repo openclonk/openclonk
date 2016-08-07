@@ -52,8 +52,8 @@ C4ConsoleQtTranslator qt_translator;
 
 /* Kick client action */
 
-C4ConsoleClientAction::C4ConsoleClientAction(int32_t client_id, const char *text, QObject *parent)
-	: QAction(text, parent), client_id(client_id)
+C4ConsoleClientAction::C4ConsoleClientAction(int32_t client_id, const char *text, QObject *parent, C4ConsoleGUI::ClientOperation op)
+	: QAction(text, parent), client_id(client_id), op(op)
 {
 	connect(this, SIGNAL(triggered()), this, SLOT(Execute()));
 }
@@ -61,7 +61,18 @@ C4ConsoleClientAction::C4ConsoleClientAction(int32_t client_id, const char *text
 void C4ConsoleClientAction::Execute()
 {
 	if (!::Control.isCtrlHost()) return;
-	::Game.Clients.CtrlRemove(Game.Clients.getClientByID(client_id), LoadResStr("IDS_MSG_KICKBYMENU"));
+	switch (op)
+	{
+	case C4ConsoleGUI::CO_Deactivate:
+		::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(client_id, CUT_Activate, false), CDT_Sync);
+		break;
+	case C4ConsoleGUI::CO_Activate:
+		::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(client_id, CUT_Activate, true), CDT_Sync);
+		break;
+	case C4ConsoleGUI::CO_Kick:
+		::Game.Clients.CtrlRemove(Game.Clients.getClientByID(client_id), LoadResStr("IDS_MSG_KICKBYMENU"));
+		break;
+	}	
 }
 
 
@@ -676,9 +687,10 @@ void C4ConsoleGUIState::UpdateBackMatTex()
 	if (new_index >= 0) ui.backgroundMatTexComboBox->setCurrentIndex(new_index);
 }
 
-void C4ConsoleGUIState::AddNetMenuItem(int32_t index, const char *text)
+void C4ConsoleGUIState::AddNetMenuItem(int32_t index, const char *text, C4ConsoleGUI::ClientOperation op)
 {
-	auto *kick_action = new C4ConsoleClientAction(index, text, ui.menuNet);
+	auto *kick_action = new C4ConsoleClientAction(index, text, ui.menuNet, op);
+	if (op == C4ConsoleGUI::CO_None) kick_action->setDisabled(true);
 	client_actions.emplace_back(kick_action);
 	ui.menuNet->addAction(kick_action);
 }
