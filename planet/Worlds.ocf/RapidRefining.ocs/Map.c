@@ -62,7 +62,7 @@ protected func InitializeMap(proplist map)
 	var wdt = 3;
 	var underground_border = {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Rect, X = wdt, Y = wdt, Wdt = map.Wdt - 2 * wdt, Hgt = map.Hgt - 2 * wdt}};
 	underground_border = {Algo = MAPALGO_And, Op = [underground_border, underground]};
-	underground_border = {Algo = MAPALGO_Or, Op = [underground_border, {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = 16, Scale = 12, Seed = Random(65536), Op = underground_border}]};
+	underground_border = {Algo = MAPALGO_Or, Op = [underground_border, {Algo = MAPALGO_Turbulence, Iterations = 6, Amplitude = 12, Scale = 16, Seed = Random(65536), Op = underground_border}]};
 	underground_border = {Algo = MAPALGO_And, Op = [underground_border, underground, {Algo = MAPALGO_Not, Op = entrance_floor}]};
 	DrawRock(underground_border);
 		
@@ -139,9 +139,16 @@ public func DrawWaterLake(proplist map, proplist underground_border)
 {
 	var lake_height = 20;
 	var lake_width = 80;
+	var waterfall_height = 62;
 	var tunnel_height = 6;
 	
+	// Draw a large lake with tunnel above.
 	underground_border = {Algo = MAPALGO_And, Op = [underground_border, {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Rect, X = 0, Y = map.Hgt - lake_height - 2, Wdt = lake_width, Hgt = 6}}]};
+	var lake_floor_rock = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Lines, X = 3, Y = 0, Distance = 10}, {Algo = MAPALGO_Rect, X = 0, Y = map.Hgt - 7, Wdt = lake_width, Hgt = 7}]};
+	var lake_floor_rock = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = 16, Scale = 8, Seed = Random(65536), Op = lake_floor_rock};
+	underground_border = {Algo = MAPALGO_Or, Op = [underground_border, lake_floor_rock]};
+	DrawRock(lake_floor_rock);
+	
 	
 	var tunnel = {Algo = MAPALGO_Rect, X = 0, Y = map.Hgt - lake_height - tunnel_height, Wdt = lake_width, Hgt = tunnel_height};
 	tunnel = {Algo = MAPALGO_Or, Op = [tunnel, {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude = 16, Scale = 8, Seed = Random(65536), Op = tunnel}]};
@@ -160,6 +167,12 @@ public func DrawWaterLake(proplist map, proplist underground_border)
 	Draw("Everrock", lake_boundary);
 	var lake_boundary_rock = {Algo = MAPALGO_Border, Wdt = -2, Op = lake_boundary};
 	DrawRock(lake_boundary_rock);
+	
+	// Draw a waterfall pooring into the lake.
+	var waterfall = {Algo = MAPALGO_Rect, X = 3, Y = map.Hgt - lake_height - waterfall_height, Wdt = 9, Hgt = waterfall_height};
+	waterfall = {Algo = MAPALGO_Or, Op = [waterfall, {Algo = MAPALGO_Turbulence, Iterations = 3, Amplitude = 12, Scale = 12, Seed = Random(65536), Op = waterfall}]};
+	waterfall = {Algo = MAPALGO_And, Op = [waterfall, {Algo = MAPALGO_Not, Op = underground_border}, {Algo = MAPALGO_Not, Op = lake}]};
+	Draw("Tunnel", waterfall);
 	return;
 }
 

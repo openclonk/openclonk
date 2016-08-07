@@ -146,6 +146,22 @@ private func InitEnvironment(int difficulty)
 	// Some earthquakes if difficulty prescribes it.
 	if (difficulty >= 2)
 		Earthquake->SetChance(4 * (difficulty - 1));
+		
+	// A waterfall above the underground lake.
+	var waterfall_x = 50;
+	var waterfall_y = LandscapeHeight() - 600;
+	var trunk = CreateObjectAbove(Trunk, waterfall_x, waterfall_y);
+	trunk->DoCon(30); trunk->SetR(150); trunk.Plane = 510;
+	trunk.MeshTransformation = [-70, 0, 998, 0, 0, 1000, 0, 0, -998, 0, -70, 0];
+	trunk->MakeInvincible();
+	
+	var waterfall = CreateWaterfall(waterfall_x + 22, waterfall_y - 10, 10, "Water");
+	waterfall->SetDirection(2, 0, 3, 6);
+	waterfall->SetSoundLocation(waterfall_x + 40, waterfall_y + 240);
+	
+	CreateLiquidDrain(8, 1040, 10);
+	CreateLiquidDrain(16, 1040, 10);
+	CreateLiquidDrain(24, 1040, 10);
 	return;
 }
 
