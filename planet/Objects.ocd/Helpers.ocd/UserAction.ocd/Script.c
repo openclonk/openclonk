@@ -96,7 +96,7 @@ func Definition(def)
 		Time = { Name="$Time$", Type="int", Min=1 }
 		} } );
 	AddEvaluator("Action", "$Ambience$", "$Sound$", "$SoundHelp$", "sound", [def, def.EvalAct_Sound], { Pitch={Function="int_constant", Value=0}, Volume={Function="int_constant", Value=100}, TargetPlayers={Function="all_players"} }, { Type="proplist", Display="{{Sound}}", EditorProps = {
-		Sound = { Name="$SoundName$", EditorHelp="$SoundNameHelp$", Type="sound", AllowEditing=true },
+		Sound = { Name="$SoundName$", EditorHelp="$SoundNameHelp$", Type="sound", AllowEditing=true, Priority=100 },
 		Pitch = new Evaluator.Integer { Name="$SoundPitch$", EditorHelp="$SoundPitchHelp$" },
 		Volume = new Evaluator.Integer { Name="$SoundVolume$", EditorHelp="$SoundVolumeHelp$" },
 		Loop = { Name="$SoundLoop$", EditorHelp="$SoundLoopHelp$", Type="enum", Options=[
@@ -108,7 +108,7 @@ func Definition(def)
 		SourceObject = new Evaluator.Object { Name="$SoundSourceObject$", EditorHelp="$SoundSourceObjectHelp$", EmptyName="$Global$" }
 		} } );
 	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
-		ID = new Evaluator.Definition { EditorHelp="$CreateObjectDefinitionHelp$" },
+		ID = new Evaluator.Definition { EditorHelp="$CreateObjectDefinitionHelp$", Priority=100 },
 		Position = new Evaluator.Position { EditorHelp="$CreateObjectPositionHelp$" },
 		CreateAbove = { Name="$CreateObjectCreationOffset$", EditorHelp="$CreateObjectCreationOffsetHelp$", Type="enum", Options=[
 			{ Name="$Center$" },
@@ -120,7 +120,7 @@ func Definition(def)
 		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" }
 		} } );
 	AddEvaluator("Action", "$Object$", "$CastObjects$", "$CastObjectsHelp$", "cast_objects", [def, def.EvalAct_CastObjects], { Amount={Function="int_constant", Value=8},Speed={Function="int_constant", Value=20},AngleDeviation={Function="int_constant", Value=360} }, { Type="proplist", Display="{{Amount}}x{{ID}}", ShowFullName=true, EditorProps = {
-		ID = new Evaluator.Definition { EditorHelp="$CastObjectsDefinitionHelp$" },
+		ID = new Evaluator.Definition { EditorHelp="$CastObjectsDefinitionHelp$", Priority=100 },
 		Position = new Evaluator.Position { EditorHelp="$CastObjectsPositionHelp$" },
 		Amount = new Evaluator.Integer { Name="$Amount$", EditorHelp="$CastObjectsAmountHelp$" },
 		Speed = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CastObjectsSpeedHelp$" },
@@ -129,7 +129,7 @@ func Definition(def)
 		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CastObjectsOwnerHelp$" }
 		} } );
 	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", ShowFullName=true, EditorProps = {
-		Object = new Evaluator.Object { EditorHelp="$RemoveObjectObject$" },
+		Object = new Evaluator.Object { EditorHelp="$RemoveObjectObject$", Priority=100 },
 		EjectContents = { Name="$EjectContents$", EditorHelp="$EjectContentsHelp$", Type="enum", Options=[
 			{ Name="$EjectContentsNo$" },
 			{ Name="$EjectContentsYes$", Value=true }
