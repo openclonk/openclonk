@@ -1025,6 +1025,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 	assert(pControlSet); // shouldn't get this callback for players without control set
 	pControlSet->GetAssignmentsByKey(ControlDefs, matched_key, state != CONS_Down, &Matches, DownKeys, RecentKeys);
 	// process async controls
+	bool cursor_pos_added = false;
 	C4ControlPlayerControl *pControlPacket = NULL;
 	for (C4PlayerControlAssignmentPVec::const_iterator i = Matches.begin(); i != Matches.end(); ++i)
 	{
@@ -1055,7 +1056,21 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 				if (reset_down_states_only) extra_trigger_mode |= C4PlayerControlAssignment::CTM_HandleDownStatesOnly;
 				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode() | extra_trigger_mode);
 				// sync cursor pos request; pos will be added to control before it is synced/executed
-				if (pControlDef->IsSendCursorPos()) IsCursorPosRequested = true;
+				if (pControlDef->IsSendCursorPos() && !cursor_pos_added)
+				{
+					int32_t x, y, game_x, game_y;
+					// Add current cursor pos in GUI and game coordinates to input
+					if (GetCurrentPlayerCursorPos(&x, &y, &game_x, &game_y))
+					{
+						C4KeyEventData cursor_key_data(rKeyExtraData);
+						cursor_key_data.vp_x = x; cursor_key_data.vp_y = y;
+						cursor_key_data.game_x = game_x; cursor_key_data.game_y = game_y;
+						pControlPacket->SetExtraData(cursor_key_data);
+					}
+					// Will also send a CON_CursorPos packet separately
+					IsCursorPosRequested = true;
+					cursor_pos_added = true;
+				}
 			}
 		}
 	}
@@ -1444,8 +1459,10 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out, 
 	// prefer mouse position if this is a mouse control
 	if (pControlSet && pControlSet->HasMouse())
 	{
-		if (MouseControl.GetLastGUIPos(x_out, y_out))
+		if (MouseControl.GetLastCursorPos(x_out, y_out, game_x_out, game_y_out))
+		{
 			return true;
+		}
 		// if getting the mouse position failed, better fall back to cursor pos
 	}
 	// no mouse position known. Use cursor.
