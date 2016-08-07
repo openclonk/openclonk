@@ -250,7 +250,9 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 	// All foreground materials
 	assert(Active);
 	if (!Active) return;
+	state->ui.foregroundMatTexComboBox->clear();
 	state->ui.foregroundMatTexComboBox->addItem(QString(C4TLS_MatSky));
+	QStringList items;
 	const C4TexMapEntry *entry; int32_t i = 0;
 	while ((entry = ::TextureMap.GetEntry(i++)))
 	{
@@ -259,15 +261,18 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 			const char *material_name = entry->GetMaterialName();
 			if (strcmp(material_name, "Vehicle") && strcmp(material_name, "HalfVehicle"))
 			{
-				state->ui.foregroundMatTexComboBox->addItem(QString(FormatString("%s-%s", material_name, entry->GetTextureName()).getData()));
+				items.append(QString(FormatString("%s-%s", material_name, entry->GetTextureName()).getData()));
 			}
 		}
 	}
+	items.sort();
+	for (QString &item : items) state->ui.foregroundMatTexComboBox->addItem(item);
 	auto width = 130; /* The ToolBar randomly resizes the control */
 	state->ui.foregroundMatTexComboBox->view()->setMinimumWidth(width);
 	state->ui.foregroundMatTexComboBox->setFixedWidth(width);
 	// Background materials: True background materials first; then the "funny" stuff
 	state->ui.backgroundMatTexComboBox->addItem(QString(C4TLS_MatSky));
+	items.clear();
 	i = 0;
 	while ((entry = ::TextureMap.GetEntry(i++)))
 	{
@@ -277,11 +282,14 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 			C4Material *mat = entry->GetMaterial();
 			if (strcmp(material_name, "Vehicle") && strcmp(material_name, "HalfVehicle") && mat->Density == C4M_Background)
 			{
-				state->ui.backgroundMatTexComboBox->addItem(QString(FormatString("%s-%s", material_name, entry->GetTextureName()).getData()));
+				items.append(QString(FormatString("%s-%s", material_name, entry->GetTextureName()).getData()));
 			}
 		}
 	}
+	items.sort();
+	for (QString &item : items) state->ui.backgroundMatTexComboBox->addItem(item);
 	state->ui.backgroundMatTexComboBox->addItem(QString("----------"));
+	items.clear();
 	i = 0;
 	while ((entry = ::TextureMap.GetEntry(i++)))
 	{
@@ -291,10 +299,12 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 			C4Material *mat = entry->GetMaterial();
 			if (strcmp(material_name, "Vehicle") && strcmp(material_name, "HalfVehicle") && mat->Density != C4M_Background)
 			{
-				state->ui.backgroundMatTexComboBox->addItem(QString(FormatString("%s-%s", material_name, entry->GetTextureName()).getData()));
+				items.append(QString(FormatString("%s-%s", material_name, entry->GetTextureName()).getData()));
 			}
 		}
 	}
+	items.sort();
+	for (QString &item : items) state->ui.backgroundMatTexComboBox->addItem(item);
 	state->ui.backgroundMatTexComboBox->view()->setMinimumWidth(width);
 	state->ui.backgroundMatTexComboBox->setFixedWidth(width);
 	// Select current materials
