@@ -101,11 +101,14 @@ public func CanBeStackedWith(object other)
 	return inherited(other) && (PipeState == other.PipeState);
 }
 
+
 /**
  The pump calls this function to prevent clogging of the intake.
  Cycles through several aperture offset indices.
  */
-func CycleApertureOffset()
+public func HasAperture() { return true; }
+ 
+public func CycleApertureOffset()
 {
 	// Cycle in three steps of three px each through X and Y
 	// covering a 3x3 grid on points -3,0,+3
