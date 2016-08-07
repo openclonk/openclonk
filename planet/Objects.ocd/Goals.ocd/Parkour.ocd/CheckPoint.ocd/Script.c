@@ -331,7 +331,9 @@ protected func DoGraphics()
 	// Start & Finish.
 	if (cp_mode & PARKOUR_CP_Start || cp_mode & PARKOUR_CP_Finish)
 	{
-		SetGraphics("", ParkourFlag, 1, GFXOV_MODE_Base);
+		var gfx;
+		if (cp_mode & PARKOUR_CP_Start) gfx = "Start"; else gfx = "";
+		SetGraphics(gfx, ParkourFlag, 1, GFXOV_MODE_Base);
 		SetObjDrawTransform(350, 0, 2000, 0, 350, 2000, 1);
 		SetClrModulation(RGBa(255, 255, 255, 160) , 1);
 	}
