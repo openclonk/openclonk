@@ -5,6 +5,9 @@
 	@author Maikel, Sven2
 */ 
 
+local Name="$Name$";
+local Description="$Description$";
+
 local spawn_id; // Item to be spawned
 local team;     // If assigned, spawner can only be used by specific team
 local spawn_list; // List keeping track of collected objects to block spawning until used up
@@ -114,7 +117,6 @@ private func FxSpawnTimer(object target, proplist effect, int time)
 	}
 	return FX_OK;
 }
-
 
 
 /* Player/team changes */

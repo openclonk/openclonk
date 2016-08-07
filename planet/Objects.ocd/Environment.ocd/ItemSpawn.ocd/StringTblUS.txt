@@ -1,0 +1,2 @@
+Name=Item spawn point
+Description=Creates an item in the inventory of clonks running through this point.
