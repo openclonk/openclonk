@@ -62,12 +62,36 @@ public func RenumberOrderedCheckpoints()
 	// Reassign all CP numbers. Use old numbers where possible
 	var cps = FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Ordered)), i;
 	SortArrayByProperty(cps, "cp_num");
+	// If there is no start or finish checkpoint, create new ones
+	var cp_start = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Start));
+	var cp_finish = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
+	if (!cp_start && GetLength(cps))
+	{
+		cps[0]->SetCPNumber(0);
+		cps[0]->SetCPMode(PARKOUR_CP_Start | cps[0]->GetCPMode());
+		cps = cps[1:];
+	}
+	if (!cp_finish && GetLength(cps))
+	{
+		cps[-1]->SetCPNumber(0);
+		cps[-1]->SetCPMode(PARKOUR_CP_Finish | cps[-1]->GetCPMode());
+		cps = cps[:-1];
+	}
+	// Re-label remaining CPs
 	for (var cp in cps)
 	{
 		cp->SetCPNumber(++i);
 		cp->DoGraphics();
 	}
 	return true;
+}
+
+public func Destruction()
+{
+	// CP deleted? Force renumbering without this CP.
+	cp_num = 0;
+	cp_mode = 0;
+	RenumberOrderedCheckpoints();
 }
 
 public func GetCPMode() { return cp_mode; }
