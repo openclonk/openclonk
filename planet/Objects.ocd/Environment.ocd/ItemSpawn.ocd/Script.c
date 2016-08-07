@@ -135,6 +135,17 @@ public func OnTeamSwitch(int plr, int new_team, int old_team)
 }
 
 
+public func OnClonkDeath(object clonk, int killed_by)
+{
+	// Reset spawn on clonk death
+	// This is odd in multi-clonk rounds with spawn points, but the alternative
+	// of not resetting it is probably worse because the spawned item will
+	// usually lie around somewhere.
+	var plr = clonk->GetOwner();
+	if (plr >= 0) Reset(plr);
+}
+
+
 /* Scenario saving */
 
 func SaveScenarioObject(props)
