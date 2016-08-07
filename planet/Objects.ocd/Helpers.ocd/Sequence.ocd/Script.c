@@ -12,7 +12,6 @@ local seq_name;
 local seq_progress;
 local started;
 
-
 /* Start and stop */
 
 public func Start(string name, int progress, ...)
@@ -335,6 +334,7 @@ local active=true;
 local check_interval=12;
 local deactivate_after_action; // If true, finished is set to true after the first execution and the trigger deactivated
 local Visibility=VIS_Editor;
+local trigger_started;
 
 // finished: Disables the trigger. true if trigger has run and deactivate_after_action is set to true.
 // Note that this flag is not saved in scenarios, so saving as scenario and reloading will re-enable all triggers (for editor mode)
@@ -377,6 +377,7 @@ public func Definition(def)
 	def.EditorProps.action_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };
+	def.EditorProps.check_interval = { Name="$CheckInterval$", EditorHelp="$CheckIntervalHelp$", Type="int", Set="SetCheckInterval", SaveAsCall="SetCheckInterval" };
 }
 
 public func SetTrigger(proplist new_trigger)
@@ -461,6 +462,8 @@ public func SetDeactivateAfterAction(bool new_val)
 public func StartTrigger()
 {
 	if (!trigger) return false;
+	if (trigger_started) StopTrigger();
+	trigger_started = true;
 	SetGraphics("Active");
 	var fn = trigger.Trigger;
 	var id_search;
@@ -493,8 +496,15 @@ public func StopTrigger()
 {
 	SetGraphics();
 	// Remove any timers that may have been added
-	RemoveTimer(this.EnterRegionRectTimer);
+	RemoveTimer(this.EnterRegionTimer);
+	trigger_started = false;
 	return true;
+}
+
+public func SetCheckInterval(new_interval)
+{
+	check_interval = Max(1, new_interval);
+	return SetTrigger(trigger); // restart trigger
 }
 
 private func EnterRegionTimer()

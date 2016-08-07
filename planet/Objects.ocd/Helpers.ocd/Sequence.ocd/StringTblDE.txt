@@ -27,3 +27,5 @@ ID=Objekttyp
 IDHelp=Typ des Objektes, nach dem gesucht wird. Bei nichtangabe werden alle Objekte gefunden.
 ObjectEnterRegionCircle=Objektyp in Bereich (Radius)
 Condition=Bedingung
+CheckInterval=Pruefintervall
+CheckIntervalHelp=Gibt das Intervall in Frames an, in dem die Bedingung ueberprueft wird.
