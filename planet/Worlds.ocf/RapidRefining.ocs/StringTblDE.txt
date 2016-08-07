@@ -1,0 +1,19 @@
+# Scenario parameters: difficulty
+Difficulty=Schwierigkeit
+DescDifficulty=Setzt die Schwierigkeit dieser Runde.
+DiffNormal=Normal
+DescDiffNormal=Die Schwierigkeit dieser Runde ist normal.
+DiffHard=Schwer
+DescDiffHard=Die Schwierigkeit dieser Runde ist schwer.
+DiffInsane=Irrsinnig
+DescDiffInsane=Die Schwierigkeit dieser Runde ist irrsinnig.
+
+# Scenario parameters: map size
+MapSize=Kartengröße
+DescMapSize=Setzt die Kartengröße dieser Runde.
+MapSmall=Klein
+DescMapSmall=Die Karte dieser Runde wird klein sein
+MapAverage=Durchschnittlich
+DescMapAverage=Die Karte dieser Runde wird durchschnittlich sein.
+MapLarge=Groß
+DescMapLarge=Die Karte dieser Runde wird groß sein.

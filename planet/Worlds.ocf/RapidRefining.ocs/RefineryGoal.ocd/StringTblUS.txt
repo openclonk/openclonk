@@ -1,0 +1,3 @@
+Name=Refinery
+Description=You have currently pumped %d {{Oil}} into the refinery drain out of the %d {{Oil}} needed to fulfill this goal.
+DescriptionCompleted=Congratulations! You have pumped enough oil into the refinery drain.

@@ -1,0 +1,47 @@
+[ParameterDef]
+Name=$Difficulty$
+Description=$DescDifficulty$
+ID=Difficulty
+Default=1
+LeagueValue=3
+
+	[Options]
+		
+		[Option]
+		Name=$DiffNormal$
+		Description=$DescDiffNormal$
+		Value=1
+		
+		[Option]
+		Name=$DiffHard$
+		Description=$DescDiffHard$
+		Value=2
+		
+		[Option]
+		Name=$DiffInsane$
+		Description=$DescDiffInsane$
+		Value=3
+		
+[ParameterDef]
+Name=$MapSize$
+Description=$DescMapSize$
+ID=MapSize
+Default=1
+LeagueValue=1
+
+	[Options]
+
+		[Option]
+		Name=$MapSmall$
+		Description=$DescMapSmall$
+		Value=1
+
+		[Option]
+		Name=$MapAverage$
+		Description=$DescMapAverage$
+		Value=2
+		
+		[Option]
+		Name=$MapLarge$
+		Description=$DescMapLarge$
+		Value=3
