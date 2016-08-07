@@ -294,6 +294,7 @@ void C4ControlScript::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
 	pComp->Value(mkNamingAdapt(fUseVarsFromCallerContext, "UseVarsFromCallerContext", false));
+	pComp->Value(mkNamingAdapt(editor_select_result, "EditorSelectResult", false));
 	pComp->Value(mkNamingAdapt(Script, "Script", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }
