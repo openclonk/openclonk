@@ -15,8 +15,6 @@ public func Construction()
 {
 	AddEffect("Activity", this, 1, 10, this);
 	SetAction("Walk");
-	if (GetOwner() == NO_OWNER)
-		SetCreatureControlled();
 	energy_sucked = 0;
 	return true;
 }
@@ -106,7 +104,7 @@ private func StartJump()
 
 private func FxJumpCheckTimer(target, effect, time)
 {
-	var e = FindObject(Find_AtPoint(), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()));
+	var e = FindObject(Find_AtPoint(), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()));
 	if(e)
 	{
 		ClawTo(e);
@@ -191,7 +189,7 @@ private func FxActivityTimer(target, effect, time)
 	
 	if(!GetEffect("DmgShock", this) && !GBackSemiSolid())
 	{
-		for(var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
+		for(var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
 		{
 			if(!PathFree(GetX(), GetY(), enemy->GetX(), enemy->GetY())) continue;
 			

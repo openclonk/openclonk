@@ -137,6 +137,15 @@ global func Find_Hostile(int plr)
 	return p;
 }
 
+/*
+Similar to Find_Hostile, but defaults to treating all players as hostile when plr = NO_OWNER.
+*/
+global func Find_AnimalHostile(int plr)
+{
+	if (plr == NO_OWNER) return Find_Not(Find_Owner(NO_OWNER));
+	return Find_Or(Find_Owner(NO_OWNER), Find_Hostile(plr));
+}
+
 global func Find_Allied(int plr)
 {
 	var p = [C4FO_Or];

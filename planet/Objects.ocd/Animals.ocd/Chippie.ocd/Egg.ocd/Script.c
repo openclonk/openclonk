@@ -17,7 +17,6 @@ public func Place(int amount, proplist area)
 	var location = nil;
 	if (area) location = Loc_InArea(area->GetBoundingRectangle());
 
-	var owner = GetCreaturePlayer();
 	while(amount > 0)
 	{
 		var p = nil;
@@ -33,9 +32,7 @@ public func Place(int amount, proplist area)
 		// small circle
 		for(var r = 0; (r < 360) && (amount > 0); r += 40+Random(40))
 		{
-			var o = CreateObject(Chippie_Egg, p.x + Sin(r, 10 + RandomX(-2, 2)), p.y - Cos(r, 10 + RandomX(-2, 2)), owner);
-			if(owner == nil)
-				o->SetCreatureControlled();
+			var o = CreateObject(Chippie_Egg, p.x + Sin(r, 10 + RandomX(-2, 2)), p.y - Cos(r, 10 + RandomX(-2, 2)), NO_OWNER);
 			o->SetCon(RandomX(90, 100));
 			--amount;
 		}

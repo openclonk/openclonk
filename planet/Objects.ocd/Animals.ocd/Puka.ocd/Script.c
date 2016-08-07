@@ -71,8 +71,6 @@ public func Construction()
 	if (Random(2)) SetDir(DIR_Left);
 	else SetDir(DIR_Right);
 	
-	SetCreatureControlled();
-	
 	// Two spot layouts are available.
 	if (!Random(2))
 		SetMeshMaterial("Puka2");
@@ -348,7 +346,7 @@ private func UpdateEnemy()
 	
 	var x = GetX();
 	var y = GetY();
-	for (var obj in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
+	for (var obj in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
 	{
 		if (!PathFree(x, y, obj->GetX(), obj->GetY())) continue;
 		enemy = obj;
@@ -377,7 +375,7 @@ private func DoElectroCircle()
 	};
 	
 	// Punish all close enemies (not allied animals, though).
-	for (var obj in FindObjects(Find_Distance(30), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Find_Exclude(this)))
+	for (var obj in FindObjects(Find_Distance(30), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Find_Exclude(this)))
 	{
 		var delta_x = 3 * (obj->GetX() - GetX());
 		var delta_y = 3 * (obj->GetY() - GetY());
@@ -645,7 +643,7 @@ private func EndShockWater()
 	if (GetDir() == DIR_Right) x *= -1;
 	var y = 15;
 	
-	for (var obj in FindObjects(Find_Distance(120), Find_OCF(OCF_Alive), Find_Hostile(this->GetOwner())))
+	for (var obj in FindObjects(Find_Distance(120), Find_OCF(OCF_Alive), Find_AnimalHostile(this->GetOwner())))
 	{
 		if (!obj->GBackLiquid()) continue;
 		var angle = Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
