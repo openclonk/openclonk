@@ -10,7 +10,7 @@ MsgClearedOrderedFirst=%s is the first to pass checkpoint %d.
 MsgClearedCheckFirst=%s was the first one to pass this checkpoint.
 
 NoGoalWarning=WARNING: No parkour goal placed. Parkour checkpoints require a goal.
-SelectPrev=Selection <<
+SelectPrev=Select <<
 SelectPrevHelp=Selects the checkpoint before this one.
 SelectNext=Select >>
 SelectNextHelp=Selects the checkpoint after this one.
