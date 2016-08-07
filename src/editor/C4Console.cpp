@@ -601,7 +601,7 @@ class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 };
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player*, StdStrBuf&, bool) {}
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&, C4ConsoleGUI::ClientOperation) {}
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t, StdStrBuf&, C4ConsoleGUI::ClientOperation) {}
 void C4ConsoleGUI::AddNetMenu() {}
 void C4ConsoleGUI::ToolsDlgClose() {}
 bool C4ConsoleGUI::ClearLog() {return 0;}
