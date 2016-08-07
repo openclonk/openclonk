@@ -84,7 +84,6 @@ public func SetStartpoint(int x, int y)
 	cp->SetPosition(x, y);
 	cp->SetCPMode(PARKOUR_CP_Start);
 	cp->SetCPController(this);
-	cp_list[0] = cp;
 	return cp;
 }
 
@@ -102,9 +101,6 @@ public func SetFinishpoint(int x, int y, bool team)
 		mode = mode | PARKOUR_CP_Team;
 	cp->SetCPMode(mode);
 	cp->SetCPController(this);
-	cp_count++;
-	cp_list[cp_count] = cp;
-	UpdateScoreboardTitle();
 	return cp;
 }
 
@@ -117,21 +113,6 @@ public func AddCheckpoint(int x, int y, int mode)
 	cp->SetPosition(x, y);
 	cp->SetCPMode(mode);
 	cp->SetCPController(this);
-	// Only increase cp count and update list if mode is check.
-	if (!(cp->GetCPMode() & PARKOUR_CP_Check))
-		return cp;
-	// Move finish one place further in checkpoint list.
-	if (cp_list[cp_count] && cp_list[cp_count]->GetCPMode() & PARKOUR_CP_Finish)
-	{
-		cp_list[cp_count + 1] = cp_list[cp_count];
-		cp_list[cp_count] = cp;
-	}
-	else
-	{
-		cp_list[cp_count + 1] = cp;
-	}
-	cp_count++;
-	UpdateScoreboardTitle();
 	return cp;
 }
 
@@ -148,6 +129,20 @@ public func TransferContentsOnRelaunch(bool on)
 {
 	transfer_contents = on;
 	return;
+}
+
+public func SetIndexedCP(object cp, int index)
+{
+	// Called directly from checkpoints after index assignment, resorting, etc.
+	// Update internal list
+	cp_list[index] = cp;
+	if (cp->GetCPMode() & PARKOUR_CP_Finish)
+	{
+		cp_count = index;
+		SetLength(cp_list, cp_count+1);
+	}
+	UpdateScoreboardTitle();
+	return true;
 }
 
 
@@ -475,17 +470,21 @@ protected func JoinPlayer(int plr)
 // More complicated behavior should be set by the scenario. 
 private func FindRespawnCP(int plr)
 {
-	return respawn_list[plr];
+	var respawn_cp = respawn_list[plr];
+	if (!respawn_cp) respawn_cp = respawn_list[plr] = cp_list[0];
+	return respawn_cp;
 }
 
 private func FindRespawnPos(int plr)
 {
 	var cp = FindRespawnCP(plr);
+	if (!cp) cp = this; // Have to start somewhere
 	return [cp->GetX(), cp->GetY()];
 }
 
 protected func RemovePlayer(int plr)
 {
+	respawn_list[plr] = nil;
 	if (!finished)
 		AddEvalData(plr);
 	return;

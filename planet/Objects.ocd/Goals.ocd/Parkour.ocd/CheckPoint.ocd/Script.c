@@ -44,6 +44,7 @@ public func SetCPMode(int mode)
 		mode = mode | PARKOUR_CP_Check;
 		// Set CP number.
 		if (!cp_num) SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
+		if (cp_con) cp_con->SetIndexedCP(this, cp_num);
 	}
 	else
 	{
@@ -54,6 +55,11 @@ public func SetCPMode(int mode)
 	if (had_cp_num) RenumberOrderedCheckpoints();
 	DoGraphics();
 	UpdateEditorHelp();
+	if (cp_con)
+	{
+		if (mode & PARKOUR_CP_Start) cp_con->SetIndexedCP(this, 0);
+		if (mode & PARKOUR_CP_Finish) cp_con->SetIndexedCP(this, ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
+	}
 	return;
 }
 
@@ -62,26 +68,36 @@ public func RenumberOrderedCheckpoints()
 	// Reassign all CP numbers. Use old numbers where possible
 	var cps = FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Ordered)), i;
 	SortArrayByProperty(cps, "cp_num");
-	// If there is no start or finish checkpoint, create new ones
+	// If there is no start or finish checkpoint, assign them from the numbered pool
 	var cp_start = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Start));
 	var cp_finish = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
 	if (!cp_start && GetLength(cps))
 	{
-		cps[0]->SetCPNumber(0);
-		cps[0]->SetCPMode(PARKOUR_CP_Start | cps[0]->GetCPMode());
+		cp_start = cps[0];
 		cps = cps[1:];
 	}
 	if (!cp_finish && GetLength(cps))
 	{
-		cps[-1]->SetCPNumber(0);
-		cps[-1]->SetCPMode(PARKOUR_CP_Finish | cps[-1]->GetCPMode());
+		cp_finish = cps[-1];
 		cps = cps[:-1];
+	}
+	// Re-label start and finish
+	if (cp_start)
+	{
+		cp_start->SetCPNumber(0);
+		cp_start->SetCPMode(PARKOUR_CP_Start | cp_start->GetCPMode());
+	}
+	if (cp_finish)
+	{
+		cp_finish->SetCPNumber(0);
+		cp_finish->SetCPMode(PARKOUR_CP_Finish | cp_finish->GetCPMode());
 	}
 	// Re-label remaining CPs
 	for (var cp in cps)
 	{
 		cp->SetCPNumber(++i);
 		cp->DoGraphics();
+		if (cp->GetCPController()) cp->GetCPController()->SetIndexedCP(cp, i);
 	}
 	return true;
 }
@@ -545,7 +561,7 @@ public func EditorInitialize()
 		new_mode = PARKOUR_CP_Finish;
 	// Change old finish point to numbered checkpoint
 	var cp = FindObject(Find_ID(GetID()), Find_Func("FindCPMode", PARKOUR_CP_Finish));
-	if (cp) cp->SetCPMode(PARKOUR_CP_Check | PARKOUR_CP_Ordered);
+	if (cp) cp->SetCPMode(PARKOUR_CP_Check | PARKOUR_CP_Ordered | PARKOUR_CP_Respawn);
 	SetCPMode(new_mode);
 	UpdateEditorHelp();
 	return this;
