@@ -528,9 +528,11 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.drawSizeSlider->setValue(C4TLS_GradeDefault);
 	// Console input box signal
 	QLineEdit *main_console_edit = ui.consoleInputBox->lineEdit();
+	main_console_edit->completer()->setCaseSensitivity(Qt::CaseSensitivity::CaseSensitive);
 	main_console_edit->connect(main_console_edit, SIGNAL(returnPressed()), window.get(), SLOT(MainConsoleEditEnter()));
 	QLineEdit *property_console_edit = ui.propertyInputBox->lineEdit();
 	property_console_edit->connect(property_console_edit, SIGNAL(returnPressed()), window.get(), SLOT(PropertyConsoleEditEnter()));
+	property_console_edit->completer()->setCaseSensitivity(Qt::CaseSensitivity::CaseSensitive);
 	// Add window menu actions
 	window_menu_separator = ui.menuWindows->addSeparator();
 	ui.menuWindows->addAction(ui.creatorDockWidget->toggleViewAction());
