@@ -227,11 +227,19 @@ public func ConstructionPreview(object previewer, int overlay, int dir)
 }
 
 // Sticking to other elevators
-public func ConstructionCombineWith() { return "IsElevator"; }
-public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right; }
+public func ConstructionCombineWith() { return "CanCombineElevator"; }
+public func ConstructionCombineDirection(object other)
+{
+	if (!other) return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right;
+
+	// Only combine when facing correctly
+	if (other->GetDir() == DIR_Left)
+		return CONSTRUCTION_STICK_Right;
+	return CONSTRUCTION_STICK_Left;
+}
 
 // Called to determine if sticking is possible
-public func IsElevator(object previewer)
+public func CanCombineElevator(object previewer)
 {
 	if (!previewer) return true;
 

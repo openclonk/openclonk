@@ -22,15 +22,17 @@ public func SetNeutral()
 }
 
 // Reddish colour.
+// Please to not change otherwise people with dyschromatopsia will hunt you down.
 public func SetDrain()
 {
-	SetProperty("LineColors", [RGB(110, 80, 80), RGB(110, 80, 80)]);
+	SetProperty("LineColors", [RGB(238, 102, 0), RGB(238, 102, 0)]);
 }
 
 // Greenish colour.
+// Please to not change otherwise people with dyschromatopsia will hunt you down.
 public func SetSource()
 {
-	SetProperty("LineColors", [RGB(80, 110, 80), RGB(80, 110, 80)]);
+	SetProperty("LineColors", [RGB(102, 136, 34), RGB(102, 136, 34)]);
 }
 
 // Returns true if this object is a functioning pipe.

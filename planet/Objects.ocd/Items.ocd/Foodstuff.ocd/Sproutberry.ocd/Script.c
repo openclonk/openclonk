@@ -1,29 +1,19 @@
-/*-- Sproutberry --*/
+/**
+	Sproutberry
+	Fresh from nature's garden.
+*/
 
-protected func Hit()
-{
-	Sound("Hits::SoftHit1");
-}
+/*-- Engine Callbacks --*/
 
 public func Construction()
 {
 	this.MeshTransformation = Trans_Scale(1500, 1500, 1500);
 }
 
-/* Eating */
-
-protected func ControlUse(object clonk, int iX, int iY)
+func Hit()
 {
-	clonk->Eat(this);
-	return true;
+	Sound("Hits::SoftHit1");
 }
-
-public func NutritionalValue() { return 5; }
-
-local Name = "$Name$";
-local Description = "$Description$";
-local Collectible = 1;
-
 
 // sproutberries are extremely unstable and likely to grow a new plant if not carried
 func Departure(object what)
@@ -31,6 +21,27 @@ func Departure(object what)
 	if(!GetEffect("SproutCheck", this))
 		AddEffect("SproutCheck", this, 1, 10, this);
 }
+
+func SaveScenarioObject(props, ...)
+{
+	// Do not save berries that are still attached to bushes
+	if (Contained())
+		if (Contained()->GetID() == SproutBerryBush_Sprout)
+			return false;
+	return inherited(props, ...);
+}
+
+/*-- Eating --*/
+
+public func ControlUse(object clonk, int iX, int iY)
+{
+	clonk->Eat(this);
+	return true;
+}
+
+public func NutritionalValue() { return 5; }
+
+/*-- Sprouting --*/
 
 func FxSproutCheckTimer(target, effect, time)
 {
@@ -128,12 +139,20 @@ func FxShrinkTimer(target, effect, time)
 	}
 }
 
-// Scenario saving
-func SaveScenarioObject(props, ...)
+/*-- Display --*/
+
+public func GetCarryMode()
 {
-	// Do not save berries that are still attached to bushes
-	if (Contained())
-		if (Contained()->GetID() == SproutBerryBush_Sprout)
-			return false;
-	return inherited(props, ...);
+	return CARRY_Hand;
 }
+
+public func GetCarryBone()
+{
+	return "Main";
+}
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Collectible = true;

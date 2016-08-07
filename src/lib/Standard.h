@@ -21,8 +21,6 @@
 #define INC_STANDARD
 
 #include <type_traits>
-#pragma push_macro("new")
-#undef new
 
 // The Clear/Default functions that exist on most OpenClonk classes are A
 // BAD IDEA because the caller has no guarantee that every member has been
@@ -39,7 +37,6 @@ inline InplaceReconstruct(T *obj)
 	obj->~T();
 	new (obj) T();
 }
-#pragma pop_macro("new")
 
 #include "platform/PlatformAbstraction.h"
 

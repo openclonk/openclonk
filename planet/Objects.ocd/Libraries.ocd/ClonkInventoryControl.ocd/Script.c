@@ -7,8 +7,11 @@
 
 /*
 	used properties:
-	this.inventory.last_slot: last inventory-slot that has been selected. Used for QuickSwitching
 	this.inventory.is_picking_up: whether currently picking up
+	this.inventory.quick_slot: slot that is currently selected for quick switching
+	this.inventory.hotkey_down: the number of a hotkey being held down
+	this.inventory.quick_slot_switched: true if the quick slot was switched during pressing down of a hotkey, the hotkey release will do nothing
+	this.inventory.slots_switched: true if two inventory were switched (pressed a hotkey while another one was pressed); the hotkey release will do nothing
 	
 	other used properties of "this.inventory" might have been declared in Inventory.ocd
 */
@@ -18,7 +21,8 @@ func Construction()
 {
 	if(this.inventory == nil)
 		this.inventory = {};
-	this.inventory.last_slot = 1;
+	this.inventory.quick_slot = 1;
+	this.inventory.hotkey_down = nil;
 	return _inherited(...);
 }
 
@@ -27,6 +31,11 @@ public func OnShiftCursor(object new_cursor)
 	if (this.control.is_interacting)
 		AbortPickingUp();
 	return _inherited(new_cursor, ...);
+}
+
+public func GetQuickSwitchSlot()
+{
+	return this.inventory.quick_slot;
 }
 
 // Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object.
@@ -48,21 +57,31 @@ func RejectCollect(id objid, object obj)
 
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	if (!this) 
+	if (!this)
 		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
-		
-	// Quickswitch changes the active slot to the last selected one
-	if (ctrl == CON_QuickSwitch)
+
+	// Quickswitch changes the current active inventory slot
+	if (ctrl == CON_QuickSwitch && !release)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
 		if(this.HandObjects > 1)
 			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
 		
-		// select last slot
-		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
+		// A number key (hotkey) is pressed, change quick switch slot
+		/*if (this.inventory.hotkey_down != nil)
+		{
+			if (SetQuickSwitchSlot(this.inventory.hotkey_down-1))
+				this.inventory.quick_slot_switched = true;
+			return true;
+		}*/
+		// Otherwise select slot
+		SetHandItemPos(0, this.inventory.quick_slot); // quick_slot is updated in SetHandItemPos
 		return true;
 	}
-	
+	if (ctrl == CON_QuickSwitch && release) // Do nothing for now but will be used in the future
+	{
+		return true;
+	}
 	// Collection and dropping is only allowed when the Clonk is not contained.
 	if (!Contained())
 	{
@@ -186,7 +205,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		this->~DropInventoryItem(hot-1);
 		return true;
 	}
-		
+	
 	// inventory
 	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -200,14 +219,54 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	// only the last-pressed key is taken into consideration.
-	// if 2 hotkeys are held, the earlier one is being treated as released
-	if (hot > 0 && hot <= this.MaxContentsCount)
+	// another hotkey is already pressed
+	if (this.inventory.hotkey_down != nil && hot > 0 && hot <= this.MaxContentsCount && this.inventory.hotkey_down != hot)
 	{
-		SetHandItemPos(0, hot-1);
+		// do nothing if this is just key down
+		if (!release)
+			return true;
+		// switch the two slots
+		this->~Switch2Items(this.inventory.hotkey_down-1, hot-1);
+		//this.inventory.slots_switched = true;
+		// This needs some explanation:
+		// In the event of the Clonk window ever losing focus, a hotkey might still be registered as being held down.
+		// If this was ever the case, the inventory would constantly switch around unless the exact same hotkey is pressed
+		// again to trigger a release. This could very well confuse players as it is not obvious which key needs to be
+		// pressed. With this, there will only be one switch and afterwards the inventory works just fine.
+		// The downside is that after one switch a hotkey has be pressed again for another switch.
+		this.inventory.hotkey_down = nil;
+
 		return true;
 	}
 	
+	// hotkey up: perform slot selection
+	if (hot > 0 && hot <= this.MaxContentsCount && release)
+	{
+		// This wasn't liked by many players, so slot selection is back to key down.
+
+		// Only perform slot selection if nothing happened in the meantime
+		/*if (!this.inventory.quick_slot_switched)
+			if (!this.inventory.slots_switched)
+				SetHandItemPos(0, hot-1);*/
+
+		this.inventory.hotkey_down = nil;
+		//this.inventory.quick_slot_switched = false;
+		//this.inventory.slots_switched = false;
+
+		return true;
+	}
+	// a hotkey is pressed, save it for now
+	if (hot > 0 && hot <= this.MaxContentsCount && !release)
+	{
+		this.inventory.hotkey_down = hot;
+		// For safety
+		//this.inventory.quick_slot_switched = false;
+		//this.inventory.slots_switched = false;
+
+		SetHandItemPos(0, hot-1);
+		return true;
+	}
+
 	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 }
 
@@ -420,9 +479,24 @@ public func SetHandItemPos(int hand, int inv)
 	// Save the current slot as the last slot only for the first hand
 	// and if the inventory slot actually changes.
 	if (hand == 0 && this->GetHandItemPos(0) != inv)
-		this.inventory.last_slot = this->GetHandItemPos(0);
+		this.inventory.quick_slot = this->GetHandItemPos(0);
 		
 	return _inherited(hand, inv, ...);
+}
+
+public func SetQuickSwitchSlot(int slot)
+{
+	// Do not set if the quick switch slot doesn't change
+	if (slot == this.inventory.quick_slot) return false;
+	// Do not set if slot is currently selected
+	if (slot == this->GetHandItemPos(0)) return false;
+
+	this.inventory.quick_slot = slot;
+	// Notify HUD
+	this->~OnInventoryChange();
+	this->~UpdateAttach();
+
+	return true;
 }
 
 /* Backpack control */

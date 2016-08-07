@@ -1,0 +1,17 @@
+[DefCore]
+id=Deco_Tree_Deciduous4
+Version=6,1
+Category=C4D_StaticBack
+Width=80
+Height=90
+Offset=-40,-45
+Vertices=6
+VertexX=0,0,0,0,0
+VertexY=45,35,20,0,-20,-40
+VertexCNAT=8,16,16,16,16,4
+VertexFriction=50,25,25,25,25,50
+Mass=110
+StretchGrowth=1
+Oversize=1
+Float=1
+Rotate=1

@@ -1,7 +1,5 @@
 /*--
 	Boompack
-	Authors: Ringwaul, Newton
-
 	A risky method of flight. When the boompack is used and launched towards
 	the sky, the category of the boompack is changed to be a vehicle and set
 	to be non-collectible. The clonk is then attached to the boompack. While
@@ -9,6 +7,8 @@
 	inventory: The ControlLeft/Right/Up/Down callbacks are issued to the boom-
 	pack too. Here, they are used to slightly steer the boompack to the left
 	or right plus to jump off the rocket.
+	
+	@author: Ringwaul, Newton
 --*/
 
 #include Library_CarryHeavy
@@ -20,28 +20,14 @@ local riderattach;
 local dirdev;
 local controllable;
 
-public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryPhase() { return 700; }
+/*-- Engine Callbacks --*/
 
-public func GetCarryTransform(clonk)
-{
-	if(GetCarrySpecial(clonk))
-		return Trans_Translate(0, 6500, 0);
-	
-	return Trans_Translate(0, 0, -1500);
-}
-
-protected func Construction()
+func Construction()
 {
 	//flight length
 	fuel=100;
 	dirdev=12;
 	controllable = true;
-}
-
-func Fuse()
-{
-	Launch(GetR());
 }
 
 func Incineration(int caused_by)
@@ -50,33 +36,91 @@ func Incineration(int caused_by)
 	Fuse();
 }
 
-protected func Destruction()
+func Hit()
+{
+	if(rider)
+	{
+		JumpOff(rider);
+	}
+	Sound("Hits::GeneralHit?");
+	if(GetEffect("Flight",this)) DoFireworks();
+}
+
+func Destruction()
 {
 	if(rider) JumpOff(rider);
 }
 
-func ControlRight()
+/*-- Callbacks --*/
+
+// Called when hitting something mid-air after the Clonk jumped off.
+public func HitObject(object target)
+{
+	if (target && WeaponCanHit(target))
+		target->~OnProjectileHit(this);
+	if (this)
+		DoFireworks();
+}
+
+public func OnMount(clonk)
+{
+	var iDir = 1;
+	if(clonk->GetDir() == 1) iDir = -1;
+	clonk->PlayAnimation("PosRocket", CLONK_ANIM_SLOT_Arms, Anim_Const(0), Anim_Const(1000));
+	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000,2000*iDir,2000), Trans_Rotate(-90*iDir,1,0,0)));
+	
+	//Modify picture transform to fit icon on clonk mount
+	this.PictureTransformation = Trans_Mul(Trans_Translate(5000 * clonk->GetDir(),0,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0), Trans_Scale(700));
+	return true;
+}
+
+public func OnUnmount(clonk)
+{
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	DetachMesh(riderattach);
+	DefaultPicTransform();
+	return true;
+}
+
+public func IsProjectileTarget(object projectile)
+{
+	return projectile->GetID() != GetID();
+}
+
+public func OnProjectileHit(object projectile)
+{
+	Incinerate(100, projectile->GetController());
+}
+
+/*-- Usage --*/
+
+public func Fuse()
+{
+	Launch(GetR());
+}
+
+public func ControlRight()
 {
 	if(controllable)
 		SetRDir(+3);
 	return true;
 }
 
-func ControlLeft()
+public func ControlLeft()
 {
 	if(controllable)
 		SetRDir(-3);
 	return true;
 }
 
-func ControlStop()
+public func ControlStop()
 {
 	if(controllable)
 		SetRDir(0);
 	return true;
 }
 
-func ControlJump(object clonk)
+public func ControlJump(object clonk)
 {
 	if(controllable)
 		JumpOff(clonk,60);
@@ -91,8 +135,7 @@ public func RejectUse(object clonk)
 	return clonk->GetProcedure() != "WALK" && clonk->GetProcedure() != "FLIGHT";
 }
 
-
-func ControlUse(object clonk, int x, int y)
+public func ControlUse(object clonk, int x, int y)
 {
 	// forward control to item
 	if(clonk->GetProcedure()=="ATTACH") return false;
@@ -103,8 +146,7 @@ func ControlUse(object clonk, int x, int y)
 	return true;
 }
 
-
-protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
+func FxFlightTimer(object pTarget, effect, int iEffectTime)
 {
 	// clonk does sense the danger and with great presence of mind jumps of the rocket
 	if(fuel<20 && rider)
@@ -140,7 +182,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	fuel--;
 }
 
-private func JumpOff(object clonk, int speed)
+func JumpOff(object clonk, int speed)
 {
 	rider = nil;
 
@@ -163,46 +205,7 @@ private func JumpOff(object clonk, int speed)
 	AddEffect("HitCheck", this, 1, 2, nil, nil, clonk);
 }
 
-protected func Hit()
-{
-	if(rider)
-	{
-		JumpOff(rider);
-	}
-	Sound("Hits::GeneralHit?");
-	if(GetEffect("Flight",this)) DoFireworks();
-}
-
-// Called when hitting something mid-air after the Clonk jumped off.
-public func HitObject(object target)
-{
-	if (target && WeaponCanHit(target))
-		target->~OnProjectileHit(this);
-	if (this)
-		DoFireworks();
-}
-
-public func OnMount(clonk)
-{
-	var iDir = 1;
-	if(clonk->GetDir() == 1) iDir = -1;
-	clonk->PlayAnimation("PosRocket", CLONK_ANIM_SLOT_Arms, Anim_Const(0), Anim_Const(1000));
-	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000,2000*iDir,2000), Trans_Rotate(-90*iDir,1,0,0)));
-	
-	//Modify picture transform to fit icon on clonk mount
-	this.PictureTransformation = Trans_Mul(Trans_Translate(5000 * clonk->GetDir(),0,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0), Trans_Scale(700));
-	return true;
-}
-
-public func OnUnmount(clonk)
-{
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
-	DetachMesh(riderattach);
-	DefaultPicTransform();
-	return true;
-}
-
-func Launch(int angle, object clonk)
+public func Launch(int angle, object clonk)
 {
 	SetProperty("Collectible",0);
 	SetCategory(C4D_Vehicle);
@@ -251,41 +254,50 @@ func DoFireworks()
 	Explode(30);
 }
 
-func SetFuel(int new)
+public func SetFuel(int new)
 {
 	fuel = new;
 }
 
-func SetDirectionDeviation(int new)
+public func SetDirectionDeviation(int new)
 {
 	dirdev = new;
 }
 
-func SetControllable(bool new)
+public func SetControllable(bool new)
 {
 	controllable = new;
 }
 
-func GetFuel()
+public func GetFuel()
 {
 	return fuel;
 }
 
-public func IsProjectileTarget(object projectile)
-{
-	return projectile->GetID() != GetID();
-}
-
-func OnProjectileHit(object projectile)
-{
-	Incinerate(100, projectile->GetController());
-}
+/*-- Production --*/
 
 func IsInventorProduct() { return true; }
 
-private func DefaultPicTransform()
+/*-- Display --*/
+
+func DefaultPicTransform()
 {
 	this.PictureTransformation = this.Prototype.PictureTransformation;
+}
+
+public func GetCarryMode()
+{
+	return CARRY_BothHands;
+}
+
+public func GetCarryPhase() { return 700; }
+
+public func GetCarryTransform(object clonk)
+{
+	if(GetCarrySpecial(clonk))
+		return Trans_Translate(0, 6500, 0);
+	
+	return Trans_Translate(0, 0, -1500);
 }
 
 public func Definition(def)
@@ -293,9 +305,11 @@ public func Definition(def)
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, -1000, 0), Trans_Rotate(45,0,0,1),Trans_Rotate(-35,1,0,0),Trans_Scale(1200));
 }
 
-local Collectible = true;
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Description = "$Description$";
+local Collectible = true;
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;
 local Components = {Wood = 1, Firestone = 1, PowderKeg = 1};

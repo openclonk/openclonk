@@ -1,33 +1,26 @@
-/*-- Club --*/
+/**
+	Club
+	Simple striking weapon.
+*/
 
 #include Library_MeleeWeapon
 
-private func Hit()
-{
-	Sound("Hits::Materials::Wood::WoodHit?");
-}
-
-public func GetCarryMode() { return CARRY_HandBack; }
-
-public func GetCarrySpecial(clonk)
-{
-	if(fAiming)
-	{
-		if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
-			return "pos_hand1";
-		else
-			return "pos_hand2";
-	}
-}
-
 local animation_set;
+local fAiming;
+
+/*-- Engine Callbacks --*/
 
 func Initialize()
 {
 	ClubChangeHandAnims("R");
 }
 
-private func ClubChangeHandAnims(string hand)
+func Hit()
+{
+	Sound("Hits::Materials::Wood::WoodHit?");
+}
+
+func ClubChangeHandAnims(string hand)
 {
 	if(hand == "R")
 	{
@@ -59,11 +52,36 @@ private func ClubChangeHandAnims(string hand)
 	}
 }
 
+/*-- Callbacks --*/
+
 public func GetAnimationSet() { return animation_set; }
 
-public func HoldingEnabled() { return true; }
+// Callback from the clonk, when he actually has stopped aiming
+public func FinishedAiming(object clonk, int angle)
+{
+	clonk->StartShoot(this);
+	
+	// since the Clonk internal callback is only once, we cannot use it
+	// ..
+	AddEffect("DuringClubShootControl", clonk, 1, 1, this, nil, angle);
+	
+	// aaaand, a cooldown
+	AddEffect("ClubWeaponCooldown", clonk, 1, 5, this);
+	
+	Sound("Objects::Weapons::WeaponSwing?", {pitch = -50});
+	return true;
+}
 
-local fAiming;
+// Called in the half of the shoot animation (when ShootTime2 is over)
+public func DuringShoot(object clonk, int angle)
+{
+	// called only once. We don't want it only once..
+	// DoStrike(clonk, angle);
+}
+
+/*-- Usage --*/
+
+public func HoldingEnabled() { return true; }
 
 public func RejectUse(object clonk)
 {
@@ -83,7 +101,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	return 1;
 }
 
-func ControlUseHolding(object clonk, ix, iy)
+public func ControlUseHolding(object clonk, ix, iy)
 {
 	var angle = Angle(0,0,ix,iy);
 	angle = Normalize(angle,-180);
@@ -99,29 +117,7 @@ public func ControlUseStop(object clonk, ix, iy)
 	return true;
 }
 
-public func ControlUseCancel(object clonk, ix, iy)
-{
-	clonk->StopAim();
-	return true;
-}
-
-// Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
-{
-	clonk->StartShoot(this);
-	
-	// since the Clonk internal callback is only once, we cannot use it
-	// ..
-	AddEffect("DuringClubShootControl", clonk, 1, 1, this, nil, angle);
-	
-	// aaaand, a cooldown
-	AddEffect("ClubWeaponCooldown", clonk, 1, 5, this);
-	
-	Sound("Objects::Weapons::WeaponSwing?", {pitch = -50});
-	return true;
-}
-
-protected func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming(this);
 	return true;
@@ -130,13 +126,6 @@ protected func ControlUseCancel(object clonk, int x, int y)
 public func Reset(clonk)
 {
 	fAiming = 0;
-}
-
-// Called in the half of the shoot animation (when ShootTime2 is over)
-public func DuringShoot(object clonk, int angle)
-{
-	// called only once. We don't want it only once..
-	// DoStrike(clonk, angle);
 }
 
 func FxDuringClubShootControlStart(target, effect, temp, p1)
@@ -239,16 +228,49 @@ func DoStrike(clonk, angle)
 	}
 }
 
+/*-- Production --*/
+
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
+
+/*-- Display --*/
+
+public func GetCarryMode(object clonk, bool idle, bool nohand)
+{
+	if (idle || nohand)
+		return CARRY_Back;
+
+	return CARRY_Musket;
+}
+
+public func GetCarrySpecial(clonk)
+{
+	if(fAiming)
+	{
+		if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+			return "pos_hand1";
+		else
+			return "pos_hand2";
+	}
+}
+
+public func GetCarryTransform(object clonk, bool idle, bool nohand)
+{
+	if (idle || nohand || fAiming)
+		return;
+
+	return Trans_Mul(Trans_Rotate(10, 0, 1), Trans_Translate(-800));
+}
 
 func Definition(def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-4500, -2000, 2000), Trans_Rotate(45,0,0,1));
 }
 
-local Collectible = 1;
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Description = "$Description$";
+local Collectible = true;
 local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 1};

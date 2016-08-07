@@ -1,19 +1,20 @@
 /**
 	Shovel
-	Essential tool for the clonk, used to dig through materials.	
+	Essential tool for the clonk, used to dig through materials.
 	
-	@author Newtom, Sven2, Zapper, Maikel
+	@author: Newton, Sven2, Zapper, Maikel
 */
-
 
 local is_digging;
 
-private func Hit()
+/*-- Engine Callbacks --*/
+
+func Hit()
 {
 	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
-private func Destruction()
+func Destruction()
 {
 	// Stop shoveling when using the shovel when it's destroyed.
 	var user = Contained();
@@ -26,14 +27,9 @@ private func Destruction()
 		}
 }
 
-public func GetCarryMode(clonk) { return CARRY_Back; }
-
-public func GetCarrySpecial(clonk) { if (clonk->~GetAction() == "Dig") return "pos_hand1"; }
+/*-- Usage --*/
 
 public func IsDigging() { return is_digging; }
-
-
-/*-- Usage --*/
 
 public func HoldingEnabled() { return true; }
 
@@ -175,7 +171,7 @@ public func FxShovelDigTimer(object clonk, effect fx, int time)
 	return FX_OK;
 }
 
-private func GetDigSpeed(object clonk)
+func GetDigSpeed(object clonk)
 {
 	var speed = clonk.ActMap.Dig.Speed * 2;
 	// Adjust speed at current animation position.
@@ -217,16 +213,33 @@ public func Dust(object target)
 	return;
 }
 
+/*-- Production --*/
+
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
+/*-- Display --*/
 
-/*-- Properties --*/
+public func GetCarryMode(object clonk, bool idle)
+{
+	if (!idle)
+		return CARRY_Hand;
+	else
+		return CARRY_Back;
+}
 
-public func Definition(proplist def)
+public func GetCarrySpecial(object clonk, bool idle)
+{
+	if (idle) return;
+	if (clonk->~GetAction() == "Dig") return "pos_hand1";
+}
+
+func Definition(proplist def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Rotate(135, 0, 0, 1), Trans_Rotate(30, 0, 1, 0));
 }
+
+/*-- Properties --*/
 
 local Collectible = true;
 local Name = "$Name$";

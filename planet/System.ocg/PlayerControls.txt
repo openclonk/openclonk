@@ -144,6 +144,8 @@
 	Identifier=QuickSwitch
 	GUIName=$CON_QuickSwitch$
 	GUIDesc=$CON_QuickSwitch_Desc$
+	Hold=1
+	SendCursorPos=1
 
 	[ControlDef]
 	Identifier=InventoryShiftForward
@@ -198,42 +200,52 @@
 	[ControlDef]
 	Identifier=Hotkey1
 	GUIName=$CON_Hotkey1$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey2
 	GUIName=$CON_Hotkey2$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey3
 	GUIName=$CON_Hotkey3$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey4
 	GUIName=$CON_Hotkey4$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey5
 	GUIName=$CON_Hotkey5$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey6
 	GUIName=$CON_Hotkey6$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey7
 	GUIName=$CON_Hotkey7$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey8
 	GUIName=$CON_Hotkey8$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey9
 	GUIName=$CON_Hotkey9$
+	Hold=1
 
 	[ControlDef]
 	Identifier=Hotkey0
 	GUIName=$CON_Hotkey0$
+	Hold=1
 
 	[ControlDef]
 	Identifier=DropHotkey1
@@ -410,7 +422,6 @@
 	[ControlDef]
 	Identifier=PlayerHotkey0
 
-
 	# Menu control
 
 	[ControlDef]
@@ -573,9 +584,9 @@
 	# Down								S
 	#
 	# Hotkey0-9							(0-9)
-	# InteractionHotkey0-0				Shift+(0-9)
+	# DropHotkey0-9						Shift+(0-9)
 	#
-	# Use						        Left mouse button
+	# Use								Left mouse button
 	# Drop								S+Left mouse button
 	# Throw								Right mouse button
 	# UseAlt							Right mouse button (low priority)
@@ -583,8 +594,8 @@
 	# Interact							Space
 	#
 	# QuickSwitch						Q
-	# InventoryShiftForward             MouseWheelUp
-	# InventoryShiftBackward            MouseWheelDown
+	# InventoryShiftForward				MouseWheelUp
+	# InventoryShiftBackward			MouseWheelDown
 	# Contents							E
 	#
 	# NextCrew							T

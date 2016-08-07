@@ -1,10 +1,9 @@
-/*
+/**
 	Axe
-	Author: Ringwaul, Clonkonaut
-
-	Used for chopping down trees. Can also harvest
-	wood from fallen trees, but will not yield as
-	many logs as a sawmill.
+	Used for chopping down trees. Can also harvest wood from fallen trees,
+	but will not yield as many logs as a sawmill.
+	
+	@author: Ringwaul, Clonkonaut
 */
 
 #include Library_MeleeWeapon
@@ -16,40 +15,27 @@ local magic_number;
 
 local movement_effect;
 
-// When using the axe to chop a tree.
-local SwingTime = 30;
-// When using the axe as a weapon (without trees).
-local StrikingLength = 20; // in frames
+/*-- Engine Callbacks --*/
 
-private func Hit(int x, int y)
+func Hit(int x, int y)
 {
 	StonyObjectHit(x,y);
 	return 1;
 }
 
-public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryBone() { return "main"; }
-public func GetCarryTransform()
+func Departure(object container)
 {
-	var act = Contained()->GetAction();
-	if(act != "Walk" && act != "Jump")
-		return Trans_Mul(Trans_Translate(4500,0,0), Trans_Rotate(90,1,0,0), Trans_Rotate(180,0,1,0) );
-
-	return Trans_Rotate(-90, 1, 0, 0);
-}
-public func GetCarrySpecial(clonk)
-{
-	if(using == 1) 
+	// Always end the movement impairing effect when exiting
+	if (movement_effect)
 	{
-		if(clonk->GetDir() == 1)
-			return "pos_hand2";
-		else
-			return "pos_hand1";
+		RemoveEffect(nil, container, movement_effect);
+		movement_effect = nil;
 	}
-	return carry_bone;
 }
 
-func RejectUse(object clonk)
+/*-- Usage --*/
+
+public func RejectUse(object clonk)
 {
 	return !clonk->IsWalking() && !clonk->IsJumping();
 }
@@ -61,15 +47,21 @@ func ReadyToBeUsed(proplist data)
 	return !RejectUse(clonk) && CanStrikeWithWeapon(clonk) && clonk->HasHandAction();
 }
 
+public func HoldingEnabled()
+{
+	return GetEffect("IntAxe", this);
+}
+
 public func ControlUseStart(object clonk, int iX, int iY)
 {
-	// find tree that is closest to the clonk's axe when swung
+	/* Chopping */
+
+	// Find tree that is closest to the clonk's axe when swung
 	var x_offs = 10;
 	if(clonk->GetDir() == DIR_Left) {
 		x_offs = -x_offs;
 	}
-	
-	// Chopping
+
 	if (clonk->IsWalking()) for (var tree in FindObjects(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer()))
 	{
 		//treedist - the x-distance the clonk is from the centre of a tree-trunk
@@ -119,7 +111,8 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		}
 	}
 
-	// Combat
+	/* Combat */
+
 	if(!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
 	{
 		clonk->PauseUse(this, "ReadyToBeUsed", {clonk = clonk});
@@ -150,7 +143,9 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	}
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), StrikingLength, ANIM_Remove), Anim_Const(1000));
+
 	clonk->UpdateAttach();
+
 	Sound("Objects::Weapons::WeaponSwing?", {pitch = -Random(10)});
 
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
@@ -159,11 +154,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	return true;
 }
 
-/* Chopping */
-
-protected func HoldingEnabled() { return GetEffect("IntAxe", this); }
-
-func ControlUseHolding(object clonk, int new_x, int new_y)
+public func ControlUseHolding(object clonk, int new_x, int new_y)
 {
 	// Can clonk use axe?
 	if (!clonk->IsWalking() || GetXDir() != 0)
@@ -174,7 +165,33 @@ func ControlUseHolding(object clonk, int new_x, int new_y)
 	return true;
 }
 
-/* Chopping effect */
+func ControlUseCancel(object clonk, int ix, int iy)
+{
+	Reset(clonk);
+	return true;
+}
+
+public func ControlUseStop(object clonk, int ix, int iy)
+{
+	Reset(clonk);
+	return true;
+}
+
+public func Reset(clonk)
+{
+	//Reset the clonk to normal control
+	using = 0;
+	clonk->SetHandAction(0);
+	clonk->UpdateAttach();
+	clonk->SetTurnForced(-1);
+	clonk->StopAnimation(swing_anim);
+	swing_anim = nil;
+	RemoveEffect("IntAxe", clonk);
+	RemoveEffect("IntSplit", clonk);
+	RemoveEffect("AxeStrike", clonk);
+}
+
+/* Chopping */
 
 func FxIntAxeStart(object clonk, effect, int temp, object target_tree)
 {
@@ -221,7 +238,7 @@ func FxIntAxeStop(object clonk, effect, int temp)
 	if (this->Contained() == clonk) Reset(clonk);
 }
 
-/* Splitting effect */
+/* Splitting */
 
 func FxIntSplitStart(object clonk, effect, int temp, object target_tree)
 {
@@ -267,32 +284,6 @@ func FxIntSplitStop(object clonk, effect, int temp)
 {
 	if (temp) return;
 	if (this->Contained() == clonk) Reset(clonk);
-}
-
-func ControlUseStop(object clonk, int ix, int iy)
-{
-	Reset(clonk);
-	return true;
-}
-
-protected func ControlUseCancel(object clonk, int ix, int iy)
-{
-	Reset(clonk);
-	return true;
-}
-
-public func Reset(clonk)
-{
-	//Reset the clonk to normal control
-	using = 0;
-	clonk->SetHandAction(0);
-	clonk->UpdateAttach();
-	clonk->SetTurnForced(-1);
-	clonk->StopAnimation(swing_anim);
-	swing_anim = nil;
-	RemoveEffect("IntAxe", clonk);
-	RemoveEffect("IntSplit", clonk);
-	RemoveEffect("AxeStrike", clonk);
 }
 
 /* Combat */
@@ -383,24 +374,56 @@ func FxAxeStrikeStopTimer(pTarget, effect)
 	return -1;
 }
 
-private func Departure(object container)
-{
-	// Always end the movement impairing effect when exiting
-	if (movement_effect)
-	{
-		RemoveEffect(nil, container, movement_effect);
-		movement_effect = nil;
-	}
-}
+/*-- Production --*/
 
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
-local Collectible = 1;
+/*-- Display --*/
+
+public func GetCarryMode(object clonk, bool idle)
+{
+	if (!idle)
+		return CARRY_HandBack;
+	else
+		return CARRY_Belt;
+}
+
+public func GetCarryTransform(object clonk, bool idle)
+{
+	if (idle) return;
+
+	var act = clonk->GetAction();
+
+	if(act != "Walk" && act != "Jump")
+		return Trans_Mul(Trans_Translate(4500,0,0), Trans_Rotate(90,1,0,0), Trans_Rotate(180,0,1,0) );
+
+	return Trans_Rotate(-90, 1, 0, 0);
+}
+
+public func GetCarrySpecial(clonk)
+{
+	if(using == 1) 
+	{
+		if(clonk->GetDir() == 1)
+			return "pos_hand2";
+		else
+			return "pos_hand1";
+	}
+	return carry_bone;
+}
+
+/*-- Properties --*/
+
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
+local Components = {Wood = 1, Metal = 1};
 // Damage dealt to trees when chopping.
 local ChopStrength = 10;
 // Damage dealt to living beings when hit with an axe.
 local WeaponStrength = 6;
-local Components = {Wood = 1, Metal = 1};
+// When using the axe to chop a tree.
+local SwingTime = 30;
+// When using the axe as a weapon (without trees).
+local StrikingLength = 20; // in frames

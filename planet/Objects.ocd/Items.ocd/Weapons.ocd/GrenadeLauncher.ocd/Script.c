@@ -1,33 +1,25 @@
-/*--
+/**
 	Grenade Launcher
-	Author: Clonkonaut
-
 	A single shot grenade launcher which fires dangerous iron bombs.
+	
+	@author: Clonkonaut
+*/
 
---*/
-
-//Uses the extra slot library
 #include Library_HasExtraSlot
 
-// Initial velocity of the bomb
-local shooting_strength = 75;
-
-func Hit()
-{
-	Sound("Hits::GeneralHit?");
-}
-
 local is_aiming;
-
-public func GetCarryMode(clonk) { return CARRY_Musket; }
-public func GetCarrySpecial(clonk) { if (is_aiming) return "pos_hand2"; }
-public func GetCarryBone()	{	return	"main";	}
-public func GetCarryTransform()
-{
-	return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
-}
-
 local animation_set;
+local loaded;
+local reload;
+
+local yOffset;
+local iBarrel;
+
+local holding;
+
+local MuzzleUp; local MuzzleFront; local MuzzleDown; local MuzzleOffset;
+
+/*-- Engine Callbacks --*/
 
 func Initialize()
 {
@@ -52,26 +44,58 @@ func Initialize()
 	};
 }
 
+func Hit()
+{
+	Sound("Hits::GeneralHit?");
+}
+
+func RejectCollect(id shotid, object shot)
+{
+	// Only collect grenade launcher ammo
+	if(!(shot->~IsGrenadeLauncherAmmo())) return true;
+}
+
+/*-- Callbacks --*/
+
 public func GetAnimationSet() { return animation_set; }
 
-local loaded;
-local reload;
+// Callback from the clonk when loading is finished
+public func FinishedLoading(object clonk)
+{
+	SetLoaded();
+	if(holding) clonk->StartAim(this);
+	return holding; // false means stop here and reset the clonk
+}
 
-local yOffset;
-local iBarrel;
+// Callback from the clonk, when he actually has stopped aiming
+public func FinishedAiming(object clonk, int angle)
+{
+	if(!loaded) return;
+	
+	// Fire
+	if(Contents(0) && Contents(0)->~IsGrenadeLauncherAmmo())
+		FireWeapon(clonk, angle);
+	Trajectory->Remove(clonk);
+	clonk->StartShoot(this);
+	return true;
+}
 
-local holding;
+// Can only be stacked with same state: loaded vs. non-loaded.
+public func CanBeStackedWith(object other)
+{
+	return this->IsLoaded() == other->~IsLoaded() && inherited(other, ...);
+}
 
-local MuzzleUp; local MuzzleFront; local MuzzleDown; local MuzzleOffset;
+/*-- Usage --*/
 
-protected func HoldingEnabled() { return true; }
+public func HoldingEnabled() { return true; }
 
 public func RejectUse(object clonk)
 {
 	return !clonk->HasHandAction(false, false, true);
 }
 
-func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, int x, int y)
 {
 	// nothing in extraslot?
 	if(!Contents(0))
@@ -105,15 +129,7 @@ func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
-// Callback from the clonk when loading is finished
-public func FinishedLoading(object clonk)
-{
-	SetLoaded();
-	if(holding) clonk->StartAim(this);
-	return holding; // false means stop here and reset the clonk
-}
-
-func ControlUseHolding(object clonk, ix, iy)
+public func ControlUseHolding(object clonk, ix, iy)
 {
 	var angle = Angle(0,0,ix,iy-MuzzleOffset);
 	angle = Normalize(angle,-180);
@@ -130,30 +146,17 @@ func ControlUseHolding(object clonk, ix, iy)
 	return true;
 }
 
-protected func ControlUseStop(object clonk, ix, iy)
-{
-	holding = false;
-	clonk->StopAim();
-	return true;
-}
-
-// Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
-{
-	if(!loaded) return;
-	
-	// Fire
-	if(Contents(0) && Contents(0)->~IsGrenadeLauncherAmmo())
-		FireWeapon(clonk, angle);
-	Trajectory->Remove(clonk);
-	clonk->StartShoot(this);
-	return true;
-}
-
-protected func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming(this);
 	Trajectory->Remove(clonk);
+	return true;
+}
+
+public func ControlUseStop(object clonk, ix, iy)
+{
+	holding = false;
+	clonk->StopAim();
 	return true;
 }
 
@@ -162,7 +165,7 @@ public func Reset(clonk)
 	is_aiming = false;
 }
 
-private func FireWeapon(object clonk, int angle)
+func FireWeapon(object clonk, int angle)
 {
 	var shot = Contents(0)->~TakeObject() ?? Contents(0);
 
@@ -191,12 +194,6 @@ private func FireWeapon(object clonk, int angle)
 	CreateParticle("Flash", 0, 0, 0, 0, 8, Particles_Flash());
 }
 
-func RejectCollect(id shotid, object shot)
-{
-	// Only collect grenade launcher ammo
-	if(!(shot->~IsGrenadeLauncherAmmo())) return true;
-}
-
 public func SetLoaded()
 {
 	loaded = true;
@@ -207,24 +204,55 @@ public func SetLoaded()
 
 public func IsLoaded() { return loaded; }
 
-// Can only be stacked with same state: loaded vs. non-loaded.
-public func CanBeStackedWith(object other)
-{
-	return this->IsLoaded() == other->~IsLoaded() && inherited(other, ...);
-}
+/*-- Production --*/
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
 
+/*-- Display --*/
 
+public func GetCarryMode(object clonk, bool idle, bool nohand)
+{
+	if (idle || nohand)
+		return CARRY_Back;
+
+	return CARRY_Musket;
+}
+
+public func GetCarrySpecial()
+{
+	if (is_aiming) return "pos_hand2";
+}
+
+public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_on_back)
+{
+	if (is_aiming)
+		return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
+
+	if (idle)
+	{
+		if (!second_on_back)
+			return Trans_Mul(Trans_Translate(0, 3000), Trans_Rotate(180, 1));
+		else
+			return Trans_Mul(Trans_Translate(3000, 3000, -1500), Trans_Rotate(180, 1), Trans_Rotate(-30, 0, 1));
+	}
+	if (nohand)
+		return Trans_Translate(0, -3000);
+
+	return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
+}
 
 func Definition(def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 1000, 1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1));
 }
 
+/*-- Properties --*/
+
 local Name = "$Name$";
 local Description = "$Description$";
-local Collectible = 1;
+local Collectible = true;
 local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 3};
+// Initial velocity of the bomb
+local shooting_strength = 75;

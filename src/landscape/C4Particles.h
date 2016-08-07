@@ -18,10 +18,7 @@
 
 #include "platform/StdScheduler.h"
 
-#pragma push_macro("new")
-#undef new
 #include <pcg/pcg_random.hpp>
-#pragma pop_macro("new")
 
 #ifndef INC_C4Particles
 #define INC_C4Particles

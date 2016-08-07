@@ -59,6 +59,14 @@ protected func InitializePlayer(int plr)
 	while (crew = GetCrew(plr, index))
 	{
 		crew->SetPosition(96 + RandomX(-12, 12), LandscapeHeight() - 92);
+		var u = 0;
+		while(crew->Stuck())
+		{
+			crew->SetPosition(crew->GetX(), crew->GetY()-1);
+			++u;
+			if (u > 50) // This is bad, the clonk will most likely die
+				break;
+		}
 
 		// First clonk can construct, others can chop.
 		if (index == 0)

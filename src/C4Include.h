@@ -44,7 +44,6 @@ don't need to include this file or any of the files it includes. */
 #include <cctype>
 #include <cerrno>
 #include <climits>
-
 #include <cmath>
 #include <cstdarg>
 #include <cstddef>
@@ -56,32 +55,13 @@ don't need to include this file or any of the files it includes. */
 #include <list>
 #include <map>
 #include <memory>
+#include <regex>
 #include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <regex>
-namespace re = std;
-
-// debug memory management - must come after standard headers,
-// because those libraries use placement new
-#ifndef NODEBUGMEM
-#if defined(_DEBUG) && defined(_MSC_VER)
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-inline void *operator new(size_t s, const char *szFile, long iLine)
-{ return ::operator new(s, _NORMAL_BLOCK, szFile, iLine); }
-inline void operator delete(void *p, const char *, long)
-{ ::operator delete(p); }
-#define new_orig new
-#define new new(__FILE__, __LINE__)
-#endif
-#endif
-#include <new>
 
 #include "lib/Standard.h"
 #include "C4Prototypes.h"

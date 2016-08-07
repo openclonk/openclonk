@@ -28,6 +28,7 @@ func Split2Components(...)
 func GetComponent(comp_id)
 {
 	var result = inherited(comp_id, ...);
+	if (GetType(this) == C4V_Def) return result;
 	if (comp_id == Wood) result += 1 + (GetCon() > 25);
 	return result;
 }

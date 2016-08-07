@@ -11,6 +11,7 @@
 		ID: submenu ID. Unique in combination with the target == this
 		obj: last object that was shown here
 		hand: bool, whether select with a hand
+		quick: bool, whether this is the quick switch slot
 */
 
 // HUD margin and size in tenths of em.
@@ -119,6 +120,7 @@ private func UpdateInventory()
 
 	// update inventory-slots
 	var hand_item_pos = clonk->~GetHandItemPos(0);
+	var quick_switch_slot = clonk->~GetQuickSwitchSlot();
 
 	for (var slot_info in inventory_slots)
 	{
@@ -134,8 +136,9 @@ private func UpdateInventory()
 			custom_overlay = item->~GetInventoryIconOverlay();
 		}
 		var needs_selection = hand_item_pos == slot_info.slot;
+		var needs_quick_switch = quick_switch_slot == slot_info.slot;
 		var has_extra_slot = item && item->~HasExtraSlot();
-		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || (stack_count != slot_info.last_count) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || (needs_quick_switch != slot_info.quick) || (stack_count != slot_info.last_count) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
 		{
 			// Hide or show extra-slot display?
 			var extra_slot_player = NO_OWNER;
@@ -225,10 +228,12 @@ private func UpdateInventory()
 			GuiUpdate(update, inventory_gui_id, slot_info.ID, this);
 
 			var tag = "Std";
+			if (needs_quick_switch) tag = "Quick";
 			if (needs_selection) tag = "Selected";
 			GuiUpdateTag(tag, inventory_gui_id, slot_info.ID, this);
 
 			slot_info.hand = needs_selection;
+			slot_info.quick = needs_quick_switch;
 			slot_info.obj = item;
 			slot_info.empty = !item;
 		}
@@ -275,6 +280,7 @@ private func CreateNewInventoryButton(int max_slots)
 		slot = slot_number,
 		ID = slot_number + 1,
 		hand = false,
+		quick = false,
 		obj = nil,
 		empty = true
 	};
@@ -292,9 +298,19 @@ private func CreateNewInventoryButton(int max_slots)
 			Style = GUI_TextTop,
 			Text = Format("%2d", slot_info.slot + 1)
 		},
+		quick_switch = // Shows quick switch control key if this is the quick switch slot
+		{
+			Priority = 3,
+			Style = GUI_NoCrop | GUI_TextHCenter | GUI_TextBottom,
+			Left = "-50%",
+			Right = "150%",
+			Top = Format(" %s%s", "20%", ToEmString(-2)),
+			Bottom = "20%",
+			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_QuickSwitch, true)), Selected = "" }
+		},
 		Style = GUI_NoCrop,
 		ID = slot_info.ID,
-		Symbol = {Std = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
+		Symbol = {Std = Icon_Menu_Circle, Quick = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
 		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
 		count =
 		{

@@ -2,7 +2,7 @@
 	Basement
 	Provides basements to structures, but can also be built as a single object.
 	
-	@author Maikel
+	@author: Maikel
 */
 
 #include Library_Structure
@@ -10,16 +10,14 @@
 local parent;
 local width;
 
-protected func Construction()
+func Construction()
 {
 	// Make sure the basement does not move while constructing.
 	SetCategory(C4D_StaticBack);
 	return _inherited(...);
 }
 
-public func IsHammerBuildable() { return true; }
-
-protected func Initialize()
+func Initialize()
 {
 	var wdt = GetObjWidth();
 	if (parent)
@@ -34,7 +32,7 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func Destruction()
+func Destruction()
 {
 	// Cast a single rock.
 	CastObjects(Rock, 1, 15, 0, -5);
@@ -53,13 +51,6 @@ public func SetWidth(int wdt)
 
 public func GetWidth() { return width; }
 
-// Set the parent if the basement is attached to a structure.
-public func CombineWith(object stick_to)
-{
-	SetParent(stick_to);
-	return;
-}
-
 public func SetParent(object to_parent)
 {
 	parent = to_parent;
@@ -74,12 +65,48 @@ public func SetParent(object to_parent)
 
 public func GetParent() { return parent; }
 
+/*-- Saving --*/
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...)) 
+		return false;
+	if (parent)
+		props->AddCall("BasementParent", this, "SetParent", parent);
+	else if (width != GetObjWidth())
+		props->AddCall("BasementWidth", this, "SetWidth", width);
+	props->Remove("Category");
+	return true;
+}
+
+/*-- Construction --*/
+
+public func IsHammerBuildable() { return true; }
+// It should not be a structure.
+public func IsStructure() { return false; }
+// But a basement!
+public func IsBasement() { return true; }
+
 // Is a construction that is built just below the surface.
 public func IsBelowSurfaceConstruction() { return true; }
 
-// Sticking to other structures, at the bottom of that structure.
+// This makes it possible to combine basements with each other.
+public func IsStructureWithoutBasement() { return true; }
+
+// Sticking to other structures.
+
 public func ConstructionCombineWith() { return "IsStructureWithoutBasement"; }
-public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Bottom; }
+
+public func ConstructionCombineDirection(object other)
+{
+	// All directions are possible for other basements
+	if (other && other->~IsBasement())
+		return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right | CONSTRUCTION_STICK_Bottom | CONSTRUCTION_STICK_Top;
+
+	// For everything else, the basement is below.
+	return CONSTRUCTION_STICK_Bottom;
+}
+
 public func ConstructionCombineOffset(object other)
 {
 	// Some structures like the elevator require the basement to have an offset.
@@ -90,9 +117,10 @@ public func NoConstructionFlip() { return true; }
 
 public func AlternativeConstructionPreview(object previewer, int direction, object combine_with)
 {
+	if (combine_with && combine_with->~IsBasement()) return;
+
 	var wdt = GetSiteWidth(direction, combine_with);
 	previewer->SetObjDrawTransform(1000 * wdt / 40, 0, 0, 0, 1000, 0, previewer.GFX_StructureOverlay);
-	return;
 }
 
 public func GetSiteWidth(int direction, object combine_with)
@@ -109,6 +137,8 @@ public func GetSiteWidth(int direction, object combine_with)
 
 public func SetConstructionSiteOverlay(object site, int direction, object combine_with)
 {
+	if (combine_with && combine_with->~IsBasement()) return;
+
 	var wdt = GetSiteWidth(direction, combine_with);
 	site->SetGraphics(nil, Basement, 1, GFXOV_MODE_Base);
 	site->SetClrModulation(RGBa(255, 255, 255, 128), 1);
@@ -116,26 +146,15 @@ public func SetConstructionSiteOverlay(object site, int direction, object combin
 	return true;
 }
 
-// Don't stick to itself, so it should not be a structure.
-public func IsStructure() { return false; }
-
-
-/*-- Saving --*/
-
-public func SaveScenarioObject(proplist props)
+// Set the parent if the basement is attached to a structure.
+public func CombineWith(object stick_to)
 {
-	if (!inherited(props, ...)) 
-		return false;
-	if (parent)
-		props->AddCall("BasementParent", this, "SetParent", parent);
-	else if (width != GetObjWidth())
-		props->AddCall("BasementWidth", this, "SetWidth", width);
-	props->Remove("Category");
-	return true;
+	if (stick_to && stick_to->~IsBasement()) return;
+
+	SetParent(stick_to);
 }
 
-
-/*-- Proplist --*/
+/*-- Properties --*/
 
 local Name = "$Name$";
 local Description ="$Description$";

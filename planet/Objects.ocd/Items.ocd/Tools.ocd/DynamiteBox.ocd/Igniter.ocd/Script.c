@@ -1,32 +1,38 @@
 /** 
-	Dynamite Igniter 
+	Dynamite Igniter
 	Can be used to ignite dynamite from a distance.
-		
+	
 	@author Newton
 */
 
 #include DynamiteBox
 
-private func Hit()
+local ignited;
+local dynamite_sticks;
+local wires;
+
+/*-- Engine Callbacks --*/
+
+func Hit()
 {
 	Sound("Hits::Materials::Metal::DullMetalHit?");
 }
 
-public func HoldingEnabled() { return true; }
+// Only the main dynamite box is stored.
+public func SaveScenarioObject() { return false; }
 
-public func GetCarryMode() { return CARRY_BothHands; }
+/*-- Callbacks --*/
 
-public func GetCarryPhase() { return 250; }
-
-public func GetCarrySpecial(clonk) 
-{ 
-	if (ignited) 
-		return "pos_hand2";
+public func OnFuseFinished()
+{
+	if (Contained() != nil) 
+		return ResetClonk(Contained());
+	return RemoveObject();
 }
 
-local ignited;
-local dynamite_sticks;
-local wires;
+/*-- Usage --*/
+
+public func HoldingEnabled() { return true; }
 
 public func ControlUse(object clonk, int x, int y)
 {
@@ -59,13 +65,6 @@ public func Ignite(object clonk)
 	return;
 }
 
-public func OnFuseFinished()
-{
-	if (Contained() != nil) 
-		return ResetClonk(Contained());
-	return RemoveObject();
-}
-
 public func ResetClonk(object clonk)
 {
 	// Reset animation of the clonk.
@@ -78,19 +77,33 @@ public func ResetClonk(object clonk)
 	return;
 }
 
-// Only the main dynamite box is stored.
-public func SaveScenarioObject() { return false; }
+/*-- Production --*/
 
 public func IsTool() { return true; }
 public func IsChemicalProduct() { return false; }
 
+/*-- Display --*/
+
+public func GetCarryMode()
+{
+	return CARRY_BothHands;
+}
+
+public func GetCarryPhase() { return 250; }
+
+public func GetCarrySpecial(clonk)
+{ 
+	if (ignited)
+		return "pos_hand2";
+}
+
+func Definition(def)
+{
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25, 1, 0, 0), Trans_Rotate(40, 0, 1, 0)), def);
+}
 
 /*-- Properties --*/
 
-func Definition(def) {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25, 1, 0, 0), Trans_Rotate(40, 0, 1, 0)), def);
-}
-local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-
+local Collectible = true;

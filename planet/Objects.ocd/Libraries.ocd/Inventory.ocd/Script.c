@@ -70,21 +70,45 @@ public func GetItemCount()
 	return count;
 }
 
+// This function was useful back when the clonk had two usable hand items.
+// Feel free to uncomment whenever this obsolete control style is reinvented.
+
 /** Get the 'i'th item in hands.
     These are the items that will be used with use-commands. (Left mouse click, etc...) */
-public func GetHandItem(int i)
+/*public func GetHandItem(int i)
 {
 	// i is valid range
 	if (i >= GetLength(this.inventory.hand_objects))
 		return nil;
-	if (i < 0) return nil;	
+	if (i < 0) return nil;
 	return GetItem(this.inventory.hand_objects[i]);
+}*/
+
+// 0: returns currently selected inventory item
+// 1: returns item in quick slot
+public func GetHandItem(int i)
+{
+	// Range exceeded
+	if (i < 0 || i >= 2) return nil;
+
+	if (i == 0)
+		return GetItem(this.inventory.hand_objects[0]);
+	if (i == 1)
+	{
+		var slot = this->~GetQuickSwitchSlot();
+		if (slot < 0 || slot >= this.MaxContentsCount) return nil;
+		// Don't show the same item twice
+		if (slot == this.inventory.hand_objects[0]) return nil;
+		return GetItem(slot);
+	}
+	// no more than 2 hands
+	return nil;
 }
 
 /** Set the 'hand'th use-item to the 'inv'th slot */
 public func SetHandItemPos(int hand, int inv)
 {
-	// indices are in range?	
+	// indices are in range?
 	if(hand >= HandObjects || inv >= MaxContentsCount)
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
@@ -258,6 +282,7 @@ public func Switch2Items(int one, int two)
 	}
 	
 	this->~OnInventoryChange(one, two);
+	this->~UpdateAttach();
 }
 
 

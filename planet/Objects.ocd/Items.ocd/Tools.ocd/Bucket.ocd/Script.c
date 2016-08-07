@@ -3,21 +3,56 @@
 	Transport earth from one spot to another to form the landscape.
 	Replaces the old earth chunks in their behaviour.
 
-	@author Clonkonaut
+	@author: Clonkonaut
 */
 
 // Uses an extra-slot to store and display material.
 #include Library_HasExtraSlot
 
-// Maximum distance at which material is collected / spilled
-local maxreach = 15;
+/*-- Engine Callbacks --*/
 
-public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryBone() { return "main"; }
-public func GetCarryTransform()
+protected func Hit()
 {
-	return Trans_Mul(Trans_Rotate(-90, 0, 1, 0), Trans_Translate(3500, 0, -4000));
+	Sound("Hits::BucketHit?");
 }
+
+public func RejectCollect(id def, object obj)
+{
+	if (!obj->~IsBucketMaterial()) return true;
+	// Can only contain one stackable object.
+	if (Contents() && Contents(0)->~IsStackable()) return true;
+	return false;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	return true;
+}
+
+/*-- Callbacks --*/
+
+// Can collect IsBucketMaterial?
+public func IsBucket() { return true; }
+
+// When trying to put into a producer that can't take the item but its contents, just transfer the contents.
+public func MergeWithStacksIn(object to_building, ...)
+{
+	if (to_building && to_building->~IsProducer() && !to_building->~IsCollectionAllowed(this))
+	{
+		var i = ContentsCount(), contents, num_collected = 0;
+		while (i--)
+			if (contents = Contents(i))
+				if (to_building->Collect(contents))
+					++num_collected;
+		// Return if contents transfer was successful.
+		if (num_collected > 0) return true;
+	}
+	return _inherited(to_building, ...);
+	 
+}
+
+/*-- Usage --*/
 
 public func RejectUse(object clonk)
 {
@@ -33,7 +68,7 @@ public func ControlUse(object clonk, int iX, int iY)
 	{
 		Spill(angle);
 		EmptyBucket();
-		PlayAnimation(clonk);
+		PlayBucketAnimation(clonk);
 		return true;
 	}
 	else
@@ -42,14 +77,6 @@ public func ControlUse(object clonk, int iX, int iY)
 	}
 
 	return true;
-}
-
-public func RejectCollect(id def, object obj)
-{
-	if (!obj->~IsBucketMaterial()) return true;
-	// Can only contain one stackable object.
-	if (Contents() && Contents(0)->~IsStackable()) return true;
-	return false;
 }
 
 public func EmptyBucket()
@@ -63,12 +90,13 @@ public func IsBucketFilled()
 {
 	return ContentsCount();
 }
+
 public func IsBucketEmpty()
 {
 	return !IsBucketFilled();
 }
 
-private func PlayAnimation(object clonk)
+func PlayBucketAnimation(object clonk)
 {
 	// animation only available for jumping and walking
 	if(!clonk->IsJumping() && !clonk->IsWalking())
@@ -98,7 +126,7 @@ private func PlayAnimation(object clonk)
 	clonk->UpdateAttach();
 }
 
-private func Spill(int angle)
+func Spill(int angle)
 {
 	var obj = Contents(0);
 	if (!obj) return;
@@ -111,44 +139,30 @@ private func Spill(int angle)
 	CastPXS(material_name, material_amount, 20, 0,0, angle, 15);
 }
 
-protected func Hit()
-{
-	Sound("Hits::BucketHit?");
-}
+/*-- Production --*/
 
-// Can collect IsBucketMaterial?
-public func IsBucket() { return true; }
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
-// When trying to put into a producer that can't take the item but its contents, just transfer the contents.
-public func MergeWithStacksIn(object to_building, ...)
+/*-- Display --*/
+
+public func GetCarryMode()
 {
-	if (to_building && to_building->~IsProducer() && !to_building->~IsCollectionAllowed(this))
-	{
-		var i = ContentsCount(), contents, num_collected = 0;
-		while (i--)
-			if (contents = Contents(i))
-				if (to_building->Collect(contents))
-					++num_collected;
-		// Return if contents transfer was successful.
-		if (num_collected > 0) return true;
-	}
-	return _inherited(to_building, ...);
-	 
+	return CARRY_HandBack;
 }
 
-
-public func SaveScenarioObject(props)
+public func GetCarryTransform(object clonk, bool idle, bool nohand)
 {
-	if (!inherited(props, ...)) return false;
-	return true;
+	if (nohand) return Trans_Mul(Trans_Rotate(180, 0, 1, 0), Trans_Translate(3000));
+	return Trans_Mul(Trans_Rotate(-90, 0, 1, 0), Trans_Translate(3500, 0, -4000));
 }
 
 protected func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1100)),def);
 }
+
+/*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
