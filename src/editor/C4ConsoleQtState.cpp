@@ -613,8 +613,9 @@ void C4ConsoleGUIState::UpdateActionStates()
 	bool has_draw_tools = enabled && landscape_mode != LandscapeMode::Dynamic;
 	bool has_exact_draw_tools = enabled && landscape_mode == LandscapeMode::Exact;
 	bool is_drawing = has_draw_tools && editcursor_mode == C4CNS_ModeDraw;
+	bool is_lobby = ::Network.isLobbyActive();
 	ui.actionFileNew->setEnabled(!enabled);
-	ui.actionPlay->setEnabled(enabled);
+	ui.actionPlay->setEnabled(enabled || is_lobby);
 	ui.actionPause->setEnabled(enabled);
 	ui.actionCursorGame->setEnabled(enabled);
 	ui.actionCursorSelect->setEnabled(enabled);
