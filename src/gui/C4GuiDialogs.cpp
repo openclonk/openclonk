@@ -237,6 +237,11 @@ namespace C4GUI
 
 	bool Dialog::CreateConsoleWindow()
 	{
+#ifdef WITH_QT_EDITOR
+		// TODO: Implement these as Qt editor windows.
+		// This currently creates an empty window in Windows and a segfault in Linux.
+		return false;
+#endif
 		// already created?
 		if (pWindow) return true;
 		// create it!
