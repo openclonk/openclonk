@@ -76,9 +76,11 @@ bool C4Console::In(const char *szText)
 		return true;
 	}
 	// begins with '#'? then it's a message. Route via ProcessInput to allow #/sound
-	if (*szText == '#')
+	// Also, in the lobby, everything written here is still a message
+	bool is_chat_command = (*szText == '#');
+	if (is_chat_command || (::Network.isEnabled() && !::Network.Status.isPastLobby()))
 	{
-		::MessageInput.ProcessInput(szText + 1);
+		::MessageInput.ProcessInput(szText + is_chat_command);
 		return true;
 	}
 	// editing enabled?
