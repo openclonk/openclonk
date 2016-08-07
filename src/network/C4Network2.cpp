@@ -1789,8 +1789,8 @@ void C4Network2::RequestActivate()
 
 void C4Network2::DeactivateInactiveClients()
 {
-	// host only
-	if (!isHost()) return;
+	// host only and not in editor
+	if (!isHost() || ::Application.isEditor) return;
 	// update activity
 	Clients.UpdateClientActivity();
 	// find clients to deactivate

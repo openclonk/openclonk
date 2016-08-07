@@ -1472,7 +1472,7 @@ void C4Player::Eliminate()
 	Log(FormatString(LoadResStr("IDS_PRC_PLRELIMINATED"),GetName()).getData());
 
 	// Early client deactivation check
-	if (::Control.isCtrlHost() && AtClient > C4ClientIDHost)
+	if (::Control.isCtrlHost() && AtClient > C4ClientIDHost && !::Application.isEditor)
 	{
 		// Check: Any player left at this client?
 		C4Player *pPlr = NULL;
