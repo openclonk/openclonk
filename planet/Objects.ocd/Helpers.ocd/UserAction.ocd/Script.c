@@ -135,6 +135,11 @@ func Definition(def)
 			{ Name="$EjectContentsYes$", Value=true }
 			] },
 		} } );
+	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If, "Action"], { }, { Type="proplist", Display="if({{Condition}}) {{Action}} else {{ElseAction}}", EditorProps = {
+		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$" },
+		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$" },
+		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$" }
+		} } );
 	AddEvaluator("Action", "$Script$", "$SetVariable$", "$SetVariableHelp$", "set_variable", [def, def.EvalAct_SetVariable], { }, { Type="proplist", Display="{{Context}}::{{VariableName}}={{Value}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" },
@@ -779,6 +784,17 @@ private func EvalAct_RemoveObject(proplist props, proplist context)
 	var obj = EvaluateValue("Object", props.Object, context);
 	if (!obj) return;
 	obj->RemoveObject(props.EjectContents);
+}
+
+private func EvalAct_If(proplist props, proplist context, eval_type)
+{
+	// Do evaluation on first pass. After that, take context value.
+	var sid = props._sequence_id;
+	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
+	if (context.sequence_progress[sid] = context.sequence_progress[sid] ?? !!EvaluateValue("Boolean", props.Condition, context))
+		return EvaluateValue(eval_type, props.TrueEvaluator, context);
+	else
+		return EvaluateValue(eval_type, props.FalseEvaluator, context);
 }
 
 private func EvalAct_Log(proplist props, proplist context)
