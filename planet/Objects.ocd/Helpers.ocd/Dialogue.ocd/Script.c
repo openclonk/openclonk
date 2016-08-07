@@ -596,7 +596,7 @@ private func EvalAct_Message(proplist props, proplist context)
 	var speaker = UserAction->EvaluateValue("Object", props.Speaker, context);
 	var n_options = 0, any_message = false;
 	if (props.Options) n_options = GetLength(props.Options);
-	if (n_options && !props.options_msg)
+	if (n_options)
 	{
 		var options_msg = CreateArray(n_options), i=0;
 		for (var opt in props.Options)
@@ -605,13 +605,13 @@ private func EvalAct_Message(proplist props, proplist context)
 			options_msg[i] = [UserAction->EvaluateValue("String", opt.Text, context) ?? "", Format("MenuSelectOption(%d)", i)];
 			++i;
 		}
-		props.options_msg = options_msg;
+		props._options_msg = options_msg;
 	}
 	var text = UserAction->EvaluateValue("String", props.Text, context) ?? "";
 	// Show message to desired players
 	for(var plr in UserAction->EvaluateValue("PlayerList", props.TargetPlayers, context))
 	{
-		Dialogue->MessageBox(text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props.options_msg, context);
+		Dialogue->MessageBox(text, context.triggering_object, speaker, plr, after_message != "next" && !n_options, props._options_msg, context);
 		any_message = true;
 	}
 	// After-message-option
