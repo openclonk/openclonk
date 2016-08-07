@@ -175,12 +175,17 @@ public func GetCarryMode(object clonk, bool idle)
 	return CARRY_Back;
 }
 
-public func GetCarryTransform(object clonk, bool idle, bool nohand)
+public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_on_back)
 {
 	if (idle)
-		return Trans_Mul(Trans_Translate(0,3000), Trans_Rotate(-45,0,1));
+	{
+		if (!second_on_back)
+			return Trans_Mul(Trans_Translate(0,3000, 00), Trans_Rotate(-45,0,1));
+		else
+			return Trans_Mul(Trans_Translate(-5000,3000), Trans_Rotate(-45,0,1));
+	}
 	if (nohand)
-		return Trans_Mul(Trans_Translate(0,-3000), Trans_Rotate(-45,0,1));
+		return Trans_Mul(Trans_Translate(0,-3000, -2200), Trans_Rotate(-45,0,1));
 }
 
 public func GetCarryPhase()

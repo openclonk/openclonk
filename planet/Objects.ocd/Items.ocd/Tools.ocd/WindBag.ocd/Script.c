@@ -223,10 +223,15 @@ public func GetCarryMode(object clonk)
 	return CARRY_Musket;
 }
 
-public func GetCarryTransform(object clonk, bool idle, bool nohand)
+public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_on_back)
 {
 	if (idle)
-		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0,-3000));
+	{
+		if (!second_on_back)
+			return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0,-3000));
+		else
+			return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(3000,-3000), Trans_Rotate(-30, 0, 1));
+	}
 	if (nohand)
 		return Trans_Mul(Trans_Rotate(180, 1), Trans_Translate(0,3000));
 
