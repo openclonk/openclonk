@@ -208,6 +208,7 @@ private func ResetAllClearedCP()
 {
 	plr_list = [];
 	team_list = [];
+	respawn_list = [];
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint)))
 		cp->ResetCleared();
 	return true;
