@@ -29,6 +29,7 @@
 #include "gui/C4MouseControl.h"
 #include "landscape/C4Landscape.h"
 #include "object/C4GameObjects.h"
+#include "player/C4PlayerList.h"
 
 /* Console viewports */
 
@@ -466,46 +467,16 @@ void C4ConsoleQtViewportScrollArea::setScrollBarVisibility(bool visible)
 	}
 }
 
-
-C4ConsoleQtViewportLabel::C4ConsoleQtViewportLabel(const QString &title, C4ConsoleQtViewportDockWidget *dock)
-	: QLabel(dock), dock(dock)
-{
-	OnActiveChanged(false);
-	setText(title);
-}
-
-void C4ConsoleQtViewportLabel::OnActiveChanged(bool active)
-{
-	// set color schemes for inactive / active viewport headers
-	QColor bgclr = QApplication::palette(this).color(QPalette::Highlight);
-	QColor fontclr = QApplication::palette(this).color(QPalette::HighlightedText);
-	if (active)
-		setStyleSheet(QString(
-			"QLabel { background: %1; padding: 3px; color: %2; font-weight: bold; }")
-			.arg(bgclr.name(), fontclr.name()));
-	else
-		setStyleSheet(QString(
-			"QLabel { padding: 3px; }"));
-}
-
-void C4ConsoleQtViewportLabel::mousePressEvent(QMouseEvent *eventPress)
-{
-	dock->view->setFocus();
-	QLabel::mousePressEvent(eventPress);
-}
-
-
-
 C4ConsoleQtViewportDockWidget::C4ConsoleQtViewportDockWidget(C4ConsoleQtMainWindow *main_window, QMainWindow *parent, C4ViewportWindow *cvp)
 	: QDockWidget("", parent), main_window(main_window), cvp(cvp)
 {
-	// Translated title
-	setWindowTitle(LoadResStr("IDS_CNS_VIEWPORT"));
+	// Translated title or player name
+	C4Player *plr = ::Players.Get(cvp->cvp->GetPlayer());
+	setWindowTitle(plr ? plr->GetName() : LoadResStr("IDS_CNS_VIEWPORT"));
 	// Actual view container, wrapped in scrolling area
 	auto scrollarea = new C4ConsoleQtViewportScrollArea(this);
 	view = new C4ConsoleQtViewportView(scrollarea);
 	scrollarea->setViewport(view);
-	setTitleBarWidget((title_label = new C4ConsoleQtViewportLabel(windowTitle(), this)));
 	setWidget(scrollarea);
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(TopLevelChanged(bool)));
 	// Register viewport widget for periodic rendering updates.
@@ -521,21 +492,20 @@ void C4ConsoleQtViewportDockWidget::mousePressEvent(QMouseEvent *eventPress)
 
 void C4ConsoleQtViewportDockWidget::OnActiveChanged(bool active)
 {
-	title_label->OnActiveChanged(active);
+	// Title bar of the selected viewport should be drawn in highlight colors to show that keyboard input will now go to the viewport.
+	// Unfortunately, color and font of the title is not taken from QDockWidget::title but directly from QDockWidget.
+	// Provide them in both just in case Qt ever changes its definition.
+	QColor bgclr = QApplication::palette(this).color(QPalette::Highlight);
+	QColor fontclr = QApplication::palette(this).color(QPalette::HighlightedText);
+	if (active)
+		setStyleSheet(QString(
+			"QDockWidget::title { text-align: left; background: %1; padding-left: 3px; color: %2; font-weight: bold; } QDockWidget { color: %2; font-weight: bold; }").arg(bgclr.name(), fontclr.name()));
+	else
+		setStyleSheet(QString());
 }
 
 void C4ConsoleQtViewportDockWidget::TopLevelChanged(bool is_floating)
 {
-	if (!is_floating)
-	{
-		// docked has custom title
-		setTitleBarWidget(title_label);
-	}
-	else
-	{
-		// undocked using OS title
-		setTitleBarWidget(NULL);
-	}
 	// Ensure focus after undock and after re-docking floating viewport window
 	view->setFocus();
 }
@@ -549,4 +519,11 @@ void C4ConsoleQtViewportDockWidget::closeEvent(QCloseEvent * event)
 		cvp = NULL;
 		deleteLater();
 	}
+}
+
+bool C4ConsoleQtViewportDockWidget::event(QEvent *e)
+{
+	// Focus on title bar click 
+	if (e->type() == QEvent::NonClientAreaMouseButtonPress || e->type() == QEvent::MouseButtonPress) view->setFocus();
+	return QDockWidget::event(e);
 }

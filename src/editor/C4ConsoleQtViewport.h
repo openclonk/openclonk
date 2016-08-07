@@ -80,22 +80,6 @@ public:
 	friend C4ConsoleQtViewportView;
 };
 
-class C4ConsoleQtViewportLabel : public QLabel
-{
-	Q_OBJECT
-
-	class C4ConsoleQtViewportDockWidget *dock;
-	bool active;
-	QPalette pal_inactive, pal_active;
-
-public:
-	C4ConsoleQtViewportLabel(const QString &title, C4ConsoleQtViewportDockWidget *dock);
-	void OnActiveChanged(bool active);
-
-protected:
-	void mousePressEvent(QMouseEvent *eventPress) override;
-};
-
 class C4ConsoleQtViewportDockWidget : public QDockWidget
 {
 	Q_OBJECT
@@ -103,7 +87,6 @@ class C4ConsoleQtViewportDockWidget : public QDockWidget
 	class C4ConsoleQtMainWindow *main_window;
 	class C4ViewportWindow *cvp;
 	C4ConsoleQtViewportView *view;
-	C4ConsoleQtViewportLabel *title_label;
 
 protected:
 	void mousePressEvent(QMouseEvent *eventPress);
@@ -114,13 +97,13 @@ public:
 	virtual void closeEvent(QCloseEvent * event);
 	class C4ViewportWindow *GetViewportWindow() const { return cvp; }
 	void SetFocus() { view->setFocus(); } // forward focus to view
+	bool event(QEvent *e) override;
 
 private slots :
 	void TopLevelChanged(bool is_floating);
 
 	friend C4ConsoleQtViewportView;
 	friend C4ConsoleQtViewportScrollArea;
-	friend C4ConsoleQtViewportLabel;
 };
 
 
