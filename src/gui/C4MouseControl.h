@@ -113,7 +113,7 @@ public:
 	void SetOwnedMouse(bool fToVal) { fMouseOwned = fToVal; }
 	bool IsMouseOwned() { return fMouseOwned; }
 	bool IsActive() { return !!Active; }
-	bool GetLastGUIPos(int32_t *x_out, int32_t *y_out) const;
+	bool GetLastCursorPos(int32_t *x_out_gui, int32_t *y_out_gui, int32_t *x_out_game, int32_t *y_out_game) const;
 
 	const char *GetCaption();
 	void SetTooltipText(const StdStrBuf &text);
