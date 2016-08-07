@@ -35,7 +35,7 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
 	var which_one = Random(3) + 1;
 	var log="";
 	if (!GetPlayerName(killed_by))
- 		 log=Format(Translate(Format("KilledByGaya%d", which_one)), GetTaggedPlayerName(plr), name);
+ 		 log=Format(Translate(Format("KilledByGaia%d", which_one)), GetTaggedPlayerName(plr), name);
  	else if (plr == killed_by)
 		log=Format(Translate(Format("Selfkill%d", which_one)), GetTaggedPlayerName(plr), name);
  	else if (!Hostile(plr,killed_by))
