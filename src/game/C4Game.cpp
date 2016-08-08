@@ -3350,6 +3350,9 @@ void C4Game::SetInitProgress(float fToProgress)
 	}
 	// Cheap hack to get the Console window updated while loading
 	Application.FlushMessages();
+#ifdef WITH_QT_EDITOR
+	Application.ProcessQtEvents();
+#endif
 }
 
 void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)

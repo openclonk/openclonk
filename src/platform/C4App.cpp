@@ -63,8 +63,22 @@ bool C4AbstractApp::DoScheduleProcs(int iTimeout)
 	// Unfortunately, the SDL event loop needs to be polled
 	FlushMessages();
 #endif
+#ifdef WITH_QT_EDITOR
+	// Some places, for example the lobby, have a nested event processing loop.
+	// To prevent the editor from freezing, call the Qt event loop here.
+	if (iTimeout)
+		ProcessQtEvents();
+#endif
 	return StdScheduler::DoScheduleProcs(iTimeout);
 }
+
+#ifdef WITH_QT_EDITOR
+void C4AbstractApp::ProcessQtEvents()
+{
+	if (Application.isEditor)
+		QApplication::processEvents();
+}
+#endif
 
 void C4Window::PerformUpdate()
 {

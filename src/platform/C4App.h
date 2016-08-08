@@ -71,6 +71,9 @@ public:
 
 	virtual bool DoScheduleProcs(int iTimeout);
 	bool FlushMessages();
+#ifdef WITH_QT_EDITOR
+	void ProcessQtEvents();
+#endif
 	C4Window * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
 
