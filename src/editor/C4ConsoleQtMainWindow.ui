@@ -1244,7 +1244,7 @@
   </connection>
   <connection>
    <sender>drawSizeSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>DrawSizeChanged(int)</slot>
    <hints>
