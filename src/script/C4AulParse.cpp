@@ -1876,6 +1876,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		Shift();
 		// generate code for the following expression
 		Parse_Expression(op->Priority);
+		if (Type == PARSER)
 		{
 			C4V_Type to = op->Type1;
 			C4V_Type from = GetLastRetType(to);
