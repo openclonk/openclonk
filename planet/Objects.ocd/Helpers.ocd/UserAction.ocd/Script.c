@@ -136,9 +136,9 @@ func Definition(def)
 			] },
 		} } );
 	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If, "Action"], { }, { Type="proplist", Display="if({{Condition}}) {{Action}} else {{ElseAction}}", EditorProps = {
-		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$" },
-		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$" },
-		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$" }
+		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
+		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
+		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$", Priority=30 }
 		} } );
 	AddEvaluator("Action", "$Script$", "$SetVariable$", "$SetVariableHelp$", "set_variable", [def, def.EvalAct_SetVariable], { }, { Type="proplist", Display="{{Context}}::{{VariableName}}={{Value}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
@@ -155,8 +155,8 @@ func Definition(def)
 	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
 	var find_object_in_area_delegate = { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
-		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
-		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Options=[
+		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$", Priority=51 },
+		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Priority=41, Options=[
 			{ Name="$SearchAreaWholeMap$", EditorHelp="$SearchAreaWholeMapHelp$" },
 			{ Name="$SearchAreaInRect$", EditorHelp="$SearchAreaInRectHelp$", Value={ Function="InRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 } },
 			{ Name="$SearchAreaAtRect$", EditorHelp="$SearchAreaAtRectHelp$", Value={ Function="AtRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff80 } },
@@ -166,7 +166,7 @@ func Definition(def)
 				Radius = { Type="circle", Relative=true, Name="$Radius$", Color=0xff80ff }
 				} } }
 			] },
-			AllowContained = { Name="$AllowContained$", EditorHelp="$AllowContainedHelp$", Type="bool" }
+		AllowContained = { Name="$AllowContained$", EditorHelp="$AllowContainedHelp$", Type="bool", Priority=31 }
 		} };
 	var find_object_in_container_delegate = { Type="proplist", Display="{{ID}} in {{Container}}", ShowFullName=true, EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
@@ -190,8 +190,8 @@ func Definition(def)
 	// Boolean (condition) evaluators
 	AddEvaluator("Boolean", nil, ["$Constant$", ""], "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
 	AddEvaluator("Boolean", "$Comparison$", "$CompareInteger$", "$ComparisonHelp$", "compare_int", [def, def.EvalComparison, "Integer"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
-		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
-		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			{ Name="<", EditorHelp="$LessThanHelp$", Value="lt" },
@@ -199,47 +199,47 @@ func Definition(def)
 			{ Name="<=", EditorHelp="$LessOrEqualHelp$", Value="le" },
 			{ Name=">=", EditorHelp="$GreaterOrEqualHelp$", Value="ge" }
 			] },
-		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
 	AddEvaluator("Boolean", "$Comparison$", "$CompareBoolean$", "$ComparisonHelp$", "compare_bool", [def, def.EvalComparison, "Boolean"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
-		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
-		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			] },
-		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
 	AddEvaluator("Boolean", "$Comparison$", "$CompareObject$", "$ComparisonHelp$", "compare_object", [def, def.EvalComparison, "Object"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
-		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
-		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			] },
-		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
 	AddEvaluator("Boolean", "$Comparison$", "$CompareString$", "$ComparisonHelp$", "compare_string", [def, def.EvalComparison, "String"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
-		LeftOperand = new Evaluator.String { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
-		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+		LeftOperand = new Evaluator.String { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			] },
-		RightOperand = new Evaluator.String { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		RightOperand = new Evaluator.String { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
 	AddEvaluator("Boolean", "$Comparison$", "$CompareDefinition$", "$ComparisonHelp$", "compare_definition", [def, def.EvalComparison, "Definition"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
-		LeftOperand = new Evaluator.Definition { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
-		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+		LeftOperand = new Evaluator.Definition { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			] },
-		RightOperand = new Evaluator.Definition { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		RightOperand = new Evaluator.Definition { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
 	AddEvaluator("Boolean", "$Comparison$", "$ComparePlayer$", "$ComparisonHelp$", "compare_player", [def, def.EvalComparison, "Player"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
-		LeftOperand = new Evaluator.Player { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$" },
-		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Options = [
+		LeftOperand = new Evaluator.Player { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
+		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
 			{ Name="!=", EditorHelp="$NotEqualHelp$", Value="ne" },
 			] },
-		RightOperand = new Evaluator.Player { Name="$RightOperand$", EditorHelp="$RightOperandHelp$" }
+		RightOperand = new Evaluator.Player { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
 	AddEvaluator("Boolean", "$Logic$", "$Not$", "$NotHelp$", "not", [def, def.EvalBool_Not], { }, new Evaluator.Boolean { }, "Operand");
 	AddEvaluator("Boolean", "$Logic$", "$And$", "$AndHelp$", "and", [def, def.EvalBool_And], { Operands=[] }, { Type="proplist", DescendPath="Operands", Display="{{Operands}}", EditorProps = {
@@ -252,8 +252,8 @@ func Definition(def)
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
 	var arithmetic_delegate = { Type="proplist", EditorProps = {
-		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftArithmeticOperandHelp$" },
-		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightArithmeticOperandHelp$" }
+		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftArithmeticOperandHelp$", Priority=44 },
+		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightArithmeticOperandHelp$", Priority=42 }
 		} };
 	AddEvaluator("Integer", "$Arithmetic$", "$Sum$ (+)", "$SumHelp$", "add", [def, def.EvalInt_Add], { }, new arithmetic_delegate { Display="{{LeftOperand}}+{{RightOperand}}" });
 	AddEvaluator("Integer", "$Arithmetic$", "$Sub$ (-)", "$SumHelp$", "subtract", [def, def.EvalInt_Sub], { }, new arithmetic_delegate { Display="{{LeftOperand}}-{{RightOperand}}" });
@@ -261,8 +261,8 @@ func Definition(def)
 	AddEvaluator("Integer", "$Arithmetic$", "$Div$ (/)", "$DivHelp$", "divide", [def, def.EvalInt_Div], { }, new arithmetic_delegate { Display="{{LeftOperand}}/{{RightOperand}}" });
 	AddEvaluator("Integer", "$Arithmetic$", "$Mod$ (%)", "$ModHelp$", "modulo", [def, def.EvalInt_Mod], { }, new arithmetic_delegate { Display="{{LeftOperand}}%{{RightOperand}}" });
 	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="Rnd({{Min}}..{{Max}})", EditorProps = {
-		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$" },
-		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$" }
+		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$", Priority=51 },
+		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$", Priority=21 }
 		} } );
 	AddEvaluator("Integer", nil, "$Distance$", "$DistanceHelp$", "distance", [def, def.EvalInt_Distance], { }, { Type="proplist", Display="d({{PositionA}}..{{PositionB}})", EditorProps = {
 		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
@@ -290,8 +290,8 @@ func Definition(def)
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$PosYHelp$" }
 		} } );
 	AddEvaluator("Position", nil, "$PositionOffset$", "$PositionOffsetHelp$", "position_offset", [def, def.EvalPositionOffset], { }, { Type="proplist", Display="{{Position}}+{{Offset}}", EditorProps = {
-		Position = new Evaluator.Position { EditorHelp="$PositionOffsetPositionHelp$" },
-		Offset = new Evaluator.Offset { EditorHelp="$PositionOffsetOffsetHelp$" }
+		Position = new Evaluator.Position { EditorHelp="$PositionOffsetPositionHelp$", Priority=51 },
+		Offset = new Evaluator.Offset { EditorHelp="$PositionOffsetOffsetHelp$", Priority=21 }
 		} } );
 	AddEvaluator("Position", nil, "$ObjectPosition$", "$ObjectPositionHelp$", "object_position", [def, def.EvalPositionObject], { Object={Function="triggering_object"} }, new Evaluator.Object { EditorHelp="$ObjectPositionObjectHelp$" }, "Object");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomRectAbs$", "$RandomRectAbsHelp$", "random_pos_rect_abs", [def, def.EvalPos_RandomRect, false], def.GetDefaultRect, { Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 }, "Area");
@@ -317,7 +317,7 @@ func Definition(def)
 	// Script evaluators
 	var variable_delegate = { Type="proplist", Display="{{Context}}::{{VariableName}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
-		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" } } };
+		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$", Priority=50 } } };
 	for (var eval_type in EvaluatorTypes)
 	{
 		var data_type = EvaluatorReturnTypes[eval_type];
