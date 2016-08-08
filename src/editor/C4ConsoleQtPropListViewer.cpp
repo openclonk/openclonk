@@ -1024,7 +1024,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		if (option.value_key)
 		{
 			C4Value child_val;
-			C4PropList *props = editor->last_val.getPropList();
+			C4PropList *props = parameter_val.getPropList();
 			if (props) props->GetPropertyByS(option.value_key.Get(), &child_val);
 			parameter_val = child_val;
 		}
