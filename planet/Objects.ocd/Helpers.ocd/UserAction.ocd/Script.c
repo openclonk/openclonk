@@ -873,7 +873,15 @@ private func EvalVariable(proplist props, proplist context, expected_type)
 
 private func EvalScript(proplist props, proplist context)
 {
-	var script_context = EvaluateValue("Object", props.Context, context) ?? Global;
+	var script_context;
+	if (props.Context)
+	{
+		if (!(script_context = EvaluateValue("Object", props.Context, context))) return;
+	}
+	else
+	{
+		script_context = Global;
+	}
 	var script = EvaluateValue("String", props.Script, context) ?? "";
 	return script_context->eval(script, true);
 }
