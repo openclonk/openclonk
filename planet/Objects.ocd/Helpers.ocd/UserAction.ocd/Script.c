@@ -463,7 +463,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	// Prevent duplicate parallel execution
 	if (!allow_parallel && (context.hold && !context.suspended)) return false;
 	// Init context settings
-	context->InitContext(action_object, triggering_player, triggering_object, props);
+	context->InitContext(action_object, triggering_player, triggering_object, props, finish_callback);
 	// Execute action
 	EvaluateValue("Action", props, context);
 	FinishAction(context);
@@ -1090,7 +1090,7 @@ public func Initialize()
 	return true;
 }
 
-public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props)
+public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props, finish_callback)
 {
 	// Determine triggering player+objects
 	var triggering_clonk;
@@ -1114,6 +1114,7 @@ public func InitContext(object action_object, int triggering_player, object trig
 	this.triggering_player = triggering_player;
 	this.root_action = props;
 	this.suspended = false;
+	this.finish_callback = finish_callback;
 	return true;
 }
 

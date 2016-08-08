@@ -551,7 +551,7 @@ public func OnTrigger(object triggering_clonk, int triggering_player, bool is_ed
 		if (GetPlayerCount(C4PT_User)) triggering_player = GetPlayerByIndex();
 	}
 	// Check condition
-	if (!UserAction->EvaluateCondition(action, this, triggering_clonk, triggering_player)) return false;
+	if (condition && !UserAction->EvaluateCondition(condition, this, triggering_clonk, triggering_player)) return false;
 	// Only one action at the time
 	if (!action_allow_parallel) StopTrigger();
 	// Execute action
@@ -563,7 +563,7 @@ private func OnActionFinished(context)
 	// Callback from EvaluateAction: Action finished. Deactivate action if desired.
 	if (deactivate_after_action)
 		SetFinished(true);
-	else if (active && !finished && !action_allow_parallel)
+	else if (active && !finished && !trigger_started)
 		StartTrigger();
 	return true;
 }
