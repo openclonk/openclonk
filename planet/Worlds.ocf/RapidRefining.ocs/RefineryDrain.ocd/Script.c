@@ -12,6 +12,11 @@
 
 /*-- Pipeline --*/
 
+public func GetLiquidContainerMaxFillLevel()
+{
+	return 10**9;
+}
+
 public func IsLiquidContainerForMaterial(string liquid)
 {
 	return WildcardMatch("Oil", liquid);
