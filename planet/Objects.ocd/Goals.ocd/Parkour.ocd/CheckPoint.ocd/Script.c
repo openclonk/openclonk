@@ -14,6 +14,11 @@
 		*Bonus - Player receives a bonus if he cleares this CP.
 --*/
 
+// TODO: The checkpoints themselves carry (and duplicate) a lot of logic that is
+// handled much easier by the parkour goal. The script could be cleaned up to
+// make the checkpoints lightweight and just callback to the parkour goal to do
+// any logic with cross-checkpoint interaction (finding the next checkpoint, etc.)
+
 
 /*-- Checkpoint modes --*/
 local cp_mode;
@@ -33,17 +38,23 @@ public func SetCPMode(int mode)
 {
 	// PARKOUR_CP_Start always occurs alone.
 	if (mode & PARKOUR_CP_Start) 
+	{
 		mode = PARKOUR_CP_Start;
+		if (cp_con) cp_con->SetIndexedCP(this, 0);
+	}
 	// PARKOUR_CP_Finish only in combination with PARKOUR_CP_Team.	
 	if (mode & PARKOUR_CP_Finish)
+	{
 		mode = mode & (PARKOUR_CP_Finish | PARKOUR_CP_Team);
+		if (cp_con) cp_con->SetIndexedCP(this, GetNextCPNumber());
+	}
 	// PARKOUR_CP_Ordered must have PARKOUR_CP_Check and a number.
 	var had_cp_num;
 	if (mode & PARKOUR_CP_Ordered)
 	{
 		mode = mode | PARKOUR_CP_Check;
 		// Set CP number.
-		if (!cp_num) SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
+		if (!cp_num) SetCPNumber(GetNextCPNumber());
 		if (cp_con) cp_con->SetIndexedCP(this, cp_num);
 	}
 	else
@@ -61,6 +72,12 @@ public func SetCPMode(int mode)
 		if (mode & PARKOUR_CP_Finish) cp_con->SetIndexedCP(this, ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
 	return;
+}
+
+private func GetNextCPNumber()
+{
+	// TODO: This should really go through the controller...
+	return ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1;
 }
 
 public func RenumberOrderedCheckpoints()

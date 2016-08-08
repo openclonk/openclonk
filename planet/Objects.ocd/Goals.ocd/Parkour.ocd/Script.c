@@ -81,9 +81,9 @@ public func SetStartpoint(int x, int y)
 	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Start));
 	if (!cp)	
 		cp = CreateObjectAbove(ParkourCheckpoint, x, y, NO_OWNER);
+	cp->SetCPController(this);
 	cp->SetPosition(x, y);
 	cp->SetCPMode(PARKOUR_CP_Start);
-	cp->SetCPController(this);
 	return cp;
 }
 
@@ -95,12 +95,12 @@ public func SetFinishpoint(int x, int y, bool team)
 	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
 	if (!cp)	
 		cp = CreateObjectAbove(ParkourCheckpoint, x, y, NO_OWNER);
+	cp->SetCPController(this);
 	cp->SetPosition(x, y);
 	var mode = PARKOUR_CP_Finish;
 	if (team)
 		mode = mode | PARKOUR_CP_Team;
 	cp->SetCPMode(mode);
-	cp->SetCPController(this);
 	return cp;
 }
 
@@ -110,9 +110,9 @@ public func AddCheckpoint(int x, int y, int mode)
 	x = BoundBy(x, 0, LandscapeWidth());
 	y = BoundBy(y, 0, LandscapeHeight());
 	var cp = CreateObjectAbove(ParkourCheckpoint, x, y, NO_OWNER);
+	cp->SetCPController(this);
 	cp->SetPosition(x, y);
 	cp->SetCPMode(mode);
-	cp->SetCPController(this);
 	return cp;
 }
 
