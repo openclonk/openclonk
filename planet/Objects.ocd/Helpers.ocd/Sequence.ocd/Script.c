@@ -432,6 +432,12 @@ public func SetAction(new_action, new_action_progress_mode, new_action_allow_par
 	return true;
 }
 
+public func SetCondition(new_condition)
+{
+	condition = new_condition;
+	return true;
+}
+
 public func SetActive(bool new_active, bool force_triggers)
 {
 	if (active == new_active && !force_triggers) return true;
