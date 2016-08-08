@@ -1,1 +1,8 @@
 Name=Strahlstrom
+Description=Ein Windkanal, der Clonks, Gegenstaende und Fahrzeuge im Bereich in eine Richtung schiebt. Der Wind zieht von dieser Objektposition zum Zielpunkt.
+Speed=Geschwindigkeit
+SpeedHelp=Wie stark Objekte im Bereich geschoben werden. Maximal 200.
+Width=Breite
+WidthHelp=Ausdehnung senkrecht zur Windrichtung. Maximal 80.
+TargetOffset=Zielpunkt
+TargetOffsetHelp=Endpunkt, bis zu dem der Wind reicht.

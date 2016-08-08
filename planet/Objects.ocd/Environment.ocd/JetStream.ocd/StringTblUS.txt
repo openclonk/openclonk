@@ -1,1 +1,8 @@
 Name=Jetstream
+Description=A wind canal which pushes clonks, items and vehicles in an area into a direction. The wind moves from this object position towards a target point.
+Speed=Speed
+SpeedHelp=How strong objects will be pushed. Maximum speed is 200.
+Width=Width
+WidthHelp=Extension perpendicular to the wind direction. Maximum width is 80.
+TargetOffset=Target offset
+TargetOffsetHelp=End pint of the jet stream.

@@ -12,21 +12,19 @@
 // be nil for an infinite jet stream. Range for width is [10, 80], for speed [10, 200].
 public func Create(int sx, int sy, int ex, int ey, int duration, int width, int speed)
 {
-	if (this != JetStream)
-		return;
+	var host;
+	if (this != JetStream) host = this;
 	var stream = [[sx, sy], [ex, ey]];
-	AddEffect("IntJetStream", nil, 100, 1, nil, JetStream, stream, duration, width, speed);
-	return;
+	return AddEffect("IntJetStream", host, 100, 1, nil, JetStream, stream, duration, width, speed);
 }
 
 // Create a jet stream along the given line with a given width. The duration can
 // be nil for an infinite jet stream. Range for width is [10, 80], for speed [10, 200].
 public func CreateLine(array line, int duration, int width, int speed)
 {
-	if (this != JetStream)
-		return;
-	AddEffect("IntJetStream", nil, 100, 1, nil, JetStream, line, duration, width, speed);
-	return;
+	var host;
+	if (this != JetStream) host = this;
+	return AddEffect("IntJetStream", host, 100, 1, nil, JetStream, line, duration, width, speed);
 } 
 
 
@@ -47,7 +45,28 @@ public func FxIntJetStreamStart(object target, effect, int temp, array stream, i
 		Prototype = Particles_Air(),
 		Size = PV_Random(2, 5)
 	};
+	// Editor manipulation 
+	if (target)
+	{
+		//effect.Name = target.Name; - unfortunately this kills the effect
+		effect.Description = target.Description;
+		effect.target_offset = stream[1];
+		effect.EditorProps = {
+			speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=1, Max=200 },
+			width = { Name="$Width$", EditorHelp="$WidthHelp$", Type="int", Min=5, Max=80 },
+			target_offset = { Name="$TargetOffset$", EditorHelp="$TargetOffsetHelp$", Type="point", Relative=true, Color=0x008fff, Set="SetTargetOffset" },
+		};
+		effect.SetTargetOffset = JetStream.SetFxTargetOffset;
+	}
 	return FX_OK;
+}
+
+public func SetFxTargetOffset(new_offset)
+{
+	// Called in effect context
+	this.target_offset = new_offset;
+	this.stream[1] = new_offset;
+	return true;
 }
 
 public func FxIntJetStreamTimer(object target, proplist effect, int time)
@@ -55,6 +74,9 @@ public func FxIntJetStreamTimer(object target, proplist effect, int time)
 	// Check the duration and remove if needed.
 	if (effect.duration != nil && time >= effect.duration)
 		return FX_Execute_Kill;
+		
+	// Global or object context
+	var context = target ?? Global;
 		
 	// The speed in the first and the last stages of the stream is slower.
 	var speed = effect.speed;
@@ -84,18 +106,18 @@ public func FxIntJetStreamTimer(object target, proplist effect, int time)
 			var point_d = Distance(x, y);
 			x = -Sin(angle + point_angle, point_d);
 			y = Cos(angle + point_angle, point_d);	
-			CreateParticle("Air", sx + x - xdir / 4, sy + y - ydir / 4, xdir, ydir, PV_Random(14, 26), effect.particles, 1);
+			context->CreateParticle("Air", sx + x - xdir / 4, sy + y - ydir / 4, xdir, ydir, PV_Random(14, 26), effect.particles, 1);
 		}
-		// Move objects in the stream.
+		// Move objects in the stream. TODO: This is very inefficient and misses objects for wide streams. We should just give Find_OnLine a width parameter.
 		var lines = [];
 		for (var count = - 3; count <= 3; count++)
 		{
 			var x = Cos(angle, count * (width - 2) / 3);
 			var y = Sin(angle, count * (width - 2) / 3);
-			PushBack(lines, Find_OnLine(sx + x, sy + y, ex + x, ey + y));
+			PushBack(lines, context->Find_OnLine(sx + x, sy + y, ex + x, ey + y));
 		}
 		var find_lines = Find_Or(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5], lines[6]);
-		for (var obj in FindObjects(Find_Category(C4D_Object | C4D_Vehicle | C4D_Living), Find_Layer(), find_lines))
+		for (var obj in context->FindObjects(Find_Category(C4D_Object | C4D_Vehicle | C4D_Living), Find_Layer(), find_lines))
 		{
 			if (obj->Stuck())
 				continue;
@@ -113,6 +135,38 @@ public func FxIntJetStreamTimer(object target, proplist effect, int time)
 }
 
 
+/* Scenario saving */
+
+public func FxIntJetStreamSaveScen(object obj, proplist fx, proplist props)
+{
+	// Save stream effect
+	props->AddCall("JetStream", obj ?? JetStream, "Create", fx.stream[0][0], fx.stream[0][1], fx.stream[1][0], fx.stream[1][1], fx.duration, fx.width, fx.speed);
+	return true;
+}
+
+public func SaveScenarioObject(props)
+{
+	// Save this object only as a host for the jet stream effect
+	if (!_inherited(props, ...)) return false;
+	if (!GetEffect("IntJetStream", this)) return false;
+	return true;
+}
+
+
+/* Editor-created jet streams */
+// Regular streams are just global effects, which doesn't work so well in the editor
+// So allow creation of streams bound to local objects
+
+public func EditorInitialize()
+{
+	var ang = Random(360);
+	var tx = BoundBy(GetX() + Cos(ang, 70), 10, LandscapeWidth()-10) - GetX();
+	var ty = BoundBy(GetY() + Sin(ang, 70), 10, LandscapeHeight()-10) - GetY();
+	Create(0, 0, tx, ty);
+}
+
 /*-- Proplist --*/
 
 local Name = "$Name$";
+local Description = "$Description$";
+local Visibility = VIS_Editor;
