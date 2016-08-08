@@ -28,4 +28,14 @@ IDHelp=Definition of object type that triggers this sequence. If nil, any object
 ObjectEnterRegionCircle=Object of type enters radius
 Condition=Condition
 CheckInterval=Check interval
-CheckIntervalHelp=Defines the interval in frames at which the condition ist checked.
+CheckIntervalHelp=Defines the interval in frames at which the condition ist checked.ObjectCountInContainer=Objektzahl in Container
+ObjectCountInContainer=Object count in container
+ObjectCountInContainerHelp=Triggered when a minimum number of objects is found in a container. This could for example be when the player put 20 diamonds into a chest.
+Container=Container
+CountContainerHelp=Container within which objects are counted.
+CountIDHelp=Type of object to be counted.
+AnyID=Any
+Count=Number
+Interval=Interval
+IntervalHelp=Sequence will be executed in regular interval. The parameter defines the interval in frames.
+IntervalTime=Number of frames between executions.

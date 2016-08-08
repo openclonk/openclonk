@@ -361,6 +361,12 @@ public func Definition(def)
 			ID = { Name="$ID$", EditorHelp="$IDHelp$", Type="def", Set="SetTriggerID", SetRoot=true },
 			Radius = { Type="circle", Color=0xff8000, Relative=true, Set="SetTriggerRadius", SetRoot=true }
 			} } },
+		{ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Value={ Trigger="contained_object_count", Count=1 }, Delegate={ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Type="proplist", EditorProps = {
+			Container = { Name="$Container$", EditorHelp="$CountContainerHelp$", Type="object" },
+			ID = { Name="$ID$", EditorHelp="$CountIDHelp$", Type="def", EmptyName="$AnyID$" },
+			Count = { Name="$Count$", Type="int", Min=1 }
+			} } },
+		{ Name="$Interval$", EditorHelp="$IntervalHelp$", Value={ Trigger="interval", Interval=60 }, ValueKey="Interval", Delegate={ Name="$IntervalTime$", Type="int", Min=1, Set="SetIntervalTimer", SetRoot=true } },
 		{ Name="$GameStart$", Value={ Trigger="game_start" } },
 		{ Name="$PlayerJoin$", Value={ Trigger="player_join" } },
 		{ Name="$PlayerRemove$", Value={ Trigger="player_remove" } },
@@ -384,11 +390,7 @@ public func SetTrigger(proplist new_trigger)
 {
 	trigger = new_trigger;
 	// Set trigger: Restart any specific trigger timers
-	if (active && !finished)
-	{
-		StopTrigger();
-		StartTrigger();
-	}
+	if (active && !finished) StartTrigger();
 	return true;
 }
 
@@ -488,6 +490,14 @@ public func StartTrigger()
 		this.search_mask = Find_And(Find_Distance(trigger.Radius), Find_OCF(OCF_Alive), Find_Func("IsClonk"), id_search);
 		AddTimer(this.EnterRegionTimer, check_interval);
 	}
+	else if (fn == "contained_object_count")
+	{
+		AddTimer(this.CountContainedObjectsTimer, check_interval);
+	}
+	else if (fn == "interval")
+	{
+		AddTimer(this.OnTrigger, trigger.Interval);
+	}
 	else return false;
 	return true;
 }
@@ -497,6 +507,8 @@ public func StopTrigger()
 	SetGraphics();
 	// Remove any timers that may have been added
 	RemoveTimer(this.EnterRegionTimer);
+	RemoveTimer(this.CountContainedObjectsTimer);
+	RemoveTimer(this.OnTrigger);
 	trigger_started = false;
 	return true;
 }
@@ -507,6 +519,12 @@ public func SetCheckInterval(new_interval)
 	return SetTrigger(trigger); // restart trigger
 }
 
+public func SetIntervalTimer(int new_interval)
+{
+	if (trigger) trigger.Interval = new_interval;
+	return SetTrigger(trigger); // restart trigger
+}
+
 private func EnterRegionTimer()
 {
 	for (var clonk in FindObjects(this.search_mask))
@@ -514,6 +532,14 @@ private func EnterRegionTimer()
 		if (!clonk) continue; // deleted by previous execution
 		OnTrigger(clonk, clonk->GetOwner());
 		if (active != true) break; // deactivated by trigger
+	}
+}
+
+private func CountContainedObjectsTimer()
+{
+	if (trigger.Container && trigger.Container->ContentsCount(trigger.ID) >= trigger.Count)
+	{
+		OnTrigger(nil, NO_OWNER);
 	}
 }
 
