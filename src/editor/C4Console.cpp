@@ -153,10 +153,6 @@ bool C4Console::SaveGame(const char * path)
 
 bool C4Console::SaveScenario(const char * path)
 {
-	// Network hosts only
-	if (::Network.isEnabled() && !::Network.isHost())
-		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return false; }
-
 	// Open new scenario file
 	if (path)
 	{
