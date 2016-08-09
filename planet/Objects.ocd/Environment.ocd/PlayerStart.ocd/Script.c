@@ -48,8 +48,8 @@ public func Definition(def)
 	return true;
 }
 
-public func GetDefaultCrew() { return [{id=Clonk, count=2}]; }
-public func GetDefaultMaterial() { return [{id=Shovel, count=2}, {id=Hammer, count=1}, {id=Axe, count=1}]; }
+public func GetDefaultCrew() { return [{id=Clonk, count=1}]; }
+public func GetDefaultMaterial() { return [{id=Shovel, count=1}, {id=Hammer, count=1}, {id=Axe, count=1}]; }
 
 public func Initialize()
 {
