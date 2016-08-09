@@ -123,7 +123,7 @@ func Definition(def)
 		ID = new Evaluator.Definition { EditorHelp="$CastObjectsDefinitionHelp$", Priority=100 },
 		Position = new Evaluator.Position { EditorHelp="$CastObjectsPositionHelp$" },
 		Amount = new Evaluator.Integer { Name="$Amount$", EditorHelp="$CastObjectsAmountHelp$" },
-		Speed = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CastObjectsSpeedHelp$" },
+		Speed = new Evaluator.Integer { Name="$Speed$", EditorHelp="$CastObjectsSpeedHelp$" },
 		MeanAngle = new Evaluator.Integer { Name="$MeanAngle$", EditorHelp="$CastObjectsMeanAngleHelp$" },
 		AngleDeviation = new Evaluator.Integer { Name="$AngleDeviation$", EditorHelp="$CastObjectsAngleDeviationHelp$" },
 		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CastObjectsOwnerHelp$" }

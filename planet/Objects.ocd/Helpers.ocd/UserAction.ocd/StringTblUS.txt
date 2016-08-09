@@ -149,6 +149,7 @@ CastObjectsDefinitionHelp=Definition of objects to be created.
 CastObjectsPositionHelp=Position from which objects are cast.
 Amount=Amount
 CastObjectsAmountHelp=Number of objects to cast.
+Speed=Speed
 CastObjectsSpeedHelp=Mean speed at which objects are flung. In 1/10th pixels per frame.
 MeanAngle=Mean angle
 CastObjectsMeanAngleHelp=Mean angle in degrees at which objects are cast. 0 is up, positive angles rotate clockwise.

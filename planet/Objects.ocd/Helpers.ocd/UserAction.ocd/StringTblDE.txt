@@ -149,6 +149,7 @@ CastObjectsDefinitionHelp=Die Definition der neu zu erstellenden Objekte.
 CastObjectsPositionHelp=Position, von der Objekte geschleudert werden.
 Amount=Anzahl
 CastObjectsAmountHelp=Anahl der Objekte, die zu verschleudern sind.
+Speed=Geschwindigkeit
 CastObjectsSpeedHelp=Geschwindigkeit, in der Objekte zu verschleudern sind. In 1/10 Pixel pro Frame.
 MeanAngle=Winkel
 CastObjectsMeanAngleHelp=Mittlerer Winkel in Grad, in dem Objekte gestreut werden. 0 is hoch, positive Winkel im Uhrzeigersinn.
