@@ -1,1 +1,1 @@
-Name=Coconut Tree
+Name=Coconut Palm

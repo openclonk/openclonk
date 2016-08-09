@@ -1,1 +1,1 @@
-Name=Kokosnussbaum
+Name=Kokospalme
