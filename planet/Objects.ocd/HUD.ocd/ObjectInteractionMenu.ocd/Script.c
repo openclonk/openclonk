@@ -156,7 +156,7 @@ func FxIntCheckObjectsTimer(target, effect fx)
 		container_restriction = Find_Or(Find_Container(container), Find_InArray([container]));
 	}
 	
-	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 20), container_restriction, Find_Layer(target->GetObjectLayer()),
+	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 21), container_restriction, Find_Layer(target->GetObjectLayer()),
 		// Find all containers and objects with a custom menu.
 		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")),
 		// Do not show objects with an extra slot though - even if they are containers. They count as items here and can be accessed via the surroundings tab.
@@ -1171,8 +1171,6 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 
 func FxExtraSlotTrackerTimer(object target, proplist effect, int time)
 {
-	Log("timer?");
-	
 	if (!effect.keep_alive)
 		return -1;
 }
