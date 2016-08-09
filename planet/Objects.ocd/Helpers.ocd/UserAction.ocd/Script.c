@@ -1116,8 +1116,11 @@ public func InitContext(object action_object, int triggering_player, object trig
 		triggering_clonk = GetCursor(triggering_player);;
 		if (!triggering_clonk) triggering_clonk = GetCrew(triggering_player);
 	}
-	// Triggering object: Fallback to triggering player clonk
-	if (!triggering_object) triggering_object = triggering_clonk;
+	// Triggering object / Triggering player clonk fallbacks
+	if (!triggering_object)
+		triggering_object = triggering_clonk;
+	else if (triggering_object->~IsClonk())
+		triggering_clonk = triggering_object;
 	// Init context settings
 	this.action_object = action_object;
 	this.triggering_object = triggering_object;
