@@ -587,7 +587,10 @@ private func EvalObjList_FindObjectInContainer(proplist props, proplist context)
 	var container = EvaluateValue("Object", props.Container, context);
 	var idobj = EvaluateValue("Definition", props.ID, context);
 	if (!container) return;
-	return container->Contents(idobj);
+	if (idobj)
+		return container->FindContents(idobj);
+	else
+		return container->Contents();
 }
 
 private func EvalObjList_FindObjectsInContainer(proplist props, proplist context)
