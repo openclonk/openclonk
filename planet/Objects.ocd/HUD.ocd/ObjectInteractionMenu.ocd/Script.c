@@ -997,7 +997,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		{
 			var j = 0, e = nil;
 			var found_tracker = false;
-			while (e = GetEffect(nil, obj, j++))
+			while (e = GetEffect("ExtraSlotTracker", obj, j++))
 			{
 				if (e.keep_alive != extra_slot_keep_alive) continue;
 				found_tracker = true;
@@ -1005,9 +1005,10 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			}
 			if (!found_tracker)
 			{
-				var e = AddEffect("ExtraSlotTracker", obj, 1, 30 + Random(60), this);
+				var e = AddEffect("ExtraSlotTracker", obj, 1, 30 + Random(60), nil, GetID());
 				e.keep_alive = extra_slot_keep_alive;
 				e.callback_effect = effect;
+				e.obj = effect.obj;
 			}
 		}
 		// How many objects are this object?!
@@ -1170,8 +1171,10 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 
 func FxExtraSlotTrackerTimer(object target, proplist effect, int time)
 {
-	if (!effect.keep_alive) return -1;
-	return 1;
+	Log("timer?");
+	
+	if (!effect.keep_alive)
+		return -1;
 }
 
 // This is called by the extra-slot library.
