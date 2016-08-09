@@ -144,6 +144,7 @@
 #define C4CFN_Names           "Names.txt"
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
+#define C4CFN_EditorGeometry  "Editor.geometry"
 
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"

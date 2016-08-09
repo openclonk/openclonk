@@ -141,11 +141,45 @@ void C4ConsoleQtMainWindow::keyReleaseEvent(QKeyEvent * event)
 	QMainWindow::keyPressEvent(event);
 }
 
+// Editor window state config file
+struct EditorWindowState
+{
+	StdCopyBuf geometry, window_state;
+
+	void CompileFunc(StdCompiler *comp)
+	{
+		comp->Value(geometry);
+		comp->Value(window_state);
+	}
+};
 
 void C4ConsoleQtMainWindow::closeEvent(QCloseEvent *event)
 {
+	// Store window settings
+	EditorWindowState ws;
+	QByteArray geometry = saveGeometry(), window_state = saveState();
+	ws.geometry.Copy(geometry.constData(), geometry.size());
+	ws.window_state.Copy(window_state.constData(), window_state.size());
+	StdBuf ws_contents = DecompileToBuf<StdCompilerBinWrite>(ws);
+	ws_contents.SaveToFile(Config.AtUserDataPath(C4CFN_EditorGeometry));
+	// Perform close
 	QMainWindow::closeEvent(event);
 	::Console.Close();
+}
+
+void C4ConsoleQtMainWindow::LoadGeometry()
+{
+	// Restore window settings from file
+	StdBuf ws_contents;
+	if (ws_contents.LoadFromFile(Config.AtUserDataPath(C4CFN_EditorGeometry)))
+	{
+		EditorWindowState ws;
+		CompileFromBuf<StdCompilerBinRead>(ws, ws_contents);
+		QByteArray geometry(static_cast<const char *>(ws.geometry.getData()), ws.geometry.getSize()),
+		           window_state(static_cast<const char *>(ws.window_state.getData()), ws.window_state.getSize());
+		restoreGeometry(geometry);
+		restoreState(window_state);
+	}
 }
 
 void C4ConsoleQtMainWindow::PlayPressed(bool down)
@@ -592,14 +626,10 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// Initial empty property page
 	auto sel = C4EditCursorSelection();
 	PropertyDlgUpdate(sel, false);
-	
-	window->showNormal();
-#ifdef USE_WIN32_WINDOWS
-	// Restore window position
-	HWND hWindow = reinterpret_cast<HWND>(window->winId());
-	RestoreWindowPosition(hWindow, "Main", Config.GetSubkeyPath("Console"));
-#endif
 
+	// Restore layout & show!
+	window->LoadGeometry();
+	window->showNormal();
 	return true;
 }
 

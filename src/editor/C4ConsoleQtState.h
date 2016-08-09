@@ -90,6 +90,7 @@ public:
 	C4ConsoleQtMainWindow(class C4AbstractApp *app, class C4ConsoleGUIState *state);
 
 	void closeEvent(class QCloseEvent *event) override;
+	void LoadGeometry();
 	class C4ConsoleGUIState *GetConsoleState() const { return state; }
 
 public slots:
