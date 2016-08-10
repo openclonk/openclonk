@@ -50,6 +50,7 @@ private:
 	bool ObservingAllowed;
 	bool PasswordNeeded;
 	bool OfficialServer;
+	bool IsEditor;
 
 	// Engine information
 	C4GameVersion Game;
@@ -73,6 +74,7 @@ public:
 	int32_t getTime() const { return Time; }
 	int32_t getStartTime() const { return StartTime; }
 	StdStrBuf getGameGoalString() const;
+	bool isEditor() const { return IsEditor; }
 
 	void SetSourceIP(in_addr ip);
 

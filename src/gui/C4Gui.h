@@ -654,6 +654,7 @@ namespace C4GUI
 		Ico_Save           = 13,
 		Ico_Active         = 14,
 		Ico_Options        = 14,
+		Ico_Editor         = 14,
 		Ico_Inactive       = 15,
 		Ico_Kick           = 16,
 		Ico_Loading        = 17,

@@ -98,6 +98,7 @@ public:
 	char PlayerFilenames[20*_MAX_PATH+1];
 	char DefinitionFilenames[20*_MAX_PATH+1];
 	char DirectJoinAddress[_MAX_PATH+1];
+	char DirectJoinTempFilename[_MAX_PATH + 1];
 	std::unique_ptr<C4Network2Reference> pJoinReference;
 	int32_t StartupPlayerCount;
 	int32_t StartupTeamCount;
@@ -244,6 +245,7 @@ protected:
 	bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers *);
 	bool InitGameFinal();
 	bool InitNetworkFromAddress(const char *szAddress);
+	bool InitNetworkFromReferenceFile(const char *temp_filename);
 	bool InitNetworkFromReference(const C4Network2Reference &Reference);
 	bool InitNetworkHost();
 	bool InitControl();
@@ -277,6 +279,8 @@ protected:
 public:
 	bool ToggleChart(); // chart dlg on/off
 	void SetGlobalSoundModifier(C4PropList *modifier_props);
+
+	static constexpr const char * DirectJoinFilePrefix = "file:";
 };
 
 extern C4Game         Game;

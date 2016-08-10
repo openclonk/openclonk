@@ -19,6 +19,7 @@
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #include <shellapi.h>
+#include "game/C4Application.h"
 bool OpenURL(const char *szURL)
 {
 	return (intptr_t)ShellExecuteW(NULL, L"open", GetWideChar(szURL), NULL, NULL, SW_SHOW) > 32;
@@ -47,6 +48,7 @@ bool IsGermanSystem()
 {
 	return PRIMARYLANGID(GetUserDefaultLangID()) == LANG_GERMAN;
 }
+
 #elif !defined(__APPLE__)
 
 bool IsGermanSystem()
@@ -76,3 +78,33 @@ bool OpenURL(char const*) {return 0;}
 
 #endif
 
+
+bool RestartApplication(const char *parameters)
+{
+	// restart with given parameters
+	bool success = false;
+#ifdef _WIN32
+	wchar_t buf[_MAX_PATH];
+	DWORD sz = ::GetModuleFileName(::GetModuleHandle(NULL), buf, _MAX_PATH);
+	if (sz)
+	{
+		intptr_t iError = (intptr_t)::ShellExecute(NULL, NULL, buf, StdStrBuf(parameters).GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
+		if (iError > 32) success = true;
+	}
+#else
+	pid_t pid;
+	switch (pid = fork())
+	{
+	case -1: break; // error message shown below
+	case 0:
+		execl("/proc/self/exe", "openclonk", parameters, NULL);
+		perror("editor launch failed");
+		exit(1);
+	default:
+		success = true;
+	}
+#endif
+	// must quit ourselves for new instance to be shown
+	if (success) Application.Quit();
+	return success;
+}

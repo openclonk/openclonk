@@ -175,6 +175,9 @@ bool IsGermanSystem();
 // open a weblink in an external browser
 bool OpenURL(const char* szURL);
 
+// reopen the engine with given parameters
+bool RestartApplication(const char *parameters);
+
 #ifdef _WIN32
 #include <io.h>
 #define F_OK 0

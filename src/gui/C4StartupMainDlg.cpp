@@ -259,34 +259,10 @@ void C4StartupMainDlg::OnOptionsBtn(C4GUI::Control *btn)
 
 void C4StartupMainDlg::OnEditorBtn(C4GUI::Control *btn)
 {
-	// restart in editor mode
-	bool success = false;
-#ifdef _WIN32
-	wchar_t buf[_MAX_PATH];
-	DWORD sz = ::GetModuleFileName(::GetModuleHandle(NULL), buf, _MAX_PATH);
-	if (sz)
+	if (!RestartApplication("--editor"))
 	{
-		intptr_t iError = (intptr_t)::ShellExecute(NULL, NULL, buf, L"--editor", Config.General.ExePath.GetWideChar(), SW_SHOW);
-		if (iError > 32) success = true;
-	}
-#else
-	pid_t pid;
-	switch (pid = fork())
-	{
-		case -1: break; // error message shown below
-		case 0:
-			execl("/proc/self/exe", "openclonk", "--editor", NULL);
-			perror("editor launch failed");
-			exit(1);
-		default:
-			success = true;
-	}
-#endif
-	// must quit ourselves for editor to be shown
-	if (success)
-		Application.Quit();
-	else
 		C4GUI::TheScreen.ShowErrorMessage(LoadResStr("IDS_ERR_STARTEDITOR"));
+	}
 }
 
 void C4StartupMainDlg::OnAboutBtn(C4GUI::Control *btn)

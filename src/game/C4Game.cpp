@@ -384,6 +384,12 @@ bool C4Game::Init()
 			if (!fSuccess)
 				return false;
 		}
+		else if (SEqual2(DirectJoinAddress, DirectJoinFilePrefix))
+		{
+			// By reference serialized to temp file
+			if (!InitNetworkFromReferenceFile(DirectJoinAddress + strlen(DirectJoinFilePrefix)))
+				return false;
+		}
 		else
 		{
 			// By address
@@ -3182,6 +3188,22 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 		delete ppRefs[i];
 	delete[] ppRefs;
 	return fSuccess;
+}
+
+bool C4Game::InitNetworkFromReferenceFile(const char *temp_filename)
+{
+	// Load reference from temp file + delete the temp file
+	bool success = false;
+	C4Network2Reference ref;
+	StdBuf join_data;
+	if (join_data.LoadFromFile(temp_filename))
+	{
+		CompileFromBuf<StdCompilerBinRead>(ref, join_data);
+		success = true;
+	}
+	EraseFile(temp_filename);
+	if (!success) return false;
+	return InitNetworkFromReference(ref);
 }
 
 bool C4Game::InitNetworkFromReference(const C4Network2Reference &Reference)

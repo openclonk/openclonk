@@ -19,6 +19,7 @@
 #include "game/C4Game.h"
 #include "control/C4RoundResults.h"
 #include "C4Version.h"
+#include "game/C4Application.h"
 
 #include <utility>
 #include <fcntl.h>
@@ -29,7 +30,7 @@
 C4Network2Reference::C4Network2Reference()
 		: Icon(0), GameMode(), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
 		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
-		iAddrCnt(0)
+		IsEditor(false), iAddrCnt(0)
 {
 
 }
@@ -76,6 +77,7 @@ void C4Network2Reference::InitLocal()
 	JoinAllowed = ::Network.isJoinAllowed();
 	ObservingAllowed = ::Network.isObservingAllowed();
 	PasswordNeeded = ::Network.isPassworded();
+	IsEditor = !!::Application.isEditor;
 	Game.Set();
 
 	// Addresses
@@ -116,6 +118,7 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(JoinAllowed,       "JoinAllowed",      true));
 	pComp->Value(mkNamingAdapt(ObservingAllowed,  "ObservingAllowed", true));
 	pComp->Value(mkNamingAdapt(PasswordNeeded,    "PasswordNeeded",   false));
+	pComp->Value(mkNamingAdapt(IsEditor,          "IsEditor",         false));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddrCnt), "AddressCount", 0));
 	iAddrCnt = std::min<uint8_t>(C4ClientMaxAddr, iAddrCnt);
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Addrs, iAddrCnt, C4Network2Address()), "Address"));

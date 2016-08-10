@@ -169,6 +169,7 @@ public:
 	const C4ClientCore &getLocalCore() const { return getLocal()->getCore(); }
 	const char *getLocalName() const { return pLocal ? getLocalCore().getName() : "???"; }
 	int32_t getLocalID() const { return pLocal ? getLocalCore().getID() : C4ClientIDUnknown; }
+	StdStrBuf GetAllClientNames() const;
 
 	bool Init(int32_t iLocalClientID = C4ClientIDHost);
 	void InitNetwork(class C4Network2ClientList *pNetClients);

@@ -246,6 +246,17 @@ int32_t C4ClientList::getClientCnt() const
 	return iCnt;
 }
 
+StdStrBuf C4ClientList::GetAllClientNames() const
+{
+	StdStrBuf result;
+	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
+	{
+		if (result.getSize()) result.Append(", ");
+		result.Append(pClient->getName());
+	}
+	return result;
+}
+
 bool C4ClientList::Init(int32_t iLocalClientID)
 {
 	Clear();

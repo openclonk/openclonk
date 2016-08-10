@@ -759,6 +759,7 @@ IDS_NET_GAMELIST=Laufende Spiele
 IDS_NET_GAMELIST_INFO=Liste der im Netzwerk gefundenen Spiele.
 IDS_NET_GRAPH=Graph
 IDS_NET_HOSTDISCONNECTED=Netzwerk: Host %s getrennt!
+IDS_NET_INFOEDITOR=Editor-Netzwerksession mit %d Teilnehmern - %s
 IDS_NET_INFOGAMES=%d Spiel(e) gefunden, %d Spieler online.
 IDS_NET_INFOINPROGR=Spiel läuft
 IDS_NET_INFONOGAME=Keine Spiele gefunden.
