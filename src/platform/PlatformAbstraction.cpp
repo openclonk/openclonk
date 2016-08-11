@@ -15,11 +15,11 @@
  */
 
 #include "C4Include.h"
+#include "game/C4Application.h"
 
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #include <shellapi.h>
-#include "game/C4Application.h"
 bool OpenURL(const char *szURL)
 {
 	return (intptr_t)ShellExecuteW(NULL, L"open", GetWideChar(szURL), NULL, NULL, SW_SHOW) > 32;
@@ -79,7 +79,7 @@ bool OpenURL(char const*) {return 0;}
 #endif
 
 
-bool RestartApplication(const char *parameters)
+bool RestartApplication(std::vector<const char *> parameters)
 {
 	// restart with given parameters
 	bool success = false;
@@ -88,7 +88,14 @@ bool RestartApplication(const char *parameters)
 	DWORD sz = ::GetModuleFileName(::GetModuleHandle(NULL), buf, _MAX_PATH);
 	if (sz)
 	{
-		intptr_t iError = (intptr_t)::ShellExecute(NULL, NULL, buf, StdStrBuf(parameters).GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
+		StdStrBuf params;
+		for (auto p : parameters)
+		{
+			params += "\"";
+			params += p;
+			params += "\" ";
+		}
+		intptr_t iError = (intptr_t)::ShellExecute(NULL, NULL, buf, params.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
 		if (iError > 32) success = true;
 	}
 #else
@@ -97,9 +104,14 @@ bool RestartApplication(const char *parameters)
 	{
 	case -1: break; // error message shown below
 	case 0:
-		execl("/proc/self/exe", "openclonk", parameters, NULL);
+	{
+		std::vector<const char*> params = {"openclonk"};
+		params.insert(params.end(), parameters.begin(), parameters.end());
+		params.push_back(NULL);
+		execv("/proc/self/exe", const_cast<char *const *>(params.data()));
 		perror("editor launch failed");
 		exit(1);
+	}
 	default:
 		success = true;
 	}

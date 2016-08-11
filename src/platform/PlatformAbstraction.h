@@ -20,6 +20,8 @@
 #ifndef INC_PLATFORMABSTRACTION
 #define INC_PLATFORMABSTRACTION
 
+#include <vector>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif // HAVE_CONFIG_H
@@ -176,7 +178,7 @@ bool IsGermanSystem();
 bool OpenURL(const char* szURL);
 
 // reopen the engine with given parameters
-bool RestartApplication(const char *parameters);
+bool RestartApplication(std::vector<const char *> parameters);
 
 #ifdef _WIN32
 #include <io.h>

@@ -1126,7 +1126,7 @@ bool C4StartupNetDlg::DoOK()
 		{
 			if (join_data.SaveToFile(tmpfn.getData()))
 			{
-				if (RestartApplication(FormatString("--editor --join=\"%s%s\"", C4Game::DirectJoinFilePrefix, tmpfn.getData()).getData())) // hope for no " in temp path
+				if (RestartApplication({"--editor", FormatString("--join=%s%s", C4Game::DirectJoinFilePrefix, tmpfn.getData()).getData()})) // hope for no " in temp path
 				{
 					// Application.Quit() has been called. Will quit after returning from this callback.
 					// The temp file will be deleted by the new instance

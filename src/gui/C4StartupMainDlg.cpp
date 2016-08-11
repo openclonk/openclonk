@@ -259,7 +259,7 @@ void C4StartupMainDlg::OnOptionsBtn(C4GUI::Control *btn)
 
 void C4StartupMainDlg::OnEditorBtn(C4GUI::Control *btn)
 {
-	if (!RestartApplication("--editor"))
+	if (!RestartApplication({"--editor"}))
 	{
 		C4GUI::TheScreen.ShowErrorMessage(LoadResStr("IDS_ERR_STARTEDITOR"));
 	}
