@@ -1,0 +1,2 @@
+Name=Helm
+Description=Bietet dem Clonk einigen Schutz. Drücke [Benutzen] um den Helm auf- oder abzusetzen.

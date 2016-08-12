@@ -1,0 +1,2 @@
+Name=Helmet
+Description=Provides the clonk with some protection. Press [Use] to take the helmet on or off.
