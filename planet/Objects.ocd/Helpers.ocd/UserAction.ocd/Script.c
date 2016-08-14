@@ -135,6 +135,10 @@ func Definition(def)
 			{ Name="$EjectContentsYes$", Value=true }
 			] },
 		} } );
+	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", ShowFullName=true, EditorProps = {
+		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
+		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
+		} } );
 	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If, "Action"], { }, { Type="proplist", Display="if({{Condition}}) {{Action}} else {{ElseAction}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
@@ -787,6 +791,14 @@ private func EvalAct_RemoveObject(proplist props, proplist context)
 	var obj = EvaluateValue("Object", props.Object, context);
 	if (!obj) return;
 	obj->RemoveObject(props.EjectContents);
+}
+
+private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return;
+	var parameter = EvaluateValue("Integer", props.Value, context);
+	obj->Call(call_fn, parameter);
 }
 
 private func EvalAct_If(proplist props, proplist context, eval_type)
