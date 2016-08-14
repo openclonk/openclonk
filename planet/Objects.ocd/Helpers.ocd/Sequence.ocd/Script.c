@@ -364,7 +364,7 @@ public func Definition(def)
 		{ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Value={ Trigger="contained_object_count", Count=1 }, Delegate={ Name="$ObjectCountInContainer$", EditorHelp="$ObjectCountInContainerHelp$", Type="proplist", EditorProps = {
 			Container = { Name="$Container$", EditorHelp="$CountContainerHelp$", Type="object" },
 			ID = { Name="$ID$", EditorHelp="$CountIDHelp$", Type="def", EmptyName="$AnyID$" },
-			Count = { Name="$Count$", Type="int", Min=1 }
+			Count = { Name="$Count$", Type="int", Min=1 },
 			Operation = { Name="$Operation$", EditorHelp="$CountOperationHelp$", Type="enum", Options = [
 				{ Name="$GreaterEqual$", EditorHelp="$GreaterEqualHelp$" },
 				{ Name="$LessThan$", EditorHelp="$LessThanHelp$", Value="lt" }

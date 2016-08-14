@@ -39,3 +39,9 @@ Count=Anzahl
 Interval=Intervall
 IntervalHelp=Sequenz wird in regelmaessigem Abstand ausgefuehrt. Der Parameter gibt das Interval in Frames an.
 IntervalTime=Anzahl Frames zwischen zwei Ausloesungen.
+Operation=Operation
+CountOperationHelp=Ob die Sequenz ausgeloest wird wenn mehr oder wenn weniger als die angegebene Objektzahl im Container sind. Ausloesung mit Operator '>=' ist zum Beispiel nuetzlich, wenn der spieler eine bestimmte Anzahl Kristalle in einer Kiste sammeln muss. Die Option '<' kann zum Beispiel benutzt werden, um Material in einer Kiste automatisch nachzuliefern.
+GreaterEqual=>=
+GreaterEqualHelp=Die Sequenz wird ausgeloest, sobald die angegebene Anzahl oder mehr Objekte im Container sind.
+LessThan=<
+LessThanHelp=Die Sequenz wird ausgeloest, sobald weniger als die angegebene Anzahl Objekte im Container sind.

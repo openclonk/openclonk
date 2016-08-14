@@ -39,3 +39,9 @@ Count=Number
 Interval=Interval
 IntervalHelp=Sequence will be executed in regular interval. The parameter defines the interval in frames.
 IntervalTime=Number of frames between executions.
+Operation=Operation
+CountOperationHelp=Whether the sequence is triggered if more or if less of the specified number of objects are in a container. The >= operator can be used to trigger something when a player has collected x crystals in a chest. The < operator can be used e.g. to automatically refill a chest.
+GreaterEqual=>=
+GreaterEqualHelp=The sequence is triggered if the given number or more objects are contained in the container.
+LessThan=<
+LessThanHelp=The sequence is triggered if less than the given number of objects is in the container.
