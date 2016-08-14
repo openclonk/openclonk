@@ -365,6 +365,10 @@ public func Definition(def)
 			Container = { Name="$Container$", EditorHelp="$CountContainerHelp$", Type="object" },
 			ID = { Name="$ID$", EditorHelp="$CountIDHelp$", Type="def", EmptyName="$AnyID$" },
 			Count = { Name="$Count$", Type="int", Min=1 }
+			Operation = { Name="$Operation$", EditorHelp="$CountOperationHelp$", Type="enum", Options = [
+				{ Name="$GreaterEqual$", EditorHelp="$GreaterEqualHelp$" },
+				{ Name="$LessThan$", EditorHelp="$LessThanHelp$", Value="lt" }
+				] }
 			} } },
 		{ Name="$Interval$", EditorHelp="$IntervalHelp$", Value={ Trigger="interval", Interval=60 }, ValueKey="Interval", Delegate={ Name="$IntervalTime$", Type="int", Min=1, Set="SetIntervalTimer", SetRoot=true } },
 		{ Name="$GameStart$", Value={ Trigger="game_start" } },
@@ -543,9 +547,14 @@ private func EnterRegionTimer()
 
 private func CountContainedObjectsTimer()
 {
-	if (trigger.Container && trigger.Container->ContentsCount(trigger.ID) >= trigger.Count)
+	if (trigger.Container)
 	{
-		OnTrigger(nil, NO_OWNER);
+		var n = trigger.Container->ContentsCount(trigger.ID), f;
+		if (!trigger.Operation) 
+			f = (n >= trigger.Count); // Operation == nil: greater than
+		else
+			f = (n < trigger.Count); // Operation == "lt": less than
+		if (f) OnTrigger(nil, NO_OWNER);
 	}
 }
 
