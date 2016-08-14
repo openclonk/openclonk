@@ -37,8 +37,6 @@
 	#
 	# Gamepad controls
 	# -------------------------------------
-	# ThrowDelayed
-	# UseDelayed
 	# AimUp AimDown AimLeft AimRight
 	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
 	#
@@ -58,26 +56,6 @@
 	Identifier=GUICursor
 	DefaultDisabled=1
 	CoordinateSpace=Viewport
-
-	[ControlDef]
-	Identifier=AimUp
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
-	Identifier=AimDown
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
-	Identifier=AimLeft
-	DefaultDisabled=1
-	Hold=1
-
-	[ControlDef]
-	Identifier=AimRight
-	DefaultDisabled=1
-	Hold=1
 
 	[ControlDef]
 	Identifier=AimAxisUp
@@ -163,12 +141,6 @@
 	GUIDesc=$CON_Throw_Desc$
 	Hold=1
 	SendCursorPos=1
-
-	[ControlDef]
-	Identifier=ThrowDelayed
-	GUIName=$CON_Throw$
-	GUIDesc=$CON_Throw_Desc$
-	Hold=1
 
 	[ControlDef]
 	Identifier=Drop
@@ -287,21 +259,7 @@
 	SendCursorPos=1
 
 	[ControlDef]
-	Identifier=UseDelayed
-	GUIName=$CON_Use$
-	GUIDesc=$CON_Use_Desc$
-	Hold=1
-	SendCursorPos=1
-
-	[ControlDef]
 	Identifier=UseAlt
-	GUIName=$CON_UseAlt$
-	GUIDesc=$CON_UseAlt_Desc$
-	Hold=1
-	SendCursorPos=1
-
-	[ControlDef]
-	Identifier=UseAltDelayed
 	GUIName=$CON_UseAlt$
 	GUIDesc=$CON_UseAlt_Desc$
 	Hold=1
@@ -961,9 +919,52 @@
 		Control=Interact
 
 		[Assignment]
+		Key=CON_Interact,CON_Left
+		Control=InteractNext_Left
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Right
+		Control=InteractNext_Right
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Up
+		Control=InteractNext_CycleObject
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Down
+		Control=InteractNext_Stop
+		Priority=75
+
+		[Assignment]
 		Key=ControllerButtonX
 		Control=PickUp
 		GUIGroup=50
+
+		[Assignment]
+		Key=CON_PickUp,CON_Left
+		Control=PickUpNext_Left
+
+		[Assignment]
+		Key=CON_PickUp,CON_Right
+		Control=PickUpNext_Right
+
+		[Assignment]
+		Key=CON_PickUp,CON_Up
+		Control=PickUpNext_All
+		Priority=75
+
+		[Assignment]
+		Key=CON_PickUp,CON_Down
+		Control=PickUpNext_Stop
+		Priority=75
+
+		[Assignment]
+		Key=CON_PickUp,CON_Throw
+		Control=Drop
+		Priority=75
 
 		# Crew
 
@@ -985,13 +986,13 @@
 		GUIDesc=$KEY_GamepadUse_Desc$
 		GUIGroup=20
 		Priority=100
-		Control=UseDelayed
+		Control=Use
 
 		[Assignment]
 		Key=ControllerLeftTrigger
 		GUIGroup=20
 		Priority=100
-		Control=ThrowDelayed
+		Control=Throw
 
 		# TODO: Zoom
 
@@ -1017,57 +1018,11 @@
 	Name=*_GamepadCon_*
 
 		[Assignment]
-		Key=CON_AimAxisLeft
-		Priority=50
-		Control=Left
-
-		[Assignment]
-		Key=CON_AimAxisRight
-		Priority=50
-		Control=Right
-
-		[Assignment]
-		Key=CON_AimAxisDown
-		Priority=50
-		Control=Down
-
-		[Assignment]
-		Key=CON_AimAxisUp
-		Priority=50
-		Control=Up
-
-		[Assignment]
-		Key=CON_Left
-		Priority=70
-		Control=AimLeft
-
-		[Assignment]
-		Key=CON_Right
-		Priority=70
-		Control=AimRight
-
-		[Assignment]
-		Key=CON_Down
-		Priority=70
-		Control=AimDown
-
-		[Assignment]
-		Key=CON_Up
-		Priority=70
-		Control=AimUp
-
-		[Assignment]
-		Key=CON_Down,CON_UseDelayed
+		Key=CON_Down,CON_Throw
 		GUIDisabled=1
 		GUIGroup=20
 		Priority=150
 		Control=Drop
-
-		[Assignment]
-		Key=CON_UseDelayed
-		GUIName=None
-		Priority=50
-		Control=ThrowDelayed
 
 	# ======================================================================= #
 	#                           Default mouse control                         #

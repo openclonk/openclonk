@@ -62,6 +62,7 @@ don't need to include this file or any of the files it includes. */
 #include <string>
 #include <utility>
 #include <vector>
+#include <math.h>
 
 #include "lib/Standard.h"
 #include "C4Prototypes.h"

@@ -62,8 +62,6 @@ func Construction()
 	CheckTurn(GetDir());
 
 	SetTailOnFire();
-
-	SetCreatureControlled();
 }
 
 func Death()
@@ -508,7 +506,7 @@ func UpdateEnemy()
 
 	var x = GetX();
 	var y = GetY();
-	for (var obj in FindObjects(Find_Distance(200), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
+	for (var obj in FindObjects(Find_Distance(200), Find_OCF(OCF_Alive), Find_AnimalHostile(GetOwner()), Sort_Distance()))
 	{
 		if (!PathFree(x, y, obj->GetX(), obj->GetY())) continue;
 		if (obj->GBackLiquid()) continue;

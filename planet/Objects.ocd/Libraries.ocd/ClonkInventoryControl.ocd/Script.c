@@ -55,17 +55,17 @@ func RejectCollect(id objid, object obj)
 	return false;
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this)
-		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+		return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 
 	// Quickswitch changes the current active inventory slot
-	if (ctrl == CON_QuickSwitch && !release)
+	if (ctrl == CON_QuickSwitch && status == CONS_Down)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
 		if(this.HandObjects > 1)
-			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
+			return inherited(plr, ctrl, x, y, strength, repeat, status, ...);;
 		
 		// A number key (hotkey) is pressed, change quick switch slot
 		/*if (this.inventory.hotkey_down != nil)
@@ -78,7 +78,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		SetHandItemPos(0, this.inventory.quick_slot); // quick_slot is updated in SetHandItemPos
 		return true;
 	}
-	if (ctrl == CON_QuickSwitch && release) // Do nothing for now but will be used in the future
+	if (ctrl == CON_QuickSwitch && status == CONS_Up) // Do nothing for now but will be used in the future
 	{
 		return true;
 	}
@@ -86,7 +86,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!Contained())
 	{
 		// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
-		if (ctrl == CON_Use && !this->GetHandItem(0) && !release)
+		if (ctrl == CON_Use && !this->GetHandItem(0) && status == CONS_Down)
 		{
 			var sort = Sort_Distance(x, y);
 			var items = FindAllPickupItems(sort);
@@ -97,7 +97,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		
 		// Begin picking up objects.
-		if (ctrl == CON_PickUp && !release)
+		if (ctrl == CON_PickUp && status == CONS_Down)
 		{
 			this->CancelUse();
 			BeginPickingUp();
@@ -105,7 +105,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		
 		// Drop the mouse item?
-		if (ctrl == CON_Drop && !release)
+		if (ctrl == CON_Drop && status == CONS_Down)
 		{
 			// Do not immediately collect another thing unless chosen with left/right.
 			if (this.inventory.is_picking_up)
@@ -139,7 +139,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			}
 			
 			// Finish picking up (aka "collect").
-			if (ctrl == CON_PickUp && release)
+			if (ctrl == CON_PickUp && status == CONS_Up)
 			{
 				EndPickingUp();
 				return true;
@@ -223,7 +223,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (this.inventory.hotkey_down != nil && hot > 0 && hot <= this.MaxContentsCount && this.inventory.hotkey_down != hot)
 	{
 		// do nothing if this is just key down
-		if (!release)
+		if (status == CONS_Down)
 			return true;
 		// switch the two slots
 		this->~Switch2Items(this.inventory.hotkey_down-1, hot-1);
@@ -240,7 +240,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// hotkey up: perform slot selection
-	if (hot > 0 && hot <= this.MaxContentsCount && release)
+	if (hot > 0 && hot <= this.MaxContentsCount && status == CONS_Up)
 	{
 		// This wasn't liked by many players, so slot selection is back to key down.
 
@@ -256,7 +256,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	// a hotkey is pressed, save it for now
-	if (hot > 0 && hot <= this.MaxContentsCount && !release)
+	if (hot > 0 && hot <= this.MaxContentsCount && status == CONS_Down)
 	{
 		this.inventory.hotkey_down = hot;
 		// For safety
@@ -267,7 +267,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 
-	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+	return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }
 
 private func FxIntHighlightItemStart(object target, proplist fx, temp, object item)

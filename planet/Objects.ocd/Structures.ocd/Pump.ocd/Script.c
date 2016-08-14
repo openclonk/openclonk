@@ -326,7 +326,6 @@ protected func Pumping()
 				break;
 			}
 		}
-		
 		stored_material_amount = i;
 		if (stored_material_amount <= 0)
 			stored_material_name = nil;
@@ -338,8 +337,8 @@ protected func Pumping()
 	}
 	else
 	{
-		// Put into wait state if no liquid could be pumped for a while
-		if (++clog_count >= max_clog_count)
+		// Put into wait state if no liquid could be pumped for a while or if the drain has no aperture, i.e. is a liquid tank.
+		if (++clog_count >= max_clog_count || !drain_obj->~HasAperture())
 		{
 			SetState("WaitForLiquid");
 		}
@@ -383,7 +382,6 @@ func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 				drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
 		}
 	}
-	
 	return amount <= 0;
 }
 
@@ -403,9 +401,10 @@ func CheckState()
 	}
 	else
 	{
-		// can pump but has no liquid -> wait for liquid
-		var source_ok = IsLiquidSourceOk();
-		var drain_ok  = IsLiquidDrainOk();
+		// Can pump but has no liquid or can't dispense liquid -> wait.
+		var source_mat = GetLiquidSourceMaterial();
+		var source_ok = source_mat != nil;
+		var drain_ok  = GetLiquidDrainOk(source_mat);
 		if (!source_ok || !drain_ok)
 		{
 			if (!source_ok)
@@ -532,30 +531,39 @@ private func PumpHeight2Power(int pump_height)
 	return used_power;
 }
 
-// TODO: check usage of this, probably has to return true if the source is a container
 // Returns whether there is liquid at the source pipe to pump.
-private func IsLiquidSourceOk()
+private func GetLiquidSourceMaterial()
 {
-	// source
+	// Get the source object and check whether there is liquid.
+	// TODO: If the source is a liquid container check which material will be supplied.
 	var source_obj = GetSourceObject();
-	if(!source_obj->GBackLiquid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY))
+	var is_liquid = source_obj->GBackLiquid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY);
+	var liquid = MaterialName(source_obj->GetMaterial(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY));
+	if (!is_liquid)
 	{
-		source_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
-		return false;
+		// Try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe.
+		source_obj->~CycleApertureOffset(this); 
+		return;
 	}
-	return true;
+	return liquid;
 }
 
-// TODO: check usage of this, probably has to return true if the drain is a container
-// Returns whether the drain pipe is free.
-private func IsLiquidDrainOk()
+// Returns whether the drain pipe is free or the liquid container accepts the given material.
+private func GetLiquidDrainOk(string liquid)
 {
-	// target (test with the very popular liquid "water")
 	var drain_obj = GetDrainObject();
-	if(!drain_obj->CanInsertMaterial(Material("Water"),drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+	if (drain_obj->~HasAperture())
 	{
-		drain_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
-		return false;
+		if (!drain_obj->CanInsertMaterial(Material(liquid), drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+		{
+			drain_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
+			return false;
+		}
+	}
+	else if (drain_obj->~IsLiquidContainer())
+	{
+		if (!drain_obj->AcceptsLiquid(liquid, 1))
+			return false;
 	}
 	return true;
 }

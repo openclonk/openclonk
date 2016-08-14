@@ -35,6 +35,24 @@ Default=1
 		Value=1
 
 [ParameterDef]
+Name=$SpawnType$
+Description=$DescSpawn$
+ID=SpawnType
+Default=1
+
+	[Options]
+
+		[Option]
+		Name=$ClassicSpawn$
+		Description=$DescClassicSpawn$
+		Value=0
+
+		[Option]
+		Name=$BalloonSpawn$
+		Description=$DescBalloonSpawn$
+		Value=1
+
+[ParameterDef]
 Name=$Rounds$
 Description=$DescRounds$
 ID=Rounds

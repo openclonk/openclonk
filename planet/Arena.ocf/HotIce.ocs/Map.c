@@ -77,6 +77,9 @@ func DrawSmallIslandsMap(proplist map)
 		if (Abs(x-w/2) < w/10) szx += Random(3); // central islands sometimes wider
 		map->Draw("^Ice-ice2", nil, [x-szx,y,1+2*szx,szy]);
 	}
+	// Balloon spawn: do nothing further
+	if (SCENPAR_SpawnType == 1)
+		return true;
 	// Starting islands for player spawns
 	var spawn_island_count = Max(GetStartupPlayerCount(), 2);
 	g_player_spawn_positions = CreateArray(spawn_island_count);

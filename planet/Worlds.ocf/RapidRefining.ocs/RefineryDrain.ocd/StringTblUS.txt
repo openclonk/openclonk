@@ -1,0 +1,9 @@
+Name=Refinery Drain
+Description=Attach the drain pipe of a pump to this structure to pump oil into the refinery. Multiple pipes can be connected to the refinery drain.
+
+MsgOilOverview=Oil Overview
+MsgOilPumped=Oil amount: %d {{Oil}}.
+MsgOilDescription=Currently %d {{Oil}} has been transferred into the refinery.
+
+MsgConnectedPipe=Connected pipe.
+MsgPipeProhibited=Source pipes cannot be connected to the foundry.

@@ -1,0 +1,9 @@
+Rapid Refining
+
+An apparently infinite oil well is hidden deep inside a cave. Connect the well to the refinery drain outside of the cave using pumps and supply the refinery. 
+
+Goal: Pump oil.
+
+Hints:
+- Do not set oil on fire, it will burn for a long time.
+- You can connect multiple pipes to the refinery drain.

@@ -1,0 +1,14 @@
+[DefCore]
+id=RefineryDrain
+Version=6,0
+Category=C4D_Structure
+Width=16
+Height=32
+Offset=-8,-16
+Vertices=4
+VertexX=-8,-8,8,8
+VertexY=-2,15,-2,15
+VertexCNAT=5,9,6,10
+VertexFriction=50,50,100,100
+Construction=1
+Mass=10

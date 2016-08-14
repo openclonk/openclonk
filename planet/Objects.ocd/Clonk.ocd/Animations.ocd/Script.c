@@ -594,6 +594,16 @@ func CheckScaleTop()
 	return true;
 }
 
+func CheckScaleTopHelper()
+{
+	// Check if the clonk has passed the material with its leg vertices
+	// and if COMD_Up is used to climb in which case corner scale would fail
+
+	if (GBackSolid(-3+6*GetDir(), 6)) return false;
+	if (GetComDir() != COMD_Up) return false;
+	return true;
+}
+
 func FxIntScaleStart(target, effect, tmp)
 {
 	if(tmp) return;
@@ -624,6 +634,22 @@ func FxIntScaleTimer(target, number, time)
 		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
 		var pos = GetAnimationPosition(number.animation_id);
 		SetScaleRotation(0, 0, 0, 0, 0, 1);
+		// Check if corner scale help is needed
+		if (CheckScaleTopHelper())
+		{
+			if (GetDir() == DIR_Left)
+				SetComDir(COMD_UpLeft);
+			else
+				SetComDir(COMD_UpRight);
+			number.corner_scale_helper = true;
+		}
+		else if (number.corner_scale_helper)
+			number.corner_scale_helper = false;
+	}
+	else if (number.corner_scale_helper)
+	{
+		// This will delay everything for 1 frame just for cleanup, hopefully it's not too bad
+		number.corner_scale_helper = false;
 	}
 	else if(!GBackSolid(-10+20*GetDir(), 8))
 	{
@@ -708,9 +734,13 @@ func FxIntScaleStop(target, number, reason, tmp)
 /*	if(number.animation_mode == 1) PlayAnimation(Clonk_WalkStand, CLONK_ANIM_SLOT_Movement, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Const(1000));
 	// Finally stop if the user has scheduled a stop
 	if(number.ScheduleStop) SetComDir(COMD_Stop);*/
-	// and reset the transform
+
+	// Reset the transform
 	SetScaleRotation(0);
-//	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
+	// Remove the corner scale helper com dir
+	if (number.corner_scale_helper)
+		if (GetComDir() == COMD_UpLeft || GetComDir() == COMD_UpRight)
+			Schedule(this, "SetComDir(COMD_Up)", 2);
 }
 
 /*--

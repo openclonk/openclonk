@@ -2,13 +2,13 @@
 
 #appendto Library_ClonkControl
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this) 
 		return false;
 
 	// Spawn menu
-	if (ctrl == CON_SpawnMenu && !release)
+	if (ctrl == CON_SpawnMenu && status == CONS_Down)
 	{
 		// Close any menu if open.
 		if (GetMenu())
@@ -31,5 +31,5 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Unhandled control will be handled by the library itself.
-	return _inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+	return _inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }

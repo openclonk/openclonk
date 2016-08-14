@@ -125,6 +125,11 @@ func PutLiquid(liquid_name, int amount, object source)
 	return after - before;
 }
 
+func AcceptsLiquid(liquid_name, int amount)
+{
+	return amount <= this->GetLiquidContainerMaxFillLevel() - GetLiquidAmount(liquid_name);
+}
+
 private func GetLiquidDef(liquid_name)
 {
 	if (GetType(liquid_name) == C4V_String)

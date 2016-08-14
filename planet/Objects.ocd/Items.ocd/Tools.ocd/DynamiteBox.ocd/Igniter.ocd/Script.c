@@ -38,9 +38,11 @@ public func ControlUse(object clonk, int x, int y)
 {
 	if (clonk->GetAction() != "Walk") 
 		return true;
-	
-	ignited = 1;
-	
+	if (ignited)
+		return true;
+
+	ignited = true;
+
 	// The clonk has to stand.
 	clonk->SetAction("Stand");
 	clonk->SetXDir(0);
@@ -91,7 +93,13 @@ public func GetCarryMode()
 
 public func GetCarryPhase() { return 250; }
 
-public func GetCarrySpecial(clonk)
+public func GetCarryTransform()
+{
+	if (ignited)
+		return Trans_Mul(Trans_Rotate(0, 1), Trans_Translate(-1000));
+}
+
+public func GetCarrySpecial()
 { 
 	if (ignited)
 		return "pos_hand2";

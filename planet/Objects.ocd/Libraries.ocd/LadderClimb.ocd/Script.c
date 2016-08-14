@@ -337,13 +337,13 @@ public func FxIntClimbControlStop(object target, effect fx, int reason, bool tmp
 	return FX_OK;
 }
 
-public func FxIntClimbControlControl(object target, effect fx, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func FxIntClimbControlControl(object target, effect fx, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	// Only handle movement controls.
 	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) 
 		return false;
 	// Perform actions on key down and not on release.
-	if (release) 
+	if (status != CONS_Down) 
 		return false;
 	// Move up and down by setting com dir.	
 	if (ctrl == CON_Up)

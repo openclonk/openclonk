@@ -61,7 +61,8 @@ func InitializeRound()
 	// Checking for victory: Only active after a Clonk dies.
 	g_check_victory_effect = AddEffect("CheckVictory", nil, 1, 0);
 	g_player_spawn_index = 0;
-	ShuffleArray(g_player_spawn_positions);
+	if (GetType(g_player_spawn_positions) == C4V_Array)
+		ShuffleArray(g_player_spawn_positions);
 
 	// Materials: Chests
 	var i,pos;
@@ -142,20 +143,34 @@ func InitPlayerRound(int plr)
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr), start_pos;
 	// Position by map type?
-	if (g_player_spawn_positions && g_player_spawn_index < GetLength(g_player_spawn_positions))
+	if (SCENPAR_SpawnType == 0)
 	{
-		start_pos = g_player_spawn_positions[g_player_spawn_index++];
-		var map_zoom = ls_wdt / g_map_width;
-		start_pos = {x=start_pos[0]*map_zoom+map_zoom/2, y=start_pos[1]*map_zoom};
+		if (g_player_spawn_positions && g_player_spawn_index < GetLength(g_player_spawn_positions))
+		{
+			start_pos = g_player_spawn_positions[g_player_spawn_index++];
+			var map_zoom = ls_wdt / g_map_width;
+			start_pos = {x=start_pos[0]*map_zoom+map_zoom/2, y=start_pos[1]*map_zoom};
+		}
+		else
+		{
+			// Start positions not defined or exhausted: Spawn in lower area for both maps becuase starting high is an an advantage.
+			start_pos = FindLocation(Loc_InRect(ls_wdt/5,ls_hgt/2,ls_wdt*3/5,ls_hgt/3), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
+			if (!start_pos) start_pos = FindLocation(Loc_InRect(ls_wdt/10,0,ls_wdt*8/10,ls_hgt*4/5), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
+			if (!start_pos) start_pos = {x=Random(ls_wdt*6/10)+ls_wdt*2/10, y=ls_hgt*58/100};
+		}
+		crew->SetPosition(start_pos.x, start_pos.y-10);
 	}
-	else
+	else // Balloon spawn
 	{
-		// Start positions not defined or exhausted: Spawn in lower area for both maps becuase starting high is an an advantage.
-		start_pos = FindLocation(Loc_InRect(ls_wdt/5,ls_hgt/2,ls_wdt*3/5,ls_hgt/3), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
-		if (!start_pos) start_pos = FindLocation(Loc_InRect(ls_wdt/10,0,ls_wdt*8/10,ls_hgt*4/5), Loc_Wall(CNAT_Bottom), Loc_Func(Scenario.IsStartSpot));
-		if (!start_pos) start_pos = {x=Random(ls_wdt*6/10)+ls_wdt*2/10, y=ls_hgt*58/100};
+		var spawn_x = ls_wdt/3, spawn_y = 10;
+		spawn_x += Random(spawn_x);
+		var balloon = CreateObject(BalloonDeployed, spawn_x, spawn_y - 16, plr);
+		crew->SetPosition(spawn_x, spawn_y);
+		balloon->SetRider(crew);
+		crew->SetAction("Ride", balloon);
+		balloon->SetSpeed(0,0);
+		crew->SetSpeed(0,0);
 	}
-	crew->SetPosition(start_pos.x, start_pos.y-10);
 	// initial material
 	if (SCENPAR_Weapons == 0)
 	{
@@ -190,8 +205,18 @@ func InitPlayerRound(int plr)
 	// Disable the Clonk during the countdown.
 	crew->SetCrewEnabled(false);
 	crew->SetComDir(COMD_Stop);
+
+	if (SCENPAR_SpawnType == 1 && balloon)
+		balloon->CreateEffect(IntNoGravity, 1, 1);
+
 	return true;
 }
+
+local IntNoGravity = new Effect {
+	Timer = func() {
+		Target->SetSpeed(0,0);
+	}
+};
 
 // Called by the round start countdown.
 func OnCountdownFinished()
@@ -201,6 +226,8 @@ func OnCountdownFinished()
 	{
 		clonk->SetCrewEnabled(true);
 		SetCursor(clonk->GetOwner(), clonk);
+		if (SCENPAR_SpawnType == 1 && clonk->GetActionTarget())
+			RemoveEffect("IntNoGravity", clonk->GetActionTarget());
 	}
 }
 
