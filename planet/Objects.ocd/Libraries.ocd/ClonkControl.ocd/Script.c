@@ -1077,7 +1077,7 @@ public func OnShiftCursor()
 	return _inherited(...);
 }
 
-/* +++++++++++++++  Throwing, jumping +++++++++++++++ */
+/*-- Throwing --*/
 
 // Throwing
 func DoThrow(object obj, int angle)
@@ -1104,12 +1104,30 @@ func DoThrow(object obj, int angle)
 	obj->SetXDir(iXDir,100);
 	obj->SetYDir(iYDir,100);
 	
+	// Prevent hitting the thrower.
+	var block_blow = AddEffect("BlockBlowControl", this, 100, 3, this);
+	block_blow.obj = obj;
 	return true;
 }
 
 // custom throw
 // implemented in Clonk.ocd/Animations.ocd
 public func ControlThrow() { return _inherited(...); }
+
+// Effect for blocking a blow by an object.
+public func FxBlockBlowControlTimer()
+{
+	return FX_Execute_Kill;
+}
+
+public func FxBlockBlowControlQueryCatchBlow(object target, effect fx, object obj)
+{
+	if (obj == fx.obj)
+		return true;
+	return false;
+}
+
+/*-- Jumping --*/
 
 public func ControlJump()
 {

@@ -683,28 +683,20 @@ func FxBubbleTimer(pTarget, effect, iTime)
 	}
 }
 
-func QueryCatchBlow(object obj)
+public func QueryCatchBlow(object obj)
 {
-	var r=0;
-	var e=0;
-	var i=0;
+	var fx;
+	var index = 0;
 	// Blocked by object effects?
-	while(e=GetEffect("*", obj, i++))
-		if(EffectCall(obj, e, "QueryHitClonk", this))
+	while (fx = GetEffect("*", obj, index++))
+		if (EffectCall(obj, fx, "QueryHitClonk", this))
 			return true;
 	// Blocked by Clonk effects?
-	i=0;
-	while(e=GetEffect("*Control*", this, i++))
-	{
-		if(EffectCall(this, e, "QueryCatchBlow", obj))
-		{
-			r=true;
-			break;
-		}
-		
-	}
-	if(r) return r;
-	// No blocking
+	index = 0;
+	while (fx = GetEffect("*Control*", this, index++))
+		if (EffectCall(this, fx, "QueryCatchBlow", obj))
+			return true;
+	// Default blocking.
 	return _inherited(obj, ...);
 }
 
