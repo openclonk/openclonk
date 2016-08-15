@@ -167,7 +167,7 @@ public:
 	bool HasJoined() const { return !!(dwFlags & PIF_Joined); }    // return whether player has joined
 	bool IsJoined() const { return HasJoined() && !(dwFlags & PIF_Removed); } // return whether player is currently in the game
 	bool HasJoinIssued() const { return !!(dwFlags & (PIF_Joined | PIF_JoinIssued)); } // return whether player join is in the queue already (or performed long ago, even)
-	bool HasJoinPending() const { return (dwFlags & PIF_JoinIssued) && !(dwFlags & (PIF_Joined | PIF_Removed)); } // return whether player join is in the queue, bot not performed yet
+	bool HasJoinPending() const { return !(dwFlags & (PIF_Joined | PIF_Removed)); } // return whether player join should be done but has not been performed yet
 	bool IsUsingColor() const { return !IsRemoved() && !idSavegamePlayer; } //return whether the player is actually using the player color
 	bool IsUsingName() const { return !IsRemoved() && !sLeagueAccount.getLength(); } //return whether the player is actually using the player name (e.g. not if league name is used)
 	bool IsUsingAttribute(Attribute eAttr) const { if (eAttr == PLRATT_Color) return IsUsingColor(); else return IsUsingName(); }
