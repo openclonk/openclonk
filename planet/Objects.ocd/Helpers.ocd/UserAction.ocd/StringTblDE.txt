@@ -287,3 +287,7 @@ DoEnergyHelp=Erhoeht oder verringert die Energie eines Lebewesens. Faellt die En
 DoEnergyObjectHelp=Objekt, dessen Energie geaendert wird.
 ValueChange=Aenderung
 DoEnergyValueChangeHelp=Wert um dne die Energie geaendert wird.
+SetPosition=Objekt verschieben
+SetPositionHelp=Setzt ein Objekt an eine neue Position.
+SetPositionObjectHelp=Zu verschiebendes Objekt.
+SetPositionPositionHelp=Neue Position fuer die Objektmitte des verschobenen Objektes.

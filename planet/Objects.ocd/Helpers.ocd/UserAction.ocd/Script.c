@@ -135,6 +135,10 @@ func Definition(def)
 			{ Name="$EjectContentsYes$", Value=true }
 			] },
 		} } );
+	AddEvaluator("Action", "$Object$", "$SetPosition$", "$SetPositionHelp$", "set_position", [def, def.EvalAct_SetPosition], { Object={ Function="triggering_clonk" }, Position={ Function="position_constant_rel" } }, { Type="proplist", Display="({{Object}}->{{Position}})", ShowFullName=true, EditorProps = {
+		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$SetPositionObjectHelp$" },
+		Position = new Evaluator.Position { Name="$Position$", EditorHelp="$SetPositionPositionHelp$" }
+		} } );
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", ShowFullName=true, EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
@@ -791,6 +795,14 @@ private func EvalAct_RemoveObject(proplist props, proplist context)
 	var obj = EvaluateValue("Object", props.Object, context);
 	if (!obj) return;
 	obj->RemoveObject(props.EjectContents);
+}
+
+private func EvalAct_SetPosition(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return;
+	var pos = EvaluatePosition(props.Position, context);
+	obj->SetPosition(pos[0], pos[1]);
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)
