@@ -123,7 +123,7 @@ func FillHomebase(object homebase)
 	homebase->AddCaption("$HomebaseWeapons$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Bow,                         ammo = Arrow,    desc = "$HomebaseDescBow$" });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Javelin,         cost = 10,                   desc = "$HomebaseDescJavelin$"                                            , infinite = true});
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,          cost = 50,  ammo = LeadShot, desc = "$HomebaseDescMusket$",          requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,          cost = 50,  ammo = LeadBullet, desc = "$HomebaseDescMusket$",          requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher,             ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = WindBag,         cost = 500,                  desc = "$HomebaseDescWindBag$", requirements = ["MasterWeapons"] });
 

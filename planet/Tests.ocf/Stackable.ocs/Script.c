@@ -1514,10 +1514,10 @@ global func Test22_Execute()
 	var musket_d = CreateObject(Musket);
 	var musket_e = CreateObject(Musket);
 	
-	musket_a->CreateContents(LeadShot);
-	musket_b->CreateContents(LeadShot);
-	musket_c->CreateContents(LeadShot)->SetStackCount(7);
-	musket_d->CreateContents(LeadShot)->SetInfiniteStackCount();
+	musket_a->CreateContents(LeadBullet);
+	musket_b->CreateContents(LeadBullet);
+	musket_c->CreateContents(LeadBullet)->SetStackCount(7);
+	musket_d->CreateContents(LeadBullet)->SetInfiniteStackCount();
 
 	passed &= doTest("Musket with 8 shots can be stacked with musket with 8 shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_b), true);
 	passed &= doTest("Musket with 8 shots cannot be stacked with musket with 7 shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_c), false);

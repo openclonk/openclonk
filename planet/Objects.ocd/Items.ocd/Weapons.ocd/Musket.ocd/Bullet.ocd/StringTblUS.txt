@@ -1,0 +1,2 @@
+Name=Lead bullet
+Description=Ammunition for various weapons.

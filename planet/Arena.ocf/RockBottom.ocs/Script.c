@@ -122,7 +122,7 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Bow)
 		obj->CreateContents([Arrow, BombArrow][Random(2)]);
 	if (obj_id == Musket)
-		obj->CreateContents(LeadShot);
+		obj->CreateContents(LeadBullet);
 	obj->Enter(this);
 	return;
 }

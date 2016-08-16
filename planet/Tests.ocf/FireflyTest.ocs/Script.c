@@ -131,7 +131,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	clonk->SetPosition(425, 498);
 	clonk->DoEnergy(100000);
 	clonk->CreateContents(Musket);
-	clonk->CreateContents(LeadShot);
+	clonk->CreateContents(LeadBullet);
 	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Bow);
 	clonk->Collect(CreateObjectAbove(Arrow));

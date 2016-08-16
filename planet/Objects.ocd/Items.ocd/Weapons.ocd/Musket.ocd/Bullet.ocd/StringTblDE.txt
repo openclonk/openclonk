@@ -1,0 +1,2 @@
+Name=Bleikugel
+Description=Munition für zahlreiche Waffen.

@@ -289,7 +289,7 @@ private func InitLorries()
 		if (!Random(8))
 		{
 			lorry->CreateContents(Musket);
-			lorry->CreateContents(LeadShot);
+			lorry->CreateContents(LeadBullet);
 		}
 	}
 	// Create two lorries at the main cave.

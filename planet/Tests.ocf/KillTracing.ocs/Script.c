@@ -407,7 +407,7 @@ global func Test15_OnStart(object victim, object killer, object fake_killer)
 	victim->DoEnergy(-45);
 		
 	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	musket.loaded = true;
 	musket->ControlUseStart(killer, 20, -8);
 	musket->ControlUseStop(killer, 20, -8);
@@ -461,7 +461,7 @@ global func Test19_OnStart(object victim, object killer, object fake_killer)
 		
 	CreateObject(PowderKeg, 240, 140);
 	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	musket.loaded = true;
 	musket->ControlUseStart(killer, 20, -8);
 	musket->ControlUseStop(killer, 20, -8);
@@ -601,7 +601,7 @@ global func Test28_OnStart(object victim, object killer, object fake_killer)
 	balloon->ControlUseStart(victim);
 
 	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	musket.loaded = true;
 	musket->ControlUseStart(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
 	musket->ControlUseStop(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
@@ -619,7 +619,7 @@ global func Test29_OnStart(object victim, object killer, object fake_killer)
 	balloon->ControlUseStart(victim);
 
 	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	musket.loaded = true;
 	musket->ControlUseStart(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
 	musket->ControlUseStop(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
@@ -744,7 +744,7 @@ global func Test37_OnStart(object victim, object killer, object fake_killer)
 		
 	CreateObject(Boompack, 240, 146)->SetR(90);
 	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	musket.loaded = true;
 	musket->ControlUseStart(killer, 20, -7);
 	musket->ControlUseStop(killer, 20, -7);
@@ -781,7 +781,7 @@ global func Test39_OnStart(object victim, object killer, object fake_killer)
 	victim->SetPosition(330, 150);
 
 	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	musket.loaded = true;
 	musket->ControlUseStart(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
 	musket->ControlUseStop(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);

@@ -72,7 +72,7 @@ private func InitCave()
 	// A hidden chest with a musket.
 	var chest = CreateObjectAbove(Chest, 10, 526);
 	var musket = chest->CreateContents(Musket);
-	musket->CreateContents(LeadShot);
+	musket->CreateContents(LeadBullet);
 	return;
 }
 

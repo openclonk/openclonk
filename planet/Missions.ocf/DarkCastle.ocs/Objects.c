@@ -482,7 +482,7 @@ func InitializeObjects()
 
 	Chest006->CreateContents(Musket);
 
-	Chest006->CreateContents(LeadShot, 3);
+	Chest006->CreateContents(LeadBullet, 3);
 
 	Clonk009->CreateContents(Javelin, 3);
 	Clonk008->CreateContents(Javelin, 3);

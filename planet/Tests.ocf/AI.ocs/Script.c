@@ -130,7 +130,7 @@ global func Test2_OnFinished()
 
 global func Test3_OnStart(int plr)
 {
-	CreateEnemy(Clonk, 120, 258, script_enemy1, [Musket, LeadShot, Sword], 50);
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Musket, LeadBullet, Sword], 50);
 	CreateEnemy(Clonk, 392, 258, script_enemy2, [Sword, Bow, Arrow], 50);
 	// Log what the test is about.
 	Log("AI battle: musket vs. bow.");

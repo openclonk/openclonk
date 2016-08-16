@@ -1,4 +1,4 @@
-#appendto LeadShot
+#appendto LeadBullet
 
 local lowering;
 public func LessDamage() { lowering=6; SetClrModulation(RGB(255,128,0)); }

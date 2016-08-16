@@ -113,7 +113,7 @@ func JoinPlayer(plr, prev_clonk)
 		arrow->SetInfiniteStackCount();
 	}
 	//clonk->CreateContents(Musket);
-	//clonk->Collect(CreateObjectAbove(LeadShot));
+	//clonk->Collect(CreateObjectAbove(LeadBullet));
 	clonk->~CrewSelection(); // force update HUD
 	return;
 }
@@ -129,7 +129,7 @@ func FillHomebase(object homebase)
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Bow,                  ammo = Arrow, desc = "$HomebaseDescBow$" });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Sword,     cost = 25 });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Firestone, cost = 5});
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,    cost = 50, ammo = LeadShot, desc = "$HomebaseDescMusket$",     requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,    cost = 50, ammo = LeadBullet, desc = "$HomebaseDescMusket$",     requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = IronBomb,  cost = 15,                                             requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = DynamiteBox,cost = 15,                                            requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });

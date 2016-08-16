@@ -52,7 +52,7 @@ func Hit()
 func RejectCollect(id shotid, object shot)
 {
 	// Only collect musket-ammo
-	if(!(shot->~IsMusketAmmo())) return true;
+	if(!(shot->~IsBullet())) return true;
 }
 
 /*-- Callbacks --*/
@@ -73,7 +73,7 @@ public func FinishedAiming(object clonk, int angle)
 	if(!loaded) return;
 	
 	// Fire
-	if(Contents(0) && Contents(0)->IsMusketAmmo())
+	if(Contents(0) && Contents(0)->IsBullet())
 		FireWeapon(clonk, angle);
 	clonk->StartShoot(this);
 	return true;
@@ -101,7 +101,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	{
 		// put something inside
 		var obj;
-		if(obj = FindObject(Find_Container(clonk), Find_Func("IsMusketAmmo")))
+		if(obj = FindObject(Find_Container(clonk), Find_Func("IsBullet")))
 		{
 			obj->Enter(this);
 		}

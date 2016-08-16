@@ -3,7 +3,7 @@
 
 #appendto Arrow
 #appendto Javelin
-#appendto LeadShot
+#appendto LeadBullet
 #appendto Boompack
 #appendto Shrapnel
 

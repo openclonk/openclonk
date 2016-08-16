@@ -34,7 +34,7 @@ protected func Initialize()
 protected func RejectCollect(id def, object obj)
 {
 	// Only accept munition and clonks.
-	if (def != LeadShot && def != Boompack && !(obj->GetOCF() & OCF_CrewMember))
+	if (def != LeadBullet && def != Boompack && !(obj->GetOCF() & OCF_CrewMember))
 		return true;
 	return false;
 }
@@ -45,7 +45,7 @@ protected func RejectCollect(id def, object obj)
 public func ContainedUseStart(object clonk, int x, int y)
 {
 	//return ContainedUseAltStart(clonk, x, y);
-	var ammo = FindObject(Find_Container(this), Find_Func("IsMusketAmmo"));
+	var ammo = FindObject(Find_Container(this), Find_Func("IsBullet"));
 	if (!ammo)
 	{
 		CustomMessage("$NoShots$", this, clonk->GetOwner());
@@ -62,7 +62,7 @@ protected func FxFireBulletsStart(object target, proplist effect, int temp)
 	effect.reticle = CreateObject(GUI_Reticle);
 	effect.reticle->SetOwner(this->GetController());
 	effect.reticle->SetAction("Show", this);
-	var ammo = FindObject(Find_Container(this), Find_Func("IsMusketAmmo"));
+	var ammo = FindObject(Find_Container(this), Find_Func("IsBullet"));
 	if (!ammo)
 		return FX_Execute_Kill;
 	FireBullet(ammo);
@@ -71,7 +71,7 @@ protected func FxFireBulletsStart(object target, proplist effect, int temp)
 
 protected func FxFireBulletsTimer(object target, proplist effect, int time)
 {
-	var ammo = FindObject(Find_Container(this), Find_Func("IsMusketAmmo"));
+	var ammo = FindObject(Find_Container(this), Find_Func("IsBullet"));
 	if (!ammo)
 		return FX_Execute_Kill;
 	FireBullet(ammo);
@@ -84,7 +84,7 @@ protected func FxFireBulletsStop(object target, proplist effect, int reason, boo
 		return FX_OK;
 	if (effect.reticle)
 		effect.reticle->RemoveObject();
-	return FX_OK;		
+	return FX_OK;
 }
 
 private func FireBullet(object ammo)

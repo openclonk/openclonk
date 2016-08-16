@@ -673,7 +673,7 @@ private func HasArrows(fx, object weapon)
 private func HasAmmo(fx, object weapon)
 {
 	if (weapon->Contents(0)) return true;
-	if (FindObject(Find_Container(this), Find_Func("IsMusketAmmo"))) return true;
+	if (FindObject(Find_Container(this), Find_Func("IsBullet"))) return true;
 	return false;
 }
 

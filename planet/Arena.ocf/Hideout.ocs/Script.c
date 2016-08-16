@@ -255,7 +255,7 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
-		obj->CreateContents(LeadShot);
+		obj->CreateContents(LeadBullet);
 	if (obj_id == GrappleBow)
 		AddEffect("NotTooLong",obj,100,36);
 	

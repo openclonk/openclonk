@@ -101,9 +101,9 @@ private func InitMaterials(int amount)
 		var chest = CreateObjectAbove(Chest, pos.x, pos.y);
 		chest->CreateContents(Dynamite, 4);
 		chest->CreateContents(Club, 4);
-		chest->CreateContents(Musket)->CreateContents(LeadShot);
-		chest->CreateContents(Musket)->CreateContents(LeadShot);
-		chest->CreateContents(Musket)->CreateContents(LeadShot);
+		chest->CreateContents(Musket)->CreateContents(LeadBullet);
+		chest->CreateContents(Musket)->CreateContents(LeadBullet);
+		chest->CreateContents(Musket)->CreateContents(LeadBullet);
 		chest->CreateContents(IronBomb, 4);
 		chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);
 		chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);

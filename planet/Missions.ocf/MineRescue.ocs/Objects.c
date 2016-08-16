@@ -236,7 +236,7 @@ func InitializeObjects()
 
 	Chest0225->CreateContents(Musket);
 
-	Chest0225->CreateContents(LeadShot);
+	Chest0225->CreateContents(LeadBullet);
 
 	Chest0224->CreateContents(Dynamite);
 	Chest0225->CreateContents(Dynamite);
