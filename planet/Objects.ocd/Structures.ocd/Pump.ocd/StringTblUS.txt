@@ -19,10 +19,13 @@ StateNoSource=There is no source pipe connected.
 StateNoInput=The pump does not have liquid to pump.
 StateNoOutput=The drain pipe is clogged.
 StateNoPower=The pump does not have power.
+StateNoAir=The air source pipe is clogged.
 StateTurnedOff=The pump has been turned off.
 
 MsgSourcePipeProhibited=Unable to connect source pipe.
 MsgDrainPipeProhibited=Unable to connect drain pipe.
+MsgAirPipeProhibited=Pump already has a drain pipe and cannot take an air pipe.
 MsgCreatedSource=Connected source pipe.
 MsgCreatedDrain=Connected drain pipe.
+MsgCreatedAirDrain=Connected air pipe.
 MsgHasPipes=Pump already has a source and a drain pipe.

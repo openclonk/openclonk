@@ -5,7 +5,7 @@
 */
 
 local pipe_kit;
-
+local is_air_pipe = false;
 
 private func Initialize()
 {
@@ -19,6 +19,7 @@ private func Initialize()
 public func SetNeutral()
 {
 	SetProperty("LineColors", [RGB(80, 80, 120), RGB(80, 80, 120)]);
+	is_air_pipe = false;
 }
 
 // Reddish colour.
@@ -26,6 +27,7 @@ public func SetNeutral()
 public func SetDrain()
 {
 	SetProperty("LineColors", [RGB(238, 102, 0), RGB(238, 102, 0)]);
+	is_air_pipe = false;
 }
 
 // Greenish colour.
@@ -33,6 +35,14 @@ public func SetDrain()
 public func SetSource()
 {
 	SetProperty("LineColors", [RGB(102, 136, 34), RGB(102, 136, 34)]);
+	is_air_pipe = false;
+}
+
+// Blueish colour.
+public func SetAir()
+{
+	SetProperty("LineColors", [RGB(0, 153, 255), RGB(0, 153, 255)]);
+	is_air_pipe = true;
 }
 
 // Returns true if this object is a functioning pipe.
@@ -41,13 +51,17 @@ public func IsPipeLine()
 	return GetAction() == "Connect";
 }
 
+public func IsAirPipe()
+{
+	return this.is_air_pipe;
+}
+
 // Returns whether this pipe is connected to an object.
 // Returns only actually connected objects if the parameter 'strict' is true.
 public func IsConnectedTo(object obj, bool strict)
 {
 	return GetActionTarget(0) == obj || GetActionTarget(1) == obj || (!strict && pipe_kit == obj);
 }
-
 
 // Returns the object which is connected to obj through this pipe.
 public func GetConnectedObject(object obj)

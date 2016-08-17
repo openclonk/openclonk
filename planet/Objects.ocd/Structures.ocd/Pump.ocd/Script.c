@@ -179,6 +179,11 @@ func QueryConnectPipe(object pipe)
 		pipe->Report("$MsgDrainPipeProhibited$");
 		return true;
 	}
+	else if (pipe->IsAirPipe() && GetDrainPipe())
+	{
+		pipe->Report("$MsgAirPipeProhibited$");
+		return true;
+	}
 	return false;
 }
 
@@ -197,14 +202,24 @@ func OnPipeConnect(object pipe, string specific_pipe_state)
 		pipe->SetDrainPipe();
 		pipe->Report("$MsgCreatedDrain$");
 	}
+	else if (PIPE_STATE_Air == specific_pipe_state)
+	{
+		// Air pipes take up the place of the drain
+		SetDrainPipe(pipe);
+		pipe->Report("$MsgCreatedAirDrain$");
+	}
 	else
 	{
 		// add a drain if we already connected a source pipe,
 		// or if the line is already connected to a container
 		var line = pipe->GetConnectedLine();
 		var pump_target = !line || line->GetConnectedObject(this);
-		if (pump_target) pump_target = pump_target->~IsLiquidContainer();		
-		if (GetSourcePipe() || pump_target)
+		if (pump_target) pump_target = pump_target->~IsLiquidContainer();
+		if (line->IsAirPipe())
+		{
+			OnPipeConnect(pipe, PIPE_STATE_Air);
+		}
+		else if (GetSourcePipe() || pump_target)
 		{
 			OnPipeConnect(pipe, PIPE_STATE_Drain);
 		}
@@ -219,9 +234,12 @@ func OnPipeConnect(object pipe, string specific_pipe_state)
 
 func OnPipeDisconnect(object pipe)
 {
-	pipe->SetNeutralPipe();		
-	
 	_inherited(pipe);
+
+	if (!pipe->IsAirPipe())
+		pipe->SetNeutralPipe();
+	else // Stop pumping to prevent errors from Pumping()
+		CheckState();
 }
 
 
@@ -231,6 +249,12 @@ public func SetSourcePipe(object pipe)
 	CheckState();
 }
 
+public func IsAirPipeConnected()
+{
+	if (!GetDrainPipe())
+		return false;
+	return GetDrainPipe()->~IsAirPipe();
+}
 
 /*-- Power stuff --*/
 
@@ -286,6 +310,15 @@ protected func Pumping()
 	// let the central function handle that on next check
 	if (!GetSourcePipe()) 
 		return;
+
+	// Don't do anything special if pumping air but inform the drain object
+	if (IsAirPipeConnected())
+	{
+		var drain_obj = GetDrainObject();
+		if (drain_obj)
+			drain_obj->~OnAirPumped(this);
+		return;
+	}
 
 	var pump_ok = true;
 	
@@ -398,6 +431,30 @@ func CheckState()
 		if (!GetSourcePipe() && switched_on)
 			SetInfoMessage("$StateNoSource$");
 		SetState("Wait");
+	}
+	else if(IsAirPipeConnected())
+	{
+		if (!GetAirSourceOk())
+		{
+			SetInfoMessage("$StateNoAir$");
+			SetState("WaitForLiquid");
+		}
+		else
+		{
+			// can pump, has air but has no power -> wait for power
+			if (!powered)
+			{
+				SetInfoMessage("$StateNoPower$");
+				SetState("WaitForPower");
+			}
+			else
+			{
+				SetInfoMessage();
+				clog_count = 0;
+				SetState("Pump");
+			}
+			UpdatePowerUsage();
+		}
 	}
 	else
 	{
@@ -528,6 +585,9 @@ private func PumpHeight2Power(int pump_height)
 	// Pumping power downwards never costs energy, but only brings something if offset is overcome.
 	else
 		used_power = BoundBy(used_power + power_offset - 10, -max_power, 0);
+	// Pumped air never generates power
+	if (IsAirPipeConnected())
+		used_power = BoundBy(used_power, 10, max_power);
 	return used_power;
 }
 
@@ -564,6 +624,20 @@ private func GetLiquidDrainOk(string liquid)
 	{
 		if (!drain_obj->AcceptsLiquid(liquid, 1))
 			return false;
+	}
+	return true;
+}
+
+// Returns whether the drain is in free air.
+func GetAirSourceOk()
+{
+	var source_obj = GetSourceObject();
+	if (!source_obj) return false;
+	var is_air = !source_obj->GBackSemiSolid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY);
+	if (!is_air)
+	{
+		source_obj->~CycleApertureOffset(this);
+		return false;
 	}
 	return true;
 }

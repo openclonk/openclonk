@@ -1,0 +1,21 @@
+material DiveHelm 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            specular 0.44354838132858276 0.44354838132858276 0.44354838132858276 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture DivingHelm.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}

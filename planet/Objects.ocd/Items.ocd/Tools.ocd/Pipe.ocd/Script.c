@@ -30,6 +30,7 @@
 static const PIPE_STATE_Neutral = nil;
 static const PIPE_STATE_Source = "Source";
 static const PIPE_STATE_Drain = "Drain";
+static const PIPE_STATE_Air = "Air";
 
 local ApertureOffsetX = 0;
 local ApertureOffsetY = 3;
@@ -130,11 +131,12 @@ func IsDroppedOnDeath(object clonk)
 /* ---------- Pipe States ---------- */
 
 
-func IsNeutralPipe(){ return PipeState == PIPE_STATE_Neutral;}
-func IsDrainPipe(){ return PipeState == PIPE_STATE_Drain;}
-func IsSourcePipe(){ return PipeState == PIPE_STATE_Source;}
+public func IsNeutralPipe(){ return PipeState == PIPE_STATE_Neutral; }
+public func IsDrainPipe(){ return PipeState == PIPE_STATE_Drain; }
+public func IsSourcePipe(){ return PipeState == PIPE_STATE_Source; }
+public func IsAirPipe(){ return PipeState == PIPE_STATE_Air; }
 
-func SetNeutralPipe()
+public func SetNeutralPipe()
 {
 	PipeState = PIPE_STATE_Neutral;
 
@@ -149,7 +151,7 @@ func SetNeutralPipe()
 	}
 }
 
-func SetDrainPipe()
+public func SetDrainPipe()
 {
 	PipeState = PIPE_STATE_Drain;
 	
@@ -165,7 +167,7 @@ func SetDrainPipe()
 	}
 }
 
-func SetSourcePipe()
+public func SetSourcePipe()
 {
 	PipeState = PIPE_STATE_Source;
 
@@ -181,7 +183,21 @@ func SetSourcePipe()
 	}
 }
 
+public func SetAirPipe()
+{
+	PipeState = PIPE_STATE_Air;
 
+	SetGraphics("Air", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+	SetObjDrawTransform(1000, 0, 0, 0, 1000, 10000, GFX_Overlay);
+	Description = "$DescriptionAir$";
+	Name = "$NameAir$";
+
+	var line = GetConnectedLine();
+	if (line)
+	{
+		line->SetAir();
+	}
+}
 
 /* ---------- Pipe Connection ---------- */
 

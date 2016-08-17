@@ -1,0 +1,12 @@
+Name=Diving helmet
+Description=Wearing this your clonk can breath underwater as long as the helmet is connected to a pump. Press [use] to put on.
+
+MsgConnectedPipe=Connected pipe.
+MsgPipeProhibited=Cannot connect source pipes to the diving helmet.
+MsgHasPipe=The diving helmet already has a pipe.
+
+MenuPipeControl=Pipe Control
+MsgCutPipe=Cut off pipe
+MsgConnectPipe=Connect pipe
+DescCutPipe=Removes the connected pipe.
+DescConnectPipe=Connects a pipe.
