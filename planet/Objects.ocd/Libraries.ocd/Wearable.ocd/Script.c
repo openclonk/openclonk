@@ -73,7 +73,7 @@ public func PutOn(object clonk, bool no_force)
 	if (!no_force)
 	{
 		var effect;
-		for (var i = GetEffectCount("Wearing", clonk); effect = GetEffect("Wearing", clonk, i); i--)
+		for (var i = GetEffectCount("Wearing", clonk); effect = GetEffect("Wearing", clonk, i-1); i--)
 			if (effect.identifier == GetWearPlace())
 				RemoveEffect(nil, clonk, effect);
 	}
