@@ -64,8 +64,6 @@ public func GetCarryMode(object clonk, bool secondary)
 {
 	if (IsWorn() || display_disabled)
 		return CARRY_None;
-	if (secondary || !clonk->~HasHandAction(false, true))
-		return CARRY_Back;
 	return CARRY_BothHands;
 }
 
@@ -81,11 +79,6 @@ public func GetCarryBone(object clonk, bool secondary)
 
 public func GetCarryTransform(object clonk, bool secondary, bool no_hand, bool on_back)
 {
-	if (secondary)
-		return Trans_Mul(Trans_Rotate(180, 1), Trans_Rotate(0, 0, 1), Trans_Rotate(90, 0, 0, 1), Trans_Translate(-4000));
-	if (no_hand || on_back)
-		return Trans_Mul(Trans_Rotate(0, 1), Trans_Rotate(0, 0, 1), Trans_Rotate(90, 0, 0, 1), Trans_Translate(-4000));
-
 	return Trans_Mul(Trans_Rotate(80, 0, 0, 1), Trans_Rotate(-90, 0, 1), Trans_Rotate(-45, 0, 0, 1), Trans_Translate(-1000, 4000));
 }
 
