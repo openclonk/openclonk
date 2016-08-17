@@ -255,8 +255,7 @@ func FindAvailablePipe(object container)
 
 /*-- Production --*/
 
-public func IsWeapon() { return true; }
-public func IsArmoryProduct() { return true; }
+public func IsToolProduct() { return true; }
 
 /*-- Display --*/
 
