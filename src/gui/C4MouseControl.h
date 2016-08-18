@@ -32,7 +32,14 @@ const int32_t C4MC_Button_None        = 0,
               C4MC_Button_RightDouble = 6,
               C4MC_Button_Wheel       = 7,
               C4MC_Button_MiddleDown  = 8,
-              C4MC_Button_MiddleUp    = 9;
+              C4MC_Button_MiddleUp    = 9,
+              C4MC_Button_MiddleDouble= 10,
+              C4MC_Button_X1Down      = 11,
+              C4MC_Button_X1Up        = 12,
+              C4MC_Button_X1Double    = 13,
+              C4MC_Button_X2Down      = 14,
+              C4MC_Button_X2Up        = 15,
+              C4MC_Button_X2Double    = 16;
 
 const int32_t C4MC_DragSensitivity = 5;
 

@@ -98,11 +98,15 @@ const C4KeyCode
 	KEY_MOUSE_ButtonLeft         = KEY_MOUSE_Button1 + 0,
 	KEY_MOUSE_ButtonRight        = KEY_MOUSE_Button1 + 1,
 	KEY_MOUSE_ButtonMiddle       = KEY_MOUSE_Button1 + 2,
+	KEY_MOUSE_ButtonX1           = KEY_MOUSE_Button1 + 3,
+	KEY_MOUSE_ButtonX2           = KEY_MOUSE_Button1 + 4,
 	KEY_MOUSE_ButtonMax          = KEY_MOUSE_Button1 + 0x1f, // max number of supported mouse buttons
 	KEY_MOUSE_Button1Double      = 0x30, // double clicks have special events because double click speed is issued by OS
 	KEY_MOUSE_ButtonLeftDouble   = KEY_MOUSE_Button1Double + 0,
 	KEY_MOUSE_ButtonRightDouble  = KEY_MOUSE_Button1Double + 1,
 	KEY_MOUSE_ButtonMiddleDouble = KEY_MOUSE_Button1Double + 2,
+	KEY_MOUSE_ButtonX1Double     = KEY_MOUSE_Button1Double + 3,
+	KEY_MOUSE_ButtonX2Double     = KEY_MOUSE_Button1Double + 4,
 	KEY_MOUSE_ButtonMaxDouble    = KEY_MOUSE_Button1Double + 0x1f, // max number of supported mouse buttons
 	KEY_MOUSE_Wheel1Up           = 0x40,    // mouse control: wheel up
 	KEY_MOUSE_Wheel1Down         = 0x41;    // mouse control: wheel down

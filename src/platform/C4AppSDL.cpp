@@ -50,9 +50,21 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 		break;
 	case SDL_BUTTON_MIDDLE:
 		if (e.state == SDL_PRESSED)
-			button = C4MC_Button_MiddleDown;
+			button = e.clicks == 2 ? C4MC_Button_MiddleDouble : C4MC_Button_MiddleDown;
 		else
 			button = C4MC_Button_MiddleUp;
+		break;
+	case SDL_BUTTON_X1:
+		if (e.state == SDL_PRESSED)
+			button = e.clicks == 2 ? C4MC_Button_X1Double : C4MC_Button_X1Down;
+		else
+			button = C4MC_Button_X1Up;
+		break;
+	case SDL_BUTTON_X2:
+		if (e.state == SDL_PRESSED)
+			button = e.clicks == 2 ? C4MC_Button_X2Double : C4MC_Button_X2Down;
+		else
+			button = C4MC_Button_X2Up;
 		break;
 	}
 }

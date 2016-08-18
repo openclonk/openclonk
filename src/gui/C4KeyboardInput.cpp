@@ -284,6 +284,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 					if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
 					else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
 					else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
+					else if (SEqualNoCase(key_str, "X1",2)) { mouseevent_id=KEY_MOUSE_ButtonX1; key_str += 2; }
+					else if (SEqualNoCase(key_str, "X2",2)) { mouseevent_id=KEY_MOUSE_ButtonX2; key_str += 2; }
 					else if (isdigit(*key_str))
 					{
 						// indexed mouse button (e.g. Mouse1Button4 or Mouse1Button4Double)
@@ -385,9 +387,13 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX1:          return FormatString("%s%dX1", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX2:          return FormatString("%s%dX2", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_str, mouse_id);
 		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX1Double:    return FormatString("%s%dX1Double", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonX2Double:    return FormatString("%s%dX2Double", mouse_str, mouse_id);
 		default:
 			// extended mouse button
 		{

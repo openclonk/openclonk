@@ -189,6 +189,9 @@ void C4ConsoleQtViewportView::mousePressEvent(QMouseEvent *eventPress)
 		{
 		case Qt::LeftButton: btn = C4MC_Button_LeftDown; break;
 		case Qt::RightButton: btn = C4MC_Button_RightDown; break;
+		case Qt::MiddleButton: btn = C4MC_Button_MiddleDown; break;
+		case Qt::XButton1: btn = C4MC_Button_X1Down; break;
+		case Qt::XButton2: btn = C4MC_Button_X2Down; break;
 		}
 		C4GUI::MouseMove(btn, eventPress->x() * pr, eventPress->y() * pr, GetShiftWParam(), cvp);
 	}
@@ -213,6 +216,9 @@ void C4ConsoleQtViewportView::mouseDoubleClickEvent(QMouseEvent *eventPress)
 		{
 		case Qt::LeftButton: btn = C4MC_Button_LeftDouble; break;
 		case Qt::RightButton: btn = C4MC_Button_RightDouble; break;
+		case Qt::MiddleButton: btn = C4MC_Button_MiddleDouble; break;
+		case Qt::XButton1: btn = C4MC_Button_X1Double; break;
+		case Qt::XButton2: btn = C4MC_Button_X2Double; break;
 		}
 		auto pr = GetDevicePixelRatio();
 		C4GUI::MouseMove(btn, eventPress->x() * pr, eventPress->y() * pr, GetShiftWParam(), cvp);
@@ -228,6 +234,9 @@ void C4ConsoleQtViewportView::mouseReleaseEvent(QMouseEvent *releaseEvent)
 		{
 		case Qt::LeftButton: btn = C4MC_Button_LeftUp; break;
 		case Qt::RightButton: btn = C4MC_Button_RightUp; break;
+		case Qt::MiddleButton: btn = C4MC_Button_MiddleUp; break;
+		case Qt::XButton1: btn = C4MC_Button_X1Up; break;
+		case Qt::XButton2: btn = C4MC_Button_X2Up; break;
 		}
 		auto pr = GetDevicePixelRatio();
 		C4GUI::MouseMove(btn, releaseEvent->x() * pr, releaseEvent->y() * pr, GetShiftWParam(), cvp);
