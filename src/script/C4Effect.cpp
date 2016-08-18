@@ -302,6 +302,13 @@ C4Effect* C4Effect::Check(const char *szCheckEffect, int32_t iPrio, int32_t iTim
 
 void C4Effect::Execute(C4Effect **ppEffectList)
 {
+	// advance all effect timers first; then do execution
+	// this prevents a possible endless loop if timers register into the same effect list with interval 1 while it is being executed
+	for (C4Effect *pEffect = *ppEffectList; pEffect; pEffect = pEffect->pNext)
+	{
+		// ignore dead status; adjusting their time doesn't hurt
+		++pEffect->iTime;
+	}
 	// get effect list
 	// execute all effects not marked as dead
 	C4Effect *pEffect = *ppEffectList, **ppPrevEffect=ppEffectList;
@@ -319,10 +326,8 @@ void C4Effect::Execute(C4Effect **ppEffectList)
 		}
 		else
 		{
-			// execute effect: time elapsed
-			++pEffect->iTime;
 			// check timer execution
-			if (pEffect->iInterval && !(pEffect->iTime % pEffect->iInterval))
+			if (pEffect->iInterval && !(pEffect->iTime % pEffect->iInterval) && pEffect->iTime)
 			{
 				if (pEffect->CallTimer(pEffect->iTime) == C4Fx_Execute_Kill)
 				{
