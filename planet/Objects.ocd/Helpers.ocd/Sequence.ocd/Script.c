@@ -335,6 +335,7 @@ local check_interval=12;
 local deactivate_after_action; // If true, finished is set to true after the first execution and the trigger deactivated
 local Visibility=VIS_Editor;
 local trigger_started;
+public func IsSequence() { return true; }
 
 // finished: Disables the trigger. true if trigger has run and deactivate_after_action is set to true.
 // Note that this flag is not saved in scenarios, so saving as scenario and reloading will re-enable all triggers (for editor mode)
@@ -345,6 +346,11 @@ public func Definition(def)
 	// EditorActions
 	if (!def.EditorActions) def.EditorActions = {};
 	def.EditorActions.Test = { Name="$Test$", Command="OnTrigger(nil, nil, true)" };
+	// UserActions
+	UserAction->AddEvaluator("Action", "$Name$", "$SetActive$", "$SetActiveDesc$", "sequence_set_active", [def, def.EvalAct_SetActive], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
+		Target = UserAction->GetObjectEvaluator("IsSequence", "$Name$"),
+		Status = new UserAction.Evaluator.Boolean { Name="$Status$", EditorHelp="$SetActiveStatusHelp$" }
+		} } );
 	// EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
@@ -648,6 +654,16 @@ public func SetName(string new_name, ...)
 			Message(Format("@<c 808080>%s</c>", new_name));
 	}
 	return inherited(new_name, ...);
+}
+
+private func EvalAct_SetActive(proplist props, proplist context)
+{
+	// User action: Enable/disable sequence
+	var target = UserAction->EvaluateValue("Object", props.Target, context);
+	var status = UserAction->EvaluateValue("Boolean", props.Status, context);
+	if (!target) return;
+	if (status && target.finished) target->~SetFinished(false);
+	target->~SetActive(status);
 }
 
 /*-- Saving --*/

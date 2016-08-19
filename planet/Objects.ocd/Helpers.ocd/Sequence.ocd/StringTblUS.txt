@@ -45,3 +45,7 @@ GreaterEqual=>=
 GreaterEqualHelp=The sequence is triggered if the given number or more objects are contained in the container.
 LessThan=<
 LessThanHelp=The sequence is triggered if less than the given number of objects is in the container.
+SetActive=Activate / deactivate
+SetActiveDesc=Enables or disables the trigger of a sequence.
+Status=Status
+SetActiveStatusHelp=Whether the sequence is activated or deactivated.

@@ -45,3 +45,7 @@ GreaterEqual=>=
 GreaterEqualHelp=Die Sequenz wird ausgeloest, sobald die angegebene Anzahl oder mehr Objekte im Container sind.
 LessThan=<
 LessThanHelp=Die Sequenz wird ausgeloest, sobald weniger als die angegebene Anzahl Objekte im Container sind.
+SetActive=Aktivieren / Deaktivieren
+SetActiveDesc=Schaltet den Ausloeser einer Sequenz ein oder aus.
+Status=Status
+SetActiveStatusHelp=Ob die Sequenz aktiviert oder deaktiviert werden soll.
