@@ -271,6 +271,14 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 	return editor;
 }
 
+bool C4PropertyDelegateInt::IsPasteValid(const C4Value &val) const
+{
+	// Check int type and limits
+	if (val.GetType() != C4V_Int) return false;
+	int32_t ival = val._getInt();
+	return (ival >= min && ival <= max);
+}
+
 
 /* String delegate */
 
@@ -316,6 +324,13 @@ QString C4PropertyDelegateString::GetDisplayString(const C4Value &v, C4Object *o
 	// Raw string without ""
 	C4String *s = v.getStr();
 	return QString(s ? s->GetCStr() : "");
+}
+
+bool C4PropertyDelegateString::IsPasteValid(const C4Value &val) const
+{
+	// Check string type
+	if (val.GetType() != C4V_String) return false;
+	return true;
 }
 
 
@@ -420,11 +435,8 @@ C4PropertyDelegateArray::C4PropertyDelegateArray(const class C4PropertyDelegateF
 	}
 }
 
-QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
+void C4PropertyDelegateArray::ResolveElementDelegate() const
 {
-	C4ValueArray *arr = v.getArray();
-	if (!arr) return QString(LoadResStr("IDS_CNS_INVALID"));
-	int32_t n = v._getArray()->GetSize();
 	if (!element_delegate)
 	{
 		C4Value element_delegate_value;
@@ -432,6 +444,14 @@ QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *ob
 		if (info_proplist) info_proplist->GetProperty(P_Elements, &element_delegate_value);
 		element_delegate = factory->GetDelegateByValue(element_delegate_value);
 	}
+}
+
+QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
+{
+	C4ValueArray *arr = v.getArray();
+	if (!arr) return QString(LoadResStr("IDS_CNS_INVALID"));
+	int32_t n = v._getArray()->GetSize();
+	ResolveElementDelegate();
 	if (max_array_display && n)
 	{
 		QString result = "[";
@@ -454,6 +474,24 @@ QString C4PropertyDelegateArray::GetDisplayString(const C4Value &v, C4Object *ob
 		// Short display of empty array: Just leave it out.
 		return QString("");
 	}
+}
+
+bool C4PropertyDelegateArray::IsPasteValid(const C4Value &val) const
+{
+	// Check array type and all contents
+	C4ValueArray *arr = val.getArray();
+	if (!arr) return false;
+	int32_t n = arr->GetSize();
+	if (n)
+	{
+		ResolveElementDelegate();
+		for (int32_t i = 0; i < arr->GetSize(); ++i)
+		{
+			C4Value item = arr->GetItem(i);
+			if (!element_delegate->IsPasteValid(item)) return false;
+		}
+	}
+	return true;
 }
 
 
@@ -507,6 +545,32 @@ QString C4PropertyDelegatePropList::GetDisplayString(const C4Value &v, C4Object 
 		result.replace(pos0, pos1 - pos0 + 2, display_value);
 	}
 	return result;
+}
+
+bool C4PropertyDelegatePropList::IsPasteValid(const C4Value &val) const
+{
+	// Check proplist type
+	C4PropList *pval = val.getPropList();
+	if (!pval) return false;
+	// Are there restrictions on allowed properties?
+	C4PropList *info_proplist = this->info_proplist.getPropList();
+	C4PropList *info_editorprops = info_proplist ? info_proplist->GetPropertyPropList(P_EditorProps) : nullptr;
+	if (!info_editorprops) return true; // No restrictions: Allow everything
+	// Otherwise all types properties must be valid for paste
+	// (Extra properties are OK)
+	std::vector< C4String * > properties = info_editorprops->GetUnsortedProperties(nullptr, nullptr);
+	for (C4String *prop_name : properties)
+	{
+		if (prop_name == &::Strings.P[P_Prototype]) continue;
+		C4Value child_delegate_val;
+		if (!info_editorprops->GetPropertyByS(prop_name, &child_delegate_val)) continue;
+		C4PropertyDelegate *child_delegate = factory->GetDelegateByValue(child_delegate_val);
+		if (!child_delegate) continue;
+		C4Value child_val;
+		pval->GetPropertyByS(prop_name, &child_val);
+		if (!child_delegate->IsPasteValid(child_val)) return false;
+	}
+	return true;
 }
 
 
@@ -575,6 +639,13 @@ QColor C4PropertyDelegateColor::GetDisplayTextColor(const C4Value &val, class C4
 QColor C4PropertyDelegateColor::GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const
 {
 	return static_cast<uint32_t>(val.getInt()) & 0xffffff;
+}
+
+bool C4PropertyDelegateColor::IsPasteValid(const C4Value &val) const
+{
+	// Color is always int
+	if (val.GetType() != C4V_Int) return false;
+	return true;
 }
 
 
@@ -1268,6 +1339,29 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 	return false;
 }
 
+bool C4PropertyDelegateEnum::IsPasteValid(const C4Value &val) const
+{
+	// Must be a valid selection
+	int32_t option_idx = GetOptionByValue(val);
+	if (option_idx < 0) return false;
+	const Option &option = options[option_idx];
+	// Check validity for parameter
+	EnsureOptionDelegateResolved(option);
+	if (!option.adelegate) return true; // No delegate? Then any value is OK.
+	C4Value parameter_val;
+	if (option.value_key.Get())
+	{
+		C4PropList *vp = val.getPropList();
+		if (!vp) return false;
+		vp->GetPropertyByS(option.value_key, &parameter_val); // if this fails, check parameter against nil
+	}
+	else
+	{
+		parameter_val = val;
+	}
+	return option.adelegate->IsPasteValid(parameter_val);
+}
+
 
 /* Definition delegate */
 
@@ -1277,7 +1371,7 @@ C4PropertyDelegateDef::C4PropertyDelegateDef(const C4PropertyDelegateFactory *fa
 	// nil is always an option
 	AddConstOption(empty_name ? empty_name.Get() : ::Strings.RegString("nil"), C4VNull);
 	// Collect sorted definitions
-	C4String *filter_property = props ? props->GetPropertyStr(P_Filter) : nullptr;
+	filter_property = props ? props->GetPropertyStr(P_Filter) : nullptr;
 	if (filter_property)
 	{
 		// With filter just create a flat list
@@ -1315,6 +1409,22 @@ void C4PropertyDelegateDef::AddDefinitions(C4ConsoleQtDefinitionListModel *def_l
 			AddDefinitions(def_list_model, index, group ? ::Strings.RegString(FormatString("%s/%s", group->GetCStr(), name->GetCStr()).getData()) : name.Get());
 		}
 	}
+}
+
+bool C4PropertyDelegateDef::IsPasteValid(const C4Value &val) const
+{
+	// Must be a definition or nil
+	if (val.GetType() == C4V_Nil) return true;
+	C4Def *def = val.getDef();
+	if (!def) return false;
+	// Check filter
+	if (filter_property)
+	{
+		C4Value prop_val;
+		if (!def->GetPropertyByS(filter_property, &prop_val)) return false;
+		if (!prop_val) return false;
+	}
+	return true;
 }
 
 
@@ -1412,6 +1522,22 @@ QString C4PropertyDelegateObject::GetDisplayString(const C4Value &v, class C4Obj
 	}
 }
 
+bool C4PropertyDelegateObject::IsPasteValid(const C4Value &val) const
+{
+	// Must be an object or nil
+	if (val.GetType() == C4V_Nil) return true;
+	C4Object *obj = val.getObj();
+	if (!obj) return false;
+	// Check filter
+	if (filter)
+	{
+		C4Value prop_val;
+		if (!obj->GetPropertyByS(filter, &prop_val)) return false;
+		if (!prop_val) return false;
+	}
+	return true;
+}
+
 
 /* Sound delegate */
 
@@ -1444,6 +1570,14 @@ C4PropertyDelegateSound::C4PropertyDelegateSound(const C4PropertyDelegateFactory
 	}
 }
 
+bool C4PropertyDelegateSound::IsPasteValid(const C4Value &val) const
+{
+	// Must be nil or a string
+	if (val.GetType() == C4V_Nil) return true;
+	if (val.GetType() != C4V_String) return false;
+	return true;
+}
+
 
 /* Boolean delegate */
 
@@ -1462,6 +1596,13 @@ bool C4PropertyDelegateBool::GetPropertyValue(const C4Value &container, C4String
 	bool success = C4PropertyDelegateEnum::GetPropertyValue(container, key, index, out_val);
 	if (out_val->GetType() != C4V_Bool) *out_val = C4VBool(!!*out_val);
 	return success;
+}
+
+bool C4PropertyDelegateBool::IsPasteValid(const C4Value &val) const
+{
+	// Must be a boolean
+	if (val.GetType() != C4V_Bool) return false;
+	return true;
 }
 
 
@@ -1582,13 +1723,11 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 /* Areas shown in viewport */
 
 C4PropertyDelegateShape::C4PropertyDelegateShape(const class C4PropertyDelegateFactory *factory, C4PropList *props)
-	: C4PropertyDelegate(factory, props), clr(0xffff0000), can_move_center(false)
+	: C4PropertyDelegate(factory, props), clr(0xffff0000)
 {
 	if (props)
 	{
-		shape_type = props->GetPropertyStr(P_Type);
 		clr = props->GetPropertyInt(P_Color) | 0xff000000;
-		can_move_center = props->GetPropertyBool(P_CanMoveCenter);
 	}
 }
 
@@ -1616,25 +1755,122 @@ bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewIte
 		// Draw shape in right corner
 		inner_rect.adjust(inner_rect.width() - inner_rect.height(), 0, 0, 0);
 	}
-	if (shape_type && shape_type->GetData() == "point")
-	{
-
-		QPoint ctr = inner_rect.center();
-		int r = inner_rect.height() * 7 / 20;
-		painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r, +r));
-		painter->drawLine(ctr + QPoint(+r, -r), ctr + QPoint(-r, +r));
-		painter->drawEllipse(inner_rect);
-	}
-	else if (shape_type && shape_type->GetData() == "circle")
-	{
-		painter->drawEllipse(inner_rect);
-		if (can_move_center) painter->drawPoint(inner_rect.center());
-	}
-	else
-	{
-		painter->drawRect(inner_rect);
-	}
+	// Paint by shape type
+	DoPaint(painter, inner_rect);
+	// Done painting
 	painter->restore();
+	return true;
+}
+
+
+/* Areas shown in viewport: Rectangle */
+
+C4PropertyDelegateRect::C4PropertyDelegateRect(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateShape(factory, props)
+{
+	if (props)
+	{
+		storage = props->GetPropertyStr(P_Storage);
+	}
+}
+
+void C4PropertyDelegateRect::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	painter->drawRect(inner_rect);
+}
+
+bool C4PropertyDelegateRect::IsPasteValid(const C4Value &val) const
+{
+	// Check storage as prop list
+	if (storage)
+	{
+		// Proplist-stored rect must have defined properties
+		C4PropertyName def_property_names[2][4] = { { P_x, P_y, P_wdt, P_hgt },{ P_X, P_Y, P_Wdt, P_Hgt } };
+		C4PropertyName *property_names = nullptr;
+		if (storage->GetData() == "proplist")
+		{
+			property_names = def_property_names[0];
+		}
+		else if (storage->GetData() == "Proplist")
+		{
+			property_names = def_property_names[1];
+		}
+		if (property_names)
+		{
+			C4PropList *val_proplist = val.getPropList();
+			if (!val_proplist) return false;
+			for (int32_t i = 0; i < 4; ++i)
+			{
+				C4Value propval;
+				if (!val_proplist->GetProperty(property_names[i], &propval)) return false;
+				if (propval.GetType() != C4V_Int) return false;
+			}
+			// extra properties are OK
+		}
+		return true;
+	}
+	// Check storage as array: Expect array with four elements. Width and height non-negative.
+	C4ValueArray *val_arr = val.getArray();
+	if (!val_arr || val_arr->GetSize() != 4) return false;
+	for (int32_t i = 0; i < 4; ++i) if (val_arr->GetItem(i).GetType() != C4V_Int) return false;
+	if (val_arr->GetItem(2)._getInt() < 0) return false;
+	if (val_arr->GetItem(3)._getInt() < 0) return false;
+	return true;
+}
+
+
+/* Areas shown in viewport: Circle */
+
+C4PropertyDelegateCircle::C4PropertyDelegateCircle(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateShape(factory, props)
+{
+	if (props)
+	{
+		can_move_center = props->GetPropertyBool(P_CanMoveCenter);
+	}
+}
+
+void C4PropertyDelegateCircle::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	painter->drawEllipse(inner_rect);
+	if (can_move_center) painter->drawPoint(inner_rect.center());
+}
+
+bool C4PropertyDelegateCircle::IsPasteValid(const C4Value &val) const
+{
+	// Circle radius stored as single non-negative int
+	if (!can_move_center) return (val.GetType() == C4V_Int) && (val.getInt() >= 0);
+	// Circle+Center stored as array with three elements (radius, x, y)
+	C4ValueArray *val_arr = val.getArray();
+	if (!val_arr || val_arr->GetSize() != 3) return false;
+	for (int32_t i = 0; i < 3; ++i) if (val_arr->GetItem(i).GetType() != C4V_Int) return false;
+	if (val_arr->GetItem(0)._getInt() < 0) return false;
+	return true;
+}
+
+
+/* Areas shown in viewport: Point */
+
+C4PropertyDelegatePoint::C4PropertyDelegatePoint(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateShape(factory, props)
+{
+}
+
+void C4PropertyDelegatePoint::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r, +r));
+	painter->drawLine(ctr + QPoint(+r, -r), ctr + QPoint(-r, +r));
+	painter->drawEllipse(inner_rect);
+}
+
+bool C4PropertyDelegatePoint::IsPasteValid(const C4Value &val) const
+{
+	// Point stored as array with two elements
+	C4ValueArray *val_arr = val.getArray();
+	if (!val_arr || val_arr->GetSize() != 2) return false;
+	for (int32_t i = 0; i < 2; ++i) if (val_arr->GetItem(i).GetType() != C4V_Int) return false;
 	return true;
 }
 
@@ -1661,7 +1897,9 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 			if (str->GetData() == "bool") return new C4PropertyDelegateBool(this, props);
 			if (str->GetData() == "has_effect") return new C4PropertyDelegateHasEffect(this, props);
 			if (str->GetData() == "c4valueenum") return new C4PropertyDelegateC4ValueEnum(this, props);
-			if (str->GetData() == "rect" || str->GetData() == "circle" || str->GetData() == "point") return new C4PropertyDelegateShape(this, props);
+			if (str->GetData() == "rect") return new C4PropertyDelegateRect(this, props);
+			if (str->GetData() == "circle") return new C4PropertyDelegateCircle(this, props);
+			if (str->GetData() == "point") return new C4PropertyDelegatePoint(this, props);
 			if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
 			// unknown type
 			LogF("Invalid delegate type: %s.", str->GetCStr());
@@ -1811,6 +2049,110 @@ bool C4PropertyDelegateFactory::CheckCurrentEditor(C4PropertyDelegate *d, QWidge
 		return false;
 	}
 	return true;
+}
+
+static const QString property_mime_type("application/OpenClonkProperty");
+
+void C4PropertyDelegateFactory::CopyToClipboard(const QModelIndex &index)
+{
+	// Re-resolve property. May have shifted while the menu was open
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
+	C4PropertyDelegate *d = GetDelegateByIndex(index);
+	if (!prop || !d) return;
+	// Get data to copy
+	C4Value val;
+	d->GetPropertyValue(prop->parent_value, prop->key, index.row(), &val);
+	StdStrBuf data_str(val.GetDataString(99999));
+	// Copy it as an internal mime type and text
+	// Presence of the internal type shows that this is a copied property so it can be safely evaluate without sync problems
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->clear();
+	std::unique_ptr<QMimeData> data(new QMimeData());
+	data->setData(property_mime_type, QByteArray(data_str.getData(), data_str.getSize()));
+	data->setText(data_str.getData());
+	clipboard->setMimeData(data.release());
+}
+
+bool C4PropertyDelegateFactory::PasteFromClipboard(const QModelIndex &index, bool check_only)
+{
+	// Re-resolve property. May have shifted while the menu was open
+	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
+	C4PropertyDelegate *d = GetDelegateByIndex(index);
+	if (!prop || !d) return false;
+	// Check value to paste
+	QClipboard *clipboard = QApplication::clipboard();
+	const QMimeData *data = clipboard->mimeData();
+	if (!data) return false; // empty clipboard
+	// Prefer copied property; fall back to text
+	StdStrBuf str_data;
+	if (data->hasFormat(property_mime_type))
+	{
+		QByteArray prop_data = data->data(property_mime_type);
+		str_data.Copy(prop_data);
+		// Check data type
+		C4Value val = ::AulExec.DirectExec(&::ScriptEngine, str_data.getData(), "paste check", false, nullptr, false);
+		if (!d->IsPasteValid(val)) return false;
+	}
+	else if (data->hasText())
+	{
+		// Text can always be pasted.
+		// Cannot perform a type check here because a function may have been copied that affects sync.
+		QString text = data->text();
+		str_data.Copy(text.toUtf8());
+	}
+	else
+	{
+		// Unknown data type in clipboard. Cannot paste.
+		return false;
+	}
+	if (check_only) return true;
+	// Alright, paste!
+	d->GetPathForProperty(prop).SetProperty(str_data.getData());
+}
+
+bool C4PropertyDelegateFactory::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+	// Custom context menu on item
+	// I would like to use the regular context menu functions of Qt on the parent widget
+	// but something is eating the right-click event before it triggers a context event.
+	// So just hack it on right click.
+	// Button check
+	if (event->type() == QEvent::Type::MouseButtonPress)
+	{
+		QMouseEvent *mev = static_cast<QMouseEvent *>(event);
+		if (mev->button() == Qt::MouseButton::RightButton)
+		{
+			// Item check
+			C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
+			C4PropertyDelegate *d = GetDelegateByIndex(index);
+			if (d && prop)
+			{
+				// Context menu on a valid property: Show copy+paste menu
+				QMenu *context = new QMenu(const_cast<QWidget *>(option.widget));
+				QAction *copy_action = new QAction(LoadResStr("IDS_DLG_COPY"), context);
+				QAction *paste_action = new QAction(LoadResStr("IDS_DLG_PASTE"), context);
+				QModelIndex index_copy(index);
+				connect(copy_action, &QAction::triggered, this, [this, index_copy]() {
+					this->CopyToClipboard(index_copy);
+				});
+				connect(paste_action, &QAction::triggered, this, [this, index_copy]() {
+					this->PasteFromClipboard(index_copy, false);
+				});
+				paste_action->setEnabled(PasteFromClipboard(index_copy, true)); // Paste grayed out if not valid
+				context->addAction(copy_action);
+				context->addAction(paste_action);
+				context->popup(mev->globalPos());
+				context->connect(context, &QMenu::aboutToHide, context, &QWidget::deleteLater);
+				// It's easier to see which item is affected when it's selected
+				QItemSelectionModel *sel_model = property_model->GetSelectionModel();
+				QItemSelection new_sel;
+				new_sel.select(model->index(index.row(), 0, index.parent()), index);
+				sel_model->select(new_sel, QItemSelectionModel::SelectionFlag::SelectCurrent);
+				return true;
+			}
+		}
+	}
+	return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 
 

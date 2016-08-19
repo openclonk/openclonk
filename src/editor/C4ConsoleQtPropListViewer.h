@@ -101,6 +101,7 @@ public:
 	C4PropertyPath GetPathForProperty(const C4PropertyPath &parent_path, const char *default_subpath) const;
 	C4String *GetNameStr() const { return name.Get(); }
 	const C4Value &GetCreationProps() const { return creation_props; }
+	virtual bool IsPasteValid(const C4Value &val) const = 0;
 
 signals:
 	void EditorValueChangedSignal(QWidget *editor) const;
@@ -117,6 +118,7 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 class C4PropertyDelegateStringEditor : public QLineEdit
@@ -137,6 +139,7 @@ public:
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 // Editor: Text displaying value plus a button that opens an extended editor
@@ -175,10 +178,13 @@ class C4PropertyDelegateArray : public C4PropertyDelegateDescendPath
 private:
 	int32_t max_array_display;
 	mutable C4PropertyDelegate *element_delegate; // lazy eval
+
+	void ResolveElementDelegate() const;
 public:
 	C4PropertyDelegateArray(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 class C4PropertyDelegatePropList : public C4PropertyDelegateDescendPath
@@ -189,6 +195,7 @@ public:
 	C4PropertyDelegatePropList(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 class C4PropertyDelegateColor : public C4PropertyDelegate
@@ -204,6 +211,7 @@ public:
 	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
 	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 // Display delegate for deep combo box. Handles the help tooltip showing.
@@ -350,6 +358,7 @@ public:
 	const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const override; // Forward to parameter of selected option
 	bool HasCustomPaint() const override { return true; }
 	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 
 private:
 	QModelIndex GetModelIndexByID(QStandardItemModel *model, QStandardItem *parent_item, int32_t id, const QModelIndex &parent) const;
@@ -365,8 +374,11 @@ public slots:
 // Select a definition
 class C4PropertyDelegateDef : public C4PropertyDelegateEnum
 {
+private:
+	C4RefCntPointer<C4String> filter_property;
 public:
 	C4PropertyDelegateDef(const C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
 
 private:
 	void AddDefinitions(class C4ConsoleQtDefinitionListModel *def_list_model, QModelIndex parent, C4String *group);
@@ -386,6 +398,7 @@ public:
 
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
 	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 // Select a sound
@@ -393,6 +406,7 @@ class C4PropertyDelegateSound : public C4PropertyDelegateEnum
 {
 public:
 	C4PropertyDelegateSound(const C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
 protected:
 	C4StyledItemDelegateWithButton::ButtonType GetOptionComboBoxButtonType() const override { return C4StyledItemDelegateWithButton::BT_PlaySound; }
 };
@@ -404,6 +418,7 @@ public:
 	C4PropertyDelegateBool(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 
 	bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const override;
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 // true or false depending on whether effect is present
@@ -422,6 +437,7 @@ class C4PropertyDelegateC4ValueEnum : public C4PropertyDelegateEnum
 {
 public:
 	C4PropertyDelegateC4ValueEnum(const C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override { return true; }
 };
 
 class C4PropertyDelegateC4ValueInputEditor : public QWidget // TODO: Merge with C4PropertyDelegateLabelAndButtonWidget
@@ -449,17 +465,17 @@ public:
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
+	bool IsPasteValid(const C4Value &val) const override { return true; }
 };
 
 // areas shown in viewport
 class C4PropertyDelegateShape : public C4PropertyDelegate
 {
-	C4RefCntPointer<C4String> shape_type;
 	uint32_t clr;
-	bool can_move_center; 
+
+	virtual void DoPaint(QPainter *painter, const QRect &inner_rect) const = 0;
 public:
 	C4PropertyDelegateShape(const class C4PropertyDelegateFactory *factory, C4PropList *props);
-
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override { } // TODO maybe implement update?
 	void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const override;
 	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override { return nullptr; }
@@ -468,6 +484,34 @@ public:
 	bool HasCustomPaint() const override { return true; }
 	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
 	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override { return QString(); }
+};
+
+class C4PropertyDelegateRect : public C4PropertyDelegateShape
+{
+	C4RefCntPointer<C4String> storage;
+
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegateRect(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegateCircle : public C4PropertyDelegateShape
+{
+	bool can_move_center;
+
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegateCircle(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegatePoint : public C4PropertyDelegateShape
+{
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegatePoint(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
 };
 
 class C4PropertyDelegateFactory : public QStyledItemDelegate
@@ -501,6 +545,8 @@ public:
 private:
 	void EditorValueChanged(QWidget *editor);
 	void EditingDone(QWidget *editor);
+	void CopyToClipboard(const QModelIndex &index);
+	bool PasteFromClipboard(const QModelIndex &index, bool check_only);
 
 protected:
 	// Model callbacks forwarded to actual delegates
@@ -511,6 +557,7 @@ protected:
 	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 };
 
 // Delegate for the name column of the property window
@@ -594,6 +641,7 @@ public:
 	~C4ConsoleQtPropListModel();
 
 	void SetSelectionModel(QItemSelectionModel *m) { selection_model = m; }
+	QItemSelectionModel *GetSelectionModel() const { return selection_model; }
 
 	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
