@@ -282,7 +282,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return Control2Menu(ctrl, x,y,strength, repeat, status);
 	}
 	
-	var contents = this->GetHandItem(0);	
+	var contents = this->GetHandItem(0);
 	
 	// usage
 	var use = (ctrl == CON_Use || ctrl == CON_UseAlt);
@@ -320,7 +320,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				// object returns true on that callback. Exactly what we want)
 				if (this.control.current_object == vehicle) return true;
 				// has been cancelled (it is not the start of the usage but no object is used)
-				if (!this.control.current_object && (repeat || status == CONS_Up)) return true;
+//				if (vehicle && !this.control.current_object && (repeat || status == CONS_Up)) return true;
 			}
 		}
 		// releasing the use-key always cancels shelved commands (in that case no this.control.current_object exists)
