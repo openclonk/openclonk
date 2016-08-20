@@ -292,3 +292,5 @@ SetPosition=Move object
 SetPositionHelp=Puts an object to a new position.
 SetPositionObjectHelp=Object to move.
 SetPositionPositionHelp=New position for the object.
+GameOver=Game over
+GameOverHelp=Ends the round and shows the evaluation dialogue. All players that have not been eliminated will be declared winners.

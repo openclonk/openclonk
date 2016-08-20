@@ -156,6 +156,7 @@ func Definition(def)
 	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { }, { Type="proplist", Display="{{Message}}", ShowFullName=true, EditorProps = {
 		Message = new Evaluator.String { Name="$LogMessage$", EditorHelp="$LogMessageHelp$" },
 		} } );
+	AddEvaluator("Action", "Game", "$GameOver$", "$GameOverHelp$", "game_over", [def, def.EvalAct_GameOver]);
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
@@ -912,6 +913,8 @@ private func EvalScript(proplist props, proplist context)
 	var script = EvaluateValue("String", props.Script, context) ?? "";
 	return script_context->eval(script, true);
 }
+
+private func EvalAct_GameOver(proplist props, proplist context) { GameOver(); }
 
 private func GetDefaultPosition(object target_object)
 {
