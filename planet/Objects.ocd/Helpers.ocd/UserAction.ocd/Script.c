@@ -26,7 +26,7 @@ local EvaluatorDefs;
 local DefinitionPriority=99;
 
 // Localized group names
-local GroupNames = { Structure="$Structure$" };
+local GroupNames = { Structure="$Structure$", Game="$Game$" };
 
 // Storage for global user variables
 static g_UserAction_global_vars;

@@ -11,6 +11,7 @@ UserPosition=Position
 UserOffset=Verschiebung
 UserAny=Wert
 Structure=Gebaeude
+Game=Spiel
 None=Nichts
 Noone=Niemand
 AllPlayers=Alle Spieler

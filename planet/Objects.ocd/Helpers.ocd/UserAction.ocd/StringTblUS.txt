@@ -11,6 +11,7 @@ UserPosition=Position
 UserOffset=Offset
 UserAny=Value
 Structure=Structure
+Game=Game
 None=Nothing
 Noone=Noone
 AllPlayers=All players
