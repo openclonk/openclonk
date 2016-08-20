@@ -32,6 +32,11 @@
 #include <SDL.h>
 #endif
 
+#ifdef USE_SDL_MAINLOOP
+// Required for KeycodeToString translation table.
+#include "platform/C4App.h"
+#endif
+
 /* ----------------- Key maps ------------------ */
 
 struct C4KeyShiftMapEntry
@@ -443,7 +448,8 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
 #elif defined(USE_SDL_MAINLOOP)
 	StdStrBuf buf;
-	buf.Copy(SDL_GetScancodeName(static_cast<SDL_Scancode>(wCode)));
+	auto name = KeycodeToString(wCode);
+	if (name) buf.Copy(name);
 	if (!buf.getLength()) buf.Format("\\x%x", wCode);
 	return buf;
 #endif

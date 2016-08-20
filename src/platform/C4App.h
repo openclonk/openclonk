@@ -29,6 +29,8 @@
 
 #ifdef USE_SDL_MAINLOOP
 #include <SDL.h>
+
+const char* KeycodeToString(C4KeyCode code);
 #endif
 
 #ifdef USE_WIN32_WINDOWS
