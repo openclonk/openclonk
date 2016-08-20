@@ -393,7 +393,7 @@ public func Definition(def)
 	def.EditorProps.action_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };
-	def.EditorProps.check_interval = { Name="$CheckInterval$", EditorHelp="$CheckIntervalHelp$", Type="int", Set="SetCheckInterval", SaveAsCall="SetCheckInterval" };
+	def.EditorProps.check_interval = { Name="$CheckInterval$", EditorHelp="$CheckIntervalHelp$", Type="int", Set="SetCheckInterval", Save="Interval" };
 }
 
 public func SetTrigger(proplist new_trigger)

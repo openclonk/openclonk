@@ -644,9 +644,9 @@ public func Definition(def)
 	def.EditorProps.check = { Type="bool", Name="$Check$", EditorHelp="$CheckHelp$", AsyncGet="GetCPCheck", Set="SetCPCheck" };
 	def.EditorProps.ordered = { Type="bool", Name="$Ordered$", EditorHelp="$OrderedHelp$", AsyncGet="GetCPOrdered", Set="SetCPOrdered" };
 	def.EditorProps.team = { Type="bool", Name="$Team$", EditorHelp="$TeamHelp$", AsyncGet="GetCPTeam", Set="SetCPTeam" };
-	def.EditorProps.on_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", SaveAsCall="SetOnCleared" };
-	def.EditorProps.on_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", SaveAsCall="SetOnFirstCleared" };
-	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", SaveAsCall="SetOnRespawn" };
+	def.EditorProps.on_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", Set="SetOnCleared", Save="Checkpoint" };
+	def.EditorProps.on_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", Set="SetOnFirstCleared", Save="Checkpoint" };
+	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", Set="SetOnRespawn", Save="Checkpoint" };
 }
 
 

@@ -730,9 +730,9 @@ public func Definition(def)
 {
 	_inherited(def);
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.on_checkpoint_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", SaveAsCall="SetOnCheckpointCleared" };
-	def.EditorProps.on_checkpoint_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", SaveAsCall="SetOnCheckpointFirstCleared" };
-	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", SaveAsCall="SetOnRespawn" };
+	def.EditorProps.on_checkpoint_cleared = new UserAction.Prop { Name="$OnCleared$", EditorHelp="$OnClearedHelp$", Set="SetOnCheckpointCleared", Save="Checkpoint" };
+	def.EditorProps.on_checkpoint_first_cleared = new UserAction.Prop { Name="$OnFirstCleared$", EditorHelp="$OnFirstClearedHelp$", Set="SetOnCheckpointFirstCleared", Save="Checkpoint" };
+	def.EditorProps.on_respawn = new UserAction.Prop { Name="$OnRespawn$", EditorHelp="$OnRespawnHelp$", Set="SetOnRespawn", Save = "Checkpoint" };
 	if (!def.EditorActions) def.EditorActions = {};
 	def.EditorActions.reset_all_cleared = { Name="$ResetAllCleared$", EditorHelp="$ResetAllClearedHelp$", Command="ResetAllClearedCP()" };
 }

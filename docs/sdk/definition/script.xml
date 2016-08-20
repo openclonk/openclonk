@@ -526,7 +526,7 @@ func SaveScenarioObject(props)
         </row>
       </table>
     </text>
-    <text>Properties published to the editor as EditorProps can also be saved automatically by setting the SaveAsCall property of the EditorProp to a string for the setter-function to call or setting SaveAsSet to true for saving directly to the property. These properties are atuomatically saved if they are different from their default value. E.g.:</text>
+    <text>Properties published to the editor as EditorProps can also be saved automatically by setting the Save property of the EditorProp to a string that serves as an identifier so saved properties can be removed by derived definitions. These properties are atuomatically saved if they are different from their default value. E.g.:</text>
    <code>/* Define two properties that can be set in the editor */
 // foo is a property with a setter function
 local foo = 42;
@@ -536,8 +536,8 @@ public func SetFoo(new_foo) { foo = new_foo; return true; }
 local bar = 23;
 
 local EditorProps = {
-  foo = { Type="int", SaveAsCall="SetFoo" }; // saved as object->SetFoo(value); unless foo is 42.
-  bar = { Type="int", SaveAsSet=true; } // saved as object.bar = value; unless bar is 23.
+  foo = { Type="int", Set="SetFoo", Save="Foo" }; // saved as object->SetFoo(value); unless foo is 42.
+  bar = { Type="int", Save="Bar"; } // saved as object.bar = value; unless bar is 23.
 };</code>
     <text>By default, effects are not saved in scenarios. To force saving of an effect, define the Fx*SaveScen callback. For example, the fire effect saves itself like this:</text>
 <code>global func FxFireSaveScen(object obj, proplist fx, proplist props)

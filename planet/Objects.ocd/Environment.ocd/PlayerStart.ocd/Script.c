@@ -40,7 +40,7 @@ public func Definition(def)
 		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
 	def.EditorProps.clonk_max_energy = { Name="$ClonkMaxEnergy$", EditorHelp="$ClonkMaxEnergyHelp$", Type="enum", Options = [
 		{ Name=Format("$Default$ (%d)", Clonk.MaxEnergy/1000) }, { Name="$Custom$", Value=Clonk.MaxEnergy/1000, Delegate={ Type="int", Min=1, Max=100000 } } ] };
-	def.EditorProps.respawn_material = { Name="$RespawnMaterial$", Type="enum", SaveAsCall="SetRespawnMaterial", Options = [
+	def.EditorProps.respawn_material = { Name="$RespawnMaterial$", Type="enum", Set="SetRespawnMaterial", Save="RespawnMaterial", Options = [
 		{ Name="$None$" },
 		{ Name="$SameAsStartingMaterial$", Value="starting_material" },
 		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=EditorBase->GetConditionalIDList("Collectible", "$RespawnMaterial$", nil, "$RespawnMaterialHelp$") },
