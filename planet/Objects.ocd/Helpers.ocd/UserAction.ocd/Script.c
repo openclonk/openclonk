@@ -356,6 +356,7 @@ func Definition(def)
 		Offset = new Evaluator.Offset { EditorHelp="$PositionOffsetOffsetHelp$", Priority=21 }
 		} } );
 	AddEvaluator("Position", nil, "$ObjectPosition$", "$ObjectPositionHelp$", "object_position", [def, def.EvalPositionObject], { Object={Function="triggering_object"} }, new Evaluator.Object { EditorHelp="$ObjectPositionObjectHelp$" }, "Object");
+	AddEvaluator("Position", nil, "$LastUsePosition$", "$LastUsePositionHelp$", "use_position", [def, def.EvalPos_LastUse]);
 	AddEvaluator("Position", "$RandomPosition$", "$RandomRectAbs$", "$RandomRectAbsHelp$", "random_pos_rect_abs", [def, def.EvalPos_RandomRect, false], def.GetDefaultRect, { Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 }, "Area");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomRectRel$", "$RandomRectRelHelp$", "random_pos_rect_rel", [def, def.EvalPos_RandomRect, true], { Area=[-30,-30,60,60] }, { Type="rect", Name="$Rectangle$", Relative=true, Color=0x00ffff }, "Area");
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleAbs$", "$RandomCircleAbsHelp$", "random_pos_circle_abs", [def, def.EvalPos_RandomCircle, false], def.GetDefaultCircle, { Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff }, "Area");
@@ -497,7 +498,7 @@ public func EvaluateValue(string eval_type, proplist props, proplist context)
 	return cb[0]->Call(cb[1], props, context, cb[2]);
 }
 
-public func EvaluateAction(proplist props, object action_object, object triggering_object, int triggering_player, string progress_mode, bool allow_parallel, finish_callback)
+public func EvaluateAction(proplist props, object action_object, object triggering_object, int triggering_player, string progress_mode, bool allow_parallel, finish_callback, array position)
 {
 	// No action
 	if (!props) if (finish_callback) return action_object->Call(finish_callback); else return;
@@ -525,7 +526,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	// Prevent duplicate parallel execution
 	if (!allow_parallel && (context.hold && !context.suspended)) return false;
 	// Init context settings
-	context->InitContext(action_object, triggering_player, triggering_object, props, finish_callback);
+	context->InitContext(action_object, triggering_player, triggering_object, props, finish_callback, position);
 	// Execute action
 	EvaluateValue("Action", props, context);
 	FinishAction(context);
@@ -1134,6 +1135,8 @@ private func EvalPositionObject(proplist props, proplist context)
 	return [0,0]; // undefined object: Position is 0/0 default
 }
 
+private func EvalPos_LastUse(proplist props, proplist context) { return context.position; }
+
 private func EvalPos_RandomRect(proplist props, proplist context, bool relative)
 {
 	// Constant random distribution in rectangle
@@ -1253,7 +1256,7 @@ public func Initialize()
 	return true;
 }
 
-public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props, finish_callback)
+public func InitContext(object action_object, int triggering_player, object triggering_object, proplist props, finish_callback, position)
 {
 	// Determine triggering player+objects
 	var triggering_clonk;
@@ -1273,11 +1276,15 @@ public func InitContext(object action_object, int triggering_player, object trig
 		triggering_object = triggering_clonk;
 	else if (triggering_object->~IsClonk())
 		triggering_clonk = triggering_object;
+	// Position default
+	if (!position && triggering_object)
+		position = [triggering_object->GetX(), triggering_object->GetY()];
 	// Init context settings
 	this.action_object = action_object;
 	this.triggering_object = triggering_object;
 	this.triggering_clonk = triggering_clonk;
 	this.triggering_player = triggering_player;
+	this.position = position;
 	this.root_action = props;
 	this.suspended = false;
 	this.finish_callback = finish_callback;

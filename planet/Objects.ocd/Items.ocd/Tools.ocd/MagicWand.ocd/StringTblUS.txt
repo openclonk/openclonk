@@ -1,0 +1,6 @@
+Name=Magic wand
+Description=Contains hidden powers.
+NoUseCooldown=Cooldown hasn't passed yet.
+MagicAction=Magic action
+Cooldown=Cooldown time
+CooldownHelp=Minimal time in frames between two spellcast actions.

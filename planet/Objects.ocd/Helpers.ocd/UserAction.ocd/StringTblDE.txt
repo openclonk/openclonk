@@ -342,3 +342,5 @@ Smoke=Rauch
 Sphere=Kreis
 StarFlash=Stern
 StarSpark=Sonne
+LastUsePosition=Aktivierungsposition
+LastUsePositionHelp=Fuer aktivierbare Gegenstaende wie den Zauberstab: Mausposition, an der der Spieler das Objekt aktiviert hat.
