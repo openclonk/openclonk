@@ -139,6 +139,12 @@ func Definition(def)
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$SetPositionObjectHelp$" },
 		Position = new Evaluator.Position { Name="$Position$", EditorHelp="$SetPositionPositionHelp$" }
 		} } );
+	AddEvaluator("Action", "$Object$", "$Fling$", "$FlingHelp$", "fling", [def, def.EvalAct_Fling], { Object={ Function="triggering_clonk" }, SpeedX={ Function="int_constant", Value=0 }, SpeedY={ Function="int_constant", Value=-20 }, AddSpeed={ Function="bool_constant", Value=false } }, { Type="proplist", Display="({{Object}}, {{SpeedX}}, {{SpeedY}})", ShowFullName=true, EditorProps = {
+		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$FlingObjectHelp$" },
+		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$FlingSpeedXHelp$" },
+		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$FlingSpeedYHelp$" },
+		AddSpeed = new Evaluator.Boolean { Name="$AddSpeedY$", EditorHelp="$FlingAddSpeedHelp$" },
+		} } );
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", ShowFullName=true, EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
@@ -804,6 +810,16 @@ private func EvalAct_SetPosition(proplist props, proplist context)
 	if (!obj) return;
 	var pos = EvaluatePosition(props.Position, context);
 	obj->SetPosition(pos[0], pos[1]);
+}
+
+private func EvalAct_Fling(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	if (!obj) return;
+	var vx = EvaluateValue("Integer", props.SpeedX, context);
+	var vy = EvaluateValue("Integer", props.SpeedY, context);
+	var add_speed = EvaluateValue("Boolean", props.AddSpeed, context);
+	obj->Fling(vx, vy, 10, add_speed);
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)
