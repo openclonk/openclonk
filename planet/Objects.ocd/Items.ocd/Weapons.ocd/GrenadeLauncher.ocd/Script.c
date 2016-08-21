@@ -13,7 +13,6 @@ local loaded;
 local reload;
 
 local yOffset;
-local iBarrel;
 
 local holding;
 
