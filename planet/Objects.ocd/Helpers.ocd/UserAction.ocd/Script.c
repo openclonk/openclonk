@@ -194,6 +194,10 @@ func Definition(def)
 		Change = new Evaluator.Integer { Name="$Change$", EditorHelp="$DoWealthChangeHelp$" },
 		DoSound = new Evaluator.Boolean { Name="$Sound$", EditorHelp="$DoWealthSoundHelp$", Priority=-1 }
 		} } );
+	AddEvaluator("Action", "$Player$", "$PlrKnowledge$", "$PlrKnowledgeHelp$", "plr_knowledge", [def, def.EvalAct_PlrKnowledge], { Players={ Function="triggering_player_list" }, ID={ Function="def_constant" } }, { Type="proplist", Display="({{Players}}, {{ID}})", EditorProps = {
+		Players = Evaluator.PlayerList,
+		ID = Evaluator.Definition
+		} } );
 	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If, "Action"], { }, { Type="proplist", Display="if({{Condition}}) {{Action}} else {{ElseAction}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
@@ -930,6 +934,14 @@ private func EvalAct_DoWealth(proplist props, proplist context)
 			if (change < 0) Sound("UI::Cash*", true, nil, player); else Sound("UI::UnCash*", true, nil, player);
 		}
 	}
+}
+
+private func EvalAct_PlrKnowledge(proplist props, proplist context)
+{
+	var players = EvaluateValue("PlayerList", props.Players, context) ?? [];
+	var def = EvaluateValue("Definition", props.ID, context);
+	if (!def) return;
+	for (var plr in players) SetPlrKnowledge(plr, def);
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)

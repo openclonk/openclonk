@@ -344,3 +344,5 @@ StarFlash=Stern
 StarSpark=Sonne
 LastUsePosition=Aktivierungsposition
 LastUsePositionHelp=Fuer aktivierbare Gegenstaende wie den Zauberstab: Mausposition, an der der Spieler das Objekt aktiviert hat.
+PlrKnowledge=Bauplan geben
+PlrKnowledgeHelp=Ermoeglicht einem oder mehreren Spielern den Bau eines neuen Gebaeudes oder Objektes.

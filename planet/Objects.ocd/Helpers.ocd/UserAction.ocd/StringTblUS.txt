@@ -343,3 +343,5 @@ StarFlash=Star
 StarSpark=Sun
 LastUsePosition=Activation position
 LastUsePositionHelp=Valid for activated items such as the magic wand: Mouse position where the player activated the item.
+PlrKnowledge=Give knowledge
+PlrKnowledgeHelp=Allows one or more players to construct a new structure or item.
