@@ -79,7 +79,7 @@ public func DoExplode()
 		shrapnel->SetVelocity(Random(359), RandomX(100, 140));
 		shrapnel->SetRDir(-30 + Random(61));
 		shrapnel->Launch(GetController());
-		CreateObjectAbove(BulletTrail)->Set(2, 30, shrapnel);
+		CreateObject(BulletTrail)->Set(shrapnel, 2, 30);
 	}
 	if (GBackLiquid())
 		Sound("Fire::BlastLiquid2");

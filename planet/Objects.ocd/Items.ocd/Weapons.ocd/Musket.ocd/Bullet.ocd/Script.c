@@ -41,8 +41,8 @@ public func Launch(object shooter, int angle, int dist, int speed, int offset_x,
 	SquishVertices(true);
 	
 	// Neat trail.
-	CreateObjectAbove(BulletTrail, 0, 0)->Set(2, 200, this);
-	
+	CreateObject(BulletTrail)->Set(this, 2, 200);
+			
 	// Sound.
 	Sound("Objects::Weapons::Musket::BulletShot?");
 }
