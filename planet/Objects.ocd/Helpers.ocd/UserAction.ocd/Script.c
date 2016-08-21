@@ -26,7 +26,7 @@ local EvaluatorDefs;
 local DefinitionPriority=99;
 
 // Localized group names
-local GroupNames = { Structure="$Structure$", Game="$Game$" };
+local GroupNames = { Structure="$Structure$", Game="$Game$", Effect="$Effect$" };
 
 // Storage for global user variables
 static g_UserAction_global_vars;
@@ -148,6 +148,11 @@ func Definition(def)
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
+		} } );
+	AddEvaluator("Action", "$Player$", "$DoWealth$", "$DoWealthHelp$", "do_wealth", [def, def.EvalAct_DoWealth], { Player={ Function="triggering_player" }, DoSound={ Function="bool_constant", Value=true } }, { Type="proplist", Display="({{Player}}, {{Change}})", EditorProps = {
+		Player = Evaluator.Player,
+		Change = new Evaluator.Integer { Name="$Change$", EditorHelp="$DoWealthChangeHelp$" },
+		DoSound = new Evaluator.Boolean { Name="$Sound$", EditorHelp="$DoWealthSoundHelp$", Priority=-1 }
 		} } );
 	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If, "Action"], { }, { Type="proplist", Display="if({{Condition}}) {{Action}} else {{ElseAction}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
@@ -351,7 +356,7 @@ func Definition(def)
 	}
 	// User action editor props
 	Prop = Evaluator.Action;
-	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$Player$", Value="player" }, { Name="$Global$" } ] };
+	PropProgressMode = { Name="$UserActionProgressMode$", EditorHelp="$UserActionProgressModeHelp$", Type="enum", Options = [ { Name="$Session$", Value="session" }, { Name="$PerPlayer$", Value="player" }, { Name="$Global$" } ] };
 	PropParallel = { Name="$ParallelAction$", EditorHelp="$ParallelActionHelp$", Type="bool" };
 	return true;
 }
@@ -820,6 +825,21 @@ private func EvalAct_Fling(proplist props, proplist context)
 	var vy = EvaluateValue("Integer", props.SpeedY, context);
 	var add_speed = EvaluateValue("Boolean", props.AddSpeed, context);
 	obj->Fling(vx, vy, 10, add_speed);
+}
+
+private func EvalAct_DoWealth(proplist props, proplist context)
+{
+	var player = EvaluatePlayer(props.Player, context);
+	var change = EvaluateValue("Integer", props.Change, context);
+	if (player != NO_OWNER && change)
+	{
+		SetWealth(player, GetWealth(player) + change);
+		var do_sound = EvaluateValue("Boolean", props.DoSound, context);
+		if (do_sound)
+		{
+			if (change < 0) Sound("UI::Cash*", true, nil, player); else Sound("UI::UnCash*", true, nil, player);
+		}
+	}
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)
