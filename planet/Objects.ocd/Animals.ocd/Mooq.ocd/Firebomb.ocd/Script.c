@@ -53,6 +53,7 @@ func Sparkle() {
 
 
 local BorderBound = C4D_Border_Sides;
+local Plane = 400;
 
 /* Act Map */
 
@@ -62,7 +63,7 @@ Fly = {
 	Name = "Fly",
 	Procedure = nil,
     Length = 1,
-    Delay = 1, // 1
+    Delay = 1,
     NextAction = "Fly",
     FacetBase = 1,
     PhaseCall = "Sparkle",

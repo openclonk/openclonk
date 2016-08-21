@@ -1,7 +1,7 @@
 [DefCore]
 id=Mooq_Firebomb
 Version=7,0,0,0
-Category=C4D_Vehicle
+Category=C4D_None
 Width=5
 Height=5
 Offset=-3,-3
