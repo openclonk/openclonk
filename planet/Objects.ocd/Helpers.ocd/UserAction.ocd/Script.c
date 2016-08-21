@@ -47,7 +47,7 @@ local EvaluatorTypeNames = {
 };
 
 // All evaluator types (unfortunately, EvaluatorReturnTypes->GetProperties() does not work)
-local EvaluatorTypes = ["Action", "Object", "ObjectList", "Definition", "Player", "PlayerList", "Boolean", "Integer", "String", "Position", "Offset", "Any"];
+local EvaluatorTypes = ["Action", "Object", "ObjectList", "Definition", "Player", "PlayerList", "Boolean", "Integer", "Color", "String", "Position", "Offset", "Any"];
 
 // Evaluator return types
 local EvaluatorReturnTypes = {
@@ -77,6 +77,7 @@ func Definition(def)
 	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
 	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
 	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [ {Name="0"} ] };
+	Evaluator.Color = { Name="$UserColor$", Type="enum", OptionKey="Function", Options = [ {Name="$Default$"} ] };
 	Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Options = [ {Name="($EmptyString$)"} ] };
 	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
 	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
@@ -148,6 +149,45 @@ func Definition(def)
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
+		} } );
+	AddEvaluator("Action", "Effect", "$CastParticles$", "$CastParticlesHelp$", "cast_particles", [def, def.EvalAct_CastParticles], {
+			Name="StarFlash",
+			Amount={Function="int_constant", Value=8},
+			Speed={Function="int_constant", Value=20},
+			Lifetime={Function="int_constant", Value=100},
+			Size={Function="int_constant", Value=10},
+			Color={Function="color_constant", Value=0xffff},
+			BlitMode=0,
+			HasGravity=true,
+			CollisionFunc="bounce"
+		}, { Type="proplist", Display="{{Amount}}x{{Name}}", EditorProps = {
+		Name = { Name="$ParticleName$", EditorHelp="$ParticleNameHelp$", Type="enum", Priority=50, Options = [
+			{ Name="$Dust$", Value="Dust" },
+			{ Name="$Flash$", Value="Flash" },
+			{ Name="$Magic$", Value="Magic" },
+			{ Name="$Smoke$", Value="Smoke" },
+			{ Name="$Sphere$", Value="Sphere" },
+			{ Name="$StarFlash$", Value="StarFlash" },
+			{ Name="$StarSpark$", Value="StarSpark" }
+			] },
+		Position = new Evaluator.Position { EditorHelp="$CastObjectsPositionHelp$" },
+		Amount = new Evaluator.Integer { Name="$Amount$", EditorHelp="$CastParticlesAmountHelp$" },
+		Speed = new Evaluator.Integer { Name="$Speed$", EditorHelp="$CastParticlesSpeedHelp$" },
+		Lifetime = new Evaluator.Integer { Name="$Lifetime$", EditorHelp="$CastParticlesLifetimeHelp$" },
+		Size = new Evaluator.Integer { Name="$Size$", EditorHelp="$CastParticlesSizeHelp$" },
+		Color = new Evaluator.Color { Name="$Color$", EditorHelp="$CastParticlesColorHelp$" },
+		BlitMode = { Name="$BlitMode$", EditorHelp="$ParticleBlitModeHelp$", Type="enum", Options = [
+			{ Name="$Normal$", Value=0 },
+			{ Name="$Additive$", Value=GFX_BLIT_Additive },
+			{ Name="$Mod2$", Value=GFX_BLIT_Mod2 }
+			] },
+		HasGravity = { Name="$HasGravity$", EditorHelp="$ParticleGravityHelp$", Type="bool" },
+		CollisionFunc = { Name="$CollisionFunc$", EditorHelp="$ParticleCollisionFuncHelp$", Type="enum", Options = [
+			{ Value="pass", Name="$Pass$" },
+			{ Value="stop", Name="$Stop$" },
+			{ Value="bounce", Name="$Bounce$" },
+			{ Value="die", Name="$Die$" }
+			] }
 		} } );
 	AddEvaluator("Action", "$Player$", "$DoWealth$", "$DoWealthHelp$", "do_wealth", [def, def.EvalAct_DoWealth], { Player={ Function="triggering_player" }, DoSound={ Function="bool_constant", Value=true } }, { Type="proplist", Display="({{Player}}, {{Change}})", EditorProps = {
 		Player = Evaluator.Player,
@@ -302,6 +342,8 @@ func Definition(def)
 	AddEvaluator("String", nil, "$Concat$", "$ConcatHelp$", "string_concat", [def, def.EvalStr_Concat], { Substrings=[] }, { Type="proplist", HideFullName=true, DescendPath="Substrings", Display="{{Substrings}}", EditorProps = {
 		Substrings = { Name="$Substrings$", Type="array", Elements=Evaluator.String }
 		} } );
+	// Color evaluators
+	AddEvaluator("Color", nil, ["$Constant$", ""], "$ConstantHelp$", "color_constant", [def, def.EvalConstant], { Value=0xffffff }, { Type="color", Name="$Value$" });
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
@@ -800,6 +842,53 @@ private func EvalAct_CastObjects(proplist props, proplist context)
 	var angle_deviation = EvaluateValue("Integer", props.AngleDeviation, context);
 	var position = EvaluatePosition(props.Position, context);
 	context.last_casted_objects = CastObjects(create_id, amount, speed, position[0], position[1], mean_angle, angle_deviation);
+}
+
+private func EvalAct_CastParticles(proplist props, proplist context)
+{
+	var particle_name = props.Name;
+	var amount = EvaluateValue("Integer", props.Amount, context);
+	var speed = EvaluateValue("Integer", props.Speed, context);
+	var size = EvaluateValue("Integer", props.Size, context);
+	if (size <= 0) return;
+	var lifetime = EvaluateValue("Integer", props.Lifetime, context);
+	if (lifetime <= 0) return;
+	var position = EvaluatePosition(props.Position, context);
+	var color = (EvaluateValue("Color", props.Color, context) ?? 0xffffff) | 0xff000000;
+	var blit_mode = props.BlitMode;
+	var has_gravity = props.HasGravity;
+	var collision_func = props.CollisionFunc;
+	var prototype = 
+	{
+		BlitMode = props.BlitMode,
+		Size = size,
+		Rotation = PV_Direction(),
+		Alpha=255,
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		CollisionVertex = 500
+	};
+	if (has_gravity) prototype.ForceY = PV_Gravity(20);
+	if (collision_func == "pass")
+	{
+		prototype.CollisionDensity = 9999;
+	}
+	else if (collision_func == "bounce")
+	{
+		prototype.OnCollision = PC_Bounce(500);
+	}
+	else if (collision_func == "die")
+	{
+		prototype.OnCollision = PC_Die();
+	}
+	else if (collision_func == "stop")
+	{
+		prototype.OnCollision = PC_Stop();
+	}
+	prototype.CollisionDensity=20;
+	prototype.OnCollision = PC_Bounce(500);
+	CreateParticle(particle_name, position[0], position[1], PV_Random(-speed, speed), PV_Random(-speed, speed), lifetime, prototype, amount);
 }
 
 private func EvalAct_RemoveObject(proplist props, proplist context)
