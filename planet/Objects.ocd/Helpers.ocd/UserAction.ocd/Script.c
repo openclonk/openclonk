@@ -84,7 +84,7 @@ func Definition(def)
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
-	AddEvaluator("Action", "$Sequence$", "$Sequence$", "$SequenceHelp$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", Display="{{Actions}}", EditorProps = {
+	AddEvaluator("Action", "$Sequence$", "$Sequence$", "$SequenceHelp$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", HideFullName=true, Display="{{Actions}}", EditorProps = {
 		Actions = { Name="$Actions$", Type="array", Elements=Evaluator.Action },
 		} } );
 	AddEvaluator("Action", "$Sequence$", "$Goto$", "$GotoHelp$", "goto", [def, def.EvalAct_Goto], { Index=0 }, { Type="proplist", Display="{{Index}}", EditorProps = {
@@ -107,7 +107,7 @@ func Definition(def)
 		TargetPlayers = new Evaluator.PlayerList { EditorHelp="$SoundTargetPlayersHelp$" },
 		SourceObject = new Evaluator.Object { Name="$SoundSourceObject$", EditorHelp="$SoundSourceObjectHelp$", EmptyName="$Global$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { EditorHelp="$CreateObjectDefinitionHelp$", Priority=100 },
 		Position = new Evaluator.Position { EditorHelp="$CreateObjectPositionHelp$" },
 		CreateAbove = { Name="$CreateObjectCreationOffset$", EditorHelp="$CreateObjectCreationOffsetHelp$", Type="enum", Options=[
@@ -119,7 +119,7 @@ func Definition(def)
 		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$CreateObjectSpeedXHelp$" },
 		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$CastObjects$", "$CastObjectsHelp$", "cast_objects", [def, def.EvalAct_CastObjects], { Amount={Function="int_constant", Value=8},Speed={Function="int_constant", Value=20},AngleDeviation={Function="int_constant", Value=360} }, { Type="proplist", Display="{{Amount}}x{{ID}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "$Object$", "$CastObjects$", "$CastObjectsHelp$", "cast_objects", [def, def.EvalAct_CastObjects], { Amount={Function="int_constant", Value=8},Speed={Function="int_constant", Value=20},AngleDeviation={Function="int_constant", Value=360} }, { Type="proplist", Display="{{Amount}}x{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { EditorHelp="$CastObjectsDefinitionHelp$", Priority=100 },
 		Position = new Evaluator.Position { EditorHelp="$CastObjectsPositionHelp$" },
 		Amount = new Evaluator.Integer { Name="$Amount$", EditorHelp="$CastObjectsAmountHelp$" },
@@ -128,24 +128,24 @@ func Definition(def)
 		AngleDeviation = new Evaluator.Integer { Name="$AngleDeviation$", EditorHelp="$CastObjectsAngleDeviationHelp$" },
 		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CastObjectsOwnerHelp$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "$Object$", "$RemoveObject$", "$RemoveObjectHelp$", "remove_object", [def, def.EvalAct_RemoveObject], { }, { Type="proplist", Display="{{Object}}", EditorProps = {
 		Object = new Evaluator.Object { EditorHelp="$RemoveObjectObject$", Priority=100 },
 		EjectContents = { Name="$EjectContents$", EditorHelp="$EjectContentsHelp$", Type="enum", Options=[
 			{ Name="$EjectContentsNo$" },
 			{ Name="$EjectContentsYes$", Value=true }
 			] },
 		} } );
-	AddEvaluator("Action", "$Object$", "$SetPosition$", "$SetPositionHelp$", "set_position", [def, def.EvalAct_SetPosition], { Object={ Function="triggering_clonk" }, Position={ Function="position_constant_rel" } }, { Type="proplist", Display="({{Object}}->{{Position}})", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "$Object$", "$SetPosition$", "$SetPositionHelp$", "set_position", [def, def.EvalAct_SetPosition], { Object={ Function="triggering_clonk" }, Position={ Function="position_constant_rel" } }, { Type="proplist", Display="({{Object}}->{{Position}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$SetPositionObjectHelp$" },
 		Position = new Evaluator.Position { Name="$Position$", EditorHelp="$SetPositionPositionHelp$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$Fling$", "$FlingHelp$", "fling", [def, def.EvalAct_Fling], { Object={ Function="triggering_clonk" }, SpeedX={ Function="int_constant", Value=0 }, SpeedY={ Function="int_constant", Value=-20 }, AddSpeed={ Function="bool_constant", Value=false } }, { Type="proplist", Display="({{Object}}, {{SpeedX}}, {{SpeedY}})", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "$Object$", "$Fling$", "$FlingHelp$", "fling", [def, def.EvalAct_Fling], { Object={ Function="triggering_clonk" }, SpeedX={ Function="int_constant", Value=0 }, SpeedY={ Function="int_constant", Value=-20 }, AddSpeed={ Function="bool_constant", Value=false } }, { Type="proplist", Display="({{Object}}, {{SpeedX}}, {{SpeedY}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$FlingObjectHelp$" },
 		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$FlingSpeedXHelp$" },
 		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$FlingSpeedYHelp$" },
 		AddSpeed = new Evaluator.Boolean { Name="$AddSpeedY$", EditorHelp="$FlingAddSpeedHelp$" },
 		} } );
-	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
 		} } );
@@ -159,7 +159,7 @@ func Definition(def)
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" },
 		Value = new Evaluator.Any { Name="$Value$", EditorHelp="$SetVariableValueHelp$" }
 		} } );
-	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { }, { Type="proplist", Display="{{Message}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { }, { Type="proplist", Display="{{Message}}", EditorProps = {
 		Message = new Evaluator.String { Name="$LogMessage$", EditorHelp="$LogMessageHelp$" },
 		} } );
 	AddEvaluator("Action", "Game", "$GameOver$", "$GameOverHelp$", "game_over", [def, def.EvalAct_GameOver]);
@@ -169,21 +169,21 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
 	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
-	var find_object_in_area_delegate = { Type="proplist", Display="{{ID}}", ShowFullName=true, EditorProps = {
+	var find_object_in_area_delegate = { Type="proplist", Display="{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$", Priority=51 },
 		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Priority=41, Options=[
 			{ Name="$SearchAreaWholeMap$", EditorHelp="$SearchAreaWholeMapHelp$" },
 			{ Name="$SearchAreaInRect$", EditorHelp="$SearchAreaInRectHelp$", Value={ Function="InRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 } },
 			{ Name="$SearchAreaAtRect$", EditorHelp="$SearchAreaAtRectHelp$", Value={ Function="AtRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff80 } },
 			{ Name="$SearchAreaCircle$", EditorHelp="$SearchAreaCircleHelp$", Value={ Function="Circle" }, Get=def.GetDefaultCircle, ValueKey="Area", Delegate={ Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff } },
-			{ Name="$SearchAreaNearPosition$", EditorHelp="$SearchAreaNearPositionHelp$", Value={ Function="NearPosition", Parameters={Radius=25} }, ValueKey="Parameters", Delegate={ Type="proplist", Display="{{Object}}", ShowFullName=true, EditorProps = {
+			{ Name="$SearchAreaNearPosition$", EditorHelp="$SearchAreaNearPositionHelp$", Value={ Function="NearPosition", Parameters={Radius=25} }, ValueKey="Parameters", Delegate={ Type="proplist", Display="{{Object}}", EditorProps = {
 				Position = new Evaluator.Position { EditorHelp="$SearchAreaNearPositionPositionHelp$"},
 				Radius = { Type="circle", Relative=true, Name="$Radius$", Color=0xff80ff }
 				} } }
 			] },
 		AllowContained = { Name="$AllowContained$", EditorHelp="$AllowContainedHelp$", Type="bool", Priority=31 }
 		} };
-	var find_object_in_container_delegate = { Type="proplist", Display="{{ID}} in {{Container}}", ShowFullName=true, EditorProps = {
+	var find_object_in_container_delegate = { Type="proplist", Display="{{ID}} in {{Container}}", EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$" },
 		Container = new Evaluator.Object { Name="$Container$", EditorHelp="FindObjectsContainerHelp" }
 		} };
@@ -204,7 +204,7 @@ func Definition(def)
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
 	// Boolean (condition) evaluators
 	AddEvaluator("Boolean", nil, ["$Constant$", ""], "$ConstantHelp$", "bool_constant", [def, def.EvalConstant], { Value=true }, { Type="bool", Name="$Value$" });
-	AddEvaluator("Boolean", "$Comparison$", "$CompareInteger$", "$ComparisonHelp$", "compare_int", [def, def.EvalComparison, "Integer"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Boolean", "$Comparison$", "$CompareInteger$", "$ComparisonHelp$", "compare_int", [def, def.EvalComparison, "Integer"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", EditorProps = {
 		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
@@ -216,7 +216,7 @@ func Definition(def)
 			] },
 		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
-	AddEvaluator("Boolean", "$Comparison$", "$CompareBoolean$", "$ComparisonHelp$", "compare_bool", [def, def.EvalComparison, "Boolean"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Boolean", "$Comparison$", "$CompareBoolean$", "$ComparisonHelp$", "compare_bool", [def, def.EvalComparison, "Boolean"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", EditorProps = {
 		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
@@ -224,7 +224,7 @@ func Definition(def)
 			] },
 		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
-	AddEvaluator("Boolean", "$Comparison$", "$CompareObject$", "$ComparisonHelp$", "compare_object", [def, def.EvalComparison, "Object"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Boolean", "$Comparison$", "$CompareObject$", "$ComparisonHelp$", "compare_object", [def, def.EvalComparison, "Object"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", EditorProps = {
 		LeftOperand = new Evaluator.Object { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
@@ -232,7 +232,7 @@ func Definition(def)
 			] },
 		RightOperand = new Evaluator.Object { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
-	AddEvaluator("Boolean", "$Comparison$", "$CompareString$", "$ComparisonHelp$", "compare_string", [def, def.EvalComparison, "String"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Boolean", "$Comparison$", "$CompareString$", "$ComparisonHelp$", "compare_string", [def, def.EvalComparison, "String"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", EditorProps = {
 		LeftOperand = new Evaluator.String { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
@@ -240,7 +240,7 @@ func Definition(def)
 			] },
 		RightOperand = new Evaluator.String { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
-	AddEvaluator("Boolean", "$Comparison$", "$CompareDefinition$", "$ComparisonHelp$", "compare_definition", [def, def.EvalComparison, "Definition"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Boolean", "$Comparison$", "$CompareDefinition$", "$ComparisonHelp$", "compare_definition", [def, def.EvalComparison, "Definition"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", EditorProps = {
 		LeftOperand = new Evaluator.Definition { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
@@ -248,7 +248,7 @@ func Definition(def)
 			] },
 		RightOperand = new Evaluator.Definition { Name="$RightOperand$", EditorHelp="$RightOperandHelp$", Priority=42 }
 		} } );
-	AddEvaluator("Boolean", "$Comparison$", "$ComparePlayer$", "$ComparisonHelp$", "compare_player", [def, def.EvalComparison, "Player"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", ShowFullName=true, EditorProps = {
+	AddEvaluator("Boolean", "$Comparison$", "$ComparePlayer$", "$ComparisonHelp$", "compare_player", [def, def.EvalComparison, "Player"], { }, { Type="proplist", Display="{{LeftOperand}}{{Operator}}{{RightOperand}}", EditorProps = {
 		LeftOperand = new Evaluator.Player { Name="$LeftOperand$", EditorHelp="$LeftOperandHelp$", Priority=44 },
 		Operator = { Type="enum", Name="$Operator$", EditorHelp="$OperatorHelp$", Priority=43, Options = [
 			{ Name="==", EditorHelp="$EqualHelp$" },
@@ -266,7 +266,7 @@ func Definition(def)
 	AddEvaluator("Boolean", nil, "$ObjectExists$", "$ObjectExistsHelp$", "object_exists", [def, def.EvalBool_ObjectExists], { }, new Evaluator.Object { }, "Object");
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
-	var arithmetic_delegate = { Type="proplist", EditorProps = {
+	var arithmetic_delegate = { Type="proplist", HideFullName=true, EditorProps = {
 		LeftOperand = new Evaluator.Integer { Name="$LeftOperand$", EditorHelp="$LeftArithmeticOperandHelp$", Priority=44 },
 		RightOperand = new Evaluator.Integer { Name="$RightOperand$", EditorHelp="$RightArithmeticOperandHelp$", Priority=42 }
 		} };
@@ -275,11 +275,11 @@ func Definition(def)
 	AddEvaluator("Integer", "$Arithmetic$", "$Mul$ (*)", "$MulHelp$", "multiply", [def, def.EvalInt_Mul], { }, new arithmetic_delegate { Display="{{LeftOperand}}*{{RightOperand}}" });
 	AddEvaluator("Integer", "$Arithmetic$", "$Div$ (/)", "$DivHelp$", "divide", [def, def.EvalInt_Div], { }, new arithmetic_delegate { Display="{{LeftOperand}}/{{RightOperand}}" });
 	AddEvaluator("Integer", "$Arithmetic$", "$Mod$ (%)", "$ModHelp$", "modulo", [def, def.EvalInt_Mod], { }, new arithmetic_delegate { Display="{{LeftOperand}}%{{RightOperand}}" });
-	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", Display="Rnd({{Min}}..{{Max}})", EditorProps = {
+	AddEvaluator("Integer", nil, "$Random$", "$RandomIntHelp$", "int_random", [def, def.EvalIntRandom], { Min={Function="int_constant", Value=0}, Max={Function="int_constant", Value=99} }, { Type="proplist", HideFullName=true, Display="Rnd({{Min}}..{{Max}})", EditorProps = {
 		Min = new Evaluator.Integer { Name="$Min$", EditorHelp="$RandomMinHelp$", Priority=51 },
 		Max = new Evaluator.Integer { Name="$Max$", EditorHelp="$RandomMaxHelp$", Priority=21 }
 		} } );
-	AddEvaluator("Integer", nil, "$Distance$", "$DistanceHelp$", "distance", [def, def.EvalInt_Distance], { }, { Type="proplist", Display="d({{PositionA}}..{{PositionB}})", EditorProps = {
+	AddEvaluator("Integer", nil, "$Distance$", "$DistanceHelp$", "distance", [def, def.EvalInt_Distance], { }, { Type="proplist", HideFullName=true, Display="d({{PositionA}}..{{PositionB}})", EditorProps = {
 		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
 		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
 		} } );
@@ -294,17 +294,17 @@ func Definition(def)
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
-	AddEvaluator("String", nil, "$Concat$", "$ConcatHelp$", "string_concat", [def, def.EvalStr_Concat], { Substrings=[] }, { Type="proplist", DescendPath="Substrings", Display="{{Substrings}}", EditorProps = {
+	AddEvaluator("String", nil, "$Concat$", "$ConcatHelp$", "string_concat", [def, def.EvalStr_Concat], { Substrings=[] }, { Type="proplist", HideFullName=true, DescendPath="Substrings", Display="{{Substrings}}", EditorProps = {
 		Substrings = { Name="$Substrings$", Type="array", Elements=Evaluator.String }
 		} } );
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
-	AddEvaluator("Position", nil, "$Coordinates$", "$CoordinatesHelp$", "position_coordinates", [def, def.EvalCoordinates], def.GetDefaultCoordinates, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
+	AddEvaluator("Position", nil, "$Coordinates$", "$CoordinatesHelp$", "position_coordinates", [def, def.EvalCoordinates], def.GetDefaultCoordinates, { Type="proplist", HideFullName=true, Display="({{X}},{{Y}})", EditorProps = {
 		X = new Evaluator.Integer { Name="X", EditorHelp="$PosXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$PosYHelp$" }
 		} } );
-	AddEvaluator("Position", nil, "$PositionOffset$", "$PositionOffsetHelp$", "position_offset", [def, def.EvalPositionOffset], { }, { Type="proplist", Display="{{Position}}+{{Offset}}", EditorProps = {
+	AddEvaluator("Position", nil, "$PositionOffset$", "$PositionOffsetHelp$", "position_offset", [def, def.EvalPositionOffset], { }, { Type="proplist", HideFullName=true, Display="{{Position}}+{{Offset}}", EditorProps = {
 		Position = new Evaluator.Position { EditorHelp="$PositionOffsetPositionHelp$", Priority=51 },
 		Offset = new Evaluator.Offset { EditorHelp="$PositionOffsetOffsetHelp$", Priority=21 }
 		} } );
@@ -315,22 +315,22 @@ func Definition(def)
 	AddEvaluator("Position", "$RandomPosition$", "$RandomCircleRel$", "$RandomCircleRelHelp$", "random_pos_circle_rel", [def, def.EvalPos_RandomCircle, true], { Area=[50,0,0] }, { Type="circle", Name="$Circle$", Relative=true, CanMoveCenter=true, Color=0xa000a0 }, "Area");
 	// Offset evaluators
 	AddEvaluator("Offset", nil, ["$ConstantOffsetRelative$", ""], "$ConstantOffsetRelativeHelp$", "offset_constant", [def, def.EvalConstant], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff30ff });
-	AddEvaluator("Offset", nil, ["$Coordinates$", ""], "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", Display="({{X}},{{Y}})", EditorProps = {
+	AddEvaluator("Offset", nil, ["$Coordinates$", ""], "$CoordinatesHelp$", "offset_coordinates", [def, def.EvalCoordinates], { Value={X=0,Y=0} }, { Type="proplist", HideFullName=true, Display="({{X}},{{Y}})", EditorProps = {
 		X = new Evaluator.Integer { Name="X", EditorHelp="$OffXHelp$" },
 		Y = new Evaluator.Integer { Name="Y", EditorHelp="$OffYHelp$" },
 		} } );
-	AddEvaluator("Offset", nil, "$AddOffsets$", "$AddOffsetsHelp$", "add_offsets", [def, def.EvalOffsetAdd], { }, { Type="proplist", Display="{{Offset1}}+{{Offset2}}", EditorProps = {
+	AddEvaluator("Offset", nil, "$AddOffsets$", "$AddOffsetsHelp$", "add_offsets", [def, def.EvalOffsetAdd], { }, { Type="proplist", HideFullName=true, Display="{{Offset1}}+{{Offset2}}", EditorProps = {
 		Offset1 = new Evaluator.Offset { EditorHelp="$AddOffsetOffsetHelp$" },
 		Offset2 = new Evaluator.Offset { EditorHelp="$AddOffsetOffsetHelp$" }
 		} } );
-	AddEvaluator("Offset", nil, "$DiffPositions$", "$DiffPositionsHelp$", "diff_positions", [def, def.EvalOffsetDiff], { }, { Type="proplist", Display="{{PositionB}}-{{PositionA}}", EditorProps = {
+	AddEvaluator("Offset", nil, "$DiffPositions$", "$DiffPositionsHelp$", "diff_positions", [def, def.EvalOffsetDiff], { }, { Type="proplist", HideFullName=true, Display="{{PositionB}}-{{PositionA}}", EditorProps = {
 		PositionA = new Evaluator.Position { Name="$PositionA$", EditorHelp="$PositionAHelp$" },
 		PositionB = new Evaluator.Position { Name="$PositionB$", EditorHelp="$PositionBHelp$" }
 		} } );
 	AddEvaluator("Offset", nil, "$RandomOffRectRel$", "$RandomRectRelHelp$", "random_off_rect_rel", [def, def.EvalPos_RandomRect, "rect", false], { Area=[-30,-30,60,60] }, { Type="rect", Name="$Rectangle$", Relative=true, Color=0x00ffff }, "Area");
 	AddEvaluator("Offset", nil, "$RandomOffCircleRel$", "$RandomCircleRelHelp$", "random_off_circle_rel", [def, def.EvalPos_RandomCircle, "circle", false], { Area=[0,0,50] }, { Type="circle", Name="$Circle$", Relative=true, CanMoveCenter=true, Color=0xa000a0 }, "Area");
 	// Script evaluators
-	var variable_delegate = { Type="proplist", Display="{{Context}}::{{VariableName}}", EditorProps = {
+	var variable_delegate = { Type="proplist", HideFullName=true, Display="{{Context}}::{{VariableName}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$", Priority=50 } } };
 	for (var eval_type in EvaluatorTypes)
@@ -345,7 +345,7 @@ func Definition(def)
 		{
 			group = "$Script$";
 		}
-		AddEvaluator(eval_type, group, "$Script$", "$ScriptHelp$", Format("%s_script", eval_type), [def, def.EvalScript, data_type], { }, { Type="proplist", Display="{{Context}}::{{Script}}", EditorProps = {
+		AddEvaluator(eval_type, group, "$Script$", "$ScriptHelp$", Format("%s_script", eval_type), [def, def.EvalScript, data_type], { }, { Type="proplist", HideFullName=true, Display="{{Context}}::{{Script}}", EditorProps = {
 			Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
 			Script = new Evaluator.String { Name="$ScriptCommand$", EditorHelp="$ScriptCommandHelp$" } } });
 	}
@@ -391,7 +391,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 		short_name = name[1];
 		name = name[0];
 	}
-	else if (delegate && delegate.Type == "proplist" && !delegate.ShowFullName)
+	else if (delegate && delegate.HideFullName)
 	{
 		// Proplist delegates provide their own display string and need not show the option name
 		short_name = "";
