@@ -179,7 +179,7 @@ func FireWeapon(object clonk, int angle)
 	// Reset transformation to indicate empty grenade launcher.
 	this.PictureTransformation = this.Prototype.PictureTransformation;
 
-	Sound("Objects::Weapons::Musket::GunShoot?");
+	Sound("Objects::Weapons::Blunderbuss::GunShoot?");
 
 	// Muzzle Flash & gun smoke
 	if(Abs(Normalize(angle,-180)) > 90)
@@ -215,7 +215,7 @@ public func GetCarryMode(object clonk, bool idle, bool nohand)
 	if (idle || nohand)
 		return CARRY_Back;
 
-	return CARRY_Musket;
+	return CARRY_Blunderbuss;
 }
 
 public func GetCarrySpecial()

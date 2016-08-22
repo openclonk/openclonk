@@ -7,10 +7,10 @@
 
 #include Library_Stackable
 
-public func MaxStackCount() { return 8; }
+public func MaxStackCount() { return 40; }
 
 public func IsBullet() { return true; }
-public func ProjectileDamage() { return 15; }
+public func ProjectileDamage() { return 5; }
 public func TumbleStrength() { return 100; }
 public func FlightTime() { return 30; }
 
@@ -19,19 +19,19 @@ protected func Hit()
 	if (GetEffect("HitCheck", this))
 	{
 		RemoveEffect("HitCheck", this);
-		Sound("Objects::Weapons::Musket::BulletHitGround?");
+		Sound("Objects::Weapons::Blunderbuss::BulletHitGround?");
 		CreateParticle("StarSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
 		RemoveObject();
 	}
 	return;
 }
 
-public func Launch(object shooter, int angle, int dist, int speed, int offset_x, int offset_y)
+public func Launch(object shooter, int angle, int dist, int speed, int offset_x, int offset_y, int prec_angle)
 {
 	SetController(shooter->GetController());
 	AddEffect("HitCheck", this, 1, 1, nil, nil, shooter);
 
-	LaunchProjectile(angle, dist, speed, offset_x, offset_y);
+	LaunchProjectile(angle, dist, speed, offset_x, offset_y, prec_angle);
 	
 	// Remove after some time.
 	SetAction("Travel");
@@ -44,7 +44,7 @@ public func Launch(object shooter, int angle, int dist, int speed, int offset_x,
 	CreateObject(BulletTrail)->Set(this, 2, 200);
 			
 	// Sound.
-	Sound("Objects::Weapons::Musket::BulletShot?");
+	Sound("Objects::Weapons::Blunderbuss::BulletShot?");
 }
 
 public func HitObject(object obj)
@@ -54,7 +54,7 @@ public func HitObject(object obj)
 		if (obj->GetAlive())
 			Sound("Hits::ProjectileHitLiving?");
 		else
-			Sound("Objects::Weapons::Musket::BulletHitGround?");
+			Sound("Objects::Weapons::Blunderbuss::BulletHitGround?");
 		
 		obj->~OnProjectileHit(this);
 		WeaponDamage(obj, this->ProjectileDamage(), FX_Call_EngObjHit, false);

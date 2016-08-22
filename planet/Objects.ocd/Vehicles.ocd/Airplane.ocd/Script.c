@@ -92,7 +92,7 @@ private func FireBullet(object ammo)
 	var shot = ammo->TakeObject();
 	var angle = this->GetR();
 	shot->Launch(this, angle, 35, 200);
-	Sound("Objects::Weapons::Musket::GunShoot?");
+	Sound("Objects::Weapons::Blunderbuss::GunShoot?");
 
 	// Muzzle Flash & gun smoke
 	var IX = Sin(GetR(), 30);

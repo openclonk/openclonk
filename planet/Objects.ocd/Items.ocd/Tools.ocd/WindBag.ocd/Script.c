@@ -228,7 +228,7 @@ public func IsInventorProduct() { return true; }
 
 public func GetCarryMode(object clonk)
 {
-	return CARRY_Musket;
+	return CARRY_Blunderbuss;
 }
 
 public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_on_back)

@@ -641,7 +641,7 @@ private func FindInventoryWeapon(fx)
 		else
 			fx.weapon = nil;
 	}
-	if (fx.weapon = FindContents(Musket))
+	if (fx.weapon = FindContents(Blunderbuss))
 	{
 		if (HasAmmo(fx, fx.weapon))
 			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 200; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasAmmo; fx.ranged=true; fx.ranged_direct = true; return true; }

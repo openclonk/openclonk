@@ -130,7 +130,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	var clonk = GetCrew(iPlr);
 	clonk->SetPosition(425, 498);
 	clonk->DoEnergy(100000);
-	clonk->CreateContents(Musket);
+	clonk->CreateContents(Blunderbuss);
 	clonk->CreateContents(LeadBullet);
 	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Bow);

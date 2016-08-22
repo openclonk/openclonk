@@ -27,7 +27,7 @@ HomebaseUpgrades=Upgrades
 HomebaseArtifacts=Artifacts
 
 HomebaseDescBow=Classic ranged weapon. Infinite arrows.
-HomebaseDescMusket=Modern fire weapon. Infinite ammunition.
+HomebaseDescBlunderbuss=Modern fire weapon. Infinite ammunition.
 HomebaseDescGrenadeLauncher=Launches bombs at the enemies. Infinite bombs.
 HomebaseDescHammer=To construct defensive towers and other buildings.
 

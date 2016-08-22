@@ -1,0 +1,2 @@
+Name=Donnerbüchse
+Description=Feuerwaffe. Die Donnerbüchse benötigt Bleikugeln als Munition. Ziele und schieße mit [Benutzen].

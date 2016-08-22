@@ -465,7 +465,7 @@ func DoUpdateAttach(int sec)
 				this.hand_display.on_back = true;
 		}
 	}
-	else if(attach_mode == CARRY_Musket)
+	else if(attach_mode == CARRY_Blunderbuss)
 	{
 		if(HasHandAction(sec, 1) && !sec)
 		{
@@ -525,7 +525,7 @@ static const CARRY_HandAlways   = 3;
 static const CARRY_Back         = 4;
 static const CARRY_BothHands    = 5;
 static const CARRY_Spear        = 6;
-static const CARRY_Musket       = 7;
+static const CARRY_Blunderbuss  = 7;
 static const CARRY_Grappler     = 8;
 static const CARRY_Belt         = 9;
 static const CARRY_Sword        = 10;

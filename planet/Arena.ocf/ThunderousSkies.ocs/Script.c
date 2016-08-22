@@ -189,7 +189,7 @@ global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));
-	var w_list = [Shield, Javelin, FireballScroll, Bow, Musket, WindScroll, ThunderScroll];
+	var w_list = [Shield, Javelin, FireballScroll, Bow, Blunderbuss, WindScroll, ThunderScroll];
 	
 	for(var chest in chests)
 		for(var i=0; i<4; ++i)
@@ -201,7 +201,7 @@ global func FxIntFillChestsTimer()
 {
 	SetTemperature(100);
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [Javelin, Bow, Musket, Boompack, IronBomb, Shield, WindScroll, FireballScroll, ThunderScroll, Club, Sword];
+	var w_list = [Javelin, Bow, Blunderbuss, Boompack, IronBomb, Shield, WindScroll, FireballScroll, ThunderScroll, Club, Sword];
 	var maxcount = [1,1,1,1,2,1,1,2,2,1,1];
 	
 	var contents;
@@ -237,7 +237,7 @@ if (!this)
 	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
+	if (obj_id == Blunderbuss)
 		obj->CreateContents(LeadBullet);
 	obj->Enter(this);
 	return;
@@ -273,4 +273,4 @@ protected func JoinPlayer(int plr)
 }
 
 func KillsToRelaunch() { return 0; }
-func RelaunchWeaponList() { return [Bow,  Javelin, Musket, FireballScroll, WindScroll, ThunderScroll]; }
+func RelaunchWeaponList() { return [Bow,  Javelin, Blunderbuss, FireballScroll, WindScroll, ThunderScroll]; }

@@ -133,7 +133,7 @@ private func GiveWeapon(id weapon_id)
 	var newobj = CreateObjectAbove(weapon_id);
 	if (weapon_id == Bow)
 		newobj->CreateContents(Arrow);
-	if (weapon_id == Musket)
+	if (weapon_id == Blunderbuss)
 		newobj->CreateContents(LeadBullet);
 	crew->Collect(newobj);
 	return;

@@ -32,7 +32,7 @@ DlgFarmerRebuild=I am!
 # Dialogue: Lookout
 DlgLookoutHello=Hello, why are you standing over here?
 DlgLookoutProtecting=I am on the lookout for attacks from the evil faction.
-DlgLookoutMusket=Is that why you are carrying a musket?
+DlgLookoutBlunderbuss=Is that why you are carrying a blunderbuss?
 DlgLookoutNoChance=Yes, but I don't think I have any chance against those evil guys.
 DlgLookoutNoShow=Then let's hope they don't come again.
 

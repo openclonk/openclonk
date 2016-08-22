@@ -1,0 +1,2 @@
+Name=Blunderbuss
+Description=Firearm. The blunderbuss needs lead shot for ammunition. Aim and shoot with [Use].

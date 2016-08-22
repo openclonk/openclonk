@@ -49,7 +49,7 @@ MsgEvilLeaderBegging=Ach, du Kleinkind. Betteln hilft dir nicht, meine Leute sin
 MsgEvilLeaderBye=Gut, wir sind hier fertig. Sagt euren Tierchen auf Wiedersehen...muhaha
 
 # Sequence: Outro messages
-MsgHenchman3DropMusket=Lass die Muskete fallen!
+MsgHenchman3DropBlunderbuss=Lass die Donnerbüchse fallen!
 MsgLookoutSurrender=Ich gebe auf!
 MsgHenchman1RunGirl=Verschwinde Mädchen oder wir schießen!
 MsgHenchman2Wipfs=Eure Wipfe gehören uns, muhaha.

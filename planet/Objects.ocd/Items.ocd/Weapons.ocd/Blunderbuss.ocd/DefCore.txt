@@ -1,5 +1,5 @@
 [DefCore]
-id=Musket
+id=Blunderbuss
 Version=6,0
 Category=C4D_Object
 Width=26

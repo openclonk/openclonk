@@ -33,7 +33,7 @@ HomebaseArtifacts=Artifacts
 
 HomebaseDescBow=Medium range, low damage. Endless arrows.
 HomebaseDescJavelin=Short range, high damage. Endless javelins.
-HomebaseDescMusket=High range, medium damage. Endloss bullets.
+HomebaseDescBlunderbuss=High range, medium damage. Endloss bullets.
 HomebaseDescGrenadeLauncher=Launches bombs at the enemies. Infinite bombs.
 HomebaseDescWindBag=Releases air blasts to knock enemies of their feet.
 HomebaseDescHammer=To construct defensive towers and other buildings.
@@ -41,7 +41,7 @@ HomebaseDescHammer=To construct defensive towers and other buildings.
 HomebaseLoadSpeed=Load speed
 HomebaseDescLoadSpeed=Shortens reload time of ranged weapons (all).
 HomebaseShootingStrength=Shooting strength.
-HomebaseDescShootingStrength=Strengthens weapons, makes them shoot farer (except musket).
+HomebaseDescShootingStrength=Strengthens weapons, makes them shoot farer (except blunderbuss).
 HomebaseLife=Life energy
 HomebaseDescLife=Makes your clonk able to take more damage.
 HomebaseAdvancedWeapons=Advanced weapons

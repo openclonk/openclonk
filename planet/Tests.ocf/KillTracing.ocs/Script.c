@@ -400,17 +400,17 @@ global func Test14_OnStart(object victim, object killer, object fake_killer)
 	return true;
 }
 
-global func Test15_Log() { return "K shoots with the musket at V"; }
+global func Test15_Log() { return "K shoots with the blunderbuss at V"; }
 global func Test15_OnStart(object victim, object killer, object fake_killer)
 {
 	victim->SetPosition(240, 150);
 	victim->DoEnergy(-45);
 		
-	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
-	musket.loaded = true;
-	musket->ControlUseStart(killer, 20, -8);
-	musket->ControlUseStop(killer, 20, -8);
+	var blunderbuss = killer->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
+	blunderbuss.loaded = true;
+	blunderbuss->ControlUseStart(killer, 20, -8);
+	blunderbuss->ControlUseStop(killer, 20, -8);
 	return true;
 }
 
@@ -453,18 +453,18 @@ global func Test18_OnStart(object victim, object killer, object fake_killer)
 	return true;
 }
 
-global func Test19_Log() { return "K ignites powder keg (musket shot) near V"; }
+global func Test19_Log() { return "K ignites powder keg (blunderbuss shot) near V"; }
 global func Test19_OnStart(object victim, object killer, object fake_killer)
 {
 	victim->SetPosition(250, 150);
 	victim->DoEnergy(-45);
 		
 	CreateObject(PowderKeg, 240, 140);
-	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
-	musket.loaded = true;
-	musket->ControlUseStart(killer, 20, -8);
-	musket->ControlUseStop(killer, 20, -8);
+	var blunderbuss = killer->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
+	blunderbuss.loaded = true;
+	blunderbuss->ControlUseStart(killer, 20, -8);
+	blunderbuss->ControlUseStop(killer, 20, -8);
 	return true;
 }
 
@@ -600,11 +600,11 @@ global func Test28_OnStart(object victim, object killer, object fake_killer)
 	var balloon = victim->CreateContents(Balloon);
 	balloon->ControlUseStart(victim);
 
-	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
-	musket.loaded = true;
-	musket->ControlUseStart(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
-	musket->ControlUseStop(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
+	var blunderbuss = killer->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
+	blunderbuss.loaded = true;
+	blunderbuss->ControlUseStart(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
+	blunderbuss->ControlUseStop(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
 	return true;
 }
 
@@ -618,11 +618,11 @@ global func Test29_OnStart(object victim, object killer, object fake_killer)
 	var balloon = victim->CreateContents(Balloon);
 	balloon->ControlUseStart(victim);
 
-	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
-	musket.loaded = true;
-	musket->ControlUseStart(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
-	musket->ControlUseStop(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
+	var blunderbuss = killer->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
+	blunderbuss.loaded = true;
+	blunderbuss->ControlUseStart(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
+	blunderbuss->ControlUseStop(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
 	return true;
 }
 
@@ -736,18 +736,18 @@ global func Test36_OnStart(object victim, object killer, object fake_killer)
 	return true;
 }
 
-global func Test37_Log() { return "K ignites boompack (musket shot) which shoots at V"; }
+global func Test37_Log() { return "K ignites boompack (blunderbuss shot) which shoots at V"; }
 global func Test37_OnStart(object victim, object killer, object fake_killer)
 {
 	victim->SetPosition(280, 150);
 	victim->DoEnergy(-45);
 		
 	CreateObject(Boompack, 240, 146)->SetR(90);
-	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
-	musket.loaded = true;
-	musket->ControlUseStart(killer, 20, -7);
-	musket->ControlUseStop(killer, 20, -7);
+	var blunderbuss = killer->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
+	blunderbuss.loaded = true;
+	blunderbuss->ControlUseStart(killer, 20, -7);
+	blunderbuss->ControlUseStop(killer, 20, -7);
 	return true;
 }
 
@@ -780,11 +780,11 @@ global func Test39_OnStart(object victim, object killer, object fake_killer)
 	airship->DoDamage(20);
 	victim->SetPosition(330, 150);
 
-	var musket = killer->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
-	musket.loaded = true;
-	musket->ControlUseStart(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
-	musket->ControlUseStop(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
+	var blunderbuss = killer->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
+	blunderbuss.loaded = true;
+	blunderbuss->ControlUseStart(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
+	blunderbuss->ControlUseStop(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
 	return true;
 }
 

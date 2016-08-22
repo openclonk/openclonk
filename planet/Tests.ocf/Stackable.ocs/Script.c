@@ -1506,33 +1506,33 @@ global func Test22_Execute()
 
 	var passed = true;
 
-	Log("****** Muskets with various contents");
+	Log("****** Blunderbusses with various contents");
 
-	var musket_a = CreateObject(Musket);
-	var musket_b = CreateObject(Musket);
-	var musket_c = CreateObject(Musket);
-	var musket_d = CreateObject(Musket);
-	var musket_e = CreateObject(Musket);
+	var blunderbuss_a = CreateObject(Blunderbuss);
+	var blunderbuss_b = CreateObject(Blunderbuss);
+	var blunderbuss_c = CreateObject(Blunderbuss);
+	var blunderbuss_d = CreateObject(Blunderbuss);
+	var blunderbuss_e = CreateObject(Blunderbuss);
 	
-	musket_a->CreateContents(LeadBullet);
-	musket_b->CreateContents(LeadBullet);
-	musket_c->CreateContents(LeadBullet)->SetStackCount(7);
-	musket_d->CreateContents(LeadBullet)->SetInfiniteStackCount();
+	blunderbuss_a->CreateContents(LeadBullet);
+	blunderbuss_b->CreateContents(LeadBullet);
+	blunderbuss_c->CreateContents(LeadBullet)->SetStackCount(7);
+	blunderbuss_d->CreateContents(LeadBullet)->SetInfiniteStackCount();
 
-	passed &= doTest("Musket with 8 shots can be stacked with musket with 8 shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_b), true);
-	passed &= doTest("Musket with 8 shots cannot be stacked with musket with 7 shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_c), false);
-	passed &= doTest("Musket with 8 shots cannot be stacked with musket with infinite shots. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_d), false);
-	passed &= doTest("Musket with 8 shots cannot be stacked with empty musket. Got %v, expected %v.", musket_a->CanBeStackedWith(musket_e), false);
+	passed &= doTest("Blunderbusses with 8 shots can be stacked with blunderbuss with 8 shots. Got %v, expected %v.", blunderbuss_a->CanBeStackedWith(blunderbuss_b), true);
+	passed &= doTest("Blunderbusses with 8 shots cannot be stacked with blunderbuss with 7 shots. Got %v, expected %v.", blunderbuss_a->CanBeStackedWith(blunderbuss_c), false);
+	passed &= doTest("Blunderbusses with 8 shots cannot be stacked with blunderbuss with infinite shots. Got %v, expected %v.", blunderbuss_a->CanBeStackedWith(blunderbuss_d), false);
+	passed &= doTest("Blunderbusses with 8 shots cannot be stacked with empty blunderbuss. Got %v, expected %v.", blunderbuss_a->CanBeStackedWith(blunderbuss_e), false);
 
-	passed &= doTest("Musket with 7 shots cannot be stacked with musket with 8 shots. Got %v, expected %v.", musket_e->CanBeStackedWith(musket_a), false);
-	passed &= doTest("Musket with infinite shots cannot be stacked with musket with 8 shots. Got %v, expected %v.", musket_d->CanBeStackedWith(musket_a), false);
-	passed &= doTest("Empty musket cannot be stacked with musket with 8 shots. Got %v, expected %v.", musket_e->CanBeStackedWith(musket_a), false);
+	passed &= doTest("Blunderbusses with 7 shots cannot be stacked with blunderbuss with 8 shots. Got %v, expected %v.", blunderbuss_e->CanBeStackedWith(blunderbuss_a), false);
+	passed &= doTest("Blunderbusses with infinite shots cannot be stacked with blunderbuss with 8 shots. Got %v, expected %v.", blunderbuss_d->CanBeStackedWith(blunderbuss_a), false);
+	passed &= doTest("Empty blunderbuss cannot be stacked with blunderbuss with 8 shots. Got %v, expected %v.", blunderbuss_e->CanBeStackedWith(blunderbuss_a), false);
 
-	if (musket_a) musket_a->RemoveObject();
-	if (musket_b) musket_b->RemoveObject();
-	if (musket_c) musket_c->RemoveObject();
-	if (musket_d) musket_d->RemoveObject();
-	if (musket_e) musket_e->RemoveObject();
+	if (blunderbuss_a) blunderbuss_a->RemoveObject();
+	if (blunderbuss_b) blunderbuss_b->RemoveObject();
+	if (blunderbuss_c) blunderbuss_c->RemoveObject();
+	if (blunderbuss_d) blunderbuss_d->RemoveObject();
+	if (blunderbuss_e) blunderbuss_e->RemoveObject();
 
 	Log("****** Grenade launcher with various contents");
 	

@@ -175,7 +175,7 @@ global func FxFillBaseChestTimer(object target, effect)
 	}
 	else
 	{
-		var w_list = [Sword, Javelin, Musket, ShieldGem, PyreGem];
+		var w_list = [Sword, Javelin, Blunderbuss, ShieldGem, PyreGem];
 		var maxcount = [1,2,1,1,1];
 	}
 	
@@ -254,7 +254,7 @@ global func CreateChestContents(id obj_id)
 		
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
+	if (obj_id == Blunderbuss)
 		obj->CreateContents(LeadBullet);
 	if (obj_id == GrappleBow)
 		AddEffect("NotTooLong",obj,100,36);

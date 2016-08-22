@@ -161,7 +161,7 @@ protected func OnPlayerRelaunch(int plr)
 	return;
 }
 
-func RelaunchWeaponList() { return [Musket, Sword, Javelin,  FrostboltScroll, Shovel]; }
+func RelaunchWeaponList() { return [Blunderbuss, Sword, Javelin,  FrostboltScroll, Shovel]; }
 
 /*-- Chest filler effects --*/
 
@@ -174,7 +174,7 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 	if(effect.supply_type) 
 		var w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
 	else
-		var w_list = [Bow, Shield, Sword, Javelin, Musket, FrostboltScroll];
+		var w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
 	for(var i=0; i<5; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
@@ -190,7 +190,7 @@ global func FxFillBaseChestTimer(object target, effect)
 	}
 	else
 	{
-		var w_list = [Bow, Shield, Sword, Javelin, Musket, FrostboltScroll];
+		var w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
 		var maxcount = [1,2,1,1,1,2];
 	}
 	
@@ -252,7 +252,7 @@ global func CreateChestContents(id obj_id)
 	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
+	if (obj_id == Blunderbuss)
 		obj->CreateContents(LeadBullet);
 	obj->Enter(this);	
 	return;

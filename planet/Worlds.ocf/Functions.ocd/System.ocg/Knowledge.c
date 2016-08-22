@@ -87,7 +87,7 @@ global func GivePlayerWeaponryKnowledge(int plr)
 		// Armory to construct the weapons.
 		Armory,
 		// Weapons and explosives.
-		Bow, Arrow, FireArrow, BombArrow, Club, Sword, Javelin, Shield, Musket, LeadBullet, IronBomb, GrenadeLauncher, PowderKeg,
+		Bow, Arrow, FireArrow, BombArrow, Club, Sword, Javelin, Shield, Blunderbuss, LeadBullet, IronBomb, GrenadeLauncher, PowderKeg,
 		// Artillery vehicles.
 		Catapult, Cannon
 	];

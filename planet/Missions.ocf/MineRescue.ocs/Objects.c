@@ -234,7 +234,7 @@ func InitializeObjects()
 	CreateObjectAbove(Mushroom, 1206, 488);
 	Chest0225->CreateContents(Mushroom);
 
-	Chest0225->CreateContents(Musket);
+	Chest0225->CreateContents(Blunderbuss);
 
 	Chest0225->CreateContents(LeadBullet);
 

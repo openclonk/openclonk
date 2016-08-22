@@ -101,9 +101,9 @@ private func InitMaterials(int amount)
 		var chest = CreateObjectAbove(Chest, pos.x, pos.y);
 		chest->CreateContents(Dynamite, 4);
 		chest->CreateContents(Club, 4);
-		chest->CreateContents(Musket)->CreateContents(LeadBullet);
-		chest->CreateContents(Musket)->CreateContents(LeadBullet);
-		chest->CreateContents(Musket)->CreateContents(LeadBullet);
+		chest->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
+		chest->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
+		chest->CreateContents(Blunderbuss)->CreateContents(LeadBullet);
 		chest->CreateContents(IronBomb, 4);
 		chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);
 		chest->CreateContents(GrenadeLauncher)->CreateContents(IronBomb);
@@ -113,7 +113,7 @@ private func InitMaterials(int amount)
 			chest->CreateContents(WallKit);
 	}
 	// Load all weapons in the chests.
-	for (var weapon in FindObjects(Find_Or(Find_ID(Musket), Find_ID(GrenadeLauncher))))
+	for (var weapon in FindObjects(Find_Or(Find_ID(Blunderbuss), Find_ID(GrenadeLauncher))))
 		weapon->SetLoaded();
 	// Place some catapults.
 	for (var count = 0; count < amount / 4; count++)

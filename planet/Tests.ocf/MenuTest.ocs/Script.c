@@ -126,7 +126,7 @@ func StartMultipleListTest()
 	};
 	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
-	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Musket, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
+	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Blunderbuss, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
 	var x = ["0%", "50%", "0%", "50%"], y = ["0%", "0%", "50%", "50%"], w = ["50%", "100%", "50%", "100%"], h = ["50%", "50%", "100%", "100%"];
 	for (var i = 0; i < 4; ++i)
 	{

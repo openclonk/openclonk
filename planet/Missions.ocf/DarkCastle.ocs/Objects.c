@@ -480,7 +480,7 @@ func InitializeObjects()
 	var Mushroom006 = CreateObject(Mushroom, 396, 1410);
 	Mushroom006->SetCon(13);
 
-	Chest006->CreateContents(Musket);
+	Chest006->CreateContents(Blunderbuss);
 
 	Chest006->CreateContents(LeadBullet, 3);
 

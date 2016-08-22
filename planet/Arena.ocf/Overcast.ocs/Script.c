@@ -255,7 +255,7 @@ global func FxFillChestStart(object target, proplist effect, int temporary)
 {
 	if (temporary) 
 		return 1;
-	var w_list = [Shield, Javelin, FireballScroll, Bow, Musket, WindScroll, TeleportScroll];
+	var w_list = [Shield, Javelin, FireballScroll, Bow, Blunderbuss, WindScroll, TeleportScroll];
 	for (var i = 0; i < 4; i++)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -265,7 +265,7 @@ global func FxFillChestTimer(object target, proplist effect)
 {
 	if (Random(5))
 		return 1;
-	var w_list = [Balloon, Boompack, IronBomb, Shield, Javelin, Bow, Musket, Boompack, IronBomb, Shield, Javelin, Bow, Musket, TeleportScroll, WindScroll, FireballScroll];
+	var w_list = [Balloon, Boompack, IronBomb, Shield, Javelin, Bow, Blunderbuss, Boompack, IronBomb, Shield, Javelin, Bow, Blunderbuss, TeleportScroll, WindScroll, FireballScroll];
 
 	if (target->ContentsCount() < 6)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
@@ -328,7 +328,7 @@ global func CreateChestContents(id obj_id)
 	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
+	if (obj_id == Blunderbuss)
 		obj->CreateContents(LeadBullet);
 	obj->Enter(this);
 	return;
@@ -363,4 +363,4 @@ protected func OnPlayerRelaunch(int plr)
 }
 
 func KillsToRelaunch() { return 0; }
-func RelaunchWeaponList() { return [Bow, Javelin, Musket, FireballScroll, WindScroll, TeleportScroll]; }
+func RelaunchWeaponList() { return [Bow, Javelin, Blunderbuss, FireballScroll, WindScroll, TeleportScroll]; }

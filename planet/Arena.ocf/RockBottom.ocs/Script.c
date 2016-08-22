@@ -98,7 +98,7 @@ global func FxIntFillChestsStart(object target, proplist effect, int temporary, 
 	if (temporary)
 		return 1;
 	// Store weapon list and chest.		
-	effect.w_list = [Dynamite, Dynamite, Firestone, Firestone, Bow, Musket, Club, Sword, Javelin, IronBomb, PowderKeg];
+	effect.w_list = [Dynamite, Dynamite, Firestone, Firestone, Bow, Blunderbuss, Club, Sword, Javelin, IronBomb, PowderKeg];
 	effect.chest = chest;
 	// Fill the chest with ten items.
 	for (var i = 0; i < 10; i++)
@@ -121,7 +121,7 @@ global func CreateChestContents(id obj_id)
 	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents([Arrow, BombArrow][Random(2)]);
-	if (obj_id == Musket)
+	if (obj_id == Blunderbuss)
 		obj->CreateContents(LeadBullet);
 	obj->Enter(this);
 	return;
@@ -136,4 +136,4 @@ public func OnClonkLeftRelaunch(object clonk)
 }
 
 public func KillsToRelaunch() { return 0; }
-public func RelaunchWeaponList() { return [Bow, Shield, Sword, Firestone, Dynamite, Javelin, Musket]; }
+public func RelaunchWeaponList() { return [Bow, Shield, Sword, Firestone, Dynamite, Javelin, Blunderbuss]; }

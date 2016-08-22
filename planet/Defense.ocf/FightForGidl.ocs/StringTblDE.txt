@@ -5,7 +5,7 @@ MsgRelaunch=Relaunch %s.
 
 EnemyNewbie=Newbie
 EnemyAmazon=Amazone
-EnemyBow=Bogenschütze
+EnemyBow=Bogenschï¿½tze
 EnemySuicide=Bomber
 EnemySwordman=Schwertie
 EnemySwordman2=Superschwertie
@@ -14,7 +14,7 @@ EnemyOgre=Oger
 EnemyArtillery=Artillerie
 EnemyRunner=Bekloppter
 
-WaveNewbies=Nur zum Aufwärmen
+WaveNewbies=Nur zum Aufwï¿½rmen
 WaveBows=Fernkampfalarm!
 
 TeamAttackers=Angreifer
@@ -27,7 +27,7 @@ HomebaseUpgrades=Verbesserungen
 HomebaseArtifacts=Artefakte
 
 HomebaseDescBow=Klassische Fernkampfwaffe. Endlos Pfeile.
-HomebaseDescMusket=Moderne Feuerwaffe. Endlos Munition.
+HomebaseDescBlunderbuss=Moderne Feuerwaffe. Endlos Munition.
 HomebaseDescGrenadeLauncher=Schleudert Bomben in die Gegner. Endlos Bomben.
 HomebaseDescHammer=Zum Errichten von Verteidigungstuermen und anderen Gebaeuden.
 

@@ -177,7 +177,7 @@ func OnClonkLeftRelaunch(object clonk)
 	if (clonk) return LaunchPlayer(clonk->GetOwner());
 }
 
-func RelaunchWeaponList() { return [Bow, Sword, Club, Javelin, Musket, Firestone, IceWallKit]; }
+func RelaunchWeaponList() { return [Bow, Sword, Club, Javelin, Blunderbuss, Firestone, IceWallKit]; }
 
 
 func AcquireBase(int plr, int team)

@@ -288,7 +288,7 @@ private func InitLorries()
 			lorry->CreateContents(WallKit, 1);
 		if (!Random(8))
 		{
-			lorry->CreateContents(Musket);
+			lorry->CreateContents(Blunderbuss);
 			lorry->CreateContents(LeadBullet);
 		}
 	}

@@ -49,7 +49,7 @@ MsgEvilLeaderBegging=Oh little kid, begging is useless, my men are not prone to 
 MsgEvilLeaderBye=Okay, we are done here. Time to say goodbye to your pet friends... muhaha
 
 # Sequence: Outro messages
-MsgHenchman3DropMusket=You better drop that musket!
+MsgHenchman3DropBlunderbuss=You better drop that blunderbuss!
 MsgLookoutSurrender=Yes, I surrender.
 MsgHenchman1RunGirl=Run girl, or we shoot!
 MsgHenchman2Wipfs=Your wipfs are ours now, muhaha.

@@ -69,10 +69,10 @@ private func InitCave()
 	CreateObjectAbove(Torch, 500, 474)->AttachToWall(true);
 	CreateObjectAbove(Torch, 506, 628)->AttachToWall(true);
 	CreateObjectAbove(Torch, 728, 696)->AttachToWall(true);
-	// A hidden chest with a musket.
+	// A hidden chest with a blunderbuss.
 	var chest = CreateObjectAbove(Chest, 10, 526);
-	var musket = chest->CreateContents(Musket);
-	musket->CreateContents(LeadBullet);
+	var blunderbuss = chest->CreateContents(Blunderbuss);
+	blunderbuss->CreateContents(LeadBullet);
 	return;
 }
 

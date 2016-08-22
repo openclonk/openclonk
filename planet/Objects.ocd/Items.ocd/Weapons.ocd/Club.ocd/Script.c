@@ -240,7 +240,7 @@ public func GetCarryMode(object clonk, bool idle, bool nohand)
 	if (idle || nohand)
 		return CARRY_Back;
 
-	return CARRY_Musket;
+	return CARRY_Blunderbuss;
 }
 
 public func GetCarrySpecial(clonk)
