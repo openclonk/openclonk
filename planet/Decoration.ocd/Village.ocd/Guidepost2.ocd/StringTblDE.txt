@@ -1,0 +1,2 @@
+Name=Wegweiser
+Description=Kann den richtigen Weg weisen.
