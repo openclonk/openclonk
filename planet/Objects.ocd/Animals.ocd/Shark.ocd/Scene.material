@@ -1,0 +1,21 @@
+material Shark
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 1.000000 1.000000 1.000000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			
+			texture_unit
+			{
+				texture Shark.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
