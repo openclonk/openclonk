@@ -385,7 +385,7 @@ global func SaveScenarioObject(props)
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));
 	for (i=0; v=def->GetMeshMaterial(i); ++i)
 	                        if (GetMeshMaterial(i) != v)          props->AddCall("MeshMaterial",  this, "SetMeshMaterial", Format("%v", GetMeshMaterial(i)), i);
-	v = GetName();          if (v != def->GetName())              props->AddCall("Name",          this, "SetName", SaveScenarioValue2String(v));
+	v = this.Name;          if (v != def.Name)                   props->AddCall("Name",          this, "SetName", SaveScenarioValue2String(v));
 	v = this.MaxEnergy;     if (v != def.MaxEnergy)               props->AddSet ("MaxEnergy",     this, "MaxEnergy", this.MaxEnergy);
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", SaveScenarioValue2String(v, "VIS_", true));
