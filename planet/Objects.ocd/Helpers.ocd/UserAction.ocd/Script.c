@@ -787,7 +787,16 @@ private func EvalAct_Wait(proplist props, proplist context)
 private func EvalAct_Sound(proplist props, proplist context)
 {
 	if (!props.Sound) return;
-	var sound_context = props.SourceObject ?? Global;
+	var sound_context;
+	if (props.SourceObject)
+	{
+		sound_context = EvaluateValue("Object", props.SourceObject, context);
+		if (!sound_context) return;
+	}
+	else
+	{
+		sound_context = Global;
+	}
 	var volume = EvaluateValue("Integer", props.Volume, context);
 	var pitch = EvaluateValue("Integer", props.Pitch, context);
 	if (props.TargetPlayers == "all_players")
