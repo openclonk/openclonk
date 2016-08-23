@@ -27,3 +27,6 @@ MsgTutorialCompleted=Gut gemacht! Du weißt jetzt wie man Gebäude aus Stein, Ho
 # Wipf name
 WipfName=Rüdiger
 WipfDescription=Dein felliger kleiner Freund.
+
+# Guide post
+MsgWelcomeWipfville=Willkommen in Wipfdorf, da wo man pelzig sein darf!

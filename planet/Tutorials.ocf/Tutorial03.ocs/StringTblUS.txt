@@ -27,3 +27,6 @@ MsgTutorialCompleted=Well done! You have mastered the basics of construction, us
 # Wipf name
 WipfName=Roger
 WipfDescription=Your furry little friend.
+
+# Guide post
+MsgWelcomeWipfville=Welcome to Wipfville, a town where you may furry!

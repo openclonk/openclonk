@@ -48,7 +48,8 @@ protected func OnGoalsFulfilled()
 private func InitVillageEntrance()
 {
 	// Create a signpost.
-	CreateObjectAbove(EnvPack_Guidepost, 56, 384);	
+	var post = CreateObjectAbove(EnvPack_Guidepost2, 56, 384);
+	post->SetInscription("$MsgWelcomeWipfville$");
 	
 	// Create a small forest.
 	CreateObjectAbove(Tree_Coniferous, 128, 384);
