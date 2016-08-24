@@ -121,7 +121,7 @@ public func AttachToWall(bool fixed)
 	this.MeshTransformation = Trans_Rotate(-20, 1, 0, 0);
 	// Add a burning effect if not already done.
 	if (!GetEffect("IntBurning", this))
-		AddEffect("IntBurning", this, 100, 1, this);
+		AddEffect("IntBurning", this, 100, 4, this);
 	return;
 }
 
@@ -133,7 +133,7 @@ public func DetachFromWall()
 	this.Collectible = true;
 	state = TRCH_Normal;
 	// Remove the burning effect if active.
-	if (!GetEffect("IntBurning", this))
+	if (GetEffect("IntBurning", this))
 		RemoveEffect("IntBurning", this);
 	return;
 }
@@ -151,8 +151,8 @@ func FxIntBurningStart(object target, effect fx, int temporary)
 {
 	if (temporary)
 		return 1;
-	// Ensure the interval is always one frame.
-	fx.Interval = 1;
+	// Starting interval
+	fx.Interval = 4;
 	// Fire particle
 	fx.flame = 
 	{
@@ -189,9 +189,11 @@ func FxIntBurningTimer (object target, effect fx, int time)
 	if (state == TRCH_Attached || state == TRCH_Fixed)
 	{
 		// Fire effects.
-		CreateParticle("FireSharp", PV_Random(-1, 2), PV_Random(0, -3), PV_Random(-2, 2), PV_Random(-3, -5), 10 + Random(3), fx.flame, 8);
+		CreateParticle("FireSharp", PV_Random(-1, 2), PV_Random(0, -3), PV_Random(-2, 2), PV_Random(-3, -5), 10 + Random(3), fx.flame, 12);
 		// Smoke effects.
-		CreateParticle("Smoke", PV_Random(-1, 2), PV_Random(-7, -9), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), fx.smoke, 2);
+		CreateParticle("Smoke", PV_Random(-1, 2), PV_Random(-7, -9), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), fx.smoke, 4);
+		// Interval jitter
+		if (!Random(10)) fx.Interval = 3+Random(3);
 	}
 	return 1;
 }
