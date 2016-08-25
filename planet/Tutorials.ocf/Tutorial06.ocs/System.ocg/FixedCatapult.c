@@ -9,5 +9,7 @@ public func Initialize()
 	return _inherited(...);
 }
 
+// Block any turning.
 public func ControlLeft(object clonk) { return true; }
 public func ControlRight(object clonk) { return true; }
+public func SetDir(int dir) { return; }
