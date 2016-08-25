@@ -9,7 +9,8 @@ public func Construction() { RemoveObject(); }
 local EditorProps = {
 	Invincibility = { Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" },
 	PlayerColor = { Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
-	Name = { Type = "string", AsyncGet = "GetName", Set = "SetName" }
+	Name = { Type = "string", AsyncGet = "GetName", Set = "SetName" },
+	CustomInitializationScript = { Type = "string", Name = "$CustomInitialization$", EditorHelp = "$CustomInitializationHelp$" }
 };
 local Plane = 1;
 

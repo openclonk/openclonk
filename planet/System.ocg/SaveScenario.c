@@ -444,6 +444,8 @@ global func SaveScenarioObject(props)
 			}
 		}
 	}
+	// Initialization function as late as possible
+	v = this.CustomInitializationScript; if (v) props->AddCall("CustomInitialization", this, "CustomInitialize", Format("%v", v));
 	return true;
 }
 
@@ -694,4 +696,10 @@ global func SaveScenP_TakeProps()
 		result.origin = this;
 	}
 	return result;
+}
+
+global func CustomInitialize(string script)
+{
+	// run a custom object initialization and 
+	return eval(this.CustomInitializationScript = script);
 }

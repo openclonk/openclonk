@@ -5,3 +5,5 @@ Specific=Player number
 Team=Team number
 Entry=%s entry
 PlayerMask=Players
+CustomInitialization=Initialization script
+CustomInitializationHelp=Script to be executed for this object on scenario initialization. Can be used to apply modifications normally not stored as properties such as DrawTransform.

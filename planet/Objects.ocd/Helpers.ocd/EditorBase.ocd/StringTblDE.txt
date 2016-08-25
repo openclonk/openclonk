@@ -5,3 +5,5 @@ Specific=Spielernummer
 Team=Teamnummer
 Entry=%s Eintrag
 PlayerMask=Spieler
+CustomInitialization=Initialisierungsscript
+CustomInitializationHelp=Script das zur Objektinitialisierung am Spielstart ausgefuehrt wird. Kann benutzt werden, um Modifikationen zu speichern, die normalerweise nicht im Szenario gespeichert werden (z.B. DrawTransform).
