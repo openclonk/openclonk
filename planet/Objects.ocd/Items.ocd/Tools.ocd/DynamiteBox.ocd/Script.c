@@ -308,5 +308,6 @@ local Description = "$Description$";
 local Collectible = true;
 local BlastIncinerate = 1;
 local ContactIncinerate = 2;
+local NoBurnDecay = true;
 local Components = {Wood = 1, Coal = 2, Firestone = 2};
 local MaxContentsCount = 5;
