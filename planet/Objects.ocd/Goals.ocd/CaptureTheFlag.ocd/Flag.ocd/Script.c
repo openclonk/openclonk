@@ -229,6 +229,7 @@ func StartAttachBase()
 }
 
 local Name = "$Name$";
+local Plane = 310;
 local ActMap = {
 	AttachCarrier = {
 		Prototype = Action,

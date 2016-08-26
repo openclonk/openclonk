@@ -1,7 +1,7 @@
 [DefCore]
 id=Airship_Burnt
 Version=6,0
-Category=C4D_Vehicle
+Category=C4D_None
 Width=64
 Height=54
 Offset=-32,-27

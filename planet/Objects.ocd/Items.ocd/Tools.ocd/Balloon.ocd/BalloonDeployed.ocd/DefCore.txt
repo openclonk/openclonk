@@ -1,7 +1,7 @@
 [DefCore]
 id=BalloonDeployed
 Version=6,0
-Category=C4D_Vehicle
+Category=C4D_None
 Width=32
 Height=40
 Offset=-16,-16
