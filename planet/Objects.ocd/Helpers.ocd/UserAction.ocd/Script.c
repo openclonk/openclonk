@@ -469,6 +469,11 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 			action_def.ValueKey = delegate_storage_key ?? "Value";
 		}
 	}
+	// Constant has higher priority
+	if (callback_data[1] == UserAction.EvalConstant)
+	{
+		action_def.Priority = 50;
+	}
 	Evaluator[eval_type].Options[n = GetLength(Evaluator[eval_type].Options)] = action_def;
 	action_def.OptionIndex = n;
 	// Remember lookup table through identifier (ignore duplicates)
