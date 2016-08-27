@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>openclonk.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>ISC and CC-BY-3.0</project_license>
+  <name>OpenClonk</name>
+  <summary>Multiplayer action game where you control small and nimble humanoids</summary>
+  <description>
+    <p>
+      OpenClonk is a free multiplayer action game in which you control clonks, small but witty and nimble humanoid beings. The game is mainly about mining, settling and fast-paced melees.
+    </p>
+  </description>
+  <screenshots>
+    <screenshot>
+      <image>http://wiki.openclonk.org/images/a/a1/Boompack.png</image>
+      <caption>Combat in Thunderous Skies</caption>
+    </screenshot>
+    <screenshot>
+      <image>http://wiki.openclonk.org/images/2/2a/Gemgrabber.png</image>
+      <caption>A base in Gemgrabbers</caption>
+    </screenshot>
+    <screenshot>
+      <image>http://wiki.openclonk.org/images/b/bf/OC-Spiral.png</image>
+      <caption>An underground base settling</caption>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">http://www.openclonk.org/</url>
+</component>
