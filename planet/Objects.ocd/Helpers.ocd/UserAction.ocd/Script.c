@@ -154,9 +154,11 @@ func Definition(def)
 			Speed={Function="int_constant", Value=20},
 			Lifetime={Function="int_constant", Value=100},
 			Size={Function="int_constant", Value=10},
+			SizeEnd={Function="int_constant", Value=1},
 			Color={Function="color_constant", Value=0xffff},
 			BlitMode=0,
-			HasGravity=true,
+			Gravity={Function="int_constant", Value=100},
+			FadeOut=true,
 			CollisionFunc="bounce"
 		}, { Type="proplist", Display="{{Amount}}x{{Name}}", EditorProps = {
 		Name = { Name="$ParticleName$", EditorHelp="$ParticleNameHelp$", Type="enum", Priority=50, Options = [
@@ -173,13 +175,15 @@ func Definition(def)
 		Speed = new Evaluator.Integer { Name="$Speed$", EditorHelp="$CastParticlesSpeedHelp$" },
 		Lifetime = new Evaluator.Integer { Name="$Lifetime$", EditorHelp="$CastParticlesLifetimeHelp$" },
 		Size = new Evaluator.Integer { Name="$Size$", EditorHelp="$CastParticlesSizeHelp$" },
+		SizeEnd = new Evaluator.Integer { Name="$SizeEnd$", EditorHelp="$CastParticlesSizeEndHelp$" },
 		Color = new Evaluator.Color { Name="$Color$", EditorHelp="$CastParticlesColorHelp$" },
 		BlitMode = { Name="$BlitMode$", EditorHelp="$ParticleBlitModeHelp$", Type="enum", Options = [
 			{ Name="$Normal$", Value=0 },
 			{ Name="$Additive$", Value=GFX_BLIT_Additive },
 			{ Name="$Mod2$", Value=GFX_BLIT_Mod2 }
 			] },
-		HasGravity = { Name="$HasGravity$", EditorHelp="$ParticleGravityHelp$", Type="bool" },
+		Gravity = new Evaluator.Integer { Name="$Gravity$", EditorHelp="$ParticleGravityHelp$" },
+		FadeOut = { Name="$FadeOut$", EditorHelp="$ParticleFadeOutHelp$", Type="bool" },
 		CollisionFunc = { Name="$CollisionFunc$", EditorHelp="$ParticleCollisionFuncHelp$", Type="enum", Options = [
 			{ Value="pass", Name="$Pass$" },
 			{ Value="stop", Name="$Stop$" },
@@ -864,27 +868,28 @@ private func EvalAct_CastParticles(proplist props, proplist context)
 	var particle_name = props.Name;
 	var amount = EvaluateValue("Integer", props.Amount, context);
 	var speed = EvaluateValue("Integer", props.Speed, context);
-	var size = EvaluateValue("Integer", props.Size, context);
-	if (size <= 0) return;
+	var size_start = EvaluateValue("Integer", props.Size, context);
+	var size_end = EvaluateValue("Integer", props.SizeEnd, context);
 	var lifetime = EvaluateValue("Integer", props.Lifetime, context);
 	if (lifetime <= 0) return;
 	var position = EvaluatePosition(props.Position, context);
 	var color = (EvaluateValue("Color", props.Color, context) ?? 0xffffff) | 0xff000000;
 	var blit_mode = props.BlitMode;
-	var has_gravity = props.HasGravity;
+	var fadeout = props.FadeOut;
+	var gravity = EvaluateValue("Integer", props.Gravity, context);
 	var collision_func = props.CollisionFunc;
 	var prototype = 
 	{
 		BlitMode = props.BlitMode,
-		Size = size,
+		Size = PV_Linear(size_start, size_end),
 		Rotation = PV_Direction(),
-		Alpha=255,
 		R = (color >> 16) & 0xff,
 		G = (color >>  8) & 0xff,
 		B = (color >>  0) & 0xff,
 		CollisionVertex = 500
 	};
-	if (has_gravity) prototype.ForceY = PV_Gravity(20);
+	if (fadeout) prototype.Alpha = PV_Linear(255, 0); else prototype.Alpha=255;
+	if (gravity) prototype.ForceY = PV_Gravity(gravity);
 	if (collision_func == "pass")
 	{
 		prototype.CollisionDensity = 9999;
@@ -901,8 +906,6 @@ private func EvalAct_CastParticles(proplist props, proplist context)
 	{
 		prototype.OnCollision = PC_Stop();
 	}
-	prototype.CollisionDensity=20;
-	prototype.OnCollision = PC_Bounce(500);
 	CreateParticle(particle_name, position[0], position[1], PV_Random(-speed, speed), PV_Random(-speed, speed), lifetime, prototype, amount);
 }
 
