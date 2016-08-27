@@ -445,7 +445,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	}
 	else if (delegate && delegate.HideFullName)
 	{
-		// Proplist delegates provide their own display string and need not show the option name
+		// Some proplist delegates provide their own display string and need not show the option name
 		short_name = "";
 	}
 	if (!default_val) default_val = {};
