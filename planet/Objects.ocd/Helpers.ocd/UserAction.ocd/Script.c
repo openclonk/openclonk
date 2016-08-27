@@ -476,7 +476,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	Evaluator[eval_type].Options[n = GetLength(Evaluator[eval_type].Options)] = action_def;
 	action_def.OptionIndex = n;
 	// Remember lookup table through identifier (ignore duplicates)
-	if (eval_type != "Any")
+	if (eval_type != "Any" || !group)
 	{
 		EvaluatorCallbacks[identifier] = callback_data;
 		EvaluatorDefs[identifier] = action_def;
