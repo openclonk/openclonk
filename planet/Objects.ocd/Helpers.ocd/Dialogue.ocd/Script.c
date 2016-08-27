@@ -531,7 +531,7 @@ func SaveScenarioObject(props)
 	props->Remove("Plane"); // updated when setting dialogue
 	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v,%v)", dlg_target->MakeScenarioSaveName(), dlg_name, !!dlg_attention);
 	// Set properties
-	if (user_dialogue || user_dialogue_progress_mode || user_dialogue_allow_parallel) props->AddCall("UserDialogue", this, "SetUserDialogue", user_dialogue, user_dialogue_progress_mode, user_dialogue_allow_parallel);
+	if (user_dialogue || user_dialogue_progress_mode || user_dialogue_allow_parallel) props->AddCall("UserDialogue", this, "SetUserDialogue", user_dialogue, Format("%v", user_dialogue_progress_mode), user_dialogue_allow_parallel);
 	if (!dlg_interact) props->AddCall("Enabled", this, "SetEnabled", dlg_interact);
 	// Force dependency on all contained objects, so dialogue initialization procedure can access them
 	var i=0, obj;
