@@ -477,6 +477,7 @@ void C4DefList::SortByPriority()
 			FirstDef = def;
 		prev_def = def;
 	}
+	if (prev_def) prev_def->Next = nullptr;
 }
 
 void C4DefList::CallEveryDefinition()
