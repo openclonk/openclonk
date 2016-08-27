@@ -2589,7 +2589,7 @@ QVariant C4ConsoleQtPropListModel::data(const QModelIndex & index, int role) con
 		{
 			C4Value v;
 			prop->delegate->GetPropertyValue(prop->parent_value, prop->key, index.row(), &v);
-			return QVariant(prop->delegate->GetDisplayString(v, target_value.getObj(), false));
+			return QVariant(prop->delegate->GetDisplayString(v, target_value.getObj(), true));
 		}
 		}
 	}
