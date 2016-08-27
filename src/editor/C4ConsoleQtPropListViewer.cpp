@@ -921,7 +921,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			if (option.value.GetType() == C4V_Nil && empty_name) option.name = empty_name.Get();
 			option.short_name = props->GetPropertyStr(P_ShortName);
 			if (!option.short_name) option.short_name = option.name.Get();
-			props->GetProperty(P_Get, &option.value_function);
+			props->GetProperty(P_Set, &option.value_function);
 			option.type = C4V_Type(props->GetPropertyInt(P_Type, C4V_Any));
 			option.option_key = props->GetPropertyStr(P_OptionKey);
 			if (!option.option_key) option.option_key = default_option_key;
@@ -1217,7 +1217,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	// Value from a parameter or directly from the enum?
 	if (option.adelegate)
 	{
-		// Default value on enum change (on main path; not use_path because the default value is always givne as the whole proplist)
+		// Default value on enum change (on main path; not use_path because the default value is always given as the whole proplist)
 		if (editor->option_changed) SetOptionValue(property_path, option);
 		// Value from a parameter.
 		// Using a setter function?
