@@ -13,3 +13,6 @@ MsgCutNeutral=Cut off pipe
 DescCutSource=Removes the source pipe.
 DescCutDrain=Removes the drain pipe.
 DescCutNeutral=Removes the connected pipe.
+
+MsgSwapSourceDrain=Swap source and drain
+DescSwapSourceDrain=Swaps the source and drain pipes.

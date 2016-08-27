@@ -1,11 +1,11 @@
 MenuPipeControl=Leitungen
 
-MsgConnectSource=Zufluss anschlieﬂen
-MsgConnectDrain=Abfluss anschlieﬂen
-MsgConnectNeutral=Rohr anschlieﬂen
-DescConnectSource=Schlieﬂt ein Zuflussrohr an.
-DescConnectDrain=Schlieﬂt ein Abflussrohr an.
-DescConnectNeutral=Schlieﬂt ein Rohr an.
+MsgConnectSource=Zufluss anschlie√üen
+MsgConnectDrain=Abfluss anschlie√üen
+MsgConnectNeutral=Rohr anschlie√üen
+DescConnectSource=Schlie√üt ein Zuflussrohr an.
+DescConnectDrain=Schlie√üt ein Abflussrohr an.
+DescConnectNeutral=Schlie√üt ein Rohr an.
 
 MsgCutSource=Zufluss trennen
 MsgCutDrain=Abfluss trennen
@@ -14,3 +14,5 @@ DescCutSource=Entfernt das Zuflussrohr.
 DescCutDrain=Entfernt das Abflussrohr.
 DescCutNeutral=Entfernt das angeschlossene Rohr.
 
+MsgSwapSourceDrain=Wechsele Zufluss und Abfluss
+DescSwapSourceDrain=Wechselt das Zuflussrohr mit dem Abflussrohr. 

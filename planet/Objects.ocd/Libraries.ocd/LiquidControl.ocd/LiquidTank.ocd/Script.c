@@ -21,6 +21,7 @@ static const LIBRARY_TANK_Menu_Action_Add_Neutral = "addneutral";
 static const LIBRARY_TANK_Menu_Action_Cut_Drain = "cutdrain";
 static const LIBRARY_TANK_Menu_Action_Cut_Source = "cutsource";
 static const LIBRARY_TANK_Menu_Action_Cut_Neutral = "cutneutral";
+static const LIBRARY_TANK_Menu_Action_Swap_SourceDrain = "swapsourcedrain";
 static const LIBRARY_TANK_Menu_Action_Description = "description";
 
 
@@ -28,7 +29,7 @@ local lib_tank; // proplist for local variables
 
 /* ---------- Callbacks ---------- */
 
-func Construction()
+public func Construction()
 {
 	lib_tank = {
 		drain_pipe = nil,
@@ -46,7 +47,7 @@ func Construction()
 	_inherited(...);
 }
 
-func IsLiquidTank(){ return true;}
+public func IsLiquidTank() { return true;}
 
 /* ---------- Menu Entries ---------- */
 
@@ -106,11 +107,13 @@ public func GetPipeControlMenuEntries(object clonk)
 	else if (neutral_pipe)
 		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral));
 
+	if (GetSourcePipe() && GetDrainPipe())
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, "$MsgSwapSourceDrain$", 4, LIBRARY_TANK_Menu_Action_Swap_SourceDrain));
+
 	return menu_entries;
 }
 
-
-func GetTankMenuEntry(symbol, string text, int priority, extra_data)
+public func GetTankMenuEntry(symbol, string text, int priority, extra_data)
 {
 	return {symbol = symbol, extra_data = extra_data, 
 		custom =
@@ -122,7 +125,6 @@ func GetTankMenuEntry(symbol, string text, int priority, extra_data)
 		}};
 }
 
-
 public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "";
@@ -132,10 +134,10 @@ public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Source) text = "$DescCutSource$";
 	else if (action == LIBRARY_TANK_Menu_Action_Add_Neutral) text = "$DescConnectNeutral$";
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral) text = "$DescCutNeutral$";
+	else if (action == LIBRARY_TANK_Menu_Action_Swap_SourceDrain) text = "$DescSwapSourceDrain$";
 	else if (action == LIBRARY_TANK_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
-
 
 public func OnPipeControl(symbol_or_object, string action, bool alt)
 {
@@ -151,6 +153,8 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Neutral);
 	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral)
 		this->DoCutPipe(GetNeutralPipe());
+	else if (action == LIBRARY_TANK_Menu_Action_Swap_SourceDrain)
+		this->DoSwapSourceDrain(GetSourcePipe(), GetDrainPipe());
 
 	UpdateInteractionMenus(this.GetPipeControlMenuEntries);	
 }
@@ -158,23 +162,23 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 
 /* ---------- Handle connections ---------- */
 
-func GetDrainPipe(){ return lib_tank.drain_pipe;}
-func GetSourcePipe(){ return lib_tank.source_pipe;}
-func GetNeutralPipe(){ return lib_tank.neutral_pipe;}
+public func GetDrainPipe() { return lib_tank.drain_pipe;}
+public func GetSourcePipe() { return lib_tank.source_pipe;}
+public func GetNeutralPipe() { return lib_tank.neutral_pipe;}
 
-func SetDrainPipe(object drain_pipe)
+public func SetDrainPipe(object drain_pipe)
 {
 	lib_tank.drain_pipe = drain_pipe;
 	return lib_tank.drain_pipe;
 }
 
-func SetSourcePipe(object source_pipe)
+public func SetSourcePipe(object source_pipe)
 {
 	lib_tank.source_pipe = source_pipe;
 	return lib_tank.source_pipe;
 }
 
-func SetNeutralPipe(object neutral_pipe)
+public func SetNeutralPipe(object neutral_pipe)
 {
 	lib_tank.neutral_pipe = neutral_pipe;
 	return lib_tank.neutral_pipe;
@@ -183,12 +187,12 @@ func SetNeutralPipe(object neutral_pipe)
 
 /* ---------- Menu callbacks ---------- */
 
-func DoConnectPipe(object pipe, string specific_pipe_state)
+public func DoConnectPipe(object pipe, string specific_pipe_state)
 {
 	pipe->ConnectPipeTo(this, specific_pipe_state);
 }
 
-func DoCutPipe(object pipe)
+public func DoCutPipe(object pipe)
 {
 	if (pipe)
 	{
@@ -196,7 +200,15 @@ func DoCutPipe(object pipe)
 	}
 }
 
-func FindAvailablePipe(object container, find_state)
+public func DoSwapSourceDrain(object source, object drain)
+{
+	SetDrainPipe(source);
+	SetSourcePipe(drain);
+	source->SetDrainPipe();
+	drain->SetSourcePipe();
+}
+
+public func FindAvailablePipe(object container, find_state)
 {
 	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), find_state))
 	{
@@ -208,9 +220,9 @@ func FindAvailablePipe(object container, find_state)
 
 /* ---------- Pipe callbacks ---------- */
 
-func CanConnectPipe(){ return true;}
+public func CanConnectPipe(){ return true;}
 
-func OnPipeDisconnect(object pipe)
+public func OnPipeDisconnect(object pipe)
 {
 	// pipe objects have to be reset!
 	if (pipe == GetDrainPipe()) SetDrainPipe();
