@@ -625,7 +625,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 
 	// Initial empty property page
 	auto sel = C4EditCursorSelection();
-	PropertyDlgUpdate(sel, false);
+	PropertyDlgUpdate(sel, true);
 
 	// Restore layout & show!
 	window->LoadGeometry();
@@ -847,7 +847,7 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 	// Function update in script combo box
 	if (force_function_update)
 	{
-		auto suggestions = ::Console.GetScriptSuggestions(::Console.PropertyDlgObject, C4Console::MRU_Object);
+		auto suggestions = ::Console.GetScriptSuggestions(rSelection.GetObject(), C4Console::MRU_Object);
 		SetComboItems(ui.propertyInputBox, suggestions);
 	}
 }

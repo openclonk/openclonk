@@ -313,7 +313,7 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged(bool by_objectlist)
 {
-	::Console.PropertyDlgUpdate(selection, false);
+	::Console.PropertyDlgUpdate(selection, true);
 	if (!by_objectlist) ::Console.ObjectListDlg.Update(selection);
 }
 
