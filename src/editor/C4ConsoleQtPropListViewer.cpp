@@ -106,9 +106,9 @@ void C4PropertyPath::SetProperty(const char *set_string) const
 	::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script.getData(), 0, false));
 }
 
-void C4PropertyPath::SetProperty(const C4Value &to_val) const
+void C4PropertyPath::SetProperty(const C4Value &to_val, const C4PropListStatic *ignore_reference_parent) const
 {
-	SetProperty(to_val.GetDataString(9999999).getData());
+	SetProperty(to_val.GetDataString(9999999, ignore_reference_parent).getData());
 }
 
 C4Value C4PropertyPath::ResolveValue() const
@@ -909,6 +909,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			C4PropList *props = v.getPropList();
 			if (!props) continue;
 			Option option;
+			option.props.SetPropList(props);
 			option.name = props->GetPropertyStr(P_Name);
 			if (!option.name) option.name = ::Strings.RegString("???");
 			option.help = props->GetPropertyStr(P_EditorHelp);
@@ -1223,7 +1224,8 @@ void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, cons
 	}
 	else
 	{
-		use_path.SetProperty(option.value);
+		C4PropList *option_props = option.props.getPropList();
+		use_path.SetProperty(option.value, option_props ? option_props->IsStatic() : nullptr);
 	}
 }
 
@@ -2417,12 +2419,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			C4PropList *info_editorprops = info_proplist->GetPropertyPropList(P_EditorProps);
 			if (info_editorprops)
 			{
-				QString name;
-				C4PropListStatic *proplist_static = info_proplist->IsStatic();
-				if (proplist_static)
-					name = QString(proplist_static->GetDataString().getData());
-				else
-					name = info_proplist->GetName();
+				QString name = info_proplist->GetName();
 				if (AddPropertyGroup(info_editorprops, num_groups, name, target_proplist, base_obj, default_selection, default_selection_index))
 					++num_groups;
 				// Assign group for default selection

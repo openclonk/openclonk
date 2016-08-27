@@ -131,11 +131,15 @@ public:
 	void Thaw() { constant = false; }
 	bool IsFrozen() const { return constant; }
 
+	// Freeze this and all proplist in properties and ensure they are static proplists
+	// If a proplist is not static, replace it with a static proplist and replace all instances
+	C4PropListStatic *FreezeAndMakeStaticRecursively(const C4PropListStatic *parent = nullptr, C4String * key = nullptr);
+
 	virtual void Denumerate(C4ValueNumbers *);
 	virtual ~C4PropList();
 
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
-	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3) const;
+	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3, bool ignore_reference_parent = false) const;
 	std::vector< C4String * > GetSortedLocalProperties(bool add_prototype=true) const;
 	std::vector< C4String * > GetSortedLocalProperties(const char *prefix, const C4PropList *ignore_overridden) const;
 	std::vector< C4String * > GetUnsortedProperties(const char *prefix, C4PropList *ignore_parent = nullptr) const;

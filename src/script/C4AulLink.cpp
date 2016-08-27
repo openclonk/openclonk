@@ -179,8 +179,8 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 
 		// Done modifying the proplists now
 		for (C4ScriptHost *s = Child0; s; s = s->Next)
-			s->GetPropList()->Freeze();
-		GetPropList()->Freeze();
+			s->GetPropList()->FreezeAndMakeStaticRecursively();
+		GetPropList()->FreezeAndMakeStaticRecursively();
 	}
 	catch (C4AulError &err)
 	{

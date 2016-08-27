@@ -130,7 +130,7 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 }
 
 // Humanreadable debug output
-StdStrBuf C4Value::GetDataString(int depth) const
+StdStrBuf C4Value::GetDataString(int depth, const C4PropListStatic *ignore_reference_parent) const
 {
 	// ouput by type info
 	switch (GetType())
@@ -148,11 +148,12 @@ StdStrBuf C4Value::GetDataString(int depth) const
 			return FormatString("Object(%d)", Obj->Number);
 		const C4PropListStatic * Def = Data.PropList->IsStatic();
 		if (Def)
-			return Def->GetDataString();
+			if (!ignore_reference_parent || Def->GetParent() != ignore_reference_parent)
+				return Def->GetDataString();
 		C4Effect * fx = Data.PropList->GetEffect();
 		StdStrBuf DataString;
 		DataString = (fx ? "effect {" : "{");
-		Data.PropList->AppendDataString(&DataString, ", ", depth);
+		Data.PropList->AppendDataString(&DataString, ", ", depth, Def && ignore_reference_parent);
 		DataString.AppendChar('}');
 		return DataString;
 	}

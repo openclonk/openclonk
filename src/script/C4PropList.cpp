@@ -283,6 +283,42 @@ C4PropList::C4PropList(C4PropList * prototype):
 #endif
 }
 
+C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(const C4PropListStatic *parent, C4String * key)
+{
+	Freeze();
+	// Already static?
+	C4PropListStatic *this_static = IsStatic();
+	if (!this_static)
+	{
+		// Make self static by creating a copy and replacing all references
+		this_static = NewStatic(GetPrototype(), parent, key);
+		this_static->Properties.Swap(&Properties); // grab properties
+		this_static->Status = Status;
+		while (FirstRef) FirstRef->SetPropList(this_static);
+		// Now "this" should be deleted.
+	}
+	// Iterate over sorted list of elements to make static
+	// Must iterate over sorted list because the order must be defined, just in case it's a network game
+	// and a non-static child proplist is available through different paths it should still get the same name
+	auto prop_names = this_static->GetSortedLocalProperties(false);
+	for (auto prop_name : prop_names)
+	{
+		C4Value child_val;
+		this_static->GetPropertyByS(prop_name, &child_val);
+		C4PropList *child_proplist = child_val.getPropList();
+		if (child_proplist)
+		{
+			// Avoid infinite recursion: Only freeze into unfrozen children and "true" static children
+			C4PropListStatic *child_static = child_proplist->IsStatic();
+			if (!child_static || (child_static->GetParent() == this_static && child_static->GetParentKeyName() == prop_name))
+			{
+				child_proplist->FreezeAndMakeStaticRecursively(this_static, prop_name);
+			}
+		}
+	}
+	return this_static;
+}
+
 void C4PropList::Denumerate(C4ValueNumbers * numbers)
 {
 	const C4Property * p = Properties.First();
@@ -451,7 +487,7 @@ void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkParAdapt(Value, numbers));
 }
 
-void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth) const
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth, bool ignore_reference_parent) const
 {
 	StdStrBuf & DataString = *out;
 	if (depth <= 0 && Properties.GetSize())
@@ -465,7 +501,7 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 		if (p != sorted_props.begin()) DataString.Append(delim);
 		DataString.Append((*p)->Key->GetData());
 		DataString.Append(" = ");
-		DataString.Append((*p)->Value.GetDataString(depth - 1));
+		DataString.Append((*p)->Value.GetDataString(depth - 1, ignore_reference_parent ? IsStatic() : nullptr));
 	}
 }
 

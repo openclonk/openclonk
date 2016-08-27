@@ -63,7 +63,7 @@ public:
 
 	C4Value ResolveValue() const;
 	void SetProperty(const char *set_string) const;
-	void SetProperty(const C4Value &to_val) const;
+	void SetProperty(const C4Value &to_val, const C4PropListStatic *ignore_reference_parent = nullptr) const;
 	void DoCall(const char *call_string) const; // Perform a script call where %s is replaced by the current path
 
 	bool operator ==(const C4PropertyPath &v) const { return get_path == v.get_path; }
@@ -316,6 +316,7 @@ public:
 		C4RefCntPointer<C4String> value_key;
 		C4RefCntPointer<C4String> sound_name; // Assigned for options that have a play button
 		C4V_Type type; // Assume this option is set when value is of given type
+		C4Value props; // Stored pointer to proplist defining this option
 		C4Value value; // Value to set if this entry is selected
 		C4Value value_function; // Function to be called to set value
 		mutable C4PropertyDelegate *adelegate; // Delegate to display if this entry is selected (pointer owned by C4PropertyDelegateFactory)
