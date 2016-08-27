@@ -1290,6 +1290,7 @@ QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Objec
 			C4Value param_val = v;
 			if (option.value_key.Get())
 			{
+				param_val.Set0();
 				C4PropList *vp = v.getPropList();
 				if (vp) vp->GetPropertyByS(option.value_key, &param_val);
 			}
