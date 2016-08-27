@@ -304,7 +304,6 @@ FlingSpeedXHelp=Horizontale Geschwindigkeit in 1/10px pro Frame.
 FlingSpeedYHelp=Vertikale Geschwindigkeit in 1/10px pro Frame.
 AddSpeedY=Geschwindigkeit addieren
 FlingAddSpeedHelp=Ob die schon vorhandene Objektgeschwindigkeit addiert werden soll.
-Effect=Effekt
 DoWealth=Reichtum aendern
 DoWealthHelp=Fuegt dem Spieler Clunker hinzu oder nimmt sie weg.
 Change=Aenderung

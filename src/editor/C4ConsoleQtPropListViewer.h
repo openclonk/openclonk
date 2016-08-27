@@ -252,6 +252,7 @@ public:
 		OptionIndexRole = Qt::UserRole + 1,
 		ObjectHighlightRole = Qt::UserRole + 2,
 		ValueStringRole = Qt::UserRole + 3,
+		PriorityNameSortRole = Qt::UserRole + 4,
 	};
 
 	C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type, bool editable);
@@ -328,8 +329,9 @@ public:
 			StorageByValue=2, // This option sets a constant value
 			StorageByKey=3, // Assume value is a proplist; identify option by field option_key
 		} storage_type;
+		int32_t priority; // Custom sort order
 
-		Option() : type(C4V_Any), adelegate(NULL), storage_type(StorageNone) {}
+		Option() : type(C4V_Any), adelegate(NULL), storage_type(StorageNone), priority(0) {}
 	};
 
 protected:
@@ -338,6 +340,7 @@ protected:
 private:
 	std::vector<Option> options;
 	bool allow_editing;
+	bool sorted;
 
 protected:
 	C4RefCntPointer<C4String> empty_name; // Override for name of empty option

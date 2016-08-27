@@ -26,7 +26,7 @@ local EvaluatorDefs;
 local DefinitionPriority=99;
 
 // Localized group names
-local GroupNames = { Structure="$Structure$", Game="$Game$", Effect="$Effect$" };
+local GroupNames = { Structure="$Structure$", Game="$Game$", Ambience="$Ambience$" };
 
 // Storage for global user variables
 static g_UserAction_global_vars;
@@ -69,19 +69,19 @@ func Definition(def)
 {
 	// Typed evaluator base definitions
 	Evaluator = {};
-	Evaluator.Action = { Name="$UserAction$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
-	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
-	Evaluator.ObjectList = { Name="$UserObjectList$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
-	Evaluator.Definition = { Name="$UserDefinition$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
-	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
-	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Options = [ { Name="$Noone$" } ] };
-	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
-	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Options = [ {Name="0"} ] };
-	Evaluator.Color = { Name="$UserColor$", Type="enum", OptionKey="Function", Options = [ {Name="$Default$"} ] };
-	Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Options = [ {Name="($EmptyString$)"} ] };
-	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Options = [ { Name="$Here$" } ] };
-	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
-	Evaluator.Any = { Name="$UserAny$", Type="enum", OptionKey="Function", Options = [ { Name="$None$" } ] };
+	Evaluator.Action = { Name="$UserAction$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	Evaluator.Object = { Name="$UserObject$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	Evaluator.ObjectList = { Name="$UserObjectList$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	Evaluator.Definition = { Name="$UserDefinition$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	Evaluator.Player = { Name="$UserPlayer$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$Noone$", Priority=100 } ] };
+	Evaluator.PlayerList = { Name="$UserPlayerList$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$Noone$", Priority=100 } ] };
+	Evaluator.Boolean = { Name="$UserBoolean$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	Evaluator.Integer = { Name="$UserInteger$", Type="enum", OptionKey="Function", Sorted=true, Options = [ {Name="0", Priority=100 } ] };
+	Evaluator.Color = { Name="$UserColor$", Type="enum", OptionKey="Function", Sorted=true, Options = [ {Name="$Default$", Priority=100 } ] };
+	Evaluator.String = { Name="$UserString$", Type="enum", OptionKey="Function", Sorted=true, Options = [ {Name="($EmptyString$)", Priority=100 } ] };
+	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$Here$", Priority=100 } ] };
+	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	Evaluator.Any = { Name="$UserAny$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
 	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
@@ -150,7 +150,7 @@ func Definition(def)
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
 		} } );
-	AddEvaluator("Action", "Effect", "$CastParticles$", "$CastParticlesHelp$", "cast_particles", [def, def.EvalAct_CastParticles], {
+	AddEvaluator("Action", "Ambience", "$CastParticles$", "$CastParticlesHelp$", "cast_particles", [def, def.EvalAct_CastParticles], {
 			Name="StarFlash",
 			Amount={Function="int_constant", Value=8},
 			Speed={Function="int_constant", Value=20},

@@ -304,7 +304,6 @@ FlingSpeedXHelp=Horizontal speed in 1/10px per frame.
 FlingSpeedYHelp=Vertical speed in 1/10px per frame.
 AddSpeedY=Add speed
 FlingAddSpeedHelp=Whether existing speed should be added to the fling speed.
-Effect=Effect
 DoWealth=Change wealth
 DoWealthHelp=Adds or removes clunker from the player's account.
 Change=Change

@@ -888,7 +888,7 @@ void C4PropertyDelegateEnumEditor::paintEvent(QPaintEvent *ev)
 /* Enumeration (dropdown list) delegate */
 
 C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions)
-	: C4PropertyDelegate(factory, props), allow_editing(false)
+	: C4PropertyDelegate(factory, props), allow_editing(false), sorted(false)
 {
 	// Build enum options from C4Value definitions in script
 	if (!poptions && props) poptions = props->GetPropertyArray(P_Options);
@@ -899,6 +899,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 		default_value_key = props->GetPropertyStr(P_ValueKey);
 		allow_editing = props->GetPropertyBool(P_AllowEditing);
 		empty_name = props->GetPropertyStr(P_EmptyName);
+		sorted = props->GetPropertyBool(P_Sorted);
 	}
 	if (poptions)
 	{
@@ -933,6 +934,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 				option.storage_type = Option::StorageByValue;
 			// Child delegate for value (resolved at runtime because there may be circular references)
 			props->GetProperty(P_Delegate, &option.adelegate_val);
+			option.priority = props->GetPropertyInt(P_Priority);
 			options.push_back(option);
 		}
 	}
@@ -963,12 +965,22 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 				if (row_index < 0)
 				{
 					QStandardItem *new_group = new QStandardItem(group_name);
+					if (sorted)
+					{
+						// Groups always sorted by name. Could also sort by priority of highest priority element?
+						new_group->setData(group_name, C4DeepQComboBox::PriorityNameSortRole);
+					}
 					parent->appendRow(new_group);
 					parent = new_group;
 				}
 			}
 		}
 		QStandardItem *new_item = new QStandardItem(QString(opt.name->GetCStr()));
+		if (sorted)
+		{
+			// Reverse priority and make positive, so we can sort by descending priority but ascending name
+			new_item->setData(QString(FormatString("%09d%s", (int)(10000000-opt.priority), opt.name->GetCStr()).getData()), C4DeepQComboBox::PriorityNameSortRole);
+		}
 		new_item->setData(QVariant(idx), C4DeepQComboBox::OptionIndexRole);
 		C4Object *item_obj_data = opt.value.getObj();
 		if (item_obj_data) new_item->setData(QVariant(item_obj_data->Number), C4DeepQComboBox::ObjectHighlightRole);
@@ -982,6 +994,12 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 		}
 		parent->appendRow(new_item);
 		++idx;
+	}
+	// Sort model and all groups
+	if (sorted)
+	{
+		model->setSortRole(C4DeepQComboBox::PriorityNameSortRole);
+		model->sort(0, Qt::AscendingOrder);
 	}
 	return model.release();
 }

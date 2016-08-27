@@ -515,6 +515,7 @@ enum C4PropertyName
 	P_AllowEditing,
 	P_EditorInitialize,
 	P_EditorPlacementLimit,
+	P_Sorted,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
