@@ -250,6 +250,7 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 	// All foreground materials
 	assert(Active);
 	if (!Active) return;
+	if (state->ui.foregroundMatTexComboBox->count()) return; // already initialized
 	state->ui.foregroundMatTexComboBox->clear();
 	state->ui.foregroundMatTexComboBox->addItem(QString(C4TLS_MatSky));
 	QStringList items;
@@ -314,7 +315,6 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 	state->SetBackTexture(dlg->BackTexture);
 	state->UpdateMatTex();
 	state->UpdateBackMatTex();
-
 }
 
 void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture) { if (!Active) return; state->SetTexture(texture); }
