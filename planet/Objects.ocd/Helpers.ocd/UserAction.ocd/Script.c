@@ -161,14 +161,16 @@ func Definition(def)
 			FadeOut=true,
 			CollisionFunc="bounce"
 		}, { Type="proplist", Display="{{Amount}}x{{Name}}", EditorProps = {
-		Name = { Name="$ParticleName$", EditorHelp="$ParticleNameHelp$", Type="enum", Priority=50, Options = [
+		Name = { Name="$ParticleName$", EditorHelp="$ParticleNameHelp$", Type="enum", Priority=50, Sorted=true, Options = [
 			{ Name="$Dust$", Value="Dust" },
 			{ Name="$Flash$", Value="Flash" },
 			{ Name="$Magic$", Value="Magic" },
 			{ Name="$Smoke$", Value="Smoke" },
 			{ Name="$Sphere$", Value="Sphere" },
 			{ Name="$StarFlash$", Value="StarFlash" },
-			{ Name="$StarSpark$", Value="StarSpark" }
+			{ Name="$StarSpark$", Value="StarSpark" },
+			{ Name="$Fire$", Value="MagicFire" },
+			{ Name="$Ring$", Value="MagicRing" }
 			] },
 		Position = new Evaluator.Position { EditorHelp="$CastObjectsPositionHelp$" },
 		Amount = new Evaluator.Integer { Name="$Amount$", EditorHelp="$CastParticlesAmountHelp$" },
