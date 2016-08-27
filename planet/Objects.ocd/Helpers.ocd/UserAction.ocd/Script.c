@@ -203,7 +203,7 @@ func Definition(def)
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
 		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$", Priority=30 }
 		} } );
-	AddEvaluator("Action", "$Script$", "$SetVariable$", "$SetVariableHelp$", "set_variable", [def, def.EvalAct_SetVariable], { }, { Type="proplist", Display="{{Context}}::{{VariableName}}={{Value}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$SetVariable$", "$SetVariableHelp$", "set_variable", [def, def.EvalAct_SetVariable], { VariableName={ Function="string_constant", Value="" } }, { Type="proplist", Display="{{Context}}::{{VariableName}}={{Value}}", EditorProps = {
 		Context = new Evaluator.Object { Name="$Context$", EditorHelp="$VariableContextHelp$", EmptyName="$Global$" },
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" },
 		Value = new Evaluator.Any { Name="$Value$", EditorHelp="$SetVariableValueHelp$" }
@@ -391,7 +391,7 @@ func Definition(def)
 		var group = nil;
 		if (eval_type != "Action")
 		{
-			AddEvaluator(eval_type, nil, "$Variable$", "$VariableHelp$", Format("%s_variable", eval_type), [def, def.EvalVariable, data_type], { }, variable_delegate);
+			AddEvaluator(eval_type, nil, "$Variable$", "$VariableHelp$", Format("%s_variable", eval_type), [def, def.EvalVariable, data_type], { VariableName={ Function="string_constant", Value="" } }, variable_delegate);
 		}
 		else
 		{
