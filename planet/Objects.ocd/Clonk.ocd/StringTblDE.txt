@@ -15,3 +15,6 @@ SetMaxContentsCount=Inventarplatzzahl aendern
 SetMaxContentsCountHelp=Aendert die maximale Anzahl an Objekten, die der Clonk tragen kann. Gueltige Werte von 0 bis 10. Ein zusaetzliches CarryHeavy-Objekt kann immer getragen werden.
 MaxContentsCount=Anzahl Inventarplaetze
 Default=Standard
+
+Skin=Skin
+SkinHelp=Aussehen des Clonks.

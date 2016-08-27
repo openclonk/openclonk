@@ -1,4 +1,4 @@
-material Clonk_Clonkarabas
+material Clonk_Leather
 {
 	receive_shadows on
 	technique

@@ -1263,7 +1263,7 @@ func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
 
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.skin = { Type="enum", Set="SetSkin", Options = [
+	def.EditorProps.skin = { Name="$Skin$", EditorHelp="$SkinHelp$", Type="enum", Set="SetSkin", Options = [
 	{ Value=0, Name="Adventurer"},
 	{ Value=1, Name="Steampunk"},
 	{ Value=2, Name="Alchemist"},
