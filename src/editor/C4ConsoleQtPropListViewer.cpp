@@ -1230,7 +1230,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	else
 	{
 		// No parameter. Use value.
-		SetOptionValue(use_path, option);
+		if (editor->option_changed) SetOptionValue(use_path, option);
 	}
 	editor->option_changed = false;
 }
