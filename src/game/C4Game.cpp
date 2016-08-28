@@ -264,9 +264,6 @@ bool C4Game::OpenScenario()
 
 void C4Game::CloseScenario()
 {
-	// safe scenario file name
-	char szSzenarioFile[_MAX_PATH + 1];
-	SCopy(ScenarioFile.GetFullName().getData(), szSzenarioFile, _MAX_PATH);
 	// close scenario
 	ScenarioFile.Close();
 	GroupSet.CloseFolders();
@@ -274,8 +271,8 @@ void C4Game::CloseScenario()
 	// remove if temporary
 	if (TempScenarioFile)
 	{
-		EraseItem(szSzenarioFile);
-		TempScenarioFile = false;
+		EraseItem(TempScenarioFile.getData());
+		TempScenarioFile.Clear();
 	}
 	// clear scenario section
 	// this removes any temp files, which may yet need to be used by any future features
@@ -414,7 +411,7 @@ bool C4Game::Init()
 		// open new scenario
 		SCopy(szScenario, ScenarioFilename, _MAX_PATH);
 		if (!OpenScenario()) return false;
-		TempScenarioFile = true;
+		TempScenarioFile.Copy(ScenarioFilename);
 
 		// get everything else
 		if (!Parameters.GameRes.RetrieveFiles()) return false;

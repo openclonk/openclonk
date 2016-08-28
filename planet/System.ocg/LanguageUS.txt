@@ -73,6 +73,7 @@ IDS_CNS_NOCHILDSAVE=%s is located in a group folder. Scenarios cannot be saved i
 IDS_CNS_NOFULLSCREENPLRS=Fullscreen mode requires at least one participating player.
 IDS_CNS_NOMATDEF=Cannot draw because selected material-texture combination '%s-%s' is not defined in the texture table.
 IDS_CNS_NONETEDIT=No editing while replaying.
+IDS_CNS_NONETREFSAVE=Cannot save over temporary network reference file. Please use 'Save as...' to save to a new filename.
 IDS_CNS_NOOBJECT=No selected objects.
 IDS_CNS_NOTHING=Nothing
 IDS_CNS_OBJECT=Object

@@ -164,11 +164,20 @@ bool C4Console::SaveScenario(const char * path)
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),path).getData());
 			return false;
 		}
-		SCopy(path, Game.ScenarioFilename);
+		SCopy(path, Game.ScenarioFilename, MAX_PATH);
 		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
 		{
-			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData());
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), Game.ScenarioFilename).getData());
+			return false;
+		}
+	}
+	else
+	{
+		// Do not save to temp network file
+		if (Game.TempScenarioFile && ItemIdentical(Game.TempScenarioFile.getData(), Game.ScenarioFilename))
+		{
+			Message(LoadResStr("IDS_CNS_NONETREFSAVE"));
 			return false;
 		}
 	}

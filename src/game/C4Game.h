@@ -117,7 +117,7 @@ public:
 	bool Record;
 	StdStrBuf RecordDumpFile;
 	StdStrBuf RecordStream;
-	bool TempScenarioFile;
+	StdStrBuf TempScenarioFile;
 	bool fPreinited; // set after PreInit has been called; unset by Clear and Default
 	int32_t FrameCounter;
 	int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick1000;
