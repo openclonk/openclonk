@@ -566,15 +566,10 @@ private func CountContainedObjectsTimer()
 
 public func OnTrigger(object triggering_clonk, int triggering_player, bool is_editor_test)
 {
-	// Editor test: Triggered by first player
-	if (is_editor_test)
-	{
-		if (GetPlayerCount(C4PT_User)) triggering_player = GetPlayerByIndex();
-	}
 	// Check condition
 	if (condition && !UserAction->EvaluateCondition(condition, this, triggering_clonk, triggering_player)) return false;
 	// Only one action at the time
-	if (!action_allow_parallel) StopTrigger();
+	if (!action_allow_parallel && !action_progress_mode) StopTrigger();
 	// Execute action
 	return UserAction->EvaluateAction(action, this, triggering_clonk, triggering_player, action_progress_mode, action_allow_parallel, this.OnActionFinished);
 }

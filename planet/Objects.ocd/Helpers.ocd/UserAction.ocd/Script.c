@@ -523,8 +523,7 @@ public func EvaluateAction(proplist props, object action_object, object triggeri
 	else if (progress_mode == "player")
 	{
 		if (!props._contexts) props._contexts = [];
-		var plr_id;
-		if (action_object) plr_id = GetPlayerID(action_object->GetOwner());
+		var plr_id = GetPlayerID(triggering_player);
 		if (!(context = props._contexts[plr_id]))
 			props._contexts[plr_id] = context = CreateObject(UserAction);
 	}
@@ -765,7 +764,9 @@ private func EvalAct_Goto(proplist props, proplist context)
 	// Apply goto by jumping in most recently executed sequence
 	if (context.last_sequence)
 	{
-		context.sequence_progress[context.last_sequence._sequence_id] = props.Index;
+		var index = props.Index;
+		if (GetType(index) != C4V_Int) index = EvaluateValue("Integer", index, context); // compatibility
+		context.sequence_progress[context.last_sequence._sequence_id] = index;
 		context.sequence_had_goto[context.last_sequence._sequence_id] = true;
 	}
 }
