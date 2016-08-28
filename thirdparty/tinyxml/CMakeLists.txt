@@ -1,4 +1,4 @@
-add_library(tinyxml
+add_library(tinyxml STATIC
 	tinystr.cpp
 	tinystr.h
 	tinyxml.cpp

@@ -48,6 +48,13 @@ CMAKE_DEPENDENT_OPTION(USE_WIN32_WINDOWS "Use Microsoft Desktop App User Interfa
 CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. Qt editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
+
+if(UNIX)
+	# Allow setting custom directories on UNIX-like systems
+	set(OC_SYSTEM_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/games/openclonk" CACHE PATH "Path to openclonk datafiles on system.")
+	set(OC_SYSTEM_GAMES_DIR "${CMAKE_INSTALL_PREFIX}/games" CACHE PATH "Path to where to install games on the system.")
+endif(UNIX)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
 
 ############################################################################
@@ -161,7 +168,7 @@ if(WIN32 AND MINGW)
 endif()
 
 if(UNIX)
-	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
+	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${OC_SYSTEM_DATA_DIR}\"")
 endif()
 
 if(APPLE)
@@ -175,8 +182,8 @@ include(CheckCXXSourceCompiles)
 include(RequireCXXSourceCompiles)
 include(CheckCXXSymbolExists)
 
-REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
-REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
+REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; return 0;}" HAVE_C11_SMART_PTRS)
+REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); return 0; }" HAVE_STATIC_ASSERT)
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); return !!a; }" HAVE_MAKE_UNIQUE)
 REQUIRE_CXX_SOURCE_COMPILES("#include <utility>\ntemplate<std::size_t... Is> int foo(std::index_sequence<Is...>) {return 0;} int main() { return foo(std::index_sequence_for<int,int>{}); }" HAVE_INDEX_SEQUENCE)
 REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
@@ -186,7 +193,7 @@ REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0
 # implementation for some things (like std::regex_iterator).
 # This needs to test *linking*, not compilation; cmake does both at the same
 # time, so the test below works.
-REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
+REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; return 0;}" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
 check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
 check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
@@ -1004,7 +1011,7 @@ include_directories(SYSTEM
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
 
-add_library(libmisc
+add_library(libmisc STATIC
 src/C4Include.cpp
 src/c4group/C4Group.cpp
 src/c4group/C4Group.h
@@ -1061,7 +1068,7 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(libmisc rt)
 endif()
 
-add_library(libc4script
+add_library(libc4script STATIC
 src/C4Include.cpp
 src/c4group/C4GroupSet.cpp
 src/c4group/C4GroupSet.h
@@ -1459,7 +1466,7 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS "${native_c4group}"
 			VERBATIM
 		)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION "${OC_SYSTEM_DATA_DIR}")
 	endif()
 endforeach()
 
@@ -1474,7 +1481,7 @@ if (NOT APPLE)
 	install(CODE "execute_process(COMMAND update-desktop-database)")
 
 	# Install binaries
-	install(TARGETS openclonk DESTINATION games)
+	install(TARGETS openclonk DESTINATION "${OC_SYSTEM_GAMES_DIR}")
 	install(TARGETS c4group DESTINATION bin)
 else()
 	install(TARGETS openclonk
