@@ -1062,7 +1062,13 @@ void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
 			bool select_returned_object = action_def->GetPropertyBool(P_Select);
 			btn->connect(btn, &QPushButton::pressed, btn, [script_command, object_number, select_returned_object]()
 			{
-				::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script_command->GetCStr(), object_number, false, select_returned_object));
+				// Action execution. Replace %player% by first local player.
+				StdStrBuf script_command_cpy(script_command->GetData(), true);
+				char plrnum_buf[24];
+				C4Player *local_player = ::Players.GetLocalByIndex(0);
+				int32_t local_player_number = local_player ? local_player->Number : NO_OWNER;
+				script_command_cpy.Replace("%player%", itoa(local_player_number, plrnum_buf, 10));
+				::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(script_command_cpy.getData(), object_number, false, select_returned_object));
 			});
 		}
 		ui.objectActionPanel->addWidget(btn, row, column);
