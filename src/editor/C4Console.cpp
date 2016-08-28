@@ -164,7 +164,7 @@ bool C4Console::SaveScenario(const char * path)
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),path).getData());
 			return false;
 		}
-		SCopy(path, Game.ScenarioFilename, MAX_PATH);
+		SCopy(path, Game.ScenarioFilename, _MAX_PATH);
 		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
 		{
