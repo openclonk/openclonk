@@ -311,10 +311,13 @@ void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPat
 QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
 	Editor *editor = new Editor(parent);
-	// EditingDone only on Return; not just when leaving edit field
+	// EditingDone on return or when leaving edit field after a change has been made
 	connect(editor, &QLineEdit::returnPressed, editor, [this, editor]() {
 		editor->commit_pending = true;
 		emit EditingDoneSignal(editor);
+	});
+	connect(editor, &QLineEdit::textEdited, this, [editor, this]() {
+		editor->commit_pending = true;
 	});
 	return editor;
 }
