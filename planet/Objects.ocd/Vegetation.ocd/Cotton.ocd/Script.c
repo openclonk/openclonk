@@ -323,6 +323,7 @@ public func Harvest(object clonk)
 
 public func SaveScenarioObject(proplist props)
 {
+	if (!inherited(props, ...)) return false;
 	// The fruit are not saved if still inside, do a rudimentary save.
 	// Saving all little details of growth is a bit too much for such an always changing state.
 	for (var i = 0; i < GetLength(branches); i++)
