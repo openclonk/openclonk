@@ -78,6 +78,7 @@ public:
 	bool SelectBackMaterial(const char *szMaterial, bool by_console_gui = false);
 	void SetAlternateTool();
 	void ResetAlternateTool();
+	bool IsGradedTool() const { return Tool == C4TLS_Brush || Tool == C4TLS_Line || Tool == C4TLS_Fill; } // return whether Grade measure affects selected tool
 protected:
 	void AssertValidTexture();
 	void AssertValidBackTexture();

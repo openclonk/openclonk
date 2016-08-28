@@ -877,7 +877,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 		                                      DropTarget->GetX() + cgo.X - cgo.TargetX - ::GraphicsResource.fctDropTarget.Wdt / 2,
 		                                      DropTarget->GetY() + DropTarget->Shape.y + cgo.Y - cgo.TargetY - ::GraphicsResource.fctDropTarget.Hgt);
 	// Draw paint circle
-	if (Mode == C4CNS_ModeDraw && has_mouse_hover && ::Console.ToolsDlg.Grade>0)
+	if (Mode == C4CNS_ModeDraw && has_mouse_hover && ::Console.ToolsDlg.Grade>0 && ::Console.ToolsDlg.IsGradedTool())
 	{
 		// shadow for recognition on white background/material
 		pDraw->DrawCircleDw(cgo.Surface, X + cgo.X - cgo.TargetX + 1.0f/cgo.Zoom, Y + cgo.Y - cgo.TargetY + 1.0f / cgo.Zoom, ::Console.ToolsDlg.Grade, 0xff000000, line_width);
