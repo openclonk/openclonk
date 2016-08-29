@@ -202,7 +202,7 @@ func Definition(def)
 		Players = Evaluator.PlayerList,
 		ID = Evaluator.Definition
 		} } );
-	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If, "Action"], { }, { Type="proplist", Display="if({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
+	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If], { }, { Type="proplist", Display="if({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
 		FalseEvaluator = new Evaluator.Action { Name="$FalseEvaluator$", EditorHelp="$FalseEvaluatorHelp$", Priority=30 }
@@ -394,6 +394,11 @@ func Definition(def)
 		if (eval_type != "Action")
 		{
 			AddEvaluator(eval_type, nil, "$Variable$", "$VariableHelp$", Format("%s_variable", eval_type), [def, def.EvalVariable, data_type], { VariableName={ Function="string_constant", Value="" } }, variable_delegate);
+			AddEvaluator(eval_type, nil, "$ConditionalValue$", "$ConditionalValueHelp$", Format("%s_conditional", eval_type), [def, def.EvalConditionalValue, eval_type], { }, { Type="proplist", HideFullName=true, Display="{{Condition}} ? {{TrueEvaluator}} : {{FalseEvaluator}}", EditorProps = {
+				Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionValueHelp$", Priority=60 },
+				TrueEvaluator = new Evaluator[eval_type] { Name="$TrueEvaluatorValue$", EditorHelp="$TrueEvaluatorValueHelp$", Priority=50 },
+				FalseEvaluator = new Evaluator[eval_type] { Name="$FalseEvaluatorValue$", EditorHelp="$FalseEvaluatorValueHelp$", Priority=30 }
+			} } );
 		}
 		else
 		{
@@ -968,12 +973,23 @@ private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_f
 	obj->Call(call_fn, parameter);
 }
 
-private func EvalAct_If(proplist props, proplist context, eval_type)
+private func EvalAct_If(proplist props, proplist context)
 {
 	// Do evaluation on first pass. After that, take context value.
 	var sid = props._sequence_id;
 	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
 	if (context.sequence_progress[sid] = context.sequence_progress[sid] ?? !!EvaluateValue("Boolean", props.Condition, context))
+		return EvaluateValue("Action", props.TrueEvaluator, context);
+	else
+		return EvaluateValue("Action", props.FalseEvaluator, context);
+	// Only keep conditional value within a held action
+	if (!context.hold) context.sequence_progress[sid] = nil;
+}
+
+private func EvalConditionalValue(proplist props, proplist context, eval_type)
+{
+	// Return value by condition
+	if (EvaluateValue("Boolean", props.Condition, context))
 		return EvaluateValue(eval_type, props.TrueEvaluator, context);
 	else
 		return EvaluateValue(eval_type, props.FalseEvaluator, context);
