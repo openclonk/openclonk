@@ -803,7 +803,8 @@ private func AddCrewBar(int foreground, int background)
 		}
 	};*/
 
-	crew_gui_menu.cursor[Format("bar%d", new_bar.ID)] =
+	var crew_gui_bar_name = Format("bar%d", new_bar.ID);
+	crew_gui_menu.cursor[crew_gui_bar_name] =
 	{
 		Target = this,
 		Player = NO_OWNER,
@@ -835,6 +836,10 @@ private func AddCrewBar(int foreground, int background)
 	};
 
 	GuiUpdate(crew_gui_menu, crew_gui_id);
+	
+	// Prevent further calls to GuiUpdate on the main panel from overwriting values in the bars with their defaults
+	crew_gui_menu.cursor[crew_gui_bar_name] = nil;
+	
 	UpdateCrewDisplay();
 
 	return GetLength(crew_bars)-1;
