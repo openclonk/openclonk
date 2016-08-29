@@ -358,3 +358,5 @@ TrueEvaluatorValue=Value 'true'
 TrueEvaluatorValueHelp=Value used if the condition is true.
 FalseEvaluatorValue=Value 'false'
 FalseEvaluatorValueHelp=Value used if the condition is false.
+Comment=Comment
+CommentHelp=Command which does nothing. Use this to annotate your sequences.

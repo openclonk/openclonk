@@ -358,3 +358,5 @@ TrueEvaluatorValue=Wert 'Wahr'
 TrueEvaluatorValueHelp=Wert der benutzt wird wenn die Bedingung wahr ist.
 FalseEvaluatorValue=Wert 'Falsch'
 FalseEvaluatorValueHelp=Wert der benutzt wird wenn die Bedingung falsch ist.
+Comment=Kommentar
+CommentHelp=Anweisung die nichts tut. Zum Beschreiben von langen Sequenzen.

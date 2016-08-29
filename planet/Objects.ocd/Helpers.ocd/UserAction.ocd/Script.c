@@ -213,6 +213,7 @@ func Definition(def)
 		Value = new Evaluator.Any { Name="$Value$", EditorHelp="$SetVariableValueHelp$" }
 		} } );
 	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { }, new Evaluator.String { Name="$LogMessage$", EditorHelp="$LogMessageHelp$" }, "Message");
+	AddEvaluator("Action", "$Script$", "$Comment$", "$CommentHelp$", "comment", [def, def.EvalAct_Nop], { Comment="" }, { Name="$Comment$", EditorHelp="$CommentHelp$", Type="string" }, "Comment");
 	AddEvaluator("Action", "Game", "$GameOver$", "$GameOverHelp$", "game_over", [def, def.EvalAct_GameOver]);
 	// Object evaluators
 	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
@@ -999,6 +1000,8 @@ private func EvalAct_Log(proplist props, proplist context)
 {
 	Log(EvaluateValue("String", props.Message, context) ?? "");
 }
+
+private func EvalAct_Nop(proplist props, proplist context) {}
 
 private func GetVariableContext(proplist props, proplist context)
 {
