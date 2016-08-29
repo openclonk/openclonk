@@ -1334,6 +1334,7 @@ const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(C4Value 
 	{
 		*shape_path = option.adelegate->GetPathForProperty(*shape_path, option.value_key->GetCStr());
 		C4PropList *vp = val.getPropList();
+		val.Set0();
 		if (vp) vp->GetPropertyByS(option.value_key, &val);
 	}
 	return option.adelegate->GetShapeDelegate(val, shape_path);
@@ -1354,6 +1355,7 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 		C4Value parameter_val = val;
 		if (selected_option.value_key.Get())
 		{
+			parameter_val.Set0();
 			C4PropList *vp = val.getPropList();
 			if (vp) vp->GetPropertyByS(selected_option.value_key, &parameter_val);
 		}
