@@ -212,15 +212,30 @@ func Definition(def)
 		VariableName = new Evaluator.String { Name="$VariableName$", EditorHelp="$VariableNameHelp$" },
 		Value = new Evaluator.Any { Name="$Value$", EditorHelp="$SetVariableValueHelp$" }
 		} } );
+	AddEvaluator("Action", "$Script$", "$ForInteger$", "$ForIntegerHelp$", "for_int", [def, def.EvalAct_For, def.EvalAct_For_IntRange], { Start={ Function="int_constant", Value=1}, End={ Function="int_constant", Value=10}, Step={ Function="int_constant", Value=1} }, { Type="proplist", HideFullName=true, Display="for({{Start}}:{{Step}}:{{End}}) {{Action}}", EditorProps = {
+		Action = new Evaluator.Action { Name="$UserAction$", EditorHelp="$ForActionHelp$", Priority=100 },
+		Start = new Evaluator.Integer { Name="$Start$", EditorHelp="$ForStartHelp$", Priority=90 },
+		End = new Evaluator.Integer { Name="$End$", EditorHelp="$ForEndHelp$", Priority=80 },
+		Step = new Evaluator.Integer { Name="$Step$", EditorHelp="$ForStepHelp$", Priority=70 }
+		} } );
+	AddEvaluator("Action", "$Script$", "$ForPlayer$", "$ForPlayerHelp$", "for_player", [def, def.EvalAct_For, def.EvalAct_For_PlayerList], { Players={ Function="all_players" } }, { Type="proplist", HideFullName=true, Display="for({{Players}}) {{Action}}", EditorProps = {
+		Action = new Evaluator.Action { Name="$UserAction$", EditorHelp="$ForActionHelp$", Priority=100 },
+		Players = new Evaluator.PlayerList { EditorHelp="$ForPlayersHelp$" }
+		} } );
+	AddEvaluator("Action", "$Script$", "$ForObject$", "$ForObjectHelp$", "for_object", [def, def.EvalAct_For, def.EvalAct_For_ObjectList], { }, { Type="proplist", HideFullName=true, Display="for({{Objects}}) {{Action}}", EditorProps = {
+		Action = new Evaluator.Action { Name="$UserAction$", EditorHelp="$ForActionHelp$", Priority=100 },
+		Objects = new Evaluator.ObjectList { EditorHelp="$ForObjectsHelp$" }
+		} } );
 	AddEvaluator("Action", "$Script$", "$Log$", "$LogHelp$", "log", [def, def.EvalAct_Log], { }, new Evaluator.String { Name="$LogMessage$", EditorHelp="$LogMessageHelp$" }, "Message");
 	AddEvaluator("Action", "$Script$", "$Comment$", "$CommentHelp$", "comment", [def, def.EvalAct_Nop], { Comment="" }, { Name="$Comment$", EditorHelp="$CommentHelp$", Type="string" }, "Comment");
 	AddEvaluator("Action", "Game", "$GameOver$", "$GameOverHelp$", "game_over", [def, def.EvalAct_GameOver]);
 	// Object evaluators
-	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalObj_ActionObject]);
-	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalObj_TriggeringClonk]);
-	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalObj_TriggeringObject]);
+	AddEvaluator("Object", nil, "$ActionObject$", "$ActionObjectHelp$", "action_object", [def, def.EvalContextValue, "action_object"]);
+	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalContextValue, "triggering_clonk"]);
+	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalContextValue, "triggering_object"]);
+	AddEvaluator("Object", nil, "$IteratedObject$", "$IteratedObjectHelp$", "iterated_object", [def, def.EvalContextValue, "for_object"]);
 	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
-	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalObj_LastCreatedObject]);
+	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalContextValue, "last_created_object"]);
 	var find_object_in_area_delegate = { Type="proplist", Display="{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$", Priority=51 },
 		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Priority=41, Options=[
@@ -248,9 +263,10 @@ func Definition(def)
 	AddEvaluator("Definition", nil, ["$Constant$", ""], "$ConstantHelp$", "def_constant", [def, def.EvalConstant], { Value=nil }, { Type="def", Name="$Value$" });
 	AddEvaluator("Definition", nil, "$TypeOfObject$", "$TypeOfObjectHelp$", "type_of_object", [def, def.EvalObjProp, Global.GetID], { }, new Evaluator.Object { }, "Object");
 	// Player evaluators
-	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalPlr_Trigger]);
+	AddEvaluator("Player", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player", [def, def.EvalContextValue, "triggering_player"]);
 	AddEvaluator("Player", nil, "$OwnerOfObject$", "$OwnerOfObjectHelp$", "owner", [def, def.EvalObjProp, Global.GetOwner], { }, new Evaluator.Object { }, "Object");
 	AddEvaluator("Player", nil, "$ControllerOfObject$", "$ControllerOfObjectHelp$", "owner", [def, def.EvalObjProp, Global.GetController], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Player", nil, "$IteratedPlayer$", "$IteratedPlayerHelp$", "iterated_player", [def, def.EvalContextValue, "for_player"]);
 	// Player list evaluators
 	AddEvaluator("PlayerList", nil, "$TriggeringPlayer$", "$TriggeringPlayerHelp$", "triggering_player_list", [def, def.EvalPlrList_Single, def.EvalPlr_Trigger]);
 	AddEvaluator("PlayerList", nil, "$AllPlayers$", "$AllPlayersHelp$", "all_players", [def, def.EvalPlrList_All]);
@@ -343,6 +359,7 @@ func Definition(def)
 	AddEvaluator("Integer", nil, "$ObjectSpeed$", "$ObjectSpeedHelp$", "object_speed", [def, def.EvalObjProp, Global.GetSpeed], { }, new Evaluator.Object { }, "Object");
 	AddEvaluator("Integer", nil, "$PositionX$", "$PositionXHelp$", "position_x", [def, def.EvalInt_PosCoord, 0], { }, new Evaluator.Position { }, "Position");
 	AddEvaluator("Integer", nil, "$PositionY$", "$PositionYHelp$", "position_y", [def, def.EvalInt_PosCoord, 1], { }, new Evaluator.Position { }, "Position");
+	AddEvaluator("Integer", nil, "$IteratedInteger$", "$IteratedIntegerHelp$", "iterated_int", [def, def.EvalContextValue, "for_int"]);
 	// String evaluators
 	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
@@ -616,6 +633,7 @@ private func FinishAction(proplist context)
 }
 
 private func EvalConstant(proplist props, proplist context) { return props.Value; }
+private func EvalContextValue(proplist props, proplist context, string name) { return context[name]; }
 private func EvalObj_ActionObject(proplist props, proplist context) { return context.action_object; }
 private func EvalObj_TriggeringObject(proplist props, proplist context) { return context.triggering_object; }
 private func EvalObj_TriggeringClonk(proplist props, proplist context) { return context.triggering_clonk; }
@@ -741,7 +759,7 @@ private func EvalAct_Sequence(proplist props, proplist context)
 	// Sequence execution: Iterate over actions until one action puts the context on hold
 	var n = GetLength(props.Actions), sid = props._sequence_id;
 	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
-	for (var progress = context.sequence_progress[sid] ?? 0; progress < n; ++progress)
+	for (var progress = context.action_data[sid] ?? 0; progress < n; ++progress)
 	{
 		//Log("Sequence progress exec %v %v", progress, context.hold);
 		// goto preparations
@@ -753,16 +771,16 @@ private func EvalAct_Sequence(proplist props, proplist context)
 		{
 			// Execution on hold (i.e. wait action). Stop execution for now
 			if (!context.hold) progress = 0; // No hold specified: Stop with sequence reset
-			context.sequence_progress[sid] = progress;
+			context.action_data[sid] = progress;
 			return;
 		}
 		// Apply jump in the sequence
-		if (context.sequence_had_goto[sid]) progress = context.sequence_progress[sid] - 1;
+		if (context.sequence_had_goto[sid]) progress = context.action_data[sid] - 1;
 	}
 	// Sequence finished
 	context.last_sequence = nil;
 	// Reset for next execution.
-	context.sequence_progress[sid] = 0;
+	context.action_data[sid] = 0;
 }
 
 private func EvalAct_Goto(proplist props, proplist context)
@@ -772,7 +790,7 @@ private func EvalAct_Goto(proplist props, proplist context)
 	{
 		var index = props.Index;
 		if (GetType(index) != C4V_Int) index = EvaluateValue("Integer", index, context); // compatibility
-		context.sequence_progress[context.last_sequence._sequence_id] = index;
+		context.action_data[context.last_sequence._sequence_id] = index;
 		context.sequence_had_goto[context.last_sequence._sequence_id] = true;
 	}
 }
@@ -789,6 +807,68 @@ private func EvalAct_SuspendSequence(proplist props, proplist context)
 	// Suspend: Remember hold position and stop action execution
 	context.hold = props;
 	context.suspended = true;
+}
+
+private func EvalAct_For_IntRange(proplist props, proplist context)
+{
+	// Create list with range of integers
+	// Both start and end inclusive
+	var start = EvaluateValue("Integer", props.Start, context);
+	var end = EvaluateValue("Integer", props.End, context);
+	var step = EvaluateValue("Integer", props.Step, context);
+	if (!step) return [];
+	var d = end - start;
+	if (d * step < 0) return []; // wrong direction
+	var n = (end - start) / step + 1;
+	var list = CreateArray(n), i;
+	for (var v = start; v <= end; v += step) list[i++] = v;
+	return list;
+}
+
+private func EvalAct_For_ObjectList(proplist props, proplist context)
+{
+	return EvaluateValue("ObjectList", props.Objects, context) ?? [];
+}
+
+private func EvalAct_For_PlayerList(proplist props, proplist context)
+{
+	return EvaluateValue("PlayerList", props.Players, context) ?? [];
+}
+
+private func EvalAct_For(proplist props, proplist context, list_function)
+{
+	// For: Iterate over elements until one action puts the context on hold
+	// list_info: [list_function, current_item_field]
+	var sid = props._sequence_id;
+	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
+	// Get list data
+	var list, progress;
+	if (!context.action_data[sid])
+	{
+		list = Call(list_function, props, context);
+	}
+	else
+	{
+		list = context.action_data[sid][0];
+		progress = context.action_data[sid][1];
+		context.action_data[sid] = nil;
+	}
+	var n = GetLength(list);
+	for (; progress < n; ++progress)
+	{
+		// Get iterated item
+		var curr_value = list[progress];
+		if (!GetType(curr_value)) continue; // Ignore nil (deleted objects)
+		context[props.Function] = curr_value;
+		// Evaluate next sequence step
+		EvaluateValue("Action", props.Action, context);
+		if (context.hold || context.suspended)
+		{
+			// Execution on hold (i.e. wait action). Stop execution for now
+			if (context.hold) context.action_data[sid] = [list, progress];
+			return;
+		}
+	}
 }
 
 private func EvalAct_Wait(proplist props, proplist context)
@@ -979,12 +1059,12 @@ private func EvalAct_If(proplist props, proplist context)
 	// Do evaluation on first pass. After that, take context value.
 	var sid = props._sequence_id;
 	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
-	if (context.sequence_progress[sid] = context.sequence_progress[sid] ?? !!EvaluateValue("Boolean", props.Condition, context))
+	if (context.action_data[sid] = context.action_data[sid] ?? !!EvaluateValue("Boolean", props.Condition, context))
 		return EvaluateValue("Action", props.TrueEvaluator, context);
 	else
 		return EvaluateValue("Action", props.FalseEvaluator, context);
 	// Only keep conditional value within a held action
-	if (!context.hold) context.sequence_progress[sid] = nil;
+	if (!context.hold) context.action_data[sid] = nil;
 }
 
 private func EvalConditionalValue(proplist props, proplist context, eval_type)
@@ -1281,7 +1361,7 @@ private func EvalObjProp(proplist props, proplist context, prop_fn)
 /* Context instance */
 
 // Proplist holding progress in each sequence
-local sequence_progress, sequence_had_goto;
+local action_data, sequence_had_goto;
 static UserAction_SequenceIDs;
 
 // Set to innermost sequence (for goto)
@@ -1298,7 +1378,7 @@ local hold_result;
 
 public func Initialize()
 {
-	sequence_progress = {};
+	action_data = {};
 	sequence_had_goto = {};
 	return true;
 }
@@ -1351,7 +1431,7 @@ public func MenuSelectOption(int index)
 	var opt = this.hold.Options[index];
 	if (opt && last_sequence)
 	{
-		sequence_progress[last_sequence._sequence_id] = opt._goto;
+		action_data[last_sequence._sequence_id] = opt._goto;
 		hold = nil;
 	}
 	UserAction->ResumeAction(this, hold);
