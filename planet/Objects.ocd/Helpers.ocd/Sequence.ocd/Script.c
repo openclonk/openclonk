@@ -88,6 +88,16 @@ public func RemovePlayer(int plr)
 
 public func JoinPlayer(int plr)
 {
+	DeactivatePlayerControls(plr, true);
+	// Per-player sequence callback.
+	var fn_join = Format("~%s_JoinPlayer", seq_name);
+	if (!Call(fn_join, plr))
+		GameCall(fn_join, this, plr);
+	return true;
+}
+
+public func DeactivatePlayerControls(int plr, bool make_invincible)
+{
 	var j = 0, crew;
 	while (crew = GetCrew(plr, j++))
 	{
@@ -97,15 +107,39 @@ public func JoinPlayer(int plr)
 		if (crew->GetMenu()) 
 			if (!crew->GetMenu()->~Uncloseable()) 
 				crew->CancelMenu();
-		crew->MakeInvincible();
+		if (make_invincible)
+		{
+			crew->MakeInvincible();
+			crew.Sequence_stored_breath = crew->GetBreath();
+			crew.Sequence_made_invincible = true;
+		}
 		crew->SetCommand("None");
 		crew->SetComDir(COMD_Stop);
-		crew.Sequence_stored_breath = crew->GetBreath();
 	}
-	// Per-player sequence callback.
-	var fn_join = Format("~%s_JoinPlayer", seq_name);
-	if (!Call(fn_join, plr))
-		GameCall(fn_join, this, plr);
+	return true;
+}
+
+public func ReactivatePlayerControls(int plr)
+{
+	var j = 0, crew;
+	while (crew = GetCrew(plr, j++))
+	{
+		crew->SetCrewEnabled(true);
+		if (crew.Sequence_made_invincible)
+		{
+			crew->ClearInvincible();
+			// just in case clonk was underwater
+			var breath_diff = crew.Sequence_stored_breath - crew->GetBreath();
+			crew.Sequence_stored_breath = nil;
+			if (breath_diff) crew->DoBreath(breath_diff + 100); // give some bonus breath for the distraction
+			crew.Sequence_made_invincible = nil;
+		}
+	}
+	// Ensure proper cursor.
+	if (!GetCursor(plr)) 
+		SetCursor(plr, GetCrew(plr));
+	if (crew = GetCursor(plr)) 
+		SetPlrView(plr, crew);
 	return true;
 }
 
@@ -118,22 +152,7 @@ public func Stop(bool no_remove)
 		for (var i = 0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
-			var j = 0, crew;
-			while (crew = GetCrew(plr, j++))
-			{
-				crew->SetCrewEnabled(true);
-				crew->ClearInvincible();
-				// just in case clonk was underwater
-				var breath_diff = crew.Sequence_stored_breath - crew->GetBreath();
-				crew.Sequence_stored_breath = nil;
-				if (breath_diff) crew->DoBreath(breath_diff + 100); // give some bonus breath for the distraction
-				//if (crew.Sequence_was_cursor) SetCursor(plr, crew);
-			}
-			// Ensure proper cursor.
-			if (!GetCursor(plr)) 
-				SetCursor(plr, GetCrew(plr));
-			if (crew = GetCursor(plr)) 
-				SetPlrView(plr, crew);
+			ReactivatePlayerControls(plr);
 			// Per-player sequence callback.
 			RemovePlayer(plr);
 		}
@@ -351,6 +370,11 @@ public func Definition(def)
 		Target = UserAction->GetObjectEvaluator("IsSequence", "$Name$"),
 		Status = new UserAction.Evaluator.Boolean { Name="$Status$", EditorHelp="$SetActiveStatusHelp$" }
 		} } );
+	UserAction->AddEvaluator("Action", "$Name$", "$DisablePlayerControls$", "$DisablePlayerControlsHelp$", "sequence_disable_player_controls", [def, def.EvalAct_DisablePlayerControls], { Players = { Function="all_players" }, MakeInvincible = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Players}}", EditorProps = {
+		Players = new UserAction.Evaluator.PlayerList { Name="$Players$", EditorHelp="$PlayerControlsPlayersHelp$" },
+		MakeInvincible = new UserAction.Evaluator.Boolean { Name="$MakeInvincible$", EditorHelp="$MakeInvincibleHelp$" }
+		} } );
+	UserAction->AddEvaluator("Action", "$Name$", "$EnablePlayerControls$", "$EnablePlayerControlsHelp$", "sequence_enable_player_controls", [def, def.EvalAct_EnablePlayerControls], { Players = { Function="all_players" } }, new UserAction.Evaluator.PlayerList { Name="$Players$", EditorHelp="$PlayerControlsPlayersHelp$" }, "Players");
 	// EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.active = { Name="$Active$", Type="bool", Set="SetActive" };
@@ -660,6 +684,20 @@ private func EvalAct_SetActive(proplist props, proplist context)
 	if (status && target.finished) target->~SetFinished(false);
 	target->~SetActive(status);
 }
+
+private func EvalAct_DisablePlayerControls(proplist props, proplist context)
+{
+	var players = UserAction->EvaluateValue("PlayerList", props.Players, context) ?? [];
+	var is_invincible = UserAction->EvaluateValue("Boolean", props.MakeInvincible, context);
+	for (var player in players) DeactivatePlayerControls(player, is_invincible);
+}
+
+private func EvalAct_EnablePlayerControls(proplist props, proplist context)
+{
+	var players = UserAction->EvaluateValue("PlayerList", props.Players, context) ?? [];
+	for (var player in players) ReactivatePlayerControls(player);
+}
+
 
 /*-- Saving --*/
 
