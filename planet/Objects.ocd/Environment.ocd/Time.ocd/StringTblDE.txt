@@ -1,0 +1,4 @@
+Time=Zeit
+TimeHelp=Aktuelle Tageszeit in Minuten seit Mitternacht.
+CycleSpeed=Tagesgeschwindigkeit
+CycleSpeedHelp=Geschwindigkeit des Tag-/Nachtrhythmus in Sekunden pro Tick. Standard 30.

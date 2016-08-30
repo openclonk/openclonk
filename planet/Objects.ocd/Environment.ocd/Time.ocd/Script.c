@@ -216,15 +216,15 @@ protected func Initialize()
 		CreateObject(Moon);
 	}
 	
+	// Set standard colour of the day
+	daycolour_global = [255, 255, 255];
+	
 	// Set the time to midday (12:00).
-	SetTime(43200); 
+	SetTime(12*60); 
 	
 	// Add effect that controls time cycle.
 	SetCycleSpeed(30);
 	AddEffect("IntTimeCycle", this, 100, 10, this);
-
-	// Set standard colour of the day
-	daycolour_global = [255, 255, 255];
 }
 
 // Cycles through day and night.
@@ -390,11 +390,21 @@ public func SaveScenarioObject(props)
 	if (!inherited(props, ...)) 
 		return false;
 	// Save time props.
-	if (GetTime() != 43200) 
+	if (GetTime() != 720) 
 		props->AddCall("Time", this, "SetTime", GetTime());
 	if (GetCycleSpeed() != 30) 
 		props->AddCall("CycleSpeed", this, "SetCycleSpeed", GetCycleSpeed());
 	return true;
+}
+
+
+/*-- Editor --*/
+
+public func Definition(def)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.Time = { Name="$Time$", EditorHelp="$TimeHelp$", Type="int", Min=0, Max=24*60 - 1, AsyncGet="GetTime", Set="SetTime" };
+	def.EditorProps.CycleSpeed = { Name="$CycleSpeed$", EditorHelp="$CycleSpeedHelp$", Type="int", Min=0, AsyncGet="GetCycleSpeed", Set="SetCycleSpeed" };
 }
 
 
