@@ -368,6 +368,16 @@ func Definition(def)
 		} } );
 	// Color evaluators
 	AddEvaluator("Color", nil, ["$Constant$", ""], "$ConstantHelp$", "color_constant", [def, def.EvalConstant], { Value=0xffffff }, { Type="color", Name="$Value$" });
+	AddEvaluator("Color", nil, "$RandomColor$", "$RandomColorHelp$", "random_color", [def, def.EvalClr_Random], { ColorA={ Function="color_constant", Value=0 }, ColorB={ Function="color_constant", Value=0xffffff } }, { Type="proplist", Display="({{ColorA}}..{{ColorB}})", EditorProps = {
+		ColorA = new Evaluator.Color { Name="$ColorA$" },
+		ColorB = new Evaluator.Color { Name="$ColorB$" }
+		} } );
+	AddEvaluator("Color", nil, "$PlayerColor$", "$PlayerColorHelp$", "player_color", [def, def.EvalClr_PlayerColor], { Player={ Function="triggering_player" } }, new Evaluator.Player { }, "Player");
+	AddEvaluator("Color", nil, "$RGB$", "$RGBHelp$", "rgb_color", [def, def.EvalClr_RGB], { R={ Function="int_constant", Value=255 }, G={ Function="int_constant", Value=255 }, B={ Function="int_constant", Value=255 } }, { Type="proplist", Display="({{R}}, {{G}}, {{B}})", EditorProps = {
+		R = new Evaluator.Integer { Name="$Red$", Priority=51 },
+		G = new Evaluator.Integer { Name="$Green$", Priority=41 },
+		B = new Evaluator.Integer { Name="$Blue$", Priority=31 }
+		} } );
 	// Position evaluators
 	AddEvaluator("Position", nil, ["$ConstantPositionAbsolute$", ""], "$ConstantPositionAbsoluteHelp$", "position_constant", [def, def.EvalConstant], def.GetDefaultPosition, { Type="point", Name="$Position$", Relative=false, Color=0xff2000 });
 	AddEvaluator("Position", nil, ["$ConstantPositionRelative$", "+"], "$ConstantPositionRelativeHelp$", "position_constant_rel", [def, def.EvalPositionRelative], { Value=[0,0] }, { Type="point", Name="$Position$", Relative=true, Color=0xff0050 });
@@ -1336,6 +1346,30 @@ private func EvalInt_Distance(proplist props, proplist context)
 private func EvalInt_Wealth(proplist props, proplist context) { return GetWealth(EvaluatePlayer(props.Player, context)); }
 
 private func EvalInt_PosCoord(proplist props, proplist context, int idx) { return EvaluatePosition(props.Position, context)[idx]; }
+
+private func EvalClr_PlayerColor(proplist props, proplist context) { return GetPlayerColor(EvaluatePlayer(props.Player, context)); }
+
+private func EvalClr_RGB(proplist props, proplist context)
+{
+	var R = EvaluateValue("Integer", props.R, context);
+	var G = EvaluateValue("Integer", props.G, context);
+	var B = EvaluateValue("Integer", props.B, context);
+	return RGB(R, G, B);
+}
+
+private func EvalClr_Random(proplist props, proplist context)
+{
+	var a = EvaluateValue("Color", props.ColorA, context);
+	var b = EvaluateValue("Color", props.ColorB, context);
+	var result;
+	for (var i=0; i<3; ++i)
+	{
+		var ca = (a>>(i*8)) & 0xff;
+		var cb = (b>>(i*8)) & 0xff;
+		result |= ((Random(Abs(ca-cb+1)) + Min(ca, cb)) << (i*8));
+	}
+	return result;
+}
 
 private func EvalStr_ValueToString(proplist props, proplist context)
 {
