@@ -4763,7 +4763,7 @@ void C4Object::Splash()
 				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
 				{
 					C4Real xdir = C4REAL100(Random(151)-75);
-					C4Real ydir = C4REAL100(-Random(200));
+					C4Real ydir = C4REAL100(-int32_t(Random(200)));
 					::PXS.Create(::Landscape.ExtractMaterial(tx,ty,false),
 					             itofix(tx),itofix(sy),
 					             xdir,
