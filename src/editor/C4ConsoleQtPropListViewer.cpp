@@ -971,7 +971,7 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 					if (sorted)
 					{
 						// Groups always sorted by name. Could also sort by priority of highest priority element?
-						new_group->setData(group_name, C4DeepQComboBox::PriorityNameSortRole);
+						new_group->setData("010000000"+group_name, C4DeepQComboBox::PriorityNameSortRole);
 					}
 					parent->appendRow(new_group);
 					parent = new_group;
