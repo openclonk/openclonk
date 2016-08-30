@@ -144,6 +144,16 @@ func Definition(def)
 		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$FlingSpeedYHelp$" },
 		AddSpeed = new Evaluator.Boolean { Name="$AddSpeedY$", EditorHelp="$FlingAddSpeedHelp$" },
 		} } );
+	AddEvaluator("Action", "$Object$", "$EnterObject$", "$EnterObjectHelp$", "enter_object", [def, def.EvalAct_EnterObject], { }, { Type="proplist", Display="{{Object}} -> {{Container}}", EditorProps = {
+		Object = new Evaluator.Object { EditorHelp="$EnterObjectObjectHelp$", Priority=90 },
+		Container = new Evaluator.Object { Name="$Container$", EditorHelp="$EnterObjectContainerHelp$", Priority=80 },
+		CollectionCheck = { Name="$CollectionCheck$", EditorHelp="$CollectionCheckHelp$", Type="enum", Options=[
+			{ Name="$CollectionCheckIgnore$" },
+			{ Name="$CollectionCheckCheck$", Value="check" },
+			{ Name="$CollectionCheckExit$", Value="exit" }
+			] }
+		} } );
+	AddEvaluator("Action", "$Object$", "$ExitObject$", "$ExitObjectHelp$", "exit_object", [def, def.EvalAct_ExitObject], { }, new Evaluator.Object { }, "Object");
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
@@ -1031,6 +1041,34 @@ private func EvalAct_Fling(proplist props, proplist context)
 	var vy = EvaluateValue("Integer", props.SpeedY, context);
 	var add_speed = EvaluateValue("Boolean", props.AddSpeed, context);
 	obj->Fling(vx, vy, 10, add_speed);
+}
+
+private func EvalAct_EnterObject(proplist props, proplist context)
+{
+	var object = EvaluateValue("Object", props.Object, context);
+	var container = EvaluateValue("Object", props.Container, context);
+	if (!container || !object) return;
+	// Enter either with a check (Collect) or just force-Enter
+	if (!props.CollectionCheck)
+	{
+		object->Enter(container);
+	}
+	else
+	{
+		if (!container->Collect(object, true))
+		{
+			if (props.CollectionCheck == "exit")
+			{
+				object->SetPosition(container->GetX(), container->GetY());
+			}
+		}
+	}
+}
+
+private func EvalAct_ExitObject(proplist props, proplist context)
+{
+	var object = EvaluateValue("Object", props.Object, context);
+	if (object) object->Exit();
 }
 
 private func EvalAct_DoWealth(proplist props, proplist context)
