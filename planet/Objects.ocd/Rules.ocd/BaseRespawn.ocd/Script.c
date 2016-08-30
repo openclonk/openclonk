@@ -76,7 +76,7 @@ protected func OnClonkDeath(object clonk)
 		// If free crew just create a clonk at the base.
 		if (free_crew)
 		{
-			crew = CreateObjectAbove(Clonk, base->GetX() - GetX(), base->GetY() + base->GetDefHeight() / 2 - GetX(), plr);
+			crew = CreateObjectAbove(Clonk, base->GetX() - GetX(), base->GetY() + base->GetDefHeight() / 2 - GetY(), plr);
 			crew->MakeCrewMember(plr);
 			SetCursor(plr, crew);
 			// Transfer inventory if turned on.
