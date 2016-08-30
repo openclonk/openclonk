@@ -34,6 +34,7 @@ static g_UserAction_global_vars;
 // Localized evaluator names
 local EvaluatorTypeNames = {
 	Action = "$UserAction$",
+	Color = "$UserColor$",
 	Object = "$UserObject$",
 	ObjectList = "$UserObjectList$",
 	Definition = "$UserDefinition$",

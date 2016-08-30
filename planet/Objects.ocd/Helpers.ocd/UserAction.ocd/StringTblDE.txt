@@ -1,4 +1,5 @@
 UserAction=Aktion
+UserColor=Farbe
 UserObject=Objekt
 UserObjectList=Objektliste
 UserPlayer=Spieler
