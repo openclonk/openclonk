@@ -3,26 +3,32 @@
 	Small, lovely creatures.
 */
 
+#include Library_Animal
+
 local Name = "$Name$";
 local Description = "$Description$";
+local animal_reproduction_area_size = 800;
+local animal_reproduction_rate = 200;
+local animal_max_count = 10;
 
 // Remember the attachee to be able to detach again.
 local attach_object, attached_mesh;
 // Remember the energy sucked to frequently spawn offsprings.
 local energy_sucked;
 
-public func Construction()
+public func Construction(...)
 {
 	AddEffect("Activity", this, 1, 10, this);
 	SetAction("Walk");
 	energy_sucked = 0;
-	return true;
+	return _inherited(...);
 }
 
 public func Destruction()
 {
 	if (GetAction() == "Clawing")
 		StopClawing();
+	return _inherited(...);
 }
 
 public func Death()
@@ -228,14 +234,6 @@ private func FxActivityTimer(target, effect, time)
 				obj->AddEffect("DoDance", obj, 1, 35*5, obj);
 				obj->AddEffect("DanceCooldown", obj, 1, 35*10, obj);
 			}
-			
-			if(!GetEffect("EggCooldown", this))
-			{
-				if(!Random(10))
-				{
-					LayEgg();
-				}
-			}
 		}
 	}
 	
@@ -256,14 +254,23 @@ private func FxActivityDamage(target, effect, dmg)
 	return dmg;
 }
 
+private func SpecialReproduction()
+{
+	LayEgg();
+	// Always return true even if laying egg failed. Otherwise mammalian reproduction is performed.
+	return true;
+}
+
 private func LayEgg()
 {
 	if(GetEffect("DmgShock", this)) return;
+	if(GetEffect("EggCooldown", this)) return;
 	var o = CreateObject(Chippie_Egg, 0, 0, GetOwner());
 	o->SetSpeed(-GetXDir(), -GetYDir());
 	o->SetCon(50);
 	o->StartGrowth(10);
 	AddEffect("EggCooldown", this, 1, 35*30, this);
+	return o;
 }
 
 local MaxEnergy = 10000;
