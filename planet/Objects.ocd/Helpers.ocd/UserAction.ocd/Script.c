@@ -251,9 +251,9 @@ func Definition(def)
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$", Priority=51 },
 		Area = { Name="$SearchArea$", EditorHelp="$SearchAreaHelp$", Type="enum", OptionKey="Function", Priority=41, Options=[
 			{ Name="$SearchAreaWholeMap$", EditorHelp="$SearchAreaWholeMapHelp$" },
-			{ Name="$SearchAreaInRect$", EditorHelp="$SearchAreaInRectHelp$", Value={ Function="InRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 } },
-			{ Name="$SearchAreaAtRect$", EditorHelp="$SearchAreaAtRectHelp$", Value={ Function="AtRect" }, Get=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff80 } },
-			{ Name="$SearchAreaCircle$", EditorHelp="$SearchAreaCircleHelp$", Value={ Function="Circle" }, Get=def.GetDefaultCircle, ValueKey="Area", Delegate={ Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff } },
+			{ Name="$SearchAreaInRect$", EditorHelp="$SearchAreaInRectHelp$", Value={ Function="InRect" }, DefaultValueFunction=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff00 } },
+			{ Name="$SearchAreaAtRect$", EditorHelp="$SearchAreaAtRectHelp$", Value={ Function="AtRect" }, DefaultValueFunction=def.GetDefaultRect, ValueKey="Area", Delegate={ Type="rect", Name="$Rectangle$", Relative=false, Color=0xffff80 } },
+			{ Name="$SearchAreaCircle$", EditorHelp="$SearchAreaCircleHelp$", Value={ Function="Circle" }, DefaultValueFunction=def.GetDefaultCircle, ValueKey="Area", Delegate={ Type="circle", Name="$Circle$", Relative=false, CanMoveCenter=true, Color=0xff00ff } },
 			{ Name="$SearchAreaNearPosition$", EditorHelp="$SearchAreaNearPositionHelp$", Value={ Function="NearPosition", Parameters={Radius=25} }, ValueKey="Parameters", Delegate={ Type="proplist", Display="({{Position}}, {{Radius}})", EditorProps = {
 				Position = new Evaluator.Position { EditorHelp="$SearchAreaNearPositionPositionHelp$"},
 				Radius = { Type="circle", Relative=true, Name="$Radius$", Color=0xff80ff }
@@ -502,7 +502,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 		default_val = Call(default_get, nil, {Function=identifier});
 	}
 	default_val.Function = identifier;
-	var action_def = { Name=name, ShortName=short_name, EditorHelp=help, Group=group, Value=default_val, Delegate=delegate, Get=default_get }, n;
+	var action_def = { Name=name, ShortName=short_name, EditorHelp=help, Group=group, Value=default_val, Delegate=delegate, DefaultValueFunction=default_get }, n;
 	if (delegate)
 	{
 		if (delegate.EditorProps || delegate.Elements)

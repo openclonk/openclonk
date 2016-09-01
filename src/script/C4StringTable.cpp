@@ -258,6 +258,7 @@ C4StringTable::C4StringTable()
 	P[P_OptionKey] = "OptionKey";
 	P[P_ValueKey] = "ValueKey";
 	P[P_Value] = "Value";
+	P[P_DefaultValueFunction] = "DefaultValueFunction";
 	P[P_Delegate] = "Delegate";
 	P[P_Min] = "Min";
 	P[P_Max] = "Max";

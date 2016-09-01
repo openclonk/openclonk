@@ -482,6 +482,7 @@ enum C4PropertyName
 	P_OptionKey,
 	P_ValueKey,
 	P_Value,
+	P_DefaultValueFunction,
 	P_Delegate,
 	P_Min,
 	P_Max,
