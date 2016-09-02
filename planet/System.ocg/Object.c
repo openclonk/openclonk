@@ -235,6 +235,7 @@ global func GetMaxBreath()
 // max_size = the maximum object size in tenths of percent.
 global func StartGrowth(int value, int max_size)
 {
+	if (value <= 0) return nil;
 	// Ensure max size is set and does not conflict with Oversize.
 	max_size = max_size ?? 1000;
 	if (!GetDefCoreVal("Oversize", "DefCore"))

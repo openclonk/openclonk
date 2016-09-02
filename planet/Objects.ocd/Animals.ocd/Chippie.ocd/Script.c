@@ -93,7 +93,7 @@ private func FxClawingTimer(target, effect, time)
 		}
 		
 		// Grow and prosper.
-		if (GetCon() < 150 && !Random(10))
+		if (GetCon() < 150 && !Random(5))
 		{
 			DoCon(1);
 			DoEnergy(5);
@@ -272,6 +272,9 @@ private func LayEgg()
 	AddEffect("EggCooldown", this, 1, 35*30, this);
 	return o;
 }
+
+// Chippies grow (solely) via sucking blood (their size influences the damage they do).
+public func GrowthSpeed() { return 0; }
 
 local MaxEnergy = 10000;
 local MaxBreath = 10000;
