@@ -75,9 +75,9 @@ func GoodSpot(int x, int y)
 
 /* Plant / Tree libraries */
 
-private func SeedChance() {	return 200; }
-private func SeedArea() { return 200; }
-private func SeedAmount() { return 5; }
+local plant_seed_chance = 50;
+local plant_seed_area = 200;
+local plant_seed_amount = 5;
 
 private func Construction()
 {
@@ -146,10 +146,8 @@ private func Seed()
 	if(GetCon() < 20) return;
 
 	var size = SeedArea();
-	var amount = SeedAmount();
-	var chance = SeedChance();
-	// Place a plant if we are lucky, in principle there can be more than seed amount.
-	if (!Random(chance))
+	// Place a plant if we are lucky
+	if (CheckSeedChance())
 	{
 		// select random angle at which we can throw the seed
 		var angle = RandomX(100, 140);
@@ -176,6 +174,7 @@ private func Seed()
 			{
 				var distance = Distance(GetX() + x, GetY() + y, neighbour[0]->GetX(), neighbour[0]->GetY());
 				var len = GetLength(neighbour);
+				var amount = SeedAmount();
 				var c = (size * distance * amount) / (len * len * len);
 				if (!Random(c))
 					continue;

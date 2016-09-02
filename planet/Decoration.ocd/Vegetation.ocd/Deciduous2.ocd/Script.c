@@ -3,9 +3,9 @@
 #include Library_Plant
 #include Library_Tree
 
-private func SeedChance() { return 500; }
-private func SeedArea() { return 400; }
-private func SeedAmount() { return 10; }
+local plant_seed_chance = 20;
+local plant_seed_area = 400;
+local plant_seed_amount = 10;
 
 local lib_tree_burned = Deco_Tree_Deciduous2_Burned;
 

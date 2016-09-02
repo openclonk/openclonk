@@ -1,2 +1,14 @@
 TxtBadGround=%s kann hier|nicht gepflanzt werden!
 Description=Drücke [Benutzen] zum Anpflanzen.
+SeedChance=Vermehrung: Chance
+SeedChanceHelp=Gibt die Rate an, in der sich die Pflanze vermehrt. 0: Keine Vermehrung. 10000: Maximale Vermehrung (ca. alle zwei Sekunden). Die tatsaechliche Rate wird angepasst, wenn weniger als die in Vermehrungsanzahl angegebenen Pflanzen existieren.
+SeedArea=Vermehrung: Gebiet
+SeedAreaHelp=Seitenlaenge des rechteckigen Bereiches, in dem sich die Pflanze vermehrt.
+SeedAmount=Vermehrung: Anzahl
+SeedAmountHelp=Maximal Anzahl Pflanzen dieser Art im Vermehrungsgebiet.
+SeedOffset=Vermehrung: Mindesabstand
+SeedOffsetHelp=Mindestabstand einer neuen Pflanze neben dieser Pflanze.
+Confinement=Vermehrung: Bereich
+ConfinementHelp=Grenzt den Bereich ein, in dem sich diese Pflanze vermehrt.
+NoConfinmenet=Keine Begrenzung
+Rect=Rechteck

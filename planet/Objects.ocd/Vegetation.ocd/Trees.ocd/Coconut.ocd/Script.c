@@ -3,9 +3,9 @@
 #include Library_Plant
 #include Library_Tree
 
-private func SeedChance() {	return 100; }
-private func SeedArea() { return 400; }
-private func SeedAmount() { return 12; }
+local plant_seed_chance = 100;
+local plant_seed_area = 400;
+local plant_seed_amount = 12;
 
 local coconuts;
 // Saved for GetTreetopPosition
@@ -23,15 +23,20 @@ private func Seed()
 {
 	if(!IsStanding()) return;
 	if(OnFire()) return;
-	if(GetCon() < 100) return;
+	if(GetGrowthValue()) return; // still growing
 	if(coconuts >= MaxCoconuts) return;
 
-	if (CheckSeedChance())
+	// Always create coconuts; the coconut will determine if it seeds
+	if (Random(10000) < SeedChance())
 	{
 		var seed = CreateObjectInTreetop(Coconut);
 		if (!seed) return;
 		coconuts++;
 		seed->SetConfinement(this.Confinement);
+		seed->SetSeedChance(this->SeedChance());
+		seed->SetSeedArea(this->SeedArea());
+		seed->SetSeedAmount(this->SeedAmount());
+		seed->SetSeedOffset(this->SeedOffset());
 		seed.Plane = this.Plane - 2; // coconuts should always be behind the tree
 	}
 }
@@ -49,9 +54,11 @@ public func LostCoconut()
 
 /*-- Properties --*/
 
-private func Definition(def) 
+private func Definition(def, ...) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-27000, -000, 22000), Trans_Rotate(40,0,0,1), Trans_Rotate(-10,1)), def);
+	_inherited(def, ...);
+	def.EditorProps.plant_seed_area = nil; // Area doesn't make sense because it's seeding via coconuts
 }
 
 local Name = "$Name$";

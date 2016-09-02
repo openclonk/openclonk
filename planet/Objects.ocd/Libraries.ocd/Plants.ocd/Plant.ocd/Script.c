@@ -13,11 +13,23 @@ public func IsPlant()
 
 /** Automated positioning via RootSurface, make sure to call this if needed (in case Construction is overloaded)
 */
-protected func Construction()
+protected func Construction(...)
 {
 	Schedule(this, "RootSurface()", 1);
+	UpdateSeedTimer();
 	AddTimer("Seed", 72 + Random(10));
 	_inherited(...);
+}
+
+public func InitChild(object parent)
+{
+	// Copy settings from parent plant
+	KeepArea(parent.Confinement);
+	SetSeedChance(parent->SeedChance());
+	SetSeedArea(parent->SeedArea());
+	SetSeedAmount(parent->SeedAmount());
+	SetSeedOffset(parent->SeedOffset());
+	return true;
 }
 
 /* Placement */
@@ -63,58 +75,104 @@ func KeepArea(proplist area)
 	this.Confinement = area;
 }
 
-/** Chance to reproduce plant. Chances are one out of return value. Default is 500.
-	@return the chance, higher = less chance.
+/** Chance to reproduce plant. Chances are one out of return value. From 0 to 10000. Default is 20.
+	@return the chance, higher = more chance. 0 = does not reproduce.
 */
-private func SeedChance()
+
+local plant_seed_chance = 20;
+
+public func SeedChance()
 {
-	return 500;
+	return plant_seed_chance;
 }
+
+public func SetSeedChance(int v)
+{
+	plant_seed_chance = v;
+	return UpdateSeedTimer();
+}
+
+private func UpdateSeedTimer()
+{
+	RemoveTimer("Seed");
+	if (plant_seed_chance) AddTimer("Seed", 72 + Random(10));
+	return true;
+}
+
 
 /** Distance the seeds may travel. Default is 250.
 	@return the maximum distance.
 */
-private func SeedArea()
+
+local plant_seed_area = 250;
+
+public func SeedArea()
 {
-	return 250;
+	return plant_seed_area;
+}
+
+public func SetSeedArea(int v)
+{
+	plant_seed_area = v;
+	return true;
 }
 
 /** The amount of plants allowed within SeedAreaSize. Default is 10.
 	@return the maximum amount of plants.
 */
+
+local plant_seed_amount = 10;
+
 private func SeedAmount()
 {
-	return 10;
+	return plant_seed_amount;
+}
+
+public func SetSeedAmount(int v)
+{
+	plant_seed_amount = v;
+	return true;
 }
 
 /** The closest distance a new plant may seed to its nearest neighbour. Default is 20.
 	@return the maximum amount of plants.
 */
-private func SeedOffset()
+
+local plant_seed_offset = 20;
+
+public func SeedOffset()
 {
-	return 20;
+	return plant_seed_offset;
 }
+
+public func SetSeedOffset(int v)
+{
+	plant_seed_offset = v;
+	return true;
+}
+
 
 /** Evaluates parameters for this definition to determine if seeding should occur.
  @par offx X offset added to context position for check.
  @par offy Y offset added to context position for check.
+ @plant_id plant to check for whether it's already too crowded. Default to GetID().
  @return true iff seeding should occur
 */
-public func CheckSeedChance(int offx, int offy)
+public func CheckSeedChance(int offx, int offy, proplist plant_id)
 {
 	// Find number of plants in seed area.
 	// Ignored confinement - that's only used for actual placement
-	var size = SeedArea();
-	var amount = SeedAmount();
+	var size = this->SeedArea();
+	var amount = this->SeedAmount();
 	var plant_id;
-	if (this.Prototype == Global) plant_id = this; else plant_id = GetID(); // allow definition and object call
-	var plant_cnt = ObjectCount(Find_ID(plant_id), Find_InRect(offx - size / 2, offy - size / 2, size, size));
-	// If there are not much plants in the seed area compared to seed amount
-	// the chance of seeding is improved, if there are much the chance is reduced.
-	var chance = SeedChance();
-	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
-	// Place a plant if we are lucky, but no more than seed amount.
-	return (plant_cnt < amount && !Random(chance));
+	var plant_cnt = ObjectCount(Find_ID(plant_id ?? GetID()), Find_InRect(offx - size / 2, offy - size / 2, size, size));
+	// Increase seed chance by number of missing plants to reach maximum amount
+	// Note the chance will become negative if the maximum has been reached, in which case the random check will never succeed.
+	// That's intended
+	var chance = this->SeedChance() * (amount - plant_cnt);
+	if (!chance) return;
+	// Place a plant if we are lucky
+	return (Random(10000) < chance);
 }
 
 /** Reproduction of plants: Called every 2 seconds by a timer.
@@ -164,8 +222,8 @@ private func DoSeed()
 		// Closeness check
 		if (distance < SeedOffset())
 			plant->RemoveObject();
-		else if (this.Confinement)
-			plant->KeepArea(this.Confinement);
+		else
+			plant->InitChild(this);
 	}
 	return plant;
 }
@@ -176,4 +234,14 @@ private func RemoveInTunnel()
 	{
 		RemoveObject();
 	} 
+}
+
+
+
+/* Editor */
+
+public func Definition(def, ...)
+{
+	Library_Seed->AddSeedEditorProps(def);
+	return _inherited(def, ...);
 }

@@ -9,9 +9,9 @@
 
 local is_explicit_skin = false;
 
-private func SeedChance() { return 300; }
-private func SeedArea() { return 120; }
-private func SeedAmount() { return 6; }
+local plant_seed_chance = 33;
+local plant_seed_area = 120;
+local plant_seed_amount = 6;
 
 public func Construction()
 {

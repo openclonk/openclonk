@@ -17,8 +17,8 @@ local BaseRectangle; // properties x,y,w,h
 // Point contained in rectangle?
 private func BaseRectangle_IsPointContained(int x, int y)
 {
-	//return ((x-this.x+this.w)/this.w) * ((y-this.y+this.h)/this.h) == 1 && x>=this.x;
-	return x>=this.x && y>=this.y && x<this.x+this.w && y<this.y+this.h;
+	//return ((x-this.x+this.wdt)/this.wdt) * ((y-this.y+this.hgt)/this.hgt) == 1 && x>=this.x;
+	return x>=this.x && y>=this.y && x<this.x+this.wdt && y<this.y+this.hgt;
 }
 
 // bounding rectangle is just self
@@ -27,20 +27,20 @@ private func BaseRectangle_GetBoundingRectangle() { return this; }
 private func BaseRectangle_Find_In(context)
 {
 	if (!context) context = Global;
-	return context->Find_InRect(this.x, this.y, this.w, this.h);
+	return context->Find_InRect(this.x, this.y, this.wdt, this.hgt);
 }
 
 private func BaseRectangle_Find_At(context)
 {
 	if (!context) context = Global;
-	return context->Find_AtRect(this.x, this.y, this.w, this.h);
+	return context->Find_AtRect(this.x, this.y, this.wdt, this.hgt);
 }
 
 private func BaseRectangle_GetRandomPoint(proplist result)
 {
-	if (this.w<=0 || this.h <=0) return false;
-	result.x = this.x + Random(this.w);
-	result.y = this.y + Random(this.h);
+	if (this.wdt<=0 || this.hgt <=0) return false;
+	result.x = this.x + Random(this.wdt);
+	result.y = this.y + Random(this.hgt);
 	return true;
 }
 
@@ -53,7 +53,7 @@ private func BaseRectangle_GetRandomPoint(proplist result)
 */
 public func Rectangle(int x, int y, int w, int h)
 {
-	return new BaseRectangle { x=x, y=y, w=w, h=h };
+	return new BaseRectangle { x=x, y=y, wdt=w, hgt=h };
 }
 
 
@@ -73,7 +73,7 @@ private func BaseCircle_IsPointContained(int x, int y)
 private func BaseCircle_GetBoundingRectangle()
 {
 	var r=this.r;
-	return new Shape.BaseRectangle { x=this.cx-r, y=this.cy-r, w=r*2+1, h=r*2+1 };
+	return new Shape.BaseRectangle { x=this.cx-r, y=this.cy-r, wdt=r*2+1, hgt=r*2+1 };
 }
 
 private func BaseCircle_GetRandomPoint(proplist result)
@@ -125,21 +125,21 @@ private func BaseIntersection_GetBoundingRectangle()
 			// first bounds determine area
 			if (!result)
 			{
-				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.w, h = rt.h};
+				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.wdt, h = rt.hgt};
 			}
 			else
 			{
 				// following bounds reduce area
-				if (rt.x + rt.w < result.x + result.w) result.w = Max(rt.x + rt.w - result.x);
-				if (rt.y + rt.h < result.y + result.h) result.h = Max(rt.y + rt.h - result.y);
+				if (rt.x + rt.wdt < result.x + result.wdt) result.wdt = Max(rt.x + rt.wdt - result.x);
+				if (rt.y + rt.hgt < result.y + result.hgt) result.hgt = Max(rt.y + rt.hgt - result.y);
 				if (rt.x > result.x)
 				{
-					result.w = Max(result.w - rt.x + result.x);
+					result.wdt = Max(result.wdt - rt.x + result.x);
 					result.x = rt.x;
 				}
 				if (rt.y > result.y)
 				{
-					result.h = Max(result.h - rt.y + result.y);
+					result.hgt = Max(result.hgt - rt.y + result.y);
 					result.y = rt.y;
 				}
 			}
@@ -211,21 +211,21 @@ private func BaseCombination_GetBoundingRectangle()
 			// first bounds determine area
 			if (!result)
 			{
-				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.w, h = rt.h};
+				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.wdt, h = rt.hgt};
 			}
 			else
 			{
 				// following bounds enlarge area
-				if (rt.x + rt.w > result.x + result.w) result.w = rt.x + rt.w - result.x;
-				if (rt.y + rt.h > result.y + result.h) result.h = rt.y + rt.h - result.y;
+				if (rt.x + rt.wdt > result.x + result.wdt) result.wdt = rt.x + rt.wdt - result.x;
+				if (rt.y + rt.hgt > result.y + result.hgt) result.hgt = rt.y + rt.hgt - result.y;
 				if (rt.x < result.x)
 				{
-					result.w += result.x - rt.x;
+					result.wdt += result.x - rt.x;
 					result.x = rt.x;
 				}
 				if (rt.y < result.y)
 				{
-					result.h += result.y - rt.y;
+					result.hgt += result.y - rt.y;
 					result.y = rt.y;
 				}
 			}
@@ -308,6 +308,7 @@ public func Definition(def)
 	BaseShape = {};
 	BaseRectangle = new BaseShape
 	{
+		Type = "rect",
 		IsPointContained = Shape.BaseRectangle_IsPointContained,
 		GetBoundingRectangle = Shape.BaseRectangle_GetBoundingRectangle,
 		GetRandomPoint = Shape.BaseRectangle_GetRandomPoint,

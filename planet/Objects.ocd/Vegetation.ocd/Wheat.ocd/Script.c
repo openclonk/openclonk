@@ -10,10 +10,10 @@
 
 local swing_anim;
 
-private func SeedArea() { return 60; }
-private func SeedChance() { return 250; }
-private func SeedAmount() { return 4; } // small seed area -> don't allow too many plants
-private func SeedOffset() { return 20; }
+local plant_seed_area = 60;
+local plant_seed_chance = 40;
+local plant_seed_amount = 4; // small seed area -> don't allow too many plants
+local plant_seed_offset = 20;
 public func SickleHarvesting() { return true; }
 
 private func Construction()

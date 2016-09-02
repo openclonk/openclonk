@@ -7,10 +7,10 @@
 
 #include Library_Plant
 
-private func SeedChance() { return 600; }
-private func SeedArea() { return 150; }
-private func SeedAmount() { return 4; }
-private func SeedOffset() { return 10; }
+local plant_seed_chance = 17;
+local plant_seed_area = 150;
+local plant_seed_amount = 4;
+local plant_seed_offset = 10;
 
 private func Incineration()
 {
