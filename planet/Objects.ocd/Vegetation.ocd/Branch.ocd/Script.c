@@ -47,12 +47,15 @@ public func Place(int amount, proplist area, proplist settings)
 	else if (settings.underground)
 		loc_background = Loc_Tunnel();
 	else
-		loc_background = Loc_Sky();	
+		loc_background = Loc_Sky();
+	var loc_inmat = Loc_Or(Loc_Material("Granite"), Loc_Material("Rock"), Loc_MaterialVal("Soil", "Material", nil, 1));
+	if (settings.in_mat)
+		loc_inmat = Loc_Material(settings.in_mat);
 	var branches = [];	
 	for (var i = 0; i < amount; i++)
 	{
 		var size = RandomX(settings.size[0], settings.size[1]);
-		var loc = FindLocation(loc_background, Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top, Loc_Or(Loc_Material("Granite"), Loc_Material("Rock"), Loc_MaterialVal("Soil", "Material", nil, 1))), loc_area);
+		var loc = FindLocation(loc_background, Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top, loc_inmat), loc_area);
 		if (!loc)
 			continue;
 		var branch = CreateObject(Branch);
