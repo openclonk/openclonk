@@ -101,12 +101,12 @@ func SaveScenarioObject(props)
 	props->RemoveCreation();
 	if (fx_waterfall)
 	{
-		props->Add(SAVEOBJ_Creation, "CreateWaterfall(%d,%d,%d,%v)",fx_waterfall.X, fx_waterfall.Y, fx_waterfall.Strength, fx_waterfall.Material);
+		props->Add(SAVEOBJ_Creation, "CreateWaterfall(%d, %d, %d, %v)",fx_waterfall.X, fx_waterfall.Y, fx_waterfall.Strength, fx_waterfall.Material);
 		if (fx_waterfall.X != GetX() || fx_waterfall.Y != GetY()) props->AddCall("Position", this, "SetSoundLocation", GetX(), GetY());
 		if (fx_waterfall.XDir || fx_waterfall.YDir || fx_waterfall.XVar || fx_waterfall.YVar)
 			props->AddCall("Direction", this, "SetDirection", fx_waterfall.XDir, fx_waterfall.YDir, fx_waterfall.XVar, fx_waterfall.YVar);
 	}
-	if (fx_drain) props->Add(SAVEOBJ_Creation, "CreateLiquidDrain(%d,%d,%d);",fx_drain.X, fx_drain.Y, fx_drain.Strength);
+	if (fx_drain) props->Add(SAVEOBJ_Creation, "CreateLiquidDrain(%d, %d, %d)",fx_drain.X, fx_drain.Y, fx_drain.Strength);
 	return true;
 }
 
