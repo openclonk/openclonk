@@ -88,6 +88,7 @@ private func SetAlternativeSkin(skin_name)
 	// Numeric argument: Fall through to regular skins
 	if (GetType(skin_name) != C4V_String)
 	{
+		this->SetPortrait(nil); // Reset portrait because it would have been set by the alt skin
 		return this->SetSkin(skin_name);
 	}
 	// Find the given name in the list and update the base skin and color of the clonk.
