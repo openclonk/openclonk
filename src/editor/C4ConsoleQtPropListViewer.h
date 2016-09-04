@@ -200,6 +200,8 @@ public:
 
 class C4PropertyDelegateColor : public C4PropertyDelegate
 {
+private:
+	uint32_t alpha_mask;
 public:
 	typedef C4PropertyDelegateLabelAndButtonWidget Editor;
 

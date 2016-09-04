@@ -580,8 +580,12 @@ bool C4PropertyDelegatePropList::IsPasteValid(const C4Value &val) const
 /* Color delegate */
 
 C4PropertyDelegateColor::C4PropertyDelegateColor(const class C4PropertyDelegateFactory *factory, C4PropList *props)
-	: C4PropertyDelegate(factory, props)
+	: C4PropertyDelegate(factory, props), alpha_mask(0u)
 {
+	if (props)
+	{
+		alpha_mask = props->GetPropertyInt(P_Alpha) << 24;
+	}
 }
 
 uint32_t GetTextColorForBackground(uint32_t background_color)
@@ -619,8 +623,8 @@ QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFac
 	Editor *editor;
 	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
 	connect(editor->button, &QPushButton::pressed, this, [editor, this]() {
-		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt()), editor, QString(), QColorDialog::ShowAlphaChannel);
-		editor->last_value.SetInt(clr.rgba());
+		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt() & (~alpha_mask)), editor, QString(), QColorDialog::ShowAlphaChannel);
+		editor->last_value.SetInt(clr.rgba() | alpha_mask);
 		this->SetEditorData(editor, editor->last_value, C4PropertyPath()); // force update on display
 		emit EditingDoneSignal(editor);
 	});
