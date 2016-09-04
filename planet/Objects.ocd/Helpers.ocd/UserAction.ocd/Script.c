@@ -160,6 +160,14 @@ func Definition(def)
 			] }
 		} } );
 	AddEvaluator("Action", "$Object$", "$ExitObject$", "$ExitObjectHelp$", "exit_object", [def, def.EvalAct_ExitObject], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Action", "$Object$", "$SetVisibility$", "$SetVisibilityHelp$", "set_visibility", [def, def.EvalAct_SetVisibility], { Object={ Function="triggering_clonk" }, Visibility=VIS_All }, { Type="proplist", Display="({{Object}}, {{Visibility}})", EditorProps = {
+		Object = new Evaluator.Object { Name="$Object$" },
+		Visibility = { Name="$Visibility$", Type="enum", Options = [{ Name="$Visible$", Value=VIS_All }, { Name="$Invisible$", Value=VIS_None }] }
+		} } );
+	AddEvaluator("Action", "$Object$", "$SetVincibility$", "$SetVincibilityHelp$", "set_vincibility", [def, def.EvalAct_SetVincibility], { Object={ Function="triggering_clonk" }, Vincibility=false }, { Type="proplist", Display="({{Object}}, {{Vincibility}})", EditorProps = {
+		Object = new Evaluator.Object { Name="$Object$" },
+		Vincibility = { Name="$Vincibility$", Type="enum", Options = [{ Name="$Invincible$", Value=false }, { Name="$Vincible$", Value=true }] }
+		} } );
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
@@ -1091,6 +1099,18 @@ private func EvalAct_SetDirection(proplist props, proplist context)
 {
 	var object = EvaluateValue("Object", props.Object, context);
 	if (object) object->SetDir(props.Direction);
+}
+
+private func EvalAct_SetVisibility(proplist props, proplist context)
+{
+	var object = EvaluateValue("Object", props.Object, context);
+	if (object) object.Visibility = props.Visibility;
+}
+
+private func EvalAct_SetVincibility(proplist props, proplist context)
+{
+	var object = EvaluateValue("Object", props.Object, context);
+	if (object) object->SetInvincibility(!props.Vincibility);
 }
 
 private func EvalAct_DoWealth(proplist props, proplist context)
