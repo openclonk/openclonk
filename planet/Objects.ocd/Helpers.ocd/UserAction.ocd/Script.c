@@ -474,7 +474,9 @@ public func GetObjectEvaluator(filter_def, name, help)
 {
 	// Create copy of the Evaluator.Object delegate, but with the object_constant proplist replaced by a version with filter_def
 	var object_options = Evaluator.Object.Options[:];
-	var const_option = new EvaluatorDefs["object_constant"] {};
+	// Need to copy the option Value field to ensure it is owned by the correct parent.
+	// Otherwise it would be assigned by reference in the editor
+	var const_option = new EvaluatorDefs["object_constant"] { Value = { Function="object_constant", Value=nil } };
 	const_option.Delegate = new const_option.Delegate { Filter=filter_def };
 	object_options[const_option.OptionIndex] = const_option;
 	var new_evaluator = new Evaluator.Object { Name=name, Options=object_options, EditorHelp=help };
