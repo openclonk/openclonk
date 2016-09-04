@@ -274,11 +274,11 @@ public func AddSeedEditorProps(def)
 {
 	// Seed props used by seed and plant
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.plant_seed_chance = { Name="$SeedChance$", EditorHelp="$SeedChanceHelp$", Type="int", Min=0, Max=10000, Asyncget="SeedChance", Set="SetSeedChance" };
-	def.EditorProps.plant_seed_area = { Name="$SeedArea$", EditorHelp="$SeedAreaHelp$", Type="int", Min=0, Asyncget="SeedArea", Set="SetSeedArea" };
-	def.EditorProps.plant_seed_amount = { Name="$SeedAmount$", EditorHelp="$SeedAmountHelp$", Type="int", Min=0, Asyncget="SeedAmount", Set="SetSeedAmount" };
-	def.EditorProps.plant_seed_offset = { Name="$SeedOffset$", EditorHelp="$SeedOffsetHelp$", Type="int", Min=0, Asyncget="SeedOffset", Set="SetSeedOffset" };
-	def.EditorProps.Confinement = { Name="$Confinement$", EditorHelp="$ConfinementHelp$", Type="enum", Set="SetConfinementRect", Options = [
+	def.EditorProps.plant_seed_chance = { Name="$SeedChance$", EditorHelp="$SeedChanceHelp$", Type="int", Min=0, Max=10000, Asyncget="SeedChance", Set="SetSeedChance", Save="Seed" };
+	def.EditorProps.plant_seed_area = { Name="$SeedArea$", EditorHelp="$SeedAreaHelp$", Type="int", Min=0, Asyncget="SeedArea", Set="SetSeedArea", Save="Seed" };
+	def.EditorProps.plant_seed_amount = { Name="$SeedAmount$", EditorHelp="$SeedAmountHelp$", Type="int", Min=0, Asyncget="SeedAmount", Set="SetSeedAmount", Save="Seed" };
+	def.EditorProps.plant_seed_offset = { Name="$SeedOffset$", EditorHelp="$SeedOffsetHelp$", Type="int", Min=0, Asyncget="SeedOffset", Set="SetSeedOffset", Save="Seed" };
+	def.EditorProps.Confinement = { Name="$Confinement$", EditorHelp="$ConfinementHelp$", Type="enum", Set="SetConfinementRect", Save="Seed", Options = [
 		{ Name="$NoConfinmenet$" },
 		{ Name="$Rect$", OptionKey="Type", DefaultValueFunction=Library_Seed.GetDefaultConfinement, Value={ Type="rect" }, Delegate={ Type="rect", Relative=false, Storage="proplist", Color=0x30ff30, Set="SetConfinementRect" } }
 		// other shapes not supported for now

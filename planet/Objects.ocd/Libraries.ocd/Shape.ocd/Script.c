@@ -44,6 +44,11 @@ private func BaseRectangle_GetRandomPoint(proplist result)
 	return true;
 }
 
+private func BaseRectangle_ToString()
+{
+	return Format("Shape->Rectangle(%d, %d, %d, %d)", this.x, this.y, this.wdt, this.hgt);
+}
+
 /** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
@@ -314,6 +319,7 @@ public func Definition(def)
 		GetRandomPoint = Shape.BaseRectangle_GetRandomPoint,
 		Find_In = Shape.BaseRectangle_Find_In,
 		Find_At = Shape.BaseRectangle_Find_At,
+		ToString = Shape.BaseRectangle_ToString
 	};
 	BaseCircle = new BaseShape
 	{
