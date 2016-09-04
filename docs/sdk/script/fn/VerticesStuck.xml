@@ -30,6 +30,7 @@ if (VerticesStuck(obj) > 1) RemoveObject(obj);</code>
     <related>
       <funclink>GetVertex</funclink>
       <funclink>Stuck</funclink>
+      <funclink>Unstick</funclink>
     </related>
   </func>
   <author>flgr</author><date>2002-01</date>

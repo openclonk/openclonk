@@ -1204,9 +1204,9 @@ static bool FnActIdle(C4Object *Obj)
 	return !Obj->GetAction();
 }
 
-static bool FnStuck(C4Object *Obj)
+static bool FnStuck(C4Object *Obj, long off_x, long off_y)
 {
-	return !!Obj->Shape.CheckContact(Obj->GetX(),Obj->GetY());
+	return !!Obj->Shape.CheckContact(Obj->GetX()+off_x,Obj->GetY()+off_y);
 }
 
 static bool FnInLiquid(C4Object *Obj)

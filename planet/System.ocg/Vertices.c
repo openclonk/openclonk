@@ -27,6 +27,29 @@ global func VerticesStuck()
 	return vertices;
 }
 
+// Automatically move an object up to <range> pixels in each direction if it is stuck
+global func Unstick(int range)
+{
+	if (Stuck())
+	{
+		for (var i = 1; i <= (range ?? 7); ++i)
+		{
+			for (var d in [[0,-i], [0,i], [-i,0], [i,0]])
+			{
+				if (!Stuck(d[0], d[1]))
+				{
+					if (Inside(GetX()+d[0], 0, LandscapeWidth()-1) && GetY()+d[1] < LandscapeHeight()) // But do not push outside landscape!
+					{
+						return SetPosition(GetX() + d[0], GetY() + d[1]);
+					}
+				}
+			}
+		}
+	}
+	// Unsticking failed (or not stuck).
+	return false;
+}
+
 // Returns whether the object has a vertex with the given CNAT value
 global func HasCNAT(int cnat)
 {
