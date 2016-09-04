@@ -5,13 +5,7 @@ local Name = "EditorBase";
 // Do not create
 public func Construction() { RemoveObject(); }
 
-// Basic properties of all objects
-local EditorProps = {
-	Invincibility = { Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" },
-	PlayerColor = { Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
-	Name = { Type = "string", AsyncGet = "GetName", Set = "SetName" },
-	CustomInitializationScript = { Type = "string", Name = "$CustomInitialization$", EditorHelp = "$CustomInitializationHelp$" }
-};
+local EditorProps;
 local Plane = 1;
 
 local CountedID, IDList, AnyDef, IDSet, PlayerNumber, TeamID, PlayerMask;
@@ -19,6 +13,15 @@ local CountedID, IDList, AnyDef, IDSet, PlayerNumber, TeamID, PlayerMask;
 local DefinitionPriority=100; // Call this definition early to allow EditorProp initialization
 func Definition(def)
 {
+	// Basic properties of all objects
+	def.EditorProps = {
+		Invincibility = { Name = "$Invincibility$", EditorHelp = "$InVincibilityHelp$", Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" },
+		Visibility = { Type = "enum", Name = "$Visibility$", EditorHelp = "$VisibilityHelp$", Options = [ { Name="$Unknown$", Value=-1 }, { Name="$Visible$", Value=VIS_All }, { Name="$Invisible$", Value=VIS_None }, { Name="$EditorVisible$", Value=VIS_Editor } ] },
+		PlayerColor = { Name="$PlayerColor$", EditorHelp="$PlayerColorHelp$", Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
+		ClrModulation = { Name="$ClrModulation$", EditorHelp="$ClrModulationHelp$", Type = "color", AsyncGet = "GetClrModulation", Set = "SetClrModulation" },
+		Name = { Name="$Name$", Type = "string", AsyncGet = "GetName", Set = "SetName" },
+		CustomInitializationScript = { Type = "string", Name = "$CustomInitialization$", EditorHelp = "$CustomInitializationHelp$" }
+	};
 	// Property delegate types
 	CountedID = { Type = "proplist", Display = "{{count}}x{{id}}", DefaultValue = { count=1, id=nil }, Name = "$IDListEntry$", EditorProps = {
 		count = { Type = "int", Min = 1 },
