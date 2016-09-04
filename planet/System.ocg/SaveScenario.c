@@ -358,7 +358,9 @@ global func SaveScenarioObject(props)
 			props->Add(SAVEOBJ_Creation, "CreateObject(%i, %d, %d%s)", GetID(), GetX(), GetY(), owner_string);
 	}
 	else
+	{
 		props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
+	}
 	// Contained creation is added alongside regular creation because it is not yet known if CreateObject+Enter or CreateContents can be used due to dependencies.
 	// func SaveScen_SetContainers will take care of removing one of the two creation strings after dependencies have been resolved.
 	if (Contained())
@@ -443,6 +445,14 @@ global func SaveScenarioObject(props)
 				}
 			}
 		}
+	}
+	// Automatic unsticking for items lying on the ground and for animals / clonks
+	// Do this after Con/Rotation and other calls that may affect the shape
+	// (Note: If someone loads a game in paused mode and immediately saves without unpausing, most unstick calls for items will be lost)
+	if (!Contained() && !this.SaveScenarioCreateCentered && !this.SaveScenarioCreateFromBottom && !Stuck() && (GetAlive() || (this.Collectible && GetContact(-1, CNAT_Left | CNAT_Right | CNAT_Top | CNAT_Bottom))))
+	{
+		var unstick_range = 7; // GetScenMapZoom() - 1; // Unfortunately, this would not be sync save for network clients doing runtime join on editor sessions [end then reloading from a runtime save]
+		props->AddCall("Unstick", this, "Unstick", unstick_range);
 	}
 	// Initialization function as late as possible
 	v = this.CustomInitializationScript; if (v) props->AddCall("CustomInitialization", this, "CustomInitialize", Format("%v", v));
