@@ -58,12 +58,12 @@ protected func InitializePlayer(int plr)
 	return true;
 }
 
-protected func InitializePlayers(int plr)
+protected func InitializePlayers()
 {
 	if (!seq_name)
 	{
 		// Editor-made sequence
-		if (trigger && trigger.Trigger == "game_start") OnTrigger();
+		if (trigger && trigger.Trigger == "game_start") OnTrigger(nil, GetPlayerByIndex(0, C4PT_User));
 	}
 	return true;
 }
