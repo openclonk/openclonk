@@ -66,6 +66,9 @@ local EvaluatorReturnTypes = {
 	Any = C4V_Nil
 };
 
+// Array of specialized object evaluators
+local object_evaluators;
+
 func Definition(def)
 {
 	// Typed evaluator base definitions
@@ -83,9 +86,11 @@ func Definition(def)
 	Evaluator.Position = { Name="$UserPosition$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$Here$", Priority=100 } ] };
 	Evaluator.Offset = { Name="$UserOffset$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
 	Evaluator.Any = { Name="$UserAny$", Type="enum", OptionKey="Function", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
-	// Action evaluators
 	EvaluatorCallbacks = {};
 	EvaluatorDefs = {};
+	// Object constant evaluator may be needed early be evaluators referencing filtered objects
+	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
+		// Action evaluators
 	AddEvaluator("Action", "$Sequence$", "$Sequence$", "$SequenceHelp$", "sequence", [def, def.EvalAct_Sequence], { Actions=[] }, { Type="proplist", DescendPath="Actions", HideFullName=true, Display="{{Actions}}", EditorProps = {
 		Actions = { Name="$Actions$", Type="array", Elements=Evaluator.Action },
 		} } );
@@ -158,6 +163,10 @@ func Definition(def)
 	AddEvaluator("Action", "Clonk", "$DoEnergy$", "$DoEnergyHelp$", "do_energy", [def, def.EvalAct_ObjectCallInt, Global.DoEnergy], { Object={ Function="triggering_clonk" } }, { Type="proplist", Display="({{Object}}, {{Value}})", EditorProps = {
 		Object = new Evaluator.Object { Name="$Object$", EditorHelp="$DoEnergyObjectHelp$" },
 		Value = new Evaluator.Integer { Name="$ValueChange$", EditorHelp="$DoEnergyValueChangeHelp$" }
+		} } );
+	AddEvaluator("Action", "Clonk", "$SetDirection$", "$SetDirectionHelp$", "set_direction", [def, def.EvalAct_SetDirection], { Object={ Function="triggering_clonk" }, Direction=DIR_Left }, { Type="proplist", Display="({{Object}}, {{Direction}})", EditorProps = {
+		Object = GetObjectEvaluator("IsClonk", "$Clonk$"),
+		Direction = { Name="$Direction$", Type="enum", Options=[{ Name="$Left$", Value=DIR_Left }, { Name="$Right$", Value=DIR_Right }] }
 		} } );
 	AddEvaluator("Action", "Ambience", "$CastParticles$", "$CastParticlesHelp$", "cast_particles", [def, def.EvalAct_CastParticles], {
 			Name="StarFlash",
@@ -245,7 +254,6 @@ func Definition(def)
 	AddEvaluator("Object", nil, "$TriggerClonk$", "$TriggerClonkHelp$", "triggering_clonk", [def, def.EvalContextValue, "triggering_clonk"]);
 	AddEvaluator("Object", nil, "$TriggerObject$", "$TriggerObjectHelp$", "triggering_object", [def, def.EvalContextValue, "triggering_object"]);
 	AddEvaluator("Object", nil, "$IteratedObject$", "$IteratedObjectHelp$", "iterated_object", [def, def.EvalContextValue, "for_object"]);
-	AddEvaluator("Object", nil, ["$ConstantObject$", ""], "$ConstantObjectHelp$", "object_constant", [def, def.EvalConstant], { Value=nil }, { Type="object", Name="$Value$" });
 	AddEvaluator("Object", nil, "$LastCreatedObject$", "$LastCreatedObjectHelp$", "last_created_object", [def, def.EvalContextValue, "last_created_object"]);
 	var find_object_in_area_delegate = { Type="proplist", Display="{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { Name="$ID$", EditorHelp="$FindObjectsIDHelp$", EmptyName="$Any$", Priority=51 },
@@ -461,7 +469,10 @@ public func GetObjectEvaluator(filter_def, name, help)
 	var const_option = new EvaluatorDefs["object_constant"] {};
 	const_option.Delegate = new const_option.Delegate { Filter=filter_def };
 	object_options[const_option.OptionIndex] = const_option;
-	return new Evaluator.Object { Name=name, Options=object_options, EditorHelp=help };
+	var new_evaluator = new Evaluator.Object { Name=name, Options=object_options, EditorHelp=help };
+	if (!object_evaluators) object_evaluators = [];
+	object_evaluators[GetLength(object_evaluators)] = new_evaluator;
+	return new_evaluator;
 }
 
 public func AddEvaluator(string eval_type, string group, name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
@@ -532,6 +543,10 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 		EvaluatorCallbacks[identifier] = callback_data;
 		EvaluatorDefs[identifier] = action_def;
 	}
+	// Copy any object evaluators to existing evaluator lists
+	if (eval_type == "Object" && object_evaluators)
+		for (obj_eval in object_evaluators)
+			obj_eval.Options[GetLength(obj_eval.Options)] = action_def;
 	return action_def;
 }
 
@@ -1070,6 +1085,12 @@ private func EvalAct_ExitObject(proplist props, proplist context)
 {
 	var object = EvaluateValue("Object", props.Object, context);
 	if (object) object->Exit();
+}
+
+private func EvalAct_SetDirection(proplist props, proplist context)
+{
+	var object = EvaluateValue("Object", props.Object, context);
+	if (object) object->SetDir(props.Direction);
 }
 
 private func EvalAct_DoWealth(proplist props, proplist context)
