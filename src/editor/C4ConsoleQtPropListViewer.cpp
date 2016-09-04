@@ -2782,8 +2782,13 @@ void C4ConsoleQtPropListModel::AddArrayElement()
 {
 	C4Value new_val;
 	C4PropList *info_proplist = this->info_proplist.getPropList();
-	if (info_proplist) info_proplist->GetProperty(P_DefaultValue, &new_val);
-	target_path.DoCall(FormatString("PushBack(%%s, %s)", new_val.GetDataString(10).getData()).getData());
+	C4PropListStatic *info_proplist_static = nullptr;
+	if (info_proplist)
+	{
+		info_proplist->GetProperty(P_DefaultValue, &new_val);
+		info_proplist_static = info_proplist->IsStatic();
+	}
+	target_path.DoCall(FormatString("PushBack(%%s, %s)", new_val.GetDataString(10, info_proplist_static).getData()).getData());
 }
 
 void C4ConsoleQtPropListModel::RemoveArrayElement()
