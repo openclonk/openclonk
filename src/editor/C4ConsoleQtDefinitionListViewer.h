@@ -52,6 +52,7 @@ public:
 
 	// Refresh definition list (on initialization or e.g. after ReloadDef)
 	void ReInit();
+	void EnsureInit();
 	void OnItemRemoved(class C4Def *def);
 
 	// Callback from EditCursor when selection was changed e.g. from property window

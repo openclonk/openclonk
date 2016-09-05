@@ -18,6 +18,7 @@
 
 #include "C4Include.h"
 #include "editor/C4ConsoleQtState.h"
+#include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleGUI.h"
 #include "landscape/C4Texture.h"
@@ -351,14 +352,19 @@ bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename)
 
  void C4ConsoleGUI::OnObjectSelectionChanged(class C4EditCursorSelection &selection)
  {
-	 // selection changed (through other means than creator or object list view)
-	 // reflect selection change in dialogues
-	 state->SetObjectSelection(selection);
+	// selection changed (through other means than creator or object list view)
+	// reflect selection change in dialogues
+	state->SetObjectSelection(selection);
  }
 
 void C4ConsoleGUI::ClearGamePointers()
 {
-	 state->ClearGamePointers();
+	state->ClearGamePointers();
+}
+
+void C4ConsoleGUI::EnsureDefinitionListInitialized()
+{
+	state->definition_list_model->EnsureInit();
 }
 
 void C4ToolsDlg::UpdateToolCtrls()

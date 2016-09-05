@@ -55,6 +55,14 @@ C4ConsoleQtDefinitionListModel::~C4ConsoleQtDefinitionListModel()
 {
 }
 
+void C4ConsoleQtDefinitionListModel::EnsureInit()
+{
+	// Init if not already done
+	if (!root.get() || root->items.empty())
+		if (::Definitions.GetDefCount())
+			ReInit();
+}
+
 void C4ConsoleQtDefinitionListModel::ReInit()
 {
 	// Re-fill definition model with all loaded definitions matching condition

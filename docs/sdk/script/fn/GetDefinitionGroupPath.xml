@@ -9,21 +9,14 @@
     <version>8.0 OC</version>
     <syntax>
       <rtype>string</rtype>
-      <params>
-        <param>
-          <type>id</type>
-          <name>definition</name>
-          <desc>Definition to get the path of.</desc>
-        </param>
-      </params>
     </syntax>
-    <desc>Returns the editor group path of a definition. This is the path at which the definition is shown in the creator window and can be used to gorup definitions in large dropdown enumerations.</desc>
+    <desc>Returns the editor group path of the calling definition. This is the path at which the definition is shown in the creator window and can be used to gorup definitions in large dropdown enumerations.</desc>
     <examples>
       <example>
         <code>var index = 0, weapon_def, weapon_list = [];
 while (weapon_def = GetDefinition(index))
 {
-	if (<funclink>WildcardMatch</funclink>(GetDefinitionGroupPath(weapon_def), "*/Weapons")
+	if (<funclink>WildcardMatch</funclink>(weapon_def->GetDefinitionGroupPath(), "*/Weapons")
 		weapon_list[GetLength(weapon_list)] = weapon_def;
 	index++;
 }

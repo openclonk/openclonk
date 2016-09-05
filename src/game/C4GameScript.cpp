@@ -987,11 +987,13 @@ static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 	return ::Definitions.GetDef(iIndex);
 }
 
-static C4String * FnGetDefinitionGroupPath(C4PropList * _this, C4ID id)
+static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 {
+	// Must have loaded all paths
+	::Console.EnsureDefinitionListInitialized();
 	// Resolve definition
-	C4Def *def = C4Id2Def(id);
-	if (!def) return nullptr;
+	C4Def *def = _this->GetDef();
+	if (!def || !def->ConsoleGroupPath.getData()) return nullptr;
 	return ::Strings.RegString(def->ConsoleGroupPath.getData());
 }
 
