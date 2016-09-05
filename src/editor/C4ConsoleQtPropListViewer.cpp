@@ -955,34 +955,40 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 	int idx = 0;
 	for (const Option &opt : options)
 	{
-		QStandardItem *parent = model->invisibleRootItem();
-		if (opt.group)
+		QStandardItem *new_item = model->invisibleRootItem(), *parent = nullptr;
+		QStringList group_names;
+		if (opt.group) group_names.append(QString(opt.group->GetCStr()).split(QString("/")));
+		group_names.append(opt.name->GetCStr());
+		for (const QString &group_name : group_names)
 		{
-			QStringList group_names = QString(opt.group->GetCStr()).split(QString("/"));
-			for (const QString &group_name : group_names)
-			{
-				int row_index = -1;
-				for (int check_row_index = 0; check_row_index < parent->rowCount(); ++check_row_index)
-					if (parent->child(check_row_index, 0)->text() == group_name)
-					{
-						row_index = check_row_index;
-						parent = parent->child(check_row_index, 0);
-						break;
-					}
-				if (row_index < 0)
+			parent = new_item;
+			int row_index = -1;
+			for (int check_row_index = 0; check_row_index < new_item->rowCount(); ++check_row_index)
+				if (new_item->child(check_row_index, 0)->text() == group_name)
 				{
-					QStandardItem *new_group = new QStandardItem(group_name);
-					if (sorted)
-					{
-						// Groups always sorted by name. Could also sort by priority of highest priority element?
-						new_group->setData("010000000"+group_name, C4DeepQComboBox::PriorityNameSortRole);
-					}
-					parent->appendRow(new_group);
-					parent = new_group;
+					row_index = check_row_index;
+					new_item = new_item->child(check_row_index, 0);
+					break;
 				}
+			if (row_index < 0)
+			{
+				QStandardItem *new_group = new QStandardItem(group_name);
+				if (sorted)
+				{
+					// Groups always sorted by name. Could also sort by priority of highest priority element?
+					new_group->setData("010000000"+group_name, C4DeepQComboBox::PriorityNameSortRole);
+				}
+				new_item->appendRow(new_group);
+				new_item = new_group;
 			}
 		}
-		QStandardItem *new_item = new QStandardItem(QString(opt.name->GetCStr()));
+		// If this item is already set, add a duplicate entry
+		if (new_item->data(C4DeepQComboBox::OptionIndexRole).isValid())
+		{
+			new_item = new QStandardItem(QString(opt.name->GetCStr()));
+			parent->appendRow(new_item);
+		}
+		// Sort key
 		if (sorted)
 		{
 			// Reverse priority and make positive, so we can sort by descending priority but ascending name
@@ -999,7 +1005,6 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 			C4String *s = opt.value.getStr();
 			new_item->setData(QString(s ? s->GetCStr() : ""), C4DeepQComboBox::ValueStringRole);
 		}
-		parent->appendRow(new_item);
 		++idx;
 	}
 	// Sort model and all groups
