@@ -118,6 +118,36 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 		new_root = root.get();
 	}
 	root->parent = nullptr;
+	// Copy group path names into definitions for later lookup by script
+	QStringList group_names;
+	DefListNode *node = root.get();
+	while (node)
+	{
+		if (node->def)
+		{
+			node->def->ConsoleGroupPath.Copy(group_names.join('/').toUtf8());
+		}
+		// Walk over tree. Remember groups in group_names string list.
+		if (!node->items.empty())
+		{
+			if (node != root.get()) group_names.append(node->name.getData());
+			node = node->items[0].get();
+		}
+		else
+		{
+			int32_t idx = node->idx + 1;
+			while ((node = node->parent))
+			{
+				if (node->items.size() > idx)
+				{
+					node = node->items[idx].get();
+					break;
+				}
+				if (group_names.size()) group_names.pop_back();
+				idx = node->idx + 1;
+			}
+		}
+	}
 	// Sort everything by display name (recursively)
 	root->SortByName();
 	// Model reset to invalidate all indexes
@@ -193,7 +223,6 @@ QModelIndex C4ConsoleQtDefinitionListModel::parent(const QModelIndex &index) con
 	if (!parent_node || parent_node == root.get()) return QModelIndex();
 	return createIndex(parent_node->idx, index.column(), parent_node);
 }
-
 
 QModelIndex C4ConsoleQtDefinitionListModel::GetModelIndexByItem(C4Def *def) const
 {

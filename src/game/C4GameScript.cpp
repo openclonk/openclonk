@@ -987,6 +987,14 @@ static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 	return ::Definitions.GetDef(iIndex);
 }
 
+static C4String * FnGetDefinitionGroupPath(C4PropList * _this, C4ID id)
+{
+	// Resolve definition
+	C4Def *def = C4Id2Def(id);
+	if (!def) return nullptr;
+	return ::Strings.RegString(def->ConsoleGroupPath.getData());
+}
+
 static C4Value FnGetBaseMaterial(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
 	if (!ValidPlr(iPlr)) return C4VBool(false);
@@ -2685,6 +2693,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetX);
 	F(GetY);
 	F(GetDefinition);
+	F(GetDefinitionGroupPath);
 	F(GetPlayerName);
 	F(GetPlayerType);
 	F(GetPlayerColor);

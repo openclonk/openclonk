@@ -178,6 +178,7 @@ public:
 	~C4Def();
 public:
 	char Filename[_MAX_FNAME+1];
+	StdCopyStrBuf ConsoleGroupPath; // file path as used in the definition list viewer in the console. Only initialized in editor mode.
 	int32_t Creation;
 	int32_t Count; // number of instanciations
 
