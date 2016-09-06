@@ -80,8 +80,8 @@ func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
 
 func Disperse(int angle, int strength)
 {
-	// does nothing but remove the object - overload if you want special effects
-	RemoveObject();
+	// does nothing but remove the object (unless it's an infinite stack) - overload if you want special effects
+	if (!IsInfiniteStackCount())  RemoveObject();
 }
 
 func DisperseMaterial(string material_name, int amount, int strength, int angle, int angle_variance)

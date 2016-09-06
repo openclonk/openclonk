@@ -67,7 +67,7 @@ public func ControlUse(object clonk, int iX, int iY)
 	if (IsBucketFilled())
 	{
 		Spill(angle);
-		EmptyBucket();
+		if (Contents(0) && !Contents(0)->IsInfiniteStackCount()) EmptyBucket();
 		PlayBucketAnimation(clonk);
 		return true;
 	}
