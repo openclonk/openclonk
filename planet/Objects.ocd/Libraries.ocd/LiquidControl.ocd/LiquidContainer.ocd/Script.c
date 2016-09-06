@@ -94,7 +94,7 @@ Inserts liquid into the container.
 @param amount: Max amount of material being inserted.
                Passing a nil parameter will fill the
                container to its maximum.
-@param source: Object which inserts the liquid
+@param source: Object which inserts the liquid [optional]
 @return returned_amount: The inserted amount
 */
 func PutLiquid(liquid_name, int amount, object source)

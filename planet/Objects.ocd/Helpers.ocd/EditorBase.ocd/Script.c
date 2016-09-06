@@ -9,6 +9,8 @@ local EditorProps;
 local Plane = 1;
 
 local CountedID, IDList, AnyDef, IDSet, PlayerNumber, TeamID, PlayerMask;
+local ItemPlusParameter, ItemPlusParameterOptionMap;
+local ItemPlusParameterList;
 
 local DefinitionPriority=100; // Call this definition early to allow EditorProp initialization
 func Definition(def)
@@ -37,6 +39,84 @@ func Definition(def)
 		{ Name="$Specific$", Value={ Option="number" }, ValueKey="Data", Delegate=PlayerNumber },
 		{ Name="$Team$", Value={ Option="team" }, ValueKey="Data", Delegate=TeamID },
 		] };
+	// Item plus extra stuff (contents, stack, etc.)
+	ItemPlusParameterOptionMap = {};
+	ItemPlusParameter = { Name="$Item", Type="enum", Sorted=true, Options = [ { Name="$Nothing$", Priority=50 } ] };
+	var itemdef, i = 0, n = 0, option, contents_def, j, n2, contents_defs, mat;
+	while ((itemdef = GetDefinition(i++)))
+		if (itemdef.Collectible || itemdef->~GetLiquidType())
+		{
+			var group = itemdef->GetDefinitionGroupPath();
+			if (WildcardMatch(group, "Objects/Items/*"))
+				group = ReplaceString(group, "Objects/Items/", ""); // Shortcut this group since most items will be here
+			else
+				group = "$Other$";
+			option = { Name=itemdef->GetName(), Group=group, Value=itemdef };
+			var def_id = Format("%i", itemdef);
+			ItemPlusParameterOptionMap[def_id] = option;
+			// Test various kinds of extra parameters for new items
+			if (itemdef->~IsLiquidContainer() && itemdef->~GetLiquidContainerMaxFillLevel())
+			{
+				// Liquid container: Offer to fill with liquid
+				j = 0; n2 = 0;
+				contents_defs = [{Name="$Nothing$"}];
+				while ((contents_def = GetDefinition(j++)))
+					if ((mat = contents_def->~GetLiquidType()))
+						if (itemdef->IsLiquidContainerForMaterial(mat))
+							contents_defs[++n2] = contents_def;
+				if (n2)
+				{
+					option.Value = { ItemPlusParameter="liquid", ID=itemdef };
+					option.OptionKey = "ID";
+					option.ValueKey = "Liquid";
+					option.Delegate = { Name="$Liquid$", Type="enum", Sorted=true, Options=contents_defs }; // Options resolved later uisng ItemPlusParameterOptionMap
+				}
+			}
+			else if (itemdef.ExtraSlotFilter)
+			{
+				// Extra slot objects: Offer contents
+				j = 0; n2 = 0;
+				contents_defs = [{Name="$Nothing$"}];
+				while ((contents_def = GetDefinition(j++)))
+					if (contents_def[itemdef.ExtraSlotFilter])
+						if (contents_def->Call(itemdef.ExtraSlotFilter))
+							contents_defs[++n2] = contents_def;
+				if (n2)
+				{
+					option.Value = { ItemPlusParameter="contents", ID=itemdef };
+					option.OptionKey = "ID";
+					option.ValueKey = "Contents";
+					option.Delegate = { Name="$Contents$", Type="enum", Sorted=true, Options=contents_defs }; // Options resolved later uisng ItemPlusParameterOptionMap
+				}
+			}
+			else if (itemdef->~IsStackable())
+			{
+				// Stackable: Offer stack count
+				option.Value = { ItemPlusParameter="stack", ID=itemdef };
+				option.OptionKey = "ID";
+				option.ValueKey = "StackCount";
+				option.Delegate = { Name="$Contents$", Type="enum", Options=[
+					{ Name=Format("$DefaultStack$", itemdef->InitialStackCount()) },
+					{ Name="$CustomStack$", Type=C4V_Int, Value=itemdef->InitialStackCount(), Delegate={ Type="int", Min=1/*, Max=itemdef->MaxStackCount()*/ } }, // there's no reason to restrict the max stack in editor
+					{ Name="$InfiniteStack$", Value="infinite" }
+					]};
+			}
+			// Add to item list if it's an item
+			// Do not add liquids; they're just processed here to get the stackable definition
+			if (itemdef.Collectible) ItemPlusParameter.Options[++n] = option;
+		}
+	// Link item contents parameter menus, but ignore group because it's usually a low number of items anyway
+	for (option in ItemPlusParameter.Options)
+		if (option.ValueKey == "Contents" || option.ValueKey == "Liquid")
+			for (i = 1; i < GetLength(option.Delegate.Options); ++i)
+			{
+				var option_item = ItemPlusParameterOptionMap[Format("%i", option.Delegate.Options[i])] ?? option.Delegate.Options[i];
+				if (option_item.Prototype == Global)
+					option.Delegate.Options[i] = { Name=option_item->GetName(), Value=option_item }; // Regular definition
+				else
+					option.Delegate.Options[i] = new option_item { Group=nil }; // Definition with extra parameter
+			}
+	ItemPlusParameterList = { Name = "$ItemPlusParameterList$", Type = "array", Display = 3, Elements = ItemPlusParameter };
 	return true;
 }
 
@@ -72,4 +152,51 @@ public func GetConditionalIDList(string condition, string name, proplist default
 		count = { Type = "int", Min = 1 },
 		id = { Type = "def", Filter=condition } } };
 	return { Name = name, Type = "array", Display = 3, DefaultValue = { count=1, id=default_id }, Elements = counted_id, EditorHelp = help };
+}
+
+// Create item specieid in ItemsPlusParameters delegate
+public func CreateItemPlusParameter(proplist param, int x, int y, int owner)
+{
+	if (!param) return nil;
+	var id;
+	if (param.ItemPlusParameter) id = param.ID; else id = param;
+	var obj = CreateObject(id, x, y, owner);
+	return ApplyContentsPlusParameter(param, obj);
+}
+
+public func CreateContentsPlusParameter(proplist param, object container)
+{
+	if (!param || !container) return nil;
+	var id;
+	if (param.ItemPlusParameter) id = param.ID; else id = param;
+	var obj = container->CreateContents(id);
+	return ApplyContentsPlusParameter(param, obj);
+}
+
+private func ApplyContentsPlusParameter(proplist param, object to_obj)
+{
+	// Apply object contents or stack count setting
+	if (to_obj && param.ItemPlusParameter)
+	{
+		if (param.ItemPlusParameter == "liquid")
+		{
+			CreateContentsPlusParameter(param.Liquid, to_obj);
+		}
+		else if (param.ItemPlusParameter == "contents")
+		{
+			CreateContentsPlusParameter(param.Contents, to_obj);
+		}
+		else if (param.ItemPlusParameter == "stack" && GetType(param.StackCount))
+		{
+			if (param.StackCount == "infinite")
+			{
+				to_obj->SetInfiniteStackCount();
+			}
+			else
+			{
+				to_obj->SetStackCount(param.StackCount);
+			}
+		}
+	}
+	return to_obj;
 }

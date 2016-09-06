@@ -34,7 +34,7 @@ public func Definition(def)
 		{ Name="$Specific$", Value={ Option="idlist", Data=[] }, ValueKey="Data", Delegate=EditorBase.IDSet },
 		] };
 	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
-	def.EditorProps.starting_material = EditorBase->GetConditionalIDList("Collectible", "$StartingMaterial$", nil, "$StartingMaterialHelp$");
+	def.EditorProps.starting_material = new EditorBase.ItemPlusParameterList { Name="$StartingMaterial$", EditorHelp="$StartingMaterialHelp$" };
 	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
 	def.EditorProps.clonk_max_contents_count = { Name="$ClonkMaxContentsCount$", EditorHelp="$ClonkMaxContentsCountHelp$", Type="enum", Options = [
 		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
@@ -43,13 +43,13 @@ public func Definition(def)
 	def.EditorProps.respawn_material = { Name="$RespawnMaterial$", Type="enum", Set="SetRespawnMaterial", Save="RespawnMaterial", Options = [
 		{ Name="$None$" },
 		{ Name="$SameAsStartingMaterial$", Value="starting_material" },
-		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=EditorBase->GetConditionalIDList("Collectible", "$RespawnMaterial$", nil, "$RespawnMaterialHelp$") },
+		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=new EditorBase.ItemPlusParameterList { Name="$RespawnMaterial$", EditorHelp="$RespawnMaterialHelp$" } },
 		] };
 	return true;
 }
 
 public func GetDefaultCrew() { return [{id=Clonk, count=1}]; }
-public func GetDefaultMaterial() { return [{id=Shovel, count=1}, {id=Hammer, count=1}, {id=Axe, count=1}]; }
+public func GetDefaultMaterial() { return [Shovel, Hammer, Axe]; }
 
 public func Initialize()
 {
@@ -88,7 +88,19 @@ public func SetStartingCrew(array new_crew)
 
 public func SetStartingMaterial(array new_material)
 {
-	starting_material = new_material;
+	// ID+count conversion (old style)
+	if (new_material && GetLength(new_material) && new_material[0].id && new_material[0].count && !new_material[0]->~GetName())
+	{
+		starting_material = [];
+		var n = 0;
+		for (var idlist_entry in new_material)
+			for (var i = 0; i < idlist_entry.count; ++i)
+				starting_material[n++] = idlist_entry.id;
+	}
+	else
+	{
+		starting_material = new_material;
+	}
 	return true;
 }
 
@@ -257,27 +269,26 @@ private func InitializeMaterial(int plr)
 	// Spread material across clonks. Try to fill them evenly and avoid giving the same item twice to the same clonk
 	// So e.g. each clonk can get one shovel
 	for (var idlist_entry in starting_material)
-		for (var i=0; i<idlist_entry.count; ++i)
-		{
-			var best_target = nil, target_score, id = idlist_entry.id, clonk;
-			var obj = CreateObjectAbove(id, 0,GetDefHeight()/2, plr);
-			if (!obj || !obj.Collectible) continue;
-			for (var j=0; j<GetCrewCount(plr); ++j)
-				if (clonk = GetCrew(plr, j))
+	{
+		var best_target = nil, target_score, id = idlist_entry.id, clonk;
+		var obj = EditorBase->CreateItemPlusParameter(idlist_entry, GetX(),GetY()+GetDefHeight()/2, plr);
+		if (!obj || !obj.Collectible) continue;
+		for (var j=0; j<GetCrewCount(plr); ++j)
+			if (clonk = GetCrew(plr, j))
+			{
+				var clonk_score = 0;
+				// High penalty: Already has item of same type
+				clonk_score += clonk->ContentsCount(id)*1000;
+				// Low penalty: Already has items
+				clonk_score += clonk->ContentsCount();
+				if (!best_target || clonk_score < target_score)
 				{
-					var clonk_score = 0;
-					// High penalty: Already has item of same type
-					clonk_score += clonk->ContentsCount(id)*1000;
-					// Low penalty: Already has items
-					clonk_score += clonk->ContentsCount();
-					if (!best_target || clonk_score < target_score)
-					{
-						best_target = clonk;
-						target_score = clonk_score;
-					}
+					best_target = clonk;
+					target_score = clonk_score;
 				}
-			if (best_target) best_target->Collect(obj); // May fail due to contents full
-		}
+			}
+		if (best_target) best_target->Collect(obj); // May fail due to contents full
+	}
 	return true;
 }
 

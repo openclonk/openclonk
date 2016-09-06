@@ -238,3 +238,5 @@ local Components = {Wood = 1, Metal = 2};
 
 local BulletsPerShot = 5;
 local BulletSpread = 300;
+
+local ExtraSlotFilter = "IsBullet"; // For editor-provided ammo list

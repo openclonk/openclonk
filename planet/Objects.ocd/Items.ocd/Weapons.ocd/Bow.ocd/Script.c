@@ -241,3 +241,5 @@ local ForceFreeHands = true;
 local Components = {Wood = 3};
 // Initial velocity of the arrow
 local shooting_strength = 100;
+
+local ExtraSlotFilter = "IsArrow"; // For editor-provided ammo list

@@ -255,3 +255,4 @@ local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 3};
 // Initial velocity of the bomb
 local shooting_strength = 75;
+local ExtraSlotFilter = "IsGrenadeLauncherAmmo"; // For editor-provided ammo list
