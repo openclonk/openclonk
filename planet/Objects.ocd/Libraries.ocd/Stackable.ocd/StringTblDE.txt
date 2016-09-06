@@ -1,1 +1,4 @@
 Infinite=Endlos
+Count=Menge
+DefaultStack=%d (Standard)
+CustomStack=Wert...
