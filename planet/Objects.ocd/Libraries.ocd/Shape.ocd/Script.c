@@ -49,6 +49,11 @@ private func BaseRectangle_ToString()
 	return Format("Shape->Rectangle(%d, %d, %d, %d)", this.x, this.y, this.wdt, this.hgt);
 }
 
+private func BaseRectangle_IsFullMap()
+{
+	return !this.x && !this.y && this.wdt == LandscapeWidth() && this.hgt == LandscapeHeight();
+}
+
 /** Constructor of rectangle area. (x,y) is included; (x+w,y+h) is excluded.
  @par x Global left side of rectangle
  @par y Global top side of rectangle
@@ -319,7 +324,8 @@ public func Definition(def)
 		GetRandomPoint = Shape.BaseRectangle_GetRandomPoint,
 		Find_In = Shape.BaseRectangle_Find_In,
 		Find_At = Shape.BaseRectangle_Find_At,
-		ToString = Shape.BaseRectangle_ToString
+		ToString = Shape.BaseRectangle_ToString,
+		IsFullMap = Shape.BaseRectangle_IsFullMap
 	};
 	BaseCircle = new BaseShape
 	{
