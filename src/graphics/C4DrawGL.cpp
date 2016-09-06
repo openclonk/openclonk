@@ -755,6 +755,11 @@ bool CStdGL::InitShaders(C4GroupSet* pGroups)
 	return true;
 }
 
+bool CStdGL::EnsureMainContextSelected()
+{
+	return pMainCtx->Select();
+}
+
 bool CStdGL::RestoreDeviceObjects()
 {
 	assert(pMainCtx);

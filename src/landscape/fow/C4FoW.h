@@ -101,10 +101,14 @@ class C4FoW
 {
 public:
 	C4FoW();
+	~C4FoW();
 
 private:
 	/** linked list of all lights */
 	class C4FoWLight *pLights;
+
+	/** linked list of all dead light objects to be deleted on next render pass*/
+	class C4FoWLight *deleted_lights;
 
 public:
 	C4FoWAmbient Ambient;
@@ -114,7 +118,7 @@ public:
 	// Shader to use for rendering the lights
 	C4Shader *GetRenderShader();
 
-	void Clear();
+	void ClearDeletedLights();
 
 	/** Updates the view range of the given object in its associated light or create a new light if none exists yet. */
 	void Add(C4Object *pObj);

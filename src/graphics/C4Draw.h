@@ -188,6 +188,7 @@ public:
 	void PrimaryUnlocked() { PrimaryLocked=false; }
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) = 0; // Find best technique, fail if there is none
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
+	virtual bool EnsureMainContextSelected() = 0;
 	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) = 0; // create sprite shader
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,

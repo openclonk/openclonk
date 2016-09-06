@@ -253,6 +253,7 @@ public:
 	// Surface
 	virtual bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices);
+	bool EnsureMainContextSelected() override;
 
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 	// Blit

@@ -20,8 +20,28 @@
 
 
 C4FoW::C4FoW()
-	: pLights(NULL)
+	: pLights(NULL), deleted_lights(nullptr)
 {
+}
+
+C4FoW::~C4FoW()
+{
+	if (deleted_lights)
+	{
+		if (pDraw) pDraw->EnsureMainContextSelected();
+		ClearDeletedLights();
+	}
+}
+
+void C4FoW::ClearDeletedLights()
+{
+	// Kill any dead lights
+	while (deleted_lights)
+	{
+		C4FoWLight *light = deleted_lights;
+		deleted_lights = deleted_lights->getNext();
+		delete light;
+	}
 }
 
 C4Shader *C4FoW::GetFramebufShader()
@@ -145,14 +165,15 @@ C4Shader *C4FoW::GetRenderShader()
 void C4FoW::Add(C4Object *pObj)
 {
 #ifndef USE_CONSOLE
-	// Safety
-	if (!pObj->Status) return;
 	// No view range? Probably want to remove instead
 	if(!pObj->lightRange && !pObj->lightFadeoutRange)
 	{
 		Remove(pObj);
 		return;
 	}
+
+	// Safety
+	if (!pObj->Status) return;
 
 	// Look for matching light
 	C4FoWLight *pLight;
@@ -188,9 +209,12 @@ void C4FoW::Remove(C4Object *pObj)
 	if (!pLight)
 		return;
 
-	// Remove
+	// Remove from list
 	(pPrev ? pPrev->pNext : pLights) = pLight->getNext();
-	delete pLight;
+
+	// Delete on next render pass
+	pLight->pNext = deleted_lights;
+	deleted_lights = pLight;
 #endif
 }
 
@@ -214,6 +238,8 @@ void C4FoW::Update(C4Rect r, C4Player *pPlr)
 void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr, const StdProjectionMatrix& projectionMatrix)
 {
 #ifndef USE_CONSOLE
+	// Delete any dead lights
+	ClearDeletedLights();
 	// Set up shader. If this one doesn't work, we're really in trouble.
 	C4Shader *pShader = GetRenderShader();
 	assert(pShader);

@@ -101,16 +101,16 @@ void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
 {
 	// Crew
 	while (Crew.Remove(pObj)) {}
-	// Cursor
-	if (Cursor==pObj)
-	{
-		// object is to be deleted; do NOT do script calls (like in Cursor->UnSelect(true))
-		Cursor=NULL; AdjustCursorCommand(); // also selects and eventually does a script call!
-	}
 	// View-Cursor
 	if (ViewCursor==pObj) ViewCursor = NULL;
 	// View
 	if (ViewTarget==pObj) ViewTarget=NULL;
+	// Cursor
+	if (Cursor == pObj)
+	{
+		// object is to be deleted; do NOT do script calls (like in Cursor->UnSelect(true))
+		Cursor = NULL; AdjustCursorCommand(); // also selects and eventually does a script call!
+	}
 	// Menu
 	Menu.ClearPointers(pObj);
 	// messageboard-queries
