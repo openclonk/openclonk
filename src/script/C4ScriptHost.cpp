@@ -85,6 +85,7 @@ void C4ScriptHost::UnlinkOwnedFunctions()
 			// If the function we're deleting is the top-level function in
 			// the inheritance chain, promote the next one in its stead;
 			// if there is no overloaded function, remove the property.
+			parent->Thaw();
 			if (func->OwnerOverloaded)
 				parent->SetPropertyByS(func->Name, C4VFunction(func->OwnerOverloaded));
 			else
