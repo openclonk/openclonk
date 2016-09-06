@@ -294,8 +294,14 @@ C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(const C4PropListSta
 		this_static = NewStatic(GetPrototype(), parent, key);
 		this_static->Properties.Swap(&Properties); // grab properties
 		this_static->Status = Status;
-		while (FirstRef) FirstRef->SetPropList(this_static);
-		// Now "this" should be deleted.
+		C4Value holder = C4VPropList(this);
+		while (FirstRef && FirstRef->NextRef)
+		{
+			C4Value *ref = FirstRef;
+			if (ref == &holder) ref = ref->NextRef;
+			ref->SetPropList(this_static);
+		}
+		// "this" should be deleted as holder goes out of scope
 	}
 	// Iterate over sorted list of elements to make static
 	// Must iterate over sorted list because the order must be defined, just in case it's a network game
