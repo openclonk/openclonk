@@ -109,6 +109,7 @@ public:
 	void RemoveViewport(C4ViewportWindow *cvp) { }
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
 	void OnStartGame() { }
+	void EnsureDefinitionListInitialized() { }
 #endif
 
 	void SetCursor(Cursor cursor);

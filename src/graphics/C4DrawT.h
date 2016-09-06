@@ -32,6 +32,7 @@ public:
 	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
 	virtual bool PrepareRendering(C4Surface *) { return true; }
+	virtual bool EnsureMainContextSelected() override { return true; }
 	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }

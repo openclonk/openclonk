@@ -35,6 +35,7 @@ C4FoW::~C4FoW()
 
 void C4FoW::ClearDeletedLights()
 {
+#ifndef USE_CONSOLE
 	// Kill any dead lights
 	while (deleted_lights)
 	{
@@ -42,6 +43,7 @@ void C4FoW::ClearDeletedLights()
 		deleted_lights = deleted_lights->getNext();
 		delete light;
 	}
+#endif
 }
 
 C4Shader *C4FoW::GetFramebufShader()
