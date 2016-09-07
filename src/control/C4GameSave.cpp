@@ -120,7 +120,7 @@ bool C4GameSave::SaveScenarioSections()
 	{
 		// compose section filename
 		SCopy(C4CFN_ScenarioSections, fn);
-		SDelete(fn, 1, iWildcardPos); SInsert(fn, pSect->szName, iWildcardPos);
+		SDelete(fn, 1, iWildcardPos); SInsert(fn, pSect->name.getData(), iWildcardPos);
 		// do not save self, because that is implied in CurrentScenarioSection and the main landscape/object data
 		if (pSect == Game.pCurrentScenarioSection)
 			pSaveGroup->DeleteEntry(fn);
@@ -129,7 +129,7 @@ bool C4GameSave::SaveScenarioSections()
 			// modified section: delete current
 			pSaveGroup->DeleteEntry(fn);
 			// replace by new
-			pSaveGroup->Add(pSect->szTempFilename, fn);
+			pSaveGroup->Add(pSect->temp_filename.getData(), fn);
 		}
 	}
 	// done, success

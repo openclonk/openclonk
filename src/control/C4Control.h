@@ -611,4 +611,14 @@ public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
+struct C4ControlReInitScenario : public C4ControlPacket // sync
+{
+public:
+	C4ControlReInitScenario();
+protected:
+	StdBuf data;
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
 #endif

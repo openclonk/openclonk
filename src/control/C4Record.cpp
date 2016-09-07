@@ -773,6 +773,7 @@ void C4Playback::Strip()
 				case CID_Script:
 				case CID_EMMoveObj:
 				case CID_EMDrawTool:
+				case CID_ReInitScenario:
 					if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
 					break;
 					// Strip sync check
@@ -806,6 +807,7 @@ void C4Playback::Strip()
 			case CID_Script:
 			case CID_EMMoveObj:
 			case CID_EMDrawTool:
+			case CID_ReInitScenario:
 				if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*i->pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
 				break;
 				// Strip some stuff

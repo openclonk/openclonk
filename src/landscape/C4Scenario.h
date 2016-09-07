@@ -249,20 +249,20 @@ extern const char *C4ScenSect_Main;
 class C4ScenarioSection
 {
 public:
-	C4ScenarioSection(char *szName);  // ctor
+	C4ScenarioSection(const char *szName);  // ctor
 	~C4ScenarioSection(); // dtor
 
 public:
-	char *szName;         // section name
-	char *szTempFilename; // filename of data file if in temp dir
-	char *szFilename;     // filename of section in scenario file
+	StdCopyStrBuf name;          // section name
+	StdCopyStrBuf temp_filename; // filename of data file if in temp dir
+	StdCopyStrBuf filename;      // filename of section in scenario file
 	bool fModified;       // if set, the file is temp and contains runtime landscape and/or object data
 	class C4ScenarioObjectsScriptHost *pObjectScripts; // points to loaded script file for section Objects.c
 
 	C4ScenarioSection *pNext; // next member of linked list
 
 public:
-	bool ScenarioLoad(C4Group &rGrp, char *szFilename);  // called when scenario is loaded: extract to temp store
+	bool ScenarioLoad(const char *szFilename, bool is_temp_file);  // called when scenario is loaded: extract to temp store
 	C4Group *GetGroupfile(C4Group &rGrp); // get group at section file (returns temp group, scenario subgroup or scenario group itself)
 	bool EnsureTempStore(bool fExtractLandscape, bool fExtractObjects);               // make sure that a temp file is created, and nothing is modified within the main scenario file
 };

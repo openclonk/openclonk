@@ -535,6 +535,7 @@ IDS_MNU_PLAYERNAMES=Spielernamen
 IDS_MNU_QUIT=Beenden
 IDS_MNU_RECENT=Zuletzt geöffnet
 IDS_MNU_RECORD=Aufnahme
+IDS_MNU_REINITSCEN=Zum Speicherstand zurücksetzen
 IDS_MNU_SAVEGAME=Spiel speichern
 IDS_MNU_SAVEGAMEAS=Spiel speichern unter...
 IDS_MNU_SAVESCENARIO=Szenario speichern

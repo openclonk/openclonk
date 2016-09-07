@@ -373,6 +373,7 @@
     <addaction name="actionFileSaveScenario"/>
     <addaction name="actionFileSaveScenarioAs"/>
     <addaction name="actionFileSaveGameAs"/>
+    <addaction name="actionFileReInitScenario"/>
     <addaction name="separator"/>
     <addaction name="actionFileClose"/>
     <addaction name="actionFileQuit"/>
@@ -1045,6 +1046,17 @@
     <string comment="res">IDS_CNS_SHOWHELPTIP</string>
    </property>
   </action>
+  <action name="actionFileReInitScenario">
+   <property name="text">
+    <string comment="res">IDS_MNU_REINITSCEN</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_REINITSCEN</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -1674,6 +1686,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionFileReInitScenario</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileReInitScenario()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1714,5 +1742,6 @@
   <slot>SelectionDuplicate()</slot>
   <slot>SelectionEjectContents()</slot>
   <slot>HelpToggle(bool)</slot>
+  <slot>FileReInitScenario()</slot>
  </slots>
 </ui>

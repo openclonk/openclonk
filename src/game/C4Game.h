@@ -218,6 +218,7 @@ public:
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 
 	bool LoadScenarioSection(const char *szSection, DWORD dwFlags);
+	bool CreateSectionFromTempFile(const char *section_name, const char *temp_filename);
 
 	bool DrawTextSpecImage(C4Facet& fctTarget, const char *szSpec, class C4DrawTransform* pTransform, uint32_t dwClr=0xff);
 	float GetTextSpecImageAspect(const char* szSpec);

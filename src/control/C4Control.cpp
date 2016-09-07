@@ -1892,3 +1892,56 @@ void C4ControlVoteEnd::CompileFunc(StdCompiler *pComp)
 {
 	C4ControlVote::CompileFunc(pComp);
 }
+
+
+// *** C4ControlReInitScenario
+
+C4ControlReInitScenario::C4ControlReInitScenario()
+{
+	// Create a temp file with the scenario files to be loaded as a section
+	char *tmp_fn = const_cast<char *>(Config.AtTempPath("ReinitSectionSave.ocs"));
+	MakeTempFilename(tmp_fn);
+	C4Group grp;
+	grp.Open(tmp_fn, true);
+	StdBuf buf;
+	bool success = true;
+	const char *section_components[] = { C4CFN_ScenarioCore, C4CFN_ScenarioObjects, C4CFN_ScenarioObjectsScript, C4CFN_Map, C4CFN_MapFg, C4CFN_MapBg };
+	for (const char *section_component : section_components)
+	{
+		if (::Game.ScenarioFile.LoadEntry(section_component, &buf))
+		{
+			if (!grp.Add(section_component, buf, false, true)) success = false;
+		}
+		buf.Clear();
+	}
+	if (!grp.Save(false)) success = false;
+	if (!success) return;
+	// Move into buffer to be sent via queue
+	success = data.LoadFromFile(tmp_fn);
+	EraseFile(tmp_fn);
+	if (!success) return;
+}
+
+void C4ControlReInitScenario::CompileFunc(StdCompiler *comp)
+{
+	comp->Value(data);
+}
+
+void C4ControlReInitScenario::Execute() const
+{
+	// Valid?
+	if (!data.getSize()) return;
+	// Store section group to temp file
+	char *tmp_fn = const_cast<char *>(Config.AtTempPath("ReinitSection.ocs"));
+	MakeTempFilename(tmp_fn);
+	if (!data.SaveToFile(tmp_fn)) return;
+	// Group to section
+	const char *reinit_section_name = "EditorReloadSection";
+	if (!::Game.CreateSectionFromTempFile(reinit_section_name, tmp_fn))
+	{
+		EraseFile(tmp_fn);
+		return;
+	}
+	// Load that section!
+	::Game.LoadScenarioSection(reinit_section_name, C4S_REINIT_SCENARIO);
+}

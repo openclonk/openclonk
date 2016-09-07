@@ -326,6 +326,11 @@ void C4ConsoleQtMainWindow::FileSaveGameAs() { ::Console.FileSaveAs(true); }
 void C4ConsoleQtMainWindow::FileClose() { ::Console.FileClose(); }
 void C4ConsoleQtMainWindow::FileQuit() { ::Console.FileQuit(); }
 
+void C4ConsoleQtMainWindow::FileReInitScenario()
+{
+	::Control.DoInput(CID_ReInitScenario, new C4ControlReInitScenario(), CDT_Decide);
+}
+
 // Player menu
 void C4ConsoleQtMainWindow::PlayerJoin() { ::Console.PlayerJoin(); }
 // Window menu
@@ -489,7 +494,6 @@ void C4ConsoleQtMainWindow::SelectionEjectContents()
 {
 	::Console.EditCursor.GrabContents();
 }
-
 
 
 /* Common C4ConsoleGUI interface */

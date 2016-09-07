@@ -2860,11 +2860,9 @@ bool C4Game::LoadScenarioComponents()
 		}
 		// load this section into temp store
 		C4ScenarioSection *pSection = new C4ScenarioSection(SctName);
-		if (!pSection->ScenarioLoad(ScenarioFile, fn))
+		if (!pSection->ScenarioLoad(fn, false))
 			{ LogFatal(FormatString(LoadResStr("IDS_ERR_SCENSECTION"), fn).getData()); return false; }
-
 	}
-
 	// Success
 	return true;
 }
@@ -3401,6 +3399,48 @@ void C4Game::OnKeyboardLayoutChanged()
 	PlayerControlUserAssignmentSets.ResolveRefs(&PlayerControlDefs);
 }
 
+bool C4Game::CreateSectionFromTempFile(const char *section_name, const char *temp_filename)
+{
+	// Remove existing (temp) section of same name
+	C4ScenarioSection *existing_section = pScenarioSections, *prev = nullptr;
+	while (existing_section) if (SEqualNoCase(existing_section->name.getData(), section_name)) break; else existing_section = (prev = existing_section)->pNext;
+	bool deleted_current_section = false;
+	if (existing_section)
+	{
+		deleted_current_section = (existing_section == pCurrentScenarioSection);
+		if (deleted_current_section)
+		{
+			pCurrentScenarioSection = nullptr;
+			pScenarioObjectsScript = nullptr;
+		}
+		if (existing_section->pObjectScripts)
+		{
+			delete existing_section->pObjectScripts;
+		}
+		if (prev) prev->pNext = existing_section->pNext; else pScenarioSections = existing_section->pNext;
+		existing_section->pNext = nullptr;
+		delete existing_section;
+	}
+	// Create new (temp) section
+	C4ScenarioSection *new_section = new C4ScenarioSection(section_name);
+	if (!new_section->ScenarioLoad(temp_filename, true))
+	{
+		pScenarioSections = new_section->pNext;
+		new_section->pNext = nullptr;
+		delete new_section;
+		return false;
+	}
+	// Re-Link current section into newly created section
+	if (deleted_current_section)
+	{
+		pCurrentScenarioSection = new_section;
+		pScenarioObjectsScript = new_section->pObjectScripts;
+	}
+	// Link new Objects.c (or re-link because old Objects.c was removed)
+	ReLinkScriptEngine();
+	return !!new_section;
+}
+
 bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 {
 	// note on scenario section saving:
@@ -3412,13 +3452,13 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// if current section was the loaded section (maybe main, but need not for resumed savegames)
 	if (!pCurrentScenarioSection)
 	{
+		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
 		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
 		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
-		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
 	}
 	// find section to load
 	C4ScenarioSection *pLoadSect = pScenarioSections;
-	while (pLoadSect) if (SEqualNoCase(pLoadSect->szName, szSection)) break; else pLoadSect = pLoadSect->pNext;
+	while (pLoadSect) if (SEqualNoCase(pLoadSect->name.getData(), szSection)) break; else pLoadSect = pLoadSect->pNext;
 	if (!pLoadSect)
 	{
 		DebugLogF("LoadScenarioSection: scenario section %s not found!", szSection);
@@ -3430,7 +3470,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		// ensure that the section file does point to temp store
 		if (!pCurrentScenarioSection->EnsureTempStore(!(dwFlags & C4S_SAVE_LANDSCAPE), !(dwFlags & C4S_SAVE_OBJECTS)))
 		{
-			DebugLogF("LoadScenarioSection(%s): could not extract section files of current section %s", szSection, pCurrentScenarioSection->szName);
+			DebugLogF("LoadScenarioSection(%s): could not extract section files of current section %s", szSection, pCurrentScenarioSection->name.getData());
 			return false;
 		}
 		// open current group
@@ -3529,7 +3569,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	SCopy(C4S.Landscape.SkyDef, szOldSky, C4MaxDefString);
 	// do not warn on ignored values in main section
 	// they are caused because not all parts of scenario core are compiled on section change
-	bool is_main_section = SEqualNoCase(pLoadSect->szName, C4ScenSect_Main);
+	bool is_main_section = SEqualNoCase(pLoadSect->name.getData(), C4ScenSect_Main);
 	// overload scenario values (fails if no scenario core is present; that's OK)
 	C4S.Load(*pGrp, true, is_main_section);
 	// determine whether a new sky has to be loaded
@@ -3556,12 +3596,12 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	C4PropListNumbered::UnshelveNumberedPropLists();
 	// set new current section
 	pCurrentScenarioSection = pLoadSect;
-	SCopy(pCurrentScenarioSection->szName, CurrentScenarioSection);
+	SCopy(pCurrentScenarioSection->name.getData(), CurrentScenarioSection);
 	// Final init on game re-init (doing mostly player initialization)
 	if (dwFlags & C4S_REINIT_SCENARIO)
 	{
 		InitGameFinal(IM_ReInit);
-		// Extra InitializePlayers on the already-joined players to start intros, etc.
+		// Extra InitializePlayers callback on the already-joined players to start intros, etc.
 		// (unless the call is still pending - can happen if section is loaded during player join)
 		if (::Game.InitialPlayersJoined && ::Players.GetCount())
 			::Game.GRBroadcast(PSF_InitializePlayers);

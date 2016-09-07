@@ -120,6 +120,7 @@ public slots:
 	void FileSaveGameAs();
 	void FileClose();
 	void FileQuit();
+	void FileReInitScenario();
 	// Player menu
 	void PlayerJoin();
 	// Window menu
