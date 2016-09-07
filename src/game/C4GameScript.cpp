@@ -2950,6 +2950,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "C4SECT_SaveLandscape"      ,C4V_Int,      C4S_SAVE_LANDSCAPE },
 	{ "C4SECT_SaveObjects"        ,C4V_Int,      C4S_SAVE_OBJECTS },
 	{ "C4SECT_KeepEffects"        ,C4V_Int,      C4S_KEEP_EFFECTS },
+	{ "C4SECT_ReinitScenario"     ,C4V_Int,      C4S_REINIT_SCENARIO },
 
 	{ "TEAMID_New"                ,C4V_Int,      TEAMID_New },
 

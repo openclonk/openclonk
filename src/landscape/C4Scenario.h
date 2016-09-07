@@ -48,6 +48,7 @@ public:
 #define C4S_SAVE_LANDSCAPE 1
 #define C4S_SAVE_OBJECTS   2
 #define C4S_KEEP_EFFECTS   4
+#define C4S_REINIT_SCENARIO 8
 
 enum C4SFilmMode
 {

@@ -33,17 +33,25 @@ class C4ScriptGuiWindow;
 
 class C4Game
 {
+public:
+	// Initialization mode: Regular game start, section load or editor reload
+	enum InitMode
+	{
+		IM_Normal = 0,
+		IM_Section = 1,
+		IM_ReInit = 2
+	};
 private:
 	// used as StdCompiler-parameter
 	struct CompileSettings
 	{
-		bool fScenarioSection;
+		InitMode init_mode;
 		bool fPlayers;
 		bool fExact;
 		bool fSync;
 
-		CompileSettings(bool fScenarioSection, bool fPlayers, bool fExact, bool fSync)
-				: fScenarioSection(fScenarioSection), fPlayers(fPlayers), fExact(fExact), fSync(fSync) { }
+		CompileSettings(InitMode init_mode, bool fPlayers, bool fExact, bool fSync)
+				: init_mode(init_mode), fPlayers(fPlayers), fExact(fExact), fSync(fSync) { }
 	};
 
 	// struct of keyboard set and indexed control key
@@ -242,8 +250,8 @@ public:
 	bool LoadAdditionalSystemGroup(class C4Group &parent_group);
 	bool SaveGameTitle(C4Group &hGroup);
 protected:
-	bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers *);
-	bool InitGameFinal();
+	bool InitGame(C4Group &hGroup, InitMode init_mode, bool fLoadSky, C4ValueNumbers *);
+	bool InitGameFinal(InitMode init_mode);
 	bool InitNetworkFromAddress(const char *szAddress);
 	bool InitNetworkFromReferenceFile(const char *temp_filename);
 	bool InitNetworkFromReference(const C4Network2Reference &Reference);
@@ -262,7 +270,7 @@ public:
 	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
 	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool fSaveSync, C4ValueNumbers *);
 protected:
-	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, bool sync, C4ValueNumbers *);
+	bool CompileRuntimeData(C4Group &hGroup, InitMode init_mode, bool exact, bool sync, C4ValueNumbers *);
 
 	// Object function internals
 	C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,

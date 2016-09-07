@@ -458,7 +458,7 @@ bool C4Game::Init()
 		DebugMode = false;
 
 	// Init game
-	if (!InitGame(ScenarioFile, false, true, &numbers)) return false;
+	if (!InitGame(ScenarioFile, IM_Normal, true, &numbers)) return false;
 
 	// Network final init
 	if (Network.isEnabled())
@@ -480,7 +480,7 @@ bool C4Game::Init()
 	SetInitProgress(98);
 
 	// Final init
-	if (!InitGameFinal()) return false;
+	if (!InitGameFinal(IM_Normal)) return false;
 	SetInitProgress(99);
 
 	// Sound modifier from savegames
@@ -1651,7 +1651,7 @@ void C4Game::Ticks()
 
 void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers * numbers)
 {
-	if (!comp.fScenarioSection && comp.fExact)
+	if (comp.init_mode == IM_Normal && comp.fExact)
 	{
 		pComp->Name("Game");
 		pComp->Value(mkNamingAdapt(Time,                  "Time",                  0));
@@ -1680,8 +1680,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
 		pComp->NameEnd();
 
-
-
 		// Music settings
 		pComp->Value(mkNamingAdapt(::Application.MusicSystem, "Music"));
 
@@ -1698,7 +1696,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(Landscape.GetSky(), "Sky"));
 
 		// save custom GUIs only if a real savegame and not for editor-scenario-saves or section changes
-		if (!comp.fScenarioSection)
+		if (comp.init_mode == IM_Normal)
 		{
 			pComp->Name("GUI");
 			if (pComp->isCompiler())
@@ -1737,18 +1735,18 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 
 	// Section load: Clear existing prop list numbering to make room for the new objects
 	// Numbers will be re-acquired in C4GameObjects::PostLoad
-	if (comp.fScenarioSection) C4PropListNumbered::ShelveNumberedPropLists();
+	if (comp.init_mode == IM_Section) C4PropListNumbered::ShelveNumberedPropLists();
 
 	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
 
-	pComp->Value(mkNamingAdapt(mkParAdapt(ScriptEngine, comp.fScenarioSection, numbers), "Script"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ScriptEngine, comp.init_mode == IM_Section, numbers), "Script"));
 }
 
-bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, bool sync, C4ValueNumbers * numbers)
+bool C4Game::CompileRuntimeData(C4Group &hGroup, InitMode init_mode, bool exact, bool sync, C4ValueNumbers * numbers)
 {
-	::Objects.Clear(!fLoadSection);
+	::Objects.Clear(init_mode != IM_Section);
 	GameText.Load(hGroup,C4CFN_Game);
-	CompileSettings Settings(fLoadSection, false, exact, sync);
+	CompileSettings Settings(init_mode, false, exact, sync);
 	// C4Game is not defaulted on compilation.
 	// Loading of runtime data overrides only certain values.
 	// Doesn't compile players; those will be done later
@@ -1772,7 +1770,7 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool 
 	{
 		StdStrBuf Buf;
 		// Decompile (without players for scenario sections)
-		DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact, fSaveSync), numbers), &Buf, "Game");
+		DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection ? IM_Section : IM_Normal, !fSaveSection && fSaveExact, fSaveExact, fSaveSync), numbers), &Buf, "Game");
 
 		// Empty? All default save a Game.txt anyway because it is used to signal the engine to not load Objects.c
 		if (!Buf.getLength()) Buf.Copy(" ");
@@ -2091,7 +2089,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	return true;
 }
 
-bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers * numbers)
+bool C4Game::InitGame(C4Group &hGroup, InitMode init_mode, bool fLoadSky, C4ValueNumbers * numbers)
 {
 	// Activate debugger if requested
 	// needs to happen before any scripts are compiled to bytecode so AB_DEBUG chunks will be inserted
@@ -2104,7 +2102,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 				return false;
 	}
 
-	if (!fLoadSection)
+	if (init_mode == IM_Normal)
 	{
 
 		// file monitor
@@ -2197,25 +2195,25 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	}
 
 	// The Landscape is the last long chunk of loading time, so it's a good place to start the music fadeout
-	if (!fLoadSection) Application.MusicSystem.FadeOut(2000);
+	if (init_mode == IM_Normal) Application.MusicSystem.FadeOut(2000);
 	// Landscape
 	Log(LoadResStr("IDS_PRC_LANDSCAPE"));
 	bool fLandscapeLoaded = false;
-	if (!Landscape.Init(hGroup, fLoadSection, fLoadSky, fLandscapeLoaded, !!C4S.Head.SaveGame))
+	if (!Landscape.Init(hGroup, init_mode != IM_Normal, fLoadSky, fLandscapeLoaded, !!C4S.Head.SaveGame))
 		{ LogFatal(LoadResStr("IDS_ERR_GBACK")); return false; }
 	SetInitProgress(88);
 	// the savegame flag is set if runtime data is present, in which case this is to be used
 	// except for scenario sections
-	if (fLandscapeLoaded && (!C4S.Head.SaveGame || fLoadSection))
+	if (fLandscapeLoaded && (!C4S.Head.SaveGame || init_mode == IM_Section))
 		Landscape.ScenarioInit();
 	// clear old landscape data
-	if (fLoadSection && fLandscapeLoaded) { PXS.Clear(); MassMover.Clear(); }
+	if (init_mode != IM_Normal && fLandscapeLoaded) { PXS.Clear(); MassMover.Clear(); }
 	SetInitProgress(89);
 	// Init main object list
 	Objects.Init(Landscape.GetWidth(), Landscape.GetHeight());
 
 	// Pathfinder
-	if (!fLoadSection) PathFinder.Init( &LandscapeFree, &TransferZones );
+	if (init_mode == IM_Normal) PathFinder.Init( &LandscapeFree, &TransferZones );
 	SetInitProgress(90);
 
 	// PXS
@@ -2231,16 +2229,17 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	SetInitProgress(92);
 
 	// definition value overloads
-	if (!fLoadSection) InitValueOverloads();
+	// TODO: Remove this function? We could move value to script and allow it through regular overloads
+	if (init_mode == IM_Normal) InitValueOverloads();
 
 	// runtime data
-	if (!CompileRuntimeData(hGroup, fLoadSection, C4S.Head.SaveGame, C4S.Head.NetworkGame, numbers))
+	if (!CompileRuntimeData(hGroup, init_mode, C4S.Head.SaveGame, C4S.Head.NetworkGame, numbers))
 		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 	SetInitProgress(93);
 
 	// Load round results
-	if (!fLoadSection)
+	if (init_mode == IM_Normal)
 	{
 		if (hGroup.FindEntry(C4CFN_RoundResults))
 		{
@@ -2254,13 +2253,13 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	}
 
 	// Denumerate game data pointers
-	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
-	if (!fLoadSection) GlobalSoundModifier.Denumerate(numbers);
+	if (init_mode == IM_Normal) ScriptEngine.Denumerate(numbers);
+	if (init_mode == IM_Normal) GlobalSoundModifier.Denumerate(numbers);
 	numbers->Denumerate();
-	if (!fLoadSection) ScriptGuiRoot->Denumerate(numbers);
+	if (init_mode == IM_Normal) ScriptGuiRoot->Denumerate(numbers);
 	// Object.PostLoad must happen after number->Denumerate(), becuase UpdateFace() will access Action proplist,
 	// which might have a non-denumerated prototype otherwise
-	Objects.PostLoad(fLoadSection, numbers);
+	Objects.PostLoad(init_mode == IM_Section, numbers);
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;
@@ -2293,7 +2292,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	// close any gfx groups, because they are no longer needed (after sky is initialized)
 	GraphicsResource.CloseFiles();
 
-	if (!fLoadSection)
+	if (init_mode == IM_Normal) // reload doesn't affect the music (takes too long)
 	{
 		// Music
 		::Application.MusicSystem.InitForScenario(ScenarioFile);
@@ -2311,9 +2310,8 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	return true;
 }
 
-bool C4Game::InitGameFinal()
+bool C4Game::InitGameFinal(InitMode init_mode)
 {
-
 	// Validate object owners & assign loaded info objects
 	Objects.ValidateOwners();
 	Objects.AssignInfo();
@@ -2329,26 +2327,32 @@ bool C4Game::InitGameFinal()
 
 	// Player final init
 	C4Player *pPlr;
-	for (pPlr=Players.First; pPlr; pPlr=pPlr->Next)
+	for (pPlr = Players.First; pPlr; pPlr = pPlr->Next)
+	{
+		if (init_mode == IM_ReInit) pPlr->ScenarioInit();
 		pPlr->FinalInit(!C4S.Head.SaveGame);
+	}
 
 	// Create viewports
-	for (pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-		if (pPlr->LocalControl)
-			::Viewports.CreateViewport(pPlr->Number);
-	// Check fullscreen viewports
-	FullScreen.ViewportCheck();
-	// update halt state
-	Console.UpdateHaltCtrls(!!HaltCount);
+	if (init_mode == IM_Normal)
+	{
+		for (pPlr = Players.First; pPlr; pPlr = pPlr->Next)
+			if (pPlr->LocalControl)
+				::Viewports.CreateViewport(pPlr->Number);
+		// Check fullscreen viewports
+		FullScreen.ViewportCheck();
+		// update halt state
+		Console.UpdateHaltCtrls(!!HaltCount);
 
-	// Host: players without connected clients: remove via control queue
-	if (Network.isEnabled() && Network.isHost())
-		for (int32_t cnt = 0; cnt < Players.GetCount(); cnt++)
-			if (Players.GetByIndex(cnt)->AtClient < 0)
-				Players.Remove(Players.GetByIndex(cnt), true, false);
+		// Host: players without connected clients: remove via control queue
+		if (Network.isEnabled() && Network.isHost())
+			for (int32_t cnt = 0; cnt < Players.GetCount(); cnt++)
+				if (Players.GetByIndex(cnt)->AtClient < 0)
+					Players.Remove(Players.GetByIndex(cnt), true, false);
 
-	// It should be safe now to reload stuff
-	if (pFileMonitor) pFileMonitor->StartMonitoring();
+		// It should be safe now to reload stuff
+		if (pFileMonitor) pFileMonitor->StartMonitoring();
+	}
 	return true;
 }
 
@@ -3368,10 +3372,14 @@ void C4Game::SetInitProgress(float fToProgress)
 		GraphicsSystem.MessageBoard->LogNotify();
 	}
 	// Cheap hack to get the Console window updated while loading
-	Application.FlushMessages();
+	// (unless game is running, i.e. section change - section change would be quick and timer execution can mess with things unpredictably)
+	if (!IsRunning)
+	{
+		Application.FlushMessages();
 #ifdef WITH_QT_EDITOR
-	Application.ProcessQtEvents();
+		Application.ProcessQtEvents();
 #endif
+	}
 }
 
 void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
@@ -3490,7 +3498,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		DebugLog("LoadScenarioSection: error opening group file");
 		return false;
 	}
-	// remove all objects (except inactive)
+	// remove all objects
 	// do correct removal calls, because this will stop fire sounds, etc.
 	for (C4Object *obj : Objects)
 		obj->AssignRemoval();
@@ -3500,7 +3508,9 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 			DebugLogF("LoadScenarioSection: WARNING: Object %d created in destruction process!", (int) obj->Number);
 			ClearPointers(obj);
 		}
-	DeleteObjects(false);
+	// Final removal in case objects got recreated
+	// Also kill inactive objects if scenario is reinitialized
+	DeleteObjects(!!(dwFlags & C4S_REINIT_SCENARIO));
 	// remove global effects
 	if (::ScriptEngine.pGlobalEffects && !(dwFlags & C4S_KEEP_EFFECTS))
 	{
@@ -3536,7 +3546,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	FixRandom(RandomSeed);
 	// re-init game in new section
 	C4ValueNumbers numbers;
-	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
+	if (!InitGame(*pGrp, (dwFlags & C4S_REINIT_SCENARIO) ? IM_ReInit : IM_Section, fLoadNewSky, &numbers))
 	{
 		DebugLog("LoadScenarioSection: Error reiniting game");
 		::Viewports.EnableFoW();
@@ -3547,6 +3557,15 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// set new current section
 	pCurrentScenarioSection = pLoadSect;
 	SCopy(pCurrentScenarioSection->szName, CurrentScenarioSection);
+	// Final init on game re-init (doing mostly player initialization)
+	if (dwFlags & C4S_REINIT_SCENARIO)
+	{
+		InitGameFinal(IM_ReInit);
+		// Extra InitializePlayers on the already-joined players to start intros, etc.
+		// (unless the call is still pending - can happen if section is loaded during player join)
+		if (::Game.InitialPlayersJoined && ::Players.GetCount())
+			::Game.GRBroadcast(PSF_InitializePlayers);
+	}
 	// resize viewports, and enable lighting again
 	::Viewports.RecalculateViewports();
 	::Viewports.EnableFoW();
