@@ -596,7 +596,7 @@ bool C4MusicSystem::ScheduleWaitTime()
 {
 	// Roll for scheduling a break after the next piece.
 	if (SCounter < 3) return false; // But not right away.
-	if (UnsyncedRandom(100) >= music_break_chance) return false;
+	if (int32_t(UnsyncedRandom(100)) >= music_break_chance) return false;
 	if (music_break_max > 0)
 	{
 		int32_t music_break = music_break_min;
