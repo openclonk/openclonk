@@ -34,4 +34,7 @@ uint32_t UnsyncedRandom(uint32_t range);
 // Generates a single random value from a seed.
 uint32_t SeededRandom(uint64_t iSeed, uint32_t iRange);
 
+// Internal
+void RecordRandom(uint32_t range, uint32_t val);
+
 #endif // INC_C4Random

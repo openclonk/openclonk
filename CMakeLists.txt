@@ -645,6 +645,7 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Log.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
+	src/lib/C4RandomRecord.cpp
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
 	src/lib/C4Stat.cpp
@@ -1016,6 +1017,8 @@ src/lib/C4InputValidation.cpp
 src/lib/C4InputValidation.h
 src/lib/C4Markup.cpp
 src/lib/C4Markup.h
+src/lib/C4Random.cpp
+src/lib/C4Random.h
 src/lib/C4SimpleLog.cpp
 src/lib/SHA1.h
 src/lib/Standard.cpp
@@ -1071,8 +1074,6 @@ src/c4group/C4LangStringTable.cpp
 src/c4group/C4LangStringTable.h
 src/lib/C4Real.cpp
 src/lib/C4Real.h
-src/lib/C4Random.cpp
-src/lib/C4Random.h
 src/script/C4Aul.cpp
 src/script/C4AulCompiler.h
 src/script/C4AulCompiler.cpp
@@ -1206,11 +1207,20 @@ target_link_libraries(c4group
 	libmisc
 )
 
+add_executable(netpuncher EXCLUDE_FROM_ALL
+	src/netpuncher/main.cpp
+)
+
+target_link_libraries(netpuncher
+	libmisc
+)
+
 if(WIN32)
 	target_link_libraries(openclonk ws2_32)
 	target_link_libraries(openclonk-server ws2_32)
 	target_link_libraries(c4group ws2_32)
 	target_link_libraries(c4script ws2_32)
+	target_link_libraries(netpuncher ws2_32)
 endif()
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)

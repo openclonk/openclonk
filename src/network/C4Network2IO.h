@@ -95,6 +95,9 @@ protected:
 	int iTCPIRate, iTCPORate, iTCPBCRate,
 	iUDPIRate, iUDPORate, iUDPBCRate;
 
+	// punching
+	C4NetIO::addr_t PuncherAddr;
+
 public:
 
 	bool hasTCP() const { return !! pNetIO_TCP; }
@@ -130,6 +133,9 @@ public:
 	// sending helpers
 	bool SendMsgToClient(C4NetIOPacket &rPkt, int iClient); // by both
 	bool BroadcastMsg(const C4NetIOPacket &rPkt); // by both
+
+	// punch
+	bool Punch(C4NetIO::addr_t PuncherAddr); // by main thread
 
 	// stuff
 	C4NetIO *getNetIO(C4Network2IOProtocol eProt); // by both
@@ -185,6 +191,9 @@ protected:
 	void CheckTimeout();
 	void GenerateStatistics(int iInterval);
 	void SendConnPackets();
+
+	// puncher
+	void OnPunch(C4NetIO::addr_t addr);
 
 };
 

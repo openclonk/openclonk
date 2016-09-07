@@ -5,6 +5,7 @@ deps
 *.o
 /openclonk
 /openclonk-server
+/netpuncher
 /c4group
 /c4script
 *.a
