@@ -402,7 +402,29 @@
      <string comment="res">IDS_MNU_NET</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string comment="res">IDS_MNU_TOOLS</string>
+    </property>
+    <addaction name="actionPlay"/>
+    <addaction name="actionPause"/>
+    <addaction name="separator"/>
+    <addaction name="actionCursorGame"/>
+    <addaction name="actionCursorSelect"/>
+    <addaction name="actionCursorCreateObj"/>
+    <addaction name="actionCursorDrawPen"/>
+    <addaction name="actionCursorDrawLine"/>
+    <addaction name="actionCursorDrawRect"/>
+    <addaction name="actionCursorFill"/>
+    <addaction name="actionCursorPicker"/>
+    <addaction name="separator"/>
+    <addaction name="actionDynamicLandscape"/>
+    <addaction name="actionStaticLandscape"/>
+    <addaction name="actionStaticFlatLandscape"/>
+    <addaction name="actionExactLandscape"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
    <addaction name="menuPlayers"/>
    <addaction name="menuWindows"/>
    <addaction name="menuNet"/>
@@ -727,7 +749,10 @@
      <normalon>:/editor/res/Play_Trans.png</normalon>:/editor/res/Play_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>PLAY</string>
+    <string comment="res">IDS_MNU_PLAY</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_PLAY</string>
    </property>
    <property name="toolTip">
     <string comment="res">IDS_TEXT_UNPAUSETHEGAME</string>
@@ -742,10 +767,16 @@
      <normaloff>:/editor/res/Halt_Trans.png</normaloff>:/editor/res/Halt_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>PAUSE</string>
+    <string comment="res">IDS_MNU_PAUSE</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_PAUSE</string>
    </property>
    <property name="toolTip">
     <string comment="res">IDS_TEXT_PAUSETHEGAME</string>
+   </property>
+   <property name="shortcut">
+    <string>Pause</string>
    </property>
   </action>
   <action name="actionCursorGame">
@@ -757,10 +788,16 @@
      <normaloff>:/editor/res/Mouse_Trans.png</normaloff>:/editor/res/Mouse_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_GAME</string>
+    <string comment="res">IDS_MNU_CURSOR_GAME</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_GAME</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_GAME_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_GAME</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
    </property>
   </action>
   <action name="actionCursorSelect">
@@ -772,10 +809,16 @@
      <normaloff>:/editor/res/Cursor_Trans.png</normaloff>:/editor/res/Cursor_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_SELECT</string>
+    <string comment="res">IDS_MNU_CURSOR_SELECT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_SELECT</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_SELECT_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_SELECT</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
    </property>
   </action>
   <action name="actionCursorDrawPen">
@@ -787,10 +830,16 @@
      <normaloff>:/editor/res/Brush_Trans.png</normaloff>:/editor/res/Brush_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_DRAWPEN</string>
+    <string comment="res">IDS_MNU_CURSOR_DRAWPEN</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWPEN</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_DRAWPEN_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_DRAWPEN</string>
+   </property>
+   <property name="shortcut">
+    <string>4</string>
    </property>
   </action>
   <action name="actionCursorDrawLine">
@@ -802,10 +851,16 @@
      <normaloff>:/editor/res/Line_Trans.png</normaloff>:/editor/res/Line_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_DRAWLINE</string>
+    <string comment="res">IDS_MNU_CURSOR_DRAWLINE</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWLINE</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_DRAWLINETIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_DRAWLINE</string>
+   </property>
+   <property name="shortcut">
+    <string>5</string>
    </property>
   </action>
   <action name="actionCursorDrawRect">
@@ -817,10 +872,16 @@
      <normaloff>:/editor/res/Rect_Trans.png</normaloff>:/editor/res/Rect_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_DRAWRECT</string>
+    <string comment="res">IDS_MNU_CURSOR_DRAWRECT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWRECT</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_DRAWRECT_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_DRAWRECT</string>
+   </property>
+   <property name="shortcut">
+    <string>6</string>
    </property>
   </action>
   <action name="actionCursorPicker">
@@ -832,10 +893,16 @@
      <normaloff>:/editor/res/Picker_Trans.png</normaloff>:/editor/res/Picker_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_DRAWPICKER</string>
+    <string comment="res">IDS_MNU_CURSOR_DRAWPICKER</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWPICKER</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_DRAWPICKER_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_DRAWPICKER</string>
+   </property>
+   <property name="shortcut">
+    <string>8</string>
    </property>
   </action>
   <action name="actionDynamicLandscape">
@@ -847,10 +914,13 @@
      <normaloff>:/editor/res/Dynamic_Trans.png</normaloff>:/editor/res/Dynamic_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>MAP_DYNAMIC</string>
+    <string comment="res">IDS_MNU_MAP_DYNAMIC</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_DYNAMIC</string>
    </property>
    <property name="toolTip">
-    <string>MAP_DYNAMIC_TIP</string>
+    <string comment="res">IDS_TEXT_MAP_DYNAMIC</string>
    </property>
   </action>
   <action name="actionStaticLandscape">
@@ -862,10 +932,16 @@
      <normaloff>:/editor/res/Static_Trans.png</normaloff>:/editor/res/Static_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>MAP_STATIC</string>
+    <string comment="res">IDS_MNU_MAP_STATIC</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_STATIC</string>
    </property>
    <property name="toolTip">
-    <string>MAP_STATIC_TIP</string>
+    <string comment="res">IDS_TEXT_MAP_STATIC</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
    </property>
   </action>
   <action name="actionExactLandscape">
@@ -877,10 +953,13 @@
      <normaloff>:/editor/res/Exact_Trans.png</normaloff>:/editor/res/Exact_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>MAP_EXACT</string>
+    <string comment="res">IDS_MNU_MAP_EXACT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_EXACT</string>
    </property>
    <property name="toolTip">
-    <string>MAP_EXACT_TIP</string>
+    <string comment="res">IDS_TEXT_MAP_EXACT</string>
    </property>
   </action>
   <action name="actionCursorFill">
@@ -892,10 +971,16 @@
      <normaloff>:/editor/res/Fill_Trans.png</normaloff>:/editor/res/Fill_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_DRAWFILL</string>
+    <string comment="res">IDS_MNU_CURSOR_DRAWFILL</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_DRAWFILL</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_DRAWFILL_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_DRAWFILL</string>
+   </property>
+   <property name="shortcut">
+    <string>7</string>
    </property>
   </action>
   <action name="actionViewportNew">
@@ -909,6 +994,9 @@
    </property>
    <property name="toolTip">
     <string>IDS_MNU_OPEN</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionFileOpenWithPlayers">
@@ -928,10 +1016,16 @@
    <property name="text">
     <string comment="res">IDS_MNU_SAVESCENARIO</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionFileSaveScenarioAs">
    <property name="text">
     <string comment="res">IDS_MNU_SAVESCENARIOAS</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionFileSaveGameAs">
@@ -943,10 +1037,16 @@
    <property name="text">
     <string comment="res">IDS_MNU_CLOSE</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="actionFileQuit">
    <property name="text">
     <string comment="res">IDS_MNU_QUIT</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionPlayerJoin">
@@ -968,10 +1068,16 @@
      <normaloff>:/editor/res/CreateObj_Trans.png</normaloff>:/editor/res/CreateObj_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>CURSOR_CREATEOBJ</string>
+    <string comment="res">IDS_MNU_CURSOR_CREATOR</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_CURSOR_CREATOR</string>
    </property>
    <property name="toolTip">
-    <string>CURSOR_CREATEOBJ_TIP</string>
+    <string comment="res">IDS_TEXT_CURSOR_CREATOR</string>
+   </property>
+   <property name="shortcut">
+    <string>3</string>
    </property>
   </action>
   <action name="actionFileNew">
@@ -994,10 +1100,16 @@
      <normaloff>:/editor/res/StaticFlat_Trans.png</normaloff>:/editor/res/StaticFlat_Trans.png</iconset>
    </property>
    <property name="text">
-    <string>MAP_STATICFLAT</string>
+    <string comment="res">IDS_MNU_MAP_STATICFLAT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_MAP_STATICFLAT</string>
    </property>
    <property name="toolTip">
-    <string>MAP_STATICFLAT_TIP</string>
+    <string comment="res">IDS_TEXT_MAP_STATICFLAT</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F3</string>
    </property>
   </action>
   <action name="actionDeleteObject">

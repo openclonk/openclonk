@@ -121,7 +121,6 @@ public:
 int ExecRecursionCheck::counter = 0;
 
 
-
 /* Console main window */
 
 C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUIState *state)
@@ -194,8 +193,8 @@ void C4ConsoleQtMainWindow::PausePressed(bool down)
 {
 	if (down)
 		::Console.DoHalt();
-	else // cannot un-check by pressing again
-		state->ui.actionPause->setChecked(true);
+	else // can un-check by pressing again!
+		::Console.DoPlay();
 }
 
 void C4ConsoleQtMainWindow::CursorGamePressed(bool down)
@@ -500,7 +499,7 @@ void C4ConsoleQtMainWindow::SelectionEjectContents()
 
 C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(NULL),
 		enabled(false), recording(false), net_enabled(false), landscape_mode(LandscapeMode::Dynamic), flat_chunk_shapes(false),
-	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0)
+	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0), disable_shortcut_filter(new C4DisableShortcutFilter(nullptr))
 {
 }
 
@@ -588,6 +587,9 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	foo->hide();
 	// Default action state
 	ui.actionHelp->setChecked(::Config.Developer.ShowHelp);
+
+	// Disable some shortcuts on actions that are handled internally
+	// (none right now)
 
 	// Property editor
 	property_delegate_factory.reset(new C4PropertyDelegateFactory());

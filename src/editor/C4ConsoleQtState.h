@@ -77,6 +77,22 @@ public:
 	void Execute();
 };
 
+/* Disable shortcut on some actions */
+
+class C4DisableShortcutFilter : public QObject
+{
+	Q_OBJECT
+
+public:
+	C4DisableShortcutFilter(QObject *parent) : QObject(parent) {}
+
+	bool eventFilter(QObject *target, QEvent *event)
+	{
+		if (event->type() == QEvent::Shortcut) return true;
+		return QObject::eventFilter(target, event);
+	}
+};
+
 class C4ConsoleQtMainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -165,6 +181,7 @@ public:
 	std::unique_ptr<class C4PropertyNameDelegate> property_name_delegate;
 	std::unique_ptr<class C4ConsoleQtObjectListModel> object_list_model;
 	std::unique_ptr<class C4ConsoleQtDefinitionListModel> definition_list_model;
+	std::unique_ptr<class C4DisableShortcutFilter> disable_shortcut_filter;
 	std::list<class C4ConsoleQtViewportDockWidget *> viewports;
 	std::list<std::unique_ptr<C4ConsoleClientAction> > client_actions;
 	std::list<std::unique_ptr<C4ConsoleRemovePlayerAction> > player_actions;
