@@ -645,7 +645,6 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Log.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
-	src/lib/C4RandomRecord.cpp
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
 	src/lib/C4Stat.cpp
@@ -1074,6 +1073,7 @@ src/c4group/C4LangStringTable.cpp
 src/c4group/C4LangStringTable.h
 src/lib/C4Real.cpp
 src/lib/C4Real.h
+src/lib/C4RandomRecord.cpp
 src/script/C4Aul.cpp
 src/script/C4AulCompiler.h
 src/script/C4AulCompiler.cpp
@@ -1116,8 +1116,8 @@ add_executable(c4script
 set_property(TARGET c4script PROPERTY FOLDER "Utilities")
 
 target_link_libraries(c4script
-	libc4script
 	libmisc
+	libc4script
 )
 
 add_executable(openclonk WIN32 MACOSX_BUNDLE
@@ -1141,8 +1141,8 @@ target_link_libraries(openclonk
 	${XRANDR_LIBRARIES}
 	${DBGHELP_LIBRARIES}
 	${UPNP_LIBRARIES}
-	libc4script
 	libmisc
+	libc4script
 )
 if(USE_COCOA)
 	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
@@ -1173,8 +1173,8 @@ target_link_libraries(openclonk-server
 	${TinyXML_LIBRARIES}
 	${DBGHELP_LIBRARIES}
 	${UPNP_LIBRARIES}
-	libc4script
 	libmisc
+	libc4script
 )
 if(USE_COCOA)
 	target_link_libraries(openclonk-server "-framework Cocoa")
@@ -1188,8 +1188,8 @@ if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
 	target_link_libraries(mape
 		${GTK3_LIBRARIES}
 		${GTK3_gtksourceview_LIBRARIES}
-		libc4script
 		libmisc
+		libc4script
 	)
 	# Suppress the console window for mape even though only a main() and not
 	# a WinMain() entry point is provided.
