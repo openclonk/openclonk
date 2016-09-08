@@ -990,7 +990,8 @@ static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 static C4String * FnGetDefinitionGroupPath(C4PropList * _this)
 {
 	// Must have loaded all paths
-	::Console.EnsureDefinitionListInitialized();
+	if (Application.isEditor)
+		::Console.EnsureDefinitionListInitialized();
 	// Resolve definition
 	C4Def *def = _this->GetDef();
 	if (!def || !def->ConsoleGroupPath.getData()) return nullptr;
