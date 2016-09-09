@@ -166,6 +166,10 @@ public slots:
 	void SelectionDelete();
 	void SelectionDuplicate();
 	void SelectionEjectContents();
+	// Shortcut actions
+	void FocusGlobalScriptBox();
+	void FocusObjectScriptBox();
+	void OpenMaterialSelection();
 };
 
 

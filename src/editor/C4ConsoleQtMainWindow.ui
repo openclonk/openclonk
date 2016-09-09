@@ -941,7 +941,7 @@
     <string comment="res">IDS_TEXT_MAP_STATIC</string>
    </property>
    <property name="shortcut">
-    <string>F3</string>
+    <string>F8</string>
    </property>
   </action>
   <action name="actionExactLandscape">
@@ -1109,7 +1109,7 @@
     <string comment="res">IDS_TEXT_MAP_STATICFLAT</string>
    </property>
    <property name="shortcut">
-    <string>Shift+F3</string>
+    <string>Shift+F8</string>
    </property>
   </action>
   <action name="actionDeleteObject">
@@ -1167,6 +1167,30 @@
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+  </action>
+  <action name="actionFocusGlobalScriptBox">
+   <property name="text">
+    <string>FocusGlobalScriptBox</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
+  <action name="actionFocusObjectScriptBox">
+   <property name="text">
+    <string>FocusObjectScriptBox</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F4</string>
+   </property>
+  </action>
+  <action name="actionOpenMaterialSelection">
+   <property name="text">
+    <string>OpenMaterialSelection</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
    </property>
   </action>
  </widget>
@@ -1814,6 +1838,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionFocusGlobalScriptBox</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FocusGlobalScriptBox()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFocusObjectScriptBox</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FocusObjectScriptBox()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpenMaterialSelection</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OpenMaterialSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1855,5 +1927,8 @@
   <slot>SelectionEjectContents()</slot>
   <slot>HelpToggle(bool)</slot>
   <slot>FileReInitScenario()</slot>
+  <slot>FocusGlobalScriptBox()</slot>
+  <slot>FocusObjectScriptBox()</slot>
+  <slot>OpenMaterialSelection()</slot>
  </slots>
 </ui>

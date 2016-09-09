@@ -513,6 +513,29 @@ void C4ConsoleQtMainWindow::SelectionEjectContents()
 	::Console.EditCursor.GrabContents();
 }
 
+void C4ConsoleQtMainWindow::FocusGlobalScriptBox()
+{
+	state->ui.logDockWidget->show();
+	state->ui.logDockWidget->raise();
+	state->ui.consoleInputBox->setFocus();
+}
+
+void C4ConsoleQtMainWindow::FocusObjectScriptBox()
+{
+	state->ui.propertyDockWidget->show();
+	state->ui.propertyDockWidget->raise();
+	state->ui.propertyInputBox->setFocus();
+}
+
+void C4ConsoleQtMainWindow::OpenMaterialSelection()
+{
+	if (state->ui.foregroundMatTexComboBox->isEnabled())
+	{
+		state->ui.foregroundMatTexComboBox->setFocus();
+		state->ui.foregroundMatTexComboBox->showPopup();
+	}
+}
+
 
 /* Common C4ConsoleGUI interface */
 
@@ -648,6 +671,11 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	window->tabifyDockWidget(ui.objectListDockWidget, ui.propertyDockWidget);
 	window->tabifyDockWidget(ui.objectListDockWidget, ui.creatorDockWidget);
 	ui.propertyDockWidget->raise();
+
+	// Some keyboard shortcut actions
+	window->addAction(ui.actionFocusGlobalScriptBox);
+	window->addAction(ui.actionFocusObjectScriptBox);
+	window->addAction(ui.actionOpenMaterialSelection);
 
 	// Welcome page
 	InitWelcomeScreen();
