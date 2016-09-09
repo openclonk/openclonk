@@ -200,25 +200,44 @@ void C4ConsoleQtMainWindow::PausePressed(bool down)
 void C4ConsoleQtMainWindow::CursorGamePressed(bool down)
 {
 	if (down)
+	{
 		::Console.EditCursor.SetMode(C4CNS_ModePlay);
-	else // cannot un-check by pressing again
+	}
+	else
+	{
+		// cannot un-check by pressing again
 		state->ui.actionCursorGame->setChecked(true);
+	}
 }
 
 void C4ConsoleQtMainWindow::CursorSelectPressed(bool down)
 {
 	if (down)
+	{
 		::Console.EditCursor.SetMode(C4CNS_ModeEdit);
-	else // cannot un-check by pressing again
+		// When the select cursor is activated, always show either the property dock
+		state->ui.propertyDockWidget->raise();
+	}
+	else
+	{
+		// cannot un-check by pressing again
 		state->ui.actionCursorSelect->setChecked(true);
+	}
 }
 
 void C4ConsoleQtMainWindow::CursorCreateObjPressed(bool down)
 {
 	if (down)
+	{
 		::Console.EditCursor.SetMode(C4CNS_ModeCreateObject);
-	else // cannot un-check by pressing again
+		// When the creator cursor is activated, always show the defintiion list
+		state->ui.creatorDockWidget->raise();
+	}
+	else
+	{
+		// cannot un-check by pressing again
 		state->ui.actionCursorCreateObj->setChecked(true);
+	}
 }
 
 void C4ConsoleQtMainWindow::CursorDrawPenPressed(bool down)
@@ -624,6 +643,11 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	window->connect(ui.propertyTable->selectionModel(), &QItemSelectionModel::currentChanged, window.get(), [this]() {
 		this->ui.arrayRemoveButton->setDisabled(this->property_model->IsTargetReadonly() || this->ui.propertyTable->selectionModel()->selectedRows().empty());
 	});
+
+	// Initial layout is tabified (somehow I cannot do this in the designer)
+	window->tabifyDockWidget(ui.objectListDockWidget, ui.propertyDockWidget);
+	window->tabifyDockWidget(ui.objectListDockWidget, ui.creatorDockWidget);
+	ui.propertyDockWidget->raise();
 
 	// Welcome page
 	InitWelcomeScreen();
