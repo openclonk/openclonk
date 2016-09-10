@@ -191,6 +191,13 @@ global func FxEnsureTreesTimer()
 	return FX_OK;
 }
 
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
+}
+
 
 /*-- Volcano Effect --*/
 
