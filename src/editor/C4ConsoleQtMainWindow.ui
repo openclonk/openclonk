@@ -396,6 +396,7 @@
      <string comment="res">IDS_MNU_WINDOWS</string>
     </property>
     <addaction name="actionViewportNew"/>
+    <addaction name="actionNextViewport"/>
    </widget>
    <widget class="QMenu" name="menuNet">
     <property name="title">
@@ -406,6 +407,16 @@
     <property name="title">
      <string comment="res">IDS_MNU_TOOLS</string>
     </property>
+    <widget class="QMenu" name="menuIDS_MNU_SHORTCUTS">
+     <property name="title">
+      <string comment="res">IDS_MNU_SHORTCUTS</string>
+     </property>
+     <addaction name="actionFocusGlobalScriptBox"/>
+     <addaction name="actionFocusObjectScriptBox"/>
+     <addaction name="actionOpenMaterialSelection"/>
+     <addaction name="actionGradeUp"/>
+     <addaction name="actionGradeDown"/>
+    </widget>
     <addaction name="actionPlay"/>
     <addaction name="actionPause"/>
     <addaction name="separator"/>
@@ -422,6 +433,8 @@
     <addaction name="actionStaticLandscape"/>
     <addaction name="actionStaticFlatLandscape"/>
     <addaction name="actionExactLandscape"/>
+    <addaction name="separator"/>
+    <addaction name="menuIDS_MNU_SHORTCUTS"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -987,6 +1000,9 @@
    <property name="text">
     <string comment="res">IDS_MNU_NEWVIEWPORT</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+0</string>
+   </property>
   </action>
   <action name="actionFileOpen">
    <property name="text">
@@ -1052,6 +1068,9 @@
   <action name="actionPlayerJoin">
    <property name="text">
     <string comment="res">IDS_MNU_JOIN</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+J</string>
    </property>
   </action>
   <action name="actionHelpAbout">
@@ -1171,7 +1190,13 @@
   </action>
   <action name="actionFocusGlobalScriptBox">
    <property name="text">
-    <string>FocusGlobalScriptBox</string>
+    <string comment="res">IDS_MNU_FOCUSGLOBALSCRIPTBOX</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_FOCUSGLOBALSCRIPTBOX</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_FOCUSGLOBALSCRIPTBOX</string>
    </property>
    <property name="shortcut">
     <string>F4</string>
@@ -1179,7 +1204,13 @@
   </action>
   <action name="actionFocusObjectScriptBox">
    <property name="text">
-    <string>FocusObjectScriptBox</string>
+    <string comment="res">IDS_MNU_FOCUSOBJECTSCRIPTBOX</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_FOCUSOBJECTSCRIPTBOX</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_FOCUSOBJECTSCRIPTBOX</string>
    </property>
    <property name="shortcut">
     <string>Shift+F4</string>
@@ -1187,10 +1218,58 @@
   </action>
   <action name="actionOpenMaterialSelection">
    <property name="text">
-    <string>OpenMaterialSelection</string>
+    <string comment="res">IDS_MNU_OPENMATERIALSELECTION</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_OPENMATERIALSELECTION</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_OPENMATERIALSELECTION</string>
    </property>
    <property name="shortcut">
     <string>F9</string>
+   </property>
+  </action>
+  <action name="actionNextViewport">
+   <property name="text">
+    <string comment="res">IDS_MNU_NEXTVIEWPORT</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_NEXTVIEWPORT</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_NEXTVIEWPORT</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
+  </action>
+  <action name="actionGradeUp">
+   <property name="text">
+    <string comment="res">IDS_MNU_GRADEUP</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_GRADEUP</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_GRADEUP</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="actionGradeDown">
+   <property name="text">
+    <string comment="res">IDS_MNU_GRADEDOWN</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_GRADEDOWN</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_GRADEDOWN</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
    </property>
   </action>
  </widget>
@@ -1886,6 +1965,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionNextViewport</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FocusNextViewport()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGradeDown</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>GradeDown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGradeUp</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>GradeUp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -1930,5 +2057,8 @@
   <slot>FocusGlobalScriptBox()</slot>
   <slot>FocusObjectScriptBox()</slot>
   <slot>OpenMaterialSelection()</slot>
+  <slot>FocusNextViewport()</slot>
+  <slot>GradeUp()</slot>
+  <slot>GradeDown()</slot>
  </slots>
 </ui>

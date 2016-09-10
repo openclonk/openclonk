@@ -170,6 +170,9 @@ public slots:
 	void FocusGlobalScriptBox();
 	void FocusObjectScriptBox();
 	void OpenMaterialSelection();
+	void FocusNextViewport();
+	void GradeUp();
+	void GradeDown();
 };
 
 

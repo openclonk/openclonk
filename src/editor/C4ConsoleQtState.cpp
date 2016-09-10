@@ -536,6 +536,45 @@ void C4ConsoleQtMainWindow::OpenMaterialSelection()
 	}
 }
 
+void C4ConsoleQtMainWindow::FocusNextViewport()
+{
+	// Focus viewport after the one that has focus
+	bool has_focus_vp = false;
+	for (C4ConsoleQtViewportDockWidget *vp : state->viewports)
+	{
+		if (has_focus_vp)
+		{
+			vp->SetFocus();
+			return;
+		}
+		else if (vp->HasFocus())
+		{
+			has_focus_vp = true;
+		}
+	}
+	// No focus or last viewport was focused? Focus first.
+	if (state->viewports.size())
+	{
+		state->viewports.front()->SetFocus();
+	}
+}
+
+void C4ConsoleQtMainWindow::GradeUp()
+{
+	if (state->ui.drawSizeSlider->isEnabled())
+	{
+		state->ui.drawSizeSlider->setValue(state->ui.drawSizeSlider->value() + state->ui.drawSizeSlider->singleStep());
+	}
+}
+
+void C4ConsoleQtMainWindow::GradeDown()
+{
+	if (state->ui.drawSizeSlider->isEnabled())
+	{
+		state->ui.drawSizeSlider->setValue(state->ui.drawSizeSlider->value() - state->ui.drawSizeSlider->singleStep());
+	}
+}
+
 
 /* Common C4ConsoleGUI interface */
 
@@ -605,6 +644,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	ui.drawSizeSlider->setMaximum(C4TLS_GradeMax);
 	ui.drawSizeSlider->setMinimum(C4TLS_GradeMin);
 	ui.drawSizeSlider->setValue(C4TLS_GradeDefault);
+	ui.drawSizeSlider->setSingleStep(1);
 	// Console input box signal
 	QLineEdit *main_console_edit = ui.consoleInputBox->lineEdit();
 	main_console_edit->completer()->setCaseSensitivity(Qt::CaseSensitivity::CaseSensitive);
@@ -614,10 +654,18 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	property_console_edit->completer()->setCaseSensitivity(Qt::CaseSensitivity::CaseSensitive);
 	// Add window menu actions
 	window_menu_separator = ui.menuWindows->addSeparator();
-	ui.menuWindows->addAction(ui.creatorDockWidget->toggleViewAction());
-	ui.menuWindows->addAction(ui.objectListDockWidget->toggleViewAction());
-	ui.menuWindows->addAction(ui.propertyDockWidget->toggleViewAction());
-	ui.menuWindows->addAction(ui.logDockWidget->toggleViewAction());
+	QAction *dock_action = ui.creatorDockWidget->toggleViewAction();
+	dock_action->setShortcut(QKeySequence(Qt::ALT | Qt::Key_1));
+	ui.menuWindows->addAction(dock_action);
+	dock_action = ui.objectListDockWidget->toggleViewAction();
+	dock_action->setShortcut(QKeySequence(Qt::ALT | Qt::Key_2));
+	ui.menuWindows->addAction(dock_action);
+	dock_action = ui.propertyDockWidget->toggleViewAction();
+	dock_action->setShortcut(QKeySequence(Qt::ALT | Qt::Key_3));
+	ui.menuWindows->addAction(dock_action);
+	dock_action = ui.logDockWidget->toggleViewAction();
+	dock_action->setShortcut(QKeySequence(Qt::ALT | Qt::Key_4));
+	ui.menuWindows->addAction(dock_action);
 	// Viewport area setup
 	viewport_area = new QMainWindow();
 	viewport_area->setWindowFlags(Qt::Widget);
@@ -672,15 +720,10 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	window->tabifyDockWidget(ui.objectListDockWidget, ui.creatorDockWidget);
 	ui.propertyDockWidget->raise();
 
-	// Some keyboard shortcut actions
-	window->addAction(ui.actionFocusGlobalScriptBox);
-	window->addAction(ui.actionFocusObjectScriptBox);
-	window->addAction(ui.actionOpenMaterialSelection);
-
 	// Welcome page
 	InitWelcomeScreen();
 	ShowWelcomeScreen();
-
+	
 	// Initial empty property page
 	auto sel = C4EditCursorSelection();
 	PropertyDlgUpdate(sel, true);
