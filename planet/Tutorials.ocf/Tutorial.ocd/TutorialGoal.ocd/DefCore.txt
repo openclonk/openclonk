@@ -2,4 +2,7 @@
 id=Goal_Tutorial
 Version=5,4,0,0
 Category=C4D_StaticBack|C4D_Goal
-Picture=0,0,64,64
+Width=64
+Height=64
+Offset=-32,-32
+Picture=0,0,128,128

@@ -2,4 +2,6 @@
 id=Goal_TreasureHunt
 Version=6,0
 Category=C4D_StaticBack|C4D_Goal
-Picture=0,0,64,64
+Width=64
+Height=64
+Offset=-32,-32
