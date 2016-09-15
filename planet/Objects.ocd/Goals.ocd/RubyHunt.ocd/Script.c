@@ -49,7 +49,7 @@ public func IsFulfilled()
 {
 	var winner=NO_OWNER, winners, winner_teams;
 	if (has_winner) return true;
-	for (var ruby in FindObjects(Find_InRect(goal_rect.x, goal_rect.y, goal_rect.w, goal_rect.h), Find_ID(Ruby)))
+	for (var ruby in FindObjects(Find_InRect(goal_rect.x, goal_rect.y, goal_rect.wdt, goal_rect.hgt), Find_ID(Ruby)))
 	{
 		if (ruby->Contained()) winner = ruby->Contained()->GetOwner();
 		if (winner==NO_OWNER) winner = ruby->GetController();

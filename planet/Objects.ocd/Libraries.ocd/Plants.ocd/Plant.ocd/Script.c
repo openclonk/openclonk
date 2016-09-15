@@ -53,7 +53,7 @@ public func Place(int amount, proplist area, proplist settings)
 	var plants = CreateArray(), plant;
 	for (var i = 0 ; i < amount ; i++)
 	{
-		plant = PlaceVegetation(this, rectangle.x, rectangle.y, rectangle.w, rectangle.h, settings.growth, area);
+		plant = PlaceVegetation(this, rectangle.x, rectangle.y, rectangle.wdt, rectangle.hgt, settings.growth, area);
 		if (plant)
 		{
 			plants[GetLength(plants)] = plant;
@@ -205,7 +205,7 @@ private func DoSeed()
 		// Quick-check if intersection to confinement yields an empty area
 		// to avoid unnecessery search by PlaceVegetation
 		area = confined_area->GetBoundingRectangle();
-		if (area.w <= 0 || area.h <= 0) return;
+		if (area.wdt <= 0 || area.hgt <= 0) return;
 	}
 	else
 	{

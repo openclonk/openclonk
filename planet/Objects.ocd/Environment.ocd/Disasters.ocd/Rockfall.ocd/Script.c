@@ -75,8 +75,8 @@ protected func FxIntRockfallControlTimer(object target, proplist effect, int tim
 			var y = 0;
 			if (effect.area)
 			{
-				x = effect.area.x + Random(effect.area.w);
-				y = effect.area.y + Random(effect.area.h);		
+				x = effect.area.x + Random(effect.area.wdt);
+				y = effect.area.y + Random(effect.area.hgt);		
 			}
 			if (effect.spawn_distance)
 			{

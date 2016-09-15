@@ -44,9 +44,9 @@ public func Place(int amount, proplist area)
 		rectangle = area->GetBoundingRectangle(); 
 		
 	var grass_list = [];
-	for (var x = rectangle.x; x <= rectangle.x + rectangle.w; x += 9)
+	for (var x = rectangle.x; x <= rectangle.x + rectangle.wdt; x += 9)
 	{
-		for (var y = rectangle.y; y <= rectangle.y + rectangle.h; y += 3)
+		for (var y = rectangle.y; y <= rectangle.y + rectangle.hgt; y += 3)
 		{
 			if (GetMaterial(AbsX(x), AbsY(y)) == Material("Sky") && GetMaterial(AbsX(x), AbsY(y + 3)) == Material("Earth"))
 			{

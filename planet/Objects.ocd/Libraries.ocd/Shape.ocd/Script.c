@@ -135,7 +135,7 @@ private func BaseIntersection_GetBoundingRectangle()
 			// first bounds determine area
 			if (!result)
 			{
-				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.wdt, h = rt.hgt};
+				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, wdt = rt.wdt, hgt = rt.hgt};
 			}
 			else
 			{
@@ -221,7 +221,7 @@ private func BaseCombination_GetBoundingRectangle()
 			// first bounds determine area
 			if (!result)
 			{
-				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, w = rt.wdt, h = rt.hgt};
+				result = new Shape.BaseRectangle {x = rt.x, y = rt.y, wdt = rt.wdt, hgt = rt.hgt};
 			}
 			else
 			{
@@ -389,5 +389,5 @@ global func Rectangle(int x2, int y2, int w2, int h2)
 		y2 += h2;
 		h2 = - h2;
 	}
-	return new Shape.BaseRectangle {x = x2, y = y2, w = w2, h = h2};
+	return new Shape.BaseRectangle {x = x2, y = y2, wdt = w2, hgt = h2};
 }

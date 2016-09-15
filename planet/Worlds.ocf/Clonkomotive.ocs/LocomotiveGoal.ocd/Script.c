@@ -21,7 +21,7 @@ public func SetGoalRect(int x, int y, int wdt, int hgt)
 // The goal is fulfilled if the train is somewhere in a rectangle.
 public func IsFulfilled()
 {
-	return FindObject(Find_ID(Locomotive), Find_InRect(AbsX(goal_rect.x), AbsY(goal_rect.y), goal_rect.w, goal_rect.h));
+	return FindObject(Find_ID(Locomotive), Find_InRect(AbsX(goal_rect.x), AbsY(goal_rect.y), goal_rect.wdt, goal_rect.hgt));
 }
 
 public func GetDescription(int plr)

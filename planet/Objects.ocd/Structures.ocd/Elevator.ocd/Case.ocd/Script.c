@@ -708,10 +708,10 @@ private func Drilling()
 	{
 		rect.x = Min(rect.x, partner->GetX() - 12);
 		rect.y = Min(rect.y, partner->GetY() - 13 - additional_y);
-		rect.w = Max(rect.w, partner->GetX() + 12);
-		rect.h = Max(rect.h, partner->GetY() + 13 + additional_y);
+		rect.wdt = Max(rect.wdt, partner->GetX() + 12);
+		rect.hgt = Max(rect.hgt, partner->GetY() + 13 + additional_y);
 	}
-	DigFreeRect(rect.x, rect.y, rect.w - rect.x, rect.h - rect.y);
+	DigFreeRect(rect.x, rect.y, rect.wdt - rect.x, rect.hgt - rect.y);
 }
 
 public func DigOutObject(object obj)

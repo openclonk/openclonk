@@ -14,7 +14,7 @@ public func Place(int amount, proplist rectangle)
 	if (!amount) amount = 1;
 	if (!rectangle) rectangle = Rectangle(0,0, LandscapeWidth(), LandscapeHeight());
 
-	var trees = FindObjects(Find_InRect(rectangle.x, rectangle.y, rectangle.w, rectangle.h), Find_OCF(OCF_Fullcon), Find_Func("IsTree"), Find_Func("IsStanding"));
+	var trees = FindObjects(Find_InRect(rectangle.x, rectangle.y, rectangle.wdt, rectangle.hgt), Find_OCF(OCF_Fullcon), Find_Func("IsTree"), Find_Func("IsStanding"));
 	var hives = CreateArray(), hive;
 	while (amount)
 	{
