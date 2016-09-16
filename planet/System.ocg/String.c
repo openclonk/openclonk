@@ -21,6 +21,20 @@ global func TakeString(string str, int begin, int end)
 	return reduced_str;
 }
 
+// Returns a list of positions where the substring was found in the main string.
+global func FindSubstring(string main_str, string sub_str)
+{
+	var positions = [];
+	var sub_length = GetLength(sub_str);
+	var main_length = GetLength(main_str);
+	if (sub_length > main_length)
+		return positions;	
+	for (var index = 0; index <= main_length - sub_length; index++)
+		if (TakeString(main_str, index, index + sub_length) == sub_str)
+			PushBack(positions, index);
+	return positions;
+}
+
 // Converts a char into a string.
 global func CharToString(int char)
 {
