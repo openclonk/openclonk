@@ -33,10 +33,13 @@
     </desc>
     <examples>
       <example>
-        <code><funclink>Log(</funclink>ReplaceString("An apple a day keeps the apple away.", "apple", "banana"));</code>
+        <code><funclink>Log</funclink>(ReplaceString("An apple a day keeps the apple away.", "apple", "banana"));</code>
         <text>Displays "An banana a day keeps the banana away."</text>
       </example>
     </examples>
+    <related>
+      <funclink>RegexReplace</funclink>
+    </related>
   </func>
   <author>Sven2</author><date>2016-07</date>
 </funcs>

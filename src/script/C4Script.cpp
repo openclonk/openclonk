@@ -24,6 +24,8 @@
 #include "lib/C4Random.h"
 #include "C4Version.h"
 
+#include <regex>
+
 //========================== Some Support Functions =======================================
 
 StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount)
@@ -467,6 +469,101 @@ static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 	// do call
 	return pEffect->DoCall(pTarget, szCallFn, Pars[3], Pars[4], Pars[5], Pars[6], Pars[7], Pars[8], Pars[9]);
 }
+
+/* Regex */
+
+static const long
+	Regex_CaseInsensitive = (1 << 0),
+	Regex_FirstOnly       = (1 << 1);
+
+static std::regex_constants::syntax_option_type C4IntToSyntaxOption(long flags)
+{
+	std::regex_constants::syntax_option_type out = std::regex::ECMAScript;
+	if (flags & Regex_CaseInsensitive)
+		out |= std::regex::icase;
+	return out;
+}
+
+static std::regex_constants::match_flag_type C4IntToMatchFlag(long flags)
+{
+	std::regex_constants::match_flag_type out = std::regex_constants::match_default;
+	if (flags & Regex_FirstOnly)
+		out |= std::regex_constants::format_first_only;
+	return out;
+}
+
+static Nillable<C4String *> FnRegexReplace(C4PropList * _this, C4String *source, C4String *regex, C4String *replacement, long flags)
+{
+	if (!source || !regex || !replacement) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		std::string out = std::regex_replace(source->GetCStr(), re, replacement->GetCStr(), C4IntToMatchFlag(flags));
+		return ::Strings.RegString(out.c_str());
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexReplace: %s", e.what()).getData());
+	}
+}
+
+
+static Nillable<C4ValueArray *> FnRegexSearch(C4PropList * _this, C4String *source, C4String *regex, long flags)
+{
+	if (!source || !regex) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		std::smatch m;
+		C4ValueArray *out = new C4ValueArray();
+		std::string cur(source->GetCStr());
+		long i = 0, pos = 0;
+		while (std::regex_search(cur, m, re))
+		{
+			pos += GetCharacterCount(m.prefix().str().c_str());
+			(*out)[i++] = C4VInt(pos);
+			if (flags & Regex_FirstOnly) break;
+			pos += GetCharacterCount(m.str().c_str());
+			cur = m.suffix();
+		}
+		return out;
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexSearch: %s", e.what()).getData());
+	}
+}
+
+static Nillable<C4ValueArray *> FnRegexMatch(C4PropList * _this, C4String *source, C4String *regex, long flags)
+{
+	if (!source || !regex) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		std::smatch m;
+		C4ValueArray *out = new C4ValueArray();
+		std::string cur(source->GetCStr());
+		long i = 0;
+		while (std::regex_search(cur, m, re))
+		{
+			C4ValueArray *match = new C4ValueArray(1);
+			long j = 0;
+			for (auto sm : m)
+			{
+				(*match)[j++] = C4VString(String(sm.str().c_str()));
+			}
+			(*out)[i++] = C4VArray(match);
+			if (flags & Regex_FirstOnly) break;
+			cur = m.suffix();
+		}
+		return out;
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexMatch: %s", e.what()).getData());
+	}
+}
+
 
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
@@ -964,6 +1061,9 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "FX_Call_EngCorrosion"      ,C4V_Int,      C4FxCall_EngCorrosion      }, // energy loss through corrosion (acid)
 	{ "FX_Call_EngGetPunched"     ,C4V_Int,      C4FxCall_EngGetPunched     }, // energy loss from punch
 
+	{ "Regex_CaseInsensitive"     ,C4V_Int,      Regex_CaseInsensitive      },
+	{ "Regex_FirstOnly"           ,C4V_Int,      Regex_FirstOnly            },
+
 	{ "C4V_Nil",         C4V_Int, C4V_Nil},
 	{ "C4V_Int",         C4V_Int, C4V_Int},
 	{ "C4V_Bool",        C4V_Int, C4V_Bool},
@@ -1034,6 +1134,9 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(RemoveEffect);
 	F(GetEffect);
 	F(GetEffectCount);
+	F(RegexReplace);
+	F(RegexSearch);
+	F(RegexMatch);
 	F(Distance);
 	F(Angle);
 	F(GetChar);
