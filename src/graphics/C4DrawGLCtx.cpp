@@ -465,6 +465,14 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	ctx = SDL_GL_CreateContext(pWindow->window);
 	if (!ctx)
 	{
+		LogSilentF("  gl: OpenGL %d.%d not available; falling back to 3.1 emergency context.", REQUESTED_GL_CTX_MAJOR, REQUESTED_GL_CTX_MINOR);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		pGL->Workarounds.ForceSoftwareTransform = true;
+		ctx = SDL_GL_CreateContext(pWindow->window);
+	}
+	if (!ctx)
+	{
 		return pGL->Error(FormatString("SDL_GL_CreateContext: %s", SDL_GetError()).getData());
 	}
 	// No luck at all?
