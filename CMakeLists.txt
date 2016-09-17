@@ -338,7 +338,7 @@ include_directories(SYSTEM ${SDL2_INCLUDE_DIRS})
 
 # Qt5 for editor
 find_path(Qt5DIR qt.pro PATHS ${CMAKE_ADDITIONAL_DEPS_PATH}/qt-5.5.0)
-find_package(Qt5Widgets PATHS ${Qt5DIR}/qtbase/lib/cmake/Qt5Widgets)
+find_package(Qt5Widgets 5.4 PATHS ${Qt5DIR}/qtbase/lib/cmake/Qt5Widgets)
 if(Qt5Widgets_FOUND)
 	SET(WITH_QT_EDITOR ${Qt5Widgets_FOUND} "Qt editor dialogues available")
 	set(CMAKE_AUTOMOC ON)
