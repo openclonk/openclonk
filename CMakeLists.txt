@@ -1483,6 +1483,9 @@ if (NOT APPLE)
 	# Update the MIME cache -- this makes the clonk:// protocol handler actually work
 	install(CODE "execute_process(COMMAND update-desktop-database)")
 
+	# Install software center metadata
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.appdata.xml DESTINATION share/appdata)
+
 	# Install binaries
 	install(TARGETS openclonk DESTINATION games)
 	install(TARGETS c4group DESTINATION bin)
