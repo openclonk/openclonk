@@ -525,7 +525,7 @@ static Nillable<C4ValueArray *> FnRegexSearch(C4PropList * _this, C4String *sour
 			int char_pos = GetCharacterCount(std::string(data.getData(), pos + m.position()).c_str());
 			(*out)[i++] = C4VInt(char_pos);
 			if (flags & Regex_FirstOnly) break;
-			pos += m.position() + std::max(m.length(), 1l);
+			pos += m.position() + std::max<size_t>(m.length(), 1);
 		}
 		return out;
 	}
@@ -556,7 +556,7 @@ static Nillable<C4ValueArray *> FnRegexMatch(C4PropList * _this, C4String *sourc
 			}
 			(*out)[i++] = C4VArray(match);
 			if (flags & Regex_FirstOnly) break;
-			pos += m.position() + std::max(m.length(), 1l);
+			pos += m.position() + std::max<size_t>(m.length(), 1);
 		}
 		return out;
 	}
@@ -581,10 +581,10 @@ static Nillable<C4ValueArray *> FnRegexSplit(C4PropList * _this, C4String *sourc
 		{
 			// As we're advancing by one character for zero-length matches, always
 			// include at least one character here.
-			std::string substr(data.getData() + pos, std::max(m.position(), 1l));
+			std::string substr(data.getData() + pos, std::max<size_t>(m.position(), 1));
 			(*out)[i++] = C4VString(String(substr.c_str()));
 			if (flags & Regex_FirstOnly) break;
-			pos += m.position() + std::max(m.length(), 1l);
+			pos += m.position() + std::max<size_t>(m.length(), 1);
 		}
 		if (pos <= data.getLength())
 		{
