@@ -566,6 +566,39 @@ static Nillable<C4ValueArray *> FnRegexMatch(C4PropList * _this, C4String *sourc
 	}
 }
 
+static Nillable<C4ValueArray *> FnRegexSplit(C4PropList * _this, C4String *source, C4String *regex, long flags)
+{
+	if (!source || !regex) return C4Void();
+	try
+	{
+		std::regex re(regex->GetCStr(), C4IntToSyntaxOption(flags));
+		C4ValueArray *out = new C4ValueArray();
+		const auto &data = source->GetData();
+		size_t pos = 0;
+		std::cmatch m;
+		long i = 0;
+		while (pos <= data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
+		{
+			// As we're advancing by one character for zero-length matches, always
+			// include at least one character here.
+			std::string substr(data.getData() + pos, std::max(m.position(), 1l));
+			(*out)[i++] = C4VString(String(substr.c_str()));
+			if (flags & Regex_FirstOnly) break;
+			pos += m.position() + std::max(m.length(), 1l);
+		}
+		if (pos <= data.getLength())
+		{
+			std::string substr(data.getData() + pos, data.getLength() - pos);
+			(*out)[i++] = C4VString(String(substr.c_str()));
+		}
+		return out;
+	}
+	catch (const std::regex_error& e)
+	{
+		throw C4AulExecError(FormatString("RegexSplit: %s", e.what()).getData());
+	}
+}
+
 
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
@@ -1139,6 +1172,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(RegexReplace);
 	F(RegexSearch);
 	F(RegexMatch);
+	F(RegexSplit);
 	F(Distance);
 	F(Angle);
 	F(GetChar);

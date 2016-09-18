@@ -49,13 +49,14 @@
     </desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>("%d", RegexSearch("hello world", "l"));</code>
+        <code><funclink>Log</funclink>("%v", RegexSearch("hello world", "l"));</code>
         <text>Searches for the character l, returning [2, 3, 9].</text>
       </example>
     </examples>
     <related>
       <funclink>RegexReplace</funclink>
       <funclink>RegexMatch</funclink>
+      <funclink>RegexSplit</funclink>
     </related>
   </func>
   <author>Luchs</author><date>2016-09</date>

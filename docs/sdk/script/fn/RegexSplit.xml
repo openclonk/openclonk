@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>RegexMatch</title>
+    <title>RegexSplit</title>
     <category>Script</category>
     <subcat>Strings</subcat>
     <version>8.0 OC</version>
@@ -14,12 +14,12 @@
         <param>
           <type>string</type>
           <name>text</name>
-          <desc>String to match.</desc>
+          <desc>String to split in parts.</desc>
         </param>
         <param>
           <type>string</type>
           <name>regex</name>
-          <desc>Regular expression in ECMAScript syntax.</desc>
+          <desc>Regular expression matching the separator in ECMAScript syntax.</desc>
         </param>
         <param>
           <type>int</type>
@@ -37,7 +37,7 @@
               </row>
               <row>
                 <literal_col>Regex_FirstOnly</literal_col>
-                <col>Stop after first match, returning an array with zero or one elements.</col>
+                <col>Split the string only once.</col>
               </row>
             </table>
           </desc>
@@ -45,18 +45,18 @@
       </params>
     </syntax>
     <desc>
-      Performs a regular expression match, returning an array of arrays containing [full match, submatch 1, submatch 2, etc.].
+      Splits a string into an array of strings.
     </desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>("%v", RegexMatch("OC 8.0", "(\\w+)\\s(\\d+)\\.(\\d+)"));</code>
-        <text>Parses a version string, printing [["OC 8.0", "OC", "8", "0"]].</text>
+        <code><funclink>Log</funclink>("%v", RegexSplit("Harry!, Sven2 &amp; Maikel", "\\s*[,&amp;]\\s*"));</code>
+        <text>Splits a list of names, returning ["Harry!", "Sven2", "Maikel"].</text>
       </example>
     </examples>
     <related>
       <funclink>RegexSearch</funclink>
       <funclink>RegexReplace</funclink>
-      <funclink>RegexSplit</funclink>
+      <funclink>RegexMatch</funclink>
     </related>
   </func>
   <author>Luchs</author><date>2016-09</date>

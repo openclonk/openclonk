@@ -62,6 +62,7 @@
       <funclink>ReplaceString</funclink>
       <funclink>RegexSearch</funclink>
       <funclink>RegexMatch</funclink>
+      <funclink>RegexSplit</funclink>
     </related>
   </func>
   <author>Luchs</author><date>2016-09</date>
