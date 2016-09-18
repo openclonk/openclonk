@@ -39,7 +39,7 @@
 #include "platform/StdRegistry.h"
 
 #define FILE_SELECT_FILTER_FOR_C4S "OpenClonk Scenario\0"         \
-                                   "*.ocs;*.ocf;Scenario.txt\0" \
+                                   "*.ocs *.ocf Scenario.txt\0" \
                                    "\0"
 
 using namespace OpenFileFlags;
