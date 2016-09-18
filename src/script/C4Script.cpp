@@ -520,12 +520,12 @@ static Nillable<C4ValueArray *> FnRegexSearch(C4PropList * _this, C4String *sour
 		std::cmatch m;
 		long i = 0;
 		// std::regex_iterator would be the better way to do this, but is is broken in libc++ (see LLVM bug #21597).
-		while (pos < data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
+		while (pos <= data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
 		{
 			int char_pos = GetCharacterCount(std::string(data.getData(), pos + m.position()).c_str());
 			(*out)[i++] = C4VInt(char_pos);
 			if (flags & Regex_FirstOnly) break;
-			pos += m.length() > 0 ? m.position() + m.length() : m.position() + 1;
+			pos += m.position() + std::max(m.length(), 1l);
 		}
 		return out;
 	}
@@ -546,7 +546,7 @@ static Nillable<C4ValueArray *> FnRegexMatch(C4PropList * _this, C4String *sourc
 		size_t pos = 0;
 		std::cmatch m;
 		long i = 0;
-		while (pos < data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
+		while (pos <= data.getLength() && std::regex_search(data.getData() + pos, data.getData() + data.getLength(), m, re))
 		{
 			C4ValueArray *match = new C4ValueArray(m.size());
 			long j = 0;
@@ -556,7 +556,7 @@ static Nillable<C4ValueArray *> FnRegexMatch(C4PropList * _this, C4String *sourc
 			}
 			(*out)[i++] = C4VArray(match);
 			if (flags & Regex_FirstOnly) break;
-			pos += m.length() > 0 ? m.position() + m.length() : m.position() + 1;
+			pos += m.position() + std::max(m.length(), 1l);
 		}
 		return out;
 	}
