@@ -54,7 +54,7 @@ public func LostCoconut()
 
 /*-- Properties --*/
 
-private func Definition(def, ...) 
+public func Definition(def, ...) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-27000, -000, 22000), Trans_Rotate(40,0,0,1), Trans_Rotate(-10,1)), def);
 	_inherited(def, ...);
