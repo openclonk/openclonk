@@ -15,6 +15,8 @@ local starting_material;
 local starting_wealth = 0;
 local respawn_material;
 local clonk_max_contents_count, clonk_max_energy; // Override properties for clonks
+local view_lock = false;
+local zoom_min, zoom_max, zoom_set;
 local Name = "$Name$";
 local Description = "$Description$";
 local Visibility = VIS_Editor;
@@ -45,6 +47,19 @@ public func Definition(def)
 		{ Name="$SameAsStartingMaterial$", Value="starting_material" },
 		{ Name="$Custom$", Value=[], Type=C4V_Array, Delegate=new EditorBase.ItemPlusParameterList { Name="$RespawnMaterial$", EditorHelp="$RespawnMaterialHelp$" } },
 		] };
+	def.EditorProps.view_lock = { Name="$ViewLock$", Priority = -100, Type="bool" };
+	def.EditorProps.zoom_min = { Name="$ZoomMin$", Set="SetZoomMin", Priority = -101, Type="enum", OptionKey="Option", Options = [
+		{ Name="$Default$" },
+		{ Name="$Custom$", Value=150, Delegate={ Type="int", Min=50, Max=750, Step=50 } }
+	] };
+	def.EditorProps.zoom_max = { Name="$ZoomMax$", Set="SetZoomMax", Priority = -102, Type="enum", OptionKey="Option", Options = [
+		{ Name="$Default$" },
+		{ Name="$Custom$", Value=750, Delegate={ Type="int", Min=150, Max=100000, Step=50 } }
+	] };
+	def.EditorProps.zoom_set = { Name="$ZoomSet$", Set="SetZoomSet", Priority = -103, Type="enum", OptionKey="Option", Options = [
+		{ Name="$Default$" },
+		{ Name="$Custom$", Value=300, Delegate={ Type="int", Min=150, Max=750, Step=50 } }
+	] };
 	return true;
 }
 
@@ -127,6 +142,34 @@ public func SetRespawnMaterial(new_material)
 	respawn_material = new_material;
 }
 
+public func SetViewLock(bool lock)
+{
+	view_lock = lock;
+}
+
+public func SetZoomMin(int zoom)
+{
+	zoom_min = zoom;
+	this.EditorProps.zoom_max.Options[1].Delegate.Min = zoom_min;
+	this.EditorProps.zoom_set.Options[1].Delegate.Min = zoom_min;
+	SetZoomSet(Max(zoom_set ?? this.EditorProps.zoom_set.Options[1].Value, zoom_min));
+}
+
+public func SetZoomMax(int zoom)
+{
+	zoom_max = zoom;
+	this.EditorProps.zoom_max.Options[1].Delegate.Max = zoom_max;
+	this.EditorProps.zoom_set.Options[1].Delegate.Max = zoom_max;
+	SetZoomSet(Min(zoom_set ?? this.EditorProps.zoom_set.Options[1].Value, zoom_max));
+}
+
+public func SetZoomSet(int zoom)
+{
+	zoom_set = zoom;
+	for (var plr in GetPlayers(C4PT_User))
+		InitializeView(plr);
+}
+
 
 /* Player initialization checks */
 
@@ -181,6 +224,8 @@ public func DoPlayerStart(int plr)
 	InitializeMaterial(plr);
 	// Give knowledge
 	InitializeKnowledge(plr);
+	// Handle viewport settings
+	InitializeView(plr);
 	--is_handling_player_spawn;
 	return true;
 }
@@ -318,7 +363,14 @@ private func InitializeKnowledge(int plr)
 	return true;
 }
 
-
+private func InitializeView(int plr)
+{
+	SetPlayerViewLock(plr, view_lock);
+	SetPlayerZoomByViewRange(plr, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
+	SetPlayerZoomByViewRange(plr, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+	return true;
+}
 
 
 /* Scenario saving */
@@ -341,5 +393,9 @@ public func SaveScenarioObject(props, ...)
 	if (starting_wealth != GetID().starting_wealth) props->AddCall("Wealth", this, "SetStartingWealth", starting_wealth);
 	if (GetType(clonk_max_contents_count)) props->AddCall("ClonkMaxContentsCount", this, "SetClonkMaxContentsCount", clonk_max_contents_count);
 	if (GetType(clonk_max_energy)) props->AddCall("ClonkMaxEnergy", this, "SetClonkMaxEnergy", clonk_max_energy);
+	if (view_lock != nil) props->AddCall("ViewLock", this, "SetViewLock", view_lock);
+	if (zoom_min != nil) props->AddCall("ZoomMin", this, "SetZoomMin", zoom_min);
+	if (zoom_max != nil) props->AddCall("ZoomMax", this, "SetZoomMax", zoom_max);
+	if (zoom_set != nil) props->AddCall("ZoomSet", this, "SetZoomSet", zoom_set);
 	return true;
 }

@@ -18,3 +18,7 @@ StartingMaterialHelp=Items carried by clonks on initial player join.
 RespawnMaterial=Respawn material
 SameAsStartingMaterial=Same as start material
 RespawnMaterialHelp=Items carried by clonks after a respawn or when newly bought.
+ViewLock=Lock the viewport
+ZoomMin=Minimal zoom
+ZoomMax=Maximal zoom
+ZoomSet=Default zoom
