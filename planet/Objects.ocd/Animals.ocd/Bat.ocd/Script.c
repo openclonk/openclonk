@@ -38,7 +38,7 @@ private func Place(int amount, proplist rectangle, proplist settings)
 	
 	while ((amount > 0) && (--max_tries > 0))
 	{
-		var spot = FindLocation(loc_bkg, Loc_Space(20), loc_area);
+		var spot = FindLocation(loc_bkg, Loc_Space(10), loc_area);
 		if (!spot)
 			continue;
 		
