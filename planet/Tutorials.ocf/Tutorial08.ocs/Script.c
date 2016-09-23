@@ -19,6 +19,10 @@ protected func Initialize()
 	goal.Name = "$MsgGoalName$";
 	goal.Description = "$MsgGoalDescription$";
 	
+	// Rules: make the pump faster.
+	var rule = CreateObject(Rule_FastPump);
+	rule->SetPumpSpeed(4 * Pump.PumpSpeed);
+	
 	// Place objects in different sections.
 	InitVillage();
 	InitMines();

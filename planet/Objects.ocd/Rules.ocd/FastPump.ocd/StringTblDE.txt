@@ -1,0 +1,3 @@
+Name=Schnelle Pumpe
+Description=Pumpen haben eine alternative Pump-Geschwindigkeit (meistens schneller).
+EditorPropPumpSpeed=Pump-Geschwindigkeit

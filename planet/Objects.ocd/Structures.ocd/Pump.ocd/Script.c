@@ -57,6 +57,9 @@ func Initialize()
 	var end = GetAnimationLength("pump");
 	animation = PlayAnimation("pump", 5, Anim_Linear(GetAnimationPosition(animation), start, end, 35, ANIM_Loop));
 	SetState("Wait");
+	// Let the fast pump rule know it has been created.
+	for (var rule in FindObjects(Find_ID(Rule_FastPump)))
+		rule->~OnPumpCreation(this);
 	return _inherited(...);
 }
 
@@ -295,12 +298,6 @@ private func GetSourceObject()
 	return this;
 }
 
-/** Returns amount of pixels to pump per 30 frames */
-public func GetPumpSpeed()
-{
-	return 50;
-}
-
 /** PhaseCall of Pump: Pump the liquid from the source to the drain pipe */
 protected func Pumping()
 {
@@ -327,7 +324,7 @@ protected func Pumping()
 	{
 		// get new materials
 		var source_obj = GetSourceObject();
-		var mat = this->ExtractMaterialFromSource(source_obj, GetPumpSpeed() / 10);
+		var mat = this->ExtractMaterialFromSource(source_obj, this.PumpSpeed / 10);
 
 		// no material to pump?
 		if (mat)
@@ -747,3 +744,5 @@ local Description = "$Description$";
 local BlastIncinerate = 50;
 local HitPoints = 70;
 local Components = {Wood = 1, Metal = 3};
+// Pump speed in amount of pixels to pump per 30 frames.
+local PumpSpeed = 50;
