@@ -156,22 +156,6 @@ public func IsBlockedDirection(int dir, int x1, int y1, int x2, int y2)
 	return false;
 }
 
-public func IsLineOverlap(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
-{
-	// Same starting point is not overlapping.
-	if ((x1 == x3 && y1 == y3) || (x1 == x4 && y1 == y4) || (x2 == x3 && y2 == y3) || (x2 == x4 && y2 == y4))
-		return false;	
-	
-	// Check if line from x1,y1 to x2,y2 crosses the line from x3,y3 to x4,y4
-	var d1x = x2 - x1, d1y = y2 - y1, d2x = x4 - x3, d2y = y4 - y3, d3x = x3 - x1, d3y = y3 - y1;
-	var a = d1y * d3x - d1x * d3y;
-	var b = d2y * d3x - d2x * d3y;
-	var c = d2y * d1x - d2x * d1y;
-	if (!c) 
-		return !a && Inside(x3, x1, x2) && Inside(y3, y1, y2); // lines are parallel
-	return a * c >= 0 && !(a * a / (c * c + 1)) && b * c >= 0 && !(b * b/(c * c + 1));
-}
-
 
 /*-- Map Drawing --*/
 
