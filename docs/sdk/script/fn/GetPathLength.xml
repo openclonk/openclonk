@@ -30,6 +30,11 @@
           <name>endy</name>
           <desc>Y coordinate of end position. Always global coordinate.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>depth</name>
+          <desc>Determines search depth of the pathfinder algorithm (range from 1 - 10 with default 1). Warning: higher values may slow down the game. See also the PathFinder entry in the <emlink href="definition/properties.html">DefCore</emlink>.</desc>
+        </param>
       </params>
     </syntax>
     <desc>Searches for a path from start point to end point using the pathfinding algorithm as used by clonks and returns the length of the found path. Returns <code>nil</code> if no path was found.</desc>

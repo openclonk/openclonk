@@ -2019,12 +2019,15 @@ private:
 	PathInfo *pPathInfo;
 };
 
-static Nillable<long> FnGetPathLength(C4PropList * _this, long iFromX, long iFromY, long iToX, long iToY)
+static Nillable<long> FnGetPathLength(C4PropList * _this, long iFromX, long iFromY, long iToX, long iToY, long iLevel)
 {
 	PathInfo PathInfo;
 	PathInfo.ilx = iFromX;
 	PathInfo.ily = iFromY;
 	PathInfo.ilen = 0;
+	if (!iLevel)
+		iLevel = 1;
+	Game.PathFinder.SetLevel(iLevel);
 	if (!Game.PathFinder.Find(iFromX, iFromY, iToX, iToY, SumPathLength(&PathInfo)))
 		return C4Void();
 	return PathInfo.ilen + Distance(PathInfo.ilx, PathInfo.ily, iToX, iToY);
