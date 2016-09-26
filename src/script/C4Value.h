@@ -157,7 +157,7 @@ public:
 
 	void Denumerate(C4ValueNumbers *);
 
-	StdStrBuf GetDataString(int depth = 1, const class C4PropListStatic *ignore_reference_parent = nullptr) const;
+	StdStrBuf GetDataString(int depth = 10, const class C4PropListStatic *ignore_reference_parent = nullptr) const;
 
 	ALWAYS_INLINE bool CheckParConversion(C4V_Type vtToType) const // convert to dest type
 	{
