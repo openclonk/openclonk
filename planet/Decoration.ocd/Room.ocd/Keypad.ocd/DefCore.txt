@@ -1,0 +1,8 @@
+[DefCore]
+id=Keypad
+Version=8,0
+Category=C4D_StaticBack
+Picture=0,0,112,144
+Width=14
+Height=18
+Offset=-7,-9
