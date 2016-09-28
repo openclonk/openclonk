@@ -40,7 +40,10 @@
 /* C4Window */
 
 C4Window::C4Window ():
-		Active(false), pSurface(0)
+		Active(false), pSurface(0), eKind(W_Fullscreen), window(nullptr)
+#ifdef WITH_QT_EDITOR
+, glwidget(nullptr)
+#endif
 {
 }
 
