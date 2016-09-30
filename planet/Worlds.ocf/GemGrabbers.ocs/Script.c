@@ -171,15 +171,8 @@ global func FxEnsureVegetationOnMainIslandTimer()
 // Initializes animals.
 private func InitAnimals(int amount, int difficulty)
 {
-	// Some fireflies attracted to deciduous trees.
-	var count = 0;
-	for (var tree in FindObjects(Find_ID(Tree_Deciduous), Sort_Random()))
-	{
-		Firefly->SpawnSwarm(tree, RandomX(6, 12));
-		count++;
-		if (count > 4 + 2 * amount)
-			break;	
-	}
+	// Some fireflies attracted to trees.
+	Firefly->Place(4 + 2 * amount);
 	// Place some bats on insane difficulty.
 	if (difficulty == 3)
 		Bat->Place(6 + 2 * amount, nil, {tunnel_only = true});

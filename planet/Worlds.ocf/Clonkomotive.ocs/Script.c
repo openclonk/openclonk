@@ -174,11 +174,7 @@ private func InitAnimals(int map_size, int difficulty)
 	Zaphive->Place(2 + 4 * difficulty);
 	Mosquito->Place(4 + 2 * map_size);
 	Butterfly->Place(16 + 4 * map_size);
-	for (var cnt = 0; cnt < 4 + map_size; cnt++)
-	{
-		var tree = FindObject(Find_ID(Tree_Deciduous), Sort_Random());
-		Firefly->SpawnSwarm(tree, RandomX(6, 12));
-	}
+	Firefly->Place(4 + map_size);
 	
 	// Bats in the bat cave.
 	Bat->Place(4 + 2 * difficulty, Rectangle(bat_cave[0] - 20, bat_cave[1] - 20, 40, 40));

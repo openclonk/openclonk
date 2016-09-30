@@ -1,109 +1,109 @@
-/*
+/**
 	Firefly
-	Author: Randrian, Nachtschatten (Clinfinity)
-
 	A small glowing being, often encountered in groups.
-*/
-static const Firefly_MaxSpawnDistance = 15;
-static const Firefly_MaxDistance = 40;
-static const Firefly_ShynessDistance = 40;
-
-local attracted_to;
-local timer;
-
-public func SpawnSwarm(object attracted_to, int size)
-{
-	if (!size) size = 10;
-	var x = attracted_to->GetX();
-	var y = attracted_to->GetY();
-	for (var i = 0; i < size; i++)
-	{
-		var firefly = CreateObject(Firefly, RandomX(x - Firefly_MaxSpawnDistance, x + Firefly_MaxSpawnDistance), RandomX(y - Firefly_MaxSpawnDistance, y + Firefly_MaxSpawnDistance), NO_OWNER);
-		firefly.attracted_to = attracted_to;
-	}
-}
-
-
-private func Flying() {
-	var xdir, ydir;
-
-	timer += Random(2);
-	var angle = timer*180/10;
-	SetObjDrawTransform(900+Sin(angle,100), 0, 0, 0, 900+Sin(angle, 100), 0, 1);
-	SetLightColor(RGB(200,255,150+Sin(angle,10)));
 	
-	var away_from = FindObject(Find_Distance(Firefly_ShynessDistance), Find_Category(C4D_Object), Find_OCF(OCF_HitSpeed1), Find_NoContainer());
-	if (away_from)
-	{
-		xdir = BoundBy(GetX() - away_from->GetX(), -1, 1);
-		ydir = BoundBy(GetY() - away_from->GetY(), -1, 1);
-		if(xdir == 0) xdir = Random(2) * 2 - 1;
-		if(ydir == 0) ydir = Random(2) * 2 - 1;
-		xdir = RandomX(5 * xdir, 10 * xdir);
-		ydir = RandomX(5 * ydir, 10 * ydir);
-		// No check for liquids here, you can scare fireflies into those ;)
-		SetSpeed(xdir, ydir);
-	}
-	else
-	{
-		if (Random(4)) return;
-		
-		if (attracted_to != 0 && ObjectDistance(attracted_to) > Firefly_MaxDistance)
-		{
-			xdir = BoundBy(attracted_to->GetX() - GetX(), -1, 1);
-			ydir = BoundBy(attracted_to->GetY() - GetY(), -1, 1);
-			xdir = RandomX(xdir, 6 * xdir);
-			ydir = RandomX(ydir, 6 * ydir);
-		}
-		else
-		{
-			xdir = Random(120) - 60;
-			ydir = Random(80) - 40;
-		}
+	@authors Randrian, Nachtschatten
+*/
 
-		if (GBackLiquid(xdir, ydir))
-		{
-			SetSpeed(0, 0);
-		}
-		else
-		{
-			xdir *= 10;
-			ydir *= 10;
-			while(GBackSemiSolid(0, ydir)) ydir-=1;
-			SetCommand("MoveTo", nil, GetX()+xdir, GetY()+ydir);
-			if(Random(10)==0 && attracted_to)
-				SetCommand("MoveTo", attracted_to);
-		}
-	}
+#include Library_InsectSwarm
+
+local lib_swarm_standard = 10;
+local lib_insect_max_dist = 40;
+local lib_swarm_density = 8;
+local lib_insect_nocturnal = true;
+
+public func Initialize()
+{
+	SetAction("Fly");
+	SetGraphics("", GetID(), 1, 1, nil, GFX_BLIT_Additive);
+	SetClrModulation(RGBa(200, 255, 100, 50), 1);
+	SetGraphics("", GetID(), 2, 1, nil, GFX_BLIT_Additive);
+	SetClrModulation(RGBa(200, 255, 0, 255), 2);
+	SetObjDrawTransform(300, 0, 0, 0, 300, 0, 2);
+	
+	// Fireflies shine a bit of light.
+	SetLightRange(5, 30);
+	SetLightColor(RGB(200, 255, 100));
+	return _inherited(...);
 }
 
+public func Death()
+{
+	_inherited(...);
+	return RemoveObject();
+}
+
+public func CatchBlow()
+{
+	_inherited(...);
+	return RemoveObject();
+}
+
+public func Damage()
+{
+	_inherited(...);
+	return RemoveObject();
+}
+
+// Attracted to trees.
+private func GetAttraction(proplist coordinates)
+{
+	// Sometimes I don't want to fly to a plant.
+	if (!Random(7)) return false;
+	for (var plant in FindObjects(Find_Distance(150), Find_Func("IsTree"), Sort_Distance()))
+	{
+		if (!Random(4))
+			continue;
+		if (ObjectDistance(plant) < 20) // Too close.
+			continue;
+		if (plant->GetCon() < 30) // Too small.
+			continue;
+		if (plant->GBackSemiSolid()) // Under water or covered with solid material.
+			continue;
+		var width = plant->GetObjWidth();
+		var height = plant->GetObjHeight();
+		coordinates.x = plant->GetX() + Random(width) - width / 2;
+		// The firefly assumes that the main part of a plant is in the upper half (below could just be the trunk).
+		coordinates.y = plant->GetY() - Random(height) / 2;
+		return true;
+	}
+	return false;
+}
+
+private func MissionComplete()
+{
+	// Fireflies are active.
+	MoveToTarget();
+	return;
+}
+
+// No sleeping.
+private func Sleep()
+{
+	this.Visibility = VIS_None;
+	_inherited();
+}
+
+
+private func WakeUp()
+{
+	this.Visibility = VIS_All;
+	_inherited();
+}
+
+// Action end call.
 private func Check()
 {
 	// Buried or in water: Instant death
 	if (GBackSemiSolid())
 	{
-		Death();
+		Kill();
 	}
+	return;
 }
 
-public func Initialize()
-{
-	SetAction("Fly");
-	
-	SetGraphics("", GetID(), 1, 1, nil, GFX_BLIT_Additive);
-	SetClrModulation(RGBa(200,255,100,50),1);
-	SetGraphics("", GetID(), 2, 1, nil, GFX_BLIT_Additive);
-	SetClrModulation(RGBa(200,255,0,255),2);
 
-	SetObjDrawTransform(300, 0, 0, 0, 300, 0, 2);
-	
-	SetLightRange(5,30);
-	SetLightColor(RGB(200,255,100));
-}
-
-public func CatchBlow() { RemoveObject(); }
-public func Damage() { RemoveObject(); }
-public func Death() { RemoveObject(); }
+/*-- Properties --*/
 
 local ActMap = {
 	Fly = {
@@ -117,7 +117,6 @@ local ActMap = {
 		Length = 1,
 		Delay = 1,
 		NextAction = "Fly",
-		PhaseCall = "Flying",
 		EndCall = "Check",
 	},
 };
@@ -127,3 +126,5 @@ local MaxEnergy = 40000;
 local MaxBreath = 125;
 local Placement = 2;
 local NoBurnDecay = 1;
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local ContactCalls = true;
