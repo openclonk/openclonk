@@ -6,6 +6,9 @@
 	@author Clonkonaut
 --*/
 
+public func IsAnimal() { return true; }
+public func IsInsect() { return true; }
+
 public func Place(int amount, proplist area)
 {
 	// No calls to objects, only definitions
@@ -17,9 +20,11 @@ public func Place(int amount, proplist area)
 	for (var i = 0 ; i < amount ; i++)
 	{
 		position = FindLocation(Loc_InArea(area), Loc_Wall(CNAT_Bottom), Loc_Sky());
+		if (!position)
+			position = FindLocation(Loc_InArea(area), Loc_Wall(CNAT_Bottom), Loc_Tunnel());
 		if (position)
 		{
-			insect = CreateObjectAbove(this, position.x, position.y, NO_OWNER);
+			insect = CreateObjectAbove(this, position.x, position.y - 2, NO_OWNER);
 			if (insect->Stuck()) insect->RemoveObject();
 			if (insect) insects[GetLength(insects)] = insect;
 		}
@@ -62,7 +67,7 @@ public func IsSleeping()
 private func MissionComplete()
 {
 	// Set a dummy command. After it finishes, regular Activity() behaviour will kick in.
-	SetCommand("Wait", nil,nil,nil,nil, 20 + Random(80));
+	SetCommand("Wait", nil, nil, nil, nil, 20 + Random(80));
 }
 
 /** Overload to define any kind of interesting spot for the insect. Return true if spot was found.
@@ -241,25 +246,26 @@ private func MoveToTarget()
 		{
 			coordinates.x = GetX();
 			// Prevent insect from flying around at borders too much
-			if (GetX() < lib_insect_max_dist/2) coordinates.x += lib_insect_max_dist/2;
-			if (GetX() > LandscapeWidth() - lib_insect_max_dist/2) coordinates.x -= lib_insect_max_dist/2;
+			if (GetX() < lib_insect_max_dist / 2) coordinates.x += lib_insect_max_dist / 2;
+			if (GetX() > LandscapeWidth() - lib_insect_max_dist / 2) coordinates.x -= lib_insect_max_dist / 2;
 
-			coordinates.x = BoundBy(coordinates.x + Random(lib_insect_max_dist) - lib_insect_max_dist/2, 10, LandscapeWidth()-10);
+			coordinates.x = BoundBy(coordinates.x + Random(lib_insect_max_dist) - lib_insect_max_dist / 2, 10, LandscapeWidth() - 10);
 		}
-		coordinates.y = GetHorizonHeight(coordinates.x)- 30 - Random(60);
+		// Move to a place slightly above the surface.
+		coordinates.y = GetHorizonHeight(coordinates.x, GetY()) - 30 - Random(60);
 	}
 	// Insect may have died
 	if (!this || !GetAlive()) return;
 
 	SetCommand("MoveTo", nil, coordinates.x, coordinates.y, nil, true);
-	AppendCommand("Call", this, nil,nil,nil,nil, "MissionComplete");
+	AppendCommand("Call", this, nil, nil, nil, nil, "MissionComplete");
 }
 
-private func GetHorizonHeight(int x)
+private func GetHorizonHeight(int x, int y_current)
 {
-	var height;
+	var height = y_current;
 	while (height < LandscapeHeight() && !GBackSemiSolid(AbsX(x), AbsY(height)))
-		height += 10;
+		height += 5;
 	return height;
 }
 
