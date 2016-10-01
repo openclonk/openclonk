@@ -524,9 +524,15 @@ void C4ConsoleQtViewportDockWidget::closeEvent(QCloseEvent * event)
 	QDockWidget::closeEvent(event);
 	if (event->isAccepted())
 	{
-		if (cvp) cvp->Close();
-		cvp = NULL;
-		deleteLater();
+		if (cvp)
+		{
+			// This causes "this" to be deleted:
+			cvp->Close();
+		}
+		else
+		{
+			deleteLater();
+		}
 	}
 }
 
