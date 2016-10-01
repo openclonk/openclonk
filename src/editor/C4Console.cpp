@@ -62,7 +62,9 @@ C4Console::~C4Console()
 
 C4Window * C4Console::Init(C4AbstractApp * pApp)
 {
-	return C4ConsoleGUI::CreateConsoleWindow(pApp);
+	if (!C4ConsoleGUI::CreateConsoleWindow(pApp))
+		return nullptr;
+	return this;
 }
 
 bool C4Console::In(const char *szText)
@@ -660,10 +662,12 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
 {
 	C4Rect r(0, 0, 400, 350);
-	return C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
+	if (!C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r))
+		return false;
+	return true;
 }
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
