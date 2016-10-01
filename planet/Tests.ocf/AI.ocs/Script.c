@@ -71,7 +71,7 @@ global func CreateEnemy(id clonktype, int x,int y, int plr, array contents, int 
 	if (!enemy) return nil;
 	enemy->SetDir(DIR_Right);
 	enemy->MakeCrewMember(plr);
-	enemy->SetMaxEnergy(life);
+	enemy->SetMaxEnergy(life * 1000);
 	if (contents) for (var c in contents) enemy->CreateContents(c);
 	AI->AddAI(enemy);
 	enemy->AddEnergyBar();
