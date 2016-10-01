@@ -284,6 +284,12 @@ local CorrosionResist = 1;
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
 
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(1000, -700, 0), Trans_Scale(1400), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(50, 0, 1, 0));
+	return _inherited(def, ...);
+}
+
 local ActMap = {
 Walk = {
 	Prototype = Action,

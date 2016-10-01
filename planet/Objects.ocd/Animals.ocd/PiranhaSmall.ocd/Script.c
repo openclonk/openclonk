@@ -18,6 +18,7 @@ public func Construction()
 {
 	inherited(...);
 	SetGraphics(nil, Piranha);
+	SetGraphics(nil, Piranha, 1, GFXOV_MODE_Picture);
 	SetMeshMaterial("PiranhaSmall");
 }
 
@@ -85,8 +86,3 @@ private func BiteEffect()
 local Name = "$Name$";
 local Description = "$Description$";
 local MaxEnergy = 25000;
-
-public func Definition(def)
-{
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
-}

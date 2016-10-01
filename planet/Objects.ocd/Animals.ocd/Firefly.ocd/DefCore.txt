@@ -9,3 +9,4 @@ Vertices=1
 VertexFriction=100
 Value=1
 Mass=1
+Picture=0,64,64,64

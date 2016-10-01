@@ -424,7 +424,7 @@ local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 func IsPrey() { return false; }
 func IsPredator() { return true; }
 
-public func Definition(def)
+public func Definition(proplist def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
+	def.PictureTransformation = Trans_Mul(Trans_Translate(12000, 5000, 0), Trans_Scale(1600), Trans_Rotate(20, 1, 0, 0), Trans_Rotate(65, 0, 1, 0));
 }

@@ -507,9 +507,9 @@ public func Birth(object parent)
 
 /*-- Properties --*/
 
-private func Definition(proplist def)
+public func Definition(proplist def)
 {
-	def.PictureTransformation = Trans_Mul(Trans_Rotate(-65, 0, 1, 0), Trans_Rotate(-35, 0, 0, 1));
+	def.PictureTransformation = Trans_Mul(Trans_Translate(3000, 0, 0), Trans_Rotate(-65, 0, 1, 0), Trans_Rotate(-35, 0, 0, 1));
 	return _inherited(def, ...);
 }
 

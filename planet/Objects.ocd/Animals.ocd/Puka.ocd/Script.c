@@ -756,6 +756,10 @@ local NoBurnDecay = 1;
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
 
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(5500, 1000, 0), Trans_Scale(1600), Trans_Rotate(-5, 1, 0, 0), Trans_Rotate(60, 0, 1, 0));
+}
 
 local ActMap = {
 Walk = {

@@ -123,7 +123,8 @@ local ContactCalls = true;
 func IsPrey() { return false; }
 func IsPredator() { return true; }
 
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
+func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(2000, 0, 0), Trans_Scale(1500), Trans_Rotate(20, 1, 0, 0), Trans_Rotate(70, 0, 1, 0));
 }
 
