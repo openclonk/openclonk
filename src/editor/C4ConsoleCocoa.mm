@@ -73,6 +73,10 @@ bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	return true;
 }
 
+void C4ConsoleGUI::DeleteConsoleWindow()
+{
+}
+
 void C4ConsoleGUI::Out(const char* message)
 {
 	C4EditorWindowController* controller = ctrler(this);

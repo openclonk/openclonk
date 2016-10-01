@@ -830,6 +830,10 @@ bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	return true;
 }
 
+void C4ConsoleGUI::DeleteConsoleWindow()
+{
+}
+
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
 	// Set button images (edit modes & halt controls)
