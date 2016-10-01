@@ -25,4 +25,5 @@ HelpKeypadCode=Enter the keypad code the player must type in (must be digits onl
 HelpKeypadTarget=Target door that will be opened when the correct has been entered.
 HelpOnCorrectCodeAction=Action to be executed when the correct code has been entered.
 HelpOnWrongCodeAction=Action to be executed when a wrong code has been entered.
-WarningKeypadCode=WARNING: keypad code (%s) contains some non-digit characters, code will not be set.
+WarningKeypadCodeNonDigit=WARNING: keypad code (%s) contains some non-digit characters, code will not be set.
+WarningKeypadCodeLong=WARNING: keypad code is too long, only %s will be set.

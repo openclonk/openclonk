@@ -25,4 +25,5 @@ HelpKeypadCode=Gib den Kennzahl ein der vom Spieler eingetippt werden muss (darf
 HelpKeypadTarget=Tür die geöffnet wird wenn den richtigen Kennzahl eingegeben wird.
 HelpOnCorrectCodeAction=Aktion die ausgeführt wird wenn die richtige Kennzahl eingegeben wird.
 HelpOnWrongCodeAction=Aktion die ausgeführt wird wenn eine falsche Kennzahl eingegeben wird.
-WarningKeypadCode=WARNUNG: Kennzahl vom Ziffernblock (%s) enthält Charaktere die nicht Zahlen sind, Kennzahl wird nicht gesetzt.
+WarningKeypadCodeNonDigit=WARNUNG: Kennzahl vom Ziffernblock (%s) enthält Charaktere die nicht Zahlen sind, Kennzahl wird nicht gesetzt.
+WarningKeypadCodeLong=WARNUNG: Kennzahl vom Ziffernblock ist zu lang, nur %s wird gesetzt.

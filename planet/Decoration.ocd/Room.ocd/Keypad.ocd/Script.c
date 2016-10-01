@@ -13,6 +13,7 @@ static const KEYPADMENU_BarColor = 0x99888888;
 local code, correct_code;
 local target_door;
 local correct_code_action, wrong_code_action;
+local replacement_images;
 local menu, menu_id, menu_target, menu_controller;
 
 
@@ -24,8 +25,14 @@ public func SetKeypadCode(string to_code)
 	var non_digits = RegexMatch(to_code, "[^0-9]+");
 	if (!DeepEqual(non_digits, []))
 	{
-		Log("$WarningKeypadCode$", to_code);
+		Log("$WarningKeypadCodeNonDigit$", to_code);
 		return;
+	}
+	// Check if code is not too long.
+	if (GetLength(to_code) > this.CodeMaxLength)
+	{
+		to_code = TakeString(to_code, 0, this.CodeMaxLength);
+		Log("$WarningKeypadCodeLong$", to_code);
 	}
 	// If code is valid, set it.	
 	correct_code = to_code;
@@ -71,6 +78,47 @@ public func SetCodeActions(new_correct_action, new_wrong_action)
 	return;
 }
 
+// A list of id's which replace the default images of the buttons.
+// The nth entry in the list replaces the nth button.
+public func SetReplacementImages(array id_list)
+{
+	// Only store at most 10 images.
+	SetLength(id_list, Min(GetLength(id_list), 10));
+	replacement_images = id_list[:];
+	// Update the keypad graphics.
+	//UpdateKeypadGraphics();
+	return;
+}
+
+public func GetReplacementImages()
+{
+	return replacement_images;
+}
+
+private func UpdateKeypadGraphics()
+{
+	if (replacement_images == nil)
+		return;
+	
+	for (var index = 0; index < GetLength(replacement_images); index++)
+	{
+		var image = replacement_images[index];
+		if (image)
+		{
+			var pos_x = (index - 1) % 3;
+			var pos_y = (index - 1) / 3;
+			if (index == 0)
+			{
+				pos_x = 1;
+				pos_y = 3;			
+			}
+			SetGraphics(nil, image, index + 1, GFXOV_MODE_IngamePicture);
+			SetObjDrawTransform(320, 0, -4000 + 4000 * pos_x, 0, 240, -6000 + 4000 * pos_y, index + 1);
+		}		
+	}
+	return;
+}
+
 
 /*-- Saving --*/
 
@@ -80,6 +128,7 @@ public func SaveScenarioObject(proplist props)
 	if (correct_code) props->AddCall("Code", this, "SetKeypadCode", Format("%v", correct_code));
 	if (target_door) props->AddCall("Target", this, "SetStoneDoor", target_door);
 	if (correct_code_action || wrong_code_action) props->AddCall("Action", this, "SetCodeActions", correct_code_action, wrong_code_action);
+	if (replacement_images) props->AddCall("Replacements", this, "SetReplacementImages", replacement_images);
 	return true;
 }
 
@@ -179,16 +228,36 @@ public func OpenKeypadMenu(object clonk)
 		ID = 4,
 		Top = "2em",
 	};
-	menu.keys.key1 = MakePadButton(0, 0, Icon_Number, "1", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 1));
-	menu.keys.key2 = MakePadButton(1, 0, Icon_Number, "2", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 2));
-	menu.keys.key3 = MakePadButton(2, 0, Icon_Number, "3", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 3));
-	menu.keys.key4 = MakePadButton(0, 1, Icon_Number, "4", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 4));
-	menu.keys.key5 = MakePadButton(1, 1, Icon_Number, "5", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 5));
-	menu.keys.key6 = MakePadButton(2, 1, Icon_Number, "6", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 6));
-	menu.keys.key7 = MakePadButton(0, 2, Icon_Number, "7", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 7));
-	menu.keys.key8 = MakePadButton(1, 2, Icon_Number, "8", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 8));
-	menu.keys.key9 = MakePadButton(2, 2, Icon_Number, "9", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 9));
-	menu.keys.key0 = MakePadButton(1, 3, Icon_Number, "0", "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", 0));
+	
+	// Create code buttons.
+	var positions = [[1, 3], [0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2]];
+	for (var index = 0; index < 10; index++)
+	{
+		var pos_x = positions[index][0];
+		var pos_y = positions[index][1];
+		var icon = Icon_Number;
+		var name = Format("%d", index);
+		if (replacement_images)
+		{
+			if (GetType(replacement_images[index]) == C4V_Def)
+			{
+				// Draw replacement image on button.
+				var pos_x = positions[index][0];
+				var pos_y = positions[index][1];
+				icon = replacement_images[index];
+				name = nil;
+			}
+			else
+			{
+				// Don't create button if replacement image is not defined.
+				continue;
+			}
+			
+		}	
+		menu.keys[Format("key%d", index)] = MakePadButton(pos_x, pos_y, icon, name, "$TooltipDigit$", GuiAction_Call(this, "UpdateMenuCode", Format("%d", index)));
+	}
+	
+	// Create other buttons.
 	menu.keys.enter = MakePadButton(2, 3, Icon_Ok, nil, "$TooltipCheck$", GuiAction_Call(this, "EnterKeypadCode", nil));
 	
 	menu.keys.clearlast = MakePadButton(0, 0, Icon_Number, "Hash", "$TooltipClearLast$", GuiAction_Call(this, "UpdateMenuCode", nil));
@@ -215,7 +284,8 @@ public func OpenKeypadMenu(object clonk)
 
 public func MakePadButton(int x, int y, id symbol, string graphics_name, string tooltip, on_click)
 {
-	return {
+	return
+	{
 		Left = Format("%dem", 4 * x),
 		Right = Format("%dem", 4 * (x + 1)),
 		Top = Format("%dem", 4 * y),
@@ -230,25 +300,48 @@ public func MakePadButton(int x, int y, id symbol, string graphics_name, string 
 	};
 }
 
-public func UpdateMenuCode(int digit_pressed)
+public func UpdateMenuCode(string digit_pressed)
 {
 	if (digit_pressed == nil)
 	{
+		// Remove last digit or symbol.
 		if (GetType(code) == C4V_String)
 			code = TakeString(code, 0, GetLength(code) - 1);
 		Sound("UI::Click?");
 	}
 	else
 	{
-		if (code == nil)
-			code = Format("%d", digit_pressed);
+		if (code == nil || GetLength(code) < this.CodeMaxLength)
+		{
+			if (code == nil)
+				code = Format("%s", digit_pressed);
+			else
+				code = Format("%s%s", code, digit_pressed);
+			Sound("UI::Tick");
+		}
 		else
-			code = Format("%s%d", code, digit_pressed);
-		Sound("UI::Tick");
+		{
+			Sound("UI::Click?");
+		}		
 	}
-	menu.code.value.Text = code;
+	menu.code.value.Text = CodeToDisplay(code);
 	GuiUpdate(menu.code.value, menu_id, menu.code.value.ID, this);
 	return;
+}
+
+// Turns a string of digits into a string of digits and images.
+private func CodeToDisplay(string code)
+{
+	var display = "";
+	for (var index = 0; index < GetLength(code); index++)
+	{
+		var digit = GetChar(code, index) - 48;
+		if (replacement_images && replacement_images[digit])
+			display = Format("%s{{%i}}", display, replacement_images[digit]);
+		else
+			display = Format("%s%d", display, digit);
+	}
+	return display;
 }
 
 public func ClearMenuCode()
@@ -364,3 +457,4 @@ public func Close()
 
 local Name = "$Name$";
 local Description = "$Description$";
+local CodeMaxLength = 12;
