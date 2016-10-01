@@ -41,32 +41,33 @@
           <desc>Distance between particles. This may not be applied exactly as particles are always spread evenly over the total distance.</desc>
         </param>
         <param>
-          <type>int</type>
-          <name>a</name>
-          <desc>Extra parameter. This is usually the size of the particle in 1/5 pixels.</desc>
+          <type>any</type>
+          <name>xdir</name>
+          <desc>Initial horizontal velocity in 1/10th pixels per frame or as a value provider.</desc>
         </param>
         <param>
-          <type>int</type>
-          <name>b0</name>
-          <desc>Extra starting parameter. This is usually the color modulation at the starting point.</desc>
-        </param>
-        <param>
-          <type>int</type>
-          <name>b1</name>
-          <desc>Extra end parameter. This parameter is interpolated from starting to end point and then applied.</desc>
-        </param>
-        <param>
-          <type>int</type>
+          <type>any</type>
           <name>ydir</name>
-          <desc>Initial vertical velocity.</desc>
+          <desc>Initial vertical velocity in 1/10th pixels per frame or as a value provider.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>lifetime</name>
+          <desc>Duration of particle in frames or as a value provider.</desc>
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>prtdef</name>
+          <desc>Particle definition.</desc>
         </param>
       </params>
     </syntax>
     <desc>Creates a line of particles between two points. Returns the number of particles created.</desc>
+    <remark>For more information about the value provider and particle definition parameters, see <funclink>CreateParticle</funclink>.</remark>
     <examples>
       <example>
-        <code>DrawParticleLine(&quot;MagicSpark&quot;, 0, 0, <funclink>GetX</funclink>(<funclink>GetCursor</funclink>())-<funclink>GetX</funclink>(), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>())-<funclink>GetY</funclink>(), 20, 100, <funclink>RGBa</funclink>(255,50,50,50), <funclink>RGBa</funclink>(50,255,50,100), -10);</code>
-        <text>Creates a line from the calling object to the selected clonk of the first player, color fading from red to blue.</text>
+        <code>DrawParticleLine(&quot;MagicSpark&quot;, 0, 0, <funclink>GetCursor</funclink>()-><funclink>GetX</funclink>()-<funclink>GetX</funclink>(), <funclink>GetCursor</funclink>()-><funclink>GetY</funclink>()-<funclink>GetY</funclink>(), 20, 0, 0, 12, {Prototype = Particles_Flash(), Size = 20, R = 50, G = 50, B = 255});</code>
+        <text>Creates a line from the calling object to the selected clonk of the first player using a blue flash particle.</text>
       </example>
     </examples>
     <related>
