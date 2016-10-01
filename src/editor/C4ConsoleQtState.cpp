@@ -762,8 +762,8 @@ void C4ConsoleGUIState::DeleteConsoleWindow()
 		auto vp = viewports.front();
 		viewports.erase(viewports.begin());
 
-		vp->deleteLater();
 		viewport_area->removeDockWidget(vp);
+		delete vp;
 	}
 
 	client_actions.clear();
@@ -930,8 +930,15 @@ void C4ConsoleGUIState::RemoveViewport(C4ViewportWindow *cvp)
 		if (vp->GetViewportWindow() == cvp)
 		{
 			viewport_area->removeDockWidget(vp);
-			vp->deleteLater();
 			iter = viewports.erase(iter);
+
+			// cannot use deleteLater here because Qt will then
+			// still select/deselect the viewport's GL context
+			// behind the scenes, leaving us with an unselected
+			// GL context.
+			// Documented at http://doc.qt.io/qt-5/qopenglwidget.html
+			// Instead, delete the viewport widget directly.
+			delete vp;
 		}
 		else
 		{

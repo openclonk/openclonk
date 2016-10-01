@@ -99,8 +99,8 @@ void C4ConsoleGUI::DeleteConsoleWindow()
 {
 	if (Active)
 	{
-		state->DeleteConsoleWindow();
 		Active = false;
+		state->DeleteConsoleWindow();
 	}
 }
 
