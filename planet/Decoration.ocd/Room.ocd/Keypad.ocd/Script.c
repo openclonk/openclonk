@@ -171,7 +171,7 @@ public func OpenKeypadMenu(object clonk)
 		ID = 3,
 		Top = "1.5em",
 		Bottom = "2em",
-		BackgroundColor = {Std = ROOMMENU_BarColor},
+		BackgroundColor = {Std = KEYPADMENU_BarColor},
 	};
 	menu.keys =
 	{
