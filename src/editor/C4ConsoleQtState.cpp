@@ -923,12 +923,19 @@ void C4ConsoleGUIState::AddViewport(C4ViewportWindow *cvp)
 void C4ConsoleGUIState::RemoveViewport(C4ViewportWindow *cvp)
 {
 	if (!viewport_area) return;
-	for (auto vp : viewports)
+
+	for (auto iter = viewports.begin(); iter != viewports.end(); )
 	{
+		auto vp = *iter;
 		if (vp->GetViewportWindow() == cvp)
 		{
 			viewport_area->removeDockWidget(vp);
 			vp->deleteLater();
+			iter = viewports.erase(iter);
+		}
+		else
+		{
+			++iter;
 		}
 	}
 }
