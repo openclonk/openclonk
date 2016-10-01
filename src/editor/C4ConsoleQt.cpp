@@ -90,6 +90,15 @@ bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	return true;
 }
 
+void C4ConsoleGUI::DeleteConsoleWindow()
+{
+	if (Active)
+	{
+		state->DeleteConsoleWindow();
+		Active = false;
+	}
+}
+
 void C4ConsoleGUI::Out(const char* message)
 {
 	// Log text: Add to log window

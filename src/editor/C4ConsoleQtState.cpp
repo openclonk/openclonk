@@ -734,6 +734,46 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	return true;
 }
 
+void C4ConsoleGUIState::DeleteConsoleWindow()
+{
+	// Reset to a state before CreateConsoleWindow was called
+	action_object = C4VNull;
+	is_object_selection_updating = false;
+
+	editcursor_mode = C4CNS_ModePlay;
+	drawing_tool = C4TLS_Brush;
+	landscape_mode = LandscapeMode::Dynamic;
+	net_enabled = false;
+	recording = false;
+	enabled = false;
+	
+	window_menu_separator = nullptr;
+	status_cursor = status_framecounter = status_timefps = nullptr;
+
+	while (!viewports.empty())
+	{
+		auto vp = viewports.front();
+		viewports.erase(viewports.begin());
+
+		vp->deleteLater();
+		viewport_area->removeDockWidget(vp);
+	}
+
+	client_actions.clear();
+	player_actions.clear();
+	viewport_actions.clear();
+	viewport_area = nullptr;
+
+	disable_shortcut_filter.reset(nullptr);
+	definition_list_model.reset(nullptr);
+	object_list_model.reset(nullptr);
+	property_name_delegate.reset(nullptr);
+	property_delegate_factory.reset(nullptr);
+	property_model.reset(nullptr);
+	window.reset(nullptr);
+	application.reset(nullptr);
+}
+
 void C4ConsoleGUIState::Execute(bool redraw_only)
 {
 	// Nothing to do - Qt's event loop is handling everything.

@@ -368,15 +368,18 @@ void C4Console::Default()
 
 void C4Console::Clear()
 {
+	if (pSurface) delete pSurface;
+	pSurface = 0;
+
 	C4Window::Clear();
+	C4ConsoleGUI::DeleteConsoleWindow();
+
 	EditCursor.Clear();
 	ToolsDlg.Clear();
 	PropertyDlgClose();
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
-	if (pSurface) delete pSurface;
-	pSurface = 0;
 #ifndef _WIN32
 	Application.Quit();
 #endif
@@ -622,6 +625,7 @@ bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
 		return false;
 	return true;
 }
+void C4ConsoleGUI::DeleteConsoleWindow() {}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}

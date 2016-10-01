@@ -123,6 +123,7 @@ public:
 	void SetInputFunctions(std::list<const char*> &functions);
 	
 	bool CreateConsoleWindow(C4AbstractApp *application);
+	void DeleteConsoleWindow();
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);

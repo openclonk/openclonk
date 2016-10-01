@@ -220,6 +220,7 @@ public:
 
 	void AddToolbarSpacer(int space);
 	bool CreateConsoleWindow(C4AbstractApp *app);
+	void DeleteConsoleWindow();
 	void Execute(bool redraw_only=false);
 	void Redraw() { Execute(true); }
 	void UpdateActionStates();
