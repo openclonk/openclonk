@@ -44,7 +44,7 @@ func SetBarColor(c, b)
 
 func Update()
 {
-	var p = (current * 100) / maximum;
+	var p = (current * 100) / Max(1, maximum);
 	var w = (width * 1000) / 110;
 	var l = (width * p * 10) / 110;
 	SetObjDrawTransform((width * 1000) / 110, 0, 0, 0, (height * 1000) / 19, 0, 0);
