@@ -307,11 +307,13 @@ protected func Pumping()
 	// let the central function handle that on next check
 	if (!GetSourcePipe()) 
 		return;
+		
+	// Get the drain object.
+	var drain_obj = GetDrainObject();
 
 	// Don't do anything special if pumping air but inform the drain object
 	if (IsAirPipeConnected())
 	{
-		var drain_obj = GetDrainObject();
 		if (drain_obj)
 			drain_obj->~OnAirPumped(this);
 		return;
@@ -343,7 +345,6 @@ protected func Pumping()
 		var i = stored_material_amount;
 		while (i > 0)
 		{
-			var drain_obj = GetDrainObject();
 			if (this->InsertMaterialAtDrain(drain_obj, stored_material_name, 1))
 			{
 				i--;
