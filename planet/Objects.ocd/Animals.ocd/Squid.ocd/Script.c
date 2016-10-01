@@ -71,6 +71,8 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	return f; // return last created fish
 }
 
+public func IsAnimal() { return true; }
+
 public func Construction()
 {
 	current_orientation = [0, -2, 1];

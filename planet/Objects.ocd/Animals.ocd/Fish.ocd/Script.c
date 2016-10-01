@@ -55,6 +55,8 @@ func Place(int amount, proplist rectangle, proplist settings)
 	return f; // return last created fish
 }
 
+public func IsAnimal() { return true; }
+
 func Construction()
 {
 	// general stuff	

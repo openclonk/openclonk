@@ -16,6 +16,8 @@ public func Initialize()
 	return;
 }
 
+public func IsAnimal() { return true; }
+
 public func Place(int amount, proplist area)
 {
 	if (this != Wipf)

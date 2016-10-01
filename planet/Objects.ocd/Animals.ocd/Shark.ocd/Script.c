@@ -22,6 +22,8 @@ private func Construction()
 	return _inherited(...);
 }
 
+public func IsAnimal() { return true; }
+
 private func Attack(object target, int x, int y)
 {
 	if (!attacking || (target->GetAction() != "Swim" && target->GetAction() != "Jump") || !target->GetAlive() || !PathFree(GetX(), GetY(), target->GetX(), target->GetY()))

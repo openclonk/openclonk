@@ -57,6 +57,8 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	return animal;
 }
 
+public func IsAnimal() { return true; }
+
 public func Construction()
 {
 	turn_angle = 0;
