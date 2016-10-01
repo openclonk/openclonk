@@ -122,7 +122,7 @@ public:
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<const char*> &functions);
 	
-	C4Window* CreateConsoleWindow(C4AbstractApp *application);
+	bool CreateConsoleWindow(C4AbstractApp *application);
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);

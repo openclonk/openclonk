@@ -783,7 +783,7 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	return true;
 }
 
-C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
 	if (!hWindow)
@@ -802,7 +802,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 		Log(FormatString("Error creating dialog window: %s", StdStrBuf(lpMsgBuf).getData()).getData());
 		// Free the buffer.
 		LocalFree(lpMsgBuf);
-		return NULL;
+		return false;
 	}
 	// Remember metrics
 	state->console_handle = hWindow;
@@ -827,7 +827,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	ShowCursor(true);
 	renderwnd = hWindow;
 	// Success
-	return this;
+	return true;
 }
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)

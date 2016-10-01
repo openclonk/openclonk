@@ -82,12 +82,12 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 	if (Active) state->SetInputFunctions(functions);
 }
 
-C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
-	if (!state->CreateConsoleWindow(application)) return NULL;
+	if (!state->CreateConsoleWindow(application)) return false;
 	Active = true;
 	EnableControls(fGameOpen);
-	return this;
+	return true;
 }
 
 void C4ConsoleGUI::Out(const char* message)
