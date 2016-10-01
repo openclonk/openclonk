@@ -136,6 +136,9 @@ void C4ScriptHost::UnLink()
 		p->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
 	}
 
+	// Delete cyclic references of owned proplists
+	DeleteOwnedPropLists();
+
 	// includes will have to be re-resolved now
 	IncludesResolved = false;
 
@@ -179,8 +182,9 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 
 		// Done modifying the proplists now
 		for (C4ScriptHost *s = Child0; s; s = s->Next)
-			s->GetPropList()->FreezeAndMakeStaticRecursively();
-		GetPropList()->FreezeAndMakeStaticRecursively();
+			s->GetPropList()->FreezeAndMakeStaticRecursively(&s->ownedPropLists);
+
+		GetPropList()->FreezeAndMakeStaticRecursively(&OwnedPropLists);
 	}
 	catch (C4AulError &err)
 	{

@@ -109,6 +109,7 @@ protected:
 	// all open user files
 	// user files aren't saved - they are just open temporary e.g. during game saving
 	std::list<C4AulUserFile> UserFiles;
+	std::vector<C4Value> OwnedPropLists;
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors

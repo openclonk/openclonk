@@ -86,6 +86,18 @@ void C4AulScriptEngine::Clear()
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 	delete pGlobalEffects; pGlobalEffects=NULL;
 	UserFiles.clear();
+	// Delete all global proplists made static (breaks
+	// cyclic references).
+	for (C4Value& value: OwnedPropLists)
+	{
+		C4PropList* plist = value.getPropList();
+		if (plist)
+		{
+			if (plist->Delete()) delete plist;
+			else plist->Clear();
+		}
+	}
+	OwnedPropLists.clear();
 }
 
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)

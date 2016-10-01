@@ -283,7 +283,7 @@ C4PropList::C4PropList(C4PropList * prototype):
 #endif
 }
 
-C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(const C4PropListStatic *parent, C4String * key)
+C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(std::vector<C4Value>* prop_lists, const C4PropListStatic *parent, C4String * key)
 {
 	Freeze();
 	// Already static?
@@ -301,6 +301,9 @@ C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(const C4PropListSta
 			if (ref == &holder) ref = ref->NextRef;
 			ref->SetPropList(this_static);
 		}
+		// store reference
+		if (prop_lists)
+			prop_lists->push_back(C4VPropList(this_static));
 		// "this" should be deleted as holder goes out of scope
 	}
 	// Iterate over sorted list of elements to make static
@@ -318,7 +321,7 @@ C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(const C4PropListSta
 			C4PropListStatic *child_static = child_proplist->IsStatic();
 			if (!child_static || (child_static->GetParent() == this_static && child_static->GetParentKeyName() == prop_name))
 			{
-				child_proplist->FreezeAndMakeStaticRecursively(this_static, prop_name);
+				child_proplist->FreezeAndMakeStaticRecursively(prop_lists, this_static, prop_name);
 			}
 		}
 	}
