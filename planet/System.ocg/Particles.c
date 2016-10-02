@@ -99,13 +99,13 @@ global func Particles_FireTrail()
 	};
 }
 
-global func Particles_Flash()
+global func Particles_Flash(int size)
 {
 	return
 	{
 		BlitMode = GFX_BLIT_Additive,
 		Alpha = PV_KeyFrames(0, 0, 128, 250, 64, 1000, 0),
-		Size = PV_KeyFrames(0, 0, 0, 100, 160, 1000, 0),
+		Size = PV_KeyFrames(0, 0, 0, 100, size ?? 160, 1000, 0),
 		R = 255, G = 255, B = 64
 	};
 }
