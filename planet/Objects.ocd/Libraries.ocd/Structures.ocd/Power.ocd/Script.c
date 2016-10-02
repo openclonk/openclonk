@@ -136,7 +136,7 @@ public func TransferPowerLink(object link)
 	var old_network;
 	for (var network in LIB_POWR_Networks)
 	{
-		if (network->ContainsPowerLink(link))
+		if (network && network->ContainsPowerLink(link))
 		{
 			old_network = network;
 			break;
