@@ -332,6 +332,8 @@ public func UpdateMenuCode(string digit_pressed)
 // Turns a string of digits into a string of digits and images.
 private func CodeToDisplay(string code)
 {
+	if (GetType(code) != C4V_String)
+		return "";
 	var display = "";
 	for (var index = 0; index < GetLength(code); index++)
 	{
