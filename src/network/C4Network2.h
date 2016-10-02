@@ -46,7 +46,7 @@ const unsigned int C4NetChaseTargetUpdateInterval = 5; // (s)
 
 // reference
 const unsigned int C4NetReferenceUpdateInterval = 120; // (s)
-const unsigned int C4NetMinLeagueUpdateInterval = 10; // (s)
+const unsigned int C4NetMinLeagueUpdateInterval = 1; // (s)
 
 // voting
 const unsigned int C4NetVotingTimeout = 10; // (s)
