@@ -3555,9 +3555,9 @@ void C4NetIOUDP::CloseDebugLog()
 void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
-	O.Format("%s %s %s:%d:", fOut ? "out" : "in ",
+	O.Format("%s %s %s:", fOut ? "out" : "in ",
 	         C4TimeMilliseconds::Now().AsString().getData(),
-	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));
+			 Pkt.getAddr().ToString().getData());
 
 	// header?
 	if (Pkt.getSize() >= sizeof(PacketHdr))
@@ -3583,7 +3583,7 @@ void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 		switch (Hdr.StatusByte)
 		{
 		case IPID_Test:   { UPACK(TestPacket); O.AppendFormat(" (%d)", P.TestNr); break; }
-		case IPID_Conn:   { UPACK(ConnPacket); O.AppendFormat(" (Ver %d, MC: %s:%d)", P.ProtocolVer, inet_ntoa(P.MCAddr.sin_addr), htons(P.MCAddr.sin_port)); break; }
+		case IPID_Conn:   { UPACK(ConnPacket); O.AppendFormat(" (Ver %d, MC: %s)", P.ProtocolVer, P.MCAddr.ToString().getData()); break; }
 		case IPID_ConnOK:
 		{
 			UPACK(ConnOKPacket);
