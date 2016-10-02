@@ -236,40 +236,30 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 	}
 	free(addresses);
 #else
-	in_addr **ppAddr = NULL;
-	std::vector<in_addr*> addr_vec;
 	struct ifaddrs* addrs;
-	getifaddrs(&addrs);
-	for(struct ifaddrs* addr = addrs; addr != nullptr; addr = addr->ifa_next)
+	if (getifaddrs(&addrs) < 0)
+	    return;
+	for (struct ifaddrs* ifaddr = addrs; ifaddr != nullptr; ifaddr = ifaddr->ifa_next)
 	{
-		struct sockaddr* ad = addr->ifa_addr;
-		if(ad == nullptr) continue;
+		struct sockaddr* ad = ifaddr->ifa_addr;
+		if (ad == nullptr) continue;
 
-		if(ad->sa_family == AF_INET && (~addr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4 devices
-			addr_vec.push_back(&reinterpret_cast<sockaddr_in*>(ad)->sin_addr);
-	}
-
-	addr_vec.push_back(nullptr);
-	ppAddr = &addr_vec[0];
-
-	// add address(es)
-	for (;;)
-	{
-		if (iPortTCP >= 0)
+		if ((ad->sa_family == AF_INET || ad->sa_family == AF_INET6) && (~ifaddr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4/6 devices
 		{
-			addr.SetPort(iPortTCP);
-			AddAddr(C4Network2Address(addr, P_TCP), false);
+			addr.SetHost(ad);
+			if (iPortTCP >= 0)
+			{
+				addr.SetPort(iPortTCP);
+				AddAddr(C4Network2Address(addr, P_TCP), false);
+			}
+			if (iPortUDP >= 0)
+			{
+				addr.SetPort(iPortUDP);
+				AddAddr(C4Network2Address(addr, P_UDP), false);
+			}
 		}
-		if (iPortUDP >= 0)
-		{
-			addr.SetPort(iPortUDP);
-			AddAddr(C4Network2Address(addr, P_UDP), false);
-		}
-		// get next
-		if (!ppAddr || !*ppAddr) break;
-		addr.SetHost(C4NetIO::HostAddress((**ppAddr++).s_addr));
 	}
-	if(addrs) freeifaddrs(addrs);
+	freeifaddrs(addrs);
 #endif
 }
 
