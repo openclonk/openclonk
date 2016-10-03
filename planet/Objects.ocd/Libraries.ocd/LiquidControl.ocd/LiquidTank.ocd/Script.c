@@ -229,3 +229,14 @@ public func OnPipeDisconnect(object pipe)
 	if (pipe == GetSourcePipe()) SetSourcePipe();
 	if (pipe == GetNeutralPipe()) SetNeutralPipe();
 }
+
+/*-- Scenario Saving --*/
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (lib_tank.drain_pipe) props->AddCall("DrainPipe", this, "SetDrainPipe", lib_tank.drain_pipe);
+	if (lib_tank.source_pipe) props->AddCall("SourcePipe", this, "SetSourcePipe", lib_tank.source_pipe);
+	if (lib_tank.neutral_pipe) props->AddCall("NeutralPipe", this, "SetNeutralPipe", lib_tank.neutral_pipe);
+	return true;
+}

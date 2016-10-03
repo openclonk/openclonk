@@ -32,6 +32,8 @@ static const PIPE_STATE_Source = "Source";
 static const PIPE_STATE_Drain = "Drain";
 static const PIPE_STATE_Air = "Air";
 
+local pipe_state = nil;
+
 local ApertureOffsetX = 0;
 local ApertureOffsetY = 3;
 
@@ -99,7 +101,7 @@ public func GetInventoryIconOverlay()
 public func CanBeStackedWith(object other)
 {
 	// Do not stack source/drain/unused pipes
-	return inherited(other) && (PipeState == other.PipeState);
+	return inherited(other) && (pipe_state == other.pipe_state);
 }
 
 
@@ -131,14 +133,14 @@ func IsDroppedOnDeath(object clonk)
 /* ---------- Pipe States ---------- */
 
 
-public func IsNeutralPipe(){ return PipeState == PIPE_STATE_Neutral; }
-public func IsDrainPipe(){ return PipeState == PIPE_STATE_Drain; }
-public func IsSourcePipe(){ return PipeState == PIPE_STATE_Source; }
-public func IsAirPipe(){ return PipeState == PIPE_STATE_Air; }
+public func IsNeutralPipe(){ return pipe_state == PIPE_STATE_Neutral; }
+public func IsDrainPipe(){ return pipe_state == PIPE_STATE_Drain; }
+public func IsSourcePipe(){ return pipe_state == PIPE_STATE_Source; }
+public func IsAirPipe(){ return pipe_state == PIPE_STATE_Air; }
 
 public func SetNeutralPipe()
 {
-	PipeState = PIPE_STATE_Neutral;
+	pipe_state = PIPE_STATE_Neutral;
 
 	SetGraphics("", nil, GFX_Overlay, GFXOV_MODE_Picture);
 	Description = "$Description$";
@@ -153,7 +155,7 @@ public func SetNeutralPipe()
 
 public func SetDrainPipe()
 {
-	PipeState = PIPE_STATE_Drain;
+	pipe_state = PIPE_STATE_Drain;
 	
 	SetGraphics("Drain", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
 	SetObjDrawTransform(1000, 0, 0, 0, 1000, 10000, GFX_Overlay);
@@ -169,7 +171,7 @@ public func SetDrainPipe()
 
 public func SetSourcePipe()
 {
-	PipeState = PIPE_STATE_Source;
+	pipe_state = PIPE_STATE_Source;
 
 	SetGraphics("Source", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
 	SetObjDrawTransform(1000, 0, 0, 0, 1000, 10000, GFX_Overlay);
@@ -185,7 +187,7 @@ public func SetSourcePipe()
 
 public func SetAirPipe()
 {
-	PipeState = PIPE_STATE_Air;
+	pipe_state = PIPE_STATE_Air;
 
 	SetGraphics("Air", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
 	SetObjDrawTransform(1000, 0, 0, 0, 1000, 10000, GFX_Overlay);
@@ -338,10 +340,22 @@ func Report(string message)
 }
 
 
+/*-- Saving --*/
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (IsNeutralPipe()) props->AddCall("PipeStateNeutral", this, "SetNeutralPipe");
+	else if (IsDrainPipe()) props->AddCall("PipeStateDrain", this, "SetDrainPipe");
+	else if (IsSourcePipe()) props->AddCall("PipeStateSource", this, "SetSourcePipe");
+	else if (IsAirPipe()) props->AddCall("PipeStateAir", this, "SetAirPipe");
+	return true;
+}
+
+
 /*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local PipeState = nil;
 local Components = {Metal = 1};

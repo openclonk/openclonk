@@ -286,15 +286,18 @@ public func OnEnoughPower()
 /** Returns object to which the liquid is pumped */
 private func GetDrainObject()
 {
-	if (GetDrainPipe()) return GetDrainPipe()->GetConnectedLine()->GetConnectedObject(this) ?? this;
+	var drain = GetDrainPipe();
+	if (drain && drain->GetConnectedLine())
+		return drain->GetConnectedLine()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
 /** Returns object from which the liquid is pumped */
 private func GetSourceObject()
 {
-	if (GetSourcePipe()) 
-		return GetSourcePipe()->GetConnectedLine()->GetConnectedObject(this) ?? this;
+	var source = GetSourcePipe();
+	if (source && source->GetConnectedLine())
+		return source->GetConnectedLine()->GetConnectedObject(this) ?? this;
 	return this;
 }
 
@@ -595,6 +598,8 @@ private func GetLiquidSourceMaterial()
 	// Get the source object and check whether there is liquid.
 	// TODO: If the source is a liquid container check which material will be supplied.
 	var source_obj = GetSourceObject();
+	if (!source_obj)
+		return;
 	var is_liquid = source_obj->GBackLiquid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY);
 	var liquid = MaterialName(source_obj->GetMaterial(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY));
 	if (!is_liquid)

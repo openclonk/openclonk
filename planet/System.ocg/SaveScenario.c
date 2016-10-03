@@ -387,14 +387,15 @@ global func SaveScenarioObject(props)
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));
 	for (i=0; v=def->GetMeshMaterial(i); ++i)
 	                        if (GetMeshMaterial(i) != v)          props->AddCall("MeshMaterial",  this, "SetMeshMaterial", Format("%v", GetMeshMaterial(i)), i);
-	v = this.Name;          if (v != def.Name)                   props->AddCall("Name",          this, "SetName", SaveScenarioValue2String(v));
+	v = this.Name;          if (v != def.Name)                    props->AddCall("Name",          this, "SetName", SaveScenarioValue2String(v));
 	v = this.MaxEnergy;     if (v != def.MaxEnergy)               props->AddSet ("MaxEnergy",     this, "MaxEnergy", this.MaxEnergy);
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", SaveScenarioValue2String(v, "VIS_", true));
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
 	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
 	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
-	v = this.StaticSaveVar; if (v && !save_scenario_dup_objects) props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v)); // do not duplicate StaticSaveVar because it needs to be unique
+	v = this.LineColors;    if (v != def.LineColors)              props->AddSet ("LineColors",    this, "LineColors", v);
+	v = this.StaticSaveVar; if (v && !save_scenario_dup_objects)  props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v)); // do not duplicate StaticSaveVar because it needs to be unique
 	// Commands: Could store the whole command stack using AppendCommand.
 	// However, usually there is one base command and the rest is derived
 	// (e.g.: A Get command may lead to multiple MoveTo commands to the

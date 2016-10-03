@@ -18,7 +18,7 @@ private func Initialize()
 // Greyish colour
 public func SetNeutral()
 {
-	SetProperty("LineColors", [RGB(80, 80, 120), RGB(80, 80, 120)]);
+	this.LineColors = [RGB(80, 80, 120), RGB(80, 80, 120)];
 	is_air_pipe = false;
 }
 
@@ -26,7 +26,7 @@ public func SetNeutral()
 // Please to not change otherwise people with dyschromatopsia will hunt you down.
 public func SetDrain()
 {
-	SetProperty("LineColors", [RGB(238, 102, 0), RGB(238, 102, 0)]);
+	this.LineColors = [RGB(238, 102, 0), RGB(238, 102, 0)];
 	is_air_pipe = false;
 }
 
@@ -34,14 +34,14 @@ public func SetDrain()
 // Please to not change otherwise people with dyschromatopsia will hunt you down.
 public func SetSource()
 {
-	SetProperty("LineColors", [RGB(102, 136, 34), RGB(102, 136, 34)]);
+	this.LineColors = [RGB(102, 136, 34), RGB(102, 136, 34)];
 	is_air_pipe = false;
 }
 
 // Blueish colour.
 public func SetAir()
 {
-	SetProperty("LineColors", [RGB(0, 153, 255), RGB(0, 153, 255)]);
+	this.LineColors = [RGB(0, 153, 255), RGB(0, 153, 255)];
 	is_air_pipe = true;
 }
 
@@ -163,6 +163,8 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	SaveScenarioObjectAction(props);
+	if (pipe_kit) props->AddCall("PipeKit", this, "SetPipeKit", pipe_kit);
+	if (IsAirPipe()) props->AddCall("AirPipe", this, "SetAir");
 	return true;
 }
 
