@@ -353,6 +353,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 		res = SDL_SetWindowFullscreen(pWindow->window, 0);
 		if (res)
 		{
+			Error(SDL_GetError());
 			LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
 			return false;
 		}
@@ -369,12 +370,14 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 		res = SDL_SetWindowFullscreen(pWindow->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		if (res)
 		{
+			Error(SDL_GetError());
 			LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
 			return false;
 		}
 		res = SDL_GetDesktopDisplayMode(iMonitor, &mode);
 		if (res)
 		{
+			Error(SDL_GetError());
 			LogF("SDL_GetDesktopDisplayMode: %s", SDL_GetError());
 			return false;
 		}
@@ -386,6 +389,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 		res = SDL_GetDisplayMode(iMonitor, i, &mode);
 		if (res)
 		{
+			Error(SDL_GetError());
 			LogF("SDL_GetDisplayMode: %s", SDL_GetError());
 			return false;
 		}
@@ -394,12 +398,14 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 			res = SDL_SetWindowDisplayMode(pWindow->window, &mode);
 			if (res)
 			{
+				Error(SDL_GetError());
 				LogF("SDL_SetWindowDisplayMode: %s", SDL_GetError());
 				return false;
 			}
 			res = SDL_SetWindowFullscreen(pWindow->window, SDL_WINDOW_FULLSCREEN);
 			if (res)
 			{
+				Error(SDL_GetError());
 				LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
 				return false;
 			}
@@ -407,6 +413,8 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 			return true;
 		}
 	}
+
+	Error("No such resolution available");
 	return false;
 }
 
