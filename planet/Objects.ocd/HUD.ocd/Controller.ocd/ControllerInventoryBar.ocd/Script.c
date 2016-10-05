@@ -23,6 +23,71 @@ local inventory_slots;
 local inventory_gui_menu;
 local inventory_gui_id;
 
+/* GUI creation */
+
+// For custom HUD graphics overload the following function as deemed fit.
+
+func AssembleInventoryButton(int max_slots, int slot_number, proplist slot_info)
+{
+	// The gui already exists, only update it with a new submenu
+	var pos = CalculateButtonPosition(slot_number, max_slots);
+
+	return
+	{
+		Target = this,
+		slot_number =
+		{
+			Priority = 3, // Make sure the slot number is drawn above the icon.
+			Style = GUI_TextTop,
+			Text = Format("%2d", slot_info.slot + 1)
+		},
+		quick_switch = // Shows quick switch control key if this is the quick switch slot
+		{
+			Priority = 3,
+			Style = GUI_NoCrop | GUI_TextHCenter | GUI_TextBottom,
+			Left = "-50%",
+			Right = "150%",
+			Top = Format(" %s%s", "20%", ToEmString(-2)),
+			Bottom = "20%",
+			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_QuickSwitch, true)), Selected = "" }
+		},
+		Style = GUI_NoCrop,
+		ID = slot_info.ID,
+		Symbol = {Std = Icon_Menu_Circle, Quick = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
+		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
+		count =
+		{
+			ID = 1000 + slot_info.ID,
+			Style = GUI_TextRight | GUI_TextBottom,
+			Text = nil,
+			Priority = 2
+		},
+		// Prepare (invisible) extra-slot display circle.
+		extra_slot =
+		{
+			Top = ToEmString(GUI_Controller_InventoryBar_IconSize),
+			Bottom = ToEmString(GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2),
+			Style = GUI_TextLeft,
+			Text = nil,
+			symbol =// used to display an infinity sign if necessary (Icon_Number)
+			{
+				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
+				GraphicsName = "Inf",
+			},
+			circle =// shows the item in the extra slot
+			{
+				Left = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
+				Symbol = nil,
+				symbol = {}
+			}
+		},
+		overlay = // Custom inventory overlays can be shown here.
+		{
+			ID = 2000 + slot_info.ID
+		}
+	};
+}
+
 /* Creation / Destruction */
 
 private func Construction()
@@ -286,63 +351,8 @@ private func CreateNewInventoryButton(int max_slots)
 	};
 	PushBack(inventory_slots, slot_info);
 
-	// The gui already exists, only update it with a new submenu
-	var pos = CalculateButtonPosition(slot_number, max_slots);
+	var slot = AssembleInventoryButton(max_slots, slot_number, slot_info);
 
-	var slot =
-	{
-		Target = this,
-		slot_number =
-		{
-			Priority = 3, // Make sure the slot number is drawn above the icon.
-			Style = GUI_TextTop,
-			Text = Format("%2d", slot_info.slot + 1)
-		},
-		quick_switch = // Shows quick switch control key if this is the quick switch slot
-		{
-			Priority = 3,
-			Style = GUI_NoCrop | GUI_TextHCenter | GUI_TextBottom,
-			Left = "-50%",
-			Right = "150%",
-			Top = Format(" %s%s", "20%", ToEmString(-2)),
-			Bottom = "20%",
-			Text = { Std = "", Quick = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_QuickSwitch, true)), Selected = "" }
-		},
-		Style = GUI_NoCrop,
-		ID = slot_info.ID,
-		Symbol = {Std = Icon_Menu_Circle, Quick = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
-		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
-		count =
-		{
-			ID = 1000 + slot_info.ID,
-			Style = GUI_TextRight | GUI_TextBottom,
-			Text = nil,
-			Priority = 2
-		},
-		// Prepare (invisible) extra-slot display circle.
-		extra_slot =
-		{
-			Top = ToEmString(GUI_Controller_InventoryBar_IconSize),
-			Bottom = ToEmString(GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2),
-			Style = GUI_TextLeft,
-			Text = nil,
-			symbol =// used to display an infinity sign if necessary (Icon_Number)
-			{
-				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
-				GraphicsName = "Inf",
-			},
-			circle =// shows the item in the extra slot
-			{
-				Left = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
-				Symbol = nil,
-				symbol = {}
-			}
-		},
-		overlay = // Custom inventory overlays can be shown here.
-		{
-			ID = 2000 + slot_info.ID
-		}
-	};
 	GuiUpdate({_new_icon = slot}, inventory_gui_id);
 }
 

@@ -60,14 +60,12 @@ local crew_plus_id;
 local crew_info_menu;
 local crew_info_id;
 
-/* Creation / Destruction */
+/* GUI creation */
 
-private func Construction()
+// For custom HUD graphics overload the following function as deemed fit.
+
+func AssembleCrewBar()
 {
-	crew_bars = [];
-	crew_warnings = [];
-//	crew_displays = [];
-
 	var cursor_margin = GUI_Controller_CrewBar_CursorMargin;
 	var cursor_size = cursor_margin + GUI_Controller_CrewBar_CursorSize;
 
@@ -80,7 +78,39 @@ private func Construction()
 	crew_next_id = 10;
 	crew_warning_id = 20;
 
-	crew_gui_menu =
+	// --- WARNING ---
+	// Crew plus menu and crew info menu will probably be removed!
+	// Hereby marked deprecated!
+
+	crew_plus_menu =
+	{
+		Target = this,
+		Player = GetOwner(),
+		Style = GUI_NoCrop | GUI_Multiple,
+		Left = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize / 2),
+		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize * 3 / 2),
+		Top = ToEmString(next_y_margin),
+		Bottom = ToEmString(next_y_size - GUI_Controller_CrewBar_IconSize / 2),
+		Symbol = Icon_Number,
+		GraphicsName = "PlusGreen",
+		Priority = 10,
+		OnClick = GuiAction_Call(this, "OpenCrewInfo")
+	};
+
+	crew_info_menu =
+	{
+		Target = this,
+		Style = GUI_NoCrop | GUI_Multiple | GUI_FitChildren,
+		Left = ToEmString(next_margin),
+		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize),
+		Top = ToEmString(next_y_size + GUI_Controller_CrewBar_IconMargin*2),
+		Decoration = GUI_MenuDecoInventoryHeader,
+		Priority = 11
+	};
+
+	// --- SEE WARNING ABOVE ---
+
+	return
 	{
 		Target = this,
 		ID = 1,
@@ -140,7 +170,8 @@ private func Construction()
 					Player = NO_OWNER,
 					ID = crew_cursor_id + 1,
 					Margin = ["5%"],
-					Symbol = Icon_Heart,
+					Symbol = CrewHealIcon().Symbol,
+					GraphicsName = CrewHealIcon().GraphicsName,
 					Priority = 7
 				}
 			}
@@ -196,7 +227,8 @@ private func Construction()
 					Player = NO_OWNER,
 					ID = crew_next_id + 1,
 					Margin = ["5%"],
-					Symbol = Icon_Heart,
+					Symbol = CrewHealIcon().Symbol,
+					GraphicsName = CrewHealIcon().GraphicsName,
 					Priority = 7
 				}
 			},
@@ -259,39 +291,61 @@ private func Construction()
 			Priority = 10
 		}
 	};
-	crew_gui_id = GuiOpen(crew_gui_menu);
+}
+
+func AddCrewBars()
+{
 	// Health bar
 	crew_health_bar = AddCrewBar(RGB(160, 0, 0));
 	// Magic bar
 	crew_magic_bar = AddCrewBar(RGB(75, 75, 160));
 	// Breath bar
 	crew_breath_bar = AddCrewBar(RGB(0, 160, 160));
+}
 
-	crew_plus_menu =
-	{
-		Target = this,
-		Player = GetOwner(),
-		Style = GUI_NoCrop | GUI_Multiple,
-		Left = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize / 2),
-		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize * 3 / 2),
-		Top = ToEmString(next_y_margin),
-		Bottom = ToEmString(next_y_size - GUI_Controller_CrewBar_IconSize / 2),
-		Symbol = Icon_Number,
-		GraphicsName = "PlusGreen",
-		Priority = 10,
-		OnClick = GuiAction_Call(this, "OpenCrewInfo")
-	};
+func CrewRecruitmentIcon()
+{
+	return Icon_Arrow;
+}
 
-	crew_info_menu =
-	{
-		Target = this,
-		Style = GUI_NoCrop | GUI_Multiple | GUI_FitChildren,
-		Left = ToEmString(next_margin),
-		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize),
-		Top = ToEmString(next_y_size + GUI_Controller_CrewBar_IconMargin*2),
-		Decoration = GUI_MenuDecoInventoryHeader,
-		Priority = 11
-	};
+func CrewDeathIcon()
+{
+	return Icon_Skull;
+}
+
+func CrewHealIcon()
+{
+	return { Symbol = Icon_Heart, GraphicsName = "" };
+}
+
+func CrewFireDamageIcon()
+{
+	return { Symbol = Icon_Heart, GraphicsName = "OnFire" };
+}
+
+func CrewDamageIcon()
+{
+	return { Symbol = Icon_Heart, GraphicsName = "Broken" };
+}
+
+func CrewBreathIcon()
+{
+	return Icon_Bubbles;
+}
+
+/* Creation / Destruction */
+
+private func Construction()
+{
+	crew_bars = [];
+	crew_warnings = [];
+//	crew_displays = [];
+
+	crew_gui_menu = AssembleCrewBar();
+
+	crew_gui_id = GuiOpen(crew_gui_menu);
+
+	AddCrewBars();
 
 	return _inherited(...);
 }
@@ -334,7 +388,7 @@ public func OnCrewDeath(object clonk, int killer)
 
 	var next_index = GetNextCrewIndex(GetCursorIndex());
 	if (GetCursor(GetOwner()) != clonk && GetCrew(GetOwner(), next_index) != clonk)
-		IssueWarning(this, Icon_Skull, "", clonk->GetName()); // this for target because Clonk might get deleted
+		IssueWarning(this, CrewDeathIcon(), "", clonk->GetName()); // this for target because Clonk might get deleted
 
 	return _inherited(clonk, killer, ...);
 }
@@ -415,12 +469,12 @@ public func OnCrewHealthChange(object clonk, int change, int cause, int caused_b
 			}
 			else // Show a warning
 			{
-				var graphics = "";
+				var graphics = CrewHealIcon();
 				if (change < 0)
-					graphics = "Broken";
+					graphics = CrewDamageIcon();
 				if (clonk->OnFire())
-					graphics = "OnFire";
-				IssueWarning(clonk, Icon_Heart, graphics);
+					graphics = CrewFireDamageIcon();
+				IssueWarning(clonk, graphics.Symbol, graphics.GraphicsName);
 			}
 		}
 	}
@@ -1154,7 +1208,8 @@ private func OpenCrewInfo()
 			},
 			heart =
 			{
-				Symbol = Icon_Heart,
+				Symbol = CrewHealIcon().Symbol,
+				GraphicsName = CrewHealIcon().GraphicsName,
 				Left = "21%",
 				Right = ToEmString(10),
 				Top = ToEmString(10),
