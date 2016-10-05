@@ -546,15 +546,17 @@ public func SetMaxContentsCount(int new_count)
 	return true;
 }
 
-/* Objects with inventory (i.e. clonks) do not allow taking out items by hostile clonks.
-   Also do not allow for neutral, because that will affect NPCs */
+/* Objects with inventory (i.e. clonks) do not allow taking out items by
+ * hostile clonks. Actively controlled Clonks never allow taking out items.
+ * Also do not allow for neutral, because that will affect NPCs.
+ */
 public func RejectInteractionMenu(object clonk, ...)
 {
 	var msg = _inherited(clonk, ...);
-	if (!msg)
+	if (clonk != this && !msg)
 	{
-		if (GetOwner() == NO_OWNER || Hostile(GetOwner(), clonk->GetOwner()))
+		if (GetOwner() == NO_OWNER || Hostile(GetOwner(), clonk->GetOwner()) || GetCursor(GetOwner()) == this)
 			return Format("$MsgNoInteraction$", GetName());
-		}
+	}
 	return msg;
 }
