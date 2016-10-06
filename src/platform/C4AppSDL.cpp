@@ -326,6 +326,16 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 
 static int modeCount = 0;
 
+static int bits_per_pixel(int format)
+{
+	// C4Draw::BITS_PER_PIXEL is 32, and other parts of the code expect
+	// the mode's bpp to match exactly. 24 is fully compatible, so just
+	// pretend it's 32 in that case to adhere to the expected interface.
+	int bbp = SDL_BITSPERPIXEL(format);
+	if (bbp == 24) bbp = 32;
+	return bbp;
+}
+
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	if (!modeCount)
@@ -340,7 +350,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	SDL_GetDisplayMode(iMonitor, iIndex, &mode);
 	*piXRes = mode.w;
 	*piYRes = mode.h;
-	*piBitDepth = SDL_BITSPERPIXEL(mode.format);
+	*piBitDepth = bits_per_pixel(mode.format);
 	if (piRefreshRate) *piRefreshRate = mode.refresh_rate;
 	return true;
 }
@@ -350,6 +360,21 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 	int res;
 	if (!fFullScreen)
 	{
+		if (iXRes == -1)
+		{
+			SDL_DisplayMode desktop_mode;
+			res = SDL_GetDesktopDisplayMode(iMonitor, &desktop_mode);
+			if (res)
+			{
+				Error(SDL_GetError());
+				LogF("SDL_GetDesktopDisplayMode: %s", SDL_GetError());
+				return false;
+			}
+
+			iXRes = desktop_mode.w;
+			iYRes = desktop_mode.h;
+		}
+
 		res = SDL_SetWindowFullscreen(pWindow->window, 0);
 		if (res)
 		{
@@ -357,11 +382,9 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 			LogF("SDL_SetWindowFullscreen: %s", SDL_GetError());
 			return false;
 		}
-		if (iXRes != -1)
-			pWindow->SetSize(iXRes, iYRes);
-		C4Rect r;
-		pWindow->GetSize(&r);
-		OnResolutionChanged(r.Wdt, r.Hgt);
+
+		pWindow->SetSize(iXRes, iYRes);
+		OnResolutionChanged(iXRes, iYRes);
 		return true;
 	}
 	SDL_DisplayMode mode;
@@ -384,16 +407,19 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int RefreshRate,
 		OnResolutionChanged(mode.w, mode.h);
 		return true;
 	}
+
 	for (int i = 0; i < modeCount; ++i)
 	{
 		res = SDL_GetDisplayMode(iMonitor, i, &mode);
+
 		if (res)
 		{
 			Error(SDL_GetError());
 			LogF("SDL_GetDisplayMode: %s", SDL_GetError());
 			return false;
 		}
-		if (mode.w == iXRes && mode.h == iYRes && mode.refresh_rate == RefreshRate && SDL_BITSPERPIXEL(mode.format) == C4Draw::COLOR_DEPTH)
+
+		if (mode.w == iXRes && mode.h == iYRes && (RefreshRate == 0 || mode.refresh_rate == RefreshRate) && bits_per_pixel(mode.format) == C4Draw::COLOR_DEPTH)
 		{
 			res = SDL_SetWindowDisplayMode(pWindow->window, &mode);
 			if (res)

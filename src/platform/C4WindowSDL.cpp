@@ -83,7 +83,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 	uint32_t flags = SDL_WINDOW_OPENGL;
 	if (windowKind == W_Fullscreen && size->Wdt == -1)
 		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-	else if (windowKind == W_Fullscreen)
+	else if (windowKind == W_Fullscreen && !Config.Graphics.Windowed)
 		flags |= SDL_WINDOW_FULLSCREEN;
 	window = SDL_CreateWindow(Title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, size->Wdt, size->Hgt, flags);
 	if (!window)

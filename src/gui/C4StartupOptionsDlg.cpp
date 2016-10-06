@@ -1063,28 +1063,33 @@ void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)
 	pFiller->ClearEntries();
 	pFiller->AddEntry(LoadResStr("IDS_MNU_DEFAULTRESOLUTION"), -1);
 	// fill with all possible resolutions
-	int32_t idx = 0, iXRes, iYRes, iBitDepth;
-	while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, NULL, Config.Graphics.Monitor))
+	int32_t idx = 0, iXRes, iYRes, iBitDepth, iRefreshRate;
+	while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, &iRefreshRate, Config.Graphics.Monitor))
 #ifdef _WIN32 // why only WIN32?
 		if (iBitDepth == C4Draw::COLOR_DEPTH)
 #endif
 		{
 			StdStrBuf sGfxString = GetGfxResString(iXRes, iYRes);
 			if (!pFiller->FindEntry(sGfxString.getData()))
-				pFiller->AddEntry(sGfxString.getData(), iXRes + (uint32_t(iYRes)<<16));
+				pFiller->AddEntry(sGfxString.getData(), iXRes + (uint32_t(iYRes) << 12) + (uint32_t(iRefreshRate) << 24));
 		}
 }
 
 bool C4StartupOptionsDlg::OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
 {
 	// get new resolution from string
-	int iResX=(idNewSelection & 0xffff), iResY=(uint32_t(idNewSelection) & 0xffff0000) >> 16;
+	int iResX=(idNewSelection & 0xfff), iResY=(uint32_t(idNewSelection) >> 12) & 0xfff, iRefreshRate = (uint32_t(idNewSelection) >> 24) & 0xff;
 	if (idNewSelection == -1)
+	{
 		iResX = iResY = -1;
+		iRefreshRate = 0;
+	}
+
 	// different than current?
-	if (iResX == Config.Graphics.ResX && iResY == Config.Graphics.ResY) return true;
+	if (iResX == Config.Graphics.ResX && iResY == Config.Graphics.ResY && iRefreshRate == Config.Graphics.RefreshRate) return true;
+
 	// try setting it
-	if (!TryNewResolution(iResX, iResY))
+	if (!TryNewResolution(iResX, iResY, iRefreshRate))
 	{
 		// didn't work or declined by user
 		return true; // do not change label, because dialog might hae been recreated!
@@ -1093,9 +1098,10 @@ bool C4StartupOptionsDlg::OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int
 	return true;
 }
 
-bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
+bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY, int32_t iRefreshRate)
 {
 	int32_t iOldResX = Config.Graphics.ResX, iOldResY = Config.Graphics.ResY;
+	int32_t iOldRefreshRate = Config.Graphics.RefreshRate;
 	int32_t iOldFontSize = Config.General.RXFontSize;
 	C4GUI::Screen *pScreen = GetScreen();
 	// resolution change may imply font size change
@@ -1105,7 +1111,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	else if (iResY > 800)
 		iNewFontSize = 16;
 	// call application to set it
-	if (!Application.SetVideoMode(iResX, iResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true))
+	if (!Application.SetVideoMode(iResX, iResY, iRefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 	{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
 		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
@@ -1121,17 +1127,19 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	// Set new resolution in config before dialog recreation so that the initial combo box value is correct (#230)
 	Config.Graphics.ResX = iResX;
 	Config.Graphics.ResY = iResY;
+	Config.Graphics.RefreshRate = iRefreshRate;
 	// since the resolution was changed, everything needs to be moved around a bit
 	RecreateDialog(false);
 	// Now set old resolution again to make sure config is restored even if the program is closed during the confirmation dialog
 	Config.Graphics.ResX = iOldResX;
 	Config.Graphics.ResY = iOldResY;
+	Config.Graphics.RefreshRate = iOldRefreshRate;
 	// Show confirmation dialog
 	ResChangeConfirmDlg *pConfirmDlg = new ResChangeConfirmDlg();
 	if (!pScreen->ShowModalDlg(pConfirmDlg, true))
 	{
 		// abort: Restore screen, if this was not some program abort
-		if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+		if (Application.SetVideoMode(iOldResX, iOldResY, iOldRefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 		{
 			if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
 			RecreateDialog(false);
@@ -1142,6 +1150,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	// resolution may be kept!
 	Config.Graphics.ResX = iResX;
 	Config.Graphics.ResY = iResY;
+	Config.Graphics.RefreshRate = iRefreshRate;
 	if(Config.Graphics.Windowed)
 		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 	return true;

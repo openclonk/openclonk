@@ -130,7 +130,7 @@ private:
 	bool OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
-	bool TryNewResolution(int32_t iResX, int32_t iResY);
+	bool TryNewResolution(int32_t iResX, int32_t iResY, int32_t iRefreshRate);
 	StdStrBuf GetGfxResString(int32_t iResX, int32_t iResY); // convert resolution to string to be displayed in resolution choice combobox
 	const char * GetWindowedName(int32_t mode = -1);
 
