@@ -256,7 +256,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"network", no_argument, 0, 'n'},
 			{"record", no_argument, 0, 'r'},
 
-			{"lobby", required_argument, 0, 'l'},
+			{"lobby", optional_argument, 0, 'l'},
 
 			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
 			{0, 0, 0, 0}
