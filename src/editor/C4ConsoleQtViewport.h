@@ -65,6 +65,7 @@ class C4ConsoleQtViewportScrollArea : public QAbstractScrollArea
 	
 	class C4ConsoleQtViewportDockWidget *dock;
 	class C4Viewport *cvp;
+	int32_t is_updating_scrollbars;
 
 protected:
 	void scrollContentsBy(int dx, int dy) override;

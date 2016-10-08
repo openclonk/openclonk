@@ -279,6 +279,8 @@ void C4ConsoleQtViewportView::wheelEvent(QWheelEvent *event)
 			cvp->ScrollView(x, y);
 		}
 	}
+	// Event has been handled - do not forward to scroll bars
+	event->accept();
 }
 
 void C4ConsoleQtViewportView::focusInEvent(QFocusEvent * event)
@@ -422,7 +424,7 @@ void C4ConsoleQtViewportView::paintGL()
 
 
 C4ConsoleQtViewportScrollArea::C4ConsoleQtViewportScrollArea(class C4ConsoleQtViewportDockWidget *dock)
-	: QAbstractScrollArea(dock), dock(dock), cvp(dock->cvp->cvp)
+	: QAbstractScrollArea(dock), dock(dock), cvp(dock->cvp->cvp), is_updating_scrollbars(0)
 {
 	cvp->scrollarea = this;
 	// No scroll bars by default. Neutral viewports will toggle this.
@@ -432,8 +434,11 @@ C4ConsoleQtViewportScrollArea::C4ConsoleQtViewportScrollArea(class C4ConsoleQtVi
 void C4ConsoleQtViewportScrollArea::scrollContentsBy(int dx, int dy)
 {
 	// Just use the absolute position in any case.
-	cvp->SetViewX(horizontalScrollBar()->value());
-	cvp->SetViewY(verticalScrollBar()->value());
+	if (!is_updating_scrollbars)
+	{
+		cvp->SetViewX(horizontalScrollBar()->value());
+		cvp->SetViewY(verticalScrollBar()->value());
+	}
 }
 
 bool C4ConsoleQtViewportScrollArea::viewportEvent(QEvent *e)
@@ -451,6 +456,7 @@ void C4ConsoleQtViewportScrollArea::setupViewport(QWidget *viewport)
 
 void C4ConsoleQtViewportScrollArea::ScrollBarsByViewPosition()
 {
+	++is_updating_scrollbars; // Do not shift view just from updating scroll bars
 	int x = viewport()->width() / cvp->GetZoom();
 	horizontalScrollBar()->setRange(0, ::Landscape.GetWidth() - x);
 	horizontalScrollBar()->setPageStep(x);
@@ -460,6 +466,7 @@ void C4ConsoleQtViewportScrollArea::ScrollBarsByViewPosition()
 	verticalScrollBar()->setRange(0, ::Landscape.GetHeight() - y);
 	verticalScrollBar()->setPageStep(y);
 	verticalScrollBar()->setValue(cvp->GetViewY());
+	--is_updating_scrollbars;
 }
 
 void C4ConsoleQtViewportScrollArea::setScrollBarVisibility(bool visible)

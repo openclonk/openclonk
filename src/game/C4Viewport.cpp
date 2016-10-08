@@ -516,10 +516,21 @@ void C4Viewport::AdjustZoomAndPosition()
 
 		if (Zoom == 0)
 			Zoom = ZoomTarget;
-		if (Zoom < ZoomTarget)
-			Zoom = std::min(Zoom * ZoomAdjustFactor, ZoomTarget);
-		if (Zoom > ZoomTarget)
-			Zoom = std::max(Zoom / ZoomAdjustFactor, ZoomTarget);
+		else
+		{
+			// Remember old viewport center
+			float view_mid_x = this->viewX + float(this->ViewWdt) / Zoom / 2.0f;
+			float view_mid_y = this->viewY + float(this->ViewHgt) / Zoom / 2.0f;
+
+			if (Zoom < ZoomTarget)
+				Zoom = std::min(Zoom * ZoomAdjustFactor, ZoomTarget);
+			if (Zoom > ZoomTarget)
+				Zoom = std::max(Zoom / ZoomAdjustFactor, ZoomTarget);
+
+			// Restore new viewport center
+			this->viewX = view_mid_x - float(this->ViewWdt) / Zoom / 2.0f;
+			this->viewY = view_mid_y - float(this->ViewHgt) / Zoom / 2.0f;
+		}
 	}
 	// Adjust position
 	AdjustPosition(false);
