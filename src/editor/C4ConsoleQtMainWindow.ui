@@ -18,339 +18,311 @@
     <normaloff>:/editor/res/oc64.png</normaloff>:/editor/res/oc64.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QComboBox" name="foregroundMatTexComboBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>74</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="editable">
-     <bool>false</bool>
-    </property>
-    <property name="sizeAdjustPolicy">
-     <enum>QComboBox::AdjustToContents</enum>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="backgroundMatTexComboBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>74</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="sizeAdjustPolicy">
-     <enum>QComboBox::AdjustToContents</enum>
-    </property>
-   </widget>
-   <widget class="QSlider" name="drawSizeSlider">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>10</y>
-      <width>100</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>100</width>
-      <height>16777215</height>
-     </size>
-    </property>
-    <property name="minimum">
-     <number>1</number>
-    </property>
-    <property name="value">
-     <number>10</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="drawSizeLabel">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>10</y>
-      <width>47</width>
-      <height>13</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string comment="res">IDS_CTL_SIZE</string>
-    </property>
-   </widget>
-   <widget class="QDockWidget" name="welcomeDockWidget">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>311</width>
-      <height>211</height>
-     </rect>
-    </property>
-    <property name="windowTitle">
-     <string comment="res">IDS_CNS_WELCOME</string>
-    </property>
-    <widget class="QWidget" name="welcomeDockWidgetContents">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QComboBox" name="foregroundMatTexComboBox">
+      <property name="editable">
+       <bool>false</bool>
       </property>
-      <property name="leftMargin">
-       <number>0</number>
+      <property name="sizeAdjustPolicy">
+       <enum>QComboBox::AdjustToContents</enum>
       </property>
-      <property name="topMargin">
-       <number>0</number>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="drawSizeLabel">
+      <property name="text">
+       <string comment="res">IDS_CTL_SIZE</string>
       </property>
-      <property name="rightMargin">
-       <number>0</number>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QSlider" name="drawSizeSlider">
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>16777215</height>
+       </size>
       </property>
-      <property name="bottomMargin">
-       <number>0</number>
+      <property name="minimum">
+       <number>1</number>
       </property>
-      <item>
-       <widget class="QScrollArea" name="welcomeScrollArea">
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="Base">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>255</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </colorrole>
-           <colorrole role="Window">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>251</green>
-              <blue>241</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="Base">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>255</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </colorrole>
-           <colorrole role="Window">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>251</green>
-              <blue>241</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="Base">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>251</green>
-              <blue>241</blue>
-             </color>
-            </brush>
-           </colorrole>
-           <colorrole role="Window">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>251</green>
-              <blue>241</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
-        </property>
-        <property name="autoFillBackground">
-         <bool>true</bool>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="lineWidth">
+      <property name="value">
+       <number>10</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QComboBox" name="backgroundMatTexComboBox">
+      <property name="sizeAdjustPolicy">
+       <enum>QComboBox::AdjustToContents</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <widget class="QDockWidget" name="welcomeDockWidget">
+      <property name="windowTitle">
+       <string comment="res">IDS_CNS_WELCOME</string>
+      </property>
+      <widget class="QWidget" name="welcomeDockWidgetContents">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
          <number>0</number>
         </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
+        <property name="leftMargin">
+         <number>0</number>
         </property>
-        <widget class="QWidget" name="welcomeScrollAreaWidgetContents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>311</width>
-           <height>191</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="welcomeScrollLayout">
-          <item>
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>10</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="welcomeTitleLabel">
-            <property name="font">
-             <font>
-              <pointsize>16</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string comment="res">IDS_CNS_EDITOR</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>10</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="welcomeStartLabel">
-            <property name="font">
-             <font>
-              <pointsize>9</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string comment="res">IDS_MNU_START</string>
-            </property>
-            <property name="indent">
-             <number>15</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="welcomeNewLabel">
-            <property name="text">
-             <string comment="res">IDS_MNU_NEW</string>
-            </property>
-            <property name="indent">
-             <number>25</number>
-            </property>
-            <property name="textInteractionFlags">
-             <set>Qt::TextBrowserInteraction</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="welcomeOpenLabel">
-            <property name="text">
-             <string comment="res">IDS_MNU_OPEN</string>
-            </property>
-            <property name="indent">
-             <number>25</number>
-            </property>
-            <property name="textInteractionFlags">
-             <set>Qt::TextBrowserInteraction</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="welcomeExploreUserPathLabel">
-            <property name="text">
-             <string comment="res">IDS_MNU_EXPLOREUSERPATH</string>
-            </property>
-            <property name="indent">
-             <number>25</number>
-            </property>
-            <property name="textInteractionFlags">
-             <set>Qt::TextBrowserInteraction</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>10</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="welcomeRecentLabel">
-            <property name="font">
-             <font>
-              <pointsize>9</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string comment="res">IDS_MNU_RECENT</string>
-            </property>
-            <property name="indent">
-             <number>15</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="welcomeScrollArea">
+          <property name="palette">
+           <palette>
+            <active>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </active>
+            <inactive>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </inactive>
+            <disabled>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>251</green>
+                <blue>241</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </disabled>
+           </palette>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="lineWidth">
+           <number>0</number>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="welcomeScrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>417</width>
+             <height>229</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="welcomeScrollLayout">
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeTitleLabel">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string comment="res">IDS_CNS_EDITOR</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeStartLabel">
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string comment="res">IDS_MNU_START</string>
+              </property>
+              <property name="indent">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeNewLabel">
+              <property name="text">
+               <string comment="res">IDS_MNU_NEW</string>
+              </property>
+              <property name="indent">
+               <number>25</number>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextBrowserInteraction</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeOpenLabel">
+              <property name="text">
+               <string comment="res">IDS_MNU_OPEN</string>
+              </property>
+              <property name="indent">
+               <number>25</number>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextBrowserInteraction</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeExploreUserPathLabel">
+              <property name="text">
+               <string comment="res">IDS_MNU_EXPLOREUSERPATH</string>
+              </property>
+              <property name="indent">
+               <number>25</number>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextBrowserInteraction</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Maximum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>10</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="welcomeRecentLabel">
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string comment="res">IDS_MNU_RECENT</string>
+              </property>
+              <property name="indent">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -770,6 +742,9 @@
    <property name="toolTip">
     <string comment="res">IDS_TEXT_UNPAUSETHEGAME</string>
    </property>
+   <property name="shortcut">
+    <string/>
+   </property>
   </action>
   <action name="actionPause">
    <property name="checkable">
@@ -810,7 +785,7 @@
     <string comment="res">IDS_TEXT_CURSOR_GAME</string>
    </property>
    <property name="shortcut">
-    <string>1</string>
+    <string>Ctrl+1</string>
    </property>
   </action>
   <action name="actionCursorSelect">
@@ -831,7 +806,7 @@
     <string comment="res">IDS_TEXT_CURSOR_SELECT</string>
    </property>
    <property name="shortcut">
-    <string>2</string>
+    <string>Ctrl+2</string>
    </property>
   </action>
   <action name="actionCursorDrawPen">
@@ -852,7 +827,7 @@
     <string comment="res">IDS_TEXT_CURSOR_DRAWPEN</string>
    </property>
    <property name="shortcut">
-    <string>4</string>
+    <string>Ctrl+4</string>
    </property>
   </action>
   <action name="actionCursorDrawLine">
@@ -873,7 +848,7 @@
     <string comment="res">IDS_TEXT_CURSOR_DRAWLINE</string>
    </property>
    <property name="shortcut">
-    <string>5</string>
+    <string>Ctrl+5</string>
    </property>
   </action>
   <action name="actionCursorDrawRect">
@@ -894,7 +869,7 @@
     <string comment="res">IDS_TEXT_CURSOR_DRAWRECT</string>
    </property>
    <property name="shortcut">
-    <string>6</string>
+    <string>Ctrl+6</string>
    </property>
   </action>
   <action name="actionCursorPicker">
@@ -915,7 +890,7 @@
     <string comment="res">IDS_TEXT_CURSOR_DRAWPICKER</string>
    </property>
    <property name="shortcut">
-    <string>8</string>
+    <string>Ctrl+8</string>
    </property>
   </action>
   <action name="actionDynamicLandscape">
@@ -993,7 +968,7 @@
     <string comment="res">IDS_TEXT_CURSOR_DRAWFILL</string>
    </property>
    <property name="shortcut">
-    <string>7</string>
+    <string>Ctrl+7</string>
    </property>
   </action>
   <action name="actionViewportNew">
@@ -1096,7 +1071,7 @@
     <string comment="res">IDS_TEXT_CURSOR_CREATOR</string>
    </property>
    <property name="shortcut">
-    <string>3</string>
+    <string>Ctrl+3</string>
    </property>
   </action>
   <action name="actionFileNew">
