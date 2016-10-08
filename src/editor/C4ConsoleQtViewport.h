@@ -97,7 +97,7 @@ public:
 	C4ConsoleQtViewportDockWidget(class C4ConsoleQtMainWindow *main_window, QMainWindow *parent, class C4ViewportWindow *window);
 	virtual void closeEvent(QCloseEvent * event);
 	class C4ViewportWindow *GetViewportWindow() const { return cvp; }
-	void SetFocus() { view->setFocus(); } // forward focus to view
+	void SetFocus() { raise(); view->setFocus(); } // forward focus to view
 	bool HasFocus() { return view->hasFocus(); } // forward focus to view
 	bool event(QEvent *e) override;
 
