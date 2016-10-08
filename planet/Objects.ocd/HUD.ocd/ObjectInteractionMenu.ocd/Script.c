@@ -575,13 +575,13 @@ func CreateSideBar(int slot)
 	for (var obj in sidebar_items)
 	{
 		var background_color = nil;
-		var symbol = {Std = Icon_Menu_RectangleRounded, OnHover = Icon_Menu_RectangleBrightRounded};
+		var symbol = {Std = SidebarIconStandard(), OnHover = SidebarIconOnHover()};
 		// figure out whether the object is already selected
 		// if so, highlight the entry
 		if (current_menus[slot].target == obj)
 		{
 			background_color = RGBa(255, 255, 0, 10);
-			symbol = Icon_Menu_RectangleBrightRounded;
+			symbol = SidebarIconSelected();
 		}
 		var priority = 10000 - obj.Plane;
 		// Cross-out the entry?
@@ -1371,4 +1371,21 @@ func PlaySoundTransferIncomplete()
 func PlaySoundError()
 {
 	Sound("Objects::Balloon::Pop", true, nil, GetOwner());
+}
+
+// Overloadable functions for customization
+
+func SidebarIconStandard()
+{
+	return Icon_Menu_RectangleRounded;
+}
+
+func SidebarIconOnHover()
+{
+	return Icon_Menu_RectangleBrightRounded;
+}
+
+func SidebarIconSelected()
+{
+	return Icon_Menu_RectangleBrightRounded;
 }
