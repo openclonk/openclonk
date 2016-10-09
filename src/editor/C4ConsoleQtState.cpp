@@ -730,7 +730,7 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 
 	// Restore layout & show!
 	window->LoadGeometry();
-	window->showNormal();
+	window->show();
 	return true;
 }
 
