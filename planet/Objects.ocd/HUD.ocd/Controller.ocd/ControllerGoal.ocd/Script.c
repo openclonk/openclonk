@@ -113,14 +113,18 @@ public func OnGoalUpdate(object goal)
 		return _inherited(goal, ...);
 	}
 
+	// Get current goal display settings
 	var goal_picture_def = goal->~GetPictureDefinition() ?? goal->GetID();
 	var goal_picture = goal->~GetPictureName() ?? goal->GetGraphics();
 	var goal_short_description = goal->~GetShortDescription(GetOwner());
 
-	var update_req = goal_gui_menu.Symbol != goal_picture_def;
+	// Determine changes
+	var update_symbol = goal_gui_menu.Symbol != goal_picture_def;
+	var update_graphics = goal_gui_menu.GraphicsName != goal_picture;
+	var update_text = goal_gui_menu.text.Text != goal_short_description;
 
 	// Only update if something has changed.
-	if (update_req || goal_gui_menu.GraphicsName != goal_picture || goal_gui_menu.text.Text != goal_short_description)
+	if (update_symbol || update_graphics || update_text)
 	{
 		goal_gui_menu.text.Text = goal_short_description;
 		goal_gui_menu.Symbol = goal_picture_def;
