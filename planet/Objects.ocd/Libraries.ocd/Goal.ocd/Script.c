@@ -105,14 +105,16 @@ public func NotifyHUD()
 	// create hud objects for all players
 	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
-		var plr = GetPlayerByIndex(i);
-		var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (HUD)
-			HUD->OnGoalUpdate(this);
+		NotifyPlayerHUD(GetPlayerByIndex(i));
 	}
 }
 
 protected func InitializePlayer(int plr)
+{
+	NotifyPlayerHUD(plr);
+}
+
+private func NotifyPlayerHUD(int plr)
 {
 	var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
 	if (HUD)
