@@ -114,11 +114,15 @@ public func OnGoalUpdate(object goal)
 
 		return _inherited(goal, ...);
 	}
-	var update_req = goal_gui_menu.Symbol != goal->GetID();
 	var goal_picture_def = goal->~GetPictureDefinition();
+	var update_req;
 	if (goal_picture_def)
 	{
 		update_req = goal_gui_menu.Symbol != goal_picture_def;
+	}
+	else
+	{
+		update_req = goal_gui_menu.Symbol != goal->GetID();
 	}
 	var goal_picture = goal->~GetPictureName() ?? goal->GetGraphics();
 
