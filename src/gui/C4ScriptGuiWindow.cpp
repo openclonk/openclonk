@@ -60,7 +60,7 @@ float C4ScriptGuiWindow::Em2Pix(float em)
 
 float C4ScriptGuiWindow::Pix2Em(float pix)
 {
-	return pix / static_cast<float>(::GraphicsResource.FontRegular.GetFontHeight());
+	return pix / static_cast<float>(std::max<int32_t>(1, ::GraphicsResource.FontRegular.GetFontHeight()));
 }
 
 C4ScriptGuiWindowAction::~C4ScriptGuiWindowAction()

@@ -1583,7 +1583,7 @@ void C4Game::DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer)
 				// Word wrap to cgo width
 				int32_t iCharWdt, dummy;
 				::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
-				int32_t iMaxLine = std::max<int32_t>(cgo.Wdt / iCharWdt, 20);
+				int32_t iMaxLine = std::max<int32_t>(cgo.Wdt / std::max<int32_t>(1, iCharWdt), 20);
 				SWordWrap(szText, ' ', '|', iMaxLine);
 				// Center text vertically, too
 				int textWidth, textHeight;
