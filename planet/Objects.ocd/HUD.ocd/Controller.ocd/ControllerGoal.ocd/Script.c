@@ -56,8 +56,6 @@ public func UnshiftGoal()
 
 public func Construction()
 {
-	var plr = GetOwner();
-
 	var y_begin = GUI_Controller_Goal_IconMargin;
 	var y_end = y_begin + GUI_Controller_Goal_IconSize;
 	// Also take into account the margin and size of the wealth HUD if shown
@@ -114,6 +112,7 @@ public func OnGoalUpdate(object goal)
 
 		return _inherited(goal, ...);
 	}
+
 	var goal_picture_def = goal->~GetPictureDefinition() ?? goal->GetID();
 	var goal_picture = goal->~GetPictureName() ?? goal->GetGraphics();
 
@@ -256,7 +255,6 @@ private func GoalSubMenu(object goal, int nr, int size)
 public func OnCloseButtonClick()
 {
 	CloseGoalWindow();
-	return;
 }
 
 public func OnGoalGUIHover(object goal)
@@ -268,12 +266,12 @@ public func OnGoalGUIHover(object goal)
 
 private func OnGoalWindowUpdate(object goal)
 {
-	if (!goal)
+	if (!goal || !goal_info_id)
 		return;
-	if (!goal_info_id)
-		return;
+
 	var index = GetIndexOf(goals, goal);
 	if (index == -1) return;
+
 	var menu = GoalSubMenu(goal, index);
 	// Update only very selectively. (To e.g. not reset the background/tag)
 	var update = 
