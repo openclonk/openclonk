@@ -159,6 +159,6 @@ func SetGraphics(string new_gfx, ...)
 	return inherited(new_gfx, ...);
 }
 
-func GetGraphics() { return goal_custom_graphics; }
+func GetGraphics(int plr) { return goal_custom_graphics; }
 
 public func IsGoal() { return true; }

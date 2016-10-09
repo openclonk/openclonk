@@ -290,10 +290,10 @@ private func OnGoalWindowUpdate(object goal)
 
 private func GetGoalSymbol(object goal)
 {
-	return goal->~GetPictureDefinition() ?? goal->GetID();
+	return goal->~GetPictureDefinition(GetOwner()) ?? goal->GetID();
 }
 
 private func GetGoalGraphicsName(object goal)
 {
-	return goal->~GetPictureName() ?? goal->GetGraphics();
+	return goal->~GetPictureName(GetOwner()) ?? goal->GetGraphics(GetOwner());
 }

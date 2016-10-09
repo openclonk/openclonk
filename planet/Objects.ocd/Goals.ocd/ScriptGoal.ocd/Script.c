@@ -38,12 +38,12 @@ public func GetDescription(int plr)
 	return this.Description;
 }
 
-public func GetPictureDefinition()
+public func GetPictureDefinition(int plr)
 {
 	return this.Picture ?? this;
 }
 
-public func GetPictureName()
+public func GetPictureName(int plr)
 {
 	return this.PictureName ?? "";
 }
