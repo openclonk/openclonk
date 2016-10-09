@@ -15,7 +15,7 @@ local mission_password; // mission password to be gained when the goal is fulfil
 func Initialize()
 {
 	// Do not create Library_Goal itself
-	if (GetID()==Library_Goal)
+	if (GetID() == Library_Goal)
 	{
 		Log("WARNING: Abstract Library_Goal object should not be created; object removed.");
 		return RemoveObject();
@@ -54,15 +54,18 @@ protected func FxIntGoalCheckTimer(object trg, effect, int time)
 	// Check current goal object
 	if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
 	{
-		curr_goal->NotifyHUD();
 		if (!curr_goal->~IsFulfilled())
+		{
+			curr_goal->NotifyHUD(); // The HUD has to be updated only if the goal is not fulfilled: in the other case a new goal will be chosen and that goal then updates the HUD
 			return true;
+		}
 	}
 	// Current goal is fulfilled/destroyed - check all others
 	var goal_count = 0;
 	for (curr_goal in FindObjects(Find_Category(C4D_Goal)))
 	{
 		++goal_count;
+		// The first unfulfilled goal is chosen
 		if (!curr_goal->~IsFulfilled())
 		{
 			effect.curr_goal = curr_goal;
@@ -70,11 +73,12 @@ protected func FxIntGoalCheckTimer(object trg, effect, int time)
 			return true;
 		}
 	}
-	// No goal object? Kill timer
-	if (!goal_count)
-		return FX_Execute_Kill;
-	// Game over :(
-	AllGoalsFulfilled();
+	// There were goal objects, and all goals are fulfilled
+	if (goal_count)
+	{
+		AllGoalsFulfilled(); // Game over :(
+	}
+	// Kill Timer
 	return FX_Execute_Kill;
 }
 
