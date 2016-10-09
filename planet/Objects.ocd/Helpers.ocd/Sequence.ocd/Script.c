@@ -360,6 +360,13 @@ public func IsSequence() { return true; }
 // Note that this flag is not saved in scenarios, so saving as scenario and reloading will re-enable all triggers (for editor mode)
 local finished;
 
+public func Initialize()
+{
+	// The default action is an empty sequence, because that's usually what the user wants
+	// Must init this in initialize to force a writable array
+	action = { Function="sequence", Actions=[] };
+}
+
 public func Definition(def)
 {
 	// EditorActions
@@ -713,7 +720,7 @@ public func SaveScenarioObject(props, ...)
 	if (!active) props->AddCall("Active", this, "SetActive", active);
 	if (trigger) props->AddCall("Trigger", this, "SetTrigger", trigger);
 	if (condition) props->AddCall("Condition", this, "SetCondition", condition);
-	if (action || action_progress_mode || action_allow_parallel) props->AddCall("Action", this, "SetAction", action, Format("%v", action_progress_mode), action_allow_parallel);
+	if ((action && !DeepEqual(action, { Function="sequence", Actions=[] })) || action_progress_mode || action_allow_parallel) props->AddCall("Action", this, "SetAction", action, Format("%v", action_progress_mode), action_allow_parallel);
 	if (deactivate_after_action) props->AddCall("DeactivateAfterAction", this, "SetDeactivateAfterAction", deactivate_after_action);
 	return true;
 }
