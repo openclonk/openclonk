@@ -3,3 +3,6 @@ Description=Where clonks rest in peace.
 
 Epitaph=Here lies
 ReadInscription=Read inscription
+
+Inscription=Inscription
+InscriptionHelp=Defines the text the player can read from this gravestone.

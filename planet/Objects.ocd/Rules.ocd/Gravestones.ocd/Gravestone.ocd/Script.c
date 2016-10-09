@@ -47,6 +47,13 @@ public func Interact(object clonk)
 	return PlayerMessage(clonk->GetController(), grave_inscription);
 }
 
+public func Definition(def)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.grave_inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscriptionMessage", Save="Inscription" };
+}
+
+
 /*-- Properties --*/
 
 local Name = "$Name$";
