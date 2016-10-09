@@ -382,6 +382,7 @@ void C4Console::Clear()
 
 void C4Console::Close()
 {
+	C4ConsoleGUI::CloseConsoleWindow();
 	Application.Quit();
 }
 

@@ -367,6 +367,11 @@ void C4ConsoleGUI::EnsureDefinitionListInitialized()
 	state->definition_list_model->EnsureInit();
 }
 
+void C4ConsoleGUI::CloseConsoleWindow()
+{
+	if (state && state->window) state->window->close();
+}
+
 void C4ToolsDlg::UpdateToolCtrls()
 {
 	// Set selected drawing tool
