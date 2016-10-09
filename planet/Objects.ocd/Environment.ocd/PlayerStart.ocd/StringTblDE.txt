@@ -22,3 +22,5 @@ ViewLock=Gesperrte Sicht
 ZoomMin=Minimaler Zoom
 ZoomMax=Maximaler Zoom
 ZoomSet=Standard Zoom
+BaseMaterial=Basismaterial
+BaseMaterialHelp=Material das an der Flagge gekauft werden kann. Die Spielregel 'Kaufen an Flagge' muss dafuer aktiviert sein. Hier muessen auch Clonks aktiviert werden, wenn der Respawn an der Flagge nicht kostenlos ist.

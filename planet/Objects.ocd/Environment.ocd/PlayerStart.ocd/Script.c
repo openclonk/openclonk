@@ -13,6 +13,7 @@ local starting_knowledge = { Option="all" };
 local starting_crew; // const arrays not supported yet
 local starting_material;
 local starting_wealth = 0;
+local starting_base_material;
 local respawn_material;
 local clonk_max_contents_count, clonk_max_energy; // Override properties for clonks
 local view_lock = false;
@@ -27,6 +28,7 @@ public func Definition(def)
 {
 	def.starting_crew = GetDefaultCrew();
 	def.starting_material = GetDefaultMaterial();
+	def.starting_base_material = GetDefaultBaseMaterial();
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.starting_players = EditorBase.PlayerMask;
 	def.EditorProps.starting_knowledge = { Name="$Knowledge$", Type="enum", OptionKey="Option", Options = [
@@ -38,6 +40,7 @@ public func Definition(def)
 	def.EditorProps.starting_crew = EditorBase->GetConditionalIDList("IsClonk", "$Crew$", Clonk);
 	def.EditorProps.starting_material = new EditorBase.ItemPlusParameterList { Name="$StartingMaterial$", EditorHelp="$StartingMaterialHelp$" };
 	def.EditorProps.starting_wealth = { Name="$Wealth$", Type="int", Min=0 };
+	def.EditorProps.starting_base_material = new EditorBase.IDList { Name="$BaseMaterial$", EditorHelp="$BaseMaterialHelp$" };
 	def.EditorProps.clonk_max_contents_count = { Name="$ClonkMaxContentsCount$", EditorHelp="$ClonkMaxContentsCountHelp$", Type="enum", Options = [
 		{ Name=Format("$Default$ (%d)", Clonk.MaxContentsCount) }, { Name="$Custom$", Value=Clonk.MaxContentsCount, Delegate={ Type="int", Min=0, Max=10 } } ] };
 	def.EditorProps.clonk_max_energy = { Name="$ClonkMaxEnergy$", EditorHelp="$ClonkMaxEnergyHelp$", Type="enum", Options = [
@@ -65,12 +68,14 @@ public func Definition(def)
 
 public func GetDefaultCrew() { return [{id=Clonk, count=1}]; }
 public func GetDefaultMaterial() { return [Shovel, Hammer, Axe]; }
+public func GetDefaultBaseMaterial() { return [{id=Clonk, count=999999}]; }
 
 public func Initialize()
 {
 	// Re-init default
 	starting_crew = GetDefaultCrew();
 	starting_material = GetDefaultMaterial();
+	starting_base_material = GetDefaultBaseMaterial();
 	return true;
 }
 
@@ -122,6 +127,12 @@ public func SetStartingMaterial(array new_material)
 public func SetStartingWealth(int new_wealth)
 {
 	starting_wealth = new_wealth;
+	return true;
+}
+
+public func SetStartingBaseMaterial(array new_material)
+{
+	starting_base_material = new_material;
 	return true;
 }
 
@@ -218,6 +229,8 @@ public func DoPlayerStart(int plr)
 	++is_handling_player_spawn;
 	// Give wealth
 	SetWealth(plr, starting_wealth);
+	// Set base material
+	InitializeBaseMaterial(plr);
 	// Create requested crew
 	InitializeCrew(plr);
 	// Put contents into crew
@@ -309,6 +322,23 @@ private func InitializeCrew(int plr)
 	return true;
 }
 
+private func InitializeBaseMaterial(int plr)
+{
+	// Set base material to minimum of current material and material given by this object
+	if (starting_base_material)
+	{
+		for (var entry in starting_base_material)
+		{
+			var current_num = GetBaseMaterial(plr, entry.id);
+			if (current_num < entry.count)
+			{
+				SetBaseMaterial(plr, entry.id, entry.count);
+			}
+		}
+	}
+	return true;
+}
+
 private func InitializeMaterial(int plr)
 {
 	// Spread material across clonks. Try to fill them evenly and avoid giving the same item twice to the same clonk
@@ -390,6 +420,7 @@ public func SaveScenarioObject(props, ...)
 			props->AddCall("Knowledge", this, "SetStartingKnowledge", nil);
 	if (!DeepEqual(starting_crew, GetID().starting_crew)) props->AddCall("Crew", this, "SetStartingCrew", starting_crew);
 	if (!DeepEqual(starting_material, GetID().starting_material)) props->AddCall("Material", this, "SetStartingMaterial", starting_material);
+	if (!DeepEqual(starting_base_material, GetID().starting_base_material)) props->AddCall("Material", this, "SetStartingBaseMaterial", starting_base_material);
 	if (starting_wealth != GetID().starting_wealth) props->AddCall("Wealth", this, "SetStartingWealth", starting_wealth);
 	if (GetType(clonk_max_contents_count)) props->AddCall("ClonkMaxContentsCount", this, "SetClonkMaxContentsCount", clonk_max_contents_count);
 	if (GetType(clonk_max_energy)) props->AddCall("ClonkMaxEnergy", this, "SetClonkMaxEnergy", clonk_max_energy);

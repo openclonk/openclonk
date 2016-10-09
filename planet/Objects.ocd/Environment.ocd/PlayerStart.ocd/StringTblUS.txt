@@ -22,3 +22,5 @@ ViewLock=Lock the viewport
 ZoomMin=Minimal zoom
 ZoomMax=Maximal zoom
 ZoomSet=Default zoom
+BaseMaterial=Base material
+BaseMaterialHelp=Material that can be bought at the flagpole. The rule 'Buy at flagpole' must be activated. Clonks should be added to this list if respawn at flagpoles is activated and not set to free.
