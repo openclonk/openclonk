@@ -133,7 +133,8 @@ public:
 
 	// Freeze this and all proplist in properties and ensure they are static proplists
 	// If a proplist is not static, replace it with a static proplist and replace all instances
-	C4PropListStatic *FreezeAndMakeStaticRecursively(const C4PropListStatic *parent = nullptr, C4String * key = nullptr);
+	// Place references to all proplists made static in the given value array
+	C4PropListStatic *FreezeAndMakeStaticRecursively(std::vector<C4Value>* prop_lists, const C4PropListStatic *parent = nullptr, C4String * key = nullptr);
 
 	virtual void Denumerate(C4ValueNumbers *);
 	virtual ~C4PropList();

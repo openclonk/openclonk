@@ -53,6 +53,7 @@ void C4ScriptHost::Clear()
 	C4ComponentHost::Clear();
 	Script.Clear();
 	LocalValues.Clear();
+	DeleteOwnedPropLists();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
 	if (stringTable)
@@ -65,6 +66,23 @@ void C4ScriptHost::Clear()
 	Appends.clear();
 	// reset flags
 	State = ASS_NONE;
+}
+
+void C4ScriptHost::DeleteOwnedPropLists()
+{
+	// delete all static proplists associated to this script host.
+	// Note that just clearing the vector is not enough in case of
+	// cyclic references.
+	for (C4Value& value: ownedPropLists)
+	{
+		C4PropList* plist = value.getPropList();
+		if (plist)
+		{
+			if (plist->Delete()) delete plist;
+			else plist->Clear();
+		}
+	}
+	ownedPropLists.clear();
 }
 
 void C4ScriptHost::UnlinkOwnedFunctions()

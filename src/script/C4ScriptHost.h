@@ -53,8 +53,6 @@ public:
 	std::list<C4ScriptHost *> SourceScripts;
 	StdCopyStrBuf ScriptName; // script name
 
-	void UnlinkOwnedFunctions();
-
 protected:
 	C4ScriptHost();
 	void Unreg(); // remove from list
@@ -64,6 +62,9 @@ protected:
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
 	virtual void UnLink(); // reset to unlinked state
+
+	void UnlinkOwnedFunctions();
+	void DeleteOwnedPropLists();
 
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
@@ -88,6 +89,11 @@ protected:
 
 	// list of all functions generated from code in this script host
 	std::set<C4AulScriptFunc*> ownedFunctions;
+
+	// list of all static proplists that refer to this script host
+	// filled in at link time and used to delete all proplists
+	// in Clear() even in case of cyclic references.
+	std::vector<C4Value> ownedPropLists;
 
 	friend class C4AulParse;
 	friend class C4AulProfiler;
