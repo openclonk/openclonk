@@ -3,6 +3,7 @@ Description=Der Dialog erlaubt es dem Spieler, mit diesem Clonk zu interagieren 
 MsgSpeak=%s ansprechen
 Next=Weiter
 Dialogue=Dialog
+DialogueHelp=Fuegt einen Dialog zu diesem Clonk hinzu und waehlt ihn aus.|Falls schon ein Dialog existiert, wird dieser stattdessen ausgewaehlt.
 Message=Nachricht
 Speaker=Sprecher
 TargetPlayers=Zielspieler

@@ -3,6 +3,7 @@ Description=The dialogue allows the player to interact with this clonk and show 
 MsgSpeak=Speak to %s
 Next=Next
 Dialogue=Dialogue
+DialogueHelp=Adds a dialogue to this clonk and selects it.|If a dialogue exists, it will be selected instead.
 Message=Message
 Speaker=Speaker
 TargetPlayers=Target players

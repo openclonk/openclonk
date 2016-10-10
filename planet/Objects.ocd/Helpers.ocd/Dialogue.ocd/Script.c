@@ -691,7 +691,7 @@ public func Definition(def)
 	UserAction->AddEvaluator("Object", nil, "$NPC$", "$NPCDesc$", "npc", [def, def.EvalObj_NPC]);
 	// Clonks can create a dialogue
 	if (!Clonk.EditorActions) Clonk.EditorActions = {};
-	Clonk.EditorActions.Dialogue = { Name="$Dialogue$", Command="SetDialogue(\"Editor\", true)", Select=true };
+	Clonk.EditorActions.Dialogue = { Name="$Dialogue$", EditorHelp = "$DialogueHelp$", Command="SetDialogue(\"Editor\", true)", Select=true };
 	// Dialogue EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.dlg_target = { Name="$Target$", EditorHelp="$TargetDesc$", Type="object", Filter="IsClonk", Set="SetDialogueTarget" };
