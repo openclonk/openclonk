@@ -1,6 +1,7 @@
 Name=Sequenz
 Description=Erlaubt das Erstellen von Intros, Zwischensequenzen oder sonstigen Ereignissen.
 Test=Testen
+TestHelp=Startet die Sequenz.|Ausloesender Spieler ist der erste lokale Spieler falls vorhanden.
 Active=Aktiv
 Finished=Sequenz beendet
 Trigger=Ausloeser

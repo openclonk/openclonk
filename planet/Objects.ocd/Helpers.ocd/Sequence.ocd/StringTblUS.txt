@@ -1,6 +1,7 @@
 Name=Sequence
 Description=Allows creation of intros, cutscenes or other events bound to triggers such as player joins, players entering regions or finished productions.
 Test=Test
+TestHelp=Starts the sequence.|Triggering player is the first local player if existing.
 Active=Active
 Finished=Finished
 Trigger=Trigger

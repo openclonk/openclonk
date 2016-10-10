@@ -371,7 +371,7 @@ public func Definition(def)
 {
 	// EditorActions
 	if (!def.EditorActions) def.EditorActions = {};
-	def.EditorActions.Test = { Name="$Test$", Command="OnTrigger(nil, %player%, true)" };
+	def.EditorActions.Test = { Name="$Test$", EditorHelp = "$TestHelp$", Command="OnTrigger(nil, %player%, true)" };
 	// UserActions
 	UserAction->AddEvaluator("Action", "$Name$", "$SetActive$", "$SetActiveDesc$", "sequence_set_active", [def, def.EvalAct_SetActive], { Target = { Function="action_object" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Target}}: {{Status}}", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsSequence", "$Name$"),
