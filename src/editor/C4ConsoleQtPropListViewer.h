@@ -671,7 +671,7 @@ public:
 	class C4PropList *GetBasePropList() const { return base_proplist.getPropList(); }
 	int32_t GetTargetPathStackSize() const { return target_path_stack.size(); }
 	const char *GetTargetPathText() const { return target_path.GetGetPath(); }
-	const char *GetTargetPathHelp() const;
+	QString GetTargetPathHelp() const;
 	const char *GetTargetPathName() const;
 	bool IsArray() const { return !!target_value.getArray(); }
 	void AddArrayElement();

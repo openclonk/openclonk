@@ -997,7 +997,8 @@ QStandardItemModel *C4PropertyDelegateEnum::CreateOptionModel() const
 		new_item->setData(QVariant(idx), C4DeepQComboBox::OptionIndexRole);
 		C4Object *item_obj_data = opt.value.getObj();
 		if (item_obj_data) new_item->setData(QVariant(item_obj_data->Number), C4DeepQComboBox::ObjectHighlightRole);
-		new_item->setData(QString((opt.help ? opt.help : opt.name)->GetCStr()), Qt::ToolTipRole);
+		QString help = QString((opt.help ? opt.help : opt.name)->GetCStr());
+		new_item->setData(help.replace('|', '\n'), Qt::ToolTipRole);
 		if (opt.help) new_item->setData(QIcon(":/editor/res/Help.png"), Qt::DecorationRole);
 		if (opt.sound_name) new_item->setData(QIcon(":/editor/res/Sound.png"), Qt::DecorationRole);
 		if (allow_editing)
@@ -2763,15 +2764,17 @@ QMimeData *C4ConsoleQtPropListModel::mimeData(const QModelIndexList &indexes) co
 	return mimeData;
 }
 
-const char *C4ConsoleQtPropListModel::GetTargetPathHelp() const
+QString C4ConsoleQtPropListModel::GetTargetPathHelp() const
 {
 	// Help text in EditorInfo prop. Fall back to description.
 	C4PropList *info_proplist = this->info_proplist.getPropList();
-	if (!info_proplist) return nullptr;
+	if (!info_proplist) return QString();
 	C4String *desc = info_proplist->GetPropertyStr(P_EditorHelp);
 	if (!desc) desc = info_proplist->GetPropertyStr(P_Description);
-	if (!desc) return nullptr;
-	return desc->GetCStr();
+	if (!desc) return QString();
+	QString result = QString(desc->GetCStr());
+	result = result.replace('|', '\n');
+	return result;
 }
 
 const char *C4ConsoleQtPropListModel::GetTargetPathName() const

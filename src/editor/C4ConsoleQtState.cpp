@@ -921,12 +921,12 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 			property_model->UpdateValue(false);
 		}
 		ui.selectionInfoLabel->setText(property_model->GetTargetPathText());
-		const char *help_text = property_model->GetTargetPathHelp();
-		if (help_text && ::Config.Developer.ShowHelp)
+		QString help_text = property_model->GetTargetPathHelp();
+		if (!help_text.isEmpty() && ::Config.Developer.ShowHelp)
 		{
 			const char *help_label = property_model->GetTargetPathName();
 			if (!help_label) help_label = LoadResStr("IDS_CNS_DESCRIPTION");
-			ui.selectionHelpLabel->setText(FormatString("%s: %s", help_label, help_text).getData());
+			ui.selectionHelpLabel->setText(QString("%1: %2").arg(help_label).arg(help_text));
 			ui.selectionHelpLabel->show();
 		}
 		else
