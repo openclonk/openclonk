@@ -23,6 +23,7 @@
 #include "config/C4Config.h"
 #include "object/C4ObjectCom.h"
 #include "lib/C4Log.h"
+#include "game/C4Application.h"
 #include "game/C4Game.h"
 
 #if defined(HAVE_SDL) && !defined(USE_CONSOLE)
@@ -31,6 +32,10 @@
 
 C4GamePadControl::C4GamePadControl()
 {
+	// SDL2 will only report events when the window has focus, so set
+	// this hint as we don't have a window
+	SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+
 	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC | SDL_INIT_EVENTS) != 0)
 		LogF("SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER): %s", SDL_GetError());
 	SDL_GameControllerEventState(SDL_ENABLE);
@@ -46,7 +51,9 @@ C4GamePadControl::~C4GamePadControl()
 
 void C4GamePadControl::Execute()
 {
-#ifndef USE_SDL_MAINLOOP
+#ifdef USE_SDL_MAINLOOP
+	if (!Application.isEditor) return;
+#endif
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -64,7 +71,6 @@ void C4GamePadControl::Execute()
 			break;
 		}
 	}
-#endif
 }
 
 namespace
