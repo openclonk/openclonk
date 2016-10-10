@@ -1154,11 +1154,19 @@ void C4ConsoleGUIState::UpdateActionObject(C4Object *new_action_object)
 			// Fallback to identifier for unnamed actions
 			action_name = action_def_id;
 		}
+		// Get action help
+		QString action_help;
+		C4String *action_help_s = action_def->GetPropertyStr(P_EditorHelp);
+		if (action_help_s)
+		{
+			action_help = QString(action_help_s->GetCStr()).replace('|', '\n');
+		}
 		// Script command to execute
 		C4RefCntPointer<C4String> script_command = action_def->GetPropertyStr(P_Command);
 		int32_t object_number = new_action_object->Number;
 		// Create action button
 		QPushButton *btn = new QPushButton(action_name->GetCStr(), window.get());
+		if (!action_help.isEmpty()) btn->setToolTip(action_help);
 		if (script_command)
 		{
 			bool select_returned_object = action_def->GetPropertyBool(P_Select);
