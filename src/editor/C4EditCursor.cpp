@@ -264,6 +264,11 @@ bool C4EditCursor::Move(float iX, float iY, float iZoom, DWORD dwKeyState)
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeCreateObject:
+		// Drop target for contained object creation
+		UpdateDropTarget(dwKeyState);
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
 		switch (Console.ToolsDlg.Tool)
 		{
@@ -427,7 +432,7 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeCreateObject:
-		ApplyCreateObject(!!(dwKeyState & MK_SHIFT));
+		ApplyCreateObject(!!(dwKeyState & MK_CONTROL));
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
@@ -1080,9 +1085,9 @@ void C4EditCursor::ApplyCreateObject(bool container)
 {
 	if (!EditingOK()) return;
 	if (!creator_def) return;
-	if (container && !Target) return;
+	if (container && !DropTarget) return;
 	// execute/send control
-	EMControl(CID_EMMoveObj, C4ControlEMMoveObject::CreateObject(creator_def->id, ftofix(X), ftofix(Y), container ? Target : NULL));
+	EMControl(CID_EMMoveObj, C4ControlEMMoveObject::CreateObject(creator_def->id, ftofix(X), ftofix(Y), container ? DropTarget : nullptr));
 }
 
 void C4EditCursor::ApplyToolBrush()
@@ -1263,11 +1268,11 @@ void C4EditCursor::GrabContents()
 
 void C4EditCursor::UpdateDropTarget(DWORD dwKeyState)
 {
-
+	// A drop target is set if holding down control either while moving an object or in object creation mode
 	DropTarget=NULL;
 
 	if (dwKeyState & MK_CONTROL)
-		if (selection.GetObject())
+		if (selection.GetObject() || (Mode == C4CNS_ModeCreateObject && creator_def))
 			for (C4Object *cobj : Objects)
 			{
 				if (cobj->Status)
