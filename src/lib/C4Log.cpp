@@ -166,8 +166,17 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		// Write to console
 		if (fConsole)
 		{
-			fputs(TimeMessage.getData(),stdout);
-			fflush(stdout);
+#if defined(_WIN32)
+			// debug: output to VC console when running with debugger
+			// Otherwise, print to stdout to allow capturing the log.
+			if (IsDebuggerPresent())
+				OutputDebugString(TimeMessage.GetWideChar());
+			else
+#endif
+			{
+				fputs(TimeMessage.getData(),stdout);
+				fflush(stdout);
+			}
 		}
 
 	}
