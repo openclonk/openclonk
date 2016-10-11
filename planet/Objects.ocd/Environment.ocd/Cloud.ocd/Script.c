@@ -22,6 +22,7 @@ local evap_x; // x coordinate for evaporation
 
 local rain; // Number of liquid pixels the cloud holds.
 local rain_mat; // Precipitation type from scenario or other. Material name of nil for no rain.
+local rain_inserts_mat; // Should the rain insert actual material pixels on impact?
 local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
 local rain_mat_freeze_temp; // Freezing temperature of current rain material.
@@ -45,6 +46,7 @@ protected func Initialize()
 	rain = 0;
 	rain_max = 960;
 	rain_visual_strength = 10;
+	rain_inserts_mat = true;
 	
 	// Cloud defaults
 	lightning_chance = 0;
@@ -175,6 +177,26 @@ public func SetCloudRGB(r, g, b)
 		cloud_color.r = r ?? 255;
 		cloud_color.g = g ?? 255;
 		cloud_color.b = b ?? 255;
+	}
+	return;
+}
+
+
+// Changes the behavior of this cloud:
+// if the parameter is true, the cloud will create particles effects and insert material on impact.
+// if the parameter is false, the could will create particle effects, but not insert material 
+// Also an id call: Changes all clouds to this settings.
+public func SetInsertMaterial(bool should_insert)
+{
+	// Called to proplist: change all clouds.
+	if (this == Cloud)
+	{
+		for (var cloud in FindObjects(Find_ID(Cloud)))
+			cloud->SetInsertMaterial(should_insert);
+	}
+	else // Otherwise change the clouds precipitation.
+	{
+		rain_inserts_mat = should_insert;
 	}
 	return;
 }
@@ -376,7 +398,10 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 	var x = AbsX(x_orig), y = AbsY(y_orig);
 	while (GBackSemiSolid(x, y - 1)) y--;
 
-	InsertMaterial(Material(material_name), x, y - 1);
+	if (rain_inserts_mat)
+	{
+		InsertMaterial(Material(material_name), x, y - 1);
+	}
 
 	// Some materials cast smoke when hitting water.
 	if (GetMaterial(x,y) == Material("Water") && SmokeyMaterial(material_name))
@@ -469,7 +494,12 @@ protected func Evaporation()
 	// Try to extract the specified material.
 	if (GetMaterial(evap_x, y) == Material(rain_mat))
 	{
-		ExtractMaterialAmount(evap_x, y, Material("Water"), 3);
+		// No idea why the value was originally increased by +3 regardless
+		// of the return value of ExtractMaterialAmount; just left it that way
+		if (rain_inserts_mat)
+		{
+			ExtractMaterialAmount(evap_x, y, Material("Water"), 3);
+		}
 		rain += 3;
 	}
 	
