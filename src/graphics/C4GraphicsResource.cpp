@@ -76,8 +76,6 @@ void C4GraphicsResource::Default()
 	fctFlagClr.Default();
 	fctPlayerClr.Default();
 
-	fctCursor.Default();
-	fctDropTarget.Default();
 	fctKeyboard.Default();
 	fctGamepad.Default();
 	fctCommand.Default();
@@ -320,10 +318,6 @@ bool C4GraphicsResource::LoadCursorGfx()
 	szCursorFilename = "Cursor";
 	if (!LoadFile(fctMouseCursor, szCursorFilename, Files, C4FCT_Height, C4FCT_Full, false, 0))
 		return false;
-	// adjust dependant faces
-	int32_t iCursorSize = fctMouseCursor.Hgt;
-	fctCursor.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
-	fctDropTarget.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
 	return true;
 }
 

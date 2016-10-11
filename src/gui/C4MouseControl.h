@@ -47,6 +47,20 @@ const int32_t C4MC_MD_DragSource = 1,
               C4MC_MD_DropTarget = 2,
               C4MC_MD_NoClick = 4;
 
+const int32_t C4MC_Cursor_Select = 0,      // click cursor to select/click stuff in the GUI
+              C4MC_Cursor_Crosshair = 1,   // standard ingame cursor
+              C4MC_Cursor_DragDrop = 2,    // cursor when drag&dropping
+              C4MC_Cursor_Up = 3,          // cursors for scrolling the viewport ...
+              C4MC_Cursor_Down = 4,        // ...
+              C4MC_Cursor_Left = 5,
+              C4MC_Cursor_Right = 6,
+              C4MC_Cursor_UpLeft = 7,
+              C4MC_Cursor_UpRight = 8,
+              C4MC_Cursor_DownLeft = 9,
+              C4MC_Cursor_DownRight = 10,
+              C4MC_Cursor_Passive = 11,    // passive cursor in records and and fog of war and outside viewport
+              C4MC_Cursor_DropInto = 12;   // drop into contents
+
 class C4MouseControl
 {
 	friend class C4Viewport;

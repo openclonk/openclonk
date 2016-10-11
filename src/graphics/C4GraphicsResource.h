@@ -68,8 +68,6 @@ public:
 	C4FacetID fctGamepad;
 	C4FacetID fctBuild;
 	C4Facet fctClonkSkin;
-	C4Facet fctCursor;
-	C4Facet fctDropTarget;
 	C4Facet fctKeyboard;
 	C4Facet fctMouse;
 	C4Facet fctCommand;

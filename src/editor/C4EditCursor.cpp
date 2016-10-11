@@ -873,9 +873,11 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 		                              X2 + cgo.X - cgo.TargetX, Y2 + cgo.Y - cgo.TargetY, 0xffffffff, line_width);
 	// Draw drop target
 	if (DropTarget)
-		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,
-		                                      DropTarget->GetX() + cgo.X - cgo.TargetX - ::GraphicsResource.fctDropTarget.Wdt / 2,
-		                                      DropTarget->GetY() + DropTarget->Shape.y + cgo.Y - cgo.TargetY - ::GraphicsResource.fctDropTarget.Hgt);
+		::GraphicsResource.fctMouseCursor.DrawX(cgo.Surface,
+				DropTarget->GetX() + cgo.X - cgo.TargetX - ::GraphicsResource.fctMouseCursor.Wdt / 2 / cgo.Zoom,
+				DropTarget->GetY() + DropTarget->Shape.y + cgo.Y - cgo.TargetY - ::GraphicsResource.fctMouseCursor.Hgt / cgo.Zoom,
+				float(::GraphicsResource.fctMouseCursor.Wdt) / cgo.Zoom,
+				float(::GraphicsResource.fctMouseCursor.Hgt) / cgo.Zoom, C4MC_Cursor_DropInto);
 	// Draw paint circle
 	if (Mode == C4CNS_ModeDraw && has_mouse_hover && ::Console.ToolsDlg.Grade>0 && ::Console.ToolsDlg.IsGradedTool())
 	{
