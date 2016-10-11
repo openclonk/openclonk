@@ -13,6 +13,9 @@ local Plane = -300;
 static const CLOUD_ModeIdle = 0;
 static const CLOUD_ModeRaining = 1;
 static const CLOUD_ModeCondensing = 2;
+
+static const CLOUD_RainFallOffDistance = 1000;
+
 local mode;
 // The time a cloud is in this mode.
 local mode_time;
@@ -28,6 +31,8 @@ local rain_max; // Max rain the cloud can hold.
 local rain_mat_freeze_temp; // Freezing temperature of current rain material.
 local rain_mat_frozen; // Material currently frozen to.
 local rain_visual_strength; // Amount of rain particles
+
+local rain_sound_dummy; // Helper object that emits the sound
 
 local cloud_shade; // Cloud shade.
 local cloud_alpha; // Cloud alpha.
@@ -47,6 +52,9 @@ protected func Initialize()
 	rain_max = 960;
 	rain_visual_strength = 10;
 	rain_inserts_mat = true;
+	
+	rain_sound_dummy = CreateObject(Dummy, 0, 0, NO_OWNER);
+	rain_sound_dummy.Visibility = VIS_All;
 	
 	// Cloud defaults
 	lightning_chance = 0;
@@ -74,6 +82,15 @@ protected func Initialize()
 	// Add effect to process all cloud features.
 	AddEffect("ProcessCloud", this, 100, 5, this);
 	return;
+}
+
+protected func Destruction()
+{
+	if (rain_sound_dummy)
+	{
+		rain_sound_dummy->RemoveObject();
+	}
+	_inherited(...);
 }
 
 /*-- Definition call interface --*/
@@ -224,17 +241,16 @@ protected func FxProcessCloudTimer()
 		mode = (mode + 1) % 3;
 		mode_time = 480 + RandomX(-90, 90);
 
-		// Start or stop the rain sound.
-		// TODO: Sound should play where the rain hits the ground, not where the cloud is.
+		// Start or stop the rain sound. The object where the sound appears updates position in DropHit()
 		if (mode == CLOUD_ModeRaining)
 		{
 			var mat = RainMat();
-			if (mat == "Water" || mat == "Acid")
-				Sound("Liquids::StereoRain", false, 80, nil, +1, 1000);
+			if (rain_sound_dummy && (mat == "Water" || mat == "Acid"))
+				rain_sound_dummy->Sound("Liquids::StereoRain", false, 80, nil, +1, CLOUD_RainFallOffDistance);
 		}
 		else
 		{
-			Sound("Liquids::StereoRain",,,, -1);
+			if (rain_sound_dummy) rain_sound_dummy->Sound("Liquids::StereoRain",,,, -1);
 		}
 	}
 	// Process modes.
@@ -286,6 +302,11 @@ private func MoveCloud()
 		SetYDir(0);
 	while (Stuck()) 
 		SetPosition(GetX(), GetY() - 5);
+		
+	if (rain_sound_dummy)
+	{
+		rain_sound_dummy->SetPosition(GetX(), GetY());
+	}
 	return;
 }
 
@@ -378,7 +399,7 @@ private func RainDrop()
 			var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
 			if (time_passed > 0)
 			{
-					ScheduleCall(this, "DropHit", time_passed, 0, mat, color, x_final, y_final);
+					ScheduleCall(this, this.DropHit, time_passed, 0, mat, color, x_final, y_final);
 			}
 		}
 	}
@@ -398,9 +419,16 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 	var x = AbsX(x_orig), y = AbsY(y_orig);
 	while (GBackSemiSolid(x, y - 1)) y--;
 
+	// Add material at impact
 	if (rain_inserts_mat)
 	{
 		InsertMaterial(Material(material_name), x, y - 1);
+	}
+	
+	// Sound?
+	if (rain_sound_dummy && Distance(x_orig, y_orig, rain_sound_dummy->GetX(), rain_sound_dummy->GetY()) > CLOUD_RainFallOffDistance)
+	{
+		rain_sound_dummy->SetPosition(x_orig, y_orig);
 	}
 
 	// Some materials cast smoke when hitting water.
