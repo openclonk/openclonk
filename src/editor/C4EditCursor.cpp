@@ -147,7 +147,7 @@ void C4EditCursor::Execute()
 	case C4CNS_ModeEdit:
 		// Hold selection
 		if (Hold)
-			EMMoveObject(EMMO_Move, Fix0, Fix0, NULL, &selection);
+			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, NULL, &selection);
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
@@ -737,10 +737,12 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 	if (n_selected)
 	{
 		// Ensure duplicated objects moved to the cursor without extra mouse movement
-		DWORD last_key_state = 0u;
+		// Move with shift key pressed to allow initial shift of HorizontalFixed items
+		DWORD last_key_state = MK_SHIFT;
 		if (fAltWasDown) last_key_state |= MK_ALT;
-		if (fShiftWasDown) last_key_state |= MK_SHIFT;
+		bool shift_was_down = fShiftWasDown;
 		Move(old_x, old_y, Zoom, last_key_state);
+		fShiftWasDown = shift_was_down;
 	}
 }
 
@@ -955,7 +957,7 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width, u
 
 void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
 {
-	EMMoveObject(EMMO_Move, XOff, YOff, NULL, &selection);
+	EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, XOff, YOff, NULL, &selection);
 }
 
 void C4EditCursor::FrameSelection()

@@ -1242,13 +1242,13 @@ C4ControlEMMoveObject::~C4ControlEMMoveObject()
 	delete [] pObjects; pObjects = NULL;
 }
 
-void C4ControlEMMoveObject::MoveObject(C4Object *moved_object) const
+void C4ControlEMMoveObject::MoveObject(C4Object *moved_object, bool move_forced) const
 {
 	// move given object by this->tx/ty and do callbacks
 	if (!moved_object || !moved_object->Status) return;
 	int32_t old_x = moved_object->GetX(), old_y = moved_object->GetY();
 	C4Real tx = this->tx;
-	if (moved_object->Def->NoHorizontalMove) tx = Fix0;
+	if (moved_object->Def->NoHorizontalMove && !move_forced) tx = Fix0;
 	moved_object->ForcePosition(moved_object->fix_x + tx, moved_object->fix_y + ty);
 	moved_object->xdir = moved_object->ydir = 0;
 	moved_object->Mobile = false;
@@ -1262,6 +1262,7 @@ void C4ControlEMMoveObject::Execute() const
 	switch (eAction)
 	{
 	case EMMO_Move:
+	case EMMO_MoveForced:
 	{
 		if (!pObjects) break;
 		// move all given objects
@@ -1270,7 +1271,7 @@ void C4ControlEMMoveObject::Execute() const
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 				if (pObj->Status)
 				{
-					MoveObject(pObj);
+					MoveObject(pObj, eAction == EMMO_MoveForced);
 					// attached objects: Also move attachment target
 					while (pObj->GetProcedure() == DFA_ATTACH)
 					{
@@ -1278,7 +1279,7 @@ void C4ControlEMMoveObject::Execute() const
 						if (!pObj) break; // leftover action cancelled next frame
 						for (int j = 0; j < iObjectNum; ++j) if (pObjects[j] == pObj->Number) { pObj = NULL; break; } // ensure we aren't moving twice
 						if (!pObj) break;
-						MoveObject(pObj);
+						MoveObject(pObj, eAction==EMMO_MoveForced);
 					}
 				}
 	}
@@ -1401,7 +1402,7 @@ void C4ControlEMMoveObject::Execute() const
 	}
 	}
 	// update property dlg & status bar
-	if (fLocalCall && eAction != EMMO_Move)
+	if (fLocalCall && eAction != EMMO_Move && eAction != EMMO_MoveForced)
 		Console.EditCursor.OnSelectionChanged();
 }
 

@@ -447,6 +447,7 @@ public:
 enum C4ControlEMObjectAction
 {
 	EMMO_Move,      // move objects by offset
+	EMMO_MoveForced,// move objects by offset and ignore HorizontalFixed
 	EMMO_Enter,     // enter objects into iTargetObj
 	EMMO_Duplicate, // duplicate objects at same position; reset EditCursor
 	EMMO_Script,    // execute Script
@@ -474,7 +475,7 @@ protected:
 	int32_t *pObjects;    // pointer on array of objects moved
 	StdStrBuf StringParam; // script to execute, or ID of object to create
 private:
-	void MoveObject(C4Object *moved_object) const;
+	void MoveObject(C4Object *moved_object, bool move_forced) const;
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
