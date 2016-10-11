@@ -558,85 +558,94 @@ void C4Game::Clear()
 	pNetworkStatistics.reset();
 	C4AulProfiler::Abort();
 
-	// exit gui
-	pGUI->Clear();
-
 	// next mission (shoud have been transferred to C4Application now if next mission was desired)
 	NextMission.Clear(); NextMissionText.Clear(); NextMissionDesc.Clear();
 
+	// Clear control
 	Network.Clear();
 	Control.Clear();
-
-	// Clear
-	Scoreboard.Clear();
 	MouseControl.Clear();
+	KeyboardInput.Clear();
+	PlayerControlUserAssignmentSets.Clear();
+	PlayerControlDefaultAssignmentSets.Clear();
+	PlayerControlDefs.Clear();
+
+	// Clear game info
+	Scoreboard.Clear();
 	Players.Clear();
 	Parameters.Clear();
 	RoundResults.Clear();
 	C4S.Clear();
 	ScenarioParameterDefs.Clear();
 	StartupScenarioParameters.Clear();
-	Weather.Clear();
-	GraphicsSystem.Clear();
+	Info.Clear();
+	Title.Clear();
+	Names.Clear();
+	GameText.Clear();
+	RecordDumpFile.Clear();
+	RecordStream.Clear();
 
 #ifdef WITH_QT_EDITOR
 	// clear console pointers held into script engine
 	::Console.EditCursor.Clear();
 	::Console.ClearGamePointers();
 #endif
+	// notify editor
+	Console.CloseGame();
 
 	// Clear the particles before cleaning up the objects.
 	Particles.Clear();
 	DeleteObjects(true);
-	::MapScript.Clear();
-	::Definitions.Clear();
+
+	// exit gui
+	pGUI->Clear();
+	ScriptGuiRoot.reset();
+
+	// Clear landscape
+	Weather.Clear();
 	Landscape.Clear();
 	PXS.Clear();
-	ScriptGuiRoot.reset();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
+	PathFinder.Clear();
+	TransferZones.Clear();
+
 	::Messages.Clear();
 	MessageInput.Clear();
-	Info.Clear();
-	Title.Clear();
-	pScenarioObjectsScript = NULL;
-	::GameScript.Clear();
-	Names.Clear();
-	GameText.Clear();
-	RecordDumpFile.Clear();
-	RecordStream.Clear();
 	SetGlobalSoundModifier(NULL); // must be called before script engine clear
 	Application.SoundSystem.Modifiers.Clear(); // free some prop list pointers
 
-	PathFinder.Clear();
-	TransferZones.Clear();
-#ifndef USE_CONSOLE
-	::FontLoader.Clear();
-#endif
-
+	// Clear script engine
+	::MapScript.Clear();
+	::Definitions.Clear();
+	::GameScript.Clear();
 	C4PropListNumbered::ClearShelve(); // may be nonempty if there was a fatal error during section load
 	ScriptEngine.Clear();
+	pScenarioObjectsScript = NULL;
 	// delete any remaining prop lists from circular chains
 	C4PropListNumbered::ClearNumberedPropLists(); 
 	C4PropListScript::ClearScriptPropLists();
+
+	// Clear translation tables
 	MainSysLangStringTable.Clear();
 	ScenarioLangStringTable.Clear();
+
+	// Cleanup remaining open scenario files
 	CloseScenario();
 	GroupSet.Clear();
-	KeyboardInput.Clear();
 	::Application.MusicSystem.ClearGame();
-	PlayerControlUserAssignmentSets.Clear();
-	PlayerControlDefaultAssignmentSets.Clear();
-	PlayerControlDefs.Clear();
-	::MeshMaterialManager.Clear();
 	Application.SoundSystem.Clear(); // will be re-inited by application pre-init if running from startup system
+
+	// Clear remaining graphics
+#ifndef USE_CONSOLE
+	::FontLoader.Clear();
+#endif
+	::MeshMaterialManager.Clear();
+	GraphicsSystem.Clear();
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
 	FullScreen.CloseMenu();
-
-	// notify editor
-	Console.CloseGame();
 
 	// Message
 	// avoid double message by not printing it if no restbl is loaded
