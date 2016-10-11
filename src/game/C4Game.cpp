@@ -578,6 +578,13 @@ void C4Game::Clear()
 	StartupScenarioParameters.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
+
+#ifdef WITH_QT_EDITOR
+	// clear console pointers held into script engine
+	::Console.EditCursor.Clear();
+	::Console.ClearGamePointers();
+#endif
+
 	// Clear the particles before cleaning up the objects.
 	Particles.Clear();
 	DeleteObjects(true);
@@ -605,12 +612,6 @@ void C4Game::Clear()
 	TransferZones.Clear();
 #ifndef USE_CONSOLE
 	::FontLoader.Clear();
-#endif
-
-#ifdef WITH_QT_EDITOR
-	// clear console pointers held into script engine
-	::Console.EditCursor.Clear();
-	::Console.ClearGamePointers();
 #endif
 
 	C4PropListNumbered::ClearShelve(); // may be nonempty if there was a fatal error during section load
