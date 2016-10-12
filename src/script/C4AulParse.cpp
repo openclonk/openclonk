@@ -2217,6 +2217,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			Shift();
 			Parse_FuncBody();
 			Fn = prev_Fn;
+			codegen.Fn = Fn;
 		}
 		else
 		{
