@@ -1,0 +1,12 @@
+[DefCore]
+id=FloorSwitch
+Version=8,0
+Category=C4D_None
+Width=40
+Height=8
+Offset=-20,-4
+Vertices=4
+VertexX=-19,19
+VertexY=0,0
+HorizontalFix=1
+SolidMask=0,0,40,8,0,0

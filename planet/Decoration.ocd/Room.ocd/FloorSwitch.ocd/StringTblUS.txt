@@ -1,0 +1,5 @@
+Name=Floor Switch
+Description=Ancient weight sensor.
+Target=Target
+UpAction='Up' action
+DownAction='Down' action
