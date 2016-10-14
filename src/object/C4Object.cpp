@@ -1747,6 +1747,7 @@ StdStrBuf C4Object::GetDataString()
 	{
 		Output.Append(LineFeed);
 		Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
+		Output.Append(": ");
 	}
 	for (C4Effect *pEffect = pEffects; pEffect; pEffect = pEffect->pNext)
 	{

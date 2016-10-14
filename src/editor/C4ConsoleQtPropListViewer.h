@@ -47,6 +47,7 @@ public:
 		PPT_GlobalSetFunction = 4,
 		PPT_RootSetFunction = 5,
 	} get_path_type, set_path_type;
+
 public:
 	C4PropertyPath() {}
 	C4PropertyPath(C4PropList *target);
@@ -62,6 +63,7 @@ public:
 	bool IsEmpty() const { return get_path.getLength() <= 0; }
 
 	C4Value ResolveValue() const;
+	C4Value ResolveRoot() const;
 	void SetProperty(const char *set_string) const;
 	void SetProperty(const C4Value &to_val, const C4PropListStatic *ignore_reference_parent = nullptr) const;
 	void DoCall(const char *call_string) const; // Perform a script call where %s is replaced by the current path
@@ -97,7 +99,7 @@ public:
 	virtual const class C4PropertyDelegateShape *GetDirectShapeDelegate() const { return nullptr; }
 	virtual bool HasCustomPaint() const { return false; }
 	virtual bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const { return false; }
-	C4PropertyPath GetPathForProperty(struct C4ConsoleQtPropListModelProperty *editor_prop) const;
+	virtual C4PropertyPath GetPathForProperty(struct C4ConsoleQtPropListModelProperty *editor_prop) const;
 	C4PropertyPath GetPathForProperty(const C4PropertyPath &parent_path, const char *default_subpath) const;
 	C4String *GetNameStr() const { return name.Get(); }
 	const C4Value &GetCreationProps() const { return creation_props; }
@@ -196,6 +198,33 @@ public:
 
 	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
 	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegateEffectEditor : public QWidget
+{
+	Q_OBJECT
+
+public:
+	QHBoxLayout *layout;
+	QPushButton *remove_button, *edit_button;
+	C4PropertyPath property_path;
+
+	C4PropertyDelegateEffectEditor(QWidget *parent);
+};
+
+class C4PropertyDelegateEffect : public C4PropertyDelegate
+{
+public:
+	typedef C4PropertyDelegateEffectEditor Editor;
+
+	C4PropertyDelegateEffect(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+
+	void SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const override;
+	QWidget *CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const override;
+	QString GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const override;
+	bool IsPasteValid(const C4Value &val) const override { return false; }
+	bool GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const override;
+	C4PropertyPath GetPathForProperty(C4ConsoleQtPropListModelProperty *editor_prop) const override;
 };
 
 class C4PropertyDelegateColor : public C4PropertyDelegate
@@ -525,6 +554,7 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 	Q_OBJECT
 
 	mutable std::map<C4PropList *, std::unique_ptr<C4PropertyDelegate> > delegates;
+	mutable C4PropertyDelegateEffect effect_delegate;
 	mutable QWidget *current_editor;
 	mutable C4PropertyDelegate *current_editor_delegate;
 	mutable C4Value last_edited_value;
@@ -534,10 +564,11 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 	C4PropertyDelegate *CreateDelegateByPropList(C4PropList *props) const;
 	C4PropertyDelegate *GetDelegateByIndex(const QModelIndex &index) const;
 public:
-	C4PropertyDelegateFactory() : current_editor(nullptr), property_model(nullptr) { }
+	C4PropertyDelegateFactory();
 	~C4PropertyDelegateFactory() { }
 
 	C4PropertyDelegate *GetDelegateByValue(const C4Value &val) const;
+	C4PropertyDelegateEffect *GetEffectDelegate() const { return &effect_delegate; }
 
 	void ClearDelegates();
 	void SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModelProperty *editor_prop) const;
@@ -650,6 +681,7 @@ public:
 	QItemSelectionModel *GetSelectionModel() const { return selection_model; }
 
 	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
+	bool AddEffectGroup(int32_t group_index, C4Object *base_object);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
 	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
 	void AscendPath(); // go back one element in target path stack

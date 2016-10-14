@@ -47,14 +47,22 @@ C4PropertyPath::C4PropertyPath(C4PropList *target) : get_path_type(PPT_Root), se
 
 C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj) : get_path_type(PPT_Root), set_path_type(PPT_Root)
 {
-	// Effect property path: Represent as GetEffect("name", Object(%d), index)
-	if (!fx || !target_obj) return;
+	// Effect property path: Represent as GetEffect("name", Object(%d), index) for object effects and GetEffect("name", nil, index) for global effects
+	if (!fx) return;
 	const char *name = fx->GetName();
 	int32_t index = 0;
-	for (C4Effect *ofx = target_obj->pEffects; ofx; ofx = ofx->pNext)
+	for (C4Effect *ofx = target_obj ? target_obj->pEffects : ::ScriptEngine.pGlobalEffects; ofx; ofx = ofx->pNext)
 		if (ofx == fx) break; else if (!strcmp(ofx->GetName(), name)) ++index;
-	get_path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
-	root.Format("Object(%d)", (int)target_obj->Number);
+	if (target_obj)
+	{
+		get_path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
+		root.Format("Object(%d)", (int)target_obj->Number);
+	}
+	else
+	{
+		get_path.Format("GetEffect(\"%s\", nil, %d)", name, (int)index);
+		root = ::Strings.P[P_Global].GetData();
+	}
 }
 
 C4PropertyPath::C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index) : root(parent.root)
@@ -115,6 +123,12 @@ C4Value C4PropertyPath::ResolveValue() const
 {
 	if (!get_path.getLength()) return C4VNull;
 	return AulExec.DirectExec(::ScriptEngine.GetPropList(), get_path.getData(), "resolve property", false, nullptr);
+}
+
+C4Value C4PropertyPath::ResolveRoot() const
+{
+	if (!root.getLength()) return C4VNull;
+	return AulExec.DirectExec(::ScriptEngine.GetPropList(), root.getData(), "resolve property root", false, nullptr);
 }
 
 void C4PropertyPath::DoCall(const char *call_string) const
@@ -574,6 +588,99 @@ bool C4PropertyDelegatePropList::IsPasteValid(const C4Value &val) const
 		if (!child_delegate->IsPasteValid(child_val)) return false;
 	}
 	return true;
+}
+
+
+/* Effect delegate: Allows removal and descend into proplist */
+
+C4PropertyDelegateEffectEditor::C4PropertyDelegateEffectEditor(QWidget *parent) : QWidget(parent), layout(nullptr), remove_button(nullptr), edit_button(nullptr)
+{
+	layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	remove_button = new QPushButton(QString(LoadResStr("IDS_CNS_REMOVE")), this);
+	layout->addWidget(remove_button);
+	edit_button = new QPushButton(QString(LoadResStr("IDS_CNS_MORE")), this);
+	layout->addWidget(edit_button);
+	// Make sure to draw over view in background
+	setAutoFillBackground(true);
+}
+
+C4PropertyDelegateEffect::C4PropertyDelegateEffect(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegate(factory, props)
+{
+}
+
+void C4PropertyDelegateEffect::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
+{
+	Editor *editor = static_cast<Editor *>(aeditor);
+	editor->property_path = property_path;
+}
+
+QWidget *C4PropertyDelegateEffect::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
+{
+	Editor *editor;
+	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
+	// Remove effect button
+	connect(editor->remove_button, &QPushButton::pressed, this, [editor, this]() {
+		// Compose an effect remove call
+		editor->property_path.DoCall("RemoveEffect(nil, nil, %s)");
+		emit EditingDoneSignal(editor);
+	});
+	// Edit effect button
+	connect(editor->edit_button, &QPushButton::pressed, this, [editor, this]() {
+		// Descend into effect proplist (if the effect still exists)
+		C4Value effect_val = editor->property_path.ResolveValue();
+		C4PropList *effect_proplist = effect_val.getPropList();
+		if (!effect_proplist)
+		{
+			// Effect lost
+			emit EditingDoneSignal(editor);
+		}
+		else
+		{
+			// Effect OK. Edit it.
+			this->factory->GetPropertyModel()->DescendPath(effect_val, effect_proplist, editor->property_path);
+			::Console.EditCursor.InvalidateSelection();
+		}
+	});
+	return peditor.release();
+}
+
+QString C4PropertyDelegateEffect::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
+{
+	C4PropList *effect_proplist = v.getPropList();
+	C4Effect *effect = effect_proplist ? effect_proplist->GetEffect() : nullptr;
+	if (effect)
+	{
+		if (effect->IsActive())
+		{
+			return QString("t=%1, interval=%2").arg(effect->iTime).arg(effect->iInterval);
+		}
+		else
+		{
+			return QString(LoadResStr("IDS_CNS_DEADEFFECT"));
+		}
+	}
+	else
+	{
+		return QString("nil");
+	}
+}
+
+bool C4PropertyDelegateEffect::GetPropertyValue(const C4Value &container, C4String *key, int32_t index, C4Value *out_val) const
+{
+	// Resolve effect by calling script function
+	if (!key) return false;
+	*out_val = AulExec.DirectExec(::ScriptEngine.GetPropList(), key->GetCStr(), "resolve effect", false, nullptr);
+	return true;
+}
+
+C4PropertyPath C4PropertyDelegateEffect::GetPathForProperty(C4ConsoleQtPropListModelProperty *editor_prop) const
+{
+	// Property path is used directly for getting effect. No set function needed.
+	return editor_prop->property_path;
 }
 
 
@@ -1913,6 +2020,11 @@ bool C4PropertyDelegatePoint::IsPasteValid(const C4Value &val) const
 
 /* Delegate factory: Create delegates based on the C4Value type */
 
+C4PropertyDelegateFactory::C4PropertyDelegateFactory() : current_editor(nullptr), property_model(nullptr), effect_delegate(this, nullptr)
+{
+
+}
+
 C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropList *props) const
 {
 	if (props)
@@ -2276,6 +2388,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		prop->help_text = nullptr;
 		prop->delegate_info.Set0(); // default C4Value delegate
 		prop->group_idx = group_index;
+		prop->about_to_edit = false;
 		prop->key = prop_def.prop->GetPropertyStr(P_Key);
 		if (!prop->key) properties.props[i].key = prop_def.key;
 		prop->display_name = prop_def.name;
@@ -2309,6 +2422,57 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			}
 		}
 	}
+	return true;
+}
+
+bool C4ConsoleQtPropListModel::AddEffectGroup(int32_t group_index, C4Object *base_object)
+{
+	// Count non-dead effects
+	C4Effect **effect_list = base_object ? &base_object->pEffects : &::ScriptEngine.pGlobalEffects;
+	int32_t num_effects = 0;
+	for (C4Effect *effect = *effect_list; effect; effect = effect->pNext)
+	{
+		num_effects += effect->IsActive();
+	}
+	// Return false to signal that no effect group has been added
+	if (!num_effects) return false;
+	// Prepare group array
+	if (property_groups.size() == group_index)
+	{
+		layout_valid = false;
+		property_groups.resize(group_index + 1);
+	}
+	PropertyGroup &properties = property_groups[group_index];
+	if (properties.props.size() != num_effects)
+	{
+		layout_valid = false;
+		properties.props.resize(num_effects);
+	}
+	properties.name = LoadResStr("IDS_CNS_EFFECTS");
+	// Add all (non-dead) effects of given object (or global effects if base_object is nullptr)
+	int32_t num_added = 0;
+	for (C4Effect *effect = *effect_list; effect; effect = effect->pNext)
+	{
+		if (effect->IsActive())
+		{
+			Property *prop = &properties.props[num_added++];
+			prop->parent_value.SetPropList(base_object ? (C4PropList *) base_object : &::ScriptEngine);
+			prop->property_path = C4PropertyPath(effect, base_object);
+			prop->help_text = nullptr;
+			prop->delegate_info.Set0();
+			prop->group_idx = group_index;
+			prop->key = ::Strings.RegString(prop->property_path.GetGetPath());
+			prop->display_name = effect->GetPropertyStr(P_Name);
+			prop->priority = 0;
+			prop->delegate = delegate_factory->GetEffectDelegate();
+			prop->shape.Clear();
+			prop->shape_delegate = nullptr;
+			prop->shape_property_path.Clear();
+			prop->about_to_edit = false;
+			prop->group_idx = group_index;
+		}
+	}
+	// Return true to signal that effect group has been added
 	return true;
 }
 
@@ -2427,14 +2591,14 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 {
 	assert(target_proplist);
 	C4PropList *base_proplist = this->base_proplist.getPropList();
-	C4Object *base_obj = this->base_proplist.getObj();
+	C4Object *base_obj = this->base_proplist.getObj(), *obj = nullptr;
 	C4PropList *info_proplist = this->info_proplist.getPropList();
 	int32_t num_groups = 0;
 	// Published properties
 	if (info_proplist)
 	{
 		C4String *default_selection = info_proplist->GetPropertyStr(P_DefaultEditorProp);
-		C4Object *obj = info_proplist->GetObject();
+		obj = info_proplist->GetObject();
 		// Properties from effects (no inheritance supported)
 		if (obj)
 		{
@@ -2495,8 +2659,27 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		internal_properties.props[i].group_idx = num_groups;
 		internal_properties.props[i].shape.Clear();
 		internal_properties.props[i].shape_delegate = nullptr;
+		internal_properties.props[i].about_to_edit = false;
 	}
 	++num_groups;
+	// Effects
+	// Add after internal because the gorup may be added/removed quickly
+	if (obj)
+	{
+		// Object: Show object effects
+		if (AddEffectGroup(num_groups, obj))
+		{
+			++num_groups;
+		}
+	}
+	else if (info_proplist == &::ScriptEngine)
+	{
+		// Global object: Show global effects
+		if (AddEffectGroup(num_groups, nullptr))
+		{
+			++num_groups;
+		}
+	}
 	return num_groups;
 }
 
@@ -2705,8 +2888,9 @@ Qt::ItemFlags C4ConsoleQtPropListModel::flags(const QModelIndex &index) const
 		}
 		else if (index.column() == 1)
 		{
-			bool readonly = IsTargetReadonly();
-			// Only object properties are editable at the moment
+			// Disallow editing on readonly target (e.g. frozen proplist).
+			// But always allow editing of effects.
+			bool readonly = IsTargetReadonly() && prop->delegate != delegate_factory->GetEffectDelegate();
 			if (!readonly)
 				flags |= Qt::ItemIsEditable;
 			else
