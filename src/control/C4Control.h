@@ -453,8 +453,6 @@ enum C4ControlEMObjectAction
 	EMMO_Script,    // execute Script
 	EMMO_Remove,    // remove objects
 	EMMO_Exit,      // exit objects
-	EMMO_Select,    // select object
-	EMMO_Deselect,  // deselect object
 	EMMO_Create,    // create a new object (used by C4Game::DropDef)
 	EMMO_Transform  // adjust rotation / con of selected object
 };

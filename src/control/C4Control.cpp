@@ -1336,25 +1336,6 @@ void C4ControlEMMoveObject::Execute() const
 				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->GetR());
 	}
 	break;
-	case EMMO_Select:
-	{
-		// callback to script
-		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj);
-		if (!target) return;
-		target->Call(PSF_EditCursorSelection);
-	}
-	break;
-	case EMMO_Deselect:
-	{
-		// callback to script
-		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj), *next_selection = NULL;
-		if (!target) return;
-		// next selection may be passed to EditCursorSelection
-		if (iObjectNum) next_selection = ::Objects.SafeObjectPointer(pObjects[0]);
-		C4AulParSet pars(C4VObj(next_selection));
-		target->Call(PSF_EditCursorDeselection, &pars);
-	}
-	break;
 	case EMMO_Create:
 	{
 		// Check max object count

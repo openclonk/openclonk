@@ -330,7 +330,6 @@ void C4EditCursor::AddToSelection(C4PropList *add_proplist)
 	if (selection.IsContained(add_proplist)) return;
 	// add object to selection and do script callback
 	selection.push_back(C4VPropList(add_proplist));
-	if (add_obj) ::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Select, Fix0, Fix0, add_obj), CDT_Decide);
 }
 
 bool C4EditCursor::RemoveFromSelection(C4PropList *remove_proplist)
@@ -341,31 +340,12 @@ bool C4EditCursor::RemoveFromSelection(C4PropList *remove_proplist)
 	// remove object from selection and do script callback
 	if (!selection.IsContained(remove_proplist)) return false;
 	selection.remove(C4VPropList(remove_proplist));
-	if (remove_obj) ::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, remove_obj), CDT_Decide);
 	return true;
 }
 
 void C4EditCursor::ClearSelection(C4PropList *next_selection)
 {
-	// remove all objects from selection and do script callbacks
-	// iterate safely because callback might delete selected objects!
-	C4Object *obj;
-	while ((obj = selection.GetObject(0)))
-	{
-		selection.remove(C4VObj(obj));
-		if (obj->Status)
-		{
-			int32_t next_selection_count = 0, *next_selection_nums = NULL;
-			if (next_selection && next_selection->GetObject() && next_selection->GetObject()->Status)
-			{
-				// Pass next selection. Always create new array becase the pointer is freed by C4ControlEMMoveObject dtor
-				++next_selection_count;
-				next_selection_nums = new int32_t[1];
-				*next_selection_nums = next_selection->GetObject()->Number;
-			}
-			::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, obj, next_selection_count, next_selection_nums), CDT_Decide);
-		}
-	}
+	// remove everything from selection
 	selection.clear();
 }
 
