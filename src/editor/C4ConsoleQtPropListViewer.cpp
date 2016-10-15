@@ -294,6 +294,8 @@ QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *pa
 	connect(editor, &QSpinBox::editingFinished, this, [editor, this]() {
 		emit EditingDoneSignal(editor);
 	});
+	// Selection in child enum: Direct focus
+	if (by_selection && is_child) editor->setFocus();
 	return editor;
 }
 
@@ -345,6 +347,8 @@ QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory 
 	connect(editor, &QLineEdit::textEdited, this, [editor, this]() {
 		editor->commit_pending = true;
 	});
+	// Selection in child enum: Direct focus
+	if (by_selection && is_child) editor->setFocus();
 	return editor;
 }
 
@@ -742,11 +746,10 @@ QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFac
 	Editor *editor;
 	std::unique_ptr<Editor> peditor((editor = new Editor(parent)));
 	connect(editor->button, &QPushButton::pressed, this, [editor, this]() {
-		QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt() & (~alpha_mask)), editor, QString(), QColorDialog::ShowAlphaChannel);
-		editor->last_value.SetInt(clr.rgba() | alpha_mask);
-		this->SetEditorData(editor, editor->last_value, C4PropertyPath()); // force update on display
-		emit EditingDoneSignal(editor);
+		this->OpenColorDialogue(editor);
 	});
+	// Selection in child enum: Open dialogue immediately
+	if (by_selection && is_child) OpenColorDialogue(editor);
 	return peditor.release();
 }
 
@@ -772,6 +775,15 @@ bool C4PropertyDelegateColor::IsPasteValid(const C4Value &val) const
 	// Color is always int
 	if (val.GetType() != C4V_Int) return false;
 	return true;
+}
+
+void C4PropertyDelegateColor::OpenColorDialogue(C4PropertyDelegateLabelAndButtonWidget *editor) const
+{
+	// Show actual dialogue to change the color
+	QColor clr = QColorDialog::getColor(QColor(editor->last_value.getInt() & (~alpha_mask)), editor, QString(), QColorDialog::ShowAlphaChannel);
+	editor->last_value.SetInt(clr.rgba() | alpha_mask);
+	this->SetEditorData(editor, editor->last_value, C4PropertyPath()); // force update on display
+	emit EditingDoneSignal(editor);
 }
 
 
@@ -1871,6 +1883,8 @@ QWidget *C4PropertyDelegateC4ValueInput::CreateEditor(const class C4PropertyDele
 			::Console.EditCursor.InvalidateSelection();
 		}
 	});
+	// Selection in child enum: Direct focus
+	if (by_selection && is_child) editor->edit->setFocus();
 	return editor;
 }
 

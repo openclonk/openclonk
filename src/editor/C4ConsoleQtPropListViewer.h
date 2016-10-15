@@ -231,6 +231,7 @@ class C4PropertyDelegateColor : public C4PropertyDelegate
 {
 private:
 	uint32_t alpha_mask;
+
 public:
 	typedef C4PropertyDelegateLabelAndButtonWidget Editor;
 
@@ -243,6 +244,9 @@ public:
 	QColor GetDisplayTextColor(const C4Value &val, class C4Object *obj) const override;
 	QColor GetDisplayBackgroundColor(const C4Value &val, class C4Object *obj) const override;
 	bool IsPasteValid(const C4Value &val) const override;
+
+private:
+	void OpenColorDialogue(Editor *editor) const;
 };
 
 // Display delegate for deep combo box. Handles the help tooltip showing.
