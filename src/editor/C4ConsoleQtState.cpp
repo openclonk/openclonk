@@ -957,6 +957,8 @@ void C4ConsoleGUIState::PropertyDlgUpdate(C4EditCursorSelection &rSelection, boo
 void C4ConsoleGUIState::ReInitDefinitions()
 {
 	if (definition_list_model) definition_list_model->ReInit();
+	// This also affects the object list
+	if (object_list_model) object_list_model->Invalidate();
 }
 
 void C4ConsoleGUIState::OnCreatorSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
@@ -988,10 +990,10 @@ void C4ConsoleGUIState::OnObjectListSelectionChanged(const QItemSelection & sele
 	// Forward to EditCursor
 	C4PropList *p;
 	for (const QModelIndex &item : deselected.indexes())
-		if ((p = static_cast<C4PropList *>(item.internalPointer())))
+		if ((p = object_list_model->GetItemByModelIndex(item)))
 			::Console.EditCursor.RemoveFromSelection(p);
 	for (const QModelIndex &item : selected.indexes())
-		if ((p = static_cast<C4PropList *>(item.internalPointer())))
+		if ((p = object_list_model->GetItemByModelIndex(item)))
 			::Console.EditCursor.AddToSelection(p);
 	::Console.EditCursor.OnSelectionChanged(true);
 	// Switching to object/effect selection mode: Remove any non-objects/effects from selection

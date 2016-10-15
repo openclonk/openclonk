@@ -66,25 +66,23 @@ int C4ConsoleQtObjectListModel::rowCount(const QModelIndex & parent) const
 	if (parent.isValid())
 	{
 		// Child row count of object
-		C4PropList *parent_item = static_cast<C4PropList *>(parent.internalPointer());
+		C4PropList *parent_item = GetItemByModelIndex(parent);
 		if (!parent_item) return result;
 		C4Object *obj = parent_item->GetObject();
 		if (!obj) return result;
-		// Contained objects plus effects
+		// Contained objects
 		for (C4Object *contents : obj->Contents)
 			if (contents && contents->Status)
 				++result;
-		for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext) if (fx->IsActive())
-			++result;
 	}
 	else
 	{
-		// Main object + effect count
+		// Static lists
+		result = IDX_Objects;
+		// Main object count
 		for (C4Object *obj : ::Objects)
 			if (obj && obj->Status && !obj->Contained)
 				++result;
-		for (C4Effect *fx = ::ScriptEngine.pGlobalEffects; fx; fx = fx->pNext) if (fx->IsActive())
-			++result;
 		last_row_count = result;
 	}
 	return result;
@@ -98,7 +96,7 @@ int C4ConsoleQtObjectListModel::columnCount(const QModelIndex & parent) const
 QVariant C4ConsoleQtObjectListModel::data(const QModelIndex & index, int role) const
 {
 	// Object list lookup is done in index(). Here we just use the pointer.
-	C4PropList *data = static_cast<C4PropList *>(index.internalPointer());
+	C4PropList *data = GetItemByModelIndex(index);
 	if (role == Qt::DisplayRole)
 	{
 		// Deleted proplist?
@@ -109,8 +107,6 @@ QVariant C4ConsoleQtObjectListModel::data(const QModelIndex & index, int role) c
 		// If no name is set, fall back to definition name for objects
 		C4Object *obj = data->GetObject();
 		if (obj) return QString(obj->Def->id.ToString());
-		// Fallback to effect names for effects
-		return QString("Fx???");
 	}
 	else if (role == Qt::ForegroundRole)
 	{
@@ -135,53 +131,61 @@ QModelIndex C4ConsoleQtObjectListModel::index(int row, int column, const QModelI
 	if (parent.isValid())
 	{
 		// Child of valid object?
-		C4PropList *parent_item = static_cast<C4PropList *>(parent.internalPointer());
-		if (!parent_item) return QModelIndex();
-		C4Object *obj = parent_item->GetObject();
-		if (!obj) return QModelIndex();
-		// Contained objects plus effects
-		for (C4Object *contents : obj->Contents)
-			if (contents && contents->Status)
-				if (!index--)
-					return createIndex(row, column, contents);
-		for (C4Effect *fx = obj->pEffects; fx; fx = fx->pNext) if (fx->IsActive())
-			if (!index--)
-				return createIndex(row, column, fx);
+		C4PropList *pobj = GetItemByModelIndex(parent);
+		C4Object *container = pobj->GetObject();
+		if (container)
+		{
+			for (C4Object *contents : container->Contents)
+			{
+				if (contents && contents->Status)
+				{
+					if (!index--)
+					{
+						return createIndex(row, column, static_cast<C4PropList *>(contents));
+					}
+				}
+			}
+		}
 	}
 	else
 	{
-		// Main object list
-		for (C4Object *obj : ::Objects)
-			if (obj && obj->Status && !obj->Contained)
-				if (!index--)
-					return createIndex(row, column, obj);
+		// Static entries
+		if (index == IDX_Global)
+		{
+			return createIndex(row, column, static_cast<C4PropList *>(&::ScriptEngine));
+		}
+		else if (index == IDX_Scenario)
+		{
+			// This may create a null pointer entry. That's OK; it's only for the disabled display before the scenario is loaded
+			return createIndex(row, column, static_cast<C4PropList *>(::GameScript.ScenPropList.getPropList()));
+		}
+		else
+		{
+			// Main object list
+			for (C4Object *obj : ::Objects)
+			{
+				if (obj && obj->Status && !obj->Contained)
+				{
+					if (!index--)
+					{
+						return createIndex(row, column, static_cast<C4PropList *>(obj));
+					}
+				}
+			}
+		}
 	}
 	return QModelIndex(); // out of range
 }
 
 QModelIndex C4ConsoleQtObjectListModel::parent(const QModelIndex &index) const
 {
-	// Find parent of object or effect
+	// Find parent of object
 	if (!index.isValid()) return QModelIndex();
-	C4PropList *data = static_cast<C4PropList *>(index.internalPointer());
+	C4PropList *data = GetItemByModelIndex(index);
 	if (!data) return QModelIndex();
 	C4Object *obj = data->GetObject();
 	if (obj) return GetModelIndexByItem(obj->Contained);
-	// Parent object of effect
-	// TODO: Effects currently don't keep track of their owners.
-	// If this ever changes, lookup can be much more efficient...
-	C4Effect *fx = data->GetEffect();
-	if (fx)
-	{
-		for (C4Object *cobj : ::Objects) if (cobj && cobj->Status)
-		{
-			for (C4Effect *cfx = cobj->pEffects; cfx; cfx = cfx->pNext)
-				if (cfx == fx) { obj = cobj; break; }
-			if (obj) break;
-		}
-		return GetModelIndexByItem(obj); // returns root index for obj==NULL, i.e. global effects
-	}
-	// Can't happen
+	// Root item
 	return QModelIndex();
 }
 
@@ -189,10 +193,20 @@ QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) co
 {
 	// Deduce position in model list from item pointer
 	if (!item) return QModelIndex();
-	C4Object *obj; C4Effect *fx;
-	int row=0;
-	if ((obj = item->GetObject()))
+	// Default position for Global and Scenario object
+	C4Object *obj;
+	int row;
+	if (item == &::ScriptEngine)
 	{
+		row = IDX_Global;
+	}
+	else if (item == ::GameScript.ScenPropList.getPropList())
+	{
+		row = IDX_Scenario;
+	}
+	else if ((obj = item->GetObject()))
+	{
+		row = IDX_Objects;
 		const C4ObjectList *list = &::Objects;
 		if (obj->Contained) list = &(obj->Contained->Contents);
 		for (C4Object *cobj : *list)
@@ -201,32 +215,16 @@ QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) co
 			if (cobj && cobj->Status) ++row;
 		}
 	}
-	else if ((fx = item->GetEffect()))
+	else
 	{
-		// TODO: Effects currently don't keep track of their owners.
-		// If this ever changes, lookup can be much more efficient...
-		bool found = false;
-		for (C4Object *cobj : ::Objects) if (cobj && cobj->Status)
-		{
-			row = 0;
-			for (C4Effect *cfx = cobj->pEffects; cfx; cfx = cfx->pNext)
-				if (cfx == fx) { obj = cobj; found = true; break; } else ++row;
-			if (obj) break;
-		}
-		// Also search global effect list
-		if (!found)
-		{
-			row = 0;
-			for (C4Effect *cfx = ::ScriptEngine.pGlobalEffects; cfx; cfx = cfx->pNext) if (cfx->IsActive())
-				if (cfx == fx) { found = true; break; } else ++row;
-			if (!found) return QModelIndex();
-		}
-		// Add other objects on top of this index
-		const C4ObjectList *list = &::Objects;
-		if (obj) list = &obj->Contents;
-		for (C4Object *cobj : *list)
-			if (cobj && cobj->Status)
-				++row;
+		return QModelIndex();
 	}
-	return createIndex(row, 0, item);
+	return createIndex(row, 0, static_cast<C4PropList *>(item));
+}
+
+C4PropList *C4ConsoleQtObjectListModel::GetItemByModelIndex(const QModelIndex &index) const
+{
+	// Get proplist from model index
+	if (!index.isValid()) return nullptr;
+	return static_cast<C4PropList *>(index.internalPointer());
 }

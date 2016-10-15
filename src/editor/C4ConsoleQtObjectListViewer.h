@@ -33,6 +33,14 @@ class C4ConsoleQtObjectListModel : public QAbstractItemModel
 	mutable int32_t last_row_count;
 	QBrush clr_deleted, clr_effect;
 
+	// model indices for static proplists
+	enum
+	{
+		IDX_Global = 0,
+		IDX_Scenario = 1,
+		IDX_Objects = 2
+	};
+
 public:
 	C4ConsoleQtObjectListModel();
 	~C4ConsoleQtObjectListModel();
@@ -42,6 +50,7 @@ public:
 	void OnItemRemoved(C4PropList *p);
 
 	QModelIndex GetModelIndexByItem(class C4PropList *item) const;
+	C4PropList *GetItemByModelIndex(const QModelIndex &index) const;
 
 protected:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;

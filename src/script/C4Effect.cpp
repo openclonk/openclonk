@@ -23,9 +23,6 @@
 
 #include "script/C4Aul.h"
 #include "game/C4GameScript.h"
-#include "object/C4ObjectList.h"
-
-extern C4ObjectListChangeListener & ObjectListChangeListener;
 
 void C4Effect::AssignCallbackFunctions()
 {
@@ -153,8 +150,6 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	// Update OnFire cache
 	if (!IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, GetName()))
 		pForObj->SetOnFire(true);
-	// Creation callback
-	if (!IsDead()) ObjectListChangeListener.OnEffectAdded(this);
 	return this;
 }
 
@@ -210,7 +205,6 @@ void C4Effect::ClearPointers(C4PropList *pObj)
 void C4Effect::SetDead()
 {
 	iPriority = 0;
-	ObjectListChangeListener.OnEffectRemoved(this);
 }
 
 C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority)

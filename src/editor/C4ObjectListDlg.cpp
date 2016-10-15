@@ -71,16 +71,6 @@ void C4ObjectListDlg::OnObjectContainerChanged(C4Object *obj, C4Object *old_cont
 	if (view_model) view_model->Invalidate();
 }
 
-void C4ObjectListDlg::OnEffectAdded(C4Effect *fx)
-{
-	if (view_model) view_model->Invalidate();
-}
-
-void C4ObjectListDlg::OnEffectRemoved(C4Effect *fx)
-{
-	if (view_model) view_model->OnItemRemoved(fx);
-}
-
 
 #else
 
@@ -101,14 +91,6 @@ void C4ObjectListDlg::OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk)
 }
 
 void C4ObjectListDlg::OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container)
-{
-}
-
-void C4ObjectListDlg::OnEffectAdded(C4Effect *fx)
-{
-}
-
-void C4ObjectListDlg::OnEffectRemoved(C4Effect *fx)
 {
 }
 

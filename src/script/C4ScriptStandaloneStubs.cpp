@@ -34,8 +34,6 @@ std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
 C4StringTable Strings;
 C4AulScriptEngine ScriptEngine;
-C4ObjectListChangeListener listener_stub;
-class C4ObjectListChangeListener & ObjectListChangeListener = listener_stub;
 
 /* Avoid a C4Object dependency */
 C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
