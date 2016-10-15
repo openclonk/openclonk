@@ -967,7 +967,7 @@ void C4EditCursor::Default()
 {
 	fAltWasDown=false;
 	fShiftWasDown=false;
-	Mode=C4CNS_ModePlay;
+	Mode = C4CNS_ModeEdit;
 	X=Y=X2=Y2=0;
 	Target=DropTarget=NULL;
 #ifdef USE_WIN32_WINDOWS
