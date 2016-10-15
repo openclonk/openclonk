@@ -33,7 +33,7 @@ public:
 	~C4Sky();
 	void Default(); // zero fields
 
-	bool Init(bool fSavegame);
+	bool Init(bool fSavegame, std::string names = "");
 	void Clear();
 	void SetColor(int32_t iIndex, int32_t iRed, int32_t iGreen, int32_t iBlue);
 	void SetFadePalette(int32_t *ipColors);

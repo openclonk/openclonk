@@ -1667,6 +1667,14 @@ static C4String *FnMaterialName(C4PropList * _this, long iMat)
 	return String(::MaterialMap.Map[iMat].Name);
 }
 
+static bool FnSetSky(C4PropList * _this, C4String * name)
+{
+	if (!name) return false;
+	auto& sky = ::Landscape.GetSky();
+	sky.Clear();
+	return sky.Init(false, name->GetCStr());
+}
+
 static bool FnSetSkyAdjust(C4PropList * _this, long dwAdjust, long dwBackClr)
 {
 	// set adjust
@@ -2800,6 +2808,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(DrawDefMap);
 	F(CreateParticle);
 	F(ClearParticles);
+	F(SetSky);
 	F(SetSkyAdjust);
 	F(SetMatAdjust);
 	F(GetSkyAdjust);

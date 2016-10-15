@@ -43,10 +43,8 @@ void C4Sky::SetFadePalette(int32_t *ipColors)
 	}
 }
 
-bool C4Sky::Init(bool fSavegame)
+bool C4Sky::Init(bool fSavegame, std::string names)
 {
-	int32_t skylistn;
-
 	// reset scrolling pos+speed
 	// not in savegame, because it will have been loaded from game data there
 	if (!fSavegame)
@@ -56,25 +54,32 @@ bool C4Sky::Init(bool fSavegame)
 
 	// Check for sky bitmap in scenario file
 	Surface = new C4Surface();
-	bool loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, C4SF_Tileable | C4SF_MipMap);
+	bool loaded = false;
+	if (names.empty())
+	{
+		loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, C4SF_Tileable | C4SF_MipMap);
+	}
 
 	// Else, evaluate scenario core landscape sky default list
 	if (!loaded)
 	{
-		// Scan list sections
-		SReplaceChar(Game.C4S.Landscape.SkyDef,',',';'); // modifying the C4S here...!
-		skylistn=SCharCount(';',Game.C4S.Landscape.SkyDef)+1;
-		char str[402];
-		SCopySegment(Game.C4S.Landscape.SkyDef,SeededRandom(Game.RandomSeed,skylistn),str,';');
-		SClearFrontBack(str);
+		if (names.empty()) names = Game.C4S.Landscape.SkyDef;
+		static std::regex separator(R"([,;\s]+)");
+		std::vector<std::string> parts;
+		std::copy(
+				std::sregex_token_iterator(names.begin(), names.end(), separator, -1),
+				std::sregex_token_iterator(),
+				std::back_inserter(parts));
+
+		auto name = parts.at(SeededRandom(Game.RandomSeed, parts.size()));
 		// Sky tile specified, try load
-		if (*str && !SEqual(str,"Default"))
+		if (name != "Default")
 		{
 			// Check for sky tile in scenario file
-			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true, C4SF_Tileable | C4SF_MipMap);
+			loaded = !!Surface->LoadAny(Game.ScenarioFile, name.c_str(), true, true, C4SF_Tileable | C4SF_MipMap);
 			if (!loaded)
 			{
-				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true, false, C4SF_Tileable | C4SF_MipMap);
+				loaded = !!Surface->LoadAny(::GraphicsResource.Files, name.c_str(), true, false, C4SF_Tileable | C4SF_MipMap);
 			}
 		}
 	}
