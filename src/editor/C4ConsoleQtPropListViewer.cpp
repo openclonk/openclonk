@@ -33,14 +33,26 @@
 
 C4PropertyPath::C4PropertyPath(C4PropList *target) : get_path_type(PPT_Root), set_path_type(PPT_Root)
 {
-	// Build string to set target: supports objects only
+	// Build string to set target
 	if (target)
 	{
+		// Object target
 		C4Object *obj = target->GetObject();
+		C4PropListStatic *target_static;
 		if (obj)
 		{
 			get_path.Format("Object(%d)", (int)obj->Number);
 			root = get_path;
+		}
+		else if ((target_static = target->IsStatic()))
+		{
+			// Global static prop lists: Resolve name
+			get_path = target_static->GetDataString();
+			root = get_path;
+		}
+		else
+		{
+			// Otherwise leave empty. We do not want assignments into temporary values, etc.
 		}
 	}
 }
@@ -2672,7 +2684,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			++num_groups;
 		}
 	}
-	else if (info_proplist == &::ScriptEngine)
+	else if (target_proplist == &::ScriptEngine)
 	{
 		// Global object: Show global effects
 		if (AddEffectGroup(num_groups, nullptr))
