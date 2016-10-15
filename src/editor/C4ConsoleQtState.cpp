@@ -715,6 +715,11 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 		this->ui.arrayRemoveButton->setDisabled(this->property_model->IsTargetReadonly() || this->ui.propertyTable->selectionModel()->selectedRows().empty());
 	});
 
+	// Double-clicking an item in the object list focuses and raises the property window
+	window->connect(ui.objectListView, &QTreeView::doubleClicked, window.get(), [this](const QModelIndex &index) {
+		window->FocusObjectScriptBox();
+	});
+
 	// Initial layout is tabified (somehow I cannot do this in the designer)
 	window->tabifyDockWidget(ui.objectListDockWidget, ui.propertyDockWidget);
 	window->tabifyDockWidget(ui.objectListDockWidget, ui.creatorDockWidget);
