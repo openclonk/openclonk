@@ -19,6 +19,7 @@
 #include "C4Include.h"
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4ConsoleQtDefinitionListViewer.h"
+#include "editor/C4ConsoleQtObjectListViewer.h"
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleGUI.h"
 #include "landscape/C4Texture.h"
@@ -370,6 +371,11 @@ void C4ConsoleGUI::EnsureDefinitionListInitialized()
 void C4ConsoleGUI::CloseConsoleWindow()
 {
 	if (state && state->window) state->window->close();
+}
+
+void C4ConsoleGUI::ClearPointers(class C4Object *obj)
+{
+	if (state && state->object_list_model) state->object_list_model->Invalidate();
 }
 
 void C4ToolsDlg::UpdateToolCtrls()

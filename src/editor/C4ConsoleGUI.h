@@ -97,6 +97,7 @@ public:
 	void ClearGamePointers();
 	void EnsureDefinitionListInitialized();
 	void CloseConsoleWindow();
+	void ClearPointers(class C4Object *obj);
 
 	// TODO some qt editor stuff is in state and needs to be public
 	// Once other editors are removed, C4ConsoleGUI, C4ConsoleQt and C4ConsoleQtState should be reorganized
@@ -112,6 +113,7 @@ public:
 	void OnStartGame() { }
 	void EnsureDefinitionListInitialized() { }
 	void CloseConsoleWindow() {}
+	void ClearPointers(class C4Object *obj) {}
 #endif
 
 	void SetCursor(Cursor cursor);

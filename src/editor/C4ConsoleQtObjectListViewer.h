@@ -47,7 +47,6 @@ public:
 
 	// Refresh object list on next redraw
 	void Invalidate();
-	void OnItemRemoved(C4PropList *p);
 
 	QModelIndex GetModelIndexByItem(class C4PropList *item) const;
 	C4PropList *GetItemByModelIndex(const QModelIndex &index) const;

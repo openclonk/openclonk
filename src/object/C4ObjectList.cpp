@@ -742,6 +742,7 @@ void C4ObjectList::DeleteObjects()
 	{
 		C4Object *pObj = First->Obj;
 		if (pObj->Status) Game.ClearPointers(pObj); // clear pointers to removed objects that weren't deleted (game end or section change)
+		pObj->Status = C4OS_DELETED;
 		Remove(pObj);
 		delete pObj;
 	}

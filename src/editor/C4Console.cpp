@@ -355,6 +355,7 @@ bool C4Console::FileRecord()
 void C4Console::ClearPointers(C4Object *pObj)
 {
 	EditCursor.ClearPointers(pObj);
+	C4ConsoleGUI::ClearPointers(pObj);
 }
 
 void C4Console::Default()

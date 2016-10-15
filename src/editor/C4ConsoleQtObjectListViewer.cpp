@@ -44,20 +44,21 @@ C4ConsoleQtObjectListModel::~C4ConsoleQtObjectListModel()
 
 void C4ConsoleQtObjectListModel::Invalidate()
 {
-	// Force redraw
+	// Kill any dead object pointers and force redraw
+	emit layoutAboutToBeChanged();
+	QModelIndexList list = this->persistentIndexList();
+	for (auto idx : list)
+	{
+		if (idx.internalPointer())
+		{
+			QModelIndex new_index = GetModelIndexByItem(static_cast<C4PropList *>(idx.internalPointer()));
+			this->changePersistentIndex(idx, new_index);
+		}
+	}
 	QModelIndex topLeft = index(0, 0, QModelIndex());
 	QModelIndex bottomRight = index(last_row_count, columnCount() - 1, QModelIndex());
 	emit dataChanged(topLeft, bottomRight);
 	emit layoutChanged();
-}
-
-void C4ConsoleQtObjectListModel::OnItemRemoved(C4PropList *p)
-{
-	QModelIndexList list = this->persistentIndexList();
-	for (auto idx : list)
-		if (idx.internalPointer() == p)
-			this->changePersistentIndex(idx, QModelIndex());
-	Invalidate();
 }
 
 int C4ConsoleQtObjectListModel::rowCount(const QModelIndex & parent) const
@@ -69,7 +70,7 @@ int C4ConsoleQtObjectListModel::rowCount(const QModelIndex & parent) const
 		C4PropList *parent_item = GetItemByModelIndex(parent);
 		if (!parent_item) return result;
 		C4Object *obj = parent_item->GetObject();
-		if (!obj) return result;
+		if (!obj || !obj->Status) return result;
 		// Contained objects
 		for (C4Object *contents : obj->Contents)
 			if (contents && contents->Status)
@@ -192,9 +193,11 @@ QModelIndex C4ConsoleQtObjectListModel::parent(const QModelIndex &index) const
 QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) const
 {
 	// Deduce position in model list from item pointer
+	// No position for invalid items
 	if (!item) return QModelIndex();
+	C4Object *obj = item->GetObject();
+	if (obj && !obj->Status) return QModelIndex();
 	// Default position for Global and Scenario object
-	C4Object *obj;
 	int row;
 	if (item == &::ScriptEngine)
 	{
@@ -204,8 +207,9 @@ QModelIndex C4ConsoleQtObjectListModel::GetModelIndexByItem(C4PropList *item) co
 	{
 		row = IDX_Scenario;
 	}
-	else if ((obj = item->GetObject()))
+	else if (obj)
 	{
+		// Positions for object items
 		row = IDX_Objects;
 		const C4ObjectList *list = &::Objects;
 		if (obj->Contained) list = &(obj->Contained->Contents);
