@@ -161,6 +161,7 @@ public func GetBaseMat(id def, int index, int category)
 	// If an index is given look for the id.
 	if (!category) 
 		category = 0xffffff;
+	index = Max(0, index);
 	var count = 0;
 	for (var combo in base_material)
 	{
@@ -187,12 +188,16 @@ public func SetBaseMat(id def, int cnt)
 		if (base_material[index][0] == def)
 		{
 			change = cnt - base_material[index][1];
-			base_material[index][1] = cnt;
+			if (cnt > 0)
+				base_material[index][1] = cnt;
+			else
+				RemoveArrayIndex(base_material, index);
 			found = true;
+			break;
 		}
 	}
 	// If material is not available add it to the existing list.
-	if (!found)
+	if (!found && cnt > 0)
 	{
 		change = cnt;
 		PushBack(base_material, [def, cnt]);
@@ -217,7 +222,10 @@ public func DoBaseMat(id def, int change)
 			// Change must at least be minus the original value.
 			change = Max(change, -base_material[index][1]);
 			base_material[index][1] += change;
+			if (base_material[index][1] == 0)
+				RemoveArrayIndex(base_material, index);
 			found = true;
+			break;
 		}
 	}
 	// If material is not available add it to the existing list.
@@ -225,7 +233,8 @@ public func DoBaseMat(id def, int change)
 	{
 		// Change must at least be zero.
 		change = Max(change, 0);
-		PushBack(base_material, [def, Max(change, 0)]);
+		if (change > 0)
+			PushBack(base_material, [def, change]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
@@ -247,6 +256,7 @@ public func GetBaseProd(id def, int index, int category)
 	// If an index is given look for the id.
 	if (!category) 
 		category = 0xffffff;
+	index = Max(0, index);
 	var count = 0;
 	for (var combo in base_production)
 	{
@@ -273,12 +283,16 @@ public func SetBaseProd(id def, int cnt)
 		if (base_production[index][0] == def)
 		{
 			change = cnt - base_production[index][1];
-			base_production[index][1] = cnt;
+			if (cnt > 0)
+				base_production[index][1] = cnt;
+			else
+				RemoveArrayIndex(base_production, index);
 			found = true;
+			break;
 		}
 	}
 	// If material is not available add it to the existing list.
-	if (!found)
+	if (!found && cnt > 0)
 	{
 		change = cnt;
 		PushBack(base_production, [def, cnt]);
@@ -303,7 +317,10 @@ public func DoBaseProd(id def, int change)
 			// Change must at least be minus the original value.
 			change = Max(change, -base_production[index][1]);
 			base_production[index][1] += change;
+			if (base_production[index][1] == 0)
+				RemoveArrayIndex(base_production, index);
 			found = true;
+			break;
 		}
 	}
 	// If production is not available add it to the existing list.
@@ -311,7 +328,8 @@ public func DoBaseProd(id def, int change)
 	{
 		// Change must at least be zero.
 		change = Max(change, 0);
-		PushBack(base_production, [def, Max(change, 0)]);
+		if (change > 0)
+			PushBack(base_production, [def, change]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
@@ -320,6 +338,8 @@ public func DoBaseProd(id def, int change)
 	return;
 }
 
+
+func Destruction() { Log("fsdfs"); }
 
 /*-- Miscellaneous --*/
 
