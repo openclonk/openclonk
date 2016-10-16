@@ -275,7 +275,8 @@ class C4DeepQComboBox : public QComboBox
 {
 	Q_OBJECT
 
-	bool editable;
+	bool editable, manual_text_edited;
+	QString last_edited_text;
 	bool is_next_close_blocked;
 	int last_popup_height;
 	std::unique_ptr<C4StyledItemDelegateWithButton> item_delegate;
@@ -304,7 +305,7 @@ public slots:
 
 signals:
 	void NewItemSelected(int32_t new_item);
-	void TextChanged(const QString new_text);
+	void TextChanged(const QString &new_text);
 
 protected:
 	// event filter for view: Catch mouse clicks to descend into children
@@ -317,9 +318,10 @@ class C4PropertyDelegateEnumEditor : public QWidget
 	Q_OBJECT
 
 public:
+	enum { INDEX_Custom_Value = -1 };
 	C4Value last_val;
 	C4Value last_parameter_val; // Resolved parameter of last_val - assigned for shape parameters only
-	int32_t last_selection_index;
+	int32_t last_selection_index; // Index of selection in model or INDEX_Custom_Value for custom value that does not resolve to an existing entry in editable enum
 	C4PropertyPath last_get_path;
 	C4DeepQComboBox *option_box;
 	QHBoxLayout *layout;
@@ -374,6 +376,7 @@ protected:
 
 private:
 	std::vector<Option> options;
+	Option default_option;
 	bool allow_editing;
 	bool sorted;
 
@@ -404,10 +407,8 @@ private:
 	int32_t GetOptionByValue(const C4Value &val) const;
 	void UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor, bool by_selection) const;
 	void EnsureOptionDelegateResolved(const Option &option) const;
-	void SetOptionValue(const C4PropertyPath &use_path, const C4PropertyDelegateEnum::Option &option) const;
-
-public slots:
-	void UpdateOptionIndex(Editor *editor, int idx) const;
+	void SetOptionValue(const C4PropertyPath &use_path, const C4PropertyDelegateEnum::Option &option, const C4Value &option_value) const;
+	void UpdateOptionIndex(Editor *editor, int idx, const QString *custom_text) const;
 };
 
 // Select a definition

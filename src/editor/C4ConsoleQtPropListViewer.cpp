@@ -836,7 +836,7 @@ void C4StyledItemDelegateWithButton::paint(QPainter *painter, const QStyleOption
 /* Enum delegate combo box */
 
 C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type, bool editable)
-	: QComboBox(parent), last_popup_height(0), is_next_close_blocked(false), editable(editable)
+	: QComboBox(parent), last_popup_height(0), is_next_close_blocked(false), editable(editable), manual_text_edited(false)
 {
 	item_delegate.reset(new C4StyledItemDelegateWithButton(button_type));
 	QTreeView *view = new QTreeView(this);
@@ -880,6 +880,8 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton
 		QVariant selected_data = this->model()->data(current, OptionIndexRole);
 		if (selected_data.type() == QVariant::Int)
 		{
+			// Reset manual text edit flag because the text is now provided by the view
+			manual_text_edited = false;
 			// Finish selection
 			setCurrentModelIndex(current);
 			emit NewItemSelected(selected_data.toInt());
@@ -888,9 +890,28 @@ C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton
 	// New text typed in
 	if (editable)
 	{
+		// text change event only sent after manual text change
+		connect(lineEdit(), &QLineEdit::textEdited, [this](const QString &text)
+		{
+			manual_text_edited = true;
+			last_edited_text = text;
+		});
+		// reflect in data after return press and when focus is lost
 		connect(lineEdit(), &QLineEdit::returnPressed, [this]()
 		{
-			emit TextChanged(this->lineEdit()->text());
+			if (manual_text_edited)
+			{
+				emit TextChanged(last_edited_text);
+				manual_text_edited = false;
+			}
+		});
+		connect(lineEdit(), &QLineEdit::editingFinished, [this]()
+		{
+			if (manual_text_edited)
+			{
+				emit TextChanged(last_edited_text);
+				manual_text_edited = false;
+			}
 		});
 	}
 	// Connect view to combobox
@@ -927,6 +948,7 @@ void C4DeepQComboBox::setCurrentModelIndex(QModelIndex new_index)
 	if (editable)
 	{
 		lineEdit()->setText(this->model()->data(new_index, ValueStringRole).toString());
+		manual_text_edited = false;
 	}
 }
 
@@ -1038,6 +1060,8 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 		allow_editing = props->GetPropertyBool(P_AllowEditing);
 		empty_name = props->GetPropertyStr(P_EmptyName);
 		sorted = props->GetPropertyBool(P_Sorted);
+		default_option.option_key = default_option_key;
+		default_option.value_key = default_value_key;
 	}
 	if (poptions)
 	{
@@ -1218,8 +1242,8 @@ int32_t C4PropertyDelegateEnum::GetOptionByValue(const C4Value &val) const
 		if (match) break;
 		++iopt;
 	}
-	// If no option matches, just pick first
-	return match ? iopt : -1;
+	// If no option matches, return sentinel value
+	return match ? iopt : Editor::INDEX_Custom_Value;
 }
 
 void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Editor *editor, bool by_selection) const
@@ -1231,7 +1255,12 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		editor->parameter_widget = NULL;
 	}
 	editor->paint_parameter_delegate = nullptr;
-	int32_t idx = editor->option_box->GetCurrentSelectionIndex();
+	int32_t idx = editor->last_selection_index;
+	if (by_selection)
+	{
+		idx = editor->option_box->GetCurrentSelectionIndex();
+	}
+	// No parameter delegate if not a known option (custom text or invalid value)
 	if (idx < 0 || idx >= options.size()) return;
 	const Option &option = options[idx];
 	// Lazy-resolve parameter delegate
@@ -1243,7 +1272,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 		C4Value parameter_val;
 		if (!by_selection)
 		{
-			// Showing current selection: From last_val assigned in SetEditorData
+			// Showing current selection: From last_val assigned in SetEditorData or by custom text
 			parameter_val = editor->last_val;
 		}
 		else
@@ -1252,7 +1281,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 			parameter_val = option.value;
 			// Although the default value is taken directly from SetEditorData, it needs to be set here to make child access into proplists and arrays possible
 			// (note that actual setting is delayed by control queue and this may often the wrong value in some cases - the correct value will be shown on execution of the queue)
-			SetOptionValue(editor->last_get_path, option);
+			SetOptionValue(editor->last_get_path, option, option.value);
 		}
 		// Resolve parameter value
 		if (option.value_key)
@@ -1325,9 +1354,25 @@ void C4PropertyDelegateEnum::SetEditorData(QWidget *aeditor, const C4Value &val,
 	editor->last_get_path = property_path;
 	editor->updating = true;
 	// Update option selection
-	int32_t index = std::max<int32_t>(GetOptionByValue(val), 0);
-	QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
-	editor->option_box->setCurrentModelIndex(GetModelIndexByID(model, model->invisibleRootItem(), index, QModelIndex()));
+	int32_t index = GetOptionByValue(val);
+	if (index == Editor::INDEX_Custom_Value && !allow_editing)
+	{
+		// Invalid value and no custom values allowed? Select first item.
+		index = 0;
+	}
+	if (index == Editor::INDEX_Custom_Value)
+	{
+		// Custom value
+		C4String *val_string = val.getStr();
+		QString edit_string = val_string ? QString(val_string->GetCStr()) : QString(val.GetDataString().getData());
+		editor->option_box->setEditText(edit_string);
+	}
+	else
+	{
+		// Regular enum entry
+		QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
+		editor->option_box->setCurrentModelIndex(GetModelIndexByID(model, model->invisibleRootItem(), index, QModelIndex()));
+	}
 	editor->last_selection_index = index;
 	// Update parameter
 	UpdateEditorParameter(editor, false);
@@ -1345,49 +1390,61 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 {
 	// Fetch value from editor
 	Editor *editor = static_cast<Editor*>(aeditor);
-	QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
+	/*QStandardItemModel *model = static_cast<QStandardItemModel *>(editor->option_box->model());
 	QModelIndex selected_model_index = model->index(editor->option_box->currentIndex(), 0, editor->option_box->rootModelIndex());
 	QVariant vidx = model->data(selected_model_index, C4DeepQComboBox::OptionIndexRole);
 	if (vidx.type() != QVariant::Int) return;
 	int32_t idx = vidx.toInt();
-	if (idx < 0 || idx >= options.size()) return;
-	const Option &option = options[idx];
+	if (idx < 0 || idx >= options.size()) return;*/
+	int32_t idx = editor->last_selection_index;
+	const Option *option;
+	const C4Value *option_value;
+	if (idx < 0)
+	{
+		option = &default_option;
+		option_value = &editor->last_val;
+	}
+	else
+	{
+		option = &options[std::max<int32_t>(idx, 0)];
+		option_value = &option->value;
+	}
 	// Store directly in value or in a proplist field?
 	C4PropertyPath use_path;
-	if (option.value_key.Get())
-		use_path = C4PropertyPath(property_path, option.value_key->GetCStr());
+	if (option->value_key.Get())
+		use_path = C4PropertyPath(property_path, option->value_key->GetCStr());
 	else
 		use_path = property_path;
 	// Value from a parameter or directly from the enum?
-	if (option.adelegate)
+	if (option->adelegate)
 	{
 		// Default value on enum change (on main path; not use_path because the default value is always given as the whole proplist)
-		if (editor->option_changed) SetOptionValue(property_path, option);
+		if (editor->option_changed) SetOptionValue(property_path, *option, *option_value);
 		// Value from a parameter.
 		// Using a setter function?
-		use_path = option.adelegate->GetPathForProperty(use_path, nullptr);
-		option.adelegate->SetModelData(editor->parameter_widget, use_path, prop_shape);
+		use_path = option->adelegate->GetPathForProperty(use_path, nullptr);
+		option->adelegate->SetModelData(editor->parameter_widget, use_path, prop_shape);
 	}
 	else
 	{
 		// No parameter. Use value.
-		if (editor->option_changed) SetOptionValue(use_path, option);
+		if (editor->option_changed) SetOptionValue(use_path, *option, *option_value);
 	}
 	editor->option_changed = false;
 }
 
-void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, const C4PropertyDelegateEnum::Option &option) const
+void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, const C4PropertyDelegateEnum::Option &option, const C4Value &option_value) const
 {
 	// After an enum entry has been selected, set its value
 	// Either directly by value or through a function
 	if (option.value_function.GetType() == C4V_Function)
 	{
-		use_path.SetProperty(FormatString("Call(%s, %s, %s)", option.value_function.GetDataString().getData(), use_path.GetRoot(), option.value.GetDataString(20).getData()).getData());
+		use_path.SetProperty(FormatString("Call(%s, %s, %s)", option.value_function.GetDataString().getData(), use_path.GetRoot(), option_value.GetDataString(20).getData()).getData());
 	}
 	else
 	{
 		C4PropList *option_props = option.props.getPropList();
-		use_path.SetProperty(option.value, option_props ? option_props->IsStatic() : nullptr);
+		use_path.SetProperty(option_value, option_props ? option_props->IsStatic() : nullptr);
 	}
 }
 
@@ -1402,24 +1459,52 @@ QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *p
 	editor->option_box = new C4DeepQComboBox(editor, GetOptionComboBoxButtonType(), allow_editing);
 	editor->layout->addWidget(editor->option_box);
 	for (auto &option : options) editor->option_box->addItem(option.name->GetCStr());
-	connect(editor->option_box, &C4DeepQComboBox::NewItemSelected, editor, [editor, this](int32_t newval) {
-		if (!editor->updating) this->UpdateOptionIndex(editor, newval); });
-	editor->updating = false;
 	editor->option_box->setModel(CreateOptionModel());
 	editor->option_box->model()->setParent(editor->option_box);
+	// Signal for selecting a new entry from the dropdown menu
+	connect(editor->option_box, &C4DeepQComboBox::NewItemSelected, editor, [editor, this](int32_t newval) {
+		if (!editor->updating) this->UpdateOptionIndex(editor, newval, nullptr); });
+	// Signal for write-in on enum delegates that allow editing
+	if (allow_editing)
+	{
+		connect(editor->option_box, &C4DeepQComboBox::TextChanged, editor, [editor, this](const QString &new_text) {
+			if (!editor->updating)
+			{
+				this->UpdateOptionIndex(editor, GetOptionByValue(C4VString(new_text.toUtf8())), &new_text);
+			}
+		});
+	}
+
+	editor->updating = false;
 	// If created by a selection from a parent enum, show drop down immediately after value has been set
 	editor->dropdown_pending = by_selection && is_child;
 	return editor;
 }
 
-void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *editor, int newval) const
+void C4PropertyDelegateEnum::UpdateOptionIndex(C4PropertyDelegateEnum::Editor *editor, int newval, const QString *custom_text) const
 {
+	bool has_changed = false;
+	// Change by text entry?
+	if (custom_text)
+	{
+		C4String *last_value_string = editor->last_val.getStr();
+		if (!last_value_string || last_value_string->GetData() != custom_text->toUtf8())
+		{
+			editor->last_val = C4VString(custom_text->toUtf8());
+			has_changed = true;
+		}
+	}
 	// Update value and parameter delegate if selection changed
 	if (newval != editor->last_selection_index)
 	{
-		editor->option_changed = true;
 		editor->last_selection_index = newval;
-		UpdateEditorParameter(editor, true);
+		UpdateEditorParameter(editor, !custom_text);
+		has_changed = true;
+	}
+	// Change either by text entry or by dropdown selection: Emit signal to parent
+	if (has_changed)
+	{
+		editor->option_changed = true;
 		emit EditorValueChangedSignal(editor);
 	}
 }
@@ -1435,10 +1520,18 @@ QString C4PropertyDelegateEnum::GetDisplayString(const C4Value &v, class C4Objec
 {
 	// Display string from value
 	int32_t idx = GetOptionByValue(v);
-	if (idx < 0)
+	if (idx == Editor::INDEX_Custom_Value)
 	{
-		// Value not found: Default display
-		return C4PropertyDelegate::GetDisplayString(v, obj, short_names);
+		// Value not found: Default display of strings; full display of nonsense values for debugging purposes.
+		C4String *custom_string = v.getStr();
+		if (custom_string)
+		{
+			return QString(custom_string->GetCStr());
+		}
+		else
+		{
+			return C4PropertyDelegate::GetDisplayString(v, obj, short_names);
+		}
 	}
 	else
 	{
@@ -1467,7 +1560,7 @@ const C4PropertyDelegateShape *C4PropertyDelegateEnum::GetShapeDelegate(C4Value 
 {
 	// Does this delegate own a shape? Forward decision into selected option.
 	int32_t option_idx = GetOptionByValue(val);
-	if (option_idx < 0) return nullptr;
+	if (option_idx == Editor::INDEX_Custom_Value) return nullptr;
 	const Option &option = options[option_idx];
 	EnsureOptionDelegateResolved(option);
 	if (!option.adelegate) return nullptr;
@@ -1485,7 +1578,7 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 {
 	// Custom painting: Forward to selected child delegate
 	int32_t option_idx = GetOptionByValue(val);
-	if (option_idx < 0) return false;
+	if (option_idx == Editor::INDEX_Custom_Value) return false;
 	const Option &selected_option = options[option_idx];
 	EnsureOptionDelegateResolved(selected_option);
 	if (!selected_option.adelegate) return false;
@@ -1508,9 +1601,11 @@ bool C4PropertyDelegateEnum::Paint(QPainter *painter, const QStyleOptionViewItem
 
 bool C4PropertyDelegateEnum::IsPasteValid(const C4Value &val) const
 {
+	// Strings always OK in editable enums
+	if (val.GetType() == C4V_String && allow_editing) return true;
 	// Must be a valid selection
 	int32_t option_idx = GetOptionByValue(val);
-	if (option_idx < 0) return false;
+	if (option_idx == Editor::INDEX_Custom_Value) return false;
 	const Option &option = options[option_idx];
 	// Check validity for parameter
 	EnsureOptionDelegateResolved(option);
