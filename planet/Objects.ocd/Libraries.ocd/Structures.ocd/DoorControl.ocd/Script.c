@@ -5,14 +5,14 @@
 	The buildings have to have OpenDoor, DoorOpen and CloseDoor in their act map
 */
 
-protected func ActivateEntrance(object obj)
+protected func ActivateEntrance(object entering_obj)
 {
 	if (this->~IsBase() && this->~CanBlockEnemies())
 	{
-		var for_plr = obj->GetOwner();
+		var for_plr = entering_obj->GetOwner();
 		if (Hostile(GetOwner(), for_plr))
 		{
-			Sound("Error", false, 100, for_plr);
+			entering_obj->~PlaySoundDecline();
 			PlayerMessage(for_plr, "$TxtNoEntryEnemy$", GetPlayerName(GetOwner()));
 			return false;
 		}
