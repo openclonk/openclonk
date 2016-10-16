@@ -1092,12 +1092,23 @@ void C4ConsoleGUIState::InitWelcomeScreen()
 		const char *filename = ::Config.Developer.RecentlyEditedSzenarios[i];
 		if (*filename && ::ItemExists(filename))
 		{
-			const char *basename = GetFilenameOnly(filename);
+			StdStrBuf basename(GetFilename(filename), true);
+			if (basename == C4CFN_ScenarioCore)
+			{
+				// If a Scenario.txt was opened, use the enclosing .ocs name
+				basename.Copy(filename, strlen(filename) - basename.getLength());
+				int32_t len = basename.getLength();
+				while (len && (basename.getData()[len - 1] == DirectorySeparator || basename.getData()[len - 1] == AltDirectorySeparator))
+					basename.SetLength(--len);
+				StdStrBuf base_folder_name(GetFilename(basename.getData()), true);
+				basename.Take(base_folder_name);
+			}
+			RemoveExtension(&basename);
 			QLabel *link = new QLabel(ui.welcomeScrollAreaWidgetContents);
 			ui.welcomeScrollLayout->insertWidget(++recent_idx, link);
 			link->setIndent(ui.welcomeOpenLabel->indent());
 			link->setTextInteractionFlags(ui.welcomeOpenLabel->textInteractionFlags());
-			link->setText(QString("<a href=\"open:%1\">%2</a>").arg(filename).arg(basename)); // let's hope file names never contain "
+			link->setText(QString("<a href=\"open:%1\">%2</a>").arg(filename).arg(basename.getData())); // let's hope file names never contain "
 			any_file = true;
 			window->connect(link, SIGNAL(linkActivated(QString)), window.get(), SLOT(WelcomeLinkActivated(QString)));
 		}
