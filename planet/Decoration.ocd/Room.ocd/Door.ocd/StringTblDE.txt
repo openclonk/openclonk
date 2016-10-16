@@ -1,2 +1,3 @@
 Name=Tür
 Description=Eine Tür wo man reingehen kann.
+MsgDoorLocked=Diese Tür ist geschlossen, bringe den richtigen Schlüssel mit.

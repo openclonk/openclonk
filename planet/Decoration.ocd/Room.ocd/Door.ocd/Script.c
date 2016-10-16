@@ -27,6 +27,35 @@ private func OnCloseDoor()
 }
 
 
+/*-- Door Locking --*/
+
+local door_key;
+
+public func MakeLockedDoor(object set_key)
+{
+	if (!set_key->~IsKey())
+		return;
+	door_key = set_key;
+	// Color the key according to the door.
+	var door_clr = GetColor();
+	if (door_clr)
+		door_key->SetColor(door_clr);
+	return;
+}
+
+public func ActivateEntrance(object entering_obj)
+{
+	// Block the entrance if this door needs a key and the key is not carried.
+	if (door_key && door_key->Contained() != entering_obj)
+	{
+		entering_obj->~PlaySoundDecline();
+		PlayerMessage(entering_obj->GetOwner(), "$MsgDoorLocked$");
+		return false;
+	}
+	return _inherited(entering_obj, ...);
+}
+
+
 /*-- ActMap --*/
 
 local ActMap = {

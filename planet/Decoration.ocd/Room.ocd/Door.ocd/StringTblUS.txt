@@ -1,2 +1,3 @@
 Name=Door
 Description=A door which can be entered.
+MsgDoorLocked=This door is locked, bring the right key.
