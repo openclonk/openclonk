@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetSky</title>
+    <category>Sky</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>sky</name>
+          <desc>Name of the new sky from Graphics.ocg or the scenario, without filename extension.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the current sky graphics.</desc>
+    <remark>
+      Changing the sky with this function will not persist in savegames. Consider using the <code>Sky</code> entry in Scenario.txt instead, possibly combined with scenario sections.
+    </remark>
+    <examples>
+      <example>
+        <code>SetSky("Default");</code>
+        <text>Changes to the default sky.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="scenario/scenario.html">Scenario.txt Documentation</emlink>
+      <funclink>SetSkyAdjust</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-10</date>
+</funcs>
