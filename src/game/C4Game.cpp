@@ -2193,6 +2193,12 @@ bool C4Game::InitGame(C4Group &hGroup, InitMode init_mode, bool fLoadSky, C4Valu
 		assert(!ScriptGuiRoot);
 		ScriptGuiRoot.reset(new C4ScriptGuiWindow);
 	}
+	else if (fLoadSky)
+	{
+		// Sky needs graphics loaded, for shaders
+		if (!GraphicsResource.Init())
+			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
+	}
 
 	// Load section sounds
 	Application.SoundSystem.LoadEffects(hGroup, NULL, true);
