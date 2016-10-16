@@ -46,6 +46,7 @@
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
 #include "landscape/C4Particles.h"
+#include "graphics/C4GraphicsResource.h"
 
 C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 {
@@ -1671,8 +1672,19 @@ static bool FnSetSky(C4PropList * _this, C4String * name)
 {
 	if (!name) return false;
 	auto& sky = ::Landscape.GetSky();
+
+	// Open Graphics.ocg -- we might need to fetch some shader (slices)
+	// from there when reloading the sky.
+	if (!::GraphicsResource.RegisterGlobalGraphics()) return false;
+	if (!::GraphicsResource.RegisterMainGroups()) return false;
+
 	sky.Clear();
-	return sky.Init(false, name->GetCStr());
+	const bool result = sky.Init(false, name->GetCStr());
+
+	// close Graphics.ocg again
+	::GraphicsResource.CloseFiles();
+
+	return result;
 }
 
 static bool FnSetSkyAdjust(C4PropList * _this, long dwAdjust, long dwBackClr)
