@@ -1832,6 +1832,13 @@ C4PropertyDelegateSound::C4PropertyDelegateSound(const C4PropertyDelegateFactory
 	}
 }
 
+QString C4PropertyDelegateSound::GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const
+{
+	// Always show full sound name
+	C4String *val_string = v.getStr();
+	return val_string ? QString(val_string->GetCStr()) : QString(v.GetDataString().getData());
+}
+
 bool C4PropertyDelegateSound::IsPasteValid(const C4Value &val) const
 {
 	// Must be nil or a string

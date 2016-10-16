@@ -446,6 +446,7 @@ class C4PropertyDelegateSound : public C4PropertyDelegateEnum
 {
 public:
 	C4PropertyDelegateSound(const C4PropertyDelegateFactory *factory, C4PropList *props);
+	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override;
 	bool IsPasteValid(const C4Value &val) const override;
 protected:
 	C4StyledItemDelegateWithButton::ButtonType GetOptionComboBoxButtonType() const override { return C4StyledItemDelegateWithButton::BT_PlaySound; }
