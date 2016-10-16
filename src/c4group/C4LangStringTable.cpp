@@ -174,5 +174,3 @@ void C4LangStringTable::ReplaceStrings(StdStrBuf &rBuf)
 {
 	ReplaceStrings(rBuf, rBuf);
 }
-
-C4LangStringTable C4LangStringTable::system_string_table;
