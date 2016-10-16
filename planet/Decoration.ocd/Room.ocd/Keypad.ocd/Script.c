@@ -307,7 +307,7 @@ public func UpdateMenuCode(string digit_pressed)
 		// Remove last digit or symbol.
 		if (GetType(code) == C4V_String)
 			code = TakeString(code, 0, GetLength(code) - 1);
-		Sound("UI::Click?");
+		Sound("UI::Click?", {player = menu_controller->GetOwner()});
 	}
 	else
 	{
@@ -317,11 +317,11 @@ public func UpdateMenuCode(string digit_pressed)
 				code = Format("%s", digit_pressed);
 			else
 				code = Format("%s%s", code, digit_pressed);
-			Sound("UI::Tick");
+			Sound("UI::Tick", {player = menu_controller->GetOwner()});
 		}
 		else
 		{
-			Sound("UI::Click?");
+			Sound("UI::Click?", {player = menu_controller->GetOwner()});
 		}		
 	}
 	menu.code.value.Text = CodeToDisplay(code);
@@ -349,7 +349,7 @@ private func CodeToDisplay(string code)
 public func ClearMenuCode()
 {
 	code = nil;
-	Sound("UI::Click?");
+	Sound("UI::Click?", {player = menu_controller->GetOwner()});
 	menu.code.value.Text = code;
 	GuiUpdate(menu.code.value, menu_id, menu.code.value.ID, this);
 	return;
@@ -363,7 +363,7 @@ public func EnterKeypadCode()
 		code = nil;
 		menu.code.value.Text = "$MsgCodeReset$";
 		menu_controller.code_reset_state = nil;
-		Sound("UI::Confirmed");
+		Sound("UI::Confirmed", {player = menu_controller->GetOwner()});
 		menu.code.text.Text = "$MsgEnterCode$";
 		GuiUpdate(menu.code.text, menu_id, menu.code.text.ID, this);
 	}
@@ -373,12 +373,12 @@ public func EnterKeypadCode()
 		{
 			code = nil;
 			menu.code.value.Text = "$MsgNoCode$";
-			Sound("UI::Error");
+			Sound("UI::Error", {player = menu_controller->GetOwner()});
 		}
 		else if (correct_code == code)
 		{
 			code = nil;
-			Sound("UI::Confirmed");
+			Sound("UI::Confirmed", {player = menu_controller->GetOwner()});
 			if (menu_controller.code_reset_state == "confirm")
 			{
 				menu.code.value.Text = "$MsgCodeConfirmed$";
@@ -397,7 +397,7 @@ public func EnterKeypadCode()
 		{
 			code = nil;
 			menu.code.value.Text = "$MsgWrongCode$";
-			Sound("UI::Error");
+			Sound("UI::Error", {player = menu_controller->GetOwner()});
 			// Execute the wrong code trigger.
 			OnWrongCodeEntered(menu_controller);
 		}
@@ -427,14 +427,14 @@ public func ResetKeypadCode()
 		menu.code.text.Text = "$MsgEnterCode$";
 		GuiUpdate(menu.code.text, menu_id, menu.code.text.ID, this);
 	}
-	Sound("UI::Tick");
+	Sound("UI::Tick", {player = menu_controller->GetOwner()});
 	return;
 }
 
 public func CloseKeypadMenu()
 {
 	// Close the menu and inform the controller.
-	Sound("UI::Close");
+	Sound("UI::Close", {player = menu_controller->GetOwner()});
 	GuiClose(menu_id, nil, this);
 	menu_target->RemoveObject();
 	menu_target = nil;
