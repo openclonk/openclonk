@@ -32,6 +32,7 @@ C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
 C4Set<C4PropListScript *> C4PropListScript::PropLists;
 std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
+C4LangStringTable C4LangStringTable::system_string_table;
 C4StringTable Strings;
 C4AulScriptEngine ScriptEngine;
 
