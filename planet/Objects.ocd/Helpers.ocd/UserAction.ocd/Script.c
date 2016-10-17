@@ -112,7 +112,7 @@ func Definition(def)
 		TargetPlayers = new Evaluator.PlayerList { EditorHelp="$SoundTargetPlayersHelp$" },
 		SourceObject = new Evaluator.Object { Name="$SoundSourceObject$", EditorHelp="$SoundSourceObjectHelp$", EmptyName="$Global$" }
 		} } );
-	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0},Rotation={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", EditorProps = {
+	AddEvaluator("Action", "$Object$", "$CreateObject$", "$CreateObjectHelp$", "create_object", [def, def.EvalAct_CreateObject], { SpeedX={Function="int_constant", Value=0},SpeedY={Function="int_constant", Value=0},SpeedR={Function="int_constant", Value=0},Rotation={Function="int_constant", Value=0} }, { Type="proplist", Display="{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { EditorHelp="$CreateObjectDefinitionHelp$", Priority=100 },
 		Position = new Evaluator.Position { EditorHelp="$CreateObjectPositionHelp$" },
 		CreateAbove = { Name="$CreateObjectCreationOffset$", EditorHelp="$CreateObjectCreationOffsetHelp$", Type="enum", Options=[
@@ -122,8 +122,9 @@ func Definition(def)
 		Owner = new Evaluator.Player { Name="$Owner$", EditorHelp="$CreateObjectOwnerHelp$" },
 		Container = new Evaluator.Object { Name="$Container$", EditorHelp="$CreateObjectContainerHelp$" },
 		SpeedX = new Evaluator.Integer { Name="$SpeedX$", EditorHelp="$CreateObjectSpeedXHelp$" },
-		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" },		
-		Rotation = new Evaluator.Integer { Name="$Rotation$", EditorHelp="$CreateObjectRotationHelp$" }
+		SpeedY = new Evaluator.Integer { Name="$SpeedY$", EditorHelp="$CreateObjectSpeedYHelp$" },
+		Rotation = new Evaluator.Integer { Name="$Rotation$", EditorHelp="$CreateObjectRotationHelp$" },
+		SpeedR = new Evaluator.Integer { Name="$SpeedR$", EditorHelp="$CreateObjectSpeedRHelp$" }
 		} } );
 	AddEvaluator("Action", "$Object$", "$CastObjects$", "$CastObjectsHelp$", "cast_objects", [def, def.EvalAct_CastObjects], { Amount={Function="int_constant", Value=8},Speed={Function="int_constant", Value=20},AngleDeviation={Function="int_constant", Value=360} }, { Type="proplist", Display="{{Amount}}x{{ID}}", EditorProps = {
 		ID = new Evaluator.Definition { EditorHelp="$CastObjectsDefinitionHelp$", Priority=100 },
@@ -974,6 +975,7 @@ private func EvalAct_CreateObject(proplist props, proplist context)
 		var speed_x = EvaluateValue("Integer", props.SpeedX, context);
 		var speed_y = EvaluateValue("Integer", props.SpeedY, context);
 		var rotation = EvaluateValue("Integer", props.Rotation, context);
+		var speed_r = EvaluateValue("Integer", props.SpeedR, context);
 		if (props.CreateAbove)
 			obj = Global->CreateObjectAbove(create_id, position[0], position[1], owner);
 		else
@@ -982,6 +984,7 @@ private func EvalAct_CreateObject(proplist props, proplist context)
 		if (obj) obj->SetXDir(speed_x);
 		if (obj) obj->SetYDir(speed_y);
 		if (obj) obj->SetR(rotation);
+		if (obj) obj->SetRDir(speed_r, 5); // Internal rdir value is in five degrees frame
 	}
 	// Remember object for later access
 	context.last_created_object = obj;
