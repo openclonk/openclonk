@@ -48,7 +48,7 @@ public:
 	C4AulParse(class C4ScriptHost *host);
 	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine);
 	~C4AulParse();
-	std::unique_ptr<::aul::ast::FunctionDecl> Parse_DirectExec(const char *code);
+	std::unique_ptr<::aul::ast::FunctionDecl> Parse_DirectExec(const char *code, bool whole_function);
 	std::unique_ptr<::aul::ast::Script> Parse_Script(C4ScriptHost *);
 
 private:

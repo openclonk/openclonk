@@ -1013,7 +1013,7 @@ void C4AulProfiler::Show()
 	// done!
 }
 
-C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
+C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context, bool parse_function)
 {
 #ifdef DEBUGREC_SCRIPT
 	if (Config.General.DebugRec)
@@ -1035,7 +1035,16 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 	// Parse function
 	try
 	{
-		pFunc->ParseFn(&::ScriptEngine, context);
+		if (parse_function)
+		{
+			// Expect a full function (e.g. "func foo() { return bar(); }")
+			pFunc->ParseDirectExecFunc(&::ScriptEngine, context);
+		}
+		else
+		{
+			// Expect a single statement (e.g. "bar()")
+			pFunc->ParseDirectExecStatement(&::ScriptEngine, context);
+		}
 		C4AulParSet Pars;
 		C4Value vRetVal(Exec(pFunc.get(), p, Pars.Par, fPassErrors));
 		// profiler

@@ -207,7 +207,8 @@ public:
 	C4AulScriptFunc(C4PropListStatic * Parent, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 	~C4AulScriptFunc();
 
-	void ParseFn(C4AulScriptEngine *Engine, C4AulScriptContext* context = NULL);
+	void ParseDirectExecFunc(C4AulScriptEngine *Engine, C4AulScriptContext* context = NULL);
+	void ParseDirectExecStatement(C4AulScriptEngine *Engine, C4AulScriptContext* context = NULL);
 
 	virtual bool GetPublic() const { return true; }
 	virtual int GetParCount() const { return ParCount; }

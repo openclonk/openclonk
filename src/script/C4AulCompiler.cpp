@@ -139,6 +139,7 @@ class C4AulCompiler::PreparseAstVisitor : public ::aul::DefaultRecursiveVisitor
 
 public:
 	PreparseAstVisitor(C4ScriptHost *host, C4ScriptHost *source_host, C4AulScriptFunc *func = nullptr) : target_host(host), host(source_host), Fn(func) {}
+	explicit PreparseAstVisitor(C4AulScriptFunc *func) : Fn(func), target_host(func->pOrgScript), host(target_host) {}
 
 	virtual ~PreparseAstVisitor() {}
 
@@ -248,7 +249,14 @@ public:
 	virtual void visit(const ::aul::ast::FunctionExpr *n) override;
 
 	template<class T>
-	void EmitFunctionCode(const T *n) { EmitFunctionCode(n, n); }
+	void EmitFunctionCode(const T *n)
+	{
+		// This dynamic_cast resolves the problem where we have a Function*
+		// and want to emit code to it. All classes derived from Function
+		// are also ultimately derived from Node, so this call is fine
+		// without any additional checking.
+		EmitFunctionCode(n, dynamic_cast<const ::aul::ast::Node*>(n));
+	}
 
 private:
 	void EmitFunctionCode(const ::aul::ast::Function *f, const ::aul::ast::Node *n);
@@ -368,10 +376,16 @@ void C4AulCompiler::Compile(C4ScriptHost *host, C4ScriptHost *source_host, const
 
 void C4AulCompiler::Compile(C4AulScriptFunc *func, const ::aul::ast::Function *def)
 {
-	CodegenAstVisitor v(func);
-	// Don't visit the whole definition here; that would create a new function
-	// and we don't want that.
-	def->body->accept(&v);
+	{
+		// Don't visit the whole definition here; that would create a new function
+		// and we don't want that.
+		PreparseAstVisitor v(func);
+		def->body->accept(&v);
+	}
+	{
+		CodegenAstVisitor v(func);
+		v.EmitFunctionCode(def);
+	}
 }
 
 #define ENSURE_COND(cond, failmsg) do { if (!(cond)) throw Error(target_host, host, n, Fn, failmsg); } while (0)
@@ -413,11 +427,16 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 				if (!Fn)
 					throw Error(target_host, host, n, Fn, "internal error: function-local var declaration outside of function");
 
-				if (target_host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || target_host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-					Warn(target_host, host, n, Fn, "function-local variable hides a global variable: %s", cname);
-				C4String *s = ::Strings.FindString(cname);
-				if (s && target_host->GetPropList()->HasProperty(s))
-					Warn(target_host, host, n, Fn, "function-local variable hides an object-local variable: %s", cname);
+				if (target_host)
+				{
+					// if target_host is unset, we're parsing this func for direct execution,
+					// in which case we don't want to warn about variable hiding.
+					if (target_host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || target_host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
+						Warn(target_host, host, n, Fn, "function-local variable hides a global variable: %s", cname);
+					C4String *s = ::Strings.FindString(cname);
+					if (s && target_host->GetPropList()->HasProperty(s))
+						Warn(target_host, host, n, Fn, "function-local variable hides an object-local variable: %s", cname);
+				}
 				Fn->VarNamed.AddName(cname);
 				break;
 			}
@@ -1130,7 +1149,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		// if this is a function without explicit context, we resolve it
 		if (!callee)
 			callee = Fn->Parent->GetFunc(cname);
-		if (!callee)
+		if (!callee && target_host)
 			callee = target_host->Engine->GetFunc(cname);
 
 		if (callee)
@@ -1168,6 +1187,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		}
 	}
 
+	// Check passed parameters for this call (as far as possible)
 	std::vector<C4V_Type> expected_par_types;
 	if (n->context)
 	{
@@ -1175,7 +1195,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		// Since we don't know the context in which this call will happen at
 		// runtime, we'll check whether all available functions with the same
 		// name agree on their parameters.
-		const C4AulFunc *candidate = target_host->Engine->GetFirstFunc(cname);
+		const C4AulFunc *candidate = target_host ? target_host->Engine->GetFirstFunc(cname) : nullptr;
 		if (candidate)
 		{
 			expected_par_types.assign(candidate->GetParType(), candidate->GetParType() + candidate->GetParCount());

@@ -757,25 +757,42 @@ void C4AulParse::UnexpectedToken(const char * Expected)
 	throw C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
-void C4AulScriptFunc::ParseFn(C4AulScriptEngine *Engine, C4AulScriptContext* context)
+void C4AulScriptFunc::ParseDirectExecFunc(C4AulScriptEngine *Engine, C4AulScriptContext* context)
 {
 	ClearCode();
 	// parse
 	C4AulParse state(this, context, Engine);
-	auto func = state.Parse_DirectExec(Script);
+	auto func = state.Parse_DirectExec(Script, true);
 	C4AulCompiler::Compile(this, func.get());
 }
 
-std::unique_ptr<::aul::ast::FunctionDecl> C4AulParse::Parse_DirectExec(const char *code)
+void C4AulScriptFunc::ParseDirectExecStatement(C4AulScriptEngine *Engine, C4AulScriptContext* context)
+{
+	ClearCode();
+	// parse
+	C4AulParse state(this, context, Engine);
+	auto func = state.Parse_DirectExec(Script, false);
+	C4AulCompiler::Compile(this, func.get());
+}
+
+std::unique_ptr<::aul::ast::FunctionDecl> C4AulParse::Parse_DirectExec(const char *code, bool whole_function)
 {
 	// get first token
 	Shift();
-	auto expr = Parse_Expression();
-	Match(ATT_EOF);
 	// Synthesize a wrapping function which we can call
-	auto func = std::make_unique<::aul::ast::FunctionDecl>("$internal$eval");
-	func->body = std::make_unique<::aul::ast::Block>();
-	func->body->children.push_back(std::make_unique<::aul::ast::Return>(std::move(expr)));
+	std::unique_ptr<::aul::ast::FunctionDecl> func;
+	if (whole_function)
+	{
+		func = Parse_ToplevelFunctionDecl();
+	}
+	else
+	{
+		auto expr = Parse_Expression();
+		func = std::make_unique<::aul::ast::FunctionDecl>("$internal$eval");
+		func->body = std::make_unique<::aul::ast::Block>();
+		func->body->children.push_back(std::make_unique<::aul::ast::Return>(std::move(expr)));
+	}
+	Match(ATT_EOF);
 	return func;
 }
 
