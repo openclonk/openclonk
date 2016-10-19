@@ -466,7 +466,13 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 		}
 	}
 
-	DefaultRecursiveVisitor::visit(n);
+	if (n->scope == ::aul::ast::VarDecl::Scope::Func)
+	{
+		// only func-scoped variables can potentially have initializers we care
+		// about in the pre-parsing stage: they may have calls that pass
+		// unnamed parameters
+		DefaultRecursiveVisitor::visit(n);
+	}
 }
 
 void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
@@ -1595,7 +1601,7 @@ C4Value C4AulCompiler::ConstexprEvaluator::eval(C4ScriptHost *host, const ::aul:
 	return ce.v;
 }
 
-C4Value C4AulCompiler::ConstexprEvaluator::eval_static(C4ScriptHost *host, C4PropListStatic *parent, const std::string & parent_key, const ::aul::ast::Expr *e, EvalFlags flags)
+C4Value C4AulCompiler::ConstexprEvaluator::eval_static(C4ScriptHost *host, C4PropListStatic *parent, const std::string &parent_key, const ::aul::ast::Expr *e, EvalFlags flags)
 {
 	ConstexprEvaluator ce(host);
 	ce.proplist_magic = ConstexprEvaluator::ProplistMagic{ true, parent, parent_key };
@@ -1623,23 +1629,51 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ArrayLit *n)
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 {
-	std::unique_ptr<C4PropList> p;
+	std::unique_ptr<C4PropList> new_proplist;
+	C4PropList *p = nullptr;
+
+	bool first_pass = true;
 
 	if (proplist_magic.active)
 	{
-		p.reset(C4PropList::NewStatic(NULL, proplist_magic.parent, ::Strings.RegString(proplist_magic.key.c_str())));
+		// Check if there's already a proplist available
+		C4String *key = ::Strings.RegString(proplist_magic.key.c_str());
+		C4Value old;
+		if (proplist_magic.parent)
+		{
+			proplist_magic.parent->GetPropertyByS(key, &old);
+		}
+		else
+		{
+			// If proplist_magic.parent is NULL, we're handling a global constant.
+			host->Engine->GetGlobalConstant(key->GetCStr(), &old);
+		}
+		if (old.getPropList())
+		{
+			p = old.getPropList();
+			first_pass = false;
+		}
+		else
+		{
+			p = C4PropList::NewStatic(NULL, proplist_magic.parent, key);
+			new_proplist.reset(p);
+		}
 	}
 	else
 	{
-		p.reset(C4PropList::New());
+		p = C4PropList::New();
+		new_proplist.reset(p);
 	}
 
 	// Since the values may be functions that refer to other values in the
 	// proplist, pre-populate the new proplist with dummy values until the
 	// real ones are set
-	for (const auto &kv : n->values)
+	if (first_pass)
 	{
-		p->SetPropertyByS(::Strings.RegString(kv.first.c_str()), C4VNull);
+		for (const auto &kv : n->values)
+		{
+			p->SetPropertyByS(::Strings.RegString(kv.first.c_str()), C4VNull);
+		}
 	}
 
 	auto saved_magic = std::move(proplist_magic);
@@ -1650,7 +1684,8 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		p->SetPropertyByS(::Strings.RegString(kv.first.c_str()), v);
 		proplist_magic = std::move(saved_magic);
 	}
-	v = C4VPropList(p.release());
+	v = C4VPropList(p);
+	new_proplist.release();
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::NilLit *) { v = C4VNull; }
@@ -1830,10 +1865,12 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::FunctionExpr *n)
 	ENSURE_COND(proplist_magic.active, "internal error: function expression outside of static proplist");
 
 	C4AulScriptFunc *sfunc = nullptr;
+	bool first_pass = true;
 
 	if (auto func = proplist_magic.parent->GetFunc(proplist_magic.key.c_str()))
 	{
 		sfunc = func->SFunc();
+		first_pass = false;
 	}
 	else
 	{
@@ -1842,18 +1879,23 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::FunctionExpr *n)
 
 	ENSURE_COND(sfunc != nullptr, "internal error: function expression target resolved to non-function value");
 
-	for (const auto &param : n->params)
+	if (first_pass)
 	{
-		sfunc->AddPar(param.name.c_str());
+		for (const auto &param : n->params)
+		{
+			sfunc->AddPar(param.name.c_str());
+		}
+		if (n->has_unnamed_params)
+			sfunc->ParCount = C4AUL_MAX_Par;
+
+		PreparseAstVisitor preparser(host, host, sfunc);
+		preparser.visit(n->body.get());
 	}
-	if (n->has_unnamed_params)
-		sfunc->ParCount = C4AUL_MAX_Par;
-
-	PreparseAstVisitor preparser(host, host, sfunc);
-	preparser.visit(n->body.get());
-
-	CodegenAstVisitor cg(sfunc);
-	cg.EmitFunctionCode(n);
+	else
+	{
+		CodegenAstVisitor cg(sfunc);
+		cg.EmitFunctionCode(n);
+	}
 
 	v.SetFunction(sfunc);
 }
