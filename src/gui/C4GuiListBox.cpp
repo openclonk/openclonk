@@ -20,6 +20,7 @@
 #include "gui/C4Gui.h"
 
 #include "gui/C4MouseControl.h"
+#include "graphics/C4Draw.h"
 #include <algorithm>
 
 namespace C4GUI

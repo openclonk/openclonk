@@ -24,6 +24,7 @@
 #include "game/C4Game.h"
 #include "gui/C4ChatDlg.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "network/C4Network2Reference.h"
 
 // ----------- C4StartupNetListEntry -----------------------------------------------------------------------

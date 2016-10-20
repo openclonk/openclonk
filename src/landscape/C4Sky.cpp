@@ -25,6 +25,7 @@
 #include "c4group/C4Components.h"
 #include "landscape/C4Weather.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "lib/StdColors.h"
 
 void C4Sky::SetFadePalette(int32_t *ipColors)

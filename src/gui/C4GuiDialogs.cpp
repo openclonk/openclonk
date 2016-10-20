@@ -25,6 +25,7 @@
 #include "game/C4Viewport.h"
 #include "object/C4Def.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "game/C4Application.h"
 #include "game/C4GameScript.h"
 

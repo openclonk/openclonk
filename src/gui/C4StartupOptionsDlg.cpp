@@ -25,6 +25,7 @@
 #include "game/C4Game.h"
 #include "lib/C4Log.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "network/C4Network2.h"
 #include "gui/C4MouseControl.h"
 

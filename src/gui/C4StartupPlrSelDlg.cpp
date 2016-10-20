@@ -29,6 +29,7 @@
 #include "gui/C4FileSelDlg.h"
 #include "lib/C4Log.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "player/C4RankSystem.h"
 #include "gui/C4MouseControl.h"
 #include "lib/StdColors.h"

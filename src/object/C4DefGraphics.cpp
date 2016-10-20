@@ -35,6 +35,7 @@
 #include "object/C4GameObjects.h"
 #include "player/C4RankSystem.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "object/C4MeshAnimation.h"
 #include "lib/StdMeshLoader.h"
 #include "lib/StdMeshUpdate.h"

@@ -26,6 +26,7 @@
 #include "game/C4Game.h"
 #include "game/C4GraphicsSystem.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "control/C4GameControl.h"
 
 // lobby

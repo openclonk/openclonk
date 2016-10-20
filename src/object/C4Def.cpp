@@ -21,6 +21,7 @@
 #include "object/C4Def.h"
 #include "graphics/C4DrawGL.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 
 #include "c4group/C4Components.h"
 #include "config/C4Config.h"
@@ -33,6 +34,7 @@
 #include "landscape/C4Particles.h"
 #include "graphics/CSurface8.h"
 #include "lib/StdColors.h"
+#include "lib/StdMeshLoader.h"
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.

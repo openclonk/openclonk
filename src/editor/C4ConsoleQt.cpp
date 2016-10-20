@@ -17,13 +17,14 @@
 /* Editor windows using Qt*/
 
 #include "C4Include.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Landscape.h"
+// Make sure to include landscape/* first. Otherwise, Qt will either include gltypes and that forbids including glew, or, if glew is inlcuded first, QT will undefine glew partially, and then it can't be included again.
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4ConsoleQtObjectListViewer.h"
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleGUI.h"
-#include "landscape/C4Texture.h"
-#include "landscape/C4Landscape.h"
 #include "C4Version.h"
 
 #include "editor/C4ConsoleQt.h"

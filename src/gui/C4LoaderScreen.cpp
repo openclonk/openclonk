@@ -22,6 +22,7 @@
 #include "lib/C4LogBuf.h"
 #include "lib/C4Log.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "lib/C4Random.h"
 #include "c4group/C4GroupSet.h"
 #include "game/C4Game.h"

@@ -18,18 +18,22 @@
 
 #include "C4Include.h"
 #include "script/C4Value.h"
-#include "editor/C4ConsoleQtViewport.h"
-#include "editor/C4ConsoleQtState.h"
-#include "editor/C4Console.h"
-#include "editor/C4ConsoleQtShapes.h"
 #include "game/C4Viewport.h"
 #include "object/C4Object.h"
-#include "editor/C4ViewportWindow.h"
-#include "editor/C4Console.h"
 #include "gui/C4MouseControl.h"
 #include "landscape/C4Landscape.h"
 #include "object/C4GameObjects.h"
 #include "player/C4PlayerList.h"
+#ifndef USE_CONSOLE
+#include <GL/glew.h>
+#endif
+// See C4ConsoleQt.cpp on the include order
+#include "editor/C4ConsoleQtViewport.h"
+#include "editor/C4ConsoleQtState.h"
+#include "editor/C4Console.h"
+#include "editor/C4ConsoleQtShapes.h"
+#include "editor/C4ViewportWindow.h"
+#include "editor/C4Console.h"
 
 /* Console viewports */
 

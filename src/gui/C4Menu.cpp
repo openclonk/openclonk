@@ -27,6 +27,7 @@
 #include "player/C4Player.h"
 #include "gui/C4MouseControl.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "game/C4Game.h"
 #include "player/C4PlayerList.h"
 #include "control/C4GameControl.h"

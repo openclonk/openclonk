@@ -13,6 +13,7 @@
  * for the above references.
  */
 
+#include <GL/glew.h> // Somehow, C4Include manages to include gltypes.h on the autobuild hosts, which makes glew.h choke if not included first. I don't understand it, and I don't want to.
 #include "C4Include.h"
 #include "game/C4GraphicsSystem.h"
 #include "gui/C4MouseControl.h"

@@ -34,6 +34,7 @@
 #include "object/C4DefList.h"
 #include "game/C4GraphicsSystem.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "game/C4Game.h"
 #include "control/C4Control.h"
 #include "gui/C4MouseControl.h"

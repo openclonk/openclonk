@@ -19,6 +19,7 @@
 #include "game/C4Game.h"
 #include "config/C4Config.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 
 C4UpperBoard::C4UpperBoard()
 {

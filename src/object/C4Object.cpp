@@ -41,6 +41,7 @@
 #include "player/C4RankSystem.h"
 #include "gui/C4GameMessage.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "game/C4GraphicsSystem.h"
 #include "game/C4Game.h"
 #include "game/C4Application.h"

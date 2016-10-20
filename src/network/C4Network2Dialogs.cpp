@@ -26,6 +26,8 @@
 #include "player/C4PlayerList.h"
 #include "control/C4GameControl.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4Draw.h"
 #include "gui/C4Startup.h"
 #include "lib/StdColors.h"
 

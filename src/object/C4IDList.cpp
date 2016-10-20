@@ -23,6 +23,7 @@
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 
 C4IDListChunk::C4IDListChunk()
 {

@@ -30,6 +30,7 @@
 #include "control/C4RoundResults.h"
 #include "landscape/C4TextureShape.h"
 #include "landscape/C4Sky.h"
+#include "graphics/C4Draw.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. */

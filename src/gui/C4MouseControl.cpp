@@ -31,6 +31,7 @@
 #include "player/C4Player.h"
 #include "gui/C4ChatDlg.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Draw.h"
 #include "player/C4PlayerList.h"
 #include "control/C4GameControl.h"
 #include "gui/C4ScriptGuiWindow.h"

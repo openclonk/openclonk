@@ -17,11 +17,13 @@
 /* Editable shapes in the viewports (like e.g. AI guard range rectangles) */
 
 #include "C4Include.h"
+#include "graphics/C4FacetEx.h"
+#include "graphics/C4Draw.h"
+#include "object/C4Object.h"
+// See C4ConsoleQt.cpp on include order
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4ConsoleQtShapes.h"
-#include "graphics/C4FacetEx.h"
-#include "object/C4Object.h"
 
 /* Generic shape */
 
