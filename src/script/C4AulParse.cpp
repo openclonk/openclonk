@@ -476,10 +476,10 @@ C4AulTokenType C4AulParse::GetNextToken()
 				{
 					// Octal escape: \142
 					char ch = 0;
-					while (SPos[1] >= '0' && SPos[1] <= '7')
+					while (SPos[0] >= '0' && SPos[0] <= '7')
 					{
 						ch *= 8;
-						ch += *++SPos -'0';
+						ch += *SPos++ -'0';
 					}
 					strbuf.push_back(ch);
 					break;
