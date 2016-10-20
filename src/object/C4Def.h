@@ -25,7 +25,6 @@
 #include "object/C4IDList.h"
 #include "script/C4ValueMap.h"
 #include "graphics/C4Facet.h"
-#include "graphics/C4Surface.h"
 #include "c4group/C4ComponentHost.h"
 #include "script/C4PropList.h"
 

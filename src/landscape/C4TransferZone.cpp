@@ -21,6 +21,7 @@
 #include "landscape/C4TransferZone.h"
 
 #include "graphics/C4FacetEx.h"
+#include "graphics/C4Draw.h"
 #include "landscape/C4Landscape.h"
 #include "object/C4GameObjects.h"
 #include "lib/StdColors.h"

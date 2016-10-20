@@ -31,6 +31,7 @@
 #include "platform/StdScheduler.h"
 #include "object/C4Id.h"
 #include "platform/C4Window.h"
+#include "graphics/C4Draw.h"
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque

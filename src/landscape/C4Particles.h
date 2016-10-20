@@ -19,6 +19,10 @@
 #include "platform/StdScheduler.h"
 
 #include <pcg/pcg_random.hpp>
+#ifndef USE_CONSOLE
+#include <GL/glew.h>
+#endif
+#include "graphics/C4Shader.h"
 
 #ifndef INC_C4Particles
 #define INC_C4Particles

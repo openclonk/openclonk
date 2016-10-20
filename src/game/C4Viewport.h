@@ -24,6 +24,7 @@
 
 class C4ViewportWindow;
 class C4FoWRegion;
+struct ZoomData;
 
 class C4Viewport
 {

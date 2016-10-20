@@ -17,7 +17,7 @@
 
 #include "C4Include.h"
 #include "lib/C4Markup.h"
-#include "graphics/C4Draw.h"
+#include "graphics/C4BltTransform.h"
 
 void C4MarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {

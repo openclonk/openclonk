@@ -43,11 +43,6 @@ extern "C" {
 // Global access pointer
 C4Draw *pDraw=NULL;
 
-inline DWORD GetTextShadowClr(DWORD dwTxtClr)
-{
-	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
-}
-
 void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
 	// iAngle is in degrees (cycling from 0 to 360)

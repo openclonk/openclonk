@@ -34,6 +34,7 @@
 #include "player/C4PlayerList.h"
 #include "control/C4GameControl.h"
 #include "gui/C4ScriptGuiWindow.h"
+#include "lib/StdMesh.h"
 
 const int32_t C4MC_Drag_None            = 0,
               C4MC_Drag_Script          = 6,

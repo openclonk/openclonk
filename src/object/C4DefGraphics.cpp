@@ -37,6 +37,7 @@
 #include "graphics/C4GraphicsResource.h"
 #include "object/C4MeshAnimation.h"
 #include "lib/StdMeshLoader.h"
+#include "lib/StdMeshUpdate.h"
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
 

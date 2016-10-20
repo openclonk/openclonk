@@ -20,6 +20,9 @@
 #include "graphics/C4FacetEx.h"
 #include "player/C4Player.h"
 #include "landscape/fow/C4FoW.h"
+#ifndef USE_CONSOLE
+#include <GL/glew.h>
+#endif
 
 class C4Surface;
 
@@ -59,8 +62,9 @@ public:
 	// Fills a 2x3 matrix to transform fragment coordinates to light texture coordinates
 	void GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect, float lightTransform[6]) const;
 private:
+#ifndef USE_CONSOLE
 	bool BindFramebuf(GLuint prev_fb);
-
+#endif
 };
 
 #endif

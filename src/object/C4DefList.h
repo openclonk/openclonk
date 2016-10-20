@@ -21,8 +21,6 @@
 #define INC_C4DefList
 
 #include "graphics/C4FontLoader.h"
-#include "lib/StdMesh.h"
-#include "lib/StdMeshLoader.h"
 
 class C4DefList: public CStdFont::CustomImages
 {

@@ -22,8 +22,8 @@
 #include "graphics/C4Surface.h"
 #include "object/C4ObjectPtr.h"
 #include "lib/C4InputValidation.h"
-#include "object/C4Id.h"
 #include "lib/StdMeshUpdate.h"
+#include "object/C4Id.h"
 
 // defintion graphics
 class C4AdditionalDefGraphics;

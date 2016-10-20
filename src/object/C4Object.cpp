@@ -48,89 +48,9 @@
 #include "object/C4GameObjects.h"
 #include "control/C4Record.h"
 #include "object/C4MeshAnimation.h"
+#include "object/C4MeshDenumerator.h"
 #include "landscape/fow/C4FoW.h"
 #include "landscape/C4Particles.h"
-
-namespace
-{
-	const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFactory = StdMeshInstance::AttachedMesh::DenumeratorFactory<C4MeshDenumerator>;
-}
-
-void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach)
-{
-	if(pComp->isCompiler())
-	{
-		int32_t def;
-		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));
-
-		if(def)
-		{
-			C4DefGraphics* pGfx = NULL;
-			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
-			Def = pGfx->pDef;
-
-			if(pGfx->Type != C4DefGraphics::TYPE_Mesh)
-				pComp->excCorrupt("ChildMesh points to non-mesh graphics");
-			assert(!attach->Child);
-			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
-			assert(attach->Child != NULL);
-			attach->OwnChild = true; // Delete the newly allocated child instance when the parent instance is gone
-
-			// TODO: Do we leak pGfx?
-		}
-		else
-		{
-			pComp->Value(mkNamingAdapt(Object, "ChildObject"));
-			attach->OwnChild = false; // Keep child instance when parent instance is gone since it belongs to a different object
-		}
-	}
-	else
-	{
-		int32_t def = 0;
-		if(Def) ++def;
-		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));
-
-		if(Def)
-		{
-			assert(attach->OwnChild);
-			C4DefGraphics* pGfx = &Def->Graphics;
-			assert(pGfx->Type == C4DefGraphics::TYPE_Mesh);
-			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
-			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
-		}
-		else
-		{
-			assert(!attach->OwnChild);
-			pComp->Value(mkNamingAdapt(Object, "ChildObject"));
-		}
-	}
-}
-
-void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach)
-{
-	Object.DenumeratePointers();
-
-	// Set child instance of attach after denumeration
-	if(Object)
-	{
-		assert(!attach->OwnChild);
-		assert(!attach->Child || attach->Child == Object->pMeshInstance);
-		if(!attach->Child)
-			attach->Child = Object->pMeshInstance;
-	}
-}
-
-bool C4MeshDenumerator::ClearPointers(C4Object* pObj)
-{
-	if(Object == pObj)
-	{
-		Object = NULL;
-		// Return false causes the attached mesh to be deleted by StdMeshInstance
-		return false;
-	}
-
-	return true;
-}
 
 static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t contact)
 {

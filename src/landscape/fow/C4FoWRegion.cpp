@@ -47,9 +47,9 @@ C4FoWRegion::~C4FoWRegion()
 #endif
 }
 
+#ifndef USE_CONSOLE
 bool C4FoWRegion::BindFramebuf(GLuint prev_fb)
 {
-#ifndef USE_CONSOLE
 	// Flip texture
 	pSurface.swap(pBackSurface);
 
@@ -152,11 +152,10 @@ bool C4FoWRegion::BindFramebuf(GLuint prev_fb)
 		glBindFramebuffer(GL_FRAMEBUFFER, prev_fb);
 		return false;
 	}
-#endif
-
 	// Worked!
 	return true;
 }
+#endif
 
 int32_t C4FoWRegion::getSurfaceHeight() const
 {

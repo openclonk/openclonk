@@ -40,6 +40,7 @@
 #include "network/C4Network2IRC.h"
 #include "landscape/C4Particles.h"
 #include "graphics/StdPNG.h"
+#include "graphics/C4Draw.h"
 
 #include <getopt.h>
 

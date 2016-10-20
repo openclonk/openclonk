@@ -22,6 +22,8 @@
 
 #include "graphics/C4Facet.h"
 #include "object/C4ObjectList.h"
+#include "lib/C4Rect.h"
+struct ZoomData; // #include "graphics/C4Draw.h"
 
 const int32_t C4MC_Button_None        = 0,
               C4MC_Button_LeftDown    = 1,

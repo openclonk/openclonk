@@ -18,6 +18,7 @@
 /* A piece of a DirectDraw surface */
 
 #include "C4Include.h"
+#include "graphics/C4Draw.h"
 #include "graphics/C4Facet.h"
 #include "graphics/C4GraphicsResource.h"
 

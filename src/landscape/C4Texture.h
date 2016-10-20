@@ -22,6 +22,7 @@
 
 #include "landscape/C4TextureShape.h"
 #include "graphics/C4Surface.h"
+#include "graphics/C4Draw.h"
 #include "config/C4Constants.h"
 #include "landscape/C4Material.h"
 

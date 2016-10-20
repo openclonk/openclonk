@@ -25,6 +25,7 @@
 #include "graphics/C4GraphicsResource.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
+#include "graphics/C4Draw.h"
 
 const int32_t ObjectMsgDelayFactor = 2, GlobalMsgDelayFactor = 3; // frames per char message display time
 

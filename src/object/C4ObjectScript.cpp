@@ -36,6 +36,7 @@
 #include "player/C4RankSystem.h"
 #include "control/C4Teams.h"
 #include "lib/StdMeshMath.h"
+#include "object/C4MeshDenumerator.h"
 
 bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix)
 {

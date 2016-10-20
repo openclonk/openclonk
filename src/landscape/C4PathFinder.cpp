@@ -45,6 +45,7 @@
 
 #include "C4Include.h"
 #include "landscape/C4PathFinder.h"
+#include "graphics/C4Draw.h"
 
 #include "graphics/C4FacetEx.h"
 #include "game/C4GraphicsSystem.h"

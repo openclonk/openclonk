@@ -87,6 +87,7 @@ class StdMeshAnimation
 	friend class StdMeshSkeleton;
 	friend class StdMeshSkeletonLoader;
 	friend class StdMeshInstance;
+	friend class StdMeshInstanceAnimationNode;
 public:
 	StdMeshAnimation() {}
 	StdMeshAnimation(const StdMeshAnimation& other);
@@ -307,12 +308,96 @@ private:
 	StdSubMeshInstance& operator=(const StdSubMeshInstance& other) = delete;
 };
 
+
+// Provider for animation position or weight.
+class StdMeshInstanceValueProvider
+{
+public:
+	StdMeshInstanceValueProvider(): Value(Fix0) {}
+	virtual ~StdMeshInstanceValueProvider() {}
+
+	// Return false if the corresponding node is to be removed or true
+	// otherwise.
+	virtual bool Execute() = 0;
+
+	C4Real Value; // Current provider value
+};
+
+// A node in the animation tree
+// Can be either a leaf node, or interpolation between two other nodes
+class StdMeshInstanceAnimationNode
+{
+	friend class StdMeshInstance;
+	friend class StdMeshUpdate;
+	friend class StdMeshAnimationUpdate;
+public:
+	typedef StdMeshInstanceAnimationNode AnimationNode;
+	typedef StdMeshInstanceValueProvider ValueProvider;
+	enum NodeType { LeafNode, CustomNode, LinearInterpolationNode };
+
+	StdMeshInstanceAnimationNode();
+	StdMeshInstanceAnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
+	StdMeshInstanceAnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans);
+	StdMeshInstanceAnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
+	~StdMeshInstanceAnimationNode();
+
+	bool GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation);
+
+	int GetSlot() const { return Slot; }
+	unsigned int GetNumber() const { return Number; }
+	NodeType GetType() const { return Type; }
+	AnimationNode* GetParent() { return Parent; }
+
+	const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
+	ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
+	C4Real GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
+
+	AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
+	AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
+	ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
+	C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
+
+	void CompileFunc(StdCompiler* pComp, const StdMesh *Mesh);
+	void DenumeratePointers();
+	void ClearPointers(class C4Object* pObj);
+
+protected:
+	int Slot;
+	unsigned int Number;
+	NodeType Type;
+	AnimationNode* Parent; // NoSave
+
+	union
+	{
+		struct
+		{
+			const StdMeshAnimation* Animation;
+			ValueProvider* Position;
+		} Leaf;
+
+		struct
+		{
+			unsigned int BoneIndex;
+			StdMeshTransformation* Transformation;
+		} Custom;
+
+		struct
+		{
+			AnimationNode* ChildLeft;
+			AnimationNode* ChildRight;
+			ValueProvider* Weight;
+		} LinearInterpolation;
+	};
+};
+
+
 class StdMeshInstance
 {
 	friend class StdMeshMaterialUpdate;
 	friend class StdMeshAnimationUpdate;
 	friend class StdMeshUpdate;
 public:
+	typedef StdMeshInstanceAnimationNode AnimationNode;
 	StdMeshInstance(const StdMesh& mesh, float completion = 1.0f);
 	~StdMeshInstance();
 
@@ -324,19 +409,7 @@ public:
 		AM_MatchSkeleton = 1 << 1
 	};
 
-	// Provider for animation position or weight.
-	class ValueProvider
-	{
-	public:
-		ValueProvider(): Value(Fix0) {}
-		virtual ~ValueProvider() {}
-
-		// Return false if the corresponding node is to be removed or true
-		// otherwise.
-		virtual bool Execute() = 0;
-
-		C4Real Value; // Current provider value
-	};
+	typedef StdMeshInstanceValueProvider ValueProvider;
 
 	// Serializable value providers need to be registered with SerializeableValueProvider::Register.
 	// They also need to implement a default constructor and a compile func
@@ -406,71 +479,6 @@ public:
 		virtual void CompileFunc(StdCompiler* pComp);
 		virtual void DenumeratePointers() {}
 		virtual void ClearPointers(class C4Object* pObj) {}
-	};
-
-	// A node in the animation tree
-	// Can be either a leaf node, or interpolation between two other nodes
-	class AnimationNode
-	{
-		friend class StdMeshInstance;
-		friend class StdMeshUpdate;
-		friend class StdMeshAnimationUpdate;
-	public:
-		enum NodeType { LeafNode, CustomNode, LinearInterpolationNode };
-
-		AnimationNode();
-		AnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
-		AnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans);
-		AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
-		~AnimationNode();
-
-		bool GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation);
-
-		int GetSlot() const { return Slot; }
-		unsigned int GetNumber() const { return Number; }
-		NodeType GetType() const { return Type; }
-		AnimationNode* GetParent() { return Parent; }
-
-		const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
-		ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
-		C4Real GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
-
-		AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
-		AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
-		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
-		C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
-
-		void CompileFunc(StdCompiler* pComp, const StdMesh *Mesh);
-		void DenumeratePointers();
-		void ClearPointers(class C4Object* pObj);
-
-	protected:
-		int Slot;
-		unsigned int Number;
-		NodeType Type;
-		AnimationNode* Parent; // NoSave
-
-		union
-		{
-			struct
-			{
-				const StdMeshAnimation* Animation;
-				ValueProvider* Position;
-			} Leaf;
-
-			struct
-			{
-				unsigned int BoneIndex;
-				StdMeshTransformation* Transformation;
-			} Custom;
-
-			struct
-			{
-				AnimationNode* ChildLeft;
-				AnimationNode* ChildRight;
-				ValueProvider* Weight;
-			} LinearInterpolation;
-		};
 	};
 
 	class AttachedMesh

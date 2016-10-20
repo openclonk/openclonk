@@ -27,6 +27,7 @@
 #include "landscape/C4Weather.h"
 #include "control/C4Record.h"
 #include "lib/StdColors.h"
+#include "graphics/C4Draw.h"
 
 static const C4Real WindDrift_Factor = itofix(1, 800);
 

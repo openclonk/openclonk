@@ -80,6 +80,7 @@ class C4MaterialList;
 class C4MaterialMap;
 class C4Menu;
 class C4MenuItem;
+class C4MeshDenumerator;
 class C4MouseControl;
 class C4NameList;
 class C4Network2Client;
@@ -146,12 +147,17 @@ class CStdVectorFont;
 class CSurface8;
 class StdCompiler;
 class StdMesh;
+class StdMeshAnimation;
+class StdMeshAnimationUpdate;
 class StdMeshBone;
 class StdMeshInstance;
+class StdMeshInstanceAnimationNode;
 class StdMeshMaterial;
+class StdMeshMaterialUpdate;
 class StdMeshMatManager;
 class StdMeshMatrix;
 class StdMeshSkeletonLoader;
+class StdMeshUpdate;
 
 namespace C4GameLobby
 {

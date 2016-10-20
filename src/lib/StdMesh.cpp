@@ -791,28 +791,28 @@ void StdMeshInstance::SerializableValueProvider::CompileFunc(StdCompiler* pComp)
 	pComp->Value(Value);
 }
 
-StdMeshInstance::AnimationNode::AnimationNode():
+StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode():
 		Type(LeafNode), Parent(NULL)
 {
 	Leaf.Animation = NULL;
 	Leaf.Position = NULL;
 }
 
-StdMeshInstance::AnimationNode::AnimationNode(const StdMeshAnimation* animation, ValueProvider* position):
+StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode(const StdMeshAnimation* animation, ValueProvider* position):
 		Type(LeafNode), Parent(NULL)
 {
 	Leaf.Animation = animation;
 	Leaf.Position = position;
 }
 
-StdMeshInstance::AnimationNode::AnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans):
+StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans):
 		Type(CustomNode), Parent(NULL)
 {
 	Custom.BoneIndex = bone->Index;
 	Custom.Transformation = new StdMeshTransformation(trans);
 }
 
-StdMeshInstance::AnimationNode::AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight):
+StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight):
 		Type(LinearInterpolationNode), Parent(NULL)
 {
 	LinearInterpolation.ChildLeft = child_left;
@@ -820,7 +820,7 @@ StdMeshInstance::AnimationNode::AnimationNode(AnimationNode* child_left, Animati
 	LinearInterpolation.Weight = weight;
 }
 
-StdMeshInstance::AnimationNode::~AnimationNode()
+StdMeshInstanceAnimationNode::~StdMeshInstanceAnimationNode()
 {
 	switch (Type)
 	{
@@ -838,7 +838,7 @@ StdMeshInstance::AnimationNode::~AnimationNode()
 	}
 }
 
-bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation)
+bool StdMeshInstanceAnimationNode::GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation)
 {
 	StdMeshTransformation combine_with;
 	StdMeshTrack* track;
@@ -870,7 +870,7 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 	}
 }
 
-void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh *Mesh)
+void StdMeshInstanceAnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh *Mesh)
 {
 	static const StdEnumEntry<NodeType> NodeTypes[] =
 	{
@@ -939,19 +939,19 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 	}
 }
 
-void StdMeshInstance::AnimationNode::DenumeratePointers()
+void StdMeshInstanceAnimationNode::DenumeratePointers()
 {
-	SerializableValueProvider* value_provider = NULL;
+	StdMeshInstance::SerializableValueProvider* value_provider = NULL;
 	switch(Type)
 	{
 	case LeafNode:
-		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
+		value_provider = dynamic_cast<StdMeshInstance::SerializableValueProvider*>(Leaf.Position);
 		break;
 	case CustomNode:
 		value_provider = NULL;
 		break;
 	case LinearInterpolationNode:
-		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
+		value_provider = dynamic_cast<StdMeshInstance::SerializableValueProvider*>(LinearInterpolation.Weight);
 		// non-recursive, StdMeshInstance::DenumeratePointers walks over all nodes
 		break;
 	}
@@ -959,19 +959,19 @@ void StdMeshInstance::AnimationNode::DenumeratePointers()
 	if(value_provider) value_provider->DenumeratePointers();
 }
 
-void StdMeshInstance::AnimationNode::ClearPointers(class C4Object* pObj)
+void StdMeshInstanceAnimationNode::ClearPointers(class C4Object* pObj)
 {
-	SerializableValueProvider* value_provider = NULL;
+	StdMeshInstance::SerializableValueProvider* value_provider = NULL;
 	switch(Type)
 	{
 	case LeafNode:
-		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
+		value_provider = dynamic_cast<StdMeshInstance::SerializableValueProvider*>(Leaf.Position);
 		break;
 	case CustomNode:
 		value_provider = NULL;
 		break;
 	case LinearInterpolationNode:
-		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
+		value_provider = dynamic_cast<StdMeshInstance::SerializableValueProvider*>(LinearInterpolation.Weight);
 		// non-recursive, StdMeshInstance::ClearPointers walks over all nodes
 		break;
 	}

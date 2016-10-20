@@ -20,6 +20,7 @@
 
 #include "lib/C4Markup.h"
 #include "graphics/C4Facet.h"
+#include "graphics/C4Surface.h"
 #include "lib/StdBuf.h"
 #include <stdio.h>
 #include <map>

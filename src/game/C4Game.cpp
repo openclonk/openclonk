@@ -77,6 +77,7 @@
 #include "landscape/C4SolidMask.h"
 #include "landscape/fow/C4FoW.h"
 #include "landscape/C4Particles.h"
+#include "lib/StdMesh.h"
 
 #include <unordered_map>
 

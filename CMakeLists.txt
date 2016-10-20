@@ -719,6 +719,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4InfoCore.h
 	src/object/C4MeshAnimation.cpp
 	src/object/C4MeshAnimation.h
+	src/object/C4MeshDenumerator.cpp
+	src/object/C4MeshDenumerator.h
 	src/object/C4Movement.cpp
 	src/object/C4ObjectCom.cpp
 	src/object/C4ObjectCom.h
@@ -1012,6 +1014,8 @@ src/c4group/C4Update.cpp
 src/c4group/C4Update.h
 src/c4group/CStdFile.cpp
 src/c4group/CStdFile.h
+src/graphics/C4BltTransform.cpp
+src/graphics/C4BltTransform.h
 src/lib/C4InputValidation.cpp
 src/lib/C4InputValidation.h
 src/lib/C4Markup.cpp

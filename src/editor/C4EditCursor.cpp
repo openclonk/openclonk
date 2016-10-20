@@ -36,6 +36,7 @@
 #ifdef WITH_QT_EDITOR
 #include "editor/C4ConsoleQtShapes.h"
 #endif
+#include "lib/StdMesh.h"
 
 #ifdef _WIN32
 #include "res/resource.h"

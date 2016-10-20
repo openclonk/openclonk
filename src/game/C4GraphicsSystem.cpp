@@ -32,8 +32,8 @@
 #include "network/C4Network2.h"
 #include "game/C4Game.h"
 #include "object/C4GameObjects.h"
-
 #include "graphics/StdPNG.h"
+#include "graphics/C4Draw.h"
 
 static const int MAX_BACKGROUND_FPS = 5;
 

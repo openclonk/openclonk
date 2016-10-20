@@ -22,7 +22,6 @@
 
 #include "game/C4GameScript.h"
 #include "graphics/C4Facet.h"
-#include "lib/StdMesh.h"
 #include "object/C4Id.h"
 #include "object/C4ObjectPtr.h"
 #include "object/C4Sector.h"
@@ -71,24 +70,6 @@
 #define VIS_OverlayOnly 128
 #define VIS_Editor      256
 
-// Helper struct to serialize an object's mesh instance with other object's mesh instances attached
-class C4MeshDenumerator: public StdMeshInstance::AttachedMesh::Denumerator
-{
-private:
-	C4Def* Def; // Set if a definition mesh was attached
-	C4ObjectPtr Object; // Set if an instance mesh was attached
-
-public:
-	C4MeshDenumerator(): Def(NULL), Object(NULL) {}
-	C4MeshDenumerator(C4Def* def): Def(def), Object(NULL) {}
-	C4MeshDenumerator(C4Object* object): Def(NULL), Object(object) {}
-
-	C4Object* GetObject() { return Object; }
-
-	virtual void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach);
-	virtual void DenumeratePointers(StdMeshInstance::AttachedMesh* attach);
-	virtual bool ClearPointers(C4Object* pObj);
-};
 
 class C4Action
 {
@@ -106,7 +87,7 @@ public:
 	C4ObjectPtr Target,Target2;
 	C4Facet Facet; // NoSave //
 	int32_t FacetX,FacetY; // NoSave //
-	StdMeshInstance::AnimationNode* Animation; // NoSave //
+	StdMeshInstanceAnimationNode* Animation; // NoSave //
 public:
 	void Default();
 	void CompileFunc(StdCompiler *pComp);

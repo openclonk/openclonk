@@ -19,6 +19,7 @@
 
 #include "C4Include.h"
 #include "graphics/C4FacetEx.h"
+#include "graphics/C4Draw.h"
 
 #include "lib/C4Rect.h"
 #include "c4group/C4Group.h"

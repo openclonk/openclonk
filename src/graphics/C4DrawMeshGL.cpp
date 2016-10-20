@@ -21,6 +21,7 @@
 #include "graphics/C4DrawGL.h"
 #include "landscape/fow/C4FoWRegion.h"
 #include "lib/SHA1.h"
+#include "src/object/C4MeshDenumerator.h"
 
 #include "lib/StdMesh.h"
 #include "graphics/C4GraphicsResource.h"

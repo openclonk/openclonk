@@ -16,9 +16,6 @@
 #ifndef INC_StdMeshUpdate
 #define INC_StdMeshUpdate
 
-#include "lib/StdMesh.h"
-#include "lib/StdMeshMaterial.h"
-
 // This is a helper class to fix pointers after an update of StdMeshMaterials.
 // To update one or more materials, remove them from the MaterialManager with
 // erase(), then add new materials, then run Update() on all StdMeshes.
@@ -59,7 +56,7 @@ public:
 	const StdMesh& GetOldMesh() const { return *OldMesh; }
 
 private:
-	bool UpdateAnimationNode(StdMeshInstance* instance, StdMeshInstance::AnimationNode* node) const;
+	bool UpdateAnimationNode(StdMeshInstance* instance, StdMeshInstanceAnimationNode* node) const;
 
 	const StdMesh* OldMesh;
 
@@ -80,7 +77,7 @@ public:
 	void Update(StdMeshInstance* instance) const;
 
 private:
-	bool UpdateAnimationNode(StdMeshInstance* instance, StdMeshInstance::AnimationNode* node) const;
+	bool UpdateAnimationNode(StdMeshInstance* instance, StdMeshInstanceAnimationNode* node) const;
 
 	std::map<const StdMeshAnimation*, StdCopyStrBuf> AnimationNames;
 };

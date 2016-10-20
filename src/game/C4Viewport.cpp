@@ -41,6 +41,7 @@
 #include "network/C4Network2.h"
 #include "landscape/fow/C4FoWRegion.h"
 #include "landscape/C4Particles.h"
+#include "graphics/C4Draw.h"
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {

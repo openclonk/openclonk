@@ -25,6 +25,7 @@
 #include "game/C4GraphicsSystem.h"
 #include "game/C4Game.h"
 #include "platform/C4SoundSystem.h"
+#include "graphics/C4Draw.h"
 
 C4Weather::C4Weather()
 {

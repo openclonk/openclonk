@@ -26,7 +26,9 @@
 #include "platform/C4windowswrapper.h"
 #endif
 
+#ifndef USE_CONSOLE
 #include <GL/glew.h>
+#endif
 
 // Shader version
 const int C4Shader_Version = 150; // GLSL 1.50 / OpenGL 3.2

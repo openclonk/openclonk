@@ -16,6 +16,7 @@
 #include "C4Include.h"
 #include "landscape/fow/C4FoWAmbient.h"
 #include "landscape/fow/C4FoW.h"
+#include "graphics/C4Draw.h"
 
 namespace
 {
