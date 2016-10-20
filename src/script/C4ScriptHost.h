@@ -21,7 +21,9 @@
 #define INC_C4ScriptHost
 
 #include "c4group/C4ComponentHost.h"
+
 #include "script/C4Aul.h"
+#include "script/C4AulAST.h"
 
 // aul script state
 enum C4AulScriptState
@@ -88,7 +90,7 @@ protected:
 	C4AulScriptState State; // script state
 
 	// list of all functions generated from code in this script host
-	std::set<C4AulScriptFunc*> ownedFunctions;
+	std::vector<C4Value> ownedFunctions;
 
 	// list of all static proplists that refer to this script host
 	// filled in at link time and used to delete all proplists
@@ -99,6 +101,11 @@ protected:
 	friend class C4AulProfiler;
 	friend class C4AulScriptEngine;
 	friend class C4AulDebug;
+	friend class C4AulCompiler;
+	friend class C4AulScriptFunc;
+
+private:
+	std::unique_ptr<::aul::ast::Script> ast;
 };
 
 // script host for System.ocg scripts and scenario section Objects.c

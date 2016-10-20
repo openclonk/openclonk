@@ -1083,6 +1083,7 @@ src/script/C4AulExec.h
 src/script/C4AulFunc.cpp
 src/script/C4AulFunc.h
 src/script/C4Aul.h
+src/script/C4AulAST.h
 src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
 src/script/C4AulParse.h

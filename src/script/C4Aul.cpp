@@ -26,15 +26,18 @@
 #include "c4group/C4Components.h"
 #include "c4group/C4LangStringTable.h"
 
-C4AulError::C4AulError(): shown(false) {}
-
-void C4AulError::show()
+static class DefaultErrorHandler : public C4AulErrorHandler
 {
-	shown = true;
-	// simply log error message
-	if (sMessage)
-		DebugLog(sMessage.getData());
-}
+public:
+	void OnError(const char *msg) override
+	{
+		DebugLogF("ERROR: %s", msg);
+	}
+	void OnWarning(const char *msg) override
+	{
+		DebugLogF("WARNING: %s", msg);
+	}
+} DefaultErrorHandler;
 
 const char *C4AulError::what() const noexcept
 {
@@ -44,8 +47,9 @@ const char *C4AulError::what() const noexcept
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		C4PropListStaticMember(NULL, NULL, ::Strings.RegString("Global")),
-		warnCnt(0), errCnt(0), lineCnt(0)
+	C4PropListStaticMember(NULL, NULL, ::Strings.RegString("Global")),
+	ErrorHandler(&DefaultErrorHandler),
+	warnCnt(0), errCnt(0), lineCnt(0)
 {
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
@@ -241,6 +245,18 @@ C4AulUserFile *C4AulScriptEngine::GetUserFile(int32_t handle)
 	return NULL;
 }
 
+void C4AulScriptEngine::RegisterErrorHandler(C4AulErrorHandler *handler)
+{
+	assert(ErrorHandler == &DefaultErrorHandler);
+	ErrorHandler = handler;
+}
+
+void C4AulScriptEngine::UnregisterErrorHandler(C4AulErrorHandler *handler)
+{
+	assert(ErrorHandler == handler);
+	ErrorHandler = &DefaultErrorHandler;
+}
+
 /*--- C4AulFuncMap ---*/
 
 C4AulFuncMap::C4AulFuncMap(): FuncCnt(0)
@@ -300,4 +316,9 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	}
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
+}
+
+C4AulErrorHandler::~C4AulErrorHandler()
+{
+	::ScriptEngine.UnregisterErrorHandler(this);
 }

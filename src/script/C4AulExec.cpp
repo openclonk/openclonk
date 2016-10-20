@@ -172,8 +172,10 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 	}
 	catch (C4AulError &e)
 	{
-		if(!e.shown) e.show();
+		if (!fPassErrors)
+			::ScriptEngine.GetErrorHandler()->OnError(e.what());
 		// Unwind stack
+		// TODO: The stack dump should be passed to the error handler somehow
 		while (pCurCtx > pOldCtx)
 		{
 			pCurCtx->dump(StdStrBuf(" by: "));
@@ -1056,7 +1058,7 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 	{
 		if(fPassErrors)
 			throw;
-		ex.show();
+		::ScriptEngine.GetErrorHandler()->OnError(ex.what());
 		LogCallStack();
 		StopDirectExec();
 		return C4VNull;

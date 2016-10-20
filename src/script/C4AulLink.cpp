@@ -89,7 +89,7 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	// catch circular includes
 	if (Resolving)
 	{
-		C4AulParseError(this, "Circular include chain detected - ignoring all includes!").show();
+		Engine->GetErrorHandler()->OnError(C4AulParseError(this, "Circular include chain detected - ignoring all includes!").what());
 		IncludesResolved = true;
 		State = ASS_LINKED;
 		return false;
@@ -189,7 +189,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 	catch (C4AulError &err)
 	{
 		// error??! show it!
-		err.show();
+		ErrorHandler->OnError(err.what());
 	}
 
 	// Set name list for globals (FIXME: is this necessary?)

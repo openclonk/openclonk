@@ -34,11 +34,8 @@ protected:
 	StdCopyStrBuf sMessage;
 
 public:
-	bool shown;
-	C4AulError();
 	virtual ~C4AulError() { } // destructor
 	virtual const char *what() const noexcept;
-	void show(); // present error message
 };
 
 // parse error
@@ -49,7 +46,6 @@ public:
 	C4AulParseError(C4ScriptHost *pScript, const char *pMsg); // constructor
 	C4AulParseError(class C4AulParse * state, const char *pMsg); // constructor
 	C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg);
-	static C4AulParseError FromSPos(const C4ScriptHost *host, const char *SPos, C4AulScriptFunc *Fn, const char *msg, const char *Idtf = nullptr, bool Warn = false);
 };
 
 // execution error
@@ -95,6 +91,14 @@ public:
 	int32_t GetHandle() const { return handle; }
 };
 
+class C4AulErrorHandler
+{
+public:
+	virtual ~C4AulErrorHandler();
+	virtual void OnError(const char *msg) = 0;
+	virtual void OnWarning(const char *msg) = 0;
+};
+
 // holds all C4AulScripts
 class C4AulScriptEngine: public C4PropListStaticMember
 {
@@ -110,6 +114,8 @@ protected:
 	// user files aren't saved - they are just open temporary e.g. during game saving
 	std::list<C4AulUserFile> UserFiles;
 	std::vector<C4Value> OwnedPropLists;
+
+	C4AulErrorHandler *ErrorHandler;
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
@@ -151,6 +157,13 @@ public:
 	int32_t CreateUserFile(); // create new file and return handle
 	void CloseUserFile(int32_t handle); // close user file given by handle
 	C4AulUserFile *GetUserFile(int32_t handle); // get user file given by handle
+
+	void RegisterErrorHandler(C4AulErrorHandler *handler);
+	void UnregisterErrorHandler(C4AulErrorHandler *handler);
+	C4AulErrorHandler *GetErrorHandler() const
+	{
+		return ErrorHandler;
+	}
 
 	friend class C4AulFunc;
 	friend class C4AulProfiler;

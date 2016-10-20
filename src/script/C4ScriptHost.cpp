@@ -20,6 +20,10 @@
 #include "C4Include.h"
 #include "script/C4ScriptHost.h"
 
+#include "script/C4AulAST.h"
+#include "script/C4AulCompiler.h"
+#include "script/C4AulParse.h"
+#include "script/C4AulScriptFunc.h"
 #include "object/C4Def.h"
 #include "script/C4AulScriptFunc.h"
 #include "script/C4Effect.h"
@@ -51,6 +55,7 @@ void C4ScriptHost::Clear()
 {
 	UnlinkOwnedFunctions();
 	C4ComponentHost::Clear();
+	ast.reset();
 	Script.Clear();
 	LocalValues.Clear();
 	DeleteOwnedPropLists();
@@ -68,30 +73,15 @@ void C4ScriptHost::Clear()
 	State = ASS_NONE;
 }
 
-void C4ScriptHost::DeleteOwnedPropLists()
-{
-	// delete all static proplists associated to this script host.
-	// Note that just clearing the vector is not enough in case of
-	// cyclic references.
-	for (C4Value& value: ownedPropLists)
-	{
-		C4PropList* plist = value.getPropList();
-		if (plist)
-		{
-			if (plist->Delete()) delete plist;
-			else plist->Clear();
-		}
-	}
-	ownedPropLists.clear();
-}
-
 void C4ScriptHost::UnlinkOwnedFunctions()
 {
 	// Remove owned functions from their parents. This solves a problem
 	// where overloading a definition would unload the C4ScriptHost, but
 	// keep around global functions, which then contained dangling pointers.
-	for (auto func : ownedFunctions)
+	for (const auto &box : ownedFunctions)
 	{
+		assert(box.GetType() == C4V_Function);
+		C4AulScriptFunc *func = box._getFunction()->SFunc();
 		C4PropList *parent = func->Parent;
 		if (parent == GetPropList())
 			continue;
@@ -118,7 +108,7 @@ void C4ScriptHost::UnlinkOwnedFunctions()
 				// Unlink the removed function from the inheritance chain
 				if (func_chain->OwnerOverloaded == func)
 				{
-					func_chain->SetOverloaded(func->OwnerOverloaded);
+					func_chain->OwnerOverloaded = func->OwnerOverloaded;
 					break;
 				}
 				assert(func_chain->OwnerOverloaded && "Removed function not found in inheritance chain");
@@ -127,6 +117,23 @@ void C4ScriptHost::UnlinkOwnedFunctions()
 		}
 	}
 	ownedFunctions.clear();
+}
+
+void C4ScriptHost::DeleteOwnedPropLists()
+{
+	// delete all static proplists associated to this script host.
+	// Note that just clearing the vector is not enough in case of
+	// cyclic references.
+	for (C4Value& value: ownedPropLists)
+	{
+		C4PropList* plist = value.getPropList();
+		if (plist)
+		{
+			if (plist->Delete()) delete plist;
+			else plist->Clear();
+		}
+	}
+	ownedPropLists.clear();
 }
 
 void C4ScriptHost::Unreg()

@@ -69,7 +69,7 @@ bool C4AulFunc::CheckParTypes(const C4Value pPars[], bool fPassErrors) const {
 				throw e;
 			else
 			{
-				e.show();
+				::ScriptEngine.GetErrorHandler()->OnError(e.what());
 				return false;
 			}
 		}
