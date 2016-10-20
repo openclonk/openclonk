@@ -120,6 +120,8 @@ if (GTEST_FOUND AND GMOCK_FOUND)
 			aul/AulTest.h
 			aul/AulMathTest.cpp
 			aul/AulPredefinedFunctionTest.cpp
+			aul/AulSyntaxTest.cpp
+			aul/AulSyntaxTestDetail.h
 			aul/ErrorHandler.h
             ../src/script/C4ScriptStandaloneStubs.cpp
             ../src/script/C4ScriptStandalone.cpp

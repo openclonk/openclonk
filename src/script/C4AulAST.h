@@ -125,7 +125,7 @@ public:
 		size_t column = 0;
 	};
 
-	const char *loc;
+	const char *loc = nullptr;
 
 	virtual void accept(::aul::AstVisitor *) const = 0;
 };
