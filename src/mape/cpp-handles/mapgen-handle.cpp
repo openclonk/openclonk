@@ -20,6 +20,7 @@
 #include "object/C4DefList.h"
 #include "object/C4Def.h"
 #include "script/C4Aul.h"
+#include "lib/StdMeshLoader.h"
 
 #include "mape/cpp-handles/material-handle.h"
 #include "mape/cpp-handles/texture-handle.h"

@@ -13,6 +13,7 @@
  * for the above references.
  */
 
+#include <GL/glew.h>
 #import <Cocoa/Cocoa.h>
 #include "platform/C4Window.h"
 
