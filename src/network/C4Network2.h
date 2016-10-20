@@ -193,6 +193,10 @@ protected:
 	class C4Network2HTTPClient *pStreamer;
 	unsigned int iCurrentStreamAmount, iCurrentStreamPosition;
 
+	// puncher
+	C4NetpuncherID_t NetpuncherGameID;
+	StdCopyStrBuf NetpuncherAddr;
+
 public:
 
 	// data access
@@ -253,6 +257,7 @@ public:
 	void OnDisconn(C4Network2IOConnection *pConn);
 	void HandlePacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
 	void HandleLobbyPacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
+	bool HandlePuncherPacket(C4NetpuncherPacket::uptr);
 
 	// runtime join stuff
 	void OnGameSynchronized();
@@ -296,6 +301,10 @@ public:
 	bool StartStreaming(C4Record *pRecord);
 	bool FinishStreaming();
 	bool StopStreaming();
+
+	// netpuncher
+	C4NetpuncherID_t getNetpuncherGameID() const { return NetpuncherGameID; }
+	StdStrBuf getNetpuncherAddr() const { return NetpuncherAddr; }
 
 protected:
 
@@ -350,6 +359,9 @@ protected:
 	// streaming
 	bool StreamIn(bool fFinish);
 	bool StreamOut();
+
+	// puncher
+	void InitPuncher();
 };
 
 extern C4Network2 Network;

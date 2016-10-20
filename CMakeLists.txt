@@ -991,8 +991,12 @@ src/lib/StdBuf.h
 src/lib/StdCompiler.cpp
 src/lib/StdCompiler.h
 src/lib/StdResStr2.cpp
+src/netpuncher/C4PuncherPacket.cpp
+src/netpuncher/C4PuncherPacket.h
 src/network/C4NetIO.cpp
 src/network/C4NetIO.h
+src/network/C4Network2Address.cpp
+src/network/C4Network2Address.h
 src/platform/StdFile.cpp
 src/platform/StdFile.h
 src/platform/StdRegistry.cpp
@@ -1235,6 +1239,7 @@ target_link_libraries(c4group
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
+	src/netpuncher/C4PuncherHash.h
 	src/netpuncher/main.cpp
 )
 

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2016, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -15,25 +15,61 @@
  */
 
 #include "C4Include.h"
+#include "netpuncher/C4PuncherHash.h"
 #include "network/C4Network2.h"
+#include "netpuncher/C4PuncherPacket.h"
 
 #include <stdio.h>
+
+#include <unordered_map>
+#include <functional>
+#include <random>
+#include <stdexcept>
 
 class C4PuncherServer : public C4NetIOUDP, private C4NetIO::CBClass
 {
 public:
-	C4PuncherServer() { C4NetIOUDP::SetCallback(this); }
+	typedef C4NetpuncherID_t CID;
+	C4PuncherServer() {
+		C4NetIOUDP::SetCallback(this);
+		rng = std::bind(std::uniform_int_distribution<CID>(1/*, max*/), std::ref(random_device));
+	}
 private:
+	std::random_device random_device;
+	std::function<CID()> rng;
+	std::unordered_map<addr_t, CID> peer_ids;
+	std::unordered_map<CID, addr_t> peer_addrs;
 	// Event handlers
-	virtual bool OnConn(const addr_t &AddrPeer, const addr_t &AddrConnect, const addr_t *OwnAddr, C4NetIO *pNetIO)
-	{
-		printf("Punched back at %s:%d...\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port));
+	virtual bool OnConn(const addr_t &AddrPeer, const addr_t &AddrConnect, const addr_t *OwnAddr, C4NetIO *pNetIO) {
+		CID nid;
+		do {
+			nid = rng();
+		} while(peer_addrs.count(nid) && !nid);
+		peer_ids.emplace(AddrPeer, nid);
+		peer_addrs.emplace(nid, AddrPeer);
+		Send(C4NetpuncherPacketAssID(nid).PackTo(AddrPeer));
+		printf("Punched %s:%d... #%u\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port), nid);
 		return true;
 	}
-	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
-	{
-		// Unused
+	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) {
+		auto& addr = rPacket.getAddr();
+		auto unpack = C4NetpuncherPacket::Construct(rPacket);
+		if (!unpack || unpack->GetType() != PID_Puncher_SReq) { Close(addr); return; }
+		auto other_it = peer_addrs.find(dynamic_cast<C4NetpuncherPacketSReq*>(unpack.get())->GetID());
+		if (other_it == peer_addrs.end()) return; // Might be nice to return some kind of error, for purposes of debugging.
+		Send(C4NetpuncherPacketCReq(other_it->second).PackTo(addr));
+		Send(C4NetpuncherPacketCReq(addr).PackTo(other_it->second));
 	}
+	virtual void OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason) {
+		auto it = peer_ids.find(AddrPeer);
+		if (it == peer_ids.end()) {
+			printf("ERROR: closing connection for %s:%d: (%s) but no connection is known\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port), szReason);
+			return;
+		}
+		peer_addrs.erase(it->second);
+		peer_ids.erase(it);
+		printf("Stopped punching %s:%d: %s...\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port), szReason);
+	};
 } Puncher;
 
 int main(int argc, char * argv[])

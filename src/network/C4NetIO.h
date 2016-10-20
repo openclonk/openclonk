@@ -451,6 +451,7 @@ public:
 	virtual bool Close(const addr_t &addr);
 
 	virtual bool Send(const C4NetIOPacket &rPacket);
+	bool SendDirect(C4NetIOPacket &&rPacket); // (mt-safe)
 	virtual bool Broadcast(const C4NetIOPacket &rPacket);
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true);
 
@@ -739,7 +740,6 @@ protected:
 
 	// sending
 	bool BroadcastDirect(const Packet &rPacket, unsigned int iNr = ~0u); // (mt-safe)
-	bool SendDirect(C4NetIOPacket &&rPacket); // (mt-safe)
 
 	// multicast related
 	bool DoLoopbackTest();

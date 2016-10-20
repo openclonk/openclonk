@@ -39,7 +39,7 @@ struct C4Network2IO::NetEvPacketData
 };
 
 // compile options
-#define C4NET2IO_DUMP_LEVEL 1
+#define C4NET2IO_DUMP_LEVEL 3
 
 // *** C4Network2IO
 
@@ -455,7 +455,7 @@ bool C4Network2IO::BroadcastMsg(const C4NetIOPacket &rPkt) // by both
 	return fSuccess;
 }
 
-bool C4Network2IO::Punch(C4NetIO::addr_t nPuncherAddr)
+bool C4Network2IO::InitPuncher(C4NetIO::addr_t nPuncherAddr)
 {
 	// UDP must be initialized
 	if (!pNetIO_UDP)
@@ -466,19 +466,30 @@ bool C4Network2IO::Punch(C4NetIO::addr_t nPuncherAddr)
 	return pNetIO_UDP->Connect(PuncherAddr);
 }
 
+void C4Network2IO::Punch(const C4NetIO::addr_t &punchee_addr) {
+	if (!pNetIO_UDP)
+		return;
+	C4PacketPing PktPeng;
+	dynamic_cast<C4NetIOUDP*>(pNetIO_UDP)->SendDirect(MkC4NetIOPacket(PID_Pong, PktPeng, punchee_addr));
+}
+
+void C4Network2IO::SendPuncherPacket(const C4NetpuncherPacket& p) {
+	if (!pNetIO_UDP || !PuncherAddr.sin_addr.s_addr) return;
+	pNetIO_UDP->Send(p.PackTo(PuncherAddr));
+}
+
 // C4NetIO interface
 bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t &ConnectAddr, const C4NetIO::addr_t *pOwnAddr, C4NetIO *pNetIO)
 {
-	// puncher answer? We just make sure here a connection /can/ be established, so close it instantly.
-	if (pNetIO == pNetIO_UDP)
-		if (PuncherAddr.sin_addr.s_addr && AddrEqual(PuncherAddr, ConnectAddr))
-		{
-			// got an address?
-			if (pOwnAddr)
-				OnPunch(*pOwnAddr);
-			// this is only a test connection - close it instantly
-			return false;
-		}
+	// puncher answer?
+	if (pNetIO == pNetIO_UDP && PuncherAddr.sin_addr.s_addr && AddrEqual(PuncherAddr, ConnectAddr))
+	{
+		// got an address?
+		if (pOwnAddr)
+			OnPuncherConnect(*pOwnAddr);
+		return true;
+	}
+
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	Application.InteractiveThread.ThreadLogS("OnConn: %s %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
@@ -527,12 +538,11 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const char *szReason)
 {
 	// punch?
-	if (pNetIO == pNetIO_UDP)
-		if (PuncherAddr.sin_addr.s_addr && AddrEqual(PuncherAddr, addr))
-		{
-			ZeroMem(&PuncherAddr, sizeof(PuncherAddr));
-			return;
-		}
+	if (pNetIO == pNetIO_UDP && PuncherAddr.sin_addr.s_addr && AddrEqual(PuncherAddr, addr))
+	{
+		ZeroMem(&PuncherAddr, sizeof(PuncherAddr));
+		return;
+	}
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	Application.InteractiveThread.ThreadLogS("OnDisconn: %s %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
@@ -570,6 +580,11 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           rPacket.getStatus(), getNetIOName(pNetIO));
 #endif
+	if (pNetIO == pNetIO_UDP && PuncherAddr.sin_addr.s_addr && AddrEqual(PuncherAddr, rPacket.getAddr()))
+	{
+		HandlePuncherPacket(rPacket);
+		return;
+	}
 	if (!rPacket.getSize()) return;
 	// find connection
 	C4Network2IOConnection *pConn = GetConnection(rPacket.getAddr(), pNetIO);
@@ -1120,6 +1135,17 @@ void C4Network2IO::HandleFwdReq(const C4PacketFwd &rFwd, C4Network2IOConnection 
 	}
 }
 
+void C4Network2IO::HandlePuncherPacket(const C4NetIOPacket& rPacket)
+{
+	auto pkt = C4NetpuncherPacket::Construct(rPacket);
+	if (pkt && ::Network.HandlePuncherPacket(move(pkt)));
+	else
+	{
+		assert(pNetIO_UDP);
+		pNetIO_UDP->Close(rPacket.getAddr());
+	}
+}
+
 bool C4Network2IO::Ping()
 {
 	bool fSuccess = true;
@@ -1237,7 +1263,7 @@ void C4Network2IO::SendConnPackets()
 
 }
 
-void C4Network2IO::OnPunch(C4NetIO::addr_t addr)
+void C4Network2IO::OnPuncherConnect(C4NetIO::addr_t addr)
 {
 	// Sanity check
 	assert (addr.sin_family == AF_INET);
@@ -1250,8 +1276,8 @@ void C4Network2IO::OnPunch(C4NetIO::addr_t addr)
 	// Add for local client
 	C4Network2Client *pLocal = ::Network.Clients.GetLocal();
 	if (pLocal)
-		if (pLocal->AddAddr(C4Network2Address(addr, P_UDP), true))
-			::Network.InvalidateReference();
+		pLocal->AddAddr(C4Network2Address(addr, P_UDP), true);
+		// Do not ::Network.InvalidateReference(); yet, we're expecting an ID from the netpuncher
 }
 
 // *** C4Network2IOConnection

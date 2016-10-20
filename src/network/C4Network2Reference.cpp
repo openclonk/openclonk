@@ -30,7 +30,7 @@
 C4Network2Reference::C4Network2Reference()
 		: Icon(0), GameMode(), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
 		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
-		IsEditor(false), iAddrCnt(0)
+		IsEditor(false), iAddrCnt(0), NetpuncherGameID(0)
 {
 
 }
@@ -78,6 +78,8 @@ void C4Network2Reference::InitLocal()
 	ObservingAllowed = ::Network.isObservingAllowed();
 	PasswordNeeded = ::Network.isPassworded();
 	IsEditor = !!::Application.isEditor;
+	NetpuncherGameID = ::Network.getNetpuncherGameID();
+	NetpuncherAddr = ::Network.getNetpuncherAddr();
 	Game.Set();
 
 	// Addresses
@@ -125,6 +127,8 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Game.sEngineName,      "Game",             "None"));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Game.iVer,0),"Version"    ));
 	pComp->Value(mkNamingAdapt(OfficialServer,  "OfficialServer", false));
+	pComp->Value(mkNamingAdapt(NetpuncherGameID,  "NetpuncherID", 0, false, false));
+	pComp->Value(mkNamingAdapt(NetpuncherAddr,  "NetpuncherAddr", "", false, false));
 
 	pComp->Value(Parameters);
 }

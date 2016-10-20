@@ -101,7 +101,6 @@ const C4PktHandlingData PktHandlingData[] =
 	{ PID_ControlPkt,   PC_Network, "Control Paket",              false,  false,  PH_C4GameControlNetwork,  PKT_UNPACK(C4PacketControlPkt)  },
 	{ PID_ExecSyncCtrl, PC_Network, "Execute Sync Control",       false,  false,  PH_C4GameControlNetwork,  PKT_UNPACK(C4PacketExecSyncCtrl)},
 
-
 	// Control (Isn't send over network, handled only as part of a control list)
 	{ CID_ClientJoin,   PC_Control, "Client Join",                false,  true,   0,                        PKT_UNPACK(C4ControlClientJoin) },
 	{ CID_ClientUpdate, PC_Control, "Client Update",              false,  true,   0,                        PKT_UNPACK(C4ControlClientUpdate)},

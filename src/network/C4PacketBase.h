@@ -169,6 +169,9 @@ enum C4PacketType
 
 	CID_DebugRec      = CID_First | 0x40,
 	CID_MenuCommand   = CID_First | 0x41,
+
+	// Note: There are some more packet types in src/netpuncher/C4PuncherPacket.h
+	// They have been picked to be distinct from these for safety, not for necessary.
 };
 
 // packet classes
@@ -187,7 +190,7 @@ enum C4PacketHandlerID
 	PH_C4Network2ClientList   = 1 << 3,   // client list class
 	PH_C4Network2Players      = 1 << 4,   // player list class
 	PH_C4Network2ResList      = 1 << 5,   // resource list class
-	PH_C4GameControlNetwork   = 1 << 6      // network control class
+	PH_C4GameControlNetwork   = 1 << 6,   // network control class
 };
 
 
