@@ -1551,7 +1551,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarDecl *n)
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 {
 	C4PropListStatic *Parent = n->is_global ? target_host->Engine->GetPropList() : target_host->GetPropList();
-	C4AulFunc *f = Parent->GetFunc(n->name.c_str());
+
+	C4String *name = ::Strings.FindString(n->name.c_str());
+	C4AulFunc *f = Parent->GetFunc(name);
 	while (f)
 	{
 		if (f->SFunc() && f->SFunc()->pOrgScript == host && f->Parent == Parent)
@@ -1561,6 +1563,11 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 			Fn = f->SFunc();
 		}
 		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
+	}
+
+	if (!Fn && Parent->HasProperty(name))
+	{
+		throw Error(target_host, host, n, Fn, "declaration of '%s': cannot override local variable via 'func %s'", n->name.c_str(), n->name.c_str());
 	}
 
 	assert(Fn && "CodegenAstVisitor: unable to find function definition");
