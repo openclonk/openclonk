@@ -18,6 +18,7 @@
 /* That which fills the world with life */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "object/C4Object.h"
 
 #include "script/C4AulExec.h"

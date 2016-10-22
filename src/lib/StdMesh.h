@@ -17,6 +17,7 @@
 #ifndef INC_StdMesh
 #define INC_StdMesh
 
+#include "C4ForbidLibraryCompilation.h"
 #include "lib/StdMeshMath.h"
 #include "lib/StdMeshMaterial.h"
 

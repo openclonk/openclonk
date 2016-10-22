@@ -14,6 +14,7 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 
 #ifndef USE_CONSOLE
 #include "landscape/fow/C4FoWBeam.h"

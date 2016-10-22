@@ -16,6 +16,7 @@
 // Input to player control mapping
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "control/C4PlayerControl.h"
 
 #include "object/C4DefList.h"

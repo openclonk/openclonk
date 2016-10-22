@@ -15,6 +15,7 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "lib/StdMeshMaterial.h"
 #include "lib/StdMeshUpdate.h"
 #include "graphics/C4DrawGL.h"

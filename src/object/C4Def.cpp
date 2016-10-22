@@ -18,6 +18,7 @@
 /* Object definition */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "object/C4Def.h"
 #include "graphics/C4DrawGL.h"
 #include "graphics/C4GraphicsResource.h"

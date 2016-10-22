@@ -19,6 +19,7 @@
 #ifndef INC_STDWINDOW
 #define INC_STDWINDOW
 
+#include "C4ForbidLibraryCompilation.h"
 #include "lib/StdBuf.h"
 
 #if defined(USE_SDL_MAINLOOP)

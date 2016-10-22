@@ -17,6 +17,7 @@
 /* Game configuration as stored in registry */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "config/C4Config.h"
 
 #include "C4Version.h"

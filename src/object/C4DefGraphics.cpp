@@ -36,6 +36,7 @@
 #include "player/C4RankSystem.h"
 #include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Draw.h"
+#include "graphics/C4Surface.h"
 #include "object/C4MeshAnimation.h"
 #include "lib/StdMeshLoader.h"
 #include "lib/StdMeshUpdate.h"
@@ -927,7 +928,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	else if (OverlayObj)
 	{
 		assert(pForObj);
-		// TODO: Shouldn't have called PrepareDrawing/set ClrModulation here, since 
+		// TODO: Shouldn't have called PrepareDrawing/set ClrModulation here, since
 		// OverlayObj drawing will do it on its own.
 		if (eMode == MODE_ObjectPicture)
 		{
@@ -1184,4 +1185,17 @@ void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)
 			pComp->Value(fContinue);
 		}
 	}
+}
+
+C4Surface *C4DefGraphics::GetBitmap(DWORD dwClr)
+{
+	if (Type != TYPE_Bitmap)
+		return NULL;
+	if (Bmp.BitmapClr)
+	{
+		Bmp.BitmapClr->SetClr(dwClr);
+		return Bmp.BitmapClr;
+	}
+	else
+		return Bmp.Bitmap;
 }

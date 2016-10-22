@@ -16,6 +16,7 @@
 
 // based on SDL implementation
 
+#include "C4ForbidLibraryCompilation.h"
 #include <GL/glew.h>
 #include <string>
 

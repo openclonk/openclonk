@@ -20,8 +20,6 @@
 
 #include "script/C4Aul.h"
 #include "object/C4GameObjects.h"
-#include "game/C4Game.h"
-#include "object/C4Object.h"
 #include "control/C4Record.h"
 
 void C4PropList::AddRef(C4Value *pRef)

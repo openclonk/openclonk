@@ -17,6 +17,7 @@
 // text drawing facility for C4Draw
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4FontLoader.h"
 
 #ifndef USE_CONSOLE

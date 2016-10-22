@@ -23,6 +23,7 @@
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 #include "lib/C4Random.h"
+#include "lib/C4Markup.h"
 #include "player/C4RankSystem.h"
 #include "c4group/C4Group.h"
 #include "c4group/C4Components.h"

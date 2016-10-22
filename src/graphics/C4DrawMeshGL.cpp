@@ -17,6 +17,7 @@
 /* OpenGL implementation of Mesh Rendering */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "object/C4Object.h"
 #include "graphics/C4DrawGL.h"
 #include "landscape/fow/C4FoWRegion.h"

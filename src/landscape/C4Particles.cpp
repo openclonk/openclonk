@@ -14,6 +14,7 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "landscape/C4Particles.h"
 
 // headers for particle loading

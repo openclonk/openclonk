@@ -16,6 +16,7 @@
 #ifndef C4FOW_H
 #define C4FOW_H
 
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Surface.h"
 #include "graphics/C4FacetEx.h"
 #include "lib/C4Rect.h"

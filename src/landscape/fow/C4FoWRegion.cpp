@@ -14,6 +14,7 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "landscape/fow/C4FoWRegion.h"
 #include "graphics/C4DrawGL.h"
 

@@ -17,6 +17,7 @@
 /* OpenGL implementation of NewGfx, the context */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4DrawGL.h"
 
 #include "platform/C4Window.h"

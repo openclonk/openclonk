@@ -16,6 +16,8 @@
 #ifndef C4FOWLIGHTSECTION_H
 #define C4FOWLIGHTSECTION_H
 
+#include "C4ForbidLibraryCompilation.h"
+
 #ifndef USE_CONSOLE
 
 #include "lib/C4Rect.h"

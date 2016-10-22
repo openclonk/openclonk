@@ -18,6 +18,7 @@
 // dialog base classes and some user dialogs
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "gui/C4Gui.h"
 
 #include "object/C4DefList.h"

@@ -18,6 +18,7 @@
 /* Main class to run the game */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "game/C4Game.h"
 
 #include "script/C4AulDebug.h"

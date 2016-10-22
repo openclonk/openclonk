@@ -17,6 +17,7 @@
 #ifndef C4LANDSCAPE_RENDER_H
 #define C4LANDSCAPE_RENDER_H
 
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Surface.h"
 #include "graphics/C4FacetEx.h"
 #include "graphics/C4Shader.h"

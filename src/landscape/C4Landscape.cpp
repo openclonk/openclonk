@@ -18,6 +18,7 @@
  /* Handles landscape and sky */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "landscape/C4Landscape.h"
 
 #include <array>

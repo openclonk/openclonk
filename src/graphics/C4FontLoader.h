@@ -18,9 +18,11 @@
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
+#include "C4ForbidLibraryCompilation.h"
 #include "lib/C4Markup.h"
 #include "graphics/C4Facet.h"
 #include "graphics/C4Surface.h"
+#include "graphics/C4FontLoaderCustomImages.h"
 #include "lib/StdBuf.h"
 #include <stdio.h>
 #include <map>
@@ -80,18 +82,7 @@ extern C4FontLoader FontLoader;
 class CStdFont
 {
 public:
-	// callback class to allow custom images
-	class CustomImages
-	{
-	protected:
-		virtual bool DrawFontImage(const char* szImageTag, C4Facet& cgo, C4DrawTransform* transform) = 0;
-		virtual float GetFontImageAspect(const char* szImageTag) = 0;
-
-		friend class CStdFont;
-	public:
-		virtual ~CustomImages() { }
-	};
-
+	typedef CStdFontCustomImages CustomImages;
 	int id;                // used by the engine to keep track of where the font came from
 
 protected:

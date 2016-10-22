@@ -18,8 +18,7 @@
 #ifndef INC_C4DefGraphics
 #define INC_C4DefGraphics
 
-#include "graphics/C4FacetEx.h"
-#include "graphics/C4Surface.h"
+#include "graphics/C4Facet.h"
 #include "object/C4ObjectPtr.h"
 #include "lib/C4InputValidation.h"
 #include "lib/StdMeshUpdate.h"
@@ -59,7 +58,7 @@ public:
 
 	bool fColorBitmapAutoCreated;  // if set, the color-by-owner-bitmap has been created automatically by all blue shades of the bitmap
 
-	inline C4Surface *GetBitmap(DWORD dwClr=0) { if (Type != TYPE_Bitmap) return NULL; if (Bmp.BitmapClr) { Bmp.BitmapClr->SetClr(dwClr); return Bmp.BitmapClr; } else return Bmp.Bitmap; }
+	C4Surface *GetBitmap(DWORD dwClr=0); 
 
 	C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
 	virtual ~C4DefGraphics() { Clear(); }; // dtor

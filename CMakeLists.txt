@@ -1069,25 +1069,25 @@ endif()
 
 add_library(libc4script
 src/C4Include.cpp
-src/c4group/C4GroupSet.cpp
-src/c4group/C4GroupSet.h
 src/c4group/C4ComponentHost.cpp
 src/c4group/C4ComponentHost.h
+src/c4group/C4GroupSet.cpp
+src/c4group/C4GroupSet.h
 src/c4group/C4LangStringTable.cpp
 src/c4group/C4LangStringTable.h
+src/lib/C4RandomRecord.cpp
 src/lib/C4Real.cpp
 src/lib/C4Real.h
-src/lib/C4RandomRecord.cpp
 src/script/C4Aul.cpp
-src/script/C4AulCompiler.h
+src/script/C4Aul.h
+src/script/C4AulAST.h
 src/script/C4AulCompiler.cpp
+src/script/C4AulCompiler.h
 src/script/C4AulDefFunc.h
 src/script/C4AulExec.cpp
 src/script/C4AulExec.h
 src/script/C4AulFunc.cpp
 src/script/C4AulFunc.h
-src/script/C4Aul.h
-src/script/C4AulAST.h
 src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
 src/script/C4AulParse.h
@@ -1102,15 +1102,17 @@ src/script/C4ScriptHost.cpp
 src/script/C4ScriptHost.h
 src/script/C4StringTable.cpp
 src/script/C4StringTable.h
-src/script/C4ValueArray.cpp
-src/script/C4ValueArray.h
 src/script/C4Value.cpp
 src/script/C4Value.h
+src/script/C4ValueArray.cpp
+src/script/C4ValueArray.h
 src/script/C4ValueMap.cpp
 src/script/C4ValueMap.h
 )
 
 target_link_libraries(libc4script libmisc)
+target_compile_definitions(libmisc PRIVATE "COMPILED_AS_C4LIBRARY")
+target_compile_definitions(libc4script PRIVATE "COMPILED_AS_C4LIBRARY")
 
 add_executable(c4script
 	include/c4script/c4script.h
@@ -1119,6 +1121,8 @@ add_executable(c4script
 	src/script/C4ScriptStandaloneStubs.cpp
 )
 set_property(TARGET c4script PROPERTY FOLDER "Utilities")
+
+target_compile_definitions(c4script PRIVATE "USE_CONSOLE")
 
 target_link_libraries(c4script
 	libmisc

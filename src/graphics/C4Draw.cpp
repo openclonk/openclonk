@@ -17,6 +17,7 @@
 
 /* NewGfx interfaces */
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Draw.h"
 
 #include "platform/C4App.h"

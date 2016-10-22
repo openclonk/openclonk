@@ -17,6 +17,7 @@
 /* Player and editor viewports in console */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "script/C4Value.h"
 #include "game/C4Viewport.h"
 #include "object/C4Object.h"

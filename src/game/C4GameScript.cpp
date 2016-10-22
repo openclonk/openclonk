@@ -18,6 +18,7 @@
 /* Functions mapped by C4Script */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "game/C4GameScript.h"
 
 #include "game/C4Application.h"

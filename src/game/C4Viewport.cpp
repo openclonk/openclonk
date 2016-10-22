@@ -18,6 +18,7 @@
 /* A viewport to each player */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "game/C4Viewport.h"
 
 #include "editor/C4ViewportWindow.h"

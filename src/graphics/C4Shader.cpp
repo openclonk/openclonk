@@ -14,6 +14,7 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Shader.h"
 #include "game/C4Application.h"
 #include "graphics/C4DrawGL.h"

@@ -18,6 +18,7 @@
 /* Loads all standard graphics from Graphics.ocg */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4GraphicsResource.h"
 
 #include "object/C4DefList.h"

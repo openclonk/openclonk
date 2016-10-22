@@ -19,6 +19,7 @@
 #ifndef INC_STDAPP
 #define INC_STDAPP
 
+#include "C4ForbidLibraryCompilation.h"
 #include "platform/StdScheduler.h"
 #include "platform/StdSync.h"
 #include "platform/C4StdInProc.h"

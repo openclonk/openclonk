@@ -18,6 +18,7 @@
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "platform/C4Window.h"
 
 #include "game/C4Application.h"

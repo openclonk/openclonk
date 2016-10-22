@@ -16,6 +16,7 @@
  */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 
 #include "script/C4Aul.h"
 #include "script/C4AulDefFunc.h"

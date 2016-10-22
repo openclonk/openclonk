@@ -13,6 +13,7 @@
  * for the above references.
  */
 
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4FacetEx.h"
 #include "lib/C4Random.h"
 

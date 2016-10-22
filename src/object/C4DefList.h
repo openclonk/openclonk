@@ -20,9 +20,9 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
-#include "graphics/C4FontLoader.h"
+#include "graphics/C4FontLoaderCustomImages.h"
 
-class C4DefList: public CStdFont::CustomImages
+class C4DefList: public CStdFontCustomImages
 {
 public:
 	C4DefList();

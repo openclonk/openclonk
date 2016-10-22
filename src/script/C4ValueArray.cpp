@@ -19,7 +19,6 @@
 
 #include "script/C4Aul.h"
 #include "object/C4FindObject.h"
-#include "object/C4Object.h"
 
 C4ValueArray::C4ValueArray()
 		: pData(NULL), iSize(0), iCapacity(0), constant(false)
@@ -90,7 +89,7 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 			pPos[i] = reinterpret_cast<intptr_t>(pData[pPos[i]]._getObj());
 		// Set the values
 		for (i = 0; i < iSize; i++)
-			pData[i].SetPropList(reinterpret_cast<C4Object *>(pPos[i]));
+			pData[i].SetPropList(reinterpret_cast<C4PropList *>(pPos[i]));
 		delete [] pPos;
 	}
 	else

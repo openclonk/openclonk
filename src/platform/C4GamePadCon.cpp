@@ -18,6 +18,7 @@
 /* Gamepad control */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "platform/C4GamePadCon.h"
 
 #include "config/C4Config.h"

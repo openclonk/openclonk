@@ -18,6 +18,7 @@
 /* Operates viewports, message board and draws the game */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "game/C4GraphicsSystem.h"
 
 #include "game/C4Viewport.h"

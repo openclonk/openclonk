@@ -15,6 +15,8 @@
 #ifndef C4FOWLIGHT_H
 #define C4FOWLIGHT_H
 
+#include "C4ForbidLibraryCompilation.h"
+
 #ifndef USE_CONSOLE
 
 #include "object/C4Object.h"

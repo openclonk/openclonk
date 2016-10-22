@@ -18,6 +18,7 @@
 /* Extension to C4Surface that handles bitmaps in C4Group files */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Surface.h"
 
 #include "c4group/C4GroupSet.h"

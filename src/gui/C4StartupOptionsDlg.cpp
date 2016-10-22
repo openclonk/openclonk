@@ -16,6 +16,7 @@
 // Startup screen for non-parameterized engine start: Options dialog
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "gui/C4StartupOptionsDlg.h"
 
 #include "game/C4Application.h"

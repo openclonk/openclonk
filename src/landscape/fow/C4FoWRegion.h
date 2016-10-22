@@ -16,6 +16,7 @@
 #ifndef C4FOWREGION_H
 #define C4FOWREGION_H
 
+#include "C4ForbidLibraryCompilation.h"
 #include "lib/C4Rect.h"
 #include "graphics/C4FacetEx.h"
 #include "player/C4Player.h"

@@ -18,6 +18,7 @@
 /* Main class to initialize configuration and execute the game */
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "game/C4Application.h"
 
 #include "C4Version.h"

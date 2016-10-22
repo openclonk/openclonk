@@ -20,7 +20,6 @@
 #ifndef INC_C4Shape
 #define INC_C4Shape
 
-#include "graphics/C4FacetEx.h"
 #include "config/C4Constants.h"
 #include "lib/C4Rect.h"
 

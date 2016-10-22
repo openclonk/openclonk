@@ -16,6 +16,7 @@
 // Startup screen for non-parameterized engine start
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "gui/C4Startup.h"
 
 #include "graphics/C4FontLoader.h"

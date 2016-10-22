@@ -16,6 +16,8 @@
 #ifndef C4FOWDRAWSTRATEGY_H
 #define C4FOWDRAWSTRATEGY_H
 
+#include "C4ForbidLibraryCompilation.h"
+
 #ifndef USE_CONSOLE
 
 #include "graphics/C4DrawGL.h"

@@ -16,7 +16,7 @@
 
 /* OpenGL implementation of NewGfx */
 
-
+#include "C4ForbidLibraryCompilation.h"
 #if !defined(INC_StdGL) && !defined(USE_CONSOLE)
 #define INC_StdGL
 
