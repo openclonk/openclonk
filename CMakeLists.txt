@@ -524,6 +524,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4GameOptions.h
 	src/gui/C4GameOverDlg.cpp
 	src/gui/C4GameOverDlg.h
+	src/gui/C4GfxErrorDlg.cpp
+	src/gui/C4GfxErrorDlg.h
 	src/gui/C4GuiButton.cpp
 	src/gui/C4GuiCheckBox.cpp
 	src/gui/C4GuiComboBox.cpp
@@ -1077,8 +1079,6 @@ add_library(libopenclonk
 	src/graphics/StdPNG.h
 	src/gui/C4Folder.cpp
 	src/gui/C4Folder.h
-	src/gui/C4GfxErrorDlg.cpp
-	src/gui/C4GfxErrorDlg.h
 	src/landscape/C4MapScriptAlgo.cpp
 	src/landscape/C4MassMover.cpp
 	src/landscape/C4MassMover.h
