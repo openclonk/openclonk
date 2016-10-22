@@ -31,6 +31,7 @@ editor-icons.h
 oc-icon.h
 NativeToolsExport.cmake
 engine-resource.c
+tests/CTestTestfile.cmake
 
 # Documentation
 *.pyc
@@ -121,6 +122,7 @@ openclonk.layout
 openclonk.sdf
 openclonk.cbp
 tests/openclonk_unittest.cbp
+tests/openclonk_unittest.sln
 
 # MacOSX saved searches
 *.savedSearch
@@ -130,10 +132,10 @@ WindowsGamesExplorer.xml
 
 # Mape
 ./mape
+/mape
 mape-icons.h
+mape-resource.c
 
-
-tests/openclonk_unittest.sln
 
 # Packed groups created directly in root path
 /*.oc*
