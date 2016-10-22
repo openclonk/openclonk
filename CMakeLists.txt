@@ -1115,6 +1115,8 @@ add_library(libopenclonk
 	src/platform/C4TimeMilliseconds.h
 )
 
+target_link_libraries(libopenclonk ${PNG_LIBRARIES})
+
 target_compile_definitions(libmisc PRIVATE "COMPILED_AS_C4LIBRARY")
 target_compile_definitions(libc4script PRIVATE "COMPILED_AS_C4LIBRARY")
 target_compile_definitions(libopenclonk PRIVATE "COMPILED_AS_C4LIBRARY")
