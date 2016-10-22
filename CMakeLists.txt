@@ -432,8 +432,6 @@ endif()
 set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
 	src/c4group/C4Components.h
-	src/c4group/C4Extra.cpp
-	src/c4group/C4Extra.h
 	src/c4group/C4Language.cpp
 	src/c4group/C4Language.h
 	src/C4Include.cpp
@@ -455,7 +453,6 @@ set(OC_CLONK_SOURCES
 	src/control/C4GameSave.h
 	src/control/C4PlayerControl.cpp
 	src/control/C4PlayerControl.h
-	src/control/C4PlayerInfoConflicts.cpp
 	src/control/C4PlayerInfo.cpp
 	src/control/C4PlayerInfo.h
 	src/control/C4Record.cpp
@@ -490,8 +487,6 @@ set(OC_CLONK_SOURCES
 	src/game/C4Physics.h
 	src/game/C4Viewport.cpp
 	src/game/C4Viewport.h
-	src/graphics/Bitmap256.cpp
-	src/graphics/Bitmap256.h
 	src/graphics/C4Draw.cpp
 	src/graphics/C4DrawGL.cpp
 	src/graphics/C4DrawGLCtx.cpp
@@ -513,18 +508,12 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4Surface.cpp
 	src/graphics/C4Surface.h
 	src/graphics/C4SurfaceLoaders.cpp
-	src/graphics/CSurface8.cpp
-	src/graphics/CSurface8.h
-	src/graphics/StdPNG.cpp
-	src/graphics/StdPNG.h
 	src/gui/C4ChatDlg.cpp
 	src/gui/C4ChatDlg.h
 	src/gui/C4DownloadDlg.cpp
 	src/gui/C4DownloadDlg.h
 	src/gui/C4FileSelDlg.cpp
 	src/gui/C4FileSelDlg.h
-	src/gui/C4Folder.cpp
-	src/gui/C4Folder.h
 	src/gui/C4GameDialogs.cpp
 	src/gui/C4GameDialogs.h
 	src/gui/C4GameLobby.cpp
@@ -535,8 +524,6 @@ set(OC_CLONK_SOURCES
 	src/gui/C4GameOptions.h
 	src/gui/C4GameOverDlg.cpp
 	src/gui/C4GameOverDlg.h
-	src/gui/C4GfxErrorDlg.cpp
-	src/gui/C4GfxErrorDlg.h
 	src/gui/C4GuiButton.cpp
 	src/gui/C4GuiCheckBox.cpp
 	src/gui/C4GuiComboBox.cpp
@@ -610,45 +597,27 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4MapCreatorS2.h
 	src/landscape/C4Map.h
 	src/landscape/C4MapScript.cpp
-	src/landscape/C4MapScriptAlgo.cpp
 	src/landscape/C4MapScript.h
-	src/landscape/C4MassMover.cpp
-	src/landscape/C4MassMover.h
 	src/landscape/C4Material.cpp
 	src/landscape/C4Material.h
-	src/landscape/C4MaterialList.cpp
-	src/landscape/C4MaterialList.h
 	src/landscape/C4Particles.cpp
 	src/landscape/C4Particles.h
 	src/landscape/C4PathFinder.cpp
 	src/landscape/C4PathFinder.h
 	src/landscape/C4PXS.cpp
 	src/landscape/C4PXS.h
-	src/landscape/C4Scenario.cpp
-	src/landscape/C4ScenarioSection.cpp
-	src/landscape/C4Scenario.h
 	src/landscape/C4Sky.cpp
 	src/landscape/C4Sky.h
 	src/landscape/C4SolidMask.cpp
 	src/landscape/C4SolidMask.h
 	src/landscape/C4Texture.cpp
 	src/landscape/C4Texture.h
-	src/landscape/C4TextureShape.cpp
-	src/landscape/C4TextureShape.h
 	src/landscape/C4TransferZone.cpp
 	src/landscape/C4TransferZone.h
 	src/landscape/C4Weather.cpp
 	src/landscape/C4Weather.h
-	src/lib/C4LogBuf.cpp
-	src/lib/C4LogBuf.h
-	src/lib/C4Log.cpp
-	src/lib/C4Log.h
-	src/lib/C4NameList.cpp
-	src/lib/C4NameList.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
-	src/lib/C4Stat.cpp
-	src/lib/C4Stat.h
 	src/lib/StdAdaptors.h
 	src/lib/StdColors.h
 	src/lib/StdMesh.cpp
@@ -662,8 +631,6 @@ set(OC_CLONK_SOURCES
 	src/lib/StdMeshLoaderXml.cpp
 	src/lib/StdMeshMaterial.cpp
 	src/lib/StdMeshMaterial.h
-	src/lib/StdMeshMath.cpp
-	src/lib/StdMeshMath.h
 	src/lib/StdMeshUpdate.cpp
 	src/lib/StdMeshUpdate.h
 	src/network/C4Client.cpp
@@ -679,8 +646,6 @@ set(OC_CLONK_SOURCES
 	src/network/C4Network2.cpp
 	src/network/C4Network2Dialogs.cpp
 	src/network/C4Network2Dialogs.h
-	src/network/C4Network2Discover.cpp
-	src/network/C4Network2Discover.h
 	src/network/C4Network2.h
 	src/network/C4Network2IO.cpp
 	src/network/C4Network2IO.h
@@ -698,7 +663,6 @@ set(OC_CLONK_SOURCES
 	src/network/C4Network2UPnP.h
 	src/network/C4Packet2.cpp
 	src/network/C4PacketBase.h
-	src/object/C4Action.cpp
 	src/object/C4Command.cpp
 	src/object/C4Command.h
 	src/object/C4Def.cpp
@@ -707,21 +671,14 @@ set(OC_CLONK_SOURCES
 	src/object/C4Def.h
 	src/object/C4DefList.cpp
 	src/object/C4DefList.h
-	src/object/C4FindObject.cpp
-	src/object/C4FindObject.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
-	src/object/C4Id.cpp
-	src/object/C4Id.h
 	src/object/C4IDList.cpp
 	src/object/C4IDList.h
-	src/object/C4InfoCore.cpp
-	src/object/C4InfoCore.h
 	src/object/C4MeshAnimation.cpp
 	src/object/C4MeshAnimation.h
 	src/object/C4MeshDenumerator.cpp
 	src/object/C4MeshDenumerator.h
-	src/object/C4Movement.cpp
 	src/object/C4ObjectCom.cpp
 	src/object/C4ObjectCom.h
 	src/object/C4Object.cpp
@@ -734,13 +691,7 @@ set(OC_CLONK_SOURCES
 	src/object/C4ObjectList.h
 	src/object/C4ObjectMenu.cpp
 	src/object/C4ObjectMenu.h
-	src/object/C4ObjectPtr.cpp
-	src/object/C4ObjectPtr.h
 	src/object/C4ObjectScript.cpp
-	src/object/C4Sector.cpp
-	src/object/C4Sector.h
-	src/object/C4Shape.cpp
-	src/object/C4Shape.h
 	src/platform/C4App.cpp
 	src/platform/C4App.h
 	src/platform/C4AppWin32Impl.h
@@ -761,8 +712,6 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundModifiers.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
-	src/platform/C4TimeMilliseconds.cpp 
-	src/platform/C4TimeMilliseconds.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/PlatformAbstraction.cpp
@@ -779,6 +728,10 @@ set(OC_CLONK_SOURCES
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
 	thirdparty/timsort/sort.h
+	src/lib/C4LogBuf.cpp
+	src/lib/C4LogBuf.h
+	src/lib/C4Log.cpp
+	src/lib/C4Log.h
 )
 
 if(WITH_QT_EDITOR)
@@ -1111,8 +1064,60 @@ src/script/C4ValueMap.h
 )
 
 target_link_libraries(libc4script libmisc)
+
+add_library(libopenclonk
+	src/c4group/C4Extra.cpp
+	src/c4group/C4Extra.h
+	src/control/C4PlayerInfoConflicts.cpp
+	src/graphics/Bitmap256.cpp
+	src/graphics/Bitmap256.h
+	src/graphics/CSurface8.cpp
+	src/graphics/CSurface8.h
+	src/graphics/StdPNG.cpp
+	src/graphics/StdPNG.h
+	src/gui/C4Folder.cpp
+	src/gui/C4Folder.h
+	src/gui/C4GfxErrorDlg.cpp
+	src/gui/C4GfxErrorDlg.h
+	src/landscape/C4MapScriptAlgo.cpp
+	src/landscape/C4MassMover.cpp
+	src/landscape/C4MassMover.h
+	src/landscape/C4MaterialList.cpp
+	src/landscape/C4MaterialList.h
+	src/landscape/C4Scenario.cpp
+	src/landscape/C4Scenario.h
+	src/landscape/C4ScenarioSection.cpp
+	src/landscape/C4TextureShape.cpp
+	src/landscape/C4TextureShape.h
+	src/lib/C4NameList.cpp
+	src/lib/C4NameList.h
+	src/lib/C4Stat.cpp
+	src/lib/C4Stat.h
+	src/lib/StdMeshMath.cpp
+	src/lib/StdMeshMath.h
+	src/network/C4Network2Discover.cpp
+	src/network/C4Network2Discover.h
+	src/object/C4Action.cpp
+	src/object/C4FindObject.cpp
+	src/object/C4FindObject.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
+	src/object/C4InfoCore.cpp
+	src/object/C4InfoCore.h
+	src/object/C4Movement.cpp
+	src/object/C4ObjectPtr.cpp
+	src/object/C4ObjectPtr.h
+	src/object/C4Sector.cpp
+	src/object/C4Sector.h
+	src/object/C4Shape.cpp
+	src/object/C4Shape.h
+	src/platform/C4TimeMilliseconds.cpp 
+	src/platform/C4TimeMilliseconds.h
+)
+
 target_compile_definitions(libmisc PRIVATE "COMPILED_AS_C4LIBRARY")
 target_compile_definitions(libc4script PRIVATE "COMPILED_AS_C4LIBRARY")
+target_compile_definitions(libopenclonk PRIVATE "COMPILED_AS_C4LIBRARY")
 
 add_executable(c4script
 	include/c4script/c4script.h
@@ -1152,6 +1157,7 @@ target_link_libraries(openclonk
 	${UPNP_LIBRARIES}
 	libmisc
 	libc4script
+	libopenclonk
 )
 if(USE_COCOA)
 	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
@@ -1184,6 +1190,7 @@ target_link_libraries(openclonk-server
 	${UPNP_LIBRARIES}
 	libmisc
 	libc4script
+	libopenclonk
 )
 if(USE_COCOA)
 	target_link_libraries(openclonk-server "-framework Cocoa")
