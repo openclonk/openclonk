@@ -354,6 +354,7 @@ local check_interval=12;
 local deactivate_after_action; // If true, finished is set to true after the first execution and the trigger deactivated
 local Visibility=VIS_Editor;
 local trigger_started;
+local trigger_offset; // Timer offset of trigger to allow non-synced triggers
 public func IsSequence() { return true; }
 
 // finished: Disables the trigger. true if trigger has run and deactivate_after_action is set to true.
@@ -425,13 +426,21 @@ public func Definition(def)
 	def.EditorProps.action_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.deactivate_after_action = { Name="$DeactivateAfterAction$", Type="bool" };
 	def.EditorProps.check_interval = { Name="$CheckInterval$", EditorHelp="$CheckIntervalHelp$", Type="int", Set="SetCheckInterval", Save="Interval" };
+	def.EditorProps.trigger_offset = { Name="$CheckOffset$", EditorHelp="$CheckOffsetHelp$", Type="int", Set="SetTriggerOffset" };
 }
 
-public func SetTrigger(proplist new_trigger)
+public func SetTrigger(proplist new_trigger, int check_offset)
 {
 	trigger = new_trigger;
+	// Compute actual trigger time offset based on current frame counter
+	if (GetType(check_offset) && check_interval > 0)
+	{
+		check_offset -= FrameCounter();
+		if (check_offset < 0) check_offset -= ((check_offset/check_interval)-1) * check_interval;
+		check_offset %= check_interval;
+	}
 	// Set trigger: Restart any specific trigger timers
-	if (active && !finished) StartTrigger();
+	if (active && !finished) StartTrigger(check_offset);
 	return true;
 }
 
@@ -463,6 +472,11 @@ public func SetTriggerID(id new_id)
 		SetTrigger(trigger); // restart trigger
 	}
 	return true;
+}
+
+public func GetCheckOffset()
+{
+	// Get timer offset of check function
 }
 
 public func SetAction(new_action, new_action_progress_mode, new_action_allow_parallel)
@@ -508,44 +522,70 @@ public func SetDeactivateAfterAction(bool new_val)
 	return true;
 }
 
-public func StartTrigger()
+public func StartTrigger(int start_delay)
 {
 	if (!trigger) return false;
 	if (trigger_started) StopTrigger();
 	trigger_started = true;
 	SetGraphics("Active");
 	var fn = trigger.Trigger;
-	var id_search;
+	var id_search, timer_fn;
 	if (trigger.ID) id_search = Find_ID(trigger.ID);
 	if (fn == "player_enter_region_rect")
 	{
 		this.search_mask = Find_And(Find_InRect(trigger.Rect[0], trigger.Rect[1], trigger.Rect[2], trigger.Rect[3]), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
-		AddTimer(this.EnterRegionTimer, check_interval);
+		timer_fn = this.EnterRegionTimer;
 	}
 	else if (fn == "player_enter_region_circle")
 	{
 		this.search_mask = Find_And(Find_Distance(trigger.Radius), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_Not(Find_Owner(NO_OWNER)));
-		AddTimer(this.EnterRegionTimer, check_interval);
+		timer_fn = this.EnterRegionTimer;
 	}
 	else if (fn == "object_enter_region_rect")
 	{
 		this.search_mask = Find_And(Find_InRect(trigger.Rect[0], trigger.Rect[1], trigger.Rect[2], trigger.Rect[3]), id_search);
-		AddTimer(this.EnterRegionTimer, check_interval);
+		timer_fn = this.EnterRegionTimer;
 	}
 	else if (fn == "object_enter_region_circle")
 	{
 		this.search_mask = Find_And(Find_Distance(trigger.Radius), Find_OCF(OCF_Alive), Find_Func("IsClonk"), id_search);
-		AddTimer(this.EnterRegionTimer, check_interval);
+		timer_fn = this.EnterRegionTimer;
 	}
 	else if (fn == "contained_object_count")
 	{
-		AddTimer(this.CountContainedObjectsTimer, check_interval);
+		timer_fn = this.CountContainedObjectsTimer;
 	}
 	else if (fn == "interval")
 	{
-		AddTimer(this.OnTrigger, trigger.Interval);
+		check_interval = trigger.Interval;
+		timer_fn = this.OnTrigger;
 	}
-	else return false;
+	else
+	{
+		trigger_offset = 0;
+		return false;
+	}
+	// If a timer was started, remember its offset
+	trigger_offset = (FrameCounter() + start_delay) % Max(1, check_interval);
+	// Start directly or delayed
+	if (start_delay > 0)
+	{
+		ScheduleCall(this, Global.AddTimer, start_delay, 1, timer_fn, check_interval);
+	}
+	else
+	{
+		AddTimer(timer_fn, check_interval);
+	}
+	return true;
+}
+
+public func SetTriggerOffset(int new_trigger_offset)
+{
+	if (trigger_offset != new_trigger_offset)
+	{
+		// Schedule trigger restart to set correct offset
+		SetTrigger(trigger, (trigger_offset = new_trigger_offset));
+	}
 	return true;
 }
 
@@ -556,6 +596,7 @@ public func StopTrigger()
 	RemoveTimer(this.EnterRegionTimer);
 	RemoveTimer(this.CountContainedObjectsTimer);
 	RemoveTimer(this.OnTrigger);
+	ClearScheduleCall(this, Global.AddTimer);
 	trigger_started = false;
 	return true;
 }
@@ -718,7 +759,7 @@ public func SaveScenarioObject(props, ...)
 	if (save_scenario_dup_objects && finished) // finished flag only copied for object duplication; not saved in savegames
 		props->AddCall("Active", this, "SetFinished", finished);
 	if (!active) props->AddCall("Active", this, "SetActive", active);
-	if (trigger) props->AddCall("Trigger", this, "SetTrigger", trigger);
+	if (trigger) props->AddCall("Trigger", this, "SetTrigger", trigger, trigger_offset);
 	if (condition) props->AddCall("Condition", this, "SetCondition", condition);
 	if ((action && !DeepEqual(action, { Function="sequence", Actions=[] })) || action_progress_mode || action_allow_parallel) props->AddCall("Action", this, "SetAction", action, Format("%v", action_progress_mode), action_allow_parallel);
 	if (deactivate_after_action) props->AddCall("DeactivateAfterAction", this, "SetDeactivateAfterAction", deactivate_after_action);

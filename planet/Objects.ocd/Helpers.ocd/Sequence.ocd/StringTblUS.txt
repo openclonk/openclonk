@@ -30,6 +30,8 @@ ObjectEnterRegionCircle=Object of type enters radius
 Condition=Condition
 CheckInterval=Check interval
 CheckIntervalHelp=Defines the interval in frames at which the condition ist checked.ObjectCountInContainer=Objektzahl in Container
+CheckOffset=Check offset
+CheckOffsetHelp=Defines a time delay in frames by which execution is delayed within the check interval. This value can be used to implement an offset between the regular execution of multiple sequences.
 ObjectCountInContainer=Object count in container
 ObjectCountInContainerHelp=Triggered when a minimum number of objects is found in a container. This could for example be when the player put 20 diamonds into a chest.
 Container=Container
