@@ -2760,9 +2760,10 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		if (obj)
 		{
 			C4Def *editor_base = C4Id2Def(C4ID::EditorBase);
-			if (editor_base)
+			C4PropList *info_editorprops = nullptr;
+			
+			if (editor_base && (info_editorprops = editor_base->GetPropertyPropList(P_EditorProps)))
 			{
-				C4PropList *info_editorprops = editor_base->GetPropertyPropList(P_EditorProps);
 				if (AddPropertyGroup(info_editorprops, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, base_obj, nullptr, nullptr))
 					++num_groups;
 			}
