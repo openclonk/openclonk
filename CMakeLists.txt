@@ -45,8 +45,9 @@ include(CMakeDependentOption)
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 CMAKE_DEPENDENT_OPTION(USE_COCOA         "Use Apple Cocoa widgets." ON "APPLE" OFF)
 CMAKE_DEPENDENT_OPTION(USE_WIN32_WINDOWS "Use Microsoft Desktop App User Interface widgets." ON "WIN32" OFF)
-CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. Qt editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS" OFF)
+CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. Qt editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS AND NOT HEADLESS_ONLY" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
+option(HEADLESS_ONLY "Only build headless parts. Somewhat reduces dependencies. (still needs libpng because that one's small and hard to remove.) Only tested with make/gcc/linux." OFF)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
 
@@ -232,18 +233,20 @@ if(MSVC)
 endif()
 
 SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
-find_package(JPEG REQUIRED)
+if(NOT HEADLESS_ONLY)
+	find_package(JPEG REQUIRED)
+	find_package(Freetype REQUIRED)
+	include_directories(
+		${JPEG_INCLUDE_DIR}
+		${FREETYPE_INCLUDE_DIRS})
+	link_directories(
+		${FREETYPE_LIBRARY_DIRS})
+endif()
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(Freetype REQUIRED)
 include_directories(
-	${JPEG_INCLUDE_DIR}
 	${PNG_INCLUDE_DIR}
-	${ZLIB_INCLUDE_DIR}
-	${FREETYPE_INCLUDE_DIRS})
-link_directories(
-	${FREETYPE_LIBRARY_DIRS})
-
+	${ZLIB_INCLUDE_DIR})
 if(CMAKE_SYSTEM MATCHES "Windows")
 	message(STATUS "Using Win32 threading.")
 else()
@@ -285,15 +288,17 @@ endif()
 
 include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
 
-find_package(OpenGL)
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-add_definitions(${GLEW_DEFINITIONS})
+if(NOT HEADLESS_ONLY)
+	find_package(OpenGL)
+	find_package(GLEW REQUIRED)
+	include_directories(${GLEW_INCLUDE_DIRS})
+	add_definitions(${GLEW_DEFINITIONS})
 # On some platforms, GLEW declares the userParam parameter of
 # GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
 # Test which one works here.
-set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
-CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
+	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+endif()
 
 if(UNIX AND NOT APPLE)
 	FINDLIB(X11_LIBRARIES X11)
@@ -1136,38 +1141,40 @@ target_link_libraries(c4script
 	libc4script
 )
 
-add_executable(openclonk WIN32 MACOSX_BUNDLE
-	${OC_SYSTEM_SOURCES}
-	${OC_GUI_SOURCES}
-	${OC_CLONK_SOURCES}
-)
+if(NOT HEADLESS_ONLY)
+	add_executable(openclonk WIN32 MACOSX_BUNDLE
+		${OC_SYSTEM_SOURCES}
+		${OC_GUI_SOURCES}
+		${OC_CLONK_SOURCES}
+	)
 
-target_link_libraries(openclonk
-	${FREETYPE_LIBRARIES}
-	${PNG_LIBRARIES}
-	${JPEG_LIBRARIES}
-	${EXECINFO_LIBRARY}
-	${SDL2_LIBRARIES}
-	${Audio_LIBRARIES}
-	${GETOPT_LIBRARIES}
-	${GLEW_LIBRARIES}
-	${OPENGL_LIBRARIES}
-	${TinyXML_LIBRARIES}
-	${X11_LIBRARIES}
-	${XRANDR_LIBRARIES}
-	${DBGHELP_LIBRARIES}
-	${UPNP_LIBRARIES}
-	libmisc
-	libc4script
-	libopenclonk
-)
-if(USE_COCOA)
-	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
-endif()
+	target_link_libraries(openclonk
+		${FREETYPE_LIBRARIES}
+		${PNG_LIBRARIES}
+		${JPEG_LIBRARIES}
+		${EXECINFO_LIBRARY}
+		${SDL2_LIBRARIES}
+		${Audio_LIBRARIES}
+		${GETOPT_LIBRARIES}
+		${GLEW_LIBRARIES}
+		${OPENGL_LIBRARIES}
+		${TinyXML_LIBRARIES}
+		${X11_LIBRARIES}
+		${XRANDR_LIBRARIES}
+		${DBGHELP_LIBRARIES}
+		${UPNP_LIBRARIES}
+		libmisc
+		libc4script
+		libopenclonk
+	)
+	if(USE_COCOA)
+		target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
+	endif()
 
-if(WITH_QT_EDITOR)
-	set_target_properties(openclonk PROPERTIES COMPILE_DEFINITIONS WITH_QT_EDITOR)
-	qt5_use_modules(openclonk Widgets)
+	if(WITH_QT_EDITOR)
+		set_target_properties(openclonk PROPERTIES COMPILE_DEFINITIONS WITH_QT_EDITOR)
+		qt5_use_modules(openclonk Widgets)
+	endif()
 endif()
 
 add_executable(openclonk-server
@@ -1189,16 +1196,18 @@ target_link_libraries(openclonk-server
 	${GETOPT_LIBRARIES}
 	${TinyXML_LIBRARIES}
 	${DBGHELP_LIBRARIES}
-	${UPNP_LIBRARIES}
 	libmisc
 	libc4script
 	libopenclonk
 )
+if(UPNP_FOUND)
+	target_link_libraries(openclonk-server ${UPNP_LIBRARIES})
+endif()
 if(USE_COCOA)
 	target_link_libraries(openclonk-server "-framework Cocoa")
 endif()
 
-if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
+if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
 	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
 	set_property(TARGET mape PROPERTY FOLDER "Utilities")
@@ -1255,7 +1264,9 @@ if (APPLE AND NOT CMAKE_GENERATOR STREQUAL "Xcode")
 	set(EXECUTABLE_NAME openclonk)
 endif()
 
-set_target_properties(openclonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
+if(NOT HEADLESS_ONLY)
+	set_target_properties(openclonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
+endif()
 
 if(MSVC)
 	# set target output filenames to a per-configuration value
@@ -1491,29 +1502,31 @@ foreach(group ${OC_C4GROUPS})
 	endif()
 endforeach()
 
-if (NOT APPLE)
-	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
-	set_property(TARGET groups PROPERTY FOLDER "Setup")
-	add_dependencies(data groups)
-	
-	# Install new files
-	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
-	# Update the MIME cache -- this makes the clonk:// protocol handler actually work
-	install(CODE "execute_process(COMMAND update-desktop-database)")
+if(NOT HEADLESS_ONLY)
+	if(NOT APPLE)
+		add_custom_target(groups DEPENDS ${OC_C4GROUPS})
+		set_property(TARGET groups PROPERTY FOLDER "Setup")
+		add_dependencies(data groups)
+		
+		# Install new files
+		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
+		# Update the MIME cache -- this makes the clonk:// protocol handler actually work
+		install(CODE "execute_process(COMMAND update-desktop-database)")
 
-	# Install software center metadata
-	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.appdata.xml DESTINATION share/appdata)
+		# Install software center metadata
+		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.appdata.xml DESTINATION share/appdata)
 
-	# Install binaries
-	install(TARGETS openclonk DESTINATION games)
-	install(TARGETS c4group DESTINATION bin)
-else()
-	install(TARGETS openclonk
-		BUNDLE DESTINATION .
-	)
-	install(TARGETS c4group c4script
-		RUNTIME DESTINATION .
-	)
+		# Install binaries
+		install(TARGETS openclonk DESTINATION games)
+		install(TARGETS c4group DESTINATION bin)
+	else()
+		install(TARGETS openclonk
+			BUNDLE DESTINATION .
+		)
+		install(TARGETS c4group c4script
+			RUNTIME DESTINATION .
+		)
+	endif()
 endif()
 
 ############################################################################
@@ -1522,23 +1535,25 @@ endif()
 
 find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
-add_custom_command(
-	OUTPUT setup_openclonk.exe
-	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=$<TARGET_FILE_DIR:openclonk>\\$<TARGET_FILE_NAME:openclonk>" "-DC4GROUP=$<TARGET_FILE_DIR:c4group>\\$<TARGET_FILE_NAME:c4group>" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
-	MAIN_DEPENDENCY
-		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
-	DEPENDS
-		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
-		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
-		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
-		${OC_C4GROUPS} openclonk c4group
-	VERBATIM
-)
+if(NOT HEADLESS_ONLY)
+	add_custom_command(
+		OUTPUT setup_openclonk.exe
+		COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=$<TARGET_FILE_DIR:openclonk>\\$<TARGET_FILE_NAME:openclonk>" "-DC4GROUP=$<TARGET_FILE_DIR:c4group>\\$<TARGET_FILE_NAME:c4group>" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+		MAIN_DEPENDENCY
+			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
+		DEPENDS
+			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
+			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
+			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
+			${OC_C4GROUPS} openclonk c4group
+		VERBATIM
+	)
 
-add_custom_target(setup
-	DEPENDS setup_openclonk.exe groups
-)
-set_property(TARGET setup PROPERTY FOLDER "Setup")
+	add_custom_target(setup
+		DEPENDS setup_openclonk.exe groups
+	)
+	set_property(TARGET setup PROPERTY FOLDER "Setup")
+endif()
 
 ############################################################################
 # CPack support
