@@ -1,3 +1,5 @@
 GuardRange=Guarded area
 MaxAggroDistance=Attack radius
 IgnoreAllies=Ignore allies
+Active=Active
+ActiveHelp=Whether the AI controls the clonk currently. An inakcive KI can be reactivated via the 'AI activate', for example in a sequence.

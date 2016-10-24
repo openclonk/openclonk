@@ -47,10 +47,15 @@ func AddAI(object clonk)
 	SetGuardRange(clonk, fx.home_x-AI_DefGuardRangeX, fx.home_y-AI_DefGuardRangeY, AI_DefGuardRangeX*2, AI_DefGuardRangeY*2);
 	SetMaxAggroDistance(clonk, AI_DefMaxAggroDistance);
 	// AI editor stuff
+	// TODO: Should use new-style effects to declare this directly in a base class
+	// Whoever does that: Make sure that the derived AIs in our defense scenarios still work
 	fx.EditorProps = {};
 	fx.EditorProps.guard_range = { Name="$GuardRange$", Type="rect", Storage="proplist", Color=0xff00, Relative=false };
 	fx.EditorProps.ignore_allies = { Name="$IgnoreAllies$", Type="bool" };
 	fx.EditorProps.max_aggro_distance = { Name="$MaxAggroDistance$", Type="circle", Color=0x808080 };
+	fx.EditorProps.active = { Name="$Active$", EditorHelp="$ActiveHelp$", Type="bool", Priority=50, AsyncGet="GetActive", Set="SetActive" };
+	fx.SetActive = AI.Fx_SetActive;
+	fx.GetActive = AI.Fx_GetActive;
 	return fx;
 }
 
@@ -83,6 +88,25 @@ func SetHome(object clonk, int x, int y, int dir)
 func AI_BindInventory() { return this.ai.ai->BindInventory(this); }
 func AI_SetHome() { return this.ai.ai->SetHome(this); }
 func AI_SetIgnoreAllies() { return (this.ai.ignore_allies = true); }
+
+// Set active state: Enables/Disables timer
+func SetActive(object clonk, bool active)
+{
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
+	return fx->SetActive(active);
+}
+
+func Fx_SetActive(bool active)
+{
+	// In effect context: Activity contorlled by execution interval
+	this.Interval = active * 3;
+	return true;
+}
+
+func Fx_GetActive()
+{
+	return !!this.Interval;
+}
 
 // Set the guard range to the provided rectangle
 func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
@@ -129,6 +153,8 @@ func FxAISaveScen(clonk, fx, props)
 {
 	if (!clonk) return false;
 	props->AddCall("AI", AI, "AddAI", clonk);
+	if (!fx.Interval)
+		props->AddCall("AI", AI, "SetActive", clonk, false);
 	if (fx.home_x != clonk->GetX() || fx.home_y != clonk->GetY() || fx.home_dir != clonk->GetDir())
 		props->AddCall("AI", AI, "SetHome", clonk, fx.home_x, fx.home_y, GetConstantNameByValueSafe(fx.home_dir, "DIR_"));
 	props->AddCall("AI", AI, "SetGuardRange", clonk, fx.guard_range.x, fx.guard_range.y, fx.guard_range.wdt, fx.guard_range.hgt);
@@ -143,6 +169,12 @@ func FxAISaveScen(clonk, fx, props)
 
 
 /* AI effect callback functions */
+
+local A = new Effect {
+	Timer = func() {
+		Target->SetSpeed(0,0);
+	}
+};
 
 protected func FxAITimer(clonk, fx, int time) { clonk->ExecuteAI(fx, time); return FX_OK; }
 

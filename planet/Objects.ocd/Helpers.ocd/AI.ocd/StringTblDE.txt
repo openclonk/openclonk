@@ -1,3 +1,5 @@
 GuardRange=Bewachter Bereich
 MaxAggroDistance=Angriffsradius
 IgnoreAllies=Mitspieler ignorieren
+Active=Aktiv
+ActiveHelp=Ob die KI aktiv den Clonk momentan steuert. Eine inaktive KI kann ueber die Aktion 'KI aktivieren' zum Beispiel in einer Sequenz wieder aktiviert werden.
