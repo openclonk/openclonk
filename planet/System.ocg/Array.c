@@ -200,7 +200,7 @@ global func MoveArrayItems(array arr, array source_indices, int insert_before)
 		source_indices = source_indices[:]; 
 		SortArray(source_indices);
 	}
-	for (idx in source_indices)
+	for (var idx in source_indices)
 	{
 		if (idx < 0) idx += (1-(idx+1)/len)*len; // resolve negative indices
 		if (idx >= len) continue;
@@ -229,7 +229,7 @@ global func RemoveArrayIndices(array arr, array indices)
 {
 	indices = indices[:];
 	SortArray(indices, true);
-	for (idx in indices)
+	for (var idx in indices)
 		if (idx < GetLength(arr))
 			RemoveArrayIndex(arr, idx);
 	return true;

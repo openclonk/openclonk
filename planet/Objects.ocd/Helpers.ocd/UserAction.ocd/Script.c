@@ -557,7 +557,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	}
 	// Copy any object evaluators to existing evaluator lists
 	if (eval_type == "Object" && object_evaluators)
-		for (obj_eval in object_evaluators)
+		for (var obj_eval in object_evaluators)
 			obj_eval.Options[GetLength(obj_eval.Options)] = action_def;
 	return action_def;
 }
@@ -786,7 +786,7 @@ private func EvalBool_Not(proplist props, proplist context) { return !EvaluateVa
 
 private func EvalBool_And(proplist props, proplist context)
 {
-	for (cond in props.Operands)
+	for (var cond in props.Operands)
 		if (!EvaluateValue("Boolean", cond, context))
 			return false;
 	return true;
@@ -794,7 +794,7 @@ private func EvalBool_And(proplist props, proplist context)
 
 private func EvalBool_Or(proplist props, proplist context)
 {
-	for (cond in props.Operands)
+	for (var cond in props.Operands)
 		if (EvaluateValue("Boolean", cond, context))
 			return true;
 	return false;

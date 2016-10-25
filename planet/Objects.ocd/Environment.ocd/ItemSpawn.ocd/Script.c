@@ -44,11 +44,11 @@ public func SetSpawnObject(id def)
 public func Reset(plr)
 {
 	if (!GetType(plr)) plr = GetPlayers(); else plr = [plr];
-		for (p in plr)
-		{
-			spawn_list[p] = nil;
-			UpdateVisibility(p);
-		}
+	for (var p in plr)
+	{
+		spawn_list[p] = nil;
+		UpdateVisibility(p);
+	}
 	return true;
 }
 

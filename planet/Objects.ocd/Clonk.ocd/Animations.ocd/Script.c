@@ -219,7 +219,7 @@ public func ReplaceAction(string action, byaction)
 			if(old[0] == byaction[0] && old[1] == byaction[1])
 			{
 				var i = 0;
-				for (test in ActualReplace)
+				for (var test in ActualReplace)
 				{
 					if(test && test[0] == action)
 						break;

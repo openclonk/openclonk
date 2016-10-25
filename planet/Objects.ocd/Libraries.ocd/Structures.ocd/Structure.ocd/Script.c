@@ -65,7 +65,7 @@ public func Damage(int change, int cause, int cause_plr)
 private func EjectContentsOnDestruction(int cause, int by_player)
 {
 	// Exit all objects in this structure.
-	for (obj in FindObjects(Find_Container(this)))
+	for (var obj in FindObjects(Find_Container(this)))
 	{
 		// For a non-blast destruction just place the objects at the bottom of the structure.
 		var angle = Random(360);

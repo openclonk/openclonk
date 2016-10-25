@@ -66,7 +66,7 @@ public func GetLoadWeight()
 	if (!has_plank)
 		return 10;
 	var weight = 50;
-	for (obj in FindObjects(Find_AtRect(-3, -10, 6, 10), Find_Exclude(this), Find_NoContainer()))
+	for (var obj in FindObjects(Find_AtRect(-3, -10, 6, 10), Find_Exclude(this), Find_NoContainer()))
 		if (obj->GetID() != Ropebridge_Segment && obj->GetID() != Ropebridge_Post && obj->GetID() != BridgePlank)
 			if (obj->GetContact(-1, 8))
 				weight += obj->GetMass();

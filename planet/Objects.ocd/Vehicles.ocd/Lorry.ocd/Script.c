@@ -247,7 +247,7 @@ protected func Damage(int change, int cause, int by_player)
 		if (!Contained())
 		{
 			// First eject the contents in different directions.
-			for (obj in FindObjects(Find_Container(this)))
+			for (var obj in FindObjects(Find_Container(this)))
 			{
 				var speed = RandomX(3, 5);
 				var angle = Random(360);
