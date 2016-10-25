@@ -11,7 +11,7 @@ local prev_segment;
 
 public func IsLadder() { return true; }
 
-public func SetMaster(object new_master)
+public func SetMaster(object new_master, int new_index)
 {
 	master = new_master;
 	return;
