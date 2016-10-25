@@ -7,10 +7,7 @@
 
 #include Library_Rope
 
-static const Ladder_MaxParticles = 15;
-static const Ladder_Iterations = 10;
-static const Ladder_Precision = 100;
-static const Ladder_SegmentLength = 5;
+local RopeBridge_Precision = 100;
 
 local bridge_post1;
 local bridge_post2;
@@ -179,7 +176,7 @@ public func DrawRopeLine(array start, array end, int i, int index)
 	var angle = -Angle(end[0], end[1], start[0], start[1]);
 	var point_x = 5 * (start[0] + end[0]);
 	var point_y = 5 * (start[1] + end[1]);
-	var length = Vec_Length(Vec_Sub(end, start)) * 125 / Ladder_Precision + 100;
+	var length = Vec_Length(Vec_Sub(end, start)) * 125 / RopeBridge_Precision + 100;
 
 	if (index != 4 && index != 7)
 		SetLineTransform(lib_rope_segments[i], angle, point_x - lib_rope_particles[i].x * 10, point_y - lib_rope_particles[i].y * 10 + 2000, length, index);
@@ -320,8 +317,8 @@ public func GetRopeConnectPosition(int index, int right, int end, int angle, int
 	if ((!end && index == 1) || (end && index == lib_rope_particle_count - 1))
 	{
 		var obj = lib_rope_objects[end][0];
-		var point_x = obj->GetX(Ladder_Precision) - Cos(obj->GetR(), Ropebridge_Anchor_Offset[right][0] * (-1 + 2 * end)) + Sin(obj->GetR(), Ropebridge_Anchor_Offset[right][1]);
-		var point_y = obj->GetY(Ladder_Precision) - Sin(obj->GetR(), Ropebridge_Anchor_Offset[right][0] * (-1 + 2 * end)) - Cos(obj->GetR(), Ropebridge_Anchor_Offset[right][1]);
+		var point_x = obj->GetX(RopeBridge_Precision) - Cos(obj->GetR(), Ropebridge_Anchor_Offset[right][0] * (-1 + 2 * end)) + Sin(obj->GetR(), Ropebridge_Anchor_Offset[right][1]);
+		var point_y = obj->GetY(RopeBridge_Precision) - Sin(obj->GetR(), Ropebridge_Anchor_Offset[right][0] * (-1 + 2 * end)) - Cos(obj->GetR(), Ropebridge_Anchor_Offset[right][1]);
 		return [point_x, point_y];
 	}
 	if (!end) 

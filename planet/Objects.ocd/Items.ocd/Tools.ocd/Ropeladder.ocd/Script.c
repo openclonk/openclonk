@@ -11,12 +11,12 @@
 
 #include Library_Rope
 
-static const Ladder_MaxParticles = 15;
-static const Ladder_Iterations = 10;
-static const Ladder_Precision = 100;
-static const Ladder_SegmentLength = 5;
-static const Ropeladder_Segment_LeftXOffset = 200;
-static const Ropeladder_Segment_RightXOffset = -100;
+local Ladder_MaxParticles = 15;
+local Ladder_Iterations = 10;
+local Ladder_Precision = 100;
+local Ladder_SegmentLength = 5;
+local Ropeladder_Segment_LeftXOffset = 200;
+local Ropeladder_Segment_RightXOffset = -100;
 
 local MaxSegmentCount;
 

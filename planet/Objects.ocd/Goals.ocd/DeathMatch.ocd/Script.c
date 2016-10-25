@@ -12,7 +12,7 @@
 
 local maxkills;
 
-static const MIME_ShowBoardTime = 5; // Duration in seconds the scoreboard will be shown to a player on an event.static const MIME_ShowBoardTime = 5; // Duration in seconds the scoreboard will be shown to a player on an event.
+local ShowBoardTime = 5; // Duration in seconds the scoreboard will be shown to a player on an event.static const ShowBoardTime = 5; // Duration in seconds the scoreboard will be shown to a player on an event.
 
 func Initialize()
 {
@@ -46,7 +46,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	GameCall("OnPlayerRelaunch", plr, true);
 	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
-	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
+	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	NotifyHUD();
 	return; // _inherited(plr, killer, ...);
 }

@@ -17,7 +17,7 @@ local TRCH_Fixed    = 3;
 
 func Initialize()
 {
-	local state = TRCH_Normal;
+	state = TRCH_Normal;
 	SetMeshMaterial("Torch");
 }
 
