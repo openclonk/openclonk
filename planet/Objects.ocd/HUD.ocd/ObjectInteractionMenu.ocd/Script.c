@@ -500,9 +500,9 @@ public func OnToggleMinimizeClicked()
 	config.minimized = !(GetProperty("minimized", config) ?? false);
 	
 	// Reopen with new layout..
-	var cursor = this.cursor;
+	var last_cursor = this.cursor;
 	RemoveObject();
-	GUI_ObjectInteractionMenu->CreateFor(cursor);
+	GUI_ObjectInteractionMenu->CreateFor(last_cursor);
 }
 
 // Tries to put all items from the other menu's target into the target of menu menu_id. Returns nil.

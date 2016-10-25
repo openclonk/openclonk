@@ -149,6 +149,6 @@ public func Definition(def, ...)
 private func EvalAct_SetBoilingIntensity(props, context)
 {
 	var boiler = UserAction->EvaluateValue("Boiler", props.Boiler, context);
-	var intensity = Max(UserAction->EvaluateValue("Integer", props.Intensity, context));
-	if (boiler) boiler->~SetIntensity(intensity);
+	var new_intensity = Max(UserAction->EvaluateValue("Integer", props.Intensity, context));
+	if (boiler) boiler->~SetIntensity(new_intensity);
 }
