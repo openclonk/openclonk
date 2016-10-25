@@ -1211,9 +1211,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 				{
 					expected_par_types.resize(candidate->GetParCount(), C4V_Any);
 				}
-				for (size_t i = 0; i < std::min<size_t>(known_par_types.size(), candidate->GetParCount()); ++i)
+				for (size_t i = 0; i < expected_par_types.size(); ++i)
 				{
-					C4V_Type a = known_par_types[i];
+					C4V_Type a = expected_par_types[i];
 					C4V_Type b = candidate->GetParType()[i];
 					// If we can convert one of the types into the other
 					// without a warning, use the wider one
