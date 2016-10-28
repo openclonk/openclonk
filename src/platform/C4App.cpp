@@ -29,8 +29,9 @@ void C4AbstractApp::Run()
 	if (Application.isEditor)
 	{
 		// Qt has its own event loop. Use a timer to call our own event handling whenever Qt is done
-		// with its events (zero timeout). The alternative (calling Qt's event handling from
+		// with its events. The alternative (calling Qt's event handling from
 		// C4Console::Execute) is too slow, at least on Linux.
+		// FIXME: All of this should be happening in a background thread instead of on the UI thread
 		QTimer timer;
 		QObject::connect(&timer, &QTimer::timeout, [this, &timer]() {
 			ScheduleProcs(0);
@@ -41,8 +42,9 @@ void C4AbstractApp::Run()
 			}
 			auto now = C4TimeMilliseconds::Now();
 			auto next_tick = GetNextTick(now);
-			timer.setInterval(Clamp(next_tick - now, 0, 36/1000));
+			timer.setInterval(Clamp(next_tick - now, 0, 1000/36));
 		});
+		timer.setTimerType(Qt::PreciseTimer);
 		timer.start();
 		QApplication::exec();
 		return;
