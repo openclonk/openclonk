@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RemoveShader</title>
+    <category>Global</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>id</name>
+          <desc>
+            Shader id returned from <funclink>AddFragmentShader</funclink>.
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Removes a shader which was previously created from script. Returns true on success.</desc>
+    <related>
+      <funclink>AddFragmentShader</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-10</date>
+</funcs>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddFragmentShader</title>
+    <category>Global</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>category</name>
+          <desc>
+            Shader category or shader name the slices are added to. Known categories:
+            <table>
+              <rowh>
+                <col>Category</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <col>Common</col>
+                <col>Applies to everything.</col>
+              </row>
+              <row>
+                <col>Object</col>
+                <col>Applies to all objects and sprites.</col>
+              </row>
+              <row>
+                <col>Landscape</col>
+                <col>Applies to the landscape.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>shader</name>
+          <desc>The GLSL shader code.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds shader slices to a category of shaders or to a single shader. Returns an identifier for removal.</desc>
+    <remark>
+      Consider using built-in functions such as <funclink>SetGamma</funclink>, <funclink>SetMatAdjust</funclink>, or <funclink>SetClrModulation</funclink> for changing colors instead of writing a custom shader.
+    </remark>
+    <examples>
+      <example>
+        <code>AddFragmentShader("Landscape", "slice(color+1) { fragColor.r = 1.f; }");</code>
+        <text>Makes the landscape very red.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RemoveShader</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-10</date>
+</funcs>
