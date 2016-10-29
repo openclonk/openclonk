@@ -215,8 +215,12 @@ void C4Window::HandleSDLEvent(SDL_WindowEvent &e)
 	case SDL_WINDOWEVENT_FOCUS_GAINED:
 		SetUrgencyHint(window, false);
 		break;
+	case SDL_WINDOWEVENT_RESIZED:
+	case SDL_WINDOWEVENT_SIZE_CHANGED:
+		Application.OnResolutionChanged(e.data1, e.data2);
+		break;
 	default:
-		// We don't care about most events.
+		// We don't care about most events. We should care about more, though.
 		break;
 	}
 }
