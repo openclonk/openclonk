@@ -101,6 +101,36 @@ bool C4Shader::LoadVertexSlices(C4GroupSet *pGroups, const char *szFile)
 	return LoadSlices(VertexSlices, pGroups, szFile);
 }
 
+void C4Shader::SetScriptCategories(std::list<std::string> categories)
+{
+	assert(!ScriptSlicesLoaded && "Can't change shader categories after initialization");
+	Categories = categories;
+}
+
+void C4Shader::LoadScriptSlices()
+{
+	ScriptShaders = ScriptShader.GetShaderIDs(Categories);
+	for (auto& id : ScriptShaders)
+	{
+		LoadScriptSlice(id);
+	}
+	ScriptSlicesLoaded = true;
+}
+
+void C4Shader::LoadScriptSlice(int id)
+{
+	auto& s = ScriptShader.shaders.at(id);
+	switch (s.type)
+	{
+	case C4ScriptShader::VertexShader:
+		AddVertexSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData(), s.time);
+		break;
+	case C4ScriptShader::FragmentShader:
+		AddFragmentSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData(), s.time);
+		break;
+	}
+}
+
 void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int line, int iSourceTime)
 {
 	ShaderSlice Slice;
@@ -298,6 +328,10 @@ void C4Shader::ClearSlices()
 	VertexSlices.clear();
 	FragmentSlices.clear();
 	iTexCoords = 0;
+	// Script slices
+	ScriptSlicesLoaded = false;
+	Categories.clear();
+	ScriptShaders.clear();
 }
 
 void C4Shader::Clear()
@@ -315,6 +349,15 @@ void C4Shader::Clear()
 
 bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **szAttributes)
 {
+	Name.Copy(szWhat);
+	LastRefresh = C4TimeMilliseconds::Now();
+
+	if (!ScriptSlicesLoaded)
+	{
+		Categories.emplace_back(szWhat);
+		LoadScriptSlices();
+	}
+
 	StdStrBuf VertexShader = Build(VertexSlices, true),
 		FragmentShader = Build(FragmentSlices, true);
 
@@ -397,52 +440,94 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 #endif
 
-	Name.Copy(szWhat);
-	LastRefresh = C4TimeMilliseconds::Now();
 	return true;
 }
 
 
 bool C4Shader::Refresh()
 {
-	// Update last refresh. Align across engine for reasons.
+	// Update last refresh. Keep a local copy around though to identify added script shaders.
 	LastRefresh = C4TimeMilliseconds::Now();
-	LastRefresh -= LastRefresh.AsInt() % C4Shader_RefreshInterval;
-	// Find a slice where the source file has updated
-	ShaderSliceList::iterator pSlice;
-	for (pSlice = FragmentSlices.begin(); pSlice != FragmentSlices.end(); pSlice++)
-		if (pSlice->Source.getLength() &&
-			FileExists(pSlice->Source.getData()) &&
-			FileTime(pSlice->Source.getData()) > pSlice->SourceTime)
-			break;
-	if (pSlice == FragmentSlices.end()) return true;
-	StdCopyStrBuf Source = pSlice->Source;
 
-	// Okay, remove all slices that came from this file
-	ShaderSliceList::iterator pNext;
-	for (; pSlice != FragmentSlices.end(); pSlice = pNext)
+	auto next = ScriptShader.GetShaderIDs(Categories);
+	std::set<int> toAdd, toRemove;
+	std::set_difference(ScriptShaders.begin(), ScriptShaders.end(), next.begin(), next.end(), std::inserter(toRemove, toRemove.end()));
+	std::set_difference(next.begin(), next.end(), ScriptShaders.begin(), ScriptShaders.end(), std::inserter(toAdd, toAdd.end()));
+	ScriptShaders = next;
+
+	auto removeSlices = [&](ShaderSliceList::iterator& pSlice)
 	{
-		pNext = pSlice; pNext++;
-		if (SEqual(pSlice->Source.getData(), Source.getData()))
-			FragmentSlices.erase(pSlice);
-	}
+		StdCopyStrBuf Source = pSlice->Source;
 
-	// Load new shader
-	char szParentPath[_MAX_PATH+1]; C4Group Group;
-	StdStrBuf Shader;
-	GetParentPath(Source.getData(),szParentPath);
-	if(!Group.Open(szParentPath) ||
-	   !Group.LoadEntryString(GetFilename(Source.getData()),&Shader) ||
-	   !Group.Close())
+		// Okay, remove all slices that came from this file
+		ShaderSliceList::iterator pNext;
+		for (; pSlice != FragmentSlices.end(); pSlice = pNext)
+		{
+			pNext = pSlice; pNext++;
+			if (SEqual(pSlice->Source.getData(), Source.getData()))
+				FragmentSlices.erase(pSlice);
+		}
+	};
+
+	// Find slices where the source file has updated.
+	std::vector<StdCopyStrBuf> sourcesToUpdate;
+	for (ShaderSliceList::iterator pSlice = FragmentSlices.begin(); pSlice != FragmentSlices.end(); pSlice++)
+		if (pSlice->Source.getLength())
+		{
+			if (pSlice->Source.BeginsWith("[script "))
+			{
+				// TODO: Maybe save id instead of parsing the string here.
+				int sid = -1;
+				sscanf(pSlice->Source.getData(), "[script %d", &sid);
+				if (toRemove.find(sid) != toRemove.end())
+					removeSlices(pSlice);
+				else
+				{
+					auto s = ScriptShader.shaders.find(sid);
+					if (s != ScriptShader.shaders.end() && s->second.time > pSlice->SourceTime)
+					{
+						removeSlices(pSlice);
+						toAdd.emplace(sid);
+					}
+				}
+			}
+			else if (FileExists(pSlice->Source.getData()) &&
+			         FileTime(pSlice->Source.getData()) > pSlice->SourceTime)
+			{
+				sourcesToUpdate.push_back(pSlice->Source);
+				removeSlices(pSlice);
+			}
+		}
+
+	// Anything to do?
+	if (toAdd.size() == 0 && toRemove.size() == 0 && sourcesToUpdate.size() == 0)
+		return true;
+
+	// Process file reloading.
+	for (auto& Source : sourcesToUpdate)
 	{
-		ShaderLogF("  gl: Failed to refresh %s shader from %s!", Name.getData(), Source.getData());
-		return false;
-	}
+		char szParentPath[_MAX_PATH+1]; C4Group Group;
+		StdStrBuf Shader;
+		GetParentPath(Source.getData(),szParentPath);
+		if(!Group.Open(szParentPath) ||
+		   !Group.LoadEntryString(GetFilename(Source.getData()),&Shader) ||
+		   !Group.Close())
+		{
+			ShaderLogF("  gl: Failed to refresh %s shader from %s!", Name.getData(), Source.getData());
+			return false;
+		}
 
-	// Load slices
-	int iSourceTime = FileTime(Source.getData());
-	StdStrBuf WhatSrc = FormatString("file %s", Config.AtRelativePath(Source.getData()));
-	AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
+		// Load slices
+		int iSourceTime = FileTime(Source.getData());
+		StdStrBuf WhatSrc = FormatString("file %s", Config.AtRelativePath(Source.getData()));
+		AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
+	}
+	
+	// Process new script slices.
+	for (int id : toAdd)
+	{
+		LoadScriptSlice(id);
+	}
 
 #ifndef USE_CONSOLE
 	std::vector<const char*> UniformNames(Uniforms.size() + 1);
@@ -469,8 +554,7 @@ bool C4Shader::Refresh()
 		))
 		return false;
 
-	// Retry in case there have been more changes
-	return Refresh();
+	return true;
 }
 
 StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
@@ -620,7 +704,7 @@ void C4ShaderCall::Start()
 	assert(pShader->hProg != 0); // Shader must be initialized
 
 	// Possibly refresh shader
-	if (C4TimeMilliseconds::Now() > pShader->LastRefresh + C4Shader_RefreshInterval)
+	if (ScriptShader.LastUpdate > pShader->LastRefresh || C4TimeMilliseconds::Now() > pShader->LastRefresh + C4Shader_RefreshInterval)
 		const_cast<C4Shader *>(pShader)->Refresh();
 
 	// Activate shader
@@ -640,3 +724,42 @@ void C4ShaderCall::Finish()
 }
 
 #endif
+
+// global instance
+C4ScriptShader ScriptShader;
+
+std::set<int> C4ScriptShader::GetShaderIDs(std::list<std::string> cats)
+{
+	std::set<int> result;
+	for (auto& cat : cats)
+		for (auto& id : categories[cat])
+			result.emplace(id);
+	return result;
+}
+
+int C4ScriptShader::Add(std::string shaderName, ShaderType type, std::string source)
+{
+	int id = NextID++;
+	LastUpdate = C4TimeMilliseconds::Now().AsInt();
+	// Hack: Always prepend a newline as the slice parser doesn't recognize
+	// slices that don't begin with a newline.
+	source.insert(0, 1, '\n');
+	shaders.emplace(std::make_pair(id, (ShaderInstance) {type, LastUpdate, source}));
+	categories[shaderName].emplace(id);
+	return id;
+}
+
+bool C4ScriptShader::Remove(int id)
+{
+	// We have to perform a rather inefficient full search. We'll have to see
+	// whether this turns out to be a performance issue.
+	if (shaders.erase(id))
+	{
+		for (auto& kv : categories)
+			if (kv.second.erase(id))
+				break; // each id can appear in one category only
+		LastUpdate = C4TimeMilliseconds::Now().AsInt();
+		return true;
+	}
+	return false;
+}

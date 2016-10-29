@@ -79,11 +79,14 @@ private:
 	typedef std::list<ShaderSlice> ShaderSliceList;
 	ShaderSliceList VertexSlices, FragmentSlices;
 	std::vector<std::string> SourceFiles;
+	std::list<std::string> Categories;
+	std::set<int> ScriptShaders;
 
 	int GetSourceFileId(const char *file) const;
 
 	// Last refresh check
 	C4TimeMilliseconds LastRefresh;
+	bool ScriptSlicesLoaded = false;
 
 	// Used texture coordinates
 	int iTexCoords;
@@ -147,6 +150,7 @@ public:
 	void AddFragmentSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	bool LoadFragmentSlices(C4GroupSet *pGroupSet, const char *szFile);
 	bool LoadVertexSlices(C4GroupSet *pGroupSet, const char *szFile);
+	void SetScriptCategories(std::list<std::string> categories);
 
 	// Assemble and link the shader. Should be called again after new slices are added.
 	bool Init(const char *szWhat, const char **szUniforms, const char **szAttributes);
@@ -160,6 +164,9 @@ private:
 	void AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iFileTime);
 	bool LoadSlices(ShaderSliceList& slices, C4GroupSet *pGroupSet, const char *szFile);
 	int ParsePosition(const char *szWhat, const char **ppPos);
+
+	void LoadScriptSlices();
+	void LoadScriptSlice(int id);
 
 	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);
 
@@ -298,5 +305,44 @@ class C4ShaderCall {
 	C4ShaderCall(const C4Shader *) {};
 };
 #endif
+
+class C4ScriptShader
+{
+	friend class C4Shader;
+	friend class C4ShaderCall;
+
+public:
+	enum ShaderType
+	{
+		VertexShader, // Note: Reloading is currently only implemented for fragment shaders.
+		FragmentShader,
+	};
+private:
+	struct ShaderInstance
+	{
+		ShaderType type;
+		uint32_t time;
+		std::string source;
+	};
+
+	// Map of shader names -> ids. The indirection is there as each C4Shader
+	// may load script shaders from multiple categories.
+	std::map<std::string, std::set<int>> categories;
+	// Map of ids -> script-loaded shaders.
+	std::map<int, ShaderInstance> shaders;
+	int NextID = 0;
+	uint32_t LastUpdate = 0;
+
+protected: // Interface for C4Shader friend class
+	std::set<int> GetShaderIDs(std::list<std::string> cats);
+
+public: // Interface for script
+	// Adds a shader, returns its id for removal.
+	int Add(std::string shaderName, ShaderType type, std::string source);
+	// Removes a shader, returning true on success.
+	bool Remove(int id);
+};
+
+extern C4ScriptShader ScriptShader;
 
 #endif // INC_C4Shader

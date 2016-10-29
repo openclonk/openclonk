@@ -264,6 +264,9 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "ObjectShader.glsl");
 
+	// Categories for script shaders.
+	shader.SetScriptCategories({"Common", "Object"});
+
 	if (additionalSlices)
 		for (const char* const* slice = additionalSlices; *slice != NULL; ++slice)
 			shader.LoadFragmentSlices(pGroups, *slice);

@@ -48,6 +48,7 @@
 #include "landscape/C4Sky.h"
 #include "landscape/C4Particles.h"
 #include "graphics/C4GraphicsResource.h"
+#include "graphics/C4Shader.h"
 
 C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 {
@@ -2016,6 +2017,17 @@ static bool FnResetGamma(C4PropList * _this, long iRampIndex)
 	return true;
 }
 
+static Nillable<long> FnAddFragmentShader(C4PropList * _this, C4String * name, C4String * shader)
+{
+	if (!name || !shader) return C4Void();
+	return ScriptShader.Add(name->GetCStr(), C4ScriptShader::FragmentShader, shader->GetCStr());
+}
+
+static bool FnRemoveShader(C4PropList * _this, long id)
+{
+	return ScriptShader.Remove(id);
+}
+
 // undocumented!
 static long FnFrameCounter(C4PropList * _this) { return Game.FrameCounter; }
 
@@ -2831,6 +2843,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(ReloadParticle);
 	F(SetGamma);
 	F(ResetGamma);
+	F(AddFragmentShader);
+	F(RemoveShader);
 	F(FrameCounter);
 	F(DrawMaterialQuad);
 	F(SetFilmView);

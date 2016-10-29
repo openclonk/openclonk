@@ -594,6 +594,9 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "LandscapeShader.glsl");
 
+	// Categories for script shaders.
+	shader.SetScriptCategories({"Common", "Landscape"});
+
 	// Make attribute name map
 	const char* AttributeNames[C4LRA_Count + 1];
 	AttributeNames[C4LRA_Position] = "oc_Position";

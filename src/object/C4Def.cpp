@@ -78,6 +78,9 @@ public:
 
 		shader.LoadFragmentSlices(&::GraphicsResource.Files, "CommonShader.glsl");
 		shader.LoadFragmentSlices(&::GraphicsResource.Files, "ObjectShader.glsl");
+
+		// Categories for script shaders.
+		shader.SetScriptCategories({"Common", "Object"});
 #endif
 	}
 
