@@ -101,7 +101,7 @@ bool C4Shader::LoadVertexSlices(C4GroupSet *pGroups, const char *szFile)
 	return LoadSlices(VertexSlices, pGroups, szFile);
 }
 
-void C4Shader::SetScriptCategories(std::list<std::string> categories)
+void C4Shader::SetScriptCategories(const std::vector<std::string>& categories)
 {
 	assert(!ScriptSlicesLoaded && "Can't change shader categories after initialization");
 	Categories = categories;
@@ -123,10 +123,10 @@ void C4Shader::LoadScriptSlice(int id)
 	switch (s.type)
 	{
 	case C4ScriptShader::VertexShader:
-		AddVertexSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData(), s.time);
+		AddVertexSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData());
 		break;
 	case C4ScriptShader::FragmentShader:
-		AddFragmentSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData(), s.time);
+		AddFragmentSlices(Name.getData(), s.source.c_str(), FormatString("[script %d]", id).getData());
 		break;
 	}
 }
@@ -481,15 +481,7 @@ bool C4Shader::Refresh()
 				sscanf(pSlice->Source.getData(), "[script %d", &sid);
 				if (toRemove.find(sid) != toRemove.end())
 					removeSlices(pSlice);
-				else
-				{
-					auto s = ScriptShader.shaders.find(sid);
-					if (s != ScriptShader.shaders.end() && s->second.time > pSlice->SourceTime)
-					{
-						removeSlices(pSlice);
-						toAdd.emplace(sid);
-					}
-				}
+				// Note: script slices don't change, so we don't have to handle updates like for files.
 			}
 			else if (FileExists(pSlice->Source.getData()) &&
 			         FileTime(pSlice->Source.getData()) > pSlice->SourceTime)
@@ -728,7 +720,7 @@ void C4ShaderCall::Finish()
 // global instance
 C4ScriptShader ScriptShader;
 
-std::set<int> C4ScriptShader::GetShaderIDs(std::list<std::string> cats)
+std::set<int> C4ScriptShader::GetShaderIDs(const std::vector<std::string>& cats)
 {
 	std::set<int> result;
 	for (auto& cat : cats)
@@ -737,14 +729,14 @@ std::set<int> C4ScriptShader::GetShaderIDs(std::list<std::string> cats)
 	return result;
 }
 
-int C4ScriptShader::Add(std::string shaderName, ShaderType type, std::string source)
+int C4ScriptShader::Add(const std::string& shaderName, ShaderType type, const std::string& source)
 {
 	int id = NextID++;
 	LastUpdate = C4TimeMilliseconds::Now().AsInt();
 	// Hack: Always prepend a newline as the slice parser doesn't recognize
 	// slices that don't begin with a newline.
-	source.insert(0, 1, '\n');
-	shaders.emplace(std::make_pair(id, (ShaderInstance) {type, LastUpdate, source}));
+	auto nsource = "\n" + source;
+	shaders.emplace(std::make_pair(id, (ShaderInstance) {type, nsource}));
 	categories[shaderName].emplace(id);
 	return id;
 }
