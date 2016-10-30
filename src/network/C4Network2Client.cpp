@@ -347,6 +347,13 @@ C4Network2Client *C4Network2ClientList::GetClient(const C4ClientCore &CCore, int
 	return NULL;
 }
 
+unsigned int C4Network2ClientList::Count()
+{
+	unsigned int ret(0);
+	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->pNext) ret++;
+	return ret;
+}
+
 C4Network2Client *C4Network2ClientList::GetHost()
 {
 	return GetClientByID(C4ClientIDHost);

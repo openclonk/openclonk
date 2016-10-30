@@ -16,6 +16,7 @@
 // the ingame-lobby
 
 #include "C4Include.h"
+#include "C4ForbidLibraryCompilation.h"
 #include "gui/C4GameLobby.h"
 
 #include "game/C4Application.h"
@@ -764,14 +765,17 @@ namespace C4GameLobby
 		// countdown done
 		if (!iStartTimer)
 		{
+#ifdef USE_CONSOLE
 			// Dedicated server: if there are not enough players for this game, abort and quit the application
-			if (!::Network.GetLobby() && (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()) && !Application.isEditor)
+			if (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()
+				|| ::Network.Clients.Count() <= 2)
 			{
 				Log(LoadResStr("IDS_MSG_NOTENOUGHPLAYERSFORTHISRO")); // it would also be nice to send this message to all clients...
 				Application.Quit();
 			}
 			// Start the game
 			else
+#endif // USE_CONSOLE
 				::Network.Start();
 		}
 	}
