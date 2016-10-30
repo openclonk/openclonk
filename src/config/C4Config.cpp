@@ -41,6 +41,12 @@
 #include <locale.h>
 #endif
 
+#ifdef USE_CONSOLE
+#define DONCOFF 0
+#else
+#define DONCOFF 1
+#endif
+
 #include "game/C4Application.h"
 
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
@@ -81,13 +87,13 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1                   , false, true));
-	pComp->Value(mkNamingAdapt(ExtraWarnings,      "ExtraWarnings",       0                   , false, true));
-	pComp->Value(mkNamingAdapt(s(TodoFilename),    "TodoFilename",       "{SCENARIO}/TODO.txt", false, true));
-	pComp->Value(mkNamingAdapt(s(AltTodoFilename), "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
-	pComp->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                  , false, false));
-	pComp->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                   , false, true));
-	pComp->Value(mkNamingAdapt(ShowHelp,            "ShowHelp",           true                , false, false));
+	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1                    , false, true));
+	pComp->Value(mkNamingAdapt(ExtraWarnings,       "ExtraWarnings",      0                    , false, true));
+	pComp->Value(mkNamingAdapt(s(TodoFilename),     "TodoFilename",       "{SCENARIO}/TODO.txt", false, true));
+	pComp->Value(mkNamingAdapt(s(AltTodoFilename),  "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
+	pComp->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                   , false, false));
+	pComp->Value(mkNamingAdapt(DebugShapeTextures,  "DebugShapeTextures", 0                    , false, true));
+	pComp->Value(mkNamingAdapt(ShowHelp,            "ShowHelp",           true                 , false, false));
 	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
 		pComp->Value(mkNamingAdapt(s(RecentlyEditedSzenarios[i]), FormatString("EditorMRU%02d", (int)i).getData(), "", false, false));
 }
@@ -128,7 +134,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
 	pComp->Value(mkNamingAdapt(Currency,              "Currency"  ,           0             ));
 	pComp->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
-	pComp->Value(mkNamingAdapt(FireParticles,         "FireParticles",        1         ));
 	pComp->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
@@ -138,11 +143,10 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(RXSound,               "Sound",                1             ,false, true));
-	pComp->Value(mkNamingAdapt(RXMusic,               "Music",                1             ,false, true));
-	pComp->Value(mkNamingAdapt(FEMusic,               "MenuMusic",            1             ,false, true));
-	pComp->Value(mkNamingAdapt(FESamples,             "MenuSound",            1             ,false, true));
-	pComp->Value(mkNamingAdapt(FMMode,                "FMMode",               1             ));
+	pComp->Value(mkNamingAdapt(RXSound,               "Sound",                DONCOFF       ,false, true));
+	pComp->Value(mkNamingAdapt(RXMusic,               "Music",                DONCOFF       ,false, true));
+	pComp->Value(mkNamingAdapt(FEMusic,               "MenuMusic",            DONCOFF       ,false, true));
+	pComp->Value(mkNamingAdapt(FESamples,             "MenuSound",            DONCOFF       ,false, true));
 	pComp->Value(mkNamingAdapt(Verbose,               "Verbose",              0             ));
 	pComp->Value(mkNamingAdapt(MusicVolume,           "MusicVolume2",         40            ,false, true));
 	pComp->Value(mkNamingAdapt(SoundVolume,           "SoundVolume",          100           ,false, true));
