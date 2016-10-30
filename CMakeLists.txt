@@ -234,17 +234,17 @@ endif()
 
 SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
 if(NOT HEADLESS_ONLY)
-	find_package(JPEG REQUIRED)
 	find_package(Freetype REQUIRED)
 	include_directories(
-		${JPEG_INCLUDE_DIR}
 		${FREETYPE_INCLUDE_DIRS})
 	link_directories(
 		${FREETYPE_LIBRARY_DIRS})
 endif()
+find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
 include_directories(
+	${JPEG_INCLUDE_DIR}
 	${PNG_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR})
 if(CMAKE_SYSTEM MATCHES "Windows")

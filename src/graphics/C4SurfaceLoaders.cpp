@@ -18,7 +18,6 @@
 /* Extension to C4Surface that handles bitmaps in C4Group files */
 
 #include "C4Include.h"
-#include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Surface.h"
 
 #include "c4group/C4GroupSet.h"
@@ -229,8 +228,6 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 
 /* JPEG loading */
 
-#ifndef USE_CONSOLE
-
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
@@ -360,13 +357,3 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup, int iFlags)
 	// return if successful
 	return true;
 }
-
-#else // ifndef USE_CONSOLE
-
-bool C4Surface::ReadJPEG(CStdStream &, int) {
-	// Dummy surface
-	if (!Create(1, 1)) return false;
-	return true;
-}
-
-#endif // USE_CONSOLE
