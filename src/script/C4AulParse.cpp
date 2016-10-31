@@ -191,16 +191,14 @@ void C4AulParse::AppendPosition(StdStrBuf & Buf)
 C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg)
 {
 	// compose error string
-	sMessage.Ref("ERROR: ");
-	sMessage.Append(pMsg);
+	sMessage.Copy(pMsg);
 	state->AppendPosition(sMessage);
 }
 
 C4AulParseError::C4AulParseError(C4ScriptHost *pScript, const char *pMsg)
 {
 	// compose error string
-	sMessage.Ref("ERROR: ");
-	sMessage.Append(pMsg);
+	sMessage.Copy(pMsg);
 	if (pScript)
 	{
 		// Script name
@@ -212,8 +210,7 @@ C4AulParseError::C4AulParseError(C4ScriptHost *pScript, const char *pMsg)
 C4AulParseError::C4AulParseError(C4AulScriptFunc * Fn, const char *SPos, const char *pMsg)
 {
 	// compose error string
-	sMessage.Ref("ERROR: ");
-	sMessage.Append(pMsg);
+	sMessage.Copy(pMsg);
 	if (!Fn) return;
 	sMessage.Append(" (");
 	// Show function name
