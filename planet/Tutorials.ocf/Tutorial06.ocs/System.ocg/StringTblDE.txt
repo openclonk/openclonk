@@ -1,9 +1,9 @@
 # Dialogue: village head
-DlgVillageHeadGrateful=I am grateful you managed to get us here to Skyville.
-DlgVillageHeadWhatToDo=Yes, it is good that these villagers want to help us.
-DlgVillageHeadPower=Indeed, please help them restoring their power production.
-DlgVillageHeadIWill=I will!
-DlgVillageHeadAfterwards=Okay, then we can get some clunkers afterwards.
+DlgVillageHeadGrateful=Ich bin dir dankebar, dass du es geschafft hast, uns hierher, ins Himmelsdorf, zu bringen.
+DlgVillageHeadWhatToDo=Ja, es ist gut, dass uns die Dorfbewohner helfen wollen.
+DlgVillageHeadPower=In der Tat, bitte hilf ihnen, ihre Energieversorgung wiederherzustellen.
+DlgVillageHeadIWill=Natürlich!
+DlgVillageHeadAfterwards=Okay, dann können wir nach getaner Arbeit ein paar Clunker bekommen.
 
 # Sequence: intro
 
