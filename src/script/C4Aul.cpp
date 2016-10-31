@@ -32,10 +32,12 @@ public:
 	void OnError(const char *msg) override
 	{
 		DebugLogF("ERROR: %s", msg);
+		++::ScriptEngine.errCnt;
 	}
 	void OnWarning(const char *msg) override
 	{
 		DebugLogF("WARNING: %s", msg);
+		++::ScriptEngine.warnCnt;
 	}
 } DefaultErrorHandler;
 
