@@ -1103,7 +1103,7 @@ void C4AulParse::Parse_CallParams(::aul::ast::CallExpr *call)
 	case ATT_COMMA:
 		// got no parameter before a ","
 		if (Config.Developer.ExtraWarnings)
-			Warn(FormatString("parameter %d of call to %s is empty", call->args.size(), call->callee.c_str()).getData(), NULL);
+			Warn(FormatString("parameter %zu of call to %s is empty", call->args.size(), call->callee.c_str()).getData(), NULL);
 		call->args.push_back(::aul::ast::NilLit::New(TokenSPos));
 		Shift();
 		break;
@@ -1137,7 +1137,7 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		if (TokenType == ATT_COMMA)
 		{
 			if (Config.Developer.ExtraWarnings)
-				Warn(FormatString("array entry %d is empty", arr->values.size()).getData(), NULL);
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), NULL);
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 		else
@@ -1149,7 +1149,7 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		if (TokenType == ATT_BCLOSE2)
 		{
 			if (Config.Developer.ExtraWarnings)
-				Warn(FormatString("array entry %d is empty", arr->values.size()).getData(), NULL);
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), NULL);
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 	}

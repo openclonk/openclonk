@@ -1150,7 +1150,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		}
 	}
 
-	int fn_argc = C4AUL_MAX_Par;
+	size_t fn_argc = C4AUL_MAX_Par;
 	if (!n->context)
 	{
 		// if this is a function without explicit context, we resolve it
@@ -1169,7 +1169,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 	{
 		// Pop off any args that are over the limit
 		Warn(target_host, host, n->args[fn_argc].get(), Fn,
-			"call to %s passes %d parameters, of which only %d are used", cname, n->args.size(), fn_argc);
+			"call to %s passes %zu parameters, of which only %zu are used", cname, n->args.size(), fn_argc);
 		AddBCC(n->loc, AB_STACK, fn_argc - n->args.size());
 	}
 	else if (n->args.size() < fn_argc)
@@ -1249,7 +1249,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		C4V_Type to = expected_par_types[i];
 		if (C4Value::WarnAboutConversion(from, to))
 		{
-			Warn(target_host, host, n->args[i].get(), Fn, "parameter %d of %s is %s (%s expected)", i, cname, GetC4VName(from), GetC4VName(to));
+			Warn(target_host, host, n->args[i].get(), Fn, "parameter %zu of %s is %s (%s expected)", i, cname, GetC4VName(from), GetC4VName(to));
 		}
 	}
 
