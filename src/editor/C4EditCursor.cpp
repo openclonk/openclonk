@@ -685,21 +685,15 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 		PerformDuplicationLegacy(object_numbers, object_count, local_call);
 		return;
 	}
-	// update status: Put new objects into selection
-	// do callbacks for all clients for sync reasons
-	for (const C4Value &prevsel : selection)
+	// Update local client status: Put new objects into selection
+	if (local_call)
 	{
-		C4Object *obj = prevsel.getObj();
-		if (obj) obj->Call(PSF_EditCursorDeselection);
-	}
-	if (local_call) selection.clear();
-	int64_t X_all = 0, Y_all = 0, n_selected = 0;
-	float old_x = X, old_y = Y;
-	for (C4Object *obj : ::Objects)
-		if (obj->Number > prev_oei)
+		selection.clear();
+		int64_t X_all = 0, Y_all = 0, n_selected = 0;
+		float old_x = X, old_y = Y;
+		for (C4Object *obj : ::Objects)
 		{
-			obj->Call(PSF_EditCursorSelection);
-			if (local_call)
+			if (obj->Number > prev_oei)
 			{
 				selection.push_back(C4VObj(obj));
 				X_all += obj->GetX();
@@ -707,16 +701,14 @@ void C4EditCursor::PerformDuplication(int32_t *object_numbers, int32_t object_co
 				++n_selected;
 			}
 		}
-	// Reset EditCursor pos to center of duplicated objects, so they will be dragged along with the cursor
-	if (n_selected)
-	{
-		X = X_all / n_selected;
-		Y = Y_all / n_selected;
-	}
-	SetHold(true);
-	OnSelectionChanged();
-	if (n_selected)
-	{
+		// Reset EditCursor pos to center of duplicated objects, so they will be dragged along with the cursor
+		if (n_selected)
+		{
+			X = X_all / n_selected;
+			Y = Y_all / n_selected;
+		}
+		SetHold(true);
+		OnSelectionChanged();
 		// Ensure duplicated objects moved to the cursor without extra mouse movement
 		// Move with shift key pressed to allow initial shift of HorizontalFixed items
 		DWORD last_key_state = MK_SHIFT;
