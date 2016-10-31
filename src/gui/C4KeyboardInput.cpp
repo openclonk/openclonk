@@ -450,7 +450,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	StdStrBuf buf;
 	auto name = KeycodeToString(wCode);
 	if (name) buf.Copy(name);
-	if (!buf.getLength()) buf.Format("\\x%x", wCode);
+	if (!buf.getLength()) buf.Format("\\x%lx", wCode);
 	return buf;
 #endif
 	return FormatString("$%x", static_cast<unsigned int>(wCode));
