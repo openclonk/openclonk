@@ -1,6 +1,6 @@
 Stromproblematik
 
-Together with Archibald you reach the friendly and calm sky village. It is a bit too calm though as their power supply is gone due to the absence of wind. They agree to help you if there power supply is restored and you construct them an airplane.
+Zusammen mit Archibald hast du das friedliche, ruhige Himmelsdorf erreicht. Doch es ist etwas zu ruhig, weil deren Energieversorgung mangels Wind zusammengebrochen ist. Sie wollen dir helfen, wenn du ihre Energieversorgung wiederherstellt und ihnen ein Flugzeug baust.
 
 Ziel: Baue die Stromversorgung wieder auf und stelle ein Flugzeug her.
 
