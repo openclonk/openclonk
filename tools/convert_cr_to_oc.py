@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 
 import os
 import re
@@ -21,13 +22,13 @@ def convertname(root, files, name):
 		os.unlink(os.path.join(root, "Names.txt"))
 		r = "\"$Name$\""
 	else:
-		print root, name
-	for lang, localname in names.iteritems():
+		print(root, name)
+	for lang, localname in names.items():
 		if "StringTbl" + lang + ".txt" in files:
-			lines = open(os.path.join(root, "StringTbl" + lang + ".txt"),"rb").read().splitlines()
+			lines = open(os.path.join(root, "StringTbl" + lang + ".txt"),"r").read().splitlines()
 		else:
 			lines = ()
-		f = open(os.path.join(root, "StringTbl" + lang + ".txt"),"wb")
+		f = open(os.path.join(root, "StringTbl" + lang + ".txt"),"w")
 		for line in lines:
 			f.write(line)
 			f.write("\r\n")
@@ -35,7 +36,7 @@ def convertname(root, files, name):
 	return r
 
 def convertactmap(root, files):
-	lines = open(os.path.join(root, "ActMap.txt"),"rb").read().splitlines()
+	lines = open(os.path.join(root, "ActMap.txt"),"r").read().splitlines()
 	actmap = "{\r\n"
 	act = ""
 	for line in lines:
@@ -95,21 +96,21 @@ for root, dirs, files in os.walk('.'):
 	if "ActMap.txt" in files:
 		properties["ActMap"] = convertactmap(root, files)
 	try:
-		f = open(os.path.join(root, "Script.c"),"r+b")
+		f = open(os.path.join(root, "Script.c"),"r+")
 		lines = f.read().splitlines()
 	except:
 		lines = ("")
 	if lines == ("") and properties == {}:
 		continue
-	f = open(os.path.join(root, "Script.c"),"wb")
+	f = open(os.path.join(root, "Script.c"),"w")
 	for i, line in enumerate(lines):
 		m = localre.match(line)
 		if m:
 			if properties.get(m.group(1)):
-				print root, m.group(1), properties.get(m.group(1)), m.group(2)
+				print(root, m.group(1), properties.get(m.group(1)), m.group(2))
 			properties.pop(m.group(1), None)
 		f.write(line)
 		f.write("\n")
-	for prop, value in properties.iteritems():
+	for prop, value in properties.items():
 		f.write("local " + prop + " = " + value + ";\n")
 
