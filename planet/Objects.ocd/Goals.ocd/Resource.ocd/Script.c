@@ -60,7 +60,7 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	for (var i = 0; i < GetLength(resource_list); i++)
-		props->AddCall("Goal", this, "SaveResource", resource_list[i], tolerance_list[i]);
+		props->AddCall("Goal", this, "SaveResource", Format("%v", resource_list[i]), tolerance_list[i]);
 	return true;
 }
 
