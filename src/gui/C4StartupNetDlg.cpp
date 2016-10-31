@@ -1120,7 +1120,7 @@ bool C4StartupNetDlg::DoOK()
 		// Editor mode join: Serialize reference to temp file and join on that
 		// (could pass through environment, but that's hard to do platform-independent
 		// (QProcessEnvironment? But then there's a Qt dependency in the network init code))
-		StdStrBuf tmpfn;
+		StdStrBuf tmpfn(Config.AtTempPath("ocjoin"), true);
 		MakeTempFilename(&tmpfn);
 		StdBuf join_data = DecompileToBuf<StdCompilerBinWrite>(*pRef);
 		if (join_data.getSize())

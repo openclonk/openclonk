@@ -112,7 +112,6 @@ public:
 	int32_t Gamma; // gamma value
 	int32_t Currency;   // default wealth symbolseb
 	int32_t Monitor;    // monitor index to play on
-	int32_t FireParticles; // draw extended fire particles if enabled (default on)
 	int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
@@ -130,7 +129,6 @@ public:
 	int32_t RXMusic;
 	int32_t FEMusic;
 	int32_t FESamples;
-	int32_t FMMode;
 	int32_t Verbose;  // show music files names
 	int32_t MusicVolume;
 	int32_t SoundVolume;

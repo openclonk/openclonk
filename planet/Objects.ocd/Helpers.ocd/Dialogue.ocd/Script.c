@@ -695,7 +695,7 @@ public func Definition(def)
 	// Dialogue EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.dlg_target = { Name="$Target$", EditorHelp="$TargetDesc$", Type="object", Filter="IsClonk", Set="SetDialogueTarget" };
-	def.EditorProps.user_dialogue = { Name="$Dialogue$", EditorHelp="$DialogueDesc$", Type="enum", OptionKey="Function", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil } ] };
+	def.EditorProps.user_dialogue = { Name="$Dialogue$", EditorHelp="$DialogueDesc$", Type="enum", OptionKey="Function", Options = [ { Name="$NoDialogue$" }, new UserAction.EvaluatorDefs.sequence { Group=nil, Value = { Function="sequence", Actions=[] } } ] };
 	def.EditorProps.user_dialogue_allow_parallel = UserAction.PropParallel;
 	def.EditorProps.user_dialogue_progress_mode = UserAction.PropProgressMode;
 	def.EditorProps.dlg_attention = { Name="$Attention$ (!)", EditorHelp="$AttentionDesc$", Type="bool", Set="SetAttention" };

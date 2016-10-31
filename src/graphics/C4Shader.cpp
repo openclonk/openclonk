@@ -736,7 +736,7 @@ int C4ScriptShader::Add(const std::string& shaderName, ShaderType type, const st
 	// Hack: Always prepend a newline as the slice parser doesn't recognize
 	// slices that don't begin with a newline.
 	auto nsource = "\n" + source;
-	shaders.emplace(std::make_pair(id, (ShaderInstance) {type, nsource}));
+	shaders.emplace(std::make_pair(id, ShaderInstance{type, nsource}));
 	categories[shaderName].emplace(id);
 	return id;
 }

@@ -261,6 +261,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"lobby", optional_argument, 0, 'l'},
 
 			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
+			{"config", required_argument, nullptr, 0},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;
@@ -283,6 +284,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 				Game.NetworkActive = true;
 				Config.Network.MasterServerSignUp = true;
 			}
+			// Config: Already handled earlier.
 			break;
 		// Lobby
 		case 'l':

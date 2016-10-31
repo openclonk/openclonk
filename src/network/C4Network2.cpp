@@ -371,7 +371,7 @@ bool C4Network2::DoLobby()
 	if (Console.Active)
 	{
 		// console lobby - update console
-		if (Console.Active) Console.UpdateMenus();
+		Console.UpdateMenus();
 		// init lobby countdown if specified
 		if (Game.iLobbyTimeout) StartLobbyCountdown(Game.iLobbyTimeout);
 		// do console lobby
@@ -1501,6 +1501,10 @@ void C4Network2::OnClientDisconnect(C4Network2Client *pClient)
 		if (!fStatusReached)
 			if (Status.getState() == GS_Go || Status.getState() == GS_Pause)
 				ChangeGameStatus(Status.getState(), ::Control.ControlTick);
+#ifdef USE_CONSOLE
+			// Dedicated server: stop hosting if there is only one client left we're hosting for.
+			if (Clients.Count() <= 3) Application.Quit(); // Off-by-1 error
+#endif // USE_CONSOLE
 	}
 	// host disconnected? Clear up
 	if (!isHost() && pClient->isHost())

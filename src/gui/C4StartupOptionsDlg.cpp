@@ -852,11 +852,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	Application.pWindow->EnumerateMultiSamples(multisamples);
 	pGfxMSCombo->SetReadOnly(multisamples.empty());
 	pGroupOptions->AddElement(pGfxMSCombo);
-	// fire particles
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FIREPARTICLES"), NULL, &Config.Graphics.FireParticles);
-	pCheck->SetToolTip(LoadResStr("IDS_MSG_FIREPARTICLES_DESC"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupOptions->AddElement(pCheck);
 	// automatic gfx frame skip
 	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_AUTOFRAMESKIP"), NULL, &Config.Graphics.AutoFrameSkip);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOFRAMESKIP"));

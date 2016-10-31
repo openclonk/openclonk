@@ -45,6 +45,7 @@ bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex
 	if (!group.LoadEntry(filename, &png_data)) return false;
 	CPNGFile png;
 	if (!png.Load(static_cast<BYTE *>(png_data.getMData()), png_data.getSize())) return false;
+	assert(base_tex_wdt > 0);
 	int32_t zoom = png.iWdt / base_tex_wdt;
 	if (base_tex_wdt * zoom != static_cast<int32_t>(png.iWdt) || base_tex_hgt * zoom != static_cast<int32_t>(png.iHgt))
 	{

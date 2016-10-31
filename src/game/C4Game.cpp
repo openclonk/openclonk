@@ -3110,10 +3110,7 @@ void C4Game::ShowGameOverDlg()
 	if (GameOverDlgShown) return;
 	// flag, show
 	GameOverDlgShown = true;
-#ifdef USE_CONSOLE
-	// console engine quits here directly
-	Application.QuitGame();
-#else
+#ifndef USE_CONSOLE
 	if (!Application.isEditor)
 	{
 		C4GameOverDlg *pDlg = new C4GameOverDlg();

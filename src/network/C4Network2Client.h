@@ -153,6 +153,7 @@ public:
 	C4Network2Client *GetLocal() const { return pLocal; }
 	C4Network2Client *GetHost();
 	C4Network2Client *GetNextClient(C4Network2Client *pClient);
+	unsigned int Count();
 
 	void Init(C4ClientList *pClientList, bool fHost);
 	C4Network2Client *RegClient(C4Client *pClient);

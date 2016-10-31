@@ -313,14 +313,14 @@ func DestinationFailed()
 }
 
 // Setup movement process
-func MoveTo(dest)
+func MoveToIndex(int dest)
 {
-	if(GetType(dest) == C4V_Int)
-	{
-		dest = FindObjects(Find_Func("IsCableCrossing"))[dest];
-		if (!dest) return;
-	}
+	var dest_obj = FindObjects(Find_Func("IsCableCrossing"))[dest];
+	if (dest_obj) return MoveTo(dest_obj);
+}
 
+public func MoveTo(object dest)
+{
 	var rail = 0;
 	for(var test_rail in FindObjects(Find_Func("IsConnectedTo", lib_ccar_rail)))
 	{
