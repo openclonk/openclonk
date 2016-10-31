@@ -503,7 +503,10 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 
 		if (fix_r != Fix0)
 		{
-			const auto mesh_center = pMeshInstance->GetMesh().GetBoundingBox().GetCenter();
+			// Rotation should happen around the mesh center after application of any mesh transformation
+			// So translate back by the transformed mesh center before rotation
+			auto mesh_center = pMeshInstance->GetMesh().GetBoundingBox().GetCenter();
+			mesh_center = matrix * mesh_center;
 			matrix = StdMeshMatrix::Translate(-mesh_center.x, -mesh_center.y, -mesh_center.z) * matrix;
 			matrix = StdMeshMatrix::Rotate(fixtof(fix_r) * (M_PI / 180.0f), 0.0f, 0.0f, 1.0f) * matrix;
 			matrix = StdMeshMatrix::Translate(mesh_center.x, mesh_center.y, mesh_center.z) * matrix;
