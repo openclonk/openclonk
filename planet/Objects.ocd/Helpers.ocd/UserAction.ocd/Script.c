@@ -1157,12 +1157,13 @@ private func EvalAct_If(proplist props, proplist context)
 	// Do evaluation on first pass. After that, take context value.
 	var sid = props._sequence_id;
 	if (!sid) sid = props._sequence_id = Format("%d", ++UserAction_SequenceIDs);
-	if (context.action_data[sid] = context.action_data[sid] ?? !!EvaluateValue("Boolean", props.Condition, context))
-		return EvaluateValue("Action", props.TrueEvaluator, context);
+	var cond = context.action_data[sid] ?? !!EvaluateValue("Boolean", props.Condition, context);
+	if (cond)
+		EvaluateValue("Action", props.TrueEvaluator, context);
 	else
-		return EvaluateValue("Action", props.FalseEvaluator, context);
+		EvaluateValue("Action", props.FalseEvaluator, context);
 	// Only keep conditional value within a held action
-	if (!context.hold) context.action_data[sid] = nil;
+	if (context.hold) context.action_data[sid] = cond;
 }
 
 private func EvalConditionalValue(proplist props, proplist context, eval_type)
