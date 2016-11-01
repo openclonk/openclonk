@@ -1511,12 +1511,11 @@ void C4ControlMessage::Execute() const
 			str.Format((eType == C4CMT_Normal ? "<%s> %s" : " * %s %s"),
 			           pClient ? pClient->getNick() : "???", szMessage);
 		}
-		// 2 lobby
+		// to lobby
 		if (pLobby)
 			pLobby->OnMessage(Game.Clients.getClientByID(iByClient), str.getData());
-		// or 2 log
-		else
-			Log(str.getData());
+		// to log
+		Log(str.getData());
 		break;
 
 	case C4CMT_Say:
