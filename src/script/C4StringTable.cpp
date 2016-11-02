@@ -114,8 +114,13 @@ C4StringTable::C4StringTable()
 	P[P_Hgt] = "Hgt";
 	P[P_wdt] = "wdt";
 	P[P_hgt] = "hgt";
+	P[P_Vertices] = "Vertices";
+	P[P_Edges] = "Edges";
+	P[P_LineWidth] = "LineWidth";
 	P[P_OffX] = "OffX";
 	P[P_OffY] = "OffY";
+	P[P_Proplist] = "Proplist";
+	P[P_proplist] = "proplist";
 	P[P_FacetBase] = "FacetBase";
 	P[P_FacetTopFace] = "FacetTopFace";
 	P[P_FacetTargetStretch] = "FacetTargetStretch";

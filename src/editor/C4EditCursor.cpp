@@ -244,7 +244,7 @@ bool C4EditCursor::Move(float iX, float iY, float iZoom, DWORD dwKeyState)
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
 #ifdef WITH_QT_EDITOR
-		shapes->MouseMove(X, Y, Hold, 3.0f/Zoom);
+		shapes->MouseMove(X, Y, Hold, 3.0f/Zoom, !!(dwKeyState & MK_SHIFT), !!(dwKeyState & MK_CONTROL));
 #endif
 		// Hold
 		if (!DragFrame && Hold && !DragShape && !DragTransform)
@@ -286,6 +286,12 @@ bool C4EditCursor::Move(float iX, float iY, float iZoom, DWORD dwKeyState)
 	// Update
 	UpdateStatusBar();
 	return true;
+}
+
+bool C4EditCursor::Move(DWORD new_key_state)
+{
+	// Move at last position with new key state
+	return Move(X, Y, Zoom, new_key_state);
 }
 
 void C4EditCursor::UpdateStatusBar()
@@ -360,6 +366,14 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
+		// Click on shape?
+#ifdef WITH_QT_EDITOR
+		if (shapes->MouseDown(X, Y, 3.0f / Zoom, !!(dwKeyState & MK_SHIFT), !!(dwKeyState & MK_CONTROL)))
+		{
+			DragShape = true;
+			break;
+		}
+#endif
 		if (dwKeyState & MK_CONTROL)
 		{
 			// Toggle target
@@ -369,14 +383,6 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 		}
 		else
 		{
-			// Click on shape?
-#ifdef WITH_QT_EDITOR
-			if (shapes->MouseDown(X, Y, 3.0f/Zoom))
-			{
-				DragShape = true;
-				break;
-			}
-#endif
 			// Click rotate/scale marker?
 			if (IsHoveringTransformMarker())
 			{
@@ -502,7 +508,7 @@ bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 
 	// Release
 #ifdef WITH_QT_EDITOR
-	shapes->MouseUp(X, Y);
+	shapes->MouseUp(X, Y, !!(dwKeyState & MK_SHIFT), !!(dwKeyState & MK_CONTROL));
 #endif
 	Hold=false;
 	DragFrame=false;

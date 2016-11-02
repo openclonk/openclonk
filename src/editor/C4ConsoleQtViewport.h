@@ -36,6 +36,7 @@ private:
 	qreal GetDevicePixelRatio();
 	void ShowContextMenu(const QPoint &pos);
 	void AddSelectObjectContextEntry(C4Object *obj, QMenu *menu);
+	void UpdateCursor();
 
 protected:
 	void focusInEvent(QFocusEvent * event) override;

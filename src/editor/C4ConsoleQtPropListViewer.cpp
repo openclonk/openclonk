@@ -2058,11 +2058,11 @@ bool C4PropertyDelegateRect::IsPasteValid(const C4Value &val) const
 		// Proplist-stored rect must have defined properties
 		C4PropertyName def_property_names[2][4] = { { P_x, P_y, P_wdt, P_hgt },{ P_X, P_Y, P_Wdt, P_Hgt } };
 		C4PropertyName *property_names = nullptr;
-		if (storage->GetData() == "proplist")
+		if (storage == &::Strings.P[P_proplist])
 		{
 			property_names = def_property_names[0];
 		}
-		else if (storage->GetData() == "Proplist")
+		else if (storage == &::Strings.P[P_Proplist])
 		{
 			property_names = def_property_names[1];
 		}
@@ -2146,6 +2146,169 @@ bool C4PropertyDelegatePoint::IsPasteValid(const C4Value &val) const
 }
 
 
+/* Areas shown in viewport: Graph */
+
+C4PropertyDelegateGraph::C4PropertyDelegateGraph(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateShape(factory, props)
+{
+	if (props)
+	{
+		storage = props->GetPropertyStr(P_Storage);
+	}
+}
+
+void C4PropertyDelegateGraph::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	// Draw symbol as a bunch of connected lines
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr, ctr + QPoint(-r / 2, -r));
+	painter->drawLine(ctr, ctr + QPoint(+r / 2, -r));
+	painter->drawLine(ctr, ctr + QPoint(0, +r));
+}
+
+bool C4PropertyDelegateGraph::IsVertexPasteValid(const C4Value &val) const
+{
+	// Check that it's an array of at least one point
+	const C4ValueArray *arr = val.getArray();
+	if (!arr || !arr->GetSize()) return false;
+	// Check validity of each point
+	bool store_as_proplist = (storage == &::Strings.P[P_Proplist]);
+	const int32_t n_props = 2;
+	C4PropertyName property_names[n_props] = { P_X, P_Y };
+	for (int32_t i_pt = 0; i_pt < arr->GetSize(); ++i_pt)
+	{
+		const C4Value &pt = arr->GetItem(i_pt);
+		if (store_as_proplist)
+		{
+			const C4PropList *ptp = pt.getPropList();
+			if (!ptp) return false;
+			for (int32_t i_prop = 0; i_prop < n_props; ++i_prop)
+			{
+				C4Value ptprop;
+				if (!ptp->GetProperty(property_names[i_prop], &ptprop)) return false;
+				if (ptprop.GetType() != C4V_Int) return false;
+			}
+		}
+		else
+		{
+			const C4ValueArray *pta = pt.getArray();
+			if (!pta) return false;
+			if (pta->GetSize() < n_props) return false;
+		}
+	}
+	return true;
+}
+
+bool C4PropertyDelegateGraph::IsEdgePasteValid(const C4Value &val) const
+{
+	// Check that it's an array
+	// Empty is OK; it could be a graph with one vertex and no edges
+	const C4ValueArray *arr = val.getArray();
+	if (!arr || !arr->GetSize()) return false;
+	// Check validity of each edge
+	bool store_as_proplist = (storage == &::Strings.P[P_Proplist]);
+	for (int32_t i_pt = 0; i_pt < arr->GetSize(); ++i_pt)
+	{
+		const C4Value pt = arr->GetItem(i_pt);
+		const C4ValueArray *pta;
+		if (store_as_proplist)
+		{
+			const C4PropList *ptp = pt.getPropList();
+			if (!ptp) return false;
+			pta = ptp->GetPropertyArray(P_Vertices);
+		}
+		else
+		{
+			pta = pt.getArray();
+		}
+		if (!pta) return false;
+		// Needs two vertices (may have more values which are ignored)
+		if (pta->GetSize() < 2) return false;
+	}
+	return true;
+}
+
+bool C4PropertyDelegateGraph::IsPasteValid(const C4Value &val) const
+{
+	// Check storage as prop list
+	const int32_t n_props = 2;
+	C4Value prop_vals[n_props]; // vertices & edges
+	C4PropertyName property_names[n_props] = { P_Vertices, P_Edges };
+	bool store_as_proplist = (storage == &::Strings.P[P_Proplist]);
+	if (store_as_proplist)
+	{
+		C4PropList *val_proplist = val.getPropList();
+		if (!val_proplist) return false;
+		for (int32_t i = 0; i < n_props; ++i)
+		{
+			val_proplist->GetProperty(property_names[i], &prop_vals[i]);
+		}
+		// extra properties are OK
+	}
+	else
+	{
+		C4ValueArray *val_array = val.getArray();
+		if (!val_array || val_array->GetSize() != n_props) return false;
+		for (int32_t i = 0; i < n_props; ++i)
+		{
+			prop_vals[i] = val_array->GetItem(i);
+		}
+	}
+	// Check validity of vertices and edges
+	return IsVertexPasteValid(prop_vals[0]) && IsEdgePasteValid(prop_vals[1]);
+}
+
+
+/* Areas shown in viewport: Polyline */
+
+C4PropertyDelegatePolyline::C4PropertyDelegatePolyline(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateGraph(factory, props)
+{
+}
+
+void C4PropertyDelegatePolyline::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	// Draw symbol as a sequence of connected lines
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr + QPoint(-r, +r), ctr + QPoint(-r/3, -r));
+	painter->drawLine(ctr + QPoint(-r / 3, -r), ctr + QPoint(+r / 3, +r));
+	painter->drawLine(ctr + QPoint(+r / 3, +r), ctr + QPoint(+r, -r));
+}
+
+bool C4PropertyDelegatePolyline::IsPasteValid(const C4Value &val) const
+{
+	// Expect just a vertex array
+	return IsVertexPasteValid(val);
+}
+
+
+/* Areas shown in viewport: Closed polyon */
+
+C4PropertyDelegatePolygon::C4PropertyDelegatePolygon(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateGraph(factory, props)
+{
+}
+
+void C4PropertyDelegatePolygon::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	// Draw symbol as a parallelogram
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr + QPoint(-r * 3 / 2, +r), ctr + QPoint(-r, -r));
+	painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r * 3 / 2, -r));
+	painter->drawLine(ctr + QPoint(+r * 3 / 2, -r), ctr + QPoint(+r, +r));
+	painter->drawLine(ctr + QPoint(+r, +r), ctr + QPoint(-r * 3 / 2, +r));
+}
+
+bool C4PropertyDelegatePolygon::IsPasteValid(const C4Value &val) const
+{
+	// Expect just a vertex array
+	return IsVertexPasteValid(val);
+}
+
+
 /* Delegate factory: Create delegates based on the C4Value type */
 
 C4PropertyDelegateFactory::C4PropertyDelegateFactory() : current_editor(nullptr), property_model(nullptr), effect_delegate(this, nullptr)
@@ -2176,6 +2339,9 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 			if (str->GetData() == "rect") return new C4PropertyDelegateRect(this, props);
 			if (str->GetData() == "circle") return new C4PropertyDelegateCircle(this, props);
 			if (str->GetData() == "point") return new C4PropertyDelegatePoint(this, props);
+			if (str->GetData() == "graph") return new C4PropertyDelegateGraph(this, props);
+			if (str->GetData() == "polyline") return new C4PropertyDelegatePolyline(this, props);
+			if (str->GetData() == "polygon") return new C4PropertyDelegatePolygon(this, props);
 			if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
 			// unknown type
 			LogF("Invalid delegate type: %s.", str->GetCStr());

@@ -99,6 +99,7 @@ public:
 	bool KeyDown(C4KeyCode KeyCode, DWORD dwKeyState);
 	bool KeyUp(C4KeyCode KeyCode, DWORD dwKeyState);
 	bool Move(float iX, float iY, float zoom, DWORD dwKeyState);
+	bool Move(DWORD new_key_state);
 	bool Init();
 	bool EditingOK(bool for_landscape_drawing=false);
 	C4EditCursorSelection &GetSelection() { return selection; }

@@ -149,9 +149,9 @@ void C4ConsoleQtViewportView::ShowContextMenu(const QPoint &pos)
 }
 
 // Get Shift state as Win32 wParam
-uint32_t GetShiftWParam()
+uint32_t GetShiftWParam(QKeyEvent * event = nullptr)
 {
-	auto modifiers = QGuiApplication::keyboardModifiers();
+	auto modifiers = event ? event->modifiers() : QGuiApplication::keyboardModifiers();
 	uint32_t result = 0;
 	if (modifiers & Qt::ShiftModifier) result |= MK_SHIFT;
 	if (modifiers & Qt::ControlModifier) result |= MK_CONTROL;
@@ -172,16 +172,20 @@ void C4ConsoleQtViewportView::mouseMoveEvent(QMouseEvent *eventMove)
 	else
 	{
 		cvp->pWindow->EditCursorMove(eventMove->x() * pr, eventMove->y() * pr, GetShiftWParam());
-		Qt::CursorShape cursor;
-		if (::Console.EditCursor.HasTransformCursor())
-			cursor = Qt::SizeAllCursor;
-		else if (::Console.EditCursor.GetShapes()->HasDragCursor())
-			cursor = ::Console.EditCursor.GetShapes()->GetDragCursor();
-		else
-			cursor = Qt::CrossCursor;
-		this->setCursor(cursor);
+		UpdateCursor();
 	}
+}
 
+void C4ConsoleQtViewportView::UpdateCursor()
+{
+	Qt::CursorShape cursor;
+	if (::Console.EditCursor.HasTransformCursor())
+		cursor = Qt::SizeAllCursor;
+	else if (::Console.EditCursor.GetShapes()->HasDragCursor())
+		cursor = ::Console.EditCursor.GetShapes()->GetDragCursor();
+	else
+		cursor = Qt::CrossCursor;
+	this->setCursor(cursor);
 }
 
 void C4ConsoleQtViewportView::mousePressEvent(QMouseEvent *eventPress)
@@ -376,6 +380,12 @@ void C4ConsoleQtViewportView::keyPressEvent(QKeyEvent * event)
 	// Handled if handled as player control or main editor
 	if (!handled) handled = Game.DoKeyboardInput(code, KEYEV_Down, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
 	if (!handled) handled = dock->main_window->HandleEditorKeyDown(event);
+	// Modifiers may update the cursor state; refresh
+	if (event->key() == Qt::Key_Shift || event->key() == Qt::Key_Control || event->key() == Qt::Key_Alt || event->key() == Qt::Key_AltGr)
+	{
+		::Console.EditCursor.Move(GetShiftWParam(event));
+		UpdateCursor();
+	}
 	event->setAccepted(handled);
 }
 
@@ -386,6 +396,12 @@ void C4ConsoleQtViewportView::keyReleaseEvent(QKeyEvent * event)
 	// Handled if handled as player control
 	bool handled = Game.DoKeyboardInput(code, KEYEV_Up, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
 	if (!handled) handled = dock->main_window->HandleEditorKeyUp(event);
+	// Modifiers may update the cursor state; refresh
+	if (event->key() == Qt::Key_Shift || event->key() == Qt::Key_Control || event->key() == Qt::Key_Alt || event->key() == Qt::Key_AltGr)
+	{
+		::Console.EditCursor.Move(GetShiftWParam(event));
+		UpdateCursor();
+	}
 	event->setAccepted(handled);
 }
 

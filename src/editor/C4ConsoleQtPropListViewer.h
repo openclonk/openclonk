@@ -555,6 +555,35 @@ public:
 	bool IsPasteValid(const C4Value &val) const override;
 };
 
+class C4PropertyDelegateGraph : public C4PropertyDelegateShape
+{
+	C4RefCntPointer<C4String> storage;
+
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+protected:
+	bool IsVertexPasteValid(const C4Value &val) const;
+	bool IsEdgePasteValid(const C4Value &val) const;
+public:
+	C4PropertyDelegateGraph(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegatePolyline : public C4PropertyDelegateGraph
+{
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegatePolyline(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegatePolygon : public C4PropertyDelegateGraph
+{
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegatePolygon(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
 class C4PropertyDelegateFactory : public QStyledItemDelegate
 {
 	Q_OBJECT
