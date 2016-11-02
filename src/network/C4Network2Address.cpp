@@ -41,7 +41,7 @@ void C4Network2Address::CompileFunc(StdCompiler *pComp)
 		{ "UDP", P_UDP },
 		{ "TCP", P_TCP },
 
-		{ NULL,  P_NONE },
+		{ nullptr,  P_NONE },
 	};
 	pComp->Value(mkEnumAdaptT<uint8_t>(eProtocol, Protocols));
 	pComp->Separator(StdCompiler::SEP_PART2); // ':'

@@ -72,9 +72,9 @@ void C4Network2UPnPP::Init()
 
 #if MINIUPNPC_API_VERSION == 10
 	// Distributed with Debian jessie.
-	if ((devlist = upnpDiscover(2000, NULL, NULL, 0, 0, &error)))
+	if ((devlist = upnpDiscover(2000, nullptr, nullptr, 0, 0, &error)))
 #else
-	if ((devlist = upnpDiscover(2000, NULL, NULL, UPNP_LOCAL_PORT_ANY, 0, 2, &error)))
+	if ((devlist = upnpDiscover(2000, nullptr, nullptr, UPNP_LOCAL_PORT_ANY, 0, 2, &error)))
 #endif
 	{
 		if ((status = UPNP_GetValidIGD(devlist, &upnp_urls, &igd_data, lanaddr, sizeof(lanaddr))))

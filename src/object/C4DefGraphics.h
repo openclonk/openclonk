@@ -60,7 +60,7 @@ public:
 
 	C4Surface *GetBitmap(DWORD dwClr=0); 
 
-	C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
+	C4DefGraphics(C4Def *pOwnDef=nullptr);  // ctor
 	virtual ~C4DefGraphics() { Clear(); }; // dtor
 
 	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, const char *szNormal, bool fColorByOwner); // load specified graphics from group
@@ -76,7 +76,7 @@ public:
 
 	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
 
-	virtual const char *GetName() { return NULL; } // return name to be stored in safe game files
+	virtual const char *GetName() { return nullptr; } // return name to be stored in safe game files
 
 	C4AdditionalDefGraphics *GetNext() { return pNext; }
 
@@ -200,9 +200,9 @@ protected:
 	void Set(Mode aMode, C4DefGraphics *pGfx, const char *szAction, DWORD dwBMode, C4Object *pOvrlObj);
 
 public:
-	C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(NULL), fctBlit(), pMeshInstance(NULL), dwBlitMode(0), dwClrModulation(0xffffff),
-			OverlayObj(NULL), Transform(+1),
-			iPhase(0), fZoomToShape(false), iID(0), pNext(NULL) { *Action=0; } // std ctor
+	C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(nullptr), fctBlit(), pMeshInstance(nullptr), dwBlitMode(0), dwClrModulation(0xffffff),
+			OverlayObj(nullptr), Transform(+1),
+			iPhase(0), fZoomToShape(false), iID(0), pNext(nullptr) { *Action=0; } // std ctor
 	~C4GraphicsOverlay(); // dtor
 
 	void CompileFunc(StdCompiler *pComp);
@@ -211,21 +211,21 @@ public:
 	void DenumeratePointers();
 
 	void SetAsBase(C4DefGraphics *pBaseGfx, DWORD dwBMode) // set in MODE_Base
-	{ Set(MODE_Base, pBaseGfx, NULL, dwBMode, NULL); }
+	{ Set(MODE_Base, pBaseGfx, nullptr, dwBMode, nullptr); }
 	void SetAsAction(C4DefGraphics *pBaseGfx, const char *szAction, DWORD dwBMode)
-	{ Set(MODE_Action, pBaseGfx, szAction, dwBMode, NULL); }
+	{ Set(MODE_Action, pBaseGfx, szAction, dwBMode, nullptr); }
 	void SetAsPicture(C4DefGraphics *pBaseGfx, DWORD dwBMode)
-	{ Set(MODE_Picture, pBaseGfx, NULL, dwBMode, NULL); }
+	{ Set(MODE_Picture, pBaseGfx, nullptr, dwBMode, nullptr); }
 	void SetAsIngamePicture(C4DefGraphics *pBaseGfx, DWORD dwBMode)
-	{ Set(MODE_IngamePicture, pBaseGfx, NULL, dwBMode, NULL); }
+	{ Set(MODE_IngamePicture, pBaseGfx, nullptr, dwBMode, nullptr); }
 	void SetAsObject(C4Object *pOverlayObj, DWORD dwBMode)
-	{ Set(MODE_Object, NULL, NULL, dwBMode, pOverlayObj); }
+	{ Set(MODE_Object, nullptr, nullptr, dwBMode, pOverlayObj); }
 	void SetAsObjectPicture(C4Object *pOverlayObj, DWORD dwBMode)
-	{ Set(MODE_ObjectPicture, NULL, NULL, dwBMode, pOverlayObj); }
+	{ Set(MODE_ObjectPicture, nullptr, nullptr, dwBMode, pOverlayObj); }
 	void SetAsExtraGraphics(C4DefGraphics *pGfx, DWORD dwBMode)
-	{ Set(MODE_ExtraGraphics, pGfx, NULL, dwBMode, NULL); }
+	{ Set(MODE_ExtraGraphics, pGfx, nullptr, dwBMode, nullptr); }
 	void SetAsRank(DWORD dwBMode, C4Object *rank_obj)
-	{ Set(MODE_Rank, NULL, NULL, dwBMode, rank_obj); }
+	{ Set(MODE_Rank, nullptr, nullptr, dwBMode, rank_obj); }
 
 	bool IsValid(const C4Object *pForObj) const;
 

@@ -30,7 +30,7 @@ C4ScenarioSection::C4ScenarioSection(const char *szName)
 	name.Copy(szName);
 	// zero fields
 	fModified = false;
-	pObjectScripts = NULL;
+	pObjectScripts = nullptr;
 	// link into main list
 	pNext = Game.pScenarioSections;
 	Game.pScenarioSections = this;
@@ -43,7 +43,7 @@ C4ScenarioSection::~C4ScenarioSection()
 	{
 		C4ScenarioSection *pDel = pNext;
 		pNext = pNext->pNext;
-		pDel->pNext = NULL;
+		pDel->pNext = nullptr;
 		delete pDel;
 	}
 	// del temp file
@@ -81,7 +81,7 @@ bool C4ScenarioSection::ScenarioLoad(const char *szFilename, bool is_temp_file)
 		}
 		else
 		{
-			pObjectScripts = NULL;
+			pObjectScripts = nullptr;
 		}
 	}
 	else
@@ -99,18 +99,18 @@ C4Group *C4ScenarioSection::GetGroupfile(C4Group &rGrp)
 	if (temp_filename.getData())
 	{
 		if (rGrp.Open(temp_filename.getData())) return &rGrp;
-		else return NULL;
+		else return nullptr;
 	}
 	// check filename within scenario
 	if (filename.getData())
 	{
 		if (rGrp.OpenAsChild(&Game.ScenarioFile, filename.getData())) return &rGrp;
-		else return NULL;
+		else return nullptr;
 	}
 	// unmodified main section: return main group
 	if (SEqualNoCase(name.getData(), C4ScenSect_Main)) return &Game.ScenarioFile;
 	// failure
-	return NULL;
+	return nullptr;
 }
 
 bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObjects)

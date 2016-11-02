@@ -41,7 +41,7 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 	size_t i;
 	// Collect event handles
 	int iEventCnt = 0; HANDLE hEvent;
-	StdSchedulerProc *pMessageProc = NULL;
+	StdSchedulerProc *pMessageProc = nullptr;
 	for (i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];

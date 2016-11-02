@@ -129,7 +129,7 @@ const C4PktHandlingData PktHandlingData[] =
 	{ CID_DebugRec,     PC_Control, "Debug Rec",                  false,  true,   0,                        PKT_UNPACK(C4ControlDebugRec)   },
 
 	// EOL
-	{ PID_None,         PC_Network, NULL,                         false,  true,   0,                        NULL                            }
+	{ PID_None,         PC_Network, nullptr,                         false,  true,   0,                        nullptr                            }
 };
 
 const char *PacketNameByID(C4PacketType eID)
@@ -193,20 +193,20 @@ void C4PktBuf::CompileFunc(StdCompiler *pComp)
 // *** C4IDPacket
 
 C4IDPacket::C4IDPacket()
-		: eID(PID_None), pPkt(NULL), fOwnPkt(true), pNext(NULL)
+		: eID(PID_None), pPkt(nullptr), fOwnPkt(true), pNext(nullptr)
 {
 
 }
 
 C4IDPacket::C4IDPacket(C4PacketType eID, C4PacketBase *pPkt, bool fTakePkt)
-		: eID(eID), pPkt(pPkt), fOwnPkt(fTakePkt), pNext(NULL)
+		: eID(eID), pPkt(pPkt), fOwnPkt(fTakePkt), pNext(nullptr)
 {
 
 }
 
 C4IDPacket::C4IDPacket(const C4IDPacket &Packet2)
 		: C4PacketBase(Packet2),
-		eID(PID_None), pPkt(NULL), fOwnPkt(true), pNext(NULL)
+		eID(PID_None), pPkt(nullptr), fOwnPkt(true), pNext(nullptr)
 {
 	// kinda hacky (note this might throw an uncaught exception)
 	C4PacketBase::unpack(Packet2.C4PacketBase::pack());
@@ -228,12 +228,12 @@ const char *C4IDPacket::getPktName() const
 
 void C4IDPacket::Default()
 {
-	eID = PID_None; pPkt = NULL;
+	eID = PID_None; pPkt = nullptr;
 }
 
 void C4IDPacket::Clear()
 {
-	if (fOwnPkt) delete pPkt; pPkt = NULL;
+	if (fOwnPkt) delete pPkt; pPkt = nullptr;
 	eID = PID_None;
 }
 
@@ -247,7 +247,7 @@ void C4IDPacket::CompileFunc(StdCompiler *pComp)
 		if (!pComp->Name(getPktName()))
 			{ pComp->excCorrupt("C4IDPacket: Data value needed! Packet data missing!"); return; }
 		// Delete old packet
-		if (fOwnPkt) delete pPkt; pPkt = NULL;
+		if (fOwnPkt) delete pPkt; pPkt = nullptr;
 		if (eID == PID_None) return;
 		// Search unpacking function
 		for (const C4PktHandlingData *pPData = PktHandlingData; pPData->ID != PID_None; pPData++)
@@ -268,14 +268,14 @@ void C4IDPacket::CompileFunc(StdCompiler *pComp)
 // *** C4PacketList
 
 C4PacketList::C4PacketList()
-		: pFirst(NULL), pLast(NULL)
+		: pFirst(nullptr), pLast(nullptr)
 {
 
 }
 
 C4PacketList::C4PacketList(const C4PacketList &List2)
 		: C4PacketBase(List2),
-		pFirst(NULL), pLast(NULL)
+		pFirst(nullptr), pLast(nullptr)
 {
 	Append(List2);
 }
@@ -322,7 +322,7 @@ void C4PacketList::Take(C4PacketList &List)
 {
 	pFirst = List.pFirst;
 	pLast = List.pLast;
-	List.pFirst = List.pLast = NULL;
+	List.pFirst = List.pLast = nullptr;
 }
 
 void C4PacketList::Append(const C4PacketList &List)
@@ -343,7 +343,7 @@ void C4PacketList::Remove(C4IDPacket *pPkt)
 	{
 		pFirst = pPkt->pNext;
 		if (pPkt == pLast)
-			pLast = NULL;
+			pLast = nullptr;
 	}
 	else
 	{

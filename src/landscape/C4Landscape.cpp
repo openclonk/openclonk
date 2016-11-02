@@ -111,10 +111,10 @@ struct C4Landscape::P
 	bool SaveDiffInternal(const C4Landscape *d, C4Group &hGroup, bool fSyncSave) const;
 
 	int32_t ForPolygon(C4Landscape *d, int *vtcs, int length, const std::function<bool(int32_t, int32_t)> &callback,
-		C4MaterialList *mats_count = NULL, uint8_t col = 0, uint8_t colBkg = 0, uint8_t *conversion_table = NULL);
+		C4MaterialList *mats_count = nullptr, uint8_t col = 0, uint8_t colBkg = 0, uint8_t *conversion_table = nullptr);
 
 	std::unique_ptr<CSurface8> CreateDefaultBkgSurface(CSurface8& sfcFg, bool msbAsIft) const;
-	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
+	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = nullptr);
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);
 
 	bool DigFreePix(C4Landscape *d, int32_t tx, int32_t ty);
@@ -532,7 +532,7 @@ C4ValueArray *C4Landscape::P::PrepareFreeShape(C4Rect &BoundingBox, C4Object *by
 	// Remember any in-earth objects in area
 	C4FindObjectInRect fo_inrect(BoundingBox);
 	C4FindObjectOCF fo_insolid(OCF_InSolid);
-	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : NULL);
+	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : nullptr);
 	C4FindObject *fo_list[] = { &fo_inrect, &fo_insolid, &fo_layer };
 	C4FindObjectAndStatic fo_srch(3, fo_list);
 	return fo_srch.FindMany(::Objects, ::Objects.Sectors);
@@ -585,7 +585,7 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 		amount = p->ForPolygon(this, vtcs, length / 2, callback, by_object->MaterialContents);
 	}
 	else
-		amount = p->ForPolygon(this, vtcs, length / 2, callback, NULL);
+		amount = p->ForPolygon(this, vtcs, length / 2, callback, nullptr);
 
 	// create objects from the material
 	if (!::Game.iTick5)
@@ -607,14 +607,14 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 
 void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player, int32_t iMaxDensity)
 {
-	C4MaterialList *MaterialContents = NULL;
+	C4MaterialList *MaterialContents = nullptr;
 
 	C4Rect BoundingBox = getBoundingBox(vtcs, length);
 
 	// Remember any collectible objects in area
 	std::unique_ptr<C4ValueArray> dig_objects(p->PrepareFreeShape(BoundingBox, by_object));
 
-	uint8_t *pblast_tbl = NULL, blast_tbl[C4M_MaxTexIndex];
+	uint8_t *pblast_tbl = nullptr, blast_tbl[C4M_MaxTexIndex];
 	if (iMaxDensity < C4M_Vehicle)
 	{
 		for (int32_t i = 0; i < C4M_MaxTexIndex; ++i) blast_tbl[i] = (GetPixDensity(i) <= iMaxDensity);
@@ -634,7 +634,7 @@ void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int
 	}
 
 	// create objects from the material
-	C4MaterialList *mat_list = NULL;
+	C4MaterialList *mat_list = nullptr;
 	if (by_object)
 		mat_list = by_object->MaterialContents;
 	else
@@ -669,7 +669,7 @@ void C4Landscape::P::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialLis
 				if (::MaterialMap.Map[mat].Blast2ObjectRatio != 0)
 				{
 					blastamount = mat_list->Amount[mat] / ::MaterialMap.Map[mat].Blast2ObjectRatio;
-					Game.CastObjects(::MaterialMap.Map[mat].Blast2Object, NULL, blastamount, cast_strength, tx, ty, NO_OWNER, caused_by, out_objects);
+					Game.CastObjects(::MaterialMap.Map[mat].Blast2Object, nullptr, blastamount, cast_strength, tx, ty, NO_OWNER, caused_by, out_objects);
 				}
 			}
 
@@ -691,7 +691,7 @@ void C4Landscape::P::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList 
 					while (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
 					{
 						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
-						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
+						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, nullptr, NO_OWNER, tx, ty);
 						if (!pObj || !pObj->Status) continue;
 						// Set controller to the controller of the object responsible for digging out
 						if (pCollect && pCollect->Status)
@@ -1040,7 +1040,7 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat = GetMat(*tx, *ty + check_dir))))
 		{
 			C4Real fvx = C4REAL10(vx), fvy = C4REAL10(vy);
-			if ((*pReact->pFunc)(pReact, *tx, *ty, *tx, *ty + check_dir, fvx, fvy, mat, tmat, meePXSPos, NULL))
+			if ((*pReact->pFunc)(pReact, *tx, *ty, *tx, *ty + check_dir, fvx, fvy, mat, tmat, meePXSPos, nullptr))
 			{
 				// the material to be inserted killed itself in some material reaction below
 				return true;
@@ -1112,7 +1112,7 @@ std::unique_ptr<CSurface8> C4Landscape::P::CreateDefaultBkgSurface(CSurface8& sf
 	auto sfcBg = std::make_unique<CSurface8>();
 	if (!sfcBg->Create(sfcFg.Wdt, sfcFg.Hgt))
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	for (int32_t y = 0; y < sfcFg.Hgt; ++y)
@@ -1179,8 +1179,8 @@ static void fill_edge_structure(CPolyEdge *edge, int *i1, int *i2)
 	edge->bottom = i2[1] - 1;
 	edge->dx = ((i2[0] - i1[0]) << POLYGON_FIX_SHIFT) / (i2[1] - i1[1]);
 	edge->x = (i1[0] << POLYGON_FIX_SHIFT) + (1 << (POLYGON_FIX_SHIFT - 1)) - 1;
-	edge->prev = NULL;
-	edge->next = NULL;
+	edge->prev = nullptr;
+	edge->next = nullptr;
 	if (edge->dx < 0)
 		edge->x += std::min<int>(edge->dx + (1 << POLYGON_FIX_SHIFT), 0);
 	edge->w = std::max<int>(Abs(edge->dx) - (1 << POLYGON_FIX_SHIFT), 0);
@@ -1189,7 +1189,7 @@ static void fill_edge_structure(CPolyEdge *edge, int *i1, int *i2)
 static CPolyEdge *add_edge(CPolyEdge *list, CPolyEdge *edge, int sort_by_x)
 {
 	CPolyEdge *pos = list;
-	CPolyEdge *prev = NULL;
+	CPolyEdge *prev = nullptr;
 	if (sort_by_x)
 	{
 		while ((pos) && (pos->x + pos->w / 2 < edge->x + edge->w / 2))
@@ -1231,8 +1231,8 @@ int32_t C4Landscape::P::ForPolygon(C4Landscape *d, int *vtcs, int length, const 
 	int bottom = INT_MIN;
 	int *i1, *i2;
 	CPolyEdge *edge, *next_edge, *edgebuf;
-	CPolyEdge *active_edges = NULL;
-	CPolyEdge *inactive_edges = NULL;
+	CPolyEdge *active_edges = nullptr;
+	CPolyEdge *inactive_edges = nullptr;
 	bool use_qpb = false;
 
 	// Return value
@@ -1431,12 +1431,12 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 static std::unique_ptr<CSurface8> GroupReadSurface8(C4Group &hGroup, const char *szWildCard)
 {
 	if (!hGroup.AccessEntry(szWildCard))
-		return NULL;
+		return nullptr;
 	// create surface
 	auto pSfc = std::make_unique<CSurface8>();
 	if (!pSfc->Read(hGroup))
 	{
-		return NULL;
+		return nullptr;
 	}
 	return pSfc;
 }
@@ -1540,7 +1540,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 			return true;
 		}
 
-		assert(sfcMapBkg != NULL);
+		assert(sfcMapBkg != nullptr);
 
 		if (Config.General.DebugRec)
 		{
@@ -1565,8 +1565,8 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky, false);
 
 		// assign new map
-		assert(p->Map == NULL);
-		assert(p->MapBkg == NULL);
+		assert(p->Map == nullptr);
+		assert(p->MapBkg == nullptr);
 		p->Map = std::move(sfcMap);
 		p->MapBkg = std::move(sfcMapBkg);
 
@@ -1610,8 +1610,8 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// (not for shaders though - they require continous textures)
 	if (!Game.C4S.Landscape.ExactLandscape)
 	{
-		assert(p->Surface8 == NULL);
-		assert(p->Surface8Bkg == NULL);
+		assert(p->Surface8 == nullptr);
+		assert(p->Surface8Bkg == nullptr);
 
 		// Create landscape surfaces
 		{
@@ -1649,7 +1649,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// Create FoW
-	assert(p->pFoW == NULL);
+	assert(p->pFoW == nullptr);
 	if (Game.C4S.Game.FoWEnabled)
 		p->pFoW.reset(new C4FoW);
 
@@ -1705,7 +1705,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 bool C4Landscape::HasMap() const
 {
-	return p->Map != NULL && p->MapBkg != NULL;
+	return p->Map != nullptr && p->MapBkg != nullptr;
 }
 
 bool C4Landscape::Save(C4Group &hGroup) const
@@ -1972,7 +1972,7 @@ bool C4Landscape::SaveMap(C4Group &hGroup) const
 {
 	// No map
 	if (!p->Map) return false;
-	assert(p->MapBkg != NULL);
+	assert(p->MapBkg != nullptr);
 
 	// Create map palette
 	CStdPalette Palette;
@@ -2140,7 +2140,7 @@ void C4Landscape::P::DrawChunk(C4Landscape *d, int32_t tx, int32_t ty, int32_t w
 	vtcs[12] = tx + wdt + ChunkyRandom(cro, rx * side_rough / 4); vtcs[13] = ty - ChunkyRandom(cro, rx * top_rough / 4);
 	vtcs[14] = tx + wdt / 2;                                      vtcs[15] = ty - ChunkyRandom(cro, rx * top_rough / 2);
 
-	ForPolygon(d, vtcs, 8, NULL, NULL, mcol, mcolBkg);
+	ForPolygon(d, vtcs, 8, nullptr, nullptr, mcol, mcolBkg);
 }
 
 void C4Landscape::P::DrawSmoothOChunk(C4Landscape *d, int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, uint8_t mcol, uint8_t mcolBkg, int flip, uint32_t cro)
@@ -2165,7 +2165,7 @@ void C4Landscape::P::DrawSmoothOChunk(C4Landscape *d, int32_t tx, int32_t ty, in
 	case 7: vtcs[6] = tx + wdt / 2; vtcs[7] += hgt / 2; break;
 	}
 
-	ForPolygon(d, vtcs, 4, NULL, NULL, mcol, mcolBkg);
+	ForPolygon(d, vtcs, 4, nullptr, nullptr, mcol, mcolBkg);
 }
 
 void C4Landscape::P::ChunkOZoom(C4Landscape *d, const CSurface8 &sfcMap, const CSurface8 &sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY)
@@ -2175,7 +2175,7 @@ void C4Landscape::P::ChunkOZoom(C4Landscape *d, const CSurface8 &sfcMap, const C
 	if (!pMaterial) return;
 	const char *texture_name = entry->GetTextureName();
 	C4Texture *texture = ::TextureMap.GetTexture(texture_name);
-	C4TextureShape *shape = texture ? texture->GetMaterialShape() : NULL;
+	C4TextureShape *shape = texture ? texture->GetMaterialShape() : nullptr;
 	// Chunk type by material
 	C4MaterialCoreShape iChunkType = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : pMaterial->MapChunkType;
 	// Get map & landscape size
@@ -2420,7 +2420,7 @@ bool C4Landscape::P::CreateMapS2(C4Group &ScenFile, CSurface8*& sfcMap, CSurface
 	// read file
 	pMapCreator->ReadFile(C4CFN_DynLandscape, &ScenFile);
 	// render landscape
-	if (!pMapCreator->Render(NULL, sfcMap, sfcMapBkg))
+	if (!pMapCreator->Render(nullptr, sfcMap, sfcMapBkg))
 		return false;
 
 	// keep map creator until script callbacks have been done
@@ -3609,14 +3609,14 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, con
 	uint8_t mcol = MatTex2PixCol(iMatTex);
 	// get background texture
 	uint8_t mcolBkg = 0;
-	if (szBackMaterial != NULL)
+	if (szBackMaterial != nullptr)
 	{
 		const int32_t iBackMatTex = ::TextureMap.GetIndexMatTex(szBackMaterial);
 		if (!iBackMatTex) return false;
 		mcolBkg = MatTex2PixCol(iBackMatTex);
 	}
 	// do bridging?
-	uint8_t *conversion_map = NULL;
+	uint8_t *conversion_map = nullptr;
 	if (fDrawBridge)
 	{
 		conversion_map = p->GetBridgeMatConversion(this, MatTex2PixCol(iMatTex));
@@ -3626,14 +3626,14 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, con
 	C4Rect BoundingBox = getBoundingBox(vtcs, length);
 	// draw polygon
 	p->PrepareChange(this, BoundingBox);
-	p->ForPolygon(this, vtcs, length / 2, NULL, NULL, mcol, mcolBkg, conversion_map);
+	p->ForPolygon(this, vtcs, length / 2, nullptr, nullptr, mcol, mcolBkg, conversion_map);
 	p->FinishChange(this, BoundingBox);
 	return true;
 }
 
 CStdPalette * C4Landscape::GetPal() const
 {
-	return p->Surface8 ? p->Surface8->pPal : NULL;
+	return p->Surface8 ? p->Surface8->pPal : nullptr;
 }
 
 int32_t C4Landscape::GetWidth() const
@@ -3842,7 +3842,7 @@ uint8_t *C4Landscape::P::GetBridgeMatConversion(const C4Landscape *d, int32_t fo
 {
 	// safety
 	int32_t for_material = d->GetPixMat(for_material_col);
-	if (for_material < 0 || for_material >= MaterialMap.Num) return NULL;
+	if (for_material < 0 || for_material >= MaterialMap.Num) return nullptr;
 	// query map. create if not done yet
 	if (!BridgeMatConversion[for_material_col])
 	{
@@ -3950,9 +3950,9 @@ bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, co
 	// read file
 	MapCreator.ReadScript(szMapDef);
 	// render map
-	CSurface8* sfcMap = NULL;
-	CSurface8* sfcMapBkg = NULL;
-	if (!MapCreator.Render(NULL, sfcMap, sfcMapBkg))
+	CSurface8* sfcMap = nullptr;
+	CSurface8* sfcMapBkg = nullptr;
+	if (!MapCreator.Render(nullptr, sfcMap, sfcMapBkg))
 		return false;
 	// map it to the landscape
 	bool fSuccess = p->MapToLandscape(this, *sfcMap, *sfcMapBkg, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
@@ -3977,8 +3977,8 @@ bool C4Landscape::DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt,
 	C4MCMap *pMap = p->pMapCreator->GetMap(szMapDef);
 	if (!pMap) return false;
 	pMap->SetSize(iMapWdt, iMapHgt);
-	CSurface8* sfcMap = NULL;
-	CSurface8* sfcMapBkg = NULL;
+	CSurface8* sfcMap = nullptr;
+	CSurface8* sfcMapBkg = nullptr;
 	if (p->pMapCreator->Render(szMapDef, sfcMap, sfcMapBkg))
 	{
 		// map to landscape

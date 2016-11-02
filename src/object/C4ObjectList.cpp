@@ -28,7 +28,7 @@
 #include "game/C4Game.h"
 #include "object/C4GameObjects.h"
 
-static const C4ObjectLink NULL_LINK = { NULL, NULL, NULL };
+static const C4ObjectLink NULL_LINK = { nullptr, nullptr, nullptr };
 
 C4ObjectList::C4ObjectList(): FirstIter(0)
 {
@@ -51,11 +51,11 @@ void C4ObjectList::Clear()
 	C4ObjectLink *cLnk,*nextLnk;
 	for (cLnk=First; cLnk; cLnk=nextLnk)
 		{ nextLnk=cLnk->Next; delete cLnk; }
-	First=Last=NULL;
+	First=Last=nullptr;
 	if (pEnumerated)
 	{
 		delete pEnumerated;
-		pEnumerated=NULL;
+		pEnumerated=nullptr;
 	}
 
 	for (iterator* it = FirstIter; it; it = it->Next)
@@ -147,13 +147,13 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 	nLnk->Obj=nObj;
 
 	// Search insert position (default: end of list)
-	C4ObjectLink *cLnk = NULL, *cPrev = Last;
+	C4ObjectLink *cLnk = nullptr, *cPrev = Last;
 
 	// Should sort?
 	if (eSort == stReverse)
 	{
 		// reverse sort: Add to beginning of list
-		cLnk = First; cPrev = NULL;
+		cLnk = First; cPrev = nullptr;
 	}
 	else if (eSort)
 	{
@@ -164,7 +164,7 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 			// Sort by master list?
 			if (pLstSorted)
 			{
-				cPrev = NULL; cLnk = First;
+				cPrev = nullptr; cLnk = First;
 				while(cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted)) cLnk = cLnk->Next;
 
 #ifndef _DEBUG
@@ -195,7 +195,7 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 						}
 					}
 
-					assert(cLnk2 != NULL);
+					assert(cLnk2 != nullptr);
 				}
 			}
 			else
@@ -205,7 +205,7 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 				// It is not done for static back to allow multiobject outside structure.
 				// Unsorted objects are ignored in comparison.
 				if (!(nObj->Category & C4D_StaticBack))
-					for (cPrev=NULL,cLnk=First; cLnk; cLnk=cLnk->Next)
+					for (cPrev=nullptr,cLnk=First; cLnk; cLnk=cLnk->Next)
 						if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 						{
 							if (cLnk->Obj->GetPlane() == nObj->GetPlane())
@@ -216,7 +216,7 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 
 				// Find successor by relative category
 				if(!cLnk)
-					for (cPrev=NULL, cLnk=First; cLnk; cLnk=cLnk->Next)
+					for (cPrev=nullptr, cLnk=First; cLnk; cLnk=cLnk->Next)
 						if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 						{
 							if (cLnk->Obj->GetPlane() <= nObj->GetPlane())
@@ -304,7 +304,7 @@ C4Object* C4ObjectList::Find(C4Def * def, int owner, DWORD dwOCF)
 				if ((owner==ANY_OWNER) || (cLnk->Obj->Owner==owner))
 					if (dwOCF & cLnk->Obj->OCF)
 						return cLnk->Obj;
-	return NULL;
+	return nullptr;
 }
 
 C4Object* C4ObjectList::FindOther(C4ID id, int owner)
@@ -316,7 +316,7 @@ C4Object* C4ObjectList::FindOther(C4ID id, int owner)
 			if (cLnk->Obj->Def->id!=id)
 				if ((owner==ANY_OWNER) || (cLnk->Obj->Owner==owner))
 					return cLnk->Obj;
-	return NULL;
+	return nullptr;
 }
 
 C4Object* C4ObjectList::GetObject(int Index) const
@@ -330,17 +330,17 @@ C4Object* C4ObjectList::GetObject(int Index) const
 			if (cIdx==Index) return cLnk->Obj;
 			cIdx++;
 		}
-	return NULL;
+	return nullptr;
 }
 
 const C4ObjectLink* C4ObjectList::GetLink(const C4Object *pObj) const
 {
-	if (!pObj) return NULL;
+	if (!pObj) return nullptr;
 	C4ObjectLink *cLnk;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj==pObj)
 			return cLnk;
-	return NULL;
+	return nullptr;
 }
 
 int C4ObjectList::ObjectCount(C4ID id) const
@@ -436,7 +436,7 @@ bool C4ObjectList::DenumeratePointers()
 	for (std::list<int32_t>::const_iterator pNum = pEnumerated->begin(); pNum != pEnumerated->end(); ++pNum)
 		Add(::Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
 	// Delete old list
-	delete pEnumerated; pEnumerated = NULL;
+	delete pEnumerated; pEnumerated = nullptr;
 	return true;
 }
 
@@ -486,7 +486,7 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4Va
 		// Load objects, add them to the list.
 		for (int i = 0; i < iObjCnt; i++)
 		{
-			C4Object *pObj = NULL;
+			C4Object *pObj = nullptr;
 			try
 			{
 				pComp->Value(mkNamingAdapt(mkParAdapt(mkPtrAdaptNoNull(pObj), numbers), "Object"));
@@ -518,7 +518,7 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkSTLContainerAdapt(*pEnumerated, StdCompiler::SEP_SEP2));
 	// Decompiling: Delete list
 	if (!pComp->isCompiler())
-		{ delete pEnumerated; pEnumerated = NULL; }
+		{ delete pEnumerated; pEnumerated = nullptr; }
 	// Compiling: Nothing to do - list will be denumerated later
 }
 
@@ -605,7 +605,7 @@ void C4ObjectList::InsertLink(C4ObjectLink *pLnk, C4ObjectLink *pAfter)
 	// Insert at head
 	else
 	{
-		pLnk->Prev=NULL; pLnk->Next=First;
+		pLnk->Prev=nullptr; pLnk->Next=First;
 		if (First) First->Prev=pLnk; else Last=pLnk;
 		First=pLnk;
 	}
@@ -635,7 +635,7 @@ void C4ObjectList::InsertLinkBefore(C4ObjectLink *pLnk, C4ObjectLink *pBefore)
 	// Insert at end
 	else
 	{
-		pLnk->Next = NULL; pLnk->Prev = Last;
+		pLnk->Next = nullptr; pLnk->Prev = Last;
 		if (Last) Last->Next = pLnk; else First = pLnk;
 		Last = pLnk;
 	}
@@ -711,9 +711,9 @@ void C4ObjectList::Copy(const C4ObjectList &rList)
 
 void C4ObjectList::Default()
 {
-	First=Last=NULL;
+	First=Last=nullptr;
 	Mass=0;
-	pEnumerated=NULL;
+	pEnumerated=nullptr;
 }
 
 bool C4ObjectList::ShiftContents(C4Object *pNewFirst)
@@ -730,7 +730,7 @@ bool C4ObjectList::ShiftContents(C4Object *pNewFirst)
 	First = pNewFirstLnk;
 	Last = pNewFirstLnk->Prev;
 	// 3. Uncycle list
-	First->Prev = Last->Next = NULL;
+	First->Prev = Last->Next = nullptr;
 	// done, success
 	return true;
 }
@@ -757,14 +757,14 @@ void C4ObjectList::DeleteObjects()
 C4Object *C4ObjectListIterator::GetNext(int32_t *piCount)
 {
 	// end reached?
-	if (pCurrID == rList.end()) return NULL;
+	if (pCurrID == rList.end()) return nullptr;
 	// not yet started?
 	if (pCurr == rList.end())
 		// then start at first ID list head
 		pCurr = pCurrID;
 	else
 		// next item
-		if (++pCurr == rList.end()) return NULL;
+		if (++pCurr == rList.end()) return nullptr;
 	// next ID section reached?
 	if ((*pCurr)->id != (*pCurrID)->id)
 		pCurrID = pCurr;
@@ -776,7 +776,7 @@ C4Object *C4ObjectListIterator::GetNext(int32_t *piCount)
 			if ((*pCheck)->CanConcatPictureWith(*pCurr))
 			{
 				// next object of matching category
-				if (++pCurr == rList.end()) return NULL;
+				if (++pCurr == rList.end()) return nullptr;
 				// next ID chunk reached?
 				if ((*pCurr)->id != (*pCurrID)->id)
 				{
@@ -847,7 +847,7 @@ bool C4ObjectList::CheckSort(C4ObjectList *pList)
 void C4ObjectList::CheckCategorySort()
 {
 	// debug: Check whether object list is sorted correctly
-	C4ObjectLink *cLnk, *cPrev=NULL;
+	C4ObjectLink *cLnk, *cPrev=nullptr;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (!cLnk->Obj->Unsorted && cLnk->Obj->Status)
 		{

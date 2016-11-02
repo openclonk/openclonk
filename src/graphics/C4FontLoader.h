@@ -54,7 +54,7 @@ public:
 
 	C4FontLoader()
 #ifndef USE_CONSOLE
-		: pLastUsedFont(NULL), LastUsedGrpID(0)
+		: pLastUsedFont(nullptr), LastUsedGrpID(0)
 #endif
 	{ } // ctor
 	~C4FontLoader() { Clear(); } // dtor

@@ -46,12 +46,12 @@ public:
 
 	virtual C4Surface* LoadTexture(const char* filename)
 	{
-		if (!Group.AccessEntry(filename)) return NULL;
+		if (!Group.AccessEntry(filename)) return nullptr;
 		C4Surface* surface = new C4Surface;
 		// Suppress error message here, StdMeshMaterial loader
 		// will show one.
 		if (!surface->Read(Group, GetExtension(filename), C4SF_MipMap))
-			{ delete surface; surface = NULL; }
+			{ delete surface; surface = nullptr; }
 		return surface;
 	}
 
@@ -209,13 +209,13 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_MouseIgnore",              C4D_MouseIgnore         },
 		{ "C4D_IgnoreFoW",                C4D_IgnoreFoW           },
 
-		{ NULL,                           0                       }
+		{ nullptr,                           0                       }
 	};
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(Category, Categories),
 	                           "Category",           0             ));
 
-	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(NULL)));
+	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(nullptr)));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));
 	pComp->Value(mkNamingAdapt(SolidMask,                     "SolidMask",          TargetRect0       ));
@@ -237,7 +237,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_GrabGet"            ,C4D_Grab_Get},
 		{ "C4D_GrabPut"            ,C4D_Grab_Put},
 
-		{ NULL,                     0}
+		{ nullptr,                     0}
 	};
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(GrabPutGet, GrabPutGetTypes),
@@ -281,7 +281,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "APS_Graphics",   APS_Graphics },
 		{ "APS_Name",       APS_Name     },
 		{ "APS_Overlay",    APS_Overlay  },
-		{ NULL,             0            }
+		{ nullptr,             0            }
 	};
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),		//undocumented
@@ -291,7 +291,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
+C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), nullptr, nullptr)
 {
 	Script.SetDef(this);
 	assert(ScriptEngine.GetPropList());
@@ -302,20 +302,20 @@ C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NUL
 void C4Def::Default()
 {
 	DefaultDefCore();
-	Next=NULL;
+	Next=nullptr;
 	Temporary=false;
 	Filename[0]=0;
 	Creation=0;
 	Count=0;
-	MainFace.Set(NULL,0,0,0,0);
+	MainFace.Set(nullptr,0,0,0,0);
 	Script.Clear();
 	StringTable.Clear();
-	pClonkNames=NULL;
-	pRankNames=NULL;
-	pRankSymbols=NULL;
+	pClonkNames=nullptr;
+	pRankNames=nullptr;
+	pRankSymbols=nullptr;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 	iNumRankSymbols=1;
-	pSolidMask = NULL;
+	pSolidMask = nullptr;
 }
 
 C4Def::~C4Def()
@@ -331,11 +331,11 @@ void C4Def::Clear()
 	Graphics.Clear();
 
 	StringTable.Clear();
-	if (pClonkNames && fClonkNamesOwned) delete pClonkNames; pClonkNames=NULL;
-	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
-	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
+	if (pClonkNames && fClonkNamesOwned) delete pClonkNames; pClonkNames=nullptr;
+	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=nullptr;
+	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=nullptr;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
-	delete pSolidMask; pSolidMask = NULL;
+	delete pSolidMask; pSolidMask = nullptr;
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -421,7 +421,7 @@ void C4Def::LoadMeshMaterials(C4Group &hGroup, C4DefGraphicsPtrBackup *gfx_backu
 		::MeshMaterialManager.Remove(mat, &gfx_backup->GetUpdater());
 	}
 	mesh_materials.clear();
-	while (hGroup.FindNextEntry(C4CFN_DefMaterials, MaterialFilename, NULL, !!*MaterialFilename))
+	while (hGroup.FindNextEntry(C4CFN_DefMaterials, MaterialFilename, nullptr, !!*MaterialFilename))
 	{
 		StdStrBuf material;
 		if (hGroup.LoadEntryString(MaterialFilename, &material))
@@ -498,7 +498,7 @@ bool C4Def::LoadGraphics(C4Group &hGroup, StdMeshSkeletonLoader &loader)
 		if (Graphics.GetBitmap())
 		{
 			// Set MainFace (unassigned bitmap: will be set by GetMainFace())
-			MainFace.Set(NULL, 0, 0, Shape.Wdt, Shape.Hgt);
+			MainFace.Set(nullptr, 0, 0, Shape.Wdt, Shape.Hgt);
 		}
 
 		// Adjust picture rect
@@ -532,14 +532,14 @@ void C4Def::LoadScript(C4Group &hGroup, const char* szLanguage)
 void C4Def::LoadClonkNames(C4Group &hGroup, C4ComponentHost* pClonkNames, const char* szLanguage)
 {
 	// clear any previous
-	if (pClonkNames) delete pClonkNames; pClonkNames = NULL;
+	if (pClonkNames) delete pClonkNames; pClonkNames = nullptr;
 	if (hGroup.FindEntry(C4CFN_ClonkNameFiles))
 	{
 		// create new
 		pClonkNames = new C4ComponentHost();
 		if (!C4Language::LoadComponentHost(pClonkNames, hGroup, C4CFN_ClonkNames, szLanguage))
 		{
-			delete pClonkNames; pClonkNames = NULL;
+			delete pClonkNames; pClonkNames = nullptr;
 		}
 		else
 			fClonkNamesOwned = true;
@@ -549,7 +549,7 @@ void C4Def::LoadClonkNames(C4Group &hGroup, C4ComponentHost* pClonkNames, const 
 void C4Def::LoadRankNames(C4Group &hGroup, const char* szLanguage)
 {
 	// clear any previous
-	if (pRankNames) delete pRankNames; pRankNames = NULL;
+	if (pRankNames) delete pRankNames; pRankNames = nullptr;
 	if (hGroup.FindEntry(C4CFN_RankNameFiles))
 	{
 		// create new
@@ -557,7 +557,7 @@ void C4Def::LoadRankNames(C4Group &hGroup, const char* szLanguage)
 		// load from group
 		if (!pRankNames->Load(hGroup, C4CFN_RankNames, 1000, szLanguage))
 		{
-			delete pRankNames; pRankNames = NULL;
+			delete pRankNames; pRankNames = nullptr;
 		}
 		else
 			fRankNamesOwned = true;
@@ -567,19 +567,19 @@ void C4Def::LoadRankNames(C4Group &hGroup, const char* szLanguage)
 void C4Def::LoadRankFaces(C4Group &hGroup)
 {
 	// clear any previous
-	if (pRankSymbols) delete pRankSymbols; pRankSymbols = NULL;
+	if (pRankSymbols) delete pRankSymbols; pRankSymbols = nullptr;
 	// load new
 	if (hGroup.AccessEntry(C4CFN_RankFacesPNG))
 	{
 		pRankSymbols = new C4FacetSurface();
-		if (!pRankSymbols->GetFace().ReadPNG(hGroup, false)) { delete pRankSymbols; pRankSymbols = NULL; }
+		if (!pRankSymbols->GetFace().ReadPNG(hGroup, false)) { delete pRankSymbols; pRankSymbols = nullptr; }
 	}
 	// set size
 	if (pRankSymbols)
 	{
 		pRankSymbols->Set(&pRankSymbols->GetFace(), 0, 0, pRankSymbols->GetFace().Hgt, pRankSymbols->GetFace().Hgt);
 		int32_t Q; pRankSymbols->GetPhaseNum(iNumRankSymbols, Q);
-		if (!iNumRankSymbols) { delete pRankSymbols; pRankSymbols = NULL; }
+		if (!iNumRankSymbols) { delete pRankSymbols; pRankSymbols = nullptr; }
 		else
 		{
 			if (pRankNames)
@@ -595,7 +595,7 @@ void C4Def::LoadRankFaces(C4Group &hGroup)
 void C4Def::LoadSounds(C4Group &hGroup, C4SoundSystem* pSoundSystem)
 {
 	if (pSoundSystem)
-		pSoundSystem->LoadEffects(hGroup, (id == C4ID::None) ? NULL : id.ToString(), true);
+		pSoundSystem->LoadEffects(hGroup, (id == C4ID::None) ? nullptr : id.ToString(), true);
 }
 
 void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans, const char *graphicsName)
@@ -643,14 +643,14 @@ void C4Def::IncludeDefinition(C4Def *pIncludeDef)
 void C4Def::ResetIncludeDependencies()
 {
 	// clear all pointers into foreign defs
-	if (!fClonkNamesOwned) pClonkNames = NULL;
-	if (!fRankNamesOwned) pRankNames = NULL;
-	if (!fRankSymbolsOwned) { pRankSymbols = NULL; iNumRankSymbols = 0; }
+	if (!fClonkNamesOwned) pClonkNames = nullptr;
+	if (!fRankNamesOwned) pRankNames = nullptr;
+	if (!fRankSymbolsOwned) { pRankSymbols = nullptr; iNumRankSymbols = 0; }
 }
 
 C4PropList *C4Def::GetActionByName(const char *actname)
 {
-	if (!actname) return NULL;
+	if (!actname) return nullptr;
 	C4String * actname_str = Strings.RegString(actname);
 	actname_str->IncRef();
 	C4PropList *r = GetActionByName(actname_str);
@@ -661,12 +661,12 @@ C4PropList *C4Def::GetActionByName(const char *actname)
 C4PropList *C4Def::GetActionByName(C4String *actname)
 {
 	assert(actname);
-	// If we get the null string or ActIdle by name, return NULL action
-	if (!actname || actname == &Strings.P[P_Idle]) return NULL;
+	// If we get the null string or ActIdle by name, return nullptr action
+	if (!actname || actname == &Strings.P[P_Idle]) return nullptr;
 	// otherwise, query actmap
 	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
-	if (!ActMap.getPropList()) return NULL;
+	if (!ActMap.getPropList()) return nullptr;
 	C4Value Action; ActMap.getPropList()->GetPropertyByS(actname, &Action);
-	if (!Action.getPropList()) return NULL;
+	if (!Action.getPropList()) return nullptr;
 	return Action.getPropList();
 }

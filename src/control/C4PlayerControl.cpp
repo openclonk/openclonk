@@ -57,7 +57,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 	{
 		{ "Game",        COS_Game        },
 		{ "Viewport",    COS_Viewport    },
-		{ NULL, COS_Game }
+		{ nullptr, COS_Game }
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdapt<CoordinateSpace, int32_t>(eCoordSpace, CoordSpaceNames), "CoordinateSpace", COS_Game));
 	pComp->Value(mkNamingAdapt(fSendCursorPos, "SendCursorPos", false));
@@ -83,7 +83,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 		{ "ObjectMenuDown",  CDA_ObjectMenuDown    },
 		{ "ZoomIn",      CDA_ZoomIn      },
 		{ "ZoomOut",     CDA_ZoomOut     },
-		{ NULL, CDA_None }
+		{ nullptr, CDA_None }
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdapt<Actions, int32_t>(eAction, ActionNames), "Action", CDA_Script));
 	pComp->NameEnd();
@@ -156,7 +156,7 @@ void C4PlayerControlDefs::MergeFrom(const C4PlayerControlDefs &Src)
 const C4PlayerControlDef *C4PlayerControlDefs::GetControlByIndex(int32_t idx) const
 {
 	// safe index
-	if (idx<0 || idx>=int32_t(Defs.size())) return NULL;
+	if (idx<0 || idx>=int32_t(Defs.size())) return nullptr;
 	return &(Defs[idx]);
 }
 
@@ -229,7 +229,7 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 		{ "Release",      CTM_Release  },
 		{ "AlwaysUnhandled", CTM_AlwaysUnhandled  },
 		{ "ClearRecentKeys", CTM_ClearRecentKeys  },
-		{ NULL, 0 }
+		{ nullptr, 0 }
 	};
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt< int32_t>(iTriggerMode, TriggerModeNames), "TriggerMode", CTM_Default));
 	pComp->Value(mkNamingAdapt(fOverrideAssignments, "OverrideAssignments", false));
@@ -462,7 +462,7 @@ const char *C4PlayerControlAssignment::GetGUIName(const C4PlayerControlDefs &def
 	const C4PlayerControlDef *def = defs.GetControlByIndex(GetControl());
 	if (def) return def->GetGUIName();
 	// no def and no name...
-	return NULL;
+	return nullptr;
 }
 
 const char *C4PlayerControlAssignment::GetGUIDesc(const C4PlayerControlDefs &defs) const
@@ -473,7 +473,7 @@ const char *C4PlayerControlAssignment::GetGUIDesc(const C4PlayerControlDefs &def
 	const C4PlayerControlDef *def = defs.GetControlByIndex(GetControl());
 	if (def) return def->GetGUIDesc();
 	// no def and no desc...
-	return NULL;
+	return nullptr;
 }
 
 bool C4PlayerControlAssignment::IsGUIDisabled() const
@@ -614,7 +614,7 @@ void C4PlayerControlAssignmentSet::SortAssignments()
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByIndex(int32_t index)
 {
-	if (index<0 || index>=int32_t(Assignments.size())) return NULL;
+	if (index<0 || index>=int32_t(Assignments.size())) return nullptr;
 	return &Assignments[index];
 }
 
@@ -625,7 +625,7 @@ C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlN
 			// We don't like release keys... (2do)
 			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
 				return &*i;
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int32_t control)
@@ -636,7 +636,7 @@ C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(
 			// We don't like release keys... (2do)
 			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
 				return &*i;
-	return NULL;
+	return nullptr;
 }
 
 bool C4PlayerControlAssignmentSet::operator ==(const C4PlayerControlAssignmentSet &cmp) const
@@ -805,13 +805,13 @@ C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByName(const 
 	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
 		if (WildcardMatch(szName, (*i).GetName()))
 			return &*i;
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetDefaultSet()
 {
 	// default set is first defined control set
-	if (Sets.empty()) return NULL; // nothing defined :(
+	if (Sets.empty()) return nullptr; // nothing defined :(
 	return &Sets.front();
 }
 
@@ -828,7 +828,7 @@ int32_t C4PlayerControlAssignmentSets::GetSetIndex(const C4PlayerControlAssignme
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByIndex(int32_t index)
 {
 	// bounds check
-	if (index < 0 || index >= (int32_t)Sets.size()) return NULL;
+	if (index < 0 || index >= (int32_t)Sets.size()) return nullptr;
 	// return indexed set
 	AssignmentSetList::iterator i = Sets.begin();
 	while (index--) ++i;
@@ -913,7 +913,7 @@ bool C4PlayerControl::CSync::ControlDownState::operator ==(const ControlDownStat
 const C4PlayerControl::CSync::ControlDownState *C4PlayerControl::CSync::GetControlDownState(int32_t iControl) const
 {
 	// safe access
-	if (iControl < 0 || iControl >= int32_t(ControlDownStates.size())) return NULL;
+	if (iControl < 0 || iControl >= int32_t(ControlDownStates.size())) return nullptr;
 	return &ControlDownStates[iControl];
 }
 
@@ -1027,7 +1027,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 	pControlSet->GetAssignmentsByKey(ControlDefs, matched_key, state != CONS_Down, &Matches, DownKeys, RecentKeys);
 	// process async controls
 	bool cursor_pos_added = false;
-	C4ControlPlayerControl *pControlPacket = NULL;
+	C4ControlPlayerControl *pControlPacket = nullptr;
 	for (C4PlayerControlAssignmentPVec::const_iterator i = Matches.begin(); i != Matches.end(); ++i)
 	{
 		const C4PlayerControlAssignment *pAssignment = *i;
@@ -1253,10 +1253,10 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	// moved events don't make sense for menus and are only handled by script
 	if (state == CONS_Moved && eAction != C4PlayerControlDef::CDA_Script) return false;
 	// get affected player
-	C4Player *pPlr = NULL;
+	C4Player *pPlr = nullptr;
 	C4Viewport *pVP;
-	C4Object *pCursor = NULL;
-	C4Menu *pCursorMenu = NULL;
+	C4Object *pCursor = nullptr;
+	C4Menu *pCursorMenu = nullptr;
 	if (iPlr > -1)
 	{
 		pPlr = ::Players.Get(iPlr);
@@ -1370,14 +1370,14 @@ void C4PlayerControl::Execute()
 	if (irk != RecentKeys.begin()) RecentKeys.erase(RecentKeys.begin(), irk);
 }
 
-C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs), iPlr(-1), pControlSet(NULL), IsCursorPosRequested(false)
+C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs), iPlr(-1), pControlSet(nullptr), IsCursorPosRequested(false)
 {
 }
 
 void C4PlayerControl::Clear()
 {
 	iPlr = NO_OWNER;
-	pControlSet = NULL;
+	pControlSet = nullptr;
 	for (KeyBindingList::iterator i = KeyBindings.begin(); i != KeyBindings.end(); ++i) delete *i;
 	KeyBindings.clear();
 	RecentKeys.clear();
@@ -1406,7 +1406,7 @@ void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32
 {
 	KeyBindings.push_back(new C4KeyBinding(
 	                        key, FormatString("PlrKey%02d", idx).getData(), KEYSCOPE_Control,
-	                        new C4KeyCBExPassKey<C4PlayerControl, C4KeyCodeEx>(*this, key, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL, NULL, fHoldKey ? &C4PlayerControl::ProcessKeyMoved : NULL),
+	                        new C4KeyCBExPassKey<C4PlayerControl, C4KeyCodeEx>(*this, key, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : nullptr, nullptr, fHoldKey ? &C4PlayerControl::ProcessKeyMoved : nullptr),
 	                        C4CustomKey::PRIO_PlrControl));
 }
 

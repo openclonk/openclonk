@@ -22,7 +22,7 @@
 #include <shellapi.h>
 bool OpenURL(const char *szURL)
 {
-	return (intptr_t)ShellExecuteW(NULL, L"open", GetWideChar(szURL), NULL, NULL, SW_SHOW) > 32;
+	return (intptr_t)ShellExecuteW(nullptr, L"open", GetWideChar(szURL), nullptr, nullptr, SW_SHOW) > 32;
 }
 
 bool EraseItemSafe(const char *szFilename)
@@ -35,11 +35,11 @@ bool EraseItemSafe(const char *szFilename)
 	shs.hwnd=0;
 	shs.wFunc=FO_DELETE;
 	shs.pFrom = wide_filename;
-	shs.pTo=NULL;
+	shs.pTo=nullptr;
 	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
 	shs.fAnyOperationsAborted=false;
 	shs.hNameMappings=0;
-	shs.lpszProgressTitle=NULL;
+	shs.lpszProgressTitle=nullptr;
 	auto error = SHFileOperationW(&shs);
 	return !error;
 }
@@ -85,7 +85,7 @@ bool RestartApplication(std::vector<const char *> parameters)
 	bool success = false;
 #ifdef _WIN32
 	wchar_t buf[_MAX_PATH];
-	DWORD sz = ::GetModuleFileName(::GetModuleHandle(NULL), buf, _MAX_PATH);
+	DWORD sz = ::GetModuleFileName(::GetModuleHandle(nullptr), buf, _MAX_PATH);
 	if (sz)
 	{
 		StdStrBuf params;
@@ -95,7 +95,7 @@ bool RestartApplication(std::vector<const char *> parameters)
 			params += p;
 			params += "\" ";
 		}
-		intptr_t iError = (intptr_t)::ShellExecute(NULL, NULL, buf, params.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
+		intptr_t iError = (intptr_t)::ShellExecute(nullptr, nullptr, buf, params.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
 		if (iError > 32) success = true;
 	}
 #else
@@ -107,7 +107,7 @@ bool RestartApplication(std::vector<const char *> parameters)
 	{
 		std::vector<const char*> params = {"openclonk"};
 		params.insert(params.end(), parameters.begin(), parameters.end());
-		params.push_back(NULL);
+		params.push_back(nullptr);
 		execv("/proc/self/exe", const_cast<char *const *>(params.data()));
 		perror("editor launch failed");
 		exit(1);

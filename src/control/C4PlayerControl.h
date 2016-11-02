@@ -193,7 +193,7 @@ public:
 	C4PlayerControlAssignment() :
 		TriggerKey(), fOverrideAssignments(false), is_inherited(false), fRefsResolved(false),
 		iGUIGroup(0), iControl(CON_None), iPriority(0), iTriggerMode(CTM_Default),
-		inherited_assignment(NULL)
+		inherited_assignment(nullptr)
 	{}
 	~C4PlayerControlAssignment() {}
 
@@ -245,7 +245,7 @@ private:
 	bool has_gamepad;
 
 public:
-	C4PlayerControlAssignmentSet() : parent_set(NULL), has_keyboard(true), has_mouse(true), has_gamepad(false) {}
+	C4PlayerControlAssignmentSet() : parent_set(nullptr), has_keyboard(true), has_mouse(true), has_gamepad(false) {}
 	~C4PlayerControlAssignmentSet() {}
 	void InitEmptyFromTemplate(const C4PlayerControlAssignmentSet &template_set); // copy all fields except assignments
 
@@ -345,7 +345,7 @@ private:
 	int32_t iPlr;
 
 	// async values
-	C4PlayerControlAssignmentSet *pControlSet; // the control set used by this player - may be NULL if the player cannot be controlled!
+	C4PlayerControlAssignmentSet *pControlSet; // the control set used by this player - may be nullptr if the player cannot be controlled!
 	typedef std::list<C4KeyBinding *> KeyBindingList;
 	KeyBindingList KeyBindings;     // keys registered into Game.KeyboardInput
 	C4PlayerControlRecentKeyList RecentKeys;           // keys pressed recently; for combinations
@@ -392,7 +392,7 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, ControlState state, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, ControlState state, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=nullptr);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyMoved(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);

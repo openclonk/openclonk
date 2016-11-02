@@ -33,7 +33,7 @@ public:
 	// conversion (using above functions)
 	C4NetIOPacket pack(const C4NetIO::addr_t &addr = C4NetIO::addr_t()) const;
 	C4NetIOPacket pack(uint8_t cStatus, const C4NetIO::addr_t &addr = C4NetIO::addr_t()) const;
-	void unpack(const C4NetIOPacket &Pkt, char *pStatus = NULL);
+	void unpack(const C4NetIOPacket &Pkt, char *pStatus = nullptr);
 
 };
 

@@ -35,7 +35,7 @@ public:
 	void SetBlackScreen(bool fIsBlack);  // enabled/disables drawing of loader screen
 	int SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard, int iLoaderCount, char *szDstName, C4Group **ppDestGrp);
 
-	void Draw(C4Facet &cgo, int iProgress=0, class C4LogBuffer *pLog=NULL, int Process=0); // draw loader screen (does not page flip!)
+	void Draw(C4Facet &cgo, int iProgress=0, class C4LogBuffer *pLog=nullptr, int Process=0); // draw loader screen (does not page flip!)
 };
 
 #endif //INC_C4LoaderScreen

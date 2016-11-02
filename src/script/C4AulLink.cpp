@@ -51,7 +51,7 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 	{
 		if (*a != "*" || !rDefs)
 		{
-			C4Def *Def = rDefs ? rDefs->GetByName(*a) : NULL;
+			C4Def *Def = rDefs ? rDefs->GetByName(*a) : nullptr;
 			if (Def)
 			{
 				DoAppend(Def);
@@ -98,7 +98,7 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	// append all includes to local script
 	for (std::list<StdCopyStrBuf>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
 	{
-		C4Def *Def = rDefs ? rDefs->GetByName(*i) : NULL;
+		C4Def *Def = rDefs ? rDefs->GetByName(*i) : nullptr;
 		if (Def)
 		{
 			// resolve #includes in included script first (#include-chains :( )

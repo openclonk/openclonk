@@ -51,7 +51,7 @@ bool C4Folder::Load(C4Group &hGroup)
 {
 	char *pSource;
 	// Load
-	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, NULL, 1)) return false;
+	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, nullptr, 1)) return false;
 	// Compile
 	if (!Compile(pSource)) { delete [] pSource; return false; }
 	delete [] pSource;

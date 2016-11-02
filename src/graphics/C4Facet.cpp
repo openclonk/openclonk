@@ -30,7 +30,7 @@
 
 void C4Facet::Default()
 {
-	Set(NULL,0,0,0,0);
+	Set(nullptr,0,0,0,0);
 }
 
 void C4Facet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt)
@@ -507,7 +507,7 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 				val.AppendChar('.'); val.Append(val2);
 			}
 #ifdef WITH_GLIB
-		mat[i] = g_ascii_strtod (val.getData(), NULL);
+		mat[i] = g_ascii_strtod (val.getData(), nullptr);
 #else
 		if (fCompiler) sscanf(val.getData(), "%g", &mat[i]);
 #endif

@@ -38,7 +38,7 @@ StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)
 	while(true)
 	{
 		DWORD valtype;
-		switch(RegQueryValueExW(ckey, GetWideChar(szValueName), NULL, &valtype,
+		switch(RegQueryValueExW(ckey, GetWideChar(szValueName), nullptr, &valtype,
 			sValue, &dwValSize))
 		{
 		case ERROR_SUCCESS:
@@ -75,10 +75,10 @@ bool SetRegistryString(const char *szSubKey,
 	if ((qerr=RegCreateKeyExW(HKEY_CURRENT_USER,
 	                         GetWideChar(szSubKey),
 	                         0,
-	                         NULL,
+	                         nullptr,
 	                         REG_OPTION_NON_VOLATILE,
 	                         KEY_ALL_ACCESS,
-	                         NULL,
+	                         nullptr,
 	                         &ckey,
 	                         &disposition
 	                        ))!=ERROR_SUCCESS) return false;
@@ -131,10 +131,10 @@ static bool SetRegClassesRoot(const wchar_t *szSubKey,
 	if ((qerr=RegCreateKeyExW(HKEY_CLASSES_ROOT,
 	                         szSubKey,
 	                         0,
-	                         NULL,
+	                         nullptr,
 	                         REG_OPTION_NON_VOLATILE,
 	                         KEY_ALL_ACCESS,
-	                         NULL,
+	                         nullptr,
 	                         &ckey,
 	                         &disposition
 	                        ))!=ERROR_SUCCESS) return false;
@@ -163,15 +163,15 @@ bool SetRegShell(const wchar_t *szClassName,
 	wchar_t szKeyName[256+1];
 	// Set shell caption
 	_snwprintf(szKeyName,256,L"%s\\Shell\\%s",szClassName,szShellName);
-	if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return false;
+	if (!SetRegClassesRoot(szKeyName, nullptr, szShellCaption)) return false;
 	// Set shell command
 	_snwprintf(szKeyName,256,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
-	if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return false;
+	if (!SetRegClassesRoot(szKeyName, nullptr, szCommand)) return false;
 	// Set as default command
 	if (fMakeDefault)
 	{
 		_snwprintf(szKeyName, 256,L"%s\\Shell", szClassName);
-		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return false;
+		if (!SetRegClassesRoot(szKeyName, nullptr, szShellName)) return false;
 	}
 	return true;
 }
@@ -391,9 +391,9 @@ void StdCompilerConfigWrite::CreateKey(HKEY hParent)
 	// Open/Create registry key
 	if (RegCreateKeyExW(hParent ? hParent : pKey->Parent->Handle,
 	                   pKey->Name.GetWideChar(),
-	                   0, NULL, REG_OPTION_NON_VOLATILE,
-	                   KEY_WRITE, NULL,
-	                   &pKey->Handle, NULL) != ERROR_SUCCESS)
+	                   0, nullptr, REG_OPTION_NON_VOLATILE,
+	                   KEY_WRITE, nullptr,
+	                   &pKey->Handle, nullptr) != ERROR_SUCCESS)
 		excCorrupt("Could not create key %s!", pKey->Name.getData());
 }
 
@@ -459,7 +459,7 @@ bool StdCompilerConfigRead::Name(const char *szName)
 		hSubKey = 0;
 		// Try to query value (exists?)
 		if (RegQueryValueExW(pKey->Handle, sName.GetWideChar(),
-		                    0, &dwType, NULL, NULL) != ERROR_SUCCESS)
+		                    0, &dwType, nullptr, nullptr) != ERROR_SUCCESS)
 			fFound = false;
 	}
 	// Push new subkey on the stack
@@ -638,7 +638,7 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 	// Read
 	uint32_t iVal; DWORD iSize = sizeof(iVal);
 	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, NULL,
+	                    0, nullptr,
 	                    reinterpret_cast<LPBYTE>(&iVal),
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return 0; }
@@ -660,15 +660,15 @@ StdStrBuf StdCompilerConfigRead::ReadString()
 	// Get size of string
 	DWORD iSize;
 	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, NULL,
-	                    NULL,
+	                    0, nullptr,
+	                    nullptr,
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
 	// Allocate string
 	StdBuf Result; Result.SetSize(iSize);
 	// Read
 	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, NULL,
+	                    0, nullptr,
 	                    reinterpret_cast<BYTE *>(Result.getMData()),
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }

@@ -121,7 +121,7 @@ C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y) const
 	// Trivial
 	y = std::max(y, 0);
 	if (!pBeams || !pBeams->isRight(x, y))
-		return NULL;
+		return nullptr;
 	// Go through list
 	// Note: In case this turns out expensive, one might think about implementing
 	// a skip-list. But I highly doubt it.
@@ -180,7 +180,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	if (beam)
 		LogSilentF("Start beam is %s", beam->getDesc().getData());
 #endif
-	C4FoWBeam *endBeam = NULL;
+	C4FoWBeam *endBeam = nullptr;
 	int32_t startY = Rect.GetBottom();
 	while (beam && !beam->isLeft(rx, ry)) {
 		if (beam->isDirty() && beam->getLeftEndY() <= Rect.y + Rect.Hgt) {
@@ -419,7 +419,7 @@ int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firs
 // not exist or the two lines are parallel.
 static inline bool find_cross(float x1, float y1, float x2, float y2,
                               float x3, float y3, float x4, float y4,
-                              float *px, float *py, float *pb = NULL)
+                              float *px, float *py, float *pb = nullptr)
 {
 	// We are looking for a, b so that
 	//  px = a*x1 + (1-a)*x2 = b*x3 + (1-b)*x4
@@ -441,7 +441,7 @@ static inline bool find_cross(float x1, float y1, float x2, float y2,
 
 std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *region) const
 {
-	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
+	C4FoWBeam *startBeam = nullptr, *endBeam = nullptr;
 	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);
 	std::list<C4FoWBeamTriangle> result;
 	float crossX=0.0f, crossY=0.0f;
@@ -841,7 +841,7 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 		ClearBeams();
 		int32_t beam_count = 0;
 		pComp->Value(mkNamingCountAdapt<int32_t>(beam_count, "Beam"));
-		C4FoWBeam *last_beam = NULL;
+		C4FoWBeam *last_beam = nullptr;
 		for (int32_t i = 0; i < beam_count; ++i)
 		{
 			std::unique_ptr<C4FoWBeam> beam(new C4FoWBeam(0, 0, 0, 0));

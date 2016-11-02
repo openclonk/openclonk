@@ -49,8 +49,8 @@ C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
 	pDef = pOwnDef;
 	// zero fields
 	Type = TYPE_None;
-	Bmp.Bitmap = Bmp.BitmapClr = Bmp.BitmapNormal = NULL;
-	pNext = NULL;
+	Bmp.Bitmap = Bmp.BitmapClr = Bmp.BitmapNormal = nullptr;
+	pNext = nullptr;
 	fColorBitmapAutoCreated = false;
 }
 
@@ -69,20 +69,20 @@ void C4DefGraphics::Clear()
 	case TYPE_None:
 		break;
 	case TYPE_Bitmap:
-		if (Bmp.BitmapNormal) { delete Bmp.BitmapNormal; Bmp.BitmapNormal=NULL; }
-		if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
-		if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
+		if (Bmp.BitmapNormal) { delete Bmp.BitmapNormal; Bmp.BitmapNormal=nullptr; }
+		if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=nullptr; }
+		if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=nullptr; }
 		break;
 	case TYPE_Mesh:
-		if (Mesh) { delete Mesh; Mesh = NULL; }
+		if (Mesh) { delete Mesh; Mesh = nullptr; }
 		break;
 	}
 	Type = TYPE_None;
 
 	// delete additonal graphics
 	C4AdditionalDefGraphics *pGrp2N = pNext, *pGrp2;
-	while ((pGrp2=pGrp2N)) { pGrp2N = pGrp2->pNext; pGrp2->pNext = NULL; delete pGrp2; }
-	pNext = NULL; fColorBitmapAutoCreated = false;
+	while ((pGrp2=pGrp2N)) { pGrp2N = pGrp2->pNext; pGrp2->pNext = nullptr; delete pGrp2; }
+	pNext = nullptr; fColorBitmapAutoCreated = false;
 }
 
 bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, const char *szNormal, bool fColorByOwner)
@@ -149,7 +149,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 		{
 			// No normal map
 			delete Bmp.BitmapNormal;
-			Bmp.BitmapNormal = NULL;
+			Bmp.BitmapNormal = nullptr;
 		}
 	}
 
@@ -160,7 +160,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 
 bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSkeletonLoader& loader)
 {
-	char* buf = NULL;
+	char* buf = nullptr;
 	size_t size;
 
 	try
@@ -195,7 +195,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 
 bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMeshSkeletonLoader& loader)
 {
-	char* buf = NULL;
+	char* buf = nullptr;
 	size_t size;
 
 	try
@@ -233,7 +233,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 
 	// load skeletons
 	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
+	while (hGroup.FindNextEntry("*", Filename, nullptr, !!*Filename))
 	{
 		if (!WildcardMatch(C4CFN_DefSkeleton, Filename) && !WildcardMatch(C4CFN_DefSkeletonXml, Filename)) continue;
 		LoadSkeleton(hGroup, Filename, loader);
@@ -248,10 +248,10 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 	C4DefGraphics *pLastGraphics = this;
 	const int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerEx);
 	hGroup.ResetSearch(); *Filename=0;
-	const char* const AdditionalGraphics[] = { C4CFN_DefGraphicsEx, C4CFN_DefGraphicsExMesh, C4CFN_DefGraphicsExMeshXml, NULL };
-	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
+	const char* const AdditionalGraphics[] = { C4CFN_DefGraphicsEx, C4CFN_DefGraphicsExMesh, C4CFN_DefGraphicsExMeshXml, nullptr };
+	while (hGroup.FindNextEntry("*", Filename, nullptr, !!*Filename))
 	{
-		for(const char* const* szWildcard = AdditionalGraphics; *szWildcard != NULL; ++szWildcard)
+		for(const char* const* szWildcard = AdditionalGraphics; *szWildcard != nullptr; ++szWildcard)
 		{
 			if(!WildcardMatch(*szWildcard, Filename)) continue;
 			// skip def graphics
@@ -294,7 +294,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 				EnforceExtension(NormalFn, GetExtension(C4CFN_NormalMapEx));
 
 				// load them
-				if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, NormalFn, fColorByOwner))
+				if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : nullptr, NormalFn, fColorByOwner))
 					return false;
 			}
 			else
@@ -316,7 +316,7 @@ C4DefGraphics *C4DefGraphics::Get(const char *szGrpName)
 	for (C4AdditionalDefGraphics *pGrp = pNext; pGrp; pGrp=pGrp->pNext)
 		if (SEqualNoCase(pGrp->GetName(), szGrpName)) return pGrp;
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
@@ -365,7 +365,7 @@ void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPh
 		pDraw->SetPerspective(true);
 		pDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
 		pDraw->SetPerspective(false);
-		pDraw->SetMeshTransform(NULL);
+		pDraw->SetMeshTransform(nullptr);
 
 		break;
 	}
@@ -423,7 +423,7 @@ C4AdditionalDefGraphics::C4AdditionalDefGraphics(C4Def *pOwnDef, const char *szN
 // C4DefGraphicsPtrBackup: Functionality to reload def graphics at runtime
 
 C4DefGraphicsPtrBackupEntry::C4DefGraphicsPtrBackupEntry(C4DefGraphics *pSourceGraphics):
-	pMeshUpdate(NULL)
+	pMeshUpdate(nullptr)
 {
 	// assign graphics + def
 	pGraphicsPtr = pSourceGraphics;
@@ -462,7 +462,7 @@ void C4DefGraphicsPtrBackupEntry::AssignUpdate()
 						// same graphics found. Update mesh graphics if any.
 						if(pMeshUpdate)
 						{
-							assert(pObj->pMeshInstance != NULL); // object had mesh graphics, so mesh instance should be present
+							assert(pObj->pMeshInstance != nullptr); // object had mesh graphics, so mesh instance should be present
 							assert(&pObj->pMeshInstance->GetMesh() == &pMeshUpdate->GetOldMesh()); // mesh instance of correct type even
 
 							// Get new mesh from reloaded graphics
@@ -476,7 +476,7 @@ void C4DefGraphicsPtrBackupEntry::AssignUpdate()
 							if (!pObj->SetGraphics(Name, pObj->Def))
 							{
 								// shouldn't happen
-								pObj->AssignRemoval(); pObj->pGraphics=NULL;
+								pObj->AssignRemoval(); pObj->pGraphics=nullptr;
 							}
 					}
 
@@ -499,11 +499,11 @@ void C4DefGraphicsPtrBackupEntry::AssignUpdate()
 					if (pDef && pObj->Menu && (pDeco = pObj->Menu->GetFrameDecoration()))
 						if (pDeco->idSourceDef == pDef->id)
 							if (!pDeco->UpdateGfx())
-								pObj->Menu->SetFrameDeco(NULL);
+								pObj->Menu->SetFrameDeco(nullptr);
 				}
 		}
 		// done; reset field to indicate finished update
-		pGraphicsPtr = NULL;
+		pGraphicsPtr = nullptr;
 	}
 }
 
@@ -529,11 +529,11 @@ void C4DefGraphicsPtrBackupEntry::AssignRemoval()
 
 							pObj->AssignRemoval();
 							delete pObj->pMeshInstance;
-							pObj->pMeshInstance = NULL;
-							pObj->pGraphics = NULL;
+							pObj->pMeshInstance = nullptr;
+							pObj->pGraphics = nullptr;
 						}
 						// sprite graphics; reset them
-						else if (!pObj->SetGraphics()) { pObj->AssignRemoval(); pObj->pGraphics=NULL; }
+						else if (!pObj->SetGraphics()) { pObj->AssignRemoval(); pObj->pGraphics=nullptr; }
 					}
 					// remove any overlay graphics
 					for (;;)
@@ -553,10 +553,10 @@ void C4DefGraphicsPtrBackupEntry::AssignRemoval()
 					C4GUI::FrameDecoration *pDeco;
 					if (pDef && pObj->Menu && (pDeco = pObj->Menu->GetFrameDecoration()))
 						if (pDeco->idSourceDef == pDef->id)
-							pObj->Menu->SetFrameDeco(NULL);
+							pObj->Menu->SetFrameDeco(nullptr);
 				}
 		// done; reset field to indicate finished update
-		pGraphicsPtr = NULL;
+		pGraphicsPtr = nullptr;
 	}
 }
 
@@ -626,7 +626,7 @@ C4DefGraphicsPtrBackup::~C4DefGraphicsPtrBackup()
 
 void C4DefGraphicsPtrBackup::Add(C4DefGraphics* pGfx)
 {
-	for(C4DefGraphics* pCur = pGfx; pCur != NULL; pCur = pCur->pNext)
+	for(C4DefGraphics* pCur = pGfx; pCur != nullptr; pCur = pCur->pNext)
 		Entries.push_back(new C4DefGraphicsPtrBackupEntry(pCur));
 
 	// Remove all mesh materials that were loaded from this definition
@@ -699,20 +699,20 @@ void C4DefGraphicsPtrBackup::UpdateMesh(StdMeshInstance* instance)
 C4GraphicsOverlay::~C4GraphicsOverlay()
 {
 	// Free mesh instance
-	delete pMeshInstance; pMeshInstance = NULL;
+	delete pMeshInstance; pMeshInstance = nullptr;
 	// free any additional overlays
 	C4GraphicsOverlay *pNextOther = pNext, *pOther;
 	while ((pOther = pNextOther))
 	{
 		pNextOther = pOther->pNext;
-		pOther->pNext = NULL;
+		pOther->pNext = nullptr;
 		delete pOther;
 	}
 }
 
 void C4GraphicsOverlay::UpdateFacet()
 {
-	// special: Nothing to update for object and pSourceGfx may be NULL
+	// special: Nothing to update for object and pSourceGfx may be nullptr
 	// If there will ever be something to init here, UpdateFacet() will also need to be called when objects have been loaded
 	if (eMode == MODE_Object) return;
 	// otherwise, source graphics must be specified
@@ -721,7 +721,7 @@ void C4GraphicsOverlay::UpdateFacet()
 	assert(pDef);
 	fZoomToShape = false;
 	// Clear old mesh instance, if any
-	delete pMeshInstance; pMeshInstance = NULL;
+	delete pMeshInstance; pMeshInstance = nullptr;
 	// update by mode
 	switch (eMode)
 	{
@@ -771,7 +771,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetSkeleton().GetAnimationByName(AnimationName->GetData());
 			if (!Animation) return;
 
-			pMeshInstance->PlayAnimation(*Animation, 0, NULL, new C4ValueProviderRef<int32_t>(iPhase, ftofix(Animation->Length / action->GetPropertyInt(P_Length))), new C4ValueProviderConst(itofix(1)), true);
+			pMeshInstance->PlayAnimation(*Animation, 0, nullptr, new C4ValueProviderRef<int32_t>(iPhase, ftofix(Animation->Length / action->GetPropertyInt(P_Length))), new C4ValueProviderConst(itofix(1)), true);
 		}
 
 		break;
@@ -848,7 +848,7 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 	// read ID
 	pComp->Value(iID); pComp->Separator();
 	// read def-graphics
-	pComp->Value(mkDefaultAdapt(C4DefGraphicsAdapt(pSourceGfx), (C4DefGraphics *)NULL));
+	pComp->Value(mkDefaultAdapt(C4DefGraphicsAdapt(pSourceGfx), (C4DefGraphics *)nullptr));
 	pComp->Separator();
 	// read mode
 	pComp->Value(mkIntAdapt(eMode)); pComp->Separator();
@@ -873,7 +873,7 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 		pComp->Value(OverlayObj);
 	else
 		// default
-		if (pComp->isCompiler()) OverlayObj = NULL;
+		if (pComp->isCompiler()) OverlayObj = nullptr;
 	// update used facet according to read data
 	if (pComp->isCompiler()) UpdateFacet();
 }
@@ -886,7 +886,7 @@ void C4GraphicsOverlay::DenumeratePointers()
 void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer)
 {
 	assert(!IsPicture());
-	// note: Also called with pForObj==NULL for editor placement preview
+	// note: Also called with pForObj==nullptr for editor placement preview
 	// get target pos
 	float offX, offY;
 	float newzoom;
@@ -990,7 +990,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		C4DrawTransform trf(Transform, offX, offY);
 
 		// Don't set pForObj because we don't draw the picture of pForObj, but the picture of another definition on top of pForObj:
-		pSourceGfx->Draw(ccgo, pForObj->Color, NULL, iPhase, 0, &trf);
+		pSourceGfx->Draw(ccgo, pForObj->Color, nullptr, iPhase, 0, &trf);
 	}
 	else
 	{
@@ -1031,7 +1031,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 				pDraw->SetMeshTransform(&matrix);
 
 			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj ? pForObj->Color : 0xff, &trf);
-			pDraw->SetMeshTransform(NULL);
+			pDraw->SetMeshTransform(nullptr);
 		}
 	}
 
@@ -1063,7 +1063,7 @@ void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
 		pRankSys = rank_def->pRankNames;
 		iRankCnt = rank_def->pRankNames->GetBaseRankNum();
 	}
-	pRankSys->DrawRankSymbol(NULL, rank_obj->Info->Rank, pRankRes, iRankCnt, false, 0, &cgo);
+	pRankSys->DrawRankSymbol(nullptr, rank_obj->Info->Rank, pRankRes, iRankCnt, false, 0, &cgo);
 }
 
 void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTransform* trans)
@@ -1091,7 +1091,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 	if(trans) trf *= *trans;
 
 	// Don't set pForObj because we don't draw the picture of pForObj, but the picture of another definition on top of pForObj:
-	pSourceGfx->Draw(cgo, pForObj->Color, NULL, iPhase, 0, &trf);
+	pSourceGfx->Draw(cgo, pForObj->Color, nullptr, iPhase, 0, &trf);
 
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
@@ -1124,9 +1124,9 @@ void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler())
 	{
 		// clear list
-		delete [] pOverlay; pOverlay = NULL;
+		delete [] pOverlay; pOverlay = nullptr;
 		// read the whole list
-		C4GraphicsOverlay *pLast = NULL;
+		C4GraphicsOverlay *pLast = nullptr;
 		bool fContinue;
 		do
 		{
@@ -1140,9 +1140,9 @@ void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)
 			{
 				delete e;
 				// delete unused overlay
-				delete pNext; pNext = NULL;
+				delete pNext; pNext = nullptr;
 				// clear up
-				if (!pLast) pOverlay = NULL;
+				if (!pLast) pOverlay = nullptr;
 				// done
 				return;
 			}
@@ -1190,7 +1190,7 @@ void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)
 C4Surface *C4DefGraphics::GetBitmap(DWORD dwClr)
 {
 	if (Type != TYPE_Bitmap)
-		return NULL;
+		return nullptr;
 	if (Bmp.BitmapClr)
 	{
 		Bmp.BitmapClr->SetClr(dwClr);

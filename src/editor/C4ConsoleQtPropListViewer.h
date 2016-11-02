@@ -368,7 +368,7 @@ public:
 		} storage_type;
 		int32_t priority; // Custom sort order
 
-		Option() : type(C4V_Any), adelegate(NULL), storage_type(StorageNone), priority(0) {}
+		Option() : type(C4V_Any), adelegate(nullptr), storage_type(StorageNone), priority(0) {}
 	};
 
 protected:
@@ -388,9 +388,9 @@ protected:
 	void ReserveOptions(int32_t num);
 	QStandardItemModel *CreateOptionModel() const;
 public:
-	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=NULL);
+	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=nullptr);
 
-	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=NULL);
+	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=nullptr);
 	void AddConstOption(C4String *name, const C4Value &val, C4String *group=nullptr, C4String *sound_name=nullptr);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;

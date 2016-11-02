@@ -23,7 +23,7 @@
 
 C4Network2HTTPClient HTTPClient;
 
-C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_ProgressDlgWdt, 100, FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), false), szError(NULL)
+C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_ProgressDlgWdt, 100, FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), false), szError(nullptr)
 {
 #ifdef HAVE_WINSOCK
 	fWinSock = AcquireWinSock();
@@ -31,7 +31,7 @@ C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_Progres
 	// add all elements - will be reposisioned when text is displayed
 	AddElement(pIcon = new C4GUI::Icon(C4Rect(), C4GUI::Ico_NetWait));
 	AddElement(pStatusLabel = new C4GUI::Label("", C4Rect(), ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont, false));
-	pProgressBar = NULL; // created when necessary
+	pProgressBar = nullptr; // created when necessary
 	AddElement(pCancelBtn = new C4GUI::CancelButton(C4Rect()));
 }
 
@@ -70,7 +70,7 @@ void C4DownloadDlg::SetStatus(const char *szNewText, int32_t iProgressPercent)
 	else
 	{
 		// no progress desired
-		if (pProgressBar) { delete pProgressBar; pProgressBar = NULL; }
+		if (pProgressBar) { delete pProgressBar; pProgressBar = nullptr; }
 	}
 	// place button
 	caMain.ExpandLeft(C4GUI_DefDlgIndent*2 + C4GUI_IconWdt);
@@ -147,14 +147,14 @@ const char *C4DownloadDlg::GetError()
 bool C4DownloadDlg::ShowModal(C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename)
 {
 	// reset error
-	szError = NULL;
+	szError = nullptr;
 	// initial text
 	if (!HTTPClient.Init()) return false;
 	HTTPClient.SetServer(szURL);
 	// show dlg
 	if (!Show(pScreen, true)) return false;
 	// start query
-	if (!HTTPClient.Query(NULL, true)) return false;
+	if (!HTTPClient.Query(nullptr, true)) return false;
 	// first time status update
 	OnIdle();
 	// cycle until query is finished or aborted
@@ -186,7 +186,7 @@ bool C4DownloadDlg::DownloadFile(const char *szDLType, C4GUI::Screen *pScreen, c
 		if (SSearch(szError, "404") && szNotFoundMessage)
 			{ sError.Append("|"); sError.Append(szNotFoundMessage); }
 		// display message
-		pScreen->ShowMessageModal(sError.getData(), FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error, NULL);
+		pScreen->ShowMessageModal(sError.getData(), FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error, nullptr);
 		delete pDlg;
 		return false;
 	}

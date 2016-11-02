@@ -322,7 +322,7 @@ class C4MapScriptMap : public C4MapScriptLayer
 {
 	std::list<C4MapScriptLayer *> layers;
 public:
-	C4MapScriptMap(C4PropList *prototype) : C4MapScriptLayer(prototype, NULL) { map=this; }
+	C4MapScriptMap(C4PropList *prototype) : C4MapScriptLayer(prototype, nullptr) { map=this; }
 	~C4MapScriptMap() { Clear(); }
 	void Clear();
 	virtual C4MapScriptMap * GetMapScriptMap() { return this; }

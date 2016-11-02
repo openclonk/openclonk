@@ -44,7 +44,7 @@ bool CPNGFile::DoLoad()
 	if (png_sig_cmp((unsigned char *) pFilePtr, 0, 8)) return false;
 	// setup png for reading
 	fWriteMode=false;
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!png_ptr) return false;
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) return false;
@@ -101,15 +101,15 @@ CPNGFile::CPNGFile()
 void CPNGFile::Default()
 {
 	// zero fields
-	pFile=NULL;
+	pFile=nullptr;
 	fpFileOwned=false;
-	pFilePtr=NULL;
-	png_ptr=NULL;
-	info_ptr=end_info=NULL;
-	pImageData=NULL;
+	pFilePtr=nullptr;
+	png_ptr=nullptr;
+	info_ptr=end_info=nullptr;
+	pImageData=nullptr;
 	iRowSize=0;
 	iPixSize=0;
-	fp=NULL;
+	fp=nullptr;
 }
 
 CPNGFile::~CPNGFile()
@@ -128,26 +128,26 @@ void CPNGFile::ClearPngStructs()
 		else
 			png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	}
-	png_ptr=NULL;
-	info_ptr=end_info=NULL;
+	png_ptr=nullptr;
+	info_ptr=end_info=nullptr;
 	fWriteMode=false;
 }
 
 void CPNGFile::Clear()
 {
 	// free image data
-	if (pImageData) { delete [] pImageData; pImageData=NULL; }
+	if (pImageData) { delete [] pImageData; pImageData=nullptr; }
 	// clear internal png ptrs
 	ClearPngStructs();
 	// free file ptr if owned
-	if (pFile && fpFileOwned) delete [] pFile; pFile=NULL;
+	if (pFile && fpFileOwned) delete [] pFile; pFile=nullptr;
 	// reset fields
 	fpFileOwned=false;
-	pFilePtr=NULL;
+	pFilePtr=nullptr;
 	iRowSize=0;
 	iPixSize=0;
 	// close file if open
-	if (fp) { fclose(fp); fp=NULL; }
+	if (fp) { fclose(fp); fp=nullptr; }
 }
 
 bool CPNGFile::Load(unsigned char *pFile, int iSize)
@@ -165,7 +165,7 @@ bool CPNGFile::Load(unsigned char *pFile, int iSize)
 		return false;
 	}
 	// reset file-field
-	this->pFile = NULL; iFileSize=0;
+	this->pFile = nullptr; iFileSize=0;
 	// success
 	return true;
 }
@@ -241,7 +241,7 @@ bool CPNGFile::Save(const char *szFilename)
 	ClearPngStructs();
 	// reinit them for writing
 	fWriteMode=true;
-	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!png_ptr) { Clear(); return false; }
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) { Clear(); return false; }
@@ -280,7 +280,7 @@ bool CPNGFile::Save(const char *szFilename)
 	// write end struct
 	png_write_end(png_ptr, info_ptr);
 	// finally, close the file
-	fclose(fp); fp = NULL;
+	fclose(fp); fp = nullptr;
 	// clear png structs
 	ClearPngStructs();
 	// success!

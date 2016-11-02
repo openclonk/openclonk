@@ -114,12 +114,12 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
 // *** C4Client
 
 C4Client::C4Client()
-		: fLocal(false), pNetClient(NULL), fIsIgnored(false), last_lobby_ready_change(0)
+		: fLocal(false), pNetClient(nullptr), fIsIgnored(false), last_lobby_ready_change(0)
 {
 }
 
 C4Client::C4Client(const C4ClientCore &Core)
-		: Core(Core), fLocal(false), pNetClient(NULL), fIsIgnored(false), pNext(NULL), last_lobby_ready_change(0)
+		: Core(Core), fLocal(false), pNetClient(nullptr), fIsIgnored(false), pNext(nullptr), last_lobby_ready_change(0)
 {
 
 }
@@ -145,7 +145,7 @@ void C4Client::SetLobbyReady(bool fnLobbyReady, time_t *time_since_last_change)
 	// Keep track of times
 	if (time_since_last_change)
 	{
-		time_t now = time(NULL);
+		time_t now = time(nullptr);
 		*time_since_last_change = now - last_lobby_ready_change;
 		last_lobby_ready_change = now;
 	}
@@ -174,7 +174,7 @@ void C4Client::CompileFunc(StdCompiler *pComp)
 // *** C4ClientList
 
 C4ClientList::C4ClientList()
-		: pFirst(NULL), pLocal(NULL), pNetClients(NULL)
+		: pFirst(nullptr), pLocal(nullptr), pNetClients(nullptr)
 {
 
 }
@@ -202,7 +202,7 @@ void C4ClientList::Add(C4Client *pClient)
 	// already in list?
 	assert(!getClientByID(pClient->getID()));
 	// find insert position
-	C4Client *pPos = pFirst, *pPrev = NULL;
+	C4Client *pPos = pFirst, *pPrev = nullptr;
 	for (; pPos; pPrev = pPos, pPos = pPos->pNext)
 		if (pPos->getID() > pClient->getID())
 			break;
@@ -219,7 +219,7 @@ C4Client *C4ClientList::getClientByID(int32_t iID) const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getID() == iID)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Client *C4ClientList::getNextClientByID(int32_t iAfterID) const
@@ -227,7 +227,7 @@ C4Client *C4ClientList::getNextClientByID(int32_t iAfterID) const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getID() > iAfterID)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Client *C4ClientList::getClientByName(const char *szName) const
@@ -235,7 +235,7 @@ C4Client *C4ClientList::getClientByName(const char *szName) const
 	for (C4Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (SEqual(pClient->getName(), szName))
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4ClientList::getClientCnt() const
@@ -280,7 +280,7 @@ void C4ClientList::ClearNetwork()
 {
 	// clear the list (should remove links)
 	C4Network2ClientList *pOldNetClients = pNetClients;
-	pNetClients = NULL;
+	pNetClients = nullptr;
 	if (pOldNetClients) pOldNetClients->Clear();
 }
 
@@ -299,7 +299,7 @@ bool C4ClientList::Remove(C4Client *pClient, bool fTemporary)
 		// unlink
 		pPrev->pNext = pClient->pNext;
 	}
-	if (pClient == pLocal) pLocal = NULL;
+	if (pClient == pLocal) pLocal = nullptr;
 	if (!fTemporary)
 	{
 		pClient->Remove();
@@ -315,7 +315,7 @@ C4Client *C4ClientList::Add(const C4ClientCore &Core)
 {
 	// client with same ID in list?
 	if (getClientByID(Core.getID()))
-		{ Log("ClientList: Duplicated client ID!"); return NULL; }
+		{ Log("ClientList: Duplicated client ID!"); return nullptr; }
 	// create, add
 	C4Client *pClient = new C4Client(Core);
 	Add(pClient);

@@ -72,8 +72,8 @@ bool C4MusicFile::Init(const char *szFile)
 
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 C4MusicFileSDL::C4MusicFileSDL():
-		Data(NULL),
-		Music(NULL)
+		Data(nullptr),
+		Music(nullptr)
 {
 }
 
@@ -148,13 +148,13 @@ void C4MusicFileSDL::Stop(int fadeout_ms)
 	if (Music)
 	{
 		Mix_FreeMusic(Music);
-		Music = NULL;
+		Music = nullptr;
 	}
 	RemTempFile();
 	if (Data)
 	{
 		delete[] Data;
-		Data = NULL;
+		Data = nullptr;
 	}
 }
 
@@ -248,7 +248,7 @@ bool C4MusicFileOgg::Init(const char *strFile)
 	}
 
 	// open using callbacks either to memory or to file loader
-	if (ov_open_callbacks(data_source, &ogg_file, NULL, 0, callbacks) != 0)
+	if (ov_open_callbacks(data_source, &ogg_file, nullptr, 0, callbacks) != 0)
 	{
 		ov_clear(&ogg_file);
 		return false;

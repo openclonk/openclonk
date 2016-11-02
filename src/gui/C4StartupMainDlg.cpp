@@ -42,7 +42,7 @@
 #endif
 
 
-C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; it is drawn in custom draw proc
+C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(nullptr) // create w/o title; it is drawn in custom draw proc
 {
 	// ctor
 	fFirstShown = true;
@@ -132,8 +132,8 @@ C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContext(C4GUI::Element *pBtn, i
 {
 	// preliminary player selection via simple context menu
 	C4GUI::ContextMenu *pCtx = new C4GUI::ContextMenu();
-	pCtx->AddItem("Add", "Add participant", C4GUI::Ico_None, NULL, new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContextAdd));
-	pCtx->AddItem("Remove", "Remove participant", C4GUI::Ico_None, NULL, new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContextRemove));
+	pCtx->AddItem("Add", "Add participant", C4GUI::Ico_None, nullptr, new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContextAdd));
+	pCtx->AddItem("Remove", "Remove participant", C4GUI::Ico_None, nullptr, new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContextRemove));
 	return pCtx;
 }
 
@@ -148,9 +148,9 @@ C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextAdd(C4GUI::Element *pBtn
 		szFn = Config.AtRelativePath(szFn);
 		if (*GetFilename(szFn) == '.') continue;
 		if (!WildcardMatch(C4CFN_PlayerFiles, GetFilename(szFn))) continue;
-		if (!SIsModule(Config.General.Participants, szFn, NULL, false))
+		if (!SIsModule(Config.General.Participants, szFn, nullptr, false))
 			pCtx->AddItem(GetFilenameOnly(szFn), "Let this player join in next game", C4GUI::Ico_Player,
-			              new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, StdCopyStrBuf>(this, &C4StartupMainDlg::OnPlayerSelContextAddPlr, StdCopyStrBuf(szFn)), NULL);
+			              new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, StdCopyStrBuf>(this, &C4StartupMainDlg::OnPlayerSelContextAddPlr, StdCopyStrBuf(szFn)), nullptr);
 	}
 	return pCtx;
 }
@@ -161,7 +161,7 @@ C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextRemove(C4GUI::Element *p
 	char szPlayer[1024+1];
 	for (int i = 0; SCopySegment(Config.General.Participants, i, szPlayer, ';', 1024, true); i++)
 		if (*szPlayer)
-			pCtx->AddItem(GetFilenameOnly(szPlayer), "Remove this player from participation list", C4GUI::Ico_Player, new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, int>(this, &C4StartupMainDlg::OnPlayerSelContextRemovePlr, i), NULL);
+			pCtx->AddItem(GetFilenameOnly(szPlayer), "Remove this player from participation list", C4GUI::Ico_Player, new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, int>(this, &C4StartupMainDlg::OnPlayerSelContextRemovePlr, i), nullptr);
 	return pCtx;
 }
 
@@ -340,7 +340,7 @@ void C4StartupMainDlg::OnShown()
 	{
 		// no player created yet: Create one
 		C4GUI::Dialog *pDlg;
-		GetScreen()->ShowModalDlg(pDlg=new C4StartupPlrPropertiesDlg(NULL, NULL), true);
+		GetScreen()->ShowModalDlg(pDlg=new C4StartupPlrPropertiesDlg(nullptr, nullptr), true);
 	}
 	// make sure participants are updated after switching back from player selection
 	UpdateParticipants();

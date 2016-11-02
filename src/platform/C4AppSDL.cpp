@@ -72,7 +72,7 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp():
-	Active(false), pWindow(NULL), fQuitMsgReceived(false),
+	Active(false), pWindow(nullptr), fQuitMsgReceived(false),
 	// main thread
 #ifdef HAVE_PTHREAD
 	MainThread (pthread_self()),
@@ -281,30 +281,30 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
 		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT),
-		                     e.key.repeat > 0, NULL);
+		                     e.key.repeat > 0, nullptr);
 		break;
 	}
 	case SDL_KEYUP:
 		Game.DoKeyboardInput(sdl_scancode_to_keycode(e.key.keysym.scancode), KEYEV_Up,
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
-		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT), false, NULL);
+		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT), false, nullptr);
 		break;
 	case SDL_MOUSEMOTION:
-		C4GUI::MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, NULL);
+		C4GUI::MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, nullptr);
 		break;
 	case SDL_MOUSEBUTTONUP:
 	case SDL_MOUSEBUTTONDOWN:
 		int32_t button;
 		sdlToC4MCBtn(e.button, button, flags);
-		C4GUI::MouseMove(button, e.button.x, e.button.y, flags, NULL);
+		C4GUI::MouseMove(button, e.button.x, e.button.y, flags, nullptr);
 		break;
 	case SDL_MOUSEWHEEL:
 		flags = e.wheel.y > 0 ? (+32) << 16 : (DWORD) (-32) << 16;
 		flags += SDL_GetModState();
 		int x, y;
 		SDL_GetMouseState(&x, &y);
-		C4GUI::MouseMove(C4MC_Button_Wheel, x, y, flags, NULL);
+		C4GUI::MouseMove(C4MC_Button_Wheel, x, y, flags, nullptr);
 		break;
 	case SDL_CONTROLLERAXISMOTION:
 	case SDL_CONTROLLERBUTTONDOWN:

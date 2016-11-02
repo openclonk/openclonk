@@ -70,13 +70,13 @@ StdStrBuf DateString(int iTime)
 // ------------------------------------------------
 // --- C4StartupPlrSelDlg::ListItem
 C4StartupPlrSelDlg::ListItem::ListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement, bool fActivated)
-		: Control(C4Rect(0,0,0,0)), pCheck(NULL), pNameLabel(NULL), pPlrSelDlg(pForDlg), pIcon(NULL)
+		: Control(C4Rect(0,0,0,0)), pCheck(nullptr), pNameLabel(nullptr), pPlrSelDlg(pForDlg), pIcon(nullptr)
 {
 	CStdFont &rUseFont = GraphicsResource.FontRegular;
 	// calc height
 	int32_t iHeight = rUseFont.GetLineHeight() + 2 * IconLabelSpacing;
 	// create subcomponents
-	pCheck = new C4GUI::CheckBox(C4Rect(0, 0, iHeight, iHeight), NULL, fActivated);
+	pCheck = new C4GUI::CheckBox(C4Rect(0, 0, iHeight, iHeight), nullptr, fActivated);
 	pCheck->SetOnChecked(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(pForDlg, &C4StartupPlrSelDlg::OnItemCheckChange));
 	pKeyCheck = new C4KeyBinding(C4KeyCodeEx(K_SPACE), "StartupPlrSelTogglePlayerActive", KEYSCOPE_Gui,
 	                             new C4GUI::ControlKeyCB<ListItem>(*this, &ListItem::KeyCheck), C4CustomKey::PRIO_Ctrl);
@@ -288,7 +288,7 @@ bool C4StartupPlrSelDlg::PlayerListItem::MoveFilename(const char *szToFilename)
 // --- C4StartupPlrSelDlg::CrewListItem
 
 C4StartupPlrSelDlg::CrewListItem::CrewListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, uint32_t dwPlrClr)
-		: ListItem(pForDlg, pForListBox, NULL, false), fLoaded(false), dwPlrClr(dwPlrClr), pParentGrp(NULL)
+		: ListItem(pForDlg, pForListBox, nullptr, false), fLoaded(false), dwPlrClr(dwPlrClr), pParentGrp(nullptr)
 {
 	SetIcon(C4GUI::Ico_Wait);
 }
@@ -369,7 +369,7 @@ void C4StartupPlrSelDlg::CrewListItem::RewriteCore()
 	if (!fLoaded) return;
 	C4Group CrewGroup;
 	if (!CrewGroup.OpenAsChild(pParentGrp, GetFilename().getData())
-	    || !Core.Save(CrewGroup, NULL)
+	    || !Core.Save(CrewGroup, nullptr)
 	    || !CrewGroup.Close() || !pParentGrp->Save(true))
 	{
 		GetScreen()->ShowMessage(LoadResStr("IDS_FAIL_MODIFY"), "", C4GUI::Ico_Error);
@@ -455,14 +455,14 @@ void C4StartupPlrSelDlg::CrewListItem::CrewRename()
 void C4StartupPlrSelDlg::CrewListItem::AbortRenaming(RenameParams par)
 {
 	// no renaming
-	pPlrSelDlg->pRenameEdit = NULL;
+	pPlrSelDlg->pRenameEdit = nullptr;
 }
 
 C4GUI::RenameEdit::RenameResult C4StartupPlrSelDlg::CrewListItem::DoRenaming(RenameParams par, const char *szNewName)
 {
 	// accept if name can be set; will fail if name is invalid or already given to another Crew member
 	if (!SetName(szNewName)) return C4GUI::RenameEdit::RR_Invalid;
-	pPlrSelDlg->pRenameEdit = NULL;
+	pPlrSelDlg->pRenameEdit = nullptr;
 	// update in selection
 	C4StartupPlrSelDlg *pDlg = static_cast<C4StartupPlrSelDlg *>(GetDlg());
 	if (pDlg && pDlg->GetSelection() == this) pDlg->UpdateSelection();
@@ -474,7 +474,7 @@ C4GUI::RenameEdit::RenameResult C4StartupPlrSelDlg::CrewListItem::DoRenaming(Ren
 // ------------------------------------------------
 // --- C4StartupPlrSelDlg
 
-C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player), pRenameEdit(NULL)
+C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player), pRenameEdit(nullptr)
 {
 	// ctor
 	UpdateSize(); // for clientrect
@@ -497,7 +497,7 @@ C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player)
 	pPlrListBox->UpdateElementPositions();
 	pPlrListBox->SetSelectionChangeCallbackFn(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(this, &C4StartupPlrSelDlg::OnSelChange));
 	pPlrListBox->SetSelectionDblClickFn(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(this, &C4StartupPlrSelDlg::OnSelDblClick));
-	AddElement(pSelectionInfo = new C4GUI::TextWindow(rcInfoWindow,0,0,0,100,4096,"  ",false,NULL,0,true));
+	AddElement(pSelectionInfo = new C4GUI::TextWindow(rcInfoWindow,0,0,0,100,4096,"  ",false,nullptr,0,true));
 	pSelectionInfo->SetDecoration(true, true, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSelectionInfo->UpdateHeight();
 
@@ -506,9 +506,9 @@ C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player)
 	AddElement(btnBack = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(LoadResStr("IDS_BTN_BACK"), rcDefault, &C4StartupPlrSelDlg::OnBackBtn));
 	AddElement(btnNew = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(LoadResStr("IDS_BTN_NEW"), rcDefault, &C4StartupPlrSelDlg::OnNewBtn));
 	btnNew->SetToolTip(LoadResStr("IDS_DLGTIP_NEWPLAYER"));
-	AddElement(btnActivatePlr = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(NULL, rcDefault, &C4StartupPlrSelDlg::OnActivateBtn));
+	AddElement(btnActivatePlr = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(nullptr, rcDefault, &C4StartupPlrSelDlg::OnActivateBtn));
 	AddElement(btnDelete = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(LoadResStr("IDS_BTN_DELETE"), rcDefault, &C4StartupPlrSelDlg::OnDelBtn));
-	AddElement(btnProperties = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(NULL, rcDefault, &C4StartupPlrSelDlg::OnPropertyBtn));
+	AddElement(btnProperties = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(nullptr, rcDefault, &C4StartupPlrSelDlg::OnPropertyBtn));
 	AddElement(btnCrew = new C4GUI::CallbackButton<C4StartupPlrSelDlg>(LoadResStr("IDS_SELECT_CREW"), rcDefault, &C4StartupPlrSelDlg::OnCrewBtn));
 	btnCrew->SetToolTip(LoadResStr("IDS_DLGTIP_PLAYERCREW"));
 
@@ -624,14 +624,14 @@ void C4StartupPlrSelDlg::UpdatePlayerList()
 		// player mode: insert all players
 		const char *szFn;
 		StdStrBuf sSearchPath(Config.General.UserDataPath);
-		PlayerListItem *pFirstActivatedPlrItem=NULL, *pFirstDeactivatedPlrItem=NULL, *pPlrItem=NULL;
+		PlayerListItem *pFirstActivatedPlrItem=nullptr, *pFirstDeactivatedPlrItem=nullptr, *pPlrItem=nullptr;
 		for (DirectoryIterator i(sSearchPath.getData()); (szFn=*i); i++)
 		{
 			szFn = Config.AtRelativePath(szFn);
 			if (*GetFilename(szFn) == '.') continue; // ignore ".", ".." and private files (".*")
 			if (!WildcardMatch(C4CFN_PlayerFiles, GetFilename(szFn))) continue;
-			bool fIsParticipating = !!SIsModule(Config.General.Participants, szFn, NULL, false);
-			pPlrItem = new PlayerListItem(this, pPlrListBox, NULL, fIsParticipating);
+			bool fIsParticipating = !!SIsModule(Config.General.Participants, szFn, nullptr, false);
+			pPlrItem = new PlayerListItem(this, pPlrListBox, nullptr, fIsParticipating);
 			try
 			{
 				pPlrItem->Load(StdStrBuf(szFn));
@@ -664,7 +664,7 @@ void C4StartupPlrSelDlg::UpdatePlayerList()
 		SetTitle(FormatString("%s %s", LoadResStrNoAmp("IDS_CTL_CREW"), CurrPlayer.Core.PrefName).getData());
 		// crew mode: Insert complete crew of player (2do: sort)
 		bool fSucc; char szFn[_MAX_PATH+1];
-		for (fSucc=CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles, szFn); fSucc; fSucc=CurrPlayer.Grp.FindNextEntry(C4CFN_ObjectInfoFiles, szFn, NULL, true))
+		for (fSucc=CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles, szFn); fSucc; fSucc=CurrPlayer.Grp.FindNextEntry(C4CFN_ObjectInfoFiles, szFn, nullptr, true))
 		{
 			CrewListItem *pCrewItem = new CrewListItem(this, pPlrListBox, CurrPlayer.Core.PrefColorDw);
 			try
@@ -733,7 +733,7 @@ void C4StartupPlrSelDlg::OnItemCheckChange(C4GUI::Element *pCheckBox)
 	{
 	case PSDM_Player:
 		// Deselect all other players
-		for (ListItem* pEl = static_cast<ListItem*>(pPlrListBox->GetFirst()); pEl != NULL; pEl = pEl->GetNext())
+		for (ListItem* pEl = static_cast<ListItem*>(pPlrListBox->GetFirst()); pEl != nullptr; pEl = pEl->GetNext())
 			if (pCheckBox && pEl != pCheckBox->GetParent())
 				pEl->SetActivated(false);
 		// update Config.General.Participants
@@ -800,7 +800,7 @@ void C4StartupPlrSelDlg::OnNewBtn(C4GUI::Control *btn)
 {
 	if (eMode != PSDM_Player) return;
 	C4GUI::Dialog *pDlg;
-	GetScreen()->ShowRemoveDlg(pDlg=new C4StartupPlrPropertiesDlg(NULL, this));
+	GetScreen()->ShowRemoveDlg(pDlg=new C4StartupPlrPropertiesDlg(nullptr, this));
 	pDlg->SetPos(std::min<int32_t>(GetBounds().Wdt/10, GetBounds().Wdt - pDlg->GetBounds().Wdt), std::min<int32_t>(GetBounds().Hgt/4, GetBounds().Hgt - pDlg->GetBounds().Hgt));
 }
 
@@ -1300,7 +1300,7 @@ void C4StartupPlrColorPickerDlg::Picker::MouseInput(C4GUI::CMouse &rMouse, int32
 		}
 		else
 		{
-			rMouse.pDragElement = NULL;
+			rMouse.pDragElement = nullptr;
 		}
 	}
 }
@@ -1544,7 +1544,7 @@ void C4StartupPlrPropertiesDlg::UserClose(bool fOK)
 	if (fOK)
 	{
 		StdStrBuf PlrName(pNameEdit->GetText()), Filename;
-		if (!C4StartupPlrSelDlg::CheckPlayerName(PlrName, Filename, pForPlayer ? &pForPlayer->GetFilename() : NULL, true)) return;
+		if (!C4StartupPlrSelDlg::CheckPlayerName(PlrName, Filename, pForPlayer ? &pForPlayer->GetFilename() : nullptr, true)) return;
 	}
 	Close(fOK);
 }
@@ -1555,7 +1555,7 @@ void C4StartupPlrPropertiesDlg::OnClosed(bool fOK)
 	{
 		// store selected data if desired
 		StdStrBuf PlrName(pNameEdit->GetText()), Filename;
-		if (C4StartupPlrSelDlg::CheckPlayerName(PlrName, Filename, pForPlayer ? &pForPlayer->GetFilename() : NULL, true))
+		if (C4StartupPlrSelDlg::CheckPlayerName(PlrName, Filename, pForPlayer ? &pForPlayer->GetFilename() : nullptr, true))
 		{
 			SCopy(PlrName.getData(), C4P.PrefName, C4MaxName);
 			C4Group PlrGroup;
@@ -1640,7 +1640,7 @@ void C4StartupPlrPropertiesDlg::SetNewPicture(const char *szFromFilename)
 {
 	if (!szFromFilename)
 	{
-		// If szFromFilename==NULL, clear bigicon
+		// If szFromFilename==nullptr, clear bigicon
 		fClearBigIcon = true;
 		fctNewBigIcon.Clear();
 	}

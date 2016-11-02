@@ -30,10 +30,10 @@ C4LogBuffer::C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szI
 		szIndent = new char[strlen(szIndentChars)+1];
 		strcpy(szIndent, szIndentChars);
 	}
-	else szIndent = NULL;
+	else szIndent = nullptr;
 	// create buffers, if buffer size is given. Otherwise, create/grow them dynamically
-	if (iBufSize) szBuf = new char[iBufSize]; else szBuf=NULL;
-	if (iMaxLineCount) pLineDataBuf = new LineData[iMaxLineCount]; else pLineDataBuf=NULL;
+	if (iBufSize) szBuf = new char[iBufSize]; else szBuf=nullptr;
+	if (iMaxLineCount) pLineDataBuf = new LineData[iMaxLineCount]; else pLineDataBuf=nullptr;
 	assert(fDynamicGrow || (iBufSize && iMaxLineCount));
 }
 
@@ -189,7 +189,7 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 		while ((szBufPos = szPos2))
 		{
 			// find first occurance of any line break char
-			szPos2 = NULL;
+			szPos2 = nullptr;
 			for (int i = 0; i < iLineBreakCharCount; ++i)
 				if ((szBufFind = strchr(szBufPos, LineBreakChars[i])))
 					if (!szPos2 || szBufFind < szPos2)
@@ -202,7 +202,7 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 			if (pFirstLineFont)
 			{
 				AppendLines(szBufPos, pFirstLineFont, dwClr);
-				pFirstLineFont = NULL;
+				pFirstLineFont = nullptr;
 			}
 			else
 				AppendLines(szBufPos, pFont, dwClr);
@@ -213,7 +213,7 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 	// no line breaks desired: Output all in one line
 	if (!iLineBreakWidth || !pFont)
 	{
-		AppendSingleLine(szLine, strlen(szLine), NULL, pFont, dwClr, true);
+		AppendSingleLine(szLine, strlen(szLine), nullptr, pFont, dwClr, true);
 	}
 	else
 	{
@@ -233,7 +233,7 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 			const char *szNextLine;
 			int iNumChars = pFont->GetMessageBreak(szLine, &szNextLine, iBreakWdt);
 			// add them
-			AppendSingleLine(szLine, iNumChars, iLineIndex ? szIndent : NULL, pFont, dwClr, !iLineIndex);
+			AppendSingleLine(szLine, iNumChars, iLineIndex ? szIndent : nullptr, pFont, dwClr, !iLineIndex);
 			// next line
 			szLine = szNextLine;
 			++iLineIndex;
@@ -247,10 +247,10 @@ const char *C4LogBuffer::GetLine(int iLineIndex, CStdFont **ppFont, DWORD *pdwCl
 	if (iLineIndex < 0)
 	{
 		iLineIndex += iLineCount;
-		if (iLineIndex < 0) return NULL;
+		if (iLineIndex < 0) return nullptr;
 	}
 	// range check
-	if (iLineIndex >= iLineCount) return NULL;
+	if (iLineIndex >= iLineCount) return nullptr;
 	// assign data
 	LineData &rData = pLineDataBuf[(iLineDataPos + iLineIndex) % iMaxLineCount];
 	if (ppFont) *ppFont = rData.pFont;

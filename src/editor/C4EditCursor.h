@@ -35,7 +35,7 @@ public:
 	StdStrBuf GetDataString() const; // Return a string like "n objects".
 	C4Object *GetObject(int32_t index=0) const; // Get indexed C4Object * in list
 	C4Object *GetLastObject() const;
-	void ConsolidateEmpty(); // remove NULLed entries that may happen because objects got deleted
+	void ConsolidateEmpty(); // remove nullptred entries that may happen because objects got deleted
 	bool ClearPointers(C4Object *obj);
 	bool IsContained(C4PropList *obj) const;
 	int32_t ObjectCount() const; // count only C4Object *
@@ -131,7 +131,7 @@ protected:
 	bool HasTransformMarker(float *x, float *y, float zoom) const;
 	void FrameSelection();
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
-	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = NULL, const char *szScript = NULL);
+	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = nullptr, const char *szScript = nullptr);
 	void DoContextObjCommand(C4Object *, const char *cmd);
 	void ObjselectDelItems();
 
@@ -144,9 +144,9 @@ protected:
 public:
 	void AddToSelection(C4PropList *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
 	bool RemoveFromSelection(C4PropList *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
-	void ClearSelection(C4PropList *next_selection=NULL);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
+	void ClearSelection(C4PropList *next_selection=nullptr);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
 	// Type of object to create in object creation mode
-	void SetCreatorDef(C4Def *new_def) { creator_def = new_def; creator_overlay.reset(NULL); }
+	void SetCreatorDef(C4Def *new_def) { creator_def = new_def; creator_overlay.reset(nullptr); }
 	C4Def *GetCreatorDef() { return creator_def; }
 
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);

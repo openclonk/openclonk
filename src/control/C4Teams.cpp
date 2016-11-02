@@ -44,7 +44,7 @@ C4Team::C4Team(const C4Team &rCopy)
 
 void C4Team::Clear()
 {
-	delete [] piPlayers; piPlayers = NULL;
+	delete [] piPlayers; piPlayers = nullptr;
 	iPlayerCount = iPlayerCapacity = iMaxPlayer = 0;
 	iID = 0; *Name=0;
 	sIconSpec.Clear();
@@ -258,7 +258,7 @@ void C4TeamList::Clear()
 	// del all teams
 	ClearTeams();
 	// del player team vector
-	delete [] ppList; ppList = NULL;
+	delete [] ppList; ppList = nullptr;
 	iTeamCapacity = 0;
 	fAllowHostilityChange = true;
 	fAllowTeamSwitch = false;
@@ -315,7 +315,7 @@ bool C4TeamList::CanLocalChooseTeam(int32_t idPlayer) const
 	// always possible if teams are generated on the fly
 	if (IsAutoGenerateTeams()) return true;
 	// also possible if one of the teams that's not the player's is not full
-	C4Team *pCurrentTeam = NULL, *pCheck;
+	C4Team *pCurrentTeam = nullptr, *pCheck;
 	if (idPlayer) pCurrentTeam = GetTeamByPlayerID(idPlayer);
 	int32_t iCheckTeam=0;
 	while ((pCheck = GetTeamByIndex(iCheckTeam++)))
@@ -385,13 +385,13 @@ C4Team *C4TeamList::GetTeamByID(int32_t iID) const
 {
 	C4Team **ppCheck=ppList; int32_t iCnt=iTeamCount;
 	for (; iCnt--; ++ppCheck) if ((*ppCheck)->GetID() == iID) return *ppCheck;
-	return NULL;
+	return nullptr;
 }
 
 C4Team *C4TeamList::GetGenerateTeamByID(int32_t iID)
 {
 	// only if enabled
-	if (!IsMultiTeams()) return NULL;
+	if (!IsMultiTeams()) return nullptr;
 	// new team?
 	if (iID == TEAMID_New) iID = GetLargestTeamID()+1;
 	// find in list
@@ -405,7 +405,7 @@ C4Team *C4TeamList::GetGenerateTeamByID(int32_t iID)
 C4Team *C4TeamList::GetTeamByIndex(int32_t iIndex) const
 {
 	// safety
-	if (!Inside<int32_t>(iIndex, 0, iTeamCount-1)) return NULL;
+	if (!Inside<int32_t>(iIndex, 0, iTeamCount-1)) return nullptr;
 	// direct list access
 	return ppList[iIndex];
 }
@@ -415,14 +415,14 @@ C4Team *C4TeamList::GetTeamByName(const char *szName) const
 	assert(szName);
 	C4Team **ppCheck=ppList; int32_t iCnt=iTeamCount;
 	for (; iCnt--; ++ppCheck) if (SEqual((*ppCheck)->GetName(), szName)) return *ppCheck;
-	return NULL;
+	return nullptr;
 }
 
 C4Team *C4TeamList::GetTeamByPlayerID(int32_t iID) const
 {
 	C4Team **ppCheck=ppList; int32_t iCnt=iTeamCount;
 	for (; iCnt--; ++ppCheck) if ((*ppCheck)->IsPlayerIDInTeam(iID)) return *ppCheck;
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4TeamList::GetLargestTeamID() const
@@ -435,7 +435,7 @@ int32_t C4TeamList::GetLargestTeamID() const
 
 C4Team *C4TeamList::GetRandomSmallestTeam() const
 {
-	C4Team *pLowestTeam = NULL; int iLowestTeamCount = 0;
+	C4Team *pLowestTeam = nullptr; int iLowestTeamCount = 0;
 	C4Team **ppCheck=ppList; int32_t iCnt=iTeamCount;
 	for (; iCnt--; ++ppCheck)
 	{
@@ -496,7 +496,7 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	bool fIsTeamNeeded = IsRuntimeJoinTeamChoice() || GetTeamCount();
 	if (!fHasOrWillHaveLobby && (!fIsTeamNeeded || fCanPickTeamAtRuntime)) return false;
 	// get least-used team
-	C4Team *pAssignTeam=NULL;
+	C4Team *pAssignTeam=nullptr;
 	C4Team *pLowestTeam = GetRandomSmallestTeam();
 	// melee mode
 	if (IsAutoGenerateTeams() && !IsRandomTeam())
@@ -580,7 +580,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 			memset(ppList, 0, sizeof(C4Team *)*iTeamCapacity);
 		}
 		else
-			ppList = NULL;
+			ppList = nullptr;
 	}
 
 	if (iTeamCount)
@@ -685,7 +685,7 @@ void C4TeamList::RecheckTeams()
 		C4Team *pLowestTeam = GetRandomSmallestTeam();
 		if (!pLowestTeam) break; // no teams: Nothing to re-distribute.
 		// get largest team that has relocateable players
-		C4Team *pLargestTeam = NULL;
+		C4Team *pLargestTeam = nullptr;
 		C4Team **ppCheck=ppList; int32_t iCnt=iTeamCount;
 		for (; iCnt--; ++ppCheck) if (!pLargestTeam || pLargestTeam->GetPlayerCount() > (*ppCheck)->GetPlayerCount())
 				if ((*ppCheck)->GetFirstUnjoinedPlayerID())
@@ -851,7 +851,7 @@ void C4TeamList::EnforceLeagueRules()
 int32_t C4TeamList::GetForcedTeamSelection(int32_t idForPlayer) const
 {
 	// if there's only one team for the player to join, return that team ID
-	C4Team *pOKTeam = NULL, *pCheck;
+	C4Team *pOKTeam = nullptr, *pCheck;
 	if (idForPlayer) pOKTeam = GetTeamByPlayerID(idForPlayer); // curent team is always possible, even if full
 	int32_t iCheckTeam=0;
 	while ((pCheck = GetTeamByIndex(iCheckTeam++)))

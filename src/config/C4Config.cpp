@@ -411,7 +411,7 @@ bool C4Config::Save()
 #endif
 		{
 			StdStrBuf filename;
-			GetConfigFileName(filename, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
+			GetConfigFileName(filename, ConfigFilename.getLength() ? ConfigFilename.getData() : nullptr);
 			StdCompilerINIWrite IniWrite;
 			IniWrite.Decompile(*this);
 			IniWrite.getOutput().SaveToFile(filename.getData());
@@ -431,7 +431,7 @@ void C4ConfigGeneral::DeterminePaths()
 #ifdef _WIN32
 	// Exe path
 	wchar_t apath[CFG_MaxString];
-	if (GetModuleFileNameW(NULL,apath,CFG_MaxString))
+	if (GetModuleFileNameW(nullptr,apath,CFG_MaxString))
 	{
 		ExePath = StdStrBuf(apath);
 		TruncatePath(ExePath.getMData());

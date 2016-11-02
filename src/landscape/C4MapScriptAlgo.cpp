@@ -490,7 +490,7 @@ bool C4MapScriptAlgoFilter::operator () (int32_t x, int32_t y, uint8_t& fg, uint
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 {
 	// Convert script function parameter to internal C4MapScriptAlgo class. Also resolve all parameters and nested child algos.
-	if (!algo_par) return NULL;
+	if (!algo_par) return nullptr;
 	// if algo is a layer, take that directly
 	C4MapScriptLayer *algo_layer = algo_par->GetMapScriptLayer();
 	if (algo_layer) return new C4MapScriptAlgoLayer(algo_layer);
@@ -516,5 +516,5 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 	default:
 		throw C4AulExecError(FormatString("got invalid algo: %d", algo_par->GetPropertyInt(P_Algo)).getData());
 	}
-	return NULL;
+	return nullptr;
 }

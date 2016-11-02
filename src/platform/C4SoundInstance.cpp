@@ -34,8 +34,8 @@ using namespace C4SoundLoaders;
 C4SoundEffect::C4SoundEffect():
 		Instances (0),
 		pSample (0),
-		FirstInst (NULL),
-		Next (NULL)
+		FirstInst (nullptr),
+		Next (nullptr)
 {
 	Name[0]=0;
 }
@@ -135,10 +135,10 @@ void C4SoundEffect::Execute()
 C4SoundInstance *C4SoundEffect::New(bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// check: too many instances?
-	if (!fLoop && Instances >= C4MaxSoundInstances) return NULL;
+	if (!fLoop && Instances >= C4MaxSoundInstances) return nullptr;
 	// create & init sound instance
 	C4SoundInstance *pInst = new C4SoundInstance();
-	if (!pInst->Create(this, fLoop, iVolume, pObj, 0, iCustomFalloffDistance, iPitch, modifier)) { delete pInst; return NULL; }
+	if (!pInst->Create(this, fLoop, iVolume, pObj, 0, iCustomFalloffDistance, iPitch, modifier)) { delete pInst; return nullptr; }
 	// add to list
 	AddInst(pInst);
 	// return
@@ -150,7 +150,7 @@ C4SoundInstance *C4SoundEffect::GetInstance(C4Object *pObj)
 	for (C4SoundInstance *pInst = FirstInst; pInst; pInst = pInst->pNext)
 		if (pInst->getObj() == pObj)
 			return pInst;
-	return NULL;
+	return nullptr;
 }
 
 void C4SoundEffect::ClearPointers(C4Object *pObj)
@@ -200,14 +200,14 @@ void C4SoundEffect::RemoveInst(C4SoundInstance *pInst)
 
 
 C4SoundInstance::C4SoundInstance():
-		pEffect (NULL),
+		pEffect (nullptr),
 		iVolume(0), iPan(0), iPitch(0),
 		player(NO_OWNER),
 		pitch_dirty(false),
 		iChannel (-1),
-		modifier(NULL),
+		modifier(nullptr),
 		has_local_modifier(false),
-		pNext (NULL)
+		pNext (nullptr)
 {
 }
 
@@ -223,7 +223,7 @@ void C4SoundInstance::Clear()
 	if (modifier)
 	{
 		modifier->DelRef();
-		modifier = NULL;
+		modifier = nullptr;
 		has_local_modifier = false;
 	}
 }
@@ -418,7 +418,7 @@ void C4SoundInstance::ClearPointers(C4Object *pDelete)
 		// otherwise: set volume by last position
 		else
 			SetVolumeByPos(pObj->GetX(), pObj->GetY());
-		pObj = NULL;
+		pObj = nullptr;
 	}
 }
 
@@ -438,7 +438,7 @@ void C4SoundInstance::SetModifier(C4SoundModifier *new_modifier, bool is_global)
 	else
 	{
 		// this sound has its own modifier now and doesn't care for global ones
-		has_local_modifier = (new_modifier != NULL);
+		has_local_modifier = (new_modifier != nullptr);
 	}
 	if (new_modifier != modifier)
 	{

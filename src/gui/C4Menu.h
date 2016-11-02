@@ -112,7 +112,7 @@ public:
 	C4Object *GetObject() const { return Object; }
 	const char *GetCommand() const { return Command; }
 
-	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = NULL; if(pObj == pSymbolObj) pSymbolObj = NULL; }
+	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = nullptr; if(pObj == pSymbolObj) pSymbolObj = nullptr; }
 
 	// GUI calls
 	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
@@ -166,7 +166,7 @@ public:
 	int32_t GetItemHeight() { return ItemHeight; }
 	C4MenuItem* GetSelectedItem();
 	C4MenuItem* GetItem(int32_t iIndex);
-	virtual C4Object *GetParentObject() { return NULL; }
+	virtual C4Object *GetParentObject() { return nullptr; }
 	bool MoveSelection(int32_t iBy, bool fAdjustPosition, bool fDoCalls);
 	bool SetSelection(int32_t iSelection, bool fAdjustPosition, bool fDoCalls);
 	bool SetPosition(int32_t iPosition);
@@ -176,21 +176,21 @@ public:
 	bool Control(BYTE byCom, int32_t iData);
 	bool KeyControl(BYTE byCom); // direct keyboard callback
 	bool AddRefSym(const char *szCaption, const C4Facet &fctSymbol, const char *szCommand,
-	               int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	               const char *szInfoCaption=NULL,
-	               C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	               int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=nullptr,
+	               const char *szInfoCaption=nullptr,
+	               C4ID idID=C4ID::None, const char *szCommand2=nullptr, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	bool Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *szCommand,
-	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	         const char *szInfoCaption=NULL,
-	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=nullptr,
+	         const char *szInfoCaption=nullptr,
+	         C4ID idID=C4ID::None, const char *szCommand2=nullptr, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	bool Add(const char *szCaption, C4Object* pGfxObj, const char *szCommand,
-	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	         const char *szInfoCaption=NULL,
-	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=nullptr,
+	         const char *szInfoCaption=nullptr,
+	         C4ID idID=C4ID::None, const char *szCommand2=nullptr, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	bool Add(const char *szCaption, C4DefGraphics* pGfx, const char *szCommand,
-	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
-	         const char *szInfoCaption=NULL,
-	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=nullptr,
+	         const char *szInfoCaption=nullptr,
+	         C4ID idID=C4ID::None, const char *szCommand2=nullptr, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	void ClearItems();
 	void ResetLocation() { LocationSet = false; }
 	bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport

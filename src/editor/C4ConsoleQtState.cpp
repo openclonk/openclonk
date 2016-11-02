@@ -124,7 +124,7 @@ int ExecRecursionCheck::counter = 0;
 /* Console main window */
 
 C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUIState *state)
-	: QMainWindow(NULL), state(state)
+	: QMainWindow(nullptr), state(state)
 {
 }
 
@@ -482,7 +482,7 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 		bool success = false;
 #ifdef USE_WIN32_WINDOWS
 		StdStrBuf path(::Config.General.UserDataPath);
-		intptr_t iError = (intptr_t) ::ShellExecute(NULL, L"open", path.GetWideChar(), NULL, path.GetWideChar(), SW_SHOW);
+		intptr_t iError = (intptr_t) ::ShellExecute(nullptr, L"open", path.GetWideChar(), nullptr, path.GetWideChar(), SW_SHOW);
 		if (iError > 32) success = true;
 #else
 		success = QDesktopServices::openUrl(QUrl::fromLocalFile(::Config.General.UserDataPath));
@@ -578,7 +578,7 @@ void C4ConsoleQtMainWindow::GradeDown()
 
 /* Common C4ConsoleGUI interface */
 
-C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(NULL),
+C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(nullptr),
 		enabled(false), recording(false), net_enabled(false), landscape_mode(LandscapeMode::Dynamic), flat_chunk_shapes(false),
 	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0), disable_shortcut_filter(new C4DisableShortcutFilter(nullptr))
 {

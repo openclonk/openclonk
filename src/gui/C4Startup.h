@@ -83,7 +83,7 @@ public:
 class C4StartupDlg : public C4GUI::FullscreenDialog
 {
 public:
-	C4StartupDlg(const char *szTitle) : C4GUI::FullscreenDialog(szTitle, NULL) {}
+	C4StartupDlg(const char *szTitle) : C4GUI::FullscreenDialog(szTitle, nullptr) {}
 
 	virtual bool SetSubscreen(const char *szToScreen) { return false; } // go to specified subdialog, e.g. a specific property sheet in the options dlg
 	virtual void OnKeyboardLayoutChanged() {}
@@ -112,7 +112,7 @@ private:
 protected:
 	void DoStartup(); // create main dlg
 	void DontStartup(); // close main dlg
-	class C4StartupDlg *SwitchDialog(DialogID eToDlg, bool fFade=true, const char *szSubDialog=NULL); // do transition to another dialog
+	class C4StartupDlg *SwitchDialog(DialogID eToDlg, bool fFade=true, const char *szSubDialog=nullptr); // do transition to another dialog
 
 	friend class C4StartupMainDlg;
 	friend class C4StartupNetDlg;

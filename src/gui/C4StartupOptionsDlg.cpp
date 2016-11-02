@@ -51,10 +51,10 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	float iDrawQuadRight[8] = { x1,y0, x1,y1, x1-iIndent,y1, x1-iIndent,y0+iIndent };
 	float iDrawQuadBottom[8] = { x1,y1, x0,y1, x0+iIndent,y1-iIndent, x1,y1-iIndent };
 	// TODO: Switch to PerformMultiTris
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh, NULL);
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh, NULL);
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow, NULL);
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow, NULL);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh, nullptr);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh, nullptr);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow, nullptr);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow, nullptr);
 	// draw selection highlight
 	int32_t iTxtOff = fDown ? iIndent : 0;
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
@@ -214,7 +214,7 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 // --- C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel
 
 C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds)
-	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, true), assignment(assignment), assignment_set(assignment_set)
+	: C4GUI::Label("", bounds, ALeft, 0xffffffff, nullptr, false, false, true), assignment(assignment), assignment_set(assignment_set)
 {
 	UpdateAssignmentString();
 }
@@ -272,13 +272,13 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAs
 // --- C4StartupOptionsDlg::ControlConfigListBox::ListItem
 
 C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool has_extra_spacing)
-	: C4GUI::Window(), parent_list(parent_list), assignment_label(NULL), has_extra_spacing(has_extra_spacing)
+	: C4GUI::Window(), parent_list(parent_list), assignment_label(nullptr), has_extra_spacing(has_extra_spacing)
 {
 	int32_t margin = 2;
 	// adding to listbox will size the element horizontally and move to proper position
 	int32_t height = ::GraphicsResource.TextFont.GetLineHeight() + 2 * margin;
 	SetBounds(C4Rect(0,0,42,height));
-	parent_list->InsertElement(this, NULL);
+	parent_list->InsertElement(this, nullptr);
 	int32_t name_col_width = GetBounds().Wdt * 2/3;
 	// child elements: two labels for two columns
 	const char *gui_name = assignment->GetGUIName(Game.PlayerControlDefs);
@@ -296,7 +296,7 @@ C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListB
 // --- C4StartupOptionsDlg::ControlConfigListBox
 
 C4StartupOptionsDlg::ControlConfigListBox::ControlConfigListBox(const C4Rect &rcBounds, class C4PlayerControlAssignmentSet *set)
-	: C4GUI::ListBox(rcBounds), set(NULL)
+	: C4GUI::ListBox(rcBounds), set(nullptr)
 {
 	SetAssignmentSet(set);
 }
@@ -393,7 +393,7 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(class C4PlayerControl
 // --- C4StartupOptionsDlg::ControlConfigArea
 
 C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg)
-		: C4GUI::Window(), fGamepad(fGamepad), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
+		: C4GUI::Window(), fGamepad(fGamepad), pOptionsDlg(pOptionsDlg), pGUICtrl(nullptr)
 {
 	CStdFont *pUseFontSmall = &(C4Startup::Get()->Graphics.BookSmallFont);
 	SetBounds(rcArea);
@@ -429,7 +429,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	caArea.ExpandTop(caArea.GetVMargin());
 	AddElement(new C4GUI::HorizontalLine(caArea.GetFromTop(2)));
 	caArea.ExpandTop(caArea.GetVMargin());
-	control_list = new ControlConfigListBox(caArea.GetFromLeft(caArea.GetInnerWidth()), NULL);
+	control_list = new ControlConfigListBox(caArea.GetFromLeft(caArea.GetInnerWidth()), nullptr);
 	AddElement(control_list);
 
 	UpdateCtrlSet();
@@ -626,7 +626,7 @@ void C4StartupOptionsDlg::BoolConfig::OnCheckChange(C4GUI::Element *pCheckBox)
 // --- C4StartupOptionsDlg::EditConfig
 
 C4StartupOptionsDlg::EditConfig::EditConfig(const C4Rect &rcBounds, const char *szName, ValidatedStdCopyStrBufBase *psConfigVal, int32_t *piConfigVal, bool fMultiline)
-		: C4GUI::LabeledEdit(rcBounds, szName, fMultiline, psConfigVal ? psConfigVal->getData() : NULL, &(C4Startup::Get()->Graphics.BookFont), C4StartupFontClr), psConfigVal(psConfigVal), piConfigVal(piConfigVal)
+		: C4GUI::LabeledEdit(rcBounds, szName, fMultiline, psConfigVal ? psConfigVal->getData() : nullptr, &(C4Startup::Get()->Graphics.BookFont), C4StartupFontClr), psConfigVal(psConfigVal), piConfigVal(piConfigVal)
 {
 	// ctor
 	GetEdit()->SetColors(C4StartupEditBGColor, C4StartupFontClr, C4StartupEditBorderColor);
@@ -738,7 +738,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLangCombo->SetFont(pUseFont);
 	pLangCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
 	pSheetGeneral->AddElement(pLangCombo);
-	pLangInfoLabel = new C4GUI::Label(NULL, caLanguage.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*3), ALeft, C4StartupFontClr, pUseFont, false);
+	pLangInfoLabel = new C4GUI::Label(nullptr, caLanguage.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*3), ALeft, C4StartupFontClr, pUseFont, false);
 	pLangInfoLabel->SetToolTip(szLangTip);
 	pSheetGeneral->AddElement(pLangInfoLabel);
 	UpdateLanguage();
@@ -768,7 +768,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pSheetGeneral->AddElement(pFontSizeCombo);
 	UpdateFontControls();
 	// MM timer
-	pCheck = new BoolConfig(caSheetProgram.GetGridCell(0,1,3,7,-1,iCheckHgt, true), LoadResStr("IDS_CTL_MMTIMER"), NULL, &Config.General.MMTimer, true, &Config.Startup.HideMsgMMTimerChange);
+	pCheck = new BoolConfig(caSheetProgram.GetGridCell(0,1,3,7,-1,iCheckHgt, true), LoadResStr("IDS_CTL_MMTIMER"), nullptr, &Config.General.MMTimer, true, &Config.Startup.HideMsgMMTimerChange);
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_MMTIMER_DESC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetGeneral->AddElement(pCheck);
@@ -853,7 +853,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGfxMSCombo->SetReadOnly(multisamples.empty());
 	pGroupOptions->AddElement(pGfxMSCombo);
 	// automatic gfx frame skip
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_AUTOFRAMESKIP"), NULL, &Config.Graphics.AutoFrameSkip);
+	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_AUTOFRAMESKIP"), nullptr, &Config.Graphics.AutoFrameSkip);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOFRAMESKIP"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupOptions->AddElement(pCheck);
@@ -876,7 +876,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetOnChecked(new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFEMusicCheck));
 	pGroupFESound->AddElement(pCheck);
 	// menu system sound effects
-	pCheck = pFESoundCheck = new BoolConfig(caGroupFESound.GetGridCell(0,1,1,2,-1,iCheckHgt,true), LoadResStr("IDS_CTL_SOUNDFX"), NULL, &Config.Sound.FESamples);
+	pCheck = pFESoundCheck = new BoolConfig(caGroupFESound.GetGridCell(0,1,1,2,-1,iCheckHgt,true), LoadResStr("IDS_CTL_SOUNDFX"), nullptr, &Config.Sound.FESamples);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_MENUSOUND"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupFESound->AddElement(pCheck);
@@ -888,7 +888,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pSheetSound->AddElement(pGroupRXSound);
 	C4GUI::ComponentAligner caGroupRXSound(pGroupRXSound->GetClientRect(), iIndentX1, iIndentY2, true);
 	// game music
-	pCheck = new BoolConfig(caGroupRXSound.GetGridCell(0,1,0,2,-1,iCheckHgt,true), LoadResStr("IDS_CTL_MUSIC"), NULL, &Config.Sound.RXMusic);
+	pCheck = new BoolConfig(caGroupRXSound.GetGridCell(0,1,0,2,-1,iCheckHgt,true), LoadResStr("IDS_CTL_MUSIC"), nullptr, &Config.Sound.RXMusic);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_GAMEMUSIC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupRXSound->AddElement(pCheck);
@@ -954,23 +954,23 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLeagueServerCfg->SetToolTip(LoadResStr("IDS_NET_MASTERSRV_DESC"));
 	pSheetNetwork->AddElement(pLeagueServerCfg);
 #ifdef WITH_AUTOMATIC_UPDATE
-	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_AUTOMATICUPDATES"), NULL, &Config.Network.AutomaticUpdate, false);
+	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_AUTOMATICUPDATES"), nullptr, &Config.Network.AutomaticUpdate, false);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOMATICUPDATES"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetNetwork->AddElement(pCheck);
 #endif
-	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_UPNP"), NULL, &Config.Network.EnableUPnP, false);
+	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_UPNP"), nullptr, &Config.Network.EnableUPnP, false);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_UPNP"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetNetwork->AddElement(pCheck);
-	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_PACKETLOGGING"), NULL, &Config.Network.PacketLogging, false);
+	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_PACKETLOGGING"), nullptr, &Config.Network.PacketLogging, false);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_PACKETLOGGING"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetNetwork->AddElement(pCheck);
 	const char *szNameCfgText = LoadResStr("IDS_NET_USERNAME");
 	int iNameCfgWdt=200, iNameCfgHgt=48; C4StartupOptionsDlg::EditConfig::GetControlSize(&iNameCfgWdt, &iNameCfgHgt, szNameCfgText, false);
 	iNameCfgWdt += 5;
-	pNetworkNickEdit = new EditConfig(caSheetNetwork.GetFromTop(iNameCfgHgt), szNameCfgText, &Config.Network.Nick, NULL, false);
+	pNetworkNickEdit = new EditConfig(caSheetNetwork.GetFromTop(iNameCfgHgt), szNameCfgText, &Config.Network.Nick, nullptr, false);
 	pNetworkNickEdit->SetToolTip(LoadResStr("IDS_NET_USERNAME_DESC"));
 	pSheetNetwork->AddElement(pNetworkNickEdit);
 
@@ -1111,7 +1111,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY, int32_t
 	if (!Application.SetVideoMode(iResX, iResY, iRefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 	{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
-		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
+		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, nullptr);
 		return false;
 	}
 	// implied font change
@@ -1236,7 +1236,7 @@ bool C4StartupOptionsDlg::SetSubscreen(const char *szToScreen)
 {
 	// go to specified property sheet
 	// option sheets do not have a good identifier associated to them - just lookup from a static array
-	const char *page_names[] = { "general", "graphics", "sound", "controls", "network", NULL };
+	const char *page_names[] = { "general", "graphics", "sound", "controls", "network", nullptr };
 	int32_t i = 0;
 	while (page_names[i])
 	{
@@ -1318,9 +1318,9 @@ void C4StartupOptionsDlg::UpdateFontControls()
 }
 
 #ifdef _WIN32
-const char *DefaultFonts[] = { "Arial Unicode MS", "Comic Sans MS", C4DEFAULT_FONT_NAME, "Verdana", NULL };
+const char *DefaultFonts[] = { "Arial Unicode MS", "Comic Sans MS", C4DEFAULT_FONT_NAME, "Verdana", nullptr };
 #else
-const char *DefaultFonts[] = { C4DEFAULT_FONT_NAME, NULL };
+const char *DefaultFonts[] = { C4DEFAULT_FONT_NAME, nullptr };
 #endif
 
 void C4StartupOptionsDlg::OnFontFaceComboFill(C4GUI::ComboBox_FillCB *pFiller)
@@ -1401,7 +1401,7 @@ void C4StartupOptionsDlg::OnSoundVolumeSliderChange(int32_t iNewVal)
 	// sound system reads this value directly
 	Config.Sound.SoundVolume = iNewVal;
 	// test sound
-	StartSoundEffect("Objects::Arrow::HitGround", false, 100, NULL);
+	StartSoundEffect("Objects::Arrow::HitGround", false, 100, nullptr);
 }
 
 void C4StartupOptionsDlg::OnRXSoundCheck(C4GUI::Element *pCheckBox)

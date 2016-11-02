@@ -94,8 +94,8 @@ public:
 	void ClearPlayers(int32_t iPlayer, int32_t dwPositioningFlags);
 	void ClearPointers(C4Object *pObj);
 	void UpdateDef(C4ID idUpdDef); // called after reloaddef
-	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, C4PropList *pSrc=NULL, uint32_t dwFlags=0u, int32_t width=0);
-	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, C4PropList *pSrc=NULL, uint32_t dwFlags=0u, int32_t width=0);
+	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, C4PropList *pSrc=nullptr, uint32_t dwFlags=0u, int32_t width=0);
+	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, C4PropList *pSrc=nullptr, uint32_t dwFlags=0u, int32_t width=0);
 	bool Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t bCol, bool fNoDuplicates = false);
 };
 

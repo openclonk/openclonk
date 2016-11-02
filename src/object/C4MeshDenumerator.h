@@ -26,9 +26,9 @@ private:
 	C4ObjectPtr Object; // Set if an instance mesh was attached
 
 public:
-	C4MeshDenumerator(): Def(NULL), Object(NULL) {}
-	C4MeshDenumerator(C4Def* def): Def(def), Object(NULL) {}
-	C4MeshDenumerator(C4Object* object): Def(NULL), Object(object) {}
+	C4MeshDenumerator(): Def(nullptr), Object(nullptr) {}
+	C4MeshDenumerator(C4Def* def): Def(def), Object(nullptr) {}
+	C4MeshDenumerator(C4Object* object): Def(nullptr), Object(object) {}
 
 	C4Object* GetObject() { return Object; }
 

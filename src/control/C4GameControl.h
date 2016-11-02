@@ -120,7 +120,7 @@ public:
 
 	// records
 	bool StartRecord(bool fInitial, bool fStreaming);
-	void StopRecord(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
+	void StopRecord(StdStrBuf *pRecordName = nullptr, BYTE *pRecordSHA1 = nullptr);
 	void RequestRuntimeRecord();
 	bool IsRuntimeRecordPossible() const;
 	bool RecAddFile(const char *szLocalFilename, const char *szAddAs);
@@ -145,7 +145,7 @@ public:
 
 	// input
 	void DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4ControlDeliveryType eDelivery);
-	void DbgRec(C4RecordChunkType eType, const uint8_t *pData=NULL, size_t iSize=0); // record debug stuff
+	void DbgRec(C4RecordChunkType eType, const uint8_t *pData=nullptr, size_t iSize=0); // record debug stuff
 	C4ControlDeliveryType DecideControlDelivery();
 
 	// sync check

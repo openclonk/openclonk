@@ -106,9 +106,9 @@ void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)
 #include "platform/C4windowswrapper.h"
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
-		: fStarted(false), pCallback(pCallback), pWatches(NULL)
+		: fStarted(false), pCallback(pCallback), pWatches(nullptr)
 {
-	hEvent = CreateEvent(NULL, true, false, NULL);
+	hEvent = CreateEvent(nullptr, true, false, nullptr);
 }
 
 C4FileMonitor::~C4FileMonitor()
@@ -155,7 +155,7 @@ void C4FileMonitor::AddDirectory(const char *szDir)
 	pWatch->Next = pWatches;
 	pWatches = pWatch;
 	// Start async directory change notification
-	if (!ReadDirectoryChangesW(hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL))
+	if (!ReadDirectoryChangesW(hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, nullptr, &pWatch->ov, nullptr))
 		if (GetLastError() != ERROR_IO_PENDING)
 		{
 			delete pWatch;
@@ -190,11 +190,11 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd *)
 				break;
 			}
 			// Restart directory change notification (flush queue)
-			ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL);
+			ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, nullptr, &pWatch->ov, nullptr);
 			dwBytes = 0;
 			while (GetOverlappedResult(pWatch->hDir, &pWatch->ov, &dwBytes, false))
 			{
-				ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL);
+				ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, nullptr, &pWatch->ov, nullptr);
 				dwBytes = 0;
 			}
 		}
@@ -220,7 +220,7 @@ void C4FileMonitor::HandleNotify(const char *szDir, const _FILE_NOTIFY_INFORMATI
 	// Get filename length
 	UINT iCodePage = CP_UTF8;
 	int iFileNameBytes = WideCharToMultiByte(iCodePage, 0,
-	                     pNotify->FileName, pNotify->FileNameLength / 2, NULL, 0, NULL, NULL);
+	                     pNotify->FileName, pNotify->FileNameLength / 2, nullptr, 0, nullptr, nullptr);
 	// Set up filename buffer
 	StdCopyStrBuf Path(szDir);
 	Path.AppendChar(DirectorySeparator);
@@ -230,7 +230,7 @@ void C4FileMonitor::HandleNotify(const char *szDir, const _FILE_NOTIFY_INFORMATI
 	int iWritten = WideCharToMultiByte(iCodePage, 0,
 	                                   pNotify->FileName, pNotify->FileNameLength / 2,
 	                                   pFilename, iFileNameBytes,
-	                                   NULL, NULL);
+	                                   nullptr, nullptr);
 	if (iWritten != iFileNameBytes)
 		Path.Shrink(iFileNameBytes+1);
 	// Send notification

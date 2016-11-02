@@ -38,7 +38,7 @@
 C4Landscape Landscape;
 C4PXSSystem PXS;
 
-class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, int32_t, int32_t, int32_t, class C4SoundModifier *) { return NULL; }
+class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, int32_t, int32_t, int32_t, class C4SoundModifier *) { return nullptr; }
 
 C4Facet::C4Facet() {}
 void C4Facet::Set(C4Surface*, float, float, float, float) {}

@@ -23,13 +23,13 @@
  * mape. We cannot link the full implementation since it would introduce
  * a dependency on C4Game, and therefore the rest of the engine. */
 
-C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
+C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), nullptr, nullptr)
 {
         Script.SetDef(this);
 	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
 
-	Next = NULL;
+	Next = nullptr;
 	Script.Clear();
 }
 
@@ -41,7 +41,7 @@ C4Def::~C4Def()
 
 C4DefList::C4DefList()
 {
-	FirstDef = NULL;
+	FirstDef = nullptr;
 }
 
 C4DefList::~C4DefList()
@@ -62,10 +62,10 @@ void C4DefList::Clear()
 C4Def* C4DefList::ID2Def(C4ID id)
 {
 	C4Def* cdef;
-	for(cdef = FirstDef; cdef != NULL; cdef = cdef->Next)
+	for(cdef = FirstDef; cdef != nullptr; cdef = cdef->Next)
 		if(cdef->id == id)
 			return cdef;
-	return NULL;
+	return nullptr;
 }
 
 C4Def* C4DefList::GetByName(const StdStrBuf& name)
@@ -76,26 +76,26 @@ C4Def* C4DefList::GetByName(const StdStrBuf& name)
 C4Def* C4DefList::GetDef(int iIndex)
 {
 	int counter = 0;
-	for(C4Def* cdef = FirstDef; cdef != NULL; cdef = cdef->Next)
+	for(C4Def* cdef = FirstDef; cdef != nullptr; cdef = cdef->Next)
 	{
 		if(counter == iIndex) return cdef;
 		++counter;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 int C4DefList::GetDefCount()
 {
 	int counter = 0;
-	for(C4Def* cdef = FirstDef; cdef != NULL; cdef = cdef->Next)
+	for(C4Def* cdef = FirstDef; cdef != nullptr; cdef = cdef->Next)
 		++counter;
 	return counter;
 }
 
 bool C4DefList::Add(C4Def* def, bool fOverload)
 {
-	assert(ID2Def(def->id) == NULL);
+	assert(ID2Def(def->id) == nullptr);
 
 	def->Next = FirstDef;
 	FirstDef = def;
@@ -112,7 +112,7 @@ bool C4Def::Load(C4Group& hGroup, StdMeshSkeletonLoader& loader, DWORD dwLoadWha
 	ParentKeyName = ::Strings.RegString(id.ToString());
 	Script.Reg2List(&::ScriptEngine);
 
-	if(!Script.Load(hGroup, "Script.c", NULL, NULL))
+	if(!Script.Load(hGroup, "Script.c", nullptr, nullptr))
 	{
 		return false;
 	}

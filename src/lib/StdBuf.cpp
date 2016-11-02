@@ -149,29 +149,29 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 #ifdef _WIN32
 StdStrBuf::StdStrBuf(const wchar_t * utf16)
 {
-	int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, 0, 0);
+	int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, 0, 0);
 	SetSize(len);
 	WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
 }
 StdStrBuf::wchar_t_holder StdStrBuf::GetWideChar() const
 {
-	if (!getSize()) return StdStrBuf::wchar_t_holder(NULL);
+	if (!getSize()) return StdStrBuf::wchar_t_holder(nullptr);
 
-	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), NULL, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), nullptr, 0);
 	wchar_t * p = new wchar_t[len];
 	MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), p, len);
 	return StdStrBuf::wchar_t_holder(p);
 }
 StdBuf StdStrBuf::GetWideCharBuf()
 {
-	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), NULL, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), nullptr, 0);
 	StdBuf r; r.SetSize(len * sizeof(wchar_t));
 	MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), getMBufPtr<wchar_t>(r), len);
 	return r;
 }
 StdStrBuf::wchar_t_holder GetWideChar(const char * utf8, bool double_null_terminate)
 {
-	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
 	if (double_null_terminate) ++len;
 	wchar_t * p = new wchar_t[len];
 	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, p, len);
@@ -180,7 +180,7 @@ StdStrBuf::wchar_t_holder GetWideChar(const char * utf8, bool double_null_termin
 }
 StdBuf GetWideCharBuf(const char * utf8)
 {
-	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
 	StdBuf r; r.SetSize(len * sizeof(wchar_t));
 	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, getMBufPtr<wchar_t>(r), len);
 	return r;

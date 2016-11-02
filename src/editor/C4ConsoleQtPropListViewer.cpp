@@ -1252,7 +1252,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 	if (editor->parameter_widget)
 	{
 		editor->parameter_widget->deleteLater();
-		editor->parameter_widget = NULL;
+		editor->parameter_widget = nullptr;
 	}
 	editor->paint_parameter_delegate = nullptr;
 	int32_t idx = editor->last_selection_index;
@@ -1926,7 +1926,7 @@ C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDel
 /* C4Value via an edit field delegate */
 
 C4PropertyDelegateC4ValueInputEditor::C4PropertyDelegateC4ValueInputEditor(QWidget *parent)
-	: QWidget(parent), layout(NULL), edit(NULL), extended_button(NULL), commit_pending(false)
+	: QWidget(parent), layout(nullptr), edit(nullptr), extended_button(nullptr), commit_pending(false)
 {
 	layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -2363,7 +2363,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByValue(const C4Value 
 C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByIndex(const QModelIndex &index) const
 {
 	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
-	if (!prop) return NULL;
+	if (!prop) return nullptr;
 	if (!prop->delegate) prop->delegate = GetDelegateByValue(prop->delegate_info);
 	return prop->delegate;
 }
@@ -2418,7 +2418,7 @@ void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QOb
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
-	if (!d) return NULL;
+	if (!d) return nullptr;
 	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	prop->about_to_edit = true;
 	QWidget *editor = d->CreateEditor(this, parent, option, true, false);
@@ -2950,7 +2950,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		internal_properties.props[i].help_text = nullptr;
 		internal_properties.props[i].priority = 0;
 		internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
-		internal_properties.props[i].delegate = NULL; // init when needed
+		internal_properties.props[i].delegate = nullptr; // init when needed
 		internal_properties.props[i].group_idx = num_groups;
 		internal_properties.props[i].shape.Clear();
 		internal_properties.props[i].shape_delegate = nullptr;
@@ -3151,7 +3151,7 @@ QModelIndex C4ConsoleQtPropListModel::index(int row, int column, const QModelInd
 	}
 	if (parent.internalId()) return QModelIndex(); // No 3rd level depth
 	// Validate range of property
-	const PropertyGroup *property_group = NULL;
+	const PropertyGroup *property_group = nullptr;
 	if (parent.row() >= 0 && parent.row() < property_groups.size())
 	{
 		property_group = &property_groups[parent.row()];

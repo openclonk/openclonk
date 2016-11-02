@@ -523,7 +523,7 @@ namespace Ogre
 		class ChunkGeometryVertexData : public Chunk
 		{
 		public:
-			ChunkGeometryVertexData() : data(NULL) {}
+			ChunkGeometryVertexData() : data(nullptr) {}
 			~ChunkGeometryVertexData() { delete[] static_cast<char*>(data); }
 			void *data;
 		protected:

@@ -93,17 +93,17 @@ public:
 
 	State(C4ConsoleGUI *console)
 	{
-		hbmMouse=NULL;
-		hbmMouse2=NULL;
-		hbmCursor=NULL;
-		hbmCursor2=NULL;
-		hbmBrush=NULL;
-		hbmBrush2=NULL;
-		hbmPlay=NULL;
-		hbmPlay2=NULL;
-		hbmHalt=NULL;
-		hbmHalt2=NULL;
-		hPropertyDlg=NULL;
+		hbmMouse=nullptr;
+		hbmMouse2=nullptr;
+		hbmCursor=nullptr;
+		hbmCursor2=nullptr;
+		hbmBrush=nullptr;
+		hbmBrush2=nullptr;
+		hbmPlay=nullptr;
+		hbmPlay2=nullptr;
+		hbmHalt=nullptr;
+		hbmHalt2=nullptr;
+		hPropertyDlg=nullptr;
 		MenuIndexFile       =  0;
 		MenuIndexPlayer     =  1;
 		MenuIndexViewport   =  2;
@@ -112,7 +112,7 @@ public:
 		property_dlg_inputarea_height = 0;
 		property_dlg_margin = 0;
 		property_dlg_okbutton_width = 0;
-		console_handle = NULL;
+		console_handle = nullptr;
 		console_default_width = 0;
 		console_default_height = 0;
 		console_margin = 0;
@@ -202,21 +202,21 @@ public:
 		if (!::GetClientRect(hPropertyDlg, &rc)) return;
 		int y0 = rc.bottom - property_dlg_margin - property_dlg_inputarea_height;
 		// Output text box
-		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_EDITOUTPUT), NULL,
+		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_EDITOUTPUT), nullptr,
 			property_dlg_margin,
 			property_dlg_margin,
 			rc.right - 2* property_dlg_margin,
 			y0 - 2* property_dlg_margin,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Input ComboBox
-		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_COMBOINPUT), NULL,
+		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_COMBOINPUT), nullptr,
 			property_dlg_margin,
 			y0,
 			rc.right - property_dlg_okbutton_width - 3*property_dlg_margin,
 			property_dlg_inputarea_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// OK button
-		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDOK), NULL,
+		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDOK), nullptr,
 			rc.right - property_dlg_margin - property_dlg_okbutton_width,
 			y0,
 			property_dlg_okbutton_width,
@@ -256,75 +256,75 @@ public:
 		int y2 = rc.bottom - console_margin * 1 - console_button_height * 1;
 		int x0 = rc.right - console_margin - console_button_height;
 		// Output text box
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_EDITOUTPUT), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_EDITOUTPUT), nullptr,
 			console_margin,
 			0,
 			x0 - console_margin - console_wide_margin,
 			y0 - console_margin,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Input ComboBox
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_COMBOINPUT), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_COMBOINPUT), nullptr,
 			console_margin,
 			y0,
 			rc.right - console_ok_button_width - console_margin * 3,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Input OK button
-		::SetWindowPos(::GetDlgItem(console_handle, IDOK), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDOK), nullptr,
 			rc.right - console_margin - console_ok_button_width,
 			y0,
 			console_ok_button_width,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Frame status bar
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICFRAME), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICFRAME), nullptr,
 			console_margin,
 			y1,
 			console_status_width,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Play button
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONPLAY), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONPLAY), nullptr,
 			console_margin + console_status_width + console_wide_margin,
 			y1,
 			console_button_height,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Halt button
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONHALT), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONHALT), nullptr,
 			console_margin + console_status_width + console_wide_margin * 2 + console_button_height,
 			y1,
 			console_button_height,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Time/FPS status bar
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICTIME), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICTIME), nullptr,
 			rc.right - console_margin - console_status_width,
 			y1,
 			console_status_width,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Main status bar
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICCURSOR), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICCURSOR), nullptr,
 			console_margin,
 			y2,
 			rc.right - 2* console_margin,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Tool buttons
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEPLAY), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEPLAY), nullptr,
 			x0,
 			console_margin,
 			console_button_height,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEEDIT), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEEDIT), nullptr,
 			x0,
 			console_margin * 2 + console_button_height,
 			console_button_height,
 			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
-		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEDRAW), NULL,
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEDRAW), nullptr,
 			x0,
 			console_margin * 3 + console_button_height * 2,
 			console_button_height,
@@ -339,7 +339,7 @@ static void ClearDlg(HWND &handle)
 {
 	if (handle)
 		DestroyWindow(handle);
-	handle = NULL;
+	handle = nullptr;
 }
 
 INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -525,7 +525,7 @@ public:
 		hbmStatic(0),
 		hbmExact(0)
 	{
-		pPreviewWindow = NULL;
+		pPreviewWindow = nullptr;
 	}
 	
 	void LoadBitmaps(HINSTANCE instance)
@@ -569,9 +569,9 @@ public:
 		if (pPreviewWindow)
 		{
 			delete pPreviewWindow;
-			pPreviewWindow = NULL;
+			pPreviewWindow = nullptr;
 		}
-		if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
+		if (hDialog) DestroyWindow(hDialog); hDialog=nullptr;
 	}
 
 	void Default()
@@ -785,7 +785,7 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
-	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
+	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), nullptr, ConsoleDlgProc);
 	if (!hWindow)
 	{
 		wchar_t * lpMsgBuf;
@@ -793,16 +793,16 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 		  FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		  FORMAT_MESSAGE_FROM_SYSTEM |
 		  FORMAT_MESSAGE_IGNORE_INSERTS,
-		  NULL,
+		  nullptr,
 		  GetLastError(),
 		  0,
 		  (wchar_t *)&lpMsgBuf, // really.
 		  0,
-		  NULL);
+		  nullptr);
 		Log(FormatString("Error creating dialog window: %s", StdStrBuf(lpMsgBuf).getData()).getData());
 		// Free the buffer.
 		LocalFree(lpMsgBuf);
-		return NULL;
+		return nullptr;
 	}
 	// Remember metrics
 	state->console_handle = hWindow;
@@ -948,7 +948,7 @@ void C4ConsoleGUI::RecordingEnabled()
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf &copyright)
 {
 	StdStrBuf strMessage; strMessage.Format("%s %s\n\n%s", C4ENGINECAPTION, C4VERSION, copyright.getData());
-	MessageBoxW(NULL, strMessage.GetWideChar(), ADDL(C4ENGINECAPTION), MB_ICONINFORMATION | MB_TASKMODAL);
+	MessageBoxW(nullptr, strMessage.GetWideChar(), ADDL(C4ENGINECAPTION), MB_ICONINFORMATION | MB_TASKMODAL);
 }
 
 bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
@@ -966,7 +966,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	while (*s) s = s + strlen(s) + 1;
 	s++;
 	int n = s - szFilter;
-	int len = MultiByteToWideChar(CP_UTF8, 0, szFilter, n, NULL, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, szFilter, n, nullptr, 0);
 	StdBuf filt;
 	filt.SetSize(len * sizeof(wchar_t));
 	MultiByteToWideChar(CP_UTF8, 0, szFilter, n, getMBufPtr<wchar_t>(filt), len );
@@ -986,7 +986,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	// Reset working directory to exe path as Windows file dialog might have changed it
 	SetCurrentDirectoryW(wd);
 	delete[] wd;
-	len = WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, NULL, 0, 0, 0);
+	len = WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, nullptr, 0, 0, 0);
 	sFilename->SetLength(len - 1);
 	WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, sFilename->getMData(), sFilename->getSize(), 0, 0);
 	return fResult;
@@ -1120,7 +1120,7 @@ void C4ConsoleGUI::ClearPlayerMenu()
 /*
 void C4ConsoleGUI::ClearPropertyDlg(C4PropertyDlg *dlg)
 {
-	if (dlg->state->hDialog) DestroyWindow(PropertyDlg.hDialog); PropertyDlg.hDialog=NULL;
+	if (dlg->state->hDialog) DestroyWindow(PropertyDlg.hDialog); PropertyDlg.hDialog=nullptr;
 }
 */
 
@@ -1130,7 +1130,7 @@ class C4ConsoleGUIPreviewWindow : public C4Window
 public:
 	C4ConsoleGUIPreviewWindow(HWND hwndControl)
 	{
-		Init(C4Window::WindowKind::W_Control, &Application, NULL, NULL);
+		Init(C4Window::WindowKind::W_Control, &Application, nullptr, nullptr);
 		this->hWindow = this->renderwnd = hwndControl;
 		pSurface = new C4Surface(&Application, this);
 	}

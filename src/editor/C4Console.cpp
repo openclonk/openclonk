@@ -52,7 +52,7 @@ C4Console::C4Console(): C4ConsoleGUI()
 	fGameOpen=false;
 
 #ifdef USE_WIN32_WINDOWS
-	hWindow=NULL;
+	hWindow=nullptr;
 #endif
 }
 
@@ -229,7 +229,7 @@ bool C4Console::FileSave()
 {
 	// Save game
 	// FIXME: What about editing a savegame inplace? (Game.C4S.Head.SaveGame)
-	return SaveScenario(NULL);
+	return SaveScenario(nullptr);
 }
 
 bool C4Console::FileSaveAs(bool fSaveGame)
@@ -501,7 +501,7 @@ void C4Console::UpdateNetMenu()
 	str.Format(LoadResStr("IDS_MNU_NETHOST"),Game.Clients.getLocalName(),Game.Clients.getLocalID());
 	AddNetMenuItemForPlayer(Game.Clients.getLocalID(), str.getData(), C4ConsoleGUI::CO_None);
 	// Clients
-	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(nullptr); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 	{
 		if (pClient->isHost()) continue;
 		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT_DEACTIVATE" : "IDS_MNU_NETCLIENT_ACTIVATE"),
@@ -574,7 +574,7 @@ std::list<const char *> C4Console::GetScriptSuggestions(C4PropList *target, Rece
 	const std::list<StdCopyStrBuf> &mru = recent_script_input[section];
 	if (!mru.empty())
 	{
-		functions.insert(functions.begin(), NULL);
+		functions.insert(functions.begin(), nullptr);
 		// add pointers into string buffer list
 		// do not iterate with for (auto i : mru) because this would copy the buffer and add stack pointers
 		for (auto i = mru.begin(); i != mru.end(); ++i)

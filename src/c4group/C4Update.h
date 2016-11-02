@@ -52,7 +52,7 @@ public:
 	bool Execute(C4Group *pGroup);
 	static bool Optimize(C4Group *pGrpFrom, const char *strTarget);
 	int  Check(C4Group *pGroup);
-	bool MakeUpdate(const char *strFile1, const char *strFile2, const char *strUpdateFile, const char *strName = NULL);
+	bool MakeUpdate(const char *strFile1, const char *strFile2, const char *strUpdateFile, const char *strName = nullptr);
 
 protected:
 	bool DoUpdate(C4Group *pGrpFrom, class C4GroupEx *pGrpTo, const char *strFileName);

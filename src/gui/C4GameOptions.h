@@ -162,7 +162,7 @@ public:
 		GOLS_Runtime
 	};
 
-	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=NULL, class C4ScenarioParameters *params=NULL);
+	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=nullptr, class C4ScenarioParameters *params=nullptr);
 	~C4GameOptionsList() { Deactivate(); }
 
 private:
@@ -178,7 +178,7 @@ public:
 	void Update();
 	void OnSec1Timer() { Update(); }
 
-	// update to new parameter set. recreates option fields. set parameters to NULL for no options
+	// update to new parameter set. recreates option fields. set parameters to nullptr for no options
 	void SetParameters(C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params);
 
 	// activate/deactivate periodic updates

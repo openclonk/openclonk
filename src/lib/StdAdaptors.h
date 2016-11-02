@@ -552,7 +552,7 @@ void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, P && ...pars)
 	bool fCompiler = pComp->isCompiler(),
 		fNaming = pComp->hasNaming();
 	// Compiling? Clear object before
-	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = NULL; }
+	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = nullptr; }
 	// Null checks - different with naming support.
 	if(adapt.fAllowNull)
 		if(fNaming)

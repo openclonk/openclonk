@@ -30,7 +30,7 @@
 C4LoaderScreen::C4LoaderScreen()
 {
 	// zero fields
-	szInfo=NULL;
+	szInfo=nullptr;
 	fBlackScreen = false;
 }
 
@@ -52,7 +52,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 	SCopy(szLoaderSpec, szLoaderSpecJpg); DefaultExtension(szLoaderSpecJpg, "jpg");
 	SCopy(szLoaderSpec, szLoaderSpecJpeg); DefaultExtension(szLoaderSpecJpeg, "jpeg");
 	int iLoaders=0;
-	C4Group *pGroup=NULL,*pChosenGrp=NULL;
+	C4Group *pGroup=nullptr,*pChosenGrp=nullptr;
 	char ChosenFilename[_MAX_PATH+1];
 	// query groups of equal priority in set
 	while ((pGroup=Game.GroupSet.FindGroup(C4GSCnt_Loaders, pGroup, true)))
@@ -102,7 +102,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 	if (!fctBackground.Load(*pChosenGrp,ChosenFilename, C4FCT_Full,C4FCT_Full,true,0)) return false;
 
 	// load info
-	if (szInfo) { delete [] szInfo; szInfo=NULL; }
+	if (szInfo) { delete [] szInfo; szInfo=nullptr; }
 
 	// done, success!
 	return true;
@@ -183,7 +183,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 		int32_t w,h;
 		for (int i = -iLinesVisible; i < 0; ++i)
 		{
-			const char *szLine = pLog->GetLine(i, NULL, NULL, NULL);
+			const char *szLine = pLog->GetLine(i, nullptr, nullptr, nullptr);
 			if (!szLine || !*szLine) continue;
 			LogFont.GetTextExtent(szLine, w,h, true);
 			pDraw->TextOut(szLine,LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);

@@ -68,7 +68,7 @@ namespace C4GameLobby
 		SetBounds(rcBounds);
 		C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 		AddElement(pDescBox = new C4GUI::TextWindow(caMain.GetAll(), 0, 0, 0, 100, 4096, "", true));
-		pDescBox->SetDecoration(false, false, NULL, true);
+		pDescBox->SetDecoration(false, false, nullptr, true);
 		// initial update to set current data
 		if (fActive) Activate();
 	}
@@ -132,8 +132,8 @@ namespace C4GameLobby
 			                          (const char *) LoadResStr("IDS_DLG_LOBBY"):
 			                          FormatString("%s - %s", Game.ScenarioTitle.getData(), LoadResStr("IDS_DLG_LOBBY")).getData(),
 			                          Game.ScenarioTitle.getData()),
-			pPlayerList(NULL), pResList(NULL), pChatBox(NULL), pRightTabLbl(NULL), pRightTab(NULL),
-			pEdt(NULL), btnRun(NULL), btnPlayers(NULL), btnResources(NULL), btnTeams(NULL), btnChat(NULL)
+			pPlayerList(nullptr), pResList(nullptr), pChatBox(nullptr), pRightTabLbl(nullptr), pRightTab(nullptr),
+			pEdt(nullptr), btnRun(nullptr), btnPlayers(nullptr), btnResources(nullptr), btnTeams(nullptr), btnChat(nullptr)
 	{
 		// key bindings
 		pKeyHistoryUp  = new C4KeyBinding(C4KeyCodeEx(K_UP  ), "LobbyChatHistoryUp"  , KEYSCOPE_Gui, new C4GUI::DlgKeyCBEx<MainDlg, bool>(*this, true , &MainDlg::KeyHistoryUpDown), C4CustomKey::PRIO_CtrlOverride);
@@ -192,7 +192,7 @@ namespace C4GameLobby
 		if (fHost)
 		{
 			btnRun = new C4GUI::CallbackButton<MainDlg>(LoadResStr("IDS_DLG_GAMEGO"), caBottom.GetFromRight(100), &MainDlg::OnRunBtn);
-			checkReady = NULL;
+			checkReady = nullptr;
 		}
 		else
 		{
@@ -311,7 +311,7 @@ namespace C4GameLobby
 		// changing away from countdown?
 		if (eCountdownState == CDS_Countdown)
 		{
-			StopSoundEffect("Structures::Elevator::Moving", NULL);
+			StopSoundEffect("Structures::Elevator::Moving", nullptr);
 			if (eToState != CDS_Start) StartSoundEffect("Liquids::Pshshsh");
 		}
 		// change to game start?

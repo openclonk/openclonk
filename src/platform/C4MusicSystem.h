@@ -39,9 +39,9 @@ public:
 	void UpdateVolume(); // compute volume from game + config data
 	void Execute(bool force_buffer_checks = false);
 	void NotifySuccess();
-	bool Init(const char * PlayList = NULL);
+	bool Init(const char * PlayList = nullptr);
 	bool InitForScenario(C4Group & hGroup);
-	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0, bool allow_break = false);
+	bool Play(const char *szSongname = nullptr, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0, bool allow_break = false);
 	bool Play(C4MusicFile *NewFile, bool fLoop, double max_resume_time);
 	bool Stop();
 	void FadeOut(int fadeout_ms);
@@ -125,7 +125,7 @@ enum MusicType { MUSICTYPE_MID, MUSICTYPE_MOD, MUSICTYPE_MP3, MUSICTYPE_OGG, MUS
 class C4MusicFileInfoNode // We need this for the MoreMusic.txt stuff
 {
 public:
-	C4MusicFileInfoNode() { next=NULL; str=NULL; };
+	C4MusicFileInfoNode() { next=nullptr; str=nullptr; };
 	~C4MusicFileInfoNode() { if (str) delete [] str; }
 	char* str;
 	MusicType type;

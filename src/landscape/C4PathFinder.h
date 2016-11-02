@@ -37,14 +37,14 @@ public:
 	void Draw(C4TargetFacet &cgo);
 	void Clear();
 	void Default();
-	void Init(PointFreeFn fnPointFree, C4TransferZones* pTransferZones=NULL);
+	void Init(PointFreeFn fnPointFree, C4TransferZones* pTransferZones=nullptr);
 	bool Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, SetWaypointFn fnSetWaypoint);
 	void EnableTransferZones(bool fEnabled);
 	void SetLevel(int iLevel);
 
 private:
 	void Run();
-	bool AddRay(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, int32_t iDepth, int32_t iDirection, C4PathFinderRay *pFrom, C4TransferZone *pUseZone=NULL);
+	bool AddRay(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, int32_t iDepth, int32_t iDirection, C4PathFinderRay *pFrom, C4TransferZone *pUseZone=nullptr);
 	bool SplitRay(C4PathFinderRay *pRay, int32_t iAtX, int32_t iAtY);
 	bool Execute();
 

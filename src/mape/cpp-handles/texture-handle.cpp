@@ -54,7 +54,7 @@ guint c4_texture_map_handle_load_map(C4TextureMapHandle* texture_map, C4GroupHan
 
 gboolean c4_texture_map_handle_add_texture(C4TextureMapHandle* texture_map, const char* texture, guint32 avg_color)
 {
-  gboolean result = HANDLE_TO_TEXTURE_MAP(texture_map)->AddTexture(texture, NULL);
+  gboolean result = HANDLE_TO_TEXTURE_MAP(texture_map)->AddTexture(texture, nullptr);
   if(!result) return FALSE;
   HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(texture)->SetAverageColor(avg_color);
   return TRUE;
@@ -73,14 +73,14 @@ guint32 c4_texture_handle_get_average_texture_color(C4TextureMapHandle* texture_
 const char* c4_texture_handle_get_entry_material_name(C4TextureMapHandle* texture_map, guint index)
 {
   const C4TexMapEntry* entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetEntry(index);
-  if(!entry) return NULL;
+  if(!entry) return nullptr;
   return entry->GetMaterialName();
 }
 
 const char* c4_texture_handle_get_entry_texture_name(C4TextureMapHandle* texture_map, guint index)
 {
   const C4TexMapEntry* entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetEntry(index);
-  if(!entry) return NULL;
+  if(!entry) return nullptr;
   return entry->GetTextureName();
 }
 

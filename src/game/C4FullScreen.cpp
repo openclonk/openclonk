@@ -37,7 +37,7 @@ void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 C4FullScreen::C4FullScreen()
 {
-	pMenu = NULL;
+	pMenu = nullptr;
 }
 
 C4FullScreen::~C4FullScreen()
@@ -161,7 +161,7 @@ void C4FullScreen::CloseMenu()
 	{
 		if (pMenu->IsActive()) pMenu->Close(false);
 		delete pMenu;
-		pMenu = NULL;
+		pMenu = nullptr;
 	}
 }
 

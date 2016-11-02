@@ -62,7 +62,7 @@ C4ParticleDef::C4ParticleDef() : C4ParticleDefCore()
 	// link into list
 	if (!Particles.definitions.first)
 	{
-		previous = NULL;
+		previous = nullptr;
 		Particles.definitions.first = this;
 	}
 	else
@@ -94,7 +94,7 @@ bool C4ParticleDef::Load(C4Group &group)
 	Filename.Copy(group.GetFullName());
 	// load
 	char *particle_source;
-	if (group.LoadEntry(C4CFN_ParticleCore,&particle_source,NULL,1))
+	if (group.LoadEntry(C4CFN_ParticleCore,&particle_source,nullptr,1))
 	{
 		if (!Compile(particle_source, Filename.getData()))
 		{
@@ -1164,7 +1164,7 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	C4ShaderCall call(pGL->GetSpriteShader(true, false, false));
 	// apply zoom and upload shader uniforms
 	StdProjectionMatrix modelview = StdProjectionMatrix::Identity();
-	pGL->SetupMultiBlt(call, NULL, 0, 0, 0, 0, &modelview);
+	pGL->SetupMultiBlt(call, nullptr, 0, 0, 0, 0, &modelview);
 	// go to correct output position (note the normal matrix is unaffected
 	// by this)
 	Translate(modelview, cgo.X-cgo.TargetX, cgo.Y-cgo.TargetY, 0.0f);
@@ -1205,11 +1205,11 @@ void C4ParticleList::Clear()
 
 	if (targetObject)
 	{
-		if (this == targetObject->FrontParticles) targetObject->FrontParticles = NULL;
-		else if (this == targetObject->BackParticles) targetObject->BackParticles = NULL;
+		if (this == targetObject->FrontParticles) targetObject->FrontParticles = nullptr;
+		else if (this == targetObject->BackParticles) targetObject->BackParticles = nullptr;
 	}
 	else
-		if(this == ::Particles.globalParticles) ::Particles.globalParticles = NULL;
+		if(this == ::Particles.globalParticles) ::Particles.globalParticles = nullptr;
 
 	accessMutex.Leave();
 }

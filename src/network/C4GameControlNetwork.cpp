@@ -31,7 +31,7 @@ C4GameControlNetwork::C4GameControlNetwork(C4GameControl *pnParent)
 		fActivated(false), iTargetTick(-1),
 		iControlPreSend(1), tWaitStart(C4TimeMilliseconds::PositiveInfinity), iAvgControlSendTime(0), iTargetFPS(38),
 		iControlSent(0), iControlReady(0),
-		pCtrlStack(NULL),
+		pCtrlStack(nullptr),
 		tNextControlRequest(0),
 		pParent(pnParent)
 {
@@ -328,7 +328,7 @@ void C4GameControlNetwork::CopyClientList(const C4ClientList &rClients)
 	CStdLock ClientLock(&ClientsCSec);
 	// create local copy of activated client list
 	ClearClients();
-	C4Client *pClient = NULL;
+	C4Client *pClient = nullptr;
 	while ((pClient = rClients.getClient(pClient)))
 		if (pClient->isActivated())
 			AddClient(pClient->getID(), pClient->getName());
@@ -398,7 +398,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 	for (C4GameControlClient *pClient = pClients; pClient; pClient = pClient->pNext)
 	{
 		// Some rudimentary PreSend-calculation
-		// get associated connection - NULL for self
+		// get associated connection - nullptr for self
 		C4Network2Client *pNetClt = ::Network.Clients.GetClientByID(pClient->getClientID());
 		if (pNetClt && !pNetClt->isLocal())
 		{
@@ -606,7 +606,7 @@ C4GameControlClient *C4GameControlNetwork::getClient(int32_t iID) // by both
 	for (C4GameControlClient *pClient = pClients; pClient; pClient = pClient->pNext)
 		if (pClient->getClientID() == iID)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 void C4GameControlNetwork::AddClient(C4GameControlClient *pClient) // by main thread
@@ -615,7 +615,7 @@ void C4GameControlNetwork::AddClient(C4GameControlClient *pClient) // by main th
 	// lock
 	CStdLock ClientsLock(&ClientsCSec);
 	// add (ordered)
-	C4GameControlClient *pPrev = NULL, *pPos = pClients;
+	C4GameControlClient *pPrev = nullptr, *pPos = pClients;
 	for (; pPos; pPrev = pPos, pPos = pPos->pNext)
 		if (pPos->getClientID() > pClient->getClientID())
 			break;
@@ -650,7 +650,7 @@ C4GameControlPacket *C4GameControlNetwork::getCtrl(int32_t iClientID, int32_t iC
 	for (C4GameControlPacket *pCtrl = pCtrlStack; pCtrl; pCtrl = pCtrl->pNext)
 		if (pCtrl->getClientID() == iClientID && pCtrl->getCtrlTick() == iCtrlTick)
 			return pCtrl;
-	return NULL;
+	return nullptr;
 }
 
 void C4GameControlNetwork::AddCtrl(C4GameControlPacket *pCtrl) // by both
@@ -667,7 +667,7 @@ void C4GameControlNetwork::ClearCtrl(int32_t iBeforeTick) // by main thread
 	// lock
 	CStdLock CtrlLock(&CtrlCSec);
 	// clear all old control
-	C4GameControlPacket *pCtrl = pCtrlStack, *pLast = NULL;
+	C4GameControlPacket *pCtrl = pCtrlStack, *pLast = nullptr;
 	while (pCtrl)
 	{
 		// old?
@@ -765,7 +765,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
 		if (eMode != CNM_Async || C4TimeMilliseconds::Now() <= tWaitStart + iMaxWait)
-			return NULL;
+			return nullptr;
 	}
 
 	// create packet
@@ -805,7 +805,7 @@ void C4GameControlNetwork::AddSyncCtrlToQueue(const C4Control &Ctrl, int32_t iTi
 {
 	// search place in queue. It's vitally important that new packets are placed
 	// behind packets for the same tick, so they will be executed in the right order.
-	C4GameControlPacket *pAfter = NULL, *pBefore = pSyncCtrlQueue;
+	C4GameControlPacket *pAfter = nullptr, *pBefore = pSyncCtrlQueue;
 	while (pBefore && pBefore->getCtrlTick() <= iTick)
 		{ pAfter = pBefore; pBefore = pBefore->pNext; }
 	// create
@@ -852,7 +852,7 @@ C4GameControlPacket::C4GameControlPacket()
 		: iClientID(C4ClientIDUnknown),
 		iCtrlTick(-1),
 		tTime(C4TimeMilliseconds::Now()),
-		pNext(NULL)
+		pNext(nullptr)
 {
 
 }
@@ -861,7 +861,7 @@ C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 		: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
 		tTime(C4TimeMilliseconds::Now()),
-		pNext(NULL)
+		pNext(nullptr)
 {
 	Ctrl.Copy(Pkt2.getControl());
 }

@@ -112,7 +112,7 @@ void StdScheduler::Remove(StdSchedulerProc *pProc)
 	if (pProc->scheduler != this)
 		return;
 	Removing(pProc);
-	pProc->scheduler = NULL;
+	pProc->scheduler = nullptr;
 	auto pos = std::find(procs.begin(), procs.end(), pProc);
 	if (pos != procs.end())
 		procs.erase(pos);
@@ -229,7 +229,7 @@ bool StdSchedulerThread::Start()
 	iThread = _beginthread(_ThreadFunc, 0, this);
 	fThread = (iThread != -1);
 #elif defined(HAVE_PTHREAD)
-	fThread = !pthread_create(&Thread, NULL, _ThreadFunc, this);
+	fThread = !pthread_create(&Thread, nullptr, _ThreadFunc, this);
 #endif
 	// success?
 	return fThread;
@@ -252,7 +252,7 @@ void StdSchedulerThread::Stop()
 #elif defined(HAVE_PTHREAD)
 	// wait for thread to terminate itself
 	// (without security - let's trust these unwashed hackers for once)
-	pthread_join(Thread, NULL);
+	pthread_join(Thread, nullptr);
 #endif
 	fThread = false;
 	// ok
@@ -309,7 +309,7 @@ bool StdThread::Start()
 	iThread = _beginthread(_ThreadFunc, 0, this);
 	fStarted = (iThread != -1);
 #elif defined(HAVE_PTHREAD)
-	fStarted = !pthread_create(&Thread, NULL, _ThreadFunc, this);
+	fStarted = !pthread_create(&Thread, nullptr, _ThreadFunc, this);
 #endif
 	// success?
 	return fStarted;
@@ -338,7 +338,7 @@ void StdThread::Stop()
 #elif defined(HAVE_PTHREAD)
 	// wait for thread to terminate itself
 	// (whithout security - let's trust these unwashed hackers for once)
-	pthread_join(Thread, NULL);
+	pthread_join(Thread, nullptr);
 #endif
 	fStarted = false;
 	// ok

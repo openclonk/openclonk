@@ -36,9 +36,9 @@
 
 C4Texture::C4Texture()
 {
-	Surface32=NULL;
+	Surface32=nullptr;
 	AvgColor = 0x00000000;
-	Next=NULL;
+	Next=nullptr;
 }
 
 C4Texture::~C4Texture()
@@ -47,7 +47,7 @@ C4Texture::~C4Texture()
 }
 
 C4TexMapEntry::C4TexMapEntry()
-		: iMaterialIndex(MNone), pMaterial(NULL)
+		: iMaterialIndex(MNone), pMaterial(nullptr)
 {
 }
 
@@ -55,7 +55,7 @@ void C4TexMapEntry::Clear()
 {
 	Material.Clear(); Texture.Clear();
 	iMaterialIndex = MNone;
-	pMaterial = NULL;
+	pMaterial = nullptr;
 	MatPattern.Clear();
 }
 
@@ -98,7 +98,7 @@ bool C4TexMapEntry::Init()
 	return true;
 }
 
-C4TextureMap::C4TextureMap() : FirstTexture(NULL), fEntriesAdded(false), fOverloadMaterials(false), fOverloadTextures(false), fInitialized(false)
+C4TextureMap::C4TextureMap() : FirstTexture(nullptr), fEntriesAdded(false), fOverloadMaterials(false), fOverloadTextures(false), fInitialized(false)
 {
 	Order.reserve(C4M_MaxTexIndex);
 }
@@ -183,7 +183,7 @@ void C4TextureMap::Clear()
 		next2=ctex->Next;
 		delete ctex;
 	}
-	FirstTexture=NULL;
+	FirstTexture=nullptr;
 	fInitialized = false;
 	fEntriesAdded = false;
 	fOverloadMaterials = false;
@@ -478,7 +478,7 @@ C4Texture * C4TextureMap::GetTexture(const char *szTexture)
 	for (pTexture=FirstTexture; pTexture; pTexture=pTexture->Next)
 		if (SEqualNoCase(pTexture->Name.getData(),szTexture))
 			return pTexture;
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4TextureMap::GetTextureIndex(const char *szName)
@@ -507,7 +507,7 @@ const char* C4TextureMap::GetTexture(int32_t iIndex)
 	for (pTexture=FirstTexture,cindex=0; pTexture; pTexture=pTexture->Next,cindex++)
 		if (cindex==iIndex)
 			return pTexture->Name.getData();
-	return NULL;
+	return nullptr;
 }
 
 BYTE C4TextureMap::DefaultBkgMatTex(BYTE fg) const

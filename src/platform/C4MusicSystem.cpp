@@ -29,9 +29,9 @@
 #include "game/C4GraphicsSystem.h"
 
 C4MusicSystem::C4MusicSystem():
-		Songs(NULL),
+		Songs(nullptr),
 		SongCount(0),
-		PlayMusicFile(NULL),
+		PlayMusicFile(nullptr),
 		game_music_level(100),
 		playlist(),
 		playlist_valid(false),
@@ -39,10 +39,10 @@ C4MusicSystem::C4MusicSystem():
 		Volume(100),
 		is_waiting(false),
 		wait_time_end(),
-		FadeMusicFile(NULL),
-		upcoming_music_file(NULL)
+		FadeMusicFile(nullptr),
+		upcoming_music_file(nullptr)
 #if AUDIO_TK == AUDIO_TK_OPENAL
-		, alcDevice(NULL), alcContext(NULL)
+		, alcDevice(nullptr), alcContext(nullptr)
 #endif
 {
 }
@@ -83,20 +83,20 @@ bool C4MusicSystem::InitializeMOD()
 	MODInitialized = true;
 	return true;
 #elif AUDIO_TK == AUDIO_TK_OPENAL
-	alcDevice = alcOpenDevice(NULL);
+	alcDevice = alcOpenDevice(nullptr);
 	if (!alcDevice)
 	{
 		LogF("Sound system: OpenAL create context error");
 		return false;
 	}
-	alcContext = alcCreateContext(alcDevice, NULL);
+	alcContext = alcCreateContext(alcDevice, nullptr);
 	if (!alcContext)
 	{
 		LogF("Sound system: OpenAL create context error");
 		return false;
 	}
 #ifndef __APPLE__
-	if (!alutInitWithoutContext(NULL, NULL))
+	if (!alutInitWithoutContext(nullptr, nullptr))
 	{
 		LogF("Sound system: ALUT init error");
 		return false;
@@ -119,8 +119,8 @@ void C4MusicSystem::DeinitializeMOD()
 #endif
 	alcDestroyContext(alcContext);
 	alcCloseDevice(alcDevice);
-	alcContext = NULL;
-	alcDevice = NULL;
+	alcContext = nullptr;
+	alcDevice = nullptr;
 #endif
 	MODInitialized = false;
 }
@@ -163,7 +163,7 @@ bool C4MusicSystem::InitForScenario(C4Group & hGroup)
 		LogF(LoadResStr("IDS_PRC_LOCALMUSIC"), MusicDir.getData());
 	}
 	// check for music folders in group set
-	C4Group *pMusicFolder = NULL;
+	C4Group *pMusicFolder = nullptr;
 	while ((pMusicFolder = Game.GroupSet.FindGroup(C4GSCnt_Music, pMusicFolder)))
 	{
 		if (!fLocalMusic)
@@ -192,7 +192,7 @@ void C4MusicSystem::Load(const char *szFile)
 {
 	// safety
 	if (!szFile || !*szFile) return;
-	C4MusicFile *NewSong=NULL;
+	C4MusicFile *NewSong=nullptr;
 #if AUDIO_TK == AUDIO_TK_OPENAL
 	// openal: Only ogg supported
 	const char *szExt = GetExtension(szFile);
@@ -209,7 +209,7 @@ void C4MusicSystem::Load(const char *szFile)
 	C4MusicFile *pCurr = Songs;
 	while (pCurr && pCurr->pNext) pCurr = pCurr->pNext;
 	if (pCurr) pCurr->pNext = NewSong; else Songs = NewSong;
-	NewSong->pNext = NULL;
+	NewSong->pNext = nullptr;
 	// count songs
 	SongCount++;
 	playlist_valid = false;
@@ -218,7 +218,7 @@ void C4MusicSystem::Load(const char *szFile)
 void C4MusicSystem::LoadDir(const char *szPath)
 {
 	char Path[_MAX_FNAME + 1], File[_MAX_FNAME + 1];
-	C4Group *pDirGroup = NULL;
+	C4Group *pDirGroup = nullptr;
 	// split path
 	SCopy(szPath, Path, _MAX_FNAME);
 	char *pFileName = GetFilename(Path);
@@ -318,7 +318,7 @@ void C4MusicSystem::ClearSongs()
 		delete pFile;
 	}
 	SongCount = 0;
-	FadeMusicFile = upcoming_music_file = PlayMusicFile = NULL;
+	FadeMusicFile = upcoming_music_file = PlayMusicFile = nullptr;
 	playlist_valid = false;
 }
 
@@ -338,9 +338,9 @@ void C4MusicSystem::ClearGame()
 	music_break_min = music_break_max = DefaultMusicBreak;
 	music_break_chance = DefaultMusicBreakChance;
 	music_max_position_memory = DefaultMusicMaxPositionMemory;
-	SetPlayList(NULL);
+	SetPlayList(nullptr);
 	is_waiting = false;
-	upcoming_music_file = NULL;
+	upcoming_music_file = nullptr;
 }
 
 void C4MusicSystem::Execute(bool force_song_execution)
@@ -353,7 +353,7 @@ void C4MusicSystem::Execute(bool force_song_execution)
 		if (tNow >= FadeTimeEnd)
 		{
 			FadeMusicFile->Stop();
-			FadeMusicFile = NULL;
+			FadeMusicFile = nullptr;
 			if (PlayMusicFile)
 			{
 				PlayMusicFile->SetVolume(Volume);
@@ -386,7 +386,7 @@ void C4MusicSystem::Execute(bool force_song_execution)
 				// Play a song if no longer in silence mode and nothing is playing right now
 				C4MusicFile *next_file = upcoming_music_file;
 				is_waiting = false;
-				upcoming_music_file = NULL;
+				upcoming_music_file = nullptr;
 				if (next_file)
 					Play(next_file, false, 0.0);
 				else
@@ -405,7 +405,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 {
 	// pause is done
 	is_waiting = false;
-	upcoming_music_file = NULL;
+	upcoming_music_file = nullptr;
 
 	// music off?
 	if (Game.IsRunning ? !Config.Sound.RXMusic : !Config.Sound.FEMusic)
@@ -417,7 +417,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 		LogF("MusicSystem: Play(\"%s\", %s, %d, %.3lf, %s)", szSongname ? szSongname : "(null)", fLoop ? "true" : "false", fadetime_ms, max_resume_time, allow_break ? "true" : "false");
 	}
 
-	C4MusicFile* NewFile = NULL;
+	C4MusicFile* NewFile = nullptr;
 
 	// Specified song name
 	if (szSongname && szSongname[0])
@@ -530,7 +530,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 
 		}
 		FadeMusicFile = PlayMusicFile;
-		PlayMusicFile = NULL;
+		PlayMusicFile = nullptr;
 		FadeTimeStart = tNow;
 		FadeTimeEnd = FadeTimeStart + fadetime_ms;
 	}
@@ -624,7 +624,7 @@ void C4MusicSystem::FadeOut(int fadeout_ms)
 	{
 		if (FadeMusicFile) FadeMusicFile->Stop();
 		FadeMusicFile = PlayMusicFile;
-		PlayMusicFile = NULL;
+		PlayMusicFile = nullptr;
 		FadeTimeStart = C4TimeMilliseconds::Now();
 		FadeTimeEnd = FadeTimeStart + fadeout_ms;
 	}
@@ -635,12 +635,12 @@ bool C4MusicSystem::Stop()
 	if (PlayMusicFile)
 	{
 		PlayMusicFile->Stop();
-		PlayMusicFile=NULL;
+		PlayMusicFile=nullptr;
 	}
 	if (FadeMusicFile)
 	{
 		FadeMusicFile->Stop();
-		FadeMusicFile = NULL;
+		FadeMusicFile = nullptr;
 	}
 	return true;
 }
@@ -742,7 +742,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 		{
 			// Switch music. Switching to a break is also allowed, but won't be done if there is a piece to resume
 			// Otherwise breaks would never occur if the playlist changes often.
-			Play(NULL, false, fadetime_ms, max_resume_time, PlayMusicFile != NULL);
+			Play(nullptr, false, fadetime_ms, max_resume_time, PlayMusicFile != nullptr);
 		}
 	}
 	// Remember setting (e.g. to be saved in savegames)

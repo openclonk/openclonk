@@ -156,7 +156,7 @@ void C4MapScriptMatTexMask::UnmaskSpec(C4String *spec)
 		if (SCharCount('-', cspec))
 		{
 			// Material+Texture
-			int32_t col = ::MapScript.pTexMap->GetIndexMatTex(cspec, NULL, false);
+			int32_t col = ::MapScript.pTexMap->GetIndexMatTex(cspec, nullptr, false);
 			if (col) mat_mask[col] = true;
 		}
 		else
@@ -221,7 +221,7 @@ bool FnParRect(C4MapScriptLayer *layer, C4ValueArray *rect, C4Rect *rc_bounds)
 {
 	// Convert rect parameter passed to script function to C4Rect structure
 	// and makes sure it is completely contained in bounding rectangle of layer
-	// rect==NULL defaults to bounding rectangle of layer
+	// rect==nullptr defaults to bounding rectangle of layer
 	*rc_bounds = layer->GetBounds();
 	if (!rect) return true; // nil is OK for rect parameter. Defaults to bounds rectangle
 	if (rect->GetSize() != 4) return false;
@@ -263,7 +263,7 @@ static C4PropList *FnCreateLayer(C4PropList * _this, C4String *mattex_fill, int3
 			throw C4AulExecError(FormatString("CreateLayer: Invalid fill material.").getData());
 
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
-	if (!layer) return NULL;
+	if (!layer) return nullptr;
 	if (!width && !height)
 	{
 		width = layer->GetWdt();
@@ -271,9 +271,9 @@ static C4PropList *FnCreateLayer(C4PropList * _this, C4String *mattex_fill, int3
 	}
 	if (width<=0 || height<=0) throw C4AulExecError(FormatString("CreateLayer: Invalid size (%d*%d).", (int)width, (int)height).getData());
 	C4MapScriptMap *map = layer->GetMap();
-	if (!map) return NULL;
+	if (!map) return nullptr;
 	layer = map->CreateLayer(width, height);
-	if (fg != 0 || bg != 0) layer->Fill(fg, bg, layer->GetBounds(), NULL);
+	if (fg != 0 || bg != 0) layer->Fill(fg, bg, layer->GetBounds(), nullptr);
 	return layer;
 }
 
@@ -281,13 +281,13 @@ static C4PropList *FnLayerDuplicate(C4PropList * _this, const C4Value &mask_spec
 {
 	// Layer script function: Create a copy of _this layer within bounds. If mask_spec is specified, copy only materials selected by mask spec
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
-	if (!layer) return NULL;
+	if (!layer) return nullptr;
 	C4MapScriptMap *map = layer->GetMap();
-	if (!map) return NULL;
+	if (!map) return nullptr;
 	C4MapScriptMatTexMask mat_mask(mask_spec);
 	C4Rect src_rect;
-	if (!FnParRect(layer, rect, &src_rect)) return NULL;
-	if (!src_rect.Wdt || !src_rect.Hgt) return NULL;
+	if (!FnParRect(layer, rect, &src_rect)) return nullptr;
+	if (!src_rect.Wdt || !src_rect.Hgt) return nullptr;
 	C4MapScriptLayer *new_layer = map->CreateLayer(src_rect.Wdt, src_rect.Hgt);
 	new_layer->Blit(layer, src_rect, mat_mask, 0,0);
 	return new_layer;
@@ -355,7 +355,7 @@ static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Va
 	{
 		const C4Value& val = fg_value_c4v;
 		C4String *str = val.getStr();
-		if (str != NULL)
+		if (str != nullptr)
 		{
 			if (!TexColSingle(str->GetCStr(), fg))
 				throw C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
@@ -376,7 +376,7 @@ static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Va
 	{
 		const C4Value& val = bg_value_c4v;
 		C4String *str = val.getStr();
-		if (str != NULL)
+		if (str != nullptr)
 		{
 			if (!TexColSingle(str->GetCStr(), bg))
 				throw C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
@@ -630,12 +630,12 @@ C4MapScriptLayer *C4MapScriptMap::CreateLayer(int32_t wdt, int32_t hgt)
 	{
 		layers.remove(new_layer);
 		delete new_layer;
-		return NULL;
+		return nullptr;
 	}
 	return new_layer;
 }
 
-C4MapScriptHost::C4MapScriptHost(): LayerPrototype(NULL), MapPrototype(NULL), pTexMap(NULL), pMatMap(NULL) { }
+C4MapScriptHost::C4MapScriptHost(): LayerPrototype(nullptr), MapPrototype(nullptr), pTexMap(nullptr), pMatMap(nullptr) { }
 
 C4MapScriptHost::~C4MapScriptHost() { Clear(); }
 
@@ -644,8 +644,8 @@ void C4MapScriptHost::InitFunctionMap(C4AulScriptEngine *pEngine)
 	// Register script host. Add Map and MapLayer prototypes, related constants and engine functions
 	assert(pEngine && pEngine->GetPropList());
 	Clear();
-	LayerPrototype = new C4PropListStaticMember(NULL, NULL, ::Strings.RegString("MapLayer"));
-	MapPrototype = new C4PropListStaticMember(LayerPrototype, NULL, ::Strings.RegString("Map"));
+	LayerPrototype = new C4PropListStaticMember(nullptr, nullptr, ::Strings.RegString("MapLayer"));
+	MapPrototype = new C4PropListStaticMember(LayerPrototype, nullptr, ::Strings.RegString("Map"));
 	LayerPrototype->SetName("MapLayer");
 	MapPrototype->SetName("Map");
 	::ScriptEngine.RegisterGlobalConstant("MapLayer", C4VPropList(LayerPrototype));
@@ -705,7 +705,7 @@ void C4MapScriptHost::Clear()
 {
 	C4ScriptHost::Clear();
 	delete LayerPrototype; delete MapPrototype;
-	LayerPrototype = MapPrototype = NULL;
+	LayerPrototype = MapPrototype = nullptr;
 }
 
 C4PropListStatic * C4MapScriptHost::GetPropList()

@@ -35,7 +35,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 {
 	// Must be an array
 	C4ValueArray *pArray = C4Value(DataVal).getArray();
-	if (!pArray) return NULL;
+	if (!pArray) return nullptr;
 
 	const C4ValueArray &Data = *pArray;
 	int32_t iType = Data[0].getInt();
@@ -43,11 +43,11 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		// this is not a FindObject but a sort condition!
 		// sort condition not desired here?
-		if (!ppSortObj) return NULL;
+		if (!ppSortObj) return nullptr;
 		// otherwise, create it!
 		*ppSortObj = C4SortObject::CreateByValue(iType, Data, context);
 		// done
-		return NULL;
+		return nullptr;
 	}
 
 	switch (iType)
@@ -56,7 +56,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		// Create child condition
 		C4FindObject *pCond = C4FindObject::CreateByValue(Data[1], nullptr, context, has_layer_check);
-		if (!pCond) return NULL;
+		if (!pCond) return nullptr;
 		// wrap
 		return new C4FindObjectNot(pCond);
 	}
@@ -169,7 +169,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_Action:
 	{
 		C4String *pStr = Data[1].getStr();
-		if (!pStr) return NULL;
+		if (!pStr) return nullptr;
 		// Don't copy, it should be safe
 		return new C4FindObjectAction(pStr->GetCStr());
 	}
@@ -178,7 +178,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		// Get function name
 		C4String *pStr = Data[1].getStr();
-		if (!pStr) return NULL;
+		if (!pStr) return nullptr;
 		// Construct
 		C4FindObjectFunc *pFO = new C4FindObjectFunc(pStr);
 		// Add parameters
@@ -223,7 +223,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		// Get property name
 		C4String *pStr = Data[1].getStr();
-		if (!pStr) return NULL;
+		if (!pStr) return nullptr;
 		// Construct
 		C4FindObjectProperty *pFO = new C4FindObjectProperty(pStr);
 		// Done
@@ -233,10 +233,10 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_AnyLayer:
 		// do not add implicit layer check
 		if (has_layer_check) *has_layer_check = true;
-		return NULL;
+		return nullptr;
 
 	}
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4FindObject::Count(const C4ObjectList &Objs)
@@ -258,10 +258,10 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs)
 {
 	// Trivial case
 	if (IsImpossible())
-		return NULL;
+		return nullptr;
 	// Search
 	// Double-check object status, as object might be deleted after Check()!
-	C4Object *pBestResult = NULL;
+	C4Object *pBestResult = nullptr;
 	for (C4Object *obj : Objs)
 		if (obj->Status)
 			if (Check(obj))
@@ -354,8 +354,8 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs, const C4LSectors &Sct)
 {
 	// Trivial case
 	if (IsImpossible())
-		return NULL;
-	C4Object *pBestResult = NULL;
+		return nullptr;
+	C4Object *pBestResult = nullptr;
 	// Check bounds
 	C4Rect *pBounds = GetBounds();
 	if (!pBounds)
@@ -826,7 +826,7 @@ C4SortObject *C4SortObject::CreateByValue(const C4Value &DataVal, const C4Object
 {
 	// Must be an array
 	const C4ValueArray *pArray = C4Value(DataVal).getArray();
-	if (!pArray) return NULL;
+	if (!pArray) return nullptr;
 	const C4ValueArray &Data = *pArray;
 	int32_t iType = Data[0].getInt();
 	return CreateByValue(iType, Data, context);
@@ -840,7 +840,7 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 	{
 		// create child sort
 		C4SortObject *pChildSort = C4SortObject::CreateByValue(Data[1], context);
-		if (!pChildSort) return NULL;
+		if (!pChildSort) return nullptr;
 		// wrap
 		return new C4SortObjectReverse(pChildSort);
 	}
@@ -897,7 +897,7 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 	{
 		// Get function name
 		C4String *pStr = Data[1].getStr();
-		if (!pStr) return NULL;
+		if (!pStr) return nullptr;
 		// Construct
 		C4SortObjectFunc *pSO = new C4SortObjectFunc(pStr);
 		// Add parameters
@@ -908,7 +908,7 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 	}
 
 	}
-	return NULL;
+	return nullptr;
 }
 
 void C4SortObject::SortObjects(C4ValueArray *pArray)
@@ -919,19 +919,19 @@ void C4SortObject::SortObjects(C4ValueArray *pArray)
 // *** C4SortObjectByValue
 
 C4SortObjectByValue::C4SortObjectByValue()
-		: C4SortObject(), pVals(NULL), iSize(0)
+		: C4SortObject(), pVals(nullptr), iSize(0)
 {
 }
 
 C4SortObjectByValue::~C4SortObjectByValue()
 {
-	delete [] pVals; pVals = NULL;
+	delete [] pVals; pVals = nullptr;
 }
 
 bool C4SortObjectByValue::PrepareCache(const C4ValueArray *pObjs)
 {
 	// Clear old cache
-	delete [] pVals; pVals = NULL; iSize = 0;
+	delete [] pVals; pVals = nullptr; iSize = 0;
 	// Create new cache
 	iSize = pObjs->GetSize(); pVals = new int32_t [iSize];
 	for (int32_t i = 0; i < iSize; i++)
@@ -1037,7 +1037,7 @@ int32_t C4SortObjectMass::CompareGetValue(C4Object *pFor)
 
 int32_t C4SortObjectValue::CompareGetValue(C4Object *pFor)
 {
-	return pFor->GetValue(NULL, NO_OWNER);
+	return pFor->GetValue(nullptr, NO_OWNER);
 }
 
 void C4SortObjectFunc::SetPar(int i, const C4Value &Par)

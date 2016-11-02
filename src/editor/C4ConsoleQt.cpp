@@ -86,7 +86,7 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
-	if (!state->CreateConsoleWindow(application)) return NULL;
+	if (!state->CreateConsoleWindow(application)) return nullptr;
 	Active = true;
 	EnableControls(fGameOpen);
 	return this;
@@ -116,7 +116,7 @@ bool C4ConsoleGUI::ClearLog()
 
 void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 {
-	QLabel *target = NULL;
+	QLabel *target = nullptr;
 	switch (type)
 	{
 	case CONSOLE_Cursor: target = state->status_cursor; break;

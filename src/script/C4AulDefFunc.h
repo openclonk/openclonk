@@ -30,17 +30,17 @@ inline const static char *FnStringPar(C4String *pString)
 }
 inline C4String *String(const char * str)
 {
-	return str ? ::Strings.RegString(str) : NULL;
+	return str ? ::Strings.RegString(str) : nullptr;
 }
 inline C4Object * Object(C4PropList * _this)
 {
-	return _this ? _this->GetObject() : NULL;
+	return _this ? _this->GetObject() : nullptr;
 }
 StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
 C4Effect ** FnGetEffectsFor(C4PropList * pTarget);
 
 // Nillable: Allow integer and boolean parameters to be nil
-// pointer parameters represent nil via plain NULL
+// pointer parameters represent nil via plain nullptr
 // other types can use C4Void
 class C4Void { };
 template <typename T> struct C4ValueConv;

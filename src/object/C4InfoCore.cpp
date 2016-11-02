@@ -189,7 +189,7 @@ void C4ObjectInfoCore::Default(C4ID n_id,
 {
 
 	// Def
-	C4Def *pDef=NULL;
+	C4Def *pDef=nullptr;
 	if (pDefs) pDef = pDefs->ID2Def(n_id);
 
 	// Defaults
@@ -357,7 +357,7 @@ bool C4ObjectInfoCore::Decompile(char **ppOutput, size_t *ipSize)
 	      &Buf,
 	      "ObjectInfo"))
 	{
-		if (ppOutput) *ppOutput = NULL;
+		if (ppOutput) *ppOutput = nullptr;
 		if (ipSize) *ipSize = 0;
 		return false;
 	}

@@ -90,7 +90,7 @@ public:
 	static constexpr int COLOR_DEPTH_BYTES = COLOR_DEPTH / 8;
 
 	C4Draw(): MaxTexSize(0) { }
-	virtual ~C4Draw() { pDraw=NULL; }
+	virtual ~C4Draw() { pDraw=nullptr; }
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
@@ -117,7 +117,7 @@ public:
 	bool Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
-	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return nullptr; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 	// Clipper
 	bool GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2);
@@ -147,15 +147,15 @@ public:
 	               C4Surface * sfcTarget, int tx, int ty, int wdt, int hgt);
 	bool Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
 	          C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
-	          bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	          bool fSrcColKey=false, const C4BltTransform *pTransform=nullptr);
 	bool BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
 	                  C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
-	                  bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	                  bool fSrcColKey=false, const C4BltTransform *pTransform=nullptr);
 	bool RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;
 	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
-	           bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	           bool fSrcColKey=false, const C4BltTransform *pTransform=nullptr);
 	bool BlitSimple(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	                bool fTransparency=true);
@@ -196,7 +196,7 @@ public:
 	void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 	void ApplyZoom(float & X, float & Y);
 	void RemoveZoom(float & X, float & Y);
-	void SetMeshTransform(const StdMeshMatrix* Transform) { MeshTransform = Transform; } // if non-NULL make sure to keep matrix valid
+	void SetMeshTransform(const StdMeshMatrix* Transform) { MeshTransform = Transform; } // if non-nullptr make sure to keep matrix valid
 	void SetPerspective(bool fSet) { fUsePerspective = fSet; }
 
 	// device objects

@@ -55,8 +55,8 @@ void C4ObjectInfo::Default()
 	HasDied=false;
 	ControlCount=0;
 	Filename[0]=0;
-	Next=NULL;
-	pDef = NULL;
+	Next=nullptr;
+	pDef = nullptr;
 }
 
 bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname)
@@ -172,7 +172,7 @@ void C4ObjectInfo::Evaluate()
 
 void C4ObjectInfo::Clear()
 {
-	pDef=NULL;
+	pDef=nullptr;
 }
 
 void C4ObjectInfo::Recruit()
@@ -202,5 +202,5 @@ void C4ObjectInfo::Retire()
 
 void C4ObjectInfo::SetBirthday()
 {
-	Birthday=time(NULL);
+	Birthday=time(nullptr);
 }

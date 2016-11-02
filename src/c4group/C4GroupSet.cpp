@@ -53,13 +53,13 @@ void C4GroupSet::Clear()
 {
 	// clear nodes
 	while (pFirst) delete pFirst;
-	pFirst = NULL;
+	pFirst = nullptr;
 }
 
 void C4GroupSet::Default()
 {
 	// zero fields
-	pFirst=pLast=NULL;
+	pFirst=pLast=nullptr;
 	// do not reset index here, because group set IDs are meant to be unique
 	// for each instance of the engine
 	// see also C4GraphicsResource::RegisterGlobalGraphics
@@ -168,10 +168,10 @@ C4Group *C4GroupSet::FindGroup(int32_t Contents, C4Group *pAfter, bool fSamePrio
 				// success, found an entry
 				return pNode->pGroup;
 		// find next clear flag
-		if (pNode->pGroup == pAfter) { pAfter=NULL; if (fSamePrio) iPriority=pNode->Priority; }
+		if (pNode->pGroup == pAfter) { pAfter=nullptr; if (fSamePrio) iPriority=pNode->Priority; }
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4Group *C4GroupSet::FindEntry(const char *szWildcard, int32_t *pPriority, int32_t *pID)
@@ -187,7 +187,7 @@ C4Group *C4GroupSet::FindEntry(const char *szWildcard, int32_t *pPriority, int32
 			return pNode->pGroup;
 		}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4Group *C4GroupSet::FindSuitableFile(const char *szName, const char * const extensions[], char *szFileName, int32_t *pID)
@@ -262,7 +262,7 @@ C4Group* C4GroupSet::GetGroup(int32_t iIndex)
 {
 	// Invalid index
 	if (iIndex < 0)
-		return NULL;
+		return nullptr;
 	// Find indicated group
 	for (C4GroupSetNode *pNode = pFirst; pNode; pNode = pNode->pNext)
 		if (iIndex == 0)
@@ -270,7 +270,7 @@ C4Group* C4GroupSet::GetGroup(int32_t iIndex)
 		else
 			iIndex--;
 	// Indicated group not found
-	return NULL;
+	return nullptr;
 }
 
 bool C4GroupSet::UnregisterGroup(int32_t iIndex)
@@ -296,7 +296,7 @@ bool C4GroupSet::UnregisterGroup(int32_t iIndex)
 C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 {
 	// the scenario filename may be a scenario or directly a group folder
-	C4Group *pParentGroup=NULL; bool fParentC4F;
+	C4Group *pParentGroup=nullptr; bool fParentC4F;
 	char szParentfolder[_MAX_PATH+1];
 	if (SEqualNoCase(GetExtension(szScenFilename), "ocf"))
 	{
@@ -349,13 +349,13 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 				if (!pGroup->OpenAsChild(pParentGroup, szParentfolder+iPos))
 				{
 					LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
-					delete pGroup; return NULL;
+					delete pGroup; return nullptr;
 				}
 			}
 			else if (!Reloc.Open(*pGroup, szParentfolder+iPos))
 			{
 				LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
-				delete pGroup; return NULL;
+				delete pGroup; return nullptr;
 			}
 			// set this group as new parent
 			pParentGroup=pGroup;
@@ -366,7 +366,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 			else
 				iContentsMask = C4GSCnt_Directory;
 			if (!RegisterGroup(*pParentGroup, true, C4GSPrio_Folder+iGroupIndex++, iContentsMask))
-				{ delete pParentGroup; LogFatal ("RegGrp: internal error"); return NULL; }
+				{ delete pParentGroup; LogFatal ("RegGrp: internal error"); return nullptr; }
 			// advance by file name length
 			iPos+=SLen(szParentfolder+iPos);
 		}

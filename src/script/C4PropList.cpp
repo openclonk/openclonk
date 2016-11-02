@@ -273,7 +273,7 @@ const char *C4PropListStatic::GetName() const
 }
 
 C4PropList::C4PropList(C4PropList * prototype):
-		FirstRef(NULL), prototype(prototype),
+		FirstRef(nullptr), prototype(prototype),
 		constant(false), Status(1)
 {
 #ifdef _DEBUG	
@@ -346,7 +346,7 @@ C4PropList::~C4PropList()
 		FirstRef->Data = 0; FirstRef->Type = C4V_Nil;
 		C4Value *ref = FirstRef;
 		FirstRef = FirstRef->NextRef;
-		ref->NextRef = NULL;
+		ref->NextRef = nullptr;
 	}
 #ifdef _DEBUG
 	assert(PropLists.Has(this));
@@ -626,13 +626,13 @@ C4Def const * C4PropList::GetDef() const
 class C4MapScriptLayer * C4PropList::GetMapScriptLayer()
 {
 	if (GetPrototype()) return GetPrototype()->GetMapScriptLayer();
-	return NULL;
+	return nullptr;
 }
 
 class C4MapScriptMap * C4PropList::GetMapScriptMap()
 {
 	if (GetPrototype()) return GetPrototype()->GetMapScriptMap();
-	return NULL;
+	return nullptr;
 }
 
 C4PropListNumbered * C4PropList::GetPropListNumbered()
@@ -843,7 +843,7 @@ C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
 	{
 		return GetPrototype()->GetPropertyPropList(n);
 	}
-	return NULL;
+	return nullptr;
 }
 
 C4ValueArray * C4PropList::GetProperties() const

@@ -51,7 +51,7 @@ bool C4AchievementGraphics::Init(C4Group &File)
 bool C4AchievementGraphics::Init(C4GroupSet &Files)
 {
 	int32_t idNewGrp=0;
-	C4Group *pGrp = Files.FindEntry(C4CFN_Achievements, NULL, &idNewGrp);
+	C4Group *pGrp = Files.FindEntry(C4CFN_Achievements, nullptr, &idNewGrp);
 	if (!pGrp) return true; // no achievement gfx. That's OK.
 	if (idNewGrp == idGrp) return true; // no update
 	idGrp = idNewGrp;
@@ -70,7 +70,7 @@ void C4AchievementGraphics::Clear()
 C4FacetSurface *C4AchievementGraphics::FindByName(const char *name) const
 {
 	auto i = Graphics.find(StdCopyStrBuf(name));
-	if (i != Graphics.end()) return i->second; else return NULL;
+	if (i != Graphics.end()) return i->second; else return nullptr;
 }
 
 
@@ -92,12 +92,12 @@ const C4ScenarioParameterDef::Option *C4ScenarioParameterDef::GetOptionByValue(i
 	for (auto i = Options.cbegin(); i != Options.cend(); ++i)
 		if (i->Value == val)
 			return &*i;
-	return NULL;
+	return nullptr;
 }
 
 const C4ScenarioParameterDef::Option *C4ScenarioParameterDef::GetOptionByIndex(size_t idx) const
 {
-	if (idx >= Options.size()) return NULL;
+	if (idx >= Options.size()) return nullptr;
 	return &Options[idx];
 }
 
@@ -110,7 +110,7 @@ void C4ScenarioParameterDef::CompileFunc(StdCompiler *pComp)
 	StdEnumEntry<ParameterType> ParTypeEntries[] =
 	{
 		{ "Enumeration", SPDT_Enum },
-		{ NULL, SPDT_Enum }
+		{ nullptr, SPDT_Enum }
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(Type, ParTypeEntries),         "Type",         SPDT_Enum));
 	pComp->Value(mkNamingAdapt(Default,                                             "Default",      0));
@@ -127,7 +127,7 @@ void C4ScenarioParameterDefs::CompileFunc(StdCompiler *pComp)
 
 const C4ScenarioParameterDef *C4ScenarioParameterDefs::GetParameterDefByIndex(size_t idx) const
 {
-	if (idx >= Parameters.size()) return NULL;
+	if (idx >= Parameters.size()) return nullptr;
 	return &Parameters[idx];
 }
 

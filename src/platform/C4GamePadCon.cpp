@@ -103,7 +103,7 @@ void C4GamePadControl::FeedEvent(const SDL_Event& event, int feed)
 		{
 			Game.DoKeyboardInput(
 			  C4KeyCodeEx(KEY_Gamepad(keyCode), KEYS_None, false, which),
-			  event, NULL, false, strength);
+			  event, nullptr, false, strength);
 		};
 
 		if (feed & FEED_BUTTONS)

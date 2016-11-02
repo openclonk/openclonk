@@ -1670,7 +1670,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		}
 		else
 		{
-			// If proplist_magic.parent is NULL, we're handling a global constant.
+			// If proplist_magic.parent is nullptr, we're handling a global constant.
 			host->Engine->GetGlobalConstant(key->GetCStr(), &old);
 		}
 		if (old.getPropList())
@@ -1680,7 +1680,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		}
 		else
 		{
-			p = C4PropList::NewStatic(NULL, proplist_magic.parent, key);
+			p = C4PropList::NewStatic(nullptr, proplist_magic.parent, key);
 			new_proplist.reset(p);
 		}
 	}

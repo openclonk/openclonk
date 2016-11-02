@@ -123,7 +123,7 @@ bool C4GameOverDlg::is_shown = false;
 C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? (C4GUI::GetScreenWdt()-10) : std::min<int32_t>(C4GUI::GetScreenWdt()-150, 800),
 		    (C4GUI::GetScreenHgt() < 600) ? (C4GUI::GetScreenHgt()-10) : std::min<int32_t>(C4GUI::GetScreenHgt()-150, 600),
 		    LoadResStr("IDS_TEXT_EVALUATION"),
-		    false), pNetResultLabel(NULL), fIsNetDone(false), fHasNextMissionButton(false)
+		    false), pNetResultLabel(nullptr), fIsNetDone(false), fHasNextMissionButton(false)
 {
 	is_shown = true; // assume dlg will be shown, soon
 	UpdateOwnPos();
@@ -153,14 +153,14 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	// league/network result, present or pending
 	fIsNetDone = false;
 	bool fHasNetResult = Game.RoundResults.HasNetResult();
-	const char *szNetResult = NULL;
+	const char *szNetResult = nullptr;
 	if (Game.Parameters.isLeague() || fHasNetResult)
 	{
 		if (fHasNetResult)
 			szNetResult = Game.RoundResults.GetNetResultString();
 		else
 			szNetResult = LoadResStr("IDS_TEXT_LEAGUEWAITINGFOREVALUATIO");
-		pNetResultLabel = new C4GUI::Label(szNetResult, caMain.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*2, iMainTextWidth), ACenter, C4GUI_Caption2FontClr, NULL, false, false, true);
+		pNetResultLabel = new C4GUI::Label(szNetResult, caMain.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*2, iMainTextWidth), ACenter, C4GUI_Caption2FontClr, nullptr, false, false, true);
 		AddElement(pNetResultLabel);
 		// only add label - contents and fIsNetDone will be set in next update
 	}
@@ -175,16 +175,16 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	{
 		int32_t iMaxHgt = caMain.GetInnerHeight() / 3; // max 1/3rd of height for extra data
 		C4GUI::MultilineLabel *pCustomStrings = new C4GUI::MultilineLabel(caMain.GetFromTop(0 /* resized later*/, iMainTextWidth), 0,0, "    ", true, true);
-		pCustomStrings->AddLine(szCustomEvaluationStrings, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false, NULL);
+		pCustomStrings->AddLine(szCustomEvaluationStrings, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false, nullptr);
 		C4Rect rcCustomStringBounds = pCustomStrings->GetBounds();
 		if (rcCustomStringBounds.Hgt > iMaxHgt)
 		{
 			// Buffer too large: Use a scrollbox instead
 			delete pCustomStrings;
 			rcCustomStringBounds.Hgt = iMaxHgt;
-			C4GUI::TextWindow *pCustomStringsWin = new C4GUI::TextWindow(rcCustomStringBounds, 0,0,0, 0,0,"    ",true, NULL,0, true);
-			pCustomStringsWin->SetDecoration(false, false, NULL, false);
-			pCustomStringsWin->AddTextLine(szCustomEvaluationStrings, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false, NULL);
+			C4GUI::TextWindow *pCustomStringsWin = new C4GUI::TextWindow(rcCustomStringBounds, 0,0,0, 0,0,"    ",true, nullptr,0, true);
+			pCustomStringsWin->SetDecoration(false, false, nullptr, false);
+			pCustomStringsWin->AddTextLine(szCustomEvaluationStrings, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false, nullptr);
 			caMain.ExpandTop(-iMaxHgt);
 			AddElement(pCustomStringsWin);
 		}
@@ -209,7 +209,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	{
 		ppPlayerLists[i] = new C4PlayerInfoListBox(caPlayerArea.GetGridCell(i,iPlrListCount,0,1), C4PlayerInfoListBox::PILBM_Evaluation, fSepTeamLists ? Game.Teams.GetTeamByIndex(i)->GetID() : 0);
 		ppPlayerLists[i]->SetSelectionDiabled(true);
-		ppPlayerLists[i]->SetDecoration(false, NULL, true, false);
+		ppPlayerLists[i]->SetDecoration(false, nullptr, true, false);
 		AddElement(ppPlayerLists[i]);
 	}
 	// add buttons

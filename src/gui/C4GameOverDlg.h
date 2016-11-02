@@ -72,7 +72,7 @@ protected:
 	virtual void OnShown();
 	virtual void OnClosed(bool fOK);
 
-	virtual bool OnEnter() { if (fIsQuitBtnVisible) OnExitBtn(NULL); return true; } // enter on non-button: Always quit
+	virtual bool OnEnter() { if (fIsQuitBtnVisible) OnExitBtn(nullptr); return true; } // enter on non-button: Always quit
 	virtual bool OnEscape() { if (fIsQuitBtnVisible) UserClose(false); return true; } // escape ignored if still streaming
 
 	// true for dialogs that should span the whole screen

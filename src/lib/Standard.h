@@ -117,7 +117,7 @@ void SDelete(char *szString, int iLen, int iPosition=0);
 
 int  SCharPos(char cTarget, const char *szInStr, int iIndex=0);
 int  SCharLastPos(char cTarget, const char *szInStr);
-unsigned int  SCharCount(char cTarget, const char *szInStr, const char *cpUntil=NULL);
+unsigned int  SCharCount(char cTarget, const char *szInStr, const char *cpUntil=nullptr);
 unsigned int  SCharCountEx(const char *szString, const char *szCharList);
 
 void SReplaceChar(char *str, char fc, char tc);
@@ -129,7 +129,7 @@ const char *SAdvanceSpace(const char *szSPos);
 const char *SAdvancePast(const char *szSPos, char cPast);
 
 bool SGetModule(const char *szList, int iIndex, char *sTarget, int iSize=-1);
-bool SIsModule(const char *szList, const char *szString, int *ipIndex=NULL, bool fCaseSensitive=false);
+bool SIsModule(const char *szList, const char *szString, int *ipIndex=nullptr, bool fCaseSensitive=false);
 bool SAddModule(char *szList, const char *szModule, bool fCaseSensitive=false);
 bool SAddModules(char *szList, const char *szModules, bool fCaseSensitive=false);
 bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive=false);

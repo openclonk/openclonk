@@ -41,8 +41,8 @@
 #include <share.h>
 #endif
 
-FILE *C4LogFile=NULL;
-FILE *C4ShaderLogFile = NULL;
+FILE *C4LogFile=nullptr;
+FILE *C4ShaderLogFile = nullptr;
 time_t C4LogStartTime;
 StdStrBuf sLogFileName;
 
@@ -87,7 +87,7 @@ bool OpenExtraLogs()
 		{
 			DebugLog("Couldn't lock shader log file, closing.");
 			fclose(C4ShaderLogFile);
-			C4ShaderLogFile = NULL;
+			C4ShaderLogFile = nullptr;
 		}
 #else
 		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
@@ -100,8 +100,8 @@ bool OpenExtraLogs()
 bool CloseLog()
 {
 	// close
-	if (C4ShaderLogFile) fclose(C4ShaderLogFile); C4ShaderLogFile = NULL;
-	if (C4LogFile) fclose(C4LogFile); C4LogFile = NULL;
+	if (C4ShaderLogFile) fclose(C4ShaderLogFile); C4ShaderLogFile = nullptr;
+	if (C4LogFile) fclose(C4LogFile); C4LogFile = nullptr;
 	// ok
 	return true;
 }

@@ -27,7 +27,7 @@ C4InteractiveThread::C4InteractiveThread()
 	// Add head-item
 	pFirstEvent = pLastEvent = new Event();
 	pFirstEvent->Type = Ev_None;
-	pFirstEvent->Next = NULL;
+	pFirstEvent->Next = nullptr;
 	// reset event handlers
 	ZeroMem(&pCallbacks, sizeof(pCallbacks));
 	// Set notify proc
@@ -39,10 +39,10 @@ C4InteractiveThread::~C4InteractiveThread()
 {
 	CStdLock PushLock(&EventPushCSec), PopLock(&EventPopCSec);
 	// Remove all items. This may leak data, if pData was allocated on the heap.
-	while (PopEvent(NULL, NULL)) {}
+	while (PopEvent(nullptr, nullptr)) {}
 	// Delete head-item
 	delete pFirstEvent;
-	pFirstEvent = pLastEvent = NULL;
+	pFirstEvent = pLastEvent = nullptr;
 	// Unregister notify
 	Application.Remove(&NotifyProc);
 }
@@ -82,7 +82,7 @@ bool C4InteractiveThread::PushEvent(C4InteractiveEventType eEvent, void *pData)
 #ifdef _DEBUG
 	pEvent->Time = C4TimeMilliseconds::Now();
 #endif
-	pEvent->Next = NULL;
+	pEvent->Next = nullptr;
 	// add item (at end)
 	pLastEvent->Next = pEvent;
 	pLastEvent = pEvent;

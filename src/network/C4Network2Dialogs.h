@@ -273,7 +273,7 @@ public:
 	C4ChartDialog();
 
 	// singleton-stuff
-	~C4ChartDialog() { if (pChartDlg==this) pChartDlg = NULL; }
+	~C4ChartDialog() { if (pChartDlg==this) pChartDlg = nullptr; }
 	static void Toggle();
 };
 

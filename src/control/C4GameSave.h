@@ -58,7 +58,7 @@ protected:
 	virtual bool GetKeepTitle() { return !IsExact(); }            // whether original, localized title with image and icon shall be deleted
 	virtual bool GetSaveDesc() { return true; }                   // should WriteDescData be executed in Save()-call?
 	virtual bool GetCopyScenario() { return true; }               // return whether the savegame depends on the game scenario file
-	virtual const char *GetSortOrder() { return C4FLS_Scenario; } // return NULL to prevent sorting
+	virtual const char *GetSortOrder() { return C4FLS_Scenario; } // return nullptr to prevent sorting
 	virtual bool GetCreateSmallFile() { return false; }           // return whether file size should be minimized
 	virtual bool GetForceExactLandscape() { return GetSaveRuntimeData() && IsExact(); } // whether exact landscape shall be saved
 	virtual bool GetSaveOrigin() { return false; }                // return whether C4S.Head.Origin shall be set
@@ -79,7 +79,7 @@ protected:
 	bool IsSynced() { return Sync>=SyncSynchronized; } // synchronized
 
 	// protected constructor
-	C4GameSave(bool fAInitial, SyncState ASync) : pSaveGroup(NULL), fOwnGroup(false), fInitial(fAInitial), Sync(ASync) { }
+	C4GameSave(bool fAInitial, SyncState ASync) : pSaveGroup(nullptr), fOwnGroup(false), fInitial(fAInitial), Sync(ASync) { }
 protected:
 	// some desc writing helpers
 	void WriteDescLineFeed(StdStrBuf &sBuf); // append a line break to desc

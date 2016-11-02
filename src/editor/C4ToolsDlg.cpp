@@ -145,7 +145,7 @@ bool C4ToolsDlg::SetIFT(bool fIFT)
 		{
 			BYTE bg_index = ::TextureMap.DefaultBkgMatTex(index);
 			const C4TexMapEntry* entry = ::TextureMap.GetEntry(bg_index);
-			if (entry != NULL)
+			if (entry != nullptr)
 			{
 				SCopy(entry->GetMaterialName(), BackMaterial, C4M_MaxName);
 				SCopy(entry->GetTextureName(), BackTexture, C4M_MaxName);

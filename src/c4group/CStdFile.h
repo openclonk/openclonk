@@ -56,7 +56,7 @@ public:
 	bool Create(const char *szFileName, bool fCompressed=false, bool fExecutable=false, bool fMemory=false);
 	bool Open(const char *szFileName, bool fCompressed=false);
 	bool Append(const char *szFilename, bool text=false); // append (uncompressed only)
-	bool Close(StdBuf **ppMemory = NULL);
+	bool Close(StdBuf **ppMemory = nullptr);
 	bool Default();
 	bool Read(void *pBuffer, size_t iSize) { return Read(pBuffer, iSize, 0); }
 	bool Read(void *pBuffer, size_t iSize, size_t *ipFSize);

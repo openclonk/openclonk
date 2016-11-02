@@ -59,7 +59,7 @@ protected:
 
 public:
 	// download file showing download dialog; display error if download failed
-	static bool DownloadFile(const char *szDLType, C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename, const char *szNotFoundMessage = NULL);
+	static bool DownloadFile(const char *szDLType, C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename, const char *szNotFoundMessage = nullptr);
 };
 
 

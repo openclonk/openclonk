@@ -44,7 +44,7 @@ namespace
 	template<class T> inline void SafeRelease(T* &t)
 	{
 		if (t) t->Release();
-		t = NULL;
+		t = nullptr;
 	}
 }
 
@@ -59,7 +59,7 @@ public:
 
 	C4Network2UPnPP()
 		: MustReleaseCOM(false),
-		mappings(NULL)
+		mappings(nullptr)
 	{}
 
 	void AddMapping(C4Network2IOProtocol protocol, uint16_t intport, uint16_t extport);
@@ -81,8 +81,8 @@ C4Network2UPnP::C4Network2UPnP()
 	p->MustReleaseCOM = true;
 
 	// Get the NAT service
-	IUPnPNAT *nat = NULL;
-	if (FAILED(CoCreateInstance(CLSID_UPnPNAT, NULL, CLSCTX_INPROC_SERVER, IID_IUPnPNAT, reinterpret_cast<void**>(&nat))))
+	IUPnPNAT *nat = nullptr;
+	if (FAILED(CoCreateInstance(CLSID_UPnPNAT, nullptr, CLSCTX_INPROC_SERVER, IID_IUPnPNAT, reinterpret_cast<void**>(&nat))))
 	{
 		Log("UPnP fail (no service).");
 		return;
@@ -114,7 +114,7 @@ C4Network2UPnP::~C4Network2UPnP()
 		// Decrement COM reference count
 		CoUninitialize();
 	}
-	delete p; p = NULL;
+	delete p; p = nullptr;
 }
 
 void C4Network2UPnP::AddMapping(C4Network2IOProtocol protocol, uint16_t intport, uint16_t extport)
@@ -155,14 +155,14 @@ void C4Network2UPnPP::AddMapping(C4Network2IOProtocol protocol, uint16_t intport
 		// Get (one of the) local host address(es)
 		char hostname[MAX_PATH];
 		hostent *host;
-		if (gethostname(hostname, MAX_PATH) == 0 && (host = gethostbyname(hostname)) != NULL)	
+		if (gethostname(hostname, MAX_PATH) == 0 && (host = gethostbyname(hostname)) != nullptr)	
 		{
 			in_addr addr;
 			addr.s_addr = *(ULONG*)host->h_addr_list[0];
 
 			BSTR description = ::SysAllocString(ADDL(C4ENGINECAPTION));
 			BSTR client = ::SysAllocString(GetWideChar(inet_ntoa(addr)));
-			IStaticPortMapping *mapping = NULL;
+			IStaticPortMapping *mapping = nullptr;
 			if (SUCCEEDED(mappings->Add(extport, protocol == P_TCP ? PROTO_TCP : PROTO_UDP, intport, client, VARIANT_TRUE, description, &mapping)))
 			{
 				LogF("UPnP: Successfully opened port %d->%s:%d (%s)", extport, StdStrBuf(client).getData(), intport, protocol == P_TCP ? "TCP" : "UDP");

@@ -189,7 +189,7 @@ class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:
 	C4ControlPlayerSelect()
-			: iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(NULL) { }
+			: iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(nullptr) { }
 	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt);
 	~C4ControlPlayerSelect() { delete[] pObjNrs; }
 protected:
@@ -460,9 +460,9 @@ enum C4ControlEMObjectAction
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
+	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(nullptr) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
-	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
+	                      int32_t iObjectNum = 0, int32_t *pObjects = nullptr, const char *szScript = nullptr);
 	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y, C4Object *container);
 	~C4ControlEMMoveObject();
 protected:
@@ -494,8 +494,8 @@ public:
 	C4ControlEMDrawTool() : eAction(EMDT_SetMode), iX(0), iY(0), iX2(0), iY2(0), iGrade(0) { }
 	C4ControlEMDrawTool(C4ControlEMDrawAction eAction, LandscapeMode iMode,
 	                    int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
-	                    const char *szMaterial=NULL, const char *szTexture=NULL,
-	                    const char *szBackMaterial=NULL, const char *szBackTexture=NULL);
+	                    const char *szMaterial=nullptr, const char *szTexture=nullptr,
+	                    const char *szBackMaterial=nullptr, const char *szBackTexture=nullptr);
 protected:
 	C4ControlEMDrawAction eAction;  // action to be performed
 	LandscapeMode iMode;        // new mode, or mode action was performed in (action will fail if changed)

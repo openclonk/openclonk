@@ -33,7 +33,7 @@ namespace C4GUI
 // CheckBox
 
 	CheckBox::CheckBox(const C4Rect &rtBounds, const char *szCaption, bool fChecked)
-			: Control(rtBounds), fChecked(fChecked), fMouseOn(false), fEnabled(true), pFont(NULL)
+			: Control(rtBounds), fChecked(fChecked), fMouseOn(false), fEnabled(true), pFont(nullptr)
 			, dwEnabledClr(C4GUI_CheckboxFontClr), dwDisabledClr(C4GUI_CheckboxDisabledFontClr), cHotkey(0)
 	{
 		if (szCaption)
@@ -50,7 +50,7 @@ namespace C4GUI
 		}
 		pKeyCheck = new C4KeyBinding(Keys, "GUICheckboxToggle", KEYSCOPE_Gui,
 		                             new ControlKeyCB<CheckBox>(*this, &CheckBox::KeyCheck), C4CustomKey::PRIO_Ctrl);
-		pCBHandler = NULL;
+		pCBHandler = nullptr;
 	}
 
 	CheckBox::~CheckBox()

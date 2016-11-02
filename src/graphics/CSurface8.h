@@ -61,7 +61,7 @@ public:
 	void Clip(int iX, int iY, int iX2, int iY2);
 	void NoClip();
 	bool Read(class CStdStream &hGroup);
-	bool Save(const char *szFilename, CStdPalette * = NULL);
+	bool Save(const char *szFilename, CStdPalette * = nullptr);
 	void GetSurfaceSize(int &irX, int &irY) const; // get surface size
 	void AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero=false);
 	void SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch);

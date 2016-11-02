@@ -185,7 +185,7 @@ static void SetUrgencyHint(SDL_Window *window, bool urgency_hint)
 	{
 		auto x11 = wminfo.info.x11;
 		XWMHints *wmhints = XGetWMHints(x11.display, x11.window);
-		if (wmhints == NULL)
+		if (wmhints == nullptr)
 			wmhints = XAllocWMHints();
 		// Set the window's urgency hint.
 		if (urgency_hint)

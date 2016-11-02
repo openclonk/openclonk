@@ -1848,7 +1848,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	C4Object *symbolObject = props[C4ScriptGuiWindowPropertyName::symbolObject].GetObject();
 	if (symbolObject)
 	{
-		symbolObject->DrawPicture(cgoOut, false, NULL);
+		symbolObject->DrawPicture(cgoOut, false, nullptr);
 	}
 	else
 	{

@@ -1210,13 +1210,13 @@ void C4ConsoleQtShapes::RemoveShape(C4ConsoleQtShape *shape)
 {
 	// Remove from list and currently moving shape
 	shapes.remove_if([shape](auto &it) { return it.get() == shape; });
-	if (dragging_shape == shape) dragging_shape = NULL;
+	if (dragging_shape == shape) dragging_shape = nullptr;
 }
 
 void C4ConsoleQtShapes::ClearShapes()
 {
 	shapes.clear();
-	dragging_shape = NULL;
+	dragging_shape = nullptr;
 	drag_cursor = Qt::CursorShape::ArrowCursor;
 }
 

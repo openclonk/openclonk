@@ -73,12 +73,12 @@ void C4Shader::AddDefine(const char* name)
 
 void C4Shader::AddVertexSlice(int iPos, const char *szText)
 {
-	AddSlice(VertexSlices, iPos, szText, NULL, 0, 0);
+	AddSlice(VertexSlices, iPos, szText, nullptr, 0, 0);
 }
 
 void C4Shader::AddFragmentSlice(int iPos, const char *szText)
 {
-	AddSlice(FragmentSlices, iPos, szText, NULL, 0, 0);
+	AddSlice(FragmentSlices, iPos, szText, nullptr, 0, 0);
 }
 
 void C4Shader::AddVertexSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
@@ -413,13 +413,13 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 	// Allocate uniform and attribute arrays
 	int iUniformCount = 0;
-	if (szUniforms != NULL)
+	if (szUniforms != nullptr)
 		while (szUniforms[iUniformCount])
 			iUniformCount++;
 	Uniforms.resize(iUniformCount);
 
 	int iAttributeCount = 0;
-	if (szAttributes != NULL)
+	if (szAttributes != nullptr)
 		while (szAttributes[iAttributeCount])
 			iAttributeCount++;
 	Attributes.resize(iAttributeCount);
@@ -525,12 +525,12 @@ bool C4Shader::Refresh()
 	std::vector<const char*> UniformNames(Uniforms.size() + 1);
 	for (std::size_t i = 0; i < Uniforms.size(); ++i)
 		UniformNames[i] = Uniforms[i].name;
-	UniformNames[Uniforms.size()] = NULL;
+	UniformNames[Uniforms.size()] = nullptr;
 
 	std::vector<const char*> AttributeNames(Attributes.size() + 1);
 	for (std::size_t i = 0; i < Attributes.size(); ++i)
 		AttributeNames[i] = Attributes[i].name;
-	AttributeNames[Attributes.size()] = NULL;
+	AttributeNames[Attributes.size()] = nullptr;
 #endif
 
 	// Reinitialise

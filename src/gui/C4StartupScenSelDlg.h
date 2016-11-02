@@ -71,7 +71,7 @@ public:
 		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded) { return true; } // load custom data for entry type (e.g. scenario title fallback in Scenario.txt)
 		virtual bool LoadCustomPre(C4Group &rGrp) { return true; } // preload stuff that's early in the group (Scenario.txt)
 		virtual bool Start() = 0; // start/open entry
-		virtual Folder *GetIsFolder() { return NULL; } // return this if this is a folder
+		virtual Folder *GetIsFolder() { return nullptr; } // return this if this is a folder
 
 		const StdStrBuf &GetName() const { return sName; }
 		const StdStrBuf &GetEntryFilename() const { return sFilename; }
@@ -98,13 +98,13 @@ public:
 		virtual StdStrBuf GetOpenText() = 0; // get open button text
 		virtual StdStrBuf GetOpenTooltip() = 0;
 
-		virtual const char *GetDefaultExtension() { return NULL; } // extension to be added when item is renamed
+		virtual const char *GetDefaultExtension() { return nullptr; } // extension to be added when item is renamed
 		virtual bool SetTitleInGroup(C4Group &rGrp, const char *szNewTitle);
 		bool RenameTo(const char *szNewName); // change name+filename
 		virtual bool IsScenario() { return false; }
 
-		virtual C4ScenarioParameterDefs *GetParameterDefs() { return NULL; }
-		virtual C4ScenarioParameters *GetParameters() { return NULL; }
+		virtual C4ScenarioParameterDefs *GetParameterDefs() { return nullptr; }
+		virtual C4ScenarioParameters *GetParameters() { return nullptr; }
 	};
 
 	// a loaded scenario to be started
@@ -158,7 +158,7 @@ public:
 		friend class Entry;
 
 	public:
-		Folder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Entry(pLoader, pParent), fContentsLoaded(false), pFirst(NULL), pMapData(NULL) {}
+		Folder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Entry(pLoader, pParent), fContentsLoaded(false), pFirst(nullptr), pMapData(nullptr) {}
 		virtual ~Folder();
 
 		virtual bool LoadCustomPre(C4Group &rGrp); // load folder core
@@ -184,8 +184,8 @@ public:
 		virtual StdStrBuf GetOpenTooltip();
 		C4MapFolderData *GetMapData() const { return pMapData; }
 
-		virtual const C4ScenarioParameterDefs *GetAchievementDefs() const { return NULL; }
-		virtual const C4AchievementGraphics *GetAchievementGfx() const { return NULL; }
+		virtual const C4ScenarioParameterDefs *GetAchievementDefs() const { return nullptr; }
+		virtual const C4AchievementGraphics *GetAchievementGfx() const { return nullptr; }
 	};
 
 	// .ocf subfolder: Read through by group
@@ -256,7 +256,7 @@ public:
 	bool FolderBack(); // go upwards by one folder
 	bool ReloadCurrent(); // reload file list
 	bool IsLoading() const { return !!iLoading; }
-	Entry *GetFirstEntry() const { return pCurrFolder ? pCurrFolder->GetFirstEntry() : NULL; }
+	Entry *GetFirstEntry() const { return pCurrFolder ? pCurrFolder->GetFirstEntry() : nullptr; }
 
 	Folder *GetCurrFolder() const { return pCurrFolder; }
 	Folder *GetRootFolder() const { return pRootFolder; }
@@ -345,7 +345,7 @@ private:
 	class C4StartupScenSelDlg *pMainDlg;
 
 public:
-	C4MapFolderData() : fCoordinatesAdjusted(false), ppScenList(NULL), iScenCount(0), ppAccessGfxList(NULL), iAccessGfxCount(0), pMainDlg(NULL) {}
+	C4MapFolderData() : fCoordinatesAdjusted(false), ppScenList(nullptr), iScenCount(0), ppAccessGfxList(nullptr), iAccessGfxCount(0), pMainDlg(nullptr) {}
 	~C4MapFolderData() { Clear(); }
 
 private:
@@ -390,7 +390,7 @@ public:
 		C4ScenarioListLoader::Entry *pScenListEntry; // associated, loaded item info
 
 	public:
-		ScenListItem(C4GUI::ListBox *pForListBox, C4ScenarioListLoader::Entry *pForEntry, C4GUI::Element *pInsertBeforeElement=NULL);
+		ScenListItem(C4GUI::ListBox *pForListBox, C4ScenarioListLoader::Entry *pForEntry, C4GUI::Element *pInsertBeforeElement=nullptr);
 
 	protected:
 		struct RenameParams { };
@@ -499,7 +499,7 @@ public:
 	void StartRenaming(C4GUI::RenameEdit *pNewRenameEdit);
 	void AbortRenaming();
 	bool IsRenaming() const { return !!pRenameEdit; }
-	void SetRenamingDone() { pRenameEdit=NULL; }
+	void SetRenamingDone() { pRenameEdit=nullptr; }
 
 	void SetBackground(C4Facet *pNewBG) { pfctBackground=pNewBG; }
 

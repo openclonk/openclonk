@@ -36,7 +36,7 @@ class C4Network2IRCMessage
 	friend class C4Network2IRCClient;
 public:
 	C4Network2IRCMessage(C4Network2IRCMessageType enType, const char *szSource, const char *szTarget, const char *szData)
-			: iTimestamp(time(NULL)), eType(enType), Source(szSource), Target(szTarget), Data(szData), Next(0)
+			: iTimestamp(time(nullptr)), eType(enType), Source(szSource), Target(szTarget), Data(szData), Next(0)
 	{ }
 
 private:
@@ -177,11 +177,11 @@ public:
 
 	using C4NetIOTCP::Connect;
 	// Simple network communication
-	bool Connect(const char *szServer, const char *szNick, const char *szRealName, const char *szPassword = NULL, const char *szChannel = NULL);
+	bool Connect(const char *szServer, const char *szNick, const char *szRealName, const char *szPassword = nullptr, const char *szChannel = nullptr);
 	using C4NetIOTCP::Close;
 	bool Close();
 	using C4NetIOTCP::Send;
-	bool Send(const char *szCommand, const char *szParameters = NULL);
+	bool Send(const char *szCommand, const char *szParameters = nullptr);
 
 	// Notfiy interface
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }

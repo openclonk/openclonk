@@ -156,14 +156,14 @@ public:
 	int32_t GetMatCount(int material) const;
 	int32_t GetEffectiveMatCount(int material) const;
 
-	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
-	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER, int32_t iMaxDensity = C4M_Vehicle);
+	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = nullptr, bool no_dig2objects = false, bool no_instability_check = false);
+	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = nullptr, int32_t by_player = NO_OWNER, int32_t iMaxDensity = C4M_Vehicle);
 
 	void ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
-	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
-	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
+	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = nullptr, bool no_dig2objects = false, bool no_instability_check = false);
+	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = nullptr, bool no_dig2objects = false, bool no_instability_check = false);
 	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
-	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL, int32_t iMaxDensity = C4M_Vehicle);
+	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = nullptr, int32_t iMaxDensity = C4M_Vehicle);
 
 	void CheckInstabilityRange(int32_t tx, int32_t ty);
 	bool CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count=0);
@@ -191,9 +191,9 @@ bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, int32_t
 bool FindThrowingPosition(int32_t iTx, int32_t iTy, C4Real fXDir, C4Real fYDir, int32_t iHeight, int32_t &rX, int32_t &rY);
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy);
-bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
+bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=nullptr, int32_t *iy=nullptr);
 bool FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2, int32_t iExcludeAngle1, int32_t iExcludeAngle2);
-bool ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
+bool ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=nullptr);
 int32_t PixCol2Mat(BYTE pixc);
 
 inline bool DensitySolid(int32_t dens)

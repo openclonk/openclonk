@@ -552,13 +552,13 @@ public:
 	void Clear();
 
 	// Parse a material script file, and add the materials to the manager.
-	// filename may be NULL if the source is not a file. It will only be used
+	// filename may be nullptr if the source is not a file. It will only be used
 	// for error messages.
 	// Throws StdMeshMaterialError.
 	// Returns a set of all loaded materials.
 	std::set<StdCopyStrBuf> Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
 
-	// Get material by name. NULL if there is no such material with this name.
+	// Get material by name. nullptr if there is no such material with this name.
 	const StdMeshMaterial* GetMaterial(const char* material_name) const;
 
 	Iterator Begin() { return Iterator(Materials.begin()); }
@@ -566,8 +566,8 @@ public:
 	void Remove(const StdStrBuf& name, class StdMeshMaterialUpdate* update);
 	Iterator Remove(const Iterator& iter, class StdMeshMaterialUpdate* update);
 
-	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, uint32_t load_flags); // if load_flags & SMM_AcceptExisting, the function returns the existing shader, otherwise returns NULL.
-	const StdMeshMaterialProgram* AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader); // returns NULL if shader code cannot be compiled
+	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, uint32_t load_flags); // if load_flags & SMM_AcceptExisting, the function returns the existing shader, otherwise returns nullptr.
+	const StdMeshMaterialProgram* AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader); // returns nullptr if shader code cannot be compiled
 
 	const StdMeshMaterialShader* GetFragmentShader(const char* name) const;
 	const StdMeshMaterialShader* GetVertexShader(const char* name) const;

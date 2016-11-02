@@ -267,7 +267,7 @@ public:
 	const char* GetSubkeyPath(const char *strSubkey);
 	void Default();
 	bool Save();
-	bool Load(const char *szConfigFile = NULL);
+	bool Load(const char *szConfigFile = nullptr);
 	bool Init();
 	bool Registered();
 	const char *AtExePath(const char *szFilename);

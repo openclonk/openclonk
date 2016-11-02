@@ -94,7 +94,7 @@ public:
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;
-	std::unique_ptr<C4Network2Stats> pNetworkStatistics; // may be NULL if no statistics are recorded
+	std::unique_ptr<C4Network2Stats> pNetworkStatistics; // may be nullptr if no statistics are recorded
 	C4KeyboardInput &KeyboardInput;
 	std::unique_ptr<C4FileMonitor> pFileMonitor;
 	std::unique_ptr<C4GameSec1Timer> pSec1Timer;
@@ -154,8 +154,8 @@ public:
 	void Abort(bool fApproved = false); // hard-quit on Esc+Y (/J/O)
 	void Evaluate();
 	void ShowGameOverDlg();
-	bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
-	bool DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
+	bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=nullptr, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
+	bool DoKeyboardInput(C4KeyCodeEx Key, C4KeyEventType eEventType, class C4GUI::Dialog *pForDialog=nullptr, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
 	void DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer);
 	void FixRandom(uint64_t iSeed);
 	bool Init();
@@ -205,14 +205,14 @@ public:
 	C4Object *FindObject(C4Def * pDef,
 	                     int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
 	                     DWORD ocf=OCF_All,
-	                     C4Object *pFindNext=NULL);
+	                     C4Object *pFindNext=nullptr);
 	C4Object *FindVisObject( // find object in view at pos, regarding parallaxity and visibility (but not distance)
 	  float tx, float ty, int32_t iPlr, const C4Facet &fctViewportGame, const C4Facet &fctViewportGUI,
 	  float iX, float iY,
 	  DWORD category,
 	  float gui_x, float gui_y);
 	int32_t ObjectCount(C4ID id);
-	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER, C4ValueArray *out_objects=NULL);
+	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER, C4ValueArray *out_objects=nullptr);
 	C4Object *PlaceVegetation(C4PropList *def, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth, C4PropList *shape_proplist, C4PropList * out_pos_proplist);
 	C4Object *PlaceAnimal(C4PropList *def);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects

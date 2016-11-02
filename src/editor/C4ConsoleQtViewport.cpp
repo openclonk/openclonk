@@ -378,7 +378,7 @@ void C4ConsoleQtViewportView::keyPressEvent(QKeyEvent * event)
 		handled = true;
 	}
 	// Handled if handled as player control or main editor
-	if (!handled) handled = Game.DoKeyboardInput(code, KEYEV_Down, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
+	if (!handled) handled = Game.DoKeyboardInput(code, KEYEV_Down, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), nullptr);
 	if (!handled) handled = dock->main_window->HandleEditorKeyDown(event);
 	// Modifiers may update the cursor state; refresh
 	if (event->key() == Qt::Key_Shift || event->key() == Qt::Key_Control || event->key() == Qt::Key_Alt || event->key() == Qt::Key_AltGr)
@@ -394,7 +394,7 @@ void C4ConsoleQtViewportView::keyReleaseEvent(QKeyEvent * event)
 	// Convert key to our internal mapping
 	C4KeyCode code = QtKeyToUnixScancode(*event);
 	// Handled if handled as player control
-	bool handled = Game.DoKeyboardInput(code, KEYEV_Up, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), NULL);
+	bool handled = Game.DoKeyboardInput(code, KEYEV_Up, !!(event->modifiers() & Qt::AltModifier), !!(event->modifiers() & Qt::ControlModifier), !!(event->modifiers() & Qt::ShiftModifier), event->isAutoRepeat(), nullptr);
 	if (!handled) handled = dock->main_window->HandleEditorKeyUp(event);
 	// Modifiers may update the cursor state; refresh
 	if (event->key() == Qt::Key_Shift || event->key() == Qt::Key_Control || event->key() == Qt::Key_Alt || event->key() == Qt::Key_AltGr)
@@ -471,7 +471,7 @@ bool C4ConsoleQtViewportScrollArea::viewportEvent(QEvent *e)
 void C4ConsoleQtViewportScrollArea::setupViewport(QWidget *viewport)
 {
 	// Don't steal focus from the viewport. This is necessary to make keyboard input work.
-	viewport->setFocusProxy(NULL);
+	viewport->setFocusProxy(nullptr);
 	ScrollBarsByViewPosition();
 }
 
@@ -553,7 +553,7 @@ void C4ConsoleQtViewportDockWidget::closeEvent(QCloseEvent * event)
 	if (event->isAccepted())
 	{
 		if (cvp) cvp->Close();
-		cvp = NULL;
+		cvp = nullptr;
 		deleteLater();
 	}
 }

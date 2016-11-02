@@ -44,7 +44,7 @@ void C4ObjectMenu::Default()
 {
 	C4Menu::Default();
 	eCallbackType = CB_None;
-	Object = ParentObject = RefillObject = NULL;
+	Object = ParentObject = RefillObject = nullptr;
 	RefillObjectContentsCount=0;
 	UserMenu = false;
 	CloseQuerying = false;
@@ -108,9 +108,9 @@ void C4ObjectMenu::OnSelectionChanged(int32_t iNewSelection)
 
 void C4ObjectMenu::ClearPointers(C4Object *pObj)
 {
-	if (Object==pObj) { Object=NULL; }
-	if (ParentObject==pObj) ParentObject=NULL; // Reason for menu close anyway.
-	if (RefillObject==pObj) RefillObject=NULL;
+	if (Object==pObj) { Object=nullptr; }
+	if (ParentObject==pObj) ParentObject=nullptr; // Reason for menu close anyway.
+	if (RefillObject==pObj) RefillObject=nullptr;
 	C4Menu::ClearPointers(pObj);
 }
 
@@ -119,7 +119,7 @@ C4Object* C4ObjectMenu::GetParentObject()
 	for (C4Object *cObj : Objects)
 		if (cObj->Menu == this)
 			return cObj;
-	return NULL;
+	return nullptr;
 }
 
 void C4ObjectMenu::SetRefillObject(C4Object *pObj)
@@ -305,7 +305,7 @@ bool C4ObjectMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 
 	case CB_Scenario:
 		// Object menu with scenario script callback
-		::AulExec.DirectExec(NULL, szCommand, "MenuCommand");
+		::AulExec.DirectExec(nullptr, szCommand, "MenuCommand");
 		break;
 
 	case CB_None:

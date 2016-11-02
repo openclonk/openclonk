@@ -129,24 +129,24 @@ void C4Object::Default()
 	Contents.Default();
 	SolidMask.Default();
 	PictureRect.Default();
-	Def=NULL;
-	Info=NULL;
-	Command=NULL;
-	Contained=NULL;
+	Def=nullptr;
+	Info=nullptr;
+	Command=nullptr;
+	Contained=nullptr;
 	TopFace.Default();
-	Menu=NULL;
-	MaterialContents=NULL;
+	Menu=nullptr;
+	MaterialContents=nullptr;
 	Marker=0;
 	ColorMod=0xffffffff;
 	BlitMode=0;
 	CrewDisabled=false;
-	Layer=NULL;
-	pSolidMaskData=NULL;
-	pGraphics=NULL;
-	pMeshInstance=NULL;
-	pDrawTransform=NULL;
-	pEffects=NULL;
-	pGfxOverlay=NULL;
+	Layer=nullptr;
+	pSolidMaskData=nullptr;
+	pGraphics=nullptr;
+	pMeshInstance=nullptr;
+	pDrawTransform=nullptr;
+	pEffects=nullptr;
+	pGfxOverlay=nullptr;
 	iLastAttachMovementFrame=-1;
 
 	ClearParticleLists();
@@ -184,7 +184,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	}
 	else
 	{
-		pMeshInstance = NULL;
+		pMeshInstance = nullptr;
 	}
 	BlitMode = Def->BlitMode;
 
@@ -315,7 +315,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 		else
 		{
 			Contents.Remove(cobj);
-			cobj->Contained = NULL;
+			cobj->Contained = nullptr;
 			cobj->AssignRemoval();
 		}
 	}
@@ -325,11 +325,11 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pCont->Contents.Remove(this);
 		pCont->UpdateMass();
 		pCont->SetOCF();
-		Contained=NULL;
+		Contained=nullptr;
 	}
 	// Object info
 	if (Info) Info->Retire();
-	Info = NULL;
+	Info = nullptr;
 	// Object system operation
 	ClearRefs();
 	Game.ClearPointers(this);
@@ -337,7 +337,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (pSolidMaskData)
 	{
 		delete pSolidMaskData;
-		pSolidMaskData = NULL;
+		pSolidMaskData = nullptr;
 	}
 	SolidMask.Wdt = 0;
 	RemovalDelay=2;
@@ -416,7 +416,7 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 		   &pMeshInstance->GetMesh() != pGraphics->Mesh)
 		{
 			// If this mesh is attached somewhere, detach it before deletion
-			if(pMeshInstance && pMeshInstance->GetAttachParent() != NULL)
+			if(pMeshInstance && pMeshInstance->GetAttachParent() != nullptr)
 			{
 				// TODO: If the new mesh has a bone with the same name, we could try updating...
 				StdMeshInstance::AttachedMesh* attach_parent = pMeshInstance->GetAttachParent();
@@ -432,7 +432,7 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 			}
 			else
 			{
-				pMeshInstance = NULL;
+				pMeshInstance = nullptr;
 			}
 		}
 
@@ -473,7 +473,7 @@ void C4Object::UpdateFlipDir()
 		if (pDrawTransform->IsIdentity())
 		{
 			delete pDrawTransform;
-			pDrawTransform=NULL;
+			pDrawTransform=nullptr;
 		}
 	}
 }
@@ -523,7 +523,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		pDraw->SetMeshTransform(&matrix);
 
 		pDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
-		pDraw->SetMeshTransform(NULL);
+		pDraw->SetMeshTransform(nullptr);
 		break;
 	}
 }
@@ -572,7 +572,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		transform_active = true;
 	}
 
-	DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : NULL);
+	DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : nullptr);
 }
 
 void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
@@ -636,7 +636,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		transform_active = true;
 	}
 
-	DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : NULL);
+	DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, transform_active ? &transform : nullptr);
 }
 
 void C4Object::UpdateMass()
@@ -1047,7 +1047,7 @@ void C4Object::AssignDeath(bool fForced)
 	if(pPlr)
 		if(!pPlr->Crew.ObjectCount())
 			::Game.GRBroadcast(PSF_RelaunchPlayer,
-			                   &C4AulParSet(Owner, iDeathCausingPlayer, Status ? this : NULL));
+			                   &C4AulParSet(Owner, iDeathCausingPlayer, Status ? this : nullptr));
 	if (pInfo)
 		pInfo->HasDied = false;
 }
@@ -1065,7 +1065,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	SetAction(0);
 	ResetProperty(&Strings.P[P_Action]); // Enforce ActIdle because SetAction may have failed due to NoOtherAction
 	SetDir(0); // will drop any outdated flipdir
-	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
+	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=nullptr; }
 	Def->Count--;
 	// Def change
 	Def=pDef;
@@ -1239,7 +1239,7 @@ void C4Object::DoExperience(int32_t change)
 bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYDir, C4Real iRDir, bool fCalls)
 {
 	// 1. Exit the current container.
-	// 2. Update Contents of container object and set Contained to NULL.
+	// 2. Update Contents of container object and set Contained to nullptr.
 	// 3. Set offset position/motion if desired.
 	// 4. Call Ejection for container and Departure for object.
 
@@ -1251,7 +1251,7 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	pContainer->UpdateMass();
 	pContainer->SetOCF();
 	// No container
-	Contained=NULL;
+	Contained=nullptr;
 	// Position/motion
 	fix_x=itofix(iX); fix_y=itofix(iY);
 	fix_r=itofix(iR);
@@ -1264,7 +1264,7 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	UpdateFace(true);
 	SetOCF();
 	// Object list callback (before script callbacks, because script callbacks may enter again)
-	ObjectListChangeListener.OnObjectContainerChanged(this, pContainer, NULL);
+	ObjectListChangeListener.OnObjectContainerChanged(this, pContainer, nullptr);
 	// Engine calls
 	if (fCalls) pContainer->Call(PSF_Ejection,&C4AulParSet(this));
 	if (fCalls) Call(PSF_Departure,&C4AulParSet(pContainer));
@@ -1314,7 +1314,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// Enter
 	if (!Contained->Contents.Add(this, C4ObjectList::stContents))
 	{
-		Contained=NULL;
+		Contained=nullptr;
 		return false;
 	}
 	// Assume that the new container controls this object, if it cannot control itself (i.e.: Alive)
@@ -1337,7 +1337,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	Contained->UpdateMass();
 	Contained->SetOCF();
 	// Object list callback (before script callbacks, because script callbacks may exit again)
-	ObjectListChangeListener.OnObjectContainerChanged(this, NULL, Contained);
+	ObjectListChangeListener.OnObjectContainerChanged(this, nullptr, Contained);
 	// Collection call
 	if (fCalls) pTarget->Call(PSF_Collection2,&C4AulParSet(this));
 	if (!Contained || !Contained->Status || !pTarget->Status) return true;
@@ -1451,8 +1451,8 @@ bool C4Object::Lift(C4Real tydir, C4Real dforce)
 C4Object* C4Object::CreateContents(C4PropList * PropList)
 {
 	C4Object *nobj;
-	if (!(nobj=Game.CreateObject(PropList,this,Owner))) return NULL;
-	if (!nobj->Enter(this)) { nobj->AssignRemoval(); return NULL; }
+	if (!(nobj=Game.CreateObject(PropList,this,Owner))) return nullptr;
+	if (!nobj->Enter(this)) { nobj->AssignRemoval(); return nullptr; }
 	return nobj;
 }
 
@@ -1571,7 +1571,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->GetViewY()) * pViewport->GetZoom());
 		// Add info item
 		fctSymbol.Create(C4PictureSize, C4PictureSize); pTarget->Def->Draw(fctSymbol, false, pTarget->Color, pTarget);
-		Menu->Add(pTarget->GetName(), fctSymbol, "", C4MN_Item_NoCount, NULL, pTarget->GetInfoString().getData());
+		Menu->Add(pTarget->GetName(), fctSymbol, "", C4MN_Item_NoCount, nullptr, pTarget->GetInfoString().getData());
 		fctSymbol.Default();
 		// Success
 		return true;
@@ -1587,7 +1587,7 @@ bool C4Object::CloseMenu(bool fForce)
 	if (Menu)
 	{
 		if (Menu->IsActive()) if (!Menu->TryClose(fForce, false)) return false;
-		if (!Menu->IsCloseQuerying()) { delete Menu; Menu=NULL; } // protect menu deletion from recursive menu operation calls
+		if (!Menu->IsCloseQuerying()) { delete Menu; Menu=nullptr; } // protect menu deletion from recursive menu operation calls
 	}
 	return true;
 }
@@ -1710,7 +1710,7 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 		// get value of def
 		// Caution: Do not pass pInBase here, because the def base value is to be queried
 		//  - and not the value if you had to buy the object in this particular base
-		iValue = Def->GetValue(NULL, iForPlayer);
+		iValue = Def->GetValue(nullptr, iForPlayer);
 	}
 	// Con percentage
 	iValue = iValue * Con / FullCon;
@@ -1759,12 +1759,12 @@ void C4Object::ClearPointers(C4Object *pObj)
 	if (Contained == pObj)
 	{
 		Contained->Contents.Remove(this);
-		Contained = NULL;
+		Contained = nullptr;
 	}
 	Contents.Remove(pObj);
 	// Action targets
-	if (Action.Target==pObj) Action.Target=NULL;
-	if (Action.Target2==pObj) Action.Target2=NULL;
+	if (Action.Target==pObj) Action.Target=nullptr;
+	if (Action.Target2==pObj) Action.Target2=nullptr;
 	// Commands
 	C4Command *cCom;
 	for (cCom=Command; cCom; cCom=cCom->Next)
@@ -1772,7 +1772,7 @@ void C4Object::ClearPointers(C4Object *pObj)
 	// Menu
 	if (Menu) Menu->ClearPointers(pObj);
 	// Layer
-	if (Layer==pObj) Layer=NULL;
+	if (Layer==pObj) Layer=nullptr;
 	// gfx overlays
 	if (pGfxOverlay)
 	{
@@ -1955,7 +1955,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Visibility inside FoW
 	const C4FoWRegion* pOldFoW = pDraw->GetFoW();
 	if(pOldFoW && (Category & C4D_IgnoreFoW))
-		pDraw->SetFoW(NULL);
+		pDraw->SetFoW(nullptr);
 
 	// color modulation (including construction sign...)
 	if (ColorMod != 0xffffffff || BlitMode) if (!eDrawMode) PrepareDrawing();
@@ -2110,7 +2110,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 				            cgo.Surface,
 				            offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
 				            float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
-				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
+				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : nullptr);
 		else
 			// normal
 			pDraw->Blit(TopFace.Surface,
@@ -2119,7 +2119,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 				            cgo.Surface,
 				            offX + Shape.GetX() + Def->TopFace.tx, offY + Shape.GetY() + Def->TopFace.ty,
 				            TopFace.Wdt, TopFace.Hgt,
-				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
+				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : nullptr);
 	}
 	// end of color modulation
 	if (!eDrawMode) FinishedDrawing();
@@ -2160,7 +2160,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo, int32_t at_player)
 		vertices[2*vtx+1].fty = Shape.VtxY[vtx+1] + cgo.Y - cgo.TargetY;
 	}
 
-	pDraw->PerformMultiLines(cgo.Surface, &vertices[0], vertices.size(), 1.0f, NULL);
+	pDraw->PerformMultiLines(cgo.Surface, &vertices[0], vertices.size(), 1.0f, nullptr);
 
 	// reset blit mode
 	FinishedDrawing();
@@ -2231,7 +2231,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( C4DefGraphicsAdapt(pGraphics),    "Graphics",           &Def->Graphics    ));
 	pComp->Value(mkNamingPtrAdapt( pDrawTransform,                "DrawTransform"                         ));
 	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), this, numbers));
-	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)NULL));
+	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)nullptr));
 
 	// Serialize mesh instance if we have a mesh graphics
 	if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
@@ -2258,7 +2258,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	{
 		if (fCompiler)
 		{
-			C4Command *pCmd = NULL;
+			C4Command *pCmd = nullptr;
 			for (int i = 1; ; i++)
 			{
 				// Every command has its own naming environment
@@ -2379,7 +2379,7 @@ void C4Object::Picture2Facet(C4FacetSurface &cgo)
 	if (pGfxOverlay)
 		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
 			if (pGfxOvrl->IsPicture())
-				pGfxOvrl->DrawPicture(cgo, this, NULL);
+				pGfxOvrl->DrawPicture(cgo, this, nullptr);
 
 	// done; reset drawing states
 	FinishedDrawing();
@@ -2437,7 +2437,7 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 {
 	if (Info==pInfo)
 	{
-		Info=NULL;
+		Info=nullptr;
 	}
 }
 
@@ -2445,19 +2445,19 @@ void C4Object::Clear()
 {
 	ClearParticleLists();
 
-	if (pEffects) { delete pEffects; pEffects=NULL; }
-	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
-	if (Menu) delete Menu; Menu=NULL;
-	if (MaterialContents) delete MaterialContents; MaterialContents=NULL;
+	if (pEffects) { delete pEffects; pEffects=nullptr; }
+	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=nullptr; }
+	if (Menu) delete Menu; Menu=nullptr;
+	if (MaterialContents) delete MaterialContents; MaterialContents=nullptr;
 	// clear commands!
 	C4Command *pCom, *pNext;
 	for (pCom=Command; pCom; pCom=pNext)
 	{
 		pNext=pCom->Next; delete pCom; pCom=pNext;
 	}
-	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=NULL; }
-	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=NULL; }
-	if (pMeshInstance) { delete pMeshInstance; pMeshInstance = NULL; }
+	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=nullptr; }
+	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=nullptr; }
+	if (pMeshInstance) { delete pMeshInstance; pMeshInstance = nullptr; }
 }
 
 bool C4Object::MenuCommand(const char *szCommand)
@@ -2470,7 +2470,7 @@ bool C4Object::MenuCommand(const char *szCommand)
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
 {
 	// remove old
-	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
+	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=nullptr; }
 	// set new data
 	SolidMask.Set(iX,iY,iWdt,iHgt,iTX,iTY);
 	// re-put if valid
@@ -2511,7 +2511,7 @@ void C4Object::SyncClearance()
 	// Menu
 	CloseMenu(true);
 	// Material contents
-	if (MaterialContents) delete MaterialContents; MaterialContents=NULL;
+	if (MaterialContents) delete MaterialContents; MaterialContents=nullptr;
 	// reset speed of staticback-objects
 	if (Category & C4D_StaticBack)
 	{
@@ -2560,7 +2560,7 @@ void C4Object::ClearCommand(C4Command *pUntil)
 	for (pCom=Command; pCom; pCom=pNext)
 	{
 		// Last one to clear
-		if (pCom==pUntil) pNext=NULL;
+		if (pCom==pUntil) pNext=nullptr;
 		// Next one to clear after this
 		else pNext=pCom->Next;
 		Command=pCom->Next;
@@ -2659,7 +2659,7 @@ C4Command *C4Object::FindCommand(int32_t iCommandType) const
 	for (C4Command *pCom = Command; pCom; pCom=pCom->Next)
 		if (pCom->Command == iCommandType) return pCom;
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 bool C4Object::ExecuteCommand()
@@ -2708,13 +2708,13 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	if (pMeshInstance)
 	{
 		if (Action.Animation) pMeshInstance->StopAnimation(Action.Animation);
-		Action.Animation = NULL;
+		Action.Animation = nullptr;
 
-		C4String* Animation = Act ? Act->GetPropertyStr(P_Animation) : NULL;
+		C4String* Animation = Act ? Act->GetPropertyStr(P_Animation) : nullptr;
 		if (Animation)
 		{
 			// note that weight is ignored
-			Action.Animation = pMeshInstance->PlayAnimation(Animation->GetData(), 0, NULL, new C4ValueProviderAction(this), new C4ValueProviderConst(itofix(1)), true);
+			Action.Animation = pMeshInstance->PlayAnimation(Animation->GetData(), 0, nullptr, new C4ValueProviderAction(this), new C4ValueProviderConst(itofix(1)), true);
 		}
 	}
 	// Stop previous act sound
@@ -2735,8 +2735,8 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 			!= (LastAction ? LastAction->GetPropertyP(P_Procedure) : -1))
 		{
 			Action.Data = 0;
-			Action.Target = NULL;
-			Action.Target2 = NULL;
+			Action.Target = nullptr;
+			Action.Target2 = nullptr;
 		}
 	}
 	// Set new action
@@ -2777,8 +2777,8 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 			if (LastAction->GetPropertyStr(P_AbortCall))
 			{
 				C4Def *pOldDef = Def;
-				if (pLastTarget && !pLastTarget->Status) pLastTarget = NULL;
-				if (pLastTarget2 && !pLastTarget2->Status) pLastTarget2 = NULL;
+				if (pLastTarget && !pLastTarget->Status) pLastTarget = nullptr;
+				if (pLastTarget2 && !pLastTarget2->Status) pLastTarget2 = nullptr;
 				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(iLastPhase, pLastTarget, pLastTarget2));
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return true;
@@ -3256,7 +3256,7 @@ static void DoGravity(C4Object *cobj)
 void StopActionDelayCommand(C4Object *cobj)
 {
 	ObjectComStop(cobj);
-	cobj->AddCommand(C4CMD_Wait,NULL,0,0,50);
+	cobj->AddCommand(C4CMD_Wait,nullptr,0,0,50);
 }
 
 bool ReduceLineSegments(C4Shape &rShape, bool fAlternate)
@@ -3711,7 +3711,7 @@ void C4Object::ExecAction()
 			// Grab lost action
 			GrabLost(this, prev_target);
 			// Lose target
-			Action.Target=NULL;
+			Action.Target=nullptr;
 			// Done
 			return;
 		}
@@ -3979,7 +3979,7 @@ void C4Object::ExecAction()
 				else
 				{
 					// Set new action
-					SetActionByName(next_action, NULL, NULL, SAC_StartCall | SAC_EndCall);
+					SetActionByName(next_action, nullptr, nullptr, SAC_StartCall | SAC_EndCall);
 				}
 			}
 		}
@@ -4167,12 +4167,12 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 		}
 		else
 			pSolidMaskData->Remove(false);
-		pSolidMaskData->Put(true, NULL, fRestoreAttachedObjects);
+		pSolidMaskData->Put(true, nullptr, fRestoreAttachedObjects);
 	}
 	// Otherwise, remove and destroy mask
 	else if (pSolidMaskData)
 	{
-		delete pSolidMaskData; pSolidMaskData = NULL;
+		delete pSolidMaskData; pSolidMaskData = nullptr;
 	}
 }
 
@@ -4299,7 +4299,7 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4Def **drag_def) const
 	if (!parV) return false;
 	// determine drag object/id
 	C4Object *obj = parV.getObj();
-	C4Def * def = NULL;
+	C4Def * def = nullptr;
 	if (!obj) def = parV.getDef();
 	if (drag_object) *drag_object = obj;
 	if (drag_def) *drag_def = def;
@@ -4490,18 +4490,18 @@ C4GraphicsOverlay *C4Object::GetGraphicsOverlay(int32_t iForID) const
 	// exact match found?
 	if (pOverlay && pOverlay->GetID() == iForID) return pOverlay;
 	// none found
-	return NULL;
+	return nullptr;
 }
 
 C4GraphicsOverlay *C4Object::GetGraphicsOverlay(int32_t iForID, bool fCreate)
 {
 	// search in list until ID is found or passed
-	C4GraphicsOverlay *pOverlay = pGfxOverlay, *pPrevOverlay = NULL;
+	C4GraphicsOverlay *pOverlay = pGfxOverlay, *pPrevOverlay = nullptr;
 	while (pOverlay && pOverlay->GetID() < iForID) { pPrevOverlay = pOverlay; pOverlay = pOverlay->GetNext(); }
 	// exact match found?
 	if (pOverlay && pOverlay->GetID() == iForID) return pOverlay;
 	// ID has been passed: Create new if desired
-	if (!fCreate) return NULL;
+	if (!fCreate) return nullptr;
 	C4GraphicsOverlay *pNewOverlay = new C4GraphicsOverlay();
 	pNewOverlay->SetID(iForID);
 	pNewOverlay->SetNext(pOverlay);
@@ -4513,14 +4513,14 @@ C4GraphicsOverlay *C4Object::GetGraphicsOverlay(int32_t iForID, bool fCreate)
 bool C4Object::RemoveGraphicsOverlay(int32_t iOverlayID)
 {
 	// search in list until ID is found or passed
-	C4GraphicsOverlay *pOverlay = pGfxOverlay, *pPrevOverlay = NULL;
+	C4GraphicsOverlay *pOverlay = pGfxOverlay, *pPrevOverlay = nullptr;
 	while (pOverlay && pOverlay->GetID() < iOverlayID) { pPrevOverlay = pOverlay; pOverlay = pOverlay->GetNext(); }
 	// exact match found?
 	if (pOverlay && pOverlay->GetID() == iOverlayID)
 	{
 		// remove it
 		if (pPrevOverlay) pPrevOverlay->SetNext(pOverlay->GetNext()); else pGfxOverlay = pOverlay->GetNext();
-		pOverlay->SetNext(NULL); // prevents deletion of following overlays
+		pOverlay->SetNext(nullptr); // prevents deletion of following overlays
 		delete pOverlay;
 		// removed
 		return true;
@@ -4663,7 +4663,7 @@ static void BubbleOut(int32_t tx, int32_t ty)
 	// Enough bubbles out there already
 	if (::Objects.ObjectCount(C4ID::Bubble) >= 150) return;
 	// Create bubble
-	Game.CreateObject(C4ID::Bubble,NULL,NO_OWNER,tx,ty);
+	Game.CreateObject(C4ID::Bubble,nullptr,NO_OWNER,tx,ty);
 }
 
 void C4Object::Splash()

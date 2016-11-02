@@ -428,7 +428,7 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
 	if (filename[0] != L'\0')
 	{
-		file = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+		file = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
 		// If we can't create a *new* file to dump into, don't dump at all.
 		if (file == INVALID_HANDLE_VALUE)
 			filename[0] = L'\0';
@@ -457,7 +457,7 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 		ExpParam.ExceptionPointers = pExceptionPointers;
 		ExpParam.ClientPointers = true;
 		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-							file, MiniDumpNormal, &ExpParam, &user_stream_info, NULL);
+							file, MiniDumpNormal, &ExpParam, &user_stream_info, nullptr);
 		CloseHandle(file);
 	}
 
@@ -599,7 +599,7 @@ namespace {
 			this_thread,
 			expression, file, line
 		};
-		HANDLE ctx_thread = CreateThread(NULL, 0L, &dump_thread, &dump_thread_data, 0L, NULL);
+		HANDLE ctx_thread = CreateThread(nullptr, 0L, &dump_thread, &dump_thread_data, 0L, nullptr);
 		WaitForSingleObject(ctx_thread, INFINITE);
 		CloseHandle(this_thread);
 		CloseHandle(ctx_thread);

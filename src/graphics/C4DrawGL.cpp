@@ -117,7 +117,7 @@ CStdGL::CStdGL():
 CStdGL::~CStdGL()
 {
 	Clear();
-	pGL=NULL;
+	pGL=nullptr;
 }
 
 void CStdGL::Clear()
@@ -126,7 +126,7 @@ void CStdGL::Clear()
 	// cannot unlock TexMgr here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
-	RenderTarget = NULL;
+	RenderTarget = nullptr;
 	// Clear all shaders
 	SpriteShader.Clear();
 	SpriteShaderMod2.Clear();
@@ -229,7 +229,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_Bones] = "bones"; // unused
 	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
 	uniformNames[C4SSU_FrameCounter] = "frameCounter";
-	uniformNames[C4SSU_Count] = NULL;
+	uniformNames[C4SSU_Count] = nullptr;
 
 	const char* attributeNames[C4SSA_Count + 1];
 	attributeNames[C4SSA_Position] = "oc_Position";
@@ -240,7 +240,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	attributeNames[C4SSA_BoneIndices1] = "oc_BoneIndices1"; // unused
 	attributeNames[C4SSA_BoneWeights0] = "oc_BoneWeights0"; // unused
 	attributeNames[C4SSA_BoneWeights1] = "oc_BoneWeights1"; // unused
-	attributeNames[C4SSA_Count] = NULL;
+	attributeNames[C4SSA_Count] = nullptr;
 
 	// Clear previous content
 	shader.Clear();
@@ -256,7 +256,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	if (ssc & C4SSC_OVERLAY) shader.AddDefine("OC_HAVE_OVERLAY");
 
 	if (additionalDefines)
-		for (const char* const* define = additionalDefines; *define != NULL; ++define)
+		for (const char* const* define = additionalDefines; *define != nullptr; ++define)
 			shader.AddDefine(*define);
 
 	// Then load slices for fragment and vertex shader
@@ -268,7 +268,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	shader.SetScriptCategories({"Common", "Object"});
 
 	if (additionalSlices)
-		for (const char* const* slice = additionalSlices; *slice != NULL; ++slice)
+		for (const char* const* slice = additionalSlices; *slice != nullptr; ++slice)
 			shader.LoadFragmentSlices(pGroups, *slice);
 
 	if (!shader.Init(name, uniformNames, attributeNames))
@@ -291,7 +291,7 @@ void CStdGL::ObjectLabel(uint32_t identifier, uint32_t name, int32_t length, con
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	// safety
-	if (!pWindow) return NULL;
+	if (!pWindow) return nullptr;
 
 	// create it
 	CStdGLCtx *pCtx;
@@ -358,11 +358,11 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	}
 	if (!success)
 	{
-		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
+		delete pCtx; Error("  gl: Error creating secondary context!"); return nullptr;
 	}
 	// creation selected the new context - switch back to previous context
-	RenderTarget = NULL;
-	pCurrCtx = NULL;
+	RenderTarget = nullptr;
+	pCurrCtx = nullptr;
 	// done
 	return pCtx;
 }
@@ -408,13 +408,13 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		call.SetUniform4fv(C4SSU_OverlayClr, 1, fOverlayModClr);
 	}
 
-	if(pFoW != NULL && normalTex != 0)
+	if(pFoW != nullptr && normalTex != 0)
 	{
 		call.AllocTexUnit(C4SSU_NormalTex);
 		glBindTexture(GL_TEXTURE_2D, normalTex);
 	}
 
-	if(pFoW != NULL)
+	if(pFoW != nullptr)
 	{
 		const C4Rect OutRect = GetOutRect();
 		const C4Rect ClipRect = GetClipRect();
@@ -461,7 +461,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 	if(pTransform)
 	{
 		float sz = 1.0f;
-		if (pFoW != NULL && normalTex != 0)
+		if (pFoW != nullptr && normalTex != 0)
 		{
 			// Decompose scale factors and scale Z accordingly to X and Y, again to avoid distorting normals
 			// We could instead work around this by using the projection matrix, but then for object rotations (SetR)
@@ -495,7 +495,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 	call.SetUniformMatrix4x4(C4SSU_ProjectionMatrix, ProjectionMatrix);
 	call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, modelview);
 
-	if (pFoW != NULL && normalTex != 0)
+	if (pFoW != nullptr && normalTex != 0)
 		call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, StdMeshMatrix::Inverse(StdProjectionMatrix::Upper3x4(modelview)));
 }
 
@@ -514,13 +514,13 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	if (!shader_call)
 	{
 		C4ShaderCall call(GetSpriteShader(false, false, false));
-		SetupMultiBlt(call, NULL, 0, 0, 0, 0, &transform);
+		SetupMultiBlt(call, nullptr, 0, 0, 0, 0, &transform);
 		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
 			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false, &call);
 	}
 	else
 	{
-		SetupMultiBlt(*shader_call, NULL, 0, 0, 0, 0, &transform);
+		SetupMultiBlt(*shader_call, nullptr, 0, 0, 0, 0, &transform);
 		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
 			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false, shader_call);
 	}
@@ -574,12 +574,12 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	if (!shader_call)
 	{
 		C4ShaderCall call(GetSpriteShader(true, false, false));
-		SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0, NULL);
+		SetupMultiBlt(call, nullptr, lines_tex, 0, 0, 0, nullptr);
 		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true, &call);
 	}
 	else
 	{
-		SetupMultiBlt(*shader_call, NULL, lines_tex, 0, 0, 0, NULL);
+		SetupMultiBlt(*shader_call, nullptr, lines_tex, 0, 0, 0, nullptr);
 		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true, shader_call);
 	}
 
@@ -591,14 +591,14 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	// Feed the vertices to the GL
 	if (!shader_call)
 	{
-		C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
-		SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, NULL);
-		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL, &call);
+		C4ShaderCall call(GetSpriteShader(pTex != nullptr, pOverlay != nullptr, pNormal != nullptr));
+		SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, nullptr);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != nullptr, &call);
 	}
 	else
 	{
-		SetupMultiBlt(*shader_call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, NULL);
-		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL, shader_call);
+		SetupMultiBlt(*shader_call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, nullptr);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != nullptr, shader_call);
 	}
 }
 
@@ -673,8 +673,8 @@ C4Shader* CStdGL::GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNorm
 	if(dwBlitMode & C4GFXBLIT_MOD2) ssc |= C4SSC_MOD2;
 	if(haveBase) ssc |= C4SSC_BASE;
 	if(haveBase && haveOverlay) ssc |= C4SSC_OVERLAY;
-	if(pFoW != NULL) ssc |= C4SSC_LIGHT;
-	if(pFoW != NULL && haveBase && haveNormal) ssc |= C4SSC_NORMAL;
+	if(pFoW != nullptr) ssc |= C4SSC_LIGHT;
+	if(pFoW != nullptr && haveBase && haveNormal) ssc |= C4SSC_NORMAL;
 	return GetSpriteShader(ssc);
 }
 
@@ -722,38 +722,38 @@ C4Shader* CStdGL::GetSpriteShader(int ssc)
 bool CStdGL::InitShaders(C4GroupSet* pGroups)
 {
 	// Create sprite blitting shaders
-	if(!PrepareSpriteShader(SpriteShader, "sprite", 0, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShader, "sprite", 0, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderMod2, "spriteMod2", C4SSC_MOD2, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderMod2, "spriteMod2", C4SSC_MOD2, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderBase, "spriteBase", C4SSC_BASE, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderBase, "spriteBase", C4SSC_BASE, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderBaseMod2, "spriteBaseMod2", C4SSC_MOD2 | C4SSC_BASE, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderBaseMod2, "spriteBaseMod2", C4SSC_MOD2 | C4SSC_BASE, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderBaseOverlay, "spriteBaseOverlay", C4SSC_BASE | C4SSC_OVERLAY, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderBaseOverlay, "spriteBaseOverlay", C4SSC_BASE | C4SSC_OVERLAY, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderBaseOverlayMod2, "spriteBaseOverlayMod2", C4SSC_MOD2 | C4SSC_BASE | C4SSC_OVERLAY, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderBaseOverlayMod2, "spriteBaseOverlayMod2", C4SSC_MOD2 | C4SSC_BASE | C4SSC_OVERLAY, pGroups, nullptr, nullptr))
 		return false;
 
-	if(!PrepareSpriteShader(SpriteShaderLight, "spriteLight", C4SSC_LIGHT, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLight, "spriteLight", C4SSC_LIGHT, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightMod2, "spriteLightMod2", C4SSC_LIGHT | C4SSC_MOD2, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightMod2, "spriteLightMod2", C4SSC_LIGHT | C4SSC_MOD2, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBase, "spriteLightBase", C4SSC_LIGHT | C4SSC_BASE, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBase, "spriteLightBase", C4SSC_LIGHT | C4SSC_BASE, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseMod2, "spriteLightBaseMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_MOD2, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseMod2, "spriteLightBaseMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_MOD2, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseOverlay, "spriteLightBaseOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseOverlay, "spriteLightBaseOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseOverlayMod2, "spriteLightBaseOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_MOD2, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseOverlayMod2, "spriteLightBaseOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_MOD2, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseNormal, "spriteLightBaseNormal", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormal, "spriteLightBaseNormal", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalMod2, "spriteLightBaseNormalMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL | C4SSC_MOD2, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalMod2, "spriteLightBaseNormalMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL | C4SSC_MOD2, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalOverlay, "spriteLightBaseNormalOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalOverlay, "spriteLightBaseNormalOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL, pGroups, nullptr, nullptr))
 		return false;
-	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalOverlayMod2, "spriteLightBaseNormalOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL | C4SSC_MOD2, pGroups, NULL, NULL))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalOverlayMod2, "spriteLightBaseNormalOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL | C4SSC_MOD2, pGroups, nullptr, nullptr))
 		return false;
 
 	return true;
@@ -796,7 +796,7 @@ bool CStdGL::RestoreDeviceObjects()
 	{
 		GenericVBOSizes[i] = GENERIC_VBO_SIZE;
 		glBindBuffer(GL_ARRAY_BUFFER, GenericVBOs[i]);
-		glBufferData(GL_ARRAY_BUFFER, GenericVBOSizes[i] * sizeof(C4BltVertex), NULL, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, GenericVBOSizes[i] * sizeof(C4BltVertex), nullptr, GL_STREAM_DRAW);
 		GenericVAOs[i] = GenVAOID();
 		GenericVAOs[i + N_GENERIC_VBOS] = GenVAOID();
 	}
@@ -869,11 +869,11 @@ bool CStdGL::Error(const char *szMsg)
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
+		nullptr,
 		err,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR) &lpMsgBuf,
-		0, NULL );
+		0, nullptr );
 	LogF("  gl: GetLastError() = %d - %s", err, StdStrBuf(lpMsgBuf).getData());
 	LocalFree(lpMsgBuf);
 #endif
@@ -909,7 +909,7 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 	return false;
 }
 
-CStdGL *pGL=NULL;
+CStdGL *pGL=nullptr;
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
@@ -922,7 +922,7 @@ bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 void CStdGL::Default()
 {
 	C4Draw::Default();
-	pCurrCtx = NULL;
+	pCurrCtx = nullptr;
 	iPixelFormat=0;
 	sfcFmt=0;
 	Workarounds.LowMaxVertexUniformCount = false;
@@ -1020,7 +1020,7 @@ void CStdGL::FreeVAOID(unsigned int vaoid)
 
 bool CStdGL::GetVAO(unsigned int vaoid, GLuint& vao)
 {
-	assert(pCurrCtx != NULL);
+	assert(pCurrCtx != nullptr);
 
 	if (vaoid >= pCurrCtx->hVAOs.size())
 	{

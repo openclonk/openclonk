@@ -22,7 +22,7 @@
 C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
 		Parent(Parent),
 		Name(pName ? Strings.RegString(pName) : 0),
-		MapNext(NULL)
+		MapNext(nullptr)
 {
 	// add to global lookuptable with this name
 	if (GetName())

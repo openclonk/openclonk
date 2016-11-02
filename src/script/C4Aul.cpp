@@ -49,7 +49,7 @@ const char *C4AulError::what() const noexcept
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-	C4PropListStaticMember(NULL, NULL, ::Strings.RegString("Global")),
+	C4PropListStaticMember(nullptr, nullptr, ::Strings.RegString("Global")),
 	ErrorHandler(&DefaultErrorHandler),
 	warnCnt(0), errCnt(0), lineCnt(0)
 {
@@ -59,7 +59,7 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
-	Child0 = ChildL = NULL;
+	Child0 = ChildL = nullptr;
 	RegisterGlobalConstant("Global", C4VPropList(this));
 }
 
@@ -90,7 +90,7 @@ void C4AulScriptEngine::Clear()
 	RegisterGlobalConstant("Global", C4VPropList(this));
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
-	delete pGlobalEffects; pGlobalEffects=NULL;
+	delete pGlobalEffects; pGlobalEffects=nullptr;
 	UserFiles.clear();
 	// Delete all global proplists made static (breaks
 	// cyclic references).
@@ -140,7 +140,7 @@ void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 static void GlobalEffectsMergeCompileFunc(StdCompiler *pComp, C4Effect * & pEffects, const char * name, C4PropList * pForObj, C4ValueNumbers * numbers)
 {
 	C4Effect *pOldEffect, *pNextOldEffect=pEffects;
-	pEffects = NULL;
+	pEffects = nullptr;
 	try
 	{
 		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pEffects, name), pForObj, numbers));
@@ -244,7 +244,7 @@ C4AulUserFile *C4AulScriptEngine::GetUserFile(int32_t handle)
 			return &*i;
 		}
 	// not found
-	return NULL;
+	return nullptr;
 }
 
 void C4AulScriptEngine::RegisterErrorHandler(C4AulErrorHandler *handler)
@@ -282,7 +282,7 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 
 C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 {
-	if (!Name) return NULL;
+	if (!Name) return nullptr;
 	C4AulFunc * Func = Funcs[Hash(Name) % HashSize];
 	while (Func && !SEqual(Name, Func->GetName()))
 		Func = Func->MapNext;

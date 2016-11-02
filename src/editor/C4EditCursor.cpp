@@ -80,12 +80,12 @@ C4Object *C4EditCursorSelection::GetObject(int32_t index) const
 		if ((obj = v.getObj()))
 			if (!index--)
 				return obj;
-	return NULL;
+	return nullptr;
 }
 
 C4Object *C4EditCursorSelection::GetLastObject() const
 {
-	C4Object *obj, *last = NULL;
+	C4Object *obj, *last = nullptr;
 	for (const C4Value &v : (*this))
 		if ((obj = v.getObj()))
 			last = obj;
@@ -94,7 +94,7 @@ C4Object *C4EditCursorSelection::GetLastObject() const
 
 void C4EditCursorSelection::ConsolidateEmpty()
 {
-	// remove NULLed entries that may happen because objects got deleted
+	// remove nullptred entries that may happen because objects got deleted
 	this->remove(C4VNull);
 }
 
@@ -148,7 +148,7 @@ void C4EditCursor::Execute()
 	case C4CNS_ModeEdit:
 		// Hold selection
 		if (Hold)
-			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, NULL, &selection);
+			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, nullptr, &selection);
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
@@ -182,7 +182,7 @@ bool C4EditCursor::Init()
 
 void C4EditCursor::ClearPointers(C4Object *pObj)
 {
-	if (Target==pObj) Target=NULL;
+	if (Target==pObj) Target=nullptr;
 	if (selection.ClearPointers(pObj))
 		OnSelectionChanged();
 }
@@ -256,10 +256,10 @@ bool C4EditCursor::Move(float iX, float iY, float iZoom, DWORD dwKeyState)
 		// Shift always indicates a target outside the current selection
 		else
 		{
-			Target = (dwKeyState & MK_SHIFT) ? selection.GetLastObject() : NULL;
+			Target = (dwKeyState & MK_SHIFT) ? selection.GetLastObject() : nullptr;
 			do
 			{
-				Target = Game.FindObject(NULL,X,Y,0,0,OCF_NotContained, Target);
+				Target = Game.FindObject(nullptr,X,Y,0,0,OCF_NotContained, Target);
 			}
 			while ((dwKeyState & MK_SHIFT) && Target && selection.IsContained(Target));
 		}
@@ -438,7 +438,7 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
-	DropTarget=NULL;
+	DropTarget=nullptr;
 
 	return true;
 }
@@ -515,7 +515,7 @@ bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 	DragLine=false;
 	DragShape = false;
 	DragTransform = false;
-	DropTarget=NULL;
+	DropTarget=nullptr;
 	// Update
 	UpdateStatusBar();
 	return true;
@@ -588,7 +588,7 @@ bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 
 bool C4EditCursor::RightButtonUp(DWORD dwKeyState)
 {
-	Target=NULL;
+	Target=nullptr;
 #ifndef WITH_QT_EDITOR
 	DoContextMenu(dwKeyState);
 #endif
@@ -601,7 +601,7 @@ bool C4EditCursor::RightButtonUp(DWORD dwKeyState)
 bool C4EditCursor::Delete()
 {
 	if (!EditingOK()) return false;
-	EMMoveObject(EMMO_Remove, Fix0, Fix0, NULL, &selection);
+	EMMoveObject(EMMO_Remove, Fix0, Fix0, nullptr, &selection);
 	if (::Control.isCtrlHost())
 	{
 		OnSelectionChanged();
@@ -626,7 +626,7 @@ bool C4EditCursor::OpenPropTools()
 
 bool C4EditCursor::Duplicate()
 {
-	EMMoveObject(EMMO_Duplicate, Fix0, Fix0, NULL, &selection);
+	EMMoveObject(EMMO_Duplicate, Fix0, Fix0, nullptr, &selection);
 	return true;
 }
 
@@ -883,7 +883,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			creator_overlay.reset(new C4GraphicsOverlay());
 			creator_overlay->SetAsBase(&creator_def->Graphics, C4GFXBLIT_ADDITIVE);
 		}
-		creator_overlay->Draw(cgo_creator, NULL, NO_OWNER);
+		creator_overlay->Draw(cgo_creator, nullptr, NO_OWNER);
 	}
 	// Draw object highlight
 	C4Object *highlight = highlighted_object.getObj();
@@ -930,13 +930,13 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width, u
 
 	const unsigned int n_vertices = sizeof(vertices) / sizeof(vertices[0]);
 
-	pDraw->PerformMultiLines(cgo.Surface, vertices, n_vertices, width, NULL);
+	pDraw->PerformMultiLines(cgo.Surface, vertices, n_vertices, width, nullptr);
 }
 
 
 void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
 {
-	EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, XOff, YOff, NULL, &selection);
+	EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, XOff, YOff, nullptr, &selection);
 }
 
 void C4EditCursor::FrameSelection()
@@ -956,7 +956,7 @@ void C4EditCursor::FrameSelection()
 bool C4EditCursor::In(const char *szText)
 {
 	::Console.RegisterRecentInput(szText, C4Console::MRU_Object);
-	EMMoveObject(EMMO_Script, Fix0, Fix0, NULL, &selection, szText);
+	EMMoveObject(EMMO_Script, Fix0, Fix0, nullptr, &selection, szText);
 	selection.ConsolidateEmpty();
 	::Console.PropertyDlgUpdate(selection, true);
 	return true;
@@ -968,14 +968,14 @@ void C4EditCursor::Default()
 	fShiftWasDown=false;
 	Mode = C4CNS_ModeEdit;
 	X=Y=X2=Y2=0;
-	Target=DropTarget=NULL;
+	Target=DropTarget=nullptr;
 #ifdef USE_WIN32_WINDOWS
-	hMenu=NULL;
+	hMenu=nullptr;
 #endif
 	Hold=DragFrame=DragLine=DragShape=DragTransform=false;
 	selection.clear();
-	creator_def = NULL;
-	creator_overlay = NULL;
+	creator_def = nullptr;
+	creator_overlay = nullptr;
 	has_mouse_hover = false;
 	selection_invalid = false;
 	DragRot0 = DragRotLast = 0; DragCon0 = DragConLast = FullCon;
@@ -984,14 +984,14 @@ void C4EditCursor::Default()
 void C4EditCursor::Clear()
 {
 #ifdef USE_WIN32_WINDOWS
-	if (hMenu) DestroyMenu(hMenu); hMenu=NULL;
+	if (hMenu) DestroyMenu(hMenu); hMenu=nullptr;
 #endif
 #ifdef WITH_DEBUG_MODE
 	ObjselectDelItems();
 #endif
 	selection.clear();
 	Console.PropertyDlgUpdate(selection, false);
-	creator_overlay.reset(NULL);
+	creator_overlay.reset(nullptr);
 #ifdef WITH_QT_EDITOR
 	shapes->ClearShapes(); // Should really be empty already
 #endif
@@ -1100,7 +1100,7 @@ void C4EditCursor::ApplyToolFill()
 	if (!EditingOK(true)) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.GetMode(), X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.GetMode(), X,Y,0,Y2, pTools->Grade, pTools->Material, nullptr, nullptr, nullptr));
 }
 
 void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
@@ -1110,7 +1110,7 @@ void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
 	if (num)
 		AppendMenu(GetSubMenu(hMenu,0), MF_STRING, IDM_VPORTDYN_FIRST + num, label.GetWideChar());
 	else
-		AppendMenu(GetSubMenu(hMenu,0), MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
+		AppendMenu(GetSubMenu(hMenu,0), MF_SEPARATOR, IDM_VPORTDYN_FIRST, nullptr);
 #endif
 }
 
@@ -1153,7 +1153,7 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 #endif
 		itemsObjselect.resize(entrycount + 1); // +1 for a separator
 		// Add a separator bar
-		itemsObjselect[0].Object = NULL;
+		itemsObjselect[0].Object = nullptr;
 		itemsObjselect[0].Command.Clear();
 		itemsObjselect[0].EditCursor = this;
 		AppendMenuItem(0, StdStrBuf());
@@ -1196,7 +1196,7 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 		{
 			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST + maxentries + 1, L"...");
 			itemsObjselect[maxentries + 1].ItemId = IDM_VPORTDYN_FIRST + maxentries + 1;
-			itemsObjselect[maxentries + 1].Object = NULL;
+			itemsObjselect[maxentries + 1].Object = nullptr;
 			itemsObjselect[maxentries + 1].Command.Clear();
 		}
 #endif
@@ -1209,7 +1209,7 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
 	                  point.x,point.y, 0,
 	                  Console.hWindow,
-	                  NULL);
+	                  nullptr);
 	switch (iItem)
 	{
 	case IDM_VIEWPORT_DELETE: Delete(); break;
@@ -1244,13 +1244,13 @@ void C4EditCursor::GrabContents()
 	Hold=true;
 
 	// Exit all objects
-	EMMoveObject(EMMO_Exit, Fix0, Fix0, NULL, &selection);
+	EMMoveObject(EMMO_Exit, Fix0, Fix0, nullptr, &selection);
 }
 
 void C4EditCursor::UpdateDropTarget(DWORD dwKeyState)
 {
 	// A drop target is set if holding down control either while moving an object or in object creation mode
-	DropTarget=NULL;
+	DropTarget=nullptr;
 
 	if (dwKeyState & MK_CONTROL)
 		if (selection.GetObject() || (Mode == C4CNS_ModeCreateObject && creator_def))
@@ -1364,7 +1364,7 @@ void C4EditCursor::ApplyToolPicker()
 void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs, const char *szScript)
 {
 	// construct object list
-	int32_t iObjCnt = 0; int32_t *pObjIDs = NULL;
+	int32_t iObjCnt = 0; int32_t *pObjIDs = nullptr;
 	if (pObjs && (iObjCnt = pObjs->ObjectCount()))
 	{
 		pObjIDs = new int32_t [iObjCnt];

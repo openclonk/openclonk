@@ -76,7 +76,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 	LPWSTR *curwarg = wargv;
 	while(argc--)
 	{
-		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, NULL, 0, 0, 0);
+		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, nullptr, 0, 0, 0);
 		char *utf8arg = new char[arglen ? arglen : 1];
 		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
 		argv.push_back(utf8arg);
@@ -107,7 +107,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 
 int main()
 {
-	return WinMain(GetModuleHandle(NULL), 0, 0, 0);
+	return WinMain(GetModuleHandle(nullptr), 0, 0, 0);
 }
 
 #else // _WIN32
@@ -215,16 +215,16 @@ int main (int argc, char * argv[])
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
 	// Quit the program when asked
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGTERM, &sa, NULL);
-	sigaction(SIGHUP, &sa, NULL);
+	sigaction(SIGINT, &sa, nullptr);
+	sigaction(SIGTERM, &sa, nullptr);
+	sigaction(SIGHUP, &sa, nullptr);
 	// Set up debugging facilities
 	sa.sa_flags |= SA_RESETHAND;
-	sigaction(SIGBUS, &sa, NULL);
-	sigaction(SIGILL, &sa, NULL);
-	sigaction(SIGSEGV, &sa, NULL);
-	sigaction(SIGABRT, &sa, NULL);
-	sigaction(SIGFPE, &sa, NULL);
+	sigaction(SIGBUS, &sa, nullptr);
+	sigaction(SIGILL, &sa, nullptr);
+	sigaction(SIGSEGV, &sa, nullptr);
+	sigaction(SIGABRT, &sa, nullptr);
+	sigaction(SIGFPE, &sa, nullptr);
 #endif
 
 	// Init application

@@ -74,13 +74,6 @@
 #endif
 
 
-
-// C++0x nullptr
-#undef NULL
-#define NULL nullptr
-
-
-
 // Integer dataypes
 #include <stdint.h>
 

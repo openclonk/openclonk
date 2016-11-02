@@ -99,7 +99,7 @@ C4Viewport::C4Viewport()
 	ZoomTarget = 0.0;
 	ViewportOpenFrame = 0;
 	ZoomLimitMin = ZoomLimitMax = 0; // no limit
-	Next = NULL;
+	Next = nullptr;
 	PlayerLock = true;
 	ResetMenuPositions = false;
 	viewOffsX = viewOffsY = 0;
@@ -209,10 +209,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 	GameZoom.Zoom = cgo.Zoom;
 
 	// Draw landscape borders
-	if (BorderLeft > 0.0f)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX, DrawY, BorderLeft, ViewHgt, -DrawX, -DrawY, NULL);
-	if (BorderTop > 0.0f)    pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY, ViewWdt - BorderLeft - BorderRight, BorderTop, -DrawX - BorderLeft, -DrawY, NULL);
-	if (BorderRight > 0.0f)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + ViewWdt - BorderRight, DrawY, BorderRight, ViewHgt, -DrawX - ViewWdt + BorderRight, -DrawY, NULL);
-	if (BorderBottom > 0.0f) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY + ViewHgt - BorderBottom, ViewWdt - BorderLeft - BorderRight, BorderBottom, -DrawX - BorderLeft, -DrawY - ViewHgt + BorderBottom, NULL);
+	if (BorderLeft > 0.0f)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX, DrawY, BorderLeft, ViewHgt, -DrawX, -DrawY, nullptr);
+	if (BorderTop > 0.0f)    pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY, ViewWdt - BorderLeft - BorderRight, BorderTop, -DrawX - BorderLeft, -DrawY, nullptr);
+	if (BorderRight > 0.0f)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + ViewWdt - BorderRight, DrawY, BorderRight, ViewHgt, -DrawX - ViewWdt + BorderRight, -DrawY, nullptr);
+	if (BorderBottom > 0.0f) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY + ViewHgt - BorderBottom, ViewWdt - BorderLeft - BorderRight, BorderBottom, -DrawX - BorderLeft, -DrawY - ViewHgt + BorderBottom, nullptr);
 
 	// Compute non-bordered viewport area
 	cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= (BorderLeft + BorderRight) / cgo.Zoom; cgo.Hgt -= (BorderTop + BorderBottom) / cgo.Zoom;
@@ -234,7 +234,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 
 		// Render FoW only if active for player
 		C4Player *pPlr = ::Players.Get(Player);
-		C4FoWRegion* pFoW = NULL;
+		C4FoWRegion* pFoW = nullptr;
 		if (pPlr && pPlr->fFogOfWar) pFoW = this->pFoW.get();
 
 		// Update FoW
@@ -248,7 +248,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 			if (!lightRect.Wdt || !lightRect.Hgt)
 			{
 				// Do not bother initializing FoW on empty region; would cause errors in drawing proc
-				pFoW = NULL;
+				pFoW = nullptr;
 			}
 			else
 			{
@@ -257,7 +257,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 				if (!pFoW->Render())
 				{
 					// If FoW init fails, do not set it for further drawing
-					pFoW = NULL;
+					pFoW = nullptr;
 				}
 			}
 		}
@@ -298,7 +298,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 		C4ST_STOP(Obj2Stat)
 
 			// Draw everything else without FoW
-			pDraw->SetFoW(NULL);
+			pDraw->SetFoW(nullptr);
 	}
 	else
 	{
@@ -838,7 +838,7 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 C4ViewportList Viewports;
 
 C4ViewportList::C4ViewportList():
-	FirstViewport(NULL)
+	FirstViewport(nullptr)
 {
 	ViewportArea.Default();
 }
@@ -854,7 +854,7 @@ void C4ViewportList::Clear()
 		delete FirstViewport;
 		FirstViewport=next;
 	}
-	FirstViewport=NULL;
+	FirstViewport=nullptr;
 }
 
 void C4ViewportList::Execute(bool DrawBackground)
@@ -876,7 +876,7 @@ void C4ViewportList::DrawFullscreenBackground()
 	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
 	{
 		const C4Rect &rc = BackgroundAreas.Get(i);
-		pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y, NULL);
+		pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y, nullptr);
 	}
 }
 
@@ -911,7 +911,7 @@ C4Viewport* C4ViewportList::GetViewport(HWND hwnd)
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 		if (cvp->pWindow->hWindow==hwnd)
 			return cvp;
-	return NULL;
+	return nullptr;
 }
 #endif
 bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
@@ -962,7 +962,7 @@ bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
 {
 	// Close all matching viewports
 	int32_t iLastCount = GetViewportCount();
-	C4Viewport *next,*prev=NULL;
+	C4Viewport *next,*prev=nullptr;
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=next)
 	{
 		next=cvp->Next;
@@ -1005,7 +1005,7 @@ void C4ViewportList::RecalculateViewports()
 	::GraphicsSystem.InvalidateBg();
 #ifdef _WIN32
 	// reset mouse clipping
-	ClipCursor(NULL);
+	ClipCursor(nullptr);
 #else
 	// StdWindow handles this.
 #endif
@@ -1072,7 +1072,7 @@ C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer, C4Viewport* pPrev)
 	for (C4Viewport *cvp=pPrev ? pPrev->Next : FirstViewport; cvp; cvp=cvp->Next)
 		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
 			return cvp;
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius, int32_t *outPlayer)
@@ -1106,7 +1106,7 @@ void C4ViewportList::SortViewportsByPlayerControl()
 	do
 	{
 		fSorted = true;
-		for (pPrev=NULL,pView=FirstViewport; pView && (pNext = pView->Next); pView=pNext)
+		for (pPrev=nullptr,pView=FirstViewport; pView && (pNext = pView->Next); pView=pNext)
 		{
 			// Get players
 			pPlr1 = ::Players.Get(pView->Player);

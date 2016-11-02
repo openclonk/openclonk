@@ -94,7 +94,7 @@ private:
 
 	ProcessLineResult ProcessLine(const StdStrBuf &Line);
 
-	bool SendLine(const char *szType, const char *szData = NULL);
+	bool SendLine(const char *szType, const char *szData = nullptr);
 };
 
 #endif

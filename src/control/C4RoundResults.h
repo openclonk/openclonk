@@ -98,8 +98,8 @@ private:
 	int32_t iPlayerCount, iPlayerCapacity;
 
 public:
-	C4RoundResultsPlayers() : ppPlayers(NULL), iPlayerCount(0), iPlayerCapacity(0) {}
-	C4RoundResultsPlayers(const C4RoundResultsPlayers &cpy) : ppPlayers(NULL), iPlayerCount(0), iPlayerCapacity(0) { *this=cpy; }
+	C4RoundResultsPlayers() : ppPlayers(nullptr), iPlayerCount(0), iPlayerCapacity(0) {}
+	C4RoundResultsPlayers(const C4RoundResultsPlayers &cpy) : ppPlayers(nullptr), iPlayerCount(0), iPlayerCapacity(0) { *this=cpy; }
 	~C4RoundResultsPlayers() { Clear(); }
 
 	void Clear();
