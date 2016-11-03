@@ -1307,7 +1307,6 @@ std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 {
 	const char *NodeStart = TokenSPos;
 	std::unique_ptr<::aul::ast::Expr> expr;
-	int ndx;
 	const C4ScriptOpDef * op;
 	C4AulFunc *FoundFn = 0;
 	C4Value val;
