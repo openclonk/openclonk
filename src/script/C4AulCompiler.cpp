@@ -500,9 +500,16 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 	Fn->SetOverloaded(parent_func);
 	Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 
+	try
+	{
 	DefaultRecursiveVisitor::visit(n);
-
-	Fn = nullptr;
+		Fn = nullptr;
+	}
+	catch (...)
+	{
+		Fn = nullptr;
+		throw;
+	}
 }
 
 void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::CallExpr *n)
@@ -1551,6 +1558,10 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarDecl *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 {
+	assert(!Fn && "CodegenAstVisitor: function declaration encountered within active function");
+	if (Fn)
+		throw Error(target_host, host, n, Fn, "internal error: function declaration for '%s' encountered within active function", n->name.c_str());
+
 	C4PropListStatic *Parent = n->is_global ? target_host->Engine->GetPropList() : target_host->GetPropList();
 
 	C4String *name = ::Strings.FindString(n->name.c_str());
@@ -1585,9 +1596,16 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 			Fn->SetOverloaded(global_parent);
 	}
 
+	try
+	{
 	EmitFunctionCode(n);
-
-	Fn = nullptr;
+		Fn = nullptr;
+	}
+	catch (...)
+	{
+		Fn = nullptr;
+		throw;
+	}
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const::aul::ast::FunctionExpr * n)
