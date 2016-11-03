@@ -1514,6 +1514,9 @@ void C4ControlMessage::Execute() const
 		// to lobby
 		if (pLobby)
 			pLobby->OnMessage(Game.Clients.getClientByID(iByClient), str.getData());
+#ifndef USE_CONSOLE
+		else
+#endif
 		// to log
 		Log(str.getData());
 		break;

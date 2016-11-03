@@ -1502,8 +1502,9 @@ void C4Network2::OnClientDisconnect(C4Network2Client *pClient)
 			if (Status.getState() == GS_Go || Status.getState() == GS_Pause)
 				ChangeGameStatus(Status.getState(), ::Control.ControlTick);
 #ifdef USE_CONSOLE
-			// Dedicated server: stop hosting if there is only one client left we're hosting for.
-			if (Clients.Count() <= 3) Application.Quit(); // Off-by-1 error
+		// Dedicated server: stop hosting if there is only one client left we're hosting for.
+		// TODO: Find a better place to do this.
+		if (Game.IsRunning && Clients.Count() <= 3) Application.Quit(); // Off-by-1 error
 #endif // USE_CONSOLE
 	}
 	// host disconnected? Clear up
