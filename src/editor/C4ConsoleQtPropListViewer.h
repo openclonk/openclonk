@@ -663,7 +663,7 @@ struct C4ConsoleQtPropListModelProperty
 	int32_t group_idx;
 
 	// Each property may be connected to one shape shown in the viewport for editing
-	C4ConsoleQtShapeHolder shape;
+	C4ConsoleQtShapeHolder *shape;
 	const C4PropertyDelegate *shape_delegate;
 	C4PropertyPath shape_property_path;
 
@@ -708,6 +708,7 @@ private:
 	C4PropertyDelegateFactory *delegate_factory;
 	QItemSelectionModel *selection_model;
 	bool layout_valid; // set to false when property numbers change
+	std::map<std::string, C4ConsoleQtShapeHolder> shapes; // shapes currently shown in editor. Indexed by get path
 public:
 	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
 	~C4ConsoleQtPropListModel();

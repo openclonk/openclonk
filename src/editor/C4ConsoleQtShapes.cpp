@@ -1300,6 +1300,8 @@ void C4ConsoleQtShapes::MouseUp(float x, float y, bool shift_down, bool ctrl_dow
 
 /* Shape pointer holder class */
 
+bool C4ConsoleQtShapeHolder::last_visit_flag = false;
+
 void C4ConsoleQtShapeHolder::Clear()
 {
 	if (shape)

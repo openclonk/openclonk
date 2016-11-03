@@ -2412,7 +2412,7 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModel::Property *editor_prop) const
 {
 	// Set according to delegate
-	d->SetModelData(editor, d->GetPathForProperty(editor_prop), editor_prop->shape.Get());
+	d->SetModelData(editor, d->GetPathForProperty(editor_prop), editor_prop->shape ? editor_prop->shape->Get() : nullptr);
 }
 
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -2708,12 +2708,19 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
 					new_shape_delegate->SetModelData(nullptr, prop->shape_property_path, shape);
 				});
-				prop->shape.Set(shape);
+				// Put shape at this path into shape holder list
+				std::string shape_index = std::string(prop->shape_property_path.GetGetPath());
+				prop->shape = &shapes[shape_index];
+				prop->shape->Set(shape);
 			}
 			else
 			{
-				prop->shape.Clear();
+				prop->shape = nullptr;
 			}
+		}
+		if (prop->shape)
+		{
+			prop->shape->visit();
 		}
 	}
 	return true;
@@ -2759,7 +2766,7 @@ bool C4ConsoleQtPropListModel::AddEffectGroup(int32_t group_index, C4Object *bas
 			prop->display_name = effect->GetPropertyStr(P_Name);
 			prop->priority = 0;
 			prop->delegate = delegate_factory->GetEffectDelegate();
-			prop->shape.Clear();
+			prop->shape = nullptr;
 			prop->shape_delegate = nullptr;
 			prop->shape_property_path.Clear();
 			prop->about_to_edit = false;
@@ -2828,6 +2835,8 @@ void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 	emit layoutAboutToBeChanged();
 	// Update target value from path
 	target_value = target_path.ResolveValue();
+	// Prepare shape list update
+	C4ConsoleQtShapeHolder::begin_visit();
 	// Safe-get from C4Values in case any prop lists or arrays got deleted
 	int32_t num_groups, default_selection_group = -1, default_selection_index = -1;
 	switch (target_value.GetType())
@@ -2841,6 +2850,18 @@ void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 	default: // probably nil
 		num_groups = 0;
 		break;
+	}
+	// Remove any unreferenced shapes
+	for (auto iter = shapes.begin(); iter != shapes.end(); )
+	{
+		if (!iter->second.was_visited())
+		{
+			iter = shapes.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
 	}
 	// Update model range
 	if (num_groups != property_groups.size())
@@ -2952,7 +2973,8 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
 		internal_properties.props[i].delegate = nullptr; // init when needed
 		internal_properties.props[i].group_idx = num_groups;
-		internal_properties.props[i].shape.Clear();
+		internal_properties.props[i].shape = nullptr;
+		internal_properties.props[i].shape_property_path.Clear();
 		internal_properties.props[i].shape_delegate = nullptr;
 		internal_properties.props[i].about_to_edit = false;
 	}
@@ -3009,7 +3031,8 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		prop.delegate = item_delegate;
 		prop.about_to_edit = false;
 		prop.group_idx = 0;
-		prop.shape.Clear(); // array elements cannot have shape
+		prop.shape = nullptr; // array elements cannot have shapes
+		prop.shape_property_path.Clear();
 		prop.shape_delegate = nullptr;
 	}
 	return 1; // one group for the values

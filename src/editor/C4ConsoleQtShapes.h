@@ -258,6 +258,9 @@ public:
 class C4ConsoleQtShapeHolder
 {
 	C4ConsoleQtShape *shape;
+	bool last_visit;
+
+	static bool last_visit_flag;
 
 public:
 	C4ConsoleQtShapeHolder() : shape(nullptr) {}
@@ -266,6 +269,11 @@ public:
 	void Clear();
 	void Set(C4ConsoleQtShape *new_shape);
 	C4ConsoleQtShape *Get() const { return shape; }
+
+	// Check counter to determine unused shapes
+	void visit() { last_visit = last_visit_flag; }
+	bool was_visited() const { return last_visit == last_visit_flag; }
+	static void begin_visit() { last_visit_flag = !last_visit_flag; }
 };
 
 
