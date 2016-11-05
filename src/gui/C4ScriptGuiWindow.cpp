@@ -1445,6 +1445,91 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 	EnableScrollBar(lowestChildRelY > height, lowestChildRelY);
 }
 
+// Similar to the grid layout but tries to fill spaces more thoroughly.
+// It's slower and might reorder items.
+void C4ScriptGuiWindow::UpdateLayoutTightGrid()
+{
+	const int32_t &width = rcBounds.Wdt;
+	const int32_t &height = rcBounds.Hgt;
+	const int32_t borderX(0), borderY(0);
+	int32_t lowestChildRelY = 0;
+
+	std::list<C4ScriptGuiWindow*> alreadyPlacedChildren;
+
+	for (C4GUI::Element * element : *this)
+	{
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
+		// calculate the space the child needs, correctly respecting the margins
+		const float childLeftMargin = child->CalculateRelativeSize(width, leftMargin, relLeftMargin);
+		const float childTopMargin = child->CalculateRelativeSize(height, topMargin, relTopMargin);
+		const float childRightMargin = child->CalculateRelativeSize(width, rightMargin, relRightMargin);
+		const float childBottomMargin = child->CalculateRelativeSize(height, bottomMargin, relBottomMargin);
+
+		const float childWdtF = float(child->rcBounds.Wdt) + childLeftMargin + childRightMargin;
+		const float childHgtF = float(child->rcBounds.Hgt) + childTopMargin + childBottomMargin;
+
+		// do all the rounding after the calculations
+		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
+		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
+
+		// Look for a free spot.
+		int32_t currentX = borderX;
+		int32_t currentY = borderY;
+
+		bool hadOverlap = false;
+		int overlapRepeats = 0;
+		do
+		{
+			auto overlapsWithOther = [&currentX, &currentY, &childWdt, &childHgt](C4ScriptGuiWindow *other)
+			{
+				if (currentX + childWdt <= other->rcBounds.x) return false;
+				if (currentY + childHgt <= other->rcBounds.y) return false;
+				if (currentX >= other->rcBounds.GetRight()) return false;
+				if (currentY >= other->rcBounds.GetBottom()) return false;
+				return true;
+			};
+
+			int32_t currentMinY = 0;
+			hadOverlap = false;
+			for (auto &other : alreadyPlacedChildren)
+			{
+				// Check if the other element is not yet above the new child.
+				if ((other->rcBounds.GetBottom() > currentY) && other->rcBounds.Hgt > 0)
+				{
+					if (currentMinY == 0 || (other->rcBounds.GetBottom() < currentMinY))
+						currentMinY = other->rcBounds.GetBottom();
+				}
+				// If overlapping, we must advance.
+				if (overlapsWithOther(other))
+				{
+					hadOverlap = true;
+					currentX = other->rcBounds.GetRight();
+					// Break line if the element doesn't fit anymore.
+					if (currentX + childWdt > width)
+					{
+						currentX = borderX;
+						// Start forcing change once we start repeating the check. Otherwise, there might
+						// be a composition of children that lead to infinite loop. The worst-case number
+						// of sensible checks might O(N^2) be with a really unfortunate children list.
+						const int32_t forcedMinimalChange = (overlapRepeats > alreadyPlacedChildren.size()) ? 1 : 0;
+						currentY = std::max(currentY + forcedMinimalChange, currentMinY);
+					}
+				}
+			}
+			overlapRepeats += 1;
+		} while (hadOverlap);
+
+		alreadyPlacedChildren.push_back(child);
+
+		lowestChildRelY = std::max(lowestChildRelY, currentY + childHgt);
+		child->rcBounds.x = currentX + static_cast<int32_t>(childLeftMargin);
+		child->rcBounds.y = currentY + static_cast<int32_t>(childTopMargin);
+	}
+
+	// do we need a scroll bar?
+	EnableScrollBar(lowestChildRelY > height, lowestChildRelY);
+}
+
 void C4ScriptGuiWindow::UpdateLayoutVertical()
 {
 	const int32_t borderY(0);
@@ -1738,6 +1823,8 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	// special layout selected?
 	if (style & C4ScriptGuiWindowStyleFlag::GridLayout)
 		UpdateLayoutGrid();
+	else if (style & C4ScriptGuiWindowStyleFlag::TightGridLayout)
+		UpdateLayoutTightGrid();
 	else if (style & C4ScriptGuiWindowStyleFlag::VerticalLayout)
 		UpdateLayoutVertical();
 

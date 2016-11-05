@@ -3039,6 +3039,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "GUI_SetTag"               ,C4V_Int,      C4ScriptGuiWindowActionID::SetTag },
 	{ "GUI_Call"                 ,C4V_Int,      C4ScriptGuiWindowActionID::Call },
 	{ "GUI_GridLayout"           ,C4V_Int,      C4ScriptGuiWindowStyleFlag::GridLayout },
+	{ "GUI_TightGridLayout"      ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TightGridLayout },
 	{ "GUI_VerticalLayout"       ,C4V_Int,      C4ScriptGuiWindowStyleFlag::VerticalLayout },
 	{ "GUI_TextVCenter"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TextVCenter },
 	{ "GUI_TextHCenter"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TextHCenter },

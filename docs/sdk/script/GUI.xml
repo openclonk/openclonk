@@ -179,6 +179,10 @@
 				<col>The sub-windows of this window will automatically be arranged in a grid.</col>
 			</row>
 			<row>
+				<col>GUI_TightGridLayout</col>
+				<col>Like GUI_GridLayout but might reorder items and lead to less empty space between sub-windows.</col>
+			</row>
+			<row>
 				<col>GUI_VerticalLayout</col>
 				<col>The sub-windows of this window will automatically be arranged vertically in a list.</col>
 			</row>

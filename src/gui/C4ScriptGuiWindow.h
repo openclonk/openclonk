@@ -82,7 +82,8 @@ enum C4ScriptGuiWindowStyleFlag
 	FitChildren = 64,
 	Multiple = 128,
 	IgnoreMouse = 256,
-	NoCrop = 512
+	NoCrop = 512,
+	TightGridLayout = 1024,
 };
 
 class C4ScriptGuiWindow;
@@ -291,6 +292,7 @@ public:
 	bool UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight);
 	// special layouts that are set by styles
 	void UpdateLayoutGrid();
+	void UpdateLayoutTightGrid();
 	void UpdateLayoutVertical();
 	// the window will be drawn in the context of a viewport BY the viewport
 	// so just do nothing when TheScreen wants to draw the window
