@@ -716,6 +716,8 @@ func CreateMainMenu(object obj, int slot)
 			continue;
 		}
 		menu.menu_object = CreateObject(MenuStyle_Grid);
+		if (menu.flag == InteractionMenu_Contents)
+			menu.menu_object->SetTightGridLayout();
 		
 		menu.menu_object.Top = "+1em";
 		menu.menu_object.Priority = 2;
@@ -1045,8 +1047,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				// Use a default grid-menu entry as the base.
 				custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
 				// Pack it into a larger frame to allow for another button below.
-				// The entries with contents are sorted to the back of the inventory menu. This makes for a nicer layout.
-				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = 10000 + obj->GetValue()};
+				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = obj->GetValue()};
 				// Then add a little container-symbol (that can be clicked).
 				custom.bottom =
 				{
