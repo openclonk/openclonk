@@ -1047,7 +1047,8 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				// Use a default grid-menu entry as the base.
 				custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
 				// Pack it into a larger frame to allow for another button below.
-				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = obj->GetValue()};
+				// The priority offset makes sure that double-height items are at the front.
+				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = -10000 + obj->GetValue()};
 				// Then add a little container-symbol (that can be clicked).
 				custom.bottom =
 				{
