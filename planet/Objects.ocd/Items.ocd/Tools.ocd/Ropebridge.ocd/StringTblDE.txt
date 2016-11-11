@@ -1,5 +1,5 @@
 Name=Hängebrücke
-Description=Short rope bridge which can cover small gaps in the landscape. Press [Use] once to place the left and another time to place the right end of the bridge.
-MsgBridgeLong=Post can't be placed here, bridge would be too long.
-MsgBridgeShort=Post can't be placed here, bridge would be too short.
-MsgBridgeUneven=Post can't be placed here, bridge would be too uneven.
+Description=Eine kleine Hängebrücke, die man über kleine Abgründe in der Landschaft bauen kann. Drücke [Benutzen], um das linke Ende, und nochmal, um das rechte zu platzieren.
+MsgBridgeLong=Pfahl kann hier nicht platziert werden: Brücke zu lang!
+MsgBridgeShort=Pfahl kann hier nicht platziert werden: Brücke zu kurz!
+MsgBridgeUneven=Pfahl kann hier nicht platziert werden: Höhenunterschied der Pfähle zu groß!
