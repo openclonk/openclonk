@@ -825,7 +825,7 @@ bool C4ConsoleQtGraph::IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::Cursor
 		{
 			// Get affected vertices
 			assert(edge.vertex_indices[0] >= 0 && edge.vertex_indices[1] >= 0);
-			assert(edge.vertex_indices[0] < vertices.size() && edge.vertex_indices[1] < vertices.size());
+			assert(edge.vertex_indices[0] < graph.vertices.size() && edge.vertex_indices[1] < graph.vertices.size());
 			const Vertex &v0 = graph.vertices[edge.vertex_indices[0]];
 			const Vertex &v1 = graph.vertices[edge.vertex_indices[1]];
 			// Relative edge pos
@@ -961,7 +961,7 @@ void C4ConsoleQtGraph::Draw(class C4TargetFacet &cgo, float line_width)
 
 bool C4ConsoleQtGraph::StartDragging(int32_t *border, int32_t x, int32_t y, bool shift_down, bool ctrl_down)
 {
-	assert(border != -1);
+	assert(*border != -1);
 	drag_snap_offset_x = drag_snap_offset_y = 0;
 	drag_snapped = false;
 	drag_snap_vertex = -1;
@@ -1167,7 +1167,7 @@ int32_t C4ConsoleQtGraph::AddEdge(int32_t connect_vertex_index_1, int32_t connec
 
 int32_t C4ConsoleQtGraph::InsertVertexOnEdge(int32_t split_edge_index, int32_t x, int32_t y)
 {
-	assert(split_edge_index >= 0 && split_edge_index < edges.size());
+	assert(split_edge_index >= 0 && split_edge_index < graph.edges.size());
 	// Insert vertex by splitting an edge
 	int32_t new_vertex_index = AddVertex(x, y);
 	AddEdge(new_vertex_index, graph.edges[split_edge_index].vertex_indices[1]);
@@ -1178,7 +1178,7 @@ int32_t C4ConsoleQtGraph::InsertVertexOnEdge(int32_t split_edge_index, int32_t x
 
 int32_t C4ConsoleQtGraph::InsertVertexOnVertex(int32_t target_vertex_index, int32_t x, int32_t y)
 {
-	assert(target_vertex_index >= 0 && target_vertex_index < vertices.size());
+	assert(target_vertex_index >= 0 && target_vertex_index < graph.vertices.size());
 	// Insert vertex
 	int32_t new_vertex_index = AddVertex(x, y);
 	// Connect new vertex to target vertex
@@ -1189,7 +1189,7 @@ int32_t C4ConsoleQtGraph::InsertVertexOnVertex(int32_t target_vertex_index, int3
 
 void C4ConsoleQtGraph::RemoveEdge(int32_t edge_index)
 {
-	assert(edge_index >= 0 && edge_index < edges.size());
+	assert(edge_index >= 0 && edge_index < graph.edges.size());
 	// Remove the edge
 	Edge removed_edge = graph.edges[edge_index];
 	EditGraph(true, C4ControlEditGraph::Action::CEG_RemoveEdge, edge_index, 0, 0);
@@ -1209,7 +1209,7 @@ void C4ConsoleQtGraph::RemoveEdge(int32_t edge_index)
 
 void C4ConsoleQtGraph::RemoveVertex(int32_t remove_vertex_index, bool create_skip_connection)
 {
-	assert(remove_vertex_index >= 0 && remove_vertex_index < vertices.size());
+	assert(remove_vertex_index >= 0 && remove_vertex_index < graph.vertices.size());
 	// Create skip connection if the vertex had exactly two edges
 	if (create_skip_connection && graph.GetEdgeCountForVertex(remove_vertex_index) == 2)
 	{
