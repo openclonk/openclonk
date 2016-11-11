@@ -125,6 +125,7 @@ const C4PktHandlingData PktHandlingData[] =
 	{ CID_EMMoveObj,    PC_Control, "EM Move Obj",                false,  true,   0,                        PKT_UNPACK(C4ControlEMMoveObject)},
 	{ CID_EMDrawTool,   PC_Control, "EM Draw Tool",               false,  true,   0,                        PKT_UNPACK(C4ControlEMDrawTool) },
 	{ CID_ReInitScenario,PC_Control, "Reinit Scenario",           false,  true,   0,                        PKT_UNPACK(C4ControlReInitScenario) },
+	{ CID_EditGraph,    PC_Control, "Edit Graph",                 false,  true,   0,                        PKT_UNPACK(C4ControlEditGraph)  },
 
 	{ CID_DebugRec,     PC_Control, "Debug Rec",                  false,  true,   0,                        PKT_UNPACK(C4ControlDebugRec)   },
 

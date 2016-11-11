@@ -1929,3 +1929,19 @@ void C4ControlReInitScenario::Execute() const
 	// Load that section!
 	::Game.LoadScenarioSection(reinit_section_name, C4S_REINIT_SCENARIO);
 }
+
+void C4ControlEditGraph::CompileFunc(StdCompiler *comp)
+{
+	comp->Value(mkNamingAdapt(path, "Path", StdCopyStrBuf()));
+	comp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(action), "Action", CEG_None));
+	comp->Value(mkNamingAdapt(index, "Index", -1));
+	comp->Value(mkNamingAdapt(x, "x", 0));
+	comp->Value(mkNamingAdapt(y, "y", 0));
+	C4ControlPacket::CompileFunc(comp);
+}
+
+void C4ControlEditGraph::Execute() const
+{
+	// Forward to console for execution
+	::Console.EditGraphControl(this);
+}

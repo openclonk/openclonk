@@ -98,6 +98,7 @@ public:
 	void EnsureDefinitionListInitialized();
 	void CloseConsoleWindow();
 	void ClearPointers(class C4Object *obj);
+	void EditGraphControl(const class C4ControlEditGraph *control);
 
 	// TODO some qt editor stuff is in state and needs to be public
 	// Once other editors are removed, C4ConsoleGUI, C4ConsoleQt and C4ConsoleQtState should be reorganized
@@ -114,6 +115,7 @@ public:
 	void EnsureDefinitionListInitialized() { }
 	void CloseConsoleWindow() {}
 	void ClearPointers(class C4Object *obj) {}
+	void EditGraphControl(const class C4ControlEditGraph *control) {}
 #endif
 
 	void SetCursor(Cursor cursor);

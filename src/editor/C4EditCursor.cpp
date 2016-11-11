@@ -370,7 +370,7 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 #ifdef WITH_QT_EDITOR
 		if (shapes->MouseDown(X, Y, 3.0f / Zoom, !!(dwKeyState & MK_SHIFT), !!(dwKeyState & MK_CONTROL)))
 		{
-			DragShape = true;
+			DragShape = shapes->IsDragging();
 			break;
 		}
 #endif

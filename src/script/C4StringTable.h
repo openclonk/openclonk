@@ -489,6 +489,8 @@ enum C4PropertyName
 	P_Value,
 	P_DefaultValueFunction,
 	P_Delegate,
+	P_VertexDelegate,
+	P_EdgeDelegate,
 	P_Min,
 	P_Max,
 	P_Set,

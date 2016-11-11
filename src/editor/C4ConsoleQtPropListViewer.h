@@ -525,6 +525,8 @@ public:
 	bool HasCustomPaint() const override { return true; }
 	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
 	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override { return QString(); }
+
+	virtual void ConnectSignals(C4ConsoleQtShape *shape, const C4PropertyPath &property_path) const;
 };
 
 class C4PropertyDelegateRect : public C4PropertyDelegateShape
@@ -557,8 +559,6 @@ public:
 
 class C4PropertyDelegateGraph : public C4PropertyDelegateShape
 {
-	C4RefCntPointer<C4String> storage;
-
 	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
 protected:
 	bool IsVertexPasteValid(const C4Value &val) const;
@@ -566,6 +566,8 @@ protected:
 public:
 	C4PropertyDelegateGraph(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 	bool IsPasteValid(const C4Value &val) const override;
+
+	void ConnectSignals(C4ConsoleQtShape *shape, const C4PropertyPath &property_path) const override;
 };
 
 class C4PropertyDelegatePolyline : public C4PropertyDelegateGraph
@@ -716,7 +718,7 @@ public:
 	void SetSelectionModel(QItemSelectionModel *m) { selection_model = m; }
 	QItemSelectionModel *GetSelectionModel() const { return selection_model; }
 
-	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
+	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, const C4PropertyPath &group_target_path, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
 	bool AddEffectGroup(int32_t group_index, C4Object *base_object);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
 	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
@@ -746,6 +748,7 @@ public:
 	void RemoveArrayElement();
 	bool IsTargetReadonly() const;
 	C4ConsoleQtPropListModel::Property *GetPropByIndex(const QModelIndex &index) const;
+	class C4ConsoleQtShape *GetShapeByPropertyPath(const char *property_path);
 
 public:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;

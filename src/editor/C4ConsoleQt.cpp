@@ -23,8 +23,11 @@
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4ConsoleQtObjectListViewer.h"
+#include "editor/C4ConsoleQtPropListViewer.h"
+#include "editor/C4ConsoleQtShapes.h"
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleGUI.h"
+#include "script/C4AulExec.h"
 #include "C4Version.h"
 
 #include "editor/C4ConsoleQt.h"
@@ -377,6 +380,34 @@ void C4ConsoleGUI::CloseConsoleWindow()
 void C4ConsoleGUI::ClearPointers(class C4Object *obj)
 {
 	if (state && state->object_list_model) state->object_list_model->Invalidate();
+}
+
+void C4ConsoleGUI::EditGraphControl(const class C4ControlEditGraph *control)
+{
+	if (state && state->property_model)
+	{
+		const char *path = control->GetPath();
+		if (path && *path)
+		{
+			// Apply control to value: Resolve value
+			C4Value graph_value = AulExec.DirectExec(::ScriptEngine.GetPropList(), path, "resolve graph edit", false, nullptr);
+			// ...and apply changes (will check for value validity)
+			C4ConsoleQtGraph::EditGraphValue(graph_value, control->GetAction(), control->GetIndex(), control->GetX(), control->GetY());
+			// For remote clients, also update any edited shapes
+			if (!control->LocalControl())
+			{
+				C4ConsoleQtShape *shape = state->property_model->GetShapeByPropertyPath(path);
+				if (shape)
+				{
+					C4ConsoleQtGraph *shape_graph = shape->GetGraphShape();
+					if (shape_graph)
+					{
+						shape_graph->EditGraph(false, control->GetAction(), control->GetIndex(), control->GetX(), control->GetY());
+					}
+				}
+			}
+		}
+	}
 }
 
 void C4ToolsDlg::UpdateToolCtrls()

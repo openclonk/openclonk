@@ -265,6 +265,8 @@ C4StringTable::C4StringTable()
 	P[P_Value] = "Value";
 	P[P_DefaultValueFunction] = "DefaultValueFunction";
 	P[P_Delegate] = "Delegate";
+	P[P_VertexDelegate] = "VertexDelegate";
+	P[P_EdgeDelegate] = "EdgeDelegate";
 	P[P_Min] = "Min";
 	P[P_Max] = "Max";
 	P[P_Set] = "Set";

@@ -620,4 +620,34 @@ public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
+class C4ControlEditGraph : public C4ControlPacket // sync
+{
+public:
+	enum Action
+	{
+		CEG_None=0,
+		CEG_SetVertexPos,
+		CEG_EditEdge,
+		CEG_InsertVertex,
+		CEG_InsertEdge,
+		CEG_RemoveVertex,
+		CEG_RemoveEdge
+	};
+	C4ControlEditGraph() {}
+	C4ControlEditGraph(const char *path, Action action, int32_t index, int32_t x, int32_t y)
+		: path(path), action(action), index(index), x(x), y(y) { }
+private:
+	StdCopyStrBuf path;
+	Action action=CEG_None;
+	int32_t index=-1, x=0, y=0;
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+
+	const char *GetPath() const { return path.getData(); }
+	Action GetAction() const { return action; }
+	int32_t GetIndex() const { return index; }
+	int32_t GetX() const { return x; }
+	int32_t GetY() const { return y; }
+};
+
 #endif

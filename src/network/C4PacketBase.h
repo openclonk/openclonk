@@ -166,6 +166,7 @@ enum C4PacketType
 	CID_EMMoveObj     = CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
 	CID_ReInitScenario= CID_First | 0x32,
+	CID_EditGraph     = CID_First | 0x33,
 
 	CID_DebugRec      = CID_First | 0x40,
 	CID_MenuCommand   = CID_First | 0x41,

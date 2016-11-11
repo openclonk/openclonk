@@ -30,16 +30,18 @@ class C4ConsoleQtShape : public QObject
 	Q_OBJECT
 protected:
 	C4Value rel_obj; // Object relative to which shape is defined
+	C4Value properties;
 	bool is_relative;
-	int32_t dragging_border;
+	int32_t dragging_border, selected_border;
 	uint32_t border_color;
 	const class C4PropertyDelegateShape *parent_delegate;
+	class C4ConsoleQtShapes *shape_list;
 
 protected:
 	// Return shape color, or dragged border color if index is the border currently being dragged
 	uint32_t GetBorderColor(int32_t border_index, bool dragging_border_is_bitmask, uint32_t default_color = 0u) const;
 public:
-	C4ConsoleQtShape(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate);
+	C4ConsoleQtShape(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
 	virtual bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down) = 0;
 	virtual void Draw(class C4TargetFacet &cgo, float line_width) = 0;
@@ -49,7 +51,7 @@ public:
 	int32_t AbsY(int32_t rel_y=0) const;
 
 	// Start/stop dragging
-	virtual bool StartDragging(int32_t border, int32_t x, int32_t y, bool shift_down, bool ctrl_down) { dragging_border = border; return true; }
+	virtual bool StartDragging(int32_t *border, int32_t x, int32_t y, bool shift_down, bool ctrl_down) { dragging_border = *border; return true; }
 	virtual void StopDragging();
 	virtual void Drag(int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t hit_range, Qt::CursorShape *drag_cursor) = 0;
 	bool IsDragging() const { return dragging_border != -1; }
@@ -58,9 +60,22 @@ public:
 	virtual C4Value GetValue() const = 0; 	// Return current shape as C4Value to be stored back to property
 
 	const class C4PropertyDelegateShape *GetParentDelegate() const { return parent_delegate; }
+	const C4PropList *GetProperties() const { return properties.getPropList(); }
+
+	virtual bool IsSelectionAllowed(int32_t border) const { return false; }
+	bool Select(int32_t border);
+	void ResetSelection();
+	virtual bool GetSelectedData(const C4Value &shape_val, const class C4PropertyPath &shape_property_path, C4PropList **shape_item_editorprops, C4PropList **shape_item_value, C4String **shape_item_name, class C4PropertyPath *shape_item_target_path) const
+	{
+		return false;
+	}
+
+	// Specialization
+	virtual class C4ConsoleQtGraph *GetGraphShape() { return nullptr; }
 
 signals:
 	void ShapeDragged();
+	void BorderSelectionChanged();
 };	
 
 // Rectangular shape
@@ -71,7 +86,7 @@ private:
 	bool store_as_proplist;
 	bool properties_lowercase;
 public:
-	C4ConsoleQtRect(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate);
+	C4ConsoleQtRect(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
 	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down) override;
 	void Draw(class C4TargetFacet &cgo, float line_width) override;
@@ -89,7 +104,7 @@ private:
 	int32_t cx, cy;
 	bool can_move_center;
 public:
-	C4ConsoleQtCircle(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate);
+	C4ConsoleQtCircle(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
 	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down) override;
 	void Draw(class C4TargetFacet &cgo, float line_width) override;
@@ -105,7 +120,7 @@ class C4ConsoleQtPoint : public C4ConsoleQtShape
 private:
 	int32_t cx, cy;
 public:
-	C4ConsoleQtPoint(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate);
+	C4ConsoleQtPoint(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
 	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down) override;
 	void Draw(class C4TargetFacet &cgo, float line_width) override;
@@ -118,6 +133,7 @@ public:
 // Vertices and edges
 class C4ConsoleQtGraph : public C4ConsoleQtShape
 {
+	Q_OBJECT
 protected:
 	struct Vertex
 	{
@@ -138,11 +154,42 @@ protected:
 		bool connects_to(int32_t vertex_index, int32_t *idx) const;
 	};
 
-	std::vector<Vertex> vertices;
-	std::vector<Edge> edges;
-	bool store_as_proplist;
-	bool properties_lowercase;
-	bool allow_edge_selection; // If edges on the graph can be selected
+	// Actual vertex and edge data
+	struct GraphData
+	{
+		std::vector<Vertex> vertices;
+		std::vector<Edge> edges;
+
+		// Convert elements to/from C4Value
+		C4ValueArray *GetVerticesValue() const;
+		C4ValueArray *GetEdgesValue() const;
+		void SetVerticesValue(const C4ValueArray *vvertices);
+		void SetEdgesValue(const C4ValueArray *vedges);
+
+		int32_t GetEdgeCountForVertex(int32_t vertex_index) const;
+
+		// Graph modification. Called from C4ConsoleQtGraph::EditGraph only, which propagates the change to the value via the queue
+		void SetVertexPos(int32_t vertex_index, int32_t new_x, int32_t new_y);
+		void EditEdge(int32_t edge_index, int32_t change_vertex_index, int32_t new_vertex_index);
+		void InsertEdgeBefore(int32_t insert_edge_index, int32_t vertex1, int32_t vertex2);
+		void InsertVertexBefore(int32_t insert_vertex_index, int32_t x, int32_t y);
+		void RemoveEdge(int32_t edge_index);
+		void RemoveVertex(int32_t vertex_index);
+
+		// Graph modification on internal C4Value script data. Called from C4ConsoleQtGraph::EditGraphValue.
+		static void EditGraphValue_SetVertexPos(C4ValueArray *vvertices, int32_t vertex_index, int32_t new_x, int32_t new_y);
+		static void EditGraphValue_EditEdge(C4ValueArray *vvertices, C4ValueArray *vedges, int32_t edge_index, int32_t change_vertex_index, int32_t new_vertex_index);
+		static void EditGraphValue_InsertEdgeBefore(C4ValueArray *vvertices, C4ValueArray *vedges, int32_t insert_edge_index, int32_t vertex1, int32_t vertex2);
+		static void EditGraphValue_InsertVertexBefore(C4ValueArray *vvertices, C4ValueArray *vedges, int32_t insert_vertex_index, int32_t x, int32_t y);
+		static void EditGraphValue_RemoveEdge(C4ValueArray *vvertices, C4ValueArray *vedges, int32_t edge_index);
+		static void EditGraphValue_RemoveVertex(C4ValueArray *vvertices, C4ValueArray *vedges, int32_t vertex_index);
+		static bool EditGraphValue_EdgeConnectsTo(C4PropList *edge, int32_t vertex_index);
+	} graph;
+
+	bool allow_vertex_selection = false; // If vertices on the graph can be selected
+	bool allow_edge_selection = false; // If edges on the graph can be selected
+
+	C4Value vertex_delegate, edge_delegate;
 
 	// Drag snap to other vertices
 	int32_t drag_snap_offset_x = 0, drag_snap_offset_y = 0;
@@ -157,45 +204,52 @@ protected:
 	static int32_t VertexToDragBorder(int32_t vertex) { return vertex; }
 	static int32_t EdgeToDragBorder(int32_t edge) { return -edge - 2; }
 public:
-	C4ConsoleQtGraph(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate);
+	C4ConsoleQtGraph(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
 	bool IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down) override;
 	void Draw(class C4TargetFacet &cgo, float line_width) override;
 	void Drag(int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t hit_range, Qt::CursorShape *drag_cursor) override;
-	bool StartDragging(int32_t border, int32_t x, int32_t y, bool shift_down, bool ctrl_down) override;
+	bool StartDragging(int32_t *border, int32_t x, int32_t y, bool shift_down, bool ctrl_down) override;
 	void StopDragging() override;
 
 	void SetValue(const C4Value &val) override;
 	C4Value GetValue() const override;
 
+	bool IsSelectionAllowed(int32_t border) const override;
+	bool GetSelectedData(const C4Value &shape_val, const class C4PropertyPath &shape_property_path, C4PropList **shape_item_editorprops, C4PropList **shape_item_value, C4String **shape_item_name, class C4PropertyPath *shape_item_target_path) const override;
+
+	void EditGraph(bool signal_change, C4ControlEditGraph::Action action, int32_t index, int32_t x, int32_t y);
+	static void EditGraphValue(C4Value &val, C4ControlEditGraph::Action action, int32_t index, int32_t x, int32_t y);
+
+	class C4ConsoleQtGraph *GetGraphShape() override { return this; }
+
 protected:
+	void EditEdge(int32_t edge_index, int32_t change_vertex_index, int32_t new_vertex);
+	int32_t AddVertex(int32_t new_x, int32_t new_y);
+	int32_t AddEdge(int32_t connect_vertex_index_1, int32_t connect_vertex_index_2);
 	void InsertVertexBefore(int32_t insert_vertex_index, int32_t x, int32_t y);
-	void InsertEdgeBefore(int32_t insert_edge_index, int32_t vertex1, int32_t vertex2);
+	void InsertEdgeBefore(int32_t insert_edge_index, int32_t connect_vertex_index_1, int32_t connect_vertex_index_2);
 	virtual int32_t InsertVertexOnEdge(int32_t split_edge_index, int32_t x, int32_t y);
 	virtual int32_t InsertVertexOnVertex(int32_t target_vertex_index, int32_t x, int32_t y);
 	virtual void RemoveEdge(int32_t edge_index);
 	virtual void RemoveVertex(int32_t vertex_index, bool create_skip_connection);
-	int32_t GetEdgeCountForVertex(int32_t vertex_index) const;
 
 	virtual bool IsPolyline() const { return false; }
-
-	C4ValueArray *GetVerticesValue() const;
-	C4ValueArray *GetEdgesValue() const;
-	void SetVerticesValue(const C4ValueArray *vvertices);
-	void SetEdgesValue(const C4ValueArray *vedges);
 
 	// Check if given vertex/edge can be modified under given shift state
 	virtual bool IsVertexHit(int32_t vertex_index, Qt::CursorShape *drag_cursor, bool shift_down, bool ctrl_down);
 	virtual bool IsEdgeHit(int32_t edge_index, Qt::CursorShape *drag_cursor, bool shift_down, bool ctrl_down);
 
+signals:
+	void GraphEdit(C4ControlEditGraph::Action action, int32_t index, int32_t x, int32_t y);
 };
 
 // Specialization of graph: One line of connected vertices
 class C4ConsoleQtPolyline : public C4ConsoleQtGraph
 {
 public:
-	C4ConsoleQtPolyline(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate)
-		: C4ConsoleQtGraph(for_obj, props, parent_delegate) {}
+	C4ConsoleQtPolyline(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list)
+		: C4ConsoleQtGraph(for_obj, props, parent_delegate, shape_list) {}
 
 	void SetValue(const C4Value &val) override;
 	C4Value GetValue() const override;
@@ -213,8 +267,8 @@ protected:
 class C4ConsoleQtPolygon : public C4ConsoleQtPolyline
 {
 public:
-	C4ConsoleQtPolygon(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate)
-		: C4ConsoleQtPolyline(for_obj, props, parent_delegate) {}
+	C4ConsoleQtPolygon(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list)
+		: C4ConsoleQtPolyline(for_obj, props, parent_delegate, shape_list) {}
 
 	void SetValue(const C4Value &val) override;
 
@@ -231,11 +285,11 @@ class C4ConsoleQtShapes
 {
 	typedef std::list<std::unique_ptr<C4ConsoleQtShape> > ShapeList;
 	ShapeList shapes;
-	C4ConsoleQtShape *dragging_shape;
+	C4ConsoleQtShape *dragging_shape, *selected_shape;
 	Qt::CursorShape drag_cursor;
 	float drag_x, drag_y;
 public:
-	C4ConsoleQtShapes() : dragging_shape(nullptr), drag_x(0), drag_y(0), drag_cursor(Qt::CursorShape::ArrowCursor) { }
+	C4ConsoleQtShapes() : dragging_shape(nullptr), selected_shape(nullptr), drag_x(0), drag_y(0), drag_cursor(Qt::CursorShape::ArrowCursor) { }
 
 	C4ConsoleQtShape *CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate);
 	void AddShape(C4ConsoleQtShape *shape);
@@ -252,6 +306,12 @@ public:
 	// Dragging info
 	bool HasDragCursor() const { return drag_cursor != Qt::CursorShape::ArrowCursor; }
 	Qt::CursorShape GetDragCursor() const { return drag_cursor; }
+	bool IsDragging() const { return !!dragging_shape; }
+
+	// Selected shapes
+	void SetSelectedShape(C4ConsoleQtShape *new_selection, int32_t selected_border);
+	C4ConsoleQtShape *GetSelectedShape() const { return selected_shape; }
+	bool GetSelectedShapeData(const C4Value &shape_val, const class C4PropertyPath &shape_property_path, C4PropList **shape_item_editorprops, C4PropList **shape_item_value, C4String **shape_item_name, class C4PropertyPath *shape_item_target_path) const;
 };
 
 /* Shape holder class: Handles adding/removal of shape to shapes list */
