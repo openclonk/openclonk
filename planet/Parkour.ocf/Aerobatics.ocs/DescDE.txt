@@ -1,10 +1,10 @@
 Aerobatik
 
-High up in the skies a challenge awaits! Move from island to island by jumping, blasting yourself, flying, catapulting, constructing bridges, or your imagination. The first one to arrive on the final sky island wins this round.
+Hoch oben in den Wolken wartet eine Herausforderung auf dich! Gehe von Insel zu Insel: Spring, jag dich in die Luft, flieg, nutze die Katapulte, baue Brücken...verwende deine Fantasie! Der Erste, der am Ziel ankommt, gewinnt die Runde.
 
 Ziel: Wettrennen
 
 Tipps:
-- You can get items at the spawn points, the item reappears when it has been used.
-- More powerful tools can be produced at the inventor's lab if you find the resources.
-- The use of the wind bag is limited, the number of available wind bursts is shown in the HUD.
+- Du kannst Objekte an den Spawnpunkten bekommen, es respawnt, wenn es verwendet wurde.
+- Stärkere Werkzeuge können beim Erfinderlabor produziert werden, wenn du die nötigen Rohstoffe findest.
+- Die Verwendung des Windbeutels ist begrenzt, die Anzahl verfügbarer Windstöße wird im HUD gezeigt.
