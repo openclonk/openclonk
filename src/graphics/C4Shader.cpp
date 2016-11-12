@@ -841,10 +841,10 @@ void C4ScriptUniform::Apply(C4ShaderCall& call)
 		auto& intVec = p.second.intVec;
 		switch (p.second.type)
 		{
-		case GL_INT:      glUniform1i(loc, intVec[0]); break;
-		case GL_INT_VEC2: glUniform2i(loc, intVec[0], intVec[1]); break;
-		case GL_INT_VEC3: glUniform3i(loc, intVec[0], intVec[1], intVec[2]); break;
-		case GL_INT_VEC4: glUniform4i(loc, intVec[0], intVec[1], intVec[2], intVec[3]); break;
+		case GL_INT:      glUniform1iv(loc, 1, intVec); break;
+		case GL_INT_VEC2: glUniform2iv(loc, 1, intVec); break;
+		case GL_INT_VEC3: glUniform3iv(loc, 1, intVec); break;
+		case GL_INT_VEC4: glUniform4iv(loc, 1, intVec); break;
 		default:
 			assert(false && "unsupported uniform type");
 		}
