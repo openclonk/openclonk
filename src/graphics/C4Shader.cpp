@@ -823,7 +823,7 @@ skip:;
 
 void C4ScriptUniform::Clear()
 {
-	uniformStack = {};
+	uniformStack = std::stack<UniformMap>();
 	uniformStack.emplace();
 }
 

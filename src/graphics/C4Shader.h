@@ -364,7 +364,8 @@ class C4ScriptUniform
 #endif
 	};
 
-	std::stack<std::map<std::string, Uniform>> uniformStack;
+	typedef std::map<std::string, Uniform> UniformMap;
+	std::stack<UniformMap> uniformStack;
 
 public:
 	class Popper
