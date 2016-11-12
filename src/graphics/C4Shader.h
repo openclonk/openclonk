@@ -31,6 +31,8 @@
 #include <GL/glew.h>
 #endif
 
+#include <stack>
+
 // Shader version
 const int C4Shader_Version = 150; // GLSL 1.50 / OpenGL 3.2
 
@@ -60,6 +62,7 @@ const int C4Shader_Vertex_PositionPos = 80;
 class C4Shader
 {
 	friend class C4ShaderCall;
+	friend class C4ScriptUniform;
 public:
 	C4Shader();
 	~C4Shader();
@@ -182,6 +185,7 @@ public:
 #ifndef USE_CONSOLE
 class C4ShaderCall
 {
+	friend class C4ScriptUniform;
 public:
 	C4ShaderCall(const C4Shader *pShader)
 		: fStarted(false), pShader(pShader), iUnits(0)
@@ -343,5 +347,43 @@ public: // Interface for script
 };
 
 extern C4ScriptShader ScriptShader;
+
+class C4ScriptUniform
+{
+	friend class C4Shader;
+
+	struct Uniform
+	{
+#ifndef USE_CONSOLE
+		GLenum type;
+		union
+		{
+			int intVec[4];
+			// TODO: Support for other uniform types.
+		};
+#endif
+	};
+
+	std::stack<std::map<std::string, Uniform>> uniformStack;
+
+public:
+	class Popper
+	{
+		C4ScriptUniform* p;
+		size_t size;
+	public:
+		Popper(C4ScriptUniform* p) : p(p), size(p->uniformStack.size()) { }
+		~Popper() { assert(size == p->uniformStack.size()); p->uniformStack.pop(); }
+	};
+
+	// Remove all uniforms.
+	void Clear();
+	// Walk the proplist `proplist.Uniforms` and add uniforms. Automatically pops when the return value is destroyed.
+	std::unique_ptr<Popper> Push(C4PropList* proplist);
+	// Apply uniforms to a shader call.
+	void Apply(C4ShaderCall& call);
+
+	C4ScriptUniform() { Clear(); }
+};
 
 #endif // INC_C4Shader

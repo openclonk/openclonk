@@ -97,6 +97,7 @@ public:
 	float gamma[C4MaxGammaRamps][3]; // input gammas
 	float gammaOut[3]; // combined gamma
 	int MaxTexSize;
+	C4ScriptUniform scriptUniform; // uniforms added to all draw calls
 protected:
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
 	float fStClipX1,fStClipY1,fStClipX2,fStClipY2; // stored clipper in unzoomed coordinates

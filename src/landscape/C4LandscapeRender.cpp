@@ -981,6 +981,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light->getFoW()->Ambient.GetBrightness());
 	}
 
+	pDraw->scriptUniform.Apply(ShaderCall);
+
 	// Start binding textures
 	if(shader->HaveUniform(C4LRU_LandscapeTex))
 	{

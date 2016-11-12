@@ -181,6 +181,7 @@ void C4Draw::Default()
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
 	MeshTransform = nullptr;
 	fUsePerspective = false;
+	scriptUniform.Clear();
 }
 
 void C4Draw::Clear()

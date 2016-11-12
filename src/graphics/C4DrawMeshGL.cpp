@@ -956,6 +956,8 @@ namespace
 				}
 			}
 
+			pDraw->scriptUniform.Apply(call);
+
 			size_t vertex_count = 3 * instance.GetNumFaces();
 			assert (vertex_buffer_offset % sizeof(StdMeshVertex) == 0);
 			size_t base_vertex = vertex_buffer_offset / sizeof(StdMeshVertex);

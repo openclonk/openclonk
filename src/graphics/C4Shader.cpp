@@ -755,3 +755,99 @@ bool C4ScriptShader::Remove(int id)
 	}
 	return false;
 }
+
+std::unique_ptr<C4ScriptUniform::Popper> C4ScriptUniform::Push(C4PropList* proplist)
+{
+#ifdef USE_CONSOLE
+	return std::unique_ptr<C4ScriptUniform::Popper>();
+#else
+	C4Value ulist;
+	if (!proplist->GetProperty(P_Uniforms, &ulist) || ulist.GetType() != C4V_PropList)
+		return std::unique_ptr<C4ScriptUniform::Popper>();
+
+	uniformStack.emplace();
+	auto& uniforms = uniformStack.top();
+	Uniform u;
+	for (const C4Property* prop : *ulist.getPropList())
+	{
+		if (!prop->Key) continue;
+		switch (prop->Value.GetType())
+		{
+		case C4V_Int:
+			u.type = GL_INT;
+			u.intVec[0] = prop->Value._getInt();
+			break;
+		case C4V_Array:
+		{
+			auto array = prop->Value._getArray();
+			switch (array->GetSize())
+			{
+			case 1: u.type = GL_INT; break;
+			case 2: u.type = GL_INT_VEC2; break;
+			case 3: u.type = GL_INT_VEC3; break;
+			case 4: u.type = GL_INT_VEC4; break;
+			default: continue;
+			}
+			for (int32_t i = 0; i < array->GetSize(); i++)
+			{
+				auto& item = array->_GetItem(i);
+				switch (item.GetType())
+				{
+				case C4V_Int:
+					u.intVec[i] = item._getInt();
+					break;
+				default:
+					goto skip;
+				}
+			}
+			break;
+		}
+		default:
+			continue;
+		}
+		// Uniform is now filled properly. Note that array contents are undefined for higher slots
+		// when "type" only requires a smaller array.
+		uniforms.insert({prop->Key->GetCStr(), u});
+skip:;
+	}
+	// Debug
+	/*
+	for (auto& p : uniforms)
+	{
+		LogF("Uniform %s (type %d) = %d %d %d %d", p.first.c_str(), p.second.type, p.second.intVec[0], p.second.intVec[1], p.second.intVec[2], p.second.intVec[3]);
+	}
+	*/
+	return std::make_unique<C4ScriptUniform::Popper>(this);
+#endif
+}
+
+void C4ScriptUniform::Clear()
+{
+	uniformStack = {};
+	uniformStack.emplace();
+}
+
+void C4ScriptUniform::Apply(C4ShaderCall& call)
+{
+#ifndef USE_CONSOLE
+	for (auto& p : uniformStack.top())
+	{
+		// The existing SetUniform* methods only work for pre-defined indexed uniforms. The script
+		// uniforms are unknown at shader compile time, so we have to use OpenGL functions directly
+		// here.
+		GLint loc = glGetUniformLocation(call.pShader->hProg, p.first.c_str());
+		// Is this uniform defined in the shader?
+		if (loc == -1) continue;
+		auto& intVec = p.second.intVec;
+		switch (p.second.type)
+		{
+		case GL_INT:      glUniform1i(loc, intVec[0]); break;
+		case GL_INT_VEC2: glUniform2i(loc, intVec[0], intVec[1]); break;
+		case GL_INT_VEC3: glUniform3i(loc, intVec[0], intVec[1], intVec[2]); break;
+		case GL_INT_VEC4: glUniform4i(loc, intVec[0], intVec[1], intVec[2], intVec[3]); break;
+		default:
+			assert(false && "unsupported uniform type");
+		}
+	}
+#endif
+}

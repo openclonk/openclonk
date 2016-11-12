@@ -497,6 +497,8 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 	if (pFoW != nullptr && normalTex != 0)
 		call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, StdMeshMatrix::Inverse(StdProjectionMatrix::Upper3x4(modelview)));
+
+	scriptUniform.Apply(call);
 }
 
 void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call)

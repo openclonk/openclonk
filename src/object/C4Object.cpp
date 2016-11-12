@@ -1808,6 +1808,9 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// visible?
 	if (!IsVisible(iByPlayer, !!eDrawMode)) return;
 
+	// Set up custom uniforms.
+	auto uniform_popper = pDraw->scriptUniform.Push(this);
+
 	// Line
 	if (Def->Line) { DrawLine(cgo, iByPlayer); return; }
 

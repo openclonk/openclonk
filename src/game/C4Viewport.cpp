@@ -386,6 +386,8 @@ void C4Viewport::Execute()
 	C4Surface *target = pWindow ? pWindow->pSurface : FullScreen.pSurface;
 	cgo.Set(target,DrawX,DrawY,float(ViewWdt)/Zoom,float(ViewHgt)/Zoom,GetViewX(),GetViewY(),Zoom);
 	pDraw->PrepareRendering(target);
+	// Load script uniforms from Global.Uniforms
+	auto uniform_pop = pDraw->scriptUniform.Push(::GameScript.ScenPropList.getPropList());
 	// Do not spoil game contents on owner-less viewport
 	bool draw_game = true;
 	if (Player == NO_OWNER)
