@@ -17,6 +17,7 @@
 #include "C4Include.h"
 #include "script/C4AulCompiler.h"
 
+#include <assert.h>
 #include <inttypes.h>
 
 #include "script/C4Aul.h"
@@ -27,9 +28,6 @@
 #define C4AUL_Inherited     "inherited"
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
-
-#undef NDEBUG
-#include <assert.h>
 
 static std::string vstrprintf(const char *format, va_list args)
 {
