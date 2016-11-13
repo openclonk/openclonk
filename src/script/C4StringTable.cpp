@@ -270,6 +270,7 @@ C4StringTable::C4StringTable()
 	P[P_HorizontalFix] = "HorizontalFix";
 	P[P_VerticalFix] = "VerticalFix";
 	P[P_StructureFix] = "StructureFix";
+	P[P_OnUpdate] = "OnUpdate";
 	P[P_Min] = "Min";
 	P[P_Max] = "Max";
 	P[P_Set] = "Set";

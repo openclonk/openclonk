@@ -2162,6 +2162,7 @@ C4PropertyDelegateGraph::C4PropertyDelegateGraph(const class C4PropertyDelegateF
 		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
 		vertical_fix = props->GetPropertyBool(P_VerticalFix);
 		structure_fix = props->GetPropertyBool(P_StructureFix);
+		update_callback = props->GetPropertyStr(P_OnUpdate);
 	}
 }
 
@@ -2246,6 +2247,11 @@ void C4PropertyDelegateGraph::ConnectSignals(C4ConsoleQtShape *shape, const C4Pr
 	connect(shape_graph, &C4ConsoleQtGraph::GraphEdit, this, [this, shape, property_path](C4ControlEditGraph::Action action, int32_t index, int32_t x, int32_t y) {
 		// Send graph editing via queue
 		::Control.DoInput(CID_EditGraph, new C4ControlEditGraph(property_path.GetGetPath(), action, index, x, y), CDT_Decide);
+		// Also send update callback to root object
+		if (update_callback)
+		{
+			::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString("%s->%s(%s)", property_path.GetRoot(), update_callback->GetCStr(), property_path.GetGetPath()).getData(), 0, false));
+		}
 	});
 	connect(shape, &C4ConsoleQtShape::BorderSelectionChanged, this, []() {
 		// Different part of the shape selected: Refresh info on next update
