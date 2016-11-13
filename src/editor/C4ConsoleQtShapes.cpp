@@ -791,6 +791,9 @@ C4ConsoleQtGraph::C4ConsoleQtGraph(C4Object *for_obj, C4PropList *props, const c
 		props->GetProperty(P_EdgeDelegate, &edge_delegate);
 		allow_vertex_selection = !!vertex_delegate.getPropList();
 		allow_edge_selection = !!edge_delegate.getPropList();
+		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
+		vertical_fix = props->GetPropertyBool(P_VerticalFix);
+		structure_fix = props->GetPropertyBool(P_StructureFix);
 	}
 }
 
@@ -850,6 +853,27 @@ bool C4ConsoleQtGraph::IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::Cursor
 				}
 			}
 			++i;
+		}
+	}
+	// Check if structure change is allowed
+	if (has_hit && (shift_down || ctrl_down) && structure_fix)
+	{
+		*drag_cursor = Qt::CursorShape::ForbiddenCursor;
+	}
+	else if (*drag_cursor == Qt::CursorShape::SizeAllCursor)
+	{
+		// Adjust cursor for constrained movement
+		if (horizontal_fix && vertical_fix)
+		{
+			*drag_cursor = Qt::CursorShape::PointingHandCursor;
+		}
+		else if (horizontal_fix)
+		{
+			*drag_cursor = Qt::CursorShape::SizeVerCursor;
+		}
+		else if (vertical_fix)
+		{
+			*drag_cursor = Qt::CursorShape::SizeHorCursor;
 		}
 	}
 	return has_hit;
@@ -966,7 +990,7 @@ bool C4ConsoleQtGraph::StartDragging(int32_t *border, int32_t x, int32_t y, bool
 	drag_snapped = false;
 	drag_snap_vertex = -1;
 	drag_source_vertex_index = -1;
-	if (shift_down && !ctrl_down)
+	if (shift_down && !ctrl_down && !structure_fix)
 	{
 		// Shift: Insert vertex
 		if (IsEdgeDrag(*border))
@@ -983,7 +1007,7 @@ bool C4ConsoleQtGraph::StartDragging(int32_t *border, int32_t x, int32_t y, bool
 		// Start dragging
 		return true;
 	}
-	else if (ctrl_down && !shift_down)
+	else if (ctrl_down && !shift_down && !structure_fix)
 	{
 		// Ctrl: Delete vertex or edge
 		if (IsEdgeDrag(*border))
@@ -1018,7 +1042,7 @@ bool C4ConsoleQtGraph::StartDragging(int32_t *border, int32_t x, int32_t y, bool
 	}
 	else
 	{
-		// Unknown modifiers
+		// Unknown modifiers or trying to modify a structure-fixed graph
 		return false;
 	}
 }
@@ -1033,10 +1057,10 @@ void C4ConsoleQtGraph::Drag(int32_t x, int32_t y, int32_t dx, int32_t dy, int32_
 		// Regular vertex movement
 		dx -= drag_snap_offset_x;
 		dy -= drag_snap_offset_y;
-		dragged_vertex.x += dx;
-		dragged_vertex.y += dy;
+		if (!horizontal_fix) dragged_vertex.x += dx;
+		if (!vertical_fix) dragged_vertex.y += dy;
 		// Handle snap to combine with other vertices
-		if (!IsPolyline())
+		if (!IsPolyline() && !structure_fix)
 		{
 			int32_t i = 0;
 			drag_snap_vertex = -1;

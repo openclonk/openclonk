@@ -2157,6 +2157,12 @@ bool C4PropertyDelegatePoint::IsPasteValid(const C4Value &val) const
 C4PropertyDelegateGraph::C4PropertyDelegateGraph(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateShape(factory, props)
 {
+	if (props)
+	{
+		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
+		vertical_fix = props->GetPropertyBool(P_VerticalFix);
+		structure_fix = props->GetPropertyBool(P_StructureFix);
+	}
 }
 
 void C4PropertyDelegateGraph::DoPaint(QPainter *painter, const QRect &inner_rect) const
@@ -2215,6 +2221,10 @@ bool C4PropertyDelegateGraph::IsEdgePasteValid(const C4Value &val) const
 
 bool C4PropertyDelegateGraph::IsPasteValid(const C4Value &val) const
 {
+	// Unfortunately, there is no good way to determine the correct value for fixed structure / position graph pastes
+	// So just reject pastes for now
+	// (TODO: Could store a default structure in a property and compare to that)
+	if (horizontal_fix || vertical_fix || structure_fix) return false;
 	// Check storage as prop list
 	const int32_t n_props = 2;
 	C4Value prop_vals[n_props]; // vertices & edges

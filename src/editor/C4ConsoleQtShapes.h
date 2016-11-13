@@ -188,6 +188,9 @@ protected:
 
 	bool allow_vertex_selection = false; // If vertices on the graph can be selected
 	bool allow_edge_selection = false; // If edges on the graph can be selected
+	bool horizontal_fix = false; // If edges are locked horizontally
+	bool vertical_fix = false; // If edges are locked vertically
+	bool structure_fix = false; // If edge+vertex insertion/deletion is blocked
 
 	C4Value vertex_delegate, edge_delegate;
 

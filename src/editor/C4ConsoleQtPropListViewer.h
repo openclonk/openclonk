@@ -559,6 +559,10 @@ public:
 
 class C4PropertyDelegateGraph : public C4PropertyDelegateShape
 {
+	bool horizontal_fix = false;
+	bool vertical_fix = false;
+	bool structure_fix = false;
+
 	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
 protected:
 	bool IsVertexPasteValid(const C4Value &val) const;
