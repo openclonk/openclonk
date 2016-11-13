@@ -322,6 +322,7 @@ class C4ConsoleQtShapeHolder
 {
 	C4ConsoleQtShape *shape;
 	bool last_visit;
+	C4Value last_value;
 
 	static bool last_visit_flag;
 
@@ -337,6 +338,10 @@ public:
 	void visit() { last_visit = last_visit_flag; }
 	bool was_visited() const { return last_visit == last_visit_flag; }
 	static void begin_visit() { last_visit_flag = !last_visit_flag; }
+
+	// Remember pointer to last proplist or array set in value to reflect scripted updates
+	const C4Value &GetLastValue() const { return last_value; }
+	void SetLastValue(const C4Value &new_val) { last_value = new_val; }
 };
 
 

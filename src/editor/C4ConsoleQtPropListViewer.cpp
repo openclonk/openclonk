@@ -2713,6 +2713,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 					C4PropertyDelegateFactory *factory = this->delegate_factory;
 					new_shape_delegate->ConnectSignals(shape, prop->shape_property_path);
 					prop->shape->Set(shape);
+					prop->shape->SetLastValue(v);
 				}
 			}
 			else
@@ -2722,7 +2723,14 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		}
 		if (prop->shape)
 		{
+			// Mark this shape to be kept aftre update is complete
 			prop->shape->visit();
+			// Update shape by value if it was changed externally
+			if (!prop->shape->GetLastValue().IsIdenticalTo(v))
+			{
+				prop->shape->Get()->SetValue(v);
+				prop->shape->SetLastValue(v);
+			}
 		}
 	}
 	return true;
