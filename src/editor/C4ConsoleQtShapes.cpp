@@ -800,7 +800,7 @@ C4ConsoleQtGraph::C4ConsoleQtGraph(C4Object *for_obj, C4PropList *props, const c
 bool C4ConsoleQtGraph::IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down)
 {
 	// Check hit on vertices
-	int32_t i = 0, best_hit_range = hit_range*hit_range * 6;
+	int32_t i = 0, best_hit_range = hit_range*hit_range * 6*6;
 	bool has_hit = false;
 	for (const Vertex &vtx : graph.vertices)
 	{
