@@ -136,6 +136,50 @@ for (var i in a) {
 }
 return b;
 )"));
+
+	// Test syntax errors inside loops
+	{
+		// Syntax error in for loop initializer
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (var i = missing();;) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop condition
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (; missing();) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop incrementor
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (;; missing()) continue;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (;;) missing();"), C4AulExecError);
+	}
+	{
+		// Syntax error in while loop condition
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("while (missing()) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in while loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("while (1) missing();"), C4AulExecError);
+	}
+	{
+		// Syntax error in for-in loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (var i in [1]) { missing(); }"), C4AulExecError);
+	}
 }
 
 TEST_F(AulTest, Locals)
