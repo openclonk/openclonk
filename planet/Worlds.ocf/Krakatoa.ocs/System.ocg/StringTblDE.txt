@@ -1,8 +1,8 @@
 # Pilot Name
-PilotName=Kapit�n Wilbur
+PilotName=Kapitän Wilbur
 
 # Intro sequence messages
-MsgNearVolcano=We are almost at the volcano's crater, did you know its core is made out of gold?
-MsgEruption=Oh no! The volcano erupts, prepare for emergency landing.
-MsgEject=We have been hit ... eject! eject!
-MsgConstructPlane=Seems our pilot is gone and the plane is broken. Let's construct a new plane, fill it with gold bars and get out of here.
+MsgNearVolcano=Wir sind fast beim Vulkankrater! Wusstest du, dass sein Kern aus Gold besthet?
+MsgEruption=Oh nein! Der Vulkan bricht aus! Bereitet euch auf eine Notlandung vor!
+MsgEject=Wir wurden getroffen...alles aussteigen!
+MsgConstructPlane=Sieht so aus, als ob unser Pilot verschwunden und das Flugzeug zerstört wäre. Lasst uns ein neues Flugzeug bauen, es mit Goldbarren füllen und von hier fliehen.
