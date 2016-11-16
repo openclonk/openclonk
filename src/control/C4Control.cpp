@@ -1253,7 +1253,10 @@ void C4ControlEMMoveObject::MoveObject(C4Object *moved_object, bool move_forced)
 	moved_object->xdir = moved_object->ydir = 0;
 	moved_object->Mobile = false;
 	C4AulParSet pars(C4VInt(old_x), C4VInt(old_y));
-	moved_object->Call(PSF_EditCursorMoved, &pars);
+	if (moved_object->Call(PSF_EditCursorMoved, &pars))
+	{
+		::Console.EditCursor.InvalidateSelection();
+	}
 }
 
 void C4ControlEMMoveObject::Execute() const
