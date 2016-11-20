@@ -2958,6 +2958,8 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			C4Value v;
 			C4Value v_target_proplist = C4VPropList(target_proplist);
 			prop->delegate->GetPropertyValue(v_target_proplist, prop->key, 0, &v);
+			C4PropertyPath shape_property_path = prop->delegate->GetPathForProperty(prop);
+			const C4PropertyDelegateShape *current_shape_delegate = prop->delegate->GetShapeDelegate(v, &shape_property_path); // to resolve v
 			if (::Console.EditCursor.GetShapes()->GetSelectedShapeData(v, prop->shape_property_path, &shape_item_editorprops, &shape_item_value, &shape_item_name, &shape_item_target_path))
 			{
 				if (AddPropertyGroup(shape_item_editorprops, num_groups, QString(shape_item_name ? shape_item_name->GetCStr() :"???"), shape_item_value, shape_item_target_path, obj, nullptr, nullptr))
