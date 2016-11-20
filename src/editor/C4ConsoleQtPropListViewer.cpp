@@ -1428,7 +1428,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	else
 	{
 		// No parameter. Use value.
-		if (editor->option_changed) SetOptionValue(use_path, *option, *option_value);
+		if (editor->option_changed) SetOptionValue(property_path, *option, *option_value);
 	}
 	editor->option_changed = false;
 }
@@ -2004,7 +2004,11 @@ C4PropertyDelegateShape::C4PropertyDelegateShape(const class C4PropertyDelegateF
 
 void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
-	if (prop_shape && prop_shape->GetParentDelegate() == this) property_path.SetProperty(prop_shape->GetValue());
+	// Only set shape data if triggered through shape movement signal; ignore update calls from e.g. parent enum editor
+	if (!editor)
+	{
+		if (prop_shape && prop_shape->GetParentDelegate() == this) property_path.SetProperty(prop_shape->GetValue());
+	}
 }
 
 bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const

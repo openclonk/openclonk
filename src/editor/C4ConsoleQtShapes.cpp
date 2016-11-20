@@ -1096,6 +1096,8 @@ void C4ConsoleQtGraph::Drag(int32_t x, int32_t y, int32_t dx, int32_t dy, int32_
 				*drag_cursor = Qt::CursorShape::SizeAllCursor;
 			}
 		}
+		// Regular drag: Emit signal to update value
+		EditGraph(true, C4ControlEditGraph::Action::CEG_SetVertexPos, dragged_vertex_index, dragged_vertex.x, dragged_vertex.y);
 	}
 }
 
