@@ -1274,6 +1274,10 @@ func Definition(def) {
 		Target = UserAction->GetObjectEvaluator("IsClonk", "Clonk"),
 		MaxContentsCount = new UserAction.Evaluator.Integer { Name="$MaxContentsCount$", EmptyName = Format("$Default$ (%d)", def.MaxContentsCount) }
 		} } );
+		
+	// Turn around
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.turn_around = { Name="$TurnAround$", EditorHelp="$TurnAroundHelp$", Command="SetDir(1-GetDir())" };
 	
 	_inherited(def);
 }
