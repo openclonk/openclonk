@@ -2,3 +2,7 @@ Name=Base Respawn
 Name2=Respawn at flagpole
 Description=You respawn at the nearest base if sufficient clonks and clunkers are available.
 Description2=You respawn at the nearest respawn flagpole.
+InventoryTransfer=Keep inventory
+InventoryTransferHelp=Whether the inventory of dying clonks is beamed to the newly respawned clonk.
+FreeCrew=Free respawn
+FreeCrewHelp=Whether respawning clonks are free. If not set, respawn happens only if the player has sufficient gold and clonks available for sale.
