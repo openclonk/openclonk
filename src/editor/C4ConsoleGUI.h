@@ -92,7 +92,7 @@ public:
 	void AddViewport(C4ViewportWindow *cvp);
 	void RemoveViewport(C4ViewportWindow *cvp);
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
-	bool CreateNewScenario(StdStrBuf *out_filename);
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network);
 	void OnStartGame();
 	void ClearGamePointers();
 	void EnsureDefinitionListInitialized();
@@ -111,6 +111,7 @@ public:
 	void AddViewport(C4ViewportWindow *cvp) { }
 	void RemoveViewport(C4ViewportWindow *cvp) { }
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network) {}
 	void OnStartGame() { }
 	void EnsureDefinitionListInitialized() { }
 	void CloseConsoleWindow() {}

@@ -129,6 +129,7 @@ public slots:
 	// File menu
 	void FileNew();
 	void FileOpen();
+	void FileOpenInNetwork();
 	void FileOpenWithPlayers();
 	void FileRecord();
 	void FileSave();
@@ -254,7 +255,7 @@ public:
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
 	void UpdateActionObject(C4Object *new_action_object);
 
-	bool CreateNewScenario(StdStrBuf *out_filename); // show "new scenario" dialogue; return true if new scenario is created
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network); // show "new scenario" dialogue; return true if new scenario is created
 
 #ifdef USE_WIN32_WINDOWS
 	bool HandleWin32KeyboardMessage(MSG *msg);

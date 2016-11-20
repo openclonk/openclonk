@@ -335,7 +335,8 @@ void C4ConsoleQtMainWindow::DrawSizeChanged(int newval)
 
 // File menu
 void C4ConsoleQtMainWindow::FileNew() { ::Console.FileNew(); }
-void C4ConsoleQtMainWindow::FileOpen() { ::Console.FileOpen(); }
+void C4ConsoleQtMainWindow::FileOpen() { ::Console.FileOpen(nullptr, false); }
+void C4ConsoleQtMainWindow::FileOpenInNetwork() { ::Console.FileOpen(nullptr, true); }
 void C4ConsoleQtMainWindow::FileOpenWithPlayers() { Console.FileOpenWPlrs(); }
 void C4ConsoleQtMainWindow::FileRecord() { ::Console.FileRecord(); }
 void C4ConsoleQtMainWindow::FileSave() { ::Console.FileSave(); }
@@ -1068,13 +1069,14 @@ void C4ConsoleGUIState::OnCreatorCurrentChanged(const QModelIndex & current, con
 	::Console.EditCursor.SetCreatorDef(new_def); // set or clear def in EditCursor
 }
 
-bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename)
+bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network)
 {
 	// Show dialogue
 	std::unique_ptr<C4ConsoleQtNewScenarioDlg> dlg(new C4ConsoleQtNewScenarioDlg(window.get()));
 	if (!dlg->exec()) return false;
 	// Dlg said OK! Scenario created
 	out_filename->Copy(dlg->GetFilename());
+	*out_host_as_network = dlg->IsHostAsNetwork();
 	return true;
 }
 

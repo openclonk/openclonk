@@ -260,9 +260,15 @@ bool C4Console::FileNew()
 {
 	StdCopyStrBuf filename;
 #ifdef WITH_QT_EDITOR
-	if (!C4ConsoleGUI::CreateNewScenario(&filename)) return false;
+	bool host_in_network = false;
+	if (!C4ConsoleGUI::CreateNewScenario(&filename, &host_in_network)) return false;
 	Application.ClearCommandLine();
 	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
+	if (host_in_network)
+	{
+		Game.NetworkActive = true;
+		Game.fLobby = true;
+	}
 	Application.OpenGame(filename.getData());
 	return true;
 #endif
@@ -271,7 +277,7 @@ bool C4Console::FileNew()
 
 }
 
-bool C4Console::FileOpen(const char *filename)
+bool C4Console::FileOpen(const char *filename, bool host_in_network)
 {
 	// Get scenario file name
 	StdCopyStrBuf c4sfile("");
@@ -285,6 +291,11 @@ bool C4Console::FileOpen(const char *filename)
 	}
 	Application.ClearCommandLine();
 	::Config.Developer.AddRecentlyEditedScenario(filename);
+	if (host_in_network)
+	{
+		Game.NetworkActive = true;
+		Game.fLobby = true;
+	}
 	// Open game
 	Application.OpenGame(filename);
 	return true;

@@ -243,6 +243,11 @@ C4ConsoleQtNewScenarioDlg::C4ConsoleQtNewScenarioDlg(class QMainWindow *parent_w
 	delete m;
 }
 
+bool C4ConsoleQtNewScenarioDlg::IsHostAsNetwork() const
+{
+	return ui.startInNetworkCheckbox->isChecked();
+}
+
 bool C4ConsoleQtNewScenarioDlg::SaveScenario(C4Group &grp)
 {
 	// Save c4s

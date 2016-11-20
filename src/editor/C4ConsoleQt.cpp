@@ -346,10 +346,10 @@ void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTr
 	 state->RemoveViewport(cvp);
  }
 
-bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename)
+bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network)
 {
 #ifdef WITH_QT_EDITOR
-	return state->CreateNewScenario(out_filename);
+	return state->CreateNewScenario(out_filename, out_host_as_network);
 #else
 	return false
 #endif
