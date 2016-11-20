@@ -715,3 +715,9 @@ private func GetDefaultMessageProp(object target_object)
 		return { Function="message", Speaker = { Function="triggering_clonk" }, TargetPlayers = { Function="triggering_player_list" }, Text = { Function="string_constant", Value="$DefaultMessage$" }, AfterMessage=60, Options=[] };
 	}
 }
+
+// Editor object drop happens easily - so move stuff directly to target
+public func Collection2(obj)
+{
+	if (dlg_target && obj) obj->Enter(dlg_target);
+}
