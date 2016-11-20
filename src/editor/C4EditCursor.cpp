@@ -148,7 +148,7 @@ void C4EditCursor::Execute()
 	case C4CNS_ModeEdit:
 		// Hold selection
 		if (Hold)
-			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, nullptr, &selection, false);
+			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, nullptr, &selection, nullptr, false);
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
