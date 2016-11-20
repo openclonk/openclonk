@@ -1,2 +1,10 @@
 Name=Ambiente
 Description=Regelt die Geraeuschkulisse.
+Ambience=Ambiente
+SetShader=Shader setzen
+SetShaderHelp=Schaltet einen globalen Shader an oder aus.
+Shader=Shader
+None=Keiner
+Grayscale=Graustufen
+Psycho=Psycho
+Status=Status

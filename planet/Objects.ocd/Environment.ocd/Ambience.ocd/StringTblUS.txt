@@ -1,3 +1,10 @@
 Name=Ambience
 Description=Controls environmental sounds and music.
-
+Ambience=Ambience
+SetShader=Set shader
+SetShaderHelp=Turns a global shader on or off.
+Shader=Shader
+None=None
+Grayscale=Grayscale
+Psycho=Psycho
+Status=Status

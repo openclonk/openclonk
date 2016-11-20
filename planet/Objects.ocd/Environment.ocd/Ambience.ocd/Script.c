@@ -372,6 +372,15 @@ public func Definition(def)
 		Reverb_Decay_HFRatio = 800,
 	};
 	UnderwaterModifier = nil; // not supported yet
+	// Shader
+	UserAction->AddEvaluator("Action", "$Ambience$", "$SetShader$", "$SetShaderHelp$", "ambience_shader", [def, def.EvalAct_SetShader], { ShaderName="Grayscale", Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{ShaderName}} ({{Status}})", EditorProps = {
+		ShaderName = { Name="$Shader$", Type="enum", Options = [
+			{ Name="$None$" },
+			{ Name="$Grayscale$", Value="Grayscale" },
+			{ Name="$Psycho$", Value="Psycho" }
+			] },
+		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
+		} } );
 	return true;
 }
 
@@ -503,4 +512,50 @@ global func InitializeAmbience()
 		CreateObject(Ambience);
 	}
 	return true;
+}
+
+
+/* Shaders */
+
+local active_shaders;
+
+local CommonShaders = {
+	Grayscale = ["Common", "slice(finish+20) { fragColor = vec4(vec3(0.299*fragColor.r + 0.587*fragColor.g + 0.114*fragColor.b), fragColor.a); }"],
+	Psycho = ["Landscape", "slice(color+1) { fragColor = scalerPx.r < 1 ? materialPx : vec4(vec3(0), materialPx.a); }"],
+};
+
+public func SetShaderStatus(shader_name, bool to_active)
+{
+	// Foreward to instance
+	if (this == Ambience)
+	{
+		var ambience = FindObject(Find_ID(Ambience));
+		if (ambience) return ambience->SetShaderStatus(shader_name, to_active);
+		return false;
+	}
+	var shader_info = CommonShaders[shader_name];
+	if (!shader_info) return false;
+	if (!active_shaders) active_shaders = {};
+	var shader_index = active_shaders[shader_name];
+	var is_active = !!GetType(shader_index);
+	if (is_active != to_active)
+	{
+		if (to_active)
+		{
+			active_shaders[shader_name] = AddFragmentShader(shader_info[0], shader_info[1]);
+		}
+		else
+		{
+			RemoveShader(shader_index);
+			active_shaders[shader_name] = nil;
+		}
+	}
+	return true;
+}
+
+private func EvalAct_SetShader(proplist props, proplist context)
+{
+	var shader_name = props.ShaderName;
+	var status = UserAction->EvaluateValue("Boolean", props.Status, context);
+	return SetShaderStatus(shader_name, status);
 }
