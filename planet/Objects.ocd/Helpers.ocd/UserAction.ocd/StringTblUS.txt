@@ -423,3 +423,5 @@ SetVincibilityHelp=Makes an object vincible or invincible. For example, an end b
 Vincibility=Vincibility
 Invincible=Invincible
 Vincible=Vincible
+ObjectAlive=Object alive
+ObjectAliveHelp=Whether the object is a clonk or animal and still alive.

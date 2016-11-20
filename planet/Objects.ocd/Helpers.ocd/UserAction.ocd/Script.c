@@ -361,6 +361,7 @@ func Definition(def)
 		Operands = { Name="$Operands$", Type="array", Elements=Evaluator.Boolean }
 		} } );
 	AddEvaluator("Boolean", nil, "$ObjectExists$", "$ObjectExistsHelp$", "object_exists", [def, def.EvalBool_ObjectExists], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Boolean", nil, "$ObjectAlive$", "$ObjectAliveHelp$", "object_alive", [def, def.EvalBool_ObjectAlive], { }, new Evaluator.Object { }, "Object");
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
 	var arithmetic_delegate = { Type="proplist", HideFullName=true, EditorProps = {
@@ -801,6 +802,12 @@ private func EvalBool_Or(proplist props, proplist context)
 }
 
 private func EvalBool_ObjectExists(proplist props, proplist context) { return !!EvaluateValue("Object", props.Object, context); }
+
+private func EvalBool_ObjectAlive(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	return obj && obj->GetAlive();
+}
 
 private func EvalAct_Sequence(proplist props, proplist context)
 {

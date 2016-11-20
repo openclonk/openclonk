@@ -423,3 +423,5 @@ SetVincibilityHelp=Macht ein Objekt verwundbar oder unverwundbar. Ein Endgegner 
 Vincibility=Verwundbarkeit
 Invincible=Unverwundbar
 Vincible=Verwundbar
+ObjectAlive=Objekt lebt
+ObjectAliveHelp=Ob es ein Lebewesen ist und lebt.
