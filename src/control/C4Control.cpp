@@ -1220,9 +1220,9 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 // *** C4ControlEMMoveObject
 
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
-    int32_t iObjectNum, int32_t *pObjects, const char *szScript)
+    int32_t iObjectNum, int32_t *pObjects, const char *szScript, bool drag_finished)
 		: eAction(eAction), tx(tx), ty(ty), iTargetObj(pTargetObj ? pTargetObj->Number : 0),
-		iObjectNum(iObjectNum), pObjects(pObjects), StringParam(szScript, true)
+		iObjectNum(iObjectNum), pObjects(pObjects), StringParam(szScript, true), drag_finished(drag_finished)
 {
 
 }
@@ -1252,7 +1252,7 @@ void C4ControlEMMoveObject::MoveObject(C4Object *moved_object, bool move_forced)
 	moved_object->ForcePosition(moved_object->fix_x + tx, moved_object->fix_y + ty);
 	moved_object->xdir = moved_object->ydir = 0;
 	moved_object->Mobile = false;
-	C4AulParSet pars(C4VInt(old_x), C4VInt(old_y));
+	C4AulParSet pars(C4VInt(old_x), C4VInt(old_y), C4VBool(drag_finished));
 	if (moved_object->Call(PSF_EditCursorMoved, &pars))
 	{
 		::Console.EditCursor.InvalidateSelection();

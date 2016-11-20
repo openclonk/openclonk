@@ -148,7 +148,7 @@ void C4EditCursor::Execute()
 	case C4CNS_ModeEdit:
 		// Hold selection
 		if (Hold)
-			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, nullptr, &selection);
+			EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, Fix0, Fix0, nullptr, &selection, false);
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
@@ -249,7 +249,7 @@ bool C4EditCursor::Move(float iX, float iY, float iZoom, DWORD dwKeyState)
 		// Hold
 		if (!DragFrame && Hold && !DragShape && !DragTransform)
 		{
-			MoveSelection(ftofix(xoff),ftofix(yoff));
+			MoveSelection(ftofix(xoff),ftofix(yoff), false);
 			UpdateDropTarget(dwKeyState);
 		}
 		// Update target
@@ -488,6 +488,11 @@ bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
+		// Finish object drag
+		if (!DragFrame && Hold && !DragShape && !DragTransform)
+		{
+			MoveSelection(Fix0, Fix0, true);
+		}
 		if (DragFrame) FrameSelection();
 		if (DropTarget) PutContents();
 		break;
@@ -934,9 +939,9 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame, float width, u
 }
 
 
-void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
+void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff, bool drag_finished)
 {
-	EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, XOff, YOff, nullptr, &selection);
+	EMMoveObject(fShiftWasDown ? EMMO_MoveForced : EMMO_Move, XOff, YOff, nullptr, &selection, nullptr, drag_finished);
 }
 
 void C4EditCursor::FrameSelection()
@@ -1361,7 +1366,7 @@ void C4EditCursor::ApplyToolPicker()
 	Hold=false;
 }
 
-void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs, const char *szScript)
+void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs, const char *szScript, bool drag_finished)
 {
 	// construct object list
 	int32_t iObjCnt = 0; int32_t *pObjIDs = nullptr;
@@ -1382,7 +1387,7 @@ void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Re
 	}
 
 	// execute control
-	EMControl(CID_EMMoveObj, new C4ControlEMMoveObject(eAction, tx, ty, pTargetObj, iObjCnt, pObjIDs, szScript));
+	EMControl(CID_EMMoveObj, new C4ControlEMMoveObject(eAction, tx, ty, pTargetObj, iObjCnt, pObjIDs, szScript, drag_finished));
 
 }
 

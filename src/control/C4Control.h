@@ -460,9 +460,9 @@ enum C4ControlEMObjectAction
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(nullptr) { }
+	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(nullptr), drag_finished(false) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
-	                      int32_t iObjectNum = 0, int32_t *pObjects = nullptr, const char *szScript = nullptr);
+	                      int32_t iObjectNum = 0, int32_t *pObjects = nullptr, const char *szScript = nullptr, bool drag_finished = false);
 	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y, C4Object *container);
 	~C4ControlEMMoveObject();
 protected:
@@ -472,6 +472,7 @@ protected:
 	int32_t iObjectNum;   // number of objects moved
 	int32_t *pObjects;    // pointer on array of objects moved
 	StdStrBuf StringParam; // script to execute, or ID of object to create
+	bool drag_finished;    // Movement only: Set when mouse drag operation concluded (i.e. mouse up)
 private:
 	void MoveObject(C4Object *moved_object, bool move_forced) const;
 public:

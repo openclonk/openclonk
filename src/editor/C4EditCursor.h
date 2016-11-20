@@ -130,8 +130,8 @@ protected:
 	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r, float width, uint32_t color = 0xffffffff);
 	bool HasTransformMarker(float *x, float *y, float zoom) const;
 	void FrameSelection();
-	void MoveSelection(C4Real iXOff, C4Real iYOff);
-	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = nullptr, const char *szScript = nullptr);
+	void MoveSelection(C4Real iXOff, C4Real iYOff, bool drag_finished);
+	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4EditCursorSelection *pObjs = nullptr, const char *szScript = nullptr, bool drag_finished = false);
 	void DoContextObjCommand(C4Object *, const char *cmd);
 	void ObjselectDelItems();
 
