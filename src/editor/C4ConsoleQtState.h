@@ -135,6 +135,7 @@ public slots:
 	void FileSave();
 	void FileSaveAs();
 	void FileSaveGameAs();
+	void FileExportPacked();
 	void FileClose();
 	void FileQuit();
 	void FileReInitScenario();

@@ -342,6 +342,7 @@ void C4ConsoleQtMainWindow::FileRecord() { ::Console.FileRecord(); }
 void C4ConsoleQtMainWindow::FileSave() { ::Console.FileSave(); }
 void C4ConsoleQtMainWindow::FileSaveAs() { ::Console.FileSaveAs(false); }
 void C4ConsoleQtMainWindow::FileSaveGameAs() { ::Console.FileSaveAs(true); }
+void C4ConsoleQtMainWindow::FileExportPacked() { ::Console.FileSaveAs(false, true); }
 void C4ConsoleQtMainWindow::FileClose() { ::Console.FileClose(); }
 void C4ConsoleQtMainWindow::FileQuit() { ::Console.FileQuit(); }
 

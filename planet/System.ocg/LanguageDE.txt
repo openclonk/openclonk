@@ -523,6 +523,7 @@ IDS_MNU_DEFAULTRESOLUTION=Bildschirm
 IDS_MNU_DELETE=Löschen
 IDS_MNU_DUPLICATE=Duplizieren
 IDS_MNU_EXPLOREUSERPATH=Benutzerpfad anzeigen
+IDS_MNU_EXPORTSCENARIOPACKED=Gepackt exportieren...
 IDS_MNU_FILE=Datei
 IDS_MNU_FOCUSGLOBALSCRIPTBOX=Eingabefokus auf Scripteingabe (global)
 IDS_MNU_FOCUSOBJECTSCRIPTBOX=Eingabefokus auf Scripteingabe (Objekt)

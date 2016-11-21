@@ -151,12 +151,33 @@ bool C4Console::SaveGame(const char * path)
 	return fOkay;
 }
 
-bool C4Console::SaveScenario(const char * path)
+bool C4Console::SaveScenario(const char * path, bool export_packed)
 {
-	// Open new scenario file
-	if (path)
+	C4Group *save_target_group = &Game.ScenarioFile;
+	C4Group export_group;
+	if (export_packed)
 	{
-		// Close current scenario file
+		// Export to packed file: Delete existing
+		if (FileExists(path))
+		{
+			if (ItemIdentical(Game.ScenarioFilename, path) || !EraseItem(path))
+			{
+				Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), path).getData());
+				return false;
+			}
+		}
+		// Write into new, packed copy
+		if (!C4Group_PackDirectoryTo(Game.ScenarioFilename, path) || !export_group.Open(path))
+		{
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), path).getData());
+			return false;
+		}
+		save_target_group = &export_group;
+	}
+	else if (path)
+	{
+		// Open new scenario file
+		// Close current scenario file to allow re-opening at new path
 		Game.ScenarioFile.Close();
 		// Copy current scenario file to target
 		if (!C4Group_CopyItem(Game.ScenarioFilename,path))
@@ -164,6 +185,7 @@ bool C4Console::SaveScenario(const char * path)
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),path).getData());
 			return false;
 		}
+		// Re-open at new path (unless exporting, in which case the export is just a copy)
 		SCopy(path, Game.ScenarioFilename, _MAX_PATH);
 		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
@@ -183,11 +205,11 @@ bool C4Console::SaveScenario(const char * path)
 	}
 
 	// Can't save to child groups
-	if (Game.ScenarioFile.GetMother() && Game.ScenarioFile.GetMother()->IsPacked())
+	if (save_target_group->GetMother() && save_target_group->GetMother()->IsPacked())
 	{
 		StdStrBuf str;
 		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
-		           GetFilename(Game.ScenarioFile.GetName()));
+		           GetFilename(save_target_group->GetName()));
 		Message(str.getData());
 		return false;
 	}
@@ -197,15 +219,22 @@ bool C4Console::SaveScenario(const char * path)
 
 	bool fOkay=true;
 	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.GetMode() == LandscapeMode::Exact, false);
-	if (!pGameSave->Save(Game.ScenarioFile, false))
+	if (!pGameSave->Save(*save_target_group, false))
 		{ Out("Game::Save failed"); fOkay=false; }
 	delete pGameSave;
 
 	// Close and reopen scenario file to fix file changes
-	if (!Game.ScenarioFile.Close())
-		{ Out("ScenarioFile::Close failed"); fOkay=false; }
-	if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
-		{ Out("ScenarioFile::Open failed"); fOkay=false; }
+	if (!export_packed)
+	{
+		if (!Game.ScenarioFile.Close())
+		{
+			Out("ScenarioFile::Close failed"); fOkay = false;
+		}
+		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
+		{
+			Out("ScenarioFile::Open failed"); fOkay = false;
+		}
+	}
 
 	SetCursor(C4ConsoleGUI::CURSOR_Normal);
 
@@ -215,7 +244,7 @@ bool C4Console::SaveScenario(const char * path)
 		StdStrBuf str(LoadResStr("IDS_CNS_SCRIPTCREATEDOBJECTS"));
 		str += LoadResStr("IDS_CNS_WARNDOUBLE");
 		Message(str.getData());
-		Game.fScriptCreatedObjects=false;
+		Game.fScriptCreatedObjects = false;
 	}
 
 	// Status report
@@ -232,22 +261,27 @@ bool C4Console::FileSave()
 	return SaveScenario(nullptr);
 }
 
-bool C4Console::FileSaveAs(bool fSaveGame)
+bool C4Console::FileSaveAs(bool fSaveGame, bool export_packed)
 {
 	// Do save-as dialog
 	StdCopyStrBuf filename("");
 	filename.Copy(Game.ScenarioFile.GetName());
+	if (export_packed)
+	{
+		RemoveExtension(&filename);
+		filename.Append("_packed.ocs");
+	}
 	if (!FileSelect(&filename,
 	                "OpenClonk Scenario\0*.ocs\0\0",
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
-	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
+	if (!export_packed) ::Config.Developer.AddRecentlyEditedScenario(filename.getData());
 	if (fSaveGame)
 		// Save game
 		return SaveGame(filename.getData());
 	else
-		return SaveScenario(filename.getData());
+		return SaveScenario(filename.getData(), export_packed);
 }
 
 bool C4Console::Message(const char *szMessage, bool fQuery)
