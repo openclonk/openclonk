@@ -91,14 +91,19 @@ public func Reset()
 	else
 	{
 		// Definition call: Reset for all players
-		RemoveAll(Find_ID(GUI_Controller));
+		RemoveAll(Find_ID(GetGUIControllerID()));
 		var plr;
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User), cursor;
-			var controller = CreateObject(GUI_Controller, 0,0, plr);
+			var controller = CreateObject(GetGUIControllerID(), 0, 0, plr);
 			if (cursor = GetCursor(plr)) controller->~OnCrewSelection(cursor);
 		}
 	}
 	return true;
+}
+
+func GetGUIControllerID()
+{
+	return GUI_Controller;
 }

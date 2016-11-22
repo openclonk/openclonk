@@ -28,9 +28,10 @@ private func GetHUDController()
 	var plr = GetOwner();
 	if (GetPlayerType(plr) != C4PT_User) return nil;
 	if (HUDcontroller) return HUDcontroller;
-	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	var controllerDef = Library_HUDController->GetGUIControllerID();
+	HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
 	if (!HUDcontroller)
-		HUDcontroller = CreateObject(GUI_Controller, AbsX(0), AbsY(0), plr);
+		HUDcontroller = CreateObject(controllerDef, AbsX(0), AbsY(0), plr);
 	return HUDcontroller;
 }
 
