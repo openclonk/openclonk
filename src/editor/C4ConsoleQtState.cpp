@@ -778,6 +778,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionFileSaveGameAs->setEnabled(enabled);
 	ui.actionFileSaveScenario->setEnabled(enabled);
 	ui.actionFileSaveScenarioAs->setEnabled(enabled);
+	ui.actionFileExportScenarioPacked->setEnabled(enabled);
 	ui.actionViewportNew->setEnabled(enabled);
 	ui.actionPlayerJoin->setEnabled(enabled);
 	ui.menuNet->setEnabled(net_enabled);
