@@ -488,6 +488,15 @@ public func GetObjectEvaluator(filter_def, name, help)
 	return new_evaluator;
 }
 
+private func CopyProplist(p)
+{
+	// Create copy of p to ensure unique global reference
+	if (GetType(p) != C4V_PropList) return p;
+	var r = {};
+	for (var k in GetProperties(p)) r[k] = p[k];
+	return r;
+}
+
 public func AddEvaluator(string eval_type, string group, name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
 {
 	// Add an evaluator for one of the data types. Evaluators allow users to write small action sequences and scripts in the editor using dropdown lists.
@@ -503,7 +512,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	{
 		var any_group;
 		if (group) any_group = Format("%s/%s", EvaluatorTypeNames[eval_type], group); else any_group = EvaluatorTypeNames[eval_type];
-		AddEvaluator("Any", any_group, name, help, identifier, callback_data, default_val, delegate, delegate_storage_key);
+		AddEvaluator("Any", any_group, name, help, identifier, callback_data, CopyProplist(default_val), delegate, delegate_storage_key);
 	}
 	// Dissect parameters
 	if (group) group = GroupNames[group] ?? group; // resolve localized group name
