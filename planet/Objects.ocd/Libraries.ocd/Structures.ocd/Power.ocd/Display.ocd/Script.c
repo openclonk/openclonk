@@ -17,7 +17,7 @@ public func HasInteractionMenu() { return true; }
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	// Only add a power menu if the structure is a flagpole (Library_Flag).
 	// And only if a power network is already initialized for this object.
 	if (this->~IsFlagpole() && this->GetPowerHelper())

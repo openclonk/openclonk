@@ -15,7 +15,7 @@ protected func Construction()
 	var graphic = Random(6);
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
-	_inherited();
+	_inherited(...);
 
 	if(GetCon() < 100) SetCon(100);
 }

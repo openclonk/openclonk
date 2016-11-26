@@ -40,13 +40,13 @@ public func SaveScenarioObject(props, ...)
 
 public func TurnOn()
 {
-	_inherited();
+	_inherited(...);
 	SetMeshMaterial("LanternLit", 1);
 }
 
 public func TurnOff()
 {
-	_inherited();
+	_inherited(...);
 	SetMeshMaterial("LanternGlass", 1);
 }
 

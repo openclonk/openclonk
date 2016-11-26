@@ -103,7 +103,7 @@ public func Construction()
 	
 	_inherited(...);
 	
-	// setup of the force fields after the call to inherited()
+	// setup of the force fields after the call to inherited(...)
 	SetDefaultForceFieldMaxDistance(SQUID_VISION_MAX_RANGE);
 	SetDefaultForceFieldTTD(36 * 4);
 	SetMaxEmitterNumber(7);

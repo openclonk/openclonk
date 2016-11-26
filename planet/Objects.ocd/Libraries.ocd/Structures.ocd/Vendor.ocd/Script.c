@@ -170,7 +170,7 @@ public func HasInteractionMenu() { return true; }
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	// only open the menus if ready
 	if (this->AllowBuyMenuEntries())
 	{

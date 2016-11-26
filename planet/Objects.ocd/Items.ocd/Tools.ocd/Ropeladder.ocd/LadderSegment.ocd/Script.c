@@ -41,7 +41,7 @@ public func GetLadderData()
 {
 	if (master)
 		return master->~GetLadderData(index);
-	return _inherited();
+	return _inherited(...);
 }
 
 public func OnLadderGrab(object clonk)

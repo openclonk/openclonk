@@ -142,7 +142,7 @@ public func GetProductionMenuEntries(object clonk)
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var prod_menu =
 	{
 		title = "$Production$",

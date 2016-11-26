@@ -4,7 +4,7 @@
 	Clonk-side scripts for the HUD. This object basically redirects the
 	engine callbacks for the clonk to the HUD. All crew members that
 	are to be shown in the HUD have to include this object and return
-	_inherited(); if they overload one of the callbacks used here.
+	_inherited(...); if they overload one of the callbacks used here.
 
 	This adapter redirects to the per player HUD controller and also
 	directly to the per clonk HUD selector.

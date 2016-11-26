@@ -8,7 +8,7 @@
 
 func Initialize()
 {
-	return _inherited();
+	return _inherited(...);
 }
 
 public func ControlUse(object pClonk, int ix, int iy)

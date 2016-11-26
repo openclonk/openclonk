@@ -12,7 +12,7 @@ private func Stick()
 		fade_out_forced = true;
 		if (g_object_fade) AddEffect("IntFadeOut", this, 100, 1, g_object_fade, Rule_ObjectFade);
 	}
-	_inherited();
+	_inherited(...);
 }
 
 public func FadeOutForced() { return fade_out_forced; }

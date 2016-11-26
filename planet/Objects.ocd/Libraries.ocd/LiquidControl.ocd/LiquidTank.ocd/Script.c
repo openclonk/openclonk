@@ -53,7 +53,7 @@ public func IsLiquidTank() { return true;}
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	
 	if (CanConnectPipe())
 	{

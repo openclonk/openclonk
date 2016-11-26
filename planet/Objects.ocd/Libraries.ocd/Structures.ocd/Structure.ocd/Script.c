@@ -270,7 +270,7 @@ public func RejectInteractionMenu(object clonk)
 // Show damage and allow a player to repair the building when damaged.
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];		
+	var menus = _inherited(clonk, ...) ?? [];		
 	var damage_menu =
 	{
 		title = "$Damage$",

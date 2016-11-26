@@ -105,7 +105,7 @@ private func Death()
 		lib_swarm_previnline->SetNextInLine(lib_swarm_nextinline);
 	}
 	PurgeLine(); // Don't do everything twice in case Destruction() follows
-	_inherited();
+	_inherited(...);
 }
 
 private func Destruction()
@@ -131,7 +131,7 @@ private func PurgeLine()
 private func MoveToTarget()
 {
 	if (!lib_swarm_helper || (lib_swarm_helper->GetMaster() == this))
-		return _inherited();
+		return _inherited(...);
 
 	var x, y;
 	// Follow previous in line

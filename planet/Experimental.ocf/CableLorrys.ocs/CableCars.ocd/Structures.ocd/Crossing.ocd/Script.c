@@ -41,7 +41,7 @@ public func HasInteractionMenu() { return true; }
 // Show settings in interaction menu
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var crossing_menu =
 	{
 		title = "$StationSettings$",
