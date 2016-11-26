@@ -14,7 +14,7 @@ protected func RejectCollect(id object_id)
 		// Achievement: easter egg found.
 		GainScenarioAchievement("TutorialEasterEgg");
 	}
-	return _inherited(...);	
+	return _inherited(object_id, ...);	
 }
 
 protected func FxIntBreathBubblesTimer(object target, proplist effect, int time)

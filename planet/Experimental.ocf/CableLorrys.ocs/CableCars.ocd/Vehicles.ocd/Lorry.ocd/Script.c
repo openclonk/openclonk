@@ -63,7 +63,7 @@ protected func RejectCollect(id object_id, object obj)
 	}
 	if (obj->Contained())
 		return Message("$TxtLorryisfull$");
-	return _inherited(...);
+	return _inherited(object_id, obj, ...);
 }
 
 // Automatic unloading in buildings.

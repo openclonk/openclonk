@@ -48,7 +48,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	NotifyHUD();
-	return; // _inherited(plr, killer, ...);
+	return;
 }
 
 protected func JoinPlayer(int plr)

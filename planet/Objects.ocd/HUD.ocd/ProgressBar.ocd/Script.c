@@ -63,7 +63,7 @@ func Init(object to /* object to attach the bar to */
 		, proplist offset /* proplist with properties "x" and "y" that specifies the offset of the bar relative to the target object, the progress bar might provide standard values */
 		, proplist data /* proplist with additional data the progress bar can use */
 		)
-{return _inherited(to, maximum, current, timeout, ...);}
+{return _inherited(to, maximum, current, timeout, offset, data, ...);}
 
 // updates the visuals of the progress bar
 func Update(){return _inherited(...);}

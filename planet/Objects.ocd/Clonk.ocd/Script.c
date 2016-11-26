@@ -113,7 +113,7 @@ protected func OnEnergyChange(int change, int cause, int caused_by)
 {
 	if (change < 0 && GetCursor(GetOwner()) == this)
 		PlayRumble(GetOwner(), Min(300 + 1000 * -change / this.MaxEnergy, 1000), 150);
-	return _inherited(...);
+	return _inherited(change, cause, caused_by, ...);
 }
 	
 protected func Grab(object pTarget, bool fGrab)

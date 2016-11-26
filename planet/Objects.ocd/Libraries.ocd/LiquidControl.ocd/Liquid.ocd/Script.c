@@ -56,7 +56,7 @@ func GetLiquidAmount()
 func Departure(object container)
 {
 	TriggerDispersion();
-	_inherited(...);
+	_inherited(container, ...);
 }
 
 func TriggerDispersion()

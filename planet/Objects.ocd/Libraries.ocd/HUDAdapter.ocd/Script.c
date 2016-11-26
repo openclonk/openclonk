@@ -101,7 +101,7 @@ private func OnEnergyChange(int change, int cause, int caused_by)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewHealthChange(this, change, cause, caused_by);
-	return _inherited(...);
+	return _inherited(change, cause, caused_by, ...);
 
 }
 private func OnBreathChange(int change)

@@ -13,7 +13,7 @@ public func GetLiquidType() { return "Oil"; }
 public func Disperse(int angle, int strength)
 {
 	DisperseMaterial(GetLiquidType(), GetLiquidAmount(), strength, angle);
-	_inherited(...);
+	_inherited(angle, strength, ...);
 }
 
 public func IsFuel() { return true; }
