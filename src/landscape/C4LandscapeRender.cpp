@@ -1030,7 +1030,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		BuildMatMap(MatMap);
 		glBindTexture(GL_TEXTURE_1D, matMapTexture);
 		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, 2*256, 0, GL_RGBA, GL_UNSIGNED_BYTE, MatMap);
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	// Calculate coordinates into landscape texture
