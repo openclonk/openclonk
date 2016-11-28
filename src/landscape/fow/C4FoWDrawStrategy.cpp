@@ -139,8 +139,12 @@ void C4FoWDrawLightTextureStrategy::Begin(const C4FoWRegion* regionPar)
 	}
 }
 
-void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
+void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader)
 {
+	C4ShaderCall call(&renderShader);
+	call.Start();
+	call.SetUniformMatrix4x4(C4FoWRSU_ProjectionMatrix, projectionMatrix);
+
 	// If we have nothing to draw (e.g. directly after initialization), abort early.
 	if (vertices.empty()) return;
 
@@ -254,7 +258,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 
 	// Assume the capacity stays the same:
 	vertices.resize(0);
-	C4FoWDrawStrategy::End(call);
+	C4FoWDrawStrategy::End(projectionMatrix, renderShader);
 }
 
 void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
@@ -359,8 +363,12 @@ void C4FoWDrawWireframeStrategy::Begin(const C4FoWRegion* region)
 {
 }
 
-void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
+void C4FoWDrawWireframeStrategy::End(const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader)
 {
+	C4ShaderCall call(&renderShader);
+	call.Start();
+	call.SetUniformMatrix4x4(C4FoWRSU_ProjectionMatrix, projectionMatrix);
+
 	// If we have nothing to draw (e.g. directly after initialization), abort early.
 	if (vertices.empty()) return;
 
@@ -421,7 +429,7 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 
 	// Assume the capacity stays the same:
 	vertices.resize(0);
-	C4FoWDrawStrategy::End(call);
+	C4FoWDrawStrategy::End(projectionMatrix, renderShader);
 }
 
 void C4FoWDrawWireframeStrategy::DrawVertex(Vertex& vtx)

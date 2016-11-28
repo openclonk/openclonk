@@ -249,14 +249,9 @@ void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Playe
 	assert(pShader);
 	if (!pShader) return;
 
-	C4ShaderCall Call(pShader);
-	Call.Start();
-	Call.SetUniformMatrix4x4(C4FoWRSU_ProjectionMatrix, projectionMatrix);
-
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		if (pLight->IsVisibleForPlayer(pPlr))
-			pLight->Render(pRegion, pOnScreen, Call);
+			pLight->Render(pRegion, pOnScreen, projectionMatrix, *pShader);
 
-	Call.Finish();
 #endif
 }
