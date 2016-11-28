@@ -146,6 +146,7 @@ C4Shader *C4FoW::GetRenderShader()
 		const char* szUniforms[C4FoWRSU_Count + 1];
 		szUniforms[C4FoWRSU_ProjectionMatrix] = "projectionMatrix";
 		szUniforms[C4FoWRSU_VertexOffset] = "vertexOffset";
+		szUniforms[C4FoWRSU_LightSourcePosition] = "lightSourcePosition";
 		szUniforms[C4FoWRSU_Count] = nullptr;
 
 		const char* szAttributes[C4FoWRSA_Count + 1];
@@ -165,6 +166,101 @@ C4Shader *C4FoW::GetRenderShader()
 #endif
 }
 
+C4Shader *C4FoW::GetDirectionalRenderShader()
+{
+#ifndef USE_CONSOLE
+	// Not created yet?
+	if (!DirectionalRenderShader.Initialised())
+	{
+		// Create the directional render shader. Similar to the
+		// normal render shader except discards pixels not in the
+		// direction of the light (w/ fade-out).
+		const char* DirectionalRenderVertexShader =
+			"in vec2 oc_Position;\n"
+			"in vec4 oc_Color;\n"
+			"out vec4 vtxColor;\n"
+                        "out vec2 vtxLightDir;\n"
+			"uniform mat4 projectionMatrix;\n"
+                        "uniform vec2 lightSourcePosition;\n"
+			"\n"
+			"slice(position)\n"
+			"{\n"
+			"  gl_Position = projectionMatrix * vec4(oc_Position, 0.0, 1.0);\n"
+			"}\n"
+			"\n"
+			"slice(color)\n"
+			"{\n"
+			"  vtxColor = oc_Color;\n"
+                        "  vtxLightDir = (oc_Position - lightSourcePosition);\n"
+			"}";
+
+		const char* DirectionalRenderFragmentShader =
+			"in vec4 vtxColor;\n"
+			"in vec2 vtxLightDir;\n"
+			"out vec4 fragColor;\n"
+			"\n"
+			// TODO: these are going to be uniforms:
+			"const vec2 lightDirection = vec2(1.0, 0.0);\n"
+			"const float PI = 3.141592653589793238462643383;\n"
+			"const float lightAngularRangeCos = cos(20.0 * PI / 180.0);\n" // 50 deg
+			"const float lightAngularFadeCos = cos((20.0 + 30.0) * PI / 180.0);\n" // 80 deg
+			"\n"
+			"const float lightAngularDistance = 5.0;\n"
+			"const float lightAngularDistanceFade = 5.0 + 15.0;\n"
+			"\n"
+			"slice(color)\n"
+			"{\n"
+			"  float lightLen = sqrt(vtxLightDir.x * vtxLightDir.x + vtxLightDir.y * vtxLightDir.y);\n"
+			"  float angDiffCos = dot(lightDirection, vtxLightDir) / lightLen;\n"
+			"\n"
+			"  float angOneMinusIntensity;\n"
+			"  if (angDiffCos <= lightAngularFadeCos)\n"
+			"    angOneMinusIntensity = 1.0;\n"
+                        //"  float dist = min(1.0, 0.02 * sqrt(vtxLightDir.x * vtxLightDir.x + vtxLightDir.y * vtxLightDir.y));\n"
+			//"  fragColor = vec4(0.0, 0.5/1.5, 0.5/1.5, 1.0);\n"
+			//"  fragColor = vtxColor;\n"
+			"  else if (angDiffCos <= lightAngularRangeCos)\n"
+			// TODO: this uses linear interpolation on the cosine values, which is not linear in the angle. Might need to use acos() here if things look funny.
+			"    angOneMinusIntensity = (lightAngularRangeCos - angDiffCos) / (lightAngularRangeCos - lightAngularFadeCos);\n"
+			"  else\n"
+			"    angOneMinusIntensity = 0.0;\n"
+                        "\n"
+                        "  float distOneMinusIntensity;\n"
+			"  if (lightLen >= lightAngularDistanceFade)\n"
+			"    distOneMinusIntensity = 1.0;\n"
+			"  else if (lightLen >= lightAngularDistance)\n"
+			"    distOneMinusIntensity = (lightLen - lightAngularDistance) / (lightAngularDistanceFade - lightAngularDistance);\n"
+			"  else\n"
+			"    distOneMinusIntensity = 0.0;\n"
+			"\n"
+                        "  fragColor = vec4(vtxColor.rgb, (1.0 - distOneMinusIntensity*angOneMinusIntensity) * vtxColor.a);\n"
+			"}";
+
+		DirectionalRenderShader.AddVertexSlices("built-in FoW directional render shader", DirectionalRenderVertexShader);
+		DirectionalRenderShader.AddFragmentSlices("built-in FoW directional render shader", DirectionalRenderFragmentShader);
+
+		const char* szUniforms[C4FoWRSU_Count + 1];
+		szUniforms[C4FoWRSU_ProjectionMatrix] = "projectionMatrix";
+		szUniforms[C4FoWRSU_VertexOffset] = "vertexOffset";
+		szUniforms[C4FoWRSU_LightSourcePosition] = "lightSourcePosition";
+		szUniforms[C4FoWRSU_Count] = nullptr;
+
+		const char* szAttributes[C4FoWRSA_Count + 1];
+		szAttributes[C4FoWRSA_Position] = "oc_Position";
+		szAttributes[C4FoWRSA_Color] = "oc_Color";
+		szAttributes[C4FoWRSA_Count] = nullptr;
+
+		if (!DirectionalRenderShader.Init("fowDirectionalRender", szUniforms, szAttributes)) {
+			DirectionalRenderShader.ClearSlices();
+			return nullptr;
+		}
+
+	}
+	return &DirectionalRenderShader;
+#else
+	return nullptr;
+#endif
+}
 
 void C4FoW::Add(C4Object *pObj)
 {
@@ -249,9 +345,12 @@ void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Playe
 	assert(pShader);
 	if (!pShader) return;
 
+	C4Shader *pDirectionalShader = GetDirectionalRenderShader();
+	assert(pDirectionalShader);
+	if (!pDirectionalShader) return;
+
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		if (pLight->IsVisibleForPlayer(pPlr))
-			pLight->Render(pRegion, pOnScreen, projectionMatrix, *pShader);
-
+			pLight->Render(pRegion, pOnScreen, projectionMatrix, *pShader, *pDirectionalShader);
 #endif
 }

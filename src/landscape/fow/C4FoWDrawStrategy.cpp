@@ -139,14 +139,20 @@ void C4FoWDrawLightTextureStrategy::Begin(const C4FoWRegion* regionPar)
 	}
 }
 
-void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader)
+void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader, const C4Shader& directionalRenderShader)
 {
-	C4ShaderCall call(&renderShader);
-	call.Start();
-	call.SetUniformMatrix4x4(C4FoWRSU_ProjectionMatrix, projectionMatrix);
-
 	// If we have nothing to draw (e.g. directly after initialization), abort early.
 	if (vertices.empty()) return;
+
+	C4ShaderCall directionalRenderCall(&directionalRenderShader);
+	directionalRenderCall.Start();
+	directionalRenderCall.SetUniformMatrix4x4(C4FoWRSU_ProjectionMatrix, projectionMatrix);
+
+	float y_offset[] = { 0.0f, 0.0f };
+	directionalRenderCall.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
+
+	const float light_source_position[2] = { light->getX() - region->getRegion().x, light->getY() - region->getRegion().y };
+	directionalRenderCall.SetUniform2fv(C4FoWRSU_LightSourcePosition, 1, light_source_position);
 
 	const GLuint vbo = bo[0];
 	const GLuint ibo = bo[1];
@@ -181,10 +187,6 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 	const float width = region->getSurfaceWidth();
 	const float height = region->getSurfaceHeight() / 2.0;
 
-	// Set Y offset for vertex
-	float y_offset[] = { 0.0f, 0.0f };
-	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
-
 	// Enable scissor test to only draw in upper or lower half of texture
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(0, height, width, height);
@@ -197,10 +199,10 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
-		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
+		glEnableVertexAttribArray(directionalRenderCall.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(directionalRenderCall.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(directionalRenderCall.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(directionalRenderCall.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
 	}
 
 	// Set up blend equation, see C4FoWDrawLightTextureStrategy::DrawVertex
@@ -211,7 +213,14 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 	// Render 1st pass
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
 
+	directionalRenderCall.Finish();
+
 	// Prepare state for 2nd pass
+	C4ShaderCall renderCall(&renderShader);
+	renderCall.Start();
+	renderCall.SetUniformMatrix4x4(C4FoWRSU_ProjectionMatrix, projectionMatrix);
+	renderCall.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
+
 	//glBlendFunc(GL_ONE, GL_ONE);
 	glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 
@@ -221,10 +230,10 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
-		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
+		glEnableVertexAttribArray(renderCall.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(renderCall.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(renderCall.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(renderCall.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
 	}
 	
 	// Render 2nd pass
@@ -235,7 +244,7 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 	glBlendEquation(GL_FUNC_ADD);
 	glScissor(0, 0, width, height);
 	y_offset[1] = height;
-	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
+	renderCall.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 
 	const bool has_vao3 = pGL->GetVAO(vaoids[2], vao3);
 	glBindVertexArray(vao3);
@@ -243,12 +252,12 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
-		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
+		glEnableVertexAttribArray(renderCall.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(renderCall.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(renderCall.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(renderCall.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
 	}
-	
+
 	// Render 3rd pass
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
 
@@ -258,7 +267,9 @@ void C4FoWDrawLightTextureStrategy::End(const StdProjectionMatrix& projectionMat
 
 	// Assume the capacity stays the same:
 	vertices.resize(0);
-	C4FoWDrawStrategy::End(projectionMatrix, renderShader);
+	C4FoWDrawStrategy::End(projectionMatrix, renderShader, directionalRenderShader);
+
+	renderCall.Finish();
 }
 
 void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
@@ -363,7 +374,7 @@ void C4FoWDrawWireframeStrategy::Begin(const C4FoWRegion* region)
 {
 }
 
-void C4FoWDrawWireframeStrategy::End(const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader)
+void C4FoWDrawWireframeStrategy::End(const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader, const C4Shader& directionalRenderShader)
 {
 	C4ShaderCall call(&renderShader);
 	call.Start();
@@ -429,7 +440,7 @@ void C4FoWDrawWireframeStrategy::End(const StdProjectionMatrix& projectionMatrix
 
 	// Assume the capacity stays the same:
 	vertices.resize(0);
-	C4FoWDrawStrategy::End(projectionMatrix, renderShader);
+	C4FoWDrawStrategy::End(projectionMatrix, renderShader, directionalRenderShader);
 }
 
 void C4FoWDrawWireframeStrategy::DrawVertex(Vertex& vtx)

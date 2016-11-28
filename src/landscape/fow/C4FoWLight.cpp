@@ -119,7 +119,7 @@ void C4FoWLight::Update(C4Rect Rec)
 		sections[i]->Update(Rec);
 }
 
-void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader)
+void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, const StdProjectionMatrix& projectionMatrix, const C4Shader& renderShader, const C4Shader& directionalRenderShader)
 {
 	TriangleList triangles;
 
@@ -157,7 +157,7 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, cons
 	DrawFade(strategy.get(), triangles);
 	DrawIntermediateFadeTriangles(strategy.get(), triangles);
 
-	strategy->End(projectionMatrix, renderShader);
+	strategy->End(projectionMatrix, renderShader, directionalRenderShader);
 }
 
 void C4FoWLight::CalculateFanMaxed(TriangleList &triangles) const

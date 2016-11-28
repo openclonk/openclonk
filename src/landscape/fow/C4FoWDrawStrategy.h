@@ -87,7 +87,7 @@ public:
 	/* TODO: shaders should be created in drawstrategy, but: make sure
 	 * there is only one shader per class
 	 * (static? but then when to clean up?). */
-	virtual void End(const StdProjectionMatrix&, const C4Shader& renderShader) { triangulator.Reset(); }
+	virtual void End(const StdProjectionMatrix&, const C4Shader& renderShader, const C4Shader& directionalRenderShader) { triangulator.Reset(); }
 
 	virtual void DrawLightVertex(float x, float y) { triangulator.AddVertex(); }
 	virtual void DrawDarkVertex(float x, float y) { triangulator.AddVertex(); }
@@ -127,7 +127,7 @@ public:
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
 	virtual void Begin(const C4FoWRegion* region);
-	virtual void End(const StdProjectionMatrix&, const C4Shader& renderShader);
+	virtual void End(const StdProjectionMatrix&, const C4Shader& renderShader, const C4Shader& directionalRenderShader);
 
 private:
 	void DrawVertex(float x, float y, bool shadeLight);
@@ -164,7 +164,7 @@ public:
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
 	virtual void Begin(const C4FoWRegion* region);
-	virtual void End(const StdProjectionMatrix&, const C4Shader& renderShader);
+	virtual void End(const StdProjectionMatrix&, const C4Shader& renderShader, const C4Shader& directionalRenderShader);
 
 private:
 	struct Vertex {
