@@ -226,6 +226,17 @@ TEST_F(AulTest, Vars)
 	EXPECT_EQ(C4VInt(42), RunCode("var i = -42; i = Abs(i); return i;"));
 }
 
+TEST_F(AulTest, GlobalVariables)
+{
+	EXPECT_EQ(C4V_PropList, RunScript("static const a = {}; func Main() { return a; }").GetType());
+	{
+		// #1850: Uncaught C4AulParseError with error in System.ocg script
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_)).Times(1);
+		EXPECT_NO_THROW(RunScript("static a = {}; func Main() {}"));
+	}
+}
+
 TEST_F(AulTest, ParameterPassing)
 {
 	EXPECT_EQ(C4VArray(

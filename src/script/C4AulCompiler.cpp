@@ -314,14 +314,18 @@ public:
 	enum EvalFlag
 	{
 		// If this flag is set, ConstexprEvaluator will assume unset values
-		// are nil. If it is not set, evaluation of unset values will throw
-		// ExpressionNotConstant.
-		IgnoreUnset = 1
+		// are nil. If it is not set, evaluation of unset values will send an
+		// ExpressionNotConstant to the error handler.
+		IgnoreUnset = 1<<0,
+		// If this flag is set, ConstexprEvaluator will not send exceptions to
+		// the error handler (so it doesn't report them twice: once from the
+		// preparsing step, then again from the compile step).
+		SuppressErrors = 1<<1
 	};
 	typedef int EvalFlags;
 
 	// Evaluates constant AST subtrees and returns the final C4Value.
-	// Throws ExpressionNotConstant if evaluation fails.
+	// Flags ExpressionNotConstant if evaluation fails.
 	static C4Value eval(C4ScriptHost *host, const ::aul::ast::Expr *e, EvalFlags flags = 0);
 	static C4Value eval_static(C4ScriptHost *host, C4PropListStatic *parent, const std::string &parent_key, const ::aul::ast::Expr *e, EvalFlags flags = 0);
 
@@ -329,6 +333,7 @@ private:
 	C4ScriptHost *host = nullptr;
 	C4Value v;
 	bool ignore_unset_values = false;
+	bool quiet = false;
 
 	struct ProplistMagic
 	{
@@ -382,9 +387,18 @@ public:
 class C4AulCompiler::ConstantResolver : public ::aul::DefaultRecursiveVisitor
 {
 	C4ScriptHost *host;
+	bool quiet = false;
 	explicit ConstantResolver(C4ScriptHost *host) : host(host) {}
 
 public:
+	static void resolve_quiet(C4ScriptHost *host, const ::aul::ast::Script *script)
+	{
+		// Does the same as resolve, but doesn't emit errors/warnings
+		// (because we'll emit them again later).
+		ConstantResolver r(host);
+		r.quiet = true;
+		r.visit(script);
+	}
 	static void resolve(C4ScriptHost *host, const ::aul::ast::Script *script)
 	{
 		// We resolve constants *twice*; this allows people to create circular
@@ -401,6 +415,7 @@ public:
 	virtual ~ConstantResolver() {}
 
 	using DefaultRecursiveVisitor::visit;
+	void visit(const ::aul::ast::Script *n) override;
 	void visit(const ::aul::ast::VarDecl *n) override;
 };
 
@@ -409,7 +424,7 @@ void C4AulCompiler::Preparse(C4ScriptHost *host, C4ScriptHost *source_host, cons
 	PreparseAstVisitor v(host, source_host);
 	v.visit(script);
 
-	ConstantResolver::resolve(host, script);
+	ConstantResolver::resolve_quiet(host, script);
 }
 
 void C4AulCompiler::Compile(C4ScriptHost *host, C4ScriptHost *source_host, const ::aul::ast::Script *script)
@@ -1722,8 +1737,17 @@ C4Value C4AulCompiler::ConstexprEvaluator::eval(C4ScriptHost *host, const ::aul:
 {
 	ConstexprEvaluator ce(host);
 	ce.ignore_unset_values = (flags & IgnoreUnset) == IgnoreUnset;
-	e->accept(&ce);
-	return ce.v;
+	try
+	{
+		e->accept(&ce);
+		return ce.v;
+	}
+	catch (C4AulParseError &e)
+	{
+		if ((flags & SuppressErrors) == 0)
+			host->Engine->ErrorHandler->OnError(e.what());
+		return C4VNull;
+	}
 }
 
 C4Value C4AulCompiler::ConstexprEvaluator::eval_static(C4ScriptHost *host, C4PropListStatic *parent, const std::string &parent_key, const ::aul::ast::Expr *e, EvalFlags flags)
@@ -1731,8 +1755,17 @@ C4Value C4AulCompiler::ConstexprEvaluator::eval_static(C4ScriptHost *host, C4Pro
 	ConstexprEvaluator ce(host);
 	ce.proplist_magic = ConstexprEvaluator::ProplistMagic{ true, parent, parent_key };
 	ce.ignore_unset_values = (flags & IgnoreUnset) == IgnoreUnset;
-	e->accept(&ce);
-	return ce.v;
+	try
+	{
+		e->accept(&ce);
+		return ce.v;
+	}
+	catch (C4AulParseError &e)
+	{
+		if ((flags & SuppressErrors) == 0)
+			host->Engine->ErrorHandler->OnError(e.what());
+		return C4VNull;
+	}
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::StringLit *n) { v = C4VString(n->value.c_str()); }
@@ -1807,8 +1840,8 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		proplist_magic = ProplistMagic { saved_magic.active, p->IsStatic(), kv.first };
 		kv.second->accept(this);
 		p->SetPropertyByS(::Strings.RegString(kv.first.c_str()), v);
-		proplist_magic = std::move(saved_magic);
 	}
+	proplist_magic = std::move(saved_magic);
 	v = C4VPropList(p);
 	new_proplist.release();
 }
@@ -2025,39 +2058,73 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::FunctionExpr *n)
 	v.SetFunction(sfunc);
 }
 
+void C4AulCompiler::ConstantResolver::visit(const::aul::ast::Script *n)
+{
+	for (const auto &d : n->declarations)
+	{
+		try
+		{
+			d->accept(this);
+		}
+		catch (C4AulParseError &e)
+		{
+			host->Engine->GetErrorHandler()->OnError(e.what());
+		}
+	}
+}
+
 void C4AulCompiler::ConstantResolver::visit(const ::aul::ast::VarDecl *n)
 {
+	const int quiet_flag = quiet ? ConstexprEvaluator::SuppressErrors : 0;
 	for (const auto &dec : n->decls)
 	{
 		const char *cname = dec.name.c_str();
+		C4String *name = ::Strings.RegString(cname);
 		switch (n->scope)
 		{
 		case ::aul::ast::VarDecl::Scope::Func:
 			// Function-scoped declarations and their initializers are handled by CodegenAstVisitor.
 			break;
 		case ::aul::ast::VarDecl::Scope::Object:
+			if (!host->GetPropList()->HasProperty(name))
+				host->GetPropList()->SetPropertyByS(name, C4VNull);
 			if (dec.init)
 			{
 				assert(host->GetPropList()->IsStatic());
-				C4Value v = ConstexprEvaluator::eval_static(host, host->GetPropList()->IsStatic(), dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset);
-				host->GetPropList()->SetPropertyByS(::Strings.RegString(cname), v);
-			}
-			else
-			{
-				host->GetPropList()->SetPropertyByS(::Strings.RegString(cname), C4VNull);
+				try
+				{
+					C4Value v = ConstexprEvaluator::eval_static(host, host->GetPropList()->IsStatic(), dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset | quiet_flag);
+					host->GetPropList()->SetPropertyByS(name, v);
+				}
+				catch (C4AulParseError &e)
+				{
+					if (!quiet)
+						host->Engine->ErrorHandler->OnError(e.what());
+				}
 			}
 			break;
 		case ::aul::ast::VarDecl::Scope::Global:
 			if ((dec.init != nullptr) != n->constant)
-				throw Error(host, host, n->loc, nullptr, "global variable must be either constant or uninitialized: %s", cname);
+			{
+				if (!quiet)
+					host->Engine->ErrorHandler->OnError(Error(host, host, n->loc, nullptr, "global variable must be either constant or uninitialized: %s", cname).what());
+			}
 			else if (dec.init)
 			{
-				assert(n->constant && "CodegenAstVisitor: initialized global variable isn't const");
-				C4Value *v = host->Engine->GlobalConsts.GetItem(cname);
-				assert(v && "CodegenAstVisitor: global constant not found in variable table");
-				if (!v)
-					throw Error(host, host, n->loc, nullptr, "internal error: global constant not found in variable table: %s", cname);
-				*v = ConstexprEvaluator::eval_static(host, nullptr, dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset);
+				try
+				{
+					assert(n->constant && "CodegenAstVisitor: initialized global variable isn't const");
+					C4Value *v = host->Engine->GlobalConsts.GetItem(cname);
+					assert(v && "CodegenAstVisitor: global constant not found in variable table");
+					if (!v)
+						throw Error(host, host, n->loc, nullptr, "internal error: global constant not found in variable table: %s", cname);
+					*v = ConstexprEvaluator::eval_static(host, nullptr, dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset | quiet_flag);
+				}
+				catch (C4AulParseError &e)
+				{
+					if (!quiet)
+						host->Engine->ErrorHandler->OnError(e.what());
+				}
 			}
 			break;
 		}
