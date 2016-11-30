@@ -1410,7 +1410,6 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Return *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 {
-#if 0
 	// Bytecode arranged like this:
 	//        initializer
 	//  cond: condition
@@ -1418,56 +1417,6 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 	//  body: body
 	//  incr: incrementor
 	//        JUMP cond
-	//  exit:
-	//
-	// continue jumps to incr
-	// break jumps to exit
-
-	if (n->init)
-	{
-		n->init->accept(this);
-		MaybePopValueOf(n->init);
-	}
-	int cond = -1, condition_jump = -1;
-	PushLoop();
-	if (n->cond)
-	{
-		cond = AddJumpTarget();
-		n->cond->accept(this);
-		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
-	}
-
-	int body = AddJumpTarget();
-	if (!n->cond)
-		cond = body;
-	n->body->accept(this);
-	MaybePopValueOf(n->body);
-
-	int incr = -1;
-	if (n->incr)
-	{
-		incr = AddJumpTarget();
-		n->incr->accept(this);
-		MaybePopValueOf(n->incr);
-	}
-	else
-	{
-		// If no incrementor exists, just jump straight to the condition
-		incr = cond;
-	}
-	// start the next iteration of the loop
-	AddJumpTo(AB_JUMP, cond);
-	PopLoop(incr);
-#else
-	// Bytecode arranged like this:
-	//        initializer
-	//  cond: condition
-	//        CONDN exit
-	//        JUMP body
-	//  incr: incrementor
-	//        JUMP cond
-	//  body: body
-	//        JUMP incr
 	//  exit:
 	//
 	// continue jumps to incr
@@ -1478,29 +1427,36 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 		if (SafeVisit(n->init))
 			MaybePopValueOf(n->init);
 	}
+	int cond = -1, condition_jump = -1;
 	PushLoop();
-	int cond = AddJumpTarget();
 	if (n->cond)
 	{
+		cond = AddJumpTarget();
 		SafeVisit(n->cond);
 		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	}
 
-	int incr = cond;
+	int body = AddJumpTarget();
+	if (!n->cond)
+		cond = body;
+	if (SafeVisit(n->body))
+		MaybePopValueOf(n->body);
+
+	int incr = -1;
 	if (n->incr)
 	{
-		int cond_jump = AddBCC(n->loc, AB_JUMP);
 		incr = AddJumpTarget();
 		if (SafeVisit(n->incr))
 			MaybePopValueOf(n->incr);
-		AddJumpTo(n->loc, AB_JUMP, cond);
-		UpdateJump(cond_jump, AddJumpTarget());
 	}
-	if (SafeVisit(n->body))
-		MaybePopValueOf(n->body);
-	AddJumpTo(n->loc, AB_JUMP, incr);
+	else
+	{
+		// If no incrementor exists, just jump straight to the condition
+		incr = cond;
+	}
+	// start the next iteration of the loop
+	AddJumpTo(n->loc, AB_JUMP, cond);
 	PopLoop(incr);
-#endif
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
