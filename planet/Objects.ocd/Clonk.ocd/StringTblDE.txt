@@ -18,3 +18,5 @@ Default=Standard
 
 Skin=Skin
 SkinHelp=Aussehen des Clonks.
+TurnAround=Umdrehen
+TurnAroundHelp=Wechselt die Blickrichtung des Clonks.

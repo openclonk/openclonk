@@ -220,7 +220,7 @@ bool C4LeagueFBIDList::FindFBIDByAccount(const char *szAccount, StdStrBuf *pFBID
 
 void C4LeagueFBIDList::RemoveFBIDByAccount(const char *szAccount)
 {
-	FBIDItem *pPrev = NULL, *pItem = pFirst;
+	FBIDItem *pPrev = nullptr, *pItem = pFirst;
 	while (pItem)
 	{
 		// Delete?
@@ -514,7 +514,7 @@ bool C4LeagueClient::GetReportDisconnectReply(StdStrBuf *pMessage)
 // *** C4LeagueSignupDialog
 
 C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister, bool fRememberLogin)
-		: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized as needed */, FormatString(LoadResStr("IDS_DLG_LEAGUESIGNUPON"), szLeagueServerName).getData(), false), strPlayerName(szPlayerName), pChkRememberLogin(NULL)
+		: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized as needed */, FormatString(LoadResStr("IDS_DLG_LEAGUESIGNUPON"), szLeagueServerName).getData(), false), strPlayerName(szPlayerName), pChkRememberLogin(nullptr)
 {
 	// get positions
 	C4GUI::ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
@@ -539,14 +539,14 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 	// place username input box
 	bool fSideEdits=true; int iCtrlHeight;
 	StdStrBuf sAccountTxt; sAccountTxt.Copy(LoadResStr("IDS_CTL_LEAGUE_ACCOUNT"));
-	C4GUI::LabeledEdit::GetControlSize(NULL, &iCtrlHeight, sAccountTxt.getData(), NULL, fSideEdits);
+	C4GUI::LabeledEdit::GetControlSize(nullptr, &iCtrlHeight, sAccountTxt.getData(), nullptr, fSideEdits);
 	AddElement(pEdtAccount = new C4GUI::LabeledEdit(caMain.GetFromTop(iCtrlHeight), sAccountTxt.getData(), fSideEdits, szAccountPref));
 	// registering? Make password field optional
 	if (fRegister)
 	{
 		// place the checkbox
 		const char *szChkPasswordCaption = LoadResStr("IDS_CTL_LEAGUE_CHK_PLRPW");
-		C4GUI::CheckBox::GetStandardCheckBoxSize(NULL, &iCtrlHeight, szChkPasswordCaption, NULL);
+		C4GUI::CheckBox::GetStandardCheckBoxSize(nullptr, &iCtrlHeight, szChkPasswordCaption, nullptr);
 		AddElement(pChkPassword = new C4GUI::CheckBox(caMain.GetFromTop(iCtrlHeight), szChkPasswordCaption, false));
 		pChkPassword->SetOnChecked(new C4GUI::CallbackHandlerNoPar<C4LeagueSignupDialog>(this, &C4LeagueSignupDialog::OnChkPassword));
 		pChkPassword->SetToolTip(LoadResStr("IDS_DESC_LEAGUECHECKPASSWORD"));
@@ -554,7 +554,7 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 		C4GUI::ComponentAligner caTemp = caMain;
 		const char *szEdtPassCaption = LoadResStr("IDS_CTL_LEAGUE_PLRPW");
 		const char *szEdtPass2Caption = LoadResStr("IDS_CTL_LEAGUE_PLRPW2");
-		C4GUI::LabeledEdit::GetControlSize(NULL, &iCtrlHeight, szEdtPassCaption, NULL, fSideEdits);
+		C4GUI::LabeledEdit::GetControlSize(nullptr, &iCtrlHeight, szEdtPassCaption, nullptr, fSideEdits);
 		AddElement(pEdtPass = new C4GUI::LabeledEdit(caTemp.GetFromTop(iCtrlHeight), szEdtPassCaption, fSideEdits, szPassPref));
 		AddElement(pEdtPass2 = new C4GUI::LabeledEdit(caTemp.GetFromTop(iCtrlHeight), szEdtPass2Caption, fSideEdits, szPassPref));
 		// hide them
@@ -566,16 +566,16 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 	else
 	{
 		// No password checkbox
-		pChkPassword = NULL;
+		pChkPassword = nullptr;
 		// But a password edit box
 		const char *szEdtPassCaption = LoadResStr("IDS_CTL_LEAGUE_PLRPW");
-		C4GUI::LabeledEdit::GetControlSize(NULL, &iCtrlHeight, szEdtPassCaption, NULL, fSideEdits);
+		C4GUI::LabeledEdit::GetControlSize(nullptr, &iCtrlHeight, szEdtPassCaption, nullptr, fSideEdits);
 		AddElement(pEdtPass = new C4GUI::LabeledEdit(caMain.GetFromTop(iCtrlHeight), szEdtPassCaption, fSideEdits, szPassPref));
 		// No second password edit box
-		pEdtPass2 = NULL;
+		pEdtPass2 = nullptr;
 		// remember login-checkbox
 		const char *szRememberPasswordCaption = LoadResStr("IDS_CTL_LEAGUE_CHK_REMEMBERLOGIN");
-		C4GUI::CheckBox::GetStandardCheckBoxSize(NULL, &iCtrlHeight, szRememberPasswordCaption, NULL);
+		C4GUI::CheckBox::GetStandardCheckBoxSize(nullptr, &iCtrlHeight, szRememberPasswordCaption, nullptr);
 		AddElement(pChkRememberLogin = new C4GUI::CheckBox(caMain.GetFromTop(iCtrlHeight), szRememberPasswordCaption, fRememberLogin));
 		pChkRememberLogin->SetToolTip(LoadResStr("IDS_DESC_REMEMBERLOGIN"));
 	}

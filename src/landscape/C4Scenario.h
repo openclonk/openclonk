@@ -92,7 +92,7 @@ public:
 	bool LocalOnly;
 	bool AllowUserChange;
 	C4IDList SkipDefs;
-	void SetModules(const char *szList, const char *szRelativeToPath=NULL, const char *szRelativeToPath2=NULL);
+	void SetModules(const char *szList, const char *szRelativeToPath=nullptr, const char *szRelativeToPath2=nullptr);
 	bool GetModules(StdStrBuf *psOutModules) const;
 	void Default();
 	void CompileFunc(StdCompiler *pComp);

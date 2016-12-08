@@ -153,7 +153,7 @@ void C4UpdateDlg::RedirectToDownloadPage()
 
 bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 {
-	if(szUpdateURL == NULL || strlen(szUpdateURL) == 0)
+	if(szUpdateURL == nullptr || strlen(szUpdateURL) == 0)
 	{
 		pScreen->ShowMessageModal(LoadResStr("IDS_MSG_NEWRELEASEAVAILABLE"), LoadResStr("IDS_TYPE_UPDATE"),C4GUI::MessageDialog::btnOK, C4GUI::Ico_Ex_Update);
 		RedirectToDownloadPage();
@@ -248,7 +248,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 #ifdef _WIN32
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
 	// the magic verb "runas" opens the update program in a shell requesting elevation
-	int iError = (intptr_t)ShellExecute(NULL, L"runas", strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
+	int iError = (intptr_t)ShellExecute(nullptr, L"runas", strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
 	if (iError <= 32) return false;
 
 	// must quit ourselves for update program to work
@@ -298,7 +298,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 bool C4UpdateDlg::IsValidUpdate(const char *szVersion)
 {
 	StdStrBuf strVersion; strVersion.Format("%d.%d", C4XVER1, C4XVER2);
-	if (szVersion == NULL || strlen(szVersion) == 0) return false;
+	if (szVersion == nullptr || strlen(szVersion) == 0) return false;
 	return strcmp(szVersion,strVersion.getData()) != 0;
 }
 
@@ -306,14 +306,14 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 {
 	// Automatic update only once a day
 	if (fAutomatic)
-		if (time(NULL) - Config.Network.LastUpdateTime < 60 * 60 * 24)
+		if (time(nullptr) - Config.Network.LastUpdateTime < 60 * 60 * 24)
 			return false;
 	// Store the time of this update check (whether it's automatic or not or successful or not)
-	Config.Network.LastUpdateTime = time(NULL);
+	Config.Network.LastUpdateTime = time(nullptr);
 	// Get current update url and version info from server
 	StdStrBuf UpdateURL;
 	StdStrBuf VersionInfo;
-	C4GUI::Dialog *pWaitDlg = NULL;
+	C4GUI::Dialog *pWaitDlg = nullptr;
 	pWaitDlg = new C4GUI::MessageDialog(LoadResStr("IDS_MSG_LOOKINGFORUPDATES"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_Ex_Update, C4GUI::MessageDialog::dsRegular);
 	pWaitDlg->SetDelOnClose(false);
 	pScreen->ShowDialog(pWaitDlg, false);
@@ -340,7 +340,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 			UpdateClient.GetUpdateURL(&UpdateURL);
 		}
 		Application.InteractiveThread.RemoveProc(&UpdateClient);
-		UpdateClient.SetNotify(NULL);
+		UpdateClient.SetNotify(nullptr);
 	}
 	delete pWaitDlg;
 	// User abort

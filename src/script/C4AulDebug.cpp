@@ -40,7 +40,7 @@ C4AulDebug::~C4AulDebug()
 {
 	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
 		{delete *it;}
-	if (pDebug == this) pDebug = NULL;
+	if (pDebug == this) pDebug = nullptr;
 }
 
 bool C4AulDebug::InitDebug(const char *szPassword, const char *szHost)
@@ -105,7 +105,7 @@ size_t C4AulDebug::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &add
 	{
 		ProcessLineResult result = ProcessLine(Buf);
 		// Send answer
-		SendLine(result.okay ? "OK" : "ERR", result.answer.length() > 0 ? result.answer.c_str() : NULL);
+		SendLine(result.okay ? "OK" : "ERR", result.answer.length() > 0 ? result.answer.c_str() : nullptr);
 	}
 	else if (!Password.getSize() || Password == Buf)
 	{
@@ -277,7 +277,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		auto sh = script;
 		if (sh)
 		{
-			C4AulBCC * found = NULL;
+			C4AulBCC * found = nullptr;
 			for (auto script = ::ScriptEngine.Child0; script; script = script->Next)
 			for (C4PropList *props = script->GetPropList(); props; props = props->GetPrototype())
 			for (auto fname = props->EnumerateOwnFuncs(); fname; fname = props->EnumerateOwnFuncs(fname))
@@ -323,7 +323,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "VAR"))
 	{
 		
-		C4Value *val = NULL;
+		C4Value *val = nullptr;
 		int varIndex;
 		C4AulScriptContext* pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
 		if (pCtx)
@@ -481,6 +481,6 @@ StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 		return StdStrBuf("(eval)");
 }
 
-C4AulDebug * C4AulDebug::pDebug = NULL;
+C4AulDebug * C4AulDebug::pDebug = nullptr;
 
 #endif

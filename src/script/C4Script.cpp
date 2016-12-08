@@ -390,11 +390,11 @@ static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4Prop
 	const char *szEffect = FnStringPar(psEffectName);
 	// get effects
 	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
-	if (!pEffect) return NULL;
+	if (!pEffect) return nullptr;
 	// name/wildcard given: find effect by name and index
 	if (szEffect && *szEffect)
 		return pEffect->Get(szEffect, index, iMaxPriority);
-	return NULL;
+	return nullptr;
 }
 
 static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
@@ -930,7 +930,7 @@ static bool FnLocateFunc(C4PropList * _this, C4String *funcname, C4PropList * p)
 				LogF("%s%s (%s:%d)", szPrefix, pFunc->GetName(), pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
 			}
 			// next func in overload chain
-			pFunc = pSFunc ? pSFunc->OwnerOverloaded : NULL;
+			pFunc = pSFunc ? pSFunc->OwnerOverloaded : nullptr;
 			szPrefix = "overloads ";
 		}
 	}
@@ -976,7 +976,7 @@ static bool FnStartScriptProfiler(C4PropList * _this, C4Def * pDef)
 	if (pDef)
 		pScript = &pDef->Script;
 	else
-		pScript = NULL;
+		pScript = nullptr;
 	// profile it
 	C4AulProfiler::StartProfiling(pScript);
 	return true;
@@ -1059,7 +1059,7 @@ static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
 	C4AulUserFile *file = ::ScriptEngine.GetUserFile(file_handle);
 	if (!file) throw C4AulExecError("FileWrite: invalid file handle");
 	// prepare string to write
-	if (!data) return false; // write NULL? No.
+	if (!data) return false; // write nullptr? No.
 	// write it
 	file->Write(data->GetCStr(), data->GetData().getLength());
 	return true;
@@ -1113,7 +1113,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver1",        C4V_Int, C4XVER1},
 	{ "C4X_Ver2",        C4V_Int, C4XVER2},
 
-	{ NULL, C4V_Nil, 0}
+	{ nullptr, C4V_Nil, 0}
 };
 
 C4ScriptFnDef C4ScriptFnMap[]=
@@ -1125,7 +1125,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
 	{ "Trans_Mul",     1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
 
-	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
+	{ nullptr,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)

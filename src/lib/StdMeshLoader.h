@@ -46,7 +46,7 @@ public:
 // Interface to load skeleton files. Given a filename occuring in the
 // mesh file, this should load the skeleton file from wherever the mesh file
 // was loaded from, for example from a C4Group. Return default-construted
-// StdStrBuf with NULL data in case of error.
+// StdStrBuf with nullptr data in case of error.
 class StdMeshSkeletonLoader
 {
 public:

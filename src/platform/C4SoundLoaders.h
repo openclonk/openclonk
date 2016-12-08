@@ -75,12 +75,12 @@ namespace C4SoundLoaders
 			size_t data_pos;
 			bool is_data_owned; // if true, dtor will delete data
 			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length), data_pos(0), is_data_owned(false) {}
-			CompressedData() : data(NULL), data_length(0), data_pos(0), is_data_owned(false) {}
+			CompressedData() : data(nullptr), data_length(0), data_pos(0), is_data_owned(false) {}
 			void SetOwnedData(BYTE* data, size_t data_length)
 			{ clear(); this->data=data; this->data_length=data_length; this->data_pos=0; is_data_owned=true; }
 
 			~CompressedData() { clear(); }
-			void clear()  { if (is_data_owned) delete [] data; data=NULL; }
+			void clear()  { if (is_data_owned) delete [] data; data=nullptr; }
 		};
 		// load from compressed data held in memory buffer
 		static size_t mem_read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource);

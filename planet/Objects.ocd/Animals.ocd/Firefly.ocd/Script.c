@@ -81,14 +81,14 @@ private func MissionComplete()
 private func Sleep()
 {
 	this.Visibility = VIS_None;
-	_inherited();
+	_inherited(...);
 }
 
 
 private func WakeUp()
 {
 	this.Visibility = VIS_All;
-	_inherited();
+	_inherited(...);
 }
 
 // Action end call.

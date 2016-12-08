@@ -180,7 +180,7 @@ public func GetExtensionMenuEntries(object clonk)
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];		
+	var menus = _inherited(clonk, ...) ?? [];		
 	var menu =
 	{
 		title = "$ReinforceScaffold$",

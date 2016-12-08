@@ -60,7 +60,7 @@ void c4_log_handle_clear()
 
 const char* c4_log_handle_get_first_log_message()
 {
-	if(first_log.empty()) return NULL;
+	if(first_log.empty()) return nullptr;
 	return first_log.c_str();
 }
 

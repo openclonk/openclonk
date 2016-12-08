@@ -59,7 +59,7 @@ protected:
 	void Changed();
 public:
 
-	StdSchedulerProc(): scheduler(NULL) {}
+	StdSchedulerProc(): scheduler(nullptr) {}
 	virtual ~StdSchedulerProc() { }
 
 	// Do whatever the process wishes to do. Should not block longer than the timeout value.

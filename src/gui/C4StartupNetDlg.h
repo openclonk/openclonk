@@ -111,7 +111,7 @@ public:
 	void UpdateCollapsed(bool fToCollapseValue);
 	void SetVisibility(bool fToValue);
 
-	const char *GetError() { return fError ? sError.getData() : NULL; } // return error message, if any is set
+	const char *GetError() { return fError ? sError.getData() : nullptr; } // return error message, if any is set
 	C4Network2Reference *GrabReference(); // grab the reference so it won't be deleted when this item is removed
 	C4Network2Reference *GetReference() const { return pRef; } // have a look at the reference
 	bool IsSameHost(const C4Network2Reference *pRef2); // check whether the reference was created by the same host as this one

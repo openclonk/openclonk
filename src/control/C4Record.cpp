@@ -68,7 +68,7 @@ void C4PktDebugRec::CompileFunc(StdCompiler *pComp)
 }
 
 C4RecordChunk::C4RecordChunk()
-		: pCtrl(NULL)
+		: pCtrl(nullptr)
 {
 
 }
@@ -77,12 +77,12 @@ void C4RecordChunk::Delete()
 {
 	switch (Type)
 	{
-	case RCT_Ctrl: delete pCtrl; pCtrl = NULL; break;
-	case RCT_CtrlPkt: delete pPkt; pPkt = NULL; break;
+	case RCT_Ctrl: delete pCtrl; pCtrl = nullptr; break;
+	case RCT_CtrlPkt: delete pPkt; pPkt = nullptr; break;
 	case RCT_End: break;
 	case RCT_Frame: break;
 	case RCT_File: delete pFileData; break;
-	default: delete pDbg; pDbg = NULL; break;
+	default: delete pDbg; pDbg = nullptr; break;
 	}
 }
 
@@ -592,7 +592,7 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 			return false;
 		}
 		// Add to list
-		chunks.push_back(c); c.pPkt = NULL;
+		chunks.push_back(c); c.pPkt = nullptr;
 		iFrame = c.Frame;
 	}
 	while (!fFinished);
@@ -774,6 +774,7 @@ void C4Playback::Strip()
 				case CID_EMMoveObj:
 				case CID_EMDrawTool:
 				case CID_ReInitScenario:
+				case CID_EditGraph:
 					if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
 					break;
 					// Strip sync check
@@ -808,6 +809,7 @@ void C4Playback::Strip()
 			case CID_EMMoveObj:
 			case CID_EMDrawTool:
 			case CID_ReInitScenario:
+			case CID_EditGraph:
 				if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*i->pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
 				break;
 				// Strip some stuff
@@ -887,7 +889,7 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 				{
 					DebugRec.Add(CID_DebugRec, currChunk->pDbg);
 					// the debugrec buffer is now responsible for deleting the packet
-					currChunk->pDbg = NULL;
+					currChunk->pDbg = nullptr;
 				}
 				break;
 			}

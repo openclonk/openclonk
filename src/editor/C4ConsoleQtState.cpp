@@ -124,7 +124,7 @@ int ExecRecursionCheck::counter = 0;
 /* Console main window */
 
 C4ConsoleQtMainWindow::C4ConsoleQtMainWindow(C4AbstractApp *app, C4ConsoleGUIState *state)
-	: QMainWindow(NULL), state(state)
+	: QMainWindow(nullptr), state(state)
 {
 }
 
@@ -335,12 +335,14 @@ void C4ConsoleQtMainWindow::DrawSizeChanged(int newval)
 
 // File menu
 void C4ConsoleQtMainWindow::FileNew() { ::Console.FileNew(); }
-void C4ConsoleQtMainWindow::FileOpen() { ::Console.FileOpen(); }
+void C4ConsoleQtMainWindow::FileOpen() { ::Console.FileOpen(nullptr, false); }
+void C4ConsoleQtMainWindow::FileOpenInNetwork() { ::Console.FileOpen(nullptr, true); }
 void C4ConsoleQtMainWindow::FileOpenWithPlayers() { Console.FileOpenWPlrs(); }
 void C4ConsoleQtMainWindow::FileRecord() { ::Console.FileRecord(); }
 void C4ConsoleQtMainWindow::FileSave() { ::Console.FileSave(); }
 void C4ConsoleQtMainWindow::FileSaveAs() { ::Console.FileSaveAs(false); }
 void C4ConsoleQtMainWindow::FileSaveGameAs() { ::Console.FileSaveAs(true); }
+void C4ConsoleQtMainWindow::FileExportPacked() { ::Console.FileSaveAs(false, true); }
 void C4ConsoleQtMainWindow::FileClose() { ::Console.FileClose(); }
 void C4ConsoleQtMainWindow::FileQuit() { ::Console.FileQuit(); }
 
@@ -482,7 +484,7 @@ void C4ConsoleQtMainWindow::WelcomeLinkActivated(const QString &link)
 		bool success = false;
 #ifdef USE_WIN32_WINDOWS
 		StdStrBuf path(::Config.General.UserDataPath);
-		intptr_t iError = (intptr_t) ::ShellExecute(NULL, L"open", path.GetWideChar(), NULL, path.GetWideChar(), SW_SHOW);
+		intptr_t iError = (intptr_t) ::ShellExecute(nullptr, L"open", path.GetWideChar(), nullptr, path.GetWideChar(), SW_SHOW);
 		if (iError > 32) success = true;
 #else
 		success = QDesktopServices::openUrl(QUrl::fromLocalFile(::Config.General.UserDataPath));
@@ -578,7 +580,7 @@ void C4ConsoleQtMainWindow::GradeDown()
 
 /* Common C4ConsoleGUI interface */
 
-C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(NULL),
+C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(nullptr),
 		enabled(false), recording(false), net_enabled(false), landscape_mode(LandscapeMode::Dynamic), flat_chunk_shapes(false),
 	editcursor_mode(C4CNS_ModePlay), drawing_tool(C4TLS_Brush), is_object_selection_updating(0), disable_shortcut_filter(new C4DisableShortcutFilter(nullptr))
 {
@@ -739,6 +741,46 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	return true;
 }
 
+void C4ConsoleGUIState::DeleteConsoleWindow()
+{
+	// Reset to a state before CreateConsoleWindow was called
+	action_object = C4VNull;
+	is_object_selection_updating = false;
+
+	editcursor_mode = C4CNS_ModePlay;
+	drawing_tool = C4TLS_Brush;
+	landscape_mode = LandscapeMode::Dynamic;
+	net_enabled = false;
+	recording = false;
+	enabled = false;
+	
+	window_menu_separator = nullptr;
+	status_cursor = status_framecounter = status_timefps = nullptr;
+
+	while (!viewports.empty())
+	{
+		auto vp = viewports.front();
+		viewports.erase(viewports.begin());
+
+		viewport_area->removeDockWidget(vp);
+		delete vp;
+	}
+
+	client_actions.clear();
+	player_actions.clear();
+	viewport_actions.clear();
+	viewport_area = nullptr;
+
+	disable_shortcut_filter.reset(nullptr);
+	definition_list_model.reset(nullptr);
+	object_list_model.reset(nullptr);
+	property_name_delegate.reset(nullptr);
+	property_delegate_factory.reset(nullptr);
+	property_model.reset(nullptr);
+	window.reset(nullptr);
+	application.reset(nullptr);
+}
+
 void C4ConsoleGUIState::Execute(bool redraw_only)
 {
 	// Nothing to do - Qt's event loop is handling everything.
@@ -776,6 +818,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionFileSaveGameAs->setEnabled(enabled);
 	ui.actionFileSaveScenario->setEnabled(enabled);
 	ui.actionFileSaveScenarioAs->setEnabled(enabled);
+	ui.actionFileExportScenarioPacked->setEnabled(enabled);
 	ui.actionViewportNew->setEnabled(enabled);
 	ui.actionPlayerJoin->setEnabled(enabled);
 	ui.menuNet->setEnabled(net_enabled);
@@ -880,12 +923,26 @@ void C4ConsoleGUIState::AddViewport(C4ViewportWindow *cvp)
 void C4ConsoleGUIState::RemoveViewport(C4ViewportWindow *cvp)
 {
 	if (!viewport_area) return;
-	for (auto vp : viewports)
+
+	for (auto iter = viewports.begin(); iter != viewports.end(); )
 	{
+		auto vp = *iter;
 		if (vp->GetViewportWindow() == cvp)
 		{
 			viewport_area->removeDockWidget(vp);
-			vp->deleteLater();
+			iter = viewports.erase(iter);
+
+			// cannot use deleteLater here because Qt will then
+			// still select/deselect the viewport's GL context
+			// behind the scenes, leaving us with an unselected
+			// GL context.
+			// Documented at http://doc.qt.io/qt-5/qopenglwidget.html
+			// Instead, delete the viewport widget directly.
+			delete vp;
+		}
+		else
+		{
+			++iter;
 		}
 	}
 }
@@ -1068,13 +1125,14 @@ void C4ConsoleGUIState::OnCreatorCurrentChanged(const QModelIndex & current, con
 	::Console.EditCursor.SetCreatorDef(new_def); // set or clear def in EditCursor
 }
 
-bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename)
+bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network)
 {
 	// Show dialogue
 	std::unique_ptr<C4ConsoleQtNewScenarioDlg> dlg(new C4ConsoleQtNewScenarioDlg(window.get()));
 	if (!dlg->exec()) return false;
 	// Dlg said OK! Scenario created
 	out_filename->Copy(dlg->GetFilename());
+	*out_host_as_network = dlg->IsHostAsNetwork();
 	return true;
 }
 

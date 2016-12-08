@@ -26,7 +26,8 @@ private func Boiling()
 		var depth_check_mat = MaterialName(GetMaterial(x_rand, y_rand + random_depth));
 
 		if (mat == "Acid" && depth_check_mat == "Acid")
-			if (PathFree(x_rand, y_rand, x_rand, y_rand + random_depth))
+			// PathFree check? Not really needed. Looks OK in smaller basins as well.
+			//if (PathFree(GetX() + x_rand, GetY() + y_rand, GetX() + x_rand, GetY() + random_depth))
 			{	
 				var nearbySpawner = FindObject(Find_Distance(RandomX(80, 100), x_rand, y_rand), Find_ID(BoilingAcid_Spawner));
 			

@@ -73,12 +73,12 @@ void C4Shader::AddDefine(const char* name)
 
 void C4Shader::AddVertexSlice(int iPos, const char *szText)
 {
-	AddSlice(VertexSlices, iPos, szText, NULL, 0, 0);
+	AddSlice(VertexSlices, iPos, szText, nullptr, 0, 0);
 }
 
 void C4Shader::AddFragmentSlice(int iPos, const char *szText)
 {
-	AddSlice(FragmentSlices, iPos, szText, NULL, 0, 0);
+	AddSlice(FragmentSlices, iPos, szText, nullptr, 0, 0);
 }
 
 void C4Shader::AddVertexSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
@@ -413,13 +413,13 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 	// Allocate uniform and attribute arrays
 	int iUniformCount = 0;
-	if (szUniforms != NULL)
+	if (szUniforms != nullptr)
 		while (szUniforms[iUniformCount])
 			iUniformCount++;
 	Uniforms.resize(iUniformCount);
 
 	int iAttributeCount = 0;
-	if (szAttributes != NULL)
+	if (szAttributes != nullptr)
 		while (szAttributes[iAttributeCount])
 			iAttributeCount++;
 	Attributes.resize(iAttributeCount);
@@ -525,12 +525,12 @@ bool C4Shader::Refresh()
 	std::vector<const char*> UniformNames(Uniforms.size() + 1);
 	for (std::size_t i = 0; i < Uniforms.size(); ++i)
 		UniformNames[i] = Uniforms[i].name;
-	UniformNames[Uniforms.size()] = NULL;
+	UniformNames[Uniforms.size()] = nullptr;
 
 	std::vector<const char*> AttributeNames(Attributes.size() + 1);
 	for (std::size_t i = 0; i < Attributes.size(); ++i)
 		AttributeNames[i] = Attributes[i].name;
-	AttributeNames[Attributes.size()] = NULL;
+	AttributeNames[Attributes.size()] = nullptr;
 #endif
 
 	// Reinitialise
@@ -754,4 +754,100 @@ bool C4ScriptShader::Remove(int id)
 		return true;
 	}
 	return false;
+}
+
+std::unique_ptr<C4ScriptUniform::Popper> C4ScriptUniform::Push(C4PropList* proplist)
+{
+#ifdef USE_CONSOLE
+	return std::unique_ptr<C4ScriptUniform::Popper>();
+#else
+	C4Value ulist;
+	if (!proplist->GetProperty(P_Uniforms, &ulist) || ulist.GetType() != C4V_PropList)
+		return std::unique_ptr<C4ScriptUniform::Popper>();
+
+	uniformStack.emplace();
+	auto& uniforms = uniformStack.top();
+	Uniform u;
+	for (const C4Property* prop : *ulist.getPropList())
+	{
+		if (!prop->Key) continue;
+		switch (prop->Value.GetType())
+		{
+		case C4V_Int:
+			u.type = GL_INT;
+			u.intVec[0] = prop->Value._getInt();
+			break;
+		case C4V_Array:
+		{
+			auto array = prop->Value._getArray();
+			switch (array->GetSize())
+			{
+			case 1: u.type = GL_INT; break;
+			case 2: u.type = GL_INT_VEC2; break;
+			case 3: u.type = GL_INT_VEC3; break;
+			case 4: u.type = GL_INT_VEC4; break;
+			default: continue;
+			}
+			for (int32_t i = 0; i < array->GetSize(); i++)
+			{
+				auto& item = array->_GetItem(i);
+				switch (item.GetType())
+				{
+				case C4V_Int:
+					u.intVec[i] = item._getInt();
+					break;
+				default:
+					goto skip;
+				}
+			}
+			break;
+		}
+		default:
+			continue;
+		}
+		// Uniform is now filled properly. Note that array contents are undefined for higher slots
+		// when "type" only requires a smaller array.
+		uniforms.insert({prop->Key->GetCStr(), u});
+skip:;
+	}
+	// Debug
+	/*
+	for (auto& p : uniforms)
+	{
+		LogF("Uniform %s (type %d) = %d %d %d %d", p.first.c_str(), p.second.type, p.second.intVec[0], p.second.intVec[1], p.second.intVec[2], p.second.intVec[3]);
+	}
+	*/
+	return std::make_unique<C4ScriptUniform::Popper>(this);
+#endif
+}
+
+void C4ScriptUniform::Clear()
+{
+	uniformStack = std::stack<UniformMap>();
+	uniformStack.emplace();
+}
+
+void C4ScriptUniform::Apply(C4ShaderCall& call)
+{
+#ifndef USE_CONSOLE
+	for (auto& p : uniformStack.top())
+	{
+		// The existing SetUniform* methods only work for pre-defined indexed uniforms. The script
+		// uniforms are unknown at shader compile time, so we have to use OpenGL functions directly
+		// here.
+		GLint loc = glGetUniformLocation(call.pShader->hProg, p.first.c_str());
+		// Is this uniform defined in the shader?
+		if (loc == -1) continue;
+		auto& intVec = p.second.intVec;
+		switch (p.second.type)
+		{
+		case GL_INT:      glUniform1iv(loc, 1, intVec); break;
+		case GL_INT_VEC2: glUniform2iv(loc, 1, intVec); break;
+		case GL_INT_VEC3: glUniform3iv(loc, 1, intVec); break;
+		case GL_INT_VEC4: glUniform4iv(loc, 1, intVec); break;
+		default:
+			assert(false && "unsupported uniform type");
+		}
+	}
+#endif
 }

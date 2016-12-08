@@ -99,7 +99,7 @@ private:
 
 	private:
 		NickItem *GetNickItem(const char *szByNick);
-		NickItem *GetFirstNickItem() { return pNickList ? static_cast<NickItem *>(pNickList->GetFirst()) : NULL; }
+		NickItem *GetFirstNickItem() { return pNickList ? static_cast<NickItem *>(pNickList->GetFirst()) : nullptr; }
 		NickItem *GetNextNickItem(NickItem *pPrev) { return static_cast<NickItem *>(pPrev->GetNext()); }
 	};
 

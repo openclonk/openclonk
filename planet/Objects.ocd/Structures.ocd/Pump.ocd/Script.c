@@ -122,7 +122,7 @@ func GetPumpMenuEntry(proplist custom_entry, symbol, string text, int priority, 
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];		
+	var menus = _inherited(clonk, ...) ?? [];		
 	var prod_menu =
 	{
 		title = "$Control$",

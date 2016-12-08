@@ -92,12 +92,13 @@ public:
 	void AddViewport(C4ViewportWindow *cvp);
 	void RemoveViewport(C4ViewportWindow *cvp);
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection); // selection changed (through other means than creator or object list view)
-	bool CreateNewScenario(StdStrBuf *out_filename);
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network);
 	void OnStartGame();
 	void ClearGamePointers();
 	void EnsureDefinitionListInitialized();
 	void CloseConsoleWindow();
 	void ClearPointers(class C4Object *obj);
+	void EditGraphControl(const class C4ControlEditGraph *control);
 
 	// TODO some qt editor stuff is in state and needs to be public
 	// Once other editors are removed, C4ConsoleGUI, C4ConsoleQt and C4ConsoleQtState should be reorganized
@@ -110,10 +111,12 @@ public:
 	void AddViewport(C4ViewportWindow *cvp) { }
 	void RemoveViewport(C4ViewportWindow *cvp) { }
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network) {}
 	void OnStartGame() { }
 	void EnsureDefinitionListInitialized() { }
 	void CloseConsoleWindow() {}
 	void ClearPointers(class C4Object *obj) {}
+	void EditGraphControl(const class C4ControlEditGraph *control) {}
 #endif
 
 	void SetCursor(Cursor cursor);
@@ -126,7 +129,8 @@ public:
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<const char*> &functions);
 	
-	C4Window* CreateConsoleWindow(C4AbstractApp *application);
+	bool CreateConsoleWindow(C4AbstractApp *application);
+	void DeleteConsoleWindow();
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);

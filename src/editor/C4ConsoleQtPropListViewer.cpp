@@ -1252,7 +1252,7 @@ void C4PropertyDelegateEnum::UpdateEditorParameter(C4PropertyDelegateEnum::Edito
 	if (editor->parameter_widget)
 	{
 		editor->parameter_widget->deleteLater();
-		editor->parameter_widget = NULL;
+		editor->parameter_widget = nullptr;
 	}
 	editor->paint_parameter_delegate = nullptr;
 	int32_t idx = editor->last_selection_index;
@@ -1428,7 +1428,7 @@ void C4PropertyDelegateEnum::SetModelData(QObject *aeditor, const C4PropertyPath
 	else
 	{
 		// No parameter. Use value.
-		if (editor->option_changed) SetOptionValue(use_path, *option, *option_value);
+		if (editor->option_changed) SetOptionValue(property_path, *option, *option_value);
 	}
 	editor->option_changed = false;
 }
@@ -1926,7 +1926,7 @@ C4PropertyDelegateC4ValueEnum::C4PropertyDelegateC4ValueEnum(const C4PropertyDel
 /* C4Value via an edit field delegate */
 
 C4PropertyDelegateC4ValueInputEditor::C4PropertyDelegateC4ValueInputEditor(QWidget *parent)
-	: QWidget(parent), layout(NULL), edit(NULL), extended_button(NULL), commit_pending(false)
+	: QWidget(parent), layout(nullptr), edit(nullptr), extended_button(nullptr), commit_pending(false)
 {
 	layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -2004,7 +2004,11 @@ C4PropertyDelegateShape::C4PropertyDelegateShape(const class C4PropertyDelegateF
 
 void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
 {
-	if (prop_shape && prop_shape->GetParentDelegate() == this) property_path.SetProperty(prop_shape->GetValue());
+	// Only set shape data if triggered through shape movement signal; ignore update calls from e.g. parent enum editor
+	if (!editor)
+	{
+		if (prop_shape && prop_shape->GetParentDelegate() == this) property_path.SetProperty(prop_shape->GetValue());
+	}
 }
 
 bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const
@@ -2033,6 +2037,12 @@ bool C4PropertyDelegateShape::Paint(QPainter *painter, const QStyleOptionViewIte
 	return true;
 }
 
+void C4PropertyDelegateShape::ConnectSignals(C4ConsoleQtShape *shape, const C4PropertyPath &property_path) const
+{
+	connect(shape, &C4ConsoleQtShape::ShapeDragged, this, [this, shape, property_path]() {
+		this->SetModelData(nullptr, property_path, shape);
+	});
+}
 
 /* Areas shown in viewport: Rectangle */
 
@@ -2058,11 +2068,11 @@ bool C4PropertyDelegateRect::IsPasteValid(const C4Value &val) const
 		// Proplist-stored rect must have defined properties
 		C4PropertyName def_property_names[2][4] = { { P_x, P_y, P_wdt, P_hgt },{ P_X, P_Y, P_Wdt, P_Hgt } };
 		C4PropertyName *property_names = nullptr;
-		if (storage->GetData() == "proplist")
+		if (storage == &::Strings.P[P_proplist])
 		{
 			property_names = def_property_names[0];
 		}
-		else if (storage->GetData() == "Proplist")
+		else if (storage == &::Strings.P[P_Proplist])
 		{
 			property_names = def_property_names[1];
 		}
@@ -2146,6 +2156,164 @@ bool C4PropertyDelegatePoint::IsPasteValid(const C4Value &val) const
 }
 
 
+/* Areas shown in viewport: Graph */
+
+C4PropertyDelegateGraph::C4PropertyDelegateGraph(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateShape(factory, props)
+{
+	if (props)
+	{
+		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
+		vertical_fix = props->GetPropertyBool(P_VerticalFix);
+		structure_fix = props->GetPropertyBool(P_StructureFix);
+		update_callback = props->GetPropertyStr(P_OnUpdate);
+	}
+}
+
+void C4PropertyDelegateGraph::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	// Draw symbol as a bunch of connected lines
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr, ctr + QPoint(-r / 2, -r));
+	painter->drawLine(ctr, ctr + QPoint(+r / 2, -r));
+	painter->drawLine(ctr, ctr + QPoint(0, +r));
+}
+
+bool C4PropertyDelegateGraph::IsVertexPasteValid(const C4Value &val) const
+{
+	// Check that it's an array of at least one point
+	const C4ValueArray *arr = val.getArray();
+	if (!arr || !arr->GetSize()) return false;
+	// Check validity of each point
+	const int32_t n_props = 2;
+	C4PropertyName property_names[n_props] = { P_X, P_Y };
+	for (int32_t i_pt = 0; i_pt < arr->GetSize(); ++i_pt)
+	{
+		const C4Value &pt = arr->GetItem(i_pt);
+		const C4PropList *ptp = pt.getPropList();
+		if (!ptp) return false;
+		for (int32_t i_prop = 0; i_prop < n_props; ++i_prop)
+		{
+			C4Value ptprop;
+			if (!ptp->GetProperty(property_names[i_prop], &ptprop)) return false;
+			if (ptprop.GetType() != C4V_Int) return false;
+		}
+	}
+	return true;
+}
+
+bool C4PropertyDelegateGraph::IsEdgePasteValid(const C4Value &val) const
+{
+	// Check that it's an array
+	// Empty is OK; it could be a graph with one vertex and no edges
+	const C4ValueArray *arr = val.getArray();
+	if (!arr || !arr->GetSize()) return false;
+	// Check validity of each edge
+	for (int32_t i_pt = 0; i_pt < arr->GetSize(); ++i_pt)
+	{
+		const C4Value pt = arr->GetItem(i_pt);
+		const C4ValueArray *pta;
+		const C4PropList *ptp = pt.getPropList();
+		if (!ptp) return false;
+		pta = ptp->GetPropertyArray(P_Vertices);
+		if (!pta) return false;
+		// Needs two vertices (may have more values which are ignored)
+		if (pta->GetSize() < 2) return false;
+	}
+	return true;
+}
+
+bool C4PropertyDelegateGraph::IsPasteValid(const C4Value &val) const
+{
+	// Unfortunately, there is no good way to determine the correct value for fixed structure / position graph pastes
+	// So just reject pastes for now
+	// (TODO: Could store a default structure in a property and compare to that)
+	if (horizontal_fix || vertical_fix || structure_fix) return false;
+	// Check storage as prop list
+	const int32_t n_props = 2;
+	C4Value prop_vals[n_props]; // vertices & edges
+	C4PropertyName property_names[n_props] = { P_Vertices, P_Edges };
+	C4PropList *val_proplist = val.getPropList();
+	if (!val_proplist) return false;
+	for (int32_t i = 0; i < n_props; ++i)
+	{
+		val_proplist->GetProperty(property_names[i], &prop_vals[i]);
+	}
+	// extra properties are OK
+	// Check validity of vertices and edges
+	return IsVertexPasteValid(prop_vals[0]) && IsEdgePasteValid(prop_vals[1]);
+}
+
+void C4PropertyDelegateGraph::ConnectSignals(C4ConsoleQtShape *shape, const C4PropertyPath &property_path) const
+{
+	C4ConsoleQtGraph *shape_graph = static_cast<C4ConsoleQtGraph *>(shape);
+	connect(shape_graph, &C4ConsoleQtGraph::GraphEdit, this, [this, shape, property_path](C4ControlEditGraph::Action action, int32_t index, int32_t x, int32_t y) {
+		// Send graph editing via queue
+		::Control.DoInput(CID_EditGraph, new C4ControlEditGraph(property_path.GetGetPath(), action, index, x, y), CDT_Decide);
+		// Also send update callback to root object
+		if (update_callback)
+		{
+			::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString("%s->%s(%s)", property_path.GetRoot(), update_callback->GetCStr(), property_path.GetGetPath()).getData(), 0, false));
+		}
+	});
+	connect(shape, &C4ConsoleQtShape::BorderSelectionChanged, this, []() {
+		// Different part of the shape selected: Refresh info on next update
+		::Console.EditCursor.InvalidateSelection();
+	});
+}
+
+
+
+/* Areas shown in viewport: Polyline */
+
+C4PropertyDelegatePolyline::C4PropertyDelegatePolyline(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateGraph(factory, props)
+{
+}
+
+void C4PropertyDelegatePolyline::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	// Draw symbol as a sequence of connected lines
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr + QPoint(-r, +r), ctr + QPoint(-r/3, -r));
+	painter->drawLine(ctr + QPoint(-r / 3, -r), ctr + QPoint(+r / 3, +r));
+	painter->drawLine(ctr + QPoint(+r / 3, +r), ctr + QPoint(+r, -r));
+}
+
+bool C4PropertyDelegatePolyline::IsPasteValid(const C4Value &val) const
+{
+	// Expect just a vertex array
+	return IsVertexPasteValid(val);
+}
+
+
+/* Areas shown in viewport: Closed polyon */
+
+C4PropertyDelegatePolygon::C4PropertyDelegatePolygon(const class C4PropertyDelegateFactory *factory, C4PropList *props)
+	: C4PropertyDelegateGraph(factory, props)
+{
+}
+
+void C4PropertyDelegatePolygon::DoPaint(QPainter *painter, const QRect &inner_rect) const
+{
+	// Draw symbol as a parallelogram
+	QPoint ctr = inner_rect.center();
+	int r = inner_rect.height() * 7 / 20;
+	painter->drawLine(ctr + QPoint(-r * 3 / 2, +r), ctr + QPoint(-r, -r));
+	painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r * 3 / 2, -r));
+	painter->drawLine(ctr + QPoint(+r * 3 / 2, -r), ctr + QPoint(+r, +r));
+	painter->drawLine(ctr + QPoint(+r, +r), ctr + QPoint(-r * 3 / 2, +r));
+}
+
+bool C4PropertyDelegatePolygon::IsPasteValid(const C4Value &val) const
+{
+	// Expect just a vertex array
+	return IsVertexPasteValid(val);
+}
+
+
 /* Delegate factory: Create delegates based on the C4Value type */
 
 C4PropertyDelegateFactory::C4PropertyDelegateFactory() : current_editor(nullptr), property_model(nullptr), effect_delegate(this, nullptr)
@@ -2176,6 +2344,9 @@ C4PropertyDelegate *C4PropertyDelegateFactory::CreateDelegateByPropList(C4PropLi
 			if (str->GetData() == "rect") return new C4PropertyDelegateRect(this, props);
 			if (str->GetData() == "circle") return new C4PropertyDelegateCircle(this, props);
 			if (str->GetData() == "point") return new C4PropertyDelegatePoint(this, props);
+			if (str->GetData() == "graph") return new C4PropertyDelegateGraph(this, props);
+			if (str->GetData() == "polyline") return new C4PropertyDelegatePolyline(this, props);
+			if (str->GetData() == "polygon") return new C4PropertyDelegatePolygon(this, props);
 			if (str->GetData() == "any") return new C4PropertyDelegateC4ValueInput(this, props);
 			// unknown type
 			LogF("Invalid delegate type: %s.", str->GetCStr());
@@ -2197,7 +2368,7 @@ C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByValue(const C4Value 
 C4PropertyDelegate *C4PropertyDelegateFactory::GetDelegateByIndex(const QModelIndex &index) const
 {
 	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
-	if (!prop) return NULL;
+	if (!prop) return nullptr;
 	if (!prop->delegate) prop->delegate = GetDelegateByValue(prop->delegate_info);
 	return prop->delegate;
 }
@@ -2246,13 +2417,13 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModel::Property *editor_prop) const
 {
 	// Set according to delegate
-	d->SetModelData(editor, d->GetPathForProperty(editor_prop), editor_prop->shape.Get());
+	d->SetModelData(editor, d->GetPathForProperty(editor_prop), editor_prop->shape ? editor_prop->shape->Get() : nullptr);
 }
 
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	C4PropertyDelegate *d = GetDelegateByIndex(index);
-	if (!d) return NULL;
+	if (!d) return nullptr;
 	C4ConsoleQtPropListModel::Property *prop = property_model->GetPropByIndex(index);
 	prop->about_to_edit = true;
 	QWidget *editor = d->CreateEditor(this, parent, option, true, false);
@@ -2447,7 +2618,7 @@ C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
 {
 }
 
-bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index)
+bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, const C4PropertyPath &group_target_path, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index)
 {
 	// Add all properties from this EditorProps group
 	std::vector<C4String *> property_names = add_proplist->GetUnsortedProperties(nullptr);
@@ -2504,11 +2675,7 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 		Property *prop = &properties.props[i];
 		// Property access path
 		prop->parent_value.SetPropList(target_proplist);
-		if (fx)
-			// Access to effect
-			prop->property_path = C4PropertyPath(fx, base_object);
-		else
-			prop->property_path = target_path;
+		prop->property_path = group_target_path;
 		// ID for default selection memory
 		const PropAndKey &prop_def = new_properties_resolved[i];
 		if (default_selection == prop_def.key) *default_selection_index = i;
@@ -2537,16 +2704,42 @@ bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_
 			prop->shape_property_path = new_shape_property_path;
 			if (new_shape_delegate)
 			{
-				C4ConsoleQtShape *shape = ::Console.EditCursor.GetShapes()->CreateShape(base_object ? base_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v, new_shape_delegate);
-				C4PropertyDelegateFactory *factory = this->delegate_factory;
-				connect(shape, &C4ConsoleQtShape::ShapeDragged, new_shape_delegate, [factory, new_shape_delegate, shape, prop]() {
-					new_shape_delegate->SetModelData(nullptr, prop->shape_property_path, shape);
-				});
-				prop->shape.Set(shape);
+				// Re-use loaded shape if possible (e.g. if only the index has moved)
+				std::string shape_index = std::string(prop->shape_property_path.GetGetPath());
+				prop->shape = &shapes[shape_index];
+				C4ConsoleQtShape *shape = prop->shape->Get();
+				if (shape)
+				{
+					if (shape->GetProperties() != new_shape_delegate->GetCreationProps().getPropList())
+					{
+						// Shape at same path but with different properties? Then re-create
+						shape = nullptr;
+					}
+				}
+				if (!shape)
+				{
+					// New shape or shape type mismatch: Generate new shape at this path and put into the shape holder list
+					shape = ::Console.EditCursor.GetShapes()->CreateShape(base_object ? base_object : target_proplist->GetObject(), new_shape_delegate->GetCreationProps().getPropList(), v, new_shape_delegate);
+					C4PropertyDelegateFactory *factory = this->delegate_factory;
+					new_shape_delegate->ConnectSignals(shape, prop->shape_property_path);
+					prop->shape->Set(shape);
+					prop->shape->SetLastValue(v);
+				}
 			}
 			else
 			{
-				prop->shape.Clear();
+				prop->shape = nullptr;
+			}
+		}
+		if (prop->shape)
+		{
+			// Mark this shape to be kept aftre update is complete
+			prop->shape->visit();
+			// Update shape by value if it was changed externally
+			if (!prop->shape->GetLastValue().IsIdenticalTo(v))
+			{
+				prop->shape->Get()->SetValue(v);
+				prop->shape->SetLastValue(v);
 			}
 		}
 	}
@@ -2593,7 +2786,7 @@ bool C4ConsoleQtPropListModel::AddEffectGroup(int32_t group_index, C4Object *bas
 			prop->display_name = effect->GetPropertyStr(P_Name);
 			prop->priority = 0;
 			prop->delegate = delegate_factory->GetEffectDelegate();
-			prop->shape.Clear();
+			prop->shape = nullptr;
 			prop->shape_delegate = nullptr;
 			prop->shape_property_path.Clear();
 			prop->about_to_edit = false;
@@ -2662,6 +2855,8 @@ void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 	emit layoutAboutToBeChanged();
 	// Update target value from path
 	target_value = target_path.ResolveValue();
+	// Prepare shape list update
+	C4ConsoleQtShapeHolder::begin_visit();
 	// Safe-get from C4Values in case any prop lists or arrays got deleted
 	int32_t num_groups, default_selection_group = -1, default_selection_index = -1;
 	switch (target_value.GetType())
@@ -2675,6 +2870,18 @@ void C4ConsoleQtPropListModel::UpdateValue(bool select_default)
 	default: // probably nil
 		num_groups = 0;
 		break;
+	}
+	// Remove any unreferenced shapes
+	for (auto iter = shapes.begin(); iter != shapes.end(); )
+	{
+		if (!iter->second.was_visited())
+		{
+			iter = shapes.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
 	}
 	// Update model range
 	if (num_groups != property_groups.size())
@@ -2722,6 +2929,46 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 	C4Object *base_obj = this->base_proplist.getObj(), *obj = nullptr;
 	C4PropList *info_proplist = this->info_proplist.getPropList();
 	int32_t num_groups = 0;
+	// Selected shape properties
+	C4ConsoleQtShape *selected_shape = ::Console.EditCursor.GetShapes()->GetSelectedShape();
+	if (selected_shape)
+	{
+		// Find property information for this shape
+		// Could also remember this pointer for every shape holder
+		// - but that would have to be updated on any property group vector resize
+		Property *prop = nullptr;
+		for (PropertyGroup &grp : property_groups)
+		{
+			for (Property &check_prop : grp.props)
+			{
+				if (check_prop.shape && check_prop.shape->Get() == selected_shape)
+				{
+					prop = &check_prop;
+					break;
+				}
+			}
+			if (prop) break;
+		}
+		// Update selected shape item information
+		if (prop && prop->delegate)
+		{
+			C4PropList *shape_item_editorprops, *shape_item_value;
+			C4String *shape_item_name = nullptr;
+			C4PropertyPath shape_item_target_path;
+			C4Value v;
+			C4Value v_target_proplist = C4VPropList(target_proplist);
+			prop->delegate->GetPropertyValue(v_target_proplist, prop->key, 0, &v);
+			C4PropertyPath shape_property_path = prop->delegate->GetPathForProperty(prop);
+			const C4PropertyDelegateShape *current_shape_delegate = prop->delegate->GetShapeDelegate(v, &shape_property_path); // to resolve v
+			if (::Console.EditCursor.GetShapes()->GetSelectedShapeData(v, prop->shape_property_path, &shape_item_editorprops, &shape_item_value, &shape_item_name, &shape_item_target_path))
+			{
+				if (AddPropertyGroup(shape_item_editorprops, num_groups, QString(shape_item_name ? shape_item_name->GetCStr() :"???"), shape_item_value, shape_item_target_path, obj, nullptr, nullptr))
+				{
+					++num_groups;
+				}
+			}
+		}
+	}
 	// Published properties
 	if (info_proplist)
 	{
@@ -2735,7 +2982,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 				if (!fx->IsActive()) continue; // skip dead effects
 				QString name = fx->GetName();
 				C4PropList *effect_editorprops = fx->GetPropertyPropList(P_EditorProps);
-				if (effect_editorprops && AddPropertyGroup(effect_editorprops, num_groups, name, fx, obj, nullptr, nullptr))
+				if (effect_editorprops && AddPropertyGroup(effect_editorprops, num_groups, name, fx, C4PropertyPath(fx, obj), obj, nullptr, nullptr))
 					++num_groups;
 			}
 		}
@@ -2746,7 +2993,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			if (info_editorprops)
 			{
 				QString name = info_proplist->GetName();
-				if (AddPropertyGroup(info_editorprops, num_groups, name, target_proplist, base_obj, default_selection, default_selection_index))
+				if (AddPropertyGroup(info_editorprops, num_groups, name, target_proplist, target_path, base_obj, default_selection, default_selection_index))
 					++num_groups;
 				// Assign group for default selection
 				if (*default_selection_index >= 0)
@@ -2764,7 +3011,7 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 			
 			if (editor_base && (info_editorprops = editor_base->GetPropertyPropList(P_EditorProps)))
 			{
-				if (AddPropertyGroup(info_editorprops, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, base_obj, nullptr, nullptr))
+				if (AddPropertyGroup(info_editorprops, num_groups, LoadResStr("IDS_CNS_OBJECT"), target_proplist, target_path, base_obj, nullptr, nullptr))
 					++num_groups;
 			}
 		}
@@ -2784,9 +3031,10 @@ int32_t C4ConsoleQtPropListModel::UpdateValuePropList(C4PropList *target_proplis
 		internal_properties.props[i].help_text = nullptr;
 		internal_properties.props[i].priority = 0;
 		internal_properties.props[i].delegate_info.Set0(); // default C4Value delegate
-		internal_properties.props[i].delegate = NULL; // init when needed
+		internal_properties.props[i].delegate = nullptr; // init when needed
 		internal_properties.props[i].group_idx = num_groups;
-		internal_properties.props[i].shape.Clear();
+		internal_properties.props[i].shape = nullptr;
+		internal_properties.props[i].shape_property_path.Clear();
 		internal_properties.props[i].shape_delegate = nullptr;
 		internal_properties.props[i].about_to_edit = false;
 	}
@@ -2843,7 +3091,8 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		prop.delegate = item_delegate;
 		prop.about_to_edit = false;
 		prop.group_idx = 0;
-		prop.shape.Clear(); // array elements cannot have shape
+		prop.shape = nullptr; // array elements cannot have shapes
+		prop.shape_property_path.Clear();
 		prop.shape_delegate = nullptr;
 	}
 	return 1; // one group for the values
@@ -2985,7 +3234,7 @@ QModelIndex C4ConsoleQtPropListModel::index(int row, int column, const QModelInd
 	}
 	if (parent.internalId()) return QModelIndex(); // No 3rd level depth
 	// Validate range of property
-	const PropertyGroup *property_group = NULL;
+	const PropertyGroup *property_group = nullptr;
 	if (parent.row() >= 0 && parent.row() < property_groups.size())
 	{
 		property_group = &property_groups[parent.row()];
@@ -3142,4 +3391,12 @@ bool C4ConsoleQtPropListModel::IsTargetReadonly() const
 	default:
 		return true;
 	}
+}
+
+class C4ConsoleQtShape *C4ConsoleQtPropListModel::GetShapeByPropertyPath(const char *property_path)
+{
+	// Lookup in map
+	auto entry = shapes.find(std::string(property_path));
+	if (entry == shapes.end()) return nullptr;
+	return entry->second.Get();
 }

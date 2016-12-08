@@ -73,10 +73,10 @@ class C4FindObject
 
 	class C4SortObject *pSort;
 public:
-	C4FindObject() : pSort(NULL) { }
+	C4FindObject() : pSort(nullptr) { }
 	virtual ~C4FindObject();
 
-	static C4FindObject *CreateByValue(const C4Value &Data, C4SortObject **ppSortObj=NULL, const C4Object *context=NULL, bool *has_layer_check=NULL); // createFindObject or SortObject - if ppSortObj==NULL, SortObject is not allowed
+	static C4FindObject *CreateByValue(const C4Value &Data, C4SortObject **ppSortObj=nullptr, const C4Object *context=nullptr, bool *has_layer_check=nullptr); // createFindObject or SortObject - if ppSortObj==nullptr, SortObject is not allowed
 
 	int32_t Count(const C4ObjectList &Objs); // Counts objects for which the condition is true
 	C4Object *Find(const C4ObjectList &Objs); // Returns first object for which the condition is true
@@ -91,7 +91,7 @@ public:
 protected:
 	// Overridables
 	virtual bool Check(C4Object *pObj) = 0;
-	virtual C4Rect *GetBounds() { return NULL; }
+	virtual C4Rect *GetBounds() { return nullptr; }
 	virtual bool UseShapes() { return false; }
 	virtual bool IsImpossible() { return false; }
 	virtual bool IsEnsured() { return false; }
@@ -126,11 +126,11 @@ private:
 	C4Rect Bounds; bool fHasBounds;
 protected:
 	virtual bool Check(C4Object *pObj);
-	virtual C4Rect *GetBounds() { return fHasBounds ? &Bounds : NULL; }
+	virtual C4Rect *GetBounds() { return fHasBounds ? &Bounds : nullptr; }
 	virtual bool UseShapes() { return fUseShapes; }
 	virtual bool IsEnsured() { return !iCnt; }
 	virtual bool IsImpossible();
-	void ForgetConditions() { ppConds=NULL; iCnt=0; }
+	void ForgetConditions() { ppConds=nullptr; iCnt=0; }
 };
 
 // Special variant of C4FindObjectAnd that does not free its conditions
@@ -153,7 +153,7 @@ private:
 	C4Rect Bounds; bool fHasBounds;
 protected:
 	virtual bool Check(C4Object *pObj);
-	virtual C4Rect *GetBounds() { return fHasBounds ? &Bounds : NULL; }
+	virtual C4Rect *GetBounds() { return fHasBounds ? &Bounds : nullptr; }
 	virtual bool UseShapes() { return fUseShapes; }
 	virtual bool IsEnsured();
 	virtual bool IsImpossible() { return !iCnt; }
@@ -412,8 +412,8 @@ public:
 	virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2) { return Compare(pObj1, pObj2); }
 
 public:
-	static C4SortObject *CreateByValue(const C4Value &Data, const C4Object *context=NULL);
-	static C4SortObject *CreateByValue(int32_t iType, const C4ValueArray &Data, const C4Object *context=NULL);
+	static C4SortObject *CreateByValue(const C4Value &Data, const C4Object *context=nullptr);
+	static C4SortObject *CreateByValue(int32_t iType, const C4ValueArray &Data, const C4Object *context=nullptr);
 
 	void SortObjects(C4ValueArray *pArray);
 };

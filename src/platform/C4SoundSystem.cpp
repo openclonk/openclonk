@@ -31,7 +31,7 @@
 #include "platform/C4SoundLoaders.h"
 
 C4SoundSystem::C4SoundSystem():
-		FirstSound (NULL)
+		FirstSound (nullptr)
 {
 }
 
@@ -54,7 +54,7 @@ bool C4SoundSystem::Init()
 	if (!SoundFile.IsOpen())
 		if (!Reloc.Open(SoundFile, C4CFN_Sound)) return false;
 	// Load static sound from Sound.ocg
-	LoadEffects(SoundFile, NULL, false);
+	LoadEffects(SoundFile, nullptr, false);
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif
@@ -78,7 +78,7 @@ void C4SoundSystem::ClearEffects()
 		next=csfx->Next;
 		delete csfx;
 	}
-	FirstSound=NULL;
+	FirstSound=nullptr;
 }
 
 void C4SoundSystem::Execute()
@@ -115,7 +115,7 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 				++iNumber;
 		// Nothing found? Abort
 		if(iNumber == 0)
-			return NULL;
+			return nullptr;
 		iNumber=UnsyncedRandom(iNumber)+1;
 	}
 	// Find requested sound effect in bank
@@ -124,20 +124,20 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 		if (WildcardMatch(szName,pSfx->Name))
 			if(!--iNumber)
 				break;
-	return pSfx; // Is still NULL if nothing is found
+	return pSfx; // Is still nullptr if nothing is found
 }
 
 C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound not active
-	if (!Config.Sound.RXSound) return NULL;
+	if (!Config.Sound.RXSound) return nullptr;
 	// Get sound
 	C4SoundEffect *csfx;
 	if (!(csfx = GetEffect(szSndName)))
 	{
 		// Warn about missing or incorrectly spelled sound to allow finding mistakes earlier.
 		DebugLogF("Warning: could not find sound matching '%s'", szSndName);
-		return NULL;
+		return nullptr;
 	}
 	// Play
 	return csfx->New(fLoop, iVolume, pObj, iCustomFalloffDistance, iPitch, modifier);
@@ -156,7 +156,7 @@ C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pO
 			C4SoundInstance *pInst = csfx->GetInstance(pObj);
 			if (pInst) return pInst;
 		}
-	return NULL;
+	return nullptr;
 }
 
 // LoadEffects will load all sound effects of all known sound types (i.e. *.wav and *.ogg) as defined in C4CFN_SoundFiles
@@ -225,7 +225,7 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, const char *namespace_prefix
 int32_t C4SoundSystem::RemoveEffect(const char *szFilename)
 {
 	int32_t iResult=0;
-	C4SoundEffect *pNext,*pPrev=NULL;
+	C4SoundEffect *pNext,*pPrev=nullptr;
 	for (C4SoundEffect *pSfx=FirstSound; pSfx; pSfx=pNext)
 	{
 		pNext=pSfx->Next;
@@ -253,7 +253,7 @@ C4SoundInstance *C4SoundSystem::GetFirstInstance() const
 	// Return by searching through effect linked list.
 	for (C4SoundEffect *pSfx = FirstSound; pSfx; pSfx = pSfx->Next)
 		if (pSfx->FirstInst) return pSfx->FirstInst;
-	return NULL;
+	return nullptr;
 }
 
 C4SoundInstance *C4SoundSystem::GetNextInstance(C4SoundInstance *prev) const
@@ -263,13 +263,13 @@ C4SoundInstance *C4SoundSystem::GetNextInstance(C4SoundInstance *prev) const
 	if (prev->pNext) return prev->pNext;
 	for (C4SoundEffect *pSfx = prev->pEffect->Next; pSfx; pSfx = pSfx->Next)
 		if (pSfx->FirstInst) return pSfx->FirstInst;
-	return NULL;
+	return nullptr;
 }
 
 C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound check
-	if (!Config.Sound.RXSound) return NULL;
+	if (!Config.Sound.RXSound) return nullptr;
 	// Start new
 	return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance, iPitch, modifier);
 }
@@ -277,9 +277,9 @@ C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVo
 C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume, int32_t iCustomFallofDistance, int32_t iPitch, C4SoundModifier *modifier)
 {
 	// Sound check
-	if (!Config.Sound.RXSound) return NULL;
+	if (!Config.Sound.RXSound) return nullptr;
 	// Create
-	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, NULL, iCustomFallofDistance, iPitch, modifier);
+	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, nullptr, iCustomFallofDistance, iPitch, modifier);
 	// Set volume by position
 	if (pInst) pInst->SetVolumeByPos(iX, iY);
 	// Return

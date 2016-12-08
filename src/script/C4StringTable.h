@@ -273,14 +273,14 @@ public:
 	}
 	static bool SortFunc(const T *p1, const T*p2)
 	{
-		// elements are guarantueed to be non-NULL
+		// elements are guarantueed to be non-nullptr
 		return *p1<*p2;
 	}
 	std::list<const T *> GetSortedListOfElementPointers() const
 	{
 		// return a list of pointers to all elements in this set sorted by the standard less-than operation
 		// of the elements
-		// elements of resulting lists are guarantueed to be non-NULL
+		// elements of resulting lists are guarantueed to be non-nullptr
 		// list remains valid as long as this set is not changed
 		std::list<const T *> result;
 		for (const T *p = First(); p; p = Next(p)) result.push_back(p);
@@ -344,8 +344,13 @@ enum C4PropertyName
 	P_Hgt,
 	P_wdt,
 	P_hgt,
+	P_Vertices,
+	P_Edges,
+	P_LineWidth,
 	P_OffX,
 	P_OffY,
+	P_proplist,
+	P_Proplist,
 	P_FacetBase,
 	P_FacetTopFace,
 	P_FacetTargetStretch,
@@ -484,6 +489,12 @@ enum C4PropertyName
 	P_Value,
 	P_DefaultValueFunction,
 	P_Delegate,
+	P_VertexDelegate,
+	P_EdgeDelegate,
+	P_HorizontalFix,
+	P_VerticalFix,
+	P_StructureFix,
+	P_OnUpdate,
 	P_Min,
 	P_Max,
 	P_Set,
@@ -517,6 +528,7 @@ enum C4PropertyName
 	P_EditorInitialize,
 	P_EditorPlacementLimit,
 	P_Sorted,
+	P_Uniforms,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

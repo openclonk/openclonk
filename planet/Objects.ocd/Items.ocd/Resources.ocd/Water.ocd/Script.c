@@ -13,7 +13,7 @@ public func GetLiquidType() { return "Water"; }
 public func Disperse(int angle, int strength)
 {
 	DisperseMaterial(GetLiquidType(), GetLiquidAmount(), strength, angle);
-	_inherited(...);
+	_inherited(angle, strength, ...);
 }
 
 

@@ -59,7 +59,7 @@ public:
 	C4Property & operator = (void * p)
 	{ assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
 	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
-	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return NULL
+	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return nullptr
 };
 class C4PropListNumbered;
 class C4PropList
@@ -84,7 +84,7 @@ public:
 	void RemoveCyclicPrototypes();
 
 	// saved as a reference to a global constant?
-	virtual class C4PropListStatic * IsStatic() { return NULL; }
+	virtual class C4PropListStatic * IsStatic() { return nullptr; }
 	const class C4PropListStatic * IsStatic() const { return const_cast<C4PropList*>(this)->IsStatic(); }
 	// saved as a reference to separately saved objects?
 	virtual bool IsNumbered() const { return false; }

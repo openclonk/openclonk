@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 // Global access pointer
-C4Draw *pDraw=NULL;
+C4Draw *pDraw=nullptr;
 
 void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
@@ -141,7 +141,7 @@ bool C4Pattern::Set(C4Surface * sfcSource, int iZoom)
 C4Pattern::C4Pattern()
 {
 	// disable
-	sfcPattern32=NULL;
+	sfcPattern32=nullptr;
 	CachedPattern = 0;
 	Zoom=0;
 }
@@ -154,7 +154,7 @@ void C4Pattern::Clear()
 		// unlock it
 		sfcPattern32->Unlock();
 		// clear field
-		sfcPattern32=NULL;
+		sfcPattern32=nullptr;
 	}
 	delete[] CachedPattern; CachedPattern = 0;
 }
@@ -171,16 +171,17 @@ DWORD C4Pattern::PatternClr(unsigned int iX, unsigned int iY) const
 
 void C4Draw::Default()
 {
-	RenderTarget=NULL;
+	RenderTarget=nullptr;
 	ClipAll=false;
 	Active=false;
 	BlitModulated=false;
 	dwBlitMode = 0;
 	ResetGamma();
-	pFoW = NULL;
+	pFoW = nullptr;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
-	MeshTransform = NULL;
+	MeshTransform = nullptr;
 	fUsePerspective = false;
+	scriptUniform.Clear();
 }
 
 void C4Draw::Clear()
@@ -287,14 +288,14 @@ void C4Draw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 
 			if(bufcnt == BUF_SIZE)
 			{
-				PerformMultiPix(sfcTarget, vertices, BUF_SIZE, NULL);
+				PerformMultiPix(sfcTarget, vertices, BUF_SIZE, nullptr);
 				bufcnt = 0;
 			}
 		}
 
 	}
 	if(bufcnt > 0)
-		PerformMultiPix(sfcTarget, vertices, bufcnt, NULL);
+		PerformMultiPix(sfcTarget, vertices, bufcnt, nullptr);
 	delete[] vertices;
 	// unlock
 	if (!fRender) sfcTarget->Unlock();
@@ -391,13 +392,13 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 		pBaseTex = sfcSource->pMainSfc->texture.get();
 	}
 
-	C4TexRef* pNormalTex = NULL;
+	C4TexRef* pNormalTex = nullptr;
 	if (sfcSource->pNormalSfc)
 		pNormalTex = sfcSource->pNormalSfc->texture.get();
 
 	// ClrByOwner is always fully opaque
 	const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
-	PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, pNormalTex, dwOverlayClrMod, NULL);
+	PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : nullptr, pNormalTex, dwOverlayClrMod, nullptr);
 	// success
 	return true;
 }
@@ -527,7 +528,7 @@ bool C4Draw::BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, 
 	{
 		if (!sfcSurface) return false;
 		C4Surface *pSfcBase = sfcSurface->pMainSfc;
-		sfcSurface->pMainSfc = NULL;
+		sfcSurface->pMainSfc = nullptr;
 		Blit(sfcSurface, 0.0f, 0.0f, (float)sfcSurface->Wdt, (float)sfcSurface->Hgt, sfcTarget, float(tx), float(ty), float(sfcSurface->Wdt), float(sfcSurface->Hgt), false);
 		sfcSurface->pMainSfc = pSfcBase;
 		return true;
@@ -562,7 +563,7 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 	vertices[4] = vertices[0]; vertices[5] = vertices[2];
 
 	// Draw
-	PerformMultiTris(sfcTarget, vertices, 6, NULL, sfcSurface->texture.get(), NULL, NULL, 0, shader_call);
+	PerformMultiTris(sfcTarget, vertices, 6, nullptr, sfcSurface->texture.get(), nullptr, nullptr, 0, shader_call);
 	return true;
 }
 
@@ -610,7 +611,7 @@ void C4Draw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 	vtx.ftx = tx;
 	vtx.fty = ty;
 	DwTo4UB(dwClr, vtx.color);
-	PerformMultiPix(sfcDest, &vtx, 1, NULL);
+	PerformMultiPix(sfcDest, &vtx, 1, nullptr);
 }
 
 void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
@@ -620,7 +621,7 @@ void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, flo
 	vertices[1].ftx = x2; vertices[1].fty = y2;
 	DwTo4UB(dwClr, vertices[0].color);
 	DwTo4UB(dwClr, vertices[1].color);
-	PerformMultiLines(sfcTarget, vertices, 2, width, NULL);
+	PerformMultiLines(sfcTarget, vertices, 2, width, nullptr);
 }
 
 void C4Draw::DrawCircleDw(C4Surface * sfcTarget, float cx, float cy, float r, DWORD dwClr, float width)
@@ -637,7 +638,7 @@ void C4Draw::DrawCircleDw(C4Surface * sfcTarget, float cx, float cy, float r, DW
 		DwTo4UB(dwClr, vertices[iv].color);
 		vertices[(iv + 1) % (num_lines * 2)] = vertices[iv];
 	}
-	PerformMultiLines(sfcTarget, vertices.get(), num_lines * 2, width, NULL);
+	PerformMultiLines(sfcTarget, vertices.get(), num_lines * 2, width, nullptr);
 }
 
 void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr, float width) // make these parameters float...?
@@ -655,7 +656,7 @@ void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DW
 	for(int i = 0; i < 8; ++i)
 		DwTo4UB(dwClr, vertices[i].color);
 
-	PerformMultiLines(sfcDest, vertices, 8, width, NULL);
+	PerformMultiLines(sfcDest, vertices, 8, width, nullptr);
 }
 
 void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call)
@@ -671,7 +672,7 @@ void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD
 	DwTo4UB(dwClr4, vertices[3].color);
 	vertices[4] = vertices[0];
 	vertices[5] = vertices[2];
-	PerformMultiTris(sfcTarget, vertices, 6, NULL, NULL, NULL, NULL, 0, shader_call);
+	PerformMultiTris(sfcTarget, vertices, 6, nullptr, nullptr, nullptr, nullptr, 0, shader_call);
 }
 
 void C4Draw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
@@ -858,6 +859,6 @@ void C4Draw::DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, 
 	}
 	else
 	{
-		DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2 - iX1 + 1), float(iY2 - iY1 + 1), dwClr, dwClr, dwClr, dwClr, NULL);
+		DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2 - iX1 + 1), float(iY2 - iY1 + 1), dwClr, dwClr, dwClr, dwClr, nullptr);
 	}
 }

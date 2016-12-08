@@ -31,7 +31,7 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 
 		if(def)
 		{
-			C4DefGraphics* pGfx = NULL;
+			C4DefGraphics* pGfx = nullptr;
 			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
 			Def = pGfx->pDef;
 
@@ -39,7 +39,7 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 				pComp->excCorrupt("ChildMesh points to non-mesh graphics");
 			assert(!attach->Child);
 			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
-			assert(attach->Child != NULL);
+			assert(attach->Child != nullptr);
 			attach->OwnChild = true; // Delete the newly allocated child instance when the parent instance is gone
 
 			// TODO: Do we leak pGfx?
@@ -90,7 +90,7 @@ bool C4MeshDenumerator::ClearPointers(C4Object* pObj)
 {
 	if(Object == pObj)
 	{
-		Object = NULL;
+		Object = nullptr;
 		// Return false causes the attached mesh to be deleted by StdMeshInstance
 		return false;
 	}

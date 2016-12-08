@@ -361,6 +361,7 @@ func Definition(def)
 		Operands = { Name="$Operands$", Type="array", Elements=Evaluator.Boolean }
 		} } );
 	AddEvaluator("Boolean", nil, "$ObjectExists$", "$ObjectExistsHelp$", "object_exists", [def, def.EvalBool_ObjectExists], { }, new Evaluator.Object { }, "Object");
+	AddEvaluator("Boolean", nil, "$ObjectAlive$", "$ObjectAliveHelp$", "object_alive", [def, def.EvalBool_ObjectAlive], { }, new Evaluator.Object { }, "Object");
 	// Integer evaluators
 	AddEvaluator("Integer", nil, ["$Constant$", ""], "$ConstantHelp$", "int_constant", [def, def.EvalConstant], { Value=0 }, { Type="int", Name="$Value$" });
 	var arithmetic_delegate = { Type="proplist", HideFullName=true, EditorProps = {
@@ -487,6 +488,15 @@ public func GetObjectEvaluator(filter_def, name, help)
 	return new_evaluator;
 }
 
+private func CopyProplist(p)
+{
+	// Create copy of p to ensure unique global reference
+	if (GetType(p) != C4V_PropList) return p;
+	var r = {};
+	for (var k in GetProperties(p)) r[k] = p[k];
+	return r;
+}
+
 public func AddEvaluator(string eval_type, string group, name, string help, string identifier, callback_data, default_val, proplist delegate, string delegate_storage_key)
 {
 	// Add an evaluator for one of the data types. Evaluators allow users to write small action sequences and scripts in the editor using dropdown lists.
@@ -502,7 +512,7 @@ public func AddEvaluator(string eval_type, string group, name, string help, stri
 	{
 		var any_group;
 		if (group) any_group = Format("%s/%s", EvaluatorTypeNames[eval_type], group); else any_group = EvaluatorTypeNames[eval_type];
-		AddEvaluator("Any", any_group, name, help, identifier, callback_data, default_val, delegate, delegate_storage_key);
+		AddEvaluator("Any", any_group, name, help, identifier, callback_data, CopyProplist(default_val), delegate, delegate_storage_key);
 	}
 	// Dissect parameters
 	if (group) group = GroupNames[group] ?? group; // resolve localized group name
@@ -801,6 +811,12 @@ private func EvalBool_Or(proplist props, proplist context)
 }
 
 private func EvalBool_ObjectExists(proplist props, proplist context) { return !!EvaluateValue("Object", props.Object, context); }
+
+private func EvalBool_ObjectAlive(proplist props, proplist context)
+{
+	var obj = EvaluateValue("Object", props.Object, context);
+	return obj && obj->GetAlive();
+}
 
 private func EvalAct_Sequence(proplist props, proplist context)
 {

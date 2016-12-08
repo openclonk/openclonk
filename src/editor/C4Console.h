@@ -73,11 +73,11 @@ public:
 	void HelpAbout();
 	bool FileSelect(StdStrBuf *sFilename, const char *szFilter, DWORD dwFlags, bool fSave=false);
 	bool SaveGame(const char * path);
-	bool SaveScenario(const char * path);
-	bool FileSaveAs(bool fSaveGame);
+	bool SaveScenario(const char * path, bool export_packed=false);
+	bool FileSaveAs(bool fSaveGame, bool export_packed=false);
 	bool FileSave();
 	bool FileNew();
-	bool FileOpen(const char *filename=NULL);
+	bool FileOpen(const char *filename=nullptr, bool host_in_network=false);
 	bool FileOpenWPlrs();
 	bool FileCommand();
 	bool FileClose();

@@ -113,7 +113,7 @@ class C4ExtraScriptHost: public C4ScriptHost
 {
 	C4Value ParserPropList;
 public:
-	C4ExtraScriptHost(C4String *parent_key_name = NULL);
+	C4ExtraScriptHost(C4String *parent_key_name = nullptr);
 	~C4ExtraScriptHost();
 	void Clear();
 
@@ -132,7 +132,7 @@ public:
 class C4DefScriptHost: public C4ScriptHost
 {
 public:
-	C4DefScriptHost() : C4ScriptHost(), Def(NULL) { }
+	C4DefScriptHost() : C4ScriptHost(), Def(nullptr) { }
 
 	void SetDef(C4Def *to_def) { Def=to_def; }
 	virtual bool Parse();
@@ -156,7 +156,7 @@ public:
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value ScenPropList;
 	C4Value ScenPrototype;
-	C4Effect * pScenarioEffects = NULL;
+	C4Effect * pScenarioEffects = nullptr;
 };
 
 extern C4GameScriptHost GameScript;

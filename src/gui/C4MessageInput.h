@@ -106,7 +106,7 @@ public:
 class C4MessageInput
 {
 public:
-	C4MessageInput() : pCommands(NULL) { Default(); }
+	C4MessageInput() : pCommands(nullptr) { Default(); }
 	~C4MessageInput() { Clear(); }
 	void Default();
 	void Clear();
@@ -126,7 +126,7 @@ public:
 	// Input
 public:
 	bool CloseTypeIn();
-	bool StartTypeIn(bool fObjInput = false, C4Object *pObj = NULL, bool fUpperCase = false, bool fTeam = false, int32_t iPlr = -1, const StdStrBuf &rsInputQuery = StdStrBuf());
+	bool StartTypeIn(bool fObjInput = false, C4Object *pObj = nullptr, bool fUpperCase = false, bool fTeam = false, int32_t iPlr = -1, const StdStrBuf &rsInputQuery = StdStrBuf());
 	bool KeyStartTypeIn(bool fTeam);
 	bool ToggleTypeIn();
 	bool IsTypeIn();
@@ -159,12 +159,12 @@ public:
 
 	// ctors
 	C4MessageBoardQuery(C4Object *pCallbackObj, const StdStrBuf &rsInputQuery, bool fIsUppercase)
-			: CallbackObj(pCallbackObj), fAnswered(false), fIsUppercase(fIsUppercase), pNext(NULL)
+			: CallbackObj(pCallbackObj), fAnswered(false), fIsUppercase(fIsUppercase), pNext(nullptr)
 	{
 		sInputQuery.Copy(rsInputQuery);
 	}
 
-	C4MessageBoardQuery() : CallbackObj(NULL), fAnswered(false), fIsUppercase(false), pNext(NULL) {}
+	C4MessageBoardQuery() : CallbackObj(nullptr), fAnswered(false), fIsUppercase(false), pNext(nullptr) {}
 
 	// use default copy ctor
 

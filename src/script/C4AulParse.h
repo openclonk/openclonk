@@ -89,8 +89,8 @@ private:
 	void ClearToken(); // clear any data held with the current token
 	C4AulTokenType GetNextToken(); // get next token of SPos
 
-	void Match(C4AulTokenType TokenType, const char * Expected = NULL);
-	void Check(C4AulTokenType TokenType, const char * Expected = NULL);
+	void Match(C4AulTokenType TokenType, const char * Expected = nullptr);
+	void Check(C4AulTokenType TokenType, const char * Expected = nullptr);
 	NORETURN void UnexpectedToken(const char * Expected);
 
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;

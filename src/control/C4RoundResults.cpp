@@ -140,7 +140,7 @@ void C4RoundResultsPlayers::Clear()
 {
 	while (iPlayerCount) delete ppPlayers[--iPlayerCount];
 	delete [] ppPlayers;
-	ppPlayers = NULL;
+	ppPlayers = nullptr;
 	iPlayerCapacity = 0;
 }
 
@@ -170,7 +170,7 @@ C4RoundResultsPlayer *C4RoundResultsPlayers::GetByIndex(int32_t idx) const
 	if (idx>=0 && idx<iPlayerCount)
 		return ppPlayers[idx];
 	else
-		return NULL;
+		return nullptr;
 }
 
 C4RoundResultsPlayer *C4RoundResultsPlayers::GetByID(int32_t id) const
@@ -178,7 +178,7 @@ C4RoundResultsPlayer *C4RoundResultsPlayers::GetByID(int32_t id) const
 	for (int32_t idx=0; idx<iPlayerCount; ++idx)
 		if (ppPlayers[idx]->GetID() == id)
 			return ppPlayers[idx];
-	return NULL;
+	return nullptr;
 }
 
 void C4RoundResultsPlayers::GrowList(size_t iByVal)
@@ -289,7 +289,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	{
 		// determine if the goal is fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 		bool fFulfilled = false;;
-		C4Object *pObj = C4Id2Def(idGoal) ? ::Objects.Find(::Definitions.ID2Def(idGoal)) : NULL;
+		C4Object *pObj = C4Id2Def(idGoal) ? ::Objects.Find(::Definitions.ID2Def(idGoal)) : nullptr;
 		if (pObj)
 		{
 			// Check fulfilled per player, this enables the possibility of rivalry.

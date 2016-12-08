@@ -43,7 +43,7 @@ public:
 	void Clear();
 	void Execute();
 	int32_t LoadEffects(C4Group &hGroup, const char *namespace_prefix, bool group_is_root);
-	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
+	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = nullptr, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
 	C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
 	C4SoundInstance *GetFirstInstance() const;
 	C4SoundInstance *GetNextInstance(C4SoundInstance *prev) const;
@@ -60,8 +60,8 @@ protected:
 	int32_t RemoveEffect(const char *szFilename);
 };
 
-C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
-C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume = 100, int32_t iCustomFallofDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
+C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = nullptr, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume = 100, int32_t iCustomFallofDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
 C4SoundInstance *GetSoundInstance(const char *szSndName, C4Object *pObj);
 void StopSoundEffect(const char *szSndName, C4Object *pObj);
 void SoundLevel(const char *szSndName, C4Object *pObj, int32_t iLevel);

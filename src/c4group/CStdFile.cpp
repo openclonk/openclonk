@@ -37,9 +37,9 @@ CStdFile::CStdFile()
 {
 	thread_check.Set();
 	Status=false;
-	hFile=NULL;
-	hgzFile=NULL;
-	pMemory=NULL;
+	hFile=nullptr;
+	hgzFile=nullptr;
+	pMemory=nullptr;
 	ClearBuffer();
 	ModeWrite=false;
 	Name[0]=0;
@@ -118,7 +118,7 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 		if(c4_gzdirect(hgzFile))
 		{
 			c4_gzclose(hgzFile);
-			hgzFile = NULL;
+			hgzFile = nullptr;
 			return false;
 		}
 	}
@@ -166,12 +166,12 @@ bool CStdFile::Close(StdBuf **ppMemory)
 	if (pMemory)
 	{
 		if (ppMemory)
-			{ *ppMemory = pMemory; pMemory = NULL; }
+			{ *ppMemory = pMemory; pMemory = nullptr; }
 		else
 			delete pMemory;
 	}
 	MemoryPtr=0;
-	hgzFile=NULL; hFile=NULL;
+	hgzFile=nullptr; hFile=nullptr;
 	return !!rval;
 }
 
@@ -179,9 +179,9 @@ bool CStdFile::Default()
 {
 	Status=false;
 	Name[0]=0;
-	hgzFile=NULL;
-	hFile=NULL;
-	pMemory=NULL;
+	hgzFile=nullptr;
+	hFile=nullptr;
+	pMemory=nullptr;
 	MemoryPtr=0;
 	BufferLoad=BufferPtr=0;
 	thread_check.Set();

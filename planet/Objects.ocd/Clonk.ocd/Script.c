@@ -113,7 +113,7 @@ protected func OnEnergyChange(int change, int cause, int caused_by)
 {
 	if (change < 0 && GetCursor(GetOwner()) == this)
 		PlayRumble(GetOwner(), Min(300 + 1000 * -change / this.MaxEnergy, 1000), 150);
-	return _inherited(...);
+	return _inherited(change, cause, caused_by, ...);
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -1274,6 +1274,10 @@ func Definition(def) {
 		Target = UserAction->GetObjectEvaluator("IsClonk", "Clonk"),
 		MaxContentsCount = new UserAction.Evaluator.Integer { Name="$MaxContentsCount$", EmptyName = Format("$Default$ (%d)", def.MaxContentsCount) }
 		} } );
+		
+	// Turn around
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.turn_around = { Name="$TurnAround$", EditorHelp="$TurnAroundHelp$", Command="SetDir(1-GetDir())" };
 	
 	_inherited(def);
 }

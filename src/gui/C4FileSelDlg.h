@@ -128,7 +128,7 @@ protected:
 	virtual void UserClose(bool fOK); // allow OK only if something is sth is selected
 	virtual void OnClosed(bool fOK); // callback when dlg got closed
 
-	virtual const char *GetFileMask() const { return NULL; }
+	virtual const char *GetFileMask() const { return nullptr; }
 	virtual bool IsMultiSelection() const { return false; } // if true, files are checked/unchecked using checkboxes
 	virtual bool IsItemGrayed(const char *szFilename) const { return false; }
 	virtual void UpdateSelection();

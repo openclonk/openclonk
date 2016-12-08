@@ -27,16 +27,16 @@ CSurface8::CSurface8()
 {
 	Wdt=Hgt=Pitch=0;
 	ClipX=ClipY=ClipX2=ClipY2=0;
-	Bits=NULL;
-	pPal=NULL;
+	Bits=nullptr;
+	pPal=nullptr;
 }
 
 CSurface8::CSurface8(int iWdt, int iHgt)
 {
 	Wdt=Hgt=Pitch=0;
 	ClipX=ClipY=ClipX2=ClipY2=0;
-	Bits=NULL;
-	pPal=NULL;
+	Bits=nullptr;
+	pPal=nullptr;
 	Create(iWdt, iHgt);
 }
 
@@ -48,10 +48,10 @@ CSurface8::~CSurface8()
 void CSurface8::Clear()
 {
 	// clear bitmap-copy
-	delete [] Bits; Bits=NULL;
+	delete [] Bits; Bits=nullptr;
 	// clear pal
 	delete pPal;
-	pPal=NULL;
+	pPal=nullptr;
 }
 
 void CSurface8::Box(int iX, int iY, int iX2, int iY2, int iCol)
@@ -250,6 +250,6 @@ void CSurface8::SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch)
 
 void CSurface8::ReleaseBuffer()
 {
-	this->Bits = NULL;
+	this->Bits = nullptr;
 	Clear();
 }

@@ -439,7 +439,7 @@ public:
 			{
 				assert(IDs);
 				IDs->erase(std::find(IDs->begin(), IDs->end(), this));
-				if (!IDs->size()) { delete IDs; IDs = NULL; }
+				if (!IDs->size()) { delete IDs; IDs = nullptr; }
 			}
 
 		public:
@@ -461,20 +461,20 @@ public:
 
 		static const IDBase* Lookup(const char* name)
 		{
-			if(!IDs) return NULL;
+			if(!IDs) return nullptr;
 			for(unsigned int i = 0; i < IDs->size(); ++i)
 				if(strcmp((*IDs)[i]->name, name) == 0)
 					return (*IDs)[i];
-			return NULL;
+			return nullptr;
 		}
 
 		static const IDBase* Lookup(const std::type_info& type)
 		{
-			if(!IDs) return NULL;
+			if(!IDs) return nullptr;
 			for(unsigned int i = 0; i < IDs->size(); ++i)
 				if((*IDs)[i]->type == type)
 					return (*IDs)[i];
-			return NULL;
+			return nullptr;
 		}
 
 		virtual void CompileFunc(StdCompiler* pComp);

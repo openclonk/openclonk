@@ -121,12 +121,12 @@ public:
 
 	void SetActivated(bool fnActivated);
 	void SetObserver() { Core.SetObserver(true); }
-	void SetLobbyReady(bool fnLobbyReady, time_t *time_since_last_change = NULL);
+	void SetLobbyReady(bool fnLobbyReady, time_t *time_since_last_change = nullptr);
 	void SetLocal();
 
 	void ToggleIgnore() { fIsIgnored = !fIsIgnored; }
 
-	void UnlinkNetClient() { pNetClient = NULL; }
+	void UnlinkNetClient() { pNetClient = nullptr; }
 
 	void Remove();
 
@@ -151,13 +151,13 @@ protected:
 	// pointer to local client
 	C4Client *pLocal;
 
-	// network client list (may be NULL if network is not active)
+	// network client list (may be nullptr if network is not active)
 	class C4Network2ClientList *pNetClients;
 
 	void Add(C4Client *pClient);
 
 public:
-	C4Client *getClient(const C4Client *pAfter = NULL) const { return pAfter ? pAfter->pNext : pFirst; }
+	C4Client *getClient(const C4Client *pAfter = nullptr) const { return pAfter ? pAfter->pNext : pFirst; }
 	C4Client *getLocal() const { return pLocal; }
 	C4Client *getClientByID(int32_t iID) const;
 	C4Client *getHost() const { return getClientByID(C4ClientIDHost); }

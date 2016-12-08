@@ -45,7 +45,7 @@ class StdCompiler
 
 public:
 
-	StdCompiler() : pWarnCB(NULL), pWarnData(NULL)
+	StdCompiler() : pWarnCB(nullptr), pWarnData(nullptr)
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 			, fFailSafe(false), fFail(false)
 #endif
@@ -86,7 +86,7 @@ public:
 	// for whatever reason (suppress warning messages).
 	virtual bool Name(const char *szName)         { return true; }
 	virtual void NameEnd(bool fBreak = false)     { }
-	virtual const char *GetNameByIndex(size_t idx) const { return NULL; }
+	virtual const char *GetNameByIndex(size_t idx) const { return nullptr; }
 
 	// Special: A naming that follows to the currently active naming (on the same level).
 	// Note this will end the current naming, so no additional NameEnd() is needed.
@@ -98,7 +98,7 @@ public:
 	virtual bool Default(const char *szName)      { return true; }
 
 	// Return count of sub-namings. May be unimplemented.
-	virtual int NameCount(const char *szName = NULL) { assert(false); return 0; }
+	virtual int NameCount(const char *szName = nullptr) { assert(false); return 0; }
 
 
 	// * Separation
@@ -388,14 +388,14 @@ void CompileFromBuf(StructT &&TargetStruct, const typename CompT::InT &SrcBuf)
 template <class CompT, class StructT>
 StructT * CompileFromBufToNew(const typename CompT::InT &SrcBuf)
 {
-	StructT *pStruct = NULL;
+	StructT *pStruct = nullptr;
 	CompileFromBuf<CompT>(mkPtrAdaptNoNull(pStruct), SrcBuf);
 	return pStruct;
 }
 template <class CompT, class StructT>
 StructT * CompileFromBufToNewNamed(const typename CompT::InT &SrcBuf, const char *szName)
 {
-	StructT *pStruct = NULL;
+	StructT *pStruct = nullptr;
 	CompileFromBuf<CompT>(mkNamingAdapt(mkPtrAdaptNoNull(pStruct), szName), SrcBuf);
 	return pStruct;
 }
@@ -421,7 +421,7 @@ public:
 
 	// Naming
 	virtual bool Name(const char *szName)         { return false; }
-	virtual int NameCount(const char *szName = NULL) { return 0; }
+	virtual int NameCount(const char *szName = nullptr) { return 0; }
 
 	// Data readers
 	virtual void DWord(int32_t &rInt)             { }
@@ -643,7 +643,7 @@ public:
 	virtual void NoSeparator();
 
 	// Counters
-	virtual int NameCount(const char *szName = NULL);
+	virtual int NameCount(const char *szName = nullptr);
 
 	// Data writers
 	virtual void DWord(int32_t &rInt);
@@ -684,10 +684,10 @@ protected:
 		// Name number in parent map
 		const char *Pos;
 		// Constructor
-		NameNode(NameNode *pParent = NULL) :
+		NameNode(NameNode *pParent = nullptr) :
 			Section(false), Parent(pParent),
-			FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
-			Indent(-1), Pos(NULL)
+			FirstChild(nullptr), PrevChild(nullptr), NextChild(nullptr), LastChild(nullptr),
+			Indent(-1), Pos(nullptr)
 		{ }
 	};
 	NameNode *pNameRoot, *pName;

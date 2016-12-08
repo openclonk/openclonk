@@ -18,3 +18,5 @@ Default=Default
 
 Skin=Skin
 SkinHelp=How the clonk looks.
+TurnAround=Turn around
+TurnAroundHelp=Changes the view direction of the clonk.

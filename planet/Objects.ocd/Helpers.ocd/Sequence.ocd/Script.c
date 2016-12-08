@@ -298,8 +298,9 @@ public func LoadScenarioSection(name, ...)
 	for (iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
-		var HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (!HUDcontroller) HUDcontroller = CreateObjectAbove(GUI_Controller, 10, 10, plr);
+		var controllerDef = Library_HUDController->GetGUIControllerID();
+		var HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
+		if (!HUDcontroller) HUDcontroller = CreateObjectAbove(controllerDef, 10, 10, plr);
 	}
 	return result;
 }

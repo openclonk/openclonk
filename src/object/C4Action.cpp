@@ -37,12 +37,12 @@ void C4Action::Default()
 	ComDir=COMD_Stop;
 	Time=0;
 	Data=0;
-	Target=Target2=NULL;
+	Target=Target2=nullptr;
 	Phase=PhaseDelay=0;
 	Facet.Default();
 	FacetX=FacetY=0;
 	t_attach=CNAT_None;
-	Animation = NULL;
+	Animation = nullptr;
 }
 
 void C4Action::CompileFunc(StdCompiler *pComp)

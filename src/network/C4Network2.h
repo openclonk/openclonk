@@ -226,7 +226,7 @@ public:
 	// initialization
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
-	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
+	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = nullptr);
 	bool DoLobby();
 	bool Start();
 	bool Pause();
@@ -270,7 +270,7 @@ public:
 	void DeactivateInactiveClients(); // host
 
 	// league
-	void LeagueGameEvaluate(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
+	void LeagueGameEvaluate(const char *szRecordName = nullptr, const BYTE *pRecordSHA = nullptr);
 	void LeagueSignupDisable(); // if "internet game" button is switched off in lobby: Remove from league server
 	bool LeagueSignupEnable();  // if "internet game" button is switched on in lobby: (re)Add to league server
 	void InvalidateReference(); // forces a recreation and re-send of the game reference in the next execution cycle
@@ -354,7 +354,7 @@ protected:
 	bool LeagueStart(bool *pCancel);
 	bool LeagueUpdate();
 	bool LeagueUpdateProcessReply();
-	bool LeagueEnd(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
+	bool LeagueEnd(const char *szRecordName = nullptr, const BYTE *pRecordSHA = nullptr);
 
 	// streaming
 	bool StreamIn(bool fFinish);

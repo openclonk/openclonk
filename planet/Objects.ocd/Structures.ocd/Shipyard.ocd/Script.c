@@ -59,25 +59,25 @@ local workEffect;
 public func OnProductionStart(id product)
 {
 	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 public func OnProductionHold(id product)
 {
 	workEffect.paused = true;
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 public func OnProductionContinued(id product)
 {
 	workEffect.paused = false;
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 public func OnProductionFinish(id product)
 {
 	RemoveEffect(nil, this, workEffect);
-	return _inherited(...);
+	return _inherited(product, ...);
 }
 
 public func Definition(def)

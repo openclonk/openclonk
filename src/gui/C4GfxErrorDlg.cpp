@@ -34,7 +34,7 @@ static int edittext_toi(HWND hWnd, int field)
 	StdStrBuf data(buf);
 	const char* bufp = data.getData();
 	while(*bufp == ' ') ++bufp;
-	int res = strtol(bufp, NULL, 0);
+	int res = strtol(bufp, nullptr, 0);
 	if(errno != ERANGE)
 		return res;
 	return -1;
@@ -86,7 +86,7 @@ static INT_PTR CALLBACK GfxErrProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
 					// Check if res is in list of supportet
 					bool found = false;
 					int32_t idx = 0, iXRes, iYRes, iBitDepth;
-					while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, NULL, Config.Graphics.Monitor))
+					while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, nullptr, Config.Graphics.Monitor))
 						if (iBitDepth == C4Draw::COLOR_DEPTH)
 							if(iXRes == resx && iYRes == resy)
 							{
@@ -110,14 +110,14 @@ static INT_PTR CALLBACK GfxErrProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
 			Config.Graphics.ResY = resy;
 			Config.Save();
 			TCHAR selfpath[4096];
-			GetModuleFileName(NULL, selfpath, 4096);
+			GetModuleFileName(nullptr, selfpath, 4096);
 			STARTUPINFOW siStartupInfo;
 			PROCESS_INFORMATION piProcessInfo;
 			memset(&siStartupInfo, 0, sizeof(siStartupInfo));
 			memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 			siStartupInfo.cb = sizeof(siStartupInfo);
-			if (CreateProcessW(selfpath, NULL,
-				NULL, NULL, FALSE, 0, NULL, Config.General.ExePath.GetWideChar(), &siStartupInfo, &piProcessInfo))
+			if (CreateProcessW(selfpath, nullptr,
+				nullptr, nullptr, FALSE, 0, nullptr, Config.General.ExePath.GetWideChar(), &siStartupInfo, &piProcessInfo))
 			{
 				CloseHandle(piProcessInfo.hProcess);
 				CloseHandle(piProcessInfo.hThread);
@@ -136,14 +136,14 @@ void ShowGfxErrorDialog()
 	// Application.Close will eventually post a quit message. We need to discard
 	// that, so DialogBox() doesn't immediately exit. 
 	auto msg = MSG();
-	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0)
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != 0)
 	{
 		if (msg.message == WM_QUIT) break;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
-	int ret = DialogBox(Application.GetInstance(), MAKEINTRESOURCE(IDD_GFXERROR), NULL, GfxErrProcedure);
+	int ret = DialogBox(Application.GetInstance(), MAKEINTRESOURCE(IDD_GFXERROR), nullptr, GfxErrProcedure);
 	if (ret == 0 || ret == -1)
 	{
 		LPVOID lpMsgBuf;
@@ -152,11 +152,11 @@ void ShowGfxErrorDialog()
 			FORMAT_MESSAGE_ALLOCATE_BUFFER |
 			FORMAT_MESSAGE_FROM_SYSTEM |
 			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
+			nullptr,
 			err,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			(LPTSTR) &lpMsgBuf,
-			0, NULL );
+			0, nullptr );
 		LogF("Error in GfxErrorDlg: %d - %s", err, StdStrBuf((wchar_t*)lpMsgBuf).getData());
 		LocalFree(lpMsgBuf);
 	}

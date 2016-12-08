@@ -52,7 +52,7 @@ C4Console::C4Console(): C4ConsoleGUI()
 	fGameOpen=false;
 
 #ifdef USE_WIN32_WINDOWS
-	hWindow=NULL;
+	hWindow=nullptr;
 #endif
 }
 
@@ -62,7 +62,9 @@ C4Console::~C4Console()
 
 C4Window * C4Console::Init(C4AbstractApp * pApp)
 {
-	return C4ConsoleGUI::CreateConsoleWindow(pApp);
+	if (!C4ConsoleGUI::CreateConsoleWindow(pApp))
+		return nullptr;
+	return this;
 }
 
 bool C4Console::In(const char *szText)
@@ -151,12 +153,33 @@ bool C4Console::SaveGame(const char * path)
 	return fOkay;
 }
 
-bool C4Console::SaveScenario(const char * path)
+bool C4Console::SaveScenario(const char * path, bool export_packed)
 {
-	// Open new scenario file
-	if (path)
+	C4Group *save_target_group = &Game.ScenarioFile;
+	C4Group export_group;
+	if (export_packed)
 	{
-		// Close current scenario file
+		// Export to packed file: Delete existing
+		if (FileExists(path))
+		{
+			if (ItemIdentical(Game.ScenarioFilename, path) || !EraseItem(path))
+			{
+				Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), path).getData());
+				return false;
+			}
+		}
+		// Write into new, packed copy
+		if (!C4Group_PackDirectoryTo(Game.ScenarioFilename, path) || !export_group.Open(path))
+		{
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"), path).getData());
+			return false;
+		}
+		save_target_group = &export_group;
+	}
+	else if (path)
+	{
+		// Open new scenario file
+		// Close current scenario file to allow re-opening at new path
 		Game.ScenarioFile.Close();
 		// Copy current scenario file to target
 		if (!C4Group_CopyItem(Game.ScenarioFilename,path))
@@ -164,6 +187,7 @@ bool C4Console::SaveScenario(const char * path)
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),path).getData());
 			return false;
 		}
+		// Re-open at new path (unless exporting, in which case the export is just a copy)
 		SCopy(path, Game.ScenarioFilename, _MAX_PATH);
 		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
@@ -183,11 +207,11 @@ bool C4Console::SaveScenario(const char * path)
 	}
 
 	// Can't save to child groups
-	if (Game.ScenarioFile.GetMother() && Game.ScenarioFile.GetMother()->IsPacked())
+	if (save_target_group->GetMother() && save_target_group->GetMother()->IsPacked())
 	{
 		StdStrBuf str;
 		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
-		           GetFilename(Game.ScenarioFile.GetName()));
+		           GetFilename(save_target_group->GetName()));
 		Message(str.getData());
 		return false;
 	}
@@ -197,15 +221,22 @@ bool C4Console::SaveScenario(const char * path)
 
 	bool fOkay=true;
 	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.GetMode() == LandscapeMode::Exact, false);
-	if (!pGameSave->Save(Game.ScenarioFile, false))
+	if (!pGameSave->Save(*save_target_group, false))
 		{ Out("Game::Save failed"); fOkay=false; }
 	delete pGameSave;
 
 	// Close and reopen scenario file to fix file changes
-	if (!Game.ScenarioFile.Close())
-		{ Out("ScenarioFile::Close failed"); fOkay=false; }
-	if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
-		{ Out("ScenarioFile::Open failed"); fOkay=false; }
+	if (!export_packed)
+	{
+		if (!Game.ScenarioFile.Close())
+		{
+			Out("ScenarioFile::Close failed"); fOkay = false;
+		}
+		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
+		{
+			Out("ScenarioFile::Open failed"); fOkay = false;
+		}
+	}
 
 	SetCursor(C4ConsoleGUI::CURSOR_Normal);
 
@@ -215,7 +246,7 @@ bool C4Console::SaveScenario(const char * path)
 		StdStrBuf str(LoadResStr("IDS_CNS_SCRIPTCREATEDOBJECTS"));
 		str += LoadResStr("IDS_CNS_WARNDOUBLE");
 		Message(str.getData());
-		Game.fScriptCreatedObjects=false;
+		Game.fScriptCreatedObjects = false;
 	}
 
 	// Status report
@@ -229,25 +260,30 @@ bool C4Console::FileSave()
 {
 	// Save game
 	// FIXME: What about editing a savegame inplace? (Game.C4S.Head.SaveGame)
-	return SaveScenario(NULL);
+	return SaveScenario(nullptr);
 }
 
-bool C4Console::FileSaveAs(bool fSaveGame)
+bool C4Console::FileSaveAs(bool fSaveGame, bool export_packed)
 {
 	// Do save-as dialog
 	StdCopyStrBuf filename("");
 	filename.Copy(Game.ScenarioFile.GetName());
+	if (export_packed)
+	{
+		RemoveExtension(&filename);
+		filename.Append("_packed.ocs");
+	}
 	if (!FileSelect(&filename,
 	                "OpenClonk Scenario\0*.ocs\0\0",
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
-	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
+	if (!export_packed) ::Config.Developer.AddRecentlyEditedScenario(filename.getData());
 	if (fSaveGame)
 		// Save game
 		return SaveGame(filename.getData());
 	else
-		return SaveScenario(filename.getData());
+		return SaveScenario(filename.getData(), export_packed);
 }
 
 bool C4Console::Message(const char *szMessage, bool fQuery)
@@ -260,9 +296,15 @@ bool C4Console::FileNew()
 {
 	StdCopyStrBuf filename;
 #ifdef WITH_QT_EDITOR
-	if (!C4ConsoleGUI::CreateNewScenario(&filename)) return false;
+	bool host_in_network = false;
+	if (!C4ConsoleGUI::CreateNewScenario(&filename, &host_in_network)) return false;
 	Application.ClearCommandLine();
 	::Config.Developer.AddRecentlyEditedScenario(filename.getData());
+	if (host_in_network)
+	{
+		Game.NetworkActive = true;
+		Game.fLobby = true;
+	}
 	Application.OpenGame(filename.getData());
 	return true;
 #endif
@@ -271,7 +313,7 @@ bool C4Console::FileNew()
 
 }
 
-bool C4Console::FileOpen(const char *filename)
+bool C4Console::FileOpen(const char *filename, bool host_in_network)
 {
 	// Get scenario file name
 	StdCopyStrBuf c4sfile("");
@@ -285,6 +327,11 @@ bool C4Console::FileOpen(const char *filename)
 	}
 	Application.ClearCommandLine();
 	::Config.Developer.AddRecentlyEditedScenario(filename);
+	if (host_in_network)
+	{
+		Game.NetworkActive = true;
+		Game.fLobby = true;
+	}
 	// Open game
 	Application.OpenGame(filename);
 	return true;
@@ -367,15 +414,18 @@ void C4Console::Default()
 
 void C4Console::Clear()
 {
+	if (pSurface) delete pSurface;
+	pSurface = 0;
+
 	C4Window::Clear();
+	C4ConsoleGUI::DeleteConsoleWindow();
+
 	EditCursor.Clear();
 	ToolsDlg.Clear();
 	PropertyDlgClose();
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
-	if (pSurface) delete pSurface;
-	pSurface = 0;
 #ifndef _WIN32
 	Application.Quit();
 #endif
@@ -501,7 +551,7 @@ void C4Console::UpdateNetMenu()
 	str.Format(LoadResStr("IDS_MNU_NETHOST"),Game.Clients.getLocalName(),Game.Clients.getLocalID());
 	AddNetMenuItemForPlayer(Game.Clients.getLocalID(), str.getData(), C4ConsoleGUI::CO_None);
 	// Clients
-	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(nullptr); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 	{
 		if (pClient->isHost()) continue;
 		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT_DEACTIVATE" : "IDS_MNU_NETCLIENT_ACTIVATE"),
@@ -574,7 +624,7 @@ std::list<const char *> C4Console::GetScriptSuggestions(C4PropList *target, Rece
 	const std::list<StdCopyStrBuf> &mru = recent_script_input[section];
 	if (!mru.empty())
 	{
-		functions.insert(functions.begin(), NULL);
+		functions.insert(functions.begin(), nullptr);
 		// add pointers into string buffer list
 		// do not iterate with for (auto i : mru) because this would copy the buffer and add stack pointers
 		for (auto i = mru.begin(); i != mru.end(); ++i)
@@ -615,11 +665,14 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
 {
 	C4Rect r(0, 0, 400, 350);
-	return C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
+	if (!C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r))
+		return false;
+	return true;
 }
+void C4ConsoleGUI::DeleteConsoleWindow() {}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}

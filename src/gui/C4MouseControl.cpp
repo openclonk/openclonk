@@ -57,8 +57,8 @@ void C4MouseControl::Default()
 {
 	Active=false;
 	Player=NO_OWNER;
-	pPlayer=NULL;
-	Viewport=NULL;
+	pPlayer=nullptr;
+	Viewport=nullptr;
 	Cursor=0;
 	Caption.Clear();
 	CaptionBottomY=0;
@@ -73,18 +73,18 @@ void C4MouseControl::Default()
 	InitCentered=false;
 	FogOfWar=false;
 	DragID=C4ID::None;
-	DragObject=NULL;
+	DragObject=nullptr;
 	KeepCaption=0;
 	Drag=C4MC_Drag_None;
 	Selection.Default();
-	TargetObject=DownTarget=NULL;
+	TargetObject=DownTarget=nullptr;
 	ControlDown=false;
 	ShiftDown=false;
 	AltDown=false;
 	Scrolling=false;
 	ScrollSpeed=10;
-	DragImageDef=NULL;
-	DragImageObject=NULL;
+	DragImageDef=nullptr;
+	DragImageObject=nullptr;
 	fMouseOwned = true; // default mouse owned
 	fctViewport.Default();
 }
@@ -124,14 +124,14 @@ bool C4MouseControl::Init(int32_t iPlayer)
 
 void C4MouseControl::ClearPointers(C4Object *pObj)
 {
-	if (TargetObject==pObj) TargetObject=NULL;
-	if (DownTarget==pObj) DownTarget=NULL;
+	if (TargetObject==pObj) TargetObject=nullptr;
+	if (DownTarget==pObj) DownTarget=nullptr;
 	if (DragObject==pObj)
 	{
-		DragObject=NULL;
+		DragObject=nullptr;
 		Drag=C4MC_Drag_None;
-		DragImageDef=NULL;
-		DragImageObject=NULL;
+		DragImageDef=nullptr;
+		DragImageObject=nullptr;
 	}
 	Selection.ClearPointers(pObj);
 }
@@ -151,10 +151,10 @@ void C4MouseControl::UpdateClip()
 	// fullscreen only
 	if (Application.isEditor) return;
 	// application or mouse control not active? remove any clips
-	if (!Active || !Application.Active || ::pGUI->HasMouseFocus()) { ClipCursor(NULL); return; }
+	if (!Active || !Application.Active || ::pGUI->HasMouseFocus()) { ClipCursor(nullptr); return; }
 	// get controlled viewport
 	C4Viewport *pVP=::Viewports.GetViewport(Player);
-	if (!pVP) { ClipCursor(NULL); return; }
+	if (!pVP) { ClipCursor(nullptr); return; }
 	// adjust size by viewport size
 	RECT vpRct;
 	vpRct.left=pVP->OutX; vpRct.top=pVP->OutY; vpRct.right=pVP->OutX+pVP->ViewWdt; vpRct.bottom=pVP->OutY+pVP->ViewHgt;
@@ -189,12 +189,12 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 		if (!pPlayer) { Active=false; return; }
 	}
 	else
-		pPlayer = NULL;
+		pPlayer = nullptr;
 	// Check viewport
 	if (!(Viewport=::Viewports.GetViewport(Player))) return;
 	// get view position
 	C4Rect rcViewport = Viewport->GetOutputRect();
-	fctViewport.Set(NULL, rcViewport.x, rcViewport.y, rcViewport.Wdt, rcViewport.Hgt);
+	fctViewport.Set(nullptr, rcViewport.x, rcViewport.y, rcViewport.Wdt, rcViewport.Hgt);
 	ViewX=Viewport->GetViewX(); ViewY=Viewport->GetViewY();
 	fctViewportGame = Viewport->last_game_draw_cgo;
 	fctViewportGUI = Viewport->last_gui_draw_cgo;
@@ -435,7 +435,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				DragImageObject->ColorMod = (Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00);
 				DragImageObject->BlitMode = C4GFXBLIT_MOD2;
 
-				DragImageObject->DrawPicture(ccgo, false, NULL);
+				DragImageObject->DrawPicture(ccgo, false, nullptr);
 
 				DragImageObject->ColorMod = ColorMod;
 				DragImageObject->BlitMode = BlitMode;
@@ -447,7 +447,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				// draw DragImage in red or green, according to the phase to be used
 				pDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00));
 
-				DragImageDef->Draw(ccgo, false, pPlayer ? pPlayer->ColorDw : 0xff0000ff, NULL, 0, 0, NULL);
+				DragImageDef->Draw(ccgo, false, pPlayer ? pPlayer->ColorDw : 0xff0000ff, nullptr, 0, 0, nullptr);
 
 				// reset color
 				pDraw->DeactivateBlitModulation();
@@ -485,13 +485,13 @@ void C4MouseControl::UpdateCursorTarget()
 	if (Scrolling)
 	{
 		// Scrolling: no other target
-		TargetObject=NULL;
+		TargetObject=nullptr;
 	}
 	else
 	{
 		// Target object
 		TargetObject=GetTargetObject();
-		if (TargetObject && FogOfWar && !(TargetObject->Category & C4D_IgnoreFoW)) TargetObject = NULL;
+		if (TargetObject && FogOfWar && !(TargetObject->Category & C4D_IgnoreFoW)) TargetObject = nullptr;
 
 		// Movement
 		if (!FogOfWar && !IsPassive()) Cursor=C4MC_Cursor_Crosshair;
@@ -513,7 +513,7 @@ void C4MouseControl::UpdateCursorTarget()
 			if ( (TargetObject->Category & C4D_MouseSelect) && CanSelect)
 				Cursor=C4MC_Cursor_Select;
 			else
-				TargetObject = NULL;
+				TargetObject = nullptr;
 		}
 
 		// passive cursor
@@ -638,7 +638,7 @@ void C4MouseControl::LeftUp()
 	}
 	// Update status flag
 	LeftButtonDown=false;
-	if(!RightButtonDown) DownTarget = NULL;
+	if(!RightButtonDown) DownTarget = nullptr;
 }
 
 void C4MouseControl::DragNone()
@@ -719,7 +719,7 @@ void C4MouseControl::RightUp()
 	}
 	// Update status flag
 	RightButtonDown=false;
-	if(!LeftButtonDown) DownTarget = NULL;
+	if(!LeftButtonDown) DownTarget = nullptr;
 }
 
 void C4MouseControl::Wheel(DWORD dwFlags)
@@ -763,15 +763,15 @@ void C4MouseControl::ButtonUpDragScript()
 	// Finish drag
 	Drag=C4MC_Drag_None;
 	DragID=C4ID::None;
-	DragImageObject = NULL;
-	DragImageDef = NULL;
+	DragImageObject = nullptr;
+	DragImageDef = nullptr;
 	C4Object *DragObject = this->DragObject;
-	this->DragObject = NULL;
+	this->DragObject = nullptr;
 	C4Object *DropObject = TargetObject;
 	// drag object must exist; drop object is optional
 	if (!DragObject) return;
 	if (DropObject && (~DropObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DropTarget))
-		DropObject = NULL;
+		DropObject = nullptr;
 	// no commands if player is eliminated or doesn't exist any more
 	C4Player *pPlr = ::Players.Get(Player);
 	if (!pPlr || pPlr->Eliminated) return;
@@ -846,7 +846,7 @@ C4Object *C4MouseControl::GetTargetObject()
 	// find object
 	// gui object position currently wrong...will fall apart once GUIZoom is activated
 	C4Object *pObj = Game.FindVisObject(ViewX, ViewY, Player, fctViewportGame, fctViewportGUI, GameX,GameY, C4D_MouseSelect, GuiX-fctViewportGUI.X, GuiY-fctViewportGUI.Y);
-	if (!pObj) return NULL;
+	if (!pObj) return nullptr;
 	return pObj;
 }
 

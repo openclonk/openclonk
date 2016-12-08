@@ -131,7 +131,7 @@ public:
 	C4ValueMapNames GlobalConstNames;
 	C4ValueMapData GlobalConsts;
 
-	C4Effect * pGlobalEffects = NULL;
+	C4Effect * pGlobalEffects = nullptr;
 
 	C4AulScriptEngine(); // constructor
 	~C4AulScriptEngine(); // destructor
@@ -145,7 +145,7 @@ public:
 	std::list<const char*> GetFunctionNames(C4PropList *);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
-	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL
+	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not nullptr
 
 	void Denumerate(C4ValueNumbers *);
 	void UnLink(); // called when a script is being reloaded (clears string table)

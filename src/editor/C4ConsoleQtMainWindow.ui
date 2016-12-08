@@ -339,12 +339,14 @@
     </property>
     <addaction name="actionFileNew"/>
     <addaction name="actionFileOpen"/>
+    <addaction name="actionFileOpenInNetwork"/>
     <addaction name="actionFileOpenWithPlayers"/>
     <addaction name="separator"/>
     <addaction name="actionFileRecord"/>
     <addaction name="actionFileSaveScenario"/>
     <addaction name="actionFileSaveScenarioAs"/>
     <addaction name="actionFileSaveGameAs"/>
+    <addaction name="actionFileExportScenarioPacked"/>
     <addaction name="actionFileReInitScenario"/>
     <addaction name="separator"/>
     <addaction name="actionFileClose"/>
@@ -1247,6 +1249,31 @@
     <string>-</string>
    </property>
   </action>
+  <action name="actionFileOpenInNetwork">
+   <property name="text">
+    <string comment="res">IDS_MNU_OPENNET</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_OPENNET</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_OPENNET</string>
+   </property>
+  </action>
+  <action name="actionFileExportScenarioPacked">
+   <property name="text">
+    <string comment="res">IDS_MNU_EXPORTSCENARIOPACKED</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_EXPORTSCENARIOPACKED</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_EXPORTSCENARIOPACKED</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+E</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -1451,8 +1478,8 @@
    <slot>DrawSizeChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>499</x>
-     <y>69</y>
+     <x>685</x>
+     <y>78</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1707,8 +1734,8 @@
    <slot>WelcomeLinkActivated(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>591</x>
-     <y>216</y>
+     <x>676</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1723,8 +1750,8 @@
    <slot>WelcomeLinkActivated(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>591</x>
-     <y>235</y>
+     <x>676</x>
+     <y>253</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1739,8 +1766,8 @@
    <slot>WelcomeLinkActivated(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>445</x>
-     <y>248</y>
+     <x>676</x>
+     <y>272</y>
     </hint>
     <hint type="destinationlabel">
      <x>477</x>
@@ -1988,6 +2015,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionFileOpenInNetwork</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileOpenInNetwork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileExportScenarioPacked</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>FileExportPacked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -2035,5 +2094,7 @@
   <slot>FocusNextViewport()</slot>
   <slot>GradeUp()</slot>
   <slot>GradeDown()</slot>
+  <slot>FileOpenInNetwork()</slot>
+  <slot>FileExportPacked()</slot>
  </slots>
 </ui>

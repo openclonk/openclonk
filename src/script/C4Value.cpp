@@ -69,22 +69,22 @@ C4Value::C4Value(C4Effect * p): C4Value(static_cast<C4PropList *>(p)) {}
 
 C4Object * C4Value::getObj() const
 {
-	return CheckConversion(C4V_Object) ? Data.PropList->GetObject() : NULL;
+	return CheckConversion(C4V_Object) ? Data.PropList->GetObject() : nullptr;
 }
 
 C4Object * C4Value::_getObj() const
 {
-	return Data.PropList ? Data.PropList->GetObject() : NULL;
+	return Data.PropList ? Data.PropList->GetObject() : nullptr;
 }
 
 C4Def * C4Value::getDef() const
 {
-	return CheckConversion(C4V_Def) ? Data.PropList->GetDef() : NULL;
+	return CheckConversion(C4V_Def) ? Data.PropList->GetDef() : nullptr;
 }
 
 C4Def * C4Value::_getDef() const
 {
-	return Data.PropList ? Data.PropList->GetDef() : NULL;
+	return Data.PropList ? Data.PropList->GetDef() : nullptr;
 }
 
 C4Value C4VObj(C4Object *pObj) { return C4Value(static_cast<C4PropList*>(pObj)); }
@@ -540,7 +540,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return s;
 		}
 	};
-	static Seen *top = NULL;
+	static Seen *top = nullptr;
 	Seen here(top, this, &Value2);
 	
 	bool recursion = top && top->recursion(&here);

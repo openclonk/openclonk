@@ -78,14 +78,14 @@ private:
 	friend class C4AulProfiler;
 public:
 	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
-	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL, bool parse_function = false);
+	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = nullptr, bool parse_function = false);
 
 	void StartTrace();
 	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = C4TimeMilliseconds::Now(); }
 	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += C4TimeMilliseconds::Now() - tDirectExecStart; }
 
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
-	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
+	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : nullptr; }
 	void LogCallStack();
 	static C4String *FnTranslate(C4PropList * _this, C4String *text);
 	static bool FnLogCallStack(C4PropList * _this);
@@ -226,7 +226,7 @@ private:
 		else
 			throw C4AulExecError(FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
 	}
-	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = NULL);
+	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = nullptr);
 };
 
 extern C4AulExec AulExec;

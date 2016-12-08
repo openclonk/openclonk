@@ -43,7 +43,7 @@ public:
 		  iLeftEndY(0), iRightEndY(0),
 		  iError(0),
 		  fDirty(true),
-		  pNext(NULL)
+		  pNext(nullptr)
 	{ }
 
 private:

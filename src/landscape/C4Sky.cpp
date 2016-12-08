@@ -116,10 +116,10 @@ bool C4Sky::Init(bool fSavegame, std::string names)
 	}
 
 	// Load sky shaders: regular sprite shaders with OC_SKY define
-	const char* const SkyDefines[] = { "OC_SKY", NULL };
-	if (!pDraw->PrepareSpriteShader(Shader, "Sky", Surface ? C4SSC_BASE : 0, &::GraphicsResource.Files, SkyDefines, NULL))
+	const char* const SkyDefines[] = { "OC_SKY", nullptr };
+	if (!pDraw->PrepareSpriteShader(Shader, "Sky", Surface ? C4SSC_BASE : 0, &::GraphicsResource.Files, SkyDefines, nullptr))
 		return false;
-	if (!pDraw->PrepareSpriteShader(ShaderLight, "SkyLight", (Surface ? C4SSC_BASE : 0) | C4SSC_LIGHT, &::GraphicsResource.Files, SkyDefines, NULL))
+	if (!pDraw->PrepareSpriteShader(ShaderLight, "SkyLight", (Surface ? C4SSC_BASE : 0) | C4SSC_LIGHT, &::GraphicsResource.Files, SkyDefines, nullptr))
 		return false;
 
 	// no sky - using fade in newgfx
@@ -143,7 +143,7 @@ bool C4Sky::Init(bool fSavegame, std::string names)
 void C4Sky::Default()
 {
 	Width=Height=0;
-	Surface=NULL;
+	Surface=nullptr;
 	x=y=xdir=ydir=0;
 	Modulation=0xffffffff;
 	ParX=ParY=10;
@@ -161,7 +161,7 @@ void C4Sky::Clear()
 {
 	Shader.Clear();
 	ShaderLight.Clear();
-	delete Surface; Surface=NULL;
+	delete Surface; Surface=nullptr;
 	Modulation=0xffffffff;
 }
 

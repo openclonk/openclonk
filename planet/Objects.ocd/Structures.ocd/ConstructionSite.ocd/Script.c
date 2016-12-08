@@ -71,7 +71,7 @@ public func GetMissingMaterialMenuEntries(object clonk)
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];		
+	var menus = _inherited(clonk, ...) ?? [];		
 	var comp_menu =
 	{
 		title = "$TxtMissingMaterial$",

@@ -528,7 +528,7 @@ namespace
 		call.SetUniform1f(C4SSU_CullMode, cullFace ? 0.0f : 1.0f);
 
 		// Dynamic light
-		if(pFoW != NULL)
+		if(pFoW != nullptr)
 		{
 			call.AllocTexUnit(C4SSU_LightTex);
 			glBindTexture(GL_TEXTURE_2D, pFoW->getSurfaceName());
@@ -705,7 +705,7 @@ namespace
 		// Unmapping the buffer may fail for certain reasons, in which case we need to try again.
 		do
 		{
-			glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(PretransformedMeshVertex), NULL, GL_STREAM_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(PretransformedMeshVertex), nullptr, GL_STREAM_DRAW);
 			void *map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 			PretransformedMeshVertex *buffer = new (map) PretransformedMeshVertex[vertex_count];
 
@@ -811,12 +811,12 @@ namespace
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
-			assert(pass.Program.get() != NULL);
+			assert(pass.Program.get() != nullptr);
 
 			// Upload all parameters to the shader
 			int ssc = 0;
 			if (dwBlitMode & C4GFXBLIT_MOD2) ssc |= C4SSC_MOD2;
-			if (pFoW != NULL) ssc |= C4SSC_LIGHT;
+			if (pFoW != nullptr) ssc |= C4SSC_LIGHT;
 			const C4Shader* shader = pass.Program->Program->GetShader(ssc);
 			if (!shader) return;
 			C4ShaderCall call(shader);
@@ -955,6 +955,8 @@ namespace
 					break;
 				}
 			}
+
+			pDraw->scriptUniform.Apply(call);
 
 			size_t vertex_count = 3 * instance.GetNumFaces();
 			assert (vertex_buffer_offset % sizeof(StdMeshVertex) == 0);

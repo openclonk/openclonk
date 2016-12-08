@@ -31,7 +31,7 @@ C4Graph::C4Graph()
 }
 
 C4TableGraph::C4TableGraph(int iBackLogLength, int iStartTime)
-		: iBackLogLength(iBackLogLength), pValues(NULL), fMultiplier(1), pAveragedValues(NULL), iBackLogPos(0), fWrapped(false)
+		: iBackLogLength(iBackLogLength), pValues(nullptr), fMultiplier(1), pAveragedValues(nullptr), iBackLogPos(0), fWrapped(false)
 		, iInitialStartTime(iStartTime), iTime(iStartTime), iAveragedTime(iStartTime), iAvgRange(1)
 {
 	// create value buffer
@@ -275,7 +275,7 @@ const C4Graph *C4GraphCollection::GetSeries(int iIndex) const
 		if (iIndex < iCnt) return (*i)->GetSeries(iIndex);
 		iIndex -= iCnt;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void C4GraphCollection::Update() const
@@ -318,14 +318,14 @@ C4Network2Stats::C4Network2Stats()
 	statActions.SetTitle(LoadResStr("IDS_NET_APM"));
 	statActions.SetAverageTime(100);
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
-	C4Network2Client *pClient = NULL;
+	C4Network2Client *pClient = nullptr;
 	while ((pClient = ::Network.Clients.GetNextClient(pClient))) pClient->CreateGraphs();
 }
 
 C4Network2Stats::~C4Network2Stats()
 {
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
-	C4Network2Client *pClient = NULL;
+	C4Network2Client *pClient = nullptr;
 	while ((pClient = ::Network.Clients.GetNextClient(pClient))) pClient->ClearGraphs();
 	Application.Remove(this);
 }
@@ -341,7 +341,7 @@ void C4Network2Stats::ExecuteSecond()
 	statNetI.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtIRate(P_TCP) + ::Network.NetIO.getProtIRate(P_UDP)));
 	statNetO.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtORate(P_TCP) + ::Network.NetIO.getProtORate(P_UDP)));
 	// pings for all clients
-	C4Network2Client *pClient = NULL;
+	C4Network2Client *pClient = nullptr;
 	while ((pClient = ::Network.Clients.GetNextClient(pClient))) if (pClient->getStatPing())
 		{
 			int iPing=0;
@@ -385,7 +385,7 @@ C4Graph *C4Network2Stats::GetGraphByName(const StdStrBuf &rszName, bool &rfIsTem
 	if (SEqualNoCase(rszName.getData(), "control")) return &statControls;
 	if (SEqualNoCase(rszName.getData(), "apm")) return &statActions;
 	// no match
-	return NULL;
+	return nullptr;
 }
 
 // MassGraph.SetDumpFile(StdStrBuf("C:\\test.txt"));

@@ -71,8 +71,8 @@ void C4PlayerInfoListBox::ListItem::DrawElement(C4TargetFacet &cgo)
 
 C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForListBox, int32_t idClient,
     int32_t idPlayer, bool fSavegamePlayer, C4GUI::Element *pInsertBeforeElement)
-		: ListItem(pForListBox), pScoreLabel(NULL), pTimeLabel(NULL), pExtraLabel(NULL),
-		pRankIcon(NULL), pTeamCombo(NULL), pTeamPic(NULL), fIconSet(false), fJoinedInfoSet(false),
+		: ListItem(pForListBox), pScoreLabel(nullptr), pTimeLabel(nullptr), pExtraLabel(nullptr),
+		pRankIcon(nullptr), pTeamCombo(nullptr), pTeamPic(nullptr), fIconSet(false), fJoinedInfoSet(false),
 		dwJoinClr(0), dwPlrClr(0), idClient(idClient), idPlayer(idPlayer), fFreeSavegamePlayer(fSavegamePlayer)
 {
 	bool fIsEvaluation = pForListBox->IsEvaluation(), fIsLobby = pForListBox->IsLobby();
@@ -115,7 +115,7 @@ C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForLis
 			if (pTeam && pTeam->GetIconSpec() && *pTeam->GetIconSpec())
 			{
 				pTeamPic = new C4GUI::Picture(C4Rect(iHeight + IconLabelSpacing, 0, iHeight, iHeight), true);
-				Game.DrawTextSpecImage(pTeamPic->GetMFacet(), pTeam->GetIconSpec(), NULL, pTeam->GetColor());
+				Game.DrawTextSpecImage(pTeamPic->GetMFacet(), pTeam->GetIconSpec(), nullptr, pTeam->GetColor());
 				pTeamPic->SetDrawColor(pTeam->GetColor());
 			}
 		}
@@ -249,11 +249,11 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 {
 	// check whether icon is known
 	bool fResPresent = false;
-	C4Network2Res *pRes = NULL;
+	C4Network2Res *pRes = nullptr;
 	if (pInfo)
 		if ((pRes = pInfo->GetRes()))
 			fResPresent = pRes->isComplete();
-	C4RoundResultsPlayer *pEvaluationPlayer = NULL;
+	C4RoundResultsPlayer *pEvaluationPlayer = nullptr;
 	if (pList->IsEvaluation()) pEvaluationPlayer = Game.RoundResults.GetPlayers().GetByID(idPlayer);
 	bool fHasIcon = fResPresent || pEvaluationPlayer || (!::Network.isEnabled() && pInfo);
 	// check whether joined info is present
@@ -331,7 +331,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateTeam()
 void C4PlayerInfoListBox::PlayerListItem::UpdateScoreLabel(C4PlayerInfo *pInfo)
 {
 	assert(pInfo);
-	C4RoundResultsPlayer *pRoundResultsPlr = NULL;
+	C4RoundResultsPlayer *pRoundResultsPlr = nullptr;
 	if (pList->IsEvaluation()) pRoundResultsPlr = Game.RoundResults.GetPlayers().GetByID(idPlayer);
 
 	if (pInfo->getLeagueScore() || pInfo->IsLeagueProjectedGainValid() || pRoundResultsPlr)
@@ -421,7 +421,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateScoreLabel(C4PlayerInfo *pInfo)
 	{
 		// score label invisible
 		delete pScoreLabel;
-		pScoreLabel = NULL;
+		pScoreLabel = nullptr;
 	}
 	if (pRankIcon)
 	{
@@ -480,7 +480,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContext(C4GUI::Elemen
 	C4PlayerInfo *pInfo = GetPlayerInfo();
 	assert(pInfo);
 	// no context menu for evaluation
-	if (!GetLobby()) return NULL;
+	if (!GetLobby()) return nullptr;
 	// create context menu
 	C4GUI::ContextMenu *pMenu = new C4GUI::ContextMenu();
 	// if this is a free player, add an option to take it over
@@ -489,7 +489,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContext(C4GUI::Elemen
 		if (pInfo->GetType() != C4PT_Script)
 		{
 			StdCopyStrBuf strTakeOver(LoadResStr("IDS_MSG_TAKEOVERPLR"));
-			pMenu->AddItem(strTakeOver.getData(), LoadResStr("IDS_MSG_TAKEOVERPLR_DESC"), C4GUI::Ico_Player, NULL,
+			pMenu->AddItem(strTakeOver.getData(), LoadResStr("IDS_MSG_TAKEOVERPLR_DESC"), C4GUI::Ico_Player, nullptr,
 			               new C4GUI::CBContextHandler<PlayerListItem>(this, &PlayerListItem::OnContextTakeOver));
 		}
 	}
@@ -503,7 +503,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContext(C4GUI::Elemen
 			{
 				StdCopyStrBuf strRemove(LoadResStr("IDS_MSG_REMOVEPLR"));
 				pMenu->AddItem(strRemove.getData(), LoadResStr("IDS_MSG_REMOVEPLR_DESC"), C4GUI::Ico_Close,
-				               new C4GUI::CBMenuHandler<PlayerListItem>(this, &PlayerListItem::OnCtxRemove), NULL);
+				               new C4GUI::CBMenuHandler<PlayerListItem>(this, &PlayerListItem::OnCtxRemove), nullptr);
 			}
 			// color was changed: Add option to assign a new color
 			C4PlayerInfo *pInfo = GetPlayerInfo();
@@ -512,7 +512,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContext(C4GUI::Elemen
 			{
 				StdCopyStrBuf strNewColor(LoadResStr("IDS_MSG_NEWPLRCOLOR"));
 				pMenu->AddItem(strNewColor.getData(), LoadResStr("IDS_MSG_NEWPLRCOLOR_DESC"), C4GUI::Ico_Player,
-				               new C4GUI::CBMenuHandler<PlayerListItem>(this, &PlayerListItem::OnCtxNewColor), NULL);
+				               new C4GUI::CBMenuHandler<PlayerListItem>(this, &PlayerListItem::OnCtxNewColor), nullptr);
 			}
 		}
 	}
@@ -672,7 +672,7 @@ C4PlayerInfo *C4PlayerInfoListBox::PlayerListItem::GetJoinedInfo() const
 {
 	// safety
 	C4PlayerInfo *pInfo = GetPlayerInfo();
-	if (!pInfo) return NULL;
+	if (!pInfo) return nullptr;
 	// is it a joined savegame player?
 	if (fFreeSavegamePlayer)
 		// then this is the joined player
@@ -683,7 +683,7 @@ C4PlayerInfo *C4PlayerInfoListBox::PlayerListItem::GetJoinedInfo() const
 		// then return the respective info from savegame recreation list
 		return Game.RestorePlayerInfos.GetPlayerInfoByID(idSavegameInfo);
 	// not joined
-	return NULL;
+	return nullptr;
 }
 
 bool C4PlayerInfoListBox::PlayerListItem::CanLocalChooseTeam() const
@@ -724,9 +724,9 @@ C4PlayerInfoListBox::ClientListItem::ClientListItem(C4PlayerInfoListBox *pForLis
 	int32_t iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	// create subcomponents
 	pStatusIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), GetCurrentStatusIcon());
-	pNameLabel = new C4GUI::Label(rClientInfo.getName(), iIconSize + IconLabelSpacing,0, ALeft, dwClientClr | C4GUI_MessageFontAlpha, NULL, true, false);
-	pPingLabel = NULL;
-	C4GUI::CallbackButton<ClientListItem, C4GUI::IconButton> *btnAddPlayer = NULL;
+	pNameLabel = new C4GUI::Label(rClientInfo.getName(), iIconSize + IconLabelSpacing,0, ALeft, dwClientClr | C4GUI_MessageFontAlpha, nullptr, true, false);
+	pPingLabel = nullptr;
+	C4GUI::CallbackButton<ClientListItem, C4GUI::IconButton> *btnAddPlayer = nullptr;
 	if (IsLocalClientPlayer())
 	{
 		// this computer: add player button
@@ -763,7 +763,7 @@ void C4PlayerInfoListBox::ClientListItem::SetPing(int32_t iToPing)
 	if (iToPing == -1)
 	{
 		// remove any ping label
-		if (pPingLabel) { delete pPingLabel; pPingLabel = NULL; }
+		if (pPingLabel) { delete pPingLabel; pPingLabel = nullptr; }
 		return;
 	}
 	// get ping as text
@@ -824,7 +824,7 @@ C4GUI::Icons C4PlayerInfoListBox::ClientListItem::GetCurrentStatusIcon()
 	// sound icon?
 	if (tLastSoundTime)
 	{
-		time_t dt = time(NULL) - tLastSoundTime;
+		time_t dt = time(nullptr) - tLastSoundTime;
 		if (dt >= SoundIconShowTime)
 		{
 			// stop showing sound icon
@@ -887,7 +887,7 @@ void C4PlayerInfoListBox::ClientListItem::UpdatePing()
 void C4PlayerInfoListBox::ClientListItem::SetSoundIcon()
 {
 	// remember time for reset
-	tLastSoundTime = time(NULL);
+	tLastSoundTime = time(nullptr);
 	// force icon
 	SetStatus(GetCurrentStatusIcon());
 }
@@ -895,7 +895,7 @@ void C4PlayerInfoListBox::ClientListItem::SetSoundIcon()
 C4GUI::ContextMenu *C4PlayerInfoListBox::ClientListItem::OnContext(C4GUI::Element *pListItem, int32_t iX, int32_t iY)
 {
 	// safety
-	if (!::Network.isEnabled()) return NULL;
+	if (!::Network.isEnabled()) return nullptr;
 	// get associated client
 	C4Client *pClient = GetClient();
 	// create context menu
@@ -920,7 +920,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::ClientListItem::OnContext(C4GUI::Elemen
 	{
 		StdCopyStrBuf strNewColor(LoadResStr(pClient->IsIgnored() ? "IDS_NET_CLIENT_UNIGNORE" : "IDS_NET_CLIENT_IGNORE"));
 		pMenu->AddItem(strNewColor.getData(), FormatString(LoadResStr("IDS_NET_CLIENT_IGNORE_DESC"), pClient->getName()).getData(),
-			C4GUI::Ico_None, new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxIgnore), NULL);
+			C4GUI::Ico_None, new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxIgnore), nullptr);
 	}
 	
 	// open it
@@ -970,7 +970,7 @@ C4PlayerInfoListBox::TeamListItem::TeamListItem(C4PlayerInfoListBox *pForListBox
 	bool fEvaluation = pList->IsEvaluation();
 	// get team data
 	const char *szTeamName;
-	C4Team *pTeam = NULL;
+	C4Team *pTeam = nullptr;
 	if (idTeam == TEAMID_Unknown)
 		szTeamName = LoadResStr("IDS_MSG_RNDTEAM");
 	else
@@ -1000,7 +1000,7 @@ C4PlayerInfoListBox::TeamListItem::TeamListItem(C4PlayerInfoListBox *pForListBox
 	{
 		C4FacetSurface fctSymbol;
 		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		Game.DrawTextSpecImage(fctSymbol, pTeam->GetIconSpec(), NULL, pTeam->GetColor());
+		Game.DrawTextSpecImage(fctSymbol, pTeam->GetIconSpec(), nullptr, pTeam->GetColor());
 		pIcon->GetMFacet().GrabFrom(fctSymbol);
 	}
 	// calc own bounds
@@ -1138,7 +1138,7 @@ C4PlayerInfoListBox::ScriptPlayersListItem::ScriptPlayersListItem(C4PlayerInfoLi
 	// create subcomponents
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), C4GUI::Ico_Record);
 	pNameLabel = new C4GUI::Label(LoadResStr("IDS_CTL_SCRIPTPLAYERS"), iIconSize + IconLabelSpacing,0, ALeft);
-	btnAddPlayer = NULL;
+	btnAddPlayer = nullptr;
 	if (::Control.isCtrlHost())
 	{
 		btnAddPlayer = new C4GUI::CallbackButton<ScriptPlayersListItem, C4GUI::IconButton>(C4GUI::Ico_AddPlr, C4Rect(0, 0, iIconSize, iIconSize), 'A' /* 2do TODO */, &ScriptPlayersListItem::OnBtnAddPlr, this);
@@ -1186,7 +1186,7 @@ void C4PlayerInfoListBox::ScriptPlayersListItem::OnBtnAddPlr(C4GUI::Control *btn
 	// request a script player join
 	C4PlayerInfo *pScriptPlrInfo = new C4PlayerInfo();
 	pScriptPlrInfo->SetAsScriptPlayer(Game.Teams.GetScriptPlayerName().getData(), GenerateRandomPlayerColor(iCurrScriptPlrCount), 0, C4ID::None);
-	C4ClientPlayerInfos JoinPkt(NULL, true, pScriptPlrInfo);
+	C4ClientPlayerInfos JoinPkt(nullptr, true, pScriptPlrInfo);
 	// add to queue!
 	Game.PlayerInfos.DoPlayerInfoUpdate(&JoinPkt);
 }
@@ -1224,7 +1224,7 @@ C4PlayerInfoListBox::ReplayPlayersListItem::ReplayPlayersListItem(C4PlayerInfoLi
 // ------------------- C4PlayerInfoListBox ------------------------
 
 C4PlayerInfoListBox::C4PlayerInfoListBox(const C4Rect &rcBounds, Mode eMode, int32_t iTeamFilter)
-		: C4GUI::ListBox(rcBounds), eMode(eMode), iMaxUncollapsedPlayers(10), fIsCollapsed(false), iTeamFilter(iTeamFilter), dwTextColor(C4GUI_MessageFontClr), pCustomFont(NULL)
+		: C4GUI::ListBox(rcBounds), eMode(eMode), iMaxUncollapsedPlayers(10), fIsCollapsed(false), iTeamFilter(iTeamFilter), dwTextColor(C4GUI_MessageFontClr), pCustomFont(nullptr)
 {
 	// update if client listbox selection changes
 	SetSelectionChangeCallbackFn(new C4GUI::CallbackHandler<C4PlayerInfoListBox>(this, &C4PlayerInfoListBox::OnPlrListSelChange));
@@ -1254,7 +1254,7 @@ C4PlayerInfoListBox::ListItem *C4PlayerInfoListBox::GetPlayerListItem(ListItem::
 		if (pItem->idListItemID == idSearch) return pItem;
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 bool C4PlayerInfoListBox::PlrListItemUpdate(ListItem::ID::IDType eType, int32_t id, class ListItem **pEnsurePos)
@@ -1454,7 +1454,7 @@ void C4PlayerInfoListBox::UpdatePlayersByRandomTeam(ListItem **ppCurrInList)
 {
 	// team sort but teams set to random and invisible: Show all players within one "Random Team"-label
 	bool fTeamLabelPut = false;
-	C4Client *pClient = NULL;
+	C4Client *pClient = nullptr;
 	while ((pClient = Game.Clients.getClient(pClient)))
 	{
 		// player infos for this client - not for deactivated, and never in replays
@@ -1482,7 +1482,7 @@ void C4PlayerInfoListBox::UpdatePlayersByRandomTeam(ListItem **ppCurrInList)
 void C4PlayerInfoListBox::UpdatePlayersByClient(ListItem **ppCurrInList)
 {
 	// regular players
-	C4Client *pClient = NULL;
+	C4Client *pClient = nullptr;
 	while ((pClient = Game.Clients.getClient(pClient)))
 	{
 		// the client label
@@ -1543,7 +1543,7 @@ void C4PlayerInfoListBox::UpdatePlayersByEvaluation(ListItem **ppCurrInList, boo
 				UpdatePlayersByEvaluation(ppCurrInList, pTeam, eAddMode);
 			}
 			// Add teamless players of winning status
-			UpdatePlayersByEvaluation(ppCurrInList, NULL, eAddMode);
+			UpdatePlayersByEvaluation(ppCurrInList, nullptr, eAddMode);
 		}
 	}
 }

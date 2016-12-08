@@ -73,7 +73,7 @@ private func InitMiddleIsland()
 	// A catapult to get to the bottom island.
 	var catapult = CreateObjectAbove(Catapult, 760, 408);
 	catapult->MakeInvincible();
-	catapult->SetDir(DIR_Left);
+	catapult->TurnLeft();
 	
 	var chemical_lab = CreateObjectAbove(ChemicalLab, 850, 368);
 	chemical_lab->MakeInvincible();

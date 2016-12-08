@@ -54,9 +54,9 @@ C4Application::C4Application():
 		CheckForUpdates(false),
 		restartAtEnd(false),
 		is_in_game_tick(false),
-		pGamePadControl(NULL),
+		pGamePadControl(nullptr),
 		AppState(C4AS_None),
-		pGameTimer(NULL)
+		pGameTimer(nullptr)
 {
 }
 
@@ -152,7 +152,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	// Windows: handle incoming updates directly, even before starting up the gui
 	//          because updates will be applied in the console anyway.
 	if (Application.IncomingUpdate)
-		if (C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.getData(), false, NULL))
+		if (C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.getData(), false, nullptr))
 			return true;
 #endif
 
@@ -592,7 +592,7 @@ void C4Application::Clear()
 	if (pGameTimer)
 	{
 		Remove(pGameTimer);
-		delete pGameTimer; pGameTimer = NULL;
+		delete pGameTimer; pGameTimer = nullptr;
 	}
 	// quit irc
 	IRCClient.Close();
@@ -605,7 +605,7 @@ void C4Application::Clear()
 	Languages.Clear();
 	Languages.ClearLanguage();
 	// gamepad clear
-	if (pGamePadControl) { delete pGamePadControl; pGamePadControl=NULL; }
+	if (pGamePadControl) { delete pGamePadControl; pGamePadControl=nullptr; }
 	// music system clear
 	MusicSystem.Clear();
 	SoundSystem.Clear();
@@ -613,7 +613,7 @@ void C4Application::Clear()
 	// clear editcursor holding graphics before clearing draw
 	::Console.EditCursor.Clear();
 	// Clear direct draw (late, because it's needed for e.g. Log)
-	if (pDraw) { delete pDraw; pDraw=NULL; }
+	if (pDraw) { delete pDraw; pDraw=nullptr; }
 	// Close window
 	FullScreen.Clear();
 	Console.Clear();

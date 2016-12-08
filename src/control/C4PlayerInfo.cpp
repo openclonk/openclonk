@@ -37,7 +37,7 @@ void C4PlayerInfo::Clear()
 	DeleteTempFile();
 	// clear fields
 	sName.Clear(); szFilename.Clear();
-	pRes = NULL;
+	pRes = nullptr;
 	ResCore.Clear();
 	// default fields
 	dwColor = dwOriginalColor = 0xffffffff;
@@ -194,7 +194,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 		{ "NoScenarioInit", PIF_NoScenarioInit },
 		{ "NoEliminationCheck", PIF_NoEliminationCheck },
 		{ "Invisible", PIF_Invisible},
-		{ NULL, 0 },
+		{ nullptr, 0 },
 	};
 	uint16_t dwSyncFlags = dwFlags & PIF_SyncFlags; // do not store local flags!
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, Entries), "Flags", 0u));
@@ -207,7 +207,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 		{ "User",   C4PT_User },
 		{ "Script", C4PT_Script },
 
-		{ NULL,  C4PT_User },
+		{ nullptr,  C4PT_User },
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eType, PlayerTypes), "Type", C4PT_User));
 
@@ -314,7 +314,7 @@ void C4PlayerInfo::DiscardResource()
 	if (pRes)
 	{
 		assert(dwFlags & PIF_HasRes);
-		pRes = NULL;
+		pRes = nullptr;
 		dwFlags &= ~PIF_HasRes;
 	}
 	else assert(~dwFlags & PIF_HasRes);
@@ -353,7 +353,7 @@ bool C4PlayerInfo::LoadBigIcon(C4FacetSurface &fctTarget)
 	bool fSuccess = false;
 	// load BigIcon.png of player into target facet; return false if no bigicon present or player file not yet loaded
 	C4Group Plr;
-	C4Network2Res *pRes = NULL;
+	C4Network2Res *pRes = nullptr;
 	bool fIncompleteRes = false;
 	if ((pRes = GetRes()))
 		if (!pRes->isComplete())
@@ -372,7 +372,7 @@ bool C4PlayerInfo::LoadBigIcon(C4FacetSurface &fctTarget)
 // *** C4ClientPlayerInfos
 
 C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd, C4PlayerInfo *pAddInfo)
-		: iPlayerCount(0), iPlayerCapacity(0), ppPlayers(NULL), iClientID(-1), dwFlags(0)
+		: iPlayerCount(0), iPlayerCapacity(0), ppPlayers(nullptr), iClientID(-1), dwFlags(0)
 {
 	// init for local client?
 	if (szJoinFilenames || pAddInfo)
@@ -437,7 +437,7 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const C4ClientPlayerInfos &rCopy)
 	// no players
 	else
 	{
-		ppPlayers = NULL;
+		ppPlayers = nullptr;
 		iPlayerCapacity = 0;
 	}
 	// misc fields
@@ -460,7 +460,7 @@ C4ClientPlayerInfos &C4ClientPlayerInfos::operator = (const C4ClientPlayerInfos 
 	// no players
 	else
 	{
-		ppPlayers = NULL;
+		ppPlayers = nullptr;
 		iPlayerCapacity = 0;
 	}
 	// misc fields
@@ -475,7 +475,7 @@ void C4ClientPlayerInfos::Clear()
 	int32_t i = iPlayerCount; C4PlayerInfo **ppCurrPlrInfo = ppPlayers;
 	while (i--) delete *ppCurrPlrInfo++;
 	// del player info vector
-	delete [] ppPlayers; ppPlayers = NULL;
+	delete [] ppPlayers; ppPlayers = nullptr;
 	// reset other fields
 	iPlayerCount = iPlayerCapacity = 0;
 	iClientID=-1;
@@ -496,13 +496,13 @@ void C4ClientPlayerInfos::GrabMergeFrom(C4ClientPlayerInfos &rFrom)
 		memcpy(ppPlayers + iPlayerCount, rFrom.ppPlayers, rFrom.iPlayerCount * sizeof(C4PlayerInfo *));
 		iPlayerCount += rFrom.iPlayerCount;
 		rFrom.iPlayerCount = rFrom.iPlayerCapacity = 0;
-		delete [] rFrom.ppPlayers; rFrom.ppPlayers = NULL;
+		delete [] rFrom.ppPlayers; rFrom.ppPlayers = nullptr;
 	}
 	else
 	{
 		// no own players: take over buffer of pFrom
 		if (ppPlayers) delete [] ppPlayers;
-		ppPlayers = rFrom.ppPlayers; rFrom.ppPlayers = NULL;
+		ppPlayers = rFrom.ppPlayers; rFrom.ppPlayers = nullptr;
 		iPlayerCount = rFrom.iPlayerCount; rFrom.iPlayerCount = 0;
 		iPlayerCapacity = rFrom.iPlayerCapacity; rFrom.iPlayerCapacity = 0;
 	}
@@ -571,7 +571,7 @@ int32_t C4ClientPlayerInfos::GetFlaggedPlayerCount(DWORD dwFlag) const
 C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfo(int32_t iIndex) const
 {
 	// check range
-	if (iIndex<0 || iIndex>=iPlayerCount) return NULL;
+	if (iIndex<0 || iIndex>=iPlayerCount) return nullptr;
 	// return indexed info
 	return ppPlayers[iIndex];
 }
@@ -587,7 +587,7 @@ C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfo(int32_t iIndex, C4PlayerType eT
 				return pNfo;
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfoByID(int32_t id) const
@@ -600,7 +600,7 @@ C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfoByID(int32_t id) const
 		++ppCurrPlrInfo;
 	}
 	// none matched
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfoByRes(int32_t idResID) const
@@ -616,7 +616,7 @@ C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfoByRes(int32_t idResID) const
 					return *ppCurrPlrInfo;
 		++ppCurrPlrInfo;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool C4ClientPlayerInfos::HasUnjoinedPlayers() const
@@ -650,7 +650,7 @@ void C4ClientPlayerInfos::CompileFunc(StdCompiler *pComp)
 		{ "Initial", CIF_Initial },
 		{ "Developer", CIF_Developer },
 
-		{ NULL, 0 }
+		{ nullptr, 0 }
 	};
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwFlags, Entries), "Flags", 0u));
 
@@ -678,13 +678,13 @@ void C4ClientPlayerInfos::LoadResources()
 
 // *** C4PlayerInfoList
 
-C4PlayerInfoList::C4PlayerInfoList() : iClientCount(0), iClientCapacity(0), ppClients(NULL), iLastPlayerID(0)
+C4PlayerInfoList::C4PlayerInfoList() : iClientCount(0), iClientCapacity(0), ppClients(nullptr), iLastPlayerID(0)
 {
 	// ctor: no need to alloc mem yet
 }
 
 C4PlayerInfoList::C4PlayerInfoList(const C4PlayerInfoList &rCpy) : iClientCount(rCpy.iClientCount), iClientCapacity(rCpy.iClientCapacity),
-		ppClients(NULL), iLastPlayerID(rCpy.iLastPlayerID)
+		ppClients(nullptr), iLastPlayerID(rCpy.iLastPlayerID)
 {
 	// copy client info vector
 	if (rCpy.ppClients)
@@ -710,7 +710,7 @@ C4PlayerInfoList &C4PlayerInfoList::operator = (const C4PlayerInfoList &rCpy)
 		while (i--) *ppInfo++ = new C4ClientPlayerInfos(**ppCpy++);
 	}
 	else
-		ppClients = NULL;
+		ppClients = nullptr;
 	return *this;
 }
 
@@ -720,7 +720,7 @@ void C4PlayerInfoList::Clear()
 	C4ClientPlayerInfos **ppInfo = ppClients; int32_t i=iClientCount;
 	while (i--) delete *ppInfo++;
 	// clear client infos
-	delete [] ppClients; ppClients = NULL;
+	delete [] ppClients; ppClients = nullptr;
 	iClientCount = iClientCapacity = 0;
 	// reset player ID counter
 	iLastPlayerID = 0;
@@ -831,7 +831,7 @@ void C4PlayerInfoList::UpdatePlayerAttributes()
 	C4ClientPlayerInfos *pForInfo;
 	while ((pForInfo = GetIndexedInfo(iIdx++))) UpdatePlayerAttributes(pForInfo, false);
 	// now resole all conflicts
-	ResolvePlayerAttributeConflicts(NULL);
+	ResolvePlayerAttributeConflicts(nullptr);
 }
 
 bool C4PlayerInfoList::AssignPlayerIDs(C4ClientPlayerInfos *pNewClientInfo)
@@ -898,7 +898,7 @@ C4ClientPlayerInfos *C4PlayerInfoList::AddInfo(C4ClientPlayerInfos *pNewClientIn
 		{
 			// no players could be added (probably MaxPlayer)
 			delete pNewClientInfo;
-			return NULL;
+			return nullptr;
 		}
 	}
 	// ensure all teams specified in the list exist (this should be done for savegame teams as well)
@@ -940,7 +940,7 @@ C4ClientPlayerInfos **C4PlayerInfoList::GetInfoPtrByClientID(int32_t iClientID) 
 	// search list
 	for (int32_t i=0; i<iClientCount; ++i) if (ppClients[i]->GetClientID() == iClientID) return ppClients+i;
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4PlayerInfoList::GetPlayerCount() const
@@ -1061,7 +1061,7 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByIndex(int32_t index) const
 				return pInfo;
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id) const
@@ -1076,7 +1076,7 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id) const
 			if (pInfo->GetID() == id) return pInfo;
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4ClientPlayerInfos *C4PlayerInfoList::GetClientInfoByPlayerID(int32_t id) const
@@ -1090,7 +1090,7 @@ C4ClientPlayerInfos *C4PlayerInfoList::GetClientInfoByPlayerID(int32_t id) const
 			if (pInfo->GetID() == id) return ppClients[i];
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id, int32_t *pidClient) const
@@ -1109,7 +1109,7 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoByID(int32_t id, int32_t *pidClient
 			}
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoBySavegameID(int32_t id) const
@@ -1124,13 +1124,13 @@ C4PlayerInfo *C4PlayerInfoList::GetPlayerInfoBySavegameID(int32_t id) const
 			if (pInfo->GetAssociatedSavegamePlayerID() == id) return pInfo;
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4PlayerInfoList::GetNextPlayerInfoByID(int32_t id) const
 {
 	// check all packets for players
-	C4PlayerInfo *pSmallest=NULL;
+	C4PlayerInfo *pSmallest=nullptr;
 	for (int32_t i=0; i<iClientCount; ++i)
 	{
 		int32_t j=0; C4PlayerInfo *pInfo;
@@ -1155,7 +1155,7 @@ C4PlayerInfo *C4PlayerInfoList::GetActivePlayerInfoByName(const char *szName)
 					return pInfo;
 	}
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4PlayerInfoList::FindSavegameResumePlayerInfo(const C4PlayerInfo *pMatchInfo, MatchingLevel mlMatchStart, MatchingLevel mlMatchEnd) const
@@ -1189,7 +1189,7 @@ C4PlayerInfo *C4PlayerInfoList::FindSavegameResumePlayerInfo(const C4PlayerInfo 
 		}
 	}
 	// no match
-	return NULL;
+	return nullptr;
 }
 
 C4PlayerInfo *C4PlayerInfoList::FindUnassociatedRestoreInfo(const C4PlayerInfoList &rRestoreInfoList)
@@ -1206,7 +1206,7 @@ C4PlayerInfo *C4PlayerInfoList::FindUnassociatedRestoreInfo(const C4PlayerInfoLi
 					return pRestoreInfo;
 	}
 	// no unassociated info found
-	return NULL;
+	return nullptr;
 }
 
 bool C4PlayerInfoList::HasSameTeamPlayers(int32_t iClient1, int32_t iClient2) const
@@ -1578,7 +1578,7 @@ bool C4PlayerInfoList::RecreatePlayers(C4ValueNumbers * numbers)
 					const char *szName = pInfo->GetName();
 					if (!::Network.RetrieveRes(pJoinRes->getCore(), C4NetResRetrieveTimeout,
 					                           FormatString(LoadResStr("IDS_NET_RES_PLRFILE"), szName).getData()))
-						szFilename=NULL;
+						szFilename=nullptr;
 				}
 				// file present?
 				if (!szFilename || !*szFilename)
@@ -1593,7 +1593,7 @@ bool C4PlayerInfoList::RecreatePlayers(C4ValueNumbers * numbers)
 					else
 					{
 						// for script players: Recreation without filename OK
-						szFilename = NULL;
+						szFilename = nullptr;
 					}
 				}
 				// record file handling: Save to the record file in the manner it's expected by C4PlayerInfoList::RecreatePlayers
@@ -1652,7 +1652,7 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 			if (pInfo->IsJoined())
 			{
 				// pre-reset filename
-				pInfo->SetFilename(NULL);
+				pInfo->SetFilename(nullptr);
 				if (pInfo->GetType() == C4PT_User)
 				{
 					fKeepInfo = fSaveUserPlrs;

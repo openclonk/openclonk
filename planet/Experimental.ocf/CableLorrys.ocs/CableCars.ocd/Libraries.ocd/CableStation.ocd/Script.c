@@ -25,7 +25,7 @@ public func CableDeactivation(int count) { }
 
 /*--- Callbacks ---*/
 
-// Be sure to always call these via _inherited();
+// Be sure to always call these via _inherited(...);
 
 func Initialize()
 {

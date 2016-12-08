@@ -28,7 +28,7 @@
 C4IDListChunk::C4IDListChunk()
 {
 	// prepare list
-	pNext=NULL;
+	pNext=nullptr;
 }
 
 C4IDListChunk::~C4IDListChunk()
@@ -43,10 +43,10 @@ void C4IDListChunk::Clear()
 	C4IDListChunk *pChunk=pNext,*pChunk2;
 	while (pChunk)
 	{
-		pChunk2=pChunk->pNext; pChunk->pNext=NULL;
+		pChunk2=pChunk->pNext; pChunk->pNext=nullptr;
 		delete pChunk; pChunk=pChunk2;
 	}
-	pNext=NULL;
+	pNext=nullptr;
 }
 
 C4IDList::C4IDList() : C4IDListChunk()
@@ -74,7 +74,7 @@ C4IDList &C4IDList::operator = (const C4IDList &rCopy)
 		pTo->pNext=pNew; pTo=pNew;
 	}
 	// finalize
-	pTo->pNext=NULL;
+	pTo->pNext=nullptr;
 	return *this;
 }
 

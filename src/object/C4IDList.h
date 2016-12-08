@@ -59,7 +59,7 @@ public:
 	void Clear();
 	bool IsClear() const;
 	// Access by direct index
-	C4ID GetID(size_t index, int32_t *ipCount=NULL) const;
+	C4ID GetID(size_t index, int32_t *ipCount=nullptr) const;
 	int32_t  GetCount(size_t index) const;
 	bool SetCount(size_t index, int32_t iCount);
 	// Access by ID
@@ -71,7 +71,7 @@ public:
 	int32_t  GetNumberOfIDs() const;
 	int32_t GetIndex(C4ID c_id) const;
 	// Access by category-sorted index
-	C4ID GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount=NULL) const;
+	C4ID GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount=nullptr) const;
 	int32_t  GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const;
 	bool SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t iCount);
 	int32_t  GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const;

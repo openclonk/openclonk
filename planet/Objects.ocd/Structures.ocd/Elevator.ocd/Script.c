@@ -96,7 +96,7 @@ private func Initialize()
 		else
 			partner = nil;
 	}
-	return _inherited();
+	return _inherited(...);
 }
 
 private func CreateCase()

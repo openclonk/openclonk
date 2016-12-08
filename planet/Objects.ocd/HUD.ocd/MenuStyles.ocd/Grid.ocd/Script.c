@@ -13,6 +13,15 @@ func Construction()
 	this.Style = GUI_GridLayout;
 }
 
+public func SetTightGridLayout(bool tight)
+{
+	tight = tight ?? true;
+	if (tight)
+		this.Style = GUI_TightGridLayout;
+	else
+		this.Style = GUI_GridLayout;
+}
+
 func MakeEntryProplist(symbol, text)
 {
 	var custom_entry = {Bottom = "+2em", Right = "+2em", desc = {Style = GUI_TextRight | GUI_TextBottom}};

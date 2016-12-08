@@ -329,7 +329,7 @@ void C4GameSave::WriteDescNetworkClients(StdStrBuf &sBuf)
 	// Desc
 	sBuf.Append(LoadResStr("IDS_DESC_CLIENTS"));
 	// Client names
-	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(nullptr); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{ sBuf.Append(", ");  sBuf.Append(pClient->getName()); }
 	// End of line
 	WriteDescLineFeed(sBuf);
@@ -402,7 +402,7 @@ bool C4GameSave::Save(const char *szFilename)
 	C4Group *pLSaveGroup = new C4Group();
 	if (!SaveCreateGroup(szFilename, *pLSaveGroup))
 	{
-		LogF(LoadResStr("IDS_ERR_SAVE_TARGETGRP"), szFilename ? szFilename : "NULL!");
+		LogF(LoadResStr("IDS_ERR_SAVE_TARGETGRP"), szFilename ? szFilename : "nullptr!");
 		delete pLSaveGroup;
 		return false;
 	}
@@ -459,7 +459,7 @@ bool C4GameSave::Close()
 			delete pSaveGroup;
 			fOwnGroup = false;
 		}
-		pSaveGroup = NULL;
+		pSaveGroup = nullptr;
 	}
 	return fSuccess;
 }

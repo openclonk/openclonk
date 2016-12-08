@@ -30,7 +30,7 @@
 #include "platform/StdRegistry.h"
 
 C4RankSystem::C4RankSystem()
-	: pszRankNames(NULL), szRankNames(NULL), pszRankExtensions(NULL)
+	: pszRankNames(nullptr), szRankNames(nullptr), pszRankExtensions(nullptr)
 {
 	Default();
 }
@@ -263,9 +263,9 @@ bool C4RankSystem::Check(int iRank, const char  *szDefRankName)
 void C4RankSystem::Clear()
 {
 	// clear any loaded rank names
-	if (pszRankNames) { delete [] pszRankNames; pszRankNames=NULL; }
-	if (pszRankExtensions) { delete [] pszRankExtensions; pszRankExtensions = NULL; }
-	if (szRankNames) { delete [] szRankNames; szRankNames=NULL; }
+	if (pszRankNames) { delete [] pszRankNames; pszRankNames=nullptr; }
+	if (pszRankExtensions) { delete [] pszRankExtensions; pszRankExtensions = nullptr; }
+	if (szRankNames) { delete [] szRankNames; szRankNames=nullptr; }
 	// reset number of ranks
 	iRankNum=0;
 	iRankExtNum=0;

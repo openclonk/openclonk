@@ -114,7 +114,7 @@ public func HasInteractionMenu() { return true; }
 // Show settins in interaction menu
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var cablecar_menu =
 	{
 		title = "$CableCarOptions$",

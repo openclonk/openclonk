@@ -28,7 +28,7 @@ class C4MusicFile
 public:
 
 	C4MusicFile() :
-		pNext(NULL), LastPlayed(-1), NoPlay(false), loop(false), SongExtracted(false), announced(false)
+		pNext(nullptr), LastPlayed(-1), NoPlay(false), loop(false), SongExtracted(false), announced(false)
 	{ }
 	virtual ~C4MusicFile() { }
 

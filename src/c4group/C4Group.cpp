@@ -42,11 +42,11 @@ const char *C4CFN_FLS[] =
 	C4CFN_ScenarioSections, C4FLS_Section,
 	C4CFN_Sound,            C4FLS_Sound,
 	C4CFN_Music,            C4FLS_Music,
-	NULL, NULL
+	nullptr, nullptr
 };
 
 #ifdef _DEBUG
-const char *szCurrAccessedEntry = NULL;
+const char *szCurrAccessedEntry = nullptr;
 int iC4GroupRewindFilePtrNoWarn=0;
 #endif
 
@@ -58,8 +58,8 @@ int iC4GroupRewindFilePtrNoWarn=0;
 
 char C4Group_TempPath[_MAX_PATH+1]="";
 char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db;.orig;.svn";
-const char **C4Group_SortList = NULL;
-bool (*C4Group_ProcessCallback)(const char *, int)=NULL;
+const char **C4Group_SortList = nullptr;
+bool (*C4Group_ProcessCallback)(const char *, int)=nullptr;
 
 void C4Group_SetProcessCallback(bool (*fnCallback)(const char *, int))
 {
@@ -260,7 +260,7 @@ bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo)
 			}
 		}
 		// Add normally otherwise
-		else if (!hGroup.Add(*i, NULL))
+		else if (!hGroup.Add(*i, nullptr))
 			break;
 	}
 	// Something went wrong?
@@ -380,7 +380,7 @@ bool C4Group_ReadFile(const char *szFile, char **pData, size_t *iSize)
 	// create buffer
 	*pData = new char [iFileSize];
 	// read it
-	if (!MotherGroup.Read(*pData, iFileSize)) { delete [] *pData; *pData = NULL; return false; }
+	if (!MotherGroup.Read(*pData, iFileSize)) { delete [] *pData; *pData = nullptr; return false; }
 	// ok
 	MotherGroup.Close();
 	if (iSize) *iSize = iFileSize;
@@ -435,7 +435,7 @@ C4Group::C4Group()
 {
 	Init();
 	StdOutput=false;
-	fnProcessCallback=NULL;
+	fnProcessCallback=nullptr;
 	NoSort=false;
 }
 
@@ -445,16 +445,16 @@ void C4Group::Init()
 	Status=GRPF_Inactive;
 	FileName[0]=0;
 	// Child status
-	Mother=NULL;
+	Mother=nullptr;
 	ExclusiveChild=false;
 	// File only
 	FilePtr=0;
 	EntryOffset=0;
 	Modified=false;
 	InplaceReconstruct(&Head);
-	FirstEntry=NULL;
-	SearchPtr=NULL;
-	pInMemEntry=NULL; iInMemEntrySize=0u;
+	FirstEntry=nullptr;
+	SearchPtr=nullptr;
+	pInMemEntry=nullptr; iInMemEntrySize=0u;
 	// Folder only
 	FolderSearch.Clear();
 	// Error status
@@ -603,7 +603,7 @@ bool C4Group::OpenRealGrpFile()
 		if (!AddEntry(C4GroupEntry::C4GRES_InGroup,!!corebuf.ChildGroup,
 		              corebuf.FileName,corebuf.Size,
 		              entryname.getData(),
-		              NULL, false, false,
+		              nullptr, false, false,
 		              !!corebuf.Executable))
 			return Error("OpenRealGrpFile: Cannot add entry");
 	}
@@ -699,7 +699,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	SCopy(fname,nentry->DiskPath,_MAX_FNAME);
 	nentry->Status=status;
 	nentry->bpMemBuf=membuf;
-	nentry->Next=NULL;
+	nentry->Next=nullptr;
 	nentry->NoSort = NoSort;
 
 	// Append entry to list
@@ -714,13 +714,13 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 
 C4GroupEntry* C4Group::GetEntry(const char *szName)
 {
-	if (Status==GRPF_Folder) return NULL;
+	if (Status==GRPF_Folder) return nullptr;
 	C4GroupEntry *centry;
 	for (centry=FirstEntry; centry; centry=centry->Next)
 		if (centry->Status != C4GroupEntry::C4GRES_Deleted)
 			if (WildcardMatch(szName,centry->FileName))
 				return centry;
-	return NULL;
+	return nullptr;
 }
 
 bool C4Group::Close()
@@ -830,7 +830,7 @@ bool C4Group::Save(bool fReOpen)
 
 	// Write
 	StdBuf *pBuf;
-	tfile.Close(fToMemory ? &pBuf : NULL);
+	tfile.Close(fToMemory ? &pBuf : nullptr);
 
 	// Child: move temp file to mother
 	if (Mother)
@@ -868,9 +868,9 @@ bool C4Group::Save(bool fReOpen)
 
 void C4Group::Default()
 {
-	FirstEntry = NULL;
+	FirstEntry = nullptr;
 	StdFile.Default();
-	Mother = NULL;
+	Mother = nullptr;
 	ExclusiveChild = 0;
 	Init();
 }
@@ -891,7 +891,7 @@ void C4Group::Clear()
 	if (Mother && ExclusiveChild)
 	{
 		delete Mother;
-		Mother=NULL;
+		Mother=nullptr;
 	}
 	// Reset
 	Init();
@@ -992,7 +992,7 @@ void C4Group::ResetSearch(bool reload_contents)
 	switch (Status)
 	{
 	case GRPF_Folder:
-		SearchPtr=NULL;
+		SearchPtr=nullptr;
 		FolderSearch.Reset(FileName, reload_contents);
 		if (*FolderSearch)
 		{
@@ -1016,7 +1016,7 @@ C4GroupEntry* C4Group::GetNextFolderEntry()
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1055,8 +1055,8 @@ C4GroupEntry* C4Group::SearchNextEntry(const char *szName)
 	default: break; // InGrp & Deleted ignored
 	}
 	// No entry found: reset search pointer
-	SearchPtr=NULL;
-	return NULL;
+	SearchPtr=nullptr;
+	return nullptr;
 }
 
 bool C4Group::SetFilePtr(int iOffset)
@@ -1177,7 +1177,7 @@ bool C4Group::RewindFilePtr()
 	if (szCurrAccessedEntry && !iC4GroupRewindFilePtrNoWarn)
 	{
 		LogF("C4Group::RewindFilePtr() for %s (%s) after %s", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName, sPrevAccessedEntry.getLength() ? sPrevAccessedEntry.getData() : "???");
-		szCurrAccessedEntry=NULL;
+		szCurrAccessedEntry=nullptr;
 	}
 #endif
 
@@ -1228,7 +1228,7 @@ bool C4Group::Merge(const char *szFolders)
 			if (fnProcessCallback)
 				fnProcessCallback(GetFilename(*i),0); // cbytes/tbytes
 			// AddEntryOnDisk
-			AddEntryOnDisk(*i, NULL, fMove);
+			AddEntryOnDisk(*i, nullptr, fMove);
 			++i;
 		}
 	}
@@ -1283,7 +1283,7 @@ bool C4Group::AddEntryOnDisk(const char *szFilename,
 	                szFilename,
 	                iSize,
 	                szAddAs,
-	                NULL,
+	                nullptr,
 	                fMove,
 	                false,
 	                fExecutable);
@@ -1611,7 +1611,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 
 	// Access entry in mother group
 	size_t iSize;
-	if ((!Mother->AccessEntry(FileName, &iSize, NULL, true)))
+	if ((!Mother->AccessEntry(FileName, &iSize, nullptr, true)))
 	{
 		if (!fCreate)
 			{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Entry not in mother group"); }
@@ -1653,7 +1653,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 		EntryOffset+=sizeof(C4GroupEntryCore);
 		if (!AddEntry(C4GroupEntry::C4GRES_InGroup, !!corebuf.ChildGroup,
 		              corebuf.FileName,corebuf.Size,
-		              NULL, NULL, false, false,
+		              nullptr, nullptr, false, false,
 		              !!corebuf.Executable))
 			{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Insufficient memory"); }
 	}
@@ -1685,7 +1685,7 @@ bool C4Group::AccessEntry(const char *szWildCard,
 	bool fResult = SetFilePtr2Entry(fname.getData(), NeedsToBeAGroup);
 #ifdef _DEBUG
 	sPrevAccessedEntry.Copy(szCurrAccessedEntry);
-	szCurrAccessedEntry = NULL;
+	szCurrAccessedEntry = nullptr;
 #endif
 	if (!fResult) return false;
 	if (sFileName) SCopy(fname.getData(),sFileName);
@@ -1704,7 +1704,7 @@ bool C4Group::AccessNextEntry(const char *szWildCard,
 #endif
 	bool fResult = SetFilePtr2Entry(fname);
 #ifdef _DEBUG
-	szCurrAccessedEntry = NULL;
+	szCurrAccessedEntry = nullptr;
 #endif
 	if (!fResult) return false;
 	if (sFileName) SCopy(fname,sFileName);
@@ -1724,7 +1724,7 @@ bool C4Group::SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup)
 	}
 	else
 	{
-		pInMemEntry = NULL;
+		pInMemEntry = nullptr;
 	}
 
 	// Not cached. Access from disk.
@@ -1868,12 +1868,12 @@ bool C4Group::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize,
 	size_t size;
 
 	// Access entry, allocate buffer, read data
-	(*lpbpBuf)=NULL; if (ipSize) *ipSize=0;
+	(*lpbpBuf)=nullptr; if (ipSize) *ipSize=0;
 	if (!AccessEntry(szEntryName,&size)) return Error("LoadEntry: Not found");
 	*lpbpBuf = new char[size+iAppendZeros];
 	if (!Read(*lpbpBuf,size))
 	{
-		delete [] (*lpbpBuf); *lpbpBuf = NULL;
+		delete [] (*lpbpBuf); *lpbpBuf = nullptr;
 		return Error("LoadEntry: Reading error");
 	}
 
@@ -1946,7 +1946,7 @@ bool C4Group::Sort(const char *szSortList)
 	{
 		fBubble=false;
 
-		for (prev=NULL,centry=FirstEntry; centry; prev=centry,centry=next)
+		for (prev=nullptr,centry=FirstEntry; centry; prev=centry,centry=next)
 			if ((next=centry->Next))
 			{
 				// primary sort by file list
@@ -1985,7 +1985,7 @@ bool C4Group::CloseExclusiveMother()
 	{
 		Mother->Close();
 		delete Mother;
-		Mother=NULL;
+		Mother=nullptr;
 		return true;
 	}
 	return false;
@@ -2092,7 +2092,7 @@ uint32_t C4Group::CalcCRC32(C4GroupEntry *pEntry)
 		CRC = 0;
 	else
 	{
-		BYTE *pData = NULL; bool fOwnData; CStdFile f;
+		BYTE *pData = nullptr; bool fOwnData; CStdFile f;
 		// get data
 		switch (pEntry->Status)
 		{

@@ -56,7 +56,7 @@ public func HasInteractionMenu() { return true; }
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var oil_menu =
 	{
 		title = "$MsgOilOverview$",

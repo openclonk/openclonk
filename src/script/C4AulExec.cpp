@@ -116,7 +116,7 @@ C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 	} \
 } while(0)
 
-	if (!text || text->GetData().isNull()) return NULL;
+	if (!text || text->GetData().isNull()) return nullptr;
 	// Find correct script: translations of the context if possible, containing script as fallback
 	if (_this && _this->GetDef())
 		ReturnIfTranslationAvailable(&(_this->GetDef()->Script), text->GetCStr());
@@ -141,7 +141,7 @@ void C4AulExec::ClearPointers(C4Object * obj)
 	for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
 	{
 		if (pCtx->Obj == obj)
-			pCtx->Obj = NULL;
+			pCtx->Obj = nullptr;
 	}
 }
 
@@ -161,10 +161,10 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 		C4AulScriptContext ctx;
 		ctx.tTime = 0;
 		ctx.Obj = p;
-		ctx.Return = NULL;
+		ctx.Return = nullptr;
 		ctx.Pars = pPars;
 		ctx.Func = pSFunc;
-		ctx.CPos = NULL;
+		ctx.CPos = nullptr;
 		PushContext(ctx);
 
 		// Execute
@@ -695,7 +695,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 				pCurCtx->CPos = pCPos;
 				assert(pCurCtx->Func->GetCode() <= pCPos);
 				// Do the call
-				C4AulBCC *pJump = Call(pFunc, pPars, pPars, NULL);
+				C4AulBCC *pJump = Call(pFunc, pPars, pPars, nullptr);
 				if (pJump)
 				{
 					pCPos = pJump;
@@ -842,7 +842,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
 		ctx.Func = pSFunc;
-		ctx.CPos = NULL;
+		ctx.CPos = nullptr;
 		PushContext(ctx);
 
 		// Jump to code
@@ -902,7 +902,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		PopValuesUntil(pReturn);
 
 		// Continue
-		return NULL;
+		return nullptr;
 	}
 
 }
@@ -980,7 +980,7 @@ void C4AulProfiler::StopProfiling()
 	AulExec.StopProfiling();
 	// collect profiler times
 	C4AulProfiler Profiler;
-	Profiler.CollectEntry(NULL, AulExec.tDirectExecTotal);
+	Profiler.CollectEntry(nullptr, AulExec.tDirectExecTotal);
 	if(AulExec.pProfiledScript)
 		Profiler.CollectTimes(AulExec.pProfiledScript->GetPropList());
 	else

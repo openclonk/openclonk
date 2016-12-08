@@ -17,6 +17,7 @@ Additionally, OpenClonk depends on a number of third-party libraries:
   - The OpenGL Extension Wrangler Library (http://glew.sourceforge.net/)
   - FreeALUT (https://github.com/vancegroup/freealut)
   - libogg and libvorbis (https://www.xiph.org/downloads/)
+  - Qt >= 5.7 (https://www.qt.io/download-open-source/)
 
 OS X Specific
 =============
@@ -29,19 +30,13 @@ Linux Specific
 ==============
 For building OpenClonk on Linux, you need the following libraries in addition
 to the ones listed above:
-  - GTK+ 3.4 or greater (http://www.gtk.org)
+  - SDL 2.0 (https://www.libsdl.org/download-2.0.php)
   - libGL (http://www.mesa3d.org/)
-  - SDL 1.2 (http://www.libsdl.org/download-1.2.php)
-  - SDL_mixer 1.2 (http://www.libsdl.org/projects/SDL_mixer/release-1.2.html)
-  - libupnp
+  - OpenAL Soft >= 1.13 (https://github.com/kcat/openal-soft)
+  - miniupnpc (http://miniupnp.free.fr/)
   - libxrandr
 Most distributions should provide these dependencies via their packaging
-system. For Debian based distributions, you will need these packages:
-  build-essential cmake imagemagick libfreetype6-dev libgl1-mesa-dev
-  libglew-dev libgtk-3-dev libjpeg-dev libpng-dev libsdl1.2-dev
-  libsdl-mixer1.2-dev libupnp-dev libxrandr-dev x11proto-core-dev
-  zlib1g-dev libalut0
-At least gcc-4.9 is required.
+system. At least gcc-4.9 is required.
 
 Windows Specific
 ================

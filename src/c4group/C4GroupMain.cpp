@@ -43,7 +43,7 @@ bool EraseItemSafe(const char *szFilename)
 	return false;
 }
 
-void DisplayGroup(const C4Group &grp, const char *filter = NULL)
+void DisplayGroup(const C4Group &grp, const char *filter = nullptr)
 {
 	const C4GroupHeader &head = grp.GetHeader();
 	
@@ -58,18 +58,18 @@ void DisplayGroup(const C4Group &grp, const char *filter = NULL)
 
 	// Find maximum file name length (matching filter)
 	size_t max_fn_len = 0;
-	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != NULL; entry = entry->Next)
+	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != nullptr; entry = entry->Next)
 	{
-		if (filter == NULL || WildcardMatch(filter, entry->FileName))
+		if (filter == nullptr || WildcardMatch(filter, entry->FileName))
 			max_fn_len = std::max(max_fn_len, strlen(entry->FileName));
 	}
 
 	// List files
 	size_t file_count = 0;
 	size_t byte_count = 0;
-	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != NULL; entry = entry->Next)
+	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != nullptr; entry = entry->Next)
 	{
-		if (filter != NULL && !WildcardMatch(filter, entry->FileName))
+		if (filter != nullptr && !WildcardMatch(filter, entry->FileName))
 			continue;
 
 		printf("%*s %8u Bytes",
@@ -153,7 +153,7 @@ bool ProcessGroup(const char *FilenamePar)
 						// Sort
 					case 's':
 						// First sort parameter overrides default Clonk sort list
-						C4Group_SetSortList(NULL);
+						C4Group_SetSortList(nullptr);
 						// Missing argument
 						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
 						{
@@ -308,7 +308,7 @@ bool ProcessGroup(const char *FilenamePar)
 							if(iArg + 1 < argc)
 							{
 								errno = 0;
-								pid = strtoul(argv[iArg+1], NULL, 10);
+								pid = strtoul(argv[iArg+1], nullptr, 10);
 								if(errno == 0)
 									have_pid = true;
 								else
@@ -373,7 +373,7 @@ int RegisterShellExtensions()
 	wchar_t strCommand[2048+1];
 	char strClass[128];
 	int i;
-	GetModuleFileNameW(NULL, strModule, 2048);
+	GetModuleFileNameW(nullptr, strModule, 2048);
 	// Groups
 	const char *strClasses =
 	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
@@ -436,7 +436,7 @@ int main(int argc, char *argv[])
 {
 #ifndef WIN32
 	// Always line buffer mode, even if the output is not sent to a terminal
-	setvbuf(stdout, NULL, _IOLBF, 0);
+	setvbuf(stdout, nullptr, _IOLBF, 0);
 #endif
 	// Scan options
 	fQuiet = true;
@@ -559,7 +559,7 @@ int main(int argc, char *argv[])
 
 		PROCESS_INFORMATION procInfo;
 
-		CreateProcessW(GetWideChar(strExecuteAtEnd), NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
+		CreateProcessW(GetWideChar(strExecuteAtEnd), nullptr, nullptr, nullptr, false, 0, nullptr, nullptr, &startInfo, &procInfo);
 #else
 		switch (fork())
 		{

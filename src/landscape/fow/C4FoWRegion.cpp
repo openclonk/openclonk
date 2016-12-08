@@ -236,7 +236,7 @@ bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Render FoW to frame buffer object
 	glBlendFunc(GL_ONE, GL_ONE);
-	pFoW->Render(this, NULL, pPlayer, projectionMatrix);
+	pFoW->Render(this, nullptr, pPlayer, projectionMatrix);
 
 	// Copy over the old state
 	if (OldRegion.Wdt > 0)

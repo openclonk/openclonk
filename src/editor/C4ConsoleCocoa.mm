@@ -63,14 +63,18 @@ public:
 	void Clear() {}
 };
 
-C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	C4WindowController* controller = [C4EditorWindowController new];
 	setObjectiveCObject(controller);
 	[NSBundle loadNibNamed:@"Editor" owner:controller];
 	[controller setStdWindow:this];
 	this->Active = true;
-	return this;
+	return true;
+}
+
+void C4ConsoleGUI::DeleteConsoleWindow()
+{
 }
 
 void C4ConsoleGUI::Out(const char* message)

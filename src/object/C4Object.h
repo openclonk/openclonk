@@ -179,11 +179,11 @@ public:
 	void SetPlane(int32_t z) { if (z) Plane = z; Resort(); }
 	int32_t GetPlane() const { return Plane; }
 	int32_t GetSolidMaskPlane() const;
-	void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL);
-	void SetCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL)
+	void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=nullptr, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=nullptr);
+	void SetCommand(int32_t iCommand, C4Object *pTarget=nullptr, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=nullptr, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=nullptr)
 	{ SetCommand(iCommand, pTarget, C4VInt(iTx), iTy, pTarget2, fControl, iData, iRetries, szText); }
-	bool AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0);
-	bool AddCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0)
+	bool AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=nullptr, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=nullptr, int32_t iBaseMode=0);
+	bool AddCommand(int32_t iCommand, C4Object *pTarget=nullptr, int32_t iTx=0, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=nullptr, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=nullptr, int32_t iBaseMode=0)
 	{ return AddCommand(iCommand, pTarget, C4VInt(iTx), iTy, iUpdateInterval, pTarget2, fInitEvaluation, iData, fAppend, iRetries, szText, iBaseMode); }
 	C4Command *FindCommand(int32_t iCommandType) const; // find a command of the given type
 	void ClearCommand(C4Command *pUntil);
@@ -201,7 +201,7 @@ public:
 	bool AssignInfo();
 	bool ValidateOwner();
 	bool AssignLightRange();
-	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4DrawTransform* transform=NULL);
+	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4DrawTransform* transform=nullptr);
 	void Picture2Facet(C4FacetSurface &cgo); // set picture to facet, or create facet in current size and draw if specific states are being needed
 	void Default();
 	bool Init(C4PropList *ndef, C4Object *pCreator,
@@ -244,19 +244,19 @@ public:
 	bool At(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	bool CloseMenu(bool fForce);
-	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
+	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=nullptr);
 	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
 	bool Contact(int32_t cnat);
 	void StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
 	C4PropList* GetAction() const;
-	bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
-	bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
-	bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+	bool SetAction(C4PropList * Act, C4Object *pTarget=nullptr, C4Object *pTarget2=nullptr, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+	bool SetActionByName(C4String * ActName, C4Object *pTarget=nullptr, C4Object *pTarget2=nullptr, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+	bool SetActionByName(const char * szActName, C4Object *pTarget=nullptr, C4Object *pTarget2=nullptr, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	void SetDir(int32_t tdir);
 	void SetCategory(int32_t Category) { this->Category = Category; Resort(); SetOCF(); }
 	int32_t GetProcedure() const;
-	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=NULL);
+	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=nullptr);
 	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
 	void ForcePosition(C4Real tx, C4Real ty);
@@ -338,7 +338,7 @@ public:
 	bool PutAwayUnusedObject(C4Object *pToMakeRoomForObject); // either directly put the least-needed object away, or add a command to do it - return whether successful
 
 	C4DefGraphics *GetGraphics() const { return pGraphics; } // return current object graphics
-	bool SetGraphics(const char *szGraphicsName=NULL, C4Def *pSourceDef=NULL);      // set used graphics for object; if szGraphicsName or *szGraphicsName are NULL, the default graphics of the given def are used; pSourceDef defaults to own def
+	bool SetGraphics(const char *szGraphicsName=nullptr, C4Def *pSourceDef=nullptr);      // set used graphics for object; if szGraphicsName or *szGraphicsName are nullptr, the default graphics of the given def are used; pSourceDef defaults to own def
 	bool SetGraphics(C4DefGraphics *pNewGfx, bool fUpdateData);      // set used graphics for object
 
 	class C4GraphicsOverlay *GetGraphicsOverlay(int32_t iForID) const;  // get specified gfx overlay

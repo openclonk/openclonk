@@ -412,7 +412,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	MaskPut=false;
 	MaskPutRotation=0;
 	MaskRemovalX=MaskRemovalY=Fix0;
-	ppAttachingObjects=NULL;
+	ppAttachingObjects=nullptr;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	MaskMaterial=MCVehic;
 	// Update linked list
@@ -493,8 +493,8 @@ CSurface8 *C4SolidMask::LoadMaskFromFile(class C4Group &hGroup, const char *szFi
 	// All pixels that are more than 50% transparent are not solid
 	CPNGFile png;
 	StdBuf png_buf;
-	if (!hGroup.LoadEntry(szFilename, &png_buf)) return NULL; // error messages done by caller
-	if (!png.Load((BYTE*)png_buf.getMData(), png_buf.getSize())) return NULL;
+	if (!hGroup.LoadEntry(szFilename, &png_buf)) return nullptr; // error messages done by caller
+	if (!png.Load((BYTE*)png_buf.getMData(), png_buf.getSize())) return nullptr;
 	CSurface8 *result = new CSurface8(png.iWdt, png.iHgt);
 	for (size_t y=0u; y<png.iHgt; ++y)
 		for (size_t x=0u; x<png.iWdt; ++x)

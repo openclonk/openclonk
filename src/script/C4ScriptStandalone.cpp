@@ -24,7 +24,7 @@
 #include "object/C4DefList.h"
 
 /* StandaloneStubs.cpp is shared with mape, which has a real implementation of these */
-C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
+C4Def* C4DefList::GetByName(const StdStrBuf &) {return nullptr;}
 C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}
 void C4DefList::SortByPriority() {}
@@ -36,13 +36,13 @@ void InitializeC4Script()
 	InitCoreFunctionMap(&ScriptEngine);
 
 	// Seed PRNG
-	FixedRandom(time(NULL));
+	FixedRandom(time(nullptr));
 }
 
 C4Value RunLoadedC4Script()
 {
 	// Link script engine (resolve includes/appends, generate code)
-	ScriptEngine.Link(NULL);
+	ScriptEngine.Link(nullptr);
 
 	C4Value result = GameScript.Call("Main");
 	GameScript.Clear();
@@ -69,7 +69,7 @@ int c4s_runfile(const char * filename)
 	}
 
 	InitializeC4Script();
-	GameScript.Load(File, fn.getData(), NULL, NULL);
+	GameScript.Load(File, fn.getData(), nullptr, nullptr);
 	RunLoadedC4Script();
 	return 0;
 }
@@ -77,7 +77,7 @@ int c4s_runfile(const char * filename)
 int c4s_runstring(const char *script)
 {
 	InitializeC4Script();
-	GameScript.LoadData("<memory>", script, NULL);
+	GameScript.LoadData("<memory>", script, nullptr);
 	RunLoadedC4Script();
 	return 0;
 }

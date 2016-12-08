@@ -117,7 +117,7 @@ protected func InitializePlayer(int plr, ...)
 
 private func NotifyPlayerHUD(int plr)
 {
-	var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	var HUD = FindObject(Find_ID(Library_HUDController->GetGUIControllerID()), Find_Owner(plr));
 	if (HUD)
 		HUD->OnGoalUpdate(this);
 }

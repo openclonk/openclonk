@@ -36,7 +36,7 @@ namespace C4GUI
 	}
 
 	Label::Label(const char *szLblText, int32_t iX0, int32_t iTop, int32_t iAlign, DWORD dwFClr, CStdFont *pFont, bool fMakeReadableOnBlack, bool fMarkup)
-			: Element(), dwFgClr(dwFClr), x0(iX0), iAlign(iAlign), pFont(pFont), cHotkey(0), fAutosize(true), fMarkup(fMarkup), pClickFocusControl(NULL)
+			: Element(), dwFgClr(dwFClr), x0(iX0), iAlign(iAlign), pFont(pFont), cHotkey(0), fAutosize(true), fMarkup(fMarkup), pClickFocusControl(nullptr)
 	{
 		// make color readable
 		if (fMakeReadableOnBlack) MakeColorReadableOnBlack(dwFgClr);
@@ -49,7 +49,7 @@ namespace C4GUI
 	}
 
 	Label::Label(const char *szLblText, const C4Rect &rcBounds, int32_t iAlign, DWORD dwFClr, CStdFont *pFont, bool fMakeReadableOnBlack, bool fAutosize, bool fMarkup)
-			: Element(), dwFgClr(dwFClr), iAlign(iAlign), pFont(pFont), cHotkey(0), fAutosize(fAutosize), fMarkup(fMarkup), pClickFocusControl(NULL)
+			: Element(), dwFgClr(dwFClr), iAlign(iAlign), pFont(pFont), cHotkey(0), fAutosize(fAutosize), fMarkup(fMarkup), pClickFocusControl(nullptr)
 	{
 		// make color readable
 		if (fMakeReadableOnBlack) MakeColorReadableOnBlack(dwFgClr);
@@ -247,7 +247,7 @@ namespace C4GUI
 		// size by line count
 		int32_t iIndex = 0; const char *szLine; int32_t iHgt = 0;
 		CStdFont *pLineFont; bool fNewPar;
-		while ((szLine = Lines.GetLine(iIndex, &pLineFont, NULL, &fNewPar)))
+		while ((szLine = Lines.GetLine(iIndex, &pLineFont, nullptr, &fNewPar)))
 		{
 			int32_t iFontLineHeight = pLineFont->GetLineHeight();
 			// indents between separate messages
@@ -476,7 +476,7 @@ namespace C4GUI
 // TextWindow
 
 	TextWindow::TextWindow(C4Rect &rtBounds, size_t iPicWdt, size_t iPicHgt, size_t iPicPadding, size_t iMaxLines, size_t iMaxTextLen, const char *szIndentChars, bool fAutoGrow, const C4Facet *pOverlayPic, int iOverlayBorder, bool fMarkup)
-			: Control(rtBounds), pLogBuffer(NULL), fDrawBackground(true), fDrawFrame(true), iPicPadding(iPicPadding)
+			: Control(rtBounds), pLogBuffer(nullptr), fDrawBackground(true), fDrawFrame(true), iPicPadding(iPicPadding)
 	{
 		// calc client rect
 		UpdateOwnPos();
@@ -505,7 +505,7 @@ namespace C4GUI
 				pTitlePicture = new Picture(rcImage, false);
 			pClientWindow->AddElement(pTitlePicture);
 		}
-		else pTitlePicture = NULL;
+		else pTitlePicture = nullptr;
 
 		// update size
 		UpdateSize();

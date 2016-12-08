@@ -72,7 +72,7 @@ public:
 
 private:
 
-	/** Remove all beams. pBeams is NULL after that. */
+	/** Remove all beams. pBeams is nullptr after that. */
 	void ClearBeams();
 
 	// Beam coordinate to landscape coordinate. Beam coordinates are relative to the light source.
@@ -128,7 +128,7 @@ private:
 	C4FoWBeam *FindBeamLeftOf(int32_t x, int32_t y) const;
 
 	/** Find beams that go through the given rectangle. Returns the number of beams that are in the rectangle and makes
-	    firstBeam point to the first and endBeam point to the beam after the last of these. Thus, endBeam is NULL if 
+	    firstBeam point to the first and endBeam point to the beam after the last of these. Thus, endBeam is nullptr if 
 		no beams were clipped at the end. */
 	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam) const;
 

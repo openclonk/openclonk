@@ -41,7 +41,7 @@ C4ObjectInfoList::~C4ObjectInfoList()
 
 void C4ObjectInfoList::Default()
 {
-	First=NULL;
+	First=nullptr;
 	iNumCreated=0;
 }
 
@@ -116,7 +116,7 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(C4ID c_id, C4DefList &rDefs)
 {
 	C4Def *pDef;
 	C4ObjectInfo *pInfo;
-	C4ObjectInfo *pHiExp=NULL;
+	C4ObjectInfo *pHiExp=nullptr;
 
 	// Search list
 	for (pInfo=First; pInfo; pInfo=pInfo->Next)
@@ -138,28 +138,28 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(C4ID c_id, C4DefList &rDefs)
 		return pHiExp;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 {
 	C4ObjectInfo *pInfo;
 	// Create new info object
-	if (!(pInfo = new C4ObjectInfo)) return NULL;
+	if (!(pInfo = new C4ObjectInfo)) return nullptr;
 	// Default type clonk if none specified
 	if (n_id == C4ID::None) n_id = C4ID::Clonk;
 	// Check type valid and def available
-	C4Def *pDef = NULL;
+	C4Def *pDef = nullptr;
 	if (pDefs)
 		if (!(pDef = pDefs->ID2Def(n_id)))
-			{ delete pInfo; return NULL; }
+			{ delete pInfo; return nullptr; }
 	// Set name source
 	const char *cpNames = Game.Names.GetData();
 	if (pDef->pClonkNames) cpNames = pDef->pClonkNames->GetData();
 	// Default by type
 	((C4ObjectInfoCore*)pInfo)->Default(n_id, pDefs, cpNames);
 	// Set birthday
-	pInfo->Birthday=time(NULL);
+	pInfo->Birthday=time(nullptr);
 	// Make valid names
 	MakeValidName(pInfo->Name);
 	// Add
@@ -205,7 +205,7 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(const char *szByName)
 				pInfo->Recruit();
 				return pInfo;
 			}
-	return NULL;
+	return nullptr;
 }
 
 void C4ObjectInfoList::DetachFromObjects()
@@ -227,7 +227,7 @@ C4ObjectInfo* C4ObjectInfoList::GetPrevious(C4ObjectInfo *pInfo)
 	for (C4ObjectInfo *cInfo = First; cInfo; cInfo=cInfo->Next)
 		if (cInfo->Next == pInfo)
 			return cInfo;
-	return NULL;
+	return nullptr;
 }
 
 bool C4ObjectInfoList::IsElement(C4ObjectInfo *pInfo)
@@ -241,7 +241,7 @@ void C4ObjectInfoList::Strip(C4DefList &rDefs)
 {
 	C4ObjectInfo *pInfo, *pPrev;
 	// Search list
-	for (pInfo=First, pPrev=NULL; pInfo; )
+	for (pInfo=First, pPrev=nullptr; pInfo; )
 	{
 		// Invalid?
 		if (!rDefs.ID2Def(pInfo->id))

@@ -37,7 +37,7 @@ public func Open(clonk)
 	GameCall("OnChestOpened", clonk);
 	Sound("Toot");
 	ScheduleCall(this, "DoTheConfetti", 2, 20);
-	return inherited();
+	return inherited(clonk, ...);
 }
 
 public func DoTheConfetti()

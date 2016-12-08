@@ -132,7 +132,7 @@ public:
 	void DrawX(C4Surface * sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
 	void DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
 	void DrawValue(C4Facet &cgo, int32_t iValue, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center);
-	void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=NULL);
+	void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=nullptr);
 	void Draw(C4Facet &cgo, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0, bool fTransparent=true);
 	void DrawFullScreen(C4Facet &cgo);
 	void DrawT(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // draw with transformation (if pTransform is assigned)
@@ -179,7 +179,7 @@ public:
 	float ParRefX, ParRefY;
 public:
 	void Default() { TargetX=TargetY=0; Zoom=1; ParRefX=ParRefY=0; C4Facet::Default(); }
-	void Clear() { Surface=NULL; }
+	void Clear() { Surface=nullptr; }
 
 	void Set(const C4Facet &cpy) { TargetX=TargetY=0; Zoom=1; ParRefX=ParRefY=0; C4Facet::Set(cpy); }
 	void Set(const C4TargetFacet &cpy) { *this = cpy; }

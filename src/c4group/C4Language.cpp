@@ -35,7 +35,7 @@ C4Language Languages;
 
 C4Language::C4Language()
 {
-	Infos = NULL;
+	Infos = nullptr;
 	PackGroupLocation[0] = 0;
 }
 
@@ -119,7 +119,7 @@ void C4Language::Clear()
 		delete Infos;
 		Infos = pNext;
 	}
-	Infos = NULL;
+	Infos = nullptr;
 }
 
 int C4Language::GetPackCount()
@@ -339,7 +339,7 @@ C4LanguageInfo* C4Language::GetInfo(int iIndex)
 			return pInfo;
 		else
 			iIndex--;
-	return NULL;
+	return nullptr;
 }
 
 C4LanguageInfo* C4Language::FindInfo(const char *strCode)
@@ -347,7 +347,7 @@ C4LanguageInfo* C4Language::FindInfo(const char *strCode)
 	for (C4LanguageInfo *pInfo = Infos; pInfo; pInfo = pInfo->Next)
 		if (SEqualNoCase(pInfo->Code, strCode, 2))
 			return pInfo;
-	return NULL;
+	return nullptr;
 }
 
 bool C4Language::LoadLanguage(const char *strLanguages)

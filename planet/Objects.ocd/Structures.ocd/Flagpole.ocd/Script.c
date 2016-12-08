@@ -109,6 +109,17 @@ public func SaveScenarioObject(props)
 	return true;
 }
 
+
+/* Editor */
+
+public func Definition(def, ...)
+{
+	_inherited(def, ...);
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.neutral = { Name="$Neutral$", EditorHelp="$NeutralHelp$", Set="SetNeutral", Type="bool" };
+}
+
+
 /*-- Properties --*/
 
 local Name = "$Name$";

@@ -42,7 +42,7 @@ public:
 	bool Load(const char *szFileName, C4Group &hGroup, const char *namespace_prefix);
 	bool Load(BYTE *pData, size_t iDataLen, bool fRaw=false); // load directly from memory
 	void Execute();
-	C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
+	C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = nullptr, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = nullptr);
 	C4SoundInstance *GetInstance(C4Object *pObj);
 	void ClearPointers(C4Object *pObj);
 	int32_t GetStartedInstanceCount(int32_t iX, int32_t iY, int32_t iRad); // local
@@ -85,7 +85,7 @@ public:
 	C4Object *getObj() const { return pObj; }
 	bool isStarted() const { return iChannel != -1; }
 	void Clear();
-	bool Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0, int32_t inPitch = 0, C4SoundModifier *modifier = NULL);
+	bool Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = nullptr, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0, int32_t inPitch = 0, C4SoundModifier *modifier = nullptr);
 	bool CheckStart();
 	bool Start();
 	bool Stop();

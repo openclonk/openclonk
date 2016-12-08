@@ -21,18 +21,18 @@
 #include "object/C4FindObject.h"
 
 C4ValueArray::C4ValueArray()
-		: pData(NULL), iSize(0), iCapacity(0), constant(false)
+		: pData(nullptr), iSize(0), iCapacity(0), constant(false)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: pData(NULL), iSize(0), iCapacity(0), constant(false)
+		: pData(nullptr), iSize(0), iCapacity(0), constant(false)
 {
 	SetSize(inSize);
 }
 
 C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
-		: pData(NULL), iSize(0), iCapacity(0), constant(false)
+		: pData(nullptr), iSize(0), iCapacity(0), constant(false)
 {
 	SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)
@@ -41,7 +41,7 @@ C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
 
 C4ValueArray::~C4ValueArray()
 {
-	delete[] pData; pData = NULL;
+	delete[] pData; pData = nullptr;
 	iSize = iCapacity = 0;
 }
 
@@ -260,7 +260,7 @@ bool C4ValueArray::operator==(const C4ValueArray& IntList2) const
 
 void C4ValueArray::Reset()
 {
-	delete[] pData; pData = NULL;
+	delete[] pData; pData = nullptr;
 	iSize = iCapacity = 0;
 }
 

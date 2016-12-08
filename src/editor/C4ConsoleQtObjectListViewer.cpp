@@ -39,7 +39,7 @@ C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel() : last_row_count(0)
 
 C4ConsoleQtObjectListModel::~C4ConsoleQtObjectListModel()
 {
-	::Console.ObjectListDlg.SetModel(NULL);
+	::Console.ObjectListDlg.SetModel(nullptr);
 }
 
 void C4ConsoleQtObjectListModel::Invalidate()

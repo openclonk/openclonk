@@ -35,7 +35,7 @@
 // C4ChatInputDialog
 
 // singleton
-C4ChatInputDialog *C4ChatInputDialog::pInstance = NULL;
+C4ChatInputDialog *C4ChatInputDialog::pInstance = nullptr;
 
 // helper func: Determine whether input text is good for a chat-style-layout dialog
 bool IsSmallInputQuery(const char *szInputQuery)
@@ -49,7 +49,7 @@ bool IsSmallInputQuery(const char *szInputQuery)
 }
 
 C4ChatInputDialog::C4ChatInputDialog(bool fObjInput, C4Object *pScriptTarget, bool fUppercase, bool fTeam, int32_t iPlr, const StdStrBuf &rsInputQuery)
-		: C4GUI::InputDialog(fObjInput ? rsInputQuery.getData() : LoadResStrNoAmp("IDS_CTL_CHAT"), NULL, C4GUI::Ico_None, NULL, !fObjInput || IsSmallInputQuery(rsInputQuery.getData())),
+		: C4GUI::InputDialog(fObjInput ? rsInputQuery.getData() : LoadResStrNoAmp("IDS_CTL_CHAT"), nullptr, C4GUI::Ico_None, nullptr, !fObjInput || IsSmallInputQuery(rsInputQuery.getData())),
 		fObjInput(fObjInput), fUppercase(fUppercase), pTarget(pScriptTarget), iPlr(iPlr), BackIndex(-1), fProcessed(false)
 {
 	// singleton-var
@@ -79,7 +79,7 @@ C4ChatInputDialog::~C4ChatInputDialog()
 	delete pKeyPlrControl;
 	delete pKeyGamepadControl;
 	delete pKeyBackClose;
-	if (this==pInstance) pInstance=NULL;
+	if (this==pInstance) pInstance=nullptr;
 }
 
 void C4ChatInputDialog::OnChatCancel()
@@ -169,7 +169,7 @@ bool C4ChatInputDialog::KeyHistoryUpDown(bool fUp)
 bool C4ChatInputDialog::KeyPlrControl(const C4KeyCodeEx &key)
 {
 	// Control pressed while doing this key: Reroute this key as a player-control
-	Game.DoKeyboardInput(WORD(key.Key), KEYEV_Down, !!(key.dwShift & KEYS_Alt), false, !!(key.dwShift & KEYS_Shift), key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(WORD(key.Key), KEYEV_Down, !!(key.dwShift & KEYS_Alt), false, !!(key.dwShift & KEYS_Shift), key.IsRepeated(), nullptr, true);
 	// mark as processed, so it won't get any double processing
 	return true;
 }
@@ -179,7 +179,7 @@ bool C4ChatInputDialog::KeyGamepadControlDown(const C4KeyCodeEx &key)
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
 	// forward it
-	Game.DoKeyboardInput(key.Key, KEYEV_Down, false, false, false, key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(key.Key, KEYEV_Down, false, false, false, key.IsRepeated(), nullptr, true);
 	return true;
 }
 
@@ -188,7 +188,7 @@ bool C4ChatInputDialog::KeyGamepadControlUp(const C4KeyCodeEx &key)
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
 	// forward it
-	Game.DoKeyboardInput(key.Key, KEYEV_Up, false, false, false, key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(key.Key, KEYEV_Up, false, false, false, key.IsRepeated(), nullptr, true);
 	return true;
 }
 
@@ -197,7 +197,7 @@ bool C4ChatInputDialog::KeyGamepadControlPressed(const C4KeyCodeEx &key)
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
 	// forward it
-	Game.DoKeyboardInput(key.Key, KEYEV_Pressed, false, false, false, key.IsRepeated(), NULL, true);
+	Game.DoKeyboardInput(key.Key, KEYEV_Pressed, false, false, false, key.IsRepeated(), nullptr, true);
 	return true;
 }
 
@@ -287,7 +287,7 @@ bool C4MessageInput::KeyStartTypeIn(bool fTeam)
 	// fullscreen only
 	if (Application.isEditor) return false;
 	// OK, start typing
-	return StartTypeIn(false, NULL, false, fTeam);
+	return StartTypeIn(false, nullptr, false, fTeam);
 }
 
 bool C4MessageInput::ToggleTypeIn()
@@ -315,7 +315,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 	// helper variables
 	char OSTR[402]; // cba
 	C4ControlMessageType eMsgType;
-	const char *szMsg = NULL;
+	const char *szMsg = nullptr;
 	int32_t iToPlayer = -1;
 
 	// Starts with '^', "team:" or "/team ": Team message
@@ -415,7 +415,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			SCopy(szMsg, szMessage, std::min<ptrdiff_t>(C4MaxMessage, szEnd - szMsg + 1));
 		}
 		// get sending player (if any)
-		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : NULL;
+		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : nullptr;
 		// send
 		::Control.DoInput(CID_Message,
 		                  new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
@@ -460,7 +460,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
 		// get player name from input text
 		int iSepPos = SCharPos(' ', pCmdPar, 0);
-		C4PlayerInfo *pNfo=NULL;
+		C4PlayerInfo *pNfo=nullptr;
 		int32_t idLocalClient = -1;
 		if (::Network.Clients.GetLocal()) idLocalClient = ::Network.Clients.GetLocal()->getID();
 		if (iSepPos>0)
@@ -478,7 +478,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		else
 			// no player name: Set local player
 			pNfo = Game.PlayerInfos.GetPrimaryInfoByClientID(idLocalClient);
-		C4ClientPlayerInfos *pCltNfo=NULL;
+		C4ClientPlayerInfos *pCltNfo=nullptr;
 		if (pNfo) pCltNfo = Game.PlayerInfos.GetClientInfoByPlayerID(pNfo->GetID());
 		if (!pCltNfo)
 		{
@@ -626,7 +626,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (SEqual2(pCmdPar, "password ") || SEqual(pCmdPar, "password"))
 		{
 			if (!::Network.isEnabled() || !::Network.isHost()) return false;
-			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
+			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : nullptr);
 			if (pLobby) pLobby->UpdatePassword();
 			return true;
 		}
@@ -733,7 +733,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			return false;
 		}
 		// what to do?
-		C4ControlClientUpdate *pCtrl = NULL;
+		C4ControlClientUpdate *pCtrl = nullptr;
 		if (szCmdName[0] == 'a') // activate
 			pCtrl = new C4ControlClientUpdate(pClient->getID(), CUT_Activate, true);
 		else if (szCmdName[0] == 'd' && !Game.Parameters.isLeague()) // deactivate
@@ -848,7 +848,7 @@ C4MessageBoardCommand *C4MessageInput::GetCommand(const char *strName)
 	for (C4MessageBoardCommand *pCmd = pCommands; pCmd; pCmd = pCmd->Next)
 		if (SEqual(pCmd->Name, strName))
 			return pCmd;
-	return NULL;
+	return nullptr;
 }
 
 void C4MessageInput::ClearPointers(C4Object *pObj)
@@ -881,13 +881,13 @@ void C4MessageInput::StoreBackBuffer(const char *szMessage)
 
 const char *C4MessageInput::GetBackBuffer(int32_t iIndex)
 {
-	if (!Inside<int32_t>(iIndex, 0, C4MSGB_BackBufferMax-1)) return NULL;
+	if (!Inside<int32_t>(iIndex, 0, C4MSGB_BackBufferMax-1)) return nullptr;
 	return BackBuffer[iIndex];
 }
 
 C4MessageBoardCommand::C4MessageBoardCommand()
 {
-	Name[0] = '\0'; Script[0] = '\0'; Next = NULL;
+	Name[0] = '\0'; Script[0] = '\0'; Next = nullptr;
 }
 
 void C4MessageBoardQuery::CompileFunc(StdCompiler *pComp)

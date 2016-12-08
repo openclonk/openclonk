@@ -17,6 +17,7 @@
 #include "C4Include.h"
 #include "script/C4AulCompiler.h"
 
+#include <assert.h>
 #include <inttypes.h>
 
 #include "script/C4Aul.h"
@@ -27,9 +28,6 @@
 #define C4AUL_Inherited     "inherited"
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
-
-#undef NDEBUG
-#include <assert.h>
 
 static std::string vstrprintf(const char *format, va_list args)
 {
@@ -151,6 +149,7 @@ public:
 	virtual void visit(const ::aul::ast::ParExpr *n) override;
 	virtual void visit(const ::aul::ast::AppendtoPragma *n) override;
 	virtual void visit(const ::aul::ast::IncludePragma *n) override;
+	virtual void visit(const ::aul::ast::Script *n) override;
 };
 
 class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
@@ -212,6 +211,52 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 	void RemoveLastBCC();
 	C4AulBCC MakeSetter(const char *SPos, bool fLeaveValue);
 
+	void HandleError(const C4AulError &e)
+	{
+		AddBCC(nullptr, AB_ERR, (intptr_t)::Strings.RegString(e.what()));
+		if (target_host) // target_host may be nullptr for DirectExec scripts
+		{
+			target_host->Engine->ErrorHandler->OnError(e.what());
+		}
+	}
+
+	template<class T>
+	bool SafeVisit(const T &node)
+	{
+		// Swallows exceptions during evaluation of node. Use if you want to
+		// keep doing syntax checks for subsequent children. (Generated code
+		// will cause a runtime error if executed.)
+		try
+		{
+			node->accept(this);
+			return true;
+		}
+		catch (C4AulParseError &e)
+		{
+			HandleError(e);
+			return false;
+		}
+	}
+
+	class StackGuard
+	{
+		// Ensures that the Aul value stack ends up at the expected height
+		CodegenAstVisitor *parent;
+		const int32_t target_stack_height;
+	public:
+		explicit StackGuard(CodegenAstVisitor *parent, int32_t offset = 0) : parent(parent), target_stack_height(parent->stack_height + offset)
+		{}
+		~StackGuard()
+		{
+			assert(parent->stack_height == target_stack_height);
+			if (parent->stack_height != target_stack_height)
+			{
+				parent->HandleError(Error(parent->target_host, parent->host, nullptr, parent->Fn, "internal error: value stack left unbalanced"));
+				parent->AddBCC(nullptr, AB_STACK, target_stack_height - parent->stack_height);
+			}
+		}
+	};
+
 public:
 	CodegenAstVisitor(C4ScriptHost *host, C4ScriptHost *source_host) : target_host(host), host(source_host) {}
 	explicit CodegenAstVisitor(C4AulScriptFunc *func) : Fn(func), target_host(func->pOrgScript), host(target_host) {}
@@ -269,14 +314,18 @@ public:
 	enum EvalFlag
 	{
 		// If this flag is set, ConstexprEvaluator will assume unset values
-		// are nil. If it is not set, evaluation of unset values will throw
-		// ExpressionNotConstant.
-		IgnoreUnset = 1
+		// are nil. If it is not set, evaluation of unset values will send an
+		// ExpressionNotConstant to the error handler.
+		IgnoreUnset = 1<<0,
+		// If this flag is set, ConstexprEvaluator will not send exceptions to
+		// the error handler (so it doesn't report them twice: once from the
+		// preparsing step, then again from the compile step).
+		SuppressErrors = 1<<1
 	};
 	typedef int EvalFlags;
 
 	// Evaluates constant AST subtrees and returns the final C4Value.
-	// Throws ExpressionNotConstant if evaluation fails.
+	// Flags ExpressionNotConstant if evaluation fails.
 	static C4Value eval(C4ScriptHost *host, const ::aul::ast::Expr *e, EvalFlags flags = 0);
 	static C4Value eval_static(C4ScriptHost *host, C4PropListStatic *parent, const std::string &parent_key, const ::aul::ast::Expr *e, EvalFlags flags = 0);
 
@@ -284,6 +333,7 @@ private:
 	C4ScriptHost *host = nullptr;
 	C4Value v;
 	bool ignore_unset_values = false;
+	bool quiet = false;
 
 	struct ProplistMagic
 	{
@@ -337,9 +387,18 @@ public:
 class C4AulCompiler::ConstantResolver : public ::aul::DefaultRecursiveVisitor
 {
 	C4ScriptHost *host;
+	bool quiet = false;
 	explicit ConstantResolver(C4ScriptHost *host) : host(host) {}
 
 public:
+	static void resolve_quiet(C4ScriptHost *host, const ::aul::ast::Script *script)
+	{
+		// Does the same as resolve, but doesn't emit errors/warnings
+		// (because we'll emit them again later).
+		ConstantResolver r(host);
+		r.quiet = true;
+		r.visit(script);
+	}
 	static void resolve(C4ScriptHost *host, const ::aul::ast::Script *script)
 	{
 		// We resolve constants *twice*; this allows people to create circular
@@ -356,6 +415,7 @@ public:
 	virtual ~ConstantResolver() {}
 
 	using DefaultRecursiveVisitor::visit;
+	void visit(const ::aul::ast::Script *n) override;
 	void visit(const ::aul::ast::VarDecl *n) override;
 };
 
@@ -364,7 +424,7 @@ void C4AulCompiler::Preparse(C4ScriptHost *host, C4ScriptHost *source_host, cons
 	PreparseAstVisitor v(host, source_host);
 	v.visit(script);
 
-	ConstantResolver::resolve(host, script);
+	ConstantResolver::resolve_quiet(host, script);
 }
 
 void C4AulCompiler::Compile(C4ScriptHost *host, C4ScriptHost *source_host, const ::aul::ast::Script *script)
@@ -500,9 +560,16 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 	Fn->SetOverloaded(parent_func);
 	Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 
-	DefaultRecursiveVisitor::visit(n);
-
-	Fn = nullptr;
+	try
+	{
+		DefaultRecursiveVisitor::visit(n);
+		Fn = nullptr;
+	}
+	catch (...)
+	{
+		Fn = nullptr;
+		throw;
+	}
 }
 
 void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::CallExpr *n)
@@ -535,6 +602,21 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::AppendtoPragma *
 void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::IncludePragma *n)
 {
 	host->Includes.emplace_back(n->what.c_str());
+}
+
+void C4AulCompiler::PreparseAstVisitor::visit(const::aul::ast::Script * n)
+{
+	for (const auto &d : n->declarations)
+	{
+		try
+		{
+			d->accept(this);
+		}
+		catch (C4AulParseError &e)
+		{
+			target_host->Engine->GetErrorHandler()->OnError(e.what());
+		}
+	}
 }
 
 int C4AulCompiler::CodegenAstVisitor::GetStackValue(C4AulBCCType eType, intptr_t X)
@@ -887,27 +969,31 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Noop *) {}
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::StringLit *n)
 {
+	StackGuard g(this, 1);
 	AddBCC(n->loc, AB_STRING, (intptr_t)::Strings.RegString(n->value.c_str()));
 	type_of_stack_top = C4V_String;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::IntLit *n)
 {
+	StackGuard g(this, 1);
 	AddBCC(n->loc, AB_INT, n->value);
 	type_of_stack_top = C4V_Int;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BoolLit *n)
 {
+	StackGuard g(this, 1);
 	AddBCC(n->loc, AB_BOOL, n->value);
 	type_of_stack_top = C4V_Bool;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ArrayLit *n)
 {
+	StackGuard g(this, 1);
 	for (const auto &e : n->values)
 	{
-		e->accept(this);
+		SafeVisit(e);
 	}
 	AddBCC(n->loc, AB_NEW_ARRAY, n->values.size());
 	type_of_stack_top = C4V_Array;
@@ -915,10 +1001,12 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ArrayLit *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ProplistLit *n)
 {
+	StackGuard g(this, 1);
 	for (const auto &e : n->values)
 	{
+		StackGuard g(this, 2);
 		AddBCC(n->loc, AB_STRING, (intptr_t)::Strings.RegString(e.first.c_str()));
-		e.second->accept(this);
+		SafeVisit(e.second);
 	}
 	AddBCC(n->loc, AB_NEW_PROPLIST, n->values.size());
 	type_of_stack_top = C4V_PropList;
@@ -926,18 +1014,21 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ProplistLit *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::NilLit *n)
 {
+	StackGuard g(this, 1);
 	AddBCC(n->loc, AB_NIL);
 	type_of_stack_top = C4V_Nil;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ThisLit *n)
 {
+	StackGuard g(this, 1);
 	AddBCC(n->loc, AB_THIS);
 	type_of_stack_top = C4V_PropList;
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 {
+	StackGuard g(this, 1);
 	assert(Fn);
 	C4Value dummy;
 	const char *cname = n->identifier.c_str();
@@ -997,18 +1088,22 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 		case C4V_Function:
 			AddBCC(n->loc, AB_CFUNCTION, reinterpret_cast<intptr_t>(v._getFunction()));
 		default:
+			AddBCC(n->loc, AB_NIL);
 			throw Error(target_host, host, n, Fn, "internal error: global constant of unexpected type: %s (of type %s)", cname, v.GetTypeName());
 		}
 		type_of_stack_top = v.GetType();
 	}
 	else
 	{
+		AddBCC(n->loc, AB_NIL);
 		throw Error(target_host, host, n, Fn, "symbol not found in any symbol table: %s", cname);
 	}
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::UnOpExpr *n)
 {
+	StackGuard g(this, 1);
+
 	n->operand->accept(this);
 	const auto &op = C4ScriptOpMap[n->op];
 	if (op.Changer)
@@ -1031,7 +1126,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::UnOpExpr *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
 {
-	n->lhs->accept(this);
+	StackGuard g(this, 1);
+	
+	SafeVisit(n->lhs);
 
 	const auto &op = C4ScriptOpMap[n->op];
 	if (op.Code == AB_JUMPAND || op.Code == AB_JUMPOR || op.Code == AB_JUMPNNIL)
@@ -1040,19 +1137,26 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
 		// because we don't want to evaluate their rhs operand when the
 		// lhs one already decided the result
 		int jump = AddBCC(n->loc, op.Code);
-		n->rhs->accept(this);
+		SafeVisit(n->rhs);
 		UpdateJump(jump, AddJumpTarget());
 	}
 	else if (op.Changer)
 	{
-		C4AulBCC setter = MakeSetter(n->loc, true);
-		n->rhs->accept(this);
-		AddBCC(n->loc, op.Code);
-		AddBCC(n->loc, setter);
+		try
+		{
+			C4AulBCC setter = MakeSetter(n->loc, true);
+			SafeVisit(n->rhs);
+			AddBCC(n->loc, op.Code);
+			AddBCC(n->loc, setter);
+		}
+		catch (C4AulParseError &e)
+		{
+			HandleError(e);
+		}
 	}
 	else
 	{
-		n->rhs->accept(this);
+		SafeVisit(n->rhs);
 		AddBCC(n->loc, op.Code, 0);
 	}
 
@@ -1061,18 +1165,26 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::BinOpExpr *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::AssignmentExpr *n)
 {
-	n->lhs->accept(this);
-	C4AulBCC setter = MakeSetter(n->loc, false);
-	n->rhs->accept(this);
-	AddBCC(n->loc, setter);
-
+	StackGuard g(this, 1);
+	SafeVisit(n->lhs);
+	try
+	{
+		C4AulBCC setter = MakeSetter(n->loc, false);
+		SafeVisit(n->rhs);
+		AddBCC(n->loc, setter);
+	}
+	catch (C4AulParseError &e)
+	{
+		HandleError(e);
+	}
 	// Assignment does not change the type of the variable
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SubscriptExpr *n)
 {
-	n->object->accept(this);
-	n->index->accept(this);
+	StackGuard g(this, 1);
+	SafeVisit(n->object);
+	SafeVisit(n->index);
 	AddBCC(n->loc, AB_ARRAYA);
 
 	// FIXME: Check if the subscripted object is a literal and if so, retrieve type
@@ -1081,9 +1193,10 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SubscriptExpr *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::SliceExpr *n)
 {
-	n->object->accept(this);
-	n->start->accept(this);
-	n->end->accept(this);
+	StackGuard g(this, 1);
+	SafeVisit(n->object);
+	SafeVisit(n->start);
+	SafeVisit(n->end);
 	AddBCC(n->loc, AB_ARRAY_SLICE);
 
 	type_of_stack_top = C4V_Array;
@@ -1107,17 +1220,31 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		return;
 	}
 
+	if (n->callee == C4AUL_Inherited || n->callee == C4AUL_SafeInherited)
+	{
+		// inherited can only be called within the same context
+		if (n->context)
+		{
+			throw Error(target_host, host, n, Fn, "\"%s\" can't be called in a different context", cname);
+		}
+	}
+
+	if (n->callee == C4AUL_Inherited && !Fn->OwnerOverloaded)
+	{
+		throw Error(target_host, host, n, Fn, "inherited function not found (use " C4AUL_SafeInherited " to disable this message)");
+	}
+
 	const auto pre_call_stack = stack_height;
 
 	if (n->context)
-		n->context->accept(this);
+		SafeVisit(n->context);
 
 	std::vector<C4V_Type> known_par_types;
 	known_par_types.reserve(n->args.size());
 
 	for (const auto &arg : n->args)
 	{
-		arg->accept(this);
+		SafeVisit(arg);
 		known_par_types.push_back(type_of_stack_top);
 	}
 
@@ -1126,28 +1253,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 	// Special handling for the overload chain
 	if (n->callee == C4AUL_Inherited || n->callee == C4AUL_SafeInherited)
 	{
-		if (n->context)
-		{
-			throw Error(target_host, host, n, Fn, "\"%s\" can't be called in a different context", cname);
-		}
 		callee = Fn->OwnerOverloaded;
-		if (!callee)
-		{
-			if (n->callee == C4AUL_SafeInherited)
-			{
-				// pop all args off the stack
-				if (!n->args.empty())
-					AddBCC(n->loc, AB_STACK, -(intptr_t)n->args.size());
-				// and "return" nil
-				AddBCC(n->loc, AB_NIL);
-				type_of_stack_top = C4V_Nil;
-				return;
-			}
-			else
-			{
-				throw Error(target_host, host, n, Fn, "inherited function not found (use " C4AUL_SafeInherited " to disable this message)");
-			}
-		}
 	}
 
 	size_t fn_argc = C4AUL_MAX_Par;
@@ -1160,9 +1266,24 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 			callee = target_host->Engine->GetFunc(cname);
 
 		if (callee)
+		{
 			fn_argc = callee->GetParCount();
+		}
 		else
-			throw Error(target_host, host, n, Fn, "called function not found: %s", cname);
+		{
+			// pop all args off the stack
+			if (!n->args.empty())
+				AddBCC(n->loc, AB_STACK, -(intptr_t)n->args.size());
+			// and "return" nil
+			AddBCC(n->loc, AB_NIL);
+			type_of_stack_top = C4V_Nil;
+
+			if (n->callee != C4AUL_SafeInherited)
+			{
+				HandleError(Error(target_host, host, n, Fn, "called function not found: %s", cname));
+			}
+			return;
+		}
 	}
 
 	if (n->args.size() > fn_argc)
@@ -1259,7 +1380,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ParExpr *n)
 {
-	n->arg->accept(this);
+	StackGuard g(this, 1);
+
+	SafeVisit(n->arg);
 	AddBCC(n->loc, AB_PAR);
 	type_of_stack_top = C4V_Any;
 }
@@ -1268,17 +1391,20 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Block *n)
 {
 	for (const auto &s : n->children)
 	{
-		const auto pre_statement_stack = stack_height;
-		s->accept(this);
-		// If the statement has left a stack value, pop it off
-		MaybePopValueOf(s);
-		assert(pre_statement_stack == stack_height);
+		StackGuard g(this, 0);
+		if (SafeVisit(s))
+		{
+			// If the statement has left a stack value, pop it off
+			MaybePopValueOf(s);
+		}
 	}
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Return *n)
 {
-	n->value->accept(this);
+	StackGuard g(this, 0);
+
+	SafeVisit(n->value);
 	AddBCC(n->loc, AB_RETURN);
 }
 
@@ -1349,28 +1475,29 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 
 	if (n->init)
 	{
-		n->init->accept(this);
-		MaybePopValueOf(n->init);
+		if (SafeVisit(n->init))
+			MaybePopValueOf(n->init);
 	}
 	PushLoop();
 	int cond = AddJumpTarget();
 	if (n->cond)
 	{
-		n->cond->accept(this);
+		SafeVisit(n->cond);
 		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	}
+
 	int incr = cond;
 	if (n->incr)
 	{
 		int cond_jump = AddBCC(n->loc, AB_JUMP);
 		incr = AddJumpTarget();
-		n->incr->accept(this);
-		MaybePopValueOf(n->incr);
+		if (SafeVisit(n->incr))
+			MaybePopValueOf(n->incr);
 		AddJumpTo(n->loc, AB_JUMP, cond);
 		UpdateJump(cond_jump, AddJumpTarget());
 	}
-	n->body->accept(this);
-	MaybePopValueOf(n->body);
+	if (SafeVisit(n->body))
+		MaybePopValueOf(n->body);
 	AddJumpTo(n->loc, AB_JUMP, incr);
 	PopLoop(incr);
 #endif
@@ -1396,16 +1523,17 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 	if (var_id == -1)
 		throw Error(target_host, host, n, Fn, "internal error: unable to find variable in foreach: %s", cname);
 	// Emit code for array
-	n->cond->accept(this);
+	SafeVisit(n->cond);
 	// Emit code for iteration
 	AddBCC(n->loc, AB_INT, 0);
 	int cond = AddJumpTarget();
 	PushLoop();
 	AddVarAccess(n->loc, AB_FOREACH_NEXT, var_id);
 	AddLoopControl(n->loc, Loop::Control::Break); // Will be skipped by AB_FOREACH_NEXT as long as more entries exist
-										  // Emit body
-	n->body->accept(this);
-	MaybePopValueOf(n->body);
+
+	// Emit body
+	if (SafeVisit(n->body))
+		MaybePopValueOf(n->body);
 	// continue starts the next iteration of the loop
 	AddLoopControl(n->loc, Loop::Control::Continue);
 	PopLoop(cond);
@@ -1453,41 +1581,25 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::DoLoop *n)
 {
 	int body = AddJumpTarget();
 	PushLoop();
-	try
-	{
-		n->body->accept(this);
+	if (SafeVisit(n->body))
 		MaybePopValueOf(n->body);
-		int cond = AddJumpTarget();
-		n->cond->accept(this);
-		AddJumpTo(n->loc, AB_COND, body);
-		PopLoop(cond);
-	}
-	catch (...)
-	{
-		PopLoop(AddJumpTarget());
-		throw;
-	}
+	int cond = AddJumpTarget();
+	SafeVisit(n->cond);
+	AddJumpTo(n->loc, AB_COND, body);
+	PopLoop(cond);
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::WhileLoop *n)
 {
 	int cond = AddJumpTarget();
 	PushLoop();
-	try
-	{
-		n->cond->accept(this);
-		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
-		n->body->accept(this);
+	SafeVisit(n->cond);
+	active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
+	if (SafeVisit(n->body))
 		MaybePopValueOf(n->body);
-		// continue starts the next iteration of the loop
-		AddLoopControl(n->loc, Loop::Control::Continue);
-		PopLoop(cond);
-	}
-	catch (...)
-	{
-		PopLoop(AddJumpTarget());
-		throw;
-	}
+	// continue starts the next iteration of the loop
+	AddLoopControl(n->loc, Loop::Control::Continue);
+	PopLoop(cond);
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Break *n)
@@ -1504,17 +1616,17 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Continue *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 {
-	n->cond->accept(this);
+	SafeVisit(n->cond);
 	int jump = AddBCC(n->loc, AB_CONDN);
-	n->iftrue->accept(this);
-	MaybePopValueOf(n->iftrue);
+	if (SafeVisit(n->iftrue))
+		MaybePopValueOf(n->iftrue);
 	if (n->iffalse)
 	{
 		int jumpout = AddBCC(n->loc, AB_JUMP);
 		UpdateJump(jump, AddJumpTarget());
 		jump = jumpout;
-		n->iffalse->accept(this);
-		MaybePopValueOf(n->iffalse);
+		if (SafeVisit(n->iffalse))
+			MaybePopValueOf(n->iffalse);
 	}
 	UpdateJump(jump, AddJumpTarget());
 }
@@ -1530,7 +1642,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarDecl *n)
 			if (dec.init)
 			{
 				// Emit code for the initializer
-				dec.init->accept(this);
+				SafeVisit(dec.init);
 				int var_idx = Fn->VarNamed.GetItemNr(cname);
 				assert(var_idx >= 0 && "CodegenAstVisitor: var not found in variable table");
 				if (var_idx < 0)
@@ -1551,6 +1663,10 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarDecl *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 {
+	assert(!Fn && "CodegenAstVisitor: function declaration encountered within active function");
+	if (Fn)
+		throw Error(target_host, host, n, Fn, "internal error: function declaration for '%s' encountered within active function", n->name.c_str());
+
 	C4PropListStatic *Parent = n->is_global ? target_host->Engine->GetPropList() : target_host->GetPropList();
 
 	C4String *name = ::Strings.FindString(n->name.c_str());
@@ -1585,13 +1701,21 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 			Fn->SetOverloaded(global_parent);
 	}
 
-	EmitFunctionCode(n);
-
-	Fn = nullptr;
+	try
+	{
+		EmitFunctionCode(n);
+		Fn = nullptr;
+	}
+	catch (...)
+	{
+		Fn = nullptr;
+		throw;
+	}
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const::aul::ast::FunctionExpr * n)
 {
+	AddBCC(n->loc, AB_NIL);
 	throw Error(target_host, host, n, Fn, "can't define a function in a function-scoped proplist");
 }
 
@@ -1599,16 +1723,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const::aul::ast::Script * n)
 {
 	for (const auto &d : n->declarations)
 	{
-		try
-		{
-			d->accept(this);
-		}
-		catch (C4AulParseError &e)
-		{
-			// Inform handler
-			host->Engine->ErrorHandler->OnError(e.what());
-			// try next declaration
-		}
+		SafeVisit(d);
 	}
 }
 
@@ -1622,8 +1737,17 @@ C4Value C4AulCompiler::ConstexprEvaluator::eval(C4ScriptHost *host, const ::aul:
 {
 	ConstexprEvaluator ce(host);
 	ce.ignore_unset_values = (flags & IgnoreUnset) == IgnoreUnset;
-	e->accept(&ce);
-	return ce.v;
+	try
+	{
+		e->accept(&ce);
+		return ce.v;
+	}
+	catch (C4AulParseError &e)
+	{
+		if ((flags & SuppressErrors) == 0)
+			host->Engine->ErrorHandler->OnError(e.what());
+		return C4VNull;
+	}
 }
 
 C4Value C4AulCompiler::ConstexprEvaluator::eval_static(C4ScriptHost *host, C4PropListStatic *parent, const std::string &parent_key, const ::aul::ast::Expr *e, EvalFlags flags)
@@ -1631,8 +1755,17 @@ C4Value C4AulCompiler::ConstexprEvaluator::eval_static(C4ScriptHost *host, C4Pro
 	ConstexprEvaluator ce(host);
 	ce.proplist_magic = ConstexprEvaluator::ProplistMagic{ true, parent, parent_key };
 	ce.ignore_unset_values = (flags & IgnoreUnset) == IgnoreUnset;
-	e->accept(&ce);
-	return ce.v;
+	try
+	{
+		e->accept(&ce);
+		return ce.v;
+	}
+	catch (C4AulParseError &e)
+	{
+		if ((flags & SuppressErrors) == 0)
+			host->Engine->ErrorHandler->OnError(e.what());
+		return C4VNull;
+	}
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::StringLit *n) { v = C4VString(n->value.c_str()); }
@@ -1670,7 +1803,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		}
 		else
 		{
-			// If proplist_magic.parent is NULL, we're handling a global constant.
+			// If proplist_magic.parent is nullptr, we're handling a global constant.
 			host->Engine->GetGlobalConstant(key->GetCStr(), &old);
 		}
 		if (old.getPropList())
@@ -1680,7 +1813,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		}
 		else
 		{
-			p = C4PropList::NewStatic(NULL, proplist_magic.parent, key);
+			p = C4PropList::NewStatic(nullptr, proplist_magic.parent, key);
 			new_proplist.reset(p);
 		}
 	}
@@ -1707,8 +1840,8 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 		proplist_magic = ProplistMagic { saved_magic.active, p->IsStatic(), kv.first };
 		kv.second->accept(this);
 		p->SetPropertyByS(::Strings.RegString(kv.first.c_str()), v);
-		proplist_magic = std::move(saved_magic);
 	}
+	proplist_magic = std::move(saved_magic);
 	v = C4VPropList(p);
 	new_proplist.release();
 }
@@ -1925,39 +2058,73 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::FunctionExpr *n)
 	v.SetFunction(sfunc);
 }
 
+void C4AulCompiler::ConstantResolver::visit(const::aul::ast::Script *n)
+{
+	for (const auto &d : n->declarations)
+	{
+		try
+		{
+			d->accept(this);
+		}
+		catch (C4AulParseError &e)
+		{
+			host->Engine->GetErrorHandler()->OnError(e.what());
+		}
+	}
+}
+
 void C4AulCompiler::ConstantResolver::visit(const ::aul::ast::VarDecl *n)
 {
+	const int quiet_flag = quiet ? ConstexprEvaluator::SuppressErrors : 0;
 	for (const auto &dec : n->decls)
 	{
 		const char *cname = dec.name.c_str();
+		C4String *name = ::Strings.RegString(cname);
 		switch (n->scope)
 		{
 		case ::aul::ast::VarDecl::Scope::Func:
 			// Function-scoped declarations and their initializers are handled by CodegenAstVisitor.
 			break;
 		case ::aul::ast::VarDecl::Scope::Object:
+			if (!host->GetPropList()->HasProperty(name))
+				host->GetPropList()->SetPropertyByS(name, C4VNull);
 			if (dec.init)
 			{
 				assert(host->GetPropList()->IsStatic());
-				C4Value v = ConstexprEvaluator::eval_static(host, host->GetPropList()->IsStatic(), dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset);
-				host->GetPropList()->SetPropertyByS(::Strings.RegString(cname), v);
-			}
-			else
-			{
-				host->GetPropList()->SetPropertyByS(::Strings.RegString(cname), C4VNull);
+				try
+				{
+					C4Value v = ConstexprEvaluator::eval_static(host, host->GetPropList()->IsStatic(), dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset | quiet_flag);
+					host->GetPropList()->SetPropertyByS(name, v);
+				}
+				catch (C4AulParseError &e)
+				{
+					if (!quiet)
+						host->Engine->ErrorHandler->OnError(e.what());
+				}
 			}
 			break;
 		case ::aul::ast::VarDecl::Scope::Global:
 			if ((dec.init != nullptr) != n->constant)
-				throw Error(host, host, n->loc, nullptr, "global variable must be either constant or uninitialized: %s", cname);
+			{
+				if (!quiet)
+					host->Engine->ErrorHandler->OnError(Error(host, host, n->loc, nullptr, "global variable must be either constant or uninitialized: %s", cname).what());
+			}
 			else if (dec.init)
 			{
-				assert(n->constant && "CodegenAstVisitor: initialized global variable isn't const");
-				C4Value *v = host->Engine->GlobalConsts.GetItem(cname);
-				assert(v && "CodegenAstVisitor: global constant not found in variable table");
-				if (!v)
-					throw Error(host, host, n->loc, nullptr, "internal error: global constant not found in variable table: %s", cname);
-				*v = ConstexprEvaluator::eval_static(host, nullptr, dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset);
+				try
+				{
+					assert(n->constant && "CodegenAstVisitor: initialized global variable isn't const");
+					C4Value *v = host->Engine->GlobalConsts.GetItem(cname);
+					assert(v && "CodegenAstVisitor: global constant not found in variable table");
+					if (!v)
+						throw Error(host, host, n->loc, nullptr, "internal error: global constant not found in variable table: %s", cname);
+					*v = ConstexprEvaluator::eval_static(host, nullptr, dec.name, dec.init.get(), ConstexprEvaluator::IgnoreUnset | quiet_flag);
+				}
+				catch (C4AulParseError &e)
+				{
+					if (!quiet)
+						host->Engine->ErrorHandler->OnError(e.what());
+				}
 			}
 			break;
 		}

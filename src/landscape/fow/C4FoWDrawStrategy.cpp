@@ -110,7 +110,7 @@ void C4FoWDrawTriangulator::Reset()
 }
 
 C4FoWDrawLightTextureStrategy::C4FoWDrawLightTextureStrategy(const C4FoWLight* light)
- : light(light), region(NULL), vbo_size(0), ibo_size(0)
+ : light(light), region(nullptr), vbo_size(0), ibo_size(0)
 {
 	bo[0] = bo[1] = 0u;
 }

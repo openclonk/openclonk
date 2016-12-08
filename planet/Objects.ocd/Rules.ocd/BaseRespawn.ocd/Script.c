@@ -167,6 +167,16 @@ public func SaveScenarioObject(props, ...)
 }
 
 
+/* Editor */
+
+public func Definition(def)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.inventory_transfer = { Name="$InventoryTransfer$", EditorHelp="$InventoryTransferHelp$", Type="bool", Set="SetInventoryTransfer" };
+	def.EditorProps.free_crew = { Name="$FreeCrew$", EditorHelp="$FreeCrewHelp$", Type="bool", Set="SetFreeCrew" };
+}
+
+
 /*-- Proplist --*/
 
 local Name = "$Name$";

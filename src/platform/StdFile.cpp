@@ -54,14 +54,14 @@ static const char *DirectorySeparators = "/";
 
 char *GetFilename(char *szPath)
 {
-	if (!szPath) return NULL;
+	if (!szPath) return nullptr;
 	char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos==DirectorySeparator || *pPos=='/') pFilename = pPos+1;
 	return pFilename;
 }
 const char *GetFilename(const char *szPath)
 {
-	if (!szPath) return NULL;
+	if (!szPath) return nullptr;
 	const char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos==DirectorySeparator || *pPos=='/') pFilename = pPos+1;
 	return pFilename;
@@ -81,7 +81,7 @@ const char* GetFilenameOnly(const char *strFilename)
 const char *GetC4Filename(const char *szPath)
 {
 	// returns path to file starting at first .c4*-directory.
-	if (!szPath) return NULL;
+	if (!szPath) return nullptr;
 	const char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++)
 	{
@@ -113,14 +113,14 @@ int GetTrailingNumber(const char *strString)
 
 char *GetFilenameWeb(char *szPath)
 {
-	if (!szPath) return NULL;
+	if (!szPath) return nullptr;
 	char *pPos, *pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos == '/') pFilename = pPos+1;
 	return pFilename;
 }
 const char *GetFilenameWeb(const char *szPath)
 {
-	if (!szPath) return NULL;
+	if (!szPath) return nullptr;
 	const char *pPos, *pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos == '/') pFilename = pPos+1;
 	return pFilename;
@@ -158,7 +158,7 @@ void RealPath(const char *szFilename, char *pFullFilename)
 	SCopy(path.getData(), pFullFilename, _MAX_PATH);
 	free(wpath);
 #else
-	char *pSuffix = NULL;
+	char *pSuffix = nullptr;
 	char szCopy[_MAX_PATH + 1];
 	for (;;)
 	{
@@ -397,7 +397,7 @@ bool WildcardMatch(const char *szWildcard, const char *szString)
 	if (!szString || !szWildcard) return false;
 	// match char-wise
 	const char *pWild = szWildcard, *pPos = szString;
-	const char *pLWild = NULL, *pLPos = NULL; // backtracking
+	const char *pLWild = nullptr, *pLPos = nullptr; // backtracking
 	while (*pWild || pLWild)
 		// string wildcard?
 		if (*pWild == '*')
@@ -653,7 +653,7 @@ bool CreatePath(const std::string &path)
 {
 	assert(!path.empty());
 #ifdef _WIN32
-	if (CreateDirectoryW(GetWideChar(path.c_str()), NULL))
+	if (CreateDirectoryW(GetWideChar(path.c_str()), nullptr))
 	{
 		return true;
 	}
@@ -671,7 +671,7 @@ bool CreatePath(const std::string &path)
 		{
 			wchar_t * str;
 			if (FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-			                  NULL, err, 0, (LPWSTR)&str, 0, NULL))
+			                  nullptr, err, 0, (LPWSTR)&str, 0, nullptr))
 			{
 				LogF("CreateDirectory failed: %s", StdStrBuf(str).getData());
 				LocalFree(str);
@@ -998,7 +998,7 @@ void DirectoryIterator::Read(const char *dirname)
 	FindClose(fh);
 #else
 	DIR *fh = opendir(dirname);
-	if (fh == NULL)
+	if (fh == nullptr)
 	{
 		switch (errno)
 		{
@@ -1014,7 +1014,7 @@ void DirectoryIterator::Read(const char *dirname)
 	}
 	dirent *file;
 	// Insert files into list
-	while ((file = readdir(fh)) != NULL)
+	while ((file = readdir(fh)) != nullptr)
 	{
 		// ...unless they're . or ..
 		if (file->d_name[0] == '.' && (file->d_name[1] == '\0' || (file->d_name[1] == '.' && file->d_name[2] == '\0')))
@@ -1041,7 +1041,7 @@ DirectoryIterator& DirectoryIterator::operator++()
 const char * DirectoryIterator::operator*() const
 {
 	if (iter == p->files.end())
-		return NULL;
+		return nullptr;
 	return iter->first.c_str();
 }
 DirectoryIterator DirectoryIterator::operator++(int)

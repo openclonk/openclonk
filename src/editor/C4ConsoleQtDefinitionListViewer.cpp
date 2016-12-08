@@ -84,7 +84,7 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 			{
 				// Find if path is already there
 				RemoveExtension(&fn);
-				DefListNode *node_child = NULL;
+				DefListNode *node_child = nullptr;
 				for (auto &test_node_child : node_parent->items)
 					if (test_node_child->filename == fn)
 					{
@@ -174,7 +174,7 @@ void C4ConsoleQtDefinitionListModel::OnItemRemoved(C4Def *p)
 class C4Def *C4ConsoleQtDefinitionListModel::GetDefByModelIndex(const QModelIndex &idx)
 {
 	DefListNode *node = static_cast<DefListNode *>(idx.internalPointer());
-	if (node) return node->def; else return NULL;
+	if (node) return node->def; else return nullptr;
 }
 
 const char *C4ConsoleQtDefinitionListModel::GetNameByModelIndex(const QModelIndex &idx)
@@ -186,7 +186,7 @@ const char *C4ConsoleQtDefinitionListModel::GetNameByModelIndex(const QModelInde
 int C4ConsoleQtDefinitionListModel::rowCount(const QModelIndex & parent) const
 {
 	int result = 0;
-	DefListNode *parent_node = parent.isValid() ? static_cast<DefListNode *>(parent.internalPointer()) : NULL;
+	DefListNode *parent_node = parent.isValid() ? static_cast<DefListNode *>(parent.internalPointer()) : nullptr;
 	if (!parent_node) parent_node = root.get();
 	if (parent_node) result = parent_node->items.size();
 	return result;
@@ -214,7 +214,7 @@ QModelIndex C4ConsoleQtDefinitionListModel::index(int row, int column, const QMo
 {
 	// Current index out of range?
 	if (row < 0 || column != 0) return QModelIndex();
-	DefListNode *parent_node = parent.isValid() ? static_cast<DefListNode *>(parent.internalPointer()) : NULL;
+	DefListNode *parent_node = parent.isValid() ? static_cast<DefListNode *>(parent.internalPointer()) : nullptr;
 	if (!parent_node) parent_node = root.get();
 	if (parent_node->items.size() <= row) return QModelIndex();
 	// Index into tree

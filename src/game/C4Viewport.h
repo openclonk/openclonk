@@ -152,13 +152,13 @@ public:
 	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	bool CloseViewport(int32_t iPlayer, bool fSilent);
 	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = NULL);
+	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = nullptr);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	bool CloseViewport(C4Viewport * cvp);
 #ifdef USE_WIN32_WINDOWS
 	C4Viewport* GetViewport(HWND hwnd);
 #endif
-	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius = 0, int32_t *outPlayer = NULL);
+	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius = 0, int32_t *outPlayer = nullptr);
 	bool ViewportNextPlayer();
 
 	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset

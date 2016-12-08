@@ -651,7 +651,7 @@ namespace C4GUI
 	ContextMenu *Edit::OnContext(C4GUI::Element *pListItem, int32_t iX, int32_t iY)
 	{
 		// safety: no text?
-		if (!Text) return NULL;
+		if (!Text) return nullptr;
 		// create context menu
 		ContextMenu *pCtx = new ContextMenu();
 		// fill with any valid items
@@ -705,7 +705,7 @@ namespace C4GUI
 			pPrevFocusCtrl = pDlg->GetFocus();
 			pDlg->SetFocus(this, false);
 		}
-		else pPrevFocusCtrl=NULL;
+		else pPrevFocusCtrl=nullptr;
 		// key binding for rename abort
 		C4CustomKey::CodeList keys;
 		keys.push_back(C4KeyCodeEx(K_ESCAPE));

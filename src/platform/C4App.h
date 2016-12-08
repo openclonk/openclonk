@@ -38,7 +38,7 @@ const char* KeycodeToString(C4KeyCode code);
 class CStdMessageProc : public StdSchedulerProc
 {
 public:
-	CStdMessageProc() : pApp(NULL) { }
+	CStdMessageProc() : pApp(nullptr) { }
 	~CStdMessageProc() { }
 
 private:

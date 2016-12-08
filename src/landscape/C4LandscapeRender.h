@@ -80,7 +80,7 @@ class C4LandscapeRender
 {
 public:
 	C4LandscapeRender()
-		: iWidth(0), iHeight(0), pTexs(NULL) { }
+		: iWidth(0), iHeight(0), pTexs(nullptr) { }
 	virtual ~C4LandscapeRender()
 		{}
 

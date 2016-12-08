@@ -82,17 +82,17 @@ void C4Surface::Default()
 {
 	Wdt=Hgt=0;
 	Scale=1;
-	PrimarySurfaceLockPitch=0; PrimarySurfaceLockBits=NULL;
+	PrimarySurfaceLockPitch=0; PrimarySurfaceLockBits=nullptr;
 	ClipX=ClipY=ClipX2=ClipY2=0;
 	Locked=0;
 	Attached=false;
 	fPrimary=false;
-	pMainSfc=NULL;
-	pNormalSfc=NULL;
+	pMainSfc=nullptr;
+	pNormalSfc=nullptr;
 #ifndef USE_CONSOLE
-	pCtx=NULL;
+	pCtx=nullptr;
 #endif
-	pWindow=NULL;
+	pWindow=nullptr;
 	ClrByOwnerClr=0;
 	iTexSize=0;
 	fIsBackground=false;
@@ -114,7 +114,7 @@ void C4Surface::MoveFrom(C4Surface *psfcFrom)
 	Wdt=psfcFrom->Wdt; Hgt=psfcFrom->Hgt;
 	PrimarySurfaceLockPitch=psfcFrom->PrimarySurfaceLockPitch;
 	PrimarySurfaceLockBits=psfcFrom->PrimarySurfaceLockBits;
-	psfcFrom->PrimarySurfaceLockBits=NULL;
+	psfcFrom->PrimarySurfaceLockBits=nullptr;
 	ClipX=psfcFrom->ClipX; ClipY=psfcFrom->ClipY;
 	ClipX2=psfcFrom->ClipX2; ClipY2=psfcFrom->ClipY2;
 	Locked=psfcFrom->Locked;
@@ -398,8 +398,8 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverl
 	if (!png->Create(Wdt, Hgt, fSaveAlpha)) { Unlock(); return false; }
 
 	// reset overlay if desired
-	C4Surface *pMainSfcBackup = NULL;
-	if (fSaveOverlayOnly) { pMainSfcBackup=pMainSfc; pMainSfc=NULL; }
+	C4Surface *pMainSfcBackup = nullptr;
+	if (fSaveOverlayOnly) { pMainSfcBackup=pMainSfc; pMainSfc=nullptr; }
 
 #ifndef USE_CONSOLE
 	if (fPrimary)
@@ -500,7 +500,7 @@ bool C4Surface::Unlock()
 
 DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 {
-	BYTE *pBuf = NULL; int iPitch = 0; // TODO: are those initialised to something sensible?
+	BYTE *pBuf = nullptr; int iPitch = 0; // TODO: are those initialised to something sensible?
 	// backup pos
 	int iX2=iX; int iY2=iY;
 	// primary?
@@ -650,7 +650,7 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 #ifndef USE_CONSOLE
 	texName = 0;
 #endif
-	texLock.pBits=NULL; fIntLock=false;
+	texLock.pBits=nullptr; fIntLock=false;
 	// store size
 	this->iSizeX=iSizeX;
 	this->iSizeY=iSizeY;
@@ -702,7 +702,7 @@ void C4TexRef::CreateTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, nullptr);
 	if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
@@ -784,7 +784,7 @@ void C4TexRef::Unlock()
 			                LockSize.x, LockSize.y, LockSize.Wdt, LockSize.Hgt,
 			                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 
-			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
+			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=nullptr;
 			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
@@ -844,7 +844,7 @@ void C4TexMgr::UnregTex(C4TexRef *pTex)
 	// remove texture from list
 	Textures.remove(pTex);
 	// if list is empty, remove self
-	if (Textures.empty()) { delete this; pTexMgr=NULL; }
+	if (Textures.empty()) { delete this; pTexMgr=nullptr; }
 }
 
 void C4TexMgr::IntLock()

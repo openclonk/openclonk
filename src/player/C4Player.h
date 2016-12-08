@@ -158,7 +158,7 @@ public:
 	void ClearPointers(C4Object *tptr, bool fDeath);
 	void Execute();
 	void ExecuteControl();
-	void SetViewMode(int32_t iMode, C4Object *pTarget=NULL, bool immediate_position=false);
+	void SetViewMode(int32_t iMode, C4Object *pTarget=nullptr, bool immediate_position=false);
 	void ResetCursorView(bool immediate_position = false); // reset view to cursor if any cursor exists
 	void Evaluate();
 	void Surrender();
@@ -271,7 +271,7 @@ private:
 
 public:
 	// custom scenario achievements
-	bool GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override=NULL);
+	bool GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override=nullptr);
 };
 
 #endif

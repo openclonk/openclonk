@@ -85,7 +85,7 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 	if (!*szExt)
 	{
 		// no extension: Default to extension that is found as file in group
-		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
+		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", nullptr };
 		int i = 0; const char *szExt;
 		while ((szExt = extensions[i++]))
 		{

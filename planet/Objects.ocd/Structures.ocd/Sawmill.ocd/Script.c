@@ -93,7 +93,7 @@ public func HasInteractionMenu() { return true; }
 // Show a helpful hint to the player. The hint is colored and titled the same as the production menu for more visual coherence.
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
+	var menus = _inherited(clonk, ...) ?? [];
 	var prod_menu =
 	{
 		title = "$Production$",

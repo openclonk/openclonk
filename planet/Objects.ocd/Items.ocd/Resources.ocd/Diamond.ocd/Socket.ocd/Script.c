@@ -89,7 +89,7 @@ public func Construction()
 	attached_mesh = AttachMesh(contents, "main", "main", Trans_Mul(Trans_Rotate(Random(360), 1, 0, 0)));
 	
 	SetR(Random(360));
-	this.Visibility = VIS_None;
+	Hide();
 	AddTimer("CheckFree", 100 + Random(10));
 	
 	// Random color for now. The Place() function will create groups of the same color.
@@ -116,8 +116,8 @@ private func CheckFree(bool by_dig_free)
 		last_free = !last_free;
 		if (!last_free)
 		{
-			this.Visibility = VIS_None;
 			if (!Contents()) return RemoveObject();
+			Hide();
 		}
 		else
 		{
@@ -135,7 +135,7 @@ private func CheckFree(bool by_dig_free)
 			CreateParticle("StarSpark", 0, 0, 0, 0, 10, particles);
 			// And some extra sparkling in the future
 			AddEffect("MuchSparkle", this, 1, 1, this);
-			this.Visibility = VIS_All;
+			Show();
 			// Also, some sound (delayed for audibility on visibility change)
 			if (by_dig_free) ScheduleCall(this, Global.Sound, 1,1, "Objects::DiamondDigOut");
 		}
@@ -201,4 +201,44 @@ public func OnHitByPickaxe()
 public func CanBeHitByPickaxe()
 {
 	return !!Contents();
+}
+
+
+/* Hidden socket state: Still show (but semi-transparent) in editor */
+
+private func Hide()
+{
+	this.Visibility = VIS_Editor;
+	SetClrModulation(0x80ffffff);
+}
+
+private func Show()
+{
+	this.Visibility = VIS_All;
+	SetClrModulation(0xffffffff);
+}
+
+
+/* Scenario saving */
+
+public func SaveScenarioObject(props, ...)
+{
+	if (!inherited(props, ...)) return false;
+	// Ignore some properties set in construction
+	props->Remove("Visibility");
+	props->Remove("ClrModulation");
+	props->Remove("R");
+	// Special saving of empty sockets
+	if (!Contents())
+	{
+		props->AddCall("Diamond", this, "RemoveDiamond");
+	}
+	return true;
+}
+
+public func RemoveDiamond()
+{
+	// Remove any contained diamond (for scenario saving of empty sockets)
+	var diamond = FindContents(Diamond);
+	if (diamond) return diamond->RemoveObject();
 }

@@ -79,7 +79,7 @@ public:
 #endif
 	std::unique_ptr<C4TexRef> texture;
 	C4Surface *pMainSfc;          // main surface for simple ColorByOwner-surfaces
-	C4Surface *pNormalSfc;        // normal map; can be NULL
+	C4Surface *pNormalSfc;        // normal map; can be nullptr
 	DWORD ClrByOwnerClr;          // current color to be used for ColorByOwner-blits
 
 	void MoveFrom(C4Surface *psfcFrom); // grab data from other surface - invalidates other surface
@@ -110,7 +110,7 @@ public:
 #endif
 	// Only for surfaces which map to a window
 	bool UpdateSize(int wdt, int hgt);
-	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL);
+	bool PageFlip(C4Rect *pSrcRt=nullptr, C4Rect *pDstRt=nullptr);
 
 	void Clear();
 	void Default();

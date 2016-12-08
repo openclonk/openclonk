@@ -32,11 +32,11 @@
 
 C4ScriptHost::C4ScriptHost():
 	// prepare lists
-	Prev(NULL), Next(NULL),
-	Engine(NULL),
+	Prev(nullptr), Next(nullptr),
+	Engine(nullptr),
 	State(ASS_NONE) // not compiled
 {
-	Script = NULL;
+	Script = nullptr;
 	stringTable = 0;
 	SourceScripts.push_back(this);
 	// prepare include list
@@ -64,7 +64,7 @@ void C4ScriptHost::Clear()
 	if (stringTable)
 	{
 		stringTable->DelRef();
-		stringTable = NULL;
+		stringTable = nullptr;
 	}
 	// remove includes
 	Includes.clear();
@@ -141,8 +141,8 @@ void C4ScriptHost::Unreg()
 	// remove from list
 	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
 	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
-	Prev = Next = NULL;
-	Engine = NULL;
+	Prev = Next = nullptr;
+	Engine = nullptr;
 }
 
 void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
@@ -159,8 +159,8 @@ void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
 		Engine->ChildL = this;
 	}
 	else
-		Prev = NULL;
-	Next = NULL;
+		Prev = nullptr;
+	Next = nullptr;
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
@@ -235,7 +235,7 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
-				if (Load(ParentGrp, NULL, szLanguage, stringTable))
+				if (Load(ParentGrp, nullptr, szLanguage, stringTable))
 					return true;
 	}
 	return false;
@@ -251,7 +251,7 @@ std::string C4ScriptHost::Translate(const std::string &text) const
 /*--- C4ExtraScriptHost ---*/
 
 C4ExtraScriptHost::C4ExtraScriptHost(C4String *parent_key_name):
-		ParserPropList(C4PropList::NewStatic(NULL, NULL, parent_key_name))
+		ParserPropList(C4PropList::NewStatic(nullptr, nullptr, parent_key_name))
 {
 }
 
@@ -328,7 +328,7 @@ C4PropListStatic * C4DefScriptHost::GetPropList() { return Def; }
 class C4PropListScen: public C4PropListStatic
 {
 public:
-	C4PropListScen(const C4PropListStatic * parent, C4String * key): C4PropListStatic(NULL, parent, key)
+	C4PropListScen(const C4PropListStatic * parent, C4String * key): C4PropListStatic(nullptr, parent, key)
 	{
 		C4PropList * proto = C4PropList::NewStatic(ScriptEngine.GetPropList(), this, &::Strings.P[P_Prototype]);
 		C4PropListStatic::SetPropertyByS(&::Strings.P[P_Prototype], C4VPropList(proto));
@@ -352,7 +352,7 @@ C4GameScriptHost::~C4GameScriptHost() { }
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
+	C4PropListStatic * pScen = new C4PropListScen(nullptr, &::Strings.P[P_Scenario]);
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
 	ScenPrototype.SetPropList(pScen->GetPrototype());
@@ -363,7 +363,7 @@ bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangS
 bool C4GameScriptHost::LoadData(const char * f, const char * d, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
+	C4PropListStatic * pScen = new C4PropListScen(nullptr, &::Strings.P[P_Scenario]);
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
 	ScenPrototype.SetPropList(pScen->GetPrototype());
@@ -376,7 +376,7 @@ void C4GameScriptHost::Clear()
 	C4ScriptHost::Clear();
 	ScenPropList.Set0();
 	ScenPrototype.Set0();
-	delete pScenarioEffects; pScenarioEffects=NULL;
+	delete pScenarioEffects; pScenarioEffects=nullptr;
 }
 
 C4PropListStatic * C4GameScriptHost::GetPropList()

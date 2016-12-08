@@ -356,7 +356,7 @@ void C4ValueMapNames::Reset()
 	for (int32_t i = 0; i < iSize; i++)
 		delete[] pNames[i];
 	delete[] pNames;
-	pNames = NULL;
+	pNames = nullptr;
 	iSize = 0;
 }
 

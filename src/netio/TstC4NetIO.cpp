@@ -102,7 +102,7 @@ int main(int argc, char * argv[])
 	for (i = 0; i < sizeof(DummyData); i++)
 		DummyData[i] = 'A' + i % 100;
 
-	FixedRandom(time(NULL));
+	FixedRandom(time(nullptr));
 
 #ifdef USE_UDP
 	C4NetIOUDP NetIO;

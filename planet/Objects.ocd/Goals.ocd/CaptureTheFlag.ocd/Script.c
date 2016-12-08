@@ -82,7 +82,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 
 	// Broadcast to scenario.
 	GameCall("OnPlayerRelaunch", plr, false);
-	return _inherited(plr, ...);
+	return _inherited(plr, x, y, base, team, ...);
 }
 
 protected func RelaunchPlayer(int plr)

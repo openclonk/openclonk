@@ -53,7 +53,7 @@ protected:
 	friend class C4TeamList;
 
 public:
-	C4Team() : piPlayers(NULL), iPlayerCount(0), iPlayerCapacity(0), iID(0), iPlrStartIndex(0), dwClr(0), iMaxPlayer(0) { *Name=0; }
+	C4Team() : piPlayers(nullptr), iPlayerCount(0), iPlayerCapacity(0), iID(0), iPlrStartIndex(0), dwClr(0), iMaxPlayer(0) { *Name=0; }
 	~C4Team() { Clear(); }
 
 	void Clear();
@@ -131,7 +131,7 @@ private:
 	StdStrBuf sScriptPlayerNames; // default script player names
 
 public:
-	C4TeamList() : ppList(NULL), iTeamCount(0), iTeamCapacity(0), iLastTeamID(0), fAllowHostilityChange(true), fAllowTeamSwitch(false),
+	C4TeamList() : ppList(nullptr), iTeamCount(0), iTeamCapacity(0), iLastTeamID(0), fAllowHostilityChange(true), fAllowTeamSwitch(false),
 			fActive(true), fCustom(false), fTeamColors(false), fAutoGenerateTeams(false), eTeamDist(TEAMDIST_Free), iMaxScriptPlayers(0) {}
 	~C4TeamList() { Clear(); }
 	void Clear();

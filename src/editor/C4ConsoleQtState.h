@@ -129,11 +129,13 @@ public slots:
 	// File menu
 	void FileNew();
 	void FileOpen();
+	void FileOpenInNetwork();
 	void FileOpenWithPlayers();
 	void FileRecord();
 	void FileSave();
 	void FileSaveAs();
 	void FileSaveGameAs();
+	void FileExportPacked();
 	void FileClose();
 	void FileQuit();
 	void FileReInitScenario();
@@ -220,6 +222,7 @@ public:
 
 	void AddToolbarSpacer(int space);
 	bool CreateConsoleWindow(C4AbstractApp *app);
+	void DeleteConsoleWindow();
 	void Execute(bool redraw_only=false);
 	void Redraw() { Execute(true); }
 	void UpdateActionStates();
@@ -254,7 +257,7 @@ public:
 	void OnCreatorCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
 	void UpdateActionObject(C4Object *new_action_object);
 
-	bool CreateNewScenario(StdStrBuf *out_filename); // show "new scenario" dialogue; return true if new scenario is created
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network); // show "new scenario" dialogue; return true if new scenario is created
 
 #ifdef USE_WIN32_WINDOWS
 	bool HandleWin32KeyboardMessage(MSG *msg);

@@ -4,6 +4,6 @@
 
 protected func Initialize()
 {
-	_inherited();
+	_inherited(...);
 	SetHalfVehicleSolidMask(true);
 }

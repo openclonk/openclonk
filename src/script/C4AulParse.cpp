@@ -110,11 +110,11 @@ C4AulParse::C4AulParse(C4ScriptHost *a) :
 	Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
 	SPos(a->Script.getData()), TokenSPos(SPos),
 	TokenType(ATT_INVALID),
-	ContextToExecIn(NULL)
+	ContextToExecIn(nullptr)
 { }
 
 C4AulParse::C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine) :
-	Fn(Fn), Host(NULL), pOrgScript(NULL), Engine(Engine),
+	Fn(Fn), Host(nullptr), pOrgScript(nullptr), Engine(Engine),
 	SPos(Fn->Script), TokenSPos(SPos),
 	TokenType(ATT_INVALID),
 	ContextToExecIn(context)
@@ -317,7 +317,7 @@ const C4ScriptOpDef C4ScriptOpMap[] =
 	{ 2, "|=",  AB_BitOr,            1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 2, "^=",  AB_BitXOr,           1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
 
-	{ 0, NULL,  AB_ERR,              0, 0, 0, C4V_Nil,  C4V_Nil,    C4V_Nil}
+	{ 0, nullptr,  AB_ERR,              0, 0, 0, C4V_Nil,  C4V_Nil,    C4V_Nil}
 };
 
 int C4AulParse::GetOperator(const char* pScript)
@@ -1103,7 +1103,11 @@ void C4AulParse::Parse_CallParams(::aul::ast::CallExpr *call)
 	case ATT_COMMA:
 		// got no parameter before a ","
 		if (Config.Developer.ExtraWarnings)
+<<<<<<< HEAD
 			Warn(FormatString("parameter %zu of call to %s is empty", call->args.size(), call->callee.c_str()).getData(), NULL);
+=======
+			Warn(FormatString("parameter %zu of call to %s is empty", call->args.size(), call->callee.c_str()).getData(), nullptr);
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
 		call->args.push_back(::aul::ast::NilLit::New(TokenSPos));
 		Shift();
 		break;
@@ -1137,7 +1141,11 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		if (TokenType == ATT_COMMA)
 		{
 			if (Config.Developer.ExtraWarnings)
+<<<<<<< HEAD
 				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), NULL);
+=======
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), nullptr);
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 		else
@@ -1149,7 +1157,11 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		if (TokenType == ATT_BCLOSE2)
 		{
 			if (Config.Developer.ExtraWarnings)
+<<<<<<< HEAD
 				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), NULL);
+=======
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), nullptr);
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 	}
@@ -1307,7 +1319,6 @@ std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 {
 	const char *NodeStart = TokenSPos;
 	std::unique_ptr<::aul::ast::Expr> expr;
-	int ndx;
 	const C4ScriptOpDef * op;
 	C4AulFunc *FoundFn = 0;
 	C4Value val;
@@ -1650,7 +1661,7 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 				if (prop->Key != &::Strings.P[P_Prototype])
 					if (!p || p->GetParent() != to)
 					{
-						p = C4PropList::NewStatic(NULL, to, prop->Key);
+						p = C4PropList::NewStatic(nullptr, to, prop->Key);
 						CopyPropList(prop->Value._getPropList()->Properties, p);
 					}
 				to->SetPropertyByS(prop->Key, C4VPropList(p));

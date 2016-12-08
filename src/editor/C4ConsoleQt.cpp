@@ -23,8 +23,11 @@
 #include "editor/C4ConsoleQtState.h"
 #include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4ConsoleQtObjectListViewer.h"
+#include "editor/C4ConsoleQtPropListViewer.h"
+#include "editor/C4ConsoleQtShapes.h"
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleGUI.h"
+#include "script/C4AulExec.h"
 #include "C4Version.h"
 
 #include "editor/C4ConsoleQt.h"
@@ -84,12 +87,21 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 	if (Active) state->SetInputFunctions(functions);
 }
 
-C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
+bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
-	if (!state->CreateConsoleWindow(application)) return NULL;
+	if (!state->CreateConsoleWindow(application)) return false;
 	Active = true;
 	EnableControls(fGameOpen);
-	return this;
+	return true;
+}
+
+void C4ConsoleGUI::DeleteConsoleWindow()
+{
+	if (Active)
+	{
+		Active = false;
+		state->DeleteConsoleWindow();
+	}
 }
 
 void C4ConsoleGUI::Out(const char* message)
@@ -116,7 +128,7 @@ bool C4ConsoleGUI::ClearLog()
 
 void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 {
-	QLabel *target = NULL;
+	QLabel *target = nullptr;
 	switch (type)
 	{
 	case CONSOLE_Cursor: target = state->status_cursor; break;
@@ -159,7 +171,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 #endif
 	// Show dialogue
 	if (fSave)
-		filename = QFileDialog::getSaveFileName(state->window.get(), LoadResStr("IDS_DLG_SAVE"), QString(), filter, &selected_filter);
+		filename = QFileDialog::getSaveFileName(state->window.get(), LoadResStr("IDS_DLG_SAVE"), QString(sFilename->getData()), filter, &selected_filter);
 	else if (!has_multi)
 		filename = QFileDialog::getOpenFileName(state->window.get(), LoadResStr("IDS_DLG_OPEN"), QString(), filter);
 	else
@@ -343,10 +355,10 @@ void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { /* Translation done through QTr
 	 state->RemoveViewport(cvp);
  }
 
-bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename)
+bool C4ConsoleGUI::CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network)
 {
 #ifdef WITH_QT_EDITOR
-	return state->CreateNewScenario(out_filename);
+	return state->CreateNewScenario(out_filename, out_host_as_network);
 #else
 	return false
 #endif
@@ -377,6 +389,34 @@ void C4ConsoleGUI::CloseConsoleWindow()
 void C4ConsoleGUI::ClearPointers(class C4Object *obj)
 {
 	if (state && state->object_list_model) state->object_list_model->Invalidate();
+}
+
+void C4ConsoleGUI::EditGraphControl(const class C4ControlEditGraph *control)
+{
+	if (state && state->property_model)
+	{
+		const char *path = control->GetPath();
+		if (path && *path)
+		{
+			// Apply control to value: Resolve value
+			C4Value graph_value = AulExec.DirectExec(::ScriptEngine.GetPropList(), path, "resolve graph edit", false, nullptr);
+			// ...and apply changes (will check for value validity)
+			C4ConsoleQtGraph::EditGraphValue(graph_value, control->GetAction(), control->GetIndex(), control->GetX(), control->GetY());
+			// For remote clients, also update any edited shapes
+			if (!control->LocalControl())
+			{
+				C4ConsoleQtShape *shape = state->property_model->GetShapeByPropertyPath(path);
+				if (shape)
+				{
+					C4ConsoleQtGraph *shape_graph = shape->GetGraphShape();
+					if (shape_graph)
+					{
+						shape_graph->EditGraph(false, control->GetAction(), control->GetIndex(), control->GetX(), control->GetY());
+					}
+				}
+			}
+		}
+	}
 }
 
 void C4ToolsDlg::UpdateToolCtrls()

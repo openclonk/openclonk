@@ -336,6 +336,16 @@
         </spacer>
        </item>
        <item>
+        <widget class="QCheckBox" name="startInNetworkCheckbox">
+         <property name="toolTip">
+          <string comment="res">IDS_CNS_HOSTASNETWORKGAMEDESC</string>
+         </property>
+         <property name="text">
+          <string comment="res">IDS_CNS_HOSTASNETWORKGAME</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="okButton">
          <property name="text">
           <string comment="res">IDS_CNS_CREATE</string>

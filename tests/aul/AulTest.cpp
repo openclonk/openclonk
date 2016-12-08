@@ -136,6 +136,50 @@ for (var i in a) {
 }
 return b;
 )"));
+
+	// Test syntax errors inside loops
+	{
+		// Syntax error in for loop initializer
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (var i = missing();;) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop condition
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (; missing();) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop incrementor
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (;; missing()) continue;"), C4AulExecError);
+	}
+	{
+		// Syntax error in for loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (;;) missing();"), C4AulExecError);
+	}
+	{
+		// Syntax error in while loop condition
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("while (missing()) break;"), C4AulExecError);
+	}
+	{
+		// Syntax error in while loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("while (1) missing();"), C4AulExecError);
+	}
+	{
+		// Syntax error in for-in loop body
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_));
+		EXPECT_THROW(RunCode("for (var i in [1]) { missing(); }"), C4AulExecError);
+	}
 }
 
 TEST_F(AulTest, Locals)
@@ -180,6 +224,17 @@ TEST_F(AulTest, Vars)
 {
 	EXPECT_EQ(C4VInt(42), RunCode("var i = 21; i = i + i; return i;"));
 	EXPECT_EQ(C4VInt(42), RunCode("var i = -42; i = Abs(i); return i;"));
+}
+
+TEST_F(AulTest, GlobalVariables)
+{
+	EXPECT_EQ(C4V_PropList, RunScript("static const a = {}; func Main() { return a; }").GetType());
+	{
+		// #1850: Uncaught C4AulParseError with error in System.ocg script
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnError(::testing::_)).Times(1);
+		EXPECT_NO_THROW(RunScript("static a = {}; func Main() {}"));
+	}
 }
 
 TEST_F(AulTest, ParameterPassing)

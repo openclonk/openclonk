@@ -31,8 +31,8 @@ namespace C4GUI
 // Button
 
 	Button::Button(const char *szBtnText, const C4Rect &rtBounds)
-			: Control(rtBounds), pCustomGfx(NULL), pCustomGfxDown(NULL), fDown(false), fMouseOver(false), fEnabled(true),
-			  dwCustomFontClr(0), pCustomFont(NULL)
+			: Control(rtBounds), pCustomGfx(nullptr), pCustomGfxDown(nullptr), fDown(false), fMouseOver(false), fEnabled(true),
+			  dwCustomFontClr(0), pCustomFont(nullptr)
 	{
 		// key callbacks
 		C4CustomKey::CodeList keys;
@@ -252,7 +252,7 @@ namespace C4GUI
 
 	void IconButton::SetIcon(Icons eUseIcon)
 	{
-		if (eUseIcon>=0) fctIcon = Icon::GetIconFacet(eUseIcon); else fctIcon.Surface=NULL;
+		if (eUseIcon>=0) fctIcon = Icon::GetIconFacet(eUseIcon); else fctIcon.Surface=nullptr;
 	}
 
 
@@ -302,7 +302,7 @@ namespace C4GUI
 // FacetButton
 
 	FacetButton::FacetButton(const C4Facet &rBaseFct, const C4Facet &rHighlightFct, const FLOAT_RECT &rtfBounds, char cHotkey)
-			: Button("", C4Rect(rtfBounds)), fctBase(rBaseFct), fctHighlight(rHighlightFct), dwTextClrInact(0x7f000000), dwTextClrAct(0xff000000), rcfDrawBounds(rtfBounds), pFont(NULL), fFontZoom(1.0f)
+			: Button("", C4Rect(rtfBounds)), fctBase(rBaseFct), fctHighlight(rHighlightFct), dwTextClrInact(0x7f000000), dwTextClrAct(0xff000000), rcfDrawBounds(rtfBounds), pFont(nullptr), fFontZoom(1.0f)
 	{
 		// ctor
 		this->cHotkey = cHotkey;

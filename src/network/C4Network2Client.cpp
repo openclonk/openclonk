@@ -39,17 +39,17 @@ C4Network2Client::C4Network2Client(C4Client *pClient)
 		iAddrCnt(0),
 		eStatus(NCS_Ready),
 		iLastActivity(0),
-		pMsgConn(NULL), pDataConn(NULL),
+		pMsgConn(nullptr), pDataConn(nullptr),
 		iNextConnAttempt(0),
-		pNext(NULL), pParent(NULL), pstatPing(NULL)
+		pNext(nullptr), pParent(nullptr), pstatPing(nullptr)
 {
 }
 
 C4Network2Client::~C4Network2Client()
 {
 	ClearGraphs();
-	if (pMsgConn) { pMsgConn->Close(); pMsgConn->DelRef(); } pMsgConn = NULL;
-	if (pDataConn) { pDataConn->Close(); pDataConn->DelRef(); } pDataConn = NULL;
+	if (pMsgConn) { pMsgConn->Close(); pMsgConn->DelRef(); } pMsgConn = nullptr;
+	if (pDataConn) { pDataConn->Close(); pDataConn->DelRef(); } pDataConn = nullptr;
 	if (pClient) pClient->UnlinkNetClient();
 }
 
@@ -85,9 +85,9 @@ void C4Network2Client::SetDataConn(C4Network2IOConnection *pConn)
 void C4Network2Client::RemoveConn(C4Network2IOConnection *pConn)
 {
 	if (pConn == pMsgConn)
-		{ pMsgConn->DelRef(); pMsgConn = NULL; }
+		{ pMsgConn->DelRef(); pMsgConn = nullptr; }
 	if (pConn == pDataConn)
-		{ pDataConn->DelRef(); pDataConn = NULL; }
+		{ pDataConn->DelRef(); pDataConn = nullptr; }
 	if (pMsgConn && !pDataConn) SetDataConn(pMsgConn);
 	if (!pMsgConn && pDataConn) SetMsgConn(pDataConn);
 }
@@ -125,9 +125,9 @@ bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
 	// local?
 	if (isLocal()) { iNextConnAttempt = 0; return true; }
 	// msg and data connected? Nothing to do
-	if (getMsgConn() != getDataConn()) { iNextConnAttempt = time(NULL) + 10; return true; }
+	if (getMsgConn() != getDataConn()) { iNextConnAttempt = time(nullptr) + 10; return true; }
 	// too early?
-	if (iNextConnAttempt && iNextConnAttempt > time(NULL)) return true;
+	if (iNextConnAttempt && iNextConnAttempt > time(nullptr)) return true;
 	// find address to try
 	int32_t iBestAddress = -1;
 	for (int32_t i = 0; i < iAddrCnt; i++)
@@ -141,9 +141,9 @@ bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
 					iBestAddress = i;
 	// too many attempts or nothing found?
 	if (iBestAddress < 0 || AddrAttempts[iBestAddress] > C4NetClientConnectAttempts)
-		{ iNextConnAttempt = time(NULL) + 10; return true; }
+		{ iNextConnAttempt = time(nullptr) + 10; return true; }
 	// save attempt
-	AddrAttempts[iBestAddress]++; iNextConnAttempt = time(NULL) + C4NetClientConnectInterval;
+	AddrAttempts[iBestAddress]++; iNextConnAttempt = time(nullptr) + C4NetClientConnectInterval;
 	// log
 	LogSilentF("Network: connecting client %s on %s...", getName(), Addr[iBestAddress].toString().getData());
 	// connect
@@ -173,7 +173,7 @@ bool C4Network2Client::AddAddr(const C4Network2Address &addr, bool fAnnounce)
 	Addr[iAddrCnt] = addr; AddrAttempts[iAddrCnt] = 0;
 	iAddrCnt++;
 	// attempt to use this one
-	if (!iNextConnAttempt) iNextConnAttempt = time(NULL);
+	if (!iNextConnAttempt) iNextConnAttempt = time(nullptr);
 	// announce
 	if (fAnnounce)
 		if (!pParent->BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Addr, C4PacketAddr(getID(), addr))))
@@ -189,7 +189,7 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 	addr.sin_family = AF_INET;
 
 	// get local address(es)
-	in_addr **ppAddr = NULL;
+	in_addr **ppAddr = nullptr;
 #ifdef HAVE_WINSOCK
 	bool fGotWinSock = AcquireWinSock();
 	if (fGotWinSock)
@@ -203,7 +203,7 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 		if (ph)
 		{
 			if (ph->h_addrtype != AF_INET)
-				ph = NULL;
+				ph = nullptr;
 			else
 				ppAddr = reinterpret_cast<in_addr **>(ph->h_addr_list);
 		}
@@ -212,16 +212,16 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 	std::vector<in_addr*> addr_vec;
 	struct ifaddrs* addrs;
 	getifaddrs(&addrs);
-	for(struct ifaddrs* addr = addrs; addr != NULL; addr = addr->ifa_next)
+	for(struct ifaddrs* addr = addrs; addr != nullptr; addr = addr->ifa_next)
 	{
 		struct sockaddr* ad = addr->ifa_addr;
-		if(ad == NULL) continue;
+		if(ad == nullptr) continue;
 
 		if(ad->sa_family == AF_INET && (~addr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4 devices
 			addr_vec.push_back(&reinterpret_cast<sockaddr_in*>(ad)->sin_addr);
 	}
 
-	addr_vec.push_back(NULL);
+	addr_vec.push_back(nullptr);
 	ppAddr = &addr_vec[0];
 #endif
 
@@ -287,14 +287,14 @@ void C4Network2Client::ClearGraphs()
 	{
 		if (Game.pNetworkStatistics) Game.pNetworkStatistics->statPings.RemoveGraph(pstatPing);
 		delete pstatPing;
-		pstatPing = NULL;
+		pstatPing = nullptr;
 	}
 }
 
 // *** C4Network2ClientList
 
 C4Network2ClientList::C4Network2ClientList(C4Network2IO *pIO)
-		: pIO(pIO), pFirst(NULL), pLocal(NULL)
+		: pIO(pIO), pFirst(nullptr), pLocal(nullptr)
 {
 
 }
@@ -309,13 +309,13 @@ C4Network2Client *C4Network2ClientList::GetClientByID(int32_t iID) const
 	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getID() == iID)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Network2Client *C4Network2ClientList::GetNextClientAfterID(int32_t iSmallerClientID) const
 {
 	// return client with smallest ID > iSmallerClientID
-	C4Network2Client *pBest = NULL;
+	C4Network2Client *pBest = nullptr;
 	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getID() > iSmallerClientID)
 			if (!pBest || pBest->getID() > pClient->getID())
@@ -328,7 +328,7 @@ C4Network2Client *C4Network2ClientList::GetClient(const char *szName) const
 	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (SEqual(pClient->getName(), szName))
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Network2Client *C4Network2ClientList::GetClient(C4Network2IOConnection *pConn) const
@@ -336,7 +336,7 @@ C4Network2Client *C4Network2ClientList::GetClient(C4Network2IOConnection *pConn)
 	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->hasConn(pConn))
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 C4Network2Client *C4Network2ClientList::GetClient(const C4ClientCore &CCore, int32_t iMaxDiffLevel)
@@ -344,7 +344,7 @@ C4Network2Client *C4Network2ClientList::GetClient(const C4ClientCore &CCore, int
 	for (C4Network2Client *pClient = pFirst; pClient; pClient = pClient->pNext)
 		if (pClient->getCore().getDiffLevel(CCore) <= iMaxDiffLevel)
 			return pClient;
-	return NULL;
+	return nullptr;
 }
 
 unsigned int C4Network2ClientList::Count()
@@ -379,7 +379,7 @@ C4Network2Client *C4Network2ClientList::RegClient(C4Client *pClient)
 	if (pClient->getNetClient())
 		return pClient->getNetClient();
 	// find insert position
-	C4Network2Client *pPos = pFirst, *pLast = NULL;
+	C4Network2Client *pPos = pFirst, *pLast = nullptr;
 	for (; pPos; pLast = pPos, pPos = pPos->getNext())
 		if (pPos->getID() > pClient->getID())
 			break;
@@ -428,7 +428,7 @@ void C4Network2ClientList::Clear()
 	if (pClientList)
 	{
 		C4ClientList *poClientList = pClientList;
-		pClientList = NULL;
+		pClientList = nullptr;
 		poClientList->ClearNetwork();
 	}
 	// delete clients
@@ -436,7 +436,7 @@ void C4Network2ClientList::Clear()
 	{
 		DeleteClient(pFirst);
 	}
-	pLocal = NULL;
+	pLocal = nullptr;
 }
 
 bool C4Network2ClientList::BroadcastMsgToConnClients(const C4NetIOPacket &rPkt)

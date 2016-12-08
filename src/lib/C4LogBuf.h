@@ -50,7 +50,7 @@ public:
 	C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szIndentChars="    ", bool fDynamicGrow = false, bool fMarkup = true); // ctor
 	~C4LogBuffer();           // dtor
 
-	void AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, CStdFont *pFirstLineFont=NULL);           // append message line to buffer; overwriting old lines if necessary
+	void AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, CStdFont *pFirstLineFont=nullptr);           // append message line to buffer; overwriting old lines if necessary
 	const char *GetLine(int iLineIndex, CStdFont **ppFont, DWORD *pdwClr, bool *pNewParagraph) const; // get indexed line - negative indices -n return last-n'th-line
 	void Clear();                              // clear all lines
 

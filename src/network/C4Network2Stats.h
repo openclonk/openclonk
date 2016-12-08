@@ -116,7 +116,7 @@ public:
 
 	// base graph has always just one series (self)
 	virtual int GetSeriesCount() const { return 1; }
-	virtual const C4Graph *GetSeries(int iIndex) const { return iIndex ? NULL : this; }
+	virtual const C4Graph *GetSeries(int iIndex) const { return iIndex ? nullptr : this; }
 
 	virtual void SetAverageTime(int iToTime);
 	virtual void Update() const; // make sure average times are correctly calculated

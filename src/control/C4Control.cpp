@@ -236,7 +236,7 @@ void C4ControlScript::Execute() const
 	if (!Game.Parameters.AllowDebug) return;
 
 	// execute
-	C4PropList *pPropList = NULL;
+	C4PropList *pPropList = nullptr;
 	if (iTargetObj == SCOPE_Console)
 		pPropList = ::GameScript.ScenPropList.getPropList();
 	else if (iTargetObj == SCOPE_Global)
@@ -244,7 +244,7 @@ void C4ControlScript::Execute() const
 	else if (!(pPropList = ::Objects.SafeObjectPointer(iTargetObj)))
 		// default: Fallback to global context
 		pPropList = ::ScriptEngine.GetPropList();
-	C4Value rVal(AulExec.DirectExec(pPropList, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
+	C4Value rVal(AulExec.DirectExec(pPropList, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : nullptr));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
 	if ( (pDebug = C4AulDebug::GetDebugger()) )
@@ -259,7 +259,7 @@ void C4ControlScript::Execute() const
 	bool is_local_script = true;
 	if (!LocalControl())
 	{
-		C4Network2Client *pClient = NULL;
+		C4Network2Client *pClient = nullptr;
 		if (::Network.isEnabled())
 		{
 			pClient = ::Network.Clients.GetClientByID(iByClient);
@@ -419,7 +419,7 @@ void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
 
 void C4ControlPlayerControl::Execute() const
 {
-	C4PlayerControl *pTargetCtrl = NULL;
+	C4PlayerControl *pTargetCtrl = nullptr;
 	if (iPlr == -1)
 	{
 		// neutral control packet: Execute in global control
@@ -740,7 +740,7 @@ void C4ControlPlayerAction::CompileFunc(StdCompiler *pComp)
 		{ "SetTeam",               CPA_SetTeam  },
 		{ "InitScenarioPlayer",    CPA_InitScenarioPlayer  },
 		{ "InitPlayerControl",     CPA_InitPlayerControl  },
-		{ NULL, CPA_NoAction }
+		{ nullptr, CPA_NoAction }
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdapt<Action, int32_t>(action, ActionNames), "Action", CPA_NoAction));
 	pComp->Value(mkNamingAdapt(target, "Target", NO_OWNER));
@@ -1097,7 +1097,7 @@ void C4ControlJoinPlayer::Execute() const
 			else if (pInfo->GetType() == C4PT_Script)
 			{
 				// script players may join without data
-				Game.JoinPlayer(NULL, iAtClient, pClient->getName(), pInfo);
+				Game.JoinPlayer(nullptr, iAtClient, pClient->getName(), pInfo);
 			}
 			else
 			{
@@ -1149,7 +1149,7 @@ void C4ControlJoinPlayer::Strip()
 			{ EraseFile(PlayerFilename.getData()); return; }
 		// remove bigicon, if the file size is too large
 		size_t iBigIconSize=0;
-		if (Grp.FindEntry(C4CFN_BigIcon, NULL, &iBigIconSize))
+		if (Grp.FindEntry(C4CFN_BigIcon, nullptr, &iBigIconSize))
 			if (iBigIconSize > C4NetResMaxBigicon*1024)
 				Grp.Delete(C4CFN_BigIcon);
 		Grp.Close();
@@ -1220,9 +1220,9 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 // *** C4ControlEMMoveObject
 
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
-    int32_t iObjectNum, int32_t *pObjects, const char *szScript)
+    int32_t iObjectNum, int32_t *pObjects, const char *szScript, bool drag_finished)
 		: eAction(eAction), tx(tx), ty(ty), iTargetObj(pTargetObj ? pTargetObj->Number : 0),
-		iObjectNum(iObjectNum), pObjects(pObjects), StringParam(szScript, true)
+		iObjectNum(iObjectNum), pObjects(pObjects), StringParam(szScript, true), drag_finished(drag_finished)
 {
 
 }
@@ -1239,7 +1239,7 @@ C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Rea
 
 C4ControlEMMoveObject::~C4ControlEMMoveObject()
 {
-	delete [] pObjects; pObjects = NULL;
+	delete [] pObjects; pObjects = nullptr;
 }
 
 void C4ControlEMMoveObject::MoveObject(C4Object *moved_object, bool move_forced) const
@@ -1252,8 +1252,11 @@ void C4ControlEMMoveObject::MoveObject(C4Object *moved_object, bool move_forced)
 	moved_object->ForcePosition(moved_object->fix_x + tx, moved_object->fix_y + ty);
 	moved_object->xdir = moved_object->ydir = 0;
 	moved_object->Mobile = false;
-	C4AulParSet pars(C4VInt(old_x), C4VInt(old_y));
-	moved_object->Call(PSF_EditCursorMoved, &pars);
+	C4AulParSet pars(C4VInt(old_x), C4VInt(old_y), C4VBool(drag_finished));
+	if (moved_object->Call(PSF_EditCursorMoved, &pars))
+	{
+		::Console.EditCursor.InvalidateSelection();
+	}
 }
 
 void C4ControlEMMoveObject::Execute() const
@@ -1277,7 +1280,7 @@ void C4ControlEMMoveObject::Execute() const
 					{
 						pObj = pObj->Action.Target;
 						if (!pObj) break; // leftover action cancelled next frame
-						for (int j = 0; j < iObjectNum; ++j) if (pObjects[j] == pObj->Number) { pObj = NULL; break; } // ensure we aren't moving twice
+						for (int j = 0; j < iObjectNum; ++j) if (pObjects[j] == pObj->Number) { pObj = nullptr; break; } // ensure we aren't moving twice
 						if (!pObj) break;
 						MoveObject(pObj, eAction==EMMO_MoveForced);
 					}
@@ -1354,7 +1357,7 @@ void C4ControlEMMoveObject::Execute() const
 		}
 		// Create object outside or contained
 		// If container is desired but not valid, do nothing (don't create object outside instead)
-		C4Object *container = NULL;
+		C4Object *container = nullptr;
 		if (iTargetObj)
 		{
 			container = ::Objects.SafeObjectPointer(iTargetObj);
@@ -1487,7 +1490,7 @@ void C4ControlMessage::Execute() const
 {
 	const char *szMessage = Message.getData();
 	// get player
-	C4Player *pPlr = (iPlayer < 0 ? NULL : ::Players.Get(iPlayer));
+	C4Player *pPlr = (iPlayer < 0 ? nullptr : ::Players.Get(iPlayer));
 	// security
 	if (pPlr && pPlr->AtClient != iByClient) return;
 	// do not record message as control, because it is not synced!
@@ -1514,6 +1517,12 @@ void C4ControlMessage::Execute() const
 		// to lobby
 		if (pLobby)
 			pLobby->OnMessage(Game.Clients.getClientByID(iByClient), str.getData());
+<<<<<<< HEAD
+=======
+#ifndef USE_CONSOLE
+		else
+#endif
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
 		// to log
 		Log(str.getData());
 		break;
@@ -1578,7 +1587,7 @@ void C4ControlMessage::Execute() const
 		// tehehe, sound!
 		C4Client *singer = Game.Clients.getClientByID(iByClient);
 		if (!singer || !singer->IsIgnored())
-			if (!StartSoundEffect(szMessage, false, 100, NULL))
+			if (!StartSoundEffect(szMessage, false, 100, nullptr))
 				// probably wrong sound file name
 				break;
 		// Sound icon even if someone you ignored just tried. So you know you still need to ignore.
@@ -1925,4 +1934,20 @@ void C4ControlReInitScenario::Execute() const
 	}
 	// Load that section!
 	::Game.LoadScenarioSection(reinit_section_name, C4S_REINIT_SCENARIO);
+}
+
+void C4ControlEditGraph::CompileFunc(StdCompiler *comp)
+{
+	comp->Value(mkNamingAdapt(path, "Path", StdCopyStrBuf()));
+	comp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(action), "Action", CEG_None));
+	comp->Value(mkNamingAdapt(index, "Index", -1));
+	comp->Value(mkNamingAdapt(x, "x", 0));
+	comp->Value(mkNamingAdapt(y, "y", 0));
+	C4ControlPacket::CompileFunc(comp);
+}
+
+void C4ControlEditGraph::Execute() const
+{
+	// Forward to console for execution
+	::Console.EditGraphControl(this);
 }

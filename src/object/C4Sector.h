@@ -99,7 +99,7 @@ public:
 	C4LArea(C4LSectors *pSectors, C4Object *pObj) // initializing constructor
 	{ Set(pSectors, pObj); }
 
-	inline void Clear() { pFirst=pOut=NULL; } // zero sector
+	inline void Clear() { pFirst=pOut=nullptr; } // zero sector
 
 	bool operator == (const C4LArea &Area) const;
 
@@ -116,11 +116,11 @@ public:
 	bool Contains(C4LSector *pSct) const; // return whether sector is contained in area
 
 	inline C4ObjectList *FirstObjects(C4LSector **ppSct) // get first object list of this area
-	{ *ppSct=NULL; return NextObjects(NULL, ppSct); }
+	{ *ppSct=nullptr; return NextObjects(nullptr, ppSct); }
 	C4ObjectList *NextObjects(C4ObjectList *pPrev, C4LSector **ppSct); // get next object list of this area
 
 	inline C4ObjectList *FirstObjectShapes(C4LSector **ppSct) // get first object shapes list of this area
-	{ *ppSct=NULL; return NextObjectShapes(NULL, ppSct); }
+	{ *ppSct=nullptr; return NextObjectShapes(nullptr, ppSct); }
 	C4ObjectList *NextObjectShapes(C4ObjectList *pPrev, C4LSector **ppSct); // get next object shapes list of this area
 
 	void DebugRec(class C4Object *pObj, char cMarker);

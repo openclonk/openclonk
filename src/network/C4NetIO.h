@@ -168,7 +168,7 @@ public:
 	const C4NetIO::addr_t &getAddr() const { return addr; }
 
 	uint8_t     getStatus()const { return getSize() ? *getBufPtr<char>(*this) : 0; }
-	const char *getPData() const { return getSize() ? getBufPtr<char>(*this, 1) : NULL; }
+	const char *getPData() const { return getSize() ? getBufPtr<char>(*this, 1) : nullptr; }
 	size_t      getPSize() const { return getSize() ? getSize() - 1 : 0; }
 	StdBuf      getPBuf()  const { return getSize() ? getPart(1, getSize() - 1) : getRef(); }
 
@@ -678,7 +678,7 @@ protected:
 
 		// helpers
 		bool DoConn(bool fMC);
-		bool DoCheck(int iAskCnt = 0, int iMCAskCnt = 0, unsigned int *pAskList = NULL);
+		bool DoCheck(int iAskCnt = 0, int iMCAskCnt = 0, unsigned int *pAskList = nullptr);
 
 		// sending
 		bool SendDirect(const Packet &rPacket, unsigned int iNr = ~0);

@@ -15,6 +15,14 @@ public func Place(int amount, proplist area, ...)
 public func IsValuable() { return true; }
 public func QueryRebuy() { return true; }
 
+public func SaveScenarioObject(props, ...)
+{
+	// Do not save diamonds in sockets
+	if (!inherited(props, ...)) return false;
+	if (Contained() && Contained()->GetID() == Diamond_Socket) return false;
+	return true;
+}
+
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;

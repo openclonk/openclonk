@@ -126,7 +126,7 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	// higher-level effects should not be inserted during the process of removing or adding a lower-level effect
 	// because that would cause a wrong initialization order
 	// (hardly ever causing trouble, however...)
-	C4Effect *pLastRemovedEffect=NULL;
+	C4Effect *pLastRemovedEffect=nullptr;
 	C4AulFunc * pFn;
 	if (!GetCallbackScript())
 	{
@@ -158,7 +158,7 @@ C4Effect::C4Effect()
 	// defaults
 	iPriority=iTime=iInterval=0;
 	CommandTarget.Set0();
-	pNext = NULL;
+	pNext = nullptr;
 }
 
 C4Effect::~C4Effect()
@@ -168,7 +168,7 @@ C4Effect::~C4Effect()
 	while ((pEffect = pNext))
 	{
 		pNext = pEffect->pNext;
-		pEffect->pNext = NULL;
+		pEffect->pNext = nullptr;
 		delete pEffect;
 	}
 }
@@ -210,7 +210,7 @@ void C4Effect::SetDead()
 C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority)
 {
 	// safety
-	if (!szName) return NULL;
+	if (!szName) return nullptr;
 	// check all effects
 	C4Effect *pEff = this;
 	do
@@ -230,7 +230,7 @@ C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority
 	}
 	while ((pEff=pEff->pNext));
 	// nothing found
-	return NULL;
+	return nullptr;
 }
 
 int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
@@ -251,8 +251,8 @@ C4Effect* C4Effect::Check(const char *szCheckEffect, int32_t iPrio, int32_t iTim
 	// priority=1: always OK; no callbacks
 	if (iPrio == 1) return 0;
 	// check this and other effects
-	C4Effect *pAddToEffect = NULL; bool fDoTempCallsForAdd = false;
-	C4Effect *pLastRemovedEffect=NULL;
+	C4Effect *pAddToEffect = nullptr; bool fDoTempCallsForAdd = false;
+	C4Effect *pLastRemovedEffect=nullptr;
 	for (C4Effect *pCheck = this; pCheck; pCheck = pCheck->pNext)
 	{
 		if (!pCheck->IsDead() && pCheck->iPriority >= iPrio)
@@ -313,7 +313,7 @@ void C4Effect::Execute(C4Effect **ppEffectList)
 		{
 			// delete it, then
 			C4Effect *pNextEffect = pEffect->pNext;
-			pEffect->pNext = NULL;
+			pEffect->pNext = nullptr;
 			delete pEffect;
 			// next effect
 			*ppPrevEffect = pEffect = pNextEffect;
@@ -343,7 +343,7 @@ void C4Effect::Execute(C4Effect **ppEffectList)
 void C4Effect::Kill()
 {
 	// active?
-	C4Effect *pLastRemovedEffect=NULL;
+	C4Effect *pLastRemovedEffect=nullptr;
 	if (IsActive())
 		// then temp remove all higher priority effects
 		TempRemoveUpperEffects(false, &pLastRemovedEffect);
@@ -404,7 +404,7 @@ void C4Effect::DoDamage(int32_t &riDamage, int32_t iDamageType, int32_t iCausePl
 	while ((pEff = pEff->pNext) && riDamage);
 }
 
-static C4Object * Obj(C4PropList * p) { return p ? p->GetObject() : NULL; }
+static C4Object * Obj(C4PropList * p) { return p ? p->GetObject() : nullptr; }
 
 C4Value C4Effect::DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
@@ -550,7 +550,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4PropList * Owner, C4ValueNumber
 	// read ID
 	if (pComp->isDecompiler())
 	{
-		const C4PropListStatic * p = CommandTarget.getPropList() ? CommandTarget._getPropList()->IsStatic() : NULL;
+		const C4PropListStatic * p = CommandTarget.getPropList() ? CommandTarget._getPropList()->IsStatic() : nullptr;
 		if (p)
 			p->RefCompileFunc(pComp, numbers);
 		else

@@ -12,7 +12,7 @@ private func Initialize()
 {
 	AddTimer("CheckCoverage", 1);
 	this.Visibility = [VIS_Select];
-	_inherited();
+	_inherited(...);
 }
 
 private func CheckCoverage()

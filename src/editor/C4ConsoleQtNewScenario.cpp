@@ -36,7 +36,7 @@ C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo(C4ConsoleQtDefiniti
 }
 
 C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo()
-	: parent(NULL), was_opened(true), is_root(true), selected(false), disabled(false)
+	: parent(nullptr), was_opened(true), is_root(true), selected(false), disabled(false)
 {
 	// Init as root: List definitions in root paths
 	// Objects.ocd is always there (even if not actually found) and always first
@@ -101,7 +101,7 @@ bool C4ConsoleQtDefinitionFileListModel::DefFileInfo::OpenGroup()
 	children.reserve(grp.EntryCount(C4CFN_DefFiles));
 	grp.ResetSearch();
 	while (grp.FindNextEntry(C4CFN_DefFiles, &child_filename))
-		children.emplace_back(new DefFileInfo(this, child_filename.getData(), NULL));
+		children.emplace_back(new DefFileInfo(this, child_filename.getData(), nullptr));
 	return true;
 }
 
@@ -114,7 +114,7 @@ int32_t C4ConsoleQtDefinitionFileListModel::DefFileInfo::GetChildCount()
 C4ConsoleQtDefinitionFileListModel::DefFileInfo *C4ConsoleQtDefinitionFileListModel::DefFileInfo::GetChild(int32_t index)
 {
 	if (!was_opened) OpenGroup();
-	if (index >= children.size()) return NULL;
+	if (index >= children.size()) return nullptr;
 	return children[index].get();
 }
 
@@ -243,6 +243,11 @@ C4ConsoleQtNewScenarioDlg::C4ConsoleQtNewScenarioDlg(class QMainWindow *parent_w
 	delete m;
 }
 
+bool C4ConsoleQtNewScenarioDlg::IsHostAsNetwork() const
+{
+	return ui.startInNetworkCheckbox->isChecked();
+}
+
 bool C4ConsoleQtNewScenarioDlg::SaveScenario(C4Group &grp)
 {
 	// Save c4s
@@ -351,7 +356,7 @@ void C4ConsoleQtNewScenarioDlg::BrowsePressed()
 	QString new_file;
 	for (;;)
 	{
-		new_file = QFileDialog::getSaveFileName(this, LoadResStr("IDS_CNS_NEWSCENARIO"), Config.General.UserDataPath, QString("%1 (%2)").arg(LoadResStr("IDS_CNS_SCENARIOFILE")).arg(C4CFN_ScenarioFiles), NULL, QFileDialog::DontConfirmOverwrite);
+		new_file = QFileDialog::getSaveFileName(this, LoadResStr("IDS_CNS_NEWSCENARIO"), Config.General.UserDataPath, QString("%1 (%2)").arg(LoadResStr("IDS_CNS_SCENARIOFILE")).arg(C4CFN_ScenarioFiles), nullptr, QFileDialog::DontConfirmOverwrite);
 		if (!new_file.size()) return;
 		// Extension must be .ocs
 		if (!new_file.endsWith(C4CFN_ScenarioFiles + 1)) new_file += (C4CFN_ScenarioFiles + 1);

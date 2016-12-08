@@ -35,7 +35,7 @@ C4FoWLight::C4FoWLight(C4Object *pObj)
 	  iFadeout(pObj->lightFadeoutRange),
 	  iSize(20), gBright(0.5), colorR(1.0), colorG(1.0), colorB(1.0),
 	  colorV(1.0), colorL(1.0),
-	  pNext(NULL),
+	  pNext(nullptr),
 	  pObj(pObj),
 	  sections(4)
 {

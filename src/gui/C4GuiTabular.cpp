@@ -167,9 +167,9 @@ namespace C4GUI
 // ----------------------------------------------------
 // Tabular
 
-	Tabular::Tabular(C4Rect &rtBounds, TabPosition eTabPos) : Control(rtBounds), pActiveSheet(NULL), eTabPos(eTabPos), iMaxTabWidth(0),
+	Tabular::Tabular(C4Rect &rtBounds, TabPosition eTabPos) : Control(rtBounds), pActiveSheet(nullptr), eTabPos(eTabPos), iMaxTabWidth(0),
 			iCaptionLengthTotal(0), iCaptionScrollPos(0), fScrollingLeft(false), fScrollingRight(false), fScrollingLeftDown(false),
-			fScrollingRightDown(false), iSheetMargin(4), fDrawSelf(true), pfctBack(NULL), pfctClip(NULL), pfctIcons(NULL), pSheetCaptionFont(NULL)
+			fScrollingRightDown(false), iSheetMargin(4), fDrawSelf(true), pfctBack(nullptr), pfctClip(nullptr), pfctIcons(nullptr), pSheetCaptionFont(nullptr)
 	{
 		// calc client rect
 		UpdateOwnPos();
@@ -205,7 +205,7 @@ namespace C4GUI
 		}
 		else
 		{
-			pKeySelUp = pKeySelDown = pKeySelUp2 = pKeySelDown2 = pKeyCloseTab = NULL;
+			pKeySelUp = pKeySelDown = pKeySelUp2 = pKeySelDown2 = pKeyCloseTab = nullptr;
 		}
 		SheetsChanged();
 	}
@@ -255,7 +255,7 @@ namespace C4GUI
 
 	void Tabular::SelectionChanged(bool fByUser)
 	{
-		Control *pFocusCtrl = NULL;
+		Control *pFocusCtrl = nullptr;
 		Dialog *pDlg = GetDlg();
 		if (pDlg) pFocusCtrl = pDlg->GetFocus();
 		// any selection?
@@ -422,7 +422,7 @@ namespace C4GUI
 					vtx[6] = d+iTabWidth; vtx[7] = y0;
 				}
 				DWORD dwClr = (pSheet == pActiveSheet) ? C4GUI_ActiveTabBGColor : C4GUI_StandardBGColor;
-				pDraw->DrawQuadDw(cgo.Surface, vtx, dwClr, dwClr, dwClr, dwClr, NULL);
+				pDraw->DrawQuadDw(cgo.Surface, vtx, dwClr, dwClr, dwClr, dwClr, nullptr);
 				// draw caption frame
 				// TODO: Switch to PerformMultiLines
 				pDraw->DrawLineDw(cgo.Surface, (float)vtx[0]-1     , (float)vtx[1]      , (float)vtx[2]-1    ,(float)vtx[3]        , C4GUI_BorderColorA1);
@@ -441,7 +441,7 @@ namespace C4GUI
 				ad0=d; ad1=d+(fLeft ? iTabHeight : iTabWidth);
 				aCptTxX = iCptTextX; aCptTxY = iCptTextY;
 				// draw active caption
-				if (!fGfx) pSheet->DrawCaption(cgo, iCptTextX, iCptTextY, iMaxTabWidth, fLeft, true, HasDrawFocus(), NULL, NULL, NULL);
+				if (!fGfx) pSheet->DrawCaption(cgo, iCptTextX, iCptTextY, iMaxTabWidth, fLeft, true, HasDrawFocus(), nullptr, nullptr, nullptr);
 			}
 			else
 			{

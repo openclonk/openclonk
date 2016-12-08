@@ -114,8 +114,13 @@ C4StringTable::C4StringTable()
 	P[P_Hgt] = "Hgt";
 	P[P_wdt] = "wdt";
 	P[P_hgt] = "hgt";
+	P[P_Vertices] = "Vertices";
+	P[P_Edges] = "Edges";
+	P[P_LineWidth] = "LineWidth";
 	P[P_OffX] = "OffX";
 	P[P_OffY] = "OffY";
+	P[P_Proplist] = "Proplist";
+	P[P_proplist] = "proplist";
 	P[P_FacetBase] = "FacetBase";
 	P[P_FacetTopFace] = "FacetTopFace";
 	P[P_FacetTargetStretch] = "FacetTargetStretch";
@@ -260,6 +265,12 @@ C4StringTable::C4StringTable()
 	P[P_Value] = "Value";
 	P[P_DefaultValueFunction] = "DefaultValueFunction";
 	P[P_Delegate] = "Delegate";
+	P[P_VertexDelegate] = "VertexDelegate";
+	P[P_EdgeDelegate] = "EdgeDelegate";
+	P[P_HorizontalFix] = "HorizontalFix";
+	P[P_VerticalFix] = "VerticalFix";
+	P[P_StructureFix] = "StructureFix";
+	P[P_OnUpdate] = "OnUpdate";
 	P[P_Min] = "Min";
 	P[P_Max] = "Max";
 	P[P_Set] = "Set";
@@ -293,6 +304,7 @@ C4StringTable::C4StringTable()
 	P[P_EditorInitialize] = "EditorInitialize";
 	P[P_EditorPlacementLimit] = "EditorPlacementLimit";
 	P[P_Sorted] = "Sorted";
+	P[P_Uniforms] = "Uniforms";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

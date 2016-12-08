@@ -34,7 +34,7 @@
 	
 	Most objects which can be stacked might want to set different pictures
 	and ingame graphics for different counts of objects. This can be done
-	by overloading UpdatePicture(), but remember to write _inherited() then.
+	by overloading UpdatePicture(), but remember to write _inherited(...) then.
 --*/
 
 

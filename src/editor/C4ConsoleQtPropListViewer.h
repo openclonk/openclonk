@@ -368,7 +368,7 @@ public:
 		} storage_type;
 		int32_t priority; // Custom sort order
 
-		Option() : type(C4V_Any), adelegate(NULL), storage_type(StorageNone), priority(0) {}
+		Option() : type(C4V_Any), adelegate(nullptr), storage_type(StorageNone), priority(0) {}
 	};
 
 protected:
@@ -388,9 +388,9 @@ protected:
 	void ReserveOptions(int32_t num);
 	QStandardItemModel *CreateOptionModel() const;
 public:
-	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=NULL);
+	C4PropertyDelegateEnum(const class C4PropertyDelegateFactory *factory, C4PropList *props, const C4ValueArray *poptions=nullptr);
 
-	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=NULL);
+	void AddTypeOption(C4String *name, C4V_Type type, const C4Value &val, C4PropertyDelegate *adelegate=nullptr);
 	void AddConstOption(C4String *name, const C4Value &val, C4String *group=nullptr, C4String *sound_name=nullptr);
 
 	void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const override;
@@ -525,6 +525,8 @@ public:
 	bool HasCustomPaint() const override { return true; }
 	bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const override;
 	QString GetDisplayString(const C4Value &v, class C4Object *obj, bool short_names) const override { return QString(); }
+
+	virtual void ConnectSignals(C4ConsoleQtShape *shape, const C4PropertyPath &property_path) const;
 };
 
 class C4PropertyDelegateRect : public C4PropertyDelegateShape
@@ -552,6 +554,40 @@ class C4PropertyDelegatePoint : public C4PropertyDelegateShape
 	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
 public:
 	C4PropertyDelegatePoint(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegateGraph : public C4PropertyDelegateShape
+{
+	bool horizontal_fix = false;
+	bool vertical_fix = false;
+	bool structure_fix = false;
+	C4RefCntPointer<C4String> update_callback;
+
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+protected:
+	bool IsVertexPasteValid(const C4Value &val) const;
+	bool IsEdgePasteValid(const C4Value &val) const;
+public:
+	C4PropertyDelegateGraph(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+
+	void ConnectSignals(C4ConsoleQtShape *shape, const C4PropertyPath &property_path) const override;
+};
+
+class C4PropertyDelegatePolyline : public C4PropertyDelegateGraph
+{
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegatePolyline(const class C4PropertyDelegateFactory *factory, C4PropList *props);
+	bool IsPasteValid(const C4Value &val) const override;
+};
+
+class C4PropertyDelegatePolygon : public C4PropertyDelegateGraph
+{
+	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
+public:
+	C4PropertyDelegatePolygon(const class C4PropertyDelegateFactory *factory, C4PropList *props);
 	bool IsPasteValid(const C4Value &val) const override;
 };
 
@@ -634,7 +670,7 @@ struct C4ConsoleQtPropListModelProperty
 	int32_t group_idx;
 
 	// Each property may be connected to one shape shown in the viewport for editing
-	C4ConsoleQtShapeHolder shape;
+	C4ConsoleQtShapeHolder *shape;
 	const C4PropertyDelegate *shape_delegate;
 	C4PropertyPath shape_property_path;
 
@@ -679,6 +715,7 @@ private:
 	C4PropertyDelegateFactory *delegate_factory;
 	QItemSelectionModel *selection_model;
 	bool layout_valid; // set to false when property numbers change
+	std::map<std::string, C4ConsoleQtShapeHolder> shapes; // shapes currently shown in editor. Indexed by get path
 public:
 	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
 	~C4ConsoleQtPropListModel();
@@ -686,7 +723,7 @@ public:
 	void SetSelectionModel(QItemSelectionModel *m) { selection_model = m; }
 	QItemSelectionModel *GetSelectionModel() const { return selection_model; }
 
-	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *ignore_overridden, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
+	bool AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, const C4PropertyPath &group_target_path, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index);
 	bool AddEffectGroup(int32_t group_index, C4Object *base_object);
 	void SetBasePropList(C4PropList *new_proplist); // Clear stack and select new proplist
 	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
@@ -716,6 +753,7 @@ public:
 	void RemoveArrayElement();
 	bool IsTargetReadonly() const;
 	C4ConsoleQtPropListModel::Property *GetPropByIndex(const QModelIndex &index) const;
+	class C4ConsoleQtShape *GetShapeByPropertyPath(const char *property_path);
 
 public:
 	int rowCount(const QModelIndex & parent = QModelIndex()) const override;

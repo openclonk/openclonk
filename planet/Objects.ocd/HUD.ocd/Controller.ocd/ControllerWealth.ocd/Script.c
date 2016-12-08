@@ -53,7 +53,7 @@ public func HideWealth()
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User);
-			var controller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+			var controller = FindObject(Find_ID(Library_HUDController->GetGUIControllerID()), Find_Owner(plr));
 			if (controller) controller->HideWealth();
 		}
 	} else {

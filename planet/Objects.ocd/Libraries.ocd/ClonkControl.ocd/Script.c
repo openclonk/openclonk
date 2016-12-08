@@ -13,7 +13,7 @@
 	(object) menu control, hotkey controls, usage and it's callbacks and
 	forwards to script.
 	
-	Objects that inherit this object need to return _inherited() in the
+	Objects that inherit this object need to return _inherited(...) in the
 	following callbacks (if defined):
 		Construction, Collection2, Ejection, RejectCollect, Departure,
 		Entrance, AttachTargetLost, CrewSelection, Death,

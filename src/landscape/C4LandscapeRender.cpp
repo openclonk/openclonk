@@ -122,7 +122,7 @@ bool C4LandscapeRenderGL::ReInit(int32_t iWidth, int32_t iHeight)
 	for (int i = 0; i < C4LR_SurfaceCount; i++)
 	{
 		delete Surfaces[i];
-		Surfaces[i] = NULL;
+		Surfaces[i] = nullptr;
 	}
 
 	// Allocate new landscape textures
@@ -143,7 +143,7 @@ void C4LandscapeRenderGL::Clear()
 	for (i = 0; i < C4LR_SurfaceCount; i++)
 	{
 		delete Surfaces[i];
-		Surfaces[i] = NULL;
+		Surfaces[i] = nullptr;
 	}
 	if (hMaterialTexture) glDeleteTextures(1, &hMaterialTexture);
 	hMaterialTexture = 0;
@@ -204,7 +204,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	int32_t iNormalDepth = iMaterialTextureDepth / 2;
 
 	// Find the largest texture
-	C4Texture *pTex; C4Surface *pRefSfc = NULL;
+	C4Texture *pTex; C4Surface *pRefSfc = nullptr;
 	for(int iTexIx = 0; (pTex = pTexs->GetTexture(pTexs->GetTexture(iTexIx))); iTexIx++)
 		if(C4Surface *pSfc = pTex->Surface32)
 			if (!pRefSfc || pRefSfc->Wdt < pSfc->Wdt || pRefSfc->Hgt < pSfc->Hgt)
@@ -602,7 +602,7 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	AttributeNames[C4LRA_Position] = "oc_Position";
 	AttributeNames[C4LRA_LandscapeTexCoord] = "oc_LandscapeTexCoord";
 	AttributeNames[C4LRA_LightTexCoord] = "oc_LightTexCoord"; // unused if no dynamic light
-	AttributeNames[C4LRA_Count] = NULL;
+	AttributeNames[C4LRA_Count] = nullptr;
 
 	// Initialise!
 	if (!shader.Init(name, UniformNames, AttributeNames)) {
@@ -650,7 +650,7 @@ bool C4LandscapeRenderGL::InitVBO()
 	assert(hVBO == 0);
 	glGenBuffers(1, &hVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, hVBO);
-	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), NULL, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), nullptr, GL_STREAM_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// Also allocate the VAO IDs
 	assert(hVAOIDLight == 0);
@@ -981,6 +981,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light->getFoW()->Ambient.GetBrightness());
 	}
 
+	pDraw->scriptUniform.Apply(ShaderCall);
+
 	// Start binding textures
 	if(shader->HaveUniform(C4LRU_LandscapeTex))
 	{
@@ -1028,7 +1030,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		BuildMatMap(MatMap);
 		glBindTexture(GL_TEXTURE_1D, matMapTexture);
 		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, 2*256, 0, GL_RGBA, GL_UNSIGNED_BYTE, MatMap);
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	// Calculate coordinates into landscape texture

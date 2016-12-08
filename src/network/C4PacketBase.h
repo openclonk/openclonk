@@ -33,7 +33,7 @@ public:
 	// conversion (using above functions)
 	C4NetIOPacket pack(const C4NetIO::addr_t &addr = C4NetIO::addr_t()) const;
 	C4NetIOPacket pack(uint8_t cStatus, const C4NetIO::addr_t &addr = C4NetIO::addr_t()) const;
-	void unpack(const C4NetIOPacket &Pkt, char *pStatus = NULL);
+	void unpack(const C4NetIOPacket &Pkt, char *pStatus = nullptr);
 
 };
 
@@ -166,6 +166,7 @@ enum C4PacketType
 	CID_EMMoveObj     = CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
 	CID_ReInitScenario= CID_First | 0x32,
+	CID_EditGraph     = CID_First | 0x33,
 
 	CID_DebugRec      = CID_First | 0x40,
 	CID_MenuCommand   = CID_First | 0x41,

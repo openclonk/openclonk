@@ -22,7 +22,7 @@
 
 
 C4FoW::C4FoW()
-	: pLights(NULL), deleted_lights(nullptr)
+	: pLights(nullptr), deleted_lights(nullptr)
 {
 }
 
@@ -89,21 +89,21 @@ C4Shader *C4FoW::GetFramebufShader()
 		const char *szUniforms[C4FoWFSU_Count + 1];
 		szUniforms[C4FoWFSU_ProjectionMatrix] = "projectionMatrix";
 		szUniforms[C4FoWFSU_Texture] = "tex";
-		szUniforms[C4FoWFSU_Count] = NULL;
+		szUniforms[C4FoWFSU_Count] = nullptr;
 
 		const char *szAttributes[C4FoWFSA_Count + 1];
 		szAttributes[C4FoWFSA_Position] = "oc_Position";
 		szAttributes[C4FoWFSA_TexCoord] = "oc_TexCoord";
-		szAttributes[C4FoWFSA_Count] = NULL;
+		szAttributes[C4FoWFSA_Count] = nullptr;
 
 		if (!FramebufShader.Init("framebuf", szUniforms, szAttributes)) {
 			FramebufShader.ClearSlices();
-			return NULL;
+			return nullptr;
 		}
 	}
 	return &FramebufShader;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -146,22 +146,22 @@ C4Shader *C4FoW::GetRenderShader()
 		const char* szUniforms[C4FoWRSU_Count + 1];
 		szUniforms[C4FoWRSU_ProjectionMatrix] = "projectionMatrix";
 		szUniforms[C4FoWRSU_VertexOffset] = "vertexOffset";
-		szUniforms[C4FoWRSU_Count] = NULL;
+		szUniforms[C4FoWRSU_Count] = nullptr;
 
 		const char* szAttributes[C4FoWRSA_Count + 1];
 		szAttributes[C4FoWRSA_Position] = "oc_Position";
 		szAttributes[C4FoWRSA_Color] = "oc_Color";
-		szAttributes[C4FoWRSA_Count] = NULL;
+		szAttributes[C4FoWRSA_Count] = nullptr;
 
 		if (!RenderShader.Init("fowRender", szUniforms, szAttributes)) {
 			RenderShader.ClearSlices();
-			return NULL;
+			return nullptr;
 		}
 
 	}
 	return &RenderShader;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -206,7 +206,7 @@ void C4FoW::Remove(C4Object *pObj)
 {
 #ifndef USE_CONSOLE
 	// Look for matching light
-	C4FoWLight *pPrev = NULL, *pLight;
+	C4FoWLight *pPrev = nullptr, *pLight;
 	for (pLight = pLights; pLight; pPrev = pLight, pLight = pLight->getNext())
 		if (pLight->getObj() == pObj)
 			break;

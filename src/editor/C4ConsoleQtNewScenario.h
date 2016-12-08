@@ -90,6 +90,7 @@ class C4ConsoleQtNewScenarioDlg : public QDialog
 public:
 	C4ConsoleQtNewScenarioDlg(class QMainWindow *parent_window);
 	const char *GetFilename() const { return filename.getData(); }
+	bool IsHostAsNetwork() const;
 
 private:
 	bool SaveScenario(class C4Group &grp);

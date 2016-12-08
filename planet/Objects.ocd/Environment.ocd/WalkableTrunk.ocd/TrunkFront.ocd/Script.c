@@ -7,7 +7,7 @@ local back;
 private func Initialize()
 {
 	this.cover_area = Shape->Rectangle(-118, -31, 236, 62);
-	_inherited();
+	_inherited(...);
 }
 
 public func Set(object trunk)

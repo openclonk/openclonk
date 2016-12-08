@@ -182,7 +182,7 @@ protected:
 	void ClearCode();
 	int GetCodePos() const { return Code.size(); }
 	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
-	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
+	C4AulBCC *GetLastCode() { return Code.empty() ? nullptr : &Code.back(); }
 	void DumpByteCode();
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
@@ -207,8 +207,8 @@ public:
 	C4AulScriptFunc(C4PropListStatic * Parent, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 	~C4AulScriptFunc();
 
-	void ParseDirectExecFunc(C4AulScriptEngine *Engine, C4AulScriptContext* context = NULL);
-	void ParseDirectExecStatement(C4AulScriptEngine *Engine, C4AulScriptContext* context = NULL);
+	void ParseDirectExecFunc(C4AulScriptEngine *Engine, C4AulScriptContext* context = nullptr);
+	void ParseDirectExecStatement(C4AulScriptEngine *Engine, C4AulScriptContext* context = nullptr);
 
 	virtual bool GetPublic() const { return true; }
 	virtual int GetParCount() const { return ParCount; }

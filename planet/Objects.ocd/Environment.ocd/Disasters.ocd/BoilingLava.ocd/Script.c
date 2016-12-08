@@ -7,6 +7,7 @@
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Visibility=VIS_Editor;
 
 local intensity;
 // Magic number by which the total map size (in pixels) is divided to get the amount of tries per frame.
@@ -69,7 +70,8 @@ private func Boiling()
 				var depth_check_math = MaterialName(GetMaterial(x_rand, y_rand + 30));
 				if (depth_check_math == "DuroLava" || depth_check_math == "Lava")
 				{
-					if (PathFree(x_rand, y_rand, x_rand, y_rand + 30))
+					// PathFree check? Not really needed. Looks OK in smaller basins as well.
+					//if (PathFree(GetX() + x_rand, GetY() + y_rand, GetX() + x_rand, GetY() + y_rand + 30))
 					{
 						CreateObject(BoilingLava_Spawner, x_rand, y_rand);
 					}
@@ -130,7 +132,7 @@ public func Definition(def, ...)
 {
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.intensity = { Name="$Intensity$", EditorHelp="$IntensityHelp$", Type="int", Min=0, Set="SetIntensity" };
-	def.EditorProps.area = { Name="$Area$", EditorHelp="$AreaHelp$", Type="enum", AsyncGet="GetAreaRect", Set="SetAreaRect", Save="Area", Options = [
+	def.EditorProps.area = { Name="$Area$", EditorHelp="$AreaHelp$", Type="enum", AsyncGet="GetAreaRect", Set="SetAreaRect", Options = [
 		{ Name="$FullMap$" },
 		{ Name="$Rect$", OptionKey="Type", DefaultValueFunction=def.GetDefaultArea, Value={ Type="rect" }, Delegate={ Type="rect", Relative=false, Storage="proplist", Color=0xffa020, Set="SetAreaRect" } }
 		// other shapes not supported for now

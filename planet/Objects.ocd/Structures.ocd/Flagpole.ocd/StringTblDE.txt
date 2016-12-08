@@ -3,3 +3,5 @@ NameNeutral=Respawn
 Description=Markiert dein Herrschaftsgebiet, in dem du in Gebäuden Gegenstände kaufen kannst.
 MsgBuy=Einkaufen
 YourWealth=Dein Kontostand
+Neutral=Neutral
+NeutralHelp=Neutrale Flaggen sind Respawnpunkte fuer alle Spieler.

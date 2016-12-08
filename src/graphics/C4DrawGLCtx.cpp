@@ -382,7 +382,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 		return true;
 	}
 
-	ReleaseDC(pWindow->renderwnd, hDC); hDC = NULL;
+	ReleaseDC(pWindow->renderwnd, hDC); hDC = nullptr;
 	return false;
 }
 
@@ -425,9 +425,9 @@ void CStdGLCtx::Deselect()
 {
 	if (pGL && pGL->pCurrCtx == this)
 	{
-		wglMakeCurrent(NULL, NULL);
-		pGL->pCurrCtx=NULL;
-		pGL->RenderTarget=NULL;
+		wglMakeCurrent(nullptr, nullptr);
+		pGL->pCurrCtx=nullptr;
+		pGL->RenderTarget=nullptr;
 	}
 }
 
@@ -441,7 +441,7 @@ bool CStdGLCtx::PageFlip()
 
 #elif defined(USE_SDL_MAINLOOP)
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { ctx = NULL; }
+CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { ctx = nullptr; }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
@@ -535,7 +535,7 @@ bool CStdGLCtx::PageFlip()
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
 
-CStdGLCtxQt::CStdGLCtxQt() { context = NULL; surface = NULL; }
+CStdGLCtxQt::CStdGLCtxQt() { context = nullptr; surface = nullptr; }
 
 void CStdGLCtxQt::Clear(bool multisample_change)
 {

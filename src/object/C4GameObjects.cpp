@@ -166,10 +166,10 @@ C4Object* C4GameObjects::AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclud
 					// Search match
 					if (cocf & ocf) { ocf=cocf; return cObj; }
 					// EXCLUSIVE block
-					else return NULL;
+					else return nullptr;
 				}
 			}
-	return NULL;
+	return nullptr;
 }
 
 void C4GameObjects::Synchronize()
@@ -191,7 +191,7 @@ C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
 {
 	C4Object *pObj = ObjectPointer(iNumber);
-	if (pObj) if (!pObj->Status) return NULL;
+	if (pObj) if (!pObj->Status) return nullptr;
 	return pObj;
 }
 
@@ -381,8 +381,8 @@ void C4GameObjects::FixObjectOrder()
 	C4ObjectLink *pLnk0=First, *pLnkL=Last;
 	while (pLnk0 != pLnkL)
 	{
-		C4ObjectLink *pLnk1stUnsorted=NULL, *pLnkLastUnsorted=NULL, *pLnkPrev=NULL, *pLnk;
-		C4Object *pLastWarnObj = NULL;
+		C4ObjectLink *pLnk1stUnsorted=nullptr, *pLnkLastUnsorted=nullptr, *pLnkPrev=nullptr, *pLnk;
+		C4Object *pLastWarnObj = nullptr;
 		// forward fix
 		int lastPlane = 2147483647; //INT32_MAX;
 		for (pLnk = pLnk0; pLnk!=pLnkL->Next; pLnk=pLnk->Next)

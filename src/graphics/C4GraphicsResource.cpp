@@ -140,7 +140,7 @@ void C4GraphicsResource::Clear()
 
 
 	// unhook deflist from font
-	FontRegular.SetCustomImages(NULL);
+	FontRegular.SetCustomImages(nullptr);
 
 	Achievements.Clear();
 
@@ -365,7 +365,7 @@ void C4GraphicsResource::CloseFiles()
 
 static C4Group *FindSuitableFile(const char *szName, C4GroupSet &rGfxSet, char *szFileName, int32_t * pID)
 {
-	const char * const extensions[] = { "bmp", "jpeg", "jpg", "png", NULL };
+	const char * const extensions[] = { "bmp", "jpeg", "jpg", "png", nullptr };
 
 	return rGfxSet.FindSuitableFile(szName, extensions, szFileName, pID);
 }
