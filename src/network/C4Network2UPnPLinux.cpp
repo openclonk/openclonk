@@ -85,6 +85,7 @@ void C4Network2UPnPP::Init()
 		else
 		{
 			ThreadLog("UPnP: No IGD found.");
+			freeUPNPDevlist(devlist);
 		}
 	}
 	else
@@ -99,8 +100,11 @@ C4Network2UPnPP::~C4Network2UPnPP()
 	ClearMappings();
 	action.wait();
 	ProcessEvents(); // necessary for logging
-	FreeUPNPUrls(&upnp_urls);
-	freeUPNPDevlist(devlist);
+	if (initialized)
+	{
+		FreeUPNPUrls(&upnp_urls);
+		freeUPNPDevlist(devlist);
+	}
 }
 
 void C4Network2UPnPP::AddMapping(C4Network2IOProtocol protocol, uint16_t intport, uint16_t extport)
