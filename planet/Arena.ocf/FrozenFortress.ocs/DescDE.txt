@@ -1,11 +1,11 @@
  Frostige Festung
 
-In dieser kalten Umgebung bekämpfen sich zwei rivalisierende Festungen.
+In dieser kalten Umgebung bekÃ¤mpfen sich zwei rivalisierende Festungen.
 
 Ziel: Stehle die Flagge der Gegner uns bringe sie in deine Basis (deine Flagge muss sich allerdings in der Basis befinden)!
 
-- Dir stehen drei nützliche Zauber in Form von Schriftrollen zur Verfügung.
-- In den Kisten erscheinen in regelmäßigen Abständen Waffen und anderes nützliches Zeugs.
+- Dir stehen drei nÃ¼tzliche Zauber in Form von Schriftrollen zur VerfÃ¼gung.
+- In den Kisten erscheinen in regelmÃ¤ÃŸigen AbstÃ¤nden Waffen und anderes nÃ¼tzliches Zeugs.
 - In der Mitte ist ein Geysir, der fast im Minutentakt ausbricht.
-- Weil es hier so kalt ist, lässt sich das Eis nicht weggraben, aber wegsprengen.
-- Die Türen in der Basis öffnen sich automatisch für befreundete Spieler.
+- Weil es hier so kalt ist, lÃ¤sst sich das Eis nicht weggraben, aber wegsprengen.
+- Die TÃ¼ren in der Basis Ã¶ffnen sich automatisch fÃ¼r befreundete Spieler.

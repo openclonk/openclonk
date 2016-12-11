@@ -1,2 +1,2 @@
 Name=Kein Strombedarf
-Description=Stromverbraucher benötigen keinen Strom mehr.
+Description=Stromverbraucher benÃ¶tigen keinen Strom mehr.

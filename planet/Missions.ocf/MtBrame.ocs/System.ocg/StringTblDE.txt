@@ -2,7 +2,7 @@
 NameSister=Ruth
 
 # Intro
-MsgIntro1=Hey ihr Schlafmützen, schaut mal was ich gefunden habe!
+MsgIntro1=Hey ihr SchlafmÃ¼tzen, schaut mal was ich gefunden habe!
 MsgIntro2=...was? Wo denn?
 MsgIntro3=Dort unten, am Hang!
 MsgIntro4=Und was soll hier sein..?

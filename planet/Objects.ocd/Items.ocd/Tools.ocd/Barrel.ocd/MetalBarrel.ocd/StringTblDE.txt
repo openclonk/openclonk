@@ -1,8 +1,8 @@
 Name=Metallfass
-Description=Stabiler Behälter zum Transport gefährlicher Flüssigkeiten wie Säure.
+Description=Stabiler BehÃ¤lter zum Transport gefÃ¤hrlicher FlÃ¼ssigkeiten wie SÃ¤ure.
 MaterialLava=Lava
 MaterialDuroLava=Lava
 MaterialWater=Wasser
 MaterialFirefluid=Feuerdings
-MaterialAcid=Säure
-MaterialOil=Öl
+MaterialAcid=SÃ¤ure
+MaterialOil=Ã–l

@@ -1,5 +1,5 @@
-NoPlrKnowledge=Keine Baupläne vorhanden
+NoPlrKnowledge=Keine BauplÃ¤ne vorhanden
 Construction=Konstruktion
 Production=Produktion
-Name=Küche
-Description=Ermöglicht die Zubereitung von aller Art Nahrungsmitteln.
+Name=KÃ¼che
+Description=ErmÃ¶glicht die Zubereitung von aller Art Nahrungsmitteln.

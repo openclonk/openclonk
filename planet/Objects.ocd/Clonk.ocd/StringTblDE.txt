@@ -2,14 +2,14 @@ Description=Ein Mitglied deiner Crew. Gewitzt und flink, wenn gekonnt gesteuert.
 
 CtxConstructionDesc=Bauauftrag
 CtxConstructionMaterial=Baumaterial
-CtxHomeDesc=Zurück zur Basis
+CtxHomeDesc=ZurÃ¼ck zur Basis
 CtxRelease=Entlassen
-CtxChop=Fällen
-CtrlMenuDesc=Menü
+CtxChop=FÃ¤llen
+CtrlMenuDesc=MenÃ¼
 TxtDescend=Abspringen
 TxtEnergysupply=Energieversorgung
 
-MsgDeadClonk=%s ist tot.|Es sind keine Interaktionen möglich.
+MsgDeadClonk=%s ist tot.|Es sind keine Interaktionen mÃ¶glich.
 
 SetMaxContentsCount=Inventarplatzzahl aendern
 SetMaxContentsCountHelp=Aendert die maximale Anzahl an Objekten, die der Clonk tragen kann. Gueltige Werte von 0 bis 10. Ein zusaetzliches CarryHeavy-Objekt kann immer getragen werden.

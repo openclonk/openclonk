@@ -1,2 +1,2 @@
 Name=Zikaden
-Description=Zikadenger‰usche.
+Description=Zikadenger√§usche.

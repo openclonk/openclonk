@@ -1,8 +1,8 @@
 MsgEncounterCastle=Ein Eindringling! Schnappt ihn!
-MsgEncounterFinal=Nein nein, der Schatz gehört NUR MIR!
-MsgTreasureCollected=Sehr gut! Nun muss der Schatz nur noch zurück zu Dagobert.
+MsgEncounterFinal=Nein nein, der Schatz gehÃ¶rt NUR MIR!
+MsgTreasureCollected=Sehr gut! Nun muss der Schatz nur noch zurÃ¼ck zu Dagobert.
 MsgGoldBarCollected=Ich habe einen Goldbarren gefunden! (%d/%d)
-MsgStoneDoorNoDamage=Diese Steintür ist zu stabil. Ich sollte einen Schalter suchen.
+MsgStoneDoorNoDamage=Diese SteintÃ¼r ist zu stabil. Ich sollte einen Schalter suchen.
 Found5=5 Goldbarren gefunden
 Found10=10 Goldbarren gefunden
 Found20=20 Goldbarren gefunden

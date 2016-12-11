@@ -2,9 +2,9 @@
  
 Erlange die Herrschaft im inneren des Vulkans und erringe die meisten Punkte. 
  
-Ziel: King of the Hill (nur der König bekommt Punkte für Kills oder andere Spieler für einen Königsmord) 
+Ziel: King of the Hill (nur der KÃ¶nig bekommt Punkte fÃ¼r Kills oder andere Spieler fÃ¼r einen KÃ¶nigsmord) 
  
-- Erlange die Herrschaft über diese Monarchie zurück, indem zu 6 Punkte erreichst. 
-- Du wirst der König, indem du entweder den Kreis aus Sternen erreichst oder dern momentanen König tötest. 
-- Als König werden deine Waffen aufgewertet, was dich noch stärker macht. 
-- Punkte sammelst du, indem du den König tötest, oder als König andere tötest. 
+- Erlange die Herrschaft Ã¼ber diese Monarchie zurÃ¼ck, indem zu 6 Punkte erreichst. 
+- Du wirst der KÃ¶nig, indem du entweder den Kreis aus Sternen erreichst oder dern momentanen KÃ¶nig tÃ¶test. 
+- Als KÃ¶nig werden deine Waffen aufgewertet, was dich noch stÃ¤rker macht. 
+- Punkte sammelst du, indem du den KÃ¶nig tÃ¶test, oder als KÃ¶nig andere tÃ¶test. 

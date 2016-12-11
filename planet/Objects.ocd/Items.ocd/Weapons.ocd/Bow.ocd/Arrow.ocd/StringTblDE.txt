@@ -1,2 +1,2 @@
 Name=Pfeile
-Description=Munition für den Bogen.
+Description=Munition fÃ¼r den Bogen.

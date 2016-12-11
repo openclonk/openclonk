@@ -1,13 +1,13 @@
- Säurebohrung
+ SÃ¤urebohrung
 
-Graf Helmi hat sich zur besseren Verteidigung seines prächtigen Anwesens einen neuen Burggraben anlegen lassen. Dummerweise fehlt noch die wichtigste Ingredienz für sein großartiges Projekt, die ihr nun in seinem Auftrag aus dem nahegelegenen Vulkan heranschaffen sollt: Säure. Und "Nein", rief er euch nach, "Lava kommt nicht in Frage, die ist komplett aus der Mode!"
+Graf Helmi hat sich zur besseren Verteidigung seines prÃ¤chtigen Anwesens einen neuen Burggraben anlegen lassen. Dummerweise fehlt noch die wichtigste Ingredienz fÃ¼r sein groÃŸartiges Projekt, die ihr nun in seinem Auftrag aus dem nahegelegenen Vulkan heranschaffen sollt: SÃ¤ure. Und "Nein", rief er euch nach, "Lava kommt nicht in Frage, die ist komplett aus der Mode!"
 
-Ziel: Fülle das Becken rechts mit Säure.
+Ziel: FÃ¼lle das Becken rechts mit SÃ¤ure.
 
 Tipps:
-- Im Bereich der Energiekristalle kann kein Gebäude errichtet werden
-- Die Länge von Pumpleitungen ist in dieser Runde begrenzt.
-- Da es kein Kraftwerk gibt und die Energiekristalle den Weg für den Stromtransport blockieren, sollte man sich überlegen, wie man Strom in die Höhle bekommt.
+- Im Bereich der Energiekristalle kann kein GebÃ¤ude errichtet werden
+- Die LÃ¤nge von Pumpleitungen ist in dieser Runde begrenzt.
+- Da es kein Kraftwerk gibt und die Energiekristalle den Weg fÃ¼r den Stromtransport blockieren, sollte man sich Ã¼berlegen, wie man Strom in die HÃ¶hle bekommt.
 - Pumpen erzeugen Strom, wenn sie nach unten pumpen.
 
 

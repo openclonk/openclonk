@@ -1,2 +1,2 @@
-DE:Säurebohrung
+DE:SÃ¤urebohrung
 US:Acid drilling

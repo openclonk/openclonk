@@ -1,5 +1,5 @@
 Clonk
-F‰hnrich
+F√§hnrich
 Leutnant
 Hauptmann
 Major
@@ -10,18 +10,18 @@ Generalleutnant
 General
 Feldmarschall
 Kadett
-Fregattenkapit‰n
-Kapit‰n
+Fregattenkapit√§n
+Kapit√§n
 Konteradmiral
 Vizeadmiral
 Admiral
-Groﬂadmiral
+Gro√üadmiral
 Staatsrat
-Staatssekret‰r
+Staatssekret√§r
 Kanzler
-Vizepr‰sident
-Pr‰sident
-Ministerpr‰sident
+Vizepr√§sident
+Pr√§sident
+Ministerpr√§sident
 *%s Erster Klasse
 *%s Zweiten Grades
 *%s ohne Gleichen

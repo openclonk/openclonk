@@ -1,2 +1,2 @@
 Name=Weizen
-Description=Liefert Samen, die zu Mehl verarbeitet werden können. Wächst schneller wenn gewässert.
+Description=Liefert Samen, die zu Mehl verarbeitet werden kÃ¶nnen. WÃ¤chst schneller wenn gewÃ¤ssert.

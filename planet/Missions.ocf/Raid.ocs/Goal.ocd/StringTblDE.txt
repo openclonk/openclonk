@@ -1,6 +1,6 @@
 Name=Spielziel
-Description1=Suche eine Axt und fälle Holz für die Baustelle.
+Description1=Suche eine Axt und fÃ¤lle Holz fÃ¼r die Baustelle.
 Description2=Sprich mit Newton.
 Description3=Suche Pyrit den Schmied in Wipfstadt im Osten und sprich ihn an.
-Description4=Baue ein Flugzeug und finde Öl als Treibstoff.
-Description5=Die Mission ist erfüllt und die nächste Mission freigeschaltet.
+Description4=Baue ein Flugzeug und finde Ã–l als Treibstoff.
+Description5=Die Mission ist erfÃ¼llt und die nÃ¤chste Mission freigeschaltet.

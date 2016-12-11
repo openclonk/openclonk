@@ -1,2 +1,2 @@
-Name=Holzhütte Ruine
+Name=HolzhÃ¼tte Ruine
 Description=Relikt vergangener Siedlungen.

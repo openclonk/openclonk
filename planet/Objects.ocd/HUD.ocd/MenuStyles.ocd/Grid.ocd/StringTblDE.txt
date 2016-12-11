@@ -1,2 +1,2 @@
 Name=Gitter
-Description=Ein einfaches Gittermenü.
+Description=Ein einfaches GittermenÃ¼.

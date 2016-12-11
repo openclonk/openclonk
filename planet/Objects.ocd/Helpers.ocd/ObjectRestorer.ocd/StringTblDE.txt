@@ -1,2 +1,2 @@
 Name=Objektregenerierung
-Description=Setzt ein Objekt zu sein vorherigen Position oder Container zurück.
+Description=Setzt ein Objekt zu sein vorherigen Position oder Container zurÃ¼ck.

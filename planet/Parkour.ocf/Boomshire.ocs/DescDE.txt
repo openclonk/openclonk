@@ -1,7 +1,7 @@
  Boomshire
 
-Dieses Rennen für zwei Spieler erfordert, anders als in normalen Rennen, die Zusammenarbeit der Spieler, denn hier kann keine Aufgabe allein gelöst werden.
+Dieses Rennen fÃ¼r zwei Spieler erfordert, anders als in normalen Rennen, die Zusammenarbeit der Spieler, denn hier kann keine Aufgabe allein gelÃ¶st werden.
 
 Ziel: Kooperatives Wettrennen
 
-- Achtung: Es werden genau zwei Spieler benötigt!
+- Achtung: Es werden genau zwei Spieler benÃ¶tigt!

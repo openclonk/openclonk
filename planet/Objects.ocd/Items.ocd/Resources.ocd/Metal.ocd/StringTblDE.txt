@@ -1,2 +1,2 @@
 Name=Metall
-Description=Baumaterial für viele Gebäude.
+Description=Baumaterial fÃ¼r viele GebÃ¤ude.

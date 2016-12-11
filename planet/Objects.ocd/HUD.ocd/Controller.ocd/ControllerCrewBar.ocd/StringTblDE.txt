@@ -1,1 +1,1 @@
-TxtSelect=%s ausw‰hlen
+TxtSelect=%s ausw√§hlen

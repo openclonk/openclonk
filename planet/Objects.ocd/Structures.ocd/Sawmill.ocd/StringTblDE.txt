@@ -1,6 +1,6 @@
-Name=Sägewerk
-Description=Das Sägewerk kann Bäume effizient in Holz zersägen, braucht dazu aber Strom. 
+Name=SÃ¤gewerk
+Description=Das SÃ¤gewerk kann BÃ¤ume effizient in Holz zersÃ¤gen, braucht dazu aber Strom. 
 
-AutoProduction=Das Sägewerk verarbeitet automatisch Bäume oder hölzerne Objekte zu Holz.
+AutoProduction=Das SÃ¤gewerk verarbeitet automatisch BÃ¤ume oder hÃ¶lzerne Objekte zu Holz.
 WoodInQueue=Holz in Produktion
 Production=Produktion

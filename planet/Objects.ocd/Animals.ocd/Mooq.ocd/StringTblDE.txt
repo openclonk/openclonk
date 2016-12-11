@@ -1,2 +1,2 @@
 Name=Mooq
-Description=Süße kleine Kreatur. Mag Lava.
+Description=SÃ¼ÃŸe kleine Kreatur. Mag Lava.

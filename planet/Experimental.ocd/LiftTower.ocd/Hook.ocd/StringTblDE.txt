@@ -1,3 +1,3 @@
 Name=Haken
-Description=Drücke [Benutzen] vor einem Fahrzeug oder einem anderen großen Gegenstand, um den Haken zu befestigen.
+Description=DrÃ¼cke [Benutzen] vor einem Fahrzeug oder einem anderen groÃŸen Gegenstand, um den Haken zu befestigen.
 Unhook=Haken abnehmen.

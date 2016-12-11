@@ -1,6 +1,6 @@
  Kamikaze Cowboys
 
-Wagemutige Clonks reiten auf ihren Boompacks um die Wette. Kein gefahrloses Unterfangen, denn Boompacks sind eigentlich überdimensionierte Silvesterraketen, die nach kurzer Zeit in die Luft gehen.
-Jeder Clonk bekommt alle paar Sekunden ein neues Boompack in seine Hand, mit dem er sich in luftige Höhe schwingen kann. 
+Wagemutige Clonks reiten auf ihren Boompacks um die Wette. Kein gefahrloses Unterfangen, denn Boompacks sind eigentlich Ã¼berdimensionierte Silvesterraketen, die nach kurzer Zeit in die Luft gehen.
+Jeder Clonk bekommt alle paar Sekunden ein neues Boompack in seine Hand, mit dem er sich in luftige HÃ¶he schwingen kann. 
 
 Ziel: Wettrennen

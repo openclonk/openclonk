@@ -2,11 +2,11 @@ Name=Capture The Flag
 
 MsgGoalCaptureTheFlag=Erobere feindliche Flaggen und bringe diese in deine Basis. Du kannst nur punkten, wenn sich deine eigeneFlagge in deiner Basis befindet.
 MsgGoalFulfilled=Du hast diese Runde gewonnen!
-MsgGoalUnfulfilled1=Für den Sieg musst du noch eine Flagge erobern.
-MsgGoalUnfulfilledX=Für den Sieg musst du noch %d Flaggen erobern.
+MsgGoalUnfulfilled1=FÃ¼r den Sieg musst du noch eine Flagge erobern.
+MsgGoalUnfulfilledX=FÃ¼r den Sieg musst du noch %d Flaggen erobern.
 
 MsgShortSteal=Erobere eine Flagge!
-MsgShortCaptured=Deine Flagge| würde erobert!
+MsgShortCaptured=Deine Flagge| wÃ¼rde erobert!
 MsgShortReturn=Bringe diese Flagge| zu deiner Base.
 
 MsgScoreboard1=Erobere eine Flagge.

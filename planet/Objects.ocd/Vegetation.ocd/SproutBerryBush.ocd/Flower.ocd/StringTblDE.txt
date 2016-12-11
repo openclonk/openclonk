@@ -1,2 +1,2 @@
-Name=Blüte
-Description=Blüht.
+Name=BlÃ¼te
+Description=BlÃ¼ht.

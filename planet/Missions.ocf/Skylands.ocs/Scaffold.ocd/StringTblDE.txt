@@ -1,12 +1,12 @@
-Name=Gerüst
-Description=Erlaubt den Bau größerer Strukturen.
+Name=GerÃ¼st
+Description=Erlaubt den Bau grÃ¶ÃŸerer Strukturen.
 
-ReinforceScaffold=Gerüst verstärken
-Reinforcement=Verstärkung
+ReinforceScaffold=GerÃ¼st verstÃ¤rken
+Reinforcement=VerstÃ¤rkung
 Extension=Erweiterung
 Top=Oben
 Bottom=Unten
 Left=Links
 Right=Rechts
-DescExtend=Hier können Seiten des Gerüsts verstärkt werden um etwa darauf zu laufen.|Zusätzlich können begehbare Erweiterungen oder ein Schutz nach oben angebracht werden.
-TearDown=Verstärkung oder Erweiterung abreißen
+DescExtend=Hier kÃ¶nnen Seiten des GerÃ¼sts verstÃ¤rkt werden um etwa darauf zu laufen.|ZusÃ¤tzlich kÃ¶nnen begehbare Erweiterungen oder ein Schutz nach oben angebracht werden.
+TearDown=VerstÃ¤rkung oder Erweiterung abreiÃŸen
