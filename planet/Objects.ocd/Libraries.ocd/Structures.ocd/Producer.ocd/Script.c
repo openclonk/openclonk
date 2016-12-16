@@ -851,8 +851,8 @@ public func IsCollectionAllowed(object item)
 
 public func RejectCollect(id item_id, object item)
 {
-	// Is the object a container? If so, try to empty it.
-	if (item->~IsContainer() || item->~IsLiquidContainer())
+	// Is the object a container? If so, try to empty it. Don't empty extra slots.
+	if ((item->~IsContainer() && !item->~HasExtraSlot()) || item->~IsLiquidContainer())
 	{
 	 	GrabContents(item);
 	}
