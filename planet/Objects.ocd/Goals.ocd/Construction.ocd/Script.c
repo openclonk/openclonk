@@ -40,7 +40,7 @@ public func IsFulfilled()
 	var is_fulfilled = true;
 	for (var con in construction_list)
 	{
-		if (ObjectCount(Find_ID(con.construction)) < con.count)
+		if (ObjectCount(Find_ID(con.id)) < con.count)
 		{
 			is_fulfilled = false;
 			break;
@@ -69,7 +69,7 @@ private func GetConstructionString()
 		var clr = RGB(255, 0, 0);
 		if (ObjectCount(Find_ID(con.construction)) >= con.count)
 			clr = RGB(0, 255, 0);
-		str = Format("%s <c %x>%dx</c> {{%i}}", str, clr, con.count, con.construction);
+		str = Format("%s <c %x>%dx</c> {{%i}}", str, clr, con.count, con.id);
 	}
 	return str;
 }
