@@ -393,9 +393,8 @@ func ExtractMaterialFromSource(object source_obj, int amount)
 		var mat = source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, amount, true);
 		if (mat)
 			return [MaterialName(mat[0]), mat[1]];
-		else
-			return nil;
 	}
+	return nil;
 }
 
 // interface for the insertion logic
@@ -412,8 +411,8 @@ func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 		var material_index = Material(material_name);
 		if (material_index != -1)
 		{
-			while (--amount >= 0)
-				drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY);
+			while (amount > 0 && drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+				amount--;
 		}
 	}
 	return amount <= 0;
