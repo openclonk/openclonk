@@ -212,6 +212,11 @@ func ConnectPipeTo(object target, string specific_pipe_state)
 /* ---------- Line Connection ---------- */
 
 
+public func SetPipeLine(to_line)
+{
+	pipe_line = to_line;
+}
+
 /**
  Finds a line that is connected to this pipe kit.
  @return object the pipe, or nil if nothing was found.
@@ -241,7 +246,7 @@ func AddLineConnectionTo(object target)
 		if (line->IsConnectedTo(this, true))
 		{
 			line->SwitchConnection(this, target);
-			pipe_line = nil;
+			SetPipeLine(line);
 			ScheduleCall(this, this.Enter, 1, nil, line); // delayed entrance, so that the message is still displayed above the clonk
 			return line;
 		}
@@ -283,7 +288,7 @@ func CutLineConnection(object target)
 		Exit(); // the kit was inside the line at this point.
 		SetPosition(target->GetX(), target->GetY());
 		line->SwitchConnection(target, this);
-		pipe_line = line;
+		SetPipeLine(line);
 	}
 	else
 	{
@@ -343,6 +348,7 @@ func Report(string message)
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
+	if (pipe_line) props->AddCall("PipeLine", this, "SetPipeLine", pipe_line);
 	if (IsNeutralPipe()) props->AddCall("PipeStateNeutral", this, "SetNeutralPipe");
 	else if (IsDrainPipe()) props->AddCall("PipeStateDrain", this, "SetDrainPipe");
 	else if (IsSourcePipe()) props->AddCall("PipeStateSource", this, "SetSourcePipe");
