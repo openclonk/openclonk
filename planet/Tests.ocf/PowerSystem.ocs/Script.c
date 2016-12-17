@@ -1185,7 +1185,7 @@ global func Test22_OnStart(int plr)
 {
 	// Start the script profiler for this test.
 	StartScriptProfiler();
-	POWER_SYSTEM_Test14_Time = GetTime();
+	POWER_SYSTEM_Test22_Time = GetTime();
 	
 	// Power source: one steam engine.
 	var steam_engine1 = CreateObjectAbove(SteamEngine, 36, 160, plr);
