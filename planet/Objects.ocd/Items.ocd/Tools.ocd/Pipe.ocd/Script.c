@@ -34,6 +34,8 @@ static const PIPE_STATE_Air = "Air";
 
 local pipe_state = nil;
 
+local pipe_line;
+
 local ApertureOffsetX = 0;
 local ApertureOffsetY = 3;
 
@@ -48,7 +50,9 @@ private func Destruction()
 {
 	// remove the line first, so that it does not provoke errors on destruction
 	var line = GetConnectedLine();
-	if (line) line->RemoveObject();
+	if (line)
+		line->RemoveObject();
+	return;
 }
 
 
@@ -73,10 +77,10 @@ public func OnPipeLengthChange()
 // Display the line length bar over the pipe icon.
 public func GetInventoryIconOverlay()
 {
-	var pipe = GetConnectedLine();
-	if (!pipe) return;
+	var line = GetConnectedLine();
+	if (!line) return;
 
-	var percentage = 100 * pipe->GetPipeLength() / pipe.PipeMaxLength;
+	var percentage = 100 * line->GetPipeLength() / line.PipeMaxLength;
 	var red = percentage * 255 / 100;
 	var green = 255 - red;
 	// Overlay a usage bar.
@@ -101,7 +105,7 @@ public func GetInventoryIconOverlay()
 public func CanBeStackedWith(object other)
 {
 	// Do not stack source/drain/unused pipes
-	return inherited(other) && (pipe_state == other.pipe_state);
+	return _inherited(other) && (pipe_state == other.pipe_state);
 }
 
 
@@ -148,9 +152,7 @@ public func SetNeutralPipe()
 
 	var line = GetConnectedLine();
 	if (line)
-	{
 		line->SetNeutral();
-	}
 }
 
 public func SetDrainPipe()
@@ -164,9 +166,7 @@ public func SetDrainPipe()
 
 	var line = GetConnectedLine();
 	if (line)
-	{
 		line->SetDrain();
-	}
 }
 
 public func SetSourcePipe()
@@ -180,9 +180,7 @@ public func SetSourcePipe()
 
 	var line = GetConnectedLine();
 	if (line)
-	{
 		line->SetSource();
-	}
 }
 
 public func SetAirPipe()
@@ -196,9 +194,7 @@ public func SetAirPipe()
 
 	var line = GetConnectedLine();
 	if (line)
-	{
 		line->SetAir();
-	}
 }
 
 /* ---------- Pipe Connection ---------- */
@@ -220,9 +216,9 @@ func ConnectPipeTo(object target, string specific_pipe_state)
  Finds a line that is connected to this pipe kit.
  @return object the pipe, or nil if nothing was found.
  */
-func GetConnectedLine()
+public func GetConnectedLine()
 {
-	return FindObject(Find_Func("IsConnectedTo", this));
+	return pipe_line;
 }
 
 
@@ -245,6 +241,7 @@ func AddLineConnectionTo(object target)
 		if (line->IsConnectedTo(this, true))
 		{
 			line->SwitchConnection(this, target);
+			pipe_line = nil;
 			ScheduleCall(this, this.Enter, 1, nil, line); // delayed entrance, so that the message is still displayed above the clonk
 			return line;
 		}
@@ -286,6 +283,7 @@ func CutLineConnection(object target)
 		Exit(); // the kit was inside the line at this point.
 		SetPosition(target->GetX(), target->GetY());
 		line->SwitchConnection(target, this);
+		pipe_line = line;
 	}
 	else
 	{
@@ -302,10 +300,10 @@ func CutLineConnection(object target)
 func CreateLine(object target)
 {
 	// Create and connect pipe line.
-	var line = CreateObject(PipeLine, 0, 0, NO_OWNER);
-	line->SetActionTargets(this, target);
-	line->SetPipeKit(this);
-	return line;
+	pipe_line = CreateObject(PipeLine, 0, 0, NO_OWNER);
+	pipe_line->SetActionTargets(this, target);
+	pipe_line->SetPipeKit(this);
+	return pipe_line;
 }
 
 
