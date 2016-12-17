@@ -105,16 +105,7 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 		obj->Set(to, cnt, number_of_bars, size, offset, visibility);
 		++cnt;
 	}
-	
-	AddEffect("LifeCheck", to, 1, 0, this);
 	Update();
-}
-
-func FxLifeCheckStop(target, effect, cause, temp)
-{
-	if(temp) return;
-	if(this)
-		this->RemoveObject();
 }
 
 func FxTimeOutTimer(target, effect, time)

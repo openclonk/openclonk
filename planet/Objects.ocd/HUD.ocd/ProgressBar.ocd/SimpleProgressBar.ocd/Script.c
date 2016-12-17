@@ -54,8 +54,6 @@ func Init(to, max, cur, timeout, offset, visibility, proplist data)
 	
 	SetAction("Attach", to);
 	SetVertexXY(0, -offset.x + to->GetVertex(0, VTX_X), -offset.y + to->GetVertex(0, VTX_Y));
-	
-	AddEffect("LifeCheck", to, 1, 0, this);
 	Update();
 }
 
@@ -66,13 +64,6 @@ func SetBarColor(c, b)
 	
 	SetClrModulation(color, 1);
 	SetClrModulation(back_color, 0);
-}
-
-func FxLifeCheckStop(target, effect, cause, temp)
-{
-	if(temp) return;
-	if(this)
-		this->RemoveObject();
 }
 
 func FxTimeOutTimer(target, effect, time)

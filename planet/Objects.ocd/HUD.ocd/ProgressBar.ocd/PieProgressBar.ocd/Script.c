@@ -64,8 +64,6 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 		obj->Set(to, 180 / amount + ((cnt * 360) / amount), offset, visibility, size);
 		++cnt;
 	}
-	
-	AddEffect("LifeCheck", to, 1, 0, this);
 	Update();
 }
 
