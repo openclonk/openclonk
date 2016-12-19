@@ -201,7 +201,7 @@ C4PXS* C4PXSSystem::New()
 			for (cnt2=0,pxp=Chunk[cnt]; cnt2<PXSChunkSize; cnt2++,pxp++)
 				if (pxp->Mat==MNone)
 				{
-					// count theam
+					// count them
 					iChunkPXS[cnt]++;
 					return pxp;
 				}

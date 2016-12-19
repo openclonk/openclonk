@@ -1021,7 +1021,9 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 	while (FindMatSlide(*tx, *ty, +1, mdens, ::MaterialMap.Map[mat].MaxSlide))
 		if (GetDensity(*tx, *ty + 1) < mdens)
 		{
-			if (!query_only) ::PXS.Create(mat, itofix(*tx), itofix(*ty), C4REAL10(vx), C4REAL10(vy)); return true;
+			if (!query_only)
+				return ::PXS.Create(mat, itofix(*tx), itofix(*ty), C4REAL10(vx), C4REAL10(vy));
+			return true;
 		}
 
 	if (query_only)
