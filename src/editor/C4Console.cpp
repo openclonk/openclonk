@@ -178,6 +178,14 @@ bool C4Console::SaveScenario(const char * path, bool export_packed)
 	}
 	else if (path)
 	{
+		// When trying to save into a subfolder of the existing scenario, the copy function
+		// below will try to recursively copy everything until it blows the stack. There is
+		// really no good reason to do this, so we just disallow it here.
+		if (SEqual2(path, Game.ScenarioFilename))
+		{
+			Message(LoadResStr("IDS_CNS_RECURSIVESAVEASERROR"));
+			return false;
+		}
 		// Open new scenario file
 		// Close current scenario file to allow re-opening at new path
 		Game.ScenarioFile.Close();

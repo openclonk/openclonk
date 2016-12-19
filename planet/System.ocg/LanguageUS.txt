@@ -87,6 +87,7 @@ IDS_CNS_PLRQUITNET=Remove %s (%s)
 IDS_CNS_PROPERTIES=Properties
 IDS_CNS_REMOVE=Remove
 IDS_CNS_SAVEASERROR=Error while saving the scenario to %s.
+IDS_CNS_RECURSIVESAVEASERROR=Cannot save into the existing scenario. Please choose another path.
 IDS_CNS_SAVERROR=Error while saving the scenario.
 IDS_CNS_SCENARIOFILE=OpenClonk scenario file
 IDS_CNS_SCENARIOSAVED=Scenario saved.

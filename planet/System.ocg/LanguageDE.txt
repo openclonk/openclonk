@@ -87,6 +87,7 @@ IDS_CNS_PLRQUITNET=%s (%s) löschen
 IDS_CNS_PROPERTIES=Eigenschaften
 IDS_CNS_REMOVE=Entfernen
 IDS_CNS_SAVEASERROR=Fehler beim Speichern des Szenarios nach %s.
+IDS_CNS_RECURSIVESAVEASERROR=Speichern in das existierende Szenario ist nicht möglich. Bitte neuen Pfad wählen.
 IDS_CNS_SAVERROR=Fehler beim Speichern des Szenarios.
 IDS_CNS_SCENARIOFILE=OpenClonk Szenariendatei
 IDS_CNS_SCENARIOSAVED=Szenario gespeichert.
