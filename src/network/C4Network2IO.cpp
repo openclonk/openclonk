@@ -39,7 +39,7 @@ struct C4Network2IO::NetEvPacketData
 };
 
 // compile options
-#define C4NET2IO_DUMP_LEVEL 3
+#define C4NET2IO_DUMP_LEVEL 1
 
 // *** C4Network2IO
 
