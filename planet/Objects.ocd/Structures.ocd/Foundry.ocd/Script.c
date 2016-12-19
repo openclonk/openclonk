@@ -109,6 +109,13 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 public func OnProductEjection(object product)
 {
+	// Enter produced liquids.
+	if (product->~IsLiquid())
+	{
+		product->Enter(this);
+		return;
+	}
+	// Other products exit the foundry.	
 	product->SetPosition(GetX() + 18 * GetCalcDir(), GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
@@ -120,7 +127,7 @@ public func OnProductEjection(object product)
 
 func IsLiquidContainerForMaterial(string liquid)
 {
-	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid);
+	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid) || WildcardMatch("Concrete", liquid);
 }
 
 func QueryConnectPipe(object pipe)
