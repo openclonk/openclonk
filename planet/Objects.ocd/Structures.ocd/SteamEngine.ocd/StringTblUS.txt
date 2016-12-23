@@ -2,5 +2,7 @@ Name=Steam engine
 Description=The steam engine generates electricity from fuel, such as coal, wood or oil.
 
 MsgConnectedPipe=Connected pipe.
-MsgPipeProhibited=Source pipes cannot be connected to the steam engine.
-MsgHasPipes=The steam engine already has a pipe.
+MsgPipeProhibited=This pipe cannot be connected to the steam engine.
+MsgHasPipes=Steam engine already has a source and a drain pipe.
+MsgSourcePipeProhibited=Unable to connect source pipe to the steam engine.
+MsgDrainPipeProhibited=Unable to connect drain pipe to the steam engine.

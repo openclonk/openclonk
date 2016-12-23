@@ -162,8 +162,8 @@ private func SetInfoMessage(string msg)
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
-/*-- Pipe control --*/
 
+/*-- Pipe control --*/
 
 func QueryConnectPipe(object pipe)
 {
@@ -233,7 +233,6 @@ func OnPipeConnect(object pipe, string specific_pipe_state)
 		}
 	}
 }
-
 
 func OnPipeDisconnect(object pipe)
 {
@@ -409,6 +408,8 @@ func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 	{
 		// convert to actual material, and insert remaining
 		var material_index = Material(material_name);
+		if (material_index == -1 && material_name != nil)
+			material_index = Material(GetDefinition(material_name)->GetLiquidMaterial());
 		if (material_index != -1)
 		{
 			while (amount > 0 && drain_obj->InsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
@@ -595,10 +596,17 @@ private func PumpHeight2Power(int pump_height)
 private func GetLiquidSourceMaterial()
 {
 	// Get the source object and check whether there is liquid.
-	// TODO: If the source is a liquid container check which material will be supplied.
 	var source_obj = GetSourceObject();
 	if (!source_obj)
 		return;
+	// The source is a liquid container: check which material will be supplied.	
+	if (source_obj->~IsLiquidContainer())
+	{
+		var liquid = source_obj->HasLiquid();
+		if (liquid)
+			return liquid->GetLiquidType();
+		return;
+	}	
 	var is_liquid = source_obj->GBackLiquid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY);
 	var liquid = MaterialName(source_obj->GetMaterial(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY));
 	if (!is_liquid)
@@ -616,7 +624,10 @@ private func GetLiquidDrainOk(string liquid)
 	var drain_obj = GetDrainObject();
 	if (drain_obj->~HasAperture())
 	{
-		if (!drain_obj->CanInsertMaterial(Material(liquid), drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+		var material_index = Material(liquid);
+		if (material_index == -1 && liquid != nil)
+			material_index = Material(GetDefinition(liquid)->GetLiquidMaterial());
+		if (!drain_obj->CanInsertMaterial(material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
 		{
 			drain_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
 			return false;

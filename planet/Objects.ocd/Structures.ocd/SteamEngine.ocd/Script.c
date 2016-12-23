@@ -187,40 +187,65 @@ func Smoking()
 }
 
 
-func IsLiquidContainerForMaterial(string liquid)
+public func IsLiquidContainerForMaterial(string liquid)
 {
 	return WildcardMatch("Oil", liquid);
 }
 
-func GetLiquidContainerMaxFillLevel()
+public func GetLiquidContainerMaxFillLevel()
 {
 	return 300;
 }
 
-func QueryConnectPipe(object pipe)
+// The foundry may have one drain and one source.
+public func QueryConnectPipe(object pipe)
 {
-	if (GetNeutralPipe())
+	if (GetDrainPipe() && GetSourcePipe())
 	{
 		pipe->Report("$MsgHasPipes$");
 		return true;
 	}
-
-	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	else if (GetSourcePipe() && pipe->IsSourcePipe())
 	{
-		return false;
+		pipe->Report("$MsgSourcePipeProhibited$");
+		return true;
 	}
-	else
+	else if (GetDrainPipe() && pipe->IsDrainPipe())
+	{
+		pipe->Report("$MsgDrainPipeProhibited$");
+		return true;
+	}
+	else if (pipe->IsAirPipe())
 	{
 		pipe->Report("$MsgPipeProhibited$");
 		return true;
 	}
+	return false;
 }
 
-func OnPipeConnect(object pipe, string specific_pipe_state)
+// Set to source or drain pipe.
+public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
-	SetNeutralPipe(pipe);
+	if (PIPE_STATE_Source == specific_pipe_state)
+	{
+		SetSourcePipe(pipe);
+		pipe->SetSourcePipe();
+	}
+	else if (PIPE_STATE_Drain == specific_pipe_state)
+	{
+		SetDrainPipe(pipe);
+		pipe->SetDrainPipe();
+	}
+	else
+	{
+		if (!GetDrainPipe())
+			OnPipeConnect(pipe, PIPE_STATE_Drain);
+		else if (!GetSourcePipe())
+			OnPipeConnect(pipe, PIPE_STATE_Source);
+	}
 	pipe->Report("$MsgConnectedPipe$");
 }
+
 
 /*-- Properties --*/
 

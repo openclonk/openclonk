@@ -54,6 +54,25 @@ func GetLiquidContents()
 //
 // Interfaces for interaction with other objects
 
+
+// Returns whether this container has the requested liquid and returns that liquid.
+// If liquid_name == nil it returns the first liquid found.
+public func HasLiquid(string liquid_name)
+{
+	for (var liquid in GetLiquidContents())
+	{
+		if (liquid_name != nil)
+		{
+			if (liquid_name == liquid->GetLiquidType())
+				return liquid;
+		}
+		else
+			return liquid;
+	}
+	return nil;
+}
+
+
 /**
 Extracts liquid from the container.
 @param liquid_name: Material to extract; Wildcardsupport

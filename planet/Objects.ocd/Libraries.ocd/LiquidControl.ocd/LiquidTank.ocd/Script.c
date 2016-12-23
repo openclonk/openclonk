@@ -47,7 +47,7 @@ public func Construction()
 	_inherited(...);
 }
 
-public func IsLiquidTank() { return true;}
+public func IsLiquidTank() { return true; }
 
 /* ---------- Menu Entries ---------- */
 
@@ -202,6 +202,7 @@ public func DoCutPipe(object pipe)
 
 public func DoSwapSourceDrain(object source, object drain)
 {
+	// TODO: Check if swapping is even allowed.
 	SetDrainPipe(source);
 	SetSourcePipe(drain);
 	source->SetDrainPipe();

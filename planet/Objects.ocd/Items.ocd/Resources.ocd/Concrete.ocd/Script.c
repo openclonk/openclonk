@@ -10,9 +10,11 @@
 
 public func GetLiquidType() { return "Concrete"; }
 
+public func GetLiquidMaterial() { return "Granite"; }
+
 public func Disperse(int angle, int strength)
 {
-	DisperseMaterial("Rock", GetLiquidAmount(), strength, angle);
+	DisperseMaterial(GetLiquidMaterial(), GetLiquidAmount(), strength, angle);
 	_inherited(angle, strength, ...);
 }
 
@@ -25,9 +27,9 @@ public func Construction(object creator)
 {
 	var res = _inherited(creator, ...);
 	// If the concrete is created by the foundry we can safely assume it has been produced
-	// and set the stack count to 100.
-	if (creator->~IsProducer())
-		SetStackCount(100);
+	// and set the stack count to 100. The only exceptions are CreateContents script calls.
+	if (creator && creator->~IsProducer())
+		SetStackCount(200);
 	return res;
 }
 
@@ -35,4 +37,4 @@ public func Construction(object creator)
 
 local Name = "$Name$";
 local Description = "$Description$";
-local Components = {Rock = 1, Water = 100};
+local Components = {Rock = 2, Water = 100};

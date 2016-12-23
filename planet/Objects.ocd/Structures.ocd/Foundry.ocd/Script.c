@@ -73,7 +73,6 @@ func Collection()
 
 public func FxSmeltingTimer(object target, proplist effect, int time)
 {
-	//Message(Format("Smelting %d",timer));
 	// Fire in the furnace.
 	CreateParticle("Fire", -10 * GetCalcDir() + RandomX(-1, 1), 20 + RandomX(-1, 1), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(3, 10), Particles_Fire(), 2);
 
@@ -125,44 +124,67 @@ public func OnProductEjection(object product)
 
 /*-- Pipeline --*/
 
-func IsLiquidContainerForMaterial(string liquid)
+public func IsLiquidContainerForMaterial(string liquid)
 {
 	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid) || WildcardMatch("Concrete", liquid);
 }
 
-func QueryConnectPipe(object pipe)
+// The foundry may have one drain and one source.
+public func QueryConnectPipe(object pipe)
 {
-	if (GetNeutralPipe())
+	if (GetDrainPipe() && GetSourcePipe())
 	{
 		pipe->Report("$MsgHasPipes$");
 		return true;
 	}
-
-	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	else if (GetSourcePipe() && pipe->IsSourcePipe())
 	{
-		return false;
+		pipe->Report("$MsgSourcePipeProhibited$");
+		return true;
 	}
-	else
+	else if (GetDrainPipe() && pipe->IsDrainPipe())
+	{
+		pipe->Report("$MsgDrainPipeProhibited$");
+		return true;
+	}
+	else if (pipe->IsAirPipe())
 	{
 		pipe->Report("$MsgPipeProhibited$");
 		return true;
 	}
+	return false;
 }
 
-func OnPipeConnect(object pipe, string specific_pipe_state)
+// Set to source or drain pipe.
+public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
-	SetNeutralPipe(pipe);
+	if (PIPE_STATE_Source == specific_pipe_state)
+	{
+		SetSourcePipe(pipe);
+		pipe->SetSourcePipe();
+	}
+	else if (PIPE_STATE_Drain == specific_pipe_state)
+	{
+		SetDrainPipe(pipe);
+		pipe->SetDrainPipe();
+	}
+	else
+	{
+		if (!GetDrainPipe())
+			OnPipeConnect(pipe, PIPE_STATE_Drain);
+		else if (!GetSourcePipe())
+			OnPipeConnect(pipe, PIPE_STATE_Source);
+	}
 	pipe->Report("$MsgConnectedPipe$");
 }
 
-func GetLiquidContainerMaxFillLevel()
+public func GetLiquidContainerMaxFillLevel()
 {
 	return 300;
 }
 
 
 /*-- Properties --*/
-
 
 local ActMap = {
 		Default = {
@@ -179,8 +201,9 @@ local ActMap = {
 };
 
 func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+	def.PictureTransformation = Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0));
 }
+
 local Name = "$Name$";
 local Description = "$Description$";
 local ContainBlast = true;

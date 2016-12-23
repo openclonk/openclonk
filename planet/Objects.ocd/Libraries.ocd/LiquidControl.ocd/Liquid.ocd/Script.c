@@ -9,10 +9,9 @@
  */
  
 #include Library_Stackable
- 
-static const FX_LIQUID_Dispersion = "IntLiquidDispersion";
 
-func IsLiquid() { return true;}
+
+func IsLiquid() { return true; }
 func InitialStackCount(){ return 1; }
 func MaxStackCount()
 {
@@ -46,6 +45,13 @@ func GetLiquidType()
 	return "undefined";
 }
 
+// The material maybe different from the type, for example concrete differs from its material granite.
+public func GetLiquidMaterial()
+{
+	// Default to the liquid type.
+	return this->GetLiquidType();
+}
+
 func GetLiquidAmount()
 {
 	return GetStackCount();
@@ -61,20 +67,19 @@ func Departure(object container)
 
 func TriggerDispersion()
 {
-	var fx = GetEffect(FX_LIQUID_Dispersion, this);
+	var fx = GetEffect("IntLiquidDispersion", this);
 	if (!fx)
 	{
-		AddEffect(FX_LIQUID_Dispersion, this, 1, 1, this);
+		AddEffect("IntLiquidDispersion", this, 1, 1, this);
 	}
 }
 
 func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
 {
-	if (!(target->Contained()))
+	if (!target->Contained())
 	{
 		target->Disperse();
 	}
-
 	return FX_Execute_Kill;
 }
 
