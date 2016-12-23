@@ -31,7 +31,7 @@ void C4DefList::SortByPriority() {}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 
-void InitializeC4Script()
+static void InitializeC4Script()
 {
 	InitCoreFunctionMap(&ScriptEngine);
 
@@ -39,18 +39,22 @@ void InitializeC4Script()
 	FixedRandom(time(nullptr));
 }
 
-C4Value RunLoadedC4Script()
+static void ClearC4Script()
+{
+	GameScript.Clear();
+	ScriptEngine.Clear();
+}
+
+static C4Value RunLoadedC4Script()
 {
 	// Link script engine (resolve includes/appends, generate code)
 	ScriptEngine.Link(nullptr);
 
 	C4Value result = GameScript.Call("Main");
-	GameScript.Clear();
-	ScriptEngine.Clear();
 	return result;
 }
 
-int c4s_runfile(const char * filename)
+static int RunFile(const char * filename, bool checkOnly)
 {
 	C4Group File;
 	if (!File.Open(GetWorkingDirectory()))
@@ -70,14 +74,25 @@ int c4s_runfile(const char * filename)
 
 	InitializeC4Script();
 	GameScript.Load(File, fn.getData(), nullptr, nullptr);
-	RunLoadedC4Script();
-	return 0;
+	if (!checkOnly)
+		RunLoadedC4Script();
+	ClearC4Script();
+	return ScriptEngine.errCnt;
 }
 
-int c4s_runstring(const char *script)
+static int RunString(const char *script, bool checkOnly)
 {
 	InitializeC4Script();
 	GameScript.LoadData("<memory>", script, nullptr);
-	RunLoadedC4Script();
-	return 0;
+	if (!checkOnly)
+		RunLoadedC4Script();
+	ClearC4Script();
+	return ScriptEngine.errCnt;
 }
+
+
+int c4s_runfile(const char *filename) { return RunFile(filename, false); }
+int c4s_runstring(const char *script) { return RunString(script, false); }
+
+int c4s_checkfile(const char *filename) { return RunFile(filename, true); }
+int c4s_checkstring(const char *script) { return RunString(script, true); }

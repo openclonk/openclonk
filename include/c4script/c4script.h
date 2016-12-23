@@ -23,6 +23,9 @@ extern "C" {
 int c4s_runfile(const char *filename);
 int c4s_runstring(const char *script);
 
+int c4s_checkfile(const char *filename);
+int c4s_checkstring(const char *script);
+
 #ifdef __cplusplus
 }
 #endif
