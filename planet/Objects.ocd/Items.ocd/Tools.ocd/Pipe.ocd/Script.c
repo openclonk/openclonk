@@ -48,8 +48,11 @@ protected func Hit()
 
 private func Destruction()
 {
-	// remove the line first, so that it does not provoke errors on destruction
-	var line = GetConnectedLine();
+	// Remove the line first, so that it does not provoke errors on destruction.
+	// Actually there is an ill-defined state where line contains the pipe and is
+	// removed. Then line = GetConnectedLine() causes an error, instead use the
+	// slower find object variant.
+	var line = FindObject(Find_Func("IsConnectedTo", this));
 	if (line)
 		line->RemoveObject();
 	return;
