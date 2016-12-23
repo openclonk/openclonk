@@ -2079,7 +2079,7 @@ void C4AulCompiler::ConstantResolver::visit(const ::aul::ast::VarDecl *n)
 	for (const auto &dec : n->decls)
 	{
 		const char *cname = dec.name.c_str();
-		C4String *name = ::Strings.RegString(cname);
+		C4RefCntPointer<C4String> name = ::Strings.RegString(cname);
 		switch (n->scope)
 		{
 		case ::aul::ast::VarDecl::Scope::Func:
