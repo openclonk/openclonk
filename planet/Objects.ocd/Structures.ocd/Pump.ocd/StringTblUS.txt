@@ -29,3 +29,7 @@ MsgCreatedSource=Connected source pipe.
 MsgCreatedDrain=Connected drain pipe.
 MsgCreatedAirDrain=Connected air pipe.
 MsgHasPipes=Pump already has a source and a drain pipe.
+
+PumpMaterials=Pump Materials
+MsgEnableMaterial=Enable the pumping of material %s.
+MsgDisableMaterial=Disable the pumping of material %s.

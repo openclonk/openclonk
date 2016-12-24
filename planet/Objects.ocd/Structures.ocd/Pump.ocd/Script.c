@@ -17,6 +17,8 @@
 static const PUMP_Menu_Action_Switch_On = "on";
 static const PUMP_Menu_Action_Switch_Off = "off";
 static const PUMP_Menu_Action_Description = "description";
+static const PUMP_Menu_Action_Material_Enable = "material_on";
+static const PUMP_Menu_Action_Material_Disable = "material_off";
 
 
 local animation; // animation handle
@@ -127,7 +129,7 @@ func GetPumpMenuEntry(proplist custom_entry, symbol, string text, int priority, 
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited(clonk, ...) ?? [];		
-	var prod_menu =
+	var control_menu =
 	{
 		title = "$Control$",
 		entries_callback = this.GetPumpControlMenuEntries,
@@ -137,7 +139,18 @@ public func GetInteractionMenus(object clonk)
 		BackgroundColor = RGB(0, 50, 50),
 		Priority = 20
 	};
-	PushBack(menus, prod_menu);
+	PushBack(menus, control_menu);
+	var materials_menu =
+	{
+		title = "$PumpMaterials$",
+		entries_callback = this.GetPumpMaterialsMenuEntries,
+		callback = "OnPumpMaterials",
+		callback_hover = "OnPumpMaterialsHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 50, 50),
+		Priority = 25
+	};
+	PushBack(menus, materials_menu);
 	return menus;
 }
 
@@ -732,7 +745,7 @@ public func SetMaterialSelection(array mats)
 	return;
 }
 
-private func RemoveFromMaterialSeleciton(id mat)
+private func RemoveFromMaterialSelection(id mat)
 {
 	return RemoveArrayValue(pump_materials, mat);
 }
@@ -752,6 +765,57 @@ private func IsInMaterialSelection(/* any */ mat)
 		if (def->GetLiquidType() == mat)
 			return true;		
 	return false;	
+}
+
+public func GetPumpMaterialsMenuEntries(object clonk)
+{
+	var menu_entries = [];
+	// Add materials to the selection.			
+	var index = 0, def;
+	while (def = GetDefinition(index++))
+	{
+		if (def->~IsLiquid() && def != Library_Liquid)
+		{
+			var act = PUMP_Menu_Action_Material_Disable;
+			var status = Icon_Ok;
+			var enabled = IsInMaterialSelection(def);
+			if (!enabled)
+			{
+				act = PUMP_Menu_Action_Material_Enable;
+				status = Icon_Cancel;
+			}
+			PushBack(menu_entries, 
+				{symbol = def, extra_data = act, 
+					custom =
+					{
+						Right = "2em", Bottom = "2em",
+						BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+						Priority = index,
+						status = {Right = "1em", Top = "1em", Symbol = status},
+						image = {Symbol = def}
+				}}
+			);
+		}
+	}
+	return menu_entries;
+}
+
+public func OnPumpMaterialsHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	var text = "";
+	if (action == PUMP_Menu_Action_Material_Enable) text = Format("$MsgEnableMaterial$", symbol->GetLiquidType());
+	else if (action == PUMP_Menu_Action_Material_Disable) text = Format("$MsgDisableMaterial$", symbol->GetLiquidType());
+	else if (action == PUMP_Menu_Action_Description) text = this.Description;
+	GuiUpdateText(text, menu_id, 1, desc_menu_target);
+}
+
+public func OnPumpMaterials(symbol_or_object, string action, bool alt)
+{
+	if (action == PUMP_Menu_Action_Material_Enable)
+		AddToMaterialSelection(symbol_or_object);
+	else if (action == PUMP_Menu_Action_Material_Disable)
+		RemoveFromMaterialSelection(symbol_or_object);
+	UpdateInteractionMenus(this.GetPumpMaterialsMenuEntries);	
 }
 
 

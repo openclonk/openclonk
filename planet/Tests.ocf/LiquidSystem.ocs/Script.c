@@ -58,7 +58,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 2;
+	effect.testnr = 1;
 	effect.launched = false;
 	effect.plr = plr;
 	return;
@@ -193,6 +193,7 @@ global func Test1_Completed()
 global func Test1_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Pump), Find_ID(Loam)));
+	RestoreWaterLevels();
 	return;
 }
 
@@ -232,7 +233,8 @@ global func Test2_Completed()
 
 global func Test2_OnFinished()
 {
-	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Pump)));
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Pump), Find_ID(Pipe)));
+	RestoreWaterLevels();
 	return;
 }
 
@@ -275,6 +277,7 @@ global func Test3_Completed()
 global func Test3_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Pump), Find_ID(Pipe)));
+	RestoreWaterLevels();
 	return;
 }
 
@@ -287,7 +290,7 @@ global func RestoreWaterLevels()
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
 	for (var x = 216; x <= 280; x++)
 		for (var y = 24; y <= 120; y++)
-			if (GetMaterial(x, y) == Material("Water"))
+			if (GetMaterial(x, y) != Material("BrickSoft"))
 				ClearFreeRect(x, y, 1, 1);
 	return;
 }
@@ -296,7 +299,7 @@ global func RemoveWater()
 {
 	for (var x = 144; x <= 208 + 1; x++)
 		for (var y = 168; y <= 304; y++)
-			if (GetMaterial(x, y) == Material("Water"))
+			if (GetMaterial(x, y) != Material("BrickSoft"))
 				ClearFreeRect(x, y, 1, 1);
 	return;
 }
