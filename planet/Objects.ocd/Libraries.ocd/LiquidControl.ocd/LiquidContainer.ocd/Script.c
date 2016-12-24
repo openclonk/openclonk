@@ -55,15 +55,15 @@ func GetLiquidContents()
 // Interfaces for interaction with other objects
 
 
-// Returns whether this container has the requested liquid and returns that liquid.
+// Returns whether this container has any of the requested liquid and returns that liquid.
 // If liquid_name == nil it returns the first liquid found.
-public func HasLiquid(string liquid_name)
+public func HasLiquid(array liquids)
 {
 	for (var liquid in GetLiquidContents())
 	{
-		if (liquid_name != nil)
+		if (liquids != nil)
 		{
-			if (liquid_name == liquid->GetLiquidType())
+			if (IsValueInArray(liquids, liquid->GetID()))
 				return liquid;
 		}
 		else

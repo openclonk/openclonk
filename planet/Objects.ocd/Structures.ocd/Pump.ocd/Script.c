@@ -29,6 +29,9 @@ local power_used; // the amount of power currently consumed or (if negative) pro
 local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
 local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
 
+local pump_materials; // list of materials which may be pumped.
+local accepted_mat; // currently accepted material.
+
 local stored_material_name; //contained liquid
 local stored_material_amount;
 
@@ -45,6 +48,7 @@ func Construction()
 {
 	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
 	this.MeshTransformation = Trans_Rotate(50 + RandomX(-10, 10), 0, 1, 0);
+	InitMaterialSelection();
 	return _inherited(...);
 }
 
@@ -385,7 +389,7 @@ func ExtractMaterialFromSource(object source_obj, int amount)
 {
 	if (source_obj->~IsLiquidContainer())
 	{
-		return source_obj->RemoveLiquid(nil, amount, this);
+		return source_obj->RemoveLiquid(accepted_mat, amount, this);
 	}
 	else
 	{
@@ -461,10 +465,11 @@ func CheckState()
 	{
 		// Can pump but has no liquid or can't dispense liquid -> wait.
 		var source_mat = GetLiquidSourceMaterial();
-		var source_ok = source_mat != nil;
-		var drain_ok  = GetLiquidDrainOk(source_mat);
+		var source_ok = IsInMaterialSelection(source_mat);
+		var drain_ok = GetLiquidDrainOk(source_mat);
 		if (!source_ok || !drain_ok)
 		{
+			accepted_mat = nil;
 			if (!source_ok)
 				SetInfoMessage("$StateNoInput$");
 			else if (!drain_ok)
@@ -473,6 +478,7 @@ func CheckState()
 		}
 		else
 		{
+			accepted_mat = source_mat;
 			// can pump, has liquid but has no power -> wait for power
 			if (!powered)
 			{
@@ -602,7 +608,7 @@ private func GetLiquidSourceMaterial()
 	// The source is a liquid container: check which material will be supplied.	
 	if (source_obj->~IsLiquidContainer())
 	{
-		var liquid = source_obj->HasLiquid();
+		var liquid = source_obj->HasLiquid(pump_materials);
 		if (liquid)
 			return liquid->GetLiquidType();
 		return;
@@ -703,6 +709,51 @@ func ToggleOnOff(bool no_menu_refresh)
 	if (!no_menu_refresh)
 		UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
+
+
+/*-- Material Selection --*/
+
+private func InitMaterialSelection()
+{
+	// Add all liquids to the list of ones allowed to pump.
+	pump_materials = [];
+	var index = 0, def;
+	while (def = GetDefinition(index++))
+		if (def->~IsLiquid() && def != Library_Liquid)
+			PushBack(pump_materials, def);
+	// Accepted mat defaults to nil.
+	accepted_mat = nil;		
+	return;	
+}
+
+public func SetMaterialSelection(array mats)
+{
+	pump_materials = mats[:];
+	return;
+}
+
+private func RemoveFromMaterialSeleciton(id mat)
+{
+	return RemoveArrayValue(pump_materials, mat);
+}
+
+private func AddToMaterialSelection(id mat)
+{
+	if (IsValueInArray(pump_materials, mat))
+		return;
+	return PushBack(pump_materials, mat);
+}
+
+private func IsInMaterialSelection(/* any */ mat)
+{
+	if (GetType(mat) == C4V_Def)
+		return IsValueInArray(pump_materials, mat);
+	for (var def in pump_materials)
+		if (def->GetLiquidType() == mat)
+			return true;		
+	return false;	
+}
+
 
 /*-- Properties --*/
 

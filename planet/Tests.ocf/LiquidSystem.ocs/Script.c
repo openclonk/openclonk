@@ -58,7 +58,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 1;
+	effect.testnr = 2;
 	effect.launched = false;
 	effect.plr = plr;
 	return;
@@ -211,6 +211,7 @@ global func Test2_OnStart(int plr)
 	drain->ConnectPipeTo(foundry, PIPE_STATE_Drain);
 	
 	var pump = CreateObjectAbove(Pump, 240, 160, plr);
+	pump->SetMaterialSelection([Concrete]);
 	var source = CreateObjectAbove(Pipe, 168, 292, plr);
 	source->ConnectPipeTo(pump, PIPE_STATE_Source);
 	source->ConnectPipeTo(foundry, PIPE_STATE_Source);
