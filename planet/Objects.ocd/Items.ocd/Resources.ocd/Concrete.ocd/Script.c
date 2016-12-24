@@ -23,6 +23,8 @@ public func Disperse(int angle, int strength)
 
 public func IsFoundryProduct() { return true; }
 
+public func GetProductionTime() { return 120; }
+
 public func Construction(object creator)
 {
 	var res = _inherited(creator, ...);
@@ -33,8 +35,9 @@ public func Construction(object creator)
 	return res;
 }
 
+
 /*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
-local Components = {Rock = 2, Water = 100};
+local Components = {Rock = 1, Water = 100};

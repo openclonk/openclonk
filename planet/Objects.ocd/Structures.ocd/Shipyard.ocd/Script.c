@@ -31,7 +31,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsShipyardProduct();
 }
 
-private func ProductionTime(id toProduce) { return 400; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 400; }
 public func PowerNeed() { return 80; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)

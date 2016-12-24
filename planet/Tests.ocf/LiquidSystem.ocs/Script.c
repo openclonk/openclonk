@@ -226,7 +226,7 @@ global func Test2_OnStart(int plr)
 
 global func Test2_Completed()
 {
-	if (GetMaterial(240, 80) == Material("Granite"))
+	if (GetMaterial(240, 60) == Material("Granite"))
 		return true;
 	return false;
 }

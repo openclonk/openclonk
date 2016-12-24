@@ -24,7 +24,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsInventorProduct();
 }
 
-private func ProductionTime(id toProduce) { return 100; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 100; }
 public func PowerNeed() { return 80; }
 
 public func OnProductionStart(id product)

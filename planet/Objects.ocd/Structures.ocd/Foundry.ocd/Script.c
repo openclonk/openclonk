@@ -36,7 +36,8 @@ private func IsProduct(id product_id)
 {
 	return product_id->~IsFoundryProduct();
 }
-private func ProductionTime(id toProduce) { return 290; }
+
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 290; }
 
 public func OnProductionStart(id product)
 {

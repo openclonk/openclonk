@@ -30,7 +30,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsToolProduct();
 }
 
-private func ProductionTime(id toProduce) { return 150; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 150; }
 public func PowerNeed() { return 40; }
 
 public func OnProductionStart(id product)

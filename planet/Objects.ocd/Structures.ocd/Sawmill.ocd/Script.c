@@ -136,7 +136,7 @@ public func Saw(object target)
 	return true;
 }
 
-private func ProductionTime() { return 100; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 100; }
 private func PowerNeed() { return 20; }
 
 private func FxWoodProductionStart(object t, proplist effect, int temp)
