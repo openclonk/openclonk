@@ -90,16 +90,10 @@ public func FxIntSearchLadderTimer(object target, proplist effect, int time)
 		if (ladder->~CanNotBeClimbed(false, this) || IsBlockedLadder(ladder))
 			continue;
 		
-		Log("----------------------------------");
-		Log("--> Grabbed ladder at frame %d", FrameCounter());
-
 		SetAction("Climb");
 		ladder->~OnLadderGrab(this);
-		Log("-- Animation before climb: %v", GetRootAnimation(CLONK_ANIM_SLOT_Movement));
 		PlayAnimation(GetLadderScaleAnimation(), CLONK_ANIM_SLOT_Movement, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-		Log("-- Animation  after climb: %v", GetRootAnimation(CLONK_ANIM_SLOT_Movement));
 		AddEffect("IntClimbControl", this, 1, 1, this, nil, ladder);
-		Log("--> Grabbed ladder finish");
 		return FX_Execute_Kill;
 	}
 	return FX_OK;

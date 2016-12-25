@@ -1157,9 +1157,6 @@ public func ControlJump()
 		// Wall kick if scaling or climbing.
 		if(GetProcedure() == "SCALE" || GetAction() == "Climb")
 		{
-			Log("----------------------------------");
-			Log("--> Wall kick at frame %d", FrameCounter());
-
 			AddEffect("WallKick",this,1);
 			SetAction("Jump");
 

@@ -751,9 +751,6 @@ func FxIntScaleStop(target, number, reason, tmp)
 
 func StartJump()
 {
-	Log("----------------------------------");
-	Log("--> Start Jump at frame %d", FrameCounter());
-
 	//which leg to kick off with?
 	var side = "R";
 	if(Random(2)) side = "L";
@@ -764,19 +761,14 @@ func StartJump()
 	//Walk kick jump
 	if(GetEffect("WallKick",this))
 	{
-		Log("--> Start wall jump");
 		SetAction("WallJump");
 		var side = "L";
 		if(GetDir() == DIR_Left) side = "R";
-		Log("-- Animation before wall jump: %v", GetRootAnimation(CLONK_ANIM_SLOT_Movement));
 		PlayAnimation(Format("JumpWall.%s", side), CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("JumpWall.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-		Log("-- Animation  after wall jump: %v", GetRootAnimation(CLONK_ANIM_SLOT_Movement));
-		Log("--> Finished wall jump");
 	}
 	//Upwards jump
 	else if(GetXDir() == 0)
 	{
-		Log("--> Did upward jump");
 		PlayAnimation(Format("JumpUp.%s", side), CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("JumpUp.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 
