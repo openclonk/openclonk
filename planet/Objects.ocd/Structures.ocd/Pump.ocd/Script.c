@@ -276,7 +276,12 @@ public func IsAirPipeConnected()
 
 /*-- Power stuff --*/
 
-public func GetConsumerPriority() { return 25; }
+public func GetConsumerPriority()
+{
+	if (IsAirPipeConnected())
+		return 125;	
+	return 25;
+}
 
 public func GetProducerPriority() { return 100; }
 
@@ -612,9 +617,9 @@ private func PumpHeight2Power(int pump_height)
 	// Pumping power downwards never costs energy, but only brings something if offset is overcome.
 	else
 		used_power = BoundBy(used_power + power_offset - 10, -max_power, 0);
-	// Pumped air never generates power
+	// Pumped air always requires 20 power.
 	if (IsAirPipeConnected())
-		used_power = BoundBy(used_power, 10, max_power);
+		used_power = 20;
 	return used_power;
 }
 
