@@ -1,33 +1,33 @@
 /**
- * Liquid
- *
- * Basic interface for liquids. The logic for adding and removing liquid,
- * PutLiquid() and RemoveLiquid() is deliberately the same as in the
- * liquid container, so that scripts can be read more easily.
- *
- * Author: Marky
- */
+	Liquid
+	Basic interface for liquids. The logic for adding and removing liquid,
+	PutLiquid() and RemoveLiquid() is deliberately the same as in the
+	liquid container, so that scripts can be read more easily.
+	
+	@author Marky
+*/
  
 #include Library_Stackable
 
 
-func IsLiquid() { return true; }
-func InitialStackCount(){ return 1; }
-func MaxStackCount()
+public func IsLiquid() { return true; }
+
+public func InitialStackCount(){ return 1; }
+
+public func MaxStackCount()
 {
 	if (this)
 	{
-		if (Contained() && Contained()->~IsLiquidContainer() && Contained()->~GetLiquidContainerMaxFillLevel() > 0)
+		if (Contained() && Contained()->~IsLiquidContainer() && Contained()->~GetLiquidContainerMaxFillLevel(GetID()) > 0)
 		{
 			// Stack limit is: [what is already inside the stack] + [free space in the container].
-			return GetLiquidAmount() + Contained()->~GetLiquidAmountRemaining();
+			return GetLiquidAmount() + Contained()->~GetLiquidAmountRemaining(GetID());
 		}
 	}
-	
 	return Stackable_Max_Count;
 }
 
-func Construction()
+public func Construction()
 {
 	TriggerDispersion();
 	return _inherited(...);
@@ -40,7 +40,7 @@ func Construction()
 //
 // naming scheme: GetLiquid[attribute], because it concerns the liquid
 
-func GetLiquidType()
+public func GetLiquidType()
 {
 	return "undefined";
 }
@@ -52,20 +52,20 @@ public func GetLiquidMaterial()
 	return this->GetLiquidType();
 }
 
-func GetLiquidAmount()
+public func GetLiquidAmount()
 {
 	return GetStackCount();
 }
 
 // -------------- Dispersion
 
-func Departure(object container)
+public func Departure(object container)
 {
 	TriggerDispersion();
 	_inherited(container, ...);
 }
 
-func TriggerDispersion()
+public func TriggerDispersion()
 {
 	var fx = GetEffect("IntLiquidDispersion", this);
 	if (!fx)
@@ -74,7 +74,7 @@ func TriggerDispersion()
 	}
 }
 
-func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
+public func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
 {
 	if (!target->Contained())
 	{
@@ -83,13 +83,13 @@ func FxIntLiquidDispersionTimer(object target, proplist fx, int timer)
 	return FX_Execute_Kill;
 }
 
-func Disperse(int angle, int strength)
+public func Disperse(int angle, int strength)
 {
 	// does nothing but remove the object (unless it's an infinite stack) - overload if you want special effects
 	if (!IsInfiniteStackCount())  RemoveObject();
 }
 
-func DisperseMaterial(string material_name, int amount, int strength, int angle, int angle_variance)
+public func DisperseMaterial(string material_name, int amount, int strength, int angle, int angle_variance)
 {
 	angle = angle ?? 0;
 	strength = strength ?? 30;
@@ -98,7 +98,7 @@ func DisperseMaterial(string material_name, int amount, int strength, int angle,
 	CastPXS(material_name, amount, strength, 0, 0, angle, 30);
 }
 
-func DisperseParticles(string particle_name, int amount, int strength, int angle, int angle_variance, proplist template, int lifetime)
+public func DisperseParticles(string particle_name, int amount, int strength, int angle, int angle_variance, proplist template, int lifetime)
 {
 	angle = angle ?? 0;
 	strength = strength ?? 30;
@@ -121,13 +121,13 @@ func DisperseParticles(string particle_name, int amount, int strength, int angle
 // -------------- Status
 
 
-func UpdateName()
+public func UpdateName()
 {
 	var container = Contained();
 	
 	if (container && container->~IsLiquidContainer())
 	{
-		SetName(Format("%d/%d %s", GetLiquidAmount(), container->GetLiquidContainerMaxFillLevel(), GetID()->GetName()));
+		SetName(Format("%d/%d %s", GetLiquidAmount(), container->GetLiquidContainerMaxFillLevel(GetID()), GetID()->GetName()));
 	}
 	else
 	{
@@ -138,7 +138,7 @@ func UpdateName()
 
 // 1000 liquid items count as 1 mass unit
 // this may have to be tuned or made object-specific?
-func UpdateMass()
+public func UpdateMass()
 {
 	SetMass(GetID()->GetMass() * Max(1, GetLiquidAmount()) / 1000);
 }
@@ -146,7 +146,7 @@ func UpdateMass()
 
 // 1000 liquid items count as 1 wealth unit
 // this may have to be tuned or made object-specific?
-func CalcValue(object in_base, int for_plr)
+public func CalcValue(object in_base, int for_plr)
 {
 	return GetID()->GetValue() * Max(1, GetLiquidAmount()) / 1000;
 }
@@ -166,7 +166,7 @@ Inserts liquid into the object.
 @param source: Object which inserts the liquid
 @return returned_amount: The inserted amount
 */
-func PutLiquid(liquid_name, int amount, object source)
+public func PutLiquid(liquid_name, int amount, object source)
 {
 	amount = amount ?? 0;
 
@@ -205,7 +205,7 @@ Extracts liquid from the object.
 	   - returned_liquid: Material being extracted
 	   - returned_amount: Amount being extracted
 */
-func RemoveLiquid(liquid_name, int amount, object destination)
+public func RemoveLiquid(liquid_name, int amount, object destination)
 {
 	if (amount < 0)
 	{
@@ -237,7 +237,7 @@ func RemoveLiquid(liquid_name, int amount, object destination)
  and amount. Liquids with amount 0 can be created
  that way.
  */
-func CreateLiquid(int amount, object in_container)
+public func CreateLiquid(int amount, object in_container)
 {
 	if (GetType(this) != C4V_Def)
 	{

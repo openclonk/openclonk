@@ -130,6 +130,13 @@ public func IsLiquidContainerForMaterial(string liquid)
 	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid) || WildcardMatch("Concrete", liquid);
 }
 
+public func GetLiquidContainerMaxFillLevel(liquid_name)
+{
+	if (GetLiquidDef(liquid_name) == Water)
+		return 600;	
+	return 300;
+}
+
 // The foundry may have one drain and one source.
 public func QueryConnectPipe(object pipe)
 {
@@ -177,11 +184,6 @@ public func OnPipeConnect(object pipe, string specific_pipe_state)
 			OnPipeConnect(pipe, PIPE_STATE_Source);
 	}
 	pipe->Report("$MsgConnectedPipe$");
-}
-
-public func GetLiquidContainerMaxFillLevel()
-{
-	return 300;
 }
 
 

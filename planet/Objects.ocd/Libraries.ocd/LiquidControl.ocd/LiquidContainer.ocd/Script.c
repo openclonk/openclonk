@@ -1,62 +1,60 @@
 /**
- * Liquid Container
- *
- * Basic interface for anything that can contain liquids.
- *
- * Author: Marky
- */
+	Liquid Container
+	Basic interface for anything that can contain liquids.
+	
+	@author Marky
+*/
 
 
-func IsLiquidContainer() { return true;}
+public func IsLiquidContainer() { return true; }
 
-func GetLiquidContainerMaxFillLevel()
+public func GetLiquidContainerMaxFillLevel(liquid_name)
 {
 	return 0;
 }
 
-func IsLiquidContainerForMaterial(string liquid_name)
+public func IsLiquidContainerForMaterial(string liquid_name)
 {
 	return true;
 }
 
-func GetLiquidAmount(liquid_name)
+public func GetLiquidAmount(liquid_name)
 {
 	var amount = 0;
 	var type = nil;
 	
-	// in case that a value was supplied, try finding the type for that
+	// In case that a value was supplied, try finding the type for that.
 	if (liquid_name != nil)
 	{
 		type = GetLiquidDef(liquid_name);
-		if (type == nil) FatalError(Format("No such liquid: %s", liquid_name));
+		if (type == nil)
+			FatalError(Format("GetLiquidAmount(%s): No such liquid.", liquid_name));
 	}
 
-	// return everything if 'nil' was passed, or a specific amount if a value was passed
+	// Return everything if 'nil' was passed, or a specific amount if a value was passed.
 	for (var liquid in GetLiquidContents())
-	if (liquid_name == nil || liquid->GetLiquidType() == type->GetLiquidType())
 	{
-		amount += liquid->~GetLiquidAmount();
+		if (liquid_name == nil || liquid->GetLiquidType() == type->GetLiquidType())
+			amount += liquid->~GetLiquidAmount();
 	}
 	return amount;
 }
 
-func GetLiquidAmountRemaining()
+public func GetLiquidAmountRemaining(liquid_name)
 {
-	return GetLiquidContainerMaxFillLevel() - GetLiquidAmount();
+	return GetLiquidContainerMaxFillLevel(liquid_name) - GetLiquidAmount(liquid_name);
 }
 
-func GetLiquidContents()
+public func GetLiquidContents()
 {
 	return FindObjects(Find_Container(this), Find_Func("IsLiquid"));
 }
 
-// -------------- Interaction
-//
-// Interfaces for interaction with other objects
 
+/*-- Interaction --*/
 
 // Returns whether this container has any of the requested liquid and returns that liquid.
-// If liquid_name == nil it returns the first liquid found.
+// If liquids == nil it returns the first liquid found.
 public func HasLiquid(array liquids)
 {
 	for (var liquid in GetLiquidContents())
@@ -84,7 +82,7 @@ Extracts liquid from the container.
 	   - returned_liquid: Material being extracted
 	   - returned_amount: Amount being extracted
 */
-func RemoveLiquid(liquid_name, int amount, object destination)
+public func RemoveLiquid(liquid_name, int amount, object destination)
 {
 	if (amount < 0)
 	{
@@ -116,7 +114,7 @@ Inserts liquid into the container.
 @param source: Object which inserts the liquid [optional]
 @return returned_amount: The inserted amount
 */
-func PutLiquid(liquid_name, int amount, object source)
+public func PutLiquid(liquid_name, int amount, object source)
 {
 	amount = amount ?? this->GetLiquidAmountRemaining();
 
@@ -127,7 +125,7 @@ func PutLiquid(liquid_name, int amount, object source)
 
 	var type = GetLiquidDef(liquid_name);
 	
-	var max = this->GetLiquidContainerMaxFillLevel();
+	var max = this->GetLiquidContainerMaxFillLevel(liquid_name);
 	var before = GetLiquidAmount(liquid_name);
 	if (max > 0 && before >= max) return 0;
 
@@ -144,23 +142,17 @@ func PutLiquid(liquid_name, int amount, object source)
 	return after - before;
 }
 
-func AcceptsLiquid(liquid_name, int amount)
+public func AcceptsLiquid(liquid_name, int amount)
 {
-	return amount <= this->GetLiquidContainerMaxFillLevel() - GetLiquidAmount(liquid_name);
+	return amount <= this->GetLiquidContainerMaxFillLevel(liquid_name) - GetLiquidAmount(liquid_name);
 }
 
 private func GetLiquidDef(liquid_name)
 {
 	if (GetType(liquid_name) == C4V_String)
-	{
 		return GetDefinition(liquid_name);
-	}
 	else if (GetType(liquid_name) == C4V_Def)
-	{
 		return liquid_name;
-	}
-	else
-	{
-		FatalError(Format("The first parameter of GetLiquidDef() must either be a string or definition. You passed %v.", liquid_name));
-	}
+	FatalError(Format("The first parameter of GetLiquidDef() must either be a string or definition. You passed %v.", liquid_name));
+	return nil;
 }
