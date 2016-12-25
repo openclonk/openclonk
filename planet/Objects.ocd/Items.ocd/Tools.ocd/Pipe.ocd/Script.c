@@ -140,10 +140,12 @@ func IsDroppedOnDeath(object clonk)
 /* ---------- Pipe States ---------- */
 
 
-public func IsNeutralPipe(){ return pipe_state == PIPE_STATE_Neutral; }
-public func IsDrainPipe(){ return pipe_state == PIPE_STATE_Drain; }
-public func IsSourcePipe(){ return pipe_state == PIPE_STATE_Source; }
-public func IsAirPipe(){ return pipe_state == PIPE_STATE_Air; }
+public func IsNeutralPipe() { return pipe_state == PIPE_STATE_Neutral; }
+public func IsDrainPipe() { return pipe_state == PIPE_STATE_Drain; }
+public func IsSourcePipe() { return pipe_state == PIPE_STATE_Source; }
+public func IsAirPipe() { return pipe_state == PIPE_STATE_Air; }
+
+public func GetPipeState() { return pipe_state; }
 
 public func SetNeutralPipe()
 {

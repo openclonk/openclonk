@@ -22,7 +22,7 @@ protected func Initialize()
 	CreateObject(Rule_NoPowerNeed);	
 	// Create a script player for some tests.
 	script_plr = nil;
-	CreateScriptPlayer("PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
+	CreateScriptPlayer("Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 	return;
 }
 
@@ -278,6 +278,40 @@ global func Test3_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Pump), Find_ID(Pipe)));
 	RestoreWaterLevels();
+	return;
+}
+
+
+global func Test4_OnStart(int plr)
+{	
+	RemoveAll(Find_ID(Rule_NoPowerNeed));	
+	
+	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
+	engine->CreateContents(Coal, 10);
+	
+	var pump = CreateObjectAbove(Pump, 84, 160, plr);
+	var helmet = GetCursor(plr)->CreateContents(DivingHelmet);
+	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+	drain->ConnectPipeTo(helmet);
+	drain->ConnectPipeTo(pump, drain->GetPipeState());
+	
+	// Log what the test is about.
+	Log("Test air supply to diving helmet.");
+	return true;
+}
+
+global func Test4_Completed()
+{
+	if (ObjectCount(Find_ID(DivingHelmet), Find_NoContainer()) >= 1)
+		return true;
+	return false;
+}
+
+global func Test4_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(DivingHelmet), Find_ID(Pump), Find_ID(Pipe), Find_ID(SteamEngine)));
+	RestoreWaterLevels();
+	CreateObject(Rule_NoPowerNeed);
 	return;
 }
 

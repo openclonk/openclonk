@@ -46,7 +46,7 @@ public func IsLiquidTank() { return false; }
 // The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
 local last_status_message;
 
-func Construction()
+public func Construction()
 {
 	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
 	this.MeshTransformation = Trans_Rotate(50 + RandomX(-10, 10), 0, 1, 0);
@@ -56,7 +56,7 @@ func Construction()
 
 public func IsHammerBuildable() { return true; }
 
-func Initialize()
+public func Initialize()
 {
 	switched_on = true;
 	var start = 0;
@@ -114,7 +114,7 @@ public func GetPumpControlMenuEntries(object clonk)
 	return menu_entries;
 }
 
-func GetPumpMenuEntry(proplist custom_entry, symbol, string text, int priority, extra_data)
+public func GetPumpMenuEntry(proplist custom_entry, symbol, string text, int priority, extra_data)
 {
 	return {symbol = symbol, extra_data = extra_data, 
 		custom =
@@ -182,7 +182,7 @@ private func SetInfoMessage(string msg)
 
 /*-- Pipe control --*/
 
-func QueryConnectPipe(object pipe)
+public func QueryConnectPipe(object pipe)
 {
 	if (GetDrainPipe() && GetSourcePipe())
 	{
@@ -208,7 +208,7 @@ func QueryConnectPipe(object pipe)
 }
 
 
-func OnPipeConnect(object pipe, string specific_pipe_state)
+public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
 	if (PIPE_STATE_Source == specific_pipe_state)
 	{
@@ -251,9 +251,9 @@ func OnPipeConnect(object pipe, string specific_pipe_state)
 	}
 }
 
-func OnPipeDisconnect(object pipe)
+public func OnPipeDisconnect(object pipe)
 {
-	_inherited(pipe);
+	_inherited(pipe, ...);
 
 	if (!pipe->IsAirPipe())
 		pipe->SetNeutralPipe();
@@ -261,10 +261,9 @@ func OnPipeDisconnect(object pipe)
 		CheckState();
 }
 
-
 public func SetSourcePipe(object pipe)
 {
-	_inherited(pipe);
+	_inherited(pipe, ...);
 	CheckState();
 }
 
@@ -324,15 +323,17 @@ protected func Pumping()
 	
 	// something went wrong in the meantime?
 	// let the central function handle that on next check
-	if (!GetSourcePipe()) 
+	if (!GetSourcePipe() && !IsAirPipeConnected()) 
 		return;
 		
 	// Get the drain object.
 	var drain_obj = GetDrainObject();
 
-	// Don't do anything special if pumping air but inform the drain object
+	// Don't do anything special if pumping air but inform the drain object.
 	if (IsAirPipeConnected())
 	{
+		if (!GetAirSourceOk() || !GetAirDrainOk())
+			return SetState("WaitForLiquid");
 		if (drain_obj)
 			drain_obj->~OnAirPumped(this);
 		return;
@@ -414,7 +415,7 @@ func ExtractMaterialFromSource(object source_obj, int amount)
 }
 
 // interface for the insertion logic
-func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
+public func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 {
 	// insert material into containers, if possible
 	if (drain_obj->~IsLiquidContainer())
@@ -438,12 +439,13 @@ func InsertMaterialAtDrain(object drain_obj, string material_name, int amount)
 
 
 /** Re check state and change the state if needed */
-func CheckState()
+public func CheckState()
 {
 	var is_fullcon = GetCon() >= 100;
-	var can_pump = GetSourcePipe() && is_fullcon && switched_on;
+	// The pump can work without source if it needs to supply air.
+	var can_pump = (GetSourcePipe() || IsAirPipeConnected()) && is_fullcon && switched_on;
 	
-	// can't pump at all -> wait
+	// Can't pump at all -> wait.
 	if (!can_pump)
 	{
 		if (!GetSourcePipe() && switched_on)
@@ -457,9 +459,14 @@ func CheckState()
 			SetInfoMessage("$StateNoAir$");
 			SetState("WaitForLiquid");
 		}
+		else if (!GetAirDrainOk())
+		{
+			SetInfoMessage("$StateNoAirNeed$");
+			SetState("WaitForLiquid");
+		}
 		else
 		{
-			// can pump, has air but has no power -> wait for power
+			// Can pump, has air but has no power -> wait for power.
 			if (!powered)
 			{
 				SetInfoMessage("$StateNoPower$");
@@ -660,18 +667,25 @@ private func GetLiquidDrainOk(string liquid)
 	return true;
 }
 
-// Returns whether the drain is in free air.
-func GetAirSourceOk()
+// Returns whether the source (or alternatively the pump itself) is in free air.
+public func GetAirSourceOk()
 {
 	var source_obj = GetSourceObject();
-	if (!source_obj) return false;
+	if (!source_obj)
+		return !GBackSemiSolid();
 	var is_air = !source_obj->GBackSemiSolid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY);
 	if (!is_air)
-	{
 		source_obj->~CycleApertureOffset(this);
+	return is_air;
+}
+
+// Returns whether the other side of air drain is in need of air.
+public func GetAirDrainOk()
+{
+	var drain_obj = GetDrainObject();
+	if (!drain_obj)
 		return false;
-	}
-	return true;
+	return drain_obj->~QueryAirNeed(this);
 }
 
 // Set the state of the pump, retaining the animation position and updating the power usage.

@@ -29,15 +29,24 @@ func Hit()
 // Called by a connected pump
 public func OnAirPumped(object pump)
 {
-	if (IsWorn())
-		if (Contained())
-		{
-			// If nearly max breath just keep the level
-			if (Contained()->~GetBreath() >= Contained()->~GetMaxBreath() - 10)
-				Contained()->DoBreath(3);
-			else // Slowly fill up breath
-				Contained()->DoBreath(4);
-		}
+	var wearer = Contained();
+	if (wearer && IsWorn())
+	{
+		// If nearly max breath just keep the level
+		if (wearer->~GetBreath() >= wearer->~GetMaxBreath() - 10)
+			wearer->DoBreath(3);
+		else // Slowly fill up breath
+			wearer->DoBreath(4);
+	}
+}
+
+// Return whether the helmet needs air.
+public func QueryAirNeed(object pump)
+{
+	var wearer = Contained();
+	if (wearer && IsWorn())
+		return wearer->~GetBreath() < wearer->~GetMaxBreath();
+	return false;
 }
 
 public func OnPipeLengthChange()
@@ -162,6 +171,7 @@ public func QueryConnectPipe(object pipe)
 	}
 }
 
+
 /*-- Interaction --*/
 
 public func HasInteractionMenu() { return true; }
@@ -181,7 +191,6 @@ public func GetInteractionMenus(object clonk)
 		Priority = 30
 	};
 	PushBack(menus, pipe_menu);
-
 	return menus;
 }
 
