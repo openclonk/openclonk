@@ -142,7 +142,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 			Log("Test %d not available, the previous test was the last test.", effect.testnr);
 			Log("=====================================");
 			Log("All tests have been successfully completed!");
-			return -1;
+			return FX_Execute_Kill;
 		}
 		effect.launched = true;
 	}		
@@ -583,7 +583,7 @@ global func Test10_OnStart(int plr)
 
 global func Test10_Completed()
 {
-	if (ObjectCount(Find_ID(Wood)) >= 5)
+	if (ObjectCount(Find_ID(Wood), Find_NoContainer()) >= 5)
 		return true;
 	return false;
 }
