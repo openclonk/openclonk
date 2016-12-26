@@ -291,7 +291,7 @@ func CutLineConnection(object target)
 	{
 		target->OnPipeDisconnect(this);
 		Exit(); // the kit was inside the line at this point.
-		SetPosition(target->GetX(), target->GetY());
+		SetPosition(target->GetX(), target->GetY() + target->GetBottom() - this->GetBottom());
 		line->SwitchConnection(target, this);
 		SetPipeLine(line);
 	}
