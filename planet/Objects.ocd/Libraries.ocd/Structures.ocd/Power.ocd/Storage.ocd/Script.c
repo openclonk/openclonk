@@ -19,7 +19,7 @@
 	
 	Important notes when including this library:
 	 * The object including this library should return _inherited(...) in the
-	   Initialize and Destruction callback if overloaded.
+	   Initialize, Destruction & Definition callback if overloaded.
 	
 	@author Maikel
 */
@@ -297,3 +297,31 @@ protected func FxConsumePowerStop(object target, proplist effect, int reason, bo
 	// Remove a possible cooldown effect as well.
 	return FX_OK;
 }
+
+
+/*-- Scenario Saving --*/
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...))
+		return false;
+	// Save the stored power.	
+	if (lib_power.stored_power != nil)
+		props->AddCall("StoredPower", this, "SetStoredPower", lib_power.stored_power);
+	return true;
+}
+
+
+/*-- Editor Properties --*/
+
+public func Definition(proplist def)
+{
+	if (!def.EditorProps)
+		def.EditorProps = {};
+	def.EditorProps.pump_speed = { Name = "$EditorPropStoredPower$", EditorHelp = "$EditorPropStoredPowerHelp$", Type = "enum", Set = "SetStoredPower", Options = [
+		{ Value = 0, Name = "$EditorPropStoredPowerEmpty$" },
+		{ Value = def->GetStorageCapacity() , Name="$EditorPropStoredPowerFull$" }
+	]};
+	return _inherited(def, ...);
+}
+
