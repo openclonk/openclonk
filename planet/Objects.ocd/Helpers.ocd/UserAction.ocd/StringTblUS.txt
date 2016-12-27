@@ -15,6 +15,7 @@ UserAny=Value
 Default=Default
 Structure=Structure
 Game=Game
+Disasters=Disasters
 None=Nothing
 Noone=Noone
 AllPlayers=All players

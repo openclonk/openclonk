@@ -15,6 +15,7 @@ UserAny=Wert
 Default=Standard
 Structure=Gebaeude
 Game=Spiel
+Disasters=Katastrophen
 None=Nichts
 Noone=Niemand
 AllPlayers=Alle Spieler
