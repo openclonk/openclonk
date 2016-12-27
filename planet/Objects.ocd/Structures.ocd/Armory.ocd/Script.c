@@ -68,6 +68,7 @@ private func Smoking()
 func Definition(proplist def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(7000, 0, 30000), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(25, 0, 1, 0));
+	return _inherited(def, ...);
 }
 
 local ActMap = {

@@ -846,6 +846,7 @@ protected func Definition(def)
 	SetProperty("PictureTransformation", Trans_Rotate(50, 0, 1, 0), def);
 	// for building preview
 	SetProperty("MeshTransformation", Trans_Rotate(50, 0, 1, 0), def);
+	return _inherited(def, ...);
 }
 
 /*

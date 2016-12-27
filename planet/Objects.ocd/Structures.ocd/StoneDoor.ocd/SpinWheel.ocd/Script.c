@@ -118,6 +118,7 @@ func Definition(def)
 	def.EditorProps.targetdoor = { Name = "$Target$", Type = "object", Filter = "IsSwitchTarget" };
 	def.EditorProps.up_action = new UserAction.Prop { Name="$UpAction$" };
 	def.EditorProps.down_action = new UserAction.Prop { Name="$DownAction$" };
+	return _inherited(def, ...);
 }
 
 

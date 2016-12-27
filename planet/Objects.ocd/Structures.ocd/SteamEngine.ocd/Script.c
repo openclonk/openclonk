@@ -283,6 +283,7 @@ protected func Definition(def)
 {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(25, 0, 1, 0), Trans_Scale(625)), def);
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-4000, -18000, 60000), Trans_Rotate(25, 0, 1, 0), Trans_Scale(625)), def);
+	return _inherited(def, ...);
 }
 
 local ContainBlast = true;

@@ -192,6 +192,7 @@ public func OnPipeConnect(object pipe, string specific_pipe_state)
 public func Definition(proplist def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(30, 0, 1, 0));
+	return _inherited(def, ...);
 }
 
 local Name = "$Name$";

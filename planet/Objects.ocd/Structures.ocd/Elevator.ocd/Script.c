@@ -331,6 +331,7 @@ local ActMap = {
 
 private func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-20,1,0), Trans_Rotate(-20, 0, 1, 0)));
+	return _inherited(def, ...);
 }
 local Name = "$Name$";
 local Description = "$Description$";
