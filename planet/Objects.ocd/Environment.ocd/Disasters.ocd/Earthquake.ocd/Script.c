@@ -43,11 +43,11 @@ func FxIntEarthquakeControlSaveScen(obj, fx, props)
 	return true;
 }
 
-// Launches an earthquake with epicenter (x,y).
+// Launches an earthquake with epicenter (x,y) in global coordinates.
 global func LaunchEarthquake(int x, int y, int strength)
 {
 	// Earthquake should start in solid.
-	if (!GBackSemiSolid(x, y))
+	if (!GBackSemiSolid(x - GetX(), y - GetY()))
 		return false;
 	// Minimum strength is 15, maximum strength is 100.
 	strength = BoundBy(strength, 15, 100);
