@@ -379,6 +379,10 @@ public func Definition(def)
 		Target = UserAction->GetObjectEvaluator("IsSequence", "$Name$"),
 		Status = new UserAction.Evaluator.Boolean { Name="$Status$", EditorHelp="$SetActiveStatusHelp$" }
 		} } );
+	UserAction->AddEvaluator("Action", "$Name$", "$ActTrigger$", "$ActTriggerDesc$", "sequence_trigger", [def, def.EvalAct_Trigger], { Target = { Function="action_object" }, TriggeringObject = { Function="triggering_object" } }, { Type="proplist", Display="{{Target}}({{TriggeringObject}})", EditorProps = {
+		Target = new UserAction->GetObjectEvaluator("IsSequence", "$Name$") { Priority=60 },
+		TriggeringObject = new UserAction.Evaluator.Object { Name="$TriggeringObject$", EditorHelp="$TriggeringObjectHelp$" }
+		} } );
 	UserAction->AddEvaluator("Action", "$Name$", "$DisablePlayerControls$", "$DisablePlayerControlsHelp$", "sequence_disable_player_controls", [def, def.EvalAct_DisablePlayerControls], { Players = { Function="all_players" }, MakeInvincible = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Players}}", EditorProps = {
 		Players = new UserAction.Evaluator.PlayerList { Name="$Players$", EditorHelp="$PlayerControlsPlayersHelp$" },
 		MakeInvincible = new UserAction.Evaluator.Boolean { Name="$MakeInvincible$", EditorHelp="$MakeInvincibleHelp$" }
@@ -732,6 +736,13 @@ private func EvalAct_SetActive(proplist props, proplist context)
 	if (!target) return;
 	if (status && target.finished) target->~SetFinished(false);
 	target->~SetActive(status);
+}
+
+private func EvalAct_Trigger(proplist props, proplist context)
+{
+	var target = UserAction->EvaluateValue("Object", props.Target, context);
+	var triggering_object = UserAction->EvaluateValue("Object", props.TriggeringObject, context);
+	if (target && target->~IsSequence()) target->OnTrigger(triggering_object, nil, false);
 }
 
 private func EvalAct_DisablePlayerControls(proplist props, proplist context)

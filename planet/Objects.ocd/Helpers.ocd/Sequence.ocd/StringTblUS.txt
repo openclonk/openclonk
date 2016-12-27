@@ -60,3 +60,7 @@ MakeInvincible=Invincible
 MakeInvincibleHelp=Whether all clonks are made invincible while control is deactivated.
 EnablePlayerControls=Enable player control
 EnablePlayerControlsHelp=Reactivates control of all clonks for one or more plauers.
+ActTrigger=Trigger sequence
+ActTriggerDesc=Starts a sequence as if the trigger had been activated. Checks the condition before.
+TriggeringObject=Triggering object
+TriggeringObjectHelp=The object returned as trigger object within the sequence.
