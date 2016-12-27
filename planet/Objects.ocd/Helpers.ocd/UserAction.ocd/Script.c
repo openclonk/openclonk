@@ -232,6 +232,14 @@ func Definition(def)
 		Players = Evaluator.PlayerList,
 		ID = Evaluator.Definition
 		} } );
+	AddEvaluator("Action", "$Player$", "$SetPlrView$", "$SetPlrViewHelp$", "plr_view", [def, def.EvalAct_PlrView], { Players={ Function="triggering_player_list" }, Target={ Function="action_object" } }, { Type="proplist", Display="({{Players}}, {{Target}})", EditorProps = {
+		Players = Evaluator.PlayerList,
+		Target = new Evaluator.Object { Name="$Target$", EditorHelp="$PlrViewTargetHelp$" },
+		Immediate = { Name="$ScrollMode$", EditorHelp="$SetPlrViewScrollModeHelp$", Type="enum", Priority=-10, Options = [
+			{ Name="$Smooth$" },
+			{ Value=true, Name="$Immediate$" }
+			] }
+		} } );
 	AddEvaluator("Action", "$Script$", "$ConditionalAction$", "$ConditionalActionHelp$", "if", [def, def.EvalAct_If], { }, { Type="proplist", Display="if({{Condition}}) {{TrueEvaluator}} else {{FalseEvaluator}}", EditorProps = {
 		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$IfConditionHelp$", Priority=60 },
 		TrueEvaluator = new Evaluator.Action { Name="$TrueEvaluator$", EditorHelp="$TrueEvaluatorHelp$", Priority=50 },
@@ -1158,6 +1166,15 @@ private func EvalAct_PlrKnowledge(proplist props, proplist context)
 	var def = EvaluateValue("Definition", props.ID, context);
 	if (!def) return;
 	for (var plr in players) SetPlrKnowledge(plr, def);
+}
+
+private func EvalAct_PlrView(proplist props, proplist context)
+{
+	var players = EvaluateValue("PlayerList", props.Players, context) ?? [];
+	var target = EvaluateValue("Object", props.Target, context);
+	var immediate = props.Immediate;
+	if (!target) return;
+	for (var plr in players) SetPlrView(plr, target, immediate);
 }
 
 private func EvalAct_ObjectCallInt(proplist props, proplist context, func call_fn)
