@@ -73,7 +73,7 @@ public func SaveScenarioObject(proplist props)
 		return false;
 	if (parent)
 		props->AddCall("BasementParent", this, "SetParent", parent);
-	else if (width != GetObjWidth())
+	else if (width != GetDefWidth())
 		props->AddCall("BasementWidth", this, "SetWidth", width);
 	props->Remove("Category");
 	return true;
