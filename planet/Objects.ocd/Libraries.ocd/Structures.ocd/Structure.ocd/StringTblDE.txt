@@ -14,3 +14,6 @@ YouNeedAHammer=Es wird ein Hammer benötigt.
 YouNeedMaterials=Es werden Materialien benötigt.
 
 MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Interaktionen möglich.
+
+Flip=Umdrehen
+FlipHelp=Spiegelt das Gebaeude.

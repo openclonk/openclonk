@@ -421,3 +421,22 @@ public func OnRepairMenuHover(id symbol, string action, desc_menu_target, menu_i
 	
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
+
+public func Flip()
+{
+	// Mirror structure
+	if (this->~NoConstructionFlip()) return false;
+	return SetDir(1-GetDir());
+}
+
+
+public func Definition(def, ...)
+{
+	if (!def.EditorProps) def.EditorProps = {};
+	if (!def->~NoConstructionFlip())
+	{
+		if (!def.EditorActions) def.EditorActions = {};
+		def.EditorActions.flip = { Name="$Flip$", EditorHelp="$FlipHelp$", Command="Flip()" };
+	}
+	return _inherited(def, ...);
+}
