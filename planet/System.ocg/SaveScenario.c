@@ -136,9 +136,16 @@ global func SaveScen_Objects(array objs, array ignore_objs, proplist props_proto
 	for (var i=0; i<n; ++i)
 	{
 		obj = objs[i];
-		// Skip objects on ignore list
-		if (GetIndexOf(ignore_objs, obj)>=0) continue;
-		if (WildcardMatch(Format("%i", obj->GetID()), "GUI_*")) continue; // big bunch of objects that should not be stored.
+		// Skip objects on ignore list (check for all objects up the containment chain)
+		var is_ignored = false;
+		var container_obj = obj;
+		while (container_obj)
+		{
+			if (GetIndexOf(ignore_objs, container_obj) >= 0) is_ignored = true;
+			if (WildcardMatch(Format("%i", container_obj->GetID()), "GUI_*")) is_ignored = true; // big bunch of objects that should not be stored.
+			container_obj = container_obj->Contained();
+		}
+		if (is_ignored) continue;
 		// Generate object creation and property strings
 		save_scenario_obj_dependencies = [];
 		if (!obj->SaveScenarioObject(obj_data[i].props))
