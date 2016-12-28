@@ -377,6 +377,19 @@ public func Damage(int change, int cause, int by_player)
 	}
 }
 
+// Inflict damage when hitting something with the plane and already damaged.
+public func Hit(int xdir, int ydir)
+{
+	var remaining_hp = this.HitPoints - GetDamage();
+	if (remaining_hp < 10)
+	{
+		var speed = Distance(0, 0, xdir, ydir) / 10;
+		if (speed > 4 * remaining_hp)
+			DoDamage(speed / 6, FX_Call_DmgScript, GetController());
+	}
+	return;
+}
+
 private func PlaneDeath()
 {
 	while(Contents(0))
