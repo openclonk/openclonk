@@ -34,54 +34,54 @@ static const BASEMATERIAL_ProductionRate = 2160;
 
 global func GetBaseMaterial(int plr, id def, int index, int category)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(),  Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(),  Find_Owner(plr));
 	if (!base) 
-		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
 	if (base) 
 		return base->GetBaseMat(def, index, category);
 }
 
 global func SetBaseMaterial(int plr, id def, int cnt)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
-		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
 	if (base)
 		return base->SetBaseMat(def, cnt);
 }
 
 global func DoBaseMaterial(int plr, id def, int change)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
-		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
 	if (base)
 		return base->DoBaseMat(def, change);
 }
 
 global func GetBaseProduction(int plr, id def, int index, int category)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base)
-		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
 	if (base) 
 		return base->GetBaseProd(def, index, category);
 }
 
 global func SetBaseProduction(int plr, id def, int cnt)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
-		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
 	if (base)
 		return base->SetBaseProd(def, cnt);
 }
 
 global func DoBaseProduction(int plr, id def, int change)
 {
-	var base = FindObject(Find_ID(BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
 	if (!base) 
-		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
 	if (base) 
 		return base->DoBaseProd(def, change);
 }
@@ -339,12 +339,8 @@ public func DoBaseProd(id def, int change)
 }
 
 
-func Destruction() { Log("fsdfs"); }
-
 /*-- Miscellaneous --*/
 
 // Internal management object not saved. Use Scenario.txt or script 
 // to adjust base materials and production.
 func SaveScenarioObject() { return false; }
-
-local Name = "$Name$";

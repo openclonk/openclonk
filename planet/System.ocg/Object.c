@@ -400,14 +400,6 @@ global func Sell (int iPlr, object pObj, object pToVendor)
 	return pToVendor->DoSell(pObj, iPlr);
 }
 
-// Returns the owner if this is a base.
-global func GetBase ()
-{
-	if(!(this->~IsBase())) return NO_OWNER;
-	return GetOwner();
-}
-
-
 /* GetXEdge returns the position of the objects top/bottom/left/right edge */
 global func GetLeftEdge()
 {

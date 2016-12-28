@@ -138,7 +138,6 @@ Split2Components() - Splits the calling object into its components.
 RootSurface() - Pulls an object above ground if it was buried (e.g. by PlaceVegetation).
 Buy() - Buys an object.
 Sell() - Sells an object.
-GetBase() - Returns the owner if this is a base. 
 
 ##### Player.c:
 
