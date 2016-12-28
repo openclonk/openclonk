@@ -151,7 +151,7 @@ global func GetDefaultMenuDecoration()
 }
 
 // Find a base of the given player. Use index to search through all bases.
-global func FindBase (int iPlr, int iIndex)
+global func FindBase(int plr, int index)
 {
-	return FindObjects(Find_Owner(iPlr), Find_Func("IsBase"))[iIndex];
+	return FindObjects(Find_Owner(plr), Find_Func("IsBase"))[index];
 }

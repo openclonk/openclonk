@@ -1,8 +1,0 @@
-Name=Base control
-Buy=Buy
-Sell=Sell
-TxtNothingToBuy=Nothing to buy
-TxtBuy=Buy: %s
-TxtNotEnoughtMoney=You don't have|enough money!
-TxtNothingToSell=Nothing to sell
-TxtSell=Sell: %s

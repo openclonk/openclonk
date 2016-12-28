@@ -3,7 +3,6 @@
 #include Library_Ownable
 #include Library_Structure
 #include Library_Flag
-#include Library_Base // Needed for DoBuy...
 #include Library_PowerDisplay
 #include Library_Vendor
 
@@ -36,6 +35,11 @@ protected func Construction()
 public func IsHammerBuildable() { return true; }
 
 public func NoConstructionFlip() { return true; }
+
+// This building is a base.
+public func IsBaseBuilding() { return true; }
+public func IsBase() { return true; }
+
 
 /*-- Interaction --*/
 
