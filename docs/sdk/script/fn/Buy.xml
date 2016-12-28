@@ -50,7 +50,6 @@
     <related>
       <funclink>Sell</funclink>
       <funclink>GetWealth</funclink>
-      <funclink>GetBase</funclink>
       <funclink>FindBase</funclink>
     </related>
   </func>

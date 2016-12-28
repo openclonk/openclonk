@@ -31,7 +31,6 @@
         <text>Gives the selected clonk the order to enter his home base.</text>
       </example>
     </examples>
-    <related><funclink>GetBase</funclink></related>
   </func>
   <author>Sven2</author><date>2001-11</date>
 </funcs>
