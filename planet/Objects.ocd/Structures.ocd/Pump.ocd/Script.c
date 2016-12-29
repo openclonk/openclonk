@@ -652,6 +652,8 @@ private func GetLiquidSourceMaterial()
 // Returns whether the drain pipe is free or the liquid container accepts the given material.
 private func GetLiquidDrainOk(string liquid)
 {
+	if (!liquid)
+		return false;
 	var drain_obj = GetDrainObject();
 	if (drain_obj->~HasAperture())
 	{
