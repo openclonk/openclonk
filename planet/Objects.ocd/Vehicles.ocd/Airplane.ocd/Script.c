@@ -401,6 +401,35 @@ func FxIntPlaneTimer(object target, effect, int timer)
 		};
 		CreateParticle("Smoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
 	}
+	else // Action "Land"
+	{
+		// If under or on water, turn upright
+		if (GBackLiquid() || GBackLiquid(0, 21))
+		{
+			if (GetR() < 0)
+			{
+				if (!Inside(GetR(), -95, -85))
+				{
+					SetRDir((90 + GetR()) / Abs(90 + GetR()) * -3);
+					RollPlane(0);
+				}
+			} else if (!Inside(GetR(), 85, 95))
+			{
+				SetRDir((90 - GetR()) / Abs(90 - GetR()) * 3);
+				RollPlane(1);
+			}
+
+			// Also: slow down because the plane tends to slide across water
+			if (GetXDir() > 0)
+				SetXDir(GetXDir() - 1);
+			else if (GetXDir() < 0)
+				SetXDir(GetXDir() + 1);
+			if (thrust > 0)
+				thrust--;
+			if (thrust < 0)
+				thrust++;
+		}
+	}
 
 	//Throttle-to-thrust lag
 	if(timer % 10 == 0)

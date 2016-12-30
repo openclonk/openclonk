@@ -18,3 +18,4 @@ Entrance=-12,-12,24,24
 RotatedEntrance=1
 VehicleControl=1
 NoStabilize=1
+Float=20
