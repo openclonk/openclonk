@@ -22,10 +22,11 @@ func Intro_Init()
 	this.pilot->SetDir(DIR_Left);
 	this.pilot->SetObjectLayer(this.pilot);
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
-	
+
 	this.dialogue = this.pilot->SetDialogue("Pyrit");
 	this.dialogue->SetInteraction(false);
 
+	this.plane->PlaneMount(this.pilot);
 	this.plane->FaceRight();
 	this.plane.PlaneDeath = this.Intro_PlaneDeath;
 }

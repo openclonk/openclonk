@@ -19,6 +19,7 @@ public func Outro_Init(int for_plr)
 	this.pilot1->Enter(this.airplane1);
 	this.pilot1->SetAction("Walk");
 	this.pilot1->SetColor(0xff000000);
+	this.airplane1->PlaneMount(this.pilot1);
 	this.airplane1->FaceRight();
 	this.airplane1->StartInstantFlight(90, 15);
 	this.airplane1->SetXDir(12);
@@ -32,6 +33,7 @@ public func Outro_Init(int for_plr)
 	this.pilot2->Enter(this.airplane2);
 	this.pilot2->SetAction("Walk");
 	this.pilot2->SetColor(0xff000000);
+	this.airplane2->PlaneMount(this.pilot2);
 	this.airplane2->FaceRight();
 	this.airplane2->StartInstantFlight(90, 15);
 	this.airplane2->SetXDir(12);

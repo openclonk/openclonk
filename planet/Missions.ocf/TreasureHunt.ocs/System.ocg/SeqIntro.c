@@ -29,6 +29,7 @@ func Intro_Init(object flagpole)
 	this.pilot->SetObjectLayer(this.pilot);
 	this.pilot->SetAlternativeSkin("MaleBrownHair");
 	
+	this.plane->PlaneMount(this.pilot);
 	// Pyit has a red hat!
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
 
