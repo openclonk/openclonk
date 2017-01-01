@@ -717,7 +717,7 @@ private func GetDefaultMessageProp(object target_object)
 }
 
 // Editor object drop happens easily - so move stuff directly to target
-public func Collection2(obj)
+public func EditorCollection(obj)
 {
-	if (dlg_target && obj) obj->Enter(dlg_target);
+	if (dlg_target && obj) obj->Enter(dlg_target);	
 }

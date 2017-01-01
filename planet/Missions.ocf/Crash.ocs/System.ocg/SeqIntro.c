@@ -46,7 +46,6 @@ func Intro_JoinPlayer(int plr)
 	var crew;
 	for(var index = 0; crew = GetCrew(plr, index); ++index)
 	{
-		Log("%v", this.dialogue);
 		crew->Enter(this.dialogue);
 	}
 	return true;
@@ -161,7 +160,7 @@ func Intro_16()
 	this.pilot->Exit();
 	Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.pilot);
 	var clonk;
-	while(clonk = this.pilot->Contents())
+	while(clonk = this.dialogue->Contents())
 	{
 		clonk->Exit();
 		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), clonk);
