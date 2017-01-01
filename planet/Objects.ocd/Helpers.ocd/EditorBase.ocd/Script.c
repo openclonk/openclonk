@@ -21,6 +21,12 @@ func Definition(def)
 		Visibility = { Type = "enum", Name = "$Visibility$", EditorHelp = "$VisibilityHelp$", Options = [ { Name="$Unknown$", Value=-1 }, { Name="$DefaultVisible$" }, { Name="$Visible$", Value=VIS_All }, { Name="$Invisible$", Value=VIS_None }, { Name="$EditorVisible$", Value=VIS_Editor } ] },
 		PlayerColor = { Name="$PlayerColor$", EditorHelp="$PlayerColorHelp$", Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
 		ClrModulation = { Name="$ClrModulation$", EditorHelp="$ClrModulationHelp$", Type = "color", AsyncGet = "GetClrModulation", Set = "SetClrModulation" },
+		BlitMode = { Name="$BlitMode$", EditorHelp="$BlitModeHelp$", Type = "enum", AsyncGet = "GetObjectBlitMode", Set = "SetObjectBlitMode", Options = [
+			{ Name="$Unknown$", Value=-1 },
+			{ Name="$Default$", Value=0 },
+			{ Name="$Additive$", Value=GFX_BLIT_Additive|GFX_BLIT_Custom },
+			{ Name="$Mod2$", EditorHelp="$Mod2Help$", Value=GFX_BLIT_Mod2|GFX_BLIT_Custom },
+			{ Name="$Wireframe$", EditorHelp="$WireframeHelp$", Value=GFX_BLIT_Wireframe|GFX_BLIT_Custom } ] },
 		Name = { Name="$Name$", Type = "string", AsyncGet = "GetName", Set = "SetName" },
 		CustomInitializationScript = { Type = "string", Name = "$CustomInitialization$", EditorHelp = "$CustomInitializationHelp$" }
 	};
