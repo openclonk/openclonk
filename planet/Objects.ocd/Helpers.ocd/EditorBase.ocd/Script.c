@@ -18,7 +18,7 @@ func Definition(def)
 	// Basic properties of all objects
 	def.EditorProps = {
 		Invincibility = { Name = "$Invincibility$", EditorHelp = "$InVincibilityHelp$", Type = "has_effect", Effect = "IntInvincible", Set = "SetInvincibility" },
-		Visibility = { Type = "enum", Name = "$Visibility$", EditorHelp = "$VisibilityHelp$", Options = [ { Name="$Unknown$", Value=-1 }, { Name="$Visible$", Value=VIS_All }, { Name="$Invisible$", Value=VIS_None }, { Name="$EditorVisible$", Value=VIS_Editor } ] },
+		Visibility = { Type = "enum", Name = "$Visibility$", EditorHelp = "$VisibilityHelp$", Options = [ { Name="$Unknown$", Value=-1 }, { Name="$DefaultVisible$" }, { Name="$Visible$", Value=VIS_All }, { Name="$Invisible$", Value=VIS_None }, { Name="$EditorVisible$", Value=VIS_Editor } ] },
 		PlayerColor = { Name="$PlayerColor$", EditorHelp="$PlayerColorHelp$", Type = "color", AsyncGet = "GetColor", Set = "SetColor" },
 		ClrModulation = { Name="$ClrModulation$", EditorHelp="$ClrModulationHelp$", Type = "color", AsyncGet = "GetClrModulation", Set = "SetClrModulation" },
 		Name = { Name="$Name$", Type = "string", AsyncGet = "GetName", Set = "SetName" },
