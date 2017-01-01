@@ -281,8 +281,44 @@ global func Test3_OnFinished()
 	return;
 }
 
-
 global func Test4_OnStart(int plr)
+{	
+	DrawMatBasin("DuroLava", 20, 120);
+
+	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
+	foundry->CreateContents(Earth, 10);
+	foundry->AddToQueue(Loam, 2);
+	
+	var pump = CreateObjectAbove(Pump, 84, 160, plr);
+	var source = CreateObject(Pipe, 168, 292, plr);
+	source->ConnectPipeTo(pump, PIPE_STATE_Source);
+	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	drain->ConnectPipeTo(foundry, PIPE_STATE_Drain);
+	
+	ScheduleCall(source, "SetPosition", 100, 0, 20, 120);
+	ScheduleCall(foundry, "DoCutPipe", 200, 0, drain);
+	
+	// Log what the test is about.
+	Log("Test air switching pumping materials after connection changes.");
+	return true;
+}
+
+global func Test4_Completed()
+{
+
+	return false;
+}
+
+global func Test4_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Foundry), Find_ID(Pump), Find_ID(Loam)));
+	RestoreWaterLevels();
+	return;
+}
+
+
+global func Test5_OnStart(int plr)
 {	
 	RemoveAll(Find_ID(Rule_NoPowerNeed));	
 	
@@ -300,14 +336,14 @@ global func Test4_OnStart(int plr)
 	return true;
 }
 
-global func Test4_Completed()
+global func Test5_Completed()
 {
 	if (ObjectCount(Find_ID(DivingHelmet), Find_NoContainer()) >= 1)
 		return true;
 	return false;
 }
 
-global func Test4_OnFinished()
+global func Test5_OnFinished()
 {
 	RemoveAll(Find_Or(Find_ID(DivingHelmet), Find_ID(Pump), Find_ID(Pipe), Find_ID(SteamEngine)));
 	RestoreWaterLevels();
@@ -326,6 +362,13 @@ global func RestoreWaterLevels()
 		for (var y = 24; y <= 120; y++)
 			if (GetMaterial(x, y) != Material("BrickSoft"))
 				ClearFreeRect(x, y, 1, 1);
+	return;
+}
+
+global func DrawMatBasin(string mat, int x, int y)
+{
+	DrawMaterialQuad("Brick", x - 10, y - 10, x - 10, y + 10, x + 10, y + 10, x + 10, y - 10);
+	DrawMaterialQuad(mat, x - 6, y - 6, x - 6, y + 6, x + 6, y + 6, x + 6, y - 6);
 	return;
 }
 
