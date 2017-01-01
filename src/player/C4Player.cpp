@@ -641,6 +641,14 @@ bool C4Player::ScenarioInit()
 		if (Game.StartupPlayerCount>=2)
 		{
 			int32_t iMaxPos=Game.StartupPlayerCount;
+			// Try to initialize PrefPosition using teams. This should put players of a team next to each other.
+			int PrefPosition = 0;
+			C4PlayerInfo *plr;
+			for (int i = 0; (plr = Game.PlayerInfos.GetPlayerInfoByIndex(i)) != nullptr; i++)
+			{
+				if (plr->GetTeam() < Team)
+					PrefPosition++;
+			}
 			// Map preferred position to available positions
 			int32_t iStartPos=Clamp(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
 			int32_t iPosition=iStartPos;

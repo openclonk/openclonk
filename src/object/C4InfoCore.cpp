@@ -60,7 +60,6 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	PrefColorDw=0xff;
 	PrefColor2Dw=0;
 	OldPrefControl=0;
-	PrefPosition=0;
 	PrefMouse=1;
 	OldPrefControlStyle = 0;
 	OldPrefAutoContextMenu = 0;
@@ -162,7 +161,6 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PrefColor,                "Color",            0));
 	pComp->Value(mkNamingAdapt(PrefColorDw,              "ColorDw",          0xffu));
 	pComp->Value(mkNamingAdapt(PrefColor2Dw,             "AlternateColorDw", 0u));
-	pComp->Value(mkNamingAdapt(PrefPosition,             "Position",         0));
 	pComp->Value(mkNamingAdapt(PrefMouse,                "Mouse",            1));
 	pComp->Value(mkNamingAdapt(OldPrefControl,           "Control",          1));
 	pComp->Value(mkNamingAdapt(OldPrefControlStyle,      "AutoStopControl",  0));
