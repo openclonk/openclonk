@@ -8,8 +8,6 @@
 #include DynamiteBox
 
 local ignited;
-local dynamite_sticks;
-local wires;
 
 /*-- Engine Callbacks --*/
 
@@ -18,8 +16,6 @@ func Hit()
 	Sound("Hits::Materials::Metal::DullMetalHit?");
 }
 
-// Only the main dynamite box is stored.
-public func SaveScenarioObject() { return false; }
 
 /*-- Callbacks --*/
 
@@ -57,11 +53,9 @@ public func ControlUse(object clonk, int x, int y)
 
 public func Ignite(object clonk)
 {
-	if (wires[0])
-		wires[0]->StartFusing(this);
-	else
-		for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
-			obj->~StartFusing(this);
+	// Ignite all connected wires
+	for (var obj in FindFuses())
+		obj->~StartFusing(this);
 
 	ScheduleCall(this, "ResetClonk", 12, 1, clonk);
 	return;
