@@ -527,6 +527,7 @@ enum C4PropertyName
 	P_AllowEditing,
 	P_EditorInitialize,
 	P_EditorPlacementLimit,
+	P_EditorCollection,
 	P_Sorted,
 	P_Uniforms,
 // Default Action Procedures
