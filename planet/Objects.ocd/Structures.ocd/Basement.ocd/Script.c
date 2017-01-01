@@ -154,6 +154,17 @@ public func CombineWith(object stick_to)
 	SetParent(stick_to);
 }
 
+
+/*-- Editor --*/
+
+public func Definition(def, ...)
+{
+	_inherited(def, ...);
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.width = { Name="$Width$", Set="SetWidth", Type="int", Min=8, Max=120 };
+}
+
+
 /*-- Properties --*/
 
 local Name = "$Name$";

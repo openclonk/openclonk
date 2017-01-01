@@ -1,2 +1,3 @@
 Name=Basement
 Description=A stable base for any building.
+Width=Width
