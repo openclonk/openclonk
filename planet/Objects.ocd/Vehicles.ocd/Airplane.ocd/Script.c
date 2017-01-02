@@ -752,7 +752,7 @@ func Parachute(object balloon, int x, int y, object clonk)
 	if (!balloon || !clonk) return;
 
 	// The balloon has to enter the clonk
-	if (!clonk->Enter(balloon))
+	if (!balloon->Enter(clonk))
 	{
 		// Maybe the clonk should just drop an object?
 		return CustomMessage("$NoSpaceInInventory$", this, clonk->GetOwner());
