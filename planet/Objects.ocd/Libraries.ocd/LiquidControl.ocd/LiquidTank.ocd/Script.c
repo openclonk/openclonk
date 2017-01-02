@@ -52,6 +52,8 @@ public func IsLiquidTank() { return true; }
 
 /*-- Menu Entries --*/
 
+public func HasInteractionMenu() { return true; }
+
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited(clonk, ...) ?? [];

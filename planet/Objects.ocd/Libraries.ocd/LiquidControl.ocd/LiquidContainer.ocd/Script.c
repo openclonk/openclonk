@@ -144,7 +144,9 @@ public func PutLiquid(liquid_name, int amount, object source)
 
 public func AcceptsLiquid(liquid_name, int amount)
 {
-	return amount <= this->GetLiquidContainerMaxFillLevel(liquid_name) - GetLiquidAmount(liquid_name);
+	// Container must accept material and not be full.
+	var liquid_type = GetLiquidDef(liquid_name)->GetLiquidType();
+	return IsLiquidContainerForMaterial(liquid_type) && amount <= this->GetLiquidContainerMaxFillLevel(liquid_name) - GetLiquidAmount(liquid_name);
 }
 
 private func GetLiquidDef(liquid_name)
