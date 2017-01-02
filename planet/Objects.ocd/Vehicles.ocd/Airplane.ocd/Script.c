@@ -18,6 +18,13 @@ local prop_speed, prop_speed_target, prop_speed_timer; // current and target pro
 local pilot;
 local clonkmesh;
 
+// What happens on mouse clicks
+local main_action = "Cannon"; // fire bullets
+local alt_action = "Rocket"; // fire rockets
+
+// All available click action
+local action_list = ["Cannon", "Rocket", "Bomb", "Spray", "Balloon", "Drop"];
+
 /*-- Engine Callbacks --*/
 
 func Construction()
@@ -107,74 +114,259 @@ public func FaceLeft()
 	RollPlane(0, true);
 }
 
+/*-- Interaction --*/
+
+// Provides an own interaction menu.
+public func HasInteractionMenu() { return true; }
+
+// Show settings in interaction menu
+public func GetInteractionMenus(object clonk)
+{
+	var menus = _inherited(clonk, ...) ?? [];
+
+	// Do not show the menu if flying and if the clonk is not the pilot
+	if (GetAction() == "Fly" && clonk != pilot)
+		return menus;
+
+	var plane_menu =
+	{
+		title = "$AirplaneSettings$",
+		entries_callback = this.GetAirplaneMenuEntries,
+		callback = nil,
+		callback_hover = "OnSettingsHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 0, 50),
+		Priority = 20
+	};
+	PushBack(menus, plane_menu);
+
+	return menus;
+}
+
+public func GetAirplaneMenuEntries(object clonk)
+{
+	var control_prototype =
+	{
+		Bottom = "2em",
+		BackgroundColor = { Std = 0, Hover = RGB(100, 30, 30) },
+		OnMouseOut = GuiAction_SetTag("Std"),
+		OnMouseIn = GuiAction_SetTag("Hover"),
+		text = { Left = "2em" },
+		icon = { Right = "2em" }
+	};
+
+	var menu_entries = [];
+
+	// main action (= left click)
+	var main_action_settings = {
+		Bottom = "2em",
+		settings = {
+			Prototype = control_prototype,
+			Priority = 1000,
+			Tooltip = GetActionTypeTooltip(main_action),
+			OnClick = GuiAction_Call(this, "ToggleMainAction", clonk),
+			text =
+				{ Prototype = control_prototype.text,
+				  Style = GUI_TextVCenter,
+				  Text = Format("$SwitchMainAction$\n%s", GetPlayerControlAssignment(clonk->GetOwner(), CON_Use, true, true), GetActionTypeName(main_action))
+				},
+			icon =
+				{ Prototype = control_prototype.icon,
+				  Symbol = GetActionTypeInfo(main_action)
+				}
+		}
+	};
+
+	PushBack(menu_entries, { symbol = this, extra_data = "MainAction", custom = main_action_settings });
+
+	// alt action (= right click)
+	var alt_action_settings = {
+		Bottom = "2em",
+		settings = {
+			Prototype = control_prototype,
+			Priority = 1000,
+			Tooltip = GetActionTypeTooltip(alt_action),
+			OnClick = GuiAction_Call(this, "ToggleAltAction"),
+			text =
+				{ Prototype = control_prototype.text,
+				  Style = GUI_TextVCenter,
+				  Text = Format("$SwitchAltAction$\n%s", GetPlayerControlAssignment(clonk->GetOwner(), CON_UseAlt, true, true), GetActionTypeName(alt_action))
+				},
+			icon =
+				{ Prototype = control_prototype.icon,
+				  Symbol = GetActionTypeInfo(alt_action)
+				}
+		}
+	};
+
+	PushBack(menu_entries, { symbol = this, extra_data = "AltAction", custom = alt_action_settings });
+
+	return menu_entries;
+}
+
+public func OnSettingsHover(symbol, extra_data, desc_menu_target, menu_id)
+{
+	if (symbol == nil) return;
+
+	var text = "";
+	if (extra_data == "MainAction")
+	{
+		if (main_action == "Cannon")
+			text = Format("$BulletInfo$", GetBulletAmount());
+		if (main_action == "Rocket")
+			text = Format("$RocketInfo$", GetRocketAmount());
+		if (main_action == "Bomb")
+			text = Format("$BombInfo$", GetBombAmount());
+		if (main_action == "Spray")
+			text = Format("$SprayInfo$", GetBarrelAmount());
+		if (main_action == "Balloon")
+			text = Format("$BalloonInfo$", GetBalloonAmount());
+		if (main_action == "Drop")
+			text = Format("$DropInfo$");
+		if (text == "")
+			text = "$Description$";
+	}
+	if (extra_data == "AltAction")
+	{
+		if (alt_action == "Cannon")
+			text = Format("$BulletInfo$", GetBulletAmount());
+		if (alt_action == "Rocket")
+			text = Format("$RocketInfo$", GetRocketAmount());
+		if (alt_action == "Bomb")
+			text = Format("$BombInfo$", GetBombAmount());
+		if (alt_action == "Spray")
+			text = Format("$SprayInfo$", GetBarrelAmount());
+		if (alt_action == "Balloon")
+			text = Format("$BalloonInfo$", GetBalloonAmount());
+		if (alt_action == "Drop")
+			text = Format("$DropInfo$");
+		if (text == "")
+			text = "$Description$";
+	}
+
+	GuiUpdate({ Text = text }, menu_id, 1, desc_menu_target);
+}
+
+func GetActionTypeTooltip(string action)
+{
+	// Show next firing mode
+	var position = GetIndexOf(action_list, action);
+	if (position == -1) return ""; // ??
+
+	if (position == GetLength(action_list)-1)
+		position = 0;
+	else
+		position++;
+
+	return Format("$SwitchTo$", GetActionTypeName(action_list[position]));
+}
+
+func GetActionTypeName(string action)
+{
+	if (action == "Cannon")
+		return "$Bullet$";
+	if (action == "Rocket")
+		return "$Rocket$";
+	if (action == "Bomb")
+		return "$Bomb$";
+	if (action == "Spray")
+		return "$Spray$";
+	if (action == "Balloon")
+		return "$Balloon$";
+	if (action == "Drop")
+		return "$Drop$";
+}
+
+func GetActionTypeInfo(string action)
+{
+	if (action == "Cannon")
+		return LeadBullet;
+	if (action == "Rocket")
+		return Boompack;
+	if (action == "Bomb")
+		return IronBomb;
+	if (action == "Spray")
+		return Barrel;
+	if (action == "Balloon")
+		return Balloon;
+	if (action == "Drop")
+		return Icon_LetGo;
+}
+
+public func ToggleMainAction(object clonk)
+{
+	var current_action = GetIndexOf(action_list, main_action);
+	if (current_action == -1) return; // ??
+
+	if (current_action == GetLength(action_list)-1)
+		current_action = 0;
+	else
+		current_action++;
+
+	main_action = action_list[current_action];
+
+	UpdateInteractionMenus(this.GetAirplaneMenuEntries);
+
+	if (clonk)
+		Sound("UI::Click2", false, nil, clonk->GetOwner());
+}
+
+public func ToggleAltAction(object clonk)
+{
+	var current_action = GetIndexOf(action_list, alt_action);
+	if (current_action == -1) return; // ??
+
+	if (current_action == GetLength(action_list)-1)
+		current_action = 0;
+	else
+		current_action++;
+
+	alt_action = action_list[current_action];
+
+	UpdateInteractionMenus(this.GetAirplaneMenuEntries);
+
+	if (clonk)
+		Sound("UI::Click2", false, nil, clonk->GetOwner());
+}
+
 /*-- Usage --*/
 
-// Bullet firing
+// Main action
 public func ContainedUseStart(object clonk, int x, int y)
 {
-	if (clonk != pilot) return false;
-
-	var ammo = FindObject(Find_Container(this), Find_Func("IsBullet"));
-	if (!ammo)
-	{
-		CustomMessage("$NoShots$", this, clonk->GetOwner());
-		return true;
-	}
-	AddEffect("FireBullets", this, 100, 12, this);
-	return true;
+	var call = Format("Use%s", main_action, x, y);
+	return this->Call(call, clonk);
 }
 
 public func ContainedUseStop(object clonk, int x, int y)
 {
-	if (clonk != pilot) return false;
-
-	if (GetEffect("FireBullets", this))
-		RemoveEffect("FireBullets", this);
-	return true;
+	var call = Format("Cancel%s", main_action, x, y);
+	return this->Call(call, clonk);
 }
 
 public func ContainedUseCancel(object clonk, int x, int y)
 {
-	if (clonk != pilot) return false;
-
-	if (GetEffect("FireBullets", this))
-		RemoveEffect("FireBullets", this);
-	return true;
+	var call = Format("Cancel%s", main_action, x, y);
+	return this->Call(call, clonk);
 }
 
-// Rocket firing
+// Secondary action
 public func ContainedUseAltStart(object clonk, int x, int y)
 {
-	if (clonk != pilot) return false;
-
-	var rocket = FindObject(Find_Container(this), Find_ID(Boompack));
-	if (!rocket)
-	{
-		CustomMessage("$NoRockets$", this, clonk->GetOwner());
-		return true;
-	}
-	return true;
+	var call = Format("Use%s", alt_action, x, y);
+	return this->Call(call, clonk);
 }
 
 public func ContainedUseAltStop(object clonk, int x, int y)
 {
-	if (clonk != pilot) return false;
-
-	var rocket = FindObject(Find_Container(this), Find_ID(Boompack));
-	if (!rocket)
-	{
-		CustomMessage("$NoRockets$", this, clonk->GetOwner());
-		return true;
-	}
-	FireRocket(rocket, x, y);
-	return true;
+	var call = Format("Cancel%s", alt_action, x, y);
+	return this->Call(call, clonk);
 }
 
 public func ContainedUseAltCancel(object clonk, int x, int y)
 {
-	if (clonk != pilot) return false;
-
-	return true;
+	var call = Format("Cancel%s", alt_action, x, y);
+	return this->Call(call, clonk);
 }
 
 // Starting the plane
@@ -252,6 +444,46 @@ public func ContainedStop(object clonk)
 
 /*-- Bullet firing --*/
 
+public func UseCannon(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	if (!GetBulletAmount())
+	{
+		CustomMessage("$NoShots$", this, clonk->GetOwner());
+		Sound("Objects::Weapons::Blunderbuss::Click?");
+		return true;
+	}
+	AddEffect("FireBullets", this, 100, 12, this);
+	return true;
+}
+
+public func CancelCannon(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	if (GetEffect("FireBullets", this))
+		RemoveEffect("FireBullets", this);
+
+	return true;
+}
+
+public func GetBulletAmount()
+{
+	var shots = 0;
+	var bullets = FindObjects(Find_Container(this), Find_Func("IsBullet"));
+	for (var bullet in bullets)
+	{
+		if (bullet->~GetStackCount())
+			shots += bullet->GetStackCount();
+		else
+			shots++;
+	}
+	return shots;
+}
+
 func FxFireBulletsStart(object target, proplist effect, int temp)
 {
 	if (temp)
@@ -305,12 +537,44 @@ func FireBullet(object ammo)
 
 /*-- Rocket firing --*/
 
+public func UseRocket(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	if (!GetRocketAmount())
+	{
+		CustomMessage("$NoRockets$", this, clonk->GetOwner());
+		Sound("Objects::Weapons::Blunderbuss::Click?");
+	}
+
+	return true;
+}
+
+public func CancelRocket(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	var rocket = FindObject(Find_Container(this), Find_ID(Boompack));
+	if (!rocket)
+		return true;
+	FireRocket(rocket, x, y);
+
+	return true;
+}
+
+public func GetRocketAmount()
+{
+	return ContentsCount(Boompack);
+}
+
 func FireRocket(object rocket, int x, int y)
 {
 	var launch_x = Cos(GetR() - 180 * (1 - dir), 10);
 	var launch_y = Sin(GetR() - 180 * (1 - dir), 10);
 	rocket->Exit(launch_x, launch_y, GetR(), GetXDir(), GetYDir());
-	rocket->Launch(GetR());
+	rocket->Launch(GetR(), nil, this);
 	var effect = AddEffect("IntControlRocket", rocket, 100, 1, this);
 	effect.x = GetX() + x;
 	effect.y = GetY() + y;
@@ -334,6 +598,214 @@ func FxIntControlRocketTimer(object target, proplist effect, int time)
 	else if (Inside(angle_delta, -180, 0) || Inside(angle_delta, 180, 360))
 		target->SetR(target->GetR() + 5);
 	return FX_OK;
+}
+
+/*-- Bombing --*/
+
+public func UseBomb(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	if (!GetBombAmount())
+	{
+		CustomMessage("$NoBombs$", this, clonk->GetOwner());
+		Sound("Objects::Weapons::Blunderbuss::Click?");
+	}
+
+	return true;
+}
+
+public func CancelBomb(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	var bomb = FindObject(Find_Container(this), Find_ID(IronBomb));
+	if (!bomb)
+		bomb = FindObject(Find_Container(this), Find_ID(Dynamite));
+	if (!bomb)
+	{
+		bomb = FindObject(Find_Container(this), Find_ID(DynamiteBox), Find_Func("GetDynamiteCount"));
+		if (bomb)
+			bomb = bomb->Contents();
+	}
+	if (!bomb)
+		return true;
+
+	DropBomb(bomb);
+
+	return true;
+}
+
+public func GetBombAmount()
+{
+	var bombs = ObjectCount(Find_Container(this), Find_Or(Find_ID(IronBomb), Find_ID(Dynamite)));
+	var boxes = FindObjects(Find_Container(this), Find_ID(DynamiteBox));
+	for (var box in boxes)
+		bombs += box->GetDynamiteCount();
+	return bombs;
+}
+
+func DropBomb(object bomb)
+{
+	if (!bomb) return;
+
+	bomb->Exit();
+	bomb->SetPosition(GetX(), GetY() + 12);
+	bomb->SetXDir(GetXDir());
+	bomb->SetYDir(GetYDir());
+	bomb->Fuse(true); // fuse and explode on hit
+}
+
+/*-- Liquid spray --*/
+
+public func UseSpray(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	if (!GetBarrelAmount())
+	{
+		CustomMessage("$NoBarrels$", this, clonk->GetOwner());
+		Sound("Objects::Weapons::Blunderbuss::Click?");
+	}
+
+	return true;
+}
+
+public func CancelSpray(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	var barrels = FindObjects(Find_Container(this), Find_Or(Find_ID(Barrel), Find_ID(MetalBarrel)));
+	var barrel;
+	for (var b in barrels)
+		if (GetLength(b->GetLiquidContents()))
+		{
+			barrel = b;
+			break;
+		}
+
+	if (!barrel) return true;
+
+	SprayLiquid(barrel, clonk);
+
+	return true;
+}
+
+public func GetBarrelAmount()
+{
+	var barrels = FindObjects(Find_Container(this), Find_Or(Find_ID(Barrel), Find_ID(MetalBarrel)));
+	var count = 0;
+	for (var barrel in barrels)
+		if (GetLength(barrel->GetLiquidContents()))
+			count++;
+	return count;
+}
+
+func SprayLiquid(object barrel, object clonk)
+{
+	if (!barrel) return;
+
+	var added_r = -60;
+	if (dir == DIR_Right)
+		added_r = 60;
+	barrel->EmptyBarrel(GetR() + added_r, 50, clonk);
+	Sound("Liquids::Splash1");
+}
+
+/*-- Parachuting --*/
+
+public func UseBalloon(object clonk, int x, int y)
+{
+	if (!GetBalloonAmount())
+	{
+		CustomMessage("$NoBalloons$", this, clonk->GetOwner());
+		Sound("Objects::Weapons::Blunderbuss::Click?");
+	}
+
+	return true;
+}
+
+public func CancelBalloon(object clonk, int x, int y)
+{
+	if (!clonk->Contained()) return false;
+
+	var balloon = FindObject(Find_Container(this), Find_ID(Balloon));
+	if (!balloon)
+		return true;
+
+	Parachute(balloon, x, y, clonk);
+
+	return true;
+}
+
+public func GetBalloonAmount()
+{
+	return ContentsCount(Balloon);
+}
+
+func Parachute(object balloon, int x, int y, object clonk)
+{
+	if (!balloon || !clonk) return;
+
+	// The balloon has to enter the clonk
+	if (!clonk->Enter(balloon))
+	{
+		// Maybe the clonk should just drop an object?
+		return CustomMessage("$NoSpaceInInventory$", this, clonk->GetOwner());
+	}
+	clonk->Exit();
+	balloon->ControlUseStart(clonk);
+}
+
+/*-- Object dropping --*/
+
+public func UseDrop(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	if (!GetNonClonkContents())
+	{
+		CustomMessage("$NoObjects$", this, clonk->GetOwner());
+		Sound("Objects::Weapons::Blunderbuss::Click?");
+	}
+
+	return true;
+}
+
+public func CancelDrop(object clonk, int x, int y)
+{
+	if (clonk != pilot)
+		return false;
+
+	var object = GetNonClonkContents()[0];
+	if (!object)
+		return true;
+
+	DropObject(object, x, y, clonk);
+
+	return true;
+}
+
+public func GetNonClonkContents()
+{
+	return FindObjects(Find_Container(this), Find_Not(Find_OCF(OCF_CrewMember)));
+}
+
+func DropObject(object to_drop, int x, int y, object clonk)
+{
+	if (!to_drop) return;
+
+	to_drop->Exit();
+	to_drop->SetXDir(GetXDir());
+	to_drop->SetYDir(GetYDir());
+
+	if (clonk)
+		to_drop->SetController(clonk->GetOwner());
 }
 
 /*-- Movement --*/
@@ -569,7 +1041,7 @@ public func IsShipyardProduct() { return true; }
 
 func Definition(def)
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-10000,-3375,0), Trans_Rotate(25,0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-1000,-3375,0), Trans_Rotate(25,0,1,0)));
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-5,1,0,0),Trans_Rotate(40,0,1,0),Trans_Translate(-20000,-4000,20000)),def);
 }
 
