@@ -863,15 +863,49 @@ func FxIntPlaneTimer(object target, effect, int timer)
 			if(GetXDir() < -10 && dir != 0) RollPlane(0);
 		}
 
-		//Vfx
+		// Vfx
+
+		// Engine smoke
 		var colour = 255 - (GetDamage() * 3);
+		var min = PV_Random(7, 20);
+		var max = PV_Random(40, 70);
+		if (GetDamage() >= this.HitPoints / 2)
+		{
+			min = PV_Random(20, 30);
+			max = PV_Random(70, 100);
+		}
 		var particles = 
 		{
 			Prototype = Particles_Smoke(),
 			R = colour, G = colour, B = colour,
-			Size = PV_Linear(PV_Random(20, 30), PV_Random(70, 100))
+			Size = PV_Linear(min, max)
 		};
-		CreateParticle("Smoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
+		CreateParticle("Smoke", -Sin(GetR(), 10), Cos(GetR(), 10), 0, 0, PV_Random(36, 2 * 36), particles, 1);
+		// Stir up liquids
+		if (GBackLiquid(0, 40))
+		{
+			var surface = 40;
+			while (surface && GBackSemiSolid(0, surface))
+				surface--;
+			if (surface > 0 && GBackLiquid(0, surface + 1))
+			{
+				var phases = PV_Linear(0, 7);
+				if (dir == 0) phases = PV_Linear(8, 15);
+				var color = GetAverageTextureColor(GetTexture(0, surface + 1));
+				var particles =
+				{
+					Size = 16,
+					Phase = phases,
+					CollisionVertex = 750,
+					OnCollision = PC_Die(),
+					R = (color >> 16) & 0xff,
+					G = (color >> 8) & 0xff,
+					B = (color >> 0) & 0xff,
+					Attach = ATTACH_Front,
+				};
+				CreateParticle("Wave", 0, surface, (RandomX(-5, 5) - (-1 + 2 * dir) * 6) / 4, 0, 16, particles);
+			}
+		}
 	}
 	else // Action "Land"
 	{
