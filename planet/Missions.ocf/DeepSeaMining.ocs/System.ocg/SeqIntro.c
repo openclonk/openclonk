@@ -1,7 +1,6 @@
 #appendto Sequence
 
 static g_intro_sky_moving;
-static npc_tuesday;
 
 func Intro_Start()
 {

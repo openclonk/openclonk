@@ -6,8 +6,8 @@
 */
 
 // set in Map.c
-static main_island_x, main_island_y;
-static goal_platform_x, goal_platform_y;
+// main_island_x, main_island_y;
+// goal_platform_x, goal_platform_y;
 
 static const SCEN_TEST = false;
 

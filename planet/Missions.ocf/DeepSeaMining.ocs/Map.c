@@ -14,7 +14,7 @@ static main_island_x, main_island_y;
 static goal_platform_x, goal_platform_y;
 
 // set after intro to force map creation
-static g_intro_done;
+// g_intro_done;
 
 // Called be the engine: draw the complete map here.
 public func InitializeMap(proplist map)
