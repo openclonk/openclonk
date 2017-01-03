@@ -53,7 +53,7 @@ public func PrepareToBoard(object cpt)
 	}
 	// Suitable crew
 	if (count >= 5)
-		Sound("Attack");
+		Sound("Clonk::Action::GroupAttack");
 	// Let the captain yell something
 	if (!Random(3) && cpt)
 		cpt->Message(Translate(Format("MsgAttack%d", Random(4))));

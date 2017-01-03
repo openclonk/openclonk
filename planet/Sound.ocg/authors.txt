@@ -86,6 +86,9 @@ jrosin          - Environemnt/Lightning/Thunder4 (https://www.freesound.org/peop
 shaka9          - Environemnt/Lightning/Thunder5 (https://www.freesound.org/people/shaka9/sounds/160514/ adapted by Maikel)
 Harbour11       - UI::Error, UI::Trumpet (both adapted by Sven2; used sound from http://freesound.org/people/Harbour11/sounds/194624/)
 CosmicEmbers    - Objects::LineSnap (cropped/pitch adjusted by Sven2; original from http://freesound.org/people/CosmicEmbers/sounds/161650/)
+daveincamas     - UI::NextWave (http://www.freesound.org/people/daveincamas/sounds/27082/)
+Erdie           - Clonk::Action::GroupAttack.ogg (http://www.freesound.org/people/Erdie/sounds/165614/)
+
 
 The following sounds use two sources:
 

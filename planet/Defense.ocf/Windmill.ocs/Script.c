@@ -383,7 +383,7 @@ func OnWaveCleared(int wave)
 		DoWealthForAll(bounty);
 	}
 	CustomMessage(Format("$MsgWaveCleared$%s|                                                             ", wave, bounty_msg));
-	Sound("NextWave");
+	Sound("UI::NextWave");
 	// Fade out stuff
 	Airship->AllStop();
 	if (g_object_fade)
