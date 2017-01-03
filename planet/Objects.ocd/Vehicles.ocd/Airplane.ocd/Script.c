@@ -1119,3 +1119,4 @@ local HitPoints = 50;
 local MaxContentsCount = 20;
 local MaxPassengerCount = 3;
 local Components = {Metal = 6, Wood = 4};
+local Touchable = 1;

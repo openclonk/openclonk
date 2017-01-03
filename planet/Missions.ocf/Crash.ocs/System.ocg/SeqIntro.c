@@ -23,6 +23,7 @@ func Intro_Init()
 
 	this.plane->FaceRight();
 	this.plane->PlaneMount(this.pilot);
+	this.plane.Touchable = 0;
 }
 
 func Intro_Start(object hero)

@@ -15,6 +15,7 @@ func Intro_Init(object flagpole)
 	this.plane_cat = this.plane->GetCategory();
 	this.plane->SetCategory(C4D_StaticBack);
 	this.plane->MakeInvincible();
+	this.plane.Touchable = 0;
 	
 	// Pyrit the pilot
 	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
