@@ -9,7 +9,7 @@
 public func Create(object o1, object o2)
 {
 	if (!o1 || !o2) return;
-	var fuse = CreateObject(Fuse);
+	var fuse = CreateObject(Fuse, AbsX(o1->GetX()), AbsY(o1->GetY()));
 	if (fuse)
 	{
 		fuse->Connect(o1, o2);
