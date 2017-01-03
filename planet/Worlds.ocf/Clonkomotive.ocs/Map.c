@@ -120,7 +120,7 @@ protected func InitializeMap(proplist map)
 			continue;
 		var correct_pos = true;
 		var try_positions = [[0, 8], [0, -8], [10, 0], [-10, 0]];
-		for (try_pos in try_positions)
+		for (var try_pos in try_positions)
 		{
 			var pix = GetPixel(pos.X + try_pos[0], pos.Y + try_pos[1]);
 			if (pix == 0 || pix == GetMaterialTextureIndex("Tunnel"))
