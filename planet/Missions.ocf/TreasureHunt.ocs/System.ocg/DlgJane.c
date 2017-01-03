@@ -2,8 +2,6 @@
 
 /* Jane dialogue */
 
-static npc_tarzan;
-
 func Dlg_Jane_1(object clonk)
 {
 	var msg = "$Jane1$"; // he's swinging all day instead of looking 4 gold

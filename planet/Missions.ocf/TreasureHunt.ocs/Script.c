@@ -8,8 +8,10 @@
 static g_is_initialized; // set after first player join
 static g_max_player_num; // max number of players that were ever joined
 
-static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole, g_golden_idol, g_last_stone_door;
+// Set in Objects.c
+//static npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole, g_golden_idol, g_last_stone_door;
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
+static npc_pyrit;
 
 func DoInit(int first_player)
 {

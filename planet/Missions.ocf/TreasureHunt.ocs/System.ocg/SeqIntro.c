@@ -2,8 +2,6 @@
 
 #appendto Sequence
 
-static npc_pyrit, g_goal;
-
 func Intro_Init(object flagpole)
 {
 	// Fix plane outside landscape for now

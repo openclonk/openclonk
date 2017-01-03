@@ -2,8 +2,6 @@
 
 /* Pyrit dialogue */
 
-static g_got_gem_task, g_got_oil;
-
 func Dlg_Pyrit_1(object clonk)
 {
 	var msg = "$Pyrit1$"; // almost done. oil found?
