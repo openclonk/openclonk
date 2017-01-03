@@ -6,7 +6,7 @@ func Intro_Init()
 {
 	this.plane = CreateObjectAbove(Airplane, 0, 800);
 	this.plane->SetColor(0xa04000);
-	this.plane.health = 9999999;
+	this.plane.HitPoints = 9999999;
 	this.plane.intro_seq = this;
 	
 	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
