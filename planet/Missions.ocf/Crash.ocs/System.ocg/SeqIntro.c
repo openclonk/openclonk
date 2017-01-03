@@ -24,6 +24,7 @@ func Intro_Init()
 	this.plane->FaceRight();
 	this.plane->PlaneMount(this.pilot);
 	this.plane.Touchable = 0;
+	this.plane->MakeInvincible();
 }
 
 func Intro_Start(object hero)
