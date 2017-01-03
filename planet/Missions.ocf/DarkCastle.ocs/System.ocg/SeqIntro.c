@@ -2,8 +2,6 @@
 
 #appendto Sequence
 
-static npc_pyrit, g_cannon, g_cannoneer;
-
 func Intro_Init()
 {
 	this.plane = CreateObjectAbove(Airplane, 0, 800);
