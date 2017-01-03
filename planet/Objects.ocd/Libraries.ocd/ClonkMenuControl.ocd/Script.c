@@ -26,7 +26,7 @@
 
 protected func Construction()
 {
-	if(this.control == nil)
+	if (this.control == nil)
 		this.control = {};
 
 	this.control.menu = nil;
@@ -42,7 +42,7 @@ protected func CrewSelection(bool unselect)
 		// if there is still a menu, cancel it too...
 		CancelMenu();
 	}
-	return _inherited(unselect,...);
+	return _inherited(unselect, ...);
 }
 
 protected func Destruction()
@@ -67,7 +67,10 @@ func HasMenuControl()
 }
 
 // helper function that can be attached to a proplist to set callbacks on-the-fly
-func GetTrue() { return true; }
+func GetTrue()
+{
+	return true;
+}
 
 /*
 Sets the menu this Clonk currently has focus of. Old menus that have been opened via SetMenu will be closed, making sure that only one menu is open at a time.
@@ -83,7 +86,8 @@ func SetMenu(new_menu, bool unclosable)
 	
 	// no news?
 	if (new_menu) // if new_menu==nil, it is important that we still do the cleaning-up below even if we didn't have a menu before (see MenuClosed())
-		if (current_menu == new_menu) return;
+		if (current_menu == new_menu)
+			return;
 	
 	// close old one!
 	if (current_menu != nil)
@@ -103,16 +107,16 @@ func SetMenu(new_menu, bool unclosable)
 			this->~CancelUse();
 			// stop clonk
 			SetComDir(COMD_Stop);
-		
+
 			if (this->~HasVirtualCursor())
 			{
 				this->~VirtualCursor()->StartAim(this, 0, new_menu);
 			}
 			else
 			{
-				if (GetType(new_menu) == C4V_C4Object && new_menu->~CursorUpdatesEnabled()) 
+				if (GetType(new_menu) == C4V_C4Object && new_menu->~CursorUpdatesEnabled())
 					SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
-		
+
 				SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
 				SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
 			}
@@ -135,7 +139,7 @@ func SetMenu(new_menu, bool unclosable)
 		}
 		else
 			FatalError("Library_ClonkControl::SetMenu called with invalid parameter!");
-		
+
 		// make sure the menu is unclosable even if it is just a GUI ID
 		if (unclosable)
 		{
@@ -199,15 +203,18 @@ func CancelMenu()
 // Tries to cancel a non-unclosable menu. Returns true when there is no menu left after this call (even if there never was one).
 func TryCancelMenu()
 {
-	if (!this.control.menu) return true;
-	if (this.control.menu->~Unclosable()) return false;
+	if (!this.control.menu)
+		return true;
+	if (this.control.menu->~Unclosable())
+		return false;
 	CancelMenu();
 	return true;
 }
 
 public func RejectShiftCursor()
 {
-	if (this.control.menu && this.control.menu->~Unclosable()) return true;
+	if (this.control.menu && this.control.menu->~Unclosable())
+		return true;
 	return _inherited(...);
 }
 
