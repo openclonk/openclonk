@@ -99,7 +99,6 @@ private func UpdateSeedTimer()
 	return true;
 }
 
-
 /** Distance the seeds may travel. Default is 250.
 	@return the maximum distance.
 */
@@ -135,7 +134,7 @@ public func SetSeedAmount(int v)
 }
 
 /** The closest distance a new plant may seed to its nearest neighbour. Default is 20.
-	@return the maximum amount of plants.
+	@return the closest distance to another plant.
 */
 
 local plant_seed_offset = 20;
@@ -150,7 +149,6 @@ public func SetSeedOffset(int v)
 	plant_seed_offset = v;
 	return true;
 }
-
 
 /** Evaluates parameters for this definition to determine if seeding should occur.
  @par offx X offset added to context position for check.
@@ -185,7 +183,36 @@ private func Seed()
 	var plant;
 	if (CheckSeedChance())
 	{
-		plant = DoSeed();
+		plant = DoSeed(true);
+		// Check if it is not close to another one.
+		if (plant)
+		{
+			var neighbours = FindObjects(Find_Func("IsPlant"), Find_Exclude(plant),
+			                           Sort_Multiple(Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()), Sort_Reverse(Sort_Func("SeedOffset"))));
+			// Only check the nearest 3 plants
+			var too_close = false;
+			for (var i = 0; i < GetLength(neighbours) && i < 3; i++)
+			{
+				var neighbour = neighbours[i];
+				var x_distance = plant->SeedOffset() + 1;
+				var y_distance = 151;
+				if (neighbour)
+				{
+					x_distance = Abs(neighbour->GetX() - plant->GetX());
+					y_distance = Abs(neighbour->GetY() - plant->GetY());
+				}
+				if ((x_distance < plant->SeedOffset() || x_distance < neighbour->~SeedOffset()) && y_distance < 151)
+				{
+					too_close = true;
+					break;
+				}
+			}
+			// Closeness check
+			if (too_close)
+				plant->RemoveObject();
+			else
+				plant->InitChild(this);
+		}
 	}
 	return plant;
 }
@@ -193,7 +220,7 @@ private func Seed()
 /** Forcefully places a seed of the plant, without random chance
     or other sanity checks. This is useful for testing.
  */
-private func DoSeed()
+public func DoSeed(bool no_init)
 {
 	// Apply confinement for plant placement
 	var size = SeedArea();
@@ -212,19 +239,11 @@ private func DoSeed()
 		// Place the new plant in the original area
 		confined_area = area;
 	}
-	// Place the plant...
+	// Place the plant
 	var plant = PlaceVegetation(GetID(), 0, 0, 0, 0, 3, confined_area);
-	if (plant)
-	{
-		// ...but check if it is not close to another one.
-		var neighbour = FindObject(Find_ID(GetID()), Find_Exclude(plant), Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()));
-		var distance = ObjectDistance(plant, neighbour);
-		// Closeness check
-		if (distance < SeedOffset())
-			plant->RemoveObject();
-		else
-			plant->InitChild(this);
-	}
+	if (!no_init && plant)
+		plant->InitChild(this);
+
 	return plant;
 }
 
@@ -235,8 +254,6 @@ private func RemoveInTunnel()
 		RemoveObject();
 	} 
 }
-
-
 
 /* Editor */
 

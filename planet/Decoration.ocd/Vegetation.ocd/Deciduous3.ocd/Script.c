@@ -6,6 +6,7 @@
 local plant_seed_chance = 20;
 local plant_seed_area = 400;
 local plant_seed_amount = 10;
+local plant_seed_offset = 30;
 
 local lib_tree_burned = Deco_Tree_Deciduous3_Burned;
 

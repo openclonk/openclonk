@@ -5,6 +5,7 @@
 local plant_seed_chance = 25;
 local plant_seed_area = 120;
 local plant_seed_amount = 4;
+local plant_seed_offset = 10;
 
 func Construction()
 {

@@ -6,6 +6,7 @@
 local plant_seed_chance = 100;
 local plant_seed_area = 400;
 local plant_seed_amount = 12;
+local plant_seed_offset = 30;
 
 local coconuts;
 // Saved for GetTreetopPosition
