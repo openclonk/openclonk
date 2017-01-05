@@ -587,7 +587,11 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	if (!rPacket.getSize()) return;
 	// find connection
 	C4Network2IOConnection *pConn = GetConnection(rPacket.getAddr(), pNetIO);
-	if (!pConn) { Application.InteractiveThread.ThreadLog("Network: could not find connection for packet from %s!", rPacket.getAddr().ToString().getData()); return; }
+	if (!pConn)
+	{
+	    Application.InteractiveThread.ThreadLog("Network: could not find connection for %s packet (status %02x) from %s!", getNetIOName(pNetIO), rPacket.getStatus(), rPacket.getAddr().ToString().getData());
+	    return;
+	}
 #if(C4NET2IO_DUMP_LEVEL > 2)
 	uint32_t iFindConnectionBlocked = C4TimeMilliseconds::Now() - tTime;
 	if (iFindConnectionBlocked > 100)
