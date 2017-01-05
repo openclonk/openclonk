@@ -557,7 +557,7 @@ private func ExecuteStand(fx)
 {
 	//Message("Stand");
 	SetCommand("None");
-	if (GetProcedure() == "SCALE")
+	if (GetProcedure() == "SCALE" || GetAction() == "Climb")
 	{
 		var tx;
 		if (fx.target) tx = fx.target->GetX() - GetX();
