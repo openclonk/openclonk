@@ -19,12 +19,6 @@ protected func Initialize()
 	return;
 }
 
-protected func Damage()
-{	
-
-	return;
-}
-
 
 /*-- Ladder Control --*/
 
@@ -66,7 +60,7 @@ public func OnLadderClimb(object clonk, object segment, int segment_index)
 		if (!Random(20))
 			segment->Sound("Environment::Vine::Grab?", {volume = 35});
 		if (!Random(8))
-			segment->CreateParticle("Leaf",  PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 1);
+			segment->CreateParticle("Leaf", PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 1);
 	}
 	return;
 }
@@ -75,7 +69,7 @@ public func OnLadderClimb(object clonk, object segment, int segment_index)
 public func OnLadderReleased(object clonk, object segment, int segment_index)
 {
 	segment->Sound("Environment::Vine::Grab?", {volume = 50});
-	segment->CreateParticle("Leaf",  PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 3);
+	segment->CreateParticle("Leaf", PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), leaf_particle, 3);
 	return;
 }
 
@@ -139,6 +133,46 @@ public func AdjustPosition()
 }
 
 
+/*-- Damage --*/
+
+public func Incineration()
+{
+	// Color burned vine dark.
+	SetClrModulation(RGB(60, 50, 30));
+	return;
+}
+
+public func Damage()
+{
+	// Remove vine if above certain damage.
+	if (GetDamage() > 30)
+	{
+		var particle = new leaf_particle {};
+		particle.R = 51;
+		particle.G = 25;
+		particle.B = 5;
+		// Create some burned leafs at each of the segments.
+		for (var segment in segments)
+		{
+			var x = segment->GetX();
+			var y = segment->GetY();
+			Global->CreateParticle("Leaf", PV_Random(x - 2, x + 2), PV_Random(y - 3, y + 3), PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(210, 240), particle, 3);
+		}
+		RemoveObject();
+	}
+	return;
+}
+
+public func Destruction()
+{
+	// Remove all segments.
+	for (var segment in segments)
+		if (segment)
+			segment->RemoveObject();
+	return;
+}
+
+
 /*-- Saving --*/
 
 // Save placed ladder segments in scenarios.
@@ -146,7 +180,6 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) 
 		return false;
-	props->AddCall("CreateSegments", this, "CreateSegments");
 	return true;
 }
 
@@ -156,4 +189,5 @@ public func SaveScenarioObject(props)
 local Name = "$Name$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local NoBurnDecay = true;
 local Placement = 4;
