@@ -9,9 +9,9 @@ NoBalloons=Keine Ballons!
 NoSpaceInInventory=Inventar voll!|Kein Platz für den Ballon!
 NoObjects=Leer!
 
-AirplaneSettings=Schussmodi auswählen:
-SwitchMainAction=Erster Modus (auf %s):
-SwitchAltAction=Zweiter Modus (auf %s):
+SelectedAction=Schussmodus:|%s ({{%i}})
+AirplaneSettings=Schussmodus auswählen:
+SwitchMainAction=Schussmodus (auf %s):
 SwitchTo=Wechseln zu: %s
 
 Bullet=Kanone
@@ -25,5 +25,5 @@ BulletInfo=Mit der Kanone schießen. Schießt Kugeln ({{LeadBullet}}). Kugeln ve
 RocketInfo=Feuert Boompacks ({{Boompack}}) aus dem Flugzeug. Boompacks verfügbar: %d.
 BombInfo=Werfe Bomben ({{IronBomb}} und {{Dynamite}}) ab. Bomben verfügbar: %d.
 SprayInfo=Überzieht die Landschaft mit einem Flüssigkeitsregen. Flüssigkeit muss in Fässern ({{Barrel}} und {{MetalBarrel}}) gelagert werden. Fässer verfügbar: %d.
-BalloonInfo=Mit einem Ballon ({{Balloon}}) vom Flugzeug abspringen. Diese Aktion kann auch nicht anderen Clonks, die das Flugzeug nicht steuern, ausgeführt werden. Ballons verfügbar: %d.
+BalloonInfo=Mit einem Ballon ({{Balloon}}) vom Flugzeug abspringen. Diese Aktion kann auch von anderen Clonks, die das Flugzeug nicht steuern, ausgeführt werden. Ballons verfügbar: %d.
 DropInfo=Werfe Objekte aus dem Flugzeug ab.

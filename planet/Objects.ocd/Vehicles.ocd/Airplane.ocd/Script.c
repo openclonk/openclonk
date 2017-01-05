@@ -18,11 +18,10 @@ local prop_speed, prop_speed_target, prop_speed_timer; // current and target pro
 local pilot;
 local clonkmesh;
 
-// What happens on mouse clicks
-local main_action = "Cannon"; // fire bullets
-local alt_action = "Rocket"; // fire rockets
+// What happens on mouse left
+local main_action = "Cannon"; // default: fire bullets
 
-// All available click action
+// All available click actions
 local action_list = ["Cannon", "Rocket", "Bomb", "Spray", "Balloon", "Drop"];
 
 /*-- Engine Callbacks --*/
@@ -71,6 +70,7 @@ func ActivateEntrance(object clonk)
 	clonk->Enter(this);
 	clonk->SetAction("Walk");
 	clonk->PlayAnimation("Drive", CLONK_ANIM_SLOT_Movement, Anim_Const(10), Anim_Const(1000));
+	ShowMainActionTo(clonk);
 }
 
 func Ejection(object obj)
@@ -179,28 +179,6 @@ public func GetAirplaneMenuEntries(object clonk)
 
 	PushBack(menu_entries, { symbol = this, extra_data = "MainAction", custom = main_action_settings });
 
-	// alt action (= right click)
-	var alt_action_settings = {
-		Bottom = "2em",
-		settings = {
-			Prototype = control_prototype,
-			Priority = 1000,
-			Tooltip = GetActionTypeTooltip(alt_action),
-			OnClick = GuiAction_Call(this, "ToggleAltAction"),
-			text =
-				{ Prototype = control_prototype.text,
-				  Style = GUI_TextVCenter,
-				  Text = Format("$SwitchAltAction$\n%s", GetPlayerControlAssignment(clonk->GetOwner(), CON_UseAlt, true, true), GetActionTypeName(alt_action))
-				},
-			icon =
-				{ Prototype = control_prototype.icon,
-				  Symbol = GetActionTypeInfo(alt_action)
-				}
-		}
-	};
-
-	PushBack(menu_entries, { symbol = this, extra_data = "AltAction", custom = alt_action_settings });
-
 	return menu_entries;
 }
 
@@ -222,23 +200,6 @@ public func OnSettingsHover(symbol, extra_data, desc_menu_target, menu_id)
 		if (main_action == "Balloon")
 			text = Format("$BalloonInfo$", GetBalloonAmount());
 		if (main_action == "Drop")
-			text = Format("$DropInfo$");
-		if (text == "")
-			text = "$Description$";
-	}
-	if (extra_data == "AltAction")
-	{
-		if (alt_action == "Cannon")
-			text = Format("$BulletInfo$", GetBulletAmount());
-		if (alt_action == "Rocket")
-			text = Format("$RocketInfo$", GetRocketAmount());
-		if (alt_action == "Bomb")
-			text = Format("$BombInfo$", GetBombAmount());
-		if (alt_action == "Spray")
-			text = Format("$SprayInfo$", GetBarrelAmount());
-		if (alt_action == "Balloon")
-			text = Format("$BalloonInfo$", GetBalloonAmount());
-		if (alt_action == "Drop")
 			text = Format("$DropInfo$");
 		if (text == "")
 			text = "$Description$";
@@ -308,25 +269,10 @@ public func ToggleMainAction(object clonk)
 	UpdateInteractionMenus(this.GetAirplaneMenuEntries);
 
 	if (clonk)
+	{
 		Sound("UI::Click2", false, nil, clonk->GetOwner());
-}
-
-public func ToggleAltAction(object clonk)
-{
-	var current_action = GetIndexOf(action_list, alt_action);
-	if (current_action == -1) return; // ??
-
-	if (current_action == GetLength(action_list)-1)
-		current_action = 0;
-	else
-		current_action++;
-
-	alt_action = action_list[current_action];
-
-	UpdateInteractionMenus(this.GetAirplaneMenuEntries);
-
-	if (clonk)
-		Sound("UI::Click2", false, nil, clonk->GetOwner());
+		ShowMainActionTo(clonk);
+	}
 }
 
 /*-- Usage --*/
@@ -350,23 +296,30 @@ public func ContainedUseCancel(object clonk, int x, int y)
 	return this->Call(call, clonk);
 }
 
-// Secondary action
+// Alt Use: toggle firing mode
 public func ContainedUseAltStart(object clonk, int x, int y)
 {
-	var call = Format("Use%s", alt_action, x, y);
-	return this->Call(call, clonk);
+	if (clonk != pilot)
+		return false;
+
+	ToggleMainAction(clonk);
+	return true;
 }
 
 public func ContainedUseAltStop(object clonk, int x, int y)
 {
-	var call = Format("Cancel%s", alt_action, x, y);
-	return this->Call(call, clonk);
+	if (clonk != pilot)
+		return false;
+
+	return true;
 }
 
 public func ContainedUseAltCancel(object clonk, int x, int y)
 {
-	var call = Format("Cancel%s", alt_action, x, y);
-	return this->Call(call, clonk);
+	if (clonk != pilot)
+		return false;
+
+	return true;
 }
 
 // Starting the plane
@@ -768,7 +721,7 @@ public func UseDrop(object clonk, int x, int y)
 	if (clonk != pilot)
 		return false;
 
-	if (!GetNonClonkContents())
+	if (!GetLength(GetNonClonkContents()))
 	{
 		CustomMessage("$NoObjects$", this, clonk->GetOwner());
 		Sound("Objects::Weapons::Blunderbuss::Click?");
@@ -1072,6 +1025,11 @@ public func IsVehicle() { return true; }
 public func IsShipyardProduct() { return true; }
 
 /*-- Display --*/
+
+func ShowMainActionTo(object clonk)
+{
+	CustomMessage(Format("$SelectedAction$", GetActionTypeName(main_action), GetActionTypeInfo(main_action)), this, clonk->GetOwner());
+}
 
 func Definition(def)
 {
