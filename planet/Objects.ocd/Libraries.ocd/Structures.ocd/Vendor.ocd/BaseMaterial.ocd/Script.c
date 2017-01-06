@@ -109,7 +109,9 @@ protected func Initialize()
 		count = GetScenarioVal("BaseMaterial", section, index * 2 + 1);
 		if (!material && !count) break;
 		if (material)
+		{
 			PushBack(base_material, [material, count]);
+		}
 		index++;
 	}
 	
@@ -121,7 +123,9 @@ protected func Initialize()
 		count = GetScenarioVal("BaseProduction", section, index * 2 + 1);
 		if (!material && !count) break;
 		if (material)
+		{
 			PushBack(base_production, [material, count]);
+		}
 		index++;
 	}
 	
@@ -159,8 +163,7 @@ public func GetBaseMat(id material, int index, int category)
 		return nil;
 	}
 	// If an index is given look for the id.
-	if (!category) 
-		category = 0xffffff;
+	category = category ?? 0xffffff;
 	index = Max(0, index);
 	var count = 0;
 	for (var combo in base_material)
@@ -168,7 +171,9 @@ public func GetBaseMat(id material, int index, int category)
 		if (combo[0]->GetCategory() & category)
 		{
 			if (count == index)
+			{
 				return combo[0];
+			}
 			count++;
 		}
 	}
@@ -189,9 +194,13 @@ public func SetBaseMat(id material, int amount)
 		{
 			change = amount - base_material[index][1];
 			if (amount > 0)
+			{
 				base_material[index][1] = amount;
+			}
 			else
+			{
 				RemoveArrayIndex(base_material, index);
+			}
 			found = true;
 			break;
 		}
@@ -223,7 +232,9 @@ public func DoBaseMat(id material, int change)
 			change = Max(change, -base_material[index][1]);
 			base_material[index][1] += change;
 			if (base_material[index][1] == 0)
+			{
 				RemoveArrayIndex(base_material, index);
+			}
 			found = true;
 			break;
 		}
@@ -234,7 +245,9 @@ public func DoBaseMat(id material, int change)
 		// Change must at least be zero.
 		change = Max(change, 0);
 		if (change > 0)
+		{
 			PushBack(base_material, [material, change]);
+		}
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
@@ -254,8 +267,7 @@ public func GetBaseProd(id material, int index, int category)
 		return;
 	}
 	// If an index is given look for the id.
-	if (!category) 
-		category = 0xffffff;
+	category = category ?? 0xffffff;
 	index = Max(0, index);
 	var count = 0;
 	for (var combo in base_production)
@@ -263,7 +275,9 @@ public func GetBaseProd(id material, int index, int category)
 		if (combo[0]->GetCategory() & category)
 		{
 			if (count == index) 
+			{
 				return combo[0];
+			}
 			count++;
 		}
 	}
@@ -284,9 +298,13 @@ public func SetBaseProd(id material, int amount)
 		{
 			change = amount - base_production[index][1];
 			if (amount > 0)
+			{
 				base_production[index][1] = amount;
+			}
 			else
+			{
 				RemoveArrayIndex(base_production, index);
+			}
 			found = true;
 			break;
 		}
@@ -318,7 +336,9 @@ public func DoBaseProd(id material, int change)
 			change = Max(change, -base_production[index][1]);
 			base_production[index][1] += change;
 			if (base_production[index][1] == 0)
+			{
 				RemoveArrayIndex(base_production, index);
+			}
 			found = true;
 			break;
 		}
@@ -329,7 +349,9 @@ public func DoBaseProd(id material, int change)
 		// Change must at least be zero.
 		change = Max(change, 0);
 		if (change > 0)
+		{
 			PushBack(base_production, [material, change]);
+		}
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
