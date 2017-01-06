@@ -2,12 +2,12 @@
 	Base Material & Production
 	Library to control the players base material and production. The initial values are read
 	from the Scenario.txt entries and per script one can modify these by:
-     * GetBaseMaterial(int plr, id def, int index, int category)
-     * SetBaseMaterial(int plr, id def, int cnt)
-     * DoBaseMaterial(int plr, id def, int change)
-     * GetBaseProduction(int plr, id def, int index, int category)
-     * SetBaseProduction(int plr, id def, int cnt)
-     * DoBaseProduction(int plr, id def, int change)
+     * GetBaseMaterial(int player, id def, int index, int category)
+     * SetBaseMaterial(int player, id def, int cnt)
+     * DoBaseMaterial(int player, id def, int change)
+     * GetBaseProduction(int player, id def, int index, int category)
+     * SetBaseProduction(int player, id def, int cnt)
+     * DoBaseProduction(int player, id def, int change)
     Performs also two callbacks to a base of the player:
      * OnBaseMaterialChange(id def, int change);
      * OnBaseProductionChange(id def, int change);
@@ -32,56 +32,56 @@ static const BASEMATERIAL_ProductionRate = 2160;
 
 /*-- Global interface --*/
 
-global func GetBaseMaterial(int plr, id def, int index, int category)
+global func GetBaseMaterial(int player, id def, int index, int category)
 {
-	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(),  Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(),  Find_Owner(player));
 	if (!base) 
-		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base) 
 		return base->GetBaseMat(def, index, category);
 }
 
-global func SetBaseMaterial(int plr, id def, int cnt)
+global func SetBaseMaterial(int player, id def, int cnt)
 {
-	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
-		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
 		return base->SetBaseMat(def, cnt);
 }
 
-global func DoBaseMaterial(int plr, id def, int change)
+global func DoBaseMaterial(int player, id def, int change)
 {
-	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
-		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
 		return base->DoBaseMat(def, change);
 }
 
-global func GetBaseProduction(int plr, id def, int index, int category)
+global func GetBaseProduction(int player, id def, int index, int category)
 {
-	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base)
-		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base) 
 		return base->GetBaseProd(def, index, category);
 }
 
-global func SetBaseProduction(int plr, id def, int cnt)
+global func SetBaseProduction(int player, id def, int cnt)
 {
-	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
-		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
 		return base->SetBaseProd(def, cnt);
 }
 
-global func DoBaseProduction(int plr, id def, int change)
+global func DoBaseProduction(int player, id def, int change)
 {
-	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(plr));
+	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
-		base = CreateObject(Library_BaseMaterial, 0, 0, plr);
+		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base) 
 		return base->DoBaseProd(def, change);
 }
@@ -93,8 +93,8 @@ protected func Initialize()
 {
 	// Gather base materials based on Scenario.txt player entries.
 	// TODO: Check teams and get the fitting player section
-	var plr = GetOwner() % 4 + 1;
-	var section = Format("Player%d", plr); 
+	var player = GetOwner() % 4 + 1;
+	var section = Format("Player%d", player); 
 	
 	// Initialize arrays for material and production.
 	base_material = [];
