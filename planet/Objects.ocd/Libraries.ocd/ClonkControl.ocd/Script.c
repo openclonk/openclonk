@@ -584,6 +584,13 @@ public func FxBlockBlowControlQueryCatchBlow(object target, effect fx, object ob
 
 /*-- Jumping --*/
 
+
+/*
+ Triggers a regular jump, that means that the speed in y direction
+ is automatically decided, depending on the action of the clonk.
+ 
+ If you want to execute a jump with a certain speed, use ControlJumpExecute().
+ */
 public func ControlJump()
 {
 	var ydir = 0;
@@ -593,26 +600,39 @@ public func ControlJump()
 		ydir = this.JumpSpeed;
 	}
 	
-	if (InLiquid())
+	if (InLiquid() && !GBackSemiSolid(0, -5))
 	{
-		if (!GBackSemiSolid(0,-5))
-			ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
+		ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
 	}
 
 	// Jump speed of the wall kick is halved.
 	if (GetProcedure() == "SCALE" || GetAction() == "Climb")
 	{
-		ydir = this.JumpSpeed/2;
+		ydir = this.JumpSpeed / 2;
 	}
 	
+	return ControlJumpExecute(ydir);
+}
+
+
+/*
+ Additional function for actually triggering a jump directly.
+ 
+ The parameter ydir can be decided directly by the user,
+ or you can use the clonk's jump speed by passing this.JumpSpeed
+ 
+ Returns false if the jump was not successful.
+ */
+public func ControlJumpExecute(int ydir)
+{
 	if (ydir && !Stuck())
 	{
-		SetPosition(GetX(),GetY()-1);
+		SetPosition(GetX(), GetY() - 1);
 
 		// Wall kick if scaling or climbing.
-		if(GetProcedure() == "SCALE" || GetAction() == "Climb")
+		if (GetProcedure() == "SCALE" || GetAction() == "Climb")
 		{
-			AddEffect("WallKick",this,1);
+			AddEffect("WallKick", this, 1);
 			SetAction("Jump");
 
 			var xdir;
@@ -641,6 +661,7 @@ public func ControlJump()
 	}
 	return false;
 }
+
 
 // Interaction with clonks is special:
 // * The clonk opening the menu should always have higher priority so the clonk is predictably selected on the left side even if standing behind e.g. a crate
