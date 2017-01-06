@@ -193,8 +193,8 @@ public:
 
 		// conversions
 		operator sockaddr() const { return gen; }
-/*		operator sockaddr_in() const { assert(gen.sa_family == AF_INET); return v4; }
-		operator sockaddr_in6() const { assert(gen.sa_family == AF_INET6); return v6; }*/
+		operator sockaddr_in() const { assert(gen.sa_family == AF_INET); return v4; }
+		operator sockaddr_in6() const { assert(gen.sa_family == AF_INET6); return v6; }
 
 		// StdCompiler
 		void CompileFunc(StdCompiler *comp);
@@ -533,7 +533,7 @@ private:
 #endif
 
 	// multicast
-	addr_t MCAddr; ip_mreq MCGrpInfo;
+	addr_t MCAddr; ipv6_mreq MCGrpInfo;
 	bool fMCLoopback;
 
 	// multibind

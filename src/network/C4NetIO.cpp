@@ -356,6 +356,17 @@ void C4NetIO::HostAddress::SetHost(uint32_t v4addr)
 		memset(&v4.sin_zero, 0, sizeof(v4.sin_zero));
 }
 
+void C4NetIO::HostAddress::SetHost(const StdStrBuf &addr)
+{
+	addrinfo hints = addrinfo();
+	addrinfo *addresses = nullptr;
+	if (getaddrinfo(addr.getData(), nullptr, &hints, &addresses) != 0)
+		// GAI failed
+		return;
+	SetHost(addresses->ai_addr);
+	freeaddrinfo(addresses);
+}
+
 void C4NetIO::EndpointAddress::SetAddress(const StdStrBuf &addr)
 {
 	Clear();
@@ -1767,7 +1778,7 @@ bool C4NetIOSimpleUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	if (fMultiCast) CloseBroadcast();
 
 	// broadcast addr valid?
-	if (pBroadcastAddr->IsMulticast())
+	if (!pBroadcastAddr->IsMulticast())
 	{
 		SetError("invalid broadcast address");
 		return false;
@@ -1779,8 +1790,8 @@ bool C4NetIOSimpleUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	}
 
 	// set mc ttl to somewhat about "same net"
-	int iTTL = 16;
-	if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, reinterpret_cast<char*>(&iTTL), sizeof(iTTL)) == SOCKET_ERROR)
+	int TTL = 16;
+	if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, reinterpret_cast<char*>(&TTL), sizeof(TTL)) == SOCKET_ERROR)
 	{
 		SetError("could not set mc ttl", true);
 		return false;
@@ -1788,11 +1799,12 @@ bool C4NetIOSimpleUDP::InitBroadcast(addr_t *pBroadcastAddr)
 
 	// set up multicast group information
 	this->MCAddr = *pBroadcastAddr;
-	MCGrpInfo.imr_multiaddr = static_cast<sockaddr_in*>(&MCAddr)->sin_addr;
-	MCGrpInfo.imr_interface.s_addr = INADDR_ANY;
+	MCGrpInfo.ipv6mr_multiaddr = static_cast<sockaddr_in6>(MCAddr).sin6_addr;
+	// TODO: do multicast on all interfaces?
+	MCGrpInfo.ipv6mr_interface = 0; // default interface
 
 	// join multicast group
-	if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+	if (setsockopt(sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP,
 	               reinterpret_cast<const char *>(&MCGrpInfo), sizeof(MCGrpInfo)) == SOCKET_ERROR)
 	{
 		SetError("could not join multicast group"); // to do: more error information
@@ -1854,10 +1866,10 @@ bool C4NetIOSimpleUDP::CloseBroadcast()
 	if (!fMultiCast) return true;
 
 	// leave multicast group
-	if (setsockopt(sock, IPPROTO_IP, IP_DROP_MEMBERSHIP,
+	if (setsockopt(sock, IPPROTO_IPV6, IPV6_DROP_MEMBERSHIP,
 	               reinterpret_cast<const char *>(&MCGrpInfo), sizeof(MCGrpInfo)) == SOCKET_ERROR)
 	{
-		SetError("could not join multicast group"); // to do: more error information
+		SetError("could not leave multicast group"); // to do: more error information
 		return false;
 	}
 
@@ -2059,10 +2071,10 @@ enum C4NetIOSimpleUDP::WaitResult C4NetIOSimpleUDP::WaitForSocket(int iTimeout)
 bool C4NetIOSimpleUDP::SetMCLoopback(int fLoopback)
 {
 	// enable/disable MC loopback
-	setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), sizeof fLoopback);
+	setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), sizeof fLoopback);
 	// read result
 	socklen_t iSize = sizeof(fLoopback);
-	if (getsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), &iSize) == SOCKET_ERROR)
+	if (getsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), &iSize) == SOCKET_ERROR)
 		return false;
 	fMCLoopback = !! fLoopback;
 	return true;

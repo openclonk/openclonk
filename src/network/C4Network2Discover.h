@@ -20,7 +20,7 @@
 
 const int C4NetMaxDiscover = 64;
 
-const C4NetIO::HostAddress C4NetDiscoveryAddress = C4NetIO::HostAddress(0xef000000); // 239.0.0.0
+const C4NetIO::HostAddress C4NetDiscoveryAddress = C4NetIO::HostAddress(StdStrBuf("ff02::1"));
 
 class C4Network2IODiscover : public C4NetIOSimpleUDP, private C4NetIO::CBClass
 {
