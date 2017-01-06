@@ -244,6 +244,16 @@ bool C4NetIO::HostAddress::IsLoopback() const
 	return false;
 }
 
+bool C4NetIO::HostAddress::IsLocal() const
+{
+	if (gen.sa_family == AF_INET6)
+		return IN6_IS_ADDR_LINKLOCAL(&v6.sin6_addr) != 0;
+	// We don't really care about local 169.256.0.0/16 addresses here as users will either have a
+	// router doing DHCP (which will prevent usage of these addresses) or have a network that
+	// doesn't care about IP and IPv6 link-local addresses will work.
+	return false;
+}
+
 void C4NetIO::HostAddress::SetScopeId(int scopeId)
 {
 	if (gen.sa_family != AF_INET6) return;

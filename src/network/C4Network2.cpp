@@ -310,9 +310,25 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 	for (int i = 0; i < iAddrCount; i++)
 		if (!pAddrs[i].isIPNull())
 		{
+			auto addr = pAddrs[i].getAddr();
+			std::vector<C4NetIO::addr_t> addrs;
+			if (addr.IsLocal())
+			{
+				// Local IPv6 addresses need a scope id.
+				for (auto& id : Clients.GetLocal()->getInterfaceIDs())
+				{
+					addr.SetScopeId(id);
+					addrs.push_back(addr);
+				}
+			}
+			else
+				addrs.push_back(addr);
 			// connection
-			if (!NetIO.Connect(pAddrs[i].getAddr(), pAddrs[i].getProtocol(), HostCore, szPassword))
-				continue;
+			int cnt = 0;
+			for (auto& a : addrs)
+				if (NetIO.Connect(a, pAddrs[i].getProtocol(), HostCore, szPassword))
+					cnt++;
+			if (cnt == 0) continue;
 			// format for message
 			if (strAddresses.getLength())
 				strAddresses.Append(", ");

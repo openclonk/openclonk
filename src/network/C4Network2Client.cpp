@@ -231,6 +231,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 					addr.SetPort(iPortUDP);
 					AddAddr(C4Network2Address(addr, P_UDP), false);
 				}
+				if (addr.GetScopeId())
+					InterfaceIDs.insert(addr.GetScopeId());
 			}
 		}
 	}
@@ -257,6 +259,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 				addr.SetPort(iPortUDP);
 				AddAddr(C4Network2Address(addr, P_UDP), false);
 			}
+			if (addr.GetScopeId())
+				InterfaceIDs.insert(addr.GetScopeId());
 		}
 	}
 	freeifaddrs(addrs);

@@ -57,6 +57,9 @@ protected:
 	int32_t AddrAttempts[C4ClientMaxAddr];
 	int32_t iAddrCnt;
 
+	// interface ids
+	std::set<int> InterfaceIDs;
+
 	// status
 	C4Network2ClientStatus eStatus;
 
@@ -87,6 +90,8 @@ public:
 
 	int32_t     getAddrCnt()    const { return iAddrCnt; }
 	const C4Network2Address &getAddr(int32_t i) const { return Addr[i]; }
+
+	const std::set<int> &getInterfaceIDs() const { return InterfaceIDs; }
 
 	C4Network2ClientStatus getStatus() const { return eStatus; }
 	bool        hasJoinData()   const { return getStatus() != NCS_Joining; }
