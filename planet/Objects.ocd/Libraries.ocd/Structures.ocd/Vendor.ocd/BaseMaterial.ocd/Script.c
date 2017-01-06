@@ -212,9 +212,7 @@ public func SetBaseMat(id material, int amount)
 		PushBack(base_material, [material, amount]);
 	}
 	// Callback to the bases of the player.
-	var i = 0, base;
-	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseMaterialChange(material, change);
+	BroadcastBaseMaterialChange(material, change);
 	return;
 }
 
@@ -250,9 +248,7 @@ public func DoBaseMat(id material, int change)
 		}
 	}
 	// Callback to the bases of the player.
-	var i = 0, base;
-	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseMaterialChange(material, change);
+	BroadcastBaseMaterialChange(material, change);
 	return;
 }
 
@@ -316,9 +312,7 @@ public func SetBaseProd(id material, int amount)
 		PushBack(base_production, [material, amount]);
 	}
 	// Callback to the bases of the player.
-	var i = 0, base;
-	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseProductionChange(material, change);
+	BroadcastBaseProductionChange(material, change);
 	return;
 }
 
@@ -354,14 +348,26 @@ public func DoBaseProd(id material, int change)
 		}
 	}
 	// Callback to the bases of the player.
-	var i = 0, base;
-	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseProductionChange(material, change);
+	BroadcastBaseProductionChange(material, change);
 	return;
 }
 
 
 /*-- Miscellaneous --*/
+
+protected func BroadcastBaseProductionChange(id material, int change)
+{
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseProductionChange(material, change);
+}
+
+protected func BroadcastBaseMaterialChange(id material, int change)
+{
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseMaterialChange(material, change);
+}
 
 // Internal management object not saved. Use Scenario.txt or script 
 // to adjust base materials and production.
