@@ -3,10 +3,10 @@
 	Library to control the players base material and production. The initial values are read
 	from the Scenario.txt entries and per script one can modify these by:
      * GetBaseMaterial(int player, id def, int index, int category)
-     * SetBaseMaterial(int player, id def, int cnt)
+     * SetBaseMaterial(int player, id def, int amount)
      * DoBaseMaterial(int player, id def, int change)
      * GetBaseProduction(int player, id def, int index, int category)
-     * SetBaseProduction(int player, id def, int cnt)
+     * SetBaseProduction(int player, id def, int amount)
      * DoBaseProduction(int player, id def, int change)
     Performs also two callbacks to a base of the player:
      * OnBaseMaterialChange(id def, int change);
@@ -41,13 +41,13 @@ global func GetBaseMaterial(int player, id def, int index, int category)
 		return base->GetBaseMat(def, index, category);
 }
 
-global func SetBaseMaterial(int player, id def, int cnt)
+global func SetBaseMaterial(int player, id def, int amount)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
-		return base->SetBaseMat(def, cnt);
+		return base->SetBaseMat(def, amount);
 }
 
 global func DoBaseMaterial(int player, id def, int change)
@@ -68,13 +68,13 @@ global func GetBaseProduction(int player, id def, int index, int category)
 		return base->GetBaseProd(def, index, category);
 }
 
-global func SetBaseProduction(int player, id def, int cnt)
+global func SetBaseProduction(int player, id def, int amount)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
-		return base->SetBaseProd(def, cnt);
+		return base->SetBaseProd(def, amount);
 }
 
 global func DoBaseProduction(int player, id def, int change)
@@ -175,11 +175,11 @@ public func GetBaseMat(id def, int index, int category)
 	return;
 }
 
-public func SetBaseMat(id def, int cnt)
+public func SetBaseMat(id def, int amount)
 {
-	if (cnt == nil)
+	if (amount == nil)
 		return;
-	cnt = Max(0, cnt);
+	amount = Max(0, amount);
 	var change = 0;
 	// Scan through current list of id's and set material if available.
 	var found = false;
@@ -187,9 +187,9 @@ public func SetBaseMat(id def, int cnt)
 	{
 		if (base_material[index][0] == def)
 		{
-			change = cnt - base_material[index][1];
-			if (cnt > 0)
-				base_material[index][1] = cnt;
+			change = amount - base_material[index][1];
+			if (amount > 0)
+				base_material[index][1] = amount;
 			else
 				RemoveArrayIndex(base_material, index);
 			found = true;
@@ -197,10 +197,10 @@ public func SetBaseMat(id def, int cnt)
 		}
 	}
 	// If material is not available add it to the existing list.
-	if (!found && cnt > 0)
+	if (!found && amount > 0)
 	{
-		change = cnt;
-		PushBack(base_material, [def, cnt]);
+		change = amount;
+		PushBack(base_material, [def, amount]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
@@ -270,11 +270,11 @@ public func GetBaseProd(id def, int index, int category)
 	return;
 }
 
-public func SetBaseProd(id def, int cnt)
+public func SetBaseProd(id def, int amount)
 {
-	if (cnt == nil)
+	if (amount == nil)
 		return;
-	cnt = Max(0, cnt);
+	amount = Max(0, amount);
 	var change = 0;
 	// Scan through current list of id's and set production if available.
 	var found = false;
@@ -282,9 +282,9 @@ public func SetBaseProd(id def, int cnt)
 	{
 		if (base_production[index][0] == def)
 		{
-			change = cnt - base_production[index][1];
-			if (cnt > 0)
-				base_production[index][1] = cnt;
+			change = amount - base_production[index][1];
+			if (amount > 0)
+				base_production[index][1] = amount;
 			else
 				RemoveArrayIndex(base_production, index);
 			found = true;
@@ -292,10 +292,10 @@ public func SetBaseProd(id def, int cnt)
 		}
 	}
 	// If material is not available add it to the existing list.
-	if (!found && cnt > 0)
+	if (!found && amount > 0)
 	{
-		change = cnt;
-		PushBack(base_production, [def, cnt]);
+		change = amount;
+		PushBack(base_production, [def, amount]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
