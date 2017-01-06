@@ -2,15 +2,15 @@
 	Base Material & Production
 	Library to control the players base material and production. The initial values are read
 	from the Scenario.txt entries and per script one can modify these by:
-     * GetBaseMaterial(int player, id def, int index, int category)
-     * SetBaseMaterial(int player, id def, int amount)
-     * DoBaseMaterial(int player, id def, int change)
-     * GetBaseProduction(int player, id def, int index, int category)
-     * SetBaseProduction(int player, id def, int amount)
-     * DoBaseProduction(int player, id def, int change)
+     * GetBaseMaterial(int player, id material, int index, int category)
+     * SetBaseMaterial(int player, id material, int amount)
+     * DoBaseMaterial(int player, id material, int change)
+     * GetBaseProduction(int player, id material, int index, int category)
+     * SetBaseProduction(int player, id material, int amount)
+     * DoBaseProduction(int player, id material, int change)
     Performs also two callbacks to a base of the player:
-     * OnBaseMaterialChange(id def, int change);
-     * OnBaseProductionChange(id def, int change);
+     * OnBaseMaterialChange(id material, int change);
+     * OnBaseProductionChange(id material, int change);
 	
 	@author Randrian, Maikel
 */
@@ -32,58 +32,58 @@ static const BASEMATERIAL_ProductionRate = 2160;
 
 /*-- Global interface --*/
 
-global func GetBaseMaterial(int player, id def, int index, int category)
+global func GetBaseMaterial(int player, id material, int index, int category)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(),  Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base) 
-		return base->GetBaseMat(def, index, category);
+		return base->GetBaseMat(material, index, category);
 }
 
-global func SetBaseMaterial(int player, id def, int amount)
+global func SetBaseMaterial(int player, id material, int amount)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
-		return base->SetBaseMat(def, amount);
+		return base->SetBaseMat(material, amount);
 }
 
-global func DoBaseMaterial(int player, id def, int change)
+global func DoBaseMaterial(int player, id material, int change)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
-		return base->DoBaseMat(def, change);
+		return base->DoBaseMat(material, change);
 }
 
-global func GetBaseProduction(int player, id def, int index, int category)
+global func GetBaseProduction(int player, id material, int index, int category)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base)
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base) 
-		return base->GetBaseProd(def, index, category);
+		return base->GetBaseProd(material, index, category);
 }
 
-global func SetBaseProduction(int player, id def, int amount)
+global func SetBaseProduction(int player, id material, int amount)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base)
-		return base->SetBaseProd(def, amount);
+		return base->SetBaseProd(material, amount);
 }
 
-global func DoBaseProduction(int player, id def, int change)
+global func DoBaseProduction(int player, id material, int change)
 {
 	var base = FindObject(Find_ID(Library_BaseMaterial), Find_AnyLayer(), Find_Owner(player));
 	if (!base) 
 		base = CreateObject(Library_BaseMaterial, 0, 0, player);
 	if (base) 
-		return base->DoBaseProd(def, change);
+		return base->DoBaseProd(material, change);
 }
 
 
@@ -102,14 +102,14 @@ protected func Initialize()
 	
 	// Load materials from Scenario.txt
 	var index;
-	var def, count;	
+	var material, count;	
 	while (true)
 	{
-		def = GetScenarioVal("BaseMaterial", section, index * 2);
+		material = GetScenarioVal("BaseMaterial", section, index * 2);
 		count = GetScenarioVal("BaseMaterial", section, index * 2 + 1);
-		if (!def && !count) break;
-		if (def)
-			PushBack(base_material, [def, count]);
+		if (!material && !count) break;
+		if (material)
+			PushBack(base_material, [material, count]);
 		index++;
 	}
 	
@@ -117,11 +117,11 @@ protected func Initialize()
 	index = 0;
 	while (true)
 	{
-		def = GetScenarioVal("BaseProduction", section, index * 2);
+		material = GetScenarioVal("BaseProduction", section, index * 2);
 		count = GetScenarioVal("BaseProduction", section, index * 2 + 1);
-		if (!def && !count) break;
-		if (def)
-			PushBack(base_production, [def, count]);
+		if (!material && !count) break;
+		if (material)
+			PushBack(base_production, [material, count]);
 		index++;
 	}
 	
@@ -148,13 +148,13 @@ public func ExecBaseProduction()
 	return;
 }
 
-public func GetBaseMat(id def, int index, int category)
+public func GetBaseMat(id material, int index, int category)
 {
 	// Get the count if the id is given.
-	if (def)
+	if (material)
 	{
 		for (var combo in base_material)
-			if (combo[0] == def)
+			if (combo[0] == material)
 				return combo[1];
 		return nil;
 	}
@@ -175,7 +175,7 @@ public func GetBaseMat(id def, int index, int category)
 	return;
 }
 
-public func SetBaseMat(id def, int amount)
+public func SetBaseMat(id material, int amount)
 {
 	if (amount == nil)
 		return;
@@ -185,7 +185,7 @@ public func SetBaseMat(id def, int amount)
 	var found = false;
 	for (var index = 0; index < GetLength(base_material); ++index)
 	{
-		if (base_material[index][0] == def)
+		if (base_material[index][0] == material)
 		{
 			change = amount - base_material[index][1];
 			if (amount > 0)
@@ -200,16 +200,16 @@ public func SetBaseMat(id def, int amount)
 	if (!found && amount > 0)
 	{
 		change = amount;
-		PushBack(base_material, [def, amount]);
+		PushBack(base_material, [material, amount]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
 	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseMaterialChange(def, change);
+		base->~OnBaseMaterialChange(material, change);
 	return;
 }
 
-public func DoBaseMat(id def, int change)
+public func DoBaseMat(id material, int change)
 {
 	if (change == 0) 
 		return;
@@ -217,7 +217,7 @@ public func DoBaseMat(id def, int change)
 	var found = false;
 	for (var index = 0; index < GetLength(base_material); ++index)
 	{
-		if (base_material[index][0] == def)
+		if (base_material[index][0] == material)
 		{
 			// Change must at least be minus the original value.
 			change = Max(change, -base_material[index][1]);
@@ -234,22 +234,22 @@ public func DoBaseMat(id def, int change)
 		// Change must at least be zero.
 		change = Max(change, 0);
 		if (change > 0)
-			PushBack(base_material, [def, change]);
+			PushBack(base_material, [material, change]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
 	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseMaterialChange(def, change);
+		base->~OnBaseMaterialChange(material, change);
 	return;
 }
 
-public func GetBaseProd(id def, int index, int category)
+public func GetBaseProd(id material, int index, int category)
 {
 	// Get the count if the id is given.
-	if (def)
+	if (material)
 	{
 		for (var combo in base_production)
-			if (combo[0] == def)
+			if (combo[0] == material)
 				return combo[1];
 		return;
 	}
@@ -270,7 +270,7 @@ public func GetBaseProd(id def, int index, int category)
 	return;
 }
 
-public func SetBaseProd(id def, int amount)
+public func SetBaseProd(id material, int amount)
 {
 	if (amount == nil)
 		return;
@@ -280,7 +280,7 @@ public func SetBaseProd(id def, int amount)
 	var found = false;
 	for (var index = 0; index < GetLength(base_production); ++index)
 	{
-		if (base_production[index][0] == def)
+		if (base_production[index][0] == material)
 		{
 			change = amount - base_production[index][1];
 			if (amount > 0)
@@ -295,16 +295,16 @@ public func SetBaseProd(id def, int amount)
 	if (!found && amount > 0)
 	{
 		change = amount;
-		PushBack(base_production, [def, amount]);
+		PushBack(base_production, [material, amount]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
 	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseProductionChange(def, change);
+		base->~OnBaseProductionChange(material, change);
 	return;
 }
 
-public func DoBaseProd(id def, int change)
+public func DoBaseProd(id material, int change)
 {
 	if (change == 0)
 		return;
@@ -312,7 +312,7 @@ public func DoBaseProd(id def, int change)
 	var found = false;
 	for (var index = 0; index < GetLength(base_production); ++index)
 	{
-		if (base_production[index][0] == def)
+		if (base_production[index][0] == material)
 		{
 			// Change must at least be minus the original value.
 			change = Max(change, -base_production[index][1]);
@@ -329,12 +329,12 @@ public func DoBaseProd(id def, int change)
 		// Change must at least be zero.
 		change = Max(change, 0);
 		if (change > 0)
-			PushBack(base_production, [def, change]);
+			PushBack(base_production, [material, change]);
 	}
 	// Callback to the bases of the player.
 	var i = 0, base;
 	while (base = FindBase(GetOwner(), i++))
-		base->~OnBaseProductionChange(def, change);
+		base->~OnBaseProductionChange(material, change);
 	return;
 }
 
