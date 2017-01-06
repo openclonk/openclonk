@@ -111,6 +111,7 @@ public:
 		bool IsNull() const;
 		bool IsMulticast() const;
 		bool IsLoopback() const;
+		bool IsLocal() const;
 //		bool IsBroadcast() const;
 
 		StdStrBuf ToString(int flags = 0) const;

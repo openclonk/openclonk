@@ -147,10 +147,22 @@ bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
 		{ iNextConnAttempt = time(nullptr) + 10; return true; }
 	// save attempt
 	AddrAttempts[iBestAddress]++; iNextConnAttempt = time(nullptr) + C4NetClientConnectInterval;
-	// log
-	LogSilentF("Network: connecting client %s on %s...", getName(), Addr[iBestAddress].toString().getData());
-	// connect
-	return pIO->Connect(Addr[iBestAddress].getAddr(), Addr[iBestAddress].getProtocol(), pClient->getCore());
+	auto addr = Addr[iBestAddress].getAddr();
+	std::set<int> interfaceIDs;
+	if (addr.IsLocal())
+	    interfaceIDs = Network.Clients.GetLocal()->getInterfaceIDs();
+	else
+	    interfaceIDs = {0};
+	for (auto id : interfaceIDs)
+	{
+	    addr.SetScopeId(id);
+	    // log
+	    LogSilentF("Network: connecting client %s on %s...", getName(), addr.ToString().getData());
+	    // connect
+	    if (pIO->Connect(addr, Addr[iBestAddress].getProtocol(), pClient->getCore()))
+		return true;
+	}
+	return false;
 }
 
 bool C4Network2Client::hasAddr(const C4Network2Address &addr) const
@@ -231,6 +243,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 					addr.SetPort(iPortUDP);
 					AddAddr(C4Network2Address(addr, P_UDP), false);
 				}
+				if (addr.GetScopeId())
+					InterfaceIDs.insert(addr.GetScopeId());
 			}
 		}
 	}
@@ -257,6 +271,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 				addr.SetPort(iPortUDP);
 				AddAddr(C4Network2Address(addr, P_UDP), false);
 			}
+			if (addr.GetScopeId())
+				InterfaceIDs.insert(addr.GetScopeId());
 		}
 	}
 	freeifaddrs(addrs);
