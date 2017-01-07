@@ -571,9 +571,13 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 		ServerAddr.SetPort(GetDefaultPort());
 	}
 	// Remove port
-	const char *pColon = strchr(Server.getData(), ':');
-	if (pColon)
-		Server.SetLength(pColon - Server.getData());
+	const char *firstColon = strchr(Server.getData(), ':');
+	const char *lastColon = strrchr(Server.getData(), ':');
+	if (firstColon)
+		// hostname/IPv4 address    or IPv6 address with port (e.g. [::1]:1234)
+		if (firstColon == lastColon || (Server[0] == '[' && *(lastColon - 1) == ']'))
+			Server.SetLength(lastColon - Server.getData());
+		
 	// Done
 	ResetError();
 	return true;

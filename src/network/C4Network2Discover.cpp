@@ -64,7 +64,7 @@ bool C4Network2IODiscover::Init(uint16_t iPort)
 bool C4Network2IODiscover::Announce()
 {
 	// Announce our presence
-	C4Network2IODiscoverReply Reply = { 4, htons(iRefServerPort) };
+	C4Network2IODiscoverReply Reply = { 4, iRefServerPort };
 	return Send(C4NetIOPacket(&Reply, sizeof(Reply), false, DiscoveryAddr));
 }
 
