@@ -136,14 +136,17 @@ public:
 	~C4Group();
 
 private:
-	enum Status
+	enum SourceType
 	{
-		GRPF_Inactive,
-		GRPF_File,
-		GRPF_Folder
+		// No source; C4Group inactive
+		ST_None,
+		// C4Group backed by archive file
+		ST_Packed,
+		// C4Group backed by raw file system
+		ST_Unpacked
 	};
 
-	Status Status;
+	SourceType SourceType;
 	char FileName[_MAX_PATH+1];
 	// Parent status
 	C4Group *Mother;
@@ -247,9 +250,9 @@ public:
 	size_t EntrySize(const char *szWildCard=nullptr);
 	size_t AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
 	unsigned int EntryCRC32(const char *szWildCard=nullptr);
-	inline bool IsOpen() { return Status != GRPF_Inactive; }
+	inline bool IsOpen() { return SourceType != ST_None; }
 	C4Group *GetMother();
-	inline bool IsPacked() { return Status == GRPF_File; }
+	inline bool IsPacked() { return SourceType == ST_Packed; }
 	inline bool HasPackedMother() { if (!Mother) return false; return Mother->IsPacked(); }
 	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
 	int PreCacheEntries(const char *szSearchPattern, bool cache_previous=false); // pre-load entries to memory. return number of loaded entries.
