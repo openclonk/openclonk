@@ -5,9 +5,9 @@ public func IsInteractable(object clonk)
 	return !GetEffect("NoInteract", this);
 }
 
-public func FxNoInteractTime() // TODO: Fix this error
+public func FxNoInteractTimer(object target, proplist fx, int timer)
 {
-	return -1;
+	return FX_Execute_Kill;
 }
 
 public func Initialize()

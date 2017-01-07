@@ -60,7 +60,7 @@ global func FxGemPyreStart(object target, effect, int temporary, array coordinat
 		Size = PV_Linear(2, 0),
 		R = PV_Random(120, 140),
 		G = PV_Random(20, 30),
-		G = PV_Random(90, 110), // TODO: fix this
+		B = PV_Random(90, 110),
 		BlitMode = GFX_BLIT_Additive
 	};
 	
