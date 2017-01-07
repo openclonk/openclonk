@@ -106,6 +106,7 @@ public:
 		void SetHost(uint32_t host);
 
 		C4NetIO::HostAddress AsIPv6() const; // convert an IPv4 address to an IPv6-mapped IPv4 address
+		C4NetIO::HostAddress AsIPv4() const; // try to convert an IPv6-mapped IPv4 address to an IPv4 address (returns unchanged address if not possible)
 
 		// General categories
 		bool IsNull() const;
@@ -151,6 +152,7 @@ public:
 
 		HostAddress GetHost() const { return *this; }	// HostAddress copy ctor slices off port information
 		EndpointAddress AsIPv6() const; // convert an IPv4 address to an IPv6-mapped IPv4 address
+		EndpointAddress AsIPv4() const; // try to convert an IPv6-mapped IPv4 address to an IPv4 address (returns unchanged address if not possible)
 		
 		void SetPort(uint16_t port);
 		uint16_t GetPort() const;

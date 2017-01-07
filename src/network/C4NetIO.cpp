@@ -290,9 +290,25 @@ C4NetIO::HostAddress C4NetIO::HostAddress::AsIPv6() const
 	return nrv;
 }
 
+C4NetIO::HostAddress C4NetIO::HostAddress::AsIPv4() const
+{
+	HostAddress nrv(*this);
+	if (gen.sa_family == AF_INET6 && IN6_IS_ADDR_V4MAPPED(&v6.sin6_addr))
+	{
+		nrv.v4.sin_family = AF_INET;
+		memcpy((char*) &nrv.v4.sin_addr, (char*) &v6.sin6_addr.s6_addr[12], sizeof(v4.sin_addr));
+	}
+	return nrv;
+}
+
 C4NetIO::EndpointAddress C4NetIO::EndpointAddress::AsIPv6() const
 {
 	return EndpointAddress(HostAddress::AsIPv6(), GetPort());
+}
+
+C4NetIO::EndpointAddress C4NetIO::EndpointAddress::AsIPv4() const
+{
+	return EndpointAddress(HostAddress::AsIPv4(), GetPort());
 }
 
 void C4NetIO::HostAddress::SetHost(const sockaddr *addr)
