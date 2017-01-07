@@ -1872,7 +1872,7 @@ size_t C4Group::EntrySize(const char *szWildCard)
 	return fsize;
 }
 
-size_t C4Group::AccessedEntrySize() { return p->iCurrFileSize; }
+size_t C4Group::AccessedEntrySize() const { return p->iCurrFileSize; }
 
 unsigned int C4Group::EntryCRC32(const char *szWildCard)
 {

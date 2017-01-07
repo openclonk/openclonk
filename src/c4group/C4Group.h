@@ -211,7 +211,7 @@ public:
 	StdStrBuf GetFullName() const;
 	int EntryCount(const char *szWildCard=nullptr);
 	size_t EntrySize(const char *szWildCard=nullptr);
-	size_t AccessedEntrySize() override; // retrieve size of last accessed entry
+	size_t AccessedEntrySize() const override; // retrieve size of last accessed entry
 	unsigned int EntryCRC32(const char *szWildCard=nullptr);
 	bool IsOpen() const;
 	C4Group *GetMother();
