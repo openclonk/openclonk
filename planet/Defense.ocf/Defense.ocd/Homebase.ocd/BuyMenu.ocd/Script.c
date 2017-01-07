@@ -80,7 +80,7 @@ public func Construction(...)
 public func Destruction(...)
 {
 	if (container_id) GuiClose(container_id);
-	if (menu) menu->RemoveObect();
+	if (menu) menu->RemoveObject();
 	DestroyToggleVisibilityButton();
 	return true;
 }
