@@ -171,6 +171,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
 	if (!obj) return nil;
 	obj->SetController(ENEMY);
+	obj->MakeCrewMember(ENEMY);
 	// Enemy visuals
 	if (enemy.Skin)
 	{
@@ -203,7 +204,6 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 		obj.FlySpeed = obj.FlySpeed * enemy.Speed / 100;
 	}
 	obj.MaxContentsCount = 1;
-	obj->MakeInvincibleToFriendlyFire();
 	// Reward for killing enemy
 	obj.Bounty = enemy.Bounty;
 	// Vehicles

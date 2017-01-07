@@ -99,7 +99,6 @@ func JoinPlayer(plr, prev_clonk)
 	}
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
-	clonk->MakeInvincibleToFriendlyFire();
 	// contents
 	clonk.MaxContentsCount = 1;
 	if (prev_clonk) TransferInventory(prev_clonk, clonk);
@@ -111,6 +110,10 @@ func JoinPlayer(plr, prev_clonk)
 		arrow->SetInfiniteStackCount();
 	}
 	clonk->~CrewSelection(); // force update HUD
+	// Make this work under the friendly fire rule.
+	for (var obj in [g_windgen1, g_windgen2, g_windgen3, g_windmill])
+		if (obj)
+			obj->SetOwner(plr);
 }
 
 // Enter all buyable things into the homebase
@@ -207,20 +210,12 @@ func StartGame()
 		obj.MaxEnergy = 800000;
 		obj->DoEnergy(obj.MaxEnergy/1000);
 		obj->AddEnergyBar();
-		obj.FxNoPlayerDamageDamage = Scenario.Object_NoPlayerDamage;
-		AddEffect("NoPlayerDamage", obj, 500, 0, obj);
+		GameCallEx("OnClonkRecruitment", obj);
 	}
 	// Launch first wave!
 	g_wave = 1;
 	ScheduleCall(nil, Scenario.LaunchWave, 50, 1, g_wave);
 	return true;
-}
-
-func Object_NoPlayerDamage(object target, fx, dmg, cause, cause_player)
-{
-	// players can't damage windmills
-	if (GetPlayerType(cause_player) == C4PT_User) return 0;
-	return dmg;
 }
 
 public func WindmillDown(object windmill)

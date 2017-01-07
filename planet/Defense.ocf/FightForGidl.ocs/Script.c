@@ -101,7 +101,6 @@ func JoinPlayer(plr, prev_clonk)
 	}
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
-	clonk->MakeInvincibleToFriendlyFire();
 	// contents
 	clonk.MaxContentsCount = 1;
 	if (prev_clonk) TransferInventory(prev_clonk, clonk);
@@ -112,9 +111,11 @@ func JoinPlayer(plr, prev_clonk)
 		clonk->Collect(arrow);
 		arrow->SetInfiniteStackCount();
 	}
-	//clonk->CreateContents(Blunderbuss);
-	//clonk->Collect(CreateObjectAbove(LeadBullet));
 	clonk->~CrewSelection(); // force update HUD
+	// Make this work under the friendly fire rule.
+	for (var obj in [g_statue, g_doorleft, g_doorright])
+		if (obj)
+			obj->SetOwner(plr);
 	return;
 }
 
@@ -151,16 +152,14 @@ func FillHomebase(object homebase)
 func StartGame()
 {
 	// Init objects to defend
-	var obj;
-	for (obj in [g_statue, g_doorleft, g_doorright]) if (obj)
+	for (var obj in [g_statue, g_doorleft, g_doorright]) if (obj)
 	{
 		obj->SetCategory(C4D_Living);
 		obj->SetAlive(true);
 		obj.MaxEnergy = 800000;
 		obj->DoEnergy(obj.MaxEnergy/1000);
 		obj->AddEnergyBar();
-		obj.FxNoPlayerDamageDamage = Scenario.Object_NoPlayerDamage;
-		AddEffect("NoPlayerDamage", obj, 500, 0, obj);
+		GameCallEx("OnClonkRecruitment", obj);
 	}
 	if (g_statue)
 	{
@@ -171,14 +170,6 @@ func StartGame()
 	ScheduleCall(nil, Scenario.LaunchWave, 50, 1, g_wave);
 	return true;
 }
-
-func Object_NoPlayerDamage(object target, fx, dmg, cause, cause_player)
-{
-	// players can't damage statue or doors
-	if (GetPlayerType(cause_player) == C4PT_User) return 0;
-	return dmg;
-}
-
 
 
 //======================================================================

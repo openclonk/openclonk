@@ -9,6 +9,8 @@ func InitializeObjects()
 
 	g_object_fade = CreateObject(Rule_ObjectFade, 0, 0);
 	g_object_fade.StaticSaveVar = "g_object_fade";
+	
+	CreateObject(Rule_NoFriendlyFire, 0, 0);
 
 	g_statue = CreateObjectAbove(Idol, 632, 445);
 	g_statue.StaticSaveVar = "g_statue";
