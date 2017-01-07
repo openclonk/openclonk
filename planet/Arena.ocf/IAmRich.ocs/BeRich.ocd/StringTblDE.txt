@@ -1,0 +1,5 @@
+Name=Werde Reich!
+
+#Goal window
+MsgGoalFulfilled=Du bist reich!
+MsgGoalUnfulfilled=Werde reich, bevor es jemand anderes wird.\n\nDu kannst nahezu alle Gegenstände an der Flagge verkaufen, um Geld zu erhalten!

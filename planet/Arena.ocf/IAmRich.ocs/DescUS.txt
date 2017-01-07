@@ -1,0 +1,4 @@
+Compete with your opponents.
+The player with most wealth will win.
+
+Nearly every item can be sold.

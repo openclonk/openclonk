@@ -1,0 +1,199 @@
+[ParameterDef]
+Name=$StartGold$
+Description=$DescStartGold$
+ID=StartGold
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=0
+		Description=0
+		Value=0
+		
+		[Option]
+		Name=25
+		Description=25
+		Value=25
+		
+		[Option]
+		Name=50
+		Description=50
+		Value=50
+		
+		[Option]
+		Name=100
+		Description=100
+		Value=100
+		
+		[Option]
+		Name=150
+		Description=150
+		Value=150
+		
+		[Option]
+		Name=200
+		Description=200
+		Value=200
+
+[ParameterDef]
+Name=$BO_Clonks$
+Description=$DescBO_Clonks$
+ID=BO_Clonks
+Default=1
+
+	[Options]
+		
+		[Option]
+		Name=$No$
+		Description=$No$
+		Value=0
+		
+		[Option]
+		Name=$Yes$
+		Description=$Yes$
+		Value=1
+		
+[ParameterDef]
+Name=$BO_BuildingMaterial$
+Description=$DescBO_BuildingMaterial$
+ID=BO_BuildingMaterial
+Default=1
+
+	[Options]
+		
+		[Option]
+		Name=$No$
+		Description=$No$
+		Value=0
+		
+		[Option]
+		Name=$Yes$
+		Description=$Yes$
+		Value=1
+		
+[ParameterDef]
+Name=$BO_Tools$
+Description=$DescBO_Tools$
+ID=BO_Tools
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$No$
+		Description=$No$
+		Value=0
+		
+		[Option]
+		Name=$Yes$
+		Description=$Yes$
+		Value=1
+		
+[ParameterDef]
+Name=$BO_Weapons$
+Description=$DescBO_Weapons$
+ID=BO_Weapons
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$No$
+		Description=$No$
+		Value=0
+		
+		[Option]
+		Name=$Yes$
+		Description=$Yes$
+		Value=1
+		
+[ParameterDef]
+Name=$BO_Food$
+Description=$DescBO_Food$
+ID=BO_Food
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$No$
+		Description=$No$
+		Value=0
+		
+		[Option]
+		Name=$Yes$
+		Description=$Yes$
+		Value=1
+		
+[ParameterDef]
+Name=$RuleNoEnergy$
+Description=$DescRuleNoEnergy$
+ID=NoEnergy
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$No$
+		Description=$DescNoEnergyNo$
+		Value=0
+		
+		[Option]
+		Name=$Yes$
+		Description=$DescNoEnergyYes$
+		Value=1
+
+[ParameterDef]
+Name=$GoalTime$
+Description=$DescGoalTime$
+ID=GoalTime
+Default=30
+
+	[Options]
+		
+		[Option]
+		Name=10
+		Description=10
+		Value=10
+		
+		[Option]
+		Name=15
+		Description=15
+		Value=15
+		
+		[Option]
+		Name=20
+		Description=20
+		Value=20
+		
+		[Option]
+		Name=30
+		Description=30
+		Value=30
+		
+		[Option]
+		Name=45
+		Description=45
+		Value=45
+		
+		[Option]
+		Name=60
+		Description=60
+		Value=60
+		
+		[Option]
+		Name=90
+		Description=90
+		Value=90
+		
+		[Option]
+		Name=120
+		Description=120
+		Value=120
+		
+		[Option]
+		Name=180
+		Description=180
+		Value=180
+		
