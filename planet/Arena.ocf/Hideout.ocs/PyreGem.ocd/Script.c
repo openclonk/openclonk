@@ -50,7 +50,6 @@ global func FxGemPyreStart(object target, effect, int temporary, array coordinat
 
 	effect.x = coordinates[0];
 	effect.y = coordinates[1];
-	effect.e = e;
 	effect.thrower = thrower_owner;
 	effect.owner = owner;
 	effect.objects = [];
@@ -78,45 +77,37 @@ global func FxGemPyreTimer(object target, effect, int time)
 {
 	var x = effect.x;
 	var y = effect.y;
-	var e = effect.e;
+	
+	var radius_max = ((time / 2) + 1) * 6;
+	var radius_min = ((time / 2) + 1) * 4;
 	
 	if (time > 32) return -1;
 	
 	for (var i = 0; i < (20 + time); i++)
 	{
 		var r = Random(360);
-		var d = Random((((time / 2) + 1) * 6) - ((time / 2) * 4)) + ((time / 2) * 4) + RandomX(-2, 2);
+		var d = Random(radius_max - radius_min) + radius_min + RandomX(-2, 2);
 		var xoff = +Sin(r, d);
 		var yoff = -Cos(r, d);
 
 		if (!PathFree(x, y, x + xoff, y + yoff)) continue;
 
-		var color; // TODO: this is not actually used??
-		if (e)
-		{
-			color = RGB(190 + Random(10), 0, 20 + Random(20));
-		}
-		else
-		{
-			color = RGB(122 + Random(20), 18 + Random(10), 90 + Random(20));
-		}
-
 		CreateParticle("Air", x + xoff, y + yoff, PV_Random(xoff - 3, xoff + 3), PV_Random(yoff - 3, yoff + 3), PV_Random(5, 10), effect.particles, 2);
 	}
 	
-	for (var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_Distance(((time / 2) + 1) * 6, x, y), Find_Not(Find_Distance((time / 2) * 4, x, y)), Find_ID(Clonk)))
+	var potential = 30 - time;
+	for (var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_Distance(radius_max, x, y), Find_Not(Find_Distance(radius_min, x, y)), Find_ID(Clonk)))
 	{
-		var end = false;	
-		for (var i = 0; i < GetLength(effect.objects); i++)
+		if (IsValueInArray(effect.objects, obj))
 		{
-			if (obj == effect.objects[i]) end = true;
+			continue;
 		}
-		if (end) continue;
+
 		if (PathFree(x, y, obj->GetX(), obj->GetY()))
 		{
-			obj->DoEnergy((-BoundBy((30-time), 1, 26) * 3) / 5, 0, 0, effect.thrower);
+			obj->DoEnergy((-BoundBy(potential, 1, 26) * 3) / 5, 0, 0, effect.thrower);
 			obj->CreateParticle("MagicFire", 0, 0, PV_Random(-15, 15), PV_Random(-15, 15), PV_Random(5, 10), effect.particles, 20);
-			obj->Fling(RandomX(-2, 2), -2 - (BoundBy((30 - time), 10, 30) / 10));
+			obj->Fling(RandomX(-2, 2), -2 -(BoundBy(potential, 10, 30) / 10));
 			effect.objects[GetLength(effect.objects)] = obj;
 		}	
 	}

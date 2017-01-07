@@ -1,10 +1,16 @@
 #appendto Ropeladder_Grabber
 
-public func IsInteractable(object clonk) { if(GetEffect("NoInteract",this)) return false; else return true;}
+public func IsInteractable(object clonk)
+{
+	return !GetEffect("NoInteract", this);
+}
 
-public func FxNoInteractTime()
+public func FxNoInteractTime() // TODO: Fix this error
 {
 	return -1;
 }
 
-public func Initialize() { AddEffect("NoInteract",this,100,10*36,this); }
+public func Initialize()
+{
+	AddEffect("NoInteract", this, 100, 10*36, this);
+}

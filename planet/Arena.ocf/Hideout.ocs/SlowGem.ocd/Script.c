@@ -40,7 +40,7 @@ func Hit()
 	RemoveObject();
 }
 
-global func FxGemSlowFieldStart(object target, effect, int temporary, int x, int y, bool e)
+global func FxGemSlowFieldStart(object target, proplist effect, int temporary, int x, int y, bool e)
 {
 	if (temporary) 
 		return 1;
@@ -68,7 +68,7 @@ global func FxGemSlowFieldStart(object target, effect, int temporary, int x, int
 	}
 }
 
-global func FxGemSlowFieldTimer(object target, effect, int time)
+global func FxGemSlowFieldTimer(object target, proplist effect, int time)
 {
 	var x = effect.x;
 	var y = effect.y;
@@ -97,8 +97,8 @@ global func FxGemSlowFieldTimer(object target, effect, int time)
 
 		var angle = Angle(0, 0, obj->GetXDir(), obj->GetYDir());
 		obj->SetXDir(obj->GetXDir(100) + Sin(-angle, speed * 3), 100);
-		obj->SetYDir(obj->GetYDir(100) + Cos(-angle, speed * 3) -10, 100);
-		obj->SetYDir(obj->GetYDir()-5);
+		obj->SetYDir(obj->GetYDir(100) + Cos(-angle, speed * 3) - 10, 100);
+		obj->SetYDir(obj->GetYDir() - 5);
 	}
 
 	return 1;
