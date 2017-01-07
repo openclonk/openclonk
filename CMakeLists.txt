@@ -124,8 +124,16 @@ if(USE_GCC_STYLE_LTCG)
 endif()
 
 if(MSVC)
-	# Disable non-standard conversion from string literal to (nonconst) char*
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:strictStrings")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+		# Set up some additional flags only if we're using the MS compiler,
+		# and not the clang-based toolchain
+
+		# Disable non-standard conversion from string literal to (nonconst) char*
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:strictStrings")
+
+		# Activate edit-and-continue
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Gy")
+	endif()
 
 	# Enable multi-core builds
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
@@ -134,9 +142,6 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Ob2 /GL")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /Ob2 /GL")
 	add_linker_flags(optimized MODULES exe shared static FLAGS "/LTCG:incremental")
-
-	# Activate edit-and-continue
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI /Gy")
 
 	# do not link the release CRT in debug builds
 	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT")
@@ -1301,7 +1306,7 @@ endif()
 # Precompiled header support for MSVC
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
-	if(MSVC)
+	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 		get_property(OC_SOURCES TARGET openclonk PROPERTY SOURCES)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)

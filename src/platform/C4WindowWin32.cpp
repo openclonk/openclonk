@@ -1010,7 +1010,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (iRefreshRate != 0)
 			dspMode.dmFields |= DM_DISPLAYFREQUENCY;
-		DWORD rv = ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : nullptr, &dspMode, nullptr, CDS_FULLSCREEN, nullptr);
+		LONG rv = ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : nullptr, &dspMode, nullptr, CDS_FULLSCREEN, nullptr);
 		if (rv != DISP_CHANGE_SUCCESSFUL)
 		{
 			switch (rv)
