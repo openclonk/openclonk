@@ -1137,7 +1137,7 @@ bool C4Group::Read(void *pBuffer, size_t iSize)
 	return true;
 }
 
-bool C4Group::AdvanceFilePtr(int iOffset, C4Group *pByChild)
+bool C4Group::AdvanceFilePtr(int iOffset)
 {
 	// Child group file: pass command to mother
 	if ((Status==GRPF_File) && Mother)
@@ -1147,7 +1147,7 @@ bool C4Group::AdvanceFilePtr(int iOffset, C4Group *pByChild)
 		if (!Mother->EnsureChildFilePtr(this))
 			return false;
 
-		if (!Mother->AdvanceFilePtr(iOffset,this))
+		if (!Mother->AdvanceFilePtr(iOffset))
 			return false;
 
 	}
@@ -1186,7 +1186,7 @@ bool C4Group::RewindFilePtr()
 	{
 		if (!Mother->SetFilePtr2Entry(FileName,true)) // Set to group file start
 			return false;
-		if (!Mother->AdvanceFilePtr(EntryOffset,this)) // Advance data offset
+		if (!Mother->AdvanceFilePtr(EntryOffset)) // Advance data offset
 			return false;
 	}
 	// Regular group or open folder: rewind standard file
@@ -2008,12 +2008,6 @@ bool C4Group::SortByList(const char **ppSortList, const char *szFilename)
 		Sort(*(ppListEntry+1));
 	// Success
 	return true;
-}
-
-void C4Group::ProcessOut(const char *szMessage, int iProcess)
-{
-	if (fnProcessCallback) fnProcessCallback(szMessage,iProcess);
-	if (C4Group_ProcessCallback) C4Group_ProcessCallback(szMessage,iProcess);
 }
 
 bool C4Group::EnsureChildFilePtr(C4Group *pChild)

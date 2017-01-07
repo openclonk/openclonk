@@ -256,7 +256,6 @@ protected:
 	void Init();
 	void Default();
 	void Clear();
-	void ProcessOut(const char *szMessage, int iProcess=0);
 	bool EnsureChildFilePtr(C4Group *pChild);
 	bool CloseExclusiveMother();
 	bool Error(const char *szStatus);
@@ -264,7 +263,7 @@ protected:
 	bool OpenRealGrpFile();
 	bool SetFilePtr(int iOffset);
 	bool RewindFilePtr();
-	bool AdvanceFilePtr(int iOffset, C4Group *pByChild=nullptr);
+	bool AdvanceFilePtr(int iOffset);
 	bool AddEntry(C4GroupEntry::EntryStatus status,
 	              bool childgroup,
 	              const char *fname,
