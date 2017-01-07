@@ -96,7 +96,11 @@ int main(int argc, char * argv[])
 	printf("Listening on port %d...\n", iPort);
 
 	// Execute forever
-	Puncher.ExecuteUntil(-1);
+	for (;;)
+	{
+		Puncher.ExecuteUntil(-1);
+		fprintf(stderr, "ERROR: %s\n", Puncher.GetError());
+	}
 
 	return 0;
 }
