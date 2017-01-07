@@ -18,7 +18,7 @@ protected func Construction()
 	return _inherited(...);
 }
 
-public func Launch(int angle, int str, object shooter)
+public func Launch(int angle, int str, object shooter, object weapon)
 {
 	SetShape(-2, -2, 4, 11);
 	SetVertex(0, VTX_Y, 3, 1);

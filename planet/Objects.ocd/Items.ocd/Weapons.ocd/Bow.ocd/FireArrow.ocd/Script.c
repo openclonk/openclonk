@@ -10,11 +10,11 @@
 
 
 // Callback from the bow: add burning effect to the arrow here.
-public func Launch(int angle, int str, object shooter)
+public func Launch(int angle, int str, object shooter, object weapon)
 {
 	AddEffect("IntBurning", this, 1, 1, this);
 	// Forward to the arrow for other functionality.
-	return _inherited(angle, str, shooter, ...);
+	return _inherited(angle, str, shooter, weapon, ...);
 }
 
 
