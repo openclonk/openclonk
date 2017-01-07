@@ -1268,14 +1268,13 @@ void C4Network2IO::SendConnPackets()
 
 void C4Network2IO::OnPuncherConnect(C4NetIO::addr_t addr)
 {
-	// Sanity check
-	if (addr.GetFamily() != C4NetIO::HostAddress::IPv4)
-		return;
-	Application.InteractiveThread.ThreadLogS("Adding address from puncher: %s", addr.ToString().getData());
+	// NAT punching is only relevant for IPv4, so convert here to show a proper address.
+	auto maybe_v4 = addr.AsIPv4();
+	Application.InteractiveThread.ThreadLogS("Adding address from puncher: %s", maybe_v4.ToString().getData());
 	// Add for local client
 	C4Network2Client *pLocal = ::Network.Clients.GetLocal();
 	if (pLocal)
-		pLocal->AddAddr(C4Network2Address(addr, P_UDP), true);
+		pLocal->AddAddr(C4Network2Address(maybe_v4, P_UDP), true);
 		// Do not ::Network.InvalidateReference(); yet, we're expecting an ID from the netpuncher
 }
 
