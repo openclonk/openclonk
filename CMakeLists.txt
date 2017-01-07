@@ -1143,6 +1143,7 @@ target_compile_definitions(c4script PRIVATE "USE_CONSOLE")
 target_link_libraries(c4script
 	libmisc
 	libc4script
+	${GETOPT_LIBRARIES}
 )
 
 if(NOT HEADLESS_ONLY)

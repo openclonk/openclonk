@@ -27,7 +27,7 @@ int usage(const char *argv0)
 	return 1;
 }
 
-int main(int argc, char *const argv[])
+int main(int argc, char *argv[])
 {
 	if (argc < 2)
 		return usage(argv[0]);
