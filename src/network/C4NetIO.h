@@ -944,22 +944,6 @@ private:
 	void EnlargeIO(int iBy);
 };
 
-// helpers
-// there seems to be no standard way to get these numbers, so let's do it the dirty way...
-inline uint8_t &in_addr_b(in_addr &addr, int i)
-{
-	assert(0 <= i && i < 4);
-	return *(reinterpret_cast<uint8_t *>(&addr.s_addr) + i);
-}
-
-inline void CompileFunc(in_addr &ip, StdCompiler *pComp)
-{
-	pComp->Value(in_addr_b(ip, 0)); pComp->Separator(StdCompiler::SEP_PART);
-	pComp->Value(in_addr_b(ip, 1)); pComp->Separator(StdCompiler::SEP_PART);
-	pComp->Value(in_addr_b(ip, 2)); pComp->Separator(StdCompiler::SEP_PART);
-	pComp->Value(in_addr_b(ip, 3));
-}
-
 #ifdef HAVE_WINSOCK
 bool AcquireWinSock();
 void ReleaseWinSock();
