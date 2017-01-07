@@ -135,7 +135,7 @@ public:
 	C4Group();
 	~C4Group();
 
-protected:
+private:
 	enum Status
 	{
 		GRPF_Inactive,
@@ -157,7 +157,6 @@ protected:
 	int MotherOffset;
 	int EntryOffset;
 	bool Modified;
-	C4GroupHeader Head;
 	C4GroupEntry *FirstEntry;
 	BYTE *pInMemEntry; size_t iInMemEntrySize; // for reading from entries prefetched into memory
 #ifdef _DEBUG
@@ -173,6 +172,12 @@ protected:
 	char ErrorString[C4GroupMaxError+1];
 
 	bool NoSort; // If this flag is set, all entries will be marked NoSort in AddEntry
+
+protected:
+	// C4Update requires these to be available by a subclass (C4GroupEx)
+	C4GroupHeader Head;
+	C4GroupEntry *GetEntry(const char *szName);
+	void Clear();
 
 public:
 	bool Open(const char *szGroupName, bool fCreate=false);
@@ -252,10 +257,9 @@ public:
 	const C4GroupHeader &GetHeader() const { return Head; }
 	const C4GroupEntry *GetFirstEntry() const { return FirstEntry; }
 
-protected:
+private:
 	void Init();
 	void Default();
-	void Clear();
 	bool EnsureChildFilePtr(C4Group *pChild);
 	bool CloseExclusiveMother();
 	bool Error(const char *szStatus);
@@ -277,7 +281,6 @@ protected:
 	bool AddEntryOnDisk(const char *szFilename, const char *szAddAs=nullptr, bool fMove=false);
 	bool SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup = false);
 	bool AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &stdfile);
-	C4GroupEntry *GetEntry(const char *szName);
 	C4GroupEntry *SearchNextEntry(const char *szName);
 	C4GroupEntry *GetNextFolderEntry();
 	uint32_t CalcCRC32(C4GroupEntry *pEntry);
