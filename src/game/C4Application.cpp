@@ -53,7 +53,6 @@ C4Application::C4Application():
 		QuitAfterGame(false),
 		CheckForUpdates(false),
 		restartAtEnd(false),
-		is_in_game_tick(false),
 		pGamePadControl(nullptr),
 		AppState(C4AS_None),
 		pGameTimer(nullptr)
@@ -669,7 +668,6 @@ void C4Application::QuitGame()
 
 void C4Application::GameTick()
 {
-	is_in_game_tick = true;
 	// Exec depending on game state
 	switch (AppState)
 	{
@@ -743,7 +741,6 @@ void C4Application::GameTick()
 		if (pGamePadControl) pGamePadControl->Execute();
 		break;
 	}
-	is_in_game_tick = false;
 }
 
 void C4Application::Draw()
