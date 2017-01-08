@@ -51,7 +51,7 @@ private:
 	bool PasswordNeeded;
 	bool OfficialServer;
 	bool IsEditor;
-	C4NetpuncherID_t NetpuncherGameID;
+	C4NetpuncherID NetpuncherGameID;
 	StdCopyStrBuf NetpuncherAddr;
 
 	// Engine information
@@ -79,7 +79,7 @@ public:
 	int32_t getStartTime() const { return StartTime; }
 	StdStrBuf getGameGoalString() const;
 	bool isEditor() const { return IsEditor; }
-	C4NetpuncherID_t getNetpuncherGameID() const { return NetpuncherGameID; }
+	C4NetpuncherID getNetpuncherGameID() const { return NetpuncherGameID; }
 	StdStrBuf getNetpuncherAddr() const { return NetpuncherAddr; }
 
 	void SetSourceAddress(const C4NetIO::EndpointAddress &ip);

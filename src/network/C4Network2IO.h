@@ -97,7 +97,8 @@ protected:
 	iUDPIRate, iUDPORate, iUDPBCRate;
 
 	// punching
-	C4NetIO::addr_t PuncherAddr;
+	C4NetIO::addr_t PuncherAddrIPv4, PuncherAddrIPv6;
+	bool IsPuncherAddr(const C4NetIO::addr_t& addr) const;
 
 public:
 
@@ -137,7 +138,7 @@ public:
 
 	// punch
 	bool InitPuncher(C4NetIO::addr_t PuncherAddr); // by main thread
-	void SendPuncherPacket(const C4NetpuncherPacket&);
+	void SendPuncherPacket(const C4NetpuncherPacket&, C4NetIO::HostAddress::AddressFamily family);
 	void Punch(const C4NetIO::addr_t&); // sends a ping packet
 
 	// stuff

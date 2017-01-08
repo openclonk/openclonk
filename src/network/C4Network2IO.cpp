@@ -460,28 +460,49 @@ bool C4Network2IO::InitPuncher(C4NetIO::addr_t nPuncherAddr)
 	if (!pNetIO_UDP)
 		return false;
 	// save address
-	PuncherAddr = nPuncherAddr;
+	switch (nPuncherAddr.GetFamily())
+	{
+	case C4NetIO::HostAddress::IPv4:
+	    PuncherAddrIPv4 = nPuncherAddr;
+	    break;
+	case C4NetIO::HostAddress::IPv6:
+	    PuncherAddrIPv6 = nPuncherAddr;
+	    break;
+	default:
+	    assert(false);
+	}
 	// let's punch
-	return pNetIO_UDP->Connect(PuncherAddr);
+	return pNetIO_UDP->Connect(nPuncherAddr);
 }
 
-void C4Network2IO::Punch(const C4NetIO::addr_t &punchee_addr) {
+void C4Network2IO::Punch(const C4NetIO::addr_t &punchee_addr)
+{
 	if (!pNetIO_UDP)
 		return;
 	C4PacketPing PktPeng;
 	dynamic_cast<C4NetIOUDP*>(pNetIO_UDP)->SendDirect(MkC4NetIOPacket(PID_Pong, PktPeng, punchee_addr));
 }
 
-void C4Network2IO::SendPuncherPacket(const C4NetpuncherPacket& p) {
-	if (!pNetIO_UDP || PuncherAddr.IsNull()) return;
-	pNetIO_UDP->Send(p.PackTo(PuncherAddr));
+void C4Network2IO::SendPuncherPacket(const C4NetpuncherPacket& p, C4NetIO::HostAddress::AddressFamily family)
+{
+	if (!pNetIO_UDP) return;
+	if (family == C4NetIO::HostAddress::IPv4 && !PuncherAddrIPv4.IsNull())
+		pNetIO_UDP->Send(p.PackTo(PuncherAddrIPv4));
+	else if (family == C4NetIO::HostAddress::IPv6 && !PuncherAddrIPv6.IsNull())
+		pNetIO_UDP->Send(p.PackTo(PuncherAddrIPv6));
+}
+
+bool C4Network2IO::IsPuncherAddr(const C4NetIO::addr_t& addr) const
+{
+	return (!PuncherAddrIPv4.IsNull() && PuncherAddrIPv4 == addr)
+	    || (!PuncherAddrIPv6.IsNull() && PuncherAddrIPv6 == addr);
 }
 
 // C4NetIO interface
 bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t &ConnectAddr, const C4NetIO::addr_t *pOwnAddr, C4NetIO *pNetIO)
 {
 	// puncher answer?
-	if (pNetIO == pNetIO_UDP && !PuncherAddr.IsNull() && PuncherAddr == ConnectAddr)
+	if (pNetIO == pNetIO_UDP && IsPuncherAddr(ConnectAddr))
 	{
 		// got an address?
 		if (pOwnAddr)
@@ -537,9 +558,12 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const char *szReason)
 {
 	// punch?
-	if (pNetIO == pNetIO_UDP && !PuncherAddr.IsNull() && PuncherAddr == addr)
+	if (pNetIO == pNetIO_UDP && IsPuncherAddr(addr))
 	{
-		PuncherAddr.Clear();
+		if (PuncherAddrIPv4 == addr)
+			PuncherAddrIPv4.Clear();
+		else
+			PuncherAddrIPv6.Clear();
 		return;
 	}
 #if(C4NET2IO_DUMP_LEVEL > 1)
@@ -579,7 +603,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           rPacket.getStatus(), getNetIOName(pNetIO));
 #endif
-	if (pNetIO == pNetIO_UDP && !PuncherAddr.IsNull() && PuncherAddr == rPacket.getAddr())
+	if (pNetIO == pNetIO_UDP && IsPuncherAddr(rPacket.getAddr()))
 	{
 		HandlePuncherPacket(rPacket);
 		return;
@@ -1141,7 +1165,7 @@ void C4Network2IO::HandleFwdReq(const C4PacketFwd &rFwd, C4Network2IOConnection 
 void C4Network2IO::HandlePuncherPacket(const C4NetIOPacket& rPacket)
 {
 	auto pkt = C4NetpuncherPacket::Construct(rPacket);
-	if (pkt && ::Network.HandlePuncherPacket(move(pkt)));
+	if (pkt && ::Network.HandlePuncherPacket(move(pkt), rPacket.getAddr().GetFamily()));
 	else
 	{
 		assert(pNetIO_UDP);
