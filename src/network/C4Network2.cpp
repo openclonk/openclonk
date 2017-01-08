@@ -946,8 +946,12 @@ void C4Network2::InitPuncher()
 {
 	// We have an internet connection, so let's punch the puncher server here in order to open an udp port
 	C4NetIO::addr_t PuncherAddr;
-	if (ResolveAddress(getNetpuncherAddr().getData(), &PuncherAddr, C4NetStdPortPuncher))
-		NetIO.InitPuncher(PuncherAddr);
+	PuncherAddr.SetAddress(getNetpuncherAddr(), C4NetIO::HostAddress::IPv4);
+	if (!PuncherAddr.IsNull())
+	{
+	    PuncherAddr.SetDefaultPort(C4NetStdPortPuncher);
+	    NetIO.InitPuncher(PuncherAddr);
+	}
 }
 
 void C4Network2::OnGameSynchronized()

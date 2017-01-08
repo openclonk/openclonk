@@ -158,7 +158,8 @@ bool C4AulDebug::SetAllowed(const char *szHost)
 	// No host?
 	if (!szHost || !*szHost) return true;
 	// Resolve the address
-	return ResolveAddress(szHost, &AllowedAddr, 0);
+	AllowedAddr.SetAddress(StdStrBuf(szHost));
+	return !AllowedAddr.IsNull();
 }
 
 bool C4AulDebug::Init(uint16_t iPort)

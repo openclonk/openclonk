@@ -566,10 +566,7 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 		SetError(FormatString("Could not resolve server address %s!", Server.getData()).getData());
 		return false;
 	}
-	if (ServerAddr.GetPort() == C4NetIO::EndpointAddress::IPPORT_NONE)
-	{
-		ServerAddr.SetPort(GetDefaultPort());
-	}
+	ServerAddr.SetDefaultPort(GetDefaultPort());
 	// Remove port
 	const char *firstColon = strchr(Server.getData(), ':');
 	const char *lastColon = strrchr(Server.getData(), ':');
