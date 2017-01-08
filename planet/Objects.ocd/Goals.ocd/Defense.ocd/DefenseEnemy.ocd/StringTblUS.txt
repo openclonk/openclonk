@@ -1,0 +1,4 @@
+EnemyBoomAttack=Rocket
+EnemyRapidBoomAttack=Rapid Rocket
+EnemyBallooner=Parachutist
+EnemyRocketeer=Rocketeer

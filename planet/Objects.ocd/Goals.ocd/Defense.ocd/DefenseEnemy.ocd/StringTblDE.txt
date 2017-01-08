@@ -1,0 +1,4 @@
+EnemyBoomAttack=Rakete
+EnemyRapidBoomAttack=Rasche Rakete
+EnemyBallooner=Fallschirmspringer
+EnemyRocketeer=Raketenreiter
