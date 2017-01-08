@@ -1,0 +1,12 @@
+Name=Defense
+Description=Survive as many attack waves as possible, each wave and enemy eliminated earns you points.
+
+MsgWaveCleared=Wave %d done!|<c ffff00>+%d</c>{{Icon_Wealth}}|                                                                           |
+WaveFallBack=Lots of rockets
+
+MsgEvaluationData=You completed %d waves and scored %d points.
+
+MsgCurrentWave=<c ffff00>Current wave:</c>\n
+MsgCurrentScore=<c ffff00>Current score:</c> %d (your high score is %d).
+
+MsgScoreboard=Defense: %d points
