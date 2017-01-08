@@ -29,7 +29,7 @@
 class C4PuncherServer : public C4NetIOUDP, private C4NetIO::CBClass
 {
 public:
-	typedef C4NetpuncherID_t CID;
+	typedef C4NetpuncherID::value CID;
 	C4PuncherServer() {
 		C4NetIOUDP::SetCallback(this);
 		rng = std::bind(std::uniform_int_distribution<CID>(1/*, max*/), std::ref(random_device));

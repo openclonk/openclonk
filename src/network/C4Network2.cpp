@@ -148,7 +148,7 @@ C4Network2::C4Network2()
 		fPausedForVote(false),
 		iLastOwnVoting(0),
 		fStreaming(false),
-		NetpuncherGameID(0)
+		NetpuncherGameID(C4NetpuncherID())
 {
 
 }
@@ -169,7 +169,7 @@ bool C4Network2::InitHost(bool fLobby)
 	fChasing = false;
 	fAllowJoin = false;
 	iNextClientID = C4ClientIDStart;
-	NetpuncherGameID = 0;
+	NetpuncherGameID = C4NetpuncherID();
 	NetpuncherAddr = ::Config.Network.PuncherAddress;
 	// initialize client list
 	Clients.Init(&Game.Clients, true);
@@ -689,7 +689,7 @@ void C4Network2::Clear()
 	delete pVoteDialog; pVoteDialog = nullptr;
 	fPausedForVote = false;
 	iLastOwnVoting = 0;
-	NetpuncherGameID = 0;
+	NetpuncherGameID = C4NetpuncherID();
 	Votes.Clear();
 	// don't clear fPasswordNeeded here, it's needed by InitClient
 }
@@ -907,7 +907,7 @@ void C4Network2::HandleLobbyPacket(char cStatus, const C4PacketBase *pBasePkt, C
 	if (pLobby) pLobby->HandlePacket(cStatus, pBasePkt, pClient);
 }
 
-bool C4Network2::HandlePuncherPacket(C4NetpuncherPacket::uptr pkt)
+bool C4Network2::HandlePuncherPacket(C4NetpuncherPacket::uptr pkt, C4NetIO::HostAddress::AddressFamily family)
 {
 	// TODO: is this all thread-safe?
 	assert(pkt);
@@ -928,18 +928,28 @@ bool C4Network2::HandlePuncherPacket(C4NetpuncherPacket::uptr pkt)
 		case PID_Puncher_AssID:
 			if (isHost())
 			{
-				NetpuncherGameID = GETPKT(AssID)->GetID();
+				getNetpuncherGameID(family) = GETPKT(AssID)->GetID();
 				InvalidateReference();
 			}
 			else
 			{
 				// While we don't need the ID as a client, this nicely serves as the signal that we can start using the netpuncher
-				if (Status.getState() == GS_Init && getNetpuncherGameID())
-					NetIO.SendPuncherPacket(C4NetpuncherPacketSReq(getNetpuncherGameID()));
+				if (Status.getState() == GS_Init && getNetpuncherGameID(family))
+					NetIO.SendPuncherPacket(C4NetpuncherPacketSReq(getNetpuncherGameID(family)), family);
 			}
 			return true;
 		default: return false;
 	}
+}
+
+C4NetpuncherID::value& C4Network2::getNetpuncherGameID(C4NetIO::HostAddress::AddressFamily family)
+{
+    switch (family)
+    {
+    case C4NetIO::HostAddress::IPv4: return NetpuncherGameID.v4;
+    case C4NetIO::HostAddress::IPv6: return NetpuncherGameID.v6;
+    default: assert(false);
+    }
 }
 
 void C4Network2::InitPuncher()
@@ -947,6 +957,12 @@ void C4Network2::InitPuncher()
 	// We have an internet connection, so let's punch the puncher server here in order to open an udp port
 	C4NetIO::addr_t PuncherAddr;
 	PuncherAddr.SetAddress(getNetpuncherAddr(), C4NetIO::HostAddress::IPv4);
+	if (!PuncherAddr.IsNull())
+	{
+	    PuncherAddr.SetDefaultPort(C4NetStdPortPuncher);
+	    NetIO.InitPuncher(PuncherAddr);
+	}
+	PuncherAddr.SetAddress(getNetpuncherAddr(), C4NetIO::HostAddress::IPv6);
 	if (!PuncherAddr.IsNull())
 	{
 	    PuncherAddr.SetDefaultPort(C4NetStdPortPuncher);

@@ -27,7 +27,14 @@ enum C4NetpuncherPacketType {
 	// extend this with exchanging ICE parameters, some day?
 };
 
-typedef uint32_t C4NetpuncherID_t;
+struct C4NetpuncherID {
+	typedef uint32_t value;
+
+	value v4 = 0, v6 = 0;
+
+	void CompileFunc(StdCompiler *pComp);
+	bool operator==(const C4NetpuncherID& other) const { return v4 == other.v4 && v6 == other.v6; }
+};
 
 class C4NetpuncherPacket {
 public:
@@ -38,7 +45,7 @@ public:
 	C4NetIOPacket PackTo(const C4NetIO::addr_t&) const;
 protected:
 	virtual StdBuf PackInto() const = 0;
-	typedef C4NetpuncherID_t CID;
+	typedef C4NetpuncherID::value CID;
 };
 
 template<C4NetpuncherPacketType TYPE>

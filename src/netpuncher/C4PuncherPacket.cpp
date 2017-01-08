@@ -18,6 +18,11 @@
 #include "network/C4Network2Address.h"
 #include <sstream>
 
+void C4NetpuncherID::CompileFunc(StdCompiler *pComp) {
+	pComp->Value(mkNamingAdapt(v4, "IPv4", 0u));
+	pComp->Value(mkNamingAdapt(v6, "IPv6", 0u));
+}
+
 std::unique_ptr<C4NetpuncherPacket> C4NetpuncherPacket::Construct(const C4NetIOPacket& rpack) {
 	if (!rpack.getPData()) return nullptr;
 	try {
