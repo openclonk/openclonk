@@ -1,0 +1,7 @@
+MsgWave=Welle %d: %s|                                                                           |
+
+WaveBreak=Pause
+WaveBoomAttack=Raketengeschwader
+WaveRapidBoomAttack=Rasches Raketengeschwader
+WaveBallooner=Fallschirmabwurf
+WaveRocketeers=Raketenreiter

@@ -1,0 +1,7 @@
+MsgWave=Wave %d: %s|                                                                           |
+
+WaveBreak=Break
+WaveBoomAttack=Rocket squadron
+WaveRapidBoomAttack=Rapid rocket squadron
+WaveBallooner=Parachute drop
+WaveRocketeers=Rocketeers
