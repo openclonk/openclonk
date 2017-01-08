@@ -19,7 +19,7 @@ local goal_gui_id;
 local goal_info_id;
 local goals;
 
-/* Wealth Showing / Hiding */
+/*-- Wealth Showing / Hiding --*/
 
 public func ShiftGoal()
 {
@@ -52,7 +52,7 @@ public func UnshiftGoal()
 	GuiUpdate(update, goal_gui_id);
 }
 
-/* Creation */
+/*-- Creation --*/
 
 public func Construction()
 {
@@ -98,7 +98,7 @@ private func Destruction()
 	_inherited(...);
 }
 
-/* Callbacks */
+/*-- Callbacks --*/
 
 // Callback from the goal library: display this goal.
 public func OnGoalUpdate(object goal)
@@ -264,9 +264,11 @@ public func OnCloseButtonClick()
 
 public func OnGoalGUIHover(object goal)
 {
-	if (!goal) return;
-	// change text to the current goal.
-	GuiUpdateText(goal->~GetDescription(GetOwner()), goal_info_id, 1, this);
+	if (!goal)
+		return;
+	// Change text to the current goal.
+	var text = Format("<c ff0000>%s:</c> %s", goal->GetName(), goal->~GetDescription(GetOwner()));
+	GuiUpdateText(text, goal_info_id, 1, this);
 }
 
 private func OnGoalWindowUpdate(object goal)
