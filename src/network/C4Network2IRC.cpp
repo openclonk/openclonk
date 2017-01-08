@@ -318,8 +318,10 @@ bool C4Network2IRCClient::Connect(const char *szServer, const char *szNick, cons
 	if (!Init())
 		return false;
 	// Resolve address
-	if (!ResolveAddress(szServer, &ServerAddr, 6666))
+	ServerAddr.SetAddress(StdStrBuf(szServer));
+	if (ServerAddr.IsNull())
 		{ SetError("Could no resolve server address!"); return false; }
+	ServerAddr.SetDefaultPort(6666);
 	// Set connection data
 	Nick = szNick; RealName = szRealName;
 	Password = szPassword; AutoJoin = szAutoJoin;

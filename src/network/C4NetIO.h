@@ -102,7 +102,7 @@ public:
 		void SetHost(const sockaddr *addr);
 		void SetHost(const HostAddress &host);
 		void SetHost(SpecialAddress host);
-		void SetHost(const StdStrBuf &host);
+		void SetHost(const StdStrBuf &host, AddressFamily family = UnknownFamily);
 		void SetHost(uint32_t host);
 
 		C4NetIO::HostAddress AsIPv6() const; // convert an IPv4 address to an IPv6-mapped IPv4 address
@@ -148,13 +148,14 @@ public:
 		void SetAddress(const EndpointAddress &other);
 		void SetAddress(HostAddress::SpecialAddress addr, uint16_t port = IPPORT_NONE);
 		void SetAddress(const HostAddress &host, uint16_t port = IPPORT_NONE);
-		void SetAddress(const StdStrBuf &addr);
+		void SetAddress(const StdStrBuf &addr, AddressFamily family = UnknownFamily);
 
 		HostAddress GetHost() const { return *this; }	// HostAddress copy ctor slices off port information
 		EndpointAddress AsIPv6() const; // convert an IPv4 address to an IPv6-mapped IPv4 address
 		EndpointAddress AsIPv4() const; // try to convert an IPv6-mapped IPv4 address to an IPv4 address (returns unchanged address if not possible)
 		
 		void SetPort(uint16_t port);
+		void SetDefaultPort(uint16_t port); // set a port only if there is none
 		uint16_t GetPort() const;
 
 		bool IsNull() const;
@@ -950,6 +951,5 @@ private:
 bool AcquireWinSock();
 void ReleaseWinSock();
 #endif
-bool ResolveAddress(const char *szAddress, C4NetIO::addr_t *paddr, uint16_t iPort);
 
 #endif

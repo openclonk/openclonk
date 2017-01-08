@@ -372,9 +372,10 @@ void C4NetIO::HostAddress::SetHost(uint32_t v4addr)
 		memset(&v4.sin_zero, 0, sizeof(v4.sin_zero));
 }
 
-void C4NetIO::HostAddress::SetHost(const StdStrBuf &addr)
+void C4NetIO::HostAddress::SetHost(const StdStrBuf &addr, AddressFamily family)
 {
 	addrinfo hints = addrinfo();
+	hints.ai_family = family;
 	addrinfo *addresses = nullptr;
 	if (getaddrinfo(addr.getData(), nullptr, &hints, &addresses) != 0)
 		// GAI failed
@@ -383,7 +384,7 @@ void C4NetIO::HostAddress::SetHost(const StdStrBuf &addr)
 	freeaddrinfo(addresses);
 }
 
-void C4NetIO::EndpointAddress::SetAddress(const StdStrBuf &addr)
+void C4NetIO::EndpointAddress::SetAddress(const StdStrBuf &addr, AddressFamily family)
 {
 	Clear();
 
@@ -439,6 +440,7 @@ void C4NetIO::EndpointAddress::SetAddress(const StdStrBuf &addr)
 	}
 
 	addrinfo hints = addrinfo();
+	hints.ai_family = family;
 	//hints.ai_flags = AI_NUMERICHOST;
 	addrinfo *addresses = nullptr;
 	if (getaddrinfo(std::string(ab, ae).c_str(), pb != end ? std::string(pb, pe).c_str() : nullptr, &hints, &addresses) != 0)
@@ -497,6 +499,12 @@ void C4NetIO::EndpointAddress::SetPort(uint16_t port)
 	case AF_INET6: v6.sin6_port = htons(port); break;
 	default: assert(!"Shouldn't reach this"); break;
 	}
+}
+
+void C4NetIO::EndpointAddress::SetDefaultPort(uint16_t port)
+{
+	if (GetPort() == IPPORT_NONE)
+		SetPort(port);
 }
 
 uint16_t C4NetIO::EndpointAddress::GetPort() const
@@ -3730,51 +3738,4 @@ void C4NetIOMan::EnlargeIO(int iBy)
 		ppnNetIO[i] = ppNetIO[i];
 	delete[] ppNetIO;
 	ppNetIO = ppnNetIO;
-}
-
-// *** helpers
-
-bool ResolveAddress(const char *szAddress, C4NetIO::addr_t *paddr, uint16_t iPort)
-{
-	assert(szAddress && paddr);
-	// port?
-	StdStrBuf Buf;
-	const char *pColon = strchr(szAddress, ':');
-	if (pColon)
-	{
-		// get port
-		iPort = atoi(pColon + 1);
-		// copy address
-		Buf.CopyUntil(szAddress, ':');
-		szAddress = Buf.getData();
-	}
-	// set up address
-	sockaddr_in raddr; ZeroMem(&raddr, sizeof raddr);
-	raddr.sin_family = AF_INET;
-	raddr.sin_port = htons(iPort);
-	// no plain IP address?
-	if ((raddr.sin_addr.s_addr = inet_addr(szAddress)) == INADDR_NONE)
-	{
-#ifdef HAVE_WINSOCK
-		if (!AcquireWinSock()) return false;
-#endif
-		// resolve
-		hostent *pHost;
-		if (!(pHost = gethostbyname(szAddress)))
-#ifdef HAVE_WINSOCK
-			{ ReleaseWinSock(); return false; }
-		ReleaseWinSock();
-#else
-			return false;
-#endif
-		// correct type?
-		if (pHost->h_addrtype != AF_INET || pHost->h_length != sizeof(in_addr))
-			return false;
-		// get address
-		raddr.sin_addr = *reinterpret_cast<in_addr *>(pHost->h_addr_list[0]);
-	}
-	// ok
-	paddr->SetAddress(reinterpret_cast<sockaddr*>(&raddr));
-	paddr->SetPort(iPort);
-	return true;
 }
