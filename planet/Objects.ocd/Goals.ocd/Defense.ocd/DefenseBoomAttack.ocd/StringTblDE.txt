@@ -1,0 +1,2 @@
+Name=Boom-Angriff
+Description=Böse Rakete die einen angreift! Könnte auch von Gegnern geritten werden.
