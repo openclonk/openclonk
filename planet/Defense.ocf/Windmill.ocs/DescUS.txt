@@ -1,7 +1,7 @@
-  The Guardians of Windmills
+The Guardians of Windmills
 
 Protect the windmills against increasingly aggressive waves of enemies.
 
-Additional weapons and upgrades can be bought via the buy menu on P.
+Additional weapons and upgrades can be bought via the buy menu on [P].
 
 Goal: Guard the Windmills

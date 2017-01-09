@@ -43,7 +43,7 @@ private func FindInventoryWeapon(fx)
 	// Extra weapons
 	if (fx.weapon = FindContents(Axe))
 		{ fx.strategy = fx.ai.ExecuteMelee; return true; }
-	if (fx.vehicle && fx.vehicle->GetID() == Boomattack)
+	if (fx.vehicle && fx.vehicle->GetID() == DefenseBoomAttack)
 		{ fx.weapon = FindContents(Bow); fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
 	if (inherited(fx, ...)) return true;
 	// no weapon :(
@@ -445,7 +445,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 	// Create enemy (usually a Clonk)
 	var x = xmin+Random(xrange);
 	var y = ymin+Random(yrange);
-	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
+	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY);
 	if (!obj) return nil;
 	obj->SetController(ENEMY);
 	obj->MakeCrewMember(ENEMY);
@@ -490,7 +490,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 		if (enemy.Vehicle == Balloon)
 		{
 			Balloon->ControlUseStart(obj);
-		} else if (enemy.Vehicle == Boomattack) {
+		} else if (enemy.Vehicle == DefenseBoomAttack) {
 			vehicle = CreateObjectAbove(enemy.Vehicle, x,y+10, ENEMY);
 			// Add boomattack to enemy array
 			g_spawned_enemies[GetLength(g_spawned_enemies)] = vehicle;

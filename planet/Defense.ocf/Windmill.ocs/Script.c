@@ -395,6 +395,11 @@ func OnWaveCleared(int wave)
 	}
 }
 
+public func GiveRandomAttackTarget(object attacker)
+{
+	return GetRandomWindmill();
+}
+
 //======================================================================
 /* Game end */
 
@@ -429,9 +434,9 @@ func InitWaveData()
 	var bowman      = { Name="$EnemyBow$",       Inventory=[Bow, Arrow],  Energy=30, Bounty=10, Color=0xff80ff80, Skin=CSKIN_Steampunk, Backpack=0,                    IsCrew=true };
 	var artillery   = { Name="$EnemyArtillery$", Inventory=Firestone,     Energy=10, Bounty=25, Color=0xffffff80, Skin=CSKIN_Steampunk, Backpack=0, Vehicle=Catapult,  IsCrew=true };
 	var ballooner   = { Name="$EnemyBalloon$",   Inventory=Sword,         Energy=30, Bounty=15, Color=0xff008000, Skin=CSKIN_Default,               Vehicle=Balloon };
-	var rocketeer   = { Name="$EnemyRocket$",    Inventory=[Bow, Arrow],  Energy=15, Bounty=15, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=Boomattack };
-	var boomattack  = { Type=Boomattack, Bounty=2 };
-	var boomattackf = { Type=Boomattack, Bounty=15, Speed=300 };
+	var rocketeer   = { Name="$EnemyRocket$",    Inventory=[Bow, Arrow],  Energy=15, Bounty=15, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=DefenseBoomAttack };
+	var boomattack  = { Type=DefenseBoomAttack, Bounty=2 };
+	var boomattackf = { Type=DefenseBoomAttack, Bounty=15, Speed=300 };
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
