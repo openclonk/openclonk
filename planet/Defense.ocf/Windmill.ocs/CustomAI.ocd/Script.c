@@ -527,7 +527,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 		}
 	}
 	// Flying AI
-	if (obj->~IsFlyingEnemy())
+	if (obj->~HasNoNeedForAI())
 	{
 		// Flying enemies all init themselves to fly at the statue at the moment
 	}

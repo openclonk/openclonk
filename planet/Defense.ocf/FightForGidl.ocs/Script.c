@@ -205,7 +205,7 @@ func ScheduleLaunchEnemy(proplist enemy)
 	// Schedules spawning of enemy definition
 	// Spawn on ground or in air?
 	var xmin, xmax, y;
-	if (enemy.Type && enemy.Type->~IsFlyingEnemy())
+	if (enemy.Type == DefenseBoomAttack)
 	{
 		// Air spawn
 		xmin = 0;
@@ -452,6 +452,11 @@ public func SetNextWave(string wave_name, bool wait)
 	ScheduleCall(nil, Scenario.LaunchWave, 500 + wait * 2000, 1, g_wave);
 }
 
+public func GiveRandomAttackTarget(object attacker)
+{
+	return g_statue;
+}
+
 //======================================================================
 /* Wave and enemy definitions */
 
@@ -494,8 +499,8 @@ func InitWaveData()
 	var swordogre  = { Name="$EnemyOgre$",      Inventory=ogresword,   Energy= 90, Bounty=100, Color=0xff805000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var nukeogre   = { Name="$EnemyOgre$",      Inventory=nukekeg,     Energy=120, Bounty=100, Color=0xffff0000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=40, Siege=true };
 	var chippie    = { Type=Chippie, Bounty=30 };
-	var boomattack = { Type=Boomattack, Bounty=10 };
-	var boomattackf= { Type=Boomattack, Bounty=25, Speed=300 };
+	var boomattack = { Type=DefenseBoomAttack, Bounty=10 };
+	var boomattackf= { Type=DefenseBoomAttack, Bounty=25, Speed=300 };
 	//newbie = runner;
 	//newbie = runner;
 
