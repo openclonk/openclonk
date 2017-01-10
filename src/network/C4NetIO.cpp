@@ -31,6 +31,8 @@
 
 #include <process.h>
 #include <share.h>
+#include <winsock2.h>
+#include <iphlpapi.h>
 
 typedef int socklen_t;
 int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
@@ -43,13 +45,14 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <ifaddrs.h>
+#include <net/if.h>
 
 #define ioctlsocket ioctl
 #define closesocket close
 #define SOCKET_ERROR (-1)
 
 #endif
-
 
 #ifdef _MSC_VER
 #pragma warning (disable : 4355)
@@ -589,6 +592,66 @@ void C4NetIO::EndpointAddress::CompileFunc(StdCompiler *comp)
 		comp->Value(val);
 		SetAddress(val);
 	}
+}
+
+std::vector<C4NetIO::HostAddress> C4NetIO::GetLocalAddresses()
+{
+	std::vector<HostAddress> result;
+
+#ifdef HAVE_WINSOCK
+	HostAddress addr;
+	const size_t BUFFER_SIZE = 16000;
+	PIP_ADAPTER_ADDRESSES addresses = nullptr;
+	for (int i = 0; i < 3; ++i)
+	{
+		addresses = (PIP_ADAPTER_ADDRESSES) realloc(addresses, BUFFER_SIZE * (i+1));
+		if (!addresses)
+			// allocation failed
+			return result;
+		ULONG bufsz = BUFFER_SIZE * (i+1);
+		DWORD rv = GetAdaptersAddresses(AF_UNSPEC,
+			GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER|GAA_FLAG_SKIP_FRIENDLY_NAME,
+			nullptr, addresses, &bufsz);
+		if (rv == ERROR_BUFFER_OVERFLOW)
+			// too little space, try again
+			continue;
+		if (rv != NO_ERROR)
+		{
+			// Something else happened
+			free(addresses);
+			return result;
+		}
+		// All okay, add addresses
+		for (PIP_ADAPTER_ADDRESSES address = addresses; address; address = address->Next)
+		{
+			for (PIP_ADAPTER_UNICAST_ADDRESS unicast = address->FirstUnicastAddress; unicast; unicast = unicast->Next)
+			{
+				addr.SetHost(unicast->Address.lpSockaddr);
+				if (addr.IsLoopback())
+					continue;
+				result.push_back(addr);
+			}
+		}
+	}
+	free(addresses);
+#else
+	struct ifaddrs* addrs;
+	if (getifaddrs(&addrs) < 0)
+	    return result;
+	for (struct ifaddrs* ifaddr = addrs; ifaddr != nullptr; ifaddr = ifaddr->ifa_next)
+	{
+		struct sockaddr* ad = ifaddr->ifa_addr;
+		if (ad == nullptr) continue;
+
+		if ((ad->sa_family == AF_INET || ad->sa_family == AF_INET6) && (~ifaddr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4/6 devices
+		{
+			result.emplace_back(ad);
+		}
+	}
+	freeifaddrs(addrs);
+#endif
+
+	return result;
 }
 
 // *** C4NetIO
@@ -1802,9 +1865,9 @@ bool C4NetIOSimpleUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	if (fMultiCast) CloseBroadcast();
 
 	// broadcast addr valid?
-	if (!pBroadcastAddr->IsMulticast())
+	if (!pBroadcastAddr->IsMulticast() || pBroadcastAddr->GetFamily() != HostAddress::IPv6)
 	{
-		SetError("invalid broadcast address");
+		SetError("invalid broadcast address (only IPv6 multicast addresses are supported)");
 		return false;
 	}
 	if (pBroadcastAddr->GetPort() != iPort)
@@ -2260,13 +2323,40 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 			SetError("broadcast address is not valid");
 			return false;
 		}
-		// set up adress
-		MCAddr.SetAddress(addr_t::AnyIPv4, iPort);
-		// search for a free one
+		// Set up address as unicast-prefix-based IPv6 multicast address (RFC 3306).
+		sockaddr_in6 saddrgen = sockaddr_in6();
+		saddrgen.sin6_family = AF_INET6;
+		uint8_t *addrgen = saddrgen.sin6_addr.s6_addr;
+		// ff3e ("global multicast based on network prefix") : 64 (length of network prefix)
+		static const uint8_t mcast_prefix[4] = { 0xff, 0x3e, 0, 64};
+		memcpy(addrgen, mcast_prefix, sizeof(mcast_prefix));
+		addrgen += sizeof(mcast_prefix);
+		// 64 bit network prefix
+		addr_t prefixAddr;
+		for (auto& addr : GetLocalAddresses())
+			if (addr.GetFamily() == HostAddress::IPv6 && !addr.IsLocal())
+			{
+				prefixAddr.SetAddress(addr);
+				break;
+			}
+		if (prefixAddr.IsNull())
+		{
+			SetError("no IPv6 unicast address available");
+			return false;
+		}
+		static const size_t network_prefix_size = 8;
+		memcpy(addrgen, &static_cast<sockaddr_in6*>(&prefixAddr)->sin6_addr, network_prefix_size);
+		addrgen += network_prefix_size;
+		// 32 bit group id: search for a free one
 		for (int iRetries = 1000; iRetries; iRetries--)
 		{
+			uint32_t rnd = UnsyncedRandom();
+			memcpy(addrgen, &rnd, sizeof(rnd));
+			// "high-order bit of the Group ID will be the same value as the T flag"
+			addrgen[0] |= 0x80;
 			// create new - random - address
-			MCAddr.SetAddress(C4NetIO::HostAddress(0x000000ef | (UnsyncedRandom(0x1000000) << 8)));
+			MCAddr.SetAddress((sockaddr*) &saddrgen);
+			MCAddr.SetPort(iPort);
 			// init broadcast
 			if (!C4NetIOSimpleUDP::InitBroadcast(&MCAddr))
 				return false;

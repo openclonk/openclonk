@@ -25,16 +25,6 @@
 #include "game/C4Game.h"
 #include "player/C4PlayerList.h"
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <iphlpapi.h>
-#else
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <ifaddrs.h>
-#include <net/if.h>
-#endif
-
 // *** C4Network2Client
 
 C4Network2Client::C4Network2Client(C4Client *pClient)
@@ -187,84 +177,24 @@ bool C4Network2Client::AddAddr(const C4Network2Address &addr, bool fAnnounce)
 
 void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 {
-	// set up address struct
 	C4NetIO::addr_t addr;
 
-	// get local address(es)
-#ifdef HAVE_WINSOCK
-	const size_t BUFFER_SIZE = 16000;
-	PIP_ADAPTER_ADDRESSES addresses = nullptr;
-	for (int i = 0; i < 3; ++i)
+	for (auto& ha : C4NetIO::GetLocalAddresses())
 	{
-		addresses = (PIP_ADAPTER_ADDRESSES) realloc(addresses, BUFFER_SIZE * (i+1));
-		if (!addresses)
-			// allocation failed
-			return;
-		ULONG bufsz = BUFFER_SIZE * (i+1);
-		DWORD rv = GetAdaptersAddresses(AF_UNSPEC,
-			GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER|GAA_FLAG_SKIP_FRIENDLY_NAME,
-			nullptr, addresses, &bufsz);
-		if (rv == ERROR_BUFFER_OVERFLOW)
-			// too little space, try again
-			continue;
-		if (rv != NO_ERROR)
+		addr.SetAddress(ha);
+		if (iPortTCP)
 		{
-			// Something else happened
-			free(addresses);
-			return;
+			addr.SetPort(iPortTCP);
+			AddAddr(C4Network2Address(addr, P_TCP), false);
 		}
-		// All okay, add addresses
-		for (PIP_ADAPTER_ADDRESSES address = addresses; address; address = address->Next)
+		if (iPortUDP)
 		{
-			for (PIP_ADAPTER_UNICAST_ADDRESS unicast = address->FirstUnicastAddress; unicast; unicast = unicast->Next)
-			{
-				addr.SetHost(unicast->Address.lpSockaddr);
-				if (addr.IsLoopback())
-					continue;
-				if (iPortTCP)
-				{
-					addr.SetPort(iPortTCP);
-					AddAddr(C4Network2Address(addr, P_TCP), false);
-				}
-				if (iPortUDP)
-				{
-					addr.SetPort(iPortUDP);
-					AddAddr(C4Network2Address(addr, P_UDP), false);
-				}
-				if (addr.GetScopeId())
-					InterfaceIDs.insert(addr.GetScopeId());
-			}
+			addr.SetPort(iPortUDP);
+			AddAddr(C4Network2Address(addr, P_UDP), false);
 		}
+		if (addr.GetScopeId())
+			InterfaceIDs.insert(addr.GetScopeId());
 	}
-	free(addresses);
-#else
-	struct ifaddrs* addrs;
-	if (getifaddrs(&addrs) < 0)
-	    return;
-	for (struct ifaddrs* ifaddr = addrs; ifaddr != nullptr; ifaddr = ifaddr->ifa_next)
-	{
-		struct sockaddr* ad = ifaddr->ifa_addr;
-		if (ad == nullptr) continue;
-
-		if ((ad->sa_family == AF_INET || ad->sa_family == AF_INET6) && (~ifaddr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4/6 devices
-		{
-			addr.SetHost(ad);
-			if (iPortTCP >= 0)
-			{
-				addr.SetPort(iPortTCP);
-				AddAddr(C4Network2Address(addr, P_TCP), false);
-			}
-			if (iPortUDP >= 0)
-			{
-				addr.SetPort(iPortUDP);
-				AddAddr(C4Network2Address(addr, P_UDP), false);
-			}
-			if (addr.GetScopeId())
-				InterfaceIDs.insert(addr.GetScopeId());
-		}
-	}
-	freeifaddrs(addrs);
-#endif
 }
 
 void C4Network2Client::SendAddresses(C4Network2IOConnection *pConn)
