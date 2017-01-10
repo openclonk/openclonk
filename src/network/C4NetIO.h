@@ -92,6 +92,7 @@ public:
 		HostAddress(SpecialAddress addr) { SetHost(addr); }
 		explicit HostAddress(uint32_t addr) { SetHost(addr); }
 		HostAddress(const StdStrBuf &addr) { SetHost(addr); }
+		HostAddress(const sockaddr *addr) { SetHost(addr); }
 
 		AddressFamily GetFamily() const;
 		
@@ -208,6 +209,8 @@ public:
 		friend class EndpointAddressPtr;
 	};
 	typedef EndpointAddress addr_t;
+
+	static std::vector<HostAddress> GetLocalAddresses();
 
 	// callback class
 	class CBClass
