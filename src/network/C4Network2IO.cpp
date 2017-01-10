@@ -468,8 +468,8 @@ bool C4Network2IO::InitPuncher(C4NetIO::addr_t nPuncherAddr)
 	case C4NetIO::HostAddress::IPv6:
 	    PuncherAddrIPv6 = nPuncherAddr;
 	    break;
-	default:
-	    assert(false);
+	case C4NetIO::HostAddress::UnknownFamily:
+	    assert(!"Unexpected address family");
 	}
 	// let's punch
 	return pNetIO_UDP->Connect(nPuncherAddr);
