@@ -442,6 +442,13 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int st
 {
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
+		// cancel usage if a menu pops up
+		if (this->~GetMenu())
+		{
+			CancelUse();
+			return true;
+		}
+	
 		// standard use
 		if (status == CONS_Down && !repeat)
 		{
