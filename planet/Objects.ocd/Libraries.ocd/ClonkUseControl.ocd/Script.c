@@ -440,9 +440,9 @@ func FxItemRemovalCheckStop(object target, proplist effect, int reason, bool tem
 // Control use redirected to script
 func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int status, object obj)
 {
-	// standard use
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
+		// standard use
 		if (status == CONS_Down && !repeat)
 		{
 			return StartUseControl(ctrl, x, y, obj);
@@ -451,11 +451,8 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int st
 		{
 			return StopUseControl(x, y, obj);
 		}
-	}
-	
-	// more use (holding)
-	if (ctrl == CON_Use || ctrl == CON_UseAlt)
-	{
+
+		// more use (holding)
 		if (status == CONS_Up)
 		{
 			// leftover use release
