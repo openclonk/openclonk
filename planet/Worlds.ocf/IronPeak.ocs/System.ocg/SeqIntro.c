@@ -98,7 +98,7 @@ public func Intro_5()
 	
 	if (HasLandingSpace(all_balloons[0]->GetX(), all_balloons[0]->GetY()))
 		for (var balloon in all_balloons)
-			balloon->ControlJump();
+			balloon->Deflate();
 	else
 		for (var balloon in all_balloons)
 			balloon->ControlRight();
