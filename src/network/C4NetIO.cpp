@@ -674,6 +674,17 @@ C4NetIO::~C4NetIO()
 
 }
 
+bool C4NetIO::EnableDualStack(SOCKET socket)
+{
+	int opt = 0;
+	if (setsockopt(socket, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<char*>(&opt), sizeof(opt)) == SOCKET_ERROR)
+	{
+		SetError("could not enable dual-stack socket", true);
+		return false;
+	}
+	return true;
+}
+
 void C4NetIO::SetError(const char *strnError, bool fSockErr)
 {
 	fSockErr &= HaveSocketError();
@@ -1424,6 +1435,8 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 		SetError("socket creation failed", true);
 		return false;
 	}
+	if (!EnableDualStack(lsock))
+		return false;
 	// To be able to reuse the port after close
 #if !defined(_DEBUG) && !defined(_WIN32)
 	int reuseaddr = 1;
@@ -1795,6 +1808,9 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 		SetError("could not create socket", true);
 		return false;
 	}
+
+	if (!EnableDualStack(sock))
+		return false;
 
 	// set reuse socket option
 	if (::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&fAllowReUse), sizeof fAllowReUse) == SOCKET_ERROR)
