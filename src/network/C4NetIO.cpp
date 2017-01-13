@@ -58,6 +58,12 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 #pragma warning (disable : 4355)
 #endif
 
+// These are named differently on mac.
+#if !defined(IPV6_ADD_MEMBERSHIP) && defined(IPV6_JOIN_GROUP)
+#define IPV6_ADD_MEMBERSHIP IPV6_JOIN_GROUP
+#define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
+#endif
+
 // constants definition
 const int C4NetIO::TO_INF = -1;
 
