@@ -1108,9 +1108,6 @@ bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 		return false;
 	}
 
-	if (!EnableDualStack(nsock))
-		return false;
-
 #ifdef STDSCHEDULER_USE_EVENTS
 	// set event
 	if (::WSAEventSelect(nsock, Event, FD_CONNECT) == SOCKET_ERROR)
