@@ -626,6 +626,7 @@ protected:
 	};
 
 	// packet structures
+	struct BinAddr;
 	struct PacketHdr; struct TestPacket; struct ConnPacket; struct ConnOKPacket; struct AddAddrPacket;
 	struct DataPacketHdr; struct CheckPacketHdr; struct ClosePacket;
 
