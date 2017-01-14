@@ -2217,6 +2217,76 @@ const unsigned int C4NetIOUDP::iUDPHeaderSize = 8 + 24; // (bytes)
 
 #pragma pack (push, 1)
 
+// We need to adapt C4NetIO::addr_t to put it in our UDP packages.
+// Previously, the sockaddr_in struct was just put in directly. This is
+// horribly non-portable though, especially as the value of AF_INET6 differs
+// between platforms.
+struct C4NetIOUDP::BinAddr
+{
+	BinAddr() : type(0) {}
+	BinAddr(const C4NetIO::addr_t& addr)
+	{
+		switch (addr.GetFamily())
+		{
+		case C4NetIO::HostAddress::IPv4:
+		{
+			type = 1;
+			auto addr4 = static_cast<const sockaddr_in*>(&addr); 
+			static_assert(sizeof(v4) == sizeof(addr4->sin_addr), "unexpected IPv4 address size");
+			memcpy(&v4, &addr4->sin_addr, sizeof(v4));
+			break;
+		}
+		case C4NetIO::HostAddress::IPv6:
+		{
+			type = 2;
+			auto addr6 = static_cast<const sockaddr_in6*>(&addr); 
+			static_assert(sizeof(v6) == sizeof(addr6->sin6_addr), "unexpected IPv6 address size");
+			memcpy(&v6, &addr6->sin6_addr, sizeof(v6));
+			break;
+		}
+		default:
+			assert(!"Unexpected address family");
+		}
+		port = addr.GetPort();
+	}
+
+	operator C4NetIO::addr_t() const
+	{
+		C4NetIO::addr_t result;
+		switch (type)
+		{
+		case 1:
+		{
+			sockaddr_in addr4 = sockaddr_in();
+			addr4.sin_family = AF_INET;
+			memcpy(&addr4.sin_addr, &v4, sizeof(v4));
+			result.SetAddress(reinterpret_cast<sockaddr*>(&addr4));
+			break;
+		}
+		case 2:
+		{
+			sockaddr_in6 addr6 = sockaddr_in6();
+			addr6.sin6_family = AF_INET6;
+			memcpy(&addr6.sin6_addr, &v6, sizeof(v6));
+			result.SetAddress(reinterpret_cast<sockaddr*>(&addr6));
+			break;
+		}
+		default:
+			assert(!"Invalid address type");
+		}
+		result.SetPort(port);
+		return result;
+	}
+
+	uint16_t port;
+	uint8_t type;
+	union
+	{
+		uint8_t v4[4];
+		uint8_t v6[16];
+	};
+};
+
 // packet structures
 struct C4NetIOUDP::PacketHdr
 {
@@ -2227,20 +2297,20 @@ struct C4NetIOUDP::PacketHdr
 struct C4NetIOUDP::ConnPacket : public PacketHdr
 {
 	uint32_t ProtocolVer;
-	C4NetIO::addr_t Addr;
-	C4NetIO::addr_t MCAddr;
+	BinAddr Addr;
+	BinAddr MCAddr;
 };
 
 struct C4NetIOUDP::ConnOKPacket : public PacketHdr
 {
 	enum { MCM_NoMC, MCM_MC, MCM_MCOK } MCMode;
-	C4NetIO::addr_t Addr;
+	BinAddr Addr;
 };
 
 struct C4NetIOUDP::AddAddrPacket : public PacketHdr
 {
-	C4NetIO::addr_t Addr;
-	C4NetIO::addr_t NewAddr;
+	BinAddr Addr;
+	BinAddr NewAddr;
 };
 
 struct C4NetIOUDP::DataPacketHdr : public PacketHdr
@@ -2257,7 +2327,7 @@ struct C4NetIOUDP::CheckPacketHdr : public PacketHdr
 
 struct C4NetIOUDP::ClosePacket : public PacketHdr
 {
-	C4NetIO::addr_t Addr;
+	BinAddr Addr;
 };
 
 
@@ -3135,14 +3205,16 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		iLastPacketAsked = iLastMCPacketAsked = 0;
 		// Activate Multicast?
 		if (!pParent->fMultiCast)
-			if (!pPkt->MCAddr.IsNull())
+		{
+			addr_t MCAddr = pPkt->MCAddr;
+			if (!MCAddr.IsNull())
 			{
-				addr_t MCAddr = pPkt->MCAddr;
 				// Init Broadcast (with delayed loopback test)
 				pParent->fDelayedLoopbackTest = true;
 				if (!pParent->InitBroadcast(&MCAddr))
 					pParent->fDelayedLoopbackTest = false;
 			}
+		}
 		// build ConnOk Packet
 		ConnOKPacket nPack;
 
@@ -3316,7 +3388,7 @@ bool C4NetIOUDP::Peer::DoConn(bool fMC) // (mt-safe)
 	if (pParent->fMultiCast)
 		Pkt.MCAddr = pParent->C4NetIOSimpleUDP::getMCAddr();
 	else
-		Pkt.MCAddr.Clear();
+		Pkt.MCAddr = C4NetIO::addr_t();
 	return SendDirect(C4NetIOPacket(&Pkt, sizeof(Pkt), false, addr));
 }
 
