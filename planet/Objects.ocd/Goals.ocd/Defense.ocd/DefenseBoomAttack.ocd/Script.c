@@ -63,7 +63,7 @@ local FxFlight = new Effect
 		if (!(time % 10))
 		{
 			var dx = this.target->GetX() - Target->GetX();
-			var dy = this.target->GetY() + 50 - Target->GetY();
+			var dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
 			// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
 			var aim_dist = 600; 
 			var aim_dy = dy * (aim_dist - Abs(dx)) / aim_dist;
