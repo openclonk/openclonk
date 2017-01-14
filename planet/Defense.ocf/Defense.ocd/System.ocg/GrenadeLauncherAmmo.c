@@ -2,8 +2,6 @@
 
 #appendto GrenadeLauncher
 
-static g_homebases; // item management / buy menus for each player
-
 func Ejection()
 {
 	var cont = Contained();

@@ -2,8 +2,6 @@
 
 #appendto Clonk
 
-static g_homebases; // item management / buy menus for each player
-
 func Ejection()
 {
 	if (!Contents() && g_homebases && g_homebases[GetOwner()])
