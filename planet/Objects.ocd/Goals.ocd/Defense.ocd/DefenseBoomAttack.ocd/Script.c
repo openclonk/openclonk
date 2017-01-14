@@ -11,8 +11,8 @@ public func Construction()
 	SetAction("Fly");
 	SetComDir(COMD_None);
 	// Add flight effects.
-	CreateEffect(FxFlight, 100, 10);
 	CreateEffect(FxFlightRotation, 100, 1);
+	CreateEffect(FxFlight, 100, 10);
 	return;
 }
 
