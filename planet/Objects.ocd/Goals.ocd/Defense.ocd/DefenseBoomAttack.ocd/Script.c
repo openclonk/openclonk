@@ -10,6 +10,8 @@ public func Construction()
 {
 	SetAction("Fly");
 	SetComDir(COMD_None);
+	// Notify friendly fire rule.
+	GameCallEx("OnCreationRuleNoFF", this);
 	// Add flight effects.
 	CreateEffect(FxFlightRotation, 100, 1);
 	CreateEffect(FxFlight, 100, 10);
@@ -145,6 +147,12 @@ private func DoFireworks(int killed_by)
 	return;
 }
 
+public func Destruction()
+{
+	// Notify friendly fire rule.
+	GameCallEx("OnDestructionRuleNoFF", this);
+}
+
 public func HasNoNeedForAI() { return true; }
 
 
@@ -166,3 +174,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local ContactCalls = true;
 local FlySpeed = 100;
+local HasNoFriendlyFire = true;

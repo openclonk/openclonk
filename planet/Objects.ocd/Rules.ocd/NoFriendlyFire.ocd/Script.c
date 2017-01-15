@@ -14,7 +14,7 @@ public func Initialize()
 		return;
 		
 	// Find all crew members and protect them from friendly fire.
-	for (var crew in FindObjects(Find_OCF(OCF_CrewMember)))
+	for (var crew in FindObjects(Find_Or(Find_OCF(OCF_CrewMember), Find_Property("HasNoFriendlyFire"))))
 		DisableFriendlyFire(crew);
 	return;
 }
@@ -26,7 +26,7 @@ public func Destruction()
 		return;
 	
 	// Find all crew members and allow friendly fire.
-	for (var crew in FindObjects(Find_OCF(OCF_CrewMember)))
+	for (var crew in FindObjects(Find_Or(Find_OCF(OCF_CrewMember), Find_Property("HasNoFriendlyFire"))))
 		EnableFriendlyFire(crew);
 	return;
 }
@@ -34,6 +34,12 @@ public func Destruction()
 public func OnClonkRecruitment(object clonk, int plr)
 {
 	DisableFriendlyFire(clonk);
+	return;
+}
+
+public func OnCreationRuleNoFF(object obj)
+{
+	DisableFriendlyFire(obj);
 	return;
 }
 
@@ -46,6 +52,12 @@ public func OnClonkDerecruitment(object clonk, int plr)
 public func OnClonkDeath(object clonk, int killed_by)
 {
 	EnableFriendlyFire(clonk);
+	return;
+}
+
+public func OnDestructionRuleNoFF(object obj)
+{
+	EnableFriendlyFire(obj);
 	return;
 }
 
