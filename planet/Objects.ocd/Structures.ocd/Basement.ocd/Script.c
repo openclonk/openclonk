@@ -37,7 +37,8 @@ func Destruction()
 	// Cast a single rock.
 	CastObjects(Rock, 1, 15, 0, -5);
 	// Set basement to nil in parent.
-	parent->~SetBasement(nil);
+	if (parent)
+		parent->~SetBasement(nil);
 	return _inherited(...);
 }
 
