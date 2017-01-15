@@ -1,0 +1,9 @@
+König des Hügels
+
+You have to defend a hill which gives way to a large ruby cave against angry miners.
+
+Ziel: Überlebe möglichst viele Angriffswellen.
+
+Tipps:
+- This round is cooperative, so work together and divide tasks.
+- Build up a settlement and defense during the earlier rounds of attack.

@@ -1,0 +1,4 @@
+TeamAttackers=Attackers
+TeamDefenders=Defenders
+PlayerAttackers=Attackers
+MsgWave=Attack!
