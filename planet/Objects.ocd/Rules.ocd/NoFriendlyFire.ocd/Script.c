@@ -82,6 +82,11 @@ public func DisableFriendlyFire(object for_obj)
 		for_obj.Backup_DoShockwaveCheck = for_obj.DoShockwaveCheck ?? Global.DoShockwaveCheck;
 		for_obj.DoShockwaveCheck = Rule_NoFriendlyFire.NoFF_DoShockwaveCheck;
 	}
+	if (for_obj.IsProjectileTarget != Rule_NoFriendlyFire.NoFF_IsProjectileTarget)
+	{
+		for_obj.Backup_IsProjectileTarget = for_obj.IsProjectileTarget ?? Global.IsProjectileTarget;
+		for_obj.IsProjectileTarget = Rule_NoFriendlyFire.NoFF_IsProjectileTarget;
+	}
 	return;
 }
 
@@ -102,6 +107,11 @@ public func EnableFriendlyFire(object for_obj)
 	{
 		for_obj.DoShockwaveCheck = for_obj.Backup_DoShockwaveCheck;
 		for_obj.Backup_DoShockwaveCheck = nil;
+	}
+	if (for_obj.Backup_IsProjectileTarget != nil)
+	{
+		for_obj.IsProjectileTarget = for_obj.Backup_IsProjectileTarget;
+		for_obj.Backup_IsProjectileTarget = nil;
 	}
 	return;
 }
@@ -133,6 +143,17 @@ public func NoFF_DoShockwaveCheck(int x, int y, int caused_by, ...)
 	if (w_controller != NO_OWNER && t_controller != NO_OWNER && !Hostile(w_controller, t_controller))
 		return false;
 	return this->Backup_DoShockwaveCheck(x, y, caused_by, ...);
+}
+
+public func NoFF_IsProjectileTarget(object projectile, object shooter, ...)
+{
+	var w_controller = projectile->GetController();
+	if (w_controller == NO_OWNER)
+		w_controller = shooter->GetController();
+	var t_controller = this->GetController();
+	if (w_controller != NO_OWNER && t_controller != NO_OWNER && !Hostile(w_controller, t_controller))
+		return false;
+	return this->Backup_IsProjectileTarget(projectile, shooter, ...);
 }
 
 
