@@ -122,11 +122,11 @@ local FxWaveControl = new Effect
 		// Do a timer call every second.
 		this.Interval = 36;
 		// Init wave number, time passed and the current wave.
-		this.wave_nr = 0;
+		this.wave_nr = 1;
 		this.time_passed = 0;
 		this.wave = nil;				
 		// Launch first wave.
-		this->Timer(0);	
+		this->Timer(0);
 	},
 	
 	Timer = func(int time)
@@ -142,7 +142,9 @@ local FxWaveControl = new Effect
 				this.wave = Target->GetDefaultWave(this.wave_nr);
 			}
 			// Launch the wave.
-			DefenseWave->LaunchWave(this.wave, this.wave_nr, g_enemy_plr);
+			if (this.enemy == nil)
+				this.enemy = GameCall("GetEnemyPlayer");
+			DefenseWave->LaunchWave(this.wave, this.wave_nr, this.enemy);
 			// Track the wave.
 			Target->CreateEffect(Target.FxTrackWave, 100, nil, this.wave_nr, this.wave);
 			// Reset passed time and increase wave number for next wave.
@@ -157,6 +159,11 @@ local FxWaveControl = new Effect
 	GetCurrentWave = func()
 	{
 		return this.wave;
+	},
+	
+	SetEnemy = func(int plr)
+	{
+		this.enemy = plr;
 	}
 };
 
@@ -172,6 +179,13 @@ public func GetDefaultWave(int wave_nr)
 		Enemies = [new DefenseEnemy.BoomAttack {Amount = Max(10, 2 * wave_nr), Speed = 100 + wave_nr * 10}]
 	};
 	return wave;
+}
+
+public func SetEnemyPlayer(int plr)
+{
+	if (fx_wave_control)
+		fx_wave_control->SetEnemy(plr);
+	return;
 }
 
 
@@ -195,7 +209,6 @@ local FxTrackWave = new Effect
 		if (GetLength(this.enemies) == 0)
 		{
 			// Completed this wave: log, give bounty and remove effect.
-			//Log("[%d]Bounty %d for wave %d", FrameCounter(), this.wave.Bounty, this.wave_nr);
 			if (this.wave.Bounty != nil)
 			{
 				Target->DoWealthForAll(this.wave.Bounty);
@@ -241,7 +254,6 @@ public func OnClonkDeath(object clonk, int killed_by)
 	var plrid = GetPlayerID(killed_by);
 	if (clonk.Bounty)
 	{
-		//Log("[%d]Bounty %d for plr %d", FrameCounter(), clonk.Bounty, killed_by);
 		if (killed_by != NO_OWNER)
 		{
 			DoWealth(killed_by, clonk.Bounty);

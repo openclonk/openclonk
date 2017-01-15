@@ -6,7 +6,7 @@
 	 * Interval (int)      - Spawn an enemy every X frames.
 	 * Bounty (int)        - The amount of clunkers received for killing the enemy.
 	 * Score (int)         - The amount of points obtained for beating this enemy.
-	 * Position (proplist) - The position where the enemy should be spawned.
+	 * Position (proplist) - The position where the enemy should be spawned {X = ??, Y = ??}.
 	Secondary properties are:
 	 * Energy
 	 * Skin
@@ -38,10 +38,13 @@ public func LaunchEnemy(proplist prop_enemy, int wave_nr, int enemy_plr)
 
 	// Determine where to spawn the enemy with some variation.	
 	var xmin, xmax, ymin, ymax;
-	xmin = BoundBy(pos.X - 100, 0 + width / 2, LandscapeWidth() - width / 2);
-	xmax = BoundBy(pos.X + 100, 0 + width / 2, LandscapeWidth() - width / 2);
-	ymin = BoundBy(pos.Y - 100, 0 + height / 2, LandscapeHeight() - height / 2);
-	ymax = BoundBy(pos.Y + 100, 0 + height / 2, LandscapeHeight() - height / 2);
+	var variation = 100;
+	if (pos.Exact)
+		variation = 0;
+	xmin = BoundBy(pos.X - variation, 0 + width / 2, LandscapeWidth() - width / 2);
+	xmax = BoundBy(pos.X + variation, 0 + width / 2, LandscapeWidth() - width / 2);
+	ymin = BoundBy(pos.Y - variation, 0 + height / 2, LandscapeHeight() - height / 2);
+	ymax = BoundBy(pos.Y + variation, 0 + height / 2, LandscapeHeight() - height / 2);
 	var rect = Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
 	
 	// Show an arrow for the enemy position.
@@ -129,7 +132,8 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		{
 			var inv_obj = enemy->CreateContents(inv);
 			// Infinite ammo.
-			inv_obj->~SetInfiniteStackCount();
+			if (inv_obj)
+				inv_obj->~SetInfiniteStackCount();
 		}
 	}
 	// Add AI.
@@ -185,6 +189,38 @@ static const DefaultEnemy =
 	Position = nil
 };
 
+// A clonk with a sword.
+local Swordsman = new DefaultEnemy
+{
+	Name = "$EnemySwordsman$",
+	Inventory = Sword,
+	Energy = 30,
+	Bounty = 20,
+	Color=0xff0000ff
+};
+
+// A clonk with bow and arrow.
+local Archer = new DefaultEnemy
+{
+	Name = "$EnemyArcher$",
+	Inventory = [Bow, Arrow],
+	Energy = 10,
+	Bounty = 5,
+	Color = 0xff00ff00,
+	Skin = 3
+};
+
+// A clonk with javelins.
+local Spearman = new DefaultEnemy
+{
+	Name = "$EnemySpearman$",
+	Inventory = Javelin,
+	Energy = 15,
+	Bounty = 5,
+	Color = 0xff0000ff,
+	Skin = 1
+};        
+
 // A rocket which moves to a target.
 local BoomAttack = new DefaultEnemy
 {
@@ -214,6 +250,7 @@ local Ballooner = new DefaultEnemy
 	Vehicle = Balloon
 };
 
+// An archer riding a boom attack.
 local Rocketeer = new DefaultEnemy
 {
 	Name = "$EnemyRocketeer$",

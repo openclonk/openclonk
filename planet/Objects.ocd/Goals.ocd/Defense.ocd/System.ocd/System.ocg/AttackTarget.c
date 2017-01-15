@@ -9,7 +9,6 @@ global func GetRandomAttackTarget(object attacker)
 		// Attack structures owned by the enemy of the attacker.
 		var controller = attacker->GetController();
 		var target = FindObject(Find_Category(C4D_Structure), Find_Hostile(controller), Sort_Random());
-		//Log("[%d]Found new attack target %v", FrameCounter(), target);
 	}
 	return target;
 }

@@ -1,3 +1,6 @@
+EnemySwordsman=Schwertkämpfer
+EnemyArcher=Bogenschütze
+EnemySpearman=Speerwerfer
 EnemyBoomAttack=Rakete
 EnemyRapidBoomAttack=Rasche Rakete
 EnemyBallooner=Fallschirmspringer

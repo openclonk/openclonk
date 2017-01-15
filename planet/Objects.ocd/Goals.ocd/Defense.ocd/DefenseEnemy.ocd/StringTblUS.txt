@@ -1,3 +1,6 @@
+EnemySwordsman=Swordsman
+EnemyArcher=Archer
+EnemySpearman=Spearman
 EnemyBoomAttack=Rocket
 EnemyRapidBoomAttack=Rapid Rocket
 EnemyBallooner=Parachutist
