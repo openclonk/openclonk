@@ -17,3 +17,5 @@ MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interaction
 
 Flip=Flip
 FlipHelp=Mirrors the structure.
+Basement=Basement
+BasementHelp=Adds a basement to the structure.

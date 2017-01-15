@@ -25,6 +25,9 @@ protected func Construction()
 	lib_structure.repair_materials = [];
 	// Total value of the components - used to calculate the required material for repairing.
 	lib_structure.total_component_value = nil;
+	// Make a writable copy of the editor action.
+	if (this.EditorActions == GetID().EditorActions)
+		MakePropertyWritable("EditorActions");
 	return _inherited(...);
 }
 
@@ -96,6 +99,10 @@ private func EjectContentsOnDestruction(int cause, int by_player)
 public func SetBasement(object to_basement)
 {
 	lib_structure.basement = to_basement;
+	if (lib_structure.basement)
+		this.EditorActions.basement = nil;
+	else
+		this.EditorActions.basement = new GetID().EditorActions.basement {};
 	return;
 }
 
@@ -108,6 +115,14 @@ public func GetBasement()
 public func IsStructureWithoutBasement()
 {
 	return IsStructure() && !(lib_structure && lib_structure.basement);
+}
+
+public func AddBasement()
+{
+	var offset = this->~GetBasementOffset() ?? [0, 0];
+	var basement = CreateObject(Basement, offset[0], GetBottom() + 4 + offset[1]);
+	basement->SetParent(this);
+	return;
 }
 
 
@@ -433,10 +448,9 @@ public func Flip()
 public func Definition(def, ...)
 {
 	if (!def.EditorProps) def.EditorProps = {};
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.basement = { Name = "$Basement$", EditorHelp = "$BasementHelp$", Command = "AddBasement()" };
 	if (!def->~NoConstructionFlip())
-	{
-		if (!def.EditorActions) def.EditorActions = {};
-		def.EditorActions.flip = { Name="$Flip$", EditorHelp="$FlipHelp$", Command="Flip()" };
-	}
+		def.EditorActions.flip = { Name = "$Flip$", EditorHelp = "$FlipHelp$", Command = "Flip()" };
 	return _inherited(def, ...);
 }

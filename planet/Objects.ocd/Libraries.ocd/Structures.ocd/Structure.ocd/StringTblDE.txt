@@ -17,3 +17,5 @@ MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Int
 
 Flip=Umdrehen
 FlipHelp=Spiegelt das Gebaeude.
+Basement=Fundament
+BasementHelp=Platziert ein Fundament unter dem Gebäude.
