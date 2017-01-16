@@ -478,7 +478,7 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 		if (eTeamDist == TEAMDIST_Free || (eTeamDist == TEAMDIST_Host && fByHost))
 			// also make sure that selecting this team is allowed, e.g. doesn't break the team limit
 			// this also checks whether the team number is a valid team - but it would accept TEAMID_New, which shouldn't be used in player infos!
-			if (rNewJoin.GetTeam() != TEAMID_New && IsJoin2TeamAllowed(rNewJoin.GetTeam()))
+			if (rNewJoin.GetTeam() != TEAMID_New && IsJoin2TeamAllowed(rNewJoin.GetTeam(), rNewJoin.GetType()))
 				// okay; accept change
 				return true;
 		// Reject change by reassigning the current team
@@ -532,15 +532,15 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	return true;
 }
 
-bool C4TeamList::IsJoin2TeamAllowed(int32_t idTeam)
+bool C4TeamList::IsJoin2TeamAllowed(int32_t idTeam, C4PlayerType plrType)
 {
 	// join to new team: Only if new teams can be created
 	if (idTeam == TEAMID_New) return IsAutoGenerateTeams();
 	// team number must be valid
 	C4Team *pTeam = GetTeamByID(idTeam);
 	if (!pTeam) return false;
-	// team player count must not exceed the limit
-	return !pTeam->IsFull();
+	// team player count must not exceed the limit, unless it is a script player
+	return !pTeam->IsFull() || plrType == C4PT_Script;
 }
 
 void C4TeamList::CompileFunc(StdCompiler *pComp)

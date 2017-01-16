@@ -141,7 +141,7 @@ bool C4Player::ScenarioAndTeamInit(int32_t idTeam)
 	// check if join to team is possible; e.g. not too many players
 	if (pPrevTeam != pTeam && idTeam)
 	{
-		if (!Game.Teams.IsJoin2TeamAllowed(idTeam))
+		if (!Game.Teams.IsJoin2TeamAllowed(idTeam, pInfo->GetType()))
 		{
 			pTeam = nullptr;
 		}
