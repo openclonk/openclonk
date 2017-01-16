@@ -768,11 +768,29 @@ public func SetMaterialSelection(array mats)
 
 private func RemoveFromMaterialSelection(id mat)
 {
+	// Remove all child materials (DuroLava for lava) as well
+	var def, index;
+	while (def = GetDefinition(index++))
+	{
+		if (def->~GetParentLiquidType() == mat)
+		{
+			RemoveFromMaterialSelection(def);
+		}
+	}
 	return RemoveArrayValue(pump_materials, mat);
 }
 
 private func AddToMaterialSelection(id mat)
 {
+	// Add all child materials (DuroLava for lava) as well
+	var def, index;
+	while (def = GetDefinition(index++))
+	{
+		if (def->~GetParentLiquidType() == mat)
+		{
+			AddToMaterialSelection(def);
+		}
+	}
 	if (IsValueInArray(pump_materials, mat))
 		return;
 	return PushBack(pump_materials, mat);
@@ -791,11 +809,12 @@ private func IsInMaterialSelection(/* any */ mat)
 public func GetPumpMaterialsMenuEntries(object clonk)
 {
 	var menu_entries = [];
-	// Add materials to the selection.			
+	// Add materials to the selection.
+	// Ignore those with parent materials, because they will be added/removed together with the parent
 	var index = 0, def;
 	while (def = GetDefinition(index++))
 	{
-		if (def->~IsLiquid() && def != Library_Liquid)
+		if (def->~IsLiquid() && def != Library_Liquid && !def->~GetParentLiquidType())
 		{
 			var act = PUMP_Menu_Action_Material_Disable;
 			var status = Icon_Ok;
