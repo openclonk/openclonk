@@ -6,11 +6,10 @@
 */
 
 static init_defenders;
-static g_enemy_plr;
+
 
 protected func Initialize()
 {
-	CreateScriptPlayer("$PlayerAttackers$", nil, 2, CSPF_NoEliminationCheck);
 	CreateObject(Goal_Defense);
 	
 	CreateObject(Rule_BuyAtFlagpole);
@@ -26,13 +25,8 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
-	// Do script player.
-	if (GetPlayerType(plr) != C4PT_User)
-	{
-		g_enemy_plr = plr;
-		GetCrew(plr)->RemoveObject();
+	if (GetPlayerType(plr) == C4PT_Script)
 		return;
-	}
 	
 	// Move players to defenders team.
 	if (GetPlayerTeam(plr) != 1)
@@ -62,8 +56,6 @@ protected func InitializePlayer(int plr)
 	}
 	return;
 }
-
-public func GetEnemyPlayer() { return g_enemy_plr; }
 
 
 /*-- Waves Control --*/

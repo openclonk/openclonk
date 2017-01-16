@@ -1,6 +1,8 @@
 Name=Verteidigung
 Description=Survive as many attack waves as possible, each wave and enemy eliminated earns you points.
 
+PlayerAttackers=Angreifer
+
 MsgWaveCleared=Welle %d geschafft!|<c ffff00>+%d</c>{{Icon_Wealth}}|                                                                           |
 WaveFallBack=Viele Raketen
 

@@ -1,12 +1,10 @@
 [Teams]
 
-  [Team]
-  id=1
-  Name=$TeamDefenders$
-  Color=4294180864
+	[Team]
+	id=1
+	Name=$TeamDefenders$
 
-  [Team]
-  id=2
-  Name=$TeamAttackers$
-  Color=4278241280
-  MaxPlayer=1
+	[Team]
+	id=2
+	Name=$TeamAttackers$
+	MaxPlayer=-1

@@ -1,0 +1,20 @@
+[Teams]
+
+	[Team]
+	id=1
+	Name=$TeamDefenders$
+
+	[Team]
+	id=2
+	Name=$TeamAttackers$
+	MaxPlayer=-1
+
+# Add this Teams.txt to your defense scenario and include the following localization into the string tables:
+# 
+# DE:
+# TeamAttackers=Angreifer
+# TeamDefenders=Verteidiger
+#
+# US:
+# TeamAttackers=Attackers
+# TeamDefenders=Defenders

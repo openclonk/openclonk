@@ -2,6 +2,8 @@
 	Defense Goal
 	The players cooperate to defend a base against an enemy for a many attack waves as possible.
 	
+	Include the Teams.txt in this object in your defense scenario.
+	
 	@author Maikel
 */
 
@@ -9,6 +11,7 @@
 #include Library_Goal
 
 
+local enemy_plr;
 local score;
 local completed_waves;
 local is_fulfilled;
@@ -34,13 +37,13 @@ public func Construction()
 	plrs_active = [];
 	plrs_bonus = [];
 	plrs_score = [];
-	// Add an effect to control the waves.
-	fx_wave_control = CreateEffect(FxWaveControl, 100, nil);
 	// Initialize scoreboard.
 	Scoreboard->SetTitle(Format("$MsgScoreboard$", GetScore()));
 	Scoreboard->Init([
 		{key = "bonus", title = Icon_Wealth, sorted = true, desc = true, default = "0", priority = 100}
 	]);
+	// Create the enemy script player, the script player should be in the attackers team (id = 2).
+	CreateScriptPlayer("$PlayerAttackers$", nil, 2, CSPF_NoEliminationCheck);
 	return _inherited(...);
 }
 
@@ -49,16 +52,23 @@ public func Construction()
 
 public func InitializePlayer(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	if (GetPlayerType(plr) == C4PT_User)
+	// Init the enemy script player.
+	if (GetPlayerType(plr) == C4PT_Script)
 	{
-		// Store active players.
-		PushBack(plrs_active, GetPlayerID(plr));
-		// Initialize scoreboard.
-		Scoreboard->NewPlayerEntry(plr);
-		plrs_bonus[plrid] = 0;
-		Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
+		GetCrew(plr)->RemoveObject();
+		// Add an effect to control the waves and set enemy player.
+		fx_wave_control = CreateEffect(FxWaveControl, 100, nil, plr);
+		return;
 	}
+	
+	// Init the normal players
+	var plrid = GetPlayerID(plr);
+	// Store active players.
+	PushBack(plrs_active, GetPlayerID(plr));
+	// Initialize scoreboard.
+	Scoreboard->NewPlayerEntry(plr);
+	plrs_bonus[plrid] = 0;
+	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
 	return;
 }
 
@@ -117,14 +127,16 @@ public func SetScore(int value)
 
 local FxWaveControl = new Effect
 {
-	Construction = func()
+	Construction = func(int enemy_plr)
 	{
 		// Do a timer call every second.
 		this.Interval = 36;
 		// Init wave number, time passed and the current wave.
 		this.wave_nr = 1;
 		this.time_passed = 0;
-		this.wave = nil;				
+		this.wave = nil;
+		// Store enemy player.
+		this.enemy = enemy_plr;	
 		// Launch first wave.
 		this->Timer(0);
 	},
@@ -160,11 +172,6 @@ local FxWaveControl = new Effect
 	{
 		return this.wave;
 	},
-	
-	SetEnemy = func(int plr)
-	{
-		this.enemy = plr;
-	}
 };
 
 public func GetDefaultWave(int wave_nr)
@@ -179,13 +186,6 @@ public func GetDefaultWave(int wave_nr)
 		Enemies = [new DefenseEnemy.BoomAttack {Amount = Max(10, 2 * wave_nr), Speed = 100 + wave_nr * 10}]
 	};
 	return wave;
-}
-
-public func SetEnemyPlayer(int plr)
-{
-	if (fx_wave_control)
-		fx_wave_control->SetEnemy(plr);
-	return;
 }
 
 
