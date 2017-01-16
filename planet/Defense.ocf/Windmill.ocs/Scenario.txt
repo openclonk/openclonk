@@ -1,8 +1,9 @@
 [Head]
 Icon=39
 Title=Windmill
-Version=7
-Difficulty=90
+Version=8,0
+Difficulty=10
+MaxPlayerLeague=3
 
 [Definitions]
 Definition2=Decoration.ocd

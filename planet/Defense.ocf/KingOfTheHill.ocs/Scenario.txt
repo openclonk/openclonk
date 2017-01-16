@@ -1,11 +1,9 @@
 [Head]
 Icon=13
 Title=KingOfTheHill
-Version=8
-Difficulty=1
-MaxPlayerLeague=1
-MinPlayer=1
-NoInitialize=true
+Version=8,0
+Difficulty=30
+MaxPlayerLeague=4
 
 [Player1]
 
@@ -17,9 +15,6 @@ NoInitialize=true
 
 [Landscape]
 Sky=Clouds2
-BottomOpen=1
-MapWidth=120,0,64,10000
-MapHeight=120,0,40,10000
 SkyScrollMode=2
 
 [Weather]
