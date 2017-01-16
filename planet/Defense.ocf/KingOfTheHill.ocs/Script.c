@@ -17,6 +17,7 @@ protected func Initialize()
 	CreateObject(Rule_BaseRespawn);
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoFriendlyFire);
+	CreateObject(Rule_Gravestones);
 	return;
 }
 

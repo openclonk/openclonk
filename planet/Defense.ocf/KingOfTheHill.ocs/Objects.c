@@ -213,8 +213,10 @@ func InitializeObjects()
 	ToolsWorkshop001->CreateContents(Shovel, 2);
 
 	ChemicalLab001->CreateContents(DynamiteBox, 2);
-	ToolsWorkshop001->CreateContents(Lantern);
-	Armory001->CreateContents(Lantern);
+	var Lantern001 = ToolsWorkshop001->CreateContents(Lantern);
+	Lantern001->TurnOn();
+	var Lantern002 = Armory001->CreateContents(Lantern);
+	Lantern002->TurnOn();
 
 	Lorry001->CreateContents(Axe, 2);
 
