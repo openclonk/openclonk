@@ -2,7 +2,8 @@
 	Defense Goal
 	The players cooperate to defend a base against an enemy for a many attack waves as possible.
 	
-	Include the Teams.txt in this object in your defense scenario.
+	Include the Teams.txt in this object in your defense scenario. Also include a ParameterDefs.txt
+	if you want to have achievements. See Defense.ocf for an example of the file to add.
 	
 	@author Maikel
 */
@@ -89,15 +90,14 @@ public func RelaunchPlayer(int plr)
 
 public func EndRound()
 {
-	for (var plr in GetPlayers(C4PT_Script))
-		EliminatePlayer(plr);
 	// Set evaluation data.
 	SetRoundEvaluationData();
-	// Set league score.
-	SetLeaguePerformance(GetScore());
 	// Remove wave control effect.
 	if (fx_wave_control)
 		fx_wave_control->Remove();
+	// Eliminate attacker.
+	for (var plr in GetPlayers(C4PT_Script))
+		EliminatePlayer(plr);	
 	is_fulfilled = true;
 	return;
 }
@@ -119,8 +119,30 @@ public func SetScore(int value)
 	score = value;
 	// Update scoreboard title.
 	Scoreboard->SetTitle(Format("$MsgScoreboard$", GetScore()));
+	// Update the best score for all players.
+	for (var plr in GetPlayers(C4PT_User))
+		SetBestScore(plr, GetScore());
 	return;
 }
+
+private func SetBestScore(int plr, int new_score)
+{
+	var plrid = GetPlayerID(plr);
+	// Only set if it increases the player's best score.
+	if (new_score > GetBestScore(plr))
+		SetPlrExtraData(plr, GetScoreString(), new_score);
+	// Also set league score if an improvement is made.
+	//if (new_score > GetLeaguePerformance(plrid)) TODO uncomment once available.
+	SetLeaguePerformance(new_score, plrid);
+	return;
+}
+
+private func GetBestScore(int plr)
+{
+	return GetPlrExtraData(plr, GetScoreString());
+}
+
+private func GetScoreString() { return Format("Defense_%s_BestScore", GetScenTitle()); }
 
 
 /*-- Wave Control --*/
@@ -172,6 +194,16 @@ local FxWaveControl = new Effect
 	{
 		return this.wave;
 	},
+
+	GetNextWave = func()
+	{
+		return GameCall("GetAttackWave", this.wave_nr + 1);
+	},
+	
+	GetCurrentWaveNumber = func()
+	{
+		return this.wave_nr;
+	}
 };
 
 public func GetDefaultWave(int wave_nr)
@@ -214,7 +246,7 @@ local FxTrackWave = new Effect
 				Target->DoWealthForAll(this.wave.Bounty);
 				CustomMessage(Format("$MsgWaveCleared$", this.wave_nr, this.wave.Bounty));
 			}
-			if (this.wave.Score != nil)
+			if (this.wave.Score != nil && !Target->IsFulfilled())
 				Target->DoScore(this.wave.Score);
 			Target->IncreaseCompletedWaves();
 			Sound("UI::NextWave");
@@ -243,6 +275,7 @@ public func OnEnemyElimination(object enemy)
 public func IncreaseCompletedWaves()
 {
 	completed_waves++;
+	CheckAchievement();
 	return;
 }
 
@@ -265,7 +298,7 @@ public func OnClonkDeath(object clonk, int killed_by)
 			DoSharedWealth(clonk.Bounty);
 		}
 	}
-	if (clonk.Score)
+	if (clonk.Score && !IsFulfilled())
 		DoScore(clonk.Score);
 	// Notify about elimination of enemy.
 	OnEnemyElimination(clonk);
@@ -298,6 +331,30 @@ public func DoWealthForAll(int amount)
 }
 
 
+/*-- Achievements --*/
+
+public func CheckAchievement()
+{
+	var achievement = ConvertWaveToAchievement(completed_waves);
+	// Give the players their achievement.
+	if (achievement > 0)
+		GainScenarioAchievement("Done", achievement);
+	return false;
+}
+
+public func ConvertWaveToAchievement(int wave_nr)
+{
+	var data = GameCall("GetWaveToAchievement");
+	if (!data)
+		data = [5, 10, 25];
+	SortArray(data);
+	for (var index = GetLength(data); index > 1; index--)
+		if (wave_nr >= data[index - 1])
+			return index;
+	return 0;
+}
+
+
 /*-- Evaluation Data --*/
 
 public func SetRoundEvaluationData()
@@ -314,17 +371,28 @@ public func SetRoundEvaluationData()
 
 public func GetDescription(int plr)
 {
-	var wave_msg = "$MsgCurrentWave$";
-	// Add enemies of current wave.
+	var wave_msg = "";
 	if (fx_wave_control)
 	{
+		// Add enemies of current wave.
 		var enemies = fx_wave_control->GetCurrentWave().Enemies;
 		if (enemies)
+		{
+			wave_msg = Format("$MsgCurrentWave$", fx_wave_control->GetCurrentWave());
 			for (var enemy in enemies)
 				wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);
+		}
+		// Show enemies of next wave.
+		var next_enemies = fx_wave_control->GetNextWave().Enemies;
+		if (next_enemies)
+		{
+			wave_msg = Format("%s\n$MsgNextWave$", wave_msg);
+			for (var enemy in next_enemies)
+				wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);		
+		}
 	}
 	// Add score.
-	wave_msg = Format("%s\n%s", wave_msg, Format("$MsgCurrentScore$", GetScore(), 0/*replace with plr high score*/));
+	wave_msg = Format("%s\n%s", wave_msg, Format("$MsgCurrentScore$", GetScore(), GetBestScore(plr)));
 	return Format("%s\n\n%s", "$Description$", wave_msg);
 }
 

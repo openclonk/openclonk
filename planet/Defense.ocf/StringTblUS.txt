@@ -1,1 +1,3 @@
-Completed=Completed
+AchievementBasic=Well defended!
+AchievementTough=Tough defense!
+AchievementRockSolid=Rock solid defense!
