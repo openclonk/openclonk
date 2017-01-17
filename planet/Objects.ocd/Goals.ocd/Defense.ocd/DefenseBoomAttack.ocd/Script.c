@@ -14,7 +14,7 @@ public func Construction()
 	GameCallEx("OnCreationRuleNoFF", this);
 	// Add flight effects.
 	CreateEffect(FxFlightRotation, 100, 1);
-	CreateEffect(FxFlight, 100, 10);
+	CreateEffect(FxFlight, 100, 2);
 	return;
 }
 
@@ -46,6 +46,12 @@ local FxFlight = new Effect
 	Construction = func()
 	{
 		this.target = GetRandomAttackTarget(Target);
+		if (this.target)
+		{
+			var dx = this.target->GetX() - Target->GetX();
+			var dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
+			Target->SetR(Angle(0, 0, dx, dy));
+		}
 		this->Timer(0);	
 	},
 	Timer = func(int time)
@@ -61,24 +67,37 @@ local FxFlight = new Effect
 			}
 		}
 		
-		// Adjust angle every 10 frames.
-		if (!(time % 10))
+		// Explode if close enough to target.
+		if (ObjectDistance(Target, this.target) < 12)
 		{
-			var dx = this.target->GetX() - Target->GetX();
-			var dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
-			// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
-			var aim_dist = 600; 
-			var aim_dy = dy * (aim_dist - Abs(dx)) / aim_dist;
-			var angle = Angle(0, 0, dx, aim_dy);
-			Target->SetXDir(Sin(angle, Target.FlySpeed), 100);
-			Target->SetYDir(-Cos(angle, Target.FlySpeed), 100);
-			Target->SetR(angle);
-		}
+			Target->DoFireworks(NO_OWNER);
+			return FX_Execute_Kill;	
+		}			
+		
+		// Adjust angle to target.
+		var dx = this.target->GetX() - Target->GetX();
+		var dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
+		// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
+		var aim_dist = 600; 
+		dy = dy * (aim_dist - Abs(dx)) / aim_dist;
+		var angle_to_target = Angle(0, 0, dx, dy);
+		var angle_rocket = Target->GetR();
+		if (angle_rocket < 0)
+			angle_rocket += 360;
+		// Gradually update the angle.
+		var angle_delta = angle_rocket - angle_to_target;
+		if (Inside(angle_delta, 0, 180) || Inside(angle_delta, -360, -180))
+			Target->SetR(Target->GetR() - Min(4, Abs(angle_delta)));
+		else if (Inside(angle_delta, -180, 0) || Inside(angle_delta, 180, 360))
+			Target->SetR(Target->GetR() + Min(4, Abs(angle_delta)));	
+
+		// Update velocity according to angle.
+		Target->SetXDir(Sin(Target->GetR(), Target.FlySpeed), 100);
+		Target->SetYDir(-Cos(Target->GetR(), Target.FlySpeed), 100);
 	
 		// Create exhaust fire.
 		var x = -Sin(Target->GetR(), 15);
-		var y = +Cos(Target->GetR(), 15);
-	
+		var y = +Cos(Target->GetR(), 15);	
 		var xdir = Target->GetXDir() / 2;
 		var ydir = Target->GetYDir() / 2;
 		Target->CreateParticle("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
