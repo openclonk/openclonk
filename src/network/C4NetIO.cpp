@@ -31,6 +31,8 @@
 
 #include <process.h>
 #include <share.h>
+#include <winsock2.h>
+#include <iphlpapi.h>
 
 typedef int socklen_t;
 int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
@@ -43,6 +45,8 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <ifaddrs.h>
+#include <net/if.h>
 
 #define ioctlsocket ioctl
 #define closesocket close
@@ -50,14 +54,18 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 
 #endif
 
-
 #ifdef _MSC_VER
 #pragma warning (disable : 4355)
 #endif
 
+// These are named differently on mac.
+#if !defined(IPV6_ADD_MEMBERSHIP) && defined(IPV6_JOIN_GROUP)
+#define IPV6_ADD_MEMBERSHIP IPV6_JOIN_GROUP
+#define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
+#endif
+
 // constants definition
 const int C4NetIO::TO_INF = -1;
-const uint16_t C4NetIO::P_NONE = ~0;
 
 // simulate packet loss (loss probability in percent)
 // #define C4NETIO_SIMULATE_PACKETLOSS 10
@@ -203,6 +211,455 @@ void ResetSocketError()
 
 #endif // HAVE_WINSOCK
 
+// *** C4NetIO::HostAddress
+void C4NetIO::HostAddress::Clear()
+{
+	v6.sin6_family = AF_INET6;
+	v6.sin6_flowinfo = 0;
+	v6.sin6_scope_id = 0;
+	memset(&v6.sin6_addr, 0, sizeof(v6.sin6_addr));
+}
+
+// *** C4NetIO::EndpointAddress
+const C4NetIO::EndpointAddress::EndpointAddressPtr C4NetIO::EndpointAddress::operator &() const { return EndpointAddressPtr(const_cast<EndpointAddress*>(this)); }
+C4NetIO::EndpointAddress::EndpointAddressPtr C4NetIO::EndpointAddress::operator &() { return EndpointAddressPtr(this); }
+
+void C4NetIO::EndpointAddress::Clear()
+{
+	HostAddress::Clear();
+	SetPort(IPPORT_NONE);
+}
+
+void C4NetIO::HostAddress::SetHost(const HostAddress &other)
+{
+	SetHost(&other.gen);
+}
+
+bool C4NetIO::HostAddress::IsMulticast() const
+{
+	if (gen.sa_family == AF_INET6)
+		return IN6_IS_ADDR_MULTICAST(&v6.sin6_addr) != 0;
+	if (gen.sa_family == AF_INET)
+		return (ntohl(v4.sin_addr.s_addr) >> 24) == 239;
+	return false;
+}
+
+bool C4NetIO::HostAddress::IsLoopback() const
+{
+	if (gen.sa_family == AF_INET6)
+		return IN6_IS_ADDR_LOOPBACK(&v6.sin6_addr) != 0;
+	if (gen.sa_family == AF_INET)
+		return (ntohl(v4.sin_addr.s_addr) >> 24) == 127;
+	return false;
+}
+
+bool C4NetIO::HostAddress::IsLocal() const
+{
+	if (gen.sa_family == AF_INET6)
+		return IN6_IS_ADDR_LINKLOCAL(&v6.sin6_addr) != 0;
+	// We don't really care about local 169.256.0.0/16 addresses here as users will either have a
+	// router doing DHCP (which will prevent usage of these addresses) or have a network that
+	// doesn't care about IP and IPv6 link-local addresses will work.
+	return false;
+}
+
+void C4NetIO::HostAddress::SetScopeId(int scopeId)
+{
+	if (gen.sa_family != AF_INET6) return;
+	if (IN6_IS_ADDR_LINKLOCAL(&v6.sin6_addr) != 0)
+		v6.sin6_scope_id = scopeId;
+}
+
+int C4NetIO::HostAddress::GetScopeId() const
+{
+	if (gen.sa_family == AF_INET6)
+		return v6.sin6_scope_id;
+	return 0;
+}
+
+C4NetIO::HostAddress C4NetIO::HostAddress::AsIPv6() const
+{
+	static const uint8_t v6_mapped_v4_prefix[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };
+
+	HostAddress nrv(*this);
+	switch (gen.sa_family)
+	{
+	case AF_INET6:
+		// That was easy
+		break;
+	case AF_INET:
+		memmove(((char*)&nrv.v6.sin6_addr) + sizeof(v6_mapped_v4_prefix), &v4.sin_addr, sizeof(v4.sin_addr));
+		nrv.v6.sin6_family = AF_INET6;
+		memcpy(&nrv.v6.sin6_addr, v6_mapped_v4_prefix, sizeof(v6_mapped_v4_prefix));
+		nrv.v6.sin6_flowinfo = 0;
+		nrv.v6.sin6_scope_id = 0;
+		break;
+	default: assert(!"Shouldn't reach this"); break;
+	}
+	return nrv;
+}
+
+C4NetIO::HostAddress C4NetIO::HostAddress::AsIPv4() const
+{
+	HostAddress nrv(*this);
+	if (gen.sa_family == AF_INET6 && IN6_IS_ADDR_V4MAPPED(&v6.sin6_addr))
+	{
+		nrv.v4.sin_family = AF_INET;
+		memcpy((char*) &nrv.v4.sin_addr, (char*) &v6.sin6_addr.s6_addr[12], sizeof(v4.sin_addr));
+	}
+	return nrv;
+}
+
+C4NetIO::EndpointAddress C4NetIO::EndpointAddress::AsIPv6() const
+{
+	return EndpointAddress(HostAddress::AsIPv6(), GetPort());
+}
+
+C4NetIO::EndpointAddress C4NetIO::EndpointAddress::AsIPv4() const
+{
+	return EndpointAddress(HostAddress::AsIPv4(), GetPort());
+}
+
+void C4NetIO::HostAddress::SetHost(const sockaddr *addr)
+{
+	// Copy all but port number
+	if (addr->sa_family == AF_INET6)
+	{
+		v6.sin6_family = ((const sockaddr_in6*)addr)->sin6_family;
+		v6.sin6_flowinfo = ((const sockaddr_in6*)addr)->sin6_flowinfo;
+		memcpy(&v6.sin6_addr, &((const sockaddr_in6*)addr)->sin6_addr, sizeof(v6.sin6_addr));
+		v6.sin6_scope_id = ((const sockaddr_in6*)addr)->sin6_scope_id;
+	}
+	else if (addr->sa_family == AF_INET)
+	{
+		v4.sin_family = ((const sockaddr_in*)addr)->sin_family;
+		v4.sin_addr.s_addr = ((const sockaddr_in*)addr)->sin_addr.s_addr;
+		memset(&v4.sin_zero, 0, sizeof(v4.sin_zero));
+	}
+}
+
+void C4NetIO::EndpointAddress::SetAddress(const sockaddr *addr)
+{
+	switch (addr->sa_family)
+	{
+	case AF_INET: memcpy(&v4, addr, sizeof(v4)); break;
+	case AF_INET6: memcpy(&v6, addr, sizeof(v6)); break;
+	default:
+		assert(!"Unexpected address family");
+		memcpy(&gen, addr, sizeof(gen)); break;
+	}
+}
+
+void C4NetIO::HostAddress::SetHost(SpecialAddress addr)
+{
+	switch (addr)
+	{
+	case Any:
+		v6.sin6_family = AF_INET6;
+		memset(&v6.sin6_addr, 0, sizeof(v6.sin6_addr));
+		v6.sin6_flowinfo = 0;
+		v6.sin6_scope_id = 0;
+		break;
+	case AnyIPv4:
+		v4.sin_family = AF_INET;
+		v4.sin_addr.s_addr = 0;
+		memset(&v4.sin_zero, 0, sizeof(v4.sin_zero));
+		break;
+	case Loopback:
+		v6.sin6_family = AF_INET6;
+		memset(&v6.sin6_addr, 0, sizeof(v6.sin6_addr)); v6.sin6_addr.s6_addr[15] = 1;
+		v6.sin6_flowinfo = 0;
+		v6.sin6_scope_id = 0;
+		break;
+	}
+}
+
+void C4NetIO::HostAddress::SetHost(uint32_t v4addr)
+{
+		v4.sin_family = AF_INET;
+		v4.sin_addr.s_addr = v4addr;
+		memset(&v4.sin_zero, 0, sizeof(v4.sin_zero));
+}
+
+void C4NetIO::HostAddress::SetHost(const StdStrBuf &addr, AddressFamily family)
+{
+	addrinfo hints = addrinfo();
+	hints.ai_family = family;
+	addrinfo *addresses = nullptr;
+	if (getaddrinfo(addr.getData(), nullptr, &hints, &addresses) != 0)
+		// GAI failed
+		return;
+	SetHost(addresses->ai_addr);
+	freeaddrinfo(addresses);
+}
+
+void C4NetIO::EndpointAddress::SetAddress(const StdStrBuf &addr, AddressFamily family)
+{
+	Clear();
+
+	if (addr.isNull()) return;
+
+	const char *begin = addr.getData();
+	const char *end = begin + addr.getLength();
+
+	const char *ab = begin;
+	const char *ae = end;
+	
+	const char *pb = end;
+	const char *pe = end;
+
+	bool isIPv6 = false;
+
+	// If addr begins with [, it's an IPv6 address
+	if (ab[0] == '[')
+	{
+		++ab; // skip bracket
+		const char *cbracket = std::find(ab, ae, ']');
+		if (cbracket == ae)
+			// No closing bracket found: invalid
+			return;
+		ae = cbracket++;
+		if (cbracket != end && cbracket[0] == ':')
+		{
+			// port number given
+			pb = ++cbracket;
+			if (pb == end)
+				// Trailing colon: invalid
+				return;
+		}
+		isIPv6 = true;
+	}
+	// If there's more than 1 colon in the address, it's IPv6
+	else if (std::count(ab, ae, ':') > 1)
+	{
+		isIPv6 = true;
+	}
+	// It's probably not IPv6, but look for a port specification
+	else
+	{
+		const char *colon = std::find(ab, ae, ':');
+		if (colon != ae)
+		{
+			ae = colon;
+			pb = colon + 1;
+			if (pb == end)
+				// Trailing colon: invalid
+				return;
+		}
+	}
+
+	addrinfo hints = addrinfo();
+	hints.ai_family = family;
+	//hints.ai_flags = AI_NUMERICHOST;
+	addrinfo *addresses = nullptr;
+	if (getaddrinfo(std::string(ab, ae).c_str(), pb != end ? std::string(pb, pe).c_str() : nullptr, &hints, &addresses) != 0)
+		// GAI failed
+		return;
+	SetAddress(addresses->ai_addr);
+	freeaddrinfo(addresses);
+}
+
+void C4NetIO::EndpointAddress::SetAddress(const EndpointAddress &addr)
+{
+	SetHost(addr);
+	SetPort(addr.GetPort());
+}
+
+void C4NetIO::EndpointAddress::SetAddress(HostAddress::SpecialAddress host, uint16_t port)
+{
+	SetHost(host);
+	SetPort(port);
+}
+
+void C4NetIO::EndpointAddress::SetAddress(const HostAddress &host, uint16_t port)
+{
+	SetHost(host);
+	SetPort(port);
+}
+
+bool C4NetIO::EndpointAddress::IsNull() const
+{
+	return IsNullHost() && GetPort() == IPPORT_NONE;
+}
+
+bool C4NetIO::HostAddress::IsNull() const
+{
+	switch (gen.sa_family)
+	{
+	case AF_INET: return v4.sin_addr.s_addr == 0;
+	case AF_INET6:
+		return IN6_IS_ADDR_UNSPECIFIED(&v6.sin6_addr);
+	}
+	assert(!"Shouldn't reach this");
+	return false;
+}
+
+C4NetIO::HostAddress::AddressFamily C4NetIO::HostAddress::GetFamily() const
+{
+	return gen.sa_family == AF_INET ? IPv4 :
+		gen.sa_family == AF_INET6 ? IPv6 : UnknownFamily;
+}
+
+void C4NetIO::EndpointAddress::SetPort(uint16_t port)
+{
+	switch (gen.sa_family)
+	{
+	case AF_INET: v4.sin_port = htons(port); break;
+	case AF_INET6: v6.sin6_port = htons(port); break;
+	default: assert(!"Shouldn't reach this"); break;
+	}
+}
+
+void C4NetIO::EndpointAddress::SetDefaultPort(uint16_t port)
+{
+	if (GetPort() == IPPORT_NONE)
+		SetPort(port);
+}
+
+uint16_t C4NetIO::EndpointAddress::GetPort() const
+{
+	switch (gen.sa_family)
+	{
+	case AF_INET: return ntohs(v4.sin_port);
+	case AF_INET6: return ntohs(v6.sin6_port);
+	}
+	assert(!"Shouldn't reach this");
+	return IPPORT_NONE;
+}
+
+bool C4NetIO::HostAddress::operator ==(const HostAddress &rhs) const
+{
+	// Check for IPv4-mapped IPv6 addresses.
+	if (gen.sa_family != rhs.gen.sa_family)
+		return AsIPv6() == rhs.AsIPv6();
+	if (gen.sa_family == AF_INET)
+		return v4.sin_addr.s_addr == rhs.v4.sin_addr.s_addr;
+	if (gen.sa_family == AF_INET6)
+		return memcmp(&v6.sin6_addr, &rhs.v6.sin6_addr, sizeof(v6.sin6_addr)) == 0 &&
+			v6.sin6_scope_id == rhs.v6.sin6_scope_id;
+	assert(!"Shouldn't reach this");
+	return false;
+}
+
+bool C4NetIO::EndpointAddress::operator ==(const addr_t &rhs) const
+{
+	if (!HostAddress::operator==(rhs)) return false;
+	if (gen.sa_family == AF_INET)
+	{
+		return v4.sin_port == rhs.v4.sin_port;
+	}
+	else if (gen.sa_family == AF_INET6)
+	{
+		return v6.sin6_port == rhs.v6.sin6_port &&
+			v6.sin6_scope_id == rhs.v6.sin6_scope_id;
+	}
+	assert(!"Shouldn't reach this");
+	return false;
+}
+
+StdStrBuf C4NetIO::HostAddress::ToString(int flags) const
+{
+	if (gen.sa_family == AF_INET6 && v6.sin6_scope_id != 0 && (flags & TSF_SkipZoneId))
+	{
+		HostAddress addr = *this;
+		addr.v6.sin6_scope_id = 0;
+		return addr.ToString(flags);
+	}
+
+	char buf[INET6_ADDRSTRLEN];
+	if (getnameinfo(&gen, sizeof(v6), buf, sizeof(buf), 0, 0, NI_NUMERICHOST) != 0)
+		return StdStrBuf();
+
+	return StdStrBuf(buf, true);
+}
+
+StdStrBuf C4NetIO::EndpointAddress::ToString(int flags) const
+{
+	if (flags & TSF_SkipPort)
+		return HostAddress::ToString(flags);
+
+	switch (GetFamily())
+	{
+	case IPv4: return FormatString("%s:%d", HostAddress::ToString(flags).getData(), GetPort());
+	case IPv6: return FormatString("[%s]:%d", HostAddress::ToString(flags).getData(), GetPort());
+	default: assert(!"Shouldn't reach this");
+	}
+	return StdStrBuf();
+}
+
+void C4NetIO::EndpointAddress::CompileFunc(StdCompiler *comp)
+{
+	if (!comp->isCompiler())
+	{
+		StdStrBuf val(ToString(TSF_SkipZoneId));
+		comp->Value(val);
+	} else {
+		StdStrBuf val;
+		comp->Value(val);
+		SetAddress(val);
+	}
+}
+
+std::vector<C4NetIO::HostAddress> C4NetIO::GetLocalAddresses()
+{
+	std::vector<HostAddress> result;
+
+#ifdef HAVE_WINSOCK
+	HostAddress addr;
+	const size_t BUFFER_SIZE = 16000;
+	PIP_ADAPTER_ADDRESSES addresses = nullptr;
+	for (int i = 0; i < 3; ++i)
+	{
+		addresses = (PIP_ADAPTER_ADDRESSES) realloc(addresses, BUFFER_SIZE * (i+1));
+		if (!addresses)
+			// allocation failed
+			return result;
+		ULONG bufsz = BUFFER_SIZE * (i+1);
+		DWORD rv = GetAdaptersAddresses(AF_UNSPEC,
+			GAA_FLAG_SKIP_ANYCAST|GAA_FLAG_SKIP_MULTICAST|GAA_FLAG_SKIP_DNS_SERVER|GAA_FLAG_SKIP_FRIENDLY_NAME,
+			nullptr, addresses, &bufsz);
+		if (rv == ERROR_BUFFER_OVERFLOW)
+			// too little space, try again
+			continue;
+		if (rv != NO_ERROR)
+		{
+			// Something else happened
+			free(addresses);
+			return result;
+		}
+		// All okay, add addresses
+		for (PIP_ADAPTER_ADDRESSES address = addresses; address; address = address->Next)
+		{
+			for (PIP_ADAPTER_UNICAST_ADDRESS unicast = address->FirstUnicastAddress; unicast; unicast = unicast->Next)
+			{
+				addr.SetHost(unicast->Address.lpSockaddr);
+				if (addr.IsLoopback())
+					continue;
+				result.push_back(addr);
+			}
+		}
+	}
+	free(addresses);
+#else
+	struct ifaddrs* addrs;
+	if (getifaddrs(&addrs) < 0)
+	    return result;
+	for (struct ifaddrs* ifaddr = addrs; ifaddr != nullptr; ifaddr = ifaddr->ifa_next)
+	{
+		struct sockaddr* ad = ifaddr->ifa_addr;
+		if (ad == nullptr) continue;
+
+		if ((ad->sa_family == AF_INET || ad->sa_family == AF_INET6) && (~ifaddr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4/6 devices
+		{
+			result.emplace_back(ad);
+		}
+	}
+	freeifaddrs(addrs);
+#endif
+
+	return result;
+}
+
 // *** C4NetIO
 
 // construction / destruction
@@ -215,6 +672,17 @@ C4NetIO::C4NetIO()
 C4NetIO::~C4NetIO()
 {
 
+}
+
+bool C4NetIO::EnableDualStack(SOCKET socket)
+{
+	int opt = 0;
+	if (setsockopt(socket, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<char*>(&opt), sizeof(opt)) == SOCKET_ERROR)
+	{
+		SetError("could not enable dual-stack socket", true);
+		return false;
+	}
+	return true;
 }
 
 void C4NetIO::SetError(const char *strnError, bool fSockErr)
@@ -318,7 +786,7 @@ bool C4NetIOTCP::Init(uint16_t iPort)
 #endif
 
 	// create listen socket (if necessary)
-	if (iPort != P_NONE)
+	if (iPort != addr_t::IPPORT_NONE)
 		if (!Listen(iPort))
 			return false;
 
@@ -633,7 +1101,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 {
 	// create new socket
-	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
+	SOCKET nsock = ::socket(addr.GetFamily() == HostAddress::IPv6 ? AF_INET6 : AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
 	if (nsock == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
@@ -675,7 +1143,7 @@ bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 #endif
 
 	// connect (async)
-	if (::connect(nsock, reinterpret_cast<const sockaddr *>(&addr), sizeof addr) == SOCKET_ERROR)
+	if (::connect(nsock, &addr, sizeof addr) == SOCKET_ERROR)
 	{
 		if (!HaveWouldBlockError()) // expected
 		{
@@ -853,9 +1321,9 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 	{
 		// accept from listener
 #ifdef __linux__
-		if ((nsock = ::accept4(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize, SOCK_CLOEXEC)) == INVALID_SOCKET)
+		if ((nsock = ::accept4(lsock, &addr, &iAddrSize, SOCK_CLOEXEC)) == INVALID_SOCKET)
 #else
-		if ((nsock = ::accept(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize)) == INVALID_SOCKET)
+		if ((nsock = ::accept(lsock, &addr, &iAddrSize)) == INVALID_SOCKET)
 #endif
 		{
 			// set error
@@ -863,12 +1331,12 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 			return nullptr;
 		}
 		// connect address unknown, so zero it
-		ZeroMem(&caddr, sizeof caddr);
+		caddr.Clear();
 	}
 	else
 	{
 		// get peer address
-		if (::getpeername(nsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize) == SOCKET_ERROR)
+		if (::getpeername(nsock, &addr, &iAddrSize) == SOCKET_ERROR)
 		{
 #ifndef HAVE_WINSOCK
 			// getpeername behaves strangely on exotic platforms. Just ignore it.
@@ -885,7 +1353,7 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 	}
 
 	// check address
-	if (iAddrSize != sizeof addr || addr.sin_family != AF_INET)
+	if (addr.GetFamily() == addr_t::UnknownFamily)
 	{
 		// set error
 		SetError("socket accept failed: invalid address returned");
@@ -959,26 +1427,25 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 	if (lsock != INVALID_SOCKET)
 		// close existing socket
 		closesocket(lsock);
-	iListenPort = P_NONE;
+	iListenPort = addr_t::IPPORT_NONE;
 
 	// create socket
-	if ((lsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP)) == INVALID_SOCKET)
+	if ((lsock = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP)) == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
 		return false;
 	}
+	if (!EnableDualStack(lsock))
+		return false;
 	// To be able to reuse the port after close
 #if !defined(_DEBUG) && !defined(_WIN32)
 	int reuseaddr = 1;
 	setsockopt(lsock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&reuseaddr), sizeof(reuseaddr));
 #endif
 	// bind listen socket
-	C4NetIO::addr_t addr;
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(inListenPort);
-	addr.sin_addr.s_addr = INADDR_ANY;
-	memset(addr.sin_zero, 0, sizeof addr.sin_zero);
-	if (::bind(lsock, reinterpret_cast<sockaddr *>(&addr), sizeof addr) == SOCKET_ERROR)
+	addr_t addr = addr_t::Any;
+	addr.SetPort(inListenPort);
+	if (::bind(lsock, &addr, sizeof(addr)) == SOCKET_ERROR)
 	{
 		SetError("socket bind failed", true);
 		closesocket(lsock); lsock = INVALID_SOCKET;
@@ -1014,7 +1481,7 @@ C4NetIOTCP::Peer *C4NetIOTCP::GetPeer(const addr_t &addr) // (mt-safe)
 	CStdShareLock PeerListLock(&PeerListCSec);
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (pPeer->Open())
-			if (AddrEqual(pPeer->GetAddr(), addr))
+			if (pPeer->GetAddr() == addr)
 				return pPeer;
 	return nullptr;
 }
@@ -1088,7 +1555,7 @@ C4NetIOTCP::ConnectWait *C4NetIOTCP::GetConnectWait(const addr_t &addr) // (mt-s
 	CStdShareLock PeerListLock(&PeerListCSec);
 	// search
 	for (ConnectWait *pWait = pConnectWaits; pWait; pWait = pWait->Next)
-		if (AddrEqual(pWait->addr, addr))
+		if (pWait->addr == addr)
 			return pWait;
 	return nullptr;
 }
@@ -1335,12 +1802,15 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 	}
 #endif
 
-	// create socket
-	if ((sock = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP)) == INVALID_SOCKET)
+	// create sockets
+	if ((sock = ::socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP)) == INVALID_SOCKET)
 	{
 		SetError("could not create socket", true);
 		return false;
 	}
+
+	if (!EnableDualStack(sock))
+		return false;
 
 	// set reuse socket option
 	if (::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&fAllowReUse), sizeof fAllowReUse) == SOCKET_ERROR)
@@ -1351,12 +1821,9 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 
 	// bind socket
 	iPort = inPort;
-	C4NetIO::addr_t naddr;
-	naddr.sin_family = AF_INET;
-	naddr.sin_port = (iPort == P_NONE ? 0 : htons(iPort));
-	naddr.sin_addr.s_addr = INADDR_ANY;
-	memset(naddr.sin_zero, 0, sizeof naddr.sin_zero);
-	if (::bind(sock, reinterpret_cast<sockaddr *>(&naddr), sizeof naddr) == SOCKET_ERROR)
+	addr_t naddr = addr_t::Any;
+	naddr.SetPort(iPort);
+	if (::bind(sock, &naddr, sizeof(naddr)) == SOCKET_ERROR)
 	{
 		SetError("could not bind socket", true);
 		return false;
@@ -1420,21 +1887,20 @@ bool C4NetIOSimpleUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	if (fMultiCast) CloseBroadcast();
 
 	// broadcast addr valid?
-	if (pBroadcastAddr->sin_family != AF_INET ||
-	    in_addr_b(pBroadcastAddr->sin_addr, 0) != 239)
+	if (!pBroadcastAddr->IsMulticast() || pBroadcastAddr->GetFamily() != HostAddress::IPv6)
 	{
-		SetError("invalid broadcast address");
+		SetError("invalid broadcast address (only IPv6 multicast addresses are supported)");
 		return false;
 	}
-	if (pBroadcastAddr->sin_port != htons(iPort))
+	if (pBroadcastAddr->GetPort() != iPort)
 	{
 		SetError("invalid broadcast address (different port)");
 		return false;
 	}
 
 	// set mc ttl to somewhat about "same net"
-	int iTTL = 16;
-	if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, reinterpret_cast<char*>(&iTTL), sizeof(iTTL)) == SOCKET_ERROR)
+	int TTL = 16;
+	if (setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, reinterpret_cast<char*>(&TTL), sizeof(TTL)) == SOCKET_ERROR)
 	{
 		SetError("could not set mc ttl", true);
 		return false;
@@ -1442,11 +1908,12 @@ bool C4NetIOSimpleUDP::InitBroadcast(addr_t *pBroadcastAddr)
 
 	// set up multicast group information
 	this->MCAddr = *pBroadcastAddr;
-	MCGrpInfo.imr_multiaddr = MCAddr.sin_addr;
-	MCGrpInfo.imr_interface.s_addr = INADDR_ANY;
+	MCGrpInfo.ipv6mr_multiaddr = static_cast<sockaddr_in6>(MCAddr).sin6_addr;
+	// TODO: do multicast on all interfaces?
+	MCGrpInfo.ipv6mr_interface = 0; // default interface
 
 	// join multicast group
-	if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+	if (setsockopt(sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP,
 	               reinterpret_cast<const char *>(&MCGrpInfo), sizeof(MCGrpInfo)) == SOCKET_ERROR)
 	{
 		SetError("could not join multicast group"); // to do: more error information
@@ -1508,10 +1975,10 @@ bool C4NetIOSimpleUDP::CloseBroadcast()
 	if (!fMultiCast) return true;
 
 	// leave multicast group
-	if (setsockopt(sock, IPPROTO_IP, IP_DROP_MEMBERSHIP,
+	if (setsockopt(sock, IPPROTO_IPV6, IPV6_DROP_MEMBERSHIP,
 	               reinterpret_cast<const char *>(&MCGrpInfo), sizeof(MCGrpInfo)) == SOCKET_ERROR)
 	{
-		SetError("could not join multicast group"); // to do: more error information
+		SetError("could not leave multicast group"); // to do: more error information
 		return false;
 	}
 
@@ -1559,8 +2026,8 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 		// alloc buffer
 		C4NetIOPacket Pkt; Pkt.New(iMaxMsgSize);
 		// read data (note: it is _not_ garantueed that iMaxMsgSize bytes are available)
-		addr_t SrcAddr; socklen_t iSrcAddrLen = sizeof(SrcAddr);
-		int iMsgSize = ::recvfrom(sock, getMBufPtr<char>(Pkt), iMaxMsgSize, 0, reinterpret_cast<sockaddr *>(&SrcAddr), &iSrcAddrLen);
+		addr_t SrcAddr; socklen_t iSrcAddrLen = sizeof(sockaddr_in6);
+		int iMsgSize = ::recvfrom(sock, getMBufPtr<char>(Pkt), iMaxMsgSize, 0, &SrcAddr, &iSrcAddrLen);
 		// error?
 		if (iMsgSize == SOCKET_ERROR)
 		{
@@ -1579,7 +2046,7 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 			}
 		}
 		// invalid address?
-		if (iSrcAddrLen != sizeof(SrcAddr) || SrcAddr.sin_family != AF_INET)
+		if ((iSrcAddrLen != sizeof(sockaddr_in) && iSrcAddrLen != sizeof(sockaddr_in6)) || SrcAddr.GetFamily() == addr_t::UnknownFamily)
 		{
 			SetError("recvfrom returned an invalid address");
 			return false;
@@ -1607,7 +2074,7 @@ bool C4NetIOSimpleUDP::Send(const C4NetIOPacket &rPacket)
 	// send it
 	C4NetIO::addr_t addr = rPacket.getAddr();
 	if (::sendto(sock, getBufPtr<char>(rPacket), rPacket.getSize(), 0,
-	             reinterpret_cast<sockaddr *>(&addr), sizeof(addr))
+	             &addr, sizeof(addr))
 	    != int(rPacket.getSize()) &&
 	    !HaveWouldBlockError())
 	{
@@ -1713,10 +2180,10 @@ enum C4NetIOSimpleUDP::WaitResult C4NetIOSimpleUDP::WaitForSocket(int iTimeout)
 bool C4NetIOSimpleUDP::SetMCLoopback(int fLoopback)
 {
 	// enable/disable MC loopback
-	setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), sizeof fLoopback);
+	setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), sizeof fLoopback);
 	// read result
 	socklen_t iSize = sizeof(fLoopback);
-	if (getsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), &iSize) == SOCKET_ERROR)
+	if (getsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, reinterpret_cast<char *>(&fLoopback), &iSize) == SOCKET_ERROR)
 		return false;
 	fMCLoopback = !! fLoopback;
 	return true;
@@ -1750,6 +2217,76 @@ const unsigned int C4NetIOUDP::iUDPHeaderSize = 8 + 24; // (bytes)
 
 #pragma pack (push, 1)
 
+// We need to adapt C4NetIO::addr_t to put it in our UDP packages.
+// Previously, the sockaddr_in struct was just put in directly. This is
+// horribly non-portable though, especially as the value of AF_INET6 differs
+// between platforms.
+struct C4NetIOUDP::BinAddr
+{
+	BinAddr() : type(0) {}
+	BinAddr(const C4NetIO::addr_t& addr)
+	{
+		switch (addr.GetFamily())
+		{
+		case C4NetIO::HostAddress::IPv4:
+		{
+			type = 1;
+			auto addr4 = static_cast<const sockaddr_in*>(&addr); 
+			static_assert(sizeof(v4) == sizeof(addr4->sin_addr), "unexpected IPv4 address size");
+			memcpy(&v4, &addr4->sin_addr, sizeof(v4));
+			break;
+		}
+		case C4NetIO::HostAddress::IPv6:
+		{
+			type = 2;
+			auto addr6 = static_cast<const sockaddr_in6*>(&addr); 
+			static_assert(sizeof(v6) == sizeof(addr6->sin6_addr), "unexpected IPv6 address size");
+			memcpy(&v6, &addr6->sin6_addr, sizeof(v6));
+			break;
+		}
+		default:
+			assert(!"Unexpected address family");
+		}
+		port = addr.GetPort();
+	}
+
+	operator C4NetIO::addr_t() const
+	{
+		C4NetIO::addr_t result;
+		switch (type)
+		{
+		case 1:
+		{
+			sockaddr_in addr4 = sockaddr_in();
+			addr4.sin_family = AF_INET;
+			memcpy(&addr4.sin_addr, &v4, sizeof(v4));
+			result.SetAddress(reinterpret_cast<sockaddr*>(&addr4));
+			break;
+		}
+		case 2:
+		{
+			sockaddr_in6 addr6 = sockaddr_in6();
+			addr6.sin6_family = AF_INET6;
+			memcpy(&addr6.sin6_addr, &v6, sizeof(v6));
+			result.SetAddress(reinterpret_cast<sockaddr*>(&addr6));
+			break;
+		}
+		default:
+			assert(!"Invalid address type");
+		}
+		result.SetPort(port);
+		return result;
+	}
+
+	uint16_t port;
+	uint8_t type;
+	union
+	{
+		uint8_t v4[4];
+		uint8_t v6[16];
+	};
+};
+
 // packet structures
 struct C4NetIOUDP::PacketHdr
 {
@@ -1760,20 +2297,20 @@ struct C4NetIOUDP::PacketHdr
 struct C4NetIOUDP::ConnPacket : public PacketHdr
 {
 	uint32_t ProtocolVer;
-	C4NetIO::addr_t Addr;
-	C4NetIO::addr_t MCAddr;
+	BinAddr Addr;
+	BinAddr MCAddr;
 };
 
 struct C4NetIOUDP::ConnOKPacket : public PacketHdr
 {
 	enum { MCM_NoMC, MCM_MC, MCM_MCOK } MCMode;
-	C4NetIO::addr_t Addr;
+	BinAddr Addr;
 };
 
 struct C4NetIOUDP::AddAddrPacket : public PacketHdr
 {
-	C4NetIO::addr_t Addr;
-	C4NetIO::addr_t NewAddr;
+	BinAddr Addr;
+	BinAddr NewAddr;
 };
 
 struct C4NetIOUDP::DataPacketHdr : public PacketHdr
@@ -1790,7 +2327,7 @@ struct C4NetIOUDP::CheckPacketHdr : public PacketHdr
 
 struct C4NetIOUDP::ClosePacket : public PacketHdr
 {
-	C4NetIO::addr_t Addr;
+	BinAddr Addr;
 };
 
 
@@ -1870,8 +2407,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	C4NetIO::addr_t MCAddr = *pBroadcastAddr;
 
 	// broadcast addr valid?
-	if (MCAddr.sin_family != AF_INET ||
-	    in_addr_b(MCAddr.sin_addr, 0) != 239)
+	if (!MCAddr.IsMulticast())
 	{
 		// port is needed in order to search a mc address automatically
 		if (!iPort)
@@ -1879,16 +2415,40 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 			SetError("broadcast address is not valid");
 			return false;
 		}
-		// set up adress
-		MCAddr.sin_family = AF_INET;
-		MCAddr.sin_port = htons(iPort);
-		memset(&MCAddr.sin_zero, 0, sizeof MCAddr.sin_zero);
-		// search for a free one
+		// Set up address as unicast-prefix-based IPv6 multicast address (RFC 3306).
+		sockaddr_in6 saddrgen = sockaddr_in6();
+		saddrgen.sin6_family = AF_INET6;
+		uint8_t *addrgen = saddrgen.sin6_addr.s6_addr;
+		// ff3e ("global multicast based on network prefix") : 64 (length of network prefix)
+		static const uint8_t mcast_prefix[4] = { 0xff, 0x3e, 0, 64};
+		memcpy(addrgen, mcast_prefix, sizeof(mcast_prefix));
+		addrgen += sizeof(mcast_prefix);
+		// 64 bit network prefix
+		addr_t prefixAddr;
+		for (auto& addr : GetLocalAddresses())
+			if (addr.GetFamily() == HostAddress::IPv6 && !addr.IsLocal())
+			{
+				prefixAddr.SetAddress(addr);
+				break;
+			}
+		if (prefixAddr.IsNull())
+		{
+			SetError("no IPv6 unicast address available");
+			return false;
+		}
+		static const size_t network_prefix_size = 8;
+		memcpy(addrgen, &static_cast<sockaddr_in6*>(&prefixAddr)->sin6_addr, network_prefix_size);
+		addrgen += network_prefix_size;
+		// 32 bit group id: search for a free one
 		for (int iRetries = 1000; iRetries; iRetries--)
 		{
+			uint32_t rnd = UnsyncedRandom();
+			memcpy(addrgen, &rnd, sizeof(rnd));
+			// "high-order bit of the Group ID will be the same value as the T flag"
+			addrgen[0] |= 0x80;
 			// create new - random - address
-			MCAddr.sin_addr.s_addr =
-			   0x000000ef | (UnsyncedRandom(0x1000000) << 8);
+			MCAddr.SetAddress((sockaddr*) &saddrgen);
+			MCAddr.SetPort(iPort);
 			// init broadcast
 			if (!C4NetIOSimpleUDP::InitBroadcast(&MCAddr))
 				return false;
@@ -1921,7 +2481,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 				// Timeout? So expect this address to be unused
 				if (LastPacket.isNull()) { fSuccess = true; break; }
 				// looped back?
-				if (C4NetIOSimpleUDP::getMCLoopback() && AddrEqual(LastPacket.getAddr(), MCLoopbackAddr))
+				if (C4NetIOSimpleUDP::getMCLoopback() && LastPacket.getAddr() == MCLoopbackAddr)
 					// ignore this one
 					continue;
 				// otherwise: there must be someone else in this MC group
@@ -1938,7 +2498,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	else
 	{
 		// check: must be same port
-		if (MCAddr.sin_port != htons(iPort))
+		if (MCAddr.GetPort() == iPort)
 		{
 			SetError("invalid multicast address: wrong port");
 			return false;
@@ -2173,7 +2733,7 @@ void C4NetIOUDP::OnPacket(const C4NetIOPacket &Packet, C4NetIO *pNetIO)
 	}
 	// looped back?
 	if (fMultiCast && !fDelayedLoopbackTest)
-		if (AddrEqual(Packet.getAddr(), MCLoopbackAddr))
+		if (Packet.getAddr() == MCLoopbackAddr)
 			return;
 	// loopback test packet? ignore
 	if ((Packet.getStatus() & 0x7F) == IPID_Test) return;
@@ -2234,7 +2794,7 @@ void C4NetIOUDP::OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *
 void C4NetIOUDP::OnAddAddress(const addr_t &FromAddr, const AddAddrPacket &Packet)
 {
 	// Security (this would be strange behavior indeed...)
-	if (!AddrEqual(FromAddr, Packet.Addr) && !AddrEqual(FromAddr, Packet.NewAddr)) return;
+	if (FromAddr != Packet.Addr && FromAddr != Packet.NewAddr) return;
 	// Search peer(s)
 	Peer *pPeer = GetPeer(Packet.Addr);
 	Peer *pPeer2 = GetPeer(Packet.NewAddr);
@@ -2494,7 +3054,7 @@ const unsigned int C4NetIOUDP::Peer::iReCheckInterval = 1000; // (ms)
 
 // construction / destruction
 
-C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
+C4NetIOUDP::Peer::Peer(const addr_t &naddr, C4NetIOUDP *pnParent)
 		: pParent(pnParent), addr(naddr),
 		eStatus(CS_None),
 		fMultiCast(false), fDoBroadcast(false),
@@ -2506,8 +3066,6 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 		tNextReCheck(C4TimeMilliseconds::NegativeInfinity),
 		iIRate(0), iORate(0), iLoss(0)
 {
-	ZeroMem(&addr2, sizeof(addr2));
-	ZeroMem(&PeerAddr, sizeof(PeerAddr));
 }
 
 C4NetIOUDP::Peer::~Peer()
@@ -2610,7 +3168,7 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		if (!fBroadcasted)
 		{
 			// Second connection attempt using different address?
-			if (PeerAddr.sin_addr.s_addr && !AddrEqual(PeerAddr, pPkt->Addr))
+			if (!PeerAddr.IsNull() && PeerAddr != pPkt->Addr)
 			{
 				// Notify peer that he has two addresses to reach this connection.
 				AddAddrPacket Pkt;
@@ -2647,14 +3205,16 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		iLastPacketAsked = iLastMCPacketAsked = 0;
 		// Activate Multicast?
 		if (!pParent->fMultiCast)
-			if (pPkt->MCAddr.sin_addr.s_addr)
+		{
+			addr_t MCAddr = pPkt->MCAddr;
+			if (!MCAddr.IsNull())
 			{
-				addr_t MCAddr = pPkt->MCAddr;
 				// Init Broadcast (with delayed loopback test)
 				pParent->fDelayedLoopbackTest = true;
 				if (!pParent->InitBroadcast(&MCAddr))
 					pParent->fDelayedLoopbackTest = false;
 			}
+		}
 		// build ConnOk Packet
 		ConnOKPacket nPack;
 
@@ -2663,7 +3223,7 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		nPack.Addr = addr;
 		if (fBroadcasted)
 			nPack.MCMode = ConnOKPacket::MCM_MCOK; // multicast send ok
-		else if (pParent->fMultiCast && addr.sin_port == pParent->iPort)
+		else if (pParent->fMultiCast && addr.GetPort() == pParent->iPort)
 			nPack.MCMode = ConnOKPacket::MCM_MC; // du ok, try multicast next
 		else
 			nPack.MCMode = ConnOKPacket::MCM_NoMC; // du ok
@@ -2774,7 +3334,7 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		if (rPacket.getSize() < sizeof(ClosePacket)) break;
 		const ClosePacket *pPkt = getBufPtr<ClosePacket>(rPacket);
 		// ignore if it's for another address
-		if (PeerAddr.sin_addr.s_addr && !AddrEqual(PeerAddr, pPkt->Addr))
+		if (!PeerAddr.IsNull() && PeerAddr != pPkt->Addr)
 			break;
 		// close
 		OnClose("connection closed by peer");
@@ -2828,7 +3388,7 @@ bool C4NetIOUDP::Peer::DoConn(bool fMC) // (mt-safe)
 	if (pParent->fMultiCast)
 		Pkt.MCAddr = pParent->C4NetIOSimpleUDP::getMCAddr();
 	else
-		memset(&Pkt.MCAddr, 0, sizeof Pkt.MCAddr);
+		Pkt.MCAddr = C4NetIO::addr_t();
 	return SendDirect(C4NetIOPacket(&Pkt, sizeof(Pkt), false, addr));
 }
 
@@ -2871,7 +3431,8 @@ bool C4NetIOUDP::Peer::SendDirect(const Packet &rPacket, unsigned int iNr)
 bool C4NetIOUDP::Peer::SendDirect(C4NetIOPacket &&rPacket) // (mt-safe)
 {
 	// insert correct addr
-	if (!(rPacket.getStatus() & 0x80)) rPacket.SetAddr(addr);
+	C4NetIO::addr_t v6Addr(addr.AsIPv6());
+	if (!(rPacket.getStatus() & 0x80)) rPacket.SetAddr(v6Addr);
 	// count outgoing
 	{ CStdLock StatLock(&StatCSec); iORate += rPacket.getSize() + iUDPHeaderSize; }
 	// forward call
@@ -3123,7 +3684,7 @@ C4NetIOUDP::Peer *C4NetIOUDP::GetPeer(const addr_t &addr)
 	CStdShareLock PeerListLock(&PeerListCSec);
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (!pPeer->Closed())
-			if (AddrEqual(pPeer->GetAddr(), addr) || AddrEqual(pPeer->GetAltAddr(), addr))
+			if (pPeer->GetAddr() == addr || pPeer->GetAltAddr() == addr)
 				return pPeer;
 	return nullptr;
 }
@@ -3224,9 +3785,9 @@ void C4NetIOUDP::CloseDebugLog()
 void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
-	O.Format("%s %s %s:%d:", fOut ? "out" : "in ",
+	O.Format("%s %s %s:", fOut ? "out" : "in ",
 	         C4TimeMilliseconds::Now().AsString().getData(),
-	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));
+			 Pkt.getAddr().ToString().getData());
 
 	// header?
 	if (Pkt.getSize() >= sizeof(PacketHdr))
@@ -3252,7 +3813,7 @@ void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 		switch (Hdr.StatusByte)
 		{
 		case IPID_Test:   { UPACK(TestPacket); O.AppendFormat(" (%d)", P.TestNr); break; }
-		case IPID_Conn:   { UPACK(ConnPacket); O.AppendFormat(" (Ver %d, MC: %s:%d)", P.ProtocolVer, inet_ntoa(P.MCAddr.sin_addr), htons(P.MCAddr.sin_port)); break; }
+		case IPID_Conn:   { UPACK(ConnPacket); O.AppendFormat(" (Ver %d, MC: %s)", P.ProtocolVer, P.MCAddr.ToString().getData()); break; }
 		case IPID_ConnOK:
 		{
 			UPACK(ConnOKPacket);
@@ -3361,50 +3922,4 @@ void C4NetIOMan::EnlargeIO(int iBy)
 		ppnNetIO[i] = ppNetIO[i];
 	delete[] ppNetIO;
 	ppNetIO = ppnNetIO;
-}
-
-// *** helpers
-
-bool ResolveAddress(const char *szAddress, C4NetIO::addr_t *paddr, uint16_t iPort)
-{
-	assert(szAddress && paddr);
-	// port?
-	StdStrBuf Buf;
-	const char *pColon = strchr(szAddress, ':');
-	if (pColon)
-	{
-		// get port
-		iPort = atoi(pColon + 1);
-		// copy address
-		Buf.CopyUntil(szAddress, ':');
-		szAddress = Buf.getData();
-	}
-	// set up address
-	sockaddr_in raddr; ZeroMem(&raddr, sizeof raddr);
-	raddr.sin_family = AF_INET;
-	raddr.sin_port = htons(iPort);
-	// no plain IP address?
-	if ((raddr.sin_addr.s_addr = inet_addr(szAddress)) == INADDR_NONE)
-	{
-#ifdef HAVE_WINSOCK
-		if (!AcquireWinSock()) return false;
-#endif
-		// resolve
-		hostent *pHost;
-		if (!(pHost = gethostbyname(szAddress)))
-#ifdef HAVE_WINSOCK
-			{ ReleaseWinSock(); return false; }
-		ReleaseWinSock();
-#else
-			return false;
-#endif
-		// correct type?
-		if (pHost->h_addrtype != AF_INET || pHost->h_length != sizeof(in_addr))
-			return false;
-		// get address
-		raddr.sin_addr = *reinterpret_cast<in_addr *>(pHost->h_addr_list[0]);
-	}
-	// ok
-	*paddr = raddr;
-	return true;
 }

@@ -25,13 +25,6 @@
 #include "game/C4Game.h"
 #include "player/C4PlayerList.h"
 
-#ifndef _WIN32
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <ifaddrs.h>
-#include <net/if.h>
-#endif
-
 // *** C4Network2Client
 
 C4Network2Client::C4Network2Client(C4Client *pClient)
@@ -144,10 +137,22 @@ bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
 		{ iNextConnAttempt = time(nullptr) + 10; return true; }
 	// save attempt
 	AddrAttempts[iBestAddress]++; iNextConnAttempt = time(nullptr) + C4NetClientConnectInterval;
-	// log
-	LogSilentF("Network: connecting client %s on %s...", getName(), Addr[iBestAddress].toString().getData());
-	// connect
-	return pIO->Connect(Addr[iBestAddress].getAddr(), Addr[iBestAddress].getProtocol(), pClient->getCore());
+	auto addr = Addr[iBestAddress].getAddr();
+	std::set<int> interfaceIDs;
+	if (addr.IsLocal())
+	    interfaceIDs = Network.Clients.GetLocal()->getInterfaceIDs();
+	else
+	    interfaceIDs = {0};
+	for (auto id : interfaceIDs)
+	{
+	    addr.SetScopeId(id);
+	    // log
+	    LogSilentF("Network: connecting client %s on %s...", getName(), addr.ToString().getData());
+	    // connect
+	    if (pIO->Connect(addr, Addr[iBestAddress].getProtocol(), pClient->getCore()))
+		return true;
+	}
+	return false;
 }
 
 bool C4Network2Client::hasAddr(const C4Network2Address &addr) const
@@ -184,70 +189,24 @@ bool C4Network2Client::AddAddr(const C4Network2Address &addr, bool fAnnounce)
 
 void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 {
-	// set up address struct
-	sockaddr_in addr; ZeroMem(&addr, sizeof addr);
-	addr.sin_family = AF_INET;
+	C4NetIO::addr_t addr;
 
-	// get local address(es)
-	in_addr **ppAddr = nullptr;
-#ifdef HAVE_WINSOCK
-	bool fGotWinSock = AcquireWinSock();
-	if (fGotWinSock)
+	for (auto& ha : C4NetIO::GetLocalAddresses())
 	{
-		// get local host name
-		char szLocalHostName[128+1]; *szLocalHostName = '\0';
-		::gethostname(szLocalHostName, 128);
-		// get hostent-struct
-		hostent *ph = ::gethostbyname(szLocalHostName);
-		// check type, get addr list
-		if (ph)
+		addr.SetAddress(ha);
+		if (iPortTCP)
 		{
-			if (ph->h_addrtype != AF_INET)
-				ph = nullptr;
-			else
-				ppAddr = reinterpret_cast<in_addr **>(ph->h_addr_list);
-		}
-	}
-#else
-	std::vector<in_addr*> addr_vec;
-	struct ifaddrs* addrs;
-	getifaddrs(&addrs);
-	for(struct ifaddrs* addr = addrs; addr != nullptr; addr = addr->ifa_next)
-	{
-		struct sockaddr* ad = addr->ifa_addr;
-		if(ad == nullptr) continue;
-
-		if(ad->sa_family == AF_INET && (~addr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4 devices
-			addr_vec.push_back(&reinterpret_cast<sockaddr_in*>(ad)->sin_addr);
-	}
-
-	addr_vec.push_back(nullptr);
-	ppAddr = &addr_vec[0];
-#endif
-
-	// add address(es)
-	for (;;)
-	{
-		if (iPortTCP >= 0)
-		{
-			addr.sin_port = htons(iPortTCP);
+			addr.SetPort(iPortTCP);
 			AddAddr(C4Network2Address(addr, P_TCP), false);
 		}
-		if (iPortUDP >= 0)
+		if (iPortUDP)
 		{
-			addr.sin_port = htons(iPortUDP);
+			addr.SetPort(iPortUDP);
 			AddAddr(C4Network2Address(addr, P_UDP), false);
 		}
-		// get next
-		if (!ppAddr || !*ppAddr) break;
-		addr.sin_addr = **ppAddr++;
+		if (addr.GetScopeId())
+			InterfaceIDs.insert(addr.GetScopeId());
 	}
-
-#ifdef HAVE_WINSOCK
-	if (fGotWinSock) ReleaseWinSock();
-#else
-	if(addrs) freeifaddrs(addrs);
-#endif
 }
 
 void C4Network2Client::SendAddresses(C4Network2IOConnection *pConn)
@@ -255,7 +214,11 @@ void C4Network2Client::SendAddresses(C4Network2IOConnection *pConn)
 	// send all addresses
 	for (int32_t i = 0; i < iAddrCnt; i++)
 	{
-		C4NetIOPacket Pkt = MkC4NetIOPacket(PID_Addr, C4PacketAddr(getID(), Addr[i]));
+		if (Addr[i].getAddr().GetScopeId() && (!pConn || pConn->getPeerAddr().GetScopeId() != Addr[i].getAddr().GetScopeId()))
+			continue;
+		C4Network2Address addr(Addr[i]);
+		addr.getAddr().SetScopeId(0);
+		C4NetIOPacket Pkt = MkC4NetIOPacket(PID_Addr, C4PacketAddr(getID(), addr));
 		if (pConn)
 			pConn->Send(Pkt);
 		else
@@ -534,7 +497,9 @@ void C4Network2ClientList::HandlePacket(char cStatus, const C4PacketBase *pBaseP
 			C4Network2Address addr = rPkt.getAddr();
 			// IP zero? Set to IP from where the packet came
 			if (addr.isIPNull())
-				addr.SetIP(pConn->getPeerAddr().sin_addr);
+			{
+				addr.SetIP(pConn->getPeerAddr());
+			}
 			// add (no announce)
 			if (pClient->AddAddr(addr, true))
 				// new address? Try to connect
