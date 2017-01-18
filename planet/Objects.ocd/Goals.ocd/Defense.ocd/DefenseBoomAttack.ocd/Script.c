@@ -160,7 +160,9 @@ private func DoFireworks(int killed_by)
 		SetRider(nil);
 	}
 	// Notify defense goal for reward and score.
-	GameCallEx("OnClonkDeath", this, killed_by);
+	var defense = FindObject(Find_ID(Goal_Defense));
+	if (defense)
+		defense->~OnClonkDeath(this, killed_by);
 	Fireworks();
 	Explode(40);
 	return;
