@@ -160,10 +160,10 @@ public func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 		wdt += x;
 		x = 0;
 	}
-	if (y < 0) // TODO: seems wrong!
+	if (y < 0)
 	{
-		wdt += x;
-		x = 0;
+		hgt += y;
+		y = 0;
 	}
 	wdt = Min(wdt, LandscapeWidth() - x);
 	hgt = Min(hgt, LandscapeHeight() - y);
