@@ -31,3 +31,26 @@ private func GetTargetYDir(object target, int prec)
 	var moving_target = GetTargetMovementObject(target);
 	return moving_target->GetYDir(prec);
 }
+
+// Helper function: Convert target coordinates and projectile out speed to desired shooting angle. Because
+// http://en.wikipedia.org/wiki/Trajectory_of_a_projectile says so. No SimFlight checks to check upper
+// angle (as that is really easy to evade anyway) just always shoot the lower angle if sight is free.
+private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
+{
+	// The variable v is in 1/10 pix/frame.
+	// The variable gravity is in 1/100 pix/frame^2.
+	var g = GetGravity();
+	// Correct vertical distance to account for integration error. Engine adds gravity after movement, so
+	// targets fly higher than they should. Thus, we aim lower. we don't know the travel time yet, so we
+	// assume some 90% of v is horizontal (it's ~2px correction for 200px shooting distance).
+	dy += Abs(dx) * g * 10 / (v * 180);
+	// The variable q is in 1/10000 (pix/frame)^4.
+	var q = v**4 - g * (g * dx * dx - 2 * dy * v * v); // dy is negative up
+	if (q < 0)
+		return nil; // Out of range.
+	var a = (Angle(0, 0, g * dx, Sqrt(q) - v * v, 10) + 1800) % 3600 - 1800;
+	// Check bounds.
+	if (!Inside(a, -10 * max_angle, 10 * max_angle))
+		return nil;
+	return a;
+}

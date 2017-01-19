@@ -1,0 +1,5 @@
+[DefCore]
+id=AI_Vehicles
+Version=6,0
+Category=C4D_StaticBack
+HideInCreator=true
