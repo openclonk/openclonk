@@ -480,8 +480,6 @@ private func ExecuteThrow(effect fx)
 	if (PathFree(x, y, tx, ty))
 	{
 		var throw_speed = this.ThrowSpeed;
-		if (fx.weapon->GetID() == Javelin)
-			throw_speed *= 2;
 		var rx = (throw_speed * throw_speed) / (100 * GetGravity()); // horizontal range for 45 degree throw if enemy is on same height as we are
 		var ry = throw_speed * 7 / (GetGravity() * 10); // vertical range of 45 degree throw
 		var dx = tx - x, dy = ty - y + 15 * GetCon() / 100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
