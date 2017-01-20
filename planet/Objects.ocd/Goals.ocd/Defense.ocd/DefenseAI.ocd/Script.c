@@ -1,24 +1,12 @@
 /**
 	Defense AI
-	Controls enemy behaviour in defense scenarios.
+	Controls enemy behaviour in defense scenarios. Modified version of normal AI.
 
 	@author Sven2, Clonkonaut, Maikel
 */
 
 #include AI
 
-
-public func AddAI(object clonk)
-{
-	// Add normal AI and adapt it.
-	var fx = AI->AddAI(clonk);
-	if (fx)
-	{
-		clonk.ExecuteAI = DefenseAI.Execute;
-		fx.ai = DefenseAI;
-	}
-	return fx;
-}
 
 private func FindTarget(effect fx)
 {
@@ -35,10 +23,10 @@ private func FindInventoryWeapon(effect fx)
 	if (fx.vehicle && fx.vehicle->GetID() == DefenseBoomAttack)
 	{
 		fx.weapon = FindContents(Bow);
-		fx.strategy = fx.ai.ExecuteRanged;
+		fx.strategy = this.ExecuteRanged;
 		fx.projectile_speed = 100;
 		fx.aim_wait = 0;
-		fx.ammo_check = fx.ai.HasArrows;
+		fx.ammo_check = this.HasArrows;
 		fx.ranged = true;
 		return true; 
 	}

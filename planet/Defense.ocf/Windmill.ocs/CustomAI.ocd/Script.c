@@ -9,85 +9,92 @@ local AIRSHIP_VICINITY_DIST = 60;
 // How near must an archer be to a target to shoot. Theoretically, archers can shoot from much farer away but that's too brutal for the players
 local ARCHER_SHOOT_DIST = 500;
 
-func AddAI(object clonk)
-{
-	var fx = AI->AddAI(clonk);
-	if (fx)
-	{
-		clonk.ExecuteAI = CustomAI.Execute;
-		fx.ai = CustomAI;
-		fx.ignore_allies = true;
-	}
-	return fx;
-}
 
-func SetEnemyData(object clonk, proplist data)
+public func SetEnemyData(object clonk, proplist data)
 {
-	var fx = GetEffect("AI", clonk);
+	var fx = clonk.ai;
 	if (fx)
 	{
-		if (data.Siege) fx.is_siege = true;
+		if (data.Siege) 
+			fx.is_siege = true;
 		return true;
 	}
 	return false;
 }
 
-func FindTarget(fx, bool parent)
+public func FindTarget(effect fx, bool parent)
 {
-	if (parent) return _inherited(fx);
-	return this->GetNearestWindmill();
+	if (parent)
+		return _inherited(fx);
+	return fx.Target->GetNearestWindmill();
 }
 
-private func FindInventoryWeapon(fx)
+private func FindInventoryWeapon(effect fx)
 {
 	// Extra weapons
-	if (fx.weapon = FindContents(Axe))
-		{ fx.strategy = fx.ai.ExecuteMelee; return true; }
+	if (fx.weapon = fx.Target->FindContents(Axe))
+	{
+		fx.strategy = this.ExecuteMelee;
+		return true;
+	}
 	if (fx.vehicle && fx.vehicle->GetID() == DefenseBoomAttack)
-		{ fx.weapon = FindContents(Bow); fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
-	if (inherited(fx, ...)) return true;
+	{
+		fx.weapon = fx.Target->FindContents(Bow);
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = 100;
+		fx.aim_wait = 0;
+	 	fx.ammo_check = this.HasArrows;
+	 	fx.ranged=true;
+	 	return true;
+	}
+	if (inherited(fx, ...))
+		return true;
 	// no weapon :(
 	return false;
 }
 
-func Execute(proplist fx, int time)
+public func Execute(effect fx, int time)
 {
-	if (!fx.target) fx.target = GetNearestWindmill();
-	if (GetAction() == "Ride")
+	if (!fx.target)
+		fx.target = fx.Target->GetNearestWindmill();
+	if (fx.Target->GetAction() == "Ride")
 	{
-		var action_target = GetActionTarget();
+		// Do nothing if hanging from a balloon.
+		var action_target = fx.Target->GetActionTarget();
 		if (action_target && action_target->GetID() == Balloon)
-			return ExecuteIdle(); // do nothing if hanging from a balloon
-		// else do everything! (action_target == Boomattack)
+			return this->ExecuteIdle(fx);
 	}
 	if (fx.parachute_lost)
 	{
-		if (GetAction() != "Walk")
+		if (fx.Target->GetAction() != "Walk")
 			return inherited(fx, time, ...);
 		fx.target = nil;
 		fx.parachute_lost = nil;
-		SetCommand("None");
+		fx.Target->SetCommand("None");
 	}
-
 	return inherited(fx, time, ...);
 }
 
-private func ExecuteVehicle(fx)
+private func ExecuteVehicle(effect fx)
 {
-	if (!fx.vehicle) return false;
-	if (fx.vehicle->GetID() == Catapult) return _inherited(fx, ...);
-	if (fx.vehicle->GetID() == Airship) return ExecutePilot(fx);
+	if (!fx.vehicle)
+		return false;
+	if (fx.vehicle->GetID() == Catapult)
+		return _inherited(fx, ...);
+	if (fx.vehicle->GetID() == Airship)
+		return ExecutePilot(fx);
 	return false;
 }
 
-private func ExecutePilot(fx) // this function name doesn't sound right
+private func ExecutePilot(effect fx)
 {
-	var target = fx.target ?? GetNearestWindmill();
-	if (!target) return false; // ???
+	var target = fx.target ?? fx.Target->GetNearestWindmill();
+	if (!target)
+		return false;
 
-	if (GetProcedure() != "PUSH" || GetActionTarget() != fx.vehicle)
+	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
 	{
-		if (ObjectDistance(fx.vehicle) > CustomAI.AIRSHIP_LOST_DIST) // We lost the airship (maybe we were flung from it)
+		if (fx.Target->ObjectDistance(fx.vehicle) > CustomAI.AIRSHIP_LOST_DIST) // We lost the airship (maybe we were flung from it)
 		{
 			fx.strategy = nil;
 			fx.weapon = nil;
@@ -95,25 +102,27 @@ private func ExecutePilot(fx) // this function name doesn't sound right
 			fx.vehicle = nil;
 			return true;
 		}
-		if (!GetCommand() || !Random(4)) SetCommand("Grab", fx.vehicle);
+		if (!fx.Target->GetCommand() || !Random(4))
+			fx.Target->SetCommand("Grab", fx.vehicle);
 		return true;
 	}
 
-	// Close to the target
-	if (ObjectDistance(target) < CustomAI.AIRSHIP_BOARD_DIST)
+	// Close to the target.
+	if (fx.Target->ObjectDistance(target) < CustomAI.AIRSHIP_BOARD_DIST)
 	{
-		fx.vehicle->PrepareToBoard(this);
+		fx.vehicle->PrepareToBoard(fx.Target);
 		return true;
 	}
 
 	// No command check
 	if (!fx.vehicle->GetCommand())
 	{
-		var point = this->GetBoardingPoint(target);
+		var point = fx.Target->GetBoardingPoint(target);
 		fx.vehicle->SetCommand("MoveTo", nil, point[0], point[1]);
-		fx.target = FindTarget(fx);
+		fx.target = this->FindTarget(fx);
 	// Unmovable check
-	} else if (fx.vehicle->GetXDir() == 0 && fx.vehicle->GetYDir() == 0)
+	}
+	else if (fx.vehicle->GetXDir() == 0 && fx.vehicle->GetYDir() == 0)
 	{
 		fx.stuck_time++;
 		if (fx.stuck_time > 20)
@@ -122,18 +131,19 @@ private func ExecutePilot(fx) // this function name doesn't sound right
 			fx.vehicle->SetXDir(RandomX(-10,10));
 		if (fx.stuck_time > 60)
 		{
-			if(InsideIslandRectangle(fx.vehicle))
-				return fx.vehicle->PrepareToBoard(this);
+			if (InsideIslandRectangle(fx.vehicle))
+				return fx.vehicle->PrepareToBoard(fx.Target);
 			else
 				fx.vehicle->Sink();
 		}
-	} else if(fx.stuck_time)
+	}
+	else if(fx.stuck_time)
 	{
 		fx.stuck_time = 0;
 	}
 
 	// Vicinity check
-	var ships = FindObjects(Find_Distance(CustomAI.AIRSHIP_VICINITY_DIST), Find_ID(Airship), Find_Exclude(fx.vehicle));
+	var ships = fx.Target->FindObjects(Find_Distance(CustomAI.AIRSHIP_VICINITY_DIST), Find_ID(Airship), Find_Exclude(fx.vehicle));
 	if (GetLength(ships) && !InsideIslandRectangle(fx.vehicle))
 	{
 		var centerX = 0, centerY = 0;
@@ -149,80 +159,94 @@ private func ExecutePilot(fx) // this function name doesn't sound right
 		// Move away from mass center
 		var targetX = fx.vehicle->GetX() - centerX;
 		var targetY = fx.vehicle->GetY() - centerY;
-		fx.vehicle->SetCommand("MoveTo", nil, BoundBy(GetX() + targetX * 2, 30, LandscapeWidth()-30), BoundBy(GetY() + targetY * 2, 30, LandscapeHeight()-30));
+		fx.vehicle->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX() + targetX * 2, 30, LandscapeWidth()-30), BoundBy(fx.Target->GetY() + targetY * 2, 30, LandscapeHeight()-30));
 	}
-
 	return true;
 }
 
-private func CheckVehicleAmmo(fx, object catapult)
+private func CheckVehicleAmmo(effect fx, object catapult)
 {
-	// Ammo is auto-refilled
+	// Ammo is auto-refilled.
 	return true;
 }
 
 func ExecuteIdle(proplist fx)
 {
-	// Idle execution overridden by Execute
+	// Idle execution overridden by Execute.
 	return true;
 }
 
-// Wait until airship arrives
-func ExecuteMelee(fx)
+// Wait until airship arrives.
+func ExecuteMelee(effect fx)
 {
 	// Don't attack if still on the carrier
 	if (fx.carrier)
 	{
-		if (!fx.carrier->IsInsideGondola(this)) fx.carrier = nil;
-		if (GetCommand()) SetCommand("None");
-		if (fx.shield) return ExecuteProtection(fx);
-		return ExecuteIdle();
+		if (!fx.carrier->IsInsideGondola(fx.Target))
+			fx.carrier = nil;
+		if (fx.Target->GetCommand())
+			fx.Target->SetCommand("None");
+		if (fx.shield)
+			return this->ExecuteProtection(fx);
+		return this->ExecuteIdle(fx);
 	}
 
 	// Still carrying the melee weapon?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
+	if (fx.weapon->Contained() != fx.Target)
+	{
+		fx.weapon = nil;
+		return false;
+	}
 	// Are we in range?
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
 	var dx = tx-x, dy = ty-y;
 	var dy_tolerance = -15;
-	if (fx.target->~IsMainObjective()) dy_tolerance = -40; // Don't jump in front of the windmills you will fall off the islands
+	if (fx.target->~IsMainObjective())
+		dy_tolerance = -40; // Don't jump in front of the windmills you will fall off the islands
 
-	if (Abs(dx) <= 10 && PathFree(x,y,tx,ty))
+	if (Abs(dx) <= 10 && PathFree(x, y, tx, ty))
 	{
 		if (dy >= dy_tolerance)
 		{
-			// target is under us - sword slash downwards!
-			if (!CheckHandsAction(fx)) return true;
+			// Target is under us - sword slash downwards!
+			if (!this->CheckHandsAction(fx))
+				return true;
 			// Stop here
-			SetCommand("None"); SetComDir(COMD_None);
+			fx.Target->SetCommand("None");
+			fx.Target->SetComDir(COMD_None);
 			// cooldown?
-			if (!fx.weapon->CanStrikeWithWeapon(this))
+			if (!fx.weapon->CanStrikeWithWeapon(fx.Target))
 			{
 				return true;
 			}
 			// OK, slash!
-			SelectItem(fx.weapon);
-			return fx.weapon->ControlUse(this, tx,ty);
+			this->SelectItem(fx, fx.weapon);
+			return fx.weapon->ControlUse(fx.Target, tx, ty);
 		}
 		if (fx.target->~IsMainObjective())
 		{
 			// Don't jump for higher windmills, get a new target!
 			fx.target = nil;
-			SetCommand("None");
+			fx.Target->SetCommand("None");
 			return true;
 		}
 		// Clonk is above us - jump there
-		ExecuteJump();
-		if (dx<-5) SetComDir(COMD_Left); else if (dx>5) SetComDir(COMD_Right); else SetComDir(COMD_None);
+		this->ExecuteJump(fx);
+		if (dx < -5)
+			fx.Target->SetComDir(COMD_Left);
+		else if (dx>5)
+			fx.Target->SetComDir(COMD_Right);
+		else
+			fx.Target->SetComDir(COMD_None);
 	}
 	// Not in range. Walk there.
-	if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
-	//Message("Melee %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
+	if (!fx.Target->GetCommand() || !Random(10))
+		fx.Target->SetCommand("MoveTo", fx.target);
 	return true;
 }
 
 // Use shields only if still on the airship
-func ExecuteProtection(fx)
+public func ExecuteProtection(fx)
 {
 	if (!fx.carrier)
 		return false;
@@ -231,29 +255,30 @@ func ExecuteProtection(fx)
 	return _inherited(fx);
 }
 
-// Don't evade you will fall off the islands
-func ExecuteEvade(fx, int foo, int bar)
+// Don't evade you will fall off the islands.
+private func ExecuteEvade(effect fx, int threat_dx, int threat_dy)
 {
 	return false;
 }
 
 // Always shoot
-private func ExecuteRanged(fx)
+private func ExecuteRanged(effect fx)
 {
 	// Still carrying the bow?
-	if (fx.weapon->Contained() != this) { fx.weapon=fx.post_aim_weapon=nil; return false; }
+	if (fx.weapon->Contained() != fx.Target)
+	{ fx.weapon=fx.post_aim_weapon=nil; return false; }
 	// Finish shooting process
 	if (fx.post_aim_weapon)
 	{
 		// wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot)
 		if (FrameCounter() - fx.post_aim_weapon_time < 36)
-			if (IsAimingOrLoading()) return true;
+			if (this->IsAimingOrLoading(fx)) return true;
 		fx.post_aim_weapon = nil;
 	}
 	// Target still in guard range?
 	//if (!CheckTargetInGuardRange(fx)) return false;
 	// Don't check for this guard range crap, fire if near enough
-	if (ObjectDistance(fx.target, this) > CustomAI.ARCHER_SHOOT_DIST) return false;
+	if (fx.Target->ObjectDistance(fx.target) > CustomAI.ARCHER_SHOOT_DIST) return false;
 
 	// Shooting at windmill
 	if (fx.target->~IsMainObjective())
@@ -261,27 +286,27 @@ private func ExecuteRanged(fx)
 		// Look for clonks in range
 		if (!Random(25))
 		{
-			var target = FindTarget(fx, true);
+			var target = this->FindTarget(fx, true);
 			if (target)
 				fx.target = target;
 		}
 	} else {
 		// Firing at a clonk, maybe fire at a windmill
-		if (!Random(50) || !PathFree(GetX(), GetY(), fx.target->GetX(), fx.target->GetY()))
-			fx.target = FindTarget(fx);
+		if (!Random(50) || !PathFree(fx.Target->GetX(), fx.Target->GetY(), fx.target->GetX(), fx.target->GetY()))
+			fx.target = this->FindTarget(fx);
 		if (!fx.target) return; // ???
 	}
 
 	// Look at target
-	ExecuteLookAtTarget(fx);
+	this->ExecuteLookAtTarget(fx);
 	// Make sure we can shoot
-	if (!IsAimingOrLoading() || !fx.aim_weapon)
+	if (!this->IsAimingOrLoading(fx) || !fx.aim_weapon)
 	{
 		CancelAiming(fx);
-		if (!CheckHandsAction(fx)) return true;
+		if (!this->CheckHandsAction(fx)) return true;
 		// Start aiming
-		SelectItem(fx.weapon);
-		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
+		this->SelectItem(fx, fx.weapon);
+		if (!fx.weapon->ControlUseStart(fx.Target, fx.target->GetX() - fx.Target->GetX(), fx.target->GetY() - fx.Target->GetY())) return false; // something's broken :(
 		fx.aim_weapon = fx.weapon;
 		fx.aim_time = fx.time;
 		fx.post_aim_weapon = nil;
@@ -289,15 +314,15 @@ private func ExecuteRanged(fx)
 		return;
 	}
 	// Stuck in aim procedure check?
-	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction())
-		return ExecuteStand(fx);
+	if (GetEffect("IntAimCheckProcedure", fx.Target) && !fx.Target->ReadyToAction())
+		return this->ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account
 	// Also aim for the head (y-4) so it's harder to evade by jumping
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
+	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
 	var d = Distance(x,y,tx,ty);
 	var dt = d * 10 / fx.projectile_speed; // projected travel time of the arrow
-	tx += GetTargetXDir(fx.target, dt);
-	ty += GetTargetYDir(fx.target, dt);
+	tx += this->GetTargetXDir(fx.target, dt);
+	ty += this->GetTargetYDir(fx.target, dt);
 	if (!fx.target->GetContact(-1)) if (!fx.target->GetCategory() & C4D_StaticBack) ty += GetGravity()*dt*dt/200;
 
 	// Get shooting angle
@@ -314,10 +339,11 @@ private func ExecuteRanged(fx)
 	{
 		// No ally on path? Also search for allied animals, just in case.
 		var ally;
-		if (!fx.ignore_allies) ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
+		if (!fx.ignore_allies || FindObject(Find_ID(Rule_NoFriendlyFire)))
+			ally = fx.Target->FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(fx.Target), Find_OCF(OCF_Alive), Find_Owner(fx.Target->GetOwner()));
 		if (ally)
 		{
-			if (ExecuteJump()) return true;
+			if (this->ExecuteJump(fx)) return true;
 			// can't jump and ally is in the way. just wait.
 		}
 		else
@@ -326,11 +352,11 @@ private func ExecuteRanged(fx)
 			// Aim/Shoot there
 			x = Sin(shooting_angle, 1000, 10);
 			y = -Cos(shooting_angle, 1000, 10);
-			fx.aim_weapon->ControlUseHolding(this, x,y);
-			if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
+			fx.aim_weapon->ControlUseHolding(fx.Target, x,y);
+			if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
 			{
 				//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
-				fx.aim_weapon->ControlUseStop(this, x,y);
+				fx.aim_weapon->ControlUseStop(fx.Target, x,y);
 				fx.post_aim_weapon = fx.aim_weapon; // assign post-aim status to allow slower shoot animations to pass
 				fx.post_aim_weapon_time = FrameCounter();
 				fx.aim_weapon = nil;
@@ -340,10 +366,10 @@ private func ExecuteRanged(fx)
 	}
 
 	// Path not free or out of range. Just wait for enemy to come...
-	fx.aim_weapon->ControlUseHolding(this,tx-x,ty-y);
+	fx.aim_weapon->ControlUseHolding(fx.Target,tx-x,ty-y);
 	// Might also change target if current is unreachable
 	var new_target;
-	if (!Random(3)) if (new_target = FindTarget(fx)) fx.target = new_target;
+	if (!Random(3)) if (new_target = this->FindTarget(fx)) fx.target = new_target;
 	return true;
 }
 
@@ -370,19 +396,18 @@ private func GetUpperBallisticAngle(int dx, int dy, int v, int max_angle)
 }
 
 // Don't move exacty to target's position (throwing check will fail then)
-private func ExecuteThrow(fx)
+private func ExecuteThrow(effect fx)
 {
 	// Still carrying the weapon to throw?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
+	if (fx.weapon->Contained() != fx.Target) { fx.weapon=nil; return false; }
 	// Path to target free?
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
+	var x=fx.Target->GetX(), y=fx.Target->GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
 	if (PathFree(x,y,tx,ty))
 	{
-		var throw_speed = this.ThrowSpeed;
-		if (fx.weapon->GetID() == Javelin) throw_speed *= 2;
+		var throw_speed = fx.Target.ThrowSpeed;
 		var rx = (throw_speed*throw_speed)/(100*GetGravity()); // horizontal range for 45 degree throw if enemy is on same height as we are
 		var ry = throw_speed*7/(GetGravity()*10); // vertical range of 45 degree throw
-		var dx = tx-x, dy = ty-y+15*GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
+		var dx = tx-x, dy = ty-y+15*fx.Target->GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
 		// Check range
 		// Could calculate the optimal parabulum here, but that's actually not very reliable on moving targets
 		// It's usually better to throw straight at the target and only throw upwards a bit if the target stands on high ground or is far away
@@ -395,18 +420,17 @@ private func ExecuteThrow(fx)
 			dy -= dx*dx/rx; // big math!
 			// And throw!
 			//Message("Throw!");
-			SetCommand("None"); SetComDir(COMD_Stop);
-			SelectItem(fx.weapon);
-			return this->ControlThrow(fx.weapon, dx, dy);
+			fx.Target->SetCommand("None"); fx.Target->SetComDir(COMD_Stop);
+			this->SelectItem(fx, fx.weapon);
+			return fx.Target->ControlThrow(fx.weapon, dx, dy);
 		}
 	}
 	// Can't reach target yet. Walk towards it.
-	if (!GetCommand() || !Random(3))
+	if (!fx.Target->GetCommand() || !Random(3))
 	{
 		var tx = fx.target->GetX();
-		SetCommand("MoveTo", nil, BoundBy(GetX(), tx-30, tx+30), fx.target->GetY());
+		fx.Target->SetCommand("MoveTo", nil, BoundBy(fx.Target->GetX(), tx-30, tx+30), fx.target->GetY());
 	}
-	//Message("Throw %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
 	return true;
 }
 
@@ -537,7 +561,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int ymin, yrange)
 		CustomAI->AddAI(obj);
 		CustomAI->SetMaxAggroDistance(obj, LandscapeWidth());
 		CustomAI->SetGuardRange(obj, 0,0,LandscapeWidth(),LandscapeHeight()); // nowhere to run!
-		var fx = GetEffect("AI", obj);
+		var fx = obj.ai;
 		if (fx) fx.vehicle = vehicle;
 		if (enemy.IsCrew) // is airship crew member, spawn on last created airship
 			if (g_last_airship)

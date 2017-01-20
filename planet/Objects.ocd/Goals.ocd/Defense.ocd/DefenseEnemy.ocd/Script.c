@@ -21,6 +21,9 @@
 // Definition call which can be used to launch an enemy.
 public func LaunchEnemy(proplist prop_enemy, int wave_nr, int enemy_plr)
 {
+	// Don't launch the enemy when amount equals zero.
+	if (!prop_enemy || prop_enemy.Amount <= 0)
+		return;	
 	// Determine enemy size.
 	var def = prop_enemy.Type ?? prop_enemy.Vehicle;
 	if (!def) 
@@ -52,7 +55,7 @@ public func LaunchEnemy(proplist prop_enemy, int wave_nr, int enemy_plr)
 		
 	// Schedule spawning of enemy definition for the given amount.
 	var interval = Max(prop_enemy.Interval, 1);
-	var amount = Max(prop_enemy.Amount, 1);
+	var amount = prop_enemy.Amount;
 	ScheduleCall(nil, DefenseEnemy.LaunchEnemyAt, interval, amount, prop_enemy, wave_nr, enemy_plr, rect);	
 	return;	
 }
@@ -219,7 +222,18 @@ local Spearman = new DefaultEnemy
 	Bounty = 5,
 	Color = 0xff0000ff,
 	Skin = 1
-};        
+};
+
+// A clonk with javelins.
+local Grenadier = new DefaultEnemy
+{
+	Name = "$EnemyGrenadier$",
+	Inventory = [GrenadeLauncher, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb],
+	Energy = 25,
+	Bounty = 5,
+	Color = 0xffa0a0ff,
+	Skin = 2
+};
 
 // A rocket which moves to a target.
 local BoomAttack = new DefaultEnemy

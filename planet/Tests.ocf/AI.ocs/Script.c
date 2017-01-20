@@ -14,8 +14,6 @@ protected func Initialize()
 	// Script player functions as an opponent
 	CreateScriptPlayer("Enemy 1", 0xffff0000, nil, CSPF_FixedAttributes | CSPF_NoEliminationCheck | CSPF_Invisible);
 	CreateScriptPlayer("Enemy 2", 0xff000000, nil, CSPF_FixedAttributes | CSPF_NoEliminationCheck | CSPF_Invisible);
-
-
 	return;
 }
 
@@ -25,9 +23,13 @@ protected func Initialize()
 protected func InitializePlayer(int plr)
 {
 	// Make all players hostile to each other.
-	//for (var plr1 in GetPlayers())
-	//	for (var plr2 in GetPlayers())
-	Log("%d", plr);
+	for (var plr1 in GetPlayers())
+		for (var plr2 in GetPlayers())
+			if (plr1 != plr2)
+			{
+				SetHostility(plr1, plr2, true, true);			
+				SetHostility(plr2, plr2, true, true);
+			}
 			
 	// Initialize script players differently.	
 	if (GetPlayerType(plr) == C4PT_Script)
@@ -40,10 +42,10 @@ protected func InitializePlayer(int plr)
 	GetCrew(plr)->Enter(container);
 	
 	// Add test control effect.
-	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 1;
-	effect.launched = false;
-	effect.plr = plr;
+	var fx = AddEffect("IntTestControl", nil, 100, 2);
+	fx.testnr = 6;
+	fx.launched = false;
+	fx.plr = plr;
 	return;
 }
 
@@ -65,18 +67,23 @@ protected func InitializeScriptPlayer(int plr)
 	return;
 }
 
-global func CreateEnemy(id clonktype, int x,int y, int plr, array contents, int life)
+global func CreateEnemy(id clonktype, int x, int y, int plr, array contents, int life)
 {
 	var enemy = CreateObjectAbove(clonktype, x, y, plr);
 	if (!enemy) return nil;
 	enemy->SetDir(DIR_Right);
 	enemy->MakeCrewMember(plr);
 	enemy->SetMaxEnergy(life * 1000);
-	if (contents) for (var c in contents) enemy->CreateContents(c);
+	if (contents)
+		for (var c in contents)
+			enemy->CreateContents(c);
 	AI->AddAI(enemy);
+	AI->SetMaxAggroDistance(enemy, LandscapeWidth());
+	AI->SetGuardRange(enemy, 0, 0, LandscapeWidth(), LandscapeHeight());
 	enemy->AddEnergyBar();
 	return enemy;
 }
+
 
 /*-- AI Tests --*/
 
@@ -89,21 +96,6 @@ global func Test1_OnStart(int plr)
 	return true;
 }
 
-global func Test1_Completed()
-{
-	if (ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy1)) == 0 || ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy2)) == 0)
-		return true;
-	return false;
-}
-
-global func Test1_OnFinished()
-{
-	RemoveAll(Find_Owner(script_enemy1));
-	RemoveAll(Find_Owner(script_enemy2));
-	return;
-}
-
-
 global func Test2_OnStart(int plr)
 {
 	CreateEnemy(Clonk, 120, 258, script_enemy1, [Firestone, Firestone, Firestone, Firestone, Firestone, Firestone, Firestone, Firestone, Firestone], 50);
@@ -112,21 +104,6 @@ global func Test2_OnStart(int plr)
 	Log("AI battle: firestone vs. lantern.");
 	return true;
 }
-
-global func Test2_Completed()
-{
-	if (ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy1)) == 0 || ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy2)) == 0)
-		return true;
-	return false;
-}
-
-global func Test2_OnFinished()
-{
-	RemoveAll(Find_Owner(script_enemy1));
-	RemoveAll(Find_Owner(script_enemy2));
-	return;
-}
-
 
 global func Test3_OnStart(int plr)
 {
@@ -137,20 +114,40 @@ global func Test3_OnStart(int plr)
 	return true;
 }
 
-global func Test3_Completed()
+global func Test4_OnStart(int plr)
 {
-	if (ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy1)) == 0 || ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy2)) == 0)
-		return true;
-	return false;
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Axe], 50);
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Axe], 50);	
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [Sword], 50);
+	// Log what the test is about.
+	Log("AI battle: 2x axe vs. sword.");
+	return true;
 }
 
-global func Test3_OnFinished()
+global func Test5_OnStart(int plr)
 {
-	RemoveAll(Find_Owner(script_enemy1));
-	RemoveAll(Find_Owner(script_enemy2));
-	return;
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, FireArrow], 50);
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, BombArrow], 50);	
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [Blunderbuss, LeadBullet, Sword], 50);
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [Blunderbuss, LeadBullet, Sword], 50);
+	// Log what the test is about.
+	Log("AI battle: 2x bow vs. 2x blunderbuss.");
+	return true;
 }
 
+global func Test6_OnStart(int plr)
+{
+	CreateEnemy(Clonk, 32, 208, script_enemy1, [Bow, FireArrow], 50);
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, BombArrow], 50);
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Club], 50);	
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [Sword], 50);
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [Blunderbuss, LeadBullet, Sword], 50);
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [GrenadeLauncher, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb], 50);
+	CreateEnemy(Clonk, 480, 208, script_enemy2, [Javelin, Javelin, Javelin, Javelin, Javelin], 50);	
+	// Log what the test is about.
+	Log("AI battle: 2x bow vs. 2x blunderbuss.");
+	return true;
+}
 
 
 /*-- Test Control --*/
@@ -159,22 +156,22 @@ global func Test3_OnFinished()
 global func LaunchTest(int nr)
 {
 	// Get the control effect.
-	var effect = GetEffect("IntTestControl", nil);
-	if (!effect)
+	var fx = GetEffect("IntTestControl", nil);
+	if (!fx)
 	{
 		// Create a new control effect and launch the test.
-		effect = AddEffect("IntTestControl", nil, 100, 2);
-		effect.testnr = nr;
-		effect.launched = false;
-		effect.plr = GetPlayerByIndex(0, C4PT_User);
+		fx = AddEffect("IntTestControl", nil, 100, 2);
+		fx.testnr = nr;
+		fx.launched = false;
+		fx.plr = GetPlayerByIndex(0, C4PT_User);
 		return;
 	}
 	// Finish the currently running test.
-	Call(Format("~Test%d_OnFinished", effect.testnr));
+	ClearCurrentTest();
 	// Start the requested test by just setting the test number and setting 
 	// effect.launched to false, effect will handle the rest.
-	effect.testnr = nr;
-	effect.launched = false;
+	fx.testnr = nr;
+	fx.launched = false;
 	return;
 }
 
@@ -182,58 +179,70 @@ global func LaunchTest(int nr)
 global func SkipTest()
 {
 	// Get the control effect.
-	var effect = GetEffect("IntTestControl", nil);
-	if (!effect)
+	var fx = GetEffect("IntTestControl", nil);
+	if (!fx)
 		return;
 	// Finish the previous test.
-	Call(Format("~Test%d_OnFinished", effect.testnr));
+	ClearCurrentTest();
 	// Start the next test by just increasing the test number and setting 
 	// effect.launched to false, effect will handle the rest.
-	effect.testnr++;
-	effect.launched = false;
+	fx.testnr++;
+	fx.launched = false;
 	return;
 }
 
 
 /*-- Test Effect --*/
 
-global func FxIntTestControlStart(object target, proplist effect, int temporary)
+global func FxIntTestControlStart(object target, effect fx, int temporary)
 {
 	if (temporary)
 		return FX_OK;
 	// Set default interval.
-	effect.Interval = 2;
+	fx.Interval = 2;
 	return FX_OK;
 }
 
-global func FxIntTestControlTimer(object target, proplist effect)
+global func FxIntTestControlTimer(object target, effect fx)
 {
 	// Launch new test if needed.
-	if (!effect.launched)
+	if (!fx.launched)
 	{
 		// Log test start.
 		Log("=====================================");
-		Log("Test %d started:", effect.testnr);
+		Log("Test %d started:", fx.testnr);
 		// Start the test if available, otherwise finish test sequence.
-		if (!Call(Format("~Test%d_OnStart", effect.testnr), effect.plr))
+		if (!Call(Format("~Test%d_OnStart", fx.testnr), fx.plr))
 		{
-			Log("Test %d not available, the previous test was the last test.", effect.testnr);
+			Log("Test %d not available, the previous test was the last test.", fx.testnr);
 			Log("=====================================");
 			Log("All tests have been successfully completed!");
-			return -1;
+			return FX_Execute_Kill;
 		}
-		effect.launched = true;
+		fx.launched = true;
 	}		
 	// Check whether the current test has been finished.
-	if (Call(Format("Test%d_Completed", effect.testnr)))
+	if (IsTestCompleted())
 	{
-		effect.launched = false;
-		//RemoveTest();
+		fx.launched = false;
 		// Call the test on finished function.
-		Call(Format("~Test%d_OnFinished", effect.testnr));
+		ClearCurrentTest();
 		// Log result and increase test number.
-		Log("Test %d successfully completed.", effect.testnr);
-		effect.testnr++;
+		Log("Test %d successfully completed.", fx.testnr);
+		fx.testnr++;
 	}
 	return FX_OK;
+}
+
+global func ClearCurrentTest()
+{
+	RemoveAll(Find_Owner(script_enemy1));
+	RemoveAll(Find_Owner(script_enemy2));
+}
+
+global func IsTestCompleted()
+{
+	if (ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy1)) == 0 || ObjectCount(Find_OCF(OCF_Alive), Find_Owner(script_enemy2)) == 0)
+		return true;
+	return false;
 }

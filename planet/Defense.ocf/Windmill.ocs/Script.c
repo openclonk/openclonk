@@ -210,7 +210,7 @@ func StartGame()
 		obj.MaxEnergy = 800000;
 		obj->DoEnergy(obj.MaxEnergy/1000);
 		obj->AddEnergyBar();
-		GameCallEx("OnClonkRecruitment", obj);
+		GameCallEx("OnCreationRuleNoFF", obj);
 	}
 	// Launch first wave!
 	g_wave = 1;

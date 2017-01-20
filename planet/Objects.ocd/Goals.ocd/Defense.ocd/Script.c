@@ -12,7 +12,6 @@
 #include Library_Goal
 
 
-local enemy_plr;
 local score;
 local completed_waves;
 local is_fulfilled;
@@ -151,6 +150,9 @@ local FxWaveControl = new Effect
 {
 	Construction = func(int enemy_plr)
 	{
+		// Check if enemy player is correct.
+		if (enemy_plr == nil || enemy_plr == NO_OWNER)
+			return FX_Execute_Kill;		
 		// Do a timer call every second.
 		this.Interval = 36;
 		// Init wave number, time passed and the current wave.
@@ -165,7 +167,7 @@ local FxWaveControl = new Effect
 	
 	Timer = func(int time)
 	{
-		// Start new wave.
+		// Start new wave if duration of previous wave has passed.
 		if (!this.wave || this.time_passed >= this.wave.Duration)
 		{
 			this.wave = GameCall("GetAttackWave", this.wave_nr);
@@ -175,9 +177,6 @@ local FxWaveControl = new Effect
 				Log("WARNING: wave not specified for wave number %d. Using default wave of defense goal instead.", this.wave_nr);
 				this.wave = Target->GetDefaultWave(this.wave_nr);
 			}
-			// Launch the wave.
-			if (this.enemy == nil)
-				this.enemy = GameCall("GetEnemyPlayer");
 			DefenseWave->LaunchWave(this.wave, this.wave_nr, this.enemy);
 			// Track the wave.
 			Target->CreateEffect(Target.FxTrackWave, 100, nil, this.wave_nr, this.wave);
@@ -203,6 +202,11 @@ local FxWaveControl = new Effect
 	GetCurrentWaveNumber = func()
 	{
 		return this.wave_nr;
+	},
+	
+	GetEnemy = func()
+	{
+		return this.enemy;
 	}
 };
 
@@ -394,6 +398,18 @@ public func GetDescription(int plr)
 	// Add score.
 	wave_msg = Format("%s\n%s", wave_msg, Format("$MsgCurrentScore$", GetScore(), GetBestScore(plr)));
 	return Format("%s\n\n%s", "$Description$", wave_msg);
+}
+
+
+/*-- Debugging Control --*/
+
+public func TestWave(int nr)
+{
+	var wave = GameCall("GetAttackWave", nr);
+	if (!wave || !fx_wave_control)
+		return;
+	DefenseWave->LaunchWave(wave, nr, fx_wave_control->GetEnemy());
+	return;
 }
 
 

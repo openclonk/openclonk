@@ -17,7 +17,7 @@ private func ExecuteVehicle(effect fx)
 	
 	// Use the catapult.
 	if (fx.vehicle->GetID() == Catapult)
-		return ExecuteCatapult(fx);
+		return this->ExecuteCatapult(fx);
 
 	// Don't know how to use this vehicle, so reset it.
 	fx.vehicle = nil;
@@ -29,12 +29,12 @@ private func CheckVehicleAmmo(effect fx, object vehicle)
 	// Check for specific vehicle.
 	if (vehicle->GetID() == Catapult)
 	{
-		if (CheckCatapultAmmo(fx, vehicle))
+		if (this->CheckCatapultAmmo(fx, vehicle))
 			return true;		
 	}
 	// Vehicle out of ammo: Can't really be refilled. Stop using that weapon.
 	fx.vehicle = nil;
-	this->ObjectCommand("UnGrab");
+	fx.Target->ObjectCommand("UnGrab");
 	return false;
 }
 
@@ -44,38 +44,38 @@ private func CheckVehicleAmmo(effect fx, object vehicle)
 private func ExecuteCatapult(effect fx)
 {
 	// Still pushing it?
-	if (GetProcedure() != "PUSH" || GetActionTarget() != fx.vehicle)
+	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
 	{
-		if (!GetCommand() || !Random(4))
-			SetCommand("Grab", fx.vehicle);
+		if (!fx.Target->GetCommand() || !Random(4))
+			fx.Target->SetCommand("Grab", fx.vehicle);
 		return true;
 	}
 	// Target still in guard range?
 	if (!this->CheckTargetInGuardRange(fx))
 		return false;
 	// Turn in correct direction.
-	var x = GetX(), y = GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
 	if (tx > x && !fx.vehicle.dir)
 	{
-		fx.vehicle->ControlRight(this);
+		fx.vehicle->ControlRight(fx.Target);
 		return true;
 	}
 	if (tx < x &&  fx.vehicle.dir)
 	{
-		fx.vehicle->ControlLeft(this);
+		fx.vehicle->ControlLeft(fx.Target);
 		return true;
 	}
 	// Make sure we're aiming.
 	if (!fx.aim_weapon)
 	{
-		if (!fx.vehicle->~ControlUseStart(this))
+		if (!fx.vehicle->~ControlUseStart(fx.Target))
 			return false;
 		fx.aim_weapon = fx.vehicle;
 		fx.aim_time = fx.time;
 		return true;
 	}
 	// Update catapult animation.
-	fx.vehicle->~ControlUseHolding(this, tx - x, ty - y);
+	fx.vehicle->~ControlUseHolding(fx.Target, tx - x, ty - y);
 	// Determine power needed to hit target.
 	var dx = tx - x, dy = ty - y + 20;
 	var power = Sqrt((GetGravity() * dx * dx) / Max(Abs(dx) + dy, 1));
@@ -91,7 +91,7 @@ private func ExecuteCatapult(effect fx)
 	// Can shoot now?
 	if (fx.time >= fx.aim_time + fx.aim_wait && PathFree(x, y - 20, x + dx, y + dy - 20))
 	{
-		fx.aim_weapon->~DoFire(this, power, 0);
+		fx.aim_weapon->~DoFire(fx.Target, power, 0);
 		fx.aim_weapon = nil;
 	}
 	return true;

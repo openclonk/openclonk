@@ -14,7 +14,7 @@
 private func ExecuteRanged(effect fx)
 {
 	// Still carrying the bow?
-	if (fx.weapon->Contained() != this)
+	if (fx.weapon->Contained() != fx.Target)
 	{
 		fx.weapon = fx.post_aim_weapon = nil;
 		return false;
@@ -24,7 +24,7 @@ private func ExecuteRanged(effect fx)
 	{
 		// Wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot).
 		if (FrameCounter() - fx.post_aim_weapon_time < 36)
-			if (this->IsAimingOrLoading())
+			if (this->IsAimingOrLoading(fx))
 				return true;
 		fx.post_aim_weapon = nil;
 	}
@@ -34,13 +34,14 @@ private func ExecuteRanged(effect fx)
 	// Look at target.
 	this->ExecuteLookAtTarget(fx);
 	// Make sure we can shoot.
-	if (!this->IsAimingOrLoading() || !fx.aim_weapon)
+	if (!this->IsAimingOrLoading(fx) || !fx.aim_weapon)
 	{
 		this->CancelAiming(fx);
 		if (!this->CheckHandsAction(fx)) return true;
 		// Start aiming.
-		this->SelectItem(fx.weapon);
-		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
+		this->SelectItem(fx, fx.weapon);
+		if (!fx.weapon->ControlUseStart(fx.Target, fx.target->GetX() - fx.Target->GetX(), fx.target->GetY() - fx.Target->GetY()))
+			return false;
 		fx.aim_weapon = fx.weapon;
 		fx.aim_time = fx.time;
 		fx.post_aim_weapon = nil;
@@ -48,11 +49,11 @@ private func ExecuteRanged(effect fx)
 		return;
 	}
 	// Stuck in aim procedure check?
-	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction()) 
+	if (GetEffect("IntAimCheckProcedure", fx.Target) && !fx.Target->ReadyToAction()) 
 		return this->ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account.
 	// Also aim for the head (y-4) so it's harder to evade by jumping.
-	var x = GetX(), y = GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
 	var d = Distance(x, y, tx, ty);
 	// Projected travel time of the arrow.
 	var dt = d * 10 / fx.projectile_speed; 
@@ -69,12 +70,14 @@ private func ExecuteRanged(effect fx)
 		if (fx.ranged_direct)
 			shooting_angle = Angle(x, y, tx, ty, 10);
 		else
-			shooting_angle = this->GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
-		if (GetType(shooting_angle) != C4V_Nil)
+			shooting_angle = this->GetBallisticAngle(tx - x, ty - y, fx.projectile_speed, 160);
+		if (shooting_angle != nil)
 		{
 			// No ally on path? Also search for allied animals, just in case.
+			// Ignore this if requested or if no friendly fire rules is active.
 			var ally;
-			if (!fx.ignore_allies) ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
+			if (!fx.ignore_allies || FindObject(Find_ID(Rule_NoFriendlyFire)))
+				ally = FindObject(Find_OnLine(0, 0, tx - x, ty - y), Find_Exclude(fx.Target), Find_OCF(OCF_Alive), Find_Owner(fx.Target->GetOwner()));
 			if (ally)
 			{
 				// Try to jump, if not possible just wait.
@@ -86,10 +89,10 @@ private func ExecuteRanged(effect fx)
 				// Aim / shoot there.
 				x = Sin(shooting_angle, 1000, 10);
 				y = -Cos(shooting_angle, 1000, 10);
-				fx.aim_weapon->ControlUseHolding(this, x, y);
-				if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
+				fx.aim_weapon->ControlUseHolding(fx.Target, x, y);
+				if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
 				{
-					fx.aim_weapon->ControlUseStop(this, x, y);
+					fx.aim_weapon->ControlUseStop(fx.Target, x, y);
 					 // Assign post-aim status to allow slower shoot animations to pass.
 					fx.post_aim_weapon = fx.aim_weapon;
 					fx.post_aim_weapon_time = FrameCounter();
@@ -100,7 +103,7 @@ private func ExecuteRanged(effect fx)
 		}
 	}
 	// Path not free or out of range. Just wait for enemy to come...
-	fx.aim_weapon->ControlUseHolding(this, tx - x, ty - y);
+	fx.aim_weapon->ControlUseHolding(fx.Target, tx - x, ty - y);
 	// Might also change target if current is unreachable.
 	var new_target;
 	if (!Random(3))
@@ -109,7 +112,10 @@ private func ExecuteRanged(effect fx)
 	return true;
 }
 
-private func IsAimingOrLoading() { return !!GetEffect("IntAim*", this); }
+private func IsAimingOrLoading(effect fx)
+{
+	return !!GetEffect("IntAim*", fx.Target);
+}
 
 
 /*-- Bow --*/
@@ -118,7 +124,7 @@ private func HasArrows(effect fx, object weapon)
 {
 	if (weapon->Contents(0))
 		return true;
-	if (FindObject(Find_Container(this), Find_Func("IsArrow")))
+	if (FindObject(Find_Container(fx.Target), Find_Func("IsArrow")))
 		return true;
 	return false;
 }
@@ -130,7 +136,7 @@ private func HasAmmo(effect fx, object weapon)
 {
 	if (weapon->Contents(0))
 		return true;
-	if (FindObject(Find_Container(this), Find_Func("IsBullet")))
+	if (FindObject(Find_Container(fx.Target), Find_Func("IsBullet")))
 		return true;
 	return false;
 }
@@ -142,7 +148,7 @@ private func HasBombs(effect fx, object weapon)
 {
 	if (weapon->Contents(0))
 		return true;
-	if (FindObject(Find_Container(this), Find_Func("IsGrenadeLauncherAmmo")))
+	if (FindObject(Find_Container(fx.Target), Find_Func("IsGrenadeLauncherAmmo")))
 		return true;
 	return false;
 }
