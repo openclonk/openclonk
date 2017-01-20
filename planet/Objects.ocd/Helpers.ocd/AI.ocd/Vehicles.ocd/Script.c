@@ -1,6 +1,7 @@
 /**
 	AI Vehicles
-	Functionality that helps the AI use vehicles.
+	Functionality that helps the AI use vehicles. Handles:
+	 * Catapult
 	
 	@author Sven2, Maikel
 */
@@ -50,7 +51,7 @@ private func ExecuteCatapult(effect fx)
 		return true;
 	}
 	// Target still in guard range?
-	if (!fx.ai->CheckTargetInGuardRange(fx))
+	if (!this->CheckTargetInGuardRange(fx))
 		return false;
 	// Turn in correct direction.
 	var x = GetX(), y = GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
@@ -79,8 +80,8 @@ private func ExecuteCatapult(effect fx)
 	var dx = tx - x, dy = ty - y + 20;
 	var power = Sqrt((GetGravity() * dx * dx) / Max(Abs(dx) + dy, 1));
 	var dt = dx * 10 / power;
-	tx += fx.ai->GetTargetXDir(fx.target, dt);
-	ty += fx.ai->GetTargetYDir(fx.target, dt);
+	tx += this->GetTargetXDir(fx.target, dt);
+	ty += this->GetTargetYDir(fx.target, dt);
 	if (!fx.target->GetContact(-1))
 		dy += GetGravity() * dt * dt / 200;
 	power = Sqrt((GetGravity() * dx * dx) / Max(Abs(dx) + dy, 1));

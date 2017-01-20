@@ -6,9 +6,13 @@
 */
 
 
+// Include the different parts of the AI.
 #include AI_HelperFunctions
+#include AI_MeleeWeapons
+#include AI_RangedWeapons
 #include AI_Vehicles
 
+// General settings of the AI, these can be modified per script for the specific AI clonk.
 static const AI_DefMaxAggroDistance = 200, // Lose sight to target if it is this far away (unles we're ranged - then always guard the range rect).
              AI_DefGuardRangeX      = 300, // Search targets this far away in either direction (searching in rectangle).
              AI_DefGuardRangeY      = 150, // Search targets this far away in either direction (searching in rectangle).
@@ -38,11 +42,13 @@ public func AddAI(object clonk)
 {
 	var fx = GetEffect("AI", clonk);
 	if (!fx) fx = AddEffect("AI", clonk, 1, 3, nil, AI);
-	if (!fx || !clonk) return nil;
+	if (!fx || !clonk)
+		return nil;
 	fx.ai = AI;
 	clonk.ExecuteAI = AI.Execute;
 	clonk.ai = fx;
-	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
+	if (clonk->GetProcedure() == "PUSH")
+		fx.vehicle = clonk->GetActionTarget();
 	BindInventory(clonk);
 	SetHome(clonk);
 	SetGuardRange(clonk, fx.home_x-AI_DefGuardRangeX, fx.home_y-AI_DefGuardRangeY, AI_DefGuardRangeX*2, AI_DefGuardRangeY*2);
@@ -451,106 +457,6 @@ private func CancelAiming(effect fx)
 	return true;
 }
 
-private func IsAimingOrLoading() { return !!GetEffect("IntAim*", this); }
-
-private func ExecuteRanged(effect fx)
-{
-	// Still carrying the bow?
-	if (fx.weapon->Contained() != this)
-	{
-		fx.weapon = fx.post_aim_weapon = nil;
-		return false;
-	}
-	// Finish shooting process.
-	if (fx.post_aim_weapon)
-	{
-		// Wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot).
-		if (FrameCounter() - fx.post_aim_weapon_time < 36)
-			if (IsAimingOrLoading())
-				return true;
-		fx.post_aim_weapon = nil;
-	}
-	// Target still in guard range?
-	if (!CheckTargetInGuardRange(fx))
-		return false;
-	// Look at target.
-	ExecuteLookAtTarget(fx);
-	// Make sure we can shoot.
-	if (!IsAimingOrLoading() || !fx.aim_weapon)
-	{
-		CancelAiming(fx);
-		if (!CheckHandsAction(fx)) return true;
-		// Start aiming.
-		SelectItem(fx.weapon);
-		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
-		fx.aim_weapon = fx.weapon;
-		fx.aim_time = fx.time;
-		fx.post_aim_weapon = nil;
-		// Enough for now.
-		return;
-	}
-	// Stuck in aim procedure check?
-	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction()) 
-		return ExecuteStand(fx);
-	// Calculate offset to target. Take movement into account.
-	// Also aim for the head (y-4) so it's harder to evade by jumping.
-	var x = GetX(), y = GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
-	var d = Distance(x, y, tx, ty);
-	// Projected travel time of the arrow.
-	var dt = d * 10 / fx.projectile_speed; 
-	tx += GetTargetXDir(fx.target, dt);
-	ty += GetTargetYDir(fx.target, dt);
-	if (!fx.target->GetContact(-1))
-		if (!fx.target->GetCategory() & C4D_StaticBack)
-			ty += GetGravity() * dt * dt / 200;
-	// Path to target free?
-	if (PathFree(x, y, tx, ty))
-	{
-		// Get shooting angle.
-		var shooting_angle;
-		if (fx.ranged_direct)
-			shooting_angle = Angle(x, y, tx, ty, 10);
-		else
-			shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
-		if (GetType(shooting_angle) != C4V_Nil)
-		{
-			// No ally on path? Also search for allied animals, just in case.
-			var ally;
-			if (!fx.ignore_allies) ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
-			if (ally)
-			{
-				if (ExecuteJump()) 
-					return true;
-				// Can't jump and ally is in the way. just wait.
-			}
-			else
-			{
-				// Aim / shoot there.
-				x = Sin(shooting_angle, 1000, 10);
-				y = -Cos(shooting_angle, 1000, 10);
-				fx.aim_weapon->ControlUseHolding(this, x, y);
-				if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
-				{
-					fx.aim_weapon->ControlUseStop(this, x, y);
-					 // Assign post-aim status to allow slower shoot animations to pass.
-					fx.post_aim_weapon = fx.aim_weapon;
-					fx.post_aim_weapon_time = FrameCounter();
-					fx.aim_weapon = nil;
-				}
-				return true;
-			}
-		}
-	}
-	// Path not free or out of range. Just wait for enemy to come...
-	fx.aim_weapon->ControlUseHolding(this, tx - x, ty - y);
-	// Might also change target if current is unreachable.
-	var new_target;
-	if (!Random(3))
-		if (new_target = FindTarget(fx))
-			fx.target = new_target;
-	return true;
-}
-
 private func ExecuteLookAtTarget(effect fx)
 {
 	// Set direction to look at target, we can assume this is instantanuous.
@@ -654,53 +560,6 @@ private func ExecuteStand(effect fx)
 	return true;
 }
 
-private func ExecuteMelee(effect fx)
-{
-	// Still carrying the melee weapon?
-	if (fx.weapon->Contained() != this)
-	{
-		fx.weapon = nil;
-		return false;
-	}
-	// Are we in range?
-	var x = GetX(), y = GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
-	var dx = tx - x, dy = ty - y;
-	if (Abs(dx) <= 10 && PathFree(x, y, tx, ty))
-	{
-		if (dy >= -15)
-		{
-			// Target is under us - sword slash downwards!
-			if (!CheckHandsAction(fx))
-				return true;
-			// Stop here.
-			SetCommand("None");
-			SetComDir(COMD_None);
-			// Cooldown?
-			if (!fx.weapon->CanStrikeWithWeapon(this))
-			{
-				// While waiting for the cooldown, we try to evade...
-				ExecuteEvade(fx, dx, dy);
-				return true;
-			}
-			// OK, slash!
-			SelectItem(fx.weapon);
-			return fx.weapon->ControlUse(this, tx,ty);
-		}
-		// Clonk is above us - jump there.
-		ExecuteJump();
-		if (dx<-5)
-			SetComDir(COMD_Left);
-		else if (dx > 5)
-			SetComDir(COMD_Right);
-		else
-			SetComDir(COMD_None);
-	}
-	// Not in range. Walk there.
-	if (!GetCommand() || !Random(10))
-		SetCommand("MoveTo", fx.target);
-	return true;
-}
-
 private func ExecuteEvade(effect fx, int threat_dx, int threat_dy)
 {
 	// Evade from threat at position delta threat_dx, threat_dy.
@@ -732,7 +591,7 @@ private func ExecuteArm(effect fx)
 	// Find shield.
 	fx.shield = FindContents(Shield);
 	// Find a weapon. For now, just search own inventory.
-	if (FindInventoryWeapon(fx) && fx.weapon->Contained()==this)
+	if (FindInventoryWeapon(fx) && fx.weapon->Contained() == this)
 	{
 		SelectItem(fx.weapon);
 		return true;
@@ -823,33 +682,6 @@ private func FindInventoryWeapon(effect fx)
 		return true;
 	}
 	// No weapon.
-	return false;
-}
-
-private func HasArrows(effect fx, object weapon)
-{
-	if (weapon->Contents(0))
-		return true;
-	if (FindObject(Find_Container(this), Find_Func("IsArrow")))
-		return true;
-	return false;
-}
-
-private func HasAmmo(effect fx, object weapon)
-{
-	if (weapon->Contents(0))
-		return true;
-	if (FindObject(Find_Container(this), Find_Func("IsBullet")))
-		return true;
-	return false;
-}
-
-private func HasBombs(effect fx, object weapon)
-{
-	if (weapon->Contents(0))
-		return true;
-	if (FindObject(Find_Container(this), Find_Func("IsGrenadeLauncherAmmo")))
-		return true;
 	return false;
 }
 
