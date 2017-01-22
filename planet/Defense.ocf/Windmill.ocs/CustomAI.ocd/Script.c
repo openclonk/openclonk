@@ -10,18 +10,6 @@ local AIRSHIP_VICINITY_DIST = 60;
 local ARCHER_SHOOT_DIST = 500;
 
 
-public func SetEnemyData(object clonk, proplist data)
-{
-	var fx = clonk.ai;
-	if (fx)
-	{
-		if (data.Siege) 
-			fx.is_siege = true;
-		return true;
-	}
-	return false;
-}
-
 public func FindTarget(effect fx, bool parent)
 {
 	if (parent)

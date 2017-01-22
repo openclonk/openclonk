@@ -1,10 +1,8 @@
 #include AI
 
-static g_statue;
-
 public func SetEnemyData(object clonk, proplist data)
 {
-	var fx = clonk.ai;
+	var fx = clonk->~GetAI();
 	if (fx)
 	{
 		if (data.Siege)

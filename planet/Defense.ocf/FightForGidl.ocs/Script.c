@@ -5,13 +5,11 @@
 	Defend the statue against waves of enemies
 */
 
-static g_goal, g_object_fade, g_statue, g_doorleft, g_doorright;
 static g_wave; // index of current wave
 static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from AI; contains changes for this scenario
-static g_homebases; // item management / buy menus for each player
 static const ENEMY = 10; // player number of enemy
 static const ALLOW_DEBUG_COMMANDS = true;
 

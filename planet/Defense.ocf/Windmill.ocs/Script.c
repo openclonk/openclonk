@@ -5,14 +5,12 @@
 	Defend the windmills against waves of enemies
 */
 
-static g_goal, g_object_fade, g_flag, g_windgen1, g_windgen2, g_windgen3, g_windmill, g_chest, g_windbag, g_lorry;
 
 static g_wave; // index of current wave
 static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from AI; contains changes for this scenario
-static g_homebases; // item management / buy menus for each player
 static g_lost; // True if all windmills are destroyed
 static const ENEMY = 10; // player number of enemy
 static const ALLOW_DEBUG_COMMANDS = true;
@@ -440,7 +438,7 @@ func InitWaveData()
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
-			{ Name = "$WaveFirst$", Bounty = 1, Enemies = 
+		{ Name = "$WaveFirst$", Bounty = 1, Enemies = 
 			new boomattack   {  Num= 1, Interval=10, PosX = 0, PosY = 500 },
 			Arrows = { X = 0, Y = 500 },
 			Chest = { Item = GoldBar, Value = 25 }
