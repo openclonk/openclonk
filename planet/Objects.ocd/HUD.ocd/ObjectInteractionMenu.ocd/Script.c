@@ -100,6 +100,9 @@ func Destruction()
 	var i = ContentsCount(), obj = nil;
 	while (obj = Contents(--i))
 		obj->RemoveObject(false);
+	// Remove check objects effect.
+	if (cursor)
+		RemoveEffect("IntCheckObjects", cursor);
 }
 
 // used as a static function
