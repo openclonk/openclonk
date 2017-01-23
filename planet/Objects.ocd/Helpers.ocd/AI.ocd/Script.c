@@ -47,7 +47,6 @@ public func AddAI(object clonk)
 		fx = clonk->CreateEffect(FxAI, 1, 3, this);
 	if (!fx || !clonk)
 		return nil;
-	clonk.ai = fx;
 	// Add AI default settings.	
 	BindInventory(clonk);
 	SetHome(clonk);
@@ -57,30 +56,31 @@ public func AddAI(object clonk)
 	return fx;
 }
 
-public func GetAI(object clonk) { return clonk->~GetAI(); }
+public func GetAI(object clonk)
+{
+	if (!clonk)
+		return nil;
+	return clonk->~GetAI();
+}
 
 // Set the current inventory to be removed when the clonk dies. Only works if clonk has an AI.
 public func BindInventory(object clonk)
 {
-	if (!clonk)
-		return false;
-	var fx = clonk.ai;
-	if (!fx)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
 	var cnt = clonk->ContentsCount();
-	fx.bound_weapons = CreateArray(cnt);
+	fx_ai.bound_weapons = CreateArray(cnt);
 	for (var i = 0; i < cnt; ++i)
-		fx.bound_weapons[i] = clonk->Contents(i);
+		fx_ai.bound_weapons[i] = clonk->Contents(i);
 	return true;
 }
 
 // Set the home position the Clonk returns to if he has no target.
 public func SetHome(object clonk, int x, int y, int dir)
 {
-	if (!clonk)
-		return false;
-	var fx = clonk.ai;
-	if (!fx)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
 	// nil/nil defaults to current position.
 	if (!GetType(x))
@@ -89,24 +89,17 @@ public func SetHome(object clonk, int x, int y, int dir)
 		y = clonk->GetY();
 	if (!GetType(dir))
 		dir = clonk->GetDir();
-	fx.home_x = x;
-	fx.home_y = y;
-	fx.home_dir = dir;
+	fx_ai.home_x = x;
+	fx_ai.home_y = y;
+	fx_ai.home_dir = dir;
 	return true;
 }
-
-// Put into clonk proplist.
-public func AI_BindInventory() { return this.ai.ai->BindInventory(this); }
-public func AI_SetHome() { return this.ai.ai->SetHome(this); }
-public func AI_SetIgnoreAllies() { return (this.ai.ignore_allies = true); }
 
 // Set active state: Enables/Disables timer
 public func SetActive(object clonk, bool active)
 {
-	if (!clonk)
-		return false;
-	var fx = clonk.ai;
-	if (!fx)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
 	if (!active)
 	{
@@ -114,28 +107,24 @@ public func SetActive(object clonk, bool active)
 		clonk->SetCommand("None");
 		clonk->SetComDir(COMD_Stop);
 	}
-	return fx->SetActive(active);
+	return fx_ai->SetActive(active);
 }
 
 // Enable/disable auto-searching of targets.
 public func SetAutoSearchTarget(object clonk, bool new_auto_search_target)
 {
-	if (!clonk)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
-	var fx = clonk.ai;
-	if (!fx)
-		return false;
-	fx.auto_search_target = new_auto_search_target;
+	fx_ai.auto_search_target = new_auto_search_target;
 	return true;
 }
 
 // Set the guard range to the provided rectangle.
 public func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
-	if (!clonk)
-		return false;
-	var fx = clonk.ai;
-	if (!fx)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
 	// Clip to landscape size.
 	if (x < 0)
@@ -150,31 +139,27 @@ public func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 	}
 	wdt = Min(wdt, LandscapeWidth() - x);
 	hgt = Min(hgt, LandscapeHeight() - y);
-	fx.guard_range = {x = x, y = y, wdt = wdt, hgt = hgt};
+	fx_ai.guard_range = {x = x, y = y, wdt = wdt, hgt = hgt};
 	return true;
 }
 
 // Set the maximum distance the enemy will follow an attacking clonk.
 public func SetMaxAggroDistance(object clonk, int max_dist)
 {
-	if (!clonk)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
-	var fx = clonk.ai;
-	if (!fx)
-		return false;
-	fx.max_aggro_distance = max_dist;
+	fx_ai.max_aggro_distance = max_dist;
 	return true;
 }
 
 // Set range in which, on first encounter, allied AI clonks get the same aggro target set.
 public func SetAllyAlertRange(object clonk, int new_range)
 {
-	if (!clonk)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
-	var fx = clonk.ai;
-	if (!fx)
-		return false;
-	fx.ally_alert_range = new_range;
+	fx_ai.ally_alert_range = new_range;
 	return true;
 }
 
@@ -183,12 +168,10 @@ public func SetAllyAlertRange(object clonk, int new_range)
 // The callback should return true to be cleared and not called again. Otherwise, it will be called every time a new target is found.
 public func SetEncounterCB(object clonk, string cb_fn)
 {
-	if (!clonk)
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
 		return false;
-	var fx = clonk.ai;
-	if (!fx)
-		return false;
-	fx.encounter_cb = cb_fn;
+	fx_ai.encounter_cb = cb_fn;
 	return true;
 }
 
@@ -209,13 +192,14 @@ local FxAI = new Effect
 		if (this.Target->GetProcedure() == "PUSH")
 			this.vehicle = this.Target->GetActionTarget();
 		// Give the AI a helper function to get the AI control effect.
+		this.Target.ai = this;
 		this.Target.GetAI = this.GetAI;
 		return FX_OK;
 	},
 	
 	GetAI = func()
 	{
-		return this;
+		return this.ai;
 	},
 
 	Timer = func(int time)
@@ -693,7 +677,7 @@ private func FindInventoryWeapon(effect fx)
 		return true;
 	}
 	// Melee weapons.
-	if (fx.weapon = fx.Target->FindContents(Sword)) 
+	if ((fx.weapon = fx.Target->FindContents(Sword)) || (fx.weapon = fx.Target->FindContents(Club)) || (fx.weapon = fx.Target->FindContents(Axe))) 
 	{
 		fx.strategy = this.ExecuteMelee;
 		return true;

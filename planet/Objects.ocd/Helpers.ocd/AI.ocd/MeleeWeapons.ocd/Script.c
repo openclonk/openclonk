@@ -2,6 +2,8 @@
 	AI Melee Weapons
 	Functionality that helps the AI use melee weapons. Handles:
 	 * Sword
+	 * Club
+	 * Axe
 	
 	@author Sven2, Maikel
 */
@@ -37,13 +39,21 @@ private func ExecuteMelee(effect fx)
 				this->ExecuteEvade(fx, dx, dy);
 				return true;
 			}
-			// OK, slash!
+			// OK, do a strike.
 			this->SelectItem(fx, fx.weapon);
-			return fx.weapon->ControlUse(fx.Target, tx, ty);
+			// First try to do a single control use call.
+			if (!fx.weapon->~HoldingEnabled() && fx.weapon->~ControlUse(fx.Target, tx, ty))
+				return true;
+			// Assume the weapon must be held longer for a strike.
+			if (fx.weapon->~ControlUseStart(fx.Target, tx, ty))
+			{
+				fx.weapon->~ControlHolding(fx.Target, tx, ty);
+				fx.weapon->~ControlUseStop(fx.Target, tx, ty);
+			}
 		}
 		// Clonk is above us - jump there.
 		this->ExecuteJump(fx);
-		if (dx<-5)
+		if (dx < -5)
 			fx.Target->SetComDir(COMD_Left);
 		else if (dx > 5)
 			fx.Target->SetComDir(COMD_Right);

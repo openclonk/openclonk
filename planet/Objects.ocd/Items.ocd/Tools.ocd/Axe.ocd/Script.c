@@ -110,9 +110,13 @@ public func ControlUseStart(object clonk, int iX, int iY)
 			return true;
 		}
 	}
+	// Do combat strike if no tree can be found.
+	return ControlUse(clonk, iX, iY);
+}
 
-	/* Combat */
-
+// Strike with the axe.
+public func ControlUse(object clonk, int iX, int iY)
+{
 	if(!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
 	{
 		clonk->PauseUse(this, "ReadyToBeUsed", {clonk = clonk});
