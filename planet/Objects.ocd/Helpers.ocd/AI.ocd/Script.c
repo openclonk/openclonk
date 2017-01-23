@@ -9,8 +9,11 @@
 // Include the different parts of the AI.
 #include AI_HelperFunctions
 #include AI_MeleeWeapons
+#include AI_Protection
 #include AI_RangedWeapons
+#include AI_TargetFinding
 #include AI_Vehicles
+
 
 // General settings of the AI, these can be modified per script for the specific AI clonk.
 static const AI_DefMaxAggroDistance = 200, // Lose sight to target if it is this far away (unles we're ranged - then always guard the range rect).
@@ -376,95 +379,6 @@ private func SelectItem(effect fx, object item)
 	fx.Target->SetHandItemPos(0, fx.Target->GetItemPos(item));
 }
 
-private func ExecuteProtection(effect fx)
-{
-	// Search for nearby projectiles. Ranged AI also searches for enemy clonks to evade.
-	var enemy_search;
-	if (fx.ranged)
-		enemy_search = Find_And(Find_OCF(OCF_CrewMember), Find_Not(Find_Owner(fx.Target->GetOwner())));
-	var projectiles = fx.Target->FindObjects(Find_InRect(-150, -50, 300, 80), Find_Or(Find_Category(C4D_Object), Find_Func("IsDangerous4AI"), Find_Func("IsArrow"), enemy_search), Find_OCF(OCF_HitSpeed2), Find_NoContainer(), Sort_Distance());
-	for (var obj in projectiles)
-	{
-		var dx = obj->GetX() - fx.Target->GetX(), dy = obj->GetY() - fx.Target->GetY();
-		var vx = obj->GetXDir(), vy = obj->GetYDir();
-		if (Abs(dx) > 40 && vx)
-			dy += (Abs(10 * dx / vx)**2) * GetGravity() / 200;
-		var v2 = Max(vx * vx + vy * vy, 1);
-		var d2 = dx * dx + dy * dy;
-		if (d2 / v2 > 4)
-		{
-			// Won't hit within the next 20 frames.
-			continue;
-		}
-		// Distance at which projectile will pass clonk should be larger than clonk size (erroneously assumes clonk is a sphere).
-		var l = dx * vx + dy * vy;
-		if (l < 0 && Sqrt(d2 - l * l / v2) <= fx.Target->GetCon() / 8)
-		{
-			// Not if there's a wall between.
-			if (!PathFree(fx.Target->GetX(), fx.Target->GetY(), obj->GetX(), obj->GetY()))
-				continue;
-			// This might hit.
-			fx.alert=fx.time;
-			// Use a shield if the object is not explosive.
-			if (fx.shield && !obj->~HasExplosionOnImpact())
-			{
-				// Use it!
-				SelectItem(fx, fx.shield);
-				if (fx.aim_weapon == fx.shield)
-				{
-					// Continue to hold shield.
-					fx.shield->ControlUseHolding(fx.Target, dx,dy);
-				}
-				else
-				{
-					// Start holding shield.
-					if (fx.aim_weapon)
-						this->CancelAiming(fx);
-					if (!this->CheckHandsAction(fx))
-						return true;
-					if (!fx.shield->ControlUseStart(fx.Target, dx, dy))
-						return false; // Something's broken :(
-					fx.shield->ControlUseHolding(fx.Target, dx, dy);
-					fx.aim_weapon = fx.shield;
-				}
-				return true;
-			}
-			// No shield. try to jump away.
-			if (dx < 0)
-				fx.Target->SetComDir(COMD_Right);
-			else
-				fx.Target->SetComDir(COMD_Left);
-			if (this->ExecuteJump(fx))
-				return true;
-			// Can only try to evade one projectile.
-			break;
-		}
-	}
-	// Stay alert if there's a target. Otherwise alert state may wear off.
-	if (!fx.target)
-		fx.target = FindEmergencyTarget(fx);
-	if (fx.target)
-		fx.alert = fx.time;
-	else if (fx.time - fx.alert > AI_AlertTime)
-		fx.alert = nil;
-	// Nothing to do.
-	return false;
-}
-
-private func CheckTargetInGuardRange(effect fx)
-{
-	// If target is not in guard range, reset it and return false.
-	if (!Inside(fx.target->GetX() - fx.guard_range.x, -10, fx.guard_range.wdt + 9) || !Inside(fx.target->GetY() - fx.guard_range.y, -10, fx.guard_range.hgt + 9)) 
-	{
-		if (ObjectDistance(fx.target) > 250)
-		{
-			fx.target = nil;
-			return false;
-		}
-	}
-	return true;
-}
-
 private func CancelAiming(effect fx)
 {
 	if (fx.aim_weapon)
@@ -720,33 +634,6 @@ private func ExecuteIdle(effect fx)
 	}
 	// Nothing to do.
 	return false;
-}
-
-private func FindTarget(effect fx)
-{
-	// Consider hostile clonks, or all clonks if the AI does not have an owner.
-	var hostile_criteria = Find_Hostile(fx.Target->GetOwner());
-	if (fx.Target->GetOwner() == NO_OWNER)
-		hostile_criteria = Find_Not(Find_Owner(fx.Target->GetOwner()));
-	for (var target in fx.Target->FindObjects(Find_InRect(fx.guard_range.x - fx.Target->GetX(), fx.guard_range.y - fx.Target->GetY(), fx.guard_range.wdt, fx.guard_range.hgt), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Random()))
-		if (PathFree(fx.Target->GetX(), fx.Target->GetY(), target->GetX(), target->GetY()))
-			return target;
-	// Nothing found.
-	return;
-}
-
-private func FindEmergencyTarget(effect fx)
-{
-	// Consider hostile clonks, or all clonks if the AI does not have an owner.
-	var hostile_criteria = Find_Hostile(fx.Target->GetOwner());
-	if (fx.Target->GetOwner() == NO_OWNER)
-		hostile_criteria = Find_Not(Find_Owner(fx.Target->GetOwner()));
-	// Search nearest enemy clonk in area even if not in guard range, used e.g. when outside guard range (AI fell down) and being attacked.
-	for (var target in fx.Target->FindObjects(Find_Distance(200), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Distance()))
-		if (PathFree(fx.Target->GetX(), fx.Target->GetY(), target->GetX(), target->GetY()))
-			return target;
-	// Nothing found.
-	return;
 }
 
 
