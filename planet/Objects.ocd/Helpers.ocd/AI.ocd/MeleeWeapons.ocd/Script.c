@@ -47,7 +47,7 @@ private func ExecuteMelee(effect fx)
 			// Assume the weapon must be held longer for a strike.
 			if (fx.weapon->~ControlUseStart(fx.Target, tx, ty))
 			{
-				fx.weapon->~ControlHolding(fx.Target, tx, ty);
+				fx.weapon->~ControlUseHolding(fx.Target, tx, ty);
 				fx.weapon->~ControlUseStop(fx.Target, tx, ty);
 			}
 		}

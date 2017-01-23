@@ -26,7 +26,8 @@ public func ExecuteProtection(effect fx)
 			dy += (Abs(10 * dx / vx)**2) * GetGravity() / 200;
 		var v2 = Max(vx * vx + vy * vy, 1);
 		var d2 = dx * dx + dy * dy;
-		if (d2 / v2 > 4)
+		var time_to_impact = 10 * Sqrt(d2) / Sqrt(v2);
+		if (time_to_impact > 20)
 		{
 			// Won't hit within the next 20 frames.
 			continue;
@@ -39,7 +40,7 @@ public func ExecuteProtection(effect fx)
 			if (!PathFree(fx.Target->GetX(), fx.Target->GetY(), obj->GetX(), obj->GetY()))
 				continue;
 			// This might hit.
-			fx.alert=fx.time;
+			fx.alert = fx.time;
 			// Use a shield if the object is not explosive.
 			if (fx.shield && !obj->~HasExplosionOnImpact())
 			{
@@ -48,7 +49,7 @@ public func ExecuteProtection(effect fx)
 				if (fx.aim_weapon == fx.shield)
 				{
 					// Continue to hold shield.
-					fx.shield->ControlUseHolding(fx.Target, dx,dy);
+					fx.shield->ControlUseHolding(fx.Target, dx, dy);
 				}
 				else
 				{
@@ -64,6 +65,9 @@ public func ExecuteProtection(effect fx)
 				}
 				return true;
 			}
+			// Try to use club to bat away objects if available.
+			if (this->ExecuteClubProtection(fx, obj, time_to_impact))
+				return true;
 			// No shield. try to jump away.
 			if (dx < 0)
 				fx.Target->SetComDir(COMD_Right);
@@ -77,7 +81,7 @@ public func ExecuteProtection(effect fx)
 	}
 	// Stay alert if there's a target. Otherwise alert state may wear off.
 	if (!fx.target)
-		fx.target = this->FindEmergencyTarget(fx);
+		fx.target = nil; //this->FindEmergencyTarget(fx);
 	if (fx.target)
 		fx.alert = fx.time;
 	else if (fx.time - fx.alert > AI_AlertTime)
@@ -86,6 +90,32 @@ public func ExecuteProtection(effect fx)
 	if (ExecuteHealing(fx))
 		return true;
 	// Nothing to do.
+	return false;
+}
+
+// Tries to hit away a projectile with a club that is about to hit the AI clonk.
+public func ExecuteClubProtection(effect fx, object projectile, int time_to_impact)
+{
+	// Don't use club on explosives.
+	if (projectile->~HasExplosionOnImpact())
+		return false;	
+	// Check for a club which can be used.
+	var club = fx.Target->FindObject(Find_Container(fx.Target), Find_ID(Club));
+	if (!club)
+		return false;
+	// Assume we are using it so just wait.
+	if (club->RejectUse(fx.Target) || time_to_impact > 8)
+		return true;	
+	var dx = projectile->GetX() - fx.Target->GetX();
+	var dy = projectile->GetY() - fx.Target->GetY();
+	// Execute all control commands in a few frames.
+	this->SelectItem(fx, club);
+	if (club->~ControlUseStart(fx.Target, dx, dy))
+	{
+		ScheduleCall(club, "~ControlUseHolding", 1, 0, fx.Target, dx, dy);
+		ScheduleCall(club, "~ControlUseStop", 2, 0, fx.Target, dx, dy);
+		return true;
+	}	
 	return false;
 }
 
