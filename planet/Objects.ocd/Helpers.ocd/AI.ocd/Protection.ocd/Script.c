@@ -1,9 +1,14 @@
 /**
 	AI Protection
-	Functionality that helps the AI to protect itself and evade danger.
+	Functionality that helps the AI to protect itself and evade danger. Also 
+	handles healing.
 	
 	@author Sven2, Maikel
 */
+
+
+// AI Settings.
+local HealingHitPointsThreshold = 30; // Number of hitpoints below which the AI will try to heal itself even in a dangerous situation.
 
 
 public func ExecuteProtection(effect fx)
@@ -77,6 +82,34 @@ public func ExecuteProtection(effect fx)
 		fx.alert = fx.time;
 	else if (fx.time - fx.alert > AI_AlertTime)
 		fx.alert = nil;
+	// If not evading the AI may try to heal.
+	if (ExecuteHealing(fx))
+		return true;
 	// Nothing to do.
+	return false;
+}
+
+public func ExecuteHealing(effect fx)
+{
+	var hp = fx.Target->GetEnergy();
+	var hp_needed = fx.Target->GetMaxEnergy() - hp;
+	// Only heal when alert if health drops below the healing threshold.
+	// If not alert also heal if more than 40 hitpoints of health are lost.
+	if (hp >= fx.control.HealingHitPointsThreshold && (fx.alert || hp_needed <= 40))
+		return false;
+	// Don't heal if already healing. One can speed up healing by healing multiple times, but we don't.
+	if (GetEffect("HealingOverTime", fx.Target))
+		return false;
+	// Find food to heal with, find closest to but more than needed hp.
+	var food;
+	for (food in fx.Target->FindObjects(Find_Container(fx.Target), Find_Func("NutritionalValue"), Sort_Func("NutritionalValue")))
+		if (food->NutritionalValue() >= hp_needed)
+			break;
+	if (!food)
+		return false;
+	// Eat the food.
+	this->SelectItem(fx, food);
+	if (food->~ControlUse(fx.Target))
+		return true;
 	return false;
 }
