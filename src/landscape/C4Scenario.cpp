@@ -304,6 +304,7 @@ void C4SLandscape::Default()
 	SkyScrollMode=0;
 	MaterialZoom=4;
 	FlatChunkShapes=false;
+	Secret=false;
 }
 
 void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
@@ -347,6 +348,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
 	pComp->Value(mkNamingAdapt(MaterialZoom,            "MaterialZoom",          4));
 	pComp->Value(mkNamingAdapt(FlatChunkShapes,         "FlatChunkShapes",       false));
+	pComp->Value(mkNamingAdapt(Secret,                  "Secret",                false));
 }
 
 void C4SWeather::Default()

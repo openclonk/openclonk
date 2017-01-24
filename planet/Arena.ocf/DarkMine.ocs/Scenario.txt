@@ -15,6 +15,7 @@ MapWidth=140
 MapHeight=140
 TopOpen=0
 BottomOpen=0
+Secret=true
 
 [Weather]
 Climate=0

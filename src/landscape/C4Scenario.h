@@ -183,6 +183,7 @@ public:
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
 	int32_t MaterialZoom;
 	bool FlatChunkShapes; // if true, all material chunks are drawn flat
+	bool Secret; // hide map from observers (except in dev mode and the like)
 public:
 	void Default();
 	void GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum);
