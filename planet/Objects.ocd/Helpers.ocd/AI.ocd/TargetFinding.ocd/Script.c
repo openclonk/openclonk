@@ -13,7 +13,7 @@ public func FindTarget(effect fx)
 	if (fx.Target->GetOwner() == NO_OWNER)
 		hostile_criteria = Find_Not(Find_Owner(fx.Target->GetOwner()));
 	for (var target in fx.Target->FindObjects(Find_InRect(fx.guard_range.x - fx.Target->GetX(), fx.guard_range.y - fx.Target->GetY(), fx.guard_range.wdt, fx.guard_range.hgt), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Random()))
-		if (PathFree(fx.Target->GetX(), fx.Target->GetY(), target->GetX(), target->GetY()))
+		if (fx.ranged || PathFree(fx.Target->GetX(), fx.Target->GetY(), target->GetX(), target->GetY()))
 			return target;
 	// Nothing found.
 	return;
@@ -45,4 +45,11 @@ public func CheckTargetInGuardRange(effect fx)
 		}
 	}
 	return true;
+}
+
+// Returns whether a weapon can be used for a certain target.
+public func IsWeaponForTarget(effect fx, object weapon, object target)
+{
+	// TODO: Implement shooting at different targets, e.g. alive vs. structure.
+	return false;
 }

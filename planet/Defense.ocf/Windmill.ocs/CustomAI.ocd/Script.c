@@ -313,17 +313,19 @@ private func ExecuteRanged(effect fx)
 	ty += this->GetTargetYDir(fx.target, dt);
 	if (!fx.target->GetContact(-1)) if (!fx.target->GetCategory() & C4D_StaticBack) ty += GetGravity()*dt*dt/200;
 
-	// Get shooting angle
+	// Get shooting angle.
 	var shooting_angle;
 	if (fx.ranged_direct)
-		shooting_angle = Angle(x, y, tx, ty, 10);
-	else {
-		if (PathFree(x,y,tx,ty))
-			shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
-		else
-			shooting_angle = GetUpperBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
+	{
+		// For straight shots it is just the angle to the target if the path is free.
+		if (PathFree(x, y, tx, ty))
+			shooting_angle = Angle(x, y, tx, ty, 10);
 	}
-	if (GetType(shooting_angle) != C4V_Nil)
+	// For ballistic shots get the angle (path free check is done inside).
+	// The lower of the two angles is preferentially returned.
+	else
+		shooting_angle = this->GetBallisticAngle(x, y, tx, ty, fx.projectile_speed, 160);
+	if (GetType(shooting_angle) != nil)
 	{
 		// No ally on path? Also search for allied animals, just in case.
 		var ally;
@@ -359,28 +361,6 @@ private func ExecuteRanged(effect fx)
 	var new_target;
 	if (!Random(3)) if (new_target = this->FindTarget(fx)) fx.target = new_target;
 	return true;
-}
-
-// Used when no free path to target (presumably because of the airship gondola floor)
-// Returns the 'upper' shooting angle, see GetBallisticAngle etc.
-private func GetUpperBallisticAngle(int dx, int dy, int v, int max_angle)
-{
-	// v is in 1/10 pix/frame
-	// gravity is in 1/100 pix/frame^2
-	var g = GetGravity();
-	// correct vertical distance to account for integration error
-	// engine adds gravity after movement, so targets fly higher than they should
-	// thus, we aim lower. we don't know the travel time yet, so we assume some 90% of v is horizontal
-	// (it's ~2px correction for 200px shooting distance)
-	dy += Abs(dx)*g*10/(v*180);
-	//Log("Correction: Aiming %d lower!", Abs(dx)*q*10/(v*180));
-	// q is in 1/10000 (pix/frame)^4
-	var q = v**4 - g*(g*dx*dx-2*dy*v*v); // dy is negative up
-	if (q<0) return nil; // out of range
-	var a = (Angle(0, 0, g * dx, -Sqrt(q) - v * v, 10) + 1800) % 3600 - 1800;
-	// Check bounds
-	if(!Inside(a, -10 * max_angle, 10 * max_angle)) return nil;
-	return a;
 }
 
 // Don't move exacty to target's position (throwing check will fail then)
