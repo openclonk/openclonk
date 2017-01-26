@@ -190,16 +190,14 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 	while ((pPlrInfo = OwnInfoPacket.GetPlayerInfo(iPlrInfo++))) pPlrInfo->ResetLeagueProjectedGain();
 	if (Game.Parameters.isLeague())
 	{
-		// lobby only
-		if (!::Network.isLobbyActive())
-			return;
 		// check league authentication for new players
 		for (int i = 0; i < OwnInfoPacket.GetPlayerCount(); i++)
+		{
 			if (!rInfoList.GetPlayerInfoByID(OwnInfoPacket.GetPlayerInfo(i)->GetID()))
 			{
 				C4PlayerInfo *pInfo = OwnInfoPacket.GetPlayerInfo(i);
-				// remove player infos without authentication
-				if (!::Network.LeaguePlrAuthCheck(pInfo))
+				// remove normal (non-script) player infos without authentication or when not in the lobby
+				if (pInfo->GetType() != C4PT_Script && (!::Network.isLobbyActive() || !::Network.LeaguePlrAuthCheck(pInfo)))
 				{
 					OwnInfoPacket.RemoveIndexedInfo(i);
 					i--;
@@ -208,6 +206,7 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 					// always reset authentication ID after check - it's not needed anymore
 					pInfo->SetAuthID("");
 			}
+		}
 	}
 	// send updates to all other clients and reset update flags
 	SendUpdatedPlayers();
