@@ -6,3 +6,5 @@ EnemyBoomAttack=Rakete
 EnemyRapidBoomAttack=Rasche Rakete
 EnemyBallooner=Fallschirmspringer
 EnemyRocketeer=Raketenreiter
+EnemyAirshipPilot=Pilot
+EnemyAirshipCrew=Luftmatrose

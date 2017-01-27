@@ -6,11 +6,13 @@
 	 * Interval (int)      - Spawn an enemy every X frames.
 	 * Bounty (int)        - The amount of clunkers received for killing the enemy.
 	 * Score (int)         - The amount of points obtained for beating this enemy.
-	 * Position (proplist) - The position where the enemy should be spawned {X = ??, Y = ??}.
+	 * Position (proplist) - The position where the enemy should be spawned {X = ??, Y = ??, Exact = true/false}.
 	Secondary properties are:
-	 * Energy
-	 * Skin
-	 * Vehicle
+	 * Energy              - Alternative amount of hitpoints of the clonk.
+	 * Skin                - Alternative skin for the clonk.
+	 * Vehicle             - Vehicle the enemy is controlling or riding.
+	 * VehicleHP           - Hitpoints for the enemy vehicle, can be made stronger.
+	 * IsCrew              - Is part of a crew of the AI that is controlling the vehicle.
 	
 	@author Maikel
  */
@@ -102,14 +104,13 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		enemy.JumpSpeed = enemy.JumpSpeed * prop_enemy.Speed / 100;
 		enemy.FlySpeed = enemy.FlySpeed * prop_enemy.Speed / 100;
 	}
-	enemy.MaxContentsCount = 2;
-	// Reward for killing enemy
+	// Reward for killing enemy: clunker bounty and points.
 	enemy.Bounty = prop_enemy.Bounty;
 	enemy.Score = prop_enemy.Score;
-	// Vehicles
-	var vehicle;
-	if (prop_enemy.Vehicle)
+	// Vehicles for enemies that are not a crew of a vehicle.
+	if (prop_enemy.Vehicle && !prop_enemy.IsCrew)
 	{
+		var vehicle;
 		if (prop_enemy.Vehicle == Balloon)
 		{
 			var balloon = enemy->CreateContents(Balloon);
@@ -126,7 +127,22 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		{
 			vehicle = CreateObjectAbove(prop_enemy.Vehicle, x, y + 10, enemy_plr);
 			enemy->SetAction("Push", vehicle);
+			vehicle.pilot = enemy;
 		}
+		// Give the vehicle more hitpoints.
+		if (prop_enemy.VehicleHP)
+			vehicle.HitPoints = prop_enemy.VehicleHP;
+		// Add the enemy vehicle to no friendly fire rule (must be done by hand, noFF rule is for crew only be default).
+		GameCallEx("OnCreationRuleNoFF", vehicle);
+	}
+	// Move crew members onto their vehicles.
+	if (prop_enemy.IsCrew && prop_enemy.Vehicle)
+	{
+		vehicle = enemy->FindObject(Find_Distance(50), Find_ID(prop_enemy.Vehicle), Sort_Distance());
+		if (vehicle)
+		{
+			enemy.commander = vehicle.pilot;		
+		}	
 	}
 	// Enemy inventory
 	if (prop_enemy.Inventory)
@@ -146,7 +162,6 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		DefenseAI->SetMaxAggroDistance(enemy, LandscapeWidth());
 		DefenseAI->SetGuardRange(enemy, 0, 0, LandscapeWidth(), LandscapeHeight());
 	}
-
 	return enemy;
 }
 
@@ -179,6 +194,11 @@ private func CreateArrowForPlayers(int x, int y)
 
 /*-- Enemies --*/
 
+static const CSKIN_Default   = 0,
+             CSKIN_Steampunk = 1,
+             CSKIN_Alchemist = 2,
+             CSKIN_Farmer    = 3;
+
 // Default enemy, all other enemies inherit from this.
 static const DefaultEnemy =
 {
@@ -210,7 +230,7 @@ local Archer = new DefaultEnemy
 	Energy = 10,
 	Bounty = 5,
 	Color = 0xff00ff00,
-	Skin = 3
+	Skin = CSKIN_Farmer
 };
 
 // A clonk with javelins.
@@ -221,7 +241,7 @@ local Spearman = new DefaultEnemy
 	Energy = 15,
 	Bounty = 5,
 	Color = 0xff0000ff,
-	Skin = 1
+	Skin = CSKIN_Steampunk
 };
 
 // A clonk with javelins.
@@ -232,7 +252,7 @@ local Grenadier = new DefaultEnemy
 	Energy = 25,
 	Bounty = 5,
 	Color = 0xffa0a0ff,
-	Skin = 2
+	Skin = CSKIN_Alchemist
 };
 
 // A rocket which moves to a target.
@@ -274,4 +294,30 @@ local Rocketeer = new DefaultEnemy
 	Color = 0xffffffff,
 	Skin = CSKIN_Steampunk,
 	Vehicle = DefenseBoomAttack
+};
+
+// Commander of the airship.
+local AirshipPilot = new DefaultEnemy
+{
+	Name = "$EnemyAirshipPilot$",
+	Inventory = [Rock, Rock, Rock, Rock, Rock],
+	Energy = 35,
+	Bounty = 15,
+	Color = 0xffff00ff,
+	Skin = CSKIN_Alchemist,
+	Vehicle = Airship,
+	VehilceHP = 100
+};
+
+// Crew of the airship.
+local AirshipCrew = new DefaultEnemy
+{
+	Name = "$EnemyAirshipCrew$",
+	Inventory = [Sword, Shield],
+	Energy = 35,
+	Bounty = 5,
+	Color = 0xff0000aa,
+	Skin = CSKIN_Farmer,
+	Vehicle = Airship,
+	IsCrew = true
 };
