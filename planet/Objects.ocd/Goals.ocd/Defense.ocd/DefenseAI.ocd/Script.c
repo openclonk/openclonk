@@ -8,12 +8,19 @@
 #include AI
 
 
+// AI Settings.
+local AltTargetDistance = 400; // Use the scenario given target if normal AI target is further away than this distance.
+
+
 private func FindTarget(effect fx)
 {
 	var target = _inherited(fx, ...);
 	// Focus on defense target if normal target is too far away.
-	if (!target || ObjectDistance(target, fx.Target) > DefenseAI.AI_AltTargetDistance)
+	if (!target || ObjectDistance(target, fx.Target) > fx.control.AltTargetDistance)
 		target = GetRandomAttackTarget(fx.Target);
+	// If target can't be attacked just take normal target again.
+	if (!this->HasWeaponForTarget(fx, target))
+		target = _inherited(fx, ...);
 	return target;
 }
 
@@ -32,8 +39,3 @@ private func FindInventoryWeapon(effect fx)
 	}
 	return _inherited(fx, ...);
 }
-
-
-/*-- Properties --*/
-
-local AI_AltTargetDistance = 400;

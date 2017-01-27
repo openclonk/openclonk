@@ -1,0 +1,5 @@
+MsgAttack0=Angriff!
+MsgAttack1=Zum Angriff!
+MsgAttack2=Attacke!
+MsgAttack3=Vorwärts!
+MsgAttack4=Hau drauf!

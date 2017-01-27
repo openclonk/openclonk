@@ -7,6 +7,8 @@
 
 
 // Include the different parts of the AI.
+#include AI_Appearance
+#include AI_Debugging
 #include AI_HelperFunctions
 #include AI_MeleeWeapons
 #include AI_Protection
@@ -201,6 +203,17 @@ public func SetEncounterCB(object clonk, string cb_fn)
 
 /*-- AI Effect --*/
 
+// The AI effect stores a lot of information about the AI clonk. This includes its state, enemy target, alertness etc.
+// Each of the functions which are called in the AI definition pass the effect and can then access these variables.
+// The most important variables are:
+// fx.Target     - The AI clonk.
+// fx.target     - The current target the AI clonk will attack.
+// fx.alert      - Whether the AI clonk is alert and aware of enemies around it.
+// fx.weapon     - Currently selected weapon by the AI clonk.
+// fx.ammo_check - Function that is called to check ammunition for fx.weapon.
+// fx.commander  - Is commanded by another AI clonk.
+// fx.control    - Definition controlling this AI, all alternative AIs should include the basic AI.
+
 local FxAI = new Effect
 {
 	Construction = func(id control_def)
@@ -306,7 +319,7 @@ local FxAI = new Effect
 
 /*-- AI Execution --*/
 
-private func Execute(effect fx, int time)
+public func Execute(effect fx, int time)
 {
 	fx.time = time;
 	// Evasion, healing etc. if alert.
@@ -334,6 +347,7 @@ private func Execute(effect fx, int time)
 	if (fx.ammo_check && !this->Call(fx.ammo_check, fx, fx.weapon))
 	{
 		fx.weapon = nil;
+		this->LogAI(fx, Format("weapon %v is out of ammo, AI won't do anything.", fx.weapon));
 		return false;
 	}
 	// Find an enemy.
@@ -367,12 +381,16 @@ private func Execute(effect fx, int time)
 			fx.ally_alert_range = nil;
 		}
 	}
+	// Do stuff on the appearance of the enemy like displaying a message.
+	this->ExecuteAppearance(fx);
 	// Attack it!
+	if (!this->IsWeaponForTarget(fx))
+		this->LogAI(fx, Format("weapon of type %i is not fit to attack %v.", fx.weapon->GetID(), fx.target));
 	return this->Call(fx.strategy, fx);
 }
 
 // Selects an item the clonk is about to use.
-private func SelectItem(effect fx, object item)
+public func SelectItem(effect fx, object item)
 {
 	if (!item)
 		return;
@@ -381,7 +399,7 @@ private func SelectItem(effect fx, object item)
 	fx.Target->SetHandItemPos(0, fx.Target->GetItemPos(item));
 }
 
-private func CancelAiming(effect fx)
+public func CancelAiming(effect fx)
 {
 	if (fx.aim_weapon)
 	{
@@ -396,7 +414,7 @@ private func CancelAiming(effect fx)
 	return true;
 }
 
-private func ExecuteLookAtTarget(effect fx)
+public func ExecuteLookAtTarget(effect fx)
 {
 	// Set direction to look at target, we can assume this is instantanuous.
 	if (fx.target->GetX() > fx.Target->GetX())
@@ -406,7 +424,7 @@ private func ExecuteLookAtTarget(effect fx)
 	return true;
 }
 
-private func ExecuteThrow(effect fx)
+public func ExecuteThrow(effect fx)
 {
 	// Still carrying the weapon to throw?
 	if (fx.weapon->Contained() != fx.Target)
@@ -446,7 +464,7 @@ private func ExecuteThrow(effect fx)
 	return true;
 }
 
-private func CheckHandsAction(effect fx)
+public func CheckHandsAction(effect fx)
 {
 	// Can use hands?
 	if (fx.Target->~HasHandAction())
@@ -461,7 +479,7 @@ private func CheckHandsAction(effect fx)
 	return false;
 }
 
-private func ExecuteStand(effect fx)
+public func ExecuteStand(effect fx)
 {
 	fx.Target->SetCommand("None");
 	if (fx.Target->GetProcedure() == "SCALE" || fx.Target->GetAction() == "Climb")
@@ -497,7 +515,7 @@ private func ExecuteStand(effect fx)
 	return true;
 }
 
-private func ExecuteEvade(effect fx, int threat_dx, int threat_dy)
+public func ExecuteEvade(effect fx, int threat_dx, int threat_dy)
 {
 	// Evade from threat at position delta threat_dx, threat_dy.
 	if (threat_dx < 0)
@@ -511,7 +529,7 @@ private func ExecuteEvade(effect fx, int threat_dx, int threat_dy)
 	return true;
 }
 
-private func ExecuteJump(effect fx)
+public func ExecuteJump(effect fx)
 {
 	// Jump if standing on floor.
 	if (fx.Target->GetProcedure() == "WALK")
@@ -523,7 +541,7 @@ private func ExecuteJump(effect fx)
 	return false;
 }
 
-private func ExecuteArm(effect fx)
+public func ExecuteArm(effect fx)
 {
 	// Find shield.
 	fx.shield = fx.Target->FindContents(Shield);
@@ -537,7 +555,7 @@ private func ExecuteArm(effect fx)
 	return false;
 }
 
-private func FindInventoryWeapon(effect fx)
+public func FindInventoryWeapon(effect fx)
 {
 	fx.ammo_check = nil;
 	fx.ranged = false;
@@ -622,7 +640,7 @@ private func FindInventoryWeapon(effect fx)
 	return false;
 }
 
-private func ExecuteIdle(effect fx)
+public func ExecuteIdle(effect fx)
 {
 	if (!Inside(fx.Target->GetX() - fx.home_x, -5, 5) || !Inside(fx.Target->GetY() - fx.home_y, -15, 15))
 	{
@@ -709,7 +727,7 @@ public func Definition(proplist def)
 	);
 }
 
-private func EvalAct_SetActive(proplist props, proplist context)
+public func EvalAct_SetActive(proplist props, proplist context)
 {
 	// User action: Activate enemy AI.
 	var enemy = UserAction->EvaluateValue("Object", props.Enemy, context);
@@ -735,7 +753,7 @@ private func EvalAct_SetActive(proplist props, proplist context)
 		fx.target = attack_target;
 }
 
-private func EvalAct_SetNewHome(proplist props, proplist context)
+public func EvalAct_SetNewHome(proplist props, proplist context)
 {
 	// User action: Set new home.
 	var enemy = UserAction->EvaluateValue("Object", props.Enemy, context);

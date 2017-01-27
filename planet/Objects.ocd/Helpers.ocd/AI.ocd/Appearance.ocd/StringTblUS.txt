@@ -1,0 +1,5 @@
+MsgAttack0=Attack!
+MsgAttack1=Charge!
+MsgAttack2=Get them!
+MsgAttack3=For glory!
+MsgAttack4=Beat 'em up!
