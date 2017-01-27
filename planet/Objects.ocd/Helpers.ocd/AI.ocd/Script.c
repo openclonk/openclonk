@@ -214,6 +214,8 @@ local FxAI = new Effect
 		// Store the vehicle the AI is using.
 		if (this.Target->GetProcedure() == "PUSH")
 			this.vehicle = this.Target->GetActionTarget();
+		// Store whether the enemy is controlled by a commander.
+		this.commander = this.Target.commander;
 		// Give the AI a helper function to get the AI control effect.
 		this.Target.ai = this;
 		this.Target.GetAI = this.GetAI;

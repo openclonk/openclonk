@@ -145,8 +145,6 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 	if (GBackLiquid(0,25) && !GBackLiquid(0,24) && effect.SpeedY > 1)
 		//effect.SpeedY = 0;
 
-	var dir = GetComDir();
-	//Log("%v", dir );
 	// Turn the airship around if needed
 	if (effect.AnimDir == DIR_Left && GetXDir(100) > 30)
 		if (GetComDir() == COMD_Right || GetComDir() == COMD_UpRight || GetComDir() == COMD_DownRight)

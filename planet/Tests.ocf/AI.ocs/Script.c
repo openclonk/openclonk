@@ -43,7 +43,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);
-	fx.testnr = 1;
+	fx.testnr = 11;
 	fx.launched = false;
 	fx.plr = plr;
 	return;
@@ -202,6 +202,15 @@ global func Test10_OnStart(int plr)
 	return true;
 }
 
+global func Test11_OnStart(int plr)
+{
+	CreateEnemy(Clonk, 120, 258, script_enemy1, [Bow, Arrow, Arrow, Arrow], 50);
+	CreateEnemy(Clonk, 392, 258, script_enemy2, [Bow, Arrow, Arrow, Arrow], 50);
+	DrawMaterialQuad("Rock", 246, 200, 266, 200, 266, 400, 246, 400);
+	// Log what the test is about.
+	Log("AI battle: bow (p1) vs. bow (p2).");
+	return true;
+}
 
 /*-- Test Control --*/
 

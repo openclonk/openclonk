@@ -19,6 +19,10 @@ private func ExecuteVehicle(effect fx)
 	if (fx.vehicle->GetID() == Catapult)
 		return this->ExecuteCatapult(fx);
 
+	// Steer the airship.
+	if (fx.vehicle->GetID() == Airship)
+		return this->ExecuteAirship(fx);
+		
 	// Don't know how to use this vehicle, so reset it.
 	fx.vehicle = nil;
 	return false;
@@ -32,6 +36,9 @@ private func CheckVehicleAmmo(effect fx, object vehicle)
 		if (this->CheckCatapultAmmo(fx, vehicle))
 			return true;		
 	}
+	// These vehicles don't need ammo.
+	if (vehicle->GetID() == Airship)
+		return true;
 	// Vehicle out of ammo: Can't really be refilled. Stop using that weapon.
 	fx.vehicle = nil;
 	fx.Target->ObjectCommand("UnGrab");
@@ -100,4 +107,111 @@ private func ExecuteCatapult(effect fx)
 private func CheckCatapultAmmo(effect fx, object vehicle)
 {
 	return vehicle->ContentsCount() > 0;
+}
+
+
+/*-- Airship --*/
+
+public func ExecuteAirship(effect fx)
+{
+	// Still steering the airship?
+	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
+	{
+		if (!fx.Target->GetCommand())
+			fx.Target->SetCommand("Grab", fx.vehicle);
+		return true;
+	}
+	
+	// Move the airship to the target. Check if no command or is making contact, this means a new control needs to be issued.
+	if (!fx.vehicle->GetCommand() || fx.vehicle->GetContact(-1))
+	{
+		// If close enough (also in y-coordinates) release the crew.
+		if (fx.vehicle->ObjectDistance(fx.target) < 100 && Inside(fx.vehicle->GetY() - fx.target->GetY(), -40, 0))
+		{
+			// Unboard the crew and let go of airship.
+			for (var clonk in this->GetAirshipCrew(fx))
+			{
+				var clonk_ai = clonk->GetAI();
+				clonk_ai.commander = nil;
+				clonk_ai.target = fx.target;
+			}
+			fx.vehicle = nil;
+			fx.weapon = nil;
+			fx.Target->SetCommand("UnGrab");
+			return true;
+		}		
+		// Find a boarding point for the target.
+		var boarding_point = this->GetAirshipBoardingPoint(fx);
+		if (boarding_point)
+		{
+			fx.vehicle->SetCommand("MoveTo", nil, boarding_point[0], boarding_point[1]);
+			return true;	
+		}
+	}
+	return false;
+}
+
+// Finds a location where to board the airship close to the target.
+public func GetAirshipBoardingPoint(effect fx)
+{
+	if (!fx.target || !fx.vehicle)
+		return nil;
+	var vx = fx.vehicle->GetX();
+	var vy = fx.vehicle->GetY();
+	var tx = fx.target->GetX();
+	var ty = fx.target->GetY();
+	// Look for a new target if the current path is not free and too far away.
+	if (fx.vehicle->ObjectDistance(fx.target) > 250 && !PathFree(vx - 30, vy, tx, ty) && !PathFree(vx + 30, vy, tx, ty))
+	{
+		fx.target = this->FindTarget(fx);
+		if (!fx.target)
+			return nil;
+		tx = fx.target->GetX();
+		ty = fx.target->GetY();
+	}
+	// Approach from above or the side if possible, so move airship up if below target.
+	if (vy > ty)
+	{
+		var gx = vx + RandomX(-10, 10);
+		var gy = vy - RandomX(80, 100);
+		// Move to the side first if exactly below target.
+		if (Abs(vx - tx) <= 150)
+		{
+			gx = (2 * Random(2) - 1) * RandomX(80, 100);
+			gy = vy + RandomX(-10, 10);
+		}
+		// Check if path is free to new coordinates (blocking by solid mask is not possible).
+		if (PathFree(vx, vy, gx, gy))
+			return [gx, gy];
+	}
+	// Go for a straight line to left/right of the target, roughly in steps of 100px.
+	for (var attempts = 0; attempts < 10; attempts++)
+	{
+		var txr = tx + Sign(vx - tx) * RandomX(40, 60);
+		var tyr = ty - 10;
+		var d = Distance(vx, vy, txr, tyr);
+		var gx = vx + Min(RandomX(80, 100), d) * (txr - vx) / d;
+		var gy = vy + Min(RandomX(80, 100), d) * (tyr - vy) / d;
+		if (PathFree(vx - 30, vy, gx, gy) || PathFree(vx + 30, vy, gx, gy))
+			return [gx, gy];
+	}
+	return nil;
+}
+
+public func PromoteNewAirshipCaptain(effect fx)
+{
+	var crew = RandomElement(this->GetAirshipCrew(fx));
+	if (!crew)
+		return false;
+	return;
+}
+
+public func GetAirshipCrew(effect fx)
+{
+	// Find all crew members with this commander.
+	var crew = [];
+	for (var clonk in fx.Target->FindObjects(Find_OCF(OCF_CrewMember), Find_Owner(fx.Target->GetOwner())))
+		if (clonk->~GetAI() && clonk->GetAI().commander == fx.Target)
+			PushBack(crew, clonk);
+	return crew;
 }
