@@ -7,3 +7,4 @@ Ziel: Überlebe möglichst viele Angriffswellen.
 Tipps:
 - This round is cooperative, so work together and divide tasks.
 - Build up a settlement and defense during the earlier rounds of attack.
+- Resources and liquids reappear at certain locations.

@@ -148,7 +148,7 @@ func InitializeObjects()
 
 	var Elevator001 = CreateObjectAbove(Elevator, 104, 487);
 	Elevator001->SetDir(DIR_Right);
-	Elevator001->CreateShaft(0);
+	Elevator001->CreateShaft(230);
 	Elevator001->SetCasePosition(476);
 
 	var Basement005 = CreateObject(Basement, 115, 492);

@@ -10,13 +10,15 @@ static init_defenders;
 
 protected func Initialize()
 {
+	// Defense goal.
 	CreateObject(Goal_Defense);
 	
+	// Rules.
 	CreateObject(Rule_BuyAtFlagpole);
 	CreateObject(Rule_BaseRespawn);
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoFriendlyFire);
-	CreateObject(Rule_Gravestones);
+	CreateObject(Rule_Gravestones)->SetFadeOut(3 * 36);
 	return;
 }
 
@@ -76,53 +78,64 @@ public func GetAttackWave(int nr)
 		Name = "$MsgWave$",
 		// Waves last shorter as the number increases.
 		Duration = BoundBy(120 - nr / 3, 20, 120),
-		Bounty = 100,
-		Score = 100,
+		Bounty = 50,
+		Score = 50,
 		Enemies = []
 	};
 	
 	// Add enemy ground troups: swordsman, archer or spearman.
-	if (nr % 3 == 0)
-	{
-		PushBack(wave.Enemies, new DefenseEnemy.Swordsman {
-			Amount = BoundBy(nr - 1, 1, 20),
-			Energy = BoundBy(20 + nr, 30, 100),
-			Position = pos_land
-		});
-	}
-	if (nr % 3 == 1)
-	{
-		PushBack(wave.Enemies, new DefenseEnemy.Archer {
-			Amount = BoundBy(nr - 1, 1, 20),
-			Energy = BoundBy(10 + nr, 20, 50),
-			Position = pos_land
-		});
-	}
-	if (nr % 3 == 2)
-	{
-		PushBack(wave.Enemies, new DefenseEnemy.Spearman {
-			Amount = BoundBy(nr - 1, 1, 20),
-			Energy = BoundBy(10 + nr, 20, 50),
-			Position = pos_land
-		});
-	}
+	PushBack(wave.Enemies, new DefenseEnemy.Swordsman {
+		Amount = BoundBy((nr + 2) / 4, 0, 20),
+		Energy = BoundBy(20 + nr, 30, 100),
+		Position = pos_land
+	});
+	PushBack(wave.Enemies, new DefenseEnemy.Archer {
+		Amount = BoundBy((nr + 1) / 4, 0, 20),
+		Energy = BoundBy(10 + nr, 20, 50),
+		Position = pos_land
+	});
+	PushBack(wave.Enemies, new DefenseEnemy.Spearman {
+		Amount = BoundBy(nr / 4, 0, 20),
+		Energy = BoundBy(10 + nr, 20, 50),
+		Position = pos_land
+	});
+	PushBack(wave.Enemies, new DefenseEnemy.Grenadier {
+		Amount = BoundBy((nr - 1) / 4, 0, 20),
+		Energy = BoundBy(25 + nr, 30, 80),
+		Position = pos_land
+	});
 	// Add enemy: boom attack.
 	PushBack(wave.Enemies, new DefenseEnemy.BoomAttack {
-		Amount = BoundBy(nr - 1, 1, 20),
+		Amount = BoundBy(nr / 2 + 1, 1, 20),
 		Speed = BoundBy(80 + nr * 5, 100, 250),
 		Position = pos_sky
 	});
-	// Add enemy: rocketeer.
+	// Add enemy: rocketeer with bow.
 	PushBack(wave.Enemies, new DefenseEnemy.Rocketeer {
-		Amount = BoundBy(nr - 1, 1, 20),
+		Amount = BoundBy(nr / 2, 1, 20),
 		Inventory = [Bow, RandomElement([Arrow, FireArrow, BombArrow])],
 		Position = pos_sky
 	});
+	// Add enemy: rocketeer with blunderbuss.
+	if (nr > 4)
+	{
+		PushBack(wave.Enemies, new DefenseEnemy.Rocketeer {
+			Amount = BoundBy(nr / 2 - 2, 1, 20),
+			Inventory = [Blunderbuss, LeadBullet],
+			Position = pos_sky
+		});
+	}
 	return wave;
 }
 
 // The attackers should go for flagpoles.
 public func GiveRandomAttackTarget(object attacker)
 {
-	return FindObject(Find_Category(C4D_Structure), Find_Func("IsFlagpole"), Find_Hostile(attacker->GetController()), Sort_Random());
+	var target = FindObject(Find_Category(C4D_Structure), Find_Func("IsFlagpole"), Find_Hostile(attacker->GetController()), Sort_Random());
+	if (target)
+		return target;
+	target = FindObject(Find_OCF(OCF_CrewMember), Find_Hostile(attacker->GetController()), Sort_Distance());
+	if (target)
+		return target;
+	return;
 }
