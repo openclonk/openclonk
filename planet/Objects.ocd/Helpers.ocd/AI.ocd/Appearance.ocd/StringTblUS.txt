@@ -3,3 +3,7 @@ MsgAttack1=Charge!
 MsgAttack2=Get them!
 MsgAttack3=For glory!
 MsgAttack4=Beat 'em up!
+
+MsgIntruder0=An intruder!
+MsgIntruder1=Who are you?
+MsgIntruder2=Get out!

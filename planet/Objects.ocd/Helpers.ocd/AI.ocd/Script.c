@@ -380,6 +380,8 @@ public func Execute(effect fx, int time)
 							if (GameCall(ally_fx.encounter_cb, ally, fx.target))
 								ally_fx.encounter_cb = nil;
 					}
+			// Do some messages.
+			this->ExecuteIntruderMessage(fx);		
 			// Waking up works only once. after that, AI might have moved and wake up clonks it shouldn't.
 			fx.ally_alert_range = nil;
 		}

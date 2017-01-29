@@ -40,8 +40,15 @@ public func ExecuteAttackMessage(effect fx)
 	if (group_cnt >= RandomX(3, 6))
 	{
 		fx.Target->Sound("Clonk::Action::GroupAttack");
-		fx.Target->Message(Translate(Format("MsgAttack%d", Random(4))));
+		fx.Target->Message(Translate(Format("MsgAttack%d", Random(5))));
 		fx.last_message = FrameCounter();
 	}
+	return true;
+}
+
+// Shows a message when an intruder is spotted.
+public func ExecuteIntruderMessage(effect fx)
+{
+	fx.Target->Message(Translate(Format("MsgIntruder%d", Random(3))));
 	return true;
 }
