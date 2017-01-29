@@ -51,17 +51,20 @@ private func ExecuteMelee(effect fx)
 				fx.weapon->~ControlUseStop(fx.Target, tx, ty);
 			}
 		}
-		// Clonk is above us - jump there.
-		this->ExecuteJump(fx);
-		if (dx < -5)
-			fx.Target->SetComDir(COMD_Left);
-		else if (dx > 5)
-			fx.Target->SetComDir(COMD_Right);
-		else
-			fx.Target->SetComDir(COMD_None);
+		// Clonk is above us - jump there, but only if not commanded.
+		if (!fx.commander)
+		{
+			this->ExecuteJump(fx);
+			if (dx < -5)
+				fx.Target->SetComDir(COMD_Left);
+			else if (dx > 5)
+				fx.Target->SetComDir(COMD_Right);
+			else
+				fx.Target->SetComDir(COMD_None);
+		}
 	}
-	// Not in range. Walk there.
-	if (!fx.Target->GetCommand() || !Random(10))
+	// Not in range. Walk there, but only if not being commanded.
+	if (!fx.commander && (!fx.Target->GetCommand() || !Random(10)))
 		fx.Target->SetCommand("MoveTo", fx.target);
 	return true;
 }

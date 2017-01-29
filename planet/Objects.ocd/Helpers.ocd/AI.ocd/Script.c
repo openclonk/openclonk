@@ -479,10 +479,11 @@ public func CheckHandsAction(effect fx)
 	return false;
 }
 
+// Tries to make sure the clonk stands: i.e. scales down or let's go when hangling.
 public func ExecuteStand(effect fx)
 {
 	fx.Target->SetCommand("None");
-	if (fx.Target->GetProcedure() == "SCALE" || fx.Target->GetAction() == "Climb")
+	if (fx.Target->GetProcedure() == "SCALE")
 	{
 		var tx;
 		if (fx.target)
@@ -503,12 +504,23 @@ public func ExecuteStand(effect fx)
 				fx.Target->ObjectControlMovement(fx.Target->GetOwner(), CON_Left, 100); // let go
 		}
 	}
+	else if (fx.Target->GetAction() == "Climb")
+	{
+		var climb_fx = GetEffect("IntClimbControl", fx.Target);
+		if (climb_fx)
+		{
+			// For now just climb down the ladder.
+			var ctrl = CON_Down;		
+			EffectCall(fx.Target, climb_fx, "Control", ctrl, 0, 0, 100, false, CONS_Down);
+		}	
+	}
 	else if (fx.Target->GetProcedure() == "HANGLE")
 	{
 		fx.Target->ObjectControlMovement(fx.Target->GetOwner(), CON_Down, 100);
 	}
 	else
-	{
+	{		
+		this->LogAI(fx, Format("ExecuteStand has no idea what to do for action %v and procedure %v.", fx.Target->GetAction(), fx.Target->GetProcedure()));
 		// Hm. What could it be? Let's just hope it resolves itself somehow...
 		fx.Target->SetComDir(COMD_Stop);
 	}
@@ -517,6 +529,10 @@ public func ExecuteStand(effect fx)
 
 public func ExecuteEvade(effect fx, int threat_dx, int threat_dy)
 {
+	// Don't try to evade if the AI has a commander, if an AI is being commanded
+	// it has more important tasks, like staying on an airship.
+	if (fx.commander)
+		return false;
 	// Evade from threat at position delta threat_dx, threat_dy.
 	if (threat_dx < 0)
 		fx.Target->SetComDir(COMD_Left);
