@@ -91,9 +91,12 @@ public func EndRound()
 {
 	// Set evaluation data.
 	SetRoundEvaluationData();
-	// Remove wave control effect.
+	// Remove wave control and wave tracking effects.
 	if (fx_wave_control)
 		fx_wave_control->Remove();
+	var fx, index = 0;
+	while (fx = GetEffect("FxTrackWave", this, index++))
+		fx->Remove();
 	// Eliminate attacker.
 	for (var plr in GetPlayers(C4PT_Script))
 		EliminatePlayer(plr);	
