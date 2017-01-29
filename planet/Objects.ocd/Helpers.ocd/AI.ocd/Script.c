@@ -1,6 +1,9 @@
 /**
 	AI
-	Controls enemy NPC behaviour.
+	Controls enemy NPC behaviour. Different parts of the AI are in the different include
+	files below. This AI can be overloaded by making a new AI object and including this
+	one and then add the needed changes. The relevant settings are all local constants 
+	which can be directly changed in the new AI object, or functions can be overloaded.
 
 	@author Sven2, Maikel
 */
@@ -18,11 +21,10 @@
 #include AI_Vehicles
 
 
-// General settings of the AI, these can be modified per script for the specific AI clonk.
-static const AI_DefMaxAggroDistance = 200, // Lose sight to target if it is this far away (unles we're ranged - then always guard the range rect).
-             AI_DefGuardRangeX      = 300, // Search targets this far away in either direction (searching in rectangle).
-             AI_DefGuardRangeY      = 150, // Search targets this far away in either direction (searching in rectangle).
-             AI_AlertTime           = 800; // Number of frames after alert after which AI no longer checks for projectiles.
+// AI Settings.
+local MaxAggroDistance = 200; // Lose sight to target if it is this far away (unless we're ranged - then always guard the range rect).
+local GuardRangeX = 300; // Search targets this far away in either direction (searching in rectangle).
+local GuardRangeY = 150; // Search targets this far away in either direction (searching in rectangle).
 
 
 /*-- Public interface --*/
@@ -58,8 +60,8 @@ public func AddAI(object clonk)
 	// Add AI default settings.	
 	BindInventory(clonk);
 	SetHome(clonk);
-	SetGuardRange(clonk, fx_ai.home_x - AI_DefGuardRangeX, fx_ai.home_y - AI_DefGuardRangeY, AI_DefGuardRangeX * 2, AI_DefGuardRangeY * 2);
-	SetMaxAggroDistance(clonk, AI_DefMaxAggroDistance);
+	SetGuardRange(clonk, fx_ai.home_x - this.GuardRangeX, fx_ai.home_y - this.GuardRangeY, this.GuardRangeX * 2, this.GuardRangeY * 2);
+	SetMaxAggroDistance(clonk, this.MaxAggroDistance);
 	SetAutoSearchTarget(clonk, true);
 	return fx_ai;
 }
@@ -305,7 +307,7 @@ local FxAI = new Effect
 		if (this.home_x != this.Target->GetX() || this.home_y != this.Target->GetY() || this.home_dir != this.Target->GetDir())
 			props->AddCall("AI", this.control, "SetHome", this.Target, this.home_x, this.home_y, GetConstantNameByValueSafe(this.home_dir, "DIR_"));
 		props->AddCall("AI", this.control, "SetGuardRange", this.Target, this.guard_range.x, this.guard_range.y, this.guard_range.wdt, this.guard_range.hgt);
-		if (this.max_aggro_distance != AI_DefMaxAggroDistance)
+		if (this.max_aggro_distance != this.control.MaxAggroDistance)
 			props->AddCall("AI", this.control, "SetMaxAggroDistance", this.Target, this.max_aggro_distance);
 		if (this.ally_alert_range)
 			props->AddCall("AI", this.control, "SetAllyAlertRange", this.Target, this.ally_alert_range);

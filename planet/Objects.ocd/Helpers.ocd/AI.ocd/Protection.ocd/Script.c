@@ -9,6 +9,7 @@
 
 // AI Settings.
 local HealingHitPointsThreshold = 30; // Number of hitpoints below which the AI will try to heal itself even in a dangerous situation.
+local AlertTime = 800; // Number of frames after alert after which AI no longer checks for projectiles.
 
 
 public func ExecuteProtection(effect fx)
@@ -84,7 +85,7 @@ public func ExecuteProtection(effect fx)
 		fx.target = nil; //this->FindEmergencyTarget(fx);
 	if (fx.target)
 		fx.alert = fx.time;
-	else if (fx.time - fx.alert > AI_AlertTime)
+	else if (fx.time - fx.alert > fx.control.AlertTime)
 		fx.alert = nil;
 	// If not evading the AI may try to heal.
 	if (ExecuteHealing(fx))
