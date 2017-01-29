@@ -64,6 +64,8 @@ public func IsWeaponForTarget(effect fx, object weapon, object target)
 {
 	weapon = weapon ?? fx.weapon;
 	target = target ?? fx.target;
+	if (!weapon || !target)
+		return false;	
 	// If on a vehicle forward behavior.
 	if (fx.vehicle)
 		return this->IsVehicleForTarget(fx, fx.vehicle, target);
@@ -89,6 +91,8 @@ public func IsVehicleForTarget(effect fx, object vehicle, object target)
 {
 	vehicle = vehicle ?? fx.vehicle;
 	target = target ?? fx.target;
+	if (!vehicle || !target)
+		return false;
 	// Airships may board everywhere.
 	if (vehicle->GetID() == Airship)
 		return true;
