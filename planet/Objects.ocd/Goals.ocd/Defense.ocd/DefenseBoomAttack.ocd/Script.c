@@ -21,6 +21,7 @@ public func Construction()
 
 /*-- Flight --*/
 
+// Rotates the boom attack slowly around its axis.
 local FxFlightRotation = new Effect
 {
 	Construction = func()
@@ -41,11 +42,17 @@ local FxFlightRotation = new Effect
 	}
 };
 
+// Controls the boom attack flight by flying through the given waypoints or to the target.
+// The way points is a list of coordinates as [{X = ??, Y = ??}, ...]. The waypoints are
+// dealt with first and then the target is aimed for.
 local FxFlight = new Effect
 {
 	Construction = func()
 	{
 		this.target = GetRandomAttackTarget(Target);
+		// Get the boom attack waypoints from the scenario or make an array.
+		this.waypoints = GameCall("GetBoomAttackWaypoints", Target) ?? [];
+		this.current_waypoint = nil;
 		if (this.target)
 		{
 			var dx = this.target->GetX() - Target->GetX();
@@ -60,11 +67,29 @@ local FxFlight = new Effect
 		if (!this.target)
 		{
 			this.target = GetRandomAttackTarget(Target);
-			if (!this.target)
+			if (!this.target && !this.current_waypoint && GetLength(this.waypoints) == 0)
 			{
 				Target->DoFireworks(NO_OWNER);
 				return FX_Execute_Kill;	
 			}
+		}
+		
+		// Check if reached current waypoint.
+		if (this.current_waypoint)
+			if (Distance(this.current_waypoint.X, this.current_waypoint.Y, Target->GetX(), Target->GetY()) < 8)
+				this.current_waypoint = nil;
+		
+		// Get relative coordinates to target.
+		var dx, dy;
+		
+		// Handle waypoints and get coordinates to move to.
+		if (this.current_waypoint || GetLength(this.waypoints) > 0)
+		{
+			if (!this.current_waypoint)
+				this.current_waypoint = PopFront(this.waypoints);
+			// Set relative coordinates to new waypoint.
+			dx = this.current_waypoint.X - Target->GetX();
+			dy = this.current_waypoint.Y - Target->GetY();		
 		}
 		
 		// Explode if close enough to target.
@@ -72,14 +97,41 @@ local FxFlight = new Effect
 		{
 			Target->DoFireworks(NO_OWNER);
 			return FX_Execute_Kill;	
-		}			
+		}
 		
-		// Adjust angle to target.
-		var dx = this.target->GetX() - Target->GetX();
-		var dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
+		// Get relative coordinates to target.
+		if (this.target && !this.current_waypoint)
+		{
+			dx = this.target->GetX() - Target->GetX();
+			dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
+			// Check if path is free to target, if not try to find a way around using waypoints.
+			if (!PathFree(this.target->GetX(), this.target->GetY(), Target->GetX(), Target->GetY())/* && !Target->GBackSolid(dx, dy)*/)
+			{
+				// Try to set a waypoint half way on a line orthogonal to the current direction.
+				for (var attempts = 0; attempts < 40; attempts++)
+				{
+					var d = Sqrt(dx**2 + dy**2);
+					var try_dist = Max(20 + 2 * attempts, d * attempts / 80) + RandomX(-10, 10);
+					var line_dist = (2 * Random(2) - 1) * try_dist;
+					var way_x = Target->GetX() + dx / 2 + dy * line_dist / d;
+					var way_y = Target->GetY() + dy / 2 - dx * line_dist / d;
+					// Path to new waypoint must be free and inside the landscape borders.
+					if (!PathFree(Target->GetX(), Target->GetY(), way_x, way_y) || !PathFree(this.target->GetX(), this.target->GetY(), way_x, way_y))
+						continue;
+					if (!Inside(way_x, 0, LandscapeWidth()) || !Inside(way_y, 0, LandscapeHeight()))
+						continue; 
+					this.current_waypoint = {X = way_x, Y = way_y};
+					break;
+				}
+			}
+		}
+		
 		// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
-		var aim_dist = 600; 
-		dy = dy * (aim_dist - Abs(dx)) / aim_dist;
+		if (this.target && !this.current_waypoint)
+		{
+			var aim_dist = 600; 
+			dy = dy * (aim_dist - Abs(dx)) / aim_dist;
+		}
 		var angle_to_target = Angle(0, 0, dx, dy);
 		var angle_rocket = Target->GetR();
 		if (angle_rocket < 0)
@@ -102,8 +154,37 @@ local FxFlight = new Effect
 		var ydir = Target->GetYDir() / 2;
 		Target->CreateParticle("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
 		return FX_OK;
-	}
+	},
+	
+	AddWaypoint = func(proplist waypoint)
+	{
+		PushBack(this.waypoints, waypoint);	
+	},
+	
+	SetWaypoints = func(array waypoints)
+	{
+		this.waypoints = waypoints;
+	}	
 };
+
+
+/*-- Waypoints --*/
+
+public func AddWaypoint(proplist waypoint)
+{
+	var fx = GetEffect("FxFlight", this);
+	if (fx)
+		fx->AddWaypoint(waypoint);
+	return;
+}
+
+public func SetWaypoints(array waypoints)
+{
+	var fx = GetEffect("FxFlight", this);
+	if (fx)
+		fx->SetWaypoints(waypoints);
+	return;
+}
 
 
 /*-- Riding --*/

@@ -139,3 +139,24 @@ public func GiveRandomAttackTarget(object attacker)
 		return target;
 	return;
 }
+
+// Give some of the boom attacks a certain path to ensure the inside of the hill is attacked.
+public func GetBoomAttackWaypoints(object boompack)
+{
+	if (!Random(3))
+	{
+		// Choose a path through the rock or on the side of the main flagpole.
+		if (!Random(2))
+			return [
+				{X = 450 + Random(10), Y = 680 + Random(10)},
+				{X = 440 + Random(10), Y = 700 + Random(10)},
+				{X = 100 + Random(200), Y = 500 + Random(200)}
+			];
+		return [
+			{X = 70 + Random(30), Y = 460 + Random(10)},
+			{X = 70 + Random(30), Y = 490 + Random(10)},
+			{X = 100 + Random(200), Y = 500 + Random(200)}
+		];
+	}
+	return nil;
+}
