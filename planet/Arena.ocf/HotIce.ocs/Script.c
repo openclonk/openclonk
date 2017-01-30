@@ -190,14 +190,11 @@ func InitPlayerRound(int plr)
 			var ammo = launcher->CreateContents(IronBomb);
 			launcher->AddTimer(Scenario.ReplenishLauncherAmmo, 10);
 			// Start reloading the launcher during the countdown.
-			if (!IsHandicapped(plr))
-			{
-				crew->SetHandItemPos(0, crew->GetItemPos(launcher));
-				// This doesn't play the animation properly - simulate a click instead.
-				/* crew->StartLoad(launcher); */
-				crew->StartUseControl(CON_Use, 0, 0, launcher);
-				crew->StopUseControl(0, 0, launcher);
-			}
+			crew->SetHandItemPos(0, crew->GetItemPos(launcher));
+			// This doesn't play the animation properly - simulate a click instead.
+			/* crew->StartLoad(launcher); */
+			crew->StartUseControl(CON_Use, 0, 0, launcher);
+			crew->StopUseControl(0, 0, launcher);
 		}
 	}
 	crew.MaxEnergy = 100000;
