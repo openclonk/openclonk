@@ -88,7 +88,7 @@ public func GetTurnAngle()
 public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 {
 	// Is the engine running?
-	if (GetComDir() != COMD_Stop && AirshipPilot())
+	if (GetComDir() != COMD_Stop && HasAirshipPilot())
 	{
 		//Turn the propeller
 		AnimationForward();
@@ -131,7 +131,7 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 		/* TODO: Implement */;
 
 	// Fall down if there no pilot and ground.
-	if (!AirshipPilot())
+	if (!HasAirshipPilot())
 	{
 		if (GetContact(-1) & CNAT_Bottom)
 			SetComDir(COMD_Stop);		
@@ -282,11 +282,27 @@ func ControlStop(object clonk, int control)
 	return true;
 }
 
-private func AirshipPilot()
+
+/*-- Pilot & Crew --*/
+
+private func HasAirshipPilot()
 {
 	// Looks for a clonk within the gondola.
-	return FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), Find_InRect(gondola[0], gondola[1], gondola[2], gondola[3]));
+	return !!FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), Find_InRect(gondola[0], gondola[1], gondola[2], gondola[3]));
 }
+
+public func IsInsideGondola(object clonk)
+{
+	if (!clonk)
+		return false;
+	return Inside(clonk->GetX() - GetX(), this.gondola[0], this.gondola[2]) && Inside(clonk->GetY() - GetY(), this.gondola[1], this.gondola[3]);
+}
+
+public func GetCrewMembers()
+{
+	return FindObjects(Find_InRect(this.gondola[0], this.gondola[1], this.gondola[2], this.gondola[3]), Find_Owner(GetOwner()), Find_OCF(OCF_Alive));
+}
+
 
 /*-- Projectile Target --*/
 

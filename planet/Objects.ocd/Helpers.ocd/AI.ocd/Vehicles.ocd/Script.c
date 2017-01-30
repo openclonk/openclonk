@@ -3,8 +3,13 @@
 	Functionality that helps the AI use vehicles. Handles:
 	 * Catapult
 	
-	@author Sven2, Maikel
+	@author Sven2, Clonkonaut, Maikel
 */
+
+
+// AI Settings.
+local AirshipBoardDistance = 100; // How near must an airship be to the target to dispatch its troops.
+local AirshipLostDistance = 50; // How far the pilot must be away from an airship for it to find a new pilot.
 
 
 /*-- General Vehicle --*/
@@ -52,7 +57,7 @@ private func ExecuteCatapult(effect fx)
 {
 	// Still pushing it?
 	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
-	{
+	{	
 		if (!fx.Target->GetCommand() || !Random(4))
 			fx.Target->SetCommand("Grab", fx.vehicle);
 		return true;
@@ -117,6 +122,15 @@ public func ExecuteAirship(effect fx)
 	// Still steering the airship?
 	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
 	{
+		// Try to find a new pilot if the current pilot lost the airship.
+		if (fx.Target->ObjectDistance(fx.vehicle) > fx.control.AirshipLostDistance)
+		{
+			this->PromoteNewAirshipCaptain(fx);
+			fx.strategy = nil;
+			fx.weapon = nil;
+			fx.vehicle = nil;
+			return true;
+		}
 		if (!fx.Target->GetCommand())
 			fx.Target->SetCommand("Grab", fx.vehicle);
 		return true;
@@ -125,14 +139,16 @@ public func ExecuteAirship(effect fx)
 	// Move the airship to the target. Check if no command or is making contact, this means a new control needs to be issued.
 	if (!fx.vehicle->GetCommand() || fx.vehicle->GetContact(-1))
 	{
-		// If close enough (also in y-coordinates) release the crew.
-		if (fx.vehicle->ObjectDistance(fx.target) < 100 && Inside(fx.vehicle->GetY() - fx.target->GetY(), -40, 0))
+		// If close enough (also in y-coordinates, must be above target) release the crew.
+		if (fx.vehicle->ObjectDistance(fx.target) < fx.control.AirshipBoardDistance && Inside(fx.vehicle->GetY() - fx.target->GetY(), -fx.control.AirshipBoardDistance / 2, 0))
 		{
 			// Unboard the crew and let go of airship.
-			for (var clonk in this->GetAirshipCrew(fx))
+			for (var clonk in this->GetCommanderCrew(fx))
 			{
 				var clonk_ai = clonk->GetAI();
 				clonk_ai.commander = nil;
+				if (clonk->GetProcedure() == "PUSH")
+					clonk->SetAction("Walk");
 				clonk_ai.target = fx.target;
 			}
 			fx.vehicle = nil;
@@ -200,15 +216,29 @@ public func GetAirshipBoardingPoint(effect fx)
 
 public func PromoteNewAirshipCaptain(effect fx)
 {
-	var crew = RandomElement(this->GetAirshipCrew(fx));
-	if (!crew)
+	var crew_members = fx.vehicle->GetCrewMembers();
+	if (!GetLength(crew_members))
 		return false;
-	return;
+	var new_pilot = RandomElement(crew_members);
+	var fx_ai = new_pilot->~GetAI();
+	if (!fx_ai)
+		return false;
+	// Make this crew the new pilot.
+	fx_ai.commander = nil;
+	fx_ai.weapon = fx.vehicle;
+	fx_ai.vehicle = fx.vehicle;
+	fx_ai.strategy = this.ExecuteVehicle;
+	// Set new commander for remaining crew members.
+	for (var crew in crew_members)
+		if (crew != new_pilot)
+			if (crew->~GetAI())
+				crew->~GetAI().commander = new_pilot;
+	return true;
 }
 
-public func GetAirshipCrew(effect fx)
+// Find all crew members with this AI as their commander.
+public func GetCommanderCrew(effect fx)
 {
-	// Find all crew members with this commander.
 	var crew = [];
 	for (var clonk in fx.Target->FindObjects(Find_OCF(OCF_CrewMember), Find_Owner(fx.Target->GetOwner())))
 		if (clonk->~GetAI() && clonk->GetAI().commander == fx.Target)
