@@ -6,5 +6,6 @@ EnemyBoomAttack=Rocket
 EnemyRapidBoomAttack=Rapid Rocket
 EnemyBallooner=Parachutist
 EnemyRocketeer=Rocketeer
+EnemyBomber=Bomber
 EnemyAirshipPilot=Pilot
 EnemyAirshipCrew=Airsailor

@@ -68,7 +68,7 @@ public func GetAttackWave(int nr)
 	if (nr == 1) return new DefenseWave.Break { Duration = 120 };
 	
 	// Attack positions.
-	var pos_land = {X = LandscapeWidth(), Y = 740, Exact = true};
+	var pos_land = {X = LandscapeWidth(), Y = 760, Exact = true};
 	var pos_sky = {X = LandscapeWidth() - 100, Y = 0};
 	var pos_above = {X = 200, Y = 0};
 	
@@ -83,27 +83,32 @@ public func GetAttackWave(int nr)
 		Enemies = []
 	};
 	
-	// Add enemy ground troups: swordsman, archer or spearman.
+	// Add enemy ground troups: swordsman, archer, spearman, grenadier, bomber.
 	PushBack(wave.Enemies, new DefenseEnemy.Swordsman {
-		Amount = BoundBy((nr + 2) / 4, 0, 20),
+		Amount = BoundBy((nr + 2) / 5, 0, 20),
 		Energy = BoundBy(20 + nr, 30, 100),
 		Position = pos_land
 	});
 	PushBack(wave.Enemies, new DefenseEnemy.Archer {
-		Amount = BoundBy((nr + 1) / 4, 0, 20),
+		Amount = BoundBy((nr + 1) / 5, 0, 20),
 		Energy = BoundBy(10 + nr, 20, 50),
 		Position = pos_land
 	});
 	PushBack(wave.Enemies, new DefenseEnemy.Spearman {
-		Amount = BoundBy(nr / 4, 0, 20),
+		Amount = BoundBy(nr / 5, 0, 20),
 		Energy = BoundBy(10 + nr, 20, 50),
 		Position = pos_land
 	});
 	PushBack(wave.Enemies, new DefenseEnemy.Grenadier {
-		Amount = BoundBy((nr - 1) / 4, 0, 20),
+		Amount = BoundBy((nr - 1) / 5, 0, 20),
 		Energy = BoundBy(25 + nr, 30, 80),
 		Position = pos_land
 	});
+	PushBack(wave.Enemies, new DefenseEnemy.Bomber {
+		Amount = BoundBy((nr - 2) / 5, 0, 20),
+		Energy = BoundBy(10 + nr, 20, 50),
+		Position = pos_land
+	});	
 	// Add enemy: boom attack.
 	PushBack(wave.Enemies, new DefenseEnemy.BoomAttack {
 		Amount = BoundBy(nr / 2 + 1, 1, 20),

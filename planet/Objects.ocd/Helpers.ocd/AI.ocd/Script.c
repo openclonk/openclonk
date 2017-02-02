@@ -390,7 +390,7 @@ public func Execute(effect fx, int time)
 	this->ExecuteAppearance(fx);
 	// Attack it!
 	if (!this->IsWeaponForTarget(fx))
-		this->LogAI(fx, Format("weapon of type %i is not fit to attack %v.", fx.weapon->GetID(), fx.target));
+		this->LogAI(fx, Format("weapon of type %i is not fit to attack %v (type: %i).", fx.weapon->GetID(), fx.target, fx.target->GetID()));
 	return this->Call(fx.strategy, fx);
 }
 

@@ -296,6 +296,17 @@ local Rocketeer = new DefaultEnemy
 	Vehicle = DefenseBoomAttack
 };
 
+// An archer riding a boom attack.
+local Bomber = new DefaultEnemy
+{
+	Name = "$EnemyBomber$",
+	Inventory = PowderKeg,
+	Energy = 50,
+	Bounty = 10,
+	Color = 0xff55aaff,
+	Skin = CSKIN_Default
+};
+
 // Commander of the airship.
 local AirshipPilot = new DefaultEnemy
 {
