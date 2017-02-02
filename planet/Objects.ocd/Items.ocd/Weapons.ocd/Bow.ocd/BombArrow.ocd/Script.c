@@ -33,6 +33,8 @@ public func ArrowStrength() { return 3; }
 
 public func HasExplosionOnImpact() { return !!GetEffect("InFlight", this); }
 
+public func IsExplosive() { return true; }
+
 
 /*-- Properties --*/
 

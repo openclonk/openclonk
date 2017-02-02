@@ -229,6 +229,8 @@ public func DoExplode()
 	Explode(26);
 }
 
+public func IsExplosive() { return true; }
+
 /*-- Scenario saving --*/
 // Do not save within dynamite box - will be handled by box
 

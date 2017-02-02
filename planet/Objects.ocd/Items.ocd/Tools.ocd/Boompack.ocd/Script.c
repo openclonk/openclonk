@@ -254,6 +254,8 @@ func DoFireworks()
 	Explode(30);
 }
 
+public func IsExplosive() { return true; }
+
 public func SetFuel(int new)
 {
 	fuel = new;

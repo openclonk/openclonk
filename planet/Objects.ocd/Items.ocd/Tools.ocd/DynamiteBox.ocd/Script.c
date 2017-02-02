@@ -183,6 +183,7 @@ public func OnCannonShot(object cannon)
 	Incinerate(nil, cannon->GetController());
 }
 
+public func IsExplosive() { return true; }
 
 /*-- Usage --*/
 

@@ -101,13 +101,12 @@ public func Incineration(int caused_by)
 public func FxFuseTimer(object target, effect, int timer)
 {
 	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
-	if(timer > 90)
-	{
-		//17-32 explosion radius
-		var radius = Sqrt(64 * (4 + count));
-		Explode(radius);
-	}
+	if (timer > 90)
+		Explode(GetExplosionStrength());
 }
+
+// Powderkeg explosion strength ranges from 17-32.
+public func GetExplosionStrength() { return Sqrt(64 * (4 + count)); }
 
 public func IsProjectileTarget()
 {
@@ -139,6 +138,7 @@ public func SaveScenarioObject(props)
 
 func IsChemicalProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
+public func IsExplosive() { return true; }
 
 
 /*-- Properties --*/

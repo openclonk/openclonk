@@ -116,6 +116,7 @@ public func HasExplosionOnImpact() { return armed; }
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
 public func IsGrenadeLauncherAmmo() { return true; }
+public func IsExplosive() { return true; }
 
 /*-- Properties --*/
 

@@ -28,6 +28,8 @@ func Hit2()
 
 public func HasExplosionOnImpact() { return true; }
 
+public func IsExplosive() { return true; }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
