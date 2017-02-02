@@ -25,6 +25,8 @@ func ContentsDestruction()
 // Recreate ammo - but max one per frame (also to ensure we don't run into endless loops when destructing)
 func RechargeIronBomb()
 {
+	if (!g_homebases)
+		return;
 	var t = FrameCounter();
 	if (this.last_iron_bomb_recharge == t) return nil;
 	this.last_iron_bomb_recharge = t;
