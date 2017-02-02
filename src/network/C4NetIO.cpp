@@ -64,6 +64,15 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 #define IPV6_DROP_MEMBERSHIP IPV6_LEAVE_GROUP
 #endif
 
+#ifdef __linux__
+#include <linux/if_addr.h>
+
+// Linux definitions needed for parsing /proc/if_inet6
+#define IPV6_ADDR_LOOPBACK	0x0010U
+#define IPV6_ADDR_LINKLOCAL	0x0020U
+#define IPV6_ADDR_SITELOCAL	0x0040U
+#endif
+
 // constants definition
 const int C4NetIO::TO_INF = -1;
 
@@ -641,6 +650,34 @@ std::vector<C4NetIO::HostAddress> C4NetIO::GetLocalAddresses()
 	}
 	free(addresses);
 #else
+	bool have_ipv6 = false;
+
+#ifdef __linux__
+	// Get IPv6 addresses on Linux from procfs which allows filtering deprecated privacy addresses.
+	FILE *f = fopen("/proc/net/if_inet6", "r");
+	if (f)
+	{
+		sockaddr_in6 sa6 = sockaddr_in6();
+		sa6.sin6_family = AF_INET6;
+		auto a6 = sa6.sin6_addr.s6_addr;
+		uint8_t if_idx, plen, scope, flags;
+		char devname[20];
+		while (fscanf(f, "%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx %02hhx %02hhx %02hhx %02hhx %20s\n",
+					&a6[0], &a6[1], &a6[2],  &a6[3],  &a6[4],  &a6[5],  &a6[6],  &a6[7],
+					&a6[8], &a6[9], &a6[10], &a6[11], &a6[12], &a6[13], &a6[14], &a6[15],
+					&if_idx, &plen, &scope, &flags, devname) != EOF)
+		{
+			// Skip loopback and deprecated addresses.
+			if (scope == IPV6_ADDR_LOOPBACK || flags & IFA_F_DEPRECATED)
+				continue;
+			sa6.sin6_scope_id = scope == IPV6_ADDR_LINKLOCAL ? if_idx : 0;
+			result.emplace_back((sockaddr*) &sa6);
+		}
+		have_ipv6 = result.size() > 0;
+		fclose(f);
+	}
+#endif
+
 	struct ifaddrs* addrs;
 	if (getifaddrs(&addrs) < 0)
 	    return result;
@@ -649,7 +686,7 @@ std::vector<C4NetIO::HostAddress> C4NetIO::GetLocalAddresses()
 		struct sockaddr* ad = ifaddr->ifa_addr;
 		if (ad == nullptr) continue;
 
-		if ((ad->sa_family == AF_INET || ad->sa_family == AF_INET6) && (~ifaddr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4/6 devices
+		if ((ad->sa_family == AF_INET || (!have_ipv6 && ad->sa_family == AF_INET6)) && (~ifaddr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4/6 devices
 		{
 			result.emplace_back(ad);
 		}
