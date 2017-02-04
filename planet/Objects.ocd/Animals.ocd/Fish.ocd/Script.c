@@ -232,7 +232,7 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		//CreateParticle("MagicSpark", obj->GetX() - GetX(), obj->GetY() - GetY(), 0, 0, 60, RGB(0, 255, 0));
 		//this->Message("%s@%d (me %d, it %d)", obj->GetName(), d, current_angle, angle);
 		var angle = -VisionMaxAngle;
-		if (d > 0) angle = VisionMaxRange;
+		if (d > 0) angle = VisionMaxAngle;
 		var distance = ObjectDistance(this, obj);
 		brain->Fuzzify(set, angle * distance / VisionMaxRange);
 		if (range_set != nil)
