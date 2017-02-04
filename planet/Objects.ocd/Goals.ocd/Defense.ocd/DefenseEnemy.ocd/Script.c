@@ -1,5 +1,6 @@
 /**
 	Defense Enemy
+	
 	Defines standard enemies which attack the player or its base. The enemy is a list of properties, the main ones are:
 	 * Type (id)           - The type of enemy (defaults to Clonk).
 	 * Amount (int)        - The amount of this type of enemy (use to create large groups).
@@ -14,6 +15,13 @@
 	 * VehicleHP           - Hitpoints for the enemy vehicle, can be made stronger.
 	 * IsCrew              - Is part of a crew of the AI that is controlling the vehicle.
 	
+	This also defines standard waves which attack the player or its base. The wave is a list of properties, the main ones are:
+	 * Name (string)       - The name of the attack wave.
+	 * Duration (int)      - Duration of the wave in seconds, if nil the next wave is only launched when this is fully eliminated.
+	 * Bounty (int)        - The amount of clunkers received for beating the wave.
+	 * Score (int)         - The amount of points obtained for beating this wave.
+	 * Enemies (array)     - Array of enemies, see DefenseEnemy for more information.	
+	
 	@author Maikel
  */
 
@@ -23,6 +31,9 @@
 // Definition call which can be used to launch an enemy.
 public func LaunchEnemy(proplist prop_enemy, int wave_nr, int enemy_plr)
 {
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: LaunchEnemy(%v, %d, %d) not called from definition context but from %v.", prop_enemy, wave_nr, enemy_plr, this);
+		
 	// Don't launch the enemy when amount equals zero.
 	if (!prop_enemy || prop_enemy.Amount <= 0)
 		return;	
@@ -133,7 +144,8 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		if (prop_enemy.VehicleHP)
 			vehicle.HitPoints = prop_enemy.VehicleHP;
 		// Add the enemy vehicle to no friendly fire rule (must be done by hand, noFF rule is for crew only be default).
-		GameCallEx("OnCreationRuleNoFF", vehicle);
+		if (vehicle)
+			GameCallEx("OnCreationRuleNoFF", vehicle);
 	}
 	// Move crew members onto their vehicles.
 	if (prop_enemy.IsCrew && prop_enemy.Vehicle)
@@ -200,7 +212,7 @@ static const CSKIN_Default   = 0,
              CSKIN_Farmer    = 3;
 
 // Default enemy, all other enemies inherit from this.
-static const DefaultEnemy =
+local DefaultEnemy =
 {
 	Type = nil,
 	Inventory = nil,
@@ -331,4 +343,45 @@ local AirshipCrew = new DefaultEnemy
 	Skin = CSKIN_Farmer,
 	Vehicle = Airship,
 	IsCrew = true
+};
+
+
+/*-- Wave Launching --*/
+
+// Definition call which can be used to launch an attack wave.
+public func LaunchWave(proplist prop_wave, int wave_nr, int enemy_plr)
+{
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: LaunchWave(%v, %d, %d) not called from definition context but from %v.", prop_wave, wave_nr, enemy_plr, this);
+
+	// Create count down until next wave and play wave start sound.
+	GUI_Clock->CreateCountdown(prop_wave.Duration);
+	CustomMessage(Format("$MsgWave$", wave_nr, prop_wave.Name));
+	Sound("UI::Ding");
+
+	// Launch enemies.
+	if (prop_wave.Enemies)
+		for (var enemy in prop_wave.Enemies)
+			this->LaunchEnemy(enemy, wave_nr, enemy_plr);
+	return;
+}
+
+
+/*-- Waves --*/
+
+// Default wave, all other waves inherit from this.
+local DefaultWave =
+{
+	Name = nil,
+	Duration = nil,
+	Bounty = nil,
+	Score = nil,
+	Enemies = nil
+};
+
+// A wave with no enemies: either at the start or to allow for a short break.
+local BreakWave = new DefaultWave
+{
+	Name = "$WaveBreak$",
+	Duration = 60
 };

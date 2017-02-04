@@ -171,7 +171,7 @@ local FxWaveControl = new Effect
 	Timer = func(int time)
 	{
 		// Start new wave if duration of previous wave has passed.
-		if (!this.wave || this.time_passed >= this.wave.Duration)
+		if (!this.wave || (this.wave.Duration != nil && this.time_passed >= this.wave.Duration))
 		{
 			this.wave = GameCall("GetAttackWave", this.wave_nr);
 			// Check if this was the last wave.
@@ -180,7 +180,7 @@ local FxWaveControl = new Effect
 				Log("WARNING: wave not specified for wave number %d. Using default wave of defense goal instead.", this.wave_nr);
 				this.wave = Target->GetDefaultWave(this.wave_nr);
 			}
-			DefenseWave->LaunchWave(this.wave, this.wave_nr, this.enemy);
+			DefenseEnemy->LaunchWave(this.wave, this.wave_nr, this.enemy);
 			// Track the wave.
 			Target->CreateEffect(Target.FxTrackWave, 100, nil, this.wave_nr, this.wave);
 			// Reset passed time and increase wave number for next wave.
@@ -190,6 +190,14 @@ local FxWaveControl = new Effect
 		// Increase the time passed in this wave.
 		this.time_passed++;
 		return FX_OK;
+	},
+	
+	OnWaveCompleted = func(int wave_nr)
+	{
+		// Set current wave to nil if it has been completed and has no duration in order to start new one.
+		if (wave_nr + 1 == this.wave_nr && this.wave.Duration == nil)
+			this.wave = nil;
+		return;
 	},
 	
 	GetCurrentWave = func()
@@ -216,7 +224,7 @@ local FxWaveControl = new Effect
 public func GetDefaultWave(int wave_nr)
 {
 	// Just launch some rockets as the default wave and increase the amount and their speed with every wave.
-	var wave = new DefaultWave
+	var wave = new DefenseEnemy.DefaultWave
 	{
 		Name = "$WaveFallBack$",
 		Duration = 2 * 60,
@@ -240,7 +248,7 @@ local FxTrackWave = new Effect
 	},
 	OnEnemyInit = func(object enemy)
 	{
-		PushBack(this.enemies, enemy);	
+		PushBack(this.enemies, enemy);
 	},
 	OnEnemyEliminated = func(object enemy)
 	{
@@ -255,7 +263,7 @@ local FxTrackWave = new Effect
 			}
 			if (this.wave.Score != nil && !Target->IsFulfilled())
 				Target->DoScore(this.wave.Score);
-			Target->IncreaseCompletedWaves();
+			Target->OnWaveCompleted(this.wave_nr);
 			Sound("UI::NextWave");
 			this->Remove();
 		}
@@ -279,10 +287,14 @@ public func OnEnemyElimination(object enemy)
 	return;
 }
 
-public func IncreaseCompletedWaves()
+public func OnWaveCompleted(int wave_nr)
 {
+	// Increase number of completed waves and update achievements.
 	completed_waves++;
 	CheckAchievement();
+	// Let wave control effect know a wave has been completed.
+	if (fx_wave_control)
+		fx_wave_control->OnWaveCompleted(wave_nr);
 	return;
 }
 
@@ -351,7 +363,9 @@ public func CheckAchievement()
 
 public func ConvertWaveToAchievement(int wave_nr)
 {
+	// Get the number of waves needed for achieving stars.
 	var data = GameCall("GetWaveToAchievement");
+	// By default the stars are awarded for 5, 10 and 25 completed waves.
 	if (!data)
 		data = [5, 10, 25];
 	SortArray(data);
@@ -387,7 +401,8 @@ public func GetDescription(int plr)
 		{
 			wave_msg = Format("$MsgCurrentWave$", fx_wave_control->GetCurrentWave());
 			for (var enemy in enemies)
-				wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);
+				if (enemy.Amount > 0)
+					wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);
 		}
 		// Show enemies of next wave.
 		var next_enemies = fx_wave_control->GetNextWave().Enemies;
@@ -395,7 +410,8 @@ public func GetDescription(int plr)
 		{
 			wave_msg = Format("%s\n$MsgNextWave$", wave_msg);
 			for (var enemy in next_enemies)
-				wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);		
+				if (enemy.Amount > 0)
+					wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);		
 		}
 	}
 	// Add score.
@@ -411,7 +427,7 @@ public func TestWave(int nr)
 	var wave = GameCall("GetAttackWave", nr);
 	if (!wave || !fx_wave_control)
 		return;
-	DefenseWave->LaunchWave(wave, nr, fx_wave_control->GetEnemy());
+	DefenseEnemy->LaunchWave(wave, nr, fx_wave_control->GetEnemy());
 	return;
 }
 

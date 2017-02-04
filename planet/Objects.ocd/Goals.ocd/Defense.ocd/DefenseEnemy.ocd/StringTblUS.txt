@@ -9,3 +9,6 @@ EnemyRocketeer=Rocketeer
 EnemyBomber=Bomber
 EnemyAirshipPilot=Pilot
 EnemyAirshipCrew=Airsailor
+
+MsgWave=Wave %d: %s|                                                                           |
+WaveBreak=Break

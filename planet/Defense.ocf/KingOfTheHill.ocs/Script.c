@@ -65,7 +65,8 @@ protected func InitializePlayer(int plr)
 public func GetAttackWave(int nr)
 {
 	// The round starts with a short phase to prepare.
-	if (nr == 1) return new DefenseWave.Break { Duration = 120 };
+	if (nr == 1) 
+		return new DefenseEnemy.BreakWave { Duration = 120 };
 	
 	// Attack positions.
 	var pos_land = {X = LandscapeWidth(), Y = 760, Exact = true};
@@ -73,7 +74,7 @@ public func GetAttackWave(int nr)
 	var pos_above = {X = 200, Y = 0};
 	
 	// Automatically build waves that become stronger.
-	var wave = 
+	var wave = new DefenseEnemy.DefaultWave
 	{
 		Name = "$MsgWave$",
 		// Waves last shorter as the number increases.
