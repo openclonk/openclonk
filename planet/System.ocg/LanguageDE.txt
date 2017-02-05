@@ -98,6 +98,7 @@ IDS_CNS_SELECTNEARBYOBJECTS=Objekt auswählen
 IDS_CNS_SELECTCONTENTS=%s Inhalt...
 IDS_CNS_SHOWHELP=Hilfetexte anzeigen
 IDS_CNS_SHOWHELPTIP=Aktiviert oder deaktiviert Objektbeschreibungen und Tooltip-Marker (?) im Objekteigenschaftsdialog.
+IDS_CNS_TEMPLATE=Vorlage
 IDS_CNS_TITLE=Titel
 IDS_CNS_TRUE=Ja
 IDS_CNS_TYPE=Typ: %s (%s)

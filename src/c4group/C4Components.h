@@ -30,6 +30,7 @@
 #define C4CFN_Music           "Music.ocg"
 #define C4CFN_Extra           "Extra.ocg"
 #define C4CFN_Languages       "Language.ocg"
+#define C4CFN_Template        "Template.ocg"
 
 #define C4CFN_Savegames       "Savegames.ocf"
 #define C4CFN_Records         "Records.ocf"
@@ -145,6 +146,7 @@
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
 #define C4CFN_EditorGeometry  "Editor.geometry"
+#define C4CFN_DefaultScenarioTemplate "Empty.ocs"
 
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"

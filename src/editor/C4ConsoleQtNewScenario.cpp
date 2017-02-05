@@ -237,10 +237,58 @@ C4ConsoleQtNewScenarioDlg::C4ConsoleQtNewScenarioDlg(class QMainWindow *parent_w
 	ui.setupUi(this);
 	adjustSize();
 	setMinimumSize(size());
+	// Create scenario at user path by default
 	ui.filenameEdit->setText(::Config.General.UserDataPath);
+	// Fill definition file model
 	QItemSelectionModel *m = ui.definitionTreeView->selectionModel();
 	ui.definitionTreeView->setModel(&def_file_model);
 	delete m;
+	// Init scenario template list
+	InitScenarioTemplateList();
+}
+
+void C4ConsoleQtNewScenarioDlg::InitScenarioTemplateList()
+{
+	// Init template scenarios from user and system folder
+	// Clear previous
+	ui.templateComboBox->clear();
+	C4Group system_templates, user_templates;
+	system_templates.OpenAsChild(&::Application.SystemGroup, C4CFN_Template);
+	user_templates.Open(Config.AtUserDataPath(C4CFN_Template));
+	for (C4Group *template_group : { &system_templates, &user_templates })
+	{
+		if (template_group->IsOpen()) // open may have failed (e.g. if it doesn't exist)
+		{
+			// All scenarios within the template group are possible scenario templates
+			template_group->ResetSearch();
+			StdStrBuf template_filename;
+			while (template_group->FindNextEntry(C4CFN_ScenarioFiles, &template_filename))
+			{
+				bool is_default = (template_group == &system_templates) && (template_filename == C4CFN_DefaultScenarioTemplate);
+				AddScenarioTemplate(*template_group, template_filename.getData(), is_default);
+			}
+		}
+	}
+	// TODO could sort elements. But should usually be sorted within the packed groups anyway.
+}
+
+void C4ConsoleQtNewScenarioDlg::AddScenarioTemplate(C4Group &parent, const char *filename, bool is_default)
+{
+	// Load scenario information from group and add as template
+	C4Group grp;
+	if (!grp.OpenAsChild(&parent, filename)) return;
+	C4Scenario template_c4s;
+	if (!template_c4s.Load(grp)) return;
+	// Title from file or scenario core
+	C4ComponentHost title_file;
+	StdStrBuf title(template_c4s.Head.Title);
+	C4Language::LoadComponentHost(&title_file, grp, C4CFN_Title, Config.General.LanguageEx);
+	title_file.GetLanguageString(Config.General.LanguageEx, title);
+	// Add it; remember full path as user data
+	StdStrBuf template_path(grp.GetFullName());
+	ui.templateComboBox->addItem(QString(title.getData()), QString(template_path.getData()));
+	// Default selection
+	if (is_default) ui.templateComboBox->setCurrentIndex(ui.templateComboBox->count()-1);
 }
 
 bool C4ConsoleQtNewScenarioDlg::IsHostAsNetwork() const
@@ -248,26 +296,41 @@ bool C4ConsoleQtNewScenarioDlg::IsHostAsNetwork() const
 	return ui.startInNetworkCheckbox->isChecked();
 }
 
-bool C4ConsoleQtNewScenarioDlg::SaveScenario(C4Group &grp)
+bool C4ConsoleQtNewScenarioDlg::CreateScenario()
 {
-	// Save c4s
-	if (!c4s.Save(grp)) return false;
-	// Save default Objects.c with player start object
-	int32_t mid_x = c4s.Landscape.MapWdt.Std * c4s.Landscape.MapZoom.Std / 2;
-	int32_t mid_y = c4s.Landscape.MapHgt.Std * c4s.Landscape.MapZoom.Std / 2 - 8;
-	StdStrBuf objects_file;
-	objects_file.AppendFormat("public func InitializeObjects() {\n\tCreateObjectAbove(PlayerStart, %d, %d);\n}\n", (int)mid_x, (int)mid_y);
-	// grp.Add... does not work for unpacked groups
-	StdStrBuf objects_filename = grp.GetFullName();
-	objects_filename.AppendBackslash();
-	objects_filename.Append(C4CFN_ScenarioObjectsScript);
-	objects_file.SaveToFile(objects_filename.getData());
-	//return grp.Save(false); -- not needed because group is unpacked
-	return true;
-}
-
-void C4ConsoleQtNewScenarioDlg::CreatePressed()
-{
+	// Try to create scenario from template. Unpack if necessery.
+	QVariant tmpl_data = ui.templateComboBox->currentData();
+	LogF(tmpl_data.toString().toUtf8());
+	StdStrBuf template_filename;
+	template_filename.Copy(tmpl_data.toString().toUtf8());
+	if (DirectoryExists(template_filename.getData()))
+	{
+		if (!CopyDirectory(template_filename.getData(), filename.getData(), true))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!C4Group_CopyItem(template_filename.getData(), filename.getData(), true, true))
+		{
+			return false;
+		}
+		if (!C4Group_UnpackDirectory(filename.getData()))
+		{
+			return false;
+		}
+	}
+	C4Group grp;
+	if (!grp.Open(filename.getData()))
+	{
+		return false;
+	}
+	// Remove localized title file to ensure it's loaded from the scenario core
+	grp.DeleteEntry(C4CFN_WriteTitle);
+	// Update scenario core with settings from dialogue
+	C4Scenario c4s;
+	if (!c4s.Load(grp)) return false;
 	// Take over settings
 	c4s.Landscape.MapWdt.SetConstant(ui.mapWidthSpinBox->value());
 	c4s.Landscape.MapHgt.SetConstant(ui.mapHeightSpinBox->value());
@@ -277,12 +340,6 @@ void C4ConsoleQtNewScenarioDlg::CreatePressed()
 	if (c4s.Game.Mode == "Undefined") c4s.Game.Mode.Clear();
 	filename.Copy(ui.filenameEdit->text().toUtf8());
 	std::list<const char *> definitions = def_file_model.GetSelectedDefinitions();
-	if (definitions.size() > C4S_MaxDefinitions)
-	{
-		DoError(FormatString(::LoadResStr("IDS_ERR_TOOMANYDEFINITIONS"), (int)definitions.size(), (int)C4S_MaxDefinitions).getData());
-		ui.definitionTreeView->setFocus();
-		return;
-	}
 	std::ostringstream definitions_join("");
 	if (definitions.size())
 	{
@@ -292,8 +349,19 @@ void C4ConsoleQtNewScenarioDlg::CreatePressed()
 		definitions_join << *iter_end;
 	}
 	c4s.Definitions.SetModules(definitions_join.str().c_str());
+	if (!c4s.Save(grp))
+	{
+		return false;
+	}
+	// Group saving not needed because it's unpacked.
+	//if (!grp.Save()) return false;
+	return true;
+}
+
+void C4ConsoleQtNewScenarioDlg::CreatePressed()
+{
 	// Check validity of settings
-	if (!*c4s.Head.Title)
+	if (!ui.titleEdit->text().length())
 	{
 		DoError(::LoadResStr("IDS_ERR_ENTERTITLE"));
 		ui.titleEdit->setFocus();
@@ -305,18 +373,16 @@ void C4ConsoleQtNewScenarioDlg::CreatePressed()
 		ui.titleEdit->setFocus();
 		return;
 	}
-	// Try to create scenario
-	if (!CreatePath(filename.getData()))
+	std::list<const char *> definitions = def_file_model.GetSelectedDefinitions();
+	if (definitions.size() > C4S_MaxDefinitions)
 	{
-		DoError(::LoadResStr("IDS_ERR_CREATESCENARIO"));
-		ui.titleEdit->setFocus();
+		DoError(FormatString(::LoadResStr("IDS_ERR_TOOMANYDEFINITIONS"), (int)definitions.size(), (int)C4S_MaxDefinitions).getData());
+		ui.definitionTreeView->setFocus();
 		return;
 	}
-	C4Group grp;
-	if (!grp.Open(filename.getData(), false) || !SaveScenario(grp))
+	if (!CreateScenario())
 	{
-		grp.Close();
-		EraseDirectory(filename.getData());
+		EraseItem(filename.getData());
 		DoError(::LoadResStr("IDS_ERR_CREATESCENARIO"));
 		ui.titleEdit->setFocus();
 		return;
@@ -341,7 +407,10 @@ void C4ConsoleQtNewScenarioDlg::TitleChanged(const QString &new_title)
 		std::string filename = new_title.toStdString();
 		std::transform(filename.begin(), filename.end(), filename.begin(), ReplaceSpecialFilenameChars);
 		filename += (C4CFN_ScenarioFiles+1);
-		ui.filenameEdit->setText(Config.AtUserDataPath(filename.c_str()));
+		const char *filename_full = Config.AtUserDataPath(filename.c_str());
+		ui.filenameEdit->setText(filename_full);
+		this->filename.Copy(filename_full);
+
 	}
 }
 
