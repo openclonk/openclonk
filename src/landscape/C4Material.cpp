@@ -710,7 +710,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 			if (was_pushed_upwards)
 			{
 				// When pushed upwards and slide was found into a target position, insert directly to allow additional PXS at same location to solidify in next position in same frame
-				if (::Landscape.GetDensity(iX, iY + Sign(GravAccel)) >= mdens);
+				if (::Landscape.GetDensity(iX, iY + Sign(GravAccel)) >= mdens)
 				{
 					return true;
 				}
