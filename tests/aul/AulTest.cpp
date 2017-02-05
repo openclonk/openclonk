@@ -283,11 +283,28 @@ TEST_F(AulTest, Conditionals)
 
 TEST_F(AulTest, Warnings)
 {
-	ErrorHandler errh;
-	EXPECT_CALL(errh, OnWarning(::testing::_)).Times(3);
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(s); }"));
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(o); }"));
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(a); }"));
+	{
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnWarning(::testing::_)).Times(3);
+		EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(s); }"));
+		EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(o); }"));
+		EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(a); }"));
+	}
+	{
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement")));
+		RunCode("if (true);");
+	}
+	{
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement")));
+		RunCode("if (true) { return; } else;");
+	}
+	{
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement"))).Times(0);
+		RunCode("if (true) {} else {}");
+	}
 }
 
 TEST_F(AulTest, NoWarnings)

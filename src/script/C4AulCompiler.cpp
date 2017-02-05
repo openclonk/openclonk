@@ -1574,8 +1574,19 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 {
 	SafeVisit(n->cond);
 	int jump = AddBCC(n->loc, AB_CONDN);
+	// Warn if we're controlling a no-op ("if (...);")
+	if (dynamic_cast<::aul::ast::Noop*>(n->iftrue.get()))
+	{
+		Warn(target_host, host, n->iftrue->loc, Fn, "empty controlled statement found (use '{}' if this is intentional)");
+	}
 	if (SafeVisit(n->iftrue))
 		MaybePopValueOf(n->iftrue);
+
+	if (dynamic_cast<::aul::ast::Noop*>(n->iffalse.get()))
+	{
+		Warn(target_host, host, n->iffalse->loc, Fn, "empty controlled statement found (use '{}' if this is intentional)");
+	}
+
 	if (n->iffalse)
 	{
 		int jumpout = AddBCC(n->loc, AB_JUMP);
