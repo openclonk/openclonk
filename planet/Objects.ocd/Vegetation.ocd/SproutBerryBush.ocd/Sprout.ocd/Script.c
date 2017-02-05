@@ -190,8 +190,6 @@ func FxLifeTimerTimer(target, effect, time)
 		if(!t) return;
 		
 		if(!Random(10))
-			;//Die();
-		if(!Random(10))
 		{
 			if(attached_flower != -1)
 			{

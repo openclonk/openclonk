@@ -128,7 +128,9 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 
 	// Wind movement if in the air
 	if (!GetContact(-1))
-		/* TODO: Implement */;
+	{
+		/* TODO: Implement */
+	}
 
 	// Fall down if there no pilot and ground.
 	if (!HasAirshipPilot())

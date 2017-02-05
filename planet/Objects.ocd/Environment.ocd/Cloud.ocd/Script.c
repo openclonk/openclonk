@@ -317,7 +317,7 @@ private func Precipitation()
 	// Precipitaion: water or snow.
 	if (rain > 0)
 	{
-		if (RainDrop());
+		if (RainDrop())
 			rain--;	
 	}	
 	// If out of liquids, skip mode.
