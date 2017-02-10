@@ -84,37 +84,10 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 	enemy->MakeCrewMember(enemy_plr);
 	enemy->SetController(enemy_plr);
 	GameCallEx("OnEnemyCreation", enemy, wave_nr);
-	// Enemy visuals
-	if (prop_enemy.Skin)
-	{
-		if (GetType(prop_enemy.Skin) == C4V_Array)
-		{
-			enemy->SetSkin(prop_enemy.Skin[0]);
-			enemy->SetMeshMaterial(prop_enemy.Skin[1]);
-		}
-		else
-			enemy->SetSkin(prop_enemy.Skin);
-	}
-	if (GetType(prop_enemy.Backpack)) enemy->~RemoveBackpack();
-	if (prop_enemy.Scale) enemy->SetMeshTransformation(Trans_Scale(prop_enemy.Scale[0], prop_enemy.Scale[1], prop_enemy.Scale[2]), 6);
-	if (prop_enemy.Name) enemy->SetName(prop_enemy.Name);
-	enemy->SetColor(prop_enemy.Color);
-	// Physical properties
-	enemy.MaxEnergy = (prop_enemy.Energy ?? 50) * 1000;
-	enemy->DoEnergy(10000);
-	if (prop_enemy.Speed)
-	{
-		// Speed: Modify Speed in all ActMap entries
-		if (enemy.ActMap == enemy.Prototype.ActMap) enemy.ActMap = new enemy.ActMap {};
-		for (var action in /*obj.ActMap->GetProperties()*/ ["Walk", "Scale", "Dig", "Swim", "Hangle", "Jump", "WallJump", "Dive", "Push"]) // obj.ActMap->GetProperties() doesn't work :(
-		{
-			if (action == "Prototype") continue;
-			if (enemy.ActMap[action] == enemy.Prototype.ActMap[action]) enemy.ActMap[action] = new enemy.ActMap[action] {};
-			enemy.ActMap[action].Speed = enemy.ActMap[action].Speed * enemy.Speed / 100;
-		}
-		enemy.JumpSpeed = enemy.JumpSpeed * prop_enemy.Speed / 100;
-		enemy.FlySpeed = enemy.FlySpeed * prop_enemy.Speed / 100;
-	}
+	// Enemy visuals.
+	UpdateEnemyVisuals(enemy, prop_enemy);
+	// Update physical properties.
+	UpdateEnemyPhysicals(enemy, prop_enemy);
 	// Reward for killing enemy: clunker bounty and points.
 	enemy.Bounty = prop_enemy.Bounty;
 	enemy.Score = prop_enemy.Score;
@@ -175,6 +148,45 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 		DefenseAI->SetGuardRange(enemy, 0, 0, LandscapeWidth(), LandscapeHeight());
 	}
 	return enemy;
+}
+
+private func UpdateEnemyVisuals(object enemy, proplist prop_enemy)
+{
+	if (prop_enemy.Skin)
+	{
+		if (GetType(prop_enemy.Skin) == C4V_Array)
+		{
+			enemy->SetSkin(prop_enemy.Skin[0]);
+			enemy->SetMeshMaterial(prop_enemy.Skin[1]);
+		}
+		else
+			enemy->SetSkin(prop_enemy.Skin);
+	}
+	if (GetType(prop_enemy.Backpack)) enemy->~RemoveBackpack();
+	if (prop_enemy.Scale) enemy->SetMeshTransformation(Trans_Scale(prop_enemy.Scale[0], prop_enemy.Scale[1], prop_enemy.Scale[2]), 6);
+	if (prop_enemy.Name) enemy->SetName(prop_enemy.Name);
+	enemy->SetColor(prop_enemy.Color);
+	return;
+}
+
+private func UpdateEnemyPhysicals(object enemy, proplist prop_enemy)
+{
+	enemy.MaxEnergy = (prop_enemy.Energy ?? 50) * 1000;
+	enemy->DoEnergy(enemy.MaxEnergy / 1000);
+	if (prop_enemy.Speed)
+	{
+		// Speed: Modify Speed in all ActMap entries
+		if (enemy.ActMap == enemy.Prototype.ActMap) enemy.ActMap = new enemy.ActMap {};
+		for (var action in /*obj.ActMap->GetProperties()*/ ["Walk", "Scale", "Dig", "Swim", "Hangle", "Jump", "WallJump", "Dive", "Push"]) // obj.ActMap->GetProperties() doesn't work :(
+		{
+			if (action == "Prototype") continue;
+			if (enemy.ActMap[action] == enemy.Prototype.ActMap[action]) enemy.ActMap[action] = new enemy.ActMap[action] {};
+			enemy.ActMap[action].Speed = enemy.ActMap[action].Speed * enemy.Speed / 100;
+		}
+		enemy.JumpSpeed = enemy.JumpSpeed * prop_enemy.Speed / 100;
+		enemy.FlySpeed = enemy.FlySpeed * prop_enemy.Speed / 100;
+	}
+	return;
 }
 
 private func ForceVal2Array(/*any*/ v)
