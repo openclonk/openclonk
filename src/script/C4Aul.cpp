@@ -17,6 +17,7 @@
 
 #include "C4Include.h"
 #include "script/C4Aul.h"
+
 #include "script/C4AulExec.h"
 #include "script/C4AulDebug.h"
 #include "config/C4Config.h"
@@ -25,6 +26,22 @@
 #include "lib/C4Log.h"
 #include "c4group/C4Components.h"
 #include "c4group/C4LangStringTable.h"
+
+const char *C4AulWarningMessages[] = {
+#define DIAG(id, text, enabled) text,
+#include "C4AulWarnings.h"
+#undef DIAG
+	nullptr
+};
+const char *C4AulWarningIDs[] = {
+#define DIAG(id, text, enabled) #id,
+#include "C4AulWarnings.h"
+#undef DIAG
+	nullptr
+};
+
+static_assert(std::extent<decltype(C4AulWarningMessages), 0>::value - 1 == static_cast<size_t>(C4AulWarningId::WarningCount), "Warning message count doesn't match warning count");
+static_assert(std::extent<decltype(C4AulWarningIDs), 0>::value - 1 == static_cast<size_t>(C4AulWarningId::WarningCount), "Warning ID count doesn't match warning count");
 
 static class DefaultErrorHandler : public C4AulErrorHandler
 {

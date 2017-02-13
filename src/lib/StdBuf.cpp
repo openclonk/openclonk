@@ -24,7 +24,7 @@
 #ifdef _WIN32
 #include <io.h>
 #include "platform/C4windowswrapper.h"
-#define vsnprintf _vsnprintf
+#define vsnprintf _vsprintf_p
 #else
 #define O_BINARY 0
 #define O_SEQUENTIAL 0

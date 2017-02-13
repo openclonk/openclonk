@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Diagnostic Messages</title>
+  <h>Diagnostic Messages</h>
+  <part>
+    <text>
+      Certain constructs may be flagged by the engine as potentially
+      unintended or deprecated. In these cases, the engine will, by default,
+      emit a warning to the log file.
+    </text>
+    <text>
+      On occasion, these constructs are in fact intended by the script
+      author. In order to avoid unwanted warning messages hiding more important
+      messages, the engine supports selectively suppressing a warning category
+      for parts of a script.
+    </text>
+  </part>
+  <part>
+    <text>
+      Suppression and re-enablement is handled by the <code>#warning</code>
+      directive. The directive must be placed on a separate line.
+    </text>
+    <text>Warnings can be controlled using this syntax:</text>
+    <code>#warning {enable|disable} [warning_category [warning_category...]]</code>
+    <text>
+      If no category is given, the engine will suppress or enable all messages,
+      including those that are not enabled by default. A category remains
+      disabled or enabled until the next directive that affects it, or until
+      the end of the script. A script linked to via the <code>#include</code>
+      or <code>#appendto</code> directives does not affect, and is itself not
+      affected by, the warning settings of the current script.
+    </text>
+    <text>
+      It is not an error to specify a category that does not exist; the
+      invalid category is simply ignored. No separate warning is emitted.
+    </text>
+  </part>
+  <part>
+    <h>Warning Categories</h>
+    <text>The following warning categories currently exist:</text>
+    <table>
+      <rowh>
+        <col>Category</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>invalid_escape_sequence</col>
+        <col>
+          <text>
+            The engine found an escape sequence inside a string that it
+            did not recognize.
+          </text>
+          <part><code>"\p"</code></part>
+        </col>
+      </row>
+      <row>
+        <col>invalid_hex_escape</col>
+        <col>
+          <text>
+            The engine found the start of a hexadecimal escape sequence
+            inside a string, but no hexadecimal digits followed it.
+          </text>
+          <part><code>"\xGN"</code></part>
+        </col>
+      </row>
+      <row>
+        <col>type_name_used_as_par_name</col>
+        <col>
+          <text>
+            A function parameter was declared without an explicit type
+            specification, but with a name that is the same as a built-in type.
+          </text>
+          <part><code>func f(array)</code></part>
+          <text>
+            This warning is not enabled by default.
+            <a href="#fn1" title="The warning may be enabled by default in a future version.">¹</a>
+          </text>
+        </col>
+      </row>
+      <row>
+        <col>empty_parameter_in_call</col>
+        <col>
+          <text>
+            In a function call, a parameter was left empty. The engine is
+            passing <code>nil</code> in its place.
+          </text>
+          <part><code><funclink>CreateObject</funclink>(Clonk,, 30, 100);</code></part>
+          <text>
+            This warning is not enabled by default.
+            <a href="#fn1" title="The warning may be enabled by default in a future version.">¹</a>
+          </text>
+        </col>
+      </row>
+      <row>
+        <col>empty_parameter_in_array</col>
+        <col>
+          <text>
+            In an array literal, an entry was left empty. The engine is
+            using <code>nil</code> in its place.
+          </text>
+          <part><code>[1, 2,, 3, 4]</code></part>
+          <text>
+            This warning is not enabled by default.
+            <a href="#fn1" title="The warning may be enabled by default in a future version.">¹</a>
+          </text>
+        </col>
+      </row>
+      <row>
+        <col>implicit_range_loop_var_decl</col>
+        <col>
+          <text>
+            The loop variable of a for-in loop was not declared either in the
+            loop header itself nor in the containing function. This is only
+            accepted for backwards compatibility and may be removed in a
+            future release. Explicitly declare the variable by adding the
+            <code>var</code> keyword.
+          </text>
+          <part>
+            <code>func f() {
+&#9;for (i in [1, 2, 3]) {
+&#9;}
+}</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>non_global_var_is_never_const</col>
+        <col>
+          <text>
+            A variable has been declared as <code>const</code>, but is not
+            global. At this time, non-global variables are always mutable.
+          </text>
+          <part>
+            <code>const local a = {}</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>variable_shadows_variable</col>
+        <col>
+          <text>
+            The declaration of a variable uses the same name as a variable
+            in a greater scope. Changes to the shadowing variable will not
+            affect the shadowed variable.
+          </text>
+          <part>
+            <code>static foo;
+func f() {
+&#9;var foo = 3;
+}</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>redeclaration</col>
+        <col>
+          <text>
+            A variable has been redeclared in the same scope. Make sure
+            you do not accidentally overwrite values another part of the
+            code relies upon.
+          </text>
+          <part>
+            <code>func f() {
+&#9;var i;
+&#9;var i;
+}</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>undeclared_varargs</col>
+        <col>
+          <text>
+            Use of <code><funclink>Par</funclink></code> inside a function
+            implicitly declares it as using a variable number of arguments.
+            This is not immediately obvious to callers of the function, and
+            should be explicitly declared in the function signature by
+            adding a final <code>...</code> parameter.
+          </text>
+          <part>
+            <code>func f(a) {
+&#9;return <funclink>Par</funclink>(a);
+}
+// Better:
+func g(a, ...) {
+&#9;return <funclink>Par</funclink>(a);
+}</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>arg_count_mismatch</col>
+        <col>
+          <text>
+            A function call passes more parameters than the function will
+            accept.
+          </text>
+          <part>
+            <code><funclink>GetDir</funclink>(0)</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>arg_type_mismatch</col>
+        <col>
+          <text>
+            The parameter given in a function call is of a different type
+            than the called function expects. The call will likely fail at
+            runtime.
+          </text>
+          <part>
+            <code><funclink>Sin</funclink>("huh?")</code>
+          </part>
+        </col>
+      </row>
+      <row>
+        <col>empty_if</col>
+        <col>
+          <text>
+            An <code>if</code> conditional is controlling an empty statement.
+            Use the empty block <code>{}</code> if this is intentional, or
+            remove the conditional entirely.
+          </text>
+          <part>
+            <code>if (true);</code>
+          </part>
+        </col>
+      </row>
+    </table>
+  </part>
+
+  <part>
+    <h>Examples</h>
+    <examples>
+      <example>
+        <code>func f(string s) {
+&#9;Sin(s);&#x9;// WARNING: parameter 0 of call to 'Sin' passes string (int expected)
+#warning disable arg_type_mismatch
+&#9;Sin(s);
+#warning enable arg_type_mismatch
+&#9;Sin(s);&#x9;// WARNING: parameter 0 of call to 'Sin' passes string (int expected)
+}</code>
+      </example>
+    </examples>
+  </part>
+  
+  <a id="fn1" style="font-size: smaller; color: inherit;">¹ The warning may be enabled by default in a future version.</a>
+</doc>

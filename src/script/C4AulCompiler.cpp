@@ -29,6 +29,10 @@
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
 
+#ifdef _MSC_VER
+#define vsnprintf _vsprintf_p
+#endif
+
 static std::string vstrprintf(const char *format, va_list args)
 {
 	va_list argcopy;
@@ -86,23 +90,30 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 }
 
 template<class... T>
-static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, const char *msg, T &&...args)
+static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
+	if (!host->IsWarningEnabled(SPos, warning))
+		return;
+	const char *msg = C4AulWarningMessages[static_cast<size_t>(warning)];
 	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
 	message += FormatCodePosition(host, SPos, target_host, func);
+
+	message += " [";
+	message += C4AulWarningIDs[static_cast<size_t>(warning)];
+	message += ']';
 
 	::ScriptEngine.GetErrorHandler()->OnWarning(message.c_str());
 }
 
 template<class... T>
-static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const ::aul::ast::Node *n, const C4AulScriptFunc *func, const char *msg, T &&...args)
+static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const ::aul::ast::Node *n, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
-	return Warn(target_host, host, n->loc, func, msg, std::forward<T>(args)...);
+	return Warn(target_host, host, n->loc, func, warning, std::forward<T>(args)...);
 }
 template<class... T>
-static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const std::nullptr_t &, const C4AulScriptFunc *func, const char *msg, T &&...args)
+static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const std::nullptr_t &, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
-	return Warn(target_host, host, static_cast<const char*>(nullptr), func, msg, std::forward<T>(args)...);
+	return Warn(target_host, host, static_cast<const char*>(nullptr), func, warning, std::forward<T>(args)...);
 }
 
 template<class... T>
@@ -463,7 +474,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 		// the function and warn if it hasn't been declared at all.
 		if (Fn->VarNamed.GetItemNr(cname) == -1)
 		{
-			Warn(target_host, host, n, Fn, "Implicit declaration of the loop variable in a for-in loop is deprecated: %s", cname);
+			Warn(target_host, host, n, Fn, C4AulWarningId::implicit_range_loop_var_decl, cname);
 			Fn->VarNamed.AddName(cname);
 		}
 	}
@@ -474,7 +485,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 {
 	if (n->constant && n->scope != ::aul::ast::VarDecl::Scope::Global)
 	{
-		Warn(target_host, host, n, Fn, "Non-global variables cannot be constant");
+		Warn(target_host, host, n, Fn, C4AulWarningId::non_global_var_is_never_const);
 	}
 	for (const auto &var : n->decls)
 	{
@@ -492,10 +503,10 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 					// if target_host is unset, we're parsing this func for direct execution,
 					// in which case we don't want to warn about variable hiding.
 					if (target_host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || target_host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-						Warn(target_host, host, n, Fn, "function-local variable hides a global variable: %s", cname);
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "global variable");
 					C4String *s = ::Strings.FindString(cname);
 					if (s && target_host->GetPropList()->HasProperty(s))
-						Warn(target_host, host, n, Fn, "function-local variable hides an object-local variable: %s", cname);
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "object-local variable");
 				}
 				Fn->VarNamed.AddName(cname);
 				break;
@@ -503,10 +514,10 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 		case ::aul::ast::VarDecl::Scope::Object:
 			{
 				if (host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-					Warn(target_host, host, n, Fn, "object-local variable hides a global variable: %s", cname);
+					Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "object-local variable", "global variable");
 				C4String *s = ::Strings.RegString(cname);
 				if (target_host->GetPropList()->HasProperty(s))
-					Warn(target_host, host, n, Fn, "object-local variable declared multiple times: %s", cname);
+					Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, cname, "object-local variable");
 				else
 					target_host->GetPropList()->SetPropertyByS(s, C4VNull);
 				break;
@@ -517,7 +528,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 				throw Error(target_host, host, n, Fn, "internal error: global var declaration inside function");
 
 			if (host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-				Warn(target_host, host, n, Fn, "global variable declared multiple times: %s", cname);
+				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, cname, "global variable");
 			if (n->constant)
 				host->Engine->GlobalConstNames.AddName(cname);
 			else
@@ -584,7 +595,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::ParExpr *n)
 {
 	if (Fn->ParCount != C4AUL_MAX_Par)
 	{
-		Warn(target_host, host, n, Fn, "using Par() inside a function forces it to take variable arguments");
+		Warn(target_host, host, n, Fn, C4AulWarningId::undeclared_varargs, "Par()");
 		Fn->ParCount = C4AUL_MAX_Par;
 	}
 	DefaultRecursiveVisitor::visit(n);
@@ -1288,8 +1299,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 	if (n->args.size() > fn_argc)
 	{
 		// Pop off any args that are over the limit
-		Warn(target_host, host, n->args[fn_argc].get(), Fn,
-			"call to %s passes %zu parameters, of which only %zu are used", cname, n->args.size(), fn_argc);
+		Warn(target_host, host, n->args[fn_argc].get(), Fn, C4AulWarningId::arg_count_mismatch,
+			cname, n->args.size(), fn_argc);
 		AddBCC(n->loc, AB_STACK, fn_argc - n->args.size());
 	}
 	else if (n->args.size() < fn_argc)
@@ -1369,7 +1380,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		C4V_Type to = expected_par_types[i];
 		if (C4Value::WarnAboutConversion(from, to))
 		{
-			Warn(target_host, host, n->args[i].get(), Fn, "parameter %zu of %s is %s (%s expected)", i, cname, GetC4VName(from), GetC4VName(to));
+			Warn(target_host, host, n->args[i].get(), Fn, C4AulWarningId::arg_type_mismatch, cname, i, GetC4VName(from), GetC4VName(to));
 		}
 	}
 
@@ -1576,14 +1587,14 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 	// Warn if we're controlling a no-op ("if (...);")
 	if (dynamic_cast<::aul::ast::Noop*>(n->iftrue.get()))
 	{
-		Warn(target_host, host, n->iftrue->loc, Fn, "empty controlled statement found (use '{}' if this is intentional)");
+		Warn(target_host, host, n->iftrue->loc, Fn, C4AulWarningId::empty_if);
 	}
 	if (SafeVisit(n->iftrue))
 		MaybePopValueOf(n->iftrue);
 
 	if (dynamic_cast<::aul::ast::Noop*>(n->iffalse.get()))
 	{
-		Warn(target_host, host, n->iffalse->loc, Fn, "empty controlled statement found (use '{}' if this is intentional)");
+		Warn(target_host, host, n->iffalse->loc, Fn, C4AulWarningId::empty_if);
 	}
 
 	if (n->iffalse)
@@ -1642,7 +1653,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 		if (f->SFunc() && f->SFunc()->pOrgScript == host && f->Parent == Parent)
 		{
 			if (Fn)
-				Warn(target_host, host, n, Fn, "function declared multiple times");
+				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, f->GetName(), "function");
 			Fn = f->SFunc();
 		}
 		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;

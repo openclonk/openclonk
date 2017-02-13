@@ -24,6 +24,7 @@
 
 #include "script/C4Aul.h"
 #include "script/C4AulAST.h"
+#include <bitset>
 
 // aul script state
 enum C4AulScriptState
@@ -54,6 +55,8 @@ public:
 	std::string Translate(const std::string &text) const;
 	std::list<C4ScriptHost *> SourceScripts;
 	StdCopyStrBuf ScriptName; // script name
+
+	bool IsWarningEnabled(const char *pos, C4AulWarningId warning) const;
 
 protected:
 	C4ScriptHost();
@@ -97,6 +100,8 @@ protected:
 	// in Clear() even in case of cyclic references.
 	std::vector<C4Value> ownedPropLists;
 
+	void EnableWarning(const char *pos, C4AulWarningId warning, bool enable = true);
+
 	friend class C4AulParse;
 	friend class C4AulProfiler;
 	friend class C4AulScriptEngine;
@@ -105,6 +110,7 @@ protected:
 	friend class C4AulScriptFunc;
 
 private:
+	std::map<const char*, std::bitset<(size_t)C4AulWarningId::WarningCount>> enabledWarnings;
 	std::unique_ptr<::aul::ast::Script> ast;
 };
 

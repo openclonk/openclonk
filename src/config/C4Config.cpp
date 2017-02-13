@@ -88,7 +88,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1                    , false, true));
-	pComp->Value(mkNamingAdapt(ExtraWarnings,       "ExtraWarnings",      0                    , false, true));
 	pComp->Value(mkNamingAdapt(s(TodoFilename),     "TodoFilename",       "{SCENARIO}/TODO.txt", false, true));
 	pComp->Value(mkNamingAdapt(s(AltTodoFilename),  "AltTodoFilename2",   "{USERPATH}/TODO.txt", false, true));
 	pComp->Value(mkNamingAdapt(MaxScriptMRU,        "MaxScriptMRU",       30                   , false, false));

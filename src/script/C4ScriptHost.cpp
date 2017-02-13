@@ -71,6 +71,7 @@ void C4ScriptHost::Clear()
 	Appends.clear();
 	// reset flags
 	State = ASS_NONE;
+	enabledWarnings.clear();
 }
 
 void C4ScriptHost::UnlinkOwnedFunctions()
