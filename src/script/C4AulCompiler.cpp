@@ -507,6 +507,15 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 					C4String *s = ::Strings.FindString(cname);
 					if (s && target_host->GetPropList()->HasProperty(s))
 						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "object-local variable");
+					if (Fn->ParNamed.GetItemNr(cname) != -1)
+					{
+						// The parameter order of this warning is correct:
+						// Aul looks up parameters before local variables, so
+						// the parameter actually shadows the local variable.
+						// This doesn't make a whole lot of sense and should
+						// probably be changed.
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "parameter", "local variable");
+					}
 				}
 				Fn->VarNamed.AddName(cname);
 				break;
@@ -1051,6 +1060,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 	// Why parameters are considered before function-scoped variables
 	// you ask? I've no idea, but that's how it was before I started
 	// changing things.
+	// NOTE: If you change this, remember to also change the warning
+	// (variable_shadows_variable) in PreparseAstVisitor.
 	if (Fn->ParNamed.GetItemNr(cname) != -1)
 	{
 		int pos = Fn->ParNamed.GetItemNr(cname);

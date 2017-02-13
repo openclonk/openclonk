@@ -305,6 +305,11 @@ TEST_F(AulTest, Warnings)
 		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement"))).Times(0);
 		RunCode("if (true) {} else {}");
 	}
+	{
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[variable_shadows_variable]")));
+		RunScript("func Main(f) { var f; }");
+	}
 }
 
 TEST_F(AulTest, NoWarnings)
