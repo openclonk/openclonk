@@ -129,25 +129,20 @@ void C4ScriptHost::Warn(const char *pMsg, ...)
 {
 	va_list args; va_start(args, pMsg);
 	StdStrBuf Buf;
-	Buf.Ref("WARNING: ");
 	Buf.AppendFormatV(pMsg, args);
 	Buf.AppendFormat(" (%s)", ScriptName.getData());
-	DebugLog(Buf.getData());
-	// count warnings
-	++Engine->warnCnt;
+	Engine->GetErrorHandler()->OnWarning(Buf.getData());
+	va_end(args);
 }
 
 void C4AulParse::Warn(const char *pMsg, ...)
 {
 	va_list args; va_start(args, pMsg);
 	StdStrBuf Buf;
-	Buf.Ref("WARNING: ");
 	Buf.AppendFormatV(pMsg, args);
 	AppendPosition(Buf);
-	DebugLog(Buf.getData());
-
-	// count warnings
-	++Engine->warnCnt;
+	Engine->GetErrorHandler()->OnWarning(Buf.getData());
+	va_end(args);
 }
 
 void C4AulParse::Error(const char *pMsg, ...)
