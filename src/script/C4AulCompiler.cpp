@@ -91,7 +91,6 @@ static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, cons
 	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
 	message += FormatCodePosition(host, SPos, target_host, func);
 
-	++::ScriptEngine.warnCnt;
 	::ScriptEngine.GetErrorHandler()->OnWarning(message.c_str());
 }
 
