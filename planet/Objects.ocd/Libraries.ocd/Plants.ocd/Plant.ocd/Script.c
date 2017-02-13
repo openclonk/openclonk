@@ -156,13 +156,12 @@ public func SetSeedOffset(int v)
  @plant_id plant to check for whether it's already too crowded. Default to GetID().
  @return true iff seeding should occur
 */
-public func CheckSeedChance(int offx, int offy, proplist plant_id)
+public func CheckSeedChance(int offx, int offy, id plant_id)
 {
 	// Find number of plants in seed area.
 	// Ignored confinement - that's only used for actual placement
 	var size = this->SeedArea();
 	var amount = this->SeedAmount();
-	var plant_id;
 	var plant_cnt = ObjectCount(Find_ID(plant_id ?? GetID()), Find_InRect(offx - size / 2, offy - size / 2, size, size));
 	// Increase seed chance by number of missing plants to reach maximum amount
 	// Note the chance will become negative if the maximum has been reached, in which case the random check will never succeed.

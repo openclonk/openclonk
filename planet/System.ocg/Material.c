@@ -79,10 +79,10 @@ global func ExtractLiquidAmount(int x, int y, int amount, bool distant_first)
 	var density = GetMaterialVal("Density", "Material", mat);
 	if (density < C4M_Liquid || density >= C4M_Solid)
 		return nil;
-	var amount = ExtractMaterialAmount(x, y, mat, amount, distant_first);
-	if (amount <= 0)
+	var extracted_amount = ExtractMaterialAmount(x, y, mat, amount, distant_first);
+	if (extracted_amount <= 0)
 		return nil;
-	return [mat, amount];
+	return [mat, extracted_amount];
 }
 
 /** Removes a material pixel from the specified location, if the material is flammable

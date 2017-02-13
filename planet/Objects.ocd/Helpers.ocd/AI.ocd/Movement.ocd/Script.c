@@ -109,7 +109,7 @@ public func ExecuteIdle(effect fx)
 // Turns around the AI such that it looks at its target.
 public func ExecuteLookAtTarget(effect fx)
 {
-	// Set direction to look at target, we can assume this is instantanuous.
+	// Set direction to look at target, we can assume this is instantaneous.
 	if (fx.target->GetX() > fx.Target->GetX())
 		fx.Target->SetDir(DIR_Right);
 	else
