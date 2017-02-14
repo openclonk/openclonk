@@ -46,9 +46,23 @@ global func SaveScenarioObjects(f, duplicate_objects)
 	// ...Except player crew
 	var ignore_objs = [];
 	if (!save_scenario_dup_objects)
+	{
 		for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
+		{
 			for (var icrew = 0, crew; crew = GetCrew(GetPlayerByIndex(iplr, C4PT_User), icrew); ++icrew)
+			{
 				ignore_objs[GetLength(ignore_objs)] = crew;
+			}
+		}
+	}
+	// Ignore objects tagged with a no-save effect
+	for (obj in objs)
+	{
+		if (GetEffect("IntNoScenarioSave", obj))
+		{
+			ignore_objs[GetLength(ignore_objs)] = obj;
+		}
+	}
 	// Write creation data and properties
 	var obj_data = SaveScen_Objects(objs, ignore_objs, props_prototype);
 	// Resolve dependencies
@@ -59,12 +73,14 @@ global func SaveScenarioObjects(f, duplicate_objects)
 	FileWrite(f, "/* Automatically created objects file */\n\n");
 	// Declare static variables for objects that wish to have them
 	for (obj in objs)
+	{
 		if (obj.StaticSaveVar && !save_scenario_dup_objects)
 		{
 			if (!any_written) FileWrite(f, "static "); else FileWrite(f, ", ");
 			FileWrite(f, obj.StaticSaveVar);
 			any_written = true;
 		}
+	}
 	if (any_written)
 	{
 		FileWrite(f, ";\n\n");

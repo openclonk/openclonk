@@ -19,6 +19,7 @@
 #include AI_RangedWeapons
 #include AI_TargetFinding
 #include AI_Vehicles
+#include AI_AttackModes
 
 
 // AI Settings.
@@ -58,7 +59,7 @@ public func AddAI(object clonk)
 	if (!fx_ai)
 		return;
 	// Add AI default settings.	
-	BindInventory(clonk);
+	SetAttackMode(clonk, "Default"); // also binds inventory
 	SetHome(clonk);
 	SetGuardRange(clonk, fx_ai.home_x - this.GuardRangeX, fx_ai.home_y - this.GuardRangeY, this.GuardRangeX * 2, this.GuardRangeY * 2);
 	SetMaxAggroDistance(clonk, this.MaxAggroDistance);
@@ -225,8 +226,6 @@ local FxAI = new Effect
 		this.Interval = 3;
 		// Store the definition that controls this AI.
 		this.control = control_def;
-		// Init editor properties.
-		this->InitEditorProps();
 		// Store the vehicle the AI is using.
 		if (this.Target->GetProcedure() == "PUSH")
 			this.vehicle = this.Target->GetActionTarget();
@@ -276,17 +275,6 @@ local FxAI = new Effect
 			this.alert = this.time;
 		return dmg;
 	},
-	
-	InitEditorProps = func()
-	{
-		// Editor properties for the AI.
-		this.EditorProps = {};
-		this.EditorProps.guard_range = { Name = "$GuardRange$", Type = "rect", Storage = "proplist", Color = 0xff00, Relative = false };
-		this.EditorProps.ignore_allies = { Name = "$IgnoreAllies$", Type = "bool" };
-		this.EditorProps.max_aggro_distance = { Name = "$MaxAggroDistance$", Type = "circle", Color = 0x808080 };
-		this.EditorProps.active = { Name = "$Active$", EditorHelp = "$ActiveHelp$", Type = "bool", Priority = 50, AsyncGet = "GetActive", Set = "SetActive" };
-		this.EditorProps.auto_search_target = { Name = "$AutoSearchTarget$", EditorHelp = "$AutoSearchTargetHelp$", Type = "bool" };
-	},
 	SetActive = func(bool active)
 	{
 		this.Interval = 3 * active;	
@@ -295,7 +283,17 @@ local FxAI = new Effect
 	{
 		return this.Interval != 0;	
 	},
-	
+	SetAttackMode = func(proplist attack_mode)
+	{
+		return this.control->SetAttackMode(this.Target, attack_mode.Identifier);
+	},
+	EditorProps = {
+		guard_range = { Name = "$GuardRange$", Type = "rect", Storage = "proplist", Color = 0xff00, Relative = false },
+		ignore_allies = { Name = "$IgnoreAllies$", Type = "bool" },
+		max_aggro_distance = { Name = "$MaxAggroDistance$", Type = "circle", Color = 0x808080 },
+		active = { Name = "$Active$", EditorHelp = "$ActiveHelp$", Type = "bool", Priority = 50, AsyncGet = "GetActive", Set = "SetActive" },
+		auto_search_target = { Name = "$AutoSearchTarget$", EditorHelp = "$AutoSearchTargetHelp$", Type = "bool" }
+	},
 	// Save this effect and the AI for scenarios.
 	SaveScen = func(proplist props)
 	{
@@ -304,6 +302,8 @@ local FxAI = new Effect
 		props->AddCall("AI", this.control, "AddAI", this.Target);
 		if (!this.Interval)
 			props->AddCall("AI", this.control, "SetActive", this.Target, false);
+		if (this.attack_mode.Identifier != "Default")
+			props->AddCall("AI", this.control, "SetAttackMode", this.Target, Format("%v", this.attack_mode.Identifier));
 		if (this.home_x != this.Target->GetX() || this.home_y != this.Target->GetY() || this.home_dir != this.Target->GetDir())
 			props->AddCall("AI", this.control, "SetHome", this.Target, this.home_x, this.home_y, GetConstantNameByValueSafe(this.home_dir, "DIR_"));
 		props->AddCall("AI", this.control, "SetGuardRange", this.Target, this.guard_range.x, this.guard_range.y, this.guard_range.wdt, this.guard_range.hgt);
@@ -478,9 +478,10 @@ public func ExecuteArm(effect fx)
 {
 	// Find shield.
 	fx.shield = fx.Target->FindContents(Shield);
-	// Find a weapon. For now, just search own inventory.
-	if (this->FindInventoryWeapon(fx) && fx.weapon->Contained() == fx.Target)
+	// Find a weapon. Depends on attack mode
+	if (Call(fx.attack_mode.FindWeapon, fx))
 	{
+		// Select unless it's e.g. a vehicle or a spell
 		SelectItem(fx, fx.weapon);
 		return true;
 	}
@@ -506,57 +507,10 @@ public func FindInventoryWeapon(effect fx)
 		else
 			fx.weapon = nil;
 	}
-	if (fx.weapon = fx.Target->FindContents(GrenadeLauncher))
-	{
-		if (this->HasBombs(fx, fx.weapon))
-		{
-			fx.strategy = this.ExecuteRanged;
-			fx.projectile_speed = 75;
-			fx.aim_wait = 85;
-			fx.ammo_check = this.HasBombs;
-			fx.ranged = true;
-			return true;
-		}
-		else
-			fx.weapon = nil;
-	}
-	if (fx.weapon = fx.Target->FindContents(Bow))
-	{
-		if (this->HasArrows(fx, fx.weapon))
-		{
-			fx.strategy = this.ExecuteRanged;
-			fx.projectile_speed = 100;
-			fx.aim_wait = 0;
-			fx.ammo_check = this.HasArrows;
-			fx.ranged = true;
-			return true;
-		}
-		else
-			fx.weapon = nil;
-	}
-	if (fx.weapon = fx.Target->FindContents(Blunderbuss))
-	{
-		if (this->HasAmmo(fx, fx.weapon))
-		{
-			fx.strategy = this.ExecuteRanged;
-			fx.projectile_speed = 200;
-			fx.aim_wait = 85;
-			fx.ammo_check = this.HasAmmo;
-			fx.ranged = true;
-			fx.ranged_direct = true;
-			return true;
-		}
-		else
-			fx.weapon = nil;
-	}
-	if (fx.weapon = fx.Target->FindContents(Javelin)) 
-	{
-		fx.strategy = this.ExecuteRanged;
-		fx.projectile_speed = fx.Target.ThrowSpeed * fx.weapon.shooting_strength / 100;
-		fx.aim_wait = 16;
-		fx.ranged=true;
-		return true;
-	}
+	if (FindInventoryWeaponGrenadeLauncher(fx)) return true;
+	if (FindInventoryWeaponBlunderbuss(fx)) return true;
+	if (FindInventoryWeaponBow(fx)) return true;
+	if (FindInventoryWeaponJavelin(fx)) return true;
 	// Throwing weapons.
 	if ((fx.weapon = fx.Target->FindContents(Firestone)) || (fx.weapon = fx.Target->FindContents(Rock)) || (fx.weapon = fx.Target->FindContents(Lantern))) 
 	{
@@ -573,6 +527,73 @@ public func FindInventoryWeapon(effect fx)
 	return false;
 }
 
+private func FindInventoryWeaponGrenadeLauncher(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(GrenadeLauncher))
+	{
+		if (this->HasBombs(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 75;
+			fx.aim_wait = 85;
+			fx.ammo_check = this.HasBombs;
+			fx.ranged = true;
+			return true;
+		}
+		else
+			fx.weapon = nil;
+	}
+}
+
+private func FindInventoryWeaponBlunderbuss(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Blunderbuss))
+	{
+		if (this->HasAmmo(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 200;
+			fx.aim_wait = 85;
+			fx.ammo_check = this.HasAmmo;
+			fx.ranged = true;
+			fx.ranged_direct = true;
+			return true;
+		}
+		else
+			fx.weapon = nil;
+	}
+}
+
+private func FindInventoryWeaponBow(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Bow))
+	{
+		if (this->HasArrows(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 100;
+			fx.aim_wait = 0;
+			fx.ammo_check = this.HasArrows;
+			fx.ranged = true;
+			return true;
+		}
+		else
+			fx.weapon = nil;
+	}
+}
+
+private func FindInventoryWeaponJavelin(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Javelin)) 
+	{
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = fx.Target.ThrowSpeed * fx.weapon.shooting_strength / 100;
+		fx.aim_wait = 16;
+		fx.ranged=true;
+		return true;
+	}
+}
+
 
 /*-- Editor Properties --*/
 
@@ -580,13 +601,17 @@ public func Definition(proplist def)
 {
 	if (!Clonk.EditorProps)
 		Clonk.EditorProps = {};
-	Clonk.EditorProps.AI =
+	if (def == AI) // TODO: Make AI an enum so different AI types can be selected.
 	{
-		Type = "has_effect",
-		Effect = "FxAI",
-		Set = Format("%i->SetAI", def),
-		SetGlobal = true
-	};
+		Clonk.EditorProps.AI =
+		{
+			Type = "has_effect",
+			Effect = "FxAI",
+			Set = Format("%i->SetAI", def),
+			SetGlobal = true
+		};
+	}
+	def->DefinitionAttackModes(def);
 	// Add AI user actions.
 	var enemy_evaluator = UserAction->GetObjectEvaluator("IsClonk", "$Enemy$", "$EnemyHelp$");
 	enemy_evaluator.Priority = 100;
