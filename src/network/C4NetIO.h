@@ -274,7 +274,7 @@ protected:
 //	virtual SOCKET CreateSocket() = 0;
 
 	// Makes IPv4 connections from an IPv6 socket work.
-	bool EnableDualStack(SOCKET socket);
+	bool InitIPv6Socket(SOCKET socket);
 
 	// *** errors
 protected:

@@ -65,6 +65,7 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 #endif
 
 #ifdef __linux__
+#include <linux/in6.h>
 #include <linux/if_addr.h>
 
 // Linux definitions needed for parsing /proc/if_inet6
@@ -711,7 +712,7 @@ C4NetIO::~C4NetIO()
 
 }
 
-bool C4NetIO::EnableDualStack(SOCKET socket)
+bool C4NetIO::InitIPv6Socket(SOCKET socket)
 {
 	int opt = 0;
 	if (setsockopt(socket, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<char*>(&opt), sizeof(opt)) == SOCKET_ERROR)
@@ -719,6 +720,15 @@ bool C4NetIO::EnableDualStack(SOCKET socket)
 		SetError("could not enable dual-stack socket", true);
 		return false;
 	}
+
+#ifdef IPV6_ADDR_PREFERENCES
+	// Prefer stable addresses. This should prevent issues with address
+	// deprecation while a match is running. No error handling - if the call
+	// fails, we just take any address.
+	opt = IPV6_PREFER_SRC_PUBLIC;
+	setsockopt(socket, IPPROTO_IPV6, IPV6_ADDR_PREFERENCES, reinterpret_cast<char*>(&opt), sizeof(opt));
+#endif
+
 	return true;
 }
 
@@ -1145,6 +1155,10 @@ bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 		return false;
 	}
 
+	if (addr.GetFamily() == HostAddress::IPv6)
+		if (!InitIPv6Socket(nsock))
+			return false;
+
 #ifdef STDSCHEDULER_USE_EVENTS
 	// set event
 	if (::WSAEventSelect(nsock, Event, FD_CONNECT) == SOCKET_ERROR)
@@ -1472,7 +1486,7 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 		SetError("socket creation failed", true);
 		return false;
 	}
-	if (!EnableDualStack(lsock))
+	if (!InitIPv6Socket(lsock))
 		return false;
 	// To be able to reuse the port after close
 #if !defined(_DEBUG) && !defined(_WIN32)
@@ -1846,7 +1860,7 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 		return false;
 	}
 
-	if (!EnableDualStack(sock))
+	if (!InitIPv6Socket(sock))
 		return false;
 
 	// set reuse socket option
