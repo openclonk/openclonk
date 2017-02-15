@@ -31,17 +31,17 @@ TEST_F(AulDiagnosticsTest, Warnings)
 	}
 	{
 		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement")));
+		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]")));
 		RunCode("if (true);");
 	}
 	{
 		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement")));
+		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]")));
 		RunCode("if (true) { return; } else;");
 	}
 	{
 		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::StartsWith("empty controlled statement"))).Times(0);
+		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]"))).Times(0);
 		RunCode("if (true) {} else {}");
 	}
 	{
