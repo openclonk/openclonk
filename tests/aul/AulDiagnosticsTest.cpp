@@ -20,15 +20,24 @@
 
 class AulDiagnosticsTest : public AulTest {};
 
-TEST_F(AulDiagnosticsTest, Warnings)
+TEST_F(AulDiagnosticsTest, arg_type_mismatch)
 {
 	{
 		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::_)).Times(3);
-		EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(s); }"));
-		EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(o); }"));
-		EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(a); }"));
+		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(3);
+		RunScript("func Main(string s, object o, array a) { Sin(s); }");
+		RunScript("func Main(string s, object o, array a) { Sin(o); }");
+		RunScript("func Main(string s, object o, array a) { Sin(a); }");
 	}
+	{
+		ErrorHandler errh;
+		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(0);
+		RunScript("func Main(string s, object o, array a) { var x; Sin(x); }");
+	}
+}
+
+TEST_F(AulDiagnosticsTest, empty_if)
+{
 	{
 		ErrorHandler errh;
 		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]")));
@@ -44,18 +53,15 @@ TEST_F(AulDiagnosticsTest, Warnings)
 		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]"))).Times(0);
 		RunCode("if (true) {} else {}");
 	}
+}
+
+TEST_F(AulDiagnosticsTest, variable_shadows_variable)
+{
 	{
 		ErrorHandler errh;
 		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[variable_shadows_variable]")));
 		RunScript("func Main(f) { var f; }");
 	}
-}
-
-TEST_F(AulDiagnosticsTest, NoWarnings)
-{
-	ErrorHandler errh;
-	EXPECT_CALL(errh, OnWarning(::testing::_)).Times(0);
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { var x; Sin(x); }"));
 }
 
 TEST_F(AulDiagnosticsTest, DiagnosticsSelection)
