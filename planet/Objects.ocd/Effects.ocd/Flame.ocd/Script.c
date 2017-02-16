@@ -15,6 +15,7 @@ protected func Initialize()
 
 public func Burning()
 {
+	if (!OnFire()) return RemoveObject();
 	// Consume inflammable material and make the flame a little bigger.
 	if (FlameConsumeMaterial() && GetCon() <= 80)
 	{

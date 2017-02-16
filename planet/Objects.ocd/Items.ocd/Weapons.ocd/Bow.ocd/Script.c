@@ -62,6 +62,7 @@ public func FinishedLoading(object clonk)
 }
 
 // Callback from the clonk, when he actually has stopped aiming
+// Calls "OnLaunchArrow"
 public func FinishedAiming(object clonk, int angle)
 {
 	clonk->DetachMesh(iArrowMesh);
@@ -73,7 +74,7 @@ public func FinishedAiming(object clonk, int angle)
 		if(Contents(0)->~IsArrow())
 		{
 			var arrow = Contents(0)->TakeObject();
-			arrow->Launch(angle,shooting_strength,clonk);
+			arrow->Launch(angle, shooting_strength, clonk, this);
 			Sound("Objects::Weapons::Bow::Shoot?");
 		}
 	}

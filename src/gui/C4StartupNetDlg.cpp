@@ -920,8 +920,7 @@ void C4StartupNetDlg::UpdateList(bool fGotReference)
 	C4NetIO::addr_t Discover;
 	while (DiscoverClient.PopDiscover(Discover))
 	{
-		StdStrBuf Address;
-		Address.Format("%s:%d", inet_ntoa(Discover.sin_addr), htons(Discover.sin_port));
+		StdStrBuf Address(Discover.ToString());
 		AddReferenceQuery(Address.getData(), C4StartupNetListEntry::NRQT_GameDiscovery);
 	}
 

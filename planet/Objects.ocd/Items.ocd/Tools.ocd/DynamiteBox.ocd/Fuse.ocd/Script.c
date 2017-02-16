@@ -5,6 +5,17 @@
 	@author Newton, Maikel
 */
 
+// Definition call: Create a fuse between two objects
+public func Create(object o1, object o2)
+{
+	if (!o1 || !o2) return;
+	var fuse = CreateObject(Fuse, AbsX(o1->GetX()), AbsY(o1->GetY()));
+	if (fuse)
+	{
+		fuse->Connect(o1, o2);
+	}
+	return fuse;
+}
 
 protected func Initialize()
 {
@@ -20,6 +31,15 @@ public func IsFuse() { return true; }
 public func Connect(object target1, object target2)
 {
 	SetAction("Connect", target1, target2);
+}
+
+public func GetConnectedItem(object source)
+{
+	// Return connected target on the other side of given source
+	if (source == GetActionTarget(0)) return GetActionTarget(1);
+	if (source == GetActionTarget(1)) return GetActionTarget(0);
+	// source is invalid
+	return nil;
 }
 
 public func StartFusing(object controller)
@@ -113,8 +133,13 @@ protected func FxIntFusingStop(object target, proplist effect, int reason, bool 
 	return FX_OK;
 }
 
-// Only the main dynamite pack is stored.
-public func SaveScenarioObject() { return false;}
+// Store as connector
+public func SaveScenarioObject(proplist props)
+{
+	if (!_inherited(props)) return false;
+	props->AddCall("Fuse", GetID(), "Create", GetActionTarget(0), GetActionTarget(1));
+	return true;
+}
 
 
 /*-- Properties --*/

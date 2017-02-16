@@ -1,2 +1,2 @@
 Name=Puka
-Description=Süße kleine Kreatur. In der Nähe von Wasser extrem gefährlich.
+Description=SÃ¼ÃŸe kleine Kreatur. In der NÃ¤he von Wasser extrem gefÃ¤hrlich.

@@ -25,7 +25,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsArmoryProduct();
 }
 
-private func ProductionTime(id toProduce) { return 100; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 100; }
 public func PowerNeed() { return 60; }
 
 public func OnProductionStart(id product)
@@ -68,6 +68,7 @@ private func Smoking()
 func Definition(proplist def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(7000, 0, 30000), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(25, 0, 1, 0));
+	return _inherited(def, ...);
 }
 
 local ActMap = {

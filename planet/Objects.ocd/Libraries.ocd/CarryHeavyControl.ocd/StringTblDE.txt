@@ -1,1 +1,1 @@
-TxtHandsFull=Hände sind voll!
+TxtHandsFull=HÃ¤nde sind voll!

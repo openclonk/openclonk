@@ -1,0 +1,22 @@
+[Teams]
+Active=1
+
+	[Team]
+	id=1
+	Name=Team 1
+	PlrStartIndex=1
+	
+	[Team]
+	id=2
+	Name=Team 2
+	PlrStartIndex=2
+	
+	[Team]
+	id=3
+	Name=Team 3
+	PlrStartIndex=3
+	
+	[Team]
+	id=4
+	Name=Team 4
+	PlrStartIndex=4

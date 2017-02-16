@@ -1,4 +1,29 @@
 Name=Flugzeug
 Description=Drücke [Hoch] oder [Runter] um den Motor zu starten bzw. zu stoppen. [Links] und [Rechts] steuern die Querruder. Drücke erneut [Runter] wenn der Motor aus ist um rückwärts zu fliegen.
-NoShots=Kein Bleikugel!
-NoRockets=No rockets available.
+
+NoShots=Keine Kugeln!
+NoRockets=Keine Raketen!
+NoBombs=Keine Bomben!
+NoBarrels=Keine Flüssigkeiten|mehr!
+NoBalloons=Keine Ballons!
+NoSpaceInInventory=Inventar voll!|Kein Platz für den Ballon!
+NoObjects=Leer!
+
+SelectedAction=Schussmodus:|%s ({{%i}})
+AirplaneSettings=Schussmodus auswählen:
+SwitchMainAction=Schussmodus (auf %s):
+SwitchTo=Wechseln zu: %s
+
+Bullet=Kanone
+Rocket=Raketenwerfer
+Bomb=Bombenabwurf
+Spray=Flüssigkeitsabwurf
+Balloon=Ballon-Fallschirmsprung
+Drop=Objektabwurf
+
+BulletInfo=Mit der Kanone schießen. Schießt Kugeln ({{LeadBullet}}). Kugeln verfügbar: %d.
+RocketInfo=Feuert Boompacks ({{Boompack}}) aus dem Flugzeug. Boompacks verfügbar: %d.
+BombInfo=Werfe Bomben ({{IronBomb}} und {{Dynamite}}) ab. Bomben verfügbar: %d.
+SprayInfo=Überzieht die Landschaft mit einem Flüssigkeitsregen. Flüssigkeit muss in Fässern ({{Barrel}} und {{MetalBarrel}}) gelagert werden. Fässer verfügbar: %d.
+BalloonInfo=Mit einem Ballon ({{Balloon}}) vom Flugzeug abspringen. Diese Aktion kann auch von anderen Clonks, die das Flugzeug nicht steuern, ausgeführt werden. Ballons verfügbar: %d.
+DropInfo=Werfe Objekte aus dem Flugzeug ab.

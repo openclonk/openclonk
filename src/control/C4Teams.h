@@ -169,7 +169,7 @@ public:
 	bool CanLocalSeeTeam() const;
 	bool IsTeamColors() const { return fTeamColors; } // whether team colors are enabled
 	bool IsRandomTeam() const { return eTeamDist==TEAMDIST_Random ||eTeamDist==TEAMDIST_RandomInv; } // whether a random team mode is selected
-	bool IsJoin2TeamAllowed(int32_t idTeam); // checks whether a team ID is valid and still available for new joins
+	bool IsJoin2TeamAllowed(int32_t idTeam, C4PlayerType plrType); // checks whether a team ID is valid and still available for new joins
 	bool IsAutoGenerateTeams() const { return fAutoGenerateTeams; }
 	bool IsRuntimeJoinTeamChoice() const { return IsCustom() && IsMultiTeams(); } // whether players joining at runtime must select a team first
 	int32_t GetMaxScriptPlayers() const { return iMaxScriptPlayers; } // return max number of script players to be added inthe lobby

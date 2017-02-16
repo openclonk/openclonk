@@ -115,16 +115,16 @@ public func OnPowerDisplayHover(id symbol, string extra_data, desc_menu_target, 
 	var power_network = this->GetPowerHelper();
 	if (power_network)
 	{
-		// Display the info dependent on which items is hovered.
+		var power_production_current = power_network->GetActivePowerAvailable(true) / 10;
+		var power_consumption_current = power_network->GetPowerConsumption(true) / 10;
+		// Display the info dependent on which item is being hovered.
 		if (extra_data == "production")
 		{
-			var power_production_current = power_network->GetActivePowerAvailable(true) / 10;
 			var power_production_capacity = power_network->GetBarePowerAvailable() / 10;
 			text = Format("$DescPowerProduction$", power_production_capacity, power_production_current);
 		}
 		else if (extra_data == "consumption")
 		{
-			var power_consumption_current = power_network->GetPowerConsumption(true) / 10;
 			var power_consumption_need = power_network->GetPowerConsumptionNeed() / 10;
 			text = Format("$DescPowerConsumption$", power_consumption_need, power_consumption_current);
 		}
@@ -133,6 +133,12 @@ public func OnPowerDisplayHover(id symbol, string extra_data, desc_menu_target, 
 			var power_stored = GetStoredPowerString(power_network->GetStoredPower());
 			var power_stored_capacity = GetStoredPowerString(power_network->GetStoredPowerCapacity());
 			text = Format("$DescPowerStored$", power_stored, power_stored_capacity, power_stored);
+			var over_production = power_production_current - power_consumption_current;
+			if (over_production > 0)
+				text = Format("%s $DescPowerOverproduction$", text, over_production);
+			else if (over_production < 0)
+				text = Format("%s $DescPowerUnderproduction$", text, -over_production);
+			
 		}
 		else if (extra_data == "nopowerneed")
 		{

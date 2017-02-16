@@ -4,4 +4,4 @@ StationSettings=Seilbahneinstellungen
 
 TooltipToggleStation=Bahnhofs-Status umstellen.
 
-DescToggleStation=Diese Kreuzung von Hand zu einem Bahnhof oder wieder zu einer Kreuzung umschalten. Nur Bahnhöfe sind als Ziel wählbar und nur am Bahnhöfen können Fahrzeuge aufgesetzt werden.
+DescToggleStation=Diese Kreuzung von Hand zu einem Bahnhof oder wieder zu einer Kreuzung umschalten. Nur BahnhÃ¶fe sind als Ziel wÃ¤hlbar und nur am BahnhÃ¶fen kÃ¶nnen Fahrzeuge aufgesetzt werden.

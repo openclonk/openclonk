@@ -7,7 +7,7 @@
 
 protected func ActivateEntrance(object entering_obj)
 {
-	if (this->~IsBase() && this->~CanBlockEnemies())
+	if (this->~CanBlockEnemies())
 	{
 		var for_plr = entering_obj->GetOwner();
 		if (Hostile(GetOwner(), for_plr))

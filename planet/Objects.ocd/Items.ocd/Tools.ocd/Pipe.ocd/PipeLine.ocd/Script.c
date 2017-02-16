@@ -73,7 +73,7 @@ public func GetConnectedObject(object obj)
 	return;
 }
 
-// Switches connection from one object to another.
+// Switches connection from connected_to to another obj.
 public func SwitchConnection(object connected_to, object obj)
 {
 	var target0 = GetActionTarget(0), target1 = GetActionTarget(1);

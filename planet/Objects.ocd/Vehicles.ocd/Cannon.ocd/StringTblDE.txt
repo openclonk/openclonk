@@ -1,6 +1,6 @@
 TxtControl=Steuerung
 TxtCannonisfull=Die Kanone ist schon geladen!
 TxtNeedsAmmo=Die Kanone hat keine Munition.
-TxtNeedsGunp=Die Kanone hat kein Schießpulver.
+TxtNeedsGunp=Die Kanone hat kein SchieÃŸpulver.
 Name=Kanone
-Description=Halte [Benutzen] gedrückt, um den Gegenstand in deiner Hand zu verschießen. Benötigt ein Pulverfass.
+Description=Halte [Benutzen] gedrÃ¼ckt, um den Gegenstand in deiner Hand zu verschieÃŸen. BenÃ¶tigt ein Pulverfass.

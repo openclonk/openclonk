@@ -34,6 +34,11 @@ protected:
 
 	static const C4Value C4VINT_MIN;
 	static const C4Value C4VINT_MAX;
+
+	virtual void SetUp() override;
+
+private:
+	int part_count = 0;
 };
 
 namespace aul_test {

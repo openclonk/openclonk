@@ -16,7 +16,7 @@ protected func Entrance() { RemoveObject(); }
 */
 global func TutArrowClear()
 {
-	for (arrow in FindObjects(Find_ID(TutorialArrow)))
+	for (var arrow in FindObjects(Find_ID(TutorialArrow)))
 		arrow->RemoveObject();
 	return;
 }

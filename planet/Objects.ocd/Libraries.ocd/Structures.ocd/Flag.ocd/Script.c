@@ -520,7 +520,7 @@ private func RefreshPowerNetwork(object network)
 	// Merge all the producers and consumers into their actual networks.
 	for (var link in Concatenate(network.lib_power.idle_producers, network.lib_power.active_producers))
 	{
-		if (!link)
+		if (!link || !link.obj)
 			continue;
 		var actual_network = Library_Power->GetPowerNetwork(link.obj);
 		if (!actual_network || actual_network == network)
@@ -531,7 +531,7 @@ private func RefreshPowerNetwork(object network)
 	}
 	for (var link in Concatenate(network.lib_power.waiting_consumers, network.lib_power.active_consumers))
 	{
-		if (!link)
+		if (!link || !link.obj)
 			continue;
 		var actual_network = Library_Power->GetPowerNetwork(link.obj);
 		if (!actual_network || actual_network == network)

@@ -10,7 +10,7 @@
 local plant_seed_chance = 17;
 local plant_seed_area = 150;
 local plant_seed_amount = 4;
-local plant_seed_offset = 10;
+local plant_seed_offset = 5;
 
 private func Incineration()
 {

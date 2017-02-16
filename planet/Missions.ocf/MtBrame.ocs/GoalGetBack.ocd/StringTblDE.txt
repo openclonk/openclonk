@@ -1,3 +1,4 @@
-Name=Finde den Weg zurück
-MsgGoalFulfilled=Ihr habt den Weg zurück gefunden.
+Name=Finde den Weg zurÃ¼ck
+MsgGoalFulfilled=Ihr habt den Weg zurÃ¼ck gefunden.
 MsgGoalUnFulfilled=Ihr seid noch nicht zuhause.
+GetBack=Finde zurÃ¼ck

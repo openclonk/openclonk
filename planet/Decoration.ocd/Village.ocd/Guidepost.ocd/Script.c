@@ -1,5 +1,5 @@
-/**
-	@author Graphics Dustin Ne� (dness.de), Script Sven2
+﻿/**
+	@author Graphics Dustin Neß (dness.de), Script Sven2
 */
 
 local Name="$Name$";

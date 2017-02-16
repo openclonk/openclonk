@@ -20,7 +20,7 @@
 
 const int C4NetMaxDiscover = 64;
 
-const unsigned long C4NetDiscoveryAddress = 0xef; // 239.0.0.0
+const StdStrBuf C4NetDiscoveryAddress = StdStrBuf("ff02::1");
 
 class C4Network2IODiscover : public C4NetIOSimpleUDP, private C4NetIO::CBClass
 {
@@ -34,12 +34,12 @@ protected:
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO);
 
 public:
-	bool Init(uint16_t iPort = P_NONE);
+	bool Init(uint16_t iPort = C4NetIO::addr_t::IPPORT_NONE);
 	void SetDiscoverable(bool fnEnabled) { fEnabled = fnEnabled; }
 	bool Announce();
 
 private:
-	sockaddr_in DiscoveryAddr;
+	C4NetIO::addr_t DiscoveryAddr;
 
 	uint16_t iRefServerPort;
 	bool fEnabled;
@@ -61,7 +61,7 @@ public:
 	const C4NetIO::addr_t &getDiscover(int i) { return Discovers[i]; }
 
 	void Clear() { iDiscoverCount = 0; }
-	bool Init(uint16_t iPort = P_NONE);
+	bool Init(uint16_t iPort = C4NetIO::addr_t::IPPORT_NONE);
 	bool StartDiscovery();
 	bool PopDiscover(C4NetIO::addr_t &Discover);
 

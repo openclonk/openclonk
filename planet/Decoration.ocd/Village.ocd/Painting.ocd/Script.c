@@ -1,5 +1,5 @@
-/**
-	@author Dustin Ne� (dness.de)
+﻿/**
+	@author Dustin Neß (dness.de)
 */
 
 protected func Construction()
@@ -8,7 +8,7 @@ protected func Construction()
 	RandomPainting(3);
 }
 
-//Change when changing textures is prossible soon(?)
+// Change when changing textures is prossible soon(?)
 public func RandomPainting(iMax) {
 	return Random(iMax);
 }

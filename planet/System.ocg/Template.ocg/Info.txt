@@ -1,0 +1,1 @@
+Contains template scenarios available in the "New Scenario" dialogue in the editor.

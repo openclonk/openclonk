@@ -47,11 +47,11 @@ static LIB_POWR_Networks;
 
 // All power related local variables are stored in a single proplist.
 // This reduces the chances of clashing local variables. See 
-// Initialize for which variables are being used.
+// Construction for which variables are being used.
 local lib_power;
 
 // Initialize the local variables needed to keep track of each power network.
-protected func Initialize()
+protected func Construction()
 {
 	// Initialize the single proplist for the power library.
 	if (lib_power == nil)

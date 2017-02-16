@@ -1,51 +1,53 @@
 /*--- Shield Gem ---*/
 
-local e;
+local has_graphics_e;
 
-protected func Initialize()
+public func Initialize()
 {
-	if(Random(2))
+	if (Random(2))
 	{
 		SetGraphics("E");
-		e=true;	
+		has_graphics_e = true;	
 	}
 	else
 	{
 		SetGraphics("");
-		e=false;
+		has_graphics_e = false;
 	}
 	
-	if(this->GetX() < 920)
+	if (this->GetX() < 920)
 	{
 		SetGraphics("E");
-		e=true;
+		has_graphics_e = true;
 	}
-	else if(this->GetX() > 1280)
+	else if (this->GetX() > 1280)
 	{
 		SetGraphics("");
-		e=false;
+		has_graphics_e = false;
 	}
 	 
 	SetR(Random(360));
 }
 
-protected func Departure()
+public func Departure()
 {
-	SetRDir(RandomX(-15,15));
+	SetRDir(RandomX(-15, 15));
 }
 
 func Hit()
 {
-	AddEffect("GemShieldCreation",nil,100,1,nil,nil,GetX(),GetY(),e);
+	AddEffect("GemShieldCreation", nil, 100, 1, nil, nil, GetX(), GetY(), has_graphics_e);
 	RemoveObject();
 }
-global func FxGemShieldCreationStart(object target, effect, int temporary, x, y, e)
+
+global func FxGemShieldCreationStart(object target, effect, int temporary, int x, int y, bool e)
 {
 	if (temporary) 
 		return 1;
-	effect.x=x;
-	effect.var1=y;
-	effect.var2=e;
+
+	effect.x = x;
+	effect.y = y;
+	effect.e = e;
 	
 	effect.particles =
 	{
@@ -62,27 +64,42 @@ global func FxGemShieldCreationStart(object target, effect, int temporary, x, y,
 		effect.particles.B = PV_Random(20, 40);
 	}
 }
-global func FxGemShieldCreationTimer(object target, effect, int time)
+
+global func FxGemShieldCreationTimer(object target, proplist effect, int time)
 {
-	if(time > 26) return -1;
-	var x=effect.x;
-	var y=effect.var1;
-	var e=effect.var2;
-	var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
-	if(e)clr=RGB(190+Random(10),0,20+Random(20));
+	if (time > 26) return -1;
+	var x = effect.x;
+	var y = effect.y;
+	var e = effect.e;
+
+	var color;
+	if (e)
+	{
+		color = RGB(190 + Random(10), 0, 20 + Random(20));
+	}
+	else
+	{
+		color = RGB(122 + Random(20), 18 + Random(10), 90 + Random(20));
+	}
 	
-	var shield=CreateObjectAbove(CrystalShield,x+Sin(time*7,35),y+Cos(time*7,35));
-	shield->SetR(-time*7);
-	shield->SetClrModulation(clr);
-	CreateParticle("MagicSpark", x+Sin(time*7,39),y+Cos(time*7,39), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 20), effect.particles, 10);
+	var angle = time * 7;
 	
-	var shield=CreateObjectAbove(CrystalShield,x-Sin(-7+time*7,35),y+Cos(-7+time*7,35));
-	shield->SetR(-7 + time*7);
-	shield->SetClrModulation(clr);
-	CreateParticle("MagicSpark", x-Sin(-7+time*7,39),y+Cos(-7+time*7,39), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 20), effect.particles, 10);
+	SpawnGemShield(effect.particles, x, y, angle, color);
+	SpawnGemShield(effect.particles, x, y, -angle + 7, color);
 	return 1;
 }
 
-local Collectible = 1;
+global func SpawnGemShield(proplist particles, int x, int y, int angle, int color)
+{
+	var dist_min = 35;
+	var dist_max = 39;
+
+	var shield = CreateObjectAbove(CrystalShield, x + Sin(angle, dist_min), y + Cos(angle, dist_min));
+	shield->SetR(-angle);
+	shield->SetClrModulation(color);
+	CreateParticle("MagicSpark", x + Sin(angle, dist_max), y + Cos(angle, dist_max), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 20), particles, 10);
+}
+
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";

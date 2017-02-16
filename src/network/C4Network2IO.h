@@ -97,7 +97,8 @@ protected:
 	iUDPIRate, iUDPORate, iUDPBCRate;
 
 	// punching
-	C4NetIO::addr_t PuncherAddr;
+	C4NetIO::addr_t PuncherAddrIPv4, PuncherAddrIPv6;
+	bool IsPuncherAddr(const C4NetIO::addr_t& addr) const;
 
 public:
 
@@ -137,7 +138,7 @@ public:
 
 	// punch
 	bool InitPuncher(C4NetIO::addr_t PuncherAddr); // by main thread
-	void SendPuncherPacket(const C4NetpuncherPacket&);
+	void SendPuncherPacket(const C4NetpuncherPacket&, C4NetIO::HostAddress::AddressFamily family);
 	void Punch(const C4NetIO::addr_t&); // sends a ping packet
 
 	// stuff
@@ -261,7 +262,7 @@ protected:
 public:
 	C4NetIO  *getNetClass()   const { return pNetClass; }
 	C4Network2IOProtocol   getProtocol()    const { return eProt; }
-	const C4NetIO::addr_t &getPeerAddr()    const { return PeerAddr.sin_port ? PeerAddr : ConnectAddr; }
+	const C4NetIO::addr_t &getPeerAddr()    const { return PeerAddr.GetPort() ? PeerAddr : ConnectAddr; }
 	const C4NetIO::addr_t &getConnectAddr() const { return ConnectAddr; }
 	uint32_t  getID()         const { return iID; }
 	uint32_t  getRemoteID()   const { return iRemoteID; }

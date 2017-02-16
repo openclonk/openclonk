@@ -703,7 +703,21 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 		// Sliding on equal material: Move directly to optimize insertion of rain onto lakes
 		// Also move directly when shifted upwards to ensure movement on permamently moving SolidMask
 		if (iPxsMat == iLsMat || was_pushed_upwards)
-			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }
+		{
+			iX = iSlideX;
+			iY = iSlideY;
+			fXDir = 0;
+			if (was_pushed_upwards)
+			{
+				// When pushed upwards and slide was found into a target position, insert directly to allow additional PXS at same location to solidify in next position in same frame
+				if (::Landscape.GetDensity(iX, iY + Sign(GravAccel)) >= mdens)
+				{
+					return true;
+				}
+			}
+			// Continue existing (and fall down next frame)
+			return false;
+		}
 		// Otherwise, just move using xdir/ydir for nice visuals when rain is moving over landscape
 		// Accelerate into the direction
 		fXDir = (fXDir * 10 + Sign(iSlideX - iX)) / 11 + C4REAL10(Random(5)-2);

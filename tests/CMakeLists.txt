@@ -121,6 +121,7 @@ if (GTEST_FOUND AND GMOCK_FOUND)
 			aul/AulMathTest.cpp
 			aul/AulPredefinedFunctionTest.cpp
 			aul/AulDeathTest.cpp
+			aul/AulDiagnosticsTest.cpp
 			aul/AulSyntaxTest.cpp
 			aul/AulSyntaxTestDetail.h
 			aul/ErrorHandler.h

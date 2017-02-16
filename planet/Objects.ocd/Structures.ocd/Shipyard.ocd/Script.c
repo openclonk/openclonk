@@ -31,7 +31,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsShipyardProduct();
 }
 
-private func ProductionTime(id toProduce) { return 400; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 400; }
 public func PowerNeed() { return 80; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
@@ -84,6 +84,7 @@ public func Definition(def)
 {
 	def.MeshTransformation = Trans_Mul(Trans_Scale(800), Trans_Translate(2000, 0, 0), Trans_Rotate(8, 0, 1, 0));
 	def.PictureTransformation = Trans_Mul(Trans_Translate(0, -25000, 50000), Trans_Scale(600));
+	return _inherited(def, ...);
 }
 
 local ActMap = {

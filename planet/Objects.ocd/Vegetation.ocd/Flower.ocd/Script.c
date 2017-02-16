@@ -12,6 +12,7 @@ local is_explicit_skin = false;
 local plant_seed_chance = 33;
 local plant_seed_area = 120;
 local plant_seed_amount = 6;
+local plant_seed_offset = 5;
 
 public func Construction()
 {

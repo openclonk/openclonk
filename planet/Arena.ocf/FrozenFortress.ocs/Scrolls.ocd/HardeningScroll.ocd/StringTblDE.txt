@@ -1,2 +1,2 @@
-Name=Härtnungs-Schriftrolle
+Name=HÃ¤rtnungs-Schriftrolle
 Description=Transformiere nahen Schnee in Eis.

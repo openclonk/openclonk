@@ -1,5 +1,5 @@
 Name=Kristallkommunikator bauen
 
 #Goal window
-MsgGoalFulfilled=Glückwunsch; der Kristallkommunikator steht.
-MsgGoalUnfulfilled=Bringe das nötige Baumaterial zur Baustelle des Kristallkommunikator!
+MsgGoalFulfilled=GlÃ¼ckwunsch; der Kristallkommunikator steht.
+MsgGoalUnfulfilled=Bringe das nÃ¶tige Baumaterial zur Baustelle des Kristallkommunikator!

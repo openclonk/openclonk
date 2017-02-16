@@ -80,7 +80,7 @@ public func Construction(...)
 public func Destruction(...)
 {
 	if (container_id) GuiClose(container_id);
-	if (menu) menu->RemoveObect();
+	if (menu) menu->RemoveObject();
 	DestroyToggleVisibilityButton();
 	return true;
 }
@@ -250,7 +250,7 @@ private func CreateToggleVisibilityButton()
 			OnClick = GuiAction_Call(this, "ToggleVisibility"),
 			BackgroundColor = {Std = nil, OnHover = 0x50000000 },
 			//GraphicsName = GetGraphicsName(is_open),
-			Symbol = { Std=Library_Base, OnHover=Library_Base },
+			Symbol = { Std=Icon_Buy, OnHover=Icon_Buy },
 			Text = { Std=Format("$Buy$%s", hotkey_string), OnHover=Format("<c ffff00>$Buy$</c>%s", hotkey_string) },
 		}
 	};

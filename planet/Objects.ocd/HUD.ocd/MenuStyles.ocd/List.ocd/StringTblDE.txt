@@ -1,2 +1,2 @@
 Name=Liste
-Description=Ein einfaches Listenmenü.
+Description=Ein einfaches ListenmenÃ¼.

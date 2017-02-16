@@ -9,8 +9,8 @@
 // Whether the intro has been initialized.
 static intro_init;
 
-// Bat cave [x, y] coordinates.
-static bat_cave;
+// Bat cave [x, y] coordinates. Set in Map.c
+//static bat_cave;
 
 public func Initialize()
 {

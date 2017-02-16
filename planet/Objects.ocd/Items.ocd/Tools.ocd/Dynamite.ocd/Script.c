@@ -22,9 +22,22 @@ func Incineration(int caused_by)
 	SetController(caused_by);
 }
 
-func RejectEntrance()
+public func Entrance(object new_container)
 {
-	return GetAction() == "Ready";
+	// Collection back into dynamite box: Kill any connected fuses
+	if (new_container && new_container->~IsDynamiteBox())
+	{
+		var fuses = FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this));
+		if (GetLength(fuses) >= 2)
+		{
+			// Two fuses? Then bridge over this stick
+			var t1 = fuses[0]->GetConnectedItem(this);
+			var t2 = fuses[1]->GetConnectedItem(this);
+			fuses[0]->Connect(t1, t2);
+			fuses[0] = nil;
+		}
+		for (var fuse in fuses) if (fuse) fuse->RemoveObject();
+	}
 }
 
 /*-- Callbacks --*/
@@ -90,7 +103,17 @@ public func IsGrenadeLauncherAmmo() { return true; }
 
 /*-- Usage --*/
 
-public func ControlUse(object clonk, int x, int y, bool box)
+public func ControlUse(object clonk, int x, int y)
+{
+	return ControlPlace(clonk, x, y, GetLength(FindFuses()));
+}
+
+private func FindFuses()
+{
+	return FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this));
+}
+
+public func ControlPlace(object clonk, int x, int y, bool box)
 {
 	// if already activated, nothing (so, throw)
 	if(GetAction() == "Fuse" || box)
@@ -137,7 +160,7 @@ public func Fuse()
 {
 	if (GetAction() != "Fuse")
 	{
-		if (!FindObject(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this))) 
+		if (!GetLength(FindFuses())) 
 			Sound("Fire::Fuse");
 		SetAction("Fuse");
 		// Object can't be collected anymore when it fuses.
@@ -201,9 +224,21 @@ func Fusing()
 public func DoExplode()
 {
 	// Activate all fuses.
-	for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
+	for (var obj in FindFuses())
 		obj->~StartFusing(this);
 	Explode(26);
+}
+
+public func IsExplosive() { return true; }
+
+/*-- Scenario saving --*/
+// Do not save within dynamite box - will be handled by box
+
+public func SaveScenarioObject(props, ...)
+{
+	var c = Contained();
+	if (c && c->~IsDynamiteBox()) return false;
+	return inherited(props, ...);
 }
 
 /*-- Production --*/

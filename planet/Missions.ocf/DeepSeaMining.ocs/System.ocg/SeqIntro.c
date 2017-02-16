@@ -1,7 +1,6 @@
 #appendto Sequence
 
 static g_intro_sky_moving;
-static npc_tuesday;
 
 func Intro_Start()
 {
@@ -27,6 +26,7 @@ func Intro_Start()
 	this.pilot->SetObjectLayer(this.pilot);
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0)); // Hat is seen in the cockpit!
 
+	this.plane->PlaneMount(this.pilot);
 	this.plane.FxIntPlaneTimer = this.Intro_PlaneTimer;
 	RemoveEffect("IntPlane", this.plane);
 	AddEffect("IntPlane",this.plane,1,1,this.plane);

@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
 
 int usage(const char *argv0)
 {
@@ -26,21 +27,55 @@ int usage(const char *argv0)
 	return 1;
 }
 
-int main(int argc, const char * argv[])
+int main(int argc, char *argv[])
 {
 	if (argc < 2)
 		return usage(argv[0]);
 
-	if (strcmp(argv[1], "-e") == 0)
+	bool check = false;
+	char *runstring = nullptr;
+
+	while (1)
 	{
-		if (argc != 3)
+		static option long_options[] =
+		{
+			{"check", no_argument, 0, 'c'},
+			{"execute", required_argument, 0, 'e'},
+			{0, 0, 0, 0}
+		};
+
+		int option_index;
+		int c = getopt_long(argc, argv, "ce:", long_options, &option_index);
+		if (c == -1) break;
+		switch (c)
+		{
+		case 'c':
+			check = true;
+			break;
+		case 'e':
+			runstring = optarg;
+			break;
+		default:
 			return usage(argv[0]);
-		return c4s_runstring(argv[2]);
+		}
+	}
+
+	if (runstring)
+	{
+		if (argc - optind != 0)
+			return usage(argv[0]);
+		if (check)
+			return c4s_checkstring(runstring);
+		else
+			return c4s_runstring(runstring);
 	}
 	else
 	{
-		if (argc != 2)
+		if (argc - optind != 1)
 			return usage(argv[0]);
-		return c4s_runfile(argv[1]);
+		if (check)
+			return c4s_checkfile(argv[optind]);
+		else
+			return c4s_runfile(argv[optind]);
 	}
 }

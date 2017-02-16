@@ -36,7 +36,7 @@ MerchantQCatapult=Wozu brauche ich ein Katapult?
 MerchantACatapult1=Ein Katapult hat viele Anwendungen. Man kann Dinge wie Leitungsenden durch die Gegend werfen. Und wenn du mutig bist, kannst du selbst ins Katapult steigen und dich über den Lavasee schleudern.
 MerchantACatapult2=Das...klingt gefährlich. Das gefällt mir!
 MerchantQGold=Wie bekomme ich Clunker?
-MerchantAGold=Sprenge Goldklumpen {{Nugget}} aus der Goldader, baue einen Flaggenmast {{Flagpole}} und wirf Goldklumpen darauf. Mehr Clunker bekommst du, wenn du sie vorher im Hochofen {{Foundry}} zu Barren {{GoldBar}} schmilzt.
+MerchantAGold=Sprenge Goldklumpen {{Nugget}} aus der Goldader, baue einen Flaggenmast {{Flagpole}} und lege Goldklumpen hinein. Mehr Clunker bekommst du, wenn du sie vorher im Hochofen {{Foundry}} zu Barren {{GoldBar}} schmilzt.
 MerchantQDone=Tschüss.
 
 # Gyro

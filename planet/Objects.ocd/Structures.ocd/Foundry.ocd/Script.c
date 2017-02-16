@@ -1,9 +1,9 @@
-/*--
+/**
 	Foundry
-	Authors: Ringwaul, Maikel
-	
 	Melts iron ore to metal, using some sort of fuel.
---*/
+
+	@authors Ringwaul, Maikel
+*/
 
 #include Library_Structure
 #include Library_Ownable
@@ -11,22 +11,22 @@
 #include Library_LampPost
 #include Library_Tank
 
-// does not need power
+
+// Foundry does not need power.
 public func PowerNeed() { return 0; }
+
 public func IsPowerConsumer() { return false; }
 
-public func LampPosition(id def) { return [GetCalcDir()*-11,2]; }
+public func LampPosition(id def) { return [-11 * GetCalcDir(), 2]; }
 
 public func Construction(object creator)
 {
-	
-	//SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
-	SetAction("Default");
 	AddTimer("CollectionZone", 1);
 	return _inherited(creator, ...);
 }
 
 public func IsHammerBuildable() { return true; }
+
 
 /*-- Production --*/
 
@@ -36,7 +36,8 @@ private func IsProduct(id product_id)
 {
 	return product_id->~IsFoundryProduct();
 }
-private func ProductionTime(id toProduce) { return 290; }
+
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 290; }
 
 public func OnProductionStart(id product)
 {
@@ -57,23 +58,22 @@ public func OnProductionFinish(id product)
 }
 
 // Timer, check for objects to collect in the designated collection zone
-func CollectionZone()
+public func CollectionZone()
 {
-	if (GetCon() < 100) return;
-
-	for (var obj in FindObjects(Find_InRect(16 - 45 * GetDir(),3,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+	if (GetCon() < 100)
+		return;
+	for (var obj in FindObjects(Find_InRect(16 - 45 * GetDir(), 3, 13, 13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 		Collect(obj, true);
 }
 
-func Collection()
+public func Collection()
 {
 	Sound("Objects::Clonk");
-	return;
+	return _inherited(...);
 }
 
 public func FxSmeltingTimer(object target, proplist effect, int time)
 {
-	//Message(Format("Smelting %d",timer));
 	// Fire in the furnace.
 	CreateParticle("Fire", -10 * GetCalcDir() + RandomX(-1, 1), 20 + RandomX(-1, 1), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(3, 10), Particles_Fire(), 2);
 
@@ -86,10 +86,10 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 		Sound("Structures::Furnace::Loop", false, 100, nil, +1);
 
 	// Pour after some time.
-	if(time == 244)
+	if (time == 244)
 		SetMeshMaterial("MetalFlow", 1);
 
-	//Molten metal hits cast... Sizzling sound
+	// Molten metal hits cast... Sizzling sound.
 	if (time == 256)
 		Sound("Liquids::Sizzle");
 
@@ -100,15 +100,22 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 	if (time == 290)
 	{
 		SetMeshMaterial("Metal", 1);
-		Sound("Structures::Furnace::Loop", false ,100, nil, -1);
+		Sound("Structures::Furnace::Loop", false, 100, nil, -1);
 		Sound("Structures::Furnace::Stop");
-		return -1;
+		return FX_Execute_Kill;
 	}
-	return 1;
+	return FX_OK;
 }
 
 public func OnProductEjection(object product)
 {
+	// Enter produced liquids.
+	if (product->~IsLiquid())
+	{
+		product->Enter(this);
+		return;
+	}
+	// Other products exit the foundry.	
 	product->SetPosition(GetX() + 18 * GetCalcDir(), GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
@@ -118,62 +125,76 @@ public func OnProductEjection(object product)
 
 /*-- Pipeline --*/
 
-func IsLiquidContainerForMaterial(string liquid)
+public func IsLiquidContainerForMaterial(string liquid)
 {
-	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid);
+	return WildcardMatch("Oil", liquid) || WildcardMatch("Water", liquid) || WildcardMatch("Concrete", liquid);
 }
 
-func QueryConnectPipe(object pipe)
+public func GetLiquidContainerMaxFillLevel(liquid_name)
 {
-	if (GetNeutralPipe())
+	if (GetLiquidDef(liquid_name) == Water)
+		return 600;	
+	return 300;
+}
+
+// The foundry may have one drain and one source.
+public func QueryConnectPipe(object pipe)
+{
+	if (GetDrainPipe() && GetSourcePipe())
 	{
 		pipe->Report("$MsgHasPipes$");
 		return true;
 	}
-
-	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
+	else if (GetSourcePipe() && pipe->IsSourcePipe())
 	{
-		return false;
+		pipe->Report("$MsgSourcePipeProhibited$");
+		return true;
 	}
-	else
+	else if (GetDrainPipe() && pipe->IsDrainPipe())
+	{
+		pipe->Report("$MsgDrainPipeProhibited$");
+		return true;
+	}
+	else if (pipe->IsAirPipe())
 	{
 		pipe->Report("$MsgPipeProhibited$");
 		return true;
 	}
+	return false;
 }
 
-func OnPipeConnect(object pipe, string specific_pipe_state)
+// Set to source or drain pipe.
+public func OnPipeConnect(object pipe, string specific_pipe_state)
 {
-	SetNeutralPipe(pipe);
+	if (PIPE_STATE_Source == specific_pipe_state)
+	{
+		SetSourcePipe(pipe);
+		pipe->SetSourcePipe();
+	}
+	else if (PIPE_STATE_Drain == specific_pipe_state)
+	{
+		SetDrainPipe(pipe);
+		pipe->SetDrainPipe();
+	}
+	else
+	{
+		if (!GetDrainPipe())
+			OnPipeConnect(pipe, PIPE_STATE_Drain);
+		else if (!GetSourcePipe())
+			OnPipeConnect(pipe, PIPE_STATE_Source);
+	}
 	pipe->Report("$MsgConnectedPipe$");
-}
-
-func GetLiquidContainerMaxFillLevel()
-{
-	return 300;
 }
 
 
 /*-- Properties --*/
 
-
-local ActMap = {
-		Default = {
-			Prototype = Action,
-			Name = "Default",
-			Procedure = DFA_NONE,
-			Directions = 2,
-			FlipDir = 1,
-			Length = 1,
-			Delay = 0,
-			FacetBase = 1,
-			NextAction = "Default",
-		},
-};
-
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+public func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(30, 0, 1, 0));
+	return _inherited(def, ...);
 }
+
 local Name = "$Name$";
 local Description = "$Description$";
 local ContainBlast = true;

@@ -30,7 +30,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsToolProduct();
 }
 
-private func ProductionTime(id toProduce) { return 150; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 150; }
 public func PowerNeed() { return 40; }
 
 public func OnProductionStart(id product)
@@ -97,6 +97,7 @@ local ActMap = {
 };
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+	return _inherited(def, ...);
 }
 local Name = "$Name$";
 local Description ="$Description$";

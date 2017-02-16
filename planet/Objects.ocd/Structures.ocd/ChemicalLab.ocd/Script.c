@@ -24,7 +24,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsChemicalProduct();
 }
 
-private func ProductionTime(id toProduce) { return 100; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 100; }
 public func PowerNeed() { return 40; }
 
 public func OnProductionStart(id product)

@@ -14,3 +14,8 @@ YouNeedAHammer=You need a hammer.
 YouNeedMaterials=You need some of the required materials to repair this structure.
 
 MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interactions possible at this point.
+
+Flip=Flip
+FlipHelp=Mirrors the structure.
+Basement=Basement
+BasementHelp=Adds a basement to the structure.

@@ -136,7 +136,7 @@ public func Saw(object target)
 	return true;
 }
 
-private func ProductionTime() { return 100; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 100; }
 private func PowerNeed() { return 20; }
 
 private func FxWoodProductionStart(object t, proplist effect, int temp)
@@ -303,6 +303,7 @@ local ActMap = {
 func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(30, 0, 1, 0)), def);
+	return _inherited(def, ...);
 }
 local Name = "$Name$";
 local Description = "$Description$";

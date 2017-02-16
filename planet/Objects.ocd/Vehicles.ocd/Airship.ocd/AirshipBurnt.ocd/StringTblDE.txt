@@ -1,2 +1,2 @@
-Name=Zerstörtes Luftschiff
+Name=ZerstÃ¶rtes Luftschiff
 Description=Leicht reduzierte Aerodynamik.

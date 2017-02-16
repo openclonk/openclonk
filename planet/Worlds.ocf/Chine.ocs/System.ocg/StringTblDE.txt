@@ -3,10 +3,10 @@ TxtNeedsAmmo=Die Kanone hat keine Munition.
 
 # Intro sequence messages
 MsgDroppedCannon=%s, warum hast du die goldene Kanone fallen gelassen?
-MsgSorryEarthquake=Sorry, da war plötzlich ein starkes Erdbeben...
+MsgSorryEarthquake=Sorry, da war plÃ¶tzlich ein starkes Erdbeben...
 MsgBackToWork=Nun, bringen wir sie halt wieder hoch. An die Arbeit!
 
 # Failure sequence messages
 MsgWhoDroppedCannon=Wer hat die Kanone in den Abgrund fallen gelassen?
 MsgItWasMe=Ups. Ich war's...
-MsgShame=Schäm dich! Nun war unser ganzes Unternehmen für die Katz.
+MsgShame=SchÃ¤m dich! Nun war unser ganzes Unternehmen fÃ¼r die Katz.

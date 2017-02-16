@@ -194,13 +194,13 @@ func DoStrike(clonk, angle)
 		
 		if (obj->GetOCF() & OCF_Alive)
 		{
-			var damage=5*1000;
+			var damage = ClubDamage();
 			ApplyWeaponBash(obj, 400, angle, clonk);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
 		}
 		else
 		{
-			var div=100;
+			var div = ClubVelocityPrecision();
 			if(obj->GetContact(-1)) div*=10;
 			
 			// the better you hit, the more power you have
@@ -226,6 +226,16 @@ func DoStrike(clonk, angle)
 		RemoveEffect("DuringClubShoot", clonk);
 		Sound("Hits::Materials::Wood::WoodHit?", {pitch = -10});
 	}
+}
+
+func ClubDamage()
+{
+	return 5*1000;
+}
+
+func ClubVelocityPrecision()
+{
+	return 100;
 }
 
 /*-- Production --*/

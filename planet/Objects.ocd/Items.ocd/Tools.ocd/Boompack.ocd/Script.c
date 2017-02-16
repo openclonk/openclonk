@@ -205,7 +205,7 @@ func JumpOff(object clonk, int speed)
 	AddEffect("HitCheck", this, 1, 2, nil, nil, clonk);
 }
 
-public func Launch(int angle, object clonk)
+public func Launch(int angle, object clonk, object shooter)
 {
 	SetProperty("Collectible",0);
 	SetCategory(C4D_Vehicle);
@@ -219,7 +219,7 @@ public func Launch(int angle, object clonk)
 	// But only if not ridden by a clonk, for riding clonks
 	// this effect is added when the clonk jumps off.
 	if (!clonk)
-		AddEffect("HitCheck", this, 1, 2, nil, nil);
+		AddEffect("HitCheck", this, 1, 2, nil, nil, shooter);
 
 	//Ride the rocket!
 	if(clonk)
@@ -253,6 +253,8 @@ func DoFireworks()
 	Sound("Fire::BlastFirework", false, 200);
 	Explode(30);
 }
+
+public func IsExplosive() { return true; }
 
 public func SetFuel(int new)
 {

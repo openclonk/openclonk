@@ -14,7 +14,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if (GetMenu())
 		{
 			var is_spawn = GetMenu()->~IsSpawnMenu();
-			// unclosable menu? bad luck
+			// unclosable menu? bad luck.
 			if (!TryCancelMenu()) return true;
 			// If contents menu, don't open new one and return.
 			if (is_spawn)
@@ -23,9 +23,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// Open contents menu.
 		CancelUse();
 		GUI_SpawnMenu->CreateFor(this);
-		// the interaction menu calls SetMenu(this) in the clonk
-		// so after this call menu = the created menu
-		if(GetMenu())
+		// The interaction menu calls SetMenu(this) in the clonk,
+		// so after this call menu = the created menu.
+		if (GetMenu())
 			GetMenu()->~Show();		
 		return true;
 	}

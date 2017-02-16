@@ -1,2 +1,2 @@
 Name=Kompensator
-Description=Kann Energie über kurze Zeit puffern.
+Description=Kann Energie Ã¼ber kurze Zeit puffern.

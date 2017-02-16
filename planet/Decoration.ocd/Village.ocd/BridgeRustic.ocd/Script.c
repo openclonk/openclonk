@@ -1,5 +1,5 @@
-/**
-	@author Dustin Ne� (dness.de)
+﻿/**
+	@author Dustin Neß (dness.de)
 */
 
 local graphicFront, graphicBack;
@@ -15,7 +15,7 @@ protected func Construction()
 	
 	
 	
-	SetClrModulation(RGBa(0,0,0,0)); //Set SolidMask graphic invisible
+	SetClrModulation(RGBa(0,0,0,0)); // Set SolidMask graphic invisible
 
 	return true;
 }

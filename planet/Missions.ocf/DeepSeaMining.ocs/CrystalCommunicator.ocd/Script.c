@@ -21,6 +21,7 @@ public func SetConstructionSiteOverlay(object site, int dir, object stick, objec
 	var metal_completion = site->ContentsCount(Metal) * 3 / Max(GetComponent(Metal, nil), 1);
 	site->SetGraphics(["Site0", "Site1", "Site2", nil][metal_completion], CrystalCommunicator, 1, GFXOV_MODE_Base);
 	site->SetGraphics(nil, nil, 2);
+	site->SetObjDrawTransform(1000, 0,0,0, 1000, site->GetObjHeight()/2 * -1000, 1);
 	// Add graphics of contained gems
 	UpdateGemOverlays(site, [1, 3, 7, 12][metal_completion]);
 	return true;

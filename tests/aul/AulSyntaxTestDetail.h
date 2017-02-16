@@ -46,7 +46,7 @@ public:
 	}
 	virtual void visit(const ::aul::ast::BoolLit *n) override
 	{
-		target << n->value ? "true" : "false";
+		target << (n->value ? "true" : "false");
 	}
 	virtual void visit(const ::aul::ast::ArrayLit *n) override
 	{

@@ -1,11 +1,11 @@
-Name=Objektinteraktionsmenü
-Description=Kümmert sich um die Spielerinteraktion mit Gebäuden, Fahrzeugen etc.
+Name=ObjektinteraktionsmenÃ¼
+Description=KÃ¼mmert sich um die Spielerinteraktion mit GebÃ¤uden, Fahrzeugen etc.
 
 Contents=Inventar
-Contains=Enthält
+Contains=EnthÃ¤lt
 
-MoveAllTo=Transferiere alle Gegenstände zu %s
-NoInteractionsPossible=Es sind keine Interaktionen möglich.
+MoveAllTo=Transferiere alle GegenstÃ¤nde zu %s
+NoInteractionsPossible=Es sind keine Interaktionen mÃ¶glich.
 
 Minimize=Minimieren
 Maximize=Maximieren

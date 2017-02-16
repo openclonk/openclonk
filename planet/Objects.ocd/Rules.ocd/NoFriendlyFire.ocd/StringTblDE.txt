@@ -1,0 +1,2 @@
+Name=Kein Teambeschuss
+Description=Clan-Mitglieder bekommen nur Schaden von feindlichen Angriffe ab.

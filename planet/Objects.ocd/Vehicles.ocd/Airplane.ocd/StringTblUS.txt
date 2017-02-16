@@ -1,4 +1,29 @@
 Name=Airplane
 Description=Press [Up] and [Down] to stop and start engine. [Left] and [Right] control orientation. Press [Down] again when the engine is off to reverse the plane.
-NoShots=No available lead shot!
-NoRockets=No rockets available.
+
+NoShots=No bullets!
+NoRockets=No rockets!
+NoBombs=No bombs!
+NoBarrels=No more liquid!
+NoBalloons=No balloons!
+NoSpaceInInventory=Inventory full!|No space for the balloon!
+NoObjects=Empty!
+
+SelectedAction=Firing mode:|%s ({{%i}})
+AirplaneSettings=Select airplane firing mode:
+SwitchMainAction=Main (on %s):
+SwitchTo=Switch action to: %s
+
+Bullet=Main cannon
+Rocket=Rocket launcher
+Bomb=Bomb drop
+Spray=Liquid spray
+Balloon=Balloon parachute
+Drop=Object drop
+
+BulletInfo=Fire the main cannon, shooting bullets ({{LeadBullet}}). Shots available: %d.
+RocketInfo=Fire boompacks ({{Boompack}}) from the airplane. Rockets available: %d.
+BombInfo=Drop bombs ({{IronBomb}} and {{Dynamite}}) from the airplane. Bombs available: %d.
+SprayInfo=Spray liquids stored in barrels ({{Barrel}} and {{MetalBarrel}}) from the airplane. Barrels available: %d.
+BalloonInfo=Parachute from the airplane with a balloon ({{Balloon}}). This action will be available for passengers, too. Balloons available: %d.
+DropInfo=Drop contents from the airplane.

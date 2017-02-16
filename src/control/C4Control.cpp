@@ -1295,7 +1295,13 @@ void C4ControlEMMoveObject::Execute() const
 		if (pTarget)
 			for (int i=0; i<iObjectNum; ++i)
 				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
+				{
 					pObj->Enter(pTarget);
+					if (!pTarget->Status) break;
+					C4AulParSet pars(C4VObj(pObj));
+					if (pObj && pObj->Status && pTarget->Status) pTarget->Call(P_EditorCollection, &pars);
+					if (!pTarget->Status) break;
+				}
 	}
 	break;
 	case EMMO_Duplicate:
@@ -1369,7 +1375,12 @@ void C4ControlEMMoveObject::Execute() const
 		create_centered = true;
 #endif
 		C4Object *obj = ::Game.CreateObject(iddef, nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty), 0, create_centered);
-		if (container && obj && container->Status && obj->Status) obj->Enter(container);
+		if (container && obj && container->Status && obj->Status)
+		{
+			obj->Enter(container);
+			C4AulParSet pars(C4VObj(obj));
+			if (obj && obj->Status) container->Call(P_EditorCollection, &pars);
+		}
 		if (obj && obj->Status) obj->Call(P_EditorInitialize); // specific initialization when placed in editor
 	}
 	break;

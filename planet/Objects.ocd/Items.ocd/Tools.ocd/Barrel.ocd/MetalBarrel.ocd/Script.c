@@ -16,7 +16,7 @@ public func IsLiquidContainerForMaterial(string liquid_name)
 {
 	// anything liquid
 	var density = GetMaterialVal("Density", "Material", Material(liquid_name));
-	return density < 50 && density >= 25;
+	return _inherited(liquid_name, ...) || (density < 50 && density >= 25);
 }
 
 

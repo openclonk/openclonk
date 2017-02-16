@@ -1,0 +1,5 @@
+Name=Be Rich!
+
+#Goal window
+MsgGoalFulfilled=You are rich!
+MsgGoalUnfulfilled=Be rich before someone else will.\n\nYou can sell nearly everything at the flagpole to make money!

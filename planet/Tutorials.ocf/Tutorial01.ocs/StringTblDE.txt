@@ -1,24 +1,24 @@
 # Goal Description
 MsgGoalName=Fange deinen Wipf
-MsgGoalDescription=Folge deinem kleinen Freund und fange ihn so bald wie mˆglich.
+MsgGoalDescription=Folge deinem kleinen Freund und fange ihn so bald wie m√∂glich.
 
 # Dialogue options
-MsgNextTutorial=&N‰chste Lernrunde
-MsgNextTutorialDesc=Die n‰chste Lernrunde starten.
+MsgNextTutorial=&N√§chste Lernrunde
+MsgNextTutorialDesc=Die n√§chste Lernrunde starten.
 MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialWelcome=Willkommen bei OpenClonk! Dies ist dein Clonk, den du mit den %s Tasten steuern kannst. Klicke auf 'n‰chste Nachricht' um den n‰chsten Hinweis zu lesen und klicke auf mein Portrait f¸r den aktuellen Hinweis.
-MsgTutorialHUD=Oben links siehst du alle deine Clonks. Oben rechts siehst du dein aktuelles Ziel und wie viele Clunker du besitzt.
-MsgTutorialFollowFriend=Folge deinem Freund R¸diger ¸ber die Br¸cke und durch die Hindernisse vor dir, w‰hrend ich die Steuerung eines Clonks erkl‰re. Bewege dich ein bisschen, indem du [%s] und [%s] um zu laufen oder [%s] um zu springen dr¸ckst.
-MsgTutorialScaleWall=Hier musst du klettern um weiterzukommen. Laufe dazu einfach gegen die Wand bis sich dein Clonk festh‰lt. Dann kannst du hoch- und runterklettern, indem du [%s] bzw. [%s] gedr¸ckt h‰lst.
-MsgTutorialHangle=Clonks sind unglaublich vielseitig und geschickt: Sobald ein Clonk die Decke ber¸hrt h‰lt er sich von alleine fest. Springe an diese Decke und hangle dich auf die andere Seite. Lasse dann mit [%s] los.
-MsgTutorialJump=Dein Freund hat sich durch diesen Baumstamm gezw‰ngt aber du bist zu groﬂ. Springe nach oben und bewege dich dabei in Richtung der Wand um hochzuklettern.
-MsgTutorialSwimming=Noch ein Hindernis: Wasser! Clonks kˆnnen mit den Richtungstasten %s schwimmen. ‹berquere das Gew‰sser um deinen fluffigen Freund zu finden.
-MsgTutorialDiving=Manchmal muss man auch tauchen. Clonks haben begrenzten Atem, den du im HUD siehst. Hole also regelm‰ﬂig Luft!
-MsgTutorialCompleted=Gut gemacht! Du hast deinen felligen Freund gefunden. Lass uns mit dem n‰chsten Tutorial weitermachen.
+MsgTutorialWelcome=Willkommen bei OpenClonk! Dies ist dein Clonk, den du mit den %s Tasten steuern kannst. Klicke auf 'n√§chste Nachricht' um den n√§chsten Hinweis zu lesen und klicke auf mein Portrait f√ºr den aktuellen Hinweis.
+MsgTutorialHUD=Oben links siehst du alle deine Clonks. Oben rechts siehst du  wie viele Clunker du besitzt und dein aktuelles Ziel (klicke auf das Symbol f√ºr mehr Info).
+MsgTutorialFollowFriend=Folge deinem Freund R√ºdiger √ºber die Br√ºcke und durch die Hindernisse vor dir, w√§hrend ich die Steuerung eines Clonks erkl√§re. Bewege dich ein bisschen, indem du [%s] und [%s] um zu laufen oder [%s] um zu springen dr√ºckst.
+MsgTutorialScaleWall=Hier musst du klettern um weiterzukommen. Laufe dazu einfach gegen die Wand bis sich dein Clonk festh√§lt. Dann kannst du hoch- und runterklettern, indem du [%s] bzw. [%s] gedr√ºckt h√§lst.
+MsgTutorialHangle=Clonks sind unglaublich vielseitig und geschickt: Sobald ein Clonk die Decke ber√ºhrt h√§lt er sich von alleine fest. Springe an diese Decke und hangle dich auf die andere Seite. Lasse dann mit [%s] los.
+MsgTutorialJump=Dein Freund hat sich durch diesen Baumstamm gezw√§ngt aber du bist zu gro√ü. Springe nach oben und bewege dich dabei in Richtung der Wand um hochzuklettern.
+MsgTutorialSwimming=Noch ein Hindernis: Wasser! Clonks k√∂nnen mit den Richtungstasten %s schwimmen. √úberquere das Gew√§sser um deinen fluffigen Freund zu finden.
+MsgTutorialDiving=Manchmal muss man auch tauchen. Clonks haben begrenzten Atem, den du im HUD siehst. Hole also regelm√§√üig Luft!
+MsgTutorialCompleted=Gut gemacht! Du hast deinen felligen Freund gefunden. Lass uns mit dem n√§chsten Tutorial weitermachen.
 
 # Wipf name
-WipfName=R¸diger
+WipfName=R√ºdiger
 WipfDescription=Dein fluffiger kleiner Freund.

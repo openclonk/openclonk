@@ -427,7 +427,6 @@ class Script : public Node
 {
 	AST_NODE(Script);
 public:
-	virtual ~Script() {}
 	std::vector<DeclPtr> declarations;
 };
 

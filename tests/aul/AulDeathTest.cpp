@@ -35,3 +35,16 @@ TEST_F(AulDeathTest, NestedFunctions)
 	// inside a proplist inside a function.
 	EXPECT_NO_DEATH(RunCode("local a = {b = func () {} };"));
 }
+
+TEST_F(AulDeathTest, issue1891)
+{
+	// 1891: NULL dereference when warning is emitted in eval()
+	EXPECT_NO_DEATH(
+		try
+		{
+			RunExpr("eval(\"Sin(\\\"\\\")\")");
+		}
+		catch (C4AulExecError &)
+		{}
+	);
+}

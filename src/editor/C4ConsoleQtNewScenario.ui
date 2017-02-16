@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>713</width>
+    <width>656</width>
     <height>277</height>
    </rect>
   </property>
@@ -288,6 +288,29 @@
            </widget>
           </item>
           <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string comment="res">IDS_CNS_TEMPLATE</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="templateComboBox"/>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -379,7 +402,9 @@
   <tabstop>mapHeightSpinBox</tabstop>
   <tabstop>mapZoomSpinBox</tabstop>
   <tabstop>gameModeComboBox</tabstop>
+  <tabstop>templateComboBox</tabstop>
   <tabstop>definitionTreeView</tabstop>
+  <tabstop>startInNetworkCheckbox</tabstop>
   <tabstop>okButton</tabstop>
   <tabstop>cancelButton</tabstop>
  </tabstops>

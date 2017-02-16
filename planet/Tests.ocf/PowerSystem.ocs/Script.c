@@ -142,7 +142,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 			Log("Test %d not available, the previous test was the last test.", effect.testnr);
 			Log("=====================================");
 			Log("All tests have been successfully completed!");
-			return -1;
+			return FX_Execute_Kill;
 		}
 		effect.launched = true;
 	}		
@@ -519,7 +519,7 @@ global func Test9_OnStart(int plr)
 	windmill->AddToQueue(Flour, 3);
 
 	// Log what the test is about.
-	Log("An on-demand producer (steam engine) always provides power to an reduced on-demand consumer (wind mill).");
+	Log("An on-demand producer (steam engine) always provides power to a reduced on-demand consumer (wind mill).");
 	return true;
 }
 
@@ -583,7 +583,7 @@ global func Test10_OnStart(int plr)
 
 global func Test10_Completed()
 {
-	if (ObjectCount(Find_ID(Wood)) >= 5)
+	if (ObjectCount(Find_ID(Wood), Find_NoContainer()) >= 5)
 		return true;
 	return false;
 }
@@ -924,7 +924,7 @@ global func Test15_OnFinished()
 
 static POWER_SYSTEM_Test16_Start;
 
-// Test for ndproduction of power not meeting a single demand, which should not lead to producing any power at all.
+// Test for underproduction of power not meeting a single demand, which should not lead to producing any power at all.
 global func Test16_OnStart(int plr)
 {
 	// Store the current frame.
@@ -1175,6 +1175,89 @@ global func Test21_OnFinished()
 	RestoreWaterLevels();
 	// Remove steam engine, armory, pump.
 	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Armory), Find_ID(Pipe), Find_ID(Pump)));
+	return;
+}
+
+static POWER_SYSTEM_Test22_Time;
+
+// Test of pumping and power system with massive amounts of pumps.
+global func Test22_OnStart(int plr)
+{
+	// Start the script profiler for this test.
+	StartScriptProfiler();
+	POWER_SYSTEM_Test22_Time = GetTime();
+	
+	// Power source: one steam engine.
+	var steam_engine1 = CreateObjectAbove(SteamEngine, 36, 160, plr);
+	steam_engine1->CreateContents(Coal, 12);
+	
+	// Power source: wind generators.
+	SetWindFixed(100);
+	CreateObjectAbove(WindGenerator, 440, 104, plr);
+	CreateObjectAbove(WindGenerator, 460, 104, plr);
+	CreateObjectAbove(WindGenerator, 480, 104, plr);
+	CreateObjectAbove(WindGenerator, 500, 104, plr);	
+
+	// Power connection: one flagpole.
+	CreateObjectAbove(Flagpole, 248, 280, plr);
+
+	// Power consumer: pumps.
+	for (var i = 0; i < 5; i++)
+	{
+		var pump = CreateObjectAbove(Pump, 84 + i * 10, 160, plr);
+		var source = CreateObjectAbove(Pipe, 168 - 2 * i, 292, plr);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
+		var drain = CreateObjectAbove(Pipe, 240 - 2 * i, 100, plr);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+		drain->GetConnectedLine()->AddVertex(208, 48);
+	}
+	
+	// Power source: pumps.
+	for (var i = 0; i < 5; i++)
+	{
+		var pump = CreateObjectAbove(Pump, 228 + i * 10, 160, plr);
+		var source = CreateObjectAbove(Pipe, 256 + 2 * i, 100, plr);
+		source->ConnectPipeTo(pump, PIPE_STATE_Source);
+		source->GetConnectedLine()->AddVertex(288, 24);
+		source->GetConnectedLine()->AddVertex(288, 114);
+		source->GetConnectedLine()->AddVertex(282, 120);
+		var drain = CreateObjectAbove(Pipe, 184 + 2 * i, 292, plr);
+		drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
+	}
+
+	// Power storage: compensators.
+	CreateObjectAbove(Compensator, 20, 224, plr);
+	CreateObjectAbove(Compensator, 45, 224, plr);
+	CreateObjectAbove(Compensator, 70, 224, plr);
+	CreateObjectAbove(Compensator, 95, 224, plr);
+	CreateObjectAbove(Compensator, 20, 312, plr);
+	CreateObjectAbove(Compensator, 45, 312, plr);
+	CreateObjectAbove(Compensator, 70, 312, plr);
+	CreateObjectAbove(Compensator, 95, 312, plr);
+
+	// Log what the test is about.
+	Log("Massive amount of pumps to test the performance of pumps and the power system.");
+	return true;
+}
+
+global func Test22_Completed()
+{
+	if (GetTime() - POWER_SYSTEM_Test22_Time > 50000)
+		return true;
+	return false;
+}
+
+global func Test22_OnFinished()
+{
+	// Stop the script profiler for this test and log the total time.
+	var time = GetTime() - POWER_SYSTEM_Test22_Time;
+	Log("The test ran for %d ms and these functions have been consuming an amount of time:", time);
+	StopScriptProfiler();
+	// Restore water levels.
+	RestoreWaterLevels();	
+	// Remove all the structures.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(WindGenerator)));
+	RemoveAll(Find_Or(Find_ID(Pump), Find_ID(Pipe), Find_ID(Compensator), Find_ID(Flagpole)));
 	return;
 }
 

@@ -1,2 +1,2 @@
 Name=ManaAltar
-Description=Beschreibung hier einfügen
+Description=Beschreibung hier einfÃ¼gen

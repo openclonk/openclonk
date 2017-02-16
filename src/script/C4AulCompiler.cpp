@@ -29,6 +29,10 @@
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
 
+#ifdef _MSC_VER
+#define vsnprintf _vsprintf_p
+#endif
+
 static std::string vstrprintf(const char *format, va_list args)
 {
 	va_list argcopy;
@@ -86,24 +90,39 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 }
 
 template<class... T>
-static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, const char *msg, T &&...args)
+static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
+	if (!host)
+	{
+		// Without a script host, just fall back to the default settings
+#define DIAG(id, msg, enabled) if (warning == C4AulWarningId::id && !enabled) return;
+#include "C4AulWarnings.h"
+#undef DIAG
+	}
+	else if (!host->IsWarningEnabled(SPos, warning))
+	{
+		return;
+	}
+	const char *msg = C4AulWarningMessages[static_cast<size_t>(warning)];
 	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
 	message += FormatCodePosition(host, SPos, target_host, func);
 
-	++::ScriptEngine.warnCnt;
+	message += " [";
+	message += C4AulWarningIDs[static_cast<size_t>(warning)];
+	message += ']';
+
 	::ScriptEngine.GetErrorHandler()->OnWarning(message.c_str());
 }
 
 template<class... T>
-static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const ::aul::ast::Node *n, const C4AulScriptFunc *func, const char *msg, T &&...args)
+static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const ::aul::ast::Node *n, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
-	return Warn(target_host, host, n->loc, func, msg, std::forward<T>(args)...);
+	return Warn(target_host, host, n->loc, func, warning, std::forward<T>(args)...);
 }
 template<class... T>
-static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const std::nullptr_t &, const C4AulScriptFunc *func, const char *msg, T &&...args)
+static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const std::nullptr_t &, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
-	return Warn(target_host, host, static_cast<const char*>(nullptr), func, msg, std::forward<T>(args)...);
+	return Warn(target_host, host, static_cast<const char*>(nullptr), func, warning, std::forward<T>(args)...);
 }
 
 template<class... T>
@@ -464,7 +483,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::RangeLoop *n)
 		// the function and warn if it hasn't been declared at all.
 		if (Fn->VarNamed.GetItemNr(cname) == -1)
 		{
-			Warn(target_host, host, n, Fn, "Implicit declaration of the loop variable in a for-in loop is deprecated: %s", cname);
+			Warn(target_host, host, n, Fn, C4AulWarningId::implicit_range_loop_var_decl, cname);
 			Fn->VarNamed.AddName(cname);
 		}
 	}
@@ -475,7 +494,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 {
 	if (n->constant && n->scope != ::aul::ast::VarDecl::Scope::Global)
 	{
-		Warn(target_host, host, n, Fn, "Non-global variables cannot be constant");
+		Warn(target_host, host, n, Fn, C4AulWarningId::non_global_var_is_never_const);
 	}
 	for (const auto &var : n->decls)
 	{
@@ -493,10 +512,19 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 					// if target_host is unset, we're parsing this func for direct execution,
 					// in which case we don't want to warn about variable hiding.
 					if (target_host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || target_host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-						Warn(target_host, host, n, Fn, "function-local variable hides a global variable: %s", cname);
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "global variable");
 					C4String *s = ::Strings.FindString(cname);
 					if (s && target_host->GetPropList()->HasProperty(s))
-						Warn(target_host, host, n, Fn, "function-local variable hides an object-local variable: %s", cname);
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "object-local variable");
+					if (Fn->ParNamed.GetItemNr(cname) != -1)
+					{
+						// The parameter order of this warning is correct:
+						// Aul looks up parameters before local variables, so
+						// the parameter actually shadows the local variable.
+						// This doesn't make a whole lot of sense and should
+						// probably be changed.
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "parameter", "local variable");
+					}
 				}
 				Fn->VarNamed.AddName(cname);
 				break;
@@ -504,10 +532,10 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 		case ::aul::ast::VarDecl::Scope::Object:
 			{
 				if (host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-					Warn(target_host, host, n, Fn, "object-local variable hides a global variable: %s", cname);
+					Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "object-local variable", "global variable");
 				C4String *s = ::Strings.RegString(cname);
 				if (target_host->GetPropList()->HasProperty(s))
-					Warn(target_host, host, n, Fn, "object-local variable declared multiple times: %s", cname);
+					Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, cname, "object-local variable");
 				else
 					target_host->GetPropList()->SetPropertyByS(s, C4VNull);
 				break;
@@ -518,7 +546,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 				throw Error(target_host, host, n, Fn, "internal error: global var declaration inside function");
 
 			if (host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-				Warn(target_host, host, n, Fn, "global variable declared multiple times: %s", cname);
+				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, cname, "global variable");
 			if (n->constant)
 				host->Engine->GlobalConstNames.AddName(cname);
 			else
@@ -585,7 +613,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::ParExpr *n)
 {
 	if (Fn->ParCount != C4AUL_MAX_Par)
 	{
-		Warn(target_host, host, n, Fn, "using Par() inside a function forces it to take variable arguments");
+		Warn(target_host, host, n, Fn, C4AulWarningId::undeclared_varargs, "Par()");
 		Fn->ParCount = C4AUL_MAX_Par;
 	}
 	DefaultRecursiveVisitor::visit(n);
@@ -1041,6 +1069,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::VarExpr *n)
 	// Why parameters are considered before function-scoped variables
 	// you ask? I've no idea, but that's how it was before I started
 	// changing things.
+	// NOTE: If you change this, remember to also change the warning
+	// (variable_shadows_variable) in PreparseAstVisitor.
 	if (Fn->ParNamed.GetItemNr(cname) != -1)
 	{
 		int pos = Fn->ParNamed.GetItemNr(cname);
@@ -1289,8 +1319,8 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 	if (n->args.size() > fn_argc)
 	{
 		// Pop off any args that are over the limit
-		Warn(target_host, host, n->args[fn_argc].get(), Fn,
-			"call to %s passes %zu parameters, of which only %zu are used", cname, n->args.size(), fn_argc);
+		Warn(target_host, host, n->args[fn_argc].get(), Fn, C4AulWarningId::arg_count_mismatch,
+			cname, n->args.size(), fn_argc);
 		AddBCC(n->loc, AB_STACK, fn_argc - n->args.size());
 	}
 	else if (n->args.size() < fn_argc)
@@ -1370,7 +1400,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		C4V_Type to = expected_par_types[i];
 		if (C4Value::WarnAboutConversion(from, to))
 		{
-			Warn(target_host, host, n->args[i].get(), Fn, "parameter %zu of %s is %s (%s expected)", i, cname, GetC4VName(from), GetC4VName(to));
+			Warn(target_host, host, n->args[i].get(), Fn, C4AulWarningId::arg_type_mismatch, cname, i, GetC4VName(from), GetC4VName(to));
 		}
 	}
 
@@ -1410,7 +1440,6 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Return *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 {
-#if 0
 	// Bytecode arranged like this:
 	//        initializer
 	//  cond: condition
@@ -1418,56 +1447,6 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 	//  body: body
 	//  incr: incrementor
 	//        JUMP cond
-	//  exit:
-	//
-	// continue jumps to incr
-	// break jumps to exit
-
-	if (n->init)
-	{
-		n->init->accept(this);
-		MaybePopValueOf(n->init);
-	}
-	int cond = -1, condition_jump = -1;
-	PushLoop();
-	if (n->cond)
-	{
-		cond = AddJumpTarget();
-		n->cond->accept(this);
-		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
-	}
-
-	int body = AddJumpTarget();
-	if (!n->cond)
-		cond = body;
-	n->body->accept(this);
-	MaybePopValueOf(n->body);
-
-	int incr = -1;
-	if (n->incr)
-	{
-		incr = AddJumpTarget();
-		n->incr->accept(this);
-		MaybePopValueOf(n->incr);
-	}
-	else
-	{
-		// If no incrementor exists, just jump straight to the condition
-		incr = cond;
-	}
-	// start the next iteration of the loop
-	AddJumpTo(AB_JUMP, cond);
-	PopLoop(incr);
-#else
-	// Bytecode arranged like this:
-	//        initializer
-	//  cond: condition
-	//        CONDN exit
-	//        JUMP body
-	//  incr: incrementor
-	//        JUMP cond
-	//  body: body
-	//        JUMP incr
 	//  exit:
 	//
 	// continue jumps to incr
@@ -1478,29 +1457,36 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 		if (SafeVisit(n->init))
 			MaybePopValueOf(n->init);
 	}
+	int cond = -1, condition_jump = -1;
 	PushLoop();
-	int cond = AddJumpTarget();
 	if (n->cond)
 	{
+		cond = AddJumpTarget();
 		SafeVisit(n->cond);
 		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	}
 
-	int incr = cond;
+	int body = AddJumpTarget();
+	if (!n->cond)
+		cond = body;
+	if (SafeVisit(n->body))
+		MaybePopValueOf(n->body);
+
+	int incr = -1;
 	if (n->incr)
 	{
-		int cond_jump = AddBCC(n->loc, AB_JUMP);
 		incr = AddJumpTarget();
 		if (SafeVisit(n->incr))
 			MaybePopValueOf(n->incr);
-		AddJumpTo(n->loc, AB_JUMP, cond);
-		UpdateJump(cond_jump, AddJumpTarget());
 	}
-	if (SafeVisit(n->body))
-		MaybePopValueOf(n->body);
-	AddJumpTo(n->loc, AB_JUMP, incr);
+	else
+	{
+		// If no incrementor exists, just jump straight to the condition
+		incr = cond;
+	}
+	// start the next iteration of the loop
+	AddJumpTo(n->loc, AB_JUMP, cond);
 	PopLoop(incr);
-#endif
 }
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::RangeLoop *n)
@@ -1618,8 +1604,19 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 {
 	SafeVisit(n->cond);
 	int jump = AddBCC(n->loc, AB_CONDN);
+	// Warn if we're controlling a no-op ("if (...);")
+	if (dynamic_cast<::aul::ast::Noop*>(n->iftrue.get()))
+	{
+		Warn(target_host, host, n->iftrue->loc, Fn, C4AulWarningId::empty_if);
+	}
 	if (SafeVisit(n->iftrue))
 		MaybePopValueOf(n->iftrue);
+
+	if (dynamic_cast<::aul::ast::Noop*>(n->iffalse.get()))
+	{
+		Warn(target_host, host, n->iffalse->loc, Fn, C4AulWarningId::empty_if);
+	}
+
 	if (n->iffalse)
 	{
 		int jumpout = AddBCC(n->loc, AB_JUMP);
@@ -1676,7 +1673,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 		if (f->SFunc() && f->SFunc()->pOrgScript == host && f->Parent == Parent)
 		{
 			if (Fn)
-				Warn(target_host, host, n, Fn, "function declared multiple times");
+				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, f->GetName(), "function");
 			Fn = f->SFunc();
 		}
 		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
@@ -2079,7 +2076,7 @@ void C4AulCompiler::ConstantResolver::visit(const ::aul::ast::VarDecl *n)
 	for (const auto &dec : n->decls)
 	{
 		const char *cname = dec.name.c_str();
-		C4String *name = ::Strings.RegString(cname);
+		C4RefCntPointer<C4String> name = ::Strings.RegString(cname);
 		switch (n->scope)
 		{
 		case ::aul::ast::VarDecl::Scope::Func:

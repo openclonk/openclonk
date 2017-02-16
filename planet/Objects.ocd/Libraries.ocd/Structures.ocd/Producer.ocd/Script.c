@@ -458,7 +458,6 @@ public func GetQueue()
 	return queue;
 }
 
-
 private func ProcessQueue()
 {
 	// If target is currently producing, don't do anything.
@@ -529,7 +528,6 @@ private func Produce(id product, producing_player)
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product, producing_player);
-
 	return true;
 }
 
@@ -715,7 +713,7 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 protected func FxProcessProductionStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp) 
-		return FX_OK;
+		return FX_OK;	
 	
 	// No need to consume power anymore. Always unregister even if there's a queue left to
 	// process, because OnNotEnoughPower relies on it and it gives other producers the chance
@@ -725,14 +723,17 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 
 	if (reason != 0)
 		return FX_OK;
-
+		
 	// Callback to the producer.
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
 	var product = CreateObject(effect.Product);
 	OnProductEjection(product);
-	// Global callback
-	if (product) GameCallEx("OnProductionFinished", product, effect.producing_player);
+	// Global callback.
+	if (product)
+		GameCallEx("OnProductionFinished", product, effect.producing_player);
+	// Try to process the queue immediately and don't wait for the timer to prevent pauses.
+	ProcessQueue();
 	return FX_OK;
 }
 
@@ -851,8 +852,8 @@ public func IsCollectionAllowed(object item)
 
 public func RejectCollect(id item_id, object item)
 {
-	// Is the object a container? If so, try to empty it.
-	if (item->~IsContainer() || item->~IsLiquidContainer())
+	// Is the object a container? If so, try to empty it. Don't empty extra slots.
+	if ((item->~IsContainer() && !item->~HasExtraSlot()) || item->~IsLiquidContainer() || item->~IsBucket())
 	{
 	 	GrabContents(item);
 	}

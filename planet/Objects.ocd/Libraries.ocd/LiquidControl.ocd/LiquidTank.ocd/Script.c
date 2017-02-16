@@ -1,16 +1,15 @@
-/* --- Tank ---
-
+/**
+	Liquid Tank
 	A structure that can contain liquids. Connecting pipes to the
 	structure can be allowed, but this has to be implemented by the
-	object.
-	This is controlled with the callbacks
-	- QueryConnectPipe
-	- OnPipeConnect
-	- OnPipeDisconnect
+	object. This is controlled with the callbacks
+	 - QueryConnectPipe
+	 - OnPipeConnect
+	 - OnPipeDisconnect
 	in that structure.
-
- Author: Marky
- */
+	
+	@author Marky
+*/
 
 #include Library_LiquidContainer
 
@@ -27,7 +26,8 @@ static const LIBRARY_TANK_Menu_Action_Description = "description";
 
 local lib_tank; // proplist for local variables
 
-/* ---------- Callbacks ---------- */
+
+/*-- Callbacks --*/
 
 public func Construction()
 {
@@ -47,9 +47,12 @@ public func Construction()
 	_inherited(...);
 }
 
-public func IsLiquidTank() { return true;}
+public func IsLiquidTank() { return true; }
 
-/* ---------- Menu Entries ---------- */
+
+/*-- Menu Entries --*/
+
+public func HasInteractionMenu() { return true; }
 
 public func GetInteractionMenus(object clonk)
 {
@@ -160,7 +163,7 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 }
 
 
-/* ---------- Handle connections ---------- */
+/*-- Handle Connections --*/
 
 public func GetDrainPipe() { return lib_tank.drain_pipe;}
 public func GetSourcePipe() { return lib_tank.source_pipe;}
@@ -185,7 +188,7 @@ public func SetNeutralPipe(object neutral_pipe)
 }
 
 
-/* ---------- Menu callbacks ---------- */
+/*-- Menu Callbacks --*/
 
 public func DoConnectPipe(object pipe, string specific_pipe_state)
 {
@@ -202,6 +205,7 @@ public func DoCutPipe(object pipe)
 
 public func DoSwapSourceDrain(object source, object drain)
 {
+	// TODO: Check if swapping is even allowed.
 	SetDrainPipe(source);
 	SetSourcePipe(drain);
 	source->SetDrainPipe();
@@ -218,7 +222,8 @@ public func FindAvailablePipe(object container, find_state)
 	return nil;
 }
 
-/* ---------- Pipe callbacks ---------- */
+
+/*-- Pipe Callbacks --*/
 
 public func CanConnectPipe(){ return true;}
 
@@ -229,6 +234,7 @@ public func OnPipeDisconnect(object pipe)
 	if (pipe == GetSourcePipe()) SetSourcePipe();
 	if (pipe == GetNeutralPipe()) SetNeutralPipe();
 }
+
 
 /*-- Scenario Saving --*/
 

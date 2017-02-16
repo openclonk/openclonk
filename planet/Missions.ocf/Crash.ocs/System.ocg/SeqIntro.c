@@ -22,6 +22,9 @@ func Intro_Init()
 	this.dialogue->SetInteraction(false);
 
 	this.plane->FaceRight();
+	this.plane->PlaneMount(this.pilot);
+	this.plane.Touchable = 0;
+	this.plane->MakeInvincible();
 }
 
 func Intro_Start(object hero)
@@ -63,26 +66,26 @@ func Intro_1()
 {
 	SetPlayerZoomByViewRange(NO_OWNER, 800,600, PLRZOOM_Set);
 	MessageBoxAll("$MsgIntro1$", this.pilot, true);
-	this.plane->ContainedLeft();
+	this.plane->ContainedLeft(this.pilot);
 	return ScheduleNext(10);
 }
 
 func Intro_2()
 {
-	this.plane->ContainedRight();
+	this.plane->ContainedRight(this.pilot);
 	return ScheduleNext(46);
 }
 
 func Intro_3()
 {
 	this.intro_closed = true;
-	this.plane->ContainedStop();
+	this.plane->ContainedStop(this.pilot);
 	return ScheduleNext(44);
 }
 
 func Intro_4()
 {
-	this.plane->ContainedLeft();
+	this.plane->ContainedLeft(this.pilot);
 	return ScheduleNext(20);
 }
 
@@ -94,7 +97,7 @@ func Intro_5()
 
 func Intro_6()
 {
-	this.plane->ContainedStop();
+	this.plane->ContainedStop(this.pilot);
 	return ScheduleNext(64);
 }
 
@@ -106,25 +109,25 @@ func Intro_7()
 
 func Intro_8()
 {
-	this.plane->ContainedRight();	
+	this.plane->ContainedRight();
 	return ScheduleNext(6);
 }
 
 func Intro_9()
 {
-	this.plane->ContainedStop();
+	this.plane->ContainedStop(this.pilot);
 	return ScheduleNext(30);
 }
 
 func Intro_10()
 {
-	this.plane->ContainedRight();
+	this.plane->ContainedRight(this.pilot);
 	return ScheduleNext(6);
 }
 
 func Intro_11()
 {
-	this.plane->ContainedStop();
+	this.plane->ContainedStop(this.pilot);
 	return ScheduleNext(28);
 }
 
@@ -158,8 +161,12 @@ func Intro_16()
 	var y = this.plane->GetY();
 	this.pilot->Exit();
 	Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.pilot);
-	while(this.dialogue->Contents())
-		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.dialogue->Contents());
+	var clonk;
+	while(clonk = this.dialogue->Contents())
+	{
+		clonk->Exit();
+		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), clonk);
+	}
 	return ScheduleNext(100);
 }
 

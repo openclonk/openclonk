@@ -24,6 +24,7 @@
 #include "lib/C4InputValidation.h"
 
 const int C4Network2HTTPQueryTimeout = 10; // (s)
+const uint32_t C4Network2HTTPHappyEyeballsTimeout = 300; // (ms)
 
 // Session data
 class C4Network2Reference
@@ -51,7 +52,7 @@ private:
 	bool PasswordNeeded;
 	bool OfficialServer;
 	bool IsEditor;
-	C4NetpuncherID_t NetpuncherGameID;
+	C4NetpuncherID NetpuncherGameID;
 	StdCopyStrBuf NetpuncherAddr;
 
 	// Engine information
@@ -60,9 +61,11 @@ private:
 	// Network addresses
 	uint8_t iAddrCnt;
 	C4Network2Address Addrs[C4ClientMaxAddr];
+	C4NetIO::EndpointAddress source;
 
 public:
 	const C4Network2Address &getAddr(int i) const { return Addrs[i]; }
+	C4Network2Address &getAddr(int i) { return Addrs[i]; }
 	int getAddrCnt() const { return iAddrCnt; }
 	const char *getTitle() const { return Title.getData(); }
 	int32_t getIcon() const { return Icon; }
@@ -77,10 +80,11 @@ public:
 	int32_t getStartTime() const { return StartTime; }
 	StdStrBuf getGameGoalString() const;
 	bool isEditor() const { return IsEditor; }
-	C4NetpuncherID_t getNetpuncherGameID() const { return NetpuncherGameID; }
+	C4NetpuncherID getNetpuncherGameID() const { return NetpuncherGameID; }
 	StdStrBuf getNetpuncherAddr() const { return NetpuncherAddr; }
 
-	void SetSourceIP(in_addr ip);
+	void SetSourceAddress(const C4NetIO::EndpointAddress &ip);
+	const C4NetIO::EndpointAddress &GetSourceAddress() const { return source; }
 
 	void InitLocal();
 
@@ -126,7 +130,7 @@ public:
 private:
 
 	// Address information
-	C4NetIO::addr_t ServerAddr, PeerAddr;
+	C4NetIO::addr_t ServerAddr, ServerAddrFallback, PeerAddr;
 	StdCopyStrBuf Server, RequestPath;
 
 	bool fBinary;
@@ -134,6 +138,7 @@ private:
 	size_t iDataOffset;
 	StdCopyBuf Request;
 	time_t iRequestTimeout;
+	C4TimeMilliseconds HappyEyeballsTimeout;
 
 	// Response header data
 	size_t iDownloadedSize, iTotalSize;

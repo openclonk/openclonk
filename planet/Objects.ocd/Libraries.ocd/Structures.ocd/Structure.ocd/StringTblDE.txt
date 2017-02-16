@@ -1,16 +1,21 @@
 HitPoints=Lebenspunkte
 NoFlag=Kein Flaggenmast in Reichweite
-Indestructible=Unzerstörbar
+Indestructible=UnzerstÃ¶rbar
 
-Invincible=Das Gebäude ist unzerstörbar.
+Invincible=Das GebÃ¤ude ist unzerstÃ¶rbar.
 Damage=Schaden
 NotDamaged=Kein Schaden.
-SlightlyDamaged=Leicht beschädigt.
-HeavilyDamaged=Schwer beschädigt.
+SlightlyDamaged=Leicht beschÃ¤digt.
+HeavilyDamaged=Schwer beschÃ¤digt.
 Repair=Reparieren
-RepairRequires=Reparieren benötigt einen Hammer und folgende Materialien:|
-NoRepairNecessary=Das Gebäude ist aktuell nicht beschädigt.|Bei Schaden findet sich hier eine Liste von benötigten Materialien.
-YouNeedAHammer=Es wird ein Hammer benötigt.
-YouNeedMaterials=Es werden Materialien benötigt.
+RepairRequires=Reparieren benÃ¶tigt einen Hammer und folgende Materialien:|
+NoRepairNecessary=Das GebÃ¤ude ist aktuell nicht beschÃ¤digt.|Bei Schaden findet sich hier eine Liste von benÃ¶tigten Materialien.
+YouNeedAHammer=Es wird ein Hammer benÃ¶tigt.
+YouNeedMaterials=Es werden Materialien benÃ¶tigt.
 
-MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Interaktionen möglich.
+MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Interaktionen mÃ¶glich.
+
+Flip=Umdrehen
+FlipHelp=Spiegelt das Gebaeude.
+Basement=Fundament
+BasementHelp=Platziert ein Fundament unter dem GebÃ¤ude.

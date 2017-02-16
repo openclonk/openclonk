@@ -31,6 +31,7 @@ MapZoom=10
 TopOpen=0
 BottomOpen=0
 SkyScrollMode=2
+Secret=true
 
 [Weather]
 Climate=0,0,0,100

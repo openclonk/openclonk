@@ -52,6 +52,7 @@ AutoScanSideOpen=1
 MapWidth=300
 MapHeight=400
 MapZoom=7
+Secret=true
 
 [Weather]
 Climate=0

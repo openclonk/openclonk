@@ -24,7 +24,7 @@
 #ifdef _WIN32
 #include <io.h>
 #include "platform/C4windowswrapper.h"
-#define vsnprintf _vsnprintf
+#define vsnprintf _vsprintf_p
 #else
 #define O_BINARY 0
 #define O_SEQUENTIAL 0
@@ -433,7 +433,8 @@ void StdStrBuf::AppendCharacter(uint32_t unicodechar)
 	else /* not an unicode code point, ignore */ {}
 }
 
-void StdStrBuf::EnsureUnicode()
+// Returns true if charset was converted.
+bool StdStrBuf::EnsureUnicode()
 {
 	// assume that it's windows-1252 and convert to utf-8
 	if (!IsValidUtf8(getData(), getLength()))
@@ -477,7 +478,9 @@ void StdStrBuf::EnsureUnicode()
 		}
 		buf.SetLength(j);
 		Take(std::move(buf));
+		return true;
 	}
+	return false;
 }
 
 bool StdStrBuf::TrimSpaces()

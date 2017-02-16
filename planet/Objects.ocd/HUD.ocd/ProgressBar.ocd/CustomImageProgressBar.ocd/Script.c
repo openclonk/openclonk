@@ -48,8 +48,6 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 		var e = AddEffect("TimeOut", this, 1, BoundBy(timeout_time/2, 5, 35), this);
 		e.t = timeout_time;
 	}
-		
-	AddEffect("LifeCheck", to, 1, 0, this);
 	
 	SetAction("Attach", to);
 	var x = -offset.x;
@@ -60,13 +58,6 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	this.Visibility = visibility;
 	
 	Update();
-}
-
-func FxLifeCheckStop(target, effect, cause, temp)
-{
-	if(temp) return;
-	if(this)
-		this->RemoveObject();
 }
 
 func FxTimeOutTimer(target, effect, time)

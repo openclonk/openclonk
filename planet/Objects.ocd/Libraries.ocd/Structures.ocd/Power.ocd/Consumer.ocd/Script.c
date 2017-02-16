@@ -117,11 +117,11 @@ public func GetActualPowerConsumer()
 
 // All power related local variables are stored in a single proplist.
 // This reduces the chances of clashing local variables. See 
-// Initialize for which variables are being used.
+// Construction for which variables are being used.
 local lib_power;
 
-// Initialize callback by the engine: check whether the no power need rule is active.
-protected func Initialize()
+// Construction callback by the engine: check whether the no power need rule is active.
+protected func Construction()
 {
 	// Initialize the single proplist for the power consumer library.
 	if (lib_power == nil)

@@ -43,11 +43,11 @@ func FxIntEarthquakeControlSaveScen(obj, fx, props)
 	return true;
 }
 
-// Launches an earthquake with epicenter (x,y).
+// Launches an earthquake with epicenter (x,y) in global coordinates.
 global func LaunchEarthquake(int x, int y, int strength)
 {
 	// Earthquake should start in solid.
-	if (!GBackSemiSolid(x, y))
+	if (!GBackSemiSolid(x - GetX(), y - GetY()))
 		return false;
 	// Minimum strength is 15, maximum strength is 100.
 	strength = BoundBy(strength, 15, 100);
@@ -132,3 +132,25 @@ protected func FxIntEarthquakeTimer(object target, effect, int time)
 /*-- Proplist --*/
 
 local Name = "$Name$";
+
+
+/* Editor */
+
+public func Definition(def, ...)
+{
+	UserAction->AddEvaluator("Action", "Disasters", "$LaunchEarthquake$", "$LaunchEarthquakeHelp$", "launch_earthquake", [def, def.EvalAct_LaunchEarthquake], { Strength={Function="int_constant", Value=50} }, { Type="proplist", Display="{{Position}}, {{Strength}}", EditorProps = {
+		Position = new UserAction.Evaluator.Position { EditorHelp="$PositionHelp$" },
+		Strength = new UserAction.Evaluator.Integer { Name="$Strength$", EditorHelp="$StrengthHelp$" },
+		} } );
+}
+
+private func EvalAct_LaunchEarthquake(proplist props, proplist context)
+{
+	// Earthquake through user action
+	var position = UserAction->EvaluatePosition(props.Position, context);
+	var strength = UserAction->EvaluateValue("Integer", props.Strength, context);
+	if (strength > 0)
+	{
+		LaunchEarthquake(position[0], position[1], strength);
+	}
+}

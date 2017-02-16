@@ -72,7 +72,7 @@
       </row>
       <row>
         <col>Secret</col>
-        <col>bool</col>
+        <col>Bool</col>
         <col>If true and MissionAccess is set, the scenario is invisible in the scenario selection list if the player does not have the required password access.</col>
       </row>
       <row>
@@ -344,6 +344,11 @@
         <literal_col>FlatChunkShapes</literal_col>
         <col>Integer</col>
         <col>0 or 1. If 1, all landscape chunks are drawn flat when the map is zoomed to draw the landscape. Set this while drawing a static map in console mode to fix small gaps of lower order materials hidden behind materials of chunky shape.</col>
+      </row>
+      <row>
+        <literal_col>Secret</literal_col>
+        <col>Bool</col>
+        <col>Whether to hide the map from <code><funclink>NO_OWNER</funclink></code> viewports (e.g. observers not following a player in network rounds)</col>
       </row>
     </table>
   </text>

@@ -31,7 +31,7 @@ public func IsProduct(id product_id)
 	return product_id->~IsLoomProduct();
 }
 
-private func ProductionTime(id toProduce) { return 140; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 140; }
 public func PowerNeed() { return 40; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
@@ -81,6 +81,7 @@ public func OnProductionFinish(id product)
 func Definition(def){
 	SetProperty("MeshTransformation", Trans_Rotate(25, 0,1,0), def);
 	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
+	return _inherited(def, ...);
 }
 
 local ActMap = {

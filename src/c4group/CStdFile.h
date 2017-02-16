@@ -32,7 +32,7 @@ public:
 	virtual bool Read(void *pBuffer, size_t iSize) = 0;
 	virtual bool Advance(int iOffset) = 0;
 	// Get size. compatible with c4group!
-	virtual size_t AccessedEntrySize() = 0;
+	virtual size_t AccessedEntrySize() const = 0;
 	virtual ~CStdStream() {}
 };
 
@@ -69,7 +69,7 @@ public:
 	bool IsOpen() const { return hFile || hgzFile; }
 	// flush contents to disk
 	inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return true; }
-	size_t AccessedEntrySize();
+	size_t AccessedEntrySize() const override;
 protected:
 	void ClearBuffer();
 	int LoadBuffer();

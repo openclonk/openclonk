@@ -1,0 +1,2 @@
+Name=Beton
+Description=Stellt ein Material-Pixel Beton dar. Sobald ein Beton-Pixel den Boden berührt härtet es zu Stein.

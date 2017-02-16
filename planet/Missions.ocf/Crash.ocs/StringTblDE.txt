@@ -1,1 +1,1 @@
-NameMerchant=Händler
+NameMerchant=HÃ¤ndler

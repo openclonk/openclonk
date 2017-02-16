@@ -1,7 +1,7 @@
 Name=Basis Neustart
 Name2=Neustart am Flaggenmast
-Description=Du wirst in der n‰chstliegenden Basis wiederbelebt, wenn ausreichend Clonks und Clunker vorhanden sind.
-Description2=Du wirst am n‰chstliegenden Flaggenmast wiederbelebt.
+Description=Du wirst in der n√§chstliegenden Basis wiederbelebt, wenn ausreichend Clonks und Clunker vorhanden sind.
+Description2=Du wirst am n√§chstliegenden Flaggenmast wiederbelebt.
 InventoryTransfer=Inventar behalten
 InventoryTransferHelp=Ob das Inventar sterbender Clonks beim Respawn zum neuen Clonk teleportiert werden soll.
 FreeCrew=Kostenloser Respawn

@@ -29,7 +29,7 @@ public func PromoteNewCaptain()
 	var crew = GetCrewMembers();
 	if (!GetLength(crew)) return Sink();
 	var captain = RandomElement(crew);
-	var fx = GetEffect("AI", captain);
+	var fx = captain.ai;
 	if (!fx) return Sink(); // shouldn't happen
 	fx.weapon = this;
 	fx.vehicle = this;
@@ -42,7 +42,7 @@ public func PrepareToBoard(object cpt)
 	var count = 0;
 	for (var member in crew)
 	{
-		var fx = GetEffect("AI", member);
+		var fx = member.ai;
 		if (!fx) continue;
 		fx.weapon = nil;
 		fx.strategy = nil;
@@ -53,7 +53,7 @@ public func PrepareToBoard(object cpt)
 	}
 	// Suitable crew
 	if (count >= 5)
-		Sound("Attack");
+		Sound("Clonk::Action::GroupAttack");
 	// Let the captain yell something
 	if (!Random(3) && cpt)
 		cpt->Message(Translate(Format("MsgAttack%d", Random(4))));

@@ -167,7 +167,7 @@ public func FireWeapon(object clonk, int angle)
 		if (!Contents(0))
 			break;
 		var shot = Contents(0)->TakeObject();
-		shot->Launch(clonk, angle * 100 + RandomX(-this.BulletSpread, this.BulletSpread), RandomX(-1, 1), 200 + RandomX(-4, 4), off_x, off_y, 100);
+		shot->Launch(clonk, angle * 100 + RandomX(-this.BulletSpread, this.BulletSpread), RandomX(-1, 1), RandomX(this.BulletSpeed[0], this.BulletSpeed[1]), off_x, off_y, 100);
 	}
 	
 	// Muzzle Flash & gun smoke.
@@ -238,5 +238,6 @@ local Components = {Wood = 1, Metal = 2};
 
 local BulletsPerShot = 5;
 local BulletSpread = 300;
+local BulletSpeed = [196, 204];
 
 local ExtraSlotFilter = "IsBullet"; // For editor-provided ammo list

@@ -1,8 +1,8 @@
-/**
+ï»¿/**
 	ManaAltar
-	Beschreibung hier einfügen
+	Insert description here
 
-	@author Dustin Neß (dness.de)
+	@author Dustin NeÃŸ (dness.de)
 */
 
 local Name = "$Name$";

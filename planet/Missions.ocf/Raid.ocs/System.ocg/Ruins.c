@@ -1,7 +1,5 @@
 /* Convert structures to ruins with some effects on damage */
 
-static g_chemical, g_cabin, g_windmill;
-
 global func MakeRuinsOnDamage()
 {
 	AddEffect("IntRuinOnDamage", g_chemical, 100, 0, g_chemical, nil, Ruin_ChemicalLab,[{x=-12,y=18,r=130, s=80, t=1300}]); // -8,5 (big)   14,5 (mid)   0,-14 (small)

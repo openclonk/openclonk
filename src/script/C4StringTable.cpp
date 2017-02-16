@@ -303,6 +303,7 @@ C4StringTable::C4StringTable()
 	P[P_AllowEditing] = "AllowEditing";
 	P[P_EditorInitialize] = "EditorInitialize";
 	P[P_EditorPlacementLimit] = "EditorPlacementLimit";
+	P[P_EditorCollection] = "EditorCollection";
 	P[P_Sorted] = "Sorted";
 	P[P_Uniforms] = "Uniforms";
 	P[DFA_WALK] = "WALK";

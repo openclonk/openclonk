@@ -20,6 +20,7 @@ StateNoInput=Es gibt keine Flüssigkeiten zu pumpen.
 StateNoOutput=Der Abfluss ist verstopft.
 StateNoPower=Die Pumpe hat keinen Strom.
 StateNoAir=Der Luftzufluss ist verstopft.
+StateNoAirNeed=Es gibt keinen Luftbedarf.
 StateTurnedOff=Die Pumpe wurde ausgeschaltet.
 
 MsgSourcePipeProhibited=Zuflussrohre können nicht an die Pumpe angeschlossen werden.
@@ -29,3 +30,7 @@ MsgCreatedSource=Zuflussrohr angeschlossen.
 MsgCreatedDrain=Abflussrohr angeschlossen.
 MsgCreatedAirDrain=Luftrohr angeschlossen.
 MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
+
+PumpMaterials=Pumpe Materialien
+MsgEnableMaterial=Schalte das Pumpen von Materiale %s ein.
+MsgDisableMaterial=Schalte das Pumpen von Materiale %s aus.

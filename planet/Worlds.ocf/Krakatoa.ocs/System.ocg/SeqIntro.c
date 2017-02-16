@@ -21,6 +21,7 @@ public func Intro_Init(int difficulty)
 	this.pilot->SetAction("Walk");
 	this.pilot->SetDir(DIR_Right);
 	this.pilot->SetColor(0xff0000aa);
+	this.airplane->PlaneMount(this.pilot);
 	this.airplane->FaceRight();
 	this.airplane->StartInstantFlight(90, 15);
 	this.airplane->SetXDir(12);

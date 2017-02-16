@@ -120,7 +120,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsWindmillProduct();
 }
 
-private func ProductionTime(id toProduce) { return 290; }
+private func ProductionTime(id product) { return _inherited(product, ...) ?? 290; }
 
 public func OnProductionStart(id product)
 {
@@ -204,6 +204,7 @@ local ActMap = {
 protected func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(30, 0, 1, 0)), def);
+	return _inherited(def, ...);
 }
 
 local ContainBlast = true;

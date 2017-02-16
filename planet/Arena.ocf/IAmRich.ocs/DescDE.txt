@@ -1,0 +1,10 @@
+Ich bin reich!
+
+Liefere dir einen Wettstreit mit deinen Mitspielern.
+Es gewinnt, wer am meisten Geld nach Ablauf der Zeit erwirtschaftet hat.
+
+Es lassen sich nahezu alle Gegenstände in dieser Runde verkaufen.
+
+Tipps:
+- Tötest du einen Gegner, erhältst du 10% von dessen Reichtum als Kopfgeld.
+- Sollte dein letzter Clonk sterben, wirst du nach kurzer Zeit an deiner Flagge einen neuen erhalten, sofern du noch über 25 Geldeinheiten verfügst.

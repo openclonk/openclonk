@@ -1,1 +1,6 @@
 Name=Erdbeben
+LaunchEarthquake=Erdbeben
+LaunchEarthquakeHelp=Laesst die Erde wackeln, Objekte schleudern und lose Materialien herunter fallen.
+PositionHelp=Wo die Erde wackelt.
+Strength=Staerke
+StrengthHelp=Radius und Staerke des Wackelns.

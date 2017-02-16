@@ -29,6 +29,7 @@ func Attack_1()
 		pilot->SetColor(0xff101010);
 		pilot->SetDir(DIR_Left);
 		//plane->FaceLeft();
+		plane->PlaneMount(pilot);
 		plane->StartInstantFlight(260, 15);
 		plane->SetXDir(-15);
 		plane->MakeInvincible();

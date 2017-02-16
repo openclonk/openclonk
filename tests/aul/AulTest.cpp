@@ -25,6 +25,11 @@
 #include "object/C4DefList.h"
 #include "TestLog.h"
 
+void AulTest::SetUp()
+{
+	part_count = 0;
+}
+
 C4Value AulTest::RunScript(const std::string &code)
 {
 	class OnScopeExit
@@ -46,7 +51,7 @@ C4Value AulTest::RunScript(const std::string &code)
 	src += "::";
 	src += test_info->name();
 	src += "::";
-	src += std::to_string(test_info->result()->total_part_count());
+	src += std::to_string(part_count++);
 	src += ">";
 
 	GameScript.LoadData(src.c_str(), code.c_str(), NULL);
@@ -279,20 +284,4 @@ TEST_F(AulTest, Conditionals)
 {
 	EXPECT_EQ(C4VInt(1), RunCode("if (true) return 1; else return 2;"));
 	EXPECT_EQ(C4VInt(2), RunCode("if (false) return 1; else return 2;"));
-}
-
-TEST_F(AulTest, Warnings)
-{
-	ErrorHandler errh;
-	EXPECT_CALL(errh, OnWarning(::testing::_)).Times(3);
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(s); }"));
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(o); }"));
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { Sin(a); }"));
-}
-
-TEST_F(AulTest, NoWarnings)
-{
-	ErrorHandler errh;
-	EXPECT_CALL(errh, OnWarning(::testing::_)).Times(0);
-	EXPECT_EQ(C4Value(), RunScript("func Main(string s, object o, array a) { var x; Sin(x); }"));
 }

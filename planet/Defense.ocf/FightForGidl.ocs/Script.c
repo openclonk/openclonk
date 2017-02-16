@@ -5,13 +5,11 @@
 	Defend the statue against waves of enemies
 */
 
-static g_goal, g_object_fade, g_statue, g_doorleft, g_doorright;
 static g_wave; // index of current wave
 static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from AI; contains changes for this scenario
-static g_homebases; // item management / buy menus for each player
 static const ENEMY = 10; // player number of enemy
 static const ALLOW_DEBUG_COMMANDS = true;
 
@@ -101,7 +99,6 @@ func JoinPlayer(plr, prev_clonk)
 	}
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
-	clonk->MakeInvincibleToFriendlyFire();
 	// contents
 	clonk.MaxContentsCount = 1;
 	if (prev_clonk) TransferInventory(prev_clonk, clonk);
@@ -112,9 +109,11 @@ func JoinPlayer(plr, prev_clonk)
 		clonk->Collect(arrow);
 		arrow->SetInfiniteStackCount();
 	}
-	//clonk->CreateContents(Blunderbuss);
-	//clonk->Collect(CreateObjectAbove(LeadBullet));
 	clonk->~CrewSelection(); // force update HUD
+	// Make this work under the friendly fire rule.
+	for (var obj in [g_statue, g_doorleft, g_doorright])
+		if (obj)
+			obj->SetOwner(plr);
 	return;
 }
 
@@ -151,16 +150,14 @@ func FillHomebase(object homebase)
 func StartGame()
 {
 	// Init objects to defend
-	var obj;
-	for (obj in [g_statue, g_doorleft, g_doorright]) if (obj)
+	for (var obj in [g_statue, g_doorleft, g_doorright]) if (obj)
 	{
 		obj->SetCategory(C4D_Living);
 		obj->SetAlive(true);
 		obj.MaxEnergy = 800000;
 		obj->DoEnergy(obj.MaxEnergy/1000);
 		obj->AddEnergyBar();
-		obj.FxNoPlayerDamageDamage = Scenario.Object_NoPlayerDamage;
-		AddEffect("NoPlayerDamage", obj, 500, 0, obj);
+		GameCallEx("OnCreationRuleNoFF", obj);
 	}
 	if (g_statue)
 	{
@@ -171,14 +168,6 @@ func StartGame()
 	ScheduleCall(nil, Scenario.LaunchWave, 50, 1, g_wave);
 	return true;
 }
-
-func Object_NoPlayerDamage(object target, fx, dmg, cause, cause_player)
-{
-	// players can't damage statue or doors
-	if (GetPlayerType(cause_player) == C4PT_User) return 0;
-	return dmg;
-}
-
 
 
 //======================================================================
@@ -214,7 +203,7 @@ func ScheduleLaunchEnemy(proplist enemy)
 	// Schedules spawning of enemy definition
 	// Spawn on ground or in air?
 	var xmin, xmax, y;
-	if (enemy.Type && enemy.Type->~IsFlyingEnemy())
+	if (enemy.Type == DefenseBoomAttack)
 	{
 		// Air spawn
 		xmin = 0;
@@ -461,6 +450,11 @@ public func SetNextWave(string wave_name, bool wait)
 	ScheduleCall(nil, Scenario.LaunchWave, 500 + wait * 2000, 1, g_wave);
 }
 
+public func GiveRandomAttackTarget(object attacker)
+{
+	return g_statue;
+}
+
 //======================================================================
 /* Wave and enemy definitions */
 
@@ -503,8 +497,8 @@ func InitWaveData()
 	var swordogre  = { Name="$EnemyOgre$",      Inventory=ogresword,   Energy= 90, Bounty=100, Color=0xff805000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var nukeogre   = { Name="$EnemyOgre$",      Inventory=nukekeg,     Energy=120, Bounty=100, Color=0xffff0000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=40, Siege=true };
 	var chippie    = { Type=Chippie, Bounty=30 };
-	var boomattack = { Type=Boomattack, Bounty=10 };
-	var boomattackf= { Type=Boomattack, Bounty=25, Speed=300 };
+	var boomattack = { Type=DefenseBoomAttack, Bounty=10 };
+	var boomattackf= { Type=DefenseBoomAttack, Bounty=25, Speed=300 };
 	//newbie = runner;
 	//newbie = runner;
 

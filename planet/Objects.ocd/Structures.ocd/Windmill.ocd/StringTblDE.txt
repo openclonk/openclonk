@@ -1,2 +1,2 @@
-Name=Windmühle
-Description=Die Windmühle verarbeitet Samen zu Mehl.
+Name=WindmÃ¼hle
+Description=Die WindmÃ¼hle verarbeitet Samen zu Mehl.

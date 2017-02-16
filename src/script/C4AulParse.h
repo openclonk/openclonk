@@ -62,6 +62,7 @@ private:
 	C4String * cStr; // current string constant
 	C4AulScriptContext* ContextToExecIn;
 	void Parse_Function(bool parse_for_direct_exec);
+	void Parse_WarningPragma();
 
 protected:
 	// All of the Parse_* functions need to be protected (not private!) so
@@ -93,7 +94,7 @@ private:
 	void Check(C4AulTokenType TokenType, const char * Expected = nullptr);
 	NORETURN void UnexpectedToken(const char * Expected);
 
-	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	void Warn(C4AulWarningId warning, ...);
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void AppendPosition(StdStrBuf & Buf);
 

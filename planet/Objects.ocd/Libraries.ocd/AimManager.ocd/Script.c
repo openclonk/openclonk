@@ -254,10 +254,10 @@ public func StopAim()
 
 private func DoStopAim()
 {
-	if (!aim_weapon)
+	// Return true means the weapon goes on doing something (e.g. start aiming) then we don't reset.
+	if (!aim_weapon || !aim_weapon->~FinishedAiming(this, aim_angle))
 		ResetHands();
-	if(!aim_weapon->~FinishedAiming(this, aim_angle)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
-		ResetHands();
+	return;
 }
 
 public func StartShoot(object weapon)

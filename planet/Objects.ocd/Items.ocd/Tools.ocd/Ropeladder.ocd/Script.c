@@ -351,55 +351,55 @@ public func GetRopeConnectPosition(int index, bool right, bool end, int angle, i
 		right = !right;
 	if (!end)
 	{
-		var start = [0, 0];
+		var ladder_start = [0, 0];
 		if (!right)
 		{
 			if (index >= 2)
 			{
-				start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
-				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
-				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+				ladder_start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
+				ladder_start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+				ladder_start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
 			}
 			else
 			{
-				start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
-				start[0] += -Cos(GetR(), 188) + Sin(GetR(), 113);
-				start[1] += -Sin(GetR(), 188) - Cos(GetR(), 113);
+				ladder_start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
+				ladder_start[0] += -Cos(GetR(), 188) + Sin(GetR(), 113);
+				ladder_start[1] += -Sin(GetR(), 188) - Cos(GetR(), 113);
 			}
 		}
 		else
 		{
 			if (index >= 2)
 			{
-				start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
-				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
-				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+				ladder_start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
+				ladder_start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+				ladder_start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
 			}
 			else
 			{
-				start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
-				start[0] += Cos(GetR(), 188) + Sin(GetR(), 113);
-				start[1] += Sin(GetR(), 188) - Cos(GetR(), 113);
+				ladder_start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
+				ladder_start[0] += Cos(GetR(), 188) + Sin(GetR(), 113);
+				ladder_start[1] += Sin(GetR(), 188) - Cos(GetR(), 113);
 			}
 		}
-		return start;
+		return ladder_start;
 	}
 	else
 	{
-		var end = [0, 0];
+		var ladder_end = [0, 0];
 		if (!right)
 		{
-			end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
-			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
-			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+			ladder_end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+			ladder_end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+			ladder_end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
 		}
 		else
 		{
-			end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
-			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
-			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+			ladder_end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+			ladder_end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+			ladder_end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
 		}
-		return end;
+		return ladder_end;
 	}
 }
 

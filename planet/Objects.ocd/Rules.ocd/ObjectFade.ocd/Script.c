@@ -8,7 +8,7 @@
 	Use ChangeEffect properly to save calls
 */
 
-local fade_time;
+local fade_time = 18;
 
 protected func Activate(int plr)
 {
@@ -28,7 +28,6 @@ protected func Initialize()
 		FindObject(Find_ID(Rule_ObjectFade), Find_Exclude(this))->DoFadeTime(36);
 		return RemoveObject();
 	}
-	fade_time = 18; // 18, because the timer will check once per second, so it's aproximately a second.
 	AddTimer("Timer");
 }
 
@@ -53,6 +52,12 @@ public func FxIntFadeOutCandidateTimer(object target, effect, int time)
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
+}
+
+public func FadeOutObject(object target)
+{
+	// Definition or hooked call: Fade out an object (even if rule is not active)
+	return AddEffect("IntFadeOut", target, 100, 1, nil, Rule_ObjectFade);
 }
 
 func CheckFadeConditions(object fade)

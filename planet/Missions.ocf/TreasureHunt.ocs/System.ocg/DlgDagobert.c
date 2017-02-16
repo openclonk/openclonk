@@ -2,8 +2,6 @@
 
 /* Dagobert dialogue */
 
-static g_got_gem_task, g_got_oil, g_goal;
-
 func Dlg_Dagobert_1(object clonk)
 {
 	var gem = FindObject(Find_ID(GemOfPower), Find_AtRect(-20,-20,20,20));

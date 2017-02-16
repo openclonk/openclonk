@@ -50,6 +50,7 @@ func Outro_5()
 {
 	if (npc_pyrit->Contained() != this.plane) return ScheduleSame(5);
 	// After Pyrit is inside, rest enters freely
+	this.plane->PlaneMount(npc_pyrit);
 	this.plane->SetEntrance(true);
 	for (var clonk in this.plane->FindObjects(this.plane->Find_AtRect(-60,-30,120,60), Find_ID(Clonk), Find_Not(Find_Owner(NO_OWNER))))
 		clonk->SetCommand("Enter", this.plane);

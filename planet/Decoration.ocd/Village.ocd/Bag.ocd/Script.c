@@ -1,5 +1,5 @@
-/**
-	@author Dustin Ne� (dness.de)
+﻿/**
+	@author Dustin Neß (dness.de)
 */
 
 protected func Construction() {

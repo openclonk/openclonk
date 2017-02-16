@@ -1,2 +1,3 @@
 Name=Fundament
-Description=Eine stabile Basis für Gebäude. 
+Description=Eine stabile Basis fÃ¼r GebÃ¤ude. 
+Width=Breite

@@ -36,7 +36,7 @@ public func GetDescription(int plr)
 {
 	var message;
 	if (IsFulfilled())
-		message = "$MsgGoalFulfilled$";		
+		message = "$MsgGoalFulfilled$";
 	else
 		message = "$MsgGoalUnFulfilled$";
 	return message;
@@ -53,7 +53,7 @@ public func Activate(int byplr)
 
 public func GetShortDescription(int plr)
 {
-	return "{{WoodenCabin}}"; // TODO
+	return "$GetBack$";
 }
 
 /*-- Proplist --*/

@@ -1,6 +1,8 @@
 Name=Hochofen
-Description=Im Hochofen können Erze zu Barren geschmolzen werden. Dafür wird ein Brennstoff benötigt.
+Description=Im Hochofen kÃ¶nnen Erze zu Barren geschmolzen werden. DafÃ¼r wird ein Brennstoff benÃ¶tigt.
 
 MsgConnectedPipe=Rohr angeschlossen.
-MsgPipeProhibited=Zuflussrohre können nicht an den Hochofen angeschlossen werden.
-MsgHasPipes=Der Hochofen hat schon ein Rohr.
+MsgPipeProhibited=Dieses Rohr kann nicht an den Hochofen angeschlossen werden.
+MsgHasPipes=Der Hochofen hat schon ein Zu- und Abflussrohr.
+MsgSourcePipeProhibited=Zuflussrohre kÃ¶nnen nicht an den Hochofen angeschlossen werden.
+MsgDrainPipeProhibited=Abflussrohre kÃ¶nnen nicht an den Hochofen angeschlossen werden.

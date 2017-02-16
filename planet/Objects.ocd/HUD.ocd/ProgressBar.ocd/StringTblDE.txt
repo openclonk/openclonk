@@ -1,2 +1,2 @@
 Name=GUI_ProgressBar
-Description=Stellt ein Interface für Fortschrittsleisten zur Verfügung.
+Description=Stellt ein Interface fÃ¼r Fortschrittsleisten zur VerfÃ¼gung.

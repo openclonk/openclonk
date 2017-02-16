@@ -34,6 +34,8 @@
 #include Library_Inventory
 #include Library_ClonkInventoryControl
 #include Library_ClonkInteractionControl
+#include Library_ClonkMenuControl
+#include Library_ClonkUseControl
 #include Library_ClonkGamepadControl
 
 // used for interaction with objects
@@ -55,15 +57,9 @@ static const DEFAULT_THROWING_ANGLE = 500;
 	used properties
 	this.control.hotkeypressed: used to determine if an interaction has already been handled by a hotkey (space + 1-9)
 	
-	this.control.current_object: object that is being used at the moment
-	this.control.using_type: way of usage
 	this.control.alt: alternate usage by right mouse button
 	this.control.mlastx: last x position of the cursor
 	this.control.mlasty: last y position of the cursor
-	this.control.noholdingcallbacks: whether to do HoldingUseControl callbacks
-	this.control.shelved_command: command (function) with condition that will be executed when the condition is met
-		used for example to re-call *Use/Throw commands when the Clonk finished scaling
-	this.control.menu: the menu that is currently assigned to the Clonk. Use the methods SetMenu/GetMenu/etc to access it.
 */
 
 
@@ -82,50 +78,6 @@ protected func Construction()
 	this.control.hotkeypressed = false;
 
 	this.control.alt = false;
-	this.control.current_object = nil;
-	this.control.using_type = nil;
-	this.control.shelved_command = nil;
-	this.control.menu = nil;
-	return _inherited(...);
-}
-
-public func GetUsedObject() { return this.control.current_object; }
-
-// The using-command hast to be canceled if the clonk is entered into
-// or exited from a building.
-
-protected func Entrance()         { CancelUse(); return _inherited(...); }
-protected func Departure()        { CancelUse(); return _inherited(...); }
-
-// The same for vehicles
-protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
-
-// ...aaand the same for when the clonk is deselected
-protected func CrewSelection(bool unselect)
-{
-	if (unselect)
-	{
-		// cancel usage on unselect first...
-		CancelUse();
-		// and if there is still a menu, cancel it too...
-		CancelMenu();
-	}
-	return _inherited(unselect,...);
-}
-
-protected func Destruction()
-{
-	// close open menus, cancel usage...
-	CancelUse();
-	CancelMenu();
-	return _inherited(...);
-}
-
-protected func Death()
-{
-	// close open menus, cancel usage...
-	CancelUse();
-	CancelMenu();
 	return _inherited(...);
 }
 
@@ -194,7 +146,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		{
 			var is_content = GetMenu()->~IsContentMenu();
 			// unclosable menu? bad luck
-			if (!TryCancelMenu()) return true;
+			if (!this->~TryCancelMenu()) return true;
 			// If contents menu, don't open new one and return.
 			if (is_content)
 				return true;
@@ -218,7 +170,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	   For the rest of the control code, it looks like the x,y coordinates
 	   came from CON_Use.
 	  */
-	if (this.control.current_object && ctrl == CON_Aim)
+	if (GetUsedObject() && ctrl == CON_Aim)
 	{
 		if (this.control.alt) ctrl = CON_UseAlt;
 		else     ctrl = CON_Use;
@@ -318,16 +270,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				// handled if the horse is the used object
 				// ("using" is set to the object in StartUseControl - when the
 				// object returns true on that callback. Exactly what we want)
-				if (this.control.current_object == vehicle) return true;
+				if (GetUsedObject() == vehicle) return true;
 				// has been cancelled (it is not the start of the usage but no object is used)
-//				if (vehicle && !this.control.current_object && (repeat || status == CONS_Up)) return true;
+//				if (vehicle && !GetUsedObject() && (repeat || status == CONS_Up)) return true;
 			}
 		}
-		// releasing the use-key always cancels shelved commands (in that case no this.control.current_object exists)
+		// releasing the use-key always cancels shelved commands (in that case no GetUsedObject() exists)
 		if(status == CONS_Up) StopShelvedCommand();
 		// Release commands are always forwarded even if contents is 0, in case we
 		// need to cancel use of an object that left inventory
-		if (contents || (status == CONS_Up && this.control.current_object))
+		if (contents || (status == CONS_Up && GetUsedObject()))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, status, contents))
 				return true;
@@ -336,7 +288,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// A click on throw can also just abort usage without having any other effects.
 	// todo: figure out if wise.
-	var currently_in_use = this.control.current_object != nil;
+	var currently_in_use = GetUsedObject() != nil;
 	if (ctrl == CON_Throw && currently_in_use && status == CONS_Down)
 	{
 		CancelUse();
@@ -505,351 +457,7 @@ public func ControlCommand(string command, object target, int tx, int ty)
 	return _inherited(command, target, tx, ty, ...);
 }
 
-public func ShelveCommand(object condition_obj, string condition, object callback_obj, string callback, proplist data)
-{
-	this.control.shelved_command = { cond = condition, cond_obj = condition_obj, callback = callback, callback_obj = callback_obj, data = data };
-	AddEffect("ShelvedCommand", this, 1, 5, this);
-}
-
-public func StopShelvedCommand()
-{
-	this.control.shelved_command = nil;
-	if(GetEffect("ShelvedCommand", this))
-		RemoveEffect("ShelvedCommand", this);
-}
-
-func FxShelvedCommandTimer(_, effect, time)
-{
-	if(!this.control.shelved_command) return -1;
-	if(!this.control.shelved_command.callback_obj) return -1;
-	if(!this.control.shelved_command.cond_obj) return -1;
-	if(!this.control.shelved_command.cond_obj->Call(this.control.shelved_command.cond, this.control.shelved_command.data)) return 1;
-	this.control.shelved_command.callback_obj->Call(this.control.shelved_command.callback, this.control.shelved_command.data);
-	return -1;
-}
-
-func FxShelvedCommandStop(target, effect, reason, temp)
-{
-	if(temp) return;
-	this.control.shelved_command = nil;
-}
-
-/* ++++++++++++++++++++++++ Use Controls ++++++++++++++++++++++++ */
-
-public func CancelUse()
-{
-	if (!this.control.current_object)
-	{
-		// just forget any possibly stored actions
-		StopShelvedCommand();
-		return;
-	}
-
-	// use the saved x,y coordinates for canceling
-	CancelUseControl(this.control.mlastx, this.control.mlasty);
-}
-
-// to be called during usage of an object to re-start usage as soon as possible
-func PauseUse(object obj, string custom_condition, proplist data)
-{
-	// cancel use first, since it removes old shelved commands
-	if(this.control.started_use)
-	{
-		CancelUse();
-		this.control.started_use = false;
-	}
-	
-	var callback_obj = this;
-	
-	if(custom_condition != nil)
-	{
-		callback_obj = obj;
-	}
-	else custom_condition = "CanReIssueCommand";
-	
-	data = data ?? {};
-	data.obj = obj;
-	data.ctrl = CON_Use;
-	ShelveCommand(callback_obj, custom_condition, this, "ReIssueCommand", data);
-}
-
-func DetermineUsageType(object obj)
-{
-	if(!obj) return nil;
-	// house
-	if (obj == Contained())
-		return C4D_Structure;
-	// object
-	if (obj->Contained() == this)
-		return C4D_Object;
-	// vehicle
-	var proc = GetProcedure();
-	if (obj == GetActionTarget())
-		if (proc == "ATTACH" && proc == "PUSH")
-			return C4D_Vehicle;
-	// unknown
-	return nil;
-}
-
-func GetUseCallString(string action)
-{
-	// Control... or Contained...
-	var control_string = "Control";
-	if (this.control.using_type == C4D_Structure) 
-		control_string = "Contained";
-	// ..Use.. or ..UseAlt...
-	var estr = "";
-	if (this.control.alt && this.control.using_type != C4D_Object) 
-		estr = "Alt";
-	// Action
-	if (!action) 
-		action = "";
-	return Format("~%sUse%s%s", control_string, estr, action);
-}
-
-func CanReIssueCommand(proplist data)
-{
-	if (!data.obj) return false;
-	
-	if(data.ctrl == CON_Use)
-		return !data.obj->~RejectUse(this);
-}
-
-func ReIssueCommand(proplist data)
-{
-	if(data.ctrl == CON_Use)
-		return StartUseControl(data.ctrl, this.control.mlastx, this.control.mlasty, data.obj);
-}
-
-func StartUseControl(int ctrl, int x, int y, object obj)
-{
-	this.control.started_use = false;
-	
-	if(obj->~RejectUse(this))
-	{
-		// remember for later:
-		PauseUse(obj);
-		// but still catch command
-		return true;
-	}
-
-	// Disable climb/hangle actions for the duration of this use
-	if (obj.ForceFreeHands && !GetEffect("IntControlFreeHands", this)) AddEffect("IntControlFreeHands", this, 130, 0, this);
-	
-	obj->SetController(GetController());
-	this.control.current_object = obj;
-	this.control.using_type = DetermineUsageType(obj);
-	this.control.alt = ctrl != CON_Use;
-	
-	if (HasVirtualCursor())
-	{
-		var cursor = VirtualCursor(), angle;
-		if (!cursor->IsActive() && (angle = obj->~DefaultCrosshairAngle(this, GetDir()*2 - 1)))
-		{
-			x = +Sin(angle, CURSOR_Radius, 10);
-			y = -Cos(angle, CURSOR_Radius, 10);
-		}
-		cursor->StartAim(this, angle);
-	}
-
-	var hold_enabled = obj->Call("~HoldingEnabled");
-	
-	if (hold_enabled)
-		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
-
-	// first call UseStart. If unhandled, call Use (mousecontrol)
-	var handled = obj->Call(GetUseCallString("Start"),this,x,y);
-	if (!handled)
-	{
-		handled = obj->Call(GetUseCallString(),this,x,y);
-		this.control.noholdingcallbacks = handled;
-	}
-	else
-	{
-		// *Start was handled. So clean up possible old noholdingcallbacks-values.
-		this.control.noholdingcallbacks = false;
-	}
-	
-	if (!handled)
-	{
-		this.control.current_object = nil;
-		this.control.using_type = nil;
-		if (hold_enabled)
-			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
-		return false;
-	}
-	else
-	{
-		this.control.started_use = true;
-		// add helper effect that prevents errors when objects are suddenly deleted by quickly cancelling their use beforehand
-		AddEffect("ItemRemovalCheck", this.control.current_object, 1, 100, this, nil); // the slow timer is arbitrary and will just clean up the effect if necessary
-	}
-		
-	return handled;
-}
-
-func CancelUseControl(int x, int y)
-{
-	// forget possibly stored commands
-	StopShelvedCommand();
-	
-	// to horse first (if there is one)
-	var horse = GetActionTarget();
-	if(horse && GetProcedure() == "ATTACH" && this.control.current_object != horse)
-		StopUseControl(x, y, horse, true);
-
-	return StopUseControl(x, y, this.control.current_object, true);
-}
-
-func StopUseControl(int x, int y, object obj, bool cancel)
-{
-	var stop = "Stop";
-	if (cancel) stop = "Cancel";
-	
-	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
-	var handled = obj->Call(GetUseCallString(stop),this,x,y);
-	if (obj == this.control.current_object)
-	{
-		// if ControlUseStop returned -1, the current object is kept as "used object"
-		// but no more callbacks except for ControlUseCancel are made. The usage of this
-		// object is finally cancelled on ControlUseCancel.
-		if(cancel || handled != -1)
-		{
-			// look for correct removal helper effect and remove it
-			var effect_index = 0;
-			var removal_helper = nil;
-			do
-			{
-				removal_helper = GetEffect("ItemRemovalCheck", this.control.current_object, effect_index++);
-				if (!removal_helper) break;
-				if (removal_helper.CommandTarget != this) continue;
-				break;
-			} while (true);
-
-			RemoveEffect("IntControlFreeHands", this); // make sure we can climb again
-			
-			this.control.current_object = nil;
-			this.control.using_type = nil;
-			this.control.alt = false;
-			
-			if (removal_helper)
-			{
-				RemoveEffect(nil, nil, removal_helper, true);
-			}		
-		}
-		this.control.noholdingcallbacks = false;
-		
-		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
-
-		if (virtual_cursor)
-			virtual_cursor->StopAim();
-	}
-		
-	return handled;
-}
-
-func HoldingUseControl(int ctrl, int x, int y, object obj)
-{
-	var mex = x;
-	var mey = y;
-	
-	//Message("%d,%d",this,mex,mey);
-
-	// automatic adjustment of the direction
-	// --------------------
-	// if this is desired for ALL objects is the question, we will find out.
-	// For now, this is done for items and vehicles, not for buildings and
-	// mounts (naturally). If turning vehicles just like that without issuing
-	// a turning animation is the question. But after all, the clonk can turn
-	// by setting the dir too.
-	
-	
-	//   not riding and                not in building  not while scaling
-	if (GetProcedure() != "ATTACH" && !Contained() &&   GetProcedure() != "SCALE")
-	{
-		// pushing vehicle: object to turn is the vehicle
-		var dir_obj = GetActionTarget();
-		if (GetProcedure() != "PUSH") dir_obj = nil;
-
-		// otherwise, turn the clonk
-		if (!dir_obj) dir_obj = this;
-	
-		if ((dir_obj->GetComDir() == COMD_Stop && dir_obj->GetXDir() == 0) || dir_obj->GetProcedure() == "FLIGHT")
-		{
-			if (dir_obj->GetDir() == DIR_Left)
-			{
-				if (mex > 0)
-					dir_obj->SetDir(DIR_Right);
-			}
-			else
-			{
-				if (mex < 0)
-					dir_obj->SetDir(DIR_Left);
-			}
-		}
-	}
-	
-	var handled = obj->Call(GetUseCallString("Holding"),this,mex,mey);
-			
-	return handled;
-}
-
-// very infrequent timer to prevent dangling effects, this is not necessary for correct functioning
-func FxItemRemovalCheckTimer(object target, proplist effect, int time)
-{
-	if (!effect.CommandTarget) return -1;
-	if (effect.CommandTarget.control.current_object != target) return -1;
-	return 1;
-}
-
-// this will be called when an inventory object (that is in use) is suddenly removed
-func FxItemRemovalCheckStop(object target, proplist effect, int reason, bool temporary)
-{
-	if (temporary) return;
-	// only trigger when the object has been removed
-	if (reason != FX_Call_RemoveClear) return;
-	// safety
-	if (!effect.CommandTarget) return;
-	if (effect.CommandTarget.control.current_object != target) return;
-	// quickly cancel use in a clean way while the object is still available
-	effect.CommandTarget->CancelUse();
-	return;
-}
-
-
-// Control use redirected to script
-func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, int status, object obj)
-{	
-	// standard use
-	if (ctrl == CON_Use || ctrl == CON_UseAlt)
-	{
-		if (status == CONS_Down && !repeat)
-		{
-			return StartUseControl(ctrl,x, y, obj);
-		}
-		else if (status == CONS_Up && (obj == this.control.current_object || obj == GetActionTarget()))
-		{
-			return StopUseControl(x, y, obj);
-		}
-	}
-	
-	// more use (holding)
-	if (ctrl == CON_Use || ctrl == CON_UseAlt)
-	{
-		if (status == CONS_Up)
-		{
-			// leftover use release
-			CancelUse();
-			return true;
-		}
-		else if (status == CONS_Down && repeat && !this.control.noholdingcallbacks)
-		{
-			return HoldingUseControl(ctrl, x, y, obj);
-		}
-	}
-		
-	return false;
-}
+/* ++++++++++++++++++++++++ Movement Controls ++++++++++++++++++++++++ */
 
 // Control use redirected to script
 func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, int status, object obj)
@@ -924,159 +532,6 @@ public func CanEnter()
 
 public func IsMounted() { return GetProcedure() == "ATTACH"; }
 
-/* +++++++++++++++++++++++ Menu control +++++++++++++++++++++++ */
-
-func HasMenuControl()
-{
-	return true;
-}
-
-// helper function that can be attached to a proplist to set callbacks on-the-fly
-func GetTrue() { return true; }
-
-/*
-Sets the menu this Clonk currently has focus of. Old menus that have been opened via SetMenu will be closed, making sure that only one menu is open at a time.
-Additionally, the Clonk's control is disabled while a menu is open.
-The menu parameter can either be an object that closes its menu via a Close() callback or it can be a menu ID as returned by GuiOpen. When /menu/ is such an ID,
-the menu will be closed via GuiClose when a new menu is opened. If you need to do cleaning up, you will have to use the OnClose callback of the menu.
-When you call SetMenu with a menu ID, you should also call clonk->MenuClosed(), once your menu is closed.
-*/
-func SetMenu(new_menu, bool unclosable)
-{
-	unclosable = unclosable ?? false;
-	var current_menu = this.control.menu;
-	
-	// no news?
-	if (new_menu) // if new_menu==nil, it is important that we still do the cleaning-up below even if we didn't have a menu before (see MenuClosed())
-		if (current_menu == new_menu) return;
-	
-	// close old one!
-	if (current_menu != nil)
-	{
-		if (GetType(current_menu) == C4V_C4Object)
-			current_menu->Close();
-		else if (GetType(current_menu) == C4V_PropList)
-			GuiClose(current_menu.ID);
-		else
-			FatalError("Library_ClonkControl::SetMenu() was called with invalid parameter.");
-	}
-	else
-	{
-		// we have a new menu but didn't have another one before? Enable menu controls!
-		if (new_menu)
-		{
-			CancelUse();
-			// stop clonk
-			SetComDir(COMD_Stop);
-		
-			if (PlayerHasVirtualCursor(GetOwner()))
-				VirtualCursor()->StartAim(this, 0, new_menu);
-			else
-			{
-				if (GetType(new_menu) == C4V_C4Object && new_menu->~CursorUpdatesEnabled()) 
-					SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
-		
-				SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
-				SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
-			}
-		}
-	}
-	
-	if (new_menu)
-	{
-		if (GetType(new_menu) == C4V_C4Object)
-		{
-			this.control.menu = new_menu;
-		}
-		else if (GetType(new_menu) == C4V_Int)
-		{
-			// add a proplist, so that it is always safe to call functions on clonk->GetMenu()
-			this.control.menu =
-			{
-				ID = new_menu
-			};
-		}
-		else
-			FatalError("Library_ClonkControl::SetMenu called with invalid parameter!");
-		
-		// make sure the menu is unclosable even if it is just a GUI ID
-		if (unclosable)
-		{
-			this.control.menu.Unclosable = Library_ClonkControl.GetTrue;
-		}
-	}
-	else
-	{
-		// always disable cursors, even if no old menu existed, because it can happen that a menu removes itself and thus the Clonk never knows whether the cursors are active or not
-		RemoveVirtualCursor(); // for gamepads
-		SetPlayerControlEnabled(GetOwner(), CON_GUICursor, false);
-		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
-		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
-
-		this.control.menu = nil;
-	}
-	return this.control.menu;
-}
-
-func MenuClosed()
-{
-	// make sure not to clean up the menu again
-	this.control.menu = nil;
-	// and remove cursors etc.
-	SetMenu(nil);
-}
-
-/*
-Returns the current menu or nil. If a menu is returned, it is always a proplist (but not necessarily an object).
-Stuff like if (clonk->GetMenu()) clonk->GetMenu()->~IsClosable(); is always safe.
-If you want to remove the menu, the suggested method is clonk->TryCancelMenu() to handle unclosable menus correctly.
-*/
-func GetMenu()
-{
-	// No new-style menu set? Return the classic menu ID. This is deprecated and should be removed in some future.
-	// This function must return a proplist, but clashes with the engine-defined "GetMenu".
-	// This workaround here at least allows developers to reach the Clonk's menu ID.
-	if (this.control.menu == nil)
-	{
-		var menu_id = inherited(...);
-		if (menu_id) return {ID = menu_id};
-	}
-	return this.control.menu;
-}
-
-// Returns true when an existing menu was closed
-func CancelMenu()
-{
-	if (this.control.menu)
-	{
-		SetMenu(nil);
-		return true;
-	}
-	
-	return false;
-}
-
-// Tries to cancel a non-unclosable menu. Returns true when there is no menu left after this call (even if there never was one).
-func TryCancelMenu()
-{
-	if (!this.control.menu) return true;
-	if (this.control.menu->~Unclosable()) return false;
-	CancelMenu();
-	return true;
-}
-
-public func RejectShiftCursor()
-{
-	if (this.control.menu && this.control.menu->~Unclosable()) return true;
-	return _inherited(...);
-}
-
-public func OnShiftCursor()
-{
-	TryCancelMenu();
-	return _inherited(...);
-}
-
 /*-- Throwing --*/
 
 // Throwing
@@ -1129,6 +584,13 @@ public func FxBlockBlowControlQueryCatchBlow(object target, effect fx, object ob
 
 /*-- Jumping --*/
 
+
+/*
+ Triggers a regular jump, that means that the speed in y direction
+ is automatically decided, depending on the action of the clonk.
+ 
+ If you want to execute a jump with a certain speed, use ControlJumpExecute().
+ */
 public func ControlJump()
 {
 	var ydir = 0;
@@ -1138,26 +600,39 @@ public func ControlJump()
 		ydir = this.JumpSpeed;
 	}
 	
-	if (InLiquid())
+	if (InLiquid() && !GBackSemiSolid(0, -5))
 	{
-		if (!GBackSemiSolid(0,-5))
-			ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
+		ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
 	}
 
 	// Jump speed of the wall kick is halved.
 	if (GetProcedure() == "SCALE" || GetAction() == "Climb")
 	{
-		ydir = this.JumpSpeed/2;
+		ydir = this.JumpSpeed / 2;
 	}
 	
+	return ControlJumpExecute(ydir);
+}
+
+
+/*
+ Additional function for actually triggering a jump directly.
+ 
+ The parameter ydir can be decided directly by the user,
+ or you can use the clonk's jump speed by passing this.JumpSpeed
+ 
+ Returns false if the jump was not successful.
+ */
+public func ControlJumpExecute(int ydir)
+{
 	if (ydir && !Stuck())
 	{
-		SetPosition(GetX(),GetY()-1);
+		SetPosition(GetX(), GetY() - 1);
 
 		// Wall kick if scaling or climbing.
-		if(GetProcedure() == "SCALE" || GetAction() == "Climb")
+		if (GetProcedure() == "SCALE" || GetAction() == "Climb")
 		{
-			AddEffect("WallKick",this,1);
+			AddEffect("WallKick", this, 1);
 			SetAction("Jump");
 
 			var xdir;
@@ -1186,6 +661,7 @@ public func ControlJump()
 	}
 	return false;
 }
+
 
 // Interaction with clonks is special:
 // * The clonk opening the menu should always have higher priority so the clonk is predictably selected on the left side even if standing behind e.g. a crate

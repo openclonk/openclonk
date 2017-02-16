@@ -1,13 +1,13 @@
  Versteck
 
-Beschütze dein Versteck und versuche, die Flagge des Gegners zu erobern. Schnapp' die Flagge und bring sie in deine Basis, während deine Flagge unbehelligt ist, um zu punkten. 
+BeschÃ¼tze dein Versteck und versuche, die Flagge des Gegners zu erobern. Schnapp' die Flagge und bring sie in deine Basis, wÃ¤hrend deine Flagge unbehelligt ist, um zu punkten. 
 
 Ziel: Stehle die Flagge der Gegner uns bringe sie in deine Basis (deine Flagge muss sich allerdings in der Basis befinden)!
 
-- Tore können zerstört werden. Die Tore in der Basis werden automatisch gesteuert.
+- Tore kÃ¶nnen zerstÃ¶rt werden. Die Tore in der Basis werden automatisch gesteuert.
 - Truhen in der Basis beinhalten grundlegende Waffen.
-- Truhen außerhalb der Basis beinhalten stärkere Waffen.
-- Die mittlere Truhe enthält viele Kristalle und besondere Gegenstände.
+- Truhen auÃŸerhalb der Basis beinhalten stÃ¤rkere Waffen.
+- Die mittlere Truhe enthÃ¤lt viele Kristalle und besondere GegenstÃ¤nde.
 - Wirf Kristalle! Sie werden beim Aufprall aktiviert.
-- Getötete Gegner hinterlassen einen Heilkristall. Dieser heilt den Clonk bei Benutzung langsam.
+- GetÃ¶tete Gegner hinterlassen einen Heilkristall. Dieser heilt den Clonk bei Benutzung langsam.
 

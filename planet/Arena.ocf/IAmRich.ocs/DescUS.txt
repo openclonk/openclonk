@@ -1,0 +1,10 @@
+I am rich!
+
+Compete with your opponents.
+The player with most wealth will win.
+
+Nearly every item can be sold.
+
+Hints:
+- If you kill an opponent, you'll gain 10% of its wealth as bounty.
+- If your last Clonk dies, you'll get a new one at the flagpole, if you have enough money (25 gold).

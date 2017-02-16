@@ -18,6 +18,11 @@
 #include "network/C4Network2Address.h"
 #include <sstream>
 
+void C4NetpuncherID::CompileFunc(StdCompiler *pComp) {
+	pComp->Value(mkNamingAdapt(v4, "IPv4", 0u));
+	pComp->Value(mkNamingAdapt(v6, "IPv6", 0u));
+}
+
 std::unique_ptr<C4NetpuncherPacket> C4NetpuncherPacket::Construct(const C4NetIOPacket& rpack) {
 	if (!rpack.getPData()) return nullptr;
 	try {
@@ -47,9 +52,7 @@ C4NetpuncherPacketCReq::C4NetpuncherPacketCReq(const C4NetIOPacket& rpack) {
 	C4Network2Address parse_addr;
 	CompileFromBuf<StdCompilerBinRead>(parse_addr, rpack.getPBuf());
 	if (parse_addr.getProtocol() != P_UDP) throw P_UDP;
-	addr.sin_addr.s_addr = parse_addr.getAddr().sin_addr.s_addr,
-	addr.sin_family      = parse_addr.getAddr().sin_family,
-	addr.sin_port        = parse_addr.getAddr().sin_port;
+	addr = parse_addr.getAddr();
 }
 
 StdBuf C4NetpuncherPacketCReq::PackInto() const {

@@ -1,874 +1,726 @@
 /**
 	AI
-	Controls NPC behaviour.
+	Controls enemy NPC behaviour. Different parts of the AI are in the different include
+	files below. This AI can be overloaded by making a new AI object and including this
+	one and then add the needed changes. The relevant settings are all local constants 
+	which can be directly changed in the new AI object, or functions can be overloaded.
 
-	@author Sven2
+	@author Sven2, Maikel
 */
 
 
+// Include the different parts of the AI.
+#include AI_Appearance
+#include AI_Debugging
 #include AI_HelperFunctions
+#include AI_MeleeWeapons
+#include AI_Movement
+#include AI_Protection
+#include AI_RangedWeapons
+#include AI_TargetFinding
+#include AI_Vehicles
+#include AI_AttackModes
 
-local Plane = 300;
 
-static const AI_DefMaxAggroDistance = 200, // lose sight to target if it is this far away (unles we're ranged - then always guard the range rect)
-             AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)
-             AI_DefGuardRangeY = 150,  // search targets this far away in either direction (searching in rectangle)
-             AI_AlertTime      = 800; // number of frames after alert after which AI no longer checks for projectiles
-/* Public interface */
+// AI Settings.
+local MaxAggroDistance = 200; // Lose sight to target if it is this far away (unless we're ranged - then always guard the range rect).
+local GuardRangeX = 300; // Search targets this far away in either direction (searching in rectangle).
+local GuardRangeY = 150; // Search targets this far away in either direction (searching in rectangle).
 
-// Change whether target Clonk has an AI (used by editor)
-func SetAI(object clonk, bool has_ai)
+
+/*-- Public interface --*/
+
+// Change whether target Clonk has an AI (used by editor).
+public func SetAI(object clonk, bool has_ai)
 {
+	var ai = GetAI(clonk);
 	if (has_ai)
 	{
-		// Only add if it doesn't have the effect yet
-		var ai = GetAI(clonk);
-		if (!ai) ai = AddAI(clonk);
+		// Only add if it doesn't have the effect yet.
+		if (!ai)
+			ai = AddAI(clonk);
 		return ai;
 	}
 	else
 	{
-		return RemoveEffect("AI", clonk);
+		if (ai)
+			ai->Remove();
 	}
 }
 
-// Add AI execution timer to target Clonk
-func AddAI(object clonk)
+// Add AI execution timer to target Clonk.
+public func AddAI(object clonk)
 {
-	var fx = GetEffect("AI", clonk);
-	if (!fx) fx = AddEffect("AI", clonk, 1, 3, nil, AI);
-	if (!fx || !clonk) return nil;
-	fx.ai = AI;
-	clonk.ExecuteAI = AI.Execute;
-	clonk.ai = fx;
-	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
-	BindInventory(clonk);
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: AddAI(%v) not called from definition context but from %v", clonk, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		fx_ai = clonk->CreateEffect(FxAI, 1, 3, this);
+	if (!fx_ai)
+		return;
+	// Add AI default settings.	
+	SetAttackMode(clonk, "Default"); // also binds inventory
 	SetHome(clonk);
-	SetGuardRange(clonk, fx.home_x-AI_DefGuardRangeX, fx.home_y-AI_DefGuardRangeY, AI_DefGuardRangeX*2, AI_DefGuardRangeY*2);
-	SetMaxAggroDistance(clonk, AI_DefMaxAggroDistance);
+	SetGuardRange(clonk, fx_ai.home_x - this.GuardRangeX, fx_ai.home_y - this.GuardRangeY, this.GuardRangeX * 2, this.GuardRangeY * 2);
+	SetMaxAggroDistance(clonk, this.MaxAggroDistance);
 	SetAutoSearchTarget(clonk, true);
-	// AI editor stuff
-	// TODO: Should use new-style effects to declare this directly in a base class
-	// Whoever does that: Make sure that the derived AIs in our defense scenarios still work
-	fx.EditorProps = {};
-	fx.EditorProps.guard_range = { Name="$GuardRange$", Type="rect", Storage="proplist", Color=0xff00, Relative=false };
-	fx.EditorProps.ignore_allies = { Name="$IgnoreAllies$", Type="bool" };
-	fx.EditorProps.max_aggro_distance = { Name="$MaxAggroDistance$", Type="circle", Color=0x808080 };
-	fx.EditorProps.active = { Name="$Active$", EditorHelp="$ActiveHelp$", Type="bool", Priority=50, AsyncGet="GetActive", Set="SetActive" };
-	fx.EditorProps.auto_search_target = { Name="$AutoSearchTarget$", EditorHelp="$AutoSearchTargetHelp$", Type="bool" };
-	fx.SetActive = AI.Fx_SetActive;
-	fx.GetActive = AI.Fx_GetActive;
-	return fx;
+	return fx_ai;
 }
 
-func GetAI(object clonk) { return clonk.ai; }
+public func GetAI(object clonk)
+{
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: GetAI(%v) not called from definition context but from %v", clonk, this);
+	if (!clonk)
+		return nil;
+	return clonk->~GetAI();
+}
 
 // Set the current inventory to be removed when the clonk dies. Only works if clonk has an AI.
-func BindInventory(object clonk)
+public func BindInventory(object clonk)
 {
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: BindInventory(%v) not called from definition context but from %v", clonk, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
 	var cnt = clonk->ContentsCount();
-	fx.bound_weapons = CreateArray(cnt);
-	for (var i=0; i<cnt; ++i) fx.bound_weapons[i] = clonk->Contents(i);
+	fx_ai.bound_weapons = CreateArray(cnt);
+	for (var i = 0; i < cnt; ++i)
+		fx_ai.bound_weapons[i] = clonk->Contents(i);
 	return true;
 }
 
-// Set the home position the Clonk returns to if he has no target
-func SetHome(object clonk, int x, int y, int dir)
+// Set the home position the Clonk returns to if he has no target.
+public func SetHome(object clonk, int x, int y, int dir)
 {
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
-	// nil/nil defaults to current position
-	if (!GetType(x)) x=clonk->GetX();
-	if (!GetType(y)) y=clonk->GetY();
-	if (!GetType(dir)) dir=clonk->GetDir();
-	fx.home_x = x; fx.home_y = y;
-	fx.home_dir = dir;
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetHome(%v, %d, %d, %d) not called from definition context but from %v", clonk, x, y, dir, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	// nil/nil defaults to current position.
+	if (!GetType(x))
+		x = clonk->GetX();
+	if (!GetType(y))
+		y = clonk->GetY();
+	if (!GetType(dir))
+		dir = clonk->GetDir();
+	fx_ai.home_x = x;
+	fx_ai.home_y = y;
+	fx_ai.home_dir = dir;
 	return true;
 }
-
-// Put into clonk proplist
-func AI_BindInventory() { return this.ai.ai->BindInventory(this); }
-func AI_SetHome() { return this.ai.ai->SetHome(this); }
-func AI_SetIgnoreAllies() { return (this.ai.ignore_allies = true); }
 
 // Set active state: Enables/Disables timer
-func SetActive(object clonk, bool active)
+public func SetActive(object clonk, bool active)
 {
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetActive(%v, %v) not called from definition context but from %v", clonk, active, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
 	if (!active)
 	{
-		// Inactive: Stop any activity
+		// Inactive: Stop any activity.
 		clonk->SetCommand("None");
 		clonk->SetComDir(COMD_Stop);
 	}
-	return fx->SetActive(active);
+	return fx_ai->SetActive(active);
 }
 
-func Fx_SetActive(bool active)
+// Enable/disable auto-searching of targets.
+public func SetAutoSearchTarget(object clonk, bool new_auto_search_target)
 {
-	// In effect context: Activity contorlled by execution interval
-	this.Interval = active * 3;
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetAutoSearchTarget(%v, %v) not called from definition context but from %v", clonk, new_auto_search_target, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.auto_search_target = new_auto_search_target;
 	return true;
 }
 
-func Fx_GetActive()
+// Set the guard range to the provided rectangle.
+public func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
-	return !!this.Interval;
-}
-
-// Enable/Disable auto-searching of targets
-func SetAutoSearchTarget(object clonk, bool new_auto_search_target)
-{
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
-	fx.auto_search_target = new_auto_search_target;
-	return true;
-}
-
-// Set the guard range to the provided rectangle
-func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
-{
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
-	// clip to landscape size
-	if (x<0) { wdt+=x; x=0; }
-	if (y<0) { wdt+=x; x=0; }
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetGuardRange(%v, %d, %d, %d, %d) not called from definition context but from %v", clonk, x, y, wdt, hgt, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	// Clip to landscape size.
+	if (x < 0)
+	{
+		wdt += x;
+		x = 0;
+	}
+	if (y < 0)
+	{
+		hgt += y;
+		y = 0;
+	}
 	wdt = Min(wdt, LandscapeWidth() - x);
 	hgt = Min(hgt, LandscapeHeight() - y);
-	fx.guard_range = {x=x, y=y, wdt=wdt, hgt=hgt};
+	fx_ai.guard_range = {x = x, y = y, wdt = wdt, hgt = hgt};
 	return true;
 }
 
-// Set the maximum distance the enemy will follow an attacking Clonk
-func SetMaxAggroDistance(object clonk, int max_dist)
+// Set the maximum distance the enemy will follow an attacking clonk.
+public func SetMaxAggroDistance(object clonk, int max_dist)
 {
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
-	fx.max_aggro_distance = max_dist;
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetMaxAggroDistance(%v, %d) not called from definition context but from %v", clonk, max_dist, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.max_aggro_distance = max_dist;
 	return true;
 }
 
-// Set range in which, on first encounter, allied AI Clonks get the same aggro target set
-func SetAllyAlertRange(object clonk, int new_range)
+// Set range in which, on first encounter, allied AI clonks get the same aggro target set.
+public func SetAllyAlertRange(object clonk, int new_range)
 {
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
-	fx.ally_alert_range = new_range;
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetAllyAlertRange(%v, %d) not called from definition context but from %v", clonk, new_range, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.ally_alert_range = new_range;
 	return true;
 }
 
 // Set callback function name to be called in game script when this AI is first encountered
 // Callback function first parameter is (this) AI clonk, second parameter is player clonk.
 // The callback should return true to be cleared and not called again. Otherwise, it will be called every time a new target is found.
-func SetEncounterCB(object clonk, string cb_fn)
+public func SetEncounterCB(object clonk, string cb_fn)
 {
-	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
-	fx.encounter_cb = cb_fn;
-	return true;
-}
-
-/* Scenario saving */
-
-func FxAISaveScen(clonk, fx, props)
-{
-	if (!clonk) return false;
-	props->AddCall("AI", AI, "AddAI", clonk);
-	if (!fx.Interval)
-		props->AddCall("AI", AI, "SetActive", clonk, false);
-	if (fx.home_x != clonk->GetX() || fx.home_y != clonk->GetY() || fx.home_dir != clonk->GetDir())
-		props->AddCall("AI", AI, "SetHome", clonk, fx.home_x, fx.home_y, GetConstantNameByValueSafe(fx.home_dir, "DIR_"));
-	props->AddCall("AI", AI, "SetGuardRange", clonk, fx.guard_range.x, fx.guard_range.y, fx.guard_range.wdt, fx.guard_range.hgt);
-	if (fx.max_aggro_distance != AI_DefMaxAggroDistance)
-		props->AddCall("AI", AI, "SetMaxAggroDistance", clonk, fx.max_aggro_distance);
-	if (fx.ally_alert_range)
-		props->AddCall("AI", AI, "SetAllyAlertRange", clonk, fx.ally_alert_range);
-	if (!fx.auto_search_target)
-		props->AddCall("AI", AI, "SetAutoSearchTarget", clonk, false);
-	if (fx.encounter_cb)
-		props->AddCall("AI", AI, "SetEncounterCB", clonk, Format("%v", fx.encounter_cb));
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetEncounterCB(%v, %s) not called from definition context but from %v", clonk, cb_fn, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.encounter_cb = cb_fn;
 	return true;
 }
 
 
-/* AI effect callback functions */
+/*-- AI Effect --*/
 
-protected func FxAITimer(clonk, fx, int time) { clonk->ExecuteAI(fx, time); return FX_OK; }
+// The AI effect stores a lot of information about the AI clonk. This includes its state, enemy target, alertness etc.
+// Each of the functions which are called in the AI definition pass the effect and can then access these variables.
+// The most important variables are:
+// fx.Target     - The AI clonk.
+// fx.target     - The current target the AI clonk will attack.
+// fx.alert      - Whether the AI clonk is alert and aware of enemies around it.
+// fx.weapon     - Currently selected weapon by the AI clonk.
+// fx.ammo_check - Function that is called to check ammunition for fx.weapon.
+// fx.commander  - Is commanded by another AI clonk.
+// fx.control    - Definition controlling this AI, all alternative AIs should include the basic AI.
 
-protected func FxAIStop(clonk, fx, int reason)
+local FxAI = new Effect
 {
-	// remove weapons on death
-	if (reason == FX_Call_RemoveDeath)
+	Construction = func(id control_def)
 	{
-		if (fx.bound_weapons) for (var obj in fx.bound_weapons) if (obj && obj->Contained()==clonk) obj->RemoveObject();
+		// Execute AI every 3 frames.
+		this.Interval = 3;
+		// Store the definition that controls this AI.
+		this.control = control_def;
+		// Store the vehicle the AI is using.
+		if (this.Target->GetProcedure() == "PUSH")
+			this.vehicle = this.Target->GetActionTarget();
+		// Store whether the enemy is controlled by a commander.
+		this.commander = this.Target.commander;
+		// Give the AI a helper function to get the AI control effect.
+		this.Target.ai = this;
+		this.Target.GetAI = this.GetAI;
+		return FX_OK;
+	},
+	
+	GetAI = func()
+	{
+		return this.ai;
+	},
+
+	Timer = func(int time)
+	{
+		// Execute the AI in the clonk.
+		this.control->Execute(this, time);
+		return FX_OK;
+	},
+
+	Destruction = func(int reason)
+	{
+		// Remove weapons on death.
+		if (reason == FX_Call_RemoveDeath)
+		{
+			if (this.bound_weapons)
+				for (var obj in this.bound_weapons)
+					if (obj && obj->Contained() == Target)
+						obj->RemoveObject();
+		}
+		// Remove AI reference.
+		if (Target && Target.ai == this)
+			Target.ai = nil;
+		return FX_OK;	
+	},
+	
+	Damage = func(int dmg, int cause)
+	{
+		// AI takes damage: Make sure we're alert so evasion and healing scripts are executed!
+		// It might also be feasible to execute encounter callbacks here (in case an AI is shot from a position it cannot see).
+		// However, the attacking clonk is not known and the callback might be triggered e.g. by an unfortunate meteorite or lightning blast.
+		// So let's just keep it at alert state for now.
+		if (dmg < 0) 
+			this.alert = this.time;
+		return dmg;
+	},
+	SetActive = func(bool active)
+	{
+		this.Interval = 3 * active;	
+	},
+	GetActive = func()
+	{
+		return this.Interval != 0;	
+	},
+	SetAttackMode = func(proplist attack_mode)
+	{
+		return this.control->SetAttackMode(this.Target, attack_mode.Identifier);
+	},
+	EditorProps = {
+		guard_range = { Name = "$GuardRange$", Type = "rect", Storage = "proplist", Color = 0xff00, Relative = false },
+		ignore_allies = { Name = "$IgnoreAllies$", Type = "bool" },
+		max_aggro_distance = { Name = "$MaxAggroDistance$", Type = "circle", Color = 0x808080 },
+		active = { Name = "$Active$", EditorHelp = "$ActiveHelp$", Type = "bool", Priority = 50, AsyncGet = "GetActive", Set = "SetActive" },
+		auto_search_target = { Name = "$AutoSearchTarget$", EditorHelp = "$AutoSearchTargetHelp$", Type = "bool" }
+	},
+	// Save this effect and the AI for scenarios.
+	SaveScen = func(proplist props)
+	{
+		if (!this.Target)
+			return false;
+		props->AddCall("AI", this.control, "AddAI", this.Target);
+		if (!this.Interval)
+			props->AddCall("AI", this.control, "SetActive", this.Target, false);
+		if (this.attack_mode.Identifier != "Default")
+			props->AddCall("AI", this.control, "SetAttackMode", this.Target, Format("%v", this.attack_mode.Identifier));
+		if (this.home_x != this.Target->GetX() || this.home_y != this.Target->GetY() || this.home_dir != this.Target->GetDir())
+			props->AddCall("AI", this.control, "SetHome", this.Target, this.home_x, this.home_y, GetConstantNameByValueSafe(this.home_dir, "DIR_"));
+		props->AddCall("AI", this.control, "SetGuardRange", this.Target, this.guard_range.x, this.guard_range.y, this.guard_range.wdt, this.guard_range.hgt);
+		if (this.max_aggro_distance != this.control.MaxAggroDistance)
+			props->AddCall("AI", this.control, "SetMaxAggroDistance", this.Target, this.max_aggro_distance);
+		if (this.ally_alert_range)
+			props->AddCall("AI", this.control, "SetAllyAlertRange", this.Target, this.ally_alert_range);
+		if (!this.auto_search_target)
+			props->AddCall("AI", this.control, "SetAutoSearchTarget", this.Target, false);
+		if (this.encounter_cb)
+			props->AddCall("AI", this.control, "SetEncounterCB", this.Target, Format("%v", this.encounter_cb));
+		return true;
 	}
-	// remove AI reference
-	if (clonk && clonk.ai == fx) clonk.ai = nil;
-	return FX_OK;
-}
-
-protected func FxAIDamage(clonk, fx, int dmg, int cause)
-{
-	// AI takes damage: Make sure we're alert so evasion and healing scripts are executed!
-	// It might also be feasible to execute encounter callbacks here (in case an AI is shot from a position it cannot see).
-	// However, the attacking Clonk is not known and the callback might be triggered e.g. by an unfortunate meteorite or lightning blast.
-	// So let's just keep it at alert state for now
-	if (dmg<0) fx.alert=fx.time;
-	return dmg;
-}
+};
 
 
-/* AI execution timer functions */
+/*-- AI Execution --*/
 
-// called in context of the Clonk that is being controlled
-private func Execute(proplist fx, int time)
+public func Execute(effect fx, int time)
 {
 	fx.time = time;
-	// Evasion, healing etc. if alert
-	if (fx.alert) if (ExecuteProtection(fx)) return true;
-	// Current command override
+	// Evasion, healing etc. if alert.
+	if (fx.alert)
+		if (this->ExecuteProtection(fx))
+			return true;
+	// Current command override.
 	if (fx.command)
 	{
-		if (Call(fx.command, fx)) return true; else fx.command = nil;
+		if (this->Call(fx.command, fx))
+			return true;
+		else
+			fx.command = nil;
 	}
-	// Find something to fight with
-	if (!fx.weapon) { CancelAiming(fx); if (!ExecuteArm(fx)) return ExecuteIdle(fx); else if (!fx.weapon) return true; }
+	// Find something to fight with.
+	if (!fx.weapon) 
+	{
+		this->CancelAiming(fx);
+		if (!this->ExecuteArm(fx))
+			return this->ExecuteIdle(fx);
+		else if (!fx.weapon)
+			return true;
+	}
 	// Weapon out of ammo?
-	if (fx.ammo_check && !Call(fx.ammo_check, fx, fx.weapon)) { fx.weapon=nil; return false; }
-	// Find an enemy
-	if (fx.target) if (!fx.target->GetAlive() || (!fx.ranged && ObjectDistance(fx.target) >= fx.max_aggro_distance)) fx.target = nil;
+	if (fx.ammo_check && !this->Call(fx.ammo_check, fx, fx.weapon))
+	{
+		fx.weapon = nil;
+		this->LogAI(fx, Format("weapon %v is out of ammo, AI won't do anything.", fx.weapon));
+		return false;
+	}
+	// Find an enemy.
+	if (fx.target) 
+		if ((fx.target->GetCategory() & C4D_Living && !fx.target->GetAlive()) || (!fx.ranged && fx.Target->ObjectDistance(fx.target) >= fx.max_aggro_distance))
+			fx.target = nil;
 	if (!fx.target)
 	{
-		CancelAiming(fx);
-		if (!fx.auto_search_target || !(fx.target = FindTarget(fx))) return ExecuteIdle(fx);
-		// first encounter callback. might display a message.
-		if (fx.encounter_cb) if (GameCall(fx.encounter_cb, this, fx.target)) fx.encounter_cb = nil;
-		// wake up nearby allies
+		this->CancelAiming(fx);
+		if (!fx.auto_search_target || !(fx.target = this->FindTarget(fx)))
+			return ExecuteIdle(fx);
+		// First encounter callback. might display a message.
+		if (fx.encounter_cb)
+			if (GameCall(fx.encounter_cb, fx.Target, fx.target))
+				fx.encounter_cb = nil;
+		// Wake up nearby allies.
 		if (fx.ally_alert_range)
 		{
 			var ally_fx;
-			for (var ally in FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(this), Find_OCF(OCF_CrewMember), Find_Owner(GetOwner())))
-				if (ally_fx = AI->GetAI(ally))
+			for (var ally in fx.Target->FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(fx.Target), Find_OCF(OCF_CrewMember), Find_Owner(fx.Target->GetOwner())))
+				if (ally_fx = this->GetAI(ally))
 					if (!ally_fx.target)
 					{
 						ally_fx.target = fx.target;
 						ally_fx.alert = ally_fx.time;
-						if (ally_fx.encounter_cb) if (GameCall(ally_fx.encounter_cb, ally, fx.target)) ally_fx.encounter_cb = nil;
+						if (ally_fx.encounter_cb) 
+							if (GameCall(ally_fx.encounter_cb, ally, fx.target))
+								ally_fx.encounter_cb = nil;
 					}
-			// waking up works only once. after that, AI might have moved and wake up Clonks it shouldn't
+			// Do some messages.
+			this->ExecuteIntruderMessage(fx);		
+			// Waking up works only once. after that, AI might have moved and wake up clonks it shouldn't.
 			fx.ally_alert_range = nil;
 		}
 	}
+	// Do stuff on the appearance of the enemy like displaying a message.
+	this->ExecuteAppearance(fx);
 	// Attack it!
-	return Call(fx.strategy, fx);
+	if (!this->IsWeaponForTarget(fx))
+		this->LogAI(fx, Format("weapon of type %i is not fit to attack %v (type: %i).", fx.weapon->GetID(), fx.target, fx.target->GetID()));
+	return this->Call(fx.strategy, fx);
 }
 
-// Selects an item the clonk is about to use
-private func SelectItem(object item)
+// Selects an item the clonk is about to use.
+public func SelectItem(effect fx, object item)
 {
-	if (!item) return;
-	if (item->Contained() != this) return;
-	this->SetHandItemPos(0, this->GetItemPos(item));
+	if (!item)
+		return;
+	if (item->Contained() != fx.Target)
+		return;
+	fx.Target->SetHandItemPos(0, fx.Target->GetItemPos(item));
 }
 
-private func ExecuteProtection(fx)
-{
-	// Search for nearby projectiles. Ranged AI also searches for enemy clonks to evade.
-	var enemy_search;
-	if (fx.ranged) enemy_search = Find_And(Find_OCF(OCF_CrewMember), Find_Not(Find_Owner(GetOwner())));
-	//Log("ExecProt");
-	var projectiles = FindObjects(Find_InRect(-150,-50,300,80), Find_Or(Find_Category(C4D_Object), Find_Func("IsDangerous4AI"), Find_Func("IsArrow"), enemy_search), Find_OCF(OCF_HitSpeed2), Find_NoContainer(), Sort_Distance());
-	for (var obj in projectiles)
-	{
-		var dx = obj->GetX()-GetX(), dy = obj->GetY()-GetY();
-		var vx = obj->GetXDir(), vy = obj->GetYDir();
-		if (Abs(dx)>40 && vx) dy += (Abs(10*dx/vx)**2)*GetGravity()/200;
-		var v2 = Max(vx*vx+vy*vy, 1);
-		var d2 = dx*dx+dy*dy;
-		if (d2/v2 > 4)
-		{
-			// won't hit within the next 20 frames
-			//obj->Message("ZZZ");
-			continue;
-		}
-		//obj->Message("###%d", Sqrt(100*d2/v2));
-		// Distance at which projectile will pass Clonk should be larger than Clonk size (erroneously assumes Clonk is a sphere)
-		var l = dx*vx+dy*vy;
-		//Log("%s l=%d  d=%d  r=%d   gravcorr=%d", obj->GetName(), l, Sqrt(d2), Sqrt(d2-l*l/v2), (Abs(10*dx/vx)**2)*GetGravity()/200);
-		if (l<0 && Sqrt(d2-l*l/v2)<=GetCon()/8)
-		{
-			// Not if there's a wall between
-			if (!PathFree(GetX(),GetY(),obj->GetX(),obj->GetY())) continue;
-			// This might hit :o
-			fx.alert=fx.time;
-			// Use a shield if the object is not explosive.
-			if (fx.shield && !obj->~HasExplosionOnImpact())
-			{
-				// use it!
-				SelectItem(fx.shield);
-				if (fx.aim_weapon == fx.shield)
-				{
-					// continue to hold shield
-					//Log("shield HOLD %d %d", dx,dy);
-					fx.shield->ControlUseHolding(this, dx,dy);
-				}
-				else
-				{
-					// start holding shield
-					if (fx.aim_weapon) CancelAiming(fx);
-					if (!CheckHandsAction(fx)) return true;
-					if (!fx.shield->ControlUseStart(this, dx,dy)) return false; // something's broken :(
-					//Log("shield START %d %d", dx,dy);
-					fx.shield->ControlUseHolding(this, dx,dy);
-					fx.aim_weapon = fx.shield;
-				}
-				return true;
-			}
-			// no shield. try to jump away
-			if (dx<0) SetComDir(COMD_Right); else SetComDir(COMD_Left);
-			if (ExecuteJump()) return true;
-			// Can only try to evade one projectile
-			break;
-		}
-	}
-	//Log("OK");
-	// stay alert if there's a target. Otherwise alert state may wear off
-	if (!fx.target) fx.target = FindEmergencyTarget(fx);
-	if (fx.target) fx.alert=fx.time; else if (fx.time-fx.alert > AI_AlertTime) fx.alert=nil;
-	// nothing to do
-	return false;
-}
-
-private func CheckTargetInGuardRange(fx)
-{
-	// if target is not in guard range, reset it and return false
-	if (!Inside(fx.target->GetX()-fx.guard_range.x, -10, fx.guard_range.wdt+9)
-		||!Inside(fx.target->GetY()-fx.guard_range.y, -10, fx.guard_range.hgt+9)) 
-		if (ObjectDistance(fx.target) > 250)
-			{ fx.target=nil; return false; }
-	return true;
-}
-
-private func ExecuteVehicle(fx)
-{
-	// only knows how to use catapult
-	if (!fx.vehicle || fx.vehicle->GetID() != Catapult) { fx.vehicle = nil; return false; }
-	// still pushing it?
-	if (GetProcedure() != "PUSH" || GetActionTarget() != fx.vehicle)
-	{
-		if (!GetCommand() || !Random(4)) SetCommand("Grab", fx.vehicle);
-		return true;
-	}
-	// Target still in guard range?
-	if (!CheckTargetInGuardRange(fx)) return false;
-	// turn in correct direction
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
-	if (tx>x && !fx.vehicle.dir) { fx.vehicle->ControlRight(this); return true; }
-	if (tx<x &&  fx.vehicle.dir) { fx.vehicle->ControlLeft (this); return true; }
-	// make sure we're aiming
-	if (!fx.aim_weapon)
-	{
-		if (!fx.vehicle->~ControlUseStart(this)) return false;
-		fx.aim_weapon = fx.vehicle;
-		fx.aim_time = fx.time;
-		return true;
-	}
-	// update catapult animation
-	fx.vehicle->~ControlUseHolding(this, tx-x, ty-y);
-	// Determine power needed to hit target
-	var dx = tx-x, dy=ty-y+20;
-	var power = Sqrt((GetGravity()*dx*dx) / Max(Abs(dx)+dy,1));
-	var dt = dx * 10 / power;
-	tx += GetTargetXDir(fx.target, dt);
-	ty += GetTargetYDir(fx.target, dt);
-	if (!fx.target->GetContact(-1)) dy += GetGravity()*dt*dt/200;
-	power = Sqrt((GetGravity()*dx*dx) / Max(Abs(dx)+dy,1));
-	power = power + Random(11)-5; // some variation
-	fx.projectile_speed = power = BoundBy(power, 20, 100); // limits imposed by catapult
-	// Can shoot now?
-	if (fx.time >= fx.aim_time + fx.aim_wait) if (PathFree(x,y-20,x+dx,y+dy-20))
-	{
-		fx.aim_weapon->~DoFire(this, power, 0);
-		fx.aim_weapon = nil;
-	}
-	return true;
-}
-
-private func CancelAiming(fx)
+public func CancelAiming(effect fx)
 {
 	if (fx.aim_weapon)
 	{
-		//Log("CancelAiming"); LogCallStack();
-		//if (fx.aim_weapon==fx.shield) Log("cancel shield");
-		fx.aim_weapon->~ControlUseCancel(this);
+		fx.aim_weapon->~ControlUseCancel(fx.Target);
 		fx.aim_weapon = nil;
 	}
 	else
 	{
-		// Also cancel aiming done outside AI control
-		this->~CancelAiming();
+		// Also cancel aiming done outside AI control.
+		fx.Target->~CancelAiming();
 	}
 	return true;
 }
 
-private func IsAimingOrLoading() { return !!GetEffect("IntAim*", this); }
-
-private func ExecuteRanged(fx)
-{
-	// Still carrying the bow?
-	if (fx.weapon->Contained() != this) { fx.weapon=fx.post_aim_weapon=nil; return false; }
-	// Finish shooting process
-	if (fx.post_aim_weapon)
-	{
-		// wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot)
-		if (FrameCounter() - fx.post_aim_weapon_time < 36)
-			if (IsAimingOrLoading()) return true;
-		fx.post_aim_weapon = nil;
-	}
-	// Target still in guard range?
-	if (!CheckTargetInGuardRange(fx)) return false;
-	// Look at target
-	ExecuteLookAtTarget(fx);
-	// Make sure we can shoot
-	if (!IsAimingOrLoading() || !fx.aim_weapon)
-	{
-		CancelAiming(fx);
-		if (!CheckHandsAction(fx)) return true;
-		// Start aiming
-		SelectItem(fx.weapon);
-		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
-		fx.aim_weapon = fx.weapon;
-		fx.aim_time = fx.time;
-		fx.post_aim_weapon = nil;
-		// Enough for now
-		return;
-	}
-	// Stuck in aim procedure check?
-	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction()) 
-		return ExecuteStand(fx);
-	// Calculate offset to target. Take movement into account
-	// Also aim for the head (y-4) so it's harder to evade by jumping
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
-	var d = Distance(x,y,tx,ty);
-	var dt = d * 10 / fx.projectile_speed; // projected travel time of the arrow
-	tx += GetTargetXDir(fx.target, dt);
-	ty += GetTargetYDir(fx.target, dt);
-	if (!fx.target->GetContact(-1)) if (!fx.target->GetCategory() & C4D_StaticBack) ty += GetGravity()*dt*dt/200;
-	// Path to target free?
-	if (PathFree(x,y,tx,ty))
-	{
-		// Get shooting angle
-		var shooting_angle;
-		if (fx.ranged_direct)
-			shooting_angle = Angle(x, y, tx, ty, 10);
-		else
-			shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
-		//Log("AI: Ranged attack calculated angle %d from coordinates (%d, %d) and (%d, %d)", shooting_angle, x, y, tx, ty); 
-		if (GetType(shooting_angle) != C4V_Nil)
-		{
-			// No ally on path? Also search for allied animals, just in case.
-			var ally;
-			if (!fx.ignore_allies) ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
-			if (ally)
-			{
-				if (ExecuteJump()) return true;
-				// can't jump and ally is in the way. just wait.
-			}
-			else
-			{
-				//Message("Bow @ %d!!!", shooting_angle);
-				// Aim/Shoot there
-				x = Sin(shooting_angle, 1000, 10);
-				y = -Cos(shooting_angle, 1000, 10);
-				fx.aim_weapon->ControlUseHolding(this, x,y);
-				if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
-				{
-					//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
-					fx.aim_weapon->ControlUseStop(this, x,y);
-					fx.post_aim_weapon = fx.aim_weapon; // assign post-aim status to allow slower shoot animations to pass
-					fx.post_aim_weapon_time = FrameCounter();
-					fx.aim_weapon = nil;
-				}
-				return true;
-			}
-		}
-	}
-	// Path not free or out of range. Just wait for enemy to come...
-	//Message("Bow @ %s!!!", fx.target->GetName());
-	fx.aim_weapon->ControlUseHolding(this,tx-x,ty-y);
-	// Might also change target if current is unreachable
-	var new_target;
-	if (!Random(3)) if (new_target = FindTarget(fx)) fx.target = new_target;
-	return true;
-}
-
-private func ExecuteLookAtTarget(fx)
-{
-	// set direction to look at target. can assume this is instantanuous
-	var dir;
-	if (fx.target->GetX() > GetX()) dir = DIR_Right; else dir = DIR_Left;
-	SetDir(dir);
-	return true;
-}
-
-private func ExecuteThrow(fx)
+public func ExecuteThrow(effect fx)
 {
 	// Still carrying the weapon to throw?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
-	// Path to target free?
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
-	if (PathFree(x,y,tx,ty))
+	if (fx.weapon->Contained() != fx.Target)
 	{
-		var throw_speed = this.ThrowSpeed;
-		if (fx.weapon->GetID() == Javelin) throw_speed *= 2;
-		var rx = (throw_speed*throw_speed)/(100*GetGravity()); // horizontal range for 45 degree throw if enemy is on same height as we are
-		var ry = throw_speed*7/(GetGravity()*10); // vertical range of 45 degree throw
-		var dx = tx-x, dy = ty-y+15*GetCon()/100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
+		fx.weapon = nil;
+		return false;
+	}
+	// Path to target free?
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
+	if (PathFree(x, y, tx, ty))
+	{
+		var throw_speed = fx.Target.ThrowSpeed;
+		var rx = (throw_speed * throw_speed) / (100 * GetGravity()); // horizontal range for 45 degree throw if enemy is on same height as we are
+		var ry = throw_speed * 7 / (GetGravity() * 10); // vertical range of 45 degree throw
+		var dx = tx - x, dy = ty - y + 15 * fx.Target->GetCon() / 100; // distance to target. Reduce vertical distance a bit because throwing exit point is not at center
 		// Check range
 		// Could calculate the optimal parabulum here, but that's actually not very reliable on moving targets
 		// It's usually better to throw straight at the target and only throw upwards a bit if the target stands on high ground or is far away
 		// Also ignoring speed added by own velocity, etc...
-		if (Abs(dx)*ry-Min(dy)*rx <= rx*ry)
+		if (Abs(dx) * ry - Min(dy) * rx <= rx * ry)
 		{
 			// We're in range. Can throw?
-			if (!CheckHandsAction(fx)) return true;
-			// OK. Calc throwing direction
-			dy -= dx*dx/rx; // big math!
+			if (!this->CheckHandsAction(fx))
+				return true;
+			// OK. Calc throwing direction.
+			dy -= dx * dx / rx;
 			// And throw!
-			//Message("Throw!");
-			SetCommand("None"); SetComDir(COMD_Stop);
-			SelectItem(fx.weapon);
-			return this->ControlThrow(fx.weapon, dx, dy);
+			fx.Target->SetCommand("None");
+			fx.Target->SetComDir(COMD_Stop);
+			this->SelectItem(fx, fx.weapon);
+			return fx.Target->ControlThrow(fx.weapon, dx, dy);
 		}
 	}
 	// Can't reach target yet. Walk towards it.
-	if (!GetCommand() || !Random(3)) SetCommand("MoveTo", fx.target);
-	//Message("Throw %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
+	if (!fx.Target->GetCommand() || !Random(3))
+		fx.Target->SetCommand("MoveTo", fx.target);
 	return true;
 }
 
-private func CheckHandsAction(fx)
+public func CheckHandsAction(effect fx)
 {
-	// can use hands?
-	if (this->~HasHandAction()) return true;
+	// Can use hands?
+	if (fx.Target->~HasHandAction())
+		return true;
 	// Can't throw: Is it because e.g. we're scaling?
-	if (!this->HasActionProcedure()) { ExecuteStand(fx); return false; }
+	if (!fx.Target->HasActionProcedure())
+	{
+		this->ExecuteStand(fx);
+		return false;
+	}
 	// Probably hands busy. Just wait.
-	//Message("HandsBusy");
 	return false;
 }
 
-private func ExecuteStand(fx)
+public func ExecuteArm(effect fx)
 {
-	//Message("Stand");
-	SetCommand("None");
-	if (GetProcedure() == "SCALE")
+	// Find shield.
+	fx.shield = fx.Target->FindContents(Shield);
+	// Find a weapon. Depends on attack mode
+	if (Call(fx.attack_mode.FindWeapon, fx))
 	{
-		var tx;
-		if (fx.target) tx = fx.target->GetX() - GetX();
-		// Scale: Either scale up if target is beyond this obstacle or let go if it's not
-		if (GetDir()==DIR_Left)
-		{
-			if (tx < -20)
-				SetComDir(COMD_Left);//ObjectControlMovement(GetOwner(), CON_Up, 100); // scale up
-			else
-				ObjectControlMovement(GetOwner(), CON_Right, 100); // let go
-		}
-		else
-		{
-			if (tx > -20)
-				SetComDir(COMD_Right);//ObjectControlMovement(GetOwner(), CON_Up, 100); // scale up
-			else
-				ObjectControlMovement(GetOwner(), CON_Left, 100); // let go
-		}
-	}
-	else if (GetProcedure() == "HANGLE")
-	{
-		ObjectControlMovement(GetOwner(), CON_Down, 100);
-	}
-	else
-	{
-		// Hm. What could it be? Let's just hope it resolves itself somehow...
-		SetComDir(COMD_Stop);
-		//Message("???");
-	}
-	return true;
-}
-
-private func ExecuteMelee(fx)
-{
-	// Still carrying the melee weapon?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
-	// Are we in range?
-	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY();
-	var dx = tx-x, dy = ty-y;
-	if (Abs(dx) <= 10 && PathFree(x,y,tx,ty))
-	{
-		if (dy >= -15)
-		{
-			// target is under us - sword slash downwards!
-			if (!CheckHandsAction(fx)) return true;
-			// Stop here
-			SetCommand("None"); SetComDir(COMD_None);
-			// cooldown?
-			if (!fx.weapon->CanStrikeWithWeapon(this))
-			{
-				//Message("MeleeWAIT %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-				// While waiting for the cooldown, we try to evade...
-				ExecuteEvade(fx,dx,dy);
-				return true;
-			}
-			// OK, slash!
-			//Message("MeleeSLASH %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-			SelectItem(fx.weapon);
-			return fx.weapon->ControlUse(this, tx,ty);
-		}
-		// Clonk is above us - jump there
-		//Message("MeleeJump %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-		ExecuteJump();
-		if (dx<-5) SetComDir(COMD_Left); else if (dx>5) SetComDir(COMD_Right); else SetComDir(COMD_None);
-	}
-	// Not in range. Walk there.
-	if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
-	//Message("Melee %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-	return true;
-}
-
-private func ExecuteEvade(fx,int threat_dx,int threat_dy)
-{
-	// Evade from threat at position delta threat_*
-	if (threat_dx < 0) SetComDir(COMD_Left); else SetComDir(COMD_Right);
-	if (threat_dy >= -5 && !Random(2)) if (ExecuteJump(fx)) return true;
-	// shield? todo
-	return true;
-}
-
-private func ExecuteJump(fx)
-{
-	//LogCallStack("Jump");
-	// Jump if standing on floor
-	if (GetProcedure() == "WALK") // if (GetContact(-1, CNAT_Bottom)) - implied by walk
-	{
-		if (this->~ControlJump()) return true; // for clonks
-		return this->Jump(); // for others
-	}
-	return false;
-}
-
-private func ExecuteArm(fx)
-{
-	// Find shield
-	//if (fx.shield = FindContents(Shield)) this->SetHandItemPos(1, this->GetItemPos(fx.shield));
-	fx.shield = FindContents(Shield);
-	// Find a weapon. For now, just search own inventory
-	if (FindInventoryWeapon(fx) && fx.weapon->Contained()==this)
-	{
-		SelectItem(fx.weapon);
+		// Select unless it's e.g. a vehicle or a spell
+		SelectItem(fx, fx.weapon);
 		return true;
 	}
-	// no weapon :(
+	// No weapon.
 	return false;
 }
 
-private func FindInventoryWeapon(fx)
+public func FindInventoryWeapon(effect fx)
 {
-	fx.ammo_check = nil; fx.ranged = false;
+	fx.ammo_check = nil;
+	fx.ranged = false;
 	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
 	if (fx.weapon = fx.vehicle)
 	{
-		if (CheckVehicleAmmo(fx, fx.weapon))
-			{ fx.strategy = fx.ai.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = fx.ai.CheckVehicleAmmo; return true; }
+		if (this->CheckVehicleAmmo(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteVehicle;
+			fx.ranged = true;
+			fx.aim_wait = 20;
+			fx.ammo_check = this.CheckVehicleAmmo;
+			return true;
+		}
 		else
 			fx.weapon = nil;
 	}
-	if (fx.weapon = FindContents(GrenadeLauncher))
+	if (FindInventoryWeaponGrenadeLauncher(fx)) return true;
+	if (FindInventoryWeaponBlunderbuss(fx)) return true;
+	if (FindInventoryWeaponBow(fx)) return true;
+	if (FindInventoryWeaponJavelin(fx)) return true;
+	// Throwing weapons.
+	if ((fx.weapon = fx.Target->FindContents(Firestone)) || (fx.weapon = fx.Target->FindContents(Rock)) || (fx.weapon = fx.Target->FindContents(Lantern))) 
 	{
-		if (HasBombs(fx, fx.weapon))
-			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 75; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasBombs; fx.ranged=true; return true; }
+		fx.strategy = this.ExecuteThrow;
+		return true;
+	}
+	// Melee weapons.
+	if ((fx.weapon = fx.Target->FindContents(Sword)) || (fx.weapon = fx.Target->FindContents(Club)) || (fx.weapon = fx.Target->FindContents(Axe))) 
+	{
+		fx.strategy = this.ExecuteMelee;
+		return true;
+	}
+	// No weapon.
+	return false;
+}
+
+private func FindInventoryWeaponGrenadeLauncher(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(GrenadeLauncher))
+	{
+		if (this->HasBombs(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 75;
+			fx.aim_wait = 85;
+			fx.ammo_check = this.HasBombs;
+			fx.ranged = true;
+			return true;
+		}
 		else
 			fx.weapon = nil;
 	}
-	if (fx.weapon = FindContents(Bow))
+}
+
+private func FindInventoryWeaponBlunderbuss(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Blunderbuss))
 	{
-		if (HasArrows(fx, fx.weapon))
-			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
+		if (this->HasAmmo(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 200;
+			fx.aim_wait = 85;
+			fx.ammo_check = this.HasAmmo;
+			fx.ranged = true;
+			fx.ranged_direct = true;
+			return true;
+		}
 		else
 			fx.weapon = nil;
 	}
-	if (fx.weapon = FindContents(Blunderbuss))
+}
+
+private func FindInventoryWeaponBow(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Bow))
 	{
-		if (HasAmmo(fx, fx.weapon))
-			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 200; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasAmmo; fx.ranged=true; fx.ranged_direct = true; return true; }
+		if (this->HasArrows(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 100;
+			fx.aim_wait = 0;
+			fx.ammo_check = this.HasArrows;
+			fx.ranged = true;
+			return true;
+		}
 		else
 			fx.weapon = nil;
 	}
-	if (fx.weapon = FindContents(Javelin)) 
-		{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = this.ThrowSpeed*21/100; fx.aim_wait = 16; fx.ranged=true; return true; }
-	if (fx.weapon = FindContents(Firestone)) 
-		{ fx.strategy = fx.ai.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Rock)) 
-		{ fx.strategy = fx.ai.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Lantern)) 
-		{ fx.strategy = fx.ai.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Sword)) 
-		{ fx.strategy = fx.ai.ExecuteMelee; return true; }
-	//if (fx.weapon = Contents(0)) { fx.strategy = fx.ai.ExecuteThrow; return true; } - don't throw empty bow, etc.
-	// no weapon :(
-	return false;
 }
 
-private func HasArrows(fx, object weapon)
+private func FindInventoryWeaponJavelin(effect fx)
 {
-	if (weapon->Contents(0)) return true;
-	if (FindObject(Find_Container(this), Find_Func("IsArrow"))) return true;
-	return false;
-}
-
-private func HasAmmo(fx, object weapon)
-{
-	if (weapon->Contents(0)) return true;
-	if (FindObject(Find_Container(this), Find_Func("IsBullet"))) return true;
-	return false;
-}
-
-private func HasBombs(fx, object weapon)
-{
-	if (weapon->Contents(0)) return true;
-	if (FindObject(Find_Container(this), Find_Func("IsGrenadeLauncherAmmo"))) return true;
-	return false;
-}
-
-private func CheckVehicleAmmo(fx, object catapult)
-{
-	if (catapult->ContentsCount()) return true;
-	// Vehicle out of ammo: Can't really be refilled. Stop using that weapon.
-	fx.vehicle = nil;
-	this->ObjectCommand("UnGrab");
-	return false;
-}
-
-private func ExecuteIdle(fx)
-{
-	if (!Inside(GetX()-fx.home_x, -5,5) || !Inside(GetY()-fx.home_y, -15,15))
+	if (fx.weapon = fx.Target->FindContents(Javelin)) 
 	{
-		return SetCommand("MoveTo", nil, fx.home_x, fx.home_y);
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = fx.Target.ThrowSpeed * fx.weapon.shooting_strength / 100;
+		fx.aim_wait = 16;
+		fx.ranged=true;
+		return true;
 	}
-	else
+}
+
+
+/*-- Editor Properties --*/
+
+public func Definition(proplist def)
+{
+	if (!Clonk.EditorProps)
+		Clonk.EditorProps = {};
+	if (def == AI) // TODO: Make AI an enum so different AI types can be selected.
 	{
-		SetCommand("None"); SetComDir(COMD_Stop); SetDir(fx.home_dir);
+		Clonk.EditorProps.AI =
+		{
+			Type = "has_effect",
+			Effect = "FxAI",
+			Set = Format("%i->SetAI", def),
+			SetGlobal = true
+		};
 	}
-	// Nothing to do.
-	return false;
-}
-
-private func FindTarget(fx)
-{
-	// Consider hostile clonks, or all clonks if the AI does not have an owner.
-	var hostile_criteria = Find_Hostile(GetOwner());
-	if (GetOwner() == NO_OWNER)
-		hostile_criteria = Find_Not(Find_Owner(GetOwner()));
-	for (var target in FindObjects(Find_InRect(fx.guard_range.x-GetX(),fx.guard_range.y-GetY(),fx.guard_range.wdt,fx.guard_range.hgt), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Random()))
-		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
-			return target;
-	// Nothing found.
-	return;
-}
-
-private func FindEmergencyTarget(fx)
-{
-	// Consider hostile clonks, or all clonks if the AI does not have an owner.
-	var hostile_criteria = Find_Hostile(GetOwner());
-	if (GetOwner() == NO_OWNER)
-		hostile_criteria = Find_Not(Find_Owner(GetOwner()));
-	// Search nearest enemy clonk in area even if not in guard range, used e.g. when outside guard range (AI fell down) and being attacked.
-	for (var target in FindObjects(Find_Distance(200), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Distance()))
-		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
-			return target;
-	// Nothing found.
-	return;
-}
-
-// Helper function: Convert target cordinates and bow out speed to desired shooting angle
-// Because http://en.wikipedia.org/wiki/Trajectory_of_a_projectile says so
-// No SimFlight checks to check upper angle (as that is really easy to evade anyway)
-// just always shoot the lower angle if sight is free
-private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
-{
-	// v is in 1/10 pix/frame
-	// gravity is in 1/100 pix/frame^2
-	var g = GetGravity();
-	// correct vertical distance to account for integration error
-	// engine adds gravity after movement, so targets fly higher than they should
-	// thus, we aim lower. we don't know the travel time yet, so we assume some 90% of v is horizontal
-	// (it's ~2px correction for 200px shooting distance)
-	dy += Abs(dx)*g*10/(v*180);
-	//Log("Correction: Aiming %d lower!", Abs(dx)*q*10/(v*180));
-	// q is in 1/10000 (pix/frame)^4
-	var q = v**4 - g*(g*dx*dx-2*dy*v*v); // dy is negative up
-	if (q<0) return nil; // out of range
-	var a = (Angle(0, 0, g * dx, Sqrt(q) - v * v, 10) + 1800) % 3600 - 1800;
-	// Check bounds
-	if(!Inside(a, -10 * max_angle, 10 * max_angle)) return nil;
-	return a;
-}
-
-func Definition(def)
-{
-	if (!Clonk.EditorProps) Clonk.EditorProps = {};
-	Clonk.EditorProps.AI = { Type = "has_effect", Effect = "AI", Set = "AI->SetAI", SetGlobal = true };
-	// Add AI user actions
+	def->DefinitionAttackModes(def);
+	// Add AI user actions.
 	var enemy_evaluator = UserAction->GetObjectEvaluator("IsClonk", "$Enemy$", "$EnemyHelp$");
 	enemy_evaluator.Priority = 100;
-	UserAction->AddEvaluator("Action", "Clonk", "$SetAIActivated$", "$SetAIActivatedHelp$", "ai_set_activated", [def, def.EvalAct_SetActive], { Enemy=nil, AttackTarget = { Function="triggering_clonk" }, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Enemy}}: {{Status}} ({{AttackTarget}})", EditorProps = {
-		Enemy = enemy_evaluator,
-		AttackTarget = UserAction->GetObjectEvaluator("IsClonk", "$AttackTarget$", "$AttackTargetHelp$"),
-		Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
-		} } );
-	UserAction->AddEvaluator("Action", "Clonk", "$SetAINewHome$", "$SetAINewHomeHelp$", "ai_set_new_home", [def, def.EvalAct_SetNewHome], { Enemy=nil, HomePosition=nil, Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{Enemy}} -> {{NewHome}}", EditorProps = {
-		Enemy = enemy_evaluator,
-		NewHome = new UserAction.Evaluator.Position { Name = "$NewHome$", EditorHelp = "$NewHomeHelp$" },
-		NewHomeDir = { Type="enum", Name="$NewHomeDir$", EditorHelp="$NewHomeDirHelp$", Options = [
-			{ Name="$Unchanged$" },
-			{ Name="$Left$", Value=DIR_Left },
-			{ Name="$Right$", Value=DIR_Right }
-			] },
-		} } );
+	UserAction->AddEvaluator("Action", "Clonk", "$SetAIActivated$", "$SetAIActivatedHelp$", "ai_set_activated", [def, def.EvalAct_SetActive], 
+		{
+			Enemy = nil,
+			AttackTarget = {
+				Function= "triggering_clonk"
+			},
+			Status = {
+				Function = "bool_constant",
+				Value = true
+			}
+		},
+		{
+			Type = "proplist",
+			Display = "{{Enemy}}: {{Status}} ({{AttackTarget}})",
+			EditorProps = {
+				Enemy = enemy_evaluator,
+				AttackTarget = UserAction->GetObjectEvaluator("IsClonk", "$AttackTarget$", "$AttackTargetHelp$"),
+				Status = new UserAction.Evaluator.Boolean { Name = "$Status$" }
+			}
+		}
+	);
+	UserAction->AddEvaluator("Action", "Clonk", "$SetAINewHome$", "$SetAINewHomeHelp$", "ai_set_new_home", [def, def.EvalAct_SetNewHome],
+		{
+			Enemy = nil,
+			HomePosition = nil,
+			Status = {
+				Function = "bool_constant",
+				Value = true
+			}
+		},
+		{
+			Type = "proplist",
+			Display = "{{Enemy}} -> {{NewHome}}",
+			EditorProps = {
+				Enemy = enemy_evaluator,
+				NewHome = new UserAction.Evaluator.Position {
+					Name = "$NewHome$",
+					EditorHelp = "$NewHomeHelp$"
+				},
+				NewHomeDir = {
+					Type = "enum",
+					Name = "$NewHomeDir$",
+					EditorHelp = "$NewHomeDirHelp$",
+					Options = [
+						{ Name = "$Unchanged$" },
+						{ Name = "$Left$", Value = DIR_Left },
+						{ Name = "$Right$", Value = DIR_Right }
+					]
+				},
+			}
+		}
+	);
 }
 
-private func EvalAct_SetActive(proplist props, proplist context)
+public func EvalAct_SetActive(proplist props, proplist context)
 {
-	// User action: Activate enemy AI
+	// User action: Activate enemy AI.
 	var enemy = UserAction->EvaluateValue("Object", props.Enemy, context);
 	var attack_target = UserAction->EvaluateValue("Object", props.AttackTarget, context);
 	var status = UserAction->EvaluateValue("Boolean", props.Status, context);
-	if (!enemy) return;
+	if (!enemy)
+		return;
 	// Ensure enemy AI exists
 	var fx = GetAI(enemy);
 	if (!fx)
 	{
-		if (!status) return; // Deactivated? Then we don't need an AI effect.
+		// Deactivated? Then we don't need an AI effect.
+		if (!status)
+			return;
 		fx = AddAI(enemy);
-		if (!fx || !enemy) return;
+		if (!fx || !enemy)
+			return;
 	}
-	// Set activation
+	// Set activation.
 	fx->SetActive(status);
-	// Set specific target if desired
-	if (attack_target) fx.target = attack_target;
+	// Set specific target if desired.
+	if (attack_target)
+		fx.target = attack_target;
 }
 
-private func EvalAct_SetNewHome(proplist props, proplist context)
+public func EvalAct_SetNewHome(proplist props, proplist context)
 {
-	// User action: Activate enemy AI
+	// User action: Set new home.
 	var enemy = UserAction->EvaluateValue("Object", props.Enemy, context);
 	var new_home = UserAction->EvaluatePosition(props.NewHome, context);
 	var new_home_dir = props.NewHomeDir;
-	if (!enemy) return;
+	if (!enemy)
+		return;
+	// Ensure enemy AI exists.
 	var fx = GetAI(enemy);
-	// Ensure enemy AI exists
 	if (!fx)
 	{
 		fx = AddAI(enemy);
-		if (!fx || !enemy) return;
-		// Create without attack command
+		if (!fx || !enemy)
+			return;
+		// Create without attack command.
 		SetAutoSearchTarget(enemy, false);
 	}
 	fx.command = this.ExecuteIdle;
 	fx.home_x = new_home[0];
 	fx.home_y = new_home[1];
-	if (GetType(new_home_dir)) fx.home_dir = new_home_dir;
+	if (GetType(new_home_dir))
+		fx.home_dir = new_home_dir;
 }
+
+
+/*-- Properties --*/
+
+local Plane = 300;

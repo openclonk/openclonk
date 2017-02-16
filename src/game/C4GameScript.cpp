@@ -2246,7 +2246,7 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 	// already in that team?
 	if (pPlr->Team == idNewTeam) return true;
 	// ask team setting if it's allowed (also checks for valid team)
-	if (!Game.Teams.IsJoin2TeamAllowed(idNewTeam)) return false;
+	if (!Game.Teams.IsJoin2TeamAllowed(idNewTeam, pPlrInfo->GetType())) return false;
 	// ask script if it's allowed
 	if (!fNoCalls)
 	{

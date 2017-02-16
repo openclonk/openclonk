@@ -1,2 +1,2 @@
-Name=Kochende Säure
-Description=Lässt Säure auf der Karte kochen.
+Name=Kochende SÃ¤ure
+Description=LÃ¤sst SÃ¤ure auf der Karte kochen.

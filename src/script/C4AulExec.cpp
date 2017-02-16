@@ -34,8 +34,9 @@ C4AulExec AulExec;
 
 C4AulExecError::C4AulExecError(const char *szError)
 {
+	assert(szError);
 	// direct error message string
-	sMessage.Format("ERROR: %s.", szError ? szError : "(no error message)");
+	sMessage.Copy(szError ? szError : "(no error message)");
 }
 
 StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)

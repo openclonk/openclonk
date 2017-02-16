@@ -1,8 +1,8 @@
- Heißes Eis
+ HeiÃŸes Eis
 
-Ein heißes Gefecht auf wackeligem Untergrund. Achtet auf die Feuersteine und Kisten von oben!
+Ein heiÃŸes Gefecht auf wackeligem Untergrund. Achtet auf die Feuersteine und Kisten von oben!
 
 Ziel: Last Man Standing (Bleibe als Letzter am Leben und gewinne)
 
-- Eine Arena für zwei bis vierzig Spieler.
+- Eine Arena fÃ¼r zwei bis vierzig Spieler.
 - Nach einer Clonk Rage-Vorlage von Diddy.

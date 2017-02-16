@@ -5,9 +5,6 @@
 	@authors Sven2
 */
 
-static g_player_spawn_positions;
-static g_map_width;
-
 // Called be the engine: draw the complete map here.
 public func InitializeMap(proplist map)
 {

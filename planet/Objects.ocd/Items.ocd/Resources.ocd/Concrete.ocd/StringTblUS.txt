@@ -1,0 +1,2 @@
+Name=Concrete
+Description=Represents a single material pixel of concrete. As soon as a concrete pixel touches the ground it will harden to rock.

@@ -36,7 +36,7 @@ MerchantQCatapult=Why do I need the catapult?
 MerchantACatapult1=A catapult has many uses. You can fling things like pipe ends. If you're daring, you could even try to catapult yourself over the lava lake!
 MerchantACatapult2=That...sounds scary. I like it!
 MerchantQGold=How do I get clunkers?
-MerchantAGold=Blast gold nuggets {{Nugget}} out of the gold mine below. Then build a flagpole {{Flagpole}} and throw nuggets onto it. You'll get more clunkers by melting it to bars {{GoldBar}} in a foundry {{Foundry}} before.
+MerchantAGold=Blast gold nuggets {{Nugget}} out of the gold mine below. Then build a flagpole {{Flagpole}} and put nuggets into it. You'll get more clunkers by melting it to bars {{GoldBar}} in a foundry {{Foundry}} before.
 MerchantQDone=Goodbye.
 
 # Gyro

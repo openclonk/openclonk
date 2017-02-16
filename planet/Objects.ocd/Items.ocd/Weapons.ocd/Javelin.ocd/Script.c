@@ -142,7 +142,7 @@ public func Reset(clonk)
 
 public func DoThrow(object clonk, int angle)
 {
-	var javelin=TakeObject();
+	var javelin = TakeObject();
 	
 	var div = 60; // 40% is converted to the direction of the throwing angle.
 	var xdir = clonk->GetXDir(1000);
@@ -163,6 +163,8 @@ public func DoThrow(object clonk, int angle)
 	
 	aiming = -1;
 	clonk->UpdateAttach();
+	
+	return javelin;
 }
 
 func Stick()

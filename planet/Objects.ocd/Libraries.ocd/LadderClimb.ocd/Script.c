@@ -56,6 +56,12 @@ public func StartSearchLadder()
 	if (GetAction() == "WallJump" && this.ActMap.WallJump.StartCallLadderOverloaded)
 		Call(this.ActMap.WallJump.StartCallLadderOverloaded);
 	// Add an effect to search for ladders.
+	ScheduleCall(this, this.AddSearchLadderEffect, 1, 1);
+	return;
+}
+
+public func AddSearchLadderEffect()
+{
 	if (!GetEffect("InSearchLadder", this))
 		AddEffect("IntSearchLadder", this, 1, 2, this);
 	FxIntSearchLadderTimer();

@@ -1,0 +1,14 @@
+EnemySwordsman=Swordsman
+EnemyArcher=Archer
+EnemySpearman=Spearman
+EnemyGrenadier=Grenadier
+EnemyBoomAttack=Rocket
+EnemyRapidBoomAttack=Rapid Rocket
+EnemyBallooner=Parachutist
+EnemyRocketeer=Rocketeer
+EnemyBomber=Bomber
+EnemyAirshipPilot=Pilot
+EnemyAirshipCrew=Airsailor
+
+MsgWave=Wave %d: %s|                                                                           |
+WaveBreak=Break

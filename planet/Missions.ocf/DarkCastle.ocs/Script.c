@@ -7,8 +7,7 @@
 
 static g_is_initialized;
 
-static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
-static npc_pyrit, g_cannon, g_cannoneer;
+static npc_pyrit;
 
 private func DoInit(int first_player)
 {

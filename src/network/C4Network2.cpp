@@ -148,7 +148,7 @@ C4Network2::C4Network2()
 		fPausedForVote(false),
 		iLastOwnVoting(0),
 		fStreaming(false),
-		NetpuncherGameID(0)
+		NetpuncherGameID(C4NetpuncherID())
 {
 
 }
@@ -169,7 +169,7 @@ bool C4Network2::InitHost(bool fLobby)
 	fChasing = false;
 	fAllowJoin = false;
 	iNextClientID = C4ClientIDStart;
-	NetpuncherGameID = 0;
+	NetpuncherGameID = C4NetpuncherID();
 	NetpuncherAddr = ::Config.Network.PuncherAddress;
 	// initialize client list
 	Clients.Init(&Game.Clients, true);
@@ -247,7 +247,10 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 		// copy addresses
 		C4Network2Address Addrs[C4ClientMaxAddr];
 		for (int i = 0; i < Ref.getAddrCnt(); i++)
+		{
 			Addrs[i] = Ref.getAddr(i);
+			Addrs[i].getAddr().SetScopeId(Ref.GetSourceAddress().GetScopeId());
+		}
 		// Try to connect to host
 		if (InitClient(Addrs, Ref.getAddrCnt(), HostCore, Password.getData()) == IR_Fatal)
 			return IR_Fatal;
@@ -307,9 +310,25 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 	for (int i = 0; i < iAddrCount; i++)
 		if (!pAddrs[i].isIPNull())
 		{
+			auto addr = pAddrs[i].getAddr();
+			std::vector<C4NetIO::addr_t> addrs;
+			if (addr.IsLocal())
+			{
+				// Local IPv6 addresses need a scope id.
+				for (auto& id : Clients.GetLocal()->getInterfaceIDs())
+				{
+					addr.SetScopeId(id);
+					addrs.push_back(addr);
+				}
+			}
+			else
+				addrs.push_back(addr);
 			// connection
-			if (!NetIO.Connect(pAddrs[i].getAddr(), pAddrs[i].getProtocol(), HostCore, szPassword))
-				continue;
+			int cnt = 0;
+			for (auto& a : addrs)
+				if (NetIO.Connect(a, pAddrs[i].getProtocol(), HostCore, szPassword))
+					cnt++;
+			if (cnt == 0) continue;
 			// format for message
 			if (strAddresses.getLength())
 				strAddresses.Append(", ");
@@ -328,7 +347,7 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 	{
 		// create & show
 		pDlg = new C4GUI::MessageDialog(strMessage.getData(), LoadResStr("IDS_NET_JOINGAME"),
-		                                C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsMedium);
+		                                C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsRegular);
 		if (!pDlg->Show(::pGUI, true)) { Clear(); return IR_Fatal; }
 	}
 	// wait for connect / timeout / abort by user (host will change status on succesful connect)
@@ -670,7 +689,7 @@ void C4Network2::Clear()
 	delete pVoteDialog; pVoteDialog = nullptr;
 	fPausedForVote = false;
 	iLastOwnVoting = 0;
-	NetpuncherGameID = 0;
+	NetpuncherGameID = C4NetpuncherID();
 	Votes.Clear();
 	// don't clear fPasswordNeeded here, it's needed by InitClient
 }
@@ -888,7 +907,7 @@ void C4Network2::HandleLobbyPacket(char cStatus, const C4PacketBase *pBasePkt, C
 	if (pLobby) pLobby->HandlePacket(cStatus, pBasePkt, pClient);
 }
 
-bool C4Network2::HandlePuncherPacket(C4NetpuncherPacket::uptr pkt)
+bool C4Network2::HandlePuncherPacket(C4NetpuncherPacket::uptr pkt, C4NetIO::HostAddress::AddressFamily family)
 {
 	// TODO: is this all thread-safe?
 	assert(pkt);
@@ -909,26 +928,48 @@ bool C4Network2::HandlePuncherPacket(C4NetpuncherPacket::uptr pkt)
 		case PID_Puncher_AssID:
 			if (isHost())
 			{
-				NetpuncherGameID = GETPKT(AssID)->GetID();
+				getNetpuncherGameID(family) = GETPKT(AssID)->GetID();
 				InvalidateReference();
 			}
 			else
 			{
 				// While we don't need the ID as a client, this nicely serves as the signal that we can start using the netpuncher
-				if (Status.getState() == GS_Init && getNetpuncherGameID())
-					NetIO.SendPuncherPacket(C4NetpuncherPacketSReq(getNetpuncherGameID()));
+				if (Status.getState() == GS_Init && getNetpuncherGameID(family))
+					NetIO.SendPuncherPacket(C4NetpuncherPacketSReq(getNetpuncherGameID(family)), family);
 			}
 			return true;
 		default: return false;
 	}
 }
 
+C4NetpuncherID::value& C4Network2::getNetpuncherGameID(C4NetIO::HostAddress::AddressFamily family)
+{
+    switch (family)
+    {
+    case C4NetIO::HostAddress::IPv4: return NetpuncherGameID.v4;
+    case C4NetIO::HostAddress::IPv6: return NetpuncherGameID.v6;
+    case C4NetIO::HostAddress::UnknownFamily: assert(!"Unexpected address family");
+    }
+    // We need to return a valid reference to satisfy the compiler, even though the code here is unreachable.
+    return NetpuncherGameID.v4;
+}
+
 void C4Network2::InitPuncher()
 {
 	// We have an internet connection, so let's punch the puncher server here in order to open an udp port
 	C4NetIO::addr_t PuncherAddr;
-	if (ResolveAddress(getNetpuncherAddr().getData(), &PuncherAddr, C4NetStdPortPuncher))
-		NetIO.InitPuncher(PuncherAddr);
+	PuncherAddr.SetAddress(getNetpuncherAddr(), C4NetIO::HostAddress::IPv4);
+	if (!PuncherAddr.IsNull())
+	{
+	    PuncherAddr.SetDefaultPort(C4NetStdPortPuncher);
+	    NetIO.InitPuncher(PuncherAddr);
+	}
+	PuncherAddr.SetAddress(getNetpuncherAddr(), C4NetIO::HostAddress::IPv6);
+	if (!PuncherAddr.IsNull())
+	{
+	    PuncherAddr.SetDefaultPort(C4NetStdPortPuncher);
+	    NetIO.InitPuncher(PuncherAddr);
+	}
 }
 
 void C4Network2::OnGameSynchronized()
@@ -1043,18 +1084,16 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 		// connections
 		if (pClient->isConnected())
 		{
-			Stat.AppendFormat( "|   Connections: %s: %s (%s:%d p%d l%d)",
+			Stat.AppendFormat( "|   Connections: %s: %s (%s p%d l%d)",
 			                   pClient->getMsgConn() == pClient->getDataConn() ? "Msg/Data" : "Msg",
 			                   NetIO.getNetIOName(pClient->getMsgConn()->getNetClass()),
-			                   inet_ntoa(pClient->getMsgConn()->getPeerAddr().sin_addr),
-			                   htons(pClient->getMsgConn()->getPeerAddr().sin_port),
+							   pClient->getMsgConn()->getPeerAddr().ToString().getData(),
 			                   pClient->getMsgConn()->getPingTime(),
 			                   pClient->getMsgConn()->getPacketLoss());
 			if (pClient->getMsgConn() != pClient->getDataConn())
 				Stat.AppendFormat( ", Data: %s (%s:%d p%d l%d)",
 				                   NetIO.getNetIOName(pClient->getDataConn()->getNetClass()),
-				                   inet_ntoa(pClient->getDataConn()->getPeerAddr().sin_addr),
-				                   htons(pClient->getDataConn()->getPeerAddr().sin_port),
+								   pClient->getDataConn()->getPeerAddr().ToString().getData(),
 				                   pClient->getDataConn()->getPingTime(),
 				                   pClient->getDataConn()->getPacketLoss());
 		}
@@ -1183,7 +1222,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	else
 	{
 		// log & close
-		LogSilentF("Network: connection by %s (%s:%d) blocked: %s", CCore.getName(), inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port), reply.getData());
+		LogSilentF("Network: connection by %s (%s) blocked: %s", CCore.getName(), pConn->getPeerAddr().ToString().getData(), reply.getData());
 		pConn->Close();
 	}
 }
@@ -1197,9 +1236,6 @@ bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pC
 	// check core
 	if (CCore.getDiffLevel(pClient->getCore()) > C4ClientCoreDL_IDMatch)
 		{ *szReply = "wrong client core"; return false; }
-	// check address
-	if (pClient->isConnected() && pClient->getMsgConn()->getPeerAddr().sin_addr.s_addr != pConn->getPeerAddr().sin_addr.s_addr)
-		{ *szReply = "wrong address"; return false; }
 	// accept
 	return true;
 }
@@ -1277,7 +1313,7 @@ void C4Network2::HandleConnRe(const C4PacketConnRe &Pkt, C4Network2IOConnection 
 		// wrong password?
 		fWrongPassword = Pkt.isPasswordWrong();
 		// show message
-		LogSilentF("Network: connection to %s (%s:%d) refused: %s", pClient->getName(), inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port), Pkt.getMsg());
+		LogSilentF("Network: connection to %s (%s) refused: %s", pClient->getName(), pConn->getPeerAddr().ToString().getData(), Pkt.getMsg());
 		// close connection
 		pConn->Close();
 		return;
@@ -1302,7 +1338,7 @@ void C4Network2::HandleConnRe(const C4PacketConnRe &Pkt, C4Network2IOConnection 
 	if (pConn->getNetClass() == NetIO.DataIO()) pClient->SetDataConn(pConn);
 
 	// add peer connect address to client address list
-	if (pConn->getConnectAddr().sin_addr.s_addr)
+	if (!pConn->getConnectAddr().IsNull())
 	{
 		C4Network2Address Addr(pConn->getConnectAddr(), pConn->getProtocol());
 		pClient->AddAddr(Addr, Status.getState() != GS_Init);
@@ -1432,8 +1468,8 @@ void C4Network2::HandleJoinData(const C4PacketJoinData &rPkt)
 void C4Network2::OnConnect(C4Network2Client *pClient, C4Network2IOConnection *pConn, const char *szMsg, bool fFirstConnection)
 {
 	// log
-	LogSilentF("Network: %s %s connected (%s:%d/%s) (%s)", pClient->isHost() ? "host" : "client",
-	           pClient->getName(), inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port),
+	LogSilentF("Network: %s %s connected (%s/%s) (%s)", pClient->isHost() ? "host" : "client",
+	           pClient->getName(), pConn->getPeerAddr().ToString().getData(),
 	           NetIO.getNetIOName(pConn->getNetClass()), szMsg ? szMsg : "");
 
 	// first connection for this peer? call special handler
@@ -1442,8 +1478,8 @@ void C4Network2::OnConnect(C4Network2Client *pClient, C4Network2IOConnection *pC
 
 void C4Network2::OnConnectFail(C4Network2IOConnection *pConn)
 {
-	LogSilentF("Network: %s connection to %s:%d failed!", NetIO.getNetIOName(pConn->getNetClass()),
-	           inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
+	LogSilentF("Network: %s connection to %s failed!", NetIO.getNetIOName(pConn->getNetClass()),
+	           pConn->getPeerAddr().ToString().getData());
 
 	// maybe client connection failure
 	// (happens if the connection is not fully accepted and the client disconnects.
@@ -1455,8 +1491,8 @@ void C4Network2::OnConnectFail(C4Network2IOConnection *pConn)
 
 void C4Network2::OnDisconnect(C4Network2Client *pClient, C4Network2IOConnection *pConn)
 {
-	LogSilentF("Network: %s connection to %s (%s:%d) lost!", NetIO.getNetIOName(pConn->getNetClass()),
-	           pClient->getName(), inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
+	LogSilentF("Network: %s connection to %s (%s) lost!", NetIO.getNetIOName(pConn->getNetClass()),
+	           pClient->getName(), pConn->getPeerAddr().ToString().getData());
 
 	// connection lost?
 	if (!pClient->isConnected())

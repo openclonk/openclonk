@@ -30,7 +30,7 @@
 C4Network2Reference::C4Network2Reference()
 		: Icon(0), GameMode(), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
 		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
-		IsEditor(false), iAddrCnt(0), NetpuncherGameID(0)
+		IsEditor(false), iAddrCnt(0), NetpuncherGameID(C4NetpuncherID())
 {
 
 }
@@ -40,11 +40,11 @@ C4Network2Reference::~C4Network2Reference()
 
 }
 
-void C4Network2Reference::SetSourceIP(in_addr ip)
+void C4Network2Reference::SetSourceAddress(const C4NetIO::EndpointAddress &ip)
 {
-	for (int i = 0; i < iAddrCnt; i++)
-		if (Addrs[i].isIPNull())
-			Addrs[i].SetIP(ip);
+	source = ip;
+	if (iAddrCnt < C4ClientMaxAddr)
+		Addrs[++iAddrCnt].SetAddr(ip);
 }
 
 void C4Network2Reference::InitLocal()
@@ -127,7 +127,7 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Game.sEngineName,      "Game",             "None"));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Game.iVer,0),"Version"    ));
 	pComp->Value(mkNamingAdapt(OfficialServer,  "OfficialServer", false));
-	pComp->Value(mkNamingAdapt(NetpuncherGameID,  "NetpuncherID", 0, false, false));
+	pComp->Value(mkNamingAdapt(NetpuncherGameID,  "NetpuncherID", C4NetpuncherID(), false, false));
 	pComp->Value(mkNamingAdapt(NetpuncherAddr,  "NetpuncherAddr", "", false, false));
 
 	pComp->Value(Parameters);
@@ -407,12 +407,15 @@ bool C4Network2HTTPClient::Decompress(StdBuf *pData)
 bool C4Network2HTTPClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const C4NetIO::addr_t *pOwnAddr, C4NetIO *pNetIO)
 {
 	// Make sure we're actually waiting for this connection
-	if (!AddrEqual(AddrConnect, ServerAddr))
+	if (fConnected || (AddrConnect != ServerAddr && AddrConnect != ServerAddrFallback))
 		return false;
 	// Save pack peer address
 	PeerAddr = AddrPeer;
 	// Send the request
-	Send(C4NetIOPacket(Request, AddrPeer));
+	if (!Send(C4NetIOPacket(Request, AddrPeer)))
+	{
+		Error.Format("Unable to send HTTP request: %s", Error.getData());
+	}
 	Request.Clear();
 	fConnected = true;
 	return true;
@@ -442,10 +445,19 @@ void C4Network2HTTPClient::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO 
 bool C4Network2HTTPClient::Execute(int iMaxTime)
 {
 	// Check timeout
-	if (fBusy && time(nullptr) > iRequestTimeout)
+	if (fBusy)
 	{
-		Cancel("Request timeout");
-		return true;
+		if (C4TimeMilliseconds::Now() > HappyEyeballsTimeout)
+		{
+			HappyEyeballsTimeout = C4TimeMilliseconds::PositiveInfinity;
+			Application.InteractiveThread.ThreadLogS("HTTP: Starting fallback connection to %s (%s)", Server.getData(), ServerAddrFallback.ToString().getData());
+			Connect(ServerAddrFallback);
+		}
+		if (time(nullptr) > iRequestTimeout)
+		{
+			Cancel("Request timeout");
+			return true;
+		}
 	}
 	// Execute normally
 	return C4NetIOTCP::Execute(iMaxTime);
@@ -459,7 +471,9 @@ C4TimeMilliseconds C4Network2HTTPClient::GetNextTick(C4TimeMilliseconds tNow)
 
 	C4TimeMilliseconds tHTTPClientTick = tNow + 1000 * std::max<time_t>(iRequestTimeout - time(nullptr), 0);
 
-	return std::max(tNetIOTCPTick, tHTTPClientTick);
+	C4TimeMilliseconds HappyEyeballsTick = tNow + std::max(HappyEyeballsTimeout - C4TimeMilliseconds::Now(), 0);
+
+	return std::min({tNetIOTCPTick, tHTTPClientTick, HappyEyeballsTick});
 }
 
 bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
@@ -509,6 +523,11 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 	// Start connecting
 	if (!Connect(ServerAddr))
 		return false;
+	// Also try the fallback address after some time (if there is one)
+	if (!ServerAddrFallback.IsNull())
+		HappyEyeballsTimeout = C4TimeMilliseconds::Now() + C4Network2HTTPHappyEyeballsTimeout;
+	else
+		HappyEyeballsTimeout = C4TimeMilliseconds::PositiveInfinity;
 	// Okay, request will be performed when connection is complete
 	fBusy = true;
 	iDataOffset = 0;
@@ -526,7 +545,7 @@ void C4Network2HTTPClient::ResetRequestTimeout()
 void C4Network2HTTPClient::Cancel(const char *szReason)
 {
 	// Close connection - and connection attempt
-	Close(ServerAddr); Close(PeerAddr);
+	Close(ServerAddr); Close(ServerAddrFallback); Close(PeerAddr);
 	// Reset flags
 	fBusy = fSuccess = fConnected = fBinary = false;
 	iDownloadedSize = iTotalSize = iDataOffset = 0;
@@ -557,15 +576,29 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 		RequestPath = "/";
 	}
 	// Resolve address
-	if (!ResolveAddress(Server.getData(), &ServerAddr, GetDefaultPort()))
+	ServerAddr.SetAddress(Server);
+	if (ServerAddr.IsNull())
 	{
 		SetError(FormatString("Could not resolve server address %s!", Server.getData()).getData());
 		return false;
 	}
+	ServerAddr.SetDefaultPort(GetDefaultPort());
+	if (ServerAddr.GetFamily() == C4NetIO::HostAddress::IPv6)
+	{
+		// Try to find a fallback IPv4 address for Happy Eyeballs.
+		ServerAddrFallback.SetAddress(Server, C4NetIO::HostAddress::IPv4);
+		ServerAddrFallback.SetDefaultPort(GetDefaultPort());
+	}
+	else
+		ServerAddrFallback.Clear();
 	// Remove port
-	const char *pColon = strchr(Server.getData(), ':');
-	if (pColon)
-		Server.SetLength(pColon - Server.getData());
+	const char *firstColon = strchr(Server.getData(), ':');
+	const char *lastColon = strrchr(Server.getData(), ':');
+	if (firstColon)
+		// hostname/IPv4 address    or IPv6 address with port (e.g. [::1]:1234)
+		if (firstColon == lastColon || (Server[0] == '[' && *(lastColon - 1) == ']'))
+			Server.SetLength(lastColon - Server.getData());
+		
 	// Done
 	ResetError();
 	return true;
@@ -657,7 +690,7 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	}
 	// Set source ip
 	for (int i = 0; i < rRefCount; i++)
-		rpReferences[i]->SetSourceIP(getServerAddress().sin_addr);
+		rpReferences[i]->SetSourceAddress(getServerAddress());
 	// Done
 	ResetError();
 	return true;

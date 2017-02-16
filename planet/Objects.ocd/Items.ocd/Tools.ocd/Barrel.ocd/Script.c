@@ -93,7 +93,7 @@ public func RejectStack(object item)
 	}
 }
 
-public func GetLiquidContainerMaxFillLevel()
+public func GetLiquidContainerMaxFillLevel(liquid_name)
 {
 	return 300;
 }
@@ -105,7 +105,7 @@ public func IsBarrel()
 
 public func IsLiquidContainerForMaterial(string liquid_name)
 {
-	return !!WildcardMatch("Water", liquid_name) || !!WildcardMatch("Oil", liquid_name);
+	return !!WildcardMatch("Water", liquid_name) || !!WildcardMatch("Oil", liquid_name) || !!WildcardMatch("Concrete", liquid_name);
 }
 
 public func CanBeStackedWith(object other)
@@ -173,7 +173,7 @@ func FillWithLiquid()
 
 	var remaining_volume = GetLiquidContainerMaxFillLevel() - GetLiquidAmount();
 	var extracted = 0;
-	while(extracted < remaining_volume && GetMaterial(0, intake) == mat)
+	while (extracted < remaining_volume && GetMaterial(0, intake) == mat)
 	{
 		extracted += 1;
 		ExtractLiquid(0, intake);

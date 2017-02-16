@@ -83,7 +83,6 @@ class C4ConsoleQtNewScenarioDlg : public QDialog
 
 	Ui::NewScenarioDialog ui;
 	StdCopyStrBuf filename;
-	C4Scenario c4s;
 	bool has_custom_filename;
 	C4ConsoleQtDefinitionFileListModel def_file_model;
 
@@ -93,7 +92,9 @@ public:
 	bool IsHostAsNetwork() const;
 
 private:
-	bool SaveScenario(class C4Group &grp);
+	void InitScenarioTemplateList();
+	void AddScenarioTemplate(C4Group &parent, const char *filename, bool is_default);
+	bool CreateScenario();
 	void DoError(const char *msg);
 
 protected slots:

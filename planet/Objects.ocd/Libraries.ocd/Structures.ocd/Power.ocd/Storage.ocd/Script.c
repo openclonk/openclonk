@@ -19,7 +19,7 @@
 	
 	Important notes when including this library:
 	 * The object including this library should return _inherited(...) in the
-	   Initialize and Destruction callback if overloaded.
+	   Initialize, Destruction & Definition callback if overloaded.
 	
 	@author Maikel
 */
@@ -65,7 +65,7 @@ public func OnStoredPowerChange()
 
 // All power related local variables are stored in a single proplist.
 // This reduces the chances of clashing local variables. See 
-// Initialize for which variables are being used.
+// Construction for which variables are being used.
 local lib_power;
 
 // Set the amount of stored power in this storage. This is limited to be a number
@@ -87,22 +87,29 @@ public func GetStoredPower()
 	return lib_power.stored_power;
 }
 
-// Initialize callback by the engine: let the power network know this objects
+// Construction callback by the engine: let the power network know this objects
 // is available as a storage.
-protected func Initialize()
+protected func Construction()
 {
 	// Initialize the single proplist for the power storage library.
 	if (lib_power == nil)
 		lib_power = {};
 	// A single variable to keep track of the stored power in the storage.
 	lib_power.stored_power = 0;
-	// Register as a power consumer since it has zero stored energy.
-	RegisterPowerRequest(GetStoragePower());
 	// Now perform the consumer library's initialization.
 	_inherited(...);
 	// Then set the power need for power storages always to true.
 	lib_power.power_need = true;
 	return;
+}
+
+// Initialize callback by the engine: let the power network know this objects
+// is available as a storage.
+protected func Initialize()
+{
+	// Register as a power consumer since it has zero stored energy.
+	RegisterPowerRequest(GetStoragePower());
+	return _inherited(...);
 }
 
 // Destruction callback by the engine: let power network know this object is not
@@ -290,3 +297,31 @@ protected func FxConsumePowerStop(object target, proplist effect, int reason, bo
 	// Remove a possible cooldown effect as well.
 	return FX_OK;
 }
+
+
+/*-- Scenario Saving --*/
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...))
+		return false;
+	// Save the stored power.	
+	if (lib_power.stored_power != nil)
+		props->AddCall("StoredPower", this, "SetStoredPower", lib_power.stored_power);
+	return true;
+}
+
+
+/*-- Editor Properties --*/
+
+public func Definition(proplist def)
+{
+	if (!def.EditorProps)
+		def.EditorProps = {};
+	def.EditorProps.pump_speed = { Name = "$EditorPropStoredPower$", EditorHelp = "$EditorPropStoredPowerHelp$", Type = "enum", Set = "SetStoredPower", Options = [
+		{ Value = 0, Name = "$EditorPropStoredPowerEmpty$" },
+		{ Value = def->GetStorageCapacity() , Name="$EditorPropStoredPowerFull$" }
+	]};
+	return _inherited(def, ...);
+}
+

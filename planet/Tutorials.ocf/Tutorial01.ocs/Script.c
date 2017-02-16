@@ -20,7 +20,8 @@ protected func Initialize()
 	var goal = CreateObject(Goal_Tutorial);
 	goal.Name = "$MsgGoalName$";
 	goal.Description = "$MsgGoalDescription$";
-	CreateObject(Rule_NoPowerNeed);
+	CreateObject(Rule_NoPowerNeed);	
+	GUI_Controller->ShowWealth();
 	
 	// Place objects in different sections.
 	InitStartLake();

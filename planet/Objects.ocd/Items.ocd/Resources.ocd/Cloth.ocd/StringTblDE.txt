@@ -1,2 +1,2 @@
 Name=Stoff
-Description=Baumaterial für alle stofflichen Dinge.
+Description=Baumaterial fÃ¼r alle stofflichen Dinge.

@@ -27,6 +27,18 @@
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
 
+// warning flags
+enum class C4AulWarningId
+{
+#define DIAG(id, text, enabled) id,
+#include "C4AulWarnings.h"
+#undef DIAG
+	WarningCount
+};
+
+extern const char *C4AulWarningIDs[];
+extern const char *C4AulWarningMessages[];
+
 // generic C4Aul error class
 class C4AulError : public std::exception
 {

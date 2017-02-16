@@ -1,9 +1,9 @@
 /*-- CrystalShield --*/
 
 
-protected func Initialize()
+public func Initialize()
 {
-	AddEffect("Selfdestruction",this,100,4+Random(2),this,this->GetID());
+	AddEffect("Selfdestruction", this, 100, 4+Random(2), this, this->GetID());
 	return;
 }
 
@@ -19,7 +19,7 @@ func SetClrModulation(int color, int overlay_id)
 	}
 }
 
-func FxSelfdestructionStart(target, effect, temp)
+func FxSelfdestructionStart(object target, proplist effect, temp)
 {
 	if (temp) return;
 	effect.particles =
@@ -29,10 +29,10 @@ func FxSelfdestructionStart(target, effect, temp)
 	};
 }
 
-func FxSelfdestructionTimer(object target, effect, int timer)
+func FxSelfdestructionTimer(object target, proplist effect, int timer)
 {
 	CreateParticle("Magic", PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(10, 30), effect.particles, 3);
- 	if(timer>175) target->RemoveObject();
+ 	if (timer > 175) target->RemoveObject();
  	return 1;
 }
 

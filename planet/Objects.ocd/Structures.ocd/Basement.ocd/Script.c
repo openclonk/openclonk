@@ -36,6 +36,9 @@ func Destruction()
 {
 	// Cast a single rock.
 	CastObjects(Rock, 1, 15, 0, -5);
+	// Set basement to nil in parent.
+	if (parent)
+		parent->~SetBasement(nil);
 	return _inherited(...);
 }
 
@@ -73,7 +76,7 @@ public func SaveScenarioObject(proplist props)
 		return false;
 	if (parent)
 		props->AddCall("BasementParent", this, "SetParent", parent);
-	else if (width != GetObjWidth())
+	else if (width != GetDefWidth())
 		props->AddCall("BasementWidth", this, "SetWidth", width);
 	props->Remove("Category");
 	return true;
@@ -153,6 +156,17 @@ public func CombineWith(object stick_to)
 
 	SetParent(stick_to);
 }
+
+
+/*-- Editor --*/
+
+public func Definition(def, ...)
+{
+	_inherited(def, ...);
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.width = { Name="$Width$", Set="SetWidth", Type="int", Min=8, Max=120 };
+}
+
 
 /*-- Properties --*/
 

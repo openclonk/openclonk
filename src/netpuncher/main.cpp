@@ -29,7 +29,7 @@
 class C4PuncherServer : public C4NetIOUDP, private C4NetIO::CBClass
 {
 public:
-	typedef C4NetpuncherID_t CID;
+	typedef C4NetpuncherID::value CID;
 	C4PuncherServer() {
 		C4NetIOUDP::SetCallback(this);
 		rng = std::bind(std::uniform_int_distribution<CID>(1/*, max*/), std::ref(random_device));
@@ -48,7 +48,7 @@ private:
 		peer_ids.emplace(AddrPeer, nid);
 		peer_addrs.emplace(nid, AddrPeer);
 		Send(C4NetpuncherPacketAssID(nid).PackTo(AddrPeer));
-		printf("Punched %s:%d... #%u\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port), nid);
+		printf("Punched %s... #%u\n", AddrPeer.ToString().getData(), nid);
 		return true;
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) {
@@ -63,12 +63,12 @@ private:
 	virtual void OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason) {
 		auto it = peer_ids.find(AddrPeer);
 		if (it == peer_ids.end()) {
-			printf("ERROR: closing connection for %s:%d: (%s) but no connection is known\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port), szReason);
+			printf("ERROR: closing connection for %s: (%s) but no connection is known\n", AddrPeer.ToString().getData(), szReason);
 			return;
 		}
 		peer_addrs.erase(it->second);
 		peer_ids.erase(it);
-		printf("Stopped punching %s:%d: %s...\n", inet_ntoa(AddrPeer.sin_addr), htons(AddrPeer.sin_port), szReason);
+		printf("Stopped punching %s: %s...\n", AddrPeer.ToString().getData(), szReason);
 	};
 } Puncher;
 
@@ -96,7 +96,11 @@ int main(int argc, char * argv[])
 	printf("Listening on port %d...\n", iPort);
 
 	// Execute forever
-	Puncher.ExecuteUntil(-1);
+	for (;;)
+	{
+		Puncher.ExecuteUntil(-1);
+		fprintf(stderr, "ERROR: %s\n", Puncher.GetError());
+	}
 
 	return 0;
 }

@@ -194,7 +194,7 @@ protected:
 	unsigned int iCurrentStreamAmount, iCurrentStreamPosition;
 
 	// puncher
-	C4NetpuncherID_t NetpuncherGameID;
+	C4NetpuncherID NetpuncherGameID;
 	StdCopyStrBuf NetpuncherAddr;
 
 public:
@@ -257,7 +257,7 @@ public:
 	void OnDisconn(C4Network2IOConnection *pConn);
 	void HandlePacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
 	void HandleLobbyPacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
-	bool HandlePuncherPacket(C4NetpuncherPacket::uptr);
+	bool HandlePuncherPacket(C4NetpuncherPacket::uptr, C4NetIO::HostAddress::AddressFamily family);
 
 	// runtime join stuff
 	void OnGameSynchronized();
@@ -303,7 +303,8 @@ public:
 	bool StopStreaming();
 
 	// netpuncher
-	C4NetpuncherID_t getNetpuncherGameID() const { return NetpuncherGameID; }
+	C4NetpuncherID::value& getNetpuncherGameID(C4NetIO::HostAddress::AddressFamily family);
+	C4NetpuncherID getNetpuncherGameID() const { return NetpuncherGameID; };
 	StdStrBuf getNetpuncherAddr() const { return NetpuncherAddr; }
 
 protected:

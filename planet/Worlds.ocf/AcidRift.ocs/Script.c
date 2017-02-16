@@ -10,7 +10,7 @@
 static intro_init;
 
 // Set in Map.c
-static g_start_map_x, g_start_map_y;
+//static g_start_map_x, g_start_map_y;
 
 static g_start_x, g_start_y;
 

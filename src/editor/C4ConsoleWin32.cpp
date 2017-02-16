@@ -1023,9 +1023,9 @@ void C4ConsoleGUI::ClearNetMenu()
 	DrawMenuBar(hWindow);
 }
 
-void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t client_id, StdStrBuf &text, C4ConsoleGUI::ClientOperation op)
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t client_id, const char *text, C4ConsoleGUI::ClientOperation op)
 {
-	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexNet), IDM_NET_CLIENT1+Game.Clients.getLocalID(), text.getData(), true);
+	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexNet), IDM_NET_CLIENT1+Game.Clients.getLocalID(), text, true);
 }
 
 void C4ConsoleGUI::ClearViewportMenu()
@@ -1080,7 +1080,7 @@ static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 	}
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4EditCursor::Selection &rSelection, bool force_function_update)
+void C4ConsoleGUI::PropertyDlgUpdate(C4EditCursorSelection &rSelection, bool force_function_update)
 {
 	HWND hDialog = state->hPropertyDlg;
 	if (!hDialog) return;

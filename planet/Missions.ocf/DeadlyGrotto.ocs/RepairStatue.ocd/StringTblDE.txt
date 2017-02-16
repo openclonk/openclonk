@@ -1,5 +1,5 @@
 Name=Statue reparieren
 
 #Goal window
-MsgGoalFulfilled=Glückwunsch; die Statue erstrahlt wieder in vollem Glanz!
-MsgGoalUnfulfilled=Bringe das fehlende Teil zurück zur Statue!
+MsgGoalFulfilled=GlÃ¼ckwunsch; die Statue erstrahlt wieder in vollem Glanz!
+MsgGoalUnfulfilled=Bringe das fehlende Teil zurÃ¼ck zur Statue!

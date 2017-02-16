@@ -1,0 +1,10 @@
+[Teams]
+
+	[Team]
+	id=1
+	Name=$TeamDefenders$
+
+	[Team]
+	id=2
+	Name=$TeamAttackers$
+	MaxPlayer=-1

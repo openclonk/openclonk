@@ -299,8 +299,8 @@ private func UpdateSwim()
 	
 	// the animation to play depends on the speed of the squid
 	var is_fast = velocity >= SQUID_SWIM_MAX_SPEED/3;
-	if (is_fast && !is_in_idle_animation); // no change needed
-	else if (!is_fast && is_in_idle_animation); // ok, too
+	if (is_fast && !is_in_idle_animation) {} // no change needed
+	else if (!is_fast && is_in_idle_animation) {} // ok, too
 	else
 	{
 		var current_weight = GetAnimationWeight(movement_animation_node);

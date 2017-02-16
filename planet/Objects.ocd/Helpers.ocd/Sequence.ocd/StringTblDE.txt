@@ -60,3 +60,7 @@ MakeInvincible=Unverwundbar
 MakeInvincibleHelp=Ob alle Clonks waehrend des Deaktivierens unverwundbar sind.
 EnablePlayerControls=Spielerkontrolle aktivieren
 EnablePlayerControlsHelp=Reaktiviert die Steuerung fuer alle Clonks eines oder mehrerer Spieler.
+ActTrigger=Sequenz ausloesen
+ActTriggerDesc=Startet eine Sequenz, als waere der Ausloeser aktiviert worden. Die Bedigung wird vorher gegebenenfalls ueberprueft.
+TriggeringObject=Ausloeseobjekt
+TriggeringObjectHelp=Das Objekt, das innerhalb der Sequenz als ausloesendes Objekt zurueckgegeben wird.
