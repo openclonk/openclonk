@@ -18,20 +18,37 @@
 #include "AulTest.h"
 #include "ErrorHandler.h"
 
-class AulDiagnosticsTest : public AulTest {};
+class AulDiagnosticsTest : public AulTest
+{
+protected:
+	std::unique_ptr<ErrorHandler> _e;
+};
 
+// Some macro helpers to ensure we can call EXPECT_WARNING multiple times
+// in the same scope
+#define EXPECT_WARNING_DETAIL2(c) struct _e_ScopeGuard_ ## c { \
+	std::unique_ptr<ErrorHandler> &_e; \
+	_e_ScopeGuard_ ## c(std::unique_ptr<ErrorHandler> &_e) : _e(_e) {} \
+	~_e_ScopeGuard_ ## c() { _e.reset(); }\
+} _e_ScopeGuard_ ## c{_e};
+#define EXPECT_WARNING_DETAIL(c) EXPECT_WARNING_DETAIL2(c)
+#define EXPECT_WARNING(id) \
+	EXPECT_WARNING_DETAIL(__COUNTER__); /* setup scope guard to clear _e at the end of scope */ \
+	if (!_e) _e = std::make_unique<ErrorHandler>(); /* register new error handler if none is set */ \
+	(void)C4AulWarningId::id; /* make sure the warning ID exists */ \
+	EXPECT_CALL(*_e, OnWarning(::testing::EndsWith("[" #id "]")))
+
+// Tests begin here
 TEST_F(AulDiagnosticsTest, arg_type_mismatch)
 {
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(3);
+		EXPECT_WARNING(arg_type_mismatch).Times(3);
 		RunScript("func Main(string s, object o, array a) { Sin(s); }");
 		RunScript("func Main(string s, object o, array a) { Sin(o); }");
 		RunScript("func Main(string s, object o, array a) { Sin(a); }");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(0);
+		EXPECT_WARNING(arg_type_mismatch).Times(0);
 		RunScript("func Main(string s, object o, array a) { var x; Sin(x); }");
 	}
 }
@@ -39,18 +56,15 @@ TEST_F(AulDiagnosticsTest, arg_type_mismatch)
 TEST_F(AulDiagnosticsTest, empty_if)
 {
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]")));
+		EXPECT_WARNING(empty_if);
 		RunCode("if (true);");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]")));
+		EXPECT_WARNING(empty_if);
 		RunCode("if (true) { return; } else;");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[empty_if]"))).Times(0);
+		EXPECT_WARNING(empty_if).Times(0);
 		RunCode("if (true) {} else {}");
 	}
 }
@@ -58,8 +72,7 @@ TEST_F(AulDiagnosticsTest, empty_if)
 TEST_F(AulDiagnosticsTest, variable_shadows_variable)
 {
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[variable_shadows_variable]")));
+		EXPECT_WARNING(variable_shadows_variable);
 		RunScript("func Main(f) { var f; }");
 	}
 }
@@ -67,8 +80,7 @@ TEST_F(AulDiagnosticsTest, variable_shadows_variable)
 TEST_F(AulDiagnosticsTest, DiagnosticsSelection)
 {
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(2);
+		EXPECT_WARNING(arg_type_mismatch).Times(2);
 		// Test disabling and re-enabling warnings
 		RunScript(R"(
 func Main(string s) {
@@ -81,8 +93,7 @@ func Main(string s) {
 )");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]")));
+		EXPECT_WARNING(arg_type_mismatch);
 		// Test that disabling a warning doesn't affect any other warnings
 		RunScript(R"(
 func Main(string s) {
@@ -92,9 +103,8 @@ func Main(string s) {
 )");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_count_mismatch]"))).Times(0);
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(0);
+		EXPECT_WARNING(arg_count_mismatch).Times(0);
+		EXPECT_WARNING(arg_type_mismatch).Times(0);
 		// Test disabling multiple warnings at once
 		RunScript(R"(
 func Main(string s) {
@@ -104,8 +114,7 @@ func Main(string s) {
 )");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[arg_type_mismatch]"))).Times(0);
+		EXPECT_WARNING(arg_type_mismatch).Times(0);
 		// Test disabling all warnings at once
 		RunScript(R"(
 func Main(string s) {
@@ -115,8 +124,7 @@ func Main(string s) {
 )");
 	}
 	{
-		ErrorHandler errh;
-		EXPECT_CALL(errh, OnWarning(::testing::EndsWith("[type_name_used_as_par_name]"))).Times(2);
+		EXPECT_WARNING(type_name_used_as_par_name).Times(2);
 		// Test that disabled-by-default warnings have to be enabled explicitly
 		RunScript(R"(
 func Main(array) {}
