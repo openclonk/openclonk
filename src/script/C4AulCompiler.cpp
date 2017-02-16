@@ -92,8 +92,17 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 template<class... T>
 static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
-	if (!host->IsWarningEnabled(SPos, warning))
+	if (!host)
+	{
+		// Without a script host, just fall back to the default settings
+#define DIAG(id, msg, enabled) if (warning == C4AulWarningId::id && !enabled) return;
+#include "C4AulWarnings.h"
+#undef DIAG
+	}
+	else if (!host->IsWarningEnabled(SPos, warning))
+	{
 		return;
+	}
 	const char *msg = C4AulWarningMessages[static_cast<size_t>(warning)];
 	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
 	message += FormatCodePosition(host, SPos, target_host, func);
