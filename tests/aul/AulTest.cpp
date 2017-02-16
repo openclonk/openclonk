@@ -25,6 +25,11 @@
 #include "object/C4DefList.h"
 #include "TestLog.h"
 
+void AulTest::SetUp()
+{
+	part_count = 0;
+}
+
 C4Value AulTest::RunScript(const std::string &code)
 {
 	class OnScopeExit
@@ -46,7 +51,7 @@ C4Value AulTest::RunScript(const std::string &code)
 	src += "::";
 	src += test_info->name();
 	src += "::";
-	src += std::to_string(test_info->result()->total_part_count());
+	src += std::to_string(part_count++);
 	src += ">";
 
 	GameScript.LoadData(src.c_str(), code.c_str(), NULL);
