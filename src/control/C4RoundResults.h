@@ -149,6 +149,7 @@ private:
 
 	// scenario-specific
 	StdCopyStrBuf sCustomEvaluationStrings;
+	StdCopyStrBuf Statistics; // stats collected by script at the end of the round
 
 public:
 	C4RoundResults() : iPlayingTime(0) {}
@@ -189,6 +190,8 @@ public:
 	// measure different from the elapsed game time
 	void SetLeaguePerformance(int32_t iNewPerf, int32_t idPlayer = 0);
 	int32_t GetLeaguePerformance(int32_t idPlayer = 0) const;
+
+	StdCopyStrBuf GetStatistics() const { return Statistics; }
 
 	const C4RoundResultsPlayers &GetPlayers() const { return Players; }
 	const char *GetCustomEvaluationStrings() const { return sCustomEvaluationStrings.getData(); }

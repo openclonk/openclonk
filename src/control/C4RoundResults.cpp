@@ -249,6 +249,7 @@ void C4RoundResults::Clear()
 	sNetResult.Clear();
 	eNetResult = NR_None;
 	fHideSettlementScore=false;
+	Statistics.Clear();
 }
 
 void C4RoundResults::Init()
@@ -308,6 +309,19 @@ void C4RoundResults::EvaluateGame()
 	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->Number : NO_OWNER;
 	EvaluateGoals(Goals, FulfilledGoals, iFirstLocalPlayer);
 	iPlayingTime = Game.Time;
+
+	// collect statistics
+	try
+	{
+		C4AulParSet Pars;
+		auto stats = ::ScriptEngine.GetPropList()->Call(PSF_CollectStatistics, &Pars);
+		if (stats != C4VNull)
+			Statistics = stats.ToJSON();
+	}
+	catch (C4JSONSerializationError& e)
+	{
+		DebugLogF("ERROR: cannot serialize CollectStatistics() result: %s", e.what());
+	}
 }
 
 void C4RoundResults::EvaluateNetwork(C4RoundResults::NetResult eNetResult, const char *szResultMsg)

@@ -80,6 +80,7 @@ void C4Network2Reference::InitLocal()
 	IsEditor = !!::Application.isEditor;
 	NetpuncherGameID = ::Network.getNetpuncherGameID();
 	NetpuncherAddr = ::Network.getNetpuncherAddr();
+	Statistics = ::Game.RoundResults.GetStatistics();
 	Game.Set();
 
 	// Addresses
@@ -129,6 +130,7 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(OfficialServer,  "OfficialServer", false));
 	pComp->Value(mkNamingAdapt(NetpuncherGameID,  "NetpuncherID", C4NetpuncherID(), false, false));
 	pComp->Value(mkNamingAdapt(NetpuncherAddr,  "NetpuncherAddr", "", false, false));
+	pComp->Value(mkNamingAdapt(Statistics,        "Statistics", "", false, false));
 
 	pComp->Value(Parameters);
 }

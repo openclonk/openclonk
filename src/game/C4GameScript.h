@@ -102,6 +102,8 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CommandFailure      "~CommandFailure" // string command, pTarget, iTx, iTy, pTarget2, iData
 #define PSF_OnCompletionChange  "~OnCompletionChange" // int old_con, int new_con
 
+#define PSF_CollectStatistics   "CollectStatistics"
+
 // Effect callbacks
 
 #define PSF_FxStart             "Fx%sStart" // C4Object *pTarget, int iEffectNumber, int iTemp, C4Value vVar1, C4Value vVar2, C4Value vVar3, C4Value vVar4
