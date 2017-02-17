@@ -458,11 +458,7 @@ public func GiveRandomAttackTarget(object attacker)
 //======================================================================
 /* Wave and enemy definitions */
 
-static const CSKIN_Default = 0,
-             CSKIN_Steampunk = 1,
-             CSKIN_Alchemist = 2,
-             CSKIN_Farmer = 3,
-             CSKIN_Amazon = [CSKIN_Farmer, "farmerClonkAmazon"],
+static const CSKIN_Amazon = [CSKIN_Farmer, "farmerClonkAmazon"],
              CSKIN_Ogre = [CSKIN_Alchemist, "alchemistClonkOgre"];
 
 static const WAVE_POS_LEFT = [10, 529];
