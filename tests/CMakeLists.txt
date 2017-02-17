@@ -23,7 +23,7 @@ set(C4SCRIPT_SOURCES
 # Look for GTest and GMock
 # GMock's source package ships GTest too, so look for it first
 find_path(GMOCK_ROOT
-    NAMES "src/gmock-all.cc" "gmock/gmock-all.cc"
+    NAMES "gmock-all.cc" "src/gmock-all.cc" "gmock/gmock-all.cc"
     PATHS "/usr/src/gmock"
     )
 find_path(GMOCK_INCLUDE_DIR
