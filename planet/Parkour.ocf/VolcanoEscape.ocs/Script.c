@@ -61,6 +61,8 @@ protected func Initialize()
 	}
 	// Create Disasters.
 	//Earthquake->SetChance(2); - this is so random...not fair without relaunches
+	
+	ScheduleCall(nil, Global.RemoveAll, 3, nil, Find_ID(Rule_Restart));
 	return;
 }
 
