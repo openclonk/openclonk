@@ -141,6 +141,7 @@ public:
 
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3, bool ignore_reference_parent = false) const;
+	StdStrBuf ToJSON(int depth = 10, bool ignore_reference_parent = false) const;
 	std::vector< C4String * > GetSortedLocalProperties(bool add_prototype=true) const;
 	std::vector< C4String * > GetSortedLocalProperties(const char *prefix, const C4PropList *ignore_overridden) const;
 	std::vector< C4String * > GetUnsortedProperties(const char *prefix, C4PropList *ignore_parent = nullptr) const;

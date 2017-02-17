@@ -130,6 +130,15 @@ if (GTEST_FOUND AND GMOCK_FOUND)
         LIBRARIES
             libmisc
             libc4script)
+    # This is included in "tests" (above) as well, but that executable currently doesn't compile.
+    create_test(c4value_test
+        SOURCES
+	    C4ValueTest.cpp
+            ../src/script/C4ScriptStandaloneStubs.cpp
+            ../src/script/C4ScriptStandalone.cpp
+        LIBRARIES
+            libmisc
+            libc4script)
 else()
     set(_gtest_missing "")
     if (NOT GTEST_INCLUDE_DIR)

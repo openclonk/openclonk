@@ -184,6 +184,64 @@ StdStrBuf C4Value::GetDataString(int depth, const C4PropListStatic *ignore_refer
 	}
 }
 
+// JSON serialization.
+// Only plain data values can be serialized. Throws a C4JSONSerializationError
+// when encountering values that cannot be represented in JSON or when the
+// maximum depth is reached.
+StdStrBuf C4Value::ToJSON(int depth, const C4PropListStatic *ignore_reference_parent) const
+{
+	// ouput by type info
+	switch (GetType())
+	{
+	case C4V_Int:
+		return FormatString("%ld", static_cast<long>(Data.Int));
+	case C4V_Bool:
+		return StdStrBuf(Data ? "true" : "false");
+	case C4V_PropList:
+	{
+		const C4PropListStatic * Def = Data.PropList->IsStatic();
+		if (Def)
+			if (!ignore_reference_parent || Def->GetParent() != ignore_reference_parent)
+				return Def->ToJSON();
+		return Data.PropList->ToJSON(depth, Def && ignore_reference_parent);
+	}
+	case C4V_String:
+		if (Data.Str && Data.Str->GetCStr())
+		{
+			StdStrBuf str = Data.Str->GetData();
+			str.EscapeString();
+			str.Replace("\n", "\\n");
+			return FormatString("\"%s\"", str.getData());
+		}
+		else
+		{
+			return StdStrBuf("null");
+		}
+	case C4V_Array:
+	{
+		if (depth <= 0 && Data.Array->GetSize())
+		{
+			throw C4JSONSerializationError("maximum depth reached");
+		}
+		StdStrBuf DataString;
+		DataString = "[";
+		for (int32_t i = 0; i < Data.Array->GetSize(); i++)
+		{
+			if (i) DataString.Append(",");
+			DataString.Append(std::move(Data.Array->GetItem(i).GetDataString(depth - 1)));
+		}
+		DataString.AppendChar(']');
+		return DataString;
+	}
+	case C4V_Function:
+		throw C4JSONSerializationError("cannot serialize function");
+	case C4V_Nil:
+		return StdStrBuf("null");
+	default:
+		throw C4JSONSerializationError("unknown type");
+	}
+}
+
 const C4Value & C4ValueNumbers::GetValue(uint32_t n)
 {
 	if (n <= LoadedValues.size())
