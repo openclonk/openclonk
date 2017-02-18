@@ -130,7 +130,7 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(OfficialServer,  "OfficialServer", false));
 	pComp->Value(mkNamingAdapt(NetpuncherGameID,  "NetpuncherID", C4NetpuncherID(), false, false));
 	pComp->Value(mkNamingAdapt(NetpuncherAddr,  "NetpuncherAddr", "", false, false));
-	pComp->Value(mkNamingAdapt(Statistics,        "Statistics", "", false, false));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Statistics, StdCompiler::RCT_All), "Statistics", "", false, false));
 
 	pComp->Value(Parameters);
 }
