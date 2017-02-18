@@ -54,6 +54,7 @@ private:
 	bool IsEditor;
 	C4NetpuncherID NetpuncherGameID;
 	StdCopyStrBuf NetpuncherAddr;
+	StdCopyStrBuf Statistics;
 
 	// Engine information
 	C4GameVersion Game;

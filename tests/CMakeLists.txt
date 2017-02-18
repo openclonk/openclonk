@@ -23,7 +23,7 @@ set(C4SCRIPT_SOURCES
 # Look for GTest and GMock
 # GMock's source package ships GTest too, so look for it first
 find_path(GMOCK_ROOT
-    NAMES "src/gmock-all.cc" "gmock/gmock-all.cc"
+    NAMES "gmock-all.cc" "src/gmock-all.cc" "gmock/gmock-all.cc"
     PATHS "/usr/src/gmock"
     )
 find_path(GMOCK_INCLUDE_DIR
@@ -125,6 +125,15 @@ if (GTEST_FOUND AND GMOCK_FOUND)
 			aul/AulSyntaxTest.cpp
 			aul/AulSyntaxTestDetail.h
 			aul/ErrorHandler.h
+            ../src/script/C4ScriptStandaloneStubs.cpp
+            ../src/script/C4ScriptStandalone.cpp
+        LIBRARIES
+            libmisc
+            libc4script)
+    # This is included in "tests" (above) as well, but that executable currently doesn't compile.
+    create_test(c4value_test
+        SOURCES
+	    C4ValueTest.cpp
             ../src/script/C4ScriptStandaloneStubs.cpp
             ../src/script/C4ScriptStandalone.cpp
         LIBRARIES

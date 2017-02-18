@@ -61,6 +61,14 @@ union C4V_Data
 	C4V_Data &operator = (void *p) { assert(!p); Ptr = p; return *this; }
 };
 
+class C4JSONSerializationError : public std::exception
+{
+	std::string msg;
+public:
+	C4JSONSerializationError(const std::string& msg) : msg(msg) {}
+	virtual const char* what() const noexcept override { return msg.c_str(); }
+};
+
 class C4Value
 {
 public:
@@ -158,6 +166,7 @@ public:
 	void Denumerate(C4ValueNumbers *);
 
 	StdStrBuf GetDataString(int depth = 10, const class C4PropListStatic *ignore_reference_parent = nullptr) const;
+	StdStrBuf ToJSON(int depth = 10, const class C4PropListStatic *ignore_reference_parent = nullptr) const;
 
 	ALWAYS_INLINE bool CheckParConversion(C4V_Type vtToType) const // convert to dest type
 	{
