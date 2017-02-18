@@ -1,4 +1,4 @@
-König des Hügels
+﻿König des Hügels
 
 Eine Horde wütender Bergleute möchte die riesigen Juwelenvorkommern plündern. Verteidige den Hügel, um ihnen den Weg zu blockieren!
 
@@ -7,6 +7,4 @@ Ziel: Überlebe möglichst viele Angriffswellen.
 Tipps:
 - Arbeitet zusamen und teilt euch Aufgaben untereinander auf.
 - Bau eine Siedlung und Verteidigungsanlagen während den ersten Angriffswellen.
-- Build up a settlement and defense during the earlier rounds of attack.
 - Ressourcen und Flüssigkeiten füllen sich an bestimmten Stellen wieder auf.
-- Resources and liquids reappear at certain locations.
