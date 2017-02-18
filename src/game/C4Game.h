@@ -164,6 +164,7 @@ public:
 	bool HasScenario() { return *DirectJoinAddress || *ScenarioFilename || RecordStream.getSize(); }
 	bool Execute();
 	C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
+	void OnPlayerJoinFinished();
 	bool DoGameOver();
 	bool CanQuickSave();
 	bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);

@@ -3081,6 +3081,16 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	return pPlr;
 }
 
+void C4Game::OnPlayerJoinFinished()
+{
+	// Do the InitializePlayers callback once all player joins have finished
+	if (!InitialPlayersJoined && !PlayerInfos.GetJoinPendingPlayerCount() && !::Players.HasPlayerInTeamSelection())
+	{
+		InitialPlayersJoined = true;
+		GRBroadcast(PSF_InitializePlayers);
+	}
+}
+
 void C4Game::FixRandom(uint64_t iSeed)
 {
 	FixedRandom(iSeed);

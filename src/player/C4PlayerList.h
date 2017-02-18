@@ -74,6 +74,7 @@ public:
 	bool PositionTaken(int iPosition) const;
 	int CheckColorDw(DWORD dwColor, C4Player *pExclude); // return minimum difference to the other player's colors
 	bool SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times
+	bool HasPlayerInTeamSelection(); // Return whether any player is in the pre-join team selection dialogue
 protected:
 	int GetFreeNumber() const;
 	void RecheckPlayerSort(C4Player *pForPlayer);

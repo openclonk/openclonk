@@ -156,6 +156,8 @@ bool C4Player::ScenarioAndTeamInit(int32_t idTeam)
 	if (pTeam) pTeam->AddPlayer(*pInfo, true);
 	if (!ScenarioInit()) return false;
 	if (!FinalInit(false)) return false;
+	// perform any pending InitializePlayers() callback
+	::Game.OnPlayerJoinFinished();
 	return true;
 }
 

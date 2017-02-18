@@ -623,6 +623,14 @@ bool C4PlayerList::SynchronizeLocalFiles()
 	return fSuccess;
 }
 
+bool C4PlayerList::HasPlayerInTeamSelection()
+{
+	for (C4Player *pPlr = First; pPlr; pPlr = pPlr->Next)
+		if (pPlr->IsChosingTeam())
+			return true;
+	return false;
+}
+
 void C4PlayerList::RecheckPlayerSort(C4Player *pForPlayer)
 {
 	if (!pForPlayer || !First) return;

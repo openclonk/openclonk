@@ -1126,11 +1126,7 @@ void C4ControlJoinPlayer::Execute() const
 		}
 	}
 	// After last of the initial player joins, do a game callback
-	if (!::Game.InitialPlayersJoined && !::Game.PlayerInfos.GetJoinPendingPlayerCount())
-	{
-		::Game.InitialPlayersJoined = true;
-		::Game.GRBroadcast(PSF_InitializePlayers);
-	}
+	::Game.OnPlayerJoinFinished();
 }
 
 void C4ControlJoinPlayer::Strip()
