@@ -44,7 +44,7 @@ func ResetRound()
 	// Clear and redraw the map.
 	LoadScenarioSection("main");
 	InitializeRound();
-	InitializePlayers();
+	AssignHandicaps();
 	// Re-enable the players.
 	for (var clonk in clonks)
 	{
@@ -124,12 +124,24 @@ func InitializePlayer(int plr)
 	Scoreboard->SetData(ScoreboardTeam(team), "team", "", ScoreboardTeam(team));
 	Scoreboard->SetPlayerData(plr, "team", "", ScoreboardTeam(team) + 1);
 
-	return InitPlayerRound(plr);
+	// Players joining at runtime will participate in the following round.
+	PutInRelaunchContainer(GetCrew(plr));
+
+	// On non-network rounds, InitializePlayers is called before InitializePlayer. Thus, we have to
+	// join the players here.
+	// TODO: Maybe find a better way to detect this case.
+	if (!IsNetwork())
+		InitPlayerRound(plr);
 }
 
 func InitializePlayers()
 {
 	AssignHandicaps();
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		InitPlayerRound(plr);
+	}
 }
 
 func InitPlayerRound(int plr)
@@ -142,6 +154,7 @@ func InitPlayerRound(int plr)
 	// Player positioning. 
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr), start_pos;
+	if (!crew) return;
 	// Position by map type?
 	if (SCENPAR_SpawnType == 0)
 	{
@@ -231,6 +244,16 @@ func OnCountdownFinished()
 	}
 }
 
+func PutInRelaunchContainer(object clonk)
+{
+	var plr = clonk->GetOwner();
+	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
+	// We just use the relaunch object as a dumb container.
+	clonk->Enter(relaunch);
+	// Allow scrolling around the landscape.
+	SetPlayerViewLock(plr, false);
+}
+
 func OnClonkDeath(object clonk)
 {
 	var plr = clonk->GetOwner();
@@ -241,11 +264,7 @@ func OnClonkDeath(object clonk)
 	{
 		var crew = CreateObject(Clonk, 0, 0, plr);
 		crew->MakeCrewMember(plr);
-		var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, plr);
-		// We just use the relaunch object as a dumb container.
-		crew->Enter(relaunch);
-		// Allow scrolling around the landscape.
-		SetPlayerViewLock(plr, false);
+		PutInRelaunchContainer(crew);
 	}
 
 	// Check for victory after three seconds to allow stalemates.
