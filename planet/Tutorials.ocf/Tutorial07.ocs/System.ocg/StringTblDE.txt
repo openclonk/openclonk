@@ -8,7 +8,6 @@ DlgPilotHaveBow=Ich verstehe. Hast du einen Bogen für mich?
 DlgPilotArmory=Nein, aber in der Waffenschmiede kannst du einen Bogen und Pfeile herstellen. Ich habe eine Waffenschmiede auf einer unten rechts von hier gebaut.
 DlgPilotFallOff=Was passiert, wenn ich vom Luftschiff runterfalle?
 DlgPilotRescue=Dann kannst du mich mit [%s] rufen, und ich werde dich mit dem Luftschiff abholen.
-Then you can call me with [%s] and I'll come down with the airship.
 
 # Messages: Pilot
 DlgPilotGem0=Yeah, ein Edelstein!
