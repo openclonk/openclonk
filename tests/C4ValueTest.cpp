@@ -35,23 +35,25 @@ TEST(C4ValueTest, SanityTests)
 	EXPECT_FALSE(C4Value(false));
 }
 
+static void PrintTo(const StdStrBuf &v, std::ostream *stream)
+{
+	*stream << testing::PrintToString(v.getData());
+}
+
 TEST(C4ValueTest, ToJSON)
 {
-	// Wrapping in std::string makes GTest print something useful in case of failure.
-#define EXPECT_STDSTRBUF_EQ(a, b) EXPECT_EQ(std::string((a).getData()), std::string(b));
-
 	// can't use raw strings that contains \" because MSVC 2015's preprocessor fails on those
 
 	// simple values
-	EXPECT_STDSTRBUF_EQ(C4Value(42).ToJSON(), "42");
-	EXPECT_STDSTRBUF_EQ(C4Value(-42).ToJSON(), "-42");
-	EXPECT_STDSTRBUF_EQ(C4Value("foobar").ToJSON(), R"#("foobar")#");
-	EXPECT_STDSTRBUF_EQ(C4Value("es\"caping").ToJSON(), "\"es\\\"caping\"");
-	EXPECT_STDSTRBUF_EQ(C4Value("es\\caping").ToJSON(), R"#("es\\caping")#");
-	EXPECT_STDSTRBUF_EQ(C4Value("new\nline").ToJSON(), R"#("new\nline")#");
-	EXPECT_STDSTRBUF_EQ(C4Value(true).ToJSON(), R"#(true)#");
-	EXPECT_STDSTRBUF_EQ(C4Value(false).ToJSON(), R"#(false)#");
-	EXPECT_STDSTRBUF_EQ(C4Value().ToJSON(), R"#(null)#");
+	EXPECT_EQ(C4Value(42).ToJSON(), "42");
+	EXPECT_EQ(C4Value(-42).ToJSON(), "-42");
+	EXPECT_EQ(C4Value("foobar").ToJSON(), R"#("foobar")#");
+	EXPECT_EQ(C4Value("es\"caping").ToJSON(), "\"es\\\"caping\"");
+	EXPECT_EQ(C4Value("es\\caping").ToJSON(), R"#("es\\caping")#");
+	EXPECT_EQ(C4Value("new\nline").ToJSON(), R"#("new\nline")#");
+	EXPECT_EQ(C4Value(true).ToJSON(), R"#(true)#");
+	EXPECT_EQ(C4Value(false).ToJSON(), R"#(false)#");
+	EXPECT_EQ(C4Value().ToJSON(), R"#(null)#");
 
 	// proplists
 	{
@@ -61,14 +63,14 @@ TEST(C4ValueTest, ToJSON)
 		auto nested = C4PropList::NewStatic(nullptr, nullptr, nullptr);
 		nested->SetProperty(P_Description, C4Value(true));
 		proplist->SetProperty(P_Storage, C4Value(nested));
-		EXPECT_STDSTRBUF_EQ(C4Value(proplist).ToJSON(), R"#({"Min":13,"Options":"options","Storage":{"Description":true}})#");
+		EXPECT_EQ(C4Value(proplist).ToJSON(), R"#({"Min":13,"Options":"options","Storage":{"Description":true}})#");
 	}
 
 	{
 		auto crazy_key = C4PropList::NewStatic(nullptr, nullptr, nullptr);
 		auto key = Strings.RegString("foo\"bar");
 		crazy_key->SetPropertyByS(key, C4Value(42));
-		EXPECT_STDSTRBUF_EQ(C4Value(crazy_key).ToJSON(), "{\"foo\\\"bar\":42}");
+		EXPECT_EQ(C4Value(crazy_key).ToJSON(), "{\"foo\\\"bar\":42}");
 	}
 
 	// arrays
@@ -77,6 +79,6 @@ TEST(C4ValueTest, ToJSON)
 		array->SetItem(0, C4Value(1));
 		array->SetItem(1, C4Value(2));
 		array->SetItem(2, C4Value(3));
-		EXPECT_STDSTRBUF_EQ(C4Value(array).ToJSON(), R"#([1,2,3])#");
+		EXPECT_EQ(C4Value(array).ToJSON(), R"#([1,2,3])#");
 	}
 }
