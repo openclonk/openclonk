@@ -40,11 +40,13 @@ TEST(C4ValueTest, ToJSON)
 	// Wrapping in std::string makes GTest print something useful in case of failure.
 #define EXPECT_STDSTRBUF_EQ(a, b) EXPECT_EQ(std::string((a).getData()), std::string(b));
 
+	// can't use raw strings that contains \" because MSVC 2015's preprocessor fails on those
+
 	// simple values
 	EXPECT_STDSTRBUF_EQ(C4Value(42).ToJSON(), "42");
 	EXPECT_STDSTRBUF_EQ(C4Value(-42).ToJSON(), "-42");
 	EXPECT_STDSTRBUF_EQ(C4Value("foobar").ToJSON(), R"#("foobar")#");
-	EXPECT_STDSTRBUF_EQ(C4Value("es\"caping").ToJSON(), R"#("es\"caping")#");
+	EXPECT_STDSTRBUF_EQ(C4Value("es\"caping").ToJSON(), "\"es\\\"caping\"");
 	EXPECT_STDSTRBUF_EQ(C4Value("es\\caping").ToJSON(), R"#("es\\caping")#");
 	EXPECT_STDSTRBUF_EQ(C4Value("new\nline").ToJSON(), R"#("new\nline")#");
 	EXPECT_STDSTRBUF_EQ(C4Value(true).ToJSON(), R"#(true)#");
@@ -66,7 +68,7 @@ TEST(C4ValueTest, ToJSON)
 		auto crazy_key = C4PropList::NewStatic(nullptr, nullptr, nullptr);
 		auto key = Strings.RegString("foo\"bar");
 		crazy_key->SetPropertyByS(key, C4Value(42));
-		EXPECT_STDSTRBUF_EQ(C4Value(crazy_key).ToJSON(), R"#({"foo\"bar":42})#");
+		EXPECT_STDSTRBUF_EQ(C4Value(crazy_key).ToJSON(), "{\"foo\\\"bar\":42}");
 	}
 
 	// arrays
