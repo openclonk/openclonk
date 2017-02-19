@@ -15,6 +15,7 @@
 local score;
 local completed_waves;
 local is_fulfilled;
+local recovery_time;
 local fx_wave_control;
 local shared_wealth_remainder;
 local observer_container;
@@ -29,6 +30,8 @@ public func Construction()
 	SetScore(0);
 	completed_waves = 0;
 	is_fulfilled = false;
+	// Set default recovery time in seconds.
+	recovery_time = 10;
 	// Wealth is shared and remainder is stored.
 	shared_wealth_remainder = 0;
 	// Create a container for observers while the round still runs.
@@ -159,8 +162,9 @@ local FxWaveControl = new Effect
 		// Do a timer call every second.
 		this.Interval = 36;
 		// Init wave number, time passed and the current wave.
-		this.wave_nr = 1;
+		this.wave_nr = 0;
 		this.time_passed = 0;
+		this.pause_time = 0;
 		this.wave = nil;
 		// Store enemy player.
 		this.enemy = enemy_plr;	
@@ -171,8 +175,9 @@ local FxWaveControl = new Effect
 	Timer = func(int time)
 	{
 		// Start new wave if duration of previous wave has passed.
-		if (!this.wave || (this.wave.Duration != nil && this.time_passed >= this.wave.Duration))
+		if ((!this.wave && this.pause_time <= 0) || (this.wave && this.wave.Duration != nil && this.time_passed >= this.wave.Duration))
 		{
+			this.wave_nr++;
 			this.wave = GameCall("GetAttackWave", this.wave_nr);
 			// Check if this was the last wave.
 			if (!this.wave)
@@ -185,18 +190,26 @@ local FxWaveControl = new Effect
 			Target->CreateEffect(Target.FxTrackWave, 100, nil, this.wave_nr, this.wave);
 			// Reset passed time and increase wave number for next wave.
 			this.time_passed = 0;
-			this.wave_nr++;
 		}	
-		// Increase the time passed in this wave.
+		// Increase the time passed in this wave and decrease the pause time.
 		this.time_passed++;
+		this.pause_time--;
 		return FX_OK;
 	},
 	
 	OnWaveCompleted = func(int wave_nr)
 	{
 		// Set current wave to nil if it has been completed and has no duration in order to start new one.
-		if (wave_nr + 1 == this.wave_nr && this.wave.Duration == nil)
+		if (wave_nr == this.wave_nr && this.wave.Duration == nil)
+		{
 			this.wave = nil;
+			var rtime = Target->GetRecoveryTime();
+			if (rtime > 0)
+			{
+				this.pause_time = rtime;
+				GUI_Clock->CreateCountdown(rtime);
+			}
+		}
 		return;
 	},
 	
@@ -234,6 +247,14 @@ public func GetDefaultWave(int wave_nr)
 	};
 	return wave;
 }
+
+public func SetRecoveryTime(int to_time)
+{
+	recovery_time = to_time;
+	return;
+}
+
+public func GetRecoveryTime() { return recovery_time; } 
 
 
 /*-- Wave Tracking --*/
@@ -396,13 +417,21 @@ public func GetDescription(int plr)
 	if (fx_wave_control)
 	{
 		// Add enemies of current wave.
-		var enemies = fx_wave_control->GetCurrentWave().Enemies;
-		if (enemies)
+		var current_wave = fx_wave_control->GetCurrentWave();
+		if (current_wave)
 		{
-			wave_msg = Format("$MsgCurrentWave$", fx_wave_control->GetCurrentWave());
-			for (var enemy in enemies)
-				if (enemy.Amount > 0)
-					wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);
+			wave_msg = Format("$MsgCurrentWave$", fx_wave_control->GetCurrentWaveNumber());
+			var enemies = current_wave.Enemies;
+			if (enemies)
+			{
+				for (var enemy in enemies)
+					if (enemy.Amount > 0)
+						wave_msg = Format("%s%dx %s\n", wave_msg, enemy.Amount, enemy.Name);
+			}
+			else
+			{
+				wave_msg = Format("%s$MsgNoEnemies$\n", wave_msg);
+			}
 		}
 		// Show enemies of next wave.
 		var next_enemies = fx_wave_control->GetNextWave().Enemies;
