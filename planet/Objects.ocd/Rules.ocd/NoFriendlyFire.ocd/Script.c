@@ -148,7 +148,7 @@ public func NoFF_DoShockwaveCheck(int x, int y, int caused_by, ...)
 public func NoFF_IsProjectileTarget(object projectile, object shooter, ...)
 {
 	var w_controller = projectile->GetController();
-	if (w_controller == NO_OWNER)
+	if (shooter && w_controller == NO_OWNER)
 		w_controller = shooter->GetController();
 	var t_controller = this->GetController();
 	if (w_controller != NO_OWNER && t_controller != NO_OWNER && !Hostile(w_controller, t_controller))
