@@ -29,10 +29,6 @@
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
 
-#ifdef _MSC_VER
-#define vsnprintf _vsprintf_p
-#endif
-
 static std::string vstrprintf(const char *format, va_list args)
 {
 	va_list argcopy;

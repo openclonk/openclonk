@@ -194,7 +194,6 @@ REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0
 # time, so the test below works.
 REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
 check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
-check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
 ############################################################################
 # Check for required system headers

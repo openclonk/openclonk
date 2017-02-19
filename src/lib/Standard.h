@@ -155,6 +155,10 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 #include <cstdio>
 #include <cstdarg>
 
+#ifdef _WIN32
+#define vsnprintf _vsprintf_p
+#endif
+
 // old, insecure sprintf
 inline int osprintf(char *str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
 inline int osprintf(char *str, const char *fmt, ...)

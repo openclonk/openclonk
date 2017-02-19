@@ -74,9 +74,6 @@
 /* Define to 1 if you have the `vasprintf' function. */
 #cmakedefine HAVE_VASPRINTF 1
 
-/* Define to 1 if you have the `__mingw_vasprintf' function. */
-#cmakedefine HAVE___MINGW_VASPRINTF 1
-
 /* Define to 1 if you have the <X11/extensions/Xrandr.h> header file. */
 #cmakedefine HAVE_X11_EXTENSIONS_XRANDR_H 1
 
