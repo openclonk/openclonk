@@ -126,12 +126,6 @@ func InitializePlayer(int plr)
 
 	// Players joining at runtime will participate in the following round.
 	PutInRelaunchContainer(GetCrew(plr));
-
-	// On non-network rounds, InitializePlayers is called before InitializePlayer. Thus, we have to
-	// join the players here.
-	// TODO: Maybe find a better way to detect this case.
-	if (!IsNetwork())
-		InitPlayerRound(plr);
 }
 
 func InitializePlayers()
@@ -154,7 +148,6 @@ func InitPlayerRound(int plr)
 	// Player positioning. 
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr), start_pos;
-	if (!crew) return;
 	// Position by map type?
 	if (SCENPAR_SpawnType == 0)
 	{
