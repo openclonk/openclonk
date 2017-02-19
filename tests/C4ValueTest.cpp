@@ -52,23 +52,29 @@ TEST(C4ValueTest, ToJSON)
 	EXPECT_STDSTRBUF_EQ(C4Value().ToJSON(), R"#(null)#");
 
 	// proplists
-	auto proplist = C4PropList::NewStatic(nullptr, nullptr, nullptr);
-	proplist->SetProperty(P_Options, C4Value("options"));
-	proplist->SetProperty(P_Min, C4Value(13));
-	auto nested = C4PropList::NewStatic(nullptr, nullptr, nullptr);
-	nested->SetProperty(P_Description, C4Value(true));
-	proplist->SetProperty(P_Storage, C4Value(nested));
-	EXPECT_STDSTRBUF_EQ(C4Value(proplist).ToJSON(), R"#({"Min":13,"Options":"options","Storage":{"Description":true}})#");
+	{
+		auto proplist = C4PropList::NewStatic(nullptr, nullptr, nullptr);
+		proplist->SetProperty(P_Options, C4Value("options"));
+		proplist->SetProperty(P_Min, C4Value(13));
+		auto nested = C4PropList::NewStatic(nullptr, nullptr, nullptr);
+		nested->SetProperty(P_Description, C4Value(true));
+		proplist->SetProperty(P_Storage, C4Value(nested));
+		EXPECT_STDSTRBUF_EQ(C4Value(proplist).ToJSON(), R"#({"Min":13,"Options":"options","Storage":{"Description":true}})#");
+	}
 
-	auto crazy_key = C4PropList::NewStatic(nullptr, nullptr, nullptr);
-	auto key = Strings.RegString("foo\"bar");
-	proplist->SetPropertyByS(key, C4Value(42));
-	EXPECT_STDSTRBUF_EQ(C4Value(proplist).ToJSON(), R"#({"foo\"bar":42})#");
+	{
+		auto crazy_key = C4PropList::NewStatic(nullptr, nullptr, nullptr);
+		auto key = Strings.RegString("foo\"bar");
+		crazy_key->SetPropertyByS(key, C4Value(42));
+		EXPECT_STDSTRBUF_EQ(C4Value(crazy_key).ToJSON(), R"#({"foo\"bar":42})#");
+	}
 
 	// arrays
-	auto array = new C4ValueArray(3);
-	array->SetItem(0, C4Value(1));
-	array->SetItem(1, C4Value(2));
-	array->SetItem(2, C4Value(3));
-	EXPECT_STDSTRBUF_EQ(C4Value(array).ToJSON(), R"#([1,2,3])#");
+	{
+		auto array = new C4ValueArray(3);
+		array->SetItem(0, C4Value(1));
+		array->SetItem(1, C4Value(2));
+		array->SetItem(2, C4Value(3));
+		EXPECT_STDSTRBUF_EQ(C4Value(array).ToJSON(), R"#([1,2,3])#");
+	}
 }
