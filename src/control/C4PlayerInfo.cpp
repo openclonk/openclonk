@@ -192,6 +192,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 		{ "Won", PIF_Won },
 		{ "AttributesFixed", PIF_AttributesFixed },
 		{ "NoScenarioInit", PIF_NoScenarioInit },
+		{ "NoScenarioSave", PIF_NoScenarioSave },
 		{ "NoEliminationCheck", PIF_NoEliminationCheck },
 		{ "Invisible", PIF_Invisible},
 		{ nullptr, 0 },
@@ -1687,7 +1688,9 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 				}
 				else if (pInfo->GetType() == C4PT_Script)
 				{
-					fKeepInfo = fSaveScriptPlrs;
+					// Save only if either all players should be saved (fSaveScriptPlrs && fSaveUserPlrs)
+					//  or if script players are saved and general scenario saving for this script player is desired
+					fKeepInfo = fSaveScriptPlrs && (fSaveUserPlrs || pInfo->IsScenarioSaveDesired());
 					if (fSetScriptPlrRefToLocalGroup)
 					{
 						// just compose a unique filename for script player

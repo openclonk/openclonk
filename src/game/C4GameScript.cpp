@@ -1127,10 +1127,12 @@ static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long idPlaye
 	}
 
 
-static const int32_t CSPF_FixedAttributes = 1<<0,
-    CSPF_NoScenarioInit  = 1<<1,
-                           CSPF_NoEliminationCheck = 1<<2,
-                                                     CSPF_Invisible          = 1<<3;
+static const int32_t CSPF_FixedAttributes = 1 << 0,
+                     CSPF_NoScenarioInit = 1 << 1,
+                     CSPF_NoEliminationCheck = 1 << 2,
+                     CSPF_Invisible = 1 << 3,
+                     CSPF_NoScenarioSave = 1 << 4;
+
 
 static bool FnCreateScriptPlayer(C4PropList * _this, C4String *szName, long dwColor, long idTeam, long dwFlags, C4ID idExtra)
 {
@@ -1146,6 +1148,7 @@ static bool FnCreateScriptPlayer(C4PropList * _this, C4String *szName, long dwCo
 	if (dwFlags & CSPF_NoScenarioInit    ) dwInfoFlags |= C4PlayerInfo::PIF_NoScenarioInit;
 	if (dwFlags & CSPF_NoEliminationCheck) dwInfoFlags |= C4PlayerInfo::PIF_NoEliminationCheck;
 	if (dwFlags & CSPF_Invisible         ) dwInfoFlags |= C4PlayerInfo::PIF_Invisible;
+	if (dwFlags & CSPF_NoScenarioSave)     dwInfoFlags |= C4PlayerInfo::PIF_NoScenarioSave;
 	pScriptPlrInfo->SetAsScriptPlayer(szName->GetCStr(), dwColor, dwInfoFlags, idExtra);
 	pScriptPlrInfo->SetTeam(idTeam);
 	C4ClientPlayerInfos JoinPkt(nullptr, true, pScriptPlrInfo);
@@ -2288,6 +2291,16 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 }
 
 // undocumented!
+static C4PropList *FnGetScriptPlayerExtraID(C4PropList * _this, long player_number)
+{
+	C4Player *plr = ::Players.Get(player_number);
+	if (!plr) return nullptr;
+	C4PlayerInfo *info = plr->GetInfo();
+	if (!info) return nullptr;
+	return C4Id2Def(info->GetScriptPlayerExtraID());
+}
+
+// undocumented!
 static long FnGetTeamConfig(C4PropList * _this, long iConfigValue)
 {
 	// query value
@@ -2861,6 +2874,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlayerID);
 	F(GetPlayerTeam);
 	F(SetPlayerTeam);
+	F(GetScriptPlayerExtraID);
 	F(GetTeamConfig);
 	F(GetTeamName);
 	F(GetTeamColor);
@@ -3015,6 +3029,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "CSPF_NoScenarioInit"       ,C4V_Int,      CSPF_NoScenarioInit },
 	{ "CSPF_NoEliminationCheck"   ,C4V_Int,      CSPF_NoEliminationCheck },
 	{ "CSPF_Invisible"            ,C4V_Int,      CSPF_Invisible },
+	{ "CSPF_NoScenarioSave"       ,C4V_Int,      CSPF_NoScenarioSave },
 
 	{ "DMQ_Sky"                   ,C4V_Int,      DMQ_Sky },
 	{ "DMQ_Sub"                   ,C4V_Int,      DMQ_Sub },
