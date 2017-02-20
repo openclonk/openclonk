@@ -26,7 +26,7 @@ public func SetAttackMode(object clonk, string attack_mode_identifier)
 	return true;
 }
 
-local AttackModes;
+local AttackModes = {}; // empty pre-init to force proplist ownership in base AI
 
 // Attack mode that just creates a weapon and uses the default attack procedures
 local SingleWeaponAttackMode = {
@@ -80,12 +80,8 @@ local SingleWeaponAttackMode = {
 private func InitAttackModes()
 {
 	// First-time init of attack mode editor prop structures
-	if (!this.AttackModes)
-	{
-		// All attack modes structures point to the base AI
-		if (!AI.AttackModes) AI.AttackModes = {};
-		if (this != AI) this.AttackModes = AI.AttackModes;
-	}
+	// All attack modes structures point to the base AI
+	this.AttackModes = AI.AttackModes;
 	if (!AI.FxAI.EditorProps.attack_mode)
 	{
 		AI.FxAI.EditorProps.attack_mode = {
@@ -97,7 +93,7 @@ private func InitAttackModes()
 			Set="SetAttackMode"
 		};
 	}
-	if (!this.FxAI.EditorProps.attack_mode) this.FxAI.EditorProps.attack_mode = AI.FxAI.EditorProps.attack_mode;
+	this.FxAI.EditorProps.attack_mode = AI.FxAI.EditorProps.attack_mode;
 }
 
 public func RegisterAttackMode(string identifier, proplist am, proplist am_default_values)
@@ -122,10 +118,11 @@ public func RegisterAttackMode(string identifier, proplist am, proplist am_defau
 
 private func DefinitionAttackModes(proplist def)
 {
+	// Make sure attack mode structures are initialized
+	this->InitAttackModes();
 	// Registration only once for base AI
 	if (this != AI) return;
 	// Register presets for all the default weapons usable by the AI
-	this->InitAttackModes();
 	def->RegisterAttackMode("Default", { Name = "$Default$", EditorHelp = "$DefaultHelp$", FindWeapon = AI.FindInventoryWeapon });
 	def->RegisterAttackMode("Sword", new SingleWeaponAttackMode { Weapon = Sword, Strategy = this.ExecuteMelee });
 	def->RegisterAttackMode("Club", new SingleWeaponAttackMode { Weapon = Club, Strategy = this.ExecuteMelee });
