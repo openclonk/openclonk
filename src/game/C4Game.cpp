@@ -3083,8 +3083,8 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 
 void C4Game::OnPlayerJoinFinished()
 {
-	// Do the InitializePlayers callback once all player joins have finished
-	if (!InitialPlayersJoined && !PlayerInfos.GetJoinPendingPlayerCount() && !::Players.HasPlayerInTeamSelection())
+	// Do the InitializePlayers callback once all player joins have finished with at least one human player
+	if (!InitialPlayersJoined && !PlayerInfos.GetJoinPendingPlayerCount() && !::Players.HasPlayerInTeamSelection() && (::Players.GetCount(C4PT_User) > 0))
 	{
 		InitialPlayersJoined = true;
 		GRBroadcast(PSF_InitializePlayers);
