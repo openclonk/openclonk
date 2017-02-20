@@ -1,6 +1,6 @@
 /*-- 
 	Hideout
-	Author: Mimmo
+	Author: Mimmo (edit by DasWipf)
 	
 	A capture the flag scenario for two teams, both teams occupy a hideout and must steal the flag from
 	the opposing team.
@@ -58,7 +58,11 @@ protected func Initialize()
 	return;
 }
 
-protected func CaptureFlagCount() { return 2;} //4 + GetPlayerCount()) / 2; }
+protected func CaptureFlagCount() 
+{ 
+	var CaptureFlagCount = SCENPAR_Captures
+	return CaptureFlagCount;
+}
 
 global func FxGeysirExplosionTimer(object target, effect)
 {
