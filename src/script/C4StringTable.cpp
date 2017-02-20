@@ -308,6 +308,7 @@ C4StringTable::C4StringTable()
 	P[P_Sorted] = "Sorted";
 	P[P_Uniforms] = "Uniforms";
 	P[P_ForceSerialization] = "ForceSerialization";
+	P[P_DrawArrows] = "DrawArrows";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

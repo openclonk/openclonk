@@ -191,6 +191,7 @@ protected:
 	bool horizontal_fix = false; // If edges are locked horizontally
 	bool vertical_fix = false; // If edges are locked vertically
 	bool structure_fix = false; // If edge+vertex insertion/deletion is blocked
+	bool draw_arrows = false;   // If directions on edges are to be signified with arrowheads
 
 	C4Value vertex_delegate, edge_delegate;
 
@@ -207,7 +208,7 @@ protected:
 	static int32_t VertexToDragBorder(int32_t vertex) { return vertex; }
 	static int32_t EdgeToDragBorder(int32_t edge) { return -edge - 2; }
 
-	void DrawEdge(class C4TargetFacet &cgo, const Vertex &v0, const Vertex &v2, uint32_t clr, float line_width, bool highlight);
+	void DrawEdge(class C4TargetFacet &cgo, const Vertex &v0, const Vertex &v2, uint32_t clr, float line_width, float edge_width, bool highlight);
 public:
 	C4ConsoleQtGraph(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 

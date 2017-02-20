@@ -532,6 +532,7 @@ enum C4PropertyName
 	P_Sorted,
 	P_Uniforms,
 	P_ForceSerialization,
+	P_DrawArrows,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
