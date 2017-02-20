@@ -390,7 +390,7 @@ public func ConvertWaveToAchievement(int wave_nr)
 	if (!data)
 		data = [5, 10, 25];
 	SortArray(data);
-	for (var index = GetLength(data); index > 1; index--)
+	for (var index = GetLength(data); index >= 1; index--)
 		if (wave_nr >= data[index - 1])
 			return index;
 	return 0;
