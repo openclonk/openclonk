@@ -100,7 +100,7 @@ private func InitAttackModes()
 	if (!this.FxAI.EditorProps.attack_mode) this.FxAI.EditorProps.attack_mode = AI.FxAI.EditorProps.attack_mode;
 }
 
-public func RegisterAttackMode(string identifier, proplist am)
+public func RegisterAttackMode(string identifier, proplist am, proplist am_default_values)
 {
 	// Definition call during Definition()-initialization:
 	// Register a new attack mode selectable for the AI clonk
@@ -108,11 +108,12 @@ public func RegisterAttackMode(string identifier, proplist am)
 	if (!AttackModes) this->InitAttackModes();
 	AttackModes[identifier] = am;
 	am.Identifier = identifier;
+	if (!am_default_values) am_default_values = { Identifier=identifier };
 	// Add to editor option for AI effect
 	var am_option = {
 		Name = am.Name ?? am->GetName(),
 		EditorHelp = am.EditorHelp,
-		Value = am
+		Value = am_default_values
 	};
 	if (!am_option.EditorHelp && am.GetEditorHelp) am_option.EditorHelp = am->GetEditorHelp();
 	var editor_opts = this.FxAI.EditorProps.attack_mode.Options;
@@ -121,10 +122,10 @@ public func RegisterAttackMode(string identifier, proplist am)
 
 private func DefinitionAttackModes(proplist def)
 {
-	// Register presets for all the default weapons usable by the AI
-	this->InitAttackModes();
 	// Registration only once for base AI
 	if (this != AI) return;
+	// Register presets for all the default weapons usable by the AI
+	this->InitAttackModes();
 	def->RegisterAttackMode("Default", { Name = "$Default$", EditorHelp = "$DefaultHelp$", FindWeapon = AI.FindInventoryWeapon });
 	def->RegisterAttackMode("Sword", new SingleWeaponAttackMode { Weapon = Sword, Strategy = this.ExecuteMelee });
 	def->RegisterAttackMode("Club", new SingleWeaponAttackMode { Weapon = Club, Strategy = this.ExecuteMelee });

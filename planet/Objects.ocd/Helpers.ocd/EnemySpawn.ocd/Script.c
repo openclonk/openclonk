@@ -1,0 +1,507 @@
+/**
+	EnemySpawn
+	When activated, spawns one or more AI-controlled enemies that attack the players.
+	
+	@author Sven2
+*/
+
+local Name="$Name$";
+local Description="$Description$";
+local Visibility=VIS_Editor;
+
+local SPAWNCOUNT_INFINITE = 0x7fffffff; // magic value for spawn_count: Infinite enemy count. (must be a big value)
+
+local active; // Triggered or currently spawning
+local waiting_for_script_player; // Set to true if rule was activated but still waiting for 
+local enemy = nil; // No enemy defined
+local spawn_position = nil; // Where / in which range to spawn
+local spawn_count = 1; // Number of enemies to spawn. SPAWNCOUNT_INFINITE for infinite.
+local spawn_delay = 0; // Delay after trigger before first spawn
+local spawn_interval = 30; // Delay between spawned enemies
+local attack_path = nil; // Optional: Array of points along which the spawned enemy moves/attacks
+local auto_activate = false; // If true, the object is activated on the first player join
+
+local spawned_count;            // Number of enemies already spawned in current wave
+local spawned_enemies;          // Array of spawned enemies. Automatically cleared when clonks die.
+local num_enemies_defeated = 0; // Increased for each defeated clonk of this spawner
+local num_waves_defeated = 0;   // Increased after each defeated activation
+
+local EnemyDefs; // Proplist of possible enemy spawn definitions; indexed by Type
+
+static g_enemyspawn_player; // player number of attacking player
+
+public func IsEnemySpawn() { return true; }
+
+
+/* Parameter interface */
+
+public func SetEnemy(proplist new_enemy) { enemy = new_enemy; UpdateEnemyDisplay(); }
+public func SetSpawnPosition(proplist new_spawn_position) { spawn_position = new_spawn_position; }
+public func SetSpawnCount(int new_spawn_count) { spawn_count = new_spawn_count; }
+public func SetSpawnDelay(int new_spawn_delay) { spawn_delay = new_spawn_delay; }
+public func SetSpawnInterval(int new_spawn_interval) { spawn_interval = new_spawn_interval; }
+public func SetAttackPath(array new_attack_path) { attack_path = new_attack_path; }
+public func SetAutoActivate(bool new_auto_activate) { auto_activate = new_auto_activate; }
+
+
+/* Initialization */
+
+public func Initialize()
+{
+	spawned_enemies = [];
+	// Make sure there's an enemy script player
+	if (!GetType(g_enemyspawn_player))
+	{
+		// Look for existing enemy player
+		for (var iplr = 0; iplr < GetPlayerCount(C4PT_Script); ++iplr)
+		{
+			var plr = GetPlayerByIndex(iplr, C4PT_Script);
+			if (GetScriptPlayerExtraID(plr) == GetID())
+			{
+				g_enemyspawn_player = plr;
+				break;
+			}
+		}
+		// Otherwise join it
+		if (!GetType(g_enemyspawn_player))
+		{
+			g_enemyspawn_player = NO_OWNER; // Sentinel value: Script player join scheduled but not joined yet
+			CreateScriptPlayer("$PlayerAttackers$", nil, 0, CSPF_NoEliminationCheck | CSPF_Invisible | CSPF_FixedAttributes | CSPF_NoScenarioInit | CSPF_NoScenarioSave, GetID());
+		}
+	}
+}
+
+private func IsEnemySpawnPlayerJoined()
+{
+	return GetType(g_enemyspawn_player) && (g_enemyspawn_player != NO_OWNER);
+}
+
+
+public func InitializeScriptPlayer(int plr, int team)
+{
+	// Init the enemy script player: Hostile to all players
+	if (g_enemyspawn_player == NO_OWNER)
+	{
+		// Handle hostility if not done through teams
+		for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
+		{
+			SetHostility(GetPlayerByIndex(iplr, C4PT_User), plr, true, true, true); // triple true hostility!
+		}
+		g_enemyspawn_player = plr;
+	}
+	// Perform delayed activation
+	if (waiting_for_script_player)
+	{
+		ActivateSpawn();
+	}
+}
+
+public func InitializePlayer(int plr, int x, int y, object base, int team, extra_id)
+{
+	if (GetPlayerType(plr) == C4PT_User && IsEnemySpawnPlayerJoined())
+	{
+		// Make sure new enemy players are hostile
+		SetHostility(g_enemyspawn_player, plr, true, true, true);
+	}
+}
+
+
+/* Enemy spawning */
+
+public func StartSpawn()
+{
+	// Timed spawn or immediate spawn?
+	if (spawn_interval > 0 && spawn_count > 1)
+	{
+		// First enemy comes immediately. Then scheduled.
+		Spawn();
+		ScheduleCall(this, this.Spawn, spawn_interval, spawn_count - 1);
+	}
+	else
+	{
+		// Immediate spawn
+		// Can't do inifinite and immediate
+		if (spawn_count == SPAWNCOUNT_INFINITE)
+		{
+			SpawnFinished();
+			FatalError("EnemySpawn: Spawning of infinite enmies without timer delay disabled, because it would destroy the universe in a big boom (Hawking, Stephen W. \"Black hole explosions.\" Nature 248.5443 (1974): 30-31.)");
+		}
+		for (var i = 0; i < spawn_count; ++i)
+		{
+			Spawn();
+		}
+	}
+}
+
+private func SpawnFinished()
+{
+	// All enemies have been spawned. Mark inactive.
+	active = waiting_for_script_player = false;
+	SetClrModulation();
+	spawned_count = 0;
+	// Count finished waves
+	if (!GetLength(spawned_enemies)) WaveDefeated();
+}
+
+private func GetAttackPath()
+{
+	// Get attack path in global coordinates
+	if (!attack_path) return [ { X = GetX(), Y = GetY() } ];
+	var global_attack_path = CreateArray(GetLength(attack_path)), i;
+	for (var pt in attack_path)
+	{
+		global_attack_path[i++] = { X = GetX() + pt.X, Y = GetY() + pt.Y };
+	}
+	return global_attack_path;
+}
+
+private func Spawn()
+{
+	// Find a spawn location
+	var spawn_pos = GetSpawnPosition();
+	// Spawn the actual enemy
+	if (enemy)
+	{
+		var enemy_def = EnemyDefs[enemy.Type];
+		var spawn_function = enemy_def.SpawnFunction;
+		var enemies = (enemy_def.SpawnCallTarget ?? GetID())->Call(spawn_function, spawn_pos, enemy, enemy_def, GetAttackPath(), this);
+		// Keep track of enemies. Could be returned as a single enemy or as an array
+		if (GetType(enemies) == C4V_Array)
+		{
+			for (var obj in enemies)
+			{
+				TrackSpawnedEnemy(obj);
+			}
+		}
+		else
+		{
+			TrackSpawnedEnemy(enemies);
+		}
+	}
+	// Keep track of count
+	if (++spawned_count == spawn_count)
+	{
+		SpawnFinished();
+	}
+}
+
+public func TrackSpawnedEnemy(object enemy)
+{
+	// Remember any spawned enemies
+	if (enemy)
+	{
+		spawned_enemies[GetLength(spawned_enemies)] = enemy;
+	}
+}
+
+private func WaveDefeated()
+{
+	// Just keep track of the count
+	++num_waves_defeated;
+}
+
+public func CancelSpawn()
+{
+	// Stop any spawning timers
+	ClearScheduleCall(this, this.StartSpawn);
+	ClearScheduleCall(this, this.Spawn);
+	// Mark inactive
+	SpawnFinished();
+}
+
+public func RemoveSpawnedEnemies()
+{
+	// Remove all spawned enemies
+	for (var enemy in spawned_enemies)
+	{
+		if (enemy)
+		{
+			enemy->RemoveObject();
+		}
+	}
+}
+
+public func ActivateSpawn()
+{
+	// Already triggered or still running?
+	if (active) return;
+	// Needs to wait for script player join?
+	if (!IsEnemySpawnPlayerJoined())
+	{
+		waiting_for_script_player = true;
+		return;
+	}
+	// Activate
+	waiting_for_script_player = false;
+	active = true;
+	SetClrModulation(0xffff2020);
+	if (spawn_delay)
+	{
+		ScheduleCall(this, this.StartSpawn, spawn_delay, 1);
+	}
+	else
+	{
+		StartSpawn();
+	}
+}
+
+public func GetSpawnPosition()
+{
+	// Evaluate spawn position setting
+	if (spawn_position)
+	{
+		var spawn_position_mode = spawn_position.Mode;
+		if (spawn_position_mode == "range")
+		{
+			// Random position in a circle around this position
+			var r = Sqrt(Random(spawn_position.Radius * spawn_position.Radius));
+			var ang = Random(360);
+			return [GetX() + Sin(ang, r), GetY() + Cos(ang, r)];
+		}
+		else if (spawn_position_mode == "rectangle")	
+		{
+			var rect = spawn_position.Area;
+			return [GetX() + rect[0] + Random(rect[2]), GetY() + rect[1] + Random(rect[3])];
+		}
+	}
+	// Default: Spawn here
+	return [GetX(), GetY()];
+}
+
+public func InitializePlayers()
+{
+	// Activate auto-triggered spawns
+	if (auto_activate) ActivateSpawn();
+}
+
+
+/* Clonk spawning */
+
+public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array clonk_attack_path, object spawner)
+{
+	// Spawn it
+	var clonk = CreateObject(Clonk, pos[0], pos[1], g_enemyspawn_player);
+	if (!clonk) return [];
+	clonk->SetController(g_enemyspawn_player);
+	clonk->MakeCrewMember(g_enemyspawn_player);
+	// Enemy visuals
+	if (clonk_data.Skin)
+	{
+		clonk->SetSkin(clonk_data.Skin);
+	}
+	if (!clonk_data.Backpack)
+	{
+		clonk->~RemoveBackpack();
+	}
+	if (clonk_data.ScaleX != 100 || clonk_data.ScaleY != 100)
+	{
+		var scale_z = (clonk_data.ScaleX + clonk_data.ScaleY) / 2;
+		clonk->SetMeshTransformation(Trans_Scale(clonk_data.ScaleX, clonk_data.ScaleY, scale_z), 6);
+	}
+	if (clonk_data.Name && GetLength(clonk_data.Name))
+	{
+		clonk->SetName(clonk_data.Name);
+	}
+	clonk->SetColor(clonk_data.Color);
+	// Physical properties
+	clonk.MaxEnergy = clonk_data.Energy * 1000;
+	clonk->DoEnergy(10000);
+	if (clonk_data.Speed != 100)
+	{
+		// Speed: Modify Speed in all ActMap entries
+		if (clonk.ActMap == clonk.Prototype.ActMap) clonk.ActMap = new clonk.ActMap {};
+		for (var action in GetProperties(Clonk.ActMap))
+		{
+			if (action == "Prototype") continue;
+			if (clonk.ActMap[action] == clonk.Prototype.ActMap[action]) clonk.ActMap[action] = new clonk.ActMap[action] {};
+			clonk.ActMap[action].Speed = clonk.ActMap[action].Speed * clonk_data.Speed / 100;
+		}
+		clonk.JumpSpeed = clonk.JumpSpeed * clonk_data.Speed / 100;
+		clonk.FlySpeed = clonk.FlySpeed * clonk_data.Speed / 100;
+	}
+	clonk.MaxContentsCount = 1;
+	// Reward for killing enemy
+	clonk.Bounty = clonk_data.Bounty;
+	// AI
+	AI->AddAI(clonk);
+	AI->SetMaxAggroDistance(clonk, Max(LandscapeWidth(), LandscapeHeight()));
+	var last_pos = clonk_attack_path[-1];
+	AI->SetHome(clonk, last_pos.X, last_pos.Y, Random(2));
+	var guard_range = clonk_data.GuardRange ?? { x=last_pos.X-300, y=last_pos.Y-150, wdt=600, hgt=300 };
+	AI->SetGuardRange(clonk, guard_range.x,guard_range.y,guard_range.wdt,guard_range.hgt);
+	if (clonk_data.AttackMode)
+	{
+		AI->SetAttackMode(clonk, clonk_data.AttackMode.Identifier);
+	}
+	// Return clonk to be added to spawned enemy list
+	return clonk;
+}
+
+
+/* Display */
+
+private func UpdateEnemyDisplay()
+{
+	// Show enemy type as text above this object
+	var msg;
+	if (enemy)
+	{
+		var enemy_def = EnemyDefs[enemy.Type];
+		if (enemy_def.GetInfoString)
+		{
+			// Custom dynamic info string
+			msg = enemy_def->GetInfoString(enemy);
+		}
+		else if (enemy_def.InfoString)
+		{
+			// Custom fixed info string
+			msg = enemy_def.InfoString;
+		}
+		else if (enemy_def.SpawnType)
+		{
+			// No info string. Fall back to object ID.
+			msg = Format("{{%i}}", enemy_def.SpawnType);
+		}
+		else
+		{
+			// Can't happen.
+			msg = enemy_def.Name ?? "??";
+		}
+	}
+	if (msg) Message("@%s", msg); else Message("");
+}
+
+
+/* Editor props and actions */
+
+public func Definition(def)
+{
+	// EditorActions
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.Activate = { Name="$Activate$", EditorHelp = "$ActivateHelp$", Command="ActivateSpawn()" };
+	def.EditorActions.Stop = { Name="$Stop$", EditorHelp = "$StopHelp$", Command="CancelSpawn()" };
+	def.EditorActions.RemoveSpawnedEnemies = { Name="$RemoveSpawnedEnemies$", EditorHelp = "$RemoveSpawnedEnemiesHelp$", Command="RemoveSpawnedEnemies()" };
+	// UserActions
+	UserAction->AddEvaluator("Action", "$Name$", "$ActActivate$", "$ActivateHelp$", "enemy_spawn_set_active", [def, def.EvalAct_Activate], { Target = { Function="action_object" } }, { Type="proplist", EditorProps = {
+		Target = UserAction->GetObjectEvaluator("IsEnemySpawn", "$Name$")
+		} } );
+	UserAction->AddEvaluator("Action", "$Name$", "$ActStop$", "$StopHelp$", "enemy_spawn_stop", [def, def.EvalAct_Stop], { Target = { Function="action_object" } }, { Type="proplist", EditorProps = {
+		Target = UserAction->GetObjectEvaluator("IsEnemySpawn", "$Name$")
+		} } );
+	// EditorProps
+	if (!def.EditorProps) def.EditorProps = {};
+  def.EditorProps.spawn_position = { Name="$SpawnPosition$", Type="enum", OptionKey="Mode", Set="SetSpawnPosition", Save="SpawnPosition", Options = [
+		{ Name="$Here$" },
+		{ Name="$InRange$", EditorHelp="$SpawnInRangeHelp$", Value={ Mode="range", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true } },
+		{ Name="$InRect$", EditorHelp="$SpawnInRectHelp$", Value={ Mode="rectangle", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true } }
+		] };
+	def.EditorProps.spawn_count = { Name="$SpawnCount$", EditorHelp="$SpawnCountHelp$", Type="enum", Set="SetSpawnCount", Save="SpawnCount", Options = [
+	  { Name="$Infinite$", Value=SPAWNCOUNT_INFINITE },
+	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetSpawnCount", SetRoot=true } }
+	  ] };
+	def.EditorProps.spawn_delay = { Name="$SpawnDelay$", EditorHelp="$SpawnDelayHelp$", Type="int", Min=0, Set="SetSpawnDelay", Save="SpawnDelay" };
+	def.EditorProps.spawn_interval = { Name="$SpawnInterval$", EditorHelp="$SpawnIntervalHelp$", Type="int", Min=0, Set="SetSpawnInterval", Save="SpawnInterval" };
+	//def.EditorProps.attack_path
+	def.EditorProps.auto_activate = { Name="$AutoActivate$", EditorHelp="$AutoActivateHelp$", Type="bool", Set="SetAutoActivate", Save="AutoActivate" };
+	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps() );
+}
+
+public func GetAIClonkEditorProps()
+{
+	// Return an editor props delegate for AI clonks
+	if (!this.AIClonkEditorProps)
+	{
+		var props = {};
+		props.AttackMode = new AI.FxAI.EditorProps.attack_mode { Set=nil, Priority=100 };
+		props.GuardRange = { Name="$AttackRange$", EditorHelp="$AttackRangeHelp$", Type="enum", Options = [
+			{ Name="$Automatic$", EditorHelp="$AutomaticGuardRangeHelp$"},
+			{ Name="$Custom$", Type=C4V_PropList, Value={}, DefaultValueFunction=this.GetDefaultAIRect, Delegate=AI.FxAI.EditorProps.guard_range }
+			] };
+		props.Color = { Name="$Color$", Type="color" };
+		props.Bounty = { Name="$Bounty$", EditorHelp="$BountyHelp$", Type="int", Min=0, Max=100000 };
+		props.ScaleX = { Name="$ScaleX$", EditorHelp="$ScaleXHelp$", Type="int", Min=50, Max=1000 };
+		props.ScaleY = { Name="$ScaleY$", EditorHelp="$ScaleYHelp$", Type="int", Min=50, Max=1000 };
+		props.Speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=5 };
+		props.Energy = { Name="$Energy$", EditorHelp="$EnergyHelp$", Type="int", Min=1, Max=100000 };
+		props.Backpack = { Name="$Backpack$", EditorHelp="$BackpackHelp$", Type="bool" };
+		this.AIClonkEditorProps = { Type="proplist", Name=Clonk->GetName(), EditorProps=props };
+	}
+	return this.AIClonkEditorProps;
+}
+
+public func GetAIClonkDefaultPropValues()
+{
+	// Default settings for AI enemy clonks
+	return {
+		AttackMode = { Identifier="Sword" },
+		Color = 0xff0000,
+		Bounty = 0,
+		ScaleX = 100,
+		ScaleY = 100,
+		Speed = 100,
+		Energy = 50,
+		Backpack = true,
+		};
+}
+
+private func SetAIClonkAttackMode(proplist attack_mode)
+{
+	this.AttackMode.Identifier = attack_mode.Identifier;
+}
+
+private func GetDefaultAIRect(object target_object, proplist props)
+{
+	// Default attack rectangle around spawner
+	var r = {};
+	if (target_object)
+	{
+		r.x = target_object->GetX()-300;
+		r.y = target_object->GetY()-150;
+		r.wdt = 600;
+		r.hgt = 300;
+	}
+	return r;
+}
+
+public func AddEnemyDef(identifier, enemy_def, default_value, parameter_delegate)
+{
+	// First-time setup of enemy selection in editor
+	if (!this.EditorProps) this.EditorProps = {};
+	if (!this.EditorProps.enemy) this.EditorProps.enemy = { Name="$Enemy$", EditorHelp="$EnemyHelp$", Type="enum", OptionKey="Type", Set="SetEnemy", Save="Enemy", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	if (!this.EnemyDefs) this.EnemyDefs = {};
+	// Remember definition
+	this.EnemyDefs[identifier] = enemy_def;
+	// Add editor selection
+	if (!default_value) default_value = {};
+	default_value.Type = identifier;
+	var enemy_opt = {
+		Name=enemy_def.Name ?? enemy_def.SpawnType->GetName(),
+		EditorHelp=enemy_def.EditorHelp,
+		Delegate=parameter_delegate,
+		Value=default_value
+		};
+	var opts = this.EditorProps.enemy.Options;
+	opts[GetLength(opts)] = enemy_opt;
+}
+
+private func EvalAct_Activate(proplist props, proplist context)
+{
+	// User action: Activate spawner.
+	var spawner = UserAction->EvaluateValue("Object", props.Target, context);
+	if (!spawner || !spawner->IsEnemySpawn())
+	{
+		return;
+	}
+	spawner->ActivateSpawn();
+}
+
+private func EvalAct_Stop(proplist props, proplist context)
+{
+	// User action: Cancel spawner activation.
+	var spawner = UserAction->EvaluateValue("Object", props.Target, context);
+	if (!spawner || !spawner->IsEnemySpawn())
+	{
+		return;
+	}
+	spawner->CancelSpawn();
+}

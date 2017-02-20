@@ -21,6 +21,8 @@
 #include AI_Vehicles
 #include AI_AttackModes
 
+// Enemy spawn definition depends on this
+local DefinitionPriority = 50;
 
 // AI Settings.
 local MaxAggroDistance = 200; // Lose sight to target if it is this far away (unless we're ranged - then always guard the range rect).
@@ -285,6 +287,8 @@ local FxAI = new Effect
 	},
 	SetAttackMode = func(proplist attack_mode)
 	{
+		// Called by editor delegate when attack mdoe is changed.
+		// For now, attack mode parameter delegates are not supported. Just set by name.
 		return this.control->SetAttackMode(this.Target, attack_mode.Identifier);
 	},
 	EditorProps = {
