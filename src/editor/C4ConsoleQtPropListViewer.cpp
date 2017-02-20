@@ -1097,6 +1097,7 @@ C4PropertyDelegateEnum::C4PropertyDelegateEnum(const C4PropertyDelegateFactory *
 			// Child delegate for value (resolved at runtime because there may be circular references)
 			props->GetProperty(P_Delegate, &option.adelegate_val);
 			option.priority = props->GetPropertyInt(P_Priority);
+			option.force_serialization = props->GetPropertyInt(P_ForceSerialization);
 			options.push_back(option);
 		}
 	}
@@ -1437,14 +1438,26 @@ void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, cons
 {
 	// After an enum entry has been selected, set its value
 	// Either directly by value or through a function
+	// Get serialization base
+	const C4PropList *ignore_base_props;
+	if (option.force_serialization)
+	{
+		ignore_base_props = option_value.getPropList();
+		if (ignore_base_props) ignore_base_props = (ignore_base_props->IsStatic() ? ignore_base_props->IsStatic()->GetParent() : nullptr);
+	}
+	else
+	{
+		ignore_base_props = option.props.getPropList();
+	}
+	const C4PropListStatic *ignore_base_props_static = ignore_base_props ? ignore_base_props->IsStatic() : nullptr;
 	if (option.value_function.GetType() == C4V_Function)
 	{
-		use_path.SetProperty(FormatString("Call(%s, %s, %s)", option.value_function.GetDataString().getData(), use_path.GetRoot(), option_value.GetDataString(20).getData()).getData());
+		use_path.SetProperty(FormatString("Call(%s, %s, %s)", option.value_function.GetDataString().getData(), use_path.GetRoot(), option_value.GetDataString(20, ignore_base_props_static).getData()).getData());
 	}
 	else
 	{
 		C4PropList *option_props = option.props.getPropList();
-		use_path.SetProperty(option_value, option_props ? option_props->IsStatic() : nullptr);
+		use_path.SetProperty(option_value, ignore_base_props_static);
 	}
 }
 

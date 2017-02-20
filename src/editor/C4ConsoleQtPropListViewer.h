@@ -356,6 +356,7 @@ public:
 		C4V_Type type; // Assume this option is set when value is of given type
 		C4Value props; // Stored pointer to proplist defining this option
 		C4Value value; // Value to set if this entry is selected
+		bool force_serialization; // If serialization should be forced on value
 		C4Value value_function; // Function to be called to set value
 		mutable C4PropertyDelegate *adelegate; // Delegate to display if this entry is selected (pointer owned by C4PropertyDelegateFactory)
 		C4Value adelegate_val; // Value to resolve adelegate from
@@ -368,7 +369,7 @@ public:
 		} storage_type;
 		int32_t priority; // Custom sort order
 
-		Option() : type(C4V_Any), adelegate(nullptr), storage_type(StorageNone), priority(0) {}
+		Option() : type(C4V_Any), adelegate(nullptr), storage_type(StorageNone), priority(0), force_serialization(false) {}
 	};
 
 protected:
