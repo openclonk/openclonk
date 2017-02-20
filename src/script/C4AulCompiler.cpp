@@ -228,7 +228,10 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 
 	void HandleError(const C4AulError &e)
 	{
-		AddBCC(nullptr, AB_ERR, (intptr_t)::Strings.RegString(e.what()));
+		if (Fn)
+		{
+			AddBCC(nullptr, AB_ERR, (intptr_t)::Strings.RegString(e.what()));
+		}
 		if (target_host) // target_host may be nullptr for DirectExec scripts
 		{
 			target_host->Engine->ErrorHandler->OnError(e.what());
