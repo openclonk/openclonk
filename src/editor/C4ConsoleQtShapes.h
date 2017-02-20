@@ -206,6 +206,8 @@ protected:
 	static int32_t DragBorderToEdge(int32_t border) { return -2 - border; }
 	static int32_t VertexToDragBorder(int32_t vertex) { return vertex; }
 	static int32_t EdgeToDragBorder(int32_t edge) { return -edge - 2; }
+
+	void DrawEdge(class C4TargetFacet &cgo, const Vertex &v0, const Vertex &v2, uint32_t clr, float line_width, bool highlight);
 public:
 	C4ConsoleQtGraph(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
@@ -250,10 +252,12 @@ signals:
 // Specialization of graph: One line of connected vertices
 class C4ConsoleQtPolyline : public C4ConsoleQtGraph
 {
+private:
+	bool start_from_object = false;
 public:
-	C4ConsoleQtPolyline(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list)
-		: C4ConsoleQtGraph(for_obj, props, parent_delegate, shape_list) {}
+	C4ConsoleQtPolyline(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 
+	void Draw(class C4TargetFacet &cgo, float line_width) override;
 	void SetValue(const C4Value &val) override;
 	C4Value GetValue() const override;
 

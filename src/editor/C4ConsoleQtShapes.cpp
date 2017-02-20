@@ -931,6 +931,26 @@ bool C4ConsoleQtGraph::IsEdgeHit(int32_t edge_index, Qt::CursorShape *drag_curso
 	return true;
 }
 
+void C4ConsoleQtGraph::DrawEdge(class C4TargetFacet &cgo, const Vertex &v0, const Vertex &v1, uint32_t clr, float edge_width, bool highlight)
+{
+	float vx0 = AbsX(v0.x) + cgo.X - cgo.TargetX;
+	float vy0 = AbsY(v0.y) + cgo.Y - cgo.TargetY;
+	float vx1 = AbsX(v1.x) + cgo.X - cgo.TargetX;
+	float vy1 = AbsY(v1.y) + cgo.Y - cgo.TargetY;
+	if (highlight)
+	{
+		// Selected edge is surrounded by a highlight
+		float dx = v1.x - v0.x, dy = v1.y - v0.y;
+		float d = sqrt(dx*dx + dy*dy);
+		float ddx = dy / d * edge_width;
+		float ddy = dx / d * edge_width;
+		pDraw->DrawLineDw(cgo.Surface, vx0 + ddx, vy0 + ddy, vx1 + ddx, vy1 + ddy, 0xffffffff, edge_width);
+		pDraw->DrawLineDw(cgo.Surface, vx0 - ddx, vy0 - ddy, vx1 - ddx, vy1 - ddy, 0xffffffff, edge_width);
+	}
+	// Regular line draw
+	pDraw->DrawLineDw(cgo.Surface, vx0, vy0, vx1, vy1, clr, edge_width);
+}
+
 void C4ConsoleQtGraph::Draw(class C4TargetFacet &cgo, float line_width)
 {
 	// Draw edges as lines
@@ -942,23 +962,9 @@ void C4ConsoleQtGraph::Draw(class C4TargetFacet &cgo, float line_width)
 		assert(edge.vertex_indices[0] < graph.vertices.size() && edge.vertex_indices[1] < graph.vertices.size());
 		const Vertex &v0 = graph.vertices[edge.vertex_indices[0]];
 		const Vertex &v1 = graph.vertices[edge.vertex_indices[1]];
-		float vx0 = AbsX(v0.x) + cgo.X - cgo.TargetX;
-		float vy0 = AbsY(v0.y) + cgo.Y - cgo.TargetY;
-		float vx1 = AbsX(v1.x) + cgo.X - cgo.TargetX;
-		float vy1 = AbsY(v1.y) + cgo.Y - cgo.TargetY;
 		float edge_width = line_width * edge.line_thickness;
-		if (IsEdgeDrag(selected_border) && DragBorderToEdge(selected_border) == i)
-		{
-			// Selected edge is surrounded by a highlight
-			float dx = v1.x - v0.x, dy = v1.y - v0.y;
-			float d = sqrt(dx*dx + dy*dy);
-			float ddx = dy / d * edge_width;
-			float ddy = dx / d * edge_width;
-			pDraw->DrawLineDw(cgo.Surface, vx0 + ddx, vy0 + ddy, vx1 + ddx, vy1 + ddy, 0xffffffff, edge_width);
-			pDraw->DrawLineDw(cgo.Surface, vx0 - ddx, vy0 - ddy, vx1 - ddx, vy1 - ddy, 0xffffffff, edge_width);
-		}
-		// Regular line draw
-		pDraw->DrawLineDw(cgo.Surface, vx0, vy0, vx1, vy1, clr, edge_width);
+		bool highlight = (IsEdgeDrag(selected_border) && DragBorderToEdge(selected_border) == i);
+		DrawEdge(cgo, v0, v1, clr, edge_width, highlight);
 		++i;
 	}
 	// Draw vertices as circles with cross inside
@@ -1431,6 +1437,26 @@ void C4ConsoleQtGraph::EditGraphValue(C4Value &val, C4ControlEditGraph::Action a
 
 
 /* Open poly line */
+
+C4ConsoleQtPolyline::C4ConsoleQtPolyline(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list)
+	: C4ConsoleQtGraph(for_obj, props, parent_delegate, shape_list)
+{
+	if (props)
+	{
+		start_from_object = props->GetPropertyBool(P_StartFromObject, start_from_object);
+	}
+}
+
+void C4ConsoleQtPolyline::Draw(class C4TargetFacet &cgo, float line_width)
+{
+	// Line from object center to first vertex
+	if (start_from_object && graph.vertices.size())
+	{
+		DrawEdge(cgo, C4ConsoleQtGraph::Vertex(), graph.vertices[0], border_color, line_width, false);
+	}
+	// Remaining polyline is handled by regular graph drawing
+	C4ConsoleQtGraph::Draw(cgo, line_width);
+}
 
 void C4ConsoleQtPolyline::SetValue(const C4Value &val)
 {

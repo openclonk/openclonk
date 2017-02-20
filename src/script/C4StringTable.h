@@ -506,6 +506,7 @@ enum C4PropertyName
 	P_Get,
 	P_Relative,
 	P_CanMoveCenter,
+	P_StartFromObject,
 	P_Storage,
 	P_Elements,
 	P_EditOnSelection,

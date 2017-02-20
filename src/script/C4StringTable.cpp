@@ -282,6 +282,7 @@ C4StringTable::C4StringTable()
 	P[P_Get] = "Get";
 	P[P_Relative] = "Relative";
 	P[P_CanMoveCenter] = "CanMoveCenter";
+	P[P_StartFromObject] = "StartFromObject";
 	P[P_Storage] = "Storage";
 	P[P_Elements] = "Elements";
 	P[P_EditOnSelection] = "EditOnSelection";
