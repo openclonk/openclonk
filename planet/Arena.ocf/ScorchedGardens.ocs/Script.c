@@ -74,8 +74,10 @@ protected func OnPlayerRelaunch(int plr)
 	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	relaunch->SetRelaunchTime(3);
+	clonk.MaxContentsCount = 2;
 	clonk->CreateContents(TeleGlove);
 	clonk->CreateContents(WindBag);
+
 	return;
 }
 

@@ -1,263 +1,110 @@
-/*-- 
-	Hideout
-	Author: Mimmo (edit by DasWipf)
-	
-	A capture the flag scenario for two teams, both teams occupy a hideout and must steal the flag from
-	the opposing team.
---*/
+/** 
+	Scorches Gardens
+	A melee in a fiery setting.
+
+	@author Mimmo_O (edit by DasWipf)
+*/
+
+
 
 protected func Initialize()
 {
-	// Environment 
+	// Goal.
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
+	
+	if (SCENPAR_Goal == 0)
+	{
+		CreateObject(Goal_LastManStanding);
+	}
+	else 
+	{	
+		CreateObject(Goal_DeathMatch);
+	}
+	
+	
+	// Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	var time=CreateObject(Time);
-	time->SetTime();
-	time->SetCycleSpeed();
-	FindObject(Find_ID(Moon))->SetMoonPhase(3);
-	FindObject(Find_ID(Moon))->SetCon(150);
-	FindObject(Find_ID(Moon))->SetPosition(LandscapeWidth()/2,150);
-
-	// Goal: Capture the flag, with bases in both hideouts.
-	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 135, 266);
-	goal->SetFlagBase(2, LandscapeWidth() - 135, 266);
-	CreateObject(Rule_KillLogs);	
+	SetSkyAdjust(RGB(255, 128, 0));
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
+	SetMatAdjust(RGB(255, 150, 128));
 	
-	var gate = CreateObjectAbove(StoneDoor, 345, 272, NO_OWNER);
-	gate->SetClrModulation(RGB(140,185,255));
-	gate->SetAutoControl(1);
-	var gate = CreateObjectAbove(StoneDoor, LandscapeWidth()-344, 272, NO_OWNER);
-	gate->SetClrModulation(RGB(140,185,255));
-	gate->SetAutoControl(2);
+	AddEffect("RandomMeteor", nil, 100, 20);
+	AddEffect("DangerousLava", nil, 100, 1);
 
-	// Chests with weapons.
-	var chest;
-	chest = CreateObjectAbove(Chest, 60, 220, NO_OWNER);
-	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
-	chest = CreateObjectAbove(Chest, 150, 370, NO_OWNER);
-	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
-	chest = CreateObjectAbove(Chest, LandscapeWidth() - 60, 220, NO_OWNER);
-	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
-	chest = CreateObjectAbove(Chest, LandscapeWidth() - 150, 370, NO_OWNER);
-	chest->MakeInvincible();
-	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
-
-	
-	chest = CreateObjectAbove(Chest, LandscapeWidth()/2, 320, NO_OWNER);
-	chest->MakeInvincible();
-	AddEffect("FillOtherChest", chest, 100, 5 * 36);
-	
-	AddEffect("SnowyWinter", nil, 100, 1);
-	Sound("Environment::WindLoop",true,20,nil,+1);
-	AddEffect("GeysirExplosion", nil, 100, 1);
-	// Brick edges, notice the symmetric landscape.
-	PlaceEdges();
+	PlaceGras();
 	return;
 }
 
-protected func CaptureFlagCount() 
-{ 
-	var CaptureFlagCount = SCENPAR_Captures
-	return CaptureFlagCount;
+
+global func FxRandomMeteorTimer()
+{
+	if (!Random(GetPlayerCount() + 2)) 
+		return FX_OK;
+	LaunchMeteor(50 + Random(LandscapeWidth() - 100), -10, 40 + Random(40), RandomX(-20, 20), 0);
+	return FX_OK;
 }
 
-global func FxGeysirExplosionTimer(object target, effect)
+private func PlaceGras()
 {
-	effect.counter++;
-	
-	if(Random(2))
-	{
-		var x=600+Random(300);
-		var y=250+Random(200);
-		while(GetMaterial(x,y) != Material("Water"))
-		{
-			var x=600+Random(300);
-			var y=250+Random(200);
-		}
-		Bubble(1,x,y);
-	}
-	if(effect.counter>1900 && effect.counter<2030)
-	{
-
-		for(var i=0; i<(-(1900-effect.counter)); i+=10 )
-		{
-			var x=600+Random(300);
-			var y=250+Random(200);
-			while(GetMaterial(x,y) != Material("Water"))
-			{
-				var x=600+Random(300);
-				var y=250+Random(200);
-			}
-			Bubble(1,x,y);
-		}
-	}
-	if(effect.counter>2000)
-	{
-		var x=LandscapeWidth()/2;
-		var y=280;
-		while(!GBackLiquid(x,y)) y++;
-		y-=3;
-		for(var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60)));
-		for(var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50)));
-		CreateParticle("Air", PV_Random(x-6, x+6), PV_Random(y-3, y), PV_Random(-15, 15), PV_Random(-90, -5), PV_Random(20, 100), Particles_Air());
-		if(effect.counter>2072) effect.counter=0;
-		for(var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
-		{
-			obj->SetYDir(Max(obj->GetYDir()-15,-50));
-		}
-
-	}
-}
-
-global func FxSnowyWinterTimer(object target, effect, int time)
-{
-	if(time%1200 == 100 ) 
-	{
-		var add=RandomX(-2,2);
-		effect.snow_count=BoundBy(effect.snow_count+add,1,5);	
-	}
-	for(var i=0; i<(effect.snow_count); i++)
-	{
-		InsertMaterial(Material("Snow"),RandomX(300,LandscapeWidth()-300),1,RandomX(-10,10),10);
-		ExtractLiquid(LandscapeWidth()/2,295);
-	}
-	ExtractLiquid(LandscapeWidth()/2,295);
-	ExtractLiquid(LandscapeWidth()/2,285);
-	ExtractLiquid(340,340);
-	ExtractLiquid(400,340);
-	ExtractLiquid(1100,340);
-	ExtractLiquid(1160,340);
-	if(!Random(3)) for(var obj in FindObjects(Find_Or(Find_InRect(0,-250,300,280),Find_InRect(LandscapeWidth()-300,-250,300,280))))
-	{
-		obj->~DoEnergy(-1); 
-	}
-}
-
-global func PlaceEdges()
-{
-	var x=[124, 116, 116, 236, 236, 223, 308, 364, 380, 353, 353, 336, 388, 724, 37, 45, 53, 356, 348, 118, 118, 732, 437, 437, 126, 118, 137, 145, 183, 175, 156, 164, 221, 194, 213, 202, 107, 99, 80, 88, 69, 46, 54, 74, 66, 86, 94, 45, 45, 45, 45, 45, 45, 140, 231, 677, 733, 212, 204, 122, 130, 234, 226, 239, 247, 217, 188, 188, 373, 353, 353, 389, 365, 397, 206, 214, 194, 186, 227, 219, 196, 204, 154, 146, 166, 174, 134, 126, 106, 114, 45, 45, 316, 308, 327, 335, 308, 194, 187, 174, 166, 53, 53, 394, 404, 386, 373, 270, 259, 240, 232, 278, 251, 297, 289, 308, 308, 53, 53, 130, 122, 146, 154, 167, 174, 186, 194, 205, 213, 224, 232, 196, 205, 225, 237, 257, 245, 205, 336, 336, 336, 373, 386, 420, 394, 357, 69, 69, 157, 157, 205, 347, 355, 375, 367, 407, 395, 387, 415, 435, 427, 429, 297, 305, 285, 277, 265, 325, 317, 267, 259, 279, 287, 307, 299, 340, 327, 319, 348, 356, 396, 353, 336, 353, 336];
-	var y=[261, 261, 269, 313, 305, 300, 388, 156, 148, 218, 210, 210, 140, 357, 301, 269, 261, 309, 301, 305, 313, 349, 301, 309, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 388, 157, 157, 157, 157, 157, 157, 173, 165, 185, 193, 213, 205, 277, 300, 300, 308, 300, 300, 301, 301, 157, 157, 188, 188, 205, 237, 229, 165, 205, 223, 157, 189, 148, 157, 157, 157, 157, 188, 188, 188, 188, 157, 157, 157, 157, 157, 157, 157, 157, 225, 232, 348, 349, 348, 348, 356, 300, 300, 300, 300, 328, 321, 317, 317, 317, 317, 388, 388, 388, 388, 388, 388, 388, 388, 366, 374, 338, 346, 317, 317, 317, 317, 317, 317, 317, 317, 317, 317, 317, 317, 237, 205, 205, 205, 205, 205, 215, 205, 223, 218, 300, 300, 300, 300, 276, 377, 369, 268, 276, 223, 348, 348, 348, 348, 348, 348, 348, 348, 348, 348, 317, 205, 205, 205, 205, 205, 205, 205, 188, 188, 188, 188, 188, 188, 188, 188, 188, 180, 164, 140, 231, 231, 237, 237];
-	var d=[0, 1, 3, 2, 0, 1, 1, 1, 1, 2, 0, 1, 1, 2, 2, 2, 2, 3, 3, 1, 3, 2, 0, 2, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 3, 2, 2, 3, 3, 2, 2, 0, 0, 2, 2, 0, 3, 0, 0, 0, 0, 1, 1, 0, 2, 3, 1, 0, 3, 3, 1, 2, 2, 0, 2, 2, 2, 3, 2, 2, 3, 0, 1, 1, 0, 2, 3, 3, 2, 2, 3, 3, 2, 0, 2, 0, 1, 1, 0, 3, 0, 1, 0, 1, 2, 0, 2, 3, 3, 2, 1, 0, 0, 1, 0, 1, 0, 1, 1, 3, 0, 2, 2, 3, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 2, 2, 2, 3, 3, 2, 0, 3, 1, 3, 0, 1, 1, 0, 0, 2, 0, 0, 2, 2, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 2, 3, 2, 2, 3, 2, 2, 3, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 2, 3, 0, 1];
+	var x=[502,468,530,525,548,560,555,551,461,483,354,425,348,343,338,420,412,405,300,315,310,305,290,193,198,169,181,176,127,137,142,133,122,147,35,45,41,30,122];
+	var y=[225,221,201,206,191,178,181,185,228,220,190,234,190,188,188,231,226,221,229,218,221,228,229,262,260,261,261,259,227,227,230,228,237,240,221,221,219,222,224];
+	var r=[45,-45,-45,-45,-45,-45,-45,-45,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-45,45,45,0,-45,0,-45,45,0,-45,90];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		DrawMaterialTriangle("Brick-brick", x[i], y[i], [0,3,1,2][d[i]]);
-		DrawMaterialTriangle("Brick-brick", LandscapeWidth() + 1 - x[i], y[i], [3,0,2,1][d[i]]);
+		while(GBackSolid(x[i],y[i])) y[i]--;
+		var edge=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
+		edge->SetCategory(C4D_StaticBack);
+		edge->SetR(r[i]); 
+		edge->Initialize();
+		edge->SetClrModulation(RGB(225+Random(30), Random(30), Random(30)));
+		
 	}
-	return 1;
-}
-
-protected func InitializePlayer(int plr)
-{
-	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
 	return;
 }
 
-// Gamecall from CTF goal, on respawning.
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
+	clonk->DoEnergy(100000);
+	var x = RandomX(75,500);
+	var y=100;
+	while(!GBackSolid(x,y)) y+=1;
+	y-=30;
+	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
-	relaunch->SetRelaunchTime(8, true);
+	relaunch->SetRelaunchTime(3);
+	clonk.MaxContentsCount = 2;
+	clonk->CreateContents(TeleGlove);
+	clonk->CreateContents(WindBag);
+
 	return;
 }
 
-func RelaunchWeaponList() { return [Blunderbuss, Sword, Javelin,  FrostboltScroll, Shovel]; }
-
-/*-- Chest filler effects --*/
-
-global func FxFillBaseChestStart(object target, effect, int temporary, bool supply)
+public func OnClonkLeftRelaunch(object clonk)
 {
-	if (temporary) 
-		return 1;
-		
-	effect.supply_type=supply;
-	if(effect.supply_type) 
-		var w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
-	else
-		var w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
-	for(var i=0; i<5; i++)
-		target->CreateChestContents(w_list[i]);
-	return 1;
-}
-global func FxFillBaseChestTimer(object target, effect)
-{
-	var maxcount = [];
-	
-	if(effect.supply_type) 
-	{
-		var w_list = [Firestone, Dynamite, IronBomb, Shovel, Loam, Ropeladder];
-		var maxcount = [2,2,1,2,1];
-	}
-	else
-	{
-		var w_list = [Bow, Shield, Sword, Javelin, Blunderbuss, FrostboltScroll];
-		var maxcount = [1,2,1,1,1,2];
-	}
-	
-	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
-	if(contents > 5) return 1;
-	
-	for(var i=0; i<2 ; i++)
-	{
-		var r = Random(GetLength(w_list));
-		if (target->ContentsCount(w_list[r]) < maxcount[r])
-		{
-			target->CreateChestContents(w_list[r]);
-			i=3;
-		}
-	}
-	return 1;
-}
-
-
-global func FxFillOtherChestStart(object target, effect, int temporary)
-{
-	if (temporary) 
-		return 1;
-	var w_list = [Sword, Javelin, Club, Firestone, Dynamite, IronBomb, Firestone];
-	if (target->ContentsCount() < 5)
-		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
-	return 1;
-}
-
-global func FxFillOtherChestTimer(object target)
-{
-
-	var w_list = [Sword, Javelin, Dynamite, IronBomb, WindScroll, FrostboltScroll, Loam, HardeningScroll, PowderKeg];
-	var maxcount = [1,1,3,1,2,1,1,1];
-	
-	var contents;
-	for(var i=0; i<target->GetLength(w_list); i++)
-		contents+=target->ContentsCount(w_list[i]);
-	if(contents > 5) return 1;
-	
-	for(var i=0; i<2 ; i++)
-	{
-		var r = Random(GetLength(w_list));
-		if (target->ContentsCount(w_list[r]) < maxcount[r])
-		{
-			target->CreateChestContents(w_list[r]);
-			i=3;
-		}
-	}
-	return 1;
-}
-
-global func CreateChestContents(id obj_id)
-{
-	if (!this)
-		return;
-	var obj = CreateObjectAbove(obj_id);
-	if (obj_id == Bow)
-		obj->CreateContents(Arrow);
-	if (obj_id == Blunderbuss)
-		obj->CreateContents(LeadBullet);
-	obj->Enter(this);	
+	clonk->CreateParticle("Fire", 0, 0, PV_Random(-20, 20), PV_Random(-40, 5), PV_Random(20, 90), Particles_Glimmer(), 30);
+	clonk->SetYDir(-5);
 	return;
+}
+
+// Remove contents of clonks on their death.
+public func OnClonkDeath(object clonk)
+{
+	while (clonk->Contents())
+		clonk->Contents()->RemoveObject();
+	return;
+}
+
+//Settings for LMS and DM.
+
+public func RelaunchCount()
+{
+	var RelaunchCount = (SCENPAR_Relaunchs);
+	return RelaunchCount;
+}	
+public func WinKillCount() 
+{ 
+	var WinKillCount = (SCENPAR_Relaunchs);
+	return WinKillCount; 
 }
