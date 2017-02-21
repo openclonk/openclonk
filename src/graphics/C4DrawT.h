@@ -20,6 +20,9 @@
 
 #include "graphics/C4Draw.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+
 class CStdNoGfx : public C4Draw
 {
 public:
@@ -48,5 +51,7 @@ public:
 	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float, C4ShaderCall*) {}
 	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD, C4ShaderCall*) {}
 };
+
+#pragma clang diagnostic pop
 
 #endif

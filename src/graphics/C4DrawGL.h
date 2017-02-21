@@ -243,32 +243,32 @@ public:
 	bool GetVAO(unsigned int vaoid, GLuint& vao);
 
 	// General
-	void Clear();
-	void Default();
-	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
+	void Clear() override;
+	void Default() override ;
+	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) override; // reinit clipper for new resolution
 	// Clipper
-	bool UpdateClipper(); // set current clipper to render target
+	bool UpdateClipper() override; // set current clipper to render target
 	const StdProjectionMatrix& GetProjectionMatrix() const { return ProjectionMatrix; }
-	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) override;
 	// Surface
-	virtual bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
-	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices);
+	virtual bool PrepareRendering(C4Surface * sfcToSurface) override; // check if/make rendering possible to given surface
+	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) override;
 	bool EnsureMainContextSelected() override;
 
-	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
+	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp) override;
 	// Blit
 	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdProjectionMatrix* out_modelview);
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
-	void FillBG(DWORD dwClr=0);
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) override;
+	void FillBG(DWORD dwClr=0) override;
 	// Drawing
-	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call);
-	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call);
-	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod, C4ShaderCall* shader_call);
+	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call) override;
+	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call) override;
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod, C4ShaderCall* shader_call) override;
 	void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex, C4ShaderCall* shader_call);
 	// device objects
-	bool RestoreDeviceObjects();    // restore device dependent objects
-	bool InvalidateDeviceObjects(); // free device dependent objects
-	bool DeviceReady() { return !!pMainCtx; }
+	bool RestoreDeviceObjects() override;    // restore device dependent objects
+	bool InvalidateDeviceObjects() override; // free device dependent objects
+	bool DeviceReady() override { return !!pMainCtx; }
 	bool InitShaders(C4GroupSet* pGroups); // load shaders from given group
 	C4Shader* GetSpriteShader(int ssc);
 	C4Shader* GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal);
@@ -283,7 +283,7 @@ public:
 protected:
 	bool CheckGLError(const char *szAtOp);
 	const char* GLErrorString(GLenum code);
-	virtual bool Error(const char *szMsg);
+	virtual bool Error(const char *szMsg) override;
 
 	friend class C4Surface;
 	friend class C4TexRef;

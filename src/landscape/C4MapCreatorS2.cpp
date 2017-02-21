@@ -1630,7 +1630,7 @@ bool AlgoMandel(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 
 bool AlgoGradient(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
-	return (abs((iX^(iY*3)) * 2531011L) % 214013L) % z > iX / pOvrl->Wdt;
+	return (std::abs((iX^(iY*3)) * 2531011L) % 214013L) % z > iX / pOvrl->Wdt;
 }
 
 bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)

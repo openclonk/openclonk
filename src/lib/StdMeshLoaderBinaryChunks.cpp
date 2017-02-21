@@ -87,7 +87,7 @@ namespace Ogre
 			chunk->type = id;
 			chunk->size = size;
 			chunk->ReadImpl(stream);
-			return move(chunk);
+			return chunk;
 		}
 
 		void ChunkUnknown::ReadImpl(DataStream *stream) { stream->Seek(GetSize()); }

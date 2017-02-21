@@ -126,7 +126,7 @@ void C4MainStat::Show()
 		StatArray[i] = pBestStat;
 	}
 
-	delete bHS;
+	delete [] bHS;
 
 	LogSilent("** Stat");
 

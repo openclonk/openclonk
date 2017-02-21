@@ -631,6 +631,7 @@ namespace
 		std::vector<BoneTransform> bones;
 		if (mesh_instance.GetBoneCount() == 0)
 		{
+#pragma clang diagnostic ignored "-Wmissing-braces" 
 			// Upload dummy bone so we don't have to do branching in the vertex shader
 			static const BoneTransform dummy_bone = {
 				1.0f, 0.0f, 0.0f, 0.0f,
@@ -678,7 +679,7 @@ namespace
 		else
 		{
 			PretransformedMeshVertex vtx{ 0, 0, 0, 0, 0, 0 };
-			for (int i = 0; i < StdMeshVertex::MaxBoneWeightCount && in.bone_weight[i] > 0; ++i)
+			for (size_t i = 0; i < StdMeshVertex::MaxBoneWeightCount && in.bone_weight[i] > 0; ++i)
 			{
 				float weight = in.bone_weight[i];
 				const auto &bone = mesh_instance.GetBoneTransform(in.bone_index[i]);

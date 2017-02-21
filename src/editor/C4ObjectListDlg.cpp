@@ -95,7 +95,7 @@ void C4ObjectListDlg::OnObjectContainerChanged(C4Object *obj, C4Object *old_cont
 }
 
 
-#endif WITH_QT_EDITOR
+#endif // WITH_QT_EDITOR
 
 
 C4ObjectListChangeListener & ObjectListChangeListener = Console.ObjectListDlg;
