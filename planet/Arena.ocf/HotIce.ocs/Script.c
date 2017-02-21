@@ -460,15 +460,3 @@ func IsFirestoneSpot(int x, int y)
 // Very thorough ice surrounding check so they don't explode right away or when the first layer of ice melts
 	return GBackSolid(x,y-1) && GBackSolid(x,y+4) && GBackSolid(x-2,y) && GBackSolid(x+2,y);
 }
-
-// Send scenario settings to the masterserver.
-func CollectStats()
-{
-	return
-	{
-		MapType = SCENPAR_MapType,
-		Weapons = SCENPAR_Weapons,
-		SpawnType = SCENPAR_SpawnType,
-		Rounds = SCENPAR_Rounds,
-	};
-}
