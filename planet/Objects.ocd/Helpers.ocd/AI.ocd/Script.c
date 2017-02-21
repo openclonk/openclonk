@@ -206,6 +206,18 @@ public func SetEncounterCB(object clonk, string cb_fn)
 	return true;
 }
 
+// Set attack path
+public func SetAttackPath(object clonk, array new_attack_path)
+{
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetAttackPath(%v, %v) not called from definition context but from %v", clonk, new_attack_path, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.attack_path = new_attack_path;
+	return true;
+}
+
 
 /*-- AI Effect --*/
 
@@ -287,16 +299,27 @@ local FxAI = new Effect
 	},
 	SetAttackMode = func(proplist attack_mode)
 	{
-		// Called by editor delegate when attack mdoe is changed.
+		// Called by editor delegate when attack mode is changed.
 		// For now, attack mode parameter delegates are not supported. Just set by name.
 		return this.control->SetAttackMode(this.Target, attack_mode.Identifier);
+	},
+	SetAttackPath = func(array attack_path)
+	{
+		// Called by editor delegate when attack path is changed.
+		return this.control->SetAttackPath(this.Target, attack_path);
 	},
 	EditorProps = {
 		guard_range = { Name = "$GuardRange$", Type = "rect", Storage = "proplist", Color = 0xff00, Relative = false },
 		ignore_allies = { Name = "$IgnoreAllies$", Type = "bool" },
 		max_aggro_distance = { Name = "$MaxAggroDistance$", Type = "circle", Color = 0x808080 },
 		active = { Name = "$Active$", EditorHelp = "$ActiveHelp$", Type = "bool", Priority = 50, AsyncGet = "GetActive", Set = "SetActive" },
-		auto_search_target = { Name = "$AutoSearchTarget$", EditorHelp = "$AutoSearchTargetHelp$", Type = "bool" }
+		auto_search_target = { Name = "$AutoSearchTarget$", EditorHelp = "$AutoSearchTargetHelp$", Type = "bool" },
+		attack_path = { Name = "$AttackPath$", EditorHelp = "$AttackPathHelp$", Type = "enum", Set = "SetAttackPath", Options = [
+			{ Name="$None$" },
+			{ Name="$AttackPath$", Type=C4V_Array, Value = [{X = 0, Y = 0}], Delegate =
+				{ Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject=true, DrawArrows=true, Color=0xdf0000, Relative=false }
+			}
+		] }
 	},
 	// Save this effect and the AI for scenarios.
 	SaveScen = func(proplist props)
@@ -308,6 +331,8 @@ local FxAI = new Effect
 			props->AddCall("AI", this.control, "SetActive", this.Target, false);
 		if (this.attack_mode.Identifier != "Default")
 			props->AddCall("AI", this.control, "SetAttackMode", this.Target, Format("%v", this.attack_mode.Identifier));
+		if (this.attack_path)
+			props->AddCall("AI", this.control, "SetAttackPath", this.Target, this.attack_path);
 		if (this.home_x != this.Target->GetX() || this.home_y != this.Target->GetY() || this.home_dir != this.Target->GetDir())
 			props->AddCall("AI", this.control, "SetHome", this.Target, this.home_x, this.home_y, GetConstantNameByValueSafe(this.home_dir, "DIR_"));
 		props->AddCall("AI", this.control, "SetGuardRange", this.Target, this.guard_range.x, this.guard_range.y, this.guard_range.wdt, this.guard_range.hgt);
@@ -344,6 +369,7 @@ public func Execute(effect fx, int time)
 	// Find something to fight with.
 	if (!fx.weapon) 
 	{
+		fx.can_attack_structures = false;
 		this->CancelAiming(fx);
 		if (!this->ExecuteArm(fx))
 			return this->ExecuteIdle(fx);
@@ -518,6 +544,7 @@ public func FindInventoryWeapon(effect fx)
 	// Throwing weapons.
 	if ((fx.weapon = fx.Target->FindContents(Firestone)) || (fx.weapon = fx.Target->FindContents(Rock)) || (fx.weapon = fx.Target->FindContents(Lantern))) 
 	{
+		fx.can_attack_structures = fx.weapon->~HasExplosionOnImpact();
 		fx.strategy = this.ExecuteThrow;
 		return true;
 	}
@@ -542,6 +569,7 @@ private func FindInventoryWeaponGrenadeLauncher(effect fx)
 			fx.aim_wait = 85;
 			fx.ammo_check = this.HasBombs;
 			fx.ranged = true;
+			fx.can_attack_structures = true;
 			return true;
 		}
 		else
@@ -579,6 +607,8 @@ private func FindInventoryWeaponBow(effect fx)
 			fx.aim_wait = 0;
 			fx.ammo_check = this.HasArrows;
 			fx.ranged = true;
+			var arrow = fx.weapon->Contents(0) ?? FindObject(Find_Container(fx.Target), Find_Func("IsArrow"));
+			fx.can_attack_structures = arrow && arrow->~IsExplosive();
 			return true;
 		}
 		else

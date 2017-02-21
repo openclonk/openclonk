@@ -46,3 +46,5 @@ Speed=Geschwindigkeit
 SpeedHelp=Geschwindigkeit der Clonks in Prozent der Standardgeschwindigkeit
 Energy=Energie
 EnergyHelp=Lebenspunkte
+AttackPath=Angriffspfad
+AttackPathHelp=Pfad, entlang dessen sich die KI-Gegner bewegen. Flugrichtung fuer Raketen und Laufrichtung fuer Clonks. Flugrichtungen werden automatisch um den Spawn-Offset verschoben. Befindet sich ein Gebaeude auf einem Eckpunkt des Pfades, greifen Clonks das Gebaeude an.

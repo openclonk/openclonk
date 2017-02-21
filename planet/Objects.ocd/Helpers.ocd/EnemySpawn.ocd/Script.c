@@ -48,6 +48,17 @@ public func SetAutoActivate(bool new_auto_activate) { auto_activate = new_auto_a
 
 public func Initialize()
 {
+	// Default attack path
+	var tx=0, ty=0;
+	if (GetY() < 100 && LandscapeHeight() > 400)
+	{
+		ty = 100;
+	}
+	else
+	{
+		if (GetX() < LandscapeWidth()/2) tx = Min(100, LandscapeWidth()-GetX()-8); else tx = Max(-100, -GetX()+8);
+	}
+	attack_path = [{X=tx, Y=ty}];
 	spawned_enemies = [];
 	// Make sure there's an enemy script player
 	if (!GetType(g_enemyspawn_player))
@@ -325,14 +336,28 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 	// AI
 	AI->AddAI(clonk);
 	AI->SetMaxAggroDistance(clonk, Max(LandscapeWidth(), LandscapeHeight()));
-	var last_pos = clonk_attack_path[-1];
-	AI->SetHome(clonk, last_pos.X, last_pos.Y, Random(2));
-	var guard_range = clonk_data.GuardRange ?? { x=last_pos.X-300, y=last_pos.Y-150, wdt=600, hgt=300 };
+	var guard_range = clonk_data.GuardRange;
+	if (!guard_range)
+	{
+		// Automatic guard range around attack path
+		var guard_min_x = spawner->GetX();
+		var guard_min_y = spawner->GetY();
+		var guard_max_x = guard_min_x, guard_max_y = guard_min_y;
+		for (var attack_pos in clonk_attack_path)
+		{
+			guard_min_x = Min(guard_min_x, attack_pos.X);
+			guard_min_y = Min(guard_min_y, attack_pos.Y);
+			guard_max_x = Max(guard_max_x, attack_pos.X);
+			guard_max_y = Max(guard_max_y, attack_pos.Y);
+		}
+		guard_range = { x=guard_min_x-300, y=guard_min_y-150, wdt=guard_max_x-guard_min_x+600, hgt=guard_max_y-guard_min_y+300 };
+	}
 	AI->SetGuardRange(clonk, guard_range.x,guard_range.y,guard_range.wdt,guard_range.hgt);
 	if (clonk_data.AttackMode)
 	{
 		AI->SetAttackMode(clonk, clonk_data.AttackMode.Identifier);
 	}
+	AI->SetAttackPath(clonk, clonk_attack_path);
 	// Return clonk to be added to spawned enemy list
 	return clonk;
 }
@@ -401,7 +426,7 @@ public func Definition(def)
 	  ] };
 	def.EditorProps.spawn_delay = { Name="$SpawnDelay$", EditorHelp="$SpawnDelayHelp$", Type="int", Min=0, Set="SetSpawnDelay", Save="SpawnDelay" };
 	def.EditorProps.spawn_interval = { Name="$SpawnInterval$", EditorHelp="$SpawnIntervalHelp$", Type="int", Min=0, Set="SetSpawnInterval", Save="SpawnInterval" };
-	//def.EditorProps.attack_path
+	def.EditorProps.attack_path = { Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject=true, DrawArrows=true, Color=0xdf0000, Relative=true, Save="AttackPath" }; // always saved
 	def.EditorProps.auto_activate = { Name="$AutoActivate$", EditorHelp="$AutoActivateHelp$", Type="bool", Set="SetAutoActivate", Save="AutoActivate" };
 	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps() );
 }

@@ -89,15 +89,48 @@ public func ExecuteJump(effect fx)
 	return false;
 }
 
-// Return to the AI's home if not yet there.
+// Follow attack path or return to the AI's home if not yet there.
 public func ExecuteIdle(effect fx)
 {
+	if (fx.attack_path)
+	{
+		var next_pt = fx.attack_path[0];
+		// Check for structure to kill on path. Only if the structure is alive or of the clonk can attack structures with the current weapon.
+		var alive_check;
+		if (!fx.can_attack_structures && !fx.can_attack_structures_after_weapon_respawn)
+		{
+			alive_check = Find_OCF(OCF_Alive);
+		}
+		if ((fx.target = FindObject(Find_AtPoint(next_pt.X, next_pt.Y), Find_Func("IsStructure"), alive_check)))
+		{
+			// Do not advance on path unless target(s) destroyed.
+			return true;
+		}
+		// Follow path
+		fx.home_x = next_pt.X;
+		fx.home_y = next_pt.Y;
+		fx.home_dir = Random(2);
+	}
 	if (!Inside(fx.Target->GetX() - fx.home_x, -5, 5) || !Inside(fx.Target->GetY() - fx.home_y, -15, 15))
 	{
 		return fx.Target->SetCommand("MoveTo", nil, fx.home_x, fx.home_y);
 	}
 	else
 	{
+		// Next section on path or done?
+		if (fx.attack_path)
+		{
+			if (GetLength(fx.attack_path) > 1)
+			{
+				fx.attack_path = fx.attack_path[1:];
+				// Wait one cycle. After that, ExecuteIdle will continue the path.
+			}
+			else
+			{
+				fx.attack_path = nil;
+			}
+		}
+		// Movement done (for now)
 		fx.Target->SetCommand("None");
 		fx.Target->SetComDir(COMD_Stop);
 		fx.Target->SetDir(fx.home_dir);

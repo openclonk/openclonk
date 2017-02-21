@@ -59,6 +59,11 @@ local SingleWeaponAttackMode = {
 	{
 		if (!(fx.weapon = fx.Target->FindContents(fx.attack_mode.Weapon))) return false;
 		fx.strategy = fx.attack_mode.Strategy;
+		if (fx.weapon->~HasExplosionOnImpact())
+		{
+			fx.can_attack_structures = true;
+			fx.can_attack_structures_after_weapon_respawn = fx.attack_mode.Respawn; // allow structure attack even during respawn time
+		}
 		return true;
 	},
 	GetName = func()
