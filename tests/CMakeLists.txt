@@ -14,7 +14,6 @@
 # used by c4script and by the unit tests
 set(C4SCRIPT_SOURCES
 	../include/c4script/c4script.h
-	../src/lib/C4SimpleLog.cpp
 	../src/C4Include.cpp
 	../src/script/C4ScriptStandalone.cpp
     ../src/script/C4ScriptStandaloneStubs.cpp

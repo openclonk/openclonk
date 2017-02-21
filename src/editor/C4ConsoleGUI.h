@@ -111,7 +111,7 @@ public:
 	void AddViewport(C4ViewportWindow *cvp) { }
 	void RemoveViewport(C4ViewportWindow *cvp) { }
 	void OnObjectSelectionChanged(class C4EditCursorSelection &selection) { }
-	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network) {}
+	bool CreateNewScenario(StdStrBuf *out_filename, bool *out_host_as_network) { return false; }
 	void OnStartGame() { }
 	void EnsureDefinitionListInitialized() { }
 	void CloseConsoleWindow() {}
