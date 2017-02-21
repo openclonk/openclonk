@@ -22,6 +22,8 @@ global func CollectStatistics()
 	stats = Scenario->~CollectStats();
 	if (stats != nil)
 		result.Scenario = stats;
+	if (GetLength(GetProperties(SCENPAR)))
+		result.SCENPAR = SCENPAR;
 	if (GetLength(GetProperties(result)))
 		return result;
 	return nil;
