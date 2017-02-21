@@ -36,7 +36,7 @@ class C4Object;
 class C4ValueArray;
 class C4Def;
 class C4Effect;
-class C4AulParSet;
+struct C4AulParSet;
 class C4AulScriptFunc;
 #include "script/C4Value.h"
 

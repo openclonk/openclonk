@@ -51,11 +51,7 @@ public:
 		EXPECT_EQ(Script, rhs.Script);
 		EXPECT_EQ(Resolving, rhs.Resolving);
 		EXPECT_EQ(IncludesResolved, rhs.IncludesResolved);
-		//EXPECT_EQ(LocalNamed.iSize, rhs.LocalNamed.iSize);
-		//if (LocalNamed.iSize == rhs.LocalNamed.iSize)
-		//	EXPECT_TRUE(std::equal(LocalNamed.pNames, LocalNamed.pNames+LocalNamed.iSize, rhs.LocalNamed.pNames));
 		EXPECT_EQ(LocalValues, rhs.LocalValues);
-		EXPECT_EQ(SourceScripts, rhs.SourceScripts);
 
 		// C4AulScript
 		EXPECT_EQ(ScriptName, rhs.ScriptName);
@@ -78,12 +74,12 @@ public:
 TEST(DirectExecTest, HostUnmodifedByParseTest)
 {
 	TestHost host;
-	TestHost &host2 = host; // I broke this test a bit… Someone look at the changeset and fix it please.
+	TestHost host2;
 	host.test_equality(host2);
 	char szScript[] = "8*5";
 	C4AulScriptFunc *pFunc = new C4AulScriptFunc(host.GetPropList(), nullptr, nullptr, szScript);
 	host.test_equality(host2);
-	//pFunc->ParseFn(&::ScriptEngine);
+	pFunc->ParseDirectExecStatement(&::ScriptEngine);
 	host.test_equality(host2);
 	delete pFunc;
 }
