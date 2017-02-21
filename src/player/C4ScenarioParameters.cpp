@@ -145,6 +145,8 @@ bool C4ScenarioParameterDefs::Load(C4Group &hGroup, C4LangStringTable *pLang)
 void C4ScenarioParameterDefs::RegisterScriptConstants(const C4ScenarioParameters &values)
 {
 	// register constants for all parameters in script engine
+
+	// old-style: one constant per parameter
 	for (auto i = Parameters.cbegin(); i != Parameters.cend(); ++i)
 	{
 		StdStrBuf constant_name;
@@ -152,6 +154,16 @@ void C4ScenarioParameterDefs::RegisterScriptConstants(const C4ScenarioParameters
 		int32_t constant_value = values.GetValueByID(i->GetID(), i->GetDefault());
 		::ScriptEngine.RegisterGlobalConstant(constant_name.getData(), C4VInt(constant_value));
 	}
+
+	// new-style: all constants in a proplist
+	auto scenpar = C4PropList::NewStatic(nullptr, nullptr, &Strings.P[P_SCENPAR]);
+	for (auto i = Parameters.cbegin(); i != Parameters.cend(); ++i)
+	{
+		int32_t constant_value = values.GetValueByID(i->GetID(), i->GetDefault());
+		scenpar->SetPropertyByS(Strings.RegString(StdStrBuf(i->GetID())), C4VInt(constant_value));
+	}
+	scenpar->Freeze();
+	::ScriptEngine.RegisterGlobalConstant("SCENPAR", C4Value(scenpar));
 }
 
 void C4ScenarioParameters::Clear()
