@@ -1470,7 +1470,18 @@ void C4ConsoleQtPolyline::Draw(class C4TargetFacet &cgo, float line_width)
 	// Line from object center to first vertex
 	if (start_from_object && graph.vertices.size())
 	{
-		DrawEdge(cgo, C4ConsoleQtGraph::Vertex(), graph.vertices[0], border_color, line_width, line_width, false);
+		C4ConsoleQtGraph::Vertex v0;
+		if (!is_relative)
+		{
+			// In non-relative mode, the root coordinate needs to be pushed to the object manually
+			C4Object *obj = rel_obj.getObj();
+			if (obj)
+			{
+				v0.x += obj->GetX();
+				v0.y += obj->GetY();
+			}
+		}
+		DrawEdge(cgo, v0, graph.vertices[0], border_color, line_width, line_width, false);
 	}
 	// Remaining polyline is handled by regular graph drawing
 	C4ConsoleQtGraph::Draw(cgo, line_width);
