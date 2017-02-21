@@ -154,14 +154,14 @@ private func SpawnFinished()
 	if (!GetLength(spawned_enemies)) WaveDefeated();
 }
 
-private func GetAttackPath()
+private func GetAttackPath(int off_x, int off_y)
 {
 	// Get attack path in global coordinates
-	if (!attack_path) return [ { X = GetX(), Y = GetY() } ];
+	if (!attack_path) return [ { X = off_x, Y = off_y } ];
 	var global_attack_path = CreateArray(GetLength(attack_path)), i;
 	for (var pt in attack_path)
 	{
-		global_attack_path[i++] = { X = GetX() + pt.X, Y = GetY() + pt.Y };
+		global_attack_path[i++] = { X = off_x + pt.X, Y = off_y + pt.Y };
 	}
 	return global_attack_path;
 }
@@ -175,7 +175,18 @@ private func Spawn()
 	{
 		var enemy_def = EnemyDefs[enemy.Type];
 		var spawn_function = enemy_def.SpawnFunction;
-		var enemies = (enemy_def.SpawnCallTarget ?? GetID())->Call(spawn_function, spawn_pos, enemy, enemy_def, GetAttackPath(), this);
+		// Attack path may be relative to spawner or relative to the actual object creation position (e.g. for rockets created in a range)
+		var use_attack_path;
+		if (enemy_def.OffsetAttackPathByPos)
+		{
+			use_attack_path = GetAttackPath(spawn_pos[0], spawn_pos[1]);
+		}
+		else
+		{
+			use_attack_path = GetAttackPath(GetX(), GetY());
+		}
+		// Do spawn
+		var enemies = (enemy_def.SpawnCallTarget ?? GetID())->Call(spawn_function, spawn_pos, enemy, enemy_def, use_attack_path, this);
 		// Keep track of enemies. Could be returned as a single enemy or as an array
 		if (GetType(enemies) == C4V_Array)
 		{
@@ -428,7 +439,7 @@ public func Definition(def)
 	def.EditorProps.spawn_interval = { Name="$SpawnInterval$", EditorHelp="$SpawnIntervalHelp$", Type="int", Min=0, Set="SetSpawnInterval", Save="SpawnInterval" };
 	def.EditorProps.attack_path = { Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject=true, DrawArrows=true, Color=0xdf0000, Relative=true, Save="AttackPath" }; // always saved
 	def.EditorProps.auto_activate = { Name="$AutoActivate$", EditorHelp="$AutoActivateHelp$", Type="bool", Set="SetAutoActivate", Save="AutoActivate" };
-	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps() );
+	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
 }
 
 public func GetAIClonkEditorProps()

@@ -50,6 +50,31 @@ public func Hit()
 public func IsInventorProduct() { return true; }
 
 
+/* Register enemy spawn with balloon */
+
+public func Definition(def)
+{
+	EnemySpawn->AddEnemyDef("Balloon", { SpawnType=Balloon, SpawnFunction=def.SpawnBalloon, OffsetAttackPathByPos=true }, EnemySpawn->GetAIClonkDefaultPropValues(), EnemySpawn->GetAIClonkEditorProps());
+}
+
+private func SpawnBalloon(array pos, proplist clonk_data, proplist enemy_def, array clonk_attack_path, object spawner)
+{
+	// First spawn a clonk. Then let the clonk open a balloon.
+	var clonk = EnemySpawn->SpawnClonk(pos, clonk_data, enemy_def, clonk_attack_path, spawner);
+	if (!clonk) return;
+	var balloon = clonk->CreateContents(Balloon);
+	if (balloon)
+	{
+		// Balloon needs to be added to inventory
+		AI->BindInventory(clonk);
+		// Open it!
+		balloon->ControlUseStart(clonk);
+	}
+	// Only the clonk is an actual enemy
+	return clonk;
+}
+
+
 /*-- Properties --*/
 
 local Collectible = true;
