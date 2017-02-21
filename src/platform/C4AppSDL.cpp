@@ -245,8 +245,8 @@ static C4KeyCode sdl_scancode_to_keycode(SDL_Scancode scancode)
 #define X(sdl, oc) case sdl: return oc;
 	SDL_SCANCODE_KEYCODE
 #undef X
+		default: return 0; // silence warnings.
 	}
-	return 0;
 }
 
 const char* KeycodeToString(C4KeyCode code)
