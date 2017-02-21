@@ -2,12 +2,11 @@
 
 language: cpp
 dist: trusty
-sudo: false # for some reason, this causes spurious fails with installing the udev package… or something. You can restart the build and it will work, but if that gets too annoying, set sudo: required. (maybe only for the gcc-5 build, I've only observed it there up to now…)
+sudo: required # not actually required, but the virtualization builds are more stable and have better single core performance. If in doubt, remove.
 
 matrix:
   include:
     - os: linux
-      sudo: required # not actually required, but the virtualization builds have better single core performance. If in doubt, remove.
       compiler: gcc
       addons:
         apt:
