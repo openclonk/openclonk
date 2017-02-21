@@ -60,7 +60,6 @@ before_script:
       .
 
 script:
-    - ${BSYS/*#/} all netpuncher tests aul_test c4value_test
+    - ${BSYS/*#/} all netpuncher tests aul_test
     - ./tests/tests 
     - ./tests/aul_test
-    - ./tests/c4value_test
