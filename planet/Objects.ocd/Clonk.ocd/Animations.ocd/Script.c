@@ -633,7 +633,7 @@ func FxIntScaleTimer(target, number, time)
 		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/800));
 		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
 		var pos = GetAnimationPosition(number.animation_id);
-		SetScaleRotation(0, 0, 0, 0, 0, 1);
+		SetScaleRotation(0, 0, 0, 0, 0, true);
 		// Check if corner scale help is needed
 		if (CheckScaleTopHelper())
 		{
@@ -705,12 +705,12 @@ func FxIntScaleRotTimer(target, eff, time)
 	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR,0,0,1), Trans_Translate(turnx, turny)), 1);
 }
 
-func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, int instant) {
+func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, bool instant) {
 	if(r < -180) r += 360;
 	if(r > 180) r -= 360;
 	// set matrix values
 	var turnx = -1000;
-	var turny = 10000;
+	turny += 10000; // rotation relative to clonk center
 	if(instant)
 	{
 		RemoveEffect("IntScaleRot", this);
