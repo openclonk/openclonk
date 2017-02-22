@@ -549,9 +549,19 @@ public func FindInventoryWeapon(effect fx)
 		return true;
 	}
 	// Melee weapons.
-	if ((fx.weapon = fx.Target->FindContents(Sword)) || (fx.weapon = fx.Target->FindContents(Club)) || (fx.weapon = fx.Target->FindContents(Axe))) 
+	if ((fx.weapon = fx.Target->FindContents(Sword)) || (fx.weapon = fx.Target->FindContents(Axe))) // Sword attacks aren't 100% correct for Axe, but work well enough
 	{
 		fx.strategy = this.ExecuteMelee;
+		return true;
+	}
+	if ((fx.weapon = fx.Target->FindContents(PowderKeg)))
+	{
+		fx.strategy = this.ExecuteBomber;
+		return true;
+	}
+	if ((fx.weapon = fx.Target->FindContents(Club)))
+	{
+		fx.strategy = this.ExecuteClub;
 		return true;
 	}
 	// No weapon.

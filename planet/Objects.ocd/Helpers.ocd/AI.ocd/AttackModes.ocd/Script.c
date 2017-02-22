@@ -32,7 +32,12 @@ local AttackModes = {}; // empty pre-init to force proplist ownership in base AI
 local SingleWeaponAttackMode = {
 	Construction = func(effect fx)
 	{
+		// Contents hack: Carry heavy collection while "Walk" plays an annoying animation. Skip that by having a jump animation
+		// (the jump animation skipping pickup is weird anyway, but it works for now)
+		var is_carry_heavy_workaround = fx.attack_mode.Weapon->~IsCarryHeavy() && !fx.Target->Contained() && fx.Target->GetAction() == "Walk";
+		if (is_carry_heavy_workaround) fx.Target->SetAction("Jump");
 		var weapon = fx.Target->CreateContents(fx.attack_mode.Weapon);
+		if (is_carry_heavy_workaround) fx.Target->SetAction("Walk");
 		if (weapon)
 		{
 			if (fx.attack_mode.Ammo)
@@ -130,8 +135,9 @@ private func DefinitionAttackModes(proplist def)
 	// Register presets for all the default weapons usable by the AI
 	def->RegisterAttackMode("Default", { Name = "$Default$", EditorHelp = "$DefaultHelp$", FindWeapon = AI.FindInventoryWeapon });
 	def->RegisterAttackMode("Sword", new SingleWeaponAttackMode { Weapon = Sword, Strategy = this.ExecuteMelee });
-	def->RegisterAttackMode("Club", new SingleWeaponAttackMode { Weapon = Club, Strategy = this.ExecuteMelee });
 	def->RegisterAttackMode("Axe", new SingleWeaponAttackMode { Weapon = Axe, Strategy = this.ExecuteMelee });
+	def->RegisterAttackMode("Club", new SingleWeaponAttackMode { Weapon = Club, Strategy = this.ExecuteClub });
+	def->RegisterAttackMode("PowderKeg", new SingleWeaponAttackMode { Weapon = PowderKeg, Strategy = this.ExecuteBomber });
 	def->RegisterAttackMode("BowArrow", new SingleWeaponAttackMode { Weapon = Bow, Ammo = Arrow, FindWeapon = this.FindInventoryWeaponBow });
 	def->RegisterAttackMode("BowFireArrow", new SingleWeaponAttackMode { Weapon = Bow, Ammo = FireArrow, FindWeapon = this.FindInventoryWeaponBow });
 	def->RegisterAttackMode("BowBombArrow", new SingleWeaponAttackMode { Weapon = Bow, Ammo = BombArrow, FindWeapon = this.FindInventoryWeaponBow });

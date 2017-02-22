@@ -8,6 +8,7 @@
 #include Library_CarryHeavy
 
 local count;
+local TimeToExplode = 90; // Number of frames to pass until keg explodes
 
 public func GetCarryTransform(clonk)
 {
@@ -101,7 +102,7 @@ public func Incineration(int caused_by)
 public func FxFuseTimer(object target, effect, int timer)
 {
 	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
-	if (timer > 90)
+	if (timer > TimeToExplode)
 		Explode(GetExplosionStrength());
 }
 
