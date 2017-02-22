@@ -46,7 +46,7 @@ public func Construction()
 		{key = "bonus", title = Icon_Wealth, sorted = true, desc = true, default = "0", priority = 100}
 	]);
 	// Create the enemy script player, the script player should be in the attackers team (id = 2).
-	CreateScriptPlayer("$PlayerAttackers$", nil, 2, CSPF_NoEliminationCheck);
+	CreateScriptPlayer("$PlayerAttackers$", nil, 2, CSPF_NoEliminationCheck | CSPF_NoScenarioInit | CSPF_NoScenarioSave, GetID());
 	return _inherited(...);
 }
 
@@ -55,15 +55,9 @@ public func Construction()
 
 public func InitializePlayer(int plr)
 {
-	// Init the enemy script player.
+	// The enemy script player is initialized in the function below.
 	if (GetPlayerType(plr) == C4PT_Script)
-	{
-		GetCrew(plr)->RemoveObject();
-		// Add an effect to control the waves and set enemy player.
-		fx_wave_control = CreateEffect(FxWaveControl, 100, nil, plr);
 		return;
-	}
-	
 	// Init the normal players
 	var plrid = GetPlayerID(plr);
 	// Store active players.
@@ -72,6 +66,21 @@ public func InitializePlayer(int plr)
 	Scoreboard->NewPlayerEntry(plr);
 	plrs_bonus[plrid] = 0;
 	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
+	return;
+}
+
+public func InitializeScriptPlayer(int plr)
+{
+	// Forward to defense goal object.
+	if (this == Goal_Defense)
+	{
+		var goal = FindObject(Find_ID(Goal_Defense));
+		if (goal)
+			goal->InitializeScriptPlayer(plr);
+		return;
+	}
+	// Add an effect to control the waves and set enemy player.
+	fx_wave_control = CreateEffect(FxWaveControl, 100, nil, plr);
 	return;
 }
 
