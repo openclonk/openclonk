@@ -1,10 +1,12 @@
 König des Hügels
 
-You have to defend a hill which gives way to a large ruby cave against angry miners.
+Eine Horde wütender Bergleute möchte die riesigen Juwelenvorkommern plündern. Verteidige den Hügel, um ihnen den Weg zu blockieren!
 
 Ziel: Überlebe möglichst viele Angriffswellen.
 
 Tipps:
-- This round is cooperative, so work together and divide tasks.
+- Arbeitet zusamen und teilt euch Aufgaben untereinander auf.
+- Bau eine Siedlung und Verteidigungsanlagen während den ersten Angriffswellen.
 - Build up a settlement and defense during the earlier rounds of attack.
+- Ressourcen und Flüssigkeiten füllen sich an bestimmten Stellen wieder auf.
 - Resources and liquids reappear at certain locations.

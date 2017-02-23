@@ -414,11 +414,6 @@ func OnAllWavesCleared()
 //======================================================================
 /* Wave and enemy definitions */
 
-static const CSKIN_Default = 0,
-             CSKIN_Steampunk = 1,
-             CSKIN_Alchemist = 2,
-             CSKIN_Farmer = 3;
-
 static ENEMY_WAVE_DATA;
 
 static const g_respawning_weapons = [Firestone, Rock];

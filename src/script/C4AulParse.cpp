@@ -1178,7 +1178,16 @@ void C4AulParse::Parse_CallParams(::aul::ast::CallExpr *call)
 	{
 	case ATT_COMMA:
 		// got no parameter before a ","
+<<<<<<< HEAD
+		if (Config.Developer.ExtraWarnings)
+<<<<<<< HEAD
+			Warn(FormatString("parameter %zu of call to %s is empty", call->args.size(), call->callee.c_str()).getData(), NULL);
+=======
+			Warn(FormatString("parameter %zu of call to %s is empty", call->args.size(), call->callee.c_str()).getData(), nullptr);
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
+=======
 		Warn(C4AulWarningId::empty_parameter_in_call, call->args.size(), call->callee.c_str());
+>>>>>>> upstream/master
 		call->args.push_back(::aul::ast::NilLit::New(TokenSPos));
 		Shift();
 		break;
@@ -1211,7 +1220,16 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		// got no parameter before a ","? then push nil
 		if (TokenType == ATT_COMMA)
 		{
+<<<<<<< HEAD
+			if (Config.Developer.ExtraWarnings)
+<<<<<<< HEAD
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), NULL);
+=======
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), nullptr);
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
+=======
 			Warn(C4AulWarningId::empty_parameter_in_array, arr->values.size());
+>>>>>>> upstream/master
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 		else
@@ -1222,7 +1240,16 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 		if (TokenType == ATT_BCLOSE2)
 		{
+<<<<<<< HEAD
+			if (Config.Developer.ExtraWarnings)
+<<<<<<< HEAD
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), NULL);
+=======
+				Warn(FormatString("array entry %zu is empty", arr->values.size()).getData(), nullptr);
+>>>>>>> 1d258d3d4883f854d1260516f3a20d7f7a0fd1a2
+=======
 			Warn(C4AulWarningId::empty_parameter_in_array, arr->values.size());
+>>>>>>> upstream/master
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 	}
