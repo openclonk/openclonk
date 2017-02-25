@@ -21,6 +21,7 @@ local spawn_interval = 30; // Delay between spawned enemies
 local attack_path = nil; // Optional: Array of points along which the spawned enemy moves/attacks
 local auto_activate = false; // If true, the object is activated on the first player join
 local max_concurrent_enemies = SPAWNCOUNT_INFINITE; // May be set to a smaller value to limit the amount of enemies spawned in parallel. Only works with spawn_delay>0.
+local has_been_activated; // Set to true after first activation. Not saved in scenario.
 
 local spawned_count;            // Number of enemies already spawned in current wave
 local spawned_enemies;          // Array of spawned enemies. Automatically cleared when clonks die.
@@ -103,9 +104,12 @@ public func InitializeScriptPlayer(int plr, int team)
 		g_enemyspawn_player = plr;
 	}
 	// Perform delayed activation
-	if (waiting_for_script_player)
+	for (var inst in FindObjects(Find_ID(this)))
 	{
-		ActivateSpawn();
+		if (inst.waiting_for_script_player)
+		{
+			inst->ActivateSpawn();
+		}
 	}
 }
 
@@ -240,6 +244,18 @@ public func OnClonkDeath(object clonk)
 	}
 }
 
+public func HasBeenActivated()
+{
+	// Has the spawn ever been activated?
+	return has_been_activated;
+}
+
+public func IsCleared()
+{
+	// Did the spawn finish spawning and are all enemies killed?
+	return has_been_activated && !active && !waiting_for_script_player && !GetAliveEnemyCount();
+}
+
 public func GetAliveEnemyCount()
 {
 	var count = 0;
@@ -278,6 +294,8 @@ public func ActivateSpawn()
 {
 	// Already triggered or still running?
 	if (active) return;
+	// Remember activation
+	has_been_activated = true;
 	// Needs to wait for script player join?
 	if (!IsEnemySpawnPlayerJoined())
 	{
@@ -455,6 +473,15 @@ public func Definition(def)
 	UserAction->AddEvaluator("Action", "$Name$", "$ActStop$", "$StopHelp$", "enemy_spawn_stop", [def, def.EvalAct_Stop], { Target = { Function="action_object" } }, { Type="proplist", EditorProps = {
 		Target = UserAction->GetObjectEvaluator("IsEnemySpawn", "$Name$")
 		} } );
+	// UserAction evaluators
+	var kill_check_options = { Name="$KillCheckTarget$", Type="enum", Options=[
+		{ Name="$AllSpawners$", EditorHelp="$KillCheckAllSpawnersHelp$" },
+		{ Name="$ThisSeqeunceSpawners$", EditorHelp="$ThisSequenceSpawnersHelp$", OptionKey="Function", Value={ Function="this_context" } },
+		{ Name="$SpecificSpawner$", EditorHelp="$SpecificSpawnerHelp$",
+			OptionKey="Function", Value={ Function="specified" }, ValueKey="Object",
+			Delegate=UserAction->GetObjectEvaluator("IsEnemySpawn", "$SpecificSpawner$", "$SpecificSpawnerHelp$")
+		} ] };
+	UserAction->AddEvaluator("Boolean", nil, "$AllEnemiesKilled$", "$AllEnemiesKilledHelp$", "spawned_enemies_killed", [def, def.EvalBool_SpawnedEnemiesKilled], { }, kill_check_options, "Spawner");
 	// EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
   def.EditorProps.spawn_position = { Name="$SpawnPosition$", Type="enum", OptionKey="Mode", Set="SetSpawnPosition", Save="SpawnPosition", Options = [
@@ -572,16 +599,47 @@ private func EvalAct_Activate(proplist props, proplist context)
 	{
 		return;
 	}
+	// Remember all activated spawners
+	if (!context.activated_enemy_spawns)
+		context.activated_enemy_spawns = [spawner];
+	else if (GetIndexOf(context.activated_enemy_spawns, spawner) == -1)
+		context.activated_enemy_spawns[GetLength(context.activated_enemy_spawns)] = spawner;
+	// Activate!
 	spawner->ActivateSpawn();
 }
 
 private func EvalAct_Stop(proplist props, proplist context)
 {
 	// User action: Cancel spawner activation.
+	// Keep in activated spawner list because enemies may already have been spawned
 	var spawner = UserAction->EvaluateValue("Object", props.Target, context);
 	if (!spawner || !spawner->IsEnemySpawn())
 	{
 		return;
 	}
 	spawner->CancelSpawn();
+}
+
+private func EvalBool_SpawnedEnemiesKilled(proplist props, proplist context)
+{
+	// User action evaluator: Enemy spawn cleared
+	var spawner = props.Spawner;
+	if (!spawner)
+	{
+		// Check if there's an activated, un-cleared spawner anywhere on the map
+		return !FindObject(Find_Func("IsEnemySpawn"), Find_Func("HasBeenActivated"), Find_Not(Find_Func("IsCleared")));
+	}
+	if (spawner.Function == "this_context")
+	{
+		// Check if all spawns activated in this context have been cleared
+		if (context.activated_enemy_spawns)
+			for (var spawn in context.activated_enemy_spawns)
+				if (!spawn->IsCleared())
+					return false;
+		return true;
+	}
+	// Must be specified spawner now
+	// Specified spawner must exist and be both activated and cleared
+	var obj = UserAction->EvaluateValue("Object", spawner.Object, context);
+	return obj && obj->~IsEnemySpawn() && obj->IsCleared();
 }
