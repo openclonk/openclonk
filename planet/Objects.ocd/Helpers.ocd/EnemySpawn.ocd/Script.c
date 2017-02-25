@@ -20,6 +20,7 @@ local spawn_delay = 0; // Delay after trigger before first spawn
 local spawn_interval = 30; // Delay between spawned enemies
 local attack_path = nil; // Optional: Array of points along which the spawned enemy moves/attacks
 local auto_activate = false; // If true, the object is activated on the first player join
+local max_concurrent_enemies = SPAWNCOUNT_INFINITE; // May be set to a smaller value to limit the amount of enemies spawned in parallel. Only works with spawn_delay>0.
 
 local spawned_count;            // Number of enemies already spawned in current wave
 local spawned_enemies;          // Array of spawned enemies. Automatically cleared when clonks die.
@@ -42,6 +43,7 @@ public func SetSpawnDelay(int new_spawn_delay) { spawn_delay = new_spawn_delay; 
 public func SetSpawnInterval(int new_spawn_interval) { spawn_interval = new_spawn_interval; }
 public func SetAttackPath(array new_attack_path) { attack_path = new_attack_path; }
 public func SetAutoActivate(bool new_auto_activate) { auto_activate = new_auto_activate; }
+public func SetMaxConcurrentEnemies(int new_max_concurrent_enemies) { max_concurrent_enemies = new_max_concurrent_enemies; }
 
 
 /* Initialization */
@@ -126,7 +128,7 @@ public func StartSpawn()
 	{
 		// First enemy comes immediately. Then scheduled.
 		Spawn();
-		ScheduleCall(this, this.Spawn, spawn_interval, spawn_count - 1);
+		ScheduleCall(this, this.Spawn, spawn_interval, SPAWNCOUNT_INFINITE); // scheduler is removed once desired spawn count has been reached
 	}
 	else
 	{
@@ -146,6 +148,8 @@ public func StartSpawn()
 
 private func SpawnFinished()
 {
+	// Stop spawning timer
+	ClearScheduleCall(this, this.Spawn);
 	// All enemies have been spawned. Mark inactive.
 	active = waiting_for_script_player = false;
 	SetClrModulation();
@@ -168,6 +172,8 @@ private func GetAttackPath(int off_x, int off_y)
 
 private func Spawn()
 {
+	// Check concurrent enemy limit
+	if (GetAliveEnemyCount() >= max_concurrent_enemies) return;
 	// Find a spawn location
 	var spawn_pos = GetSpawnPosition();
 	// Spawn the actual enemy
@@ -212,8 +218,33 @@ public func TrackSpawnedEnemy(object enemy)
 	// Remember any spawned enemies
 	if (enemy)
 	{
+		enemy.EnemySpawn_source = this;
 		spawned_enemies[GetLength(spawned_enemies)] = enemy;
 	}
+}
+
+public func OnClonkDeath(object clonk)
+{
+	if (clonk.EnemySpawn_source == this)
+	{
+		var idx = GetIndexOf(spawned_enemies, clonk);
+		var n = GetLength(spawned_enemies) - 1;
+		if (idx >= 0)
+		{
+			if (idx < n)
+			{
+				spawned_enemies[idx] = spawned_enemies[n];
+			}
+			SetLength(spawned_enemies, n);
+		}
+	}
+}
+
+public func GetAliveEnemyCount()
+{
+	var count = 0;
+	for (var enemy in spawned_enemies) count += !!enemy;
+	return count;
 }
 
 private func WaveDefeated()
@@ -439,6 +470,10 @@ public func Definition(def)
 	def.EditorProps.spawn_interval = { Name="$SpawnInterval$", EditorHelp="$SpawnIntervalHelp$", Type="int", Min=0, Set="SetSpawnInterval", Save="SpawnInterval" };
 	def.EditorProps.attack_path = { Name="$AttackPath$", EditorHelp="$AttackPathHelp$", Type="polyline", StartFromObject=true, DrawArrows=true, Color=0xdf0000, Relative=true, Save="AttackPath" }; // always saved
 	def.EditorProps.auto_activate = { Name="$AutoActivate$", EditorHelp="$AutoActivateHelp$", Type="bool", Set="SetAutoActivate", Save="AutoActivate" };
+	def.EditorProps.max_concurrent_enemies = { Name="$MaxConcurrent$", EditorHelp="$MaxConcurrentHelp$", Type="enum", Set="SetMaxConcurrentEnemies", Save="MaxConcurrentEnemies", Options = [
+	  { Name="$Unlimited$", Value=SPAWNCOUNT_INFINITE },
+	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetMaxConcurrentEnemies", SetRoot=true } }
+	  ] };
 	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
 }
 
@@ -503,7 +538,16 @@ public func AddEnemyDef(identifier, enemy_def, default_value, parameter_delegate
 {
 	// First-time setup of enemy selection in editor
 	if (!this.EditorProps) this.EditorProps = {};
-	if (!this.EditorProps.enemy) this.EditorProps.enemy = { Name="$Enemy$", EditorHelp="$EnemyHelp$", Type="enum", OptionKey="Type", Set="SetEnemy", Save="Enemy", Sorted=true, Options = [ { Name="$None$", Priority=100 } ] };
+	if (!this.EditorProps.enemy) this.EditorProps.enemy = {
+		Name = "$Enemy$",
+		EditorHelp = "$EnemyHelp$",
+		Type = "enum",
+		OptionKey = "Type",
+		Set = "SetEnemy",
+		Save = "Enemy",
+		Sorted = true,
+		Priority = 100,
+		Options = [ { Name="$None$", Priority=100 } ] };
 	if (!this.EnemyDefs) this.EnemyDefs = {};
 	// Remember definition
 	this.EnemyDefs[identifier] = enemy_def;

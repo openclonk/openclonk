@@ -48,3 +48,6 @@ Energy=Energie
 EnergyHelp=Lebenspunkte
 AttackPath=Angriffspfad
 AttackPathHelp=Pfad, entlang dessen sich die KI-Gegner bewegen. Flugrichtung fuer Raketen und Laufrichtung fuer Clonks. Flugrichtungen werden automatisch um den Spawn-Offset verschoben. Befindet sich ein Gebaeude auf einem Eckpunkt des Pfades, greifen Clonks das Gebaeude an.
+MaxConcurrent=Max Gegner gleichzeitig
+MaxConcurrentHelp=Wie viele Gegner maximal gleichzeitig erzeugt sein duerfen. Wenn die Zahl erreicht wurde, muessen Gegenr getoetet werden, wird der Spawner pausiert bis genug Gegner getoetet wurden um wieder unter diese Zahl zu kommen.
+Unlimited=Unbegrenzt
