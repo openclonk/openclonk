@@ -100,6 +100,10 @@ func Definition(def)
 	AddEvaluator("Action", "$Sequence$", "$Wait$", "$WaitHelp$", "wait", [def, def.EvalAct_Wait], { Time=60 }, { Type="proplist", Display="{{Time}}", EditorProps = {
 		Time = { Name="$Time$", Type="int", Min=1 }
 		} } );
+	AddEvaluator("Action", "$Sequence$", "$WaitForcondition$", "$WaitForConditionHelp$", "wait_condition", [def, def.EvalAct_WaitCondition], { Interval=20 }, { Type="proplist", Display="{{Condition}}", EditorProps = {
+		Interval = { Name="$CheckInterval$", Type="int", Min=1 },
+		Condition = new Evaluator.Boolean { Name="$Condition$", EditorHelp="$WaitConditionHelp$", Priority=60 }
+		} } );
 	AddEvaluator("Action", "$Ambience$", "$Sound$", "$SoundHelp$", "sound", [def, def.EvalAct_Sound], { Pitch={Function="int_constant", Value=0}, Volume={Function="int_constant", Value=100}, TargetPlayers={Function="all_players"} }, { Type="proplist", Display="{{Sound}}", EditorProps = {
 		Sound = { Name="$SoundName$", EditorHelp="$SoundNameHelp$", Type="sound", AllowEditing=true, Priority=100 },
 		Pitch = new Evaluator.Integer { Name="$SoundPitch$", EditorHelp="$SoundPitchHelp$" },
@@ -948,6 +952,28 @@ private func EvalAct_Wait(proplist props, proplist context)
 	// Wait for specified number of frames
 	context.hold = props;
 	ScheduleCall(context, UserAction.ResumeAction, props.Time, 1, context, props);
+}
+
+private func EvalAct_WaitCondition(proplist props, proplist context)
+{
+	// Poll condition and resume when it's met.
+	var cond = props.Condition;
+	// Invalid condition?
+	if (!cond) return;
+	// Condition fulfilled?
+	if (EvaluateValue("Boolean", cond, context)) return;	
+	// Re-check condition periodically
+	context.hold = props;
+	ScheduleCall(context, UserAction.EvalAct_WaitConditionRe, props.Interval, 0x7fffffff, props, context);
+}
+
+private func EvalAct_WaitConditionRe(proplist props, proplist context)
+{
+	if (UserAction->EvaluateValue("Boolean", props.Condition, context))
+	{
+		ClearScheduleCall(context, UserAction.EvalAct_WaitConditionRe);
+		UserAction->ResumeAction(context, props);
+	}
 }
 
 private func EvalAct_Sound(proplist props, proplist context)
