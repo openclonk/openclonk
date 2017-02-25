@@ -511,10 +511,10 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 					// if target_host is unset, we're parsing this func for direct execution,
 					// in which case we don't want to warn about variable hiding.
 					if (target_host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || target_host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "global variable");
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, "local variable", cname, "global variable");
 					C4String *s = ::Strings.FindString(cname);
 					if (s && target_host->GetPropList()->HasProperty(s))
-						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "local variable", "object-local variable");
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, "local variable", cname, "object-local variable");
 					if (Fn->ParNamed.GetItemNr(cname) != -1)
 					{
 						// The parameter order of this warning is correct:
@@ -522,7 +522,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 						// the parameter actually shadows the local variable.
 						// This doesn't make a whole lot of sense and should
 						// probably be changed.
-						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "parameter", "local variable");
+						Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, "parameter", cname, "local variable");
 					}
 				}
 				Fn->VarNamed.AddName(cname);
@@ -531,10 +531,10 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 		case ::aul::ast::VarDecl::Scope::Object:
 			{
 				if (host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-					Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, cname, "object-local variable", "global variable");
+					Warn(target_host, host, n, Fn, C4AulWarningId::variable_shadows_variable, "object-local variable", cname, "global variable");
 				C4String *s = ::Strings.RegString(cname);
 				if (target_host->GetPropList()->HasProperty(s))
-					Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, cname, "object-local variable");
+					Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, "object-local variable", cname);
 				else
 					target_host->GetPropList()->SetPropertyByS(s, C4VNull);
 				break;
@@ -545,7 +545,7 @@ void C4AulCompiler::PreparseAstVisitor::visit(const ::aul::ast::VarDecl *n)
 				throw Error(target_host, host, n, Fn, "internal error: global var declaration inside function");
 
 			if (host->Engine->GlobalNamedNames.GetItemNr(cname) >= 0 || host->Engine->GlobalConstNames.GetItemNr(cname) >= 0)
-				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, cname, "global variable");
+				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, "global variable", cname);
 			if (n->constant)
 				host->Engine->GlobalConstNames.AddName(cname);
 			else
@@ -1399,7 +1399,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		C4V_Type to = expected_par_types[i];
 		if (C4Value::WarnAboutConversion(from, to))
 		{
-			Warn(target_host, host, n->args[i].get(), Fn, C4AulWarningId::arg_type_mismatch, cname, i, GetC4VName(from), GetC4VName(to));
+			Warn(target_host, host, n->args[i].get(), Fn, C4AulWarningId::arg_type_mismatch, i, cname, GetC4VName(from), GetC4VName(to));
 		}
 	}
 
@@ -1672,7 +1672,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 		if (f->SFunc() && f->SFunc()->pOrgScript == host && f->Parent == Parent)
 		{
 			if (Fn)
-				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, f->GetName(), "function");
+				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, "function", f->GetName());
 			Fn = f->SFunc();
 		}
 		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
