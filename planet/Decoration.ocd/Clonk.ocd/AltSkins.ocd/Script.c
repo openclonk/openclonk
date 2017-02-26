@@ -15,11 +15,12 @@
 	 - Sage
 	 - Youngster
 
-	@author Marky, Maikel	
+	@author Marky, Maikel, Sven2
 */
 
 // This is a list of valid skin names and which base skin of the clonk is used.
-local skin_names = [["Beggar", 0, 0x4040ff],
+local skin_names = [["Amazon", CSKIN_Farmer, 0xd0a000],
+									["Beggar", 0, 0x4040ff],
                   ["Carpenter", 0, 0xefef40],
                   ["DarkSkinned", 0, 0x906000],
                   ["Doctor", 2, 0xd0d0d0],
@@ -29,6 +30,7 @@ local skin_names = [["Beggar", 0, 0x4040ff],
                   ["MaleBrownHair", 0, 0x2020ff],
                   ["MaleDarkHair", 0, 0x406d99],
                   ["Mime", 2, 0xffffff],
+                  ["Ogre", CSKIN_Alchemist, 0x20ff20],
                   ["Sage", 0, 0x813100],
                   ["Youngster", 0, 0xba8e37],
                   ["YoungsterBlond", 0, 0x151366]

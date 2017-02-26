@@ -5,6 +5,10 @@ Version=8,0
 Difficulty=20
 MaxPlayerLeague=4
 
+[Definitions]
+Definition2=Decoration.ocd\Clonk.ocd\AltSkins.ocd
+
+
 [Game]
 Goals=Goal_ProtectTheStatue=1
 Rules=Rule_ObjectFade=1

@@ -458,12 +458,8 @@ public func GiveRandomAttackTarget(object attacker)
 //======================================================================
 /* Wave and enemy definitions */
 
-static const CSKIN_Default = 0,
-             CSKIN_Steampunk = 1,
-             CSKIN_Alchemist = 2,
-             CSKIN_Farmer = 3,
-             CSKIN_Amazon = [CSKIN_Farmer, "farmerClonkAmazon"],
-             CSKIN_Ogre = [CSKIN_Alchemist, "alchemistClonkOgre"];
+static const CSKIN_Amazon = [CSKIN_Farmer, "Clonk_Amazon"],
+             CSKIN_Ogre = [CSKIN_Alchemist, "Clonk_Ogre"];
 
 static const WAVE_POS_LEFT = [10, 529];
 static const WAVE_POS_RIGHT = [1190, 509];
@@ -505,7 +501,7 @@ func InitWaveData()
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
 			{ Name = "$WaveNewbies$", Bounty = 10, Enemies = [
-			new newbie   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
+			new ogre   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "$WaveBows$", Bounty = 15, Enemies = [
 			new newbie      {            Num= 2, Interval=10 },
 			new bowman      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_RIGHT },
