@@ -264,7 +264,7 @@ public func IsCleared()
 public func GetAliveEnemyCount()
 {
 	var count = 0;
-	for (var enemy in spawned_enemies) count += !!enemy;
+	for (var aenemy in spawned_enemies) count += !!aenemy;
 	return count;
 }
 
@@ -286,13 +286,15 @@ public func CancelSpawn()
 public func RemoveSpawnedEnemies()
 {
 	// Remove all spawned enemies
-	for (var enemy in spawned_enemies)
+	for (var i = GetLength(spawned_enemies); i>=0; --i)
 	{
-		if (enemy)
+		var aenemy = spawned_enemies[i];
+		if (aenemy)
 		{
-			enemy->RemoveObject();
+			aenemy->RemoveObject();
 		}
 	}
+	spawned_enemies = [];
 }
 
 public func ActivateSpawn()
