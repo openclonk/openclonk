@@ -84,6 +84,12 @@ local SingleWeaponAttackMode = {
 			return Format("$AttackWithAmmo$", this.Weapon->GetName(), this.Ammo->GetName());
 		else
 			return Format("$AttackWith$", this.Weapon->GetName());
+	},
+	GetInfoString = func(proplist ai_def)
+	{
+		// Info icon for given attack mode
+		if (!this.Weapon) return "";
+		if (this.Ammo) return Format("{{%i}}{{%i}}", this.Weapon, this.Ammo); else return Format("{{%i}}", this.Weapon);
 	}
 };
 

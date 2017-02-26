@@ -463,6 +463,11 @@ private func UpdateEnemyDisplay()
 	if (msg) Message("@%s", msg); else Message("");
 }
 
+public func EditorPropertyChanged()
+{
+	return UpdateEnemyDisplay();
+}
+
 
 /* Editor props and actions */
 
@@ -508,7 +513,7 @@ public func Definition(def)
 	  { Name="$Unlimited$", Value=SPAWNCOUNT_INFINITE },
 	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetMaxConcurrentEnemies", SetRoot=true } }
 	  ] };
-	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
+	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk, GetInfoString=GetAIClonkInfoString }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
 }
 
 public func GetAIClonkEditorProps()
@@ -547,6 +552,15 @@ public func GetAIClonkDefaultPropValues()
 		Energy = 50,
 		Backpack = true,
 		};
+}
+
+public func GetAIClonkInfoString(proplist enemy_props)
+{
+	var msg = "{{Clonk}}";
+	var attack_mode = AI.AttackModes[enemy_props.AttackMode.Identifier];
+	var str = attack_mode->~GetInfoString(enemy_props.AttackMode);
+	if (str) msg = Format("%s%s", msg, str);
+	return msg;
 }
 
 private func SetAIClonkAttackMode(proplist attack_mode)

@@ -54,7 +54,13 @@ public func IsInventorProduct() { return true; }
 
 public func Definition(def)
 {
-	EnemySpawn->AddEnemyDef("Balloon", { SpawnType=Balloon, SpawnFunction=def.SpawnBalloon, OffsetAttackPathByPos=true }, EnemySpawn->GetAIClonkDefaultPropValues(), EnemySpawn->GetAIClonkEditorProps());
+	EnemySpawn->AddEnemyDef("Balloon",
+			{ SpawnType=Balloon,
+				SpawnFunction=def.SpawnBalloon,
+				OffsetAttackPathByPos=true,
+				GetInfoString=def.GetSpawnInfoString },
+		EnemySpawn->GetAIClonkDefaultPropValues(),
+		EnemySpawn->GetAIClonkEditorProps());
 }
 
 private func SpawnBalloon(array pos, proplist clonk_data, proplist enemy_def, array clonk_attack_path, object spawner)
@@ -72,6 +78,12 @@ private func SpawnBalloon(array pos, proplist clonk_data, proplist enemy_def, ar
 	}
 	// Only the clonk is an actual enemy
 	return clonk;
+}
+
+private func GetSpawnInfoString(proplist enemy_data)
+{
+	// Prepend balloon to clonk info string
+	return Format("{{Balloon}}%s", EnemySpawn->GetAIClonkInfoString(enemy_data));
 }
 
 

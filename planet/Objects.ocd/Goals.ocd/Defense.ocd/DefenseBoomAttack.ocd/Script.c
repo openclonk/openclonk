@@ -282,7 +282,7 @@ public func Definition(def)
 			Rider = nil,
 			FlySpeed = def.FlySpeed
 		};
-		EnemySpawn->AddEnemyDef("BoomAttack", { SpawnType=DefenseBoomAttack, SpawnFunction=def.SpawnBoomAttack, OffsetAttackPathByPos=true }, spawn_default_values, spawn_editor_props);
+		EnemySpawn->AddEnemyDef("BoomAttack", { SpawnType=DefenseBoomAttack, SpawnFunction=def.SpawnBoomAttack, OffsetAttackPathByPos=true, GetInfoString=def.GetSpawnInfoString }, spawn_default_values, spawn_editor_props);
 	}
 }
 
@@ -309,6 +309,18 @@ private func SpawnBoomAttack(array pos, proplist enemy_data, proplist enemy_def,
 	}
 	// Return rider-less boom attack
 	return boom;
+}
+
+private func GetSpawnInfoString(proplist enemy_data)
+{
+	if (enemy_data.Rider && enemy_data.Rider.Type == "Clonk")
+	{
+		return Format("{{DefenseBoomAttack}}%s", EnemySpawn->GetAIClonkInfoString(enemy_data.Rider.Properties));
+	}
+	else
+	{
+		return "{{DefenseBoomAttack}}";
+	}
 }
 
 
