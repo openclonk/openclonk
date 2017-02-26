@@ -1,0 +1,2 @@
+Name=Schalter
+Description=Öffnet oder schließt Türen und andere Dinge. Bedienung mit Anfassen und Richtungstasten.

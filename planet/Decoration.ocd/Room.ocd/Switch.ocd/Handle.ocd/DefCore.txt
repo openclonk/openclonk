@@ -1,0 +1,16 @@
+[DefCore]
+id=Switch_Handle
+Version=5,2,0,1
+Category=C4D_Vehicle
+Width=7
+Height=22
+Offset=-4,-11
+Vertices=2
+VertexX=0,0
+VertexY=10,-7
+VertexFriction=100,100
+Value=5
+Rotate=1
+Mass=10
+NoStabilize=1
+HideInCreator=true

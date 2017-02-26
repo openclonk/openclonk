@@ -1,0 +1,2 @@
+Name=Switch
+Description=Opens and closes doors and other things. Grab and hit direction keys to control.

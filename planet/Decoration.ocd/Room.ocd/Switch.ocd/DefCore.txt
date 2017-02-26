@@ -1,0 +1,14 @@
+[DefCore]
+id=Switch
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=25
+Height=15
+Offset=-12,-8
+Vertices=4
+VertexX=0,-10,10,0
+VertexY=6,7,7,0
+VertexFriction=100,100,100,100
+Value=20
+Rotate=1
+Mass=1000
