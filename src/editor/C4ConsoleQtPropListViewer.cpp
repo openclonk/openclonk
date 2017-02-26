@@ -2575,6 +2575,7 @@ bool C4PropertyDelegateFactory::PasteFromClipboard(const QModelIndex &index, boo
 	if (check_only) return true;
 	// Alright, paste!
 	d->GetPathForProperty(prop).SetProperty(str_data.getData());
+	return true;
 }
 
 bool C4PropertyDelegateFactory::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
