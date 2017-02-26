@@ -177,6 +177,7 @@ C4PropertyDelegate::C4PropertyDelegate(const C4PropertyDelegateFactory *factory,
 			set_function_type = C4PropertyPath::PPT_SetFunction;
 		}
 		async_get_function = props->GetPropertyStr(P_AsyncGet);
+		update_callback = props->GetPropertyStr(P_OnUpdate);
 	}
 }
 
@@ -283,6 +284,7 @@ void C4PropertyDelegateInt::SetModelData(QObject *editor, const C4PropertyPath &
 	QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
 	spinBox->interpretText();
 	property_path.SetProperty(C4VInt(spinBox->value()));
+	factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
 }
 
 QWidget *C4PropertyDelegateInt::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
@@ -332,6 +334,7 @@ void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPat
 		// TODO: Would be better to handle escaping in the C4Value-to-string code
 		new_value = new_value.replace("\\", "\\\\").replace("\"", "\\\"");
 		property_path.SetProperty(C4VString(new_value.toUtf8()));
+		factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
 		line_edit->commit_pending = false;
 	}
 }
@@ -739,6 +742,7 @@ void C4PropertyDelegateColor::SetModelData(QObject *aeditor, const C4PropertyPat
 {
 	Editor *editor = static_cast<Editor *>(aeditor);
 	property_path.SetProperty(editor->last_value);
+	factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
 }
 
 QWidget *C4PropertyDelegateColor::CreateEditor(const class C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
@@ -1459,6 +1463,7 @@ void C4PropertyDelegateEnum::SetOptionValue(const C4PropertyPath &use_path, cons
 		C4PropList *option_props = option.props.getPropList();
 		use_path.SetProperty(option_value, ignore_base_props_static);
 	}
+	factory->GetPropertyModel()->DoOnUpdateCall(use_path, this);
 }
 
 QWidget *C4PropertyDelegateEnum::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
@@ -1977,6 +1982,7 @@ void C4PropertyDelegateC4ValueInput::SetModelData(QObject *aeditor, const C4Prop
 	if (editor->commit_pending)
 	{
 		property_path.SetProperty(editor->edit->text().toUtf8());
+		factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
 		editor->commit_pending = false;
 	}
 }
@@ -2020,7 +2026,11 @@ void C4PropertyDelegateShape::SetModelData(QObject *editor, const C4PropertyPath
 	// Only set shape data if triggered through shape movement signal; ignore update calls from e.g. parent enum editor
 	if (!editor)
 	{
-		if (prop_shape && prop_shape->GetParentDelegate() == this) property_path.SetProperty(prop_shape->GetValue());
+		if (prop_shape && prop_shape->GetParentDelegate() == this)
+		{
+			property_path.SetProperty(prop_shape->GetValue());
+			factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
+		}
 	}
 }
 
@@ -2179,7 +2189,6 @@ C4PropertyDelegateGraph::C4PropertyDelegateGraph(const class C4PropertyDelegateF
 		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
 		vertical_fix = props->GetPropertyBool(P_VerticalFix);
 		structure_fix = props->GetPropertyBool(P_StructureFix);
-		update_callback = props->GetPropertyStr(P_OnUpdate);
 	}
 }
 
@@ -2265,10 +2274,7 @@ void C4PropertyDelegateGraph::ConnectSignals(C4ConsoleQtShape *shape, const C4Pr
 		// Send graph editing via queue
 		::Control.DoInput(CID_EditGraph, new C4ControlEditGraph(property_path.GetGetPath(), action, index, x, y), CDT_Decide);
 		// Also send update callback to root object
-		if (update_callback)
-		{
-			::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString("%s->%s(%s)", property_path.GetRoot(), update_callback->GetCStr(), property_path.GetGetPath()).getData(), 0, false));
-		}
+		factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
 	});
 	connect(shape, &C4ConsoleQtShape::BorderSelectionChanged, this, []() {
 		// Different part of the shape selected: Refresh info on next update
@@ -2430,7 +2436,8 @@ void C4PropertyDelegateFactory::setModelData(QWidget *editor, QAbstractItemModel
 void C4PropertyDelegateFactory::SetPropertyData(const C4PropertyDelegate *d, QObject *editor, C4ConsoleQtPropListModel::Property *editor_prop) const
 {
 	// Set according to delegate
-	d->SetModelData(editor, d->GetPathForProperty(editor_prop), editor_prop->shape ? editor_prop->shape->Get() : nullptr);
+	const C4PropertyPath set_path = d->GetPathForProperty(editor_prop);
+	d->SetModelData(editor, set_path, editor_prop->shape ? editor_prop->shape->Get() : nullptr);
 }
 
 QWidget *C4PropertyDelegateFactory::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -3109,6 +3116,23 @@ int32_t C4ConsoleQtPropListModel::UpdateValueArray(C4ValueArray *target_array, i
 		prop.shape_delegate = nullptr;
 	}
 	return 1; // one group for the values
+}
+
+void C4ConsoleQtPropListModel::DoOnUpdateCall(const C4PropertyPath &updated_path, const C4PropertyDelegate *delegate)
+{
+	// If delegate has its own update clalback, perform that on the root
+	const char *update_callback = delegate->GetUpdateCallback();
+	if (update_callback)
+	{
+		::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString("%s->%s(%s)", updated_path.GetRoot(), update_callback, updated_path.GetGetPath()).getData(), 0, false));
+	}
+	// Do general object property update control
+	C4PropList *base_proplist = this->base_proplist.getPropList();
+	C4Value q;
+	if (base_proplist && base_proplist->GetProperty(P_EditorPropertyChanged, &q))
+	{
+		::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString("%s->%s(\"%s\")", updated_path.GetRoot(), ::Strings.P[P_EditorPropertyChanged].GetCStr(), updated_path.GetGetPath()).getData(), 0, false));
+	}
 }
 
 C4ConsoleQtPropListModel::Property *C4ConsoleQtPropListModel::GetPropByIndex(const QModelIndex &index) const

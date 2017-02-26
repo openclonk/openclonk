@@ -80,6 +80,7 @@ protected:
 	C4Value creation_props;
 	C4RefCntPointer<C4String> set_function, async_get_function, name;
 	C4PropertyPath::PathType set_function_type;
+	C4RefCntPointer<C4String> update_callback;
 
 public:
 	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, C4PropList *props);
@@ -97,6 +98,7 @@ public:
 	const char *GetSetFunction() const { return set_function.Get() ? set_function->GetCStr() : nullptr; } // get name of setter function for this property
 	virtual const class C4PropertyDelegateShape *GetShapeDelegate(C4Value &val, C4PropertyPath *shape_path) const { return nullptr;  }
 	virtual const class C4PropertyDelegateShape *GetDirectShapeDelegate() const { return nullptr; }
+	const char *GetUpdateCallback() const { return update_callback ? update_callback->GetCStr() : nullptr; }
 	virtual bool HasCustomPaint() const { return false; }
 	virtual bool Paint(QPainter *painter, const QStyleOptionViewItem &option, const C4Value &val) const { return false; }
 	virtual C4PropertyPath GetPathForProperty(struct C4ConsoleQtPropListModelProperty *editor_prop) const;
@@ -563,7 +565,6 @@ class C4PropertyDelegateGraph : public C4PropertyDelegateShape
 	bool horizontal_fix = false;
 	bool vertical_fix = false;
 	bool structure_fix = false;
-	C4RefCntPointer<C4String> update_callback;
 
 	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
 protected:
@@ -707,7 +708,7 @@ public:
 	};
 private:
 	C4Value target_value; // Target value for which properties are listed (either proplist or array)
-	C4Value base_proplist; // Parent-most value, i.e. object or effect selected in editor through 
+	C4Value base_proplist; // Parent-most value, i.e. object or effect selected and framed in editor
 	C4Value info_proplist; // Proplist from which available properties are derived. May differ from target_proplist in child proplists.
 	C4PropertyPath target_path; // script path to target proplist to set values
 	std::list<TargetStackEntry> target_path_stack; // stack of target paths descended into by setting child properties
@@ -730,6 +731,7 @@ public:
 	void DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path); // Add proplist to stack
 	void AscendPath(); // go back one element in target path stack
 	void UpdateValue(bool select_default);
+	void DoOnUpdateCall(const C4PropertyPath &updated_path, const C4PropertyDelegate *delegate);
 
 private:
 	int32_t UpdateValuePropList(C4PropList *target_proplist, int32_t *default_selection_group, int32_t *default_selection_index);

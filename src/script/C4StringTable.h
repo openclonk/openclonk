@@ -495,6 +495,7 @@ enum C4PropertyName
 	P_VerticalFix,
 	P_StructureFix,
 	P_OnUpdate,
+	P_EditorPropertyChanged,
 	P_Min,
 	P_Max,
 	P_Set,
