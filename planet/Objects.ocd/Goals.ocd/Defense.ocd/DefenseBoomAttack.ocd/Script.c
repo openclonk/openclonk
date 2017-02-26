@@ -59,7 +59,13 @@ local FxFlight = new Effect
 			var dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
 			Target->SetR(Angle(0, 0, dx, dy));
 		}
-		this->Timer(0);	
+		// Immediately start flying unless we don't have a target set yet
+		// If there's no target, it may be set directly after creation so let the rocket survive for one frame
+		// by not calling the timer yet.
+		if (this.target || GetLength(this.waypoints))
+		{
+			this->Timer(0);	
+		}
 	},
 	Timer = func(int time)
 	{
@@ -92,45 +98,48 @@ local FxFlight = new Effect
 			dy = this.current_waypoint.Y - Target->GetY();		
 		}
 		
-		// Explode if close enough to target.
-		if (ObjectDistance(Target, this.target) < 12)
+		if (this.target)
 		{
-			Target->DoFireworks(NO_OWNER);
-			return FX_Execute_Kill;	
-		}
-		
-		// Get relative coordinates to target.
-		if (this.target && !this.current_waypoint)
-		{
-			dx = this.target->GetX() - Target->GetX();
-			dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
-			// Check if path is free to target, if not try to find a way around using waypoints.
-			if (!PathFree(this.target->GetX(), this.target->GetY(), Target->GetX(), Target->GetY())/* && !Target->GBackSolid(dx, dy)*/)
+			// Explode if close enough to target.
+			if (ObjectDistance(Target, this.target) < 12)
 			{
-				// Try to set a waypoint half way on a line orthogonal to the current direction.
-				for (var attempts = 0; attempts < 40; attempts++)
+				Target->DoFireworks(NO_OWNER);
+				return FX_Execute_Kill;	
+			}
+			
+			// Get relative coordinates to target.
+			if (!this.current_waypoint)
+			{
+				dx = this.target->GetX() - Target->GetX();
+				dy = this.target->GetY() + this.target->GetBottom() - Target->GetY();
+				// Check if path is free to target, if not try to find a way around using waypoints.
+				if (!PathFree(this.target->GetX(), this.target->GetY(), Target->GetX(), Target->GetY())/* && !Target->GBackSolid(dx, dy)*/)
 				{
-					var d = Sqrt(dx**2 + dy**2);
-					var try_dist = Max(20 + 2 * attempts, d * attempts / 80) + RandomX(-10, 10);
-					var line_dist = (2 * Random(2) - 1) * try_dist;
-					var way_x = Target->GetX() + dx / 2 + dy * line_dist / d;
-					var way_y = Target->GetY() + dy / 2 - dx * line_dist / d;
-					// Path to new waypoint must be free and inside the landscape borders.
-					if (!PathFree(Target->GetX(), Target->GetY(), way_x, way_y) || !PathFree(this.target->GetX(), this.target->GetY(), way_x, way_y))
-						continue;
-					if (!Inside(way_x, 0, LandscapeWidth()) || !Inside(way_y, 0, LandscapeHeight()))
-						continue; 
-					this.current_waypoint = {X = way_x, Y = way_y};
-					break;
+					// Try to set a waypoint half way on a line orthogonal to the current direction.
+					for (var attempts = 0; attempts < 40; attempts++)
+					{
+						var d = Sqrt(dx**2 + dy**2);
+						var try_dist = Max(20 + 2 * attempts, d * attempts / 80) + RandomX(-10, 10);
+						var line_dist = (2 * Random(2) - 1) * try_dist;
+						var way_x = Target->GetX() + dx / 2 + dy * line_dist / d;
+						var way_y = Target->GetY() + dy / 2 - dx * line_dist / d;
+						// Path to new waypoint must be free and inside the landscape borders.
+						if (!PathFree(Target->GetX(), Target->GetY(), way_x, way_y) || !PathFree(this.target->GetX(), this.target->GetY(), way_x, way_y))
+							continue;
+						if (!Inside(way_x, 0, LandscapeWidth()) || !Inside(way_y, 0, LandscapeHeight()))
+							continue; 
+						this.current_waypoint = {X = way_x, Y = way_y};
+						break;
+					}
 				}
 			}
-		}
-		
-		// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
-		if (this.target && !this.current_waypoint)
-		{
-			var aim_dist = 600; 
-			dy = dy * (aim_dist - Abs(dx)) / aim_dist;
+			
+			// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
+			if (!this.current_waypoint)
+			{
+				var aim_dist = 600; 
+				dy = dy * (aim_dist - Abs(dx)) / aim_dist;
+			}
 		}
 		var angle_to_target = Angle(0, 0, dx, dy);
 		var angle_rocket = Target->GetR();
@@ -241,9 +250,7 @@ private func DoFireworks(int killed_by)
 		SetRider(nil);
 	}
 	// Notify defense goal for reward and score.
-	var defense = FindObject(Find_ID(Goal_Defense));
-	if (defense)
-		defense->~OnClonkDeath(this, killed_by);
+	GameCallEx("OnRocketDeath", this, killed_by);
 	Fireworks();
 	Explode(40);
 	return;
@@ -256,6 +263,53 @@ public func Destruction()
 }
 
 public func HasNoNeedForAI() { return true; }
+
+
+/* Enemy spawn registration */
+
+public func Definition(def)
+{
+	if (def == DefenseBoomAttack)
+	{
+		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+			Rider = { Name="$Rider$", EditorHelp="$RiderHelp$", Type="enum", ValueKey="Properties", OptionKey="Type", Options=[
+				{ Name="$None$", EditorHelp="$NoRiderHelp$" },
+				{ Name=Clonk->GetName(), EditorHelp="$ClonkRiderHelp$", Value={ Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() }, Delegate=EnemySpawn->GetAIClonkEditorProps() }
+				] },
+			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 }
+		} };
+		var spawn_default_values = {
+			Rider = nil,
+			FlySpeed = def.FlySpeed
+		};
+		EnemySpawn->AddEnemyDef("BoomAttack", { SpawnType=DefenseBoomAttack, SpawnFunction=def.SpawnBoomAttack, OffsetAttackPathByPos=true }, spawn_default_values, spawn_editor_props);
+	}
+}
+
+private func SpawnBoomAttack(array pos, proplist enemy_data, proplist enemy_def, array attack_path, object spawner)
+{
+	// Spawn the boomattack
+	var boom = CreateObject(DefenseBoomAttack, pos[0], pos[1], g_enemyspawn_player);
+	if (!boom) return;
+	// Boomattack settings
+	boom.FlySpeed = enemy_data.FlySpeed;
+	var wp0 = attack_path[0];
+	boom->SetR(Angle(0, 0, wp0.X - pos[0], wp0.Y - pos[1]) + Random(11)-5);
+	boom->SetWaypoints(attack_path);
+	// Rider?
+	if (enemy_data.Rider && enemy_data.Rider.Type == "Clonk")
+	{
+		// Target the rider AI to the final position of the attack path (in case it gets shot down)
+		var clonk = EnemySpawn->SpawnClonk(pos, enemy_data.Rider.Properties, enemy_def.Rider, [attack_path[-1]], spawner);
+		if (clonk)
+		{
+			clonk->SetAction("Ride", boom);
+			return [boom, clonk];
+		}
+	}
+	// Return rider-less boom attack
+	return boom;
+}
 
 
 /*-- Properties --*/

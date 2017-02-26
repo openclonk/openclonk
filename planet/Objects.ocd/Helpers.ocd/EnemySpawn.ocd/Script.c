@@ -227,7 +227,12 @@ public func TrackSpawnedEnemy(object enemy)
 	}
 }
 
-public func OnClonkDeath(object clonk)
+public func OnRocketDeath(object rocket, int killed_by)
+{
+	return OnClonkDeath(rocket, killed_by);
+}
+
+public func OnClonkDeath(object clonk, int killed_by)
 {
 	if (clonk.EnemySpawn_source == this)
 	{
@@ -522,7 +527,7 @@ public func GetAIClonkEditorProps()
 		props.Speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=5 };
 		props.Energy = { Name="$Energy$", EditorHelp="$EnergyHelp$", Type="int", Min=1, Max=100000 };
 		props.Backpack = { Name="$Backpack$", EditorHelp="$BackpackHelp$", Type="bool" };
-		this.AIClonkEditorProps = { Type="proplist", Name=Clonk->GetName(), EditorProps=props };
+		this.AIClonkEditorProps = { Type="proplist", Name=Clonk->GetName(), EditorProps=props, Priority=100 };
 	}
 	return this.AIClonkEditorProps;
 }
