@@ -209,6 +209,50 @@ bool C4Network2::InitHost(bool fLobby)
 	return true;
 }
 
+// Orders connection addresses to optimize joining.
+static void SortAddresses(std::vector<C4Network2Address>& addrs)
+{
+	// TODO: Maybe use addresses from local client to avoid the extra system calls.
+	auto localAddrs = C4NetIO::GetLocalAddresses();
+	bool haveIPv6 = false;
+	for (auto& addr : localAddrs)
+	{
+		if (addr.GetFamily() == C4NetIO::HostAddress::IPv6 && !addr.IsLocal())
+		{
+			haveIPv6 = true;
+			break;
+		}
+	}
+
+	auto rank = [&](const C4Network2Address& Addr)
+	{
+		// Rank addresses. For IPv6-enabled clients, try public IPv6 addresses first, then IPv4,
+		// then link-local IPv6. For IPv4-only clients, skip IPv6.
+		int rank = 0;
+		auto addr = Addr.getAddr();
+		switch (addr.GetFamily())
+		{
+		case C4NetIO::HostAddress::IPv6:
+			if (addr.IsLocal())
+				rank = 100;
+			else if (haveIPv6)
+				// TODO: Rank public IPv6 addresses by longest matching prefix with local addresses.
+				rank = 300;
+			break;
+		case C4NetIO::HostAddress::IPv4:
+			// TODO: Maybe rank IPv4 addresses from private address ranges differently.
+			rank = 200;
+			break;
+		default:
+			assert(!"Unexpected address family");
+		}
+		return rank;
+	};
+
+	// Sort by decreasing rank. Use stable sort to allow the host to prioritize addresses within a family.
+	std::stable_sort(addrs.begin(), addrs.end(), [&](auto a, auto b) { return rank(a) > rank(b); });
+}
+
 C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bool fObserver)
 {
 	if (isEnabled()) Clear();
@@ -234,6 +278,16 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 	NetpuncherGameID = Ref.getNetpuncherGameID();
 	NetpuncherAddr = Ref.getNetpuncherAddr();
 	StdStrBuf Password;
+
+	// copy addresses
+	std::vector<C4Network2Address> Addrs;
+	for (int i = 0; i < Ref.getAddrCnt(); i++)
+	{
+		C4Network2Address a = Ref.getAddr(i);
+		a.getAddr().SetScopeId(Ref.GetSourceAddress().GetScopeId());
+		Addrs.push_back(std::move(a));
+	}
+	SortAddresses(Addrs);
 	for (;;)
 	{
 		// ask for password (again)?
@@ -244,15 +298,8 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 				return IR_Error;
 			fWrongPassword = false;
 		}
-		// copy addresses
-		C4Network2Address Addrs[C4ClientMaxAddr];
-		for (int i = 0; i < Ref.getAddrCnt(); i++)
-		{
-			Addrs[i] = Ref.getAddr(i);
-			Addrs[i].getAddr().SetScopeId(Ref.GetSourceAddress().GetScopeId());
-		}
 		// Try to connect to host
-		if (InitClient(Addrs, Ref.getAddrCnt(), HostCore, Password.getData()) == IR_Fatal)
+		if (InitClient(Addrs, HostCore, Password.getData()) == IR_Fatal)
 			return IR_Fatal;
 		// success?
 		if (isEnabled())
@@ -282,7 +329,7 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 	return IR_Success;
 }
 
-C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const C4ClientCore &HostCore, const char *szPassword)
+C4Network2::InitResult C4Network2::InitClient(const std::vector<class C4Network2Address>& Addrs, const C4ClientCore &HostCore, const char *szPassword)
 {
 	// initialization
 	Status.Set(GS_Init, -1);
@@ -307,10 +354,10 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 	InitPuncher();
 	// try to connect host
 	StdStrBuf strAddresses; int iSuccesses = 0;
-	for (int i = 0; i < iAddrCount; i++)
-		if (!pAddrs[i].isIPNull())
+	for (auto Addr : Addrs)
+		if (!Addr.isIPNull())
 		{
-			auto addr = pAddrs[i].getAddr();
+			auto addr = Addr.getAddr();
 			std::vector<C4NetIO::addr_t> addrs;
 			if (addr.IsLocal())
 			{
@@ -326,13 +373,13 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 			// connection
 			int cnt = 0;
 			for (auto& a : addrs)
-				if (NetIO.Connect(a, pAddrs[i].getProtocol(), HostCore, szPassword))
+				if (NetIO.Connect(a, Addr.getProtocol(), HostCore, szPassword))
 					cnt++;
 			if (cnt == 0) continue;
 			// format for message
 			if (strAddresses.getLength())
 				strAddresses.Append(", ");
-			strAddresses.Append(pAddrs[i].toString());
+			strAddresses.Append(Addr.toString());
 			iSuccesses++;
 		}
 	// no connection attempt running?

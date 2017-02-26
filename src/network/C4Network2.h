@@ -226,7 +226,7 @@ public:
 	// initialization
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
-	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = nullptr);
+	InitResult InitClient(const std::vector<class C4Network2Address>& Addrs, const class C4ClientCore &HostCore, const char *szPassword = nullptr);
 	bool DoLobby();
 	bool Start();
 	bool Pause();
