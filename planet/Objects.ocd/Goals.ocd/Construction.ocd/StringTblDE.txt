@@ -1,5 +1,5 @@
 Name=Konstruktion
 
 #Goal window
-MsgGoalFulfilled=You have constructed the required objects.
-MsgGoalUnFulfilled=The following objects still need to be constructed:%s.
+MsgGoalFulfilled=Du hast die benötigten Objekte errichtet.
+MsgGoalUnFulfilled=Die folgenden Objekte müssen noch errichtet werden:%s.
