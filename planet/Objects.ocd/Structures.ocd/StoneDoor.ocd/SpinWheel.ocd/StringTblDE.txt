@@ -3,3 +3,6 @@ Description=Öffne oder schließe die verbundene Burgtür mit [Hoch] oder [Runte
 Target=Ziel
 UpAction=Aktion 'Hoch'
 DownAction=Aktion 'Runter'
+ConnectNearestDoor=Tuer verbinden
+ControlUp=Winde hoch
+ControlDown=Winde runter

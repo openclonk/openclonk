@@ -110,6 +110,12 @@ local Plane = 200;
 local Components = {Wood = 3, Metal = 1};
 local up_action, down_action; // Custom editor-selected actions on switch handling
 
+local EditorActions = {
+	SwitchLeft = { Name = "$ControlUp$", Command = "ControlUp()" },
+	SwitchRight = { Name = "$ControlDown$", Command = "ControlDown()" },
+	ConnectClosestDoor = { Name = "$ConnectNearestDoor$", Command = "ConnectNearestDoor()" }
+};
+
 func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(-30,0,1,0)), def);
