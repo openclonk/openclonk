@@ -27,7 +27,7 @@ public:
 	{ }
 
 	C4Network2Address(C4NetIO::addr_t addr, C4Network2IOProtocol eProtocol)
-			: addr(addr), eProtocol(eProtocol)
+			: addr(addr.AsIPv4()), eProtocol(eProtocol)
 	{ }
 
 	C4Network2Address(const C4Network2Address &addr)
@@ -53,9 +53,9 @@ public:
 
 	StdStrBuf toString() const;
 
-	void SetAddr(C4NetIO::addr_t naddr) { addr = naddr; }
+	void SetAddr(C4NetIO::addr_t naddr) { addr = naddr.AsIPv4(); }
 	//void SetIP(in_addr ip) { addr.SetAddress(ip); }
-	void SetIP(C4NetIO::addr_t ip) { addr.SetAddress(ip); }
+	void SetIP(C4NetIO::addr_t ip) { addr.SetAddress(ip.AsIPv4()); }
 	void SetPort(uint16_t iPort) { addr.SetPort(iPort); }
 	void SetProtocol(C4Network2IOProtocol enProtocol) { eProtocol = enProtocol; }
 
