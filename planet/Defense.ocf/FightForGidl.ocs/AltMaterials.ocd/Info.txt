@@ -1,1 +1,0 @@
-This definition is not created. It just serves as a container for custom mesh materials, which aren't loaded unless the definition is valid.

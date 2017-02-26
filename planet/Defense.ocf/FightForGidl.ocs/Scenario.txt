@@ -7,6 +7,7 @@ MaxPlayerLeague=4
 
 [Definitions]
 Definition2=Decoration.ocd\Clonk.ocd\AltSkins.ocd
+Definition3=Decoration.ocd\Misc.ocd\AltMaterials.ocd
 
 
 [Game]

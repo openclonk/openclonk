@@ -501,7 +501,7 @@ func InitWaveData()
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
 			{ Name = "$WaveNewbies$", Bounty = 10, Enemies = [
-			new ogre   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
+			new newbie   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "$WaveBows$", Bounty = 15, Enemies = [
 			new newbie      {            Num= 2, Interval=10 },
 			new bowman      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_RIGHT },
