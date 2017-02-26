@@ -40,6 +40,10 @@ local SingleWeaponAttackMode = {
 		if (is_carry_heavy_workaround) fx.Target->SetAction("Walk");
 		if (weapon)
 		{
+			if (fx.attack_mode.Skin)
+			{
+				weapon->SetMeshMaterial(fx.attack_mode.Skin, 0);
+			}
 			if (fx.attack_mode.Ammo)
 			{
 				var ammo = weapon->CreateContents(fx.attack_mode.Ammo);
@@ -73,10 +77,9 @@ local SingleWeaponAttackMode = {
 	},
 	GetName = func()
 	{
-		if (this.Ammo)
-			return Format("%s (%s)", this.Weapon->GetName(), this.Ammo->GetName());
-		else
-			return this.Weapon->GetName();
+		var weapon_name = this.SkinName ?? this.Weapon->GetName();
+		if (this.Ammo) weapon_name = Format("%s (%s)", weapon_name, this.Ammo->GetName());
+		return weapon_name;
 	},
 	GetEditorHelp = func()
 	{

@@ -51,6 +51,7 @@ private func SetMeshMaterial2(string to_mat) { return SetMeshMaterial(to_mat, 2)
 
 public func Definition(proplist def)
 {
+	// Add materials
 	AddMaterial(Chest, "MetalChest", "$MetalChest$");
 	AddMaterial(Chest, "GoldenChest", "$GoldenChest$");
 	AddMaterial(Column, "AncientColumn", "$AncientColumn$");
@@ -66,4 +67,8 @@ public func Definition(proplist def)
 	AddMaterial(Sword, "LaserSword", "$LaserSword$");
 	AddMaterial(Sword, "OgreSword", "$OgreSword$");
 	AddMaterial(PowderKeg, "NukePowderKeg", "$NukePowderKeg$");
+	// Add custom attack modes for swords and keg (currently only affecting visuals, but should really add some extra differences)
+	AI->RegisterAttackMode("LaserSword", new AI.SingleWeaponAttackMode { Weapon=Sword, Strategy=AI.ExecuteMelee, Skin="LaserSword", SkinName="$LaserSword$" });
+	AI->RegisterAttackMode("OgreSword", new AI.SingleWeaponAttackMode { Weapon=Sword, Strategy=AI.ExecuteMelee, Skin="OgreSword", SkinName="$OgreSword$" });
+	AI->RegisterAttackMode("NukePowderKeg", new AI.SingleWeaponAttackMode { Weapon=PowderKeg, Strategy=AI.ExecuteBomber, Skin="NukePowderKeg", SkinName="$NukePowderKeg$" });
 }
