@@ -218,6 +218,18 @@ public func SetAttackPath(object clonk, array new_attack_path)
 	return true;
 }
 
+// Set controlled vehicle
+public func SetVehicle(object clonk, object new_vehicle)
+{
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetVehicle(%v, %v) not called from definition context but from %v", clonk, new_vehicle, this);
+	var fx_ai = GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.vehicle = new_vehicle;
+	return true;
+}
+
 
 /*-- AI Effect --*/
 
@@ -508,22 +520,7 @@ public func ExecuteArm(effect fx)
 {
 	// Find shield.
 	fx.shield = fx.Target->FindContents(Shield);
-	// Find a weapon. Depends on attack mode
-	if (Call(fx.attack_mode.FindWeapon, fx))
-	{
-		// Select unless it's e.g. a vehicle or a spell
-		SelectItem(fx, fx.weapon);
-		return true;
-	}
-	// No weapon.
-	return false;
-}
-
-public func FindInventoryWeapon(effect fx)
-{
-	fx.ammo_check = nil;
-	fx.ranged = false;
-	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
+	// Vehicle control overrides all other weapons
 	if (fx.weapon = fx.vehicle)
 	{
 		if (this->CheckVehicleAmmo(fx, fx.weapon))
@@ -537,6 +534,22 @@ public func FindInventoryWeapon(effect fx)
 		else
 			fx.weapon = nil;
 	}
+	// Find a weapon. Depends on attack mode
+	if (Call(fx.attack_mode.FindWeapon, fx))
+	{
+		// Select unless it's e.g. a vehicle or a spell
+		SelectItem(fx, fx.weapon);
+		return true;
+	}
+	// No weapon.
+	return false;
+}
+
+public func FindInventoryWeapon(effect fx)
+{
+	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
+	fx.ammo_check = nil;
+	fx.ranged = false;
 	if (FindInventoryWeaponGrenadeLauncher(fx)) return true;
 	if (FindInventoryWeaponBlunderbuss(fx)) return true;
 	if (FindInventoryWeaponBow(fx)) return true;

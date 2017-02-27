@@ -539,18 +539,18 @@ public func GetAIClonkEditorProps()
 	return this.AIClonkEditorProps;
 }
 
-public func GetAIClonkDefaultPropValues()
+public func GetAIClonkDefaultPropValues(string attack_mode)
 {
 	// Default settings for AI enemy clonks
 	return {
-		AttackMode = { Identifier="Sword" },
+		AttackMode = { Identifier=attack_mode ?? "Sword" },
 		Color = 0xff0000,
 		Bounty = 0,
 		ScaleX = 100,
 		ScaleY = 100,
 		Speed = 100,
 		Energy = 50,
-		Backpack = true,
+		Backpack = false,
 		};
 }
 

@@ -56,6 +56,7 @@ local SingleWeaponAttackMode = {
 			{
 				weapon->~SetStackCount(1); // Ensure departure is called on every object
 				weapon.Departure = AI.Departure_WeaponRespawn;
+				fx.has_ammo_respawn = true;
 			}
 		}
 	},

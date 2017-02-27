@@ -103,15 +103,20 @@ private func ExecuteCatapult(effect fx)
 	// Can shoot now?
 	if (fx.time >= fx.aim_time + fx.aim_wait && PathFree(x, y - 20, x + dx, y + dy - 20))
 	{
-		fx.aim_weapon->~DoFire(fx.Target, power, 0);
-		fx.aim_weapon = nil;
+		// Need to wait for ammo?
+		if (fx.vehicle->ContentsCount() || fx.Target->ContentsCount())
+		{
+			fx.aim_weapon->~DoFire(fx.Target, power, 0);
+			fx.aim_weapon = nil;
+		}
 	}
 	return true;
 }
 
 private func CheckCatapultAmmo(effect fx, object vehicle)
 {
-	return vehicle->ContentsCount() > 0;
+	// Must have ammo in the catapult or in the clonk (or be respawning ammo)
+	return vehicle->ContentsCount() > 0 || fx.Target->ContentsCount() > 0 || fx.has_ammo_respawn;
 }
 
 

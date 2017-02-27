@@ -92,6 +92,9 @@ public func ExecuteJump(effect fx)
 // Follow attack path or return to the AI's home if not yet there.
 public func ExecuteIdle(effect fx)
 {
+	// Persist commands because constant command resets may hinder execution
+	if (fx.Target->GetCommand() && Random(4)) return true;
+	// Follow attack path
 	if (fx.attack_path)
 	{
 		var next_pt = fx.attack_path[0];
@@ -111,30 +114,38 @@ public func ExecuteIdle(effect fx)
 		fx.home_y = next_pt.Y;
 		fx.home_dir = Random(2);
 	}
-	if (!Inside(fx.Target->GetX() - fx.home_x, -5, 5) || !Inside(fx.Target->GetY() - fx.home_y, -15, 15))
+	// Check if we need to move/push to a target
+	if (fx.vehicle)
 	{
-		return fx.Target->SetCommand("MoveTo", nil, fx.home_x, fx.home_y);
+		if (!Inside(fx.vehicle->GetX() - fx.home_x, -15, 15) || !Inside(fx.vehicle->GetY() - fx.home_y, -20, 20))
+		{
+			return fx.Target->SetCommand("PushTo", fx.vehicle, fx.home_x, fx.home_y);
+		}
 	}
 	else
 	{
-		// Next section on path or done?
-		if (fx.attack_path)
+		if (!Inside(fx.Target->GetX() - fx.home_x, -5, 5) || !Inside(fx.Target->GetY() - fx.home_y, -15, 15))
 		{
-			if (GetLength(fx.attack_path) > 1)
-			{
-				fx.attack_path = fx.attack_path[1:];
-				// Wait one cycle. After that, ExecuteIdle will continue the path.
-			}
-			else
-			{
-				fx.attack_path = nil;
-			}
+			return fx.Target->SetCommand("MoveTo", nil, fx.home_x, fx.home_y);
 		}
-		// Movement done (for now)
-		fx.Target->SetCommand("None");
-		fx.Target->SetComDir(COMD_Stop);
-		fx.Target->SetDir(fx.home_dir);
 	}
+	// Next section on path or done?
+	if (fx.attack_path)
+	{
+		if (GetLength(fx.attack_path) > 1)
+		{
+			fx.attack_path = fx.attack_path[1:];
+			// Wait one cycle. After that, ExecuteIdle will continue the path.
+		}
+		else
+		{
+			fx.attack_path = nil;
+		}
+	}
+	// Movement done (for now)
+	fx.Target->SetCommand("None");
+	fx.Target->SetComDir(COMD_Stop);
+	fx.Target->SetDir(fx.home_dir);
 	// Nothing to do.
 	return false;
 }
