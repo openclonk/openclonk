@@ -217,7 +217,7 @@ static void SortAddresses(std::vector<C4Network2Address>& addrs)
 	bool haveIPv6 = false;
 	for (auto& addr : localAddrs)
 	{
-		if (addr.GetFamily() == C4NetIO::HostAddress::IPv6 && !addr.IsLocal())
+		if (addr.GetFamily() == C4NetIO::HostAddress::IPv6 && !addr.IsLocal() && !addr.IsPrivate())
 		{
 			haveIPv6 = true;
 			break;
@@ -235,13 +235,17 @@ static void SortAddresses(std::vector<C4Network2Address>& addrs)
 		case C4NetIO::HostAddress::IPv6:
 			if (addr.IsLocal())
 				rank = 100;
+			else if (addr.IsPrivate())
+				rank = 150;
 			else if (haveIPv6)
 				// TODO: Rank public IPv6 addresses by longest matching prefix with local addresses.
 				rank = 300;
 			break;
 		case C4NetIO::HostAddress::IPv4:
-			// TODO: Maybe rank IPv4 addresses from private address ranges differently.
-			rank = 200;
+			if (addr.IsPrivate())
+				rank = 150;
+			else
+				rank = 200;
 			break;
 		default:
 			assert(!"Unexpected address family");

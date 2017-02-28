@@ -113,7 +113,8 @@ public:
 		bool IsNull() const;
 		bool IsMulticast() const;
 		bool IsLoopback() const;
-		bool IsLocal() const;
+		bool IsLocal() const; // IPv6 link-local address
+		bool IsPrivate() const; // IPv6 ULA or IPv4 private address range
 //		bool IsBroadcast() const;
 
 		StdStrBuf ToString(int flags = 0) const;

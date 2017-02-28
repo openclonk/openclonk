@@ -273,6 +273,25 @@ bool C4NetIO::HostAddress::IsLocal() const
 	return false;
 }
 
+bool C4NetIO::HostAddress::IsPrivate() const
+{
+	// IPv6 unique local address
+	if (gen.sa_family == AF_INET6)
+		return (v6.sin6_addr.s6_addr[0] & 0xfe) == 0xfc;
+	if (gen.sa_family == AF_INET)
+	{
+		uint32_t addr = ntohl(v4.sin_addr.s_addr);
+		uint32_t s = (addr >> 16) & 0xff;
+		switch (addr >> 24)
+		{
+		case 10:  return true;
+		case 172: return s >= 16 && s <= 31;
+		case 192: return s == 168;
+		}
+	}
+	return false;
+}
+
 void C4NetIO::HostAddress::SetScopeId(int scopeId)
 {
 	if (gen.sa_family != AF_INET6) return;
