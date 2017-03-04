@@ -10,7 +10,7 @@
 // AI Settings.
 local AirshipBoardDistance = 100; // How near must an airship be to the target to dispatch its troops.
 local AirshipLostDistance = 50; // How far the pilot must be away from an airship for it to find a new pilot.
-
+local AirshipOccludedTargetMaxDistance = 250; // IF a target is further than this and occluded, search for a new target
 
 /*-- General Vehicle --*/
 
@@ -62,6 +62,8 @@ private func ExecuteCatapult(effect fx)
 			fx.Target->SetCommand("Grab", fx.vehicle);
 		return true;
 	}
+	// No target? Revert to default idle proc
+	if (!fx.target) return false;
 	// Target still in guard range?
 	if (!this->CheckTargetInGuardRange(fx))
 		return false;
@@ -137,39 +139,66 @@ public func ExecuteAirship(effect fx)
 			return true;
 		}
 		if (!fx.Target->GetCommand())
+		{
 			fx.Target->SetCommand("Grab", fx.vehicle);
+		}
 		return true;
 	}
-	
-	// Move the airship to the target. Check if no command or is making contact, this means a new control needs to be issued.
+	// Move the airship to the target or along path. Check if no command or is making contact, this means a new control needs to be issued.
 	if (!fx.vehicle->GetCommand() || fx.vehicle->GetContact(-1))
 	{
 		// If close enough (also in y-coordinates, must be above target) release the crew.
-		if (fx.vehicle->ObjectDistance(fx.target) < fx.control.AirshipBoardDistance && Inside(fx.vehicle->GetY() - fx.target->GetY(), -fx.control.AirshipBoardDistance / 2, 0))
+		if (!fx.attack_path)
 		{
-			// Unboard the crew and let go of airship.
-			for (var clonk in this->GetCommanderCrew(fx))
+			var tx, ty;
+			if (fx.target)
 			{
-				var clonk_ai = clonk->GetAI();
-				clonk_ai.commander = nil;
-				if (clonk->GetProcedure() == "PUSH")
-					clonk->SetAction("Walk");
-				clonk_ai.target = fx.target;
+				tx = fx.target->GetX();
+				ty = fx.target->GetY();
 			}
-			fx.vehicle = nil;
-			fx.weapon = nil;
-			fx.Target->SetCommand("UnGrab");
-			return true;
-		}		
-		// Find a boarding point for the target.
-		var boarding_point = this->GetAirshipBoardingPoint(fx);
-		if (boarding_point)
+			else
+			{
+				tx = fx.home_x;
+				ty = fx.home_y;
+			}
+			if (Distance(fx.vehicle->GetX(), fx.vehicle->GetY(), tx, ty) < fx.control.AirshipBoardDistance
+		   && Inside(fx.vehicle->GetY() - ty, -fx.control.AirshipBoardDistance / 2, 0))
+			{
+				// Unboard the crew and let go of airship.
+				for (var clonk in this->GetCommanderCrew(fx))
+				{
+					var clonk_ai = clonk->GetAI();
+					clonk_ai.commander = nil;
+					if (clonk->GetProcedure() == "PUSH")
+						clonk->SetAction("Walk");
+					clonk_ai.target = fx.target;
+				}
+				fx.vehicle = nil;
+				fx.weapon = nil;
+				fx.Target->SetCommand("UnGrab");
+				return true;
+			}	
+			// Find a boarding point for the target.
+			var boarding_point = this->GetAirshipBoardingPoint(fx);
+			if (boarding_point)
+			{
+				fx.vehicle->SetCommand("MoveTo", nil, boarding_point[0], boarding_point[1]);
+				return true;	
+			}
+		}
+		else
 		{
-			fx.vehicle->SetCommand("MoveTo", nil, boarding_point[0], boarding_point[1]);
-			return true;	
+			// Always follow attack path
+			fx.vehicle->SetCommand("MoveTo", nil, fx.home_x, fx.home_y);
+			return true;
 		}
 	}
-	return false;
+	else if (fx.attack_path)
+	{
+		this->ExecuteAttackPath(fx);
+	}
+	// Nothing to do. But return handled because we need to keep pushing.
+	return true;
 }
 
 // Finds a location where to board the airship close to the target.
@@ -179,16 +208,25 @@ public func GetAirshipBoardingPoint(effect fx)
 		return nil;
 	var vx = fx.vehicle->GetX();
 	var vy = fx.vehicle->GetY();
-	var tx = fx.target->GetX();
-	var ty = fx.target->GetY();
-	// Look for a new target if the current path is not free and too far away.
-	if (fx.vehicle->ObjectDistance(fx.target) > 250 && !PathFree(vx - 30, vy, tx, ty) && !PathFree(vx + 30, vy, tx, ty))
+	var tx, ty;
+	if (fx.target)
 	{
-		fx.target = this->FindTarget(fx);
-		if (!fx.target)
-			return nil;
 		tx = fx.target->GetX();
 		ty = fx.target->GetY();
+		// Look for a new target if the current path is not free and too far away.
+		if (fx.auto_search_target && fx.vehicle->ObjectDistance(fx.target) > AirshipOccludedTargetMaxDistance && !PathFree(vx - 30, vy, tx, ty) && !PathFree(vx + 30, vy, tx, ty))
+		{
+			fx.target = this->FindTarget(fx);
+			if (!fx.target)
+				return nil;
+			tx = fx.target->GetX();
+			ty = fx.target->GetY();
+		}
+	}
+	else
+	{
+		tx = fx.home_x;
+		ty = fx.home_y;
 	}
 	// Approach from above or the side if possible, so move airship up if below target.
 	if (vy > ty)
@@ -233,6 +271,7 @@ public func PromoteNewAirshipCaptain(effect fx)
 	fx_ai.weapon = fx.vehicle;
 	fx_ai.vehicle = fx.vehicle;
 	fx_ai.strategy = this.ExecuteVehicle;
+	fx_ai.attack_path = fx.attack_path;
 	// Set new commander for remaining crew members.
 	for (var crew in crew_members)
 		if (crew != new_pilot)

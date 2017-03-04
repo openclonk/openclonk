@@ -95,8 +95,23 @@ public func ExecuteIdle(effect fx)
 	// Persist commands because constant command resets may hinder execution
 	if (fx.Target->GetCommand() && Random(4)) return true;
 	// Follow attack path
+	if (this->ExecuteAttackPath(fx)) return true;
+	// Movement done (for now)
+	fx.Target->SetCommand("None");
+	fx.Target->SetComDir(COMD_Stop);
+	fx.Target->SetDir(fx.home_dir);
+	if (fx.vehicle) fx.vehicle->SetCommand();
+	// Nothing to do.
+	return false;
+}
+
+public func ExecuteAttackPath(effect fx)
+{
+	// Attack path is to follow the commander.
+	if (fx.commander) return true;
 	if (fx.attack_path)
 	{
+		// Follow attack path
 		var next_pt = fx.attack_path[0];
 		// Check for structure to kill on path. Only if the structure is alive or of the clonk can attack structures with the current weapon.
 		var alive_check;
@@ -119,7 +134,19 @@ public func ExecuteIdle(effect fx)
 	{
 		if (!Inside(fx.vehicle->GetX() - fx.home_x, -15, 15) || !Inside(fx.vehicle->GetY() - fx.home_y, -20, 20))
 		{
-			return fx.Target->SetCommand("PushTo", fx.vehicle, fx.home_x, fx.home_y);
+			if (fx.vehicle->IsAirship())
+			{
+				if (!fx.vehicle->GetCommand())
+				{
+					fx.vehicle->SetCommand("MoveTo", nil, fx.home_x, fx.home_y);
+				}
+			}
+			else
+			{
+				// Default vehicle movement
+				return fx.Target->SetCommand("PushTo", fx.vehicle, fx.home_x, fx.home_y);
+			}
+			return true;
 		}
 	}
 	else
@@ -130,23 +157,25 @@ public func ExecuteIdle(effect fx)
 		}
 	}
 	// Next section on path or done?
+	this->AdvanceAttackPath(fx);
+	return false;
+}
+
+public func AdvanceAttackPath(effect fx)
+{
+	// Pick next element in attack path if an attack path is set. Return whether a path remains.
 	if (fx.attack_path)
 	{
 		if (GetLength(fx.attack_path) > 1)
 		{
 			fx.attack_path = fx.attack_path[1:];
-			// Wait one cycle. After that, ExecuteIdle will continue the path.
+			return true;
 		}
 		else
 		{
 			fx.attack_path = nil;
 		}
 	}
-	// Movement done (for now)
-	fx.Target->SetCommand("None");
-	fx.Target->SetComDir(COMD_Stop);
-	fx.Target->SetDir(fx.home_dir);
-	// Nothing to do.
 	return false;
 }
 

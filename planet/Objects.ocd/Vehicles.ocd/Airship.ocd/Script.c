@@ -142,9 +142,9 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 	}
 	
 	//Rise in water
-	if (GBackLiquid(0,25))
+	//if (GBackLiquid(0,25))
 		//effect.SpeedY = -10;
-	if (GBackLiquid(0,25) && !GBackLiquid(0,24) && effect.SpeedY > 1)
+	//if (GBackLiquid(0,25) && !GBackLiquid(0,24) && effect.SpeedY > 1)
 		//effect.SpeedY = 0;
 
 	// Turn the airship around if needed
@@ -160,14 +160,14 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 	return 1;
 }
 
-func TurnAirship(int to_dir)
+func TurnAirship(int to_dir, bool instant)
 {
 	// Default direction is left
 	var animName = "TurnLeft";
 	if (to_dir == DIR_Right)
 		animName = "TurnRight";
 
-	turnanim = PlayAnimation(animName, 10, Anim_Linear(0, 0, GetAnimationLength(animName), 36, ANIM_Hold));
+	turnanim = PlayAnimation(animName, 10, Anim_Linear(0, GetAnimationLength(animName) * !!instant, GetAnimationLength(animName), 36, ANIM_Hold));
 	
 	SetAnimDir(to_dir);
 	
@@ -362,10 +362,106 @@ local ActMap = {
 	},
 };
 
-func Definition(def)
+/* Register enemy spawn with catapult */
+
+func Definition(proplist def)
 {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
+	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0));
+	if (def == Airship)
+	{
+		var clonk_editor_props = { Type="enum", ValueKey="Properties", OptionKey="Type", Options=[
+				{ Name="$None$", EditorHelp="$NoPilotHelp$" },
+				{ Name=Clonk->GetName(), EditorHelp="$ClonkPilotHelp$", Value={ Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() }, Delegate=EnemySpawn->GetAIClonkEditorProps() }
+				] };
+		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+			Pilot = new clonk_editor_props { Name="$Pilot$", EditorHelp="$PilotHelp$" },
+			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
+			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=clonk_editor_props }
+		} };
+		var spawn_default_values = {
+			Pilot = { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() },
+			FlySpeed = def.FlySpeed,
+			Crew = [ { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues("BowArrow", true) } ],
+		};
+		EnemySpawn->AddEnemyDef("Airship",
+				{ SpawnType=Airship,
+					SpawnFunction=def.SpawnAirship,
+					OffsetAttackPathByPos=true,
+					GetInfoString=def.GetSpawnInfoString },
+			spawn_default_values, spawn_editor_props);
+	}
 }
+
+private func SpawnAirship(array pos, proplist enemy_data, proplist enemy_def, array attack_path, object spawner)
+{
+	// Spawn the boomattack
+	var airship = CreateObjectAbove(Airship, pos[0], pos[1]+15, g_enemyspawn_player);
+	var rval = [airship], n=1;
+	if (!airship) return;
+	airship->TurnAirship(attack_path[0].X > pos[0], true);
+	// Boomattack settings
+	airship.FlySpeed = enemy_data.FlySpeed;
+	// Pilot
+	var clonk, pilot;
+	if (enemy_data.Pilot && enemy_data.Pilot.Type == "Clonk")
+	{
+		// Target the rider AI to the final position of the attack path (in case it gets shot down)
+		airship.pilot = pilot = EnemySpawn->SpawnClonk(pos, enemy_data.Pilot.Properties, enemy_def, attack_path, spawner);
+		if (pilot)
+		{
+			pilot->SetAction("Push", airship);
+			rval[n++] = pilot;
+			// Set attack mode
+			AI->SetVehicle(pilot, airship);
+		}
+	}
+	// Crew
+	if (enemy_data.Crew)
+	{
+		var idx = 0;
+		for (var crew_data in enemy_data.Crew)
+		{
+			if (crew_data && crew_data.Type == "Clonk")
+			{
+				var xpos = pos[0] - 15 + 30 * idx / Max(1, GetLength(enemy_data.Crew)-1);
+				clonk = EnemySpawn->SpawnClonk([xpos, pos[1]], crew_data.Properties, enemy_def, attack_path, spawner);
+				if (clonk)
+				{
+					rval[n++] = clonk;
+					clonk.commander = pilot;
+					var ai = clonk->~GetAI();
+					if (ai) ai.commander = pilot;
+				}
+			}
+			++idx;
+		}
+	}
+	// Return airship and all created enemies
+	return rval;
+}
+
+private func GetSpawnInfoString(proplist enemy_data)
+{
+	var s = "{{Airship}}";
+	if (enemy_data.Pilot && enemy_data.Pilot.Type == "Clonk")
+	{
+		s = Format("%s%s", s, EnemySpawn->GetAIClonkInfoString(enemy_data.Pilot.Properties));
+	}
+	if (enemy_data.Crew)
+	{
+		for (var crew_data in enemy_data.Crew)
+		{
+			if (crew_data && crew_data.Type == "Clonk")
+			{
+				s = Format("%s%s", s, EnemySpawn->GetAIClonkInfoString(crew_data.Properties));
+			}
+		}
+	}
+	return s;
+}
+
+
+/* Properties */
 
 local Name = "$Name$";
 local Description = "$Description$";
@@ -375,3 +471,5 @@ local SolidMaskPlane = 275;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 local HitPoints = 30;
 local Components = {Metal = 4, Wood = 4, Cloth = 2};
+
+public func IsAirship() { return true; }
