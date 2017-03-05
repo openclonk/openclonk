@@ -1241,12 +1241,7 @@ target_link_libraries(netpuncher
 )
 
 if(WIN32)
-	target_link_libraries(libmisc iphlpapi)
-	target_link_libraries(openclonk ws2_32)
-	target_link_libraries(openclonk-server ws2_32)
-	target_link_libraries(c4group ws2_32)
-	target_link_libraries(c4script ws2_32)
-	target_link_libraries(netpuncher ws2_32)
+	target_link_libraries(libmisc iphlpapi ws2_32)
 endif()
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
