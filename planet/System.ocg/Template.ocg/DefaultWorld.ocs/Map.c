@@ -20,58 +20,54 @@ public func InitializeMap(proplist map)
 	return true;
 }
 
+private func DrawMaterialInRange(string mat, int ymin, int ymax, spot_size, int ratio)
+{
+	// Create mask
+	var mask = {Algo = MAPALGO_Rect, X = this.mat_rect.X,  Y = this.mat_rect.Y + ymin * this.mat_rect.Hgt / 100, Wdt = this.mat_rect.Wdt, Hgt = (ymax-ymin) * this.mat_rect.Hgt / 100 };
+	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Amplitude=BoundBy(this.mat_rect.Hgt, 10, 50), Op = mask};
+	mask = {Algo = MAPALGO_And, Op = [this.mat_surface, mask]}; 
+	// Draw on it
+	return DrawMaterial(mat, mask, spot_size, ratio);
+}
+
 // Draws materials on the given surface.
 public func DrawMaterials(proplist rect, proplist surface)
 {
-	var mask;
-	var x = rect.X;
-	var y = rect.Y;
-	var wdt = rect.Wdt;
-	var hgt = rect.Hgt;
+	this.mat_rect = rect;
+	this.mat_surface = surface;
 	
 	// A bit of different types of earth all around the surface.
-	mask = {Algo = MAPALGO_Rect, X = x,  Y = y, Wdt = wdt, Hgt = hgt};
-	mask = {Algo = MAPALGO_And, Op = [surface, mask]};
-	DrawMaterial("Earth-earth", mask, 4, 12);
-	DrawMaterial("Earth-earth_root", mask, 2, 16);
-	DrawMaterial("Earth-earth_spongy", mask, 2, 16);
-	DrawMaterial("Earth-earth", mask, 4, 12);
+	DrawMaterialInRange("Earth-earth_root", 0, 100, 2, 16);
+	DrawMaterialInRange("Earth-earth_spongy", 0, 100, 2, 16);
+	DrawMaterialInRange("Earth-earth", 0, 100, 4, 12);
 
-	// Coal and surface in the first layer.
-	mask = {Algo = MAPALGO_Rect, X = x,  Y = y, Wdt = wdt, Hgt = hgt / 4};
-	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
-	mask = {Algo = MAPALGO_And, Op = [surface, mask]}; 
-	DrawMaterial("Firestone", mask, 4, 5);
-	DrawMaterial("Coal", mask, 4, 5);
-	DrawMaterial("Firestone", mask);
-	DrawMaterial("Coal", mask);
+	// Coal and firestone mostly in upper areas
+	DrawMaterialInRange("Coal", 0, 25, 4, 5);
+	DrawMaterialInRange("Coal", 25, 100, 4, 8);
+	DrawMaterialInRange("Firestone", 0, 60, 4, 5);
+	DrawMaterialInRange("Firestone", 60, 100, 2, 10);
 	
-	// Some small lakes as well in a second layer .
-	mask = {Algo = MAPALGO_Rect, X = x,  Y = y + 1 * hgt / 4, Wdt = wdt, Hgt = hgt / 4};
-	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
-	mask = {Algo = MAPALGO_And, Op = [surface, mask]};
-	DrawMaterial("Coal", mask, 3, 8);
-	DrawMaterial("Firestone", mask, 4, 5);
-	DrawMaterial("Water", mask, 4, 10);
+	// Some small lakes in mid layers
+	DrawMaterialInRange("Water", 25, 55, [5, 20], 20);
 	
-	// Ore and rock in the third layer.
-	mask = {Algo = MAPALGO_Rect, X = x,  Y = y + 2 * hgt / 4, Wdt = wdt, Hgt = hgt / 4};
-	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
-	mask = {Algo = MAPALGO_And, Op = [surface, mask]}; 
-	DrawMaterial("Ore", mask, 3, 10);
-	DrawMaterial("Rock", mask, 2, 8);
-	DrawMaterial("Granite", mask, 2, 8);
-	DrawMaterial("Rock", mask);
-	DrawMaterial("Ore", mask);
+	// Ore and rock starting mostly further down
+	DrawMaterialInRange("Ore", 30, 80, 3, 10);
+	DrawMaterialInRange("Rock", 25, 30, 2, 4);
+	DrawMaterialInRange("Rock", 30, 90, 5, 8);
 	
-	// Gold in the last layer.
-	mask = {Algo = MAPALGO_Rect, X = x,  Y = y + 3 * hgt / 4, Wdt = wdt, Hgt = hgt / 4};
-	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
-	mask = {Algo = MAPALGO_And, Op = [surface, mask]}; 
-	DrawMaterial("Gold", mask, 2, 5);
-	DrawMaterial("Coal", mask, 2, 10);
-	DrawMaterial("Gold", mask, 2, 5);
-	DrawMaterial("Gold", mask, 5, 10);
+	// A few tunnels deep down
+	DrawMaterialInRange("Tunnel", 50, 75, [20, 12], 12);
+	
+	// Granite even further down
+	DrawMaterialInRange("Granite", 50, 80, 2, 10);
+	DrawMaterialInRange("Granite", 80, 100, [25, 2], 15);
+	
+	// Gold near the bottom only
+	DrawMaterialInRange("Gold", 70, 90, 2, 8);
+	
+	// Lava near at bottom
+	DrawMaterialInRange("DuroLava", 70, 90, [2, 40], 10);
+	DrawMaterialInRange("DuroLava", 90, 120, [10, 15], 25);
 
 	// The top border consists of top soil and dry earth and a bit of sand.
 	var border = {Algo = MAPALGO_Border, Top = 4, Op = surface};
@@ -80,6 +76,10 @@ public func DrawMaterials(proplist rect, proplist surface)
 	var rnd_border = {Algo = MAPALGO_And, Op = [border, rnd_checker]};
 	Draw("Sand", rnd_border);
 	Draw("Earth-earth_root", rnd_border);
+	
+	// Make sure we don't have hanging liquids
+	FixLiquidBorders();
+	
 	return;
 }
 
