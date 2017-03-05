@@ -54,19 +54,25 @@ public func IsInventorProduct() { return true; }
 
 public func Definition(def)
 {
+	var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
+		Rider = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoRiderHelp$") { Name="$Rider$", EditorHelp="$RiderHelp$" },
+	} };
+	var spawn_default_values = {
+		Rider = nil,
+	};
 	EnemySpawn->AddEnemyDef("Balloon",
 			{ SpawnType=Balloon,
 				SpawnFunction=def.SpawnBalloon,
 				OffsetAttackPathByPos=true,
 				GetInfoString=def.GetSpawnInfoString },
-		EnemySpawn->GetAIClonkDefaultPropValues(),
-		EnemySpawn->GetAIClonkEditorProps());
+		spawn_default_values,
+		spawn_editor_props);
 }
 
-private func SpawnBalloon(array pos, proplist clonk_data, proplist enemy_def, array clonk_attack_path, object spawner)
+private func SpawnBalloon(array pos, proplist enemy_data, proplist enemy_def, array attack_path, object spawner)
 {
 	// First spawn a clonk. Then let the clonk open a balloon.
-	var clonk = EnemySpawn->SpawnClonk(pos, clonk_data, enemy_def, clonk_attack_path, spawner);
+	var clonk = EnemySpawn->SpawnAICreature(enemy_data.Rider, pos, enemy_def, attack_path, spawner);
 	if (!clonk) return;
 	var balloon = clonk->CreateContents(Balloon);
 	if (balloon)
@@ -83,7 +89,7 @@ private func SpawnBalloon(array pos, proplist clonk_data, proplist enemy_def, ar
 private func GetSpawnInfoString(proplist enemy_data)
 {
 	// Prepend balloon to clonk info string
-	return Format("{{Balloon}}%s", EnemySpawn->GetAIClonkInfoString(enemy_data));
+	return Format("{{Balloon}}%s", EnemySpawn->GetAICreatureInfoString(enemy_data.Rider));
 }
 
 

@@ -1,2 +1,5 @@
 Name=Balloon
 Description=Acts like a parachute, press the use key to activate while falling. While hanging on the balloon use [A] and [D] to steer left and right and [W] to stop. The balloon can be pulled in using [S].
+Rider=Rider
+RiderHelp=Type of enemy hanging from the balloon.
+NoRiderHelp=No enemy. Balloon will not spawn.

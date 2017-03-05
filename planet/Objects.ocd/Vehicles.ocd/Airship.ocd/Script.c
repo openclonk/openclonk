@@ -369,14 +369,10 @@ func Definition(proplist def)
 	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0));
 	if (def == Airship)
 	{
-		var clonk_editor_props = { Type="enum", ValueKey="Properties", OptionKey="Type", Options=[
-				{ Name="$None$", EditorHelp="$NoPilotHelp$" },
-				{ Name=Clonk->GetName(), EditorHelp="$ClonkPilotHelp$", Value={ Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() }, Delegate=EnemySpawn->GetAIClonkEditorProps() }
-				] };
 		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
-			Pilot = new clonk_editor_props { Name="$Pilot$", EditorHelp="$PilotHelp$" },
+			Pilot = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoPilotHelp$")  { Name="$Pilot$", EditorHelp="$PilotHelp$" },
 			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
-			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=clonk_editor_props },
+			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=EnemySpawn->GetAICreatureEditorProps(EnemySpawn->GetAIClonkDefaultPropValues("Firestone")) },
 			HitPoints = { Name="$HitPoints$", EditorHelp="$HitPointsHelp$", Type="int", Min=1, Max=1000000 },
 		} };
 		var spawn_default_values = {
@@ -406,17 +402,13 @@ private func SpawnAirship(array pos, proplist enemy_data, proplist enemy_def, ar
 	airship.HitPoints = enemy_data.HitPoints;
 	// Pilot
 	var clonk, pilot;
-	if (enemy_data.Pilot && enemy_data.Pilot.Type == "Clonk")
+	airship.pilot = pilot = EnemySpawn->SpawnAICreature(enemy_data.Pilot, pos, enemy_def, attack_path, spawner);
+	if (pilot)
 	{
-		// Target the rider AI to the final position of the attack path (in case it gets shot down)
-		airship.pilot = pilot = EnemySpawn->SpawnClonk(pos, enemy_data.Pilot.Properties, enemy_def, attack_path, spawner);
-		if (pilot)
-		{
-			pilot->SetAction("Push", airship);
-			rval[n++] = pilot;
-			// Set attack mode
-			AI->SetVehicle(pilot, airship);
-		}
+		pilot->SetAction("Push", airship);
+		rval[n++] = pilot;
+		// Set attack mode
+		AI->SetVehicle(pilot, airship);
 	}
 	// Crew
 	if (enemy_data.Crew)
@@ -424,17 +416,14 @@ private func SpawnAirship(array pos, proplist enemy_data, proplist enemy_def, ar
 		var idx = 0;
 		for (var crew_data in enemy_data.Crew)
 		{
-			if (crew_data && crew_data.Type == "Clonk")
+			var xpos = pos[0] - 15 + 30 * idx / Max(1, GetLength(enemy_data.Crew)-1);
+			clonk = EnemySpawn->SpawnAICreature(crew_data, [xpos, pos[1]], enemy_def, attack_path, spawner);
+			if (clonk)
 			{
-				var xpos = pos[0] - 15 + 30 * idx / Max(1, GetLength(enemy_data.Crew)-1);
-				clonk = EnemySpawn->SpawnClonk([xpos, pos[1]], crew_data.Properties, enemy_def, attack_path, spawner);
-				if (clonk)
-				{
-					rval[n++] = clonk;
-					clonk.commander = pilot;
-					var ai = clonk->~GetAI();
-					if (ai) ai.commander = pilot;
-				}
+				rval[n++] = clonk;
+				clonk.commander = pilot;
+				var ai = clonk->~GetAI();
+				if (ai) ai.commander = pilot;
 			}
 			++idx;
 		}

@@ -446,6 +446,15 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 	return clonk;
 }
 
+public func SpawnAICreature(proplist enemy_data, pos, enemy_def, attack_path, spawner)
+{
+	if (enemy_data && enemy_data.Type == "Clonk")
+	{
+		// Only Clonks supported for now
+		return SpawnClonk(pos, enemy_data.Properties, enemy_def, attack_path, spawner);
+	}
+}
+
 
 /* Display */
 
@@ -576,13 +585,39 @@ public func GetAIClonkDefaultPropValues(string attack_mode)
 		};
 }
 
+public func GetAICreatureEditorProps(proplist default_clonk_properties, string none_help)
+{
+	// TODO: Allow registration of more creature types
+	var props = {
+		Type="enum", ValueKey="Properties", OptionKey="Type", Options=[
+				{ Name="$None$", EditorHelp=none_help },
+				{ Name=Clonk->GetName(), Value={
+						Type="Clonk",
+						Properties=default_clonk_properties ?? EnemySpawn->GetAIClonkDefaultPropValues()
+						},
+					Delegate=EnemySpawn->GetAIClonkEditorProps() }
+				] };
+	return props;
+}
+
 public func GetAIClonkInfoString(proplist enemy_props)
 {
+	// Spawn info string shown above enemy spawns
 	var msg = "{{Clonk}}";
 	var attack_mode = AI.AttackModes[enemy_props.AttackMode.Identifier];
 	var str = attack_mode->~GetInfoString(enemy_props.AttackMode);
 	if (str) msg = Format("%s%s", msg, str);
 	return msg;
+}
+
+public func GetAICreatureInfoString(proplist enemy_props)
+{
+	// Spawn info string shown above enemy spawns
+	if (enemy_props)
+	{
+		if (enemy_props.Type == "Clonk") return GetAIClonkInfoString(enemy_props.Properties);
+	}
+	return "";
 }
 
 private func SetAIClonkAttackMode(proplist attack_mode)

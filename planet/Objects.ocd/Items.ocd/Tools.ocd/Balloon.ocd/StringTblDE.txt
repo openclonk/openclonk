@@ -1,2 +1,5 @@
 Name=Ballon
 Description=Wirkt wie ein Fallschirm, Benutze den Ballon während eines Falles um ihn zu aktiveren. While hanging on the balloon use [A] and [D] to steer left and right and [W] to stop. The balloon can be pulled in using [S].
+Rider=Reiter
+RiderHelp=Gegnertyp, der am Ballon haengt.
+NoRiderHelp=Kein Gegner. Ballon spawnt nicht.

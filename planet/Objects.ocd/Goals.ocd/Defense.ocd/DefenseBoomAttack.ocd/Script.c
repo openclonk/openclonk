@@ -272,15 +272,12 @@ public func Definition(def)
 	if (def == DefenseBoomAttack)
 	{
 		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
-			Rider = { Name="$Rider$", EditorHelp="$RiderHelp$", Type="enum", ValueKey="Properties", OptionKey="Type", Options=[
-				{ Name="$None$", EditorHelp="$NoRiderHelp$" },
-				{ Name=Clonk->GetName(), EditorHelp="$ClonkRiderHelp$", Value={ Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() }, Delegate=EnemySpawn->GetAIClonkEditorProps() }
-				] },
-			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 }
+			Rider = new EnemySpawn->GetAICreatureEditorProps(nil, "$NoRiderHelp$") { Name="$Rider$", EditorHelp="$RiderHelp$" },
+			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
 		} };
 		var spawn_default_values = {
 			Rider = nil,
-			FlySpeed = def.FlySpeed
+			FlySpeed = def.FlySpeed,
 		};
 		EnemySpawn->AddEnemyDef("BoomAttack", { SpawnType=DefenseBoomAttack, SpawnFunction=def.SpawnBoomAttack, OffsetAttackPathByPos=true, GetInfoString=def.GetSpawnInfoString }, spawn_default_values, spawn_editor_props);
 	}
@@ -297,15 +294,11 @@ private func SpawnBoomAttack(array pos, proplist enemy_data, proplist enemy_def,
 	boom->SetR(Angle(0, 0, wp0.X - pos[0], wp0.Y - pos[1]) + Random(11)-5);
 	boom->SetWaypoints(attack_path);
 	// Rider?
-	if (enemy_data.Rider && enemy_data.Rider.Type == "Clonk")
+	var clonk = EnemySpawn->SpawnAICreature(enemy_data.Rider, pos, enemy_def, [attack_path[-1]], spawner);
+	if (clonk)
 	{
-		// Target the rider AI to the final position of the attack path (in case it gets shot down)
-		var clonk = EnemySpawn->SpawnClonk(pos, enemy_data.Rider.Properties, enemy_def.Rider, [attack_path[-1]], spawner);
-		if (clonk)
-		{
-			clonk->SetAction("Ride", boom);
-			return [boom, clonk];
-		}
+		clonk->SetAction("Ride", boom);
+		return [boom, clonk];
 	}
 	// Return rider-less boom attack
 	return boom;
