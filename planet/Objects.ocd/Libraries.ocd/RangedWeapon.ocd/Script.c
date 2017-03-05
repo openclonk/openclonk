@@ -22,6 +22,18 @@ public func Initialize(...)
 	return _inherited(...);
 }
 
+public func GetReloadTime()
+{
+	// Get weapon reload time after speed adjustments
+	return animation_set.LoadTime;
+}
+
+public func GetShootTime()
+{
+	// Get shoot time after speed adjustments
+	return animation_set.ShootTime;
+}
+
 public func SetSpeedMultiplier(int new_multiplier)
 {
 	// Updates the weapon speed

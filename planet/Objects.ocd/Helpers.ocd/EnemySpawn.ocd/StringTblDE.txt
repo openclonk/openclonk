@@ -60,3 +60,5 @@ SpecificSpawner=Bestimmter Spawner
 SpecificSpawnerHelp=Objektauswahl fuer bestimmten Spawner.
 AllEnemiesKilled=Gegnerspawn getoetet
 AllEnemiesKilledHelp=Wahr wenn alle Gegner aus einem oder mehreren aktivierten Gegnerspawns getoetet wurden.
+AttackSpeed=Angriffsgeschwindigkeit
+AttackSpeedHelp=Nur Fernkampfwaffen: Anpassung der Schuss- und Nachladegeschwindigkeit in Prozent des Standardwertes. Grosse Werte bedeuten schnelleres Schiessen und Nachladen.

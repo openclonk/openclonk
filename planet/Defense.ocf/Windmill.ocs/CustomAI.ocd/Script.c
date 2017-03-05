@@ -30,7 +30,6 @@ private func FindInventoryWeapon(effect fx)
 		fx.weapon = fx.Target->FindContents(Bow);
 		fx.strategy = this.ExecuteRanged;
 		fx.projectile_speed = 100;
-		fx.aim_wait = 0;
 	 	fx.ammo_check = this.HasArrows;
 	 	fx.ranged=true;
 	 	return true;
@@ -259,7 +258,7 @@ private func ExecuteRanged(effect fx)
 	if (fx.post_aim_weapon)
 	{
 		// wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot)
-		if (FrameCounter() - fx.post_aim_weapon_time < 36)
+		if (FrameCounter() - fx.post_aim_weapon_time <= (fx.post_aim_weapon->~GetShootTime() ? ? 35))
 			if (this->IsAimingOrLoading(fx)) return true;
 		fx.post_aim_weapon = nil;
 	}
@@ -343,7 +342,7 @@ private func ExecuteRanged(effect fx)
 			x = Sin(shooting_angle, 1000, 10);
 			y = -Cos(shooting_angle, 1000, 10);
 			fx.aim_weapon->ControlUseHolding(fx.Target, x,y);
-			if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
+			if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_weapon->GetReloadTime())
 			{
 				//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
 				fx.aim_weapon->ControlUseStop(fx.Target, x,y);

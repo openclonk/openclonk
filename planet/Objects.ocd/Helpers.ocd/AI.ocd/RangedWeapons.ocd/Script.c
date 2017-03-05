@@ -23,7 +23,7 @@ private func ExecuteRanged(effect fx)
 	if (fx.post_aim_weapon)
 	{
 		// Wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot).
-		if (FrameCounter() - fx.post_aim_weapon_time < 36)
+		if (FrameCounter() - fx.post_aim_weapon_time <= (fx.post_aim_weapon->~GetShootTime() ?? 35))
 			if (this->IsAimingOrLoading(fx))
 				return true;
 		fx.post_aim_weapon = nil;
@@ -94,7 +94,7 @@ private func ExecuteRanged(effect fx)
 			x = Sin(shooting_angle, 1000, 10);
 			y = -Cos(shooting_angle, 1000, 10);
 			fx.aim_weapon->ControlUseHolding(fx.Target, x, y);
-			if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
+			if (fx.Target->IsAiming() && fx.time >= fx.aim_time + fx.aim_weapon->GetReloadTime())
 			{
 				fx.aim_weapon->ControlUseStop(fx.Target, x, y);
 				 // Assign post-aim status to allow slower shoot animations to pass.

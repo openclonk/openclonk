@@ -589,7 +589,6 @@ private func FindInventoryWeaponGrenadeLauncher(effect fx)
 		{
 			fx.strategy = this.ExecuteRanged;
 			fx.projectile_speed = 75;
-			fx.aim_wait = 85;
 			fx.ammo_check = this.HasBombs;
 			fx.ranged = true;
 			fx.can_attack_structures = true;
@@ -608,7 +607,6 @@ private func FindInventoryWeaponBlunderbuss(effect fx)
 		{
 			fx.strategy = this.ExecuteRanged;
 			fx.projectile_speed = 200;
-			fx.aim_wait = 85;
 			fx.ammo_check = this.HasAmmo;
 			fx.ranged = true;
 			fx.ranged_direct = true;
@@ -627,7 +625,6 @@ private func FindInventoryWeaponBow(effect fx)
 		{
 			fx.strategy = this.ExecuteRanged;
 			fx.projectile_speed = 100;
-			fx.aim_wait = 0;
 			fx.ammo_check = this.HasArrows;
 			fx.ranged = true;
 			var arrow = fx.weapon->Contents(0) ?? FindObject(Find_Container(fx.Target), Find_Func("IsArrow"));
@@ -645,7 +642,6 @@ private func FindInventoryWeaponJavelin(effect fx)
 	{
 		fx.strategy = this.ExecuteRanged;
 		fx.projectile_speed = fx.Target.ThrowSpeed * fx.weapon.shooting_strength / 100;
-		fx.aim_wait = 16;
 		fx.ranged=true;
 		return true;
 	}

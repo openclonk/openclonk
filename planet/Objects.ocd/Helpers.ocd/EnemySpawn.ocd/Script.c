@@ -401,7 +401,7 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 	// Reward for killing enemy
 	clonk.Bounty = clonk_data.Bounty;
 	// AI
-	AI->AddAI(clonk);
+	var fx_ai = AI->AddAI(clonk);
 	AI->SetMaxAggroDistance(clonk, Max(LandscapeWidth(), LandscapeHeight()));
 	var guard_range = clonk_data.GuardRange;
 	if (!guard_range)
@@ -425,6 +425,11 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 		AI->SetAttackMode(clonk, clonk_data.AttackMode.Identifier);
 	}
 	AI->SetAttackPath(clonk, clonk_attack_path);
+	// Attack speed on weapon
+	if (clonk_data.AttackSpeed != 100 && fx_ai && fx_ai.default_weapon)
+	{
+		fx_ai.default_weapon->~SetSpeedMultiplier(clonk_data.AttackSpeed);
+	}
 	// Return clonk to be added to spawned enemy list
 	return clonk;
 }
@@ -534,6 +539,7 @@ public func GetAIClonkEditorProps()
 		props.Speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=5 };
 		props.Energy = { Name="$Energy$", EditorHelp="$EnergyHelp$", Type="int", Min=1, Max=100000 };
 		props.Backpack = { Name="$Backpack$", EditorHelp="$BackpackHelp$", Type="bool" };
+		props.AttackSpeed = { Name="$AttackSpeed$", EditorHelp="$AttackSpeedHelp$", Type="int", Min = 1, Max = 20000 };
 		this.AIClonkEditorProps = { Type="proplist", Name=Clonk->GetName(), EditorProps=props, Priority=100 };
 	}
 	return this.AIClonkEditorProps;
@@ -551,6 +557,7 @@ public func GetAIClonkDefaultPropValues(string attack_mode)
 		Speed = 100,
 		Energy = 50,
 		Backpack = false,
+		AttackSpeed = 100,
 		};
 }
 

@@ -36,7 +36,7 @@ local SingleWeaponAttackMode = {
 		// (the jump animation skipping pickup is weird anyway, but it works for now)
 		var is_carry_heavy_workaround = fx.attack_mode.Weapon->~IsCarryHeavy() && !fx.Target->Contained() && fx.Target->GetAction() == "Walk";
 		if (is_carry_heavy_workaround) fx.Target->SetAction("Jump");
-		var weapon = fx.Target->CreateContents(fx.attack_mode.Weapon);
+		var weapon = fx.default_weapon = fx.Target->CreateContents(fx.attack_mode.Weapon);
 		if (is_carry_heavy_workaround) fx.Target->SetAction("Walk");
 		if (weapon)
 		{
