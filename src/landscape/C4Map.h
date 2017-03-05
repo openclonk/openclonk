@@ -32,7 +32,7 @@ protected:
 public:
 	void Create(CSurface8 *sfcMap,
 	            C4SLandscape &rLScape, C4TextureMap &rTexMap,
-	            bool fLayers=false, int32_t iPlayerNum=1);
+	            int32_t iPlayerNum=1);
 
 protected:
 	void Reset();

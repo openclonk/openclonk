@@ -2399,7 +2399,7 @@ bool C4Landscape::P::CreateMap(CSurface8*& sfcMap, CSurface8*& sfcMapBkg)
 	C4MapCreator MapCreator;
 	MapCreator.Create(fg_map.get(),
 		Game.C4S.Landscape, ::TextureMap,
-		true, Game.StartupPlayerCount);
+		Game.StartupPlayerCount);
 
 	auto bg_map = CreateDefaultBkgSurface(*fg_map, false);
 	if (!bg_map)
