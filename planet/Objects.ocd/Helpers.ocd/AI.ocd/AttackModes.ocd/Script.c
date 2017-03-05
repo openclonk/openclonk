@@ -36,7 +36,7 @@ local SingleWeaponAttackMode = {
 		// (the jump animation skipping pickup is weird anyway, but it works for now)
 		var is_carry_heavy_workaround = fx.attack_mode.Weapon->~IsCarryHeavy() && !fx.Target->Contained() && fx.Target->GetAction() == "Walk";
 		if (is_carry_heavy_workaround) fx.Target->SetAction("Jump");
-		var weapon = fx.default_weapon = fx.Target->CreateContents(fx.attack_mode.Weapon);
+		var weapon = fx.default_weapon = fx.Target->CreateContents(fx.attack_mode.Weapon), ammo;
 		if (is_carry_heavy_workaround) fx.Target->SetAction("Walk");
 		if (weapon)
 		{
@@ -46,7 +46,7 @@ local SingleWeaponAttackMode = {
 			}
 			if (fx.attack_mode.Ammo)
 			{
-				var ammo = weapon->CreateContents(fx.attack_mode.Ammo);
+				ammo = weapon->CreateContents(fx.attack_mode.Ammo);
 				if (ammo) ammo->~SetInfiniteStackCount();
 			}
 			// Do not save in scenario, because it's automatically created through the attack mode setting
@@ -54,8 +54,10 @@ local SingleWeaponAttackMode = {
 			// Automatic fadeout+inventory respawn of e.g. firestones
 			if (fx.attack_mode.Respawn)
 			{
-				weapon->~SetStackCount(1); // Ensure departure is called on every object
-				weapon.Departure = AI.Departure_WeaponRespawn;
+				var respawning_object = ammo ?? weapon;
+				respawning_object->~SetStackCount(1); // Ensure departure is called on every object
+				respawning_object.WeaponRespawn_Departure = respawning_object.Departure;
+				respawning_object.Departure = AI.Departure_WeaponRespawn;
 				fx.has_ammo_respawn = true;
 			}
 		}
@@ -151,7 +153,7 @@ private func DefinitionAttackModes(proplist def)
 	def->RegisterAttackMode("BowArrow", new SingleWeaponAttackMode { Weapon = Bow, Ammo = Arrow, FindWeapon = this.FindInventoryWeaponBow });
 	def->RegisterAttackMode("BowFireArrow", new SingleWeaponAttackMode { Weapon = Bow, Ammo = FireArrow, FindWeapon = this.FindInventoryWeaponBow });
 	def->RegisterAttackMode("BowBombArrow", new SingleWeaponAttackMode { Weapon = Bow, Ammo = BombArrow, FindWeapon = this.FindInventoryWeaponBow });
-	def->RegisterAttackMode("GrenadeLauncher", new SingleWeaponAttackMode { Weapon = GrenadeLauncher, Ammo = IronBomb, FindWeapon = this.FindInventoryWeaponGrenadeLauncher });
+	def->RegisterAttackMode("GrenadeLauncher", new SingleWeaponAttackMode { Weapon = GrenadeLauncher, Ammo = IronBomb, Respawn = true, FindWeapon = this.FindInventoryWeaponGrenadeLauncher });
 	def->RegisterAttackMode("Blunderbuss", new SingleWeaponAttackMode { Weapon = Blunderbuss, Ammo = LeadBullet, FindWeapon = this.FindInventoryWeaponBlunderbuss });
 	def->RegisterAttackMode("Javelin", new SingleWeaponAttackMode { Weapon = Javelin, Respawn = true, FindWeapon = this.FindInventoryWeaponJavelin });
 	def->RegisterAttackMode("Rock", new SingleWeaponAttackMode { Weapon = Rock, Respawn = true, Strategy = this.ExecuteThrow });
@@ -164,23 +166,26 @@ private func DefinitionAttackModes(proplist def)
 
 /* Attack with respawning weapons */
 
-func Departure_WeaponRespawn(object container)
+func Departure_WeaponRespawn(object container, ...)
 {
 	// Weapon used? Schedule to respawn a new one!
-	if (container->GetAlive() || container->GetID()==Catapult)
+	if (container->GetAlive() || !container->~IsClonk())
 	{
 		container->ScheduleCall(container, AI_AttackModes.DoWeaponRespawn, 5, 1, GetID());
 	}
 	// Remove this weapon after a while
 	// (This function should be save to be called in foreign context)
 	ScheduleCall(this, Rule_ObjectFade.FadeOutObject, 120, 1, this);
-	// No double-respawn in case it gets collected
-	this.Departure = nil;
+	// Revert to previou sdeparture call. No double-respawn in case it gets collected
+	if ((this.Departure = this.WeaponRespawn_Departure))
+	{
+		return Call(this.Departure, container, ...);
+	}
 }
 
 func DoWeaponRespawn(id_weapon)
 {
-	if (GetAlive() || GetID()==Catapult)
+	if (GetAlive() || !this->~IsClonk())
 	{
 		var re_weapon = CreateContents(id_weapon);
 		if (re_weapon)
