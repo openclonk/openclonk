@@ -223,19 +223,6 @@ CHECK_CXX_SOURCE_COMPILES("#include <getopt.h>\nint main(int argc, char * argv[]
 ############################################################################
 # Locate libraries
 ############################################################################
-# Find win32 SDK, since a lot of users don't have the include path in their environment
-if(MSVC)
-	get_filename_component(WINSDK_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE CACHE)
-	mark_as_advanced(WINSDK_ROOT)
-	list(APPEND CMAKE_INCLUDE_PATH "${WINSDK_ROOT}/Include")
-	include_directories(SYSTEM ${WINSDK_ROOT}/Include)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib/x64)
-	else()
-		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib)
-	endif()
-endif()
-
 SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
 if(NOT HEADLESS_ONLY)
 	find_package(Freetype REQUIRED)
