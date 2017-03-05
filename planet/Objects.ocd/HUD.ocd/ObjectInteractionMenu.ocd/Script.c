@@ -43,7 +43,8 @@ local current_objects;
 			callback_target: object to which the callback is made, ususally the target object (except for contents menus)
 			menu_object: MenuStyle_Grid object, used to add/remove entries later
 			entry_index_count: used to generate unique IDs for the entries
-			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later)
+			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later).
+			    The function is called in the object that the menu was opened for and passes the menu cursor as the first parameter. 
 				This callback should return an array of entries shown in the menu, the entries are proplists with the following attributes:
 				symbol: icon of the item
 				extra_data: custom user data (internal: in case of inventory menus this is a proplist containing some extra data (f.e. the one object for unstackable objects))
@@ -51,6 +52,8 @@ local current_objects;
 				custom (optional): completely custom menu entry that is passed to the grid menu - allows for custom design
 				unique_index: generated from entry_index_count (not set by user)
 				fx: (optional) effect that gets a "OnMenuOpened(int menu_id, object menu_target, int subwindow_id)" callback once which can be used to update a specific entry only
+			entries_callback_parameter (optional):
+				If this property is defined the entry callback is called in the object that opened the menu. with a second parameter.
 			entries: last result of the callback function described above
 				additional properties that are added are:
 				ID: (menu) id of the entry as returned by the menu_object - can be used for updating
@@ -710,9 +713,13 @@ func CreateMainMenu(object obj, int slot)
 	{
 		var menu = menus[i];
 		if (!menu.flag)
+		{
 			menu.flag = InteractionMenu_Custom;
+		}
 		if (menu.entries_callback)
-			menu.entries = obj->Call(menu.entries_callback, cursor);
+		{
+			menu.entries = obj->Call(menu.entries_callback, cursor, menu.entries_callback_parameter);
+		}
 		if (menu.entries == nil)
 		{
 			FatalError(Format("An interaction menu did not return valid entries. %s -> %v() (object %v)", obj->GetName(), menu.entries_callback, obj));
@@ -720,8 +727,10 @@ func CreateMainMenu(object obj, int slot)
 		}
 		menu.menu_object = CreateObject(MenuStyle_Grid);
 		if (menu.flag == InteractionMenu_Contents)
+		{
 			menu.menu_object->SetTightGridLayout();
-		
+		}
+	
 		menu.menu_object.Top = "+1em";
 		menu.menu_object.Priority = 2;
 		menu.menu_object->SetPermanent();
@@ -756,11 +765,17 @@ func CreateMainMenu(object obj, int slot)
 			spacer = {Left = "0em", Right = "0em", Bottom = "3em"} // guarantees a minimum height
 		};
 		if (menu.flag == InteractionMenu_Contents)
+		{
 			all.BackgroundColor = RGB(0, 50, 0);
+		}
 		else if (menu.BackgroundColor)
-				all.BackgroundColor = menu.BackgroundColor;
+		{
+			all.BackgroundColor = menu.BackgroundColor;
+		}
 		else if (menu.decoration)
+		{
 			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
+		}
 		GuiAddSubwindow(all, container);
 	}
 	
@@ -1215,7 +1230,9 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 	var menu = current_menus[slot].menus[menu_index];
 	var current_entries = menu.entries;
 	if (!new_entries && menu.entries_callback)
-		new_entries = current_menus[slot].target->Call(menu.entries_callback, this.cursor);
+	{
+		new_entries = current_menus[slot].target->Call(menu.entries_callback, this.cursor, menu.entries_callback_parameter);
+	}
 	
 	// step 0.1: update all items where the symbol and extra_data did not change but other things (f.e. the text)
 	// this is done to maintain a consistent order that would be shuffled constantly if the entry was removed and re-added at the end
@@ -1340,7 +1357,10 @@ func UpdateInteractionMenuFor(object target, callbacks)
 				for (var menu_index = 0; menu_index < GetLength(current_menu.menus); ++menu_index)
 				{
 					var menu = current_menu.menus[menu_index];
-					if (menu.entries_callback != callback) continue;
+					if (menu.entries_callback != callback)
+					{
+						continue;
+					}
 					DoMenuRefresh(slot, menu_index);
 				}
 			}
