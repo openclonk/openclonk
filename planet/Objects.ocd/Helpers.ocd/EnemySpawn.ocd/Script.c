@@ -22,6 +22,7 @@ local attack_path = nil; // Optional: Array of points along which the spawned en
 local auto_activate = false; // If true, the object is activated on the first player join
 local max_concurrent_enemies = SPAWNCOUNT_INFINITE; // May be set to a smaller value to limit the amount of enemies spawned in parallel. Only works with spawn_delay>0.
 local has_been_activated; // Set to true after first activation. Not saved in scenario.
+local spawn_action; // UserAction excuted on each spawned enemy
 
 local spawned_count;            // Number of enemies already spawned in current wave
 local spawned_enemies;          // Array of spawned enemies. Automatically cleared when clonks die.
@@ -198,17 +199,23 @@ private func Spawn()
 		// Do spawn
 		var enemies = (enemy_def.SpawnCallTarget ?? GetID())->Call(spawn_function, spawn_pos, enemy, enemy_def, use_attack_path, this);
 		// Keep track of enemies. Could be returned as a single enemy or as an array
+		var first_enemy;
 		if (GetType(enemies) == C4V_Array)
 		{
 			for (var obj in enemies)
 			{
 				TrackSpawnedEnemy(obj);
 			}
+			first_enemy = enemies[0];
 		}
 		else
 		{
 			TrackSpawnedEnemy(enemies);
+			first_enemy = enemies;
 		}
+		// Perform spawn action
+		if (first_enemy) UserAction->EvaluateAction(spawn_action, this, first_enemy);
+		if (!this) return;
 	}
 	// Keep track of count
 	if (++spawned_count == spawn_count)
@@ -523,6 +530,7 @@ public func Definition(def)
 	  { Name="$Unlimited$", Value=SPAWNCOUNT_INFINITE },
 	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetMaxConcurrentEnemies", SetRoot=true } }
 	  ] };
+	def.EditorProps.spawn_action = new UserAction.Prop { Name="$SpawnAction$", EditorHelp="$SpawnActionHelp$" };
 	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk, GetInfoString=GetAIClonkInfoString }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
 }
 

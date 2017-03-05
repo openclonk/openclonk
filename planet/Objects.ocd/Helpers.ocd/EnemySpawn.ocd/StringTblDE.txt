@@ -64,3 +64,5 @@ AttackSpeed=Angriffsgeschwindigkeit
 AttackSpeedHelp=Nur Fernkampfwaffen: Anpassung der Schuss- und Nachladegeschwindigkeit in Prozent des Standardwertes. Grosse Werte bedeuten schnelleres Schiessen und Nachladen.
 Shield=Schild
 ShieldHelp=Ob der Gegnerclonk einen Schild zur Abwehr von Angriffen traegt.
+SpawnAction=Aktion bei Spawn
+SpawnActionHelp=Aktion, die mit jedem Gegnerspawn ausgefuehrt wird (zum Beispiel fuer grafische Effekte).

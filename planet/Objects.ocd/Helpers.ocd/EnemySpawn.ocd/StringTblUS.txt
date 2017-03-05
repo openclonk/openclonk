@@ -64,3 +64,5 @@ AttackSpeed=Attack speed
 AttackSpeedHelp=Ranged weapons only: Adjustment of shoot and reload speed in percent of the default value. Large values mean faster shooting and reloading.
 Shield=Shield
 ShieldHelp=Whether the enemy clonk carries a shield to deflect attacks.
+SpawnAction=Action on spawn
+SpawnActionHelp=Action to be executed for each spawned enemy. Can be used e.g. for graphical effects.
