@@ -62,3 +62,5 @@ AllEnemiesKilled=Enemy spawn killed
 AllEnemiesKilledHelp=True if all enemies from one or more previously activated enemy spawn objects have been killed or removed.
 AttackSpeed=Attack speed
 AttackSpeedHelp=Ranged weapons only: Adjustment of shoot and reload speed in percent of the default value. Large values mean faster shooting and reloading.
+Shield=Shield
+ShieldHelp=Whether the enemy clonk carries a shield to deflect attacks.

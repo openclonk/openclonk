@@ -430,6 +430,11 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 	{
 		fx_ai.default_weapon->~SetSpeedMultiplier(clonk_data.AttackSpeed);
 	}
+	// Shield
+	if (clonk_data.Shield)
+	{
+		clonk->CreateContents(Shield);
+	}
 	// Return clonk to be added to spawned enemy list
 	return clonk;
 }
@@ -539,6 +544,7 @@ public func GetAIClonkEditorProps()
 		props.Speed = { Name="$Speed$", EditorHelp="$SpeedHelp$", Type="int", Min=5 };
 		props.Energy = { Name="$Energy$", EditorHelp="$EnergyHelp$", Type="int", Min=1, Max=100000 };
 		props.Backpack = { Name="$Backpack$", EditorHelp="$BackpackHelp$", Type="bool" };
+		props.Shield = { Name="$Shield$", EditorHelp="$ShieldHelp$", Type="bool" };
 		props.AttackSpeed = { Name="$AttackSpeed$", EditorHelp="$AttackSpeedHelp$", Type="int", Min = 1, Max = 20000 };
 		this.AIClonkEditorProps = { Type="proplist", Name=Clonk->GetName(), EditorProps=props, Priority=100 };
 	}
@@ -557,6 +563,7 @@ public func GetAIClonkDefaultPropValues(string attack_mode)
 		Speed = 100,
 		Energy = 50,
 		Backpack = false,
+		Shield = false,
 		AttackSpeed = 100,
 		};
 }

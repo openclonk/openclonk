@@ -62,3 +62,5 @@ AllEnemiesKilled=Gegnerspawn getoetet
 AllEnemiesKilledHelp=Wahr wenn alle Gegner aus einem oder mehreren aktivierten Gegnerspawns getoetet wurden.
 AttackSpeed=Angriffsgeschwindigkeit
 AttackSpeedHelp=Nur Fernkampfwaffen: Anpassung der Schuss- und Nachladegeschwindigkeit in Prozent des Standardwertes. Grosse Werte bedeuten schnelleres Schiessen und Nachladen.
+Shield=Schild
+ShieldHelp=Ob der Gegnerclonk einen Schild zur Abwehr von Angriffen traegt.
