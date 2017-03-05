@@ -134,7 +134,7 @@ public func ExecuteAttackPath(effect fx)
 	{
 		if (!Inside(fx.vehicle->GetX() - fx.home_x, -15, 15) || !Inside(fx.vehicle->GetY() - fx.home_y, -20, 20))
 		{
-			if (fx.vehicle->IsAirship())
+			if (fx.vehicle->~IsAirship())
 			{
 				if (!fx.vehicle->GetCommand())
 				{
