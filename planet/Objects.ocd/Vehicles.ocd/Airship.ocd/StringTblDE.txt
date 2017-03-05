@@ -9,3 +9,5 @@ FlySpeed=Fluggeschwindigkeit
 FlySpeedHelp=Wie schnell das Luftschiff fliegen kann.
 Crew=Crew
 CrewHelp=Weitere Clonks auf dem Luftschiff.
+HitPoints=Lebenspunkte
+HitPointsHelp=Ab wie viel Schaden das Luftschiff brennt.

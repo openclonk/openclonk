@@ -376,12 +376,14 @@ func Definition(proplist def)
 		var spawn_editor_props = { Type="proplist", Name=def->GetName(), EditorProps= {
 			Pilot = new clonk_editor_props { Name="$Pilot$", EditorHelp="$PilotHelp$" },
 			FlySpeed = { Name="$FlySpeed$", EditorHelp="$FlySpeedHelp$", Type="int", Min=5, Max=10000 },
-			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=clonk_editor_props }
+			Crew = { Name="$Crew$", EditorHelp="$CrewHelp$", Type="array", Elements=clonk_editor_props },
+			HitPoints = { Name="$HitPoints$", EditorHelp="$HitPointsHelp$", Type="int", Min=1, Max=1000000 },
 		} };
 		var spawn_default_values = {
 			Pilot = { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues() },
 			FlySpeed = def.FlySpeed,
 			Crew = [ { Type="Clonk", Properties=EnemySpawn->GetAIClonkDefaultPropValues("BowArrow", true) } ],
+			HitPoints = def.HitPoints,
 		};
 		EnemySpawn->AddEnemyDef("Airship",
 				{ SpawnType=Airship,
@@ -399,8 +401,9 @@ private func SpawnAirship(array pos, proplist enemy_data, proplist enemy_def, ar
 	var rval = [airship], n=1;
 	if (!airship) return;
 	airship->TurnAirship(attack_path[0].X > pos[0], true);
-	// Boomattack settings
+	// Airship settings
 	airship.FlySpeed = enemy_data.FlySpeed;
+	airship.HitPoints = enemy_data.HitPoints;
 	// Pilot
 	var clonk, pilot;
 	if (enemy_data.Pilot && enemy_data.Pilot.Type == "Clonk")

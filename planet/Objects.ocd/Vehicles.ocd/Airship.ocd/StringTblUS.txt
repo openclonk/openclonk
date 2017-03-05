@@ -9,3 +9,5 @@ FlySpeed=Flight speed
 FlySpeedHelp=How fast the airship can fly.
 Crew=Crew
 CrewHelp=Additional clonks to be placed on each airship.
+HitPoints=Hit points
+HitPointsHelp=How much damage the airship needs to take to burn down.
