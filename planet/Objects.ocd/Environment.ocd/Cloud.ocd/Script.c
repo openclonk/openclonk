@@ -24,7 +24,7 @@ local lightning_chance; // chance of lightning strikes 0-100.
 local evap_x; // x coordinate for evaporation
 
 local rain; // Number of liquid pixels the cloud holds.
-local rain_mat; // Precipitation type from scenario or other. Material name of nil for no rain.
+local rain_mat; // Precipitation type from scenario or other. Material name or nil for no rain.
 local rain_inserts_mat; // Should the rain insert actual material pixels on impact?
 local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
@@ -570,7 +570,7 @@ func SaveScenarioObject(props)
 	if (GetComDir() == COMD_None) props->Remove("ComDir");
 	props->Remove("Con");
 	props->Remove("ClrModulation");
-	if (rain_mat != nil) props->AddCall("Precipitation", this, "SetPrecipitation", Format("%v", MaterialName(rain_mat)), rain_amount);
+	if (rain_mat != nil) props->AddCall("Precipitation", this, "SetPrecipitation", Format("%v", rain_mat), rain_amount);
 	if (lightning_chance) props->AddCall("Lightning", this, "SetLightning", lightning_chance);
 	if (rain) props->AddCall("Rain", this, "SetRain", rain);
 	return true;
