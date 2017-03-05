@@ -516,7 +516,7 @@ public func Definition(def)
   def.EditorProps.spawn_position = { Name="$SpawnPosition$", Type="enum", OptionKey="Mode", Set="SetSpawnPosition", Save="SpawnPosition", Options = [
 		{ Name="$Here$" },
 		{ Name="$InRange$", EditorHelp="$SpawnInRangeHelp$", Value={ Mode="range", Radius=25 }, ValueKey="Radius", Delegate={ Type="circle", Color=0xff8000, Relative=true } },
-		{ Name="$InRect$", EditorHelp="$SpawnInRectHelp$", Value={ Mode="rectangle", Rect=[-20, -20, 40, 40] }, ValueKey="Rect", Delegate={ Type="rect", Color=0xff8000, Relative=true } }
+		{ Name="$InRect$", EditorHelp="$SpawnInRectHelp$", Value={ Mode="rectangle", Area=[-20, -20, 40, 40] }, ValueKey="Area", Delegate={ Type="rect", Color=0xff8000, Relative=true } }
 		] };
 	def.EditorProps.spawn_count = { Name="$SpawnCount$", EditorHelp="$SpawnCountHelp$", Type="enum", Set="SetSpawnCount", Save="SpawnCount", Options = [
 	  { Name="$Infinite$", Value=SPAWNCOUNT_INFINITE },
