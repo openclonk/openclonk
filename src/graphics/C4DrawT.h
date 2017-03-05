@@ -20,38 +20,25 @@
 
 #include "graphics/C4Draw.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Winconsistent-missing-override"
-
 class CStdNoGfx : public C4Draw
 {
 public:
 	CStdNoGfx();
-	virtual bool BeginScene() { return true; }
-	virtual void EndScene() { }
-	virtual void TaskOut() { }
-	virtual void TaskIn() { }
-	virtual bool UpdateClipper() { return true; }
-	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
-	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
-	virtual bool PrepareRendering(C4Surface *) { return true; }
+	virtual bool UpdateClipper() override { return true; }
+	virtual bool OnResolutionChanged(unsigned int, unsigned int) override { return true; }
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) override;
+	virtual bool PrepareRendering(C4Surface *) override { return true; }
 	virtual bool EnsureMainContextSelected() override { return true; }
-	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) { return true; }
-	virtual void FillBG(DWORD dwClr=0) { }
-	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
-	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
-	virtual void PerformPix(C4Surface *, float, float, DWORD) { }
-	virtual bool RestoreDeviceObjects();
-	virtual bool InvalidateDeviceObjects() { return true; }
-	virtual bool DeleteDeviceObjects() { return true; }
-	virtual bool DeviceReady() { return true; }
-	virtual bool SetOutputAdapter(unsigned int) { return true; }
+	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) override { return true; }
+	virtual void FillBG(DWORD dwClr=0) override { }
+	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) override { }
+	virtual bool RestoreDeviceObjects() override;
+	virtual bool InvalidateDeviceObjects() override { return true; }
+	virtual bool DeviceReady() override { return true; }
 
-	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) {}
-	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float, C4ShaderCall*) {}
-	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD, C4ShaderCall*) {}
+	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) override {}
+	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float, C4ShaderCall*) override {}
+	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD, C4ShaderCall*) override {}
 };
-
-#pragma clang diagnostic pop
 
 #endif
