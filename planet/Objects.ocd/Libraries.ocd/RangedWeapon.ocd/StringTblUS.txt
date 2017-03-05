@@ -1,0 +1,2 @@
+SpeedMult=Speed
+SpeedMultHelp=Adjustment of shoot and reload speed in percent of the default value. Large values mean faster shooting and reloading.

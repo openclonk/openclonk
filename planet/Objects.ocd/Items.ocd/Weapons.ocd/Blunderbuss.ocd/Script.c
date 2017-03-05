@@ -6,6 +6,7 @@
 */
 
 #include Library_HasExtraSlot
+#include Library_RangedWeapon
 
 local is_aiming;
 local animation_set;
@@ -13,10 +14,15 @@ local loaded;
 local holding;
 local musk_up, musk_front, musk_down, musk_offset;
 
+// Default timing values for animation set
+// (Adjusted for speeed multiplier and stored in animation set by Library_RangedWeapon)
+local DefaultLoadTime = 80;
+local DefaultShootTime = 20;
+
 
 /*-- Engine Callbacks --*/
 
-public func Initialize()
+public func Initialize(...)
 {
 	// Tweaking options
 	musk_up = 12;
@@ -31,12 +37,12 @@ public func Initialize()
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle.
 		AnimationAim   = "MusketAimArms",
 		AnimationLoad  = "MusketLoadArms",
-		LoadTime       = 80,
 		AnimationShoot = nil,
-		ShootTime      = 20,
 		WalkSpeed      = 84,
 		WalkBack       = 56,
 	};
+	
+	return _inherited(...);
 }
 
 public func Hit()
@@ -225,6 +231,7 @@ public func GetCarryTransform()
 public func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(1500, 0, -1500), Trans_Rotate(170, 0, 1, 0), Trans_Rotate(30, 0, 0, 1)), def);
+	return _inherited(def, ...);
 }
 
 

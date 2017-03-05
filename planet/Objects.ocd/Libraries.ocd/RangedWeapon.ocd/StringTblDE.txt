@@ -1,0 +1,2 @@
+SpeedMult=Geschwindigkeit
+SpeedMultHelp=Anpassung der Schuss- und Nachladegeschwindigkeit in Prozent des Standardwertes. Grosse Werte bedeuten schnelleres Schiessen und Nachladen.

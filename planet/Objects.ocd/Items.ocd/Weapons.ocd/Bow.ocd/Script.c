@@ -6,6 +6,7 @@
 */
 
 #include Library_HasExtraSlot
+#include Library_RangedWeapon
 
 local fAiming;
 local iArrowMesh;
@@ -13,16 +14,20 @@ local animation_set;
 
 /*-- Engine Callbacks --*/
 
-func Initialize()
+// Default timing values for animation set
+// (Adjusted for speeed multiplier and stored in animation set by Library_RangedWeapon)
+local DefaultLoadTime = 30;
+local DefaultLoadTime2 = 5*30/20;
+local DefaultShootTime = 20;
+local DefaultShootTime2 = nil;
+
+func Initialize(...)
 {
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
 		AnimationAim   = "BowAimArms",
 		AnimationLoad  = "BowLoadArms",
-		LoadTime       = 30,
-		LoadTime2      = 5*30/20,
 		AnimationShoot = nil,
-		ShootTime      = 20,
 		TurnType       = 1,
 		WalkSpeed      = 84,
 		WalkBack       = 56,
@@ -34,6 +39,7 @@ func Initialize()
 			["KneelDown", "BowKneel"]
 		],
 	};
+	return _inherited(...);
 }
 
 func Hit()
@@ -229,6 +235,7 @@ public func GetCarrySpecial(clonk)
 func Definition(def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000,4000),Trans_Rotate(180,0,1,0),Trans_Rotate(-45,0,0,1));
+	return _inherited(def, ...);
 }
 
 /*-- Properties --*/

@@ -6,13 +6,19 @@
 --*/
 
 #include Library_Stackable
+#include Library_RangedWeapon
+
+// Default timing values for animation set
+// (Adjusted for speeed multiplier and stored in animation set by Library_RangedWeapon)
+local DefaultShootTime = 16;
+local DefaultShootTime2 = 8;
 
 local animation_set;
 local aiming;
 
 /*-- Engine Callbacks --*/
 
-func Initialize()
+func Initialize(...)
 {
 	animation_set = {
 		AimMode         = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
@@ -20,10 +26,9 @@ func Initialize()
 		AnimationShoot  = "SpearThrowArms",
 		AnimationShoot2 = "SpearThrow2Arms",
 		AnimationShoot3 = "SpearThrow3Arms",
-		ShootTime       = 16,
-		ShootTime2      =  8,
 		WalkBack        =  0,
 	};
+	return _inherited(...);
 }
 
 func Hit()
@@ -261,8 +266,9 @@ public func GetCarryTransform()
 	if(aiming == 1) return Trans_Rotate(180, 0, 0, 1);
 }
 
-func Definition(def) {
+func Definition(def, ...) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(40,0,0,1),Trans_Rotate(-10,1,0,0)),def);
+	return _inherited(def, ...);
 }
 
 /*-- Properties --*/
