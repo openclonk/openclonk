@@ -30,12 +30,10 @@ global func AddSpeed(int x_dir, int y_dir, int prec)
 // Can set either speed or angle of velocity, or both
 global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 {
-	if(!precSpd) precSpd = 10;
-	if(!precAng) precAng = 1;
-	if(!speed)
-		speed = Distance(0,0, GetXDir(precSpd), GetYDir(precSpd));
-	if(!angle)
-		angle = Angle(0,0, GetXDir(precSpd), GetYDir(precSpd), precAng);
+	if (!precSpd) precSpd = 10;
+	if (!precAng) precAng = 1;
+	speed = speed ?? Distance(0, 0, GetXDir(precSpd), GetYDir(precSpd));
+	angle = angle ?? Angle(0, 0, GetXDir(precSpd), GetYDir(precSpd), precAng);
 		
 	var x_dir = Sin(angle, speed, precAng);
 	var y_dir = -Cos(angle, speed, precAng);
