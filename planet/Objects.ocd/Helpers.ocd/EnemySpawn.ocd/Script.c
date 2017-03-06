@@ -539,7 +539,7 @@ public func Definition(def)
 	  { Name="$Unlimited$", Value=SPAWNCOUNT_INFINITE },
 	  { Name="$FixedNumber$", Value=1, Type=C4V_Int, Delegate={ Type="int", Min=1, Set="SetMaxConcurrentEnemies", SetRoot=true } }
 	  ] };
-	def.EditorProps.spawn_action = new UserAction.Prop { Name="$SpawnAction$", EditorHelp="$SpawnActionHelp$" };
+	def.EditorProps.spawn_action = new UserAction.Prop { Name="$SpawnAction$", EditorHelp="$SpawnActionHelp$", Save="SpawnAction" };
 	AddEnemyDef("Clonk", { SpawnType=Clonk, SpawnFunction=def.SpawnClonk, GetInfoString=GetAIClonkInfoString }, def->GetAIClonkDefaultPropValues(), def->GetAIClonkEditorProps());
 }
 
