@@ -442,6 +442,9 @@ void C4Command::MoveTo()
 	break;
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLIGHT:
+		// Try to move into right direction
+		if (cx<Tx._getInt()-iTargetRange) cObj->Action.ComDir=COMD_Right;
+		if (cx>Tx._getInt()+iTargetRange) cObj->Action.ComDir=COMD_Left;
 		// Flight control
 		if (FlightControl()) return;
 		break;
