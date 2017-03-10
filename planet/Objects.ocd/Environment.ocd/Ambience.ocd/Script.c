@@ -9,13 +9,16 @@ local exec_counter; // counter to distribute execution of players across frames
 local player_environments;  // array indexed by player number: array of derived environments with per-player data
 local all_environments; // array of available environments for which it is checked if the player is in. sorted by priority.
 
+local fixed_environment; // May be set to a string to fix the environment
+local fixed_player_environments; // Per-player setting for environment
+local EditorProps;
+
 // Initialization
 protected func Initialize()
 {
-	// Register default environments (overloadable)
-	this->InitializeEnvironments();
 	// Initial player data
 	player_environments = [];
+	fixed_player_environments = [];
 	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		InitializePlayer(GetPlayerByIndex(i, C4PT_User));
 	// Periodic execution of ambience events
@@ -23,9 +26,46 @@ protected func Initialize()
 	return true;
 }
 
+public func SetEnvironment(string new_env, int plr)
+{
+	// Switch to a fixed environment
+	if (new_env && !GetLength(new_env)) new_env = nil;
+	// Update active flag(s)
+	var set_envs;
+	if (GetType(plr))
+	{
+		// Update for one player
+		fixed_player_environments[plr] = new_env;
+		set_envs = [player_environments[plr]];
+	}
+	else
+	{
+		// Update for all players
+		fixed_environment = new_env;
+		set_envs = player_environments;
+		fixed_player_environments = [];
+	}
+	for (var envs in set_envs)
+	{
+		if (envs)
+		{
+			for (var env in envs)
+			{
+				env.is_active = (env.Name == new_env);
+				env.change_delay = 999;
+			}
+		}
+	}
+	// Force the change now
+	for (var i = 0; i < 3; ++i)
+	{
+		Execute();
+	}
+}
+
 func InitializeEnvironments()
 {
-	// Register all standard environments
+	// Definition() call: Register all standard environments
 	all_environments = [];
 	
 	// Underwater: Clonk is swimming in water
@@ -135,24 +175,27 @@ private func ExecutePlayer(int plr, array environments)
 	// Update active state of all player environments
 	if (cursor)
 	{
-		var x = cursor->GetX(), y = cursor->GetY();
-		for (var env in environments)
+		if (!(fixed_player_environments[plr] ?? fixed_environment))
 		{
-			var was_active = env.is_active;
-			var is_active = env->CheckPlayer(cursor, x, y, was_active);
-			if (is_active == was_active)
+			var x = cursor->GetX(), y = cursor->GetY();
+			for (var env in environments)
 			{
-				// No change. Reset change delays.
-				env.change_delay = 0;
-			}
-			else
-			{
-				// Environment change. The change must persist for a while to become active.
-				if (++env.change_delay > env.min_change_delays[!is_active])
+				var was_active = env.is_active;
+				var is_active = env->CheckPlayer(cursor, x, y, was_active);
+				if (is_active == was_active)
 				{
-					// Waited long enough. Activate or deactivate this environment.
-					env.is_active = is_active;
-					//Log("%s environment: %s set to %v", GetPlayerName(plr), env.Name, is_active);
+					// No change. Reset change delays.
+					env.change_delay = 0;
+				}
+				else
+				{
+					// Environment change. The change must persist for a while to become active.
+					if (++env.change_delay > env.min_change_delays[!is_active])
+					{
+						// Waited long enough. Activate or deactivate this environment.
+						env.is_active = is_active;
+						//Log("%s environment: %s set to %v", GetPlayerName(plr), env.Name, is_active);
+					}
 				}
 			}
 		}
@@ -194,7 +237,7 @@ func InitializePlayer(int plr)
 		var n = GetLength(all_environments);
 		var envs = CreateArray(n);
 		for (var i=0; i < n; ++i)
-			envs[i] = new all_environments[i] { change_delay = 999, is_active = false };
+			envs[i] = new all_environments[i] { change_delay = 999, is_active = (all_environments[i].Name == fixed_environment) };
 		player_environments[plr] = envs;
 		// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
 		// However, this only works with a cursor
@@ -337,9 +380,9 @@ private func EnvCheck_Day(object cursor, int x, int y, bool is_current)
 public func SaveScenarioObject(proplist props, ...)
 {
 	// Only save ambience if it has modifications set for this scenario
-	// However, modifications aren't possible for now so never save it
-	return false;
+	return !!fixed_environment;
 }
+
 
 /*-- Proplist --*/
 
@@ -372,6 +415,29 @@ public func Definition(def)
 		Reverb_Decay_HFRatio = 800,
 	};
 	UnderwaterModifier = nil; // not supported yet
+	// Register default environments
+	def->InitializeEnvironments();
+	// Initialize environment switching in editor
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.fixed_environment = { Name="$FixedEnv$", EditorHelp="$FixedEnvHelp$", Type="enum", Set="SetEnvironment", Options = [
+		{ Name="$Automatic$", EditorHelp="$AutomaticEnvHelp$" }
+		] };
+	var n = 0;
+	for (var env in all_environments)
+	{
+		EditorProps.fixed_environment.Options[++n] = { Name=env.Name, Value=env.Name };
+	}
+	// User actions
+	var env_options = [{ Name="$Automatic$", EditorHelp="$AutomaticEnvHelp$", Value="" }];
+	n = 0;
+	for (var env in all_environments)
+	{
+		env_options[++n] = { Name=env.Name, Value=env.Name };
+	}
+	UserAction->AddEvaluator("Action", "$Ambience$", "$SetEnvironment$", "$SetEnvironmentHelp$", "ambience_environment", [def, def.EvalAct_SetEnvironment], { Players={Function="all_players"}, Environment="" }, { Type="proplist", Display="{{Environment}} ({{Players}})", EditorProps = {
+		Environment = { Name="$Environment$", Type="enum", Editable=true, Options = env_options },
+		Players = UserAction.Evaluator.PlayerList
+		} } );
 	// Shader
 	UserAction->AddEvaluator("Action", "$Ambience$", "$SetShader$", "$SetShaderHelp$", "ambience_shader", [def, def.EvalAct_SetShader], { ShaderName="Grayscale", Status = { Function="bool_constant", Value=true } }, { Type="proplist", Display="{{ShaderName}} ({{Status}})", EditorProps = {
 		ShaderName = { Name="$Shader$", Type="enum", Options = [
@@ -558,4 +624,21 @@ private func EvalAct_SetShader(proplist props, proplist context)
 	var shader_name = props.ShaderName;
 	var status = UserAction->EvaluateValue("Boolean", props.Status, context);
 	return SetShaderStatus(shader_name, status);
+}
+
+private func EvalAct_SetEnvironment(proplist props, proplist context)
+{
+	var new_environment = props.Environment;
+	var is_all_players = (props.Players.Function == "all_players"); // special handling for "all players"
+	var ambience = FindObject(Find_ID(Ambience));
+	if (!ambience) return;
+	if (is_all_players)
+	{
+		ambience->SetEnvironment(new_environment);
+	}
+	else
+	{
+		var players = UserAction->EvaluateValue("PlayerList", props.Players, context) ?? [];
+		for (var plr in players) ambience->SetEnvironment(new_environment, plr);
+	}
 }
