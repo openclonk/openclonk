@@ -172,12 +172,20 @@ void C4ConsoleQtMainWindow::LoadGeometry()
 	StdBuf ws_contents;
 	if (ws_contents.LoadFromFile(Config.AtUserDataPath(C4CFN_EditorGeometry)))
 	{
-		EditorWindowState ws;
-		CompileFromBuf<StdCompilerBinRead>(ws, ws_contents);
-		QByteArray geometry(static_cast<const char *>(ws.geometry.getData()), ws.geometry.getSize()),
-		           window_state(static_cast<const char *>(ws.window_state.getData()), ws.window_state.getSize());
-		restoreGeometry(geometry);
-		restoreState(window_state);
+		try
+		{
+			EditorWindowState ws;
+			CompileFromBuf<StdCompilerBinRead>(ws, ws_contents);
+			QByteArray geometry(static_cast<const char *>(ws.geometry.getData()), ws.geometry.getSize()),
+					   window_state(static_cast<const char *>(ws.window_state.getData()), ws.window_state.getSize());
+			restoreGeometry(geometry);
+			restoreState(window_state);
+		}
+		catch (StdCompiler::Exception *e)
+		{
+			Log("Editor: Could not restore window settings");
+			delete e;
+		}
 	}
 }
 
