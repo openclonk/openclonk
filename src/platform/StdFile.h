@@ -54,7 +54,6 @@ bool TruncatePath(char *szPath);
 // szBuffer has to be of at least _MAX_PATH length.
 bool GetParentPath(const char *szFilename, char *szBuffer);
 bool GetParentPath(const char *szFilename, StdStrBuf *outBuf);
-bool GetRelativePath(const char *strPath, const char *strRelativeTo, char *strBuffer, int iBufferSize=_MAX_PATH);
 const char *GetRelativePathS(const char *strPath, const char *strRelativeTo);
 bool IsGlobalPath(const char *szPath);
 

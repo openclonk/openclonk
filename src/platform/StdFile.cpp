@@ -218,16 +218,6 @@ bool GetParentPath(const char *szFilename, StdStrBuf *outBuf)
 	return true;
 }
 
-bool GetRelativePath(const char *strPath, const char *strRelativeTo, char *strBuffer, int iBufferSize)
-{
-	// Specified path is relative to base path
-	// Copy relative section
-	const char *szCpy;
-	SCopy(szCpy=GetRelativePathS(strPath, strRelativeTo), strBuffer, iBufferSize);
-	// return whether it was made relative
-	return szCpy!=strPath;
-}
-
 const char *GetRelativePathS(const char *strPath, const char *strRelativeTo)
 {
 	// Specified path is relative to base path

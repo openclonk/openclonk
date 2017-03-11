@@ -31,6 +31,17 @@
 #include "config/C4Config.h"
 #include "game/C4Game.h"
 
+template<size_t iBufferSize>
+static bool GetRelativePath(const char *strPath, const char *strRelativeTo, char(&strBuffer)[iBufferSize])
+{
+	// Specified path is relative to base path
+	// Copy relative section
+	const char *szCpy;
+	SCopy(szCpy = GetRelativePathS(strPath, strRelativeTo), strBuffer, iBufferSize);
+	// return whether it was made relative
+	return szCpy != strPath;
+}
+
 C4Language Languages;
 
 C4Language::C4Language()
