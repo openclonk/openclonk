@@ -37,7 +37,7 @@ public:
 	void AddExtraDef(const char *def);
 	std::list<const char *> GetUserSelectedDefinitions() const;
 	std::list<const char *> GetSelectedDefinitions() const;
-	void SetForcedSelection(std::list<const char *> &defs);
+	void SetForcedSelection(const std::list<const char *> &defs);
 
 private:
 

@@ -211,7 +211,7 @@ std::list<const char *> C4ConsoleQtDefinitionFileListModel::GetSelectedDefinitio
 	return result;
 }
 
-void C4ConsoleQtDefinitionFileListModel::SetForcedSelection(std::list<const char *> &defs)
+void C4ConsoleQtDefinitionFileListModel::SetForcedSelection(const std::list<const char *> &defs)
 {
 	// Unselect previous
 	root.SetSelected(false, true);
