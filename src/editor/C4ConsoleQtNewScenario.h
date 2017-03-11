@@ -34,7 +34,10 @@ class C4ConsoleQtDefinitionFileListModel : public QAbstractItemModel
 public:
 	C4ConsoleQtDefinitionFileListModel();
 	~C4ConsoleQtDefinitionFileListModel();
+	void AddExtraDef(const char *def);
+	std::list<const char *> GetUserSelectedDefinitions() const;
 	std::list<const char *> GetSelectedDefinitions() const;
+	void SetForcedSelection(std::list<const char *> &defs);
 
 private:
 
@@ -46,7 +49,7 @@ private:
 		std::vector< std::unique_ptr<DefFileInfo> > children;
 		StdCopyStrBuf filename, root_path, full_filename;
 		bool was_opened, is_root;
-		bool selected, disabled;
+		bool user_selected, force_selected;
 
 		bool OpenGroup();
 	public:
@@ -58,11 +61,15 @@ private:
 		int32_t GetChildIndex(const DefFileInfo *child);
 		const char *GetName() const { return filename.getData(); }
 		bool IsRoot() const { return is_root; }
-		void SetSelected(bool to_val);
-		bool IsSelected() const { return selected; }
-		void SetDisabled(bool to_val) { disabled = to_val; }
-		bool IsDisabled() const { return disabled; }
+		void SetSelected(bool to_val, bool forced);
+		bool IsUserSelected() const { return user_selected; }
+		bool IsForceSelected() const { return force_selected; }
+		bool IsSelected() const { return user_selected || force_selected; }
+		bool IsDisabled() const { return force_selected || (parent && parent->IsSelected()); }
+		void AddUserSelectedDefinitions(std::list<const char *> *result) const;
 		void AddSelectedDefinitions(std::list<const char *> *result) const;
+		void SetForcedSelection(const char *selected_def_filepath);
+		void AddExtraDef(const char *def);
 	};
 
 	mutable DefFileInfo root;
@@ -85,6 +92,7 @@ class C4ConsoleQtNewScenarioDlg : public QDialog
 	StdCopyStrBuf filename;
 	bool has_custom_filename;
 	C4ConsoleQtDefinitionFileListModel def_file_model;
+	std::vector<C4Scenario> all_template_c4s;
 
 public:
 	C4ConsoleQtNewScenarioDlg(class QMainWindow *parent_window);
@@ -101,6 +109,7 @@ protected slots:
 	void CreatePressed();
 	void BrowsePressed();
 	void TitleChanged(const QString &new_title);
+	void SelectedTemplateChanged(int new_selection);
 };
 
 #endif // WITH_QT_EDITOR

@@ -434,6 +434,23 @@ bool C4SDefinitions::GetModules(StdStrBuf *psOutModules) const
 	return true;
 }
 
+std::list<const char *> C4SDefinitions::GetModulesAsList() const
+{
+	// get definitions as string pointers into this structure
+	std::list<const char *> result;
+	if (!LocalOnly)
+	{
+		for (const char *def : Definition)
+		{
+			if (*def)
+			{
+				result.push_back(def);
+			}
+		}
+	}
+	return result;
+}
+
 
 void C4SDefinitions::SetModules(const char *szList, const char *szRelativeToPath, const char *szRelativeToPath2)
 {

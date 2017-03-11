@@ -25,7 +25,7 @@
 /* Definition file list model for new scenario definition selection */
 
 C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo(C4ConsoleQtDefinitionFileListModel::DefFileInfo *parent, const char *filename, const char *root_path)
-	: parent(parent), filename(filename), root_path(root_path), was_opened(false), is_root(false), selected(parent->IsSelected()), disabled(parent->IsSelected() /*not a bug*/)
+	: parent(parent), filename(filename), root_path(root_path), was_opened(false), is_root(false), user_selected(parent->IsUserSelected()), force_selected(parent->IsForceSelected())
 {
 	// Delay opening of groups until information is actually requested
 	// Full names into child groups in C4S always delimeted with backslashes
@@ -36,14 +36,12 @@ C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo(C4ConsoleQtDefiniti
 }
 
 C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo()
-	: parent(nullptr), was_opened(true), is_root(true), selected(false), disabled(false)
+	: parent(nullptr), was_opened(true), is_root(true), user_selected(false), force_selected(false)
 {
 	// Init as root: List definitions in root paths
 	// Objects.ocd is always there (even if not actually found) and always first
 	DefFileInfo *main_objects_def = new DefFileInfo(this, C4CFN_Objects, "");
 	children.emplace_back(main_objects_def);
-	main_objects_def->SetSelected(true);
-	main_objects_def->SetDisabled(true);
 	bool has_default_objects_found = false;
 	for (auto & root_iter : ::Reloc)
 	{
@@ -73,14 +71,16 @@ C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo()
 	}
 }
 
-void C4ConsoleQtDefinitionFileListModel::DefFileInfo::SetSelected(bool to_val)
+void C4ConsoleQtDefinitionFileListModel::DefFileInfo::SetSelected(bool to_val, bool forced)
 {
-	selected = to_val;
-	// Selection propagates to children; children of selected are disabled because they cannot be un-selected
+	if (forced)
+		force_selected = to_val;
+	else
+		user_selected = to_val;
+	// Selection propagates to children
 	for (auto & child : children)
 	{
-		child->SetSelected(selected);
-		child->SetDisabled(selected);
+		child->SetSelected(to_val, forced);
 	}
 }
 
@@ -126,6 +126,20 @@ int32_t C4ConsoleQtDefinitionFileListModel::DefFileInfo::GetChildIndex(const Def
 	return int32_t(iter - children.begin());
 }
 
+void C4ConsoleQtDefinitionFileListModel::DefFileInfo::AddUserSelectedDefinitions(std::list<const char *> *result) const
+{
+	// Add parent-most selected
+	// Ignore any forced selection even if also selected by user.
+	// It may have been selected first and then forced by the scenario preset after the template has been switched)
+	if (!IsForceSelected())
+	{
+		if (IsUserSelected())
+			result->push_back(full_filename.getData());
+		else
+			for (auto &iter : children) iter->AddUserSelectedDefinitions(result);
+	}
+}
+
 void C4ConsoleQtDefinitionFileListModel::DefFileInfo::AddSelectedDefinitions(std::list<const char *> *result) const
 {
 	// Add parent-most selected
@@ -135,6 +149,41 @@ void C4ConsoleQtDefinitionFileListModel::DefFileInfo::AddSelectedDefinitions(std
 		for (auto &iter : children) iter->AddSelectedDefinitions(result);
 }
 
+void C4ConsoleQtDefinitionFileListModel::DefFileInfo::SetForcedSelection(const char *selected_def_filepath)
+{
+	// Filenames are assumed to be case insensitive for the Windows client
+	if (SEqualNoCase(selected_def_filepath, full_filename.getData()))
+	{
+		// This is the def to be force-selected
+		SetSelected(true, true);
+	}
+	else if (is_root || (SEqual2NoCase(selected_def_filepath, full_filename.getData()) && selected_def_filepath[full_filename.getLength()] == '\\'))
+	{
+		// One of the child definitions should be force-selected
+		if (!was_opened) OpenGroup();
+		for (auto &iter : children) iter->SetForcedSelection(selected_def_filepath);
+	}
+}
+
+void C4ConsoleQtDefinitionFileListModel::DefFileInfo::AddExtraDef(const char *def)
+{
+	assert(is_root);
+	// Ignore if it was already added
+	// Could also avoid adding child definitions if they are already in the list.
+	// E.g. do not add both foo.ocs\bar.ocd and foo.ocs\bar.ocd\baz.ocd, but keep only the parent path.
+	// But it's overkill for a case that will probably never happen and would pose just a minor nuisance if it does.
+	for (auto &iter : children)
+	{
+		if (SEqualNoCase(iter->full_filename.getData(), def))
+		{
+			return;
+		}
+	}
+	// Add using user path as root (extra defs will always be in the user path because they are not used by our main system templates)
+	children.emplace_back(new DefFileInfo(this, def, ::Config.General.UserDataPath));
+}
+
+
 C4ConsoleQtDefinitionFileListModel::C4ConsoleQtDefinitionFileListModel()
 {
 }
@@ -143,11 +192,34 @@ C4ConsoleQtDefinitionFileListModel::~C4ConsoleQtDefinitionFileListModel()
 {
 }
 
+void C4ConsoleQtDefinitionFileListModel::AddExtraDef(const char *def)
+{
+	root.AddExtraDef(def);
+}
+
+std::list<const char *> C4ConsoleQtDefinitionFileListModel::GetUserSelectedDefinitions() const
+{
+	std::list<const char *> result;
+	root.AddUserSelectedDefinitions(&result);
+	return result;
+}
+
 std::list<const char *> C4ConsoleQtDefinitionFileListModel::GetSelectedDefinitions() const
 {
 	std::list<const char *> result;
 	root.AddSelectedDefinitions(&result);
 	return result;
+}
+
+void C4ConsoleQtDefinitionFileListModel::SetForcedSelection(std::list<const char *> &defs)
+{
+	// Unselect previous
+	root.SetSelected(false, true);
+	// Force new selection
+	for (const char *def : defs)
+	{
+		root.SetForcedSelection(def);
+	}
 }
 
 int C4ConsoleQtDefinitionFileListModel::rowCount(const QModelIndex & parent) const
@@ -216,7 +288,7 @@ bool C4ConsoleQtDefinitionFileListModel::setData(const QModelIndex& index, const
 		DefFileInfo *def = static_cast<DefFileInfo *>(index.internalPointer());
 		if (def && !def->IsDisabled())
 		{
-			def->SetSelected(value.toBool());
+			def->SetSelected(value.toBool(), false);
 			// Update changed index and all children
 			int32_t child_count = def->GetChildCount();
 			QModelIndex end_changed = index;
@@ -287,6 +359,28 @@ void C4ConsoleQtNewScenarioDlg::AddScenarioTemplate(C4Group &parent, const char 
 	// Add it; remember full path as user data
 	StdStrBuf template_path(grp.GetFullName());
 	ui.templateComboBox->addItem(QString(title.getData()), QString(template_path.getData()));
+	all_template_c4s.push_back(template_c4s);
+	// Add any extra definition (e.g. pointing into a scenario) to selection model
+	// "extra" definitions are those that use non-ocd-files anywhere in their path
+	auto c4s_defs = template_c4s.Definitions.GetModulesAsList();
+	for (const char *c4s_def : c4s_defs)
+	{
+		char c4s_def_component[_MAX_PATH + 1];
+		int32_t i = 0;
+		bool is_extra_def = false;
+		while (SCopySegment(c4s_def, i++, c4s_def_component, '\\', _MAX_PATH))
+		{
+			if (!WildcardMatch(C4CFN_DefFiles, c4s_def_component))
+			{
+				is_extra_def = true;
+				break;
+			}
+		}
+		if (is_extra_def)
+		{
+			def_file_model.AddExtraDef(c4s_def);
+		}
+	}
 	// Default selection
 	if (is_default) ui.templateComboBox->setCurrentIndex(ui.templateComboBox->count()-1);
 }
@@ -294,6 +388,20 @@ void C4ConsoleQtNewScenarioDlg::AddScenarioTemplate(C4Group &parent, const char 
 bool C4ConsoleQtNewScenarioDlg::IsHostAsNetwork() const
 {
 	return ui.startInNetworkCheckbox->isChecked();
+}
+
+void C4ConsoleQtNewScenarioDlg::SelectedTemplateChanged(int new_selection)
+{
+	// Update forced definition selection for template
+	if (new_selection >= 0 && new_selection < all_template_c4s.size())
+	{
+		const C4Scenario &template_c4s = all_template_c4s[new_selection];
+		def_file_model.SetForcedSelection(template_c4s.Definitions.GetModulesAsList());
+	}
+	else
+	{
+		def_file_model.SetForcedSelection(std::list<const char *>());
+	}
 }
 
 bool C4ConsoleQtNewScenarioDlg::CreateScenario()
@@ -339,11 +447,19 @@ bool C4ConsoleQtNewScenarioDlg::CreateScenario()
 	c4s.Game.Mode.Copy(ui.gameModeComboBox->currentText().toUtf8());
 	if (c4s.Game.Mode == "Undefined") c4s.Game.Mode.Clear();
 	filename.Copy(ui.filenameEdit->text().toUtf8());
-	std::list<const char *> definitions = def_file_model.GetSelectedDefinitions();
-	std::ostringstream definitions_join("");
+	std::list<const char *> definitions = def_file_model.GetUserSelectedDefinitions();
+	StdStrBuf forced_definitions;
+	c4s.Definitions.GetModules(&forced_definitions);
+	const char *forced_definitions_c = forced_definitions.getData();
+	std::ostringstream definitions_join(forced_definitions_c ? forced_definitions_c : nullptr, std::ostringstream::ate);
 	if (definitions.size())
 	{
 		// definitions_join = definitions.join(";")
+		if (forced_definitions.getLength())
+		{
+			// Combine both forced and user-selected definitions
+			definitions_join << ";";
+		}
 		auto iter_end = definitions.end();
 		std::copy(definitions.begin(), --iter_end, std::ostream_iterator<std::string>(definitions_join, ";"));
 		definitions_join << *iter_end;

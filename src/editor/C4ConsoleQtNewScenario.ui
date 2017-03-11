@@ -419,7 +419,7 @@
    <slot>CreatePressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>596</x>
+     <x>535</x>
      <y>262</y>
     </hint>
     <hint type="destinationlabel">
@@ -435,7 +435,7 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>701</x>
+     <x>640</x>
      <y>262</y>
     </hint>
     <hint type="destinationlabel">
@@ -467,11 +467,27 @@
    <slot>BrowsePressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>638</x>
-     <y>73</y>
+     <x>629</x>
+     <y>85</y>
     </hint>
     <hint type="destinationlabel">
      <x>356</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>templateComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>NewScenarioDialog</receiver>
+   <slot>SelectedTemplateChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
      <y>138</y>
     </hint>
    </hints>
@@ -481,5 +497,6 @@
   <slot>CreatePressed()</slot>
   <slot>TitleChanged(QString)</slot>
   <slot>BrowsePressed()</slot>
+  <slot>SelectedTemplateChanged(int)</slot>
  </slots>
 </ui>

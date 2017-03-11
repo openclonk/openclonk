@@ -94,6 +94,7 @@ public:
 	C4IDList SkipDefs;
 	void SetModules(const char *szList, const char *szRelativeToPath=nullptr, const char *szRelativeToPath2=nullptr);
 	bool GetModules(StdStrBuf *psOutModules) const;
+	std::list<const char *> GetModulesAsList() const; // get definitions as string pointers into this structure
 	void Default();
 	void CompileFunc(StdCompiler *pComp);
 
