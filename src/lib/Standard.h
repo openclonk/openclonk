@@ -184,4 +184,8 @@ inline int ssprintf(char(&str)[N], const char *fmt, ...)
 // Checks a string for conformance with UTF-8
 bool IsValidUtf8(const char *string, int length = -1);
 
+
+std::string vstrprintf(const char *format, va_list args);
+std::string strprintf(const char *format, ...) GNUC_FORMAT_ATTRIBUTE;
+
 #endif // INC_STANDARD

@@ -29,31 +29,6 @@
 #define C4AUL_SafeInherited "_inherited"
 #define C4AUL_DebugBreak    "__debugbreak"
 
-static std::string vstrprintf(const char *format, va_list args)
-{
-	va_list argcopy;
-	va_copy(argcopy, args);
-	int size = vsnprintf(nullptr, 0, format, argcopy);
-	if (size < 0)
-		throw std::invalid_argument("invalid argument to strprintf");
-	va_end(argcopy);
-	std::string s;
-	s.resize(size + 1);
-	size = vsnprintf(&s[0], s.size(), format, args);
-	assert(size >= 0);
-	s.resize(size);
-	return s;
-}
-
-static std::string strprintf(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	std::string s = vstrprintf(format, args);
-	va_end(args);
-	return s;
-}
-
 static std::string FormatCodePosition(const C4ScriptHost *source_host, const char *pos, const C4ScriptHost *target_host = nullptr, const C4AulScriptFunc *func = nullptr)
 {
 	std::string s;

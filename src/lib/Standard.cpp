@@ -798,3 +798,28 @@ int GetCharacterCount(const char * s)
 	}
 	return l;
 }
+
+std::string vstrprintf(const char *format, va_list args)
+{
+	va_list argcopy;
+	va_copy(argcopy, args);
+	int size = vsnprintf(nullptr, 0, format, argcopy);
+	if (size < 0)
+		throw std::invalid_argument("invalid argument to strprintf");
+	va_end(argcopy);
+	std::string s;
+	s.resize(size + 1);
+	size = vsnprintf(&s[0], s.size(), format, args);
+	assert(size >= 0);
+	s.resize(size);
+	return s;
+}
+
+std::string strprintf(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	std::string s = vstrprintf(format, args);
+	va_end(args);
+	return s;
+}
