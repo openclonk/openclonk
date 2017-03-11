@@ -450,16 +450,15 @@ void C4AbstractApp::RestoreVideoMode()
 		SDL_SetWindowFullscreen(pWindow->window, 0);
 }
 
-bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 {
-	return SDL_SetClipboardText(text.getData()) == 0;
+	return SDL_SetClipboardText(text.c_str()) == 0;
 }
 
-StdStrBuf C4AbstractApp::Paste(bool fClipboard)
+std::string C4AbstractApp::Paste(bool fClipboard)
 {
 	char * text = SDL_GetClipboardText();
-	StdStrBuf buf;
-	buf.Copy(text);
+	std::string buf(text);
 	SDL_free(text);
 	return buf;
 }

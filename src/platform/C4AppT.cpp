@@ -71,15 +71,15 @@ bool C4AbstractApp::SetVideoMode(int, int, unsigned int, unsigned int, bool)
 }
 
 // Copy the text to the clipboard or the primary selection
-bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 {
 	return false;
 }
 
 // Paste the text from the clipboard or the primary selection
-StdStrBuf C4AbstractApp::Paste(bool fClipboard)
+std::string C4AbstractApp::Paste(bool fClipboard)
 {
-	return StdStrBuf("");
+	return std::string();
 }
 // Is there something in the clipboard?
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)

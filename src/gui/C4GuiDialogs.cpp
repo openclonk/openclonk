@@ -946,7 +946,7 @@ namespace C4GUI
 		// resize to actually needed size
 		SetClientSize(GetClientRect().Wdt, GetClientRect().Hgt - caMain.GetHeight());
 		// Control+C copies text to clipboard
-		sCopyText.Format("[%s] %s", szCaption ? szCaption : "", szMessage ? szMessage : "");
+		sCopyText = strprintf("[%s] %s", szCaption ? szCaption : "", szMessage ? szMessage : "");
 		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(K_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
 		               new DlgKeyCB<MessageDialog>(*this, &MessageDialog::KeyCopy), C4CustomKey::PRIO_CtrlOverride);
 	}

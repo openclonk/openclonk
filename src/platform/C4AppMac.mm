@@ -31,11 +31,11 @@
 #import "platform/C4WindowController.h"
 #import "graphics/C4DrawGLMac.h"
 
-bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 	[pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-	NSString* string = [NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding];
+	NSString* string = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
 	if (![pasteboard setString:string forType:NSStringPboardType])
 	{
 		Log("Writing to Cocoa pasteboard failed");
@@ -44,15 +44,15 @@ bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return true;
 }
 
-StdStrBuf C4AbstractApp::Paste(bool fClipboard)
+std::string C4AbstractApp::Paste(bool fClipboard)
 {
 	if (fClipboard)
 	{
 		NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 		const char* chars = [[pasteboard stringForType:NSStringPboardType] cStringUsingEncoding:NSUTF8StringEncoding];
-		return StdStrBuf(chars);
+		return chars;
 	}
-	return StdStrBuf(0);
+	return std::string();
 }
 
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
@@ -214,7 +214,7 @@ bool EraseItemSafe(const char* szFilename)
 		tag: 0];
 }
 
-StdStrBuf C4AbstractApp::GetGameDataPath()
+std::string C4AbstractApp::GetGameDataPath()
 {
-	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
+	return [[[NSBundle mainBundle] resourcePath] fileSystemRepresentation];
 }

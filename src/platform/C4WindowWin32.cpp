@@ -893,7 +893,7 @@ void C4AbstractApp::SetLastErrorFromOS()
 	LPWSTR buffer = 0;
 	FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
 		0, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
-	sLastError.Take(StdStrBuf(buffer));
+	sLastError = WStrToString(buffer);
 	LocalFree(buffer);
 }
 
@@ -1046,7 +1046,7 @@ void C4AbstractApp::MessageDialog(const char * message)
 }
 
 // Clipboard functions
-bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 {
 	if (!fClipboard) return false;
 	bool fSuccess = true;
@@ -1054,12 +1054,12 @@ bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 	if (!OpenClipboard(pWindow ? pWindow->hWindow : nullptr)) return false;
 	// must empty the global clipboard, so the application clipboard equals the Windows clipboard
 	EmptyClipboard();
-	int size = MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), 0, 0);
+	int size = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), text.size() + 1, 0, 0);
 	HANDLE hglbCopy = GlobalAlloc(GMEM_MOVEABLE, size * sizeof(wchar_t));
 	if (hglbCopy == nullptr) { CloseClipboard(); return false; }
 	// lock the handle and copy the text to the buffer.
 	wchar_t *szCopyChar = (wchar_t *) GlobalLock(hglbCopy);
-	fSuccess = !!MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), szCopyChar, size);
+	fSuccess = !!MultiByteToWideChar(CP_UTF8, 0, text.c_str(), text.size() + 1, szCopyChar, size);
 	GlobalUnlock(hglbCopy);
 	// place the handle on the clipboard.
 	fSuccess = fSuccess && !!SetClipboardData(CF_UNICODETEXT, hglbCopy);
@@ -1069,15 +1069,15 @@ bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return fSuccess;
 }
 
-StdStrBuf C4AbstractApp::Paste(bool fClipboard)
+std::string C4AbstractApp::Paste(bool fClipboard)
 {
-	if (!fClipboard) return StdStrBuf();
+	if (!fClipboard) return std::string();
 	// open clipboard
-	if (!OpenClipboard(nullptr)) return StdStrBuf();
+	if (!OpenClipboard(nullptr)) return std::string();
 	// get text from clipboard
 	HANDLE hglb = GetClipboardData(CF_UNICODETEXT);
-	if (!hglb) return StdStrBuf();
-	StdStrBuf text((LPCWSTR) GlobalLock(hglb));
+	if (!hglb) return std::string();
+	std::string text{ WStrToString((wchar_t*)GlobalLock(hglb)) };
 	// unlock mem
 	GlobalUnlock(hglb);
 	// close clipboard

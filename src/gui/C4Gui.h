@@ -2330,7 +2330,7 @@ namespace C4GUI
 		bool fHasOK;
 		int32_t *piConfigDontShowAgainSetting;
 		class C4KeyBinding *pKeyCopy;
-		StdCopyStrBuf sCopyText; // text that goes into clipboard if user presses Ctrl+C on this window
+		std::string sCopyText; // text that goes into clipboard if user presses Ctrl+C on this window
 	public:
 		enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16, btnReset=32,
 		               btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort

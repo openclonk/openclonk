@@ -291,11 +291,10 @@ namespace C4GUI
 		// get selected range
 		int32_t iSelBegin = std::min(iSelectionStart, iSelectionEnd), iSelEnd = std::max(iSelectionStart, iSelectionEnd);
 		if (iSelBegin == iSelEnd) return false;
-		StdStrBuf buf;
 		// allocate a global memory object for the text.
-		buf.Append(Text+iSelBegin, iSelEnd-iSelBegin);
+		std::string buf(Text+iSelBegin, iSelEnd-iSelBegin);
 		if (cPasswordMask)
-			memset(buf.getMData(), cPasswordMask, buf.getLength());
+			buf.assign(buf.size(), cPasswordMask);
 
 		return Application.Copy(buf);
 	}
@@ -315,7 +314,7 @@ namespace C4GUI
 		bool fSuccess = false;
 		// check clipboard contents
 		if(!Application.IsClipboardFull()) return false;
-		StdStrBuf text(Application.Paste());
+		StdCopyStrBuf text(Application.Paste().c_str());
 		char * szText = text.getMData();
 		if (text)
 		{
