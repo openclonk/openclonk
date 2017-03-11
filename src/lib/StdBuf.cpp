@@ -507,3 +507,16 @@ bool StdStrBuf::TrimSpaces()
 	SetLength(iLength - iSpaceLeftCount - iSpaceRightCount);
 	return true;
 }
+
+#ifdef _WIN32
+std::string WStrToString(wchar_t *ws)
+{
+	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, 0, 0);
+	assert(len >= 0);
+	if (len <= 0) return std::string{};
+
+	std::string s(static_cast<size_t>(len), '\0');
+	s.resize(WideCharToMultiByte(CP_UTF8, 0, ws, -1, &s[0], s.size(), 0, 0) - 1);
+	return s;
+}
+#endif

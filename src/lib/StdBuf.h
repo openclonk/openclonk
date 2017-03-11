@@ -728,4 +728,9 @@ public:
 extern StdStrBuf FormatString(const char *szFmt, ...) GNUC_FORMAT_ATTRIBUTE;
 extern StdStrBuf FormatStringV(const char *szFmt, va_list args);
 
+#ifdef _WIN32
+// Converts a wide char string to UTF-8 std::string
+std::string WStrToString(wchar_t *s);
+#endif
+
 #endif
