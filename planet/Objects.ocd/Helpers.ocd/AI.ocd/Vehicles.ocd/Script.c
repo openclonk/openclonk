@@ -92,7 +92,7 @@ private func ExecuteCatapult(effect fx)
 	fx.vehicle->~ControlUseHolding(fx.Target, tx - x, ty - y);
 	// Determine power needed to hit target.
 	var dx = tx - x, dy = ty - y + 20;
-	var power = Sqrt((GetGravity() * dx * dx) / Max(Abs(dx) + dy, 1));
+	var power = Max(Sqrt((GetGravity() * dx * dx) / Max(Abs(dx) + dy, 1)), 1);
 	var dt = dx * 10 / power;
 	tx += this->GetTargetXDir(fx.target, dt);
 	ty += this->GetTargetYDir(fx.target, dt);
