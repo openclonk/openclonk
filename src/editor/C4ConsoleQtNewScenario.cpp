@@ -213,6 +213,7 @@ std::list<const char *> C4ConsoleQtDefinitionFileListModel::GetSelectedDefinitio
 
 void C4ConsoleQtDefinitionFileListModel::SetForcedSelection(const std::list<const char *> &defs)
 {
+	beginResetModel();
 	// Unselect previous
 	root.SetSelected(false, true);
 	// Force new selection
@@ -220,6 +221,7 @@ void C4ConsoleQtDefinitionFileListModel::SetForcedSelection(const std::list<cons
 	{
 		root.SetForcedSelection(def);
 	}
+	endResetModel();
 }
 
 int C4ConsoleQtDefinitionFileListModel::rowCount(const QModelIndex & parent) const
