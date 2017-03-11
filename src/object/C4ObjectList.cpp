@@ -467,7 +467,7 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4Va
 	// "Object" section count
 	int32_t iObjCnt = ObjectCount();
 	pComp->Value(mkNamingCountAdapt(iObjCnt, "Object"));
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		// skipping player objects would screw object counting in non-naming compilers
 		assert(!fSkipPlayerObjects || pComp->hasNaming());
@@ -510,14 +510,14 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// (Re)create list
 	delete pEnumerated; pEnumerated = new std::list<int32_t>();
 	// Decompiling: Build list
-	if (!pComp->isCompiler())
+	if (!pComp->isDeserializer())
 		for (C4ObjectLink *pPos = First; pPos; pPos = pPos->Next)
 			if (pPos->Obj->Status)
 				pEnumerated->push_back(pPos->Obj->Number);
 	// Compile list
 	pComp->Value(mkSTLContainerAdapt(*pEnumerated, StdCompiler::SEP_SEP2));
 	// Decompiling: Delete list
-	if (!pComp->isCompiler())
+	if (!pComp->isDeserializer())
 		{ delete pEnumerated; pEnumerated = nullptr; }
 	// Compiling: Nothing to do - list will be denumerated later
 }

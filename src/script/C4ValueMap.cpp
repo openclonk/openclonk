@@ -265,21 +265,21 @@ void C4ValueMapData::Denumerate(C4ValueNumbers * numbers)
 
 void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	C4ValueMapNames *pOldNames = pNames;
-	if (fCompiler) Reset();
+	if (deserializing) Reset();
 	// Compile item count
 	int32_t iValueCnt;
-	if (!fCompiler) iValueCnt = pNames ? pNames->iSize : 0;
+	if (!deserializing) iValueCnt = pNames ? pNames->iSize : 0;
 	pComp->Value(mkDefaultAdapt(iValueCnt, 0));
 	// nuthing 2do for no items
 	if (!iValueCnt) return;
 	// Separator (';')
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	// Data
-	char **ppNames = !fCompiler ? pNames->pNames : new char * [iValueCnt];
-	if (fCompiler) for (int32_t i = 0; i < iValueCnt; i++) ppNames[i] = 0;
-	C4Value *pValues = !fCompiler ? pData : new C4Value [iValueCnt];
+	char **ppNames = !deserializing ? pNames->pNames : new char * [iValueCnt];
+	if (deserializing) for (int32_t i = 0; i < iValueCnt; i++) ppNames[i] = 0;
+	C4Value *pValues = !deserializing ? pData : new C4Value [iValueCnt];
 	// Compile
 	try
 	{
@@ -289,9 +289,9 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			if (i) pComp->Separator();
 			// Name
 			StdStrBuf Name;
-			if (!fCompiler) Name.Ref(ppNames[i]);
+			if (!deserializing) Name.Ref(ppNames[i]);
 			pComp->Value(mkParAdapt(Name, StdCompiler::RCT_Idtf));
-			if (fCompiler) ppNames[i] = Name.GrabPointer();
+			if (deserializing) ppNames[i] = Name.GrabPointer();
 			// Separator ('=')
 			pComp->Separator(StdCompiler::SEP_SET);
 			// Value
@@ -301,7 +301,7 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	catch (...)
 	{
 		// make sure no mem is leaked on compiler error in name list
-		if (fCompiler)
+		if (deserializing)
 		{
 			for (int32_t i = 0; i < iValueCnt; i++) if (ppNames[i]) free(ppNames[i]);
 			delete [] ppNames;
@@ -310,7 +310,7 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		throw;
 	}
 	// Set
-	if (fCompiler)
+	if (deserializing)
 	{
 		// Set
 		CreateTempNameList();

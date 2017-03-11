@@ -1443,7 +1443,7 @@ public:
 			: pszNames(pszNames), iNameCnt(iNameCnt), iEntryNr(iEntryNr)
 	{  }
 
-	virtual bool isCompiler() { return false; }
+	virtual bool isDeserializer() { return false; }
 	virtual bool hasNaming() { return true; }
 	virtual bool isVerbose() { return false; }
 

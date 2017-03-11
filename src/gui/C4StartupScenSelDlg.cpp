@@ -195,7 +195,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 	// compile scenario list
 	int32_t iOldScenCount = iScenCount;
 	pComp->Value(mkNamingCountAdapt(iScenCount,  "Scenario"));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		while (iOldScenCount--) delete ppScenList[iOldScenCount];
 		delete [] ppScenList;
@@ -215,7 +215,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 	// compile access gfx list
 	int32_t iOldAccesGfxCount = iAccessGfxCount;
 	pComp->Value(mkNamingCountAdapt(iAccessGfxCount,  "AccessGfx"));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		while (iOldAccesGfxCount--) delete ppAccessGfxList[iOldAccesGfxCount];
 		delete [] ppAccessGfxList;

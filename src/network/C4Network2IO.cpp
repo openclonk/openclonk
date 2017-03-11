@@ -1624,7 +1624,7 @@ void C4PacketPostMortem::Add(const C4NetIOPacket &rPkt)
 
 void C4PacketPostMortem::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 
 	// Connection ID, packet number and packet count
 	pComp->Value(mkNamingAdapt(iConnID, "ConnID"));
@@ -1632,7 +1632,7 @@ void C4PacketPostMortem::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iPacketCount, "PacketCount"));
 
 	// Packets
-	if (fCompiler)
+	if (deserializing)
 	{
 		// Read packets
 		for (uint32_t i = 0; i < iPacketCount; i++)

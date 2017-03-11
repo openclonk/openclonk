@@ -149,7 +149,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,  "TotalPlayingTime",     0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
 	pComp->Value(mkNamingAdapt(numbers,           "ExtraDataValues"));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		numbers.Denumerate();
 		ExtraData.Denumerate(&numbers);
@@ -329,7 +329,7 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Age,                     "Age",              0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
 	pComp->Value(mkNamingAdapt(numbers,                 "ExtraDataValues"));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		numbers.Denumerate();
 		ExtraData.Denumerate(&numbers);

@@ -618,7 +618,7 @@ StdStrBuf C4NetIO::EndpointAddress::ToString(int flags) const
 
 void C4NetIO::EndpointAddress::CompileFunc(StdCompiler *comp)
 {
-	if (!comp->isCompiler())
+	if (!comp->isDeserializer())
 	{
 		StdStrBuf val(ToString(TSF_SkipZoneId));
 		comp->Value(val);

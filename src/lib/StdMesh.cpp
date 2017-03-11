@@ -152,7 +152,7 @@ namespace
 			const StdMeshInstance::SerializableValueProvider::IDBase* id;
 			StdMeshInstance::SerializableValueProvider* svp = nullptr;
 
-			if(pComp->isCompiler())
+			if(pComp->isDeserializer())
 			{
 				StdCopyStrBuf id_str;
 				pComp->Value(mkParAdapt(id_str, StdCompiler::RCT_Idtf));
@@ -175,7 +175,7 @@ namespace
 			pComp->Value(mkContextPtrAdapt(svp, *id, false));
 			pComp->Separator(StdCompiler::SEP_END);
 
-			if(pComp->isCompiler())
+			if(pComp->isDeserializer())
 				*ValueProvider = svp;
 		}
 	};
@@ -185,7 +185,7 @@ namespace
 	void CompileFloat(StdCompiler* pComp, float& f)
 	{
 		// TODO: Teach StdCompiler how to handle float
-		if(pComp->isCompiler())
+		if(pComp->isDeserializer())
 		{
 			C4Real r;
 			pComp->Value(r);
@@ -763,7 +763,7 @@ void StdSubMeshInstance::SetFaceOrderingForClrModulation(StdMeshInstance& instan
 void StdSubMeshInstance::CompileFunc(StdCompiler* pComp)
 {
 	// TODO: We should also serialize the texture animation positions
-	if(pComp->isCompiler())
+	if(pComp->isDeserializer())
 	{
 		StdCopyStrBuf material_name;
 		pComp->Value(mkNamingAdapt(material_name, "Material"));
@@ -889,7 +889,7 @@ void StdMeshInstanceAnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh
 	switch(Type)
 	{
 	case LeafNode:
-		if(pComp->isCompiler())
+		if(pComp->isDeserializer())
 		{
 			StdCopyStrBuf anim_name;
 			pComp->Value(mkNamingAdapt(toC4CStrBuf(anim_name), "Animation"));
@@ -904,7 +904,7 @@ void StdMeshInstanceAnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh
 		pComp->Value(mkNamingAdapt(mkValueProviderAdapt(&Leaf.Position), "Position"));
 		break;
 	case CustomNode:
-		if(pComp->isCompiler())
+		if(pComp->isDeserializer())
 		{
 			StdCopyStrBuf bone_name;
 			pComp->Value(mkNamingAdapt(toC4CStrBuf(bone_name), "Bone"));
@@ -924,7 +924,7 @@ void StdMeshInstanceAnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh
 		pComp->Value(mkParAdapt(mkNamingPtrAdapt(LinearInterpolation.ChildLeft, "ChildLeft"), Mesh));
 		pComp->Value(mkParAdapt(mkNamingPtrAdapt(LinearInterpolation.ChildRight, "ChildRight"), Mesh));
 		pComp->Value(mkNamingAdapt(mkValueProviderAdapt(&LinearInterpolation.Weight), "Weight"));
-		if(pComp->isCompiler())
+		if(pComp->isDeserializer())
 		{
 			if(LinearInterpolation.ChildLeft->Slot != Slot)
 				pComp->excCorrupt("Slot of left child does not match parent slot");
@@ -1029,7 +1029,7 @@ void StdMeshInstance::AttachedMesh::SetAttachTransformation(const StdMeshMatrix&
 
 void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory)
 {
-	if(pComp->isCompiler())
+	if(pComp->isDeserializer())
 	{
 		FinalTransformDirty = true;
 		ChildDenumerator = Factory();
@@ -1049,7 +1049,7 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 
 	uint8_t dwSyncFlags = static_cast<uint8_t>(Flags);
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, AM_Entries), "Flags", 0u));
-	if(pComp->isCompiler()) Flags = dwSyncFlags;
+	if(pComp->isDeserializer()) Flags = dwSyncFlags;
 
 	pComp->Value(mkParAdapt(*ChildDenumerator, this));
 }
@@ -1591,7 +1591,7 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 
 void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory)
 {
-	if(pComp->isCompiler())
+	if(pComp->isDeserializer())
 	{
 		// Only initially created instances can be compiled
 		assert(!AttachParent);

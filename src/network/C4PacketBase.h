@@ -54,13 +54,13 @@ struct C4NetFilenameAdapt
 		pComp->Value(FileName);
 #else
 		StdCopyStrBuf FileName2;
-		if (pComp->isDecompiler() && FileName)
+		if (pComp->isSerializer() && FileName)
 		{
 			FileName2.Copy(FileName);
 			SReplaceChar(FileName2.getMData(),DirectorySeparator,'\\');
 		}
 		pComp->Value(FileName2);
-		if (pComp->isCompiler())
+		if (pComp->isDeserializer())
 		{
 			FileName.Take(FileName2);
 			SReplaceChar(FileName.getMData(),'\\',DirectorySeparator);

@@ -124,7 +124,7 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 	uint32_t tmp = iSize; pComp->Value(mkIntPackAdapt(tmp)); iSize = tmp;
 	pComp->Separator(StdCompiler::SEP_PART2);
 	// Read/write data
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		New(iSize);
 		pComp->Raw(getMData(), iSize, StdCompiler::RawCompileType(iType));
@@ -260,7 +260,7 @@ void StdStrBuf::AppendBackslash()
 
 void StdStrBuf::CompileFunc(StdCompiler *pComp, int iRawType)
 {
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		char *pnData;
 		pComp->String(&pnData, StdCompiler::RawCompileType(iRawType));

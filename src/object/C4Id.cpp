@@ -53,7 +53,7 @@ void C4ID::assign(const std::string &s)
 
 void C4ID::CompileFunc(StdCompiler *pComp)
 {
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		assert(v < names.size());
 		pComp->String(&names[v][0], names[v].size(), StdCompiler::RCT_ID);

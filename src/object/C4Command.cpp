@@ -1890,7 +1890,7 @@ void C4Command::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	}
 	// Text
 	StdStrBuf TextBuf;
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		if (Text)
 			TextBuf.Ref(Text->GetData());
@@ -1898,7 +1898,7 @@ void C4Command::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			TextBuf.Ref("0");
 	}
 	pComp->Value(mkParAdapt(TextBuf, StdCompiler::RCT_All));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		if (Text)
 			Text->DecRef();

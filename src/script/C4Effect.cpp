@@ -529,7 +529,7 @@ void C4Effect::TempReaddUpperEffects(C4Effect *pLastReaddEffect)
 
 void C4Effect::CompileFunc(StdCompiler *pComp, C4PropList * Owner, C4ValueNumbers * numbers)
 {
-	if (pComp->isCompiler()) Target = Owner;
+	if (pComp->isDeserializer()) Target = Owner;
 	// read name
 	pComp->Separator(StdCompiler::SEP_START); // '('
 	// read priority
@@ -541,14 +541,14 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4PropList * Owner, C4ValueNumber
 	// FIXME: replace with this when savegame compat breaks for other reasons
 	// pComp->Value(mkParAdapt(CommandTarget, numbers));
 	int32_t nptr = 0;
-	if (!pComp->isCompiler() && CommandTarget.getPropList() && CommandTarget._getPropList()->GetPropListNumbered())
+	if (!pComp->isDeserializer() && CommandTarget.getPropList() && CommandTarget._getPropList()->GetPropListNumbered())
 		nptr = CommandTarget._getPropList()->GetPropListNumbered()->Number;
 	pComp->Value(nptr);
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 		CommandTarget.SetObjectEnum(nptr);
 	pComp->Separator();
 	// read ID
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		const C4PropListStatic * p = CommandTarget.getPropList() ? CommandTarget._getPropList()->IsStatic() : nullptr;
 		if (p)
@@ -573,7 +573,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4PropList * Owner, C4ValueNumber
 	bool fNext = !! pNext;
 	if (pComp->hasNaming())
 	{
-		if (fNext || pComp->isCompiler())
+		if (fNext || pComp->isDeserializer())
 			fNext = pComp->Separator();
 	}
 	else

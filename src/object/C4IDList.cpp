@@ -471,10 +471,10 @@ bool C4IDList::operator==(const C4IDList& rhs) const
 void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 {
 	// Get compiler characteristics
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	bool fNaming = pComp->hasNaming();
 	// Compiling: Clear existing data first
-	if (fCompiler) Clear();
+	if (deserializing) Clear();
 	// Start
 	C4IDListChunk *pChunk = this;
 	size_t iNr = 0, iCNr = 0;
@@ -486,7 +486,7 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 	for (;;)
 	{
 		// Prepare compiling of single mapping
-		if (!fCompiler)
+		if (!deserializing)
 		{
 			// End of list?
 			if (iNr >= Count) break;
@@ -522,11 +522,11 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
 				// Count
 				pComp->Value(mkDefaultAdapt(pChunk->Count[iCNr], 0));
 		}
-		else if (fCompiler)
+		else if (deserializing)
 			pChunk->Count[iCNr] = 0;
 		// Goto next entry
 		iNr++; iCNr++;
 		// Save back count
-		if (fCompiler && fNaming) Count = iNr;
+		if (deserializing && fNaming) Count = iNr;
 	}
 }

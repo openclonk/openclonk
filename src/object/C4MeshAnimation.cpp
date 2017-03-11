@@ -208,7 +208,7 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	// Game.FrameCounter and to make sure that the Value is always up to
 	// date (current frame) when saving by running Execute(). This could
 	// even be done in the base class.
-	if(pComp->isCompiler())
+	if(pComp->isDeserializer())
 		if(LastTick > Game.FrameCounter)
 			LastTick = 0;
 }

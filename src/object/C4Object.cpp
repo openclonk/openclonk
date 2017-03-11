@@ -2172,13 +2172,13 @@ void C4Object::DrawLine(C4TargetFacet &cgo, int32_t at_player)
 
 void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler)
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing)
 		Clear();
 
 	// Compile ID, search definition
 	pComp->Value(mkNamingAdapt(id,                  "id",                 C4ID::None          ));
-	if (fCompiler)
+	if (deserializing)
 	{
 		Def = ::Definitions.ID2Def(id);
 		if (!Def)
@@ -2239,7 +2239,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// Serialize mesh instance if we have a mesh graphics
 	if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 	{
-		if(pComp->isCompiler())
+		if(pComp->isDeserializer())
 		{
 			assert(!pMeshInstance);
 			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
@@ -2259,7 +2259,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// Commands
 	if (pComp->FollowName("Commands"))
 	{
-		if (fCompiler)
+		if (deserializing)
 		{
 			C4Command *pCmd = nullptr;
 			for (int i = 1; ; i++)
@@ -2286,7 +2286,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	}
 
 	// Compiling? Do initialization.
-	if (fCompiler)
+	if (deserializing)
 	{
 		// add to def count
 		Def->Count++;

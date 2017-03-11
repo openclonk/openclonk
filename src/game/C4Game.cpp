@@ -1711,7 +1711,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		if (comp.init_mode == IM_Normal)
 		{
 			pComp->Name("GUI");
-			if (pComp->isCompiler())
+			if (pComp->isDeserializer())
 			{
 				C4Value val;
 				pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "ScriptGUIs", C4VNull));
@@ -1736,7 +1736,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 
 	if (comp.fPlayers)
 	{
-		assert(pComp->isDecompiler());
+		assert(pComp->isSerializer());
 		// player parsing: Parse all players
 		// This doesn't create any players, but just parses existing by their ID
 		// Primary player ininitialization (also setting ID) is done by player info list

@@ -30,7 +30,7 @@ template <class T> struct unpack_class
 {
 	static C4PacketBase *unpack(StdCompiler *pComp)
 	{
-		assert(pComp->isCompiler());
+		assert(pComp->isDeserializer());
 		T *pPkt = new T();
 		try
 		{
@@ -243,7 +243,7 @@ void C4IDPacket::CompileFunc(StdCompiler *pComp)
 	// Packet ID
 	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eID), "ID", PID_None));
 	// Compiling or Decompiling?
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		if (!pComp->Name(getPktName()))
 			{ pComp->excCorrupt("C4IDPacket: Data value needed! Packet data missing!"); return; }
@@ -368,7 +368,7 @@ void C4PacketList::Delete(C4IDPacket *pPkt)
 void C4PacketList::CompileFunc(StdCompiler *pComp)
 {
 	// unpack packets
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// Read until no further sections available
 		while (pComp->Name("IDPacket"))

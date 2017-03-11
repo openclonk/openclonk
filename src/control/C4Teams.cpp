@@ -125,12 +125,12 @@ int32_t C4Team::GetFirstUnjoinedPlayerID() const
 
 void C4Team::CompileFunc(StdCompiler *pComp)
 {
-	if (pComp->isCompiler()) Clear();
+	if (pComp->isDeserializer()) Clear();
 	pComp->Value(mkNamingAdapt(iID,                  "id",             0));
 	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Name), "Name",          ""));
 	pComp->Value(mkNamingAdapt(iPlrStartIndex,       "PlrStartIndex",  0));
 	pComp->Value(mkNamingAdapt(iPlayerCount,         "PlayerCount", 0));
-	if (pComp->isCompiler()) { delete [] piPlayers; piPlayers = new int32_t [iPlayerCapacity = iPlayerCount]; ZeroMem(piPlayers, sizeof(*piPlayers) * iPlayerCount); }
+	if (pComp->isDeserializer()) { delete [] piPlayers; piPlayers = new int32_t [iPlayerCapacity = iPlayerCount]; ZeroMem(piPlayers, sizeof(*piPlayers) * iPlayerCount); }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(piPlayers, iPlayerCount, -1), "Players"));
 	pComp->Value(mkNamingAdapt(dwClr,                "Color",        0u));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sIconSpec, StdCompiler::RCT_All),
@@ -545,7 +545,7 @@ bool C4TeamList::IsJoin2TeamAllowed(int32_t idTeam, C4PlayerType plrType)
 
 void C4TeamList::CompileFunc(StdCompiler *pComp)
 {
-	// if (pComp->isCompiler()) Clear(); - do not clear, because this would corrupt  the fCustom-flag
+	// if (pComp->isDeserializer()) Clear(); - do not clear, because this would corrupt  the fCustom-flag
 	pComp->Value(mkNamingAdapt(fActive,               "Active",               true));
 	pComp->Value(mkNamingAdapt(fCustom,               "Custom",               true));
 	pComp->Value(mkNamingAdapt(fAllowHostilityChange, "AllowHostilityChange", false));
@@ -570,7 +570,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 	int32_t iOldTeamCount = iTeamCount;
 	pComp->Value(mkNamingCountAdapt(iTeamCount,  "Team"));
 
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		while (iOldTeamCount--) delete ppList[iOldTeamCount];
 		delete [] ppList;
@@ -593,7 +593,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 		               "Team"));
 	}
 
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// adjust last team ID, which may not be set properly for player-generated team files
 		iLastTeamID = std::max(GetLargestTeamID(), iLastTeamID);

@@ -127,7 +127,7 @@ void C4PlayerControlDefs::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
 	pComp->Value(mkSTLContainerAdapt(Defs, StdCompiler::SEP_NONE));
-	if (pComp->isCompiler()) UpdateInternalCons();
+	if (pComp->isDeserializer()) UpdateInternalCons();
 }
 
 void C4PlayerControlDefs::MergeFrom(const C4PlayerControlDefs &Src)
@@ -188,7 +188,7 @@ void C4PlayerControlDefs::FinalInit()
 void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 {
 	// if key is compiled, also store as a string into KeyName for later resolving
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		Key.dwShift = 0;
 		sKeyName.Clear();
@@ -235,7 +235,7 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(fOverrideAssignments, "OverrideAssignments", false));
 	pComp->NameEnd();
 	// newly loaded structures are not resolved
-	if (pComp->isCompiler()) fRefsResolved = false;
+	if (pComp->isDeserializer()) fRefsResolved = false;
 }
 
 void C4PlayerControlAssignment::ResetKeyToInherited()
@@ -731,7 +731,7 @@ void C4PlayerControlAssignmentSets::Clear()
 
 void C4PlayerControlAssignmentSets::CompileFunc(StdCompiler *pComp)
 {
-	if (pComp->isDecompiler() && pComp->isRegistry())
+	if (pComp->isSerializer() && pComp->isRegistry())
 	{
 		pComp->Default("ControlSets"); // special registry compiler: Clean out everything before
 	}

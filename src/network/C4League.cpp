@@ -261,7 +261,7 @@ public:
 
 	void CompileFunc(StdCompiler *pComp)
 	{
-		if (pComp->isCompiler())
+		if (pComp->isDeserializer())
 		{
 			// compiling not yet needed
 			assert(!"DisconnectData::CompileFunc not defined for compiler!");

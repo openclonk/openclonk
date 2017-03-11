@@ -93,15 +93,15 @@ void C4GameRes::SetNetRes(C4Network2Res::Ref pnNetRes)
 
 void C4GameRes::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	// Clear previous data for compiling
-	if (fCompiler) Clear();
+	if (deserializing) Clear();
 	// Core is needed to decompile something meaningful
-	if (!fCompiler) assert(pResCore);
+	if (!deserializing) assert(pResCore);
 	// De-/Compile core
 	pComp->Value(mkPtrAdaptNoNull(const_cast<C4Network2ResCore * &>(pResCore)));
 	// Compile: Set type accordingly
-	if (fCompiler)
+	if (deserializing)
 		eType = pResCore->getType();
 }
 
@@ -351,13 +351,13 @@ void C4GameResList::Add(C4GameRes *pRes)
 
 void C4GameResList::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	// Clear previous data
-	if (fCompiler) Clear();
+	if (deserializing) Clear();
 	// Compile resource count
 	pComp->Value(mkNamingCountAdapt(iResCount, "Resource"));
 	// Create list
-	if (fCompiler)
+	if (deserializing)
 	{
 		pResList = new C4GameRes *[iResCapacity = iResCount];
 		ZeroMem(pResList, sizeof(*pResList) * iResCount);

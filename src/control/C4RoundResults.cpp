@@ -146,14 +146,14 @@ void C4RoundResultsPlayers::Clear()
 
 void C4RoundResultsPlayers::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	int32_t iTemp = iPlayerCount;
 	pComp->Value(mkNamingCountAdapt<int32_t>(iTemp, "Player"));
 	if (iTemp < 0 || iTemp > C4MaxPlayer)
 		{ pComp->excCorrupt("player count out of range"); return; }
 	// Grow list, if necessary
-	if (fCompiler && iTemp > iPlayerCapacity)
+	if (deserializing && iTemp > iPlayerCapacity)
 	{
 		GrowList(iTemp - iPlayerCapacity);
 		iPlayerCount = iTemp;
@@ -261,8 +261,8 @@ void C4RoundResults::Init()
 
 void C4RoundResults::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	pComp->Value(mkNamingAdapt(Goals, "Goals", C4IDList()));
 	pComp->Value(mkNamingAdapt(iPlayingTime, "PlayingTime", 0u));
 	pComp->Value(mkNamingAdapt(fHideSettlementScore, "HideSettlementScore", Game.C4S.Game.IsMelee()));

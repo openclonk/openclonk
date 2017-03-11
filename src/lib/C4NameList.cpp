@@ -71,9 +71,9 @@ bool C4NameList::IsEmpty()
 
 void C4NameList::CompileFunc(StdCompiler *pComp, bool fValues)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	for (int32_t cnt=0; cnt<C4MaxNameList; cnt++)
-		if (fCompiler || Name[cnt][0])
+		if (deserializing || Name[cnt][0])
 		{
 			if (cnt) pComp->Separator(StdCompiler::SEP_SEP2);
 			// Name

@@ -24,7 +24,7 @@ const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFac
 
 void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach)
 {
-	if(pComp->isCompiler())
+	if(pComp->isDeserializer())
 	{
 		int32_t def;
 		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));

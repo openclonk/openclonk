@@ -167,7 +167,7 @@ void C4Client::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(Core);
 	// Assume this is a non-local client
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 		fLocal = false;
 }
 
@@ -410,13 +410,13 @@ C4ClientList &C4ClientList::operator =(const C4ClientList &List)
 void C4ClientList::CompileFunc(StdCompiler *pComp)
 {
 	// Clear existing data
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	// Client count
 	uint32_t iClientCnt = getClientCnt();
 	pComp->Value(mkNamingCountAdapt(iClientCnt, "Client"));
 	// Compile all clients
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 		for (uint32_t i = 0; i < iClientCnt; i++)
 		{
 			C4Client *pClient = new C4Client();

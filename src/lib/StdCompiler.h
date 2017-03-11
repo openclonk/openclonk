@@ -60,8 +60,8 @@ public:
 	virtual bool isDoublePass()                   { return false; }
 
 	// Changes the target?
-	virtual bool isCompiler()                     { return false; }
-	inline  bool isDecompiler()                   { return !isCompiler(); }
+	virtual bool isDeserializer()                 { return false; }
+	inline  bool isSerializer()                   { return !isDeserializer(); }
 
 	// Does the compiler support naming, so values can be omitted without harm to
 	// the data structure? Is separation implemented?
@@ -181,12 +181,12 @@ public:
 	// Compiling/Decompiling (may throw a data format exception!)
 	template <class T> inline void Compile(T &&rStruct)
 	{
-		assert(isCompiler());
+		assert(isDeserializer());
 		DoCompilation(rStruct);
 	}
 	template <class T> inline void Decompile(const T &rStruct)
 	{
-		assert(!isCompiler());
+		assert(!isDeserializer());
 		DoCompilation(const_cast<T &>(rStruct));
 	}
 
@@ -416,7 +416,7 @@ class StdCompilerNull : public StdCompiler
 public:
 
 	// Properties
-	virtual bool isCompiler()                     { return true; }
+	virtual bool isDeserializer()                 { return true; }
 	virtual bool hasNaming()                      { return true; }
 
 	// Naming
@@ -493,7 +493,7 @@ public:
 	void setInput(InT &&In) { Buf = std::move(In); }
 
 	// Properties
-	virtual bool isCompiler()                     { return true; }
+	virtual bool isDeserializer()                 { return true; }
 
 	// Data readers
 	virtual void DWord(int32_t &rInt);
@@ -629,7 +629,7 @@ public:
 	void setInput(const InT &In) { Buf.Ref(In); lineBreaks.clear(); }
 
 	// Properties
-	virtual bool isCompiler() { return true; }
+	virtual bool isDeserializer() { return true; }
 	virtual bool hasNaming() { return true; }
 
 	// Naming

@@ -281,7 +281,7 @@ void C4ValueArray::CompileFunc(class StdCompiler *pComp, C4ValueNumbers * number
 	// Separator
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	// Allocate
-	if (pComp->isCompiler()) this->SetSize(inSize);
+	if (pComp->isDeserializer()) this->SetSize(inSize);
 	// Values
 	pComp->Value(mkArrayAdaptMap(pData, iSize, C4Value(), mkParAdaptMaker(numbers)));
 }

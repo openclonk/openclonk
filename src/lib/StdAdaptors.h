@@ -102,7 +102,7 @@ struct StdNamingDefaultAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		// Default check
-		if (pComp->hasNaming() && pComp->isDecompiler() && rValue == rDefault && !fStoreDefault)
+		if (pComp->hasNaming() && pComp->isSerializer() && rValue == rDefault && !fStoreDefault)
 		{
 			if (pComp->Default(szName)) return;
 		}
@@ -111,7 +111,7 @@ struct StdNamingDefaultAdapt
 			// Search named section, set default if not found
 			if (pComp->Name(szName))
 			{
-				if (fPrefillDefault && pComp->isCompiler()) rValue = rDefault; // default prefill if desired
+				if (fPrefillDefault && pComp->isDeserializer()) rValue = rDefault; // default prefill if desired
 				pComp->Value(mkDefaultAdapt(rValue, rDefault));
 			}
 			else
@@ -138,7 +138,7 @@ struct StdDecompileAdapt
 	explicit StdDecompileAdapt(const T &rValue) : rValue(rValue) { }
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
-		assert(pComp->isDecompiler());
+		assert(pComp->isSerializer());
 		pComp->Value(const_cast<T &>(rValue));
 	}
 	
@@ -146,7 +146,7 @@ struct StdDecompileAdapt
 	template<typename ... P>
 	inline void CompileFunc(StdCompiler* pComp, P && ... pars) const
 	{
-		assert(pComp->isDecompiler());
+		assert(pComp->isSerializer());
 		pComp->Value(mkParAdapt(const_cast<T &>(rValue), std::forward<P>(pars)...));
 	}
 };
@@ -323,9 +323,9 @@ struct StdArrayDefaultAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		size_t i, iWrite = iSize;
-		bool fCompiler = pComp->isCompiler();
+		bool deserializing = pComp->isDeserializer();
 		// Decompiling: Omit defaults
-		if (!fCompiler && pComp->hasNaming())
+		if (!deserializing && pComp->hasNaming())
 			while (iWrite > 0 && pArray[iWrite - 1] == rDefault)
 				iWrite--;
 		// Read/write values
@@ -337,7 +337,7 @@ struct StdArrayDefaultAdapt
 			pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault));
 		}
 		// Fill rest of array
-		if (fCompiler)
+		if (deserializing)
 			for (; i < iSize; i++)
 				pArray[i] = rDefault;
 	}
@@ -375,9 +375,9 @@ struct StdArrayDefaultArrayAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		size_t i, iWrite = iSize;
-		bool fCompiler = pComp->isCompiler();
+		bool deserializing = pComp->isDeserializer();
 		// Decompiling: Omit defaults
-		if (!fCompiler && pComp->hasNaming())
+		if (!deserializing && pComp->hasNaming())
 			while (iWrite > 0 && pArray[iWrite - 1] == rDefault[iWrite - 1])
 				iWrite--;
 		// Read/write values
@@ -389,7 +389,7 @@ struct StdArrayDefaultArrayAdapt
 			pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault[i]));
 		}
 		// Fill rest of array
-		if (fCompiler)
+		if (deserializing)
 			for (; i < iSize; i++)
 				pArray[i] = rDefault[i];
 	}
@@ -549,18 +549,18 @@ struct StdContextPtrAdapt: StdBasicPtrAdapt<T>
 template <class T, typename ... P>
 void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, P && ...pars)
 {
-	bool fCompiler = pComp->isCompiler(),
+	bool deserializing = pComp->isDeserializer(),
 		fNaming = pComp->hasNaming();
 	// Compiling? Clear object before
-	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = nullptr; }
+	if(deserializing) { delete adapt.rpObj; adapt.rpObj = nullptr; }
 	// Null checks - different with naming support.
 	if(adapt.fAllowNull)
 		if(fNaming)
 		{
 			// Null check: just omit when writing
-			if(!fCompiler && !adapt.rpObj) return;
+			if(!deserializing && !adapt.rpObj) return;
 			// Set up naming
-			if(!pComp->Name(adapt.szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
+			if(!pComp->Name(adapt.szNaming)) { assert(deserializing); pComp->NameEnd(); return; }
 		}
 		else
 		{
@@ -569,10 +569,10 @@ void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, P && ...pars)
 			// Null? Nothing further to do
 			if(fNull) return;
 		}
-	else if(!fCompiler)
+	else if(!deserializing)
 		assert(adapt.rpObj);
 	// Compile value
-	if(fCompiler)
+	if(deserializing)
 		StdPtrAdaptCompileNewFunc(adapt, pComp, std::forward<P>(pars)...);
 	else
 		StdPtrAdaptDecompileNewFunc(adapt, pComp, std::forward<P>(pars)...);
@@ -623,10 +623,10 @@ struct StdSTLContainerAdapt
 	{
 		typedef typename C::value_type T;
 		// Get compiler specs
-		bool fCompiler = pComp->isCompiler();
+		bool deserializing = pComp->isDeserializer();
 		bool fNaming = pComp->hasNaming();
 		// Decompiling?
-		if (!fCompiler)
+		if (!deserializing)
 		{
 			// Write size (binary only)
 			if (!fNaming)
@@ -711,7 +711,7 @@ struct StdIntPackAdapt
 		}
 		T val; uint8_t tmp;
 		// writing?
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			val = rVal;
 			for (;;)
@@ -782,7 +782,7 @@ struct StdEnumAdapt
 			return;
 		}
 		// writing?
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			// Find value
 			const Entry *pName = pNames;
@@ -869,7 +869,7 @@ struct StdBitfieldAdapt
 			return;
 		}
 		// writing?
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			T val = rVal, orig_val = rVal;
 			// Write until value is comsumed
@@ -963,7 +963,7 @@ struct StdNamingCountAdapt
 	{
 		if (pComp->hasNaming())
 		{
-			if (pComp->isCompiler())
+			if (pComp->isDeserializer())
 				iCount = pComp->NameCount(szName);
 		}
 		else
@@ -984,13 +984,13 @@ public:
 	{
 		if (!pComp->isVerbose())
 			pComp->Raw(pData, iSize);
-		char szData[2+1]; bool fCompiler = pComp->isCompiler();
+		char szData[2+1]; bool deserializing = pComp->isDeserializer();
 		for (size_t i = 0; i < iSize; i++)
 		{
 			uint8_t *pByte = reinterpret_cast<uint8_t *>(pData) + i;
-			if (!fCompiler) sprintf(szData, "%02x", *pByte);
+			if (!deserializing) sprintf(szData, "%02x", *pByte);
 			pComp->String(szData, 2, StdCompiler::RCT_Idtf);
-			if (fCompiler)
+			if (deserializing)
 			{
 				unsigned int b;
 				if (sscanf(szData, "%02x", &b) != 1)

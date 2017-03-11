@@ -183,7 +183,7 @@ void C4PropListNumbered::CompileFunc(StdCompiler *pComp, C4ValueNumbers * number
 	pComp->Value(n);
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	C4PropList::CompileFunc(pComp, numbers);
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		if (PropLists.Get(n))
 		{
@@ -239,7 +239,7 @@ void C4PropListScript::ClearScriptPropLists()
 
 void C4PropListStatic::RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const
 {
-	assert(!pComp->isCompiler());
+	assert(!pComp->isDeserializer());
 	if (Parent)
 	{
 		Parent->RefCompileFunc(pComp, numbers);
@@ -378,7 +378,7 @@ void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	bool oldFormat = false;
 	// constant proplists are not serialized to savegames, but recreated from the game data instead
 	assert(!constant);
-	if (pComp->isCompiler() && pComp->hasNaming())
+	if (pComp->isDeserializer() && pComp->hasNaming())
 	{
 		// backwards compat to savegames and scenarios before 5.5
 		try
@@ -428,7 +428,7 @@ template<typename T>
 void C4Set<T>::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fNaming = pComp->hasNaming();
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// Compiling: Empty previous
 		Clear();
@@ -481,10 +481,10 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	StdStrBuf s;
-	if (!pComp->isCompiler())
+	if (!pComp->isDeserializer())
 		s = Key->GetData();
 	pComp->Value(s);
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		if (Key) Key->DecRef();
 		Key = ::Strings.RegString(s);

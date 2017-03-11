@@ -481,14 +481,14 @@ bool C4Facet::GetPhaseNum(int32_t &rX, int32_t &rY)
 
 void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	int i;
 	// hacky. StdCompiler doesn't allow floats to be safed directly.
 	for (i = 0; i < 6; i++)
 	{
 		if (i) pComp->Separator();
 		StdStrBuf val;
-		if (!fCompiler)
+		if (!deserializing)
 		{
 #ifdef WITH_GLIB
 			val.SetLength(G_ASCII_DTOSTR_BUF_SIZE);
@@ -499,7 +499,7 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 #endif
 		}
 		pComp->Value(mkParAdapt(val, StdCompiler::RCT_Idtf));
-		if (fCompiler && pComp->hasNaming())
+		if (deserializing && pComp->hasNaming())
 			if (pComp->Separator(StdCompiler::SEP_PART))
 			{
 				StdStrBuf val2;
@@ -509,12 +509,12 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 #ifdef WITH_GLIB
 		mat[i] = g_ascii_strtod (val.getData(), nullptr);
 #else
-		if (fCompiler) sscanf(val.getData(), "%g", &mat[i]);
+		if (deserializing) sscanf(val.getData(), "%g", &mat[i]);
 #endif
 	}
 	pComp->Separator();
 	pComp->Value(FlipDir);
-	if (!fCompiler && mat[6] == 0 && mat[7] == 0 && mat[8] == 1) return;
+	if (!deserializing && mat[6] == 0 && mat[7] == 0 && mat[8] == 1) return;
 	// because of backwards-compatibility, the last row comes after flipdir
 	for (i = 6; i < 9; ++i)
 	{
@@ -524,16 +524,16 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 		}
 		else
 		{
-			StdStrBuf val; if (!fCompiler) val.Format("%g", mat[i]);
+			StdStrBuf val; if (!deserializing) val.Format("%g", mat[i]);
 			pComp->Value(mkParAdapt(val, StdCompiler::RCT_Idtf));
-			if (fCompiler && pComp->hasNaming())
+			if (deserializing && pComp->hasNaming())
 				if (pComp->Separator(StdCompiler::SEP_PART))
 				{
 					StdStrBuf val2;
 					pComp->Value(mkParAdapt(val2, StdCompiler::RCT_Idtf));
 					val.AppendChar('.'); val.Append(val2);
 				}
-			if (fCompiler) sscanf(val.getData(), "%g", &mat[i]);
+			if (deserializing) sscanf(val.getData(), "%g", &mat[i]);
 		}
 	}
 }

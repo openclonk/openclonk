@@ -29,7 +29,7 @@
 void C4Network2Address::CompileFunc(StdCompiler *pComp)
 {
 	// Clear
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		addr.Clear();
 	}

@@ -322,8 +322,8 @@ int32_t C4Network2ResChunkData::getPresentChunk(int32_t iNr) const
 
 void C4Network2ResChunkData::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	// Data
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iChunkCnt), "ChunkCnt", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iChunkRangeCnt), "ChunkRangeCnt", 0));
@@ -334,7 +334,7 @@ void C4Network2ResChunkData::CompileFunc(StdCompiler *pComp)
 	for (int32_t i = 0; i < iChunkRangeCnt; i++)
 	{
 		// Create new range / go to next range
-		if (fCompiler)
+		if (deserializing)
 			pRange = (pRange ? pRange->Next : pChunkRanges) = new ChunkRange;
 		else
 			pRange = pRange ? pRange->Next : pChunkRanges;
@@ -346,7 +346,7 @@ void C4Network2ResChunkData::CompileFunc(StdCompiler *pComp)
 		pComp->Value(mkIntPackAdapt(pRange->Length));
 	}
 	// Terminate list
-	if (fCompiler)
+	if (deserializing)
 		(pRange ? pRange->Next : pChunkRanges) = nullptr;
 	pComp->NameEnd();
 }

@@ -55,7 +55,7 @@ const ReactionFuncMapEntry ReactionFuncMap[] =
 
 void C4MaterialReaction::CompileFunc(StdCompiler *pComp)
 {
-	if (pComp->isCompiler()) pScriptFunc = nullptr;
+	if (pComp->isDeserializer()) pScriptFunc = nullptr;
 	// compile reaction func ptr
 	StdStrBuf sReactionFuncName;
 	int32_t i=0; while (ReactionFuncMap[i].szRFName && (ReactionFuncMap[i].pFunc != pFunc)) ++i;
@@ -184,7 +184,7 @@ bool C4MaterialCore::Load(C4Group &hGroup,
 void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 {
 	assert(pComp->hasNaming());
-	if (pComp->isCompiler()) Clear();
+	if (pComp->isDeserializer()) Clear();
 	pComp->Name("Material");
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),      "Name",                ""));
 
@@ -215,7 +215,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MaxSlide,            "MaxSlide",            0));
 	pComp->Value(mkNamingAdapt(WindDrift,           "WindDrift",           0));
 	pComp->Value(mkNamingAdapt(Inflammable,         "Inflammable",         0));
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// The value used to have a wrong spelling ("Incindiary"). If there's
 		// no "Incendiary" value, use the wrong spelling instead

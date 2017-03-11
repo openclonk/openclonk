@@ -302,9 +302,9 @@ uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
 void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Type
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	char cC4VID;
-	if (!fCompiler)
+	if (!deserializing)
 	{
 		assert(Type != C4V_Nil || !Data);
 		switch (Type)
@@ -351,10 +351,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 
 	case 'E':
-		if (!fCompiler)
+		if (!deserializing)
 			iTmp = numbers->GetNumberForValue(this);
 		pComp->Value(iTmp);
-		if (fCompiler)
+		if (deserializing)
 		{
 			Data.Int = iTmp; // must be denumerated later
 			Type = C4V_Enum;
@@ -362,10 +362,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 
 	case 'O':
-		if (!fCompiler)
+		if (!deserializing)
 			iTmp = getPropList()->GetPropListNumbered()->Number;
 		pComp->Value(iTmp);
-		if (fCompiler)
+		if (deserializing)
 		{
 			Data.Int = iTmp; // must be denumerated later
 			Type = C4V_C4ObjectEnum;
@@ -374,7 +374,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 	case 'D':
 	{
-		if (!pComp->isCompiler())
+		if (!pComp->isDeserializer())
 		{
 			const C4PropList * p = getPropList();
 			if (getFunction())
@@ -417,33 +417,33 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	case 's':
 	{
 		StdStrBuf s;
-		if (!fCompiler)
+		if (!deserializing)
 			s = Data.Str->GetData();
 		pComp->Value(s);
-		if (fCompiler)
+		if (deserializing)
 			SetString(::Strings.RegString(s));
 		break;
 	}
 
 	// FIXME: remove these three once Game.txt were re-saved with current version
 	case 'c':
-		if (fCompiler)
+		if (deserializing)
 			Set(GameScript.ScenPropList);
 		break;
 
 	case 't':
-		if (fCompiler)
+		if (deserializing)
 			Set(GameScript.ScenPrototype);
 		break;
 
 	case 'g':
-		if (fCompiler)
+		if (deserializing)
 			SetPropList(ScriptEngine.GetPropList());
 		break;
 
 	case 'n':
 	case 'A': // compat with OC 5.1
-		if (fCompiler)
+		if (deserializing)
 			Set0();
 		// doesn't have a value, so nothing to store
 		break;
@@ -458,13 +458,13 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
 {
 	// Type
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	char cC4VID;
 	switch(v->GetType())
 	{
 	case C4V_PropList: cC4VID = 'p'; break;
 	case C4V_Array:    cC4VID = 'a'; break;
-	default: assert(fCompiler); break;
+	default: assert(deserializing); break;
 	}
 	pComp->Character(cC4VID);
 	pComp->Separator(StdCompiler::SEP_START);
@@ -474,14 +474,14 @@ void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
 		{
 			C4PropList * p = v->_getPropList();
 			pComp->Value(mkParAdapt(mkPtrAdaptNoNull(p), this));
-			if (fCompiler) v->SetPropList(p);
+			if (deserializing) v->SetPropList(p);
 		}
 		break;
 	case 'a':
 		{
 			C4ValueArray * a = v->_getArray();
 			pComp->Value(mkParAdapt(mkPtrAdaptNoNull(a), this));
-			if (fCompiler) v->SetArray(a);
+			if (deserializing) v->SetArray(a);
 		}
 		break;
 	default:
@@ -493,9 +493,9 @@ void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
 
 void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	bool fNaming = pComp->hasNaming();
-	if (fCompiler)
+	if (deserializing)
 	{
 		uint32_t iSize;
 		if (!fNaming) pComp->Value(iSize);

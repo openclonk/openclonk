@@ -485,7 +485,7 @@ StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 
 void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 {
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// reading from file
 		StdStrBuf sCode;
@@ -903,7 +903,7 @@ void C4KeyboardInput::CompileFunc(StdCompiler *pComp)
 			C4CustomKey::CodeList OldCodes = i->second->GetCodes();
 			pComp->Value(*i->second);
 			// resort in secondary map if key changed
-			if (pComp->isCompiler())
+			if (pComp->isDeserializer())
 			{
 				const C4CustomKey::CodeList &rNewCodes = i->second->GetCodes();
 				if (!(OldCodes == rNewCodes)) UpdateKeyCodes(i->second, OldCodes, rNewCodes);

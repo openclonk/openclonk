@@ -831,7 +831,7 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(rb, "rb"));
 	pComp->Value(mkNamingAdapt(rc, "rc"));
 	pComp->Value(mkNamingAdapt(rd, "rd"));
-	if (pComp->isDecompiler())
+	if (pComp->isSerializer())
 	{
 		for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
 			pComp->Value(mkNamingAdapt(*beam, "Beam"));

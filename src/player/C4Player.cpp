@@ -1124,7 +1124,7 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(SoundModifier, numbers), "SoundModifier", C4Value()));
 	
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		SoundModifier.Denumerate(numbers);
 	}
@@ -1772,7 +1772,7 @@ bool C4Player::ActivateMenuMain()
 void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
 {
 	int entries = size();
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		clear();
 		pComp->Value(entries);

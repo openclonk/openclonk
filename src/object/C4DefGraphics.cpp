@@ -390,20 +390,20 @@ void C4DefGraphics::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)
 
 void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
+	bool deserializing = pComp->isDeserializer();
 	// nothing?
-	if (!fCompiler && !pDefGraphics) return;
+	if (!deserializing && !pDefGraphics) return;
 	// definition
-	C4ID id; if (!fCompiler) id = pDefGraphics->pDef->id;
+	C4ID id; if (!deserializing) id = pDefGraphics->pDef->id;
 	pComp->Value(id);
 	// go over two separators ("::"). Expect them if an id was found.
 	if (!pComp->Separator(StdCompiler::SEP_PART2) || !pComp->Separator(StdCompiler::SEP_PART2))
 		pComp->excCorrupt("DefGraphics: expected \"::\"");
 	// compile name
-	StdStrBuf Name; if (!fCompiler) Name = pDefGraphics->GetName();
+	StdStrBuf Name; if (!deserializing) Name = pDefGraphics->GetName();
 	pComp->Value(mkDefaultAdapt(mkParAdapt(Name, StdCompiler::RCT_Idtf), ""));
 	// reading: search def-graphics
-	if (fCompiler)
+	if (deserializing)
 	{
 		// search definition, throw expection if not found
 		C4Def *pDef = ::Definitions.ID2Def(id);
@@ -867,15 +867,15 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 		pComp->Value(mkIntAdapt(dwClrModulation));
 	else
 		// default
-		if (pComp->isCompiler()) dwClrModulation = 0xffffff;
+		if (pComp->isDeserializer()) dwClrModulation = 0xffffff;
 	// read overlay target object
 	if (pComp->Separator())
 		pComp->Value(OverlayObj);
 	else
 		// default
-		if (pComp->isCompiler()) OverlayObj = nullptr;
+		if (pComp->isDeserializer()) OverlayObj = nullptr;
 	// update used facet according to read data
-	if (pComp->isCompiler()) UpdateFacet();
+	if (pComp->isDeserializer()) UpdateFacet();
 }
 
 void C4GraphicsOverlay::DenumeratePointers()
@@ -1121,7 +1121,7 @@ bool C4GraphicsOverlay::operator == (const C4GraphicsOverlay &rCmp) const
 void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)
 {
 	bool fNaming = pComp->hasNaming();
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		// clear list
 		delete [] pOverlay; pOverlay = nullptr;

@@ -407,7 +407,7 @@ void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(fIsAlt, "IsAlt", false));
 	pComp->Value(mkNamingAdapt(iObjCnt, "ObjCnt", 0));
 	// Compile array
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 		{ delete[] pObjNrs; pObjNrs = new int32_t [iObjCnt]; }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjNrs, iObjCnt), "Objs", 0));
 
@@ -1404,7 +1404,7 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ty, "ty", 0));
 	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iObjectNum), "ObjectNum", 0));
-	if (pComp->isCompiler()) { delete [] pObjects; pObjects = new int32_t [iObjectNum]; }
+	if (pComp->isDeserializer()) { delete [] pObjects; pObjects = new int32_t [iObjectNum]; }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjects, iObjectNum), "Objs", -1));
 	if (eAction == EMMO_Script)
 		pComp->Value(mkNamingAdapt(StringParam, "Script", ""));

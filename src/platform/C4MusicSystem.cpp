@@ -782,7 +782,7 @@ void C4MusicSystem::CompileFunc(StdCompiler *comp)
 	comp->Value(mkNamingAdapt(music_max_position_memory, "MusicMaxPositionMemory", DefaultMusicMaxPositionMemory));
 	// Wait time is not saved - begin savegame resume with a fresh song!
 	// Reflect loaded values immediately
-	if (comp->isCompiler())
+	if (comp->isDeserializer())
 	{
 		SetGameMusicLevel(game_music_level);
 		SetPlayList(playlist.getData());

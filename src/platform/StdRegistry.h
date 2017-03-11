@@ -117,7 +117,7 @@ public:
 	~StdCompilerConfigRead();
 
 	// Properties
-	virtual bool isCompiler() { return true; }
+	virtual bool isDeserializer() { return true; }
 	virtual bool hasNaming() { return true; }
 	virtual bool isRegistry() { return true; }
 

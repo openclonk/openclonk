@@ -60,7 +60,7 @@ template <class T> struct C4StrValAdapt
 	inline void CompileFunc(StdCompiler *pComp)
 	{
 		pComp->Value(rValue);
-		if (pComp->isCompiler()) C4InVal::ValidateString(rValue.GetObj(), eValType); // works on Par adapt only :(
+		if (pComp->isDeserializer()) C4InVal::ValidateString(rValue.GetObj(), eValType); // works on Par adapt only :(
 	}
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline C4StrValAdapt<T> &operator = (const D &nValue) { rValue = nValue; return *this; }
@@ -76,7 +76,7 @@ struct ValidatedStdCopyStrBufBase : public StdCopyStrBuf
 	inline void CompileFunc(StdCompiler *pComp, int iRawType = 0)
 	{
 		pComp->Value(mkParAdapt(static_cast<StdCopyStrBuf &>(*this), iRawType));
-		if (pComp->isCompiler()) Validate();
+		if (pComp->isDeserializer()) Validate();
 	}
 
 	virtual bool Validate() = 0;

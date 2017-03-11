@@ -1414,7 +1414,7 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(p->Modulation, "MatModulation", 0U));
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(p->mode), "Mode", LandscapeMode::Undefined));
 
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		int32_t ambient_brightness;
 		pComp->Value(mkNamingAdapt(ambient_brightness, "AmbientBrightness", 255));

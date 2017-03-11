@@ -209,7 +209,7 @@ void C4ScenarioParameters::SetValue(const char *id, int32_t value, bool only_if_
 void C4ScenarioParameters::CompileFunc(StdCompiler *pComp)
 {
 	// Unfortunately, StdCompiler cannot save std::map yet
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		Parameters.clear();
 		if (pComp->hasNaming())

@@ -199,7 +199,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	};
 	uint16_t dwSyncFlags = dwFlags & PIF_SyncFlags; // do not store local flags!
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, Entries), "Flags", 0u));
-	if (pComp->isCompiler()) dwFlags = dwSyncFlags;
+	if (pComp->isDeserializer()) dwFlags = dwSyncFlags;
 	pComp->Value(mkNamingAdapt(iID, "ID", 0));
 
 	// type
@@ -213,7 +213,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eType, PlayerTypes), "Type", C4PT_User));
 
 	// safety: Do not allow invisible regular players
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		if (eType != C4PT_Script) dwFlags &= ~PIF_Invisible;
 	}
@@ -256,7 +256,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(sLeagueProgressData, "LeagueProgressData", ""));
 
 	// file resource
-	if (pComp->isCompiler() && Game.C4S.Head.Replay)
+	if (pComp->isDeserializer() && Game.C4S.Head.Replay)
 	{
 		// Replays don't have player resources, drop the flag
 		dwFlags &= ~PIF_HasRes;
@@ -264,7 +264,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	if (dwFlags & PIF_HasRes)
 	{
 		// ResCore
-		if (pComp->isDecompiler() && pRes)
+		if (pComp->isSerializer() && pRes)
 		{
 			// ensure ResCore is up-to-date
 			ResCore = pRes->getCore();
@@ -639,8 +639,8 @@ int32_t C4ClientPlayerInfos::GetJoinedPlayerCount() const
 
 void C4ClientPlayerInfos::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	pComp->Value(mkNamingAdapt(iClientID, "ID", C4ClientIDUnknown));
 
 	// Flags
@@ -659,7 +659,7 @@ void C4ClientPlayerInfos::CompileFunc(StdCompiler *pComp)
 	if (iPlayerCount < 0 || iPlayerCount > C4MaxPlayer)
 		{ pComp->excCorrupt("player count out of range"); return; }
 	// Grow list, if necessary
-	if (fCompiler && iPlayerCount > iPlayerCapacity)
+	if (deserializing && iPlayerCount > iPlayerCapacity)
 	{
 		GrowList(iPlayerCount - iPlayerCapacity);
 		ZeroMem(ppPlayers, sizeof(*ppPlayers) * iPlayerCount);
@@ -1737,10 +1737,10 @@ void C4PlayerInfoList::ResetLeagueProjectedGain(bool fSetUpdated)
 
 void C4PlayerInfoList::CompileFunc(StdCompiler *pComp)
 {
-	bool fCompiler = pComp->isCompiler();
-	if (fCompiler) Clear();
+	bool deserializing = pComp->isDeserializer();
+	if (deserializing) Clear();
 	// skip compiling if there is nothing to compile (cosmentics)
-	if (!fCompiler && pComp->hasNaming() && iLastPlayerID == 0 && iClientCount == 0)
+	if (!deserializing && pComp->hasNaming() && iLastPlayerID == 0 && iClientCount == 0)
 		return;
 	// header
 	pComp->Value(mkNamingAdapt(iLastPlayerID, "LastPlayerID", 0));
@@ -1750,7 +1750,7 @@ void C4PlayerInfoList::CompileFunc(StdCompiler *pComp)
 	if (iTemp < 0 || iTemp > C4MaxClient)
 		{ pComp->excCorrupt("client count out of range"); return; }
 	// grow list
-	if (fCompiler)
+	if (deserializing)
 	{
 		if (iTemp > iClientCapacity) GrowList(iTemp - iClientCapacity);
 		iClientCount = iTemp;

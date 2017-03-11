@@ -30,10 +30,10 @@ void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 	assert(fDenumerated);
 
 	int32_t nptr = 0;
-	if (!pComp->isCompiler() && data.ptr)
+	if (!pComp->isDeserializer() && data.ptr)
 		nptr = data.ptr->Number;
 	pComp->Value(nptr);
-	if (pComp->isCompiler())
+	if (pComp->isDeserializer())
 	{
 		data.nptr = nptr;
 #ifndef NDEBUG

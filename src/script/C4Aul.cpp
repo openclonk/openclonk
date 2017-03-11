@@ -184,7 +184,7 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, bool fScenarioSection, C
 		pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
 		pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
 	}
-	if (pComp->isCompiler() && pGlobalEffects)
+	if (pComp->isDeserializer() && pGlobalEffects)
 	{
 		// loading scenario section or game re-init: Merge effects
 		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect

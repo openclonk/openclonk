@@ -201,7 +201,7 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),  "Origin",  StdCopyStrBuf()));
 		// windows needs backslashes in Origin; other systems use forward slashes
-		if (pComp->isCompiler()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+		if (pComp->isDeserializer()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
 	}
 }
 
