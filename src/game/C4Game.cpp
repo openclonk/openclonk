@@ -3216,6 +3216,8 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 
 bool C4Game::InitNetworkFromReferenceFile(const char *temp_filename)
 {
+	// We need winsock for address parsing
+	WinSockHolder ws;
 	// Load reference from temp file + delete the temp file
 	bool success = false;
 	C4Network2Reference ref;

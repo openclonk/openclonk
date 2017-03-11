@@ -960,4 +960,24 @@ bool AcquireWinSock();
 void ReleaseWinSock();
 #endif
 
+// Class that keeps winsock loaded
+class WinSockHolder
+{
+public:
+	WinSockHolder()
+	{
+#ifdef HAVE_WINSOCK
+		AcquireWinSock();
+#endif
+	}
+
+	~WinSockHolder()
+	{
+#ifdef HAVE_WINSOCK
+		ReleaseWinSock();
+#endif
+	}
+};
+
+
 #endif
