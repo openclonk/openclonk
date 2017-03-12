@@ -619,6 +619,18 @@ public func SetShaderStatus(shader_name, bool to_active)
 	return true;
 }
 
+public func Destruction()
+{
+	// Remove active shaders.
+	if (active_shaders)
+	{
+		var shaders = GetProperties(active_shaders);
+		for (var shader in shaders)
+			RemoveShader(active_shaders[shader]);
+	}
+	return _inherited(...);
+}
+
 private func EvalAct_SetShader(proplist props, proplist context)
 {
 	var shader_name = props.ShaderName;
