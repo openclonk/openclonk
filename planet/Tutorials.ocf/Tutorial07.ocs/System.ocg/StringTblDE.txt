@@ -7,7 +7,7 @@ DlgPilotBowArrow=Nun ja, wenn sie angreifen...mit Pfeil und Bogen könntest du s
 DlgPilotHaveBow=Ich verstehe. Hast du einen Bogen für mich?
 DlgPilotArmory=Nein, aber in der Waffenschmiede kannst du einen Bogen und Pfeile herstellen. Ich habe eine Waffenschmiede auf einer unten rechts von hier gebaut.
 DlgPilotFallOff=Was passiert, wenn ich vom Luftschiff runterfalle?
-DlgPilotRescue=Dann kannst du mich mit [%s] rufen, und ich werde dich mit dem Luftschiff abholen.
+DlgPilotRescue=Dann kannst du mich mit [%s] rufen und ich werde dich mit dem Luftschiff abholen.
 
 # Messages: Pilot
 DlgPilotGem0=Yeah, ein Edelstein!
