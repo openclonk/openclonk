@@ -69,12 +69,12 @@ public:
 
 	bool IsQuittingGame() const { return AppState >= C4AS_AfterGame; }
 
-	const char *GetRevision() const { return Revision.getData(); }
+	const char *GetRevision() const { return Revision.c_str(); }
 
 	// set by ParseCommandLine
 	int isEditor;
 	// set by ParseCommandLine, for manually applying downloaded update packs
-	StdStrBuf IncomingUpdate;
+	std::string IncomingUpdate;
 	// set by ParseCommandLine, for manually invoking an update check by command line or url
 	int CheckForUpdates;
 
@@ -95,12 +95,12 @@ protected:
 	// set by ParseCommandLine, if neither editor, scenario nor direct join adress has been specified
 	int QuitAfterGame;
 	// set by ParseCommandLine, for installing registration keys
-	StdStrBuf IncomingKeyfile;
+	std::string IncomingKeyfile;
 private:
 	// if set, this mission will be launched next
-	StdCopyStrBuf NextMission;
+	std::string NextMission;
 	// version information strings
-	StdCopyStrBuf Revision;
+	static const std::string Revision;
 };
 
 extern C4Application  Application;

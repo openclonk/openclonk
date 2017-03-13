@@ -46,6 +46,7 @@
 #include <getopt.h>
 
 static C4Network2IRCClient ApplicationIRCClient;
+const std::string C4Application::Revision{ C4REVISION };
 
 C4Application::C4Application():
 		isEditor(false),
@@ -101,11 +102,9 @@ bool C4Application::DoInit(int argc, char * argv[])
 	// Open log
 	OpenLog();
 
-	Revision.Ref(C4REVISION);
-
 	// Engine header message
 	Log(C4ENGINECAPTION);
-	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
+	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, GetRevision());
 	LogF("ExePath: \"%s\"", Config.General.ExePath.getData());
 	LogF("SystemDataPath: \"%s\"", Config.General.SystemDataPath);
 	LogF("UserDataPath: \"%s\"", Config.General.UserDataPath);
@@ -424,13 +423,13 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		// Key file
 		if (SEqualNoCase(GetExtension(szParameter),"c4k"))
 		{
-			Application.IncomingKeyfile.Copy(szParameter);
+			Application.IncomingKeyfile = szParameter;
 			continue;
 		}
 		// Update file
 		if (SEqualNoCase(GetExtension(szParameter),"ocu"))
 		{
-			Application.IncomingUpdate.Copy(szParameter);
+			Application.IncomingUpdate = szParameter;
 			continue;
 		}
 		// record stream
@@ -462,8 +461,8 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	SReplaceChar(Game.ScenarioFilename, AltDirectorySeparator, DirectorySeparator);
 	SReplaceChar(Game.PlayerFilenames, AltDirectorySeparator, DirectorySeparator);
 	SReplaceChar(Game.DefinitionFilenames, AltDirectorySeparator, DirectorySeparator);
-	Application.IncomingKeyfile.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
-	Application.IncomingUpdate.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+	std::replace(begin(IncomingKeyfile), end(IncomingKeyfile), AltDirectorySeparator, DirectorySeparator);
+	std::replace(begin(IncomingUpdate), end(IncomingUpdate), AltDirectorySeparator, DirectorySeparator);
 	Game.RecordStream.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
 #endif
 
@@ -586,7 +585,7 @@ bool C4Application::ProcessCallback(const char *szMessage, int iProcess)
 void C4Application::Clear()
 {
 	Game.Clear();
-	NextMission.Clear();
+	NextMission.clear();
 	// stop timer
 	if (pGameTimer)
 	{
@@ -656,7 +655,7 @@ void C4Application::OpenGame(const char * scenario)
 void C4Application::QuitGame()
 {
 	// reinit desired? Do restart
-	if (!QuitAfterGame || NextMission)
+	if (!QuitAfterGame || !NextMission.empty())
 	{
 		AppState = C4AS_AfterGame;
 	}
@@ -716,18 +715,18 @@ void C4Application::GameTick()
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
-		if(Config.Graphics.Windowed == 2 && !NextMission && !isEditor)
+		if(Config.Graphics.Windowed == 2 && NextMission.empty() && !isEditor)
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 		if (!isEditor)
 			pWindow->GrabMouse(false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
-		if (NextMission)
+		if (!NextMission.empty())
 		{
-			Game.SetScenarioFilename(NextMission.getData());
+			Game.SetScenarioFilename(NextMission.c_str());
 			Game.fLobby = Game.NetworkActive;
 			Game.fObserve = false;
-			NextMission.Clear();
+			NextMission.clear();
 		}
 		break;
 	case C4AS_Game:
@@ -842,12 +841,12 @@ void C4Application::SetNextMission(const char *szMissionFilename)
 	// set next mission if any is desired
 	if (szMissionFilename)
 	{
-		NextMission.Copy(szMissionFilename);
+		NextMission = szMissionFilename;
 		// scenarios tend to use the wrong slash
-		SReplaceChar(NextMission.getMData(), AltDirectorySeparator, DirectorySeparator);
+		std::replace(begin(NextMission), end(NextMission), AltDirectorySeparator, DirectorySeparator);
 	}
 	else
-		NextMission.Clear();
+		NextMission.clear();
 }
 
 void C4Application::NextTick()
