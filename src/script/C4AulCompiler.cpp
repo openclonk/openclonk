@@ -1319,7 +1319,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 	{
 		// Pop off any args that are over the limit
 		Warn(target_host, host, n->args[fn_argc].get(), Fn, C4AulWarningId::arg_count_mismatch,
-			cname, n->args.size(), fn_argc);
+			cname, (unsigned)n->args.size(), fn_argc);
 		AddBCC(n->loc, AB_STACK, fn_argc - n->args.size());
 	}
 	else if (n->args.size() < fn_argc)
@@ -1399,7 +1399,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		C4V_Type to = expected_par_types[i];
 		if (C4Value::WarnAboutConversion(from, to))
 		{
-			Warn(target_host, host, n->args[i].get(), Fn, C4AulWarningId::arg_type_mismatch, i, cname, GetC4VName(from), GetC4VName(to));
+			Warn(target_host, host, n->args[i].get(), Fn, C4AulWarningId::arg_type_mismatch, (unsigned)i, cname, GetC4VName(from), GetC4VName(to));
 		}
 	}
 

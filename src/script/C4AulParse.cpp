@@ -1178,7 +1178,7 @@ void C4AulParse::Parse_CallParams(::aul::ast::CallExpr *call)
 	{
 	case ATT_COMMA:
 		// got no parameter before a ","
-		Warn(C4AulWarningId::empty_parameter_in_call, call->args.size(), call->callee.c_str());
+		Warn(C4AulWarningId::empty_parameter_in_call, (unsigned)call->args.size(), call->callee.c_str());
 		call->args.push_back(::aul::ast::NilLit::New(TokenSPos));
 		Shift();
 		break;
@@ -1211,7 +1211,7 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		// got no parameter before a ","? then push nil
 		if (TokenType == ATT_COMMA)
 		{
-			Warn(C4AulWarningId::empty_parameter_in_array, arr->values.size());
+			Warn(C4AulWarningId::empty_parameter_in_array, (unsigned)arr->values.size());
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 		else
@@ -1222,7 +1222,7 @@ std::unique_ptr<::aul::ast::ArrayLit> C4AulParse::Parse_Array()
 		// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 		if (TokenType == ATT_BCLOSE2)
 		{
-			Warn(C4AulWarningId::empty_parameter_in_array, arr->values.size());
+			Warn(C4AulWarningId::empty_parameter_in_array, (unsigned)arr->values.size());
 			arr->values.emplace_back(::aul::ast::NilLit::New(TokenSPos));
 		}
 	}

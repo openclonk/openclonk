@@ -26,8 +26,8 @@ DIAG(invalid_hex_escape, "'\\x' used with no following hex digits", true)
 
 // Parser diagnostics
 DIAG(type_name_used_as_par_name, "type '%s' used as parameter name", false)
-DIAG(empty_parameter_in_call, "parameter %zu of call to '%s' is empty", false)
-DIAG(empty_parameter_in_array, "array entry %zu is empty", false)
+DIAG(empty_parameter_in_call, "parameter %u of call to '%s' is empty", false)
+DIAG(empty_parameter_in_array, "array entry %u is empty", false)
 
 // Compiler diagnostics
 DIAG(implicit_range_loop_var_decl, "implicit declaration of the loop variable '%s' in a for-in loop is deprecated", true)
@@ -35,8 +35,8 @@ DIAG(non_global_var_is_never_const, "variable '%s' declared as const, but non-gl
 DIAG(variable_shadows_variable, "declaration of %s '%s' shadows %s", true)
 DIAG(redeclaration, "redeclaration of %s '%s'", true)
 DIAG(undeclared_varargs, "use of '%s' in a function forces it to take variable arguments", true)
-DIAG(arg_count_mismatch, "call to '%s' passes %zu arguments, of which only %zu are used", true)
-DIAG(arg_type_mismatch, "parameter %zu of call to '%s' passes %s (%s expected)", true)
+DIAG(arg_count_mismatch, "call to '%s' passes %u arguments, of which only %u are used", true)
+DIAG(arg_type_mismatch, "parameter %u of call to '%s' passes %s (%s expected)", true)
 DIAG(empty_if, "empty controlled statement (use '{}' if this is intentional)", true)
 
 #pragma pop_macro("DIAG")
