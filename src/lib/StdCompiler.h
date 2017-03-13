@@ -153,6 +153,7 @@ public:
 	// Note that string won't allow '\0' inside the buffer, even with escaped compiling!
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) = 0;
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped) = 0;
+	virtual void String(std::string &str, RawCompileType type = RCT_Escaped) = 0;
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) = 0;
 
 	// * Position
@@ -434,6 +435,7 @@ public:
 	virtual void Character(char &rChar)           { }
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) { }
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped) { }
+	virtual void String(std::string &str, RawCompileType eType = RCT_Escaped) override {}
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) { }
 
 };
@@ -466,6 +468,7 @@ public:
 	virtual void Character(char &rChar);
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
+	virtual void String(std::string &str, RawCompileType eType = RCT_Escaped) override;
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
 	// Passes
@@ -506,6 +509,7 @@ public:
 	virtual void Character(char &rChar);
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
+	virtual void String(std::string &str, RawCompileType eType = RCT_Escaped) override;
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
 	// Position
@@ -584,6 +588,7 @@ public:
 	virtual void Character(char &rChar);
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
+	virtual void String(std::string &str, RawCompileType eType = RCT_Escaped) override;
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
 	// Passes
@@ -656,6 +661,7 @@ public:
 	virtual void Character(char &rChar);
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
+	virtual void String(std::string &str, RawCompileType eType = RCT_Escaped) override;
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
 	// Position

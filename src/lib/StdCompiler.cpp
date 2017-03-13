@@ -77,6 +77,11 @@ void StdCompilerBinWrite::String(char **pszString, RawCompileType eType)
 		WriteValue('\0');
 }
 
+void StdCompilerBinWrite::String(std::string &str, RawCompileType type)
+{
+	WriteData(str.c_str(), str.size() + 1);
+}
+
 template <class T>
 void StdCompilerBinWrite::WriteValue(const T &rValue)
 {
@@ -150,6 +155,24 @@ void StdCompilerBinRead::String(char **pszString, RawCompileType eType)
 	// Allocate and copy data
 	*pszString = (char *) malloc(iPos - iStart);
 	memcpy(*pszString, Buf.getPtr(iStart), iPos - iStart);
+}
+
+void StdCompilerBinRead::String(std::string &str, RawCompileType type)
+{
+	// At least one byte data needed
+	if (iPos >= Buf.getSize())
+	{
+		excEOF(); return;
+	}
+	int iStart = iPos;
+	// Search string end
+	while (*getBufPtr<char>(Buf, iPos++))
+		if (iPos >= Buf.getSize())
+		{
+			excEOF(); return;
+		}
+	// Copy data
+	str.assign(getBufPtr<char>(Buf, iStart), getBufPtr<char>(Buf, iPos));
 }
 
 void StdCompilerBinRead::Raw(void *pData, size_t iSize, RawCompileType eType)
@@ -311,6 +334,10 @@ void StdCompilerINIWrite::Raw(void *pData, size_t iSize, RawCompileType eType)
 	}
 }
 
+void StdCompilerINIWrite::String(std::string &str, RawCompileType type)
+{
+	Raw(&str[0], str.size(), type);
+}
 
 void StdCompilerINIWrite::Begin()
 {
@@ -635,6 +662,14 @@ void StdCompilerINIRead::String(char **pszString, RawCompileType eType)
 	StdBuf Buf = ReadString(iLength, eType, true);
 	// Set
 	*pszString = reinterpret_cast<char *>(Buf.GrabPointer());
+}
+void StdCompilerINIRead::String(std::string &str, RawCompileType type)
+{
+	// Get length
+	size_t iLength = GetStringLength(type);
+	// Read data
+	StdBuf Buf = ReadString(iLength, type, true);
+	str = getBufPtr<char>(Buf);
 }
 void StdCompilerINIRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 {

@@ -1494,6 +1494,7 @@ protected:
 	virtual void ProcessChar(char &rChar) = 0;
 	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID) = 0;
 	virtual void ProcessString(char **pszString, bool fIsID) = 0;
+	virtual void ProcessString(std::string &str, bool isID) = 0;
 
 public:
 	// value functions
@@ -1511,6 +1512,8 @@ public:
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(szString, iMaxLength, eType == StdCompiler::RCT_ID); }
 	virtual void String(char **pszString, RawCompileType eType)
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(pszString, eType == StdCompiler::RCT_ID); }
+	virtual void String(std::string &str, RawCompileType type) override
+	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(str, type == StdCompiler::RCT_ID); }
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped)
 	{ /* C4Script can't handle this */ }
 
@@ -1558,6 +1561,8 @@ protected:
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(szString))) : C4VString(szString)); }
 	virtual void ProcessString(char **pszString, bool fIsID)
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(*pszString))) : C4VString(*pszString)); }
+	virtual void ProcessString(std::string &str, bool fIsID)
+	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(str.c_str()))) : C4VString(str.c_str())); }
 };
 
 // Use the compiler to find a named value in a structure
