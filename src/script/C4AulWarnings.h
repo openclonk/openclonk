@@ -21,7 +21,7 @@
 #endif
 
 // Lexer diagnostics
-DIAG(invalid_escape_sequence, "unknown escape sequence '\\%s'", true)
+DIAG(invalid_escape_sequence, "unknown escape sequence '\\%c'", true)
 DIAG(invalid_hex_escape, "'\\x' used with no following hex digits", true)
 
 // Parser diagnostics
