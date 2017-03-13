@@ -98,7 +98,6 @@ private:
 		HKEY Handle;
 		Key *Parent;
 	} *pKey;
-	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last written string. Used for separators within strings.
 
 	// Writing
 	void CreateKey(HKEY hParent = 0);
@@ -160,7 +159,6 @@ private:
 		bool Virtual;
 		DWORD Type; // for values only
 	} *pKey;
-	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last read string. Used for separators within strings.
 
 	// Reading
 	uint32_t ReadDWord();

@@ -283,7 +283,6 @@ bool StdCompilerConfigWrite::Name(const char *szName)
 	pnKey->Parent = pKey;
 	pKey = pnKey;
 	iDepth++;
-	LastString.Clear();
 	return true;
 }
 
@@ -293,7 +292,6 @@ void StdCompilerConfigWrite::NameEnd(bool fBreak)
 	// Close current key
 	if (pKey->Handle)
 		RegCloseKey(pKey->Handle);
-	LastString.Clear();
 	// Pop
 	Key *poKey = pKey;
 	pKey = poKey->Parent;
@@ -319,10 +317,8 @@ bool StdCompilerConfigWrite::Default(const char *szName)
 
 bool StdCompilerConfigWrite::Separator(Sep eSep)
 {
-	// Append separators to last string
-	char sep [] = { SeparatorToChar(eSep), '\0' };
-	WriteString(sep);
-	return true;
+	assert(!"StdCompilerConfigWrite::Separator: not supported");
+	return false;
 }
 
 void StdCompilerConfigWrite::DWord(int32_t &rInt)
@@ -360,11 +356,13 @@ void StdCompilerConfigWrite::Character(char &rChar)
 
 void StdCompilerConfigWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
+	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
 	WriteString(szString);
 }
 
 void StdCompilerConfigWrite::String(char **pszString, RawCompileType eType)
 {
+	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
 	WriteString(pszString ? *pszString : "");
 }
 
@@ -408,9 +406,7 @@ void StdCompilerConfigWrite::WriteDWord(uint32_t iVal)
 
 void StdCompilerConfigWrite::WriteString(const char *szString)
 {
-	// Append or set the value
-	if (LastString.getLength()) LastString.Append(szString); else LastString.Copy(szString);
-	StdBuf v = LastString.GetWideCharBuf();
+	StdBuf v = GetWideCharBuf(szString);
 	if (RegSetValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                  0, REG_SZ, getBufPtr<BYTE>(v), v.getSize()) != ERROR_SUCCESS)
 		excCorrupt("Could not write key %s!", pKey->Name.getData());
@@ -472,8 +468,6 @@ bool StdCompilerConfigRead::Name(const char *szName)
 	pnKey->Type = dwType;
 	pKey = pnKey;
 	iDepth++;
-	// Last string reset
-	LastString.Clear();
 	return fFound;
 }
 
@@ -483,7 +477,6 @@ void StdCompilerConfigRead::NameEnd(bool fBreak)
 	// Close current key
 	if (pKey->Handle)
 		RegCloseKey(pKey->Handle);
-	LastString.Clear();
 	// Pop
 	Key *poKey = pKey;
 	pKey = poKey->Parent;
@@ -498,26 +491,8 @@ bool StdCompilerConfigRead::FollowName(const char *szName)
 
 bool StdCompilerConfigRead::Separator(Sep eSep)
 {
-	// ensure string is loaded in case value begins with a separator
-	if (!LastString.getData()) LastString.Take(ReadString());
-	if (LastString.getData())
-	{
-		// separator within string: check if it is there
-		if (LastString.getLength() && *LastString.getData() == SeparatorToChar(eSep))
-		{
-			LastString.Take(StdStrBuf(LastString.getData()+1, true));
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		// No separators outside strings
-		return false;
-	}
+	assert(!"StdCompilerConfigRead::Separator: not supported");
+	return false;
 }
 
 void StdCompilerConfigRead::DWord(int32_t &rInt)
@@ -575,41 +550,16 @@ void StdCompilerConfigRead::Character(char &rChar)
 
 void StdCompilerConfigRead::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-	if (!LastString) LastString.Take(ReadString());
-	if (!LastString.getLength()) { *szString='\0'; return; }
-	// when reading identifiers, only take parts of the string
-	if (eType == RCT_Idtf || eType == RCT_IdtfAllowEmpty)
-	{
-		const char *s = LastString.getData();
-		size_t ncpy = 0;
-		while (isalnum((unsigned char)s[ncpy])) ++ncpy;
-		SCopy(LastString.getData(), szString, std::min(iMaxLength, ncpy));
-		LastString.Take(StdStrBuf(s+ncpy, true));
-	}
-	else
-	{
-		SCopy(LastString.getData(), szString, iMaxLength);
-	}
+	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
+	StdStrBuf str = ReadString();
+	if (!str.getLength()) { *szString='\0'; return; }
+	SCopy(str.getData(), szString, iMaxLength);
 }
 
 void StdCompilerConfigRead::String(char **pszString, RawCompileType eType)
 {
-	if (!LastString) LastString.Take(ReadString());
-	// when reading identifiers, only take parts of the string
-	if (eType == RCT_Idtf || eType == RCT_IdtfAllowEmpty)
-	{
-		const char *s = LastString.getData();
-		size_t ncpy = 0;
-		while (isalnum((unsigned char)s[ncpy])) ++ncpy;
-		StdStrBuf Result(LastString.getData(), ncpy, true);
-		Result.getMData()[ncpy] = '\0';
-		*pszString = Result.GrabPointer();
-		LastString.Take(StdStrBuf(s+ncpy, true));
-	}
-	else
-	{
-		*pszString = LastString.GrabPointer();
-	}
+	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
+	*pszString = ReadString().GrabPointer();
 }
 
 void StdCompilerConfigRead::Raw(void *pData, size_t iSize, RawCompileType eType)
