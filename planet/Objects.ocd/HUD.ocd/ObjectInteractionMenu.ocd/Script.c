@@ -44,7 +44,7 @@ local current_objects;
 			menu_object: MenuStyle_Grid object, used to add/remove entries later
 			entry_index_count: used to generate unique IDs for the entries
 			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later).
-			    The function is called in the object that the menu was opened for and passes the menu cursor as the first parameter. 
+				The function is called in the object that the menu was opened for and passes the player's Clonk as the first argument. 
 				This callback should return an array of entries shown in the menu, the entries are proplists with the following attributes:
 				symbol: icon of the item
 				extra_data: custom user data (internal: in case of inventory menus this is a proplist containing some extra data (f.e. the one object for unstackable objects))
@@ -53,7 +53,7 @@ local current_objects;
 				unique_index: generated from entry_index_count (not set by user)
 				fx: (optional) effect that gets a "OnMenuOpened(int menu_id, object menu_target, int subwindow_id)" callback once which can be used to update a specific entry only
 			entries_callback_parameter (optional):
-				If this property is defined the entry callback is called in the object that opened the menu. with a second parameter.
+				Passed as second argument to entries_callback. Can be used for custom information.
 			entries: last result of the callback function described above
 				additional properties that are added are:
 				ID: (menu) id of the entry as returned by the menu_object - can be used for updating
