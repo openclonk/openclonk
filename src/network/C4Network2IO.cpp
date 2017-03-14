@@ -262,7 +262,7 @@ bool C4Network2IO::Connect(const C4NetIO::addr_t &addr, C4Network2IOProtocol ePr
 	if (!pConn->Connect())
 	{
 		// show error
-		LogF("Network: could not connect to %s using %s: %s", addr.ToString().getData(),
+		LogSilentF("Network: could not connect to %s using %s: %s", addr.ToString().getData(),
 		     getNetIOName(pNetIO), pNetIO->GetError() ? pNetIO->GetError() : "");
 		pNetIO->ResetError();
 		// remove class
