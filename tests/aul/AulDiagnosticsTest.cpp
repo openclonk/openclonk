@@ -53,6 +53,22 @@ TEST_F(AulDiagnosticsTest, arg_type_mismatch)
 	}
 }
 
+TEST_F(AulDiagnosticsTest, invalid_escape_sequence)
+{
+	{
+		EXPECT_WARNING(invalid_escape_sequence);
+		RunExpr("\"\\g\"");
+	}
+}
+
+TEST_F(AulDiagnosticsTest, invalid_hex_escape)
+{
+	{
+		EXPECT_WARNING(invalid_hex_escape);
+		RunExpr("\"\\xg\"");
+	}
+}
+
 TEST_F(AulDiagnosticsTest, empty_if)
 {
 	{
@@ -66,6 +82,14 @@ TEST_F(AulDiagnosticsTest, empty_if)
 	{
 		EXPECT_WARNING(empty_if).Times(0);
 		RunCode("if (true) {} else {}");
+	}
+}
+
+TEST_F(AulDiagnosticsTest, arg_count_mismatch)
+{
+	{
+		EXPECT_WARNING(arg_count_mismatch);
+		RunExpr("Trans_Identity(1)");
 	}
 }
 
