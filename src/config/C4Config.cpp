@@ -474,7 +474,7 @@ void C4ConfigGeneral::DeterminePaths()
 	// Use ExePath: on windows, everything is installed to one directory
 	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
-	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
+	SCopy(::Application.GetGameDataPath().c_str(),SystemDataPath);
 #elif defined(WITH_AUTOMATIC_UPDATE)
 	// WITH_AUTOMATIC_UPDATE builds are our tarball releases and
 	// development snapshots, i.e. where the game data is at the

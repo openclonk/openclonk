@@ -524,7 +524,7 @@ namespace C4GUI
 			iCursorPos = iSelectionStart;
 #ifndef _WIN32
 			// Insert primary selection
-			InsertText(Application.Paste(false).getData(), true);
+			InsertText(Application.Paste(false).c_str(), true);
 #endif
 			break;
 		};

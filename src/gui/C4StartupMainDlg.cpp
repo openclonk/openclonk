@@ -299,10 +299,10 @@ void C4StartupMainDlg::OnShown()
 {
 #ifdef WITH_AUTOMATIC_UPDATE
 	// Incoming update
-	if (Application.IncomingUpdate)
+	if (!Application.IncomingUpdate.empty())
 	{
-		C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.getData(), false, GetScreen());
-		Application.IncomingUpdate.Clear();
+		C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.c_str(), false, GetScreen());
+		Application.IncomingUpdate.clear();
 	}
 	// Manual update by command line or url
 	if (Application.CheckForUpdates)

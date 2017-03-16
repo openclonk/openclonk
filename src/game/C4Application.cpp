@@ -149,8 +149,8 @@ bool C4Application::DoInit(int argc, char * argv[])
 #if defined(WIN32) && defined(WITH_AUTOMATIC_UPDATE)
 	// Windows: handle incoming updates directly, even before starting up the gui
 	//          because updates will be applied in the console anyway.
-	if (Application.IncomingUpdate)
-		if (C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.getData(), false, nullptr))
+	if (!Application.IncomingUpdate.empty())
+		if (C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.c_str(), false, nullptr))
 			return true;
 #endif
 
