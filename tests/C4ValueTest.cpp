@@ -81,4 +81,12 @@ TEST(C4ValueTest, ToJSON)
 		array->SetItem(2, C4Value(3));
 		EXPECT_EQ(C4Value(array).ToJSON(), R"#([1,2,3])#");
 	}
+
+	{
+		auto proplist = C4PropList::NewStatic(nullptr, nullptr, nullptr);
+		proplist->SetProperty(P_Options, C4Value(123));
+		auto array = new C4ValueArray(1);
+		array->SetItem(0, C4Value(proplist));
+		EXPECT_EQ(C4Value(array).ToJSON(), R"#([{"Options":123}])#");
+	}
 }

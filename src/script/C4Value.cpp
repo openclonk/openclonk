@@ -228,7 +228,7 @@ StdStrBuf C4Value::ToJSON(int depth, const C4PropListStatic *ignore_reference_pa
 		for (int32_t i = 0; i < Data.Array->GetSize(); i++)
 		{
 			if (i) DataString.Append(",");
-			DataString.Append(std::move(Data.Array->GetItem(i).GetDataString(depth - 1)));
+			DataString.Append(std::move(Data.Array->GetItem(i).ToJSON(depth - 1)));
 		}
 		DataString.AppendChar(']');
 		return DataString;
