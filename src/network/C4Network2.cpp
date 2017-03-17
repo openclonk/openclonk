@@ -333,6 +333,73 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 	return IR_Success;
 }
 
+C4Network2::InitialConnect::InitialConnect(const std::vector<C4Network2Address>& Addrs, const C4ClientCore& HostCore, const char *Password)
+	: CStdTimerProc(DELAY), Addrs(Addrs), CurrentAddr(this->Addrs.cbegin()),
+	  HostCore(HostCore), Password(Password)
+{
+	Application.Add(this);
+}
+
+C4Network2::InitialConnect::~InitialConnect()
+{
+	Done();
+}
+
+bool C4Network2::InitialConnect::Execute(int, pollfd *)
+{
+	if (CheckAndReset())
+		TryNext();
+	return true;
+}
+
+void C4Network2::InitialConnect::TryNext()
+{
+	StdStrBuf strAddresses; int Successes = 0;
+	for (; Successes < ADDR_PER_TRY && CurrentAddr != Addrs.cend(); ++CurrentAddr)
+	{
+		if (!CurrentAddr->isIPNull())
+		{
+			auto addr = CurrentAddr->getAddr();
+			std::vector<C4NetIO::addr_t> addrs;
+			if (addr.IsLocal())
+			{
+				// Local IPv6 addresses need a scope id.
+				for (auto& id : Network.Clients.GetLocal()->getInterfaceIDs())
+				{
+					addr.SetScopeId(id);
+					addrs.push_back(addr);
+				}
+			}
+			else
+				addrs.push_back(addr);
+			// connection
+			int cnt = 0;
+			for (auto& a : addrs)
+				if (Network.NetIO.Connect(a, CurrentAddr->getProtocol(), HostCore, Password))
+					cnt++;
+			if (cnt == 0) continue;
+			// format for message
+			if (strAddresses.getLength())
+				strAddresses.Append(", ");
+			strAddresses.Append(CurrentAddr->toString());
+			Successes++;
+		}
+	}
+	if (Successes > 0)
+	{
+		LogF(LoadResStr("IDS_NET_CONNECTHOST"), strAddresses.getData());
+	}
+	else
+	{
+		Done();
+	}
+}
+
+void C4Network2::InitialConnect::Done()
+{
+	Application.Remove(this);
+}
+
 C4Network2::InitResult C4Network2::InitClient(const std::vector<class C4Network2Address>& Addrs, const C4ClientCore &HostCore, const char *szPassword)
 {
 	// initialization
@@ -357,60 +424,26 @@ C4Network2::InitResult C4Network2::InitClient(const std::vector<class C4Network2
 	// warm up netpuncher
 	InitPuncher();
 	// try to connect host
-	StdStrBuf strAddresses; int iSuccesses = 0;
-	for (auto Addr : Addrs)
-		if (!Addr.isIPNull())
-		{
-			auto addr = Addr.getAddr();
-			std::vector<C4NetIO::addr_t> addrs;
-			if (addr.IsLocal())
-			{
-				// Local IPv6 addresses need a scope id.
-				for (auto& id : Clients.GetLocal()->getInterfaceIDs())
-				{
-					addr.SetScopeId(id);
-					addrs.push_back(addr);
-				}
-			}
-			else
-				addrs.push_back(addr);
-			// connection
-			int cnt = 0;
-			for (auto& a : addrs)
-				if (NetIO.Connect(a, Addr.getProtocol(), HostCore, szPassword))
-					cnt++;
-			if (cnt == 0) continue;
-			// format for message
-			if (strAddresses.getLength())
-				strAddresses.Append(", ");
-			strAddresses.Append(Addr.toString());
-			iSuccesses++;
-		}
-	// no connection attempt running?
-	if (!iSuccesses)
-		{ Clear(); return IR_Error; }
-	// log
-	StdStrBuf strMessage = FormatString(LoadResStr("IDS_NET_CONNECTHOST"), strAddresses.getData());
-	Log(strMessage.getData());
+	InitialConnect iconn(Addrs, HostCore, szPassword);
 	// show box
-	C4GUI::MessageDialog *pDlg = nullptr;
+	std::unique_ptr<C4GUI::MessageDialog> pDlg = nullptr;
 	if (!Application.isEditor)
 	{
+		StdStrBuf strMessage = FormatString(LoadResStr("IDS_NET_JOINGAMEBY"), HostCore.getName());
 		// create & show
-		pDlg = new C4GUI::MessageDialog(strMessage.getData(), LoadResStr("IDS_NET_JOINGAME"),
-		                                C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsRegular);
+		pDlg = std::make_unique<C4GUI::MessageDialog>(
+				strMessage.getData(), LoadResStr("IDS_NET_JOINGAME"),
+				C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsRegular);
 		if (!pDlg->Show(::pGUI, true)) { Clear(); return IR_Fatal; }
 	}
 	// wait for connect / timeout / abort by user (host will change status on succesful connect)
 	while (Status.getState() == GS_Init)
 	{
 		if (!Application.ScheduleProcs(100))
-			{ delete pDlg; return IR_Fatal;}
+			{ return IR_Fatal;}
 		if (pDlg && pDlg->IsAborted())
-			{ delete pDlg; return IR_Fatal; }
+			{ return IR_Fatal; }
 	}
-	// Close dialog
-	delete pDlg;
 	// error?
 	if (!isEnabled())
 		return IR_Error;

@@ -363,6 +363,26 @@ protected:
 
 	// puncher
 	void InitPuncher();
+
+	// Manages delayed initial connection attempts.
+	class InitialConnect : protected CStdTimerProc
+	{
+		static const uint32_t DELAY = 100; // ms to wait for each batch
+		static const int ADDR_PER_TRY = 4; // how many connection attempts to start each time
+
+		const std::vector<C4Network2Address>& Addrs;
+		std::vector<C4Network2Address>::const_iterator CurrentAddr;
+		const C4ClientCore& HostCore;
+		const char *Password;
+
+		void TryNext();
+		void Done();
+
+	public:
+		InitialConnect(const std::vector<C4Network2Address>& Addrs, const C4ClientCore& HostCore, const char *Password);
+		~InitialConnect();
+		virtual bool Execute(int, pollfd *) override;
+	};
 };
 
 extern C4Network2 Network;
