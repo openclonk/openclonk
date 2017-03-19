@@ -70,7 +70,7 @@ global func GivePlayerFarmingKnowledge(int plr)
 {
 	var knowledge = [
 		// Structures needed to process farming materials.
-		Kitchen, Loom,
+		Kitchen, Loom, Windmill,
 		// Basic tools for farming.
 		Sickle,
 		// Processed goods.
