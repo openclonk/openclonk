@@ -15,6 +15,7 @@
 
 /* Verify correct behavior of UTF-8 handling code. */
 
+#include "C4Include.h"
 #include "lib/Standard.h"
 #include <gtest/gtest.h>
 
@@ -206,7 +207,6 @@ TEST(UnicodeHandlingTest, WideStringConversion)
 
 #ifdef _WIN32
 #include "platform/StdRegistry.h"
-char StdCompiler::SeparatorToChar(enum StdCompiler::Sep) { return ' '; }
 TEST(UnicodeHandlingTest, RegistryAccess)
 {
 	const wchar_t *wide_strings[] = {
