@@ -1038,6 +1038,28 @@ C4NetpuncherID::value& C4Network2::getNetpuncherGameID(C4NetIO::HostAddress::Add
     return NetpuncherGameID.v4;
 }
 
+void C4Network2::OnPuncherConnect(C4NetIO::addr_t addr)
+{
+	// NAT punching is only relevant for IPv4, so convert here to show a proper address.
+	auto maybe_v4 = addr.AsIPv4();
+	Application.InteractiveThread.ThreadLogS("Adding address from puncher: %s", maybe_v4.ToString().getData());
+	// Add for local client
+	C4Network2Client *pLocal = Clients.GetLocal();
+	if (pLocal)
+	{
+		pLocal->AddAddr(C4Network2Address(maybe_v4, P_UDP), true);
+		// If the outside port matches the inside port, there is no port translation and the
+		// TCP address will probably work as well.
+		if (addr.GetPort() == Config.Network.PortUDP && Config.Network.PortTCP > 0)
+		{
+			maybe_v4.SetPort(Config.Network.PortTCP);
+			pLocal->AddAddr(C4Network2Address(maybe_v4, P_TCP), true);
+		}
+		// Do not ::Network.InvalidateReference(); yet, we're expecting an ID from the netpuncher
+	}
+}
+
+
 void C4Network2::InitPuncher()
 {
 	// We have an internet connection, so let's punch the puncher server here in order to open an udp port

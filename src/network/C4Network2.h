@@ -258,6 +258,7 @@ public:
 	void HandlePacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
 	void HandleLobbyPacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);
 	bool HandlePuncherPacket(C4NetpuncherPacket::uptr, C4NetIO::HostAddress::AddressFamily family);
+	void OnPuncherConnect(C4NetIO::addr_t addr);
 
 	// runtime join stuff
 	void OnGameSynchronized();

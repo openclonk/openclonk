@@ -196,9 +196,6 @@ protected:
 	void CheckTimeout();
 	void GenerateStatistics(int iInterval);
 	void SendConnPackets();
-
-	// puncher
-	void OnPuncherConnect(C4NetIO::addr_t addr);
 };
 
 enum C4Network2IOConnStatus

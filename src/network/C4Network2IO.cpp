@@ -506,7 +506,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 	{
 		// got an address?
 		if (pOwnAddr)
-			OnPuncherConnect(*pOwnAddr);
+			::Network.OnPuncherConnect(*pOwnAddr);
 		return true;
 	}
 
@@ -1288,27 +1288,6 @@ void C4Network2IO::SendConnPackets()
 			}
 		}
 
-}
-
-void C4Network2IO::OnPuncherConnect(C4NetIO::addr_t addr)
-{
-	// NAT punching is only relevant for IPv4, so convert here to show a proper address.
-	auto maybe_v4 = addr.AsIPv4();
-	Application.InteractiveThread.ThreadLogS("Adding address from puncher: %s", maybe_v4.ToString().getData());
-	// Add for local client
-	C4Network2Client *pLocal = ::Network.Clients.GetLocal();
-	if (pLocal)
-	{
-		pLocal->AddAddr(C4Network2Address(maybe_v4, P_UDP), true);
-		// If the outside port matches the inside port, there is no port translation and the
-		// TCP address will probably work as well.
-		if (addr.GetPort() == Config.Network.PortUDP && Config.Network.PortTCP > 0)
-		{
-			maybe_v4.SetPort(Config.Network.PortTCP);
-			pLocal->AddAddr(C4Network2Address(maybe_v4, P_TCP), true);
-		}
-		// Do not ::Network.InvalidateReference(); yet, we're expecting an ID from the netpuncher
-	}
 }
 
 // *** C4Network2IOConnection
