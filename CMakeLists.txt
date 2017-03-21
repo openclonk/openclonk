@@ -293,6 +293,12 @@ endif()
 
 if(UNIX AND NOT APPLE)
 	FINDLIB(X11_LIBRARIES X11)
+
+	set(Backward_DIR thirdparty/backward-cpp)
+	find_package(Backward)
+	if(Backward_FOUND)
+		set(HAVE_BACKWARD 1)
+	endif()
 endif()
 
 if (WIN32)
@@ -1172,6 +1178,10 @@ if(NOT HEADLESS_ONLY)
 		set_target_properties(openclonk PROPERTIES COMPILE_DEFINITIONS WITH_QT_EDITOR)
 		qt5_use_modules(openclonk Widgets)
 	endif()
+
+	if(HAVE_BACKWARD)
+		add_backward(openclonk)
+	endif()
 endif()
 
 add_executable(openclonk-server
@@ -1202,6 +1212,9 @@ if(UPNP_FOUND)
 endif()
 if(USE_COCOA)
 	target_link_libraries(openclonk-server "-framework Cocoa")
+endif()
+if(HAVE_BACKWARD)
+	add_backward(openclonk-server)
 endif()
 
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY)

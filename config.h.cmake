@@ -2,6 +2,9 @@
 /* Generate minidumps on crash */
 #cmakedefine HAVE_DBGHELP 1
 
+/* Use backward-cpp to print stack traces on crash */
+#cmakedefine HAVE_BACKWARD 1
+
 /* Define to 1 if you have the <direct.h> header file. */
 #cmakedefine HAVE_DIRECT_H 1
 

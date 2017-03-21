@@ -119,8 +119,12 @@ int main()
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_SIGNAL_H
+#ifdef HAVE_BACKWARD
+#include <backward-cpp/backward.hpp>
+
+#elif defined(HAVE_SIGNAL_H)
 #include <signal.h>
+
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
 #endif
@@ -209,7 +213,9 @@ int main (int argc, char * argv[])
 		printf("Do not run %s as root!\n", argc ? argv[0] : "this program");
 		return C4XRV_Failure;
 	}
-#ifdef HAVE_SIGNAL_H
+#ifdef HAVE_BACKWARD
+	backward::SignalHandling sh;
+#elif defined(HAVE_SIGNAL_H)
 	struct sigaction sa;
 	sa.sa_sigaction = crash_handler;
 	sigemptyset(&sa.sa_mask);
