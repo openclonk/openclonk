@@ -1955,6 +1955,14 @@ private:
 		printer.address = true;
 		printer.print(st, stderr);
 
+		// OpenClonk modification: also print to the log file
+		if (GetLogFD() > -1)
+		{
+			auto f = fdopen(GetLogFD(), "ab");
+			printer.print(st, f);
+			fclose(f);
+		}
+
 #if _XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L
 		psiginfo(info, 0);
 #endif
