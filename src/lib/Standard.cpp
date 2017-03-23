@@ -623,22 +623,6 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard)
 	return !*pWild && !*pPos;
 }
 
-/* Some part of the Winapi */
-
-#ifdef NEED_FALLBACK_ATOMIC_FUNCS
-static CStdCSec SomeMutex;
-long InterlockedIncrement(long * var)
-{
-	CStdLock Lock(&SomeMutex);
-	return ++(*var);
-}
-long InterlockedDecrement(long * var)
-{
-	CStdLock Lock(&SomeMutex);
-	return --(*var);
-}
-#endif
-
 // UTF-8 conformance checking
 namespace
 {

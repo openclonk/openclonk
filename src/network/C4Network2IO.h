@@ -21,6 +21,8 @@
 #include "network/C4InteractiveThread.h"
 #include "netpuncher/C4PuncherPacket.h"
 
+#include <atomic>
+
 class C4Network2IOConnection;
 
 // enums & constants
@@ -254,7 +256,7 @@ protected:
 	C4Network2IOConnection *pNext;
 
 	// reference counter
-	long iRefCnt;
+	std::atomic_long iRefCnt;
 
 public:
 	C4NetIO  *getNetClass()   const { return pNetClass; }
