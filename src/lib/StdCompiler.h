@@ -320,6 +320,11 @@ inline void CompileFunc(T &rStruct, StdCompiler *pComp)
 	rStruct.CompileFunc(pComp);
 }
 
+inline void CompileFunc(std::string &s, StdCompiler *comp)
+{
+	comp->String(s);
+}
+
 template <class T>
 void CompileNewFunc(T *&pStruct, StdCompiler *pComp)
 {
