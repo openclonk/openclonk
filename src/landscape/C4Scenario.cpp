@@ -160,7 +160,11 @@ void C4SHead::Default()
 {
 	Origin.Clear();
 	Icon=18;
-	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
+	Title.clear();
+	Loader.clear();
+	Font.clear();
+	Engine.clear();
+	MissionAccess.clear();
 	Secret = false;
 	C4XVer[0] = C4XVer[1] = 0;
 	Difficulty = RandomSeed = 0;
@@ -170,7 +174,7 @@ void C4SHead::Default()
 
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
 	MinPlayer=0; // auto-determine by mode
-	SCopy("Default Title",Title,C4MaxTitle);
+	Title = "Default Title";
 }
 
 void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
@@ -178,9 +182,9 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 	if (!fSection)
 	{
 		pComp->Value(mkNamingAdapt(Icon,                      "Icon",                 18));
-		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Title),    "Title",                "Default Title"));
-		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Loader),   "Loader",               ""));
-		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Font),     "Font",                 ""));
+		pComp->Value(mkNamingAdapt(Title,                     "Title",                "Default Title"));
+		pComp->Value(mkNamingAdapt(Loader,                    "Loader",               ""));
+		pComp->Value(mkNamingAdapt(Font,                      "Font",                 ""));
 		pComp->Value(mkNamingAdapt(mkArrayAdaptDM(C4XVer,0),  "Version"               ));
 		pComp->Value(mkNamingAdapt(Difficulty,                "Difficulty",           0));
 		pComp->Value(mkNamingAdapt(MaxPlayer,                 "MaxPlayer",            C4S_MaxPlayerDefault));
@@ -194,14 +198,17 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(RandomSeed,                "RandomSeed",           0));
 	if (!fSection)
 	{
-		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Engine),   "Engine",               ""));
-		pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
+		pComp->Value(mkNamingAdapt(Engine,                    "Engine",               ""));
+		pComp->Value(mkNamingAdapt(MissionAccess,             "MissionAccess", ""));
 		pComp->Value(mkNamingAdapt(Secret,                    "Secret",               false));
 		pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),  "Origin",  StdCopyStrBuf()));
 		// windows needs backslashes in Origin; other systems use forward slashes
-		if (pComp->isDeserializer()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+		if (pComp->isDeserializer())
+		{
+			Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+		}
 	}
 }
 
@@ -295,8 +302,8 @@ void C4SLandscape::Default()
 	LiquidLevel.Default();
 	MapPlayerExtend=0;
 	Layers.Clear();
-	SCopy("Earth",Material,C4M_MaxName);
-	SCopy("Water",Liquid,C4M_MaxName);
+	Material = "Earth";
+	Liquid = "Water";
 	ExactLandscape=0;
 	Gravity.Set(100,0,10,200);
 	NoScan=0;
@@ -323,7 +330,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(VegLevel,                "VegetationLevel",       C4SVal(50,30,0,100), true));
 	pComp->Value(mkNamingAdapt(InEarth,                 "InEarth",               C4IDList()));
 	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
-	pComp->Value(mkNamingAdapt(mkStringAdaptMA(SkyDef), "Sky",                   ""));
+	pComp->Value(mkNamingAdapt(SkyDef,                  "Sky",                   ""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
 	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            0));
 	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               1));
@@ -337,8 +344,8 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Phase,                   "Phase",                 C4SVal(50)));
 	pComp->Value(mkNamingAdapt(Period,                  "Period",                C4SVal(15)));
 	pComp->Value(mkNamingAdapt(Random,                  "Random",                C4SVal(0)));
-	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Material),"Material",             "Earth"));
-	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Liquid), "Liquid",                "Water"));
+	pComp->Value(mkNamingAdapt(Material,                "Material",             "Earth"));
+	pComp->Value(mkNamingAdapt(Liquid,                  "Liquid",                "Water"));
 	pComp->Value(mkNamingAdapt(LiquidLevel,             "LiquidLevel",           C4SVal()));
 	pComp->Value(mkNamingAdapt(MapPlayerExtend,         "MapPlayerExtend",       0));
 	pComp->Value(mkNamingAdapt(Layers,                  "Layers",                C4NameList()));

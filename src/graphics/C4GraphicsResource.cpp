@@ -154,7 +154,7 @@ bool C4GraphicsResource::InitFonts()
 {
 	// this regards scenario-specific fonts or overloads in Extra.ocg
 	const char *szFont;
-	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
+	if (!Game.C4S.Head.Font.empty()) szFont = Game.C4S.Head.Font.c_str(); else szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(&FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	if (!::FontLoader.InitFont(&FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;

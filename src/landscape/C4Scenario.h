@@ -61,9 +61,9 @@ class C4SHead
 {
 public:
 	int32_t  C4XVer[2];
-	char Title[C4MaxTitle+1];
-	char Loader[C4MaxTitle+1];
-	char Font[C4MaxTitle+1]; // scenario specific font; may be 0
+	std::string Title;
+	std::string Loader;
+	std::string Font; // scenario specific font; may be 0
 	int32_t  Difficulty;
 	int32_t  Icon;
 	bool  NoInitialize;
@@ -72,8 +72,8 @@ public:
 	bool  Replay;
 	int32_t  Film;
 	int32_t  RandomSeed;
-	char Engine[C4MaxTitle+1]; // Relative filename of engine to be used for this scenario
-	char MissionAccess[C4MaxTitle+1];
+	std::string Engine; // Relative filename of engine to be used for this scenario
+	std::string MissionAccess;
 	bool Secret; // if true, scenario is invisible if MissionAccess has not been granted
 	bool NetworkGame;
 	bool NetworkRuntimeJoin;
@@ -168,7 +168,7 @@ public:
 	int32_t BottomOpen,TopOpen;
 	int32_t LeftOpen,RightOpen;
 	bool AutoScanSideOpen;
-	char SkyDef[C4MaxDefString+1];
+	std::string SkyDef;
 	int32_t SkyDefFade[6];
 	bool NoScan;
 	C4SVal Gravity;
@@ -178,8 +178,8 @@ public:
 	C4SVal LiquidLevel;
 	int32_t MapPlayerExtend;
 	C4NameList Layers;
-	char Material[C4M_MaxDefName+1];
-	char Liquid[C4M_MaxDefName+1];
+	std::string Material;
+	std::string Liquid;
 	bool KeepMapCreator; // set if the mapcreator will be needed in the scenario (for DrawDefMap)
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
 	int32_t MaterialZoom;

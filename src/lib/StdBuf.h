@@ -718,10 +718,19 @@ public:
 	explicit StdCopyStrBuf(const wchar_t * utf16): StdStrBuf(utf16) {}
 #endif
 
+	StdCopyStrBuf(const std::string &s) noexcept
+		: StdStrBuf(s.c_str(), s.size(), true)
+	{ }
+
 	StdCopyStrBuf &operator = (const StdStrBuf &Buf2) { Copy(Buf2); return *this; }
 	StdCopyStrBuf &operator = (const StdCopyStrBuf &Buf2) { Copy(Buf2); return *this; }
 	StdCopyStrBuf &operator = (const char *szString) { Copy(szString); return *this; }
+	StdCopyStrBuf &operator = (const std::string &s) { Copy(s.c_str(), s.size()); return *this; }
 
+	operator std::string() const
+	{
+		return std::string(getData(), getLength());
+	}
 };
 
 // Wrappers

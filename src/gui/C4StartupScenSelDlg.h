@@ -56,7 +56,7 @@ public:
 		friend class Folder;
 
 	protected:
-		StdStrBuf sName, sFilename, sDesc, sVersion, sAuthor;
+		StdCopyStrBuf sName, sFilename, sDesc, sVersion, sAuthor;
 		C4FacetSurface fctIcon, fctTitle;
 		bool fBaseLoaded, fExLoaded;
 		int iIconIndex;

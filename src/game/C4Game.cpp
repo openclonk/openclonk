@@ -234,7 +234,7 @@ bool C4Game::OpenScenario()
 #ifndef _DEBUG
 	if (C4S.Head.MissionAccess[0])
 		if (!Application.isEditor)
-			if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
+			if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess.c_str()))
 				{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
 #endif
 #endif
@@ -242,7 +242,7 @@ bool C4Game::OpenScenario()
 	// Title
 	C4Language::LoadComponentHost(&Title, ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
 	if (!Title.GetLanguageString(Config.General.LanguageEx, ScenarioTitle))
-		ScenarioTitle.Copy(C4S.Head.Title);
+		ScenarioTitle = C4S.Head.Title;
 
 	// String tables
 	C4Language::LoadComponentHost(&ScenarioLangStringTable, ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
@@ -368,7 +368,7 @@ bool C4Game::Init()
 				{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 			// init loader
-			if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader))
+			if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader.c_str()))
 				{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 		}
 
@@ -440,7 +440,7 @@ bool C4Game::Init()
 			{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 		// init loader
-		if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader))
+		if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader.c_str()))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 
 		// Init network
@@ -898,7 +898,7 @@ bool C4Game::InitMaterialTexture()
 	TextureMap.Init();
 
 	// Cross map mats (after texture init, because Material-Texture-combinations are used)
-	if (!::MaterialMap.CrossMapMaterials(C4S.Landscape.Material)) return false;
+	if (!::MaterialMap.CrossMapMaterials(C4S.Landscape.Material.c_str())) return false;
 
 	// get material script funcs
 	::MaterialMap.UpdateScriptPointers();
@@ -3592,15 +3592,15 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// clear transfer zones
 	TransferZones.Clear();
 	// backup old sky
-	char szOldSky[C4MaxDefString+1];
-	SCopy(C4S.Landscape.SkyDef, szOldSky, C4MaxDefString);
+	std::string old_sky;
+	old_sky = C4S.Landscape.SkyDef;
 	// do not warn on ignored values in main section
 	// they are caused because not all parts of scenario core are compiled on section change
 	bool is_main_section = SEqualNoCase(pLoadSect->name.getData(), C4ScenSect_Main);
 	// overload scenario values (fails if no scenario core is present; that's OK)
 	C4S.Load(*pGrp, true, is_main_section);
 	// determine whether a new sky has to be loaded
-	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
+	bool fLoadNewSky = !SEqualNoCase(old_sky.c_str(), C4S.Landscape.SkyDef.c_str()) || pGrp->FindEntry(C4CFN_Sky ".*");
 	// set new Objects.c source
 	Game.pScenarioObjectsScript = pLoadSect->pObjectScripts;
 	// remove reference to FoW from viewports, so that we can safely

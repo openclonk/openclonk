@@ -666,7 +666,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
 	// Mission access
-	fNoMissionAccess = (C4S.Head.MissionAccess[0] && !SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess));
+	fNoMissionAccess = (!C4S.Head.MissionAccess.empty() && !SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess.c_str()));
 	// Localized parameter definitions. needed for achievements and parameter input boxes.
 	// Only show them for "real" scenarios
 	if (!C4S.Head.SaveGame && !C4S.Head.Replay)
@@ -734,7 +734,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustom(C4Group &rGrp, bool fNameLoaded,
 	}
 	// scenario name fallback to core
 	if (!fNameLoaded)
-		sName.Copy(C4S.Head.Title);
+		sName = C4S.Head.Title;
 	// difficulty: Set only for regular rounds (not savegame or record) to avoid bogus sorting
 	if (!C4S.Head.SaveGame && !C4S.Head.Replay)
 		iDifficulty = C4S.Head.Difficulty;

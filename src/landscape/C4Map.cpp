@@ -95,7 +95,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 	MapBuf->ClearBox8Only(0,0,MapBuf->Wdt, MapBuf->Hgt);
 
 	// Surface
-	ccol=rTexMap.GetIndexMatTex(rLScape.Material);
+	ccol=rTexMap.GetIndexMatTex(rLScape.Material.c_str());
 	float amplitude= (float) rLScape.Amplitude.Evaluate();
 	float phase=     (float) rLScape.Phase.Evaluate();
 	float period=    (float) rLScape.Period.Evaluate();
@@ -136,7 +136,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 			SetPix(cx,cy,ccol);
 	// Raise liquid level
 	Exclusive=0;
-	ccol=rTexMap.GetIndexMatTex(rLScape.Liquid);
+	ccol=rTexMap.GetIndexMatTex(rLScape.Liquid.c_str());
 	int32_t wtr_level=rLScape.LiquidLevel.Evaluate();
 	for (cx=0; cx<MapWdt; cx++)
 		for (cy=MapHgt*(100-wtr_level)/100; cy<MapHgt; cy++)
@@ -145,7 +145,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 
 	// Layers
 	// Base material
-	Exclusive=rTexMap.GetIndexMatTex(rLScape.Material);
+	Exclusive=rTexMap.GetIndexMatTex(rLScape.Material.c_str());
 
 	int32_t cnt,clayer,layer_num,sptx,spty;
 

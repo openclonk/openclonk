@@ -355,7 +355,7 @@ void C4ConsoleQtNewScenarioDlg::AddScenarioTemplate(C4Group &parent, const char 
 	if (!template_c4s.Load(grp)) return;
 	// Title from file or scenario core
 	C4ComponentHost title_file;
-	StdStrBuf title(template_c4s.Head.Title);
+	StdCopyStrBuf title(template_c4s.Head.Title);
 	C4Language::LoadComponentHost(&title_file, grp, C4CFN_Title, Config.General.LanguageEx);
 	title_file.GetLanguageString(Config.General.LanguageEx, title);
 	// Add it; remember full path as user data
@@ -445,7 +445,7 @@ bool C4ConsoleQtNewScenarioDlg::CreateScenario()
 	c4s.Landscape.MapWdt.SetConstant(ui.mapWidthSpinBox->value());
 	c4s.Landscape.MapHgt.SetConstant(ui.mapHeightSpinBox->value());
 	c4s.Landscape.MapZoom.SetConstant(ui.mapZoomSpinBox->value());
-	SCopy(ui.titleEdit->text().toUtf8(), c4s.Head.Title, C4MaxTitle);
+	c4s.Head.Title = ui.titleEdit->text().toUtf8();
 	c4s.Game.Mode.Copy(ui.gameModeComboBox->currentText().toUtf8());
 	if (c4s.Game.Mode == "Undefined") c4s.Game.Mode.Clear();
 	filename.Copy(ui.filenameEdit->text().toUtf8());
