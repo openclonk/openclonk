@@ -445,7 +445,7 @@ bool C4ConsoleQtNewScenarioDlg::CreateScenario()
 	c4s.Landscape.MapWdt.SetConstant(ui.mapWidthSpinBox->value());
 	c4s.Landscape.MapHgt.SetConstant(ui.mapHeightSpinBox->value());
 	c4s.Landscape.MapZoom.SetConstant(ui.mapZoomSpinBox->value());
-	c4s.Head.Title = ui.titleEdit->text().toUtf8();
+	c4s.Head.Title = ui.titleEdit->text().toStdString();
 	c4s.Game.Mode.Copy(ui.gameModeComboBox->currentText().toUtf8());
 	if (c4s.Game.Mode == "Undefined") c4s.Game.Mode.Clear();
 	filename.Copy(ui.filenameEdit->text().toUtf8());
