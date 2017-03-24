@@ -1443,11 +1443,11 @@ public:
 			: pszNames(pszNames), iNameCnt(iNameCnt), iEntryNr(iEntryNr)
 	{  }
 
-	virtual bool isDeserializer() { return false; }
-	virtual bool hasNaming() { return true; }
-	virtual bool isVerbose() { return false; }
+	virtual bool isDeserializer() override { return false; }
+	virtual bool hasNaming() override { return true; }
+	virtual bool isVerbose() override { return false; }
 
-	virtual bool Name(const char *szName)
+	virtual bool Name(const char *szName) override
 	{
 		// match possible? (no match yet / continued match)
 		if (!iMatchStart || haveCurrentMatch())
@@ -1464,13 +1464,13 @@ public:
 		return true;
 	}
 
-	virtual bool Default(const char *szName)
+	virtual bool Default(const char *szName) override
 	{
 		// Always process values even if they are default!
 		return false;
 	}
 
-	virtual void NameEnd(bool fBreak = false)
+	virtual void NameEnd(bool fBreak = false) override
 	{
 		// end of matched name section?
 		if (haveCurrentMatch())
@@ -1481,7 +1481,7 @@ public:
 		iDepth--;
 	}
 
-	virtual void Begin()
+	virtual void Begin() override
 	{
 		// set up
 		iDepth = iMatchStart = iMatchCount = 0;
@@ -1496,21 +1496,32 @@ protected:
 	virtual void ProcessString(char **pszString, bool fIsID) = 0;
 	virtual void ProcessString(std::string &str, bool isID) = 0;
 
-public:
 	// value functions
-	virtual void DWord(int32_t &rInt)      { if (haveCompleteMatch()) if (!iEntryNr--) ProcessInt(rInt); }
-	virtual void DWord(uint32_t &rInt)     { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rInt;   ProcessInt(i); rInt  =i; } }
-	virtual void Word(int16_t &rShort)     { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rShort; ProcessInt(i); rShort=i; } }
-	virtual void Word(uint16_t &rShort)    { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rShort; ProcessInt(i); rShort=i; } }
-	virtual void Byte(int8_t &rByte)       { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rByte;  ProcessInt(i); rByte =i; } }
-	virtual void Byte(uint8_t &rByte)      { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rByte;  ProcessInt(i); rByte =i; } }
-	virtual void Boolean(bool &rBool)      { if (haveCompleteMatch()) if (!iEntryNr--) ProcessBool(rBool); }
-	virtual void Character(char &rChar)    { if (haveCompleteMatch()) if (!iEntryNr--) ProcessChar(rChar); }
+private:
+	template<class T>
+	void MaybeProcessInt(T &t)
+	{
+		if (haveCompleteMatch() && !iEntryNr--)
+		{
+			int32_t i = t;
+			ProcessInt(i);
+			t = i; 
+		}
+	}
+public:
+	virtual void DWord(int32_t &rInt) override { MaybeProcessInt(rInt); }
+	virtual void DWord(uint32_t &rInt) override { MaybeProcessInt(rInt); }
+	virtual void Word(int16_t &rShort) override { MaybeProcessInt(rShort); }
+	virtual void Word(uint16_t &rShort) override { MaybeProcessInt(rShort); }
+	virtual void Byte(int8_t &rByte) override { MaybeProcessInt(rByte); }
+	virtual void Byte(uint8_t &rByte) override { MaybeProcessInt(rByte); }
+	virtual void Boolean(bool &rBool) override { if (haveCompleteMatch()) if (!iEntryNr--) ProcessBool(rBool); }
+	virtual void Character(char &rChar) override { if (haveCompleteMatch()) if (!iEntryNr--) ProcessChar(rChar); }
 
 	// The C4ID-Adaptor will set RCT_ID for it's strings (see C4Id.h), so we don't have to guess the type.
-	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType)
+	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType) override
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(szString, iMaxLength, eType == StdCompiler::RCT_ID); }
-	virtual void String(char **pszString, RawCompileType eType)
+	virtual void String(char **pszString, RawCompileType eType) override
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(pszString, eType == StdCompiler::RCT_ID); }
 	virtual void String(std::string &str, RawCompileType type) override
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(str, type == StdCompiler::RCT_ID); }
@@ -1553,15 +1564,15 @@ public:
 
 protected:
 	// get values as C4Value
-	virtual void ProcessInt(int32_t &rInt) { Res = C4VInt(rInt); }
-	virtual void ProcessBool(bool &rBool)  { Res = C4VBool(rBool); }
-	virtual void ProcessChar(char &rChar)  { Res = C4VString(FormatString("%c", rChar)); }
+	virtual void ProcessInt(int32_t &rInt) override { Res = C4VInt(rInt); }
+	virtual void ProcessBool(bool &rBool) override { Res = C4VBool(rBool); }
+	virtual void ProcessChar(char &rChar) override { Res = C4VString(FormatString("%c", rChar)); }
 
-	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID)
+	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID) override
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(szString))) : C4VString(szString)); }
-	virtual void ProcessString(char **pszString, bool fIsID)
+	virtual void ProcessString(char **pszString, bool fIsID) override
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(*pszString))) : C4VString(*pszString)); }
-	virtual void ProcessString(std::string &str, bool fIsID)
+	virtual void ProcessString(std::string &str, bool fIsID) override
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(str.c_str()))) : C4VString(str.c_str())); }
 };
 
