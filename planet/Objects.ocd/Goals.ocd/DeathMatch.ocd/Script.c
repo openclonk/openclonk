@@ -24,7 +24,7 @@ func Initialize()
 	maxkills = GameCall("WinKillCount");
 	if(maxkills == nil || maxkills < 1) maxkills = 4;
 	GetRelaunchRule()->SetDefaultRelaunches(nil);
-    return _inherited(...);
+	return _inherited(...);
 }
 
 protected func RelaunchPlayer(int plr, int killer)
@@ -47,7 +47,7 @@ public func IsFulfilled()
 		// Otherwise just check if there are no enemies
 		return Goal_Melee->IsFulfilled();
 	// Eliminate all players, that are not in a team with one of the winners
-	for (var i = 0; i < GetPlayerCount(); i++)  
+	for (var i = 0; i < GetPlayerCount(); i++)	
 	{
 		var plr = GetPlayerByIndex(i);
 		if (winner == plr)
@@ -70,7 +70,7 @@ public func GetDescription(int plr)
 	{
 		var score = GetRelativeScore(plr);
 		if (score.kills > 0)
-			return Format("$MsgAhead$",  score.kills,  GetPlayerName(score.best));
+			return Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best));
 		else if (score.kills < 0)
 			return Format("$MsgBehind$", -score.kills, GetPlayerName(score.best));
 		else if (score.best == plr) 
@@ -89,7 +89,7 @@ public func Activate(int byplr)
 	else 
 	{
 		var score = GetRelativeScore(byplr);
-		if(score.kills > 0)      MessageWindow(Format("$MsgAhead$",  score.kills,  GetPlayerName(score.best)), byplr);
+		if(score.kills > 0)		 MessageWindow(Format("$MsgAhead$",	 score.kills,  GetPlayerName(score.best)), byplr);
 		else if(score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills,GetPlayerName(score.best)), byplr);
 		else if(score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
 		else MessageWindow(Format("$MsgEqual$", GetPlayerName(score.best)), byplr);
