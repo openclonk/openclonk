@@ -50,14 +50,14 @@ private func OpenWeaponMenu(object clonk)
 			menu->SetTitle(Format("$MsgWeapon$", GetRelaunchRule().RelaunchTime / 36));
 			clonk->SetMenu(menu, true);
 			
-            if(GetType(GetRelaunchRule().LastUsedPlayerWeapons) != C4V_Array) GetRelaunchRule().LastUsedPlayerWeapons = [];
+			if(GetType(GetRelaunchRule().LastUsedPlayerWeapons) != C4V_Array) GetRelaunchRule().LastUsedPlayerWeapons = [];
 			for (var weapon in weapons)
-            {
+			{
 				if(GetRelaunchRule().LastUsedPlayerWeapons[clonk->GetOwner()] != weapon)
-                {
-                    menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
-                }
-            }
+				{
+					menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
+				}
+			}
 				
 			menu->Open();
 		}
@@ -88,7 +88,7 @@ func FxIntTimeLimitTimer(object target, effect, int fxtime)
 
 public func OnWeaponSelected(id weapon)
 {
-    if(!crew) return;
+	if(!crew) return;
 	GiveWeapon(weapon);
 	if(GetRelaunchRule().DisableLastWeapon) GetRelaunchRule().LastUsedPlayerWeapons[crew->GetOwner()] = weapon;
 	has_selected = true;
@@ -124,8 +124,8 @@ private func GiveWeapon(id weapon_id)
 {
 	var newobj = CreateObjectAbove(weapon_id);
 	newobj->~OnRelaunchCreation(crew);
-    crew->Collect(newobj);
-    return true;
+	crew->Collect(newobj);
+	return true;
 }
 
 public func SaveScenarioObject() { return false; }
