@@ -18,8 +18,8 @@ func ScoreboardTeamID(int team)
 protected func Initialize()
 {
 	score_list = [];
-    GetRelaunchRule()->SetRespawnDelay(0);
-    GetRelaunchRule()->SetDefaultRelaunches(nil);
+	GetRelaunchRule()->SetRespawnDelay(0);
+	GetRelaunchRule()->SetDefaultRelaunches(nil);
 	
 	// init scoreboard
 	Scoreboard->Init(
@@ -77,8 +77,8 @@ private func EliminateOthers(int win_team)
 protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
-    GetRelaunchRule()->InitializePlayer(plr);
-    GetRelaunchRule()->DoRelaunch(iPlr, nil, RelaunchPosition(team), true);
+	GetRelaunchRule()->InitializePlayer(plr);
+	GetRelaunchRule()->DoRelaunch(iPlr, nil, RelaunchPosition(team), true);
 	
 	// make scoreboard entry for team
 	Scoreboard->NewEntry(ScoreboardTeamID(team), GetTaggedTeamName(team));
@@ -92,9 +92,9 @@ protected func RelaunchPlayer(int plr)
 
 private func RelaunchPosition(int iTeam)
 {
-    var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
+	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base) return [base->GetX(), base->GetY() - 10];
-    return nil;
+	return nil;
 }
 
 protected func RemovePlayer(int plr)
