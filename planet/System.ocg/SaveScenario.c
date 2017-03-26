@@ -470,6 +470,9 @@ global func SaveScenarioObject(props)
 			}
 		}
 	}
+	// A con of != 100 and a non-zero rotation may have moved the object, if so re-center it after setting the con and rotation.
+	if (is_centered_creation && (GetCon != 100 || (GetR() && !Contained())))
+		props->AddCall("SetPosition", this, "SetPosition", GetX(), GetY());
 	// Automatic unsticking for items lying on the ground and for animals / clonks
 	// Do this after Con/Rotation and other calls that may affect the shape
 	// (Note: If someone loads a game in paused mode and immediately saves without unpausing, most unstick calls for items will be lost)
