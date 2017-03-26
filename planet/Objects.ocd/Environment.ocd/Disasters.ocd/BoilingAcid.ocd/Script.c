@@ -26,18 +26,41 @@ private func Boiling()
 		var depth_check_mat = MaterialName(GetMaterial(x_rand, y_rand + random_depth));
 
 		if (mat == "Acid" && depth_check_mat == "Acid")
-			// PathFree check? Not really needed. Looks OK in smaller basins as well.
-			//if (PathFree(GetX() + x_rand, GetY() + y_rand, GetX() + x_rand, GetY() + random_depth))
-			{	
-				var nearbySpawner = FindObject(Find_Distance(RandomX(80, 100), x_rand, y_rand), Find_ID(BoilingAcid_Spawner));
-			
-				if (nearbySpawner == nil)
-				{
-					CreateObject(BoilingAcid_Spawner, x_rand, y_rand + random_depth);
-				}
+		{	
+			var nearby_spawner = FindObject(Find_Distance(RandomX(80, 100), x_rand, y_rand), Find_Property("IsAcidSpawner"));
+			if (!nearby_spawner)
+			{
+				var spawner = CreateObject(Dummy, x_rand, y_rand + random_depth);
+				spawner.Boil = this.SpawnerBoil;
+				spawner.max_time = 12;
+				spawner.timer = 0;
+				spawner.count = 7;
+				spawner->AddTimer("Boil", 1);
+				spawner.IsAcidSpawner = true;
 			}
+		}
 	}
 }
+
+private func SpawnerBoil()
+{
+	if (++this.timer > this.max_time)
+	{
+		this.timer = 0;
+		var amount = RandomX(1, 3);
+		this.count -= amount;
+		
+		var bubbles = this->CastAcidBubbles(amount, RandomX(10, 30), 0, 0);
+		for (var bubble in bubbles)
+			bubble->SetCon(RandomX(30, 40));
+	}
+	
+	if (!this->GBackLiquid(0, 0) || this.count <= 0)
+	{
+		this->RemoveObject();
+	}
+}
+
 
 public func Definition(def, ...)
 {

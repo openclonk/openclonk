@@ -62,22 +62,40 @@ private func Boiling()
 		{
 			for (var dy = 0; dy < 20; ++dy)
 			{
-			--y_rand;
-				if ((above_mat = MaterialName(GetMaterial(x_rand, --y_rand))) != mat) break;
+				--y_rand;
+				if ((above_mat = MaterialName(GetMaterial(x_rand, --y_rand))) != mat)
+					break;
 			}
 			if (!above_mat || above_mat == "Tunnel")
 			{
 				var depth_check_math = MaterialName(GetMaterial(x_rand, y_rand + 30));
 				if (depth_check_math == "DuroLava" || depth_check_math == "Lava")
 				{
-					// PathFree check? Not really needed. Looks OK in smaller basins as well.
-					//if (PathFree(GetX() + x_rand, GetY() + y_rand, GetX() + x_rand, GetY() + y_rand + 30))
-					{
-						CreateObject(BoilingLava_Spawner, x_rand, y_rand);
-					}
+					var spawner = CreateObject(Dummy, x_rand, y_rand);
+					spawner.Boil = this.SpawnerBoil;
+					spawner.max_time = 2;
+					spawner.timer = 0;
+					spawner.count = 10;
+					spawner->AddTimer("Boil", 1);
 				}
 			}
 		}
+	}
+}
+
+private func SpawnerBoil()
+{
+	if (++this.timer > this.max_time)
+	{
+		this.timer = 0;
+		var amount = RandomX(1, 3);
+		this.count -= amount;
+		
+		var bubbles = this->CastLavaBubbles(amount, RandomX(10, 30), RandomX(-30, 30), 0);
+		for (var bubble in bubbles)
+			bubble->SetCon(RandomX(105, 115));
+		if (this.count <= 0)
+			this->RemoveObject();
 	}
 }
 
