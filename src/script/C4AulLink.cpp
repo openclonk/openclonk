@@ -149,10 +149,14 @@ void C4AulScriptEngine::UnLink()
 {
 	warnCnt = errCnt = lineCnt = 0;
 
+	// Make everything writeable
+	GetPropList()->ThawRecursively();
+	for (C4ScriptHost *s = Child0; s; s = s->Next)
+		s->GetPropList()->ThawRecursively();
+
 	// unlink scripts
 	for (C4ScriptHost *s = Child0; s; s = s->Next)
 		s->UnLink();
-	GetPropList()->Thaw();
 	// Do not clear global variables and constants, because they are registered by the
 	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
 	// variable or constant at runtime by removing it from the script.

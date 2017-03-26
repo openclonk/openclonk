@@ -129,6 +129,7 @@ public:
 	// FIXME: Only C4PropListStatic get frozen. Optimize accordingly.
 	void Freeze() { constant = true; }
 	void Thaw() { constant = false; }
+	void ThawRecursively();
 	bool IsFrozen() const { return constant; }
 
 	// Freeze this and all proplist in properties and ensure they are static proplists

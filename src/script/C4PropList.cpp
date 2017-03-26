@@ -281,6 +281,26 @@ C4PropList::C4PropList(C4PropList * prototype):
 #endif
 }
 
+void C4PropList::ThawRecursively()
+{
+	//thaw self and all owned properties
+	Thaw();
+	C4PropListStatic *s = IsStatic();
+	//if (s) LogF("Thaw: %s", s->GetDataString().getData());
+	auto prop_names = GetUnsortedProperties(nullptr, ::ScriptEngine.GetPropList());
+	for (auto prop_name : prop_names)
+	{
+		C4Value child_val;
+		GetPropertyByS(prop_name, &child_val);
+		//LogF("  %s=%s", prop_name->GetCStr(), child_val.GetDataString(1).getData());
+		C4PropList *child_proplist = child_val.getPropList();
+		if (child_proplist && child_proplist->IsFrozen())
+		{
+			child_proplist->ThawRecursively();
+		}
+	}
+}
+
 C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(std::vector<C4Value>* prop_lists, const C4PropListStatic *parent, C4String * key)
 {
 	Freeze();
@@ -301,7 +321,9 @@ C4PropListStatic *C4PropList::FreezeAndMakeStaticRecursively(std::vector<C4Value
 		}
 		// store reference
 		if (prop_lists)
+		{
 			prop_lists->push_back(C4VPropList(this_static));
+		}
 		// "this" should be deleted as holder goes out of scope
 	}
 	// Iterate over sorted list of elements to make static
