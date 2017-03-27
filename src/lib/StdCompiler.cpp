@@ -55,6 +55,19 @@ char StdCompiler::SeparatorToChar(Sep eSep)
 	return ' ';
 }
 
+bool StdCompiler::IsStringEnd(char c, RawCompileType eType)
+{
+	switch (eType)
+	{
+	case RCT_Escaped: return c == '"' || !c || c == '\n' || c == '\r';
+	case RCT_All: return !c || c == '\n' || c == '\r';
+		// '-' is needed for Layers in Scenario.txt (C4NameList) and other Material-Texture combinations
+	case RCT_Idtf: case RCT_IdtfAllowEmpty: case RCT_ID: return !isalnum((unsigned char)c) && c != '_' && c != '-';
+	}
+	// unreachable
+	return true;
+}
+
 // *** StdCompilerBinWrite
 
 void StdCompilerBinWrite::DWord(int32_t &rInt)   { WriteValue(rInt); }
@@ -958,19 +971,6 @@ StdBuf StdCompilerINIRead::ReadString(size_t iLength, RawCompileType eRawType, b
 	OutBuf.Shrink(iLength);
 	// Done
 	return OutBuf;
-}
-
-bool StdCompilerINIRead::TestStringEnd(RawCompileType eType)
-{
-	switch (eType)
-	{
-	case RCT_Escaped: return *pPos == '"' || !*pPos || *pPos == '\n' || *pPos == '\r';
-	case RCT_All: return !*pPos || *pPos == '\n' || *pPos == '\r';
-		// '-' is needed for Layers in Scenario.txt (C4NameList) and other Material-Texture combinations
-	case RCT_Idtf: case RCT_IdtfAllowEmpty: case RCT_ID: return !isalnum((unsigned char)*pPos) && *pPos != '_' && *pPos != '-';
-	}
-	// unreachable
-	return true;
 }
 
 char StdCompilerINIRead::ReadEscapedChar()

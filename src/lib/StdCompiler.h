@@ -302,7 +302,8 @@ protected:
 
 	// Standard separator character
 	static char SeparatorToChar(Sep eSep);
-
+	// String end test depending on encoding type
+	static bool IsStringEnd(char c, RawCompileType eType);
 };
 
 // Standard compile funcs
@@ -730,7 +731,7 @@ protected:
 	long ReadNum();
 	size_t GetStringLength(RawCompileType eTyped);
 	StdBuf ReadString(size_t iLength, RawCompileType eTyped, bool fAppendNull = true);
-	bool TestStringEnd(RawCompileType eType);
+	bool TestStringEnd(RawCompileType eType) { return IsStringEnd(*pPos, eType); }
 	char ReadEscapedChar();
 	unsigned long ReadUNum();
 

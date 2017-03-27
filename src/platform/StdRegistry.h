@@ -99,6 +99,9 @@ private:
 		Key *Parent;
 	} *pKey;
 
+	// Current string for writing with separators
+	std::string last_written_string;
+
 	// Writing
 	void CreateKey(HKEY hParent = 0);
 	void WriteDWord(uint32_t iVal);
@@ -161,9 +164,15 @@ private:
 		DWORD Type; // for values only
 	} *pKey;
 
+	// Current string for reading with separators
+	std::string last_read_string;
+	bool has_read_string = false;
+	bool has_separator_mismatch = false;
+
 	// Reading
 	uint32_t ReadDWord();
-	StdStrBuf ReadString();
+	void ReadString();
+	void ResetLastString();
 
 };
 

@@ -283,6 +283,7 @@ bool StdCompilerConfigWrite::Name(const char *szName)
 	pnKey->Parent = pKey;
 	pKey = pnKey;
 	iDepth++;
+	last_written_string.clear();
 	return true;
 }
 
@@ -297,6 +298,7 @@ void StdCompilerConfigWrite::NameEnd(bool fBreak)
 	pKey = poKey->Parent;
 	delete poKey;
 	iDepth--;
+	last_written_string.clear();
 }
 
 bool StdCompilerConfigWrite::FollowName(const char *szName)
@@ -317,8 +319,10 @@ bool StdCompilerConfigWrite::Default(const char *szName)
 
 bool StdCompilerConfigWrite::Separator(Sep eSep)
 {
-	assert(!"StdCompilerConfigWrite::Separator: not supported");
-	return false;
+	// Just append separator and re-write last string
+	const char s[2] = { SeparatorToChar(eSep) , '\0' };
+	WriteString(s);
+	return true;
 }
 
 void StdCompilerConfigWrite::DWord(int32_t &rInt)
@@ -356,19 +360,16 @@ void StdCompilerConfigWrite::Character(char &rChar)
 
 void StdCompilerConfigWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
 	WriteString(szString);
 }
 
 void StdCompilerConfigWrite::String(char **pszString, RawCompileType eType)
 {
-	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
 	WriteString(pszString ? *pszString : "");
 }
 
 void StdCompilerConfigWrite::String(std::string &str, RawCompileType eType)
 {
-	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
 	WriteString(str.c_str());
 }
 
@@ -412,7 +413,10 @@ void StdCompilerConfigWrite::WriteDWord(uint32_t iVal)
 
 void StdCompilerConfigWrite::WriteString(const char *szString)
 {
-	StdBuf v = GetWideCharBuf(szString);
+	// Append to write-string and just re-write
+	// This is probably pretty inefficient, but config saving only uses it for a few key overloads
+	last_written_string += szString;
+	StdBuf v = GetWideCharBuf(last_written_string.c_str());
 	if (RegSetValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                  0, REG_SZ, getBufPtr<BYTE>(v), v.getSize()) != ERROR_SUCCESS)
 		excCorrupt("Could not write key %s!", pKey->Name.getData());
@@ -474,6 +478,7 @@ bool StdCompilerConfigRead::Name(const char *szName)
 	pnKey->Type = dwType;
 	pKey = pnKey;
 	iDepth++;
+	ResetLastString();
 	return fFound;
 }
 
@@ -488,6 +493,14 @@ void StdCompilerConfigRead::NameEnd(bool fBreak)
 	pKey = poKey->Parent;
 	delete poKey;
 	iDepth--;
+	ResetLastString();
+}
+
+void StdCompilerConfigRead::ResetLastString()
+{
+	has_read_string = false;
+	has_separator_mismatch = false;
+	last_read_string.clear();
 }
 
 bool StdCompilerConfigRead::FollowName(const char *szName)
@@ -497,8 +510,21 @@ bool StdCompilerConfigRead::FollowName(const char *szName)
 
 bool StdCompilerConfigRead::Separator(Sep eSep)
 {
-	assert(!"StdCompilerConfigRead::Separator: not supported");
-	return false;
+	// Make sure there's a string to work on
+	ReadString();
+	// Match?
+	if (last_read_string.size() && (last_read_string.front() == SeparatorToChar(eSep)))
+	{
+		// Match found. Just advance.
+		last_read_string = last_read_string.substr(1);
+		return true;
+	}
+	else
+	{
+		// Separator mismatch? Let all read attempts fail until the correct separator is found or the naming ends.
+		has_separator_mismatch = true;
+		return false;
+	}
 }
 
 void StdCompilerConfigRead::DWord(int32_t &rInt)
@@ -529,8 +555,8 @@ void StdCompilerConfigRead::Boolean(bool &rBool)
 {
 	try
 	{
-		StdStrBuf szVal = ReadString();
-		rBool = (szVal == "true");
+		ReadString();
+		rBool = (!has_separator_mismatch && (last_read_string == "true"));
 	}
 	catch (NotFoundException *pExc)
 	{
@@ -543,8 +569,8 @@ void StdCompilerConfigRead::Character(char &rChar)
 {
 	try
 	{
-		StdStrBuf szVal = ReadString();
-		rChar = *szVal.getData();
+		ReadString();
+		rChar = (last_read_string.length() && !has_separator_mismatch) ? last_read_string.front() : '\0';
 	}
 	catch (NotFoundException *pExc)
 	{
@@ -556,22 +582,39 @@ void StdCompilerConfigRead::Character(char &rChar)
 
 void StdCompilerConfigRead::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
-	StdStrBuf str = ReadString();
-	if (!str.getLength()) { *szString='\0'; return; }
-	SCopy(str.getData(), szString, iMaxLength);
+	std::string s;
+	String(s, eType);
+	SCopy(s.c_str(), szString, iMaxLength);
 }
 
 void StdCompilerConfigRead::String(char **pszString, RawCompileType eType)
 {
-	assert(eType != RCT_Idtf && eType != RCT_IdtfAllowEmpty);
-	*pszString = ReadString().GrabPointer();
+	// Read string, copy into buffer and release buffer (to use buffer allocation method)
+	std::string s;
+	String(s, eType);
+	StdStrBuf sbuf(s.c_str(), true);
+	*pszString = sbuf.GrabPointer();
 }
 
 void StdCompilerConfigRead::String(std::string &str, RawCompileType type)
 {
-	assert(type != RCT_Idtf && type != RCT_IdtfAllowEmpty);
-	str = ReadString().getData();
+	// Read from string until end marker is found
+	ReadString();
+	if (has_separator_mismatch || !last_read_string.length()) { str = "\0"; return; }
+	size_t string_end_pos = 0;
+	const char *s = last_read_string.c_str();
+	size_t spos = 0;
+	while (!IsStringEnd(s[spos], type)) ++spos;
+	if (spos < last_read_string.length())
+	{
+		str = last_read_string.substr(0, spos);
+		last_read_string = last_read_string.substr(spos);
+	}
+	else
+	{
+		str = last_read_string;
+		last_read_string.clear();
+	}
 }
 
 void StdCompilerConfigRead::Raw(void *pData, size_t iSize, RawCompileType eType)
@@ -597,6 +640,8 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 	// Wrong type?
 	if (pKey->Type != REG_DWORD && pKey->Type != REG_DWORD_LITTLE_ENDIAN)
 		{ excNotFound("Wrong value type!"); return 0; }
+	// Clear previous string
+	ResetLastString();
 	// Read
 	uint32_t iVal; DWORD iSize = sizeof(iVal);
 	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
@@ -611,33 +656,51 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 	return iVal;
 }
 
-StdStrBuf StdCompilerConfigRead::ReadString()
+void StdCompilerConfigRead::ReadString()
 {
-	// Virtual key?
-	if (pKey->Virtual)
-		{ excNotFound("Could not read value %s! Parent key doesn't exist!", pKey->Name.getData()); return StdStrBuf(); }
-	// Wrong type?
-	if (pKey->Type != REG_SZ)
-		{ excNotFound("Wrong value type!"); return StdStrBuf(); }
-	// Get size of string
-	DWORD iSize;
-	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, nullptr,
-	                    nullptr,
-	                    &iSize) != ERROR_SUCCESS)
-		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
-	// Allocate string
-	StdBuf Result; Result.SetSize(iSize);
-	// Read
-	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, nullptr,
-	                    reinterpret_cast<BYTE *>(Result.getMData()),
-	                    &iSize) != ERROR_SUCCESS)
-		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
-	// Check size
-	if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize / sizeof(wchar_t))
-		{ excCorrupt("Wrong size of a string!"); return StdStrBuf(); }
-	return StdStrBuf(getBufPtr<wchar_t>(Result));
+	// Already read?
+	if (!has_read_string)
+	{
+		ResetLastString();
+		// Virtual key?
+		if (pKey->Virtual)
+		{
+			excNotFound("Could not read value %s! Parent key doesn't exist!", pKey->Name.getData()); return;
+		}
+		// Wrong type?
+		if (pKey->Type != REG_SZ)
+		{
+			excNotFound("Wrong value type!"); return;
+		}
+		// Get size of string
+		DWORD iSize;
+		if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
+			0, nullptr,
+			nullptr,
+			&iSize) != ERROR_SUCCESS)
+		{
+			excNotFound("Could not read value %s!", pKey->Name.getData()); return;
+		}
+		// Allocate string
+		StdBuf Result; Result.SetSize(iSize);
+		// Read
+		if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
+			0, nullptr,
+			reinterpret_cast<BYTE *>(Result.getMData()),
+			&iSize) != ERROR_SUCCESS)
+		{
+			excNotFound("Could not read value %s!", pKey->Name.getData()); return;
+		}
+		// Check size
+		if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize / sizeof(wchar_t))
+		{
+			excCorrupt("Wrong size of a string!"); return;
+		}
+		// Remember string
+		StdStrBuf str_result(getBufPtr<wchar_t>(Result));
+		last_read_string = str_result.getData();
+		has_read_string = true;
+	}
 }
 
 #endif // _WIN32
