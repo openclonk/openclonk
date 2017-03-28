@@ -1,0 +1,7 @@
+[DefCore]
+id=Teleporter
+Version=5,2,0,1
+Category=C4D_Object
+Width=64
+Height=64
+Offset=-32,-32

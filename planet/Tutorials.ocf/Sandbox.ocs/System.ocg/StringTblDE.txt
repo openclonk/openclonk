@@ -1,0 +1,91 @@
+TooltipObjectspawn=Objekte erzeugen
+TooltipLandscapeBrush=Landschaft zeichnen
+TooltipMarker=Marker
+TooltipMapGen=Kartengenerator
+TooltipTweaks=Cheats und anderes tolles Zeugs
+GodsHandDisplayTT=Dieses Objekt wird mit der Hand Gottes platziert (zum Ändern \"Objekte erzeugen\" aufrufen und \"Hand Gottes\" als Ziel auswählen)
+
+OSCatProductionResources=Rohstoffe
+OSCatFoodstuff=Nahrungsmittel
+OSCatLiquids=Flüssigkeiten
+OSCatTools=Werkzeuge
+OSCatWeapons=Waffen
+OSCatExplosives=Sprengstoff
+OSCatVehicles=Fahrzeuge
+OSCatAnimals=Tiere
+OSCatPlants=Pflanzen
+OSCatGodTools=Götterspielzeug
+
+OSHintTarget=Tipp! Du kannst hiermit einstellen, wo du Objekte erzeugen möchtest. Stelle dies auf \"Hand Gottes\" um auszuwählen, welches Objekt du mit der Hand Gottes erzeugen möchtest.
+
+OSTargetClonk=Ziel: Clonk/Inventar
+OSTargetGodsHand=Ziel: Hand Gottes
+OSTargetClonkTT=Das Objekt wird (wenn möglich) im Inventar des Clonks erzeugt
+OSTargetGodsHandTT=Das Objekt kann mit der Hand Gottes erzeugt werden
+
+MatEarth=Erde
+MatEarthSpongy=Erde (Schwammig)
+MatEarthRoot=Erde (Rau)
+MatSand=Sand
+MatSandDry=Trockener Sand
+MatIce=Eis
+MatIce2=Eis (Anders)
+MatSnow=Schnee
+MatRock=Stein
+MatRockSmooth=Stein (Weich)
+MatGranite=Granit
+MatOre=Erz
+MatGold=Gold
+MatCoal=Kohle
+MatFirestone=Feuerstein
+MatRuby=Rubin
+MatAmethyst=Amethyst
+MatAshes=Asche
+MatBrick=Steinmauer
+MatBrickSoft=Steinmauer (Schwach)
+MatEverrock=Everrock
+MatWater=Wasser
+MatAcid=Säure
+MatLava=Lava
+MatDuroLava=Magma
+MatOil=Öl
+MatTunnel=Tunnel (Hintergrund)
+MatTunnelBrick=Steinmauer (Hintergrund)
+
+MatBgSky=Himmel
+MatBgTunnel=Tunnel
+MatBgBricks=Steinmauer
+
+MBMaterialFg=Material
+MBMaterialBg=Hintergrundmaterial
+MBBrushSize=Pinselgröße
+MBBrushMode=Pinselmodus
+
+MBBrushModeBrush=Pinsel
+MBBrushModeQuad=Quadrat
+MBBrushModeErase=Radierer
+
+MarkerNotSet=Marker nicht gesetzt
+PlaceMarker=Marker setzen
+RemoveMarker=Marker entfernen
+GoToMarker=Teleport
+
+MapGenButtonGenerate=Karte generieren!
+MapGenSizeWidth=Kartenbreite
+MapGenSizeHeight=Kartenhöhe
+MapGenMapType=Kartentyp
+
+MapGenTPCustom=Anpassen
+MapGenTPFlatLand=Flachland
+MapGenTPSkylands=Himmelsinseln
+MapGenTPCaves=Höhlen
+
+TweakInvincible=Unverwundbarkeit (Gott-Modus)
+OptActivate=Aktivieren
+OptDeactivate=Deaktivieren
+
+TweakSkinChoose=Skin wechseln
+OptSkin1=Abenteurer
+OptSkin2=Steampunk
+OptSkin3=Alchemist
+OptSkin4=Farmer

@@ -1,0 +1,15 @@
+Eine Karte zum Unfug treiben, ohne wenn und aber. Hier kannst du dich nach Lust und Laune austoben und kannst hier alles ausprobieren, was du möchtest.
+
+Folgende Werkzeuge stehen dir hier zur Verfügung:
+
+Landschaftsgenerator:
+Erstelle eine Landschaft, wie sie dir gefällt. Du kannst jederzeit eine neue Landschaft generieren lassen. Du kannst auswählen, was du in der Landschaft vorfinden möchtest. Ob Wüste, Schneelandschaft oder Unterwasserwelt: Du entscheidest.
+
+Materialpinsel:
+Was Entwickler im Editor können, kannst du hier mit diesem Werkzeug erledigen. Die ganze Materialienpalette steht dir zur Verfügung.
+
+Objekterzeuger:
+Was fehlt, kannst du hiermit erschaffen, ganz egal, ob Gegenstände, Gebäuden oder Fahrzeuge.
+
+Marker:
+Ein praktisches, vielseitiges Hilfmittel. Kann als Respawnpunkt und als Teleporter benutzt werden.
