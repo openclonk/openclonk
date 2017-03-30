@@ -7,6 +7,9 @@ static const EDIT_MAP = false; // Set to true to edit map and Objects.c; avoids 
 func Initialize()
 {
 	if (EDIT_MAP) return true;
+	GetRelaunchRule()->SetRelaunchCount(nil);
+	GetRelaunchRule()->SetRespawnDelay(8);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	// Mirror map objects by moving them to the other side, then re-running object initialization
 	for (var o in FindObjects(Find_NoContainer(), Find_Not(Find_Category(C4D_Goal | C4D_Rule))))
 	{
@@ -105,7 +108,6 @@ func InitializePlayer(int plr)
 		ScheduleCall(nil, Scenario.IntroMsg, 10, 1);
 	}
 	// Initial launch
-	RelaunchPlayer(plr);
 	return true;
 }
 
@@ -125,56 +127,38 @@ func IntroMsg()
 	return true;
 }
 
-func LaunchPlayer(int plr)
+func LaunchPlayer(object pClonk, int plr)
 {
-	// Position at flag
-	var flagpole = g_respawn_flags[GetPlayerTeam(plr)];
-	if (!flagpole) return EliminatePlayer(plr); // Flag lost and clonk died? Game over!
-	var crew = GetCrew(plr), start_x = flagpole->GetX(), start_y = flagpole->GetY();
-	crew->SetPosition(start_x, start_y);
 	// Make sure clonk can move
-	DigFreeRect(start_x-6,start_y-10,13,18,true);
+	DigFreeRect(pClonk->GetX()-6,pClonk->GetY()-10,13,18,true);
 	// Crew setup
-	crew.MaxEnergy = 100000;
-	crew->DoEnergy(1000);
-	crew->CreateContents(WindBag);
+	pClonk.MaxEnergy = 100000;
+	pClonk->DoEnergy(1000);
+	pClonk->CreateContents(WindBag);
 	return true;
 }
 
-func RelaunchPlayer(int plr)
+public func OnPlayerRelaunch(iPlr)
+{
+	if(!g_respawn_flags[GetPlayerTeam(plr)]) return EliminatePlayer(plr);
+}
+
+public func RelaunchPosition(int iPlr, int iTeam)
+{
+	if(!g_respawn_flags[iTeam]) return;
+	return [g_respawn_flags[iTeam]->GetX(), g_respawn_flags[iTeam]->GetY()];
+}
+
+public func OnClonkLeftRelaunch(object pClonk, int plr)
 {
 	// Find flag for respawn
 	var flagpole = g_respawn_flags[GetPlayerTeam(plr)];
 	if (!flagpole) return EliminatePlayer(plr); // Flag lost and clonk died? Game over!
-	// Player positioning. 
-	var start_x = flagpole->GetX(), start_y = flagpole->GetY();
-	// Relaunch: New clonk
-	var crew = GetCrew(plr);
-	var is_relaunch = (!crew || !crew->GetAlive());
-	if (is_relaunch)
-	{
-		crew = CreateObject(Clonk, 10,10, plr);
-		if (!crew) return false; // wat?
-		crew->MakeCrewMember(plr);
-		SetCursor(plr, crew, false);
-	}
+	
 	// Reset available items in spawns
 	for (var item_spawn in FindObjects(Find_ID(ItemSpawn))) item_spawn->Reset(plr);
 	// Relaunch near current flag pos (will be adjusted on actual relaunch)
-	crew->SetPosition(start_x, start_y);
-	var relaunch = CreateObjectAbove(RelaunchContainer, start_x, start_y, plr);
-	if (relaunch)
-	{
-		relaunch->StartRelaunch(crew);
-		relaunch->SetRelaunchTime(8, is_relaunch);
-	}
-	return true;
-}
-
-// GameCall from RelaunchContainer.
-func OnClonkLeftRelaunch(object clonk)
-{
-	if (clonk) return LaunchPlayer(clonk->GetOwner());
+	return LaunchPlayer(plr);
 }
 
 func RelaunchWeaponList() { return [Bow, Sword, Club, Javelin, Blunderbuss, Firestone, IceWallKit]; }
