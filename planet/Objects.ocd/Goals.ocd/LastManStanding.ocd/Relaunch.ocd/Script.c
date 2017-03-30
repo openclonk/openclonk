@@ -112,7 +112,7 @@ private func RelaunchClonk()
 		SetPlrView(clonk->GetOwner(), clonk);
 	}
 	clonk->Exit();
-	GameCall("OnClonkLeftRelaunch", clonk);
+	GameCall("OnClonkLeftRelaunch", clonk, clonk->GetOwner());
 	if (menu)
 		menu->Close();
 	PlayerMessage(clonk->GetOwner(), "");
