@@ -22,6 +22,9 @@ protected func Initialize()
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	GetRelaunchRule()->SetDefaultRelaunchCount(nil);
+	GetRelaunchRule()->SetRespawnDelay(8);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	var lwidth = LandscapeWidth();
 	
@@ -97,16 +100,6 @@ protected func Initialize()
 protected func InitializePlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
-	return;
-}
-
-// Gamecall from CTF goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	relaunch->SetRelaunchTime(8, true);
 	return;
 }
 
