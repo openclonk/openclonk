@@ -18,6 +18,7 @@ protected func Initialize()
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	//make lava collapse
 	CreateObjectAbove(Firestone,625,480);
@@ -147,31 +148,9 @@ global func CreateChestContents(id obj_id)
 	return;
 }
 
-protected func InitializePlayer(int plr)
+public func RelaunchPosition()
 {
-	return JoinPlayer(plr);
-}
-
-// GameCall from RelaunchContainer.
-protected func RelaunchPlayer(int plr)
-{
-	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	JoinPlayer(plr);
-	return;
-}
-
-protected func JoinPlayer(int plr)
-{
-	var clonk = GetCrew(plr);
-	clonk->DoEnergy(100000);
-	var position = [[420,200],[300,440],[130,176],[140,368],[700,192],[670,336],[750,440],[440,392],[45,256]];
-	var r=Random(GetLength(position));
-	var x = position[r][0], y = position[r][1];
-	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	return;
+	return [[420,200],[300,440],[130,176],[140,368],[700,192],[670,336],[750,440],[440,392],[45,256]];
 }
 
 func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Blunderbuss, Club]; }
