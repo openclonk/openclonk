@@ -15,7 +15,7 @@ protected func Initialize()
 	
 	// Rules.
 	CreateObject(Rule_BuyAtFlagpole);
-	CreateObject(Rule_BaseRespawn);
+	GetRelaunchRule()->SetBaseRespawn(true);
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoFriendlyFire);
 	CreateObject(Rule_Gravestones)->SetFadeOut(3 * 36);
