@@ -77,7 +77,6 @@ private func EliminateOthers(int win_team)
 protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
-	GetRelaunchRule()->InitializePlayer(plr);
 	GetRelaunchRule()->DoRelaunch(iPlr, nil, RelaunchPosition(team), true);
 	
 	// make scoreboard entry for team
@@ -85,12 +84,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 	return _inherited(plr, x, y, base, team, ...);
 }
 
-protected func RelaunchPlayer(int plr)
-{
-	return GetRelaunchRule()->RelaunchPlayer(plr);
-}
-
-private func RelaunchPosition(int iTeam)
+public func RelaunchPosition(int iTeam)
 {
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base) return [base->GetX(), base->GetY() - 10];
