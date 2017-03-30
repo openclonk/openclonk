@@ -14,6 +14,7 @@ protected func Initialize()
 	CreateObject(Goal_LastManStanding);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	//Enviroment.
 	Cloud->Place(25);
@@ -339,27 +340,19 @@ global func CreateChestContents(id obj_id)
 // GameCall from RelaunchContainer.
 func OnClonkLeftRelaunch(object clonk)
 {
-	var pos = GetRandomSpawn();
-	clonk->SetPosition(pos[0],pos[1]);
 	CreateParticle("Air", pos[0],pos[1], PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), Overcast_air_particles, 25);
 	return;
 }
 
-global func GetRandomSpawn()
+public func RelaunchPosition()
 {
-	var spawns = [[432,270],[136,382],[200,134],[864,190],[856,382],[840,518],[408,86],[536,470]];
-	var rand = Random(GetLength(spawns));
-	return spawns[rand];
+	return [[432,270],[136,382],[200,134],[864,190],[856,382],[840,518],[408,86],[536,470]];
+	
 }
 
-
-// Gamecall from LastManStanding goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
+global func GetRandomSpawn()
 {
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	return;
+	return Scenario->RelaunchPosition();
 }
 
 func KillsToRelaunch() { return 0; }
