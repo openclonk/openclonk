@@ -15,7 +15,7 @@ local respawn_at_base = false;
 //Determines whether only the last clonk gets respawned
 local RespawnLastClonk = false;
 
-local DefaultRelaunchCount = 5;
+local DefaultRelaunchCount = nil;
 local aRelaunches = [];
 
 local ClonkType = Clonk;
@@ -44,6 +44,7 @@ public func Activate(int plr)
 protected func Initialize()
 {
 	ScheduleCall(this, this.CheckDescription, 1, 1);
+	if(GetScenarioVal("Mode", "Game") == "Melee") DefaultRelaunchCount = 5;
 	return true;
 }
 
