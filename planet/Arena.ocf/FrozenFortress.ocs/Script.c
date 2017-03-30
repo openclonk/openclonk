@@ -10,6 +10,9 @@ protected func Initialize()
 {
 	// Environment 
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
+	
+	GetRelaunchRule()->SetLastWeaponUse(false);
+	
 	var time=CreateObject(Time);
 	time->SetTime();
 	time->SetCycleSpeed();
@@ -148,16 +151,6 @@ global func PlaceEdges()
 protected func InitializePlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
-	return;
-}
-
-// Gamecall from CTF goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	relaunch->SetRelaunchTime(8, true);
 	return;
 }
 
