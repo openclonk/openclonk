@@ -228,6 +228,11 @@ public func GetCarryTransform()
 	return Trans_Rotate(90, 1, 0, 0);
 }
 
+public func OnRelaunchCreation()
+{
+	CreateContents(LeadBullet);
+}
+
 public func Definition(def) 
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(1500, 0, -1500), Trans_Rotate(170, 0, 1, 0), Trans_Rotate(30, 0, 0, 1)), def);
