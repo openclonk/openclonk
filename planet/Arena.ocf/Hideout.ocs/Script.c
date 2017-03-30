@@ -18,7 +18,9 @@ protected func Initialize()
 	goal->SetFlagBase(2, LandscapeWidth() - 120, 502);
 	
 	// Rules
-	CreateObject(Rule_Restart);
+	GetRelaunchRule()
+		->SetDefaultRelaunchCount(nil)
+		->EnablePlayerRestart();
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);

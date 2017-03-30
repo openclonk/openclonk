@@ -10,6 +10,7 @@ func Initialize()
 	GetRelaunchRule()->SetRelaunchCount(nil);
 	GetRelaunchRule()->SetRespawnDelay(8);
 	GetRelaunchRule()->SetLastWeaponUse(false);
+	GetRelaunchRule()->EnablePlayerRestart();
 	// Mirror map objects by moving them to the other side, then re-running object initialization
 	for (var o in FindObjects(Find_NoContainer(), Find_Not(Find_Category(C4D_Goal | C4D_Rule))))
 	{
