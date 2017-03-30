@@ -497,10 +497,7 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) 
 		return false;
-	// Force dependency on restart rule.
-	var restart_rule = FindObject(Find_ID(Rule_Restart));
-	if (restart_rule)
-		restart_rule->MakeScenarioSaveName();
+	props->AddCall("Goal", this, "EnsureRestartRule");
 	if (no_respawn_handling)
 		props->AddCall("Goal", this, "DisableRespawnHandling");
 	if (transfer_contents)
