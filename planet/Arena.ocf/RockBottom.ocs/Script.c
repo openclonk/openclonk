@@ -12,6 +12,7 @@ protected func Initialize()
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	// Chests with weapons.
 	var chest = CreateObjectAbove(Chest, 108, 248);
@@ -82,16 +83,6 @@ protected func InitializePlayer(int plr)
 	return;
 }
 
-// Gamecall from LastManStanding goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	return;
-}
-
-
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, proplist effect, int temporary, object chest)
 {
@@ -133,6 +124,11 @@ public func OnClonkLeftRelaunch(object clonk)
 	clonk->SetPosition(RandomX(120, 160), -20);
 	clonk->Fling(0,5);
 	return;
+}
+
+public func RelaunchPosition()
+{
+	return [LandscapeWidth() / 2, LandscapeHeight() / 2];
 }
 
 public func KillsToRelaunch() { return 0; }
