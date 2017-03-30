@@ -26,6 +26,12 @@ static g_is_initialized,      // intro started
 
 func Initialize()
 {
+	GetRelaunchRule()
+		->SetBaseRespawn(true)
+		->SetFairCrew(true)
+		->InventoryTransfer(true)
+		->EnablePlayerRestart()
+		->SetLastClonkRespawn(true);
 	npc_newton->SetAlternativeSkin("MaleBlackHair");
 	npc_pyrit->SetAlternativeSkin("MaleBrownHair");
 	npc_woody->SetAlternativeSkin("Youngster");

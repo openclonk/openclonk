@@ -53,6 +53,12 @@ func DoInit(int first_player)
 	// Start intro if not yet started
 	StartSequence("Intro", 0, GetCrew(first_player));
 	
+	GetRelaunchRule()
+		->SetInventoryTransfer(true)
+		->SetLastClonkRespawn(true)
+		->SetFreeCrew(true)
+		->EnablePlayerRestart();
+	
 	return true;
 }
 

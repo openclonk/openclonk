@@ -15,6 +15,12 @@ static npc_pyrit;
 
 func DoInit(int first_player)
 {
+	GetRelaunchRule()
+		->SetBaseRespawn(true)
+		->SetLastClonkRespawn(true)
+		->SetInventoryTransfer(true)
+		->SetFreeCrew(true)
+		->EnablePlayerRestart();
 	ClearFreeRect(530,1135, 50,2);
 	if (g_last_stone_door) g_last_stone_door->DoDamage(170 - g_last_stone_door->GetDamage());
 	if (g_golden_idol)

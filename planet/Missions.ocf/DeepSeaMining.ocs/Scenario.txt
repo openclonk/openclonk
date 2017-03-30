@@ -11,7 +11,7 @@ Definition2=Decoration.ocd\Misc.ocd\Hat.ocd
 Definition3=Decoration.ocd\Clonk.ocd\AltSkins.ocd
 
 [Game]
-Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;Rule_BaseRespawn=1;Rule_Restart=1;
+Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
 Goals=Goal_BuildCrystalCommunicator=1;
 ValueOverloads=Ruby=10;Amethyst=10
 
