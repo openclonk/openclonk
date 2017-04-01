@@ -24,7 +24,7 @@
 #include "graphics/C4Surface.h"
 #include "graphics/C4FacetEx.h"
 #include "gui/C4Gui.h"
-#include "player/C4ScenarioParameters.h"
+#include "player/C4Achievement.h"
 
 class C4GraphicsResource
 {

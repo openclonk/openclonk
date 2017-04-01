@@ -721,6 +721,8 @@ set(OC_CLONK_SOURCES
 	src/platform/PlatformAbstraction.cpp
 	src/platform/PlatformAbstraction.h
 	src/platform/StdSync.h
+	src/player/C4Achievement.cpp
+	src/player/C4Achievement.h
 	src/player/C4Player.cpp
 	src/player/C4Player.h
 	src/player/C4PlayerList.cpp
