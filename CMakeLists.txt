@@ -1509,12 +1509,16 @@ foreach(group ${OC_C4GROUPS})
 	endif()
 endforeach()
 
+if(NOT APPLE)
+	# group files (game data)
+	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
+	set_property(TARGET groups PROPERTY FOLDER "Setup")
+	add_dependencies(data groups)
+	# Install binaries
+	install(TARGETS c4group DESTINATION bin)
+endif()
 if(NOT HEADLESS_ONLY)
 	if(NOT APPLE)
-		add_custom_target(groups DEPENDS ${OC_C4GROUPS})
-		set_property(TARGET groups PROPERTY FOLDER "Setup")
-		add_dependencies(data groups)
-		
 		# Install new files
 		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 		# Update the MIME cache -- this makes the clonk:// protocol handler actually work
@@ -1525,7 +1529,6 @@ if(NOT HEADLESS_ONLY)
 
 		# Install binaries
 		install(TARGETS openclonk DESTINATION games)
-		install(TARGETS c4group DESTINATION bin)
 	else()
 		install(TARGETS openclonk
 			BUNDLE DESTINATION .
