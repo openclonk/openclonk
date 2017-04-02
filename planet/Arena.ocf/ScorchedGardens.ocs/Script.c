@@ -2,7 +2,7 @@
 	Scorches Gardens
 	A melee in a fiery setting.
 
-	@author Mimmo_O
+	@author Mimmo_O (edit by DasWipf)
 */
 
 
@@ -10,32 +10,32 @@
 protected func Initialize()
 {
 	// Goal.
-	CreateObject(Goal_LastManStanding);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	
+	if (SCENPAR_Goal == 0)
+	{
+		CreateObject(Goal_LastManStanding);
+	}
+	else 
+	{	
+		CreateObject(Goal_DeathMatch);
+	}
+	
 	
 	// Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
 	SetSkyAdjust(RGB(255, 128, 0));
 	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
-	CreateObjectAbove(Column, 160, 304)->SetClrModulation(RGB(255, 100, 80));
-	CreateObjectAbove(Column, 448, 272)->SetClrModulation(RGB(255, 100, 80));
 	SetMatAdjust(RGB(255, 150, 128));
 	
 	AddEffect("RandomMeteor", nil, 100, 20);
 	AddEffect("DangerousLava", nil, 100, 1);
 
-	PlaceEdges();
 	PlaceGras();
 	return;
 }
 
-// Lava hurts a lot.
-global func FxDangerousLavaTimer()
-{
-	for (var burning in FindObjects(Find_ID(Clonk),Find_OCF(OCF_OnFire)))
-		burning->DoEnergy(-3); 
-}
 
 global func FxRandomMeteorTimer()
 {
@@ -43,16 +43,6 @@ global func FxRandomMeteorTimer()
 		return FX_OK;
 	LaunchMeteor(50 + Random(LandscapeWidth() - 100), -10, 40 + Random(40), RandomX(-20, 20), 0);
 	return FX_OK;
-}
-
-private func PlaceEdges()
-{
-	var x = [69, 69, 76, 84, 484, 76, 565, 565, 532, 68, 68, 476, 468, 532];
-	var y = [357, 349, 364, 364, 260, 300, 305, 313, 313, 300, 308, 260, 268, 305];
-	var d = [2, 3, 2, 1, 0, 0, 3, 2, 1, 3, 2, 3, 3, 0];
-	for (var i = 0; i < GetLength(x); i++)
-		DrawMaterialTriangle("Brick-brick", x[i], y[i], d[i]);
-	return;
 }
 
 private func PlaceGras()
@@ -84,7 +74,10 @@ protected func OnPlayerRelaunch(int plr)
 	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	relaunch->SetRelaunchTime(3);
+	clonk.MaxContentsCount = 2;
 	clonk->CreateContents(TeleGlove);
+	clonk->CreateContents(WindBag);
+
 	return;
 }
 
@@ -103,6 +96,15 @@ public func OnClonkDeath(object clonk)
 	return;
 }
 
-// Settings for LMS and DM.
-public func RelaunchCount() { return 5; }
-public func WinKillCount() { return 5; }
+//Settings for LMS and DM.
+
+public func RelaunchCount()
+{
+	var RelaunchCount = (SCENPAR_Relaunchs);
+	return RelaunchCount;
+}	
+public func WinKillCount() 
+{ 
+	var WinKillCount = (SCENPAR_Relaunchs);
+	return WinKillCount; 
+}

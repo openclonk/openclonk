@@ -1,26 +1,23 @@
 [Head]
-Title=ScorchedGardens
-Version=6,0
-MinPlayer=2
+Title=ScorchedGardens Wipfedit
+Version=8
 Difficulty=40
+MinPlayer=2
+NoInitialize=true
 
 [Game]
 Mode=Melee
 
-[Definitions]
-Definition1=Objects.ocd
-
 [Player1]
-Crew=Clonk=1
 
 [Player2]
-Crew=Clonk=1
 
 [Player3]
-Crew=Clonk=1
 
 [Player4]
-Crew=Clonk=1
 
 [Landscape]
 Sky=Clouds1
+BottomOpen=1
+MapWidth=100,0,64,10000
+MapHeight=50,0,40,10000

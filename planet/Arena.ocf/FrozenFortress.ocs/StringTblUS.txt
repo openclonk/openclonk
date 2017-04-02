@@ -1,2 +1,3 @@
 NameLeft=Team Icecrackers
 NameRight=Team Snowbreakers
+Captures=Captures for win

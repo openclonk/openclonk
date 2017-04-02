@@ -9,3 +9,7 @@ Ziel: Stehle die Flagge der Gegner uns bringe sie in deine Basis (deine Flagge m
 - In der Mitte ist ein Geysir, der fast im Minutentakt ausbricht.
 - Weil es hier so kalt ist, lässt sich das Eis nicht weggraben, aber wegsprengen.
 - Die Türen in der Basis öffnen sich automatisch für befreundete Spieler.
+
+[Edit]
+!Map�nderungen
+*Parameter

@@ -1,2 +1,3 @@
 NameLeft=Team Eisknacker
 NameRight=Team Schneebrecher
+Captures=Zielpunktzahl

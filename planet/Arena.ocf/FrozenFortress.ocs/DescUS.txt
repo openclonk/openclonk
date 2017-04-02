@@ -10,3 +10,6 @@ Goal: Steal your enemies' flag and bring it to your base (your flag has to be in
 - Because it is so cold here, you cannot dig through the ice, however, you can destroy it with explosives.
 - The gates open automatically when a friendly clonk comes within range.
 
+[Edit]
+!Mapchanges
+*Parameters
