@@ -147,6 +147,25 @@ TEST_F(AulPredefFunctionTest, CreateEffect)
 	EXPECT_EQ(C4VInt(3), RunScript("local A = { Construction=func() { this.Magicnumber = 3; } }; func Main() { return CreateEffect(A, 1).Magicnumber; }"));
 }
 
+TEST_F(AulPredefFunctionTest, ParseInt)
+{
+	auto ParseInt = [this](const std::string &value) { return RunExpr("ParseInt(\"" + value + "\")"); };
+	EXPECT_EQ(C4VInt(0), ParseInt("0"));
+	EXPECT_EQ(C4VInt(0), ParseInt("-0"));
+	EXPECT_EQ(C4VInt(0), ParseInt("+0"));
+	EXPECT_EQ(C4VINT_MIN, ParseInt("-2147483648"));
+	EXPECT_EQ(C4VINT_MAX, ParseInt("2147483647"));
+
+	EXPECT_EQ(C4VNull, ParseInt(""));
+	EXPECT_EQ(C4VNull, ParseInt("-"));
+	EXPECT_EQ(C4VNull, ParseInt("+"));
+	EXPECT_EQ(C4VNull, ParseInt("--23"));
+	EXPECT_EQ(C4VNull, ParseInt("-+1234"));
+	EXPECT_EQ(C4VNull, ParseInt("a"));
+	EXPECT_EQ(C4VNull, ParseInt("0a"));
+	EXPECT_EQ(C4VNull, ParseInt("2147483647a"));
+}
+
 TEST_F(AulPredefFunctionTest, Trivial)
 {
 	EXPECT_EQ(C4VInt(100), RunExpr("Sin(900,100,10)"));
