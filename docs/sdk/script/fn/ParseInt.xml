@@ -5,7 +5,8 @@
 <funcs>
   <func>
     <title>ParseInt</title>
-    <category>Arithmetics</category>
+    <category>Script</category>
+    <subcat>Strings</subcat>
     <version>8.0 OC</version>
     <syntax>
       <rtype>int</rtype>
@@ -13,7 +14,7 @@
         <param>
           <type>string</type>
           <name>value</name>
-          <desc>Absolute coordinate you want to convert to a relative coordinate.</desc>
+          <desc>string representation of a number to parse</desc>
         </param>
       </params>
     </syntax>
