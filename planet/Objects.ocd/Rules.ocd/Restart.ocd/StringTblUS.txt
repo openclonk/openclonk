@@ -1,2 +1,0 @@
-Name=Restart
-Description=This rule allows the player to start again.

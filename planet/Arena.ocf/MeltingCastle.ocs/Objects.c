@@ -4,8 +4,7 @@ func InitializeObjects()
 {
 	CreateObject(Rule_KillLogs, 50, 50);
 	CreateObject(Rule_Gravestones, 50, 50);
-	CreateObject(Rule_Restart, 50, 50);
-
+	
 	CreateObject(Goal_Melee, 50, 50);
 
 	ItemSpawn->Create(Firestone,407,389);

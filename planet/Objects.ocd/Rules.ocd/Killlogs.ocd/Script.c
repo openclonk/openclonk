@@ -42,16 +42,7 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
   		log=Format(Translate(Format("Teamkill%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
 	else log=Format(Translate(Format("KilledByPlayer%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
 	
-	// okay, why is GetRelaunchCount not a global function..?
-	// and why are the relaunches not stored in a static variable or a singleton that can be accessed somehow..
-	var relaunches=nil;
-	for(var goal in FindObjects(Find_Or(Find_Category(C4D_Goal), Find_Category(C4D_Rule))))
-	{
-		relaunches = goal->~GetRelaunchCount(plr);
-		if(relaunches != nil) break;
-	}
-	if(relaunches == nil) relaunches=GameCall("GetRelaunchCount", plr);
-
+	var relaunches = GetRelaunchCount(plr);
 	if(relaunches != nil)
 	{
 		var msg="";

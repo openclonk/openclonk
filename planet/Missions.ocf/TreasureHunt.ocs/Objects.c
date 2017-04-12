@@ -32,15 +32,9 @@ func InitializeObjects()
 	Column001->SetMeshMaterial("AncientColumn", 0);
 	Column001.Plane = 50;
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
-
 	CreateObject(Rule_TeamAccount);
 
 	CreateObject(Rule_NoPowerNeed);
-
-	CreateObject(Rule_Restart);
 
 	var LargeCaveMushroom001 = CreateObjectAbove(LargeCaveMushroom, 1308, 1038);
 	LargeCaveMushroom001->SetClrModulation(0xffe4effc);

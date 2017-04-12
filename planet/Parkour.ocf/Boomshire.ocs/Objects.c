@@ -503,7 +503,6 @@ func InitializeObjects()
 	var Torch018 = CreateObjectAbove(Torch, 1005, 1164);
 	Torch018->AttachToWall(true);
 
-	var Rule_Restart001 = CreateObject(Rule_Restart);
 
 	g_goal = CreateObject(Goal_Parkour);
 

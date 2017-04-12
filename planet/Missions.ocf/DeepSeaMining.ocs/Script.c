@@ -33,12 +33,13 @@ protected func PostIntroInitialize()
 	}
 	
 	// Rules
-	var respawn_rule = FindObject(Find_ID(Rule_BaseRespawn));
-	if (respawn_rule)
-	{
-		respawn_rule->SetInventoryTransfer(true);
-		respawn_rule->SetFreeCrew(true);
-	}
+	GetRelaunchRule()
+		->SetDefaultRelaunches()
+		->SetInventoryTransfer(true)
+		->SetFreeCrew(true)
+		->EnablePlayerRestart()
+		->SetBaseRespawn(true)
+		->SetLastClonkRespawn(true);
 	
 	// Initialize different parts of the scenario.
 	InitializeAmbience();

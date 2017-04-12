@@ -28,6 +28,11 @@ func DoInit(int first_player)
 			enemy->DoEnergy(10000);
 			enemy->AddEnergyBar();
 		}
+	
+	GetRelaunchRule()
+		->SetBaseRespawn(true)
+		->SetInventoryTransfer(true)
+		->SetFreeCrew(true);
 	return true;
 }
 

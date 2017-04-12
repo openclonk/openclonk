@@ -56,8 +56,7 @@ protected func Initialize(...)
 
 private func EnsureRestartRule()
 {
-	if (!ObjectCount(Find_ID(Rule_Restart)))
-		CreateObject(Rule_Restart, Min(64, LandscapeWidth()-GetX()-32), 0, NO_OWNER);
+	GetRelaunchRule()->EnablePlayerRestart();
 	return true;
 }
 
@@ -440,7 +439,7 @@ protected func OnClonkDeath(object clonk, int killed_by)
 	JoinPlayer(plr);
 	// Transfer contents if active.
 	if (transfer_contents)
-		Rule_BaseRespawn->TransferInventory(clonk, new_clonk);	
+		GetRelaunchRule()->TransferInventory(clonk, new_clonk);
 	// Scenario script callback.
 	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	// Log message.
@@ -498,10 +497,7 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) 
 		return false;
-	// Force dependency on restart rule.
-	var restart_rule = FindObject(Find_ID(Rule_Restart));
-	if (restart_rule)
-		restart_rule->MakeScenarioSaveName();
+	props->AddCall("Goal", this, "EnsureRestartRule");
 	if (no_respawn_handling)
 		props->AddCall("Goal", this, "DisableRespawnHandling");
 	if (transfer_contents)

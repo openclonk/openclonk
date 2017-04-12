@@ -45,10 +45,9 @@ protected func Initialize()
 	
 	// Rules: no power and restart with keeping inventory.
 	CreateObject(Rule_NoPowerNeed);
-	var restart = FindObject(Find_ID(Rule_Restart));
-	if (!restart)
-		restart = CreateObject(Rule_Restart);
-	restart->SetRemoveContents(false);
+	GetRelaunchRule()
+		->EnablePlayerRestart()
+		->SetInventoryTransfer(true);
 	
 	// Initialize parts of the scenario.
 	var amount = BoundBy(SCENPAR_NrCheckPoints, 6, 20);

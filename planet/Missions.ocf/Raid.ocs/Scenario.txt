@@ -10,7 +10,7 @@ Definition2=Decoration.ocd
 
 [Game]
 Goals=Goal_Raid=1
-Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;Rule_BaseRespawn=1;
+Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;
 
 [Player1]
 Knowledge=Foundry=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;GoldBar=1;Metal=1;Pipe=1;WallKit=1;WindGenerator=1;

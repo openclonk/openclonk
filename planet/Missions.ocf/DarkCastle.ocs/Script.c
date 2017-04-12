@@ -11,6 +11,12 @@ static npc_pyrit;
 
 private func DoInit(int first_player)
 {
+	GetRelaunchRule()
+		->SetBaseRespawn(true)
+		->SetInventoryTransfer(true)
+		->SetFreeCrew(true)
+		->EnablePlayerRestart()
+		->SetLastClonkRespawn(true);
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village

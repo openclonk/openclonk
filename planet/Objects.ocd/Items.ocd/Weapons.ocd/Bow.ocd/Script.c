@@ -232,6 +232,12 @@ public func GetCarrySpecial(clonk)
 	if(fAiming) return "pos_hand2";
 }
 
+
+public func OnRelaunchCreation()
+{
+	CreateContents(Arrow);
+}
+
 func Definition(def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-4000,-2000,4000),Trans_Rotate(180,0,1,0),Trans_Rotate(-45,0,0,1));

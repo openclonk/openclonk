@@ -7,16 +7,10 @@ func InitializeObjects()
 	var Time001 = CreateObject(Time);
 	Time001->SetTime(600);
 	Time001->SetCycleSpeed(20);
-	
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
 
 	CreateObject(Rule_NoPowerNeed);
 
 	CreateObject(Rule_TeamAccount);
-
-	CreateObject(Rule_Restart);
 
 	CreateObjectAbove(EnvPack_Scarecrow, 1218, 440);
 

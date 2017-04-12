@@ -42,7 +42,6 @@ protected func Initialize()
 	};
 	
 	CreateEffect(fx_volcano, 1, 40);
-	ScheduleCall(nil, Global.RemoveAll, 3, nil, Find_ID(Rule_Restart));
 	// Bottom is open, so put some stable lava here to prevent remaining lava from just flowing out of the map
 	DrawMaterialQuad("StableLava",0,h0,w,h0,w,h,0,h);
 	return;
