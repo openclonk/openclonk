@@ -28,6 +28,15 @@ function(git_get_changeset_id VAR)
 				OUTPUT_VARIABLE GIT_STATUS
 			)
 			string(REGEX MATCH "^[MADRC ][MD ]" WORKDIR_DIRTY "${GIT_STATUS}")
+			execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+				COMMAND "${GIT_EXECUTABLE}" "rev-parse" "--git-path" "index"
+				OUTPUT_VARIABLE GIT_INDEX
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+			set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+				APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+				"${GIT_INDEX}"
+			)
 		endif()
 	endif()
 	if (NOT C4REVISION)
