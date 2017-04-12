@@ -32,7 +32,14 @@
 
 #define C4XVER1               @C4XVER1@
 #define C4XVER2               @C4XVER2@
+#cmakedefine01 C4REVISION_DIRTY
+#if C4REVISION_DIRTY
+#define C4REVISION            "@C4REVISION@+"
+#define C4REVISION_TS         __DATE__ " " __TIME__
+#else
 #define C4REVISION            "@C4REVISION@"
+#define C4REVISION_TS         "@C4REVISION_TS@"
+#endif
 
 // Build Options
 #ifdef _DEBUG
