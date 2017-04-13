@@ -30,7 +30,7 @@ public func Activate(int plr)
 {
 	if(!RestartPlayer) return MessageWindow(this.Description, plr);
 	// Notify scenario.
-	if (!GameCall("OnPlayerRestart", plr))
+	if (GameCall("OnPlayerRestart", plr))
 		return;
 	// Remove the player's clonk, including contents.
 	var clonk = GetCrew(plr);
