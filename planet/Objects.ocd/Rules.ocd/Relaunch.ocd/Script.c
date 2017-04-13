@@ -389,8 +389,8 @@ public func Definition(def)
 	};
 	
 	def.EditorProps.hold = {
-		Name = "$holding$",
-		EditorHelp = "$holdingHelp$",
+		Name = "$Holding$",
+		EditorHelp = "$HoldingHelp$",
 		Type = "bool",
 		Set = "Setholding"
 	};
