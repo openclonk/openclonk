@@ -201,10 +201,8 @@ public func RelaunchPlayer(int plr, int killer, object pClonk)
 
 private func RespawnAtBase(int iPlr, object pClonk)
 {
-	for(var base in GetBases(pClonk))
-	{
-		if(base) return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
-	}
+	var base = GetRelaunchBase(pClonk);
+	if(base) return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
 }
 
 private func TransferInventory(object from, object to)
@@ -226,15 +224,15 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-private func GetBases(object clonk)
+private func GetRelaunchBase(object clonk)
 {
 	var plr = clonk->GetOwner();
 	// Neutral flagpoles are preferred respawn points, because they are used as the only respawn points in missions.
-	var bases = clonk->FindObjects(Find_ID(Flagpole), Find_Func("IsNeutral"), clonk->Sort_Distance());
+	var base = clonk->FindObject2(Find_ID(Flagpole), Find_Func("IsNeutral"), clonk->Sort_Distance());
 	// If there are no neutral flagpoles, find closest base owned by the player (or team) and try to buy a clonk.
-	if (GetLength(bases) <= 0) 
-		bases = clonk->FindObjects(Find_Func("IsBaseBuilding"), Find_Allied(plr), clonk->Sort_Distance());
-	return bases;
+	if (!base)
+		base = clonk->FindObject2(Find_Func("IsBaseBuilding"), Find_Allied(plr), clonk->Sort_Distance());
+	return base;
 }
 
 public func DoRelaunch(int iPlr, object pClonk, array position, bool fNoCreation)
@@ -269,12 +267,14 @@ public func DoRelaunch(int iPlr, object pClonk, array position, bool fNoCreation
 		}
 		else
 		{
+			var base = GetRelaunchBase();
+			if(!base) return;
 			// Try to buy a crew member at the base.
 			var pay_plr = base->GetOwner();
 			// Payment in neutral bases by clonk owner.
 			if (pay_plr == NO_OWNER) 
-			pay_plr = plr;
-			clonk = base->~DoBuy(ClonkType, plr, pay_plr, pClonk);
+			pay_plr = iPlr;
+			clonk = base->~DoBuy(ClonkType, iPlr, pay_plr, pClonk);
 			if (clonk)
 			{
 				clonk->Exit();
