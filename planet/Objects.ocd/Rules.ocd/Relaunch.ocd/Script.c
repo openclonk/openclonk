@@ -13,22 +13,22 @@ local free_crew = true;
 //Determines whether the clonk will be respawned at the base
 local respawn_at_base = false;
 //Determines whether only the last clonk gets respawned
-local RespawnLastClonk = false;
+local respawn_last_clonk = false;
 
-local DefaultRelaunchCount = nil;
-local aRelaunches = [];
+local default_relaunch_count = nil;
+local relaunches = [];
 
-local ClonkType = Clonk;
+local clonk_type = Clonk;
 
-local DisableLastWeapon = false;
-local LastUsedPlayerWeapons = [];
-local RelaunchTime = 36 * 10;
-local Hold = false;
-local RestartPlayer = false;
+local disable_last_weapon = false;
+local last_used_player_weapons = [];
+local relaunch_time = 36 * 10;
+local hold = false;
+local restart_player = false;
 
 public func Activate(int plr)
 {
-	if(!RestartPlayer) return MessageWindow(this.Description, plr);
+	if(!restart_player) return MessageWindow(this.Description, plr);
 	// Notify scenario.
 	if (GameCall("OnPlayerRestart", plr))
 		return;
@@ -44,7 +44,7 @@ public func Activate(int plr)
 protected func Initialize()
 {
 	ScheduleCall(this, this.CheckDescription, 1, 1);
-	if(GetScenarioVal("Mode", "Game") == "Melee") DefaultRelaunchCount = 5;
+	if(GetScenarioVal("Mode", "Game") == "Melee") default_relaunch_count = 5;
 	return true;
 }
 
@@ -94,42 +94,42 @@ public func GetFreeCrew()
 	return free_crew;
 }
 
-public func SetRespawnDelay(int iDelay)
+public func SetRespawnDelay(int delay)
 {
-	RelaunchTime = iDelay * 36;
+	relaunch_time = delay * 36;
 	return this;
 }
 
 public func GetRespawnDelay()
 {
-	return RelaunchTime / 36;
+	return relaunch_time / 36;
 }
 
-public func SetHolding(bool fHold)
+public func SetHolding(bool b)
 {
-	Hold = fHold;
+	hold = b;
 	return this;
 }
 
 public func GetHolding()
 {
-	return Hold;
+	return hold;
 }
 
-public func SetLastWeaponUse(bool fUse)
+public func SetLastWeaponUse(bool use)
 {
-	this.DisableLastWeapon = !fUse;
+	this.disable_last_weapon = !use;
 	return this;
 }
 
 public func GetLastWeaponUse()
 {
-	return DisableLastWeapon;
+	return disable_last_weapon;
 }
 
-public func SetBaseRespawn(bool fSet)
+public func SetBaseRespawn(bool set)
 {
-	respawn_at_base = fSet;
+	respawn_at_base = set;
 	return this;
 }
 
@@ -138,41 +138,41 @@ public func GetBaseRespawn()
 	return respawn_at_base;
 }
 
-public func SetDefaultRelaunches(int iRelaunches)
+public func SetDefaultRelaunches(int r)
 {
-	DefaultRelaunchCount = iRelaunches;
+	default_relaunch_count = r;
 }
 
 public func SetLastClonkRespawn(bool b)
 {
-	RespawnLastClonk = b;
+	respawn_last_clonk = b;
 	return this;
 }
 
 public func EnablePlayerRestart()
 {
-	RestartPlayer = true;
+	restart_player = true;
 	return this;
 }
 
 public func DisablePlayerRestart()
 {
-	RestartPlayer = false;
+	restart_player = false;
 	return this;
 }
 
 public func GetLastClonkRespawn()
 {
-	return RespawnLastClonk;
+	return respawn_last_clonk;
 }
 
-public func InitializePlayer(int iPlr)
+public func InitializePlayer(int plr)
 {
-	_inherited(iPlr, ...);
+	_inherited(plr, ...);
 	// Scenario script callback.
-	aRelaunches[iPlr] = DefaultRelaunchCount;
-	GameCallEx("OnPlayerRelaunch", iPlr, false);
-	return DoRelaunch(iPlr, nil, nil, true);
+	relaunches[plr] = default_relaunch_count;
+	GameCallEx("OnPlayerRelaunch", plr, false);
+	return DoRelaunch(plr, nil, nil, true);
 }
 
 /*public func OnClonkDeath(int plr, object pClonk, int iKiller)
@@ -180,14 +180,14 @@ public func InitializePlayer(int iPlr)
 	return RelaunchPlayer(plr, iKiller, pClonk);
 }*/
 
-public func RelaunchPlayer(int plr, int killer, object pClonk)
+public func RelaunchPlayer(int plr, int killer, object clonk)
 {
-	if(plr == nil || plr == NO_OWNER) return Log("NO PlAYER: %d", plr);
+	if(plr == nil || plr == NO_OWNER) return;
 	
-	if(DefaultRelaunchCount != nil)
+	if(default_relaunch_count != nil)
 	{
-		aRelaunches[plr]--;
-		if(aRelaunches[plr] < 0)
+		relaunches[plr]--;
+		if(relaunches[plr] < 0)
 		{
 			EliminatePlayer(plr);
 			return;
@@ -196,12 +196,12 @@ public func RelaunchPlayer(int plr, int killer, object pClonk)
 	
 	GameCall("OnPlayerRelaunch", plr, true);
 	
-	return DoRelaunch(plr, pClonk, nil);
+	return DoRelaunch(plr, clonk, nil);
 }
 
-private func RespawnAtBase(int iPlr, object pClonk)
+private func RespawnAtBase(object clonk)
 {
-	var base = GetRelaunchBase(pClonk);
+	var base = GetRelaunchBase(clonk);
 	if(base) return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
 }
 
@@ -235,13 +235,13 @@ private func GetRelaunchBase(object clonk)
 	return base;
 }
 
-public func DoRelaunch(int iPlr, object pClonk, array position, bool fNoCreation)
+public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 {
-	if(!GetPlayerName(iPlr)) return;
-	if(RespawnLastClonk && GetCrewCount(iPlr) >= 1) return;
+	if(!GetPlayerName(plr)) return;
+	if(respawn_last_clonk && GetCrewCount(plr) >= 1) return;
 	
-	if(respawn_at_base) position = RespawnAtBase(iPlr, pClonk);
-	position = (position ?? GameCallEx("RelaunchPosition", iPlr, GetPlayerTeam(iPlr))) ?? FindRelaunchPos(iPlr);
+	if(respawn_at_base) position = RespawnAtBase(clonk);
+	position = (position ?? GameCallEx("RelaunchPosition", plr, GetPlayerTeam(plr))) ?? FindRelaunchPos(plr);
 	
 	var spawn;
 	
@@ -256,14 +256,14 @@ public func DoRelaunch(int iPlr, object pClonk, array position, bool fNoCreation
 		else spawn = position;
 	}
 	
-	var clonk;
-	if(!fNoCreation)
+	var new_clonk;
+	if(!no_creation)
 	{
 		if(free_crew)
 		{
-			clonk = CreateObjectAbove(ClonkType, spawn[0], spawn[1],iPlr);
-			if(!clonk) return;
-			clonk->MakeCrewMember(iPlr);
+			new_clonk = CreateObjectAbove(clonk_type, spawn[0], spawn[1],plr);
+			if(!new_clonk) return;
+			new_clonk->MakeCrewMember(plr);
 		}
 		else
 		{
@@ -273,30 +273,30 @@ public func DoRelaunch(int iPlr, object pClonk, array position, bool fNoCreation
 			var pay_plr = base->GetOwner();
 			// Payment in neutral bases by clonk owner.
 			if (pay_plr == NO_OWNER) 
-			pay_plr = iPlr;
-			clonk = base->~DoBuy(ClonkType, iPlr, pay_plr, pClonk);
-			if (clonk)
+			pay_plr = plr;
+			new_clonk = base->~DoBuy(clonk_type, plr, pay_plr, clonk);
+			if (new_clonk)
 			{
-				clonk->Exit();
+				new_clonk->Exit();
 			}
 		}
 	}
 	else
 	{
-		clonk = GetCrew(iPlr);
-		if(!clonk) return;
+		new_clonk = GetCrew(plr);
+		if(!new_clonk) return;
 	}
 	
-	if (inventory_transfer) TransferInventory(pClonk, clonk);
+	if (inventory_transfer) TransferInventory(clonk, new_clonk);
 	
-	clonk->SetPosition(spawn[0], spawn[1], iPlr)
+	new_clonk->SetPosition(spawn[0], spawn[1], plr);
 	
-	if(!GetCursor(iPlr) || GetCursor(iPlr) == pClonk) SetCursor(iPlr, clonk);
-	clonk->DoEnergy(clonk.Energy || 100000);
+	if(!GetCursor(plr) || GetCursor(plr) == clonk) SetCursor(plr, new_clonk);
+	new_clonk->DoEnergy(new_clonk.Energy || 100000);
 	
-	if(RelaunchTime)
+	if(relaunch_time)
 	{
-		clonk->CreateObject(RelaunchContainer,nil,nil,iPlr)->StartRelaunch(clonk);
+		new_clonk->CreateObject(RelaunchContainer,nil,nil,plr)->StartRelaunch(new_clonk);
 	}
 	return true;
 }
@@ -346,27 +346,27 @@ public func SaveScenarioObject(props, ...)
 global func SetRelaunchCount(int plr, int value)
 {
 	if(UnlimitedRelaunches()) return;
-	GetRelaunchRule().aRelaunches[plr] = value;
-	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule().aRelaunches[plr]);
+	GetRelaunchRule().relaunches[plr] = value;
+	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule().relaunches[plr]);
 	return value;
 }
 
 global func GetRelaunchCount(int plr)
 {
-	return GetRelaunchRule().aRelaunches[plr];
+	return GetRelaunchRule().relaunches[plr];
 }
 
 global func DoRelaunchCount(int plr, int value)
 {
 	if(UnlimitedRelaunches()) return;
-	GetRelaunchRule().aRelaunches[plr] += value;
-	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule().aRelaunches[plr]);
+	GetRelaunchRule().relaunches[plr] += value;
+	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule().relaunches[plr]);
 	return;
 }
 
 global func UnlimitedRelaunches()
 {
-	return GetRelaunchRule().DefaultRelaunchCount == nil;
+	return GetRelaunchRule().default_relaunch_count == nil;
 }
 
 global func GetRelaunchRule()
@@ -389,10 +389,10 @@ public func Definition(def)
 	};
 	
 	def.EditorProps.hold = {
-		Name = "$Holding$",
-		EditorHelp = "$HoldingHelp$",
+		Name = "$holding$",
+		EditorHelp = "$holdingHelp$",
 		Type = "bool",
-		Set = "SetHolding"
+		Set = "Setholding"
 	};
 	
 	def.EditorProps.respawn_delay = {
