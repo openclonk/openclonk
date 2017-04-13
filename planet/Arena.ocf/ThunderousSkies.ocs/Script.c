@@ -18,7 +18,9 @@ protected func Initialize()
 	AddEffect("BlessTheKing",goal,100,1,nil);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
-	GetRelaunchRule()->SetLastWeaponUse(false);
+	GetRelaunchRule()
+		->SetLastWeaponUse(false)
+		->SetDefaultRelaunches(nil);
 	
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
@@ -252,7 +254,7 @@ protected func InitializePlayer(int plr)
 
 public func RelaunchPosition()
 {
-	return [[180,150],[310,320],[600,290],[650,180],[790,110],[440,190]];
+	return [[180,150],[310,300],[600,290],[650,180],[790,110],[440,190]];
 }
 
 func KillsToRelaunch() { return 0; }
