@@ -1,0 +1,55 @@
+# can use variables like {build} and {branch}
+version: 1.0.{build}-{branch}
+pull_requests:
+  do_not_increment_build_number: true
+
+branches:
+  only:
+    - appveyor
+    - master
+
+configuration:
+  - RelWithDebInfo
+
+environment:
+  matrix:
+    - CMAKE_GENERATOR_PREFIX: Visual Studio 14 2015
+
+platform:
+  - Win32
+  - x64
+
+before_build:
+  - if "%platform%" == "x64" (
+      set CMAKE_GENERATOR=%CMAKE_GENERATOR_PREFIX% Win64
+    ) else (
+      set CMAKE_GENERATOR=%CMAKE_GENERATOR_PREFIX%
+    )
+  # Based on http://stackoverflow.com/a/39408964
+  - set PREFIX=%APPVEYOR_BUILD_FOLDER%\deps
+  - if exist %PREFIX% set NEEDDEPS=rem
+  # Depends
+  - |-
+    %NEEDDEPS% cd thirdparty
+    %NEEDDEPS% mkdir build
+    %NEEDDEPS% cd build
+    %NEEDDEPS% cmake .. -G"%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=%configuration% -DCMAKE_INSTALL_PREFIX=%PREFIX%
+    %NEEDDEPS% cmake --build . --config %configuration% -- /m
+
+  - 7z a dep-libs.zip %APPVEYOR_BUILD_FOLDER%\deps\bin\*.dll
+  - |-
+    cd %APPVEYOR_BUILD_FOLDER%
+    cmake . -G"%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=%configuration%
+
+build:
+  parallel: true
+  project: openclonk.sln
+  verbosity: minimal
+
+cache:
+  - deps -> thirdparty\CMakeLists.txt
+
+artifacts:
+  - path: setup_openclonk.exe
+  - path: openclonk.exe
+  - path: dep-libs.zip
