@@ -1,0 +1,14 @@
+[DefCore]
+id=LavaCoreShell
+Version=8,0
+Category=C4D_None
+Width=56
+Height=56
+Offset=-28,-28
+Vertices=1
+VertexX=0
+VertexY=0
+SolidMask=0,0,4,8,24,24
+Rotate=1
+NoStabilize=1
+HideInCreator=true
