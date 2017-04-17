@@ -16,7 +16,7 @@ local crew;
 // Sets the GetRelaunchRule().RelaunchTime, in seconds, the clonk is held in the container.
 
 // Returns the GetRelaunchRule().RelaunchTime, in seconds the clonk is held.
-public func GetRelaunchTime() { return GetRelaunchRule().RelaunchTime / 36; }
+public func GetRelaunchTime() { return GetRelaunchRule().relaunch_time / 36; }
 
 // Retrieve weapon list from scenario.
 private func WeaponList() { return GameCall("RelaunchWeaponList"); }
@@ -47,13 +47,13 @@ private func OpenWeaponMenu(object clonk)
 		{
 			menu = CreateObject(MenuStyle_Default, nil, nil, clonk->GetOwner());
 			menu->SetPermanent();
-			menu->SetTitle(Format("$MsgWeapon$", GetRelaunchRule().RelaunchTime / 36));
+			menu->SetTitle(Format("$MsgWeapon$", GetRelaunchRule().relaunch_time / 36));
 			clonk->SetMenu(menu, true);
 			
-			if(GetType(GetRelaunchRule().LastUsedPlayerWeapons) != C4V_Array) GetRelaunchRule().LastUsedPlayerWeapons = [];
+			if(GetType(GetRelaunchRule().last_used_player_weapons) != C4V_Array) GetRelaunchRule().last_used_player_weapons = [];
 			for (var weapon in weapons)
 			{
-				if(GetRelaunchRule().LastUsedPlayerWeapons[clonk->GetOwner()] != weapon)
+				if(GetRelaunchRule().last_used_player_weapons[clonk->GetOwner()] != weapon)
 				{
 					menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
 				}
@@ -72,7 +72,7 @@ func FxIntTimeLimitTimer(object target, effect, int fxtime)
 		RemoveObject();
 		return -1;
 	}
-	if (fxtime >= GetRelaunchRule().RelaunchTime)
+	if (fxtime >= GetRelaunchRule().relaunch_time)
 	{
 		if (!has_selected && WeaponList())
 			GiveWeapon(WeaponList()[Random(GetLength(WeaponList()))]);
@@ -80,9 +80,9 @@ func FxIntTimeLimitTimer(object target, effect, int fxtime)
 		return -1;
 	}
 	if (menu)
-		menu->SetTitle(Format("$MsgWeapon$", (GetRelaunchRule().RelaunchTime - fxtime) / 36));
+		menu->SetTitle(Format("$MsgWeapon$", (GetRelaunchRule().relaunch_time - fxtime) / 36));
 	else
-		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (GetRelaunchRule().RelaunchTime - fxtime) / 36));
+		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (GetRelaunchRule().relaunch_time - fxtime) / 36));
 	return 1;
 }
 
@@ -90,13 +90,13 @@ public func OnWeaponSelected(id weapon)
 {
 	if(!crew) return;
 	GiveWeapon(weapon);
-	if(GetRelaunchRule().DisableLastWeapon) GetRelaunchRule().LastUsedPlayerWeapons[crew->GetOwner()] = weapon;
+	if(GetRelaunchRule().disable_last_weapon) GetRelaunchRule().last_used_player_weapons[crew->GetOwner()] = weapon;
 	has_selected = true;
 	// Close menu manually, to prevent selecting more weapons.
 	if (menu)
 		menu->Close();
 
-	if (!GetRelaunchRule().Hold)
+	if (!GetRelaunchRule().hold)
 		RelaunchClonk();
 	return true;
 }
