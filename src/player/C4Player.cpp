@@ -516,9 +516,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
 				// OnJoinCrew callback
 				{
-#if !defined(DEBUGREC_RECRUITMENT)
-					C4DebugRecOff DbgRecOff;
-#endif
+					C4DebugRecOff DbgRecOff{ !DEBUGREC_RECRUITMENT };
 					C4AulParSet parset(Number);
 					nobj->Call(PSF_OnJoinCrew, &parset);
 				}

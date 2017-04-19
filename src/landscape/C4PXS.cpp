@@ -33,15 +33,13 @@ static const C4Real WindDrift_Factor = itofix(1, 800);
 
 void C4PXS::Execute()
 {
-#ifdef DEBUGREC_PXS
-	if (Config.General.DebugRec)
+	if (DEBUGREC_PXS && Config.General.DebugRec)
 	{
 		C4RCExecPXS rc;
 		rc.x=x; rc.y=y; rc.iMat=Mat;
 		rc.pos = 0;
 		AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
 	}
-#endif
 	int32_t inmat;
 
 	// Safety
@@ -126,29 +124,25 @@ void C4PXS::Execute()
 
 	// No contact? Free movement
 	x=ctcox; y=ctcoy;
-#ifdef DEBUGREC_PXS
-	if (Config.General.DebugRec)
+	if (DEBUGREC_PXS && Config.General.DebugRec)
 	{
 		C4RCExecPXS rc;
 		rc.x=x; rc.y=y; rc.iMat=Mat;
 		rc.pos = 1;
 		AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
 	}
-#endif
 	return;
 }
 
 void C4PXS::Deactivate()
 {
-#ifdef DEBUGREC_PXS
-	if (Config.General.DebugRec)
+	if (DEBUGREC_PXS && Config.General.DebugRec)
 	{
 		C4RCExecPXS rc;
 		rc.x=x; rc.y=y; rc.iMat=Mat;
 		rc.pos = 2;
 		AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
 	}
-#endif
 	Mat=MNone;
 	::PXS.Delete(this);
 }
