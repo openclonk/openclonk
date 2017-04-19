@@ -471,14 +471,13 @@ bool C4SolidMask::CheckConsistency()
 	if (!SOLIDMASK_DEBUG)
 		return true;
 
-	assert(IsSomeVehicle(MaskMaterial));
 	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{
 		pSolid->RemoveTemporary(SolidMaskRect);
 	}
-	assert(!::Landscape.MatCount[MVehic]);
+	assert(!::Landscape.GetMatCount(MVehic));
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 	{
