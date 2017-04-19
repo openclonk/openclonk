@@ -26,6 +26,7 @@
 #include "gui/C4Startup.h"
 #include "gui/C4StartupAboutDlg.h"
 #include "gui/C4StartupNetDlg.h"
+#include "gui/C4StartupModsDlg.h"
 #include "gui/C4StartupOptionsDlg.h"
 #include "gui/C4StartupPlrSelDlg.h"
 #include "gui/C4StartupScenSelDlg.h"
@@ -66,6 +67,9 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(nullptr) // create w/o title
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_EDITOR"));
 	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
 #endif
+	AddElement(btn = new C4GUI::CallbackButton<C4StartupMainDlg>(LoadResStr("IDS_DLG_MODS"), caButtons.GetFromTop(iButtonHeight), &C4StartupMainDlg::OnModsBtn));
+	btn->SetToolTip(LoadResStr("IDS_DLGTIP_MODS"));
+	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupMainDlg>(LoadResStr("IDS_DLG_ABOUT"), caButtons.GetFromTop(iButtonHeight), &C4StartupMainDlg::OnAboutBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_ABOUT"));
 	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
@@ -244,6 +248,12 @@ void C4StartupMainDlg::OnNetJoin(const StdStrBuf &rsHostAddress)
 	SCopy(rsHostAddress.getData(), Game.DirectJoinAddress, sizeof(Game.DirectJoinAddress)-1);
 	// start with this set!
 	Application.OpenGame();
+}
+
+void C4StartupMainDlg::OnModsBtn(C4GUI::Control *btn)
+{
+	// launch mod manachement dialogue.
+	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Mods);
 }
 
 void C4StartupMainDlg::OnOptionsBtn(C4GUI::Control *btn)

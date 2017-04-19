@@ -30,6 +30,7 @@
 #include "gui/C4StartupOptionsDlg.h"
 #include "gui/C4StartupPlrSelDlg.h"
 #include "gui/C4StartupScenSelDlg.h"
+#include "gui/C4StartupModsDlg.h"
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {
@@ -167,6 +168,9 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *s
 		break;
 	case SDID_PlrSel:
 		pToDlg = new C4StartupPlrSelDlg();
+		break;
+	case SDID_Mods:
+		pToDlg = new C4StartupModsDlg();
 		break;
 	case SDID_Back:
 		pToDlg = pLastDlg;
@@ -333,6 +337,8 @@ bool C4Startup::SetStartScreen(const char *szScreen)
 		eLastDlgID = SDID_ScenSelNetwork;
 	else if (SEqualNoCase(szScreen, "net"))
 		eLastDlgID = SDID_NetJoin;
+	else if (SEqualNoCase(szScreen, "mods"))
+		eLastDlgID = SDID_Mods;
 	else if (SEqualNoCase(szScreen, "options"))
 		eLastDlgID = SDID_Options;
 	else if (SEqual2NoCase(szScreen, "options-"))

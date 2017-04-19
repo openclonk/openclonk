@@ -618,6 +618,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4StartupMainDlg.h
 	src/gui/C4StartupNetDlg.cpp
 	src/gui/C4StartupNetDlg.h
+	src/gui/C4StartupModsDlg.cpp
+	src/gui/C4StartupModsDlg.h
 	src/gui/C4StartupOptionsDlg.cpp
 	src/gui/C4StartupOptionsDlg.h
 	src/gui/C4StartupPlrSelDlg.cpp
