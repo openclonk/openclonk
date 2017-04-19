@@ -411,7 +411,8 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// zero fields
 	MaskPut=false;
 	MaskPutRotation=0;
-	MaskRemovalX=MaskRemovalY=Fix0;
+	MaskRemovalX = Fix0;
+	MaskRemovalY = 0;
 	ppAttachingObjects=nullptr;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	MaskMaterial=MCVehic;

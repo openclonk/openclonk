@@ -123,7 +123,7 @@ public:
 	inline C4Fixed &operator = (int32_t x) { return *this = C4Fixed(x); }
 
 	// test value
-	inline operator bool () const { return !! val; }
+	explicit operator bool () const { return val != 0; }
 	inline bool operator ! () const { return ! val; }
 
 	// arithmetic operations
