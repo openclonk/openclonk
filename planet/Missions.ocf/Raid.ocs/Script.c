@@ -26,12 +26,15 @@ static g_is_initialized,      // intro started
 
 func Initialize()
 {
-	GetRelaunchRule()
-		->SetBaseRespawn(true)
-		->SetFairCrew(true)
-		->InventoryTransfer(true)
-		->EnablePlayerRestart()
-		->SetLastClonkRespawn(true);
+	GetRelaunchRule()->Set({
+		inventory_transfer = true,
+		free_crew = true,
+		relaunch_time = 36,
+		respawn_at_base = true,
+		default_relaunch_count = nil,
+		player_restart = true,
+		respawn_last_clonk = true
+	});
 	npc_newton->SetAlternativeSkin("MaleBlackHair");
 	npc_pyrit->SetAlternativeSkin("MaleBrownHair");
 	npc_woody->SetAlternativeSkin("Youngster");
@@ -127,4 +130,9 @@ func OnGoalsFulfilled()
 	GainMissionAccess("S2Raid");
 	GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
+}
+
+public func OnPlayerRelaunch()
+{
+	return true;
 }

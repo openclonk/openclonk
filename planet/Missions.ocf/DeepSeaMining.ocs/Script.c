@@ -33,13 +33,15 @@ protected func PostIntroInitialize()
 	}
 	
 	// Rules
-	GetRelaunchRule()
-		->SetDefaultRelaunches()
-		->SetInventoryTransfer(true)
-		->SetFreeCrew(true)
-		->EnablePlayerRestart()
-		->SetBaseRespawn(true)
-		->SetLastClonkRespawn(true);
+	GetRelaunchRule()->Set({
+		inventory_transfer = true,
+		free_crew = true,
+		relaunch_time = 36,
+		respawn_at_base = true,
+		default_relaunch_count = nil,
+		player_restart = true,
+		respawn_last_clonk = true
+	});
 	
 	// Initialize different parts of the scenario.
 	InitializeAmbience();
@@ -312,4 +314,9 @@ global func Particles_Smoke(...)
 		p.DampingX = 800;
 	}
 	return p;
+}
+
+public func OnPlayerRelaunch()
+{
+	return true;
 }

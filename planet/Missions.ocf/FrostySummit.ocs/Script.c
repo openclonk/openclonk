@@ -14,6 +14,15 @@ func Initialize()
 		if (loc = FindLocation(Loc_InRect(0,80*8,40*8,20*8), Loc_Material("Earth")))
 			CreateObjectAbove(Rock, loc.x, loc.y+3);
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
+	GetRelaunchRule()->Set({
+		inventory_transfer = true,
+		free_crew = true,
+		relaunch_time = 36,
+		respawn_at_base = false,
+		default_relaunch_count = nil,
+		player_restart = true,
+		respawn_last_clonk = true
+	});
 }
 
 static g_was_player_init;
@@ -27,7 +36,6 @@ func InitializePlayer(int plr)
 		g_was_player_init = true;
 	}
 	// Position and materials
-	JoinPlayer(plr);
 	return true;
 }
 
@@ -55,21 +63,22 @@ func RelaunchPlayer(int plr)
 	return true;
 }
 
-func JoinPlayer(int plr)
+public func OnPlayerRelaunch(int plr, bool is_relaunch)
 {
-	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
-	{
-		crew->SetPosition(40*8+Random(40), 90*8-10);
-		if (!i)
-		{
-			crew->CreateContents(GrappleBow, 2);
-			crew->CreateContents(WindBag);
-			crew->CreateContents(TeleGlove);
-			crew->CreateContents(Dynamite, 2);
-		}
-	}
-	return true;
+	if(!is_relaunch) return OnClonkLeftRelaunch(GetCrew(plr), plr);
+}
+
+public func OnClonkLeftRelaunch(object clonk, int plr)
+{
+	clonk->CreateContents(GrappleBow, 2);
+	clonk->CreateContents(WindBag);
+	clonk->CreateContents(TeleGlove);
+	clonk->CreateContents(Dynamite, 2);
+}
+
+public func RelaunchPosition()
+{
+	return [40*8 + Random(40), 90*8-10];
 }
 
 func OnGoalsFulfilled()

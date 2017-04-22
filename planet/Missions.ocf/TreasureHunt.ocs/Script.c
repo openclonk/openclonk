@@ -15,12 +15,15 @@ static npc_pyrit;
 
 func DoInit(int first_player)
 {
-	GetRelaunchRule()
-		->SetBaseRespawn(true)
-		->SetLastClonkRespawn(true)
-		->SetInventoryTransfer(true)
-		->SetFreeCrew(true)
-		->EnablePlayerRestart();
+	GetRelaunchRule()->Set({
+		inventory_transfer = true,
+		free_crew = true,
+		relaunch_time = 36,
+		respawn_at_base = true,
+		default_relaunch_count = nil,
+		player_restart = true,
+		respawn_last_clonk = true
+	});
 	ClearFreeRect(530,1135, 50,2);
 	if (g_last_stone_door) g_last_stone_door->DoDamage(170 - g_last_stone_door->GetDamage());
 	if (g_golden_idol)
@@ -182,3 +185,7 @@ func OnInvincibleDamage(object damaged_target)
 	return true;
 }
 
+public func OnPlayerRelaunch()
+{
+	return true;
+}
