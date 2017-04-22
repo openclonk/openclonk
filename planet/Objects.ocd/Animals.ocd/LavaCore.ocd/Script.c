@@ -34,7 +34,7 @@ public func Initialize()
 
 public func Place(int amount, proplist rectangle, proplist settings)
 {
-	var max_tries = 2 * amount;
+	var max_tries = 5 * amount;
 	var loc_area = nil;
 	if (rectangle) loc_area = Loc_InArea(rectangle);
 	var size_range = nil;
@@ -54,7 +54,8 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		
 		if (settings.size_range)
 		{
-			core.MaxSize = Max(core.MinSize, RandomX(settings.size_range[0], settings.size_range[1]));
+			var size = RandomX(settings.size_range[0], settings.size_range[1]);
+			core.MaxSize = BoundBy(size, core.SizeLimitMin, core.SizeLimitMax);
 			core->SetCon(core.MaxSize);
 		}	
 		if (core->Stuck())
@@ -101,6 +102,8 @@ local FxCoreBehavior = new Effect
 		this.movement_step = 72;
 		this.frames_per_attack = 9;
 		this.evading_core = 0;
+		// Change time to have cores perform actions at different times.
+		this.Time = Random(this.movement_step);
 		// Make core swim and able to move.
 		Target->SetAction("Swim");
 		Target->SetComDir(COMD_None);
@@ -289,7 +292,7 @@ private func SpecialReproductionCondition()
 
 public func Birth(object parent)
 {
-	SetCon(Max(GetCon(), this.MinSize));
+	SetCon(BoundBy(GetCon(), this.SizeLimitMin, this.SizeLimitMax));
 	if (shell)
 		shell->SetSize(GetCon());
 	return;
@@ -354,8 +357,9 @@ local Plane = 424;
 local CorrosionResist = true;
 local MaxEnergy = 100000;
 local ContactCalls = true;
-local MinSize = 15;
-local MaxSize = 50;
+local SizeLimitMin = 15; // Min size of all cores.
+local SizeLimitMax = 100; // Max size of all cores.
+local MaxSize = 50; // To which size this core will grow.
 local MovementSpeed = 20;
 
 local ActMap = {
