@@ -75,7 +75,7 @@ private func CheckDescription()
 public func SetInventoryTransfer(bool transfer)
 {
 	inventory_transfer = transfer;
-	return true;
+	return this;
 }
 
 public func GetInventoryTransfer()
@@ -86,7 +86,7 @@ public func GetInventoryTransfer()
 public func SetFreeCrew(bool free)
 {
 	free_crew = free;
-	return true;
+	return this;
 }
 
 public func GetFreeCrew()
