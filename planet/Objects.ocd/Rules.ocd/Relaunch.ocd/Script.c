@@ -171,18 +171,14 @@ public func InitializePlayer(int plr)
 	_inherited(plr, ...);
 	// Scenario script callback.
 	relaunches[plr] = default_relaunch_count;
-	GameCallEx("OnPlayerRelaunch", plr, false);
-	return DoRelaunch(plr, nil, nil, true);
+	if(!GameCallEx("OnPlayerRelaunch", plr, false)) return DoRelaunch(plr, nil, nil, true);
 }
 
-/*public func OnClonkDeath(int plr, object pClonk, int iKiller)
+public func OnClonkDeath(object clonk, int killer)
 {
-	return RelaunchPlayer(plr, iKiller, pClonk);
-}*/
-
-public func RelaunchPlayer(int plr, int killer, object clonk)
-{
-	if(plr == nil || plr == NO_OWNER) return;
+	if(clonk == nil) return;
+	var plr = clonk->GetOwner();
+	if(plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
 	
 	if(default_relaunch_count != nil)
 	{
@@ -228,10 +224,10 @@ private func GetRelaunchBase(object clonk)
 {
 	var plr = clonk->GetOwner();
 	// Neutral flagpoles are preferred respawn points, because they are used as the only respawn points in missions.
-	var base = clonk->FindObject2(Find_ID(Flagpole), Find_Func("IsNeutral"), clonk->Sort_Distance());
+	var base = clonk->FindObject(Find_ID(Flagpole), Find_Func("IsNeutral"), clonk->Sort_Distance());
 	// If there are no neutral flagpoles, find closest base owned by the player (or team) and try to buy a clonk.
 	if (!base)
-		base = clonk->FindObject2(Find_Func("IsBaseBuilding"), Find_Allied(plr), clonk->Sort_Distance());
+		base = clonk->FindObject(Find_Func("IsBaseBuilding"), Find_Allied(plr), clonk->Sort_Distance());
 	return base;
 }
 
@@ -321,7 +317,7 @@ protected func FindRelaunchPos(int plr)
 		// Succes.
 		return [tx, ty];
 	}
-	return nil;
+	return [];
 }
 
 /*-- Scenario saving --*/
