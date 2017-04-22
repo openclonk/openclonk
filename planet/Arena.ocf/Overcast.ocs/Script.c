@@ -340,7 +340,7 @@ global func CreateChestContents(id obj_id)
 // GameCall from RelaunchContainer.
 func OnClonkLeftRelaunch(object clonk)
 {
-	CreateParticle("Air", pos[0],pos[1], PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), Overcast_air_particles, 25);
+	CreateParticle("Air", clonk->GetX(),clonk->GetY(), PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), Overcast_air_particles, 25);
 	return;
 }
 
