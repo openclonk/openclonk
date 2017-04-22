@@ -28,7 +28,9 @@ local restart_player = false;
 
 public func Activate(int plr)
 {
-	if(!restart_player) return MessageWindow(this.Description, plr);
+	// Only restart player if enabled unless this is a definition call.
+	if (this != Rule_Relaunch && !restart_player)
+		return MessageWindow(this.Description, plr);
 	// Notify scenario.
 	if (GameCall("OnPlayerRestart", plr))
 		return;
