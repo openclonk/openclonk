@@ -239,32 +239,37 @@ private func GetRelaunchBase(object clonk)
 
 public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 {
-	if(!GetPlayerName(plr)) return;
-	if(respawn_last_clonk && GetCrewCount(plr) >= 1) return;
+	if (!GetPlayerName(plr))
+		return;
+	if (respawn_last_clonk && GetCrewCount(plr) >= 1)
+		return;
 	
-	if(respawn_at_base) position = RespawnAtBase(clonk);
-	position = (position ?? GameCallEx("RelaunchPosition", plr, GetPlayerTeam(plr))) ?? FindRelaunchPos(plr);
+	if (respawn_at_base)
+		position = RespawnAtBase(clonk);
+	position = position ?? GameCallEx("RelaunchPosition", plr, GetPlayerTeam(plr));
+	position = position ?? FindRelaunchPos(plr);
 	
 	var spawn;
-	
-	
-	// position array either has the form [x, y] or [[x, y], [x, y], ...]
-	if(GetType(position) == C4V_Array)
+	// Position array either has the form [x, y] or [[x, y], [x, y], ...].
+	if (GetType(position) == C4V_Array)
 	{
-		if(GetType(position[0]) == C4V_Array)
+		if (GetType(position[0]) == C4V_Array)
 		{
 			spawn = position[Random(GetLength(position))];
 		}
 		else spawn = position;
 	}
+	// If no spawn has been found set it to the middle of the landscape, this should not happen.
+	spawn = spawn ?? [LandscapeWidth() / 2, LandscapeHeight() / 2];
 	
 	var new_clonk;
-	if(!no_creation)
+	if (!no_creation)
 	{
-		if(free_crew)
+		if (free_crew)
 		{
-			new_clonk = CreateObjectAbove(clonk_type, spawn[0], spawn[1],plr);
-			if(!new_clonk) return;
+			new_clonk = CreateObjectAbove(clonk_type, spawn[0], spawn[1], plr);
+			if (!new_clonk)
+				return;
 			new_clonk->MakeCrewMember(plr);
 		}
 		else
@@ -286,44 +291,33 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	else
 	{
 		new_clonk = GetCrew(plr);
-		if(!new_clonk) return;
+		if (!new_clonk)
+			return;
 	}
 	
-	if (inventory_transfer) TransferInventory(clonk, new_clonk);
+	if (inventory_transfer)
+		TransferInventory(clonk, new_clonk);
 	
 	new_clonk->SetPosition(spawn[0], spawn[1], plr);
 	
-	if(!GetCursor(plr) || GetCursor(plr) == clonk) SetCursor(plr, new_clonk);
+	if (!GetCursor(plr) || GetCursor(plr) == clonk)
+		SetCursor(plr, new_clonk);
 	new_clonk->DoEnergy(new_clonk.Energy || 100000);
 	
-	if(relaunch_time)
+	if (relaunch_time)
 	{
-		new_clonk->CreateObject(RelaunchContainer,nil,nil,plr)->StartRelaunch(new_clonk);
+		var container = new_clonk->CreateObject(RelaunchContainer, nil, nil, plr);
+		container->StartRelaunch(new_clonk);
 	}
 	return true;
 }
 
 protected func FindRelaunchPos(int plr)
 {
-	var tx, ty; // Test position.
-	for (var i = 0; i < 500; i++)
-	{
-		tx = Random(LandscapeWidth());
-		ty = Random(LandscapeHeight());
-		if (GBackSemiSolid(AbsX(tx), AbsY(ty)))
-			continue;
-		if (GBackSemiSolid(AbsX(tx+5), AbsY(ty+10)))
-			continue;
-		if (GBackSemiSolid(AbsX(tx+5), AbsY(ty-10)))
-			continue;
-		if (GBackSemiSolid(AbsX(tx-5), AbsY(ty+10)))
-			continue;
-		if (GBackSemiSolid(AbsX(tx-5), AbsY(ty-10)))
-			continue;
-		// Succes.
-		return [tx, ty];
-	}
-	return nil;
+	var loc = FindLocation(Loc_Or(Loc_Sky(), Loc_Tunnel()), Loc_Space(20, CNAT_Top), Loc_Wall(CNAT_Bottom));
+	if (loc == nil)
+		return nil;
+	return [loc.x, loc.y];
 }
 
 /*-- Scenario saving --*/
