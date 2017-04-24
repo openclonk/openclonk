@@ -64,7 +64,7 @@ void C4FullScreen::Close()
 void C4FullScreen::Clear()
 {
 	if (pSurface) delete pSurface;
-	pSurface = 0;
+	pSurface = nullptr;
 	C4Window::Clear();
 }
 

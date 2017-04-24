@@ -44,7 +44,7 @@ class C4DefAdditionalResourcesLoader: public StdMeshMaterialLoader
 public:
 	C4DefAdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
-	virtual C4Surface* LoadTexture(const char* filename)
+	C4Surface* LoadTexture(const char* filename) override
 	{
 		if (!Group.AccessEntry(filename)) return nullptr;
 		C4Surface* surface = new C4Surface;
@@ -55,14 +55,14 @@ public:
 		return surface;
 	}
 
-	virtual StdStrBuf LoadShaderCode(const char* filename)
+	StdStrBuf LoadShaderCode(const char* filename) override
 	{
 		StdStrBuf ret;
 		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
 		return ret;
 	}
 
-	virtual void AddShaderSlices(C4Shader& shader, int ssc)
+	void AddShaderSlices(C4Shader& shader, int ssc) override
 	{
 #ifndef USE_CONSOLE
 		// Add mesh-independent slices

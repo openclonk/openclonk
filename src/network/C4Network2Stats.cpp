@@ -263,16 +263,16 @@ C4Graph::ValueType C4GraphCollection::GetMaxValue() const
 int C4GraphCollection::GetSeriesCount() const
 {
 	int iCount = 0;
-	for (const_iterator i = begin(); i != end(); ++i) iCount += (*i)->GetSeriesCount();
+	for (auto i : *this) iCount += i->GetSeriesCount();
 	return iCount;
 }
 
 const C4Graph *C4GraphCollection::GetSeries(int iIndex) const
 {
-	for (const_iterator i = begin(); i != end(); ++i)
+	for (auto i : *this)
 	{
-		int iCnt = (*i)->GetSeriesCount();
-		if (iIndex < iCnt) return (*i)->GetSeries(iIndex);
+		int iCnt = i->GetSeriesCount();
+		if (iIndex < iCnt) return i->GetSeries(iIndex);
 		iIndex -= iCnt;
 	}
 	return nullptr;
@@ -281,19 +281,19 @@ const C4Graph *C4GraphCollection::GetSeries(int iIndex) const
 void C4GraphCollection::Update() const
 {
 	// update all child graphs
-	for (const_iterator i = begin(); i != end(); ++i) (*i)->Update();
+	for (auto i : *this) i->Update();
 }
 
 void C4GraphCollection::SetAverageTime(int iToTime)
 {
 	if ((iCommonAvgTime = iToTime))
-		for (iterator i = begin(); i != end(); ++i) (*i)->SetAverageTime(iToTime);
+		for (auto & i : *this) i->SetAverageTime(iToTime);
 }
 
 void C4GraphCollection::SetMultiplier(ValueType fToVal)
 {
 	if ((fMultiplier = fToVal))
-		for (iterator i = begin(); i != end(); ++i) (*i)->SetMultiplier(fToVal);
+		for (auto & i : *this) i->SetMultiplier(fToVal);
 }
 
 

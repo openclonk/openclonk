@@ -26,7 +26,7 @@
 
 #include "lib/StdMesh.h"
 #include "graphics/C4GraphicsResource.h"
-#include <locale.h>
+#include <clocale>
 #include <stdexcept>
 
 #ifndef USE_CONSOLE
@@ -215,9 +215,8 @@ namespace
 		// units that actually use a texture.
 		unsigned int texIndex = 0;
 		StdStrBuf textureUnitCode(""), textureUnitDeclCode("");
-		for(unsigned int i = 0; i < pass.TextureUnits.size(); ++i)
+		for(const auto & texunit : pass.TextureUnits)
 		{
-			const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[i];
 			textureUnitCode.Append(TextureUnitToCode(texIndex, texunit));
 
 			if(texunit.HasTexture())
@@ -294,16 +293,15 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 			max_texture_units = std::min<GLint>(max_texture_units, 16);
 
 			unsigned int active_texture_units = 0;
-			for(unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
-				if(pass.TextureUnits[k].HasTexture())
+			for(auto & TextureUnit : pass.TextureUnits)
+				if(TextureUnit.HasTexture())
 					++active_texture_units;
 
 			if (active_texture_units > static_cast<unsigned int>(max_texture_units))
 				technique.Available = false;
 
-			for (unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
+			for (auto & texunit : pass.TextureUnits)
 			{
-				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
 				for (unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
 				{
 					const C4TexRef& texture = texunit.GetTexture(l);
@@ -566,9 +564,8 @@ namespace
 		StdProjectionMatrix matrix = StdProjectionMatrix::Identity();
 		const double Position = instance.GetTexturePosition(passIndex, texUnitIndex);
 
-		for (unsigned int k = 0; k < texunit.Transformations.size(); ++k)
+		for (const auto & trans : texunit.Transformations)
 		{
-			const StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[k];
 			StdProjectionMatrix temp_matrix;
 			switch (trans.TransformType)
 			{
@@ -913,12 +910,12 @@ namespace
 
 			// Set uniforms and instance parameters
 			SetStandardUniforms(call, dwModClr, dwPlayerColor, dwBlitMode, pass.CullHardware != StdMeshMaterialPass::CH_None, pFoW, clipRect, outRect);
-			for(unsigned int j = 0; j < pass.Program->Parameters.size(); ++j)
+			for(auto & Parameter : pass.Program->Parameters)
 			{
-				const int uniform = pass.Program->Parameters[j].UniformIndex;
+				const int uniform = Parameter.UniformIndex;
 				if(!shader->HaveUniform(uniform)) continue; // optimized out
 
-				const StdMeshMaterialShaderParameter* parameter = pass.Program->Parameters[j].Parameter;
+				const StdMeshMaterialShaderParameter* parameter = Parameter.Parameter;
 
 				StdMeshMaterialShaderParameter auto_resolved;
 				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)

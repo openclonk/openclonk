@@ -432,7 +432,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			{
 				uint32_t ColorMod = DragImageObject->ColorMod;
 				uint32_t BlitMode = DragImageObject->BlitMode;
-				DragImageObject->ColorMod = (Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00);
+				DragImageObject->ColorMod = (Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/false ? 0x8f7f0000 : 0x1f007f00);
 				DragImageObject->BlitMode = C4GFXBLIT_MOD2;
 
 				DragImageObject->DrawPicture(ccgo, false, nullptr);
@@ -445,7 +445,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				// draw in special modulation mode
 				pDraw->SetBlitMode(C4GFXBLIT_MOD2);
 				// draw DragImage in red or green, according to the phase to be used
-				pDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00));
+				pDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/false ? 0x8f7f0000 : 0x1f007f00));
 
 				DragImageDef->Draw(ccgo, false, pPlayer ? pPlayer->ColorDw : 0xff0000ff, nullptr, 0, 0, nullptr);
 

@@ -76,9 +76,9 @@ int WINAPI WinMain (HINSTANCE hInst,
 	LPWSTR *curwarg = wargv;
 	while(argc--)
 	{
-		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, nullptr, 0, 0, 0);
-		char *utf8arg = new char[arglen ? arglen : 1];
-		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
+		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, nullptr, 0, nullptr, nullptr);
+		auto *utf8arg = new char[arglen ? arglen : 1];
+		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, nullptr, nullptr);
 		argv.push_back(utf8arg);
 		++curwarg;
 	}
@@ -107,7 +107,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 
 int main()
 {
-	return WinMain(GetModuleHandle(nullptr), 0, 0, 0);
+	return WinMain(GetModuleHandle(nullptr), nullptr, nullptr, 0);
 }
 
 #else // _WIN32

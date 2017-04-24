@@ -43,22 +43,22 @@ namespace C4GUI
 		pKeyContext = new C4KeyBinding(C4KeyCodeEx(K_MENU), "GUIListBoxContext", KEYSCOPE_Gui,
 		                               new ControlKeyCB<ListBox>(*this, &ListBox::KeyContext), C4CustomKey::PRIO_Ctrl);
 		C4CustomKey::CodeList keys;
-		keys.push_back(C4KeyCodeEx(K_UP));
+		keys.emplace_back(K_UP);
 		if (Config.Controls.GamepadGuiControl) ControllerKeys::Up(keys);
 		pKeyUp = new C4KeyBinding(keys, "GUIListBoxUp", KEYSCOPE_Gui,
 		                          new ControlKeyCB<ListBox>(*this, &ListBox::KeyUp), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_DOWN));
+		keys.emplace_back(K_DOWN);
 		if (Config.Controls.GamepadGuiControl) ControllerKeys::Down(keys);
 		pKeyDown = new C4KeyBinding(keys, "GUIListBoxDown", KEYSCOPE_Gui,
 		                            new ControlKeyCB<ListBox>(*this, &ListBox::KeyDown), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_LEFT));
+		keys.emplace_back(K_LEFT);
 		if (Config.Controls.GamepadGuiControl) ControllerKeys::Left(keys);
 		pKeyLeft = new C4KeyBinding(keys, "GUIListBoxLeft", KEYSCOPE_Gui,
 		                            new ControlKeyCB<ListBox>(*this, &ListBox::KeyLeft), C4CustomKey::PRIO_Ctrl);
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_RIGHT));
+		keys.emplace_back(K_RIGHT);
 		if (Config.Controls.GamepadGuiControl) ControllerKeys::Right(keys);
 		pKeyRight = new C4KeyBinding(keys, "GUIListBoxRight", KEYSCOPE_Gui,
 		                             new ControlKeyCB<ListBox>(*this, &ListBox::KeyRight), C4CustomKey::PRIO_Ctrl);
@@ -72,8 +72,8 @@ namespace C4GUI
 		                           new ControlKeyCB<ListBox>(*this, &ListBox::KeyEnd), C4CustomKey::PRIO_Ctrl);
 		// "activate" current item
 		keys.clear();
-		keys.push_back(C4KeyCodeEx(K_RETURN));
-		keys.push_back(C4KeyCodeEx(K_RETURN, KEYS_Alt));
+		keys.emplace_back(K_RETURN);
+		keys.emplace_back(K_RETURN, KEYS_Alt);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Ok(keys);

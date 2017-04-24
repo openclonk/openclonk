@@ -19,8 +19,8 @@
 #include "lib/StdAdaptors.h"
 #include "platform/StdFile.h"
 
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #ifdef _WIN32
 #include <io.h>
 #include "platform/C4windowswrapper.h"
@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #endif
-#include <ctype.h>
+#include <cctype>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -140,9 +140,9 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 #ifdef _WIN32
 StdStrBuf::StdStrBuf(const wchar_t * utf16)
 {
-	int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, 0, 0);
+	int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, nullptr, nullptr);
 	SetSize(len);
-	WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
+	WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), nullptr, nullptr);
 }
 StdStrBuf::wchar_t_holder StdStrBuf::GetWideChar() const
 {
@@ -511,12 +511,12 @@ bool StdStrBuf::TrimSpaces()
 #ifdef _WIN32
 std::string WStrToString(wchar_t *ws)
 {
-	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, 0, 0);
+	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
 	assert(len >= 0);
 	if (len <= 0) return std::string{};
 
 	std::string s(static_cast<size_t>(len), '\0');
-	s.resize(WideCharToMultiByte(CP_UTF8, 0, ws, -1, &s[0], s.size(), 0, 0) - 1);
+	s.resize(WideCharToMultiByte(CP_UTF8, 0, ws, -1, &s[0], s.size(), nullptr, nullptr) - 1);
 	return s;
 }
 #endif

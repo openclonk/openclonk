@@ -353,7 +353,7 @@ void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPh
 		}
 		else
 		{
-			dummy.reset(new StdMeshInstance(*Mesh, 1.0f));
+			dummy = std::make_unique<StdMeshInstance>(*Mesh, 1.0f);
 			instance = dummy.get();
 			pDef->GetProperty(P_PictureTransformation, &value);
 		}
@@ -398,7 +398,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 	pComp->Value(id);
 	// go over two separators ("::"). Expect them if an id was found.
 	if (!pComp->Separator(StdCompiler::SEP_PART2) || !pComp->Separator(StdCompiler::SEP_PART2))
-		pComp->excCorrupt("DefGraphics: expected \"::\"");
+		pComp->excCorrupt(R"(DefGraphics: expected "::")");
 	// compile name
 	StdStrBuf Name; if (!deserializing) Name = pDefGraphics->GetName();
 	pComp->Value(mkDefaultAdapt(mkParAdapt(Name, StdCompiler::RCT_Idtf), ""));
@@ -409,7 +409,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 		C4Def *pDef = ::Definitions.ID2Def(id);
 		// search def-graphics
 		if (!pDef || !( pDefGraphics = pDef->Graphics.Get(Name.getData()) ))
-			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), id.ToString(), pDef ? pDef->GetName() : "def not found");
+			pComp->excCorrupt(R"(DefGraphics: could not find graphics "%s" in %s(%s)!)", Name.getData(), id.ToString(), pDef ? pDef->GetName() : "def not found");
 	}
 }
 
@@ -604,9 +604,9 @@ void C4DefGraphicsPtrBackupEntry::UpdateAttachedMesh(StdMeshInstance* instance)
 	for(StdMeshInstance::AttachedMeshIter iter = instance->AttachedMeshesBegin(); iter != instance->AttachedMeshesEnd(); ++iter)
 		attached_meshes.push_back(*iter);
 
-	for(std::vector<StdMeshInstance::AttachedMesh*>::iterator iter = attached_meshes.begin(); iter != attached_meshes.end(); ++iter)
+	for(auto & attached_meshe : attached_meshes)
 		// TODO: Check that this mesh is still attached?
-		UpdateAttachedMesh((*iter)->Child);
+		UpdateAttachedMesh(attached_meshe->Child);
 }
 
 C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup():
@@ -620,8 +620,8 @@ C4DefGraphicsPtrBackup::~C4DefGraphicsPtrBackup()
 {
 	if(!fApplied) AssignRemoval();
 
-	for(std::list<C4DefGraphicsPtrBackupEntry*>::iterator iter = Entries.begin(); iter != Entries.end(); ++iter)
-		delete *iter;
+	for(auto & Entrie : Entries)
+		delete Entrie;
 }
 
 void C4DefGraphicsPtrBackup::Add(C4DefGraphics* pGfx)
@@ -649,8 +649,8 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 	MeshMaterialUpdate.Cancel();
 
 	// Remove gfx
-	for(std::list<C4DefGraphicsPtrBackupEntry*>::iterator iter = Entries.begin(); iter != Entries.end(); ++iter)
-		(*iter)->AssignRemoval();
+	for(auto & Entrie : Entries)
+		Entrie->AssignRemoval();
 
 	fApplied = true;
 }
@@ -658,13 +658,13 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 void C4DefGraphicsPtrBackup::AssignUpdate()
 {
 	// Update mesh materials for all meshes
-	for(C4DefList::Table::iterator iter = Definitions.table.begin(); iter != Definitions.table.end(); ++iter)
-		if(iter->second->Graphics.Type == C4DefGraphics::TYPE_Mesh)
-			MeshMaterialUpdate.Update(iter->second->Graphics.Mesh);
+	for(auto & iter : Definitions.table)
+		if(iter.second->Graphics.Type == C4DefGraphics::TYPE_Mesh)
+			MeshMaterialUpdate.Update(iter.second->Graphics.Mesh);
 
 	// Then, update mesh references in instances, attach bones by name, and update sprite gfx
-	for(std::list<C4DefGraphicsPtrBackupEntry*>::iterator iter = Entries.begin(); iter != Entries.end(); ++iter)
-		(*iter)->AssignUpdate();
+	for(auto & Entrie : Entries)
+		Entrie->AssignUpdate();
 
 	// Update mesh materials and animations for all mesh instances.
 	for (C4Object *pObj : Objects)

@@ -49,8 +49,8 @@ C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 
 /* Stubs */
 C4Config Config;
-C4Config::C4Config() {}
-C4Config::~C4Config() {}
+C4Config::C4Config() = default;
+C4Config::~C4Config() = default;
 const char * C4Config::AtRelativePath(char const*s) {return s;}
 
 C4AulDebug *C4AulDebug::pDebug;

@@ -22,13 +22,13 @@
 // *** C4ValueMapData ***
 
 C4ValueMapData::C4ValueMapData()
-		: pData(0), pNames(0), bTempNameList(false), pNext(0)
+		: pData(nullptr), pNames(nullptr), bTempNameList(false), pNext(nullptr)
 {
 
 }
 
 C4ValueMapData::C4ValueMapData(const C4ValueMapData &DataToCopy)
-		: pData(0), pNames(0), bTempNameList(false), pNext(0)
+		: pData(nullptr), pNames(nullptr), bTempNameList(false), pNext(nullptr)
 {
 	SetNameList(DataToCopy.pNames);
 	if (pNames) for (int32_t i = 0; i < pNames->iSize; i++)
@@ -62,10 +62,10 @@ void C4ValueMapData::Reset()
 {
 	// unreg from name list (if using one)
 	if (pNames) UnRegister();
-	pNames = 0;
+	pNames = nullptr;
 	// free data
 	delete[] pData;
-	pData = 0;
+	pData = nullptr;
 }
 
 void C4ValueMapData::ResetContent()
@@ -76,7 +76,7 @@ void C4ValueMapData::ResetContent()
 	else
 	{
 		delete[] pData;
-		pData = 0;
+		pData = nullptr;
 	}
 }
 
@@ -145,7 +145,7 @@ void C4ValueMapData::UnRegister()
 
 	// delete data array
 	delete[] pData;
-	pData = 0;
+	pData = nullptr;
 }
 
 C4ValueMapNames *C4ValueMapData::CreateTempNameList()
@@ -160,7 +160,7 @@ C4ValueMapNames *C4ValueMapData::CreateTempNameList()
 	if (pNames != pTempNames)
 	{
 		delete pTempNames;
-		return 0;
+		return nullptr;
 	}
 
 	// set flag
@@ -230,9 +230,9 @@ C4Value *C4ValueMapData::GetItem(int32_t iNr)
 	assert(iNr < pNames->iSize);
 	assert(iNr >= 0);
 	// the list is nothing without name list...
-	if (!pNames) return 0;
+	if (!pNames) return nullptr;
 
-	if (iNr >= pNames->iSize) return 0;
+	if (iNr >= pNames->iSize) return nullptr;
 
 	return &pData[iNr];
 }
@@ -240,12 +240,12 @@ C4Value *C4ValueMapData::GetItem(int32_t iNr)
 C4Value *C4ValueMapData::GetItem(const char *strName)
 {
 	assert(pNames);
-	if (!pNames) return 0;
+	if (!pNames) return nullptr;
 
 	int32_t iNr = pNames->GetItemNr(strName);
 	assert(iNr != -1);
 
-	if (iNr == -1) return 0;
+	if (iNr == -1) return nullptr;
 
 	return &pData[iNr];
 }
@@ -278,7 +278,7 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	// Data
 	char **ppNames = !deserializing ? pNames->pNames : new char * [iValueCnt];
-	if (deserializing) for (int32_t i = 0; i < iValueCnt; i++) ppNames[i] = 0;
+	if (deserializing) for (int32_t i = 0; i < iValueCnt; i++) ppNames[i] = nullptr;
 	C4Value *pValues = !deserializing ? pData : new C4Value [iValueCnt];
 	// Compile
 	try
@@ -326,13 +326,13 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 // *** C4ValueMapNames ***
 
 C4ValueMapNames::C4ValueMapNames()
-		: pNames(0), iSize(0), pFirst(0)
+		: pNames(nullptr), iSize(0), pFirst(nullptr)
 {
 
 }
 
 C4ValueMapNames::C4ValueMapNames(const C4ValueMapNames& NamesToCopy)
-		: pNames(0), iSize(0), pFirst(0)
+		: pNames(nullptr), iSize(0), pFirst(nullptr)
 {
 	ChangeNameList(const_cast<const char **>(NamesToCopy.pNames), NamesToCopy.iSize);
 }
@@ -372,7 +372,7 @@ void C4ValueMapNames::Register(C4ValueMapData *pData)
 void C4ValueMapNames::UnRegister(C4ValueMapData *pData)
 {
 	// find in list
-	C4ValueMapData *pAktData = pFirst, *pLastData = 0;
+	C4ValueMapData *pAktData = pFirst, *pLastData = nullptr;
 	while (pAktData && pAktData != pData)
 	{
 		pLastData = pAktData;
@@ -388,9 +388,9 @@ void C4ValueMapNames::UnRegister(C4ValueMapData *pData)
 		pLastData->pNext = pData->pNext;
 	else
 		pFirst = pData->pNext;
-	pData->pNext = 0;
+	pData->pNext = nullptr;
 
-	pData->pNames = 0;
+	pData->pNames = nullptr;
 }
 
 void C4ValueMapNames::ChangeNameList(const char **pnNames, int32_t nSize)

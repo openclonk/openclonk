@@ -667,7 +667,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	{
 		// Console viewport initialization
 		// Create window
-		pWindow.reset(new C4ViewportWindow(this));
+		pWindow = std::make_unique<C4ViewportWindow>(this);
 		if (!pWindow->Init(Player))
 			return false;
 		UpdateOutputSize();
@@ -696,7 +696,7 @@ void C4Viewport::EnableFoW()
 {
 	if (::Landscape.HasFoW() && Player != NO_OWNER)
 	{
-		pFoW.reset(new C4FoWRegion(::Landscape.GetFoW(), ::Players.Get(Player)));
+		pFoW = std::make_unique<C4FoWRegion>(::Landscape.GetFoW(), ::Players.Get(Player));
 	}
 	else
 	{
@@ -845,9 +845,7 @@ C4ViewportList::C4ViewportList():
 {
 	ViewportArea.Default();
 }
-C4ViewportList::~C4ViewportList()
-{
-}
+C4ViewportList::~C4ViewportList() = default;
 void C4ViewportList::Clear()
 {
 	C4Viewport *next;

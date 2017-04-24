@@ -23,21 +23,17 @@
 #include "game/C4Game.h"
 #include "lib/C4Log.h"
 
-C4Extra::C4Extra()
-{
-}
+C4Extra::C4Extra() = default;
 
-C4Extra::~C4Extra()
-{
-}
+C4Extra::~C4Extra() = default;
 
 bool C4Extra::InitGroup()
 {
 	// register extra root into game group set
-	for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
+	for(const auto & iter : Reloc)
 	{
 		std::unique_ptr<C4Group> pGroup(new C4Group);
-		if(pGroup->Open( ((*iter).strBuf + DirSep + C4CFN_Extra).getData()))
+		if(pGroup->Open( (iter.strBuf + DirSep + C4CFN_Extra).getData()))
 			ExtraGroups.emplace_back(std::move(pGroup));
 	}
 
@@ -55,9 +51,9 @@ bool C4Extra::Init()
 	char szSegment[_MAX_PATH+1];
 	for (int cseg=0; SCopySegment(Game.DefinitionFilenames,cseg,szSegment,';',_MAX_PATH); cseg++)
 	{
-		for(unsigned int i = 0; i < ExtraGroups.size(); ++i)
+		for(auto & ExtraGroup : ExtraGroups)
 		{
-			if(LoadDef(*ExtraGroups[i], GetFilename(szSegment)))
+			if(LoadDef(*ExtraGroup, GetFilename(szSegment)))
 			{
 				break;
 			}

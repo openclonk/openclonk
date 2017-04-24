@@ -439,13 +439,13 @@ void C4Object::DoMovement()
 			if (OCF & OCF_HitSpeed2)
 				if (Mass>3) Splash();
 			fNoAttach=false;
-			InLiquid=1;
+			InLiquid=true;
 		}
 	}
 	else // Out of liquid
 	{
 		if (InLiquid) // Leave liquid
-			InLiquid=0;
+			InLiquid=false;
 	}
 	// Contact Action
 	if (fAnyContact)
@@ -558,7 +558,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		// Move object
 		DoMovement();
 		// Demobilization check
-		if ((xdir==0) && (ydir==0) && (rdir==0)) Mobile=0;
+		if ((xdir==0) && (ydir==0) && (rdir==0)) Mobile=false;
 		// Check for stabilization
 		if (rdir==0) Stabilize();
 	}
@@ -571,7 +571,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		{
 			// Gravity mobilization
 			xdir=ydir=rdir=0;
-			Mobile=1;
+			Mobile=true;
 		}
 	}
 

@@ -171,8 +171,8 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0,0,C4SymbolSize,C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Commands
-				sprintf(szCommand,"SetCommand(\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
-				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
+				sprintf(szCommand,R"(SetCommand("Activate",Object(%d))&&ExecuteCommand())",pObj->Number);
+				sprintf(szCommand2,R"(SetCommand("Activate",nil,%d,0,Object(%d),%s)&&ExecuteCommand())",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
 				// Add menu item
 				Add(szCaption,fctSymbol,szCommand,iCount,pObj,"",pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
 				// facet taken over (arrg!)
@@ -216,11 +216,11 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0, 0, C4SymbolSize, C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Primary command: get/activate single object
-				sprintf(szCommand, "SetCommand(\"%s\", Object(%d)) && ExecuteCommand()", fGet ? "Get" : "Activate", pObj->Number);
+				sprintf(szCommand, R"(SetCommand("%s", Object(%d)) && ExecuteCommand())", fGet ? "Get" : "Activate", pObj->Number);
 				// Secondary command: get/activate all objects of the chosen type
 				szCommand2[0] = 0; int32_t iAllCount;
 				if ((iAllCount = pTarget->Contents.ObjectCount(pDef->id)) > 1)
-					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, pDef->id.ToString());
+					sprintf(szCommand2, R"(SetCommand("%s", nil, %d,0, Object(%d), %s) && ExecuteCommand())", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, pDef->id.ToString());
 				// Add menu item (with object)
 				Add(szCaption, fctSymbol, szCommand, iCount, pObj, "", pDef->id, szCommand2);
 				fctSymbol.Default();

@@ -47,14 +47,14 @@ C4FoWLight::C4FoWLight(C4Object *pObj)
 
 C4FoWLight::~C4FoWLight()
 {
-	for(size_t i = 0; i < sections.size(); ++i )
-		delete sections[i];
+	for(auto & section : sections)
+		delete section;
 }
 
 void C4FoWLight::Invalidate(C4Rect r)
 {
-	for(size_t i = 0; i < sections.size(); ++i )
-		sections[i]->Invalidate(r);
+	for(auto & section : sections)
+		section->Invalidate(r);
 }
 
 void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
@@ -68,15 +68,15 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 	{
 		// Reach decreased? Prune beams
 		iReach = iReach2;
-		for(size_t i = 0; i < sections.size(); ++i )
-			sections[i]->Prune(iReach);
+		for(auto & section : sections)
+			section->Prune(iReach);
 
 	} else {
 
 		// Reach increased? Dirty beams that might get longer now
 		iReach = iReach2;
-		for(size_t i = 0; i < sections.size(); ++i )
-			sections[i]->Dirty(iReach);
+		for(auto & section : sections)
+			section->Dirty(iReach);
 	}
 }
 
@@ -110,13 +110,13 @@ void C4FoWLight::Update(C4Rect Rec)
 	// Clear if we moved in any way
 	if (iNX != iX || iNY != iY)
 	{
-		for(size_t i = 0; i < sections.size(); ++i )
-			sections[i]->Prune(0);
+		for(auto & section : sections)
+			section->Prune(0);
 		iX = iNX; iY = iNY;
 	}
 
-	for(size_t i = 0; i < sections.size(); ++i )
-		sections[i]->Update(Rec);
+	for(auto & section : sections)
+		section->Update(Rec);
 }
 
 void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, C4ShaderCall& call)
@@ -125,9 +125,9 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, C4Sh
 
 	bool clip = false;
 	
-	for(size_t i = 0; i < sections.size(); ++i )
+	for(auto & section : sections)
 	{
-		TriangleList sectionTriangles = sections[i]->CalculateTriangles(region);
+		TriangleList sectionTriangles = section->CalculateTriangles(region);
 
 		// if the triangles of one section are clipped completely, the neighbouring triangles
 		// must be marked as clipped
@@ -145,9 +145,9 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, C4Sh
 	if (!strategy.get())
 	{
 		if (onScreen)
-			strategy.reset(new C4FoWDrawWireframeStrategy(this, onScreen));
+			strategy = std::make_unique<C4FoWDrawWireframeStrategy>(this, onScreen);
 		else
-			strategy.reset(new C4FoWDrawLightTextureStrategy(this));
+			strategy = std::make_unique<C4FoWDrawLightTextureStrategy>(this);
 	}
 
 	strategy->Begin(region);
@@ -162,10 +162,8 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, C4Sh
 
 void C4FoWLight::CalculateFanMaxed(TriangleList &triangles) const
 {
-	for (TriangleList::iterator it = triangles.begin(); it != triangles.end(); ++it)
+	for (auto & tri : triangles)
 	{
-		C4FoWBeamTriangle &tri = *it;
-
 		// Is the left point close enough that normals don't max out?
 		float dist = sqrt(GetSquaredDistanceTo(tri.fanLX, tri.fanLY));
 		if (dist <= getNormalSize()) {
@@ -305,9 +303,9 @@ void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 {
 	pen->BeginFade();
 
-	for (TriangleList::iterator it = triangles.begin(); it != triangles.end(); ++it)
+	for (auto & tri : triangles)
 	{
-		C4FoWBeamTriangle &tri = *it; // just for convenience
+		// just for convenience
 
 		// The quad will be empty if fan points match
 		if (tri.fanLX == tri.fanRX && tri.fanLY == tri.fanRY) continue;

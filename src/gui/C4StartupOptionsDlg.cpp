@@ -318,9 +318,9 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetAssignmentSet(class C4PlayerC
 		std::stable_sort(grouped_assignments.begin(),grouped_assignments.end(),&C4StartupOptionsDlg::ControlConfigListBox::sort_by_group);
 
 		int32_t current_group = 0;
-		for (std::vector<C4PlayerControlAssignment *>::iterator i = grouped_assignments.begin(); i != grouped_assignments.end(); ++i)
+		for (auto & grouped_assignment : grouped_assignments)
 		{
-			assignment = *i;
+			assignment = grouped_assignment;
 			bool first_element_of_group = assignment->GetGUIGroup() > current_group;
 			current_group = assignment->GetGUIGroup();
 			// only show assignments of GUI-named controls
@@ -662,11 +662,11 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 
 	// key bindings
 	C4CustomKey::CodeList keys;
-	keys.push_back(C4KeyCodeEx(K_BACK)); keys.push_back(C4KeyCodeEx(K_LEFT));
+	keys.emplace_back(K_BACK); keys.emplace_back(K_LEFT);
 	pKeyBack = new C4KeyBinding(keys, "StartupOptionsBack", KEYSCOPE_Gui,
 	                            new C4GUI::DlgKeyCB<C4StartupOptionsDlg>(*this, &C4StartupOptionsDlg::KeyBack), C4CustomKey::PRIO_Dlg);
 	keys.clear();
-	keys.push_back(C4KeyCodeEx(K_F3)); // overloading global toggle with higher priority here, so a new name is required
+	keys.emplace_back(K_F3); // overloading global toggle with higher priority here, so a new name is required
 	pKeyToggleMusic = new C4KeyBinding(keys, "OptionsMusicToggle", KEYSCOPE_Gui,
 	                                   new C4GUI::DlgKeyCB<C4StartupOptionsDlg>(*this, &C4StartupOptionsDlg::KeyMusicToggle), C4CustomKey::PRIO_Dlg);
 
@@ -918,8 +918,8 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 		sLabelTxt.Copy(LoadResStr("IDS_CTL_LOUD"));
 		pUseFont->GetTextExtent(sLabelTxt.getData(), w,q, true);
 		pGroupVolume->AddElement(new C4GUI::Label(sLabelTxt.getData(), caVolumeSlider.GetFromRight(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-		C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t> *pCB = new C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t>(this, i ? &C4StartupOptionsDlg::OnSoundVolumeSliderChange : &C4StartupOptionsDlg::OnMusicVolumeSliderChange);
-		C4GUI::ScrollBar *pSlider = new C4GUI::ScrollBar(caVolumeSlider.GetCentered(caVolumeSlider.GetInnerWidth(), C4GUI_ScrollBarHgt), true, pCB, 101);
+		auto *pCB = new C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t>(this, i ? &C4StartupOptionsDlg::OnSoundVolumeSliderChange : &C4StartupOptionsDlg::OnMusicVolumeSliderChange);
+		auto *pSlider = new C4GUI::ScrollBar(caVolumeSlider.GetCentered(caVolumeSlider.GetInnerWidth(), C4GUI_ScrollBarHgt), true, pCB, 101);
 		pSlider->SetDecoration(&C4Startup::Get()->Graphics.sfctBookScroll, false);
 		pSlider->SetToolTip(i ? LoadResStr("IDS_DESC_VOLUMESOUND") : LoadResStr("IDS_DESC_VOLUMEMUSIC"));
 		pSlider->SetScrollPos(i ? Config.Sound.SoundVolume : Config.Sound.MusicVolume);
@@ -1022,11 +1022,11 @@ void C4StartupOptionsDlg::OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller)
 	Application.pWindow->EnumerateMultiSamples(multisamples);
 
 	std::sort(multisamples.begin(), multisamples.end());
-	for(unsigned int i = 0; i < multisamples.size(); ++i)
+	for(int multisample : multisamples)
 	{
 		StdStrBuf text;
-		text.Format("%dx", multisamples[i]);
-		pFiller->AddEntry(text.getData(), multisamples[i]);
+		text.Format("%dx", multisample);
+		pFiller->AddEntry(text.getData(), multisample);
 	}
 }
 

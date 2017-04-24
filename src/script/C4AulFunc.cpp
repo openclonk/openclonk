@@ -21,7 +21,7 @@
 
 C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
 		Parent(Parent),
-		Name(pName ? Strings.RegString(pName) : 0),
+		Name(pName ? Strings.RegString(pName) : nullptr),
 		MapNext(nullptr)
 {
 	// add to global lookuptable with this name
@@ -63,7 +63,7 @@ bool C4AulFunc::CheckParTypes(const C4Value pPars[], bool fPassErrors) const {
 		if (!pPars[i].CheckParConversion(pTypes[i]))
 		{
 			C4AulExecError e(FormatString(
-				"call to \"%s\" parameter %d: passed %s, but expected %s",
+				R"(call to "%s" parameter %d: passed %s, but expected %s)",
 				GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])).getData());
 			if (fPassErrors)
 				throw e;

@@ -177,8 +177,8 @@ C4MusicFileOgg::C4MusicFileOgg() :
 	playing(false), streaming_done(false), loaded(false), channel(0), current_section(0), byte_pos_total(0), volume(1.0f),
 	is_loading_from_file(false), last_source_file_pos(0), last_playback_pos_sec(0), last_interruption_time()
 {
-	for (size_t i=0; i<num_buffers; ++i)
-		buffers[i] = 0;
+	for (unsigned int & buffer : buffers)
+		buffer = 0;
 }
 
 C4MusicFileOgg::~C4MusicFileOgg()
@@ -302,10 +302,10 @@ StdStrBuf C4MusicFileOgg::GetDebugInfo() const
 	result.AppendFormat("[%.0lf]", last_playback_pos_sec);
 	result.AppendChar('[');
 	bool sec = false;
-	for (auto i = categories.cbegin(); i != categories.cend(); ++i)
+	for (const auto & categorie : categories)
 	{
 		if (sec) result.AppendChar(',');
-		result.Append(i->getData());
+		result.Append(categorie.getData());
 		sec = true;
 	}
 	result.AppendChar(']');
@@ -442,8 +442,8 @@ bool C4MusicFileOgg::HasCategory(const char *szcat) const
 {
 	if (!szcat) return false;
 	// check all stored categories
-	for (auto i = categories.cbegin(); i != categories.cend(); ++i)
-		if (WildcardMatch(szcat, i->getData()))
+	for (const auto & categorie : categories)
+		if (WildcardMatch(szcat, categorie.getData()))
 			return true;
 	return false;
 }

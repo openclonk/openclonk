@@ -130,7 +130,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	// load images
 	if (!fctBackgroundPicture.Load(hGroup, C4CFN_MapFolderBG, C4FCT_Full, C4FCT_Full, false, 0))
 	{
-		DebugLogF("C4MapFolderData::Load(%s): Could not load background graphic \"%s\"", hGroup.GetName(), C4CFN_MapFolderBG);
+		DebugLogF(R"(C4MapFolderData::Load(%s): Could not load background graphic "%s")", hGroup.GetName(), C4CFN_MapFolderBG);
 		return false;
 	}
 	int i;
@@ -156,18 +156,18 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 				fSuccess = fctDump.Surface->SavePNG(pScen->sBaseImage.getData(), true, false, false);
 			}
 			if (!fSuccess)
-				DebugLogF("C4MapFolderData::Load(%s): Could not dump graphic \"%s\"", hGroup.GetName(), pScen->sBaseImage.getData());
+				DebugLogF(R"(C4MapFolderData::Load(%s): Could not dump graphic "%s")", hGroup.GetName(), pScen->sBaseImage.getData());
 			continue;
 		}
 		// load images
 		if (pScen->sBaseImage.getLength()>0) if (!pScen->fctBase.Load(hGroup, pScen->sBaseImage.getData(), C4FCT_Full, C4FCT_Full, false, 0))
 			{
-				DebugLogF("C4MapFolderData::Load(%s): Could not load base graphic \"%s\"", hGroup.GetName(), pScen->sBaseImage.getData());
+				DebugLogF(R"(C4MapFolderData::Load(%s): Could not load base graphic "%s")", hGroup.GetName(), pScen->sBaseImage.getData());
 				return false;
 			}
 		if (pScen->sOverlayImage.getLength()>0) if (!pScen->fctOverlay.Load(hGroup, pScen->sOverlayImage.getData(), C4FCT_Full, C4FCT_Full, false, 0))
 			{
-				DebugLogF("C4MapFolderData::Load(%s): Could not load graphic \"%s\"", hGroup.GetName(), pScen->sOverlayImage.getData());
+				DebugLogF(R"(C4MapFolderData::Load(%s): Could not load graphic "%s")", hGroup.GetName(), pScen->sOverlayImage.getData());
 				return false;
 			}
 	}
@@ -176,7 +176,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 		AccessGfx *pGfx= ppAccessGfxList[i];
 		if (pGfx->sOverlayImage.getLength()>0) if (!pGfx->fctOverlay.Load(hGroup, pGfx->sOverlayImage.getData(), C4FCT_Full, C4FCT_Full, false, 0))
 			{
-				DebugLogF("C4MapFolderData::Load(%s): Could not load graphic \"%s\"", hGroup.GetName(), pGfx->sOverlayImage.getData());
+				DebugLogF(R"(C4MapFolderData::Load(%s): Could not load graphic "%s")", hGroup.GetName(), pGfx->sOverlayImage.getData());
 				return false;
 			}
 	}
@@ -680,9 +680,8 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 		// achievement images: Loaded from this entry and parent folder
 		nAchievements = 0;
 		const C4ScenarioParameterDefs *deflists[] = { pParent ? pParent->GetAchievementDefs() : nullptr, &ParameterDefs };
-		for (size_t def_list_idx=0; def_list_idx<2; ++def_list_idx)
+		for (auto deflist : deflists)
 		{
-			const C4ScenarioParameterDefs *deflist = deflists[def_list_idx];
 			if (!deflist) continue;
 			const C4ScenarioParameterDef *def; size_t idx=0;
 			while ((def = deflist->GetParameterDefByIndex(idx++)))
@@ -1046,7 +1045,7 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 				// ...and load it
 				if (!pNewEntry->Load(&Group, &sChildFilename, fLoadEx))
 				{
-					DebugLogF("Error loading entry \"%s\" in SubFolder \"%s\"!", sChildFilename.getData(), Group.GetFullName().getData());
+					DebugLogF(R"(Error loading entry "%s" in SubFolder "%s"!)", sChildFilename.getData(), Group.GetFullName().getData());
 					delete pNewEntry;
 				}
 			}
@@ -1079,8 +1078,7 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 // ------------------------------------
 // RegularFolder
 
-C4ScenarioListLoader::RegularFolder::~RegularFolder()
-{}
+C4ScenarioListLoader::RegularFolder::~RegularFolder() = default;
 
 bool C4ScenarioListLoader::RegularFolder::LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded)
 {
@@ -1139,7 +1137,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 				// ...and load it
 				if (!pNewEntry->Load(nullptr, &sChildFilename, fLoadEx))
 				{
-					DebugLogF("Error loading entry \"%s\" in Folder \"%s\"!", szChildFilename, it->c_str());
+					DebugLogF(R"(Error loading entry "%s" in Folder "%s"!)", szChildFilename, it->c_str());
 					delete pNewEntry;
 				}
 			}
@@ -1154,7 +1152,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 
 void C4ScenarioListLoader::RegularFolder::Merge(const char *szPath)
 {
-	contents.push_back(szPath);
+	contents.emplace_back(szPath);
 }
 
 // ------------------------------------
@@ -1223,8 +1221,8 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	pCurrFolder = pRootFolder = new RegularFolder(this, nullptr);
 	// Load regular game data if no explicit path specified
 	if(!sRootFolder.getData())
-		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
-			pRootFolder->Merge(iter->strBuf.getData());
+		for(const auto & iter : Reloc)
+			pRootFolder->Merge(iter.strBuf.getData());
 	bool fSuccess = pRootFolder->LoadContents(this, nullptr, &sRootFolder, false, false);
 	EndActivity();
 	return fSuccess;
@@ -1319,7 +1317,7 @@ C4StartupScenSelDlg::ScenListItem::ScenListItem(C4GUI::ListBox *pForListBox, C4S
 	SetBounds(pIcon->GetBounds());
 	// add components
 	AddElement(pIcon); AddElement(pNameLabel);
-	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i) if (ppAchievements[i]) AddElement(ppAchievements[i]);
+	for (auto & ppAchievement : ppAchievements) if (ppAchievement) AddElement(ppAchievement);
 	// tooltip by name, so long names can be read via tooltip
 	SetToolTip(pScenListEntry->GetName().getData());
 	// add to listbox (will get resized horizontally and moved) - zero indent; no tree structure in this dialog
@@ -1338,9 +1336,9 @@ void C4StartupScenSelDlg::ScenListItem::UpdateOwnPos()
 	ParentClass::UpdateOwnPos();
 	// reposition achievement items
 	C4GUI::ComponentAligner caBounds(GetContainedClientRect(), IconLabelSpacing, IconLabelSpacing);
-	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i) if (ppAchievements[i])
+	for (auto & ppAchievement : ppAchievements) if (ppAchievement)
 	{
-		ppAchievements[i]->SetBounds(caBounds.GetFromRight(caBounds.GetHeight()));
+		ppAchievement->SetBounds(caBounds.GetFromRight(caBounds.GetHeight()));
 	}
 }
 
@@ -1483,7 +1481,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 
 	// key bindings
 	C4CustomKey::CodeList keys;
-	keys.push_back(C4KeyCodeEx(K_BACK)); keys.push_back(C4KeyCodeEx(K_LEFT));
+	keys.emplace_back(K_BACK); keys.emplace_back(K_LEFT);
 	pKeyBack = new C4KeyBinding(keys, "StartupScenSelFolderUp", KEYSCOPE_Gui,
 	                            new C4GUI::DlgKeyCB<C4StartupScenSelDlg>(*this, &C4StartupScenSelDlg::KeyBack), C4CustomKey::PRIO_CtrlOverride);
 	pKeyRefresh = new C4KeyBinding(C4KeyCodeEx(K_F5), "StartupScenSelReload", KEYSCOPE_Gui,

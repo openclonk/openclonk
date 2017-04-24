@@ -59,8 +59,8 @@ bool C4AchievementGraphics::Init(C4GroupSet &Files)
 
 void C4AchievementGraphics::Clear()
 {
-	for (auto i = Graphics.begin(); i != Graphics.end(); ++i)
-		delete i->second;
+	for (auto & Graphic : Graphics)
+		delete Graphic.second;
 	Graphics.clear();
 	idGrp = 0;
 }

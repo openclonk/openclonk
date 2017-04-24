@@ -34,19 +34,19 @@ private:
 
 public:
 	C4ScoreboardDlg(C4Scoreboard *pForScoreboard);
-	~C4ScoreboardDlg();
+	~C4ScoreboardDlg() override;
 
 protected:
 	void InvalidateRows() { delete [] piColWidths; piColWidths = nullptr; }
 	void Update(); // update row widths and own size and caption
 
-	virtual bool DoPlacement(C4GUI::Screen *pOnScreen, const C4Rect &rPreferredDlgRect);
-	virtual void Draw(C4TargetFacet &cgo);
-	virtual void DrawElement(C4TargetFacet &cgo);
+	bool DoPlacement(C4GUI::Screen *pOnScreen, const C4Rect &rPreferredDlgRect) override;
+	void Draw(C4TargetFacet &cgo) override;
+	void DrawElement(C4TargetFacet &cgo) override;
 
-	virtual const char *GetID() { return "Scoreboard"; }
+	const char *GetID() override { return "Scoreboard"; }
 
-	virtual bool IsMouseControlled() { return false; }
+	bool IsMouseControlled() override { return false; }
 
 	friend class C4Scoreboard;
 };

@@ -179,7 +179,7 @@ namespace C4GUI
 			// Ctrl+(Shift-)Tab works with dialog focus only (assumes max one tabular per dialog)
 			// Arrow keys work if control is focused only
 			C4CustomKey::CodeList Keys;
-			Keys.push_back(C4KeyCodeEx(K_UP));
+			Keys.emplace_back(K_UP);
 			if (Config.Controls.GamepadGuiControl)
 			{
 				ControllerKeys::Up(Keys);
@@ -188,7 +188,7 @@ namespace C4GUI
 			                             new ControlKeyCB<Tabular>(*this, &Tabular::KeySelUp), C4CustomKey::PRIO_Ctrl);
 
 			Keys.clear();
-			Keys.push_back(C4KeyCodeEx(K_DOWN));
+			Keys.emplace_back(K_DOWN);
 			if (Config.Controls.GamepadGuiControl)
 			{
 				ControllerKeys::Down(Keys);

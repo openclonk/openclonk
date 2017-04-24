@@ -205,7 +205,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
 	// Render 1st pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Prepare state for 2nd pass
 	//glBlendFunc(GL_ONE, GL_ONE);
@@ -224,7 +224,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	}
 	
 	// Render 2nd pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Prepare state for 3rd pass (color pass)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -246,7 +246,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	}
 	
 	// Render 3rd pass
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Reset GL state
 	glBindVertexArray(0);
@@ -413,7 +413,7 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 	const float y_offset[] = { 0.0f, 0.0f };
 	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 
-	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, nullptr);
 
 	// Reset GL state
 	glBindVertexArray(0);

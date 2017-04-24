@@ -285,9 +285,9 @@ void C4SLandscape::Default()
 {
 	BottomOpen=0; TopOpen=1;
 	LeftOpen=0; RightOpen=0;
-	AutoScanSideOpen=1;
+	AutoScanSideOpen=true;
 	SkyDef[0]=0;
-	for (int32_t cnt=0; cnt<6; cnt++) SkyDefFade[cnt]=0;
+	for (int & cnt : SkyDefFade) cnt=0;
 	VegLevel.Set(50,30,0,100);
 	Vegetation.Default();
 	InEarthLevel.Set(50,0,0,100);
@@ -304,10 +304,10 @@ void C4SLandscape::Default()
 	Layers.Clear();
 	Material = "Earth";
 	Liquid = "Water";
-	ExactLandscape=0;
+	ExactLandscape=false;
 	Gravity.Set(100,0,10,200);
-	NoScan=0;
-	KeepMapCreator=0;
+	NoScan=false;
+	KeepMapCreator=false;
 	SkyScrollMode=0;
 	MaterialZoom=4;
 	FlatChunkShapes=false;
@@ -364,7 +364,7 @@ void C4SWeather::Default()
 	StartSeason.Set(50,50);
 	YearSpeed.Set(50);
 	Wind.Set(0,70,-100,+100);
-	NoGamma=1;
+	NoGamma=true;
 }
 
 void C4SWeather::CompileFunc(StdCompiler *pComp)
@@ -400,8 +400,8 @@ void C4SEnvironment::CompileFunc(StdCompiler *pComp)
 
 void C4SRealism::Default()
 {
-	LandscapePushPull=0;
-	LandscapeInsertThrust=0;
+	LandscapePushPull=false;
+	LandscapeInsertThrust=false;
 	ValueOverloads.Default();
 }
 
@@ -414,7 +414,7 @@ void C4Scenario::SetExactLandscape()
 {
 	if (Landscape.ExactLandscape) return;
 	// Set landscape
-	Landscape.ExactLandscape = 1;
+	Landscape.ExactLandscape = true;
 }
 
 bool C4SDefinitions::GetModules(StdStrBuf *psOutModules) const

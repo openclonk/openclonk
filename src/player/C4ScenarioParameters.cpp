@@ -32,9 +32,9 @@ void C4ScenarioParameterDef::Option::CompileFunc(StdCompiler *pComp)
 const C4ScenarioParameterDef::Option *C4ScenarioParameterDef::GetOptionByValue(int32_t val) const
 {
 	// search option by value
-	for (auto i = Options.cbegin(); i != Options.cend(); ++i)
-		if (i->Value == val)
-			return &*i;
+	for (const auto & Option : Options)
+		if (Option.Value == val)
+			return &Option;
 	return nullptr;
 }
 
@@ -90,20 +90,20 @@ void C4ScenarioParameterDefs::RegisterScriptConstants(const C4ScenarioParameters
 	// register constants for all parameters in script engine
 
 	// old-style: one constant per parameter
-	for (auto i = Parameters.cbegin(); i != Parameters.cend(); ++i)
+	for (const auto & Parameter : Parameters)
 	{
 		StdStrBuf constant_name;
-		constant_name.Format("SCENPAR_%s", i->GetID());
-		int32_t constant_value = values.GetValueByID(i->GetID(), i->GetDefault());
+		constant_name.Format("SCENPAR_%s", Parameter.GetID());
+		int32_t constant_value = values.GetValueByID(Parameter.GetID(), Parameter.GetDefault());
 		::ScriptEngine.RegisterGlobalConstant(constant_name.getData(), C4VInt(constant_value));
 	}
 
 	// new-style: all constants in a proplist
 	auto scenpar = C4PropList::NewStatic(nullptr, nullptr, &Strings.P[P_SCENPAR]);
-	for (auto i = Parameters.cbegin(); i != Parameters.cend(); ++i)
+	for (const auto & Parameter : Parameters)
 	{
-		int32_t constant_value = values.GetValueByID(i->GetID(), i->GetDefault());
-		scenpar->SetPropertyByS(Strings.RegString(StdStrBuf(i->GetID())), C4VInt(constant_value));
+		int32_t constant_value = values.GetValueByID(Parameter.GetID(), Parameter.GetDefault());
+		scenpar->SetPropertyByS(Strings.RegString(StdStrBuf(Parameter.GetID())), C4VInt(constant_value));
 	}
 	scenpar->Freeze();
 	::ScriptEngine.RegisterGlobalConstant("SCENPAR", C4Value(scenpar));
@@ -117,14 +117,14 @@ void C4ScenarioParameters::Clear()
 void C4ScenarioParameters::Merge(const C4ScenarioParameters &other)
 {
 	// Merge lists and keep larger value
-	for (auto i = other.Parameters.cbegin(); i != other.Parameters.cend(); ++i)
+	for (const auto & Parameter : other.Parameters)
 	{
-		auto j = Parameters.find(i->first);
+		auto j = Parameters.find(Parameter.first);
 		if (j != Parameters.end())
-			if (j->second >= i->second)
+			if (j->second >= Parameter.second)
 				continue; // existing value is same or larger - keep old
 		// update to new value from other list
-		Parameters[i->first] = i->second;
+		Parameters[Parameter.first] = Parameter.second;
 	}
 }
 
@@ -188,18 +188,18 @@ void C4ScenarioParameters::CompileFunc(StdCompiler *pComp)
 		if (pComp->hasNaming())
 		{
 			// save to INI
-			for (auto i = Parameters.begin(); i != Parameters.end(); ++i)
-				pComp->Value(mkNamingAdapt(i->second, i->first.getData()));
+			for (auto & Parameter : Parameters)
+				pComp->Value(mkNamingAdapt(Parameter.second, Parameter.first.getData()));
 		}
 		else
 		{
 			// save to binary
 			int32_t name_count=Parameters.size();
 			pComp->Value(name_count);
-			for (auto i = Parameters.begin(); i != Parameters.end(); ++i)
+			for (auto & Parameter : Parameters)
 			{
-				pComp->Value(const_cast<StdCopyStrBuf &>(i->first));
-				pComp->Value(i->second);
+				pComp->Value(const_cast<StdCopyStrBuf &>(Parameter.first));
+				pComp->Value(Parameter.second);
 			}
 		}
 	}

@@ -111,7 +111,7 @@ enum C4AulTokenType : int
 };
 
 C4AulParse::C4AulParse(C4ScriptHost *a) :
-	Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
+	Fn(nullptr), Host(a), pOrgScript(a), Engine(a->Engine),
 	SPos(a->Script.getData()), TokenSPos(SPos),
 	TokenType(ATT_INVALID),
 	ContextToExecIn(nullptr)
@@ -274,50 +274,50 @@ const C4ScriptOpDef C4ScriptOpMap[] =
 	// |  |     Bytecode             |  |  no second id
 	// |  |     |                    |  |  |  RetType   ParType1    ParType2
 	// prefix
-	{ 15, "++", AB_Inc,              0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "--", AB_Dec,              0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "~",  AB_BitNot,           0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "!",  AB_Not,              0, 0, 0, C4V_Bool, C4V_Bool,   C4V_Any},
-	{ 15, "+",  AB_ERR,              0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "-",  AB_Neg,              0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "++", AB_Inc,              false, true, false, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "--", AB_Dec,              false, true, false, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "~",  AB_BitNot,           false, false, false, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "!",  AB_Not,              false, false, false, C4V_Bool, C4V_Bool,   C4V_Any},
+	{ 15, "+",  AB_ERR,              false, false, false, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "-",  AB_Neg,              false, false, false, C4V_Int,  C4V_Int,    C4V_Any},
 	
 	// postfix (whithout second statement)
-	{ 16, "++", AB_Inc,              1, 1, 1, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 16, "--", AB_Dec,              1, 1, 1, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 16, "++", AB_Inc,              true, true, true, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 16, "--", AB_Dec,              true, true, true, C4V_Int,  C4V_Int,    C4V_Any},
 	
 	// postfix
-	{ 14, "**", AB_Pow,              1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "/",  AB_Div,              1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "*",  AB_Mul,              1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "%",  AB_Mod,              1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "-",  AB_Sub,              1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "+",  AB_Sum,              1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 11, "<<", AB_LeftShift,        1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 11, ">>", AB_RightShift,       1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 10, "<",  AB_LessThan,         1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
-	{ 10, "<=", AB_LessThanEqual,    1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
-	{ 10, ">",  AB_GreaterThan,      1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
-	{ 10, ">=", AB_GreaterThanEqual, 1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
-	{ 9, "==",  AB_Equal,            1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
-	{ 9, "!=",  AB_NotEqual,         1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
-	{ 8, "&",   AB_BitAnd,           1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 6, "^",   AB_BitXOr,           1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 6, "|",   AB_BitOr,            1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 5, "&&",  AB_JUMPAND,          1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
-	{ 4, "||",  AB_JUMPOR,           1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
-	{ 3, "??",  AB_JUMPNNIL,         1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
+	{ 14, "**", AB_Pow,              true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "/",  AB_Div,              true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "*",  AB_Mul,              true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "%",  AB_Mod,              true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 12, "-",  AB_Sub,              true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 12, "+",  AB_Sum,              true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 11, "<<", AB_LeftShift,        true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 11, ">>", AB_RightShift,       true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 10, "<",  AB_LessThan,         true, false, false, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 10, "<=", AB_LessThanEqual,    true, false, false, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 10, ">",  AB_GreaterThan,      true, false, false, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 10, ">=", AB_GreaterThanEqual, true, false, false, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 9, "==",  AB_Equal,            true, false, false, C4V_Bool, C4V_Any,    C4V_Any},
+	{ 9, "!=",  AB_NotEqual,         true, false, false, C4V_Bool, C4V_Any,    C4V_Any},
+	{ 8, "&",   AB_BitAnd,           true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 6, "^",   AB_BitXOr,           true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 6, "|",   AB_BitOr,            true, false, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 5, "&&",  AB_JUMPAND,          true, false, false, C4V_Bool, C4V_Bool,   C4V_Bool},
+	{ 4, "||",  AB_JUMPOR,           true, false, false, C4V_Bool, C4V_Bool,   C4V_Bool},
+	{ 3, "??",  AB_JUMPNNIL,         true, false, false, C4V_Any,  C4V_Any,    C4V_Any},
 	
 	// changers
-	{ 2, "*=",  AB_Mul,              1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "/=",  AB_Div,              1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "%=",  AB_Mod,              1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "+=",  AB_Sum,              1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "-=",  AB_Sub,              1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "&=",  AB_BitAnd,           1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "|=",  AB_BitOr,            1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 2, "^=",  AB_BitXOr,           1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "*=",  AB_Mul,              true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "/=",  AB_Div,              true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "%=",  AB_Mod,              true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "+=",  AB_Sum,              true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "-=",  AB_Sub,              true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "&=",  AB_BitAnd,           true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "|=",  AB_BitOr,            true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 2, "^=",  AB_BitXOr,           true, true, false, C4V_Int,  C4V_Int,    C4V_Int},
 
-	{ 0, nullptr,  AB_ERR,              0, 0, 0, C4V_Nil,  C4V_Nil,    C4V_Nil}
+	{ 0, nullptr,  AB_ERR,              false, false, false, C4V_Nil,  C4V_Nil,    C4V_Nil}
 };
 
 int C4AulParse::GetOperator(const char* pScript)
@@ -523,7 +523,7 @@ C4AulTokenType C4AulParse::GetNextToken()
 		if (C >= '!' && C <= '~')
 			throw C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
 		else
-			throw C4AulParseError(this, FormatString("unexpected character \\x%x found", (int)(unsigned char) C).getData());
+			throw C4AulParseError(this, FormatString(R"(unexpected character \x%x found)", (int)(unsigned char) C).getData());
 	}
 }
 
@@ -645,20 +645,20 @@ void C4AulScriptFunc::DumpByteCode()
 					{
 						switch (c)
 						{
-						case '\'': es.append("\\'"); break;
-						case '\"': es.append("\\\""); break;
-						case '\\': es.append("\\\\"); break;
-						case '\a': es.append("\\a"); break;
-						case '\b': es.append("\\b"); break;
-						case '\f': es.append("\\f"); break;
-						case '\n': es.append("\\n"); break;
-						case '\r': es.append("\\r"); break;
-						case '\t': es.append("\\t"); break;
-						case '\v': es.append("\\v"); break;
+						case '\'': es.append(R"(\')"); break;
+						case '\"': es.append(R"(\")"); break;
+						case '\\': es.append(R"(\\)"); break;
+						case '\a': es.append(R"(\a)"); break;
+						case '\b': es.append(R"(\b)"); break;
+						case '\f': es.append(R"(\f)"); break;
+						case '\n': es.append(R"(\n)"); break;
+						case '\r': es.append(R"(\r)"); break;
+						case '\t': es.append(R"(\t)"); break;
+						case '\v': es.append(R"(\v)"); break;
 						default:
 						{
 							std::stringstream hex;
-							hex << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>((unsigned char)c);
+							hex << R"(\x)" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>((unsigned char)c);
 							es.append(hex.str());
 							break;
 						}
@@ -1381,7 +1381,7 @@ std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 	const char *NodeStart = TokenSPos;
 	std::unique_ptr<::aul::ast::Expr> expr;
 	const C4ScriptOpDef * op;
-	C4AulFunc *FoundFn = 0;
+	C4AulFunc *FoundFn = nullptr;
 	C4Value val;
 	switch (TokenType)
 	{
@@ -1529,7 +1529,7 @@ std::unique_ptr<::aul::ast::Expr> C4AulParse::Parse_Expression(int iParentPrio)
 
 	assert(expr);
 
-	while (1)
+	while (true)
 	{
 		NodeStart = TokenSPos;
 		switch (TokenType)
@@ -1668,7 +1668,7 @@ std::unique_ptr<::aul::ast::VarDecl> C4AulParse::Parse_Var()
 		decl->constant = true;
 		Shift();
 	}
-	while (1)
+	while (true)
 	{
 		// get desired variable name
 		Check(ATT_IDTF, "variable name");
@@ -1750,14 +1750,14 @@ bool C4ScriptHost::Parse()
 
 	C4PropListStatic * p = GetPropList();
 
-	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
+	for (auto & SourceScript : SourceScripts)
 	{
-		CopyPropList((*s)->LocalValues, p);
-		if (*s == this)
+		CopyPropList(SourceScript->LocalValues, p);
+		if (SourceScript == this)
 			continue;
 		// definition appends
-		if (GetPropList() && GetPropList()->GetDef() && (*s)->GetPropList() && (*s)->GetPropList()->GetDef())
-			GetPropList()->GetDef()->IncludeDefinition((*s)->GetPropList()->GetDef());
+		if (GetPropList() && GetPropList()->GetDef() && SourceScript->GetPropList() && SourceScript->GetPropList()->GetDef())
+			GetPropList()->GetDef()->IncludeDefinition(SourceScript->GetPropList()->GetDef());
 	}
 
 	// generate bytecode

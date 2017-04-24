@@ -112,7 +112,7 @@ bool C4Sky::Init(bool fSavegame, std::string names)
 	{
 		SetFadePalette(Game.C4S.Landscape.SkyDefFade);
 		delete Surface;
-		Surface = 0;
+		Surface = nullptr;
 	}
 
 	// Load sky shaders: regular sprite shaders with OC_SKY define

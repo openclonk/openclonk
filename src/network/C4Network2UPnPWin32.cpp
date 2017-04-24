@@ -51,16 +51,13 @@ namespace
 class C4Network2UPnPP
 {
 public:
-	bool MustReleaseCOM;
+	bool MustReleaseCOM{false};
 
 	// NAT
-	IStaticPortMappingCollection *mappings;
+	IStaticPortMappingCollection *mappings{nullptr};
 	std::set<IStaticPortMapping*> added_mappings;
 
-	C4Network2UPnPP()
-		: MustReleaseCOM(false),
-		mappings(nullptr)
-	{}
+	C4Network2UPnPP() = default;
 
 	void AddMapping(C4Network2IOProtocol protocol, uint16_t intport, uint16_t extport);
 	void RemoveMapping(C4Network2IOProtocol protocol, uint16_t extport);
@@ -72,7 +69,7 @@ C4Network2UPnP::C4Network2UPnP()
 {
 	Log("UPnP init...");
 	// Make sure COM is available
-	if (FAILED(CoInitializeEx(0, COINIT_APARTMENTTHREADED)))
+	if (FAILED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
 	{
 		// Didn't work, don't do UPnP then
 		Log("UPnP fail (no COM).");

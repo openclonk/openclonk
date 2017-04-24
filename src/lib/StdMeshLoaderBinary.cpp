@@ -247,9 +247,9 @@ void StdMeshSkeletonLoader::RemoveSkeletonsInGroup(const char* groupname)
 		}
 	}
 
-	for (unsigned i = 0; i < delete_skeletons.size(); i++)
+	for (const auto & delete_skeleton : delete_skeletons)
 	{
-		RemoveSkeleton(delete_skeletons[i]);
+		RemoveSkeleton(delete_skeleton);
 	}
 }
 
@@ -560,10 +560,8 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 		else
 			vertices = &mesh->SharedVertices;
 
-		for (unsigned int j = 0; j < vertices->size(); ++j)
+		for (const auto & vertex : *vertices)
 		{
-			const StdMeshVertex& vertex = (*vertices)[j];
-
 			const float d = std::sqrt(vertex.x*vertex.x
 		 	                        + vertex.y*vertex.y
 			                        + vertex.z*vertex.z);

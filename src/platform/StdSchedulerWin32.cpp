@@ -87,9 +87,8 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 	// Iterate over the index because procedures may be added or removed during execution
 	// (If they are removed, we skip one execution, which doesn't really matter in practice)
 	auto tNow = C4TimeMilliseconds::Now();
-	for (size_t i_proc = 0u; i_proc < procs.size(); ++i_proc)
+	for (auto proc : procs)
 	{
-		StdSchedulerProc *proc = procs[i_proc];
 		auto tProcTick = proc->GetNextTick(tNow);
 		if (tProcTick <= tNow)
 			if (!proc->Execute(0))

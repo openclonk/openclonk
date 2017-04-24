@@ -623,7 +623,7 @@ bool C4MCOverlay::PeekPix(int32_t iX, int32_t iY)
 	// start with this one
 	C4MCOverlay *pOvrl=this; bool fLastSetC=false; C4MCTokenType eLastOp=MCT_NONE; BYTE Crap;
 	// loop through op chain
-	while (1)
+	while (true)
 	{
 		fLastSetC=pOvrl->RenderPix(iX, iY, Crap, Crap, eLastOp, fLastSetC, false);
 		eLastOp=pOvrl->Op;
@@ -1472,7 +1472,7 @@ void C4MCParser::ParseFile(const char *szFilename, C4Group *pGrp)
 	BPos=Code;
 	CPos=Code;
 	ParseTo(MapCreator);
-	if (0) PrintNodeTree(MapCreator, 0);
+	if (false) PrintNodeTree(MapCreator, 0);
 	// free code
 	// on errors, this will be done be destructor
 	Clear();
@@ -1486,7 +1486,7 @@ void C4MCParser::Parse(const char *szScript)
 	BPos=szScript;
 	CPos=szScript;
 	ParseTo(MapCreator);
-	if (0) PrintNodeTree(MapCreator, 0);
+	if (false) PrintNodeTree(MapCreator, 0);
 	// free code
 	// on errors, this will be done be destructor
 	Clear();
@@ -1759,7 +1759,7 @@ C4MCAlgorithm C4MCAlgoMap[] =
 	{ "script",     &AlgoScript },
 	{ "rndall",     &AlgoRndAll },
 	{ "poly",       &AlgoPolygon },
-	{ "",     0 }
+	{ "",     nullptr }
 };
 
 #define offsC4MCOvrl(x) reinterpret_cast<C4MCOverlayOffsetType>(&C4MCOverlay::x)
@@ -1791,6 +1791,6 @@ namespace {
 		{ "mask",        C4MCV_Boolean,     offsC4MCOvrl(Mask)          },
 		{ "evalFn",      C4MCV_ScriptFunc,  offsC4MCOvrl(pEvaluateFunc) },
 		{ "drawFn",      C4MCV_ScriptFunc,  offsC4MCOvrl(pDrawFunc)     },
-		{ "", C4MCV_None, 0 }
+		{ "", C4MCV_None, nullptr }
 	};
 }

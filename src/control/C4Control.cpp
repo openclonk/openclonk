@@ -59,10 +59,7 @@ C4ControlPacket::C4ControlPacket()
 
 }
 
-C4ControlPacket::~C4ControlPacket()
-{
-
-}
+C4ControlPacket::~C4ControlPacket() = default;
 
 bool C4ControlPacket::LocalControl() const
 {
@@ -82,10 +79,7 @@ void C4ControlPacket::CompileFunc(StdCompiler *pComp)
 
 // *** C4Control
 
-C4Control::C4Control()
-{
-
-}
+C4Control::C4Control() = default;
 
 C4Control::~C4Control()
 {
@@ -540,7 +534,7 @@ void C4ControlMenuCommand::Execute() const
 	// menu was closed?
 	if (!menu) return;
 
-	C4Object *obj = target ? ::Objects.ObjectPointer(target) : 0;
+	C4Object *obj = target ? ::Objects.ObjectPointer(target) : nullptr;
 	// target has been removed in the meantime? abort now
 	if (target && !obj) return;
 
@@ -751,9 +745,7 @@ void C4ControlPlayerAction::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlSyncCheck
 
-C4ControlSyncCheck::C4ControlSyncCheck()
-{
-}
+C4ControlSyncCheck::C4ControlSyncCheck() = default;
 
 void C4ControlSyncCheck::Set()
 {
@@ -1012,9 +1004,9 @@ void C4ControlClientRemove::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlJoinPlayer
 
-C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, const C4Network2ResCore &ResCore)
+C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, C4Network2ResCore ResCore)
 		: Filename(szFilename, true), iAtClient(iAtClient),
-		idInfo(iIDInfo), fByRes(true), ResCore(ResCore)
+		idInfo(iIDInfo), fByRes(true), ResCore(std::move(ResCore))
 {
 }
 

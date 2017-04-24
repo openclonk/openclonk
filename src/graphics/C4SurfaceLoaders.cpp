@@ -235,7 +235,7 @@ extern "C"
 #undef FAR
 #include <jpeglib.h>
 }
-#include <setjmp.h>
+#include <csetjmp>
 
 // Straight from the libjpeg example
 struct my_error_mgr

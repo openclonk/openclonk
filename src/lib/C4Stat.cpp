@@ -21,13 +21,11 @@
 // ** implemetation of C4MainStat
 
 C4MainStat::C4MainStat()
-		: pFirst(0)
+		: pFirst(nullptr)
 {
 }
 
-C4MainStat::~C4MainStat()
-{
-}
+C4MainStat::~C4MainStat() = default;
 
 void C4MainStat::RegisterStat(C4Stat* pStat)
 {
@@ -35,14 +33,14 @@ void C4MainStat::RegisterStat(C4Stat* pStat)
 	if (!pFirst)
 	{
 		pFirst = pStat;
-		pStat->pNext = 0;
-		pStat->pPrev = 0;
+		pStat->pNext = nullptr;
+		pStat->pPrev = nullptr;
 	}
 	else
 	{
 		pStat->pNext = pFirst;
 		pFirst->pPrev = pStat;
-		pStat->pPrev = 0;
+		pStat->pPrev = nullptr;
 		pFirst = pStat;
 	}
 }
@@ -53,20 +51,20 @@ void C4MainStat::UnRegStat(C4Stat* pStat)
 	if (!pStat->pPrev)
 	{
 		pFirst = pStat->pNext;
-		pStat->pNext = 0;
+		pStat->pNext = nullptr;
 	}
 	// last item?
 	else if (!pStat->pNext)
 	{
-		pStat->pPrev->pNext = 0;
-		pStat->pPrev = 0;
+		pStat->pPrev->pNext = nullptr;
+		pStat->pPrev = nullptr;
 	}
 	else
 	{
 		pStat->pNext->pPrev = pStat->pPrev;
 		pStat->pPrev->pNext = pStat->pNext;
-		pStat->pNext = 0;
-		pStat->pPrev = 0;
+		pStat->pNext = nullptr;
+		pStat->pPrev = nullptr;
 	}
 }
 
@@ -93,8 +91,8 @@ void C4MainStat::Show()
 		iCnt++;
 
 	// create array
-	C4Stat** StatArray = new C4Stat*[iCnt];
-	bool* bHS = new bool[iCnt];
+	auto** StatArray = new C4Stat*[iCnt];
+	auto* bHS = new bool[iCnt];
 
 	// sort it
 	unsigned int i,ii;

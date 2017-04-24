@@ -154,7 +154,7 @@ void C4GraphicsSystem::Execute()
 
 void C4GraphicsSystem::Default()
 {
-	MessageBoard.reset(new C4MessageBoard);
+	MessageBoard = std::make_unique<C4MessageBoard>();
 	InvalidateBg();
 	ShowVertices=false;
 	ShowAction=false;

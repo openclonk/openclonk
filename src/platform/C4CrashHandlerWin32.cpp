@@ -26,12 +26,12 @@
 #include "platform/C4windowswrapper.h"
 #include <dbghelp.h>
 #include <fcntl.h>
-#include <string.h>
+#include <cstring>
 #include <tlhelp32.h>
 #ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
+#include <cinttypes>
 #endif
-#include <assert.h>
+#include <cassert>
 #if defined(__CRT_WIDE) || (defined(_MSC_VER) && _MSC_VER >= 1900)
 #define USE_WIDE_ASSERT
 #endif
@@ -270,7 +270,7 @@ namespace {
 		// Initialize DbgHelp.dll symbol functions
 		SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES);
 		HANDLE process = GetCurrentProcess();
-		if (SymInitialize(process, 0, true))
+		if (SymInitialize(process, nullptr, true))
 		{
 			LOG_STATIC_TEXT("\nStack trace:\n");
 			auto frame = STACKFRAME64();
@@ -300,7 +300,7 @@ namespace {
 			IMAGEHLP_LINE64 *line = reinterpret_cast<IMAGEHLP_LINE64*>(SymbolBuffer);
 			static_assert(DumpBufferSize >= sizeof(*line), "IMAGEHLP_LINE64 too large to fit into buffer");
 			int frame_number = 0;
-			while (StackWalk64(image_type, process, GetCurrentThread(), &frame, &context, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0))
+			while (StackWalk64(image_type, process, GetCurrentThread(), &frame, &context, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
 			{
 				LOG_DYNAMIC_TEXT("#%3d ", frame_number);
 				module->SizeOfStruct = sizeof(*module);

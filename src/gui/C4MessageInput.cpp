@@ -116,8 +116,8 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	// no double processing
 	if (fProcessed) return C4GUI::Edit::IR_CloseDlg;
 	// get edit text
-	C4GUI::Edit *pEdt = reinterpret_cast<C4GUI::Edit *>(edt);
-	char *szInputText = const_cast<char *>(pEdt->GetText());
+	auto *pEdt = reinterpret_cast<C4GUI::Edit *>(edt);
+	auto *szInputText = const_cast<char *>(pEdt->GetText());
 	// Store to back buffer
 	::MessageInput.StoreBackBuffer(szInputText);
 	// script queried input?
@@ -249,7 +249,7 @@ bool C4MessageInput::Init()
 void C4MessageInput::Default()
 {
 	// clear backlog
-	for (int32_t cnt=0; cnt<C4MSGB_BackBufferMax; cnt++) BackBuffer[cnt][0]=0;
+	for (auto & cnt : BackBuffer) cnt[0]=0;
 }
 
 void C4MessageInput::Clear()
@@ -779,9 +779,9 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// try writing main file (usually {SCENARIO}/TODO.txt); if access is not possible, e.g. because scenario is packed, write to alternate file
 		const char *todo_filenames[] = { ::Config.Developer.TodoFilename, ::Config.Developer.AltTodoFilename };
 		bool success = false;
-		for (int i = 0; i < static_cast<int>(std::extent<decltype(todo_filenames)>::value); ++i)
+		for (auto & i : todo_filenames)
 		{
-			StdCopyStrBuf todo_filename(todo_filenames[i]);
+			StdCopyStrBuf todo_filename(i);
 			todo_filename.Replace("{USERPATH}", Config.General.UserDataPath);
 			int replacements = todo_filename.Replace("{SCENARIO}", Game.ScenarioFile.GetFullName().getData());
 			// sanity checks for writing scenario TODO file

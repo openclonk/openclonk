@@ -129,13 +129,13 @@ const C4Value C4ScriptGuiWindowAction::ToC4Value(bool first)
 
 void C4ScriptGuiWindowAction::ClearPointers(C4Object *pObj)
 {
-	C4Object *targetObj = target ? target->GetObject() : 0;
+	C4Object *targetObj = target ? target->GetObject() : nullptr;
 
 	if (targetObj == pObj)
 	{
 		// not only forget object, but completely invalidate action
 		action = 0;
-		target = 0;
+		target = nullptr;
 	}
 	if (nextAction)
 		nextAction->ClearPointers(pObj);
@@ -309,7 +309,7 @@ void C4ScriptGuiWindowProperty::SetNull(C4String *tag)
 	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
-	current->data = 0;
+	current->data = nullptr;
 }
 
 void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
@@ -337,11 +337,11 @@ void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
 
 void C4ScriptGuiWindowProperty::CleanUpAll()
 {
-	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for (auto & taggedPropertie : taggedProperties)
 	{
-		CleanUp(iter->second);
-		if (iter->first != &Strings.P[P_Std])
-			iter->first->DecRef();
+		CleanUp(taggedPropertie.second);
+		if (taggedPropertie.first != &Strings.P[P_Std])
+			taggedPropertie.first->DecRef();
 	}
 }
 
@@ -355,10 +355,10 @@ const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 
 	// go through all of the tagged properties and add a property to the proplist containing both the tag name
 	// and the serialzed C4Value of the properties' value
-	for(std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for(auto & taggedPropertie : taggedProperties)
 	{
-		C4String *tagString = iter->first;
-		const Prop &prop = iter->second;
+		C4String *tagString = taggedPropertie.first;
+		const Prop &prop = taggedPropertie.second;
 
 		C4Value val;
 
@@ -517,7 +517,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
 			current->obj = symbol->GetObject();
-		else current->obj = 0;
+		else current->obj = nullptr;
 		break;
 	}
 	case C4ScriptGuiWindowPropertyName::symbolDef:
@@ -525,7 +525,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
 			current->def = symbol->GetDef();
-		else current->def = 0;
+		else current->def = nullptr;
 		break;
 	}
 	case C4ScriptGuiWindowPropertyName::frameDecoration:
@@ -538,7 +538,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 			if (!current->deco->SetByDef(def))
 			{
 				delete current->deco;
-				current->deco = 0;
+				current->deco = nullptr;
 			}
 		}
 		break;
@@ -580,21 +580,21 @@ void C4ScriptGuiWindowProperty::ClearPointers(C4Object *pObj)
 {
 	// assume that we actually contain an object
 	// go through all the tags and, in case the tag has anything to do with objects, check and clear it
-	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for (auto & taggedPropertie : taggedProperties)
 	{
 		switch (type)
 		{
 		case C4ScriptGuiWindowPropertyName::symbolObject:
-			if (iter->second.obj == pObj)
-				iter->second.obj = 0;
+			if (taggedPropertie.second.obj == pObj)
+				taggedPropertie.second.obj = nullptr;
 		break;
 
 		case C4ScriptGuiWindowPropertyName::onClickAction:
 		case C4ScriptGuiWindowPropertyName::onMouseInAction:
 		case C4ScriptGuiWindowPropertyName::onMouseOutAction:
 		case C4ScriptGuiWindowPropertyName::onCloseAction:
-			if (iter->second.action)
-				iter->second.action->ClearPointers(pObj);
+			if (taggedPropertie.second.action)
+				taggedPropertie.second.action->ClearPointers(pObj);
 		break;
 		default:
 			return;
@@ -614,9 +614,9 @@ bool C4ScriptGuiWindowProperty::SwitchTag(C4String *tag)
 std::list<C4ScriptGuiWindowAction*> C4ScriptGuiWindowProperty::GetAllActions()
 {
 	std::list<C4ScriptGuiWindowAction*> allActions;
-	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
+	for (auto & taggedPropertie : taggedProperties)
 	{
-		Prop &p = iter->second;
+		Prop &p = taggedPropertie.second;
 		if (p.action)
 			allActions.push_back(p.action);
 	}
@@ -681,7 +681,7 @@ void C4ScriptGuiWindow::Init()
 	wasRemoved = false;
 	closeActionWasExecuted = false;
 	currentMouseState = MouseState::None;
-	target = 0;
+	target = nullptr;
 	pScrollBar->fAutoHide = true;
 
 	rcBounds.x = rcBounds.y = 0;
@@ -693,8 +693,8 @@ C4ScriptGuiWindow::~C4ScriptGuiWindow()
 	ClearChildren(false);
 
 	// delete certain properties that contain allocated elements or referenced strings
-	for (int32_t i = 0; i < C4ScriptGuiWindowPropertyName::_lastProp; ++i)
-		props[i].CleanUpAll();
+	for (auto & prop : props)
+		prop.CleanUpAll();
 
 	if (pScrollBar)
 		delete pScrollBar;
@@ -828,7 +828,7 @@ void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4S
 		}
 		else // error, abort! (readere is not in a clean state anyway)
 		{
-			LogF("Warning: Could not parse menu format string \"%s\"!", property.getStr()->GetCStr());
+			LogF(R"(Warning: Could not parse menu format string "%s"!)", property.getStr()->GetCStr());
 			return;
 		}
 
@@ -848,11 +848,11 @@ C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relat
 	
 	C4PropList *proplist = nullptr;
 	const bool onlyStdTag = relative.taggedProperties.size() == 1;
-	for (std::map<C4String*, C4ScriptGuiWindowProperty::Prop>::iterator iter = relative.taggedProperties.begin(); iter != relative.taggedProperties.end(); ++iter)
+	for (auto & taggedPropertie : relative.taggedProperties)
 	{
-		C4String *tag = iter->first;
+		C4String *tag = taggedPropertie.first;
 		StdStrBuf buf;
-		buf.Format("%f%%%+fem", 100.0f * iter->second.f, absolute.taggedProperties[tag].f);
+		buf.Format("%f%%%+fem", 100.0f * taggedPropertie.second.f, absolute.taggedProperties[tag].f);
 		C4String *propString = Strings.RegString(buf);
 
 		if (onlyStdTag)
@@ -918,9 +918,8 @@ const C4Value C4ScriptGuiWindow::ToC4Value()
 
 	const int32_t entryCount = sizeof(toSave) / sizeof(int32_t);
 
-	for (size_t i = 0; i < entryCount; ++i)
+	for (int prop : toSave)
 	{
-		int32_t prop = toSave[i];
 		C4Value val;
 
 		switch (prop)
@@ -1289,7 +1288,7 @@ C4ScriptGuiWindow *C4ScriptGuiWindow::GetSubWindow(int32_t childID, C4Object *ch
 		if (subwindow->GetTarget() != childTarget) continue;
 		return subwindow;
 	}
-	return 0;
+	return nullptr;
 }
 
 void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool all)
@@ -1327,7 +1326,7 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 
 void C4ScriptGuiWindow::ClearChildren(bool close)
 {
-	RemoveChild(0, close, true);
+	RemoveChild(nullptr, close, true);
 }
 
 void C4ScriptGuiWindow::Close()
@@ -1422,8 +1421,8 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 		};
 
 		// do all the rounding after the calculations
-		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
-		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
+		const auto childWdt = (int32_t)(childWdtF + 0.5f);
+		const auto childHgt = (int32_t)(childHgtF + 0.5f);
 
 		// Check if the child even fits in the remainder of the row
 		const bool fitsInRow = (width - currentX) >= childWdt;
@@ -1469,8 +1468,8 @@ void C4ScriptGuiWindow::UpdateLayoutTightGrid()
 		const float childHgtF = float(child->rcBounds.Hgt) + childTopMargin + childBottomMargin;
 
 		// do all the rounding after the calculations
-		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
-		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
+		const auto childWdt = (int32_t)(childWdtF + 0.5f);
+		const auto childHgt = (int32_t)(childHgtF + 0.5f);
 
 		// Look for a free spot.
 		int32_t currentX = borderX;
@@ -1606,9 +1605,8 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 	// note that withMultipleFlag only plays a roll for the root-menu
 	bool oneDrawn = false; // was at least one child drawn?
 	//for (auto iter = rbegin(); iter != rend(); ++iter)
-	for (auto iter = begin(); iter != end(); ++iter)
+	for (auto element : *this)
 	{
-		C4GUI::Element *element = *iter;
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 
 		if (withMultipleFlag != -1)
@@ -2310,9 +2308,8 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 		MenuDebugLogF("children:\t%d", GetElementCount());
 		MenuDebugLogF("all actions:\t%d", props[actionType].GetAllActions().size());
 		std::list<C4ScriptGuiWindowAction*> allActions = props[actionType].GetAllActions();
-		for (std::list<C4ScriptGuiWindowAction*>::iterator iter = allActions.begin(); iter != allActions.end(); ++iter)
+		for (auto action : allActions)
 		{
-			C4ScriptGuiWindowAction *action = *iter;
 			assert(action && "C4ScriptGuiWindowProperty::GetAllActions returned list with null-pointer");
 
 			if (action->ExecuteCommand(actionID, this, player))

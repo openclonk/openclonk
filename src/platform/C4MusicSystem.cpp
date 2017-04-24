@@ -139,7 +139,7 @@ bool C4MusicSystem::Init(const char * PlayList)
 	LoadMoreMusic();
 	// set play list
 	SCounter = 0;
-	if (PlayList) SetPlayList(PlayList); else SetPlayList(0);
+	if (PlayList) SetPlayList(PlayList); else SetPlayList(nullptr);
 	// set initial volume
 	UpdateVolume();
 	// ok
@@ -183,7 +183,7 @@ bool C4MusicSystem::InitForScenario(C4Group & hGroup)
 	// no music?
 	if (!SongCount) return false;
 	// set play list
-	SetPlayList(0);
+	SetPlayList(nullptr);
 	// ok
 	return true;
 }
@@ -414,7 +414,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 	// info
 	if (::Config.Sound.Verbose)
 	{
-		LogF("MusicSystem: Play(\"%s\", %s, %d, %.3lf, %s)", szSongname ? szSongname : "(null)", fLoop ? "true" : "false", fadetime_ms, max_resume_time, allow_break ? "true" : "false");
+		LogF(R"(MusicSystem: Play("%s", %s, %d, %.3lf, %s))", szSongname ? szSongname : "(null)", fLoop ? "true" : "false", fadetime_ms, max_resume_time, allow_break ? "true" : "false");
 	}
 
 	C4MusicFile* NewFile = nullptr;
@@ -560,7 +560,7 @@ bool C4MusicSystem::Play(C4MusicFile *NewFile, bool fLoop, double max_resume_tim
 	// info
 	if (::Config.Sound.Verbose)
 	{
-		LogF("MusicSystem: PlaySong(\"%s\", %s, %.3lf)", NewFile->GetDebugInfo().getData(), fLoop ? "true" : "false", max_resume_time);
+		LogF(R"(MusicSystem: PlaySong("%s", %s, %.3lf))", NewFile->GetDebugInfo().getData(), fLoop ? "true" : "false", max_resume_time);
 	}
 	// Play new song directly
 	if (!NewFile->Play(fLoop, max_resume_time)) return false;
@@ -693,7 +693,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 	// info
 	if (::Config.Sound.Verbose)
 	{
-		LogF("MusicSystem: SetPlayList(\"%s\", %s, %d, %.3lf)", szPlayList ? szPlayList : "(null)", fForceSwitch ? "true" : "false", fadetime_ms, max_resume_time);
+		LogF(R"(MusicSystem: SetPlayList("%s", %s, %d, %.3lf))", szPlayList ? szPlayList : "(null)", fForceSwitch ? "true" : "false", fadetime_ms, max_resume_time);
 	}
 	// reset
 	C4MusicFile *pFile;

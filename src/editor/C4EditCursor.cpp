@@ -885,7 +885,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			creator_def->Shape.Wdt, creator_def->Shape.Hgt, 0, 0, cgo.Zoom, 0, 0);
 		if (!creator_overlay)
 		{
-			creator_overlay.reset(new C4GraphicsOverlay());
+			creator_overlay = std::make_unique<C4GraphicsOverlay>();
 			creator_overlay->SetAsBase(&creator_def->Graphics, C4GFXBLIT_ADDITIVE);
 		}
 		creator_overlay->Draw(cgo_creator, nullptr, NO_OWNER);

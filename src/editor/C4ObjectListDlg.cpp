@@ -24,13 +24,9 @@
 #include "script/C4Effect.h"
 
 
-C4ObjectListDlg::C4ObjectListDlg()
-{
-}
+C4ObjectListDlg::C4ObjectListDlg() = default;
 
-C4ObjectListDlg::~C4ObjectListDlg()
-{
-}
+C4ObjectListDlg::~C4ObjectListDlg() = default;
 
 void C4ObjectListDlg::Execute()
 {

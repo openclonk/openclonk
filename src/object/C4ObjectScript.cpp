@@ -334,7 +334,7 @@ static void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
 	if (!iPrec) iPrec=10;
 	// update xdir
 	Obj->xdir=itofix(nxdir, iPrec);
-	Obj->Mobile=1;
+	Obj->Mobile=true;
 }
 
 static void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
@@ -343,7 +343,7 @@ static void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
 	if (!iPrec) iPrec=10;
 	// update rdir
 	Obj->rdir=itofix(nrdir, iPrec);
-	Obj->Mobile=1;
+	Obj->Mobile=true;
 }
 
 static void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
@@ -352,7 +352,7 @@ static void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
 	if (!iPrec) iPrec=10;
 	// update ydir
 	Obj->ydir=itofix(nydir, iPrec);
-	Obj->Mobile=1;
+	Obj->Mobile=true;
 }
 
 static void FnSetR(C4Object *Obj, long nr)
@@ -660,7 +660,7 @@ static bool FnSetVertex(C4Object *Obj, long iIndex, long iValueToSet, long iValu
 		if (!Obj->fOwnVertices)
 		{
 			Obj->Shape.CreateOwnOriginalCopy(Obj->Def->Shape);
-			Obj->fOwnVertices = 1;
+			Obj->fOwnVertices = true;
 		}
 		// set vertices at end of buffer
 		iIndex += C4D_VertexCpyPos;
@@ -887,7 +887,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 		if (Parameter.getPropList()->GetObject())
 			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetObject()->Number);
 		else if (Parameter.getPropList()->GetDef())
-			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
+			sprintf(parameter, R"(C4Id("%s"))", Parameter.getPropList()->GetDef()->id.ToString());
 		else
 			throw C4AulExecError("proplist as parameter to AddMenuItem");
 		break;
@@ -924,8 +924,8 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		// Search for "%d" an replace it by "%s" for insertion of formatted parameter
 		SCopy(FnStringPar(szCommand), dummy, 256);
-		char* pFound = const_cast<char*>(SSearch(dummy, "%d"));
-		if (pFound != 0)
+		auto* pFound = const_cast<char*>(SSearch(dummy, "%d"));
+		if (pFound != nullptr)
 			*(pFound - 1) = 's';
 		// Compose left-click command
 		sprintf(command, dummy, parameter, 0);
@@ -1045,7 +1045,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		// draw object picture
 		if (!XPar.CheckConversion(C4V_Object))
-			throw C4AulExecError(FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
+			throw C4AulExecError(FormatString(R"(call to "%s" parameter %d: got "%s", but expected "%s"!)",
 			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
 		pGfxObj = XPar.getObj();

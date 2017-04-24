@@ -523,9 +523,9 @@ C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player)
 
 	// key bindings
 	C4CustomKey::CodeList keys;
-	keys.push_back(C4KeyCodeEx(K_BACK));
-	keys.push_back(C4KeyCodeEx(K_LEFT));
-	keys.push_back(C4KeyCodeEx(K_ESCAPE));
+	keys.emplace_back(K_BACK);
+	keys.emplace_back(K_LEFT);
+	keys.emplace_back(K_ESCAPE);
 	if (Config.Controls.GamepadGuiControl)
 	{
 		ControllerKeys::Cancel(keys);
@@ -998,8 +998,8 @@ typedef std::vector<C4StartupPlrSelDlg_CrewSortDataEntry> C4StartupPlrSelDlg_Cre
 
 int32_t C4StartupPlrSelDlg::CrewSortFunc(const C4GUI::Element *pEl1, const C4GUI::Element *pEl2, void *par)
 {
-	const CrewListItem *pItem1 = static_cast<const CrewListItem *>(pEl1);
-	const CrewListItem *pItem2 = static_cast<const CrewListItem *>(pEl2);
+	const auto *pItem1 = static_cast<const CrewListItem *>(pEl1);
+	const auto *pItem2 = static_cast<const CrewListItem *>(pEl2);
 	C4StartupPlrSelDlg_CrewSortData &rSortData = *static_cast<C4StartupPlrSelDlg_CrewSortData *>(par);
 	C4StartupPlrSelDlg_CrewSortData::iterator i = std::find_if(rSortData.begin(), rSortData.end(), C4StartupPlrSelDlg_CrewSortDataMatchType(pItem1->GetCore().id)),
 	    j = std::find_if(rSortData.begin(), rSortData.end(), C4StartupPlrSelDlg_CrewSortDataMatchType(pItem2->GetCore().id));
@@ -1022,7 +1022,7 @@ void C4StartupPlrSelDlg::ResortCrew()
 	{
 		C4StartupPlrSelDlg_CrewSortData::iterator i = std::find_if(SortData.begin(), SortData.end(), C4StartupPlrSelDlg_CrewSortDataMatchType(pCrewItem->GetCore().id));
 		if (i == SortData.end())
-			SortData.push_back(C4StartupPlrSelDlg_CrewSortDataEntry(pCrewItem->GetCore().Experience, pCrewItem->GetCore().id));
+			SortData.emplace_back(pCrewItem->GetCore().Experience, pCrewItem->GetCore().id);
 		else
 			(*i).iMaxExp = std::max<int32_t>((*i).iMaxExp, pCrewItem->GetCore().Experience);
 	}
@@ -1038,7 +1038,7 @@ public:
 
 protected:
 	// Event handler
-	virtual void OnClosed(bool commit);
+	void OnClosed(bool commit) override;
 
 private:
 	class Picker : public C4GUI::Control
@@ -1052,9 +1052,9 @@ private:
 	
 	protected:
 		// Event handlers, overridden from C4GUI::Control
-		virtual void DrawElement(C4TargetFacet &cgo);
-		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
-		virtual void DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);
+		void DrawElement(C4TargetFacet &cgo) override;
+		void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
+		void DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 	
 	private:
 		static const unsigned int HSPickerCursorSize = 5;

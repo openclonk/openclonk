@@ -32,13 +32,13 @@ bool EraseItemSafe(const char *szFilename)
 	Filename[SLen(Filename)+1]=0;
 	auto wide_filename = GetWideChar(Filename, true); // wide_filename holds the buffer
 	SHFILEOPSTRUCTW shs;
-	shs.hwnd=0;
+	shs.hwnd=nullptr;
 	shs.wFunc=FO_DELETE;
 	shs.pFrom = wide_filename;
 	shs.pTo=nullptr;
 	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
 	shs.fAnyOperationsAborted=false;
-	shs.hNameMappings=0;
+	shs.hNameMappings=nullptr;
 	shs.lpszProgressTitle=nullptr;
 	auto error = SHFileOperationW(&shs);
 	return !error;
@@ -91,9 +91,9 @@ bool RestartApplication(std::vector<const char *> parameters)
 		StdStrBuf params;
 		for (auto p : parameters)
 		{
-			params += "\"";
+			params += R"(")";
 			params += p;
-			params += "\" ";
+			params += R"(" )";
 		}
 		intptr_t iError = (intptr_t)::ShellExecute(nullptr, nullptr, buf, params.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
 		if (iError > 32) success = true;

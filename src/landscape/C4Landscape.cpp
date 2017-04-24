@@ -131,7 +131,7 @@ namespace
 {
 	bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
 		std::function<bool(int32_t, int32_t)> fnCallback,
-		int32_t *lastx = 0, int32_t *lasty = 0)
+		int32_t *lastx = nullptr, int32_t *lasty = nullptr)
 	{
 		int d, dx, dy, aincr, bincr, xincr, yincr, x, y;
 		if (Abs(x2 - x1) < Abs(y2 - y1))
@@ -1649,12 +1649,12 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Create FoW
 	assert(p->pFoW == nullptr);
 	if (Game.C4S.Game.FoWEnabled)
-		p->pFoW.reset(new C4FoW);
+		p->pFoW = std::make_unique<C4FoW>();
 
 	// Create renderer
 #ifndef USE_CONSOLE
 	if (!p->pLandscapeRender)
-		p->pLandscapeRender.reset(new C4LandscapeRenderGL);
+		p->pLandscapeRender = std::make_unique<C4LandscapeRenderGL>();
 #endif
 
 	if (p->pLandscapeRender)

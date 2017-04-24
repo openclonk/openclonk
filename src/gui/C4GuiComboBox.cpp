@@ -71,10 +71,10 @@ namespace C4GUI
 		*Text=0;
 		// key callbacks - lots of possibilities to get the dropdown
 		C4CustomKey::CodeList cbKeys;
-		cbKeys.push_back(C4KeyCodeEx(K_DOWN));
-		cbKeys.push_back(C4KeyCodeEx(K_SPACE));
-		cbKeys.push_back(C4KeyCodeEx(K_DOWN, KEYS_Alt));
-		cbKeys.push_back(C4KeyCodeEx(K_SPACE, KEYS_Alt));
+		cbKeys.emplace_back(K_DOWN);
+		cbKeys.emplace_back(K_SPACE);
+		cbKeys.emplace_back(K_DOWN, KEYS_Alt);
+		cbKeys.emplace_back(K_SPACE, KEYS_Alt);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Ok(cbKeys);
@@ -83,7 +83,7 @@ namespace C4GUI
 		pKeyOpenCombo = new C4KeyBinding(cbKeys, "GUIComboOpen", KEYSCOPE_Gui,
 		                                 new ControlKeyCB<ComboBox>(*this, &ComboBox::KeyDropDown), C4CustomKey::PRIO_Ctrl);
 		cbKeys.clear();
-		cbKeys.push_back(C4KeyCodeEx(K_ESCAPE));
+		cbKeys.emplace_back(K_ESCAPE);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Cancel(cbKeys);

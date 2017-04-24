@@ -77,7 +77,7 @@ bool C4GameSave::SaveCore()
 		rC4S.Head.RandomSeed=Game.RandomSeed;
 	}
 	// reset some network flags
-	rC4S.Head.NetworkGame=0;
+	rC4S.Head.NetworkGame=false;
 	// Title in language game was started in (not: save scenarios and net references)
 	if (!GetKeepTitle())
 	{

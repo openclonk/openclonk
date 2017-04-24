@@ -76,8 +76,8 @@ void C4ChatControl::ChatSheet::NickItem::Update(class C4Network2IRCUser *pByUser
 
 int32_t C4ChatControl::ChatSheet::NickItem::SortFunc(const C4GUI::Element *pEl1, const C4GUI::Element *pEl2, void *)
 {
-	const NickItem *pNickItem1 = static_cast<const NickItem *>(pEl1);
-	const NickItem *pNickItem2 = static_cast<const NickItem *>(pEl2);
+	const auto *pNickItem1 = static_cast<const NickItem *>(pEl1);
+	const auto *pNickItem2 = static_cast<const NickItem *>(pEl2);
 	int32_t s1 = pNickItem1->GetStatus(), s2 = pNickItem2->GetStatus();
 	if (s1 != s2) return s1 - s2;
 	return stricmp(pNickItem2->GetNick(), pNickItem1->GetNick());
@@ -92,7 +92,7 @@ C4ChatControl::ChatSheet::ChatSheet(C4ChatControl *pChatControl, const char *szT
 	if (szIdent) sIdent.Copy(szIdent);
 	// create elements - positioned later
 	C4Rect rcDefault(0,0,10,10);
-	pChatBox = new C4GUI::TextWindow(rcDefault,0,0,0,100,4096,"  ",false,0,0,true);
+	pChatBox = new C4GUI::TextWindow(rcDefault,0,0,0,100,4096,"  ",false,nullptr,0,true);
 	pChatBox->SetDecoration(false, false, nullptr, false);
 	AddElement(pChatBox);
 	if (eType == CS_Channel)
@@ -961,9 +961,7 @@ C4ChatDlg::C4ChatDlg() : C4GUI::Dialog(100, 100, "IRC", false)
 	SetFocus(GetDefaultControl(), false);
 }
 
-C4ChatDlg::~C4ChatDlg()
-{
-}
+C4ChatDlg::~C4ChatDlg() = default;
 
 C4ChatDlg *C4ChatDlg::ShowChat()
 {

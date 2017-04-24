@@ -33,12 +33,12 @@ void C4MarkupTagColor::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 
 bool C4Markup::Read(const char **ppText, bool fSkip)
 {
-	char Tag[50]; C4MarkupTag *pNewTag=0; int iTagLen,iParLen;
+	char Tag[50]; C4MarkupTag *pNewTag=nullptr; int iTagLen,iParLen;
 	// get tag
 	if (!SCopyEnclosed(*ppText, '<', '>', Tag, 49)) return false;
 	iTagLen=SLen(Tag);
 	// split tag to name and pars
-	char *szPars=0; int iSPos;
+	char *szPars=nullptr; int iSPos;
 	if ((iSPos=SCharPos(' ', Tag))>-1)
 	{
 		Tag[iSPos]=0;

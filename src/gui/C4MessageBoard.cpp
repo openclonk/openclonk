@@ -124,8 +124,8 @@ void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 	}
 
 	// messageboard
-	ScrollUpBinding.reset(new C4KeyBinding(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp)));
-	ScrollDownBinding.reset(new C4KeyBinding(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown)));
+	ScrollUpBinding = std::make_unique<C4KeyBinding>(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp));
+	ScrollDownBinding = std::make_unique<C4KeyBinding>(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown));
 }
 
 void C4MessageBoard::Draw(C4Facet &cgo)

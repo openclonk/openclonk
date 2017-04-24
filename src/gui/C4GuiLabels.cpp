@@ -467,9 +467,7 @@ namespace C4GUI
 		fctPaint.Create(iSfcWdt, iSfcHgt);
 	}
 
-	PaintBox::~PaintBox()
-	{
-	}
+	PaintBox::~PaintBox() = default;
 
 
 // --------------------------------------------------

@@ -60,7 +60,7 @@ double AmbientForPix(int x0, int y0, double R, const LightMap& light_map)
 // Everything is illuminated, independent of the landscape
 // This is used to obtain the normalization factor
 struct LightMapFull {
-	LightMapFull() {}
+	LightMapFull() = default;
 	bool operator()(int x, int y) const { return true; }
 };
 
