@@ -1,0 +1,7 @@
+[Head]
+Title=Sandbox Reloaded
+Icon=17
+
+[Landscape]
+SkyScrollMode=2
+Secret=false

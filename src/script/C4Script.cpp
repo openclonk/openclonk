@@ -617,6 +617,16 @@ static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
 }
 
+// Parse a string into an integer. Returns nil if the conversion fails.
+static Nillable<int32_t> FnParseInt(C4PropList *_this, C4String *str)
+{
+	const char *cstr = str->GetCStr();
+	const char *end = nullptr;
+	int32_t result = StrToI32(cstr, 10, &end);
+	if (end == cstr || *end != '\0') return C4Void();
+	return result;
+}
+
 static long FnAbs(C4PropList * _this, long iVal)
 {
 	return Abs(iVal);
@@ -1142,6 +1152,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
 		new C4AulDefFunc(p, pDef);
 #define F(f) ::AddFunc(p, #f, Fn##f)
+	F(ParseInt);
 	F(Abs);
 	F(Min);
 	F(Max);

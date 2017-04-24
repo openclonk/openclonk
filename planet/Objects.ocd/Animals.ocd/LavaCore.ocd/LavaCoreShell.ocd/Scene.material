@@ -1,0 +1,54 @@
+material LavaShellMat
+{
+	receive_shadows off
+	
+	technique 0
+	{
+		pass 0
+		{
+			
+
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.800000 0.316192 0.800000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			scene_blend alpha_blend
+			depth_write off
+			
+			texture_unit
+			{
+				texture LavaCoreShell.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex source1 src_texture src_texture
+			}
+		}
+	}
+}
+material LavaShellStoneMat
+{
+	receive_shadows off
+	
+	technique 0
+	{
+		pass 0
+		{
+			
+
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.800000 0.316192 0.800000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			scene_blend alpha_blend
+			depth_write off
+			
+			texture_unit
+			{
+				texture LavaCoreShellStone.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex source1 src_texture src_texture
+			}
+		}
+	}
+}

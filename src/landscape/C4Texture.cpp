@@ -551,10 +551,15 @@ void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMateria
 	bool fSet[C4M_MaxTexIndex];
 	ZeroMem(&fSet, sizeof (fSet));
 	int32_t i;
-	for (i = 0; i < C4M_MaxTexIndex; i++)
+	for (i = 1; i < C4M_MaxTexIndex; i++)
 	{
 		// Find material
-		DWORD dwPix = Entry[i].GetPattern().PatternClr(0, 0);
+		DWORD dwPix;
+		auto texture = GetTexture(Entry[i].GetTextureName());
+		if (texture)
+			dwPix = texture->GetAverageColor();
+		else
+			dwPix = Entry[i].GetPattern().PatternClr(0, 0);
 		Palette->Colors[i] = dwPix;
 		fSet[i] = true;
 	}

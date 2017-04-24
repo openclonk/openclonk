@@ -1,5 +1,0 @@
-[DefCore]
-id=BoilingAcid_Spawner
-Version=6,0
-Category=C4D_StaticBack
-HideInCreator=true

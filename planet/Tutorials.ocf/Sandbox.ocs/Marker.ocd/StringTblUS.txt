@@ -1,0 +1,2 @@
+Name=Marker
+Description=A simple Marker or Waypoint

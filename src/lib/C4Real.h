@@ -74,8 +74,8 @@ public:
 
 public:
 	// constructors
-	inline C4Fixed () { }
-	inline C4Fixed (const C4Fixed &rCpy): val(rCpy.val) { }
+	inline C4Fixed () = default;
+	inline C4Fixed (const C4Fixed &) = default;
 
 	// Conversion must be done by the conversion routines itofix, fixtoi, ftofix and fixtof
 	// in order to be backward compatible, so everything is private.
@@ -123,7 +123,7 @@ public:
 	inline C4Fixed &operator = (int32_t x) { return *this = C4Fixed(x); }
 
 	// test value
-	inline operator bool () const { return !! val; }
+	explicit operator bool () const { return val != 0; }
 	inline bool operator ! () const { return ! val; }
 
 	// arithmetic operations

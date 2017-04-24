@@ -22,6 +22,7 @@
 #include "landscape/C4Scenario.h"
 #include "gui/C4Folder.h"
 #include "player/C4ScenarioParameters.h"
+#include "player/C4Achievement.h"
 
 #include <list>
 #include <string>

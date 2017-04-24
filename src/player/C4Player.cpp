@@ -516,9 +516,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
 				// OnJoinCrew callback
 				{
-#if !defined(DEBUGREC_RECRUITMENT)
-					C4DebugRecOff DbgRecOff;
-#endif
+					C4DebugRecOff DbgRecOff{ !DEBUGREC_RECRUITMENT };
 					C4AulParSet parset(Number);
 					nobj->Call(PSF_OnJoinCrew, &parset);
 				}
@@ -1818,19 +1816,19 @@ void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool 
 	ZoomLimitsToViewports();
 }
 
-void C4Player::SetZoom(C4Fixed zoom, bool direct, bool no_increase, bool no_decrease)
+void C4Player::SetZoom(C4Real zoom, bool direct, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomVal, zoom, no_increase, no_decrease);
 	ZoomToViewports(direct, no_increase, no_decrease);
 }
 
-void C4Player::SetMinZoom(C4Fixed zoom, bool no_increase, bool no_decrease)
+void C4Player::SetMinZoom(C4Real zoom, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomLimitMinVal, zoom, no_increase, no_decrease);
 	ZoomLimitsToViewports();
 }
 
-void C4Player::SetMaxZoom(C4Fixed zoom, bool no_increase, bool no_decrease)
+void C4Player::SetMaxZoom(C4Real zoom, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomLimitMaxVal, zoom, no_increase, no_decrease);
 	ZoomLimitsToViewports();
@@ -1882,7 +1880,7 @@ bool C4Player::AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_
 	return true;
 }
 
-bool C4Player::AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease)
+bool C4Player::AdjustZoomParameter(C4Real *zoom_par, C4Real new_val, bool no_increase, bool no_decrease)
 {
 	// helper function: Adjust *zoom_par to new_val if increase/decrease not forbidden
 	if (new_val < *zoom_par)

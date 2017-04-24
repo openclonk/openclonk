@@ -1,0 +1,2 @@
+Name=Teleporter
+Description=Flying is lame. Teleporting is what the trendy kids do today.

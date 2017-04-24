@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ParseInt</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>value</name>
+          <desc>string representation of a number to parse</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Parses a string representing a base 10 number into an integer value. If the string does not entirely consist of a base 10 number, optionally signed, <code>nil</code> is returned.</desc>
+    <examples>
+      <example>
+        <code>ParseInt("14")</code>
+        <text>Returns the integer <code>14</code>.</text>
+        <code>ParseInt("fourteen")</code>
+        <text>Returns <code>nil</code>.</text>
+      </example>
+    </examples>
+  </func>
+</funcs>

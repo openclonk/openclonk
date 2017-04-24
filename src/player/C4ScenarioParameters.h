@@ -20,23 +20,6 @@
 #ifndef INC_C4ScenarioParameters
 #define INC_C4ScenarioParameters
 
-// Maps IDs to achievement graphics to be shown beside scenarios (and maybe other things)
-class C4AchievementGraphics
-{
-	std::map<StdCopyStrBuf, C4FacetSurface *> Graphics;
-	int32_t idGrp; // ID of group file from which achievements were loaded
-
-public:
-	C4AchievementGraphics() : idGrp(0) {}
-
-	// Init will always  load all achievement files from the first group that contains achievements
-	bool Init(C4Group &File);
-	bool Init(C4GroupSet &Files);
-	void Clear();
-
-	C4FacetSurface *FindByName(const char *name) const;
-};
-
 // Definition for a custom setting for the scenario
 class C4ScenarioParameterDef
 {

@@ -854,8 +854,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		if (pContext && !pContext->Status)
 			throw C4AulExecError("using removed object");
 
-#ifdef DEBUGREC_SCRIPT
-		if (Config.General.DebugRec)
+		if (DEBUGREC_SCRIPT && Config.General.DebugRec)
 		{
 			StdStrBuf sCallText;
 			if (pContext && pContext->GetObject())
@@ -885,7 +884,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			sCallText.AppendChar(';');
 			AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
 		}
-#endif
 
 		// Execute
 #ifdef _DEBUG
@@ -1019,14 +1017,12 @@ void C4AulProfiler::Show()
 
 C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context, bool parse_function)
 {
-#ifdef DEBUGREC_SCRIPT
-	if (Config.General.DebugRec)
+	if (DEBUGREC_SCRIPT && Config.General.DebugRec)
 	{
 		AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
 		int32_t iObjNumber = p && p->GetPropListNumbered() ? p->GetPropListNumbered()->Number : -1;
 		AddDbgRec(RCT_DirectExec, &iObjNumber, sizeof(int32_t));
 	}
-#endif
 	// profiler
 	StartDirectExec();
 	C4PropListStatic * script = ::GameScript.GetPropList();

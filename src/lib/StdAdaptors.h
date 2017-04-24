@@ -240,10 +240,13 @@ struct StdCastAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		// Cast
-		assert(sizeof(to_t) == sizeof(T));
-		to_t vVal = *reinterpret_cast<to_t *>(&rValue);
+		static_assert(sizeof(to_t) == sizeof(T), "CastAdapt sanity: sizes match");
+		static_assert(std::is_pod<to_t>::value, "CastAdapt sanity: to-type is POD");
+		static_assert(std::is_pod<T>::value, "CastAdapt sanity: from-type is POD");
+		to_t vVal;
+		std::memcpy(&vVal, &rValue, sizeof(to_t));
 		pComp->Value(vVal);
-		rValue = *reinterpret_cast<T *>(&vVal);
+		std::memcpy(&rValue, &vVal, sizeof(T));
 	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }

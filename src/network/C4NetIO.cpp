@@ -517,7 +517,7 @@ bool C4NetIO::HostAddress::IsNull() const
 	{
 	case AF_INET: return v4.sin_addr.s_addr == 0;
 	case AF_INET6:
-		return IN6_IS_ADDR_UNSPECIFIED(&v6.sin6_addr);
+		return !!IN6_IS_ADDR_UNSPECIFIED(&v6.sin6_addr);
 	}
 	assert(!"Shouldn't reach this");
 	return false;

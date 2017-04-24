@@ -411,7 +411,8 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// zero fields
 	MaskPut=false;
 	MaskPutRotation=0;
-	MaskRemovalX=MaskRemovalY=Fix0;
+	MaskRemovalX = Fix0;
+	MaskRemovalY = 0;
 	ppAttachingObjects=nullptr;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	MaskMaterial=MCVehic;
@@ -465,18 +466,18 @@ C4SolidMask * C4SolidMask::First = 0;
 C4SolidMask * C4SolidMask::Last = 0;
 
 
-#ifdef SOLIDMASK_DEBUG
-
 bool C4SolidMask::CheckConsistency()
 {
-	assert(IsSomeVehicle(MaskMaterial));
+	if (!SOLIDMASK_DEBUG)
+		return true;
+
 	C4Rect SolidMaskRect(0,0,::Landscape.GetWidth(),::Landscape.GetHeight());
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{
 		pSolid->RemoveTemporary(SolidMaskRect);
 	}
-	assert(!::Landscape.MatCount[MVehic]);
+	assert(!::Landscape.GetMatCount(MVehic));
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 	{
@@ -484,8 +485,6 @@ bool C4SolidMask::CheckConsistency()
 	}
 	return true;
 }
-
-#endif
 
 CSurface8 *C4SolidMask::LoadMaskFromFile(class C4Group &hGroup, const char *szFilename)
 {

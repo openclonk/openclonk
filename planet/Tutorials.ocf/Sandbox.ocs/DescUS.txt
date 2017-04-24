@@ -1,0 +1,15 @@
+A scenario to play around with all the cool stuff.
+
+The following tools can be used:
+
+Landscape Generator:
+Create the landscape as you wish. You can choose what kind of things you want to have on the map. Desert, Snowlands or Underwaterworld, it's up to you.
+
+Material Brush:
+What developers can do in the editor can be done by you using this tool. You get the full palette of materials.
+
+Object Creator:
+Whatever is missing, you could create it using this tool, no matter if object, building or vehicle.
+
+Marker:
+A tool to mark the spot. Can be used for Respawns and Teleports.

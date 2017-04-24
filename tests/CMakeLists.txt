@@ -102,6 +102,14 @@ endfunction()
 if (GTEST_FOUND AND GMOCK_FOUND)
     enable_testing()
 
+    create_test(StdMeshMath
+        SOURCES
+        "../src/lib/StdMeshMath.cpp"
+        "../src/lib/StdMeshMath.h"
+        "math/StdMeshVectorTest.cpp"
+        "math/StdMeshQuaternionTest.cpp"
+        )
+
     AUX_SOURCE_DIRECTORY("${CMAKE_CURRENT_LIST_DIR}" TESTS_SOURCES)
     add_executable(tests EXCLUDE_FROM_ALL ${TESTS_SOURCES} ${C4SCRIPT_SOURCES})
 	set_property(TARGET "tests" PROPERTY FOLDER "Testing")

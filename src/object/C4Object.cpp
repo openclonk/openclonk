@@ -670,9 +670,7 @@ void C4Object::UpdateInMat()
 void C4Object::SetOCF()
 {
 	C4PropList* pActionDef = GetAction();
-#ifdef DEBUGREC_OCF
 	uint32_t dwOCFOld = OCF;
-#endif
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
@@ -756,22 +754,18 @@ void C4Object::SetOCF()
 	// OCF_Container
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
-#ifdef DEBUGREC_OCF
-	if (Config.General.DebugRec)
+	if (DEBUGREC_OCF && Config.General.DebugRec)
 	{
 		C4RCOCF rc = { dwOCFOld, OCF, false };
 		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
 	}
-#endif
 }
 
 
 void C4Object::UpdateOCF()
 {
 	C4PropList* pActionDef = GetAction();
-#ifdef DEBUGREC_OCF
 	uint32_t dwOCFOld = OCF;
-#endif
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
@@ -832,13 +826,11 @@ void C4Object::UpdateOCF()
 	// OCF_Container
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
-#ifdef DEBUGREC_OCF
-	if (Config.General.DebugRec)
+	if (DEBUGREC_OCF && Config.General.DebugRec)
 	{
 		C4RCOCF rc = { dwOCFOld, OCF, true };
 		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
 	}
-#endif
 #ifdef _DEBUG
 	DEBUGREC_OFF
 	uint32_t updateOCF = OCF;
@@ -3529,7 +3521,7 @@ void C4Object::ExecAction()
 		else if (Action.t_attach & CNAT_Top && Shape.Attach(smpx,smpy,CNAT_Top)) fAttachOK = true;
 		if (!fAttachOK)
 			{ ObjectComStopDig(this); return; }
-		iPhaseAdvance=40*limit;
+		iPhaseAdvance=fixtoi(itofix(40)*limit);
 
 		if (xdir < 0) SetDir(DIR_Left); else if (xdir > 0) SetDir(DIR_Right);
 		Action.t_attach=CNAT_None;

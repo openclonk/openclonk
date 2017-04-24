@@ -27,7 +27,7 @@ private func AddReproductionEffect()
 
 private func RemoveReproductionEffect()
 {
-	return RemoveEffect("IntReproduction");
+	return RemoveEffect("IntReproduction", this);
 }
 
 
@@ -68,6 +68,12 @@ private func SpecialReproduction()
 	return false;
 }
 
+// Standard conditions for reproduction.
+private func ReproductionCondition()
+{
+	return GetAlive() && GetCon() >= 100;
+}
+
 // Special conditions which needs to be fulfilled (e.g. a fish should have the swim action).
 private func SpecialReproductionCondition()
 {
@@ -87,7 +93,7 @@ private func CountAnimalsInArea()
 public func FxIntReproductionTimer(object target, proplist effect, int time)
 {
 	// Already dead or not full grown? Don't do anything.
-	if (!GetAlive() || GetCon() < 100) 
+	if (!ReproductionCondition()) 
 		return FX_OK;
 	// Apply the reproduction rate.
 	if (Random(10000) >= ReproductionRate())

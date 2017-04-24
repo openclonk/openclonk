@@ -34,7 +34,7 @@ private func FxMoveTimer(object target, effect fx, int time)
 		DoCon(2);
 	
 	// Causes bubbles to repel each other.
-	var nearby_bubble = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_ID(GetID()));
+	var nearby_bubble = FindObject(Find_Distance(GetCon() / 15), Find_ID(GetID()));
 	if (nearby_bubble)
 	{
 		SetXDir(-(nearby_bubble->GetX() - GetX()) / 2);
@@ -43,7 +43,7 @@ private func FxMoveTimer(object target, effect fx, int time)
 	// Deep green bubbles explode when near a living thing.
 	if (fx.is_explosive)
 	{
-		var prey = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_OCF(OCF_Alive));
+		var prey = FindObject(Find_Distance(GetCon() / 15), Find_OCF(OCF_Alive), Find_Not(Find_Property("CorrosionResist")));
 		if (prey)
 		{
 			Explode(10);

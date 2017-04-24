@@ -262,6 +262,12 @@ void C4ConfigGamepad::Reset()
 void C4ConfigControls::CompileFunc(StdCompiler *pComp)
 {
 #ifndef USE_CONSOLE
+	if (pComp->isSerializer())
+	{
+		// The registry compiler is broken with arrays. It doesn't delete extra items if the config got shorter
+		// Solve it by defaulting the array before writing to it.
+		pComp->Default("UserSets");
+	}
 	pComp->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
 	pComp->Value(mkNamingAdapt(MouseAutoScroll,      "MouseAutoScroll",      0 /* change default 33 to enable */ ));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));

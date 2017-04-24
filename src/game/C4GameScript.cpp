@@ -902,7 +902,7 @@ static bool FnSetPlayerZoom(C4PropList * _this, long plr_idx, long zoom, long pr
 	{
 		// zoom factor calculation
 		if (!precision) precision = 1;
-		C4Fixed fZoom = itofix(zoom, precision);
+		C4Real fZoom = itofix(zoom, precision);
 		// safety check on player only, so function return result is always in sync
 		C4Player *plr = ::Players.Get(plr_idx);
 		if (!plr) return false;

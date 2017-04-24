@@ -12,4 +12,3 @@ VertexFriction=1
 Float=1
 Oversize=1
 StretchGrowth=1
-HideInCreator=true
