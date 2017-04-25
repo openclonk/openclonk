@@ -352,7 +352,7 @@ public func RelaunchPosition()
 
 global func GetRandomSpawn()
 {
-	return Scenario->RelaunchPosition();
+	return RandomElement(Scenario->RelaunchPosition());
 }
 
 func KillsToRelaunch() { return 0; }
