@@ -111,8 +111,8 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 	// initialization of bounding box and bounding sphere.
 	bool hasVertices = false;
 	if(!mesh.SharedVertices.empty()) hasVertices = true;
-	for(auto & SubMeshe : mesh.SubMeshes)
-		if(!SubMeshe.Vertices.empty())
+	for(auto & SubMesh : mesh.SubMeshes)
+		if(!SubMesh.Vertices.empty())
 			hasVertices = true;
 
 	int VertexCount = RequireIntAttribute(geometry_elem, "vertexcount");

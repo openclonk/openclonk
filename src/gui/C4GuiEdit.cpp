@@ -27,7 +27,7 @@
 namespace C4GUI
 {
 
-	const char *Edit::CursorRepresentation = R"(┬ª)"; // U+00A6 BROKEN BAR
+	const char *Edit::CursorRepresentation = "\xC2\xA6"; // U+00A6 BROKEN BAR
 
 	namespace
 	{

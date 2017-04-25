@@ -337,11 +337,11 @@ void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
 
 void C4ScriptGuiWindowProperty::CleanUpAll()
 {
-	for (auto & taggedPropertie : taggedProperties)
+	for (auto & taggedProperty : taggedProperties)
 	{
-		CleanUp(taggedPropertie.second);
-		if (taggedPropertie.first != &Strings.P[P_Std])
-			taggedPropertie.first->DecRef();
+		CleanUp(taggedProperty.second);
+		if (taggedProperty.first != &Strings.P[P_Std])
+			taggedProperty.first->DecRef();
 	}
 }
 
@@ -355,10 +355,10 @@ const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 
 	// go through all of the tagged properties and add a property to the proplist containing both the tag name
 	// and the serialzed C4Value of the properties' value
-	for(auto & taggedPropertie : taggedProperties)
+	for(auto & taggedProperty : taggedProperties)
 	{
-		C4String *tagString = taggedPropertie.first;
-		const Prop &prop = taggedPropertie.second;
+		C4String *tagString = taggedProperty.first;
+		const Prop &prop = taggedProperty.second;
 
 		C4Value val;
 
@@ -580,21 +580,21 @@ void C4ScriptGuiWindowProperty::ClearPointers(C4Object *pObj)
 {
 	// assume that we actually contain an object
 	// go through all the tags and, in case the tag has anything to do with objects, check and clear it
-	for (auto & taggedPropertie : taggedProperties)
+	for (auto & taggedProperty : taggedProperties)
 	{
 		switch (type)
 		{
 		case C4ScriptGuiWindowPropertyName::symbolObject:
-			if (taggedPropertie.second.obj == pObj)
-				taggedPropertie.second.obj = nullptr;
+			if (taggedProperty.second.obj == pObj)
+				taggedProperty.second.obj = nullptr;
 		break;
 
 		case C4ScriptGuiWindowPropertyName::onClickAction:
 		case C4ScriptGuiWindowPropertyName::onMouseInAction:
 		case C4ScriptGuiWindowPropertyName::onMouseOutAction:
 		case C4ScriptGuiWindowPropertyName::onCloseAction:
-			if (taggedPropertie.second.action)
-				taggedPropertie.second.action->ClearPointers(pObj);
+			if (taggedProperty.second.action)
+				taggedProperty.second.action->ClearPointers(pObj);
 		break;
 		default:
 			return;
@@ -614,9 +614,9 @@ bool C4ScriptGuiWindowProperty::SwitchTag(C4String *tag)
 std::list<C4ScriptGuiWindowAction*> C4ScriptGuiWindowProperty::GetAllActions()
 {
 	std::list<C4ScriptGuiWindowAction*> allActions;
-	for (auto & taggedPropertie : taggedProperties)
+	for (auto & taggedProperty : taggedProperties)
 	{
-		Prop &p = taggedPropertie.second;
+		Prop &p = taggedProperty.second;
 		if (p.action)
 			allActions.push_back(p.action);
 	}
@@ -848,11 +848,11 @@ C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relat
 	
 	C4PropList *proplist = nullptr;
 	const bool onlyStdTag = relative.taggedProperties.size() == 1;
-	for (auto & taggedPropertie : relative.taggedProperties)
+	for (auto & taggedProperty : relative.taggedProperties)
 	{
-		C4String *tag = taggedPropertie.first;
+		C4String *tag = taggedProperty.first;
 		StdStrBuf buf;
-		buf.Format("%f%%%+fem", 100.0f * taggedPropertie.second.f, absolute.taggedProperties[tag].f);
+		buf.Format("%f%%%+fem", 100.0f * taggedProperty.second.f, absolute.taggedProperties[tag].f);
 		C4String *propString = Strings.RegString(buf);
 
 		if (onlyStdTag)

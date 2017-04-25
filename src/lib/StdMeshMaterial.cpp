@@ -525,10 +525,7 @@ void StdMeshMaterialParserCtx::WarningNotSupported(const char* identifier)
 	DebugLogF(R"(%s:%d: Warning: "%s" is not supported!)", FileName.getData(), Line, identifier);
 }
 
-StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
-		 
-{
-}
+StdMeshMaterialSubLoader::StdMeshMaterialSubLoader() = default;
 
 template<typename SubT>
 void StdMeshMaterialSubLoader::Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec)
@@ -1470,8 +1467,8 @@ bool StdMeshMaterialTechnique::IsOpaque() const
 	// non-opaque passes will just depend on the opaque value drawn in
 	// the previous pass; total result will not depend on original
 	// frame buffer value).
-	for(const auto & Passe : Passes)
-		if(Passe.IsOpaque())
+	for(const auto & Pass : Passes)
+		if(Pass.IsOpaque())
 			return true;
 	return false;
 }

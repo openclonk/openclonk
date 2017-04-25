@@ -26,16 +26,16 @@ StdMeshMaterialUpdate::StdMeshMaterialUpdate(StdMeshMatManager& manager):
 
 void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 {
-	for(auto & SubMeshe : mesh->SubMeshes)
+	for(auto & SubMesh : mesh->SubMeshes)
 	{
-		auto mat_iter = Materials.find(SubMeshe.Material);
+		auto mat_iter = Materials.find(SubMesh.Material);
 		if(mat_iter != Materials.end())
 		{
 			const StdMeshMaterial* new_material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
 
 			if(new_material)
 			{
-				SubMeshe.Material = new_material;
+				SubMesh.Material = new_material;
 			}
 			else
 			{
@@ -44,7 +44,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 				// going - next time the scenario will be started the mesh will fail
 				// to load because the material cannot be found.
 				MaterialManager.Materials[mat_iter->second.Name] = mat_iter->second; // TODO: could be moved
-				SubMeshe.Material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
+				SubMesh.Material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
 			}
 		}
 	}

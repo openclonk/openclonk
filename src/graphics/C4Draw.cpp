@@ -653,8 +653,8 @@ void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DW
 	vertices[6] = vertices[5];
 	vertices[7] = vertices[0];
 
-	for(auto & vertice : vertices)
-		DwTo4UB(dwClr, vertice.color);
+	for(auto & vertex : vertices)
+		DwTo4UB(dwClr, vertex.color);
 
 	PerformMultiLines(sfcDest, vertices, 8, width, nullptr);
 }

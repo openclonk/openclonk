@@ -302,10 +302,10 @@ StdStrBuf C4MusicFileOgg::GetDebugInfo() const
 	result.AppendFormat("[%.0lf]", last_playback_pos_sec);
 	result.AppendChar('[');
 	bool sec = false;
-	for (const auto & categorie : categories)
+	for (const auto & category : categories)
 	{
 		if (sec) result.AppendChar(',');
-		result.Append(categorie.getData());
+		result.Append(category.getData());
 		sec = true;
 	}
 	result.AppendChar(']');
@@ -442,8 +442,8 @@ bool C4MusicFileOgg::HasCategory(const char *szcat) const
 {
 	if (!szcat) return false;
 	// check all stored categories
-	for (const auto & categorie : categories)
-		if (WildcardMatch(szcat, categorie.getData()))
+	for (const auto & category : categories)
+		if (WildcardMatch(szcat, category.getData()))
 			return true;
 	return false;
 }

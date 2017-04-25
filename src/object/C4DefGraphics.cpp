@@ -604,9 +604,9 @@ void C4DefGraphicsPtrBackupEntry::UpdateAttachedMesh(StdMeshInstance* instance)
 	for(StdMeshInstance::AttachedMeshIter iter = instance->AttachedMeshesBegin(); iter != instance->AttachedMeshesEnd(); ++iter)
 		attached_meshes.push_back(*iter);
 
-	for(auto & attached_meshe : attached_meshes)
+	for(auto & attached_mesh : attached_meshes)
 		// TODO: Check that this mesh is still attached?
-		UpdateAttachedMesh(attached_meshe->Child);
+		UpdateAttachedMesh(attached_mesh->Child);
 }
 
 C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup():
@@ -620,8 +620,8 @@ C4DefGraphicsPtrBackup::~C4DefGraphicsPtrBackup()
 {
 	if(!fApplied) AssignRemoval();
 
-	for(auto & Entrie : Entries)
-		delete Entrie;
+	for(auto & Entry : Entries)
+		delete Entry;
 }
 
 void C4DefGraphicsPtrBackup::Add(C4DefGraphics* pGfx)
@@ -649,8 +649,8 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 	MeshMaterialUpdate.Cancel();
 
 	// Remove gfx
-	for(auto & Entrie : Entries)
-		Entrie->AssignRemoval();
+	for(auto & Entry : Entries)
+		Entry->AssignRemoval();
 
 	fApplied = true;
 }
@@ -663,8 +663,8 @@ void C4DefGraphicsPtrBackup::AssignUpdate()
 			MeshMaterialUpdate.Update(iter.second->Graphics.Mesh);
 
 	// Then, update mesh references in instances, attach bones by name, and update sprite gfx
-	for(auto & Entrie : Entries)
-		Entrie->AssignUpdate();
+	for(auto & Entry : Entries)
+		Entry->AssignUpdate();
 
 	// Update mesh materials and animations for all mesh instances.
 	for (C4Object *pObj : Objects)
