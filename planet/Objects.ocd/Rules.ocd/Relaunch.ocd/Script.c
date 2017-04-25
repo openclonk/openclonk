@@ -25,6 +25,7 @@ local last_used_player_weapons = [];
 local relaunch_time = 36 * 10;
 local hold = false;
 local restart_player = false;
+local respawn_script_players = false;
 
 public func Activate(int plr)
 {
@@ -178,11 +179,12 @@ public func InitializePlayer(int plr)
 
 public func OnClonkDeath(object clonk, int killer)
 {
-	if(clonk == nil) return;
+	if (clonk == nil)
+		return;
 	var plr = clonk->GetOwner();
-	if(plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
+	if	(plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
 	
-	if(default_relaunch_count != nil)
+	if	(default_relaunch_count != nil)
 	{
 		relaunches[plr]--;
 		if(relaunches[plr] < 0)
@@ -200,7 +202,8 @@ public func OnClonkDeath(object clonk, int killer)
 private func RespawnAtBase(object clonk)
 {
 	var base = GetRelaunchBase(clonk);
-	if(base) return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
+	if	(base)
+		return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
 }
 
 private func TransferInventory(object from, object to)
@@ -209,7 +212,9 @@ private func TransferInventory(object from, object to)
 	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
 	var i = from->ContentsCount(), contents;
 	while (i--)
+	{
 		if (contents = from->Contents(i))
+		{
 			if (contents->~IsDroppedOnDeath(from))
 			{
 				contents->Exit();
@@ -219,6 +224,8 @@ private func TransferInventory(object from, object to)
 				// The new clonk doesn't burn. To be consistent, also extinguish contents
 				contents->Extinguish();
 			}
+		}
+	}
 	return to->GrabContents(from);
 }
 
