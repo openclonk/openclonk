@@ -20,7 +20,7 @@ protected func Initialize()
 	// Rules
 	GetRelaunchRule()
 		->SetDefaultRelaunchCount(nil)
-		->EnablePlayerRestart();
+		->AllowPlayerRestart();
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);

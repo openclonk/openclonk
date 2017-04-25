@@ -6,9 +6,6 @@
 */
 
 
-static checkpoint_locations;
-static inventorslab_location;
-
 protected func Initialize()
 {
 	// Create the parkour goal.
@@ -45,9 +42,9 @@ protected func Initialize()
 	
 	// Rules: no power and restart with keeping inventory.
 	CreateObject(Rule_NoPowerNeed);
-	GetRelaunchRule()
-		->EnablePlayerRestart()
-		->SetInventoryTransfer(true);
+	//GetRelaunchRule()
+	//	->AllowPlayerRestart()
+	//	->SetInventoryTransfer(true);
 	
 	// Initialize parts of the scenario.
 	var amount = BoundBy(SCENPAR_NrCheckPoints, 6, 20);

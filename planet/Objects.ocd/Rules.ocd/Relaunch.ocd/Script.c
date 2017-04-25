@@ -6,13 +6,11 @@
 
 // Determines whether the inventory of the crew member is transfered upon respawn.
 local inventory_transfer = false;
-
 // Determines whether a crew member needs to be bought.
 local free_crew = true;
-
-//Determines whether the clonk will be respawned at the base
+// Determines whether the clonk will be respawned at the base.
 local respawn_at_base = false;
-//Determines whether only the last clonk gets respawned
+// Determines whether only the last clonk gets respawned.
 local respawn_last_clonk = false;
 
 local default_relaunch_count = nil;
@@ -24,13 +22,14 @@ local disable_last_weapon = false;
 local last_used_player_weapons = [];
 local relaunch_time = 36 * 10;
 local hold = false;
-local restart_player = false;
+local allow_restart_player = false;
 local respawn_script_players = false;
+local perform_restart = true;
 
 public func Activate(int plr)
 {
 	// Only restart player if enabled unless this is a definition call.
-	if (this != Rule_Relaunch && !restart_player)
+	if (this != Rule_Relaunch && !allow_restart_player)
 		return MessageWindow(this.Description, plr);
 	// Notify scenario.
 	if (GameCall("OnPlayerRestart", plr))
@@ -47,7 +46,8 @@ public func Activate(int plr)
 protected func Initialize()
 {
 	ScheduleCall(this, this.CheckDescription, 1, 1);
-	if(GetScenarioVal("Mode", "Game") == "Melee") default_relaunch_count = 5;
+	if (GetScenarioVal("Mode", "Game") == "Melee")
+		default_relaunch_count = 5;
 	return true;
 }
 
@@ -152,21 +152,26 @@ public func SetLastClonkRespawn(bool b)
 	return this;
 }
 
-public func EnablePlayerRestart()
+public func AllowPlayerRestart()
 {
-	restart_player = true;
+	allow_restart_player = true;
 	return this;
 }
 
-public func DisablePlayerRestart()
+public func DisallowPlayerRestart()
 {
-	restart_player = false;
+	allow_restart_player = false;
 	return this;
 }
 
 public func GetLastClonkRespawn()
 {
 	return respawn_last_clonk;
+}
+
+public func SetPerformRestart(bool on)
+{
+	perform_restart = on;
 }
 
 public func InitializePlayer(int plr)
@@ -179,12 +184,12 @@ public func InitializePlayer(int plr)
 
 public func OnClonkDeath(object clonk, int killer)
 {
-	if (clonk == nil)
+	if (!clonk || !perform_restart)
 		return;
 	var plr = clonk->GetOwner();
-	if	(plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
+	if (plr == NO_OWNER || (!respawn_script_players && GetPlayerType(plr) == C4PT_Script)) return;
 	
-	if	(default_relaunch_count != nil)
+	if (default_relaunch_count != nil)
 	{
 		relaunches[plr]--;
 		if(relaunches[plr] < 0)
@@ -278,7 +283,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 		else
 		{
 			var base = GetRelaunchBase();
-			if(!base) return;
+			if (!base) return;
 			// Try to buy a crew member at the base.
 			var pay_plr = base->GetOwner();
 			// Payment in neutral bases by clonk owner.
@@ -305,7 +310,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	
 	if (!GetCursor(plr) || GetCursor(plr) == clonk)
 		SetCursor(plr, new_clonk);
-	new_clonk->DoEnergy(new_clonk.Energy || 100000);
+	new_clonk->DoEnergy(new_clonk.Energy ?? 100000);
 	
 	if (relaunch_time)
 	{
@@ -322,6 +327,7 @@ protected func FindRelaunchPos(int plr)
 		return nil;
 	return [loc.x, loc.y];
 }
+
 
 /*-- Scenario saving --*/
 
@@ -340,6 +346,8 @@ public func SaveScenarioObject(props, ...)
 		props->AddCall("BaseRespawn", this, "SetBaseRespawn", respawn_at_base);
 	return true;
 }
+
+
 /*-- Globals --*/
 
 global func SetRelaunchCount(int plr, int value)
@@ -373,7 +381,8 @@ global func GetRelaunchRule()
 	return FindObject(Find_ID(Rule_Relaunch)) || CreateObject(Rule_Relaunch);
 }
 
-/* Editor */
+
+/*-- Editor --*/
 
 public func Definition(def)
 {
@@ -408,6 +417,7 @@ public func Definition(def)
 		Set = "SetDefaultRelaunches"
 	};
 }
+
 
 /*-- Proplist --*/
 

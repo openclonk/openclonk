@@ -56,7 +56,9 @@ protected func Initialize(...)
 
 private func EnsureRestartRule()
 {
-	GetRelaunchRule()->EnablePlayerRestart();
+	var relaunch = GetRelaunchRule();
+	relaunch->AllowPlayerRestart();
+	relaunch->SetPerformRestart(false);
 	return true;
 }
 
@@ -447,7 +449,8 @@ protected func OnClonkDeath(object clonk, int killed_by)
 	// Respawn actions
 	var cp = FindRespawnCP(plr);
 	UserAction->EvaluateAction(on_respawn, this, clonk, plr);
-	if (cp) cp->OnPlayerRespawn(new_clonk, plr);
+	if (cp)
+		cp->OnPlayerRespawn(new_clonk, plr);
 	return;
 }
 
@@ -471,7 +474,8 @@ protected func JoinPlayer(int plr)
 private func FindRespawnCP(int plr)
 {
 	var respawn_cp = respawn_list[plr];
-	if (!respawn_cp) respawn_cp = respawn_list[plr] = cp_list[0];
+	if (!respawn_cp)
+		respawn_cp = respawn_list[plr] = cp_list[0];
 	return respawn_cp;
 }
 
@@ -547,19 +551,19 @@ private func UpdateScoreboard(int plr)
 /*-- Direction indication --*/
 
 // Effect for direction indication for the clonk.
-protected func FxIntDirNextCPStart(object target, effect)
+protected func FxIntDirNextCPStart(object target, effect fx)
 {
 	var arrow = CreateObjectAbove(GUI_GoalArrow, 0, 0, target->GetOwner());
 	arrow->SetAction("Show", target);
-	effect.arrow = arrow;
+	fx.arrow = arrow;
 	return FX_OK;
 }
 
-protected func FxIntDirNextCPTimer(object target, effect)
+protected func FxIntDirNextCPTimer(object target, effect fx)
 {
 	var plr = target->GetOwner();
 	var team = GetPlayerTeam(plr);
-	var arrow = effect.arrow;
+	var arrow = fx.arrow;
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
@@ -604,9 +608,9 @@ protected func FxIntDirNextCPTimer(object target, effect)
 	return FX_OK;
 }
 
-protected func FxIntDirNextCPStop(object target, effect)
+protected func FxIntDirNextCPStop(object target, effect fx)
 {
-	effect.arrow->RemoveObject();
+	fx.arrow->RemoveObject();
 	return;
 }
 
