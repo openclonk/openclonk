@@ -42,16 +42,36 @@ func PlayBarrelHitSound()
 	Sound("Hits::Materials::Wood::DullWoodHit?");
 }
 
-func Collection2(object item)
+public func Collection2(object item)
 {
 	UpdateLiquidContainer();
 	return _inherited(item, ...);
 }
 
-func Ejection(object item)
+public func Ejection(object item)
 {
 	UpdateLiquidContainer();
 	return _inherited(item, ...);
+}
+
+public func ContentsDestruction(object item)
+{
+	ScheduleCall(this, "UpdateLiquidContainer", 1);
+	return _inherited(item, ...);
+}
+
+public func RemoveLiquid(liquid_name, int amount, object destination)
+{
+	var res = _inherited(liquid_name, amount, destination, ...);
+	UpdateLiquidContainer();
+	return res;
+}
+
+public func PutLiquid(liquid_name, int amount, object source)
+{
+	var res = _inherited(liquid_name, amount, source, ...);
+	UpdateLiquidContainer();
+	return res;
 }
 
 /*-- Callbacks --*/
