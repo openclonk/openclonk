@@ -602,10 +602,10 @@ C4CustomKey::C4CustomKey(const C4CustomKey &rCpy, bool fCopyCallbacks)
 	Name.Copy(rCpy.GetName());
 	if (fCopyCallbacks)
 	{
-		for (auto vecCallback : rCpy.vecCallbacks)
+		for (auto callback : rCpy.vecCallbacks)
 		{
-			vecCallback->Ref();
-			vecCallbacks.push_back(vecCallback);
+			callback->Ref();
+			vecCallbacks.push_back(callback);
 		}
 	}
 }
@@ -635,10 +635,10 @@ void C4CustomKey::Update(const C4CustomKey *pByKey)
 	if (pByKey->Codes.size()) Codes = pByKey->Codes;
 	if (pByKey->Scope != KEYSCOPE_None) Scope = pByKey->Scope;
 	if (pByKey->uiPriority != PRIO_None) uiPriority = pByKey->uiPriority;
-	for (auto vecCallback : pByKey->vecCallbacks)
+	for (auto callback : pByKey->vecCallbacks)
 	{
-		vecCallback->Ref();
-		vecCallbacks.push_back(vecCallback);
+		callback->Ref();
+		vecCallbacks.push_back(callback);
 	}
 }
 
@@ -669,8 +669,8 @@ bool C4CustomKey::Execute(C4KeyEventType eEv, C4KeyCodeEx key)
 	// remember down-state
 	is_down = (eEv == KEYEV_Down);
 	// execute all callbacks
-	for (auto & vecCallback : vecCallbacks)
-		if (vecCallback->OnKeyEvent(key, eEv))
+	for (auto & callback : vecCallbacks)
+		if (callback->OnKeyEvent(key, eEv))
 			return true;
 	// no event processed it
 	return false;
