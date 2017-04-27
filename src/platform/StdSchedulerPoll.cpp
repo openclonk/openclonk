@@ -143,8 +143,9 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 		bool any_executed = false;
 		auto tNow = C4TimeMilliseconds::Now();
 		// Which process?
-		for (auto proc : procs)
+		for (size_t i = 0; i < procs.size(); i++)
 		{
+			auto proc = procs[i];
 			auto tProcTick = proc->GetNextTick(tNow);
 			if (tProcTick <= tNow)
 			{
