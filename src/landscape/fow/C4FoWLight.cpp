@@ -305,8 +305,6 @@ void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 
 	for (auto & tri : triangles)
 	{
-		// just for convenience
-
 		// The quad will be empty if fan points match
 		if (tri.fanLX == tri.fanRX && tri.fanLY == tri.fanRY) continue;
 

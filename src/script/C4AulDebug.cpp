@@ -37,8 +37,8 @@ C4AulDebug::C4AulDebug()
 
 C4AulDebug::~C4AulDebug()
 {
-	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
-		{delete *it;}
+	for (auto & it : StackTrace)
+		delete it;
 	if (pDebug == this) pDebug = nullptr;
 }
 
@@ -456,8 +456,8 @@ const char* C4AulDebug::RelativePath(StdStrBuf &path)
 
 void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 {
-	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
-		{delete *it;}
+	for (auto & it : StackTrace)
+		delete it;
 	StackTrace.clear();
 	for (int ctxNum = pExec->GetContextDepth()-1; ctxNum >= 0; ctxNum--)
 	{

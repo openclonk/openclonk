@@ -203,7 +203,7 @@ static void restart(char * argv[])
 	for (int fd = 4; fd < open_max; fd++)
 		fcntl (fd, F_SETFD, FD_CLOEXEC);
 	// Execute the new engine
-	execlp(argv[0], argv[0], static_cast<char *>(0));
+	execlp(argv[0], argv[0], static_cast<char *>(nullptr));
 }
 
 int main (int argc, char * argv[])

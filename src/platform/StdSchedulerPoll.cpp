@@ -143,13 +143,12 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 		bool any_executed = false;
 		auto tNow = C4TimeMilliseconds::Now();
 		// Which process?
-		for (size_t i = 0; i < procs.size(); i++)
+		for (auto proc : procs)
 		{
-			auto proc = procs[i];
 			auto tProcTick = proc->GetNextTick(tNow);
 			if (tProcTick <= tNow)
 			{
-				struct pollfd * pfd = 0;
+				struct pollfd * pfd = nullptr;
 				if (fds_for_proc.find(proc) != fds_for_proc.end())
 					pfd = &fds[fds_for_proc[proc].first];
 				if (!proc->Execute(0, pfd))

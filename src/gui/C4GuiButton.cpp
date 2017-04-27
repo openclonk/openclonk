@@ -301,8 +301,8 @@ namespace C4GUI
 // --------------------------------------------------------
 // FacetButton
 
-	FacetButton::FacetButton(const C4Facet &rBaseFct, const C4Facet &rHighlightFct, const FLOAT_RECT &rtfBounds, char cHotkey)
-			: Button("", C4Rect(rtfBounds)), fctBase(rBaseFct), fctHighlight(rHighlightFct), dwTextClrInact(0x7f000000), dwTextClrAct(0xff000000), rcfDrawBounds(rtfBounds), pFont(nullptr), fFontZoom(1.0f)
+	FacetButton::FacetButton(C4Facet baseFct, C4Facet highlightFct, const FLOAT_RECT &rtfBounds, char cHotkey)
+			: Button("", C4Rect(rtfBounds)), fctBase(std::move(baseFct)), fctHighlight(std::move(highlightFct)), dwTextClrInact(0x7f000000), dwTextClrAct(0xff000000), rcfDrawBounds(rtfBounds), pFont(nullptr), fFontZoom(1.0f)
 	{
 		// ctor
 		this->cHotkey = cHotkey;

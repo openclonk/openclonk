@@ -93,7 +93,7 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd * pfd) // some other thread
 void C4FileMonitor::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) // main thread
 {
 	if (eEvent != Ev_FileChange) return;
-	pCallback((const char *)pEventData, 0);
+	pCallback((const char *)pEventData, nullptr);
 }
 
 void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)

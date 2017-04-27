@@ -84,9 +84,7 @@ C4AbstractApp::C4AbstractApp():
 {
 }
 
-C4AbstractApp::~C4AbstractApp()
-{
-}
+C4AbstractApp::~C4AbstractApp() = default;
 
 bool C4AbstractApp::Init(int argc, char * argv[])
 {
@@ -470,5 +468,5 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 
 void C4AbstractApp::MessageDialog(const char * message)
 {
-	SDL_ShowSimpleMessageBox(0, C4ENGINECAPTION, message, pWindow ? pWindow->window : 0);
+	SDL_ShowSimpleMessageBox(0, C4ENGINECAPTION, message, pWindow ? pWindow->window : nullptr);
 }

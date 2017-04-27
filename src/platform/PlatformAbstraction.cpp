@@ -53,7 +53,7 @@ bool IsGermanSystem()
 
 bool IsGermanSystem()
 {
-	if (strstr(setlocale(LC_MESSAGES, 0), "de"))
+	if (strstr(setlocale(LC_MESSAGES, nullptr), "de"))
 		return true;
 	else
 		return false;

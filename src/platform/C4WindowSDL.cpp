@@ -40,7 +40,7 @@
 /* C4Window */
 
 C4Window::C4Window ():
-		Active(false), pSurface(0), eKind(W_Fullscreen), window(nullptr)
+		Active(false), pSurface(nullptr), eKind(W_Fullscreen), window(nullptr)
 #ifdef WITH_QT_EDITOR
 , glwidget(nullptr)
 #endif
@@ -89,7 +89,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 	if (!window)
 	{
 		Log(SDL_GetError());
-		return 0;
+		return nullptr;
 	}
 	SDL_SetWindowData(window, "C4Window", this);
 	Active = true;

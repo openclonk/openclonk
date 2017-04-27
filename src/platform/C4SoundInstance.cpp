@@ -33,7 +33,7 @@ using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
 		Instances (0),
-		pSample (0),
+		pSample (nullptr),
 		FirstInst (nullptr),
 		Next (nullptr)
 {
@@ -53,7 +53,7 @@ void C4SoundEffect::Clear()
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
-	pSample = 0;
+	pSample = nullptr;
 }
 
 bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, const char *namespace_prefix)
