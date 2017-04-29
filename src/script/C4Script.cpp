@@ -178,6 +178,11 @@ static C4ValueArray *FnTrans_Rotate(C4PropList * _this, long angle, long rx, lon
 	long n = long(sqrt(double(sqrt_val)));
 	if (n * n < sqrt_val) n++;
 	else if (n * n > sqrt_val) n--;
+	
+	if (n == 0)
+	{
+		throw C4AulExecError("cannot rotate around a null vector");
+	}
 
 	rx = (1000 * rx) / n;
 	ry = (1000 * ry) / n;
