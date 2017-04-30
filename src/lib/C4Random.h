@@ -20,7 +20,7 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
-#include <inttypes.h>
+#include <cinttypes>
 
 extern int RandomCount;
 

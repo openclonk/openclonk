@@ -17,12 +17,9 @@
 #ifndef INC_StdMeshMaterial
 #define INC_StdMeshMaterial
 
-#include "lib/StdBuf.h"
-#include "graphics/C4Surface.h"
 #include "graphics/C4Shader.h"
+#include "graphics/C4Surface.h"
 
-#include <vector>
-#include <map>
 #include <tuple>
 
 // TODO: Support more features of OGRE material scripts

@@ -16,9 +16,9 @@
 
 #include "C4Include.h"
 #include "C4ForbidLibraryCompilation.h"
-#include "graphics/C4DrawGL.h"
 #include "lib/StdMesh.h"
-#include <algorithm>
+
+#include "graphics/C4DrawGL.h"
 
 namespace
 {

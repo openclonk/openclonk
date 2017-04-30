@@ -14,11 +14,10 @@
  */
 
 // A loader for the OGRE .mesh binary file format
-#include "lib/StdMesh.h"
-
 #ifndef INC_StdMeshLoader
 #define INC_StdMeshLoader
-#include <stdexcept>
+
+#include "lib/StdMesh.h"
 
 namespace OgreToClonk
 {
