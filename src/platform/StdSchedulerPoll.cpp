@@ -18,20 +18,12 @@
 #include "platform/StdScheduler.h"
 
 #ifdef HAVE_POLL_H
-#include <stdio.h>
-#include <assert.h>
-#include <errno.h>
-#include <fcntl.h>
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
 #ifdef HAVE_SHARE_H
 #include <share.h>
 #endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <map>
 
 // Is this process currently signaled?
 bool StdSchedulerProc::IsSignaled()

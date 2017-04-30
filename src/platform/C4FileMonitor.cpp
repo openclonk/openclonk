@@ -18,13 +18,11 @@
 
 #include "C4Include.h"
 #include "platform/C4FileMonitor.h"
-#include "game/C4Application.h"
 
-#include "platform/StdFile.h"
+#include "game/C4Application.h"
 
 #ifdef HAVE_SYS_INOTIFY_H
 #include <sys/inotify.h>
-#include <errno.h>
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): fStarted(false), pCallback(pCallback)
 {

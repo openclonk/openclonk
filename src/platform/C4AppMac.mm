@@ -18,7 +18,6 @@
 
 #include "C4ForbidLibraryCompilation.h"
 #include <GL/glew.h>
-#include <string>
 
 #include "C4Include.h"
 #include "platform/C4Window.h"
