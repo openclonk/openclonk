@@ -20,23 +20,14 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4DrawGL.h"
 
+#include "game/C4Application.h"
 #include "graphics/C4Surface.h"
-#include "platform/C4Window.h"
 #include "landscape/fow/C4FoWRegion.h"
 #include "lib/C4Rect.h"
-#include "config/C4Config.h"
-#include "game/C4Application.h"
 #include "lib/StdColors.h"
+#include "platform/C4Window.h"
 
 #ifndef USE_CONSOLE
-
-// MSVC doesn't define M_PI in math.h unless requested
-#ifdef  _MSC_VER
-#define _USE_MATH_DEFINES
-#endif  /* _MSC_VER */
-
-#include <cstdio>
-#include <cmath>
 
 namespace
 {

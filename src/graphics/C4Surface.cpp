@@ -20,29 +20,19 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Surface.h"
 
-#include "platform/StdFile.h"
 #include "c4group/CStdFile.h"
-#include "platform/C4App.h"
+#include "graphics/Bitmap256.h"
+#include "graphics/C4Draw.h"
 #include "graphics/C4DrawGL.h"
+#include "graphics/StdPNG.h"
+#include "lib/StdColors.h"
+#include "platform/C4App.h"
 #include "platform/C4Window.h"
 #include "platform/StdRegistry.h"
-#include "graphics/C4Draw.h"
-#include "graphics/Bitmap256.h"
-#include "graphics/StdPNG.h"
-#include "config/C4Config.h"
-#include "lib/StdColors.h"
-
 
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
-
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
-#include <climits>
-#include <list>
 
 C4Surface::C4Surface() : fIsBackground(false)
 {

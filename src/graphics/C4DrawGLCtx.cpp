@@ -20,8 +20,8 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4DrawGL.h"
 
-#include "platform/C4Window.h"
 #include "platform/C4App.h"
+#include "platform/C4Window.h"
 
 #ifndef USE_CONSOLE
 

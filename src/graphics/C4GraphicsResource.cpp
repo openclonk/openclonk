@@ -21,12 +21,10 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4GraphicsResource.h"
 
-#include "object/C4DefList.h"
-#include "graphics/C4FontLoader.h"
-#include "lib/C4Log.h"
-#include "game/C4Game.h"
 #include "c4group/C4Components.h"
+#include "graphics/C4FontLoader.h"
 #include "graphics/C4DrawGL.h"
+#include "object/C4DefList.h"
 
 /* C4GraphicsResource */
 
