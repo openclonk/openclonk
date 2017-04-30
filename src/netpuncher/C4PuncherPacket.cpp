@@ -15,8 +15,8 @@
 
 #include "C4Include.h"
 #include "netpuncher/C4PuncherPacket.h"
+
 #include "network/C4Network2Address.h"
-#include <sstream>
 
 void C4NetpuncherID::CompileFunc(StdCompiler *pComp) {
 	pComp->Value(mkNamingAdapt(v4, "IPv4", 0u));
