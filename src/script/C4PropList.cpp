@@ -18,9 +18,9 @@
 #include "C4Include.h"
 #include "script/C4PropList.h"
 
-#include "script/C4Aul.h"
-#include "object/C4GameObjects.h"
 #include "control/C4Record.h"
+#include "object/C4GameObjects.h"
+#include "script/C4Aul.h"
 
 void C4PropList::AddRef(C4Value *pRef)
 {

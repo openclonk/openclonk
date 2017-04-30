@@ -17,17 +17,15 @@
 #include "C4Include.h"
 #include "script/C4Value.h"
 
-#include "script/C4AulExec.h"
+#include "game/C4GameScript.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "script/C4StringTable.h"
-#include "script/C4ValueArray.h"
-#include "game/C4Game.h"
-#include "game/C4GameScript.h"
 #include "object/C4GameObjects.h"
 #include "object/C4Object.h"
-#include "lib/C4Log.h"
+#include "script/C4AulExec.h"
 #include "script/C4Effect.h"
+#include "script/C4StringTable.h"
+#include "script/C4ValueArray.h"
 
 const C4Value C4VNull;
 

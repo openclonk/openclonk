@@ -18,17 +18,13 @@
 #include "C4Include.h"
 #include "script/C4AulExec.h"
 
+#include "control/C4Record.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
 #include "script/C4Aul.h"
 #include "script/C4AulScriptFunc.h"
 #include "script/C4AulDebug.h"
-#include "object/C4Object.h"
-#include "config/C4Config.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
-#include "control/C4Record.h"
-#include "object/C4Def.h"
 #include "script/C4ScriptHost.h"
-#include <algorithm>
 
 C4AulExec AulExec;
 

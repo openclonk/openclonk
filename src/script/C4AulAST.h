@@ -18,11 +18,6 @@
 #ifndef INC_C4AulAST
 #define INC_C4AulAST
 
-#include <memory>
-
-#include <map>
-#include <vector>
-
 #include "script/C4Value.h"
 
 namespace aul { namespace ast {
