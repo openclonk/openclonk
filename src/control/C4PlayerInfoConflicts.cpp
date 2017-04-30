@@ -19,7 +19,6 @@
 
 #include "C4Include.h"
 #include "control/C4PlayerInfo.h"
-#include "game/C4Game.h"
 #include "control/C4Teams.h"
 #include "lib/StdColors.h"
 #include "lib/C4Random.h"

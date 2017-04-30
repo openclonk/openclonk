@@ -18,9 +18,9 @@
 #ifndef C4GAMEPARAMETERS_H
 #define C4GAMEPARAMETERS_H
 
-#include "object/C4IDList.h"
 #include "control/C4PlayerInfo.h"
 #include "control/C4Teams.h"
+#include "object/C4IDList.h"
 #include "object/C4InfoCore.h"
 
 class C4GameRes
