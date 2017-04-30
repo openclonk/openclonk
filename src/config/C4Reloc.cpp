@@ -16,7 +16,6 @@
 #include "C4Include.h"
 #include "config/C4Reloc.h"
 
-#include "config/C4Config.h"
 #include "game/C4Application.h"
 
 C4Reloc Reloc; // singleton
