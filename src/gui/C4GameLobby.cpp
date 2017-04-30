@@ -19,17 +19,16 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "gui/C4GameLobby.h"
 
-#include "game/C4Application.h"
 #include "c4group/C4Components.h"
-#include "network/C4Network2Dialogs.h"
-#include "gui/C4GameOptions.h"
-#include "gui/C4ChatDlg.h"
-#include "gui/C4PlayerInfoListBox.h"
-#include "gui/C4MessageInput.h"
-#include "game/C4Game.h"
-#include "network/C4Network2.h"
-#include "graphics/C4GraphicsResource.h"
 #include "control/C4GameControl.h"
+#include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4ChatDlg.h"
+#include "gui/C4GameOptions.h"
+#include "gui/C4MessageInput.h"
+#include "gui/C4PlayerInfoListBox.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Dialogs.h"
 
 namespace C4GameLobby
 {

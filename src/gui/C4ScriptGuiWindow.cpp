@@ -29,22 +29,19 @@
 #include "C4Include.h"
 #include "gui/C4ScriptGuiWindow.h"
 
+#include "control/C4Control.h"
 #include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "lib/StdColors.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "game/C4GraphicsSystem.h"
-#include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
-#include "game/C4Game.h"
-#include "control/C4Control.h"
-#include "gui/C4MouseControl.h"
 #include "object/C4Object.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
-#include "game/C4Viewport.h"
-#include "lib/StdColors.h"
-
-#include <cmath>
 
 // Adds some helpful logs for hunting control & menu based desyncs.
 //#define MenuDebugLogF(...) DebugLogF(__VA_ARGS__)

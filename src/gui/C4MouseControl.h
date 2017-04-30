@@ -21,8 +21,8 @@
 #define INC_C4MouseControl
 
 #include "graphics/C4Facet.h"
-#include "object/C4ObjectList.h"
 #include "lib/C4Rect.h"
+#include "object/C4ObjectList.h"
 struct ZoomData; // #include "graphics/C4Draw.h"
 
 const int32_t C4MC_Button_None        = 0,

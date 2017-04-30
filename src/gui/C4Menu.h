@@ -20,9 +20,9 @@
 #ifndef INC_C4Menu
 #define INC_C4Menu
 
-#include "object/C4Id.h"
 #include "graphics/C4FacetEx.h"
 #include "gui/C4Gui.h"
+#include "object/C4Id.h"
 #include "object/C4IDList.h"
 
 enum

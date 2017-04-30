@@ -19,13 +19,8 @@
 #include "gui/C4KeyboardInput.h"
 
 #include "c4group/C4Components.h"
-#include "game/C4Game.h"
 #include "platform/C4Window.h"
 
-
-#include <algorithm>
-#include <regex>
-#include <string>
 #include <unordered_map>
 
 #ifdef HAVE_SDL

@@ -19,17 +19,14 @@
 #include "C4Include.h"
 #include "gui/C4UpdateDlg.h"
 
-#include "game/C4Application.h"
 #include "c4group/C4Components.h"
+#include "game/C4Application.h"
 #include "gui/C4DownloadDlg.h"
-#include "lib/C4Log.h"
 
 #ifdef _WIN32
 #include <shellapi.h>
 #else
-#include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

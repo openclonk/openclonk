@@ -21,17 +21,16 @@
 #include "gui/C4MessageBoard.h"
 
 #include "game/C4Application.h"
-#include "gui/C4LoaderScreen.h"
-#include "gui/C4Gui.h"
-#include "player/C4Player.h"
-#include "game/C4GraphicsSystem.h"
-#include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
-#include "gui/C4MessageInput.h"
-#include "game/C4Game.h"
-#include "player/C4PlayerList.h"
 #include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4Gui.h"
+#include "gui/C4LoaderScreen.h"
+#include "gui/C4MessageInput.h"
 #include "lib/StdColors.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
 

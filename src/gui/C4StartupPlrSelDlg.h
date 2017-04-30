@@ -19,7 +19,6 @@
 #ifndef INC_C4StartupPlrSelDlg
 #define INC_C4StartupPlrSelDlg
 
-#include <utility>
 #include "gui/C4Startup.h"
 #include "object/C4InfoCore.h"
 
