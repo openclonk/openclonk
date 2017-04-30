@@ -20,10 +20,10 @@
 #include "C4Include.h"
 #include "object/C4Shape.h"
 
-#include "game/C4Physics.h"
-#include "landscape/C4Material.h"
-#include "landscape/C4Landscape.h"
 #include "control/C4Record.h"
+#include "game/C4Physics.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Material.h"
 
 bool C4Shape::AddVertex(int32_t iX, int32_t iY)
 {

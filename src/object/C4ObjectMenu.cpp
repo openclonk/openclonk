@@ -20,16 +20,15 @@
 #include "object/C4ObjectMenu.h"
 
 #include "control/C4Control.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
 #include "object/C4Def.h"
+#include "object/C4GameObjects.h"
 #include "object/C4Object.h"
 #include "object/C4ObjectCom.h"
 #include "player/C4Player.h"
-#include "game/C4Viewport.h"
-#include "gui/C4MouseControl.h"
-#include "graphics/C4GraphicsResource.h"
-#include "game/C4Game.h"
 #include "player/C4PlayerList.h"
-#include "object/C4GameObjects.h"
 #include "script/C4AulExec.h"
 
 // -----------------------------------------------------------

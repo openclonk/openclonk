@@ -17,8 +17,9 @@
 
 #include "C4Include.h"
 #include "object/C4MeshDenumerator.h"
-#include "object/C4Object.h"
+
 #include "object/C4Def.h"
+#include "object/C4Object.h"
 
 const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFactory = StdMeshInstance::AttachedMesh::DenumeratorFactory<C4MeshDenumerator>;
 

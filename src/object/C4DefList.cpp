@@ -21,15 +21,12 @@
 #include "object/C4DefList.h"
 
 #include "c4group/C4Components.h"
-#include "config/C4Config.h"
+#include "control/C4Record.h"
+#include "game/C4GameScript.h"
+#include "game/C4GameVersion.h"
+#include "lib/StdMeshLoader.h"
 #include "object/C4Def.h"
 #include "platform/C4FileMonitor.h"
-#include "game/C4GameVersion.h"
-#include "c4group/C4Language.h"
-#include "game/C4GameScript.h"
-#include "control/C4Record.h"
-
-#include "lib/StdMeshLoader.h"
 
 namespace
 {

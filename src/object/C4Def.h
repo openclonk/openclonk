@@ -20,21 +20,19 @@
 #ifndef INC_C4Def
 #define INC_C4Def
 
-#include "object/C4Shape.h"
-#include "object/C4InfoCore.h"
-#include "object/C4IDList.h"
-#include "script/C4ValueMap.h"
-#include "graphics/C4Facet.h"
 #include "c4group/C4ComponentHost.h"
-#include "script/C4PropList.h"
-
-#include "script/C4ScriptHost.h"
-#include "object/C4DefGraphics.h"
 #include "c4group/C4LangStringTable.h"
+#include "graphics/C4Facet.h"
 #include "lib/C4InputValidation.h"
+#include "object/C4DefGraphics.h"
+#include "object/C4IDList.h"
+#include "object/C4InfoCore.h"
+#include "object/C4Shape.h"
+#include "script/C4PropList.h"
+#include "script/C4ScriptHost.h"
+#include "script/C4ValueMap.h"
 
 #include <functional>
-#include <set>
 
 const int32_t
 C4D_None           =     0,

@@ -20,8 +20,6 @@
 #ifndef INC_C4ObjectCom
 #define INC_C4ObjectCom
 
-#include "lib/C4Real.h"
-
 bool ComDirLike(int32_t iComDir, int32_t iSample);
 
 bool ObjectActionWalk(C4Object *cObj);
