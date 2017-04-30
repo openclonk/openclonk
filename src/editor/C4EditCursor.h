@@ -20,12 +20,11 @@
 #ifndef INC_C4EditCursor
 #define INC_C4EditCursor
 
-#include "object/C4ObjectList.h"
 #include "control/C4Control.h"
 #include "lib/C4Rect.h"
-#include "script/C4Value.h"
-#include <vector>
 #include "object/C4DefGraphics.h"
+#include "object/C4ObjectList.h"
+#include "script/C4Value.h"
 
 
 // Currently selected elements in editcursor. May be objects and other prop lists.

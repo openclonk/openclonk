@@ -34,7 +34,6 @@
 #include <QtWidgets>
 #include <qabstractitemmodel.h>
 #include <QAbstractTableModel>
-#include <memory>
 
 // TODO: If we remove the other editors, state and consolegui can be merged and the relevant header go into this file
 // For now, just use this to include Qt

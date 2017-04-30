@@ -19,7 +19,6 @@
 #include "editor/C4Console.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
-#include "game/C4Game.h"
 
 #import <Cocoa/Cocoa.h>
 #import "editor/C4EditorWindowController.h"
