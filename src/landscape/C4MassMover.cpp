@@ -21,10 +21,10 @@
 #include "landscape/C4MassMover.h"
 
 #include "c4group/C4Components.h"
-#include "lib/C4Random.h"
+#include "control/C4Record.h"
 #include "landscape/C4Material.h"
 #include "landscape/C4Landscape.h"
-#include "control/C4Record.h"
+#include "lib/C4Random.h"
 
 // Note: creation optimized using advancing CreatePtr, so sequential
 // creation does not keep rescanning the complete set for a free

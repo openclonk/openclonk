@@ -21,9 +21,8 @@
 #include "landscape/C4TextureShape.h"
 
 #include "c4group/C4Group.h"
-#include "landscape/C4Landscape.h"
-#include "lib/C4Log.h"
 #include "graphics/StdPNG.h"
+#include "landscape/C4Landscape.h"
 
 // -------------------------------------- C4TextureShape
 

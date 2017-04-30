@@ -19,15 +19,14 @@
 #include "C4Include.h"
 #include "landscape/C4SolidMask.h"
 
-#include "object/C4Def.h"
-#include "object/C4Object.h"
-#include "landscape/C4Landscape.h"
-#include "game/C4Game.h"
-#include "object/C4GameObjects.h"
 #include "graphics/C4DrawGL.h"
-#include "graphics/StdPNG.h"
 #include "graphics/CSurface8.h"
+#include "graphics/StdPNG.h"
+#include "landscape/C4Landscape.h"
 #include "landscape/C4Material.h"
+#include "object/C4Def.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
 
 
 void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment)

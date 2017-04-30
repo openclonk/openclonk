@@ -18,9 +18,9 @@
 #define C4LANDSCAPE_RENDER_H
 
 #include "C4ForbidLibraryCompilation.h"
-#include "graphics/C4Surface.h"
 #include "graphics/C4FacetEx.h"
 #include "graphics/C4Shader.h"
+#include "graphics/C4Surface.h"
 
 // Data we want to store per landscape pixel
 enum C4LR_Byte {

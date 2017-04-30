@@ -19,11 +19,12 @@
 
 #include "C4Include.h"
 #include "landscape/C4MapScript.h"
-#include "script/C4AulDefFunc.h"
+
+#include "game/C4GameScript.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Texture.h"
 #include "lib/C4Random.h"
-#include "game/C4GameScript.h"
+#include "script/C4AulDefFunc.h"
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 

@@ -20,12 +20,11 @@
 #include "C4Include.h"
 #include "landscape/C4Weather.h"
 
-#include "object/C4Object.h"
-#include "lib/C4Random.h"
 #include "game/C4GraphicsSystem.h"
-#include "game/C4Game.h"
-#include "platform/C4SoundSystem.h"
 #include "graphics/C4Draw.h"
+#include "lib/C4Random.h"
+#include "object/C4Object.h"
+#include "platform/C4SoundSystem.h"
 
 C4Weather::C4Weather()
 {

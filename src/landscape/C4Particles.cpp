@@ -18,22 +18,20 @@
 #include "landscape/C4Particles.h"
 
 // headers for particle loading
-#include "lib/C4Log.h"
 #include "c4group/C4Components.h"
-#include "config/C4Config.h"
 
 #ifndef USE_CONSOLE
 // headers for particle execution
-#include "script/C4Aul.h"
 #include "game/C4Application.h"
+#include "graphics/C4DrawGL.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4Weather.h"
+#include "object/C4MeshAnimation.h"	
+#include "object/C4Object.h"
+#include "script/C4Aul.h"
 #include "script/C4Value.h"
 #include "script/C4ValueArray.h"
-#include "landscape/C4Material.h"
-#include "object/C4MeshAnimation.h"
-#include "graphics/C4DrawGL.h"
-#include "landscape/C4Landscape.h"
-#include "landscape/C4Weather.h"	
-#include "object/C4Object.h"
 #include <random>
 #endif
 
