@@ -15,10 +15,10 @@
  */
 #include "C4Include.h"
 #include "c4group/C4Update.h"
+
 #include "C4Version.h"
 #include "c4group/C4Components.h"
 #include "c4group/C4Group.h"
-#include "lib/C4Log.h"
 
 C4Config *GetCfg();
 
