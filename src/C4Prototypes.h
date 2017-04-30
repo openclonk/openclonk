@@ -158,6 +158,7 @@ class StdMeshMatManager;
 class StdMeshMatrix;
 class StdMeshSkeletonLoader;
 class StdMeshUpdate;
+class StdStrBuf;
 
 namespace C4GameLobby
 {
