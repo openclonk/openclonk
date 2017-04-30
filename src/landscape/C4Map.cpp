@@ -20,8 +20,8 @@
 #include "C4Include.h"
 #include "landscape/C4Map.h"
 
-#include "lib/C4Random.h"
 #include "landscape/C4Texture.h"
+#include "lib/C4Random.h"
 #include "graphics/CSurface8.h"
 
 C4MapCreator::C4MapCreator()

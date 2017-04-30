@@ -14,9 +14,9 @@
  */
 #include "C4Include.h"
 #include "player/C4Achievement.h"
+
 #include "c4group/C4Components.h"
 #include "graphics/C4FacetEx.h"
-
 
 /* C4AchievementGraphics */
 

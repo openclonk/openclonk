@@ -21,8 +21,6 @@
 #include "lib/StdMeshLoaderBinaryChunks.h"
 #include "lib/StdMeshLoaderDataStream.h"
 #include "lib/StdMeshMaterial.h"
-#include <cassert>
-#include <vector>
 
 namespace
 {

@@ -19,10 +19,10 @@
 
 #include "C4Include.h"
 #include "platform/C4SoundModifiers.h"
-#include "platform/C4SoundSystem.h"
-#include "platform/C4SoundInstance.h"
-#include "platform/C4SoundIncludes.h"
+
 #include "game/C4Application.h"
+#include "platform/C4SoundInstance.h"
+#include "platform/C4SoundSystem.h"
 #include "script/C4Value.h"
 
 #if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)

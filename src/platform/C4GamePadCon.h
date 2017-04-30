@@ -20,12 +20,8 @@
 #ifndef INC_C4GamePadCon
 #define INC_C4GamePadCon
 
-#include <memory>
-
 #ifdef HAVE_SDL
 #include "gui/C4KeyboardInput.h"
-#include <set>
-#include <map>
 
 #include <SDL.h>
 #endif

@@ -23,8 +23,6 @@
 #include "gui/C4MessageBoard.h"
 #include "gui/C4UpperBoard.h"
 
-#include <memory>
-
 class C4GraphicsSystem
 {
 public:

@@ -18,18 +18,16 @@
 #include "C4Include.h"
 #include "network/C4Network2Dialogs.h"
 
-#include "network/C4Network2.h"
-#include "network/C4Network2Stats.h"
-#include "game/C4Viewport.h"
-#include "gui/C4GameOptions.h"
-#include "game/C4Game.h"
-#include "player/C4PlayerList.h"
 #include "control/C4GameControl.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
 #include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
-#include "graphics/C4Draw.h"
+#include "gui/C4GameOptions.h"
 #include "gui/C4Startup.h"
 #include "lib/StdColors.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Stats.h"
+#include "player/C4PlayerList.h"
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>

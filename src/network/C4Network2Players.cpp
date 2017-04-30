@@ -20,14 +20,13 @@
 
 #include "C4Include.h"
 #include "network/C4Network2Players.h"
-#include "control/C4PlayerInfo.h"
-#include "gui/C4GameLobby.h"
-#include "game/C4Game.h"
-#include "network/C4Network2.h"
-#include "control/C4GameControl.h"
-#include "control/C4RoundResults.h"
 
 #include "control/C4Control.h"
+#include "control/C4GameControl.h"
+#include "control/C4PlayerInfo.h"
+#include "control/C4RoundResults.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2.h"
 
 // *** C4Network2Players
 

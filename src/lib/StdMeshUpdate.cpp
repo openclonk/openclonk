@@ -14,9 +14,10 @@
  */
 
 #include "C4Include.h"
+#include "lib/StdMeshUpdate.h"
+
 #include "lib/StdMesh.h"
 #include "lib/StdMeshMaterial.h"
-#include "lib/StdMeshUpdate.h"
 #include "lib/StdMeshLoader.h"
 
 StdMeshMaterialUpdate::StdMeshMaterialUpdate(StdMeshMatManager& manager):

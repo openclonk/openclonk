@@ -19,10 +19,10 @@
 #include "gui/C4ChatDlg.h"
 
 #include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MessageInput.h"
 #include "lib/C4InputValidation.h"
 #include "network/C4Network2IRC.h"
-#include "gui/C4MessageInput.h"
-#include "graphics/C4GraphicsResource.h"
 
 /* C4ChatControl::ChatSheet::NickItem */
 

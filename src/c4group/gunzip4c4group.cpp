@@ -14,7 +14,6 @@
 
 #include "C4Include.h"
 #include "c4group/CStdFile.h"
-#include <stdio.h>
 
 bool EraseItemSafe(const char *szFilename)
 {

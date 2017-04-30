@@ -18,8 +18,6 @@
 #ifndef INC_C4InputValidation
 #define INC_C4InputValidation
 
-#include "lib/StdBuf.h"
-#include "platform/StdFile.h"
 #include "lib/StdAdaptors.h"
 
 const unsigned int C4MaxName = 30; // player names, etc.

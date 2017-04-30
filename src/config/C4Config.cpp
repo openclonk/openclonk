@@ -21,13 +21,9 @@
 #include "config/C4Config.h"
 
 #include "C4Version.h"
-#include "lib/C4Log.h"
 #include "c4group/C4Components.h"
 #include "network/C4Network2.h"
-#include "c4group/C4Language.h"
 
-#include <utility>
-#include "platform/StdFile.h"
 #include "platform/C4Window.h"
 #include "platform/StdRegistry.h"
 

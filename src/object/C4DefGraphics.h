@@ -19,10 +19,10 @@
 #define INC_C4DefGraphics
 
 #include "graphics/C4Facet.h"
-#include "object/C4ObjectPtr.h"
 #include "lib/C4InputValidation.h"
 #include "lib/StdMeshUpdate.h"
 #include "object/C4Id.h"
+#include "object/C4ObjectPtr.h"
 
 // defintion graphics
 class C4AdditionalDefGraphics;

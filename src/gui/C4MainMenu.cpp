@@ -19,19 +19,18 @@
 #include "C4Include.h"
 #include "gui/C4MainMenu.h"
 
+#include "control/C4GameControl.h"
 #include "game/C4Application.h"
-#include "object/C4DefList.h"
 #include "game/C4FullScreen.h"
 #include "game/C4Viewport.h"
-#include "player/C4Player.h"
-#include "gui/C4GameOverDlg.h"
 #include "graphics/C4GraphicsResource.h"
-#include "game/C4Game.h"
-#include "player/C4PlayerList.h"
-#include "object/C4GameObjects.h"
+#include "gui/C4GameOverDlg.h"
 #include "network/C4Network2.h"
-#include "control/C4GameControl.h"
 #include "object/C4Def.h"
+#include "object/C4DefList.h"
+#include "object/C4GameObjects.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // -----------------------------------------------------------
 // C4MainMenu

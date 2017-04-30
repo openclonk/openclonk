@@ -19,13 +19,11 @@
 #include "gui/C4LoaderScreen.h"
 
 #include "c4group/C4Components.h"
-#include "lib/C4LogBuf.h"
-#include "lib/C4Log.h"
-#include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
-#include "lib/C4Random.h"
 #include "c4group/C4GroupSet.h"
-#include "game/C4Game.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "lib/C4LogBuf.h"
+#include "lib/C4Random.h"
 
 C4LoaderScreen::C4LoaderScreen()
 {

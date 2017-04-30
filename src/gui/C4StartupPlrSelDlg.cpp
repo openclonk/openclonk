@@ -17,24 +17,16 @@
 // Also contains player creation, editing and crew management
 
 #include "C4Include.h"
-
-#include <utility>
-
 #include "gui/C4StartupPlrSelDlg.h"
 
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4FileSelDlg.h"
+#include "gui/C4MouseControl.h"
 #include "gui/C4StartupMainDlg.h"
 #include "lib/C4Random.h"
-#include "game/C4Game.h"
-#include "c4group/C4Language.h"
-#include "gui/C4FileSelDlg.h"
-#include "lib/C4Log.h"
-#include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
-#include "player/C4RankSystem.h"
-#include "gui/C4MouseControl.h"
 #include "lib/StdColors.h"
-#include <cctype>
-#include <algorithm>
+#include "player/C4RankSystem.h"
 
 // font clrs
 const uint32_t ClrPlayerItem   = 0xffffffff;

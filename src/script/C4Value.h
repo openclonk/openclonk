@@ -16,8 +16,8 @@
 #ifndef INC_C4Value
 #define INC_C4Value
 
-#include "script/C4StringTable.h"
 #include "object/C4ObjectPtr.h"
+#include "script/C4StringTable.h"
 
 // C4Value type
 enum C4V_Type

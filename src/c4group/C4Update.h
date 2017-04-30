@@ -16,7 +16,6 @@
 /* Update package support */
 
 #ifndef INC_C4GroupEx
-
 #define INC_C4GroupEx
 
 #include "lib/C4InputValidation.h"

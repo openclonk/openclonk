@@ -19,9 +19,8 @@
 #ifndef STD_FILE_MONITOR_H_INC
 #define STD_FILE_MONITOR_H_INC
 
-#include "platform/StdScheduler.h"
 #include "network/C4InteractiveThread.h"
-#include <map>
+#include "platform/StdScheduler.h"
 
 #ifdef __APPLE__
 #import <CoreFoundation/CoreFoundation.h>

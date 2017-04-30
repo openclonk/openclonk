@@ -16,9 +16,9 @@
 
 #include "C4Include.h"
 #include "platform/C4SoundLoaders.h"
-#include "platform/C4MusicFile.h"
 
 #include "game/C4Application.h"
+#include "platform/C4MusicFile.h"
 
 
 using namespace C4SoundLoaders;

@@ -20,11 +20,11 @@
 #include "C4Include.h"
 #include "landscape/C4TransferZone.h"
 
-#include "graphics/C4FacetEx.h"
 #include "graphics/C4Draw.h"
+#include "graphics/C4FacetEx.h"
 #include "landscape/C4Landscape.h"
-#include "object/C4GameObjects.h"
 #include "lib/StdColors.h"
+#include "object/C4GameObjects.h"
 
 C4TransferZone::C4TransferZone()
 {

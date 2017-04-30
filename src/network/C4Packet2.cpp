@@ -15,13 +15,12 @@
  */
 #include "C4Include.h"
 
-
-#include "network/C4Network2Res.h"
 #include "C4Version.h"
-#include "gui/C4GameLobby.h"
-#include "network/C4Network2.h"
 #include "control/C4RoundResults.h"
+#include "gui/C4GameLobby.h"
 #include "network/C4GameControlNetwork.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Res.h"
 
 // *** constants
 

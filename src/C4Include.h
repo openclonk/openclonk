@@ -64,16 +64,16 @@ constexpr bool SOLIDMASK_DEBUG = false;
 #include <unordered_set>
 #include <math.h>
 
-#include "lib/Standard.h"
 #include "C4Prototypes.h"
+#include "lib/C4Log.h"
 #include "lib/C4Real.h"
+#include "lib/Standard.h"
 #include "lib/StdBuf.h"
 #include "platform/StdFile.h"
-#include "c4group/C4Language.h"
-#include "lib/C4Log.h"
-#include "config/C4Reloc.h"
-#include "config/C4Config.h"
 
+#include "c4group/C4Language.h"
+#include "config/C4Config.h"
+#include "config/C4Reloc.h"
 #include "game/C4Game.h"
 
 #endif // INC_C4Include

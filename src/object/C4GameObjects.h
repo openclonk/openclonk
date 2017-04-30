@@ -18,8 +18,8 @@
 #ifndef INC_C4GameObjects
 #define INC_C4GameObjects
 
-#include "object/C4ObjectList.h"
 #include "object/C4FindObject.h"
+#include "object/C4ObjectList.h"
 #include "object/C4Sector.h"
 
 // main object list class

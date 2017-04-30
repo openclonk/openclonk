@@ -16,11 +16,6 @@
 #include "C4Include.h"
 #include "lib/StdCompiler.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include "lib/C4Log.h"
-
 // *** StdCompiler
 
 void StdCompiler::Warn(const char *szWarning, ...)
@@ -205,7 +200,7 @@ StdStrBuf StdCompilerBinRead::getPosition() const
 template <class T>
 inline void StdCompilerBinRead::ReadValue(T &rValue)
 {
-	// Pufferüberhang prüfen
+	// Pufferï¿½berhang prï¿½fen
 	if (iPos + sizeof(T) > Buf.getSize())
 		{ excEOF(); return; }
 	// Kopieren
@@ -865,7 +860,7 @@ long StdCompilerINIRead::ReadNum()
 		{ notFound("Number"); return 0; }
 	// Skip whitespace
 	SkipWhitespace();
-	// Read number. If this breaks, Günther is to blame!
+	// Read number. If this breaks, Gï¿½nther is to blame!
 	const char *pnPos = pPos;
 	long iNum = strtol(pPos, const_cast<char **>(&pnPos), 10);
 	// Could not read?
@@ -882,7 +877,7 @@ unsigned long StdCompilerINIRead::ReadUNum()
 		{ notFound("Number"); return 0; }
 	// Skip whitespace
 	SkipWhitespace();
-	// Read number. If this breaks, Günther is to blame!
+	// Read number. If this breaks, Gï¿½nther is to blame!
 	const char *pnPos = pPos;
 	unsigned long iNum = strtoul(pPos, const_cast<char **>(&pnPos), 10);
 	// Could not read?

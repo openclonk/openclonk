@@ -21,9 +21,6 @@
 #define INC_C4Id
 
 #include "lib/StdAdaptors.h"
-#include <map>
-#include <string>
-#include <vector>
 
 class C4ID
 {

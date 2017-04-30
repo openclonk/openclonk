@@ -16,7 +16,6 @@
 // A loader for the OGRE .mesh binary file format
 
 #include "C4Include.h"
-
 #include "lib/StdMeshLoader.h"
 
 namespace

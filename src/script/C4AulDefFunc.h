@@ -22,7 +22,6 @@
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 #include "script/C4Effect.h"
-#include <utility>
 
 inline const static char *FnStringPar(C4String *pString)
 {

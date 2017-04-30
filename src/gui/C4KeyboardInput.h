@@ -18,13 +18,6 @@
 #ifndef INC_C4KeyboardInput
 #define INC_C4KeyboardInput
 
-#include <vector>
-#include <map>
-#include <cctype>
-#include <vector>
-#include <map>
-#include <algorithm>
-
 // key context classifications
 enum C4KeyScope
 {

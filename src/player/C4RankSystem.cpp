@@ -20,11 +20,9 @@
 #include "C4Include.h"
 #include "player/C4RankSystem.h"
 
-#include "lib/C4Log.h"
-#include "c4group/C4Group.h"
 #include "c4group/C4ComponentHost.h"
+#include "c4group/C4Group.h"
 #include "graphics/C4FacetEx.h"
-#include "game/C4Game.h"
 #include "graphics/C4GraphicsResource.h"
 
 #include "platform/StdRegistry.h"

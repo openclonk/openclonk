@@ -18,13 +18,13 @@
 #include "C4Include.h"
 #include "network/C4Network2Dialogs.h"
 
-#include "game/C4Application.h"
-#include "gui/C4GameLobby.h"
-#include "game/C4FullScreen.h"
-#include "network/C4Network2.h"
 #include "control/C4PlayerInfo.h"
-#include "network/C4Network2Players.h"
+#include "game/C4Application.h"
+#include "game/C4FullScreen.h"
 #include "graphics/C4GraphicsResource.h"
+#include "gui/C4GameLobby.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Players.h"
 
 // ----------- C4Network2ResDlg::ListItem ----------------------------------------------------------------
 

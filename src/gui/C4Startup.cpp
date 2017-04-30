@@ -19,18 +19,16 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "gui/C4Startup.h"
 
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
 #include "graphics/C4FontLoader.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4StartupAboutDlg.h"
 #include "gui/C4StartupMainDlg.h"
-#include "gui/C4StartupScenSelDlg.h"
 #include "gui/C4StartupNetDlg.h"
 #include "gui/C4StartupOptionsDlg.h"
-#include "gui/C4StartupAboutDlg.h"
 #include "gui/C4StartupPlrSelDlg.h"
-#include "game/C4Game.h"
-#include "game/C4Application.h"
-#include "lib/C4Log.h"
-#include "graphics/C4GraphicsResource.h"
-#include "game/C4GraphicsSystem.h"
+#include "gui/C4StartupScenSelDlg.h"
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {

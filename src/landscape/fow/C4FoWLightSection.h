@@ -21,7 +21,6 @@
 #ifndef USE_CONSOLE
 
 #include "lib/C4Rect.h"
-#include <list>
 
 class C4FoWLight;
 class C4FoWRegion;

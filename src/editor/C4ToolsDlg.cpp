@@ -19,10 +19,11 @@
 
 #include "C4Include.h"
 #include "editor/C4ToolsDlg.h"
+
+#include "control/C4GameControl.h"
 #include "editor/C4Console.h"
 #include "landscape/C4Texture.h"
 #include "landscape/C4Landscape.h"
-#include "control/C4GameControl.h"
 
 bool C4ToolsDlg::Open()
 {

@@ -19,14 +19,12 @@
 
 #ifndef USE_CONSOLE
 
-#include "object/C4Object.h"
-#include "graphics/C4Surface.h"
 #include "graphics/C4FacetEx.h"
-#include "landscape/fow/C4FoWLightSection.h"
+#include "graphics/C4Surface.h"
 #include "landscape/fow/C4FoWDrawStrategy.h"
+#include "landscape/fow/C4FoWLightSection.h"
 #include "lib/C4Rect.h"
-
-#include <vector>
+#include "object/C4Object.h"
 
 /** This class represents one light source. A light source has an associated object with which the light source moves
     and one light section that handles the light beams for each direction (up, down, left, right).

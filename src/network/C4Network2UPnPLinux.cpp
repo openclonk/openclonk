@@ -15,16 +15,16 @@
 /* Linux implementation of a UPnP port mapper (using miniupnpc) */
 
 #include "C4Include.h"
-#include "game/C4Application.h"
-#include "C4Version.h"
+#include "network/C4Network2UPnP.h"
 
-#include <future>
+#include "C4Version.h"
+#include "game/C4Application.h"
 
 #include <miniupnpc.h>
 #include <upnpcommands.h>
 #include <upnperrors.h>
 
-#include "network/C4Network2UPnP.h"
+#include <future>
 
 static const char *description = "OpenClonk";
 

@@ -16,12 +16,6 @@
 #ifndef STDCOMPILER_H
 #define STDCOMPILER_H
 
-#include "lib/StdBuf.h"
-#include "lib/C4Log.h"
-
-#include <assert.h>
-#include <memory>
-
 // Try to avoid casting NotFoundExceptions for trivial cases (MSVC log flood workaround)
 #if defined(_MSC_VER)
 #define STDCOMPILER_EXCEPTION_WORKAROUND

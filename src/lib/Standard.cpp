@@ -18,6 +18,7 @@
 /* All kinds of valuable helpers */
 
 #include "C4Include.h"
+#include "lib/Standard.h"
 
 //------------------------------------- Basics ----------------------------------------
 

@@ -23,9 +23,6 @@
 #include "graphics/C4Facet.h"
 #include "graphics/C4Surface.h"
 #include "graphics/C4FontLoaderCustomImages.h"
-#include "lib/StdBuf.h"
-#include <stdio.h>
-#include <map>
 
 // Font rendering flags
 #define STDFONT_CENTERED    0x0001

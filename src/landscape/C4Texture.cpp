@@ -19,20 +19,12 @@
 
 #include "C4Include.h"
 #include "landscape/C4Texture.h"
-#include "landscape/C4TextureShape.h"
 
-#include "c4group/C4Group.h"
-#include "game/C4Game.h"
-#include "config/C4Config.h"
 #include "c4group/C4Components.h"
-#include "landscape/C4Material.h"
+#include "c4group/C4Group.h"
 #include "landscape/C4Landscape.h"
-#include "lib/C4Log.h"
 #include "lib/C4Random.h"
 #include "lib/StdColors.h"
-
-#include <cctype>
-#include <algorithm>
 
 C4Texture::C4Texture()
 {

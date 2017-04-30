@@ -18,12 +18,12 @@
 #include "C4Include.h"
 #include "script/C4Aul.h"
 
+#include "game/C4Game.h"
+#include "landscape/C4Material.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "script/C4Effect.h"
-#include "landscape/C4Material.h"
-#include "game/C4Game.h"
 #include "object/C4GameObjects.h"
+#include "script/C4Effect.h"
 
 void C4ScriptHost::DoAppend(C4Def *def)
 {

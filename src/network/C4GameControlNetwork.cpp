@@ -18,10 +18,8 @@
 #include "C4Include.h"
 #include "network/C4GameControlNetwork.h"
 
-#include "game/C4Application.h"
 #include "control/C4GameControl.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
+#include "game/C4Application.h"
 #include "game/C4GraphicsSystem.h"
 
 // *** C4GameControlNetwork

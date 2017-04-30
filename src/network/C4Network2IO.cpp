@@ -15,14 +15,11 @@
  */
 #include "C4Include.h"
 #include "network/C4Network2IO.h"
-#include "network/C4Network2Reference.h"
 
-#include "network/C4Network2Discover.h"
-#include "game/C4Application.h"
-#include "lib/C4Log.h"
-#include "game/C4Game.h"
 #include "control/C4GameControl.h"
-
+#include "game/C4Application.h"
+#include "network/C4Network2Discover.h"
+#include "network/C4Network2Reference.h"
 #include "network/C4Network2UPnP.h"
 
 #ifndef HAVE_WINSOCK

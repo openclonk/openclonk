@@ -20,15 +20,12 @@
 #include "gui/C4StartupOptionsDlg.h"
 
 #include "game/C4Application.h"
-#include "gui/C4StartupMainDlg.h"
-#include "c4group/C4Language.h"
-#include "platform/C4GamePadCon.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
-#include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Draw.h"
-#include "network/C4Network2.h"
+#include "graphics/C4GraphicsResource.h"
 #include "gui/C4MouseControl.h"
+#include "gui/C4StartupMainDlg.h"
+#include "network/C4Network2.h"
+#include "platform/C4GamePadCon.h"
 
 #include "graphics/C4DrawGL.h"
 

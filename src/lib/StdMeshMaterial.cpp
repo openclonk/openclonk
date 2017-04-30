@@ -17,22 +17,12 @@
 #include "C4Include.h"
 #include "C4ForbidLibraryCompilation.h"
 #include "lib/StdMeshMaterial.h"
+
 #include "lib/StdMeshUpdate.h"
 #include "graphics/C4DrawGL.h"
 
-#include <cctype>
-#include <memory>
-
-// MSVC doesn't define M_PI in math.h unless requested
-#ifdef  _MSC_VER
-#define _USE_MATH_DEFINES
-#endif  /* _MSC_VER */
-#include <cmath>
-
 #ifdef WITH_GLIB
 #include <glib.h>
-#else
-#include <sstream>
 #endif
 
 namespace

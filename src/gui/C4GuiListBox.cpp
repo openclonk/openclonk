@@ -19,9 +19,8 @@
 #include "C4Include.h"
 #include "gui/C4Gui.h"
 
-#include "gui/C4MouseControl.h"
 #include "graphics/C4Draw.h"
-#include <algorithm>
+#include "gui/C4MouseControl.h"
 
 namespace C4GUI
 {

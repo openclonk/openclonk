@@ -21,13 +21,12 @@
 #include "landscape/C4PXS.h"
 
 #include "c4group/C4Components.h"
-#include "config/C4Config.h"
-#include "game/C4Physics.h"
-#include "lib/C4Random.h"
-#include "landscape/C4Weather.h"
 #include "control/C4Record.h"
-#include "lib/StdColors.h"
+#include "game/C4Physics.h"
 #include "graphics/C4Draw.h"
+#include "landscape/C4Weather.h"
+#include "lib/C4Random.h"
+#include "lib/StdColors.h"
 
 static const C4Real WindDrift_Factor = itofix(1, 800);
 
