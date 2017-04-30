@@ -179,7 +179,8 @@ public func InitializePlayer(int plr)
 	_inherited(plr, ...);
 	// Scenario script callback.
 	relaunches[plr] = default_relaunch_count;
-	if(!GameCallEx("OnPlayerRelaunch", plr, false)) return DoRelaunch(plr, nil, nil, true);
+	if (!GameCallEx("OnPlayerRelaunch", plr, false))
+		return DoRelaunch(plr, nil, nil, true);
 }
 
 public func OnClonkDeath(object clonk, int killer)

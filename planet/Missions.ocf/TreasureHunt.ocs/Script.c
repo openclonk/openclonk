@@ -15,15 +15,14 @@ static npc_pyrit;
 
 func DoInit(int first_player)
 {
-	GetRelaunchRule()->Set({
-		inventory_transfer = true,
-		free_crew = true,
-		relaunch_time = 36,
-		respawn_at_base = true,
-		default_relaunch_count = nil,
-		player_restart = true,
-		respawn_last_clonk = true
-	});
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetInventoryTransfer(true);
+	relaunch_rule->SetFreeCrew(true);
+	relaunch_rule->SetRespawnDelay(1);
+	relaunch_rule->SetBaseRespawn(true);
+	relaunch_rule->SetDefaultRelaunches(nil);
+	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule->SetLastClonkRespawn(true);
 	ClearFreeRect(530,1135, 50,2);
 	if (g_last_stone_door) g_last_stone_door->DoDamage(170 - g_last_stone_door->GetDamage());
 	if (g_golden_idol)

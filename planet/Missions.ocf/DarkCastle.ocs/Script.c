@@ -11,15 +11,14 @@ static npc_pyrit;
 
 private func DoInit(int first_player)
 {
-	GetRelaunchRule()->Set({
-		inventory_transfer = true,
-		free_crew = true,
-		relaunch_time = 36,
-		respawn_at_base = true,
-		default_relaunch_count = nil,
-		player_restart = true,
-		respawn_last_clonk = true
-	});
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetInventoryTransfer(true);
+	relaunch_rule->SetFreeCrew(true);
+	relaunch_rule->SetRespawnDelay(1);
+	relaunch_rule->SetBaseRespawn(true);
+	relaunch_rule->SetDefaultRelaunches(nil);
+	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule->SetLastClonkRespawn(true);
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
