@@ -205,9 +205,9 @@ public func OnClonkDeath(object clonk, int killer)
 	return DoRelaunch(plr, clonk, nil);
 }
 
-private func RespawnAtBase(object clonk)
+private func RespawnAtBase(int plr, object clonk)
 {
-	var base = GetRelaunchBase(clonk);
+	var base = GetRelaunchBase(plr, clonk);
 	if	(base)
 		return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
 }
@@ -235,14 +235,20 @@ private func TransferInventory(object from, object to)
 	return to->GrabContents(from);
 }
 
-private func GetRelaunchBase(object clonk)
+private func GetRelaunchBase(int plr, object clonk)
 {
-	var plr = clonk->GetOwner();
+	plr = plr ?? clonk->GetOwner();
 	// Neutral flagpoles are preferred respawn points, because they are used as the only respawn points in missions.
-	var base = clonk->FindObject(Find_ID(Flagpole), Find_Func("IsNeutral"), clonk->Sort_Distance());
+	var base = FindObject(Find_ID(Flagpole), Find_Func("IsNeutral"), Sort_Random());
+	if (clonk)
+		clonk->FindObject(Find_ID(Flagpole), Find_Func("IsNeutral"), clonk->Sort_Distance());
 	// If there are no neutral flagpoles, find closest base owned by the player (or team) and try to buy a clonk.
 	if (!base)
-		base = clonk->FindObject(Find_Func("IsBaseBuilding"), Find_Allied(plr), clonk->Sort_Distance());
+	{
+		base = FindObject(Find_Func("IsBaseBuilding"), Find_Allied(plr), Sort_Random());
+		if (clonk)
+			base = clonk->FindObject(Find_Func("IsBaseBuilding"), Find_Allied(plr), clonk->Sort_Distance());
+	}
 	return base;
 }
 
@@ -254,9 +260,9 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 		return;
 	
 	if (respawn_at_base)
-		position = RespawnAtBase(clonk);
-	position = position ?? GameCallEx("RelaunchPosition", plr, GetPlayerTeam(plr));
-	position = position ?? FindRelaunchPos(plr);
+		position = RespawnAtBase(plr, clonk);
+	position = position ?? GameCall("RelaunchPosition", plr, GetPlayerTeam(plr));
+	position = position ?? this->FindRelaunchPos(plr);
 	
 	var spawn;
 	// Position array either has the form [x, y] or [[x, y], [x, y], ...].

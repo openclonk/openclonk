@@ -18,8 +18,12 @@ func ScoreboardTeamID(int team)
 protected func Initialize()
 {
 	score_list = [];
-	GetRelaunchRule()->SetRespawnDelay(0);
-	GetRelaunchRule()->SetDefaultRelaunches(nil);
+	
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetRespawnDelay(0);
+	relaunch_rule->SetDefaultRelaunches(nil);
+	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule.FindRelaunchPos = GetID().FindRelaunchPos;
 	
 	// init scoreboard
 	Scoreboard->Init(
@@ -43,9 +47,9 @@ private func GetScoreGoal()
 
 public func SetFlagBase(int team, int x, int y)
 {
-	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
+	var base = CreateObjectAbove(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);
-	var flag = CreateObject(Goal_Flag, x, y, NO_OWNER);
+	var flag = CreateObjectAbove(Goal_Flag, x, y, NO_OWNER);
 	flag->SetAction("AttachBase", base);
 	flag->SetTeam(team);
 	return;
@@ -77,23 +81,24 @@ private func EliminateOthers(int win_team)
 protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
-	GetRelaunchRule()->DoRelaunch(plr, nil, RelaunchPosition(team), true);
+	GetRelaunchRule()->DoRelaunch(plr, nil, FindRelaunchPos(plr), true);
 	
 	// make scoreboard entry for team
 	Scoreboard->NewEntry(ScoreboardTeamID(team), GetTaggedTeamName(team));
 	return _inherited(plr, x, y, base, team, ...);
 }
 
-public func RelaunchPosition(int iTeam)
+public func FindRelaunchPos(int plr)
 {
-	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", iTeam));
-	if (base) return [base->GetX(), base->GetY() - 10];
+	var team = GetPlayerTeam(plr);
+	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
+	if (base)
+		return [base->GetX(), base->GetY() - 10];
 	return nil;
 }
 
 protected func RemovePlayer(int plr)
 {
-
 	return _inherited(plr, ...);
 }
 
