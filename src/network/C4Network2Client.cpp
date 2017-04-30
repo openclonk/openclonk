@@ -16,13 +16,10 @@
 #include "C4Include.h"
 #include "network/C4Network2Client.h"
 
-#include "lib/C4Log.h"
 #include "editor/C4Console.h"
-#include "network/C4Network2.h"
-#include "network/C4Network2IO.h"
-#include "network/C4Network2Stats.h"
 #include "gui/C4GameLobby.h" // fullscreen network lobby
-#include "game/C4Game.h"
+#include "network/C4Network2.h"
+#include "network/C4Network2Stats.h"
 #include "player/C4PlayerList.h"
 
 // *** C4Network2Client

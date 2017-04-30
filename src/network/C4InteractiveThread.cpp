@@ -15,10 +15,8 @@
  */
 #include "C4Include.h"
 #include "network/C4InteractiveThread.h"
-#include "game/C4Application.h"
-#include "lib/C4Log.h"
 
-#include "game/C4Game.h"
+#include "game/C4Application.h"
 
 // *** C4InteractiveThread
 

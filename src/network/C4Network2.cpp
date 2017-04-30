@@ -19,19 +19,16 @@
 #include "network/C4Network2.h"
 
 #include "C4Version.h"
-#include "lib/C4Log.h"
-#include "game/C4Application.h"
-#include "editor/C4Console.h"
+#include "control/C4GameControl.h"
 #include "control/C4GameSave.h"
 #include "control/C4RoundResults.h"
-#include "game/C4Game.h"
+#include "editor/C4Console.h"
+#include "game/C4Application.h"
 #include "game/C4GraphicsSystem.h"
-#include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Draw.h"
-#include "control/C4GameControl.h"
+#include "graphics/C4GraphicsResource.h"
 
 // lobby
-#include "gui/C4Gui.h"
 #include "gui/C4GameLobby.h"
 
 #include "network/C4Network2Dialogs.h"

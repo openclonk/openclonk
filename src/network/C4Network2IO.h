@@ -16,10 +16,10 @@
 #ifndef INC_C4Network2IO
 #define INC_C4Network2IO
 
-#include "network/C4NetIO.h"
+#include "netpuncher/C4PuncherPacket.h"
 #include "network/C4Client.h"
 #include "network/C4InteractiveThread.h"
-#include "netpuncher/C4PuncherPacket.h"
+#include "network/C4NetIO.h"
 
 #include <atomic>
 
