@@ -10,13 +10,21 @@
 
 local menu;
 local has_selected;
-
 local crew;
 
-// Sets the GetRelaunchRule().RelaunchTime, in seconds, the clonk is held in the container.
+local hold_crew = false;
+local relaunch_time = 36 * 10;
 
-// Returns the GetRelaunchRule().RelaunchTime, in seconds the clonk is held.
-public func GetRelaunchTime() { return GetRelaunchRule().relaunch_time / 36; }
+// Sets the time, in seconds, the clonk is held in the container.
+public func SetRelaunchTime(int to_time, bool to_hold)
+{
+	relaunch_time = to_time * 36;
+	hold_crew = to_hold;
+	return;
+}
+
+// Returns the time, in seconds the clonk is held.
+public func GetRelaunchTime() { return relaunch_time / 36; }
 
 // Retrieve weapon list from scenario.
 private func WeaponList() { return GameCall("RelaunchWeaponList"); }
@@ -25,10 +33,10 @@ public func StartRelaunch(object clonk)
 {
 	if (!clonk)
 		return;
-	// only 1 clonk can be inside
-	if(crew)
+	// Only 1 clonk can be inside.
+	if (crew)
 		return;
-	// save clonk for later use
+	// Save clonk for later use.
 	crew = clonk;
 	clonk->Enter(this);
 	ScheduleCall(this, "OpenWeaponMenu", 36, 0, clonk);
@@ -47,13 +55,14 @@ private func OpenWeaponMenu(object clonk)
 		{
 			menu = CreateObject(MenuStyle_Default, nil, nil, clonk->GetOwner());
 			menu->SetPermanent();
-			menu->SetTitle(Format("$MsgWeapon$", GetRelaunchRule().relaunch_time / 36));
+			menu->SetTitle(Format("$MsgWeapon$", relaunch_time / 36));
 			clonk->SetMenu(menu, true);
 			
-			if(GetType(GetRelaunchRule().last_used_player_weapons) != C4V_Array) GetRelaunchRule().last_used_player_weapons = [];
+			if (GetType(GetRelaunchRule().last_used_player_weapons) != C4V_Array)
+				GetRelaunchRule().last_used_player_weapons = [];
 			for (var weapon in weapons)
 			{
-				if(GetRelaunchRule().last_used_player_weapons[clonk->GetOwner()] != weapon)
+				if (GetRelaunchRule().last_used_player_weapons[clonk->GetOwner()] != weapon)
 				{
 					menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
 				}
@@ -64,40 +73,41 @@ private func OpenWeaponMenu(object clonk)
 	}
 }
 
-func FxIntTimeLimitTimer(object target, effect, int fxtime)
+public func FxIntTimeLimitTimer(object target, effect fx, int fxtime)
 {
 	var clonk = crew;
 	if (!clonk)
 	{
 		RemoveObject();
-		return -1;
+		return FX_Execute_Kill;
 	}
-	if (fxtime >= GetRelaunchRule().relaunch_time)
+	if (fxtime >= relaunch_time)
 	{
 		if (!has_selected && WeaponList())
-			GiveWeapon(WeaponList()[Random(GetLength(WeaponList()))]);
+			GiveWeapon(RandomElement(WeaponList()));
 		RelaunchClonk();
-		return -1;
+		return FX_Execute_Kill;
 	}
 	if (menu)
-		menu->SetTitle(Format("$MsgWeapon$", (GetRelaunchRule().relaunch_time - fxtime) / 36));
+		menu->SetTitle(Format("$MsgWeapon$", (relaunch_time - fxtime) / 36));
 	else
-		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (GetRelaunchRule().relaunch_time - fxtime) / 36));
-	return 1;
+		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (relaunch_time - fxtime) / 36));
+	return FX_OK;
 }
 
 public func OnWeaponSelected(id weapon)
 {
-	if (!crew) return;
-		GiveWeapon(weapon);
-	if (GetRelaunchRule().disable_last_weapon)
+	if (!crew)
+		return;
+	GiveWeapon(weapon);
+	if (GetRelaunchRule()->GetLastWeaponUse())
 		GetRelaunchRule().last_used_player_weapons[crew->GetOwner()] = weapon;
 	has_selected = true;
 	// Close menu manually, to prevent selecting more weapons.
 	if (menu)
 		menu->Close();
 
-	if (!GetRelaunchRule()->GetHolding())
+	if (!hold_crew)
 		RelaunchClonk();
 	return true;
 }
@@ -105,7 +115,7 @@ public func OnWeaponSelected(id weapon)
 private func RelaunchClonk()
 {
 	var clonk = crew;
-	// When relaunching from disabled state (i.e base respawn), reset view to clonk
+	// When relaunching from disabled state (i.e base respawn), reset view to clonk.
 	if (!clonk->GetCrewEnabled())
 	{
 		clonk->SetCrewEnabled(true);
@@ -129,6 +139,7 @@ private func GiveWeapon(id weapon_id)
 	return true;
 }
 
-public func SaveScenarioObject() { return false; }
 
-local Name = "$Name$";
+/*-- Saving --*/
+
+public func SaveScenarioObject() { return false; }

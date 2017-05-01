@@ -130,19 +130,19 @@ public func SetInitialRelaunch(bool on)
 public func GetInitialRelaunch() { return initial_relaunch; }
 
 
-// Determines ...
-local hold = false;
+// Determines whether the crew is released after weapon selection.
+local hold_crew = false;
 
-public func SetHolding(bool b)
+public func SetHolding(bool hold)
 {
-	hold = b;
+	hold_crew = hold;
 	return this;
 }
 
-public func GetHolding() { return hold; }
+public func GetHolding() { return hold_crew; }
 
 
-// Determines ...
+// Determines whether the player can select the last weapon again.
 local disable_last_weapon = false;
 local last_used_player_weapons = [];
 
@@ -361,6 +361,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	if (relaunch_time)
 	{
 		var container = new_clonk->CreateObject(RelaunchContainer, 0, 0, plr);
+		container->SetRelaunchTime(relaunch_time, hold_crew);
 		container->StartRelaunch(new_clonk);
 	}
 	return true;
@@ -388,7 +389,7 @@ public func SaveScenarioObject(props, ...)
 		props->AddCall("InventoryTransfer", this, "SetInventoryTransfer", inventory_transfer);
 	if (free_crew) 
 		props->AddCall("FreeCrew", this, "SetFreeCrew", free_crew);
-	if(respawn_at_base)
+	if (respawn_at_base)
 		props->AddCall("BaseRespawn", this, "SetBaseRespawn", respawn_at_base);
 	return true;
 }
