@@ -7,10 +7,10 @@ static const EDIT_MAP = false; // Set to true to edit map and Objects.c; avoids 
 func Initialize()
 {
 	if (EDIT_MAP) return true;
-	GetRelaunchRule()->SetRelaunchCount(nil);
+	GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	GetRelaunchRule()->SetRespawnDelay(8);
 	GetRelaunchRule()->SetLastWeaponUse(false);
-	GetRelaunchRule()->AllowPlayerRestart();
+	GetRelaunchRule()->SetAllowPlayerRestart(true);
 	// Mirror map objects by moving them to the other side, then re-running object initialization
 	for (var o in FindObjects(Find_NoContainer(), Find_Not(Find_Category(C4D_Goal | C4D_Rule))))
 	{
@@ -128,20 +128,21 @@ func IntroMsg()
 	return true;
 }
 
-func LaunchPlayer(object pClonk, int plr)
+func LaunchPlayer(object clonk, int plr)
 {
 	// Make sure clonk can move
-	DigFreeRect(pClonk->GetX()-6,pClonk->GetY()-10,13,18,true);
+	DigFreeRect(clonk->GetX()-6,clonk->GetY()-10,13,18,true);
 	// Crew setup
-	pClonk.MaxEnergy = 100000;
-	pClonk->DoEnergy(1000);
-	pClonk->CreateContents(WindBag);
+	clonk.MaxEnergy = 100000;
+	clonk->DoEnergy(1000);
+	clonk->CreateContents(WindBag);
 	return true;
 }
 
-public func OnPlayerRelaunch(iPlr)
+public func OnPlayerRelaunch(int plr)
 {
-	if(!g_respawn_flags[GetPlayerTeam(plr)]) return EliminatePlayer(plr);
+	if (!g_respawn_flags[GetPlayerTeam(plr)])
+		return EliminatePlayer(plr);
 }
 
 public func RelaunchPosition(int iPlr, int iTeam)
@@ -150,7 +151,7 @@ public func RelaunchPosition(int iPlr, int iTeam)
 	return [g_respawn_flags[iTeam]->GetX(), g_respawn_flags[iTeam]->GetY()];
 }
 
-public func OnClonkLeftRelaunch(object pClonk, int plr)
+public func OnClonkLeftRelaunch(object clonk, int plr)
 {
 	// Find flag for respawn
 	var flagpole = g_respawn_flags[GetPlayerTeam(plr)];
@@ -159,7 +160,7 @@ public func OnClonkLeftRelaunch(object pClonk, int plr)
 	// Reset available items in spawns
 	for (var item_spawn in FindObjects(Find_ID(ItemSpawn))) item_spawn->Reset(plr);
 	// Relaunch near current flag pos (will be adjusted on actual relaunch)
-	return LaunchPlayer(plr);
+	return LaunchPlayer(clonk, plr);
 }
 
 func RelaunchWeaponList() { return [Bow, Sword, Club, Javelin, Blunderbuss, Firestone, IceWallKit]; }

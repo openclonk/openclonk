@@ -2,8 +2,7 @@
 
 private func Initialize()
 {
-	GetRelaunchRule()
-		->AllowPlayerRestart();
+	GetRelaunchRule()->SetAllowPlayerRestart(true);
 
 	// Create dynamite below the first lava basin
 	DrawMaterialQuad("Tunnel",1378,1327-5,1860,1327-5,1860,1330,1387,1330,1);

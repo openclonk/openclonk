@@ -1,30 +1,154 @@
 /**
 	Relaunch Rule
-	This rule enables and handles relaunches.
+	This rule enables and handles relaunches with its various aspects. These are:
+	 * SetInventoryTransfer(bool transfer): inventory of crew is transferred on respawn [default false].
+	 * SetFreeCrew(bool free): whether the crew is free or needs to be bought [default false].
+	 * SetBaseRespawn(bool set): whether to respawn at a nearby base [default false].
+	 * SetLastClonkRespawn(bool b): whether to respawn the last clonk only [default false].
+	 * SetRespawnDelay(int delay): respawn delay in seconds [default 10].
+	 * SetAllowPlayerRestart(bool on): whether a player can select restart in the rule menu.
+	 * SetPerformRestart(bool on): whether this rule actually handles the respawn [default true].
+	 * SetDefaultRelaunchCount(int r): the number of relaunches a player has [default nil == infinte].
+	The active relaunch rule can be obtained by the global function GetRelaunchRule(). The rule also
+	keeps track of player's actual number of relaunches which can be modified and accessed by:
+	 * SetPlayerRelaunchCount(int plr, int value): set player relaunch count.
+	 * GetPlayerRelaunchCount(int plr): get player relaunch count.
+	 * DoPlayerRelaunchCount(int plr, int value): add to player relaunch count.
+	 * HasUnlimitedRelaunches(): whether the players have infinite relaunches.
+	 
 	@author Maikel, Sven2, Fulgen
 */
 
+
+/*-- Settings --*/
+
 // Determines whether the inventory of the crew member is transfered upon respawn.
 local inventory_transfer = false;
+
+public func SetInventoryTransfer(bool transfer)
+{
+	inventory_transfer = transfer;
+	return this;
+}
+
+public func GetInventoryTransfer() { return inventory_transfer; }
+
+
 // Determines whether a crew member needs to be bought.
 local free_crew = true;
+
+public func SetFreeCrew(bool free)
+{
+	free_crew = free;
+	return this;
+}
+
+public func GetFreeCrew() { return free_crew; }
+
+
 // Determines whether the clonk will be respawned at the base.
 local respawn_at_base = false;
+
+public func SetBaseRespawn(bool set)
+{
+	respawn_at_base = set;
+	return this;
+}
+
+public func GetBaseRespawn() { return respawn_at_base; }
+
+
 // Determines whether only the last clonk gets respawned.
 local respawn_last_clonk = false;
 
+public func SetLastClonkRespawn(bool b)
+{
+	respawn_last_clonk = b;
+	return this;
+}
+
+public func GetLastClonkRespawn() { return respawn_last_clonk; }
+
+
+// Determines the amount of time in the relaunch container.
+local relaunch_time = 36 * 10;
+
+public func SetRespawnDelay(int delay)
+{
+	relaunch_time = delay * 36;
+	return this;
+}
+
+public func GetRespawnDelay() { return relaunch_time / 36; }
+
+
+// Determines whether a player can select to restart in a round via the rule menu.
+local allow_restart_player = false;
+public func SetAllowPlayerRestart(bool on)
+{
+	allow_restart_player = on;
+	return this;
+}
+
+public func GetAllowPlayerRestart() { return allow_restart_player; }
+
+
+// Determines whether a relaunch is performed by the rule.
+local perform_restart = true;
+
+public func SetPerformRestart(bool on)
+{
+	perform_restart = on;
+	return this;
+}
+
+public func GetPerformRestart() { return perform_restart; }
+
+
+// Determines the default relaunch count.
 local default_relaunch_count = nil;
 local relaunches = [];
 
-local clonk_type = Clonk;
+public func SetDefaultRelaunchCount(int r)
+{
+	default_relaunch_count = r;
+	return this;
+}
 
+public func GetDefaultRelaunchCount() { return default_relaunch_count; }
+
+
+// Determines ...
+local hold = false;
+
+public func SetHolding(bool b)
+{
+	hold = b;
+	return this;
+}
+
+public func GetHolding() { return hold; }
+
+
+// Determines ...
 local disable_last_weapon = false;
 local last_used_player_weapons = [];
-local relaunch_time = 36 * 10;
-local hold = false;
-local allow_restart_player = false;
+
+public func SetLastWeaponUse(bool use)
+{
+	disable_last_weapon = !use;
+	return this;
+}
+
+public func GetLastWeaponUse() { return disable_last_weapon; }
+
+
+// Not modifiable at the moment.
 local respawn_script_players = false;
-local perform_restart = true;
+local clonk_type = Clonk;
+
+
+/*-- Rule Code --*/
 
 public func Activate(int plr)
 {
@@ -41,14 +165,15 @@ public func Activate(int plr)
 		clonk->Kill(clonk, true);
 		clonk->RemoveObject();
 	}
+	return;
 }
 
-protected func Initialize()
+public func Initialize()
 {
 	ScheduleCall(this, this.CheckDescription, 1, 1);
 	if (GetScenarioVal("Mode", "Game") == "Melee")
 		default_relaunch_count = 5;
-	return true;
+	return;
 }
 
 private func CheckDescription()
@@ -75,105 +200,6 @@ private func CheckDescription()
 	return true;
 }
 
-public func SetInventoryTransfer(bool transfer)
-{
-	inventory_transfer = transfer;
-	return this;
-}
-
-public func GetInventoryTransfer()
-{
-	return inventory_transfer;
-}
-
-public func SetFreeCrew(bool free)
-{
-	free_crew = free;
-	return this;
-}
-
-public func GetFreeCrew()
-{
-	return free_crew;
-}
-
-public func SetRespawnDelay(int delay)
-{
-	relaunch_time = delay * 36;
-	return this;
-}
-
-public func GetRespawnDelay()
-{
-	return relaunch_time / 36;
-}
-
-public func SetHolding(bool b)
-{
-	hold = b;
-	return this;
-}
-
-public func GetHolding()
-{
-	return hold;
-}
-
-public func SetLastWeaponUse(bool use)
-{
-	this.disable_last_weapon = !use;
-	return this;
-}
-
-public func GetLastWeaponUse()
-{
-	return disable_last_weapon;
-}
-
-public func SetBaseRespawn(bool set)
-{
-	respawn_at_base = set;
-	return this;
-}
-
-public func GetBaseRespawn()
-{
-	return respawn_at_base;
-}
-
-public func SetDefaultRelaunches(int r)
-{
-	default_relaunch_count = r;
-}
-
-public func SetLastClonkRespawn(bool b)
-{
-	respawn_last_clonk = b;
-	return this;
-}
-
-public func AllowPlayerRestart()
-{
-	allow_restart_player = true;
-	return this;
-}
-
-public func DisallowPlayerRestart()
-{
-	allow_restart_player = false;
-	return this;
-}
-
-public func GetLastClonkRespawn()
-{
-	return respawn_last_clonk;
-}
-
-public func SetPerformRestart(bool on)
-{
-	perform_restart = on;
-}
-
 public func InitializePlayer(int plr)
 {
 	_inherited(plr, ...);
@@ -193,7 +219,7 @@ public func OnClonkDeath(object clonk, int killer)
 	if (default_relaunch_count != nil)
 	{
 		relaunches[plr]--;
-		if(relaunches[plr] < 0)
+		if (relaunches[plr] < 0)
 		{
 			EliminatePlayer(plr);
 			return;
@@ -208,8 +234,9 @@ public func OnClonkDeath(object clonk, int killer)
 private func RespawnAtBase(int plr, object clonk)
 {
 	var base = GetRelaunchBase(plr, clonk);
-	if	(base)
+	if (base)
 		return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
+	return;
 }
 
 private func TransferInventory(object from, object to)
@@ -269,10 +296,9 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	if (GetType(position) == C4V_Array)
 	{
 		if (GetType(position[0]) == C4V_Array)
-		{
 			spawn = position[Random(GetLength(position))];
-		}
-		else spawn = position;
+		else
+			spawn = position;
 	}
 	// If no spawn has been found set it to the middle of the landscape, this should not happen.
 	spawn = spawn ?? [LandscapeWidth() / 2, LandscapeHeight() / 2];
@@ -290,17 +316,16 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 		else
 		{
 			var base = GetRelaunchBase();
-			if (!base) return;
+			if (!base)
+				return;
 			// Try to buy a crew member at the base.
 			var pay_plr = base->GetOwner();
 			// Payment in neutral bases by clonk owner.
 			if (pay_plr == NO_OWNER) 
-			pay_plr = plr;
+				pay_plr = plr;
 			new_clonk = base->~DoBuy(clonk_type, plr, pay_plr, clonk);
 			if (new_clonk)
-			{
 				new_clonk->Exit();
-			}
 		}
 	}
 	else
@@ -321,7 +346,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	
 	if (relaunch_time)
 	{
-		var container = new_clonk->CreateObject(RelaunchContainer, nil, nil, plr);
+		var container = new_clonk->CreateObject(RelaunchContainer, 0, 0, plr);
 		container->StartRelaunch(new_clonk);
 	}
 	return true;
@@ -336,7 +361,7 @@ protected func FindRelaunchPos(int plr)
 }
 
 
-/*-- Scenario saving --*/
+/*-- Scenario Saving --*/
 
 public func SaveScenarioObject(props, ...)
 {
@@ -357,41 +382,47 @@ public func SaveScenarioObject(props, ...)
 
 /*-- Globals --*/
 
-global func SetRelaunchCount(int plr, int value)
-{
-	if(UnlimitedRelaunches()) return;
-	GetRelaunchRule().relaunches[plr] = value;
-	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule().relaunches[plr]);
-	return value;
-}
-
-global func GetRelaunchCount(int plr)
-{
-	return GetRelaunchRule().relaunches[plr];
-}
-
-global func DoRelaunchCount(int plr, int value)
-{
-	if(UnlimitedRelaunches()) return;
-	GetRelaunchRule().relaunches[plr] += value;
-	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule().relaunches[plr]);
-	return;
-}
-
-global func UnlimitedRelaunches()
-{
-	return GetRelaunchRule().default_relaunch_count == nil;
-}
-
+// Returns the active relaunch rule, creates one if no exists.
 global func GetRelaunchRule()
 {
 	return FindObject(Find_ID(Rule_Relaunch)) || CreateObject(Rule_Relaunch);
 }
 
 
+/*-- Player Relaunches --*/
+
+public func SetPlayerRelaunchCount(int plr, int value)
+{
+	if (HasUnlimitedRelaunches())
+		return;
+	relaunches[plr] = value;
+	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);
+	return;
+}
+
+public func GetPlayerRelaunchCount(int plr)
+{
+	return relaunches[plr];
+}
+
+public func DoPlayerRelaunchCount(int plr, int value)
+{
+	if(HasUnlimitedRelaunches())
+		return;
+	relaunches[plr] += value;
+	Scoreboard->SetPlayerData(plr, "relaunches", relaunches[plr]);
+	return;
+}
+
+public func HasUnlimitedRelaunches()
+{
+	return default_relaunch_count == nil;
+}
+
+
 /*-- Editor --*/
 
-public func Definition(def)
+public func Definition(proplist def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.inventory_transfer = { Name="$InventoryTransfer$", EditorHelp="$InventoryTransferHelp$", Type="bool", Set="SetInventoryTransfer" };
@@ -421,7 +452,7 @@ public func Definition(def)
 		Name = "$RelaunchCount$",
 		EditorHelp = "$RelaunchCountHelp$",
 		Type = "int",
-		Set = "SetDefaultRelaunches"
+		Set = "SetDefaultRelaunchCount"
 	};
 }
 

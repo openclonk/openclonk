@@ -23,7 +23,7 @@ func Initialize()
 	}
 	maxkills = GameCall("WinKillCount");
 	if(maxkills == nil || maxkills < 1) maxkills = 4;
-	GetRelaunchRule()->SetDefaultRelaunches(nil);
+	GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	return _inherited(...);
 }
 

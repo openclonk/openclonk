@@ -16,7 +16,7 @@ protected func Initialize()
 {
 	// init scoreboard
 	// init scoreboard, uses the condition of Scoreboard_Deaths too
-	if(UnlimitedRelaunches()) return;
+	if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
     Scoreboard->Init(
 		[{key = "relaunches", title = Scoreboard_Relaunch, sorted = true, desc = true, default = "", priority = 75, conditional = Scoreboard_Death.ScoreboardCondition}]
 		);
@@ -25,16 +25,16 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
-    if(UnlimitedRelaunches()) return;
+    if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
 	Scoreboard->NewPlayerEntry(plr);
-	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchCount(plr));
+	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
 	return _inherited(plr, ...);
 }
 
 protected func RelaunchPlayer(int plr, int killer)
 {
-    if(UnlimitedRelaunches()) return;
-	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchCount(plr));
+    if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
+	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
 	return _inherited(plr, killer, ...);
 }
 

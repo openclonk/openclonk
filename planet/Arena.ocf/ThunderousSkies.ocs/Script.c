@@ -20,7 +20,7 @@ protected func Initialize()
 	CreateObject(Rule_Gravestones);
 	GetRelaunchRule()
 		->SetLastWeaponUse(false)
-		->SetDefaultRelaunches(nil);
+		->SetDefaultRelaunchCount(nil);
 	
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));

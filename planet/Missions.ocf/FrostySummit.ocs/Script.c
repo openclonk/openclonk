@@ -19,8 +19,8 @@ func Initialize()
 	relaunch_rule->SetFreeCrew(true);
 	relaunch_rule->SetRespawnDelay(1);
 	relaunch_rule->SetBaseRespawn(false);
-	relaunch_rule->SetDefaultRelaunches(nil);
-	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetLastClonkRespawn(true);
 }
 

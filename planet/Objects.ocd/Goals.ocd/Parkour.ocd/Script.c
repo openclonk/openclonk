@@ -57,7 +57,7 @@ protected func Initialize(...)
 private func EnsureRestartRule()
 {
 	var relaunch = GetRelaunchRule();
-	relaunch->AllowPlayerRestart();
+	relaunch->SetAllowPlayerRestart(true);
 	relaunch->SetPerformRestart(false);
 	return true;
 }

@@ -88,15 +88,16 @@ func FxIntTimeLimitTimer(object target, effect, int fxtime)
 
 public func OnWeaponSelected(id weapon)
 {
-	if(!crew) return;
-	GiveWeapon(weapon);
-	if(GetRelaunchRule().disable_last_weapon) GetRelaunchRule().last_used_player_weapons[crew->GetOwner()] = weapon;
+	if (!crew) return;
+		GiveWeapon(weapon);
+	if (GetRelaunchRule().disable_last_weapon)
+		GetRelaunchRule().last_used_player_weapons[crew->GetOwner()] = weapon;
 	has_selected = true;
 	// Close menu manually, to prevent selecting more weapons.
 	if (menu)
 		menu->Close();
 
-	if (!GetRelaunchRule().hold)
+	if (!GetRelaunchRule()->GetHolding())
 		RelaunchClonk();
 	return true;
 }

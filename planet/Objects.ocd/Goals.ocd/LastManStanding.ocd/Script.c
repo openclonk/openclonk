@@ -58,7 +58,7 @@ protected func RelaunchPlayer(int plr, int killer)
 		if (!(GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr)))
 			if (KillsToRelaunch() && !(GetKillCount(killer) % KillsToRelaunch()) && GetKillCount(killer))
 			{
-				DoRelaunchCount(killer, 1);
+				GetRelaunchRule()->DoPlayerRelaunchCount(killer, 1);
 				Log("$MsgRelaunchGained$", GetPlayerName(killer));
 			}
 				

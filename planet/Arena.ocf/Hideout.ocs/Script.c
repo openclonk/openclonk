@@ -19,7 +19,7 @@ protected func Initialize()
 	
 	// Rules
 	var relaunch_rule = GetRelaunchRule();
-	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetRespawnDelay(8);
 	relaunch_rule->SetLastWeaponUse(false);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);

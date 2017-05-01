@@ -7,9 +7,6 @@
 */
 
 
-// List for storing the different large caves.
-static cave_list;
-
 // Game modes.
 static const GAMEMODE_Deathmatch = 0;
 static const GAMEMODE_LastManStanding = 1;
@@ -21,12 +18,12 @@ protected func Initialize()
 	if (SCENPAR_GameMode == GAMEMODE_Deathmatch)
 	{
 		CreateObject(Goal_DeathMatch);
-		GetRelaunchRule()->SetDefaultRelaunches(Max(SCENPAR_NrRelaunchesKills, 0));
+		GetRelaunchRule()->SetDefaultRelaunchCount(Max(SCENPAR_NrRelaunchesKills, 0));
 	}
 	else if (SCENPAR_GameMode == GAMEMODE_LastManStanding)
 	{
 		CreateObject(Goal_LastManStanding);
-		GetRelaunchRule()->SetDefaultRelaunches(Max(SCENPAR_NrRelaunchesKills, 0));
+		GetRelaunchRule()->SetDefaultRelaunchCount(Max(SCENPAR_NrRelaunchesKills, 0));
 	}
 	
 	else if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
@@ -34,7 +31,7 @@ protected func Initialize()
 		var goal = CreateObject(Goal_KingOfTheHill, LandscapeWidth() / 2, LandscapeHeight() / 2);
 		goal->SetRadius(72);
 		goal->SetPointLimit(Max(SCENPAR_NrRelaunchesKills, 1));
-		GetRelaunchRule()->SetDefaultRelaunches(nil);
+		GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	}
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
@@ -80,7 +77,7 @@ public func WinKillCount()
 
 public func RelaunchPosition(int plr)
 {
-	return FindStartCave(plr, GetRelaunchCount(plr) != SCENPAR_NrRelaunchesKills);
+	return FindStartCave(plr, GetRelaunchRule()->GetPlayerRelaunchCount(plr) != SCENPAR_NrRelaunchesKills);
 }
 
 public func OnClonkLeftRelaunch(object clonk, int plr)
@@ -93,7 +90,7 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Pickaxe);
 	// Better weapons after relaunching.
-	if (GetRelaunchCount(plr) != SCENPAR_NrRelaunchesKills)
+	if (GetRelaunchRule()->GetPlayerRelaunchCount(plr) != SCENPAR_NrRelaunchesKills)
 	{
 		clonk->CreateContents(Torch);
 		clonk->CreateContents(Firestone, 2);

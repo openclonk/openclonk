@@ -2,6 +2,9 @@
 
 protected func Construction()
 {
-	GetRelaunchRule()->SetBaseRespawn(true);
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetBaseRespawn(true);
+	relaunch_rule->SetFreeCrew(false);
+	relaunch_rule->SetLastClonkRespawn(true);
 	return RemoveObject();
 }

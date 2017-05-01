@@ -21,8 +21,8 @@ protected func Initialize()
 	
 	var relaunch_rule = GetRelaunchRule();
 	relaunch_rule->SetRespawnDelay(0);
-	relaunch_rule->SetDefaultRelaunches(nil);
-	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule.FindRelaunchPos = GetID().FindRelaunchPos;
 	
 	// init scoreboard

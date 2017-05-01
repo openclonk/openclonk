@@ -57,7 +57,7 @@ func DoInit(int first_player)
 		->SetInventoryTransfer(true)
 		->SetLastClonkRespawn(true)
 		->SetFreeCrew(true)
-		->AllowPlayerRestart()
+		->SetAllowPlayerRestart(true)
 		->SetBaseRespawn(true)
 		->SetRespawnDelay(0);
 	

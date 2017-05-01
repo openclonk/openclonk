@@ -16,8 +16,8 @@ private func DoInit(int first_player)
 	relaunch_rule->SetFreeCrew(true);
 	relaunch_rule->SetRespawnDelay(1);
 	relaunch_rule->SetBaseRespawn(true);
-	relaunch_rule->SetDefaultRelaunches(nil);
-	relaunch_rule->AllowPlayerRestart();
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetLastClonkRespawn(true);
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
