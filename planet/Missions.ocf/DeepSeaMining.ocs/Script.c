@@ -41,6 +41,7 @@ protected func PostIntroInitialize()
 	relaunch_rule->SetDefaultRelaunchCount(nil);
 	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetInitialRelaunch(false);
 	
 	// Initialize different parts of the scenario.
 	InitializeAmbience();
@@ -313,9 +314,4 @@ global func Particles_Smoke(...)
 		p.DampingX = 800;
 	}
 	return p;
-}
-
-public func OnPlayerRelaunch()
-{
-	return true;
 }

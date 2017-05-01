@@ -34,6 +34,7 @@ func Initialize()
 	relaunch_rule->SetDefaultRelaunchCount(nil);
 	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetInitialRelaunch(false);
 	npc_newton->SetAlternativeSkin("MaleBlackHair");
 	npc_pyrit->SetAlternativeSkin("MaleBrownHair");
 	npc_woody->SetAlternativeSkin("Youngster");
@@ -129,9 +130,4 @@ func OnGoalsFulfilled()
 	GainMissionAccess("S2Raid");
 	GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
-}
-
-public func OnPlayerRelaunch()
-{
-	return true;
 }

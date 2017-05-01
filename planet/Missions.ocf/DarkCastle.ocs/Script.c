@@ -18,7 +18,8 @@ private func DoInit(int first_player)
 	relaunch_rule->SetBaseRespawn(true);
 	relaunch_rule->SetDefaultRelaunchCount(nil);
 	relaunch_rule->SetAllowPlayerRestart(true);
-	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetLastClonkRespawn(true);	
+	relaunch_rule->SetInitialRelaunch(false);
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
@@ -123,9 +124,4 @@ public func OnGoalsFulfilled()
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Castle");
 	return false;
-}
-
-public func OnPlayerRelaunch()
-{
-	return true;
 }

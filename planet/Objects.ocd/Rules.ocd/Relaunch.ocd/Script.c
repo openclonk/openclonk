@@ -9,6 +9,7 @@
 	 * SetAllowPlayerRestart(bool on): whether a player can select restart in the rule menu.
 	 * SetPerformRestart(bool on): whether this rule actually handles the respawn [default true].
 	 * SetDefaultRelaunchCount(int r): the number of relaunches a player has [default nil == infinte].
+	 * SetInitialRelaunch(bool on): whether a relaunch on round start is done [default true].
 	The active relaunch rule can be obtained by the global function GetRelaunchRule(). The rule also
 	keeps track of player's actual number of relaunches which can be modified and accessed by:
 	 * SetPlayerRelaunchCount(int plr, int value): set player relaunch count.
@@ -117,6 +118,17 @@ public func SetDefaultRelaunchCount(int r)
 
 public func GetDefaultRelaunchCount() { return default_relaunch_count; }
 
+// Determines whether a relaunch is needed on round start.
+local initial_relaunch = true;
+
+public func SetInitialRelaunch(bool on)
+{
+	initial_relaunch = on;
+	return this;
+}
+
+public func GetInitialRelaunch() { return initial_relaunch; }
+
 
 // Determines ...
 local hold = false;
@@ -155,8 +167,8 @@ public func Activate(int plr)
 	// Only restart player if enabled unless this is a definition call.
 	if (this != Rule_Relaunch && !allow_restart_player)
 		return MessageWindow(this.Description, plr);
-	// Notify scenario.
-	if (GameCall("OnPlayerRestart", plr))
+	// Notify scenario and stop execution if handled by scenario.
+	if (GameCall("OnPlayerActivatedRestart", plr))
 		return;
 	// Remove the player's clonk, including contents.
 	var clonk = GetCrew(plr);
@@ -203,10 +215,14 @@ private func CheckDescription()
 public func InitializePlayer(int plr)
 {
 	_inherited(plr, ...);
-	// Scenario script callback.
 	relaunches[plr] = default_relaunch_count;
-	if (!GameCallEx("OnPlayerRelaunch", plr, false))
-		return DoRelaunch(plr, nil, nil, true);
+	// Check if relaunch is needed.
+	if (!initial_relaunch)
+		return;	
+	// Scenario script callback.
+	if (GameCall("OnPlayerRelaunch", plr, false))
+		return;
+	return DoRelaunch(plr, nil, nil, true);
 }
 
 public func OnClonkDeath(object clonk, int killer)
@@ -225,9 +241,7 @@ public func OnClonkDeath(object clonk, int killer)
 			return;
 		}
 	}
-	
 	GameCall("OnPlayerRelaunch", plr, true);
-	
 	return DoRelaunch(plr, clonk, nil);
 }
 
@@ -315,7 +329,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 		}
 		else
 		{
-			var base = GetRelaunchBase();
+			var base = GetRelaunchBase(plr, clonk);
 			if (!base)
 				return;
 			// Try to buy a crew member at the base.

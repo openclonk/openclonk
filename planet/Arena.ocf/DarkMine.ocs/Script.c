@@ -38,7 +38,8 @@ protected func Initialize()
 	
 	GetRelaunchRule()
 		->SetLastWeaponUse(false)
-		->SetFreeCrew(true);
+		->SetFreeCrew(true)
+		->SetRespawnDelay(4);
 	
 	// Rescale cave coordinates with map zoom and shuffle them.
 	var mapzoom = GetScenarioVal("MapZoom", "Landscape");
@@ -84,7 +85,8 @@ public func OnClonkLeftRelaunch(object clonk, int plr)
 {
 	// Players start in a random small cave, the cave depends on whether it is a relaunch.
 	var cave = [clonk->GetX(), clonk->GetY()];
-	for (var i=0; i<4; ++i) BlastFree(cave[0], cave[1], 13);
+	for (var i = 0; i < 4; ++i)
+		BlastFree(cave[0], cave[1], 13);
 
 	// Players start with a shovel, a pickaxe and two firestones.
 	clonk->CreateContents(Shovel);

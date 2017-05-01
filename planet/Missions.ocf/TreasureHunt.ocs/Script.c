@@ -23,6 +23,7 @@ func DoInit(int first_player)
 	relaunch_rule->SetDefaultRelaunchCount(nil);
 	relaunch_rule->SetAllowPlayerRestart(true);
 	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetInitialRelaunch(false);
 	ClearFreeRect(530,1135, 50,2);
 	if (g_last_stone_door) g_last_stone_door->DoDamage(170 - g_last_stone_door->GetDamage());
 	if (g_golden_idol)
@@ -181,10 +182,5 @@ func OnInvincibleDamage(object damaged_target)
 			Dialogue->MessageBoxAll("$MsgStoneDoorNoDamage$", observer, true);
 		}
 	}
-	return true;
-}
-
-public func OnPlayerRelaunch()
-{
 	return true;
 }
