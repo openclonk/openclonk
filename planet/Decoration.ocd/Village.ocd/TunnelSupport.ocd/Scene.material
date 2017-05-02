@@ -1,0 +1,21 @@
+material TunnelSupport 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            specular 0.2638509273529053 0.2638509273529053 0.2638509273529053 1.0 5.0
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture TunnelSupport.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
