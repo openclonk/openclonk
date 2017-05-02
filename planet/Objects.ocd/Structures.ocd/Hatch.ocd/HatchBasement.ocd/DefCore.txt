@@ -1,0 +1,15 @@
+[DefCore]
+id=HatchBasement
+Version=8,0
+Category=C4D_Structure
+Width=40
+Height=8
+Offset=-20,-4
+Vertices=5
+VertexX=0,-20,-20,20,20
+VertexY=0,-4,4,-4,4
+VertexFriction=100,100,100,100,100
+Mass=2000
+Exclusive=1
+Construction=1
+SolidMask=0,0,40,8,0,0
