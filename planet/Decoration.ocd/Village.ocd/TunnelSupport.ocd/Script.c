@@ -21,11 +21,11 @@ public func Extend(int percentage)
 
 	extension = percentage;
 
+	var height = 30 + (55 * percentage / 100);
 	percentage = 2500 * percentage / 100;
 	PlayAnimation("extend", 1, Anim_Const(percentage));
 
-	var height = 30 + (55 * percentage / 100);
-	SetShape(-15, -height/2, 30, height);
+	SetShape(-15, -15 + (30 - height), 30, height);
 }
 
 public func SaveScenarioObject(props)
