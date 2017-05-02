@@ -1,0 +1,11 @@
+[DefCore]
+id=MetalLadder
+Version=8,0
+Category=C4D_StaticBack
+Width=5
+Height=80
+Offset=-3,-40
+Vertices=3
+VertexX=0,0,0
+VertexY=0,-27,27
+Mass=4
