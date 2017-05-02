@@ -72,11 +72,11 @@ public func GetLastClonkRespawn() { return respawn_last_clonk; }
 
 
 // Determines the amount of time in the relaunch container.
-local relaunch_time = 36 * 10;
+local relaunch_time = 10; // seconds
 
 public func SetRespawnDelay(int delay)
 {
-	relaunch_time = delay * 36;
+	relaunch_time = delay;
 	return this;
 }
 
@@ -217,7 +217,7 @@ public func InitializePlayer(int plr)
 	_inherited(plr, ...);
 	relaunches[plr] = default_relaunch_count;
 	// Check if relaunch is needed.
-	if (!initial_relaunch)
+	if (!initial_relaunch || !perform_restart)
 		return;	
 	// Scenario script callback.
 	if (GameCall("OnPlayerRelaunch", plr, false))
@@ -249,13 +249,13 @@ private func RespawnAtBase(int plr, object clonk)
 {
 	var base = GetRelaunchBase(plr, clonk);
 	if (base)
-		return [base->GetX(), base->GetY() + base->GetDefHeight() / 2];
+		return [base->GetX(), base->GetY() + base->GetBottom()];
 	return;
 }
 
 private func TransferInventory(object from, object to)
 {
-	if(!from || !to) return;
+	if (!from || !to) return;
 	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
 	var i = from->ContentsCount(), contents;
 	while (i--)
@@ -352,7 +352,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	if (inventory_transfer)
 		TransferInventory(clonk, new_clonk);
 	
-	new_clonk->SetPosition(spawn[0], spawn[1], plr);
+	new_clonk->SetPosition(spawn[0], spawn[1] - new_clonk->GetBottom(), plr);
 	
 	if (!GetCursor(plr) || GetCursor(plr) == clonk)
 		SetCursor(plr, new_clonk);
@@ -360,7 +360,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	
 	if (relaunch_time)
 	{
-		var container = new_clonk->CreateObject(RelaunchContainer, 0, 0, plr);
+		var container = new_clonk->CreateObject(RelaunchContainer, 0, new_clonk->GetBottom(), plr);
 		container->SetRelaunchTime(relaunch_time, hold_crew);
 		container->StartRelaunch(new_clonk);
 	}
