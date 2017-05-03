@@ -18,6 +18,25 @@ func Construction()
 	return _inherited(...);
 }
 
+func Initialize()
+{
+	// If the hatch has not been properly combined with a basement, we might want to correct that
+	if (!GetBasement())
+	{
+		var basements = FindObjects(Find_AtRect(-1,0, 2,4), Find_Func("IsBasement"), Sort_Distance());
+		for (var basement in basements)
+		{
+			if (!basement->GetParent() && basement->GetWidth() == 40)
+			{
+				SetPosition(basement->GetX(), basement->GetY()-2);
+				basement->SetParent(this);
+				break;
+			}
+		}
+	}
+	return _inherited(...);
+}
+
 /*-- Callbacks --*/
 
 public func IsHammerBuildable() { return true; }
@@ -34,11 +53,6 @@ public func NoConstructionFlip() { return true; }
 public func ConstructionCombineWith() { return "IsBasement"; }
 
 public func ConstructionCombineDirection(object other) { return CONSTRUCTION_STICK_Top; }
-
-public func ConstructionCombineOffset(object other)
-{
-	return [0, 0];
-}
 
 public func CombineWith(object stick_to)
 {
