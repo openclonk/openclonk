@@ -594,9 +594,7 @@ C4ConsoleGUIState::C4ConsoleGUIState(C4ConsoleGUI *console) : viewport_area(null
 {
 }
 
-C4ConsoleGUIState::~C4ConsoleGUIState()
-{
-}
+C4ConsoleGUIState::~C4ConsoleGUIState() = default;
 
 void C4ConsoleGUIState::AddToolbarSpacer(int space)
 {
@@ -631,9 +629,9 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// stay valid over the lifetime of the application.
 	static int fake_argc = 1;
 	static const char *fake_argv[] = { "openclonk" };
-	application.reset(new QApplication(fake_argc, const_cast<char **>(fake_argv)));
+	application = std::make_unique<QApplication>(fake_argc, const_cast<char **>(fake_argv));
 	application->installTranslator(&qt_translator);
-	window.reset(new C4ConsoleQtMainWindow(app, this));
+	window = std::make_unique<C4ConsoleQtMainWindow>(app, this);
 	ui.setupUi(window.get());
 
 	// Setup some extra stuff that cannot be done easily in the designer
@@ -692,29 +690,29 @@ bool C4ConsoleGUIState::CreateConsoleWindow(C4AbstractApp *app)
 	// (none right now)
 
 	// Property editor
-	property_delegate_factory.reset(new C4PropertyDelegateFactory());
+	property_delegate_factory = std::make_unique<C4PropertyDelegateFactory>();
 	ui.propertyTable->setItemDelegateForColumn(1, property_delegate_factory.get());
 	ui.propertyEditAscendPathButton->setMaximumWidth(ui.propertyEditAscendPathButton->fontMetrics().boundingRect(ui.propertyEditAscendPathButton->text()).width() + 10);
 	ui.propertyTable->setDropIndicatorShown(true);
 	ui.propertyTable->setAcceptDrops(true);
-	property_name_delegate.reset(new C4PropertyNameDelegate());
+	property_name_delegate = std::make_unique<C4PropertyNameDelegate>();
 	ui.propertyTable->setItemDelegateForColumn(0, property_name_delegate.get());
 	ui.propertyTable->setMouseTracking(true);
 
 	// View models
-	property_model.reset(new C4ConsoleQtPropListModel(property_delegate_factory.get()));
+	property_model = std::make_unique<C4ConsoleQtPropListModel>(property_delegate_factory.get());
 	property_delegate_factory->SetPropertyModel(property_model.get());
 	property_name_delegate->SetPropertyModel(property_model.get());
 	QItemSelectionModel *m = ui.propertyTable->selectionModel();
 	ui.propertyTable->setModel(property_model.get());
 	delete m;
 	property_model->SetSelectionModel(ui.propertyTable->selectionModel());
-	object_list_model.reset(new C4ConsoleQtObjectListModel());
+	object_list_model = std::make_unique<C4ConsoleQtObjectListModel>();
 	m = ui.objectListView->selectionModel();
 	ui.objectListView->setModel(object_list_model.get());
 	delete m;
 	window->connect(ui.objectListView->selectionModel(), &QItemSelectionModel::selectionChanged, window.get(), &C4ConsoleQtMainWindow::OnObjectListSelectionChanged);
-	definition_list_model.reset(new C4ConsoleQtDefinitionListModel());
+	definition_list_model = std::make_unique<C4ConsoleQtDefinitionListModel>();
 	property_delegate_factory->SetDefinitionListModel(definition_list_model.get());
 	m = ui.creatorTreeView->selectionModel();
 	ui.creatorTreeView->setModel(definition_list_model.get());
@@ -852,12 +850,12 @@ static void SetComboItems(QComboBox *box, std::list<const char*> &items)
 {
 	QString text = box->lineEdit()->text(); // remember and restore current text
 	box->clear();
-	for (std::list<const char*>::iterator it = items.begin(); it != items.end(); it++)
+	for (auto & item : items)
 	{
-		if (!*it)
+		if (!item)
 			box->addItem("----------");
 		else
-			box->addItem(*it);
+			box->addItem(item);
 	}
 	box->lineEdit()->setText(text);
 }
@@ -1147,15 +1145,14 @@ bool C4ConsoleGUIState::CreateNewScenario(StdStrBuf *out_filename, bool *out_hos
 void C4ConsoleGUIState::InitWelcomeScreen()
 {
 	// Init links
-	ui.welcomeNewLabel->setText(QString("<a href=\"new\">%1</a>").arg(ui.welcomeNewLabel->text()));
-	ui.welcomeOpenLabel->setText(QString("<a href=\"open\">%1</a>").arg(ui.welcomeOpenLabel->text()));
-	ui.welcomeExploreUserPathLabel->setText(QString("<a href=\"exploreuserpath\">%1</a>").arg(ui.welcomeExploreUserPathLabel->text()));
+	ui.welcomeNewLabel->setText(QString(R"(<a href="new">%1</a>)").arg(ui.welcomeNewLabel->text()));
+	ui.welcomeOpenLabel->setText(QString(R"(<a href="open">%1</a>)").arg(ui.welcomeOpenLabel->text()));
+	ui.welcomeExploreUserPathLabel->setText(QString(R"(<a href="exploreuserpath">%1</a>)").arg(ui.welcomeExploreUserPathLabel->text()));
 	// Recently opened scenarios
 	bool any_file = false;
 	int recent_idx = ui.welcomeScrollLayout->indexOf(ui.welcomeRecentLabel);
-	for (int32_t i = 0; i < CFG_MaxEditorMRU; ++i)
+	for (auto filename : ::Config.Developer.RecentlyEditedSzenarios)
 	{
-		const char *filename = ::Config.Developer.RecentlyEditedSzenarios[i];
 		if (*filename && ::ItemExists(filename))
 		{
 			StdStrBuf basename(GetFilename(filename), true);
@@ -1174,7 +1171,7 @@ void C4ConsoleGUIState::InitWelcomeScreen()
 			ui.welcomeScrollLayout->insertWidget(++recent_idx, link);
 			link->setIndent(ui.welcomeOpenLabel->indent());
 			link->setTextInteractionFlags(ui.welcomeOpenLabel->textInteractionFlags());
-			link->setText(QString("<a href=\"open:%1\">%2</a>").arg(filename).arg(basename.getData())); // let's hope file names never contain "
+			link->setText(QString(R"(<a href="open:%1">%2</a>)").arg(filename).arg(basename.getData())); // let's hope file names never contain "
 			any_file = true;
 			window->connect(link, SIGNAL(linkActivated(QString)), window.get(), SLOT(WelcomeLinkActivated(QString)));
 		}

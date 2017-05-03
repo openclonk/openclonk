@@ -51,9 +51,7 @@ C4ConsoleQtDefinitionListModel::C4ConsoleQtDefinitionListModel()
 	ReInit();
 }
 
-C4ConsoleQtDefinitionListModel::~C4ConsoleQtDefinitionListModel()
-{
-}
+C4ConsoleQtDefinitionListModel::~C4ConsoleQtDefinitionListModel() = default;
 
 void C4ConsoleQtDefinitionListModel::EnsureInit()
 {
@@ -67,9 +65,9 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 {
 	// Re-fill definition model with all loaded definitions matching condition
 	// (TODO: Add conditional lists)
-	root.reset(new DefListNode());
+	root = std::make_unique<C4ConsoleQtDefinitionListModel::DefListNode>();
 	int32_t index = 0; C4Def *def;
-	while (def = ::Definitions.GetDef(index++))
+	while ((def = ::Definitions.GetDef(index++)))
 	{
 		// Ignore hidden defs
 		if (def->HideInCreator) continue;
