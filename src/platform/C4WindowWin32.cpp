@@ -171,7 +171,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	{
 		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
 		char c[5] = {0,0,0,0,0};
-		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
+		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, nullptr, nullptr))
 			return 0;
 		// GUI: forward
 		if (::pGUI->CharIn(c))
@@ -258,11 +258,11 @@ bool ConsoleHandleWin32KeyboardMessage(MSG *msg)
 		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), nullptr)) return true;
 		break;
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Up, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, nullptr)) return 0;
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Up, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, nullptr)) return false;
 		break;
 	case WM_SYSKEYDOWN:
 		if (msg->wParam == 18) break; // VK_MENU (Alt)
-		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), nullptr)) return 0;
+		if (Game.DoKeyboardInput(msg2scancode(msg), KEYEV_Down, !!(msg->lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(msg->lParam & 0x40000000), nullptr)) return false;
 		break;
 	}
 	return false;
@@ -571,15 +571,13 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-C4Window::C4Window (): Active(false), pSurface(0), hWindow(0)
+C4Window::C4Window (): Active(false), pSurface(nullptr), hWindow(nullptr)
 #ifdef WITH_QT_EDITOR
 , glwidget(nullptr)
 #endif
 {
 }
-C4Window::~C4Window ()
-{
-}
+C4Window::~C4Window () = default;
 
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
@@ -702,7 +700,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
 					::Console.hWindow,nullptr,pApp->GetInstance(),nullptr);
 		renderwnd = hWindow;
-		return hWindow ? this : 0;
+		return hWindow ? this : nullptr;
 	}
 	else if (windowKind == W_Control)
 	{
@@ -856,9 +854,7 @@ C4AbstractApp::C4AbstractApp() :
 #endif
 }
 
-C4AbstractApp::~C4AbstractApp()
-{
-}
+C4AbstractApp::~C4AbstractApp() = default;
 
 bool C4AbstractApp::Init(int argc, char * argv[])
 {
@@ -890,9 +886,9 @@ bool C4AbstractApp::FlushMessages()
 
 void C4AbstractApp::SetLastErrorFromOS()
 {
-	LPWSTR buffer = 0;
+	LPWSTR buffer = nullptr;
 	FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-		0, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
+		nullptr, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
 	sLastError = WStrToString(buffer);
 	LocalFree(buffer);
 }
@@ -917,7 +913,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
 	StdStrBuf Mon;
 	if (iMonitor)
-		Mon.Format("\\\\.\\Display%d", iMonitor+1);
+		Mon.Format(R"(\\.\Display%d)", iMonitor+1);
 	// check if indexed mode exists
 	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode))
 	{
@@ -977,7 +973,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 		}
 		StdStrBuf Mon;
 		if (iMonitor)
-			Mon.Format("\\\\.\\Display%d", iMonitor+1);
+			Mon.Format(R"(\\.\Display%d)", iMonitor+1);
 
 		ZeroMemory(&dmode, sizeof(dmode));
 		dmode.dmSize = sizeof(dmode);
@@ -1042,7 +1038,7 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate
 
 void C4AbstractApp::MessageDialog(const char * message)
 {
-	MessageBoxW(0, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
+	MessageBoxW(nullptr, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
 }
 
 // Clipboard functions
@@ -1054,7 +1050,7 @@ bool C4AbstractApp::Copy(const std::string &text, bool fClipboard)
 	if (!OpenClipboard(pWindow ? pWindow->hWindow : nullptr)) return false;
 	// must empty the global clipboard, so the application clipboard equals the Windows clipboard
 	EmptyClipboard();
-	int size = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), text.size() + 1, 0, 0);
+	int size = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), text.size() + 1, nullptr, 0);
 	HANDLE hglbCopy = GlobalAlloc(GMEM_MOVEABLE, size * sizeof(wchar_t));
 	if (hglbCopy == nullptr) { CloseClipboard(); return false; }
 	// lock the handle and copy the text to the buffer.

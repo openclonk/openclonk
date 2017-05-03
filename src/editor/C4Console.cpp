@@ -56,9 +56,7 @@ C4Console::C4Console(): C4ConsoleGUI()
 #endif
 }
 
-C4Console::~C4Console()
-{
-}
+C4Console::~C4Console() = default;
 
 C4Window * C4Console::Init(C4AbstractApp * pApp)
 {
@@ -416,14 +414,14 @@ void C4Console::ClearPointers(C4Object *pObj)
 void C4Console::Default()
 {
 	EditCursor.Default();
-	PropertyDlgObject = 0;
+	PropertyDlgObject = nullptr;
 	ToolsDlg.Default();
 }
 
 void C4Console::Clear()
 {
 	if (pSurface) delete pSurface;
-	pSurface = 0;
+	pSurface = nullptr;
 
 	C4Window::Clear();
 	C4ConsoleGUI::DeleteConsoleWindow();
@@ -635,8 +633,8 @@ std::list<const char *> C4Console::GetScriptSuggestions(C4PropList *target, Rece
 		functions.insert(functions.begin(), nullptr);
 		// add pointers into string buffer list
 		// do not iterate with for (auto i : mru) because this would copy the buffer and add stack pointers
-		for (auto i = mru.begin(); i != mru.end(); ++i)
-			functions.insert(functions.begin(), i->getData());
+		for (const auto & i : mru)
+			functions.insert(functions.begin(), i.getData());
 	}
 	return functions;
 }
@@ -647,7 +645,7 @@ void C4Console::RegisterRecentInput(const char *input, RecentScriptInputLists se
 	// remove previous copy (i.e.: Same input just gets pushed to top)
 	mru.remove(StdCopyStrBuf(input));
 	// register to list
-	mru.push_back(StdCopyStrBuf(input));
+	mru.emplace_back(input);
 	// limit history length
 	if (static_cast<int32_t>(mru.size()) > ::Config.Developer.MaxScriptMRU)
 		mru.erase(mru.begin());
@@ -669,7 +667,7 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
 void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t, const char *, C4ConsoleGUI::ClientOperation) {}
 void C4ConsoleGUI::AddNetMenu() {}
 void C4ConsoleGUI::ToolsDlgClose() {}
-bool C4ConsoleGUI::ClearLog() {return 0;}
+bool C4ConsoleGUI::ClearLog() {return false;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
@@ -683,11 +681,11 @@ bool C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp * pApp)
 void C4ConsoleGUI::DeleteConsoleWindow() {}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
-bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
-bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, DWORD, bool) {return 0;}
-bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
+bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return false;}
+bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, DWORD, bool) {return false;}
+bool C4ConsoleGUI::Message(char const*, bool) {return false;}
 void C4ConsoleGUI::Out(char const*) {}
-bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}
+bool C4ConsoleGUI::PropertyDlgOpen() {return false;}
 void C4ConsoleGUI::PropertyDlgClose() {}
 void C4ConsoleGUI::PropertyDlgUpdate(class C4EditCursorSelection &, bool) {}
 void C4ConsoleGUI::RecordingEnabled() {}
@@ -696,22 +694,22 @@ void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*>&) {}
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
 void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
-bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}
+bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return false;}
 void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectBackMaterial(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectBackTexture(C4ToolsDlg*, char const*) {}
-bool C4ConsoleGUI::UpdateModeCtrls(int) {return 0;}
+bool C4ConsoleGUI::UpdateModeCtrls(int) {return false;}
 void C4ToolsDlg::EnableControls() {}
 void C4ToolsDlg::InitGradeCtrl() {}
 void C4ToolsDlg::NeedPreviewUpdate() {}
-bool C4ToolsDlg::PopMaterial() {return 0;}
-bool C4ToolsDlg::PopTextures() {return 0;}
+bool C4ToolsDlg::PopMaterial() {return false;}
+bool C4ToolsDlg::PopTextures() {return false;}
 void C4ToolsDlg::UpdateIFTControls() {}
 void C4ToolsDlg::UpdateLandscapeModeCtrls() {}
 void C4ToolsDlg::UpdateTextures() {}
 void C4ToolsDlg::UpdateToolCtrls() {}
-bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
-bool C4Viewport::TogglePlayerLock() {return 0;}
+bool C4Viewport::ScrollBarsByViewPosition() {return false;}
+bool C4Viewport::TogglePlayerLock() {return false;}
 #include "editor/C4ConsoleGUICommon.h"
 #endif

@@ -27,11 +27,11 @@
 
 #include <zlib.h>
 #include "zlib/gzio.h"
-#include <stdio.h>
+#include <cstdio>
 
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <assert.h>
+#include <cassert>
 
 CStdFile::CStdFile()
 {

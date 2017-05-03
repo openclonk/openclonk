@@ -92,7 +92,7 @@ namespace C4GUI
 		rcBounds.Wdt=40; rcBounds.Hgt=7;
 		// key bindings
 		C4CustomKey::CodeList Keys;
-		Keys.push_back(C4KeyCodeEx(K_UP));
+		Keys.emplace_back(K_UP);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Up(Keys);
@@ -101,7 +101,7 @@ namespace C4GUI
 		                             new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeySelUp), C4CustomKey::PRIO_Context);
 
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_DOWN));
+		Keys.emplace_back(K_DOWN);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Down(Keys);
@@ -110,7 +110,7 @@ namespace C4GUI
 		                               new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeySelDown), C4CustomKey::PRIO_Context);
 
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_RIGHT));
+		Keys.emplace_back(K_RIGHT);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Right(Keys);
@@ -119,7 +119,7 @@ namespace C4GUI
 		                               new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeySubmenu), C4CustomKey::PRIO_Context);
 
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_LEFT));
+		Keys.emplace_back(K_LEFT);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Left(Keys);
@@ -128,7 +128,7 @@ namespace C4GUI
 		                            new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeyBack), C4CustomKey::PRIO_Context);
 
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_ESCAPE));
+		Keys.emplace_back(K_ESCAPE);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Cancel(Keys);
@@ -137,7 +137,7 @@ namespace C4GUI
 		                             new C4KeyCB<ContextMenu>(*this, &ContextMenu::KeyAbort), C4CustomKey::PRIO_Context);
 
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_RETURN));
+		Keys.emplace_back(K_RETURN);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Ok(Keys);
@@ -589,12 +589,12 @@ namespace C4GUI
 	{
 		// reg keys for pressing the context button
 		C4CustomKey::CodeList ContextKeys;
-		ContextKeys.push_back(C4KeyCodeEx(K_RIGHT));
-		ContextKeys.push_back(C4KeyCodeEx(K_DOWN));
-		ContextKeys.push_back(C4KeyCodeEx(K_SPACE));
-		ContextKeys.push_back(C4KeyCodeEx(K_RIGHT, KEYS_Alt));
-		ContextKeys.push_back(C4KeyCodeEx(K_DOWN, KEYS_Alt));
-		ContextKeys.push_back(C4KeyCodeEx(K_SPACE, KEYS_Alt));
+		ContextKeys.emplace_back(K_RIGHT);
+		ContextKeys.emplace_back(K_DOWN);
+		ContextKeys.emplace_back(K_SPACE);
+		ContextKeys.emplace_back(K_RIGHT, KEYS_Alt);
+		ContextKeys.emplace_back(K_DOWN, KEYS_Alt);
+		ContextKeys.emplace_back(K_SPACE, KEYS_Alt);
 		pKeyContext = new C4KeyBinding(ContextKeys, "GUIContextButtonPress", KEYSCOPE_Gui,
 		                               new ControlKeyCB<ContextButton>(*this, &ContextButton::KeyContext), C4CustomKey::PRIO_Ctrl);
 	}

@@ -515,15 +515,15 @@ public:
 	HBITMAP hbmStatic;
 	HBITMAP hbmExact;
 	
-	State(C4ToolsDlg *toolsDlg): C4ConsoleGUI::InternalState<class C4ToolsDlg>(toolsDlg), hDialog(0),
-		hbmBrush(0), hbmBrush2(0),
-		hbmLine(0), hbmLine2(0),
-		hbmRect(0), hbmRect2(0),
-		hbmFill(0), hbmFill2(0),
-		hbmPicker(0), hbmPicker2(0),
-		hbmDynamic(0),
-		hbmStatic(0),
-		hbmExact(0)
+	State(C4ToolsDlg *toolsDlg): C4ConsoleGUI::InternalState<class C4ToolsDlg>(toolsDlg), hDialog(nullptr),
+		hbmBrush(nullptr), hbmBrush2(nullptr),
+		hbmLine(nullptr), hbmLine2(nullptr),
+		hbmRect(nullptr), hbmRect2(nullptr),
+		hbmFill(nullptr), hbmFill2(nullptr),
+		hbmPicker(nullptr), hbmPicker2(nullptr),
+		hbmDynamic(nullptr),
+		hbmStatic(nullptr),
+		hbmExact(nullptr)
 	{
 		pPreviewWindow = nullptr;
 	}
@@ -553,19 +553,19 @@ public:
 	void Clear()
 	{
 		// Unload bitmaps
-		if (hbmBrush) { DeleteObject(hbmBrush); hbmBrush = 0; }
-		if (hbmLine) { DeleteObject(hbmLine); hbmLine = 0; }
-		if (hbmRect) { DeleteObject(hbmRect); hbmRect = 0; }
-		if (hbmFill) { DeleteObject(hbmFill); hbmFill = 0; }
-		if (hbmPicker) { DeleteObject(hbmPicker); hbmPicker = 0; }
-		if (hbmBrush2) { DeleteObject(hbmBrush2); hbmBrush2 = 0; }
-		if (hbmLine2) { DeleteObject(hbmLine2); hbmLine2 = 0; }
-		if (hbmRect2) { DeleteObject(hbmRect2); hbmRect2 = 0; }
-		if (hbmFill2) { DeleteObject(hbmFill2); hbmFill2 = 0; }
-		if (hbmPicker2) { DeleteObject(hbmPicker2); hbmPicker2 = 0; }
-		if (hbmDynamic) { DeleteObject(hbmDynamic); hbmDynamic = 0; }
-		if (hbmStatic) { DeleteObject(hbmStatic); hbmStatic = 0; }
-		if (hbmExact) { DeleteObject(hbmExact); hbmExact = 0; }
+		if (hbmBrush) { DeleteObject(hbmBrush); hbmBrush = nullptr; }
+		if (hbmLine) { DeleteObject(hbmLine); hbmLine = nullptr; }
+		if (hbmRect) { DeleteObject(hbmRect); hbmRect = nullptr; }
+		if (hbmFill) { DeleteObject(hbmFill); hbmFill = nullptr; }
+		if (hbmPicker) { DeleteObject(hbmPicker); hbmPicker = nullptr; }
+		if (hbmBrush2) { DeleteObject(hbmBrush2); hbmBrush2 = nullptr; }
+		if (hbmLine2) { DeleteObject(hbmLine2); hbmLine2 = nullptr; }
+		if (hbmRect2) { DeleteObject(hbmRect2); hbmRect2 = nullptr; }
+		if (hbmFill2) { DeleteObject(hbmFill2); hbmFill2 = nullptr; }
+		if (hbmPicker2) { DeleteObject(hbmPicker2); hbmPicker2 = nullptr; }
+		if (hbmDynamic) { DeleteObject(hbmDynamic); hbmDynamic = nullptr; }
+		if (hbmStatic) { DeleteObject(hbmStatic); hbmStatic = nullptr; }
+		if (hbmExact) { DeleteObject(hbmExact); hbmExact = nullptr; }
 		if (pPreviewWindow)
 		{
 			delete pPreviewWindow;
@@ -766,7 +766,7 @@ bool C4ConsoleGUI::Win32DialogMessageHandling(MSG *msg)
 
 void C4ConsoleGUI::SetCursor(Cursor cursor)
 {
-	::SetCursor(LoadCursor(0,IDC_WAIT));
+	::SetCursor(LoadCursor(nullptr,IDC_WAIT));
 }
 
 bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
@@ -980,8 +980,8 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	ofn.Flags=dwFlags;
 
 	bool fResult;
-	size_t l = GetCurrentDirectoryW(0,0);
-	wchar_t *wd = new wchar_t[l];
+	size_t l = GetCurrentDirectoryW(0,nullptr);
+	auto *wd = new wchar_t[l];
 	GetCurrentDirectoryW(l,wd);
 	if (fSave)
 		fResult = !!GetSaveFileNameW(&ofn);
@@ -990,9 +990,9 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	// Reset working directory to exe path as Windows file dialog might have changed it
 	SetCurrentDirectoryW(wd);
 	delete[] wd;
-	len = WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, nullptr, 0, 0, 0);
+	len = WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, nullptr, 0, nullptr, nullptr);
 	sFilename->SetLength(len - 1);
-	WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, sFilename->getMData(), sFilename->getSize(), 0, 0);
+	WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, sFilename->getMData(), sFilename->getSize(), nullptr, nullptr);
 	return fResult;
 }
 
@@ -1071,12 +1071,12 @@ void C4ConsoleGUI::PropertyDlgClose()
 
 static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 {
-	for (std::list<const char*>::iterator it = items.begin(); it != items.end(); it++)
+	for (auto & item : items)
 	{
-		if (!*it)
+		if (!item)
 			SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"----------");
 		else
-			SendMessage(hCombo,CB_ADDSTRING,0,GetWideLPARAM(*it));
+			SendMessage(hCombo,CB_ADDSTRING,0,GetWideLPARAM(item));
 	}
 }
 
@@ -1139,12 +1139,12 @@ public:
 		pSurface = new C4Surface(&Application, this);
 	}
 
-	~C4ConsoleGUIPreviewWindow()
+	~C4ConsoleGUIPreviewWindow() override
 	{
 		delete pSurface;
 	}
 
-	virtual void Close() {}
+	void Close() override {}
 };
 
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)

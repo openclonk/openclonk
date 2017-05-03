@@ -31,7 +31,7 @@
 #include "lib/C4Random.h"
 #include "lib/StdColors.h"
 
-#include <ctype.h>
+#include <cctype>
 #include <algorithm>
 
 C4Texture::C4Texture()
@@ -279,7 +279,7 @@ int32_t C4TextureMap::LoadMap(C4Group &hGroup, const char *szEntryName, bool *pO
 			std::string::const_iterator separator = std::find(value.cbegin(), value.cend(), '-');
 			if (separator == value.cend())
 			{
-				DebugLogF("TexMap line %u: Texture name \"%s\" is invalid (missing \"-\")", static_cast<unsigned>(line), value.c_str());
+				DebugLogF(R"(TexMap line %u: Texture name "%s" is invalid (missing "-"))", static_cast<unsigned>(line), value.c_str());
 				continue;
 			}
 
@@ -326,9 +326,8 @@ bool C4TextureMap::SaveMap(C4Group &hGroup, const char *szEntryName)
 	if (fOverloadTextures) sTexMapFile.Append("# Import textures from global file as well" LineFeed "OverloadTextures" LineFeed);
 	sTexMapFile.Append(LineFeed);
 	// add entries
-	for (auto iter = Order.begin(); iter != Order.end(); ++iter)
+	for (auto i : Order)
 	{
-		int32_t i = *iter;
 		if (!Entry[i].isNull())
 		{
 			// compose line

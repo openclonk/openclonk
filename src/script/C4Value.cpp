@@ -158,7 +158,7 @@ StdStrBuf C4Value::GetDataString(int depth, const C4PropListStatic *ignore_refer
 		return DataString;
 	}
 	case C4V_String:
-		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
+		return (Data.Str && Data.Str->GetCStr()) ? FormatString(R"("%s")", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
 	{
 		if (depth <= 0 && Data.Array->GetSize())
@@ -210,8 +210,8 @@ StdStrBuf C4Value::ToJSON(int depth, const C4PropListStatic *ignore_reference_pa
 		{
 			StdStrBuf str = Data.Str->GetData();
 			str.EscapeString();
-			str.Replace("\n", "\\n");
-			return FormatString("\"%s\"", str.getData());
+			str.Replace("\n", R"(\n)");
+			return FormatString(R"("%s")", str.getData());
 		}
 		else
 		{
@@ -282,8 +282,8 @@ void C4Value::Denumerate(class C4ValueNumbers * numbers)
 
 void C4ValueNumbers::Denumerate()
 {
-	for (std::vector<C4Value>::iterator i = LoadedValues.begin(); i != LoadedValues.end(); ++i)
-		i->Denumerate(this);
+	for (auto & LoadedValue : LoadedValues)
+		LoadedValue.Denumerate(this);
 }
 
 uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
@@ -508,7 +508,7 @@ void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
 			// Read entries
 			try
 			{
-				LoadedValues.push_back(C4Value());
+				LoadedValues.emplace_back();
 				CompileValue(pComp, &LoadedValues.back());
 			}
 			catch (StdCompiler::NotFoundException *pEx)

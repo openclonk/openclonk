@@ -22,7 +22,7 @@
 
 #include <limits>
 
-const C4ObjectPtr C4ObjectPtr::Null(0);
+const C4ObjectPtr C4ObjectPtr::Null(nullptr);
 
 void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 {

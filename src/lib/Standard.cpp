@@ -121,7 +121,7 @@ int32_t StrToI32(const char *str, int base, const char **scan_end)
 		result *= base;
 		result += value;
 	}
-	if (scan_end != 0L) *scan_end = s;
+	if (scan_end != nullptr) *scan_end = s;
 	result *= sign;
 	return result;
 }

@@ -47,9 +47,7 @@ C4FileSelDlg::ListItem::ListItem(const char *szFilename) : C4GUI::Control(C4Rect
 	if (szFilename) sFilename.Copy(szFilename); else sFilename.Clear();
 }
 
-C4FileSelDlg::ListItem::~ListItem()
-{
-}
+C4FileSelDlg::ListItem::~ListItem() = default;
 
 // ---------------------------------------------------
 // C4FileSelDlg::DefaultListItem

@@ -417,7 +417,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	MaskMaterial=MCVehic;
 	// Update linked list
-	Next = 0;
+	Next = nullptr;
 	Prev = Last;
 	Last = this;
 	if (Prev) Prev->Next = this;
@@ -462,8 +462,8 @@ void C4SolidMask::PutSolidMasks()
 	}
 }
 
-C4SolidMask * C4SolidMask::First = 0;
-C4SolidMask * C4SolidMask::Last = 0;
+C4SolidMask * C4SolidMask::First = nullptr;
+C4SolidMask * C4SolidMask::Last = nullptr;
 
 
 bool C4SolidMask::CheckConsistency()

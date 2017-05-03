@@ -16,9 +16,9 @@
 #include "C4Include.h"
 #include "lib/StdCompiler.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
 #include "lib/C4Log.h"
 
 // *** StdCompiler
@@ -393,17 +393,17 @@ void StdCompilerINIWrite::WriteEscaped(const char *szString, const char *pEnd)
 			fLastNumEscape = false;
 			switch (*pPos)
 			{
-			case '\a': Buf.Append("\\a"); break;
-			case '\b': Buf.Append("\\b"); break;
-			case '\f': Buf.Append("\\f"); break;
-			case '\n': Buf.Append("\\n"); break;
-			case '\r': Buf.Append("\\r"); break;
-			case '\t': Buf.Append("\\t"); break;
-			case '\v': Buf.Append("\\v"); break;
-			case '\"': Buf.Append("\\\""); break;
-			case '\\': Buf.Append("\\\\"); break;
+			case '\a': Buf.Append(R"(\a)"); break;
+			case '\b': Buf.Append(R"(\b)"); break;
+			case '\f': Buf.Append(R"(\f)"); break;
+			case '\n': Buf.Append(R"(\n)"); break;
+			case '\r': Buf.Append(R"(\r)"); break;
+			case '\t': Buf.Append(R"(\t)"); break;
+			case '\v': Buf.Append(R"(\v)"); break;
+			case '\"': Buf.Append(R"(\")"); break;
+			case '\\': Buf.Append(R"(\\)"); break;
 			default:
-				Buf.AppendFormat("\\%o", *reinterpret_cast<const unsigned char *>(pPos));
+				Buf.AppendFormat(R"(\%o)", *reinterpret_cast<const unsigned char *>(pPos));
 				fLastNumEscape = true;
 			}
 			// Set pointer
@@ -497,7 +497,7 @@ void StdCompilerINIRead::NameEnd(bool fBreak)
 		{
 			// Report unused entries
 			if (pNode->Pos && !fBreak)
-				Warn("Unexpected %s \"%s\"!", pNode->Section ? "section" : "value", pNode->Name.getData());
+				Warn(R"(Unexpected %s "%s"!)", pNode->Section ? "section" : "value", pNode->Name.getData());
 			// delete node
 			pNext = pNode->NextChild;
 			delete pNode;
@@ -587,7 +587,7 @@ int StdCompilerINIRead::NameCount(const char *szName)
 const char *StdCompilerINIRead::GetNameByIndex(size_t idx) const 
 {
 	// not in virtual naming
-	if (iDepth > iRealDepth || !pName) return 0;
+	if (iDepth > iRealDepth || !pName) return nullptr;
 	// count within current name
 	NameNode *pNode;
 	for (pNode = pName->FirstChild; pNode; pNode = pNode->NextChild)
@@ -732,11 +732,11 @@ StdStrBuf StdCompilerINIRead::getPosition() const
 	if (pPos)
 		return FormatString("line %d", getLineNumberOfPos(pPos));
 	else if (iDepth == iRealDepth)
-		return FormatString(pName->Section ? "section \"%s\", after line %d" : "value \"%s\", line %d", pName->Name.getData(), getLineNumberOfPos(pName->Pos));
+		return FormatString(pName->Section ? R"(section "%s", after line %d)" : R"(value "%s", line %d)", pName->Name.getData(), getLineNumberOfPos(pName->Pos));
 	else if (iRealDepth)
-		return FormatString("missing value/section \"%s\" inside section \"%s\" (line %d)", NotFoundName.getData(), pName->Name.getData(), getLineNumberOfPos(pName->Pos));
+		return FormatString(R"(missing value/section "%s" inside section "%s" (line %d))", NotFoundName.getData(), pName->Name.getData(), getLineNumberOfPos(pName->Pos));
 	else
-		return FormatString("missing value/section \"%s\"", NotFoundName.getData());
+		return FormatString(R"(missing value/section "%s")", NotFoundName.getData());
 }
 
 void StdCompilerINIRead::Begin()

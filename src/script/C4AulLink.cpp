@@ -47,11 +47,11 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 {
 	// resolve local appends
 	if (State != ASS_PREPARSED) return false;
-	for (std::list<StdCopyStrBuf>::iterator a = Appends.begin(); a != Appends.end(); ++a)
+	for (auto & Append : Appends)
 	{
-		if (*a != "*" || !rDefs)
+		if (Append != "*" || !rDefs)
 		{
-			C4Def *Def = rDefs ? rDefs->GetByName(*a) : nullptr;
+			C4Def *Def = rDefs ? rDefs->GetByName(Append) : nullptr;
 			if (Def)
 			{
 				DoAppend(Def);
@@ -61,7 +61,7 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 				// save id in buffer because AulWarn will use the buffer of C4IdText
 				// to get the id of the object in which the error occurs...
 				// (stupid static buffers...)
-				Warn("#appendto %s not found", a->getData());
+				Warn("#appendto %s not found", Append.getData());
 			}
 		}
 		else

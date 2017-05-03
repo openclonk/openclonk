@@ -185,7 +185,7 @@ C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 	// search own list
 	C4PropList *pObj = C4PropListNumbered::GetByNumber(iNumber);
 	if (pObj) return pObj->GetObject();
-	return 0;
+	return nullptr;
 }
 
 C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)

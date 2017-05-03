@@ -135,9 +135,8 @@ void C4PlayerControlDefs::MergeFrom(const C4PlayerControlDefs &Src)
 	// Clear previous defs if specified in merge set
 	if (Src.clear_previous) Defs.clear();
 	// copy all defs from source file; overwrite defs of same name if found
-	for (DefVecImpl::const_iterator i = Src.Defs.begin(); i != Src.Defs.end(); ++i)
+	for (const auto & SrcDef : Src.Defs)
 	{
-		const C4PlayerControlDef &SrcDef = *i;
 		// overwrite if def of same name existed
 		int32_t iPrevIdx = GetControlIndexByIdentifier(SrcDef.GetIdentifier());
 		if (iPrevIdx != CON_None)
@@ -285,9 +284,8 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	iControl = pControlDefs->GetControlIndexByIdentifier(sControlName.getData());
 	// resolve keys
 	KeyComboVec NewCombo;
-	for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i)
+	for (auto & rKeyComboItem : KeyCombo)
 	{
-		KeyComboItem &rKeyComboItem = *i;
 		const char *szKeyName = rKeyComboItem.sKeyName.getData();
 		// check if this is a key reference. A key reference must be preceded by CON_
 		// it may also be preceded by modifiers (Shift+), which are already set in rKeyComboItem.Key.dwShift
@@ -316,9 +314,8 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 				DWORD ref_shift = rKeyComboItem.Key.dwShift;
 				if (ref_shift)
 				{
-					for (KeyComboVec::iterator j = pRefAssignment->KeyCombo.begin(); j != pRefAssignment->KeyCombo.end(); ++j)
+					for (auto assignment_combo_item : pRefAssignment->KeyCombo)
 					{
-						KeyComboItem assignment_combo_item = *j;
 						assignment_combo_item.Key.dwShift |= ref_shift;
 						NewCombo.push_back(assignment_combo_item);
 					}
@@ -340,7 +337,7 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 			// non-reference: check if the assignment was valid
 #ifndef USE_CONSOLE
 			if (rKeyComboItem.Key == KEY_Default)
-				LogF("WARNING: Control %s of set %s contains undefined key \"%s\".", GetControlName(), pParentSet->GetName(), szKeyName);
+				LogF(R"(WARNING: Control %s of set %s contains undefined key "%s".)", GetControlName(), pParentSet->GetName(), szKeyName);
 #endif
 			// ...and just keep this item.
 			NewCombo.push_back(rKeyComboItem);
@@ -352,16 +349,16 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	if (KeyCombo.size() > 1 && !fComboIsSequence)
 	{
 		int32_t shift = 0;
-		for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i)
+		for (auto & i : KeyCombo)
 		{
-			if (i->Key.Key == K_CONTROL_L || i->Key.Key == K_CONTROL_R) shift |= KEYS_Control;
-			if (i->Key.Key == K_SHIFT_L || i->Key.Key == K_SHIFT_R) shift |= KEYS_Shift;
-			shift |= i->Key.dwShift;
+			if (i.Key.Key == K_CONTROL_L || i.Key.Key == K_CONTROL_R) shift |= KEYS_Control;
+			if (i.Key.Key == K_SHIFT_L || i.Key.Key == K_SHIFT_R) shift |= KEYS_Shift;
+			shift |= i.Key.dwShift;
 		}
-		for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i) i->Key.dwShift |= shift;
+		for (auto & i : KeyCombo) i.Key.dwShift |= shift;
 	}
 	// remove control/shift duplications
-	for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i) i->Key.FixShiftKeys();
+	for (auto & i : KeyCombo) i.Key.FixShiftKeys();
 	// the trigger key is always last of the chain
 	if (KeyCombo.size()) TriggerKey = KeyCombo.back().Key; else TriggerKey = C4KeyCodeEx();
 	// done
@@ -379,8 +376,8 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 		C4TimeMilliseconds tKeyLast = C4TimeMilliseconds::Now();
 		// combo is a sequence: The last keys of RecentKeys must match the sequence
 		// the last ComboKey is the TriggerKey, which is omitted because it has already been matched and is not to be found in RecentKeys yet
-		KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1;
-		for (C4PlayerControlRecentKeyList::const_reverse_iterator ri = RecentKeys.rbegin(); i!=KeyCombo.rend(); ++ri)
+		auto i = KeyCombo.rbegin()+1;
+		for (auto ri = RecentKeys.rbegin(); i!=KeyCombo.rend(); ++ri)
 		{
 			// no more keys pressed but combo didn't end? -> no combo match
 			if (ri == RecentKeys.rend()) return false;
@@ -403,13 +400,11 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 	else
 	{
 		// combo requires keys to be down simultanuously: check that all keys of the combo are in the down-list
-		for (KeyComboVec::const_iterator i = KeyCombo.begin(); i!=KeyCombo.end(); ++i)
+		for (const auto & k : KeyCombo)
 		{
-			const KeyComboItem &k = *i;
 			bool fFound = false;
-			for (C4PlayerControlRecentKeyList::const_iterator di = DownKeys.begin(); di!=DownKeys.end(); ++di)
+			for (const auto & dk : DownKeys)
 			{
-				const C4PlayerControlRecentKey &dk = *di;
 				if (dk.matched_key == k.Key) { fFound = true; break; }
 			}
 			if (!fFound) return false;
@@ -517,9 +512,8 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, MergeMode merge_mode)
 {
 	// take over all assignments defined in Src
-	for (C4PlayerControlAssignmentVec::const_iterator i = Src.Assignments.begin(); i != Src.Assignments.end(); ++i)
+	for (const auto & SrcAssignment : Src.Assignments)
 	{
-		const C4PlayerControlAssignment &SrcAssignment = *i;
 		bool fIsReleaseKey = !!(SrcAssignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
 		// overwrite same def and release key state
 		if (merge_mode != MM_LowPrio && SrcAssignment.IsOverrideAssignments())
@@ -546,18 +540,18 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 		{
 			// if this is low priority, another override control kills this
 			bool any_override = false;
-			for (C4PlayerControlAssignmentVec::iterator j = Assignments.begin(); j != Assignments.end(); ++j)
-				if (SEqual((*j).GetControlName(), SrcAssignment.GetControlName()))
+			for (auto & Assignment : Assignments)
+				if (SEqual(Assignment.GetControlName(), SrcAssignment.GetControlName()))
 				{
-					bool fSelfIsReleaseKey = !!((*j).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
+					bool fSelfIsReleaseKey = !!(Assignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
 					if (fSelfIsReleaseKey == fIsReleaseKey)
 					{
 						any_override = true;
 						// config overloads just change the key of the inherited assignment
 						if (merge_mode == MM_ConfigOverload)
 						{
-							(*j).CopyKeyFrom(SrcAssignment);
-							(*j).SetInherited(false);
+							Assignment.CopyKeyFrom(SrcAssignment);
+							Assignment.SetInherited(false);
 						}
 						break;
 					}
@@ -577,7 +571,7 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::CreateAssignmentForControl(const char *control_name)
 {
-	Assignments.push_back(C4PlayerControlAssignment());
+	Assignments.emplace_back();
 	Assignments.back().SetControlName(control_name);
 	return &Assignments.back();
 }
@@ -595,12 +589,12 @@ void C4PlayerControlAssignmentSet::RemoveAssignmentByControlName(const char *con
 bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 {
 	// reset all resolved flags to allow re-resolve after overloads
-	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
-		(*i).ResetRefsResolved();
+	for (auto & Assignment : Assignments)
+		Assignment.ResetRefsResolved();
 	// resolve in order; ignore already resolved because they might have been resolved by cross reference
-	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
-		if (!(*i).IsRefsResolved())
-			if (!(*i).ResolveRefs(this, pDefs))
+	for (auto & Assignment : Assignments)
+		if (!Assignment.IsRefsResolved())
+			if (!Assignment.ResolveRefs(this, pDefs))
 				return false;
 	return true;
 }
@@ -620,22 +614,22 @@ C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByIndex(in
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlName(const char *szControlName)
 {
-	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
-		if (SEqual((*i).GetControlName(), szControlName))
+	for (auto & Assignment : Assignments)
+		if (SEqual(Assignment.GetControlName(), szControlName))
 			// We don't like release keys... (2do)
-			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
-				return &*i;
+			if (!(Assignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
+				return &Assignment;
 	return nullptr;
 }
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int32_t control)
 {
 	// TODO: Might want to stuff this into a vector indexed by control for faster lookup
-	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
-		if ((*i).GetControl() == control)
+	for (auto & Assignment : Assignments)
+		if (Assignment.GetControl() == control)
 			// We don't like release keys... (2do)
-			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
-				return &*i;
+			if (!(Assignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
+				return &Assignment;
 	return nullptr;
 }
 
@@ -649,9 +643,8 @@ void C4PlayerControlAssignmentSet::GetAssignmentsByKey(const C4PlayerControlDefs
 {
 	assert(pOutVec);
 	// primary match by TriggerKey (todo: Might use a hash map here if matching speed becomes an issue due to large control sets)
-	for (C4PlayerControlAssignmentVec::const_iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+	for (const auto & rAssignment : Assignments)
 	{
-		const C4PlayerControlAssignment &rAssignment = *i;
 		const C4KeyCodeEx &rAssignmentTriggerKey = rAssignment.GetTriggerKey();
 		if (!(rAssignmentTriggerKey.Key == key.Key)) continue;
 		// special: hold-keys-only ignore shift, because shift state might have been release during hold
@@ -680,9 +673,8 @@ void C4PlayerControlAssignmentSet::GetTriggerKeys(const C4PlayerControlDefs &rDe
 {
 	// put all trigger keys of keyset into output vectors
 	// first all hold keys
-	for (C4PlayerControlAssignmentVec::const_iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+	for (const auto & rAssignment : Assignments)
 	{
-		const C4PlayerControlAssignment &rAssignment = *i;
 		const C4PlayerControlDef *pDef = rDefs.GetControlByIndex(rAssignment.GetControl());
 		if (pDef && pDef->IsHoldKey())
 		{
@@ -691,9 +683,8 @@ void C4PlayerControlAssignmentSet::GetTriggerKeys(const C4PlayerControlDefs &rDe
 		}
 	}
 	// then all regular keys that aren't in the hold keys list yet
-	for (C4PlayerControlAssignmentVec::const_iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+	for (const auto & rAssignment : Assignments)
 	{
-		const C4PlayerControlAssignment &rAssignment = *i;
 		const C4PlayerControlDef *pDef = rDefs.GetControlByIndex(rAssignment.GetControl());
 		if (pDef && !pDef->IsHoldKey())
 		{
@@ -749,9 +740,8 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 	// if source set is flagged to clear previous, do this!
 	if (Src.clear_previous) Sets.clear();
 	// take over all assignments in known sets and new sets defined in Src
-	for (AssignmentSetList::const_iterator i = Src.Sets.begin(); i != Src.Sets.end(); ++i)
+	for (const auto & SrcSet : Src.Sets)
 	{
-		const C4PlayerControlAssignmentSet &SrcSet = *i;
 		// overwrite if def of same name existed if it's not low priority anyway
 		bool fIsWildcardSet = SrcSet.IsWildcardName();
 		if (!fIsWildcardSet)
@@ -775,9 +765,8 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 		else
 		{
 			// source is a wildcard: Merge with all matching sets
-			for (AssignmentSetList::iterator j = Sets.begin(); j != Sets.end(); ++j)
+			for (auto & DstSet : Sets)
 			{
-				C4PlayerControlAssignmentSet &DstSet = *j;
 				if (WildcardMatch(SrcSet.GetName(), DstSet.GetName()))
 				{
 					DstSet.MergeFrom(SrcSet, merge_mode);
@@ -789,22 +778,22 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 
 bool C4PlayerControlAssignmentSets::ResolveRefs(C4PlayerControlDefs *pDefs)
 {
-	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
-		if (!(*i).ResolveRefs(pDefs)) return false;
+	for (auto & Set : Sets)
+		if (!Set.ResolveRefs(pDefs)) return false;
 	return true;
 }
 
 void C4PlayerControlAssignmentSets::SortAssignments()
 {
-	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
-		(*i).SortAssignments();
+	for (auto & Set : Sets)
+		Set.SortAssignments();
 }
 
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByName(const char *szName)
 {
-	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
-		if (WildcardMatch(szName, (*i).GetName()))
-			return &*i;
+	for (auto & Set : Sets)
+		if (WildcardMatch(szName, Set.GetName()))
+			return &Set;
 	return nullptr;
 }
 
@@ -837,7 +826,7 @@ C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByIndex(int32
 
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::CreateEmptySetByTemplate(const C4PlayerControlAssignmentSet &template_set)
 {
-	Sets.push_back(C4PlayerControlAssignmentSet());
+	Sets.emplace_back();
 	Sets.back().InitEmptyFromTemplate(template_set);
 	return &Sets.back();
 }
@@ -1378,7 +1367,7 @@ void C4PlayerControl::Clear()
 {
 	iPlr = NO_OWNER;
 	pControlSet = nullptr;
-	for (KeyBindingList::iterator i = KeyBindings.begin(); i != KeyBindings.end(); ++i) delete *i;
+	for (auto & KeyBinding : KeyBindings) delete KeyBinding;
 	KeyBindings.clear();
 	RecentKeys.clear();
 	DownKeys.clear();

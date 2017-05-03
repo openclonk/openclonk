@@ -18,7 +18,7 @@
 #include "landscape/fow/C4FoW.h"
 #include "graphics/C4Draw.h"
 
-#include <float.h>
+#include <cfloat>
 
 
 C4FoW::C4FoW()

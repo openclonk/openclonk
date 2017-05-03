@@ -48,9 +48,7 @@ C4String::C4String(StdStrBuf strString)
 	Strings.Set.Add(this);
 }
 
-C4String::C4String()
-{
-}
+C4String::C4String() = default;
 
 C4String::~C4String()
 {
@@ -327,10 +325,10 @@ C4StringTable::C4StringTable()
 	P[DFA_CONNECT] = "CONNECT";
 	P[DFA_PULL] = "PULL";
 	// Prevent the individual strings from being deleted, they are not created with new
-	for (unsigned int i = 0; i < P_LAST; ++i)
+	for (auto & i : P)
 	{
-		assert(P[i].GetCStr()); // all strings should be assigned
-		P[i].IncRef();
+		assert(i.GetCStr()); // all strings should be assigned
+		i.IncRef();
 	}
 }
 

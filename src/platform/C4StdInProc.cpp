@@ -59,9 +59,9 @@ bool C4StdInProc::Execute(int iTimeout, pollfd *)
 
 #else
 
-C4StdInProc::C4StdInProc() { }
+C4StdInProc::C4StdInProc() = default;
 
-C4StdInProc::~C4StdInProc() { }
+C4StdInProc::~C4StdInProc() = default;
 
 bool C4StdInProc::Execute(int iTimeout, pollfd *)
 {

@@ -103,10 +103,10 @@ namespace C4GUI
 	{
 		// register same op for all shift states; distinction will be done in handling proc
 		C4CustomKey::CodeList KeyList;
-		KeyList.push_back(C4KeyCodeEx(key));
-		KeyList.push_back(C4KeyCodeEx(key, KEYS_Shift));
-		KeyList.push_back(C4KeyCodeEx(key, KEYS_Control));
-		KeyList.push_back(C4KeyCodeEx(key, C4KeyShiftState(KEYS_Shift | KEYS_Control)));
+		KeyList.emplace_back(key);
+		KeyList.emplace_back(key, KEYS_Shift);
+		KeyList.emplace_back(key, KEYS_Control);
+		KeyList.emplace_back(key, C4KeyShiftState(KEYS_Shift | KEYS_Control));
 		return new C4KeyBinding(KeyList, szName, KEYSCOPE_Gui, new ControlKeyCBExPassKey<Edit, CursorOperation>(*this, op, &Edit::KeyCursorOp), eKeyPrio);
 	}
 
@@ -707,7 +707,7 @@ namespace C4GUI
 		else pPrevFocusCtrl=nullptr;
 		// key binding for rename abort
 		C4CustomKey::CodeList keys;
-		keys.push_back(C4KeyCodeEx(K_ESCAPE));
+		keys.emplace_back(K_ESCAPE);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Cancel(keys);

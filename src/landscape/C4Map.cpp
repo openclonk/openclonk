@@ -96,9 +96,9 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 
 	// Surface
 	ccol=rTexMap.GetIndexMatTex(rLScape.Material.c_str());
-	float amplitude= (float) rLScape.Amplitude.Evaluate();
-	float phase=     (float) rLScape.Phase.Evaluate();
-	float period=    (float) rLScape.Period.Evaluate();
+	auto amplitude= (float) rLScape.Amplitude.Evaluate();
+	auto phase=     (float) rLScape.Phase.Evaluate();
+	auto period=    (float) rLScape.Period.Evaluate();
 	if (rLScape.MapPlayerExtend) period *= std::min(iPlayerNum, C4S_MaxMapPlayerExtend);
 	float natural=   (float) rLScape.Random.Evaluate();
 	int32_t level0=    std::min(MapWdt,MapHgt)/2;

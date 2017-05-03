@@ -59,7 +59,7 @@ bool ObjectActionJump(C4Object *cObj, C4Real xdir, C4Real ydir, bool fByCom)
 	// hardcoded jump by action
 	if (!cObj->SetActionByName("Jump")) return false;
 	cObj->xdir=xdir; cObj->ydir=ydir;
-	cObj->Mobile=1;
+	cObj->Mobile=true;
 	// unstick from ground, because jump command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	cObj->Action.t_attach&=~CNAT_Bottom;
@@ -70,7 +70,7 @@ bool ObjectActionDive(C4Object *cObj, C4Real xdir, C4Real ydir)
 {
 	if (!cObj->SetActionByName("Dive")) return false;
 	cObj->xdir=xdir; cObj->ydir=ydir;
-	cObj->Mobile=1;
+	cObj->Mobile=true;
 	// unstick from ground, because jump command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	cObj->Action.t_attach&=~CNAT_Bottom;
@@ -407,7 +407,7 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 bool ObjectComCancelAttach(C4Object *cObj)
 {
 	if (cObj->GetProcedure()==DFA_ATTACH)
-		return cObj->SetAction(0);
+		return cObj->SetAction(nullptr);
 	return false;
 }
 

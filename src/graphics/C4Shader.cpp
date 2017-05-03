@@ -145,7 +145,7 @@ void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, c
 void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
 {
 	if (std::find(SourceFiles.cbegin(), SourceFiles.cend(), szSource) == SourceFiles.cend())
-		SourceFiles.push_back(szSource);
+		SourceFiles.emplace_back(szSource);
 
 	const char *pStart = szText, *pPos = szText;
 	int iDepth = -1;
@@ -265,9 +265,9 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 
 	// Lookup name
 	int iPosition = -1;
-	for (unsigned int i = 0; i < sizeof(C4SH_PosNames) / sizeof(*C4SH_PosNames); i++) {
-		if (SEqual(Name.getData(), C4SH_PosNames[i].Name)) {
-			iPosition = C4SH_PosNames[i].Position;
+	for (auto & PosName : C4SH_PosNames) {
+		if (SEqual(Name.getData(), PosName.Name)) {
+			iPosition = PosName.Position;
 			break;
 		}
 	}
@@ -540,8 +540,8 @@ bool C4Shader::Refresh()
 		&UniformNames[0],
 		&AttributeNames[0]
 #else
-		0,
-		0
+		nullptr,
+		nullptr
 #endif
 		))
 		return false;
@@ -574,26 +574,26 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 		// Add all slices at the current level
 		if (fDebug && iPos > 0)
 			Buf.AppendFormat("\t// Position %d:\n", iPos);
-		for (ShaderSliceList::const_iterator pSlice = Slices.begin(); pSlice != Slices.end(); pSlice++)
+		for (const auto & Slice : Slices)
 		{
-			if (pSlice->Position < iPos) continue;
-			if (pSlice->Position > iPos)
+			if (Slice.Position < iPos) continue;
+			if (Slice.Position > iPos)
 			{
-				iNextPos = std::min(iNextPos, pSlice->Position);
+				iNextPos = std::min(iNextPos, Slice.Position);
 				continue;
 			}
 			// Same position - add slice!
 			if (fDebug)
 			{
-				if (pSlice->Source.getLength())
+				if (Slice.Source.getLength())
 				{
 					// GLSL below 3.30 consider the line after a #line N directive to be N + 1; 3.30 and higher consider it N
-					Buf.AppendFormat("\t// Slice from %s:\n#line %d %d\n", pSlice->Source.getData(), pSlice->SourceLine - (C4Shader_Version < 330), GetSourceFileId(pSlice->Source.getData()) + 1);
+					Buf.AppendFormat("\t// Slice from %s:\n#line %d %d\n", Slice.Source.getData(), Slice.SourceLine - (C4Shader_Version < 330), GetSourceFileId(Slice.Source.getData()) + 1);
 				}
 				else
 					Buf.Append("\t// Built-in slice:\n#line 1 0\n");
 				}
-			Buf.Append(pSlice->Text);
+			Buf.Append(Slice.Text);
 			if (Buf[Buf.getLength()-1] != '\n')
 				Buf.AppendChar('\n');
 		}
@@ -621,7 +621,7 @@ GLuint C4Shader::Create(GLenum iShaderType, const char *szWhat, const char *szSh
 	pGL->ObjectLabel(GL_SHADER, hShader, -1, szWhat);
 
 	// Compile
-	glShaderSource(hShader, 1, &szShader, 0);
+	glShaderSource(hShader, 1, &szShader, nullptr);
 	glCompileShader(hShader);
 
 	// Dump any information to log

@@ -30,7 +30,7 @@ C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo(C4ConsoleQtDefiniti
 	// Delay opening of groups until information is actually requested
 	// Full names into child groups in C4S always delimeted with backslashes
 	if (parent->full_filename.getLength())
-		full_filename = parent->full_filename + "\\" + filename;
+		full_filename = parent->full_filename + R"(\)" + filename;
 	else
 		full_filename = filename;
 }
@@ -184,13 +184,9 @@ void C4ConsoleQtDefinitionFileListModel::DefFileInfo::AddExtraDef(const char *de
 }
 
 
-C4ConsoleQtDefinitionFileListModel::C4ConsoleQtDefinitionFileListModel()
-{
-}
+C4ConsoleQtDefinitionFileListModel::C4ConsoleQtDefinitionFileListModel() = default;
 
-C4ConsoleQtDefinitionFileListModel::~C4ConsoleQtDefinitionFileListModel()
-{
-}
+C4ConsoleQtDefinitionFileListModel::~C4ConsoleQtDefinitionFileListModel() = default;
 
 void C4ConsoleQtDefinitionFileListModel::AddExtraDef(const char *def)
 {
@@ -513,7 +509,7 @@ void C4ConsoleQtNewScenarioDlg::CreatePressed()
 // (Also replace space, because spaces in filenames suk)
 static char ReplaceSpecialFilenameChars(char c)
 {
-	const char *special_chars = "\\/:<>|$?\" ";
+	const char *special_chars = R"(\/:<>|$?" )";
 	return strchr(special_chars, c) ? '_' : c;
 }
 

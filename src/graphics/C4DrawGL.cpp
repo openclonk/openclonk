@@ -35,8 +35,8 @@
 #define _USE_MATH_DEFINES
 #endif  /* _MSC_VER */
 
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 
 namespace
 {
@@ -105,7 +105,7 @@ namespace
 #undef USERPARAM_CONST
 
 CStdGL::CStdGL():
-	pMainCtx(0), CurrentVBO(0), NextVAOID(VAOIDs.end())
+	pMainCtx(nullptr), CurrentVBO(0), NextVAOID(VAOIDs.end())
 {
 	GenericVBOs[0] = 0;
 	Default();
@@ -146,7 +146,7 @@ void CStdGL::Clear()
 	SpriteShaderLightBaseNormalOverlayMod2.Clear();
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
-	pMainCtx=0;
+	pMainCtx=nullptr;
 	C4Draw::Clear();
 }
 
@@ -323,9 +323,9 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	// Must log after context creation to get valid results
 	if (first_ctx)
 	{
-		const char *gl_vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
-		const char *gl_renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
-		const char *gl_version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+		const auto *gl_vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
+		const auto *gl_renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+		const auto *gl_version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
 		LogF("GL %s on %s (%s)", gl_version ? gl_version : "", gl_renderer ? gl_renderer : "", gl_vendor ? gl_vendor : "");
 		
 		if (Config.Graphics.DebugOpenGL)
@@ -831,8 +831,8 @@ bool CStdGL::InvalidateDeviceObjects()
 		glDeleteBuffers(N_GENERIC_VBOS, GenericVBOs);
 		GenericVBOs[0] = 0;
 		CurrentVBO = 0;
-		for (unsigned int i = 0; i < N_GENERIC_VBOS * 2; ++i)
-			FreeVAOID(GenericVAOs[i]);
+		for (unsigned int GenericVAO : GenericVAOs)
+			FreeVAOID(GenericVAO);
 	}
 
 	// invalidate shaders
@@ -991,9 +991,8 @@ void CStdGL::FreeVAOID(unsigned int vaoid)
 	// For all other contexts, mark it to be deleted as soon as we select
 	// that context. Otherwise we would need to do a lot of context
 	// switching at this point.
-	for (std::list<CStdGLCtx*>::iterator iter = CStdGLCtx::contexts.begin(); iter != CStdGLCtx::contexts.end(); ++iter)
+	for (auto ctx : CStdGLCtx::contexts)
 	{
-		CStdGLCtx* ctx = *iter;
 		if (ctx != pCurrCtx && vaoid < ctx->hVAOs.size() && ctx->hVAOs[vaoid] != 0)
 			if (std::find(ctx->VAOsToBeDeleted.begin(), ctx->VAOsToBeDeleted.end(), vaoid) == ctx->VAOsToBeDeleted.end())
 				ctx->VAOsToBeDeleted.push_back(vaoid);

@@ -286,7 +286,7 @@ C4Player* C4PlayerList::Join(const char *szFilename, bool fScenarioInit, int iAt
 	LogF(LoadResStr(fScenarioInit ? "IDS_PRC_JOINPLR" : "IDS_PRC_RECREATE"),pInfo->GetName());
 
 	// Too many players
-	if (1) // replay needs to check, too!
+	if (true) // replay needs to check, too!
 		if (GetCount()+1>Game.Parameters.MaxPlayers)
 		{
 			LogF(LoadResStr("IDS_PRC_TOOMANYPLRS"),Game.Parameters.MaxPlayers);

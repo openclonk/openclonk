@@ -1787,9 +1787,9 @@ void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
 	else
 	{
 		pComp->Value(entries);
-		for (const_iterator it = begin(); it != end(); ++it)
+		for (auto it : *this)
 		{
-			int32_t num = (*it)->Number;
+			int32_t num = it->Number;
 			pComp->Value(num); // Can't use (*it)->Number directly because StdCompiler is dumb about constness
 		}
 	}

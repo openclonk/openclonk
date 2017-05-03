@@ -42,8 +42,8 @@ void C4MaterialList::Clear()
 
 void C4MaterialList::Reset()
 {
-	for (int cnt=0; cnt<C4MaxMaterial; cnt++)
-		Amount[cnt]=0;
+	for (int & cnt : Amount)
+		cnt=0;
 }
 
 void C4MaterialList::Set(int32_t iMaterial, int32_t iAmount)

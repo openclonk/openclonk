@@ -43,7 +43,7 @@ namespace C4GUI
 		}
 		// key callbacks: Check/Uncheck on space and primary joy button
 		C4CustomKey::CodeList Keys;
-		Keys.push_back(C4KeyCodeEx(K_SPACE));
+		Keys.emplace_back(K_SPACE);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Ok(Keys);

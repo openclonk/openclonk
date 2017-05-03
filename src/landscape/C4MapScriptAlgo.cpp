@@ -38,7 +38,7 @@ bool C4MapScriptAlgo::GetXYProps(const C4PropList *props, C4PropertyName k, int3
 	if ((arr = val.getArray()))
 	{
 		if (arr->GetSize() != 2)
-			throw C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k].GetCStr()).getData());
+			throw C4AulExecError(FormatString(R"(C4MapScriptAlgo: Expected either integer or array with two integer elements in property "%s".)", Strings.P[k].GetCStr()).getData());
 		out_xy[0] = arr->GetItem(0).getInt();
 		out_xy[1] = arr->GetItem(1).getInt();
 	}
@@ -54,7 +54,7 @@ C4MapScriptAlgoLayer::C4MapScriptAlgoLayer(const C4PropList *props)
 	// Get MAPALGO_Layer properties
 	C4PropList *layer_pl = props->GetPropertyPropList(P_Layer);
 	if (!layer_pl || !(layer = layer_pl->GetMapScriptLayer()))
-		throw C4AulExecError("C4MapScriptAlgoLayer: Expected layer in \"Layer\" property.");
+		throw C4AulExecError(R"(C4MapScriptAlgoLayer: Expected layer in "Layer" property.)");
 }
 
 bool C4MapScriptAlgoLayer::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
@@ -143,7 +143,7 @@ C4MapScriptAlgoPolygon::C4MapScriptAlgoPolygon(const C4PropList *props)
 	props->GetProperty(P_X, &vptx); props->GetProperty(P_Y, &vpty);
 	C4ValueArray *ptx = vptx.getArray(), *pty = vpty.getArray();
 	if (!ptx || !pty || ptx->GetSize() != pty->GetSize())
-		throw C4AulExecError("C4MapScriptAlgoPolygon: Expected two equally sized int arrays in properties \"X\" and \"Y\".");
+		throw C4AulExecError(R"(C4MapScriptAlgoPolygon: Expected two equally sized int arrays in properties "X" and "Y".)");
 	poly.resize(ptx->GetSize());
 	for (int32_t i=0; i<ptx->GetSize(); ++i)
 	{
@@ -195,7 +195,7 @@ C4MapScriptAlgoLines::C4MapScriptAlgoLines(const C4PropList *props)
 	// Get MAPALGO_Lines properties
 	lx = props->GetPropertyInt(P_X);
 	ly = props->GetPropertyInt(P_Y);
-	if (!lx && !ly) throw C4AulExecError("C4MapScriptAlgoLines: Invalid direction vector. Either \"X\" or \"Y\" must be nonzero!");
+	if (!lx && !ly) throw C4AulExecError(R"(C4MapScriptAlgoLines: Invalid direction vector. Either "X" or "Y" must be nonzero!)");
 	ox = props->GetPropertyInt(P_OffX);
 	oy = props->GetPropertyInt(P_OffY);
 		// use sync-safe distance function to calculate line width
@@ -240,7 +240,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		n = ops->GetSize();
 	}
 	if (!ops || n<min_ops || (max_ops && n>max_ops))
-		throw C4AulExecError(FormatString("C4MapScriptAlgo: Expected between %d and %d operands in property \"Op\".", (int)min_ops, (int)max_ops).getData());
+		throw C4AulExecError(FormatString(R"(C4MapScriptAlgo: Expected between %d and %d operands in property "Op".)", (int)min_ops, (int)max_ops).getData());
 	operands.resize(n);
 	try
 	{
@@ -249,7 +249,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		for (int32_t i=0; i<n; ++i)
 		{
 			C4MapScriptAlgo *new_algo = FnParAlgo(ops->GetItem(i).getPropList());
-			if (!new_algo) throw C4AulExecError(FormatString("C4MapScriptAlgo: Operand %d in property \"Op\" not valid.", (int)i).getData());
+			if (!new_algo) throw C4AulExecError(FormatString(R"(C4MapScriptAlgo: Operand %d in property "Op" not valid.)", (int)i).getData());
 			operands[i] = new_algo;
 		}
 	}
@@ -263,7 +263,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 void C4MapScriptAlgoModifier::Clear()
 {
 	// Child algos are owned by this algo, so delete them
-	for (std::vector<C4MapScriptAlgo *>::iterator i=operands.begin(); i != operands.end(); ++i) delete *i;
+	for (auto & operand : operands) delete operand;
 	operands.clear();
 }
 
@@ -271,9 +271,9 @@ bool C4MapScriptAlgoAnd::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t
 {
 	// Evaluate MAPALGO_And at x,y: 
 	// Return 0 if any of the operands is 0. Otherwise, returns value of last operand.
-	bool val=0;
-	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if (!(val=(**i)(x, y, fg, bg)))
+	bool val=false;
+	for (auto operand : operands)
+		if (!(val=(*operand)(x, y, fg, bg)))
 			return false;
 	return val;
 }
@@ -283,8 +283,8 @@ bool C4MapScriptAlgoOr::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t&
 	// Evaluate MAPALGO_Or at x,y: 
 	// Return first nonzero operand
 	bool val;
-	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if ((val=(**i)(x, y, fg, bg)))
+	for (auto operand : operands)
+		if ((val=(*operand)(x, y, fg, bg)))
 			return val;
 	// If all operands are zero, return zero.
 	return false;

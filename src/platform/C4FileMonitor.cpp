@@ -93,7 +93,7 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd * pfd) // some other thread
 void C4FileMonitor::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) // main thread
 {
 	if (eEvent != Ev_FileChange) return;
-	pCallback((const char *)pEventData, 0);
+	pCallback((const char *)pEventData, nullptr);
 }
 
 void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)
@@ -142,7 +142,7 @@ const DWORD C4FileMonitorNotifies = FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_C
 void C4FileMonitor::AddDirectory(const char *szDir)
 {
 	// Create file handle
-	HANDLE hDir = CreateFileW(GetWideChar(szDir), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, 0);
+	HANDLE hDir = CreateFileW(GetWideChar(szDir), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, nullptr);
 	if (hDir == INVALID_HANDLE_VALUE) return;
 	// Create tree watch structure
 	TreeWatch *pWatch = new TreeWatch();
@@ -206,7 +206,7 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd *)
 void C4FileMonitor::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) // main thread
 {
 	if (eEvent != Ev_FileChange) return;
-	pCallback((const char *)pEventData, 0);
+	pCallback((const char *)pEventData, nullptr);
 	StdBuf::DeletePointer(pEventData);
 }
 

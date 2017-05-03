@@ -35,7 +35,7 @@ namespace
 {
 	class C4SkeletonManager : public StdMeshSkeletonLoader
 	{
-		virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const
+		StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const override
 		{
 			// find the definition
 			C4Def* def = ::Definitions.ID2Def(C4ID(definition));
@@ -443,14 +443,14 @@ float C4DefList::GetFontImageAspect(const char* szImageTag)
 
 void C4DefList::Synchronize()
 {
-	for (Table::iterator it = table.begin(); it != table.end(); ++it)
-		it->second->Synchronize();
+	for (auto & it : table)
+		it.second->Synchronize();
 }
 
 void C4DefList::ResetIncludeDependencies()
 {
-	for (Table::iterator it = table.begin(); it != table.end(); ++it)
-		it->second->ResetIncludeDependencies();
+	for (auto & it : table)
+		it.second->ResetIncludeDependencies();
 }
 
 void C4DefList::SortByPriority()

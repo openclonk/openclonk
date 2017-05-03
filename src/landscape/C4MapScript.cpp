@@ -617,7 +617,7 @@ bool C4MapScriptLayer::FindPos(const C4Rect &search_rect, const C4MapScriptMatTe
 void C4MapScriptMap::Clear()
 {
 	// Layers are owned by map. Free them.
-	for (std::list<C4MapScriptLayer *>::iterator i=layers.begin(); i!=layers.end(); ++i) delete *i;
+	for (auto & layer : layers) delete layer;
 	layers.clear();
 }
 

@@ -86,21 +86,21 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(nullptr) // create w/o title
 	pParticipantsLbl->SetContextHandler(new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContext));
 	// key bindings
 	C4CustomKey::CodeList keys;
-	keys.push_back(C4KeyCodeEx(K_DOWN)); keys.push_back(C4KeyCodeEx(K_RIGHT));
+	keys.emplace_back(K_DOWN); keys.emplace_back(K_RIGHT);
 	if (Config.Controls.GamepadGuiControl)
 	{
 		ControllerKeys::Down(keys); // right will be done by Dialog already
 	}
 	pKeyDown = new C4KeyBinding(keys, "StartupMainCtrlNext", KEYSCOPE_Gui,
 	                            new C4GUI::DlgKeyCBEx<C4StartupMainDlg, bool>(*this, false, &C4StartupMainDlg::KeyAdvanceFocus), C4CustomKey::PRIO_CtrlOverride);
-	keys.clear(); keys.push_back(C4KeyCodeEx(K_UP)); keys.push_back(C4KeyCodeEx(K_LEFT));
+	keys.clear(); keys.emplace_back(K_UP); keys.emplace_back(K_LEFT);
 	if (Config.Controls.GamepadGuiControl)
 	{
 		ControllerKeys::Up(keys); // left will be done by Dialog already
 	}
 	pKeyUp = new C4KeyBinding(keys, "StartupMainCtrlPrev", KEYSCOPE_Gui,
 	                          new C4GUI::DlgKeyCBEx<C4StartupMainDlg, bool>(*this, true, &C4StartupMainDlg::KeyAdvanceFocus), C4CustomKey::PRIO_CtrlOverride);
-	keys.clear(); keys.push_back(C4KeyCodeEx(K_RETURN));
+	keys.clear(); keys.emplace_back(K_RETURN);
 	pKeyEnter = new C4KeyBinding(keys, "StartupMainOK", KEYSCOPE_Gui,
 	                             new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::KeyEnterDown, &C4StartupMainDlg::KeyEnterUp), C4CustomKey::PRIO_CtrlOverride);
 }

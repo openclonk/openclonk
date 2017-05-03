@@ -115,9 +115,7 @@ C4AulDefFunc::C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef):
 	Parent->SetPropertyByS(Name, C4VFunction(this));
 }
 
-C4AulDefFunc::~C4AulDefFunc()
-{
-}
+C4AulDefFunc::~C4AulDefFunc() = default;
 
 C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
@@ -413,14 +411,14 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropLis
 	{
 		pEffect = *FnGetEffectsFor(pTarget);
 		// the object has no effects attached, nothing to look for
-		if (!pEffect) return 0;
+		if (!pEffect) return false;
 		// name/wildcard given: find effect by name
 		if (szEffect && *szEffect)
 			pEffect = pEffect->Get(szEffect, 0);
 	}
 
 	// neither passed nor found - nothing to remove!
-	if (!pEffect) return 0;
+	if (!pEffect) return false;
 
 	// kill it
 	if (fDoNoCalls)
@@ -457,7 +455,7 @@ static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4PropL
 	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
 	if (!pEffect) return false;
 	// count effects
-	if (!*szEffect) szEffect = 0;
+	if (!*szEffect) szEffect = nullptr;
 	return pEffect->GetCount(szEffect, iMaxPriority);
 }
 
@@ -465,7 +463,7 @@ static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 {
 	// evaluate parameters
 	C4PropList *pTarget = Pars[0].getPropList();
-	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : 0;
+	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : nullptr;
 	const char *szCallFn = FnStringPar(Pars[2].getStr());
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
@@ -1133,14 +1131,14 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
-	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
-	{ "EffectCall",    1, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
-	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
-	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
-	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
-	{ "Trans_Mul",     1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
+	{ "Call",          true, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
+	{ "EffectCall",    true, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
+	{ "Log",           true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
+	{ "DebugLog",      true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
+	{ "Format",        true, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
+	{ "Trans_Mul",     true, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
 
-	{ nullptr,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
+	{ nullptr,            false, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, nullptr          }
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)

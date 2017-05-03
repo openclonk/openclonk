@@ -52,7 +52,7 @@ bool C4Reloc::AddPath(const char* path, PathType pathType)
 	if(std::find(Paths.begin(), Paths.end(), path) != Paths.end())
 		return false;
 
-	Paths.push_back(PathInfo(StdCopyStrBuf(path), pathType));
+	Paths.emplace_back(StdCopyStrBuf(path), pathType);
 	return true;
 }
 
@@ -70,8 +70,8 @@ bool C4Reloc::Open(C4Group& hGroup, const char* filename) const
 {
 	if(IsGlobalPath(filename)) return hGroup.Open(filename);
 
-	for(iterator iter = begin(); iter != end(); ++iter)
-		if(hGroup.Open(((*iter).strBuf + DirSep + filename).getData()))
+	for(const auto & iter : *this)
+		if(hGroup.Open((iter.strBuf + DirSep + filename).getData()))
 			return true;
 
 	return false;
@@ -85,9 +85,9 @@ bool C4Reloc::LocateItem(const char* filename, StdStrBuf& str) const
 		return true;
 	}
 
-	for(iterator iter = begin(); iter != end(); ++iter)
+	for(const auto & iter : *this)
 	{
-		str.Copy((*iter).strBuf + DirSep + filename);
+		str.Copy(iter.strBuf + DirSep + filename);
 		if(ItemExists(str.getData()))
 			return true;
 	}

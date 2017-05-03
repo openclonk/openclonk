@@ -124,7 +124,7 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 	{K_APOSTROPHE,    "Apostrophe",   "'"},
 	{K_GRAVE_ACCENT,  "GraveAccent",  "`"},
 	{K_SHIFT_L,       "LeftShift",    "LShift"},
-	{K_BACKSLASH,     "Backslash",    "\\"},
+	{K_BACKSLASH,     "Backslash",    R"(\)"},
 	{K_Z,             "Z",            nullptr},
 	{K_X,             "X",            nullptr},
 	{K_C,             "C",            nullptr},
@@ -247,7 +247,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	if (sName.getLength() > 2)
 	{
 		unsigned int dwRVal;
-		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
+		if (sscanf(sName.getData(), R"(\x%x)", &dwRVal) == 1) return dwRVal;
 		// scan code
 		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
@@ -583,8 +583,8 @@ C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeySc
 	}
 }
 
-C4CustomKey::C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-		: DefaultCodes(rDefCodes), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0), is_down(false)
+C4CustomKey::C4CustomKey(CodeList rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
+		: DefaultCodes(std::move(rDefCodes)), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0), is_down(false)
 {
 	// ctor for default key
 	Name.Copy(szName);
@@ -602,10 +602,10 @@ C4CustomKey::C4CustomKey(const C4CustomKey &rCpy, bool fCopyCallbacks)
 	Name.Copy(rCpy.GetName());
 	if (fCopyCallbacks)
 	{
-		for (CBVec::const_iterator i = rCpy.vecCallbacks.begin(); i != rCpy.vecCallbacks.end(); ++i)
+		for (auto callback : rCpy.vecCallbacks)
 		{
-			(*i)->Ref();
-			vecCallbacks.push_back(*i);
+			callback->Ref();
+			vecCallbacks.push_back(callback);
 		}
 	}
 }
@@ -635,10 +635,10 @@ void C4CustomKey::Update(const C4CustomKey *pByKey)
 	if (pByKey->Codes.size()) Codes = pByKey->Codes;
 	if (pByKey->Scope != KEYSCOPE_None) Scope = pByKey->Scope;
 	if (pByKey->uiPriority != PRIO_None) uiPriority = pByKey->uiPriority;
-	for (CBVec::const_iterator i = pByKey->vecCallbacks.begin(); i != pByKey->vecCallbacks.end(); ++i)
+	for (auto callback : pByKey->vecCallbacks)
 	{
-		(*i)->Ref();
-		vecCallbacks.push_back(*i);
+		callback->Ref();
+		vecCallbacks.push_back(callback);
 	}
 }
 
@@ -669,8 +669,8 @@ bool C4CustomKey::Execute(C4KeyEventType eEv, C4KeyCodeEx key)
 	// remember down-state
 	is_down = (eEv == KEYEV_Down);
 	// execute all callbacks
-	for (CBVec::iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
-		if ((*i)->OnKeyEvent(key, eEv))
+	for (auto & callback : vecCallbacks)
+		if (callback->OnKeyEvent(key, eEv))
 			return true;
 	// no event processed it
 	return false;

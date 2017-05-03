@@ -165,7 +165,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 	}
 #ifdef USE_WIN32_WINDOWS
 	// cwd backup
-	size_t l = GetCurrentDirectoryW(0, 0);
+	size_t l = GetCurrentDirectoryW(0, nullptr);
 	std::unique_ptr<wchar_t []> wd(new wchar_t[l]);
 	GetCurrentDirectoryW(l, wd.get());
 #endif

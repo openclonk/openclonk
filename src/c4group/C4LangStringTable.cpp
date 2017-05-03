@@ -68,7 +68,7 @@ void C4LangStringTable::PopulateStringTable() const
 			else if (*data == '\0' || *data == '\n' || *data == '\r')
 			{
 				if (!key.empty() && key[0]!='#')
-					LogF("%s: string table entry without a value: \"%s\"", GetFilePath() ? GetFilePath() : "<unknown>", key.c_str());
+					LogF(R"(%s: string table entry without a value: "%s")", GetFilePath() ? GetFilePath() : "<unknown>", key.c_str());
 				key.clear();
 			}
 			else
@@ -134,7 +134,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 		}
 		catch (NoSuchTranslation &)
 		{
-			LogF("%s: string table entry not found: \"%s\"", GetFilePath() ? GetFilePath() : "<unknown>", szStringName);
+			LogF(R"(%s: string table entry not found: "%s")", GetFilePath() ? GetFilePath() : "<unknown>", szStringName);
 		}
 	}
 	// Alloc new Buffer

@@ -459,9 +459,7 @@ namespace C4GUI
 		// LDownX/Y initialized upon need
 	}
 
-	CMouse::~CMouse()
-	{
-	}
+	CMouse::~CMouse() = default;
 
 	void CMouse::Input(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{

@@ -192,7 +192,7 @@ C4Group *C4GroupSet::FindEntry(const char *szWildcard, int32_t *pPriority, int32
 
 C4Group *C4GroupSet::FindSuitableFile(const char *szName, const char * const extensions[], char *szFileName, int32_t *pID)
 {
-	C4Group *pGrp = 0;
+	C4Group *pGrp = nullptr;
 	C4Group *pGrp2;
 	int iPrio = -1;
 	int32_t iPrio2;

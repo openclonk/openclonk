@@ -143,15 +143,9 @@ const char *PacketNameByID(C4PacketType eID)
 
 // *** C4PacketBase
 
-C4PacketBase::C4PacketBase()
-{
+C4PacketBase::C4PacketBase() = default;
 
-}
-
-C4PacketBase::~C4PacketBase()
-{
-
-}
+C4PacketBase::~C4PacketBase() = default;
 
 C4NetIOPacket C4PacketBase::pack(const C4NetIO::addr_t &addr) const
 {
@@ -172,9 +166,7 @@ void C4PacketBase::unpack(const C4NetIOPacket &Pkt, char *pStatus)
 
 // *** C4PktBuf
 
-C4PktBuf::C4PktBuf()
-{
-}
+C4PktBuf::C4PktBuf() = default;
 
 C4PktBuf::C4PktBuf(const C4PktBuf &rCopy) : C4PacketBase(rCopy)
 {
@@ -431,9 +423,7 @@ void C4PacketConn::CompileFunc(StdCompiler *pComp)
 
 // *** C4PacketConnRe
 
-C4PacketConnRe::C4PacketConnRe()
-{
-}
+C4PacketConnRe::C4PacketConnRe() = default;
 
 C4PacketConnRe::C4PacketConnRe(bool fnOK, bool fWrongPassword, const char *sznMsg)
 		: fOK(fnOK),
@@ -532,10 +522,7 @@ void C4PacketPing::CompileFunc(StdCompiler *pComp)
 
 // *** C4PacketResStatus
 
-C4PacketResStatus::C4PacketResStatus()
-{
-
-}
+C4PacketResStatus::C4PacketResStatus() = default;
 
 C4PacketResStatus::C4PacketResStatus(int32_t iResID, const C4Network2ResChunkData &nChunks)
 		: iResID(iResID), Chunks(nChunks)

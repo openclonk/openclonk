@@ -106,9 +106,7 @@ C4Record::C4Record()
 {
 }
 
-C4Record::~C4Record()
-{
-}
+C4Record::~C4Record() = default;
 
 bool C4Record::Start(bool fInitial)
 {
@@ -493,19 +491,19 @@ bool C4Playback::Open(C4Group &rGrp)
 		{
 			if (!DbgRecFile.Create(Config.General.DebugRecExternalFile))
 			{
-				LogFatal(FormatString("DbgRec: Creation of external file \"%s\" failed!", Config.General.DebugRecExternalFile).getData());
+				LogFatal(FormatString(R"(DbgRec: Creation of external file "%s" failed!)", Config.General.DebugRecExternalFile).getData());
 				return false;
 			}
-			else LogF("DbgRec: Writing to \"%s\"...", Config.General.DebugRecExternalFile);
+			else LogF(R"(DbgRec: Writing to "%s"...)", Config.General.DebugRecExternalFile);
 		}
 		else
 		{
 			if (!DbgRecFile.Open(Config.General.DebugRecExternalFile))
 			{
-				LogFatal(FormatString("DbgRec: Opening of external file \"%s\" failed!", Config.General.DebugRecExternalFile).getData());
+				LogFatal(FormatString(R"(DbgRec: Opening of external file "%s" failed!)", Config.General.DebugRecExternalFile).getData());
 				return false;
 			}
-			else LogF("DbgRec: Checking against \"%s\"...", Config.General.DebugRecExternalFile);
+			else LogF(R"(DbgRec: Checking against "%s"...)", Config.General.DebugRecExternalFile);
 		}
 	}
 	// ok
@@ -625,7 +623,7 @@ void C4Playback::NextChunk()
 	// end of all chunks if not loading sequential here
 	if (!fLoadSequential) return;
 	// otherwise, get next few chunks
-	for (chunks_t::iterator i = chunks.begin(); i != chunks.end(); i++) i->Delete();
+	for (auto & chunk : chunks) chunk.Delete();
 	chunks.clear(); currChunk = chunks.end();
 	NextSequentialChunk();
 }
@@ -920,7 +918,7 @@ void C4Playback::Finish()
 void C4Playback::Clear()
 {
 	// free stuff
-	for (chunks_t::iterator i = chunks.begin(); i != chunks.end(); i++) i->Delete();
+	for (auto & chunk : chunks) chunk.Delete();
 	chunks.clear(); currChunk = chunks.end();
 	playbackFile.Close();
 	sequentialBuffer.Clear();

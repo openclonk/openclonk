@@ -124,7 +124,7 @@ C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 	ReturnIfTranslationAvailable(AulExec.pCurCtx[0].Func->pOrgScript, text->GetCStr());
 
 	// No translation available, log
-	DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
+	DebugLogF(R"(WARNING: Translate: no translation for string "%s")", text->GetCStr());
 	// Trace
 	AulExec.LogCallStack();
 	return text;
@@ -773,7 +773,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 
 				// Function not found?
 				if (!pFunc)
-					throw C4AulExecError(FormatString("'->': no function \"%s\" in object \"%s\"", pCPos->Par.s->GetCStr(), pTargetVal->GetDataString().getData()).getData());
+					throw C4AulExecError(FormatString(R"('->': no function "%s" in object "%s")", pCPos->Par.s->GetCStr(), pTargetVal->GetDataString().getData()).getData());
 
 				// Save current position
 				pCurCtx->CPos = pCPos;
@@ -872,9 +872,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 						sCallText.Append("(Snull)");
 					else
 					{
-						sCallText.Append("\"");
+						sCallText.Append(R"(")");
 						sCallText.Append(s->GetData());
-						sCallText.Append("\"");
+						sCallText.Append(R"(")");
 					}
 				}
 				else
@@ -1006,9 +1006,8 @@ void C4AulProfiler::Show()
 	Log("Profiler statistics:");
 	Log("==============================");
 	typedef std::vector<Entry> EntryList;
-	for (EntryList::iterator i = Times.begin(); i!=Times.end(); ++i)
+	for (auto & e : Times)
 	{
-		Entry &e = (*i);
 		LogF("%05ums\t%s", e.tProfileTime, e.pFunc ? (e.pFunc->GetFullName().getData()) : "Direct exec");
 	}
 	Log("==============================");

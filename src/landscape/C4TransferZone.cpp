@@ -34,9 +34,7 @@ C4TransferZone::C4TransferZone()
 	Used = false;
 }
 
-C4TransferZone::~C4TransferZone()
-{
-}
+C4TransferZone::~C4TransferZone() = default;
 
 C4TransferZones::C4TransferZones()
 {

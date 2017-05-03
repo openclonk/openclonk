@@ -1152,7 +1152,7 @@ void C4Command::Activate()
 			// Activate object to exit
 			Target->Controller = cObj->Controller;
 			Target->SetCommand(C4CMD_Exit);
-			Target = 0;
+			Target = nullptr;
 		}
 
 		Finish(true); return;
@@ -1697,7 +1697,7 @@ void C4Command::Acquire()
 	// No available material found: buy material
 	// This command will fail immediately if buying at bases is not possible
 	// - but the command should be created anyway because it might be overloaded
-	cObj->AddCommand(C4CMD_Buy,nullptr,0,0,100,nullptr,true,Data,false,0,0,C4CMD_Mode_Sub);
+	cObj->AddCommand(C4CMD_Buy,nullptr,0,0,100,nullptr,true,Data,false,0,nullptr,C4CMD_Mode_Sub);
 
 }
 

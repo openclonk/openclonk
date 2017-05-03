@@ -222,7 +222,7 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 	}
 	delete a;
 	functions.sort(sort_alpha);
-	if (!functions.empty() && !global_functions.empty()) functions.push_back(0); // separator
+	if (!functions.empty() && !global_functions.empty()) functions.push_back(nullptr); // separator
 	global_functions.sort(sort_alpha);
 	functions.splice(functions.end(), global_functions);
 	return functions;
@@ -237,7 +237,7 @@ int32_t C4AulScriptEngine::CreateUserFile()
 		if ((*i).GetHandle() >= last_handle)
 			last_handle = (*i).GetHandle()+1;
 	// Create new user file
-	UserFiles.push_back(C4AulUserFile(last_handle));
+	UserFiles.emplace_back(last_handle);
 	return last_handle;
 }
 
@@ -255,10 +255,10 @@ void C4AulScriptEngine::CloseUserFile(int32_t handle)
 C4AulUserFile *C4AulScriptEngine::GetUserFile(int32_t handle)
 {
 	// get user file given by handle
-	for (std::list<C4AulUserFile>::iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
-		if ((*i).GetHandle() == handle)
+	for (auto & UserFile : UserFiles)
+		if (UserFile.GetHandle() == handle)
 		{
-			return &*i;
+			return &UserFile;
 		}
 	// not found
 	return nullptr;

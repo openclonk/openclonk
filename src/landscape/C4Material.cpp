@@ -83,7 +83,7 @@ void C4MaterialReaction::ResolveScriptFuncs(const char *szMatName)
 	{
 		pScriptFunc = ::ScriptEngine.GetPropList()->GetFunc(this->ScriptFunc.getData());
 		if (!pScriptFunc)
-			DebugLogF("Error getting function \"%s\" for Material reaction of \"%s\"", this->ScriptFunc.getData(), szMatName);
+			DebugLogF(R"(Error getting function "%s" for Material reaction of "%s")", this->ScriptFunc.getData(), szMatName);
 	}
 	else
 		pScriptFunc = nullptr;
@@ -292,8 +292,8 @@ C4Material::C4Material()
 
 void C4Material::UpdateScriptPointers()
 {
-	for (uint32_t i = 0; i < CustomReactionList.size(); ++i)
-		CustomReactionList[i].ResolveScriptFuncs(Name);
+	for (auto & i : CustomReactionList)
+		i.ResolveScriptFuncs(Name);
 }
 
 
@@ -449,9 +449,9 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 				if ((sfcTexture=Texture->Surface32))
 					Map[cnt].PXSFace.Set(sfcTexture, Map[cnt].PXSGfxRt.x, Map[cnt].PXSGfxRt.y, Map[cnt].PXSGfxRt.Wdt, Map[cnt].PXSGfxRt.Hgt);
 		// evaluate reactions for that material
-		for (unsigned int iRCnt = 0; iRCnt < pMat->CustomReactionList.size(); ++iRCnt)
+		for (auto & iRCnt : pMat->CustomReactionList)
 		{
-			C4MaterialReaction *pReact = &(pMat->CustomReactionList[iRCnt]);
+			C4MaterialReaction *pReact = &iRCnt;
 			if (pReact->sConvertMat.getLength()) pReact->iConvertMat = Get(pReact->sConvertMat.getData()); else pReact->iConvertMat = -1;
 			// evaluate target spec
 			int32_t tmat;
@@ -545,7 +545,7 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 	// Get hardcoded system material indices
 	const C4TexMapEntry* earth_entry = ::TextureMap.GetEntry(::TextureMap.GetIndexMatTex(szEarthMaterial));
 	if(!earth_entry)
-		{ LogFatal(FormatString("Earth material \"%s\" not found!", szEarthMaterial).getData()); return false; }
+		{ LogFatal(FormatString(R"(Earth material "%s" not found!)", szEarthMaterial).getData()); return false; }
 
 	MVehic     = Get("Vehicle");     MCVehic     = Mat2PixColDefault(MVehic);
 	MHalfVehic = Get("HalfVehicle"); MCHalfVehic = Mat2PixColDefault(MHalfVehic);
