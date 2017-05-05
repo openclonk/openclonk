@@ -13,11 +13,13 @@ local TRCH_InHand   = 1;
 local TRCH_Attached = 2;
 local TRCH_Fixed    = 3;
 
+local transform; // for debugging
+
 /*-- Engine Callbacks --*/
 
 func Initialize()
 {
-	state = TRCH_Normal;
+	SetState(TRCH_Normal);
 	SetMeshMaterial("Torch");
 }
 
@@ -30,8 +32,7 @@ public func Selection(object container)
 {
 	if (container && container->~IsClonk())
 	{
-		state = TRCH_InHand;
-		Burn(true);
+		SetState(TRCH_InHand);
 	}
 	return _inherited(container, ...);
 }
@@ -40,8 +41,7 @@ public func Deselection(object container)
 {
 	if (container->~IsClonk())
 	{
-		state = TRCH_Normal;
-		Burn(false);
+		SetState(TRCH_Normal);
 	}
 	return _inherited(container, ...);
 }
@@ -184,6 +184,7 @@ func FxIntBurningTimer (object target, effect fx, int time)
 	// If the torched is attached or fixed it should emit some fire and smoke particles.
 	if (state != TRCH_Normal)
 	{
+		if(Contained() && (Contained()->~InLiquid() || !Contained()->~HasHandAction())) return -1;
 		var pos = GetParticleOffset();
 		// Fire effects.
 		CreateParticle("FireSharp", PV_Random(-1 + pos[0], 2 + pos[0]), PV_Random(0 + pos[1], -3 + pos[1]), PV_Random(-2, 2), PV_Random(-3, -5), 10 + Random(3), fx.flame, 12);
@@ -229,12 +230,23 @@ public func IsToolProduct() { return true; }
 
 /*-- Display --*/
 
-public func GetCarryMode(object clonk, bool idle, bool nohand)
+public func GetCarryMode(object clonk)
 {
-	if (idle || nohand)
+	if (clonk && !clonk->~HasHandAction())
+	{
+		Burn(false);
 		return CARRY_Back;
+	}
+	else
+	{
+		Burn(true);
+		return CARRY_Spear;
+	}
+}
 
-	return CARRY_Spear;
+public func GetCarryTransform(object clonk, int sec, bool nohand)
+{
+	return Trans_Rotate(90, 0, 0, 1);
 }
 
 private func GetParticleOffset()
