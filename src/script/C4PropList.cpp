@@ -524,13 +524,23 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 		DataString.Append("...");
 		return;
 	}
+	bool has_elements = false;
+	// Append prototype
+	if (prototype)
+	{
+		DataString.Append("Prototype = ");
+		DataString.Append(prototype.GetDataString(depth - 1, ignore_reference_parent ? IsStatic() : nullptr));
+		has_elements = true;
+	}
+	// Append other properties
 	std::list<const C4Property *> sorted_props = Properties.GetSortedListOfElementPointers();
 	for (std::list<const C4Property *>::const_iterator p = sorted_props.begin(); p != sorted_props.end(); ++p)
 	{
-		if (p != sorted_props.begin()) DataString.Append(delim);
+		if (has_elements) DataString.Append(delim);
 		DataString.Append((*p)->Key->GetData());
 		DataString.Append(" = ");
 		DataString.Append((*p)->Value.GetDataString(depth - 1, ignore_reference_parent ? IsStatic() : nullptr));
+		has_elements = true;
 	}
 }
 
@@ -542,13 +552,23 @@ StdStrBuf C4PropList::ToJSON(int depth, bool ignore_reference_parent) const
 	}
 	StdStrBuf DataString;
 	DataString = "{";
+	bool has_elements = false;
+	// Append prototype
+	if (prototype)
+	{
+		DataString.Append("Prototype:");
+		DataString.Append(prototype.ToJSON(depth - 1, ignore_reference_parent ? IsStatic() : nullptr));
+		has_elements = true;
+	}
+	// Append other properties
 	std::list<const C4Property *> sorted_props = Properties.GetSortedListOfElementPointers();
 	for (std::list<const C4Property *>::const_iterator p = sorted_props.begin(); p != sorted_props.end(); ++p)
 	{
-		if (p != sorted_props.begin()) DataString.Append(",");
+		if (has_elements) DataString.Append(",");
 		DataString.Append(C4Value((*p)->Key).ToJSON());
 		DataString.Append(":");
 		DataString.Append((*p)->Value.ToJSON(depth - 1, ignore_reference_parent ? IsStatic() : nullptr));
+		has_elements = true;
 	}
 	DataString.Append("}");
 	return DataString;
