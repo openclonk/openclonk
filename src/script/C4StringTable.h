@@ -535,6 +535,9 @@ enum C4PropertyName
 	P_ForceSerialization,
 	P_DrawArrows,
 	P_SCENPAR,
+	P_Translatable,
+	P_Function,
+	P_Translate,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

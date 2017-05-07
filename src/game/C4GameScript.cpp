@@ -2742,6 +2742,12 @@ static long FnGetPXSCount(C4PropList * _this, Nillable<long> iMaterial, Nillable
 	}
 }
 
+static C4String *FnGetTranslatedString(C4PropList * _this, const C4Value & string_data)
+{
+	// Resolve proplists containing localized strings to the current localization
+	return ::Game.GetTranslatedString(string_data, nullptr, false);
+}
+
 extern C4ScriptConstDef C4ScriptGameConstMap[];
 extern C4ScriptFnDef C4ScriptGameFnMap[];
 
@@ -2953,6 +2959,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(IncinerateLandscape);
 	F(GetGravity);
 	F(SetGravity);
+	F(GetTranslatedString);
 #undef F
 }
 

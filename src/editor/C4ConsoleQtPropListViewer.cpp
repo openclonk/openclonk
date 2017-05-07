@@ -19,6 +19,7 @@
 #include "editor/C4ConsoleQtPropListViewer.h"
 #include "editor/C4ConsoleQtDefinitionListViewer.h"
 #include "editor/C4ConsoleQtState.h"
+#include "editor/C4ConsoleQtLocalizeString.h"
 #include "editor/C4Console.h"
 #include "object/C4Object.h"
 #include "object/C4GameObjects.h"
@@ -312,43 +313,190 @@ bool C4PropertyDelegateInt::IsPasteValid(const C4Value &val) const
 
 /* String delegate */
 
+C4PropertyDelegateStringEditor::C4PropertyDelegateStringEditor(QWidget *parent, bool has_localization_button)
+	: QWidget(parent), edit(nullptr), localization_button(nullptr), commit_pending(false), text_edited(false)
+{
+	auto layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setMargin(0);
+	layout->setSpacing(0);
+	edit = new QLineEdit(this);
+	layout->addWidget(edit);
+	if (has_localization_button)
+	{
+		localization_button = new QPushButton(QString(LoadResStr("IDS_CNS_MORE")), this);
+		layout->addWidget(localization_button);
+		connect(localization_button, &QPushButton::pressed, this, [this]() {
+			// Show dialogue
+			OpenLocalizationDialogue();
+		});
+	}
+	connect(edit, &QLineEdit::returnPressed, this, [this]() {
+		text_edited = true;
+		commit_pending = true;
+		emit EditingDoneSignal();
+	});
+	connect(edit, &QLineEdit::textEdited, this, [this]() {
+		text_edited = true;
+		commit_pending = true;
+	});
+}
+
+void C4PropertyDelegateStringEditor::OpenLocalizationDialogue()
+{
+	if (!localization_dialogue)
+	{
+		// Make sure we have an updated value
+		StoreEditedText();
+		// Make sure we're using a localized string
+		if (value.GetType() != C4V_PropList)
+		{
+			C4PropList *value_proplist = ::Game.AllocateTranslatedString();
+			if (value.GetType() == C4V_String)
+			{
+				C4String *lang = ::Strings.RegString(lang_code);
+				value_proplist->SetPropertyByS(lang, value);
+			}
+			value = C4VPropList(value_proplist);
+		}
+		// Open dialogue on value
+		localization_dialogue.reset(new C4ConsoleQtLocalizeStringDlg(::Console.GetState()->window.get(), value));
+		connect(localization_dialogue.get(), &C4ConsoleQtLocalizeStringDlg::accepted, this, [this]() {
+			// Usually, the proplist owned by localization_dialogue is the same as this->value
+			// However, it may have changed if there was an update call that modified the value while the dialogue was open
+			// In this case, take the value from the dialogue
+			SetValue(C4VPropList(localization_dialogue->GetTranslations()));
+			// Finish editing on the value
+			CloseLocalizationDialogue();
+			commit_pending = true;
+			emit EditingDoneSignal();
+		});
+		connect(localization_dialogue.get(), &C4ConsoleQtLocalizeStringDlg::rejected, this, [this]() {
+			CloseLocalizationDialogue();
+		});
+		localization_dialogue->show();
+	}
+}
+
+void C4PropertyDelegateStringEditor::CloseLocalizationDialogue()
+{
+	if (localization_dialogue)
+	{
+		localization_dialogue->close();
+		localization_dialogue.reset();
+	}
+}
+
+void C4PropertyDelegateStringEditor::StoreEditedText()
+{
+	if (text_edited)
+	{
+		// TODO: Would be better to handle escaping in the C4Value-to-string code
+		QString new_value = edit->text();
+		new_value = new_value.replace("\\", "\\\\").replace("\"", "\\\"");
+		C4Value text_value = C4VString(new_value.toUtf8());
+		// If translatable, always store as translation proplist
+		// This makes it easier to collect strings to be localized in the localization overview
+		if (localization_button)
+		{
+			C4PropList *value_proplist = this->value.getPropList();
+			if (!value_proplist)
+			{
+				value_proplist = ::Game.AllocateTranslatedString();
+			}
+			C4String *lang = ::Strings.RegString(lang_code);
+			value_proplist->SetPropertyByS(lang, text_value);
+		}
+		else
+		{
+			this->value = text_value;
+		}
+		text_edited = false;
+	}
+}
+
+void C4PropertyDelegateStringEditor::SetValue(const C4Value &val)
+{
+	// Set editor text to value
+	// Resolve text string and default language for localized strings
+	C4String *s;
+	C4Value language;
+	if (localization_button)
+	{
+		s = ::Game.GetTranslatedString(val, &language, true);
+		C4String *language_string = language.getStr();
+		SCopy(language_string ? language_string->GetCStr() : Config.General.LanguageEx, lang_code, 2);
+		localization_button->setText(QString(lang_code));
+	}
+	else
+	{
+		s = val.getStr();
+	}
+	edit->setText(QString(s ? s->GetCStr() : ""));
+	// Remember full value with all localizations
+	if (val.GetType() == C4V_PropList)
+	{
+		if (val != this->value)
+		{
+			// Localization proplist: Create a copy (C4Value::Copy() would be nice)
+			C4PropList *new_value_proplist = new C4PropListScript();
+			this->value = C4VPropList(new_value_proplist);
+			C4PropList *val_proplist = val.getPropList();
+			for (C4String *lang : val_proplist->GetSortedLocalProperties())
+			{
+				C4Value lang_string;
+				val_proplist->GetPropertyByS(lang, &lang_string);
+				new_value_proplist->SetPropertyByS(lang, lang_string);
+			}
+		}
+	}
+	else
+	{
+		this->value = val;
+	}
+}
+
+C4Value C4PropertyDelegateStringEditor::GetValue()
+{
+	// Flush edits from the text field into value
+	StoreEditedText();
+	// Return current value
+	return this->value;
+}
+
 C4PropertyDelegateString::C4PropertyDelegateString(const C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegate(factory, props)
 {
-}
-
-void C4PropertyDelegateString::SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const
-{
-	Editor *line_edit = static_cast<Editor*>(editor);
-	C4String *s = val.getStr();
-	line_edit->setText(QString(s ? s->GetCStr() : ""));
-}
-
-void C4PropertyDelegateString::SetModelData(QObject *editor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
-{
-	Editor *line_edit = static_cast<Editor*>(editor);
-	// Only set model data when pressing Enter explicitely; not just when leaving 
-	if (line_edit->commit_pending)
+	if (props)
 	{
-		QString new_value = line_edit->text();
-		// TODO: Would be better to handle escaping in the C4Value-to-string code
-		new_value = new_value.replace("\\", "\\\\").replace("\"", "\\\"");
-		property_path.SetProperty(C4VString(new_value.toUtf8()));
+		translatable = props->GetPropertyBool(P_Translatable);
+	}
+}
+
+void C4PropertyDelegateString::SetEditorData(QWidget *aeditor, const C4Value &val, const C4PropertyPath &property_path) const
+{
+	Editor *editor = static_cast<Editor*>(aeditor);
+	editor->SetValue(val);
+}
+
+void C4PropertyDelegateString::SetModelData(QObject *aeditor, const C4PropertyPath &property_path, C4ConsoleQtShape *prop_shape) const
+{
+	Editor *editor = static_cast<Editor*>(aeditor);
+	// Only set model data when pressing Enter explicitely; not just when leaving 
+	if (editor->IsCommitPending())
+	{
+		property_path.SetProperty(editor->GetValue());
 		factory->GetPropertyModel()->DoOnUpdateCall(property_path, this);
-		line_edit->commit_pending = false;
+		editor->SetCommitPending(false);
 	}
 }
 
 QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory *parent_delegate, QWidget *parent, const QStyleOptionViewItem &option, bool by_selection, bool is_child) const
 {
-	Editor *editor = new Editor(parent);
+	Editor *editor = new Editor(parent, translatable);
 	// EditingDone on return or when leaving edit field after a change has been made
-	connect(editor, &QLineEdit::returnPressed, editor, [this, editor]() {
-		editor->commit_pending = true;
+	connect(editor, &Editor::EditingDoneSignal, editor, [this, editor]() {
 		emit EditingDoneSignal(editor);
-	});
-	connect(editor, &QLineEdit::textEdited, this, [editor, this]() {
-		editor->commit_pending = true;
 	});
 	// Selection in child enum: Direct focus
 	if (by_selection && is_child) editor->setFocus();
@@ -358,15 +506,23 @@ QWidget *C4PropertyDelegateString::CreateEditor(const C4PropertyDelegateFactory 
 QString C4PropertyDelegateString::GetDisplayString(const C4Value &v, C4Object *obj, bool short_names) const
 {
 	// Raw string without ""
-	C4String *s = v.getStr();
+	C4String *s = translatable ? ::Game.GetTranslatedString(v, nullptr, true) : v.getStr();
 	return QString(s ? s->GetCStr() : "");
 }
 
 bool C4PropertyDelegateString::IsPasteValid(const C4Value &val) const
 {
-	// Check string type
-	if (val.GetType() != C4V_String) return false;
-	return true;
+	// Check string type or translatable proplist
+	if (val.GetType() == C4V_String) return true;
+	if (translatable)
+	{
+		C4PropList *val_p = val.getPropList();
+		if (val_p)
+		{
+			return val_p->GetPropertyStr(P_Function) == &::Strings.P[P_Translate];
+		}
+	}
+	return false;
 }
 
 

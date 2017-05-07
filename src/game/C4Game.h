@@ -290,6 +290,10 @@ public:
 	bool ToggleChart(); // chart dlg on/off
 	void SetGlobalSoundModifier(C4PropList *modifier_props);
 
+	// Localized strings in editor props
+	C4String *GetTranslatedString(const class C4Value &input_string, C4Value *selected_language, bool fail_silently) const;
+	C4PropList *AllocateTranslatedString();
+
 	static constexpr const char * DirectJoinFilePrefix = "file:";
 };
 

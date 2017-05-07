@@ -3890,3 +3890,83 @@ void C4Game::SetGlobalSoundModifier(C4PropList *new_modifier)
 	}
 	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, NO_OWNER);
 }
+
+C4String *C4Game::GetTranslatedString(const C4Value &input_string, C4Value *selected_language, bool fail_silently) const
+{
+	// Resolve a localized string
+	// If a string is passed, just return it
+	// If a proplist like { DE="Hallo, Welt!", US="Hello, world!" } is passed, return the string matching the selected language
+	// Nothing?
+	if (input_string.GetType() == C4V_Nil)
+	{
+		return nullptr;
+	}
+	// Non-localized string?
+	if (input_string.GetType() == C4V_String)
+	{
+		return input_string._getStr();
+	}
+	// Invalid type for this function?
+	C4PropList *p = input_string._getPropList();
+	if (!p || p->GetPropertyStr(P_Function) != &::Strings.P[P_Translate])
+	{
+		if (fail_silently)
+		{
+			return nullptr;
+		}
+		else
+		{
+			throw C4AulExecError(FormatString("Invalid value for translation: %s", input_string.GetDataString().getData()).getData());
+		}
+	}
+	// This is a proplist. Resolve the language as the key.
+	char lang_code[3] = "";
+	for (int32_t lang_index = 0; SCopySegment(Config.General.LanguageEx, lang_index, lang_code, ',', 2); ++lang_index)
+	{
+		C4String *lang_string = ::Strings.FindString(lang_code);
+		if (lang_string) // If the string is not found, it cannot be the key in a prop list
+		{
+			C4Value localized_string_val;
+			if (p->GetPropertyByS(lang_string, &localized_string_val))
+			{
+				C4String *localized_string = localized_string_val.getStr();
+				if (localized_string)
+				{
+					// Found it!
+					if (selected_language)
+					{
+						selected_language->SetString(lang_string);
+					}
+					return localized_string;
+				}
+			}
+		}
+	}
+	// No language matched. Just use any property and assume it's a language key.
+	for (C4String *lang_string : p->GetSortedLocalProperties(false))
+	{
+		C4Value localized_string_val;
+		if (p->GetPropertyByS(lang_string, &localized_string_val))
+		{
+			C4String *localized_string = localized_string_val.getStr();
+			if (localized_string)
+			{
+				// Found it!
+				if (selected_language)
+				{
+					selected_language->SetString(lang_string);
+				}
+				return localized_string;
+			}
+		}
+	}
+	// No string properties. There's no localized information to be found.
+	return nullptr;
+}
+
+C4PropList *C4Game::AllocateTranslatedString()
+{
+	C4PropListScript *value_proplist = new C4PropListScript();
+	value_proplist->SetProperty(P_Function, C4VString(&::Strings.P[P_Translate]));
+	return value_proplist;
+}

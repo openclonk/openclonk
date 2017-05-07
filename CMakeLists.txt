@@ -758,6 +758,9 @@ if(WITH_QT_EDITOR)
 	  src/editor/C4ConsoleQtNewScenario.cpp
 	  src/editor/C4ConsoleQtNewScenario.h
 	  src/editor/C4ConsoleQtNewScenario.ui
+	  src/editor/C4ConsoleQtLocalizeString.cpp
+	  src/editor/C4ConsoleQtLocalizeString.h
+	  src/editor/C4ConsoleQtLocalizeString.ui
 	  src/editor/C4ConsoleQtMainWindow.ui
 	  src/editor/resource.qrc
 	  ${qt_editor_resources}

@@ -125,15 +125,35 @@ public:
 	bool IsPasteValid(const C4Value &val) const override;
 };
 
-class C4PropertyDelegateStringEditor : public QLineEdit
+class C4PropertyDelegateStringEditor : public QWidget
 {
+	Q_OBJECT
+private:
+	QLineEdit *edit;
+	QPushButton *localization_button;
+	bool text_edited, commit_pending;
+	C4Value value;
+	char lang_code[3];
+	C4Value base_proplist;
+	std::unique_ptr<class C4ConsoleQtLocalizeStringDlg> localization_dialogue;
+
+	void OpenLocalizationDialogue();
+	void CloseLocalizationDialogue();
+	void StoreEditedText();
 public:
-	C4PropertyDelegateStringEditor(QWidget *parent) : QLineEdit(parent), commit_pending(false) {}
-	bool commit_pending;
+	C4PropertyDelegateStringEditor(QWidget *parent, bool has_localization_button);
+	void SetValue(const C4Value &val);
+	C4Value GetValue();
+	bool IsCommitPending() const { return commit_pending; }
+	void SetCommitPending(bool to_val) { commit_pending = to_val; }
+signals:
+	void EditingDoneSignal() const;
 };
 
 class C4PropertyDelegateString : public C4PropertyDelegate
 {
+private:
+	bool translatable;
 public:
 	typedef C4PropertyDelegateStringEditor Editor;
 

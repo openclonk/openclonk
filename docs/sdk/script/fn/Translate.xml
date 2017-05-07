@@ -34,6 +34,7 @@ MsgOnFire3=Oops, I dropped my lighter!</code>
         <text>When the clonk catches fire, the engine calls Incineration() in the clonk and in this example, one of the four above messages is displayed at random.</text>
       </example>
     </examples>
+    <related><funclink>GetTranslatedString</funclink></related>
   </func>
   <author>Isilkor</author><date>2009-11</date>
   <author>Newton</author><date>2011-06</date>

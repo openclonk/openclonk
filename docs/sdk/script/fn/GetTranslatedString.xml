@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetTranslatedString</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>string_data</name>
+          <desc>Either a string or a proplist containing multiple translations of a string. If a string or <code>nil</code> is passed, the parameter is returned directly. If a proplist is passed, the value corresponding to the selected language (or a fallback) is returned.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a string corresponding to the user's selected language. For <code>string_data</code>, the expected format is <code>{ Function="Translate", DE="Hallo, Welt", US="Hello, World"}</code>. If no matching entry is found or it is <code>nil</code>, then another language string is returned as a fallback.</desc>
+    <examples>
+      <example>
+        <code>Log(GetTranslatedString({ Function="Translate", DE="Dies ist ein Test.", US="This is a test."}));</code>
+        <text>Logs either "Dies ist ein Test." or "This is a test." depending on the player's language setting.</text>
+      </example>
+      <example>
+				<code>local inscription = "";
+
+// Players can read the sign via the interaction bar.
+public func IsInteractable() { return true; }
+
+// Called on player interaction.
+public func Interact(object clonk)
+{
+	if (!clonk) return false;
+	Dialogue->MessageBox(GetTranslatedString(inscription), clonk, this, clonk->GetController(), true);
+	return true;
+}
+
+public func SetInscription(to_text)
+{
+	inscription = to_text ?? "";
+	return true;
+}
+
+public func Definition(def)
+{
+	// Inscription props
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.inscription = { Name="Inscription", Type="string", Set="SetInscription", Save="Inscription", Translatable=true };
+}</code>
+				<text>Code for a signpost. The string editor property with setting <code>Translatable=true</code> provides a translation proplist in the correct format automatically.</text>
+      </example>
+    </examples>
+    <related><funclink>Translate</funclink></related>
+  </func>
+  <author>Sven2</author><date>2017-05</date>
+</funcs>

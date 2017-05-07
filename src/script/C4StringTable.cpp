@@ -311,6 +311,9 @@ C4StringTable::C4StringTable()
 	P[P_ForceSerialization] = "ForceSerialization";
 	P[P_DrawArrows] = "DrawArrows";
 	P[P_SCENPAR] = "SCENPAR";
+	P[P_Translatable] = "Translatable";
+	P[P_Function] = "Function";
+	P[P_Translate] = "Translate";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
