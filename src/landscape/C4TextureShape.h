@@ -28,12 +28,12 @@ class C4TextureShape
 private:
 	enum { Shape_None = 0xff }; // special value in data surface: No shape defined here.
 	CSurface8 data;
-	int32_t num_shapes;
+	int32_t num_shapes{0};
 	std::vector<bool> shape_border_x, shape_border_y; // whether shapes are touching horizontal/vertical borders
 	std::vector<int32_t> shape_pixnum; // number of pixels
 public:
-	C4TextureShape() : data(), num_shapes(0) {}
-	~C4TextureShape() {}
+	C4TextureShape() : data() {}
+	~C4TextureShape() = default;
 
 	void Clear();
 	bool Load(C4Group &group, const char *filename, int32_t base_tex_wdt, int32_t base_tex_hgt);

@@ -635,7 +635,7 @@ C4MapScriptLayer *C4MapScriptMap::CreateLayer(int32_t wdt, int32_t hgt)
 	return new_layer;
 }
 
-C4MapScriptHost::C4MapScriptHost(): LayerPrototype(nullptr), MapPrototype(nullptr), pTexMap(nullptr), pMatMap(nullptr) { }
+C4MapScriptHost::C4MapScriptHost() = default;
 
 C4MapScriptHost::~C4MapScriptHost() { Clear(); }
 

@@ -56,7 +56,7 @@ protected:
 		DensityProvider(class C4Object *pForObject, C4SolidMask &rSolidMaskData)
 				: pForObject(pForObject), rSolidMaskData(rSolidMaskData) {}
 
-		virtual int32_t GetDensity(int32_t x, int32_t y) const;
+		int32_t GetDensity(int32_t x, int32_t y) const override;
 	};
 	// Remove the solidmask temporarily
 	void RemoveTemporary(C4Rect where);
