@@ -287,7 +287,7 @@ namespace Ogre
 		Type type;
 		size_t size;
 	public:
-		virtual ~ChunkBase() {}
+		virtual ~ChunkBase() = default;
 		Type GetType() const { return type; }
 		size_t GetSize() const { return size; }
 
@@ -363,7 +363,7 @@ namespace Ogre
 		class ChunkUnknown : public Chunk
 		{
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkFileHeader : public Chunk
@@ -375,23 +375,23 @@ namespace Ogre
 			std::string version;
 
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkMesh : public Chunk
 		{
 		public:
-			ChunkMesh() : hasAnimatedSkeleton(false), radius(0.0f) {}
-			bool hasAnimatedSkeleton;
+			ChunkMesh() = default;
+			bool hasAnimatedSkeleton{false};
 			std::string skeletonFile;
 			std::unique_ptr<ChunkGeometry> geometry;
 			unique_ptr_vector<ChunkSubmesh> submeshes;
 			std::vector<BoneAssignment> boneAssignments;
 			StdMeshBox bounds;
-			float radius;
+			float radius{0.0f};
 
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkMeshSkeletonLink : public Chunk
@@ -399,13 +399,13 @@ namespace Ogre
 		public:
 			std::string skeleton;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkSubmesh : public Chunk
 		{
 		public:
-			ChunkSubmesh() : operation(SO_TriList) {}
+			ChunkSubmesh() = default;
 			std::string material;
 			bool hasSharedVertices;
 			std::vector<size_t> faceVertices;
@@ -420,10 +420,10 @@ namespace Ogre
 				SO_TriFan = 6,
 				SO_MIN = SO_PointList,
 				SO_MAX = SO_TriFan
-			} operation;
+			} operation{SO_TriList};
 			std::vector<BoneAssignment> boneAssignments;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkSubmeshOp : public Chunk
@@ -431,7 +431,7 @@ namespace Ogre
 		public:
 			ChunkSubmesh::SubmeshOperation operation;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkMeshBoneAssignments : public Chunk
@@ -439,7 +439,7 @@ namespace Ogre
 		public:
 			std::vector<BoneAssignment> assignments;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkMeshBounds : public Chunk
@@ -448,7 +448,7 @@ namespace Ogre
 			StdMeshBox bounds;
 			float radius;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkGeometry : public Chunk
@@ -458,7 +458,7 @@ namespace Ogre
 			unique_ptr_vector<ChunkGeometryVertexDeclElement> vertexDeclaration;
 			unique_ptr_vector<ChunkGeometryVertexBuffer> vertexBuffers;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkGeometryVertexDecl : public Chunk
@@ -466,7 +466,7 @@ namespace Ogre
 		public:
 			unique_ptr_vector<ChunkGeometryVertexDeclElement> declaration;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkGeometryVertexDeclElement : public Chunk
@@ -507,7 +507,7 @@ namespace Ogre
 			} semantic;
 			uint16_t index;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkGeometryVertexBuffer : public Chunk
@@ -517,17 +517,17 @@ namespace Ogre
 			uint16_t vertexSize;
 			std::unique_ptr<ChunkGeometryVertexData> data;
 		protected:
-			void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkGeometryVertexData : public Chunk
 		{
 		public:
-			ChunkGeometryVertexData() : data(nullptr) {}
-			~ChunkGeometryVertexData() { delete[] static_cast<char*>(data); }
-			void *data;
+			ChunkGeometryVertexData() = default;
+			~ChunkGeometryVertexData() override { delete[] static_cast<char*>(data); }
+			void *data{nullptr};
 		protected:
-			void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 	}
 
@@ -560,7 +560,7 @@ namespace Ogre
 		class ChunkUnknown : public Chunk
 		{
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkFileHeader : public Chunk
@@ -572,7 +572,7 @@ namespace Ogre
 			std::string version;
 
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkBlendMode : public Chunk
@@ -580,7 +580,7 @@ namespace Ogre
 		public:
 			uint16_t blend_mode;
 		protected:
-			virtual void ReadImpl(DataStream* stream);
+			void ReadImpl(DataStream* stream) override;
 		};
 
 		class ChunkBone : public Chunk
@@ -593,7 +593,7 @@ namespace Ogre
 			StdMeshQuaternion orientation;
 			StdMeshVector scale;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkBoneParent : public Chunk
@@ -602,7 +602,7 @@ namespace Ogre
 			uint16_t childHandle;
 			uint16_t parentHandle;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkAnimation : public Chunk
@@ -612,7 +612,7 @@ namespace Ogre
 			float duration;
 			unique_ptr_vector<ChunkAnimationTrack> tracks;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkAnimationBaseInfo : public Chunk
@@ -621,7 +621,7 @@ namespace Ogre
 			std::string base_animation_name;
 			float base_key_frame_time;
 		protected:
-			virtual void ReadImpl(DataStream* stream);
+			void ReadImpl(DataStream* stream) override;
 		};
 
 		class ChunkAnimationTrack : public Chunk
@@ -630,7 +630,7 @@ namespace Ogre
 			uint16_t bone;
 			unique_ptr_vector<ChunkAnimationTrackKF> keyframes;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkAnimationTrackKF : public Chunk
@@ -641,7 +641,7 @@ namespace Ogre
 			StdMeshVector translation;
 			StdMeshVector scale;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 
 		class ChunkAnimationLink : public Chunk
@@ -650,7 +650,7 @@ namespace Ogre
 			std::string file;
 			StdMeshVector scale;
 		protected:
-			virtual void ReadImpl(DataStream *stream);
+			void ReadImpl(DataStream *stream) override;
 		};
 	}
 }
