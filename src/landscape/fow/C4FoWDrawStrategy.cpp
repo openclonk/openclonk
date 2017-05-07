@@ -23,10 +23,7 @@
 #include "landscape/fow/C4FoWRegion.h"
 #include "graphics/C4DrawGL.h"
 
-C4FoWDrawTriangulator::C4FoWDrawTriangulator():
-  mode(M_Fan), cur_vertices(0), begin_vertices(0)
-{
-}
+C4FoWDrawTriangulator::C4FoWDrawTriangulator() = default;
 
 void C4FoWDrawTriangulator::Fan()
 {

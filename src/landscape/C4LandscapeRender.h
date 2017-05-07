@@ -79,14 +79,12 @@ class C4Landscape; class C4TextureMap;
 class C4LandscapeRender
 {
 public:
-	C4LandscapeRender()
-		: iWidth(0), iHeight(0), pTexs(nullptr) { }
-	virtual ~C4LandscapeRender()
-		{}
+	C4LandscapeRender() = default;
+	virtual ~C4LandscapeRender() = default;
 
 protected:
-	int32_t iWidth, iHeight;
-	C4TextureMap *pTexs;
+	int32_t iWidth{0}, iHeight{0};
+	C4TextureMap *pTexs{nullptr};
 
 public:
 
@@ -109,7 +107,7 @@ class C4LandscapeRenderGL : public C4LandscapeRender
 {
 public:
 	C4LandscapeRenderGL();
-	~C4LandscapeRenderGL();
+	~C4LandscapeRenderGL() override;
 
 private:
 	// surfaces
@@ -140,14 +138,14 @@ private:
 	C4FacetSurface fctScaler;
 
 public:
-	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
-	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
-	virtual void Clear();
+	bool ReInit(int32_t iWidth, int32_t iHeight) override;
+	bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics) override;
+	void Clear() override;
 
-	virtual C4Rect GetAffectedRect(C4Rect Rect);
-	virtual void Update(C4Rect Rect, C4Landscape *pSource);
+	C4Rect GetAffectedRect(C4Rect Rect) override;
+	void Update(C4Rect Rect, C4Landscape *pSource) override;
 
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light, uint32_t clrMod);
+	void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light, uint32_t clrMod) override;
 
 private:
 	bool InitLandscapeTexture();

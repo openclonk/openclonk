@@ -44,8 +44,8 @@ protected:
 	StdCopyStrBuf sMessage;
 
 public:
-	virtual ~C4AulError() { } // destructor
-	virtual const char *what() const noexcept;
+	~C4AulError() override = default; // destructor
+	const char *what() const noexcept override;
 };
 
 // parse error
@@ -75,7 +75,7 @@ public:
 private:
 	enum { HashSize = 1025 };
 	C4AulFunc * Funcs[HashSize];
-	int FuncCnt;
+	int FuncCnt{0};
 	static unsigned int Hash(const char * Name);
 protected:
 	void Add(C4AulFunc * func);
@@ -128,8 +128,8 @@ protected:
 	C4AulErrorHandler *ErrorHandler;
 
 public:
-	int warnCnt, errCnt; // number of warnings/errors
-	int lineCnt; // line count parsed
+	int warnCnt{0}, errCnt{0}; // number of warnings/errors
+	int lineCnt{0}; // line count parsed
 
 	C4ValueMapNames GlobalNamedNames;
 	C4ValueMapData GlobalNamed;
@@ -144,7 +144,7 @@ public:
 	C4Effect * pGlobalEffects = nullptr;
 
 	C4AulScriptEngine(); // constructor
-	~C4AulScriptEngine(); // destructor
+	~C4AulScriptEngine() override; // destructor
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink, link and parse all scripts
@@ -157,7 +157,7 @@ public:
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not nullptr
 
-	void Denumerate(C4ValueNumbers *);
+	void Denumerate(C4ValueNumbers *) override;
 	void UnLink(); // called when a script is being reloaded (clears string table)
 
 	// Compile scenario script data (without strings and constants)

@@ -35,7 +35,7 @@ const int32_t C4LSectorWdt = 50,
 class C4LSector
 {
 public:
-	C4LSector() { } // constructor
+	C4LSector() = default; // constructor
 	~C4LSector() { Clear(); } // destructor
 
 protected:

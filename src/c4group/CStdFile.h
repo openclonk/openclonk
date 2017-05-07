@@ -32,14 +32,14 @@ public:
 	virtual bool Advance(int iOffset) = 0;
 	// Get size. compatible with c4group!
 	virtual size_t AccessedEntrySize() const = 0;
-	virtual ~CStdStream() {}
+	virtual ~CStdStream() = default;
 };
 
 class CStdFile: public CStdStream
 {
 public:
 	CStdFile();
-	~CStdFile();
+	~CStdFile() override;
 	bool Status;
 	char Name[_MAX_PATH+1];
 protected:
@@ -57,7 +57,7 @@ public:
 	bool Append(const char *szFilename, bool text=false); // append (uncompressed only)
 	bool Close(StdBuf **ppMemory = nullptr);
 	bool Default();
-	bool Read(void *pBuffer, size_t iSize) override { return Read(pBuffer, iSize, 0); }
+	bool Read(void *pBuffer, size_t iSize) override { return Read(pBuffer, iSize, nullptr); }
 	bool Read(void *pBuffer, size_t iSize, size_t *ipFSize);
 	bool Write(const void *pBuffer, int iSize);
 	bool WriteString(const char *szStr);

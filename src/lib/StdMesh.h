@@ -27,7 +27,7 @@ class StdMeshBone
 	friend class StdMeshSkeletonLoader;
 	friend class StdMeshXML;
 public:
-	StdMeshBone() {}
+	StdMeshBone() = default;
 
 	unsigned int Index; // Index in master bone table
 	int ID; // Bone ID
@@ -88,7 +88,7 @@ class StdMeshAnimation
 	friend class StdMeshInstance;
 	friend class StdMeshInstanceAnimationNode;
 public:
-	StdMeshAnimation() {}
+	StdMeshAnimation() = default;
 	StdMeshAnimation(const StdMeshAnimation& other);
 	~StdMeshAnimation();
 
@@ -174,14 +174,14 @@ public:
 	size_t GetOffsetInIBO() const { return index_buffer_offset; }
 
 private:
-	StdSubMesh();
+	StdSubMesh() = default;
 
 	std::vector<Vertex> Vertices; // Empty if we use shared vertices
 	std::vector<StdMeshFace> Faces;
-	size_t vertex_buffer_offset;
-	size_t index_buffer_offset;
+	size_t vertex_buffer_offset{0};
+	size_t index_buffer_offset{0};
 
-	const StdMeshMaterial* Material;
+	const StdMeshMaterial* Material{nullptr};
 };
 
 class StdMesh
@@ -218,9 +218,9 @@ public:
 
 private:
 #ifndef USE_CONSOLE
-	GLuint vbo;
-	GLuint ibo;
-	unsigned int vaoid;
+	GLuint vbo{0};
+	GLuint ibo{0};
+	unsigned int vaoid{0};
 	void UpdateVBO();
 	void UpdateIBO();
 #endif
@@ -260,7 +260,7 @@ public:
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
-	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : 0; }
+	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : nullptr; }
 	size_t GetNumFaces() const { return Faces.size(); }
 	const StdSubMesh &GetSubMesh() const { return *base; }
 
@@ -313,7 +313,7 @@ class StdMeshInstanceValueProvider
 {
 public:
 	StdMeshInstanceValueProvider(): Value(Fix0) {}
-	virtual ~StdMeshInstanceValueProvider() {}
+	virtual ~StdMeshInstanceValueProvider() = default;
 
 	// Return false if the corresponding node is to be removed or true
 	// otherwise.
@@ -363,8 +363,8 @@ public:
 protected:
 	int Slot;
 	unsigned int Number;
-	NodeType Type;
-	AnimationNode* Parent; // NoSave
+	NodeType Type{LeafNode};
+	AnimationNode* Parent{nullptr}; // NoSave
 
 	union
 	{
@@ -460,18 +460,18 @@ public:
 		static const IDBase* Lookup(const char* name)
 		{
 			if(!IDs) return nullptr;
-			for(unsigned int i = 0; i < IDs->size(); ++i)
-				if(strcmp((*IDs)[i]->name, name) == 0)
-					return (*IDs)[i];
+			for(auto & ID : *IDs)
+				if(strcmp(ID->name, name) == 0)
+					return ID;
 			return nullptr;
 		}
 
 		static const IDBase* Lookup(const std::type_info& type)
 		{
 			if(!IDs) return nullptr;
-			for(unsigned int i = 0; i < IDs->size(); ++i)
-				if((*IDs)[i]->type == type)
-					return (*IDs)[i];
+			for(auto & ID : *IDs)
+				if(ID->type == type)
+					return ID;
 			return nullptr;
 		}
 
@@ -489,7 +489,7 @@ public:
 		class Denumerator
 		{
 		public:
-			virtual ~Denumerator() {}
+			virtual ~Denumerator() = default;
 
 			virtual void CompileFunc(StdCompiler* pComp, AttachedMesh* attach) = 0;
 			virtual void DenumeratePointers(AttachedMesh* attach) {}
@@ -506,11 +506,11 @@ public:
 		             unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform, uint32_t flags);
 		~AttachedMesh();
 
-		uint32_t Number;
-		StdMeshInstance* Parent; // NoSave (set by parent)
-		StdMeshInstance* Child;
-		bool OwnChild; // NoSave
-		Denumerator* ChildDenumerator;
+		uint32_t Number{0};
+		StdMeshInstance* Parent{nullptr}; // NoSave (set by parent)
+		StdMeshInstance* Child{nullptr};
+		bool OwnChild{true}; // NoSave
+		Denumerator* ChildDenumerator{nullptr};
 
 		bool SetParentBone(const StdStrBuf& bone);
 		bool SetChildBone(const StdStrBuf& bone);
@@ -526,14 +526,14 @@ public:
 		unsigned int GetChildBone() const { return ChildBone; }
 
 	private:
-		unsigned int ParentBone;
-		unsigned int ChildBone;
+		unsigned int ParentBone{0};
+		unsigned int ChildBone{0};
 		StdMeshMatrix AttachTrans;
 		uint32_t Flags;
 
 		// Cache final attach transformation, updated in UpdateBoneTransform
 		StdMeshMatrix FinalTrans; // NoSave
-		bool FinalTransformDirty; // NoSave; Whether FinalTrans is up to date or not
+		bool FinalTransformDirty{false}; // NoSave; Whether FinalTrans is up to date or not
 
 		std::vector<int> MatchedBoneInParentSkeleton; // Only filled if AM_MatchSkeleton is set
 

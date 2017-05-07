@@ -39,7 +39,7 @@ C4Texture::~C4Texture()
 }
 
 C4TexMapEntry::C4TexMapEntry()
-		: iMaterialIndex(MNone), pMaterial(nullptr)
+		: iMaterialIndex(MNone)
 {
 }
 
@@ -90,7 +90,7 @@ bool C4TexMapEntry::Init()
 	return true;
 }
 
-C4TextureMap::C4TextureMap() : FirstTexture(nullptr), fEntriesAdded(false), fOverloadMaterials(false), fOverloadTextures(false), fInitialized(false)
+C4TextureMap::C4TextureMap()
 {
 	Order.reserve(C4M_MaxTexIndex);
 }

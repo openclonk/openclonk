@@ -38,7 +38,7 @@ public:
 	// Will take over buffer ownership. Copies data if specified.
 	// Note: Construct with Buf2.getRef() to construct a reference (This will work for a constant Buf2, too)
 	StdBuf(StdBuf & Buf2, bool fCopy = false)
-			: fRef(true), pData(nullptr), iSize(0)
+			: pData(nullptr)
 	{
 		if (fCopy)
 			Copy(Buf2);
@@ -48,7 +48,7 @@ public:
 			Ref(Buf2);
 	}
 	StdBuf(const StdBuf & Buf2, bool fCopy = true)
-			: fRef(true), pData(nullptr), iSize(0)
+			: pData(nullptr)
 	{
 		if (fCopy)
 			Copy(Buf2);
@@ -56,7 +56,7 @@ public:
 			Ref(Buf2);
 	}
 	StdBuf(StdBuf && Buf2) noexcept
-			: fRef(true), pData(nullptr), iSize(0)
+			: pData(nullptr)
 	{
 		if (!Buf2.isRef())
 			Take(std::move(Buf2));
@@ -66,7 +66,7 @@ public:
 
 	// Set by constant data. Copies data if desired.
 	StdBuf(const void *pData, size_t iSize, bool fCopy = false)
-			: fRef(true), pData(pData), iSize(iSize)
+			: pData(pData), iSize(iSize)
 	{
 		if (fCopy) Copy();
 	}
@@ -83,7 +83,7 @@ protected:
 	// Data
 	union
 	{
-		const void *pData = 0;
+		const void *pData = nullptr;
 		void *pMData;
 #if defined(_DEBUG)
 		char *szString; // for debugger preview
@@ -668,8 +668,8 @@ public:
 
 	void EscapeString()
 	{
-		Replace("\\", "\\\\");
-		Replace("\"", "\\\"");
+		Replace(R"(\)", R"(\\)");
+		Replace(R"(")", R"(\")");
 	}
 
 	bool TrimSpaces(); // kill spaces at beginning and end. Return if changed.

@@ -918,7 +918,7 @@ void C4SortObject::SortObjects(C4ValueArray *pArray)
 // *** C4SortObjectByValue
 
 C4SortObjectByValue::C4SortObjectByValue()
-		: C4SortObject(), pVals(nullptr), iSize(0)
+		: C4SortObject()
 {
 }
 

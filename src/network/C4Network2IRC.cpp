@@ -177,14 +177,7 @@ void C4Network2IRCChannel::ClearUsers()
 // *** C4Network2IRCClient
 // Created statically in C4Application.cpp, refer by &Application.IRCClient
 
-C4Network2IRCClient::C4Network2IRCClient()
-		: fConnecting(false), fConnected(false),
-		pChannels(nullptr),
-		pLog(nullptr), pLogEnd(nullptr), iLogLength(0), iUnreadLogLength(0),
-		pNotify(nullptr)
-{
-
-}
+C4Network2IRCClient::C4Network2IRCClient() = default;
 
 C4Network2IRCClient::~C4Network2IRCClient()
 {

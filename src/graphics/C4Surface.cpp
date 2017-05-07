@@ -34,12 +34,12 @@
 #include <io.h>
 #endif
 
-C4Surface::C4Surface() : fIsBackground(false)
+C4Surface::C4Surface()
 {
 	Default();
 }
 
-C4Surface::C4Surface(int iWdt, int iHgt, int iFlags) : fIsBackground(false)
+C4Surface::C4Surface(int iWdt, int iHgt, int iFlags)
 {
 	Default();
 	// create

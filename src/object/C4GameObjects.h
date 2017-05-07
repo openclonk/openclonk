@@ -27,13 +27,13 @@ class C4GameObjects : public C4NotifyingObjectList
 {
 public:
 	C4GameObjects(); // constructor
-	~C4GameObjects(); // destructor
-	void Default();
+	~C4GameObjects() override; // destructor
+	void Default() override;
 	void Init(int32_t iWidth, int32_t iHeight);
 	void Clear(bool fClearInactive); // clear objects
 	// don't use default parameters so we get a correct vtbl entry
 	// don't clear internal objects, because they should not be cleared on section load
-	void Clear() { Clear(false); }
+	void Clear() override { Clear(false); }
 
 private:
 	uint32_t LastUsedMarker; // last used value for C4Object::Marker
@@ -45,7 +45,7 @@ public:
 
 	using C4ObjectList::Add;
 	bool Add(C4Object *nObj); // add object
-	bool Remove(C4Object *pObj); // clear pointers to object
+	bool Remove(C4Object *pObj) override; // clear pointers to object
 
 	C4ObjectList &ObjectsAt(int ix, int iy); // get object list for map pos
 
@@ -71,8 +71,8 @@ public:
 
 	void DeleteObjects(bool fDeleteInactive); // delete all objects and links
 
-	bool ValidateOwners();
-	bool AssignInfo();
+	bool ValidateOwners() override;
+	bool AssignInfo() override;
 	void AssignLightRange();
 	void SyncClearance();
 	void ResetAudibility();

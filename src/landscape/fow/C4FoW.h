@@ -32,7 +32,7 @@
 class C4FragTransform
 {
 public:
-	C4FragTransform(): x(1.0f), y(1.0f), x0(0.0f), y0(0.0f) {}
+	C4FragTransform() = default;
 
 	// Multiplies from left
 	inline void Translate(float dx, float dy)
@@ -62,8 +62,8 @@ public:
 	}
 
 private:
-	float x, y;
-	float x0, y0;
+	float x{1.0f}, y{1.0f};
+	float x0{0.0f}, y0{0.0f};
 };
 
 enum C4FoWFramebufShaderUniforms {
@@ -106,10 +106,10 @@ public:
 
 private:
 	/** linked list of all lights */
-	class C4FoWLight *pLights;
+	class C4FoWLight *pLights{nullptr};
 
 	/** linked list of all dead light objects to be deleted on next render pass*/
-	class C4FoWLight *deleted_lights;
+	class C4FoWLight *deleted_lights{nullptr};
 
 public:
 	C4FoWAmbient Ambient;

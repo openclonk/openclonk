@@ -184,11 +184,7 @@ void C4PktBuf::CompileFunc(StdCompiler *pComp)
 
 // *** C4IDPacket
 
-C4IDPacket::C4IDPacket()
-		: eID(PID_None), pPkt(nullptr), fOwnPkt(true), pNext(nullptr)
-{
-
-}
+C4IDPacket::C4IDPacket() = default;
 
 C4IDPacket::C4IDPacket(C4PacketType eID, C4PacketBase *pPkt, bool fTakePkt)
 		: eID(eID), pPkt(pPkt), fOwnPkt(fTakePkt), pNext(nullptr)
@@ -197,8 +193,7 @@ C4IDPacket::C4IDPacket(C4PacketType eID, C4PacketBase *pPkt, bool fTakePkt)
 }
 
 C4IDPacket::C4IDPacket(const C4IDPacket &Packet2)
-		: C4PacketBase(Packet2),
-		eID(PID_None), pPkt(nullptr), fOwnPkt(true), pNext(nullptr)
+		: C4PacketBase(Packet2)
 {
 	// kinda hacky (note this might throw an uncaught exception)
 	C4PacketBase::unpack(Packet2.C4PacketBase::pack());
@@ -259,11 +254,7 @@ void C4IDPacket::CompileFunc(StdCompiler *pComp)
 
 // *** C4PacketList
 
-C4PacketList::C4PacketList()
-		: pFirst(nullptr), pLast(nullptr)
-{
-
-}
+C4PacketList::C4PacketList() = default;
 
 C4PacketList::C4PacketList(const C4PacketList &List2)
 		: C4PacketBase(List2),
@@ -440,15 +431,10 @@ void C4PacketConnRe::CompileFunc(StdCompiler *pComp)
 
 // *** C4PacketFwd
 
-C4PacketFwd::C4PacketFwd()
-		: fNegativeList(false),
-		iClientCnt(0)
-{
-}
+C4PacketFwd::C4PacketFwd() = default;
 
 C4PacketFwd::C4PacketFwd(const StdBuf &Pkt)
-		: fNegativeList(false), iClientCnt(0),
-		Data(Pkt)
+		: Data(Pkt)
 {
 }
 
@@ -537,11 +523,7 @@ void C4PacketResStatus::CompileFunc(StdCompiler *pComp)
 
 // *** C4PacketResDiscover
 
-C4PacketResDiscover::C4PacketResDiscover()
-		: iDisIDCnt(0)
-{
-
-}
+C4PacketResDiscover::C4PacketResDiscover() = default;
 
 bool C4PacketResDiscover::isIDPresent(int32_t iID) const
 {

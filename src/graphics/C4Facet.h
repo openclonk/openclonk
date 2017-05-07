@@ -68,9 +68,7 @@ public:
 		Set(1,0,0,0,1,0,0,0,1);
 	}
 
-	~C4DrawTransform()
-	{
-	}
+	~C4DrawTransform() = default;
 
 	// do transform at given offset - doesn't init FlipDir (for temp use only)
 	void SetTransformAt(C4DrawTransform &rCopy, float iOffX, float iOffY);
@@ -162,7 +160,7 @@ class C4TargetFacet: public C4Facet
 {
 public:
 	C4TargetFacet() { Default(); }
-	~C4TargetFacet() { }
+	~C4TargetFacet() = default;
 public:
 	float TargetX,TargetY,Zoom;
 

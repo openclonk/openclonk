@@ -106,8 +106,6 @@ C4Game::C4Game():
 		Input(Control.Input),
 		KeyboardInput(C4KeyboardInput_Init()),
 		pSec1Timer(new C4GameSec1Timer()),
-		fPreinited(false), StartupLogPos(0), QuitLogPos(0),
-		fQuitWithError(false),
 		GlobalSoundModifier(GameGlobalSoundModifier)
 {
 	Default();

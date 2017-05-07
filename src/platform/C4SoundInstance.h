@@ -30,11 +30,11 @@ public:
 	~C4SoundEffect();
 public:
 	char Name[C4MaxSoundName+1];
-	int32_t Instances;
+	int32_t Instances{0};
 	int32_t SampleRate, Length;
-	C4SoundHandle pSample;
-	C4SoundInstance *FirstInst;
-	C4SoundEffect *Next;
+	C4SoundHandle pSample{0};
+	C4SoundInstance *FirstInst{nullptr};
+	C4SoundEffect *Next{nullptr};
 public:
 	void Clear();
 	bool Load(const char *szFileName, C4Group &hGroup, const char *namespace_prefix);
@@ -62,17 +62,17 @@ protected:
 public:
 	~C4SoundInstance();
 protected:
-	C4SoundEffect *pEffect;
-	int32_t iVolume, iPan, iPitch, iChannel;
-	bool pitch_dirty;
+	C4SoundEffect *pEffect{nullptr};
+	int32_t iVolume{0}, iPan{0}, iPitch{0}, iChannel{-1};
+	bool pitch_dirty{false};
 	C4TimeMilliseconds tStarted;
 	int32_t iNearInstanceMax;
 	bool fLooping;
 	C4Object *pObj;
 	int32_t iFalloffDistance;
-	C4SoundModifier *modifier;
-	bool has_local_modifier;
-	C4SoundInstance *pNext;
+	C4SoundModifier *modifier{nullptr};
+	bool has_local_modifier{false};
+	C4SoundInstance *pNext{nullptr};
 
 	// NO_OWNER or a player number signifying which player owns the viewport in which the sound is heard (best)
 	// Note that this does NOT correspond to the player number given in the Sound() script function

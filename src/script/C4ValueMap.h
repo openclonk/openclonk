@@ -38,14 +38,14 @@ public:
 	bool operator == (const C4ValueMapData &Data) const;
 
 	// data array
-	C4Value *pData;
+	C4Value *pData{nullptr};
 
 	// pointer on name list
-	C4ValueMapNames *pNames;
+	C4ValueMapNames *pNames{nullptr};
 
 	// using temporary name list?
 	// (delete when changing list)
-	bool bTempNameList;
+	bool bTempNameList{false};
 
 
 	// returns the item specified or 0 if it doesn't exist
@@ -74,7 +74,7 @@ public:
 private:
 
 	// a list linking all data lists using the same name list together.
-	C4ValueMapData *pNext;
+	C4ValueMapData *pNext{nullptr};
 
 	void Register(C4ValueMapNames *pnNames);
 	void UnRegister();
@@ -103,10 +103,10 @@ public:
 
 
 	// name array
-	char **pNames;
+	char **pNames{nullptr};
 
 	// item count
-	int32_t iSize;
+	int32_t iSize{0};
 
 
 	// set name array
@@ -128,7 +128,7 @@ public:
 private:
 
 	// points to first data list using this name list
-	C4ValueMapData *pFirst;
+	C4ValueMapData *pFirst{nullptr};
 
 	void Register(C4ValueMapData *pData);
 	void UnRegister(C4ValueMapData *pData);

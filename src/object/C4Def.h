@@ -172,7 +172,7 @@ private:
 	friend class C4DefList;
 public:
 	C4Def();
-	~C4Def();
+	~C4Def() override;
 public:
 	char Filename[_MAX_FNAME+1];
 	StdCopyStrBuf ConsoleGroupPath; // file path as used in the definition list viewer in the console. Only initialized in editor mode.
@@ -212,9 +212,9 @@ public:
 	int32_t GetPlane() { return GetPropertyInt(P_Plane); }
 	int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
 	void Synchronize();
-	virtual C4Def const * GetDef() const { return this; }	
-	virtual C4Def * GetDef() { return this; }
-	virtual bool Delete() { return false; }
+	C4Def const * GetDef() const override { return this; }	
+	C4Def * GetDef() override { return this; }
+	bool Delete() override { return false; }
 protected:
 	bool LoadActMap(C4Group &hGroup);
 	void CrossMapActMap();

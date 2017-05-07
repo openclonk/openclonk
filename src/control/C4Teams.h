@@ -32,9 +32,9 @@ class C4Team
 private:
 	// std::vector...
 	// containing player info IDs
-	int32_t *piPlayers;
-	int32_t iPlayerCount;
-	int32_t iPlayerCapacity;
+	int32_t *piPlayers{nullptr};
+	int32_t iPlayerCount{0};
+	int32_t iPlayerCapacity{0};
 
 public:
 	// copying
@@ -43,17 +43,17 @@ public:
 
 protected:
 	// team identification; usually > 0 for a valid team
-	int32_t iID;
+	int32_t iID{0};
 	char Name[C4MaxName+1];
-	int32_t iPlrStartIndex; // 0 for unassigned; 1 to 4 if all players of that team shall be assigned a specific [Player*]-section in the Scenario.txt
-	uint32_t dwClr; // team color
+	int32_t iPlrStartIndex{0}; // 0 for unassigned; 1 to 4 if all players of that team shall be assigned a specific [Player*]-section in the Scenario.txt
+	uint32_t dwClr{0}; // team color
 	StdCopyStrBuf sIconSpec; // icon drawing specification for offline or runtime team selection dialog
-	int32_t iMaxPlayer; // maximum number of players allowed in this team - 0 for infinite
+	int32_t iMaxPlayer{0}; // maximum number of players allowed in this team - 0 for infinite
 
 	friend class C4TeamList;
 
 public:
-	C4Team() : piPlayers(nullptr), iPlayerCount(0), iPlayerCapacity(0), iID(0), iPlrStartIndex(0), dwClr(0), iMaxPlayer(0) { *Name=0; }
+	C4Team()  { *Name=0; }
 	~C4Team() { Clear(); }
 
 	void Clear();
@@ -115,24 +115,23 @@ public:
 
 private:
 	// std::vector...
-	C4Team **ppList;
-	int32_t iTeamCount;
-	int32_t iTeamCapacity;
+	C4Team **ppList{nullptr};
+	int32_t iTeamCount{0};
+	int32_t iTeamCapacity{0};
 
-	int32_t iLastTeamID;
-	bool fAllowHostilityChange; // hostility not fixed
-	bool fAllowTeamSwitch; // teams not fixed
-	bool fActive;
-	bool fCustom; // set if read from team file or changed in scenario
-	bool fTeamColors; // if set, player colors are determined by team colors
-	bool fAutoGenerateTeams; // teams are generated automatically so there's enough teams for everyone
-	TeamDist eTeamDist;
-	int32_t iMaxScriptPlayers; // maximum number of script players to be added in the lobby
+	int32_t iLastTeamID{0};
+	bool fAllowHostilityChange{true}; // hostility not fixed
+	bool fAllowTeamSwitch{false}; // teams not fixed
+	bool fActive{true};
+	bool fCustom{false}; // set if read from team file or changed in scenario
+	bool fTeamColors{false}; // if set, player colors are determined by team colors
+	bool fAutoGenerateTeams{false}; // teams are generated automatically so there's enough teams for everyone
+	TeamDist eTeamDist{TEAMDIST_Free};
+	int32_t iMaxScriptPlayers{0}; // maximum number of script players to be added in the lobby
 	StdStrBuf sScriptPlayerNames; // default script player names
 
 public:
-	C4TeamList() : ppList(nullptr), iTeamCount(0), iTeamCapacity(0), iLastTeamID(0), fAllowHostilityChange(true), fAllowTeamSwitch(false),
-			fActive(true), fCustom(false), fTeamColors(false), fAutoGenerateTeams(false), eTeamDist(TEAMDIST_Free), iMaxScriptPlayers(0) {}
+	C4TeamList() = default;
 	~C4TeamList() { Clear(); }
 	void Clear();
 

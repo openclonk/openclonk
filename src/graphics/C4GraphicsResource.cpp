@@ -29,7 +29,6 @@
 /* C4GraphicsResource */
 
 C4GraphicsResource::C4GraphicsResource():
-	idSfcCaption(0), idSfcButton(0), idSfcButtonD(0), idSfcScroll(0), idSfcContext(0),
 	CaptionFont(FontCaption), TitleFont(FontTitle), TextFont(FontRegular), MiniFont(FontTiny), TooltipFont(FontTooltip)
 {
 	Default();

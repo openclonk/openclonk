@@ -66,7 +66,7 @@ class C4MenuItem : public C4GUI::Element
 {
 	friend class C4Menu;
 public:
-	~C4MenuItem();
+	~C4MenuItem() override;
 protected:
 	char Caption[C4MaxTitle+1];
 	char Command[_MAX_FNAME+30+1];
@@ -93,7 +93,7 @@ private:
 	int32_t GetSymbolWidth(int32_t iForHeight);
 
 protected:
-	virtual void DrawElement(C4TargetFacet &cgo); // draw menu item
+	void DrawElement(C4TargetFacet &cgo) override; // draw menu item
 
 	// ctor
 	C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption, const char *szCommand,
@@ -115,8 +115,8 @@ public:
 	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = nullptr; if(pObj == pSymbolObj) pSymbolObj = nullptr; }
 
 	// GUI calls
-	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-	virtual void MouseEnter(class C4GUI::CMouse &rMouse); // called when mouse cursor enters element region: Select this item (deselects any other)
+	void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
+	void MouseEnter(class C4GUI::CMouse &rMouse) override; // called when mouse cursor enters element region: Select this item (deselects any other)
 };
 
 class C4Menu : public C4GUI::Dialog
@@ -124,7 +124,7 @@ class C4Menu : public C4GUI::Dialog
 	typedef C4GUI::Dialog BaseClass;
 public:
 	C4Menu();
-	~C4Menu() { Clear(); }
+	~C4Menu() override { Clear(); }
 
 	void Clear();
 	virtual void Default();
@@ -237,27 +237,27 @@ protected:
 	virtual bool IsReadOnly() { return false; } // determine whether the menu is just viewed by an observer, and should not issue any calls
 	virtual int32_t GetControllingPlayer() { return NO_OWNER; }
 
-	virtual const char *GetID() { return 0; } // no ID needed, because it's a viewport dlg
+	const char *GetID() override { return nullptr; } // no ID needed, because it's a viewport dlg
 
 	bool HasPortrait() { return fHasPortrait; } // dialog menus only: Whether a portrait is shown in the topleft
 
 protected:
 	// C4GUI
-	virtual C4Viewport *GetViewport();              // return associated viewport
-	virtual bool IsExternalDrawDialog() { return true; } // drawn by viewport drawing proc
-	virtual bool IsMouseControlled() { return false; }
-	virtual void UpdateOwnPos();
+	C4Viewport *GetViewport() override;              // return associated viewport
+	bool IsExternalDrawDialog() override { return true; } // drawn by viewport drawing proc
+	bool IsMouseControlled() override { return false; }
+	void UpdateOwnPos() override;
 	void UpdateElementPositions();            // reposition list items so they are stacked vertically
-	virtual int32_t GetZOrdering() { return -1; }
-	virtual void Draw(C4TargetFacet &cgo);
-	virtual void DrawElement(C4TargetFacet &cgo); // draw menu
-	virtual bool IsOwnPtrElement() { return true; }
-	virtual void UserClose(bool fOK);
+	int32_t GetZOrdering() override { return -1; }
+	void Draw(C4TargetFacet &cgo) override;
+	void DrawElement(C4TargetFacet &cgo) override; // draw menu
+	bool IsOwnPtrElement() override { return true; }
+	void UserClose(bool fOK) override;
 
 	// bottom area needed for extra info
-	virtual int32_t GetMarginBottom() { return ((Extra) ? C4MN_SymbolSize : 0) + C4MN_FrameWidth + BaseClass::GetMarginBottom(); }
-	virtual int32_t GetMarginLeft() { return C4MN_FrameWidth + BaseClass::GetMarginLeft(); }
-	virtual int32_t GetMarginRight() { return C4MN_FrameWidth + BaseClass::GetMarginRight(); }
+	int32_t GetMarginBottom() override { return ((Extra) ? C4MN_SymbolSize : 0) + C4MN_FrameWidth + BaseClass::GetMarginBottom(); }
+	int32_t GetMarginLeft() override { return C4MN_FrameWidth + BaseClass::GetMarginLeft(); }
+	int32_t GetMarginRight() override { return C4MN_FrameWidth + BaseClass::GetMarginRight(); }
 
 	friend class C4Viewport; // for drawing
 	friend class C4MenuItem;

@@ -45,7 +45,6 @@ void C4ConsoleQtDefinitionListModel::DefListNode::SortByName()
 /* Defintion view model */
 
 C4ConsoleQtDefinitionListModel::C4ConsoleQtDefinitionListModel()
-	: last_row_count(0)
 {
 	// initial model data
 	ReInit();

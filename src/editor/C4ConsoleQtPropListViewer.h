@@ -43,7 +43,7 @@ protected:
 
 public:
 	C4PropertyDelegate(const class C4PropertyDelegateFactory *factory, C4PropList *props);
-	virtual ~C4PropertyDelegate() { }
+	~C4PropertyDelegate() override = default;
 
 	virtual void SetEditorData(QWidget *editor, const C4Value &val, const C4PropertyPath &property_path) const {};
 	virtual void SetModelData(QObject *editor, const C4PropertyPath &property_path, class C4ConsoleQtShape *prop_shape) const {};
@@ -334,12 +334,12 @@ public:
 		C4RefCntPointer<C4String> option_key;
 		C4RefCntPointer<C4String> value_key;
 		C4RefCntPointer<C4String> sound_name; // Assigned for options that have a play button
-		C4V_Type type; // Assume this option is set when value is of given type
+		C4V_Type type{C4V_Any}; // Assume this option is set when value is of given type
 		C4Value props; // Stored pointer to proplist defining this option
 		C4Value value; // Value to set if this entry is selected
-		bool force_serialization; // If serialization should be forced on value
+		bool force_serialization{false}; // If serialization should be forced on value
 		C4Value value_function; // Function to be called to set value
-		mutable C4PropertyDelegate *adelegate; // Delegate to display if this entry is selected (pointer owned by C4PropertyDelegateFactory)
+		mutable C4PropertyDelegate *adelegate{nullptr}; // Delegate to display if this entry is selected (pointer owned by C4PropertyDelegateFactory)
 		C4Value adelegate_val; // Value to resolve adelegate from
 		// How the currently selected option is identified from the value
 		enum StorageType {
@@ -347,10 +347,10 @@ public:
 			StorageByType=1, // Use type to identify this enum
 			StorageByValue=2, // This option sets a constant value
 			StorageByKey=3, // Assume value is a proplist; identify option by field option_key
-		} storage_type;
-		int32_t priority; // Custom sort order
+		} storage_type{StorageNone};
+		int32_t priority{0}; // Custom sort order
 
-		Option() : type(C4V_Any), adelegate(nullptr), storage_type(StorageNone), priority(0), force_serialization(false) {}
+		Option() = default;
 	};
 
 protected:
@@ -581,17 +581,17 @@ class C4PropertyDelegateFactory : public QStyledItemDelegate
 
 	mutable std::map<C4PropList *, std::unique_ptr<C4PropertyDelegate> > delegates;
 	mutable C4PropertyDelegateEffect effect_delegate;
-	mutable QWidget *current_editor;
+	mutable QWidget *current_editor{nullptr};
 	mutable C4PropertyDelegate *current_editor_delegate;
 	mutable C4Value last_edited_value;
-	class C4ConsoleQtPropListModel *property_model;
+	class C4ConsoleQtPropListModel *property_model{nullptr};
 	class C4ConsoleQtDefinitionListModel *def_list_model;
 
 	C4PropertyDelegate *CreateDelegateByPropList(C4PropList *props) const;
 	C4PropertyDelegate *GetDelegateByIndex(const QModelIndex &index) const;
 public:
 	C4PropertyDelegateFactory();
-	~C4PropertyDelegateFactory() { }
+	~C4PropertyDelegateFactory() override = default;
 
 	C4PropertyDelegate *GetDelegateByValue(const C4Value &val) const;
 	C4PropertyDelegateEffect *GetEffectDelegate() const { return &effect_delegate; }
@@ -620,7 +620,7 @@ protected:
 	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 };
 
 // Delegate for the name column of the property window
@@ -629,10 +629,10 @@ class C4PropertyNameDelegate : public C4StyledItemDelegateWithButton
 {
 	Q_OBJECT
 
-	class C4ConsoleQtPropListModel *property_model;
+	class C4ConsoleQtPropListModel *property_model{nullptr};
 
 public:
-	C4PropertyNameDelegate() : C4StyledItemDelegateWithButton(C4StyledItemDelegateWithButton::BT_Help), property_model(nullptr) { }
+	C4PropertyNameDelegate() : C4StyledItemDelegateWithButton(C4StyledItemDelegateWithButton::BT_Help) { }
 
 	void SetPropertyModel(class C4ConsoleQtPropListModel *new_property_model) { property_model = new_property_model; }
 };
@@ -646,19 +646,19 @@ struct C4ConsoleQtPropListModelProperty
 	C4RefCntPointer<C4String> help_text;
 	C4RefCntPointer<C4String> key;
 	C4Value delegate_info;
-	C4PropertyDelegate *delegate;
-	bool about_to_edit;
-	int32_t priority;
+	C4PropertyDelegate *delegate{nullptr};
+	bool about_to_edit{false};
+	int32_t priority{0};
 
 	// Parent group index
-	int32_t group_idx;
+	int32_t group_idx{-1};
 
 	// Each property may be connected to one shape shown in the viewport for editing
 	C4ConsoleQtShapeHolder *shape;
-	const C4PropertyDelegate *shape_delegate;
+	const C4PropertyDelegate *shape_delegate{nullptr};
 	C4PropertyPath shape_property_path;
 
-	C4ConsoleQtPropListModelProperty() : delegate(nullptr), about_to_edit(false), priority(0), group_idx(-1), shape_delegate(nullptr) {}
+	C4ConsoleQtPropListModelProperty() = default;
 };
 
 // Prop list view implemented as a model view
@@ -702,7 +702,7 @@ private:
 	std::map<std::string, C4ConsoleQtShapeHolder> shapes; // shapes currently shown in editor. Indexed by get path
 public:
 	C4ConsoleQtPropListModel(C4PropertyDelegateFactory *delegate_factory);
-	~C4ConsoleQtPropListModel();
+	~C4ConsoleQtPropListModel() override;
 
 	void SetSelectionModel(QItemSelectionModel *m) { selection_model = m; }
 	QItemSelectionModel *GetSelectionModel() const { return selection_model; }

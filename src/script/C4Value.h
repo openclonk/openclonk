@@ -66,14 +66,14 @@ class C4JSONSerializationError : public std::exception
 	std::string msg;
 public:
 	C4JSONSerializationError(const std::string& msg) : msg(msg) {}
-	virtual const char* what() const noexcept override { return msg.c_str(); }
+	const char* what() const noexcept override { return msg.c_str(); }
 };
 
 class C4Value
 {
 public:
 
-	C4Value() : NextRef(nullptr), Type(C4V_Nil) { Data = 0; }
+	C4Value() { Data = nullptr; }
 
 	C4Value(const C4Value &nValue) : Data(nValue.Data), NextRef(nullptr), Type(nValue.Type)
 	{ AddDataRef(); }
@@ -110,7 +110,7 @@ public:
 
 	// Checked getters
 	int32_t getInt() const { return CheckConversion(C4V_Int) ? Data.Int : 0; }
-	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : 0; }
+	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : false; }
 	C4Object * getObj() const;
 	C4Def * getDef() const;
 	C4PropList * getPropList() const { return CheckConversion(C4V_PropList) ? Data.PropList : nullptr; }
@@ -129,7 +129,7 @@ public:
 	C4PropList *_getPropList() const { return Data.PropList; }
 
 	bool operator ! () const { return !GetData(); }
-	inline operator const void* () const { return GetData() ? this : 0; }  // To allow use of C4Value in conditions
+	inline operator const void* () const { return GetData() ? this : nullptr; }  // To allow use of C4Value in conditions
 
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
@@ -217,10 +217,10 @@ private:
 	C4V_Data Data;
 
 	// proplist reference list
-	C4Value * NextRef;
+	C4Value * NextRef{nullptr};
 
 	// data type
-	C4V_Type Type;
+	C4V_Type Type{C4V_Nil};
 
 	void Set(C4V_Data nData, C4V_Type nType);
 
@@ -256,7 +256,7 @@ extern const C4Value C4VNull;
 class C4ValueNumbers
 {
 public:
-	C4ValueNumbers() {}
+	C4ValueNumbers() = default;
 	uint32_t GetNumberForValue(C4Value * v);
 	const C4Value & GetValue(uint32_t);
 	void Denumerate();
@@ -339,7 +339,7 @@ ALWAYS_INLINE void C4Value::Set0()
 	C4V_Type oType = Type;
 
 	// change
-	Data = 0;
+	Data = nullptr;
 	Type = C4V_Nil;
 
 	// clean up (save even if Data was 0 before)
@@ -354,7 +354,7 @@ ALWAYS_INLINE C4Value::C4Value(C4Value && nValue) noexcept:
 		Data.PropList->AddRef(this);
 		Data.PropList->DelRef(&nValue, nValue.NextRef);
 	}
-	nValue.Type = C4V_Nil; nValue.Data = 0; nValue.NextRef = nullptr;
+	nValue.Type = C4V_Nil; nValue.Data = nullptr; nValue.NextRef = nullptr;
 }
 
 #endif

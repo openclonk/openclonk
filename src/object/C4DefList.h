@@ -26,7 +26,7 @@ class C4DefList: public CStdFontCustomImages
 {
 public:
 	C4DefList();
-	virtual ~C4DefList();
+	~C4DefList() override;
 public:
 	bool LoadFailure;
 	typedef std::map<C4ID, C4Def*> Table;
@@ -69,8 +69,8 @@ public:
 	StdMeshSkeletonLoader& GetSkeletonLoader();
 
 	// callback from font renderer: get ID image
-	virtual bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform);
-	virtual float GetFontImageAspect(const char* szImageTag);
+	bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) override;
+	float GetFontImageAspect(const char* szImageTag) override;
 private:
 	std::unique_ptr<StdMeshSkeletonLoader> SkeletonLoader;
 };

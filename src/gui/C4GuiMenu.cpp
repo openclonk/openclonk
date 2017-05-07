@@ -83,7 +83,7 @@ namespace C4GUI
 // ----------------------------------------------------
 // ContextMenu
 
-	ContextMenu::ContextMenu() : Window(), pTarget(nullptr), pSelectedItem(nullptr), pSubmenu(nullptr)
+	ContextMenu::ContextMenu() : Window()
 	{
 		iMenuIndex = ++iGlobalMenuIndex;
 		// set min size

@@ -49,11 +49,7 @@ public:
 	// enum of different fonts used in the clonk engine
 	enum FontType { C4FT_Log, C4FT_MainSmall, C4FT_Main, C4FT_Caption, C4FT_Title };
 
-	C4FontLoader()
-#ifndef USE_CONSOLE
-		: pLastUsedFont(nullptr), LastUsedGrpID(0)
-#endif
-	{ } // ctor
+	C4FontLoader() = default; // ctor
 	~C4FontLoader() { Clear(); } // dtor
 
 	void Clear();                   // clear loaded fonts
@@ -63,9 +59,9 @@ public:
 
 protected:
 #ifndef USE_CONSOLE
-	CStdVectorFont * pLastUsedFont; // cache
+	CStdVectorFont * pLastUsedFont{nullptr}; // cache
 	StdCopyStrBuf LastUsedName;
-	int32_t LastUsedGrpID;
+	int32_t LastUsedGrpID{0};
 
 	CStdVectorFont * CreateFont(StdBuf & Data);
 	CStdVectorFont * CreateFont(const char *szFaceName);

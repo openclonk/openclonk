@@ -791,16 +791,9 @@ void C4NetIOPacket::Clear()
 
 // construction / destruction
 
-C4NetIOTCP::C4NetIOTCP()
-		: pPeerList(nullptr),
-		pConnectWaits(nullptr),
+C4NetIOTCP::C4NetIOTCP() :
 		PeerListCSec(this),
-		fInit(false),
-		iListenPort(~0), lsock(INVALID_SOCKET),
-#ifdef STDSCHEDULER_USE_EVENTS
-		Event(nullptr),
-#endif
-		pCB(nullptr)
+		iListenPort(~0), lsock(INVALID_SOCKET)
 {
 
 }
@@ -1830,11 +1823,7 @@ void C4NetIOTCP::Peer::ClearStatistics() // (mt-safe)
 // *** C4NetIOSimpleUDP
 
 C4NetIOSimpleUDP::C4NetIOSimpleUDP()
-		: fInit(false), fMultiCast(false), iPort(~0), sock(INVALID_SOCKET),
-#ifdef STDSCHEDULER_USE_EVENTS
-		hEvent(nullptr),
-#endif
-		fAllowReUse(false)
+		: iPort(~0), sock(INVALID_SOCKET)
 {
 
 }
@@ -2282,7 +2271,7 @@ const unsigned int C4NetIOUDP::iUDPHeaderSize = 8 + 24; // (bytes)
 // between platforms.
 struct C4NetIOUDP::BinAddr
 {
-	BinAddr()  {}
+	BinAddr() = default;
 	BinAddr(const C4NetIO::addr_t& addr)
 	{
 		switch (addr.GetFamily())
@@ -2401,16 +2390,9 @@ struct C4NetIOUDP::TestPacket : public PacketHdr
 
 C4NetIOUDP::C4NetIOUDP()
 		: PeerListCSec(this),
-		fInit(false),
-		fMultiCast(false),
 		iPort(~0),
-		pPeerList(nullptr),
-		fSavePacket(false),
-		fDelayedLoopbackTest(false),
 		tNextCheck(C4TimeMilliseconds::PositiveInfinity),
-		OPackets(iMaxOPacketBacklog),
-		iOPacketCounter(0),
-		iBroadcastRate(0)
+		OPackets(iMaxOPacketBacklog)
 {
 
 }
@@ -2872,8 +2854,7 @@ void C4NetIOUDP::OnAddAddress(const addr_t &FromAddr, const AddAddrPacket &Packe
 
 C4NetIOUDP::Packet::Packet()
 		: iNr(~0),
-		Data(),
-		pFragmentGot(nullptr)
+		Data()
 {
 
 }
@@ -2998,10 +2979,7 @@ size_t C4NetIOUDP::Packet::FragmentSize(nr_t iFNr) const
 // construction / destruction
 
 C4NetIOUDP::PacketList::PacketList(unsigned int inMaxPacketCnt)
-		: pFront(nullptr),
-		pBack(nullptr),
-		iPacketCnt(0),
-		iMaxPacketCnt(inMaxPacketCnt)
+		: iMaxPacketCnt(inMaxPacketCnt)
 {
 
 }
@@ -3917,9 +3895,7 @@ void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 // *** C4NetIOMan
 
 C4NetIOMan::C4NetIOMan()
-		: StdSchedulerThread(),
-		iNetIOCnt(0), iNetIOCapacity(0),
-		ppNetIO(nullptr)
+		: StdSchedulerThread()
 
 {
 }

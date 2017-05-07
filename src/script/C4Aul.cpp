@@ -65,8 +65,7 @@ const char *C4AulError::what() const noexcept
 
 C4AulScriptEngine::C4AulScriptEngine():
 	C4PropListStaticMember(nullptr, nullptr, ::Strings.RegString("Global")),
-	ErrorHandler(&DefaultErrorHandler),
-	warnCnt(0), errCnt(0), lineCnt(0)
+	ErrorHandler(&DefaultErrorHandler)
 {
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
@@ -276,9 +275,9 @@ void C4AulScriptEngine::UnregisterErrorHandler(C4AulErrorHandler *handler)
 
 /*--- C4AulFuncMap ---*/
 
-C4AulFuncMap::C4AulFuncMap(): FuncCnt(0)
+C4AulFuncMap::C4AulFuncMap()
 {
-	memset(Funcs, 0, sizeof (C4AulFunc *) * HashSize);
+	memset(Funcs, 0, sizeof(Funcs));
 }
 
 C4AulFuncMap::~C4AulFuncMap()

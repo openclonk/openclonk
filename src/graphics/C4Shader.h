@@ -91,11 +91,11 @@ private:
 	bool ScriptSlicesLoaded = false;
 
 	// Used texture coordinates
-	int iTexCoords;
+	int iTexCoords{0};
 
 #ifndef USE_CONSOLE
 	// shaders
-	GLuint hProg;
+	GLuint hProg{0};
 	// shader variables
 	struct Variable { int address; const char* name; };
 	std::vector<Variable> Uniforms;

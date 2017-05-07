@@ -120,29 +120,29 @@ public:
 
 	public:
 		Scenario(class C4ScenarioListLoader *pLoader, class Folder *pParent) : Entry(pLoader, pParent), fNoMissionAccess(false), nAchievements(0), iMinPlrCount(0) {}
-		virtual ~Scenario() {}
+		~Scenario() override = default;
 
-		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // do fallbacks for title and icon; check whether scenario is valid
-		virtual bool LoadCustomPre(C4Group &rGrp); // load scenario core
-		virtual bool Start(); // launch scenario!
+		bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded) override; // do fallbacks for title and icon; check whether scenario is valid
+		bool LoadCustomPre(C4Group &rGrp) override; // load scenario core
+		bool Start() override; // launch scenario!
 
-		virtual bool CanOpen(StdStrBuf &sError); // check mission access, player count, etc.
-		virtual bool IsGrayed() { return false; } // additional option for graying out
-		virtual bool IsHidden() { return C4S.Head.Secret && !HasMissionAccess(); } // condition for hiding element completely
-		virtual bool HasMissionAccess() const { return !fNoMissionAccess; };         // check mission access only
-		virtual StdStrBuf GetOpenText(); // get open button text
-		virtual StdStrBuf GetOpenTooltip();
+		bool CanOpen(StdStrBuf &sError) override; // check mission access, player count, etc.
+		bool IsGrayed() override { return false; } // additional option for graying out
+		bool IsHidden() override { return C4S.Head.Secret && !HasMissionAccess(); } // condition for hiding element completely
+		bool HasMissionAccess() const override { return !fNoMissionAccess; };         // check mission access only
+		StdStrBuf GetOpenText() override; // get open button text
+		StdStrBuf GetOpenTooltip() override;
 		const C4Scenario &GetC4S() const { return C4S; } // get scenario core
-		virtual bool GetAchievement(int32_t idx, C4Facet *out_facet, const char **out_description); // return true and fill output parameters if player got the indexed achievement
+		bool GetAchievement(int32_t idx, C4Facet *out_facet, const char **out_description) override; // return true and fill output parameters if player got the indexed achievement
 
-		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_SCENARIO"), true); }
+		StdStrBuf GetTypeName() override { return StdCopyStrBuf(LoadResStr("IDS_TYPE_SCENARIO"), true); }
 
-		virtual const char *GetDefaultExtension() { return "ocs"; }
+		const char *GetDefaultExtension() override { return "ocs"; }
 
-		virtual C4ScenarioParameterDefs *GetParameterDefs() { return &ParameterDefs; }
-		virtual C4ScenarioParameters *GetParameters() { return &Parameters; }
+		C4ScenarioParameterDefs *GetParameterDefs() override { return &ParameterDefs; }
+		C4ScenarioParameters *GetParameters() override { return &Parameters; }
 
-		virtual bool IsScenario() { return true; }
+		bool IsScenario() override { return true; }
 	};
 
 	// scenario folder
@@ -157,9 +157,9 @@ public:
 
 	public:
 		Folder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Entry(pLoader, pParent), fContentsLoaded(false), pFirst(nullptr), pMapData(nullptr) {}
-		virtual ~Folder();
+		~Folder() override;
 
-		virtual bool LoadCustomPre(C4Group &rGrp); // load folder core
+		bool LoadCustomPre(C4Group &rGrp) override; // load folder core
 
 		bool LoadContents(C4ScenarioListLoader *pLoader, C4Group *pFromGrp, const StdStrBuf *psFilename, bool fLoadEx, bool fReload); // load folder contents as child if pFromGrp, else directly from filename
 		uint32_t GetEntryCount() const;
@@ -170,16 +170,16 @@ public:
 		virtual bool DoLoadContents(C4ScenarioListLoader *pLoader, C4Group *pFromGrp, const StdStrBuf &sFilename, bool fLoadEx) = 0; // load folder contents as child if pFromGrp, else directly from filename
 
 	public:
-		virtual bool Start(); // open as subfolder
-		virtual Folder *GetIsFolder() { return this; } // this is a folder
+		bool Start() override; // open as subfolder
+		Folder *GetIsFolder() override { return this; } // this is a folder
 		Entry *GetFirstEntry() const { return pFirst; }
 		void Resort() { Sort(); }
 		Entry *FindEntryByName(const char *szFilename) const; // find entry by filename comparison
 
-		virtual bool CanOpen(StdStrBuf &sError) { return true; } // can always open folders
-		virtual bool IsGrayed(); // unreg folders can be opened to view stuff but they are still grayed out for clarity
-		virtual StdStrBuf GetOpenText(); // get open button text
-		virtual StdStrBuf GetOpenTooltip();
+		bool CanOpen(StdStrBuf &sError) override { return true; } // can always open folders
+		bool IsGrayed() override; // unreg folders can be opened to view stuff but they are still grayed out for clarity
+		StdStrBuf GetOpenText() override; // get open button text
+		StdStrBuf GetOpenTooltip() override;
 		C4MapFolderData *GetMapData() const { return pMapData; }
 
 		virtual const C4ScenarioParameterDefs *GetAchievementDefs() const { return nullptr; }
@@ -195,18 +195,18 @@ public:
 
 	public:
 		SubFolder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Folder(pLoader, pParent) {}
-		virtual ~SubFolder() {}
+		~SubFolder() override = default;
 
-		virtual const char *GetDefaultExtension() { return "ocf"; }
+		const char *GetDefaultExtension() override { return "ocf"; }
 
-		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_FOLDER"), true); }
+		StdStrBuf GetTypeName() override { return StdCopyStrBuf(LoadResStr("IDS_TYPE_FOLDER"), true); }
 
-		virtual const C4ScenarioParameterDefs *GetAchievementDefs() const { return &AchievementDefs; }
-		virtual const C4AchievementGraphics *GetAchievementGfx() const { return &AchievementGfx; }
+		const C4ScenarioParameterDefs *GetAchievementDefs() const override { return &AchievementDefs; }
+		const C4AchievementGraphics *GetAchievementGfx() const override { return &AchievementGfx; }
 
 	protected:
-		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // load custom data for entry type - icon fallback to folder icon
-		virtual bool DoLoadContents(C4ScenarioListLoader *pLoader, C4Group *pFromGrp, const StdStrBuf &sFilename, bool fLoadEx); // load folder contents as child if pFromGrp, else directly from filename
+		bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded) override; // load custom data for entry type - icon fallback to folder icon
+		bool DoLoadContents(C4ScenarioListLoader *pLoader, C4Group *pFromGrp, const StdStrBuf &sFilename, bool fLoadEx) override; // load folder contents as child if pFromGrp, else directly from filename
 	};
 
 	// regular, open folder: Read through by directory iterator
@@ -214,15 +214,15 @@ public:
 	{
 	public:
 		RegularFolder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Folder(pLoader, pParent) {}
-		virtual ~RegularFolder();
+		~RegularFolder() override;
 
-		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_DIRECTORY"), true); }
+		StdStrBuf GetTypeName() override { return StdCopyStrBuf(LoadResStr("IDS_TYPE_DIRECTORY"), true); }
 
 		void Merge(const char *szPath);
 
 	protected:
-		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // load custom data for entry type - icon fallback to folder icon
-		virtual bool DoLoadContents(C4ScenarioListLoader *pLoader, C4Group *pFromGrp, const StdStrBuf &sFilename, bool fLoadEx); // load folder contents as child if pFromGrp, else directly from filename
+		bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded) override; // load custom data for entry type - icon fallback to folder icon
+		bool DoLoadContents(C4ScenarioListLoader *pLoader, C4Group *pFromGrp, const StdStrBuf &sFilename, bool fLoadEx) override; // load folder contents as child if pFromGrp, else directly from filename
 
 		typedef std::list<std::string> NameList;
 		NameList contents;
@@ -323,27 +323,27 @@ private:
 	public:
 		MapPic(const FLOAT_RECT &rcfBounds, const C4Facet &rfct); // ctor
 
-		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons - deselect everything if clicked
+		void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons - deselect everything if clicked
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // draw the image
+		void DrawElement(C4TargetFacet &cgo) override; // draw the image
 	};
 
 private:
 	C4FacetSurface fctBackgroundPicture; FLOAT_RECT rcfBG;
-	bool fCoordinatesAdjusted;
+	bool fCoordinatesAdjusted{false};
 	C4Rect rcScenInfoArea; // area in which scenario info is displayed
 	class C4ScenarioListLoader::Folder *pScenarioFolder;
 	class C4ScenarioListLoader::Entry *pSelectedEntry;
 	C4GUI::TextWindow *pSelectionInfoBox;
 	int32_t MinResX, MinResY; // minimum resolution for display of the map
 	bool fUseFullscreenMap;
-	Scenario **ppScenList; int32_t iScenCount;
-	AccessGfx **ppAccessGfxList; int32_t iAccessGfxCount;
-	class C4StartupScenSelDlg *pMainDlg;
+	Scenario **ppScenList{nullptr}; int32_t iScenCount{0};
+	AccessGfx **ppAccessGfxList{nullptr}; int32_t iAccessGfxCount{0};
+	class C4StartupScenSelDlg *pMainDlg{nullptr};
 
 public:
-	C4MapFolderData() : fCoordinatesAdjusted(false), ppScenList(nullptr), iScenCount(0), ppAccessGfxList(nullptr), iAccessGfxCount(0), pMainDlg(nullptr) {}
+	C4MapFolderData() = default;
 	~C4MapFolderData() { Clear(); }
 
 private:
@@ -398,20 +398,20 @@ public:
 		bool KeyRename();
 
 	protected:
-		virtual void UpdateOwnPos(); // recalculate item positioning
+		void UpdateOwnPos() override; // recalculate item positioning
 		void Update() {}
 
 	public:
-		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+		void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 		C4ScenarioListLoader::Entry *GetEntry() const { return pScenListEntry; }
 		ScenListItem *GetNext() { return static_cast<ScenListItem *>(BaseClass::GetNext()); }
 
-		virtual bool CheckNameHotkey(const char * c); // return whether this item can be selected by entering given char
+		bool CheckNameHotkey(const char * c) override; // return whether this item can be selected by entering given char
 	};
 
 public:
 	C4StartupScenSelDlg(bool fNetwork); // ctor
-	~C4StartupScenSelDlg(); // dtor
+	~C4StartupScenSelDlg() override; // dtor
 
 private:
 	enum { ShowStyle_Book=0, ShowStyle_Map=1 };
@@ -447,12 +447,12 @@ public:
 	static C4StartupScenSelDlg *pInstance; // singleton
 
 protected:
-	virtual int32_t GetMarginTop() { return (rcBounds.Hgt/7); }
-	virtual bool HasBackground() { return false; }
-	virtual void DrawElement(C4TargetFacet &cgo);
+	int32_t GetMarginTop() override { return (rcBounds.Hgt/7); }
+	bool HasBackground() override { return false; }
+	void DrawElement(C4TargetFacet &cgo) override;
 
-	virtual bool OnEnter() { DoOK(); return true; }
-	virtual bool OnEscape() { DoBack(true); return true; }
+	bool OnEnter() override { DoOK(); return true; }
+	bool OnEscape() override { DoBack(true); return true; }
 	bool KeyBack() { return DoBack(true); }
 	bool KeyRefresh() { DoRefresh(); return true; }
 	bool KeyForward() { DoOK(); return true; }
@@ -463,15 +463,15 @@ protected:
 
 	void DeleteConfirm(ScenListItem *pSel);
 
-	virtual void OnShown();             // callback when shown: Init file list
-	virtual void OnClosed(bool fOK);    // callback when dlg got closed: Return to main screen
+	void OnShown() override;             // callback when shown: Init file list
+	void OnClosed(bool fOK) override;    // callback when dlg got closed: Return to main screen
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(true); }
 	void OnNextBtn(C4GUI::Control *btn) { DoOK(); }
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
 	void OnButtonScenario(C4GUI::Control *pEl);
 
-	virtual void OnLeagueOptionChanged();
+	void OnLeagueOptionChanged() override;
 
 	friend class C4MapFolderData;
 

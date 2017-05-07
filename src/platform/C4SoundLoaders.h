@@ -30,9 +30,9 @@ namespace C4SoundLoaders
 #if AUDIO_TK == AUDIO_TK_OPENAL
 		ALenum format;
 #endif
-		C4SoundHandle final_handle;
+		C4SoundHandle final_handle{0};
 
-		SoundInfo(): sound_data(), final_handle(0) {}
+		SoundInfo(): sound_data() {}
 	};
 	
 	class SoundLoader
@@ -47,7 +47,7 @@ namespace C4SoundLoaders
 			next = first_loader;
 			first_loader = this;
 		}
-		virtual ~SoundLoader() {}
+		virtual ~SoundLoader() = default;
 		virtual bool ReadInfo(SoundInfo* info, BYTE* data, size_t data_length, uint32_t options = 0) = 0;
 	};
 
@@ -69,12 +69,12 @@ namespace C4SoundLoaders
 		struct CompressedData
 		{
 		public:
-			BYTE* data;
-			size_t data_length;
-			size_t data_pos;
-			bool is_data_owned; // if true, dtor will delete data
-			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length), data_pos(0), is_data_owned(false) {}
-			CompressedData() : data(nullptr), data_length(0), data_pos(0), is_data_owned(false) {}
+			BYTE* data{nullptr};
+			size_t data_length{0};
+			size_t data_pos{0};
+			bool is_data_owned{false}; // if true, dtor will delete data
+			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length) {}
+			CompressedData() = default;
 			void SetOwnedData(BYTE* data, size_t data_length)
 			{ clear(); this->data=data; this->data_length=data_length; this->data_pos=0; is_data_owned=true; }
 
@@ -92,7 +92,7 @@ namespace C4SoundLoaders
 		static int file_close_func(void* datasource);
 		static long file_tell_func(void* datasource);
 	public:
-		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
+		bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t) override;
 	protected:
 		static VorbisLoader singleton;
 	};
@@ -101,7 +101,7 @@ namespace C4SoundLoaders
 	class WavLoader: public SoundLoader
 	{
 	public:
-		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
+		bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t) override;
 	protected:
 		static WavLoader singleton;
 	};
@@ -112,7 +112,7 @@ namespace C4SoundLoaders
 	{
 	public:
 		static SDLMixerSoundLoader singleton;
-		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
+		bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t) override;
 	};
 #endif
 }

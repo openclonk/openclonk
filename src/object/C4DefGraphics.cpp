@@ -607,8 +607,7 @@ void C4DefGraphicsPtrBackupEntry::UpdateAttachedMesh(StdMeshInstance* instance)
 
 C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup():
 	MeshMaterialUpdate(::MeshMaterialManager),
-	MeshAnimationUpdate(::Definitions.GetSkeletonLoader()),
-	fApplied(false)
+	MeshAnimationUpdate(::Definitions.GetSkeletonLoader())
 {
 }
 

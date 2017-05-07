@@ -28,10 +28,7 @@
 #include "platform/C4SoundInstance.h"
 #include "platform/C4SoundLoaders.h"
 
-C4SoundSystem::C4SoundSystem():
-		FirstSound (nullptr)
-{
-}
+C4SoundSystem::C4SoundSystem() = default;
 
 C4SoundSystem::~C4SoundSystem() = default;
 

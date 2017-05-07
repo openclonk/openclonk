@@ -37,16 +37,16 @@ struct StdMeshVertex
 	static const size_t MaxBoneWeightCount = 8;
 
 	// Match GL_T2F_N3F_V3F
-	float u, v;
-	float nx, ny, nz;
-	float x, y, z;
+	float u{0}, v{0};
+	float nx{0}, ny{0}, nz{0};
+	float x{0}, y{0}, z{0};
 
 	float bone_weight[MaxBoneWeightCount];
 	uint16_t bone_index[MaxBoneWeightCount];
 
 	char _padding[16];
 
-	StdMeshVertex() : u(0), v(0), nx(0), ny(0), nz(0), x(0), y(0), z(0) 
+	StdMeshVertex()
 	{
 		std::uninitialized_fill(std::begin(bone_weight), std::end(bone_weight), 0);
 		std::uninitialized_fill(std::begin(bone_index), std::end(bone_index), 0);

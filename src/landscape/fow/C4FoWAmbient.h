@@ -33,22 +33,22 @@ public:
 	~C4FoWAmbient();
 
 #ifndef USE_CONSOLE
-	GLuint Tex;
+	GLuint Tex{0};
 #endif
 
 private:
 	// Parameters
-	double Resolution;
-	double Radius;
-	double FullCoverage;
+	double Resolution{0.};
+	double Radius{0.};
+	double FullCoverage{0.};
 	// Landscape size
-	unsigned int LandscapeX;
-	unsigned int LandscapeY;
+	unsigned int LandscapeX{0};
+	unsigned int LandscapeY{0};
 	// Size of ambient map
-	unsigned int SizeX;
-	unsigned int SizeY;
+	unsigned int SizeX{0};
+	unsigned int SizeY{0};
 	// Brightness (not premultiplied)
-	double Brightness;
+	double Brightness{1.};
 public:
 	void Clear();
 

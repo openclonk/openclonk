@@ -370,7 +370,6 @@ bool C4PlayerInfo::LoadBigIcon(C4FacetSurface &fctTarget)
 // *** C4ClientPlayerInfos
 
 C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd, C4PlayerInfo *pAddInfo)
-		: iPlayerCount(0), iPlayerCapacity(0), ppPlayers(nullptr), iClientID(-1), dwFlags(0)
 {
 	// init for local client?
 	if (szJoinFilenames || pAddInfo)
@@ -676,10 +675,8 @@ void C4ClientPlayerInfos::LoadResources()
 
 // *** C4PlayerInfoList
 
-C4PlayerInfoList::C4PlayerInfoList() : iClientCount(0), iClientCapacity(0), ppClients(nullptr), iLastPlayerID(0)
-{
+C4PlayerInfoList::C4PlayerInfoList() = default;
 	// ctor: no need to alloc mem yet
-}
 
 C4PlayerInfoList::C4PlayerInfoList(const C4PlayerInfoList &rCpy) : iClientCount(rCpy.iClientCount), iClientCapacity(rCpy.iClientCapacity),
 		ppClients(nullptr), iLastPlayerID(rCpy.iLastPlayerID)

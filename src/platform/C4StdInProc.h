@@ -23,14 +23,14 @@ class C4StdInProc : public StdSchedulerProc
 {
 public:
 	C4StdInProc();
-	~C4StdInProc();
+	~C4StdInProc() override;
 
 	// StdSchedulerProc override
-	virtual bool Execute(int iTimeout, pollfd *);
+	bool Execute(int iTimeout, pollfd *) override;
 #ifdef STDSCHEDULER_USE_EVENTS
-	virtual HANDLE GetEvent() { return GetStdHandle(STD_INPUT_HANDLE); }
+	HANDLE GetEvent() override { return GetStdHandle(STD_INPUT_HANDLE); }
 #else
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
+	void GetFDs(std::vector<struct pollfd> & checkfds) override
 	{
 		pollfd pfd = { 0, POLLIN, 0 };
 		checkfds.push_back(pfd);

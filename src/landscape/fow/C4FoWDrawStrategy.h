@@ -53,9 +53,9 @@ private:
 	};
 
 	std::vector<unsigned int> indices; // TODO should be GLuint?
-	unsigned int begin_vertices;
-	unsigned int cur_vertices;
-	Mode mode;
+	unsigned int begin_vertices{0};
+	unsigned int cur_vertices{0};
+	Mode mode{M_Fan};
 };
 
 /** A C4FoWDrawStrategy is a connector to OpenGL calls used to draw the light.
@@ -68,8 +68,8 @@ private:
 class C4FoWDrawStrategy
 {
 public:
-	C4FoWDrawStrategy() : phase(P_None) {}
-	virtual ~C4FoWDrawStrategy() {}
+	C4FoWDrawStrategy() = default;
+	virtual ~C4FoWDrawStrategy() = default;
 
 	// Drawing phases
 	enum DrawPhase {
@@ -78,7 +78,7 @@ public:
 		P_FanMaxed,
 		P_Fade,
 		P_Intermediate
-	} phase;
+	} phase{P_None};
 
 	/** Called before each rendering pass */
 	virtual void Begin(const C4FoWRegion* region) = 0;
@@ -118,12 +118,12 @@ class C4FoWDrawLightTextureStrategy : public C4FoWDrawStrategy
 {
 public:
 	C4FoWDrawLightTextureStrategy(const C4FoWLight* light);
-	virtual ~C4FoWDrawLightTextureStrategy();
+	~C4FoWDrawLightTextureStrategy() override;
 
-	virtual void DrawLightVertex(float x, float y);
-	virtual void DrawDarkVertex(float x, float y);
-	virtual void Begin(const C4FoWRegion* region);
-	virtual void End(C4ShaderCall& call);
+	void DrawLightVertex(float x, float y) override;
+	void DrawDarkVertex(float x, float y) override;
+	void Begin(const C4FoWRegion* region) override;
+	void End(C4ShaderCall& call) override;
 
 private:
 	void DrawVertex(float x, float y, bool shadeLight);
@@ -154,13 +154,13 @@ class C4FoWDrawWireframeStrategy : public C4FoWDrawStrategy
 {
 public:
 	C4FoWDrawWireframeStrategy(const C4FoWLight* light, const C4TargetFacet *screen);
-	virtual ~C4FoWDrawWireframeStrategy();
+	~C4FoWDrawWireframeStrategy() override;
 	//  : light(light), screen(screen), vbo(0) {};
 
-	virtual void DrawLightVertex(float x, float y);
-	virtual void DrawDarkVertex(float x, float y);
-	virtual void Begin(const C4FoWRegion* region);
-	virtual void End(C4ShaderCall& call);
+	void DrawLightVertex(float x, float y) override;
+	void DrawDarkVertex(float x, float y) override;
+	void Begin(const C4FoWRegion* region) override;
+	void End(C4ShaderCall& call) override;
 
 private:
 	struct Vertex {

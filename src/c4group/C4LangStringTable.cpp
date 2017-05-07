@@ -20,8 +20,6 @@
 
 #include "lib/C4InputValidation.h"
 
-C4LangStringTable::C4LangStringTable() : ref_count(1) {}
-
 bool C4LangStringTable::HasTranslation(const std::string &text) const
 {
 	if (strings.empty())

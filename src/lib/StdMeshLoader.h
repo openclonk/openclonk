@@ -38,8 +38,8 @@ public:
 
 	// filename is only used to show it in error messages. The model is
 	// loaded from src. Throws LoaderException.
-	static StdMesh *LoadMeshBinary(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
-	static StdMesh *LoadMeshXml(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
+	static StdMesh *LoadMeshBinary(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = nullptr);
+	static StdMesh *LoadMeshXml(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = nullptr);
 };
 
 // Interface to load skeleton files. Given a filename occuring in the
@@ -49,7 +49,7 @@ public:
 class StdMeshSkeletonLoader
 {
 public:
-	virtual ~StdMeshSkeletonLoader() {}
+	virtual ~StdMeshSkeletonLoader() = default;
 
 	void StoreSkeleton(const char* groupname, const char* filename, std::shared_ptr<StdMeshSkeleton> skeleton);
 	void RemoveSkeleton(const StdCopyStrBuf& filepath);

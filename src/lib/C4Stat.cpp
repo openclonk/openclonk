@@ -20,10 +20,7 @@
 
 // ** implemetation of C4MainStat
 
-C4MainStat::C4MainStat()
-		: pFirst(nullptr)
-{
-}
+C4MainStat::C4MainStat() = default;
 
 C4MainStat::~C4MainStat() = default;
 
