@@ -123,8 +123,8 @@ public:
 	bool HoldBuffer = false;
 	bool BufferIsStdbuf = false;
 	bool NoSort = false;
-	BYTE *bpMemBuf = 0;
-	C4GroupEntry *Next = 0;
+	BYTE *bpMemBuf = nullptr;
+	C4GroupEntry *Next = nullptr;
 public:
 	void Set(const DirectoryIterator & iter, const char * szPath);
 };
@@ -135,7 +135,7 @@ class C4Group : public CStdStream
 	std::unique_ptr<P> p;
 public:
 	C4Group();
-	~C4Group();
+	~C4Group() override;
 	C4Group(C4Group &&) = default;
 	C4Group &operator=(C4Group &&) = default;
 

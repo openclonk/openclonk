@@ -23,7 +23,7 @@
 class C4ComponentHost
 {
 public:
-	C4ComponentHost() { }
+	C4ComponentHost() = default;
 	virtual ~C4ComponentHost() { Clear(); }
 	const char *GetFilePath() const { return FilePath.getData(); }
 	void Clear() { Data.Clear(); OnLoad(); }

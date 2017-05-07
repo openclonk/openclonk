@@ -30,9 +30,9 @@ class C4LangStringTable : public C4ComponentHost
 	typedef std::map<std::string, std::string> Table;
 	mutable Table strings;
 	void PopulateStringTable() const;
-	int32_t ref_count; // ref counter initialized to 1 on ctor; delete when zero is reached
+	int32_t ref_count{1}; // ref counter initialized to 1 on ctor; delete when zero is reached
 public:
-	C4LangStringTable();
+	C4LangStringTable() = default;
 	const std::string &Translate(const std::string &text) const;
 	bool HasTranslation(const std::string &text) const;
 	// do replacement in buffer
@@ -46,12 +46,12 @@ public:
 	class NoSuchTranslation : public std::runtime_error
 	{
 	public:
-		NoSuchTranslation(const std::string &text) : std::runtime_error("No such translation: \"" + text + "\"") {}
+		NoSuchTranslation(const std::string &text) : std::runtime_error(R"(No such translation: ")" + text + R"(")") {}
 	};
 
 	static inline C4LangStringTable &GetSystemStringTable() { return system_string_table; }
 protected:
-	virtual void OnLoad() { strings.clear(); } // Make sure we re-populate when the string table is reloaded
+	void OnLoad() override { strings.clear(); } // Make sure we re-populate when the string table is reloaded
 
 private:
 	static C4LangStringTable system_string_table;
