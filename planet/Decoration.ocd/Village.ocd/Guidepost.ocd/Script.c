@@ -20,7 +20,7 @@ public func GetInteractionMetaInfo(object clonk)
 public func Interact(object clonk)
 {
 	if (!clonk) return false;
-	Dialogue->MessageBox(inscription, clonk, this, clonk->GetController(), true);
+	Dialogue->MessageBox(GetTranslatedString(inscription), clonk, this, clonk->GetController(), true);
 	return true;
 }
 
@@ -47,5 +47,5 @@ public func Definition(def)
 	def.MeshTransformation = Trans_Scale(360);
 	// Inscription props
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscription", Save="Inscription" };
+	def.EditorProps.inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscription", Save="Inscription", Translatable=true };
 }

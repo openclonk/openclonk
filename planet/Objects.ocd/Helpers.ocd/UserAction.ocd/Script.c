@@ -403,7 +403,7 @@ func Definition(def)
 	AddEvaluator("Integer", nil, "$PositionY$", "$PositionYHelp$", "position_y", [def, def.EvalInt_PosCoord, 1], { }, new Evaluator.Position { }, "Position");
 	AddEvaluator("Integer", nil, "$IteratedInteger$", "$IteratedIntegerHelp$", "iterated_int", [def, def.EvalContextValue, "for_int"]);
 	// String evaluators
-	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalConstant], { Value="" }, { Type="string", Name="$Value$" });
+	AddEvaluator("String", nil, ["$Constant$", ""], "$ConstantHelp$", "string_constant", [def, def.EvalStringConstant], { Value="" }, { Type="string", Name="$Value$", Translatable=true });
 	AddEvaluator("String", nil, ["$ValueToString$", ""], "$ValueToStringHelp$", "value_to_string", [def, def.EvalStr_ValueToString], { }, new Evaluator.Any { });
 	AddEvaluator("String", nil, "$Concat$", "$ConcatHelp$", "string_concat", [def, def.EvalStr_Concat], { Substrings=[] }, { Type="proplist", HideFullName=true, DescendPath="Substrings", Display="{{Substrings}}", EditorProps = {
 		Substrings = { Name="$Substrings$", Type="array", Elements=Evaluator.String }
@@ -651,6 +651,11 @@ public func EvaluateCondition(proplist props, object action_object, object trigg
 	return result;
 }
 
+public func EvaluateString(proplist props, object context)
+{
+	return EvaluateValue("String", props, context) ?? "";
+}
+
 private func EvaluatePosition(proplist props, object context)
 {
 	// Execute position evaluator; fall back to position of action object
@@ -703,6 +708,7 @@ private func FinishAction(proplist context)
 }
 
 private func EvalConstant(proplist props, proplist context) { return props.Value; }
+private func EvalStringConstant(proplist props, proplist context) { return GetTranslatedString(props.Value); }
 private func EvalContextValue(proplist props, proplist context, string name) { return context[name]; }
 private func EvalObj_ActionObject(proplist props, proplist context) { return context.action_object; }
 private func EvalObj_TriggeringObject(proplist props, proplist context) { return context.triggering_object; }
@@ -1236,7 +1242,7 @@ private func EvalConditionalValue(proplist props, proplist context, eval_type)
 
 private func EvalAct_Log(proplist props, proplist context)
 {
-	Log(EvaluateValue("String", props.Message, context) ?? "");
+	Log(EvaluateString(props.Message, context));
 }
 
 private func EvalAct_Nop(proplist props, proplist context) {}
@@ -1262,7 +1268,7 @@ private func EvalAct_SetVariable(proplist props, proplist context)
 {
 	// Assign variable
 	var var_context = GetVariableContext(props.Context, context);
-	var var_name = StringToIdentifier(EvaluateValue("String", props.VariableName, context) ?? "");
+	var var_name = StringToIdentifier(EvaluateString(props.VariableName, context));
 	var value = EvaluateValue("Any", props.Value, context);
 	var_context[var_name] = value;
 }
@@ -1271,7 +1277,7 @@ private func EvalVariable(proplist props, proplist context, expected_type)
 {
 	// Get variable value
 	var var_context = GetVariableContext(props.Context, context);
-	var var_name = StringToIdentifier(EvaluateValue("String", props.VariableName, context) ?? "");
+	var var_name = StringToIdentifier(EvaluateString(props.VariableName, context));
 	var value = var_context[var_name];
 	// Check type (except for C4V_Nil which means "Any" here)
 	var val_type = GetType(value);
@@ -1321,7 +1327,7 @@ private func EvalScript(proplist props, proplist context)
 	{
 		script_context = Global;
 	}
-	var script = EvaluateValue("String", props.Script, context) ?? "";
+	var script = EvaluateString(props.Script, context);
 	return script_context->eval(script, true);
 }
 
@@ -1527,7 +1533,7 @@ private func EvalStr_ValueToString(proplist props, proplist context)
 private func EvalStr_Concat(proplist props, proplist context)
 {
 	var result="";
-	for (var s in props.Substrings) result = Format("%s%s", result, EvaluateValue("String", s, context) ?? "");
+	for (var s in props.Substrings) result = Format("%s%s", result, EvaluateString(s, context));
 	return result;
 }
 

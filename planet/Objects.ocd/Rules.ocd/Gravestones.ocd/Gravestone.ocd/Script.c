@@ -29,7 +29,7 @@ public func SetInscription(object dead)
 }
 
 // Set the inscription message directly.
-public func SetInscriptionMessage(string message)
+public func SetInscriptionMessage(message)
 {
 	grave_inscription = message;
 	return true;
@@ -44,13 +44,13 @@ public func GetInteractionMetaInfo(object clonk)
 
 public func Interact(object clonk)
 {
-	return PlayerMessage(clonk->GetController(), grave_inscription);
+	return PlayerMessage(clonk->GetController(), GetTranslatedString(grave_inscription));
 }
 
 public func Definition(def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.grave_inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscriptionMessage", Save="Inscription" };
+	def.EditorProps.grave_inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscriptionMessage", Save="Inscription", Translatable=true };
 }
 
 

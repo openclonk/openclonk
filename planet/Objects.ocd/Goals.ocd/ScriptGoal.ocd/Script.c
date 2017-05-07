@@ -56,7 +56,7 @@ public func Definition(def)
 {
 	// Properties
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.Description = { Name="$PropDescription$", EditorHelp="$PropDescriptionHelp$", Type="string", Save="Description" };
+	def.EditorProps.Description = { Name="$PropDescription$", EditorHelp="$PropDescriptionHelp$", Type="string", Save="Description", Translatable=true };
 	def.EditorProps.overlay_picture = { Name="$Picture$", EditorHelp="$PictureHelp$", Type="def", Set="SetOverlayPicture", Save="Picture" };
 	// User actions
 	UserAction->AddEvaluator("Action", "Game", "$SetScriptGoalData$", "$SetScriptGoalDataDesc$", "set_script_goal_data", [def, def.EvalAct_SetData],
@@ -84,7 +84,7 @@ private func EvalAct_SetData(props, context)
 {
 	var target = UserAction->EvaluateValue("Objct", props.Target, context);
 	if (!target || !target->~IsScriptGoal()) return;
-	target.Description = UserAction->EvaluateValue("String", props.Description, context);
+	target.Description = UserAction->EvaluateString(props.Description, context);
 	target->~SetOverlayPicture(UserAction->EvaluateValue("Definition", props.OverlayPicture, context));
 	target->~SetFulfilled(UserAction->EvaluateValue("Boolean", props.Fulfilled, context));
 }
