@@ -49,14 +49,7 @@ static C4Network2IRCClient ApplicationIRCClient;
 const std::string C4Application::Revision{ C4REVISION };
 
 C4Application::C4Application():
-		isEditor(false),
-		IRCClient(ApplicationIRCClient),
-		QuitAfterGame(false),
-		CheckForUpdates(false),
-		restartAtEnd(false),
-		pGamePadControl(nullptr),
-		AppState(C4AS_None),
-		pGameTimer(nullptr)
+		IRCClient(ApplicationIRCClient)
 {
 }
 
@@ -870,7 +863,7 @@ bool C4Application::FullScreenMode()
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
 		: CStdMultimediaTimerProc(26),
-		tLastGameTick(C4TimeMilliseconds::NegativeInfinity), iGameTickDelay(28), iExtraGameTickDelay(0)
+		tLastGameTick(C4TimeMilliseconds::NegativeInfinity)
 {
 }
 

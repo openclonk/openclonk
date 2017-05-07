@@ -840,8 +840,7 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 
 C4ViewportList Viewports;
 
-C4ViewportList::C4ViewportList():
-	FirstViewport(nullptr)
+C4ViewportList::C4ViewportList()
 {
 	ViewportArea.Default();
 }
