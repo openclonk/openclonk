@@ -554,7 +554,7 @@ void C4ControlMenuCommand::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlPlayerAction
 C4ControlPlayerAction::C4ControlPlayerAction(const C4Player *source)
-	: action(CPA_NoAction), source(source ? source->Number : NO_OWNER), target(NO_OWNER), param_int(0)
+	: source(source ? source->Number : NO_OWNER), target(NO_OWNER)
 {
 }
 
@@ -1012,7 +1012,7 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 
 C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo)
 		: Filename(szFilename, true), iAtClient(iAtClient),
-		idInfo(iIDInfo), fByRes(false)
+		idInfo(iIDInfo)
 {
 	// load from file if filename is given - which may not be the case for script players
 	StdStrBuf filename;

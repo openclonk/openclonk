@@ -38,7 +38,7 @@ void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
 	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
 }
 
-C4DebugRecOff::C4DebugRecOff() : fDoOff(true)
+C4DebugRecOff::C4DebugRecOff()
 {
 	DEBUGREC_OFF;
 }
@@ -101,10 +101,7 @@ void C4RecordChunk::CompileFunc(StdCompiler *pComp)
 	}
 }
 
-C4Record::C4Record()
-		: fRecording(false), fStreaming(false)
-{
-}
+C4Record::C4Record() = default;
 
 C4Record::~C4Record() = default;
 
@@ -379,9 +376,7 @@ bool C4Record::StreamFile(const char *szLocalFilename, const char *szAddAs)
 }
 
 // set defaults
-C4Playback::C4Playback():  Finished(true), fLoadSequential(false)
-{
-}
+C4Playback::C4Playback() = default;
 
 C4Playback::~C4Playback()
 {

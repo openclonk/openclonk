@@ -117,12 +117,12 @@ public:
 protected:
 	bool fForceExactLandscape;
 	bool fSaveOrigin;
-	virtual bool GetSaveOrigin() { return fSaveOrigin; }
-	virtual bool GetClearOrigin() { return false; } // always keep existing origin
-	virtual bool GetSaveDesc() { return false; }    // should WriteDescData be executed in Save()-call?
-	virtual bool GetForceExactLandscape() { return C4GameSave::GetForceExactLandscape() || fForceExactLandscape; }
-	virtual bool GetSaveScriptPlayers() { return true; } // script players are also saved; but user players aren't!
-	virtual bool GetSaveScriptPlayerFiles() { return true; } // script players are also saved; but user players aren't!
+	bool GetSaveOrigin() override { return fSaveOrigin; }
+	bool GetClearOrigin() override { return false; } // always keep existing origin
+	bool GetSaveDesc() override { return false; }    // should WriteDescData be executed in Save()-call?
+	bool GetForceExactLandscape() override { return C4GameSave::GetForceExactLandscape() || fForceExactLandscape; }
+	bool GetSaveScriptPlayers() override { return true; } // script players are also saved; but user players aren't!
+	bool GetSaveScriptPlayerFiles() override { return true; } // script players are also saved; but user players aren't!
 };
 
 class C4GameSaveSavegame : public C4GameSave
@@ -132,12 +132,12 @@ public:
 
 protected:
 	// savegame specializations
-	virtual bool GetSaveOrigin() { return true; }   // origin must be saved in savegames
-	virtual bool GetSaveUserPlayerFiles() { return false; } // user player files are not needed in savegames, because they will be replaced by player files of resuming playerss
-	virtual void AdjustCore(C4Scenario &rC4S);      // set specific C4S values
-	virtual bool WriteDesc(StdStrBuf &sBuf);        // write savegame desc (contents only)
-	virtual bool SaveComponents();                  // custom savegame components (title)
-	virtual bool OnSaving();                        // add sync when saving
+	bool GetSaveOrigin() override { return true; }   // origin must be saved in savegames
+	bool GetSaveUserPlayerFiles() override { return false; } // user player files are not needed in savegames, because they will be replaced by player files of resuming playerss
+	void AdjustCore(C4Scenario &rC4S) override;      // set specific C4S values
+	bool WriteDesc(StdStrBuf &sBuf) override;        // write savegame desc (contents only)
+	bool SaveComponents() override;                  // custom savegame components (title)
+	bool OnSaving() override;                        // add sync when saving
 
 };
 
@@ -155,16 +155,16 @@ public:
 
 protected:
 	// query functions
-	virtual bool GetSaveDesc() { return false; }     // desc is saved by external call when the record is finished
-	virtual bool GetCreateSmallFile() { return true; } // no need to save players complete with portraits
-	virtual bool GetSaveOrigin() { return true; }    // origin must be saved to trace language packs, folder local material, etc. for records
+	bool GetSaveDesc() override { return false; }     // desc is saved by external call when the record is finished
+	bool GetCreateSmallFile() override { return true; } // no need to save players complete with portraits
+	bool GetSaveOrigin() override { return true; }    // origin must be saved to trace language packs, folder local material, etc. for records
 
-	virtual bool GetCopyScenario() { return fCopyScenario; } // records without copied scenario are a lot smaller can be reconstructed later (used for streaming)
+	bool GetCopyScenario() override { return fCopyScenario; } // records without copied scenario are a lot smaller can be reconstructed later (used for streaming)
 
 	// savegame specializations
-	virtual void AdjustCore(C4Scenario &rC4S);       // set specific C4S values
-	virtual bool WriteDesc(StdStrBuf &sBuf);         // write desc (contents only) - using old-style unchecked string buffers here...
-	virtual bool SaveComponents();                   // custom components: PlayerInfos even if fInitial
+	void AdjustCore(C4Scenario &rC4S) override;       // set specific C4S values
+	bool WriteDesc(StdStrBuf &sBuf) override;         // write desc (contents only) - using old-style unchecked string buffers here...
+	bool SaveComponents() override;                   // custom components: PlayerInfos even if fInitial
 
 };
 
@@ -175,14 +175,14 @@ public:
 
 protected:
 	// query functions
-	virtual bool GetSaveOrigin() { return true; }     // clients must know where to get music and localization
-	virtual bool GetKeepTitle() { return false; }     // always delete title files (not used in dynamics)
-	virtual bool GetSaveDesc() { return false; }      // no desc in dynamics
-	virtual bool GetCreateSmallFile() { return true; }// return whether file size should be minimized
+	bool GetSaveOrigin() override { return true; }     // clients must know where to get music and localization
+	bool GetKeepTitle() override { return false; }     // always delete title files (not used in dynamics)
+	bool GetSaveDesc() override { return false; }      // no desc in dynamics
+	bool GetCreateSmallFile() override { return true; }// return whether file size should be minimized
 
-	virtual bool GetCopyScenario() { return false; }    // network dynamics do not base on normal scenario
+	bool GetCopyScenario() override { return false; }    // network dynamics do not base on normal scenario
 	// savegame specializations
-	virtual void AdjustCore(C4Scenario &rC4S);           // set specific C4S values
+	void AdjustCore(C4Scenario &rC4S) override;           // set specific C4S values
 };
 
 #endif // INC_C4GameSave

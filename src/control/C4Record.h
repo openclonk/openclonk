@@ -31,7 +31,7 @@ extern int DoNoDebugRec; // debugrec disable counter in C4Record.cpp
 // turn off debugrecs in current block
 class C4DebugRecOff
 {
-	bool fDoOff;
+	bool fDoOff{true};
 
 public:
 	C4DebugRecOff();
@@ -116,7 +116,7 @@ public:
 	C4RecordChunk();
 	void Delete();
 	virtual void CompileFunc(StdCompiler *pComp);
-	virtual ~C4RecordChunk() {}
+	virtual ~C4RecordChunk() = default;
 };
 
 struct C4RCSetPix
@@ -228,16 +228,16 @@ struct C4RCOCF
 class C4PktDebugRec : public C4PktBuf
 {
 protected:
-	C4RecordChunkType eType;
+	C4RecordChunkType eType{RCT_Undefined};
 public:
-	C4PktDebugRec() : C4PktBuf(), eType(RCT_Undefined) {}
-	C4PktDebugRec(const C4PktDebugRec &rCopy) : C4PktBuf(rCopy), eType(rCopy.eType) {}
+	C4PktDebugRec() : C4PktBuf() {}
+	C4PktDebugRec(const C4PktDebugRec &rCopy) = default;
 	C4PktDebugRec(C4RecordChunkType eType, const StdBuf &rCpyData)
 			: C4PktBuf(rCpyData), eType(eType) {}
 
 	C4RecordChunkType getType() const { return eType; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Record // demo recording
@@ -247,9 +247,9 @@ private:
 	CStdFile LogRec; // handle for additional log file in record
 	StdStrBuf sFilename; // recorded scenario file name
 	C4Group RecordGrp; // record scenario group
-	bool fRecording; // set if recording is active
+	bool fRecording{false}; // set if recording is active
 	uint32_t iLastFrame; // frame of last chunk written
-	bool fStreaming; // perdiodically sent new control to server
+	bool fStreaming{false}; // perdiodically sent new control to server
 	unsigned int iStreamingPos; // Position of current buffer in stream
 	StdBuf StreamingData; // accumulated control data since last stream sync
 public:
@@ -288,9 +288,9 @@ private:
 	typedef std::list<C4RecordChunk> chunks_t;
 	chunks_t chunks;
 	chunks_t::iterator currChunk;
-	bool Finished;    // if set, free playback in next frame
+	bool Finished{true};    // if set, free playback in next frame
 	CStdFile playbackFile; // if open, try reading additional chunks from this file
-	bool fLoadSequential;  // used for debugrecs: Sequential reading of files
+	bool fLoadSequential{false};  // used for debugrecs: Sequential reading of files
 	StdBuf sequentialBuffer; // buffer to manage sequential reads
 	uint32_t iLastSequentialFrame; // frame number of last chunk read
 	void Finish(); // end playback
