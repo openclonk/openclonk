@@ -29,7 +29,7 @@ class C4ObjectListDlg: public C4ObjectListChangeListener
 #endif
 public:
 	C4ObjectListDlg();
-	virtual ~C4ObjectListDlg();
+	~C4ObjectListDlg() override;
 #ifdef WITH_QT_EDITOR
 	void SetModel(C4ConsoleQtObjectListModel *new_view_model) { view_model = new_view_model;  }
 #endif
@@ -38,10 +38,10 @@ public:
 	void Open();
 	void Update(class C4EditCursorSelection &rSelection);
 
-	virtual void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk) override;
-	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) override;
-	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) override;
-	virtual void OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container) override;
+	void OnObjectRemove(C4ObjectList * pList, C4ObjectLink * pLnk) override;
+	void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) override;
+	void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) override;
+	void OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container) override;
 };
 
 #endif //INC_C4ObjectListDlg

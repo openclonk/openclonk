@@ -2369,7 +2369,7 @@ bool C4PropertyDelegatePolygon::IsPasteValid(const C4Value &val) const
 
 /* Delegate factory: Create delegates based on the C4Value type */
 
-C4PropertyDelegateFactory::C4PropertyDelegateFactory() : current_editor(nullptr), property_model(nullptr), effect_delegate(this, nullptr)
+C4PropertyDelegateFactory::C4PropertyDelegateFactory() : effect_delegate(this, nullptr)
 {
 
 }
