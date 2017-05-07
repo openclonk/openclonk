@@ -35,7 +35,7 @@ public func SetFulfilled(bool to_val)
 
 public func GetDescription(int plr)
 {
-	return this.Description;
+	return GetTranslatedString(this.Description);
 }
 
 public func GetPictureDefinition(int plr)
