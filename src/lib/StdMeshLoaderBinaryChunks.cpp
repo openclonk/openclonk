@@ -63,26 +63,26 @@ namespace Ogre
 			std::unique_ptr<Chunk> chunk;
 			switch (id)
 			{
-			case CID_Header: chunk.reset(new ChunkFileHeader()); break;
-			case CID_Mesh: chunk.reset(new ChunkMesh()); break;
+			case CID_Header: chunk = std::make_unique<Ogre::Mesh::ChunkFileHeader>(); break;
+			case CID_Mesh: chunk = std::make_unique<Ogre::Mesh::ChunkMesh>(); break;
 			case CID_Mesh_Bone_Assignment:
 			case CID_Submesh_Bone_Assignment:
-				chunk.reset(new ChunkMeshBoneAssignments()); break;
-			case CID_Mesh_Skeleton_Link: chunk.reset(new ChunkMeshSkeletonLink()); break;
-			case CID_Mesh_Bounds: chunk.reset(new ChunkMeshBounds()); break;
-			case CID_Submesh: chunk.reset(new ChunkSubmesh()); break;
-			case CID_Submesh_Op: chunk.reset(new ChunkSubmeshOp()); break;
-			case CID_Geometry: chunk.reset(new ChunkGeometry()); break;
-			case CID_Geometry_Vertex_Buffer: chunk.reset(new ChunkGeometryVertexBuffer()); break;
-			case CID_Geometry_Vertex_Data: chunk.reset(new ChunkGeometryVertexData()); break;
-			case CID_Geometry_Vertex_Decl: chunk.reset(new ChunkGeometryVertexDecl()); break;
-			case CID_Geometry_Vertex_Decl_Element: chunk.reset(new ChunkGeometryVertexDeclElement()); break;
+				chunk = std::make_unique<Ogre::Mesh::ChunkMeshBoneAssignments>(); break;
+			case CID_Mesh_Skeleton_Link: chunk = std::make_unique<Ogre::Mesh::ChunkMeshSkeletonLink>(); break;
+			case CID_Mesh_Bounds: chunk = std::make_unique<Ogre::Mesh::ChunkMeshBounds>(); break;
+			case CID_Submesh: chunk = std::make_unique<Ogre::Mesh::ChunkSubmesh>(); break;
+			case CID_Submesh_Op: chunk = std::make_unique<Ogre::Mesh::ChunkSubmeshOp>(); break;
+			case CID_Geometry: chunk = std::make_unique<Ogre::Mesh::ChunkGeometry>(); break;
+			case CID_Geometry_Vertex_Buffer: chunk = std::make_unique<Ogre::Mesh::ChunkGeometryVertexBuffer>(); break;
+			case CID_Geometry_Vertex_Data: chunk = std::make_unique<Ogre::Mesh::ChunkGeometryVertexData>(); break;
+			case CID_Geometry_Vertex_Decl: chunk = std::make_unique<Ogre::Mesh::ChunkGeometryVertexDecl>(); break;
+			case CID_Geometry_Vertex_Decl_Element: chunk = std::make_unique<Ogre::Mesh::ChunkGeometryVertexDeclElement>(); break;
 			default:
 				LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu", id);
 				// Fall through
 			case CID_Edge_List: case CID_Submesh_Name_Table:
 				// We don't care about these
-				chunk.reset(new ChunkUnknown()); break;
+				chunk = std::make_unique<Ogre::Mesh::ChunkUnknown>(); break;
 			};
 			chunk->type = id;
 			chunk->size = size;
@@ -343,18 +343,18 @@ namespace Ogre
 			std::unique_ptr<Chunk> chunk;
 			switch (id)
 			{
-			case CID_Header: chunk.reset(new ChunkFileHeader()); break;
-			case CID_BlendMode: chunk.reset(new ChunkBlendMode()); break;
-			case CID_Bone: chunk.reset(new ChunkBone()); break;
-			case CID_Bone_Parent: chunk.reset(new ChunkBoneParent()); break;
-			case CID_Animation: chunk.reset(new ChunkAnimation()); break;
-			case CID_Animation_BaseInfo: chunk.reset(new ChunkAnimationBaseInfo()); break;
-			case CID_Animation_Track: chunk.reset(new ChunkAnimationTrack()); break;
-			case CID_Animation_Track_KF: chunk.reset(new ChunkAnimationTrackKF()); break;
-			case CID_Animation_Link: chunk.reset(new ChunkAnimationLink()); break;
+			case CID_Header: chunk = std::make_unique<Ogre::Skeleton::ChunkFileHeader>(); break;
+			case CID_BlendMode: chunk = std::make_unique<Ogre::Skeleton::ChunkBlendMode>(); break;
+			case CID_Bone: chunk = std::make_unique<Ogre::Skeleton::ChunkBone>(); break;
+			case CID_Bone_Parent: chunk = std::make_unique<Ogre::Skeleton::ChunkBoneParent>(); break;
+			case CID_Animation: chunk = std::make_unique<Ogre::Skeleton::ChunkAnimation>(); break;
+			case CID_Animation_BaseInfo: chunk = std::make_unique<Ogre::Skeleton::ChunkAnimationBaseInfo>(); break;
+			case CID_Animation_Track: chunk = std::make_unique<Ogre::Skeleton::ChunkAnimationTrack>(); break;
+			case CID_Animation_Track_KF: chunk = std::make_unique<Ogre::Skeleton::ChunkAnimationTrackKF>(); break;
+			case CID_Animation_Link: chunk = std::make_unique<Ogre::Skeleton::ChunkAnimationLink>(); break;
 			default:
 				LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu", id);
-				chunk.reset(new ChunkUnknown()); break;
+				chunk = std::make_unique<Ogre::Skeleton::ChunkUnknown>(); break;
 			};
 			chunk->type = id;
 			chunk->size = size;

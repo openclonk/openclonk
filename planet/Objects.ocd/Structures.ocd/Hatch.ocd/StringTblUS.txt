@@ -1,0 +1,4 @@
+Name=Hatch
+Description=A simple trap door. Can be opened at will and be passed vertically. Can be built on top of regular basement.
+Open=Open
+Close=Close

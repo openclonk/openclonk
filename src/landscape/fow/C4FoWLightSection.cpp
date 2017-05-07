@@ -25,7 +25,7 @@
 #include "landscape/fow/C4FoWRegion.h"
 #include "landscape/C4Landscape.h"
 
-#include "float.h"
+#include <cfloat>
 
 #include <iterator>
 
@@ -752,10 +752,8 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 #endif
 
 	// Phase 2: Calculate fade points
-	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
+	for (auto & tri : result)
 	{
-		C4FoWBeamTriangle &tri = *it;
-
 		// Calculate light bounds. Note that the way light size is calculated
 		// and we are using it below, we need to consider an "asymetrical" light.
 		float lightLX, lightLY, lightRX, lightRY;
@@ -797,9 +795,8 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 
 void C4FoWLightSection::transTriangles(std::list<C4FoWBeamTriangle> &triangles) const
 {
-	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(); it != triangles.end(); ++it)
+	for (auto & tri : triangles)
 	{
-		C4FoWBeamTriangle &tri = *it;
 		float x,y;
 
 		x = tri.fanRX, y = tri.fanRY;

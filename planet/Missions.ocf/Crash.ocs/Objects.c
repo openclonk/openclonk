@@ -9,13 +9,7 @@ func InitializeObjects()
 	var BoilingLava001 = CreateObject(BoilingLava);
 	BoilingLava001->SetIntensity(25);
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
-
 	CreateObject(Rule_TeamAccount);
-
-	CreateObject(Rule_Restart);
 
 	CreateObjectAbove(Tree_Coniferous, 380, 877);
 

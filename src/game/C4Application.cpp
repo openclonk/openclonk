@@ -104,10 +104,10 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 	// Engine header message
 	Log(C4ENGINECAPTION);
-	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, GetRevision());
-	LogF("ExePath: \"%s\"", Config.General.ExePath.getData());
-	LogF("SystemDataPath: \"%s\"", Config.General.SystemDataPath);
-	LogF("UserDataPath: \"%s\"", Config.General.UserDataPath);
+	LogF("Version: %s %s (%s - %s)", C4VERSION, C4_OS, GetRevision(), C4REVISION_TS);
+	LogF(R"(ExePath: "%s")", Config.General.ExePath.getData());
+	LogF(R"(SystemDataPath: "%s")", Config.General.SystemDataPath);
+	LogF(R"(UserDataPath: "%s")", Config.General.UserDataPath);
 
 	// Init C4Group
 	C4Group_SetProcessCallback(&ProcessCallback);
@@ -214,7 +214,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	Game.NetworkActive = false;
 	isEditor = 2;
 	int c;
-	while (1)
+	while (true)
 	{
 
 		static struct option long_options[] =
@@ -231,36 +231,36 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"nosignup", no_argument, &Config.Network.MasterServerSignUp, 0},
 			{"signup", no_argument, &Config.Network.MasterServerSignUp, 1},
 			
-			{"debugrecread", required_argument, 0, 'K'},
-			{"debugrecwrite", required_argument, 0, 'w'},
+			{"debugrecread", required_argument, nullptr, 'K'},
+			{"debugrecwrite", required_argument, nullptr, 'w'},
 
-			{"client", required_argument, 0, 'c'},
-			{"host", no_argument, 0, 'h'},
-			{"debughost", required_argument, 0, 'H'},
-			{"debugpass", required_argument, 0, 'P'},
-			{"debug", required_argument, 0, 'D'},
-			{"data", required_argument, 0, 'd'},
-			{"startup", required_argument, 0, 's'},
-			{"stream", required_argument, 0, 'e'},
-			{"recdump", required_argument, 0, 'R'},
-			{"comment", required_argument, 0, 'm'},
-			{"pass", required_argument, 0, 'p'},
-			{"udpport", required_argument, 0, 'u'},
-			{"tcpport", required_argument, 0, 't'},
-			{"join", required_argument, 0, 'j'},
-			{"language", required_argument, 0, 'L'},
-			{"scenpar", required_argument, 0, 'S'},
+			{"client", required_argument, nullptr, 'c'},
+			{"host", no_argument, nullptr, 'h'},
+			{"debughost", required_argument, nullptr, 'H'},
+			{"debugpass", required_argument, nullptr, 'P'},
+			{"debug", required_argument, nullptr, 'D'},
+			{"data", required_argument, nullptr, 'd'},
+			{"startup", required_argument, nullptr, 's'},
+			{"stream", required_argument, nullptr, 'e'},
+			{"recdump", required_argument, nullptr, 'R'},
+			{"comment", required_argument, nullptr, 'm'},
+			{"pass", required_argument, nullptr, 'p'},
+			{"udpport", required_argument, nullptr, 'u'},
+			{"tcpport", required_argument, nullptr, 't'},
+			{"join", required_argument, nullptr, 'j'},
+			{"language", required_argument, nullptr, 'L'},
+			{"scenpar", required_argument, nullptr, 'S'},
 
-			{"observe", no_argument, 0, 'o'},
-			{"nonetwork", no_argument, 0, 'N'},
-			{"network", no_argument, 0, 'n'},
-			{"record", no_argument, 0, 'r'},
+			{"observe", no_argument, nullptr, 'o'},
+			{"nonetwork", no_argument, nullptr, 'N'},
+			{"network", no_argument, nullptr, 'n'},
+			{"record", no_argument, nullptr, 'r'},
 
-			{"lobby", optional_argument, 0, 'l'},
+			{"lobby", optional_argument, nullptr, 'l'},
 
 			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
 			{"config", required_argument, nullptr, 0},
-			{0, 0, 0, 0}
+			{nullptr, 0, nullptr, 0}
 		};
 		int option_index = 0;
 		c = getopt_long (argc, argv, "abc:d:f:",

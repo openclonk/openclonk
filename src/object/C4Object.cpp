@@ -87,7 +87,7 @@ void C4Action::GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfW
 
 C4Object::C4Object()
 {
-	FrontParticles = BackParticles = 0;
+	FrontParticles = BackParticles = nullptr;
 	Default();
 }
 
@@ -104,7 +104,7 @@ void C4Object::Default()
 	Mass=OwnMass=0;
 	Damage=0;
 	Energy=0;
-	Alive=0;
+	Alive=false;
 	Breath=0;
 	InMat=MNone;
 	Color=0;
@@ -113,19 +113,19 @@ void C4Object::Default()
 	lightColor=0xffffffff;
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
-	Mobile=0;
+	Mobile=false;
 	Unsorted=false;
 	Initializing=false;
-	OnFire=0;
-	InLiquid=0;
-	EntranceStatus=0;
+	OnFire=false;
+	InLiquid=false;
+	EntranceStatus=false;
 	Audible=AudiblePan=0;
 	AudiblePlayer = NO_OWNER;
 	t_contact=0;
 	OCF=0;
 	Action.Default();
 	Shape.Default();
-	fOwnVertices=0;
+	fOwnVertices=false;
 	Contents.Default();
 	SolidMask.Default();
 	PictureRect.Default();
@@ -197,13 +197,13 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 
 	// Initial mobility
 	if (!!xdir || !!ydir || !!rdir)
-		Mobile=1;
+		Mobile=true;
 
 	// Mass
 	Mass=std::max<int32_t>(Def->Mass*Con/FullCon,1);
 
 	// Life, energy, breath
-	if (Category & C4D_Living) Alive=1;
+	if (Category & C4D_Living) Alive=true;
 	if (Alive) Energy=GetPropertyInt(P_MaxEnergy);
 	Breath=GetPropertyInt(P_MaxBreath);
 
@@ -247,11 +247,11 @@ C4Object::~C4Object()
 
 void C4Object::ClearParticleLists()
 {
-	if (FrontParticles != 0)
+	if (FrontParticles != nullptr)
 		Particles.ReleaseParticleList(FrontParticles);
-	if (BackParticles != 0)
+	if (BackParticles != nullptr)
 		Particles.ReleaseParticleList(BackParticles);
-	FrontParticles = BackParticles = 0;
+	FrontParticles = BackParticles = nullptr;
 }
 
 void C4Object::AssignRemoval(bool fExitContents)
@@ -288,7 +288,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove particles
 	ClearParticleLists();
 	// Action idle
-	SetAction(0);
+	SetAction(nullptr);
 	// Object system operation
 	if (Status == C4OS_INACTIVE)
 	{
@@ -530,13 +530,13 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 
 void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX, int32_t iPhaseY) const
 {
-	const float swdt = float(Def->Shape.Wdt);
-	const float shgt = float(Def->Shape.Hgt);
+	const auto swdt = float(Def->Shape.Wdt);
+	const auto shgt = float(Def->Shape.Hgt);
 	// Grow Type Display
-	float fx = float(swdt * iPhaseX);
-	float fy = float(shgt * iPhaseY);
-	float fwdt = float(swdt);
-	float fhgt = float(shgt);
+	auto fx = float(swdt * iPhaseX);
+	auto fy = float(shgt * iPhaseY);
+	auto fwdt = float(swdt);
+	auto fhgt = float(shgt);
 
 	float stretch_factor = static_cast<float>(Con) / FullCon;
 	float tx = offX + Def->Shape.GetX() * stretch_factor;
@@ -583,16 +583,16 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 	C4PropList* pActionDef = GetAction();
 
 	// Regular action facet
-	const float swdt = float(Action.Facet.Wdt);
-	const float shgt = float(Action.Facet.Hgt);
+	const auto swdt = float(Action.Facet.Wdt);
+	const auto shgt = float(Action.Facet.Hgt);
 	int32_t iPhase = Action.Phase;
 	if (pActionDef->GetPropertyInt(P_Reverse)) iPhase = pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
 
 	// Grow Type Display
-	float fx = float(Action.Facet.X + swdt * iPhase);
-	float fy = float(Action.Facet.Y + shgt * Action.DrawDir);
-	float fwdt = float(swdt);
-	float fhgt = float(shgt);
+	auto fx = float(Action.Facet.X + swdt * iPhase);
+	auto fy = float(Action.Facet.Y + shgt * Action.DrawDir);
+	auto fwdt = float(swdt);
+	auto fhgt = float(shgt);
 
 	// draw stretched towards shape center with transform
 	float stretch_factor = static_cast<float>(Con) / FullCon;
@@ -670,9 +670,7 @@ void C4Object::UpdateInMat()
 void C4Object::SetOCF()
 {
 	C4PropList* pActionDef = GetAction();
-#ifdef DEBUGREC_OCF
 	uint32_t dwOCFOld = OCF;
-#endif
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
@@ -756,22 +754,18 @@ void C4Object::SetOCF()
 	// OCF_Container
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
-#ifdef DEBUGREC_OCF
-	if (Config.General.DebugRec)
+	if (DEBUGREC_OCF && Config.General.DebugRec)
 	{
 		C4RCOCF rc = { dwOCFOld, OCF, false };
 		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
 	}
-#endif
 }
 
 
 void C4Object::UpdateOCF()
 {
 	C4PropList* pActionDef = GetAction();
-#ifdef DEBUGREC_OCF
 	uint32_t dwOCFOld = OCF;
-#endif
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
@@ -832,13 +826,11 @@ void C4Object::UpdateOCF()
 	// OCF_Container
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
-#ifdef DEBUGREC_OCF
-	if (Config.General.DebugRec)
+	if (DEBUGREC_OCF && Config.General.DebugRec)
 	{
 		C4RCOCF rc = { dwOCFOld, OCF, true };
 		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
 	}
-#endif
 #ifdef _DEBUG
 	DEBUGREC_OFF
 	uint32_t updateOCF = OCF;
@@ -1012,14 +1004,14 @@ void C4Object::AssignDeath(bool fForced)
 	// and prevent recursive death-calls this way
 	// get death causing player before doing effect calls, because those might meddle around with the flags
 	int32_t iDeathCausingPlayer = LastEnergyLossCausePlayer;
-	Alive=0;
+	Alive=false;
 	if (pEffects) pEffects->ClearAll(C4FxCall_RemoveDeath);
 	// if the object is alive again, abort here if the kill is not forced
 	if (Alive && !fForced) return;
 	// Action
 	SetActionByName("Dead");
 	// Values
-	Alive=0;
+	Alive=false;
 	ClearCommands();
 	C4ObjectInfo * pInfo = Info;
 	if (Info)
@@ -1062,7 +1054,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	// Exit container (no Ejection/Departure)
 	if (Contained) Exit(0,0,0,Fix0,Fix0,Fix0,false);
 	// Pre change resets
-	SetAction(0);
+	SetAction(nullptr);
 	ResetProperty(&Strings.P[P_Action]); // Enforce ActIdle because SetAction may have failed due to NoOtherAction
 	SetDir(0); // will drop any outdated flipdir
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=nullptr; }
@@ -1206,7 +1198,7 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 			while ((cobj=Contents.GetObject()))
 				if (Contained) cobj->Enter(Contained);
 				else cobj->Exit(cobj->GetX(),cobj->GetY());
-			SetAction(0);
+			SetAction(nullptr);
 		}
 	}
 
@@ -1258,8 +1250,8 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	BoundsCheck(fix_x, fix_y);
 	xdir=iXDir; ydir=iYDir; rdir=iRDir;
 	// Misc updates
-	Mobile=1;
-	InLiquid=0;
+	Mobile=true;
+	InLiquid=false;
 	CloseMenu(true);
 	UpdateFace(true);
 	SetOCF();
@@ -1355,7 +1347,7 @@ void C4Object::Fling(C4Real txdir, C4Real tydir, bool fAddSpeed)
 		if (!ObjectActionJump(this,txdir,tydir,false))
 		{
 			xdir=txdir; ydir=tydir;
-			Mobile=1;
+			Mobile=true;
 			Action.t_attach&=~CNAT_Bottom;
 		}
 }
@@ -1408,7 +1400,7 @@ bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
 	}
 
 	// Mobilization check
-	if (!!xdir || !!ydir || !!rdir) Mobile=1;
+	if (!!xdir || !!ydir || !!rdir) Mobile=true;
 
 	// Stuck check
 	if (!::Game.iTick35) if (txdir) if (!Def->NoHorizontalMove)
@@ -1427,7 +1419,7 @@ bool C4Object::Lift(C4Real tydir, C4Real dforce)
 	if (!Status || !Def || Contained) return false;
 	// Mobilization check
 	if (!Mobile)
-		{ xdir=ydir=Fix0; Mobile=1; }
+		{ xdir=ydir=Fix0; Mobile=true; }
 	// General pushing force vs. object mass
 	dforce=dforce*100/Mass;
 	// If close enough, set tydir
@@ -1743,7 +1735,7 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 	// call to object
 	Call(PSF_Promotion);
 
-	StartSoundEffect("UI::Trumpet",0,100,this);
+	StartSoundEffect("UI::Trumpet",false,100,this);
 	return true;
 }
 
@@ -2728,7 +2720,7 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	// Unfullcon objects no action
 	if (Con<FullCon)
 		if (!Def->IncompleteActivity)
-			Act = 0;
+			Act = nullptr;
 	// Reset action time on change
 	if (Act!=LastAction)
 	{
@@ -2833,7 +2825,7 @@ bool C4Object::SetActionByName(C4String *ActName,
 	assert(ActName);
 	// If we get the null string or ActIdle by name, set ActIdle
 	if (!ActName || ActName == &Strings.P[P_Idle])
-		return SetAction(0,0,0,iCalls,fForce);
+		return SetAction(nullptr,nullptr,nullptr,iCalls,fForce);
 	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
 	if (!ActMap.getPropList()) return false;
 	C4Value Action; ActMap.getPropList()->GetPropertyByS(ActName, &Action);
@@ -2925,7 +2917,7 @@ void C4Object::NoAttachAction()
 	else
 	{
 		DoGravity(this);
-		Mobile=1;
+		Mobile=true;
 	}
 }
 
@@ -3292,15 +3284,15 @@ void C4Object::ExecAction()
 			if (Inside<int32_t>(GetR(),-StableRange,+StableRange))
 			{
 				Action.t_attach|=Def->UprightAttach;
-				Mobile=1;
+				Mobile=true;
 			}
 
 	C4PropList* pActionDef = GetAction();
 	// No IncompleteActivity? Reset action if there was one
 	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity && pActionDef)
 	{
-		SetAction(0);
-		pActionDef = 0;
+		SetAction(nullptr);
+		pActionDef = nullptr;
 	}
 
 	// InLiquidAction check
@@ -3410,7 +3402,7 @@ void C4Object::ExecAction()
 			iPhaseAdvance=+fixtoi(xdir*10);
 		}
 
-		Mobile=1;
+		Mobile=true;
 		// object is rotateable? adjust to ground, if in horizontal movement or not attached to the center vertex
 		if (Def->Rotateable && Shape.AttachMat != MNone && (!!xdir || Def->Shape.VtxX[Shape.iAttachVtx]))
 			AdjustWalkRotation(20, 20, 100);
@@ -3420,7 +3412,7 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_KNEEL:
 		ydir=0;
-		Mobile=1;
+		Mobile=true;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_SCALE:
@@ -3455,7 +3447,7 @@ void C4Object::ExecAction()
 		if (ydir<0) iPhaseAdvance=-fixtoi(ydir*14);
 		if (ydir>0) iPhaseAdvance=+fixtoi(ydir*14);
 		xdir=0;
-		Mobile=1;
+		Mobile=true;
 		break;
 	}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3492,7 +3484,7 @@ void C4Object::ExecAction()
 		if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left); }
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		ydir=0;
-		Mobile=1;
+		Mobile=true;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLIGHT:
@@ -3516,7 +3508,7 @@ void C4Object::ExecAction()
 
 		// Gravity/mobile
 		DoGravity(this);
-		Mobile=1;
+		Mobile=true;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_DIG:
@@ -3529,11 +3521,11 @@ void C4Object::ExecAction()
 		else if (Action.t_attach & CNAT_Top && Shape.Attach(smpx,smpy,CNAT_Top)) fAttachOK = true;
 		if (!fAttachOK)
 			{ ObjectComStopDig(this); return; }
-		iPhaseAdvance=40*limit;
+		iPhaseAdvance=fixtoi(itofix(40)*limit);
 
 		if (xdir < 0) SetDir(DIR_Left); else if (xdir > 0) SetDir(DIR_Right);
 		Action.t_attach=CNAT_None;
-		Mobile=1;
+		Mobile=true;
 		break;
 	}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3580,12 +3572,12 @@ void C4Object::ExecAction()
 		if (xdir<0) SetDir(DIR_Left);
 		if (xdir>0) SetDir(DIR_Right);
 		iPhaseAdvance=fixtoi(limit*10);
-		Mobile=1;
+		Mobile=true;
 
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_THROW:
-		Mobile=1;
+		Mobile=true;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_BRIDGE:
@@ -3597,7 +3589,7 @@ void C4Object::ExecAction()
 		case COMD_Right: case COMD_UpRight: SetDir(DIR_Right); break;
 		}
 		ydir=0; xdir=0;
-		Mobile=1;
+		Mobile=true;
 	}
 	break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3612,10 +3604,10 @@ void C4Object::ExecAction()
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_DownLeft:   iTXDir=-limit; break;
-		case COMD_UpLeft:  fStraighten=1;     iTXDir=-limit; break;
+		case COMD_UpLeft:  fStraighten=true;     iTXDir=-limit; break;
 		case COMD_Right: case COMD_DownRight: iTXDir=+limit; break;
-		case COMD_UpRight: fStraighten=1;     iTXDir=+limit; break;
-		case COMD_Up:      fStraighten=1; break;
+		case COMD_UpRight: fStraighten=true;     iTXDir=+limit; break;
+		case COMD_Up:      fStraighten=true; break;
 		case COMD_Stop: case COMD_Down:       iTXDir=0;       break;
 		}
 		// Push object
@@ -3652,7 +3644,7 @@ void C4Object::ExecAction()
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
 		ydir=0;
-		Mobile=1;
+		Mobile=true;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_PULL:
@@ -3728,13 +3720,13 @@ void C4Object::ExecAction()
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
 		ydir=0;
-		Mobile=1;
+		Mobile=true;
 
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_LIFT:
 		// Valid check
-		if (!Action.Target) { SetAction(0); return; }
+		if (!Action.Target) { SetAction(nullptr); return; }
 		// Target lifting force
 		lftspeed=itofix(2); tydir=0;
 		switch (Action.ComDir)
@@ -3745,7 +3737,7 @@ void C4Object::ExecAction()
 		}
 		// Lift object
 		if (!Action.Target->Lift(tydir,C4REAL100(50)))
-			{ SetAction(0); return; }
+			{ SetAction(nullptr); return; }
 		// Check LiftTop
 		if (Def->LiftTop)
 			if (Action.Target->GetY()<=(GetY()+Def->LiftTop))
@@ -3807,7 +3799,7 @@ void C4Object::ExecAction()
 			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
 		}
 
-		Mobile=1;
+		Mobile=true;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// ATTACH: Force position to target object
@@ -3820,7 +3812,7 @@ void C4Object::ExecAction()
 		{
 			if (Status)
 			{
-				SetAction(0);
+				SetAction(nullptr);
 				Call(PSF_AttachTargetLost);
 			}
 			return;
@@ -3829,7 +3821,7 @@ void C4Object::ExecAction()
 		// Target incomplete and no incomplete activity
 		if (!(Action.Target->OCF & OCF_FullCon))
 			if (!Action.Target->Def->IncompleteActivity)
-				{ SetAction(0); return; }
+				{ SetAction(nullptr); return; }
 
 		// Force containment
 		if (Action.Target->Contained!=Contained)
@@ -3922,7 +3914,7 @@ void C4Object::ExecAction()
 			// Line fBroke
 			if (fBroke)
 			{
-				Call(PSF_OnLineBreak,0);
+				Call(PSF_OnLineBreak,nullptr);
 				AssignRemoval();
 				return;
 			}
@@ -3943,7 +3935,7 @@ void C4Object::ExecAction()
 		if (Action.t_attach)
 		{
 			xdir = ydir = 0;
-			Mobile = 1;
+			Mobile = true;
 		}
 		// Free gravity
 		else
@@ -4715,13 +4707,13 @@ void C4Object::UpdateInLiquid()
 		{
 			if (OCF & OCF_HitSpeed2)
 				if (Mass>3) Splash();
-			InLiquid=1;
+			InLiquid=true;
 		}
 	}
 	else // Out of liquid
 	{
 		if (InLiquid) // Leave liquid
-			InLiquid=0;
+			InLiquid=false;
 	}
 }
 

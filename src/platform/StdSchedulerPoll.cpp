@@ -149,7 +149,7 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 			auto tProcTick = proc->GetNextTick(tNow);
 			if (tProcTick <= tNow)
 			{
-				struct pollfd * pfd = 0;
+				struct pollfd * pfd = nullptr;
 				if (fds_for_proc.find(proc) != fds_for_proc.end())
 					pfd = &fds[fds_for_proc[proc].first];
 				if (!proc->Execute(0, pfd))

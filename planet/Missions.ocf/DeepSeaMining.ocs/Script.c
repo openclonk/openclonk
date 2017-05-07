@@ -33,12 +33,15 @@ protected func PostIntroInitialize()
 	}
 	
 	// Rules
-	var respawn_rule = FindObject(Find_ID(Rule_BaseRespawn));
-	if (respawn_rule)
-	{
-		respawn_rule->SetInventoryTransfer(true);
-		respawn_rule->SetFreeCrew(true);
-	}
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetInventoryTransfer(true);
+	relaunch_rule->SetFreeCrew(true);
+	relaunch_rule->SetRespawnDelay(1);
+	relaunch_rule->SetBaseRespawn(true);
+	relaunch_rule->SetDefaultRelaunchCount(nil);
+	relaunch_rule->SetAllowPlayerRestart(true);
+	relaunch_rule->SetLastClonkRespawn(true);
+	relaunch_rule->SetInitialRelaunch(false);
 	
 	// Initialize different parts of the scenario.
 	InitializeAmbience();

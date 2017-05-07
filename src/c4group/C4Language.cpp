@@ -320,7 +320,7 @@ void C4Language::LoadInfos(C4Group &hGroup)
 		// of the same code - the system always loads the first string table found for a given code
 		if (!FindInfo(GetFilenameOnly(strEntry) + SLen(GetFilenameOnly(strEntry)) - 2))
 			// Load language string table
-			if (hGroup.LoadEntry(strEntry, &strTable, 0, 1))
+			if (hGroup.LoadEntry(strEntry, &strTable, nullptr, 1))
 			{
 				// New language info
 				C4LanguageInfo *pInfo = new C4LanguageInfo;

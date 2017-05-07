@@ -31,7 +31,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #endif
-#include <errno.h>
+#include <cerrno>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -143,10 +143,7 @@ C4Network2ResLoad::C4Network2ResLoad(int32_t inChunk, int32_t inByClient)
 
 }
 
-C4Network2ResLoad::~C4Network2ResLoad()
-{
-
-}
+C4Network2ResLoad::~C4Network2ResLoad() = default;
 
 bool C4Network2ResLoad::CheckTimeout()
 {
@@ -1188,15 +1185,9 @@ bool C4Network2Res::OptimizeStandalone(bool fSilent)
 
 // *** C4Network2ResChunk
 
-C4Network2ResChunk::C4Network2ResChunk()
-{
+C4Network2ResChunk::C4Network2ResChunk() = default;
 
-}
-
-C4Network2ResChunk::~C4Network2ResChunk()
-{
-
-}
+C4Network2ResChunk::~C4Network2ResChunk() = default;
 
 bool C4Network2ResChunk::Set(C4Network2Res *pRes, uint32_t inChunk)
 {

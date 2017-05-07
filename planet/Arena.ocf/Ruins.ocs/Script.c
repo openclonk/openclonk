@@ -13,6 +13,7 @@ protected func Initialize()
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	// Mood.
 	SetSkyAdjust(RGBa(255, 255, 255, 127), RGB(255, 200, 150));
@@ -34,15 +35,6 @@ protected func Initialize()
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 
 	AddEffect("DryTime",nil,100,2);
-	return;
-}
-
-// Gamecall from LastManStanding goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
 	return;
 }
 

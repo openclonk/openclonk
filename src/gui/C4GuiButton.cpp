@@ -36,8 +36,8 @@ namespace C4GUI
 	{
 		// key callbacks
 		C4CustomKey::CodeList keys;
-		keys.push_back(C4KeyCodeEx(K_SPACE));
-		keys.push_back(C4KeyCodeEx(K_RETURN));
+		keys.emplace_back(K_SPACE);
+		keys.emplace_back(K_RETURN);
 		if (Config.Controls.GamepadGuiControl)
 			ControllerKeys::Ok(keys);
 		pKeyButton = new C4KeyBinding(keys, "GUIButtonPress", KEYSCOPE_Gui,

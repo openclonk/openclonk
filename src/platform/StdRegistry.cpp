@@ -22,7 +22,7 @@
 
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
-#include <stdio.h>
+#include <cstdio>
 
 StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)
 {
@@ -254,7 +254,7 @@ StdCompilerConfigWrite::StdCompilerConfigWrite(HKEY hRoot, const char *szPath)
 {
 	pKey->Name = szPath;
 	pKey->subindex = 0;
-	pKey->Handle = 0;
+	pKey->Handle = nullptr;
 	CreateKey(hRoot);
 }
 
@@ -270,8 +270,8 @@ bool StdCompilerConfigWrite::Name(const char *szName)
 	// Open parent key (if not already done so)
 	CreateKey();
 	// Push new subkey onto the stack
-	Key *pnKey = new Key();
-	pnKey->Handle = 0;
+	auto *pnKey = new Key();
+	pnKey->Handle = nullptr;
 	pnKey->subindex = 0;
 	if (pKey->LastChildName == szName)
 		pnKey->Name.Format("%s%d", szName, (int)++pKey->subindex);
@@ -434,7 +434,7 @@ StdCompilerConfigRead::StdCompilerConfigRead(HKEY hRoot, const char *szPath)
 	if (RegOpenKeyExW(hRoot, GetWideChar(szPath),
 	                 0, KEY_READ,
 	                 &pKey->Handle) != ERROR_SUCCESS)
-		pKey->Handle = 0;
+		pKey->Handle = nullptr;
 }
 
 StdCompilerConfigRead::~StdCompilerConfigRead()
@@ -462,10 +462,10 @@ bool StdCompilerConfigRead::Name(const char *szName)
 	                 0, KEY_READ,
 	                 &hSubKey) != ERROR_SUCCESS)
 	{
-		hSubKey = 0;
+		hSubKey = nullptr;
 		// Try to query value (exists?)
 		if (RegQueryValueExW(pKey->Handle, sName.GetWideChar(),
-		                    0, &dwType, nullptr, nullptr) != ERROR_SUCCESS)
+		                    nullptr, &dwType, nullptr, nullptr) != ERROR_SUCCESS)
 			fFound = false;
 	}
 	// Push new subkey on the stack
@@ -619,7 +619,7 @@ void StdCompilerConfigRead::String(std::string &str, RawCompileType type)
 
 void StdCompilerConfigRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
-	excCorrupt(0, "Raw values aren't supported for registry compilers!");
+	excCorrupt(nullptr, "Raw values aren't supported for registry compilers!");
 }
 
 void StdCompilerConfigRead::Begin()
@@ -645,7 +645,7 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 	// Read
 	uint32_t iVal; DWORD iSize = sizeof(iVal);
 	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-	                    0, nullptr,
+	                    nullptr, nullptr,
 	                    reinterpret_cast<LPBYTE>(&iVal),
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return 0; }
@@ -675,7 +675,7 @@ void StdCompilerConfigRead::ReadString()
 		// Get size of string
 		DWORD iSize;
 		if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-			0, nullptr,
+			nullptr, nullptr,
 			nullptr,
 			&iSize) != ERROR_SUCCESS)
 		{
@@ -685,7 +685,7 @@ void StdCompilerConfigRead::ReadString()
 		StdBuf Result; Result.SetSize(iSize);
 		// Read
 		if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
-			0, nullptr,
+			nullptr, nullptr,
 			reinterpret_cast<BYTE *>(Result.getMData()),
 			&iSize) != ERROR_SUCCESS)
 		{

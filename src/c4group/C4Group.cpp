@@ -551,7 +551,7 @@ bool C4Group::Open(const char *szGroupName, bool fCreate)
 	char szRealGroup[_MAX_FNAME];
 	SCopy(szGroupNameN,szRealGroup,_MAX_FNAME);
 	do
-		{ if (!TruncatePath(szRealGroup)) return Error(FormatString("Open(\"%s\"): File not found", szGroupNameN).getData()); }
+		{ if (!TruncatePath(szRealGroup)) return Error(FormatString(R"(Open("%s"): File not found)", szGroupNameN).getData()); }
 	while (!FileExists(szRealGroup));
 
 	// Open mother and child in exclusive mode

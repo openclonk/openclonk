@@ -27,7 +27,7 @@ C4AulScriptFunc::C4AulScriptFunc(C4PropListStatic * Parent, C4ScriptHost *pOrgSc
 		pOrgScript(pOrgScript),
 		tProfileTime(0)
 {
-	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
+	for (auto & i : ParType) i = C4V_Any;
 	AddBCC(AB_EOFN);
 }
 

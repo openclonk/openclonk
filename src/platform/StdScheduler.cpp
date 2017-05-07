@@ -16,10 +16,10 @@
 #include "C4Include.h"
 #include "platform/StdScheduler.h"
 
-#include <stdio.h>
+#include <cstdio>
 
-#include <assert.h>
-#include <errno.h>
+#include <cassert>
+#include <cerrno>
 #include <fcntl.h>
 
 #include <vector>

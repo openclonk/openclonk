@@ -1,0 +1,63 @@
+material LavaCoreMat: NormalMap
+{
+	receive_shadows off
+	
+	technique 0
+	{
+		pass 0
+		{
+			cull_hardware none
+			
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			scene_blend alpha_blend
+			depth_write off
+			
+			texture_unit base
+			{
+				texture LavaCore.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+			
+			texture_unit normal
+            {
+                texture LavaCoreNormals.png
+                tex_address_mode wrap
+            }
+		}
+	}
+}
+material LavaCoreStoneMat: NormalMap
+{
+	receive_shadows off
+	
+	technique 0
+	{
+		pass 0
+		{
+			cull_hardware none
+
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			scene_blend alpha_blend
+			depth_write off
+			
+			texture_unit base
+			{
+				texture LavaCoreStone.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+			
+			texture_unit normal
+            {
+                texture LavaCoreNormals.png
+                tex_address_mode wrap
+            }
+		}
+	}
+}
+

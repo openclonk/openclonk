@@ -118,7 +118,7 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 			// or added to an effect that destroyed itself (iResult = -2)
 			if (pEffect2 != (C4Effect*)C4Fx_Effect_Deny && pEffect2 != (C4Effect*)C4Fx_Effect_Annul) return pEffect2;
 			// effect is still marked dead
-			return 0;
+			return nullptr;
 		}
 	}
 	// init effect
@@ -131,7 +131,7 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	if (!GetCallbackScript())
 	{
 		Call(P_Construction, &C4AulParSet(rVal1, rVal2, rVal3, rVal4)).getInt();
-		if (pForObj && !pForObj->Status) return 0;
+		if (pForObj && !pForObj->Status) return nullptr;
 		pFn = GetFunc(P_Start);
 	}
 	else
@@ -139,14 +139,14 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	if (fRemoveUpper && pNext && pFn)
 		TempRemoveUpperEffects(false, &pLastRemovedEffect);
 	// bad things may happen
-	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
+	if (pForObj && !pForObj->Status) return nullptr; // this will be invalid!
 	iPriority = iPrio; // validate effect now
 	if (CallStart(0, rVal1, rVal2, rVal3, rVal4) == C4Fx_Start_Deny)
 		// the effect denied to start: assume it hasn't, and mark it dead
 		SetDead();
 	if (fRemoveUpper && pNext && pFn)
 		TempReaddUpperEffects(pLastRemovedEffect);
-	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
+	if (pForObj && !pForObj->Status) return nullptr; // this will be invalid!
 	// Update OnFire cache
 	if (!IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, GetName()))
 		pForObj->SetOnFire(true);
@@ -249,7 +249,7 @@ int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
 C4Effect* C4Effect::Check(const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	// priority=1: always OK; no callbacks
-	if (iPrio == 1) return 0;
+	if (iPrio == 1) return nullptr;
 	// check this and other effects
 	C4Effect *pAddToEffect = nullptr; bool fDoTempCallsForAdd = false;
 	C4Effect *pLastRemovedEffect=nullptr;
@@ -291,7 +291,7 @@ C4Effect* C4Effect::Check(const char *szCheckEffect, int32_t iPrio, int32_t iTim
 			return pAddToEffect;
 	}
 	// added to no effect and not denied
-	return 0;
+	return nullptr;
 }
 
 void C4Effect::Execute(C4Effect **ppEffectList)

@@ -94,8 +94,9 @@ static int ToNumber(char c)
 
 //------------------------------- Strings ------------------------------------------------
 
-int32_t StrToI32(const char *s, int base, const char **scan_end)
+int32_t StrToI32(const char *str, int base, const char **scan_end)
 {
+	const char *s = str;
 	int sign = 1;
 	int32_t result = 0;
 	if (*s == '-')
@@ -107,6 +108,12 @@ int32_t StrToI32(const char *s, int base, const char **scan_end)
 	{
 		s++;
 	}
+	if (!*s)
+	{
+		// Abort if there are no digits to parse
+		if (scan_end) *scan_end = str;
+		return 0;
+	}
 	while (IsNumber(*s,base))
 	{
 		int value = ToNumber(*s++);
@@ -114,7 +121,7 @@ int32_t StrToI32(const char *s, int base, const char **scan_end)
 		result *= base;
 		result += value;
 	}
-	if (scan_end != 0L) *scan_end = s;
+	if (scan_end != nullptr) *scan_end = s;
 	result *= sign;
 	return result;
 }

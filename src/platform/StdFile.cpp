@@ -21,7 +21,7 @@
 #include "platform/StdFile.h"
 #include "lib/StdBuf.h"
 
-#include <stdio.h>
+#include <cstdio>
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
@@ -34,9 +34,9 @@
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #endif
-#include <errno.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cerrno>
+#include <cstdlib>
+#include <cctype>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -45,7 +45,7 @@
 
 /* Path & Filename */
 #ifdef _WIN32
-static const char *DirectorySeparators = "/\\";
+static const char *DirectorySeparators = R"(/\)";
 #else
 static const char *DirectorySeparators = "/";
 #endif
@@ -151,7 +151,7 @@ const char *GetExtension(const char *szFilename)
 void RealPath(const char *szFilename, char *pFullFilename)
 {
 #ifdef _WIN32
-	wchar_t *wpath = _wfullpath(0, GetWideChar(szFilename), 0);
+	wchar_t *wpath = _wfullpath(nullptr, GetWideChar(szFilename), 0);
 	StdStrBuf path(wpath);
 	// I'm pretty sure pFullFilename will always have at least a size of _MAX_PATH, but ughh
 	// This should return a StdStrBuf
@@ -421,7 +421,7 @@ void MakeFilenameFromTitle(char *szTitle)
 		else if (static_cast<unsigned int>(*szTitle2) > 127)
 			fStrip = true;
 		else
-			fStrip = (SCharPos(*szTitle2, "!\"'%&/=?+*#:;<>\\.") >= 0);
+			fStrip = (SCharPos(*szTitle2, R"(!"'%&/=?+*#:;<>\.)") >= 0);
 		if (!fStrip) *szFilename++ = *szTitle2;
 		++szTitle2;
 	}
@@ -614,12 +614,12 @@ const char *GetWorkingDirectory()
 {
 #ifdef _WIN32
 	static StdStrBuf buffer;
-	wchar_t *widebuf = 0;
-	DWORD widebufsz = GetCurrentDirectoryW(0, 0);
+	wchar_t *widebuf = nullptr;
+	DWORD widebufsz = GetCurrentDirectoryW(0, nullptr);
 	widebuf = new wchar_t[widebufsz];
 	if (GetCurrentDirectoryW(widebufsz, widebuf) == 0) {
 		delete[] widebuf;
-		return 0;
+		return nullptr;
 	}
 	buffer.Take(StdStrBuf(widebuf));
 	delete[] widebuf;
@@ -777,7 +777,7 @@ bool EraseDirectory(const char *szDirName)
 	char path[_MAX_PATH+1];
 #ifdef _WIN32
 	// Get path to directory contents
-	SCopy(szDirName,path); SAppend("\\*.*",path);
+	SCopy(szDirName,path); SAppend(R"(\*.*)",path);
 	// Erase subdirectories and files
 	ForEachFile(path,&EraseItem);
 #else
@@ -878,10 +878,10 @@ bool ItemIdentical(const char *szFilename1, const char *szFilename2)
 
 struct DirectoryIteratorP
 {
-	DirectoryIteratorP() : ref(1) {}
+	DirectoryIteratorP()  {}
 	DirectoryIterator::FileList files;
 	std::string directory;
-	int ref;
+	int ref{1};
 };
 
 DirectoryIterator::DirectoryIterator()
@@ -1015,8 +1015,8 @@ void DirectoryIterator::Read(const char *dirname)
 #endif
 	// Sort list
 	std::sort(p->files.begin(), p->files.end());
-	for (FileList::iterator it = p->files.begin(); it != p->files.end(); ++it)
-		it->first.insert(0, search_path); // prepend path to all file entries
+	for (auto & file : p->files)
+		file.first.insert(0, search_path); // prepend path to all file entries
 	iter = p->files.begin();
 	p->directory = dirname;
 }

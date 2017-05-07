@@ -69,12 +69,7 @@ StdCopyStrBuf C4TimeMilliseconds::AsString() const
 	return StdCopyStrBuf(string);
 }
 
-C4TimeMilliseconds& C4TimeMilliseconds::operator=(const C4TimeMilliseconds& rhs)
-{
-	time = rhs.time;
-	inf = rhs.inf;
-	return *this;
-}
+C4TimeMilliseconds& C4TimeMilliseconds::operator=(const C4TimeMilliseconds& rhs) = default;
 
 bool operator==( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )
 {

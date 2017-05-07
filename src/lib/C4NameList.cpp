@@ -63,8 +63,8 @@ bool C4NameList::Add(const char *szName, int32_t iCount)
 
 bool C4NameList::IsEmpty()
 {
-	for (int32_t cnt=0; cnt<C4MaxNameList; cnt++)
-		if (Name[cnt][0])
+	for (auto & cnt : Name)
+		if (cnt[0])
 			return false;
 	return true;
 }

@@ -35,10 +35,7 @@ C4SoundSystem::C4SoundSystem():
 {
 }
 
-C4SoundSystem::~C4SoundSystem()
-{
-
-}
+C4SoundSystem::~C4SoundSystem() = default;
 
 bool C4SoundSystem::Init()
 {

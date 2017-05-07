@@ -38,7 +38,7 @@
 #include <sys/types.h>
 #endif
 #ifdef HAVE_LOCALE_H
-#include <locale.h>
+#include <clocale>
 #endif
 
 #ifdef USE_CONSOLE
@@ -213,7 +213,7 @@ void C4ConfigSecurity::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(WasRegistered,           "WasRegistered",        0                   ));
 #ifdef _WIN32
-	pComp->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              "%APPDATA%\\" C4ENGINENAME, false, true));
+	pComp->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              R"(%APPDATA%\)" C4ENGINENAME, false, true));
 #elif defined(__linux__)
 	pComp->Value(mkNamingAdapt(s(KeyPath),              "KeyPath",              "$HOME/.clonk/" C4ENGINENICK, false, true));
 #elif defined(__APPLE__)
@@ -498,7 +498,7 @@ void C4ConfigGeneral::DeterminePaths()
 		SCopy(ConfigUserPath, UserDataPath);
 	else
 #if defined(_WIN32)
-		SCopy("%APPDATA%\\" C4ENGINENAME, UserDataPath);
+		SCopy(R"(%APPDATA%\)" C4ENGINENAME, UserDataPath);
 #elif defined(__APPLE__)
 		SCopy("$HOME/Library/Application Support/" C4ENGINENAME, UserDataPath);
 #else
@@ -718,7 +718,7 @@ const char* C4Config::GetSubkeyPath(const char *strSubkey)
 {
 	static char key[1024 + 1];
 #ifdef _WIN32
-	sprintf(key, "Software\\%s\\%s\\%s", C4CFG_Company, C4ENGINENAME, strSubkey);
+	sprintf(key, R"(Software\%s\%s\%s)", C4CFG_Company, C4ENGINENAME, strSubkey);
 #else
 	sprintf(key, "%s", strSubkey);
 #endif

@@ -115,9 +115,7 @@ C4AulDefFunc::C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef):
 	Parent->SetPropertyByS(Name, C4VFunction(this));
 }
 
-C4AulDefFunc::~C4AulDefFunc()
-{
-}
+C4AulDefFunc::~C4AulDefFunc() = default;
 
 C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
@@ -178,6 +176,11 @@ static C4ValueArray *FnTrans_Rotate(C4PropList * _this, long angle, long rx, lon
 	long n = long(sqrt(double(sqrt_val)));
 	if (n * n < sqrt_val) n++;
 	else if (n * n > sqrt_val) n--;
+	
+	if (n == 0)
+	{
+		throw C4AulExecError("cannot rotate around a null vector");
+	}
 
 	rx = (1000 * rx) / n;
 	ry = (1000 * ry) / n;
@@ -408,14 +411,14 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropLis
 	{
 		pEffect = *FnGetEffectsFor(pTarget);
 		// the object has no effects attached, nothing to look for
-		if (!pEffect) return 0;
+		if (!pEffect) return false;
 		// name/wildcard given: find effect by name
 		if (szEffect && *szEffect)
 			pEffect = pEffect->Get(szEffect, 0);
 	}
 
 	// neither passed nor found - nothing to remove!
-	if (!pEffect) return 0;
+	if (!pEffect) return false;
 
 	// kill it
 	if (fDoNoCalls)
@@ -452,7 +455,7 @@ static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4PropL
 	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
 	if (!pEffect) return false;
 	// count effects
-	if (!*szEffect) szEffect = 0;
+	if (!*szEffect) szEffect = nullptr;
 	return pEffect->GetCount(szEffect, iMaxPriority);
 }
 
@@ -460,7 +463,7 @@ static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 {
 	// evaluate parameters
 	C4PropList *pTarget = Pars[0].getPropList();
-	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : 0;
+	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : nullptr;
 	const char *szCallFn = FnStringPar(Pars[2].getStr());
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
@@ -615,6 +618,16 @@ static C4Value FnDebugLog(C4PropList * _this, C4Value * Pars)
 static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 {
 	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
+}
+
+// Parse a string into an integer. Returns nil if the conversion fails.
+static Nillable<int32_t> FnParseInt(C4PropList *_this, C4String *str)
+{
+	const char *cstr = str->GetCStr();
+	const char *end = nullptr;
+	int32_t result = StrToI32(cstr, 10, &end);
+	if (end == cstr || *end != '\0') return C4Void();
+	return result;
 }
 
 static long FnAbs(C4PropList * _this, long iVal)
@@ -1118,14 +1131,14 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
-	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
-	{ "EffectCall",    1, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
-	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
-	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
-	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
-	{ "Trans_Mul",     1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
+	{ "Call",          true, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
+	{ "EffectCall",    true, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
+	{ "Log",           true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
+	{ "DebugLog",      true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
+	{ "Format",        true, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
+	{ "Trans_Mul",     true, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
 
-	{ nullptr,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
+	{ nullptr,            false, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, nullptr          }
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
@@ -1142,6 +1155,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
 		new C4AulDefFunc(p, pDef);
 #define F(f) ::AddFunc(p, #f, Fn##f)
+	F(ParseInt);
 	F(Abs);
 	F(Min);
 	F(Max);

@@ -82,12 +82,7 @@ public:
 	C4SolidMask(C4Object *pForObject);  // ctor
 	~C4SolidMask(); // dtor
 
-#ifdef SOLIDMASK_DEBUG
 	static bool CheckConsistency();
-#else
-	static bool CheckConsistency() { return true; }
-#endif
-
 	static void RemoveSolidMasks();
 	static void PutSolidMasks();
 

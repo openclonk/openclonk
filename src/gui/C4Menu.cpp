@@ -391,8 +391,7 @@ bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szComm
                      int32_t iCount, C4Object *pObject, const char *szInfoCaption,
                      C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
 {
-#ifdef DEBUGREC_MENU
-	if (Config.General.DebugRec)
+	if (DEBUGREC_MENU && Config.General.DebugRec)
 		if (pObject)
 		{
 			C4RCMenuAdd rc = { pObject ? pObject->Number : -1, iCount, idID, fOwnValue, iValue, fIsSelectable };
@@ -400,7 +399,6 @@ bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szComm
 			if (szCommand) AddDbgRec(RCT_MenuAddC, szCommand, strlen(szCommand)+1);
 			if (szCommand2) AddDbgRec(RCT_MenuAddC, szCommand2, strlen(szCommand2)+1);
 		}
-#endif
 	// Add it to the list
 	pClientWindow->AddElement(pNew);
 	// first menuitem is portrait, if it does not have text but a facet

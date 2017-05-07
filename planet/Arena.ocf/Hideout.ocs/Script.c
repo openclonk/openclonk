@@ -14,17 +14,19 @@ protected func Initialize()
 	
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 120, 502);
-	goal->SetFlagBase(2, LandscapeWidth() - 120, 502);
+	goal->SetFlagBase(1, 120, 506);
+	goal->SetFlagBase(2, LandscapeWidth() - 120, 506);
 	
 	// Rules
-	CreateObject(Rule_Restart);
+	var relaunch_rule = GetRelaunchRule();
+	relaunch_rule->SetAllowPlayerRestart(true);
+	relaunch_rule->SetRespawnDelay(8);
+	relaunch_rule->SetLastWeaponUse(false);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
-	
+		
 	var lwidth = LandscapeWidth();
-	
 	// Doors and spinwheels.
 	var gate, wheel;
 	gate = CreateObjectAbove(StoneDoor, 364, 448, NO_OWNER);
@@ -97,16 +99,6 @@ protected func Initialize()
 protected func InitializePlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
-	return;
-}
-
-// Gamecall from CTF goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	relaunch->SetRelaunchTime(8, true);
 	return;
 }
 

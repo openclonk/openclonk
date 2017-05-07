@@ -13,6 +13,9 @@ protected func Initialize()
 	CreateObject(Goal_LastManStanding);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	GetRelaunchRule()
+		->SetRespawnDelay(3)
+		->SetLastWeaponUse(false);
 	
 	// Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
@@ -73,25 +76,21 @@ private func PlaceGras()
 	return;
 }
 
-protected func OnPlayerRelaunch(int plr)
+public func RelaunchPosition()
 {
-	var clonk = GetCrew(plr);
-	clonk->DoEnergy(100000);
 	var x = RandomX(75,500);
 	var y=100;
 	while(!GBackSolid(x,y)) y+=1;
 	y-=30;
-	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	relaunch->SetRelaunchTime(3);
-	clonk->CreateContents(TeleGlove);
-	return;
+	
+	return [x, y];
 }
 
 public func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->CreateParticle("Fire", 0, 0, PV_Random(-20, 20), PV_Random(-40, 5), PV_Random(20, 90), Particles_Glimmer(), 30);
 	clonk->SetYDir(-5);
+	clonk->CreateContents(TeleGlove);
 	return;
 }
 
@@ -104,5 +103,4 @@ public func OnClonkDeath(object clonk)
 }
 
 // Settings for LMS and DM.
-public func RelaunchCount() { return 5; }
 public func WinKillCount() { return 5; }

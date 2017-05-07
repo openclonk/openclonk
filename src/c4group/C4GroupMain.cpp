@@ -569,7 +569,7 @@ int main(int argc, char *argv[])
 			break;
 			// Child process
 		case 0:
-			execl(strExecuteAtEnd, strExecuteAtEnd, static_cast<char *>(0)); // currently no parameters are passed to the executed program
+			execl(strExecuteAtEnd, strExecuteAtEnd, static_cast<char *>(nullptr)); // currently no parameters are passed to the executed program
 			exit(1);
 			// Parent process
 		default:

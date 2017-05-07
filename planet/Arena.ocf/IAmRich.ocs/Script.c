@@ -47,7 +47,9 @@ func Initialize()
 	g_goal = CreateObject(Goal_BeRich);
 	
 	CreateObject(Rule_BuyAtFlagpole);
-	CreateObject(Rule_BaseRespawn);
+	GetRelaunchRule()
+		->SetBaseRespawn(true)
+		->SetLastClonkRespawn(true);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_TeamAccount);
 	

@@ -309,13 +309,13 @@ private:
 	static std::list<CPNGSaveThread *> threads;
 public:
 	CPNGSaveThread(CPNGFile *png, const char *filename);
-	virtual ~CPNGSaveThread();
+	~CPNGSaveThread() override;
 
 	static bool HasPendingThreads();
 
 protected:
-	virtual void Execute();
-	virtual bool IsSelfDestruct() { return true; }
+	void Execute() override;
+	bool IsSelfDestruct() override { return true; }
 };
 
 CStdCSec CPNGSaveThread::threads_sec;

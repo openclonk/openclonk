@@ -337,8 +337,8 @@ bool C4GraphicsResource::RegisterGlobalGraphics()
 	// then be kept.
 	// The cleanest alternative would be to reinit all the fonts whenever a scenario is reloaded
 	// FIXME: Test whether vector fonts from a scenario are correctly reloaded
-	C4Group *pMainGfxGrp = new C4Group();
-	if (!Reloc.Open(*pMainGfxGrp, C4CFN_Graphics) || !Files.RegisterGroup(*pMainGfxGrp, true, C4GSPrio_Base, C4GSCnt_Graphics, 1))
+	auto *pMainGfxGrp = new C4Group();
+	if (!Reloc.Open(*pMainGfxGrp, C4CFN_Graphics) || !Files.RegisterGroup(*pMainGfxGrp, true, C4GSPrio_Base, C4GSCnt_Graphics, true))
 	{
 		// error
 		LogFatal(FormatString(LoadResStr("IDS_PRC_NOGFXFILE"),C4CFN_Graphics,pMainGfxGrp->GetError()).getData());

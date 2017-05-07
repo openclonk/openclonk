@@ -1,0 +1,2 @@
+Name=Sprühdose
+Description=Lasse den kleinen Künstler in dir heraus!

@@ -123,8 +123,8 @@ void C4PropListNumbered::ShelveNumberedPropLists()
 void C4PropListNumbered::UnshelveNumberedPropLists()
 {
 	// re-insert shelved proplists into main list and give them a number
-	for (std::vector<C4PropListNumbered *>::iterator i=ShelvedPropLists.begin(); i!=ShelvedPropLists.end(); ++i)
-		(*i)->AcquireNumber();
+	for (auto & ShelvedPropList : ShelvedPropLists)
+		ShelvedPropList->AcquireNumber();
 	ShelvedPropLists.clear();
 }
 
@@ -365,7 +365,7 @@ C4PropList::~C4PropList()
 	while (FirstRef)
 	{
 		// Manually kill references so DelRef doesn't destroy us again
-		FirstRef->Data = 0; FirstRef->Type = C4V_Nil;
+		FirstRef->Data = nullptr; FirstRef->Type = C4V_Nil;
 		C4Value *ref = FirstRef;
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = nullptr;
@@ -664,25 +664,25 @@ void C4PropList::SetName(const char* NewName)
 C4Object * C4PropList::GetObject()
 {
 	if (GetPrototype()) return GetPrototype()->GetObject();
-	return 0;
+	return nullptr;
 }
 
 C4Object const * C4PropList::GetObject() const
 {
 	if (GetPrototype()) return GetPrototype()->GetObject();
-	return 0;
+	return nullptr;
 }
 
 C4Def * C4PropList::GetDef()
 {
 	if (GetPrototype()) return GetPrototype()->GetDef();
-	return 0;
+	return nullptr;
 }
 
 C4Def const * C4PropList::GetDef() const
 {
 	if (GetPrototype()) return GetPrototype()->GetDef();
-	return 0;
+	return nullptr;
 }
 
 class C4MapScriptLayer * C4PropList::GetMapScriptLayer()
@@ -700,13 +700,13 @@ class C4MapScriptMap * C4PropList::GetMapScriptMap()
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
 	if (GetPrototype()) return GetPrototype()->GetPropListNumbered();
-	return 0;
+	return nullptr;
 }
 
 C4Effect * C4PropList::GetEffect()
 {
 	if (GetPrototype()) return GetPrototype()->GetEffect();
-	return 0;
+	return nullptr;
 }
 
 template<> template<>
@@ -780,7 +780,7 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 	{
 		return GetPrototype()->GetPropertyStr(n);
 	}
-	return 0;
+	return nullptr;
 }
 
 C4ValueArray * C4PropList::GetPropertyArray(C4PropertyName n) const
@@ -794,7 +794,7 @@ C4ValueArray * C4PropList::GetPropertyArray(C4PropertyName n) const
 	{
 		return GetPrototype()->GetPropertyArray(n);
 	}
-	return 0;
+	return nullptr;
 }
 
 C4AulFunc * C4PropList::GetFunc(C4String * k) const
@@ -808,7 +808,7 @@ C4AulFunc * C4PropList::GetFunc(C4String * k) const
 	{
 		return GetPrototype()->GetFunc(k);
 	}
-	return 0;
+	return nullptr;
 }
 
 C4AulFunc * C4PropList::GetFunc(const char * s) const
@@ -818,7 +818,7 @@ C4AulFunc * C4PropList::GetFunc(const char * s) const
 	C4String * k = Strings.FindString(s);
 	// this string is entirely unused
 	if (!k)
-		return 0;
+		return nullptr;
 	return GetFunc(k);
 }
 
@@ -943,7 +943,7 @@ C4String * C4PropList::EnumerateOwnFuncs(C4String * prev) const
 			return p->Key;
 		p = Properties.Next(p);
 	}
-	return 0;
+	return nullptr;
 }
 
 void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)

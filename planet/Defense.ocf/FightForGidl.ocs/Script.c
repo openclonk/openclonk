@@ -46,7 +46,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	{
 		g_relaunchs = [];
 		g_scores = [];
-		Scoreboard->Init([{key = "relaunchs", title = Rule_Restart, sorted = true, desc = true, default = "", priority = 75},
+		Scoreboard->Init([{key = "relaunchs", title = Rule_Relaunch, sorted = true, desc = true, default = "", priority = 75},
 	                    {key = "score", title = Nugget, sorted = true, desc = true, default = "0", priority = 100}]);
 	}
 	for (var stonedoor in FindObjects(Find_ID(StoneDoor), Find_Owner(NO_OWNER))) stonedoor->SetOwner(plr);

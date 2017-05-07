@@ -130,7 +130,7 @@ void C4ToolsDlg::SetBackTexture(const char *szTexture)
 bool C4ToolsDlg::SetIFT(bool fIFT)
 {
 	ModeBack = false;
-	if (fIFT) ModeIFT = 1; else ModeIFT=0;
+	if (fIFT) ModeIFT = true; else ModeIFT=false;
 
 	// Keep sensible default values in BackMaterial / BackTexture
 	if (ModeIFT == 0)

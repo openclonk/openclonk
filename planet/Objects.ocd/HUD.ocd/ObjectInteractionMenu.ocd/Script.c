@@ -820,35 +820,41 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	if (!info.menu.callback_target || !info.menu.callback_hover)
 	{
 		var text = Format("%s:|%s", info.entry.symbol->GetName(), info.entry.symbol.Description);
-		var obj = nil;
-		if (info.entry.extra_data && info.entry.extra_data.objects)
-		{
-			for (var possible in info.entry.extra_data.objects)
-			{
-				if (possible == nil) continue;
-				obj = possible;
-				break;
-			}
-		}
+		
 		// For contents menus, we can sometimes present additional information about objects.
-		if (info.menu.flag == InteractionMenu_Contents && obj)
+		if (info.menu.flag == InteractionMenu_Contents)
 		{
-			var additional = nil;
-			if (obj->Contents())
+			// Get the first valid object of the clicked stack.
+			var obj = nil;
+			if (info.entry.extra_data && info.entry.extra_data.objects)
 			{
-				additional = "$Contains$ ";
-				var i = 0, count = obj->ContentsCount();
-				// This currently justs lists contents one after the other.
-				// Items are not stacked, which should be enough for everything we have ingame right now. If this is filed into the bugtracker at some point, fix here.
-				for (;i < count;++i)
+				for (var possible in info.entry.extra_data.objects)
 				{
-					if (i > 0)
-						additional = Format("%s, ", additional);
-					additional = Format("%s%s", additional, obj->Contents(i)->GetName());
+					if (possible == nil) continue;
+					obj = possible;
+					break;
 				}
 			}
-			if (additional != nil)
-				text = Format("%s||%s", text, additional);
+			// ..and use that object to fetch some more information.
+			if (obj)
+			{
+				var additional = nil;
+				if (obj->Contents())
+				{
+					additional = "$Contains$ ";
+					var i = 0, count = obj->ContentsCount();
+					// This currently justs lists contents one after the other.
+					// Items are not stacked, which should be enough for everything we have ingame right now. If this is filed into the bugtracker at some point, fix here.
+					for (;i < count;++i)
+					{
+						if (i > 0)
+							additional = Format("%s, ", additional);
+						additional = Format("%s%s", additional, obj->Contents(i)->GetName());
+					}
+				}
+				if (additional != nil)
+					text = Format("%s||%s", text, additional);
+			}
 		}
 		
 		GuiUpdateText(text, current_main_menu_id, 1, current_description_box.desc_target);

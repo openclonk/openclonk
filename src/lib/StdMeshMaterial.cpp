@@ -27,7 +27,7 @@
 #ifdef  _MSC_VER
 #define _USE_MATH_DEFINES
 #endif  /* _MSC_VER */
-#include <math.h>
+#include <cmath>
 
 #ifdef WITH_GLIB
 #include <glib.h>
@@ -246,7 +246,7 @@ public:
 
 	template<typename SubT> void Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec);
 private:
-	unsigned int CurIndex;
+	unsigned int CurIndex{0u};
 };
 
 StdMeshMaterialParserCtx::StdMeshMaterialParserCtx(StdMeshMatManager& manager, const char* mat_script, const char* filename, StdMeshMaterialLoader& loader):
@@ -522,13 +522,10 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 
 void StdMeshMaterialParserCtx::WarningNotSupported(const char* identifier)
 {
-	DebugLogF("%s:%d: Warning: \"%s\" is not supported!", FileName.getData(), Line, identifier);
+	DebugLogF(R"(%s:%d: Warning: "%s" is not supported!)", FileName.getData(), Line, identifier);
 }
 
-StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
-		: CurIndex(0)
-{
-}
+StdMeshMaterialSubLoader::StdMeshMaterialSubLoader() = default;
 
 template<typename SubT>
 void StdMeshMaterialSubLoader::Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec)
@@ -734,9 +731,7 @@ void StdMeshMaterialShaderParameter::Move(StdMeshMaterialShaderParameter &&other
 	other.type = FLOAT;
 }
 
-StdMeshMaterialShaderParameters::StdMeshMaterialShaderParameters()
-{
-}
+StdMeshMaterialShaderParameters::StdMeshMaterialShaderParameters() = default;
 
 StdMeshMaterialShaderParameter StdMeshMaterialShaderParameters::LoadConstParameter(StdMeshMaterialParserCtx& ctx)
 {
@@ -780,7 +775,7 @@ StdMeshMaterialShaderParameter StdMeshMaterialShaderParameters::LoadConstParamet
 	}
 	else
 	{
-		ctx.Error(FormatString("Invalid type: \"%s\"", type_name.getData()));
+		ctx.Error(FormatString(R"(Invalid type: "%s")", type_name.getData()));
 		return StdMeshMaterialShaderParameter();
 	}
 }
@@ -840,12 +835,12 @@ bool StdMeshMaterialProgram::AddParameterNames(const StdMeshMaterialShaderParame
 {
 	// TODO: This is O(n^2) -- not optimal!
 	bool added = false;
-	for (unsigned int i = 0; i < parameters.NamedParameters.size(); ++i)
+	for (const auto & NamedParameter : parameters.NamedParameters)
 	{
-		const std::vector<StdCopyStrBuf>::const_iterator iter = std::find(ParameterNames.begin(), ParameterNames.end(), parameters.NamedParameters[i].first);
+		const std::vector<StdCopyStrBuf>::const_iterator iter = std::find(ParameterNames.begin(), ParameterNames.end(), NamedParameter.first);
 		if (iter == ParameterNames.end())
 		{
-			ParameterNames.push_back(parameters.NamedParameters[i].first);
+			ParameterNames.push_back(NamedParameter.first);
 			added = true;
 		}
 	}
@@ -1031,7 +1026,7 @@ void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, cons
 	if (surface->Wdt != surface->Hgt)
 		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is not quadratic");
 
-	Textures.push_back(TexPtr(surface.release()));
+	Textures.emplace_back(surface.release());
 }
 
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
@@ -1179,8 +1174,8 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_TRANSFORM;
-			for (int i = 0; i < 16; ++i)
-				trans.Transform.M[i] = ctx.AdvanceFloat();
+			for (float & i : trans.Transform.M)
+				i = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
 		else if (token_name == "wave_xform")
@@ -1219,9 +1214,9 @@ StdMeshMaterialPass::ProgramInstance::ProgramInstance(const StdMeshMaterialProgr
 
 void StdMeshMaterialPass::ProgramInstance::LoadParameterRefs(const ShaderInstance* instance)
 {
-	for(unsigned int i = 0; i < instance->Parameters.NamedParameters.size(); ++i)
+	for(const auto & NamedParameter : instance->Parameters.NamedParameters)
 	{
-		const int index = Program->GetParameterIndex(instance->Parameters.NamedParameters[i].first.getData());
+		const int index = Program->GetParameterIndex(NamedParameter.first.getData());
 		assert(index != -1);
 
 		const std::vector<ParameterRef>::const_iterator parameter_iter =
@@ -1234,7 +1229,7 @@ void StdMeshMaterialPass::ProgramInstance::LoadParameterRefs(const ShaderInstanc
 		else
 		{
 			ParameterRef ref;
-			ref.Parameter = &instance->Parameters.NamedParameters[i].second;
+			ref.Parameter = &NamedParameter.second;
 			ref.UniformIndex = index;
 			Parameters.push_back(ref);
 		}
@@ -1472,8 +1467,8 @@ bool StdMeshMaterialTechnique::IsOpaque() const
 	// non-opaque passes will just depend on the opaque value drawn in
 	// the previous pass; total result will not depend on original
 	// frame buffer value).
-	for(unsigned int i = 0; i < Passes.size(); ++i)
-		if(Passes[i].IsOpaque())
+	for(const auto & Pass : Passes)
+		if(Pass.IsOpaque())
 			return true;
 	return false;
 }

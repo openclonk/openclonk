@@ -428,7 +428,7 @@ struct C4ControlJoinPlayer : public C4ControlPacket // sync
 {
 public:
 	C4ControlJoinPlayer() : iAtClient(-1), idInfo(-1), fByRes(false) { }
-	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, const C4Network2ResCore &ResCore);
+	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, C4Network2ResCore ResCore);
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo);
 protected:
 	StdStrBuf Filename;

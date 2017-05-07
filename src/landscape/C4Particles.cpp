@@ -499,7 +499,7 @@ float C4ParticleValueProvider::Wind(C4Particle *forParticle)
 
 float C4ParticleValueProvider::Gravity(C4Particle *forParticle)
 {
-	return startValue + (speedFactor * ::Landscape.GetGravity());
+	return startValue + (speedFactor * fixtof(::Landscape.GetGravity()));
 }
 
 void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)

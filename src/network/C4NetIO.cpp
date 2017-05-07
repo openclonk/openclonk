@@ -21,8 +21,8 @@
 #include "config/C4Config.h"
 
 #include <utility>
-#include <assert.h>
-#include <errno.h>
+#include <cassert>
+#include <cerrno>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -596,7 +596,7 @@ StdStrBuf C4NetIO::HostAddress::ToString(int flags) const
 	}
 
 	char buf[INET6_ADDRSTRLEN];
-	if (getnameinfo(&gen, sizeof(v6), buf, sizeof(buf), 0, 0, NI_NUMERICHOST) != 0)
+	if (getnameinfo(&gen, sizeof(v6), buf, sizeof(buf), nullptr, 0, NI_NUMERICHOST) != 0)
 		return StdStrBuf();
 
 	return StdStrBuf(buf, true);
@@ -726,10 +726,7 @@ C4NetIO::C4NetIO()
 	ResetError();
 }
 
-C4NetIO::~C4NetIO()
-{
-
-}
+C4NetIO::~C4NetIO() = default;
 
 bool C4NetIO::InitIPv6Socket(SOCKET socket)
 {
@@ -764,9 +761,7 @@ void C4NetIO::SetError(const char *strnError, bool fSockErr)
 
 // construction / destruction
 
-C4NetIOPacket::C4NetIOPacket()
-{
-}
+C4NetIOPacket::C4NetIOPacket() = default;
 
 C4NetIOPacket::C4NetIOPacket(const void *pnData, size_t inSize, bool fCopy, const C4NetIO::addr_t &naddr)
 		: StdCopyBuf(pnData, inSize, fCopy), addr(naddr)
@@ -2293,7 +2288,7 @@ const unsigned int C4NetIOUDP::iUDPHeaderSize = 8 + 24; // (bytes)
 // between platforms.
 struct C4NetIOUDP::BinAddr
 {
-	BinAddr() : type(0) {}
+	BinAddr()  {}
 	BinAddr(const C4NetIO::addr_t& addr)
 	{
 		switch (addr.GetFamily())
@@ -2349,7 +2344,7 @@ struct C4NetIOUDP::BinAddr
 	}
 
 	uint16_t port;
-	uint8_t type;
+	uint8_t type{0};
 	union
 	{
 		uint8_t v4[4];

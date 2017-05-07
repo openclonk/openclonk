@@ -37,11 +37,11 @@
 #include <io.h>
 #endif
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <limits.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <climits>
 #include <list>
 
 C4Surface::C4Surface() : fIsBackground(false)
@@ -142,7 +142,7 @@ void C4Surface::Clear()
 	if (pCtx)
 	{
 		delete pCtx;
-		pCtx = 0;
+		pCtx = nullptr;
 	}
 #endif
 	texture.reset();
@@ -485,7 +485,7 @@ bool C4Surface::Unlock()
 		{
 			// emulated primary locks in OpenGL
 			delete[] PrimarySurfaceLockBits;
-			PrimarySurfaceLockBits = 0;
+			PrimarySurfaceLockBits = nullptr;
 			return true;
 		}
 		else
@@ -683,7 +683,7 @@ C4TexRef::~C4TexRef()
 #ifndef USE_CONSOLE
 	if (pGL && pGL->pCurrCtx) glDeleteTextures(1, &texName);
 #endif
-	if (pDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = 0;
+	if (pDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = nullptr;
 	// remove from texture manager
 	pTexMgr->UnregTex(this);
 }

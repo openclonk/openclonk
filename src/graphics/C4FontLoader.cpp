@@ -52,7 +52,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 	assert(szFontName);
 	if (!szFontName || !*szFontName)
 	{
-		LogFatal(FormatString("%s (\"%s\")", LoadResStr("IDS_ERR_INITFONTS"), szFontName ? szFontName : "(null)").getData());
+		LogFatal(FormatString(R"(%s ("%s"))", LoadResStr("IDS_ERR_INITFONTS"), szFontName ? szFontName : "(null)").getData());
 		return false;
 	}
 	// if def has not been found, use the def as font name

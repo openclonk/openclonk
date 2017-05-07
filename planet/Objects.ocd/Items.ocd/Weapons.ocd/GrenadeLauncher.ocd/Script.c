@@ -247,6 +247,12 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_
 	return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
 }
 
+
+public func OnRelaunchCreation()
+{
+	CreateContents(IronBomb);
+}
+
 func Definition(def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Translate(-3000, 1000, 1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1));

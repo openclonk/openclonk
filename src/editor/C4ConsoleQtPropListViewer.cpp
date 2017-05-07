@@ -68,12 +68,12 @@ C4PropertyPath::C4PropertyPath(C4Effect *fx, C4Object *target_obj) : get_path_ty
 		if (ofx == fx) break; else if (!strcmp(ofx->GetName(), name)) ++index;
 	if (target_obj)
 	{
-		get_path.Format("GetEffect(\"%s\", Object(%d), %d)", name, (int)target_obj->Number, (int)index);
+		get_path.Format(R"(GetEffect("%s", Object(%d), %d))", name, (int)target_obj->Number, (int)index);
 		root.Format("Object(%d)", (int)target_obj->Number);
 	}
 	else
 	{
-		get_path.Format("GetEffect(\"%s\", nil, %d)", name, (int)index);
+		get_path.Format(R"(GetEffect("%s", nil, %d))", name, (int)index);
 		root = ::Strings.P[P_Global].GetData();
 	}
 }
@@ -393,7 +393,7 @@ void C4PropertyDelegateStringEditor::StoreEditedText()
 	{
 		// TODO: Would be better to handle escaping in the C4Value-to-string code
 		QString new_value = edit->text();
-		new_value = new_value.replace("\\", "\\\\").replace("\"", "\\\"");
+		new_value = new_value.replace(R"(\)", R"(\\)").replace(R"(")", R"(\")");
 		C4Value text_value = C4VString(new_value.toUtf8());
 		// If translatable, always store as translation proplist
 		// This makes it easier to collect strings to be localized in the localization overview
@@ -1000,7 +1000,7 @@ void C4StyledItemDelegateWithButton::paint(QPainter *painter, const QStyleOption
 C4DeepQComboBox::C4DeepQComboBox(QWidget *parent, C4StyledItemDelegateWithButton::ButtonType button_type, bool editable)
 	: QComboBox(parent), last_popup_height(0), is_next_close_blocked(false), editable(editable), manual_text_edited(false)
 {
-	item_delegate.reset(new C4StyledItemDelegateWithButton(button_type));
+	item_delegate = std::make_unique<C4StyledItemDelegateWithButton>(button_type);
 	QTreeView *view = new QTreeView(this);
 	view->setFrameShape(QFrame::NoFrame);
 	view->setSelectionBehavior(QTreeView::SelectRows);
@@ -2373,10 +2373,10 @@ bool C4PropertyDelegateGraph::IsVertexPasteValid(const C4Value &val) const
 		const C4Value &pt = arr->GetItem(i_pt);
 		const C4PropList *ptp = pt.getPropList();
 		if (!ptp) return false;
-		for (int32_t i_prop = 0; i_prop < n_props; ++i_prop)
+		for (auto & property_name : property_names)
 		{
 			C4Value ptprop;
-			if (!ptp->GetProperty(property_names[i_prop], &ptprop)) return false;
+			if (!ptp->GetProperty(property_name, &ptprop)) return false;
 			if (ptprop.GetType() != C4V_Int) return false;
 		}
 	}
@@ -2793,9 +2793,7 @@ C4ConsoleQtPropListModel::C4ConsoleQtPropListModel(C4PropertyDelegateFactory *de
 	layout_valid = false;
 }
 
-C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel()
-{
-}
+C4ConsoleQtPropListModel::~C4ConsoleQtPropListModel() = default;
 
 bool C4ConsoleQtPropListModel::AddPropertyGroup(C4PropList *add_proplist, int32_t group_index, QString name, C4PropList *target_proplist, const C4PropertyPath &group_target_path, C4Object *base_object, C4String *default_selection, int32_t *default_selection_index)
 {
@@ -2993,7 +2991,7 @@ void C4ConsoleQtPropListModel::SetBasePropList(C4PropList *new_proplist)
 void C4ConsoleQtPropListModel::DescendPath(const C4Value &new_value, C4PropList *new_info_proplist, const C4PropertyPath &new_path)
 {
 	// Add previous proplist to stack
-	target_path_stack.push_back(TargetStackEntry(target_path, target_value, info_proplist));
+	target_path_stack.emplace_back(target_path, target_value, info_proplist);
 	// descend
 	target_value = new_value;
 	info_proplist.SetPropList(new_info_proplist);
@@ -3290,7 +3288,7 @@ void C4ConsoleQtPropListModel::DoOnUpdateCall(const C4PropertyPath &updated_path
 	C4Value q;
 	if (base_proplist && base_proplist->GetProperty(P_EditorPropertyChanged, &q))
 	{
-		::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString("%s->%s(\"%s\")", updated_path.GetRoot(), ::Strings.P[P_EditorPropertyChanged].GetCStr(), updated_path.GetGetPath()).getData(), 0, false));
+		::Console.EditCursor.EMControl(CID_Script, new C4ControlScript(FormatString(R"(%s->%s("%s"))", updated_path.GetRoot(), ::Strings.P[P_EditorPropertyChanged].GetCStr(), updated_path.GetGetPath()).getData(), 0, false));
 	}
 }
 

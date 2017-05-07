@@ -226,8 +226,8 @@ static C4ValueArray *FnFindConstructionSite(C4PropList * _this, C4PropList * Pro
 		return nullptr;
 	// Search for real
 	bool result = !!FindConSiteSpot(v1, v2, pDef->Shape.Wdt,pDef->Shape.Hgt, 20);
-	if(!result) return 0;
-	C4ValueArray *pArray = new C4ValueArray(2);
+	if(!result) return nullptr;
+	auto *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(v1));
 	pArray->SetItem(1, C4VInt(v2));
 	return pArray;
@@ -902,7 +902,7 @@ static bool FnSetPlayerZoom(C4PropList * _this, long plr_idx, long zoom, long pr
 	{
 		// zoom factor calculation
 		if (!precision) precision = 1;
-		C4Fixed fZoom = itofix(zoom, precision);
+		C4Real fZoom = itofix(zoom, precision);
 		// safety check on player only, so function return result is always in sync
 		C4Player *plr = ::Players.Get(plr_idx);
 		if (!plr) return false;
@@ -1299,7 +1299,7 @@ static C4ValueArray* FnPathFree2(C4PropList * _this, int32_t x1, int32_t y1, int
 		pArray->SetItem(1, C4VInt(y));
 		return pArray;
 	}
-	return 0;
+	return nullptr;
 }
 
 C4Object* FnObject(C4PropList * _this, long iNumber)
@@ -1443,11 +1443,11 @@ public:
 			: pszNames(pszNames), iNameCnt(iNameCnt), iEntryNr(iEntryNr)
 	{  }
 
-	virtual bool isDeserializer() override { return false; }
-	virtual bool hasNaming() override { return true; }
-	virtual bool isVerbose() override { return false; }
+	bool isDeserializer() override { return false; }
+	bool hasNaming() override { return true; }
+	bool isVerbose() override { return false; }
 
-	virtual bool Name(const char *szName) override
+	bool Name(const char *szName) override
 	{
 		// match possible? (no match yet / continued match)
 		if (!iMatchStart || haveCurrentMatch())
@@ -1464,13 +1464,13 @@ public:
 		return true;
 	}
 
-	virtual bool Default(const char *szName) override
+	bool Default(const char *szName) override
 	{
 		// Always process values even if they are default!
 		return false;
 	}
 
-	virtual void NameEnd(bool fBreak = false) override
+	void NameEnd(bool fBreak = false) override
 	{
 		// end of matched name section?
 		if (haveCurrentMatch())
@@ -1481,7 +1481,7 @@ public:
 		iDepth--;
 	}
 
-	virtual void Begin() override
+	void Begin() override
 	{
 		// set up
 		iDepth = iMatchStart = iMatchCount = 0;
@@ -1509,23 +1509,23 @@ private:
 		}
 	}
 public:
-	virtual void DWord(int32_t &rInt) override { MaybeProcessInt(rInt); }
-	virtual void DWord(uint32_t &rInt) override { MaybeProcessInt(rInt); }
-	virtual void Word(int16_t &rShort) override { MaybeProcessInt(rShort); }
-	virtual void Word(uint16_t &rShort) override { MaybeProcessInt(rShort); }
-	virtual void Byte(int8_t &rByte) override { MaybeProcessInt(rByte); }
-	virtual void Byte(uint8_t &rByte) override { MaybeProcessInt(rByte); }
-	virtual void Boolean(bool &rBool) override { if (haveCompleteMatch()) if (!iEntryNr--) ProcessBool(rBool); }
-	virtual void Character(char &rChar) override { if (haveCompleteMatch()) if (!iEntryNr--) ProcessChar(rChar); }
+	void DWord(int32_t &rInt) override { MaybeProcessInt(rInt); }
+	void DWord(uint32_t &rInt) override { MaybeProcessInt(rInt); }
+	void Word(int16_t &rShort) override { MaybeProcessInt(rShort); }
+	void Word(uint16_t &rShort) override { MaybeProcessInt(rShort); }
+	void Byte(int8_t &rByte) override { MaybeProcessInt(rByte); }
+	void Byte(uint8_t &rByte) override { MaybeProcessInt(rByte); }
+	void Boolean(bool &rBool) override { if (haveCompleteMatch()) if (!iEntryNr--) ProcessBool(rBool); }
+	void Character(char &rChar) override { if (haveCompleteMatch()) if (!iEntryNr--) ProcessChar(rChar); }
 
 	// The C4ID-Adaptor will set RCT_ID for it's strings (see C4Id.h), so we don't have to guess the type.
-	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType) override
+	void String(char *szString, size_t iMaxLength, RawCompileType eType) override
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(szString, iMaxLength, eType == StdCompiler::RCT_ID); }
-	virtual void String(char **pszString, RawCompileType eType) override
+	void String(char **pszString, RawCompileType eType) override
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(pszString, eType == StdCompiler::RCT_ID); }
-	virtual void String(std::string &str, RawCompileType type) override
+	void String(std::string &str, RawCompileType type) override
 	{ if (haveCompleteMatch()) if (!iEntryNr--) ProcessString(str, type == StdCompiler::RCT_ID); }
-	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped)
+	void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override
 	{ /* C4Script can't handle this */ }
 
 private:
@@ -1564,15 +1564,15 @@ public:
 
 protected:
 	// get values as C4Value
-	virtual void ProcessInt(int32_t &rInt) override { Res = C4VInt(rInt); }
-	virtual void ProcessBool(bool &rBool) override { Res = C4VBool(rBool); }
-	virtual void ProcessChar(char &rChar) override { Res = C4VString(FormatString("%c", rChar)); }
+	void ProcessInt(int32_t &rInt) override { Res = C4VInt(rInt); }
+	void ProcessBool(bool &rBool) override { Res = C4VBool(rBool); }
+	void ProcessChar(char &rChar) override { Res = C4VString(FormatString("%c", rChar)); }
 
-	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID) override
+	void ProcessString(char *szString, size_t iMaxLength, bool fIsID) override
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(szString))) : C4VString(szString)); }
-	virtual void ProcessString(char **pszString, bool fIsID) override
+	void ProcessString(char **pszString, bool fIsID) override
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(*pszString))) : C4VString(*pszString)); }
-	virtual void ProcessString(std::string &str, bool fIsID) override
+	void ProcessString(std::string &str, bool fIsID) override
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(str.c_str()))) : C4VString(str.c_str())); }
 };
 
@@ -2212,7 +2212,7 @@ static bool FnSetViewOffset(C4PropList * _this, long iPlayer, long iX, long iY)
 	if (!ValidPlr(iPlayer)) return false;
 	// get player viewport
 	C4Viewport *pView = ::Viewports.GetViewport(iPlayer);
-	if (!pView) return 1; // sync safety
+	if (!pView) return true; // sync safety
 	// set
 	pView->SetViewOffset(iX, iY);
 	// ok
@@ -3102,14 +3102,14 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 
 C4ScriptFnDef C4ScriptGameFnMap[]=
 {
-	{ "FindObject",    1, C4V_Object, { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObject    },
-	{ "FindObjects",   1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObjects   },
-	{ "ObjectCount",   1, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnObjectCount   },
-	{ "GameCallEx",    1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCallEx    },
-	{ "PlayerMessage", 1, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
-	{ "Message",       1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },
-	{ "AddMessage",    1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnAddMessage    },
-	{ "PV_KeyFrames",  1, C4V_Array,  { C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPV_KeyFrames  },
+	{ "FindObject",    true, C4V_Object, { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObject    },
+	{ "FindObjects",   true, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObjects   },
+	{ "ObjectCount",   true, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnObjectCount   },
+	{ "GameCallEx",    true, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCallEx    },
+	{ "PlayerMessage", true, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
+	{ "Message",       true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },
+	{ "AddMessage",    true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnAddMessage    },
+	{ "PV_KeyFrames",  true, C4V_Array,  { C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPV_KeyFrames  },
 
-	{ nullptr,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0               }
+	{ nullptr,            false, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, nullptr               }
 };

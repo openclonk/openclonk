@@ -32,7 +32,7 @@
 #include "graphics/CSurface8.h"
 #include "lib/StdColors.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 // Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
 #if defined(_WIN32) && !defined(USE_CONSOLE)
@@ -106,7 +106,7 @@ C4Pattern& C4Pattern::operator=(const C4Pattern& nPattern)
 	}
 	else
 	{
-		CachedPattern = 0;
+		CachedPattern = nullptr;
 	}
 	Wdt = nPattern.Wdt;
 	Hgt = nPattern.Hgt;
@@ -142,7 +142,7 @@ C4Pattern::C4Pattern()
 {
 	// disable
 	sfcPattern32=nullptr;
-	CachedPattern = 0;
+	CachedPattern = nullptr;
 	Zoom=0;
 }
 
@@ -156,7 +156,7 @@ void C4Pattern::Clear()
 		// clear field
 		sfcPattern32=nullptr;
 	}
-	delete[] CachedPattern; CachedPattern = 0;
+	delete[] CachedPattern; CachedPattern = nullptr;
 }
 
 DWORD C4Pattern::PatternClr(unsigned int iX, unsigned int iY) const
@@ -443,8 +443,8 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	Transform *=* pTransform;
 	C4BltTransform TransformBack;
 	TransformBack.SetAsInv(Transform);
-	float ttx0=(float)tx, tty0=(float)ty, ttx1=(float)(tx+twdt), tty1=(float)(ty+thgt);
-	float ttx2=(float)ttx0, tty2=(float)tty1, ttx3=(float)ttx1, tty3=(float)tty0;
+	auto ttx0=(float)tx, tty0=(float)ty, ttx1=(float)(tx+twdt), tty1=(float)(ty+thgt);
+	auto ttx2=(float)ttx0, tty2=(float)tty1, ttx3=(float)ttx1, tty3=(float)tty0;
 	pTransform->TransformPoint(ttx0, tty0);
 	pTransform->TransformPoint(ttx1, tty1);
 	pTransform->TransformPoint(ttx2, tty2);
@@ -653,8 +653,8 @@ void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DW
 	vertices[6] = vertices[5];
 	vertices[7] = vertices[0];
 
-	for(int i = 0; i < 8; ++i)
-		DwTo4UB(dwClr, vertices[i].color);
+	for(auto & vertex : vertices)
+		DwTo4UB(dwClr, vertex.color);
 
 	PerformMultiLines(sfcDest, vertices, 8, width, nullptr);
 }
@@ -753,19 +753,19 @@ void C4Draw::SetGamma(float r, float g, float b, int32_t iRampIndex)
 	// Recalculate resulting gamma. Note that we flip gamma direction here,
 	// because higher gammaOut means darker.
 	gammaOut[0] = gammaOut[1] = gammaOut[2] = 1.0f;
-	for (int i = 0; i < C4MaxGammaRamps; i++) {
-		gammaOut[0] /= gamma[i][0];
-		gammaOut[1] /= gamma[i][1];
-		gammaOut[2] /= gamma[i][2];
+	for (auto & i : gamma) {
+		gammaOut[0] /= i[0];
+		gammaOut[1] /= i[1];
+		gammaOut[2] /= i[2];
 	}
 }
 
 void C4Draw::ResetGamma()
 {
-	for (int i = 0; i < C4MaxGammaRamps; i++) {
-		gamma[i][0] = 1.0f;
-		gamma[i][1] = 1.0f;
-		gamma[i][2] = 1.0f;
+	for (auto & i : gamma) {
+		i[0] = 1.0f;
+		i[1] = 1.0f;
+		i[2] = 1.0f;
 	}
 	gammaOut[0] = 1.0f;
 	gammaOut[1] = 1.0f;

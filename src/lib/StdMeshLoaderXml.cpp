@@ -111,8 +111,8 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 	// initialization of bounding box and bounding sphere.
 	bool hasVertices = false;
 	if(!mesh.SharedVertices.empty()) hasVertices = true;
-	for(unsigned int i = 0; i < mesh.SubMeshes.size(); ++i)
-		if(!mesh.SubMeshes[i].Vertices.empty())
+	for(auto & SubMesh : mesh.SubMeshes)
+		if(!SubMesh.Vertices.empty())
 			hasVertices = true;
 
 	int VertexCount = RequireIntAttribute(geometry_elem, "vertexcount");
@@ -245,9 +245,8 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 
 	// Normalize vertex bone assignment weights (this is not guaranteed in the
 	// Ogre file format).
-	for (unsigned int i = 0; i < vertices.size(); ++i)
+	for (auto & vertex : vertices)
 	{
-		StdSubMesh::Vertex& vertex = vertices[i];
 		float sum = 0.0;
 		for (float weight : vertex.bone_weight)
 			sum += weight;
@@ -456,9 +455,9 @@ void StdMeshSkeletonLoader::LoadSkeletonXml(const char* groupname, const char* f
 	std::shared_ptr<StdMeshSkeleton> Skeleton(new StdMeshSkeleton);
 
 	// Fill master bone table in hierarchical order:
-	for (unsigned int i = 0; i < bones.size(); ++i)
-		if (bones[i]->Parent == nullptr)
-			Skeleton->AddMasterBone(bones[i]);
+	for (auto & bone : bones)
+		if (bone->Parent == nullptr)
+			Skeleton->AddMasterBone(bone);
 
 	// Load Animations
 	TiXmlElement* animations_elem = skeleton_elem->FirstChildElement("animations");

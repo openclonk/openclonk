@@ -27,17 +27,16 @@ don't need to include this file or any of the files it includes. */
 
 #include "platform/PlatformAbstraction.h"
 
-#define DEBUGREC_SCRIPT
-#define DEBUGREC_START_FRAME 0
-#define DEBUGREC_PXS
-#define DEBUGREC_OBJCOM
-#define DEBUGREC_MATSCAN
-#define DEBUGREC_MENU
-#define DEBUGREC_OCF
-//#define DEBUGREC_RECRUITMENT
+constexpr bool DEBUGREC_SCRIPT = true;
+constexpr int DEBUGREC_START_FRAME = 0;
+constexpr bool DEBUGREC_PXS = true;
+constexpr bool DEBUGREC_MATSCAN = true;
+constexpr bool DEBUGREC_MENU = true;
+constexpr bool DEBUGREC_OCF = true;
+constexpr bool DEBUGREC_RECRUITMENT = false;
 
 // solidmask debugging
-//#define SOLIDMASK_DEBUG
+constexpr bool SOLIDMASK_DEBUG = false;
 
 #include <algorithm>
 #include <cassert>

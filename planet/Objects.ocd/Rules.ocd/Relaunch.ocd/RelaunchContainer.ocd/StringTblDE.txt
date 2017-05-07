@@ -1,0 +1,2 @@
+MsgRelaunch=You will be relaunched in %d seconds.
+MsgWeapon=You have %d seconds to choose a weapon.

@@ -19,7 +19,7 @@
 #include "network/C4Network2.h"
 #include "netpuncher/C4PuncherPacket.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <unordered_map>
 #include <functional>
@@ -40,7 +40,7 @@ private:
 	std::unordered_map<addr_t, CID> peer_ids;
 	std::unordered_map<CID, addr_t> peer_addrs;
 	// Event handlers
-	virtual bool OnConn(const addr_t &AddrPeer, const addr_t &AddrConnect, const addr_t *OwnAddr, C4NetIO *pNetIO) {
+	bool OnConn(const addr_t &AddrPeer, const addr_t &AddrConnect, const addr_t *OwnAddr, C4NetIO *pNetIO) override {
 		CID nid;
 		do {
 			nid = rng();
@@ -51,7 +51,7 @@ private:
 		printf("Punched %s... #%u\n", AddrPeer.ToString().getData(), nid);
 		return true;
 	}
-	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) {
+	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) override {
 		auto& addr = rPacket.getAddr();
 		auto unpack = C4NetpuncherPacket::Construct(rPacket);
 		if (!unpack || unpack->GetType() != PID_Puncher_SReq) { Close(addr); return; }
@@ -60,7 +60,7 @@ private:
 		Send(C4NetpuncherPacketCReq(other_it->second).PackTo(addr));
 		Send(C4NetpuncherPacketCReq(addr).PackTo(other_it->second));
 	}
-	virtual void OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason) {
+	void OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason) override {
 		auto it = peer_ids.find(AddrPeer);
 		if (it == peer_ids.end()) {
 			printf("ERROR: closing connection for %s: (%s) but no connection is known\n", AddrPeer.ToString().getData(), szReason);

@@ -42,12 +42,12 @@ void CStdGLCtx::SelectCommon()
 	std::vector<GLuint> toBeDeleted;
 	if (!VAOsToBeDeleted.empty())
 	{
-		for (unsigned int i = 0; i < VAOsToBeDeleted.size(); ++i)
+		for (unsigned int i : VAOsToBeDeleted)
 		{
-			if (VAOsToBeDeleted[i] < hVAOs.size() && hVAOs[VAOsToBeDeleted[i]] != 0)
+			if (i < hVAOs.size() && hVAOs[i] != 0)
 			{
-				toBeDeleted.push_back(hVAOs[VAOsToBeDeleted[i]]);
-				hVAOs[VAOsToBeDeleted[i]] = 0;
+				toBeDeleted.push_back(hVAOs[i]);
+				hVAOs[i] = 0;
 			}
 		}
 
@@ -61,7 +61,7 @@ void CStdGLCtx::SelectCommon()
 #include <GL/wglew.h>
 
 static PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
-static HGLRC hrc = 0;
+static HGLRC hrc = nullptr;
 
 // Enumerate available pixel formats. Choose the best pixel format in
 // terms of color and depth buffer bits and then return all formats with
@@ -143,17 +143,17 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 static int GetPixelFormatForMS(HDC hDC, int samples)
 {
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
-	for(unsigned int i = 0; i < vec.size(); ++i)
+	for(int i : vec)
 	{
 		int attributes[] = { WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
 		const unsigned int n_attributes = 2;
 		int results[2];
-		if(!wglGetPixelFormatAttribivARB(hDC, vec[i], 0, n_attributes, attributes, results)) continue;
+		if(!wglGetPixelFormatAttribivARB(hDC, i, 0, n_attributes, attributes, results)) continue;
 
 		if( (samples == 0 && results[0] == 0) ||
 		    (samples > 0 && results[0] == 1 && results[1] == samples))
 		{
-			return vec[i];
+			return i;
 		}
 	}
 
@@ -171,9 +171,9 @@ public:
 private:
 	static std::string format_error(error_code err)
 	{
-		LPWSTR buffer = 0;
+		LPWSTR buffer = nullptr;
 		FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
-			0, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
+			nullptr, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
 		StdStrBuf str(buffer);
 		LocalFree(buffer);
 		return std::string(str.getData(), str.getLength());
@@ -188,7 +188,7 @@ class GLTempContext
 public:
 	GLTempContext()
 	{
-		wnd = CreateWindowExW(0, L"STATIC", 0, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
+		wnd = CreateWindowExW(0, L"STATIC", nullptr, WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
 		if (!wnd)
 			throw WinAPIError();
 		dc = GetDC(wnd);
@@ -201,7 +201,7 @@ public:
 		int format = ChoosePixelFormat(dc, &pfd);
 		if (!format ||
 			!SetPixelFormat(dc, format, &pfd) ||
-			(glrc = wglCreateContext(dc)) == 0)
+			(glrc = wglCreateContext(dc)) == nullptr)
 		{
 			DWORD err = GetLastError();
 			ReleaseDC(wnd, dc);
@@ -220,22 +220,22 @@ public:
 	~GLTempContext()
 	{
 		if (glrc == wglGetCurrentContext())
-			wglMakeCurrent(dc, 0);
+			wglMakeCurrent(dc, nullptr);
 		wglDeleteContext(glrc);
 		ReleaseDC(wnd, dc);
 		DestroyWindow(wnd);
 	}
 };
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
+CStdGLCtx::CStdGLCtx(): pWindow(nullptr), hDC(nullptr), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
 	Deselect();
 	if (hDC && pWindow)
 		ReleaseDC(pWindow->renderwnd, hDC);
-	hDC = 0;
-	pWindow = 0;
+	hDC = nullptr;
+	pWindow = nullptr;
 
 	if (this_context != contexts.end())
 	{
@@ -247,7 +247,7 @@ void CStdGLCtx::Clear(bool multisample_change)
 		assert(!pGL->pCurrCtx);
 		if (hrc)
 			wglDeleteContext(hrc);
-		hrc = 0;
+		hrc = nullptr;
 	}
 }
 
@@ -257,12 +257,12 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 	if (!pGL || !pWindow) return false;
 
 	std::unique_ptr<GLTempContext> tempContext;
-	if (hrc == 0)
+	if (hrc == nullptr)
 	{
 		// Create a temporary context to be able to fetch GL extension pointers
 		try
 		{
-			tempContext.reset(new GLTempContext);
+			tempContext = std::make_unique<GLTempContext>();
 			glewExperimental = GL_TRUE;
 			GLenum err = glewInit();
 			if(err != GLEW_OK)
@@ -330,7 +330,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 							0
 						};
 
-						hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+						hrc = wglCreateContextAttribsARB(hDC, nullptr, attribs);
 					}
 
 					if (!hrc)
@@ -345,7 +345,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp)
 							0
 						};
 						pGL->Workarounds.ForceSoftwareTransform = true;
-						hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+						hrc = wglCreateContextAttribsARB(hDC, nullptr, attribs);
 					}
 				}
 				else
@@ -390,12 +390,12 @@ std::vector<int> CStdGLCtx::EnumerateMultiSamples() const
 {
 	std::vector<int> result;
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
-	for(unsigned int i = 0; i < vec.size(); ++i)
+	for(int i : vec)
 	{
 		int attributes[] = { WGL_SAMPLE_BUFFERS_ARB, WGL_SAMPLES_ARB };
 		const unsigned int n_attributes = 2;
 		int results[2];
-		if(!wglGetPixelFormatAttribivARB(hDC, vec[i], 0, n_attributes, attributes, results)) continue;
+		if(!wglGetPixelFormatAttribivARB(hDC, i, 0, n_attributes, attributes, results)) continue;
 
 		if(results[0] == 1) result.push_back(results[1]);
 	}

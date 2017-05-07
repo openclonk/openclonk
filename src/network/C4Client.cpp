@@ -40,10 +40,7 @@ C4ClientCore::C4ClientCore()
 	Name.Ref(""); CUID.Ref(""); Nick.Ref("");
 }
 
-C4ClientCore::~C4ClientCore()
-{
-
-}
+C4ClientCore::~C4ClientCore() = default;
 
 void C4ClientCore::SetLocal(int32_t inID, bool fnActivated, bool fnObserver)
 {

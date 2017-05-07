@@ -11,9 +11,6 @@ func InitializeObjects()
 	var Grass003 = CreateObjectAbove(Grass, 228, 1180);
 	Grass003->SetClrModulation(0xffa08060);
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
-	Rule_BaseRespawn001->SetInventoryTransfer(true);
-	Rule_BaseRespawn001->SetFreeCrew(true);
 
 	var Tree_Coniferous_Burned001 = CreateObject(Tree_Coniferous_Burned, 17, 1097);
 	Tree_Coniferous_Burned001->SetR(10);
@@ -542,8 +539,6 @@ func InitializeObjects()
 	g_king->CreateContents(Firestone, 3);
 
 	CreateObject(Rule_Gravestones);
-
-	CreateObject(Rule_Restart);
 
 	return true;
 }

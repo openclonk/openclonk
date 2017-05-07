@@ -285,7 +285,7 @@ namespace C4GUI
 		SetBounds(C4Rect(0,0,iWdt,iHgt));
 		// create key callbacks
 		C4CustomKey::CodeList Keys;
-		Keys.push_back(C4KeyCodeEx(K_TAB));
+		Keys.emplace_back(K_TAB);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Right(Keys);
@@ -293,7 +293,7 @@ namespace C4GUI
 		pKeyAdvanceControl = new C4KeyBinding(Keys, "GUIAdvanceFocus", KEYSCOPE_Gui,
 		                                      new DlgKeyCBEx<Dialog, bool>(*this, false, &Dialog::KeyAdvanceFocus), C4CustomKey::PRIO_Dlg);
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_TAB, KEYS_Shift));
+		Keys.emplace_back(K_TAB, KEYS_Shift);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Left(Keys);
@@ -301,12 +301,12 @@ namespace C4GUI
 		pKeyAdvanceControlB = new C4KeyBinding(Keys, "GUIAdvanceFocusBack", KEYSCOPE_Gui,
 		                                       new DlgKeyCBEx<Dialog, bool>(*this, true, &Dialog::KeyAdvanceFocus), C4CustomKey::PRIO_Dlg);
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(KEY_Any, KEYS_Alt));
-		Keys.push_back(C4KeyCodeEx(KEY_Any, C4KeyShiftState(KEYS_Alt | KEYS_Shift)));
+		Keys.emplace_back(KEY_Any, KEYS_Alt);
+		Keys.emplace_back(KEY_Any, C4KeyShiftState(KEYS_Alt | KEYS_Shift));
 		pKeyHotkey = new C4KeyBinding(Keys, "GUIHotkey", KEYSCOPE_Gui,
 		                              new DlgKeyCBPassKey<Dialog>(*this, &Dialog::KeyHotkey), C4CustomKey::PRIO_Ctrl);
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_RETURN));
+		Keys.emplace_back(K_RETURN);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Ok(Keys);
@@ -314,7 +314,7 @@ namespace C4GUI
 		pKeyEnter = new C4KeyBinding(Keys, "GUIDialogOkay", KEYSCOPE_Gui,
 		                             new DlgKeyCB<Dialog>(*this, &Dialog::KeyEnter), C4CustomKey::PRIO_Dlg);
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(K_ESCAPE));
+		Keys.emplace_back(K_ESCAPE);
 		if (Config.Controls.GamepadGuiControl)
 		{
 			ControllerKeys::Cancel(Keys);
@@ -322,8 +322,8 @@ namespace C4GUI
 		pKeyEscape = new C4KeyBinding(Keys, "GUIDialogAbort", KEYSCOPE_Gui,
 		                              new DlgKeyCB<Dialog>(*this, &Dialog::KeyEscape), C4CustomKey::PRIO_Dlg);
 		Keys.clear();
-		Keys.push_back(C4KeyCodeEx(KEY_Any));
-		Keys.push_back(C4KeyCodeEx(KEY_Any, KEYS_Shift));
+		Keys.emplace_back(KEY_Any);
+		Keys.emplace_back(KEY_Any, KEYS_Shift);
 		pKeyFocusDefControl = new C4KeyBinding(Keys, "GUIFocusDefault", KEYSCOPE_Gui,
 		                                       new DlgKeyCB<Dialog>(*this, &Dialog::KeyFocusDefault), C4CustomKey::PRIO_Dlg);
 	}
@@ -997,7 +997,7 @@ bool MessageDialog::KeyCopy()
 // ProgressDialog
 
 	ProgressDialog::ProgressDialog(const char *szMessage, const char *szCaption, int32_t iMaxProgress, int32_t iInitialProgress, Icons icoIcon)
-			: Dialog(C4GUI_ProgressDlgWdt, std::max(::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, 0, 0, true), C4GUI_IconHgt) + C4GUI_ProgressDlgVRoom, szCaption, false)
+			: Dialog(C4GUI_ProgressDlgWdt, std::max(::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, nullptr, 0, true), C4GUI_IconHgt) + C4GUI_ProgressDlgVRoom, szCaption, false)
 	{
 		// get positions
 		ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
@@ -1101,7 +1101,7 @@ bool MessageDialog::KeyCopy()
 	InputDialog::InputDialog(const char *szMessage, const char *szCaption, Icons icoIcon, BaseInputCallback *pCB, bool fChatLayout)
 			: Dialog(fChatLayout ? C4GUI::GetScreenWdt()*4/5 : C4GUI_InputDlgWdt,
 			         fChatLayout ? C4GUI::Edit::GetDefaultEditHeight() + 2 :
-			         std::max(::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, 0, 0, true),
+			         std::max(::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, nullptr, 0, true),
 			             C4GUI_IconHgt) + C4GUI_InputDlgVRoom, szCaption, false),
 			pEdit(nullptr), pCB(pCB), fChatLayout(fChatLayout), pChatLbl(nullptr)
 	{

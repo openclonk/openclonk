@@ -17,8 +17,8 @@
 // c4script.h is useable without that.
 #include "../../include/c4script/c4script.h"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <getopt.h>
 
 int usage(const char *argv0)
@@ -35,13 +35,13 @@ int main(int argc, char *argv[])
 	bool check = false;
 	char *runstring = nullptr;
 
-	while (1)
+	while (true)
 	{
 		static option long_options[] =
 		{
-			{"check", no_argument, 0, 'c'},
-			{"execute", required_argument, 0, 'e'},
-			{0, 0, 0, 0}
+			{"check", no_argument, nullptr, 'c'},
+			{"execute", required_argument, nullptr, 'e'},
+			{nullptr, 0, nullptr, 0}
 		};
 
 		int option_index;

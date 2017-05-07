@@ -374,15 +374,9 @@ void C4GameResList::CompileFunc(StdCompiler *pComp)
 
 // *** C4GameParameters
 
-C4GameParameters::C4GameParameters()
-{
+C4GameParameters::C4GameParameters() = default;
 
-}
-
-C4GameParameters::~C4GameParameters()
-{
-
-}
+C4GameParameters::~C4GameParameters() = default;
 
 void C4GameParameters::Clear()
 {

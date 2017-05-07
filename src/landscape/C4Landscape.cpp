@@ -131,7 +131,7 @@ namespace
 {
 	bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
 		std::function<bool(int32_t, int32_t)> fnCallback,
-		int32_t *lastx = 0, int32_t *lasty = 0)
+		int32_t *lastx = nullptr, int32_t *lasty = nullptr)
 	{
 		int d, dx, dy, aincr, bincr, xincr, yincr, x, y;
 		if (Abs(x2 - x1) < Abs(y2 - y1))
@@ -232,10 +232,8 @@ void C4Landscape::P::ExecuteScan(C4Landscape *d)
 	if (mat >= ::MaterialMap.Num)
 		return;
 
-#ifdef DEBUGREC_MATSCAN
-	if (Config.General.DebugRec)
+	if (DEBUGREC_MATSCAN && Config.General.DebugRec)
 		AddDbgRec(RCT_MatScan, &ScanX, sizeof(ScanX));
-#endif
 
 	for (int32_t cnt = 0; cnt < ScanSpeed; cnt++)
 	{
@@ -290,13 +288,11 @@ int32_t C4Landscape::P::DoScan(C4Landscape *d, int32_t cx, int32_t cy, int32_t m
 	// find mat top
 	int32_t mconv = ::MaterialMap.Map[mat].TempConvStrength,
 		mconvs = mconv;
-#ifdef DEBUGREC_MATSCAN
-	if (Config.General.DebugRec)
+	if (DEBUGREC_MATSCAN && Config.General.DebugRec)
 	{
 		C4RCMatScan rc = { cx, cy, mat, conv_to, dir, mconvs };
 		AddDbgRec(RCT_MatScanDo, &rc, sizeof(C4RCMatScan));
 	}
-#endif
 	int32_t ydir = (dir == 0 ? +1 : -1), cy2;
 #ifdef PRETTY_TEMP_CONV
 	// get left pixel
@@ -1653,12 +1649,12 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Create FoW
 	assert(p->pFoW == nullptr);
 	if (Game.C4S.Game.FoWEnabled)
-		p->pFoW.reset(new C4FoW);
+		p->pFoW = std::make_unique<C4FoW>();
 
 	// Create renderer
 #ifndef USE_CONSOLE
 	if (!p->pLandscapeRender)
-		p->pLandscapeRender.reset(new C4LandscapeRenderGL);
+		p->pLandscapeRender = std::make_unique<C4LandscapeRenderGL>();
 #endif
 
 	if (p->pLandscapeRender)

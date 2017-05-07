@@ -25,10 +25,7 @@ C4Action::C4Action()
 	Default();
 }
 
-C4Action::~C4Action()
-{
-
-}
+C4Action::~C4Action() = default;
 
 void C4Action::Default()
 {

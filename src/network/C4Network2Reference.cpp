@@ -35,10 +35,7 @@ C4Network2Reference::C4Network2Reference()
 
 }
 
-C4Network2Reference::~C4Network2Reference()
-{
-
-}
+C4Network2Reference::~C4Network2Reference() = default;
 
 void C4Network2Reference::SetSourceAddress(const C4NetIO::EndpointAddress &ip)
 {
@@ -255,9 +252,7 @@ C4Network2HTTPClient::C4Network2HTTPClient()
 	C4NetIOTCP::SetCallback(this);
 }
 
-C4Network2HTTPClient::~C4Network2HTTPClient()
-{
-}
+C4Network2HTTPClient::~C4Network2HTTPClient() = default;
 
 void C4Network2HTTPClient::PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf)
 {
@@ -320,7 +315,7 @@ bool C4Network2HTTPClient::ReadHeader(StdStrBuf Data)
 	const char *pData = Data.getData();
 	const char *pContent = SSearch(pData, "\r\n\r\n");
 	if (!pContent)
-		return 0;
+		return false;
 	// Parse header line
 	int iHTTPVer1, iHTTPVer2, iResponseCode, iStatusStringPtr;
 	if (sscanf(pData, "HTTP/%d.%d %d %n", &iHTTPVer1, &iHTTPVer2, &iResponseCode, &iStatusStringPtr) != 3)

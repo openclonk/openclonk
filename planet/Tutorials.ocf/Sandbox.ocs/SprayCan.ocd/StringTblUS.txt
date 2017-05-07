@@ -1,0 +1,2 @@
+Name=Spray can
+Description=Let out the little artist in you!

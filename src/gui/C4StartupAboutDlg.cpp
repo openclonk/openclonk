@@ -49,9 +49,7 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"
 		caButtons.GetFromBottom(rUseFont.GetLineHeight())));
 }
 
-C4StartupAboutDlg::~C4StartupAboutDlg()
-{
-}
+C4StartupAboutDlg::~C4StartupAboutDlg() = default;
 
 void C4StartupAboutDlg::DoBack()
 {

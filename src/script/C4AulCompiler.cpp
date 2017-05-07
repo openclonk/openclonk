@@ -17,8 +17,8 @@
 #include "C4Include.h"
 #include "script/C4AulCompiler.h"
 
-#include <assert.h>
-#include <inttypes.h>
+#include <cassert>
+#include <cinttypes>
 
 #include "script/C4Aul.h"
 #include "script/C4AulParse.h"
@@ -129,17 +129,17 @@ public:
 	PreparseAstVisitor(C4ScriptHost *host, C4ScriptHost *source_host, C4AulScriptFunc *func = nullptr) : target_host(host), host(source_host), Fn(func) {}
 	explicit PreparseAstVisitor(C4AulScriptFunc *func) : Fn(func), target_host(func->pOrgScript), host(target_host) {}
 
-	virtual ~PreparseAstVisitor() {}
+	~PreparseAstVisitor() override = default;
 
 	using DefaultRecursiveVisitor::visit;
-	virtual void visit(const ::aul::ast::RangeLoop *n) override;
-	virtual void visit(const ::aul::ast::VarDecl *n) override;
-	virtual void visit(const ::aul::ast::FunctionDecl *n) override;
-	virtual void visit(const ::aul::ast::CallExpr *n) override;
-	virtual void visit(const ::aul::ast::ParExpr *n) override;
-	virtual void visit(const ::aul::ast::AppendtoPragma *n) override;
-	virtual void visit(const ::aul::ast::IncludePragma *n) override;
-	virtual void visit(const ::aul::ast::Script *n) override;
+	void visit(const ::aul::ast::RangeLoop *n) override;
+	void visit(const ::aul::ast::VarDecl *n) override;
+	void visit(const ::aul::ast::FunctionDecl *n) override;
+	void visit(const ::aul::ast::CallExpr *n) override;
+	void visit(const ::aul::ast::ParExpr *n) override;
+	void visit(const ::aul::ast::AppendtoPragma *n) override;
+	void visit(const ::aul::ast::IncludePragma *n) override;
+	void visit(const ::aul::ast::Script *n) override;
 };
 
 class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
@@ -254,38 +254,38 @@ public:
 	CodegenAstVisitor(C4ScriptHost *host, C4ScriptHost *source_host) : target_host(host), host(source_host) {}
 	explicit CodegenAstVisitor(C4AulScriptFunc *func) : Fn(func), target_host(func->pOrgScript), host(target_host) {}
 
-	virtual ~CodegenAstVisitor() {}
+	~CodegenAstVisitor() override = default;
 
 	using DefaultRecursiveVisitor::visit;
-	virtual void visit(const ::aul::ast::Noop *) override;
-	virtual void visit(const ::aul::ast::StringLit *n) override;
-	virtual void visit(const ::aul::ast::IntLit *n) override;
-	virtual void visit(const ::aul::ast::BoolLit *n) override;
-	virtual void visit(const ::aul::ast::ArrayLit *n) override;
-	virtual void visit(const ::aul::ast::ProplistLit *n) override;
-	virtual void visit(const ::aul::ast::NilLit *n) override;
-	virtual void visit(const ::aul::ast::ThisLit *n) override;
-	virtual void visit(const ::aul::ast::VarExpr *n) override;
-	virtual void visit(const ::aul::ast::UnOpExpr *n) override;
-	virtual void visit(const ::aul::ast::BinOpExpr *n) override;
-	virtual void visit(const ::aul::ast::AssignmentExpr *n) override;
-	virtual void visit(const ::aul::ast::SubscriptExpr *n) override;
-	virtual void visit(const ::aul::ast::SliceExpr *n) override;
-	virtual void visit(const ::aul::ast::CallExpr *n) override;
-	virtual void visit(const ::aul::ast::ParExpr *n) override;
-	virtual void visit(const ::aul::ast::Block *n) override;
-	virtual void visit(const ::aul::ast::Return *n) override;
-	virtual void visit(const ::aul::ast::ForLoop *n) override;
-	virtual void visit(const ::aul::ast::RangeLoop *n) override;
-	virtual void visit(const ::aul::ast::DoLoop *n) override;
-	virtual void visit(const ::aul::ast::WhileLoop *n) override;
-	virtual void visit(const ::aul::ast::Break *n) override;
-	virtual void visit(const ::aul::ast::Continue *n) override;
-	virtual void visit(const ::aul::ast::If *n) override;
-	virtual void visit(const ::aul::ast::VarDecl *n) override;
-	virtual void visit(const ::aul::ast::FunctionDecl *n) override;
-	virtual void visit(const ::aul::ast::FunctionExpr *n) override;
-	virtual void visit(const ::aul::ast::Script *n) override;
+	void visit(const ::aul::ast::Noop *) override;
+	void visit(const ::aul::ast::StringLit *n) override;
+	void visit(const ::aul::ast::IntLit *n) override;
+	void visit(const ::aul::ast::BoolLit *n) override;
+	void visit(const ::aul::ast::ArrayLit *n) override;
+	void visit(const ::aul::ast::ProplistLit *n) override;
+	void visit(const ::aul::ast::NilLit *n) override;
+	void visit(const ::aul::ast::ThisLit *n) override;
+	void visit(const ::aul::ast::VarExpr *n) override;
+	void visit(const ::aul::ast::UnOpExpr *n) override;
+	void visit(const ::aul::ast::BinOpExpr *n) override;
+	void visit(const ::aul::ast::AssignmentExpr *n) override;
+	void visit(const ::aul::ast::SubscriptExpr *n) override;
+	void visit(const ::aul::ast::SliceExpr *n) override;
+	void visit(const ::aul::ast::CallExpr *n) override;
+	void visit(const ::aul::ast::ParExpr *n) override;
+	void visit(const ::aul::ast::Block *n) override;
+	void visit(const ::aul::ast::Return *n) override;
+	void visit(const ::aul::ast::ForLoop *n) override;
+	void visit(const ::aul::ast::RangeLoop *n) override;
+	void visit(const ::aul::ast::DoLoop *n) override;
+	void visit(const ::aul::ast::WhileLoop *n) override;
+	void visit(const ::aul::ast::Break *n) override;
+	void visit(const ::aul::ast::Continue *n) override;
+	void visit(const ::aul::ast::If *n) override;
+	void visit(const ::aul::ast::VarDecl *n) override;
+	void visit(const ::aul::ast::FunctionDecl *n) override;
+	void visit(const ::aul::ast::FunctionExpr *n) override;
+	void visit(const ::aul::ast::Script *n) override;
 
 	template<class T>
 	void EmitFunctionCode(const T *n)
@@ -335,7 +335,7 @@ private:
 		std::string key;
 
 		ProplistMagic() = default;
-		ProplistMagic(bool active, C4PropListStatic *parent, const std::string &key) : active(active), parent(parent), key(key) {}
+		ProplistMagic(bool active, C4PropListStatic *parent, std::string key) : active(active), parent(parent), key(std::move(key)) {}
 	} proplist_magic;
 
 	explicit ConstexprEvaluator(C4ScriptHost *host) : host(host) {}
@@ -349,7 +349,7 @@ private:
 	{
 		// Typecheck parameter
 		if (!v.CheckParConversion(Type1))
-			throw Error(host, host, n, nullptr, "operator \"%s\": got %s, but expected %s", opname, v.GetTypeName(), GetC4VName(Type1));
+			throw Error(host, host, n, nullptr, R"(operator "%s": got %s, but expected %s)", opname, v.GetTypeName(), GetC4VName(Type1));
 	}
 public:
 	class ExpressionNotConstant : public C4AulParseError
@@ -360,21 +360,21 @@ public:
 	};
 
 	using AstVisitor::visit;
-	virtual void visit(const ::aul::ast::StringLit *n) override;
-	virtual void visit(const ::aul::ast::IntLit *n) override;
-	virtual void visit(const ::aul::ast::BoolLit *n) override;
-	virtual void visit(const ::aul::ast::ArrayLit *n) override;
-	virtual void visit(const ::aul::ast::ProplistLit *n) override;
-	virtual void visit(const ::aul::ast::NilLit *) override;
-	virtual void visit(const ::aul::ast::ThisLit *n) override;
-	virtual void visit(const ::aul::ast::VarExpr *n) override;
-	virtual void visit(const ::aul::ast::UnOpExpr *n) override;
-	virtual void visit(const ::aul::ast::BinOpExpr *n) override;
-	virtual void visit(const ::aul::ast::AssignmentExpr *n) override;
-	virtual void visit(const ::aul::ast::SubscriptExpr *n) override;
-	virtual void visit(const ::aul::ast::SliceExpr *n) override;
-	virtual void visit(const ::aul::ast::CallExpr *n) override;
-	virtual void visit(const ::aul::ast::FunctionExpr *n) override;
+	void visit(const ::aul::ast::StringLit *n) override;
+	void visit(const ::aul::ast::IntLit *n) override;
+	void visit(const ::aul::ast::BoolLit *n) override;
+	void visit(const ::aul::ast::ArrayLit *n) override;
+	void visit(const ::aul::ast::ProplistLit *n) override;
+	void visit(const ::aul::ast::NilLit *) override;
+	void visit(const ::aul::ast::ThisLit *n) override;
+	void visit(const ::aul::ast::VarExpr *n) override;
+	void visit(const ::aul::ast::UnOpExpr *n) override;
+	void visit(const ::aul::ast::BinOpExpr *n) override;
+	void visit(const ::aul::ast::AssignmentExpr *n) override;
+	void visit(const ::aul::ast::SubscriptExpr *n) override;
+	void visit(const ::aul::ast::SliceExpr *n) override;
+	void visit(const ::aul::ast::CallExpr *n) override;
+	void visit(const ::aul::ast::FunctionExpr *n) override;
 };
 
 class C4AulCompiler::ConstantResolver : public ::aul::DefaultRecursiveVisitor
@@ -405,7 +405,7 @@ public:
 		ConstantResolver r(host);
 		r.visit(script);
 	}
-	virtual ~ConstantResolver() {}
+	~ConstantResolver() override = default;
 
 	using DefaultRecursiveVisitor::visit;
 	void visit(const ::aul::ast::Script *n) override;
@@ -1213,9 +1213,9 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 	if (n->callee == C4AUL_DebugBreak)
 	{
 		if (n->context)
-			throw Error(target_host, host, n, Fn, "\"%s\" can't be called in a different context", cname);
+			throw Error(target_host, host, n, Fn, R"("%s" can't be called in a different context)", cname);
 		if (!n->args.empty())
-			throw Error(target_host, host, n, Fn, "\"%s\" must not have any arguments", cname);
+			throw Error(target_host, host, n, Fn, R"("%s" must not have any arguments)", cname);
 
 		AddBCC(n->loc, AB_DEBUG);
 		// Add a pseudo-nil to keep the stack balanced
@@ -1229,7 +1229,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::CallExpr *n)
 		// inherited can only be called within the same context
 		if (n->context)
 		{
-			throw Error(target_host, host, n, Fn, "\"%s\" can't be called in a different context", cname);
+			throw Error(target_host, host, n, Fn, R"("%s" can't be called in a different context)", cname);
 		}
 	}
 
@@ -1650,7 +1650,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::FunctionDecl *n)
 				Warn(target_host, host, n, Fn, C4AulWarningId::redeclaration, "function", f->GetName());
 			Fn = f->SFunc();
 		}
-		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
+		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : nullptr;
 	}
 
 	if (!Fn && Parent->HasProperty(name))

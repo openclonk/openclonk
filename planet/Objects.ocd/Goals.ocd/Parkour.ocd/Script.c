@@ -56,8 +56,9 @@ protected func Initialize(...)
 
 private func EnsureRestartRule()
 {
-	if (!ObjectCount(Find_ID(Rule_Restart)))
-		CreateObject(Rule_Restart, Min(64, LandscapeWidth()-GetX()-32), 0, NO_OWNER);
+	var relaunch = GetRelaunchRule();
+	relaunch->SetAllowPlayerRestart(true);
+	relaunch->SetPerformRestart(false);
 	return true;
 }
 
@@ -440,7 +441,7 @@ protected func OnClonkDeath(object clonk, int killed_by)
 	JoinPlayer(plr);
 	// Transfer contents if active.
 	if (transfer_contents)
-		Rule_BaseRespawn->TransferInventory(clonk, new_clonk);	
+		GetRelaunchRule()->TransferInventory(clonk, new_clonk);
 	// Scenario script callback.
 	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	// Log message.
@@ -448,7 +449,8 @@ protected func OnClonkDeath(object clonk, int killed_by)
 	// Respawn actions
 	var cp = FindRespawnCP(plr);
 	UserAction->EvaluateAction(on_respawn, this, clonk, plr);
-	if (cp) cp->OnPlayerRespawn(new_clonk, plr);
+	if (cp)
+		cp->OnPlayerRespawn(new_clonk, plr);
 	return;
 }
 
@@ -472,7 +474,8 @@ protected func JoinPlayer(int plr)
 private func FindRespawnCP(int plr)
 {
 	var respawn_cp = respawn_list[plr];
-	if (!respawn_cp) respawn_cp = respawn_list[plr] = cp_list[0];
+	if (!respawn_cp)
+		respawn_cp = respawn_list[plr] = cp_list[0];
 	return respawn_cp;
 }
 
@@ -498,10 +501,7 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) 
 		return false;
-	// Force dependency on restart rule.
-	var restart_rule = FindObject(Find_ID(Rule_Restart));
-	if (restart_rule)
-		restart_rule->MakeScenarioSaveName();
+	props->AddCall("Goal", this, "EnsureRestartRule");
 	if (no_respawn_handling)
 		props->AddCall("Goal", this, "DisableRespawnHandling");
 	if (transfer_contents)
@@ -551,19 +551,19 @@ private func UpdateScoreboard(int plr)
 /*-- Direction indication --*/
 
 // Effect for direction indication for the clonk.
-protected func FxIntDirNextCPStart(object target, effect)
+protected func FxIntDirNextCPStart(object target, effect fx)
 {
 	var arrow = CreateObjectAbove(GUI_GoalArrow, 0, 0, target->GetOwner());
 	arrow->SetAction("Show", target);
-	effect.arrow = arrow;
+	fx.arrow = arrow;
 	return FX_OK;
 }
 
-protected func FxIntDirNextCPTimer(object target, effect)
+protected func FxIntDirNextCPTimer(object target, effect fx)
 {
 	var plr = target->GetOwner();
 	var team = GetPlayerTeam(plr);
-	var arrow = effect.arrow;
+	var arrow = fx.arrow;
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
@@ -608,9 +608,9 @@ protected func FxIntDirNextCPTimer(object target, effect)
 	return FX_OK;
 }
 
-protected func FxIntDirNextCPStop(object target, effect)
+protected func FxIntDirNextCPStop(object target, effect fx)
 {
-	effect.arrow->RemoveObject();
+	fx.arrow->RemoveObject();
 	return;
 }
 

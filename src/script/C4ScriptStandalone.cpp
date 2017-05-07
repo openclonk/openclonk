@@ -25,7 +25,7 @@
 
 /* StandaloneStubs.cpp is shared with mape, which has a real implementation of these */
 C4Def* C4DefList::GetByName(const StdStrBuf &) {return nullptr;}
-C4Def * C4DefList::GetDef(int) {return 0;}
+C4Def * C4DefList::GetDef(int) {return nullptr;}
 int C4DefList::GetDefCount() {return 0;}
 void C4DefList::SortByPriority() {}
 void C4DefList::CallEveryDefinition() {}

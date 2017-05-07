@@ -18,12 +18,20 @@ public func SaveScenarioObject(props)
 		var pos = GetHandlePosition();
 		if (pos) props->AddCall("Handle", this, "SetSwitchDir", (pos>0)-(pos<0));
 	}
+	if (left_action || right_action) props->AddCall("Action", this, "SetActions", left_action, right_action);
 	return true;
 }
 
 public func SetTarget(object trg)
 {
 	target = trg;
+	return true;
+}
+
+public func SetActions(new_left_action, new_right_action)
+{
+	left_action = new_left_action;
+	right_action = new_right_action;
 	return true;
 }
 
@@ -65,7 +73,7 @@ public func ControlRight(object clonk)
 
 private func ControlSwitchDir(object clonk, int dir)
 {
-	if (!target || !handle)
+	if (!handle || (!target && !right_action && !left_action))
 	{
 		Sound("Structures::SwitchStuck");
 		Message("$MsgStuck$");
@@ -120,7 +128,11 @@ public func SetR(int to_r)
 
 private func SwitchingTimer(int dir)
 {
-	if (!handle || !target) { Sound("Structures::SwitchStuck"); return SetAction("Idle"); }
+	if (!handle || (!target && !right_action && !left_action))
+	{
+		Sound("Structures::SwitchStuck");
+		return SetAction("Idle");
+	}
 	var handle_pos = GetHandlePosition();
 	var handle_pos_new = BoundBy(handle_pos + HandleSpeed * dir, -MaxHandleAngle, +MaxHandleAngle);
 	if (!handle_pos_new) handle_pos_new = dir; // avoid direct central position, so player cannot force the same direction twice
@@ -139,10 +151,11 @@ private func SwitchingTimer(int dir)
 private func DoSwitchFlip(object clonk, int dir)
 {
 	// Perform action associated to this switch
-	if (target)
-		if (dir>0)
+	if (dir > 0)
+	{
+		// Open/close should be aligned to vertical component of direction
+		if (target)
 		{
-			// Open/close should be aligned to vertical component of direction
 			if (GetR() < 0)
 			{
 				target->~OpenDoor(this);
@@ -151,12 +164,16 @@ private func DoSwitchFlip(object clonk, int dir)
 			{
 				target->~CloseDoor(this);
 			}
-			// Action last; it may delete the door/clonk/etc.
+		}
+		// Action last; it may delete the door/clonk/etc.
+		if (right_action)
 			UserAction->EvaluateAction(right_action, this, clonk);
-		}
-		else
-		{
-			// Open/close should be aligned to vertical component of direction
+	}
+	else
+	{
+		// Open/close should be aligned to vertical component of direction
+		if (target)
+		{	
 			if (GetR() < 0)
 			{
 				target->~CloseDoor(this);
@@ -165,8 +182,11 @@ private func DoSwitchFlip(object clonk, int dir)
 			{
 				target->~OpenDoor(this);
 			}
-			UserAction->EvaluateAction(left_action, this, clonk);
 		}
+		// Action last; it may delete the door/clonk/etc.	
+		if (left_action)
+			UserAction->EvaluateAction(left_action, this, clonk);
+	}
 	return false;
 }
 

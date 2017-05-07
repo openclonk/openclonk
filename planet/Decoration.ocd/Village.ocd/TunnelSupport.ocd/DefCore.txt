@@ -1,0 +1,7 @@
+[DefCore]
+id=Deco_TunnelSupport
+Version=8,0
+Category=C4D_StaticBack
+Width=30
+Height=30
+Offset=-15,-15

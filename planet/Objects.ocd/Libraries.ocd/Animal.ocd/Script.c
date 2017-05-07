@@ -27,7 +27,7 @@ private func AddReproductionEffect()
 
 private func RemoveReproductionEffect()
 {
-	return RemoveEffect("IntReproduction");
+	return RemoveEffect("IntReproduction", this);
 }
 
 

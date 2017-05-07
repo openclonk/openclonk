@@ -1027,7 +1027,7 @@ int32_t C4SortObjectRandom::CompareGetValue(C4Object *pFor)
 
 int32_t C4SortObjectSpeed::CompareGetValue(C4Object *pFor)
 {
-	return pFor->xdir*pFor->xdir + pFor->ydir*pFor->ydir;
+	return fixtoi(pFor->xdir*pFor->xdir + pFor->ydir*pFor->ydir);
 }
 
 int32_t C4SortObjectMass::CompareGetValue(C4Object *pFor)

@@ -49,9 +49,9 @@ C4StartupNetListEntry::C4StartupNetListEntry(C4GUI::ListBox *pForListBox, C4GUI:
 	int32_t iThisWdt = rcIconRect.Wdt;
 	rcIconRect.x = iThisWdt - iIconSize * (iInfoIconCount + 1);
 	rcIconRect.Wdt = rcIconRect.Hgt = iIconSize;
-	for (int32_t iIcon = 0; iIcon<MaxInfoIconCount; ++iIcon)
+	for (auto & pInfoIcon : pInfoIcons)
 	{
-		AddElement(pInfoIcons[iIcon] = new C4GUI::Icon(rcIconRect, C4GUI::Ico_None));
+		AddElement(pInfoIcon = new C4GUI::Icon(rcIconRect, C4GUI::Ico_None));
 		rcIconRect.x -= rcIconRect.Wdt;
 	}
 	C4Rect rcLabelBounds;
@@ -597,7 +597,7 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	// ctor
 	// key bindings
 	C4CustomKey::CodeList keys;
-	keys.push_back(C4KeyCodeEx(K_BACK)); keys.push_back(C4KeyCodeEx(K_LEFT));
+	keys.emplace_back(K_BACK); keys.emplace_back(K_LEFT);
 	pKeyBack = new C4KeyBinding(keys, "StartupNetBack", KEYSCOPE_Gui,
 	                            new C4GUI::DlgKeyCB<C4StartupNetDlg>(*this, &C4StartupNetDlg::KeyBack), C4CustomKey::PRIO_Dlg);
 	pKeyRefresh = new C4KeyBinding(C4KeyCodeEx(K_F5), "StartupNetReload", KEYSCOPE_Gui,
@@ -771,7 +771,7 @@ void C4StartupNetDlg::OnShown()
 	UpdateUpdateButton(); // in case update check was finished before callback registration
 	UpdateMasterserver();
 	OnSec1Timer();
-	tLastRefresh = time(0);
+	tLastRefresh = time(nullptr);
 	// also update chat
 	if (pChatCtrl) pChatCtrl->OnShown();
 }
@@ -1172,7 +1172,7 @@ bool C4StartupNetDlg::DoBack()
 void C4StartupNetDlg::DoRefresh()
 {
 	// check min refresh timer
-	time_t tNow = time(0);
+	time_t tNow = time(nullptr);
 	if (tLastRefresh && tNow < tLastRefresh + C4NetMinRefreshInterval)
 	{
 		// avoid hammering on refresh key

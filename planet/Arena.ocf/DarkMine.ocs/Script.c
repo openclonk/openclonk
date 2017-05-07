@@ -7,9 +7,6 @@
 */
 
 
-// List for storing the different large caves.
-static cave_list;
-
 // Game modes.
 static const GAMEMODE_Deathmatch = 0;
 static const GAMEMODE_LastManStanding = 1;
@@ -19,17 +16,30 @@ protected func Initialize()
 {
 	// Goals and rules.
 	if (SCENPAR_GameMode == GAMEMODE_Deathmatch)
+	{
 		CreateObject(Goal_DeathMatch);
+		GetRelaunchRule()->SetDefaultRelaunchCount(Max(SCENPAR_NrRelaunchesKills, 0));
+	}
 	else if (SCENPAR_GameMode == GAMEMODE_LastManStanding)
+	{
 		CreateObject(Goal_LastManStanding);
+		GetRelaunchRule()->SetDefaultRelaunchCount(Max(SCENPAR_NrRelaunchesKills, 0));
+	}
+	
 	else if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
 	{
 		var goal = CreateObject(Goal_KingOfTheHill, LandscapeWidth() / 2, LandscapeHeight() / 2);
 		goal->SetRadius(72);
 		goal->SetPointLimit(Max(SCENPAR_NrRelaunchesKills, 1));
+		GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	}
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
+	
+	GetRelaunchRule()
+		->SetLastWeaponUse(false)
+		->SetFreeCrew(true)
+		->SetRespawnDelay(4);
 	
 	// Rescale cave coordinates with map zoom and shuffle them.
 	var mapzoom = GetScenarioVal("MapZoom", "Landscape");
@@ -54,13 +64,6 @@ protected func Initialize()
 }
 
 // Callback from the last man standing goal.
-protected func RelaunchCount() 
-{ 
-	// Relaunch count depends on scenario setting.
-	return Max(SCENPAR_NrRelaunchesKills, 0); 
-}
-
-// Callback from the last man standing goal.
 protected func KillsToRelaunch() 
 {
 	// No relaunches awarded for kills.
@@ -73,46 +76,23 @@ public func WinKillCount()
 	return Max(SCENPAR_NrRelaunchesKills, 1); 
 }
 
-// Forward callbacks to OnPlayerRelaunch for KotH goal.
-protected func InitializePlayer(int plr)
+public func RelaunchPosition(int plr)
 {
-	if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
-		GameCall("OnPlayerRelaunch", plr, false);
-	return _inherited(plr, ...);
+	return FindStartCave(plr, GetRelaunchRule()->GetPlayerRelaunchCount(plr) != SCENPAR_NrRelaunchesKills);
 }
 
-// Forward callbacks to OnPlayerRelaunch for KotH goal.
-protected func RelaunchPlayer(int plr, int killer)
+public func OnClonkLeftRelaunch(object clonk, int plr)
 {
-	if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
-	{
-		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
-		clonk->MakeCrewMember(plr);
-		SetCursor(plr, clonk);
-		clonk->DoEnergy(100000);
-		GameCall("OnPlayerRelaunch", plr, true);
-	}
-	return _inherited(plr, killer);
-}
-
-// Callback from the last man standing and deathmatch goal.
-// Takes over the role of initializing the player.
-protected func OnPlayerRelaunch(int plr, bool is_relaunch)
-{
-	// Get the only clonk of the player.
-	var clonk = GetCrew(plr);
-	
 	// Players start in a random small cave, the cave depends on whether it is a relaunch.
-	var cave = FindStartCave(plr, is_relaunch);
-	clonk->SetPosition(cave[0], cave[1]);
-	// Ensure spawn position is free
-	for (var i=0; i<4; ++i) BlastFree(cave[0], cave[1], 13);
+	var cave = [clonk->GetX(), clonk->GetY()];
+	for (var i = 0; i < 4; ++i)
+		BlastFree(cave[0], cave[1], 13);
 
 	// Players start with a shovel, a pickaxe and two firestones.
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Pickaxe);
 	// Better weapons after relaunching.
-	if (!is_relaunch)
+	if (GetRelaunchRule()->GetPlayerRelaunchCount(plr) != SCENPAR_NrRelaunchesKills)
 	{
 		clonk->CreateContents(Torch);
 		clonk->CreateContents(Firestone, 2);

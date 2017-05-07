@@ -1,0 +1,15 @@
+[DefCore]
+id=Hatch
+Version=8,0
+Category=C4D_Structure
+Width=26
+Height=26
+Offset=-13,-13
+Vertices=4
+VertexX=-12,-12,12,12
+VertexY=-3,3,-3,3
+VertexFriction=100,100,100,100
+SolidMask=0,0,26,4,0,11
+Construction=1
+Mass=1000
+Exclusive=1

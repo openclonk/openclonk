@@ -119,10 +119,10 @@ bool C4LandscapeRenderGL::ReInit(int32_t iWidth, int32_t iHeight)
 	this->iHeight = iHeight;
 
 	// Clear old landscape textures
-	for (int i = 0; i < C4LR_SurfaceCount; i++)
+	for (auto & Surface : Surfaces)
 	{
-		delete Surfaces[i];
-		Surfaces[i] = nullptr;
+		delete Surface;
+		Surface = nullptr;
 	}
 
 	// Allocate new landscape textures
@@ -182,10 +182,10 @@ bool C4LandscapeRenderGL::InitLandscapeTexture()
 	int iSfcHgt = iHeight;
 
 	// Create our surfaces
-	for(int i = 0; i < C4LR_SurfaceCount; i++)
+	for(auto & Surface : Surfaces)
 	{
-		Surfaces[i] = new C4Surface();
-		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt))
+		Surface = new C4Surface();
+		if(!Surface->Create(iSfcWdt, iSfcHgt))
 			return false;
 	}
 
@@ -196,7 +196,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 {
 
 	// Populate our map with all needed textures
-	MaterialTextureMap.push_back(StdCopyStrBuf(""));
+	MaterialTextureMap.emplace_back("");
 	AddTexturesFromMap(pTexs);
 
 	// Determine depth to use
@@ -366,10 +366,10 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	// main memory buffer for the box, so that only that box needs to be
 	// sent to the gpu, and not the whole texture, or every pixel
 	// separately. It's an important optimization.
-	for (int i = 0; i < C4LR_SurfaceCount; i++)
+	for (auto & Surface : Surfaces)
 	{
-		if (!Surfaces[i]->Lock()) return;
-		Surfaces[i]->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
+		if (!Surface->Lock()) return;
+		Surface->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
 	}
 
 	// Initialize up & down placement arrays. These arrays are always updated
@@ -509,8 +509,8 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 
 	// done
 	delete[] placementSumsUp;
-	for (int i = 0; i < C4LR_SurfaceCount; i++)
-		Surfaces[i]->Unlock();
+	for (auto & Surface : Surfaces)
+		Surface->Unlock();
 }
 
 /** Returns the data used for the scaler shader for the given pixel. It is a 8-bit bitmask. The bits stand for the 8
@@ -549,12 +549,12 @@ int C4LandscapeRenderGL::CalculateScalerBitmask(int x, int y, C4Rect To, C4Lands
 
 	// Look for highest-placement material in our surroundings
 	int maxPixel = pixel, maxPlacement = placement;
-	for(int i = 0; i < 8; i++)
+	for(int neighbour : neighbours)
 	{
-		int tempPlacement = MatPlacement(PixCol2Mat(neighbours[i]));
-		if(tempPlacement > maxPlacement || (tempPlacement == maxPlacement && neighbours[i] > maxPixel) )
+		int tempPlacement = MatPlacement(PixCol2Mat(neighbour));
+		if(tempPlacement > maxPlacement || (tempPlacement == maxPlacement && neighbour > maxPixel) )
 		{
-			maxPixel = neighbours[i];
+			maxPixel = neighbour;
 			maxPlacement = tempPlacement;
 		}
 	}
@@ -801,17 +801,17 @@ void C4LandscapeRenderGL::AddTextureTransition(const char *szFrom, const char *s
 	if (LookupTextureTransition(szTo, szFrom) >= 0) return;
 	// Single texture? Add it as single
 	if (SEqual(szTo, szFrom))
-		MaterialTextureMap.push_back(StdCopyStrBuf(szFrom));
+		MaterialTextureMap.emplace_back(szFrom);
 	// Have one of the textures at the end of the list?
 	else if(SEqual(MaterialTextureMap.back().getData(), szFrom))
-		MaterialTextureMap.push_back(StdCopyStrBuf(szTo));
+		MaterialTextureMap.emplace_back(szTo);
 	else if(SEqual(MaterialTextureMap.back().getData(), szTo))
-		MaterialTextureMap.push_back(StdCopyStrBuf(szFrom));
+		MaterialTextureMap.emplace_back(szFrom);
 	else
 	{
 		// Otherwise add both
-		MaterialTextureMap.push_back(StdCopyStrBuf(szFrom));
-		MaterialTextureMap.push_back(StdCopyStrBuf(szTo));
+		MaterialTextureMap.emplace_back(szFrom);
+		MaterialTextureMap.emplace_back(szTo);
 	}
 }
 
@@ -1118,7 +1118,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		if (Light)
 			glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LightTexCoord));
 
-		glVertexAttribPointer(shader->GetAttribute(C4LRA_Position), 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(shader->GetAttribute(C4LRA_Position), 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 		glVertexAttribPointer(shader->GetAttribute(C4LRA_LandscapeTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
 		if (Light)
 			glVertexAttribPointer(shader->GetAttribute(C4LRA_LightTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(16 * sizeof(float)));

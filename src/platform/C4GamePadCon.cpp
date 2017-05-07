@@ -262,7 +262,7 @@ void C4GamePadOpener::StopRumble()
 // Dedicated server and everything else with neither Win32 nor SDL.
 
 C4GamePadControl::C4GamePadControl() { Log("WARNING: Engine without Gamepad support"); }
-C4GamePadControl::~C4GamePadControl() { }
+C4GamePadControl::~C4GamePadControl() = default;
 void C4GamePadControl::Execute() { }
 void C4GamePadControl::DoAxisInput() { }
 int C4GamePadControl::GetGamePadCount() { return 0; }
@@ -271,7 +271,7 @@ std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetGamePadByID(int32_t id) { 
 std::shared_ptr<C4GamePadOpener> C4GamePadControl::GetAvailableGamePad() { return nullptr; }
 
 C4GamePadOpener::C4GamePadOpener(int iGamepad) { }
-C4GamePadOpener::~C4GamePadOpener() {}
+C4GamePadOpener::~C4GamePadOpener() = default;
 int32_t C4GamePadOpener::GetID() { return -1; }
 bool C4GamePadOpener::IsAttached() { return false; }
 void C4GamePadOpener::PlayRumble(float strength, uint32_t length) { }

@@ -86,8 +86,8 @@ class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
 public:
 	C4GameSec1Timer() { Application.Add(this); }
-	~C4GameSec1Timer() { Application.Remove(this); }
-	void OnSec1Timer();
+	~C4GameSec1Timer() override { Application.Remove(this); }
+	void OnSec1Timer() override;
 };
 
 static C4GameParameters GameParameters;
@@ -498,7 +498,7 @@ bool C4Game::Init()
 	FullScreen.CloseMenu();
 
 	// start statistics (always for now. Make this a config?)
-	pNetworkStatistics.reset(new C4Network2Stats);
+	pNetworkStatistics = std::make_unique<C4Network2Stats>();
 
 	// clear loader screen
 	if (GraphicsSystem.pLoaderScreen)
@@ -2119,7 +2119,7 @@ bool C4Game::InitGame(C4Group &hGroup, InitMode init_mode, bool fLoadSky, C4Valu
 
 		// file monitor
 		if (Config.Developer.AutoFileReload && Application.isEditor && !pFileMonitor)
-			pFileMonitor.reset(new C4FileMonitor(FileMonitorCallback));
+			pFileMonitor = std::make_unique<C4FileMonitor>(FileMonitorCallback);
 
 		// system scripts
 		if (!InitScriptEngine())
@@ -2193,7 +2193,7 @@ bool C4Game::InitGame(C4Group &hGroup, InitMode init_mode, bool fLoadSky, C4Valu
 
 		// prepare script menus
 		assert(!ScriptGuiRoot);
-		ScriptGuiRoot.reset(new C4ScriptGuiWindow);
+		ScriptGuiRoot = std::make_unique<C4ScriptGuiWindow>();
 	}
 	else if (fLoadSky)
 	{
@@ -2961,33 +2961,33 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SUBTRACT, KEYS_Shift), "GameSlowDown",         KEYSCOPE_Generic,    new C4KeyCB  <C4Game>          (*this, &C4Game::SlowDown)));
 
 	// fullscreen menu
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_LEFT));
+	Keys.clear(); Keys.emplace_back(K_LEFT);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Left(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuLeft",     KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuLeft, &C4FullScreen::MenuKeyControl)));
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_RIGHT));
+	Keys.clear(); Keys.emplace_back(K_RIGHT);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Right(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuRight",    KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuRight, &C4FullScreen::MenuKeyControl)));
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_UP));
+	Keys.clear(); Keys.emplace_back(K_UP);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Up(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuUp",       KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuUp, &C4FullScreen::MenuKeyControl)));
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_DOWN));
+	Keys.clear(); Keys.emplace_back(K_DOWN);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Down(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuDown",     KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuDown, &C4FullScreen::MenuKeyControl)));
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE)); Keys.push_back(C4KeyCodeEx(K_RETURN));
+	Keys.clear(); Keys.emplace_back(K_SPACE); Keys.emplace_back(K_RETURN);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Ok(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOK",       KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuEnter, &C4FullScreen::MenuKeyControl))); // name used by PlrControlKeyName
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_ESCAPE));
+	Keys.clear(); Keys.emplace_back(K_ESCAPE);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Cancel(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuCancel",   KEYSCOPE_FullSMenu,  new C4KeyCBEx<C4FullScreen, BYTE>   (FullScreen, COM_MenuClose, &C4FullScreen::MenuKeyControl))); // name used by PlrControlKeyName
-	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE));
+	Keys.clear(); Keys.emplace_back(K_SPACE);
 	if (Config.Controls.GamepadGuiControl) ControllerKeys::Any(Keys);
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOpen",     KEYSCOPE_FreeView,   new C4KeyCB  <C4FullScreen>   (FullScreen, &C4FullScreen::ActivateMenuMain))); // name used by C4MainMenu!
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FilmNextPlayer",         KEYSCOPE_FilmView,   new C4KeyCB  <C4ViewportList>(::Viewports, &C4ViewportList::ViewportNextPlayer)));
 
 	// chat
 	Keys.clear();
-	Keys.push_back(C4KeyCodeEx(K_RETURN));
-	Keys.push_back(C4KeyCodeEx(K_F2)); // alternate chat key, if RETURN is blocked by player control
+	Keys.emplace_back(K_RETURN);
+	Keys.emplace_back(K_F2); // alternate chat key, if RETURN is blocked by player control
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "ChatOpen",               KEYSCOPE_Generic,    new C4KeyCBEx<C4MessageInput, bool>(MessageInput, false, &C4MessageInput::KeyStartTypeIn)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RETURN, KEYS_Shift), "ChatOpen2Allies",        KEYSCOPE_Generic,    new C4KeyCBEx<C4MessageInput, bool>(MessageInput, true, &C4MessageInput::KeyStartTypeIn)));
 
@@ -3303,8 +3303,8 @@ bool C4Game::CheckObjectEnumeration()
 
 	struct Check
 	{
-		int32_t maxNumber;
-		Check() : maxNumber(0) {}
+		int32_t maxNumber{0};
+		Check() = default;
 		// Check valid & maximum number & duplicate numbers
 		bool that(C4Object* cObj)
 		{

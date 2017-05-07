@@ -28,6 +28,20 @@ function(git_get_changeset_id VAR)
 				OUTPUT_VARIABLE GIT_STATUS
 			)
 			string(REGEX MATCH "^[MADRC ][MD ]" WORKDIR_DIRTY "${GIT_STATUS}")
+			execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+				COMMAND "${GIT_EXECUTABLE}" "rev-parse" "--git-path" "index"
+				OUTPUT_VARIABLE GIT_INDEX
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+			set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+				APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+				"${GIT_INDEX}"
+			)
+			execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+				COMMAND "${GIT_EXECUTABLE}" "show" "--format=%ci" "-s" "HEAD"
+				OUTPUT_VARIABLE GIT_TIMESTAMP
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
 		endif()
 	endif()
 	if (NOT C4REVISION)
@@ -44,9 +58,17 @@ function(git_get_changeset_id VAR)
 			string(SUBSTRING "${C4REVISION}" 6 12 C4REVISION)
 		endif()
 		unset(revlength)
+
+		file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.git_archival" C4REVISION_TS
+			LIMIT_COUNT 1
+			REGEX "date: .+"
+		)
+		string(SUBSTRING "${C4REVISION_TS}" 6 -1 GIT_TIMESTAMP)
 	endif()
 	if(WORKDIR_DIRTY)
-		set(C4REVISION "${C4REVISION}+")
+		set(WORKDIR_DIRTY 1)
 	endif()
 	set(${VAR} "${C4REVISION}" PARENT_SCOPE)
+	set(${VAR}_DIRTY ${WORKDIR_DIRTY} PARENT_SCOPE)
+	set(${VAR}_TS "${GIT_TIMESTAMP}" PARENT_SCOPE)
 endfunction()

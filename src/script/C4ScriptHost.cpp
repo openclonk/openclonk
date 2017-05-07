@@ -37,7 +37,7 @@ C4ScriptHost::C4ScriptHost():
 	State(ASS_NONE) // not compiled
 {
 	Script = nullptr;
-	stringTable = 0;
+	stringTable = nullptr;
 	SourceScripts.push_back(this);
 	// prepare include list
 	IncludesResolved = false;
@@ -334,7 +334,7 @@ public:
 		C4PropList * proto = C4PropList::NewStatic(ScriptEngine.GetPropList(), this, &::Strings.P[P_Prototype]);
 		C4PropListStatic::SetPropertyByS(&::Strings.P[P_Prototype], C4VPropList(proto));
 	}
-	virtual void SetPropertyByS(C4String * k, const C4Value & to)
+	void SetPropertyByS(C4String * k, const C4Value & to) override
 	{
 		if (k == &Strings.P[P_Prototype])
 		{
@@ -348,7 +348,7 @@ public:
 /*--- C4GameScriptHost ---*/
 
 C4GameScriptHost::C4GameScriptHost(): ScenPrototype(0), ScenPropList(0) { }
-C4GameScriptHost::~C4GameScriptHost() { }
+C4GameScriptHost::~C4GameScriptHost() = default;
 
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
@@ -383,7 +383,7 @@ void C4GameScriptHost::Clear()
 C4PropListStatic * C4GameScriptHost::GetPropList()
 {
 	C4PropList * p = ScenPrototype._getPropList();
-	return p ? p->IsStatic() : 0;
+	return p ? p->IsStatic() : nullptr;
 }
 
 void C4GameScriptHost::Denumerate(C4ValueNumbers * numbers)
