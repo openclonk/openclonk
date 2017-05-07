@@ -850,9 +850,7 @@ void C4GameControlNetwork::ExecQueuedSyncCtrl()  // by main thread
 
 C4GameControlPacket::C4GameControlPacket()
 		: iClientID(C4ClientIDUnknown),
-		iCtrlTick(-1),
-		tTime(C4TimeMilliseconds::Now()),
-		pNext(nullptr)
+		tTime(C4TimeMilliseconds::Now())
 {
 
 }
@@ -860,8 +858,7 @@ C4GameControlPacket::C4GameControlPacket()
 C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 		: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
-		tTime(C4TimeMilliseconds::Now()),
-		pNext(nullptr)
+		tTime(C4TimeMilliseconds::Now())
 {
 	Ctrl.Copy(Pkt2.getControl());
 }
@@ -900,7 +897,7 @@ void C4GameControlPacket::CompileFunc(StdCompiler *pComp)
 // *** C4GameControlClient
 
 C4GameControlClient::C4GameControlClient()
-		: iClientID(C4ClientIDUnknown), iNextControl(0), iPerformance(0)
+		: iClientID(C4ClientIDUnknown) 
 {
 	szName[0] = '\0';
 }

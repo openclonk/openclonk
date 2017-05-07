@@ -22,9 +22,7 @@
 class C4Network2Address
 {
 public:
-	C4Network2Address()
-			: eProtocol(P_NONE)
-	{ }
+	C4Network2Address() = default;
 
 	C4Network2Address(C4NetIO::addr_t addr, C4Network2IOProtocol eProtocol)
 			: addr(addr.AsIPv4()), eProtocol(eProtocol)
@@ -41,7 +39,7 @@ public:
 
 protected:
 	C4NetIO::addr_t addr;
-	C4Network2IOProtocol eProtocol;
+	C4Network2IOProtocol eProtocol{P_NONE};
 
 public:
 	const C4NetIO::addr_t &getAddr() const { return addr; }

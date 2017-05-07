@@ -44,17 +44,7 @@ struct C4Network2IO::NetEvPacketData
 // *** C4Network2IO
 
 C4Network2IO::C4Network2IO()
-		: pNetIO_TCP(nullptr), pNetIO_UDP(nullptr),
-		pNetIODiscover(nullptr), pRefServer(nullptr),
-		UPnPMgr(nullptr),
-		pConnList(nullptr),
-		iNextConnID(0),
-		fAllowConnect(false),
-		pAutoAcceptList(nullptr),
-		fExclusiveConn(false),
-		tLastExecute(0), tLastPing(0), tLastStatistic(0),
-		iTCPIRate(0), iTCPORate(0), iTCPBCRate(0),
-		iUDPIRate(0), iUDPORate(0), iUDPBCRate(0)
+		: tLastExecute(0), tLastPing(0), tLastStatistic(0) 
 {
 }
 
@@ -1293,19 +1283,11 @@ void C4Network2IO::SendConnPackets()
 // *** C4Network2IOConnection
 
 C4Network2IOConnection::C4Network2IOConnection()
-		: pNetClass(nullptr),
-		iID(~0), iRemoteID(~0),
-		fAutoAccept(false),
-		fBroadcastTarget(false),
-		iTimestamp(0),
-		iPingTime(-1),
+		: iID(~0), iRemoteID(~0),
+		
 		tLastPing(C4TimeMilliseconds::NegativeInfinity),
 		tLastPong(C4TimeMilliseconds::NegativeInfinity),
-		fConnSent(false),
-		fPostMortemSent(false),
-		iOutPacketCounter(0), iInPacketCounter(0),
-		pPacketLog(nullptr),
-		pNext(nullptr),
+		
 		iRefCnt(0)
 {
 }
@@ -1553,9 +1535,7 @@ void C4Network2IOConnection::DelRef()
 
 C4PacketPostMortem::C4PacketPostMortem()
 		: iConnID(~0),
-		iPacketCounter(~0),
-		iPacketCount(0),
-		pPackets(nullptr)
+		iPacketCounter(~0)
 {
 
 }

@@ -35,12 +35,12 @@ class C4ClientCore : public C4PacketBase
 {
 public:
 	C4ClientCore();
-	~C4ClientCore();
+	~C4ClientCore() override;
 
 protected:
 
 	// identification
-	int32_t iID;
+	int32_t iID{-1};
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> Name, Nick;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> CUID;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> Revision; // engine hg revision number
@@ -49,7 +49,7 @@ protected:
 	int iVersion[4];
 
 	// status
-	bool fActivated, fObserver, fLobbyReady;
+	bool fActivated{false}, fObserver{false}, fLobbyReady{false};
 
 public:
 
@@ -78,7 +78,7 @@ public:
 
 	int32_t getDiffLevel(const C4ClientCore &CCore2) const;
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Client
@@ -92,11 +92,11 @@ public:
 private:
 	C4ClientCore Core;
 
-	bool fLocal; // Local, NoSync
-	class C4Network2Client *pNetClient; // Local, NoSync
-	time_t last_lobby_ready_change; // Local, NoSync: Time when the lobby ready state was changed last through the SetLobbyReady call. 0 for never changed.
+	bool fLocal{false}; // Local, NoSync
+	class C4Network2Client *pNetClient{nullptr}; // Local, NoSync
+	time_t last_lobby_ready_change{0}; // Local, NoSync: Time when the lobby ready state was changed last through the SetLobbyReady call. 0 for never changed.
 
-	bool fIsIgnored; // Local, NoSync: chat messages from this client are suppressed
+	bool fIsIgnored{false}; // Local, NoSync: chat messages from this client are suppressed
 
 	C4Client *pNext;
 
@@ -146,13 +146,13 @@ public:
 
 protected:
 	// client list
-	C4Client *pFirst;
+	C4Client *pFirst{nullptr};
 
 	// pointer to local client
-	C4Client *pLocal;
+	C4Client *pLocal{nullptr};
 
 	// network client list (may be nullptr if network is not active)
-	class C4Network2ClientList *pNetClients;
+	class C4Network2ClientList *pNetClients{nullptr};
 
 	void Add(C4Client *pClient);
 

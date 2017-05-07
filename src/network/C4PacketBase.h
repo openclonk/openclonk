@@ -229,7 +229,7 @@ public:
 	size_t getSize() const { return Data.getSize(); }
 	const void *getData() const { return Data.getData(); }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // "identified" packet: packet with packet type id
@@ -240,15 +240,15 @@ public:
 	C4IDPacket();
 	C4IDPacket(C4PacketType eID, C4PacketBase *pPkt, bool fTakePkt = true);
 	C4IDPacket(const C4IDPacket &Packet2);
-	~C4IDPacket();
+	~C4IDPacket() override;
 
 protected:
-	C4PacketType eID;
-	C4PacketBase *pPkt;
-	bool fOwnPkt;
+	C4PacketType eID{PID_None};
+	C4PacketBase *pPkt{nullptr};
+	bool fOwnPkt{true};
 
 	// used by C4PacketList
-	C4IDPacket *pNext;
+	C4IDPacket *pNext{nullptr};
 
 public:
 	C4PacketType  getPktType() const { return eID; }
@@ -259,7 +259,7 @@ public:
 	void Default();
 	void Set(C4PacketType eType, C4PacketBase *pPkt);
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // list of identified packets
@@ -268,10 +268,10 @@ class C4PacketList : public C4PacketBase
 public:
 	C4PacketList();
 	C4PacketList(const C4PacketList &List2);
-	virtual ~C4PacketList();
+	~C4PacketList() override;
 
 protected:
-	C4IDPacket *pFirst, *pLast;
+	C4IDPacket *pFirst{nullptr}, *pLast{nullptr};
 
 public:
 	C4IDPacket *firstPkt() const { return pFirst; }
@@ -291,6 +291,6 @@ public:
 	void Remove(C4IDPacket *pPkt);
 	void Delete(C4IDPacket *pPkt);
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 #endif // INC_C4PacketBase
