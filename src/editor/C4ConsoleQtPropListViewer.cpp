@@ -426,6 +426,8 @@ void C4PropertyDelegateStringEditor::SetValue(const C4Value &val)
 		s = ::Game.GetTranslatedString(val, &language, true);
 		C4String *language_string = language.getStr();
 		SCopy(language_string ? language_string->GetCStr() : Config.General.LanguageEx, lang_code, 2);
+		QFontMetrics fm(localization_button->font());
+		localization_button->setFixedWidth(fm.width(lang_code) + 4);
 		localization_button->setText(QString(lang_code));
 	}
 	else
