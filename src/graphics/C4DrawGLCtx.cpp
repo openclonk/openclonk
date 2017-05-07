@@ -227,7 +227,7 @@ public:
 	}
 };
 
-CStdGLCtx::CStdGLCtx(): pWindow(nullptr), hDC(nullptr), this_context(contexts.end()) { }
+CStdGLCtx::CStdGLCtx(): this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear(bool multisample_change)
 {
@@ -620,8 +620,8 @@ void CStdGLCtxQt::Deselect()
 	}
 	if (pGL && pGL->pCurrCtx == this)
 	{
-		pGL->pCurrCtx = 0;
-		pGL->RenderTarget = 0;
+		pGL->pCurrCtx = nullptr;
+		pGL->RenderTarget = nullptr;
 	}
 }
 
