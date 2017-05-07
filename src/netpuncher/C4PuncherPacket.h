@@ -40,7 +40,7 @@ class C4NetpuncherPacket {
 public:
 	typedef std::unique_ptr<C4NetpuncherPacket> uptr;
 	static std::unique_ptr<C4NetpuncherPacket> Construct(const C4NetIOPacket& rpack);
-	virtual ~C4NetpuncherPacket() {};
+	virtual ~C4NetpuncherPacket() = default;
 	virtual C4NetpuncherPacketType GetType() const = 0;
 	C4NetIOPacket PackTo(const C4NetIO::addr_t&) const;
 protected:
@@ -59,7 +59,7 @@ protected:
 public:
 	C4NetpuncherPacketType GetType() const final { return TYPE; }
 	CID GetID() const { return id; }
-	virtual ~C4NetpuncherPacketID() {};
+	~C4NetpuncherPacketID() override = default;;
 };
 
 #define PIDC(n) \
