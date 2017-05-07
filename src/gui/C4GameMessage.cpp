@@ -29,10 +29,7 @@
 
 const int32_t ObjectMsgDelayFactor = 2, GlobalMsgDelayFactor = 3; // frames per char message display time
 
-C4GameMessage::C4GameMessage() : pFrameDeco(nullptr)
-{
-
-}
+C4GameMessage::C4GameMessage() = default;
 
 C4GameMessage::~C4GameMessage()
 {

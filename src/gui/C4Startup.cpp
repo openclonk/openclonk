@@ -122,7 +122,7 @@ StdCopyStrBuf C4Startup::sSubDialog = StdCopyStrBuf();
 // startup singleton instance
 C4Startup *C4Startup::pInstance = nullptr;
 
-C4Startup::C4Startup() : fInStartup(false), pLastDlg(nullptr), pCurrDlg(nullptr)
+C4Startup::C4Startup()
 {
 	// must be single!
 	assert(!pInstance);

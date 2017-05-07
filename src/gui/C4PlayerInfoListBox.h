@@ -63,11 +63,11 @@ private:
 				PLI_CLIENT,       // client label
 				PLI_TEAM,         // team label
 				PLI_REPLAY        // replay player (ID>0), or caption (ID=0)
-			} idType;
+			} idType{PLI_NONE};
 
-			int32_t id; // player file ID or team ID or client ID
+			int32_t id{0}; // player file ID or team ID or client ID
 
-			ID() : idType(PLI_NONE), id(0) {}
+			ID() = default;
 			ID(IDType eType, int32_t id) : idType(eType), id(id) {}
 
 			inline bool operator ==(const ID &r2)
@@ -82,7 +82,7 @@ private:
 		virtual void Update() {} // periodic update callback
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // draw background
+		void DrawElement(C4TargetFacet &cgo) override; // draw background
 		bool CanLocalChooseTeams(int32_t idPlayer=0) const; // whether the local client can change any teams
 
 	public:
@@ -113,12 +113,12 @@ private:
 		bool fShownCollapsed;                       // true if small view is shown
 
 	protected:
-		virtual void UpdateOwnPos(); // recalculate item positioning
-		virtual int32_t GetListItemTopSpacing();
+		void UpdateOwnPos() override; // recalculate item positioning
+		int32_t GetListItemTopSpacing() override;
 
 	public:
 		PlayerListItem(C4PlayerInfoListBox *pForListBox, int32_t idClient, int32_t idPlayer, bool fSavegamePlayer, C4GUI::Element *pInsertBeforeElement); // ctor
-		~PlayerListItem() {};                         // dtor
+		~PlayerListItem() override = default;;                         // dtor
 
 		void UpdateIcon(C4PlayerInfo *pInfo, C4PlayerInfo *pJoinedInfo); // update player icon
 		void UpdateTeam();
@@ -135,7 +135,7 @@ private:
 		void OnTeamComboFill(C4GUI::ComboBox_FillCB *pFiller);
 		bool OnTeamComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 
-		virtual void Update(); // update icon and team
+		void Update() override; // update icon and team
 
 		int32_t GetInfoID() const { return idPlayer; }
 		C4Network2Client *GetNetClient() const; // return associated network client
@@ -166,7 +166,7 @@ private:
 
 	public:
 		ClientListItem(C4PlayerInfoListBox *pForListBox, const C4ClientCore &rClientInfo, ListItem *pInsertBefore); // ctor
-		~ClientListItem() {}                         // dtor
+		~ClientListItem() override = default;                         // dtor
 
 		void SetColor(DWORD dwToClr)              // update color of client name label
 		{ pNameLabel->SetColor((dwClientClr=dwToClr) | C4GUI_MessageFontAlpha); }
@@ -177,8 +177,8 @@ private:
 		void SetSoundIcon();                        // sets the sound icon as current icon and schedules reset after some time
 
 		// spacing inserted between two client list items
-		virtual int32_t GetListItemTopSpacing() { return ClientListBoxSpacing; }
-		virtual bool GetListItemTopSpacingBar() { return true; }
+		int32_t GetListItemTopSpacing() override { return ClientListBoxSpacing; }
+		bool GetListItemTopSpacingBar() override { return true; }
 
 	public:
 		void Init(const C4ClientCore &rClientInfo); // init members
@@ -192,7 +192,7 @@ private:
 		class C4Network2Client *GetNetClient() const; // return assicuated network client; nullptr for local
 		bool IsLocal() const;
 
-		virtual void Update() { UpdatePing(); UpdateInfo(); }
+		void Update() override { UpdatePing(); UpdateInfo(); }
 		void UpdatePing();                     // update ping label
 
 		C4GUI::ContextMenu *OnContext(C4GUI::Element *pListItem, int32_t iX, int32_t iY); // open context menu
@@ -214,18 +214,18 @@ private:
 		int32_t idTeam; // team ID
 
 	protected:
-		virtual void UpdateOwnPos(); // recalculate item positioning
+		void UpdateOwnPos() override; // recalculate item positioning
 
 	public:
 		TeamListItem(C4PlayerInfoListBox *pForListBox, int32_t idTeam, ListItem *pInsertBefore); // ctor
 
-		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
 
 		// spacing inserted between of those list items; usually this is top anyway...
-		virtual bool GetListItemTopSpacingBar() { return true; }
-		virtual int32_t GetListItemTopSpacing() { return ClientListBoxSpacing; }
+		bool GetListItemTopSpacingBar() override { return true; }
+		int32_t GetListItemTopSpacing() override { return ClientListBoxSpacing; }
 
-		virtual void Update();
+		void Update() override;
 
 	private:
 		void MoveLocalPlayersIntoTeam(); // move all local players into team marked by this label
@@ -244,10 +244,10 @@ private:
 
 		// spacing inserted between of those list items; usually this is top anyway...
 		virtual bool ListItemTopSpacingBar() { return true; }
-		virtual int32_t GetListItemTopSpacing() { return ClientListBoxSpacing; }
+		int32_t GetListItemTopSpacing() override { return ClientListBoxSpacing; }
 
 	public:
-		virtual void Update();
+		void Update() override;
 	};
 
 	// list of script players (both savegame recreation and regular)
@@ -264,13 +264,13 @@ private:
 
 		// spacing inserted between of those list items; usually this is top anyway...
 		virtual bool ListItemTopSpacingBar() { return true; }
-		virtual int32_t GetListItemTopSpacing() { return ClientListBoxSpacing; }
+		int32_t GetListItemTopSpacing() override { return ClientListBoxSpacing; }
 
 	protected:
 		void OnBtnAddPlr(C4GUI::Control *btn);
 
 	public:
-		virtual void Update();
+		void Update() override;
 	};
 
 	// list of players in record (currently not used, because replays in network are not allowed :C)
@@ -285,8 +285,8 @@ private:
 		ReplayPlayersListItem(C4PlayerInfoListBox *pForListBox, ListItem *pInsertBefore); // ctor
 
 		// spacing inserted between of those list items; usually this is top anyway...
-		virtual bool GetListItemTopSpacingBar() { return true; }
-		virtual int32_t GetListItemTopSpacing() { return ClientListBoxSpacing; }
+		bool GetListItemTopSpacingBar() override { return true; }
+		int32_t GetListItemTopSpacing() override { return ClientListBoxSpacing; }
 	};
 
 	// -----------------------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ protected:
 
 public:
 	C4PlayerInfoListBox(const C4Rect &rcBounds, Mode eMode, int32_t iTeamFilter=0);
-	virtual ~C4PlayerInfoListBox() {}
+	~C4PlayerInfoListBox() override = default;
 
 	void Update(); // update player list
 	void SetClientSoundIcon(int32_t iForClientID);
