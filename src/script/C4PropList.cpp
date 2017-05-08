@@ -148,7 +148,7 @@ void C4PropListNumbered::ClearNumberedPropLists()
 	}
 }
 
-C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
+C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype)
 {
 }
 
@@ -273,10 +273,9 @@ const char *C4PropListStatic::GetName() const
 }
 
 C4PropList::C4PropList(C4PropList * prototype):
-		FirstRef(nullptr), prototype(prototype),
-		constant(false), Status(1)
+		prototype(prototype)
 {
-#ifdef _DEBUG	
+#ifdef _DEBUG
 	PropLists.Add(this);
 #endif
 }

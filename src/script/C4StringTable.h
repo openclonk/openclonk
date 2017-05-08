@@ -21,14 +21,14 @@
 class C4RefCnt
 {
 public:
-	C4RefCnt(): RefCnt(0) {}
-	virtual ~C4RefCnt() {}
+	C4RefCnt() = default;
+	virtual ~C4RefCnt() = default;
 	// Add/Remove Reference
 	void IncRef() { RefCnt++; }
 	void DecRef() { if (!--RefCnt) delete this; }
 protected:
 	// Reference counter
-	unsigned int RefCnt;
+	unsigned int RefCnt{0};
 };
 
 class C4String: public C4RefCnt
@@ -44,7 +44,7 @@ private:
 
 	friend class C4StringTable;
 public:
-	~C4String();
+	~C4String() override;
 
 	const char * GetCStr() const { return Data.getData(); }
 	StdStrBuf GetData() const { return Data.getRef(); }
@@ -56,11 +56,11 @@ class C4RefCntPointer
 {
 public:
 	C4RefCntPointer(T* p): p(p) { IncRef(); }
-	C4RefCntPointer(): p(0) { }
+	C4RefCntPointer(): p(nullptr) { }
 	C4RefCntPointer(const C4RefCntPointer<T> & r) : p(r.p) { IncRef(); }
 	template <class U> C4RefCntPointer(const C4RefCntPointer<U> & r): p(r.p) { IncRef(); }
 	// Move constructor
-	C4RefCntPointer(C4RefCntPointer<T> &&r) : p(r.p) { r.p = 0; }
+	C4RefCntPointer(C4RefCntPointer<T> &&r) : p(r.p) { r.p = nullptr; }
 	template <class U> C4RefCntPointer(C4RefCntPointer<U> &&r): p(r.p) { r.p = 0; }
 	// Move assignment
 	C4RefCntPointer& operator = (C4RefCntPointer<T> &&r)
@@ -69,7 +69,7 @@ public:
 		{
 			DecRef();
 			p = r.p;
-			r.p = 0;
+			r.p = nullptr;
 		}
 		return *this;
 	}
@@ -117,8 +117,8 @@ private:
 
 template<typename T> class C4Set
 {
-	unsigned int Capacity;
-	unsigned int Size;
+	unsigned int Capacity{2};
+	unsigned int Size{0};
 	T * Table;
 	T * GetPlaceFor(T const & e)
 	{
@@ -145,7 +145,7 @@ template<typename T> class C4Set
 	void ClearTable()
 	{
 		for (unsigned int i = 0; i < Capacity; ++i)
-			Table[i] = 0;
+			Table[i] = nullptr;
 	}
 	void MaintainCapacity()
 	{
@@ -168,7 +168,7 @@ public:
 	template<typename H> static unsigned int Hash(const H &);
 	template<typename H> static bool Equals(const T &, const H &);
 	static bool Equals(const T & a, const T & b) { return a == b; }
-	C4Set(): Capacity(2), Size(0), Table(new T[Capacity])
+	C4Set(): Table(new T[Capacity])
 	{
 		ClearTable();
 	}
@@ -240,13 +240,13 @@ public:
 			r = &Table[++h % Capacity];
 		}
 		assert(*r);
-		*r = 0;
+		*r = nullptr;
 		--Size;
 		// Move entries which might have collided with e
 		while (*(r = &Table[++h % Capacity]))
 		{
 			T m = *r;
-			*r = 0;
+			*r = nullptr;
 			AddInternal(std::move(m));
 		}
 	}
@@ -257,7 +257,7 @@ public:
 		{
 			if (*p) return p;
 		}
-		return 0;
+		return nullptr;
 	}
 	void Swap(C4Set<T> * S2)
 	{
