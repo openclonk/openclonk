@@ -20,10 +20,10 @@
 class C4AchievementGraphics
 {
 	std::map<StdCopyStrBuf, C4FacetSurface *> Graphics;
-	int32_t idGrp; // ID of group file from which achievements were loaded
+	int32_t idGrp{0}; // ID of group file from which achievements were loaded
 
 public:
-	C4AchievementGraphics() : idGrp(0) {}
+	C4AchievementGraphics() = default;
 
 	// Init will always  load all achievement files from the first group that contains achievements
 	bool Init(C4Group &File);

@@ -30,7 +30,6 @@
 #include "platform/StdRegistry.h"
 
 C4RankSystem::C4RankSystem()
-	: pszRankNames(nullptr), szRankNames(nullptr), pszRankExtensions(nullptr)
 {
 	Default();
 }
