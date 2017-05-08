@@ -24,52 +24,11 @@
 #include "editor/C4ConsoleGUI.h" // for glew.h
 #include "editor/C4ConsoleQt.h"
 #include "editor/C4ConsoleQtShapes.h"
+#include "editor/C4PropertyPath.h"
 #include "script/C4Value.h"
 
 class C4ConsoleQtPropListModel;
 struct C4ConsoleQtPropListModelProperty;
-
-// Path to a property, like e.g. Object(123).foo.bar[456].baz
-// Used to allow proper synchronization of property setting
-class C4PropertyPath
-{
-	// TODO: For now just storing the path. May want to keep the path info later to allow validation/updating of values
-	StdCopyStrBuf get_path, argument, set_path;
-	StdCopyStrBuf root;
-
-public:
-	enum PathType
-	{
-		PPT_Root = 0,
-		PPT_Property = 1,
-		PPT_Index = 2,
-		PPT_SetFunction = 3,
-		PPT_GlobalSetFunction = 4,
-		PPT_RootSetFunction = 5,
-	} get_path_type, set_path_type;
-
-public:
-	C4PropertyPath() {}
-	C4PropertyPath(C4PropList *target);
-	C4PropertyPath(C4Effect *fx, C4Object *target_obj);
-	C4PropertyPath(const char *path) : get_path(path), root(path), get_path_type(PPT_Root), set_path_type(PPT_Root) {}
-	C4PropertyPath(const C4PropertyPath &parent, int32_t elem_index);
-	C4PropertyPath(const C4PropertyPath &parent, const char *child_property);
-	void SetSetPath(const C4PropertyPath &parent, const char *child_property, PathType path_type);
-	void Clear() { get_path.Clear(); set_path.Clear(); }
-	const char *GetGetPath() const { return get_path.getData(); }
-	const char *GetSetPath() const { return set_path ? set_path.getData() : get_path.getData(); }
-	const char *GetRoot() const { return root.getData(); } // Parent-most path (usually the object)
-	bool IsEmpty() const { return get_path.getLength() <= 0; }
-
-	C4Value ResolveValue() const;
-	C4Value ResolveRoot() const;
-	void SetProperty(const char *set_string) const;
-	void SetProperty(const C4Value &to_val, const C4PropListStatic *ignore_reference_parent = nullptr) const;
-	void DoCall(const char *call_string) const; // Perform a script call where %s is replaced by the current path
-
-	bool operator ==(const C4PropertyPath &v) const { return get_path == v.get_path; }
-};
 
 class C4PropertyDelegate : public QObject
 {

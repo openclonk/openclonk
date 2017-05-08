@@ -743,6 +743,8 @@ set(OC_CLONK_SOURCES
 if(WITH_QT_EDITOR)
   qt5_add_resources(qt_editor_resources "src/editor/resource.qrc")
   set(QT_EDITOR_SOURCES
+	  src/editor/C4PropertyPath.cpp
+	  src/editor/C4PropertyPath.h
 	  src/editor/C4ConsoleQt.cpp
 	  src/editor/C4ConsoleQt.h
 	  src/editor/C4ConsoleQtState.cpp
