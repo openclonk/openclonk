@@ -104,7 +104,7 @@ private:
 	void Splash();
 public:
 	C4Object();
-	~C4Object();
+	~C4Object() override;
 	C4ID id;
 	int32_t RemovalDelay; // NoSave //
 	int32_t Owner;
@@ -209,7 +209,7 @@ public:
 	          int32_t nx, int32_t ny, int32_t nr,
 	          C4Real nxdir, C4Real nydir, C4Real nrdir, int32_t iController);
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
-	virtual void Denumerate(C4ValueNumbers *);
+	void Denumerate(C4ValueNumbers *) override;
 	void DrawLine(C4TargetFacet &cgo, int32_t at_player);
 	bool SetPhase(int32_t iPhase);
 	void AssignRemoval(bool fExitContents=false);
@@ -245,7 +245,7 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=nullptr);
-	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
+	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=nullptr, bool collide_halfvehic=false);
 	bool Contact(int32_t cnat);
 	void StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
@@ -293,13 +293,13 @@ public:
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir) const;
 	C4Real GetSpeed() const;
 	StdStrBuf GetDataString();
-	void SetName (const char *NewName = 0);
+	void SetName (const char *NewName = nullptr) override;
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
 	bool SetLightRange(int32_t iToRange, int32_t iToFadeoutRange);
 	uint32_t GetLightColor() const { return lightColor; }
 	bool SetLightColor(uint32_t iValue);
-	void SetOnFire(bool OnFire) { this->OnFire = OnFire; SetOCF(); }
+	void SetOnFire(bool OnFire) override { this->OnFire = OnFire; SetOCF(); }
 	bool GetOnFire() const { return OnFire; }
 	void SetAlive(bool Alive) { this->Alive = Alive; SetOCF(); }
 	bool GetAlive() const { return Alive; }
@@ -370,12 +370,12 @@ public:
 	bool IsUserPlayerObject();// true for any object that belongs to any player (NO_OWNER) or a specified player
 
 	// overloaded from C4PropList
-	virtual C4Object * GetObject() { return this; }
-	virtual C4Object const * GetObject() const { return this; }
-	virtual void SetPropertyByS(C4String * k, const C4Value & to);
-	virtual void ResetProperty(C4String * k);
-	virtual bool GetPropertyByS(const C4String *k, C4Value *pResult) const;
-	virtual C4ValueArray * GetProperties() const;
+	C4Object * GetObject() override { return this; }
+	C4Object const * GetObject() const override { return this; }
+	void SetPropertyByS(C4String * k, const C4Value & to) override;
+	void ResetProperty(C4String * k) override;
+	bool GetPropertyByS(const C4String *k, C4Value *pResult) const override;
+	C4ValueArray * GetProperties() const override;
 };
 
 #endif

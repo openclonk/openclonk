@@ -54,61 +54,61 @@ enum C4AnimationEnding
 class C4ValueProviderConst: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderConst() {}
+	C4ValueProviderConst() = default;
 	C4ValueProviderConst(C4Real value);
-	virtual bool Execute();
+	bool Execute() override;
 };
 
 // Interpolate linearly in time between two values
 class C4ValueProviderLinear: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderLinear(): Begin(Fix0), End(Fix0), Length(0), Ending(ANIM_Loop), LastTick(0) {}
+	C4ValueProviderLinear(): Begin(Fix0), End(Fix0) {}
 	C4ValueProviderLinear(C4Real pos, C4Real begin, C4Real end, int32_t length, C4AnimationEnding ending);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
+	void CompileFunc(StdCompiler* pComp) override;
 private:
 	C4Real Begin;
 	C4Real End;
-	int32_t Length;
-	C4AnimationEnding Ending;
+	int32_t Length{0};
+	C4AnimationEnding Ending{ANIM_Loop};
 
-	int32_t LastTick;
+	int32_t LastTick{0};
 };
 
 class C4ValueProviderX: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderX(): Object(nullptr), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderX(): Object(nullptr), Begin(Fix0), End(Fix0) {}
 	C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
 	C4Real End;
-	int32_t Length;
+	int32_t Length{0};
 };
 
 class C4ValueProviderY: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderY(): Object(nullptr), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderY(): Object(nullptr), Begin(Fix0), End(Fix0) {}
 	C4ValueProviderY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
 	C4Real End;
-	int32_t Length;
+	int32_t Length{0};
 };
 
 class C4ValueProviderR: public StdMeshInstance::SerializableValueProvider
@@ -116,11 +116,11 @@ class C4ValueProviderR: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderR(): Object(nullptr), Begin(Fix0), End(Fix0) {}
 	C4ValueProviderR(C4Object* object, C4Real begin, C4Real end);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -130,52 +130,52 @@ private:
 class C4ValueProviderAbsX: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAbsX(): Object(nullptr), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderAbsX(): Object(nullptr), Begin(Fix0), End(Fix0) {}
 	C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
 	C4Real End;
-	int32_t Length;
+	int32_t Length{0};
 };
 
 class C4ValueProviderAbsY: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAbsY(): Object(nullptr), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderAbsY(): Object(nullptr), Begin(Fix0), End(Fix0) {}
 	C4ValueProviderAbsY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
 	C4Real End;
-	int32_t Length;
+	int32_t Length{0};
 };
 
 class C4ValueProviderDist: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderDist(): Object(nullptr), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderDist(): Object(nullptr), Begin(Fix0), End(Fix0) {}
 	C4ValueProviderDist(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
 	C4Real End;
-	int32_t Length;
+	int32_t Length{0};
 };
 
 class C4ValueProviderXDir: public StdMeshInstance::SerializableValueProvider
@@ -183,11 +183,11 @@ class C4ValueProviderXDir: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderXDir(): Object(nullptr), Begin(Fix0), End(Fix0), MaxXDir(Fix0) {}
 	C4ValueProviderXDir(C4Object* object, C4Real begin, C4Real end, C4Real max_xdir);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -200,11 +200,11 @@ class C4ValueProviderYDir: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderYDir(): Object(nullptr), Begin(Fix0), End(Fix0), MaxYDir(Fix0) {}
 	C4ValueProviderYDir(C4Object* object, C4Real begin, C4Real end, C4Real max_ydir);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -217,11 +217,11 @@ class C4ValueProviderRDir: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderRDir(): Object(nullptr), Begin(Fix0), End(Fix0), MinRDir(Fix0), MaxRDir(Fix0) {}
 	C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -235,11 +235,11 @@ class C4ValueProviderAbsRDir: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderAbsRDir(): Object(nullptr), Begin(Fix0), End(Fix0), MinRDir(Fix0), MaxRDir(Fix0) {}
 	C4ValueProviderAbsRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -253,11 +253,11 @@ class C4ValueProviderCosR: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderCosR(): Object(nullptr), Begin(Fix0), End(Fix0), Offset(Fix0) {}
 	C4ValueProviderCosR(C4Object* object, C4Real begin, C4Real end, C4Real offset);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -270,11 +270,11 @@ class C4ValueProviderSinR: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderSinR(): Object(nullptr), Begin(Fix0), End(Fix0), Offset(Fix0) {}
 	C4ValueProviderSinR(C4Object* object, C4Real begin, C4Real end, C4Real offset);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -287,11 +287,11 @@ class C4ValueProviderCosV: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderCosV(): Object(nullptr), Begin(Fix0), End(Fix0), Offset(Fix0) {}
 	C4ValueProviderCosV(C4Object* object, C4Real begin, C4Real end, C4Real offset);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -304,11 +304,11 @@ class C4ValueProviderSinV: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderSinV(): Object(nullptr), Begin(Fix0), End(Fix0), Offset(Fix0) {}
 	C4ValueProviderSinV(C4Object* object, C4Real begin, C4Real end, C4Real offset);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -321,11 +321,11 @@ class C4ValueProviderAction: public StdMeshInstance::SerializableValueProvider
 public:
 	C4ValueProviderAction(): Object(nullptr) {}
 	C4ValueProviderAction(C4Object* object);
-	virtual bool Execute();
+	bool Execute() override;
 
-	virtual void CompileFunc(StdCompiler* pComp);
-	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = nullptr; }
+	void CompileFunc(StdCompiler* pComp) override;
+	void DenumeratePointers() override { Object.DenumeratePointers(); }
+	void ClearPointers(C4Object* pObj) override { if(Object == pObj) Object = nullptr; }
 private:
 	C4ObjectPtr Object;
 };
@@ -338,7 +338,7 @@ public:
 	C4ValueProviderRef(const SourceT& ref, C4Real scale):
 			Ref(ref), Scale(scale) {}
 
-	virtual bool Execute()
+	bool Execute() override
 	{
 		Value = Scale * Ref;
 		return true;

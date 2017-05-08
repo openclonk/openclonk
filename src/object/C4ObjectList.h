@@ -36,7 +36,7 @@ public:
 	virtual void OnObjectAdded(C4ObjectList * pList, C4ObjectLink * pLnk) {};
 	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk) {};
 	virtual void OnObjectContainerChanged(C4Object *obj, C4Object *old_container, C4Object *new_container) {};
-	virtual ~C4ObjectListChangeListener() { }
+	virtual ~C4ObjectListChangeListener() = default;
 };
 
 extern C4ObjectListChangeListener & ObjectListChangeListener;
@@ -127,7 +127,7 @@ public:
 	bool IsClear() const;
 	bool DenumeratePointers();
 	bool Write(char *szTarget);
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * = 0);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * = nullptr);
 	void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers *);
 	void Denumerate(C4ValueNumbers *);
 
@@ -162,7 +162,7 @@ protected:
 	virtual void InsertLinkBefore(C4ObjectLink *pLink, C4ObjectLink *pBefore);
 	virtual void InsertLink(C4ObjectLink *pLink, C4ObjectLink *pAfter);
 	virtual void RemoveLink(C4ObjectLink *pLnk);
-	mutable iterator * FirstIter;
+	mutable iterator * FirstIter{nullptr};
 	iterator * AddIter(iterator * iter) const;
 	void RemoveIter(iterator * iter) const;
 
@@ -172,14 +172,14 @@ protected:
 class C4NotifyingObjectList: public C4ObjectList
 {
 public:
-	C4NotifyingObjectList() { }
-	C4NotifyingObjectList(const C4NotifyingObjectList &List): C4ObjectList(List) { }
+	C4NotifyingObjectList() = default;
+	C4NotifyingObjectList(const C4NotifyingObjectList &List) = default;
 	C4NotifyingObjectList(const C4ObjectList &List): C4ObjectList(List) { }
-	virtual ~C4NotifyingObjectList() { }
+	~C4NotifyingObjectList() override = default;
 protected:
-	virtual void InsertLinkBefore(C4ObjectLink *pLink, C4ObjectLink *pBefore);
-	virtual void InsertLink(C4ObjectLink *pLink, C4ObjectLink *pAfter);
-	virtual void RemoveLink(C4ObjectLink *pLnk);
+	void InsertLinkBefore(C4ObjectLink *pLink, C4ObjectLink *pBefore) override;
+	void InsertLink(C4ObjectLink *pLink, C4ObjectLink *pAfter) override;
+	void RemoveLink(C4ObjectLink *pLnk) override;
 };
 
 // This iterator is used to return objects of same ID and picture as grouped.
@@ -193,7 +193,7 @@ private:
 	C4ObjectList::iterator pCurr; // link to last returned object
 	C4ObjectList::iterator pCurrID; // link to head of link group with same ID
 
-	C4ObjectListIterator(const C4ObjectListIterator &rCopy); // no copy ctor
+	C4ObjectListIterator(const C4ObjectListIterator &rCopy) = delete; // no copy ctor
 public:
 	C4ObjectListIterator(C4ObjectList &rList) : rList(rList), pCurr(rList.end()), pCurrID(rList.begin()) {} // ctor
 	C4Object *GetNext(int32_t *piCount); // get next object; return nullptr if end is reached

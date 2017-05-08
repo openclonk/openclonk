@@ -48,8 +48,8 @@ public:
 	static const C4ID EditorBase;
 
 	C4ID(): v(None.v) {}
-	C4ID(const C4ID &other): v(other.v) {}
-	C4ID &operator =(const C4ID &other) { v = other.v; return *this; }
+	C4ID(const C4ID &other) = default;
+	C4ID &operator =(const C4ID &other) = default;
 
 	explicit C4ID(const std::string &s);
 	explicit C4ID(const StdStrBuf &s) { assign(s.getData()); }
@@ -86,7 +86,7 @@ public:
 
 	// Safe bool
 	typedef size_t C4ID::*safe_bool_type;
-	inline operator safe_bool_type() const { return v == None.v ? 0 : &C4ID::v; }
+	inline operator safe_bool_type() const { return v == None.v ? nullptr : &C4ID::v; }
 };
 
 #endif

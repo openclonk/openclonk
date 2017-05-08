@@ -27,7 +27,7 @@ public:
 	// denumerated null pointer which can be repeatedly denumerated.
 	static const C4ObjectPtr Null;
 
-	C4ObjectPtr() {} // uninitialized
+	C4ObjectPtr() = default; // uninitialized
 
 	C4ObjectPtr(C4Object* pObj)
 #ifndef NDEBUG
