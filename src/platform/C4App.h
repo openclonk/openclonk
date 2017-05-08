@@ -38,18 +38,18 @@ const char* KeycodeToString(C4KeyCode code);
 class CStdMessageProc : public StdSchedulerProc
 {
 public:
-	CStdMessageProc() : pApp(nullptr) { }
-	~CStdMessageProc() { }
+	CStdMessageProc() = default;
+	~CStdMessageProc() override = default;
 
 private:
-	C4AbstractApp *pApp;
+	C4AbstractApp *pApp{nullptr};
 
 public:
 	void SetApp(C4AbstractApp *pnApp) { pApp = pnApp; }
 
 	// StdSchedulerProc overrides
-	virtual bool Execute(int iTimeout = -1, pollfd *dummy=0);
-	virtual HANDLE GetEvent() { return STDSCHEDULER_EVENT_MESSAGE; }
+	bool Execute(int iTimeout = -1, pollfd *dummy=nullptr) override;
+	HANDLE GetEvent() override { return STDSCHEDULER_EVENT_MESSAGE; }
 
 };
 #endif
@@ -58,9 +58,9 @@ class C4AbstractApp : public StdScheduler
 {
 public:
 	C4AbstractApp ();
-	virtual ~C4AbstractApp ();
+	~C4AbstractApp () override;
 
-	bool Active;
+	bool Active{false};
 
 	virtual void Clear();
 
@@ -72,13 +72,13 @@ public:
 	bool SetVideoMode(int iXRes, int iYRes, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
 
-	virtual bool DoScheduleProcs(int iTimeout);
+	bool DoScheduleProcs(int iTimeout) override;
 	bool FlushMessages();
 #ifdef WITH_QT_EDITOR
 	void ProcessQtEvents();
 #endif
-	C4Window * pWindow;
-	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
+	C4Window * pWindow{nullptr};
+	bool fQuitMsgReceived{false}; // if true, a quit message has been received and the application should terminate
 
 	// Copy the text to the clipboard or the primary selection
 	bool Copy(const std::string &text, bool fClipboard = true);
@@ -100,7 +100,7 @@ public:
 
 #ifdef _WIN32
 private:
-	HINSTANCE hInstance;
+	HINSTANCE hInstance{nullptr};
 	DWORD idMainThread; // ID of main thread that initialized the app
 
 	void SetLastErrorFromOS();
@@ -154,7 +154,7 @@ protected:
 
 protected:
 	std::string sLastError;
-	bool fDspModeSet;           // true if display mode was changed
+	bool fDspModeSet{false};           // true if display mode was changed
 	virtual bool DoInit(int argc, char * argv[]) = 0;
 
 	friend class CStdGL;

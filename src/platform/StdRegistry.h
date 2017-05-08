@@ -53,38 +53,38 @@ public:
 
 	// Construct with root key
 	StdCompilerConfigWrite(HKEY hRoot, const char *szPath);
-	~StdCompilerConfigWrite();
+	~StdCompilerConfigWrite() override;
 
 	// Properties
-	virtual bool hasNaming() override { return true; }
-	virtual bool isRegistry() override { return true; }
+	bool hasNaming() override { return true; }
+	bool isRegistry() override { return true; }
 
 	// Naming
-	virtual bool Name(const char *szName) override;
-	virtual void NameEnd(bool fBreak = false) override;
-	virtual bool FollowName(const char *szName) override;
-	virtual bool Default(const char *szName) override;
+	bool Name(const char *szName) override;
+	void NameEnd(bool fBreak = false) override;
+	bool FollowName(const char *szName) override;
+	bool Default(const char *szName) override;
 
 	// Separators
-	virtual bool Separator(Sep eSep) override;
+	bool Separator(Sep eSep) override;
 
 	// Data writers
-	virtual void DWord(int32_t &rInt) override;
-	virtual void DWord(uint32_t &rInt) override;
-	virtual void Word(int16_t &rShort) override;
-	virtual void Word(uint16_t &rShort) override;
-	virtual void Byte(int8_t &rByte) override;
-	virtual void Byte(uint8_t &rByte) override;
-	virtual void Boolean(bool &rBool) override;
-	virtual void Character(char &rChar) override;
-	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
-	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
-	virtual void String(std::string &str, RawCompileType type = RCT_Escaped) override;
-	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override;
+	void DWord(int32_t &rInt) override;
+	void DWord(uint32_t &rInt) override;
+	void Word(int16_t &rShort) override;
+	void Word(uint16_t &rShort) override;
+	void Byte(int8_t &rByte) override;
+	void Byte(uint8_t &rByte) override;
+	void Boolean(bool &rBool) override;
+	void Character(char &rChar) override;
+	void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
+	void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
+	void String(std::string &str, RawCompileType type = RCT_Escaped) override;
+	void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override;
 
 	// Passes
-	virtual void Begin() override;
-	virtual void End() override;
+	void Begin() override;
+	void End() override;
 
 private:
 
@@ -103,7 +103,7 @@ private:
 	std::string last_written_string;
 
 	// Writing
-	void CreateKey(HKEY hParent = 0);
+	void CreateKey(HKEY hParent = nullptr);
 	void WriteDWord(uint32_t iVal);
 	void WriteString(const char *szStr);
 
@@ -116,38 +116,38 @@ public:
 
 	// Construct with root key
 	StdCompilerConfigRead(HKEY hRoot, const char *szPath);
-	~StdCompilerConfigRead();
+	~StdCompilerConfigRead() override;
 
 	// Properties
-	virtual bool isDeserializer() override { return true; }
-	virtual bool hasNaming() override { return true; }
-	virtual bool isRegistry() override { return true; }
+	bool isDeserializer() override { return true; }
+	bool hasNaming() override { return true; }
+	bool isRegistry() override { return true; }
 
 	// Naming
-	virtual bool Name(const char *szName) override;
-	virtual void NameEnd(bool fBreak = false) override;
-	virtual bool FollowName(const char *szName) override;
+	bool Name(const char *szName) override;
+	void NameEnd(bool fBreak = false) override;
+	bool FollowName(const char *szName) override;
 
 	// Separators
-	virtual bool Separator(Sep eSep) override;
+	bool Separator(Sep eSep) override;
 
 	// Data writers
-	virtual void DWord(int32_t &rInt) override;
-	virtual void DWord(uint32_t &rInt) override;
-	virtual void Word(int16_t &rShort) override;
-	virtual void Word(uint16_t &rShort) override;
-	virtual void Byte(int8_t &rByte) override;
-	virtual void Byte(uint8_t &rByte) override;
-	virtual void Boolean(bool &rBool) override;
-	virtual void Character(char &rChar) override;
-	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
-	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
-	virtual void String(std::string &str, RawCompileType type = RCT_Escaped) override;
-	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override;
+	void DWord(int32_t &rInt) override;
+	void DWord(uint32_t &rInt) override;
+	void Word(int16_t &rShort) override;
+	void Word(uint16_t &rShort) override;
+	void Byte(int8_t &rByte) override;
+	void Byte(uint8_t &rByte) override;
+	void Boolean(bool &rBool) override;
+	void Character(char &rChar) override;
+	void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
+	void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
+	void String(std::string &str, RawCompileType type = RCT_Escaped) override;
+	void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) override;
 
 	// Passes
-	virtual void Begin() override;
-	virtual void End() override;
+	void Begin() override;
+	void End() override;
 
 private:
 

@@ -31,11 +31,7 @@
 
 using namespace C4SoundLoaders;
 
-C4SoundEffect::C4SoundEffect():
-		Instances (0),
-		pSample (0),
-		FirstInst (nullptr),
-		Next (nullptr)
+C4SoundEffect::C4SoundEffect()
 {
 	Name[0]=0;
 }
@@ -200,14 +196,7 @@ void C4SoundEffect::RemoveInst(C4SoundInstance *pInst)
 
 
 C4SoundInstance::C4SoundInstance():
-		pEffect (nullptr),
-		iVolume(0), iPan(0), iPitch(0),
-		player(NO_OWNER),
-		pitch_dirty(false),
-		iChannel (-1),
-		modifier(nullptr),
-		has_local_modifier(false),
-		pNext (nullptr)
+		player(NO_OWNER)
 {
 }
 

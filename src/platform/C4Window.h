@@ -275,8 +275,8 @@ public:
 public:
 	C4Window ();
 	virtual ~C4Window ();
-	bool Active;
-	C4Surface * pSurface;
+	bool Active{false};
+	C4Surface * pSurface{nullptr};
 	WindowKind eKind;
 	virtual void Clear();
 	// Only when the wm requests a close
@@ -309,7 +309,7 @@ public:
 
 public:
 #if defined(USE_WIN32_WINDOWS)
-	HWND hWindow;
+	HWND hWindow{nullptr};
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_SDL_MAINLOOP)
 	SDL_Window * window;
@@ -319,7 +319,7 @@ public:
 	HWND renderwnd;
 #endif
 #ifdef WITH_QT_EDITOR
-	class QOpenGLWidget *glwidget;
+	class QOpenGLWidget *glwidget{nullptr};
 #endif
 protected:
 	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);

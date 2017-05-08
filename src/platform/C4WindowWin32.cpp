@@ -571,12 +571,7 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-C4Window::C4Window (): Active(false), pSurface(nullptr), hWindow(nullptr)
-#ifdef WITH_QT_EDITOR
-, glwidget(nullptr)
-#endif
-{
-}
+C4Window::C4Window () = default;
 C4Window::~C4Window () = default;
 
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
@@ -841,9 +836,7 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 
 /* C4AbstractApp */
 
-C4AbstractApp::C4AbstractApp() :
-		Active(false), pWindow(nullptr), fQuitMsgReceived(false),
-		hInstance(nullptr), fDspModeSet(false)
+C4AbstractApp::C4AbstractApp()
 {
 	ZeroMemory(&dspMode, sizeof(dspMode)); dspMode.dmSize =  sizeof(dspMode);
 	ZeroMemory(&OldDspMode, sizeof(OldDspMode)); OldDspMode.dmSize =  sizeof(OldDspMode);

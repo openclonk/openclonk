@@ -184,33 +184,32 @@ class CStdCSecExCallback
 public:
 	// is called with CSec exlusive locked!
 	virtual void OnShareFree(class CStdCSecEx *pCSec) = 0;
-	virtual ~CStdCSecExCallback() {}
+	virtual ~CStdCSecExCallback() = default;
 };
 
 class CStdCSecEx : public CStdCSec
 {
 public:
 	CStdCSecEx()
-			: lShareCnt(0), ShareFreeEvent(false), pCallbClass(nullptr)
+			: ShareFreeEvent(false)
 	{ }
 	CStdCSecEx(CStdCSecExCallback *pCallb)
 			: lShareCnt(0), ShareFreeEvent(false), pCallbClass(pCallb)
 	{ }
-	~CStdCSecEx()
-	{ }
+	~CStdCSecEx() override = default;
 
 protected:
 	// share counter
-	long lShareCnt;
+	long lShareCnt{0};
 	// event: exclusive access permitted
 	CStdEvent ShareFreeEvent;
 	// callback
-	CStdCSecExCallback *pCallbClass;
+	CStdCSecExCallback *pCallbClass{nullptr};
 
 public:
 
 	// (cycles forever if shared locked by calling thread!)
-	void Enter()
+	void Enter() override
 	{
 		// lock
 		CStdCSec::Enter();
@@ -228,7 +227,7 @@ public:
 		}
 	}
 
-	void Leave()
+	void Leave() override
 	{
 		// set event
 		ShareFreeEvent.Set();

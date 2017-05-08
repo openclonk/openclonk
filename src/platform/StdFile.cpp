@@ -878,7 +878,7 @@ bool ItemIdentical(const char *szFilename1, const char *szFilename2)
 
 struct DirectoryIteratorP
 {
-	DirectoryIteratorP()  {}
+	DirectoryIteratorP() = default;
 	DirectoryIterator::FileList files;
 	std::string directory;
 	int ref{1};

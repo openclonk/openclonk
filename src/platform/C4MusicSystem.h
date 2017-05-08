@@ -52,19 +52,19 @@ public:
 
 protected:
 	// song list
-	C4MusicFile* Songs;
-	int SongCount, ASongCount, SCounter;
+	C4MusicFile* Songs{nullptr};
+	int SongCount{0}, ASongCount, SCounter;
 
 	// play
-	C4MusicFile *PlayMusicFile;
-	int Volume; bool Loop;
+	C4MusicFile *PlayMusicFile{nullptr};
+	int Volume{100}; bool Loop;
 
 	// fading between two songs
-	C4MusicFile *FadeMusicFile, *upcoming_music_file;
+	C4MusicFile *FadeMusicFile{nullptr}, *upcoming_music_file{nullptr};
 	C4TimeMilliseconds FadeTimeStart, FadeTimeEnd;
 
 	// Wait time until next song
-	bool is_waiting;
+	bool is_waiting{false};
 	C4TimeMilliseconds wait_time_end;
 
 	void LoadDir(const char *szPath); // load some music files (by wildcard / directory)
@@ -82,8 +82,8 @@ protected:
 	void DeinitializeMOD();
 #if AUDIO_TK == AUDIO_TK_OPENAL
 private:
-	ALCdevice* alcDevice;
-	ALCcontext* alcContext;
+	ALCdevice* alcDevice{nullptr};
+	ALCcontext* alcContext{nullptr};
 public:
 	void SelectContext();
 	ALCcontext *GetContext() const { return alcContext; }
@@ -94,10 +94,10 @@ public:
 
 private:
 	// scenario-defined music level
-	int32_t game_music_level;
+	int32_t game_music_level{100};
 	// current play list
 	StdCopyStrBuf playlist;
-	bool playlist_valid;
+	bool playlist_valid{false};
 	// Set to nonzero to allow pauses between songs
 	int32_t music_break_min, music_break_max, music_break_chance;
 	// Maximum time (in seconds) last position in a song is remembered until it would just be restarted from the beginning
