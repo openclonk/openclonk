@@ -37,6 +37,22 @@ public func SaveScenarioObject(props)
 	return true;
 }
 
+private func GetExtensionPoint() { return [0, -10 - extension*60/100]; }
+private func SetExtensionPoint(pt) { Extend((-10 - pt[1]) * 100/60); }
+
+public func Definition(def)
+{
+	// Drag handle for extension
+	if (!def.EditorProps) def.EditorProps = {};
+	def.EditorProps.extension_point = {
+	  Type="point",
+	  Relative=true,
+	  HorizontalFix=true,
+	  AsyncGet="GetExtensionPoint",
+	  Set="SetExtensionPoint",
+	  Color=0xffff00 };
+}
+
 /*-- Properties --*/
 
 local Name = "$Name$";
