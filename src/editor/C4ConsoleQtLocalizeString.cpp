@@ -86,7 +86,7 @@ void C4ConsoleQtLocalizeStringDlg::DoError(const char *msg)
 
 QLineEdit *C4ConsoleQtLocalizeStringDlg::AddEditor(const char *language, const char *language_name)
 {
-	assert(!GetEditorByLanguage(const char *language));
+	assert(!GetEditorByLanguage(language));
 	// Add editor widgets
 	int32_t row = edited_languages.size();
 	QString language_label_text(language);

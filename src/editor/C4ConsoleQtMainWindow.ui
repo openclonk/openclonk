@@ -409,6 +409,7 @@
     <addaction name="actionExactLandscape"/>
     <addaction name="separator"/>
     <addaction name="menuIDS_MNU_SHORTCUTS"/>
+    <addaction name="actionTranslations"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1274,6 +1275,17 @@
     <string>Ctrl+Shift+E</string>
    </property>
   </action>
+  <action name="actionTranslations">
+   <property name="text">
+    <string comment="res">IDS_MNU_TRANSLATIONTABLE</string>
+   </property>
+   <property name="iconText">
+    <string comment="res">IDS_MNU_TRANSLATIONTABLE</string>
+   </property>
+   <property name="toolTip">
+    <string comment="res">IDS_MNU_TRANSLATIONTABLE</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>
@@ -2047,6 +2059,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTranslations</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OpenTranslationsOverview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>PlayPressed(bool)</slot>
@@ -2096,5 +2124,6 @@
   <slot>GradeDown()</slot>
   <slot>FileOpenInNetwork()</slot>
   <slot>FileExportPacked()</slot>
+  <slot>OpenTranslationsOverview()</slot>
  </slots>
 </ui>

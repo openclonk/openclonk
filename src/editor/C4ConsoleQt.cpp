@@ -25,6 +25,7 @@
 #include "editor/C4ConsoleQtObjectListViewer.h"
 #include "editor/C4ConsoleQtPropListViewer.h"
 #include "editor/C4ConsoleQtShapes.h"
+#include "editor/C4ConsoleQtLocalizeOverview.h"
 #include "editor/C4Console.h"
 #include "editor/C4ConsoleGUI.h"
 #include "script/C4AulExec.h"
@@ -238,6 +239,8 @@ void C4ConsoleGUI::DoEnableControls(bool fEnable)
 	if (!Active) return;
 	state->SetEnabled(fEnable);
 	state->SetLandscapeMode(::Landscape.GetMode(), ::Game.C4S.Landscape.FlatChunkShapes); // initial setting
+	// If disabling controls, also stop translation editing
+	if (!fEnable) state->translation_overview_dialogue.reset();
 }
 
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)

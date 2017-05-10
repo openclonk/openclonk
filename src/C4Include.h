@@ -61,6 +61,7 @@ constexpr bool SOLIDMASK_DEBUG = false;
 #include <string>
 #include <utility>
 #include <vector>
+#include <unordered_set>
 #include <math.h>
 
 #include "lib/Standard.h"

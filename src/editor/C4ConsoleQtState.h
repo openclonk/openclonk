@@ -126,6 +126,7 @@ public slots:
 	void StaticFlatLandscapePressed(bool down);
 	void ExactLandscapePressed(bool down);
 	void DrawSizeChanged(int newval);
+	void OpenTranslationsOverview();
 	// File menu
 	void FileNew();
 	void FileOpen();
@@ -191,6 +192,7 @@ public:
 	std::unique_ptr<class C4ConsoleQtObjectListModel> object_list_model;
 	std::unique_ptr<class C4ConsoleQtDefinitionListModel> definition_list_model;
 	std::unique_ptr<class C4DisableShortcutFilter> disable_shortcut_filter;
+	std::unique_ptr<class C4ConsoleQtLocalizeOverviewDlg> translation_overview_dialogue;
 	std::list<class C4ConsoleQtViewportDockWidget *> viewports;
 	std::list<std::unique_ptr<C4ConsoleClientAction> > client_actions;
 	std::list<std::unique_ptr<C4ConsoleRemovePlayerAction> > player_actions;

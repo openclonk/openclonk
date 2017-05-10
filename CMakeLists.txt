@@ -765,6 +765,9 @@ if(WITH_QT_EDITOR)
 	  src/editor/C4ConsoleQtLocalizeString.cpp
 	  src/editor/C4ConsoleQtLocalizeString.h
 	  src/editor/C4ConsoleQtLocalizeString.ui
+	  src/editor/C4ConsoleQtLocalizeOverview.cpp
+	  src/editor/C4ConsoleQtLocalizeOverview.h
+	  src/editor/C4ConsoleQtLocalizeOverview.ui
 	  src/editor/C4ConsoleQtMainWindow.ui
 	  src/editor/resource.qrc
 	  ${qt_editor_resources}

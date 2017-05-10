@@ -24,6 +24,7 @@
 #include "editor/C4ConsoleQtNewScenario.h"
 #include "editor/C4ConsoleQtViewport.h"
 #include "editor/C4ConsoleQtShapes.h"
+#include "editor/C4ConsoleQtLocalizeOverview.h"
 #include "editor/C4Console.h"
 #include "platform/StdRegistry.h"
 #include "landscape/C4Landscape.h"
@@ -339,6 +340,24 @@ void C4ConsoleQtMainWindow::ExactLandscapePressed(bool down)
 void C4ConsoleQtMainWindow::DrawSizeChanged(int newval)
 {
 	::Console.ToolsDlg.SetGrade(newval);
+}
+
+void C4ConsoleQtMainWindow::OpenTranslationsOverview()
+{
+	// Open/refresh translations overview dialogue
+	if (!state->translation_overview_dialogue)
+	{
+		state->translation_overview_dialogue.reset(new C4ConsoleQtLocalizeOverviewDlg(this));
+	}
+	state->translation_overview_dialogue->Refresh();
+	state->translation_overview_dialogue->show();
+	state->translation_overview_dialogue->resize(size() * 8/10);
+	int32_t margin = size().width() / 10;
+	QRect geom = geometry();
+	geom.adjust(margin, margin, -margin, -margin);
+	state->translation_overview_dialogue->setGeometry(geom);
+	state->translation_overview_dialogue->raise();
+	state->translation_overview_dialogue->activateWindow();
 }
 
 // File menu
@@ -816,6 +835,7 @@ void C4ConsoleGUIState::UpdateActionStates()
 	ui.actionStaticLandscape->setEnabled(enabled);
 	ui.actionStaticFlatLandscape->setEnabled(enabled);
 	ui.actionExactLandscape->setEnabled(enabled);
+	ui.actionTranslations->setEnabled(enabled);
 	ui.foregroundMatTexComboBox->setEnabled(is_drawing);
 	ui.backgroundMatTexComboBox->setEnabled(is_drawing);
 	ui.drawSizeSlider->setEnabled(is_drawing);
