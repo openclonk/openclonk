@@ -2192,15 +2192,38 @@ bool C4PropertyDelegateCircle::IsPasteValid(const C4Value &val) const
 C4PropertyDelegatePoint::C4PropertyDelegatePoint(const class C4PropertyDelegateFactory *factory, C4PropList *props)
 	: C4PropertyDelegateShape(factory, props)
 {
+	if (props)
+	{
+		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
+		vertical_fix = props->GetPropertyBool(P_VerticalFix);
+	}
 }
 
 void C4PropertyDelegatePoint::DoPaint(QPainter *painter, const QRect &inner_rect) const
 {
 	QPoint ctr = inner_rect.center();
 	int r = inner_rect.height() * 7 / 20;
-	painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r, +r));
-	painter->drawLine(ctr + QPoint(+r, -r), ctr + QPoint(-r, +r));
-	painter->drawEllipse(inner_rect);
+	if (horizontal_fix && !vertical_fix)
+	{
+		painter->drawLine(ctr + QPoint(0, -r), ctr + QPoint(0, +r));
+		painter->drawLine(ctr + QPoint(-r / 2, -r), ctr + QPoint(+r / 2, -r));
+		painter->drawLine(ctr + QPoint(-r / 2, +r), ctr + QPoint(+r / 2, +r));
+	}
+	else if (vertical_fix && !horizontal_fix)
+	{
+		painter->drawLine(ctr + QPoint(-r, 0), ctr + QPoint(+r, 0));
+		painter->drawLine(ctr + QPoint(-r, -r / 2), ctr + QPoint(-r, +r / 2));
+		painter->drawLine(ctr + QPoint(+r, -r / 2), ctr + QPoint(+r, +r / 2));
+	}
+	else
+	{
+		if (!horizontal_fix)
+		{
+			painter->drawLine(ctr + QPoint(-r, -r), ctr + QPoint(+r, +r));
+		}
+		painter->drawLine(ctr + QPoint(+r, -r), ctr + QPoint(-r, +r));
+		painter->drawEllipse(inner_rect);
+	}
 }
 
 bool C4PropertyDelegatePoint::IsPasteValid(const C4Value &val) const

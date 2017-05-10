@@ -119,6 +119,8 @@ class C4ConsoleQtPoint : public C4ConsoleQtShape
 {
 private:
 	int32_t cx, cy;
+	bool horizontal_fix{ false };
+	bool vertical_fix{ false };
 public:
 	C4ConsoleQtPoint(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list);
 

@@ -322,6 +322,11 @@ C4Value C4ConsoleQtCircle::GetValue() const
 C4ConsoleQtPoint::C4ConsoleQtPoint(class C4Object *for_obj, C4PropList *props, const class C4PropertyDelegateShape *parent_delegate, class C4ConsoleQtShapes *shape_list)
 	: C4ConsoleQtShape(for_obj, props, parent_delegate, shape_list), cx(0), cy(0)
 {
+	if (props)
+	{
+		horizontal_fix = props->GetPropertyBool(P_HorizontalFix);
+		vertical_fix = props->GetPropertyBool(P_VerticalFix);
+	}
 }
 
 bool C4ConsoleQtPoint::IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::CursorShape *drag_cursor, int32_t *drag_border, bool shift_down, bool ctrl_down)
@@ -333,7 +338,10 @@ bool C4ConsoleQtPoint::IsHit(int32_t x, int32_t y, int32_t hit_range, Qt::Cursor
 	// Hits point?
 	if (r <= hit_range*hit_range*6)
 	{
-		*drag_cursor = Qt::CursorShape::SizeAllCursor;
+		if (horizontal_fix && vertical_fix) *drag_cursor = Qt::CursorShape::ForbiddenCursor;
+		if (horizontal_fix && !vertical_fix) *drag_cursor = Qt::CursorShape::SizeVerCursor;
+		if (!horizontal_fix && vertical_fix) *drag_cursor = Qt::CursorShape::SizeHorCursor;
+		if (!horizontal_fix && !vertical_fix) *drag_cursor = Qt::CursorShape::SizeAllCursor;
 		*drag_border = 0;
 		return true;
 	}
@@ -348,15 +356,33 @@ void C4ConsoleQtPoint::Draw(class C4TargetFacet &cgo, float line_width)
 	float dc = sqrtf(2) * d;
 	int32_t x = AbsX(cx) + cgo.X - cgo.TargetX;
 	int32_t y = AbsY(cy) + cgo.Y - cgo.TargetY;
-	pDraw->DrawLineDw(cgo.Surface, x - d, y - d, x + d, y + d, clr, line_width);
-	pDraw->DrawLineDw(cgo.Surface, x - d, y + d, x + d, y - d, clr, line_width);
-	pDraw->DrawCircleDw(cgo.Surface, x, y, dc, clr, line_width);
+	if (horizontal_fix && !vertical_fix)
+	{
+		pDraw->DrawLineDw(cgo.Surface, x, y - d, x, y + d, clr, line_width);
+		pDraw->DrawLineDw(cgo.Surface, x - d / 2, y - d, x + d / 2, y - d, clr, line_width);
+		pDraw->DrawLineDw(cgo.Surface, x - d / 2, y + d, x + d / 2, y + d, clr, line_width);
+	}
+	else if (!horizontal_fix && vertical_fix)
+	{
+		pDraw->DrawLineDw(cgo.Surface, x - d, y, x + d, y, clr, line_width);
+		pDraw->DrawLineDw(cgo.Surface, x - d, y - d / 2, x - d, y + d / 2, clr, line_width);
+		pDraw->DrawLineDw(cgo.Surface, x + d, y - d / 2, x + d, y + d / 2, clr, line_width);
+	}
+	else
+	{
+		pDraw->DrawLineDw(cgo.Surface, x - d, y - d, x + d, y + d, clr, line_width);
+		if (!horizontal_fix)
+		{
+			pDraw->DrawLineDw(cgo.Surface, x - d, y + d, x + d, y - d, clr, line_width);
+		}
+		pDraw->DrawCircleDw(cgo.Surface, x, y, dc, clr, line_width);
+	}
 }
 
 void C4ConsoleQtPoint::Drag(int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t hit_range, Qt::CursorShape *drag_cursor)
 {
-	cx += dx;
-	cy += dy;
+	if (!horizontal_fix) cx += dx;
+	if (!vertical_fix) cy += dy;
 }
 
 void C4ConsoleQtPoint::SetValue(const C4Value &val)

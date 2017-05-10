@@ -533,6 +533,9 @@ public:
 
 class C4PropertyDelegatePoint : public C4PropertyDelegateShape
 {
+	bool horizontal_fix{ false };
+	bool vertical_fix{ false };
+
 	void DoPaint(QPainter *painter, const QRect &inner_rect) const override;
 public:
 	C4PropertyDelegatePoint(const class C4PropertyDelegateFactory *factory, C4PropList *props);
