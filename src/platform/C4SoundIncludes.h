@@ -35,7 +35,7 @@
  		// This is an ugly hack to make FreeALUT not dllimport everything.
 #		define _XBOX
 #	endif
-#	include <alut.h>
+#	include <AL/alut.h>
 #	undef _XBOX
 #	if defined(__APPLE__)
 #		import <CoreFoundation/CoreFoundation.h>
