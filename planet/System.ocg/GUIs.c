@@ -49,7 +49,7 @@ static const GUI_BoxLayout = new Global {
          Defines the layout for individual cells in the grid
  
  */
-static const GUI_GridLayout = new Global {
+static const GUI_GridCellLayout = new Global {
 	Grid = { Prototype = GUI_BoxLayout, Rows = 1, Columns = 1},
 	Cell = { Prototype = GUI_BoxLayout, },
 };
@@ -295,7 +295,7 @@ global func GuiCalculateBoxElementPosition(proplist layout)
  The proplist can be added to a GUI proplist in order to define the position
  of said GUI element - simply merge with AddProperties(element, position);
  
- @par layout A proplist with prototype GUI_GridLayout; Alternatively,
+ @par layout A proplist with prototype GUI_GridCellLayout; Alternatively,
              you can use a the prototype GUI_BoxLayout (In that case, however,
              the margin and alignment are shared between cells and the grid,
              and you need two additional properties "Rows" and "Columns")
