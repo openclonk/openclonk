@@ -317,8 +317,8 @@ global func GuiCalculateGridElementPosition(proplist layout, int row, int column
 	{
 		grid_layout = {Prototype = layout};
 		cell_layout = {Prototype = layout};
-		grid_layout.Rows = grid_layout.Rows ?? 1;
-		grid_layout.Columns = grid_layout.Columns ?? 1;
+		grid_layout.Rows = grid_layout.Rows;
+		grid_layout.Columns = grid_layout.Columns;
 	}
 
 	// determine position of the cell in the grid
@@ -329,8 +329,8 @@ global func GuiCalculateGridElementPosition(proplist layout, int row, int column
 	var cell_pos_y = cell_layout.Margin.Top + row * cell_height;
 
 	// determine position of the grid
-	var grid_width = cell_width * grid_layout.Columns;
-	var grid_height = cell_height * grid_layout.Rows;
+	var grid_width = cell_width * (grid_layout.Columns ?? 1);
+	var grid_height = cell_height * (grid_layout.Rows ?? 1);
 
 	var grid_position = GuiCalculateBoxElementPosition({Prototype = grid_layout, Width = grid_width, Height = grid_height});
 	
