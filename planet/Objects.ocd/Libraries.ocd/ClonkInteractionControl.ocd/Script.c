@@ -485,15 +485,16 @@ func ExecuteInteraction(proplist action_info)
 	else if (action_info.actiontype == ACTIONTYPE_STRUCTURE)
 	{
 		// inside? -> exit
-		if(Contained() == action_info.interaction_object)
+		if (Contained() == action_info.interaction_object)
 		{
 			ObjectCommand("Exit");
 			return true;
 		}
 		// outside? -> enter
-		else if(this->CanEnter())
+		else if (this->CanEnter())
 		{
-			ObjectCommand("Enter", action_info.interaction_object);
+			// First attempt to enter the pushed vehicle.
+			ObjectCommand("Enter", action_info.interaction_object, nil, nil, nil, C4CMD_Enter_PushTarget);
 			return true;
 		}
 	}

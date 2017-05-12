@@ -421,12 +421,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 }
 
 // A wrapper to SetCommand to catch special behaviour for some actions.
-public func ObjectCommand(string command, object target, int tx, int ty, object target2)
+public func ObjectCommand(string command, object target, int tx, int ty, object target2, /*any*/ data)
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
-	if (command == "Throw") return this->~ControlThrow(target,tx,ty);
-	else if (command == "Jump") return this->~ControlJump();
+	if (command == "Throw")
+		return this->~ControlThrow(target, tx, ty);
+	else if (command == "Jump")
+		return this->~ControlJump();
 	// else standard command
 	else 
 	{
@@ -434,9 +436,10 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 		if (command == "Drop")
 		{
 			// Disable collection for a moment.
-			if (target) this->OnDropped(target);
+			if (target)
+				this->OnDropped(target);
 		}
-		return SetCommand(command,target,tx,ty,target2);
+		return SetCommand(command, target, tx, ty, target2, data);
 	}
 	// this function might be obsolete: a normal SetCommand does make a callback to
 	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)

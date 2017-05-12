@@ -477,11 +477,12 @@ global func ComDir2XY(int comd)
 	return [[0,0,1,1,1,0,-1,-1,-1][comd], [0,-1,-1,0,1,1,1,0,-1][comd]];
 }
 
-global func ObjectCommand(string command, object target, int tx, int ty, object target2)
+global func ObjectCommand(string command, object target, int tx, int ty, object target2, /*any*/ data)
 {
 	// this function exists to be overloadable by ClonkControl.c4d
-	if(!this) return;
-	this->SetCommand(command,target,tx,ty, target2);
+	if (!this)
+		return;
+	this->SetCommand(command, target, tx, ty, target2, data);
 }
 
 // Let go from scaling or hangling
