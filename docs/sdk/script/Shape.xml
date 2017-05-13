@@ -38,6 +38,9 @@
     <text>Finds a random position in the shape and returns it as properties x and y in the supplied proplist. The return value indivates whether a point could be found.</text>
     <text>The parameter max_tries indicates how many times the algorithm tries to find a point within the shape. The function is guaranteed to succeed for non-empty base shapes (i.e. rectangle and circle) as well as combined shapes on a single try. However a stochastic approach is used for intersection and subtraction shapes where random points are queried from one of the sub-shapes and subsequently checked against the other sub-shapes.</text>
     <text></text>
+    <code>bool GetArea();</code>
+    <text>Returns the area covered by the shape in squared pixels.</text>
+    <text></text>    
     <code>proplist GetBoundingRectangle();</code>
     <text>Returns a rectangular shape that includes at least the whole shape used as calling context.</text>
     <text></text>

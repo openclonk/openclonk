@@ -10,6 +10,18 @@
 
 local BaseShape;
 
+// Returns the area in squared pixels covered by the shape. Works for all specific shapes by using their functionality.
+public func GetArea()
+{
+	var check_rect = this->GetBoundingRectangle();
+	var area = 0;
+	for (var x = check_rect.x; x < check_rect.x + check_rect.wdt; x++)
+		for (var y = check_rect.y; y < check_rect.y + check_rect.hgt; y++)
+			if (this->IsPointContained(x, y))
+				area++;
+	return area;
+}
+
 /* Rectangle shape */
 
 local BaseRectangle; // properties x,y,w,h
@@ -44,6 +56,11 @@ private func BaseRectangle_GetRandomPoint(proplist result)
 	return true;
 }
 
+private func BaseRectangle_GetArea()
+{
+	return this.wdt * this.hgt;
+}
+
 private func BaseRectangle_ToString()
 {
 	return Format("Shape->Rectangle(%d, %d, %d, %d)", this.x, this.y, this.wdt, this.hgt);
@@ -69,9 +86,9 @@ public func Rectangle(int x, int y, int w, int h)
 
 /* Circle shape */
 
-local BaseCircle; // properties cx,cy,xr,yr
+local BaseCircle; // properties cx,cy,r
 
-// point contained in rectangle?
+// point contained in circle?
 private func BaseCircle_IsPointContained(int x, int y)
 {
 	x-=this.cx; y-=this.cy;
@@ -98,6 +115,17 @@ private func BaseCircle_GetRandomPoint(proplist result)
 	result.x = this.cx + Sin(a, r);
 	result.y = this.cy + Cos(a, r);
 	return true;
+}
+
+public func BaseCircle_GetArea()
+{
+	// Is aleady covered by general method, but this direct calculation for a simple circle is faster.
+	var area = 0;
+	for (var x = 0; x <= this.r; x++)
+		for (var y = 1; y <= this.r; y++)
+			if (x*x + y*y <= this.r*this.r)
+				area++;
+	return 4 * area + 1;
 }
 
 /** Constructor of circular area.
@@ -315,13 +343,17 @@ public func Subtract(proplist in, proplist ex)
 public func Definition(def)
 {
 	// Initialize function pointers in shape classes
-	BaseShape = {};
+	BaseShape =
+	{
+		GetArea = Shape.GetArea
+	};
 	BaseRectangle = new BaseShape
 	{
 		Type = "rect",
 		IsPointContained = Shape.BaseRectangle_IsPointContained,
 		GetBoundingRectangle = Shape.BaseRectangle_GetBoundingRectangle,
 		GetRandomPoint = Shape.BaseRectangle_GetRandomPoint,
+		GetArea = Shape.BaseRectangle_GetArea,
 		Find_In = Shape.BaseRectangle_Find_In,
 		Find_At = Shape.BaseRectangle_Find_At,
 		ToString = Shape.BaseRectangle_ToString,
@@ -332,6 +364,7 @@ public func Definition(def)
 		IsPointContained = Shape.BaseCircle_IsPointContained,
 		GetBoundingRectangle = Shape.BaseCircle_GetBoundingRectangle,
 		GetRandomPoint = Shape.BaseCircle_GetRandomPoint,
+		GetArea = Shape.BaseCircle_GetArea
 	};
 	BaseIntersection = new BaseShape
 	{
