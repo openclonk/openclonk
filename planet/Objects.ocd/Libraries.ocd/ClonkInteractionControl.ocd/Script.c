@@ -428,11 +428,25 @@ func GetInteractableObjects(array sort)
 			}
 		}
 		
-		// can be entered?
-		if (interactable->GetOCF() & OCF_Entrance && (!can_only_use_container || interactable == Contained()))
+		// Can be entered or exited?
+		var can_be_exited = interactable == Contained();
+		var can_be_entered = interactable->GetOCF() & OCF_Entrance;
+		// Check if object shape overlaps with entrance area.
+		if (can_be_entered)
+		{
+			var entrance = interactable->GetEntranceRectangle();
+			var shape = GetShape();
+			entrance = Rectangle(interactable->GetX() + entrance[0], interactable->GetY() + entrance[1], entrance[2], entrance[3]);
+			shape = Rectangle(GetX() + shape[0], GetY() + shape[1], shape[2], shape[3]);
+			var overlap = Shape->Intersect(entrance, shape);
+			// Interactable can be entered if the area of overlap is bigger than zero.
+			can_be_entered = overlap->GetArea() > 0;
+		}	
+		if (can_be_entered && (!can_only_use_container || can_be_exited))
 		{
 			var priority = 29;
-			if (Contained() == interactable) priority = 0;
+			if (can_be_exited)
+				priority = 0;
 			PushBackInteraction(possible_interactions,
 				{
 					interaction_object = interactable,

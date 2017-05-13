@@ -480,3 +480,12 @@ global func GetShape()
 	var height = GetObjectVal("Height");
 	return [offset_x, offset_y, width, height];
 }
+
+global func GetEntranceRectangle()
+{
+	var entrance_x = GetDefCoreVal("Entrance", "DefCore", 0);
+	var entrance_y = GetDefCoreVal("Entrance", "DefCore", 1);
+	var entrance_wdt = GetDefCoreVal("Entrance", "DefCore", 2);
+	var entrance_hgt = GetDefCoreVal("Entrance", "DefCore", 3);
+	return [entrance_x, entrance_y, entrance_wdt, entrance_hgt];
+}
