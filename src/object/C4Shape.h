@@ -30,7 +30,7 @@ class C4DensityProvider
 {
 public:
 	virtual int32_t GetDensity(int32_t x, int32_t y) const;
-	virtual ~C4DensityProvider() {}
+	virtual ~C4DensityProvider() = default;
 };
 
 extern C4DensityProvider DefaultDensityProvider;
@@ -64,7 +64,7 @@ public:
 	int32_t GetY() const { return y; }
 	bool AddVertex(int32_t iX, int32_t iY);
 	bool CheckContact(int32_t cx, int32_t cy);
-	bool ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
+	bool ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts=nullptr, bool collide_halfvehic=false);
 	bool Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos);
 	bool LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy);
 	bool InsertVertex(int32_t iPos, int32_t tx, int32_t ty);

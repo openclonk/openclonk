@@ -30,7 +30,7 @@ public:
 	C4MainMenu *pMenu;
 public:
 	C4FullScreen();
-	~C4FullScreen();
+	~C4FullScreen() override;
 	void Execute();
 	bool ViewportCheck();
 	bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
@@ -40,10 +40,10 @@ public:
 	using C4Window::Init;
 	C4Window * Init(C4AbstractApp * pApp);
 	// User requests close
-	virtual void Close();
-	virtual void Clear();
-	virtual void CharIn(const char * c);
-	virtual void PerformUpdate();
+	void Close() override;
+	void Clear() override;
+	void CharIn(const char * c) override;
+	void PerformUpdate() override;
 };
 
 extern C4FullScreen   FullScreen;

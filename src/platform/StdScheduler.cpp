@@ -69,7 +69,7 @@ bool StdSchedulerProc::ExecuteUntil(int iTimeout)
 
 // *** StdScheduler
 
-StdScheduler::StdScheduler() : isInManualLoop(false)
+StdScheduler::StdScheduler()
 {
 	Add(&Unblocker);
 }
@@ -167,11 +167,7 @@ void StdScheduler::UnBlock()
 
 // *** StdSchedulerThread
 
-StdSchedulerThread::StdSchedulerThread()
-		: fThread(false)
-{
-
-}
+StdSchedulerThread::StdSchedulerThread() = default;
 
 StdSchedulerThread::~StdSchedulerThread()
 {
@@ -294,10 +290,7 @@ unsigned int StdSchedulerThread::ThreadFunc()
 
 
 
-StdThread::StdThread() : fStarted(false), fStopSignaled(false)
-{
-
-}
+StdThread::StdThread() = default;
 
 bool StdThread::Start()
 {

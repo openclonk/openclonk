@@ -100,10 +100,10 @@ protected:
 public:
 	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
-	~C4Effect();                      // dtor - deletes all following effects
+	~C4Effect() override;                      // dtor - deletes all following effects
 
 	void Register(C4Effect **ppEffectList, int32_t iPrio);  // add into effect list of object or global effect list
-	void Denumerate(C4ValueNumbers *); // numbers to object pointers
+	void Denumerate(C4ValueNumbers *) override; // numbers to object pointers
 	void ClearPointers(C4PropList *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
 
 	void SetDead();                      // mark effect to be removed in next execution cycle
@@ -134,11 +134,11 @@ public:
 	void OnObjectChangedDef(C4PropList *pObj);
 
 	void CompileFunc(StdCompiler *pComp, C4PropList *Owner, C4ValueNumbers *);
-	virtual C4Effect * GetEffect() { return this; }
-	virtual void SetPropertyByS(C4String * k, const C4Value & to);
-	virtual void ResetProperty(C4String * k);
-	virtual bool GetPropertyByS(const C4String *k, C4Value *pResult) const;
-	virtual C4ValueArray * GetProperties() const;
+	C4Effect * GetEffect() override { return this; }
+	void SetPropertyByS(C4String * k, const C4Value & to) override;
+	void ResetProperty(C4String * k) override;
+	bool GetPropertyByS(const C4String *k, C4Value *pResult) const override;
+	C4ValueArray * GetProperties() const override;
 
 protected:
 	void TempRemoveUpperEffects(bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority

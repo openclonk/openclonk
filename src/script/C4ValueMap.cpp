@@ -21,14 +21,9 @@
 
 // *** C4ValueMapData ***
 
-C4ValueMapData::C4ValueMapData()
-		: pData(nullptr), pNames(nullptr), bTempNameList(false), pNext(nullptr)
-{
-
-}
+C4ValueMapData::C4ValueMapData() = default;
 
 C4ValueMapData::C4ValueMapData(const C4ValueMapData &DataToCopy)
-		: pData(nullptr), pNames(nullptr), bTempNameList(false), pNext(nullptr)
 {
 	SetNameList(DataToCopy.pNames);
 	if (pNames) for (int32_t i = 0; i < pNames->iSize; i++)
@@ -325,14 +320,9 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 // *** C4ValueMapNames ***
 
-C4ValueMapNames::C4ValueMapNames()
-		: pNames(nullptr), iSize(0), pFirst(nullptr)
-{
-
-}
+C4ValueMapNames::C4ValueMapNames() = default;
 
 C4ValueMapNames::C4ValueMapNames(const C4ValueMapNames& NamesToCopy)
-		: pNames(nullptr), iSize(0), pFirst(nullptr)
 {
 	ChangeNameList(const_cast<const char **>(NamesToCopy.pNames), NamesToCopy.iSize);
 }

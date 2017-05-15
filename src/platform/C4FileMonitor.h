@@ -40,23 +40,23 @@ public:
 	typedef void (*ChangeNotify)(const char *, const char *);
 
 	C4FileMonitor(ChangeNotify pCallback);
-	~C4FileMonitor();
+	~C4FileMonitor() override;
 
 	void StartMonitoring();
 	void AddDirectory(const char *szDir);
 
 	// StdSchedulerProc:
-	virtual bool Execute(int iTimeout = -1, pollfd * = 0);
+	bool Execute(int iTimeout = -1, pollfd * = nullptr) override;
 
 	// Signal for calling Execute()
 #ifdef STDSCHEDULER_USE_EVENTS
-	virtual HANDLE GetEvent();
+	HANDLE GetEvent() override;
 #else
-	virtual void GetFDs(std::vector<struct pollfd> & FDs);
+	void GetFDs(std::vector<struct pollfd> & FDs) override;
 #endif
 
 	// C4InteractiveThread::Callback:
-	virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData);
+	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) override;
 
 private:
 

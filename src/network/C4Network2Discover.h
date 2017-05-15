@@ -31,10 +31,10 @@ public:
 protected:
 
 	// callbacks (will handle everything here)
-	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO);
+	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) override;
 
 public:
-	bool Init(uint16_t iPort = C4NetIO::addr_t::IPPORT_NONE);
+	bool Init(uint16_t iPort = C4NetIO::addr_t::IPPORT_NONE) override;
 	void SetDiscoverable(bool fnEnabled) { fEnabled = fnEnabled; }
 	bool Announce();
 
@@ -48,27 +48,27 @@ private:
 class C4Network2IODiscoverClient : public C4NetIOSimpleUDP, private C4NetIO::CBClass
 {
 public:
-	C4Network2IODiscoverClient() : iDiscoverCount(0)
+	C4Network2IODiscoverClient()
 	{ C4NetIOSimpleUDP::SetCallback(this); }
 
 protected:
 
 	// callbacks (will handle everything here)
-	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO);
+	void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO) override;
 
 public:
 	int getDiscoverCount() const { return iDiscoverCount; }
 	const C4NetIO::addr_t &getDiscover(int i) { return Discovers[i]; }
 
 	void Clear() { iDiscoverCount = 0; }
-	bool Init(uint16_t iPort = C4NetIO::addr_t::IPPORT_NONE);
+	bool Init(uint16_t iPort = C4NetIO::addr_t::IPPORT_NONE) override;
 	bool StartDiscovery();
 	bool PopDiscover(C4NetIO::addr_t &Discover);
 
 private:
 	C4NetIO::addr_t DiscoveryAddr;
 
-	int iDiscoverCount;
+	int iDiscoverCount{0};
 	C4NetIO::addr_t Discovers[C4NetMaxDiscover];
 
 };

@@ -29,7 +29,7 @@ public:
 	C4ValueArray(int32_t inSize);
 	C4ValueArray(const C4ValueArray &);
 
-	~C4ValueArray();
+	~C4ValueArray() override;
 
 	C4ValueArray &operator =(const C4ValueArray&);
 
@@ -82,9 +82,9 @@ public:
 	bool SortByArrayElement(int32_t array_idx, bool descending=false); // checks that this is an array of all arrays and sorts by array elements at index. returns false if an element is not an array or smaller than array_idx+1
 
 private:
-	C4Value* pData;
-	int32_t iSize, iCapacity;
-	bool constant; // if true, this array is not changeable
+	C4Value* pData{nullptr};
+	int32_t iSize{0}, iCapacity{0};
+	bool constant{false}; // if true, this array is not changeable
 };
 
 #endif

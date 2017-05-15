@@ -91,12 +91,12 @@ class C4ConsoleQtViewportDockWidget : public QDockWidget
 	C4ConsoleQtViewportView *view;
 
 protected:
-	void mousePressEvent(QMouseEvent *eventPress);
+	void mousePressEvent(QMouseEvent *eventPress) override;
 	void OnActiveChanged(bool active);
 
 public:
 	C4ConsoleQtViewportDockWidget(class C4ConsoleQtMainWindow *main_window, QMainWindow *parent, class C4ViewportWindow *window);
-	virtual void closeEvent(QCloseEvent * event);
+	void closeEvent(QCloseEvent * event) override;
 	class C4ViewportWindow *GetViewportWindow() const { return cvp; }
 	void SetFocus() { raise(); view->setFocus(); } // forward focus to view
 	bool HasFocus() { return view->hasFocus(); } // forward focus to view

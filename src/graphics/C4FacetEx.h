@@ -68,9 +68,9 @@ public:
 class C4FacetID : public C4FacetSurface
 {
 public:
-	int32_t idSourceGroup;
+	int32_t idSourceGroup{0};
 
-	C4FacetID() : C4FacetSurface(), idSourceGroup(0) { } // ctor
+	C4FacetID() : C4FacetSurface() { } // ctor
 
 	void Default() { C4FacetSurface::Default(); idSourceGroup = 0; } // default to std values
 	void Clear() { C4FacetSurface::Clear(); idSourceGroup = 0; } // clear all data in class

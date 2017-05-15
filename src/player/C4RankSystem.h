@@ -34,10 +34,10 @@ protected:
 	char Register[256+1];
 	char RankName[C4MaxName+1];
 	int RankBase;
-	char **pszRankNames;      // loaded rank names for non-registry ranks
-	char *szRankNames;        // loaded rank-name buffer
+	char **pszRankNames{nullptr};      // loaded rank names for non-registry ranks
+	char *szRankNames{nullptr};        // loaded rank-name buffer
 	int iRankNum;             // number of ranks for loaded rank-names
-	char **pszRankExtensions; // rank extensions (e.g. "%s First class") for even more ranks!
+	char **pszRankExtensions{nullptr}; // rank extensions (e.g. "%s First class") for even more ranks!
 	int iRankExtNum;          // number of rank extensions
 public:
 	void Default();

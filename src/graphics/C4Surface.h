@@ -69,7 +69,7 @@ public:
 	int PrimarySurfaceLockPitch; BYTE *PrimarySurfaceLockBits; // lock data if primary surface is locked
 	int iTexSize; // size of textures
 	int ClipX,ClipY,ClipX2,ClipY2;
-	bool fIsBackground; // background surfaces fill unused pixels with black, rather than transparency - must be set prior to loading
+	bool fIsBackground{false}; // background surfaces fill unused pixels with black, rather than transparency - must be set prior to loading
 #ifdef _DEBUG
 	unsigned int dbg_idx;
 #endif

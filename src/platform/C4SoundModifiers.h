@@ -85,7 +85,7 @@ public:
 	C4SoundModifierReverb(C4PropList *in_props);
 
 public:
-	virtual void Update();
+	void Update() override;
 };
 
 // Echo: Repeats dampened version of input signal
@@ -95,7 +95,7 @@ public:
 	C4SoundModifierEcho(C4PropList *in_props);
 
 public:
-	virtual void Update();
+	void Update() override;
 };
 
 // Equalizer: Allows to specify low- mid- and high-frequency amplification and reduction
@@ -105,7 +105,7 @@ public:
 	C4SoundModifierEqualizer(C4PropList *in_props);
 
 public:
-	virtual void Update();
+	void Update() override;
 };
 
 // member of C4SoundSystem: Handles modifier management and EFX initialization

@@ -30,7 +30,7 @@
 
 static const C4ObjectLink NULL_LINK = { nullptr, nullptr, nullptr };
 
-C4ObjectList::C4ObjectList(): FirstIter(nullptr)
+C4ObjectList::C4ObjectList()
 {
 	Default();
 }

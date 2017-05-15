@@ -22,11 +22,11 @@
 class C4FoWBeamTriangle
 {
 public:
-	C4FoWBeamTriangle() : clipLeft(false), clipRight(false) {};
+	C4FoWBeamTriangle() = default;
 
 	// whether this triangle is the last one in a row because the triangle
 	// that would normally be left/right of it is clipped
-	bool clipLeft, clipRight;
+	bool clipLeft{false}, clipRight{false};
 
 	// Result of C4FoWLightSection::CalculateTriangles:
 	float fanLX, fanLY,   // left point of the triangle that has 100% light

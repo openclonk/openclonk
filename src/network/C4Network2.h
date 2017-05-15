@@ -72,9 +72,9 @@ public:
 	C4Network2Status();
 
 protected:
-	C4NetGameState eState;
+	C4NetGameState eState{GS_None};
 	int32_t iCtrlMode;
-	int32_t iTargetCtrlTick;
+	int32_t iTargetCtrlTick{-1};
 
 public:
 	C4NetGameState  getState()            const { return eState; }
@@ -95,7 +95,7 @@ public:
 	void Clear();
 
 	void CompileFunc(StdCompiler *pComp, bool fReference);
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Network2 : private C4ApplicationSec1Timer
@@ -103,7 +103,7 @@ class C4Network2 : private C4ApplicationSec1Timer
 	friend class C4Network2IO;
 public:
 	C4Network2();
-	virtual ~C4Network2();
+	~C4Network2() override;
 
 public:
 	// network i/o class
@@ -127,46 +127,46 @@ protected:
 	bool fHost;
 
 	// options
-	bool fAllowJoin, fAllowObserve;
+	bool fAllowJoin{false}, fAllowObserve;
 
 	// join resource
 	C4Network2ResCore ResDynamic;
 
 	// resources
-	int32_t iDynamicTick;
-	bool fDynamicNeeded;
+	int32_t iDynamicTick{-1};
+	bool fDynamicNeeded{false};
 
 	// game status flags
-	bool fStatusAck, fStatusReached;
-	bool fChasing;
+	bool fStatusAck{false}, fStatusReached{false};
+	bool fChasing{false};
 
 	// control
-	class C4GameControlNetwork *pControl;
+	class C4GameControlNetwork *pControl{nullptr};
 
 	// lobby
-	C4GameLobby::MainDlg *pLobby;
-	bool fLobbyRunning;
-	C4GameLobby::Countdown *pLobbyCountdown;
+	C4GameLobby::MainDlg *pLobby{nullptr};
+	bool fLobbyRunning{false};
+	C4GameLobby::Countdown *pLobbyCountdown{nullptr};
 
 	// master server used
 	StdCopyStrBuf MasterServerAddress;
 
 	// clients
-	int32_t iNextClientID;
+	int32_t iNextClientID{0};
 
 	// chase
-	uint32_t iLastChaseTargetUpdate;
+	uint32_t iLastChaseTargetUpdate{0};
 
 	// time of last activation request.
 	C4TimeMilliseconds tLastActivateRequest;
 
 	// reference
-	uint32_t iLastReferenceUpdate;
-	uint32_t iLastLeagueUpdate, iLeagueUpdateDelay;
+	uint32_t iLastReferenceUpdate{0};
+	uint32_t iLastLeagueUpdate{0}, iLeagueUpdateDelay;
 	bool fLeagueEndSent;
 
 	// league
-	class C4LeagueClient *pLeagueClient;
+	class C4LeagueClient *pLeagueClient{nullptr};
 
 	// game password
 	StdStrBuf sPassword;
@@ -175,16 +175,16 @@ protected:
 	bool fWrongPassword;
 
 	// delayed activation request?
-	bool fDelayedActivateReq;
+	bool fDelayedActivateReq{false};
 
 	// voting
 	C4Control Votes;
-	class C4VoteDialog *pVoteDialog;
-	bool fPausedForVote;
-	time_t iVoteStartTime, iLastOwnVoting;
+	class C4VoteDialog *pVoteDialog{nullptr};
+	bool fPausedForVote{false};
+	time_t iVoteStartTime, iLastOwnVoting{0};
 
 	// streaming
-	bool fStreaming;
+	bool fStreaming{false};
 	time_t iLastStreamAttempt;
 	C4Record *pStreamedRecord;
 	StdBuf StreamingBuf;
@@ -237,7 +237,7 @@ public:
 	C4Network2Res::Ref RetrieveRes(const C4Network2ResCore &Core, int32_t iTimeout, const char *szResName, bool fWaitForCore = false);
 
 	// idle processes
-	void OnSec1Timer();
+	void OnSec1Timer() override;
 	void Execute();
 
 	// termination
@@ -294,7 +294,7 @@ public:
 	// lobby countdown
 	void StartLobbyCountdown(int32_t iCountdownTime);
 	void AbortLobbyCountdown();
-	bool isLobbyCountDown() { return pLobbyCountdown != 0; }
+	bool isLobbyCountDown() { return pLobbyCountdown != nullptr; }
 
 	// streaming
 	size_t getPendingStreamData() const { return StreamingBuf.getSize() - StreamCompressor.avail_out; }
@@ -381,8 +381,8 @@ protected:
 
 	public:
 		InitialConnect(const std::vector<C4Network2Address>& Addrs, const C4ClientCore& HostCore, const char *Password);
-		~InitialConnect();
-		virtual bool Execute(int, pollfd *) override;
+		~InitialConnect() override;
+		bool Execute(int, pollfd *) override;
 	};
 };
 
@@ -403,11 +403,11 @@ public:
 	int32_t getVoteData() const { return iVoteData; }
 
 private:
-	virtual bool OnEnter() { UserClose(false); return true; } // the vote dialog defaults to "No" [MarkFra]
-	virtual void OnClosed(bool fOK);
+	bool OnEnter() override { UserClose(false); return true; } // the vote dialog defaults to "No" [MarkFra]
+	void OnClosed(bool fOK) override;
 
 	// true for dialogs that receive full keyboard and mouse input even in shared mode
-	virtual bool IsExclusiveDialog() { return true; }
+	bool IsExclusiveDialog() override { return true; }
 };
 
 // * Packets *
@@ -415,7 +415,7 @@ private:
 class C4PacketJoinData : public C4PacketBase
 {
 public:
-	C4PacketJoinData() { }
+	C4PacketJoinData() = default;
 
 protected:
 
@@ -450,7 +450,7 @@ public:
 	void SetDynamicCore(const C4Network2ResCore &Core) { Dynamic = Core; }
 	void SetStartCtrlTick(int32_t iTick)               { iStartCtrlTick = iTick; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4PacketActivateReq : public C4PacketBase
@@ -464,7 +464,7 @@ protected:
 public:
 	int32_t getTick() const { return iTick; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 #endif

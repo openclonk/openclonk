@@ -102,7 +102,7 @@ public:
 class C4LeagueResponseHead
 {
 public:
-	C4LeagueResponseHead() { }
+	C4LeagueResponseHead() = default;
 
 private:
 	StdCopyStrBuf Status;
@@ -190,10 +190,10 @@ private:
 		StdCopyStrBuf Account;
 		StdCopyStrBuf FBID;
 		FBIDItem *pNext;
-	} *pFirst;
+	} *pFirst{nullptr};
 
 public:
-	C4LeagueFBIDList() : pFirst(nullptr) {}
+	C4LeagueFBIDList() = default;
 	~C4LeagueFBIDList() { Clear(); }
 	void Clear();
 	void RemoveFBIDByAccount(const char *szAccount);
@@ -207,11 +207,11 @@ class C4LeagueClient : public C4Network2RefClient
 
 private:
 	StdCopyStrBuf CSID;
-	C4LeagueAction eCurrAction;
+	C4LeagueAction eCurrAction{C4LA_None};
 	C4LeagueFBIDList FBIDList;
 
 public:
-	C4LeagueClient() : C4Network2RefClient(), CSID(), eCurrAction(C4LA_None) { }
+	C4LeagueClient() : C4Network2RefClient(), CSID() { }
 	const char *getCSID() const { return CSID.getData(); }
 	C4LeagueAction getCurrentAction() const { return eCurrAction; }
 	void ResetCurrentAction() { eCurrAction = C4LA_None; }
@@ -253,7 +253,7 @@ private:
 	bool fRememberLogin;
 public:
 	C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister, bool fRememberLogin);
-	~C4LeagueSignupDialog() {}
+	~C4LeagueSignupDialog() override = default;
 
 	const char *GetAccount() { return pEdtAccount->GetText(); }
 	bool HasPass() { return !pChkPassword || pChkPassword->GetChecked(); }
@@ -261,7 +261,7 @@ public:
 	bool GetRememberLogin() { return pChkRememberLogin && pChkRememberLogin->GetChecked(); }
 
 	// check for errors (overridden)
-	virtual void UserClose(bool fOK);
+	void UserClose(bool fOK) override;
 
 	// show modal league dialog to query password for player; return
 	static bool ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psAccount, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister, bool *pfRememberLogin);

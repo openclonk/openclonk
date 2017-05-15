@@ -71,12 +71,12 @@ public:
 	C4Network2ResCore();
 
 protected:
-	C4Network2ResType eType;
-	int32_t iID, iDerID;
+	C4Network2ResType eType{NRT_Null};
+	int32_t iID{-1}, iDerID{-1};
 	StdCopyStrBuf FileName;
-	bool fLoadable;
+	bool fLoadable{false};
 	uint32_t iFileSize, iFileCRC, iContentsCRC;
-	uint8_t fHasFileSHA;
+	uint8_t fHasFileSHA{false};
 	uint8_t FileSHA[SHA_DIGEST_LENGTH];
 	uint32_t iChunkSize;
 
@@ -102,7 +102,7 @@ public:
 	void SetFileSHA(BYTE *pSHA)         { memcpy(FileSHA, pSHA, SHA_DIGEST_LENGTH); fHasFileSHA = true; }
 	void Clear();
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 
 };
 
@@ -137,16 +137,16 @@ class C4Network2ResChunkData : public C4PacketBase
 public:
 	C4Network2ResChunkData();
 	C4Network2ResChunkData(const C4Network2ResChunkData &Data2);
-	~C4Network2ResChunkData();
+	~C4Network2ResChunkData() override;
 
 	C4Network2ResChunkData &operator =(const C4Network2ResChunkData &Data2);
 protected:
-	int32_t iChunkCnt, iPresentChunkCnt;
+	int32_t iChunkCnt{0}, iPresentChunkCnt{0};
 
 	// present chunk ranges
 	struct ChunkRange { int32_t Start, Length; ChunkRange *Next; };
-	ChunkRange *pChunkRanges;
-	int32_t iChunkRangeCnt;
+	ChunkRange *pChunkRanges{nullptr};
+	int32_t iChunkRangeCnt{0};
 
 public:
 	int32_t getChunkCnt()         const { return iChunkCnt; }
@@ -172,7 +172,7 @@ protected:
 	int32_t getPresentChunk(int32_t iNr) const;
 
 public:
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Network2Res
@@ -185,14 +185,14 @@ public:
 	class Ref
 	{
 	public:
-		Ref() : pRes(nullptr) { }
+		Ref() = default;
 		Ref(C4Network2Res *pRes) : pRes(pRes) { if (pRes) pRes->AddRef(); }
 		Ref(const Ref &rCopy) : pRes(rCopy.pRes) { if (pRes) pRes->AddRef(); }
 		~Ref() { Clear(); }
 		Ref &operator = (C4Network2Res *pnRes) { Set(pnRes); return *this; }
 		Ref &operator = (const Ref &rCopy) { Set(rCopy.pRes); return *this; }
 	private:
-		C4Network2Res *pRes;
+		C4Network2Res *pRes{nullptr};
 	public:
 		operator C4Network2Res *() const { return pRes; }
 		bool operator ! () const { return !pRes; }
@@ -306,7 +306,7 @@ class C4Network2ResChunk : public C4PacketBase
 {
 public:
 	C4Network2ResChunk();
-	~C4Network2ResChunk();
+	~C4Network2ResChunk() override;
 
 protected:
 	int32_t iResID;
@@ -320,7 +320,7 @@ public:
 	bool Set(C4Network2Res *pRes, uint32_t iChunk);
 	bool AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const;
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4Network2ResList : protected CStdCSecExCallback // run by network thread
@@ -329,22 +329,22 @@ class C4Network2ResList : protected CStdCSecExCallback // run by network thread
 	friend class C4Network2;
 public:
 	C4Network2ResList();
-	virtual ~C4Network2ResList();
+	~C4Network2ResList() override;
 
 protected:
 
-	C4Network2Res *pFirst;
+	C4Network2Res *pFirst{nullptr};
 	CStdCSecEx ResListCSec;
 	CStdCSec ResListAddCSec;
 
-	int32_t iClientID, iNextResID;
+	int32_t iClientID{-1}, iNextResID;
 	CStdCSec ResIDCSec;
 
 	// timings
-	int32_t iLastDiscover, iLastStatus;
+	int32_t iLastDiscover{0}, iLastStatus{0};
 
 	// object used for network i/o
-	C4Network2IO *pIO;
+	C4Network2IO *pIO{nullptr};
 
 public:
 
@@ -381,7 +381,7 @@ public:
 	void OnTimer();
 
 	// CStdCSecExCallback
-	void OnShareFree(CStdCSecEx *pCSec);
+	void OnShareFree(CStdCSecEx *pCSec) override;
 
 	// for C4Network2Res
 	C4Network2IO *getIOClass() { return pIO; }
@@ -411,7 +411,7 @@ public:
 	int32_t getResID() const { return iResID; }
 	const C4Network2ResChunkData &getChunks() const { return Chunks; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4PacketResDiscover : public C4PacketBase
@@ -420,7 +420,7 @@ public:
 	C4PacketResDiscover();
 
 protected:
-	int32_t iDisIDs[16], iDisIDCnt;
+	int32_t iDisIDs[16], iDisIDCnt{0};
 
 public:
 	int32_t getDisIDCnt()       const { return iDisIDCnt; }
@@ -429,7 +429,7 @@ public:
 
 	bool AddDisID(int32_t iID);
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4PacketResRequest : public C4PacketBase
@@ -444,7 +444,7 @@ public:
 	int32_t getReqID()    const { return iReqID; }
 	int32_t getReqChunk() const { return iReqChunk; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 #endif // INC_C4Network2Res

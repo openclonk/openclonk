@@ -89,14 +89,14 @@ public:
 	static constexpr int COLOR_DEPTH = 32;
 	static constexpr int COLOR_DEPTH_BYTES = COLOR_DEPTH / 8;
 
-	C4Draw(): MaxTexSize(0) { }
+	C4Draw() = default;
 	virtual ~C4Draw() { pDraw=nullptr; }
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
 	float gamma[C4MaxGammaRamps][3]; // input gammas
 	float gammaOut[3]; // combined gamma
-	int MaxTexSize;
+	int MaxTexSize{0};
 	C4ScriptUniform scriptUniform; // uniforms added to all draw calls
 protected:
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates

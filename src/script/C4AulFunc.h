@@ -29,7 +29,7 @@ struct C4AulParSet
 {
 	C4Value Par[C4AUL_MAX_Par];
 
-	C4AulParSet() {} // standard-constructor
+	C4AulParSet() = default; // standard-constructor
 	template<class ...T> explicit C4AulParSet(T&& ...pars):
 			Par {C4Value(std::forward<T>(pars))...}
 	{
@@ -54,13 +54,13 @@ public:
 	C4AulFunc(C4PropListStatic * Parent, const char *pName);
 
 	C4PropListStatic * Parent;
-	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
+	const char * GetName() const { return Name ? Name->GetCStr() : nullptr; }
 	virtual StdStrBuf GetFullName() const; // get a fully classified name (C4ID::Name) for debug output
 
 protected:
 	C4RefCntPointer<C4String> Name; // function name
 	C4AulFunc *MapNext; // map member
-	virtual ~C4AulFunc();
+	~C4AulFunc() override;
 
 public:
 	virtual C4AulScriptFunc *SFunc() { return nullptr; } // type check func...

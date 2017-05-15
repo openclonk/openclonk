@@ -92,7 +92,7 @@ struct ValidatedStdCopyStrBufBase : public StdCopyStrBuf
 		Validate();
 	}
 
-	virtual ~ValidatedStdCopyStrBufBase() { }
+	virtual ~ValidatedStdCopyStrBufBase() = default;
 };
 
 template <int V> struct ValidatedStdCopyStrBuf : public ValidatedStdCopyStrBufBase
@@ -100,7 +100,7 @@ template <int V> struct ValidatedStdCopyStrBuf : public ValidatedStdCopyStrBufBa
 	ValidatedStdCopyStrBuf(const char *szCopy) : ValidatedStdCopyStrBufBase(szCopy) {}
 	ValidatedStdCopyStrBuf() : ValidatedStdCopyStrBufBase() {}
 
-	virtual bool Validate()
+	bool Validate() override
 	{
 		return C4InVal::ValidateString(*this, (C4InVal::ValidationOption) V);
 	}

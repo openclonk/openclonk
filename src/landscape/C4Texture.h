@@ -53,7 +53,7 @@ public:
 private:
 	StdCopyStrBuf Material, Texture;
 	int32_t iMaterialIndex;
-	C4Material *pMaterial;
+	C4Material *pMaterial{nullptr};
 	C4Pattern MatPattern;
 public:
 	bool isNull() const { return Material.isNull(); }
@@ -75,12 +75,12 @@ public:
 protected:
 	C4TexMapEntry Entry[C4M_MaxTexIndex];
 	std::vector<int32_t> Order; // drawing order in map2landscape. Reflects order in MatMap.txt file.
-	C4Texture *FirstTexture;
-	bool fOverloadMaterials;
-	bool fOverloadTextures;
-	bool fInitialized; // Set after Init() - newly added entries initialized automatically
+	C4Texture *FirstTexture{nullptr};
+	bool fOverloadMaterials{false};
+	bool fOverloadTextures{false};
+	bool fInitialized{false}; // Set after Init() - newly added entries initialized automatically
 public:
-	bool fEntriesAdded;
+	bool fEntriesAdded{false};
 public:
 	const C4TexMapEntry *GetEntry(int32_t iIndex) const { return Inside<int32_t>(iIndex, 0, C4M_MaxTexIndex-1) ? &Entry[iIndex] : nullptr; }
 	void RemoveEntry(int32_t iIndex);
@@ -90,7 +90,7 @@ public:
 	int32_t LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 	int32_t Init();
 	bool SaveMap(C4Group &hGroup, const char *szEntryName);
-	int32_t LoadTextures(C4Group &hGroup, C4Group* OverloadFile=0);
+	int32_t LoadTextures(C4Group &hGroup, C4Group* OverloadFile=nullptr);
 	bool HasTextures(C4Group &hGroup);
 	const char *GetTexture(int32_t iIndex);
 	void MoveIndex(BYTE byOldIndex, BYTE byNewIndex); // change index of texture

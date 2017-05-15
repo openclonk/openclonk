@@ -28,7 +28,7 @@
 #include "object/C4GameObjects.h"
 
 
-C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel() : last_row_count(0)
+C4ConsoleQtObjectListModel::C4ConsoleQtObjectListModel()
 {
 	// default font colors
 	clr_deleted.setColor(QApplication::palette().color(QPalette::Mid));

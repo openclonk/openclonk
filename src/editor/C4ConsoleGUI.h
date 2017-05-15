@@ -85,7 +85,7 @@ public:
 	bool fGameOpen;
 
 	C4ConsoleGUI();
-	~C4ConsoleGUI();
+	~C4ConsoleGUI() override;
 
 #ifdef WITH_QT_EDITOR
 	void Execute();
@@ -173,8 +173,8 @@ public:
 	void ToolsDlgSelectBackMaterial(C4ToolsDlg *dlg, const char *material);
 
 #ifdef USE_WIN32_WINDOWS
-	void Win32KeepDialogsFloating(HWND hwnd = 0);
-	virtual bool Win32DialogMessageHandling(MSG *msg);
+	void Win32KeepDialogsFloating(HWND hwnd = nullptr);
+	bool Win32DialogMessageHandling(MSG *msg) override;
 	void UpdateMenuText(HMENU hMenu);
 
 	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);

@@ -151,7 +151,7 @@ namespace C4GUI
 // --------------------------------------------------
 // Element
 
-	Element::Element() : pParent(nullptr), pDragTarget(nullptr), fDragging(false), pContextHandler(nullptr), fVisible(true), is_immediate_tooltip(false)
+	Element::Element()
 	{
 		// pParent=nullptr invalidates pPrev/pNext
 		// fDragging=false invalidates iDragX/Y
@@ -568,7 +568,7 @@ namespace C4GUI
 		}
 	}
 
-	Screen::Screen() : Window(), Mouse(0, 0), pContext(nullptr), fExclusive(true), fZoom(1.0f)
+	Screen::Screen() : Window(), Mouse(0, 0)
 	{
 		// no dialog active
 		pActiveDlg = nullptr;

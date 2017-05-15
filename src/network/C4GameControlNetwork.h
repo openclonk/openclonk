@@ -181,14 +181,14 @@ public:
 
 protected:
 	// header
-	int32_t iClientID, iCtrlTick;
+	int32_t iClientID, iCtrlTick{-1};
 	C4TimeMilliseconds tTime;
 
 	// data
 	C4Control Ctrl;
 
 	// list (C4GameControlNetwork)
-	C4GameControlPacket *pNext;
+	C4GameControlPacket *pNext{nullptr};
 
 public:
 	int32_t          getClientID()  const { return iClientID; }
@@ -200,7 +200,7 @@ public:
 	void Set(int32_t iClientID, int32_t iCtrlTick, const C4Control &Ctrl);
 	void Add(const C4GameControlPacket &Ctrl);
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4GameControlClient
@@ -215,10 +215,10 @@ protected:
 	char szName[C4MaxName + 1];
 
 	// next expected control for this client
-	int32_t iNextControl;
+	int32_t iNextControl{0};
 
 	// performance data
-	int32_t iPerformance;
+	int32_t iPerformance{0};
 
 	// list (C4GameControl)
 	C4GameControlClient *pNext;
@@ -247,26 +247,26 @@ protected:
 public:
 	int32_t getCtrlTick() const { return iCtrlTick; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4PacketControlPkt : public C4PacketBase
 {
 public:
-	C4PacketControlPkt() : eDelivery(CDT_Queue) { }
+	C4PacketControlPkt() = default;
 	C4PacketControlPkt(enum C4ControlDeliveryType eDelivery, const C4IDPacket &Ctrl)
 			: eDelivery(eDelivery), Ctrl(Ctrl)
 	{ }
 
 protected:
-	enum C4ControlDeliveryType eDelivery;
+	enum C4ControlDeliveryType eDelivery{CDT_Queue};
 	C4IDPacket Ctrl;
 
 public:
 	C4ControlDeliveryType getDelivery() const { return eDelivery; }
 	const C4IDPacket &getCtrl() const { return Ctrl; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 class C4PacketExecSyncCtrl : public C4PacketBase
@@ -280,7 +280,7 @@ protected:
 public:
 	int32_t getControlTick() const { return iControlTick; }
 
-	virtual void CompileFunc(StdCompiler *pComp) { pComp->Value(mkNamingAdapt(iControlTick, "ControlTick", -1)); }
+	void CompileFunc(StdCompiler *pComp) override { pComp->Value(mkNamingAdapt(iControlTick, "ControlTick", -1)); }
 };
 
 

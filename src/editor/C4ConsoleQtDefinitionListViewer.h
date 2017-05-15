@@ -30,25 +30,25 @@ class C4ConsoleQtDefinitionListModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
-	mutable int32_t last_row_count;
+	mutable int32_t last_row_count{0};
 
 	// Tree structure of definition list
 	struct DefListNode
 	{
 		std::vector<std::unique_ptr<DefListNode> > items;
-		C4Def *def;
+		C4Def *def{nullptr};
 		StdCopyStrBuf name, filename;
-		int32_t idx;
-		DefListNode *parent;
+		int32_t idx{0};
+		DefListNode *parent{nullptr};
 
-		DefListNode() : def(nullptr), idx(0), parent(nullptr) {}
+		DefListNode() = default;
 		void SortByName(); // sort self and children
 	};
 	std::unique_ptr<DefListNode> root;
 
 public:
 	C4ConsoleQtDefinitionListModel();
-	~C4ConsoleQtDefinitionListModel();
+	~C4ConsoleQtDefinitionListModel() override;
 
 	// Refresh definition list (on initialization or e.g. after ReloadDef)
 	void ReInit();

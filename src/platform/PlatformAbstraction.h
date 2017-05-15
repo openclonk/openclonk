@@ -75,7 +75,7 @@
 
 
 // Integer dataypes
-#include <stdint.h>
+#include <cstdint>
 
 
 #ifdef HAVE_UNISTD_H

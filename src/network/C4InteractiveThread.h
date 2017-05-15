@@ -51,7 +51,7 @@ private:
 	class C4InteractiveThread *pNotify;
 public:
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
-	virtual bool Execute(int iTimeout, pollfd * readyfds);
+	bool Execute(int iTimeout, pollfd * readyfds) override;
 };
 
 // Collects StdSchedulerProc objects and executes them in a separate thread
@@ -67,7 +67,7 @@ public:
 	{
 	public:
 		virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) = 0;
-		virtual ~Callback() { }
+		virtual ~Callback() = default;
 	};
 
 private:

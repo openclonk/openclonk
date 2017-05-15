@@ -474,7 +474,7 @@ C4GUI::RenameEdit::RenameResult C4StartupPlrSelDlg::CrewListItem::DoRenaming(Ren
 // ------------------------------------------------
 // --- C4StartupPlrSelDlg
 
-C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player), pRenameEdit(nullptr)
+C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W")
 {
 	// ctor
 	UpdateSize(); // for clientrect

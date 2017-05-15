@@ -102,12 +102,12 @@ public:
 	enum DialogID { SDID_Main=0, SDID_ScenSel, SDID_ScenSelNetwork, SDID_NetJoin, SDID_Options, SDID_About, SDID_PlrSel, SDID_Back };
 
 private:
-	bool fInStartup, fLastDlgWasBack;
+	bool fInStartup{false}, fLastDlgWasBack;
 	static C4Startup *pInstance; // singleton instance
 	static DialogID eLastDlgID;
 	static StdCopyStrBuf sSubDialog; // subdialog to go into (e.g.: property sheet in options dialog)
 
-	C4StartupDlg *pLastDlg, *pCurrDlg; // startup dlg that is currently shown, and dialog that was last shown
+	C4StartupDlg *pLastDlg{nullptr}, *pCurrDlg{nullptr}; // startup dlg that is currently shown, and dialog that was last shown
 
 protected:
 	void DoStartup(); // create main dlg

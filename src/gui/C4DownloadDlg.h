@@ -39,7 +39,7 @@ private:
 
 protected:
 	C4DownloadDlg(const char *szDLType);
-	virtual ~C4DownloadDlg();
+	~C4DownloadDlg() override;
 
 private:
 	// updates the displayed status text and progress bar - repositions elements if necessary
@@ -47,10 +47,10 @@ private:
 
 protected:
 	// idle proc: Continue download; close when finished
-	virtual void OnIdle();
+	void OnIdle() override;
 
 	// user presses cancel button: Abort download
-	virtual void UserClose(bool fOK);
+	void UserClose(bool fOK) override;
 
 	// downloads the specified file to the specified location. Returns whether successful
 	bool ShowModal(C4GUI::Screen *pScreen, const char *szURL, const char *szSaveAsFilename);

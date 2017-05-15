@@ -36,7 +36,7 @@ public:
 	void ResetPart();
 
 protected:
-	C4Stat* pFirst;
+	C4Stat* pFirst{nullptr};
 
 	void RegisterStat(C4Stat* pStat);
 	void UnRegStat(C4Stat* pStat);

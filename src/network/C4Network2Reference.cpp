@@ -28,9 +28,7 @@
 // *** C4Network2Reference
 
 C4Network2Reference::C4Network2Reference()
-		: Icon(0), GameMode(), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
-		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
-		IsEditor(false), iAddrCnt(0), NetpuncherGameID(C4NetpuncherID())
+		:  GameMode(), NetpuncherGameID(C4NetpuncherID())
 {
 
 }
@@ -167,10 +165,7 @@ StdStrBuf C4Network2Reference::getGameGoalString() const
 
 // *** C4Network2RefServer
 
-C4Network2RefServer::C4Network2RefServer()
-		: pReference(nullptr)
-{
-}
+C4Network2RefServer::C4Network2RefServer() = default;
 
 C4Network2RefServer::~C4Network2RefServer()
 {
@@ -246,8 +241,6 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 // *** C4Network2HTTPClient
 
 C4Network2HTTPClient::C4Network2HTTPClient()
-		: fBinary(false), fBusy(false), fSuccess(false), fConnected(false), iDataOffset(0), iDownloadedSize(0), iTotalSize(0),
-		pNotify(nullptr)
 {
 	C4NetIOTCP::SetCallback(this);
 }

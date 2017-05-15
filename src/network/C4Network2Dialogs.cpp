@@ -562,7 +562,7 @@ void C4Network2ClientListDlg::OnSound(class C4Client *singer)
 // C4Network2StartWaitDlg
 
 C4Network2StartWaitDlg::C4Network2StartWaitDlg()
-		: C4GUI::Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_CAPTION"), false), pClientListBox(nullptr)
+		: C4GUI::Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_CAPTION"), false)
 {
 	C4GUI::ComponentAligner caAll(GetContainedClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent);
 	C4GUI::ComponentAligner caButtonArea(caAll.GetFromBottom(C4GUI_ButtonAreaHgt), 0,0);
@@ -915,7 +915,7 @@ C4Chart::~C4Chart()
 // singleton
 C4ChartDialog *C4ChartDialog::pChartDlg=nullptr;
 
-C4ChartDialog::C4ChartDialog() : Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_STATISTICS"), false), pChartTabular(nullptr)
+C4ChartDialog::C4ChartDialog() : Dialog(DialogWidth, DialogHeight, LoadResStr("IDS_NET_STATISTICS"), false)
 {
 	// register singleton
 	pChartDlg = this;

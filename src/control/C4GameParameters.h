@@ -34,9 +34,9 @@ public:
 	C4GameRes &operator = (const C4GameRes &Res);
 
 private:
-	C4Network2ResType eType;
+	C4Network2ResType eType{NRT_Null};
 	StdCopyStrBuf File;
-	const C4Network2ResCore *pResCore;
+	const C4Network2ResCore *pResCore{nullptr};
 	C4Network2Res::Ref pNetRes;
 
 public:
@@ -64,11 +64,11 @@ public:
 class C4GameResList
 {
 private:
-	C4GameRes **pResList;
-	int32_t iResCount, iResCapacity;
+	C4GameRes **pResList{nullptr};
+	int32_t iResCount{0}, iResCapacity{0};
 
 public:
-	C4GameResList() : pResList(nullptr), iResCount(0), iResCapacity(0) {}
+	C4GameResList() = default;
 	~C4GameResList() { Clear(); }
 
 	C4GameResList &operator = (const C4GameResList &List);

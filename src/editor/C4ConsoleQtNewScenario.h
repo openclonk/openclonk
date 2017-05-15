@@ -33,7 +33,7 @@ class C4ConsoleQtDefinitionFileListModel : public QAbstractItemModel
 
 public:
 	C4ConsoleQtDefinitionFileListModel();
-	~C4ConsoleQtDefinitionFileListModel();
+	~C4ConsoleQtDefinitionFileListModel() override;
 	void AddExtraDef(const char *def);
 	std::list<const char *> GetUserSelectedDefinitions() const;
 	std::list<const char *> GetSelectedDefinitions() const;
@@ -44,12 +44,12 @@ private:
 	// Cached def file info: Children loaded on demand (if user expands into tree)
 	class DefFileInfo
 	{
-		DefFileInfo *parent;
+		DefFileInfo *parent{nullptr};
 		C4Group grp;
 		std::vector< std::unique_ptr<DefFileInfo> > children;
 		StdCopyStrBuf filename, root_path, full_filename;
-		bool was_opened, is_root;
-		bool user_selected, force_selected;
+		bool was_opened{true}, is_root{true};
+		bool user_selected{false}, force_selected{false};
 
 		bool OpenGroup();
 	public:

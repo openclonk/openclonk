@@ -191,7 +191,7 @@ template <> struct C4ValueConv<C4PropList *>
 template <> struct C4ValueConv<C4Effect *>
 {
 	static constexpr C4V_Type Type = C4V_Effect;
-	inline static C4Effect *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetEffect() : 0; }
+	inline static C4Effect *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetEffect() : nullptr; }
 };
 template <> struct C4ValueConv<C4Def *>
 {
@@ -226,27 +226,27 @@ public:
 			ParType[i] = C4V_Any;
 	}
 
-	virtual int GetParCount() const
+	int GetParCount() const override
 	{
 		return sizeof...(ParTypes);
 	}
 
-	virtual const C4V_Type* GetParType() const
+	const C4V_Type* GetParType() const override
 	{
 		return ParType;
 	}
 
-	virtual C4V_Type GetRetType() const
+	C4V_Type GetRetType() const override
 	{
 		return C4ValueConv<RType>::Type;
 	}
 
-	virtual bool GetPublic() const
+	bool GetPublic() const override
 	{
 		return Public;
 	}
 
-	virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors)
+	C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) override
 	{
 		return ExecImpl<RType, ThisType, ParTypes...>::Exec(pFunc, ThisImpl<ThisType>::Conv(_this, this),
 								    pPars, std::index_sequence_for<ParTypes...>{});
@@ -288,13 +288,13 @@ public:
 	C4ScriptFnDef* Def;
 
 	C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef);
-	~C4AulDefFunc();
+	~C4AulDefFunc() override;
 
-	virtual bool GetPublic() const { return !!Def->Public; }
-	virtual const C4V_Type* GetParType() const { return Def->ParType; }
-	virtual C4V_Type GetRetType() const { return Def->RetType; }
+	bool GetPublic() const override { return !!Def->Public; }
+	const C4V_Type* GetParType() const override { return Def->ParType; }
+	C4V_Type GetRetType() const override { return Def->RetType; }
 
-	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false);
+	C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false) override;
 };
 
 #endif

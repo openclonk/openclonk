@@ -193,7 +193,7 @@ public:
 class C4PacketAddr : public C4PacketBase
 {
 public:
-	C4PacketAddr() { }
+	C4PacketAddr() = default;
 	C4PacketAddr(int32_t iClientID, const C4Network2Address &addr)
 			: iClientID(iClientID), addr(addr)
 	{ }
@@ -206,7 +206,7 @@ public:
 	int32_t getClientID() const { return iClientID; }
 	const C4Network2Address &getAddr() const { return addr; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 #endif

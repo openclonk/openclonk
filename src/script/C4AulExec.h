@@ -56,14 +56,14 @@ class C4AulExec
 
 public:
 	C4AulExec()
-			: pCurCtx(Contexts - 1), pCurVal(Values - 1), iTraceStart(-1)
+			: pCurCtx(Contexts - 1), pCurVal(Values - 1)
 	{ }
 
 private:
 	C4AulScriptContext *pCurCtx;
 	C4Value *pCurVal;
 
-	int iTraceStart;
+	int iTraceStart{-1};
 	bool fProfiling;
 	C4TimeMilliseconds tDirectExecStart;
 	uint32_t tDirectExecTotal; // profiler time for DirectExec
@@ -195,17 +195,17 @@ private:
 
 		// Typecheck parameters
 		if (!pPar1->CheckParConversion(Type1))
-			throw C4AulExecError(FormatString("operator \"%s\" left side got %s, but expected %s",
+			throw C4AulExecError(FormatString(R"(operator "%s" left side got %s, but expected %s)",
 			                                      opname, pPar1->GetTypeName(), GetC4VName(Type1)).getData());
 		if (!pPar2->CheckParConversion(Type2))
-			throw C4AulExecError(FormatString("operator \"%s\" right side got %s, but expected %s",
+			throw C4AulExecError(FormatString(R"(operator "%s" right side got %s, but expected %s)",
 			                                      opname, pPar2->GetTypeName(), GetC4VName(Type2)).getData());
 	}
 	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
 		// Typecheck parameter
 		if (!pCurVal->CheckParConversion(Type1))
-			throw C4AulExecError(FormatString("operator \"%s\": got %s, but expected %s",
+			throw C4AulExecError(FormatString(R"(operator "%s": got %s, but expected %s)",
 			                                      opname, pCurVal->GetTypeName(), GetC4VName(Type1)).getData());
 	}
 

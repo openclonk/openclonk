@@ -25,12 +25,12 @@ class C4StartupAboutDlg : public C4StartupDlg
 {
 public:
 	C4StartupAboutDlg();
-	~C4StartupAboutDlg(); 
+	~C4StartupAboutDlg() override; 
 
 protected:
-	virtual bool OnEnter() { DoBack(); return true; }
-	virtual bool OnEscape() { DoBack(); return true; }
-	virtual void DrawElement(C4TargetFacet &cgo);
+	bool OnEnter() override { DoBack(); return true; }
+	bool OnEscape() override { DoBack(); return true; }
+	void DrawElement(C4TargetFacet &cgo) override;
 	bool KeyBack() { DoBack(); return true; }
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
 #ifdef WITH_AUTOMATIC_UPDATE

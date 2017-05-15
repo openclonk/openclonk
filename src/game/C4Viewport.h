@@ -167,7 +167,7 @@ public:
 protected:
 	void MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 	void DrawFullscreenBackground();
-	C4Viewport *FirstViewport;
+	C4Viewport *FirstViewport{nullptr};
 	C4Facet ViewportArea;
 	C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
 	friend class C4GUI::Screen;

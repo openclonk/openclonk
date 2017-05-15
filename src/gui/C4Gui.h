@@ -222,8 +222,8 @@ namespace C4GUI
 	class MenuHandler
 	{
 	public:
-		MenuHandler() {} //ctor
-		virtual ~MenuHandler() { } // dtor
+		MenuHandler() = default; //ctor
+		virtual ~MenuHandler() = default; // dtor
 
 		virtual void OnOK(Element *pTarget) = 0; // menu item selected
 	};
@@ -232,10 +232,10 @@ namespace C4GUI
 	class ContextHandler
 	{
 	private:
-		int32_t iRefs;
+		int32_t iRefs{0};
 	public:
-		ContextHandler() : iRefs(0) { } //ctor
-		virtual ~ContextHandler() { } // dtor
+		ContextHandler() = default; //ctor
+		virtual ~ContextHandler() = default; // dtor
 
 		virtual bool OnContext(Element *pOnElement, int32_t iX, int32_t iY) = 0; // context queried - ret true if handled
 		virtual ContextMenu *OnSubcontext(Element *pOnElement) = 0; // subcontext queried
@@ -248,10 +248,10 @@ namespace C4GUI
 	class BaseCallbackHandler
 	{
 	private:
-		int32_t iRefs;
+		int32_t iRefs{0};
 	public:
-		BaseCallbackHandler() : iRefs(0) {}
-		virtual ~BaseCallbackHandler() {}
+		BaseCallbackHandler()  = default;
+		virtual ~BaseCallbackHandler() = default;
 
 		inline void Ref() { ++iRefs; }
 		inline void DeRef() { if (!--iRefs) delete this; }
@@ -269,7 +269,7 @@ namespace C4GUI
 		Func CBFunc;
 
 	public:
-		virtual void DoCall(class Element *pElement)
+		void DoCall(class Element *pElement) override
 		{
 			((pCBClass)->*CBFunc)(pElement);
 		}
@@ -287,7 +287,7 @@ namespace C4GUI
 		Func CBFunc;
 
 	public:
-		virtual void DoCall(class Element *pElement)
+		void DoCall(class Element *pElement) override
 		{
 			((pCBClass)->*CBFunc)();
 		}
@@ -306,7 +306,7 @@ namespace C4GUI
 		Func CBFunc;
 
 	public:
-		virtual void DoCall(class Element *pElement)
+		void DoCall(class Element *pElement) override
 		{
 			((pCBClass)->*CBFunc)(par);
 		}
@@ -318,9 +318,9 @@ namespace C4GUI
 	template <class ParType> class BaseParCallbackHandler : public BaseCallbackHandler
 	{
 	protected:
-		virtual void DoCall(class Element *pElement) {assert(false);} // no-par: Not to be called
+		void DoCall(class Element *pElement) override {assert(false);} // no-par: Not to be called
 	public:
-		BaseParCallbackHandler() {}
+		BaseParCallbackHandler() = default;
 
 		virtual void DoCall(ParType par) = 0;
 	};
@@ -340,7 +340,7 @@ namespace C4GUI
 		using BaseParCallbackHandler<ParType>::DoCall;
 
 	public:
-		virtual void DoCall(ParType par) { ((pCBClass)->*CBFunc)(par); }
+		void DoCall(ParType par) override { ((pCBClass)->*CBFunc)(par); }
 
 		ParCallbackHandler(CB *pTarget, Func rFunc) : pCBClass(pTarget), CBFunc(rFunc) {}
 	};
@@ -370,17 +370,17 @@ namespace C4GUI
 	{
 	private:
 		StdStrBuf ToolTip; // MouseOver - status text
-		bool is_immediate_tooltip;
+		bool is_immediate_tooltip{false};
 
 	protected:
-		Container *pParent;     // owning container
+		Container *pParent{nullptr};     // owning container
 		Element *pPrev, *pNext; // previous and next element of same container
-		Window *pDragTarget;    // target that is dragged around when the user drags this element
+		Window *pDragTarget{nullptr};    // target that is dragged around when the user drags this element
 		int32_t iDragX, iDragY;     // drag start pos
-		bool fDragging;         // if set, mouse is down on component and dragging enabled
-		ContextHandler *pContextHandler; // context handler to be called upon context menu request
+		bool fDragging{false};         // if set, mouse is down on component and dragging enabled
+		ContextHandler *pContextHandler{nullptr}; // context handler to be called upon context menu request
 	public:
-		bool fVisible; // if false, component (and subcomponents) are not drawn
+		bool fVisible{true}; // if false, component (and subcomponents) are not drawn
 	protected:
 		C4Rect rcBounds; // element bounds
 
@@ -486,10 +486,10 @@ namespace C4GUI
 
 		Control *pClickFocusControl; // control that gets focus if the label is clicked or hotkey is pressed
 
-		virtual void DrawElement(C4TargetFacet &cgo); // output label
-		virtual void UpdateOwnPos();
+		void DrawElement(C4TargetFacet &cgo) override; // output label
+		void UpdateOwnPos() override;
 
-		virtual bool OnHotkey(uint32_t cHotkey); // focus control on correct hotkey
+		bool OnHotkey(uint32_t cHotkey) override; // focus control on correct hotkey
 
 		virtual int32_t GetLeftIndent() { return 0; }
 
@@ -497,7 +497,7 @@ namespace C4GUI
 		Label(const char *szLblText, int32_t iX0, int32_t iTop, int32_t iAlign=ALeft, DWORD dwFClr=0xffffffff, CStdFont *pFont=nullptr, bool fMakeReadableOnBlack = true, bool fMarkup=true); // ctor
 		Label(const char *szLblText, const C4Rect &rcBounds, int32_t iAlign=ALeft, DWORD dwFClr=0xffffffff, CStdFont *pFont=nullptr, bool fMakeReadableOnBlack = true, bool fAutosize = true, bool fMarkup=true); // ctor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse
 
 		void SetText(const char *szToText, bool fAllowHotkey=true); // update text
 		const char *GetText() { return sText.getData(); } // retrieve current text
@@ -519,11 +519,11 @@ namespace C4GUI
 		int32_t iScrollPos, iScrollDir;
 		int32_t iRightIndent;
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // output label
+		void DrawElement(C4TargetFacet &cgo) override; // output label
 
 		C4Facet fctIcon; // icon shown at left-side of label; if set, text is aligned to left
 
-		virtual int32_t GetLeftIndent() { return fctIcon.Surface ? rcBounds.Hgt : 0; }
+		int32_t GetLeftIndent() override { return fctIcon.Surface ? rcBounds.Hgt : 0; }
 		int32_t GetRightIndent() const { return iRightIndent; }
 
 	public:
@@ -549,9 +549,9 @@ namespace C4GUI
 		bool fMarkup;
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // output label
+		void DrawElement(C4TargetFacet &cgo) override; // output label
 		void UpdateHeight();
-		virtual void UpdateSize();                // update label height
+		void UpdateSize() override;                // update label height
 
 	public:
 		MultilineLabel(const C4Rect &rcBounds, int32_t iMaxLines, int32_t iMaxBuf, const char *szIndentChars, bool fAutoGrow, bool fMarkup); // ctor
@@ -568,7 +568,7 @@ namespace C4GUI
 	protected:
 		int32_t iProgress, iMax;
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw progress bar
+		void DrawElement(C4TargetFacet &cgo) override; // draw progress bar
 
 	public:
 		ProgressBar(C4Rect &rrcBounds, int32_t iMaxProgress=100) // progress bar ctor
@@ -584,7 +584,7 @@ namespace C4GUI
 	protected:
 		uint32_t dwClr, dwShadowClr;
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw horizontal line
+		void DrawElement(C4TargetFacet &cgo) override; // draw horizontal line
 	public:
 		HorizontalLine(C4Rect &rrcBounds, uint32_t dwClr=0x000000, uint32_t dwShadowClr=0xaf7f7f7f)
 				: Element(), dwClr(dwClr), dwShadowClr(dwShadowClr)
@@ -602,7 +602,7 @@ namespace C4GUI
 		bool fAnimate; // if true, the picture is animated. Whoaa!
 		int32_t iPhaseTime, iAnimationPhase, iDelay; // current animation phase - undefined if not animated
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw the image
+		void DrawElement(C4TargetFacet &cgo) override; // draw the image
 
 	public:
 		Picture(const C4Rect &rcBounds, bool fAspect); // ctor - does not load image
@@ -622,7 +622,7 @@ namespace C4GUI
 		int iBorderSize; // border of overlay image if not zoomed
 		C4Facet OverlayImage; // image to be displayed on top of the actual picture
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw the image
+		void DrawElement(C4TargetFacet &cgo) override; // draw the image
 
 	public:
 		OverlayPicture(const C4Rect &rcBounds, bool fAspect, const C4Facet &rOverlayImage, int iBorderSize); // ctor - does not load image
@@ -749,30 +749,30 @@ namespace C4GUI
 	protected:
 		Element *pFirst, *pLast; // contained elements
 
-		virtual void Draw(C4TargetFacet &cgo); // draw all elements
+		void Draw(C4TargetFacet &cgo) override; // draw all elements
 		virtual void ElementSizeChanged(Element *pOfElement) { } // called when an element size is changed
 		virtual void ElementPosChanged(Element *pOfElement) { }  // called when an element position is changed
 
 		virtual void AfterElementRemoval()
 		{ if (pParent) pParent->AfterElementRemoval(); } // called by ScrollWindow to parent after an element has been removed
 
-		virtual bool OnHotkey(uint32_t cHotkey); // check all contained elements for hotkey
+		bool OnHotkey(uint32_t cHotkey) override; // check all contained elements for hotkey
 
 	public:
 		Container();  // ctor
-		~Container(); // dtor
+		~Container() override; // dtor
 
 		void Clear();                        // delete all child elements
 		void ClearChildren();                // delete all child elements
-		virtual void RemoveElement(Element *pChild); // remove child element from container
+		void RemoveElement(Element *pChild) override; // remove child element from container
 		void MakeLastElement(Element *pChild);       // resort to the end of the list
 		void AddElement(Element *pChild); // add child element to container
 		void ReaddElement(Element *pChild); // resort child element to end of list
 		void InsertElement(Element *pChild, Element *pInsertBefore); // add child element to container, ordered directly before given, other element
 		Element *GetNextNestedElement(Element *pPrevElement, bool fBackwards); // get next element after given, applying recursion
-		virtual Element *GetFirstContained() { return pFirst; }
+		Element *GetFirstContained() override { return pFirst; }
 		virtual Element *GetLastContained() { return pLast; }
-		virtual Element *GetFirstNestedElement(bool fBackwards);
+		Element *GetFirstNestedElement(bool fBackwards) override;
 		
 		class Iterator
 		{
@@ -828,14 +828,14 @@ namespace C4GUI
 
 		Element *GetFirst() { return pFirst; }
 		Element *GetLast() { return pLast; }
-		virtual Container *GetContainer() { return this; } // returns parent for elements; this for containers
+		Container *GetContainer() override { return this; } // returns parent for elements; this for containers
 		Element *GetElementByIndex(int32_t i); // get indexed child element
 		int32_t GetElementCount();
 
-		virtual void SetVisibility(bool fToValue);
+		void SetVisibility(bool fToValue) override;
 		virtual bool IsFocused(Control *pCtrl) { return pParent ? pParent->IsFocused(pCtrl) : false; }
 		virtual bool IsSelectedChild(Element *pChild) { return pParent ? pParent->IsSelectedChild(pChild) : true; } // whether the child element is selected - only false for list-box-containers which can have unselected children
-		virtual bool IsParentOf(Element *pEl); // whether this is the parent container (directly or recursively) of the passed element
+		bool IsParentOf(Element *pEl) override; // whether this is the parent container (directly or recursively) of the passed element
 
 		virtual void ApplyElementOffset(int32_t &riX, int32_t &riY) {} // apply child drawing offset
 		virtual void ApplyInvElementOffset(int32_t &riX, int32_t &riY) {} // subtract child drawing offset
@@ -850,22 +850,22 @@ namespace C4GUI
 	protected:
 		C4Rect rcClientRect; // area for contained elements
 
-		virtual void Draw(C4TargetFacet &cgo); // draw this window
+		void Draw(C4TargetFacet &cgo) override; // draw this window
 
 	public:
 		Window(); // ctor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
 
 		void SetPos(int32_t iXPos, int32_t iYPos)
 		{ rcBounds.x=iXPos; rcBounds.y=iYPos; UpdatePos(); }
 
-		virtual void UpdateOwnPos(); // update client rect
-		virtual C4Rect &GetClientRect() { return rcClientRect; }
+		void UpdateOwnPos() override; // update client rect
+		C4Rect &GetClientRect() override { return rcClientRect; }
 
-		virtual void ApplyElementOffset(int32_t &riX, int32_t &riY)
+		void ApplyElementOffset(int32_t &riX, int32_t &riY) override
 		{ riX -= rcClientRect.x; riY -= rcClientRect.y; }
-		virtual void ApplyInvElementOffset(int32_t &riX, int32_t &riY)
+		void ApplyInvElementOffset(int32_t &riX, int32_t &riY) override
 		{ riX += rcClientRect.x; riY += rcClientRect.y; }
 		virtual bool IsComponentOutsideClientArea() { return false; } // if set, drawing routine of subcomponents will clip to Bounds rather than to ClientRect
 
@@ -896,7 +896,7 @@ namespace C4GUI
 		void Update();       // update scroll bar according to window
 		void OnPosChanged(); // update window according to scroll bar, and/or do callbacks
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw scroll bar
+		void DrawElement(C4TargetFacet &cgo) override; // draw scroll bar
 
 		// suppress scrolling pin for very narrow menus
 		bool HasPin()
@@ -918,12 +918,12 @@ namespace C4GUI
 	public:
 		ScrollBar(C4Rect &rcBounds, ScrollWindow *pWin); // ctor for scroll window
 		ScrollBar(C4Rect &rcBounds, bool fHorizontal, BaseParCallbackHandler<int32_t> *pCB, int32_t iCBMaxRange=256); // ctor for callback
-		~ScrollBar(); // dtor
+		~ScrollBar() override; // dtor
 
 		// mouse handling
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // dragging: allow dragging of thumb
-		virtual void MouseLeave(CMouse &rMouse);                                     // mouse leaves with button down: reset down state of buttons
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
+		void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam) override;   // dragging: allow dragging of thumb
+		void MouseLeave(CMouse &rMouse) override;                                     // mouse leaves with button down: reset down state of buttons
 
 		// change style
 		void SetDecoration(ScrollBarFacets *pToGfx, bool fAutoHide)
@@ -946,12 +946,12 @@ namespace C4GUI
 		int32_t iFrozen;           // if >0, no scrolling updates are done (used during window refill)
 
 		// pass element updates through to parent window
-		virtual void ElementSizeChanged(Element *pOfElement) // called when an element size is changed
+		void ElementSizeChanged(Element *pOfElement) override // called when an element size is changed
 		{
 			Window::ElementSizeChanged(pOfElement);
 			if (pParent) pParent->ElementSizeChanged(pOfElement);
 		}
-		virtual void ElementPosChanged(Element *pOfElement)  // called when an element position is changed
+		void ElementPosChanged(Element *pOfElement) override  // called when an element position is changed
 		{
 			Window::ElementPosChanged(pOfElement);
 			if (pParent) pParent->ElementPosChanged(pOfElement);
@@ -959,13 +959,13 @@ namespace C4GUI
 
 	public:
 		ScrollWindow(Window *pParentWindow); // create scroll window in client area of window
-		~ScrollWindow() { if (pScrollBar) pScrollBar->pScrollWindow = nullptr; }
+		~ScrollWindow() override { if (pScrollBar) pScrollBar->pScrollWindow = nullptr; }
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 
-		virtual bool IsComponentOutsideClientArea() { return true; } // always clip drawing routine of subcomponents to Bounds
+		bool IsComponentOutsideClientArea() override { return true; } // always clip drawing routine of subcomponents to Bounds
 		void Update();               // update client rect and scroll bar according to window
-		virtual void UpdateOwnPos();
+		void UpdateOwnPos() override;
 		void Freeze() { ++iFrozen; }
 		void UnFreeze() { if (!--iFrozen) Update(); }
 		bool IsFrozen() const { return !!iFrozen; }
@@ -1020,12 +1020,12 @@ namespace C4GUI
 
 		bool HasTitle() const { return !!sTitle.getLength(); }
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw frame
+		void DrawElement(C4TargetFacet &cgo) override; // draw frame
 
-		virtual int32_t GetMarginTop() { return HasTitle() ? iMargin + GetTitleFont()->GetLineHeight() : iMargin; }
-		virtual int32_t GetMarginLeft() { return iMargin; }
-		virtual int32_t GetMarginRight() { return iMargin; }
-		virtual int32_t GetMarginBottom() { return iMargin; }
+		int32_t GetMarginTop() override { return HasTitle() ? iMargin + GetTitleFont()->GetLineHeight() : iMargin; }
+		int32_t GetMarginLeft() override { return iMargin; }
+		int32_t GetMarginRight() override { return iMargin; }
+		int32_t GetMarginBottom() override { return iMargin; }
 	};
 
 	// a drawing area
@@ -1034,12 +1034,12 @@ namespace C4GUI
 	protected:
 		C4FacetSurface fctPaint;
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw what has been painted
+		void DrawElement(C4TargetFacet &cgo) override; // draw what has been painted
 	public:
 		PaintBox(C4Rect &rtBounds, int32_t iSfcWdt=-1, int32_t iSfcHgt=-1); // ctor
-		~PaintBox();                // dtor
+		~PaintBox() override;                // dtor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse
 	};
 
 	// a control that may have focus
@@ -1052,7 +1052,7 @@ namespace C4GUI
 
 		void DisableFocus(); // called when control gets disabled: Make sure it loses focus
 		virtual bool IsFocusOnClick() { return true; } // defaultly, controls get focused on left-down
-		virtual Control *IsFocusElement() { return this; }; // this control can gain focus
+		Control *IsFocusElement() override { return this; }; // this control can gain focus
 		virtual void OnGetFocus(bool fByMouse) {}; // callback when control gains focus
 		virtual void OnLooseFocus() {}; // callback when control looses focus
 
@@ -1060,9 +1060,9 @@ namespace C4GUI
 
 	public:
 		Control(const C4Rect &rtBounds);  // ctor
-		~Control();
+		~Control() override;
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click sets focus
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse. left-click sets focus
 
 		bool HasFocus() { return pParent && pParent->IsFocused(this); }
 		bool HasDrawFocus();
@@ -1104,9 +1104,9 @@ namespace C4GUI
 		uint32_t cHotkey;   // hotkey for this button
 		bool fEnabled;
 
-		virtual bool IsFocusOnClick() { return false; } // buttons don't get focus on click (for easier input, e.g. in chatbox)
+		bool IsFocusOnClick() override { return false; } // buttons don't get focus on click (for easier input, e.g. in chatbox)
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw dlg bg
+		void DrawElement(C4TargetFacet &cgo) override; // draw dlg bg
 
 		virtual void OnPress(); // called when button is pressed
 
@@ -1115,15 +1115,15 @@ namespace C4GUI
 		void SetDown(); // mark down and play sound
 		void SetUp(bool fPress);   // mark up and play sound
 
-		virtual bool OnHotkey(uint32_t cHotkey); // press btn on correct hotkey
+		bool OnHotkey(uint32_t cHotkey) override; // press btn on correct hotkey
 
 	public:
 		Button(const char *szBtnText, const C4Rect &rtBounds); // ctor
-		~Button(); // dtor
+		~Button() override; // dtor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-		virtual void MouseEnter(CMouse &rMouse); // mouse re-enters with button down: set button down
-		virtual void MouseLeave(CMouse &rMouse); // mouse leaves with button down: reset down state
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
+		void MouseEnter(CMouse &rMouse) override; // mouse re-enters with button down: set button down
+		void MouseLeave(CMouse &rMouse) override; // mouse leaves with button down: reset down state
 
 		void SetText(const char *szToText); // update button text (and hotkey)
 		void SetCustomGraphics(DynBarFacet *pCustomGfx, DynBarFacet *pCustomGfxDown)
@@ -1141,7 +1141,7 @@ namespace C4GUI
 		bool fHasClr;
 		bool fHighlight; // if true, the button is highlighted permanently
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw icon and highlight if necessary
+		void DrawElement(C4TargetFacet &cgo) override; // draw icon and highlight if necessary
 
 	public:
 		IconButton(Icons eUseIcon, const C4Rect &rtBounds, char cHotkey='\0', const char *tooltip_text=nullptr); // ctor
@@ -1159,7 +1159,7 @@ namespace C4GUI
 	protected:
 		ArrowFct eDir;
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw arrow; highlight and down if necessary
+		void DrawElement(C4TargetFacet &cgo) override; // draw arrow; highlight and down if necessary
 
 	public:
 		ArrowButton(ArrowFct eDir, const C4Rect &rtBounds, char cHotkey=0); // ctor
@@ -1181,7 +1181,7 @@ namespace C4GUI
 		uint8_t byTxtAlign;         // ALeft, ACenter or ARight
 		CStdFont *pFont; float fFontZoom;
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw base facet or highlight facet if necessary
+		void DrawElement(C4TargetFacet &cgo) override; // draw base facet or highlight facet if necessary
 
 	public:
 		FacetButton(const C4Facet &rBaseFct, const C4Facet &rHighlightFct, const FLOAT_RECT &rtfBounds, char cHotkey); // ctor
@@ -1200,7 +1200,7 @@ namespace C4GUI
 		CallbackDlg *pCB;
 
 		typename DlgCallback<CallbackDlg>::Func pCallbackFn; // callback function
-		virtual void OnPress()
+		void OnPress() override
 		{
 			if (pCallbackFn)
 			{
@@ -1230,7 +1230,7 @@ namespace C4GUI
 		typedef CallbackDlg * CallbackDlgPointer;
 		CallbackDlgPointer pCBTarget;                     // callback target
 		typename DlgCallback<CallbackDlg>::Func pCallbackFn; // callback function
-		virtual void OnPress()
+		void OnPress() override
 		{ (pCBTarget->*pCallbackFn)(this); }
 
 	public:
@@ -1247,7 +1247,7 @@ namespace C4GUI
 	{
 	public:
 		Edit(const C4Rect &rtBounds, bool fFocusEdit=false); // ctor
-		~Edit();
+		~Edit() override;
 
 		enum InputResult // action to be taken when text is confirmed with enter
 		{
@@ -1314,26 +1314,26 @@ namespace C4GUI
 
 		bool fLeftBtnDown;         // flag whether left mouse button is down or not
 
-		virtual bool CharIn(const char * c);                                            // input: character key pressed - should return false for none-character-inputs
-		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // dragging: allow text selection outside the component
-		virtual bool IsFocusOnClick() { return true; } // edit fields do get focus on click
-		virtual void OnGetFocus(bool fByMouse);                     // edit control gets focus
-		virtual void OnLooseFocus();                   // edit control looses focus
+		bool CharIn(const char * c) override;                                            // input: character key pressed - should return false for none-character-inputs
+		void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam) override;   // dragging: allow text selection outside the component
+		bool IsFocusOnClick() override { return true; } // edit fields do get focus on click
+		void OnGetFocus(bool fByMouse) override;                     // edit control gets focus
+		void OnLooseFocus() override;                   // edit control looses focus
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw edit control
+		void DrawElement(C4TargetFacet &cgo) override; // draw edit control
 
 		// called when user presses enter in single-line edit control - closes the current dialog
 		virtual InputResult OnFinishInput(bool fPasting, bool fPastingMore) { return IR_CloseDlg; }
 		virtual void OnAbortInput() {}
 
 		// get margins from bounds to client rect
-		virtual int32_t GetMarginTop() { return 2; }
-		virtual int32_t GetMarginLeft() { return 4; }
-		virtual int32_t GetMarginRight() { return 4; }
-		virtual int32_t GetMarginBottom() { return 2; }
+		int32_t GetMarginTop() override { return 2; }
+		int32_t GetMarginLeft() override { return 4; }
+		int32_t GetMarginRight() override { return 4; }
+		int32_t GetMarginBottom() override { return 2; }
 
 	public:
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
 
 		const char *GetText() { return Text; }
 		void SelectAll(); // select all the text
@@ -1361,9 +1361,9 @@ namespace C4GUI
 		typedef InputResult (CallbackCtrl::*CBFunc)(Edit *, bool, bool);
 		typedef void (CallbackCtrl::*CBAbortFunc)();
 		CBFunc pCBFunc; CBAbortFunc pCBAbortFunc;
-		virtual InputResult OnFinishInput(bool fPasting, bool fPastingMore)
+		InputResult OnFinishInput(bool fPasting, bool fPastingMore) override
 		{ if (pCBFunc && pCBCtrl) return (pCBCtrl->*pCBFunc)(this, fPasting, fPastingMore); else return IR_CloseDlg; }
-		virtual void OnAbortInput()
+		void OnAbortInput() override
 		{ if (pCBAbortFunc && pCBCtrl) (pCBCtrl->*pCBAbortFunc)(); }
 
 	public:
@@ -1390,7 +1390,7 @@ namespace C4GUI
 
 	public:
 		RenameEdit(Label *pLabel); // ctor - construct for label; add element; set focus
-		virtual ~RenameEdit();
+		~RenameEdit() override;
 
 		void Abort();
 
@@ -1399,8 +1399,8 @@ namespace C4GUI
 
 	protected:
 		bool KeyAbort() { Abort(); return true; }
-		virtual InputResult OnFinishInput(bool fPasting, bool fPastingMore); // forward last input to OnOKRename
-		virtual void OnLooseFocus(); // callback when control looses focus: OK input
+		InputResult OnFinishInput(bool fPasting, bool fPastingMore) override; // forward last input to OnOKRename
+		void OnLooseFocus() override; // callback when control looses focus: OK input
 
 		virtual void OnCancelRename() {} // renaming was aborted
 		virtual RenameResult OnOKRename(const char *szNewName) = 0; // rename performed - return whether name was accepted
@@ -1416,8 +1416,8 @@ namespace C4GUI
 		CBCancelFunc pCBCancelFunc; CBOKFunc pCBOKFunc;
 		CallbackDlg *pDlg; ParType par;
 
-		virtual void OnCancelRename() { if (pDlg && pCBCancelFunc) (pDlg->*pCBCancelFunc)(par); }
-		virtual RenameResult OnOKRename(const char *szNewName) { return (pDlg && pCBOKFunc) ? (pDlg->*pCBOKFunc)(par, szNewName) : RR_Accepted; }
+		void OnCancelRename() override { if (pDlg && pCBCancelFunc) (pDlg->*pCBCancelFunc)(par); }
+		RenameResult OnOKRename(const char *szNewName) override { return (pDlg && pCBOKFunc) ? (pDlg->*pCBOKFunc)(par, szNewName) : RR_Accepted; }
 
 	public:
 		CallbackRenameEdit(Label *pForLabel, CallbackDlg *pDlg, const ParType &par, CBOKFunc pCBOKFunc, CBCancelFunc pCBCancelFunc) // ctor
@@ -1453,7 +1453,7 @@ namespace C4GUI
 
 	public:
 		CheckBox(const C4Rect &rtBounds, const char *szCaption, bool fChecked); // ctor
-		~CheckBox();
+		~CheckBox() override;
 
 	private:
 		bool KeyCheck() { ToggleCheck(true); return true; }
@@ -1462,16 +1462,16 @@ namespace C4GUI
 		void ToggleCheck(bool fByUser); // check on/off; do callback
 
 	protected:
-		virtual void UpdateOwnPos();
-		virtual bool IsFocusOnClick() { return false; } // just check/uncheck on click; do not gain keyboard focus as well
-		virtual Control *IsFocusElement() { return fEnabled ? Control::IsFocusElement() : nullptr; }; // this control can gain focus if enabled
-		virtual void DrawElement(C4TargetFacet &cgo); // draw checkbox
-		virtual bool OnHotkey(uint32_t cHotkey); // return true when hotkey has been processed
+		void UpdateOwnPos() override;
+		bool IsFocusOnClick() override { return false; } // just check/uncheck on click; do not gain keyboard focus as well
+		Control *IsFocusElement() override { return fEnabled ? Control::IsFocusElement() : nullptr; }; // this control can gain focus if enabled
+		void DrawElement(C4TargetFacet &cgo) override; // draw checkbox
+		bool OnHotkey(uint32_t cHotkey) override; // return true when hotkey has been processed
 
 	public:
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-		virtual void MouseEnter(CMouse &rMouse);
-		virtual void MouseLeave(CMouse &rMouse);
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
+		void MouseEnter(CMouse &rMouse) override;
+		void MouseLeave(CMouse &rMouse) override;
 
 		void SetChecked(bool fToVal) { fChecked = fToVal; } // set w/o callback
 		bool GetChecked() const { return fChecked; }
@@ -1513,34 +1513,34 @@ namespace C4GUI
 		bool fDrawBorder;     // whether 3D frame around box shall be drawn or nay
 		bool fSelectionDisabled; // if set, no entries can be selected
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw listbox
+		void DrawElement(C4TargetFacet &cgo) override; // draw listbox
 
-		virtual bool IsFocused(Control *pCtrl)
+		bool IsFocused(Control *pCtrl) override
 		{
 			// subcontrol also counts as focused if the list has focus and the subcontrol is selected
 			return Control::IsFocused(pCtrl) || (HasFocus() && pSelectedItem == pCtrl);
 		}
-		virtual bool IsFocusOnClick() { return true; } // list boxes do get focus on click
-		virtual Control *IsFocusElement() { return this; }; // this control can gain focus
-		virtual void OnGetFocus(bool fByMouse); // callback when control gains focus - select a list item if none are selected
-		virtual bool CharIn(const char * c); // character input for direct list element selection
+		bool IsFocusOnClick() override { return true; } // list boxes do get focus on click
+		Control *IsFocusElement() override { return this; }; // this control can gain focus
+		void OnGetFocus(bool fByMouse) override; // callback when control gains focus - select a list item if none are selected
+		bool CharIn(const char * c) override; // character input for direct list element selection
 
-		virtual void AfterElementRemoval()
+		void AfterElementRemoval() override
 		{ Container::AfterElementRemoval(); UpdateElementPositions(); } // called by ScrollWindow to parent after an element has been removed
 
 		void UpdateColumnCount();
 
 	public:
 		ListBox(const C4Rect &rtBounds, int32_t iMultiColItemWidth=0); // ctor
-		virtual ~ListBox(); // dtor
+		~ListBox() override; // dtor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
 
-		virtual void RemoveElement(Element *pChild); // remove child component
+		void RemoveElement(Element *pChild) override; // remove child component
 		bool AddElement(Element *pChild, int32_t iIndent=0); // add element and adjust its pos
 		bool InsertElement(Element *pChild, Element *pInsertBefore, int32_t iIndent=0); // insert element and adjust its pos
-		virtual void ElementSizeChanged(Element *pOfElement); // called when an element size is changed
-		virtual void ElementPosChanged(Element *pOfElement);  // called when an element position is changed
+		void ElementSizeChanged(Element *pOfElement) override; // called when an element size is changed
+		void ElementPosChanged(Element *pOfElement) override;  // called when an element position is changed
 
 		int32_t GetItemWidth() { return iMultiColItemWidth ? iMultiColItemWidth : pClientWindow->GetClientRect().Wdt; }
 
@@ -1572,10 +1572,10 @@ namespace C4GUI
 		Element *GetLast() { return pClientWindow ? pClientWindow->GetLast() : nullptr; }
 
 		// get margins from bounds to client rect
-		virtual int32_t GetMarginTop() { return 3; }
-		virtual int32_t GetMarginLeft() { return 3; }
-		virtual int32_t GetMarginRight() { return 3; }
-		virtual int32_t GetMarginBottom() { return 3; }
+		int32_t GetMarginTop() override { return 3; }
+		int32_t GetMarginLeft() override { return 3; }
+		int32_t GetMarginRight() override { return 3; }
+		int32_t GetMarginBottom() override { return 3; }
 
 		Element *GetSelectedItem() { return pSelectedItem; } // get focused listbox item
 		bool IsScrollingActive() { return pClientWindow && pClientWindow->IsScrollingActive(); }
@@ -1588,9 +1588,9 @@ namespace C4GUI
 
 		void UpdateElementPositions();            // reposition list items so they are stacked vertically
 		void UpdateElementPosition(Element *pOfElement, int32_t iIndent); // update pos for one specific element
-		virtual void UpdateSize() { Control::UpdateSize(); if (pClientWindow) { pClientWindow->UpdateSize(); UpdateElementPositions(); } }
+		void UpdateSize() override { Control::UpdateSize(); if (pClientWindow) { pClientWindow->UpdateSize(); UpdateElementPositions(); } }
 
-		virtual bool IsSelectedChild(Element *pChild) { return pChild == pSelectedItem || (pSelectedItem && pSelectedItem->IsParentOf(pChild)); }
+		bool IsSelectedChild(Element *pChild) override { return pChild == pSelectedItem || (pSelectedItem && pSelectedItem->IsParentOf(pChild)); }
 
 		typedef int32_t (*SortFunction)(const Element *pEl1, const Element *pEl2, void *par);
 		void SortElements(SortFunction SortFunc, void *par); // sort list items
@@ -1668,34 +1668,34 @@ namespace C4GUI
 		bool KeySelDown(); // keyboard callback: Select next sheet
 		bool KeyCloseTab(); // keyboard callback: Close current sheet if possible
 
-		virtual void DrawElement(C4TargetFacet &cgo);
+		void DrawElement(C4TargetFacet &cgo) override;
 		void MouseLeaveCaptionArea();
-		virtual void MouseLeave(CMouse &rMouse);
-		virtual void OnGetFocus(bool fByMouse);
+		void MouseLeave(CMouse &rMouse) override;
+		void OnGetFocus(bool fByMouse) override;
 
-		virtual Control *IsFocusElement() { return eTabPos ? this : nullptr; }; // this control can gain focus only if tabs are enabled only
-		virtual bool IsFocusOnClick() { return false; } // but never get focus on single mouse click, because this would de-focus any contained controls!
+		Control *IsFocusElement() override { return eTabPos ? this : nullptr; }; // this control can gain focus only if tabs are enabled only
+		bool IsFocusOnClick() override { return false; } // but never get focus on single mouse click, because this would de-focus any contained controls!
 
 		int32_t GetTopSize() { return (eTabPos == tbTop) ? 20 : 0; } // vertical size of tab selection bar
 		int32_t GetLeftSize() { return (eTabPos == tbLeft) ? (HasGfx() ? GetLeftClipSize(pfctClip) : 20+iMaxTabWidth) : 0; } // horizontal size of tab selection bar
 		bool HasLargeCaptions() { return eTabPos == tbLeft; }
 
-		virtual int32_t GetMarginTop() { return iSheetMargin+GetTopSize() + (HasGfx() ? (rcBounds.Hgt-GetTopSize())*30/483 : 0); }
-		virtual int32_t GetMarginLeft() { return iSheetMargin+GetLeftSize() + (HasGfx() ? (rcBounds.Wdt-GetLeftSize())*13/628 : 0); }
-		virtual int32_t GetMarginRight() { return iSheetMargin + (HasGfx() ? (rcBounds.Wdt-GetLeftSize())*30/628 : 0); }
-		virtual int32_t GetMarginBottom() { return iSheetMargin + (HasGfx() ? (rcBounds.Hgt-GetTopSize())*32/483 : 0); }
+		int32_t GetMarginTop() override { return iSheetMargin+GetTopSize() + (HasGfx() ? (rcBounds.Hgt-GetTopSize())*30/483 : 0); }
+		int32_t GetMarginLeft() override { return iSheetMargin+GetLeftSize() + (HasGfx() ? (rcBounds.Wdt-GetLeftSize())*13/628 : 0); }
+		int32_t GetMarginRight() override { return iSheetMargin + (HasGfx() ? (rcBounds.Wdt-GetLeftSize())*30/628 : 0); }
+		int32_t GetMarginBottom() override { return iSheetMargin + (HasGfx() ? (rcBounds.Hgt-GetTopSize())*32/483 : 0); }
 
-		virtual void UpdateSize();
+		void UpdateSize() override;
 
-		virtual bool IsSelectedChild(Element *pChild) { return pChild == pActiveSheet || (pActiveSheet && pActiveSheet->IsParentOf(pChild)); }
+		bool IsSelectedChild(Element *pChild) override { return pChild == pActiveSheet || (pActiveSheet && pActiveSheet->IsParentOf(pChild)); }
 
 	public:
 		Tabular(C4Rect &rtBounds, TabPosition eTabPos); // ctor
-		~Tabular(); // dtor
+		~Tabular() override; // dtor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 
-		virtual void RemoveElement(Element *pChild); // clear ptr
+		void RemoveElement(Element *pChild) override; // clear ptr
 		Sheet *AddSheet(const char *szTitle, int32_t icoTitle = Ico_None);
 		void AddCustomSheet(Sheet *pAddSheet);
 		void ClearSheets(); // del all sheets
@@ -1726,13 +1726,13 @@ namespace C4GUI
 		bool fDrawBackground, fDrawFrame;        // whether dark background should be drawn (default true)
 		size_t iPicPadding;
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw text window
+		void DrawElement(C4TargetFacet &cgo) override; // draw text window
 
-		virtual void ElementSizeChanged(Element *pOfElement); // called when an element size is changed
-		virtual void ElementPosChanged(Element *pOfElement);  // called when an element position is changed
-		virtual void UpdateSize();
+		void ElementSizeChanged(Element *pOfElement) override; // called when an element size is changed
+		void ElementPosChanged(Element *pOfElement) override;  // called when an element position is changed
+		void UpdateSize() override;
 
-		virtual Control *IsFocusElement() { return nullptr; }; // no focus element for now, because there's nothing to do (2do: scroll?)
+		Control *IsFocusElement() override { return nullptr; }; // no focus element for now, because there's nothing to do (2do: scroll?)
 
 	public:
 		TextWindow(C4Rect &rtBounds, size_t iPicWdt=0, size_t iPicHgt=0, size_t iPicPadding=0, size_t iMaxLines=100, size_t iMaxTextLen=4096, const char *szIndentChars="    ", bool fAutoGrow=false, const C4Facet *pOverlayPic=nullptr, int iOverlayBorder=0, bool fMarkup=false); // ctor
@@ -1754,10 +1754,10 @@ namespace C4GUI
 		void SetPicture(const C4Facet &rNewPic);
 
 		// get margins from bounds to client rect
-		virtual int32_t GetMarginTop() { return 8; }
-		virtual int32_t GetMarginLeft() { return 10; }
-		virtual int32_t GetMarginRight() { return 5; }
-		virtual int32_t GetMarginBottom() { return 8; }
+		int32_t GetMarginTop() override { return 8; }
+		int32_t GetMarginLeft() override { return 10; }
+		int32_t GetMarginRight() override { return 5; }
+		int32_t GetMarginBottom() override { return 8; }
 	};
 
 	// context menu opened on right-click
@@ -1800,21 +1800,21 @@ namespace C4GUI
 			ContextHandler *pSubmenuHandler; // callback when submenu is opened
 
 		protected:
-			virtual void DrawElement(C4TargetFacet &cgo); // draw element
+			void DrawElement(C4TargetFacet &cgo) override; // draw element
 
 			MenuHandler *GetAndZeroCallback()
 			{ MenuHandler *pMH = pMenuHandler; pMenuHandler=nullptr; return pMH; }
 
-			virtual void MouseLeave(CMouse &rMouse)
+			void MouseLeave(CMouse &rMouse) override
 			{ if (GetParent()) ((ContextMenu *) GetParent())->MouseLeaveEntry(rMouse, this); }
 
-			virtual bool OnHotkey(uint32_t cKey) { return cKey==cHotkey; }
+			bool OnHotkey(uint32_t cKey) override { return cKey==cHotkey; }
 
-			virtual bool IsMenu() { return true; }
+			bool IsMenu() override { return true; }
 
 		public:
 			Entry(const char *szText, Icons icoIcon=Ico_None, MenuHandler *pMenuHandler=nullptr, ContextHandler *pSubmenuHandler=nullptr); // ctor
-			~Entry()
+			~Entry() override
 			{
 				if (pMenuHandler) delete pMenuHandler;
 				if (pSubmenuHandler) delete pSubmenuHandler;
@@ -1826,36 +1826,36 @@ namespace C4GUI
 		};
 
 	protected:
-		Element *pTarget; // target element; close menu if this is lost
-		Element *pSelectedItem; // currently highlighted menu item
+		Element *pTarget{nullptr}; // target element; close menu if this is lost
+		Element *pSelectedItem{nullptr}; // currently highlighted menu item
 
-		ContextMenu *pSubmenu; // currently open submenu
+		ContextMenu *pSubmenu{nullptr}; // currently open submenu
 
 		// mouse movement or buttons forwarded from screen:
 		// Check bounds and forward as MouseInput to context menu or submenus
 		// return whether inside context menu bounds
 		bool CtxMouseInput(CMouse &rMouse, int32_t iButton, int32_t iScreenX, int32_t iScreenY, DWORD dwKeyParam);
-		virtual void RemoveElement(Element *pChild); // clear ptr - abort menu if target is destroyed
+		void RemoveElement(Element *pChild) override; // clear ptr - abort menu if target is destroyed
 
 		virtual bool CharIn(const char * c);                                            // input: character key pressed - should return false for none-character-inputs
 		void MouseLeaveEntry(CMouse &rMouse, Entry *pOldEntry); // callback: mouse leaves - deselect menu item if no submenu is open (callback done by menu item)
 
-		virtual void DrawElement(C4TargetFacet &cgo); // draw BG
-		virtual void Draw(C4TargetFacet &cgo);        // draw inherited (element+contents) plus submenu
+		void DrawElement(C4TargetFacet &cgo) override; // draw BG
+		void Draw(C4TargetFacet &cgo) override;        // draw inherited (element+contents) plus submenu
 
-		virtual bool IsMenu() { return true; }
+		bool IsMenu() override { return true; }
 
-		virtual Screen *GetScreen(); // return screen by static var
+		Screen *GetScreen() override; // return screen by static var
 
-		virtual int32_t GetMarginTop() { return 5; }
-		virtual int32_t GetMarginLeft() { return 5; }
-		virtual int32_t GetMarginRight() { return 5; }
-		virtual int32_t GetMarginBottom() { return 5; }
+		int32_t GetMarginTop() override { return 5; }
+		int32_t GetMarginLeft() override { return 5; }
+		int32_t GetMarginRight() override { return 5; }
+		int32_t GetMarginBottom() override { return 5; }
 
 		void SelectionChanged(bool fByUser); // other item selected: Close any submenu; do callbacks
 
-		virtual void ElementSizeChanged(Element *pOfElement); // called when an element size is changed
-		virtual void ElementPosChanged(Element *pOfElement);  // called when an element position is changed
+		void ElementSizeChanged(Element *pOfElement) override; // called when an element size is changed
+		void ElementPosChanged(Element *pOfElement) override;  // called when an element position is changed
 
 		void CheckOpenSubmenu(); // open submenu if present for selected item
 		bool IsSubmenu(); // return whether it's a submenu
@@ -1863,9 +1863,9 @@ namespace C4GUI
 
 	public:
 		ContextMenu();  // ctor
-		~ContextMenu(); // dtor
+		~ContextMenu() override; // dtor
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse movement or buttons
 
 		void Open(Element *pTarget, int32_t iScreenX, int32_t iScreenY);
 		void Abort(bool fByUser);
@@ -1899,7 +1899,7 @@ namespace C4GUI
 	public:
 		ContextButton(C4Rect &rtBounds); // ctor
 		ContextButton(Element *pForEl, bool fAdd, int32_t iHIndent=4, int32_t iVIndent=4);  // ctor creating at topright pos of element
-		~ContextButton();
+		~ContextButton() override;
 
 	private:
 		bool DoContext(int32_t iX=-1, int32_t iY=-1); // open context menu
@@ -1907,14 +1907,14 @@ namespace C4GUI
 		void RegisterContextKey();
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo);    // draw btn
+		void DrawElement(C4TargetFacet &cgo) override;    // draw btn
 
-		virtual bool IsFocusOnClick() { return false; } // don't select control on click
+		bool IsFocusOnClick() override { return false; } // don't select control on click
 
 	public:
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click opens menu
-		virtual void MouseEnter(CMouse &rMouse);
-		virtual void MouseLeave(CMouse &rMouse);
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse. left-click opens menu
+		void MouseEnter(CMouse &rMouse) override;
+		void MouseLeave(CMouse &rMouse) override;
 	};
 
 
@@ -1926,7 +1926,7 @@ namespace C4GUI
 		ComboBox *pCombo;
 		ContextMenu *pDrop;
 	public:
-		virtual ~ComboBox_FillCB() {}
+		virtual ~ComboBox_FillCB() = default;
 		void FillDropDown(ComboBox *pComboBox, ContextMenu *pDropdownList)
 		{ pCombo = pComboBox; pDrop = pDropdownList; FillDropDownCB(); }
 		virtual void FillDropDownCB() = 0;
@@ -1950,9 +1950,9 @@ namespace C4GUI
 		ComboFillFunc FillFunc;
 		ComboSelFunc SelFunc;
 	protected:
-		virtual void FillDropDownCB()
+		void FillDropDownCB() override
 		{ if (pCBClass && FillFunc) (pCBClass->*FillFunc)(this); }
-		virtual bool OnComboSelChange(ComboBox *pForCombo, int32_t idNewSelection)
+		bool OnComboSelChange(ComboBox *pForCombo, int32_t idNewSelection) override
 		{ if (pCBClass && SelFunc) return (pCBClass->*SelFunc)(pForCombo, idNewSelection); else return false; }
 
 	public:
@@ -1968,9 +1968,9 @@ namespace C4GUI
 		struct ComboMenuCBStruct // struct used as menu callback parameter for dropdown menu
 		{
 			StdCopyStrBuf sText;
-			int32_t id;
+			int32_t id{0};
 
-			ComboMenuCBStruct() : sText(), id(0) {}
+			ComboMenuCBStruct() : sText() {}
 			ComboMenuCBStruct(const char *szText, int32_t id) : sText(szText), id(id) {}
 		};
 	private:
@@ -1993,20 +1993,20 @@ namespace C4GUI
 		bool AbortDropdown(bool fByUser); // abort dropdown menu, if it's open
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo);    // draw combo box
+		void DrawElement(C4TargetFacet &cgo) override;    // draw combo box
 
-		virtual bool IsFocusOnClick() { return false; } // don't select control on click
-		virtual Control *IsFocusElement() { return fReadOnly ? nullptr : this; }; // this control can gain focus if not readonly
+		bool IsFocusOnClick() override { return false; } // don't select control on click
+		Control *IsFocusElement() override { return fReadOnly ? nullptr : this; }; // this control can gain focus if not readonly
 
 		void OnCtxComboSelect(C4GUI::Element *pListItem, const ComboMenuCBStruct &rNewSel);
 
 	public:
 		ComboBox(const C4Rect &rtBounds);
-		~ComboBox();
+		~ComboBox() override;
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click opens menu
-		virtual void MouseEnter(CMouse &rMouse); // called when mouse cursor enters element region
-		virtual void MouseLeave(CMouse &rMouse); // called when mouse cursor leaves element region
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse. left-click opens menu
+		void MouseEnter(CMouse &rMouse) override; // called when mouse cursor enters element region
+		void MouseLeave(CMouse &rMouse) override; // called when mouse cursor leaves element region
 
 		void SetComboCB(ComboBox_FillCB *pNewFillCallback);
 		static int32_t GetDefaultHeight();
@@ -2029,19 +2029,19 @@ namespace C4GUI
 	class DialogWindow : public C4Window
 	{
 	public:
-		Dialog* pDialog;
-		DialogWindow(): C4Window(), pDialog(nullptr) {}
+		Dialog* pDialog{nullptr};
+		DialogWindow(): C4Window() {}
 		using C4Window::Init;
 		C4Window * Init(C4AbstractApp * pApp, const char * Title, const C4Rect &rcBounds, const char *szID);
-		virtual void Close();
-		virtual void PerformUpdate();
+		void Close() override;
+		void PerformUpdate() override;
 	};
 
 	// information on how to draw dialog borders and face
 	class FrameDecoration
 	{
 	private:
-		int iRefCount;
+		int iRefCount{0};
 
 		bool SetFacetByAction(C4Def *pOfDef, class C4TargetFacet &rfctTarget, const char *szFacetName);
 
@@ -2053,7 +2053,7 @@ namespace C4GUI
 		int iBorderTop, iBorderLeft, iBorderRight, iBorderBottom;
 		bool fHasGfxOutsideClientArea;
 
-		FrameDecoration() : iRefCount(0) { Clear(); }
+		FrameDecoration()  { Clear(); }
 		void Clear(); // zero data
 
 		// create from ActMap and graphics of a definition (does some script callbacks to get parameters)
@@ -2091,30 +2091,30 @@ namespace C4GUI
 		bool CreateConsoleWindow();
 		void DestroyConsoleWindow();
 
-		virtual void UpdateSize();                // called when own size changed - update assigned pWindow
-		virtual void UpdatePos(); // Dialogs with their own windows can only be at 0/0
+		void UpdateSize() override;                // called when own size changed - update assigned pWindow
+		void UpdatePos() override; // Dialogs with their own windows can only be at 0/0
 
 	public:
 		Dialog(int32_t iWdt, int32_t iHgt, const char *szTitle, bool fViewportDlg); // ctor
-		virtual ~Dialog(); // dtor
+		~Dialog() override; // dtor
 
-		virtual void RemoveElement(Element *pChild); // clear ptr
+		void RemoveElement(Element *pChild) override; // clear ptr
 
-		virtual void Draw(C4TargetFacet &cgo); // render dialog (published)
-		virtual void DrawElement(C4TargetFacet &cgo); // draw dlg bg
-		virtual bool IsComponentOutsideClientArea() { return !!pTitle; } // pTitle lies outside client area
+		void Draw(C4TargetFacet &cgo) override; // render dialog (published)
+		void DrawElement(C4TargetFacet &cgo) override; // draw dlg bg
+		bool IsComponentOutsideClientArea() override { return !!pTitle; } // pTitle lies outside client area
 
 		virtual const char *GetID() { return nullptr; }
 
 		// special handling for viewport dialogs
-		virtual void ApplyElementOffset(int32_t &riX, int32_t &riY);
-		virtual void ApplyInvElementOffset(int32_t &riX, int32_t &riY);
+		void ApplyElementOffset(int32_t &riX, int32_t &riY) override;
+		void ApplyInvElementOffset(int32_t &riX, int32_t &riY) override;
 
-		virtual bool IsFocused(Control *pCtrl) { return pCtrl == pActiveCtrl; }
+		bool IsFocused(Control *pCtrl) override { return pCtrl == pActiveCtrl; }
 		void SetFocus(Control *pCtrl, bool fByMouse);
 		Control *GetFocus() { return pActiveCtrl; }
-		virtual Dialog *GetDlg() { return this; } // this is the dialog
-		virtual DialogWindow* GetDialogWindow() { return pWindow; }
+		Dialog *GetDlg() override { return this; } // this is the dialog
+		DialogWindow* GetDialogWindow() override { return pWindow; }
 
 		virtual bool CharIn(const char * c);                                 // input: character key pressed - should return false for none-character-inputs  (forward to focused control)
 
@@ -2123,7 +2123,7 @@ namespace C4GUI
 		bool KeyFocusDefault();
 
 	public:
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. forwards to child controls
+		void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override; // input: mouse. forwards to child controls
 
 		// default control to be set if unprocessed keyboard input has been detected
 		virtual class Control *GetDefaultControl() { return nullptr; }
@@ -2137,10 +2137,10 @@ namespace C4GUI
 		void AdvanceFocus(bool fBackwards); // change focus to next component
 		bool KeyAdvanceFocus(bool fBackwards) { AdvanceFocus(fBackwards); return true; }
 
-		virtual int32_t GetMarginTop() { return (pTitle ? pTitle->GetBounds().Hgt : 0) + (pFrameDeco ? pFrameDeco->iBorderTop : Window::GetMarginTop()); }
-		virtual int32_t GetMarginLeft() { return pFrameDeco ? pFrameDeco->iBorderLeft : Window::GetMarginLeft(); }
-		virtual int32_t GetMarginRight() { return pFrameDeco ? pFrameDeco->iBorderRight: Window::GetMarginRight(); }
-		virtual int32_t GetMarginBottom() { return pFrameDeco ? pFrameDeco->iBorderBottom: Window::GetMarginBottom(); }
+		int32_t GetMarginTop() override { return (pTitle ? pTitle->GetBounds().Hgt : 0) + (pFrameDeco ? pFrameDeco->iBorderTop : Window::GetMarginTop()); }
+		int32_t GetMarginLeft() override { return pFrameDeco ? pFrameDeco->iBorderLeft : Window::GetMarginLeft(); }
+		int32_t GetMarginRight() override { return pFrameDeco ? pFrameDeco->iBorderRight: Window::GetMarginRight(); }
+		int32_t GetMarginBottom() override { return pFrameDeco ? pFrameDeco->iBorderBottom: Window::GetMarginBottom(); }
 
 		static int32_t GetDefaultTitleHeight();
 
@@ -2175,7 +2175,7 @@ namespace C4GUI
 		virtual bool DoPlacement(Screen *pOnScreen, const C4Rect &rPreferredDlgRect)  { return false; }
 
 		// true for dialogs drawn externally
-		virtual bool IsExternalDrawDialog() { return false; }
+		bool IsExternalDrawDialog() override { return false; }
 
 		// z-ordering used for dialog placement
 		virtual int32_t GetZOrdering() { return C4GUI_Z_DEFAULT; }
@@ -2208,7 +2208,7 @@ namespace C4GUI
 		virtual void OnShown() {}           // callback when shown - should not delete the dialog
 		virtual void OnIdle() {}            // idle proc in DoModal
 
-		virtual ContextHandler *GetContextHandler() // always use own context handler only (no fall-through to screen)
+		ContextHandler *GetContextHandler() override // always use own context handler only (no fall-through to screen)
 		{ return pContextHandler; }
 #ifdef _WIN32
 		static bool RegisterWindowClass(HINSTANCE hInst); // registers WNDCLASS for console mode dialogs
@@ -2223,7 +2223,7 @@ namespace C4GUI
 		Label *pFullscreenTitle, *pSubTitle; // subtitle to be put in upper-right corner
 		int32_t iDlgMarginX, iDlgMarginY; // dialog margin set by screen size
 
-		virtual const char *GetID() { return 0; } // no ID needed, because it's never created as a window
+		const char *GetID() override { return nullptr; } // no ID needed, because it's never created as a window
 
 	public:
 		FullscreenDialog(const char *szTitle, const char *szSubtitle); // ctor
@@ -2231,23 +2231,23 @@ namespace C4GUI
 		void SetTitle(const char *szToTitle); // change title text; creates or removes title bar if necessary
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // draw dlg bg
+		void DrawElement(C4TargetFacet &cgo) override; // draw dlg bg
 
 		// fullscreen dialogs are not closed on Enter
-		virtual bool OnEnter() { return false; }
+		bool OnEnter() override { return false; }
 
-		virtual bool IsComponentOutsideClientArea() { return true; }
+		bool IsComponentOutsideClientArea() override { return true; }
 
 		virtual bool HasUpperBoard() { return false; } // standard fullscreen dialog: UpperBoard no longer present
 
-		virtual bool IsFullscreenDialog() { return true; }
-		virtual bool DoPlacement(Screen *pOnScreen, const C4Rect &rPreferredDlgRect)  { return true; } // fullscreen dlg already placed
+		bool IsFullscreenDialog() override { return true; }
+		bool DoPlacement(Screen *pOnScreen, const C4Rect &rPreferredDlgRect) override  { return true; } // fullscreen dlg already placed
 
-		virtual int32_t GetMarginTop() { return (HasUpperBoard() ? C4UpperBoardHeight : C4GUI_FullscreenDlg_TitleHeight) + iDlgMarginY; }
-		virtual int32_t GetMarginLeft() { return iDlgMarginX; }
-		virtual int32_t GetMarginRight() { return iDlgMarginX; }
-		virtual int32_t GetMarginBottom() { return iDlgMarginY; }
-		virtual void UpdateOwnPos(); // called when element bounds were changed externally
+		int32_t GetMarginTop() override { return (HasUpperBoard() ? C4UpperBoardHeight : C4GUI_FullscreenDlg_TitleHeight) + iDlgMarginY; }
+		int32_t GetMarginLeft() override { return iDlgMarginX; }
+		int32_t GetMarginRight() override { return iDlgMarginX; }
+		int32_t GetMarginBottom() override { return iDlgMarginY; }
+		void UpdateOwnPos() override; // called when element bounds were changed externally
 
 		// helper func: draw facet to screen background
 		void DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct);
@@ -2259,7 +2259,7 @@ namespace C4GUI
 	protected:
 		bool fCloseResult;
 
-		virtual void OnPress()
+		void OnPress() override
 		{ Dialog *pDlg; if ((pDlg = GetDlg())) pDlg->UserClose(fCloseResult); }
 
 	public:
@@ -2271,7 +2271,7 @@ namespace C4GUI
 	protected:
 		bool fCloseResult;
 
-		virtual void OnPress()
+		void OnPress() override
 		{ Dialog *pDlg; if ((pDlg = GetDlg())) pDlg->UserClose(fCloseResult); }
 
 	public:
@@ -2337,16 +2337,16 @@ namespace C4GUI
 		             };
 		enum DlgSize { dsRegular=C4GUI_MessageDlgWdt, dsMedium=C4GUI_MessageDlgWdtMedium, dsSmall=C4GUI_MessageDlgWdtSmall };
 		MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize=dsRegular, int32_t *piConfigDontShowAgainSetting=nullptr, bool fDefaultNo=false);
-		~MessageDialog();
+		~MessageDialog() override;
 
 	protected:
-		virtual bool OnEnter() { if (!fHasOK) return false; Close(true); return true; }
+		bool OnEnter() override { if (!fHasOK) return false; Close(true); return true; }
 		void OnDontShowAgainCheck(C4GUI::Element *pCheckBox)
 		{ if (piConfigDontShowAgainSetting) *piConfigDontShowAgainSetting = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked(); }
 		bool KeyCopy();
 
-		virtual const char *GetID() { return "MessageDialog"; }
-		virtual int32_t GetZOrdering() { return C4GUI_Z_INPUT; }
+		const char *GetID() override { return "MessageDialog"; }
+		int32_t GetZOrdering() override { return C4GUI_Z_INPUT; }
 	};
 
 	// a confirmation dialog, which performs a callback after confirmation
@@ -2357,10 +2357,10 @@ namespace C4GUI
 
 	public:
 		ConfirmationDialog(const char *szMessage, const char *szCaption, BaseCallbackHandler *pCB, DWORD dwButtons=MessageDialog::btnOKAbort, bool fSmall=false, Icons icoIcon=Ico_Confirm);
-		~ConfirmationDialog() { if (pCB) pCB->DeRef(); }
+		~ConfirmationDialog() override { if (pCB) pCB->DeRef(); }
 
 	protected:
-		virtual void OnClosed(bool fOK);    // callback when dlg got closed
+		void OnClosed(bool fOK) override;    // callback when dlg got closed
 	};
 
 	// a simple progress dialog
@@ -2369,13 +2369,13 @@ namespace C4GUI
 	protected:
 		ProgressBar *pBar; // progress bar component
 
-		virtual const char *GetID() { return "ProgressDialog"; }
+		const char *GetID() override { return "ProgressDialog"; }
 
 	public:
 		ProgressDialog(const char *szMessage, const char *szCaption, int32_t iMaxProgress, int32_t iInitialProgress, Icons icoIcon);
 
 		void SetProgress(int32_t iToProgress) { pBar->SetProgress(iToProgress); } // change progress
-		virtual bool OnEnter() { return false; } // don't close on Enter!
+		bool OnEnter() override { return false; } // don't close on Enter!
 	};
 
 
@@ -2383,7 +2383,7 @@ namespace C4GUI
 	{
 	public:
 		virtual void OnOK(const StdStrBuf &sText) = 0;
-		virtual ~BaseInputCallback() {}
+		virtual ~BaseInputCallback() = default;
 	};
 
 	template <class T> class InputCallback : public BaseInputCallback
@@ -2396,7 +2396,7 @@ namespace C4GUI
 	public:
 		InputCallback(T *pTarget, CBFunc pCBFunc) : pTarget(pTarget), pCBFunc(pCBFunc) {}
 
-		virtual void OnOK(const StdStrBuf &sText) { (pTarget->*pCBFunc)(sText); }
+		void OnOK(const StdStrBuf &sText) override { (pTarget->*pCBFunc)(sText); }
 	};
 
 	// a dialog for a one-line text input; contains OK and cancel button
@@ -2409,13 +2409,13 @@ namespace C4GUI
 		bool fChatLayout;
 		Label *pChatLbl;
 
-		virtual const char *GetID() { return "InputDialog"; }
+		const char *GetID() override { return "InputDialog"; }
 
 	public:
 		InputDialog(const char *szMessage, const char *szCaption, Icons icoIcon, BaseInputCallback *pCB, bool fChatLayout=false);
-		~InputDialog() { if (pCB) delete pCB; }
+		~InputDialog() override { if (pCB) delete pCB; }
 
-		virtual void OnClosed(bool fOK) { if (pCB && fOK) pCB->OnOK(StdStrBuf(pEdit->GetText())); Dialog::OnClosed(fOK); } // close CB
+		void OnClosed(bool fOK) override { if (pCB && fOK) pCB->OnOK(StdStrBuf(pEdit->GetText())); Dialog::OnClosed(fOK); } // close CB
 		void SetMaxText(int32_t iMaxLen) { pEdit->SetMaxText(iMaxLen); }
 		void SetInputText(const char *szToText);
 		const char *GetInputText() { return pEdit->GetText(); }
@@ -2442,11 +2442,11 @@ namespace C4GUI
 
 		virtual void UpdateText() {}; // function to be overwritten for timed dlgs: Update window text
 
-		virtual void OnSec1Timer(); // idle proc: update text if necessary
+		void OnSec1Timer() override; // idle proc: update text if necessary
 	public:
 		InfoDialog(const char *szCaption, int32_t iLineCount); // ctor
 		InfoDialog(const char *szCaption, int iLineCount, const StdStrBuf &sText); // ctor - init w/o timer
-		~InfoDialog();
+		~InfoDialog() override;
 	};
 
 	// a keyboard event that's only executed if the dialog is activated
@@ -2459,7 +2459,7 @@ namespace C4GUI
 		DlgKeyCB(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=nullptr, CallbackFunc pFuncPressed=nullptr)
 				: Base(rTarget, pFuncDown, pFuncUp, pFuncPressed) {}
 
-		virtual bool CheckCondition() { return Base::rTarget.IsInActiveDlg(true) && Base::rTarget.IsVisible(); }
+		bool CheckCondition() override { return Base::rTarget.IsInActiveDlg(true) && Base::rTarget.IsVisible(); }
 	};
 
 	template <class TargetClass> class DlgKeyCBPassKey : public C4KeyCBPassKey<TargetClass>
@@ -2471,7 +2471,7 @@ namespace C4GUI
 		DlgKeyCBPassKey(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=nullptr, CallbackFunc pFuncPressed=nullptr)
 				: Base(rTarget, pFuncDown, pFuncUp, pFuncPressed) {}
 
-		virtual bool CheckCondition() { return Base::rTarget.IsInActiveDlg(true) && Base::rTarget.IsVisible(); }
+		bool CheckCondition() override { return Base::rTarget.IsInActiveDlg(true) && Base::rTarget.IsVisible(); }
 	};
 
 	template <class TargetClass, class ParameterType> class DlgKeyCBEx : public C4KeyCBEx<TargetClass, ParameterType>
@@ -2483,7 +2483,7 @@ namespace C4GUI
 		DlgKeyCBEx(TargetClass &rTarget, const ParameterType &par, CallbackFunc pFuncDown, CallbackFunc pFuncUp=nullptr, CallbackFunc pFuncPressed=nullptr)
 				: Base(rTarget, par, pFuncDown, pFuncUp, pFuncPressed) {}
 
-		virtual bool CheckCondition() { return Base::rTarget.IsInActiveDlg(true) && Base::rTarget.IsVisible(); }
+		bool CheckCondition() override { return Base::rTarget.IsInActiveDlg(true) && Base::rTarget.IsVisible(); }
 	};
 
 	// a keyboard event that's only executed if the control has focus
@@ -2496,7 +2496,7 @@ namespace C4GUI
 		ControlKeyCB(TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=nullptr, CallbackFunc pFuncPressed=nullptr)
 				: Base(rTarget, pFuncDown, pFuncUp, pFuncPressed) {}
 
-		virtual bool CheckCondition() { return Base::rTarget.HasDrawFocus(); }
+		bool CheckCondition() override { return Base::rTarget.HasDrawFocus(); }
 	};
 
 	template <class TargetClass, class ParameterType> class ControlKeyCBExPassKey : public C4KeyCBExPassKey<TargetClass, ParameterType>
@@ -2508,7 +2508,7 @@ namespace C4GUI
 		ControlKeyCBExPassKey(TargetClass &rTarget, const ParameterType &rPar, CallbackFunc pFuncDown, CallbackFunc pFuncUp=nullptr, CallbackFunc pFuncPressed=nullptr)
 				: Base(rTarget, rPar, pFuncDown, pFuncUp, pFuncPressed) {}
 
-		virtual bool CheckCondition() { return Base::rTarget.HasDrawFocus(); }
+		bool CheckCondition() override { return Base::rTarget.HasDrawFocus(); }
 	};
 
 	// key event that checks whether a control is active, but forwards to the dialog
@@ -2522,7 +2522,7 @@ namespace C4GUI
 		ControlKeyDlgCB(Control *pCtrl, TargetClass &rTarget, CallbackFunc pFuncDown, CallbackFunc pFuncUp=nullptr, CallbackFunc pFuncPressed=nullptr)
 				: Base(rTarget, pFuncDown, pFuncUp, pFuncPressed), pCtrl(pCtrl) {}
 
-		virtual bool CheckCondition() { return pCtrl && pCtrl->IsInActiveDlg(true) && pCtrl->IsVisible(); }
+		bool CheckCondition() override { return pCtrl && pCtrl->IsInActiveDlg(true) && pCtrl->IsVisible(); }
 	};
 
 	// mouse cursor control
@@ -2588,22 +2588,22 @@ namespace C4GUI
 
 	protected:
 		Dialog *pActiveDlg;    // current, active dialog
-		ContextMenu *pContext; // currently opened context menu (lowest submenu)
-		bool fExclusive;       // default true. if false, input is shared with the game
+		ContextMenu *pContext{nullptr}; // currently opened context menu (lowest submenu)
+		bool fExclusive{true};       // default true. if false, input is shared with the game
 		C4Rect PreferredDlgRect; // rectangle in which dialogs should be placed
-		float fZoom;
+		float fZoom{1.0f};
 
 		static Screen *pScreen; // static singleton var
 
 	public:
-		virtual void RemoveElement(Element *pChild); // clear ptr
+		void RemoveElement(Element *pChild) override; // clear ptr
 		const C4Rect &GetPreferredDlgRect() { return PreferredDlgRect; }
 
 	protected:
 		using Window::Draw;
 		virtual void Draw(C4TargetFacet &cgo, bool fDoBG); // draw screen contents
 
-		virtual void ElementPosChanged(Element *pOfElement); // called when a dialog is moved
+		void ElementPosChanged(Element *pOfElement) override; // called when a dialog is moved
 
 	public:
 		void ShowDialog(Dialog *pDlg, bool fFade); // present dialog to user
@@ -2614,7 +2614,7 @@ namespace C4GUI
 		Dialog *GetTopDialog(); // get topmost dlg
 	public:
 		Screen();
-		~Screen();
+		~Screen() override;
 
 		void Init(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt);
 		void Clear();
@@ -2622,7 +2622,7 @@ namespace C4GUI
 		void Render(bool fDoBG);                 // render to pDraw
 		void RenderMouse(C4TargetFacet &cgo);        // draw mouse only
 
-		virtual Screen *GetScreen() { return this; }; // return contained screen
+		Screen *GetScreen() override { return this; }; // return contained screen
 		static Screen *GetScreenS() { return pScreen; } // get global screen
 
 		float GetZoom() const { return fZoom; }; // get GUI zoom
@@ -2698,7 +2698,7 @@ namespace C4GUI
 		CBMenuHandler<CBClass>(CBClass *pCBTarget, typename DlgCallback<CBClass>::ContextClickFunc pCallbackFn, int32_t iaExtra=0)
 				: MenuHandler(), pCBTarget(pCBTarget), pCallbackFn(pCallbackFn) { }
 
-		virtual void OnOK(Element *pTargetElement)
+		void OnOK(Element *pTargetElement) override
 		{
 			if (!pCBTarget /* || !pCallbackFn */) return;
 			// do callback
@@ -2716,14 +2716,14 @@ namespace C4GUI
 	public:
 		// ctor
 		CBMenuHandlerEx<CBClass, TEx>(CBClass *pCBTarget, typename DlgCallbackEx<CBClass, const TEx &>::ContextClickFunc pCallbackFn, TEx aExtra)
-				: MenuHandler(), pCBTarget(pCBTarget), pCallbackFn(pCallbackFn), Extra(aExtra) { }
+				: MenuHandler(), pCBTarget(pCBTarget), pCallbackFn(pCallbackFn), Extra(std::move(aExtra)) { }
 		CBMenuHandlerEx<CBClass, TEx>(CBClass *pCBTarget, typename DlgCallbackEx<CBClass, const TEx &>::ContextClickFunc pCallbackFn)
 				: MenuHandler(), pCBTarget(pCBTarget), pCallbackFn(pCallbackFn), Extra() { }
 
 		const TEx &GetExtra() const { return Extra; }
 		void SetExtra(const TEx &e) { Extra = e; }
 
-		virtual void OnOK(Element *pTargetElement)
+		void OnOK(Element *pTargetElement) override
 		{
 			if (!pCBTarget || !pCallbackFn) return;
 			// do callback
@@ -2743,7 +2743,7 @@ namespace C4GUI
 		CBContextHandler<CBClass>(CBClass *pCBTarget, typename DlgCallback<CBClass>::ContextFunc pCallbackFn)
 				: ContextHandler(), pCBTarget(pCBTarget), pCallbackFn(pCallbackFn) { }
 
-		virtual bool OnContext(Element *pOnElement, int32_t iX, int32_t iY)
+		bool OnContext(Element *pOnElement, int32_t iX, int32_t iY) override
 		{
 			DlgCallback<CBClass>();
 			if (!pCBTarget) return false;
@@ -2759,7 +2759,7 @@ namespace C4GUI
 			return true;
 		}
 
-		virtual C4GUI::ContextMenu *OnSubcontext(Element *pOnElement)
+		C4GUI::ContextMenu *OnSubcontext(Element *pOnElement) override
 		{
 			// query directly
 			return (pCBTarget->*pCallbackFn)(pOnElement, 0, 0);

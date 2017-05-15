@@ -157,12 +157,12 @@ public:
 	bool IsConstant() const { return isConstant; }
 	bool IsRandom() const { return valueFunction == &C4ParticleValueProvider::Random; }
 	C4ParticleValueProvider() :
-		startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrameCount(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT)
+		startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrameCount(0), valueFunction(nullptr), isConstant(true), floatValueToChange(nullptr), typeOfValueToChange(VAL_TYPE_FLOAT)
 	{ }
 	~C4ParticleValueProvider()
 	{
-		for (std::vector<C4ParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
-			delete *iter;
+		for (auto &child : childrenValueProviders)
+			delete child;
 	}
 	C4ParticleValueProvider(const C4ParticleValueProvider &other) { *this = other; }
 	C4ParticleValueProvider & operator= (const C4ParticleValueProvider &other);
@@ -179,7 +179,7 @@ private:
 	void UpdatePointerValue(C4Particle *particle, C4ParticleValueProvider *parent);
 	void UpdateChildren(C4Particle *particle);
 	void FloatifyParameterValue(float C4ParticleValueProvider::*value, float denominator, size_t keyFrameIndex = 0);
-	void SetParameterValue(int type, const C4Value &value, float C4ParticleValueProvider::*floatVal, int C4ParticleValueProvider::*intVal = 0, size_t keyFrameIndex = 0);
+	void SetParameterValue(int type, const C4Value &value, float C4ParticleValueProvider::*floatVal, int C4ParticleValueProvider::*intVal = nullptr, size_t keyFrameIndex = 0);
 
 	void SetType(C4ParticleValueProviderID what = C4PV_Const);
 	float Linear(C4Particle *forParticle);
@@ -360,7 +360,7 @@ private:
 	void DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom);
 
 public:
-	C4ParticleChunk() : sourceDefinition(0), blitMode(0), attachment(C4ATTACH_None), particleCount(0), drawingDataVertexBufferObject(0), drawingDataVertexArraysObject(0)
+	C4ParticleChunk() : sourceDefinition(nullptr), blitMode(0), attachment(C4ATTACH_None), particleCount(0), drawingDataVertexBufferObject(0), drawingDataVertexArraysObject(0)
 	{
 
 	}
@@ -402,7 +402,7 @@ private:
 	CStdCSec accessMutex;
 
 public:
-	C4ParticleList(C4Object *obj = 0) : targetObject(obj), lastAccessedChunk(0)
+	C4ParticleList(C4Object *obj = nullptr) : targetObject(obj), lastAccessedChunk(nullptr)
 	{
 
 	}
@@ -433,9 +433,9 @@ private:
 	// pointers to the last and first element of linked list of particle definitions
 	C4ParticleDef *first, *last;
 public:
-	C4ParticleSystemDefinitionList() : first(0), last(0) {}
+	C4ParticleSystemDefinitionList() : first(nullptr), last(nullptr) {}
 	void Clear();
-	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=0);
+	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=nullptr);
 
 	friend class C4ParticleDef;
 };
@@ -447,7 +447,7 @@ class C4ParticleSystem
 	class CalculationThread : public StdThread
 	{
 	protected:
-		virtual void Execute();
+		void Execute() override;
 	public:
 		CalculationThread() { StdThread::Start(); }
 	};
@@ -489,7 +489,7 @@ public:
 	void DrawGlobalParticles(C4TargetFacet cgo)
 	{
 #ifndef USE_CONSOLE
-		if (globalParticles) globalParticles->Draw(cgo, 0);
+		if (globalParticles) globalParticles->Draw(cgo, nullptr);
 #endif
 	} 
 
@@ -498,13 +498,13 @@ public:
 #ifndef USE_CONSOLE
 		return globalParticles;
 #else
-		return 0;
+		return nullptr;
 #endif
 	}
 
-	C4ParticleList *GetNewParticleList(C4Object *forTarget = 0);
+	C4ParticleList *GetNewParticleList(C4Object *forTarget = nullptr);
 	// releases up to 2 lists
-	void ReleaseParticleList(C4ParticleList *first, C4ParticleList *second = 0);
+	void ReleaseParticleList(C4ParticleList *first, C4ParticleList *second = nullptr);
 
 	// interface for particle definitions
 	C4ParticleSystemDefinitionList definitions;

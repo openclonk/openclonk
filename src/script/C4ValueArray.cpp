@@ -20,19 +20,14 @@
 #include "script/C4Aul.h"
 #include "object/C4FindObject.h"
 
-C4ValueArray::C4ValueArray()
-		: pData(nullptr), iSize(0), iCapacity(0), constant(false)
-{
-}
+C4ValueArray::C4ValueArray() = default;
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: pData(nullptr), iSize(0), iCapacity(0), constant(false)
 {
 	SetSize(inSize);
 }
 
 C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
-		: pData(nullptr), iSize(0), iCapacity(0), constant(false)
 {
 	SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)

@@ -77,11 +77,7 @@ uint32_t DirSizeHelper::iSize, DirSizeHelper::iMaxSize;
 // *** C4Network2ResCore
 
 C4Network2ResCore::C4Network2ResCore()
-		: eType(NRT_Null),
-		iID(-1), iDerID(-1),
-		fLoadable(false),
-		iFileSize(~0u), iFileCRC(~0u), iContentsCRC(~0u),
-		fHasFileSHA(false),
+		: iFileSize(~0u), iFileCRC(~0u), iContentsCRC(~0u),
 		iChunkSize(C4NetResChunkSize)
 {
 }
@@ -152,17 +148,11 @@ bool C4Network2ResLoad::CheckTimeout()
 
 // *** C4Network2ResChunkData
 
-C4Network2ResChunkData::C4Network2ResChunkData()
-		: iChunkCnt(0), iPresentChunkCnt(0),
-		pChunkRanges(nullptr), iChunkRangeCnt(0)
-{
-
-}
+C4Network2ResChunkData::C4Network2ResChunkData() = default;
 
 C4Network2ResChunkData::C4Network2ResChunkData(const C4Network2ResChunkData &Data2)
 		: C4PacketBase(Data2),
-		iChunkCnt(Data2.getChunkCnt()), iPresentChunkCnt(0),
-		pChunkRanges(nullptr), iChunkRangeCnt(0)
+		iChunkCnt(Data2.getChunkCnt())
 {
 	// add ranges
 	Merge(Data2);
@@ -1284,12 +1274,8 @@ void C4Network2ResChunk::CompileFunc(StdCompiler *pComp)
 // *** C4Network2ResList
 
 C4Network2ResList::C4Network2ResList()
-		: pFirst(nullptr),
-		ResListCSec(this),
-		iClientID(-1),
-		iNextResID((-1) << 16),
-		iLastDiscover(0), iLastStatus(0),
-		pIO(nullptr)
+		: ResListCSec(this),
+		iNextResID((-1) << 16)
 {
 
 }

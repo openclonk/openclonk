@@ -95,7 +95,7 @@ protected:
 
 public:
 	C4AdditionalDefGraphics(C4Def *pOwnDef, const char *szName);  // ctor
-	virtual const char *GetName() { return Name; }
+	const char *GetName() override { return Name; }
 };
 
 // backup class holding dead graphics pointers and names
@@ -144,7 +144,7 @@ private:
 
 	std::list<C4DefGraphicsPtrBackupEntry*> Entries;
 
-	bool fApplied;
+	bool fApplied{false};
 };
 
 // Helper to compile C4DefGraphics-Pointer
@@ -179,30 +179,29 @@ public:
 		MODE_ObjectPicture=8    // draw the picture of source object
 	};
 protected:
-	Mode eMode;                // overlay mode
+	Mode eMode{MODE_None};                // overlay mode
 
-	C4DefGraphics *pSourceGfx; // source graphics - used for savegame saving and comparisons in ReloadDef
+	C4DefGraphics *pSourceGfx{nullptr}; // source graphics - used for savegame saving and comparisons in ReloadDef
 	char Action[C4MaxName+1];  // action used as overlay in source gfx
 	C4TargetFacet fctBlit; // current blit data for bitmap graphics
-	StdMeshInstance* pMeshInstance; // NoSave // - current blit data for mesh graphics 
-	uint32_t dwBlitMode;          // extra parameters for additive blits, etc.
-	uint32_t dwClrModulation;        // colormod for this overlay
+	StdMeshInstance* pMeshInstance{nullptr}; // NoSave // - current blit data for mesh graphics 
+	uint32_t dwBlitMode{0};          // extra parameters for additive blits, etc.
+	uint32_t dwClrModulation{0xffffff};        // colormod for this overlay
 	C4ObjectPtr OverlayObj; // object to be drawn as overlay in MODE_Object
 	C4DrawTransform Transform; // drawing transformation: Rotation, zoom, etc.
-	int32_t iPhase;                // action face for MODE_Action
-	bool fZoomToShape;             // if true, overlay will be zoomed to match the target object shape
+	int32_t iPhase{0};                // action face for MODE_Action
+	bool fZoomToShape{false};             // if true, overlay will be zoomed to match the target object shape
 
-	int32_t iID; // identification number for Z-ordering and script identification
+	int32_t iID{0}; // identification number for Z-ordering and script identification
 
-	C4GraphicsOverlay *pNext; // singly linked list
+	C4GraphicsOverlay *pNext{nullptr}; // singly linked list
 
 	void UpdateFacet();       // update fctBlit to reflect current data
 	void Set(Mode aMode, C4DefGraphics *pGfx, const char *szAction, DWORD dwBMode, C4Object *pOvrlObj);
 
 public:
-	C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(nullptr), fctBlit(), pMeshInstance(nullptr), dwBlitMode(0), dwClrModulation(0xffffff),
-			OverlayObj(nullptr), Transform(+1),
-			iPhase(0), fZoomToShape(false), iID(0), pNext(nullptr) { *Action=0; } // std ctor
+	C4GraphicsOverlay() : fctBlit(),
+			OverlayObj(nullptr), Transform(+1) { *Action=0; } // std ctor
 	~C4GraphicsOverlay(); // dtor
 
 	void CompileFunc(StdCompiler *pComp);

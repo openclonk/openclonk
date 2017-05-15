@@ -22,10 +22,10 @@
 class C4MarkupTag
 {
 public:
-	C4MarkupTag *pPrev, *pNext;
+	C4MarkupTag *pPrev{nullptr}, *pNext{nullptr};
 
-	C4MarkupTag(): pPrev(0), pNext(0) { }; // ctor
-	virtual ~C4MarkupTag() { };    // dtor
+	C4MarkupTag() = default; // ctor
+	virtual ~C4MarkupTag() = default;    // dtor
 
 	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)=0; // assign markup
 	virtual const char *TagName()=0;  // get character string for this tag
@@ -37,8 +37,8 @@ class C4MarkupTagItalic : public C4MarkupTag
 public:
 	C4MarkupTagItalic() : C4MarkupTag() { } // ctor
 
-	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
-	virtual const char *TagName() { return "i"; }
+	void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr) override; // assign markup
+	const char *TagName() override { return "i"; }
 };
 
 // markup tag for colored text
@@ -49,8 +49,8 @@ private:
 public:
 	C4MarkupTagColor(DWORD dwClr) : C4MarkupTag(), dwClr(dwClr) { } // ctor
 
-	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
-	virtual const char *TagName() { return "c"; }
+	void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr) override; // assign markup
+	const char *TagName() override { return "c"; }
 };
 
 // markup rendering functionality for text
@@ -63,9 +63,9 @@ private:
 	void Push(C4MarkupTag *pTag)
 	{ if ((pTag->pPrev=pLast)) pLast->pNext=pTag; else pTags=pTag; pLast=pTag; }
 	C4MarkupTag *Pop()
-	{ C4MarkupTag *pL=pLast; if (!pL) return 0; if ((pLast=pL->pPrev)) pLast->pNext=0; else pTags=0; return pL; }
+	{ C4MarkupTag *pL=pLast; if (!pL) return nullptr; if ((pLast=pL->pPrev)) pLast->pNext=nullptr; else pTags=nullptr; return pL; }
 public:
-	C4Markup(bool fDoClr) { pTags=pLast=0; this->fDoClr=fDoClr; };   // ctor
+	C4Markup(bool fDoClr) { pTags=pLast=nullptr; this->fDoClr=fDoClr; };   // ctor
 	~C4Markup() // dtor
 	{ C4MarkupTag *pTag=pTags,*pNext; while (pTag) { pNext=pTag->pNext; delete pTag; pTag=pNext; } }
 
