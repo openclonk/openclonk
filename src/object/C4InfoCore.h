@@ -20,11 +20,10 @@
 #ifndef INC_C4InfoCore
 #define INC_C4InfoCore
 
-#include "object/C4Id.h"
-#include "script/C4ValueMap.h"
-#include "lib/C4Real.h"
 #include "lib/C4InputValidation.h"
+#include "object/C4Id.h"
 #include "player/C4ScenarioParameters.h"
+#include "script/C4ValueMap.h"
 
 const int32_t C4MaxPhysical = 100000,
                               C4MaxDeathMsg = 75;

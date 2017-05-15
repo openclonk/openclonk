@@ -38,8 +38,6 @@ inline InplaceReconstruct(T *obj)
 	new (obj) T();
 }
 
-#include "platform/PlatformAbstraction.h"
-
 // Small helpers
 template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }
 template <class T, class U, class V> inline bool Inside(T ival, U lbound, V rbound) { return ival >= lbound && ival <= rbound; }
@@ -57,7 +55,6 @@ int Angle(int iX1, int iY1, int iX2, int iY2);
 int Pow(int base, int exponent);
 int32_t StrToI32(const char *s, int base, const char **scan_end);
 
-#include <cstring>
 template <class T>
 typename std::enable_if<std::is_pod<T>::value>::type
 inline ZeroMem(T *lpMem, size_t dwSize)
@@ -70,7 +67,6 @@ inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
 	std::memmove(lpMem2,lpMem1,dwSize);
 }
 
-#include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
 bool IsIdentifier(char cChar);
 inline bool IsWhiteSpace(char cChar) { return !!std::isspace((unsigned char)cChar); }
@@ -151,9 +147,6 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 #define LineFeed "\x00D\x00A"
 
 // sprintf wrapper
-
-#include <cstdio>
-#include <cstdarg>
 
 #ifdef _WIN32
 #define vsnprintf _vsprintf_p

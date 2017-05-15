@@ -19,17 +19,13 @@
 #include "C4Include.h"
 #include "platform/C4Window.h"
 
-#include "game/C4Application.h"
-#include "graphics/C4DrawGL.h"
-#include "editor/C4Console.h"
-#include "editor/C4ViewportWindow.h"
-#include "gui/C4Gui.h"
-#include "platform/StdFile.h"
-#include "lib/StdBuf.h"
-
 #include "C4Version.h"
 #include "lib/C4Rect.h"
-#include "config/C4Config.h"
+#include "editor/C4Console.h"
+#include "editor/C4ViewportWindow.h"
+#include "game/C4Application.h"
+#include "graphics/C4DrawGL.h"
+#include "gui/C4Gui.h"
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include <X11/Xlib.h>

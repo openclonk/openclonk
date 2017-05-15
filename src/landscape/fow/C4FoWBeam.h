@@ -19,7 +19,6 @@
 #include "C4ForbidLibraryCompilation.h"
 
 #ifndef USE_CONSOLE
-#include "lib/StdBuf.h"
 
 /** This class represents one beam. A beam is a triangle spanned by two rays: one going from the origin to the
     left delimiter point, one going from the origin to the right delimiter point.

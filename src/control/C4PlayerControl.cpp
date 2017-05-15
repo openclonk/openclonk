@@ -19,25 +19,20 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "control/C4PlayerControl.h"
 
-#include "object/C4DefList.h"
 #include "c4group/C4LangStringTable.h"
-#include "player/C4Player.h"
-#include "player/C4PlayerList.h"
 #include "control/C4Control.h"
-#include "game/C4Game.h"
-#include "platform/C4GamePadCon.h"
-#include "lib/C4Log.h"
-#include "graphics/C4GraphicsResource.h"
-#include "gui/C4MouseControl.h"
+#include "control/C4Record.h"
 #include "game/C4GraphicsSystem.h"
 #include "game/C4Viewport.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "object/C4DefList.h"
 #include "object/C4Object.h"
 #include "object/C4ObjectMenu.h"
+#include "platform/C4GamePadCon.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 #include "script/C4Aul.h"
-
-#include <algorithm>
-
-#include "control/C4Record.h"
 
 /* C4PlayerControlDef */
 

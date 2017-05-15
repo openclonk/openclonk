@@ -21,8 +21,6 @@
 #include "platform/StdRegistry.h"
 
 #ifdef _WIN32
-#include "platform/C4windowswrapper.h"
-#include <cstdio>
 
 StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)
 {

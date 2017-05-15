@@ -20,7 +20,6 @@
 #define INC_STDWINDOW
 
 #include "C4ForbidLibraryCompilation.h"
-#include "lib/StdBuf.h"
 
 #if defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
@@ -43,10 +42,6 @@ extern int MK_ALT;
 #ifndef MK_ALT
 #define MK_ALT 0x20 // as defined in oleidl.h
 #endif
-#endif
-
-#ifdef USE_SDL_MAINLOOP
-#include <SDL.h>
 #endif
 
 #if defined(USE_WIN32_WINDOWS) || defined(USE_CONSOLE) || defined(USE_SDL_MAINLOOP)

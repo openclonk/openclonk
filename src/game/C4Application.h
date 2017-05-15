@@ -18,12 +18,12 @@
 #ifndef INC_C4Application
 #define INC_C4Application
 
-#include "c4group/C4Group.h"
-#include "platform/C4MusicSystem.h"
-#include "platform/C4SoundSystem.h"
 #include "c4group/C4Components.h"
+#include "c4group/C4Group.h"
 #include "network/C4InteractiveThread.h"
 #include "platform/C4App.h"
+#include "platform/C4MusicSystem.h"
+#include "platform/C4SoundSystem.h"
 
 class C4ApplicationGameTimer;
 

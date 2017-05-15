@@ -20,11 +20,10 @@
 #include "C4Include.h"
 #include "script/C4ScriptHost.h"
 
-#include "script/C4AulAST.h"
+#include "object/C4Def.h"
 #include "script/C4AulCompiler.h"
 #include "script/C4AulParse.h"
 #include "script/C4AulScriptFunc.h"
-#include "object/C4Def.h"
 #include "script/C4AulScriptFunc.h"
 #include "script/C4Effect.h"
 

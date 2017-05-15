@@ -20,7 +20,6 @@
 #ifndef INC_C4Sky
 #define INC_C4Sky
 
-#include "lib/C4Real.h"
 #include "graphics/C4Shader.h"
 
 #define C4SkyPM_Fixed     0   // sky parallax mode: fixed

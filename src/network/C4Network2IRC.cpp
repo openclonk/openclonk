@@ -17,13 +17,10 @@
 #include "C4Include.h"
 #include "network/C4Network2IRC.h"
 
-#include "game/C4Application.h"
-#include "config/C4Config.h"
 #include "C4Version.h"
-#include "network/C4InteractiveThread.h"
+#include "game/C4Application.h"
 #include "gui/C4Gui.h" // for clearly visi
-
-#include <cctype> // for isdigit
+#include "network/C4InteractiveThread.h"
 
 // Helper for IRC command parameter parsing
 StdStrBuf ircExtractPar(const char **ppPar)

@@ -16,13 +16,10 @@
 #include "C4Include.h"
 #include "network/C4Client.h"
 
-#include "game/C4Application.h"
-#include "config/C4Config.h"
-#include "network/C4Network2Client.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
-#include "player/C4PlayerList.h"
 #include "control/C4GameControl.h"
+#include "game/C4Application.h"
+#include "network/C4Network2Client.h"
+#include "player/C4PlayerList.h"
 
 #ifndef HAVE_WINSOCK
 #include <netdb.h>

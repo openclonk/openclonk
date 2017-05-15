@@ -19,19 +19,18 @@
 
 #include "C4Include.h"
 #include "landscape/C4Material.h"
-#include "c4group/C4Components.h"
 
+#include "c4group/C4Components.h"
 #include "c4group/C4Group.h"
-#include "landscape/C4PXS.h"
-#include "lib/C4Random.h"
 #include "editor/C4ToolsDlg.h" // For C4TLS_MatSky...
-#include "landscape/C4Texture.h"
-#include "script/C4Aul.h"
-#include "landscape/C4Landscape.h"
-#include "platform/C4SoundSystem.h"
-#include "script/C4Effect.h"
-#include "lib/C4Log.h"
 #include "game/C4Physics.h" // For GravAccel
+#include "landscape/C4PXS.h"
+#include "landscape/C4Texture.h"
+#include "landscape/C4Landscape.h"
+#include "lib/C4Random.h"
+#include "platform/C4SoundSystem.h"
+#include "script/C4Aul.h"
+#include "script/C4Effect.h"
 
 
 int32_t MVehic=MNone,MHalfVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;

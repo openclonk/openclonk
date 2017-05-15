@@ -17,17 +17,13 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "landscape/C4LandscapeRender.h"
 
+#include "c4group/C4Components.h"
+#include "c4group/C4GroupSet.h"
+#include "graphics/C4DrawGL.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Texture.h"
 #include "landscape/fow/C4FoWRegion.h"
-
-#include "c4group/C4GroupSet.h"
-#include "c4group/C4Components.h"
-
-#include "graphics/C4DrawGL.h"
 #include "lib/StdColors.h"
-
-#include <algorithm>
 
 #ifndef USE_CONSOLE
 

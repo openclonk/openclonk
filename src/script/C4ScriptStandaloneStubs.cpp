@@ -15,14 +15,13 @@
 
 #include "C4Include.h"
 
+#include "config/C4Reloc.h"
+#include "control/C4Record.h"
+#include "object/C4Def.h"
+#include "object/C4ObjectList.h"
 #include "script/C4Aul.h"
 #include "script/C4AulDebug.h"
-#include "config/C4Config.h"
-#include "object/C4Def.h"
 #include "script/C4PropList.h"
-#include "control/C4Record.h"
-#include "config/C4Reloc.h"
-#include "object/C4ObjectList.h"
 
 /* Parts of the ScriptEngine that are normally in C4Globals for initialization order reasons. */
 #ifdef _DEBUG

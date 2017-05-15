@@ -18,18 +18,9 @@
 #include "C4Include.h"
 #include "script/C4AulParse.h"
 
-#include <utility>
-#include <stack>
-
-#include "script/C4Aul.h"
+#include "object/C4Def.h"
 #include "script/C4AulDebug.h"
 #include "script/C4AulExec.h"
-#include "object/C4Def.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
-#include "config/C4Config.h"
-#include "script/C4AulAST.h"
-#include "script/C4AulCompiler.h"
 
 #ifndef DEBUG_BYTECODE_DUMP
 #define DEBUG_BYTECODE_DUMP 0

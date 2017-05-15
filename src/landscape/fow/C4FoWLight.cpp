@@ -22,11 +22,9 @@
 #include "landscape/fow/C4FoWLightSection.h"
 #include "landscape/fow/C4FoWBeamTriangle.h"
 #include "landscape/fow/C4FoWDrawStrategy.h"
+#include "lib/StdColors.h"
 #include "player/C4PlayerList.h"
 #include "player/C4Player.h"
-#include "lib/StdColors.h"
-
-#include <vector>
 
 C4FoWLight::C4FoWLight(C4Object *pObj)
 	: iX(fixtoi(pObj->fix_x)),

@@ -21,8 +21,8 @@
 #include "C4Include.h"
 #include "script/C4Effect.h"
 
-#include "script/C4Aul.h"
 #include "game/C4GameScript.h"
+#include "script/C4Aul.h"
 
 void C4Effect::AssignCallbackFunctions()
 {

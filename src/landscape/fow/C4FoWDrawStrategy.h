@@ -22,7 +22,6 @@
 
 #include "graphics/C4DrawGL.h"
 #include "graphics/C4Shader.h"
-#include <list>
 
 class C4FoWRegion;
 class C4TargetFacet;

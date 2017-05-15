@@ -20,11 +20,11 @@
 #ifndef INC_C4Control
 #define INC_C4Control
 
-#include "object/C4Id.h"
-#include "network/C4PacketBase.h"
 #include "control/C4PlayerInfo.h"
-#include "network/C4Client.h"
 #include "gui/C4KeyboardInput.h"
+#include "network/C4PacketBase.h"
+#include "network/C4Client.h"
+#include "object/C4Id.h"
 #include "object/C4ObjectList.h"
 
 // *** control base classes

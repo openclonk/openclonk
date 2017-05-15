@@ -18,19 +18,17 @@
 #include "C4Include.h"
 #include "control/C4GameSave.h"
 
-#include "c4group/C4Components.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
-#include "landscape/C4Landscape.h"
-#include "landscape/C4PXS.h"
-#include "landscape/C4MassMover.h"
-#include "player/C4PlayerList.h"
-#include "control/C4RoundResults.h"
-#include "control/C4Record.h"
 #include "C4Version.h"
+#include "c4group/C4Components.h"
 #include "control/C4GameParameters.h"
-#include "script/C4Value.h"
+#include "control/C4Record.h"
+#include "control/C4RoundResults.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4MassMover.h"
+#include "landscape/C4PXS.h"
+#include "player/C4PlayerList.h"
 #include "network/C4Network2.h"
+#include "script/C4Value.h"
 
 // *** C4GameSave main class
 

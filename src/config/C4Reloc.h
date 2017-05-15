@@ -16,8 +16,6 @@
 #ifndef C4RELOC_H
 #define C4RELOC_H
 
-#include <vector>
-
 class C4Reloc
 {
 public:

@@ -20,8 +20,6 @@
     Feel free to customize this file to suit your needs
 */
 
-#include <vector>
-
 #include "C4Include.h"
 #include "gui/C4KeyboardInput.h"
 

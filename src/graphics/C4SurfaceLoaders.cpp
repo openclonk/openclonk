@@ -22,7 +22,6 @@
 
 #include "c4group/C4GroupSet.h"
 #include "c4group/C4Group.h"
-#include "lib/C4Log.h"
 #include "graphics/StdPNG.h"
 #include "lib/StdColors.h"
 

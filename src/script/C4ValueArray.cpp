@@ -15,10 +15,9 @@
  */
 #include "C4Include.h"
 #include "script/C4ValueArray.h"
-#include <algorithm>
 
-#include "script/C4Aul.h"
 #include "object/C4FindObject.h"
+#include "script/C4Aul.h"
 
 C4ValueArray::C4ValueArray()
 		: pData(nullptr), iSize(0), iCapacity(0), constant(false)

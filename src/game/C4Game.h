@@ -20,14 +20,12 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-#include "landscape/C4Scenario.h"
-#include "landscape/C4PathFinder.h"
 #include "c4group/C4Extra.h"
-#include "gui/C4Scoreboard.h"
 #include "control/C4PlayerControl.h"
+#include "gui/C4Scoreboard.h"
+#include "landscape/C4PathFinder.h"
+#include "landscape/C4Scenario.h"
 #include "landscape/C4TransferZone.h"
-
-#include <memory>
 
 class C4ScriptGuiWindow;
 

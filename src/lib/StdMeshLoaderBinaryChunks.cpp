@@ -15,10 +15,6 @@
 
 #include "C4Include.h"
 #include "lib/StdMeshLoaderBinaryChunks.h"
-#include "lib/StdMeshLoaderDataStream.h"
-#include <cassert>
-#include <string>
-#include <utility>
 
 // deleter-agnostic unique_ptr static caster
 template<typename To, typename From>

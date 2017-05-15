@@ -18,8 +18,6 @@
 #ifndef INC_StdColors
 #define INC_StdColors
 
-#include <math.h>
-
 // helper function
 inline uint32_t RGBA(uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {

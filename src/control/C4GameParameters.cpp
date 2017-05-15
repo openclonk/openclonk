@@ -16,11 +16,9 @@
 #include "C4Include.h"
 #include "control/C4GameParameters.h"
 
-#include "lib/C4Log.h"
 #include "c4group/C4Components.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "game/C4Game.h"
 #include "game/C4Application.h"
 #include "network/C4Network2.h"
 

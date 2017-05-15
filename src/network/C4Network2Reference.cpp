@@ -16,13 +16,10 @@
 #include "C4Include.h"
 #include "network/C4Network2Reference.h"
 
-#include "game/C4Game.h"
-#include "control/C4RoundResults.h"
 #include "C4Version.h"
+#include "control/C4RoundResults.h"
 #include "game/C4Application.h"
 
-#include <utility>
-#include <fcntl.h>
 #include <zlib.h>
 
 // *** C4Network2Reference

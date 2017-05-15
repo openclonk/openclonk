@@ -20,20 +20,19 @@
 #include "C4Include.h"
 #include "object/C4ObjectCom.h"
 
-#include "script/C4Effect.h"
-#include "object/C4Def.h"
-#include "object/C4Object.h"
 #include "game/C4Physics.h"
-#include "object/C4Command.h"
-#include "lib/C4Random.h"
+#include "graphics/C4GraphicsResource.h"
 #include "gui/C4GameMessage.h"
+#include "landscape/C4Material.h"
+#include "lib/C4Random.h"
+#include "object/C4Command.h"
+#include "object/C4Def.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
 #include "object/C4ObjectMenu.h"
 #include "player/C4Player.h"
-#include "graphics/C4GraphicsResource.h"
-#include "landscape/C4Material.h"
-#include "game/C4Game.h"
 #include "player/C4PlayerList.h"
-#include "object/C4GameObjects.h"
+#include "script/C4Effect.h"
 
 bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir);
 

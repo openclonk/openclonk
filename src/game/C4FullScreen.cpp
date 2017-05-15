@@ -20,18 +20,16 @@
 #include "C4Include.h"
 #include "game/C4FullScreen.h"
 
-#include "game/C4Game.h"
-#include "game/C4Application.h"
-#include "game/C4Viewport.h"
-#include "c4group/C4Language.h"
-#include "gui/C4Gui.h"
-#include "gui/C4GameDialogs.h"
-#include "player/C4Player.h"
-#include "gui/C4GameOverDlg.h"
-#include "game/C4GraphicsSystem.h"
-#include "gui/C4MouseControl.h"
-#include "player/C4PlayerList.h"
 #include "C4Version.h"
+#include "game/C4Application.h"
+#include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "gui/C4GameDialogs.h"
+#include "gui/C4GameOverDlg.h"
+#include "gui/C4Gui.h"
+#include "gui/C4MouseControl.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 

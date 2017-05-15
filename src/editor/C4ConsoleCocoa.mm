@@ -17,13 +17,11 @@
 
 #include "C4Include.h"
 #include "editor/C4Console.h"
-#include "game/C4Application.h"
 
+#include "game/C4Application.h"
 #include "control/C4GameSave.h"
-#include "game/C4Game.h"
 #include "gui/C4MessageInput.h"
 #include "C4Version.h"
-#include "c4group/C4Language.h"
 #include "player/C4Player.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
@@ -32,7 +30,6 @@
 #include "control/C4GameControl.h"
 #include "landscape/C4Texture.h"
 
-#include "platform/StdFile.h"
 #include "platform/StdRegistry.h"
 
 #import <Cocoa/Cocoa.h>

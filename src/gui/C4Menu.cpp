@@ -20,18 +20,17 @@
 #include "C4Include.h"
 #include "gui/C4Menu.h"
 
+#include "control/C4GameControl.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4MouseControl.h"
+#include "lib/StdColors.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
 #include "object/C4Object.h"
-#include "game/C4Viewport.h"
 #include "player/C4Player.h"
-#include "gui/C4MouseControl.h"
-#include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
-#include "game/C4Game.h"
 #include "player/C4PlayerList.h"
-#include "control/C4GameControl.h"
-#include "lib/StdColors.h"
 
 const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
                   C4MN_DlgWdt         = 270, // default width of dialog windows

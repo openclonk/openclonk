@@ -16,11 +16,11 @@
 #ifndef INC_C4Network2Client
 #define INC_C4Network2Client
 
+#include "network/C4Client.h"
 #include "network/C4NetIO.h"
+#include "network/C4Network2Address.h"
 #include "network/C4Network2IO.h"
 #include "network/C4PacketBase.h"
-#include "network/C4Client.h"
-#include "network/C4Network2Address.h"
 
 class C4Network2; class C4Network2IOConnection;
 

@@ -18,13 +18,12 @@
 #include "C4Include.h"
 #include "control/C4RoundResults.h"
 
-#include "player/C4Player.h"
-#include "game/C4Game.h"
 #include "object/C4Def.h"
-#include "object/C4Object.h"
-#include "player/C4PlayerList.h"
-#include "object/C4GameObjects.h"
 #include "object/C4DefList.h"
+#include "object/C4GameObjects.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // *** C4RoundResultsPlayer
 

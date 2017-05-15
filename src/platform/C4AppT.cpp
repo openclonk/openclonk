@@ -19,9 +19,9 @@
 #include "C4Include.h"
 #include "platform/C4App.h"
 
-#include "platform/C4Window.h"
-#include "graphics/C4Draw.h"
 #include "game/C4Application.h"
+#include "graphics/C4Draw.h"
+#include "platform/C4Window.h"
 
 /* C4AbstractApp */
 

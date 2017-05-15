@@ -18,18 +18,16 @@
 #include "C4Include.h"
 #include "gui/C4MessageInput.h"
 
-#include "game/C4Game.h"
-#include "object/C4Object.h"
-#include "gui/C4Gui.h"
+#include "control/C4GameControl.h"
 #include "editor/C4Console.h"
 #include "game/C4Application.h"
-#include "lib/C4Log.h"
-#include "player/C4Player.h"
-#include "gui/C4GameLobby.h"
 #include "game/C4GraphicsSystem.h"
-#include "player/C4PlayerList.h"
-#include "control/C4GameControl.h"
 #include "graphics/C4GraphicsResource.h"
+#include "gui/C4Gui.h"
+#include "gui/C4GameLobby.h"
+#include "object/C4Object.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // --------------------------------------------------
 // C4ChatInputDialog

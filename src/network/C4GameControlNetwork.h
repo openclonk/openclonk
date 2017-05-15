@@ -19,8 +19,8 @@
 #define INC_C4GameControlNetwork
 
 #include "control/C4Control.h"
-#include "network/C4PacketBase.h"
 #include "network/C4Network2.h"
+#include "network/C4PacketBase.h"
 
 // constants
 const int32_t C4ControlBacklog = 100, // (ctrl ticks)

@@ -20,18 +20,15 @@
 #include "C4Include.h"
 #include "object/C4ObjectInfo.h"
 
+#include "c4group/C4Components.h"
+#include "game/C4Application.h"
+#include "graphics/C4GraphicsResource.h"
+#include "lib/C4Random.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "lib/C4Random.h"
-#include "c4group/C4Components.h"
-#include "game/C4Game.h"
-#include "config/C4Config.h"
-#include "game/C4Application.h"
-#include "player/C4RankSystem.h"
-#include "lib/C4Log.h"
 #include "player/C4Player.h"
-#include "graphics/C4GraphicsResource.h"
 #include "player/C4PlayerList.h"
+#include "player/C4RankSystem.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf

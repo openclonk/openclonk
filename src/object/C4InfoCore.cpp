@@ -20,17 +20,14 @@
 #include "C4Include.h"
 #include "object/C4InfoCore.h"
 
+#include "c4group/C4Components.h"
+#include "c4group/C4Group.h"
+#include "lib/C4Markup.h"
+#include "lib/C4Random.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "lib/C4Random.h"
-#include "lib/C4Markup.h"
-#include "player/C4RankSystem.h"
-#include "c4group/C4Group.h"
-#include "c4group/C4Components.h"
-#include "game/C4Game.h"
 #include "object/C4GameObjects.h"
-
-#include "lib/C4Random.h"
+#include "player/C4RankSystem.h"
 
 
 //------------------------------- Player Info ----------------------------------------

@@ -16,8 +16,8 @@
 #ifndef C4FINDOBJECT_H
 #define C4FINDOBJECT_H
 
-#include "script/C4Value.h"
 #include "lib/C4Rect.h"
+#include "script/C4Value.h"
 
 // Condition map
 enum C4FindObjectCondID

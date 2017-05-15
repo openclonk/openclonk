@@ -20,14 +20,11 @@
 #include "C4Include.h"
 #include "control/C4PlayerInfo.h"
 
-#include "game/C4Game.h"
-#include "config/C4Config.h"
-#include "lib/C4Log.h"
-#include "player/C4Player.h"
-#include "game/C4FullScreen.h"
-#include "player/C4PlayerList.h"
-#include "control/C4GameControl.h"
 #include "c4group/C4Components.h"
+#include "control/C4GameControl.h"
+#include "game/C4FullScreen.h"
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // *** C4PlayerInfo
 

@@ -24,7 +24,6 @@
 #include <io.h>
 #endif
 #include "c4group/CStdFile.h"
-#include "lib/StdBuf.h"
 
 // C4Group-Rewind-warning:
 // The current C4Group-implementation cannot handle random file access very well,

@@ -18,14 +18,11 @@
 #ifndef INC_C4StartupScenSelDlg
 #define INC_C4StartupScenSelDlg
 
+#include "gui/C4Folder.h"
 #include "gui/C4Startup.h"
 #include "landscape/C4Scenario.h"
-#include "gui/C4Folder.h"
 #include "player/C4ScenarioParameters.h"
 #include "player/C4Achievement.h"
-
-#include <list>
-#include <string>
 
 class C4StartupScenSelDlg;
 

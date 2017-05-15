@@ -18,20 +18,16 @@
 /* A handy wrapper class to gzio files */
 
 #include "C4Include.h"
-#ifdef _WIN32
-#	include "platform/C4windowswrapper.h"
-#endif
-#include "platform/StdFile.h"
 #include "c4group/CStdFile.h"
+#ifdef _WIN32
+#include "platform/C4windowswrapper.h"
+#endif
 #include "lib/SHA1.h"
 
 #include <zlib.h>
 #include "zlib/gzio.h"
-#include <cstdio>
 
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <cassert>
 
 CStdFile::CStdFile()
 {

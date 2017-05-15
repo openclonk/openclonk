@@ -20,15 +20,13 @@
 #ifndef INC_C4Player
 #define INC_C4Player
 
+#include "control/C4PlayerControl.h"
 #include "gui/C4MainMenu.h"
-#include "object/C4ObjectInfoList.h"
 #include "object/C4InfoCore.h"
+#include "object/C4ObjectInfoList.h"
 #include "object/C4ObjectList.h"
 #include "object/C4ObjectPtr.h"
-#include "control/C4PlayerControl.h"
 #include "script/C4Value.h"
-#include <set>
-#include <memory>
 
 const int32_t C4PVM_Cursor    = 0,
               C4PVM_Target    = 1,

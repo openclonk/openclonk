@@ -19,15 +19,13 @@
 #include "C4Include.h"
 #include "platform/C4App.h"
 
-#include "platform/C4Window.h"
-#include "graphics/C4DrawGL.h"
-#include "platform/StdFile.h"
-#include "lib/StdBuf.h"
-#include "gui/C4MouseControl.h"
-#include "game/C4Application.h"
-#include "gui/C4Gui.h"
-#include "platform/C4GamePadCon.h"
 #include "C4Version.h"
+#include "game/C4Application.h"
+#include "graphics/C4DrawGL.h"
+#include "gui/C4Gui.h"
+#include "gui/C4MouseControl.h"
+#include "platform/C4GamePadCon.h"
+#include "platform/C4Window.h"
 
 static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& flags)
 {

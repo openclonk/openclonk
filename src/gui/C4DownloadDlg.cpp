@@ -18,7 +18,6 @@
 #include "C4Include.h"
 #include "gui/C4DownloadDlg.h"
 
-#include "lib/C4Log.h"
 #include "graphics/C4GraphicsResource.h"
 
 C4Network2HTTPClient HTTPClient;

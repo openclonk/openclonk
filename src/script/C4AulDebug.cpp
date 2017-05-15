@@ -16,12 +16,10 @@
 #include "C4Include.h"
 #include "script/C4AulDebug.h"
 
-#include "game/C4Application.h"
 #include "C4Version.h"
 #include "control/C4GameControl.h"
-#include "game/C4Game.h"
+#include "game/C4Application.h"
 #include "gui/C4MessageInput.h"
-#include "lib/C4Log.h"
 #include "object/C4Def.h"
 #include "object/C4Object.h"
 #include "script/C4AulExec.h"

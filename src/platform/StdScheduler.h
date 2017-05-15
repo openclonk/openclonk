@@ -33,7 +33,6 @@ struct pollfd;
 #else // _WIN32
 #ifdef HAVE_POLL_H
 #include <poll.h>
-#include <vector>
 #else // HAVE_POLL_H
 #include <sys/select.h>
 #endif // HAVE_POLL_H
@@ -44,9 +43,6 @@ struct pollfd;
 #include <sched.h>
 #endif
 #endif // _WIN32
-
-
-#include <vector>
 
 typedef struct _GMainLoop GMainLoop;
 

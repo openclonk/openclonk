@@ -18,9 +18,8 @@
 #include "C4Include.h"
 #include "gui/C4GameOptions.h"
 
-#include "game/C4Application.h"
-#include "game/C4Game.h"
 #include "control/C4GameControl.h"
+#include "game/C4Application.h"
 #include "graphics/C4GraphicsResource.h"
 #include "gui/C4GameLobby.h"
 #include "gui/C4Startup.h"

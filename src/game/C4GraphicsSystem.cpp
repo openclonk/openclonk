@@ -21,20 +21,19 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "game/C4GraphicsSystem.h"
 
-#include "game/C4Viewport.h"
-#include "game/C4Application.h"
 #include "editor/C4Console.h"
+#include "game/C4Application.h"
 #include "game/C4FullScreen.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "graphics/StdPNG.h"
 #include "gui/C4Gui.h"
 #include "gui/C4LoaderScreen.h"
-#include "graphics/C4GraphicsResource.h"
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Sky.h"
 #include "network/C4Network2.h"
-#include "game/C4Game.h"
 #include "object/C4GameObjects.h"
-#include "graphics/StdPNG.h"
-#include "graphics/C4Draw.h"
 
 static const int MAX_BACKGROUND_FPS = 5;
 

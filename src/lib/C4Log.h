@@ -19,8 +19,6 @@
 #ifndef INC_C4Log
 #define INC_C4Log
 
-#include "lib/StdBuf.h"
-
 bool OpenLog();
 bool OpenExtraLogs();
 bool CloseLog();

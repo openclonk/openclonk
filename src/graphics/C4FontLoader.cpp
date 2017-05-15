@@ -22,16 +22,10 @@
 
 #ifndef USE_CONSOLE
 #include "c4group/C4Components.h"
-#include "config/C4Config.h"
-#include "graphics/C4Draw.h"
-#include "c4group/C4Language.h"
-#include "lib/C4Log.h"
 #include "lib/C4Markup.h"
-#include "graphics/C4Surface.h"
 #include "lib/StdColors.h"
-
-#include <stdexcept>
-#include <string>
+#include "graphics/C4Draw.h"
+#include "graphics/C4Surface.h"
 
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"

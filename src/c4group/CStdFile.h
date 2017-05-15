@@ -20,7 +20,6 @@
 #ifndef INC_CSTDFILE
 #define INC_CSTDFILE
 
-#include <stdio.h>
 #include "platform/StdSync.h" // for StdThreadCheck
 #include <zlib.h> // for gzFile
 

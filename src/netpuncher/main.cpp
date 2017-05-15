@@ -16,15 +16,11 @@
 
 #include "C4Include.h"
 #include "netpuncher/C4PuncherHash.h"
-#include "network/C4Network2.h"
 #include "netpuncher/C4PuncherPacket.h"
+#include "network/C4Network2.h"
 
-#include <cstdio>
-
-#include <unordered_map>
-#include <functional>
 #include <random>
-#include <stdexcept>
+#include <unordered_map>
 
 class C4PuncherServer : public C4NetIOUDP, private C4NetIO::CBClass
 {

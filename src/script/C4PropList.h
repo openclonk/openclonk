@@ -15,8 +15,6 @@
 
 /* Property lists */
 
-#include <memory>
-
 #include "script/C4Value.h"
 #include "script/C4StringTable.h"
 

@@ -18,10 +18,9 @@
 #ifndef C4NETIO_H
 #define C4NETIO_H
 
-#include "platform/StdSync.h"
-#include "lib/StdBuf.h"
 #include "lib/StdCompiler.h"
 #include "platform/StdScheduler.h"
+#include "platform/StdSync.h"
 
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"

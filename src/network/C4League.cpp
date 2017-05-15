@@ -19,7 +19,6 @@
 #include "C4Include.h"
 #include "network/C4League.h"
 
-#include "game/C4Game.h"
 #include "control/C4RoundResults.h"
 #include "graphics/C4GraphicsResource.h"
 

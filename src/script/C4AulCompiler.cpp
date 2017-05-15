@@ -17,13 +17,12 @@
 #include "C4Include.h"
 #include "script/C4AulCompiler.h"
 
-#include <cassert>
-#include <cinttypes>
-
 #include "script/C4Aul.h"
 #include "script/C4AulParse.h"
 #include "script/C4AulScriptFunc.h"
 #include "script/C4ScriptHost.h"
+
+#include <cinttypes>
 
 #define C4AUL_Inherited     "inherited"
 #define C4AUL_SafeInherited "_inherited"
