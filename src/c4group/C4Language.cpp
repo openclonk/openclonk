@@ -27,9 +27,6 @@
 
 #include "game/C4Application.h"
 #include "c4group/C4Components.h"
-#include "lib/C4Log.h"
-#include "config/C4Config.h"
-#include "game/C4Game.h"
 
 template<size_t iBufferSize>
 static bool GetRelativePath(const char *strPath, const char *strRelativeTo, char(&strBuffer)[iBufferSize])

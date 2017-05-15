@@ -18,10 +18,7 @@
 #include "C4Include.h"
 #include "c4group/C4Extra.h"
 
-#include "config/C4Config.h"
 #include "c4group/C4Components.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
 
 C4Extra::C4Extra() = default;
 

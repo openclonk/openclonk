@@ -19,9 +19,8 @@
 
 #include "C4Include.h"
 #include "object/C4Id.h"
-#include "lib/StdCompiler.h"
 
-#include <utility>
+#include "lib/StdCompiler.h"
 
 C4ID::NamesList C4ID::names;
 C4ID::LookupTable C4ID::lookup;

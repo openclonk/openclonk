@@ -20,14 +20,12 @@
 #include "C4Include.h"
 #include "object/C4ObjectInfoList.h"
 
+#include "c4group/C4Components.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "object/C4ObjectInfo.h"
-#include "c4group/C4Components.h"
-#include "game/C4Game.h"
-#include "player/C4RankSystem.h"
-#include "config/C4Config.h"
 #include "object/C4GameObjects.h"
+#include "object/C4ObjectInfo.h"
+#include "player/C4RankSystem.h"
 
 C4ObjectInfoList::C4ObjectInfoList()
 {

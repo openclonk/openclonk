@@ -19,29 +19,19 @@
 
 #include "C4Include.h"
 #include "platform/StdFile.h"
-#include "lib/StdBuf.h"
 
-#include <cstdio>
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
 #ifdef HAVE_DIRECT_H
 #include <direct.h>
 #endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #endif
-#include <cerrno>
-#include <cstdlib>
-#include <cctype>
-#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <zlib.h>
-#include <string>
 
 /* Path & Filename */
 #ifdef _WIN32

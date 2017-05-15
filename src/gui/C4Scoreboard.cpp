@@ -18,10 +18,10 @@
 #include "C4Include.h"
 #include "gui/C4Scoreboard.h"
 
-#include "gui/C4Gui.h"
 #include "gui/C4GameOverDlg.h"
-#include "graphics/C4GraphicsResource.h"
+#include "gui/C4Gui.h"
 #include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
 
 
 class C4ScoreboardDlg : public C4GUI::Dialog

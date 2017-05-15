@@ -18,18 +18,16 @@
 #include "C4Include.h"
 #include "gui/C4GameOverDlg.h"
 
+#include "control/C4GameControl.h"
 #include "game/C4Application.h"
+#include "game/C4FullScreen.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4PlayerInfoListBox.h"
 #include "object/C4Def.h"
 #include "object/C4DefList.h"
-#include "game/C4Game.h"
-#include "game/C4FullScreen.h"
-#include "player/C4Player.h"
-#include "gui/C4PlayerInfoListBox.h"
-#include "player/C4PlayerList.h"
 #include "object/C4GameObjects.h"
-#include "control/C4GameControl.h"
-#include "graphics/C4GraphicsResource.h"
-
+#include "player/C4Player.h"
+#include "player/C4PlayerList.h"
 
 // ---------------------------------------------------
 // C4GoalDisplay

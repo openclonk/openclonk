@@ -16,11 +16,8 @@
 // Loads StringTbl* and replaces $..$-strings by localized versions
 
 #include "C4Include.h"
-
-#include <utility>
-#include <vector>
-
 #include "c4group/C4LangStringTable.h"
+
 #include "lib/C4InputValidation.h"
 
 C4LangStringTable::C4LangStringTable() : ref_count(1) {}

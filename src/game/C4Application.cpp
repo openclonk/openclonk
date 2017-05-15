@@ -22,26 +22,23 @@
 #include "game/C4Application.h"
 
 #include "C4Version.h"
+#include "editor/C4Console.h"
+#include "game/C4FullScreen.h"
+#include "game/C4GraphicsSystem.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "graphics/StdPNG.h"
+#include "gui/C4GameLobby.h"
+#include "gui/C4GfxErrorDlg.h"
+#include "gui/C4MessageInput.h"
 #ifdef _WIN32
 #include "gui/C4UpdateDlg.h"
 #endif
-#include "game/C4Game.h"
-#include "gui/C4GfxErrorDlg.h"
-#include "game/C4GraphicsSystem.h"
-#include "graphics/C4GraphicsResource.h"
-#include "gui/C4MessageInput.h"
-#include "game/C4FullScreen.h"
-#include "c4group/C4Language.h"
-#include "editor/C4Console.h"
 #include "gui/C4Startup.h"
-#include "lib/C4Log.h"
-#include "platform/C4GamePadCon.h"
-#include "gui/C4GameLobby.h"
+#include "landscape/C4Particles.h"
 #include "network/C4Network2.h"
 #include "network/C4Network2IRC.h"
-#include "landscape/C4Particles.h"
-#include "graphics/StdPNG.h"
-#include "graphics/C4Draw.h"
+#include "platform/C4GamePadCon.h"
 
 #include <getopt.h>
 

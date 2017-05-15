@@ -17,12 +17,13 @@
 
 #include "C4Include.h"
 #include "landscape/C4MapCreatorS2.h"
-#include "lib/C4Random.h"
-#include "landscape/C4Material.h"
-#include "script/C4ScriptHost.h"
-#include "landscape/C4Texture.h"
+
 #include "control/C4Record.h"
 #include "graphics/CSurface8.h"
+#include "landscape/C4Material.h"
+#include "landscape/C4Texture.h"
+#include "lib/C4Random.h"
+#include "script/C4ScriptHost.h"
 
 namespace {
 	// node attribute entry for SetField search

@@ -19,17 +19,15 @@
 #include "C4Include.h"
 #include "object/C4GameObjects.h"
 
-#include "script/C4Effect.h"
-#include "object/C4Def.h"
-#include "object/C4Object.h"
-#include "object/C4ObjectCom.h"
+#include "control/C4Record.h"
 #include "game/C4Physics.h"
 #include "lib/C4Random.h"
 #include "network/C4Network2Stats.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
+#include "object/C4Def.h"
+#include "object/C4Object.h"
+#include "object/C4ObjectCom.h"
 #include "player/C4PlayerList.h"
-#include "control/C4Record.h"
+#include "script/C4Effect.h"
 
 C4GameObjects::C4GameObjects()
 {

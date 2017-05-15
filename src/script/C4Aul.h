@@ -21,8 +21,6 @@
 #include "script/C4StringTable.h"
 #include "script/C4Value.h"
 #include "script/C4ValueMap.h"
-#include <string>
-#include <vector>
 
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers

@@ -20,18 +20,15 @@
 #include "C4Include.h"
 #include "lib/C4Log.h"
 
-#include "script/C4AulDebug.h"
-#include "editor/C4Console.h"
-#include "gui/C4GameLobby.h"
-#include "game/C4Game.h"
-#include "lib/C4LogBuf.h"
-#include "c4group/C4Language.h"
-#include "network/C4Network2.h"
-#include "game/C4GraphicsSystem.h"
-#include "config/C4Config.h"
 #include "c4group/C4Components.h"
-#include "platform/C4Window.h"
+#include "editor/C4Console.h"
+#include "game/C4GraphicsSystem.h"
 #include "graphics/C4Shader.h"
+#include "gui/C4GameLobby.h"
+#include "lib/C4LogBuf.h"
+#include "network/C4Network2.h"
+#include "platform/C4Window.h"
+#include "script/C4AulDebug.h"
 
 #ifdef HAVE_SYS_FILE_H
 #include <sys/file.h>

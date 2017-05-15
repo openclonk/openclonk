@@ -19,9 +19,6 @@
 #include "network/C4NetIO.h"
 #include "lib/C4Random.h"
 
-#include <iostream>
-#include <sstream>
-#include <time.h>
 #ifdef _WIN32
 #include "platform/C4windowswrapper.h"
 #include <mmsystem.h>

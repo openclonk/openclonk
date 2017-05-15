@@ -21,12 +21,10 @@
 #define INC_C4Material
 
 #include "config/C4Constants.h"
-#include "lib/C4Real.h"
-#include "object/C4Id.h"
-#include "object/C4Shape.h"
 #include "graphics/C4Facet.h"
 #include "graphics/CSurface8.h"
-#include <vector>
+#include "object/C4Id.h"
+#include "object/C4Shape.h"
 
 #define C4MatOv_Default     0
 #define C4MatOv_Exact       1

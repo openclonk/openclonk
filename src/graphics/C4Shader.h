@@ -19,7 +19,6 @@
 #define INC_C4Shader
 
 #include "C4ForbidLibraryCompilation.h"
-#include "lib/StdBuf.h"
 #include "lib/StdMeshMath.h"
 #include "graphics/C4Surface.h"
 

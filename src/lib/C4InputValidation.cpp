@@ -17,10 +17,8 @@
 
 #include "C4Include.h"
 #include "lib/C4InputValidation.h"
-#include "lib/C4Log.h"
-#include "lib/C4Markup.h"
 
-#include <cctype>
+#include "lib/C4Markup.h"
 
 namespace C4InVal
 {

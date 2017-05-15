@@ -20,13 +20,11 @@
 #include "C4Include.h"
 #include "platform/C4MusicSystem.h"
 
-#include "platform/C4Window.h"
-#include "platform/C4MusicFile.h"
 #include "game/C4Application.h"
-#include "lib/C4Random.h"
-#include "lib/C4Log.h"
-#include "game/C4Game.h"
 #include "game/C4GraphicsSystem.h"
+#include "lib/C4Random.h"
+#include "platform/C4MusicFile.h"
+#include "platform/C4Window.h"
 
 C4MusicSystem::C4MusicSystem():
 		Songs(nullptr),

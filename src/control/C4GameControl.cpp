@@ -16,15 +16,13 @@
 /* control management */
 
 #include "C4Include.h"
-
-#include "game/C4Application.h"
-#include "game/C4Game.h"
 #include "control/C4GameControl.h"
-#include "gui/C4GameOverDlg.h"
+
 #include "control/C4Record.h"
-#include "lib/C4Log.h"
-#include "network/C4Network2Stats.h"
+#include "game/C4Application.h"
+#include "gui/C4GameOverDlg.h"
 #include "gui/C4MouseControl.h"
+#include "network/C4Network2Stats.h"
 #include "platform/C4GamePadCon.h"
 #include "player/C4PlayerList.h"
 #include "player/C4Player.h"

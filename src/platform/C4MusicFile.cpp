@@ -19,7 +19,6 @@
 #include "platform/C4MusicFile.h"
 
 #include "game/C4Application.h"
-#include "lib/C4Log.h"
 
 #if AUDIO_TK == AUDIO_TK_OPENAL
 #if defined(__APPLE__)

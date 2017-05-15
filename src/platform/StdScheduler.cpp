@@ -16,24 +16,11 @@
 #include "C4Include.h"
 #include "platform/StdScheduler.h"
 
-#include <cstdio>
-
-#include <cassert>
-#include <cerrno>
-#include <fcntl.h>
-
-#include <vector>
-
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
 #ifdef HAVE_SHARE_H
 #include <share.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-// For pipe()
-#include <unistd.h>
 #endif
 
 #ifdef _WIN32

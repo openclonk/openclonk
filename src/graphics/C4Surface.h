@@ -21,8 +21,6 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "lib/C4Rect.h"
 
-#include <list>
-
 // blitting modes
 #define C4GFXBLIT_NORMAL          0 // regular blit
 #define C4GFXBLIT_ADDITIVE        1 // all blits additive

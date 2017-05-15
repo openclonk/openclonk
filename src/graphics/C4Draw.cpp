@@ -20,19 +20,16 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "graphics/C4Draw.h"
 
-#include "platform/C4App.h"
-#include "graphics/C4FontLoader.h"
-#include "platform/C4Window.h"
 #include "graphics/C4DrawGL.h"
 #include "graphics/C4DrawT.h"
+#include "graphics/C4FontLoader.h"
+#include "graphics/CSurface8.h"
 #include "lib/C4Markup.h"
 #include "lib/C4Rect.h"
-#include "config/C4Config.h"
-#include "lib/StdMesh.h"
-#include "graphics/CSurface8.h"
 #include "lib/StdColors.h"
-
-#include <cstdio>
+#include "lib/StdMesh.h"
+#include "platform/C4App.h"
+#include "platform/C4Window.h"
 
 // Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
 #if defined(_WIN32) && !defined(USE_CONSOLE)

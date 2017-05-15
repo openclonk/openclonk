@@ -15,15 +15,10 @@
  */
 #include "C4Include.h"
 #include "network/C4NetIO.h"
-#include "lib/C4Random.h"
 
 #include "config/C4Constants.h"
-#include "config/C4Config.h"
+#include "lib/C4Random.h"
 
-#include <utility>
-#include <cassert>
-#include <cerrno>
-#include <fcntl.h>
 #include <sys/stat.h>
 
 // platform specifics
@@ -44,7 +39,6 @@ int pipe(int *phandles) { return _pipe(phandles, 10, O_BINARY); }
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <stdlib.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 

@@ -15,11 +15,11 @@
  */
 
 #include "C4Include.h"
-#include "script/C4Aul.h"
 #include "object/C4MeshAnimation.h"
+
 #include "object/C4Object.h"
+#include "script/C4Aul.h"
 #include "script/C4ValueArray.h"
-#include "game/C4Game.h"
 
 namespace
 {

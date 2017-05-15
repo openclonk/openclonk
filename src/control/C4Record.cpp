@@ -18,15 +18,11 @@
 #include "C4Include.h"
 #include "control/C4Record.h"
 
-#include "editor/C4Console.h"
-#include "control/C4PlayerInfo.h"
-#include "control/C4GameSave.h"
-#include "lib/C4Log.h"
-#include "player/C4Player.h"
-#include "game/C4Game.h"
 #include "control/C4GameControl.h"
-
-#include "platform/StdFile.h"
+#include "control/C4GameSave.h"
+#include "control/C4PlayerInfo.h"
+#include "editor/C4Console.h"
+#include "player/C4Player.h"
 
 #define IMMEDIATEREC
 

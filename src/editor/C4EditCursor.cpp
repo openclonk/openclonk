@@ -29,7 +29,6 @@
 #include "landscape/C4Landscape.h"
 #include "landscape/C4Texture.h"
 #include "graphics/C4GraphicsResource.h"
-#include "game/C4Game.h"
 #include "object/C4GameObjects.h"
 #include "control/C4GameControl.h"
 #include "script/C4AulExec.h"

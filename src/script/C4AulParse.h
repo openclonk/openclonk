@@ -17,12 +17,12 @@
 #ifndef INC_C4AulParse
 #define INC_C4AulParse
 
-#include <stack>
-
 #include "script/C4Aul.h"
 #include "script/C4AulAST.h"
 #include "script/C4AulCompiler.h"
 #include "script/C4AulScriptFunc.h"
+
+#include <stack>
 
 enum C4AulBCCType : int;
 enum C4AulTokenType : int;

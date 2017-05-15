@@ -21,11 +21,8 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "platform/C4GamePadCon.h"
 
-#include "config/C4Config.h"
-#include "object/C4ObjectCom.h"
-#include "lib/C4Log.h"
 #include "game/C4Application.h"
-#include "game/C4Game.h"
+#include "object/C4ObjectCom.h"
 
 #if defined(HAVE_SDL) && !defined(USE_CONSOLE)
 

@@ -18,9 +18,9 @@
 #include "C4Include.h"
 #include "gui/C4StartupAboutDlg.h"
 
-#include "gui/C4UpdateDlg.h"
-#include "graphics/C4GraphicsResource.h"
 #include "C4Version.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4UpdateDlg.h"
 
 // ------------------------------------------------
 // --- C4StartupAboutDlg

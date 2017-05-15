@@ -18,14 +18,12 @@
 #include "C4Include.h"
 #include "script/C4Aul.h"
 
-#include "script/C4AulExec.h"
-#include "script/C4AulDebug.h"
-#include "config/C4Config.h"
-#include "script/C4Effect.h"
-#include "script/C4ScriptHost.h"
-#include "lib/C4Log.h"
 #include "c4group/C4Components.h"
 #include "c4group/C4LangStringTable.h"
+#include "script/C4AulDebug.h"
+#include "script/C4AulExec.h"
+#include "script/C4Effect.h"
+#include "script/C4ScriptHost.h"
 
 const char *C4AulWarningMessages[] = {
 #define DIAG(id, text, enabled) text,

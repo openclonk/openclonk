@@ -18,15 +18,7 @@
 #ifndef STDBUF_H
 #define STDBUF_H
 
-#include "platform/PlatformAbstraction.h"
-
 #include <zlib.h>
-
-#include <cstdlib>
-#include <cstring>
-#include <cassert>
-#include <cstdarg>
-#include <algorithm>
 
 // debug memory management
 #if defined(_DEBUG) && defined(_MSC_VER)

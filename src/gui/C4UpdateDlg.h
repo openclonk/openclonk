@@ -20,8 +20,8 @@
 
 #ifdef WITH_AUTOMATIC_UPDATE
 
-#include "gui/C4Gui.h"
 #include "game/C4GameVersion.h"
+#include "gui/C4Gui.h"
 #include "network/C4Network2Reference.h"
 
 // dialog showing info about a connected client

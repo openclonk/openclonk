@@ -18,13 +18,11 @@
 /* Functions mapped by C4Script */
 
 #include "C4Include.h"
-#include "script/C4AulDefFunc.h"
 
-#include "script/C4AulExec.h"
-#include "lib/C4Random.h"
 #include "C4Version.h"
-
-#include <regex>
+#include "lib/C4Random.h"
+#include "script/C4AulExec.h"
+#include "script/C4AulDefFunc.h"
 
 //========================== Some Support Functions =======================================
 

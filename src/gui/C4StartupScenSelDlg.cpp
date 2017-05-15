@@ -18,22 +18,18 @@
 #include "C4Include.h"
 #include "gui/C4StartupScenSelDlg.h"
 
-#include "game/C4Application.h"
-#include "gui/C4GameOptions.h"
-#include "network/C4Network2Dialogs.h"
-#include "gui/C4StartupMainDlg.h"
-#include "gui/C4StartupNetDlg.h"
 #include "c4group/C4ComponentHost.h"
 #include "c4group/C4Components.h"
-#include "lib/C4Log.h"
-#include "game/C4Game.h"
-#include "gui/C4GameDialogs.h"
-#include "c4group/C4Language.h"
-#include "gui/C4FileSelDlg.h"
-#include "gui/C4MouseControl.h"
-#include "graphics/C4GraphicsResource.h"
+#include "game/C4Application.h"
 #include "graphics/C4Draw.h"
-#include <set>
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4FileSelDlg.h"
+#include "gui/C4GameDialogs.h"
+#include "gui/C4GameOptions.h"
+#include "gui/C4MouseControl.h"
+#include "gui/C4StartupMainDlg.h"
+#include "gui/C4StartupNetDlg.h"
+#include "network/C4Network2Dialogs.h"
 
 // singleton
 C4StartupScenSelDlg *C4StartupScenSelDlg::pInstance=nullptr;

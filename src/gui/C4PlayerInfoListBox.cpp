@@ -18,18 +18,17 @@
 #include "C4Include.h"
 #include "gui/C4PlayerInfoListBox.h"
 
+#include "control/C4GameControl.h"
 #include "control/C4PlayerInfo.h"
-#include "network/C4Network2Dialogs.h"
+#include "control/C4RoundResults.h"
 #include "control/C4Teams.h"
-#include "game/C4Game.h"
-#include "gui/C4FileSelDlg.h"
-#include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4FileSelDlg.h"
+#include "gui/C4GameLobby.h"
 #include "gui/C4MouseControl.h"
 #include "network/C4Network2.h"
-#include "control/C4GameControl.h"
-#include "control/C4RoundResults.h"
-#include "gui/C4GameLobby.h"
+#include "network/C4Network2Dialogs.h"
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
 

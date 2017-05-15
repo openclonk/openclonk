@@ -18,12 +18,11 @@
 #include "C4Include.h"
 #include "control/C4Teams.h"
 
-#include "game/C4Game.h"
-#include "lib/C4Random.h"
 #include "c4group/C4Components.h"
+#include "control/C4GameControl.h"
+#include "lib/C4Random.h"
 #include "player/C4Player.h"
 #include "player/C4PlayerList.h"
-#include "control/C4GameControl.h"
 
 // ---------------------------------------------------------------
 // C4Team

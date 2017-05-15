@@ -19,8 +19,8 @@
 #ifndef C4AULEXEC_H
 #define C4AULEXEC_H
 
-#include "script/C4Aul.h"
 #include "platform/C4TimeMilliseconds.h"
+#include "script/C4Aul.h"
 #include "script/C4AulScriptFunc.h"
 
 const int MAX_CONTEXT_STACK = 512;

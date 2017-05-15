@@ -18,16 +18,16 @@
 
 #include "C4Include.h"
 #include "C4ForbidLibraryCompilation.h"
-#include "object/C4Object.h"
+
 #include "graphics/C4DrawGL.h"
+#include "graphics/C4GraphicsResource.h"
 #include "landscape/fow/C4FoWRegion.h"
 #include "lib/SHA1.h"
+#include "lib/StdMesh.h"
+#include "object/C4Object.h"
 #include "object/C4MeshDenumerator.h"
 
-#include "lib/StdMesh.h"
-#include "graphics/C4GraphicsResource.h"
 #include <clocale>
-#include <stdexcept>
 
 #ifndef USE_CONSOLE
 

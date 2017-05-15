@@ -18,11 +18,9 @@
 #include "C4Include.h"
 #include "object/C4Sector.h"
 
-#include "game/C4Game.h"
-#include "object/C4Object.h"
-#include "lib/C4Log.h"
 #include "control/C4Record.h"
 #include "object/C4GameObjects.h"
+#include "object/C4Object.h"
 
 /* sector */
 

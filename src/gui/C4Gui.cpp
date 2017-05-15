@@ -19,16 +19,15 @@
 #include "C4Include.h"
 #include "gui/C4Gui.h"
 
-#include "game/C4FullScreen.h"
-#include "gui/C4LoaderScreen.h"
 #include "game/C4Application.h"
-#include "game/C4Viewport.h"
-#include "lib/C4Log.h"
-#include "platform/C4GamePadCon.h"
-#include "gui/C4MouseControl.h"
-#include "graphics/C4GraphicsResource.h"
-#include "graphics/C4Draw.h"
+#include "game/C4FullScreen.h"
 #include "game/C4GraphicsSystem.h"
+#include "game/C4Viewport.h"
+#include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4LoaderScreen.h"
+#include "gui/C4MouseControl.h"
+#include "platform/C4GamePadCon.h"
 
 namespace C4GUI
 {

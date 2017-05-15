@@ -18,14 +18,13 @@
 /* Object motion, collision, friction */
 
 #include "C4Include.h"
+
+#include "game/C4Physics.h"
+#include "landscape/C4Landscape.h"
+#include "landscape/C4SolidMask.h"
 #include "object/C4Def.h"
 #include "object/C4Object.h"
-
 #include "script/C4Effect.h"
-#include "game/C4Physics.h"
-#include "landscape/C4SolidMask.h"
-#include "landscape/C4Landscape.h"
-#include "game/C4Game.h"
 
 /* Some physical constants */
 

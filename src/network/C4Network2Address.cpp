@@ -15,14 +15,14 @@
  */
 
 #include "C4Include.h"
+#include "network/C4Network2Address.h"
+
 #ifndef _WIN32
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #endif
-
-#include "network/C4Network2Address.h"
 
 // *** C4Network2Address
 

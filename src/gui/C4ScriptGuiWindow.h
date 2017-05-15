@@ -20,10 +20,7 @@
 
 #include "graphics/C4Surface.h"
 #include "gui/C4Gui.h"
-
 #include "script/C4Value.h"
-
-#include <map>
 
 enum C4ScriptGuiWindowPropertyName
 {

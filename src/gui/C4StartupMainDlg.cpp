@@ -18,27 +18,21 @@
 #include "C4Include.h"
 #include "gui/C4StartupMainDlg.h"
 
-#include "game/C4Application.h"
-#include "c4group/C4Components.h"
-#include "gui/C4UpdateDlg.h"
 #include "C4Version.h"
-#include "gui/C4StartupNetDlg.h"
-#include "gui/C4StartupScenSelDlg.h"
-#include "gui/C4StartupOptionsDlg.h"
-#include "gui/C4StartupAboutDlg.h"
-#include "gui/C4StartupPlrSelDlg.h"
-#include "gui/C4Startup.h"
-#include "game/C4Game.h"
-#include "lib/C4Log.h"
-#include "c4group/C4Language.h"
-#include "graphics/C4GraphicsResource.h"
+#include "c4group/C4Components.h"
+#include "game/C4Application.h"
 #include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "gui/C4Startup.h"
+#include "gui/C4StartupAboutDlg.h"
+#include "gui/C4StartupNetDlg.h"
+#include "gui/C4StartupOptionsDlg.h"
+#include "gui/C4StartupPlrSelDlg.h"
+#include "gui/C4StartupScenSelDlg.h"
+#include "gui/C4UpdateDlg.h"
 
 #ifdef _WIN32
 #include <shellapi.h>
-#else
-#include <unistd.h>
-#include <stdio.h>
 #endif
 
 

@@ -20,14 +20,12 @@
 #include "C4Include.h"
 #include "platform/C4SoundSystem.h"
 
-#include "platform/C4SoundInstance.h"
 #include "lib/C4Random.h"
-#include "object/C4Object.h"
-#include "game/C4Game.h"
-#include "config/C4Config.h"
 #include "game/C4Application.h"
 #include "game/C4Viewport.h"
+#include "object/C4Object.h"
 #include "platform/C4SoundIncludes.h"
+#include "platform/C4SoundInstance.h"
 #include "platform/C4SoundLoaders.h"
 
 C4SoundSystem::C4SoundSystem():

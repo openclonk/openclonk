@@ -22,8 +22,6 @@
 
 #define C4D_VertexCpyPos (C4D_MaxVertex/2)
 
-#include <vector>
-
 struct FLOAT_RECT { float left,right,top,bottom; };
 
 class C4Rect

@@ -21,8 +21,6 @@
 #include "C4ForbidLibraryCompilation.h"
 #include "landscape/C4Landscape.h"
 
-#include <array>
-
 #include "c4group/C4Components.h"
 #include "control/C4Record.h"
 #include "editor/C4ToolsDlg.h"
@@ -30,7 +28,6 @@
 #include "game/C4Physics.h"
 #include "graphics/C4GraphicsResource.h"
 #include "gui/C4GameMessage.h"
-#include "landscape/fow/C4FoW.h"
 #include "landscape/C4LandscapeRender.h"
 #include "landscape/C4Map.h"
 #include "landscape/C4MapCreatorS2.h"
@@ -43,11 +40,14 @@
 #include "landscape/C4SolidMask.h"
 #include "landscape/C4Texture.h"
 #include "landscape/C4Weather.h"
+#include "landscape/fow/C4FoW.h"
 #include "lib/C4Random.h"
 #include "lib/StdColors.h"
 #include "object/C4Def.h"
 #include "object/C4FindObject.h"
 #include "object/C4GameObjects.h"
+
+#include <array>
 
 struct C4Landscape::P
 {

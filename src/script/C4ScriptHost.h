@@ -21,9 +21,9 @@
 #define INC_C4ScriptHost
 
 #include "c4group/C4ComponentHost.h"
-
 #include "script/C4Aul.h"
 #include "script/C4AulAST.h"
+
 #include <bitset>
 
 // aul script state

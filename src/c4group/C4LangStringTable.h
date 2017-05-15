@@ -20,10 +20,6 @@
 
 #include "c4group/C4ComponentHost.h"
 
-#include <map>
-#include <string>
-#include <stdexcept>
-
 class C4LangStringTable : public C4ComponentHost
 {
 	// Contains the localization string->string mapping. Populated lazily from PopulateStringTable, thus mutable.

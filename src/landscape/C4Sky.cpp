@@ -20,12 +20,11 @@
 #include "C4Include.h"
 #include "landscape/C4Sky.h"
 
-#include "game/C4Game.h"
-#include "lib/C4Random.h"
 #include "c4group/C4Components.h"
-#include "landscape/C4Weather.h"
-#include "graphics/C4GraphicsResource.h"
 #include "graphics/C4Draw.h"
+#include "graphics/C4GraphicsResource.h"
+#include "landscape/C4Weather.h"
+#include "lib/C4Random.h"
 #include "lib/StdColors.h"
 
 void C4Sky::SetFadePalette(int32_t *ipColors)

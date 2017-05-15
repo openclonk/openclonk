@@ -23,7 +23,6 @@
 #include "config/C4Constants.h"
 #include "lib/C4InputValidation.h"
 #include "control/C4PlayerControl.h"
-#include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"
 enum { CFG_MaxString  = 1024, CFG_MaxEditorMRU = 8 };

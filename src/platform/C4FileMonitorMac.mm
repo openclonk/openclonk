@@ -17,9 +17,8 @@
 
 #include "C4Include.h"
 #include "platform/C4FileMonitor.h"
-#include "game/C4Application.h"
 
-#include "platform/StdFile.h"
+#include "game/C4Application.h"
 
 #import <Foundation/Foundation.h>
 

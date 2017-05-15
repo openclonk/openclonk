@@ -21,9 +21,9 @@
 #define INC_C4Console
 
 #include "editor/C4ConsoleGUI.h"
-#include "editor/C4ToolsDlg.h"
-#include "editor/C4ObjectListDlg.h"
 #include "editor/C4EditCursor.h"
+#include "editor/C4ObjectListDlg.h"
+#include "editor/C4ToolsDlg.h"
 
 #include "platform/C4Window.h"
 

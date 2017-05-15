@@ -16,22 +16,17 @@
 #include "C4Include.h"
 #include "network/C4Network2Res.h"
 
-#include "game/C4Application.h"
-#include "lib/C4Random.h"
-#include "config/C4Config.h"
-#include "lib/C4Log.h"
-#include "c4group/C4Group.h"
 #include "c4group/C4Components.h"
-#include "game/C4Game.h"
+#include "c4group/C4Group.h"
 #include "control/C4GameControl.h"
+#include "lib/C4Random.h"
+#include "game/C4Application.h"
 
-#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <direct.h>
 #endif
-#include <cerrno>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
