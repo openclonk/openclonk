@@ -179,13 +179,13 @@ func OnClonkDeath(object clonk, int killer)
 	return;
 }
 
-func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
+public func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
 {
-	if(!Hostile(killed_by, plr)) return;
-	if(!location->GetKing()) return;
-	if(location->GetKing()->GetOwner() != killed_by) return;
-	if(!GetEffect("NewKing", GetCursor(killed_by))) return;
-	var msg=Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
+	if (!Hostile(killed_by, plr)) return;
+	if (!location->GetKing()) return;
+	if (location->GetKing()->GetOwner() != killed_by) return;
+	if (!GetEffect("NewKing", GetCursor(killed_by))) return;
+	var msg = Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
 	return msg;
 }
 

@@ -403,6 +403,11 @@ global func GetRelaunchRule()
 	return FindObject(Find_ID(Rule_Relaunch)) || CreateObject(Rule_Relaunch);
 }
 
+global func IsActiveRelaunchRule()
+{
+	return !!FindObject(Find_ID(Rule_Relaunch));
+}
+
 
 /*-- Player Relaunches --*/
 
