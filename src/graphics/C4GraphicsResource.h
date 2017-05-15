@@ -37,7 +37,7 @@ protected:
 	C4Surface sfcControl, sfcClonkSkins;
 	C4Surface sfcCaption, sfcButton, sfcButtonD;
 	C4Surface sfcScroll, sfcContext;
-	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext, idSfcClonkSkins;
+	int32_t idSfcCaption{0}, idSfcButton{0}, idSfcButtonD{0}, idSfcScroll{0}, idSfcContext{0}, idSfcClonkSkins;
 	int32_t idSfcControl; // id of source group of control surface
 	// ID of last group in main group set that was already registered into the Files-set
 	// used to avoid doubled entries by subsequent calls to RegisterMainGroups

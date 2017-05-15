@@ -37,8 +37,8 @@ public:
 	void EditCursorMove(int X, int Y, uint32_t);
 	using C4Window::Init;
 	C4Window * Init(int32_t iPlayer);
-	virtual void Close();
-	virtual void PerformUpdate();
+	void Close() override;
+	void PerformUpdate() override;
 
 #ifdef WITH_QT_EDITOR
 	class QWidget *viewport_widget;

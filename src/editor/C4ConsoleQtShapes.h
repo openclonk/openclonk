@@ -139,19 +139,19 @@ class C4ConsoleQtGraph : public C4ConsoleQtShape
 protected:
 	struct Vertex
 	{
-		int32_t x, y;
-		uint32_t color; // 0 = default color
+		int32_t x{0}, y{0};
+		uint32_t color{0u}; // 0 = default color
 
-		Vertex() : x(0), y(0), color(0u) {}
+		Vertex() = default;
 	};
 
 	struct Edge
 	{
 		int32_t vertex_indices[2]; // index into vertices array
-		uint32_t color; // 0 = default color
-		uint32_t line_thickness;
+		uint32_t color{0u}; // 0 = default color
+		uint32_t line_thickness{1};
 
-		Edge() : color(0u), line_thickness(1) { vertex_indices[0] = vertex_indices[1] = -1; }
+		Edge() { vertex_indices[0] = vertex_indices[1] = -1; }
 		bool connects_to(int32_t vertex_index) const;
 		bool connects_to(int32_t vertex_index, int32_t *idx) const;
 	};
@@ -295,11 +295,11 @@ class C4ConsoleQtShapes
 {
 	typedef std::list<std::unique_ptr<C4ConsoleQtShape> > ShapeList;
 	ShapeList shapes;
-	C4ConsoleQtShape *dragging_shape, *selected_shape;
-	Qt::CursorShape drag_cursor;
-	float drag_x, drag_y;
+	C4ConsoleQtShape *dragging_shape{nullptr}, *selected_shape{nullptr};
+	Qt::CursorShape drag_cursor{Qt::CursorShape::ArrowCursor};
+	float drag_x{0}, drag_y{0};
 public:
-	C4ConsoleQtShapes() : dragging_shape(nullptr), selected_shape(nullptr), drag_x(0), drag_y(0), drag_cursor(Qt::CursorShape::ArrowCursor) { }
+	C4ConsoleQtShapes() = default;
 
 	C4ConsoleQtShape *CreateShape(class C4Object *for_obj, C4PropList *props, const C4Value &val, const class C4PropertyDelegateShape *parent_delegate);
 	void AddShape(C4ConsoleQtShape *shape);
@@ -327,14 +327,14 @@ public:
 /* Shape holder class: Handles adding/removal of shape to shapes list */
 class C4ConsoleQtShapeHolder
 {
-	C4ConsoleQtShape *shape;
+	C4ConsoleQtShape *shape{nullptr};
 	bool last_visit;
 	C4Value last_value;
 
 	static bool last_visit_flag;
 
 public:
-	C4ConsoleQtShapeHolder() : shape(nullptr) {}
+	C4ConsoleQtShapeHolder()  = default;
 	~C4ConsoleQtShapeHolder() { Clear(); }
 
 	void Clear();

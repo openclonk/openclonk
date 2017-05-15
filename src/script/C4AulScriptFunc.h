@@ -96,7 +96,7 @@ enum C4AulBCCType : int
 class C4AulBCC
 {
 public:
-	C4AulBCCType bccType; // chunk type
+	C4AulBCCType bccType{AB_EOFN}; // chunk type
 	union
 	{
 		intptr_t X;
@@ -106,7 +106,7 @@ public:
 		C4ValueArray * a;
 		C4AulFunc * f;
 	} Par;    // extra info
-	C4AulBCC(): bccType(AB_EOFN) { }
+	C4AulBCC() = default;
 	C4AulBCC(C4AulBCCType bccType, intptr_t X): bccType(bccType), Par{X}
 	{
 		IncRef();
@@ -175,9 +175,9 @@ class C4AulScriptFunc : public C4AulFunc
 public:
 	C4AulFunc *OwnerOverloaded; // overloaded owner function; if present
 	void SetOverloaded(C4AulFunc *);
-	C4AulScriptFunc *SFunc() { return this; } // type check func...
+	C4AulScriptFunc *SFunc() override { return this; } // type check func...
 protected:
-	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = nullptr); // add byte code chunk and advance
 	void RemoveLastBCC();
 	void ClearCode();
 	int GetCodePos() const { return Code.size(); }
@@ -205,16 +205,16 @@ public:
 
 	C4AulScriptFunc(C4PropListStatic * Parent, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
 	C4AulScriptFunc(C4PropListStatic * Parent, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
-	~C4AulScriptFunc();
+	~C4AulScriptFunc() override;
 
 	void ParseDirectExecFunc(C4AulScriptEngine *Engine, C4AulScriptContext* context = nullptr);
 	void ParseDirectExecStatement(C4AulScriptEngine *Engine, C4AulScriptContext* context = nullptr);
 
-	virtual bool GetPublic() const { return true; }
-	virtual int GetParCount() const { return ParCount; }
-	virtual const C4V_Type *GetParType() const { return ParType; }
-	virtual C4V_Type GetRetType() const { return C4V_Any; }
-	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false); // execute func
+	bool GetPublic() const override { return true; }
+	int GetParCount() const override { return ParCount; }
+	const C4V_Type *GetParType() const override { return ParType; }
+	C4V_Type GetRetType() const override { return C4V_Any; }
+	C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false) override; // execute func
 
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();

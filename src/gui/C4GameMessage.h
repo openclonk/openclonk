@@ -66,7 +66,7 @@ protected:
 	C4ID DecoID;
 	C4PropList *PictureDef; // can be definition, object or prop list with Source and Name properties
 	C4Value PictureDefVal; // C4Value holding PictureDef to prevent deletion
-	C4GUI::FrameDecoration *pFrameDeco;
+	C4GUI::FrameDecoration *pFrameDeco{nullptr};
 	uint32_t dwFlags;
 protected:
 	void Init(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwCol, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int width);

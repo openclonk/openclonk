@@ -616,10 +616,7 @@ void LoadShader(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShaderType type)
 	ctx.Manager.AddShader(source.getData(), name.getData(), language.getData(), type, code.getData(), StdMeshMatManager::SMM_ForceReload);
 }
 
-StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter():
-	type(FLOAT4)
-{
-}
+StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter() = default;
 
 StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter(Type type):
 	type(type)
@@ -995,9 +992,7 @@ StdMeshMaterialTextureUnit::TexPtr& StdMeshMaterialTextureUnit::TexPtr::operator
 	return *this;
 }
 
-StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-		Duration(0.0f), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
-		AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
+StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit()
 {
 	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
 	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
@@ -1226,8 +1221,7 @@ void StdMeshMaterialPass::ProgramInstance::LoadParameterRefs(const ShaderInstanc
 	}
 }
 
-StdMeshMaterialPass::StdMeshMaterialPass():
-	DepthCheck(true), DepthWrite(true), CullHardware(CH_Clockwise)
+StdMeshMaterialPass::StdMeshMaterialPass()
 {
 	Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 1.0f;
 	Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 1.0f;
@@ -1427,10 +1421,7 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
-StdMeshMaterialTechnique::StdMeshMaterialTechnique():
-		Available(false)
-{
-}
+StdMeshMaterialTechnique::StdMeshMaterialTechnique() = default;
 
 void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 {
@@ -1463,10 +1454,7 @@ bool StdMeshMaterialTechnique::IsOpaque() const
 	return false;
 }
 
-StdMeshMaterial::StdMeshMaterial():
-		Line(0), ReceiveShadows(true), BestTechniqueIndex(-1)
-{
-}
+StdMeshMaterial::StdMeshMaterial() = default;
 
 void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 {

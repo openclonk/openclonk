@@ -124,7 +124,7 @@ public:
 	StdStrBuf RecordDumpFile;
 	StdStrBuf RecordStream;
 	StdStrBuf TempScenarioFile;
-	bool fPreinited; // set after PreInit has been called; unset by Clear and Default
+	bool fPreinited{false}; // set after PreInit has been called; unset by Clear and Default
 	int32_t FrameCounter;
 	int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick1000;
 	bool TimeGo;
@@ -138,8 +138,8 @@ public:
 	bool fResortAnyObject; // if set, object list will be checked for unsorted objects next frame
 	bool IsRunning;        // (NoSave) if set, the game is running; if not, just the startup message board is painted
 	bool PointersDenumerated; // (NoSave) set after object pointers have been denumerated
-	size_t StartupLogPos, QuitLogPos; // current log positions when game was last started and cleared
-	bool fQuitWithError; // if set, game shut down irregularly
+	size_t StartupLogPos{0}, QuitLogPos{0}; // current log positions when game was last started and cleared
+	bool fQuitWithError{false}; // if set, game shut down irregularly
 	// Show errors and allow debug commands?
 	bool DebugMode;
 	// next mission to be played after this one
@@ -214,7 +214,7 @@ public:
 	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER, C4ValueArray *out_objects=nullptr);
 	C4Object *PlaceVegetation(C4PropList *def, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth, C4PropList *shape_proplist, C4PropList * out_pos_proplist);
 	C4Object *PlaceAnimal(C4PropList *def);
-	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
+	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = nullptr, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 
 	bool LoadScenarioSection(const char *szSection, DWORD dwFlags);
 	bool CreateSectionFromTempFile(const char *section_name, const char *temp_filename);

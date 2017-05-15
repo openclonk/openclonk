@@ -26,7 +26,7 @@ protected:
 
 	friend class CStdFont;
 public:
-	virtual ~CStdFontCustomImages() { }
+	virtual ~CStdFontCustomImages() = default;
 };
 
 #endif

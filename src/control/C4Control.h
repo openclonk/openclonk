@@ -33,7 +33,7 @@ class C4ControlPacket : public C4PacketBase
 {
 public:
 	C4ControlPacket();
-	~C4ControlPacket();
+	~C4ControlPacket() override;
 
 protected:
 	int32_t iByClient;
@@ -54,18 +54,18 @@ public:
 	// allowed as direct/private control?
 	virtual bool Sync() const { return true; }
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 #define DECLARE_C4CONTROL_VIRTUALS \
-  virtual void Execute() const; \
-  virtual void CompileFunc(StdCompiler *pComp);
+  void Execute() const override; \
+  void CompileFunc(StdCompiler *pComp) override;
 
 class C4Control : public C4PacketBase
 {
 public:
 	C4Control();
-	~C4Control();
+	~C4Control() override;
 
 protected:
 	C4PacketList Pkts;
@@ -92,7 +92,7 @@ public:
 	void Execute() const;
 	void PreRec(C4Record *pRecord) const;
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // *** control packets
@@ -110,18 +110,16 @@ enum C4CtrlValueType
 class C4ControlSet : public C4ControlPacket // sync, lobby
 {
 public:
-	C4ControlSet()
-			: eValType(C4CVT_None), iData(0)
-	{ }
+	C4ControlSet() = default;
 	C4ControlSet(C4CtrlValueType eValType, int32_t iData)
 			: eValType(eValType), iData(iData)
 	{ }
 protected:
-	C4CtrlValueType eValType;
-	int32_t iData;
+	C4CtrlValueType eValType{C4CVT_None};
+	int32_t iData{0};
 public:
 	// C4CVT_TeamDistribution and C4CVT_TeamColors are lobby-packets
-	virtual bool Lobby() const { return eValType == C4CVT_TeamDistribution || eValType == C4CVT_TeamColors; }
+	bool Lobby() const override { return eValType == C4CVT_TeamDistribution || eValType == C4CVT_TeamColors; }
 
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -131,15 +129,13 @@ class C4ControlScript : public C4ControlPacket // sync
 public:
 	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
-	C4ControlScript()
-			: iTargetObj(-1), fUseVarsFromCallerContext(false)
-	{ }
+	C4ControlScript() = default;
 	C4ControlScript(const char *szScript, int32_t iTargetObj, bool fUseVarsFromCallerContext = false, bool editor_select_result = false)
 			: iTargetObj(iTargetObj), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true), editor_select_result(editor_select_result)
 	{ }
 protected:
-	int32_t iTargetObj;
-	bool fUseVarsFromCallerContext;
+	int32_t iTargetObj{-1};
+	bool fUseVarsFromCallerContext{false};
 	bool editor_select_result; // if true and executed script from local client in editor mode, select the object returned by this script
 	StdStrBuf Script;
 public:
@@ -151,7 +147,7 @@ class C4ControlMsgBoardReply : public C4ControlPacket // sync
 {
 public:
 	C4ControlMsgBoardReply()
-		: target(-1), player(NO_OWNER)
+		: player(NO_OWNER)
 	{}
 	C4ControlMsgBoardReply(const char *reply, int32_t target, int32_t player)
 		: reply(reply), target(target), player(player)
@@ -159,7 +155,7 @@ public:
 
 private:
 	StdCopyStrBuf reply;
-	int32_t target;
+	int32_t target{-1};
 	int32_t player;
 
 public:
@@ -188,15 +184,14 @@ public:
 class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:
-	C4ControlPlayerSelect()
-			: iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(nullptr) { }
+	C4ControlPlayerSelect() = default;
 	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt);
-	~C4ControlPlayerSelect() { delete[] pObjNrs; }
+	~C4ControlPlayerSelect() override { delete[] pObjNrs; }
 protected:
-	int32_t iPlr;
-	bool fIsAlt;
-	int32_t iObjCnt;
-	int32_t *pObjNrs;
+	int32_t iPlr{-1};
+	bool fIsAlt{false};
+	int32_t iObjCnt{0};
+	int32_t *pObjNrs{nullptr};
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -204,7 +199,7 @@ public:
 class C4ControlPlayerControl : public C4ControlPacket // sync
 {
 public:
-	C4ControlPlayerControl() : iPlr(-1), state(C4PlayerControl::CONS_Down) {}
+	C4ControlPlayerControl() = default;
 	C4ControlPlayerControl(int32_t iPlr, C4PlayerControl::ControlState state, const C4KeyEventData &rExtraData)
 			: iPlr(iPlr), state(state), ExtraData(rExtraData) { }
 	C4ControlPlayerControl(int32_t iPlr, int32_t iControl, int32_t iExtraData) // old-style menu com emulation
@@ -212,23 +207,23 @@ public:
 
 	struct ControlItem
 	{
-		int32_t iControl;
-		int32_t iTriggerMode;
-		ControlItem() : iControl(-1), iTriggerMode(0) {}
+		int32_t iControl{-1};
+		int32_t iTriggerMode{0};
+		ControlItem() = default;
 		ControlItem(int32_t iControl, int32_t iTriggerMode) : iControl(iControl), iTriggerMode(iTriggerMode) {}
 		void CompileFunc(StdCompiler *pComp);
 		bool operator ==(const struct ControlItem &cmp) const { return iControl==cmp.iControl && iTriggerMode == cmp.iTriggerMode; }
 	};
 	typedef std::vector<ControlItem> ControlItemVec;
 protected:
-	int32_t iPlr;
-	int32_t state;
+	int32_t iPlr{-1};
+	int32_t state{C4PlayerControl::CONS_Down};
 	C4KeyEventData ExtraData;
 	ControlItemVec ControlItems;
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 	void AddControl(int32_t iControl, int32_t iTriggerMode)
-	{ ControlItems.push_back(ControlItem(iControl, iTriggerMode)); }
+	{ ControlItems.emplace_back(iControl, iTriggerMode); }
 	const ControlItemVec &GetControlItems() const { return ControlItems; }
 	C4PlayerControl::ControlState GetState() const { return static_cast<C4PlayerControl::ControlState>(state); }
 	const C4KeyEventData &GetExtraData() const { return ExtraData; }
@@ -246,16 +241,16 @@ public:
 		CPM_Drop = 0x02
 	};
 
-	C4ControlPlayerMouse() : action(CPM_NoAction), player(NO_OWNER), target_obj(0), drag_obj(0), old_obj(0) {}
+	C4ControlPlayerMouse() : player(NO_OWNER) {}
 	static C4ControlPlayerMouse *Hover(const C4Player *player, const C4Object *target, const C4Object *old_target, const C4Object *drag = nullptr);
 	static C4ControlPlayerMouse *DragDrop(const C4Player *player, const C4Object *target, const C4Object *drag);
 
 private:
-	int32_t action;
+	int32_t action{CPM_NoAction};
 	int32_t player;
-	int32_t target_obj;
-	int32_t drag_obj;
-	int32_t old_obj;
+	int32_t target_obj{0};
+	int32_t drag_obj{0};
+	int32_t old_obj{0};
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -263,12 +258,11 @@ public:
 class C4ControlMenuCommand : public C4ControlPacket // sync
 {
 public:
-	C4ControlMenuCommand()
-			: menuID(0), subwindowID(0) { }
+	C4ControlMenuCommand() = default;
 	C4ControlMenuCommand(int32_t actionID, int32_t player, int32_t menuID, int32_t subwindowID,
 	                       C4Object *target, int32_t actionType);
 protected:
-	int32_t actionID, player, menuID, subwindowID, target, actionType;
+	int32_t actionID, player, menuID{0}, subwindowID{0}, target, actionType;
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -303,10 +297,10 @@ public:
 	static C4ControlPlayerAction *InitPlayerControl(const C4Player *source, const C4PlayerControlAssignmentSet *ctrl_set = nullptr);
 
 private:
-	Action action;
+	Action action{CPA_NoAction};
 	int32_t source;
 	int32_t target;
-	int32_t param_int;
+	int32_t param_int{0};
 	StdCopyStrBuf param_str;
 
 	enum IpcParam
@@ -337,7 +331,7 @@ protected:
 public:
 	void Set();
 	int32_t getFrame() const { return Frame; }
-	virtual bool Sync() const { return false; }
+	bool Sync() const override { return false; }
 	DECLARE_C4CONTROL_VIRTUALS
 protected:
 	static int32_t GetAllCrewPosX();
@@ -358,13 +352,13 @@ public:
 class C4ControlClientJoin : public C4ControlPacket // not sync, lobby
 {
 public:
-	C4ControlClientJoin() { }
+	C4ControlClientJoin() = default;
 	C4ControlClientJoin(const C4ClientCore &Core) : Core(Core) { }
 public:
 	C4ClientCore Core;
 public:
-	virtual bool Sync() const { return false; }
-	virtual bool Lobby() const { return true; }
+	bool Sync() const override { return false; }
+	bool Lobby() const override { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
@@ -376,33 +370,33 @@ enum C4ControlClientUpdType
 class C4ControlClientUpdate : public C4ControlPacket // sync, lobby
 {
 public:
-	C4ControlClientUpdate() : iID(0), eType(CUT_None), iData(0) { }
+	C4ControlClientUpdate() = default;
 	C4ControlClientUpdate(int32_t iID, C4ControlClientUpdType eType, int32_t iData = 0)
 			: iID(iID), eType(eType), iData(iData)
 	{ }
 private:
 	static const int32_t MinReadyAnnouncementDelay = 1; // seconds that need to pass between ready-state announcements to prevent spam
 public:
-	int32_t iID;
-	C4ControlClientUpdType eType;
-	int32_t iData;
+	int32_t iID{0};
+	C4ControlClientUpdType eType{CUT_None};
+	int32_t iData{0};
 public:
-	virtual bool Sync() const { return false; }
-	virtual bool Lobby() const { return true; }
+	bool Sync() const override { return false; }
+	bool Lobby() const override { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
 class C4ControlClientRemove : public C4ControlPacket // not sync, lobby
 {
 public:
-	C4ControlClientRemove() { }
+	C4ControlClientRemove() = default;
 	C4ControlClientRemove(int32_t iID, const char *szReason = "") : iID(iID), strReason(szReason) { }
 public:
 	int32_t iID;
 	StdCopyStrBuf strReason;
 public:
-	virtual bool Sync() const { return false; }
-	virtual bool Lobby() const { return true; }
+	bool Sync() const override { return false; }
+	bool Lobby() const override { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
@@ -410,8 +404,7 @@ public:
 class C4ControlPlayerInfo : public C4ControlPacket // not sync, lobby
 {
 public:
-	C4ControlPlayerInfo()
-	{ }
+	C4ControlPlayerInfo() = default;
 	C4ControlPlayerInfo(const C4ClientPlayerInfos &PlrInfo)
 			: PlrInfo(PlrInfo)
 	{ }
@@ -419,28 +412,28 @@ protected:
 	C4ClientPlayerInfos PlrInfo;
 public:
 	const C4ClientPlayerInfos &GetInfo() const { return PlrInfo; }
-	virtual bool Sync() const { return false; }
-	virtual bool Lobby() const { return true; }
+	bool Sync() const override { return false; }
+	bool Lobby() const override { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
 struct C4ControlJoinPlayer : public C4ControlPacket // sync
 {
 public:
-	C4ControlJoinPlayer() : iAtClient(-1), idInfo(-1), fByRes(false) { }
+	C4ControlJoinPlayer() = default;
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, C4Network2ResCore ResCore);
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo);
 protected:
 	StdStrBuf Filename;
-	int32_t iAtClient;
-	int32_t idInfo;
-	bool fByRes;
+	int32_t iAtClient{-1};
+	int32_t idInfo{-1};
+	bool fByRes{false};
 	StdBuf PlrData;               // for fByRes == false
 	C4Network2ResCore ResCore;    // for fByRes == true
 public:
 	DECLARE_C4CONTROL_VIRTUALS
-	virtual bool PreExecute() const;
-	virtual void PreRec(C4Record *pRecord);
+	bool PreExecute() const override;
+	void PreRec(C4Record *pRecord) override;
 	void Strip();
 };
 
@@ -460,19 +453,19 @@ enum C4ControlEMObjectAction
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(nullptr), drag_finished(false) { }
+	C4ControlEMMoveObject() : tx(Fix0), ty(Fix0) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = nullptr, const char *szScript = nullptr, bool drag_finished = false);
 	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y, C4Object *container);
-	~C4ControlEMMoveObject();
+	~C4ControlEMMoveObject() override;
 protected:
-	C4ControlEMObjectAction eAction; // action to be performed
+	C4ControlEMObjectAction eAction{EMMO_Move}; // action to be performed
 	C4Real tx,ty;        // target position
-	int32_t iTargetObj;   // enumerated ptr to target object
-	int32_t iObjectNum;   // number of objects moved
-	int32_t *pObjects;    // pointer on array of objects moved
+	int32_t iTargetObj{0};   // enumerated ptr to target object
+	int32_t iObjectNum{0};   // number of objects moved
+	int32_t *pObjects{nullptr};    // pointer on array of objects moved
 	StdStrBuf StringParam; // script to execute, or ID of object to create
-	bool drag_finished;    // Movement only: Set when mouse drag operation concluded (i.e. mouse up)
+	bool drag_finished{false};    // Movement only: Set when mouse drag operation concluded (i.e. mouse up)
 private:
 	void MoveObject(C4Object *moved_object, bool move_forced) const;
 public:
@@ -492,15 +485,15 @@ enum class LandscapeMode;
 class C4ControlEMDrawTool : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMDrawTool() : eAction(EMDT_SetMode), iX(0), iY(0), iX2(0), iY2(0), iGrade(0) { }
+	C4ControlEMDrawTool() = default;
 	C4ControlEMDrawTool(C4ControlEMDrawAction eAction, LandscapeMode iMode,
 	                    int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
 	                    const char *szMaterial=nullptr, const char *szTexture=nullptr,
 	                    const char *szBackMaterial=nullptr, const char *szBackTexture=nullptr);
 protected:
-	C4ControlEMDrawAction eAction;  // action to be performed
+	C4ControlEMDrawAction eAction{EMDT_SetMode};  // action to be performed
 	LandscapeMode iMode;        // new mode, or mode action was performed in (action will fail if changed)
-	int32_t iX,iY,iX2,iY2,iGrade; // drawing parameters
+	int32_t iX{0},iY{0},iX2{0},iY2{0},iGrade{0}; // drawing parameters
 	StdStrBuf Material; // used material
 	StdStrBuf Texture;  // used texture
 	StdStrBuf BackMaterial; // used background material
@@ -524,31 +517,29 @@ enum C4ControlMessageType
 class C4ControlMessage : public C4ControlPacket // not sync, lobby
 {
 public:
-	C4ControlMessage()
-			: eType(C4CMT_Normal), iPlayer(-1) { }
+	C4ControlMessage() = default;
 	C4ControlMessage(C4ControlMessageType eType, const char *szMessage, int32_t iPlayer = -1, int32_t iToPlayer = -1)
 			: eType(eType), iPlayer(iPlayer), iToPlayer(iToPlayer), Message(szMessage, true)
 	{ }
 protected:
-	C4ControlMessageType eType;
-	int32_t iPlayer, iToPlayer;
+	C4ControlMessageType eType{C4CMT_Normal};
+	int32_t iPlayer{-1}, iToPlayer;
 	StdStrBuf Message;
 public:
-	virtual bool Sync() const { return false; }
-	virtual bool Lobby() const { return true; }
+	bool Sync() const override { return false; }
+	bool Lobby() const override { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
 class C4ControlRemovePlr : public C4ControlPacket // sync
 {
 public:
-	C4ControlRemovePlr()
-			: iPlr(-1), fDisconnected(false) { }
+	C4ControlRemovePlr() = default;
 	C4ControlRemovePlr(int32_t iPlr, bool fDisconnected)
 			: iPlr(iPlr), fDisconnected(fDisconnected) { }
 protected:
-	int32_t iPlr;
-	bool fDisconnected;
+	int32_t iPlr{-1};
+	bool fDisconnected{false};
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -556,8 +547,7 @@ public:
 class C4ControlDebugRec : public C4ControlPacket // sync
 {
 public:
-	C4ControlDebugRec()
-	{ }
+	C4ControlDebugRec() = default;
 	C4ControlDebugRec(StdBuf &Data)
 			: Data(Data) { }
 protected:
@@ -594,7 +584,7 @@ public:
 	StdStrBuf getDesc() const;
 	StdStrBuf getDescWarning() const;
 
-	virtual bool Sync() const { return false; }
+	bool Sync() const override { return false; }
 
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -606,7 +596,7 @@ public:
 			: C4ControlVote(eType, fApprove, iData)
 	{ }
 
-	virtual bool Sync() const { return true; }
+	bool Sync() const override { return true; }
 
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -634,7 +624,7 @@ public:
 		CEG_RemoveVertex,
 		CEG_RemoveEdge
 	};
-	C4ControlEditGraph() {}
+	C4ControlEditGraph() = default;
 	C4ControlEditGraph(const char *path, Action action, int32_t index, int32_t x, int32_t y)
 		: path(path), action(action), index(index), x(x), y(y) { }
 private:

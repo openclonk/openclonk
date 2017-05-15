@@ -23,7 +23,7 @@ class C4BltTransform
 public:
 	float mat[9]; // transformation matrix
 public:
-	C4BltTransform() {} // default: don't init fields
+	C4BltTransform() = default; // default: don't init fields
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{ mat[0]=fA; mat[1]=fB; mat[2]=fC; mat[3]=fD; mat[4]=fE; mat[5]=fF; mat[6]=fG; mat[7]=fH; mat[8]=fI; }
 	void SetRotate(float iAngle, float fOffX, float fOffY); // set by angle and rotation offset

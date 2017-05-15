@@ -50,24 +50,24 @@ typedef struct _GMainLoop GMainLoop;
 class StdSchedulerProc
 {
 private:
-	class StdScheduler *scheduler;
+	class StdScheduler *scheduler{nullptr};
 protected:
 	void Changed();
 public:
 
-	StdSchedulerProc(): scheduler(nullptr) {}
-	virtual ~StdSchedulerProc() { }
+	StdSchedulerProc() = default;
+	virtual ~StdSchedulerProc() = default;
 
 	// Do whatever the process wishes to do. Should not block longer than the timeout value.
 	// Is called whenever the process is signaled or a timeout occurs.
-	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0) = 0;
+	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = nullptr) = 0;
 
 	// As Execute, but won't return until the given timeout value has elapsed or a failure occurs
 	bool ExecuteUntil(int iTimeout = -1);
 
 	// Signal for calling Execute()
 #ifdef STDSCHEDULER_USE_EVENTS
-	virtual HANDLE GetEvent() { return 0; }
+	virtual HANDLE GetEvent() { return nullptr; }
 #else
 	virtual void GetFDs(std::vector<struct pollfd> &) { }
 #endif
@@ -92,7 +92,7 @@ class CStdTimerProc : public StdSchedulerProc
 {
 public:
 	CStdTimerProc(uint32_t iDelay) : tLastTimer(C4TimeMilliseconds::NegativeInfinity), iDelay(iDelay) { }
-	~CStdTimerProc() { Set(); }
+	~CStdTimerProc() override { Set(); }
 
 private:
 	C4TimeMilliseconds tLastTimer;
@@ -115,11 +115,11 @@ public:
 	}
 
 	// StdSchedulerProc override
-	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow)
+	C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) override
 	{
 		return tLastTimer + iDelay;
 	}
-	virtual uint32_t TimerInterval() { return iDelay; }
+	uint32_t TimerInterval() override { return iDelay; }
 };
 
 class C4ApplicationSec1Timer : protected CStdTimerProc
@@ -128,7 +128,7 @@ public:
 	C4ApplicationSec1Timer() : CStdTimerProc(1000) { }
 	virtual void OnSec1Timer() = 0;
 protected:
-	virtual bool Execute(int, pollfd *)
+	bool Execute(int, pollfd *) override
 	{
 		if (CheckAndReset())
 			OnSec1Timer();
@@ -144,22 +144,22 @@ public:
 
 	void Notify();
 	bool CheckAndReset();
-	virtual bool IsNotify() { return true; }
+	bool IsNotify() override { return true; }
 
 #ifdef STDSCHEDULER_USE_EVENTS
-	~CStdNotifyProc() { }
+	~CStdNotifyProc() override = default;
 
 	// StdSchedulerProc override
-	virtual HANDLE GetEvent() { return Event.GetEvent(); }
+	HANDLE GetEvent() override { return Event.GetEvent(); }
 
 private:
 	CStdEvent Event;
 
 #else // STDSCHEDULER_USE_EVENTS
-	~CStdNotifyProc();
+	~CStdNotifyProc() override;
 
 	// StdSchedulerProc override
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
+	void GetFDs(std::vector<struct pollfd> & checkfds) override;
 
 private:
 	int fds[2];
@@ -172,7 +172,7 @@ class CStdMultimediaTimerProc : public CStdNotifyProc
 {
 public:
 	CStdMultimediaTimerProc(uint32_t iDelay);
-	~CStdMultimediaTimerProc();
+	~CStdMultimediaTimerProc() override;
 
 private:
 	static int iTimePeriod;
@@ -189,7 +189,7 @@ public:
 	bool CheckAndReset();
 
 	// StdSchedulerProc overrides
-	virtual HANDLE GetEvent() { return Event.GetEvent(); }
+	HANDLE GetEvent() override { return Event.GetEvent(); }
 
 };
 
@@ -199,7 +199,7 @@ class CStdMultimediaTimerProc : public StdSchedulerProc
 {
 public:
 	CStdMultimediaTimerProc(uint32_t iDelay);
-	~CStdMultimediaTimerProc();
+	~CStdMultimediaTimerProc() override;
 
 private:
 	int fd;
@@ -209,7 +209,7 @@ public:
 	void SetDelay(uint32_t inDelay);
 	bool CheckAndReset();
 	// StdSchedulerProc overrides
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
+	void GetFDs(std::vector<struct pollfd> & checkfds) override;
 };
 
 #else
@@ -226,12 +226,12 @@ public:
 private:
 	// Process list
 	std::vector<StdSchedulerProc*> procs;
-	bool isInManualLoop;
+	bool isInManualLoop{false};
 
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
 	{
-	public: virtual bool Execute(int, pollfd *) { CheckAndReset(); return true; }
+	public: bool Execute(int, pollfd *) override { CheckAndReset(); return true; }
 	};
 	NoopNotifyProc Unblocker;
 
@@ -274,14 +274,14 @@ class StdSchedulerThread : public StdScheduler
 {
 public:
 	StdSchedulerThread();
-	virtual ~StdSchedulerThread();
+	~StdSchedulerThread() override;
 
 private:
 
 	// thread control
 	bool fRunThreadRun;
 
-	bool fThread;
+	bool fThread{false};
 #ifdef HAVE_WINTHREAD
 	uintptr_t iThread;
 #elif defined(HAVE_PTHREAD)
@@ -312,8 +312,8 @@ private:
 class StdThread
 {
 private:
-	bool fStarted;
-	bool fStopSignaled;
+	bool fStarted{false};
+	bool fStopSignaled{false};
 
 #ifdef HAVE_WINTHREAD
 	uintptr_t iThread;

@@ -25,12 +25,11 @@
 
 /* C4AbstractApp */
 
-C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
+C4AbstractApp::C4AbstractApp()
 		// main thread
 #ifdef HAVE_PTHREAD
-		MainThread (pthread_self()),
+		: MainThread (pthread_self())
 #endif
-		fDspModeSet(false)
 {
 	Add(&InProc);
 }

@@ -43,10 +43,10 @@ class C4Console: public C4ConsoleGUI
 {
 public:
 	C4Console();
-	virtual ~C4Console();
+	~C4Console() override;
 	void Default();
-	virtual void Clear();
-	virtual void Close();
+	void Clear() override;
+	void Close() override;
 	using C4Window::Init;
 	virtual C4Window * Init(C4AbstractApp * app);
 	void Execute();

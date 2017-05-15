@@ -33,8 +33,8 @@ class C4ConsoleQtTranslator : public QTranslator
 {
 	Q_OBJECT
 public:
-	bool isEmpty() const { return false; }
-	QString translate(const char * context, const char * sourceText, const char * disambiguation = 0, int n = -1) const;
+	bool isEmpty() const override { return false; }
+	QString translate(const char * context, const char * sourceText, const char * disambiguation = nullptr, int n = -1) const override;
 };
 
 extern C4ConsoleQtTranslator qt_translator;
@@ -86,7 +86,7 @@ class C4DisableShortcutFilter : public QObject
 public:
 	C4DisableShortcutFilter(QObject *parent) : QObject(parent) {}
 
-	bool eventFilter(QObject *target, QEvent *event)
+	bool eventFilter(QObject *target, QEvent *event) override
 	{
 		if (event->type() == QEvent::Shortcut) return true;
 		return QObject::eventFilter(target, event);
@@ -284,7 +284,7 @@ class C4ToolsDlg::State : C4ConsoleGUI::InternalState<class C4ToolsDlg>
 {
 public:
 	State(C4ToolsDlg *toolsDlg) : C4ConsoleGUI::InternalState<class C4ToolsDlg>(toolsDlg) {}
-	~State() {}
+	~State() = default;
 
 	void Clear() {}
 	void Default() {}

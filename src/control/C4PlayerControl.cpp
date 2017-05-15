@@ -1354,7 +1354,7 @@ void C4PlayerControl::Execute()
 	if (irk != RecentKeys.begin()) RecentKeys.erase(RecentKeys.begin(), irk);
 }
 
-C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs), iPlr(-1), pControlSet(nullptr), IsCursorPosRequested(false)
+C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs)
 {
 }
 

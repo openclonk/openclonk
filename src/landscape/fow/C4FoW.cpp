@@ -21,10 +21,7 @@
 #include <cfloat>
 
 
-C4FoW::C4FoW()
-	: pLights(nullptr), deleted_lights(nullptr)
-{
-}
+C4FoW::C4FoW() = default;
 
 C4FoW::~C4FoW()
 {

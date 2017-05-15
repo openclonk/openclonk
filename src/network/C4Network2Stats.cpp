@@ -25,13 +25,12 @@
 #include "player/C4PlayerList.h"
 
 C4Graph::C4Graph()
-		: szTitle(LoadResStr("IDS_NET_GRAPH")), dwColor(0x7fff0000)
+		: szTitle(LoadResStr("IDS_NET_GRAPH")) 
 {
 }
 
 C4TableGraph::C4TableGraph(int iBackLogLength, int iStartTime)
-		: iBackLogLength(iBackLogLength), pValues(nullptr), fMultiplier(1), pAveragedValues(nullptr), iBackLogPos(0), fWrapped(false)
-		, iInitialStartTime(iStartTime), iTime(iStartTime), iAveragedTime(iStartTime), iAvgRange(1)
+		: iBackLogLength(iBackLogLength), iInitialStartTime(iStartTime), iTime(iStartTime), iAveragedTime(iStartTime)
 {
 	// create value buffer
 	assert(iBackLogLength);

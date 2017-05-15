@@ -26,20 +26,20 @@ class C4StartupOptionsDlg : public C4StartupDlg
 	// main dlg stuff -----------------------------------------------------
 public:
 	C4StartupOptionsDlg(); // ctor
-	~C4StartupOptionsDlg(); // dtor
+	~C4StartupOptionsDlg() override; // dtor
 
 private:
 	class C4KeyBinding *pKeyBack;
-	bool fConfigSaved; // set when config has been saved because dlg is closed; prevents double save
-	bool fCanGoBack; // set if dlg has not been recreated yet, in which case going back to a previous dialog is not possible
+	bool fConfigSaved{false}; // set when config has been saved because dlg is closed; prevents double save
+	bool fCanGoBack{true}; // set if dlg has not been recreated yet, in which case going back to a previous dialog is not possible
 	C4GUI::Tabular *pOptionsTabular;
 
 protected:
-	virtual bool OnEnter() { return false; } // Enter ignored
-	virtual bool OnEscape() { DoBack(); return true; }
+	bool OnEnter() override { return false; } // Enter ignored
+	bool OnEscape() override { DoBack(); return true; }
 	bool KeyBack() { DoBack(); return true; }
-	virtual void OnClosed(bool fOK);    // callback when dlg got closed - save config
-	virtual void UserClose(bool fOK)   // callback when the user tried to close the dialog (e.g., by pressing Enter in an edit) - just ignore this and save config instead
+	void OnClosed(bool fOK) override;    // callback when dlg got closed - save config
+	void UserClose(bool fOK) override   // callback when the user tried to close the dialog (e.g., by pressing Enter in an edit) - just ignore this and save config instead
 	{ if (fOK) SaveConfig(false, true); }
 
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
@@ -49,8 +49,8 @@ protected:
 public:
 	void DoBack(); // back to main menu
 	
-	virtual bool SetSubscreen(const char *szToScreen); // go to specified property sheet
-	virtual void OnKeyboardLayoutChanged(); // keyboard layout changed: update keys from scan codes
+	bool SetSubscreen(const char *szToScreen) override; // go to specified property sheet
+	void OnKeyboardLayoutChanged() override; // keyboard layout changed: update keys from scan codes
 
 public:
 	void RecreateDialog(bool fFade);
@@ -61,7 +61,7 @@ private:
 	class SmallButton : public C4GUI::Button
 	{
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo); // draw the button
+		void DrawElement(C4TargetFacet &cgo) override; // draw the button
 
 	public:
 		SmallButton(const char *szText, const C4Rect &rtBounds) // ctor
@@ -117,11 +117,11 @@ private:
 		C4GUI::Label *pOperationCancelLabel; int32_t iResChangeSwitchTime;
 	public:
 		ResChangeConfirmDlg();
-		~ResChangeConfirmDlg();
-		void OnSec1Timer(); // update timer label
+		~ResChangeConfirmDlg() override;
+		void OnSec1Timer() override; // update timer label
 	protected:
-		virtual bool OnEnter() { return true; } // Pressing Enter does not confirm this dialog, so "blind" users are less likely to accept their change
-		virtual const char *GetID() { return "ResChangeConfirmDialog"; }
+		bool OnEnter() override { return true; } // Pressing Enter does not confirm this dialog, so "blind" users are less likely to accept their change
+		const char *GetID() override { return "ResChangeConfirmDialog"; }
 	};
 
 	void OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller);
@@ -168,7 +168,7 @@ private:
 		bool KeyDown(const C4KeyCodeEx &key);
 	public:
 		KeySelDialog(const class C4PlayerControlAssignment *assignment, const class C4PlayerControlAssignmentSet *assignment_set);
-		virtual ~KeySelDialog();
+		~KeySelDialog() override;
 
 		C4KeyCodeEx GetKeyCode() { return key; }
 
@@ -187,7 +187,7 @@ private:
 
 			void UpdateAssignmentString();
 		public:
-			virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+			void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam) override;
 
 			ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds);
 		};
@@ -200,7 +200,7 @@ private:
 			ControlAssignmentLabel *assignment_label;
 			bool has_extra_spacing; // if true, add a bit of spacing on top of this item to group elements
 
-			virtual int32_t GetListItemTopSpacing() { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
+			int32_t GetListItemTopSpacing() override { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
 
 		public:
 			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool first_of_group);
@@ -232,7 +232,7 @@ private:
 		class C4GUI::CheckBox *pGUICtrl;
 	public:
 		ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg);
-		virtual ~ControlConfigArea();
+		~ControlConfigArea() override;
 
 		void UpdateCtrlSet();
 

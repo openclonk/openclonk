@@ -55,31 +55,31 @@ protected:
 	// chat input callback
 	C4GUI::Edit::InputResult OnChatInput(C4GUI::Edit *edt, bool fPasting, bool fPastingMore);
 	void OnChatCancel();
-	virtual void OnClosed(bool fOK);
+	void OnClosed(bool fOK) override;
 
-	virtual const char *GetID() { return "ChatDialog"; }
+	const char *GetID() override { return "ChatDialog"; }
 public:
 	C4ChatInputDialog(bool fObjInput, C4Object *pScriptTarget, bool fUpperCase, bool fTeam, int32_t iPlr, const StdStrBuf &rsInputQuery); // ctor - construct by screen ratios
-	~C4ChatInputDialog();
+	~C4ChatInputDialog() override;
 
 	// place on top of normal dialogs
-	virtual int32_t GetZOrdering() { return C4GUI_Z_CHAT; }
+	int32_t GetZOrdering() override { return C4GUI_Z_CHAT; }
 
 	// align by screen, not viewport
-	virtual bool IsFreePlaceDialog() { return true; }
+	bool IsFreePlaceDialog() override { return true; }
 
 	// place more to the bottom of the screen
-	virtual bool IsBottomPlacementDialog() { return true; }
+	bool IsBottomPlacementDialog() override { return true; }
 
 	// true for dialogs that receive full keyboard and mouse input even in shared mode
-	virtual bool IsExclusiveDialog() { return true; }
+	bool IsExclusiveDialog() override { return true; }
 
 	// don't enable mouse just for this dlg
-	virtual bool IsMouseControlled() { return false; }
+	bool IsMouseControlled() override { return false; }
 
 	// usually processed by edit;
 	// but may reach this if the user managed to deselect the edit control
-	virtual bool OnEnter() { OnChatInput(pEdit, false, false); return true; }
+	bool OnEnter() override { OnChatInput(pEdit, false, false); return true; }
 
 	static bool IsShown() { return !!pInstance; } // external query fn whether dlg is visible
 	static C4ChatInputDialog *GetInstance() { return pInstance; }
@@ -106,7 +106,7 @@ public:
 class C4MessageInput
 {
 public:
-	C4MessageInput() : pCommands(nullptr) { Default(); }
+	C4MessageInput() { Default(); }
 	~C4MessageInput() { Clear(); }
 	void Default();
 	void Clear();
@@ -118,7 +118,7 @@ private:
 
 	// MessageBoard-commands
 private:
-	class C4MessageBoardCommand *pCommands;
+	class C4MessageBoardCommand *pCommands{nullptr};
 public:
 	void AddCommand(const char *strCommand, const char *strScript);
 	class C4MessageBoardCommand *GetCommand(const char *strName);
@@ -151,20 +151,20 @@ class C4MessageBoardQuery
 public:
 	C4ObjectPtr CallbackObj; // callback target object
 	StdStrBuf sInputQuery;   // question being asked to the player
-	bool fAnswered;          // if set, an answer packet is in the queue (NOSAVE, as the queue isn't saved either!)
-	bool fIsUppercase;       // if set, any input is converted to uppercase be4 sending to script
+	bool fAnswered{false};          // if set, an answer packet is in the queue (NOSAVE, as the queue isn't saved either!)
+	bool fIsUppercase{false};       // if set, any input is converted to uppercase be4 sending to script
 
 	// linked list to allow for multiple queries
-	C4MessageBoardQuery *pNext;
+	C4MessageBoardQuery *pNext{nullptr};
 
 	// ctors
 	C4MessageBoardQuery(C4Object *pCallbackObj, const StdStrBuf &rsInputQuery, bool fIsUppercase)
-			: CallbackObj(pCallbackObj), fAnswered(false), fIsUppercase(fIsUppercase), pNext(nullptr)
+			: CallbackObj(pCallbackObj), fIsUppercase(fIsUppercase), pNext(nullptr)
 	{
 		sInputQuery.Copy(rsInputQuery);
 	}
 
-	C4MessageBoardQuery() : CallbackObj(nullptr), fAnswered(false), fIsUppercase(false), pNext(nullptr) {}
+	C4MessageBoardQuery() : CallbackObj(nullptr) {}
 
 	// use default copy ctor
 

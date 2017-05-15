@@ -22,19 +22,19 @@
 class C4MeshDenumerator : public StdMeshInstance::AttachedMesh::Denumerator
 {
 private:
-	C4Def* Def; // Set if a definition mesh was attached
+	C4Def* Def{nullptr}; // Set if a definition mesh was attached
 	C4ObjectPtr Object; // Set if an instance mesh was attached
 
 public:
-	C4MeshDenumerator(): Def(nullptr), Object(nullptr) {}
+	C4MeshDenumerator(): Object(nullptr) {}
 	C4MeshDenumerator(C4Def* def): Def(def), Object(nullptr) {}
 	C4MeshDenumerator(C4Object* object): Def(nullptr), Object(object) {}
 
 	C4Object* GetObject() { return Object; }
 
-	virtual void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach);
-	virtual void DenumeratePointers(StdMeshInstance::AttachedMesh* attach);
-	virtual bool ClearPointers(C4Object* pObj);
+	void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach) override;
+	void DenumeratePointers(StdMeshInstance::AttachedMesh* attach) override;
+	bool ClearPointers(C4Object* pObj) override;
 };
 
 extern const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFactory;

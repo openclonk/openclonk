@@ -29,10 +29,6 @@
 // *** C4ClientCore
 
 C4ClientCore::C4ClientCore()
-		: iID(-1),
-		fActivated(false),
-		fObserver(false),
-		fLobbyReady(false)
 {
 	Name.Ref(""); CUID.Ref(""); Nick.Ref("");
 }
@@ -107,13 +103,10 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
 
 // *** C4Client
 
-C4Client::C4Client()
-		: fLocal(false), pNetClient(nullptr), fIsIgnored(false), last_lobby_ready_change(0)
-{
-}
+C4Client::C4Client() = default;
 
 C4Client::C4Client(const C4ClientCore &Core)
-		: Core(Core), fLocal(false), pNetClient(nullptr), fIsIgnored(false), pNext(nullptr), last_lobby_ready_change(0)
+		: Core(Core), pNext(nullptr)
 {
 
 }
@@ -167,11 +160,7 @@ void C4Client::CompileFunc(StdCompiler *pComp)
 
 // *** C4ClientList
 
-C4ClientList::C4ClientList()
-		: pFirst(nullptr), pLocal(nullptr), pNetClients(nullptr)
-{
-
-}
+C4ClientList::C4ClientList() = default;
 
 C4ClientList::~C4ClientList()
 {

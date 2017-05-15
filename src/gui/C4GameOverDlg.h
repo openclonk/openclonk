@@ -38,12 +38,12 @@ private:
 		GoalPicture(const C4Rect &rcBounds, C4ID idGoal, bool fFulfilled);
 
 	protected:
-		virtual void DrawElement(C4TargetFacet &cgo);
+		void DrawElement(C4TargetFacet &cgo) override;
 	};
 
 public:
 	C4GoalDisplay(const C4Rect &rcBounds) : C4GUI::Window() { SetBounds(rcBounds); }
-	virtual ~C4GoalDisplay() {}
+	~C4GoalDisplay() override = default;
 
 	void SetGoals(const C4IDList &rAllGoals, const C4IDList &rFulfilledGoals, int32_t iGoalSymbolHeight);
 };
@@ -55,11 +55,11 @@ private:
 	int32_t iPlrListCount;
 	class C4PlayerInfoListBox **ppPlayerLists;
 	C4GoalDisplay *pGoalDisplay;
-	C4GUI::Label *pNetResultLabel; // label showing league result, disconnect, etc.
+	C4GUI::Label *pNetResultLabel{nullptr}; // label showing league result, disconnect, etc.
 	C4GUI::Button *pBtnExit, *pBtnContinue;
-	bool fIsNetDone; // set if league is evaluated and round results arrived
+	bool fIsNetDone{false}; // set if league is evaluated and round results arrived
 	bool fIsQuitBtnVisible; // quit button available? set if not host or when fIsNetDone
-	bool fHasNextMissionButton; // continue button replaced by "next mission"-button?
+	bool fHasNextMissionButton{false}; // continue button replaced by "next mission"-button?
 
 private:
 	void OnExitBtn(C4GUI::Control *btn); // callback: exit button pressed
@@ -69,25 +69,25 @@ private:
 	void SetNetResult(const char *szResultString, C4RoundResults::NetResult eResultType, size_t iPendingStreamingData, bool fIsStreaming);
 
 protected:
-	virtual void OnShown();
-	virtual void OnClosed(bool fOK);
+	void OnShown() override;
+	void OnClosed(bool fOK) override;
 
-	virtual bool OnEnter() { if (fIsQuitBtnVisible) OnExitBtn(nullptr); return true; } // enter on non-button: Always quit
-	virtual bool OnEscape() { if (fIsQuitBtnVisible) UserClose(false); return true; } // escape ignored if still streaming
+	bool OnEnter() override { if (fIsQuitBtnVisible) OnExitBtn(nullptr); return true; } // enter on non-button: Always quit
+	bool OnEscape() override { if (fIsQuitBtnVisible) UserClose(false); return true; } // escape ignored if still streaming
 
 	// true for dialogs that should span the whole screen
 	// not just the mouse-viewport
-	virtual bool IsFreePlaceDialog() { return true; }
+	bool IsFreePlaceDialog() override { return true; }
 
 	// true for dialogs that receive full keyboard and mouse input even in shared mode
-	virtual bool IsExclusiveDialog() { return true; }
+	bool IsExclusiveDialog() override { return true; }
 
 	// sec1 timer
-	virtual void OnSec1Timer() { Update(); }
+	void OnSec1Timer() override { Update(); }
 
 public:
 	C4GameOverDlg();
-	~C4GameOverDlg();
+	~C4GameOverDlg() override;
 
 	static bool IsShown() { return is_shown; }
 };

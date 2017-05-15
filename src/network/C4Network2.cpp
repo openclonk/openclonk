@@ -50,11 +50,7 @@
 
 // *** C4Network2Status
 
-C4Network2Status::C4Network2Status()
-		: eState(GS_None), iTargetCtrlTick(-1)
-{
-
-}
+C4Network2Status::C4Network2Status() = default;
 
 const char *C4Network2Status::getStateName() const
 {
@@ -128,23 +124,7 @@ void C4Network2Status::CompileFunc(StdCompiler *pComp, bool fReference)
 
 C4Network2::C4Network2()
 		: Clients(&NetIO),
-		fAllowJoin(false),
-		iDynamicTick(-1), fDynamicNeeded(false),
-		fStatusAck(false), fStatusReached(false),
-		fChasing(false),
-		pControl(nullptr),
-		pLobby(nullptr), fLobbyRunning(false), pLobbyCountdown(nullptr),
-		iNextClientID(0),
-		iLastChaseTargetUpdate(0),
 		tLastActivateRequest(C4TimeMilliseconds::NegativeInfinity),
-		iLastReferenceUpdate(0),
-		iLastLeagueUpdate(0),
-		pLeagueClient(nullptr),
-		fDelayedActivateReq(false),
-		pVoteDialog(nullptr),
-		fPausedForVote(false),
-		iLastOwnVoting(0),
-		fStreaming(false),
 		NetpuncherGameID(C4NetpuncherID())
 {
 

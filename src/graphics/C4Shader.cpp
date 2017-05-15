@@ -43,11 +43,7 @@ C4ShaderPosName C4SH_PosNames[] = {
 };
 
 C4Shader::C4Shader()
-	: iTexCoords(0)
-	, LastRefresh()
-#ifndef USE_CONSOLE
-	, hProg(0)
-#endif
+	: LastRefresh()
 {
 
 }

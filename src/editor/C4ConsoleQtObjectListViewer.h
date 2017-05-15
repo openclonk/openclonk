@@ -30,7 +30,7 @@ class C4ConsoleQtObjectListModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
-	mutable int32_t last_row_count;
+	mutable int32_t last_row_count{0};
 	QBrush clr_deleted, clr_effect;
 
 	// model indices for static proplists
@@ -43,7 +43,7 @@ class C4ConsoleQtObjectListModel : public QAbstractItemModel
 
 public:
 	C4ConsoleQtObjectListModel();
-	~C4ConsoleQtObjectListModel();
+	~C4ConsoleQtObjectListModel() override;
 
 	// Refresh object list on next redraw
 	void Invalidate();

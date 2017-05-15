@@ -29,11 +29,7 @@
 
 /*--- C4ScriptHost ---*/
 
-C4ScriptHost::C4ScriptHost():
-	// prepare lists
-	Prev(nullptr), Next(nullptr),
-	Engine(nullptr),
-	State(ASS_NONE) // not compiled
+C4ScriptHost::C4ScriptHost()
 {
 	Script = nullptr;
 	stringTable = nullptr;

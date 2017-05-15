@@ -26,7 +26,7 @@
 
 
 C4GameRes::C4GameRes()
-		: eType(NRT_Null), pResCore(nullptr), pNetRes(nullptr)
+		: pNetRes(nullptr)
 {
 
 }

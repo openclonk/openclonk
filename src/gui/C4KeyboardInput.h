@@ -241,9 +241,9 @@ private:
 struct C4KeyEventData
 {
 	enum { KeyPos_None = 0x7fffff }; // value used to denote invalid/none key positions
-	int32_t iStrength; // pressure between 0 and 100 (100 for nomal keypress)
-	int32_t game_x,game_y, vp_x,vp_y;       // position for mouse event, landscape+viewport coordinates
-	C4KeyEventData() : iStrength(0), game_x(KeyPos_None), game_y(KeyPos_None), vp_x(KeyPos_None), vp_y(KeyPos_None) {}
+	int32_t iStrength{0}; // pressure between 0 and 100 (100 for nomal keypress)
+	int32_t game_x{KeyPos_None},game_y{KeyPos_None}, vp_x{KeyPos_None},vp_y{KeyPos_None};       // position for mouse event, landscape+viewport coordinates
+	C4KeyEventData() = default;
 	C4KeyEventData(int32_t iStrength, int32_t game_x, int32_t game_y, int32_t vp_x, int32_t vp_y) : iStrength(iStrength), game_x(game_x), game_y(game_y),vp_x(vp_x),vp_y(vp_y) {}
 	void CompileFunc(StdCompiler *pComp);
 	bool operator ==(const struct C4KeyEventData &cmp) const;
@@ -268,9 +268,9 @@ template<class T> void Down(T &keys)   { keys.push_back(C4KeyCodeEx(KEY_Gamepad(
 class C4KeyboardCallbackInterface
 {
 private:
-	int iRef;
+	int iRef{0};
 public:
-	class C4CustomKey *pOriginalKey;
+	class C4CustomKey *pOriginalKey{nullptr};
 
 public:
 	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv) = 0; // return true if processed
@@ -281,8 +281,8 @@ public:
 	inline void Ref() { ++iRef; }
 	inline void Deref() { if (!--iRef) delete this; }
 
-	C4KeyboardCallbackInterface() : iRef(0), pOriginalKey(nullptr) {}
-	virtual ~C4KeyboardCallbackInterface() {}
+	C4KeyboardCallbackInterface() = default;
+	virtual ~C4KeyboardCallbackInterface() = default;
 
 	bool IsOriginalKey(const class C4CustomKey *pCheckKey) const { return pCheckKey == pOriginalKey; }
 };
@@ -298,7 +298,7 @@ protected:
 	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 
 protected:
-	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
+	bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv) override
 	{
 		if (!CheckCondition()) return false;
 		switch (eEv)
@@ -329,7 +329,7 @@ protected:
 	CallbackFunc pFuncDown, pFuncUp, pFuncPressed, pFuncMoved;
 
 protected:
-	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
+	bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv) override
 	{
 		if (!CheckCondition()) return false;
 		switch (eEv)
@@ -361,7 +361,7 @@ protected:
 	ParameterType par;
 
 protected:
-	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
+	bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv) override
 	{
 		if (!CheckCondition()) return false;
 		switch (eEv)
@@ -392,7 +392,7 @@ protected:
 	ParameterType par;
 
 protected:
-	virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
+	bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv) override
 	{
 		if (!CheckCondition()) return false;
 		switch (eEv)
@@ -476,7 +476,7 @@ class C4KeyBinding : protected C4CustomKey
 public:
 	C4KeyBinding(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
 	C4KeyBinding(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
-	~C4KeyBinding();
+	~C4KeyBinding() override;
 };
 
 // main keyboard mapping class

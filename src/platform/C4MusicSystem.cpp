@@ -27,21 +27,9 @@
 #include "platform/C4Window.h"
 
 C4MusicSystem::C4MusicSystem():
-		Songs(nullptr),
-		SongCount(0),
-		PlayMusicFile(nullptr),
-		game_music_level(100),
 		playlist(),
-		playlist_valid(false),
 		music_break_min(DefaultMusicBreak), music_break_max(DefaultMusicBreak),
-		Volume(100),
-		is_waiting(false),
-		wait_time_end(),
-		FadeMusicFile(nullptr),
-		upcoming_music_file(nullptr)
-#if AUDIO_TK == AUDIO_TK_OPENAL
-		, alcDevice(nullptr), alcContext(nullptr)
-#endif
+		wait_time_end()
 {
 }
 

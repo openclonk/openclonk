@@ -36,7 +36,6 @@ C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo(C4ConsoleQtDefiniti
 }
 
 C4ConsoleQtDefinitionFileListModel::DefFileInfo::DefFileInfo()
-	: parent(nullptr), was_opened(true), is_root(true), user_selected(false), force_selected(false)
 {
 	// Init as root: List definitions in root paths
 	// Objects.ocd is always there (even if not actually found) and always first

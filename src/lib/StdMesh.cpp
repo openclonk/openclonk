@@ -544,16 +544,8 @@ std::vector<int> StdMeshSkeleton::GetMatchingBones(const StdMeshSkeleton& child_
 	return MatchedBoneInParentSkeleton;
 }
 
-StdSubMesh::StdSubMesh() :
-	Material(nullptr), vertex_buffer_offset(0), index_buffer_offset(0)
-{
-}
-
 StdMesh::StdMesh() :
 	Skeleton(new StdMeshSkeleton)
-#ifndef USE_CONSOLE
-	, vbo(0), ibo(0), vaoid(0)
-#endif
 {
 	BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
 	BoundingBox.x2 = BoundingBox.y2 = BoundingBox.z2 = 0.0f;
@@ -790,15 +782,13 @@ void StdMeshInstance::SerializableValueProvider::CompileFunc(StdCompiler* pComp)
 	pComp->Value(Value);
 }
 
-StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode():
-		Type(LeafNode), Parent(nullptr)
+StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode() 
 {
 	Leaf.Animation = nullptr;
 	Leaf.Position = nullptr;
 }
 
-StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode(const StdMeshAnimation* animation, ValueProvider* position):
-		Type(LeafNode), Parent(nullptr)
+StdMeshInstanceAnimationNode::StdMeshInstanceAnimationNode(const StdMeshAnimation* animation, ValueProvider* position)
 {
 	Leaf.Animation = animation;
 	Leaf.Position = position;
@@ -978,10 +968,7 @@ void StdMeshInstanceAnimationNode::ClearPointers(class C4Object* pObj)
 	if(value_provider) value_provider->ClearPointers(pObj);
 }
 
-StdMeshInstance::AttachedMesh::AttachedMesh():
-	Number(0), Parent(nullptr), Child(nullptr), OwnChild(true), ChildDenumerator(nullptr), ParentBone(0), ChildBone(0), FinalTransformDirty(false)
-{
-}
+StdMeshInstance::AttachedMesh::AttachedMesh() = default;
 
 StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child, Denumerator* denumerator,
 		unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform, uint32_t flags):

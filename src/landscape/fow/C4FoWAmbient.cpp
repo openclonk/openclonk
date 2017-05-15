@@ -85,15 +85,7 @@ struct LightMapZoom {
 
 } // anonymous namespace
 
-C4FoWAmbient::C4FoWAmbient() :
-#ifndef USE_CONSOLE
-	Tex(0),
-#endif
-	Resolution(0.), Radius(0.), FullCoverage(0.),
-	SizeX(0), LandscapeX(0), SizeY(0), LandscapeY(0),
-	Brightness(1.)
-{
-}
+C4FoWAmbient::C4FoWAmbient() = default;
 
 C4FoWAmbient::~C4FoWAmbient()
 {

@@ -24,21 +24,21 @@ class CStdNoGfx : public C4Draw
 {
 public:
 	CStdNoGfx();
-	virtual bool UpdateClipper() override { return true; }
-	virtual bool OnResolutionChanged(unsigned int, unsigned int) override { return true; }
-	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) override;
-	virtual bool PrepareRendering(C4Surface *) override { return true; }
-	virtual bool EnsureMainContextSelected() override { return true; }
-	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) override { return true; }
-	virtual void FillBG(DWORD dwClr=0) override { }
-	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) override { }
-	virtual bool RestoreDeviceObjects() override;
-	virtual bool InvalidateDeviceObjects() override { return true; }
-	virtual bool DeviceReady() override { return true; }
+	bool UpdateClipper() override { return true; }
+	bool OnResolutionChanged(unsigned int, unsigned int) override { return true; }
+	bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) override;
+	bool PrepareRendering(C4Surface *) override { return true; }
+	bool EnsureMainContextSelected() override { return true; }
+	bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) override { return true; }
+	void FillBG(DWORD dwClr=0) override { }
+	void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) override { }
+	bool RestoreDeviceObjects() override;
+	bool InvalidateDeviceObjects() override { return true; }
+	bool DeviceReady() override { return true; }
 
-	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) override {}
-	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float, C4ShaderCall*) override {}
-	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD, C4ShaderCall*) override {}
+	void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) override {}
+	void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float, C4ShaderCall*) override {}
+	void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD, C4ShaderCall*) override {}
 };
 
 #endif

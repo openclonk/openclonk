@@ -33,33 +33,33 @@ namespace C4GameLobby
 	class C4PacketCountdown : public C4PacketBase
 	{
 	private:
-		int32_t iCountdown; // countdown timer, or zero for abort
+		int32_t iCountdown{Abort}; // countdown timer, or zero for abort
 	public:
 		enum { Abort = -1 };
 
 		C4PacketCountdown(int32_t iaCountdown) : iCountdown(iaCountdown) { } // ctor
-		C4PacketCountdown() : iCountdown(Abort) { } // std ctor
+		C4PacketCountdown() = default; // std ctor
 
 		bool IsAbort() const { return iCountdown == Abort; }
 		int32_t GetCountdown() const { return iCountdown; }
 		StdStrBuf GetCountdownMsg(bool fInitialMsg=false) const;
 
-		virtual void CompileFunc(StdCompiler *pComp);
+		void CompileFunc(StdCompiler *pComp) override;
 	};
 
 	class C4PacketSetScenarioParameter : public C4PacketBase
 	{
 	private:
 		StdCopyStrBuf ID;
-		int32_t Value;
+		int32_t Value{0};
 	public:
 		C4PacketSetScenarioParameter(const char *id, int32_t v) : ID(id), Value(v) {} // ctor
-		C4PacketSetScenarioParameter() : Value(0) {} // std ctor
+		C4PacketSetScenarioParameter() = default; // std ctor
 
 		const char *GetID() const { return ID.getData(); }
 		int32_t GetValue() const { return Value; }
 
-		virtual void CompileFunc(StdCompiler *pComp);
+		void CompileFunc(StdCompiler *pComp) override;
 	};
 
 	// scneario info tab: displays scenario description
@@ -74,9 +74,9 @@ namespace C4GameLobby
 
 	public:
 		ScenDesc(const C4Rect &rcBounds, bool fActive); // ctor
-		~ScenDesc() { Deactivate(); }
+		~ScenDesc() override { Deactivate(); }
 
-		void OnSec1Timer() { Update(); }
+		void OnSec1Timer() override { Update(); }
 		// activate/deactivate periodic updates
 		void Activate();
 		void Deactivate();
@@ -111,8 +111,8 @@ namespace C4GameLobby
 		bool KeyHistoryUpDown(bool fUp); // key callback
 		C4GUI::Edit::InputResult OnChatInput(C4GUI::Edit *edt, bool fPasting, bool fPastingMore); // callback: chat input performed
 
-		void OnClosed(bool fOK); // callback when dlg is closed
-		void OnSec1Timer();              // timer proc; update pings
+		void OnClosed(bool fOK) override; // callback when dlg is closed
+		void OnSec1Timer() override;              // timer proc; update pings
 
 		C4GUI::ContextMenu *OnRightTabContext(C4GUI::Element *pLabel, int32_t iX, int32_t iY); // open context menu
 		void OnCtxTabPlayers(C4GUI::Element *pListItem) { OnTabPlayers(nullptr); }
@@ -128,7 +128,7 @@ namespace C4GameLobby
 		void UpdateRightTab(); // update label and tooltips for sheet change
 		void OnBtnChat(C4GUI::Control *btn);
 
-		virtual class C4GUI::Control *GetDefaultControl() { return pEdt; } // def focus chat input
+		class C4GUI::Control *GetDefaultControl() override { return pEdt; } // def focus chat input
 
 	private:
 		void SetCountdownState(CountdownState eToState, int32_t iTimer);
@@ -138,7 +138,7 @@ namespace C4GameLobby
 
 	public:
 		MainDlg(bool fHost); // ctor
-		~MainDlg(); // dtor
+		~MainDlg() override; // dtor
 
 		// callback by network system
 		void OnClientJoin(C4Client *pNewClient); // called when a new client joined (connection not necessarily ready)
@@ -171,11 +171,11 @@ namespace C4GameLobby
 		int32_t iStartTimer;        // countdown timer for round start; 0 for not started, -1 for start overdue
 
 	public:
-		void OnSec1Timer();              // timer proc; count down; send important countdown packets
+		void OnSec1Timer() override;              // timer proc; count down; send important countdown packets
 
 	public:
 		Countdown(int32_t iStartTimer); // ctor: Init; sends initial countdown packet
-		~Countdown();
+		~Countdown() override;
 
 		void Abort();
 	};

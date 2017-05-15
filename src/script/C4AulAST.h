@@ -58,7 +58,7 @@ namespace aul {
 class AstVisitor
 {
 public:
-	virtual ~AstVisitor() {}
+	virtual ~AstVisitor() = default;
 
 	virtual void visit(const ::aul::ast::Noop *) {}
 	virtual void visit(const ::aul::ast::StringLit *) {}
@@ -111,7 +111,7 @@ namespace aul { namespace ast {
 class Node
 {
 public:
-	virtual ~Node() {}
+	virtual ~Node() = default;
 
 	struct Location
 	{
@@ -142,7 +142,7 @@ class Noop : public Stmt
 class Expr : public Stmt
 {
 public:
-	virtual bool has_value() const override { return true; }
+	bool has_value() const override { return true; }
 };
 typedef std::unique_ptr<Expr> ExprPtr;
 
@@ -434,66 +434,66 @@ namespace aul {
 class DefaultRecursiveVisitor : public AstVisitor
 {
 public:
-	virtual ~DefaultRecursiveVisitor() {}
+	~DefaultRecursiveVisitor() override = default;
 
 	using AstVisitor::visit;
 
-	virtual void visit(const ::aul::ast::ArrayLit *n) override
+	void visit(const ::aul::ast::ArrayLit *n) override
 	{
 		for (const auto &c : n->values)
 			c->accept(this);
 	}
-	virtual void visit(const ::aul::ast::ProplistLit *n) override
+	void visit(const ::aul::ast::ProplistLit *n) override
 	{
 		for (const auto &c : n->values)
 			c.second->accept(this);
 	}
-	virtual void visit(const ::aul::ast::UnOpExpr *n) override
+	void visit(const ::aul::ast::UnOpExpr *n) override
 	{
 		n->operand->accept(this);
 	}
-	virtual void visit(const ::aul::ast::BinOpExpr *n) override
+	void visit(const ::aul::ast::BinOpExpr *n) override
 	{
 		n->lhs->accept(this);
 		n->rhs->accept(this);
 	}
-	virtual void visit(const ::aul::ast::AssignmentExpr *n) override
+	void visit(const ::aul::ast::AssignmentExpr *n) override
 	{
 		n->lhs->accept(this);
 		n->rhs->accept(this);
 	}
-	virtual void visit(const ::aul::ast::SubscriptExpr *n) override
+	void visit(const ::aul::ast::SubscriptExpr *n) override
 	{
 		n->object->accept(this);
 		n->index->accept(this);
 	}
-	virtual void visit(const ::aul::ast::SliceExpr *n) override
+	void visit(const ::aul::ast::SliceExpr *n) override
 	{
 		n->object->accept(this);
 		n->start->accept(this);
 		n->end->accept(this);
 	}
-	virtual void visit(const ::aul::ast::CallExpr *n) override
+	void visit(const ::aul::ast::CallExpr *n) override
 	{
 		if (n->context)
 			n->context->accept(this);
 		for (const auto &a : n->args)
 			a->accept(this);
 	}
-	virtual void visit(const ::aul::ast::ParExpr *n) override
+	void visit(const ::aul::ast::ParExpr *n) override
 	{
 		n->arg->accept(this);
 	}
-	virtual void visit(const ::aul::ast::Block *n) override
+	void visit(const ::aul::ast::Block *n) override
 	{
 		for (const auto &s : n->children)
 			s->accept(this);
 	}
-	virtual void visit(const ::aul::ast::Return *n) override
+	void visit(const ::aul::ast::Return *n) override
 	{
 		n->value->accept(this);
 	}
-	virtual void visit(const ::aul::ast::ForLoop *n) override
+	void visit(const ::aul::ast::ForLoop *n) override
 	{
 		if (n->init)
 			n->init->accept(this);
@@ -503,43 +503,43 @@ public:
 			n->incr->accept(this);
 		n->body->accept(this);
 	}
-	virtual void visit(const ::aul::ast::RangeLoop *n) override
+	void visit(const ::aul::ast::RangeLoop *n) override
 	{
 		n->cond->accept(this);
 		n->body->accept(this);
 	}
-	virtual void visit(const ::aul::ast::DoLoop *n) override
+	void visit(const ::aul::ast::DoLoop *n) override
 	{
 		n->body->accept(this);
 		n->cond->accept(this);
 	}
-	virtual void visit(const ::aul::ast::WhileLoop *n) override
+	void visit(const ::aul::ast::WhileLoop *n) override
 	{
 		n->cond->accept(this);
 		n->body->accept(this);
 	}
-	virtual void visit(const ::aul::ast::If *n) override
+	void visit(const ::aul::ast::If *n) override
 	{
 		n->cond->accept(this);
 		n->iftrue->accept(this);
 		if (n->iffalse)
 			n->iffalse->accept(this);
 	}
-	virtual void visit(const ::aul::ast::VarDecl *n) override
+	void visit(const ::aul::ast::VarDecl *n) override
 	{
 		for (const auto &d : n->decls)
 			if (d.init)
 				d.init->accept(this);
 	}
-	virtual void visit(const ::aul::ast::FunctionDecl *n) override
+	void visit(const ::aul::ast::FunctionDecl *n) override
 	{
 		n->body->accept(this);
 	}
-	virtual void visit(const ::aul::ast::FunctionExpr *n) override
+	void visit(const ::aul::ast::FunctionExpr *n) override
 	{
 		n->body->accept(this);
 	}
-	virtual void visit(const ::aul::ast::Script *n) override
+	void visit(const ::aul::ast::Script *n) override
 	{
 		for (const auto &d : n->declarations)
 			d->accept(this);

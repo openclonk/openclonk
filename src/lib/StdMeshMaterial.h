@@ -31,9 +31,9 @@ class StdMeshMaterialError: public std::exception
 {
 public:
 	StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line);
-	virtual ~StdMeshMaterialError() throw() {}
+	~StdMeshMaterialError() throw() override = default;
 
-	virtual const char* what() const throw() { return Buf.getData(); }
+	const char* what() const throw() override { return Buf.getData(); }
 
 protected:
 	StdCopyStrBuf Buf;
@@ -88,7 +88,7 @@ private:
 	void CopyDeep(const StdMeshMaterialShaderParameter& other);
 	void Move(StdMeshMaterialShaderParameter &&other);
 
-	Type type;
+	Type type{FLOAT4};
 
 	union {
 		Auto a;
@@ -130,7 +130,7 @@ public:
 	virtual C4Surface* LoadTexture(const char* filename) = 0;
 	virtual StdStrBuf LoadShaderCode(const char* filename) = 0;
 	virtual void AddShaderSlices(C4Shader& shader, int ssc) = 0; // add default shader slices
-	virtual ~StdMeshMaterialLoader() {}
+	virtual ~StdMeshMaterialLoader() = default;
 };
 
 // This is just a container class to hold the shader code; the C4Shader
@@ -342,21 +342,21 @@ public:
 	bool HasTexCoordAnimation() const { return !Transformations.empty(); }
 
 	StdCopyStrBuf Name;
-	float Duration; // Duration of texture animation, if any.
+	float Duration{0.0f}; // Duration of texture animation, if any.
 
-	TexAddressModeType TexAddressMode;
+	TexAddressModeType TexAddressMode{AM_Wrap};
 	float TexBorderColor[4];
 	FilteringType Filtering[3]; // min, max, mipmap
 
-	BlendOpExType ColorOpEx;
+	BlendOpExType ColorOpEx{BOX_Modulate};
 	BlendOpSourceType ColorOpSources[2];
-	float ColorOpManualFactor;
+	float ColorOpManualFactor{0.0f};
 	float ColorOpManualColor1[3];
 	float ColorOpManualColor2[3];
 
-	BlendOpExType AlphaOpEx;
+	BlendOpExType AlphaOpEx{BOX_Modulate};
 	BlendOpSourceType AlphaOpSources[2];
-	float AlphaOpManualFactor;
+	float AlphaOpManualFactor{0.0f};
 	float AlphaOpManualAlpha1;
 	float AlphaOpManualAlpha2;
 
@@ -417,10 +417,10 @@ public:
 	float Emissive[4];
 	float Shininess;
 
-	bool DepthCheck;
-	bool DepthWrite;
+	bool DepthCheck{true};
+	bool DepthWrite{true};
 
-	CullHardwareType CullHardware;
+	CullHardwareType CullHardware{CH_Clockwise};
 	SceneBlendType SceneBlendFactors[2];
 	DepthFunctionType AlphaRejectionFunction;
 	float AlphaRejectionValue;
@@ -485,7 +485,7 @@ public:
 
 	// Filled in by gfx implementation: Whether this technique is available on
 	// the hardware and gfx engine (DX/GL) we are running on
-	bool Available;
+	bool Available{false};
 };
 
 class StdMeshMaterial
@@ -498,20 +498,20 @@ public:
 
 	// Location the Material was loaded from
 	StdCopyStrBuf FileName;
-	unsigned int Line;
+	unsigned int Line{0};
 
 	// Material name
 	StdCopyStrBuf Name;
 
 	// Not currently used in Clonk, but don't fail when we see this in a
 	// Material script:
-	bool ReceiveShadows;
+	bool ReceiveShadows{true};
 
 	// Available techniques
 	std::vector<StdMeshMaterialTechnique> Techniques;
 
 	// Filled in by gfx implementation: Best technique to use
-	int BestTechniqueIndex; // Don't use a pointer into the Technique vector to save us from implementing a copyctor
+	int BestTechniqueIndex{-1}; // Don't use a pointer into the Technique vector to save us from implementing a copyctor
 };
 
 class StdMeshMatManager
@@ -531,7 +531,7 @@ public:
 		friend class StdMeshMatManager;
 	public:
 		Iterator(const MaterialMap::iterator& iter): iter_(iter) {}
-		Iterator(const Iterator& iter): iter_(iter.iter_) {}
+		Iterator(const Iterator& iter) = default;
 
 		Iterator operator=(const Iterator& iter) { iter_ = iter.iter_; return *this; }
 		Iterator& operator++() { ++iter_; return *this; }

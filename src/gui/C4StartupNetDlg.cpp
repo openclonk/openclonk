@@ -591,7 +591,7 @@ C4Network2Reference *C4StartupNetListEntry::GrabReference()
 
 // ----------- C4StartupNetDlg ---------------------------------------------------------------------------------
 
-C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")), pChatTitleLabel(nullptr), pMasterserverClient(nullptr), fIsCollapsed(false), fUpdatingList(false), iGameDiscoverInterval(0), tLastRefresh(0), fUpdateCheckPending(false)
+C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART"))
 {
 	// ctor
 	// key bindings

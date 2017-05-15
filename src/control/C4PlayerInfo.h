@@ -72,39 +72,36 @@ public:
 	enum Attribute { PLRATT_Color=0, PLRATT_Name=1, PLRATT_Last=2 };
 	enum AttributeLevel { PLRAL_Current, PLRAL_Original, PLRAL_Alternate };
 private:
-	uint32_t dwFlags; // DWORD-mask of C4PlayerInfoFlags-constants
-	C4PlayerType eType;         // user or script player
+	uint32_t dwFlags{0}; // DWORD-mask of C4PlayerInfoFlags-constants
+	C4PlayerType eType{C4PT_User};         // user or script player
 
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> sName;     // player name
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sForcedName; // player name if a new name is forced e.g. because the current name appeared twice
-	int32_t iID;          // unique ID set by host
+	int32_t iID{0};          // unique ID set by host
 	C4Network2Res::Ref pRes;    // player resource to load from
 	C4Network2ResCore ResCore;  // core of resource to load from
 	StdCopyStrBuf szFilename;   // source filename for local players
-	uint32_t dwColor;           // player color
-	uint32_t dwOriginalColor, dwAlternateColor; // original player color wish
-	int32_t idSavegamePlayer;   // ID of associated savegame player
-	int32_t idTeam;             // team ID
+	uint32_t dwColor{0xffffffff};           // player color
+	uint32_t dwOriginalColor{0}, dwAlternateColor{0}; // original player color wish
+	int32_t idSavegamePlayer{0};   // ID of associated savegame player
+	int32_t idTeam{0};             // team ID
 	StdCopyStrBuf szAuthID;     // authentication ID (for league server, will be cleared on successful join)
-	int32_t iInGameNumber, iInGameJoinFrame, iInGamePartFrame; // information about player in game
+	int32_t iInGameNumber{-1}, iInGameJoinFrame{-1}, iInGamePartFrame{-1}; // information about player in game
 	C4ID idExtraData;           // extra data for script players
 
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sLeagueAccount; // account name on league server
-	int32_t iLeagueScore;       // score on league server at join time
-	int32_t iLeagueRank;        // rank on league server at join time
-	int32_t iLeagueRankSymbol;  // symbolization of the player's rank
+	int32_t iLeagueScore{0};       // score on league server at join time
+	int32_t iLeagueRank{0};        // rank on league server at join time
+	int32_t iLeagueRankSymbol{0};  // symbolization of the player's rank
 	int32_t iLeagueScoreProjected;// score on league server in case of win
-	int32_t iLeagueProjectedGain; // projected league score increase if game is won - -1 for unknown; valid values always positive
+	int32_t iLeagueProjectedGain{-1}; // projected league score increase if game is won - -1 for unknown; valid values always positive
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sClanTag; // clan ("team") tag
-	int32_t iLeaguePerformance; // script-set league performance value, only set temporarily for masterserver end reference
+	int32_t iLeaguePerformance{0}; // script-set league performance value, only set temporarily for masterserver end reference
 	StdCopyStrBuf sLeagueProgressData; // level progress data as reported by league
 
 public:
 	C4PlayerInfo()                           // construct empty
-			:  dwFlags(0), eType(C4PT_User), iID(0), pRes(0), szFilename(), dwColor(0xffffffff),
-			dwOriginalColor(0xffffffff), dwAlternateColor(0), idSavegamePlayer(0), idTeam(0), iInGameNumber(-1),
-			iInGameJoinFrame(-1), iInGamePartFrame(-1), idExtraData(C4ID::None), sLeagueAccount(""),
-			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1), iLeaguePerformance(0) { }
+			: pRes(nullptr), szFilename(), idExtraData(C4ID::None), sLeagueAccount("") { }
 
 	void Clear();                            // clear fields
 
@@ -212,12 +209,12 @@ class C4ClientPlayerInfos
 {
 private:
 	// std::vector...
-	int32_t iPlayerCount;               // number of clients registered into the list
-	int32_t iPlayerCapacity;            // size of pClients-array
-	C4PlayerInfo **ppPlayers;       // array of registered client information
+	int32_t iPlayerCount{0};               // number of clients registered into the list
+	int32_t iPlayerCapacity{0};            // size of pClients-array
+	C4PlayerInfo **ppPlayers{nullptr};       // array of registered client information
 	void GrowList(size_t iByVal); // increase list capacity
 
-	int32_t iClientID;          // ID of client described by this packet
+	int32_t iClientID{-1};          // ID of client described by this packet
 
 	// flags for this packet
 	enum Flags
@@ -228,7 +225,7 @@ private:
 		CIF_Developer   = 1<<3, // set for developer hosts (by regkey); client side check only!
 		CIF_Removed     = 1<<4 // client was removed
 	};
-	uint32_t dwFlags; // bit mask of the above flags
+	uint32_t dwFlags{0}; // bit mask of the above flags
 
 public:
 	C4ClientPlayerInfos(const char *szJoinFilenames=nullptr, bool fAdd=false, C4PlayerInfo *pAddInfo=nullptr); // ctor; sets local data (or makes an add-player-packet if filename is given) if par is true
@@ -285,7 +282,7 @@ public:
 
 	C4PacketPlayerInfoUpdRequest(const C4ClientPlayerInfos &rInfo) : Info(rInfo) {} // ctor
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // * PID_PlayerInfoUpd
@@ -294,13 +291,13 @@ class C4PacketPlayerInfo : public C4PacketBase
 {
 public:
 	C4ClientPlayerInfos Info; // info for clients to be updated
-	bool fIsRecreationInfo;   // if set, this info packet describes savegame recreation players
+	bool fIsRecreationInfo{false};   // if set, this info packet describes savegame recreation players
 
-	C4PacketPlayerInfo() : Info(), fIsRecreationInfo(false) { } // std ctor
+	C4PacketPlayerInfo() : Info() { } // std ctor
 	C4PacketPlayerInfo(const C4ClientPlayerInfos &rCopyInfos, bool fRecreationPlayers) // ctor
 			: Info(rCopyInfos), fIsRecreationInfo(fRecreationPlayers) { };
 
-	virtual void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp) override;
 };
 
 // player info list
@@ -309,12 +306,12 @@ class C4PlayerInfoList
 {
 private:
 	// std::vector...
-	int32_t iClientCount;               // number of clients registered into the list
-	int32_t iClientCapacity;            // size of pClients-array
-	C4ClientPlayerInfos **ppClients; // array of registered client information
+	int32_t iClientCount{0};               // number of clients registered into the list
+	int32_t iClientCapacity{0};            // size of pClients-array
+	C4ClientPlayerInfos **ppClients{nullptr}; // array of registered client information
 	void GrowList(size_t iByVal); // increase list capacity
 
-	int32_t iLastPlayerID;              // last ID given to a player
+	int32_t iLastPlayerID{0};              // last ID given to a player
 
 	enum MatchingLevel { PML_PlrFileName=0, PML_PlrName, PML_PrefColor, PML_Any };
 
