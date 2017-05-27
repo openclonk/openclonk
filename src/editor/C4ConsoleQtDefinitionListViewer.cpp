@@ -73,10 +73,16 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 		// Build path leading to this definition
 		DefListNode *node_parent = root.get();
 		StdCopyStrBuf fn(def->Filename), fn2;
+		StdCopyStrBuf fn_full;
 		fn.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
 		for (;;)
 		{
 			bool is_parent_folder = fn.SplitAtChar(DirectorySeparator, &fn2);
+			if (fn_full.getLength())
+			{
+				fn_full.AppendChar(DirectorySeparator);
+			}
+			fn_full.Append(fn);
 			if (!is_parent_folder || WildcardMatch(C4CFN_DefFiles, fn.getData())) // ignore non-.ocd-folders (except for final definition)
 			{
 				// Find if path is already there
@@ -94,7 +100,8 @@ void C4ConsoleQtDefinitionListModel::ReInit()
 					node_parent->items.emplace_back((node_child = new DefListNode()));
 					node_child->idx = node_parent->items.size() - 1;
 					node_child->parent = node_parent;
-					node_child->name.Copy(fn);
+					const char *localized_name = ::Definitions.GetLocalizedGroupFolderName(fn_full.getData());
+					node_child->name.Copy(localized_name ? localized_name : fn.getData());
 					node_child->filename.Copy(fn);
 				}
 				// And fill in node if this is not a parent folder

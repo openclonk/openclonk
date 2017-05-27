@@ -33,6 +33,9 @@ public:
 	Table table;
 protected:
 	C4Def *FirstDef;
+	// Localized names of definition parent groups that do not contain a definition themselves
+	// Loaded for editor definition list
+	std::map<StdCopyStrBuf, StdCopyStrBuf> localized_group_folder_names;
 public:
 	void Default();
 	void Clear();
@@ -67,6 +70,7 @@ public:
 	void Synchronize();
 	void AppendAndIncludeSkeletons();
 	StdMeshSkeletonLoader& GetSkeletonLoader();
+	const char *GetLocalizedGroupFolderName(const char *folder_path) const;
 
 	// callback from font renderer: get ID image
 	bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) override;

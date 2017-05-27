@@ -75,7 +75,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
                         bool fSearchMessage, int32_t iMinProgress, int32_t iMaxProgress, bool fLoadSysGroups)
 {
 	int32_t iResult=0;
-	C4Def *nDef;
+	C4Def *nDef = nullptr;
 	char szEntryname[_MAX_FNAME+1];
 	C4Group hChild;
 	bool fPrimaryDef=false;
@@ -106,7 +106,22 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			else
 			{
 				delete nDef;
+				nDef = nullptr;
 			}
+		}
+	}
+
+	// Remember localized name for pure definition groups
+	if (!nDef)
+	{
+		C4ComponentHost title_file;
+		StdCopyStrBuf title;
+		C4Language::LoadComponentHost(&title_file, hGroup, C4CFN_Title, Config.General.LanguageEx);
+		if (title_file.GetLanguageString(Config.General.LanguageEx, title))
+		{
+			StdCopyStrBuf group_path(hGroup.GetFullName());
+			group_path.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+			localized_group_folder_names[group_path] = title;
 		}
 	}
 
@@ -226,6 +241,8 @@ void C4DefList::Clear()
 	FirstDef=nullptr;
 	// clear quick access table
 	table.clear();
+	// clear localized group names table
+	localized_group_folder_names.clear();
 	// clear loaded skeletons
 	SkeletonLoader->Clear();
 }
@@ -509,4 +526,12 @@ void C4DefList::AppendAndIncludeSkeletons()
 StdMeshSkeletonLoader& C4DefList::GetSkeletonLoader()
 {
 	return *SkeletonLoader;
+}
+
+const char *C4DefList::GetLocalizedGroupFolderName(const char *folder_path) const
+{
+	// lookup in map
+	auto iter = localized_group_folder_names.find(StdCopyStrBuf(folder_path));
+	if (iter == localized_group_folder_names.end()) return nullptr;
+	return iter->second.getData();
 }
