@@ -22,6 +22,20 @@ global func AssertArrayBounds(array arr, int index)
 
 
 /*
+ Throws a fatal error function is not called from definition context.
+
+ @par function_name [optional] A function name for the error message output.
+ */
+global func AssertDefinitionContext(string function_name)
+{
+	if (!this || GetType(this) != C4V_Def)
+	{
+		FatalError(Format("%s must be called from definition context! Was instead called from: %v", function_name ?? "The function", this));
+	}
+}
+
+
+/*
  Throws a fatal error function is called from global context.
 
  @par function_name [optional] A function name for the error message output.
