@@ -22,7 +22,7 @@ pkgs.stdenv.mkDerivation rec {
 
   buildInputs = with pkgs; [
     SDL2 libvorbis libogg libjpeg libpng freetype glew tinyxml
-    openal freealut
+    openal freealut readline
   ] ++ stdenv.lib.optional withEditor qt5.full;
 
   cmakeFlags = [ "-DCMAKE_AR=${pkgs.gcc-unwrapped}/bin/gcc-ar" "-DCMAKE_RANLIB=${pkgs.gcc-unwrapped}/bin/gcc-ranlib" ];
