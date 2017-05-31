@@ -13,11 +13,13 @@ local TRCH_InHand   = 1;
 local TRCH_Attached = 2;
 local TRCH_Fixed    = 3;
 
+local transform; // for debugging
+
 /*-- Engine Callbacks --*/
 
 func Initialize()
 {
-	state = TRCH_Normal;
+	SetState(TRCH_Normal);
 	SetMeshMaterial("Torch");
 }
 
@@ -26,25 +28,29 @@ func Hit()
 	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
-// Set state on entrance of a clonk.
-func Entrance(object container)
+public func Selection(object container)
 {
-	if (container->~IsClonk())
-		state = TRCH_InHand;
+	if (container && container->~IsClonk())
+	{
+		SetState(TRCH_InHand);
+	}
 	return _inherited(container, ...);
 }
 
-// Set state on departure from a clonk.
-func Departure(object container)
+public func Deselection(object container)
 {
 	if (container->~IsClonk())
-		state = TRCH_Normal;
+	{
+		SetState(TRCH_Normal);
+	}
 	return _inherited(container, ...);
 }
 
 public func SaveScenarioObject(proplist props, ...)
 {
 	if (!_inherited(props, ...)) return false;
+	
+	props->AddCall("SetState", this, "SetState", state);
 	if (state == TRCH_Attached || state == TRCH_Fixed)
 	{
 		props->AddCall("Attach", this, "AttachToWall", state == TRCH_Fixed);
@@ -84,9 +90,6 @@ public func ControlUse(object clonk)
 	// Attach the torch if the clonk stands in front of tunnel material.
 	if (GetMaterial() == Material("Tunnel"))	
 	{
-		// Do an attach animation. 
-		clonk->DoKneel(); // For now kneel.
-		// Attach the torch to the wall.
 		AttachToWall();
 		return true;
 	}
@@ -97,8 +100,6 @@ public func ControlUse(object clonk)
 
 public func Interact(object clonk)
 {
-	// Do an detach animation. 
-	clonk->DoKneel(); // For now kneel.
 	// detach the torch from the wall.
 	DetachFromWall();
 	clonk->Collect(this, false, nil, true);
@@ -112,16 +113,13 @@ public func AttachToWall(bool fixed)
 	if (Contained()) Exit(0, 3);
 	SetCategory(C4D_StaticBack);
 	this.Collectible = false;
-	state = TRCH_Attached;
+	SetState(TRCH_Attached);
 	if (fixed)
-		state = TRCH_Fixed;
+		SetState(TRCH_Fixed);
 	// Set plane so that it is in the background.
 	this.Plane = 1;
 	// Rotate the head of the torch a little into the screen.
 	this.MeshTransformation = Trans_Rotate(-20, 1, 0, 0);
-	// Add a burning effect if not already done.
-	if (!GetEffect("IntBurning", this))
-		AddEffect("IntBurning", this, 100, 4, this);
 	return;
 }
 
@@ -131,10 +129,7 @@ public func DetachFromWall()
 	// Make the torch a collectible object, also change its state.
 	SetCategory(C4D_Object);
 	this.Collectible = true;
-	state = TRCH_Normal;
-	// Remove the burning effect if active.
-	if (GetEffect("IntBurning", this))
-		RemoveEffect("IntBurning", this);
+	SetState(TRCH_Normal);
 	return;
 }
 
@@ -142,6 +137,8 @@ public func DetachFromWall()
 public func SetState(int to_state)
 {
 	state = to_state;
+	if (state == TRCH_Normal) Burn(false);
+	else Burn(true);
 	return;
 }
 
@@ -169,8 +166,7 @@ func FxIntBurningStart(object target, effect fx, int temporary)
 		DampingY = 1000,
 		BlitMode = GFX_BLIT_Additive,
 		CollisionVertex = 0,
-		OnCollision = PC_Die(),
-		Attach = ATTACH_Front
+		OnCollision = PC_Die()
 	};
 	fx.smoke = 
 	{
@@ -186,12 +182,14 @@ func FxIntBurningStart(object target, effect fx, int temporary)
 func FxIntBurningTimer (object target, effect fx, int time)
 {
 	// If the torched is attached or fixed it should emit some fire and smoke particles.
-	if (state == TRCH_Attached || state == TRCH_Fixed)
+	if (state != TRCH_Normal)
 	{
+		if(Contained() && (Contained()->~InLiquid() || !Contained()->~HasHandAction())) return -1;
+		var pos = GetParticleOffset();
 		// Fire effects.
-		CreateParticle("FireSharp", PV_Random(-1, 2), PV_Random(0, -3), PV_Random(-2, 2), PV_Random(-3, -5), 10 + Random(3), fx.flame, 12);
+		CreateParticle("FireSharp", PV_Random(-1 + pos[0], 2 + pos[0]), PV_Random(0 + pos[1], -3 + pos[1]), PV_Random(-2, 2), PV_Random(-3, -5), 10 + Random(3), fx.flame, 12);
 		// Smoke effects.
-		CreateParticle("Smoke", PV_Random(-1, 2), PV_Random(-7, -9), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), fx.smoke, 4);
+		CreateParticle("Smoke", PV_Random(-1 + pos[0], 2 + pos[0]), PV_Random(-7, -9), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), fx.smoke, 4);
 		// Interval jitter
 		if (!Random(10)) fx.Interval = 3+Random(3);
 	}
@@ -207,6 +205,24 @@ func FxIntBurningStop(object target, proplist effect, int reason, bool temporary
 	return 1;
 }
 
+private func Burn(bool burn)
+{
+	if (burn)
+	{
+		if (!GetEffect("IntBurning", this))
+		{
+			AddEffect("IntBurning", this, 100, 4, this);
+		}
+	}
+	else
+	{
+		if (GetEffect("IntBurning", this))
+		{
+			RemoveEffect("IntBurning", this);
+		}
+	}
+}
+
 /*-- Production --*/
 
 public func IsTool() { return true; }
@@ -214,12 +230,34 @@ public func IsToolProduct() { return true; }
 
 /*-- Display --*/
 
-public func GetCarryMode(object clonk, bool idle, bool nohand)
+public func GetCarryMode(object clonk)
 {
-	if (idle || nohand)
+	if (clonk && !clonk->~HasHandAction())
+	{
+		Burn(false);
 		return CARRY_Back;
+	}
+	else
+	{
+		Burn(true);
+		return CARRY_Spear;
+	}
+}
 
-	return CARRY_Spear;
+public func GetCarryTransform(object clonk, int sec, bool nohand)
+{
+	return Trans_Rotate(90, 0, 0, 1);
+}
+
+private func GetParticleOffset()
+{
+	if(state != TRCH_InHand || !Contained() || !(Contained() && Contained()->~IsClonk())) return [0,0];
+	
+	// Special handling for clonks
+	var off = [-4, -6];
+	if(Contained()->GetDir() == DIR_Right) off[0] = 4;
+	
+	return off;
 }
 
 func Definition(def)
