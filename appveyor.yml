@@ -1,0 +1,47 @@
+# can use variables like {build} and {branch}
+version: 1.0.{build}-{branch}
+pull_requests:
+  do_not_increment_build_number: true
+
+branches:
+  only:
+    - appveyor
+    - master
+
+configuration:
+  - RelWithDebInfo
+
+platform:
+  - Win32
+
+before_build:
+  - set BUILD_DIR=%APPVEYOR_BUILD_FOLDER%\build
+  # Based on http://stackoverflow.com/a/39408964
+  - set PREFIX=%APPVEYOR_BUILD_FOLDER%\deps
+  - if exist %PREFIX% set NEEDDEPS=rem
+  # Depends
+  - |-
+    %NEEDDEPS% cd thirdparty
+    %NEEDDEPS% mkdir build
+    %NEEDDEPS% cd build
+    %NEEDDEPS% cmake .. -DCMAKE_BUILD_TYPE=%configuration% -DCMAKE_INSTALL_PREFIX=%PREFIX%
+    %NEEDDEPS% cmake --build . --config %configuration% -- /m
+
+  - |-
+    mkdir %BUILD_DIR%
+    cd %BUILD_DIR%
+    cmake %APPVEYOR_BUILD_FOLDER% -DCMAKE_BUILD_TYPE=%configuration%
+
+# The following enables c4group.exe to run on the build machine, and makes the installed openclonk usable
+  - for %%F in (zlib.dll,glew32.dll,libpng16.dll,OpenAL32.dll,alut.dll) do (copy /Y %PREFIX%\bin\%%F %BUILD_DIR%)
+
+build:
+  parallel: true
+  project: build/setup.vcxproj
+  verbosity: minimal
+
+cache:
+  - deps -> thirdparty\CMakeLists.txt
+
+artifacts:
+  - path: build\setup_openclonk.exe
