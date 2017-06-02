@@ -1,5 +1,8 @@
 /**
+	GUI.c
 	Contains UI related functions that require definitions from Objects.ocd to be loaded.
+	
+	@author Zapper
 */
 
 // The default menu decoration used in most places.

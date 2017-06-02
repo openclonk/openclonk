@@ -1,9 +1,9 @@
-/*--
-		Material.c
-		Authors: Ringwaul
-
-		Functions in relation to material; any kind of operations.
---*/
+/**
+	Material.c
+	Functions relating to materials; any kind of operations.
+	
+	@author Ringwaul
+*/
 
 global func MaterialDepthCheck(int x, int y, string mat, int depth)
 {
@@ -59,8 +59,8 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 global func ExtractLiquid(int x, int y, bool distant_first)
 {
 	var result = ExtractLiquidAmount(x, y, 1, distant_first);
-	if(!result) return -1;
-	
+	if (!result)
+		return -1;
 	return result[0];
 }
 

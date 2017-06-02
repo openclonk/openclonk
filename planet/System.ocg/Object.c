@@ -1,9 +1,9 @@
-/*--
-		Objects.c
-		Authors: Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther, Randrian
-
-		Functions generally applicable to objects; not enough to be worth distinct scripts though.
---*/
+/**
+	Objects.c
+	Functions generally applicable to objects; not enough to be worth distinct scripts though.
+		
+	@author Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther, Randrian
+*/
 
 // Does not set the speed of an object. But you can set two components of the velocity vector with this function.
 global func SetSpeed(int x_dir, int y_dir, int prec)
@@ -321,15 +321,17 @@ global func StonyObjectHit(int x, int y)
 	// Failsafe
 	if (!this) return false;
 	var xdir = GetXDir(), ydir = GetYDir();
-	if(x) x = x / Abs(x);
-	if(y) y = y / Abs(y);
+	if (x) x = x / Abs(x);
+	if (y) y = y / Abs(y);
 	// Check for solid in hit direction
 	var i = 0;
 	var average_obj_size = Distance(0,0, GetObjWidth(), GetObjHeight()) / 2 + 2;
-	while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
+	while (!GBackSolid(x * i, y * i) && i < average_obj_size)
+		i++;
 	// To catch some high speed cases: if no solid found, check directly beneath
-	if (!GBackSolid(x*i, y*i))
-		while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
+	if (!GBackSolid(x * i, y * i))
+		while (!GBackSolid(x * i, y * i) && i < average_obj_size)
+			i++;
 	// Check if digfree
 	if (!GetMaterialVal("DigFree", "Material", GetMaterial(x*i, y*i)) && GBackSolid(x*i, y*i))
 		return Sound("Hits::Materials::Rock::RockHit?");
@@ -356,76 +358,87 @@ global func RemoveAll(p, ...)
 	return cnt;
 }
 
-// Pulls an object above ground if it was buried (e.g. by PlaceVegetation).
+// Pulls an object above ground if it was buried (e.g. by PlaceVegetation), mainly used by plants.
 // The object must have 'Bottom' and 'Center' CNAT to use this.
 // (bottom is the point which should be buried, center the lowest point that must not be buried)
-// Mainly used by plants.
 global func RootSurface()
 {
 	if (HasCNAT(CNAT_Center))
 	{
 		var i = 0;
-		while(GetContact(-1) & CNAT_Center && i < GetObjHeight()/2) { SetPosition(GetX(),GetY()-1); i++; } //Move up if too far underground
+		// Move up if too far underground.
+		while (GetContact(-1) & CNAT_Center && i < GetObjHeight()/2)
+		{
+			SetPosition(GetX(),	GetY()	-	1);
+			i++;
+		}
 	}
 	if (HasCNAT(CNAT_Bottom))
 	{
 		i = 0;
-		while(!(GetContact(-1) & CNAT_Bottom) && i < GetObjHeight()/2) { SetPosition(GetX(),GetY()+1); i++; } //Move down if in midair
-
-		if (!Stuck()) SetPosition(GetX(),GetY()+1); // try make the plant stuck
+		 // Move down if in midair.
+		while (!(GetContact(-1) & CNAT_Bottom) && i < GetObjHeight()/2)
+		{
+			SetPosition(GetX(), GetY() + 1);
+			i++;
+		}
+		// Try to make the plant stuck.
+		if (!Stuck())
+			SetPosition(GetX(), GetY() + 1); 
 	}
 }
 
 // Buys an object. Returns the object if it could be bought.
-global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pFromVendor, bool fShowErrors)
+global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool show_errors)
 {
 	// if no vendor is given try this
-	if (!pFromVendor) pFromVendor = this;
+	if (!from_vendor) 
+		from_vendor = this;
 	// not a vendor?
-	if (!pFromVendor->~IsVendor())
+	if (!from_vendor->~IsVendor())
 		return nil;
-	return pFromVendor->DoBuy(idBuyObj, iForPlr, iPayPlr, nil, 0, fShowErrors);
+	return from_vendor->DoBuy(buy_def, for_plr, pay_plr, nil, 0, show_errors);
 }
 
 // Sells an object. Returns true if it could be sold.
-global func Sell (int iPlr, object pObj, object pToVendor)
+global func Sell(int plr, object obj, object to_vendor)
 {
 	// if no vendor is given try this
-	if(!pToVendor) pToVendor = this;
+	if (!to_vendor)
+		to_vendor = this;
 	// not a vendor?
-	if (!pToVendor->~IsVendor())
+	if (!to_vendor->~IsVendor())
 		return false;
-	return pToVendor->DoSell(pObj, iPlr);
+	return to_vendor->DoSell(obj, plr);
 }
 
-/* GetXEdge returns the position of the objects top/bottom/left/right edge */
+// GetXEdge returns the position of the objects top/bottom/left/right edge.
 global func GetLeftEdge()
 {
-	return GetX()-GetObjWidth()/2;
+	return GetX() - GetObjWidth() / 2;
 }
 
 global func GetRightEdge()
 {
-	return GetX()+GetObjWidth()/2;
+	return GetX() + GetObjWidth() / 2;
 }
 
 global func GetTopEdge()
 {
-	return GetY()-GetObjHeight()/2;
+	return GetY() - GetObjHeight() / 2;
 }
 
 global func GetBottomEdge()
 {
-	return GetY()+GetObjHeight()/2;
+	return GetY() + GetObjHeight() / 2;
 }
 
 // Returns if the object is standing in front of the back-object
 global func InFrontOf(object back)
 {
 	var front = this;
-	if(!front)
+	if (!front)
 		return;
-	
 	return front->FindObject(front->Find_AtPoint(), Find_Not(Find_Exclude(back))) != nil;
 }
 

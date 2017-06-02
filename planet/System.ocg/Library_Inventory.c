@@ -1,5 +1,8 @@
-/*
-	global functions that belong to Libraries.ocd/Inventory.ocd
+/**
+	Library_Inventory.c
+	Global functions that belong to Libraries.ocd/Inventory.ocd.
+	
+	@author
 */
 
 // overload function for objects with Inventory.ocd

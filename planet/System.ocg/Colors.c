@@ -1,9 +1,9 @@
-/*--
-		Colors.c
-		Authors: Tyron
-		
-		All sorts of operations on colors.
---*/
+/**
+	Colors.c
+	All sorts of operations on colors.
+	
+	@author Tyron	
+*/
 
 static const RGBA_ALPHA = 0;
 static const RGBA_RED = 1;
@@ -27,7 +27,8 @@ global func SetRGBaValue(int val, int newval, int sel)
 	return val | newval << ((3 - sel) * 8);
 }
 
-global func SplitRGBaValue(int rgb) {
+global func SplitRGBaValue(int rgb)
+{
 	return [GetRGBaValue(rgb, 1), GetRGBaValue(rgb, 2), GetRGBaValue(rgb, 3), GetRGBaValue(rgb, 0)];
 }
 
@@ -110,5 +111,5 @@ global func RGB2HSL(int rgb)
 			hue -= 255;
 	}
 	
-	return RGB(hue,sat,lightness);
+	return RGB(hue, sat, lightness);
 }

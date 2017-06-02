@@ -1,11 +1,9 @@
-/*--
-		Fire.c
-		Authors: Zapper, Maikel
-		
-		The fire effect ported from the engine.
-		
-		Functions to be used as documented in the docs.
---*/
+/**
+	Fire.c
+	The fire effect ported from the engine. Functions to be used as documented in the docs.
+	
+	@author Zapper, Maikel		
+*/
 
 static const FIRE_LIGHT_COLOR = 0xc86400;
 

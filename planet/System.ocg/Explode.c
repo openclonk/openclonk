@@ -1,15 +1,12 @@
-/*--
-		Explode.c
-		Authors: Newton
-		
-		Everything about the explosion.
-		TODO: documentation.
---*/
+/**
+	Explode.c
+	Everything about the explosion.
+	
+	@author Newton
+*/
 
-/*--
-Particle definitions used by the explosion effect.
-They will be initialized lazily whenever the first blast goes off.
---*/
+// Particle definitions used by the explosion effect.
+// They will be initialized lazily whenever the first blast goes off.
 static ExplosionParticles_Smoke;
 static ExplosionParticles_Blast;
 static ExplosionParticles_BlastSmooth;

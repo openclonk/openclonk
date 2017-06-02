@@ -1,9 +1,9 @@
-/*--
-		FindObject.c
-		Authors:
+/**
+	FindObject.c
+	Wrappers for convenient calls to the FindObject family.
 
-		Wrappers for convenient calls to the FindObject family.
---*/
+	@author		
+*/
 
 
 /*-- Find functions --*/
@@ -142,7 +142,8 @@ Similar to Find_Hostile, but defaults to treating all players as hostile when pl
 */
 global func Find_AnimalHostile(int plr)
 {
-	if (plr == NO_OWNER) return Find_Not(Find_Owner(NO_OWNER));
+	if (plr == NO_OWNER)
+		return Find_Not(Find_Owner(NO_OWNER));
 	return Find_Or(Find_Owner(NO_OWNER), Find_Hostile(plr));
 }
 

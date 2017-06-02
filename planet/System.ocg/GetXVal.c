@@ -1,15 +1,14 @@
-/*--
-		GetXVal.c
-		Authors:
-		
-		Some functions which request information from the GetXVal family.
-		Attention: These functions directly access internal values of the engine.
-		The usage might, under certain circumstances, lead to desynchronisation in
-		either network games or save games. The most dangerous functions are marked
-		with //(!).
-		
-		These functions are also very slow. Values should be cached if possible.
---*/
+/**
+	GetXVal.c
+	Some functions which request information from the GetXVal family.
+	Attention: These functions directly access internal values of the engine.
+	The usage might, under certain circumstances, lead to desynchronisation in
+	either network games or save games. The most dangerous functions are marked
+	with //(!).
+	These functions are also very slow. Values should be cached if possible.
+
+	@author 
+*/
 
 global func GetActMapVal(string entry, string action, id def, int num)
 {

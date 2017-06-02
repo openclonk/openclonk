@@ -1,10 +1,9 @@
-
-/*--
-		CollectStatistics.c
-		Authors: Luchs
-
-		Global entry point for statistics collection for the masterserver.
---*/
+/**
+	CollectStatistics.c
+	Global entry point for statistics collection for the masterserver.
+		
+	@author Luchs
+*/
 
 
 // This function is called after the round ends. The return value is passed to

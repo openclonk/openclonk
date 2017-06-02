@@ -1,9 +1,9 @@
-/*--
-		Action.c
-		Authors: Günther
-
-		Stuff for the proplist changes.
---*/
+/**
+	Action.c
+	Stuff for the proplist changes.
+	
+	@author Günther
+*/
 
 static const DFA_NONE    = nil;
 static const DFA_WALK    =  "WALK";
@@ -21,7 +21,8 @@ static const DFA_FLOAT   =  "FLOAT";
 static const DFA_ATTACH  =  "ATTACH";
 static const DFA_CONNECT =  "CONNECT";
 static const DFA_PULL    =  "PULL";
-static const Action = {
+static const Action = 
+{
 	GetName = Global.GetName,
 	Length = 1,
 	Directions = 1,
@@ -29,9 +30,12 @@ static const Action = {
 	Procedure = DFA_NONE,
 };
 
-global func GameCall(string fn, ...) {
-	if (!fn) return;
+global func GameCall(string fn, ...)
+{
+	if (!fn)
+		return;
 	var f = Scenario[fn];
-	if (!f) return;
+	if (!f)
+		return;
 	return Scenario->Call(f, ...);
 }

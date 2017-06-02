@@ -1,8 +1,12 @@
 /**
+	Particles.c
 	This file contains some default particle behavior definitions as well as helper functions.
+	
+	@author Zapper
 */
 
-/* particle helper/effect functions */
+
+/*-- Helper/Effect Functions --*/
 
 global func CreateMuzzleFlash(int x, int y, int angle, int size)
 {
@@ -30,7 +34,8 @@ global func Smoke(int x, int y, int level, int color, bool heavy)
 }
 
 
-/* particle definitions */
+/*-- Particle Definitions --*/
+
 global func Particles_Dust()
 {
 	return
@@ -54,7 +59,6 @@ global func Particles_Cloud()
 		Phase = PV_Random(0, 15)
 	};
 }
-
 
 global func Particles_Smoke(bool heavy)
 {
@@ -294,7 +298,6 @@ global func Particles_Air()
 	};
 }
 
-
 global func Particles_Thrust(int size)
 {
 	size = size ?? 10;
@@ -367,7 +370,8 @@ global func Particles_ElectroSpark2()
 	};
 }
 
-/* weather particles */
+
+/*-- Weather Particles --*/
 
 global func Particles_Rain(int color)
 {

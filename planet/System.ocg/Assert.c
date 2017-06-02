@@ -1,7 +1,8 @@
-/*
-	This file contains functions that can be commonly used to make functions safe.
+/**
+	Assert.c
+	Functions that can be commonly used to make functions safe.
 
-	Author: Marky
+	@author Marky
 */
 
 

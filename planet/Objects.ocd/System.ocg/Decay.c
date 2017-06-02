@@ -1,6 +1,9 @@
 /**
+	Decay.c
 	Animals can use Decay() in their Death() function so they will slowly decay and spawn a few temporary flies.
 	The delay parameter specifies the amount of frames before decaying one Con.
+	
+	@author
 */
 
 global func Decay(int delay)

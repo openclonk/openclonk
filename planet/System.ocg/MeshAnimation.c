@@ -1,10 +1,9 @@
-/*--
-		MeshAnimation.c
-		Authors: ck
-		
-		Wrappers for convenient calls to PlayAnimation.
---*/
-
+/**
+	MeshAnimation.c
+	Wrappers for convenient calls to PlayAnimation.
+	
+	@author ck
+*/
 
 global func Anim_Const(int value)
 {

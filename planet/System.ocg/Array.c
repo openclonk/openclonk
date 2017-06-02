@@ -1,9 +1,9 @@
-/*--
-		Array.c
-		Authors: Zapper, Sven2
-	
-		Global array helper functions.
---*/
+/**
+	Array.c
+	Global array helper functions.
+
+	@author Zapper, Sven2		
+*/
 
 
 // Concatenates two arrays and returns a new array.

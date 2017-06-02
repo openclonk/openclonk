@@ -2,7 +2,7 @@
 	String.c
 	Functions for string manipulation.	
 	
-	@authors Maikel
+	@author Maikel
 */
 
 // Returns the reduced string with only the characters in the interval [begin, end) are taken. The value begin starts

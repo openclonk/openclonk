@@ -1,9 +1,9 @@
-/*--
-		Effect.c
-		Authors: Günther
-
-		Prototype for effect prototypes.
---*/
+/**
+	Effect.c
+	Prototype for effect prototypes and useful effects.
+	
+	@author Günther
+*/
 
 static const Effect = new Global
 {

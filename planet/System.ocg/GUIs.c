@@ -1,5 +1,8 @@
-/*
+/**
+	GUI.c
 	This file contains functions that are used for layouting custom menus.
+
+	@author Zapper
 */
 
 /* -- constants used for layout -- */

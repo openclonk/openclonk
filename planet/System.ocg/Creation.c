@@ -1,9 +1,9 @@
-/*--
-		Creation.c
-		Authors: Ringwaul, Tyron
-
-		Creation of objects, particles or PSX.
---*/
+/**
+	Creation.c
+	Creation of objects, particles or PSX.
+	
+	@author Ringwaul, Tyron		
+*/
 
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
 // Returns the number of iterations needed, or -1 when the placement failed.

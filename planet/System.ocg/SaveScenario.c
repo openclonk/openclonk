@@ -1,4 +1,10 @@
-/* Scenario saving functionality */
+/**
+	SaveScenario.c
+ 	Scenario saving functionality
+ 
+	@author Sven2 
+*/
+
 // Defines script function SaveScenarioObjects, which is called by the
 // engine to generate the Objects.c file for scenario saving
 // Also called for object duplication in the editor

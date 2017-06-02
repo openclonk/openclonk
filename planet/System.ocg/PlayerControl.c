@@ -1,10 +1,9 @@
-/*--
-		PlayerControl.c
-		Authors: Newton
-		
-		Functions to handle player controls (i.e. input keys)
---*/
-
+/**
+	PlayerControl.c
+	Functions to handle player controls (i.e. input keys).
+	
+	@author Newton
+*/
 
 static const CON_Gamepad_Deadzone = 60;
 static CON_VC_Players;
@@ -75,7 +74,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		
 		// local coordinates
 		var cursorX = x, cursorY = y;
-		if(x != nil || y != nil)
+		if (x != nil || y != nil)
 		{
 			cursorX -= cursor->GetX();
 			cursorY -= cursor->GetY();
@@ -110,7 +109,7 @@ global func InitializePlayerControl(int plr, string controlset_name, bool keyboa
 	CON_VC_Players[plr] = !mouse;
 	
 	// for all clonks...
-	for(var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
+	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
 	{
 		clonk->~ReinitializeControls();
 	}
@@ -118,7 +117,7 @@ global func InitializePlayerControl(int plr, string controlset_name, bool keyboa
 
 global func PlayerHasVirtualCursor(int plr)
 {
-	if(!CON_VC_Players)
+	if (!CON_VC_Players)
 		return false;
 		
 	return CON_VC_Players[plr];
@@ -189,7 +188,7 @@ global func GetPlayerCursorPos(int plr)
 global func StopSelected(int plr)
 {
 	var cursor = GetCursor(plr);
-	if(cursor)
+	if (cursor)
 	{
 		cursor->SetCommand("None");
 		cursor->SetComDir(COMD_Stop);
@@ -207,14 +206,14 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	if (!this) return false;
 	
 	// Count down from EffectCount, in case effects get deleted
-	var i = GetEffectCount("*Control*", this), iEffect;
+	var i = GetEffectCount("*Control*", this), fx;
 	while (i--)
-		{
-		iEffect = GetEffect("*Control*", this, i);
-		if (iEffect)
-			if (EffectCall(this, iEffect, "Control", ctrl, x,y,strength, repeat, status))
+	{
+		fx = GetEffect("*Control*", this, i);
+		if (fx)
+			if (EffectCall(this, fx, "Control", ctrl, x,y,strength, repeat, status))
 				return true;
-		}
+	}
 	// No effect handled the control
 	return false;
 }
@@ -283,8 +282,8 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 	if (Contained()) return false;
 
 	// this is for controlling movement with Analogpad
-	if(status == CONS_Down)
-		if(strength != nil && strength < CON_Gamepad_Deadzone)
+	if (status == CONS_Down)
+		if (strength != nil && strength < CON_Gamepad_Deadzone)
 			return true;
 	
 	var proc = GetProcedure();
@@ -294,9 +293,9 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 		// Jump control
 		if (ctrl == CON_Jump)
 		{
-			if(proc == "WALK" && GetComDir() == COMD_Up)
+			if (proc == "WALK" && GetComDir() == COMD_Up)
 				SetComDir(COMD_Stop);
-			if(proc == "WALK")
+			if (proc == "WALK")
 			{
 				this->ObjectCommand("Jump");
 				return true;
@@ -501,10 +500,10 @@ global func ObjectComLetGo(int vx, int vy)
 global func MouseHover(int player, object leaving, object entering, object dragged)
 {
 	// Leaving the hovering zone should be processed first.
-	if(leaving)
+	if (leaving)
 		leaving->~OnMouseOut(player, dragged);
 	// Then process entering a new hovering zone. 
-	if(entering)
+	if (entering)
 		entering->~OnMouseOver(player, dragged);
 	return true;
 }

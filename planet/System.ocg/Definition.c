@@ -1,9 +1,9 @@
-/*--
-		Definition.c
-		Authors: Maikel
-
-		Functions generally applicable to definitions.
---*/
+/**
+	Definition.c
+	Functions generally applicable to definitions.
+	
+	@author Maikel
+*/
 
 static GetDefinition_Loaded_Definition_List;
 

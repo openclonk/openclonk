@@ -1,7 +1,13 @@
-/* Configurable pathfinder for graphs */
+/**
+	AStar.c
+	Configurable pathfinder for graphs.
+
+	@author Luchs	
+*/
 
 // Generic A* implementation.
-static const AStar = new Global {
+static const AStar = new Global
+{
 	/* Overwrite these functions */
 	/* ========================= */
 
@@ -93,7 +99,8 @@ static const AStar = new Global {
 //
 // Graph nodes are a regular grid over the landscape with a configurable size
 // (step). Nodes are represented as {x, y} proplists.
-static const AStarMap = new AStar {
+static const AStarMap = new AStar
+{
 	// This function is used both as heuristic (node to the goal) and as cost
 	// function (two neighboring nodes).
 	distance = func(proplist a, proplist b)
@@ -132,8 +139,8 @@ static const AStarMap = new AStar {
 };
 
 /* Binary Min-Heap */
-static const MinHeap = new Global {
-
+static const MinHeap = new Global
+{
 	// A heap is an array of [key, value] array-tuples.
 	Heapify = func(array heap, int i)
 	{

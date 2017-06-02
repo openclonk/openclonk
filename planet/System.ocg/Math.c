@@ -1,9 +1,9 @@
-/*--
-		Math.c
-		Authors: Maikel, flgr, Newton, Tyron, Zapper
-
-		Any kind of help with calculation.
---*/
+/**
+	Math.c
+	Any kind of help with calculations.
+	
+	@author Maikel, flgr, Newton, Tyron, Zapper
+*/
 
 // Returns the offset to x.
 global func AbsX(int x)
@@ -122,7 +122,7 @@ global func GetCalcDir()
 	return GetDir() * 2 - 1;
 }
 
-//Moves param 'a' towards param 'b' by 'max' amount per frame
+// Moves param 'a' towards param 'b' by 'max' amount per frame.
 global func MoveTowards(int a, int b, int max)
 {
 	if(b == nil) return false;

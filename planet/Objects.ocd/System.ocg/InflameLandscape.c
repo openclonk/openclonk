@@ -1,5 +1,8 @@
 /**
+	InflameLandscape.c
 	Engine callback handling for landscape inflammation
+	
+	@author
 */
 
 // Callback from engine when landsape is incinerated at an incindiary material.

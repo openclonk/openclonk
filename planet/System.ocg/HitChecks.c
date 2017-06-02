@@ -1,13 +1,13 @@
-/*--
-		HitCheck.c
-		Authors: Newton, Boni
-	
-		Effect for hit checking.
-		Facilitates any hit check of a projectile. The Projectile hits anything
-		which is either alive or returns for IsProjectileTarget(object projectile,
-		object shooter) true. If the projectile hits something, it calls
-		HitObject(object target) in the projectile.
---*/
+/**
+	HitCheck.c
+	Effect for hit checking.
+	Facilitates any hit check of a projectile. The Projectile hits anything
+	which is either alive or returns for IsProjectileTarget(object projectile,
+	object shooter) true. If the projectile hits something, it calls
+	HitObject(object target) in the projectile.
+
+	@author Newton, Boni
+*/
 
 global func FxHitCheckStart(object target, proplist effect, int temp, object by_obj, bool never_shooter)
 {

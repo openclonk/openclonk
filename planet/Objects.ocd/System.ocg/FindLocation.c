@@ -1,4 +1,5 @@
-/*
+/**
+	FindLocation.c
 	This script contains the function FindLocation which uses a parameter-system similar to FindObject.
 	This function should mainly be used for placement of objects at the start of a scenario.
 	FindLocation is not guaranteed to always return a spot if a fitting spot exists, it's just best effort.
@@ -8,6 +9,8 @@
 	FindLocation([Loc_Tunnel()]);
 	finds a floor spot but not in front of tunnel:
 	FindLocation([Loc_Not(Find_Tunnel()), Loc_Wall(CNAT_Bottom)]);
+	
+	@author Zapper
 */
 
 static const LOC_INVALID = 0;

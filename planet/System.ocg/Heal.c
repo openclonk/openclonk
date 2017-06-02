@@ -2,7 +2,7 @@
     Heal.c
     Function to heal livings over time.
 
-    Author: Armin
+    @author Armin
 */
 
 /**
