@@ -235,8 +235,9 @@ local ActMap = {
 		},
 };
 
-func Definition(def) {
-	
+public func Definition(proplist def)
+{
+	return _inherited(def, ...);
 }
 
 local Name = "$Name$";
