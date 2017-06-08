@@ -12,7 +12,7 @@ local DebugLoggingOn = false; // Whether or not debug logging is turned on.
 
 public func LogAI(effect fx, string message)
 {
-	if (fx.control.DebugLoggingOn)
+	if (fx->GetControl().DebugLoggingOn)
 		Log("[%d]AI WARNING (%v): %s", FrameCounter(), fx.Target, message);
 	return;
 }

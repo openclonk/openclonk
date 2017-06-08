@@ -14,7 +14,7 @@ local AttackMessageRate = 80; // Likelihood of displaying an attack message in p
 public func ExecuteAppearance(effect fx)
 {
 	// Do a random attack message.
-	if (!Random(5) && Random(100) >= 100 - fx.control.AttackMessageRate)
+	if (!Random(5) && Random(100) >= 100 - fx->GetControl().AttackMessageRate)
 		this->ExecuteAttackMessage(fx);
 	return true;
 }
@@ -32,7 +32,7 @@ public func ExecuteAttackMessage(effect fx)
 		var ai = clonk->~GetAI();
 		if (!ai)
 			continue;
-		if (ai.last_message != nil && FrameCounter() - ai.last_message < fx.control.AttackMessageWaitTime)
+		if (ai.last_message != nil && FrameCounter() - ai.last_message < fx->GetControl().AttackMessageWaitTime)
 			continue;
 		group_cnt++;
 	}

@@ -42,7 +42,7 @@ public func OnSaveScenarioAI(proplist fx_ai, proplist props)
 	_inherited(fx_ai, props);
 
 	if (fx_ai.home_x != fx_ai.Target->GetX() || fx_ai.home_y != fx_ai.Target->GetY() || fx_ai.home_dir != fx_ai.Target->GetDir())
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetHome", fx_ai.Target, fx_ai.home_x, fx_ai.home_y, GetConstantNameByValueSafe(fx_ai.home_dir, "DIR_"));
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetHome", fx_ai.Target, fx_ai.home_x, fx_ai.home_y, GetConstantNameByValueSafe(fx_ai.home_dir, "DIR_"));
 }
 
 

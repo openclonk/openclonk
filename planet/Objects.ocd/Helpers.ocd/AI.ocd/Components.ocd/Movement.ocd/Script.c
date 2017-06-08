@@ -29,7 +29,7 @@ public func OnSaveScenarioAI(proplist fx_ai, proplist props)
 	_inherited(fx_ai, props);
 
 	if (fx_ai.attack_path)
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetAttackPath", fx_ai.Target, fx_ai.attack_path);
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetAttackPath", fx_ai.Target, fx_ai.attack_path);
 
 }
 
@@ -62,7 +62,7 @@ func EditorDelegate_SetAttackPath(array attack_path)
 {
 	// Called by editor delegate when attack mode is changed.
 	// For now, attack mode parameter delegates are not supported. Just set by name.
-	return this.control->SetAttackPath(this.Target, attack_path);
+	return this->GetControl()->SetAttackPath(this.Target, attack_path);
 }
 
 

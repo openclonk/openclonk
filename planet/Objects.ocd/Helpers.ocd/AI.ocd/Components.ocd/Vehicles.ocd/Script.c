@@ -159,7 +159,7 @@ public func ExecuteAirship(effect fx)
 	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
 	{
 		// Try to find a new pilot if the current pilot lost the airship.
-		if (fx.Target->ObjectDistance(fx.vehicle) > fx.control.AirshipLostDistance)
+		if (fx.Target->ObjectDistance(fx.vehicle) > fx->GetControl().AirshipLostDistance)
 		{
 			this->PromoteNewAirshipCaptain(fx);
 			fx.strategy = nil;
@@ -190,8 +190,8 @@ public func ExecuteAirship(effect fx)
 				tx = fx.home_x;
 				ty = fx.home_y;
 			}
-			if (Distance(fx.vehicle->GetX(), fx.vehicle->GetY(), tx, ty) < fx.control.AirshipBoardDistance
-		   && Inside(fx.vehicle->GetY() - ty, -fx.control.AirshipBoardDistance / 2, 0))
+			if (Distance(fx.vehicle->GetX(), fx.vehicle->GetY(), tx, ty) < fx->GetControl().AirshipBoardDistance
+		   && Inside(fx.vehicle->GetY() - ty, -fx->GetControl().AirshipBoardDistance / 2, 0))
 			{
 				// Unboard the crew and let go of airship.
 				for (var clonk in this->GetCommanderCrew(fx))

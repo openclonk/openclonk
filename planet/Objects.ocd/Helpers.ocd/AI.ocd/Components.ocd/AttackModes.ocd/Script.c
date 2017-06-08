@@ -24,7 +24,7 @@ public func OnSaveScenarioAI(proplist fx_ai, proplist props)
 	_inherited(fx_ai, props);
 
 	if (fx_ai.attack_mode.Identifier != "Default")
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetAttackMode", fx_ai.Target, Format("%v", fx_ai.attack_mode.Identifier));
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetAttackMode", fx_ai.Target, Format("%v", fx_ai.attack_mode.Identifier));
 }
 
 
@@ -46,7 +46,7 @@ public func EditorDelegate_SetAttackMode(proplist attack_mode)
 {
 	// Called by editor delegate when attack mode is changed.
 	// For now, attack mode parameter delegates are not supported. Just set by name.
-	return this.control->SetAttackMode(this.Target, attack_mode.Identifier);
+	return this->GetControl()->SetAttackMode(this.Target, attack_mode.Identifier);
 }
 
 

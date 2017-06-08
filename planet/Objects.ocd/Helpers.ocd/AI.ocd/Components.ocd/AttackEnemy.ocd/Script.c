@@ -135,14 +135,14 @@ public func OnSaveScenarioAI(proplist fx_ai, proplist props)
 	_inherited(fx_ai, props);
 
 	if (fx_ai.ally_alert_range)
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetAllyAlertRange", fx_ai.Target, fx_ai.ally_alert_range);
-	props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetGuardRange", fx_ai.Target, fx_ai.guard_range.x, fx_ai.guard_range.y, fx_ai.guard_range.wdt, fx_ai.guard_range.hgt);
-	if (fx_ai.max_aggro_distance != fx_ai.control.MaxAggroDistance)
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetMaxAggroDistance", fx_ai.Target, fx_ai.max_aggro_distance);
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetAllyAlertRange", fx_ai.Target, fx_ai.ally_alert_range);
+	props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetGuardRange", fx_ai.Target, fx_ai.guard_range.x, fx_ai.guard_range.y, fx_ai.guard_range.wdt, fx_ai.guard_range.hgt);
+	if (fx_ai.max_aggro_distance != fx_ai->GetControl().MaxAggroDistance)
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetMaxAggroDistance", fx_ai.Target, fx_ai.max_aggro_distance);
 	if (!fx_ai.auto_search_target)
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetAutoSearchTarget", fx_ai.Target, false);
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetAutoSearchTarget", fx_ai.Target, false);
 	if (fx_ai.encounter_cb)
-		props->AddCall(SAVESCEN_ID_AI, fx_ai.control, "SetEncounterCB", fx_ai.Target, Format("%v", fx_ai.encounter_cb));
+		props->AddCall(SAVESCEN_ID_AI, fx_ai->GetControl(), "SetEncounterCB", fx_ai.Target, Format("%v", fx_ai.encounter_cb));
 }
 
 /*-- Editor Properties --*/
