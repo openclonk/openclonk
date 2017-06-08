@@ -46,6 +46,8 @@ public func OnDefineAI(proplist def)
 	AddEditorProp_AISelection(Clonk, AI);
 }
 
+local EditorHelp = "$EditorHelp$";
+
 
 /*-- AI Execution --*/
 

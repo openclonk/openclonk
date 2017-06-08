@@ -220,7 +220,7 @@ public func Execute(effect fx, int time) // TODO: Adjust
 
 /*-- Editor Properties --*/
 
-// Adds an AI to the selection
+// Adds an AI to the selection list in the editor
 public func AddEditorProp_AISelection(proplist type, id ai_type)
 {
 	InitEditorProp_AISelection(type);
