@@ -72,8 +72,6 @@ public func SetAttackMode(object clonk, string attack_mode_identifier)
 	return true;
 }
 
-local AttackModes = {}; // empty pre-init to force proplist ownership in base AI
-
 // Attack mode that just creates a weapon and uses the default attack procedures
 local SingleWeaponAttackMode = {
 	Construction = func(effect fx)
@@ -103,7 +101,7 @@ local SingleWeaponAttackMode = {
 				var respawning_object = ammo ?? weapon;
 				respawning_object->~SetStackCount(1); // Ensure departure is called on every object
 				respawning_object.WeaponRespawn_Departure = respawning_object.Departure;
-				respawning_object.Departure = AI.Departure_WeaponRespawn;
+				respawning_object.Departure = AI_AttackModes.Departure_WeaponRespawn;
 				fx.has_ammo_respawn = true;
 			}
 		}
@@ -148,11 +146,11 @@ local SingleWeaponAttackMode = {
 private func InitAttackModes()
 {
 	// First-time init of attack mode editor prop structures
-	// All attack modes structures point to the base AI
-	this.AttackModes = AI.AttackModes;
-	if (!AI->GetControlEffect().EditorProps.attack_mode)
+	// The attack mode structures are defined in every AI that includes this library
+	if (!this.AttackModes) this.AttackModes = {};
+	if (!this->GetControlEffect().EditorProps.attack_mode)
 	{
-		AI->GetControlEffect().EditorProps.attack_mode = {
+		this->GetControlEffect().EditorProps.attack_mode = {
 			Name="$AttackMode$",
 			EditorHelp="$AttackModeHelp$",
 			Type="enum",
@@ -161,7 +159,6 @@ private func InitAttackModes()
 			Set="SetAttackMode"
 		};
 	}
-	this->GetControlEffect().EditorProps.attack_mode = AI->GetControlEffect().EditorProps.attack_mode;
 }
 
 public func RegisterAttackMode(string identifier, proplist am, proplist am_default_values)
@@ -169,8 +166,8 @@ public func RegisterAttackMode(string identifier, proplist am, proplist am_defau
 	// Definition call during Definition()-initialization:
 	// Register a new attack mode selectable for the AI clonk
 	// Add to attack mode info structure
-	if (!AttackModes) this->InitAttackModes();
-	AttackModes[identifier] = am;
+	if (!this.AttackModes) this->InitAttackModes();
+	this.AttackModes[identifier] = am;
 	am.Identifier = identifier;
 	if (!am_default_values) am_default_values = { Identifier=identifier };
 	// Add to editor option for AI effect
@@ -188,10 +185,8 @@ private func DefinitionAttackModes(proplist def)
 {
 	// Make sure attack mode structures are initialized
 	this->InitAttackModes();
-	// Registration only once for base AI
-	if (this != AI) return;
 	// Register presets for all the default weapons usable by the AI
-	def->RegisterAttackMode("Default", { Name = "$Default$", EditorHelp = "$DefaultHelp$", FindWeapon = AI.FindInventoryWeapon });
+	def->RegisterAttackMode("Default", { Name = "$Default$", EditorHelp = "$DefaultHelp$", FindWeapon = this.FindInventoryWeapon });
 	def->RegisterAttackMode("Sword", new SingleWeaponAttackMode { Weapon = Sword, Strategy = this.ExecuteMelee });
 	def->RegisterAttackMode("Axe", new SingleWeaponAttackMode { Weapon = Axe, Strategy = this.ExecuteMelee });
 	def->RegisterAttackMode("Club", new SingleWeaponAttackMode { Weapon = Club, Strategy = this.ExecuteClub });
@@ -244,3 +239,112 @@ func DoWeaponRespawn(id_weapon)
 		return re_weapon;
 	}
 }
+
+/*-- Finding weapons --*/
+
+public func FindInventoryWeapon(effect fx)
+{
+	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
+	fx.ammo_check = nil;
+	fx.ranged = false;
+	if (FindInventoryWeaponGrenadeLauncher(fx)) return true;
+	if (FindInventoryWeaponBlunderbuss(fx)) return true;
+	if (FindInventoryWeaponBow(fx)) return true;
+	if (FindInventoryWeaponJavelin(fx)) return true;
+	// Throwing weapons.
+	if ((fx.weapon = fx.Target->FindContents(Firestone)) || (fx.weapon = fx.Target->FindContents(Rock)) || (fx.weapon = fx.Target->FindContents(Lantern))) 
+	{
+		fx.can_attack_structures = fx.weapon->~HasExplosionOnImpact();
+		fx.strategy = this.ExecuteThrow;
+		return true;
+	}
+	// Melee weapons.
+	if ((fx.weapon = fx.Target->FindContents(Sword)) || (fx.weapon = fx.Target->FindContents(Axe))) // Sword attacks aren't 100% correct for Axe, but work well enough
+	{
+		fx.strategy = this.ExecuteMelee;
+		return true;
+	}
+	if ((fx.weapon = fx.Target->FindContents(PowderKeg)))
+	{
+		fx.strategy = this.ExecuteBomber;
+		return true;
+	}
+	if ((fx.weapon = fx.Target->FindContents(Club)))
+	{
+		fx.strategy = this.ExecuteClub;
+		return true;
+	}
+	// No weapon.
+	return false;
+}
+
+
+private func FindInventoryWeaponGrenadeLauncher(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(GrenadeLauncher))
+	{
+		if (this->HasBombs(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 75;
+			fx.ammo_check = this.HasBombs;
+			fx.ranged = true;
+			fx.can_attack_structures = true;
+			return true;
+		}
+		else
+			fx.weapon = nil;
+	}
+}
+
+
+private func FindInventoryWeaponBlunderbuss(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Blunderbuss))
+	{
+		if (this->HasAmmo(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 200;
+			fx.ammo_check = this.HasAmmo;
+			fx.ranged = true;
+			fx.ranged_direct = true;
+			return true;
+		}
+		else
+			fx.weapon = nil;
+	}
+}
+
+
+private func FindInventoryWeaponBow(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Bow))
+	{
+		if (this->HasArrows(fx, fx.weapon))
+		{
+			fx.strategy = this.ExecuteRanged;
+			fx.projectile_speed = 100;
+			fx.ammo_check = this.HasArrows;
+			fx.ranged = true;
+			var arrow = fx.weapon->Contents(0) ?? FindObject(Find_Container(fx.Target), Find_Func("IsArrow"));
+			fx.can_attack_structures = arrow && arrow->~IsExplosive();
+			return true;
+		}
+		else
+			fx.weapon = nil;
+	}
+}
+
+
+private func FindInventoryWeaponJavelin(effect fx)
+{
+	if (fx.weapon = fx.Target->FindContents(Javelin)) 
+	{
+		fx.strategy = this.ExecuteRanged;
+		fx.projectile_speed = fx.Target.ThrowSpeed * fx.weapon.shooting_strength / 100;
+		fx.ranged=true;
+		return true;
+	}
+}
+
