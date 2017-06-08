@@ -18,8 +18,7 @@ local AirshipOccludedTargetMaxDistance = 250; // IF a target is further than thi
 // Set controlled vehicle
 public func SetVehicle(object clonk, object new_vehicle)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetVehicle(%v, %v) not called from definition context but from %v", clonk, new_vehicle, this);
+	AssertDefinitionContext(Format("SetVehicle(%v, %v)", clonk, new_vehicle));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;

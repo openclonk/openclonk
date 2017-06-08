@@ -11,8 +11,7 @@
 // Set the current inventory to be removed when the clonk dies. Only works if clonk has an AI.
 public func BindInventory(object clonk)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: BindInventory(%v) not called from definition context but from %v", clonk, this);
+	AssertDefinitionContext(Format("BindInventory(%v)", clonk));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;

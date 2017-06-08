@@ -9,8 +9,7 @@
 // Set the home position the Clonk returns to if he has no target.
 public func SetHome(object clonk, int x, int y, int dir)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetHome(%v, %d, %d, %d) not called from definition context but from %v", clonk, x, y, dir, this);
+	AssertDefinitionContext(Format("SetHome(%v, %d, %d, %d)", clonk, x, y, dir));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;

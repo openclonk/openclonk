@@ -11,8 +11,7 @@
 // Set attack path
 public func SetAttackPath(object clonk, array new_attack_path)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetAttackPath(%v, %v) not called from definition context but from %v", clonk, new_attack_path, this);
+	AssertDefinitionContext(Format("SetAttackPath(%v, %v)", clonk, new_attack_path));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;

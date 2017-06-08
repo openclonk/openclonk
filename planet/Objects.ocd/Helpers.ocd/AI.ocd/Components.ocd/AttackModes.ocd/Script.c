@@ -55,8 +55,7 @@ public func EditorDelegate_SetAttackMode(proplist attack_mode)
 // Set attack mode / spell to control attack behaviour
 public func SetAttackMode(object clonk, string attack_mode_identifier)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetAttackMode(%v, %s) not called from definition context but from %v", clonk, attack_mode_identifier, this);
+	AssertDefinitionContext(Format("SetAttackMode(%v, %s)", clonk, attack_mode_identifier));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;

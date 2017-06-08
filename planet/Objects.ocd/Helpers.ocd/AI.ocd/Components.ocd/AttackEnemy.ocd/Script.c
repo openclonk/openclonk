@@ -17,8 +17,7 @@ local GuardRangeY = 150; // Search targets this far away in either direction (se
 
 public func SetAllyAlertRange(object clonk, int new_range)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetAllyAlertRange(%v, %d) not called from definition context but from %v", clonk, new_range, this);
+	AssertDefinitionContext(Format("SetAllyAlertRange(%v, %d)", clonk, new_range));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;
@@ -32,8 +31,7 @@ public func SetAllyAlertRange(object clonk, int new_range)
 // The callback should return true to be cleared and not called again. Otherwise, it will be called every time a new target is found.
 public func SetEncounterCB(object clonk, string cb_fn)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetEncounterCB(%v, %s) not called from definition context but from %v", clonk, cb_fn, this);
+	AssertDefinitionContext(Format("SetEncounterCB(%v, %s)", clonk, cb_fn));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;
@@ -45,8 +43,7 @@ public func SetEncounterCB(object clonk, string cb_fn)
 // Enable/disable auto-searching of targets.
 public func SetAutoSearchTarget(object clonk, bool new_auto_search_target)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetAutoSearchTarget(%v, %v) not called from definition context but from %v", clonk, new_auto_search_target, this);
+	AssertDefinitionContext(Format("SetAutoSearchTarget(%v, %v)", clonk, new_auto_search_target));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;
@@ -58,8 +55,7 @@ public func SetAutoSearchTarget(object clonk, bool new_auto_search_target)
 // Set the guard range to the provided rectangle.
 public func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetGuardRange(%v, %d, %d, %d, %d) not called from definition context but from %v", clonk, x, y, wdt, hgt, this);
+	AssertDefinitionContext(Format("SetGuardRange(%v, %d, %d, %d, %d)", clonk, x, y, wdt, hgt));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;
@@ -84,8 +80,7 @@ public func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 // Set the maximum distance the enemy will follow an attacking clonk.
 public func SetMaxAggroDistance(object clonk, int max_dist)
 {
-	if (GetType(this) != C4V_Def)
-		Log("WARNING: SetMaxAggroDistance(%v, %d) not called from definition context but from %v", clonk, max_dist, this);
+	AssertDefinitionContext(Format("SetMaxAggroDistance(%v, %d)", clonk, max_dist));
 	var fx_ai = this->GetAI(clonk);
 	if (!fx_ai)
 		return false;
