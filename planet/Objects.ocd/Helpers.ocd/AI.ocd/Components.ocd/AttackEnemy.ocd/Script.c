@@ -123,7 +123,7 @@ public func OnDefineAI(proplist def)
 		auto_search_target = { Name = "$AutoSearchTarget$", EditorHelp = "$AutoSearchTargetHelp$", Type = "bool" },
 	};
 	
-	AddProperties(def.FxAI.EditorProps, additional_props);
+	AddProperties(def->GetControlEffect().EditorProps, additional_props);
 }
 
 

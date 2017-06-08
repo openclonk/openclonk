@@ -35,7 +35,7 @@ public func OnDefineAI(proplist def)
 {
 	_inherited(def);
 	
-	def.FxAI.SetAttackMode = this.EditorDelegate_SetAttackMode;
+	def->GetControlEffect().SetAttackMode = this.EditorDelegate_SetAttackMode;
 	
 	// Set the other options
 	def->DefinitionAttackModes(def);
@@ -151,9 +151,9 @@ private func InitAttackModes()
 	// First-time init of attack mode editor prop structures
 	// All attack modes structures point to the base AI
 	this.AttackModes = AI.AttackModes;
-	if (!AI.FxAI.EditorProps.attack_mode)
+	if (!AI->GetControlEffect().EditorProps.attack_mode)
 	{
-		AI.FxAI.EditorProps.attack_mode = {
+		AI->GetControlEffect().EditorProps.attack_mode = {
 			Name="$AttackMode$",
 			EditorHelp="$AttackModeHelp$",
 			Type="enum",
@@ -162,7 +162,7 @@ private func InitAttackModes()
 			Set="SetAttackMode"
 		};
 	}
-	this.FxAI.EditorProps.attack_mode = AI.FxAI.EditorProps.attack_mode;
+	this->GetControlEffect().EditorProps.attack_mode = AI->GetControlEffect().EditorProps.attack_mode;
 }
 
 public func RegisterAttackMode(string identifier, proplist am, proplist am_default_values)
@@ -181,7 +181,7 @@ public func RegisterAttackMode(string identifier, proplist am, proplist am_defau
 		Value = am_default_values
 	};
 	if (!am_option.EditorHelp && am.GetEditorHelp) am_option.EditorHelp = am->GetEditorHelp();
-	var editor_opts = this.FxAI.EditorProps.attack_mode.Options;
+	var editor_opts = this->GetControlEffect().EditorProps.attack_mode.Options;
 	editor_opts[GetLength(editor_opts)] = am_option;
 }
 

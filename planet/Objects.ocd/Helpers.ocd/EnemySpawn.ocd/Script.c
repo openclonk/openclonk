@@ -549,10 +549,10 @@ public func GetAIClonkEditorProps()
 	if (!this.AIClonkEditorProps)
 	{
 		var props = {};
-		props.AttackMode = new AI.FxAI.EditorProps.attack_mode { Set=nil, Priority=100 };
+		props.AttackMode = new AI->GetControlEffect().EditorProps.attack_mode { Set=nil, Priority=100 };
 		props.GuardRange = { Name="$AttackRange$", EditorHelp="$AttackRangeHelp$", Type="enum", Options = [
 			{ Name="$Automatic$", EditorHelp="$AutomaticGuardRangeHelp$"},
-			{ Name="$Custom$", Type=C4V_PropList, Value={}, DefaultValueFunction=this.GetDefaultAIRect, Delegate=AI.FxAI.EditorProps.guard_range }
+			{ Name="$Custom$", Type=C4V_PropList, Value={}, DefaultValueFunction=this.GetDefaultAIRect, Delegate=AI->GetControlEffect().EditorProps.guard_range }
 			] };
 		props.Color = { Name="$Color$", Type="color" };
 		props.Bounty = { Name="$Bounty$", EditorHelp="$BountyHelp$", Type="int", Min=0, Max=100000 };

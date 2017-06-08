@@ -41,7 +41,7 @@ public func OnDefineAI(proplist def)
 {
 	_inherited(def);
 	
-	def.FxAI.SetAttackPath = this.EditorDelegate_SetAttackPath;
+	def->GetControlEffect().SetAttackPath = this.EditorDelegate_SetAttackPath;
 	
 	// Set the additional editor properties
 	var additional_props =
@@ -54,7 +54,7 @@ public func OnDefineAI(proplist def)
 		] },
 	};
 	
-	AddProperties(def.FxAI.EditorProps, additional_props);
+	AddProperties(def->GetControlEffect().EditorProps, additional_props);
 }
 
 
