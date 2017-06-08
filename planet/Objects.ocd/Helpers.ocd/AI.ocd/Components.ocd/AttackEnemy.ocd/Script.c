@@ -41,6 +41,7 @@ public func SetEncounterCB(object clonk, string cb_fn)
 	return true;
 }
 
+
 // Enable/disable auto-searching of targets.
 public func SetAutoSearchTarget(object clonk, bool new_auto_search_target)
 {
@@ -108,6 +109,7 @@ public func OnAddAI(proplist fx_ai)
 	// Store whether the enemy is controlled by a commander.
 	fx_ai.commander = fx_ai.Target.commander;
 }
+
 
 // Callback from the Definition()-call
 public func OnDefineAI(proplist def)

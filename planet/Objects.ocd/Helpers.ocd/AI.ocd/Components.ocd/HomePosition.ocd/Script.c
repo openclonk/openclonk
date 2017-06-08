@@ -15,12 +15,9 @@ public func SetHome(object clonk, int x, int y, int dir)
 	if (!fx_ai)
 		return false;
 	// nil/nil defaults to current position.
-	if (!GetType(x))
-		x = clonk->GetX();
-	if (!GetType(y))
-		y = clonk->GetY();
-	if (!GetType(dir))
-		dir = clonk->GetDir();
+	x = x ?? clonk->GetX();
+	y = y ?? clonk->GetY();
+	dir = dir ?? clonk->GetDir();
 	fx_ai.home_x = x;
 	fx_ai.home_y = y;
 	fx_ai.home_dir = dir;

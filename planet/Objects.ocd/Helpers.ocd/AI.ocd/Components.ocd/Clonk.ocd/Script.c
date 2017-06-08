@@ -46,4 +46,3 @@ public func CheckHandsAction(effect fx)
 	// Probably hands busy. Just wait.
 	return false;
 }
-
