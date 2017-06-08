@@ -1,0 +1,9 @@
+ChooseAI=AI selection
+NoAI=No AI
+NoAIEditorHelp=Removes the AI from this object.
+Active=Active
+ActiveHelp=Whether the AI controls the clonk currently. An inactive KI can be reactivated via the 'AI activate', for example in a sequence.
+SetAIActivated=AI activate
+SetAIActivatedHelp=Activates an enemy AI for a clonk. AI will be created if necessary.
+Status=Active
+StatusHelp=Whether to activate or deactivate the AI.

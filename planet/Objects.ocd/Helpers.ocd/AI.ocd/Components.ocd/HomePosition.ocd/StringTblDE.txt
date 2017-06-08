@@ -1,0 +1,9 @@
+SetAINewHome=KI Position setzen
+SetAINewHomeHelp=Lässt einen KI-Gegner an eine neue Position laufen.
+NewHome=Neue Position
+NewHomeHelp=Wohin der Clonk laufen soll.
+NewHomeDir=Richtung
+NewHomeDirHelp=In welche Richtung der KI-Clonk schauen soll, wenn kein Gegner in der Nähe ist.
+Unchanged=Ungeändert
+Left=Links
+Right=Rechts

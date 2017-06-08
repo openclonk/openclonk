@@ -12,6 +12,35 @@ local AirshipBoardDistance = 100; // How near must an airship be to the target t
 local AirshipLostDistance = 50; // How far the pilot must be away from an airship for it to find a new pilot.
 local AirshipOccludedTargetMaxDistance = 250; // IF a target is further than this and occluded, search for a new target
 
+
+/*-- Public interface --*/
+
+// Set controlled vehicle
+public func SetVehicle(object clonk, object new_vehicle)
+{
+	if (GetType(this) != C4V_Def)
+		Log("WARNING: SetVehicle(%v, %v) not called from definition context but from %v", clonk, new_vehicle, this);
+	var fx_ai = this->GetAI(clonk);
+	if (!fx_ai)
+		return false;
+	fx_ai.vehicle = new_vehicle;
+	return true;
+}
+
+
+/*-- Callbacks --*/
+
+// Callback from the effect Construction()-call
+public func OnAddAI(proplist fx_ai)
+{
+	_inherited(fx_ai);
+	
+	// Store the vehicle the AI is using.
+	if (fx_ai.Target->GetProcedure() == "PUSH")
+		fx_ai.vehicle = fx_ai.Target->GetActionTarget();
+}
+
+
 /*-- General Vehicle --*/
 
 private func ExecuteVehicle(effect fx)

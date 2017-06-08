@@ -1,0 +1,9 @@
+IgnoreAllies=Mitspieler ignorieren
+GuardRange=Bewachter Bereich
+MaxAggroDistance=Angriffsradius
+AutoSearchTarget=Ziel automatisch suchen
+AutoSearchTargetHelp=Wenn wahr, sucht die KI automatisch Gegner. Ansonsten muss der Gegner per Sequenzbefehl gegeben werden.
+AttackTarget=Angriffsziel
+AttackTargetHelp=Wenn angegeben, greift der KI-Clonk direkt diesen Gegner an.
+Enemy=Gegner
+EnemyHelp=Welcher Gegner angegriffen werden soll. Wenn nicht angegeben, greift der Gegner den nächsten Clonk an.
