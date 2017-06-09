@@ -1129,18 +1129,7 @@ func GetSwimRotation()
 
 func Hit(int iXSpeed, int iYSpeed)
 {
-	if (this->IsWalking() && iYSpeed > 450)
-	{
-		// roll :D
-		var x_movement = ComDir2XY(GetComDir())[0];
-		var looking_right = GetDir() == DIR_Right;
-		if ((x_movement > 0 && looking_right) || (x_movement < 0 && !looking_right))
-		{
-			DoRoll();
-		}
-		else // Force kneel-down when hitting the ground at high velocity.
-			DoKneel(true);
-	}
+	HandleRollOnHit(iXSpeed, iYSpeed);
 	return _inherited(iXSpeed, iYSpeed, ...);
 }
 
@@ -1177,6 +1166,24 @@ func DoKneel(bool create_dust)
 func EndKneel()
 {
 	if(GetAction() != "Roll") SetAction("Walk");
+}
+
+
+// Handle rolling when hitting the landscape
+func HandleRollOnHit(int iXSpeed, int iYSpeed)
+{
+	if (this->IsWalking() && iYSpeed > 450)
+	{
+		// roll :D
+		var x_movement = ComDir2XY(GetComDir())[0];
+		var looking_right = GetDir() == DIR_Right;
+		if ((x_movement > 0 && looking_right) || (x_movement < 0 && !looking_right))
+		{
+			DoRoll();
+		}
+		else // Force kneel-down when hitting the ground at high velocity.
+			DoKneel(true);
+	}
 }
 
 
