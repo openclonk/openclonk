@@ -50,19 +50,3 @@ global func CharIsUpperCase(int char)
 {
 	return Inside(char, 65, 90);
 }
-
-// Converts a string to an integer if it consists of digits only.
-global func StringToInteger(string str)
-{
-	var integer = 0;
-	var power = 0;
-	for (var index = GetLength(str) - 1; index >= 0; index--)
-	{
-		var char = GetChar(str, index);
-		if (!CharIsDigit(char))
-			return nil;
-		integer += (char - 48) * 10**power;
-		power++;	
-	}
-	return integer;
-}
