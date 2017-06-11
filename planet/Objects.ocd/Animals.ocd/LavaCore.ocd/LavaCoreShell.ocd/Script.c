@@ -5,7 +5,6 @@
 	@author Win, Maikel
 */
 
-
 local size;
 
 public func InitAttach(object parent)
@@ -15,17 +14,28 @@ public func InitAttach(object parent)
 	return;
 }
 
-public func SetSize(int size)
+public func SetSize(int to_size)
 {
-	// Rotate core to solidmask.
+	size = to_size;	
+	// Rotate core to match solidmask.
 	var r = -70;
 	var fsin = Sin(r, 10 * size), fcos = Cos(r, 10 * size);
 	SetObjDrawTransform(+fcos, +fsin, 0, -fsin, +fcos, 0);
-	// Update solid mask.
+	return;
+}
+
+public func AddSolidMask()
+{	
 	var solid_size = 2 * ((size * 20 / 100 + 2) / 2) + 4;
 	solid_size = BoundBy(solid_size, 4, 28);
 	var solid_x = (1 + solid_size / 2) * (solid_size - 4);
 	SetSolidMask(solid_x, 0, solid_size * 2, solid_size * 2, 28 - solid_size, 28 - solid_size);
+	return;
+}
+
+public func RemoveSolidMask()
+{
+	SetSolidMask();
 	return;
 }
 

@@ -160,10 +160,14 @@ local FxCoreBehavior = new Effect
 		var angle = Random(360);
 		if (prey)
 			angle = Angle(Target->GetX(), Target->GetY(), prey->GetX(), prey->GetY());
-		var test_x = Sin(angle, Target->GetCon() / 4);
-		var test_y = -Cos(angle, Target->GetCon() / 4);	
-		if (!PathFree(Target->GetX(), Target->GetY(), Target->GetX() + test_x, Target->GetY() + test_y))
-			return;		
+		// Test if shot is not blocked by the shell.
+		if (Target.shell)
+		{
+			var shell_angle = Normalize(Target.shell->GetR() + 90, 0);
+			var diff_angle = angle - shell_angle;
+			if (!Inside(diff_angle, -30, 30) && diff_angle < 330 && diff_angle > -330)
+				return;		
+		}
 		
 		var bubble = Target->CreateObject(BoilingLava_Bubble);
 		bubble->SetVelocity(angle, RandomX(30, 40));
@@ -195,7 +199,6 @@ local FxCoreBehavior = new Effect
 		var cnat = Target->GetContact(-1);
 		if (!Target->InLiquid())
 		{
-			//Log("[%d]%v out of liquid", FrameCounter(), Target);
 			cnat = cnat | CNAT_Top;
 		}
 		var other_core = Target->FindObject(Find_ID(LavaCore), Find_Exclude(Target), Target->Find_Distance(20 + Target.MaxSize));
@@ -321,6 +324,7 @@ public func Fossilize()
 	{	
 		shell->SetMeshMaterial("LavaShellStoneMat");
 		shell->SetRDir(0);
+		shell->AddSolidMask();
 	}
 	return;	
 }
@@ -332,7 +336,10 @@ public func Revive()
 	SetComDir(COMD_None);
 	SetMeshMaterial("LavaCoreMat");
 	if (shell)
+	{
 		shell->SetMeshMaterial("LavaShellMat");
+		shell->RemoveSolidMask();	
+	}
 	return;
 }
 
