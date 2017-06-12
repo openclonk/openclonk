@@ -11,7 +11,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'libgtest-dev']
+          packages: ['g++-4.9', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0']
       env: 
           - CCOMPILER=gcc-4.9 
           - CXXCOMPILER=g++-4.9 
@@ -23,7 +23,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libgtest-dev']
+          packages: ['g++-5', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build']
       env:
           - CCOMPILER=gcc-5
           - CXXCOMPILER=g++-5
@@ -36,16 +36,13 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-          packages: ['clang-3.8', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1', 'libgtest-dev']
+          packages: ['clang-3.8', 'build-essential', 'cmake', 'libfreetype6-dev', 'libgl1-mesa-dev', 'libglew-dev', 'libgtk-3-dev', 'libjpeg-dev', 'libpng-dev', 'libsdl2-dev', 'libupnp-dev', 'libxrandr-dev', 'x11proto-core-dev', 'zlib1g-dev', 'libalut0', 'ninja-build', 'libc++-dev', 'libc++1']
       env: 
           - CCOMPILER=clang-3.8 
           - CXXCOMPILER=clang++-3.8 
           - CXX_FLAGS="-stdlib=libc++ -fcolor-diagnostics" 
           - TYPE=Debug 
           - BSYS="Ninja#ninja -k30"
-
-before_install:
-    - for t in test mock; do wget https://github.com/google/google$t/archive/release-1.7.0.tar.gz -Og$t.tgz && tar xvf g$t.tgz; done 
 
 before_script:
     - export CXX="$CXXCOMPILER" CC="$CCOMPILER"
@@ -55,11 +52,8 @@ before_script:
       -DCMAKE_BUILD_TYPE="$TYPE"
       -DCMAKE_CXX_FLAGS="$CXX_FLAGS"
       -DUSE_GCC_PCH=${PCH:-off}
-      -DGTEST_ROOT=$PWD/googletest-release-1.7.0
-      -DGMOCK_ROOT=$PWD/googlemock-release-1.7.0
       .
 
 script:
-    - ${BSYS/*#/} all netpuncher tests aul_test
-    - ./tests/tests 
-    - ./tests/aul_test
+    - ${BSYS/*#/} all netpuncher
+    - ctest -C $TYPE --output-on-failure
