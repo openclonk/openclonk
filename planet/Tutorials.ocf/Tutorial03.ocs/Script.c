@@ -454,7 +454,8 @@ global func FxTutorialTalkedForFlagpoleTimer(object target, proplist effect)
 {
 	if (effect.talked_to_fireman && effect.talked_to_builder)
 	{
-		guide->AddGuideMessage("$MsgTutorialConstructFlagpole$");
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialConstructFlagpole$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialPlacedFlagpole", nil, 100, 5);
 		new_effect.plr = effect.plr;
