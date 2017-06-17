@@ -19,7 +19,7 @@ MsgTutorialBlastedRock=Well done, you blasted the rock and found your friend! He
 MsgTutorialFedWipf=That has done him good! And he is off again... Also try to find a way out of here.
 MsgTutorialDigOutLoam=This way! These orange objects ahead are pieces of loam, dig them out and collect a few. Loam can be used to build bridges out of earth, hold [%s] to construct a bridge in the direction of the mouse cursor.
 MsgTutorialFragileBridge=Wait a second... That bridge looks highly fragile, and below there is acid, which is very dangerous. You should let your wipf go ahead to probe the bridge since he is much lighter.
-MsgTutorialMakeLoamBridge=I told you so, it was fragile after all, luckily your friend made it. Use the pieces of loam to construct a bridge to safely pass the acid below and get to your furry friend. Hold [%s] to construct a loam bridge in the direction of the mouse cursor.
+MsgTutorialMakeLoamBridge=I told you so, it was fragile after all, luckily your friend made it. Use the pieces of loam to construct a bridge to safely pass the acid below and get to your furry friend. Select a piece of loam and hold [%s] to construct a loam bridge in the direction of the mouse cursor.
 MsgTutorialCompleted=Well done! Let's proceed to the next tutorial.
 
 # Wipf name
