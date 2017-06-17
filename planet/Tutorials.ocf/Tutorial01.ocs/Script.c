@@ -33,6 +33,9 @@ protected func Initialize()
 	InitVegetation();
 	InitAnimals();
 	
+	// Show wealth in HUD.
+	GUI_Controller->ShowWealth();
+	
 	// Environment.
 	var time = CreateObject(Time);
 	time->SetTime(18 * 60 + 30);
@@ -251,9 +254,12 @@ protected func InitializePlayer(int plr)
 	// Position player's clonk.
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(60, 606);
-	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
-	effect.to_x = 60;
-	effect.to_y = 606;
+	var fx = AddEffect("ClonkRestore", clonk, 100, 10);
+	fx.to_x = 60;
+	fx.to_y = 606;
+	
+	// Some wealth for the guide message.
+	SetWealth(plr, 25);
 	
 	// Player controls disabled at the start.
 	DisablePlrControls(plr);
