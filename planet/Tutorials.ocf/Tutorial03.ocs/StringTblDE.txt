@@ -1,6 +1,6 @@
 # Goal Description
 MsgGoalName=Wiederaufbau des Dorfes
-MsgGoalDescription=Hilf den Dorfbewohnern ihre zerstörten Gebäude wieder aufzubauen.
+MsgGoalDescription=Hilf den Dorfbewohnern, ihre zerstörten Gebäude wieder aufzubauen.
 
 # Dialogue options
 MsgNextTutorial=&Nächste Lernrunde
@@ -9,19 +9,19 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialWipfville=Auf dem Wegweiser steht Wipfdorf - wahrscheinlich der Grund für Rüdigers Abhauen. Es scheint als ob dieses kleine Dorf angegriffen worden ist. Vielleicht weiß der Holzfäller dort drüben mehr. Stelle dich vor einen NPC und drücke [%s] um ein Gespräch zu beginnen.
-MsgTutorialFindRock=Okay, wir müssen etwas Stein finden um das Sägewerk da fertig zu stellen. Lass uns einen Blick in die Minen des Dorfes werfen. Vielleicht finden wir da etwas.
-MsgTutorialDynamiteLorry=Da steht eine Lore voll mit Dynamit! Du kommst an den Inhalt von vielen Fahrzeugen und Gebäuden heran, indem du [%s] drückst um das Interaktionsmenü zu öffnen. Du kannst mit einem Klick Gegenstände hin- und hertauschen. Hol dir etwas Dynamit!
-MsgTutorialBlastRock=Perfekt, mit Dynamit kannst du den Stein an der Decke sprengen. Stein wird als Baumaterial gebraucht. Hangel dich an den Stein und wähle das Dynamit aus. Drücke dann die linke Maustaste einmal um das Dynamit zu zünden und dann ziele auf den Stein und klicke noch einmal um das Dynamit in die Wand zu stecken. Dann hau ab!
-MsgTutorialPickUpRock=Schön! Sammle drei Steine ein, so dass du damit das Sägewerk fertig bauen kannst. Beachte, dass einige Stein durch die Explosion in der Lore gelandet sein könnten.
+MsgTutorialWipfville=Auf dem Wegweiser steht Wipfdorf - wahrscheinlich der Grund für Rüdigers Abhauen. Es scheint, als ob dieses kleine Dorf angegriffen worden ist. Vielleicht weiß der Holzfäller dort drüben mehr. Stelle dich vor einen NPC und drücke [%s], um ein Gespräch zu beginnen.
+MsgTutorialFindRock=Okay, wir müssen etwas Stein finden, um das Sägewerk da fertig zu stellen. Lass uns einen Blick in die Minen des Dorfes werfen. Vielleicht finden wir da etwas.
+MsgTutorialDynamiteLorry=Da steht eine Lore voll mit Dynamit! Du kommst an den Inhalt von vielen Fahrzeugen und Gebäuden heran, indem du [%s] drückst, um das Interaktionsmenü zu öffnen. Du kannst mit einem Klick Gegenstände hin- und hertauschen. Hol dir etwas Dynamit!
+MsgTutorialBlastRock=Perfekt, mit Dynamit kannst du den Stein an der Decke sprengen. Stein wird als Baumaterial gebraucht. Hangel dich an den Stein und wähle das Dynamit aus. Drücke dann [%s] einmal, um das Dynamit zu zünden, und dann ziele auf den Stein und klicke noch einmal, um das Dynamit in die Wand zu stecken. Dann hau ab!
+MsgTutorialPickUpRock=Schön! Sammle drei Steine ein, sodass du damit das Sägewerk fertig bauen kannst. Beachte, dass einige Steine durch die Explosion in der Lore gelandet sein könnten.
 MsgTutorialSawmill=Geh hoch zur Baustelle und tue die drei Steine mit dem Interaktionsmenü in die Baustelle (drücke dazu [%s]). Die Baustelle wird automatisch vollendet, sobald alles Baumaterial da ist.
 MsgTutorialTalkToFireman=Die Dorfbewohner brauchen noch mehr Hilfe. Rede mit dem Feuerwehrmann neben der verbrannten Hütte und mit dem Bauarbeiter beim Mineneingang.
-MsgTutorialConstructFlagpole=Hol dir den Hammer aus der Kiste und benutze ihn [%s] um das Baumenü zu öffnen. Im Baumenü kannst du ein Gebäude auswählen und danach platzieren. Wähle die Flagge aus und platziere sie an der markierten Position.
-MsgTutorialFlagpoleMaterials=Jetzt da die Baustelle steht brauchen wir etwas Holz und Metall. Rede nochmal mit dem Holzfäller.
-MsgTutorialAxeChopping=Finde die Axt in der Mine und benutze sie um einen Baum zu fällen. Lege dann drei Stücke Holz in die Baustelle der Flagge. Stelle dich neben einen Baum und benutze die Axt um ihn zu fällen. Stell dich nicht direkt vor den Stamm und halte die Maustaste gedrückt. Der gefällte Baum kann entweder in das Sägewerk geschoben werden oder nochmal mit der Axt zerlegt werden.
-MsgTutorialOreMining=Gut. Jetzt fehlt nurnoch ein Metall, welches im Hochofen aus Kohle und Erz geschmolzen werden kann. Gehe nochmal in die Mine und hole ein Stück Erz, indem du das Erzmaterial sprengst. Grabe auch etwas Kohle aus dem Kohlematerial heraus.
-MsgTutorialProduceMetal=Mit Erz und Kohle kannst du Metall herstellen, das du als Baumaterial für viele Gebäude und Gegenstände brauchst. Gehe zum Hochofen und benutze das Interaktionsmenü (mit [%s]) um die Kohle und das Erz in den Hochofen zu legen. Für Produktionsgebäude wie dem Hochofen gibt es eine zusätzliche Sektion im Interaktionsmenü. Wähle dort Metallproduktion aus und warte auf das Ergebnis.
-MsgTutorialMetalToSite=Das Metall ist fertig! Nimm es und lege es in die Baustelle der Flagge um sie fertig zu stellen.
+MsgTutorialConstructFlagpole=Hol dir den Hammer aus der Kiste und benutze ihn mittels [%s], um das Baumenü zu öffnen. Im Baumenü kannst du ein Gebäude auswählen und danach platzieren. Wähle die Flagge aus und platziere sie an der markierten Position.
+MsgTutorialFlagpoleMaterials=Jetzt da die Baustelle steht, brauchen wir etwas Holz und Metall. Rede nochmal mit dem Holzfäller.
+MsgTutorialAxeChopping=Finde die Axt in der Mine und benutze sie, um einen Baum zu fällen. Lege dann drei Stücke Holz in die Baustelle der Flagge. Stelle dich neben einen Baum und benutze die Axt, um ihn zu fällen. Stell dich nicht direkt vor den Stamm und halte die Maustaste gedrückt. Der gefällte Baum kann entweder in das Sägewerk geschoben werden (effizienter) oder nochmal mit der Axt zerlegt werden.
+MsgTutorialOreMining=Gut. Jetzt fehlt nur noch ein Stück Metall, welches im Hochofen aus Kohle und Erz geschmolzen werden kann. Gehe nochmal in die Mine und hole ein Stück Erz, indem du das Erzmaterial sprengst. Grabe auch etwas Kohle aus dem Kohlematerial heraus.
+MsgTutorialProduceMetal=Mit Erz und Kohle kannst du Metall herstellen, das du als Baumaterial für viele Gebäude und Gegenstände brauchst. Gehe zum Hochofen und öffne das Interaktionsmenü mit [%s], um die Kohle und das Erz in den Hochofen zu legen. Für Produktionsgebäude wie dem Hochofen gibt es eine zusätzliche Sektion im Interaktionsmenü. Wähle dort Metallproduktion aus und warte auf das Ergebnis.
+MsgTutorialMetalToSite=Das Metall ist fertig! Nimm es und lege es in die Baustelle der Flagge, um sie fertig zu stellen.
 MsgTutorialCompleted=Gut gemacht! Du weißt jetzt wie man Gebäude aus Stein, Holz und Metall baut. Die Dorfbewohner werden dankbar sein. Lass uns mit dem nächsten Tutorial weitermachen.
 
 # Wipf name
@@ -29,4 +29,4 @@ WipfName=Rüdiger
 WipfDescription=Dein felliger kleiner Freund.
 
 # Guide post
-MsgWelcomeWipfville=Willkommen in Wipfdorf, da wo man pelzig sein darf!
+MsgWelcomeWipfville=Willkommen in Wipfdorf, dem Dorf, wo man pelzig sein darf!
