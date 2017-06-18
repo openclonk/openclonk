@@ -10,7 +10,7 @@ MsgRepeatRoundDesc=Restart this scenario.
 
 # Tutorial messages
 MsgTutorialWelcome=Welcome to OpenClonk! This is your clonk and it is controlled with the %s keys. Click on the next button to read the next hint and click on my icon at any time to view the current hint.
-MsgTutorialHUD=In the top left part of the screen each of your clonks is shown, in the top right you can see the amount of clunkers you own (if you have some) and the current goal (click on the icon for more information).
+MsgTutorialHUD=In the top left part of the screen each of your clonks is shown, in the top right you can see the amount of clunkers you own (if clunkers are important for the scenario) and the current goal (click on the icon for more information).
 MsgTutorialFollowFriend=Follow your animal friend Roger across the bridge and past the obstacles ahead while the clonk's movement is explained. Try moving the clonk around a bit by pressing [%s] or [%s] for walking left or right and [%s] for jumping.
 MsgTutorialScaleWall=Here you will need to climb the wall to advance. To climb, walk towards the wall until your clonk grabs on. Once you have grabbed on, you may scale up or down the wall by holding [%s] or [%s].
 MsgTutorialHangle=Clonks are incredibly versatile and nimble, once a clonk touches a ceiling it automatically holds on to it. Jump to this ceiling, hangle to the other side and let go by pressing [%s].

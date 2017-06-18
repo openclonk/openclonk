@@ -10,7 +10,7 @@ MsgRepeatRoundDesc=Restart this scenario.
 
 # Tutorial messages
 MsgTutorialTalkToHead=You need to enter the cave and take down the robbers. Talk to the village head first, hopefully he has some idea on how to do this.
-MsgTutorialNotHelpful=That was not very helpful, but at least you have a weapon. You can test the axe on the straw men in the grain field, press [%s] to use axe and destroy the straw men.
+MsgTutorialNotHelpful=That was not very helpful, but at least you have a weapon. You can test the axe on the straw men in the grain field, press [%s] to use the axe and destroy the straw men.
 MsgTutorialFirstEnemy=The first robber in the cave has a bow and shoots arrows at you, maybe there is another way to approach him instead of engaging him head-on. Kill your enemy, if you die in the process you will respawn, so you can try multiple times.
 MsgTutorialOnRespawn=Okay, that did not work, maybe you can reach that chest over there by digging through the earth. Then take whatever is in the chest and use that to kill the robber. Some weapons can be thrown, just aim your mouse cursor at where you want to throw that weapon.
 MsgTutorialKilledFirst=Well done, that guy is eliminated. You can take his weapons and proceed to explore the cave and find more robbers. The bow can be used to shoot enemies over larger distance, aim with the mouse cursor in the direction you want to shoot.

@@ -9,7 +9,7 @@ MsgRepeatRound=&Repeat this round
 MsgRepeatRoundDesc=Restart this scenario.
 
 # Tutorial messages
-MsgTutorialTalkToPilot=You are high up in the sky in an area with several sky islands. Talk to the pilot for some advice about the area. If there are multiple objects to interact with (in this case the pilot, the airship and the lorry) you can cycle through them with [%s] and [%s]. To cycle through multiple interactions of the same object use [%s] and to cancel the interaction selection use [%s].
+MsgTutorialTalkToPilot=You are high up in the sky in an area with several sky islands. Talk to the pilot for some advice about the area. If there are multiple objects to interact with (in this case the pilot, the airship and the lorry), you can cycle through them with [%s] and [%s]. To cycle through multiple interactions of the same object use [%s] and to cancel the interaction selection use [%s].
 MsgTutorialFindRubies=Now take the airship and find the ruby stalactite hanging from one of the islands. You can grab the airship with [%s] and cycling through the interactions and then steer it with %s.
 MsgTutorialParkAirship=Ah you found the ruby stalactite. Now it is time to blast it to gems! Park your airship in front of the rope ladders over there.
 MsgTutorialLadderJump=Good, now your companion will control the airship and you can jump to the ruby stalactite. Jump towards a hanging rope ladder and you will automatically grab it. You can switch sides or let go of the ladder by pressing the movement keys [%s]/[%s]. Instead of letting go you can also jump off the ladder if you press the movement key corresponding to the side your a hanging on while climbing up.

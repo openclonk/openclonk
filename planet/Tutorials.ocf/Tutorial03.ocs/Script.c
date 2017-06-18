@@ -369,7 +369,8 @@ global func FxTutorialObtainedDynamiteTimer(object target, proplist effect)
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr));
 	if (clonk && FindObject(Find_ID(Dynamite), Find_Container(clonk)))
 	{
-		guide->AddGuideMessage("$MsgTutorialBlastRock$");
+		var use = GetPlayerControlAssignment(effect.plr, CON_Use, true, true);
+		guide->AddGuideMessage(Format("$MsgTutorialBlastRock$", use));
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialBlastedRock", nil, 100, 5);
 		new_effect.plr = effect.plr;

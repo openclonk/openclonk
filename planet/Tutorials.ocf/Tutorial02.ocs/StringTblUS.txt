@@ -9,9 +9,9 @@ MsgRepeatRound=&Repeat this round
 MsgRepeatRoundDesc=Restart this scenario.
 
 # Tutorial messages
-MsgTutorialIntro=It seems your Roger is lost again, he's quite a character! Wipfs tend to spend quite some time underground cause of their craving for digging, so you might find him there. For now just proceed to the right.
+MsgTutorialIntro=It seems your Roger is lost again, he's quite a character! Wipfs tend to spend quite some time underground because of their craving for digging, so you might find him there. For now just proceed to the right.
 MsgTutorialShovel=There is a shovel over there! Clonks need equipment to perform certain tasks, the shovel is used for digging. Pick up the shovel by standing in front of it and by pressing [%s].
-MsgTutorialInventory=Now the shovel is in your inventory, the five slots at the top of the screen. The item you have selected is highlighted and can be used. To change the item selection press the corresponding number key (%s) or use %s to cycle through the inventory.  
+MsgTutorialInventory=Now the shovel is in your inventory, the slots at the top of the screen. The item you have selected is highlighted and can be used. To change the item selection press the corresponding number key (%s) or use %s to cycle through the inventory.  
 MsgTutorialDigging=Now that you are holding shovel, you better use it. Hold [%s] to use the item currently selected. Select the shovel and you can start digging in the direction you are pointing towards.
 MsgTutorialFirestones=Watch out! The reddish material ahead is dangerous, if you dig through this material firestones will appear. These are fragile and highly explosive, luckily the clonk picks them up automatically when they are in range. Be sure to pick up a couple, they might come in handy.
 MsgTutorialFoundWipf=Almost found your little Roger, but a patch of rock is in the way. Rock can not be dug away and must be blown. Throw some firestones on the rock, but keep your distance! Click [%s] in the direction you want to throw.
