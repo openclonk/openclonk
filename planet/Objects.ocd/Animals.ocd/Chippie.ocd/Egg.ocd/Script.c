@@ -1,6 +1,8 @@
 /**
-	Egg
+	Chippie Egg
 	New chippies hatch from here.
+	
+	@author Zapper
 */
 
 local Name = "$Name$";

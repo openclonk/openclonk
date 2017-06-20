@@ -1,6 +1,8 @@
 /**
 	Chippy
 	Small, lovely creatures.
+	
+	@author Zapper
 */
 
 #include Library_Animal
@@ -15,6 +17,38 @@ local animal_max_count = 10;
 local attach_object, attached_mesh;
 // Remember the energy sucked to frequently spawn offsprings.
 local energy_sucked;
+
+private func Place(int amount, proplist rectangle, proplist settings)
+{
+	var max_tries = 4 * amount;
+	var loc_area = nil;
+	if (rectangle) 
+		loc_area = Loc_InArea(rectangle);
+	var chippies = [];
+	var loc_mat = Loc_Material("Acid");
+	if (settings && settings.mat)
+		loc_mat = settings.mat;
+	while ((amount > 0) && (--max_tries > 0))
+	{
+		var spot = FindLocation(loc_mat, Loc_Space(5), loc_area);
+		if (!spot)
+			continue;
+		
+		var chippie = CreateObject(this, spot.x, spot.y, NO_OWNER);
+		if (!chippie) 
+			continue;
+		
+		if (chippie->Stuck())
+		{
+			chippie->RemoveObject();
+			continue;
+		}
+		PushBack(chippies, chippie);
+		--amount;
+	}
+	// Return a list of all created chippies.
+	return chippies;
+}
 
 public func Construction(...)
 {
