@@ -317,7 +317,12 @@ func StopUseControl(int x, int y, object obj, bool cancel)
 		stop = "Cancel";
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
-	var handled = obj->Call(GetUseCallString(stop), this, x, y);
+	var handled = false;
+	if (obj)
+	{
+		handled = obj->Call(GetUseCallString(stop), this, x, y);
+	}
+	
 	if (obj == GetUsedObject())
 	{
 		// if ControlUseStop returned -1, the current object is kept as "used object"
