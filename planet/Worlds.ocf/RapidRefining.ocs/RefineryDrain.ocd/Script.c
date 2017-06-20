@@ -12,7 +12,7 @@
 
 /*-- Pipeline --*/
 
-public func GetLiquidContainerMaxFillLevel()
+public func GetLiquidContainerMaxFillLevel(liquid_name)
 {
 	return 10**9;
 }

@@ -6,4 +6,4 @@ MsgOilPumped=Oil amount: %d {{Oil}}.
 MsgOilDescription=Currently %d {{Oil}} has been transferred into the refinery.
 
 MsgConnectedPipe=Connected pipe.
-MsgPipeProhibited=Source pipes cannot be connected to the foundry.
+MsgPipeProhibited=Source pipes cannot be connected to the refinery.
