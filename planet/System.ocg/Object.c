@@ -361,13 +361,15 @@ global func RemoveAll(p, ...)
 // Pulls an object above ground if it was buried (e.g. by PlaceVegetation), mainly used by plants.
 // The object must have 'Bottom' and 'Center' CNAT to use this.
 // (bottom is the point which should be buried, center the lowest point that must not be buried)
-global func RootSurface()
+global func RootSurface(int max_movement)
 {
+	max_movement = max_movement ?? GetObjHeight() / 2;
+
 	if (HasCNAT(CNAT_Center))
 	{
 		var i = 0;
 		// Move up if too far underground.
-		while (GetContact(-1) & CNAT_Center && i < GetObjHeight()/2)
+		while (GetContact(-1) & CNAT_Center && i < max_movement)
 		{
 			SetPosition(GetX(),	GetY()	-	1);
 			i++;
@@ -375,9 +377,9 @@ global func RootSurface()
 	}
 	if (HasCNAT(CNAT_Bottom))
 	{
-		i = 0;
+		var i = 0;
 		 // Move down if in midair.
-		while (!(GetContact(-1) & CNAT_Bottom) && i < GetObjHeight()/2)
+		while (!(GetContact(-1) & CNAT_Bottom) && i < max_movement)
 		{
 			SetPosition(GetX(), GetY() + 1);
 			i++;
