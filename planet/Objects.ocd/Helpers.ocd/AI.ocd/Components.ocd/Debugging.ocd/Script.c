@@ -5,14 +5,17 @@
 	@author Maikel
 */
 
+// Callback from the Definition()-call
+public func OnDefineAI(proplist def)
+{
+	_inherited(def);
 
-// AI Settings.
-local DebugLoggingOn = false; // Whether or not debug logging is turned on.
-
+	def->GetControlEffect().DebugLoggingOn = false; // Whether or not debug logging is turned on.
+}
 
 public func LogAI(effect fx, string message)
 {
-	if (fx->GetControl().DebugLoggingOn)
+	if (fx.DebugLoggingOn)
 		Log("[%d]AI WARNING (%v): %s", FrameCounter(), fx.Target, message);
 	return;
 }
