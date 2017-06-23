@@ -289,12 +289,9 @@ private func EditorProp_AIType(id type)
 local Plane = 300;
 
 
-local DebugLoggingEnabled = false; // Whether or not debug logging is turned on.
-
-
-public func DebugLogAI(string message)
+public func DebugLogAI(proplist fx_ai, string message)
 {
-	if (AI_Controller.DebugLoggingEnabled)
+	if (fx_ai.DebugLoggingOn)
 		DebugLog(message);
 }
 

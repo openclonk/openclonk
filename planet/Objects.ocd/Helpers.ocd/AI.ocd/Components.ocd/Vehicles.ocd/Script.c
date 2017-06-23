@@ -145,6 +145,7 @@ private func ExecuteCatapult(effect fx)
 
 private func CheckCatapultAmmo(effect fx, object vehicle)
 {
+	this->~DebugLogAI(fx, Format("Contents count in vehicle %d, contents count in target %d", vehicle->ContentsCount(), fx.Target->ContentsCount()));
 	// Must have ammo in the catapult or in the clonk (or be respawning ammo)
 	return vehicle->ContentsCount() > 0 || fx.Target->ContentsCount() > 0 || fx.has_ammo_respawn;
 }

@@ -79,19 +79,25 @@ public func Execute(effect fx, int time)
 	// Weapon out of ammo?
 	if (fx.ammo_check && !this->Call(fx.ammo_check, fx, fx.weapon))
 	{
+		this->LogAI(fx, Format("Weapon %v is out of ammo, AI won't do anything.", fx.weapon));
 		fx.weapon = nil;
-		this->LogAI(fx, Format("weapon %v is out of ammo, AI won't do anything.", fx.weapon));
 		return false;
 	}
 	// Find an enemy.
 	if (fx.target) 
 		if ((fx.target->GetCategory() & C4D_Living && !fx.target->GetAlive()) || (!fx.ranged && fx.Target->ObjectDistance(fx.target) >= fx.max_aggro_distance))
+		{
+			this->DebugLogAI(fx, Format("Forgetting target %v, because it is dead or out of range", fx.target));
 			fx.target = nil;
+		}
 	if (!fx.target)
 	{
 		this->CancelAiming(fx);
 		if (!fx.auto_search_target || !(fx.target = this->FindTarget(fx)))
+		{
+			this->DebugLogAI(fx, "No target found or not looking for target - will execute idle strategy");
 			return ExecuteIdle(fx);
+		}
 		// First encounter callback. might display a message.
 		if (fx.encounter_cb)
 			if (GameCall(fx.encounter_cb, fx.Target, fx.target))
@@ -121,6 +127,8 @@ public func Execute(effect fx, int time)
 	// Attack it!
 	if (!this->IsWeaponForTarget(fx))
 		this->LogAI(fx, Format("weapon of type %i is not fit to attack %v (type: %i).", fx.weapon->GetID(), fx.target, fx.target->GetID()));
+
+	this->DebugLogAI(fx, Format("Calling strategy: %v", fx.strategy));
 	return this->Call(fx.strategy, fx);
 }
 
@@ -175,6 +183,7 @@ public func ExecuteArm(effect fx)
 	{
 		if (this->CheckVehicleAmmo(fx, fx.weapon))
 		{
+			this->DebugLogAI(fx, "Vehicle ammo is ok");
 			fx.strategy = this.ExecuteVehicle;
 			fx.ranged = true;
 			fx.aim_wait = 20;
@@ -182,7 +191,10 @@ public func ExecuteArm(effect fx)
 			return true;
 		}
 		else
+		{
+			this->DebugLogAI(fx, "Vehicle ammo is not ok. Weapon is %v, vehicle is %v", fx.weapon, fx.vehicle);
 			fx.weapon = nil;
+		}
 	}
 	// Find a weapon. Depends on attack mode
 	if (Call(fx.attack_mode.FindWeapon, fx))
