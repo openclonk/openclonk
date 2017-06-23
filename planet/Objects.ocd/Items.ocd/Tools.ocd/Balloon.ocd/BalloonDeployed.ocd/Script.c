@@ -203,6 +203,24 @@ public func FxControlFloatTimer(object target, proplist effect, int time)
 }
 
 
+/*-- Floating --*/
+
+// Make the balloon float around its position.
+public func MakeFloat()
+{
+	RemoveEffect("ControlFloat", this);
+	AddEffect("FloatBalloon", this, 100, 1, this);
+	return;
+}
+
+public func FxFloatBalloonTimer(object target, effect fx, int time)
+{
+	var ysin = time % 360;
+	target->SetYDir(Sin(ysin, 2));
+	return FX_OK;
+}
+
+
 /*-- Event Handling --*/
 
 // Called when the clonk unmounts for whatever reason.
