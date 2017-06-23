@@ -79,7 +79,7 @@ public func Execute(effect fx, int time)
 	// Weapon out of ammo?
 	if (fx.ammo_check && !this->Call(fx.ammo_check, fx, fx.weapon))
 	{
-		this->LogAI(fx, Format("Weapon %v is out of ammo, AI won't do anything.", fx.weapon));
+		this->LogAI_Warning(fx, Format("Weapon %v is out of ammo, AI won't do anything.", fx.weapon));
 		fx.weapon = nil;
 		return false;
 	}
@@ -87,7 +87,7 @@ public func Execute(effect fx, int time)
 	if (fx.target) 
 		if ((fx.target->GetCategory() & C4D_Living && !fx.target->GetAlive()) || (!fx.ranged && fx.Target->ObjectDistance(fx.target) >= fx.max_aggro_distance))
 		{
-			this->DebugLogAI(fx, Format("Forgetting target %v, because it is dead or out of range", fx.target));
+			this->LogAI_Info(fx, Format("Forgetting target %v, because it is dead or out of range", fx.target));
 			fx.target = nil;
 		}
 	if (!fx.target)
@@ -95,7 +95,7 @@ public func Execute(effect fx, int time)
 		this->CancelAiming(fx);
 		if (!fx.auto_search_target || !(fx.target = this->FindTarget(fx)))
 		{
-			this->DebugLogAI(fx, "No target found or not looking for target - will execute idle strategy");
+			this->LogAI_Warning(fx, Format("Will call ExecuteIdle, because there is no target. Auto-searching for target %v", fx.auto_search_target));
 			return ExecuteIdle(fx);
 		}
 		// First encounter callback. might display a message.
@@ -126,9 +126,9 @@ public func Execute(effect fx, int time)
 	this->ExecuteAppearance(fx);
 	// Attack it!
 	if (!this->IsWeaponForTarget(fx))
-		this->LogAI(fx, Format("weapon of type %i is not fit to attack %v (type: %i).", fx.weapon->GetID(), fx.target, fx.target->GetID()));
+		this->LogAI_Warning(fx, Format("Weapon of type %i is not fit to attack %v (type: %i).", fx.weapon->GetID(), fx.target, fx.target->GetID()));
 
-	this->DebugLogAI(fx, Format("Calling strategy: %v", fx.strategy));
+	this->LogAI_Info(fx, Format("Calling strategy: %v", fx.strategy));
 	return this->Call(fx.strategy, fx);
 }
 
@@ -183,7 +183,7 @@ public func ExecuteArm(effect fx)
 	{
 		if (this->CheckVehicleAmmo(fx, fx.weapon))
 		{
-			this->DebugLogAI(fx, "Vehicle ammo is ok");
+			this->LogAI_Info(fx, "Vehicle ammo is ok");
 			fx.strategy = this.ExecuteVehicle;
 			fx.ranged = true;
 			fx.aim_wait = 20;
@@ -192,7 +192,7 @@ public func ExecuteArm(effect fx)
 		}
 		else
 		{
-			this->DebugLogAI(fx, "Vehicle ammo is not ok. Weapon is %v, vehicle is %v", fx.weapon, fx.vehicle);
+			this->LogAI_Info(fx, "Vehicle ammo is not ok. Weapon is %v, vehicle is %v", fx.weapon, fx.vehicle);
 			fx.weapon = nil;
 		}
 	}

@@ -112,7 +112,7 @@ public func ExecuteStand(effect fx)
 	}
 	else
 	{		
-		this->LogAI(fx, Format("ExecuteStand has no idea what to do for action %v and procedure %v.", fx.Target->GetAction(), fx.Target->GetProcedure()));
+		this->~LogAI_Warning(fx, Format("ExecuteStand has no idea what to do for action %v and procedure %v.", fx.Target->GetAction(), fx.Target->GetProcedure()));
 		// Hm. What could it be? Let's just hope it resolves itself somehow...
 		fx.Target->SetComDir(COMD_Stop);
 	}

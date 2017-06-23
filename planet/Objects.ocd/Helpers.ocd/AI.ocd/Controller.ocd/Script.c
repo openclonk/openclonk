@@ -289,13 +289,6 @@ private func EditorProp_AIType(id type)
 local Plane = 300;
 
 
-public func DebugLogAI(proplist fx_ai, string message)
-{
-	if (fx_ai.DebugLoggingOn)
-		DebugLog(message);
-}
-
-
 /*-- Callbacks --*/
 
 // Callback from the effect Construction()-call
