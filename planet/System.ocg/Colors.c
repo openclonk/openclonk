@@ -29,7 +29,7 @@ global func SetRGBaValue(int val, int newval, int sel)
 
 global func SplitRGBaValue(int rgb)
 {
-	return [GetRGBaValue(rgb, 1), GetRGBaValue(rgb, 2), GetRGBaValue(rgb, 3), GetRGBaValue(rgb, 0)];
+	return [GetRGBaValue(rgb, RGBA_RED), GetRGBaValue(rgb, RGBA_GREEN), GetRGBaValue(rgb, RGBA_BLUE), GetRGBaValue(rgb, RGBA_ALPHA)];
 }
 
 global func HSL2RGB(int hsl)
@@ -76,7 +76,7 @@ global func Hue_2_RGB(int var1, int var2, int hue)
 
 global func RGB2HSL(int rgb)
 {
-	var red = GetRGBaValue(rgb, 1), green = GetRGBaValue(rgb, 2), blue = GetRGBaValue(rgb, 3);
+	var red = GetRGBaValue(rgb, RGBA_RED), green = GetRGBaValue(rgb, RGBA_GREEN), blue = GetRGBaValue(rgb, RGBA_BLUE);
 	var min_val = Min(red, Min(green, blue)), max_val = Max(red, Max(green, blue));
 	var diff_val = max_val - min_val;
 	var lightness = (max_val + min_val) / 2;
