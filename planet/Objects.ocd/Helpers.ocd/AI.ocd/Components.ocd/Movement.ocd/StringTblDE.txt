@@ -1,0 +1,3 @@
+AttackPath=Angriffspfad
+AttackPathHelp=Pfad, entlang dessen sich der KI-Gegner berwegt. Befindet sich ein Gebaeude auf einem Eckpunkt des Pfades, greift der Clonk das Gebaeude an.
+None=Keiner

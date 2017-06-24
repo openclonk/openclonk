@@ -43,7 +43,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);
-	fx.testnr = 11;
+	fx.testnr = 1;
 	fx.launched = false;
 	fx.plr = plr;
 	return;

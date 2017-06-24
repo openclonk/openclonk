@@ -1,0 +1,3 @@
+AttackPath=Attack path
+AttackPathHelp=Path along which the AI clonk moves. If a vertex of the attack path is placed on a structure (e.g. a gate), the clonk will attack the structure.
+None=None

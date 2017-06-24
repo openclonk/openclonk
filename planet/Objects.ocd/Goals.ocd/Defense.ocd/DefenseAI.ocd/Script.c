@@ -17,7 +17,7 @@ public func FindTarget(effect fx)
 {
 	var target = _inherited(fx, ...);
 	// Focus on defense target if normal target is too far away.
-	if (!target || ObjectDistance(target, fx.Target) > fx.control.AltTargetDistance)
+	if (!target || ObjectDistance(target, fx.Target) > fx->GetControl().AltTargetDistance)
 	{
 		if (fx.is_siege)
 			target = GetRandomSiegeTarget(fx.Target);

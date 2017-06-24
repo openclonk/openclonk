@@ -53,6 +53,10 @@ public func CheckTargetInGuardRange(effect fx)
 public func HasWeaponForTarget(effect fx, object target)
 {
 	target = target ?? fx.target;
+	// Already has a weapon, or a vehicle
+	if (fx.weapon && this->IsWeaponForTarget(fx, fx.weapon, target))
+		return true;
+	// Look for weapons in the inventory
 	for (var weapon in FindObjects(Find_Container(fx.Target)))
 		if (this->IsWeaponForTarget(fx, weapon, target))
 			return true;

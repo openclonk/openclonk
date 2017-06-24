@@ -85,7 +85,7 @@ public func ExecuteProtection(effect fx)
 		fx.target = nil; //this->FindEmergencyTarget(fx);
 	if (fx.target)
 		fx.alert = fx.time;
-	else if (fx.time - fx.alert > fx.control.AlertTime)
+	else if (fx.time - fx.alert > fx->GetControl().AlertTime)
 		fx.alert = nil;
 	// If not evading the AI may try to heal.
 	if (ExecuteHealing(fx))
@@ -126,7 +126,7 @@ public func ExecuteHealing(effect fx)
 	var hp_needed = fx.Target->GetMaxEnergy() - hp;
 	// Only heal when alert if health drops below the healing threshold.
 	// If not alert also heal if more than 40 hitpoints of health are lost.
-	if (hp >= fx.control.HealingHitPointsThreshold && (fx.alert || hp_needed <= 40))
+	if (hp >= fx->GetControl().HealingHitPointsThreshold && (fx.alert || hp_needed <= 40))
 		return false;
 	// Don't heal if already healing. One can speed up healing by healing multiple times, but we don't.
 	if (GetEffect("HealingOverTime", fx.Target))
