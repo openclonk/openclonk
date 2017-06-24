@@ -173,11 +173,16 @@ local FxFlight = new Effect
 	SetWaypoints = func(array waypoints)
 	{
 		this.waypoints = waypoints;
-	}	
+	},
+	
+	SetTarget = func(object target)
+	{
+		this.target = target;
+	}
 };
 
 
-/*-- Waypoints --*/
+/*-- Waypoints & Target --*/
 
 public func AddWaypoint(proplist waypoint)
 {
@@ -192,6 +197,14 @@ public func SetWaypoints(array waypoints)
 	var fx = GetEffect("FxFlight", this);
 	if (fx)
 		fx->SetWaypoints(waypoints);
+	return;
+}
+
+public func SetTarget(object target)
+{
+	var fx = GetEffect("FxFlight", this);
+	if (fx)
+		fx->SetTarget(target);
 	return;
 }
 
