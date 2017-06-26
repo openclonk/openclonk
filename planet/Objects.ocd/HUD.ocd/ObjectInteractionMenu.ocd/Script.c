@@ -782,7 +782,8 @@ func CreateMainMenu(object obj, int slot)
 	// add refreshing effects for all of the contents menus
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
-		if (!(menus[i].flag & InteractionMenu_Contents)) continue;
+		if (!(menus[i].flag & InteractionMenu_Contents))
+			continue;
 		AddEffect("IntRefreshContentsMenu", this, 1, 1, this, nil, obj, slot, i);
 	}
 	
@@ -998,10 +999,15 @@ func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object 
 	effect.last_inventory = [];
 }
 
-func FxIntRefreshContentsMenuTimer(target, effect, time)
+func FxIntRefreshContentsMenuTimer(object target, effect, int time)
 {
-	if (!effect.obj) return -1;
-	if (!current_menus[effect.slot]) return -1;
+	// Remove effect if menu is gone or menu at slot and index is not a contents menu.
+	if (!effect.obj)
+		return FX_Execute_Kill;
+	if (!current_menus[effect.slot] || !current_menus[effect.slot].menus[effect.menu_index])
+		return FX_Execute_Kill;
+	if (!(current_menus[effect.slot].menus[effect.menu_index].flag & InteractionMenu_Contents))
+		return FX_Execute_Kill;
 	// Helper object used to track extra-slot objects. When this object is removed, the tracking stops.
 	var extra_slot_keep_alive = current_menus[effect.slot].menu_object;
 	// The fast interval is only used for the very first check to ensure a fast startup.
@@ -1187,12 +1193,13 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			same = false;
 			break;
 		}
-		if (same) return 1;
+		if (same)
+			return FX_OK;
 	}
 	
 	effect.last_inventory = inventory[:];
 	DoMenuRefresh(effect.slot, effect.menu_index, inventory);
-	return 1;
+	return FX_OK;
 }
 
 func FxExtraSlotTrackerTimer(object target, proplist effect, int time)
