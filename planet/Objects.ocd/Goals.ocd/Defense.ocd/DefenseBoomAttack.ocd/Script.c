@@ -243,7 +243,8 @@ public func OnUnmount(object clonk)
 
 /*-- Explosion --*/
 
-public func IsProjectileTarget(target,shooter) { return (!shooter) || (shooter->GetActionTarget() != this); } // don't get hit by projectiles shot from own rider
+// Don't get hit by projectiles shot from own rider.
+public func IsProjectileTarget(target,shooter) { return (!shooter) || (shooter->GetActionTarget() != this); }
 public func OnProjectileHit(object shot) { return DoFireworks(shot->GetController()); }
 
 public func ContactBottom() { return Hit(); }
@@ -252,7 +253,21 @@ public func ContactLeft() { return Hit(); }
 public func ContactRight() { return Hit(); }
 
 public func Hit() { return DoFireworks(NO_OWNER); }
-public func HitObject() { return DoFireworks(NO_OWNER); }
+public func HitObject(object ) { return DoFireworks(NO_OWNER); }
+
+public func Damage(int change, int cause, int cause_plr)
+{
+	if (change > 0)
+		return DoFireworks(cause_plr);
+	return;	
+}
+
+public func Incineration(int caused_by)
+{
+	if (OnFire())
+		return DoFireworks(caused_by);
+	return;
+}
 
 private func DoFireworks(int killed_by)
 {
@@ -348,4 +363,6 @@ local Name = "$Name$";
 local Description = "$Description$";
 local ContactCalls = true;
 local FlySpeed = 100;
+local BlastIncinerate = 8;
+local ContactIncinerate = 8;
 local HasNoFriendlyFire = true;
