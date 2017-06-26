@@ -54,6 +54,8 @@ local current_objects;
 				fx: (optional) effect that gets a "OnMenuOpened(int menu_id, object menu_target, int subwindow_id)" callback once which can be used to update a specific entry only
 			entries_callback_parameter (optional):
 				Passed as second argument to entries_callback. Can be used for custom information.
+			entries_callback_target (optional):
+				By default the object for which the menu is opened, can be changed for more involved constructions.
 			entries: last result of the callback function described above
 				additional properties that are added are:
 				ID: (menu) id of the entry as returned by the menu_object - can be used for updating
@@ -718,7 +720,8 @@ func CreateMainMenu(object obj, int slot)
 		}
 		if (menu.entries_callback)
 		{
-			menu.entries = obj->Call(menu.entries_callback, cursor, menu.entries_callback_parameter);
+			var call_from = menu.entries_callback_target ?? obj;			
+			menu.entries = call_from->Call(menu.entries_callback, cursor, menu.entries_callback_parameter);
 		}
 		if (menu.entries == nil)
 		{
@@ -1244,7 +1247,8 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 	var current_entries = menu.entries;
 	if (!new_entries && menu.entries_callback)
 	{
-		new_entries = current_menus[slot].target->Call(menu.entries_callback, this.cursor, menu.entries_callback_parameter);
+		var call_from = menu.entries_callback_target ?? current_menus[slot].target;
+		new_entries = call_from->Call(menu.entries_callback, this.cursor, menu.entries_callback_parameter);
 	}
 	
 	// step 0.1: update all items where the symbol and extra_data did not change but other things (f.e. the text)

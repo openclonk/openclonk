@@ -64,6 +64,7 @@ public func GetInteractionMenus(object clonk)
 		{
 			title = "$MenuPipeControl$",
 			entries_callback = this.GetPipeControlMenuEntries,
+			entries_callback_target = this,
 			callback = "OnPipeControl",
 			callback_hover = "OnPipeControlHover",
 			callback_target = this,
@@ -159,7 +160,7 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 	else if (action == LIBRARY_TANK_Menu_Action_Swap_SourceDrain)
 		this->DoSwapSourceDrain(GetSourcePipe(), GetDrainPipe());
 
-	UpdateInteractionMenus(this.GetPipeControlMenuEntries);	
+	UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 }
 
 
