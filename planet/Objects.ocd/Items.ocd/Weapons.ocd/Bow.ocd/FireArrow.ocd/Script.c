@@ -91,10 +91,13 @@ public func HitObject(object obj)
 	// Incinerate object to the amount where a clonk (ContactIncinerate = 10) won't fully burn.
 	// ContactIncinerate = 1 implies 100% incinaration.
 	// ContactIncinerate = 10 implies 37-43% incinaration.
-	// Hitting the same clonk twice with a fire arrow usually means it while burn indefinitely.
+	// Hitting the same clonk twice with a fire arrow usually means it will burn indefinitely.
 	// Check before incinerating if the hit was blocked by the clonk, its shield or an effect.
 	if (obj.ContactIncinerate && !obj->~QueryCatchBlow(this))
 		obj->Incinerate(BoundBy(100 - 7 * (obj.ContactIncinerate - 1) + Random(7), 0, 100), GetController());
+	// Object may be destroyed, if so don't do anything else.
+	if (!obj)
+		return;	
 	// Additional damage from normal arrow hit, however, reduced.
 	return _inherited(obj, ...);
 }
