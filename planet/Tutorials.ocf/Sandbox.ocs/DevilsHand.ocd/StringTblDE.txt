@@ -1,0 +1,2 @@
+Name=Teufelshand
+Description=Entfernt zeugs. Was du willst, wo du willst.

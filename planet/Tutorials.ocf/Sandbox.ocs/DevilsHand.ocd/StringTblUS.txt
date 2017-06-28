@@ -1,0 +1,2 @@
+Name=Devil's Hand
+Description=Removes things. What you want, where you want.

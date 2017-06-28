@@ -288,7 +288,7 @@ local ObjectSpawnMenuOpts =
 		Priority = 99,
 		Caption = "$OSCatGodTools$",
 		Icon = GodsHand,
-		Items = [GodsHand, SprayCan, Teleporter, Marker]
+		Items = [GodsHand, DevilsHand, SprayCan, Teleporter, Marker]
 	}
 };
 
@@ -1256,7 +1256,7 @@ func ShowTweaksUI()
 							Style = GUI_TextVCenter,
 						},
 						
-						OnClick = GuiAction_Call(this, "SetInvincibility", true),
+						OnClick = GuiAction_Call(this, "TweaksUI_SetInvincibility", true),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1281,7 +1281,7 @@ func ShowTweaksUI()
 							Style = GUI_TextVCenter,
 						},
 						
-						OnClick = GuiAction_Call(this, "SetInvincibility", false),
+						OnClick = GuiAction_Call(this, "TweaksUI_SetInvincibility", false),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},

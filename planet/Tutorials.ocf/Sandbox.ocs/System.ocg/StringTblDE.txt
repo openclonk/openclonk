@@ -83,6 +83,8 @@ MapGenTPCaves=Höhlen
 TweakInvincible=Unverwundbarkeit (Gott-Modus)
 OptActivate=Aktivieren
 OptDeactivate=Deaktivieren
+TweakInvincible_Activated=%s ist jetzt unverwundbar
+TweakInvincible_Deactivated=%s ist jetzt nicht mehr unverwundbar
 
 TweakSkinChoose=Skin wechseln
 OptSkin1=Abenteurer

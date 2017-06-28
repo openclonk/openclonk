@@ -20,6 +20,7 @@ func InitializePlayer(int plr)
 	crew->ShowSandboxUI();
 	
 	crew->CreateContents(GodsHand);
+	crew->CreateContents(DevilsHand);
 	crew->CreateContents(SprayCan);
 	crew->CreateContents(Teleporter);
 	
