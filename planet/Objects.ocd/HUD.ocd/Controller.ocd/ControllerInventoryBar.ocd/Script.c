@@ -215,7 +215,7 @@ private func UpdateInventory()
 				// Show!
 				contents = item->Contents(0);
 				if (contents)
-					extra_symbol = contents->GetID();
+					extra_symbol = contents;
 				extra_slot_player = GetOwner();
 				extra_slot_background_symbol = Icon_Menu_Circle;
 				// And attach tracker..
