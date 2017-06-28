@@ -197,7 +197,7 @@ protected func CheckStuck()
 
 public func Eat(object food)
 {
-	if(GetProcedure() == "WALK")
+	if (IsWalking())
 	{
 		Heal(food->NutritionalValue());
 		food->RemoveObject();
