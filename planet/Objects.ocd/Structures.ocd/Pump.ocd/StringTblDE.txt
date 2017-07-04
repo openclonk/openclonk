@@ -32,5 +32,5 @@ MsgCreatedAirDrain=Luftrohr angeschlossen.
 MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
 
 PumpMaterials=Pumpe Materialien
-MsgEnableMaterial=Schalte das Pumpen von Materiale %s ein.
-MsgDisableMaterial=Schalte das Pumpen von Materiale %s aus.
+MsgEnableMaterial=Schalte das Pumpen von Material %s ein.
+MsgDisableMaterial=Schalte das Pumpen von Material %s aus.

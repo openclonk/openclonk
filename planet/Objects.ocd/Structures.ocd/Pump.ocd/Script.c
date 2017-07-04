@@ -843,8 +843,8 @@ public func GetPumpMaterialsMenuEntries(object clonk)
 public func OnPumpMaterialsHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "";
-	if (action == PUMP_Menu_Action_Material_Enable) text = Format("$MsgEnableMaterial$", symbol->GetLiquidType());
-	else if (action == PUMP_Menu_Action_Material_Disable) text = Format("$MsgDisableMaterial$", symbol->GetLiquidType());
+	if (action == PUMP_Menu_Action_Material_Enable) text = Format("$MsgEnableMaterial$", symbol->GetName());
+	else if (action == PUMP_Menu_Action_Material_Disable) text = Format("$MsgDisableMaterial$", symbol->GetName());
 	else if (action == PUMP_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
