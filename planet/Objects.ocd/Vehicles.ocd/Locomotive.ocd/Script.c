@@ -6,6 +6,7 @@
 */
 
 #include Library_ElevatorControl
+#include Library_Tank
 
 
 local move_dir;
@@ -57,19 +58,65 @@ public func Ejection(object obj)
 }
 
 
+/*-- Liquid Control --*/
+
+public func IsLiquidContainerForMaterial(string liquid)
+{
+	return WildcardMatch("Water", liquid);
+}
+
+public func GetLiquidContainerMaxFillLevel(liquid_name)
+{
+	return this.LiquidCapacity;
+}
+
+// The locomotive may only have a drain pipe.
+public func QueryConnectPipe(object pipe)
+{
+	if (pipe->IsDrainPipe() && GetDrainPipe())
+	{
+		pipe->Report("$MsgHasDrainPipe$");
+		return true;
+	}
+	else if (pipe->IsSourcePipe() || pipe->IsAirPipe())
+	{
+		pipe->Report("$MsgPipeProhibited$");
+		return true;
+	}
+	return false;
+}
+
+// Set to source or drain pipe.
+public func OnPipeConnect(object pipe, string specific_pipe_state)
+{
+	if (specific_pipe_state == PIPE_STATE_Drain)
+	{
+		SetDrainPipe(pipe);
+		pipe->SetDrainPipe();
+	}
+	else
+	{
+		if (!GetDrainPipe())
+			OnPipeConnect(pipe, PIPE_STATE_Drain);
+	}
+	pipe->Report("$MsgConnectedPipe$");
+}
+
+
+
 /*-- Movement --*/
 
 public func Move()
 {
 	UpdateFuel();
-	var barrel = GetBarrel();
+	var water_amount = GetLiquidAmount(Water);
 	
 	if (move_dir == 0)
 		return;
 	
-	if (fuel_amount <= 0 && !barrel)
+	if (fuel_amount <= 0 && water_amount <= 0)
 		return Message("$MsgNoCoalAndWater$");
-	if (!barrel)
+	if (water_amount <= 0)
 		return Message("$MsgNoWater$");
 	if (fuel_amount <= 0)
 		return Message("$MsgNoCoal$");
@@ -77,7 +124,8 @@ public func Move()
 		return Message("$MsgStuck$");
 		
 	fuel_amount--;
-	barrel->RemoveLiquid("Water", 1, this);
+	RemoveLiquid(Water, 1);
+	
 	if (move_dir == -1)
 		SetDir(DIR_Left);
 	if (move_dir == 1)
@@ -136,14 +184,6 @@ private func UpdateFuel()
 	return;
 }
 
-private func GetBarrel()
-{
-	for (var barrel in FindObjects(Find_Func("IsBarrel"), Find_Container(this)))
-		if (barrel->GetLiquidAmount("Water") > 0)
-			return barrel;
-	return;
-}
-
 public func ContainedDown(object clonk)
 {
 	move_dir = 0;
@@ -177,7 +217,7 @@ public func IsContainer() { return true; }
 
 protected func RejectCollect(id object_id)
 {
-	if (object_id == Coal || object_id == Barrel || object_id == MetalBarrel)
+	if (object_id == Coal || object_id->~IsLiquid())
 		return false;
 	return true;
 }
@@ -209,3 +249,4 @@ local Description = "$Description$";
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
 local Components = {Wood = 1, Metal = 4};
+local LiquidCapacity = 2400;

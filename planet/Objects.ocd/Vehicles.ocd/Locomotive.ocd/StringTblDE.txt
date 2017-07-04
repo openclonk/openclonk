@@ -5,3 +5,7 @@ MsgNoCoal=Keine Kohle im Ofen!
 MsgNoWater=Kein Wasser im Kessel!
 MsgNoCoalAndWater=Keine Kohle und kein Wasser verfügbar!
 MsgStuck=Lokomotive steckt fest
+
+MsgConnectedPipe=Rohr angeschlossen.
+MsgHasDrainPipe=Die Lokomotive hat schon ein Abflussrohr.
+MsgPipeProhibited=Es können nur Abflussrohre an die Lokomotive angeschlossen werden.
