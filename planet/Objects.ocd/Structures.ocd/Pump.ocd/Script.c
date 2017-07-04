@@ -189,12 +189,12 @@ public func QueryConnectPipe(object pipe)
 		pipe->Report("$MsgHasPipes$");
 		return true;
 	}
-	else if (pipe->IsSourcePipe())
+	else if (pipe->IsSourcePipe() && GetSourcePipe())
 	{
 		pipe->Report("$MsgSourcePipeProhibited$");
 		return true;
 	}
-	else if (pipe->IsDrainPipe())
+	else if (pipe->IsDrainPipe() && GetDrainPipe())
 	{
 		pipe->Report("$MsgDrainPipeProhibited$");
 		return true;
