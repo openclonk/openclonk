@@ -8,7 +8,7 @@
 local throttle = 0;
 local rdir = 0;
 local thrust = 0;
-local dir = 0;
+local dir = DIR_Left;
 
 local newrot;
 
@@ -348,7 +348,7 @@ public func ContainedUp(object clonk)
 public func ContainedDown(object clonk)
 {
 	//engine shutoff
-	if(GetAction() == "Fly" && clonk == pilot)
+	if (GetAction() == "Fly" && clonk == pilot)
 	{
 		CancelFlight();
 		return true;
@@ -361,9 +361,10 @@ public func ContainedDown(object clonk)
 			return false;
 	}
 	//allow reverse
-	if(clonk && GetAction() == "Land")
+	if (clonk && GetAction() == "Land")
 	{
-		if (!pilot) PlaneMount(clonk);
+		if (!pilot)
+			PlaneMount(clonk);
 		StartFlight(-5);
 		return true;
 	}
@@ -373,26 +374,47 @@ public func ContainedDown(object clonk)
 // Steering
 public func ContainedLeft(object clonk)
 {
-	if (clonk != pilot) return false;
-
+	if (clonk != pilot)
+		return false;
 	rdir = -1;
 	return true;
 }
 
 public func ContainedRight(object clonk)
 {
-	if (clonk != pilot) return false;
-
+	if (clonk != pilot)
+		return false;
 	rdir = 1;
 	return true;
 }
 
 public func ContainedStop(object clonk)
 {
-	if (clonk != pilot) return false;
-
+	if (clonk != pilot)
+		return false;
 	rdir = 0;
 	return true;
+}
+
+/*-- Control --*/
+
+
+public func ControlLeft(object clonk)
+{
+	if (Inside(GetR(), 80, 100) && dir == DIR_Right)
+	{
+		FaceLeft();
+	}
+	return false;
+}
+
+public func ControlRight(object clonk)
+{
+	if (Inside(GetR(), -100, -80) && dir == DIR_Left)
+	{
+		FaceRight();
+	}
+	return false;
 }
 
 /*-- Bullet firing --*/
@@ -795,25 +817,26 @@ func FxIntPlaneTimer(object target, effect, int timer)
 {
 	//Lift
 	var lift = Distance(0, 0, GetXDir(), GetYDir()) / 2;
-	if(lift > 20) lift = 20;
-	if(throttle < 1) lift = 0;
+	if (lift > 20)
+		lift = 20;
+	if (throttle < 1)
+		lift = 0;
 
-	if(GetAction() == "Fly")
+	if (GetAction() == "Fly")
 	{
-	//--Ailerons--
-		//clockwise
-		if(rdir == 1)
+		// clockwise
+		if (rdir == 1)
 			if(GetRDir() < 5) SetRDir(GetRDir() + 3);
-		//counter-clockwise
-		if(rdir == -1)
+		// counter-clockwise
+		if (rdir == -1)
 			if(GetRDir() > -5) SetRDir(GetRDir() - 3);
-		if(rdir == 0) SetRDir();
+		if (rdir == 0) SetRDir();
 
-		//Roll plane to movement direction
-		if(throttle > 0)
+		// Roll plane to movement direction
+		if (throttle > 0)
 		{
-			if(GetXDir() > 10 && dir != 1) RollPlane(1);
-			if(GetXDir() < -10 && dir != 0) RollPlane(0);
+			if(GetXDir() > 10 && dir != DIR_Right) RollPlane(1);
+			if(GetXDir() < -10 && dir != DIR_Left) RollPlane(0);
 		}
 
 		// Vfx
@@ -843,7 +866,7 @@ func FxIntPlaneTimer(object target, effect, int timer)
 			if (surface > 0 && GBackLiquid(0, surface + 1))
 			{
 				var phases = PV_Linear(0, 7);
-				if (dir == 0) phases = PV_Linear(8, 15);
+				if (dir == DIR_Left) phases = PV_Linear(8, 15);
 				var color = GetAverageTextureColor(GetTexture(0, surface + 1));
 				var particles =
 				{
@@ -872,32 +895,32 @@ func FxIntPlaneTimer(object target, effect, int timer)
 					SetRDir((90 + GetR()) / Abs(90 + GetR()) * -3);
 					RollPlane(0);
 				}
-			} else if (!Inside(GetR(), 85, 95))
+			}
+			else if (!Inside(GetR(), 85, 95))
 			{
 				SetRDir((90 - GetR()) / Abs(90 - GetR()) * 3);
 				RollPlane(1);
-			}
-
+			}				
 			// Also: slow down because the plane tends to slide across water
 			if (GetXDir() > 0)
 				SetXDir(GetXDir() - 1);
 			else if (GetXDir() < 0)
 				SetXDir(GetXDir() + 1);
-			if (thrust > 0)
-				thrust--;
-			if (thrust < 0)
-				thrust++;
 		}
+		if (thrust > 0)
+			thrust--;
+		if (thrust < 0)
+			thrust++;
 	}
 
-	//Throttle-to-thrust lag
-	if(timer % 10 == 0)
+	// Throttle-to-thrust lag
+	if (timer % 10 == 0)
 	{
-		if(throttle > thrust) ++thrust;
-		if(throttle < thrust) --thrust;
+		if (throttle > thrust) ++thrust;
+		if (throttle < thrust) --thrust;
 	}
 
-	//propellor
+	// Propellor
 	var change = GetAnimationPosition(propanim) + thrust * 3;
 	if(change > GetAnimationLength("Propellor"))
 		change = (GetAnimationPosition(propanim) + thrust * 3) - GetAnimationLength("Propellor");
@@ -906,44 +929,42 @@ func FxIntPlaneTimer(object target, effect, int timer)
 
 	SetAnimationPosition(propanim, Anim_Const(change));
 
-	//Thrust
+	// Thrust
 	SetXDir(Sin(GetR(), thrust) + GetXDir(100), 100);
 	SetYDir(-Cos(GetR(), thrust) + GetYDir(100) - lift, 100);
 
-	//Drag
+	// Drag
 	var maxspeed = 40;
 	var speed = Distance(0, 0, GetXDir(), GetYDir());
-	if(speed > maxspeed)
+	if (speed > maxspeed)
 	{
 		SetXDir(GetXDir(100)*maxspeed/speed, 100);
 		SetYDir(GetYDir(100)*maxspeed/speed, 100);
 	}
 
-	// No pilot? Look for all layers, since an NPC might be in a different layer.
-//	var pilot = FindObject(Find_OCF(OCF_CrewMember), Find_Container(this), Find_AnyLayer());
-
-	if(!pilot && throttle != 0) CancelFlight();
+	if (!pilot && throttle != 0)
+		CancelFlight();
 	if (pilot && !pilot->GetAlive())
 		PlaneDismount(pilot);
 
-	//Planes cannot fly underwater!
-	if(GBackLiquid())
+	// Planes cannot fly underwater!
+	if (GBackLiquid())
 	{
-		if(pilot) Ejection(pilot);
-		if(throttle != 0) CancelFlight();
+		if (pilot)
+			Ejection(pilot);
+		if (throttle != 0)
+			CancelFlight();
 	}
-
-	//Pilot, but no mesh? In case they are scripted into the plane.
-//	if(FindContents(Clonk) && !clonkmesh)
-//		PlaneMount(FindContents(Clonk));
+	return FX_OK;
 }
 
 public func RollPlane(int rolldir, bool instant)
 {
-	if(dir != rolldir)
+	if (dir != rolldir)
 	{
 		var i = 36;
-		if(instant) i = 1;
+		if (instant)
+			i = 1;
 		newrot = PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d", rolldir)), i, ANIM_Hold));
 		dir = rolldir;
 	}
@@ -1026,15 +1047,16 @@ public func IsShipyardProduct() { return true; }
 
 /*-- Display --*/
 
-func ShowMainActionTo(object clonk)
+public func ShowMainActionTo(object clonk)
 {
 	CustomMessage(Format("$SelectedAction$", GetActionTypeName(main_action), GetActionTypeInfo(main_action)), this, clonk->GetOwner());
 }
 
-func Definition(def)
+public func Definition(proplist def)
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-1000,-3375,0), Trans_Rotate(25,0,1,0)));
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-5,1,0,0),Trans_Rotate(40,0,1,0),Trans_Translate(-20000,-4000,20000)),def);
+	def.MeshTransformation = Trans_Mul(Trans_Rotate(90, 0, 0, 1), Trans_Translate(-1000, -3375, 0), Trans_Rotate(25, 0, 1, 0));
+	def.PictureTransformation = Trans_Mul(Trans_Rotate(-5, 1, 0, 0), Trans_Rotate(40, 0, 1, 0), Trans_Translate(-20000, -4000, 20000));
+	return _inherited(def, ...);
 }
 
 /*-- Properties --*/
