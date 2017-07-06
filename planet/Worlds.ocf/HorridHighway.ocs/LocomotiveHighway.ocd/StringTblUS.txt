@@ -1,0 +1,6 @@
+Name=Locomotive Highway
+
+# Goal window
+MsgGoalFulfilled=Done! All the locomotives safely passed the highway!
+MsgGoalUnfulfilled=Construct the highway out of bridges and protect it against all of the disasters, then you can turn the switch to let the locomotives pass the highway.
+MsgGoalRunning=The locomotives are currently running, %d out of %d have passed the highway!

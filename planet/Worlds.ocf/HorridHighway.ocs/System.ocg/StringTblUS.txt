@@ -1,0 +1,5 @@
+# Intro sequence messages
+MsgWelcomeHorridHighway=Hi %s, welcome to the horrid highway.
+MsgHighwayBroken=Oh no! The highway is broken again, these damn meteors.
+MsgFixHighway=I am leaving you here, fix the highway for our locomotives then we can give you plenty resources.
+MsgRunLocomotives=You can let me know with the lever if you are ready, then I will send over some locomotives.
