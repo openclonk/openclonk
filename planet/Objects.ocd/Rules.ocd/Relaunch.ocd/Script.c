@@ -338,8 +338,9 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 			if (pay_plr == NO_OWNER) 
 				pay_plr = plr;
 			new_clonk = base->~DoBuy(clonk_type, plr, pay_plr, clonk);
-			if (new_clonk)
-				new_clonk->Exit();
+			if (!new_clonk)
+				return;
+			new_clonk->Exit();
 		}
 	}
 	else
