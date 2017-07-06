@@ -39,8 +39,9 @@ public func StartRelaunch(object clonk)
 	// Save clonk for later use.
 	crew = clonk;
 	clonk->Enter(this);
-	ScheduleCall(this, "OpenWeaponMenu", 36, 0, clonk);
 	AddEffect("IntTimeLimit", this, 100, 36, this);
+	ScheduleCall(this, "OpenWeaponMenu", 36, 0, clonk);
+	GameCall("OnClonkEnteredRelaunch", clonk, clonk->GetOwner());
 	return true;
 }
 
