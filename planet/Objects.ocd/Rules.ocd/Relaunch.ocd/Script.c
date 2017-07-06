@@ -241,7 +241,8 @@ public func OnClonkDeath(object clonk, int killer)
 			return;
 		}
 	}
-	GameCall("OnPlayerRelaunch", plr, true);
+	if (GameCall("OnPlayerRelaunch", plr, true));
+		return;
 	return DoRelaunch(plr, clonk, nil);
 }
 
