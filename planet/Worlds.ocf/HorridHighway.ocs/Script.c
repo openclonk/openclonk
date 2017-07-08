@@ -111,6 +111,10 @@ private func InitEnvironment(int difficulty)
 	// Set a certain parallax.
 	SetSkyParallax(0, 20, 20);
 	
+	// Adjust sky dependent on difficulty setting.
+	if (difficulty == 3)
+		SetSkyAdjust(RGBa(225, 255, 205, 191), RGB(63, 200, 0));
+	
 	// Clouds and rain.
 	Cloud->Place(15);
 	Cloud->SetPrecipitation("Water", 60);
@@ -141,10 +145,10 @@ private func InitVegetation()
 	PlaceObjects(Loam, 30, "Earth");
 
 	// Place some trees.
-	Tree_Deciduous->Place(20, Rectangle(0, 0, 600, LandscapeHeight()));
-	Tree_Deciduous->Place(20, Rectangle(LandscapeWidth() - 600, 0, 600, LandscapeHeight()));
-	Tree_Coniferous2->Place(12, Rectangle(0, 0, 600, LandscapeHeight()));
-	Tree_Coniferous2->Place(12, Rectangle(LandscapeWidth() - 600, 0, 600, LandscapeHeight()));
+	Tree_Deciduous->Place(20, Rectangle(0, 0, 600, LandscapeHeight() / 3));
+	Tree_Deciduous->Place(20, Rectangle(LandscapeWidth() - 600, 0, 600, LandscapeHeight() / 3));
+	Tree_Coniferous2->Place(12, Rectangle(0, 0, 600, LandscapeHeight() / 3));
+	Tree_Coniferous2->Place(12, Rectangle(LandscapeWidth() - 600, 0, 600, LandscapeHeight() / 3));
 	return;
 }
 
@@ -154,7 +158,10 @@ private func InitAnimals(int difficulty)
 	// Some fireflies attracted to trees.
 	Firefly->Place(6);
 	// Place some bats depending on difficulties.
-	Bat->Place(10 * difficulty**2, Rectangle(LandscapeWidth() - 600, 0, 600, LandscapeHeight()), {tunnel_only = true});
+	var bat_region = Rectangle(LandscapeWidth() - 600, 0, 600, LandscapeHeight());
+	if (difficulty >= 2)
+		bat_region = Rectangle(LandscapeWidth() / 2 - 300, 0, LandscapeWidth() / 2 + 300, LandscapeHeight());
+	Bat->Place(10 * difficulty + 5 * difficulty**2, bat_region, {tunnel_only = true});
 	// Place zaps on higher difficulties.
 	if (difficulty >= 2)
 		Zaphive->Place(2 * difficulty);
@@ -202,6 +209,7 @@ private func InitLeftIsland()
 	
 	var guidepost = CreateObjectAbove(EnvPack_Guidepost2, 40, LandscapeHeight() / 2);
 	guidepost->SetInscription("$MsgHorridHighwayEast$");
+	guidepost.MeshTransformation = EnvPack_Guidepost2.MeshTransformation;
 	
 	var lorry = CreateObjectAbove(Lorry, 80, LandscapeHeight() / 2 - 2);
 	lorry->CreateContents(Shovel, 2);
@@ -237,6 +245,10 @@ private func InitMiddleIsland()
 	lorry->CreateContents(DynamiteBox, 8);
 	lorry->CreateContents(PowderKeg, 8);
 	lorry->CreateContents(Pickaxe, 2);
+	
+	var guidepost = CreateObjectAbove(EnvPack_Guidepost2, LandscapeWidth() / 2 + 40, LandscapeHeight() / 2);
+	guidepost->SetInscription("$MsgResourcesWest$");
+	guidepost.MeshTransformation = EnvPack_Guidepost2.MeshTransformation;
 	return;
 }
 
@@ -244,6 +256,7 @@ private func InitRightIsland()
 {
 	var guidepost = CreateObjectAbove(EnvPack_Guidepost2, LandscapeWidth() - 40, LandscapeHeight() / 2);
 	guidepost->SetInscription("$MsgHorridHighwayWest$");
+	guidepost.MeshTransformation = EnvPack_Guidepost2.MeshTransformation;
 	
 	var elevator = CreateObjectAbove(Elevator, LandscapeWidth() - 180, 384);
 	elevator->CreateShaft(196);
@@ -265,26 +278,24 @@ private func InitDisasters(int difficulty)
 		Rockfall->SetChance(10 * (difficulty - 1));
 		Rockfall->SetArea(Rectangle(LandscapeWidth() / 2 - 200, 0, 400, 20));
 		if (difficulty >= 3)
-			Rockfall->SetExplosiveness(true);
+			Rockfall->SetExplosiveness(100);
 	}
 	// Meteors: controlled by effect to happen between the main islands.
-	var meteor_chance = 15 * difficulty;
-	if (difficulty == 3)
-		meteor_chance = 60;
-	CreateEffect(FxControlMeteors, 100, 1, meteor_chance);
+	CreateEffect(FxControlMeteors, 100, 1, difficulty);
 	return;
 }
 
 static const FxControlMeteors = new Effect
 {
-	Construction = func(int chance)
+	Construction = func(int difficulty)
 	{
-		this.chance = chance;
+		this.difficulty = difficulty;
+		this.chance = 9 * difficulty + 3 * difficulty**2;
 		this.Interval = 10;
 		// Find spawn range according to outer bridges.
 		var bridge_left = FindObject(Find_ID(WoodenBridge), Sort_Distance(0, LandscapeHeight() / 2));
 		var bridge_right = FindObject(Find_ID(WoodenBridge), Sort_Distance(LandscapeWidth(), LandscapeHeight() / 2));
-		this.spawn_range = [bridge_left->GetX() + 132, bridge_right->GetX() - 132];
+		this.spawn_range = [bridge_left->GetX() + 134, bridge_right->GetX() - 134];
 		return FX_OK;
 	},
 	Timer = func(int time)
@@ -292,7 +303,10 @@ static const FxControlMeteors = new Effect
 		if (Random(100) >= 100 - this.chance)
 		{ 
 			var x = RandomX(this.spawn_range[0], this.spawn_range[1]);
-			LaunchMeteor(x, 0, RandomX(40, 60), RandomX(-15, 15), RandomX(40, 50));
+			var spawn_id = nil;
+			if (this.difficulty >= 3 && !Random(3))
+				spawn_id = Chippie_Egg;
+			LaunchMeteor(x, -12, RandomX(40, 60), RandomX(-15, 15), RandomX(40, 50), spawn_id);
 		}
 		return FX_OK;
 	}

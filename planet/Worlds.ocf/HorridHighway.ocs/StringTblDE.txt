@@ -19,5 +19,6 @@ MapLarge=Groß
 DescMapLarge=Die Karte dieser Runde wird groß sein.
 
 # Scenario
-MsgHorridHighwayEast=Scheußliche Straße im Osten.
-MsgHorridHighwayWest=Scheußliche Straße im Westen.
+MsgHorridHighwayEast=Scheußliche Straße im Osten (links).
+MsgHorridHighwayWest=Scheußliche Straße im Westen (rechts).
+MsgResourcesWest=Erz- und Steinvorräte im Osten (links).
