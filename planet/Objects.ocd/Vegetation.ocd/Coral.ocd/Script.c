@@ -182,4 +182,7 @@ protected func ControlUse(object clonk, int iX, int iY)
 	return true;
 }
 
-func NutritionalValue_() { return 5; }
+// this.NutritionalValue will the set to this function once the coral starts floating and
+// can be collected by a Clonk.
+// Otherwise, fish would eat fixed corals - that's not intended.
+public func NutritionalValue_() { return 5; }
