@@ -34,16 +34,17 @@ public func Launch(int x, int y, int to_strength, int to_xdir, int to_ydir, int 
 	return true;
 }
 
-protected func FxLightningMoveStart(object target, proplist effect, int temp, bool play_sound)
+protected func FxLightningMoveStart(object target, effect fx, int temp, bool play_sound)
 {
 	if (temp)
 		return FX_OK;
+	fx.play_sound = play_sound;
 	if (play_sound && strength > 30)
 		Sound("Environment::Lightning::Thunder?", false, strength);
 	return FX_OK;
 }
 
-protected func FxLightningMoveTimer()
+protected func FxLightningMoveTimer(object target, effect fx, int time)
 {
 	// Calculate new coordinates to move to.
 	var vertices = GetVertexNum();
@@ -102,7 +103,7 @@ protected func FxLightningMoveTimer()
 		var branch_strength = (strength + Random(strength)) / 4;
 		var lightning = CreateObject(Lightning, newx, newy);
 		if (lightning)
-			lightning->Launch(newx + GetX(), newy + GetY(), branch_strength, xdir, ydir, xdev, ydev);
+			lightning->Launch(newx + GetX(), newy + GetY(), branch_strength, xdir, ydir, xdev, ydev, !fx.play_sound);
 		strength -= branch_strength / 3;
 	}
 	return FX_OK;
