@@ -126,7 +126,7 @@ func InitializePlayer(int plr)
 
 	// Players joining at runtime will participate in the following round.
 	// Should only happen if it's not game start, else Clonks would start stuck in a RelaunchContainer.
-	if (FrameCounter > 1) PutInRelaunchContainer(GetCrew(plr));
+	if (FrameCounter() > 1) PutInRelaunchContainer(GetCrew(plr));
 }
 
 func InitializePlayers()
