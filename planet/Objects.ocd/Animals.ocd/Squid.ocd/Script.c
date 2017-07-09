@@ -7,6 +7,7 @@
 */
 
 #include Library_ForceField
+#include Library_Edible
 
 
 static const SQUID_SWIM_MAX_SPEED = 30;
@@ -155,12 +156,6 @@ public func CatchBlow()
 		DoInk();
 	else if (ink_level > 500 && !Random(5))
 		DoInk();
-}
-
-public func ControlUse(object clonk, int iX, int iY)
-{
-	clonk->Eat(this);
-	return true;
 }
 
 public func NutritionalValue() { if (!GetAlive()) return 15; else return 0; }

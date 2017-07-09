@@ -3,6 +3,8 @@
 	Fresh from nature's garden.
 */
 
+#include Library_Edible
+
 /*-- Engine Callbacks --*/
 
 public func Construction()
@@ -30,16 +32,6 @@ func SaveScenarioObject(props, ...)
 			return false;
 	return inherited(props, ...);
 }
-
-/*-- Eating --*/
-
-public func ControlUse(object clonk, int iX, int iY)
-{
-	clonk->Eat(this);
-	return true;
-}
-
-public func NutritionalValue() { return 5; }
 
 /*-- Sprouting --*/
 

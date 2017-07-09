@@ -3,6 +3,8 @@
 	Yummier meal than an uncooked mushroom.
 */
 
+#include Library_Edible
+
 /*-- Engine Callbacks --*/
 
 func Construction()
@@ -16,12 +18,6 @@ func Hit()
 }
 
 /*-- Eating --*/
-
-public func ControlUse(object clonk)
-{
-	clonk->Eat(this);
-	return true;
-}
 
 public func NutritionalValue() { return 25; }
 

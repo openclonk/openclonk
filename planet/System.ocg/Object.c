@@ -236,6 +236,14 @@ global func GetMaxEnergy()
 	return this.MaxEnergy / 1000;
 }
 
+// Returns whether an object is at full energy, that is if its energy is >= its MaxEnergy
+global func HasMaxEnergy()
+{
+	if (!this)
+		return false;
+	return GetEnergy() >= GetMaxEnergy();
+}
+
 // Sets the MaxBreath value of an object and does the necessary callbacks.
 global func SetMaxBreath(int value)
 {

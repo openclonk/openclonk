@@ -6,6 +6,7 @@
 */
 
 #include Library_Plant
+#include Library_Edible
 
 local plant_seed_chance = 17;
 local plant_seed_area = 150;
@@ -41,12 +42,6 @@ public func RootSurface()
 }
 
 /*-- Eating --*/
-
-protected func ControlUse(object clonk)
-{
-	clonk->Eat(this);
-	return true;
-}
 
 // Nutritional value depends on the completion of the mushroom.
 public func NutritionalValue() { return GetCon() / 10; }

@@ -1,5 +1,6 @@
 /*-- Coral --*/
 
+#include Library_Edible
 
 local Name = "$Name$";
 local Description = "$Description$";
@@ -43,7 +44,6 @@ func StartFloating()
 	RemoveTimer("Seed");
 	SetAction("Idle");
 	this.Collectible = 1;
-	this.NutritionalValue = this.NutritionalValue_;
 	
 	for (var attachment in mesh_attachments)
 		DetachMesh(attachment);
@@ -176,13 +176,7 @@ func IsPlant(){return true;}
 
 /* Eating */
 
-protected func ControlUse(object clonk, int iX, int iY)
-{
-	clonk->Eat(this);
-	return true;
-}
-
-// this.NutritionalValue will the set to this function once the coral starts floating and
+// the nutritional value will the set to this function once the coral starts floating and
 // can be collected by a Clonk.
 // Otherwise, fish would eat fixed corals - that's not intended.
-public func NutritionalValue_() { return 5; }
+func NutritionalValue() { if (this.Collectible) return 5; else return 0; }
