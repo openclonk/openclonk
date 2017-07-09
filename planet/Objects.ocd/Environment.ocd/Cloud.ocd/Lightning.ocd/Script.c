@@ -80,7 +80,7 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 		if (obj && !obj->~RejectLightningStrike(this, damage))
 		{
 			// Do a callback notifying the object that it has been struck by lightning.
-			obj->~OnLightningStrike(damage);
+			obj->~OnLightningStrike(this, damage);
 			if (!obj)
 				continue;
 			// Damage or hurt objects. Lightning strikes may have a controller, thus pass this for kill tracing.	
