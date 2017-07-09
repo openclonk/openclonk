@@ -238,6 +238,29 @@ protected func Hit(int xdir, int ydir)
 	return;
 }
 
+
+/*-- Target --*/
+
+public func OnLightningStrike(object lightning, int damage)
+{
+	SetController(lightning->GetController());
+	Hit();
+	return;
+}
+
+public func IsProjectileTarget(object projectile)
+{
+	return true;
+}
+
+public func OnProjectileHit(object projectile)
+{
+	SetController(projectile->GetController());
+	Hit();
+	return;
+}
+
+
 /*-- Proplist --*/
 
 local Name = "$Name$";
