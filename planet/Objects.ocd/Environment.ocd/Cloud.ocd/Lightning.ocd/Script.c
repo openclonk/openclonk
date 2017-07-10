@@ -88,6 +88,13 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 				Punch(obj, damage);
 			else
 				obj->DoDamage(damage, FX_Call_DmgScript, GetController());
+			// Reduce strength of the lightning if an object is struck.
+			strength -= damage;
+			if (strength <= 0)
+			{
+				RemoveObject();
+				return FX_OK;
+			}
 		}
 	}
 	
