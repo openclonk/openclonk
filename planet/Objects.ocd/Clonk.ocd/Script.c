@@ -197,13 +197,10 @@ protected func CheckStuck()
 
 public func Eat(object food)
 {
-	if (IsWalking())
-	{
-		Heal(food->NutritionalValue());
-		food->RemoveObject();
-		Sound("Clonk::Action::Munch?");
-		SetAction("Eat");
-	}
+	Heal(food->NutritionalValue());
+	food->RemoveObject();
+	Sound("Clonk::Action::Munch?");
+	SetAction("Eat");
 }
 
 // Called when an object was dug free.
