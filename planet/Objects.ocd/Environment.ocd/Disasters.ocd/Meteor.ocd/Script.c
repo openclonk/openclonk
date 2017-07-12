@@ -260,6 +260,8 @@ public func OnProjectileHit(object projectile)
 	return;
 }
 
+public func IsMeteor() { return true; }
+
 
 /*-- Proplist --*/
 

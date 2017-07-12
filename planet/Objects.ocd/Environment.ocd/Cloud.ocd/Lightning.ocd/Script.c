@@ -71,8 +71,8 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 	SetLightColor(RGB(60, 60, 192));
 	this.LightOffset = [newx, newy];
 	
-	// Strike objects on the line.
-	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_NoContainer()))
+	// Strike objects on the line: only objects that are vehicle, items, alive or structures.
+	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle | C4D_Structure), Find_Func("IsLightningAttractor", this)), Find_NoContainer()))
 	{
 		var damage = 3 + strength / 10;
 		// Check if the object rejects a lightning strike, also check if object still exists because an object
