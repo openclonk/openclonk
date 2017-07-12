@@ -35,10 +35,24 @@ void C4Reloc::Init()
 	StdCopyStrBuf planet(Config.General.ExePath);
 	planet.AppendBackslash();
 	planet.Append("planet");
-	AddPath(planet.getData());
+	if (DirectoryExists(planet.getData()))
+	{
+		// Only add planet if it's a valid contents folder.
+		// Because users may create a folder "planet" in their source repos.
+		StdCopyStrBuf planet_system_check(planet);
+		planet_system_check.AppendBackslash();
+		planet_system_check.Append(C4CFN_System);
+		if (ItemExists(planet_system_check.getData()))
+		{
+			AddPath(planet.getData());
+		}
+	}
 #endif
-	// Add main system path
-	AddPath(Config.General.SystemDataPath);
+	// Add main system path (unless it's using planet/ anyway, in which we would just slow down scenario enumeration by looking throug hthe whole source folder)
+	if (!Paths.size())
+	{
+		AddPath(Config.General.SystemDataPath);
+	}
 	// Add user path for additional data (player files, user scenarios, etc.)
 	AddPath(Config.General.UserDataPath, PATH_PreferredInstallationLocation);
 }
