@@ -631,14 +631,18 @@ std::vector< C4String * > C4PropList::GetUnsortedProperties(const char *prefix, 
 
 std::vector< C4String * > C4PropList::GetSortedProperties(const char *prefix, C4PropList *ignore_parent) const
 {
+	struct sort_cmp {
+		bool operator() (const C4String *a, const C4String *b) const
+		{
+			return strcmp(a->GetCStr(), b->GetCStr()) < 0;
+		}
+	};
 	// Return property list with descending into prototype
 	// But do not include Prototype property
 	std::vector< C4String * > result = GetUnsortedProperties(prefix, ignore_parent);
-	// Sort
-	std::sort(result.begin(), result.end(), [](const C4String *a, const C4String *b) -> bool
-	{
-		return strcmp(a->GetCStr(), b->GetCStr()) < 0;
-	});
+	// Sort and remove duplicates
+	std::set< C4String *, sort_cmp > result_set(result.begin(), result.end());
+	result.assign(result_set.begin(), result_set.end());
 	return result;
 }
 
