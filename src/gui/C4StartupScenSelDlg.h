@@ -232,6 +232,7 @@ private:
 	RegularFolder *pRootFolder;
 	Folder *pCurrFolder; // scenario list in working directory
 	int32_t iLoading, iProgress, iMaxProgress;
+	StdCopyStrBuf current_load_info; // extra string for currently loaded item
 	bool fAbortThis, fAbortPrevious; // activity state
 	const C4ScenarioParameters &Achievements;
 
@@ -245,7 +246,7 @@ private:
 	void EndActivity();
 
 public:
-	bool DoProcessCallback(int32_t iProgress, int32_t iMaxProgress); // returns false if the activity was aborted
+	bool DoProcessCallback(int32_t iProgress, int32_t iMaxProgress, const char *current_load_info); // returns false if the activity was aborted
 
 public:
 	bool Load(const StdStrBuf &sRootFolder); // (unthreaded) loading of all entries in root folder
@@ -262,6 +263,7 @@ public:
 	int32_t GetProgress() const { return iProgress; }
 	int32_t GetMaxProgress() const { return iMaxProgress; }
 	int32_t GetProgressPercent() const { return iProgress * 100 / std::max<int32_t>(iMaxProgress, 1); }
+	const char *GetProgressInfo() const { return current_load_info.getData(); }
 
 	const C4ScenarioParameters &GetAchievements() const { return Achievements; }
 };
@@ -421,6 +423,7 @@ private:
 	C4GUI::Label *pScenSelCaption;       // caption label atop scenario list; indicating current folder
 	C4GUI::ListBox *pScenSelList;        // left page of book: Scenario selection
 	C4GUI::Label *pScenSelProgressLabel; // progress label shown while scenario list is being generated
+	C4GUI::Label *pScenSelProgressInfoLabel; // extra progress label showing currently processed item
 	C4GUI::TextWindow *pSelectionInfo;   // used to display the description of the current selection
 	class C4GameOptionsList *pSelectionOptions; // displays custom scenario options for selected item below description
 

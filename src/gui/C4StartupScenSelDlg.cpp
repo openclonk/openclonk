@@ -1025,7 +1025,7 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 			szSearchMask = nullptr;
 	}
 	// initial progress estimate
-	if (!pLoader->DoProcessCallback(0, iEntryCount)) return false;
+	if (!pLoader->DoProcessCallback(0, iEntryCount, nullptr)) return false;
 	// iterate through group contents
 	char ChildFilename[_MAX_FNAME+1]; StdStrBuf sChildFilename; int32_t iLoadCount=0;
 	for (szSearchMask = szC4CFN_ScenarioFiles; szSearchMask;)
@@ -1033,6 +1033,8 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 		Group.ResetSearch();
 		while (Group.FindNextEntry(szSearchMask, ChildFilename))
 		{
+			// mark progress
+			if (!pLoader->DoProcessCallback(iLoadCount, iEntryCount, ChildFilename)) return false;
 			sChildFilename.Ref(ChildFilename);
 			// okay; create this item
 			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
@@ -1045,8 +1047,7 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 					delete pNewEntry;
 				}
 			}
-			// mark progress
-			if (!pLoader->DoProcessCallback(++iLoadCount, iEntryCount)) return false;
+			++iLoadCount;
 		}
 		// next search mask
 		if (szSearchMask == szC4CFN_ScenarioFiles)
@@ -1110,18 +1111,20 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 		}
 	}
 	// initial progress estimate
-	if (!pLoader->DoProcessCallback(iCountLoaded, iCountTotal)) return false;
+	if (!pLoader->DoProcessCallback(iCountLoaded, iCountTotal, nullptr)) return false;
 
 	// do actual loading of files
 	std::set<std::string> names;
 	const char *szChildFilename;
 	for (it = contents.begin(); it != contents.end(); ++it)
 	{
+		if (!pLoader->DoProcessCallback(iCountLoaded, iCountTotal, GetFilename(it->c_str()))) return false;
 		for (DirectoryIterator DirIter(it->c_str()); (szChildFilename = *DirIter); ++DirIter)
 		{
 			StdStrBuf sChildFilename(szChildFilename);
 			szChildFilename = GetFilename(szChildFilename);
-
+			// progress callback
+			if (!pLoader->DoProcessCallback(iCountLoaded, iCountTotal, szChildFilename)) return false;
 			// Ignore directory navigation entries and CVS folders
 			if (C4Group_TestIgnore(szChildFilename)) continue;
 			if (names.find(szChildFilename) != names.end()) continue;
@@ -1137,8 +1140,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 					delete pNewEntry;
 				}
 			}
-			// progress callback
-			if (!pLoader->DoProcessCallback(++iCountLoaded, iCountTotal)) return false;
+			++iCountLoaded;
 		}
 	}
 	// done, success
@@ -1173,6 +1175,7 @@ bool C4ScenarioListLoader::BeginActivity(bool fAbortPrevious)
 	++iLoading;
 	// progress of activity not yet decided
 	iProgress = iMaxProgress = 0;
+	current_load_info.Clear();
 	// okay; start activity
 	return true;
 }
@@ -1186,6 +1189,7 @@ void C4ScenarioListLoader::EndActivity()
 		fAbortThis = false;
 		fAbortPrevious = false;
 		iProgress = iMaxProgress = 0;
+		current_load_info.Clear();
 	}
 	else
 	{
@@ -1194,10 +1198,11 @@ void C4ScenarioListLoader::EndActivity()
 	}
 }
 
-bool C4ScenarioListLoader::DoProcessCallback(int32_t iProgress, int32_t iMaxProgress)
+bool C4ScenarioListLoader::DoProcessCallback(int32_t iProgress, int32_t iMaxProgress, const char *current_load_info)
 {
 	this->iProgress = iProgress;
 	this->iMaxProgress = iMaxProgress;
+	this->current_load_info.Copy(current_load_info);
 	// callback to dialog
 	if (C4StartupScenSelDlg::pInstance) C4StartupScenSelDlg::pInstance->ProcessCallback();
 	// process callback - abort at a few ugly circumstances...
@@ -1429,9 +1434,11 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pSheetBook->AddElement(pScenSelList);
 	pScenSelList->SetSelectionChangeCallbackFn(new C4GUI::CallbackHandler<C4StartupScenSelDlg>(this, &C4StartupScenSelDlg::OnSelChange));
 	pScenSelList->SetSelectionDblClickFn(new C4GUI::CallbackHandler<C4StartupScenSelDlg>(this, &C4StartupScenSelDlg::OnSelDblClick));
-	// scenario selection list progress label
-	pScenSelProgressLabel = new C4GUI::Label("", pScenSelList->GetBounds().GetMiddleX(), pScenSelList->GetBounds().GetMiddleX()-iCaptionFontHgt/2, ACenter, ClrScenarioItem, &(C4Startup::Get()->Graphics.BookFontCapt), false);
+	// scenario selection list progress labels
+	pScenSelProgressLabel = new C4GUI::Label("", pScenSelList->GetBounds().GetMiddleX(), pScenSelList->GetBounds().GetMiddleY()-iCaptionFontHgt, ACenter, ClrScenarioItem, &(C4Startup::Get()->Graphics.BookFontCapt), false);
 	pSheetBook->AddElement(pScenSelProgressLabel);
+	pScenSelProgressInfoLabel = new C4GUI::Label("", pScenSelList->GetBounds().GetMiddleX(), pScenSelList->GetBounds().GetMiddleY(), ACenter, ClrScenarioItemXtra, &(C4Startup::Get()->Graphics.BookFontCapt), false);
+	pSheetBook->AddElement(pScenSelProgressInfoLabel);
 
 	// right side of book: Displaying current selection
 	C4Rect bounds = caBook.GetFromRight(iBookPageWidth);
@@ -1574,9 +1581,12 @@ void C4StartupScenSelDlg::UpdateList()
 		sProgressText.Format(LoadResStr("IDS_MSG_SCENARIODESC_LOADING"), (int32_t) pScenLoader->GetProgressPercent());
 		pScenSelProgressLabel->SetText(sProgressText.getData());
 		pScenSelProgressLabel->SetVisibility(true);
+		pScenSelProgressInfoLabel->SetText(pScenLoader->GetProgressInfo());
+		pScenSelProgressInfoLabel->SetVisibility(true);
 		return;
 	}
 	pScenSelProgressLabel->SetVisibility(false);
+	pScenSelProgressInfoLabel->SetVisibility(false);
 	// is this a map folder? Then show the map instead
 	C4ScenarioListLoader::Folder *pFolder = static_cast<C4ScenarioListLoader::Folder *>(pScenLoader->GetCurrFolder());
 	if ((pMapData = pFolder->GetMapData()))
