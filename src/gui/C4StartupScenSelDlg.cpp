@@ -1201,7 +1201,9 @@ bool C4ScenarioListLoader::DoProcessCallback(int32_t iProgress, int32_t iMaxProg
 	// callback to dialog
 	if (C4StartupScenSelDlg::pInstance) C4StartupScenSelDlg::pInstance->ProcessCallback();
 	// process callback - abort at a few ugly circumstances...
-	if (!Application.ScheduleProcs() // WM_QUIT message?
+	// schedule with 1ms delay to force event processing
+	// (delay 0 would be nice, but isn't supported properly by our Windows implementation of ScheduleProcs)
+	if (!Application.ScheduleProcs(1) // WM_QUIT message?
 	    || !C4StartupScenSelDlg::pInstance // host dialog removed?
 	    || !C4StartupScenSelDlg::pInstance->IsShown() // host dialog closed?
 	   ) return false;
