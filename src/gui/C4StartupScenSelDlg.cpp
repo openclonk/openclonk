@@ -524,6 +524,11 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 // helper func: Recursive check whether a directory contains a .ocs or .ocf file
 bool DirContainsScenarios(const char *szDir)
 {
+	// Ignore object and group folders to avoid descending e.g. deep into unpacked Objects.ocd
+	if (WildcardMatch(C4CFN_DefFiles, szDir) || WildcardMatch(C4CFN_GenericGroupFiles, szDir))
+	{
+		return false;
+	}
 	// create iterator on free store to avoid stack overflow with deeply recursed folders
 	DirectoryIterator *pIter = new DirectoryIterator(szDir);
 	const char *szChildFilename;

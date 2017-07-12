@@ -164,6 +164,7 @@
 #define C4CFN_TempLeagueInfo  "~league.tmp"
 
 #define C4CFN_DefFiles        "*.ocd"
+#define C4CFN_GenericGroupFiles "*.ocg"
 #define C4CFN_PlayerFiles     "*.ocp"
 #define C4CFN_MaterialFiles   "*.ocm"
 #define C4CFN_ObjectInfoFiles "*.oci"
