@@ -71,6 +71,9 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 	this->iHeight = iHeight;
 	this->pTexs = pTexs;
 
+	// Start timer
+	this->TimerStart = std::chrono::steady_clock::now();
+
 	// Allocate landscape textures
 	if (!InitLandscapeTexture())
 	{
@@ -631,6 +634,8 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	UniformNames[C4LRU_AmbientBrightness] = "ambientBrightness";
 	UniformNames[C4LRU_AmbientTransform]  = "ambientTransform";
 	UniformNames[C4LRU_Modulation]        = "clrMod";
+	UniformNames[C4LRU_FrameCounter]      = "frameCounter";
+	UniformNames[C4LRU_Time]              = "time";
 
 	if(!LoadShader(pGroups, Shader, "landscape", 0))
 		return false;
@@ -976,6 +981,12 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		ShaderCall.SetUniformMatrix2x3fv(C4LRU_AmbientTransform, 1, ambientTransform);
 		ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light->getFoW()->Ambient.GetBrightness());
 	}
+
+	// time information
+	ShaderCall.SetUniform1i(C4LRU_FrameCounter, ::Game.FrameCounter);
+	const auto now = std::chrono::steady_clock::now();
+	const int epoch = std::chrono::duration_cast<std::chrono::milliseconds>(now - TimerStart).count();
+	ShaderCall.SetUniform1i(C4LRU_Time, epoch);
 
 	pDraw->scriptUniform.Apply(ShaderCall);
 

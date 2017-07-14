@@ -22,6 +22,8 @@
 #include "graphics/C4Shader.h"
 #include "graphics/C4Surface.h"
 
+#include <chrono>
+
 // Data we want to store per landscape pixel
 enum C4LR_Byte {
 	C4LR_Material,
@@ -54,6 +56,9 @@ enum C4LR_Uniforms
 	C4LRU_AmbientBrightness,
 	C4LRU_AmbientTransform,
 	C4LRU_Modulation,
+
+	C4LRU_FrameCounter,
+	C4LRU_Time,
 
 	C4LRU_Count
 };
@@ -136,6 +141,9 @@ private:
 
 	// scaler image
 	C4FacetSurface fctScaler;
+
+	// shader timer
+	std::chrono::time_point<std::chrono::steady_clock> TimerStart;
 
 public:
 	bool ReInit(int32_t iWidth, int32_t iHeight) override;
