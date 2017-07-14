@@ -210,6 +210,34 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform1i(pShader->GetUniform(iUniform), iX);
 	}
+	void SetUniform2i(int iUniform, int iX, int iY) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2i(pShader->GetUniform(iUniform), iX, iY);
+	}
+	void SetUniform3i(int iUniform, int iX, int iY, int iZ) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3i(pShader->GetUniform(iUniform), iX, iY, iZ);
+	}
+	void SetUniform4i(int iUniform, int iX, int iY, int iZ, int iW) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4i(pShader->GetUniform(iUniform), iX, iY, iZ, iW);
+	}
+	void SetUniform1ui(int iUniform, unsigned int iX) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1ui(pShader->GetUniform(iUniform), iX);
+	}
+	void Setuniform2ui(int iUniform, unsigned int iX, unsigned int iY) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2ui(pShader->GetUniform(iUniform), iX, iY);
+	}
+	void Setuniform3ui(int iUniform, unsigned int iX, unsigned int iY, unsigned int iZ) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3ui(pShader->GetUniform(iUniform), iX, iY, iZ);
+	}
+	void Setuniform4ui(int iUniform, unsigned int iX, unsigned int iY, unsigned int iZ, unsigned int iW) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4ui(pShader->GetUniform(iUniform), iX, iY, iZ, iW);
+	}
 	void SetUniform1f(int iUniform, float gX) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1f(pShader->GetUniform(iUniform), gX);
@@ -218,9 +246,45 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform2f(pShader->GetUniform(iUniform), gX, gY);
 	}
+	void SetUniform3f(int iUniform, float gX, float gY, float gZ) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3f(pShader->GetUniform(iUniform), gX, gY, gZ);
+	}
+	void SetUniform4f(int iUniform, float gX, float gY, float gZ, float gW) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4f(pShader->GetUniform(iUniform), gX, gY, gZ, gW);
+	}
 	void SetUniform1iv(int iUniform, int iLength, const int *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform2iv(int iUniform, int iLength, const int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform3iv(int iUniform, int iLength, const int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform4iv(int iUniform, int iLength, const int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4iv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform1uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1uiv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform2uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2uiv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform3uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3uiv(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform4uiv(int iUniform, int iLength, const unsigned int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4uiv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 	void SetUniform1fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
