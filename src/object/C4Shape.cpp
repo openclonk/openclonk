@@ -123,7 +123,6 @@ void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)
 	y=y*iCon/FullCon;
 	Wdt=Wdt*iCon/FullCon;
 	Hgt=Hgt*iCon/FullCon;
-	FireTop=FireTop*iCon/FullCon;
 	if (bUpdateVertices)
 		for (cnt=0; cnt<VtxNum; cnt++)
 		{
@@ -137,7 +136,6 @@ void C4Shape::Jolt(int32_t iCon, bool bUpdateVertices)
 	int32_t cnt;
 	y=y*iCon/FullCon;
 	Hgt=Hgt*iCon/FullCon;
-	FireTop=FireTop*iCon/FullCon;
 	if (bUpdateVertices)
 		for (cnt=0; cnt<VtxNum; cnt++)
 			VtxY[cnt]=VtxY[cnt]*iCon/FullCon;
@@ -454,7 +452,6 @@ void C4Shape::CopyFrom(C4Shape rFrom, bool bCpyVertices, bool fCopyVerticesFromS
 	AttachMat=rFrom.AttachMat;
 	ContactCNAT=rFrom.ContactCNAT;
 	ContactCount=rFrom.ContactCount;
-	FireTop=rFrom.FireTop;
 }
 
 int32_t C4Shape::GetBottomVertex()
@@ -553,7 +550,6 @@ void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 	pComp->Value(mkNamingAdapt( mkArrayAdaptDMAM(VtxCNAT, default_shape->VtxCNAT, [&](decltype(*VtxCNAT) &elem){ return mkBitfieldAdapt<int32_t>(elem, ContactDirections); }), "VertexCNAT", default_shape->VtxCNAT));
 	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxFriction, default_shape->VtxFriction), "VertexFriction",     default_shape->VtxFriction));
 	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     default_shape->ContactDensity));
-	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            default_shape->FireTop));
 	if (fRuntime)
 	{
 		pComp->Value(mkNamingAdapt( iAttachX,                   "AttachX",            0                 ));

@@ -13781,12 +13781,6 @@ msgstr "DIR_Left"
 msgid "Border width to the left side. Definition like Wdt. Falls back to Wdt if not specified."
 msgstr ""
 
-#: sdk/script/MapScript.xml:328(col)
-#: sdk/script/GUI.xml:38(col)
-#, fuzzy
-msgid "Top"
-msgstr "FireTop"
-
 #: sdk/script/MapScript.xml:330(col)
 msgid "Border width upwards. Definition like Wdt. Falls back to Wdt if not specified."
 msgstr ""

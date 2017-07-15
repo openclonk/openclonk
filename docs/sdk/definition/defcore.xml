@@ -116,11 +116,6 @@
           <col>Position of the intake region relative to the object centre.</col>
         </row>
         <row>
-          <literal_col>FireTop</literal_col>
-          <col>Integer</col>
-          <col>Flame distance to the object's bottom line.</col>
-        </row>
-        <row>
           <literal_col>Exclusive</literal_col>
           <col>Integer</col>
           <col>0 or 1. Determines whether the object blocks objects behind it. Exclusive objects also block the placement of a construction site at an overlapping location.</col>

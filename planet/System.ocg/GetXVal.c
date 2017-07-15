@@ -27,7 +27,6 @@ global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
 global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
 global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
 global func GetDefColorByOwner(){ return GetDefCoreVal("ColorByOwner", "DefCore"); }
-global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("CrewMember", "DefCore"); }
 global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
@@ -58,7 +57,6 @@ global func GetObjFixX()       { return GetObjectVal("FixX", nil); }
 global func GetObjFixY()       { return GetObjectVal("FixY", nil); }
 global func GetObjWidth()      { return GetObjectVal("Width", nil); }
 global func GetObjHeight()     { return GetObjectVal("Height", nil); }
-global func GetObjFireTop()    { return GetObjectVal("FireTop", nil); }
 global func GetObjMobile()     { return GetObjectVal("Mobile", nil); }
 global func GetObjOnFire()     { return GetObjectVal("OnFire", nil); }
 global func GetObjInLiquid()   { return GetObjectVal("InLiquid", nil); }

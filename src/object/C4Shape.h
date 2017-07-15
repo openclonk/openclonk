@@ -39,7 +39,6 @@ class C4Shape : public C4Rect
 {
 public:
 	// remember to adjust C4Shape::CopyFrom and CreateOwnOriginalCopy when adding members here!
-	int32_t FireTop = 0;
 	int32_t VtxNum = 0;
 	int32_t VtxX[C4D_MaxVertex] = { 0 };
 	int32_t VtxY[C4D_MaxVertex] = { 0 };
