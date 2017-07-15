@@ -991,7 +991,7 @@ include_directories(SYSTEM
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
 
-add_library(libmisc
+add_library(libmisc STATIC
 src/C4Include.cpp
 src/c4group/C4Group.cpp
 src/c4group/C4Group.h
@@ -1056,7 +1056,7 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(libmisc rt)
 endif()
 
-add_library(libc4script
+add_library(libc4script STATIC
 src/C4Include.cpp
 src/c4group/C4ComponentHost.cpp
 src/c4group/C4ComponentHost.h
@@ -1105,7 +1105,7 @@ add_subdirectory(thirdparty/blake2)
 set_property(TARGET blake2 PROPERTY FOLDER "Third-party libraries")
 target_link_libraries(libc4script blake2 libmisc)
 
-add_library(libopenclonk
+add_library(libopenclonk STATIC
 	src/c4group/C4Extra.cpp
 	src/c4group/C4Extra.h
 	src/control/C4PlayerInfoConflicts.cpp
