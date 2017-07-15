@@ -126,7 +126,6 @@ public:
 	int32_t Line;
 	int32_t LineIntersect;
 	int32_t IncompleteActivity;
-	int32_t AttractLightning;
 	int32_t Oversize;
 	int32_t Fragile;
 	int32_t Projectile;

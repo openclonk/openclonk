@@ -105,7 +105,6 @@ msgstr "Kategorie"
 #: sdk/script/fn/OCF_Collectible.xml:9(subcat)
 #: sdk/script/fn/OCF_Chop.xml:9(subcat)
 #: sdk/script/fn/OCF_Available.xml:9(subcat)
-#: sdk/script/fn/OCF_AttractLightning.xml:9(subcat)
 #: sdk/script/fn/OCF_Alive.xml:9(subcat)
 #: sdk/script/fn/GetOCF.xml:9(subcat)
 msgid "OCF"
@@ -1605,7 +1604,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/OCF_Collectible.xml:8(category)
 #: sdk/script/fn/OCF_Chop.xml:8(category)
 #: sdk/script/fn/OCF_Available.xml:8(category)
-#: sdk/script/fn/OCF_AttractLightning.xml:8(category)
 #: sdk/script/fn/OCF_Alive.xml:8(category)
 #: sdk/script/fn/MakeCrewMember.xml:8(category)
 #: sdk/script/fn/Kill.xml:8(category)
@@ -6714,7 +6712,6 @@ msgstr "Object character flag: Objekt ist drehbar."
 #: sdk/script/fn/OCF_Collectible.xml:13(remark)
 #: sdk/script/fn/OCF_Chop.xml:13(remark)
 #: sdk/script/fn/OCF_Available.xml:13(remark)
-#: sdk/script/fn/OCF_AttractLightning.xml:13(remark)
 #: sdk/script/fn/OCF_Alive.xml:13(remark)
 msgid "For more information and examples regarding these constants see <emlink href=\"definition/ocf.html\">object character flags</emlink>."
 msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href=\"definition/ocf.html\">Object character flags</emlink>."
@@ -6742,7 +6739,6 @@ msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten
 #: sdk/script/fn/OCF_Collectible.xml:17(emlink)
 #: sdk/script/fn/OCF_Chop.xml:17(emlink)
 #: sdk/script/fn/OCF_Available.xml:17(emlink)
-#: sdk/script/fn/OCF_AttractLightning.xml:17(emlink)
 #: sdk/script/fn/OCF_Alive.xml:17(emlink)
 #: sdk/script/fn/Find_OCF.xml:35(emlink)
 #: sdk/definition/ocf.xml:6(title)
@@ -6877,10 +6873,6 @@ msgstr "Object character flag: Fällbares Objekt. Normalerweise sind das Bäume.
 #: sdk/script/fn/OCF_Available.xml:12(desc)
 msgid "Object character flag: this object can theoretically be acquired by a clonk, meaning it is either uncontained or in a container to which the clonk can have access."
 msgstr "Object character flag: Das Objekt kann von einem Clonk theoretisch geholt werden. Das heißt, es liegt entweder frei, oder steckt in einem Behälter, auf den der Clonk zugreifen kann (Gebäude mit Eingang, anfassbare Vehikel, etc.)."
-
-#: sdk/script/fn/OCF_AttractLightning.xml:12(desc)
-msgid "Object character flag: the object attracts lightning. See <emlink href=\"definition/defcore.html\">DefCore</emlink> entry \"AttractLightning\"."
-msgstr "Object character flag: Blitzanziehendes Objekt. Dieses Flag wird durch die <emlink href=\"definition/defcore.html\">DefCore</emlink>-Eigenschaft \"AttractLightning\" kontrolliert."
 
 #: sdk/script/fn/OCF_Alive.xml:12(desc)
 msgid "Object character flag: live living being."
@@ -22902,9 +22894,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "OCF_Available"
 #~ msgstr "OCF_Available"
-
-#~ msgid "OCF_AttractLightning"
-#~ msgstr "OCF_AttractLightning"
 
 #~ msgid "OCF_Alive"
 #~ msgstr "OCF_Alive"

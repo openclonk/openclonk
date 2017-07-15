@@ -93,7 +93,6 @@ const uint32_t
 	OCF_Collection = 1<<14,
 
 	OCF_HitSpeed4 = 1<<16,
-	OCF_AttractLightning = 1<<17,
 	OCF_NotContained = 1<<18,
 	OCF_CrewMember = 1<<19,
 	OCF_InLiquid = 1<<20,

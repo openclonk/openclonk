@@ -725,10 +725,6 @@ void C4Object::SetOCF()
 	if (Def->CrewMember)
 		if (Alive)
 			OCF|=OCF_CrewMember;
-	// OCF_AttractLightning
-	if (Def->AttractLightning)
-		if (OCF & OCF_FullCon)
-			OCF|=OCF_AttractLightning;
 	// OCF_NotContained
 	if (!Contained)
 		OCF|=OCF_NotContained;
@@ -773,7 +769,7 @@ void C4Object::UpdateOCF()
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_FullCon | OCF_Rotate | OCF_OnFire
-		| OCF_Alive | OCF_CrewMember | OCF_AttractLightning);
+		| OCF_Alive | OCF_CrewMember);
 	// OCF_inflammable: can catch fire and is not currently burning.
 	if (!OnFire && GetPropertyInt(P_ContactIncinerate) > 0)
 		OCF |= OCF_Inflammable;

@@ -118,7 +118,6 @@ void C4Def::DefaultDefCore()
 	Line=0;
 	LineIntersect=0;
 	IncompleteActivity=0;
-	AttractLightning=0;
 	Oversize=0;
 	Fragile=0;
 	NoPushEnter=0;
@@ -250,7 +249,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(UprightAttach,                 "UprightAttach",      0                 ));
 	pComp->Value(mkNamingAdapt(GrowthType,                    "StretchGrowth",      0                 ));
 	pComp->Value(mkNamingAdapt(IncompleteActivity,            "IncompleteActivity", 0                 ));
-	pComp->Value(mkNamingAdapt(AttractLightning,              "AttractLightning",   0                 ));
 	pComp->Value(mkNamingAdapt(Oversize,                      "Oversize",           0                 ));
 	// <Newton> Fragile and Projectile are kinda obsolete.
 	// Only used at one point in the command system. Should rather be solved with properties if at all

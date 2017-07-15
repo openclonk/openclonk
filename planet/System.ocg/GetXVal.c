@@ -38,7 +38,6 @@ global func GetDefLiftTop()     { return GetDefCoreVal("LiftTop", "DefCore"); }
 global func GetDefUprightAttach() { return GetDefCoreVal("UprightAttach", "DefCore"); }
 global func GetDefStretchGrowth() { return GetDefCoreVal("StretchGrowth", "DefCore"); }
 global func GetDefIncompleteActivity()  { return GetDefCoreVal("IncompleteActivity", "DefCore"); }
-global func GetDefAttractLightning()  { return GetDefCoreVal("AttractLightning", "DefCore"); }
 global func GetDefOversize()    { return GetDefCoreVal("Oversize", "DefCore"); }
 global func GetDefFragile()     { return GetDefCoreVal("Fragile", "DefCore"); }
 global func GetDefProjectile()  { return GetDefCoreVal("Projectile", "DefCore"); }
