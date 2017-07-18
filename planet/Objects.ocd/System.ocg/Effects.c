@@ -133,25 +133,18 @@ static const FxRainDrop = new Effect {
 		else
 			particle_name = "Raindrop";
 		
-		for (var i = 0; i < this.strength; i++)
-		{
-		    var x = RandomX(-wdt, wdt);
-		    var y = RandomX(-hgt, hgt);
-		    var xdir = RandomX(-5, -5);
-		    var ydir = RandomX(10, 30);
-			this.Target->CreateParticle(
-				particle_name,
-				x,
-				y,
-				xdir,
-				ydir,
-				PV_Random(200, 300),
-				this.particle_cache.particle,
-				0
-				);
-			
-			this.Target->~OnRainDropCreated(this);
-		}
+		this.Target->CreateParticle(
+			particle_name,
+			PV_Random(-wdt, wdt),
+			PV_Random(-hgt, hgt),
+			PV_Random(-5, 5),
+			PV_Random(10, 30),
+			PV_Random(200, 300),
+			this.particle_cache.particle,
+			this.strength
+			);
+		
+		this.Target->~OnRainDropCreated(this);
 		return FX_OK;
 	}
 };
