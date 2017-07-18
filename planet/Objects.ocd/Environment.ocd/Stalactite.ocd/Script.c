@@ -21,7 +21,7 @@ public func Construction()
 		sibling = TransformBone(bone, transformation, 1, Anim_Const(1000), sibling);
 	}
 	
-	AddRainDropEffect(nil, 100, "Water", 2);
+	AddRainDropEffect(nil, RandomX(80, 120), "Water", RandomX(1, 5));
 }
 
 private func Hit()
@@ -31,8 +31,8 @@ private func Hit()
 	{
 		Size = PV_KeyFrames(0, 0, 0, 100, PV_Random(3, 5), 1000, 3),
 		R = (colour >> 16) & 0xff,
-		G = (colour >>	8) & 0xff,
-		B = (colour >>	0) & 0xff,
+		G = (colour >>  8) & 0xff,
+		B = (colour >>  0) & 0xff,
 		Alpha = PV_Linear(255, 0),
 		ForceY = PV_Gravity(100),
 		CollisionVertex = 0
