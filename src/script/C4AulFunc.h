@@ -29,7 +29,6 @@ struct C4AulParSet
 {
 	C4Value Par[C4AUL_MAX_Par];
 
-	C4AulParSet() = default; // standard-constructor
 	template<class ...T> explicit C4AulParSet(T&& ...pars):
 			Par {C4Value(std::forward<T>(pars))...}
 	{
