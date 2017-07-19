@@ -51,7 +51,7 @@ inline int DWordAligned(int val)
 }
 
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2);
-int Angle(int iX1, int iY1, int iX2, int iY2);
+int32_t Angle(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iPrec = 1);
 int Pow(int base, int exponent);
 int32_t StrToI32(const char *s, int base, const char **scan_end);
 

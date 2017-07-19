@@ -33,13 +33,35 @@ int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2)
 	return dist;
 }
 
-int Angle(int iX1, int iY1, int iX2, int iY2)
+// Angle between points (iX1, iY1) and (iX2, iY2) with range [0, 360), angle = 0 means vertically upward and increasing angles in clockwise direction.
+int32_t Angle(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iPrec)
 {
-	int iAngle = (int) ( 180.0 * atan2( float(Abs(iY1-iY2)), float(Abs(iX1-iX2)) ) / M_PI );
-	if (iX2>iX1 )
-		{ if (iY2<iY1) iAngle = 90-iAngle; else iAngle = 90+iAngle; }
+	int32_t iAngle;
+	int32_t dx = iX2 - iX1, dy = iY2 - iY1;
+	if (!dx)
+	{
+		if (dy > 0) return 180 * iPrec;
+		else return 0;
+	}
+	if (!dy)
+	{
+		if (dx > 0) return 90 * iPrec;
+		else return 270 * iPrec;
+	}
+
+	iAngle = static_cast<int32_t>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / M_PI);
+
+	if (iX2 > iX1)
+	{
+		if (iY2 < iY1) iAngle = (90 * iPrec) - iAngle;
+		else iAngle = (90 * iPrec) + iAngle;
+	}
 	else
-		{ if (iY2<iY1) iAngle = 270+iAngle; else iAngle = 270-iAngle; }
+	{
+		if (iY2 < iY1) iAngle = (270 * iPrec) + iAngle;
+		else iAngle = (270 * iPrec) - iAngle;
+	}
+	
 	return iAngle;
 }
 

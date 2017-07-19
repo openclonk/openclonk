@@ -660,37 +660,9 @@ static long FnSqrt(C4PropList * _this, long iValue)
 
 static long FnAngle(C4PropList * _this, long iX1, long iY1, long iX2, long iY2, long iPrec)
 {
-	long iAngle;
-
 	// Standard prec
 	if (!iPrec) iPrec = 1;
-
-	long dx=iX2-iX1,dy=iY2-iY1;
-	if (!dx)
-	{
-		if (dy>0) return 180 * iPrec;
-		else return 0;
-	}
-	if (!dy)
-	{
-		if (dx>0) return 90 * iPrec;
-		else return 270 * iPrec;
-	}
-
-	iAngle = static_cast<long>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / M_PI);
-
-	if (iX2>iX1 )
-	{
-		if (iY2<iY1) iAngle = (90 * iPrec) - iAngle;
-		else iAngle = (90 * iPrec) + iAngle;
-	}
-	else
-	{
-		if (iY2<iY1) iAngle = (270 * iPrec) + iAngle;
-		else iAngle = (270 * iPrec) - iAngle;
-	}
-
-	return iAngle;
+	return Angle(iX1, iY1, iX2, iY2, iPrec);
 }
 
 static long FnArcSin(C4PropList * _this, long iVal, long iRadius)
