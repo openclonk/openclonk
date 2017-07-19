@@ -68,6 +68,13 @@ global func Find_Distance(int r, int x, int y)
 	return [C4FO_Distance, x, y, r];
 }
 
+global func Find_Cone(int r, int cone_angle, int cone_width, int x, int y, int prec_angle)
+{
+	if (!prec_angle)
+		prec_angle = 1;
+	return [C4FO_Cone, x, y, r, cone_angle, cone_width, prec_angle];
+}
+
 global func Find_OCF(int ocf)
 {
 	return [C4FO_OCF, ocf];

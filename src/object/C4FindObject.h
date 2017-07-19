@@ -46,6 +46,7 @@ enum C4FindObjectCondID
 	C4FO_InArray       = 22,
 	C4FO_Property      = 23,
 	C4FO_AnyLayer      = 24,
+	C4FO_Cone          = 25,
 	// last C4FO must be smaller than C4SO_First.
 };
 
@@ -243,6 +244,19 @@ public:
 			: x(x), y(y), r2(r*r), bounds(x-r, y-r, 2*r+1, 2*r+1) { }
 private:
 	int32_t x, y, r2;
+	C4Rect bounds;
+protected:
+	bool Check(C4Object *pObj) override;
+	C4Rect *GetBounds() override { return &bounds; }
+};
+
+class C4FindObjectCone : public C4FindObject
+{
+public:
+	C4FindObjectCone(int32_t x, int32_t y, int32_t r, int32_t angle, int32_t width, int32_t prec = 1)
+			: x(x), y(y), r2(r * r), cone_angle(angle % (360 * prec)), cone_width(width), prec_angle(prec), bounds(x - r, y - r, 2 * r + 1, 2 * r + 1) { }
+private:
+	int32_t x, y, r2, cone_angle, cone_width, prec_angle;
 	C4Rect bounds;
 protected:
 	bool Check(C4Object *pObj) override;

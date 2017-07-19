@@ -158,6 +158,18 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		}
 		return new C4FindObjectDistance(x, y, Data[3].getInt());
 	}
+	
+	case C4FO_Cone:
+	{
+		int32_t x = Data[1].getInt();
+		int32_t y = Data[2].getInt();
+		if (context)
+		{
+			x += context->GetX();
+			y += context->GetY();
+		}
+		return new C4FindObjectCone(x, y, Data[3].getInt(), Data[4].getInt(), Data[5].getInt(), Data[6].getInt());
+	}
 
 	case C4FO_OCF:
 		return new C4FindObjectOCF(Data[1].getInt());
@@ -666,6 +678,16 @@ bool C4FindObjectOnLine::Check(C4Object *pObj)
 bool C4FindObjectDistance::Check(C4Object *pObj)
 {
 	return (pObj->GetX() - x) * (pObj->GetX() - x) + (pObj->GetY() - y) * (pObj->GetY() - y) <= r2;
+}
+
+bool C4FindObjectCone::Check(C4Object *pObj)
+{
+	bool in_circle = (pObj->GetX() - x) * (pObj->GetX() - x) + (pObj->GetY() - y) * (pObj->GetY() - y) <= r2;
+	int32_t obj_angle = Angle(x, y, pObj->GetX(), pObj->GetY(), prec_angle);
+	bool in_cone = Inside(obj_angle, cone_angle - cone_width, cone_angle + cone_width) ||
+		Inside(obj_angle - 360 * prec_angle, cone_angle - cone_width, cone_angle + cone_width) ||
+		Inside(obj_angle + 360 * prec_angle, cone_angle - cone_width, cone_angle + cone_width);
+	return in_circle && in_cone;
 }
 
 bool C4FindObjectOCF::Check(C4Object *pObj)

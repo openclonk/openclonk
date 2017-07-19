@@ -45,6 +45,7 @@
       <funclink>Find_AtPoint</funclink>
       <funclink>Find_OnLine</funclink>
       <funclink>Find_Category</funclink>
+      <funclink>Find_Cone</funclink>
       <funclink>Find_Container</funclink>
       <funclink>Find_Distance</funclink>
       <funclink>Find_Exclude</funclink>
