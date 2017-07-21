@@ -1491,9 +1491,15 @@ ENDIF()
 
 # When cross-compiling, import c4group from a native build
 IF(CMAKE_CROSSCOMPILING)
-	SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
-	INCLUDE(${IMPORT_NATIVE_TOOLS})
-	SET(native_c4group native-c4group)
+	FIND_PROGRAM(C4GROUP_PATH NAMES c4group PATHS)
+
+	IF (NOT C4GROUP_PATH)
+		SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
+		INCLUDE(${IMPORT_NATIVE_TOOLS})
+		SET(native_c4group native-c4group)
+	ELSE()
+		SET(native_c4group ${C4GROUP_PATH})
+	ENDIF()
 ELSE()
 	SET(native_c4group c4group)
 ENDIF()
