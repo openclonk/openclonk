@@ -124,7 +124,7 @@ public func IsStructureWithoutBasement()
 public func AddBasement()
 {
 	var offset = this->~GetBasementOffset() ?? [0, 0];
-	var basement = CreateObject(Basement, offset[0], GetBottom() + 4 + offset[1]);
+	var basement = CreateObject(this->~GetBasementID() ?? Basement, offset[0], GetBottom() + 4 + offset[1]);
 	basement->SetParent(this);
 	return;
 }
