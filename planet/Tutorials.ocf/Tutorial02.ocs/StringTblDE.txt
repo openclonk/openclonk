@@ -9,17 +9,17 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialIntro=Es scheint als wäre Rüdiger wieder verloren gegangen! Wipfe verbringen normalerweise einige Zeit unter der Erde, weil sie es lieben zu graben. Vielleicht findest du ihn da. Laufe jetzt erstmal nach rechts.
+MsgTutorialIntro=Es scheint, als wäre Rüdiger wieder verloren gegangen! Wipfe verbringen normalerweise einige Zeit unter der Erde, weil sie es lieben zu graben. Vielleicht findest du ihn da. Laufe jetzt erstmal nach rechts.
 MsgTutorialShovel=Da drüben ist eine Schaufel! Clonks brauchen für einige Aufgaben Werkzeuge - die Schaufel wird zum Graben benutzt. Nimm die Schaufel, indem du dich vor sie stellst und [%s] drückst.
-MsgTutorialInventory=Du hast die Schaufel in deinem Inventar oben am Bildschirm! Der ausgewählte Gegenstand ist hervorgehoben und kann benutzt werden. Um andere Gegenstände auszuwählen, drücke die zugehörige Zahl (%s) oder benutze %s um das Inventar durchzublättern.
-MsgTutorialDigging=Jetzt da du die Schaufel hast, benutze sie auch! Halte [%s] gedrückt um den ausgewählten Gegenstand zu benutzen. Wähle die Schaufel aus und du kannst anfangen in die Richtung zu graben, in die du zeigst.
-MsgTutorialFirestones=Pass auf! Das rötliche Material voraus ist gefährlich! Wenn du da durchgräbst, erscheinen Feuersteine. Diese sind zerbrechlich und hochexplosiv, doch zum Glück sammelt dein Clonk sie automatisch auf, wenn du sie freigräbst. Nimm ein paar mit - die werden noch nützlich.
+MsgTutorialInventory=Du hast die Schaufel in deinem Inventar oben am Bildschirm! Der ausgewählte Gegenstand ist hervorgehoben und kann benutzt werden. Um andere Gegenstände auszuwählen, drücke die zugehörige Zahl (%s) oder benutze [%s], um das Inventar durchzublättern.
+MsgTutorialDigging=Jetzt da du die Schaufel hast, benutze sie auch! Halte [%s] gedrückt, um den ausgewählten Gegenstand zu benutzen. Wähle die Schaufel aus, und du kannst anfangen, in die Richtung des Mauszeigers zu graben.
+MsgTutorialFirestones=Pass auf! Das rötliche Material voraus ist gefährlich! Wenn du da durchgräbst, erscheinen Feuersteine. Diese sind zerbrechlich und hochexplosiv, doch zum Glück sammelt dein Clonk sie automatisch auf, wenn du sie freigräbst. Nimm ein paar mit - die werden noch nützlich sein.
 MsgTutorialFoundWipf=Du hast Rüdiger fast gefunden, aber es ist ein wenig Stein im Weg. Stein kann nicht durchgraben, sondern nur gesprengt werden. Wirf einige Feuersteine auf den Stein, aber halte Abstand! Klick [%s] in die Richtung, in die du werfen willst.
 MsgTutorialBlastedRock=Gut gemacht, du hast den Stein gesprengt und deinen Freund gefunden. Er scheint erschöpft, also bring ihm etwas zu essen. Sammel etwa ein paar Pilze aus den Höhlen hier. Um einen Gegenstand abzulegen, drücke [%s] oder die entsprechende Tastenkombinationen für die anderen Inventarplätzen. Lege das Essen erst ab wenn du vor Rüdiger stehst.
-MsgTutorialFedWipf=Das hat ihm gut getan! Und schon ist er wieder weg... Versuch auch einen Weg heraus zu finden.
-MsgTutorialDigOutLoam=Hier lang! Die orangenen Objekte vor dir sind Lehmklumpen. Grab ein paar aus und nimm sie mit, denn Lehm kann benutzt werden um Brücken aus Erde zu bauen. Halte dafür [%s] gedrückt um eine Brücke in die Richtung des Mauszeigers zu bauen.
-MsgTutorialFragileBridge=Warte mal... Die Brücke sieht sehr zerbrechlich aus und unter ihr ist gefährliche Säure. Du solltest deinen Wipf vorschicken um die Brücke zu testen.
-MsgTutorialMakeLoamBridge=Ich hab's gesagt: Sie war zerbrechlich! Zum Glück hat dein Freund es geschafft. Benutze die Lehmklumpen um eine Brücke zu bauen und über die Säure zu deinem felligen Freund zu kommen. Wähle einen Lehmklumpen aus und halte [%s] gedrückt um eine Lehmbrücke in die Richtung des Mauszeigers zu bauen.
+MsgTutorialFedWipf=Das hat ihm gut getan! Und schon ist er wieder weg... Versuch auch, einen Weg heraus zu finden.
+MsgTutorialDigOutLoam=Hier lang! Die orangenen Objekte vor dir sind Lehmklumpen. Grab ein paar aus und nimm sie mit, denn Lehm kann benutzt werden um Brücken aus Erde zu bauen. Halte dafür [%s] gedrückt, um eine Brücke in die Richtung des Mauszeigers zu bauen.
+MsgTutorialFragileBridge=Warte mal... Die Brücke sieht sehr zerbrechlich aus, und unter ihr ist gefährliche Säure. Du solltest deinen Wipf vorschicken, um die Brücke zu testen.
+MsgTutorialMakeLoamBridge=Ich hab's gesagt: Sie war zerbrechlich! Zum Glück hat dein Freund es geschafft. Benutze die Lehmklumpen, um eine Brücke zu bauen und über die Säure zu deinem felligen Freund zu kommen. Wähle einen Lehmklumpen aus und halte [%s] gedrückt, um eine Lehmbrücke in die Richtung des Mauszeigers zu bauen.
 MsgTutorialCompleted=Klasse! Lass uns mit dem nächsten Tutorial weitermachen.
 
 # Wipf name

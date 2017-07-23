@@ -10,7 +10,7 @@ MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutorialWelcome=Willkommen bei OpenClonk! Dies ist dein Clonk, den du mit den %s Tasten steuern kannst. Klicke auf 'nächste Nachricht' um den nächsten Hinweis zu lesen und klicke auf mein Portrait für den aktuellen Hinweis.
-MsgTutorialHUD=Oben links siehst du alle deine Clonks. Oben rechts siehst du wie viele Clunker du besitzt (wenn du welche hast) und dein aktuelles Ziel (klicke auf das Symbol für mehr Info).
+MsgTutorialHUD=Oben links siehst du alle deine Clonks. Oben rechts siehst du, wie viele Clunker du besitzt, wenn Clunker für das Szenario wichtig sind, und dein aktuelles Ziel (klicke auf das Symbol für mehr Info).
 MsgTutorialFollowFriend=Folge deinem Freund Rüdiger über die Brücke und durch die Hindernisse vor dir, während ich die Steuerung eines Clonks erkläre. Bewege dich ein bisschen, indem du [%s] und [%s] um zu laufen oder [%s] um zu springen drückst.
 MsgTutorialScaleWall=Hier musst du klettern um weiterzukommen. Laufe dazu einfach gegen die Wand bis sich dein Clonk festhält. Dann kannst du hoch- und runterklettern, indem du [%s] bzw. [%s] gedrückt hälst.
 MsgTutorialHangle=Clonks sind unglaublich vielseitig und geschickt: Sobald ein Clonk die Decke berührt hält er sich von alleine fest. Springe an diese Decke und hangle dich auf die andere Seite. Lasse dann mit [%s] los.
