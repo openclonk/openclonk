@@ -21,7 +21,7 @@ public func Construction()
 		sibling = TransformBone(bone, transformation, 1, Anim_Const(1000), sibling);
 	}
 	
-	AddTimer("DoWaterdrop", RandomX(36 * 10, 36 * 40));
+	AddRainDropEffect(nil, RandomX(80, 120), "Water", RandomX(1, 5));
 }
 
 private func Hit()
@@ -177,7 +177,7 @@ private func DrawWaterSource()
 	}
 }
 
-private func DoWaterdrop()
+public func OnRainDropCreated()
 {
 	if (Random(9)) return;
 	Sound("Liquids::Waterdrop*");

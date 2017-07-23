@@ -79,3 +79,72 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 
 	return;
 }
+
+/**
+Creates a raindrop effect upon the the calling object.
+@par duration The duration of the effect. Default nil = unlimited.
+@par interval The interval in which the raindrops are created. Default 10.
+@material The material of which the drops are created. Default "Water".
+@strength Specifies how many drops are created in a call.
+@return The created effect.
+*/
+
+global func AddRainDropEffect(int duration, int interval, string material, int strength)
+{
+	if(!this || GetType(this) != C4V_C4Object) FatalError(Format("AddRainDropEffect needs to be called from object context, not from %v", this));
+	
+	return this->CreateEffect(FxRainDrop, 1, interval ?? 10, duration, material, strength);
+}
+
+static const FxRainDrop = new Effect {
+	duration = nil,
+	material = nil,
+	strength = nil,
+	particle_cache = {},
+	
+	Construction = func(int duration, string material, int strength) {
+		this.duration = duration;
+		this.material = material ?? "Water";
+		this.strength = strength ?? 1;
+	},
+	
+	Timer = func(int time) {
+		if (!this.Target || (this.duration != nil && time > this.duration)) return FX_Execute_Kill;
+		
+		if (this.Target->GBackSemiSolid()) return;
+		
+		var con = this.Target->GetCon();
+		var wdt = this.Target->GetDefWidth() * con / 500;
+		var hgt = this.Target->GetDefHeight() * con / 700;
+		var particle_name;
+		
+		var color = Cloud->GetMaterialColor(this.material);
+		
+		if (this.particle_cache.color != color)
+		{
+			this.particle_cache.color = color;
+			this.particle_cache.particle = Particles_Rain(color);
+			this.particle_cache.particle.Size = 5;
+		}
+		
+		if (this.material == "Lava" || this.material == "DuroLava")
+			particle_name = "RaindropLava";
+		
+		else
+			particle_name = "Raindrop";
+		
+		this.Target->CreateParticle(
+			particle_name,
+			PV_Random(-wdt, wdt),
+			PV_Random(-hgt, hgt),
+			PV_Random(-5, 5),
+			PV_Random(10, 30),
+			PV_Random(200, 300),
+			this.particle_cache.particle,
+			this.strength
+			);
+		
+		this.Target->~OnRainDropCreated(this);
+		return FX_OK;
+	}
+};
