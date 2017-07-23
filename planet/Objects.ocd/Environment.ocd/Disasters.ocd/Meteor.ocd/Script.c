@@ -57,8 +57,6 @@ private func FxIntMeteorControlStart(object target, effect fx, temp, id spawn_id
 	fx.spawn_amount = spawn_amount;
 }
 
-
-
 private func FxIntMeteorControlTimer(object target, effect fx, int time)
 {
 	if (Random(100) < fx.chance && !Random(10))
@@ -101,7 +99,7 @@ public func Launch(int x, int y, int size, int xdir, int ydir, id spawn_id, int 
 		return false;
 	// Allow for some more effects (overloadable).
 	this->OnAfterLaunch();
-	return true;
+	return this;
 }
 
 public func OnAfterLaunch()
@@ -194,7 +192,7 @@ protected func FxIntMeteorTimer(object target, effect fx, bool temp)
 	if (size > 10 && !Random(5))
 		DoCon(-1);
 
-	return 1;
+	return FX_OK;
 }
 
 // Scenario saving
@@ -244,7 +242,8 @@ protected func Hit(int xdir, int ydir)
 public func OnLightningStrike(object lightning, int damage)
 {
 	SetController(lightning->GetController());
-	Hit();
+	if (GetDamage() + damage >= 6)
+		Hit();
 	return;
 }
 

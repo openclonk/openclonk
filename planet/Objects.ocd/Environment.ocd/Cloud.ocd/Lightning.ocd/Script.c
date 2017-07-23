@@ -8,6 +8,7 @@
 local xdir, ydir;
 local xdev, ydev;
 local strength;
+local launcher;
 
 // Creates a lightning bolt at the specified location. 
 // x: X coordinate, always global.
@@ -21,14 +22,15 @@ local strength;
 global func LaunchLightning(int x, int y, int strength, int xdir, int ydir, int xdev, int ydev, bool no_sound)
 {
 	var lightning = CreateObject(Lightning, x - GetX(), y - GetY());
-	return lightning && lightning->Launch(x, y, strength, xdir, ydir, xdev, ydev, no_sound);
+	return lightning && lightning->Launch(x, y, strength, xdir, ydir, xdev, ydev, no_sound, this);
 }
 
-public func Launch(int x, int y, int to_strength, int to_xdir, int to_ydir, int to_xdev, int to_ydev, bool no_sound)
+public func Launch(int x, int y, int to_strength, int to_xdir, int to_ydir, int to_xdev, int to_ydev, bool no_sound, to_launcher)
 {
 	xdir = to_xdir; ydir = to_ydir;
 	xdev = to_xdev; ydev = to_ydev;
 	strength = to_strength ?? 20;
+	launcher = to_launcher;
 	AddVertex(x - GetX(), y - GetY());
 	AddEffect("LightningMove", this, 1, 1, this, nil, !no_sound);
 	return true;
@@ -53,6 +55,18 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 	var newx = oldx + xdir + xdev - Random(2 * xdev);
 	var newy = oldy + ydir + ydev - Random(2 * ydev);
 	
+	// Check if a lightning attractor is in range.
+	var range = Distance(0, 0, xdir, ydir);
+	var cone_angle = Angle(0, 0, xdir, ydir);
+	var cone_width = 30 + Distance(0, 0, xdev, ydev);
+	var attractor = FindObject(Find_Cone(3 * range / 2, cone_angle, cone_width, oldx, oldy), Find_Property("IsLightningAttractor"), Find_Exclude(launcher), Find_NoContainer(), Sort_Distance(oldx, oldy));
+	if (attractor)
+	{
+		// Move to lightning attractor.
+		newx = attractor->GetX() - GetX();
+		newy = attractor->GetY() - GetY();
+	}
+	
 	// Check if lightning hits landscape, and adapt new coordinates.
 	// Open question: should it penetrate liquids?
 	var strike_solid = PathFree2(oldx + GetX(), oldy + GetY(), newx + GetX(), newy + GetY());
@@ -72,25 +86,28 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 	this.LightOffset = [newx, newy];
 	
 	// Strike objects on the line: only objects that are vehicle, items, alive or structures.
-	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle | C4D_Structure), Find_Func("IsLightningAttractor", this)), Find_NoContainer()))
+	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle | C4D_Structure), Find_Func("IsLightningStrikable", this)), Find_Exclude(launcher), Find_NoContainer()))
 	{
 		var damage = 3 + strength / 10;
 		// Check if the object rejects a lightning strike, also check if object still exists because an object
 		// at the same location may have been struck first and have removed nearby objects.
 		if (obj && !obj->~RejectLightningStrike(this, damage))
 		{
+			var is_attractor = obj.IsLightningAttractor;
 			// Do a callback notifying the object that it has been struck by lightning.
 			obj->~OnLightningStrike(this, damage);
-			if (!obj)
-				continue;
-			// Damage or hurt objects. Lightning strikes may have a controller, thus pass this for kill tracing.	
-			if (obj->GetOCF() & OCF_Alive)
-				Punch(obj, damage);
-			else
-				obj->DoDamage(damage, FX_Call_DmgScript, GetController());
+			// Damage or hurt objects. Lightning strikes may have a controller, thus pass this for kill tracing.
+			if (obj)
+			{
+				if (obj->GetOCF() & OCF_Alive)
+					Punch(obj, damage);
+				else
+					obj->DoDamage(damage, FX_Call_DmgScript, GetController());
+			}
 			// Reduce strength of the lightning if an object is struck.
 			strength -= damage;
-			if (strength <= 0)
+			// Remove lightning if too weak or an attractor has been struck.
+			if (strength <= 0 || is_attractor)
 			{
 				RemoveObject();
 				return FX_OK;

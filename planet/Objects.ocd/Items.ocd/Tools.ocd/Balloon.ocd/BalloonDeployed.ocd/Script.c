@@ -267,7 +267,7 @@ public func OnProjectileHit(object projectile)
 	RemoveObject();
 }
 
-public func IsLightningAttractor(object lightning) { return true; }
+public func IsLightningStrikable(object lightning) { return true; }
 
 // Could store and restore the deployed balloon, but all the
 // dependencies to be set when recreating this mid-animation
