@@ -193,9 +193,9 @@ public func RejectCollect(id def, object obj)
 	var max = definition->GetComponent(def);
 	
 	// not a component?
-	if(max == 0)
+	if (max == 0)
 		return true;
-	if(ContentsCount(def) < max)
+	if (ContentsCount(def) < max)
 		return false;
 	
 	return true;
@@ -279,11 +279,9 @@ private func GetMissingComponents()
 
 private func StartConstructing(int by_player)
 {
-	if(!definition)
+	if (!definition || !full_material)
 		return;
-	if(!full_material)
-		return;
-	
+
 	is_constructing = true;
 	
 	// find all objects on the bottom of the area that are not stuck
@@ -295,109 +293,118 @@ private func StartConstructing(int by_player)
 	// uncancellable sites (for special game goals) are forced and don't do checks either
 	var site;
 	var checks = !definition->~IsBelowSurfaceConstruction() && !no_cancel;
-	if(!(site = CreateConstruction(definition, 0, 0, GetOwner(), 1, checks, checks)))
+	if (!(site = CreateConstruction(definition, 0, 0, GetOwner(), 1, checks, checks)))
 	{
 		// spit out error message. This could happen if the landscape changed in the meantime
 		// a little hack: the message would immediately vanish because this object is deleted. So, instead display the
 		// message on one of the contents.
-		if(Contents(0))
-			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil,nil, RGB(255,0,0));
+		if (Contents(0))
+		{
+			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil,nil, RGB(255, 0, 0));
+		}
 		Deconstruct();
 		return;
 	}
 	
-	if(direction)
+	if (direction)
+	{
 		site->SetDir(direction);
+	}
 	// Inform about sticky building
 	if (stick_to)
+	{
 		site->CombineWith(stick_to);
+	}
 	
 	// Object provides custom construction effects?
 	if (!site->~DoConstructionEffects(this))
 	{
 		// If not: Autoconstruct 2.0!
-		Schedule(site, "DoCon(2)",1,50);
-		Schedule(this,"RemoveObject()",1);
+		Schedule(site, "DoCon(2)", 1, 50);
+		Schedule(this, "RemoveObject()", 1);
 		Global->ScheduleCall(nil, Global.GameCallEx, 51, 1, "OnConstructionFinished", site, by_player);
 		site->Sound("Structures::FinishBuilding");
 	}
 	
 	// clean up stuck objects
-	for(var o in lying_around)
+	for (var thing in lying_around)
 	{
-		if (!o) continue;
+		if (!thing) continue;
 		
 		var x, y;
-		var dif = 0;
+		var moved = 0;
 		
-		x = o->GetX();
-		y = o->GetY();
+		x = thing->GetX();
+		y = thing->GetY();
 		
 		// move living creatures upwards till they stand on top.
-		if(o->GetOCF() & OCF_Alive)
+		if(thing->GetOCF() & OCF_Alive)
 		{
-			while(o->GetContact(-1, CNAT_Bottom))
+			while (thing->GetContact(-1, CNAT_Bottom))
 			{
 				// only up to 20 pixel
-				if(dif > 20)
+				if (moved > 20)
 				{
-					o->SetPosition(x,y);
+					thing->SetPosition(x, y);
 					break;
 				}
 				
-				dif++;
-				o->SetPosition(x, y-dif);
+				moved++;
+				thing->SetPosition(x, y - moved);
 			}
 		}
-		else {
-			while(o->Stuck())
+		else
+		{
+			while (thing->Stuck())
 			{
 				// only up to 20 pixel
-				if(dif > 20)
+				if (moved > 20)
 				{
-					o->SetPosition(x,y);
+					thing->SetPosition(x, y);
 					break;
 				}
 				
-				dif++;
-				o->SetPosition(x, y-dif);
+				moved++;
+				thing->SetPosition(x, y - moved);
 			}
 		}
 	}
 }
 
-func TakeConstructionMaterials(object from_clonk)
+private func TakeConstructionMaterials(object from_clonk)
 {
 	// check for material
-	var comp, index = 0;
-	var mat;
+	var component, index = 0;
+	var materials;
 	var w = definition->GetDefWidth() + 10;
 	var h = definition->GetDefHeight() + 10;
 
-	while (comp = definition->GetComponent(nil, index))
+	while (component = definition->GetComponent(nil, index))
 	{
 		// find material
-		var count_needed = definition->GetComponent(comp);
+		var count_needed = definition->GetComponent(component);
 		index++;
 		
-		mat = CreateArray();
+		materials = CreateArray();
 		// 1. look for stuff in the clonk
-		mat[0] = FindObjects(Find_ID(comp), Find_Container(from_clonk));
+		materials[0] = FindObjects(Find_ID(component), Find_Container(from_clonk));
 		// 2. look for stuff lying around
-		mat[1] = from_clonk->FindObjects(Find_ID(comp), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
+		materials[1] = from_clonk->FindObjects(Find_ID(component), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
 		// 3. look for stuff in nearby lorries/containers
 		var i = 2;
-		for(var cont in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
-			mat[i] = FindObjects(Find_ID(comp), Find_Container(cont));
+		for(var container in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
+			materials[i] = FindObjects(Find_ID(component), Find_Container(container));
 		// move it
-		for(var mat2 in mat)
+		for (var material_list in materials)
 		{
-			for(var o in mat2)
+			for (var material in material_list)
 			{
-				if(count_needed <= 0)
+				if (count_needed <= 0)
+				{
 					break;
-				o->Exit();
-				o->Enter(this);
+				}
+				material->Exit();
+				material->Enter(this);
 				count_needed--;
 			}
 		}
