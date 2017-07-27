@@ -178,7 +178,7 @@ protected func Destruction(...)
 
 protected func DeepBreath()
 {
-	Sound("Breath");
+	Sound("Clonk::Action::Breathing");
 }
 
 public func Incineration()
