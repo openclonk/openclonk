@@ -206,26 +206,35 @@ public func OpenConstructionMenu(object clonk)
 	var item_size = 4; 
 	
 	// Construction menu proplist.
-	menu =
-	{
-		Target = menu_target,
-		Decoration = GUI_MenuDeco,
-		BackgroundColor = 0xee403020
-	};
-	
+	menu = CreateConstructionMenuBackground(menu_target);
 	menu.structures = CreateStructureGrid(clonk, item_size);
 	menu.struct_info = CreateStructureInfo();
-	menu.separator =
-	{
-		Left = "60%",
-		Right = "60%+0.5em",
-		BackgroundColor = {Std = 0x50888888}	
-	};
+	menu.separator = CreateConstructionMenuSeparator();
 
 	// Menu ID.
 	menu_id = GuiOpen(menu);
 	clonk->SetMenu(menu_id);
 	return;
+}
+
+public func CreateConstructionMenuBackground(object target)
+{
+	return
+	{
+		Target = target,
+		Decoration = GUI_MenuDeco,
+		BackgroundColor = 0xee403020
+	};
+}
+
+public func CreateConstructionMenuSeparator()
+{
+	return 
+	{
+		Left = "60%",
+		Right = "60%+0.5em",
+		BackgroundColor = {Std = 0x50888888}	
+	};
 }
 
 public func CreateStructureGrid(object clonk, int item_size)
