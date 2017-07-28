@@ -1179,16 +1179,22 @@ func HandleRollOnHit(int iXSpeed, int iYSpeed)
 		var looking_right = GetDir() == DIR_Right;
 		if ((x_movement > 0 && looking_right) || (x_movement < 0 && !looking_right))
 		{
-			DoRoll();
+			DoRoll(true);
 		}
 		else // Force kneel-down when hitting the ground at high velocity.
+		{
 			DoKneel(true);
+		}
 	}
 }
 
 
 // Start a roll into the current direction.
-func DoRoll()
+// The parameter should distinguish between
+// rolling from a fall, and rolling while
+// running, so that you can implement
+// custom effects for both version, if desired
+func DoRoll(bool is_falling)
 {
 	SetAction("Roll");
 }
