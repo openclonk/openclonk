@@ -122,16 +122,21 @@ void C4StartupModsListEntry::FromXML(const TiXmlElement *xml)
 	
 	// Additional meta-information.
 	C4GUI::Icons icon = C4GUI::Icons::Ico_None;
-	const TiXmlElement *hashNode = xml->FirstChildElement("hash");
-	std::string hashSHA1 = "";
-	if (hashNode)
-		hashSHA1 = getSafeStringValue(hashNode, "sha1", "");
 
 	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
 	{
+		const auto node = filenode->Clone();
+		const TiXmlHandle nodeHandle(node);
+
 		const std::string handle = getSafeStringValue(filenode, "file", "");
 		const std::string name = getSafeStringValue(filenode, "name", "");
 		const std::string lengthString = getSafeStringValue(filenode, "length", "");
+
+		std::string hashSHA1 = "";
+		const auto hashNode = nodeHandle.FirstChild("metadata").FirstChild("hash").Node();
+		if (hashNode != nullptr) {
+			hashSHA1 = getSafeStringValue(hashNode->ToElement(), "sha1", "");
+		}
 
 		if (handle.empty() || name.empty() || lengthString.empty()) continue;
 		size_t length{ 0 };
