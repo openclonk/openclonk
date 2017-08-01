@@ -125,8 +125,8 @@ void C4StartupModsListEntry::FromXML(const TiXmlElement *xml)
 
 	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
 	{
-		const auto node = filenode->Clone();
-		const TiXmlHandle nodeHandle(node);
+		// We guarantee that we do not modify the handle below, thus the const_cast is safe.
+		const TiXmlHandle nodeHandle(const_cast<TiXmlNode*> (static_cast<const TiXmlNode*> (filenode)));
 
 		const std::string handle = getSafeStringValue(filenode, "file", "");
 		const std::string name = getSafeStringValue(filenode, "name", "");
@@ -632,6 +632,9 @@ void C4StartupModsDownloader::RequestConfirmation()
 
 void C4StartupModsDownloader::ExecuteRequestConfirmation()
 {
+	// Disable callback during execution.
+	progressCallback = nullptr;
+
 	// To be able to check against the installed mods, the discovery needs to be finished.
 	parent->modsDiscovery.WaitForDiscoveryFinished();
 
