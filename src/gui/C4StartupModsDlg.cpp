@@ -157,7 +157,7 @@ void C4StartupModsListEntry::FromXML(const TiXmlElement *xml)
 			if (name.find(".ocd") != std::string::npos)
 				icon = C4GUI::Icons::Ico_Definition;
 			else if (name.find(".ocs") != std::string::npos)
-				icon = C4GUI::Icons::Ico_Chart;
+				icon = C4GUI::Icons::Ico_Gfx;
 			else if (name.find(".ocf") != std::string::npos)
 				icon = C4GUI::Icons::Ico_Ex_GameList;
 		}
