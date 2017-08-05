@@ -31,6 +31,80 @@
 #include <regex>
 const std::string C4StartupModsDlg::baseServerURL = "frustrum.pictor.uberspace.de/larry/api/";
 
+// Used to parse values of subelements from an XML element.
+std::string getSafeStringValue(const TiXmlElement *xml, const char *childName, std::string fallback = "")
+{
+	const TiXmlElement *child = xml->FirstChildElement(childName);
+	if (child == nullptr) return fallback;
+	const char *nodeText = child->GetText();
+	if (nodeText == nullptr) return fallback;
+	const std::string value(nodeText);
+	if (!value.empty()) return value;
+	return fallback;
+};
+
+ModXMLData::ModXMLData(const TiXmlElement *xml, bool isLocalData)
+{
+
+	// Remember whether the loaded the element from a local file, because we
+	// then still have to do a query if we want to update.
+	isLoadedFromLocal = isLocalData;
+	// Remember the XML element in case we need to pretty-print it later.
+	originalXMLElement = xml->Clone();
+
+	id = getSafeStringValue(xml, "_id", "");
+
+	title = getSafeStringValue(xml, "title", "???");
+	description = getSafeStringValue(xml, "description");
+	if (!description.empty())
+	{
+		if (description.size() > 200)
+		{
+			description.resize(200);
+			description += "...";
+		}
+	}
+
+	// Additional meta-information.
+
+	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
+	{
+		// We guarantee that we do not modify the handle below, thus the const_cast is safe.
+		const TiXmlHandle nodeHandle(const_cast<TiXmlNode*> (static_cast<const TiXmlNode*> (filenode)));
+
+		const std::string handle = getSafeStringValue(filenode, "file", "");
+		const std::string name = getSafeStringValue(filenode, "name", "");
+		const std::string lengthString = getSafeStringValue(filenode, "length", "");
+
+		std::string hashSHA1 = "";
+		const auto hashNode = nodeHandle.FirstChild("metadata").FirstChild("hash").Node();
+		if (hashNode != nullptr)
+		{
+			hashSHA1 = getSafeStringValue(hashNode->ToElement(), "sha1", "");
+		}
+
+		if (handle.empty() || name.empty() || lengthString.empty()) continue;
+		size_t length{ 0 };
+
+		try
+		{
+			length = std::stoi(lengthString);
+		}
+		catch (...)
+		{
+			continue;
+		}
+
+		files.emplace_back(FileInfo{ handle, length, name, hashSHA1 });
+	}
+}
+
+ModXMLData::~ModXMLData()
+{
+	delete originalXMLElement;
+	originalXMLElement = nullptr;
+}
+
 // ----------- C4StartupNetListEntry -----------------------------------------------------------------------
 
 C4StartupModsListEntry::C4StartupModsListEntry(C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBefore, C4StartupModsDlg *pModsDlg)
@@ -89,83 +163,24 @@ C4StartupModsListEntry::~C4StartupModsListEntry()
 	ClearRef();
 }
 
-void C4StartupModsListEntry::FromXML(const TiXmlElement *xml)
+void C4StartupModsListEntry::FromXML(const TiXmlElement *xml, bool isLocalData)
 {
-	// Remember the XML element in case we need to pretty-print it later.
-	originalXMLElement = xml->Clone();
+	modXMLData = std::make_unique<ModXMLData>(xml, isLocalData);
 
-	auto getSafeStringValue = [](const TiXmlElement *xml, const char *childName, std::string fallback="")
-	{
-		const TiXmlElement *child = xml->FirstChildElement(childName);
-		if (child == nullptr) return fallback;
-		const char *nodeText = child->GetText();
-		if (nodeText == nullptr) return fallback;
-		const std::string value(nodeText);
-		if (!value.empty()) return value;
-		return fallback;
-	};
-
-	id = getSafeStringValue(xml, "_id", "");
-	
-	title = getSafeStringValue(xml, "title", "???");
 	sInfoTextRight[0].Format(LoadResStr("IDS_MODS_METAINFO"), getSafeStringValue(xml, "downloads", "0").c_str());
-	sInfoText[0].Format(LoadResStr("IDS_MODS_TITLE"), title.c_str(), getSafeStringValue(xml, "author", "???").c_str());
-	description = getSafeStringValue(xml, "description");
-	if (!description.empty())
+	sInfoText[0].Format(LoadResStr("IDS_MODS_TITLE"), modXMLData->title.c_str(), getSafeStringValue(xml, "author", "???").c_str());
+
+	for (auto &file : modXMLData->files)
 	{
-		if (description.size() > 200)
-		{
-			description.resize(200);
-			description += "...";
-		}
-	}
-	
-	// Additional meta-information.
-	C4GUI::Icons icon = C4GUI::Icons::Ico_None;
-
-	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
-	{
-		// We guarantee that we do not modify the handle below, thus the const_cast is safe.
-		const TiXmlHandle nodeHandle(const_cast<TiXmlNode*> (static_cast<const TiXmlNode*> (filenode)));
-
-		const std::string handle = getSafeStringValue(filenode, "file", "");
-		const std::string name = getSafeStringValue(filenode, "name", "");
-		const std::string lengthString = getSafeStringValue(filenode, "length", "");
-
-		std::string hashSHA1 = "";
-		const auto hashNode = nodeHandle.FirstChild("metadata").FirstChild("hash").Node();
-		if (hashNode != nullptr) {
-			hashSHA1 = getSafeStringValue(hashNode->ToElement(), "sha1", "");
-		}
-
-		if (handle.empty() || name.empty() || lengthString.empty()) continue;
-		size_t length{ 0 };
-
-		try
-		{
-			length = std::stoi(lengthString);
-		}
-		catch (...)
-		{
-			continue;
-		}
-
-		files.emplace_back(FileInfo { handle, length, name, hashSHA1});
-
-		if (icon == C4GUI::Icons::Ico_None)
-		{
-			if (name.find(".ocd") != std::string::npos)
-				icon = C4GUI::Icons::Ico_Definition;
-			else if (name.find(".ocs") != std::string::npos)
-				icon = C4GUI::Icons::Ico_Gfx;
-			else if (name.find(".ocf") != std::string::npos)
-				icon = C4GUI::Icons::Ico_Ex_GameList;
-		}
-	}
-	
-	if (icon != C4GUI::Icons::Ico_None)
-	{
-		defaultIcon = icon;
+		const auto &name = file.name;
+		if (name.find(".ocd") != std::string::npos)
+			defaultIcon = C4GUI::Icons::Ico_Definition;
+		else if (name.find(".ocs") != std::string::npos)
+			defaultIcon = C4GUI::Icons::Ico_Gfx;
+		else if (name.find(".ocf") != std::string::npos)
+			defaultIcon = C4GUI::Icons::Ico_Ex_GameList;
+		else continue;
+		break;
 	}
 }
 
@@ -225,8 +240,6 @@ void C4StartupModsListEntry::ClearRef()
 	InvalidateStatusIcons();
 	fIsEnabled = true;
 	fIsImportant = false;
-	delete originalXMLElement;
-	originalXMLElement = nullptr;
 }
 
 bool C4StartupModsListEntry::Execute()
@@ -299,13 +312,13 @@ void C4StartupModsListEntry::UpdateInstalledState(C4StartupModsLocalModDiscovery
 
 	isInstalled = modInfo != nullptr;
 
-	std::string fullDescription = description;
+	std::string fullDescription = modXMLData->description;
 
 	if (modInfo != nullptr)
 	{
 		pIcon->SetIcon(C4GUI::Icons::Ico_Save);
 
-		fullDescription = std::string("<c 559955>") + LoadResStr("IDS_MODS_INSTALLED") + ".</c> " + description;
+		fullDescription = std::string("<c 559955>") + LoadResStr("IDS_MODS_INSTALLED") + ".</c> " + modXMLData->description;
 	}
 	else
 	{
@@ -436,12 +449,7 @@ C4StartupModsDownloader::C4StartupModsDownloader(C4StartupModsDlg *parent, const
 {
 	this->parent = parent;
 
-	auto mod = std::make_unique<ModInfo>(entry->GetID(), entry->GetTitle(), entry->GetXMLNode()->Clone());
-	for (auto & fileInfo : entry->GetFileInfos())
-	{
-		mod->files.emplace_back(ModInfo::FileInfo{ fileInfo.handle, fileInfo.name, fileInfo.size, fileInfo.sha1});
-	}
-	items.emplace_back(std::move(mod));
+	items.emplace_back(std::move(std::make_unique<ModInfo>(entry)));
 
 	// Register timer.
 	Application.Add(this);
@@ -453,30 +461,80 @@ C4StartupModsDownloader::~C4StartupModsDownloader()
 	CancelRequest();
 }
 
+C4GUI::ProgressDialog * C4StartupModsDownloader::GetProgressDialog()
+{
+	if (!progressDialog)
+	{
+		progressDialog = new C4GUI::ProgressDialog("", LoadResStr("IDS_MODS_SEARCHING"), 100, 0, C4GUI::Icons::Ico_Save);
+		parent->GetScreen()->ShowRemoveDlg(progressDialog);
+		progressDialog->SetDelOnClose(false);
+	}
+	return progressDialog;
+}
+
 void C4StartupModsDownloader::CancelRequest()
 {
 	for (auto & mod : items)
 		mod->CancelRequest();
 	items.resize(0);
 
+	if (postMetadataClient.get())
+	{
+		Application.InteractiveThread.RemoveProc(postMetadataClient.get());
+		postMetadataClient.reset();
+	}
+
 	if (progressDialog)
 		progressDialog->Close(true);
 	delete progressDialog;
 	progressDialog = nullptr;
+
+	progressCallback = nullptr;
 }
 
 void C4StartupModsDownloader::OnConfirmInstallation(C4GUI::Element *element)
 {
+	CStdLock lock(&guiThreadResponse);
+
 	assert(!items.empty());
 	assert(!items[0]->files.empty());
 
-	std::string message = std::string("Downloading and installing ") + items[0]->name + "...";
-	progressDialog = new C4GUI::ProgressDialog(message.c_str(), "Downloading...", 100, 0, C4GUI::Icons::Ico_Save);
-	parent->GetScreen()->ShowRemoveDlg(progressDialog);
-	progressDialog->SetDelOnClose(false);
+	GetProgressDialog()->SetTitle(LoadResStr("IDS_MODS_INSTALLANDDOWNLOAD"));
+	GetProgressDialog()->SetMessage("");
+	GetProgressDialog()->SetProgress(0);
 	GetProgressDialog()->SetVisibility(true);
 
 	progressCallback = std::bind(&C4StartupModsDownloader::ExecuteCheckDownloadProgress, this);
+}
+
+C4StartupModsDownloader::ModInfo::ModInfo(const C4StartupModsListEntry *entry)
+{
+	FromXMLData(entry->GetModXMLData());
+}
+
+void C4StartupModsDownloader::ModInfo::FromXMLData(const ModXMLData &xmlData)
+{
+	Clear();
+	modID = xmlData.id;
+	name = xmlData.title;
+	originalXMLNode = xmlData.originalXMLElement->Clone();
+	hasOnlyCachedInformation = xmlData.isLoadedFromLocal;
+
+	for (const auto & fileInfo : xmlData.files)
+	{
+		files.emplace_back(ModInfo::FileInfo{ fileInfo.handle, fileInfo.name, fileInfo.size, fileInfo.sha1 });
+		requiredFilenames.insert(fileInfo.name);
+	}
+}
+
+void C4StartupModsDownloader::ModInfo::Clear()
+{
+	CancelRequest();
+	files.resize(0);
+	requiredFilenames.clear();
+	downloadedBytes = totalBytes = 0;
+	delete originalXMLNode;
+	originalXMLNode = nullptr;
 }
 
 void C4StartupModsDownloader::ModInfo::CancelRequest()
@@ -559,6 +617,27 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 					originalXMLNode->Print(metadata, 0);
 					std::fclose(metadata);
 					successful = true;
+
+					// Now clean up all files that don't belong to this mod.
+					// This can be necessary if e.g. filenames change over updates.
+					for (DirectoryIterator iter(path.c_str()); *iter; ++iter)
+					{
+						const std::string filename(*iter);
+						// No folders.
+						if (DirectoryExists(filename.c_str())) continue;
+						// Safety: touch only a special set of file endings.
+						const std::string::size_type typeIndex = filename.rfind(".");
+						if (typeIndex == std::string::npos) continue;
+						const std::string ending(filename.substr(typeIndex + 1));
+						if (ending != "ocd" && ending != "ocf" && ending != "ocs") continue;
+						// In the required files anyway?
+						const std::string::size_type leafIndex = filename.rfind(DirectorySeparator);
+						std::string leaf(filename);
+						if (leafIndex != std::string::npos)
+							leaf = filename.substr(leafIndex + 1);
+						if (requiredFilenames.count(leaf) > 0) continue;
+						EraseFile(filename.c_str());
+					}
 				}
 			}
 			return;
@@ -626,6 +705,103 @@ void C4StartupModsDownloader::ExecuteCheckDownloadProgress()
 	}
 }
 
+void C4StartupModsDownloader::ExecuteMetadataUpdate()
+{
+	if (!progressDialog) return;
+
+	if (!progressDialog->Execute() || progressDialog->IsAborted())
+	{
+		CancelRequest();
+		return;
+	}
+
+	// Start querying new metadata?
+	if (!postMetadataClient)
+	{
+		// Find first mod that requires an update.
+		for (auto &mod : items)
+		{
+			if (!mod->RequiresMetadataUpdate()) continue;
+			
+			StdStrBuf progressMessage;
+			progressMessage.Format(LoadResStr("IDS_MODS_INSTALL_UPDATEMETADATA_FOR"), mod->name.c_str());
+			progressDialog->SetMessage(progressMessage.getData());
+
+			postMetadataClient = std::make_unique<C4Network2HTTPClient>();
+
+			if (!postMetadataClient->Init() || !postMetadataClient->SetServer((C4StartupModsDlg::baseServerURL + "items/" + mod->modID).c_str()))
+			{
+				assert(false);
+				return;
+			}
+			postMetadataClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);
+
+			// Do the actual request.
+			Application.InteractiveThread.AddProc(postMetadataClient.get());
+			postMetadataClient->Query(nullptr, false); // Empty query.
+			return;
+		}
+		// Nothing to be updated found? Great, give execution back.
+		progressCallback = std::bind(&C4StartupModsDownloader::ExecuteRequestConfirmation, this);
+		return;
+	}
+
+	// We are already running a query!
+	// Check whether the data has arrived yet.
+	if (!postMetadataClient->isBusy())
+	{
+		if (!postMetadataClient->isSuccess())
+		{
+			Log(postMetadataClient->GetError());
+			// Destroy client and cancel.
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
+			CancelRequest();
+			return;
+		}
+
+		TiXmlDocument xmlDocument;
+		xmlDocument.Parse(postMetadataClient->getResultString());
+
+		if (xmlDocument.Error())
+		{
+			Log(xmlDocument.ErrorDesc());
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
+			CancelRequest();
+			return;
+		}
+		const char * resourceElementName = "resource";
+		const TiXmlElement *root = xmlDocument.RootElement();
+		assert(strcmp(root->Value(), resourceElementName) == 0);
+
+		// Re-use the parsing from the list entries.
+		ModXMLData modXMLData(root, false);
+
+		// Find the mod matching the id from the metadata.
+		size_t foundIdx = 0;
+		for (;foundIdx < items.size(); ++foundIdx)
+		{
+			auto &mod = items[foundIdx];
+			if (mod->modID != modXMLData.id) continue;
+			mod->FromXMLData(modXMLData);
+			break;
+		}
+
+		progressDialog->SetProgress(100 * foundIdx / items.size());
+
+		// Somehow, the matching mod could not be found. That should not happen.
+		if (foundIdx == items.size())
+		{
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
+			assert(false);
+			CancelRequest();
+			return;
+		}
+
+		Application.InteractiveThread.RemoveProc(postMetadataClient.get());
+		postMetadataClient.reset();
+	}
+}
+
 void C4StartupModsDownloader::RequestConfirmation()
 {
 	progressCallback = std::bind(&C4StartupModsDownloader::ExecuteRequestConfirmation, this);
@@ -636,6 +812,14 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	// Disable callback during execution.
 	progressCallback = nullptr;
 
+	// In case some of the mods need an information update, do that first.
+	for (auto &mod : items)
+	{
+		if (!mod->RequiresMetadataUpdate()) continue;
+		progressCallback = std::bind(&C4StartupModsDownloader::ExecuteMetadataUpdate, this);
+		GetProgressDialog()->SetTitle(LoadResStr("IDS_MODS_INSTALL_UPDATEMETADATA"));
+		return;
+	}
 	// To be able to check against the installed mods, the discovery needs to be finished.
 	parent->modsDiscovery.WaitForDiscoveryFinished();
 
@@ -707,6 +891,7 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_ALREADYINSTALLED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 		else
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_NODATA"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		CancelRequest();
 		return;
 	}
 
@@ -960,13 +1145,13 @@ void C4StartupModsDlg::ClearList()
 	}
 }
 
-void C4StartupModsDlg::AddToList(std::vector<const TiXmlElement*> elements)
+void C4StartupModsDlg::AddToList(std::vector<const TiXmlElement*> elements, bool isLocalData)
 {
 	const bool modsDiscoveryFinished = modsDiscovery.IsDiscoveryFinished();
 	for (const auto e : elements)
 	{
 		C4StartupModsListEntry *pEntry = new C4StartupModsListEntry(pGameSelList, nullptr, this);
-		pEntry->FromXML(e);
+		pEntry->FromXML(e, isLocalData);
 
 		if (modsDiscoveryFinished && modsDiscovery.IsModInstalled(pEntry->GetID()))
 		{
@@ -1011,7 +1196,7 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 			const TiXmlElement *root = xmlDocument.RootElement();
 			elements.emplace_back(static_cast<TiXmlElement*>(root->Clone()));
 		}
-		AddToList(elements);
+		AddToList(elements, true);
 		// We took ownership, clear it.
 		for (auto & e : elements)
 			delete e;
@@ -1061,7 +1246,7 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 			std::vector<const TiXmlElement*> elements;
 			for (const TiXmlElement* e = root->FirstChildElement(resourceElementName); e != NULL; e = e->NextSiblingElement(resourceElementName))
 				elements.push_back(e);
-			AddToList(elements);
+			AddToList(elements, false);
 
 			// Nothing found? Notify!
 			if (elements.empty())

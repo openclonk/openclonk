@@ -31,6 +31,29 @@ class TiXmlNode;
 class C4StartupModsDlg;
 class C4StartupModsListEntry;
 
+// The data that can be parsed from downloaded/cached XML files.
+struct ModXMLData
+{
+	struct FileInfo
+	{
+		std::string handle;
+		size_t size;
+		std::string name;
+		std::string sha1;
+	};
+	std::vector<FileInfo> files;
+	std::string title;
+	std::string id;
+	std::string description;
+
+	ModXMLData(const TiXmlElement *xml, bool isLocalData = false);
+	~ModXMLData();
+
+	// Used to write the element to a file in case the mod gets installed.
+	TiXmlNode *originalXMLElement{ nullptr };
+	bool isLoadedFromLocal{ false };
+};
+
 class C4StartupModsLocalModDiscovery : public StdThread
 {
 protected:
@@ -118,26 +141,33 @@ private:
 		std::string name;
 
 		ModInfo() = default;
-		ModInfo(std::string modID, std::string name, TiXmlNode *xml) : modID(modID), name(name), originalXMLNode(xml) {}
-		~ModInfo() { CancelRequest(); }
+		ModInfo(const C4StartupModsListEntry *entry);
+		~ModInfo() { Clear(); }
 
 		std::vector<FileInfo> files;
+		// All filenames are held separately, too, because the 'files' list will be manipulated.
+		std::set<std::string> requiredFilenames;
 
+		void Clear();
+		void FromXMLData(const ModXMLData &entry);
 		void CheckProgress();
 		void CancelRequest();
 
 		std::tuple<size_t, size_t> GetProgress() const { return std::make_tuple(downloadedBytes, totalBytes); }
 		bool WasSuccessful() const { return successful; }
 		bool IsBusy() const { return postClient.get() != nullptr; }
+		bool RequiresMetadataUpdate() const { return hasOnlyCachedInformation; }
 		std::string GetErrorMessage() const { if (errorMessage.empty()) return ""; return name + ": " + errorMessage; }
 		std::string GetPath();
 	private:
 		bool successful{ false };
+		// Whether the information might be outdated and needs an update prior to hash-checking.
+		bool hasOnlyCachedInformation{ false };
 		size_t downloadedBytes{ 0 };
 		size_t totalBytes{ 0 };
 		std::unique_ptr<C4Network2HTTPClient> postClient;
 		std::string errorMessage;
-		TiXmlNode *originalXMLNode;
+		TiXmlNode *originalXMLNode{ nullptr };
 	};
 private:
 	std::vector<std::unique_ptr<ModInfo>> items;
@@ -145,16 +175,22 @@ private:
 	C4StartupModsDlg * parent;
 
 	C4GUI::ProgressDialog *progressDialog = nullptr;
-
+	C4GUI::ProgressDialog * GetProgressDialog();
+	// For sync the GUI thread (e.g. abort button) with the background thread.
+	CStdCSec guiThreadResponse;
 	void CancelRequest();
 	void ExecuteCheckDownloadProgress();
 	void ExecuteRequestConfirmation();
+
+	void ExecuteMetadataUpdate();
+	std::unique_ptr<C4Network2HTTPClient> postMetadataClient;
 
 	std::function<void(void)> progressCallback;
 
 	// Called by CStdTimerProc.
 	bool Execute(int, pollfd *) override
 	{
+		CStdLock lock(&guiThreadResponse);
 		if (CheckAndReset() && progressCallback)
 			progressCallback();
 		return true;
@@ -209,22 +245,12 @@ private:
 	void UpdateEntrySize();
 	void UpdateText(); // strings to labels
 					   // Additional information that is required for downloading.
-	struct FileInfo
-	{
-		std::string handle;
-		size_t size;
-		std::string name;
-		std::string sha1;
-	};
-	std::vector<FileInfo> files;
-	std::string title;
-	std::string id;
-	std::string description;
+	
 	C4GUI::Icons defaultIcon{ C4GUI::Icons::Ico_Resource };
 
 	bool isInstalled;
-	// Used to write the element to a file in case the mod gets installed.
-	TiXmlNode *originalXMLElement{ nullptr };
+	std::unique_ptr<ModXMLData> modXMLData;
+
 protected:
 	virtual int32_t GetListItemTopSpacing() { return fIsCollapsed ? 5 : 10; }
 	virtual void DrawElement(C4TargetFacet &cgo);
@@ -232,7 +258,8 @@ protected:
 	C4GUI::Element* GetNextLower(int32_t sortOrder); // returns the element before which this element should be inserted
 
 public:
-	void FromXML(const TiXmlElement *xml);
+	void FromXML(const TiXmlElement *xml, bool isLocalData = false);
+	const ModXMLData &GetModXMLData() const { return *modXMLData.get(); }
 	void ClearRef();    // del any ref/refclient/error data
 
 	bool Execute(); // update stuff - if false is returned, the item is to be removed
@@ -252,11 +279,12 @@ public:
 																		   //bool IsSameAddress(const C4Network2Reference *pRef2); // check whether there is at least one matching address (address and port)
 	bool KeywordMatch(const char *szMatch); // check whether any of the reference contents match a given keyword
 
-	const TiXmlNode *GetXMLNode() const { return originalXMLElement; }
-	std::string GetTitle() const { return title; }
-	const std::vector<FileInfo> & GetFileInfos() const { return files; }
-	std::string GetID() const { return id; }
+	const TiXmlNode *GetXMLNode() const { return modXMLData->originalXMLElement; }
+	std::string GetTitle() const { return modXMLData->title; }
+	const std::vector<ModXMLData::FileInfo> & GetFileInfos() const { return modXMLData->files; }
+	std::string GetID() const { return modXMLData->id; }
 	bool IsInstalled() const { return isInstalled; }
+	bool IsLoadedFromLocal() const { return modXMLData->isLoadedFromLocal; }
 };
 
 // startup dialog: Network game selection
@@ -317,7 +345,7 @@ private:
 	void QueryModList();
 	void ClearList();
 	void UpdateList(bool fGotReference = false, bool onlyWithLocalFiles = false);
-	void AddToList(std::vector<const TiXmlElement*> elements);
+	void AddToList(std::vector<const TiXmlElement*> elements, bool isLocalData);
 	void UpdateCollapsed();
 	void UpdateSelection(bool fUpdateCollapsed);
 	void CheckRemoveMod();
