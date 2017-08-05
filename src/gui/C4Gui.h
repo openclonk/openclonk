@@ -2368,6 +2368,7 @@ namespace C4GUI
 	{
 	protected:
 		ProgressBar *pBar; // progress bar component
+		Label *pLblMessage; // message label
 
 		const char *GetID() override { return "ProgressDialog"; }
 
@@ -2376,6 +2377,7 @@ namespace C4GUI
 
 		void SetProgress(int32_t iToProgress) { pBar->SetProgress(iToProgress); } // change progress
 		bool OnEnter() override { return false; } // don't close on Enter!
+		void SetMessage(const char *szMessage);
 	};
 
 
