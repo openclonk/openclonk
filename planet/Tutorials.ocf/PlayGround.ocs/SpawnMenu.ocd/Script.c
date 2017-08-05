@@ -367,7 +367,7 @@ private func GetVegetation()
 	var def;
 	while (def = GetDefinition(index++))
 	{
-		if (!def->~IsPlant())
+		if (!def->~IsPlant() || def == Library_Plant)
 			continue;
 		PushBack(vegetation, def);	
 	}
