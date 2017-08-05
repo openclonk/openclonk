@@ -22,6 +22,15 @@ protected func Initialize()
 	PlaceBatches([Firestone], 5, 100, 15);
 	PlaceBatches([Dynamite, Dynamite, Dynamite, DynamiteBox], 3, 50, 6);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
+	// Some dead trees.
+	Tree_Coniferous_Burned->Place(4);	
+	Tree_Coniferous2_Burned->Place(2);	
+	Tree_Coniferous3_Burned->Place(2);	
+	Tree_Coniferous4_Burned->Place(2);
+	// At night with stars.
+	Time->Init();
+	Time->SetTime(24 * 60);
+	Time->SetCycleSpeed(0);
 	// Starting chest
 	var start_chest = CreateObjectAbove(Chest, w*2/5, h*94/100);
 	if (start_chest)
@@ -38,6 +47,7 @@ protected func Initialize()
 	// Schedule script to update volcano speed multiplier
 	
 	var fx_volcano = new Effect {
+		Name = "FxVolcano",
 		Timer = Scenario.VolcanoTimer
 	};
 	

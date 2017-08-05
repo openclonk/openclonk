@@ -50,6 +50,11 @@ protected func Initialize()
 	PlaceBatches([Firestone], 5, 100, 15);
 	PlaceBatches([Dynamite, Dynamite, Dynamite, DynamiteBox], 3, 50, 6);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
+	// Some dead trees.
+	Tree_Coniferous_Burned->Place(4);	
+	Tree_Coniferous2_Burned->Place(2);	
+	Tree_Coniferous3_Burned->Place(2);	
+	Tree_Coniferous4_Burned->Place(2);
 	// Starting chest
 	var start_chest = CreateObjectAbove(Chest, LandscapeWidth()*2/5, LandscapeHeight()*97/100);
 	if (start_chest)
@@ -59,9 +64,6 @@ protected func Initialize()
 		start_chest->CreateContents(Firestone,3);
 		start_chest->CreateContents(DynamiteBox,2);
 	}
-	// Create Disasters.
-	//Earthquake->SetChance(2); - this is so random...not fair without relaunches
-	
 	return;
 }
 
