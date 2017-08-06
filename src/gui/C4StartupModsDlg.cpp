@@ -474,6 +474,7 @@ void C4StartupModsDownloader::OnConfirmInstallation(C4GUI::Element *element)
 	progressDialog = new C4GUI::ProgressDialog(message.c_str(), "Downloading...", 100, 0, C4GUI::Icons::Ico_Save);
 	parent->GetScreen()->ShowRemoveDlg(progressDialog);
 	progressDialog->SetDelOnClose(false);
+	GetProgressDialog()->SetVisibility(true);
 
 	progressCallback = std::bind(&C4StartupModsDownloader::ExecuteCheckDownloadProgress, this);
 }
@@ -695,6 +696,10 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 			}
 		}
 	}
+
+	// Hide progress bar, so it's not behind the modal dialogs.
+	if (progressDialog)
+		progressDialog->SetVisibility(false);
 
 	if (totalSize == 0)
 	{
