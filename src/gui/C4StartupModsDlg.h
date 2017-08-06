@@ -70,6 +70,8 @@ public:
 	{
 		std::string id;
 		std::string path;
+		// Name parsed from the directory name.
+		std::string name;
 	};
 
 	bool IsDiscoveryFinished() const { return discoveryFinished; }
@@ -92,10 +94,10 @@ public:
 		CStdLock lock(&modInformationModification);
 		modsInformation.erase(id);
 	}
-	ModsInfo & AddMod(const std::string &id, const std::string &path)
+	ModsInfo & AddMod(const std::string &id, const std::string &path, const std::string &name)
 	{
 		CStdLock lock(&modInformationModification);
-		modsInformation[id] = ModsInfo{ id, path };
+		modsInformation[id] = ModsInfo{ id, path, name };
 		return modsInformation[id];
 	}
 
@@ -142,6 +144,8 @@ private:
 
 		ModInfo() = default;
 		ModInfo(const C4StartupModsListEntry *entry);
+		// From minimal information, will require an update.
+		ModInfo(std::string modID, std::string name);
 		~ModInfo() { Clear(); }
 
 		std::vector<FileInfo> files;
@@ -197,6 +201,7 @@ private:
 	}
 
 public:
+	void AddModToQueue(std::string modID, std::string name);
 	void RequestConfirmation();
 	void OnConfirmInstallation(C4GUI::Element *element);
 	// callback from C4Network2ReferenceClient
@@ -259,7 +264,7 @@ protected:
 
 public:
 	void FromXML(const TiXmlElement *xml, bool isLocalData = false);
-	const ModXMLData &GetModXMLData() const { return *modXMLData.get(); }
+	const ModXMLData &GetModXMLData() const { assert(modXMLData); return *modXMLData.get(); }
 	void ClearRef();    // del any ref/refclient/error data
 
 	bool Execute(); // update stuff - if false is returned, the item is to be removed
@@ -279,12 +284,12 @@ public:
 																		   //bool IsSameAddress(const C4Network2Reference *pRef2); // check whether there is at least one matching address (address and port)
 	bool KeywordMatch(const char *szMatch); // check whether any of the reference contents match a given keyword
 
-	const TiXmlNode *GetXMLNode() const { return modXMLData->originalXMLElement; }
-	std::string GetTitle() const { return modXMLData->title; }
-	const std::vector<ModXMLData::FileInfo> & GetFileInfos() const { return modXMLData->files; }
-	std::string GetID() const { return modXMLData->id; }
+	const TiXmlNode *GetXMLNode() const { return GetModXMLData().originalXMLElement; }
+	std::string GetTitle() const { return GetModXMLData().title; }
+	const std::vector<ModXMLData::FileInfo> & GetFileInfos() const { return GetModXMLData().files; }
+	std::string GetID() const { return GetModXMLData().id; }
 	bool IsInstalled() const { return isInstalled; }
-	bool IsLoadedFromLocal() const { return modXMLData->isLoadedFromLocal; }
+	bool IsLoadedFromLocal() const { return GetModXMLData().isLoadedFromLocal; }
 };
 
 // startup dialog: Network game selection
@@ -302,6 +307,10 @@ private:
 	//C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnUpdate;
 	C4GUI::Button *btnInstall, *btnRemove;
 	C4GUI::Edit *pSearchFieldEdt;
+	struct _filters
+	{
+		C4GUI::CheckBox *showCompatible{ nullptr };
+	} filters;
 	C4StartupModsListEntry *pMasterserverClient; // set if masterserver query is enabled: Checks clonk.de for new games
 	bool fIsCollapsed; // set if the number of games in the list requires them to be displayed in a condensed format
 	// Whether the last query was successful. No re-fetching will be done.
@@ -330,6 +339,7 @@ protected:
 	void OnInstallModBtn(C4GUI::Control *btn) { DoOK(); }
 	void OnShowInstalledBtn(C4GUI::Control *btn) { UpdateList(false, true); }
 	void OnUninstallModBtn(C4GUI::Control *btn) { CheckRemoveMod(); }
+	void OnUpdateAllBtn(C4GUI::Control *btn) { CheckUpdateAll(); }
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(true); }
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
 	void OnSortComboFill(C4GUI::ComboBox_FillCB *pFiller);
@@ -350,6 +360,7 @@ private:
 	void UpdateSelection(bool fUpdateCollapsed);
 	void CheckRemoveMod();
 	void OnConfirmRemoveMod(C4GUI::Element *element);
+	void CheckUpdateAll();
 	//void AddReferenceQuery(const char *szAddress, C4StartupNetListEntry::QueryType eQueryType); // add a ref searcher entry and start searching
 
 	// Set during update information retrieval.

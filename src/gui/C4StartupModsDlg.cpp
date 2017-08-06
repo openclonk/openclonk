@@ -435,8 +435,8 @@ void C4StartupModsLocalModDiscovery::ExecuteDiscovery()
 		if (idSeparatorPosition == std::string::npos) continue;
 		const std::string id = leaf.substr(0, idSeparatorPosition);
 		if (id.empty()) continue;
-
-		AddMod(id, filename);
+		const std::string name = leaf.substr(idSeparatorPosition + 1);
+		AddMod(id, filename, name);
 	}
 }
 
@@ -449,14 +449,21 @@ C4StartupModsDownloader::C4StartupModsDownloader(C4StartupModsDlg *parent, const
 {
 	this->parent = parent;
 
-	items.emplace_back(std::move(std::make_unique<ModInfo>(entry)));
+	if (entry != nullptr)
+		items.emplace_back(std::move(std::make_unique<ModInfo>(entry)));
 
 	// Register timer.
 	Application.Add(this);
 }
 
+void C4StartupModsDownloader::AddModToQueue(std::string modID, std::string name)
+{
+	items.emplace_back(std::move(std::make_unique<ModInfo>(modID, name)));
+}
+
 C4StartupModsDownloader::~C4StartupModsDownloader()
 {
+	CStdLock lock(&guiThreadResponse);
 	Application.Remove(this);
 	CancelRequest();
 }
@@ -510,6 +517,14 @@ void C4StartupModsDownloader::OnConfirmInstallation(C4GUI::Element *element)
 C4StartupModsDownloader::ModInfo::ModInfo(const C4StartupModsListEntry *entry)
 {
 	FromXMLData(entry->GetModXMLData());
+}
+
+C4StartupModsDownloader::ModInfo::ModInfo(std::string modID, std::string name)
+{
+	Clear();
+	this->modID = modID;
+	this->name = name;
+	this->hasOnlyCachedInformation = true;
 }
 
 void C4StartupModsDownloader::ModInfo::FromXMLData(const ModXMLData &xmlData)
@@ -650,7 +665,7 @@ void C4StartupModsDownloader::ExecuteCheckDownloadProgress()
 	// Not even progressing yet?
 	if (progressDialog == nullptr) return;
 
-	if (!progressDialog->Execute() || progressDialog->IsAborted())
+	if (progressDialog->IsAborted())
 	{
 		CancelRequest();
 		return;
@@ -667,10 +682,11 @@ void C4StartupModsDownloader::ExecuteCheckDownloadProgress()
 		size_t downloaded, total;
 		std::tie(downloaded, total) = mod->GetProgress();
 		
+		downloadedBytes += downloaded;
+		totalBytes += total;
+
 		if (mod->IsBusy())
 		{
-			downloadedBytes += downloaded;
-			totalBytes += total;
 			anyNotFinished = true;
 		}
 	}
@@ -687,7 +703,7 @@ void C4StartupModsDownloader::ExecuteCheckDownloadProgress()
 		{
 			if (mod->WasSuccessful())
 			{
-				parent->modsDiscovery.AddMod(mod->modID, mod->GetPath());
+				parent->modsDiscovery.AddMod(mod->modID, mod->GetPath(), mod->name);
 				parent->QueueSyncWithDiscovery();
 			}
 			const std::string modError = mod->GetErrorMessage();
@@ -709,7 +725,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 {
 	if (!progressDialog) return;
 
-	if (!progressDialog->Execute() || progressDialog->IsAborted())
+	if (progressDialog->IsAborted())
 	{
 		CancelRequest();
 		return;
@@ -826,11 +842,13 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	// Calculate total filesize to be downloaded.
 	size_t totalSize{ 0 };
 	bool atLeastOneFileExisted = false;
+	std::string allMissingModNames;
 
 	for (auto &mod : items)
 	{
 		const bool modInstalled = parent->modsDiscovery.IsModInstalled(mod->modID);
 		const std::string modBasePath = modInstalled ? parent->modsDiscovery.GetModInformation(mod->modID).path : "";
+		bool modRequiresFileDownload = false;
 
 		for (auto fileIterator = mod->files.begin(); fileIterator != mod->files.end();)
 		{
@@ -877,7 +895,12 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 			{
 				totalSize += file.size;
 				++fileIterator;
+				modRequiresFileDownload = true;
 			}
+		}
+		if (modRequiresFileDownload)
+		{
+			allMissingModNames += (allMissingModNames.empty() ? "\"" : ", \"") + mod->name + "\"";
 		}
 	}
 
@@ -907,7 +930,7 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	}
 
 	StdStrBuf confirmationMessage;
-	confirmationMessage.Format(LoadResStr("IDS_MODS_INSTALL_CONFIRM"), items[0]->name.c_str(), filesizeString.c_str());
+	confirmationMessage.Format(LoadResStr("IDS_MODS_INSTALL_CONFIRM"), allMissingModNames.c_str(), filesizeString.c_str());
 	auto *callbackHandler = new C4GUI::CallbackHandler<C4StartupModsDownloader>(this, &C4StartupModsDownloader::OnConfirmInstallation);
 	auto *dialog = new C4GUI::ConfirmationDialog(confirmationMessage.getData(), "Confirm installation", callbackHandler, C4GUI::MessageDialog::btnYesNo, false, C4GUI::Icons::Ico_Save);
 	parent->GetScreen()->ShowRemoveDlg(dialog);
@@ -1014,13 +1037,29 @@ C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")),
 	btnInstall->SetToolTip(LoadResStr("IDS_MODS_INSTALL_DESC"));
 	AddElement(btnRemove = new C4GUI::CallbackButton<C4StartupModsDlg>(LoadResStr("IDS_MODS_UNINSTALL"), caButtons.GetFromLeft(iButtonWidth), &C4StartupModsDlg::OnUninstallModBtn));
 	btnRemove->SetToolTip(LoadResStr("IDS_MODS_UNINSTALL_DESC"));
+	AddElement(btn = new C4GUI::CallbackButton<C4StartupModsDlg>(LoadResStr("IDS_MODS_UPDATEALL"), caButtons.GetFromLeft(iButtonWidth), &C4StartupModsDlg::OnUpdateAllBtn));
+	btn->SetToolTip(LoadResStr("IDS_MODS_UPDATEALL_DESC"));
 
-	// right button area
-	auto buttonShowInstalled = new C4GUI::CallbackButton<C4StartupModsDlg, C4GUI::IconButton>(C4GUI::Ico_Save, caConfigArea.GetFromTop(iIconSize, iIconSize), '\0', &C4StartupModsDlg::OnShowInstalledBtn);
+	// Left button area.
+	auto buttonShowInstalled = new C4GUI::CallbackButton<C4StartupModsDlg, C4GUI::IconButton>(C4GUI::Ico_Save, caLeftBtnArea.GetFromTop(iIconSize, iIconSize), '\0', &C4StartupModsDlg::OnShowInstalledBtn);
 	buttonShowInstalled->SetToolTip(LoadResStr("IDS_MODS_SHOWINSTALLED_DESC"));
 	buttonShowInstalled->SetText(LoadResStr("IDS_MODS_SHOWINSTALLED"));
 	AddElement(buttonShowInstalled);
 
+	// Right button area.
+	{
+		auto filterLabel = new C4GUI::Label(LoadResStr("IDS_MODS_FILTER"), caConfigArea.GetFromTop(iSearchHgt), ALeft, C4GUI_Caption2FontClr, &::GraphicsResource.CaptionFont);
+		AddElement(filterLabel);
+	}
+	{
+		CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
+		const char *szText = LoadResStr("IDS_MODS_FILTER_COMPATIBLE");
+		int iWdt = 100, iHgt = 12;
+		C4GUI::CheckBox::GetStandardCheckBoxSize(&iWdt, &iHgt, szText, pUseFont);
+		filters.showCompatible = new C4GUI::CheckBox(caConfigArea.GetFromTop(iHgt, iWdt), szText, true);
+		filters.showCompatible->SetToolTip(LoadResStr("IDS_MODS_FILTER_COMPATIBLE_DESC"));
+		AddElement(filters.showCompatible);
+	}
 	// initial focus
 	SetFocus(GetDlgModeFocusControl(), false);
 	
@@ -1085,8 +1124,9 @@ void C4StartupModsDlg::QueryModList()
 	C4StartupModsListEntry *infoEntry = new C4StartupModsListEntry(pGameSelList, nullptr, this);
 	infoEntry->MakeInfoEntry();
 
+	// First, construct the 'where' part of the query.
 	// Forward the filter-field to the server.
-	std::string searchQueryPostfix("");
+	std::string whereClauseContents = "";
 	if (pSearchFieldEdt->GetText())
 	{
 		std::string searchText(pSearchFieldEdt->GetText());
@@ -1095,16 +1135,28 @@ void C4StartupModsDlg::QueryModList()
 			// Sanity, escape quotes etc.
 			searchText = std::regex_replace(searchText, std::regex("\""), "\\\"");
 			searchText = std::regex_replace(searchText, std::regex("[ ]+"), "%20");
-			searchQueryPostfix = "?where={%22$text%22:{%22$search%22:%22" + searchText + "%22}}";
+			whereClauseContents += "%22$text%22:{%22$search%22:%22" + searchText + "%22}";
 		}
 	}
+	// Additional filter options set?
+	if (filters.showCompatible->GetChecked())
+	{
+		const std::string versionTag = std::string("%22OpenClonk%20") + std::to_string(C4XVER1) + std::string(".0%22");
+		whereClauseContents += std::string(whereClauseContents.empty() ? "" : ",") + "%22tags%22:" + versionTag;
+	}
+	// 'where' part is done; close it.
+	std::string searchQueryPostfix("?");
+	if (!whereClauseContents.empty())
+		searchQueryPostfix += "where={" + whereClauseContents + "}&";
 
 	// Forward the sorting criterion to the server.
 	if (!sortKeySuffix.empty())
 	{
-		searchQueryPostfix += std::string(searchQueryPostfix.empty() ? "?" : "&") + "sort=" + sortKeySuffix;
+		searchQueryPostfix += "sort=" + sortKeySuffix + "&";
 	}
 
+
+	Log(searchQueryPostfix.c_str());
 	// Initialize connection.
 	queryWasSuccessful = false;
 	postClient = std::make_unique<C4Network2HTTPClient>();
@@ -1349,6 +1401,35 @@ void C4StartupModsDlg::UpdateSelection(bool fUpdateCollapsed)
 void C4StartupModsDlg::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData)
 {
 	UpdateList(true);
+}
+
+void C4StartupModsDlg::CheckUpdateAll()
+{
+	// Wait for the discovery (in the same thread here).
+	modsDiscovery.WaitForDiscoveryFinished();
+	auto lock = std::move(modsDiscovery.Lock());
+
+	const auto & allInstalledMods = modsDiscovery.GetAllModInformation();
+
+	if (allInstalledMods.empty())
+	{
+		::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOUPDATEALL_NOMODS"), LoadResStr("IDS_MODS_NOUPDATEALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		return;
+	}
+
+	if (downloader.get() != nullptr)
+		downloader.reset();
+	downloader = std::make_unique<C4StartupModsDownloader>(this, nullptr);
+
+	for (const auto & pair : allInstalledMods)
+	{
+		const std::string &modID = pair.first;
+		const std::string &name = pair.second.name;
+
+		downloader->AddModToQueue(modID, name);
+	}
+
+	downloader->RequestConfirmation();
 }
 
 void C4StartupModsDlg::CheckRemoveMod()
