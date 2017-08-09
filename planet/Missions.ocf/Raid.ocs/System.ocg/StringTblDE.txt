@@ -1,4 +1,4 @@
-DoorUnlocked=Die Tür ist aufgeschlossen.
+﻿DoorUnlocked=Die Tür ist aufgeschlossen.
 DoorNoKey=Diese Tür braucht einen Schlüssel.
 DoorTooFar=Das Schloss ist zu weit weg.
 
@@ -162,7 +162,7 @@ Pyrit20=Puh, unter der Erde denke ich.
 
 Clonko1=Guten tag, Fremder. Was führt dich nach Wipfstadt?
 Clonko2=Ich bin auf der Suche nach Pyrit.
-Clonko3=Pyrit ist der Typ in rot, der dort auf das Katapult einhämmert. Ich frage mich, wozu er das wohl tut?
+Clonko3=Pyrit ist der Typ in blau, der dort auf das Katapult einhämmert. Ich frage mich, wozu er das wohl tut?
 Clonko4=Vielen Dank.
 
 Clonko100=Hi, hast du Öl für mich?
