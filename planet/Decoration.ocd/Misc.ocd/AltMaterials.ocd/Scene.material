@@ -235,10 +235,17 @@ material IdolGrayColor
 	{
 		pass
 		{
-			ambient 0.5 0.5 0.5 1.000000
-			diffuse 0.4 0.37 0.35 1.000000
-			specular 0.266613 0.266613 0.266613 1.000000 12.500000
-			emissive 0.000000 0.000000 0.000000 1.000000
+			ambient 0.9 0.9 0.9 1.0
+			diffuse 0.9 0.9 0.9 1.0
+			specular 0.9 0.9 0.9 1.0 12.5
+			emissive 0.0 0.0 0.0 1.0
+
+			texture_unit 
+			{
+				texture StoneIdol_UV.jpg
+				tex_address_mode wrap
+				filtering trilinear
+			}
 		}
 	}
 }
