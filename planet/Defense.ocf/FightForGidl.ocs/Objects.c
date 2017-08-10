@@ -12,8 +12,9 @@ func InitializeObjects()
 	
 	CreateObject(Rule_NoFriendlyFire, 0, 0);
 
-	g_statue = CreateObjectAbove(Idol, 632, 445);
+	g_statue = CreateObjectAbove(Idol, 632, 440);
 	g_statue.StaticSaveVar = "g_statue";
+	g_statue.Touchable = 0;
 
 	g_doorleft = CreateObjectAbove(StoneDoor, 495, 449);
 	g_doorleft->SetComDir(COMD_Down);
