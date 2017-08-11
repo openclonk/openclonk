@@ -16,3 +16,7 @@ PoseItemRightHighName=Item right hand, raised
 PoseItemRightHighHelp=The statue raises an item in its right hand.
 PoseItemCentralName=Item both hands
 PoseItemCentralHelp=The statue carries an item in both hands, in front of its torso.
+
+ChooseItemLeft=Left hand
+ChooseItemRight=Right hand
+ChooseItemHelp=Puts a decorative item into the hand of the statue.
