@@ -105,7 +105,7 @@ slice(material)
 	int matMapIx = f2i(landscapePx.r);
 	vec4 matMap = queryMatMap(2*matMapIx);
 	vec4 matMapX = queryMatMap(2*matMapIx+1);
-	float materialIx = f2i(matMap.a) / 256.0 * materialDepth;
+	float materialIx = int(matMap.a * (materialDepth - 1) + 0.5);
 	vec3 matEmit = matMap.rgb;
 	vec3 matSpot = matMapX.rgb * 255.9f / 16.0f;
 	float matAngle = matMapX.a;
@@ -117,7 +117,7 @@ slice(material)
 	int matMapIx2 = f2i(landscapePx2.r);
 	vec4 matMap2 = queryMatMap(2*matMapIx2);
 	vec4 matMapX2 = queryMatMap(2*matMapIx2+1);
-	float materialIx2 = f2i(matMap2.a) / 256.0 * materialDepth;
+	float materialIx2 = int(matMap2.a * (materialDepth - 1) + 0.5);
 	vec3 matEmit2 = matMap2.rgb;
 	vec3 matSpot2 = matMapX2.rgb * 255.9f / 16.0f;
 	float matAngle2 = matMapX2.a;
