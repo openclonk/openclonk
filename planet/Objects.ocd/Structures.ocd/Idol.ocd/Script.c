@@ -38,6 +38,7 @@ public func Definition(proplist type)
 			Name = "$ChoosePose$",
 			EditorHelp = "$ChoosePoseHelp$",
 			Options = [],
+			AsyncGet = "GetAction",
 			Set = "SetAction",
 		};
 	}
@@ -63,6 +64,7 @@ public func Definition(proplist type)
 			Name = "$ChooseItemLeft$",
 			EditorHelp = "$ChooseItemHelp$",
 			Options = [],
+			AsyncGet = "EditorGetItemLeft",
 			Set = "EditorSetItemLeft",
 		};
 	}
@@ -74,6 +76,7 @@ public func Definition(proplist type)
 			Name = "$ChooseItemRight$",
 			EditorHelp = "$ChooseItemHelp$",
 			Options = [],
+			AsyncGet = "EditorGetItemRight",
 			Set = "EditorSetItemRight",
 		};
 	}
@@ -150,6 +153,16 @@ private func EditorSetItem(proplist item_info, string parent_bone, proplist save
 	
 	save_settings.AttachedMesh = submesh;
 	save_settings.Choice = item_info;
+}
+
+private func EditorGetItemLeft()
+{
+	return this.EditorProps.IdolItemL.Choice;
+}
+
+private func EditorGetItemRight()
+{
+	return this.EditorProps.IdolItemR.Choice;
 }
 
 
