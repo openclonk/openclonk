@@ -1532,7 +1532,7 @@ if(NOT HEADLESS_ONLY)
 		# Install new files
 		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 		# Update the MIME cache -- this makes the clonk:// protocol handler actually work
-		install(CODE "execute_process(COMMAND update-desktop-database)")
+		install(CODE "message(\"Note: Run update-desktop-database to install clonk:// protocol handler\")")
 
 		# Install software center metadata
 		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.appdata.xml DESTINATION share/appdata)
