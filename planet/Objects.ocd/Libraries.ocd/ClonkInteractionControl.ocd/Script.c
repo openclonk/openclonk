@@ -74,7 +74,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	return inherited(plr, ctrl, x, y, strength, repeat, status, ...);
 }
 
-private func FxIntHighlightInteractionStart(object target, proplist fx, temp, proplist interaction, proplist interaction_help)
+private func FxIntHighlightInteractionStart(object target, proplist fx, temp, proplist interaction, int nr_interactions)
 {
 	if (temp) return;
 	fx.obj = interaction.interaction_object;
@@ -104,8 +104,11 @@ private func FxIntHighlightInteractionStart(object target, proplist fx, temp, pr
 	}
 	var multiple_interactions_hint = "";
 	if (fx.interaction.has_multiple_interactions)
-		multiple_interactions_hint = Format("<c 999999>[%s] $More$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Up, true, false));
-	fx.dummy->Message("@<c eeffee>%s</c>|%s|", fx.interaction_help.help_text, multiple_interactions_hint);
+		multiple_interactions_hint = Format("|<c 999999>[%s] $More$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Up, true, false));
+	var cycle_interactions_hint = "";
+	if (nr_interactions > 1)
+		cycle_interactions_hint = Format("|<c 999999>[%s/%s] $Cycle$..</c>", GetPlayerControlAssignment(GetOwner(), CON_Left, true, false), GetPlayerControlAssignment(GetOwner(), CON_Right, true, false));
+	fx.dummy->Message("@<c eeffee>%s</c>%s%s|", fx.interaction_help.help_text, multiple_interactions_hint, cycle_interactions_hint);
 
 	// Center dummy!
 	fx.dummy->SetVertexXY(0, fx.obj->GetVertex(0, VTX_X), fx.obj->GetVertex(0, VTX_Y));
@@ -187,8 +190,9 @@ private func SetNextInteraction(proplist to)
 		RemoveEffect(nil, this, e);
 	// And set & mark new one.
 	this.control.interaction_hud_controller->SetCurrentInteraction(to);
+	var interaction_cnt = GetLength(GetInteractableObjects());
 	if (to)
-		AddEffect("IntHighlightInteraction", this, 1, 2, this, nil, to);
+		AddEffect("IntHighlightInteraction", this, 1, 2, this, nil, to, interaction_cnt);
 }
 
 private func FindNextInteraction(proplist start_from, int x_dir)
@@ -386,7 +390,7 @@ func GetInteractableObjects(array sort)
 		Find_Or(Find_OCF(OCF_Grab), Find_Func("IsInteractable", this), Find_OCF(OCF_Entrance)),
 		Find_NoContainer(), Find_Layer(GetObjectLayer()),
 		sort);
-	for(var interactable in interactables)
+	for (var interactable in interactables)
 	{
 		var interaction_count = interactable->~GetInteractionCount() ?? 1;
 		var uses_container = interactable == Contained();
