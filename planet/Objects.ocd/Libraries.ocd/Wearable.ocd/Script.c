@@ -141,8 +141,9 @@ local Wearing = new Effect {
 
 		var attachment_bone = this.item->~GetWearBone() ?? "main";
 		var attachment_transform = this.item->~GetWearTransform(this.Target);
+		var attachment_flags = this.item->~GetWearFlags(); // does not need a default value
 
-		this.attach = Target->AttachMesh(this.item, this.identifier, attachment_bone, attachment_transform);
+		this.attach = Target->AttachMesh(this.item, this.identifier, attachment_bone, attachment_transform, attachment_flags);
 	},
 
 	Damage = func(int damage, int cause, int by_player) {
