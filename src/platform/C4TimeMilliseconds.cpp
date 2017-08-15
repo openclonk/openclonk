@@ -84,7 +84,7 @@ bool operator<( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )
 	{
 		return lhs.inf < rhs.inf;
 	}
-	return int32_t(lhs.time - rhs.time) < 0;
+	return lhs.time < rhs.time;
 }
 
 int32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs)
