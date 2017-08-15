@@ -581,6 +581,7 @@ public:
 	void Byte(uint8_t &rByte) override;
 	void Boolean(bool &rBool) override;
 	void Character(char &rChar) override;
+	void String(const char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) override;
 	void String(char **pszString, RawCompileType eType = RCT_Escaped) override;
 	void String(std::string &str, RawCompileType eType = RCT_Escaped) override;
