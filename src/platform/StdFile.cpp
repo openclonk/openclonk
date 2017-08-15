@@ -945,7 +945,8 @@ void DirectoryIterator::Read(const char *dirname)
 	assert(dirname && *dirname);
 	assert(p->files.empty());
 	std::string search_path(dirname);
-	search_path.push_back(DirectorySeparator);
+	if (!search_path.empty() && search_path.back() != DirectorySeparator)
+		search_path.push_back(DirectorySeparator);
 #ifdef WIN32
 	auto file = WIN32_FIND_DATAW();
 	HANDLE fh = FindFirstFileW(GetWideChar((search_path + '*').c_str()), &file);
