@@ -9,3 +9,5 @@ Found20=20 Goldbarren gefunden
 Achieve5=Bronzenen Barren erreicht!
 Achieve10=Silbernen Barren erreicht!
 Achieve20=Goldenen Barren erreicht!
+Guard=Wächter
+TreasureHunter=Schatzsucher

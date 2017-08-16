@@ -175,23 +175,30 @@ func InitializeObjects()
 	CreateObjectAbove(StrawMan, 1924, 439);
 	CreateObjectAbove(StrawMan, 2642, 705);
 	var Clonk001 = CreateObjectAbove(Clonk, 316, 431);
+	Clonk001->SetName("$Guard$");
 	AI->AddAI(Clonk001);
 	AI->SetHome(Clonk001, 315, 422, DIR_Left);
 	AI->SetGuardRange(Clonk001, 296, 322, 350, 140);
 	AI->SetEncounterCB(Clonk001, "EncounterCastle");
 	Clonk001->SetDir(DIR_Left);
+	
 	var Clonk002 = CreateObjectAbove(Clonk, 501, 454);
 	Clonk002->SetDir(DIR_Right);
+	Clonk002->SetName("$Guard$");
 	AI->AddAI(Clonk002);
 	AI->SetHome(Clonk002, 502, 445, DIR_Right);
 	AI->SetGuardRange(Clonk002, 460, 300, 200, 160);
 	AI->SetMaxAggroDistance(Clonk002, 60);
+	
 	var Clonk003 = CreateObjectAbove(Clonk, 534, 455);
+	Clonk003->SetName("$Guard$");
 	Clonk003->SetDir(DIR_Right);
 	AI->AddAI(Clonk003);
 	AI->SetGuardRange(Clonk003, 460, 300, 200, 160);
 	AI->SetMaxAggroDistance(Clonk003, 60);
+	
 	var Clonk004 = CreateObjectAbove(Clonk, 671, 638);
+	Clonk004->SetName("$TreasureHunter$");
 	Clonk004->SetDir(DIR_Right);
 	Clonk004->SetCon(150);
 	Clonk004->SetColor(0xffffa000);
@@ -199,9 +206,10 @@ func InitializeObjects()
 	AI->SetHome(Clonk004, 671, 629, DIR_Right);
 	AI->SetGuardRange(Clonk004, 580, 480, 320, 175);
 	AI->SetEncounterCB(Clonk004, "EncounterFinal");
+	
 	npc_dagobert = CreateObjectAbove(Clonk, 369, 1142);
 	npc_dagobert->SetColor(0xffa000);
-	npc_dagobert->SetName("Scrooge");
+	npc_dagobert->SetName("Dagobert");
 	npc_dagobert.StaticSaveVar = "npc_dagobert";
 	npc_dagobert->MakeInvincible();
 	npc_dagobert->SetDir(DIR_Left);
@@ -209,16 +217,19 @@ func InitializeObjects()
 	Clonk005->SetDir(DIR_Right);
 	Clonk005->SetColor(0x808080);
 	Clonk005->SetName("Otto");
+	Clonk005->MakeInvincible();
 	Clonk005->SetSkin(2);
 	var Clonk006 = CreateObjectAbove(Clonk, 1868, 951);
 	Clonk006->SetColor(0xff0000);
 	Clonk006->SetName("Donald");
+	Clonk006->MakeInvincible();
 	Clonk006->SetDir(DIR_Left);
 	var Clonk007 = CreateObjectAbove(Clonk, 676, 943);
 	Clonk007->SetDir(DIR_Right);
 	Clonk007->SetColor(0x802000);
 	Clonk007->SetName("Jane");
 	Clonk007->SetSkin(1);
+	Clonk007->MakeInvincible();
 	npc_tarzan = CreateObjectAbove(Clonk, 750, 859);
 	npc_tarzan->SetXDir(3);
 	npc_tarzan->SetYDir(27);
@@ -230,6 +241,7 @@ func InitializeObjects()
 	Clonk008->SetColor(0x20ffff);
 	Clonk008->SetName("Sophie");
 	Clonk008->SetSkin(3);
+	Clonk008->MakeInvincible();
 	Clonk008->SetDir(DIR_Left);
 	var Clonk009 = CreateObjectAbove(Clonk, 853, 734);
 	Clonk009->SetDir(DIR_Right);
@@ -241,6 +253,7 @@ func InitializeObjects()
 	Clonk010->SetColor(0x800000);
 	Clonk010->SetName("Ann");
 	Clonk010->SetSkin(3);
+	Clonk010->MakeInvincible();
 	var Pickaxe001 = Clonk010->CreateContents(Pickaxe);
 
 	Clonk010->SetDialogue("Ann",true);

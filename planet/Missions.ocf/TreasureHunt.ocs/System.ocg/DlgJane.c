@@ -12,7 +12,9 @@ func Dlg_Jane_1(object clonk)
 
 func Dlg_Jane_2(object clonk)
 {
-	MessageBox("$Jane2$", clonk, clonk); // i want rope 2
+	var msg = "$Jane2$";
+	if (!npc_tarzan || !npc_tarzan->GetAlive()) msg = "$Jane2B$";
+	MessageBox(msg, clonk, clonk); // i want rope 2
 	return true;
 }
 

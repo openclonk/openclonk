@@ -76,7 +76,8 @@ SophieSad=Why did you have to take away my playing items? Sophie sad :(
 Jane1=He's supposed to search for treasures. But he's just swinging his rope all day.
 Jane1B=He was supposed to search for treasures. Instead, he was just swinging his rope all day. And now he's dead. Typical.
 Jane2=Cool! Can I have a rope too?
-Jane3=There's extra grappler bows in the chest. Just put it into your hand and click in the direction you want to shoot. Click again to let go.
+Jane2B=Rest in peace. But, can I have a rope too?
+Jane3=There are extra grappler bows in the chest. Just put it into your hand and click in the direction you want to shoot. Click again to let go.
 Jane4=You can even carry two and have one in each hand. Then when you shoot the second, the first one will automatically retreat.
 Jane5=Please take all the bows. I'm sick of this swinging.
 

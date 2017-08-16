@@ -76,6 +76,7 @@ SophieSad=Warum hast du mir mein Spielzeug weggenommen? Das ist gemein :(
 Jane1=Er sollte nach Schätzen suchen. Stattdessen schwingt er einfach nur den ganzen Tag am Seil hin und her.
 Jane1B=Er sollte nach Schätzen suchen. Stattdessen schwang er einfach nur den ganzen Tag am Seil hin und her. Nun ist er tot. Typisch!
 Jane2=Cool! Kriege ich auch so ein Seil?
+Jane2B=Schade. Kriege ich aber auch so ein Seil?
 Jane3=Es liegen noch Enterhaken in den Kisten hier. Nimm ihn einfach in die Hand und drücke die Richtung, die du schießen willst. Drücke noch einmal, um wieder loszulassen.
 Jane4=Du kannst sogar in jeder Hand einen Enterhaken tragen. Wenn du den zweiten schießt, löst sich der erste automatisch.
 Jane5=Bitte nimm die Enterhaken alle mit! Ich hab diese Schwingerei satt.
@@ -96,4 +97,4 @@ DonaldShovel1=Hier ist deine Schaufel.
 DonaldShovel2=Vielen Dank! Ich stehe auf Ewig in deiner Schuld.
 
 Otto1=Ich liebe diesen einsamen Ort. Er ist so friedlich.
-Otto2=Schau nur diese Aussicht. Dort hinten im Osten ist sogar eine schwebende Insel über dem See. Ich frage mich, was dort wohl drauf ist.
+Otto2=Schau nur, diese Aussicht. Dort hinten im Osten ist sogar eine schwebende Insel über dem See. Ich frage mich, was dort wohl drauf ist.
