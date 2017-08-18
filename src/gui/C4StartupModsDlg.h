@@ -45,13 +45,24 @@ struct ModXMLData
 	std::string title;
 	std::string id;
 	std::string description;
+	std::string slug;
 
-	ModXMLData(const TiXmlElement *xml, bool isLocalData = false);
+	// Depending on the origin of the data, we might need an update query before doing anything.
+	enum class Source
+	{
+		Unknown,
+		Local,
+		Overview,
+		DetailView
+	};
+	Source source{ Source::Unknown };
+	bool requiresUpdate() const { return source != Source::DetailView; }
+
+	ModXMLData(const TiXmlElement *xml, Source source = Source::Unknown);
 	~ModXMLData();
 
 	// Used to write the element to a file in case the mod gets installed.
 	TiXmlNode *originalXMLElement{ nullptr };
-	bool isLoadedFromLocal{ false };
 };
 
 class C4StartupModsLocalModDiscovery : public StdThread
@@ -141,8 +152,9 @@ private:
 
 		std::string modID;
 		std::string name;
+		std::string slug;
 
-		ModInfo() = default;
+		ModInfo() : localDiscoveryCheck(*this) {}
 		ModInfo(const C4StartupModsListEntry *entry);
 		// From minimal information, will require an update.
 		ModInfo(std::string modID, std::string name);
@@ -160,13 +172,27 @@ private:
 		std::tuple<size_t, size_t> GetProgress() const { return std::make_tuple(downloadedBytes, totalBytes); }
 		bool WasSuccessful() const { return successful; }
 		bool IsBusy() const { return postClient.get() != nullptr; }
-		bool RequiresMetadataUpdate() const { return hasOnlyCachedInformation; }
+		bool RequiresMetadataUpdate() const { return hasOnlyIncompleteInformation; }
 		std::string GetErrorMessage() const { if (errorMessage.empty()) return ""; return name + ": " + errorMessage; }
 		std::string GetPath();
+
+		struct LocalDiscoveryCheck : protected StdThread
+		{
+			std::string basePath;
+			bool needsCheck{ true };
+			bool installed{ false };
+			bool atLeastOneFileExisted{ false };
+
+			LocalDiscoveryCheck(ModInfo &mod) : mod(mod) { };
+			void Start() { StdThread::Start(); }
+		protected:
+			ModInfo &mod;
+			void Execute() override;
+		} localDiscoveryCheck;
 	private:
 		bool successful{ false };
-		// Whether the information might be outdated and needs an update prior to hash-checking.
-		bool hasOnlyCachedInformation{ false };
+		// Whether the information might be outdated or incomplete and needs an update prior to hash-checking.
+		bool hasOnlyIncompleteInformation{ true };
 		size_t downloadedBytes{ 0 };
 		size_t totalBytes{ 0 };
 		std::unique_ptr<C4Network2HTTPClient> postClient;
@@ -184,6 +210,8 @@ private:
 	CStdCSec guiThreadResponse;
 	void CancelRequest();
 	void ExecuteCheckDownloadProgress();
+	void ExecutePreRequestChecks();
+	void ExecuteWaitForChecksums();
 	void ExecuteRequestConfirmation();
 
 	void ExecuteMetadataUpdate();
@@ -263,7 +291,7 @@ protected:
 	C4GUI::Element* GetNextLower(int32_t sortOrder); // returns the element before which this element should be inserted
 
 public:
-	void FromXML(const TiXmlElement *xml, bool isLocalData = false);
+	void FromXML(const TiXmlElement *xml, ModXMLData::Source source, std::string fallbackID="", std::string fallbackName="");
 	const ModXMLData &GetModXMLData() const { assert(modXMLData); return *modXMLData.get(); }
 	void ClearRef();    // del any ref/refclient/error data
 
@@ -274,9 +302,10 @@ public:
 
 	// There is a special entry that conveys status information.
 	void MakeInfoEntry();
+	bool IsInfoEntry() const { return isInfoEntry; }
 	void OnNoResultsFound();
 	void OnError(std::string message);
-
+	void ShowPageInfo(int page, int totalPages, int totalResults);
 	const char *GetError() { return fError ? sError.getData() : nullptr; } // return error message, if any is set
 																		   //C4Network2Reference *GrabReference(); // grab the reference so it won't be deleted when this item is removed
 																		   //C4Network2Reference *GetReference() const { return pRef; } // have a look at the reference
@@ -288,8 +317,8 @@ public:
 	std::string GetTitle() const { return GetModXMLData().title; }
 	const std::vector<ModXMLData::FileInfo> & GetFileInfos() const { return GetModXMLData().files; }
 	std::string GetID() const { return GetModXMLData().id; }
-	bool IsInstalled() const { return isInstalled; }
-	bool IsLoadedFromLocal() const { return GetModXMLData().isLoadedFromLocal; }
+	bool IsInstalled() const { return isInstalled || IsLoadedFromLocal(); }
+	bool IsLoadedFromLocal() const { return GetModXMLData().source == ModXMLData::Source::Local; }
 };
 
 // startup dialog: Network game selection
@@ -329,7 +358,7 @@ protected:
 	virtual bool OnEnter() { DoOK(); return true; }
 	virtual bool OnEscape() { DoBack(); return true; }
 	bool KeyBack() { return DoBack(); }
-	bool KeyRefresh() { DoRefresh(); return true; }
+	bool KeyRefresh();
 	bool KeyForward() { DoOK(); return true; }
 
 	virtual void OnShown();             // callback when shown: Start searching for games
@@ -352,10 +381,20 @@ private:
 	// Deletes lingering updates etc.
 	void CancelRequest();
 
-	void QueryModList();
+	void QueryModList(bool loadNextPage=false);
 	void ClearList();
 	void UpdateList(bool fGotReference = false, bool onlyWithLocalFiles = false);
-	void AddToList(std::vector<const TiXmlElement*> elements, bool isLocalData);
+	// When loading from local files, we must pass a fallback ID in case the XML is corrupted.
+	// Otherwise, it wouldn't be possible to even delete installed mods without a valid XML file.
+	struct TiXmlElementLoaderInfo
+	{
+		TiXmlElementLoaderInfo(const TiXmlElement* element, std::string id="", std::string name="") :
+			element(element), id(id), name(name) {}
+		const TiXmlElement* element;
+		const TiXmlElement* operator->() const { return element; }
+		std::string id, name;
+	};
+	void AddToList(std::vector<TiXmlElementLoaderInfo> elements, ModXMLData::Source source);
 	void UpdateCollapsed();
 	void UpdateSelection(bool fUpdateCollapsed);
 	void CheckRemoveMod();
@@ -380,6 +419,13 @@ private:
 	};
 	std::vector<SortingOption> sortingOptions;
 	std::string sortKeySuffix = "";
+
+	struct _PageInfo
+	{
+		int totalResults{ 0 };
+		int currentPage{ 0 };
+		int totalPages{ 0 };
+	} pageInfo;
 public:
 	bool DoOK(); // join currently selected item
 	bool DoBack(); // abort dialog

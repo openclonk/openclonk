@@ -32,8 +32,16 @@
 const std::string C4StartupModsDlg::baseServerURL = "frustrum.pictor.uberspace.de/larry/api/";
 
 // Used to parse values of subelements from an XML element.
-std::string getSafeStringValue(const TiXmlElement *xml, const char *childName, std::string fallback = "")
+std::string getSafeStringValue(const TiXmlElement *xml, const char *childName, std::string fallback = "", bool isAttribute = false)
 {
+	if (xml == nullptr) return fallback;
+	if (isAttribute)
+	{
+		const char * value = xml->Attribute(childName);
+		if (value == nullptr)
+			return fallback;
+		return{ value };
+	}
 	const TiXmlElement *child = xml->FirstChildElement(childName);
 	if (child == nullptr) return fallback;
 	const char *nodeText = child->GetText();
@@ -43,28 +51,51 @@ std::string getSafeStringValue(const TiXmlElement *xml, const char *childName, s
 	return fallback;
 };
 
-ModXMLData::ModXMLData(const TiXmlElement *xml, bool isLocalData)
+ModXMLData::ModXMLData(const TiXmlElement *xml, Source source)
 {
 
-	// Remember whether the loaded the element from a local file, because we
+	// Remember whether the loaded the element from a local file / overview, because we
 	// then still have to do a query if we want to update.
-	isLoadedFromLocal = isLocalData;
+	this->source = source;
 	// Remember the XML element in case we need to pretty-print it later.
 	originalXMLElement = xml->Clone();
-
-	id = getSafeStringValue(xml, "_id", "");
-
-	title = getSafeStringValue(xml, "title", "???");
+	id = getSafeStringValue(xml, "id", "", true);
+	title = getSafeStringValue(xml, "title", "");
+	assert(IsValidUtf8(title.c_str()));
+	slug = getSafeStringValue(xml, "slug", title);
+	assert(IsValidUtf8(slug.c_str()));
 	description = getSafeStringValue(xml, "description");
+	assert(IsValidUtf8(description.c_str()));
 	if (!description.empty())
 	{
-		if (description.size() > 200)
+		if (description.size() > 150)
 		{
-			description.resize(200);
-			description += "...";
+			// Find a cutoff that is not inside a UTF-8 character.
+			std::string::size_type characterCount{ 0 };
+			for (const char *c = description.data(); *c != '\0';)
+			{
+				const uint8_t val = *c;
+				if (val <= 127)
+				{
+					c += 1;
+				}
+				else
+				{
+					GetNextUTF8Character(&c);
+				}
+				characterCount += 1;
+
+				if ((characterCount > 140 && *c == ' ') || (characterCount > 150))
+				{
+					uint32_t byteDifference = c - description.data();
+					description.resize(byteDifference);
+					description += "...";
+					break;
+				}
+			}
 		}
 	}
-
+	assert(IsValidUtf8(description.c_str()));
 	// Additional meta-information.
 
 	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
@@ -72,12 +103,12 @@ ModXMLData::ModXMLData(const TiXmlElement *xml, bool isLocalData)
 		// We guarantee that we do not modify the handle below, thus the const_cast is safe.
 		const TiXmlHandle nodeHandle(const_cast<TiXmlNode*> (static_cast<const TiXmlNode*> (filenode)));
 
-		const std::string handle = getSafeStringValue(filenode, "file", "");
-		const std::string name = getSafeStringValue(filenode, "name", "");
+		const std::string handle = getSafeStringValue(filenode, "_id", "");
+		const std::string name = getSafeStringValue(filenode, "filename", "");
 		const std::string lengthString = getSafeStringValue(filenode, "length", "");
 
 		std::string hashSHA1 = "";
-		const auto hashNode = nodeHandle.FirstChild("metadata").FirstChild("hash").Node();
+		const auto hashNode = nodeHandle.FirstChild("metadata").FirstChild("hashes").Node();
 		if (hashNode != nullptr)
 		{
 			hashSHA1 = getSafeStringValue(hashNode->ToElement(), "sha1", "");
@@ -163,12 +194,28 @@ C4StartupModsListEntry::~C4StartupModsListEntry()
 	ClearRef();
 }
 
-void C4StartupModsListEntry::FromXML(const TiXmlElement *xml, bool isLocalData)
+void C4StartupModsListEntry::FromXML(const TiXmlElement *xml, ModXMLData::Source source, std::string fallbackID, std::string fallbackName)
 {
-	modXMLData = std::make_unique<ModXMLData>(xml, isLocalData);
-
-	sInfoTextRight[0].Format(LoadResStr("IDS_MODS_METAINFO"), getSafeStringValue(xml, "downloads", "0").c_str());
-	sInfoText[0].Format(LoadResStr("IDS_MODS_TITLE"), modXMLData->title.c_str(), getSafeStringValue(xml, "author", "???").c_str());
+	modXMLData = std::make_unique<ModXMLData>(xml, source);
+	if (modXMLData->id.empty()) modXMLData->id = fallbackID;
+	if (modXMLData->title.empty()) modXMLData->title = fallbackName;
+	if (source != ModXMLData::Source::Local)
+	{
+		std::string updated = getSafeStringValue(xml, "updatedAt", "");
+		std::string::size_type dateEnd;
+		if (!updated.empty() && (dateEnd = updated.find('T')) != std::string::npos)
+		{
+			updated = updated.substr(0, dateEnd);
+		}
+		else
+			updated = "/";
+		sInfoTextRight[0].Format(LoadResStr("IDS_MODS_METAINFO"),
+			updated.c_str(),
+			getSafeStringValue(xml->FirstChildElement("voting"), "sum", "0").c_str());
+	}
+	const std::string author = getSafeStringValue(xml->FirstChildElement("author"), "username", "???");
+	const std::string title = modXMLData->title.empty() ? "???" : modXMLData->title;
+	sInfoText[0].Format(LoadResStr("IDS_MODS_TITLE"), title.c_str(), author.c_str());
 
 	for (auto &file : modXMLData->files)
 	{
@@ -202,6 +249,14 @@ void C4StartupModsListEntry::OnNoResultsFound()
 {
 	pIcon->SetAnimated(false, 1);
 	sInfoText[0].Copy(LoadResStr("IDS_MODS_SEARCH_NORESULTS"));
+	UpdateText();
+}
+
+void C4StartupModsListEntry::ShowPageInfo(int page, int totalPages, int totalResults)
+{
+	pIcon->SetAnimated(false, 1);
+	sInfoText[0].Copy(LoadResStr("IDS_MODS_SEARCH_NEXTPAGE"));
+	sInfoText[1].Format(LoadResStr("IDS_MODS_SEARCH_NEXTPAGE_DESC"), page, totalPages, totalResults);
 	UpdateText();
 }
 
@@ -413,7 +468,7 @@ void C4StartupModsLocalModDiscovery::Execute()
 
 	parent->QueueSyncWithDiscovery();
 
-	StdThread::Stop();
+	StdThread::SignalStop();
 }
 
 void C4StartupModsLocalModDiscovery::ExecuteDiscovery()
@@ -514,17 +569,17 @@ void C4StartupModsDownloader::OnConfirmInstallation(C4GUI::Element *element)
 	progressCallback = std::bind(&C4StartupModsDownloader::ExecuteCheckDownloadProgress, this);
 }
 
-C4StartupModsDownloader::ModInfo::ModInfo(const C4StartupModsListEntry *entry)
+C4StartupModsDownloader::ModInfo::ModInfo(const C4StartupModsListEntry *entry) : ModInfo()
 {
 	FromXMLData(entry->GetModXMLData());
 }
 
-C4StartupModsDownloader::ModInfo::ModInfo(std::string modID, std::string name)
+C4StartupModsDownloader::ModInfo::ModInfo(std::string modID, std::string name) : ModInfo()
 {
 	Clear();
 	this->modID = modID;
 	this->name = name;
-	this->hasOnlyCachedInformation = true;
+	this->hasOnlyIncompleteInformation = true;
 }
 
 void C4StartupModsDownloader::ModInfo::FromXMLData(const ModXMLData &xmlData)
@@ -532,8 +587,9 @@ void C4StartupModsDownloader::ModInfo::FromXMLData(const ModXMLData &xmlData)
 	Clear();
 	modID = xmlData.id;
 	name = xmlData.title;
+	slug = xmlData.slug;
 	originalXMLNode = xmlData.originalXMLElement->Clone();
-	hasOnlyCachedInformation = xmlData.isLoadedFromLocal;
+	hasOnlyIncompleteInformation = xmlData.requiresUpdate();
 
 	for (const auto & fileInfo : xmlData.files)
 	{
@@ -562,7 +618,7 @@ void C4StartupModsDownloader::ModInfo::CancelRequest()
 std::string C4StartupModsDownloader::ModInfo::GetPath()
 {
 	return std::string(Config.General.UserDataPath) + "mods" + DirectorySeparator + \
-		modID + "_" + name;
+		modID + "_" + slug;
 }
 
 void C4StartupModsDownloader::ModInfo::CheckProgress()
@@ -575,12 +631,12 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 	{
 		postClient = std::make_unique<C4Network2HTTPClient>();
 
-		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::baseServerURL + files.back().handle).c_str()))
+		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::baseServerURL + "media/" + files.back().handle + "?download").c_str()))
 		{
 			assert(false);
 			return;
 		}
-		postClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);
+		postClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::NoPreference);
 
 		// Do the actual request.
 		postClient->SetNotify(&Application.InteractiveThread);
@@ -596,6 +652,7 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 	{
 		if (!postClient->isSuccess())
 		{
+			errorMessage = std::string(LoadResStr("IDS_MODS_NOINSTALL_CONNECTIONFAIL")) + postClient->GetError();
 			CancelRequest();
 			return;
 		}
@@ -711,12 +768,12 @@ void C4StartupModsDownloader::ExecuteCheckDownloadProgress()
 				errorMessage += "|" + modError;
 		}
 
+		CancelRequest();
+
 		if (!errorMessage.empty())
 		{
 			::pGUI->ShowMessageModal(errorMessage.c_str(), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		}
-
-		CancelRequest();
 		return;
 	}
 }
@@ -745,7 +802,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 
 			postMetadataClient = std::make_unique<C4Network2HTTPClient>();
 
-			if (!postMetadataClient->Init() || !postMetadataClient->SetServer((C4StartupModsDlg::baseServerURL + "items/" + mod->modID).c_str()))
+			if (!postMetadataClient->Init() || !postMetadataClient->SetServer((C4StartupModsDlg::baseServerURL + "uploads/" + mod->modID).c_str()))
 			{
 				assert(false);
 				return;
@@ -758,7 +815,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 			return;
 		}
 		// Nothing to be updated found? Great, give execution back.
-		progressCallback = std::bind(&C4StartupModsDownloader::ExecuteRequestConfirmation, this);
+		progressCallback = std::bind(&C4StartupModsDownloader::ExecutePreRequestChecks, this);
 		return;
 	}
 
@@ -770,8 +827,8 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 		{
 			Log(postMetadataClient->GetError());
 			// Destroy client and cancel.
-			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			CancelRequest();
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			return;
 		}
 
@@ -781,16 +838,16 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 		if (xmlDocument.Error())
 		{
 			Log(xmlDocument.ErrorDesc());
-			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			CancelRequest();
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			return;
 		}
-		const char * resourceElementName = "resource";
+		const char * resourceElementName = "upload";
 		const TiXmlElement *root = xmlDocument.RootElement();
 		assert(strcmp(root->Value(), resourceElementName) == 0);
 
 		// Re-use the parsing from the list entries.
-		ModXMLData modXMLData(root, false);
+		ModXMLData modXMLData(root, ModXMLData::Source::DetailView);
 
 		// Find the mod matching the id from the metadata.
 		size_t foundIdx = 0;
@@ -807,9 +864,9 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 		// Somehow, the matching mod could not be found. That should not happen.
 		if (foundIdx == items.size())
 		{
+			CancelRequest();
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			assert(false);
-			CancelRequest();
 			return;
 		}
 
@@ -820,10 +877,10 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 
 void C4StartupModsDownloader::RequestConfirmation()
 {
-	progressCallback = std::bind(&C4StartupModsDownloader::ExecuteRequestConfirmation, this);
+	progressCallback = std::bind(&C4StartupModsDownloader::ExecutePreRequestChecks, this);
 }
 
-void C4StartupModsDownloader::ExecuteRequestConfirmation()
+void C4StartupModsDownloader::ExecutePreRequestChecks()
 {
 	// Disable callback during execution.
 	progressCallback = nullptr;
@@ -839,6 +896,61 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	// To be able to check against the installed mods, the discovery needs to be finished.
 	parent->modsDiscovery.WaitForDiscoveryFinished();
 
+	// Check all local files for compatibility.
+	bool anyModNeedsCheck = false;
+	for (auto &mod : items)
+	{
+		if (!mod->localDiscoveryCheck.needsCheck) continue;
+
+		const bool modInstalled = mod->localDiscoveryCheck.installed = parent->modsDiscovery.IsModInstalled(mod->modID);
+		mod->localDiscoveryCheck.basePath = modInstalled ? parent->modsDiscovery.GetModInformation(mod->modID).path : "";
+		mod->localDiscoveryCheck.needsCheck = false;
+
+		if (modInstalled)
+		{
+
+			for (auto file : mod->files)
+			{
+				if (file.sha1.empty()) continue;
+				mod->localDiscoveryCheck.needsCheck = anyModNeedsCheck = true;
+				break;
+			}
+
+			if (mod->localDiscoveryCheck.needsCheck)
+			{
+				mod->localDiscoveryCheck.Start();
+			}
+		}
+	}
+
+	if (anyModNeedsCheck)
+	{
+		progressCallback = std::bind(&C4StartupModsDownloader::ExecuteWaitForChecksums, this);
+		GetProgressDialog()->SetTitle(LoadResStr("IDS_MODS_INSTALL_CHECKFILES"));
+		GetProgressDialog()->SetMessage("");
+		GetProgressDialog()->SetProgress(0);
+	}
+	else
+	{
+		// Just enter it directly.
+		ExecuteRequestConfirmation();
+	}
+}
+
+void C4StartupModsDownloader::ExecuteWaitForChecksums()
+{
+	for (auto &mod : items)
+	{
+		if (mod->localDiscoveryCheck.needsCheck)
+			return;
+	}
+	progressCallback = std::bind(&C4StartupModsDownloader::ExecuteRequestConfirmation, this);
+}
+
+void C4StartupModsDownloader::ExecuteRequestConfirmation()
+{
+	progressCallback = nullptr;
+
 	// Calculate total filesize to be downloaded.
 	size_t totalSize{ 0 };
 	bool atLeastOneFileExisted = false;
@@ -846,62 +958,17 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 
 	for (auto &mod : items)
 	{
-		const bool modInstalled = parent->modsDiscovery.IsModInstalled(mod->modID);
-		const std::string modBasePath = modInstalled ? parent->modsDiscovery.GetModInformation(mod->modID).path : "";
-		bool modRequiresFileDownload = false;
-
-		for (auto fileIterator = mod->files.begin(); fileIterator != mod->files.end();)
-		{
-			auto &file = *fileIterator;
-			bool fileExists = false;
-
-			// Check if the file already exists.
-			if (modInstalled && !file.sha1.empty())
-			{
-				const std::string &hashString = file.sha1;
-				BYTE hash[SHA_DIGEST_LENGTH];
-				const std::string filePath = modBasePath + DirectorySeparator + file.name;
-				if (GetFileSHA1(filePath.c_str(), hash))
-				{
-					fileExists = true;
-
-					// Match hashes (string against byte array).
-					const size_t byteLen = 2;
-					size_t index = 0;
-					for (size_t offset = 0; offset < hashString.size(); offset += byteLen, index += 1)
-					{
-						// Oddly, the indices of the byte array to not correspond 1-to-1 to a standard sha1 string.
-						const size_t hashIndex = (index / 4 * 4) + (3 - (index % 4));
-						const BYTE &byte = hash[hashIndex];
-
-						const std::string byteStr = hashString.substr(offset, byteLen);
-						unsigned char byteStrValue = static_cast<unsigned char> (std::stoi(byteStr, nullptr, 16));
-
-						if (byteStrValue != byte)
-						{
-							fileExists = false;
-							break;
-						}
-					}
-				}
-			}
-
-			if (fileExists)
-			{
-				fileIterator = mod->files.erase(fileIterator);
-				atLeastOneFileExisted = true;
-			}
-			else
-			{
-				totalSize += file.size;
-				++fileIterator;
-				modRequiresFileDownload = true;
-			}
-		}
-		if (modRequiresFileDownload)
+		if (mod->localDiscoveryCheck.atLeastOneFileExisted)
+			atLeastOneFileExisted = true;
+		if (!mod->files.empty())
 		{
 			allMissingModNames += (allMissingModNames.empty() ? "\"" : ", \"") + mod->name + "\"";
+			for (auto file : mod->files)
+			{
+				totalSize += file.size;
+			}
 		}
+
 	}
 
 	// Hide progress bar, so it's not behind the modal dialogs.
@@ -910,11 +977,11 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 
 	if (totalSize == 0)
 	{
+		CancelRequest();
 		if (atLeastOneFileExisted)
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_ALREADYINSTALLED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 		else
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_NODATA"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-		CancelRequest();
 		return;
 	}
 
@@ -932,9 +999,66 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	StdStrBuf confirmationMessage;
 	confirmationMessage.Format(LoadResStr("IDS_MODS_INSTALL_CONFIRM"), allMissingModNames.c_str(), filesizeString.c_str());
 	auto *callbackHandler = new C4GUI::CallbackHandler<C4StartupModsDownloader>(this, &C4StartupModsDownloader::OnConfirmInstallation);
-	auto *dialog = new C4GUI::ConfirmationDialog(confirmationMessage.getData(), "Confirm installation", callbackHandler, C4GUI::MessageDialog::btnYesNo, false, C4GUI::Icons::Ico_Save);
+	auto *dialog = new C4GUI::ConfirmationDialog(confirmationMessage.getData(), LoadResStr("IDS_MODS_INSTALL_CONFIRM_TITLE"), callbackHandler, C4GUI::MessageDialog::btnYesNo, false, C4GUI::Icons::Ico_Save);
 	parent->GetScreen()->ShowRemoveDlg(dialog);
 }
+
+void C4StartupModsDownloader::ModInfo::LocalDiscoveryCheck::Execute()
+{
+	assert(installed);
+
+	for (auto fileIterator = mod.files.begin(); fileIterator != mod.files.end();)
+	{
+		auto &file = *fileIterator;
+		bool fileExists = false;
+
+		// Check if the file already exists.
+		if (!file.sha1.empty())
+		{
+			const std::string &hashString = file.sha1;
+			BYTE hash[SHA_DIGEST_LENGTH];
+			const std::string filePath = basePath + DirectorySeparator + file.name;
+			if (GetFileSHA1(filePath.c_str(), hash))
+			{
+				fileExists = true;
+
+				// Match hashes (string against byte array).
+				const size_t byteLen = 2;
+				size_t index = 0;
+				for (size_t offset = 0; offset < hashString.size(); offset += byteLen, index += 1)
+				{
+					// Oddly, the indices of the byte array to not correspond 1-to-1 to a standard sha1 string.
+					const size_t hashIndex = (index / 4 * 4) + (3 - (index % 4));
+					const BYTE &byte = hash[hashIndex];
+
+					const std::string byteStr = hashString.substr(offset, byteLen);
+					unsigned char byteStrValue = static_cast<unsigned char> (std::stoi(byteStr, nullptr, 16));
+
+					if (byteStrValue != byte)
+					{
+						fileExists = false;
+						break;
+					}
+				}
+			}
+		}
+
+		if (fileExists)
+		{
+			fileIterator = mod.files.erase(fileIterator);
+			atLeastOneFileExisted = true;
+		}
+		else
+		{
+			++fileIterator;
+		}
+	}
+
+	// Fire-once check done.
+	needsCheck = false;
+	StdThread::SignalStop();
+}
+
 
 // ----------- C4StartupNetDlg ---------------------------------------------------------------------------------
 
@@ -983,9 +1107,9 @@ C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")),
 	
 	sortingOptions =
 	{
-		{ "version", "IDS_MODS_SORT_RATING_UP", "IDS_MODS_SORT_RATING_DOWN" },
+		{ "voting.sum", "IDS_MODS_SORT_RATING_DOWN", "IDS_MODS_SORT_RATING_UP" },
 		{ "title", "IDS_MODS_SORT_NAME_UP", "IDS_MODS_SORT_NAME_DOWN" },
-		{ "_created", "IDS_MODS_SORT_DATE_UP", "IDS_MODS_SORT_DATE_DOWN" },
+		{ "updatedAt", "IDS_MODS_SORT_DATE_DOWN", "IDS_MODS_SORT_DATE_UP" },
 	};
 	// Translate all labels.
 	for (auto &option : sortingOptions)
@@ -1117,11 +1241,20 @@ C4GUI::Control *C4StartupModsDlg::GetDlgModeFocusControl()
 	return pGameSelList;
 }
 
-void C4StartupModsDlg::QueryModList()
+void C4StartupModsDlg::QueryModList(bool loadNextPage)
 {
-	// Clear the list and add an info entry.
-	ClearList();
-	C4StartupModsListEntry *infoEntry = new C4StartupModsListEntry(pGameSelList, nullptr, this);
+	C4StartupModsListEntry *infoEntry{ nullptr };
+	// New page requested? Leave the list as-is.
+	if (loadNextPage && pGameSelList->GetLast() != nullptr)
+	{
+		infoEntry = static_cast<C4StartupModsListEntry*> (pGameSelList->GetLast());
+	}
+	else
+	{
+		// Clear the list and add an info entry.
+		ClearList();
+		infoEntry = new C4StartupModsListEntry(pGameSelList, nullptr, this);
+	}
 	infoEntry->MakeInfoEntry();
 
 	// First, construct the 'where' part of the query.
@@ -1155,13 +1288,18 @@ void C4StartupModsDlg::QueryModList()
 		searchQueryPostfix += "sort=" + sortKeySuffix + "&";
 	}
 
+	// Request the correct page.
+	const int requestedPage = loadNextPage ? pageInfo.currentPage + 1 : 1;
+	searchQueryPostfix += "page=" + std::to_string(requestedPage) + "&";
 
 	Log(searchQueryPostfix.c_str());
 	// Initialize connection.
+	// Abort possible running request.
+	CancelRequest();
 	queryWasSuccessful = false;
 	postClient = std::make_unique<C4Network2HTTPClient>();
 	
-	if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::baseServerURL + "items" + searchQueryPostfix).c_str()))
+	if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::baseServerURL + "uploads" + searchQueryPostfix).c_str()))
 	{
 		assert(false);
 		return;
@@ -1197,13 +1335,13 @@ void C4StartupModsDlg::ClearList()
 	}
 }
 
-void C4StartupModsDlg::AddToList(std::vector<const TiXmlElement*> elements, bool isLocalData)
+void C4StartupModsDlg::AddToList(std::vector<TiXmlElementLoaderInfo> elements, ModXMLData::Source source)
 {
 	const bool modsDiscoveryFinished = modsDiscovery.IsDiscoveryFinished();
 	for (const auto e : elements)
 	{
 		C4StartupModsListEntry *pEntry = new C4StartupModsListEntry(pGameSelList, nullptr, this);
-		pEntry->FromXML(e, isLocalData);
+		pEntry->FromXML(e.element, source, e.id, e.name);
 
 		if (modsDiscoveryFinished && modsDiscovery.IsModInstalled(pEntry->GetID()))
 		{
@@ -1231,7 +1369,7 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 		auto lock = std::move(modsDiscovery.Lock());
 		auto installedMods = modsDiscovery.GetAllModInformation();
 
-		std::vector<const TiXmlElement*> elements;
+		std::vector<TiXmlElementLoaderInfo> elements;
 		for (const auto & modData: installedMods)
 		{
 			const auto &mod = modData.second;
@@ -1246,12 +1384,12 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 			if (xmlDocument.Error()) continue;
 
 			const TiXmlElement *root = xmlDocument.RootElement();
-			elements.emplace_back(static_cast<TiXmlElement*>(root->Clone()));
+			elements.emplace_back(static_cast<TiXmlElement*>(root->Clone()), mod.id, mod.name);
 		}
-		AddToList(elements, true);
+		AddToList(elements, ModXMLData::Source::Local);
 		// We took ownership, clear it.
 		for (auto & e : elements)
-			delete e;
+			delete e.element;
 		
 		if (elements.empty())
 		{
@@ -1267,8 +1405,8 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 		// Check whether the data has arrived yet.
 		if (!postClient->isBusy())
 		{
-			// At this point we can assert that the list contains only one child - the info field.
-			C4StartupModsListEntry *infoEntry = static_cast<C4StartupModsListEntry*> (pGameSelList->GetFirst());
+			// At this point we can assert that the info field is the last entry in the list.
+			C4StartupModsListEntry *infoEntry = static_cast<C4StartupModsListEntry*> (pGameSelList->GetLast());
 			assert(infoEntry != nullptr);
 
 			if (!postClient->isSuccess())
@@ -1291,18 +1429,39 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 				infoEntry->OnError(xmlDocument.ErrorDesc());
 				return;
 			}
-			const char * resourceElementName = "resource";
+			const char * rootElementName = "uploads";
+			const char * resourceElementName = "upload";
 			const TiXmlElement *root = xmlDocument.RootElement();
-			assert(strcmp(root->Value(), resourceElementName) == 0);
+			assert(strcmp(root->Value(), rootElementName) == 0);
 
-			std::vector<const TiXmlElement*> elements;
+			// Parse pagination data.
+			pageInfo.currentPage = pageInfo.totalPages = pageInfo.totalResults = 0;
+			const TiXmlElement *meta = root->FirstChildElement("_meta");
+			const TiXmlElement *pagination = meta ? meta->FirstChildElement("pagination") : nullptr;
+			if (pagination != nullptr)
+			{
+				try
+				{
+					pageInfo.currentPage = std::stoi(getSafeStringValue(pagination, "page", "0"));
+					pageInfo.totalResults = std::stoi(getSafeStringValue(pagination, "total", "0"));
+					pageInfo.totalPages = std::stoi(getSafeStringValue(pagination, "pages", "0"));
+				}
+				catch (...) {}
+			}
+			std::vector<TiXmlElementLoaderInfo> elements;
 			for (const TiXmlElement* e = root->FirstChildElement(resourceElementName); e != NULL; e = e->NextSiblingElement(resourceElementName))
 				elements.push_back(e);
-			AddToList(elements, false);
+			AddToList(elements, ModXMLData::Source::Overview);
 
 			// Nothing found? Notify!
 			if (elements.empty())
 				infoEntry->OnNoResultsFound();
+			else if (pageInfo.currentPage < pageInfo.totalPages)
+			{
+				infoEntry->ShowPageInfo(pageInfo.currentPage, pageInfo.totalPages, pageInfo.totalResults);
+				pGameSelList->RemoveElement(infoEntry);
+				pGameSelList->AddElement(infoEntry);
+			}
 			else
 				delete infoEntry;
 
@@ -1332,6 +1491,8 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 		{
 			pNextElem = pElem->GetNext(); // determine next exec element now - execution
 			C4StartupModsListEntry *pEntry = static_cast<C4StartupModsListEntry *>(pElem);
+			if (pEntry->IsInfoEntry()) continue;
+
 			if (!modsDiscovery.IsModInstalled(pEntry->GetID()))
 				pEntry->UpdateInstalledState(nullptr);
 			else
@@ -1436,6 +1597,7 @@ void C4StartupModsDlg::CheckRemoveMod()
 {
 	C4StartupModsListEntry *selected = static_cast<C4StartupModsListEntry*>(pGameSelList->GetSelectedItem());
 	if (selected == nullptr) return;
+	if (selected->IsInfoEntry()) return;
 
 	StdStrBuf confirmationMessage;
 	confirmationMessage.Format(LoadResStr("IDS_MODS_UNINSTALL_CONFIRM"), selected->GetTitle().c_str());
@@ -1505,6 +1667,14 @@ bool C4StartupModsDlg::DoOK()
 	else // Show confirmation dialogue.
 	{
 		auto *elem = static_cast<C4StartupModsListEntry*> (pSelection);
+		if (elem->IsInfoEntry())
+		{
+			if (postClient.get() != nullptr) return false;
+			// Next page?
+			if (pageInfo.currentPage >= pageInfo.totalPages) return false;
+			QueryModList(true);
+			return true;
+		}
 		if (elem->GetID().empty()) return false;
 
 		if (downloader.get() != nullptr)
@@ -1519,6 +1689,13 @@ bool C4StartupModsDlg::DoBack()
 {
 	// abort dialog: Back to main
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Back);
+	return true;
+}
+
+bool C4StartupModsDlg::KeyRefresh()
+{
+	if (!postClient.get())
+		DoRefresh();
 	return true;
 }
 
