@@ -176,7 +176,8 @@ protected func Definition(def)
 
 local Name = "$Name$";
 local Description = "$Description$";
-local BlastIncinerate = 60;
+local BlastIncinerate = 20;
 local ContactIncinerate = 5;
+local NoBurnDecay = true;
 local HitPoints = 50;
 local Components = {Wood = 3, Metal = 1};

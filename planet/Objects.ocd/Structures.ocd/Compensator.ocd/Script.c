@@ -120,4 +120,5 @@ local Description = "$Description$";
 local BlastIncinerate = 1;
 local HitPoints = 25;
 local ContactIncinerate = 1;
+local NoBurnDecay = true;
 local Components = {Coal = 1, Metal = 1};

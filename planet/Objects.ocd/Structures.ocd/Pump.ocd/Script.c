@@ -914,6 +914,7 @@ local ActMap = {
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 50;
+local NoBurnDecay = true;
 local HitPoints = 70;
 local Components = {Wood = 1, Metal = 3};
 // Pump speed in amount of pixels to pump per 30 frames.
