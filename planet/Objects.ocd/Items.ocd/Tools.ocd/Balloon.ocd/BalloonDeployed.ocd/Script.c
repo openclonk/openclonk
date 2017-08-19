@@ -13,8 +13,8 @@ protected func Initialize()
 	SetAction("Inflate");
 	SetComDir(COMD_None);
 	// Control direction determines the horizontal movement of the balloon.
-	var effect = AddEffect("ControlFloat", this, 100, 1, this);
-	effect.control_dir = nil;
+	var fx = AddEffect("ControlFloat", this, 100, 1, this);
+	fx.control_dir = nil;
 
 	// Create some air particles on inflation.
 	CreateParticle("Air", PV_Random(-1, 1), PV_Random(15, 17), PV_Random(-3, 3), PV_Random(0, 2), 18, Particles_Air(), 20);
@@ -115,6 +115,7 @@ private func DeflateEffect()
 		rider->SetAction("Jump");
 		rider->SetSpeed(GetXDir(), GetYDir());
 		rider->SetComDir(COMD_Stop);
+		rider = nil;
 	}
 	return;
 }
@@ -138,17 +139,17 @@ public func RejectWindbagForce() { return true; }
 
 public func ControlLeft()
 {
-	var effect = GetEffect("ControlFloat", this);
-	if (effect)
-		effect.control_dir = -1;
+	var fx = GetEffect("ControlFloat", this);
+	if (fx)
+		fx.control_dir = -1;
 	return true;
 }
 
 public func ControlRight()
 {
-	var effect = GetEffect("ControlFloat", this);
-	if (effect)
-		effect.control_dir = 1;
+	var fx = GetEffect("ControlFloat", this);
+	if (fx)
+		fx.control_dir = 1;
 	return true;
 }
 
@@ -160,13 +161,13 @@ public func ControlDown()
 
 public func ControlUp()
 {
-	var effect = GetEffect("ControlFloat", this);
-	if (effect)
-		effect.control_dir = 0;
+	var fx = GetEffect("ControlFloat", this);
+	if (fx)
+		fx.control_dir = 0;
 	return true;
 }
 
-public func FxControlFloatTimer(object target, proplist effect, int time)
+public func FxControlFloatTimer(object target, effect fx, int time)
 {
 	var speed = 7;
 	// Normalize vertical speed.
@@ -175,7 +176,7 @@ public func FxControlFloatTimer(object target, proplist effect, int time)
 	
 	// Adjust horizontal speed, according to control and max speed.
 	var xdir = GetXDir();
-	var xdir_dev = effect.control_dir;
+	var xdir_dev = fx.control_dir;
 	if (xdir > speed * 3)
 		xdir_dev = -1;
 	else if (xdir < -speed * 3)
