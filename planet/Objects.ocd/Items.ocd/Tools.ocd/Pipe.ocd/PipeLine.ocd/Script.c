@@ -172,6 +172,7 @@ public func SaveScenarioObject(props)
 
 local Name = "$Name$";
 local PipeMaxLength = 1200;
+local BlockPipeCutting = false;
 
 local ActMap = {
 	Connect = {

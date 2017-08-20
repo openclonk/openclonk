@@ -205,10 +205,10 @@ public func SetAirPipe()
 /* ---------- Pipe Connection ---------- */
 
 
-func ConnectPipeTo(object target, string specific_pipe_state)
+func ConnectPipeTo(object target, string specific_pipe_state, bool block_cutting)
 {
 	if (!target || target->~QueryConnectPipe(this)) return false;
-	AddLineConnectionTo(target);
+	AddLineConnectionTo(target, block_cutting);
 	target->OnPipeConnect(this, specific_pipe_state);
 	Sound("Objects::Connect");
 	return true;
@@ -243,7 +243,7 @@ public func GetConnectedLine()
       
  @par target the target object
  */
-func AddLineConnectionTo(object target)
+func AddLineConnectionTo(object target, bool block_cutting)
 {
 	var line = GetConnectedLine();
 	if (line)
@@ -252,6 +252,7 @@ func AddLineConnectionTo(object target)
 		{
 			line->SwitchConnection(this, target);
 			SetPipeLine(line);
+			line.BlockPipeCutting = block_cutting;
 			ScheduleCall(this, this.Enter, 1, nil, line); // delayed entrance, so that the message is still displayed above the clonk
 			return line;
 		}
@@ -262,7 +263,7 @@ func AddLineConnectionTo(object target)
 	}
 	else
 	{
-		return CreateLine(target);
+		return CreateLine(target, block_cutting);
 	}
 }
 
@@ -301,18 +302,27 @@ func CutLineConnection(object target)
 	}
 }
 
+// Returns whether the cutting pipe is blocked.
+public func QueryCutLineConnection(object target)
+{
+	var line = GetConnectedLine();
+	if (!line)
+		return false;
+	return line.BlockPipeCutting;
+}
 
 /**
  Creates a new pipe line that is connected to this pipe kit.
  @par target the target object.
  @return object the line that was created
  */
-func CreateLine(object target)
+func CreateLine(object target, bool block_cutting)
 {
 	// Create and connect pipe line.
 	pipe_line = CreateObject(PipeLine, 0, 0, NO_OWNER);
 	pipe_line->SetActionTargets(this, target);
 	pipe_line->SetPipeKit(this);
+	pipe_line.BlockPipeCutting = block_cutting;
 	return pipe_line;
 }
 

@@ -97,17 +97,26 @@ public func GetPipeControlMenuEntries(object clonk)
 	var neutral_pipe = FindAvailablePipe(clonk, Find_Func("IsNeutralPipe"));
 
 	if (GetSourcePipe())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source));
+	{
+		if (!GetSourcePipe()->QueryCutLineConnection(this))
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source));
+	}
 	else if (source_pipe)
 		PushBack(menu_entries, GetTankMenuEntry(source_pipe, "$MsgConnectSource$", 1, LIBRARY_TANK_Menu_Action_Add_Source));
 
 	if (GetDrainPipe())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain));
+	{
+		if (!GetDrainPipe()->QueryCutLineConnection(this))
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain));
+	}
 	else if (drain_pipe)
 		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, "$MsgConnectDrain$", 2, LIBRARY_TANK_Menu_Action_Add_Drain));
 
 	if (GetNeutralPipe())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutNeutral$", 3, LIBRARY_TANK_Menu_Action_Cut_Neutral));
+	{
+		if (!GetNeutralPipe()->QueryCutLineConnection(this))
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutNeutral$", 3, LIBRARY_TANK_Menu_Action_Cut_Neutral));
+	}
 	else if (neutral_pipe)
 		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral));
 
