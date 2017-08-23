@@ -38,7 +38,12 @@ public func Departure(object from)
 
 func Hit()
 {
-	AddEffect("GemPyre", nil, 100, 1, nil, nil, [GetX(), GetY()], has_graphics_e, this->GetOwner(), thrower->GetOwner());
+	var thrower_owner = NO_OWNER;
+	if (thrower)
+	{
+		thrower_owner = thrower->GetOwner();
+	}
+	AddEffect("GemPyre", nil, 100, 1, nil, nil, [GetX(), GetY()], has_graphics_e, this->GetOwner(), thrower_owner);
 	RemoveObject();
 }
 
