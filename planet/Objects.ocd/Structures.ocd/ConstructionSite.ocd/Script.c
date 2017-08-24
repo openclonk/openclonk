@@ -164,7 +164,7 @@ public func RejectCollect(id def, object obj)
 		return true;
 	}
 	// Reject collection if full
-	return ContentsCount(def) >= max;
+	return GetAvailableComponentCount(def) >= max;
 }
 
 // Check if full
@@ -263,18 +263,18 @@ private func GetMissingComponents()
 	full_material = true;
 	
 	// Check for material
-	var comp, index = 0;
+	var component, index = 0;
 	var missing_material = CreateArray();
-	while (comp = definition->GetComponent(nil, index))
+	while (component = definition->GetComponent(nil, index))
 	{
 		// Find material
-		var max_amount = definition->GetComponent(comp);
-		var c = ContentsCount(comp);
-		var dif = max_amount-c;
+		var max_amount = definition->GetComponent(component);
+		var current_amount = GetAvailableComponentCount(component);
+		var diff = max_amount - current_amount;
 		
-		if (dif > 0)
+		if (diff > 0)
 		{
-			PushBack(missing_material, {id=comp, count=dif});
+			PushBack(missing_material, {id=component, count=diff});
 			full_material = false;
 		}		
 		
@@ -417,3 +417,12 @@ private func TakeConstructionMaterials(object from_clonk)
 		}
 	}
 }
+
+// Gets the number of available components of a type.
+// This defaults to ContentsCount(), but can be overloaded
+// for implementations of the construction site.
+private func GetAvailableComponentCount(id component)
+{
+	return ContentsCount(component);
+}
+
