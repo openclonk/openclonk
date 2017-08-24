@@ -1,2 +1,22 @@
 Name=Goldene Statue
 Description=Ein wertvolles Kunststück
+
+ChoosePose=Pose setzen
+ChoosePoseHelp=Ändert die Aktion der Statue.
+
+PoseDefaultName=Standard
+PoseDefaultHelp=Die Statue hat die Arme an der Seite.
+PoseItemLeftLowName=Gegenstand links
+PoseItemLeftLowHelp=Die Statue trägt in der linken Hand einen Gegenstand.
+PoseItemLeftHighName=Gegenstand links, erhoben
+PoseItemLeftHighHelp=Die Statue streckt mit der linken Hand einen Gegenstand nach oben.
+PoseItemRightLowName=Gegenstand rechts
+PoseItemRightLowHelp=Die Statue trägt in der rechten Hand einen Gegenstand-
+PoseItemRightHighName=Gegenstand rechts, erhoben
+PoseItemRightHighHelp=Die Statue streckt mit der rechten Hand einen Gegenstand nach oben.
+PoseItemCentralName=Gegenstand mittig
+PoseItemCentralHelp=Die Statue trägt mit beiden Händen einen Gegenstand vor sich.
+
+ChooseItemLeft=Linke Hand
+ChooseItemRight=Rechte Hand
+ChooseItemHelp=Legt einen dekorativen Gegenstand in die Hand der Statue.

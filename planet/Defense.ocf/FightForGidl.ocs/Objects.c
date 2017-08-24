@@ -12,8 +12,12 @@ func InitializeObjects()
 	
 	CreateObject(Rule_NoFriendlyFire, 0, 0);
 
-	g_statue = CreateObjectAbove(Idol, 632, 445);
+	g_statue = CreateObjectAbove(Idol, 632, 440);
 	g_statue.StaticSaveVar = "g_statue";
+	g_statue.Touchable = 0;
+	g_statue->SetAction("ItemRightHigh");
+	g_statue->EditorSetItemLeft({Bone = "main", MeshTransformation = [0, 0, 1200, 0, 1200, 0, 0, 0, 0, 1200, 0, -1200], Type = Shield});
+	g_statue->EditorSetItemRight({Bone = "Javelin", MeshTransformation = [-1500, 0, 0, 0, 0, -1500, 0, 0, 0, 0, 1500, 0], Type = Javelin});
 
 	g_doorleft = CreateObjectAbove(StoneDoor, 495, 449);
 	g_doorleft->SetComDir(COMD_Down);
