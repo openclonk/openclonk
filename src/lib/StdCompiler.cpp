@@ -307,19 +307,16 @@ void StdCompilerINIWrite::Character(char &rChar)
 
 void StdCompilerINIWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-	const char *cszString = szString;
-	String(cszString, iMaxLength, eType);
+	StringN(szString, strnlen(szString, iMaxLength), eType);
 }
 
-void StdCompilerINIWrite::String(const char *szString, size_t iMaxLength, RawCompileType eType)
+void StdCompilerINIWrite::StringN(const char *szString, size_t iLength, RawCompileType eType)
 {
 	PrepareForValue();
-	if (iMaxLength == 0)
-		iMaxLength = strlen(szString);
 	switch (eType)
 	{
 	case RCT_Escaped:
-		WriteEscaped(szString, szString + iMaxLength);
+		WriteEscaped(szString, szString + iLength);
 		break;
 	case RCT_All:
 	case RCT_Idtf:
@@ -353,7 +350,7 @@ void StdCompilerINIWrite::Raw(void *pData, size_t iSize, RawCompileType eType)
 
 void StdCompilerINIWrite::String(std::string &str, RawCompileType type)
 {
-	String(&str[0], str.size(), type);
+	StringN(str.c_str(), str.size(), type);
 }
 
 void StdCompilerINIWrite::Begin()
