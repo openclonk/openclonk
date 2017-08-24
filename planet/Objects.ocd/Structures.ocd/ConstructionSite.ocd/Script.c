@@ -290,19 +290,31 @@ private func StartConstructing(int by_player)
 		return;
 
 	is_constructing = true;
-	
-	// find all objects on the bottom of the area that are not stuck
-	var wdt = GetObjWidth();
-	var hgt = GetObjHeight();
-	var lying_around = FindObjects(Find_Category(C4D_Vehicle | C4D_Object | C4D_Living), Find_AtRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_OCF(OCF_InFree), Find_NoContainer());
-	
-	// create the construction, below surface constructions don't perform any checks.
-	// uncancellable sites (for special game goals) are forced and don't do checks either
-	var site;
-	var checks = !definition->~IsBelowSurfaceConstruction() && !no_cancel;
-	if (!(site = CreateConstruction(definition, 0, 0, GetOwner(), 1, checks, checks)))
+
+	// Find all objects on the bottom of the area that are not stuck
+	var lying_around = GetObjectsLyingAround();
+
+	// Create the site?
+	var site = CreateConstructionSite();
+	if (site)
 	{
-		// spit out error message. This could happen if the landscape changed in the meantime
+		StartConstructionEffect(site, by_player);
+	}
+	
+	// Clean up stuck objects
+	EnsureObjectsLyingAround(lying_around);
+}
+
+// Create the construction, below surface constructions don't perform any checks.
+// Uncancellable sites (for special game goals) are forced and don't do checks either
+private func CreateConstructionSite()
+{
+	var checks = !definition->~IsBelowSurfaceConstruction() && !no_cancel;
+	var site = CreateConstruction(definition, 0, 0, GetOwner(), 1, checks, checks);
+
+	if (!site)
+	{
+		// Spit out error message. This could happen if the landscape changed in the meantime
 		// a little hack: the message would immediately vanish because this object is deleted. So, instead display the
 		// message on one of the contents.
 		if (Contents(0))
@@ -310,9 +322,10 @@ private func StartConstructing(int by_player)
 			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil,nil, RGB(255, 0, 0));
 		}
 		Deconstruct();
-		return;
+		return nil;
 	}
-	
+
+	// Apply direction
 	if (direction)
 	{
 		site->SetDir(direction);
@@ -323,6 +336,11 @@ private func StartConstructing(int by_player)
 		site->CombineWith(stick_to);
 	}
 	
+	return site;
+}
+
+private func StartConstructionEffect(object site, int by_player)
+{
 	// Object provides custom construction effects?
 	if (!site->~DoConstructionEffects(this))
 	{
@@ -331,50 +349,6 @@ private func StartConstructing(int by_player)
 		Schedule(this, "RemoveObject()", 1);
 		Global->ScheduleCall(nil, Global.GameCallEx, 51, 1, "OnConstructionFinished", site, by_player);
 		site->Sound("Structures::FinishBuilding");
-	}
-	
-	// Clean up stuck objects
-	for (var thing in lying_around)
-	{
-		if (!thing) continue;
-		
-		var x, y;
-		var moved = 0;
-		
-		x = thing->GetX();
-		y = thing->GetY();
-		
-		// Move living creatures upwards till they stand on top.
-		if (thing->GetOCF() & OCF_Alive)
-		{
-			while (thing->GetContact(-1, CNAT_Bottom))
-			{
-				// Only up to 20 pixel
-				if (moved > 20)
-				{
-					thing->SetPosition(x, y);
-					break;
-				}
-				
-				moved++;
-				thing->SetPosition(x, y - moved);
-			}
-		}
-		else
-		{
-			while (thing->Stuck())
-			{
-				// Only up to 20 pixel
-				if (moved > 20)
-				{
-					thing->SetPosition(x, y);
-					break;
-				}
-				
-				moved++;
-				thing->SetPosition(x, y - moved);
-			}
-		}
 	}
 }
 
@@ -424,5 +398,60 @@ private func TakeConstructionMaterials(object from_clonk)
 private func GetAvailableComponentCount(id component)
 {
 	return ContentsCount(component);
+}
+
+// Find all objects on the bottom of the area that are not stuck
+private func GetObjectsLyingAround()
+{
+	var wdt = GetObjWidth();
+	var hgt = GetObjHeight();
+	return FindObjects(Find_Category(C4D_Vehicle | C4D_Object | C4D_Living), Find_AtRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_OCF(OCF_InFree), Find_NoContainer());
+}
+
+// Clean up stuck objects
+private func EnsureObjectsLyingAround(array lying_around)
+{
+	for (var thing in lying_around)
+	{
+		if (!thing) continue;
+		
+		var x, y;
+		var moved = 0;
+		
+		x = thing->GetX();
+		y = thing->GetY();
+		
+		// Move living creatures upwards till they stand on top.
+		if (thing->GetOCF() & OCF_Alive)
+		{
+			while (thing->GetContact(-1, CNAT_Bottom))
+			{
+				// Only up to 20 pixel
+				if (moved > 20)
+				{
+					thing->SetPosition(x, y);
+					break;
+				}
+				
+				moved++;
+				thing->SetPosition(x, y - moved);
+			}
+		}
+		else
+		{
+			while (thing->Stuck())
+			{
+				// Only up to 20 pixel
+				if (moved > 20)
+				{
+					thing->SetPosition(x, y);
+					break;
+				}
+				
+				moved++;
+				thing->SetPosition(x, y - moved);
+			}
+		}
+	}
 }
 
