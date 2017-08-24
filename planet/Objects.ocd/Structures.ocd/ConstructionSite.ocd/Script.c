@@ -170,27 +170,13 @@ public func RejectCollect(id def, object obj)
 // Check if full
 public func Collection2(object obj)
 {
-	// Ignore any activity during construction
-	if (is_constructing) return;
-	
-	// Update message
-	ShowMissingComponents();
-	
-	// Update possibly open menus.
-	UpdateInteractionMenus(this.GetMissingMaterialMenuEntries);
-	
-	// Update preview image
-	if (definition) definition->~SetConstructionSiteOverlay(this, direction, stick_to, obj);
-	
-	// Check if we're done?
-	if (full_material)
-		StartConstructing(obj->GetController());
+	UpdateStatus(obj);
 }
 
 // Component removed (e.g.: Contained wood burned down or some externel scripts went havoc)
 // Make sure lists are updated
-public func ContentsDestruction(object obj) { return Collection2(nil); }
-public func Ejection(object obj) { return Collection2(nil); }
+public func ContentsDestruction(object obj) { return UpdateStatus(); }
+public func Ejection(object obj) { return UpdateStatus(); }
 
 /*-- Internals --*/
 
@@ -233,6 +219,31 @@ public func Set(id def, int dir, object stick)
 	return;
 }
 
+
+private func UpdateStatus(object item)
+{
+	// Ignore any activity during construction
+	if (is_constructing) return;
+	
+	// Update message
+	ShowMissingComponents();
+	
+	// Update possibly open menus.
+	UpdateInteractionMenus(this.GetMissingMaterialMenuEntries);
+	
+	// Update preview image
+	if (definition) definition->~SetConstructionSiteOverlay(this, direction, stick_to, item);
+	
+	// Check if we're done?
+	if (full_material)
+	{
+		var controller = GetOwner();
+		if (item) controller = item->GetController();
+		StartConstructing(controller);
+	}
+}
+
+
 private func ShowMissingComponents()
 {
 	if (definition == nil)
@@ -250,6 +261,7 @@ private func ShowMissingComponents()
 	var dy = 23 - Max(23 + GetY() - LandscapeHeight(), 0) / 2;
 	CustomMessage(msg, this, NO_OWNER, 0, dy);
 }
+
 
 private func GetMissingComponents()
 {
@@ -284,6 +296,7 @@ private func GetMissingComponents()
 	return missing_material;
 }
 
+
 private func StartConstructing(int by_player)
 {
 	if (!definition || !full_material)
@@ -304,6 +317,7 @@ private func StartConstructing(int by_player)
 	// Clean up stuck objects
 	EnsureObjectsLyingAround(lying_around);
 }
+
 
 // Create the construction, below surface constructions don't perform any checks.
 // Uncancellable sites (for special game goals) are forced and don't do checks either
@@ -339,6 +353,7 @@ private func CreateConstructionSite()
 	return site;
 }
 
+
 private func StartConstructionEffect(object site, int by_player)
 {
 	// Object provides custom construction effects?
@@ -351,6 +366,7 @@ private func StartConstructionEffect(object site, int by_player)
 		site->Sound("Structures::FinishBuilding");
 	}
 }
+
 
 private func TakeConstructionMaterials(object from_clonk)
 {
@@ -392,6 +408,7 @@ private func TakeConstructionMaterials(object from_clonk)
 	}
 }
 
+
 // Gets the number of available components of a type.
 // This defaults to ContentsCount(), but can be overloaded
 // for implementations of the construction site.
@@ -400,6 +417,7 @@ private func GetAvailableComponentCount(id component)
 	return ContentsCount(component);
 }
 
+
 // Find all objects on the bottom of the area that are not stuck
 private func GetObjectsLyingAround()
 {
@@ -407,6 +425,7 @@ private func GetObjectsLyingAround()
 	var hgt = GetObjHeight();
 	return FindObjects(Find_Category(C4D_Vehicle | C4D_Object | C4D_Living), Find_AtRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_OCF(OCF_InFree), Find_NoContainer());
 }
+
 
 // Clean up stuck objects
 private func EnsureObjectsLyingAround(array lying_around)
