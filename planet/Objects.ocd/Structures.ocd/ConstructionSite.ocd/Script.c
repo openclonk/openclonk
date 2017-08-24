@@ -5,16 +5,16 @@
 	@author boni
 */
 
-local definition;
+local definition;		// this definition is being built here
 local direction;
 local stick_to;
-local full_material; // true when all needed material is in the site
-local no_cancel; // if true, site cannot be cancelled
+local full_material;	// true when all needed material is in the site
+local no_cancel;		// if true, site cannot be cancelled
 local is_constructing;
 
 // This should be recongnized as a container by the interaction menu independent of its category.
 public func IsContainer() { return !full_material; }
-// disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
+// Disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
 public func MakeUncancellable() { no_cancel = true; return true; }
 
 /*-- Testing / Development --*/
@@ -33,7 +33,7 @@ public func HasInteractionMenu() { return true; }
 
 public func GetInteractionMenuEntries(object clonk)
 {
-	// default design of a control menu item
+	// Default design of a control menu item
 	var custom_entry = 
 	{
 		Right = "100%", Bottom = "2em",
@@ -114,17 +114,24 @@ public func OnInteractionControl(id symbol, string action, object clonk)
 	}
 }
 
+/*-- Engine callbacks --*/
+
 public func Deconstruct()
 {
-	// Remove Site
-	if (!no_cancel)
+	// Remove site
+	if (no_cancel)
 	{
-		for(var obj in FindObjects(Find_Container(this)))
-			obj->Exit();
+		return false;
+	}
+	else
+	{
+		for (var contained in FindObjects(Find_Container(this)))
+		{
+			contained->Exit();
+		}
 		RemoveObject();
 		return true;
 	}
-	return false;
 }
 
 public func Construction()
@@ -135,6 +142,57 @@ public func Construction()
 	
 	return true;
 }
+
+// Scenario saving
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Name");
+	if (definition) props->AddCall("Definition", this, "Set", definition, direction, stick_to);
+	if (no_cancel) props->AddCall("NoCancel", this, "MakeUncancellable");
+	return true;
+}
+
+// Only allow collection if needed
+public func RejectCollect(id def, object obj)
+{
+	var max = definition->GetComponent(def);
+	
+	// Not a component?
+	if (max == 0)
+	{
+		return true;
+	}
+	// Reject collection if full
+	return ContentsCount(def) >= max;
+}
+
+// Check if full
+public func Collection2(object obj)
+{
+	// Ignore any activity during construction
+	if (is_constructing) return;
+	
+	// Update message
+	ShowMissingComponents();
+	
+	// Update possibly open menus.
+	UpdateInteractionMenus(this.GetMissingMaterialMenuEntries);
+	
+	// Update preview image
+	if (definition) definition->~SetConstructionSiteOverlay(this, direction, stick_to, obj);
+	
+	// Check if we're done?
+	if (full_material)
+		StartConstructing(obj->GetController());
+}
+
+// Component removed (e.g.: Contained wood burned down or some externel scripts went havoc)
+// Make sure lists are updated
+public func ContentsDestruction(object obj) { return Collection2(nil); }
+public func Ejection(object obj) { return Collection2(nil); }
+
+/*-- Internals --*/
 
 public func Set(id def, int dir, object stick)
 {
@@ -175,55 +233,6 @@ public func Set(id def, int dir, object stick)
 	return;
 }
 
-// Scenario saving
-func SaveScenarioObject(props)
-{
-	if (!inherited(props, ...)) return false;
-	props->Remove("Name");
-	if (definition) props->AddCall("Definition", this, "Set", definition, direction, stick_to);
-	if (no_cancel) props->AddCall("NoCancel", this, "MakeUncancellable");
-	return true;
-}
-
-// only allow collection if needed
-public func RejectCollect(id def, object obj)
-{
-	var max = definition->GetComponent(def);
-	
-	// not a component?
-	if (max == 0)
-		return true;
-	if (ContentsCount(def) < max)
-		return false;
-	
-	return true;
-}
-
-// check if full
-public func Collection2(object obj)
-{
-	// Ignore any activity during construction
-	if (is_constructing) return;
-	
-	// update message
-	ShowMissingComponents();
-	
-	// Update possibly open menus.
-	UpdateInteractionMenus(this.GetMissingMaterialMenuEntries);
-	
-	// Update preview image
-	if (definition) definition->~SetConstructionSiteOverlay(this, direction, stick_to, obj);
-	
-	// check if we're done?
-	if(full_material)
-		StartConstructing(obj->GetController());
-}
-
-// component removed (e.g.: Contained wood burned down or some externel scripts went havoc)
-// Make sure lists are updated
-public func ContentsDestruction(object obj) { return Collection2(nil); }
-public func Ejection(object obj) { return Collection2(nil); }
-
 private func ShowMissingComponents()
 {
 	if (definition == nil)
@@ -244,26 +253,26 @@ private func ShowMissingComponents()
 
 private func GetMissingComponents()
 {
-	if(definition == nil)
+	if (definition == nil)
 		return;
 	
-	if(full_material == true)
+	if (full_material == true)
 		return nil;
 	
-	// set false again as soon as we find a missing component
+	// Set false again as soon as we find a missing component
 	full_material = true;
 	
-	// check for material
+	// Check for material
 	var comp, index = 0;
 	var missing_material = CreateArray();
 	while (comp = definition->GetComponent(nil, index))
 	{
-		// find material
+		// Find material
 		var max_amount = definition->GetComponent(comp);
 		var c = ContentsCount(comp);
 		var dif = max_amount-c;
 		
-		if(dif > 0)
+		if (dif > 0)
 		{
 			PushBack(missing_material, {id=comp, count=dif});
 			full_material = false;
@@ -324,7 +333,7 @@ private func StartConstructing(int by_player)
 		site->Sound("Structures::FinishBuilding");
 	}
 	
-	// clean up stuck objects
+	// Clean up stuck objects
 	for (var thing in lying_around)
 	{
 		if (!thing) continue;
@@ -335,12 +344,12 @@ private func StartConstructing(int by_player)
 		x = thing->GetX();
 		y = thing->GetY();
 		
-		// move living creatures upwards till they stand on top.
-		if(thing->GetOCF() & OCF_Alive)
+		// Move living creatures upwards till they stand on top.
+		if (thing->GetOCF() & OCF_Alive)
 		{
 			while (thing->GetContact(-1, CNAT_Bottom))
 			{
-				// only up to 20 pixel
+				// Only up to 20 pixel
 				if (moved > 20)
 				{
 					thing->SetPosition(x, y);
@@ -355,7 +364,7 @@ private func StartConstructing(int by_player)
 		{
 			while (thing->Stuck())
 			{
-				// only up to 20 pixel
+				// Only up to 20 pixel
 				if (moved > 20)
 				{
 					thing->SetPosition(x, y);
@@ -371,7 +380,7 @@ private func StartConstructing(int by_player)
 
 private func TakeConstructionMaterials(object from_clonk)
 {
-	// check for material
+	// Check for material
 	var component, index = 0;
 	var materials;
 	var w = definition->GetDefWidth() + 10;
@@ -379,20 +388,20 @@ private func TakeConstructionMaterials(object from_clonk)
 
 	while (component = definition->GetComponent(nil, index))
 	{
-		// find material
+		// Find material
 		var count_needed = definition->GetComponent(component);
 		index++;
 		
 		materials = CreateArray();
-		// 1. look for stuff in the clonk
+		// 1. Look for stuff in the clonk
 		materials[0] = FindObjects(Find_ID(component), Find_Container(from_clonk));
-		// 2. look for stuff lying around
+		// 2. Look for stuff lying around
 		materials[1] = from_clonk->FindObjects(Find_ID(component), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
-		// 3. look for stuff in nearby lorries/containers
+		// 3. Look for stuff in nearby lorries/containers
 		var i = 2;
-		for(var container in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
+		for (var container in from_clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
 			materials[i] = FindObjects(Find_ID(component), Find_Container(container));
-		// move it
+		// Move it
 		for (var material_list in materials)
 		{
 			for (var material in material_list)
