@@ -330,7 +330,8 @@ void StdCompilerINIWrite::String(char **pszString, RawCompileType eType)
 {
 	assert(pszString);
 	char cNull = '\0';
-	String(*pszString ? *pszString : &cNull, 0, eType);
+	char * szString = *pszString ? *pszString : &cNull;
+	String(szString, strlen(szString), eType);
 }
 
 void StdCompilerINIWrite::Raw(void *pData, size_t iSize, RawCompileType eType)
