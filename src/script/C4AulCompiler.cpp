@@ -339,9 +339,10 @@ private:
 
 	explicit ConstexprEvaluator(C4ScriptHost *host) : host(host) {}
 
-	NORETURN void nonconst(const ::aul::ast::Node *n) const
+	template<typename... T>
+	NORETURN void nonconst(const ::aul::ast::Node *n, const char *msg, T&&...args) const
 	{
-		throw ExpressionNotConstant(host, n, nullptr, nullptr);
+		throw ExpressionNotConstant(host, n, msg, std::forward<T>(args)...);
 	}
 
 	void AssertValueType(const C4Value &v, C4V_Type Type1, const char *opname, const ::aul::ast::Node *n)
@@ -354,8 +355,9 @@ public:
 	class ExpressionNotConstant : public C4AulParseError
 	{
 	public:
-		ExpressionNotConstant(const C4ScriptHost *host, const ::aul::ast::Node *n, C4AulScriptFunc *Fn, const char *expr) :
-			C4AulParseError(Error(host, host, n, Fn, "expression not constant: %s", expr)) {}
+		template<typename... T>
+		ExpressionNotConstant(const C4ScriptHost *host, const ::aul::ast::Node *n, const char *reason, T&&...args) :
+			C4AulParseError(Error(host, host, n, nullptr, reason, std::forward<T>(args)...)) {}
 	};
 
 	using AstVisitor::visit;
@@ -1818,7 +1820,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ProplistLit *n)
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::NilLit *) { v = C4VNull; }
 
-void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ThisLit *n) { nonconst(n); }
+void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::ThisLit *n) { nonconst(n, "\"this\" is not a global constant"); }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::VarExpr *n)
 {
@@ -1835,7 +1837,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::VarExpr *n)
 		return;
 	}
 
-	nonconst(n);
+	nonconst(n, "the variable \"%s\" is not a global constant", cname);
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::UnOpExpr *n)
@@ -1844,7 +1846,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::UnOpExpr *n)
 	assert(n->op > 0);
 	const auto &op = C4ScriptOpMap[n->op];
 	if (op.Changer)
-		nonconst(n);
+		nonconst(n, "unary operator %s is applied in a non-const fashion", op.Identifier);
 	AssertValueType(v, op.Type1, op.Identifier, n);
 	switch (op.Code)
 	{
@@ -1868,7 +1870,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::BinOpExpr *n)
 	assert(n->op > 0);
 	const auto &op = C4ScriptOpMap[n->op];
 	if (op.Changer)
-		nonconst(n);
+		nonconst(n, "binary operator %s is applied in a non-const fashion", op.Identifier);
 
 	n->lhs->accept(this);
 	C4Value lhs = v;
@@ -1938,7 +1940,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::BinOpExpr *n)
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::AssignmentExpr *n)
 {
-	nonconst(n);
+	nonconst(n, "updating assignment used in a non-const fashion");
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::SubscriptExpr *n)
@@ -1984,7 +1986,7 @@ void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::SliceExpr *n)
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::CallExpr *n)
 {
 	// TODO: allow side-effect-free calls here
-	nonconst(n);
+	nonconst(n, "call to function (%s) not supported in constant expressions", n->callee.c_str());
 }
 
 void C4AulCompiler::ConstexprEvaluator::visit(const ::aul::ast::FunctionExpr *n)
