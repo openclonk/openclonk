@@ -258,7 +258,7 @@ private func ExecuteRanged(effect fx)
 	if (fx.post_aim_weapon)
 	{
 		// wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot)
-		if (FrameCounter() - fx.post_aim_weapon_time <= (fx.post_aim_weapon->~GetShootTime() ? ? 35))
+		if (FrameCounter() - fx.post_aim_weapon_time <= (fx.post_aim_weapon->~GetShootTime() ?? 35))
 			if (this->IsAimingOrLoading(fx)) return true;
 		fx.post_aim_weapon = nil;
 	}
