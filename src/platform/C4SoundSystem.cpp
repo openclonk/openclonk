@@ -128,7 +128,9 @@ C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int
 	if (!(csfx = GetEffect(szSndName)))
 	{
 		// Warn about missing or incorrectly spelled sound to allow finding mistakes earlier.
+#if !defined(USE_CONSOLE)
 		DebugLogF("Warning: could not find sound matching '%s'", szSndName);
+#endif
 		return nullptr;
 	}
 	// Play
