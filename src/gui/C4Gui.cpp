@@ -752,7 +752,7 @@ namespace C4GUI
 			if (!pFSDlg || !pFSDlg->HasBackground())
 			{
 				if (::GraphicsSystem.pLoaderScreen)
-					::GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
+					::GraphicsSystem.pLoaderScreen->Draw(cgo, C4LoaderScreen::Flag::BACKGROUND);
 				else
 					// loader not yet loaded: black BG
 					pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt+1, cgo.Hgt+1, 0x00000000);

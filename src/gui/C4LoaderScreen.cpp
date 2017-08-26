@@ -25,6 +25,11 @@
 #include "lib/C4LogBuf.h"
 #include "lib/C4Random.h"
 
+// allow combination of loader flags
+inline C4LoaderScreen::Flag operator|(C4LoaderScreen::Flag a, C4LoaderScreen::Flag b) {
+	return static_cast<C4LoaderScreen::Flag>(static_cast<int>(a) | static_cast<int>(b));
+}
+
 C4LoaderScreen::C4LoaderScreen()
 {
 	// zero fields
@@ -38,33 +43,21 @@ C4LoaderScreen::~C4LoaderScreen()
 	if (szInfo) delete [] szInfo;
 }
 
-bool C4LoaderScreen::Init(const char *szLoaderSpec)
+bool C4LoaderScreen::Init(std::string loaderSpec)
 {
 	// Determine loader specification
-	if (!szLoaderSpec || !szLoaderSpec[0])
-		szLoaderSpec = "Loader*";
-	char szLoaderSpecPng[128 + 1 + 4], szLoaderSpecBmp[128 + 1 + 4];
-	char szLoaderSpecJpg[128 + 1 + 4], szLoaderSpecJpeg[128 + 1 + 5];
-	SCopy(szLoaderSpec, szLoaderSpecPng); DefaultExtension(szLoaderSpecPng, "png");
-	SCopy(szLoaderSpec, szLoaderSpecBmp); DefaultExtension(szLoaderSpecBmp, "bmp");
-	SCopy(szLoaderSpec, szLoaderSpecJpg); DefaultExtension(szLoaderSpecJpg, "jpg");
-	SCopy(szLoaderSpec, szLoaderSpecJpeg); DefaultExtension(szLoaderSpecJpeg, "jpeg");
-	int iLoaders=0;
-	C4Group *pGroup=nullptr,*pChosenGrp=nullptr;
-	char ChosenFilename[_MAX_PATH+1];
+	if (loaderSpec.empty())
+		loaderSpec = "Loader*";
+
+	C4Group *pGroup = nullptr;
 	// query groups of equal priority in set
 	while ((pGroup=Game.GroupSet.FindGroup(C4GSCnt_Loaders, pGroup, true)))
 	{
-		iLoaders+=SeekLoaderScreens(*pGroup, szLoaderSpecPng, iLoaders, ChosenFilename, &pChosenGrp);
-		iLoaders+=SeekLoaderScreens(*pGroup, szLoaderSpecJpeg, iLoaders, ChosenFilename, &pChosenGrp);
-		iLoaders+=SeekLoaderScreens(*pGroup, szLoaderSpecJpg, iLoaders, ChosenFilename, &pChosenGrp);
-		// lower the chance for any loader other than png
-		iLoaders*=2;
-		iLoaders+=SeekLoaderScreens(*pGroup, szLoaderSpecBmp, iLoaders, ChosenFilename, &pChosenGrp);
+		SeekLoaderScreens(*pGroup, loaderSpec);
 	}
 	// nothing found? seek in main gfx grp
 	C4Group GfxGrp;
-	if (!iLoaders)
+	if (loaders.empty())
 	{
 		// open it
 		GfxGrp.Close();
@@ -73,31 +66,29 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 			LogFatal(FormatString(LoadResStr("IDS_PRC_NOGFXFILE"),C4CFN_Graphics,GfxGrp.GetError()).getData());
 			return false;
 		}
-		// seek for png-loaders
-		iLoaders=SeekLoaderScreens(GfxGrp, szLoaderSpecPng, iLoaders, ChosenFilename, &pChosenGrp);
-		iLoaders+=SeekLoaderScreens(GfxGrp, szLoaderSpecJpg, iLoaders, ChosenFilename, &pChosenGrp);
-		iLoaders+=SeekLoaderScreens(GfxGrp, szLoaderSpecJpeg, iLoaders, ChosenFilename, &pChosenGrp);
-		iLoaders*=2;
-		// seek for bmp-loaders
-		iLoaders+=SeekLoaderScreens(GfxGrp, szLoaderSpecBmp, iLoaders, ChosenFilename, &pChosenGrp);
+		// seek for loaders
+		SeekLoaderScreens(GfxGrp, loaderSpec);
+
 		// Still nothing found: fall back to general loader spec in main graphics group
-		if (!iLoaders)
+		if (loaders.empty())
 		{
-			iLoaders = SeekLoaderScreens(GfxGrp, "Loader*.png", 0, ChosenFilename, &pChosenGrp);
-			iLoaders += SeekLoaderScreens(GfxGrp, "Loader*.jpg", iLoaders, ChosenFilename, &pChosenGrp);
-			iLoaders += SeekLoaderScreens(GfxGrp, "Loader*.jpeg", iLoaders, ChosenFilename, &pChosenGrp);
+			SeekLoaderScreens(GfxGrp, "Loader*");
 		}
 		// Not even default loaders available? Fail.
-		if (!iLoaders)
+		if (loaders.empty())
 		{
-			LogFatal(FormatString("No loaders found for loader specification: %s/%s/%s/%s", szLoaderSpecPng, szLoaderSpecBmp, szLoaderSpecJpg, szLoaderSpecJpeg).getData());
+			LogFatal(FormatString("No loaders found for loader specification: %s", loaderSpec.c_str()).getData());
 			return false;
 		}
 	}
 
+	// choose random loader
+	auto entry = loaders.begin();
+	std::advance(entry, UnsyncedRandom(loaders.size()));
+
 	// load loader
 	fctBackground.GetFace().SetBackground();
-	if (!fctBackground.Load(*pChosenGrp,ChosenFilename, C4FCT_Full,C4FCT_Full,true,0)) return false;
+	if (!fctBackground.Load(*(entry->first), entry->second.c_str(), C4FCT_Full, C4FCT_Full, true, 0)) return false;
 
 	// load info
 	if (szInfo) { delete [] szInfo; szInfo=nullptr; }
@@ -113,29 +104,25 @@ void C4LoaderScreen::SetBlackScreen(bool fIsBlack)
 	// will be updated when drawn next time
 }
 
-int C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard, int iLoaderCount, char *szDstName, C4Group **ppDestGrp)
+void C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const std::string wildcard)
 {
-	bool fFound;
-	int iLocalLoaders=0;
-	char Filename[_MAX_PATH+1];
-	for (fFound=rFromGrp.FindEntry(szWildcard, Filename); fFound; fFound=rFromGrp.FindNextEntry(szWildcard, Filename))
+	// seek for png, jpg, jpeg, bmp
+	char filename[_MAX_PATH + 1];
+	for (bool found = rFromGrp.FindEntry(wildcard.c_str(), filename); found; found = rFromGrp.FindNextEntry(wildcard.c_str(), filename))
 	{
-		// loader found; choose it, if Daniel wants it that way
-		++iLocalLoaders;
-		if (!UnsyncedRandom(++iLoaderCount))
-		{
-			// copy group and path
-			*ppDestGrp=&rFromGrp;
-			SCopy(Filename, szDstName, _MAX_PATH);
+		// potential candidate - check file extension
+		std::string extension{ GetExtension(filename) };
+		if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp") {
+			auto loader = std::pair<C4Group*, std::string>{ &rFromGrp, std::string(filename) };
+			loaders.emplace(loader);
 		}
 	}
-	return iLocalLoaders;
 }
 
-void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Process)
+void C4LoaderScreen::Draw(C4Facet &cgo, Flag options, int iProgress, C4LogBuffer *pLog, int Process)
 {
 	// simple black screen loader?
-	if (fBlackScreen)
+	if (fBlackScreen || options == Flag::BLACK)
 	{
 		pDraw->FillBG();
 		return;
@@ -151,47 +138,61 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	CStdFont &LogFont=::GraphicsResource.FontTiny, &rProgressBarFont=::GraphicsResource.FontRegular;
 	CStdFont &TitleFont = ::GraphicsResource.FontTitle;
 	float fLogBoxFontZoom=1.0f;
-	// Background (loader)
-	fctBackground.DrawFullScreen(cgo);
-	// draw scenario title
-	pDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.GetLineHeight(), 0xdddddddd, ARight, false);
-	//
-	// draw progress bar
-	pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
-	int iProgressBarWdt=cgo.Wdt-iHIndent*2-2;
-	if (::GraphicsResource.fctProgressBar.Surface)
-	{
-		::GraphicsResource.fctProgressBar.DrawX(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iProgressBarWdt*iProgress/100, iProgressBarHgt-2);
+
+	if (options & Flag::BACKGROUND) {
+		// Background (loader)
+		fctBackground.DrawFullScreen(cgo);
 	}
-	else
-	{
-		pDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
+
+	if (options & Flag::TITLE) {
+		// draw scenario title
+		pDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt - iHIndent, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin - iProgressBarHgt - iVMargin - TitleFont.GetLineHeight(), 0xdddddddd, ARight, false);
 	}
-	pDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
-	                             cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.GetLineHeight()/2-iProgressBarHgt/2, 0xffffffff,
-	                             ACenter, true);
-	// draw log box
-	if (pLog)
-	{
-		pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
-		int iLineHgt=int(fLogBoxFontZoom*LogFont.GetLineHeight()); if (!iLineHgt) iLineHgt=5;
-		int iLinesVisible = (iLogBoxHgt-2*iLogBoxMargin)/iLineHgt;
-		int iX = iHIndent+iLogBoxMargin;
-		int iY = cgo.Hgt-iVIndent-iLogBoxHgt+iLogBoxMargin;
-		int32_t w,h;
-		for (int i = -iLinesVisible; i < 0; ++i)
+
+	if (options & Flag::PROGRESS) {
+		// draw progress bar
+		pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin - iProgressBarHgt, cgo.Wdt - iHIndent, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin, 0xb0000000);
+		int iProgressBarWdt = cgo.Wdt - iHIndent * 2 - 2;
+		if (::GraphicsResource.fctProgressBar.Surface)
 		{
-			const char *szLine = pLog->GetLine(i, nullptr, nullptr, nullptr);
-			if (!szLine || !*szLine) continue;
-			LogFont.GetTextExtent(szLine, w,h, true);
-			pDraw->TextOut(szLine,LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
-			iY += h;
+			::GraphicsResource.fctProgressBar.DrawX(cgo.Surface, iHIndent + 1, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin - iProgressBarHgt + 1, iProgressBarWdt*iProgress / 100, iProgressBarHgt - 2);
 		}
-		// append process text
-		if (Process)
+		else
 		{
-			iY -= h; iX += w;
-			pDraw->TextOut(FormatString("%i%%", (int) Process).getData(),LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
+			pDraw->DrawBoxDw(cgo.Surface, iHIndent + 1, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin - iProgressBarHgt + 1, iHIndent + 1 + iProgressBarWdt*iProgress / 100, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin - 1, 0xb0ff0000);
+		}
+		pDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
+			cgo.Wdt / 2, cgo.Hgt - iVIndent - iLogBoxHgt - iVMargin - rProgressBarFont.GetLineHeight() / 2 - iProgressBarHgt / 2, 0xffffffff,
+			ACenter, true);
+	}
+
+	if (options & Flag::LOG) {
+		// draw log box
+		if (pLog)
+		{
+			pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt - iVIndent - iLogBoxHgt, cgo.Wdt - iHIndent, cgo.Hgt - iVIndent, 0x7f000000);
+			int iLineHgt = int(fLogBoxFontZoom*LogFont.GetLineHeight()); if (!iLineHgt) iLineHgt = 5;
+			int iLinesVisible = (iLogBoxHgt - 2 * iLogBoxMargin) / iLineHgt;
+			int iX = iHIndent + iLogBoxMargin;
+			int iY = cgo.Hgt - iVIndent - iLogBoxHgt + iLogBoxMargin;
+			int32_t w, h;
+			for (int i = -iLinesVisible; i < 0; ++i)
+			{
+				const char *szLine = pLog->GetLine(i, nullptr, nullptr, nullptr);
+				if (!szLine || !*szLine) continue;
+				LogFont.GetTextExtent(szLine, w, h, true);
+				pDraw->TextOut(szLine, LogFont, fLogBoxFontZoom, cgo.Surface, iX, iY);
+				iY += h;
+			}
+
+			if (options & Flag::PROCESS) {
+				// append process text
+				if (Process)
+				{
+					iY -= h; iX += w;
+					pDraw->TextOut(FormatString("%i%%", (int)Process).getData(), LogFont, fLogBoxFontZoom, cgo.Surface, iX, iY);
+				}
+			}
 		}
 	}
 }

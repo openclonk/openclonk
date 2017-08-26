@@ -136,7 +136,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 	if (Startup)
 	{
 		if (::GraphicsSystem.pLoaderScreen)
-			::GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
+			::GraphicsSystem.pLoaderScreen->Draw(cgo, C4LoaderScreen::Flag::ALL, Game.InitProgress, &LogBuffer);
 		else
 			// loader not yet loaded: black BG
 			pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
