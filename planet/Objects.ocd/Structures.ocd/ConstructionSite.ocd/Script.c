@@ -199,24 +199,30 @@ public func Set(id def, int dir, object stick)
 	// Draw the building with a wired frame and large alpha unless site graphics is overloaded by definition
 	if (!definition->~SetConstructionSiteOverlay(this, direction, stick_to))
 	{
-		SetGraphics(nil, nil, 0);
-		SetGraphics(nil, def, 1, GFXOV_MODE_Base);
-		SetClrModulation(RGBa(255, 255, 255, 128), 1);
-		// If the structure is a mesh, use wire frame mode to show the site.
-		// TODO: use def->IsMesh() once this becomes available.
-		if (def->GetMeshMaterial())
-		{
-			SetClrModulation(RGBa(255, 255, 255, 50), 1);
-			SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
-		}
-		SetObjDrawTransform((1 - dir * 2) * 1000, 0, 0, 0, 1000, -h * 500, 1);
-		SetObjDrawTransform((1 - dir * 2) * 1000, 0, 0, 0, 1000, -h * 500, 2);
+		SetConstructionSiteOverlay(def, direction, stick_to, w, h);
 	}
 
 	SetName(Format(Translate("TxtConstruction"), def->GetName()));
 	this.visibility = VIS_Owner | VIS_Allies;	
 	ShowMissingComponents();
 	return;
+}
+
+
+private func SetConstructionSiteOverlay(id def, int dir, object stick, int w, int h)
+{
+	SetGraphics(nil, nil, 0);
+	SetGraphics(nil, def, 1, GFXOV_MODE_Base);
+	SetClrModulation(RGBa(255, 255, 255, 128), 1);
+	// If the structure is a mesh, use wire frame mode to show the site.
+	// TODO: use def->IsMesh() once this becomes available.
+	if (def->GetMeshMaterial())
+	{
+		SetClrModulation(RGBa(255, 255, 255, 50), 1);
+		SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
+	}
+	SetObjDrawTransform((1 - dir * 2) * 1000, 0, 0, 0, 1000, -h * 500, 1);
+	SetObjDrawTransform((1 - dir * 2) * 1000, 0, 0, 0, 1000, -h * 500, 2);
 }
 
 
