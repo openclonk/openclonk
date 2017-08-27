@@ -103,10 +103,13 @@ private func EjectContentsOnDestruction(int cause, int by_player)
 public func SetBasement(object to_basement)
 {
 	lib_structure.basement = to_basement;
-	if (lib_structure.basement)
-		this.EditorActions.basement = nil;
-	else
-		this.EditorActions.basement = new GetID().EditorActions.basement {};
+	if (this.EditorActions)
+	{
+		if (lib_structure.basement)
+			this.EditorActions.basement = nil;
+		else
+			this.EditorActions.basement = new GetID().EditorActions.basement {};
+	}
 	return;
 }
 
