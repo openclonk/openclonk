@@ -24,7 +24,7 @@
 class C4LoaderScreen
 {
 public:
-	enum Flag {
+	enum Flag: int {
 		BLACK = 0x00,
 		BACKGROUND = 0x01,
 		TITLE = 0x02,
@@ -42,7 +42,7 @@ protected:
 	bool fBlackScreen; // if set, a black screen is drawn instead of a loader
 
 	std::map<C4Group*, const std::string> loaders;
-	void SeekLoaderScreens(C4Group &rFromGrp, const std::string wildcard);
+	void SeekLoaderScreens(C4Group &rFromGrp, const std::string &wildcard);
 
 public:
 	C4LoaderScreen();
