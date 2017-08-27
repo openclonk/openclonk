@@ -272,10 +272,10 @@ private func ShowMissingComponents()
 private func GetMissingComponents()
 {
 	if (definition == nil)
-		return;
+		return [];
 	
 	if (full_material == true)
-		return nil;
+		return [];
 	
 	// Set false again as soon as we find a missing component
 	full_material = true;
