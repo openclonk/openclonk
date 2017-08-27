@@ -199,7 +199,7 @@ public func Set(id def, int dir, object stick)
 	// Draw the building with a wired frame and large alpha unless site graphics is overloaded by definition
 	if (!definition->~SetConstructionSiteOverlay(this, direction, stick_to))
 	{
-		SetConstructionSiteOverlay(def, direction, stick_to, w, h);
+		SetConstructionSiteOverlayDefault(def, direction, stick_to, w, h);
 	}
 
 	SetName(Format(Translate("TxtConstruction"), def->GetName()));
@@ -209,7 +209,7 @@ public func Set(id def, int dir, object stick)
 }
 
 
-private func SetConstructionSiteOverlay(id def, int dir, object stick, int w, int h)
+private func SetConstructionSiteOverlayDefault(id def, int dir, object stick, int w, int h)
 {
 	SetGraphics(nil, nil, 0);
 	SetGraphics(nil, def, 1, GFXOV_MODE_Base);
