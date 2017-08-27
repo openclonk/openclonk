@@ -25,10 +25,6 @@
 #include "lib/C4LogBuf.h"
 #include "lib/C4Random.h"
 
-// allow combination of loader flags
-inline C4LoaderScreen::Flag operator|(C4LoaderScreen::Flag a, C4LoaderScreen::Flag b) {
-	return static_cast<C4LoaderScreen::Flag>(static_cast<int>(a) | static_cast<int>(b));
-}
 
 C4LoaderScreen::C4LoaderScreen()
 {
@@ -104,7 +100,7 @@ void C4LoaderScreen::SetBlackScreen(bool fIsBlack)
 	// will be updated when drawn next time
 }
 
-void C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const std::string wildcard)
+void C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const std::string &wildcard)
 {
 	// seek for png, jpg, jpeg, bmp
 	char filename[_MAX_PATH + 1];
@@ -112,9 +108,9 @@ void C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const std::string wild
 	{
 		// potential candidate - check file extension
 		std::string extension{ GetExtension(filename) };
+		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 		if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp") {
-			auto loader = std::pair<C4Group*, std::string>{ &rFromGrp, std::string(filename) };
-			loaders.emplace(loader);
+			loaders.emplace(&rFromGrp, std::string(filename));
 		}
 	}
 }
