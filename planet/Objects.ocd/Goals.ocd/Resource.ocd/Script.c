@@ -207,4 +207,3 @@ func ObjectCount2MaterialCount(int count, int material)
 /*-- Proplist --*/
 
 local Name = "$Name$";
-local Visibility = VIS_Editor;

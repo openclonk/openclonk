@@ -741,4 +741,3 @@ public func Definition(def)
 /*-- Proplist --*/
 
 local Name = "$Name$";
-local Visibility = VIS_Editor;

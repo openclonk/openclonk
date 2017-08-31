@@ -107,4 +107,3 @@ public func GetShortDescription(int plr)
 /*-- Proplist --*/
 
 local Name = "$Name$";
-local Visibility = VIS_Editor;

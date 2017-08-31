@@ -92,4 +92,3 @@ private func EvalAct_SetData(props, context)
 /*-- Proplist --*/
 local Name = "$Name$";
 local Description = "$Description$";
-local Visibility = VIS_Editor;

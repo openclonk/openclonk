@@ -74,4 +74,3 @@ protected func RemovePlayer(int plr)
 
 
 local Name = "$Name$";
-local Visibility = VIS_Editor;

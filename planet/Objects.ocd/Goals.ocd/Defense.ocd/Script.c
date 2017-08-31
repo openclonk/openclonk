@@ -479,5 +479,4 @@ public func TestWave(int nr)
 
 local Name = "$Name$";
 local Description = "$Description$";
-local Visibility = VIS_Editor;
 local EditorPlacementLimit = 1;

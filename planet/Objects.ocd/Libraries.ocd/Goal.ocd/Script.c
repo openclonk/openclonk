@@ -169,3 +169,5 @@ func SetGraphics(string new_gfx, ...)
 func GetGraphics(int plr) { return goal_custom_graphics; }
 
 public func IsGoal() { return true; }
+
+local Visibility = VIS_Editor;
