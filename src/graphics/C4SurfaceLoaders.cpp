@@ -182,7 +182,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 		{
 			// Optimize the easy case of a png in the same format as the display
 			// 32 bit
-			DWORD *pPix=(DWORD *) (((char *) texture->texLock.pBits) + iY * texture->texLock.Pitch);
+			DWORD *pPix=(DWORD *) (((char *) texture->texLock.pBits.get()) + iY * texture->texLock.Pitch);
 			memcpy (pPix, png.GetRow(iY), maxX * sizeof(*pPix));
 			int iX = maxX;
 			while (iX--) { if (((BYTE *)pPix)[3] == 0x00) *pPix = 0x00000000; ++pPix; }
@@ -197,7 +197,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 				// if color is fully transparent, ensure it's black
 				if (dwCol>>24 == 0x00) dwCol=0x00000000;
 				// set pix in surface
-				DWORD *pPix=(DWORD *) (((char *) texture->texLock.pBits) + iY * texture->texLock.Pitch + iX * 4);
+				DWORD *pPix=(DWORD *) (((char *) texture->texLock.pBits.get()) + iY * texture->texLock.Pitch + iX * 4);
 				*pPix=dwCol;
 			}
 		}

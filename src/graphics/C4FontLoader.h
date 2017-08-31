@@ -125,7 +125,7 @@ public:
 	inline int GetLineHeight() const
 	{
 #ifdef USE_CONSOLE
-		return 0;
+		return 1;
 #else
 		return iLineHgt;
 #endif

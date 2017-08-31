@@ -45,6 +45,7 @@ C4MessageBoard::C4MessageBoard() : LogBuffer(C4LogSize, C4LogMaxLines, 0, "  ", 
 	iBackScroll = -1;
 	ScrollUpBinding = nullptr;
 	ScrollDownBinding = nullptr;
+	iLineHgt = 1; // Prevent unitialized access with USE_CONSOLE
 }
 
 C4MessageBoard::~C4MessageBoard()

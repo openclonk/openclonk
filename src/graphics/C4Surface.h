@@ -142,8 +142,8 @@ private:
 
 typedef struct _LOCKED_RECT
 {
-	int                 Pitch;
-	unsigned char *     pBits;
+	int                                  Pitch;
+	std::unique_ptr<unsigned char[]>     pBits;
 } LOCKED_RECT;
 
 // one texture encapsulation
@@ -171,7 +171,7 @@ public:
 	bool FillBlack(); // fill complete texture in black
 	void SetPix(int iX, int iY, DWORD v)
 	{
-		*((DWORD *)(((BYTE *)texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
+		*((DWORD *)(((BYTE *)texLock.pBits.get()) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
 	}
 private:
 	void CreateTexture();

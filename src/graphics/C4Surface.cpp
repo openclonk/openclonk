@@ -512,7 +512,7 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 		// get+lock affected texture
 		if (!texture) return 0;
 		texture->Lock();
-		pBuf=(BYTE *) texture->texLock.pBits;
+		pBuf=(BYTE *) texture->texLock.pBits.get();
 		iPitch=texture->texLock.Pitch;
 	}
 	// get pix of surface
@@ -593,7 +593,7 @@ bool C4Surface::BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrc
 	// 32bit-blit. lock target
 	if (!texture) return false;
 	texture->Lock();
-	DWORD *pPix32 = (DWORD *)(((BYTE *)texture->texLock.pBits) + iY*texture->texLock.Pitch + iX * 4);
+	DWORD *pPix32 = (DWORD *)(((BYTE *)texture->texLock.pBits.get()) + iY*texture->texLock.Pitch + iX * 4);
 	// get source pix as dword
 	DWORD srcPix=sfcSource->GetPixDw(iSrcX, iSrcY, true);
 	// merge
@@ -640,7 +640,7 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 #ifndef USE_CONSOLE
 	texName = 0;
 #endif
-	texLock.pBits=nullptr; fIntLock=false;
+	texLock.pBits.reset(); fIntLock=false;
 	// store size
 	this->iSizeX=iSizeX;
 	this->iSizeY=iSizeY;
@@ -657,9 +657,9 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 
 	if ((iFlags & C4SF_Unlocked) == 0 && pDraw)
 	{
-		texLock.pBits = new unsigned char[iSizeX * iSizeY * C4Draw::COLOR_DEPTH_BYTES];
+		texLock.pBits = std::make_unique<unsigned char[]>(iSizeX * iSizeY * C4Draw::COLOR_DEPTH_BYTES);
 		texLock.Pitch = iSizeX * C4Draw::COLOR_DEPTH_BYTES;
-		memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
+		memset(texLock.pBits.get(), 0x00, texLock.Pitch*iSizeY);
 		// Always locked
 		LockSize.x = LockSize.y = 0;
 		LockSize.Wdt = iSizeX; LockSize.Hgt = iSizeY;
@@ -673,7 +673,7 @@ C4TexRef::~C4TexRef()
 #ifndef USE_CONSOLE
 	if (pGL && pGL->pCurrCtx) glDeleteTextures(1, &texName);
 #endif
-	if (pDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = nullptr;
+	if (pDraw) texLock.pBits = nullptr;
 	// remove from texture manager
 	pTexMgr->UnregTex(this);
 }
@@ -716,7 +716,7 @@ bool C4TexRef::LockForUpdate(C4Rect & rtUpdate)
 	// lock
 #ifndef USE_CONSOLE
 	// prepare texture data
-	texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * C4Draw::COLOR_DEPTH_BYTES];
+	texLock.pBits = std::make_unique<unsigned char[]>(rtUpdate.Wdt * rtUpdate.Hgt * C4Draw::COLOR_DEPTH_BYTES);
 	texLock.Pitch = rtUpdate.Wdt * C4Draw::COLOR_DEPTH_BYTES;
 	LockSize = rtUpdate;
 	return true;
@@ -737,10 +737,10 @@ bool C4TexRef::Lock()
 			{
 				if (!pGL->pCurrCtx) return false;
 				// get texture
-				texLock.pBits = new unsigned char[iSizeX * iSizeY * C4Draw::COLOR_DEPTH_BYTES];
+				texLock.pBits = std::make_unique<unsigned char[]>(iSizeX * iSizeY * C4Draw::COLOR_DEPTH_BYTES);
 				texLock.Pitch = iSizeX * C4Draw::COLOR_DEPTH_BYTES;
 				glBindTexture(GL_TEXTURE_2D, texName);
-				glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+				glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits.get());
 				return true;
 			}
 #endif
@@ -772,9 +772,9 @@ void C4TexRef::Unlock()
 			glBindTexture(GL_TEXTURE_2D, texName);
 			glTexSubImage2D(GL_TEXTURE_2D, 0,
 			                LockSize.x, LockSize.y, LockSize.Wdt, LockSize.Hgt,
-			                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+			                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits.get());
 
-			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=nullptr;
+			texLock.pBits.reset();
 			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
