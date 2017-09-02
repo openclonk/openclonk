@@ -6,6 +6,7 @@
 local lib_seed_plant = Tree_Coconut;
 local lib_seed_lifetime = 10000;
 local lib_seed_planttime = 2500;
+local lib_seed_can_plant_manually = false;
 
 local mother;
 
