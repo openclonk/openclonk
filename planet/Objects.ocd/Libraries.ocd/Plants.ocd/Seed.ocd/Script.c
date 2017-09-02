@@ -23,6 +23,9 @@ local lib_seed_creationtime;
 // ****** Must be the id of the plant to create. Do not leave empty.
 local lib_seed_plant;
 
+// Can be planted manually?
+local lib_seed_can_plant_manually = true;
+
 /* Reproduction control */
 
 /** Chance of seeded plant to reproduce again (does not affect the seed itself)
@@ -221,16 +224,37 @@ private func Sprout()
 
 /* Planting */
 
+
+// When the clonk is able to use the item
+public func RejectUse(object clonk)
+{
+	return _inherited(clonk) || (lib_seed_can_plant_manually && !clonk->IsWalking());
+}
+
 public func ControlUse(object clonk, int x, int y, bool box)
 {
-	if(!clonk->~IsWalking()) return true;
+	var used = _inherited(clonk, x, y, box, ...);
+	if (!used && lib_seed_can_plant_manually)
+	{
+		return PlantManually(clonk);
+	}
+	return used;
+}
+
+
+private func PlantManually(object clonk)
+{
 	var ground = GetGroundPos();
 	if (ground == -1)
+	{
 		return CustomMessage(Format("$TxtBadGround$", GetName()), clonk, clonk->GetController(), 0, 0, 0xff0000);
+	}
 
 	// Soil is needed
 	if (GetMaterialVal("Soil", "Material", GetMaterial(0,ground)) != 1)
+	{
 		return CustomMessage(Format("$TxtBadGround$", GetName()), clonk, clonk->GetController(), 0, 0, 0xff0000);
+	}
 
 	// Plant!
 	clonk->DoKneel();
