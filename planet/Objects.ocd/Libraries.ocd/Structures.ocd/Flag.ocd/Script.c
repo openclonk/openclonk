@@ -349,8 +349,7 @@ public func RefreshLinkedFlags()
 	var old_network = GetPowerHelper();
 	// Create a new power network for ths flag since we don't know whether flag links have been lost.
 	// We then just possibly remove the old ones if they exist.
-	SetPowerHelper(CreateObject(GetPowerSystem()->GetPowerSystemNetwork(), 0, 0, NO_OWNER));
-	PushBack(LIB_POWR_Networks, GetPowerHelper());
+	SetPowerHelper(GetPowerSystem()->CreateNetwork());
 	// Make a list of the power networks which need to be merged into the new one.
 	var to_merge = [old_network];
 	for (var linked_flag in lib_flag.linked_flags)

@@ -216,9 +216,7 @@ public func GetPowerNetwork(object for_obj)
 		// Create the helper if it does not exist yet.
 		if (helper == nil)
 		{
-			helper = CreateObject(GetPowerSystem()->GetPowerSystemNetwork(), 0, 0, NO_OWNER);
-			helper.lib_power.neutral_network = true;
-			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
+			helper = CreateNetwork(true);
 		}
 	}
 	// Otherwise just get the helper from the flag.
@@ -228,8 +226,7 @@ public func GetPowerNetwork(object for_obj)
 		// Create the helper if it does not exist yet.
 		if (helper == nil)
 		{
-			helper = CreateObject(GetPowerSystem()->GetPowerSystemNetwork(), 0, 0, NO_OWNER);
-			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
+			helper = CreateNetwork(false);
 			// Add to all linked flags.
 			flag->SetPowerHelper(helper);
 			for (var linked_flag in flag->GetLinkedFlags())
@@ -237,8 +234,10 @@ public func GetPowerNetwork(object for_obj)
 				if (!linked_flag)
 					continue;
 				// Assert different power helpers for the same network.
-				if (linked_flag->GetPowerHelper() != nil) 
+				if (linked_flag->GetPowerHelper() != nil)
+				{
 					FatalError("Flags in the same network have different power helpers.");
+				}
 				linked_flag->SetPowerHelper(helper);
 			}
 		}
@@ -256,6 +255,17 @@ public func Init()
 	if (GetType(LIB_POWR_Networks) != C4V_Array)
 		LIB_POWR_Networks = [];
 	return;
+}
+
+
+// Definition call: Create a new network and add it to the list of networks.
+// Can be a neutral network, if desired.
+private func CreateNetwork(bool neutral)
+{
+	var network = CreateObject(GetPowerSystemNetwork(), 0, 0, NO_OWNER);
+	PushBack(LIB_POWR_Networks, network);
+	network.lib_power.neutral_network = neutral;
+	return network;
 }
 
 
