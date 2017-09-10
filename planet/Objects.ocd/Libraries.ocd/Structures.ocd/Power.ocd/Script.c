@@ -276,13 +276,7 @@ public func RefreshAllPowerNetworks()
 		return;
 	
 	// Special handling for neutral networks of which there should be at most one.
-	for (var network in LIB_POWR_Networks)
-	{
-		if (!network || !network.lib_power.neutral_network) 
-			continue;
-		RefreshPowerNetwork(network);
-		break;
-	}
+	var neutral_network_count = 0;
 	
 	// Do the same for all other helpers: delete / refresh.
 	for (var index = GetLength(LIB_POWR_Networks) - 1; index >= 0; index--)
@@ -297,11 +291,17 @@ public func RefreshAllPowerNetworks()
 			RemoveArrayIndex(LIB_POWR_Networks, index);
 			continue;
 		}
-		//network->CheckPowerBalance();
-		if (!network.lib_power.neutral_network) // this makes the special handling above essentially obsolete
+
+		RefreshPowerNetwork(network);
+		if (network.lib_power.neutral_network)
 		{
-			RefreshPowerNetwork(network);
+			network.lib_power.neutral_network += 1;
 		}
+	}
+	
+	if (neutral_network_count > 1)
+	{
+		FatalError(Format("There were a total of %d neural networks, at most there should be one", neutral_network_count));
 	}
 	return;
 }
