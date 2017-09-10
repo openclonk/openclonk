@@ -49,7 +49,7 @@ public func IsPowerProducer() { return true; }
 // that this structure is available and able to produce the specified amount of power.
 private func RegisterPowerProduction(int amount)
 {
-	Library_Power->RegisterPowerProducer(this, amount);
+	GetPowerSystem()->RegisterPowerProducer(this, amount);
 	return;
 }
 
@@ -57,7 +57,7 @@ private func RegisterPowerProduction(int amount)
 // that this structure is not able to produce any power any more.
 private func UnregisterPowerProduction()
 {
-	Library_Power->UnregisterPowerProducer(this);
+	GetPowerSystem()->UnregisterPowerProducer(this);
 	return;
 }
 
@@ -105,6 +105,6 @@ protected func Destruction()
 // When ownership has changed, the producer may have moved out of or into a new network.
 public func OnOwnerChanged(int new_owner, int old_owner)
 {
-	Library_Power->TransferPowerLink(this);
+	GetPowerSystem()->TransferPowerLink(this);
 	return _inherited(new_owner, old_owner, ...);
 }

@@ -344,12 +344,12 @@ public func RefreshLinkedFlags()
 	
 	// Since the connected flags have been updated it is necessary to update the power helper as well.
 	// First make sure the power system is initialized.
-	Library_Power->Init();
+	GetPowerSystem()->Init();
 	// Get the old power network for this flag.
 	var old_network = lib_flag.power_helper;
 	// Create a new power network for ths flag since we don't know whether flag links have been lost.
 	// We then just possibly remove the old ones if they exist.
-	lib_flag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+	lib_flag.power_helper = CreateObject(GetPowerSystem()->GetPowerSystemNetwork(), 0, 0, NO_OWNER);
 	PushBack(LIB_POWR_Networks, lib_flag.power_helper);
 	// Make a list of the power networks which need to be merged into the new one.
 	var to_merge = [old_network];
@@ -522,7 +522,7 @@ private func RefreshPowerNetwork(object network)
 	{
 		if (!link || !link.obj)
 			continue;
-		var actual_network = Library_Power->GetPowerNetwork(link.obj);
+		var actual_network = GetPowerSystem()->GetPowerNetwork(link.obj);
 		if (!actual_network || actual_network == network)
 			continue;
 		// Remove from old network and add to new network.
@@ -533,7 +533,7 @@ private func RefreshPowerNetwork(object network)
 	{
 		if (!link || !link.obj)
 			continue;
-		var actual_network = Library_Power->GetPowerNetwork(link.obj);
+		var actual_network = GetPowerSystem()->GetPowerNetwork(link.obj);
 		if (!actual_network || actual_network == network)
 			continue;
 		// Remove from old network and add to new network.

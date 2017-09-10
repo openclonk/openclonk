@@ -50,6 +50,14 @@ static LIB_POWR_Networks;
 // Construction for which variables are being used.
 local lib_power;
 
+
+// The definition of the power system. You can overload this function
+// if you want to use a different power system.
+global func GetPowerSystem()
+{
+	return Library_Power;
+}
+
 // Initialize the local variables needed to keep track of each power network.
 protected func Construction()
 {
@@ -75,9 +83,9 @@ protected func Construction()
 public func RegisterPowerProducer(object producer, int amount)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !producer || !producer->~IsPowerProducer())
+	if (this != GetPowerSystem() || !producer || !producer->~IsPowerProducer())
 		return FatalError("RegisterPowerProducer() either not called from definition context or no producer specified.");
-	Library_Power->Init();
+	GetPowerSystem()->Init();
 	// Find the network for this producer and add it.
 	var network = GetPowerNetwork(producer);	
 	network->AddPowerProducer(producer, amount, producer->GetProducerPriority());
@@ -88,9 +96,9 @@ public func RegisterPowerProducer(object producer, int amount)
 public func UnregisterPowerProducer(object producer)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !producer || !producer->~IsPowerProducer())
+	if (this != GetPowerSystem() || !producer || !producer->~IsPowerProducer())
 		return FatalError("UnregisterPowerProducer() either not called from definition context or no producer specified.");
-	Library_Power->Init();
+	GetPowerSystem()->Init();
 	// Find the network for this producer and remove it.
 	var network = GetPowerNetwork(producer);	
 	network->RemovePowerProducer(producer);
@@ -101,9 +109,9 @@ public func UnregisterPowerProducer(object producer)
 public func RegisterPowerConsumer(object consumer, int amount)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !consumer || !consumer->~IsPowerConsumer())
+	if (this != GetPowerSystem() || !consumer || !consumer->~IsPowerConsumer())
 		return FatalError("RegisterPowerConsumer() either not called from definition context or no consumer specified.");
-	Library_Power->Init();
+	GetPowerSystem()->Init();
 	// Find the network for this consumer and add it.
 	var network = GetPowerNetwork(consumer);	
 	network->AddPowerConsumer(consumer, amount, consumer->GetConsumerPriority());
@@ -114,9 +122,9 @@ public func RegisterPowerConsumer(object consumer, int amount)
 public func UnregisterPowerConsumer(object consumer)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !consumer || !consumer->~IsPowerConsumer())
+	if (this != GetPowerSystem() || !consumer || !consumer->~IsPowerConsumer())
 		return FatalError("UnregisterPowerConsumer() either not called from definition context or no consumer specified.");
-	Library_Power->Init();
+	GetPowerSystem()->Init();
 	// Find the network for this consumer and remove it.
 	var network = GetPowerNetwork(consumer);	
 	network->RemovePowerConsumer(consumer);
@@ -128,7 +136,7 @@ public func UnregisterPowerConsumer(object consumer)
 public func TransferPowerLink(object link)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !link)
+	if (this != GetPowerSystem() || !link)
 		return FatalError("TransferPowerLink() either not called from definition context or no link specified.");
 	// Get the new network for this power link.
 	var new_network = GetPowerNetwork(link);
@@ -165,7 +173,7 @@ public func TransferPowerLink(object link)
 public func UpdateNetworkForPowerLink(object link)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !link)
+	if (this != GetPowerSystem() || !link)
 		return FatalError("UpdateNetworkForPowerLink() either not called from definition context or no link specified.");
 	// Find the network for this link and update it.
 	var network = GetPowerNetwork(link);
@@ -177,7 +185,7 @@ public func UpdateNetworkForPowerLink(object link)
 public func GetPowerNetwork(object for_obj)
 {
 	// Definition call safety checks.
-	if (this != Library_Power || !for_obj)
+	if (this != GetPowerSystem() || !for_obj)
 		return FatalError("GetPowerNetwork() either not called from definition context or no object specified.");
 	
 	// Get the actual power consumer for this object. This can for example be the elevator for the case.
@@ -209,7 +217,7 @@ public func GetPowerNetwork(object for_obj)
 		// Create the helper if it does not exist yet.
 		if (helper == nil)
 		{
-			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+			helper = CreateObject(GetPowerSystem()->GetPowerSystemNetwork(), 0, 0, NO_OWNER);
 			helper.lib_power.neutral_network = true;
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
 		}
@@ -221,7 +229,7 @@ public func GetPowerNetwork(object for_obj)
 		// Create the helper if it does not exist yet.
 		if (helper == nil)
 		{
-			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+			helper = CreateObject(GetPowerSystem()->GetPowerSystemNetwork(), 0, 0, NO_OWNER);
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
 			// Add to all linked flags.
 			flag->SetPowerHelper(helper);
@@ -243,7 +251,7 @@ public func GetPowerNetwork(object for_obj)
 public func Init()
 {
 	// Definition call safety checks.
-	if (this != Library_Power)
+	if (this != GetPowerSystem())
 		return;
 	// Initialize the list of networks if not done already.
 	if (GetType(LIB_POWR_Networks) != C4V_Array)
@@ -251,6 +259,14 @@ public func Init()
 	return;
 }
 
+
+// Definition call: Get the type of network helper object to create.
+// You can overload this function if you want to use a different
+// power system network helper object.
+private func GetPowerSystemNetwork()
+{
+	return Library_Power;
+}
 
 /*-- Library Code --*/
 
@@ -767,7 +783,7 @@ private func NotifyOnPowerBalanceChange()
 	// Notify all power display objects a balance change has occured.
 	for (var display_obj in FindObjects(Find_Func("IsPowerDisplay")))
 	{
-		if (Library_Power->GetPowerNetwork(display_obj) == this)
+		if (GetPowerSystem()->GetPowerNetwork(display_obj) == this)
 			display_obj->~OnPowerBalanceChange(this);
 	}
 	return;
@@ -871,7 +887,7 @@ private func VisualizePowerChange(object obj, int old_val, int new_val, bool los
 	var before_current = nil;
 	var effect = GetEffect("VisualPowerChange", obj);
 	if (!effect)
-		effect = AddEffect("VisualPowerChange", obj, 1, 5, nil, Library_Power);
+		effect = AddEffect("VisualPowerChange", obj, 1, 5, nil, GetPowerSystem());
 	else 
 		before_current = effect.current;
 	
@@ -953,7 +969,7 @@ protected func FxVisualPowerChangeTimer(object target, proplist effect, int time
 // Helper object should not be saved.
 public func SaveScenarioObject()
 {
-	if (GetID() == Library_Power) 
+	if (GetID() == GetPowerSystem()) 
 		return false;
 	return inherited(...);
 }

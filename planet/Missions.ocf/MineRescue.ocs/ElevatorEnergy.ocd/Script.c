@@ -25,7 +25,7 @@ public func SetTarget(object target_)
 public func IsFulfilled()
 {
 	// Get the power network for the target.
-	var network = Library_Power->GetPowerNetwork(target);
+	var network = GetPowerSystem()->GetPowerNetwork(target);
 	if (!network)
 		return false;
 	return network->GetBarePowerAvailable() > 0;

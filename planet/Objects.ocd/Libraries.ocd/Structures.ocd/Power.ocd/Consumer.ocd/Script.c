@@ -53,7 +53,7 @@ public func IsPowerConsumer() { return true; }
 // a request for power of the specified amount.
 private func RegisterPowerRequest(int amount)
 {
-	Library_Power->RegisterPowerConsumer(this, amount);
+	GetPowerSystem()->RegisterPowerConsumer(this, amount);
 	return;
 }
 
@@ -61,7 +61,7 @@ private func RegisterPowerRequest(int amount)
 // a the end of a power request.
 private func UnregisterPowerRequest()
 {
-	Library_Power->UnregisterPowerConsumer(this);
+	GetPowerSystem()->UnregisterPowerConsumer(this);
 	// Also ensure that the no-power symbol is not shown any more.
 	RemoveStatusSymbol(Library_PowerConsumer);
 	return;
@@ -71,7 +71,7 @@ private func UnregisterPowerRequest()
 // the power network of this consumer.
 private func UpdatePowerRequest()
 {
-	Library_Power->UpdateNetworkForPowerLink(this);
+	GetPowerSystem()->UpdateNetworkForPowerLink(this);
 	return;
 }
 
@@ -145,7 +145,7 @@ protected func Destruction()
 // When ownership has changed, the consumer may have moved out of or into a new network.
 public func OnOwnerChanged(int new_owner, int old_owner)
 {
-	Library_Power->TransferPowerLink(this);
+	GetPowerSystem()->TransferPowerLink(this);
 	return _inherited(new_owner, old_owner, ...);
 }
 
