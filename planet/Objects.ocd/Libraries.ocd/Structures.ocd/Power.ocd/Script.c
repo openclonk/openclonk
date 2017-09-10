@@ -186,6 +186,8 @@ public func GetPowerNetwork(object for_obj)
 	// Definition call safety checks.
 	if (this != GetPowerSystem() || !for_obj)
 		return FatalError("GetPowerNetwork() either not called from definition context or no object specified.");
+		
+	Init();
 	
 	// Get the actual power consumer for this object. This can for example be the elevator for the case.
 	var actual;
@@ -204,8 +206,6 @@ public func GetPowerNetwork(object for_obj)
 	// If no flag was available the object is neutral and needs a neutral helper.
 	if (!flag)
 	{
-		if (!LIB_POWR_Networks)
-			LIB_POWR_Networks = [];
 		for (var network in LIB_POWR_Networks)
 		{
 			if (!network || !network.lib_power.neutral_network) 
@@ -227,19 +227,8 @@ public func GetPowerNetwork(object for_obj)
 		if (helper == nil)
 		{
 			helper = CreateNetwork(false);
-			// Add to all linked flags.
-			flag->SetPowerHelper(helper);
-			for (var linked_flag in flag->GetLinkedFlags())
-			{
-				if (!linked_flag)
-					continue;
-				// Assert different power helpers for the same network.
-				if (linked_flag->GetPowerHelper() != nil)
-				{
-					FatalError("Flags in the same network have different power helpers.");
-				}
-				linked_flag->SetPowerHelper(helper);
-			}
+			// Add to all linked flags, report errors if the linked flags already have a power helper
+			flag->SetPowerHelper(helper, true, true);
 		}
 	}	
 	return helper;
@@ -262,6 +251,7 @@ public func Init()
 // Can be a neutral network, if desired.
 private func CreateNetwork(bool neutral)
 {
+	Init();
 	var network = CreateObject(GetPowerSystemNetwork(), 0, 0, NO_OWNER);
 	PushBack(LIB_POWR_Networks, network);
 	network.lib_power.neutral_network = neutral;
@@ -308,6 +298,10 @@ public func RefreshAllPowerNetworks()
 			continue;
 		}
 		//network->CheckPowerBalance();
+		if (!network.lib_power.neutral_network) // this makes the special handling above essentially obsolete
+		{
+			RefreshPowerNetwork(network);
+		}
 	}
 	return;
 }

@@ -208,7 +208,6 @@ private func AddOwnership()
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag and update the power system.
 	RefreshLinkedFlags();
-	GetPowerSystem()->RefreshAllPowerNetworks();
 	return;
 }
 
@@ -226,7 +225,6 @@ private func RemoveOwnership()
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag and update the power system.
 	RefreshLinkedFlags();
-	GetPowerSystem()->RefreshAllPowerNetworks();
 	return;
 }
 
@@ -341,31 +339,13 @@ public func RefreshLinkedFlags()
 	// Update the linked flags for all other linked flags as well.
 	for (var other in lib_flag.linked_flags)
 		other->CopyLinkedFlags(this, lib_flag.linked_flags);
-	
+
 	// Since the connected flags have been updated it is necessary to update the power helper as well.
-	// First make sure the power system is initialized.
-	GetPowerSystem()->Init();
-	// Get the old power network for this flag.
-	var old_network = GetPowerHelper();
 	// Create a new power network for ths flag since we don't know whether flag links have been lost.
 	// We then just possibly remove the old ones if they exist.
-	SetPowerHelper(GetPowerSystem()->CreateNetwork());
-	// Make a list of the power networks which need to be merged into the new one.
-	var to_merge = [old_network];
-	for (var linked_flag in lib_flag.linked_flags)
-	{
-		// Add old network of this flag to merge list and reset to new network.
-		if (GetIndexOf(to_merge, linked_flag->GetPowerHelper()) == -1)
-			PushBack(to_merge, linked_flag->GetPowerHelper());
-		linked_flag->SetPowerHelper(GetPowerHelper());
-	}
+	SetPowerHelper(GetPowerSystem()->CreateNetwork(), true, false);
 	// Now merge all networks into the newly created network.
-	for (var network in to_merge)
-	{
-		if (network == nil)
-			continue;
-		GetPowerSystem()->RefreshPowerNetwork(network);
-	}
+	GetPowerSystem()->RefreshAllPowerNetworks();
 	// Debugging logs.
 	//LogFlags();
 	return;
@@ -474,9 +454,25 @@ public func GetLinkedFlags() {return lib_flag.linked_flags; }
 
 public func GetPowerHelper() { return lib_flag.power_helper; }
 
-public func SetPowerHelper(object to) 
+public func SetPowerHelper(object to, bool update_linked_flags, bool report_inconsistency) 
 {
-	lib_flag.power_helper = to; 
+	var old_network = GetPowerHelper();
+	lib_flag.power_helper = to;
+	// Update linked flags
+	if (update_linked_flags)
+	{
+		for (var linked_flag in GetLinkedFlags())
+		{
+			if (!linked_flag)
+				continue;
+			// Assert different power helpers for the same network.
+			if (report_inconsistency && linked_flag->GetPowerHelper() != old_network)
+			{
+				FatalError("Flags in the same network have different power helpers.");
+			}
+			linked_flag->SetPowerHelper(to);
+		}
+	}
 	return;
 }
 
