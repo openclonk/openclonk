@@ -301,7 +301,7 @@ public func RefreshAllPowerNetworks()
 	
 	if (neutral_network_count > 1)
 	{
-		FatalError(Format("There were a total of %d neural networks, at most there should be one", neutral_network_count));
+		FatalError(Format("There were a total of %d neutral networks, at most there should be one", neutral_network_count));
 	}
 	return;
 }
