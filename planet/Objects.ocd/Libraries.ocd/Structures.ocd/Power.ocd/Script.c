@@ -295,7 +295,7 @@ public func RefreshAllPowerNetworks()
 		RefreshPowerNetwork(network);
 		if (network.lib_power.neutral_network)
 		{
-			network.lib_power.neutral_network += 1;
+			neutral_network_count += 1;
 		}
 	}
 	
