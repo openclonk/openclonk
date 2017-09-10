@@ -208,7 +208,7 @@ private func AddOwnership()
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag and update the power system.
 	RefreshLinkedFlags();
-	RefreshAllPowerNetworks();
+	GetPowerSystem()->RefreshAllPowerNetworks();
 	return;
 }
 
@@ -226,7 +226,7 @@ private func RemoveOwnership()
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag and update the power system.
 	RefreshLinkedFlags();
-	RefreshAllPowerNetworks();
+	GetPowerSystem()->RefreshAllPowerNetworks();
 	return;
 }
 
@@ -365,7 +365,7 @@ public func RefreshLinkedFlags()
 	{
 		if (network == nil)
 			continue;
-		RefreshPowerNetwork(network);
+		GetPowerSystem()->RefreshPowerNetwork(network);
 	}
 	// Debugging logs.
 	//LogFlags();
@@ -478,68 +478,6 @@ public func GetPowerHelper() { return lib_flag.power_helper; }
 public func SetPowerHelper(object to) 
 {
 	lib_flag.power_helper = to; 
-	return;
-}
-
-// Refreshes all power networks (Library_Power objects).
-public func RefreshAllPowerNetworks()
-{
-	// Don't do anything if there are no power helpers created yet.
-	if (GetType(LIB_POWR_Networks) != C4V_Array)
-		return;
-	
-	// Special handling for neutral networks of which there should be at most one.
-	for (var network in LIB_POWR_Networks)
-	{
-		if (!network || !network.lib_power.neutral_network) 
-			continue;
-		RefreshPowerNetwork(network);
-		break;
-	}
-	
-	// Do the same for all other helpers: delete / refresh.
-	for (var index = GetLength(LIB_POWR_Networks) - 1; index >= 0; index--)
-	{
-		var network = LIB_POWR_Networks[index];
-		if (!network) 
-			continue;
-		
-		if (network->IsEmpty())
-		{
-			network->RemoveObject();
-			RemoveArrayIndex(LIB_POWR_Networks, index);
-			continue;
-		}
-		//network->CheckPowerBalance();
-	}
-	return;
-}
-
-private func RefreshPowerNetwork(object network)
-{
-	// Merge all the producers and consumers into their actual networks.
-	for (var link in Concatenate(network.lib_power.idle_producers, network.lib_power.active_producers))
-	{
-		if (!link || !link.obj)
-			continue;
-		var actual_network = GetPowerSystem()->GetPowerNetwork(link.obj);
-		if (!actual_network || actual_network == network)
-			continue;
-		// Remove from old network and add to new network.
-		network->RemovePowerProducer(link.obj);
-		actual_network->AddPowerProducer(link.obj, link.prod_amount, link.priority);
-	}
-	for (var link in Concatenate(network.lib_power.waiting_consumers, network.lib_power.active_consumers))
-	{
-		if (!link || !link.obj)
-			continue;
-		var actual_network = GetPowerSystem()->GetPowerNetwork(link.obj);
-		if (!actual_network || actual_network == network)
-			continue;
-		// Remove from old network and add to new network.
-		network->RemovePowerConsumer(link.obj);
-		actual_network->AddPowerConsumer(link.obj, link.cons_amount, link.priority);
-	}
 	return;
 }
 
