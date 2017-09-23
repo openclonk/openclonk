@@ -1186,11 +1186,11 @@ if(NOT HEADLESS_ONLY)
 
 	if(WITH_QT_EDITOR)
 		set_target_properties(openclonk PROPERTIES COMPILE_DEFINITIONS WITH_QT_EDITOR)
-		qt5_use_modules(openclonk Widgets)
+		target_link_libraries(openclonk Qt5::Widgets)
 	endif()
 
 	if(HAVE_BACKWARD)
-		add_backward(openclonk)
+		target_link_libraries(openclonk Backward::Backward)
 	endif()
 endif()
 
@@ -1224,7 +1224,7 @@ if(USE_COCOA)
 	target_link_libraries(openclonk-server "-framework Cocoa")
 endif()
 if(HAVE_BACKWARD)
-	add_backward(openclonk-server)
+	target_link_libraries(openclonk-server Backward::Backward)
 endif()
 
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY)
