@@ -340,6 +340,9 @@ SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 
 find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
 
+find_package(CURL REQUIRED)
+include_directories(SYSTEM ${CURL_INCLUDE_DIR})
+
 # Select an audio library
 find_package("Audio")
 if(Audio_FOUND)
@@ -659,6 +662,8 @@ set(OC_CLONK_SOURCES
 	src/network/C4Client.h
 	src/network/C4GameControlNetwork.cpp
 	src/network/C4GameControlNetwork.h
+	src/network/C4HTTP.cpp
+	src/network/C4HTTP.h
 	src/network/C4InteractiveThread.cpp
 	src/network/C4InteractiveThread.h
 	src/network/C4League.cpp
@@ -1197,6 +1202,7 @@ if(NOT HEADLESS_ONLY)
 		${XRANDR_LIBRARIES}
 		${DBGHELP_LIBRARIES}
 		${UPNP_LIBRARIES}
+		${CURL_LIBRARIES}
 		libmisc
 		libc4script
 		libopenclonk
@@ -1245,6 +1251,7 @@ target_link_libraries(openclonk-server
 	${GETOPT_LIBRARIES}
 	${TinyXML_LIBRARIES}
 	${DBGHELP_LIBRARIES}
+	${CURL_LIBRARIES}
 	libmisc
 	libc4script
 	libopenclonk

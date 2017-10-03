@@ -1,0 +1,194 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2017, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
+#include "C4Include.h"
+#include "network/C4HTTP.h"
+#include "network/C4InteractiveThread.h"
+#include "C4Version.h"
+
+#define CURL_STRICTER
+#include <curl/curl.h>
+
+// *** C4HTTPClient
+
+C4HTTPClient::C4HTTPClient()
+{
+}
+
+C4HTTPClient::~C4HTTPClient()
+{
+	Cancel(nullptr);
+	if (MultiHandle)
+		curl_multi_cleanup(MultiHandle);
+}
+
+bool C4HTTPClient::Init()
+{
+	MultiHandle = curl_multi_init();
+	return !!MultiHandle;
+}
+
+bool C4HTTPClient::Execute(int iMaxTime)
+{
+	int running;
+	curl_multi_perform(MultiHandle, &running);
+
+	CURLMsg *m;
+	do {
+		int msgq = 0;
+		m = curl_multi_info_read(MultiHandle, &msgq);
+		if(m && (m->msg == CURLMSG_DONE)) {
+			CURL *e = m->easy_handle;
+			assert(e == CurlHandle);
+			CurlHandle = nullptr;
+			curl_multi_remove_handle(MultiHandle, e);
+
+			// Check for errors and notify listeners. Note that curl fills
+			// the Error buffer automatically.
+			fSuccess = m->data.result == CURLE_OK;
+			if (!fSuccess && !*Error.getData())
+				Error.Copy(curl_easy_strerror(m->data.result));
+			char *ip;
+			curl_easy_getinfo(e, CURLINFO_PRIMARY_IP, &ip);
+			ServerAddr.SetHost(StdStrBuf(ip));
+			if (pNotify)
+				pNotify->PushEvent(Ev_HTTP_Response, this);
+
+			curl_easy_cleanup(e);
+		}
+	} while(m);
+
+	return true;
+}
+
+C4TimeMilliseconds C4HTTPClient::GetNextTick(C4TimeMilliseconds tNow)
+{
+	long timeout;
+	curl_multi_timeout(MultiHandle, &timeout);
+	if (timeout < 0)
+		timeout = 1000;
+	return tNow + timeout;
+}
+
+bool C4HTTPClient::Query(const StdBuf &Data, bool fBinary)
+{
+	if (URL.isNull()) return false;
+	// Cancel previous request
+	if (CurlHandle)
+		Cancel("Cancelled");
+	// No result known yet
+	ResultString.Clear();
+	// store mode
+	this->fBinary = fBinary;
+	// Create request
+	CURL *curl = curl_easy_init();
+	if (!curl) return false;
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+	curl_easy_setopt(curl, CURLOPT_URL, URL.getData());
+	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, C4ENGINENAME "/" C4VERSION );
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, C4HTTPQueryTimeout);
+	curl_slist *headers = nullptr;
+	headers = curl_slist_append(headers, "Accept-Charset: utf-8");
+	headers = curl_slist_append(headers, FormatString("Accept-Language: %s", Config.General.LanguageEx).getData());
+
+	if (Data.getSize())
+	{
+		RequestData = Data;
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, RequestData.getData());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, RequestData.getSize());
+		// Disable the Expect: 100-Continue header which curl automatically
+		// adds for POST requests.
+		headers = curl_slist_append(headers, "Expect:");
+		headers = curl_slist_append(headers, "Content-Type: text/plain; charset=utf-8");
+	}
+
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &C4HTTPClient::SWriteCallback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
+	curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &C4HTTPClient::SProgressCallback);
+	curl_easy_setopt(curl, CURLOPT_XFERINFODATA, this);
+	Error.Clear();
+	Error.SetLength(CURL_ERROR_SIZE);
+	*Error.getMData() = '\0';
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, Error.getMData());
+
+	curl_multi_add_handle(MultiHandle, curl);
+	CurlHandle = curl;
+	iDownloadedSize = iTotalSize = 0;
+
+	return true;
+}
+
+size_t C4HTTPClient::SWriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	C4HTTPClient *client = reinterpret_cast<C4HTTPClient*>(userdata);
+	return client->WriteCallback(ptr, size * nmemb);
+}
+
+size_t C4HTTPClient::WriteCallback(char *ptr, size_t realsize)
+{
+	if (fBinary)
+		ResultBin.Append(ptr, realsize);
+	else
+		ResultString.Append(ptr, realsize);
+	return realsize;
+}
+
+int C4HTTPClient::SProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow)
+{
+	C4HTTPClient *client = reinterpret_cast<C4HTTPClient*>(clientp);
+	return client->ProgressCallback(dltotal, dlnow, ultotal, ulnow);
+}
+
+int C4HTTPClient::ProgressCallback(int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow)
+{
+	iDownloadedSize = dlnow;
+	iTotalSize = dltotal;
+	return 0;
+}
+
+void C4HTTPClient::Cancel(const char *szReason)
+{
+	if (CurlHandle)
+	{
+		curl_multi_remove_handle(MultiHandle, CurlHandle);
+		curl_easy_cleanup(CurlHandle);
+		CurlHandle = nullptr;
+	}
+	fBinary = false;
+	iDownloadedSize = iTotalSize = 0;
+	Error = szReason;
+}
+
+void C4HTTPClient::Clear()
+{
+	Cancel(nullptr);
+	ServerAddr.Clear();
+	ResultBin.Clear();
+	ResultString.Clear();
+}
+
+bool C4HTTPClient::SetServer(const char *szServerAddress)
+{
+	// CURL validates URLs only on connect anyways, so we never fail here.
+	URL.Copy(szServerAddress);
+	return true;
+}
+
+const char *C4HTTPClient::getServerName() const
+{
+	// TODO: Parse out server name.
+	return URL.getData();
+}
