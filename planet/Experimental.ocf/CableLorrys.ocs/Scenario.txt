@@ -1,6 +1,5 @@
 [Head]
 Icon=26
-Title=CableLorries
 Version=8
 Difficulty=10
 MaxPlayer=8
@@ -30,7 +29,6 @@ Vegetation=Mushroom=1
 VegetationLevel=100,0,0,100
 InEarth=Rock=1;Gold=1;Firestone=1;Loam=1
 InEarthLevel=65,0,0,100
-Sky=Clouds2
 BottomOpen=1
 MapWidth=500,0,64,10000
 MapHeight=100,0,40,10000
@@ -39,7 +37,6 @@ Amplitude=10,10,0,100
 Phase=50,50,0,100
 Period=10,10,0,100
 Random=20,20,0,100
-Liquid=Water-Smooth
 LiquidLevel=20,30,0,100
 Layers=Rock=7;Rock=7;Gold=7;Granite=4;Water=5;Earth-earth=50;Earth-earth_dry=50
 SkyScrollMode=2

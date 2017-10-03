@@ -23,6 +23,28 @@ public func CableActivation(int count) { }
 // count is a value indicating the amount of deactivations (e.g. a cable with more than one car broke).
 public func CableDeactivation(int count) { }
 
+// Called by arriving cable cars if this station is the final stop
+public func OnCableCarArrival(object car) { }
+
+// Called by departing cable cars if it just starts a new journey
+public func OnCableCarDeparture(object car) { }
+
+// Called by a cable car that has been hooked up to the rail at this station
+public func OnCableCarEngaged(object car) { }
+
+// Called by a cable car that has been taken off the rail at this station
+public func OnCableCarDisengaged(object car) { }
+
+// Called when a cable car with a requested delivery arrives
+public func OnCableCarDelivery(object car, id requested, int amount) { }
+
+// Called by other stations to check if a certain object and amount are available for delivery at this station.
+// Return true if there are means to collect the required amount.
+public func IsAvailable(proplist requested, int amount)
+{
+	return false;
+}
+
 /*--- Callbacks ---*/
 
 // Be sure to always call these via _inherited(...);
@@ -30,6 +52,7 @@ public func CableDeactivation(int count) { }
 func Initialize()
 {
 	destination_list = [];
+	request_queue = [];
 	return _inherited(...);
 }
 
@@ -360,103 +383,115 @@ public func GetLengthToTarget(object end)
 }
 
 /*-- Auto production --*/
-/*
-public func CheckAcquire(id object_id, int amount)
-{
-	var container = false;
-	for (var list_item in destination_list)
-		if (list_item[const_finaldestination]->CheckAvailability(object_id, amount))
-		{
-			if (!container) container = list_item[const_finaldestination];
-			else if (GetLengthToTarget(container) > GetLengthToTarget(list_item[const_finaldestination]))
-				container = list_item[const_finaldestination];
-		}
-	return container;
-}
 
-public func CheckAcquiringCar(object target)
-{
-	var car = false;
-	if (!target) target = this;
-	for (var car_to_check in FindObjects(Find_Func("IsCableCar")))
-	{
-		if (car_to_check->GetRailTarget() == target)
-		{
-			if (car_to_check->IsAvailable())
-				return car_to_check;
-		}
-		else if (car_to_check->GetRailTarget() == this)
-			if (car_to_check->IsAvailable())
-				car = car_to_check;
-	}
-	return car;
-}
+local request_queue;
 
-public func DoAcquire(id object_id, int amount)
+// Add a new acquiring order
+public func AddRequest(proplist requested_id, int amount)
 {
-	// Check if the objects are available
-	var container = CheckAcquire(object_id, amount);
-	if (!container) return false;
-	// Check if a cable car is available
-	var car = CheckAcquiringCar(container);
-	if (!car) return false;
-	container->AddReservation(object_id, amount);
-	car->AddDelivery(container, nil, object_id, amount);
-	return true;
-}
-
-public func DeliveryDone(id object_id, int amount)
-{
-	// Nothing so far
-}
-
-/*-- Object requests and deliveries --*/
-/*
-local reservations; // two dimensional array with ongoing deliveries: [[ID, amount]]
-
-public func CheckAvailability(id object_id, int amount)
-{
-	if (ContentsCount(object_id) < amount) return false;
-	var reserved = 0;
-	for (var reservation in reservations)
-		if (reservation[0] == object_id)
-			reserved += reservation[1];
-	if (ContentsCount(object_id) - reserved < amount)
-		return false;
-	return true;
-}
-
-public func AddReservation(id object_id, int amount)
-{
-	reservations[GetLength(reservations)] = [object_id, amount];
-}
-
-public func RemoveReservation(id object_id, int amount)
-{
-	var new_list = [], removed = false;
-	for (var reservation in reservations)
-	{
-		if (reservation[0] == object_id && reservation[1] == amount && !removed)
-		{
-			removed = true;
-			continue;
-		}
-		new_list[GetLength(new_list)] = reservation;
-	}
-	reservations = new_list;
-}
-
-public func AddRequest(id requested_id, int amount, id requested_object)
-{
-	if (!requested_id && !requested_object) return false;
+	if (!requested_id) return false;
 	if (!amount) amount = 1;
+
+	// First of all check if a similar request already is on the line
+	// Similar requests will be dismissed, even if they are technically new
+	for (var request in request_queue)
+		if (request[0] == requested_id)
+			if (request[1] == amount)
+				return true; // The request is considered handled
+
+	var source = CheckAvailability(requested_id, amount);
+	if (!source)
+		return false; // Items are not available
+
+	var car = source->GetAvailableCableCar(requested_id, amount, this);
+	if (!car)
+		return false; // No cable car is available for delivery
+
+	// Great. Start working immediately
+	PushBack(request_queue, [requested_id, amount]);
+	car->AddRequest(requested_id, amount, this, source);
+
+	return true;
 }
 
-public func RequestObjects(object requester, id request_id, int amount)
+// Check all connected stations for available objects
+func CheckAvailability(proplist requested, int amount)
 {
-	if (ContentsCount(request_id) < amount)
+	var nearest_station;
+	var length_to;
+	for (var destination in destination_list)
+	{
+		if (destination[const_finaldestination]->IsAvailable(requested, amount))
+		{
+			var station = destination[const_finaldestination];
+			if (!nearest_station)
+			{
+				nearest_station = station;
+				length_to = GetLengthToTarget(nearest_station);
+			}
+			else {
+				// Storages (like chests) are always preferred over other producer because the items
+				// might be stored in another producer to produce something
+				if (station->~IsStorage() && !nearest_station->~IsStorage())
+				{
+					nearest_station = station;
+					length_to = GetLengthToTarget(nearest_station);
+				}
+				else if (nearest_station->~IsStorage() && !station->~IsStorage())
+					continue;
+				// Otherwise the shorter the path, the better
+				else if (GetLengthToTarget(station) < length_to)
+				{
+					nearest_station = station;
+					length_to = GetLengthToTarget(nearest_station);
+				}
+			}
+		}
+	}
+	return nearest_station;
+}
+
+// Check if there is a cable car ready for delivery
+public func GetAvailableCableCar(proplist requested, int amount, proplist requesting_station)
+{
+	
+}
+
+// A delivery has arrived, remove it from the queue and handle the request
+public func RequestArrived(proplist car, proplist requested_id, int amount)
+{
+	if (!HasRequest(requested_id, amount))
+		return;
+
+	OnCableCarDelivery(car, requested_id, amount);
+	RemoveRequest(requested_id, amount);
+}
+
+public func HasRequest(id requested, int amount)
+{
+	for (var i = 0; i < GetLength(request_queue); i++)
+	{
+		if (request_queue[i][0] != requested)
+			continue;
+		if (request_queue[i][1] != amount)
+			continue;
+		return true;
+	}
+	return false;
+}
+
+public func RemoveRequest(id requested, int amount)
+{
+	for (var i = 0; i < GetLength(request_queue); i++)
+	{
+		if (request_queue[i][0] != requested)
+			continue;
+		if (request_queue[i][1] != amount)
+			continue;
+		break;
+	}
+	if (i >= GetLength(request_queue))
 		return false;
-	for (var i = 0; i < amount; i++)
-		FindContents(request_id)->Enter(requester);
+	RemoveArrayIndex(request_queue, i, true);
 	return true;
-}*/
+}

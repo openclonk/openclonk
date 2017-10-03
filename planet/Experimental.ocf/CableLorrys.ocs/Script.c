@@ -167,5 +167,6 @@ private func JoinPlayer(int plr)
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(510, 370);
+	clonk->CreateContents(Hammer);
 	return;
 }

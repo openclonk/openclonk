@@ -12,6 +12,20 @@ func Construction()
 	SetCableSpeed(1);
 }
 
+/* Engine Callbacks */
+
+func Damage(int change, int cause)
+{
+	if (cause == FX_Call_DmgBlast)
+	{
+		// Explosions knock the hoist off the rail
+		if (GetAction() == "OnRail")
+			DisengageRail();
+		if (pickup)
+			DropVehicle();
+	}
+}
+
 /* Status */
 
 public func IsToolProduct() { return true; }
@@ -21,7 +35,7 @@ public func IsToolProduct() { return true; }
 func GetCableOffset(array position, int prec)
 {
 	if (!prec) prec = 1;
-	position[1] += 7 * prec;
+	position[1] += 5 * prec;
 }
 
 func Engaged()
@@ -97,7 +111,7 @@ public func DropVehicle()
 
 func FxCableHoistPickupStart(object vehicle, proplist effect)
 {
-	vehicle->SetPosition(GetX(), GetY());
+	vehicle->SetPosition(GetX(), GetY()+4);
 	vehicle->SetSpeed(0,0);
 	vehicle->SetR(GetR());
 	vehicle->SetRDir(0);
@@ -107,7 +121,7 @@ func FxCableHoistPickupStart(object vehicle, proplist effect)
 
 func FxCableHoistPickupTimer(object vehicle, proplist effect)
 {
-	vehicle->SetPosition(GetX(), GetY());
+	vehicle->SetPosition(GetX(), GetY()+4);
 	vehicle->SetSpeed(0,0);
 }
 
@@ -140,6 +154,59 @@ local ActMap = {
 			NextAction = "OnRail",
 		},
 };
+
+/* Callbacks */
+
+public func GetAttachedVehicle()
+{
+	return pickup;
+}
+
+// Calls from the stations will mostly be forwarded to the attached vehicle
+
+public func DropContents(proplist station)
+{
+	if (pickup)
+		pickup->DropContents(station);
+}
+
+// Check for available contents
+public func IsAvailable(proplist requested, int amount)
+{
+	// So far only do something if a lorry is connected, all other vehicles are considered off-limits
+	if (pickup && pickup->~IsLorry())
+		if (pickup->ContentsCount(requested) >= amount)
+			return true;
+	return false;
+}
+
+// Called when a station has asked to make a delivery
+public func IsReadyForDelivery(proplist requested, int amount, proplist requesting_station)
+{
+	// Only if a lorry is connected
+	if (pickup && pickup->~IsLorry())
+	{
+		// Lorry must have enough space left...
+		if (pickup->ContentsCount() + amount <= pickup.MaxContentsCount)
+			return true;
+		// ...or contain the requested objects
+		if (pickup->ContentsCount(requested) >= amount)
+			return true;
+	}
+	return false;
+}
+
+// Called when searching for a better option to deliver something
+public func OverridePriority(proplist requested, int amount, proplist requesting_station, proplist best)
+{
+	// Check if the connected vehicle holds the requested objects and if yes, override the selection
+	if (pickup && pickup->ContentsCount(requested) >= amount)
+		return true;
+
+	return false;
+}
+
+/* Definition */
 
 func Definition(def)
 {

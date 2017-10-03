@@ -28,6 +28,8 @@
 // Contains proplists of format {Product = <objid>, Amount = <int>, Infinite = (optional)<bool>, ProducingPlayer = (optional)<int>}. /Infinite/ == true -> infinite production.
 local queue;
 
+// Possibly connected cable station
+local cable_station;
 
 protected func Initialize()
 {
@@ -763,14 +765,23 @@ public func OnProductEjection(object product)
 }
 
 
-/*-- --*/
+/*-- Cable Network --*/
 
+public func IsNoCableStationConnected() { return !cable_station; }
+
+public func ConnectCableStation(object station)
+{
+	cable_station = station;
+}
 
 /**
 	Requests the necessary material from the cable network if available.
 */
-private func RequestAllMissingComponents(id item_id)
+func RequestAllMissingComponents(id item_id)
 {
+	if (!cable_station)
+		return false;
+
 	for (var item in ProductionCosts(item_id))
 	{
 		var mat_id = item[0];
@@ -782,14 +793,11 @@ private func RequestAllMissingComponents(id item_id)
 	return true;
 }
 
-
-// Must exist if Library_CableStation is not included by either this
-// library or the structure including this library.
 public func RequestObject(id item_id, int amount)
 {
-	return _inherited(item_id, amount, ...);
+	if (cable_station)
+		cable_station->AddRequest(item_id, amount);
 }
-
 
 /*-- Storage --*/
 

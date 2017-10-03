@@ -21,6 +21,8 @@ local lib_ccar_progress;
 local lib_ccar_max_progress;
 // This target point for pathfinding
 local lib_ccar_destination;
+// Current delivery the car is on, array: [starting station, target station, requested objects, amount]
+local lib_ccar_delivery;
 
 /*--- Overloads ---*/
 
@@ -240,6 +242,7 @@ public func EngageRail(object crossing, bool silent)
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 
 	Engaged();
+	lib_ccar_rail->OnCableCarEngaged(this);
 }
 
 // Detach the car from its current holding point (cable or crossing, does not matter)
@@ -253,6 +256,7 @@ public func DisengageRail()
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 
 	Disengaged();
+	if (lib_ccar_rail) lib_ccar_rail->OnCableCarDisengaged(this);
 }
 
 // Sets a target point for travelling and starts the movement process
@@ -270,6 +274,8 @@ public func SetDestination(dest)
 	{
 		OnStart();
 		CrossingReached();
+		if (lib_ccar_rail)
+			lib_ccar_rail->~OnCableCarDeparture(this);
 	}
 }
 
@@ -299,6 +305,13 @@ func DestinationReached()
 	lib_ccar_max_progress = 0;
 
 	OnStop(false);
+
+	if (lib_ccar_rail)
+	{
+		if (lib_ccar_delivery)
+			FinishedRequest(lib_ccar_rail);
+		lib_ccar_rail->OnCableCarArrival(this);
+	}
 }
 
 // When the way to the current destination has vanished somehow
@@ -364,41 +377,16 @@ public func OpenDestinationSelection(object clonk)
 }
 
 /*-- Delivery --*/
-/*
-local deliver_id, deliver_amount, deliver_to;
 
-// Returns true when this car is not in move
-public func IsAvailable()
+public func AddRequest(proplist requested, int amount, proplist target, proplist source)
 {
-	return !lib_ccar_destination;
+	lib_ccar_delivery = [source, target, requested, amount];
+	SetDestination(target);
 }
 
-public func AddDelivery(object from, object to, id object_id, int amount)
+func FinishedRequest(object station)
 {
-	deliver_id = object_id;
-	deliver_amount = amount;
-	deliver_to = to;
-	SetDestination(from);
+	if (station && lib_ccar_delivery)
+		station->RequestArrived(this, lib_ccar_delivery[2], lib_ccar_delivery[3]);
+	lib_ccar_delivery = nil;
 }
-
-public func ReturnDelivery()
-{
-	SetDestination(deliver_to);
-}
-
-public func DeliverObjects()
-{
-	if (ContentsCount(deliver_id) < deliver_amount) return DeliveryFailed();
-	for (var i = 0; i < deliver_amount; i++)
-		FindContents(deliver_id)->Enter(lib_ccar_rail);
-	lib_ccar_rail->DeliveryDone(deliver_id, deliver_amount);
-	deliver_id = false;
-	deliver_amount = false;
-	deliver_to = false;
-}
-
-private func DeliveryFailed()
-{
-
-}
-*/

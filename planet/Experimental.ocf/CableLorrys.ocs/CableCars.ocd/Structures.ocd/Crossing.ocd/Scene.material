@@ -63,3 +63,25 @@ material CableCarStation_SignStation
         }
     }
 }
+
+material CableCarStation_SignDropOff
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.0 0.0 0.0 1.0 12.5
+            emissive 1.0 1.0 1.0 1.0
+
+            texture_unit
+            {
+                texture CableCarStation_dropoff.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
