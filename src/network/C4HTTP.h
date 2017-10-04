@@ -18,6 +18,8 @@
 #include "platform/StdScheduler.h"
 #include "network/C4NetIO.h"
 
+#include <map>
+
 const int C4HTTPQueryTimeout = 10; // (s)
 
 typedef struct Curl_multi CURLM;
@@ -35,6 +37,8 @@ private:
 
 	CURLM *MultiHandle{nullptr};
 	CURL *CurlHandle{nullptr};
+
+	std::map<SOCKET, int> sockets;
 
 	// Address information
 	StdCopyStrBuf URL;
@@ -57,6 +61,8 @@ private:
 	size_t WriteCallback(char *ptr, size_t realsize);
 	static int SProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow);
 	int ProgressCallback(int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow);
+	static int SSocketCallback(CURL *easy, SOCKET s, int what, void *userp, void *socketp);
+	int SocketCallback(CURL *easy, SOCKET s, int what, void *socketp);
 
 protected:
 	StdCopyBuf ResultBin; // set if fBinary
@@ -88,10 +94,15 @@ public:
 
 	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
 
-	// Overridden
-	bool Execute(int iMaxTime, pollfd * readyfds) override { return Execute(iMaxTime); }
-	virtual bool Execute(int iMaxTime = -1);
+	// StdScheduler interface
+	bool Execute(int iMaxTime = -1, pollfd * readyfds = nullptr) override;
 	C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) override;
+#ifdef STDSCHEDULER_USE_EVENTS
+	// TODO
+	HANDLE GetEvent() override { return nullptr; }
+#else
+	void GetFDs(std::vector<struct pollfd> &) override;
+#endif
 
 };
 

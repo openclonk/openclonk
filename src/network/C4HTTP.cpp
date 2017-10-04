@@ -36,13 +36,29 @@ C4HTTPClient::~C4HTTPClient()
 bool C4HTTPClient::Init()
 {
 	MultiHandle = curl_multi_init();
-	return !!MultiHandle;
+	if (!MultiHandle) return false;
+	curl_multi_setopt(MultiHandle, CURLMOPT_SOCKETFUNCTION, &C4HTTPClient::SSocketCallback);
+	curl_multi_setopt(MultiHandle, CURLMOPT_SOCKETDATA, this);
+	return true;
 }
 
-bool C4HTTPClient::Execute(int iMaxTime)
+bool C4HTTPClient::Execute(int iMaxTime, pollfd *readyfd)
 {
 	int running;
-	curl_multi_perform(MultiHandle, &running);
+	if (readyfd)
+	{
+#ifndef STDSCHEDULER_USE_EVENTS
+		int ev_bitmask = 0;
+		if (readyfd->revents & POLLIN)  ev_bitmask |= CURL_CSELECT_IN;
+		if (readyfd->revents & POLLOUT) ev_bitmask |= CURL_CSELECT_OUT;
+		if (readyfd->revents & POLLERR) ev_bitmask |= CURL_CSELECT_ERR;
+		curl_multi_socket_action(MultiHandle, readyfd->fd, ev_bitmask, &running);
+#endif
+	}
+	else
+	{
+		curl_multi_socket_action(MultiHandle, CURL_SOCKET_TIMEOUT, 0, &running);
+	}
 
 	CURLMsg *m;
 	do {
@@ -80,6 +96,32 @@ C4TimeMilliseconds C4HTTPClient::GetNextTick(C4TimeMilliseconds tNow)
 		timeout = 1000;
 	return tNow + timeout;
 }
+
+#ifdef STDSCHEDULER_USE_EVENTS
+// TODO
+#else
+void C4HTTPClient::GetFDs(std::vector<pollfd> &pollfds)
+{
+	for (const auto& kv : sockets)
+	{
+		pollfd pfd;
+		pfd.fd = kv.first;
+		pfd.revents = 0;
+		switch (kv.second)
+		{
+		case CURL_POLL_IN:
+			pfd.events = POLLIN; break;
+		case CURL_POLL_OUT:
+			pfd.events = POLLOUT; break;
+		case CURL_POLL_INOUT:
+			pfd.events = POLLIN | POLLOUT; break;
+		default:
+			pfd.events = 0;
+		}
+		pollfds.push_back(pfd);
+	}
+}
+#endif
 
 bool C4HTTPClient::Query(const StdBuf &Data, bool fBinary)
 {
@@ -128,6 +170,9 @@ bool C4HTTPClient::Query(const StdBuf &Data, bool fBinary)
 	CurlHandle = curl;
 	iDownloadedSize = iTotalSize = 0;
 
+	int running;
+	curl_multi_socket_action(MultiHandle, CURL_SOCKET_TIMEOUT, 0, &running);
+
 	return true;
 }
 
@@ -156,6 +201,21 @@ int C4HTTPClient::ProgressCallback(int64_t dltotal, int64_t dlnow, int64_t ultot
 {
 	iDownloadedSize = dlnow;
 	iTotalSize = dltotal;
+	return 0;
+}
+
+int C4HTTPClient::SSocketCallback(CURL *easy, curl_socket_t s, int what, void *userp, void *socketp)
+{
+	C4HTTPClient *client = reinterpret_cast<C4HTTPClient*>(userp);
+	return client->SocketCallback(easy, s, what, socketp);
+}
+
+int C4HTTPClient::SocketCallback(CURL *easy, curl_socket_t s, int what, void *socketp)
+{
+	if (what == CURL_POLL_REMOVE)
+		sockets.erase(s);
+	else
+		sockets[s] = what;
 	return 0;
 }
 
