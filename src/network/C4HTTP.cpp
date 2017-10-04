@@ -17,6 +17,8 @@
 #include "network/C4InteractiveThread.h"
 #include "C4Version.h"
 
+#include <regex>
+
 #define CURL_STRICTER
 #include <curl/curl.h>
 
@@ -289,13 +291,17 @@ void C4HTTPClient::Clear()
 
 bool C4HTTPClient::SetServer(const char *szServerAddress)
 {
-	// CURL validates URLs only on connect anyways, so we never fail here.
-	URL.Copy(szServerAddress);
-	return true;
-}
-
-const char *C4HTTPClient::getServerName() const
-{
-	// TODO: Parse out server name.
-	return URL.getData();
+	static std::regex HostnameRegex(R"(^(:?[a-z]+:\/\/)?([^/:]+).*)", std::regex::icase);
+	std::cmatch match;
+	if (std::regex_match(szServerAddress, match, HostnameRegex))
+	{
+		// CURL validates URLs only on connect.
+		URL.Copy(szServerAddress);
+		ServerName.Copy(match[2].str().c_str());
+		return true;
+	}
+	// The HostnameRegex above is pretty stupid, so we will reject only very
+	// malformed URLs immediately.
+	SetError("Malformed URL");
+	return false;
 }
