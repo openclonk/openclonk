@@ -450,6 +450,19 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 				Game.DirectJoinAddress[0] = 0;
 				continue;
 			}
+			// Special case: start the mod dialog and initiate installation of a mod.
+			if (SEqualNoCase(Game.DirectJoinAddress, "installmod", 10))
+			{
+				// IDs are at least a few characters long.
+				const char *id = Game.DirectJoinAddress + 10;
+				if (SLen(id) > 10)
+				{
+					++id; // Remove slash.
+					C4Startup::SetStartScreen("mods", id);
+				}
+				Game.DirectJoinAddress[0] = 0;
+				continue;
+			}
 			// Self-enable network
 			Game.NetworkActive = true;
 			continue;

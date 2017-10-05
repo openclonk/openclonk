@@ -140,7 +140,7 @@ public:
 	static void Unload(); // make sure startup data is destroyed
 	static void InitStartup();
 	static void CloseStartup();
-	static bool SetStartScreen(const char *szScreen); // set screen that is shown first by case insensitive identifier
+	static bool SetStartScreen(const char *szScreen, const char *szSubDialog=nullptr); // set screen that is shown first by case insensitive identifier
 	void OnKeyboardLayoutChanged();
 	void OnLeagueOptionChanged(); // callback from network options dialogue: Updates settings in scenario selction
 

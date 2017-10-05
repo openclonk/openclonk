@@ -1742,3 +1742,22 @@ bool C4StartupModsDlg::OnSortComboSelChange(C4GUI::ComboBox *pForCombo, int32_t 
 	QueryModList();
 	return true;
 }
+
+bool C4StartupModsDlg::SetSubscreen(const char *toScreen)
+{
+	std::string modID(toScreen);
+	if (modID.empty()) return false;
+
+	if (downloader.get() != nullptr)
+		downloader.reset();
+
+	downloader = std::make_unique<C4StartupModsDownloader>(this, nullptr);
+
+	std::stringstream ss(modID);
+	while (std::getline(ss, modID, '-'))
+		if (!modID.empty())
+			downloader->AddModToQueue(modID, "???");
+
+	downloader->RequestConfirmation();
+	return true;
+}

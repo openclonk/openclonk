@@ -427,6 +427,8 @@ private:
 		int totalPages{ 0 };
 	} pageInfo;
 public:
+	// The "subscreen" is used by the clonk://installmod protocol and gives a mod ID to search.
+	virtual bool SetSubscreen(const char *toScreen) override;
 	bool DoOK(); // join currently selected item
 	bool DoBack(); // abort dialog
 	void DoRefresh(); // restart network search

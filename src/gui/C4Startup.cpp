@@ -325,9 +325,12 @@ void C4Startup::InitStartup()
 	pStartup->DoStartup();
 }
 
-bool C4Startup::SetStartScreen(const char *szScreen)
+bool C4Startup::SetStartScreen(const char *szScreen, const char *szSubDialog)
 {
 	sSubDialog.Clear();
+	if (szSubDialog != nullptr)
+		sSubDialog = szSubDialog;
+
 	// set dialog ID to be shown to specified value
 	if (SEqualNoCase(szScreen, "main"))
 		eLastDlgID = SDID_Main;
