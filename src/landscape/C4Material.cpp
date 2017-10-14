@@ -660,7 +660,7 @@ static void Smoke(int32_t tx, int32_t ty, int32_t level)
 	::ScriptEngine.GetPropList()->Call(P_Smoke, &pars);
 }
 
-bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int32_t &iPxsMat, int32_t iLsMat, bool *pfPosChanged)
+bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int32_t &iPxsMat, int32_t iLsMat, bool *pfPosChanged, bool no_slide = false)
 {
 	// always manipulating pos/speed here
 	if (pfPosChanged) *pfPosChanged = true;
@@ -697,7 +697,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
 	
-	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),mdens,::MaterialMap.Map[iPxsMat].MaxSlide))
+	if (!no_slide && ::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),mdens,::MaterialMap.Map[iPxsMat].MaxSlide))
 	{
 		// Sliding on equal material: Move directly to optimize insertion of rain onto lakes
 		// Also move directly when shifted upwards to ensure movement on permamently moving SolidMask
@@ -797,8 +797,9 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 
 	case meePXSMove: // PXS movement
 		// incindiary/extinguisher/corrosives are always same density proc; so do insertion check first
+		// Do not allow sliding though (e.g. water on lava).
 		if (!pReaction->fUserDefined)
-			if (!mrfInsertCheck(iX, iY, fXDir, fYDir, iPxsMat, iLsMat, pfPosChanged))
+			if (!mrfInsertCheck(iX, iY, fXDir, fYDir, iPxsMat, iLsMat, pfPosChanged, true))
 				// either splash or slide prevented interaction
 				return false;
 		// Always kill both landscape and PXS mat
