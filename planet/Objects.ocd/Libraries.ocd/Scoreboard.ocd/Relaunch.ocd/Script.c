@@ -38,6 +38,14 @@ protected func RelaunchPlayer(int plr, int killer)
 	return _inherited(plr, killer, ...);
 }
 
+protected func OnPlayerRelaunch(int plr)
+{
+    if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
+	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
+	return _inherited(plr, ...);
+}
+
+
 protected func RemovePlayer(int plr)
 {
 	return _inherited(plr, ...);

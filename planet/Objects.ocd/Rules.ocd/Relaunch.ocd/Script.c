@@ -220,7 +220,7 @@ public func InitializePlayer(int plr)
 	if (!initial_relaunch || !perform_restart)
 		return;	
 	// Scenario script callback.
-	if (GameCall("OnPlayerRelaunch", plr, false))
+	if (GameCallEx("OnPlayerRelaunch", plr, false))
 		return;
 	return DoRelaunch(plr, nil, nil, true);
 }
@@ -241,7 +241,7 @@ public func OnClonkDeath(object clonk, int killer)
 			return;
 		}
 	}
-	if (GameCall("OnPlayerRelaunch", plr, true))
+	if (GameCallEx("OnPlayerRelaunch", plr, true))
 		return;
 	return DoRelaunch(plr, clonk, nil);
 }
