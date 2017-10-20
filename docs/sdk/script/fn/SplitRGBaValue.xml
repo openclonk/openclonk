@@ -6,9 +6,9 @@
   <func>
     <title>SplitRGBaValue</title>
     <category>Arithmetics</category>
-    <version>5.1 OC</version>
+    <version>5.1 OC (returns proplist since 8.0 OC)</version>
     <syntax>
-      <rtype>array</rtype>
+      <rtype>proplist</rtype>
       <params>
         <param>
           <type>int</type>
@@ -17,11 +17,11 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns an array with the red, green, blue, and alpha values of the specified 32 bit color value: [red, green, blue, alpha]</desc>
+    <desc>Returns a proplist with the red, green, blue, and alpha values of the specified 32 bit color value: <code>{R = red, G = green, B = blue, Alpha = alpha}</code></desc>
     <examples>
       <example>
         <code>var rgba = SplitRGBaValue(<funclink>GetCursor</funclink>()-&gt;<funclink>GetColor</funclink>());
-<funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;R: %d|G: %d|B: %d|A: %d&quot;,rgba[0], rgba[1], rgba[2], rgba[3]);
+<funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;R: %d|G: %d|B: %d|A: %d&quot;, rgba.R, rgba.G, rgba.B, rgba.Alpha);
 				</code>
         <text>Displays the four color values of the currently selected clonk above the clonk's head.</text>
       </example>
