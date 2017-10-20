@@ -10,6 +10,7 @@
 	@author 
 */
 
+// documented in /docs/sdk/script/fn
 global func GetActMapVal(string entry, string action, id def, int num)
 {
 	if (!def)

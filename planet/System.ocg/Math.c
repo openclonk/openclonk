@@ -6,18 +6,21 @@
 */
 
 // Returns the offset to x.
+// documented in /docs/sdk/script/fn
 global func AbsX(int x)
 {
 	return x - GetX();
 }
 
 // Returns the offset to y.
+// documented in /docs/sdk/script/fn
 global func AbsY(int y)
 {
 	return y - GetY();
 }
 
 // Supports negative values, and can deliver random values between two bounds.
+// documented in /docs/sdk/script/fn
 global func RandomX(int start, int end)
 {
 	var swap;
@@ -39,6 +42,7 @@ global func Sign(int x)
 }
 
 // Tangens.
+// documented in /docs/sdk/script/fn
 global func Tan(int angle, int radius, int prec)
 {
 	return radius * Sin(angle, radius * 100, prec) / Cos(angle, radius * 100, prec);
@@ -98,6 +102,7 @@ global func GetTurnDirection(
 	 return dir;
 }
 
+// documented in /docs/sdk/script/fn
 global func SetBit(int old_val, int bit_nr, bool bit)
 {
 	if (GetBit(old_val, bit_nr) != (bit != 0))
@@ -105,11 +110,13 @@ global func SetBit(int old_val, int bit_nr, bool bit)
 	return old_val;
 }
 
+// documented in /docs/sdk/script/fn
 global func GetBit(int value, int bit_nr)
 {
 	return (value & (1 << bit_nr)) != 0;
 }
 
+// documented in /docs/sdk/script/fn
 global func ToggleBit(int old_val, int bit_nr)
 {
 	return old_val ^ (1 << bit_nr);

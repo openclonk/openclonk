@@ -6,6 +6,7 @@
 */
 
 // Returns the player number of plr_name, or none if there is no such player. (written by timi for CR/CE/CP)
+// documented in /docs/sdk/script/fn
 global func GetPlayerByName(string plr_name)
 {
 	// Loop through all players.
@@ -34,6 +35,7 @@ global func GetTeamByName(string team_name)
 }
 
 // Returns the name of a player, including color markup using the player color.
+// documented in /docs/sdk/script/fn
 global func GetTaggedPlayerName(int plr)
 {
 	var plr_name = GetPlayerName(plr);
@@ -115,6 +117,7 @@ global func GetPlayerByID(int plr_id)
 }
 
 // Adds value to the account of iPlayer.
+// documented in /docs/sdk/script/fn
 global func DoWealth(int plr, int value)
 {
 	return SetWealth(plr, value + GetWealth(plr));
@@ -152,6 +155,7 @@ global func GetDefaultMenuDecoration()
 }
 
 // Find a base of the given player. Use index to search through all bases.
+// documented in /docs/sdk/script/fn
 global func FindBase(int plr, int index)
 {
 	return FindObjects(Find_Owner(plr), Find_Func("IsBase"))[index];

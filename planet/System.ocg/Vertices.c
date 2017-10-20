@@ -6,6 +6,7 @@
 */
 
 // Sets both the X and Y-coordinate of one vertex.
+// documented in /docs/sdk/script/fn
 global func SetVertexXY(int index, int x, int y)
 {
 	// Set vertices.
@@ -15,6 +16,7 @@ global func SetVertexXY(int index, int x, int y)
 }
 
 // Returns the number of stuck vertices. (of this)
+// documented in /docs/sdk/script/fn
 global func VerticesStuck()
 {
 	var vertices = 0;
@@ -28,6 +30,7 @@ global func VerticesStuck()
 }
 
 // Automatically move an object up to <range> pixels in each direction if it is stuck
+// documented in /docs/sdk/script/fn
 global func Unstick(int range)
 {
 	if (Stuck())

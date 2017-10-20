@@ -13,6 +13,7 @@ static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. las
 // Called by engine whenever a control is issued
 // Forwards control to special handler or cursor
 // Return whether handled
+// documented in /docs/sdk/script/fn
 global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
 {
 	var release = status == CONS_Up;

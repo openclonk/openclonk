@@ -6,6 +6,7 @@
 */
 
 // Executes a script repetitively with delay.
+// documented in /docs/sdk/script/fn
 global func Schedule(object obj, string script, int interval, int repeats)
 {
 	// Defaults.
@@ -69,6 +70,7 @@ global func RemoveTimer(call_function /* name or pointer to the timer to remove 
 }
 
 // Executes a function repetitively with delay.
+// documented in /docs/sdk/script/fn
 global func ScheduleCall(object obj, call_function, int interval, int repeats, par0, par1, par2, par3, par4)
 {
 	// Defaults.
@@ -97,6 +99,7 @@ global func FxIntScheduleCallTimer(object obj, effect fx)
 	return FX_OK;
 }
 
+// documented in /docs/sdk/script/fn
 global func ClearScheduleCall(object obj, call_function)
 {
 	var i, fx;

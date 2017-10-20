@@ -13,6 +13,7 @@
 
 
 // Sets the component of an object or definition.
+// documented in /docs/sdk/script/fn
 global func SetComponent(id component, int count)
 {
 	// Safety: can only be called from object.
@@ -40,6 +41,7 @@ global func SetComponent(id component, int count)
 
 // Returns the amount if the component parameter is specified. If the component parameter is nil
 // it returns the definition of the component for the given index.
+// documented in /docs/sdk/script/fn
 global func GetComponent(id component, int index)
 {
 	// Safety: can only be called from object or definition context.
@@ -97,6 +99,7 @@ global func OnCompletionChange(int old_con, int new_con)
 }
 
 // Splits the calling object into its components.
+// documented in /docs/sdk/script/fn
 global func Split2Components()
 {
 	// Safety: can only be called from object context.

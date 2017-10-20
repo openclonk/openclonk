@@ -330,6 +330,7 @@ global func AddScenarioSaveDependency()
 	if (save_scenario_obj_dependencies && GetIndexOf(save_scenario_obj_dependencies, this)<0) save_scenario_obj_dependencies[GetLength(save_scenario_obj_dependencies)] = this;
 }
 
+// documented in /docs/sdk/script/fn
 global func MakeScenarioSaveName()
 {
 	// Get name to be used to store this object in a scenario
@@ -492,6 +493,7 @@ global func SaveScenarioObject(props)
 	return true;
 }
 
+// documented in /docs/sdk/script/fn
 global func SaveScenarioObjectAction(props)
 {
 	// Helper function to store action properties

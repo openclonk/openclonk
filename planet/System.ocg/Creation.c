@@ -7,6 +7,7 @@
 
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
 // Returns the number of iterations needed, or -1 when the placement failed.
+// documented in /docs/sdk/script/fn
 global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wdt, int hgt, bool onsf, bool nostuck)
 {
 	var i, j;
@@ -86,6 +87,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	return j;
 }
 
+// documented in /docs/sdk/script/fn
 global func CastObjects(id def, int am, int lev, int x, int y, int angs, int angw)
 {
 	var objects = [];
@@ -111,6 +113,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 	return objects;
 }
 
+// documented in /docs/sdk/script/fn
 global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int angw)
 {
 	if (!angw)
@@ -123,6 +126,7 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
+// documented in /docs/sdk/script/fn
 global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, int prtdist, xdir, ydir, lifetime, proplist properties)
 {
 	// Right parameters?

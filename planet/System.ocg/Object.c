@@ -6,6 +6,7 @@
 */
 
 // Does not set the speed of an object. But you can set two components of the velocity vector with this function.
+// documented in /docs/sdk/script/fn
 global func SetSpeed(int x_dir, int y_dir, int prec)
 {
 	SetXDir(x_dir, prec);
@@ -65,6 +66,7 @@ global func AddVelocity(int angle, int speed, int precision_angle, int precision
 
 
 // Sets the completion of this to new_con.
+// documented in /docs/sdk/script/fn
 global func SetCon(int new_con, int precision, bool grow_from_center)
 {
 	return DoCon(new_con - GetCon(), precision, grow_from_center);
@@ -351,6 +353,7 @@ global func StonyObjectHit(int x, int y)
 }
 
 // Removes all objects of the given type.
+// documented in /docs/sdk/script/fn
 global func RemoveAll(p, ...)
 {
 	var cnt;
@@ -399,6 +402,7 @@ global func RootSurface(int max_movement)
 }
 
 // Buys an object. Returns the object if it could be bought.
+// documented in /docs/sdk/script/fn
 global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool show_errors)
 {
 	// if no vendor is given try this
@@ -411,6 +415,7 @@ global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool s
 }
 
 // Sells an object. Returns true if it could be sold.
+// documented in /docs/sdk/script/fn
 global func Sell(int plr, object obj, object to_vendor)
 {
 	// if no vendor is given try this

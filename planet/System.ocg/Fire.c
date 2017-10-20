@@ -16,6 +16,7 @@ static const C4Fx_FireMode_Last      = 3; // largest valid fire mode
 
 
 // Returns whether the object is burning.
+// documented in /docs/sdk/script/fn
 global func OnFire()
 {
 	if (!this)
@@ -27,6 +28,7 @@ global func OnFire()
 }
 
 // Extinguishes the calling object with specified strength.
+// documented in /docs/sdk/script/fn
 global func Extinguish(strength /* strength between 0 and 100 */)
 {
 	if (!this)
@@ -46,6 +48,7 @@ global func Extinguish(strength /* strength between 0 and 100 */)
 }
 
 // Incinerates the calling object with specified strength.
+// documented in /docs/sdk/script/fn
 global func Incinerate(
 	strength /* strength between 0 and 100 */
 	, int caused_by /* the player that caused the incineration */

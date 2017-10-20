@@ -111,6 +111,7 @@ global func ExplosionParticles_Init()
 
 /*-- Explosion --*/
 
+// documented in /docs/sdk/script/fn
 global func Explode(int level, bool silent, int damage_level)
 {
 	if(!this) FatalError("Function Explode must be called from object context");
@@ -194,6 +195,7 @@ global func ExplosionEffect(...)
 /*-- Blast objects & shockwaves --*/
 
 // Damage and hurl objects away.
+// documented in /docs/sdk/script/fn
 global func BlastObjects(int x, int y, int level, object container, int cause_plr, int damage_level, object layer, object prev_container)
 {
 	var obj;
@@ -269,6 +271,7 @@ global func BlastObject(int level, int caused_by)
 	return;
 }
 
+// documented in /docs/sdk/script/fn
 global func DoShockwave(int x, int y, int level, int cause_plr, object layer, int off_x, int off_y)
 {
 	// Zero-size shockwave
@@ -370,6 +373,7 @@ strength falls off linearly by distance from 100% to 0% when the player is 700 p
 @param y_off y offset in relative coordinates from the calling object
 @param range range of clonk to explosion at which shaking falls off to 0%
 */
+// documented in /docs/sdk/script/fn
 global func ShakeViewport(int level, int x_off, int y_off, range)
 {
 	if (level <= 0)

@@ -6,6 +6,7 @@
 */
 
 // overload function for objects with Inventory.ocd
+// documented in /docs/sdk/script/fn
 global func ShiftContents(bool shift_back, id target_id)
 {
 	if (this && (this.HandObjects > 0))

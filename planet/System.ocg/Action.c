@@ -30,6 +30,7 @@ static const Action =
 	Procedure = DFA_NONE,
 };
 
+// documented in /docs/sdk/script/fn
 global func GameCall(string fn, ...)
 {
 	if (!fn)

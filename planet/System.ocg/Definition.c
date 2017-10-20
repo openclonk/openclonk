@@ -9,6 +9,7 @@ static GetDefinition_Loaded_Definition_List;
 
 // Returns the definition or nil if par is a string and the definition exists.
 // See the documentation for the case when par is an integer.
+// documented in /docs/sdk/script/fn
 global func GetDefinition(par)
 {
 	// Overload behavior when par is a string.

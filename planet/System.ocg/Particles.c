@@ -18,6 +18,7 @@ global func CreateMuzzleFlash(int x, int y, int angle, int size)
 	CreateParticle("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
 }
 
+// documented in /docs/sdk/script/fn
 global func Smoke(int x, int y, int level, int color, bool heavy)
 {
 	level = level ?? 10;
@@ -151,6 +152,7 @@ global func Particles_Spark()
 	};
 }
 
+// documented in /docs/sdk/script/fn
 global func Particles_Colored(prototype, color, color2)
 {
 	// Colors the given particle. If color2 is given, colors in a random fade between color and color2

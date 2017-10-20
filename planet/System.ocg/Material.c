@@ -56,6 +56,7 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	@param y Y coordinate
 	@param distant_first If true, extraction position takes largest horizontal distance from given offset at same height to a maximum value of MaxSlide. Useful to ensure that no floor of 1px of liquid remains.
 	@return The material index of the removed pixel, or -1 if no liquid was found. */
+// documented in /docs/sdk/script/fn
 global func ExtractLiquid(int x, int y, bool distant_first)
 {
 	var result = ExtractLiquidAmount(x, y, 1, distant_first);

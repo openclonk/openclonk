@@ -5,6 +5,7 @@
 	@author Marky
 */
 
+// documented in /docs/sdk/script/fn
 global func Sound(string name, opts, ...)
 {
 	if (GetType(opts) == C4V_PropList)
@@ -12,6 +13,7 @@ global func Sound(string name, opts, ...)
 	return inherited(name, opts, ...);
 }
 
+// documented in /docs/sdk/script/fn
 global func SoundAt(string name, int x, int y, opts, ...)
 {
 	if (GetType(opts) == C4V_PropList)
