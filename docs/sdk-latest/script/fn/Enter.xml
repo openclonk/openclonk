@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Enter</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Target container.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Moves an object into the contents of another object. This call invokes no RejectCollect, Collection, or ActivateEntracnce callbacks in the target object. It does, however, cause RejectEntrance and Entrance callbacks in the entering object.</desc>
+    <examples>
+      <example>
+        <code>for(var obj in <funclink>FindObjects</funclink>(<funclink>Find_ID</funclink>(Gold)))
+	obj->Enter(GetCrew(0,0));</code>
+        <text>All gold chunks in the landscape are moved into the first clonk of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Exit</funclink>
+      <funclink>Collect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

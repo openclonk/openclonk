@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerType</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose type you want to retrieve.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Returns the type of a player. Possible values are: 
+      <table>
+        <rowh>
+          <col>Constant</col>
+          <col>Value</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>C4PT_User</col>
+          <col>1</col>
+          <col>User-controlled player.</col>
+        </row>
+        <row>
+          <col>C4PT_Script</col>
+          <col>2</col>
+          <col>Script-controlled player; i.e. AI player.</col>
+        </row>
+      </table>
+
+    </desc>
+    <remark>If the specified player number is invalid, the return value is 0.</remark>
+    <examples>
+      <example>
+        <code>protected func InitializePlayer(int player)
+  {
+  // Is it a script player?
+  if (GetPlayerType(player) == C4PT_Script)
+    // then create an AI controller object for that player
+    <funclink>CreateObject</funclink>(SomeAIController, 50,50, player);
+	return true;
+  }</code>
+        <text>Scenario script: when a script player joins, an object of definition SomeAIController is created (owned by the joining script player). This object might now control all clonks owned by this player.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="script/ScriptPlayers.html">Script Player</emlink>
+      <funclink>CreateScriptPlayer</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2007-12</date>
+</funcs>

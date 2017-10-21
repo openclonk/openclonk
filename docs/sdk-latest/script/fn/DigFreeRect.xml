@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DigFreeRect</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_dig2objects</name>
+          <desc>Prevent objects from being dug out</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_instability_check</name>
+          <desc>Does not perform instability checks around dug pixels, i.e. prevents surrounding single pixels and liquids from becoming loose.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Makes a rectangular hole in semi-solid materials. The return value is the amount of pixels that were dug free. If no_dig2objects is true, the dug out material does neither create objects according to the Dig2Objects in the <emlink href="material/ocm.html">*.ocm</emlink> nor will the amount be stored in the internal buffer.</desc>
+    <remark>Drills an elevator shaft.</remark>
+    <examples>
+      <example>
+        <code>DigFreeRect(700, 1500, 15, 15);</code>
+        <text>Makes a square hole in the middle of the landscape.</text>
+      </example>
+    </examples>
+    <related><funclink>DigFree</funclink></related>
+  </func>
+  <date>2013-03</date>
+</funcs>

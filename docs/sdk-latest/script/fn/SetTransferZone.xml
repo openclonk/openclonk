@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetTransferZone</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the top left corner of the new transfer zone, relative to the object center.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the top left corner of the new transfer zone, relative to the object center.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the new transfer zone.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the new transfer zone.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the transfer zone of the object. If the pathfinding trail of another object leads through this transfer zone (a transfer zone is always considered completely passable in pathfinding) ControlTransfer calls will be made to the transfer zone object for the passing clonk. In these calls, the necessary script commands should be given to the clonk so he can pass the object and reach his destination.</desc>
+    <remark>Transfer zones have to be set anew when the object has moved. Also, they should be set anew in response to a OnSynchronized callback made by the engine.</remark>
+    <examples>
+      <example>
+        <code>protected func Initialize() { <funclink>return</funclink> OnSynchronized(); }
+
+protected func OnSynchronized() { <funclink>return</funclink> SetTransferZone(-<funclink>GetX</funclink>(), -<funclink>GetY</funclink>(), <funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>());
+
+protected func ControlTransfer(clonk, endx, endy)
+  {
+  clonk-&gt;<funclink>SetPosition</funclink>(endx, endy);
+  <funclink>return</funclink> 1;
+  }</code>
+        <text>Script for a cheat object: a clonk with a movement command will be immediately warped to the destination.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>MakeScenarioSaveName</title>
+    <category>System</category>
+    <version>5.3 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+    </syntax>
+    <desc>Returns the name under which an object is stored in an Objects.c file if it is saved with the "Save scenario" option (See <emlink href="definition/script.html#ScenSave">Scenario objects saving</emlink>).</desc>
+    <examples>
+      <example>
+        <code>local target;
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (target) props->Add("Target", "SetTarget(%s)", target->MakeScenarioSaveName());
+	return false;
+}</code>
+        <text>Stores a call to SetTarget using a reference to an object stored in the target variable.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="definition/script.html#ScenSave">Scenario objects saving</emlink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2013-12</date>
+</funcs>

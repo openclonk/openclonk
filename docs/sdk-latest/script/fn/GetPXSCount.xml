@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPXSCount</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>5.2 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>material</name>
+          <desc>Index of material. If nil or -1, any material is counted.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left side of search rectangle. Offset in local calls. Set to nil to search the whole map.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top side of search rectangle. Offset in local calls.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>wdt</name>
+          <desc>Width of search rectangle. Right border is not included in search.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>wdt</name>
+          <desc>Height of search rectangle. Bottom border is not included in search.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines how many loose pixels (PXS) are present of a given material in a given rectangle.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(GetPXSCount(<funclink>Material</funclink>(&quot;Snow&quot;), -100,-100,200,100) > 5) <funclink>Message</funclink>(&quot;It is snowing!&quot;);</code>
+        <text>Part of a clonk script: if snow is found around the clonk, he shows a message above his head.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Material</funclink>
+      <funclink>CastPXS</funclink>
+      <funclink>InsertMaterial</funclink>
+      <funclink>GetMaterial</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2014-12</date>
+</funcs>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Fling</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+          <desc>X flinging speed</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+          <desc>Y flinging speed</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Flings an object into the specified direction. This function is designed for living beings as it will also set the tumbling activity.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>(0)-&gt;Fling(10, -15);</code>
+        <text>Throws the selected clonk up and to the right.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Jump</funclink>
+      <funclink>SetXDir</funclink>
+      <funclink>SetYDir</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

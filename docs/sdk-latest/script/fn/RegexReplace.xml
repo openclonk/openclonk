@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RegexReplace</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>Source string in which the replacements occur.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>regex</name>
+          <desc>Regular expression in ECMAScript syntax</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>replacement</name>
+          <desc>New substring by which the regular expression matches will be replaced. Can reference submatches with $1, $2 etc.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Bitmask of the following values:
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>Regex_CaseInsensitive</literal_col>
+                <col>Regular expression is case insensitive.</col>
+              </row>
+              <row>
+                <literal_col>Regex_FirstOnly</literal_col>
+                <col>Only replace the first match instead of all matches.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Returns a string in which all regular expression matches are replaced by a replacement string.
+    </desc>
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>(RegexReplace("hello world", "(\\w+)\\s(\\w+)", "$2 $1"));</code>
+        <text>Swaps two words, displaying "world hello".</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ReplaceString</funclink>
+      <funclink>RegexSearch</funclink>
+      <funclink>RegexMatch</funclink>
+      <funclink>RegexSplit</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-09</date>
+</funcs>

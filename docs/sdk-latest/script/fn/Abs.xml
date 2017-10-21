@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Abs</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Absolute coordinate you want to convert to a relative coordinate.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the absolute value of the given parameter, ignoring the sign of the value.</desc>
+    <examples>
+      <example>
+        <code>Abs(-12) == Abs(12) == 12</code>
+        <text>This expression is <code>true</code>.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

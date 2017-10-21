@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ClearParticles</title>
+    <category>Particles</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+    </syntax>
+    <desc>Removes all particles associated with the calling object or the global particles if not called from object context.</desc>
+    <examples>
+      <example>
+        <code>
+GetCursor(0)->ClearParticles();
+Scenario->ClearParticles();</code>
+        <text>Removes all particles belonging to the first player's Clonk and all global particles.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateParticle</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2013-12</date>
+</funcs>

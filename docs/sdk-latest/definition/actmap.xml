@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>ActMap</title>
+  <h>ActMap</h>
+  <part>
+  <text>The ActMap property describes possible actions (i.e., activities like walking and scaling for clonks; or opening/closing doors of buildings), of an object. It is almost always inherited from their definition. The animation phases of each activity are placed as adjacent images in the Graphics.png (and/or Overlay.png). These animations are being referenced using image coordinates in the ActMap. Animations may be started by script (see <emlink href="script/fn/SetAction.html">SetAction</emlink>) or directly by the engine. Some activities - especially those of clonks and animals - use an engine-internal <emlink href="definition/procedures.html">procedure</emlink>, which controls the movement of an object while such an activity is set.</text>
+  <text>
+    <table>
+      <caption id="BeliebigvieleSektionenAction">Any number of proplists</caption>
+      <rowh>
+        <col>Property</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <literal_col>Prototype</literal_col>
+        <col>proplist</col>
+        <col>Must be Action. See below in the example.</col>
+      </row>
+      <row>
+        <literal_col>Name</literal_col>
+        <col>String</col>
+        <col>Name of the activity. See <emlink href="script/fn/SetAction.html">SetAction</emlink>().</col>
+      </row>
+      <row>
+        <literal_col>Procedure</literal_col>
+        <col>String</col>
+        <col>Internal procedure. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Speed</literal_col>
+        <col>Integer</col>
+        <col>The maximum speed in 1/100 px/frame an internal procedure will move the object with. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Accel</literal_col>
+        <col>Integer</col>
+        <col>The acceleration in 1/100 px/frame² an internal procedure will apply to the object. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Decel</literal_col>
+        <col>Integer</col>
+        <col>The deceleration in 1/100 px/frame² the internal procedure WALK will apply to the object. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Directions</literal_col>
+        <col>Integer</col>
+        <col>Number of animation directions. Animation directions are arranged vertically in Graphics.png. Default 1.</col>
+      </row>
+      <row>
+        <literal_col>FlipDir</literal_col>
+        <col>Integer</col>
+        <col>If nonzero, this value specifies the first animation phase that is produced by mirroring one of the previous animation directions. If this value is 1, graphics of direction 1 (DIR_Right) will be drawn as a horizontally mirrored graphics of direction 0 (DIR_Left) (see clonks). If it is 7, any directions n &gt;= 7 will be drawn using the mirrored graphics of directions 6 - n, i.e. higher direction values will be drawn using the mirrored graphics in reverse orders (cf. banner in the knights pack).</col>
+      </row>
+      <row>
+        <literal_col>Length</literal_col>
+        <col>Integer</col>
+        <col>Number of animation phases for this activity (arranged horizontally in Graphics.png). Default 1.</col>
+      </row>
+      <row>
+        <literal_col>Reverse</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the animation phases will be shown in reverse order.</col>
+      </row>
+      <row>
+        <literal_col>Delay</literal_col>
+        <col>Integer</col>
+        <col>Time difference in frames (ticks) between two animation phases.</col>
+      </row>
+      <row>
+        <literal_col>Step</literal_col>
+        <col>Integer</col>
+        <col>How many animation phases the animation should advance after Delay frames. Default 1.</col>
+      </row>
+      <row>
+        <literal_col>Attach</literal_col>
+        <col>Integer</col>
+        <col>A bitmask for the attachment to surfaces. See <emlink href="definition/cnat.html">CNAT Values</emlink> for a documentation of possible values. Only evaluated if the procedure is NONE.</col>
+      </row>
+      <row>
+        <literal_col>X</literal_col>
+        <col>Integer</col>
+        <col>Animation graphics: X coordinate from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Y</literal_col>
+        <col>Integer</col>
+        <col>Animation graphics: Y coordinate from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Wdt</literal_col>
+        <col>Integer</col>
+        <col>Width of the animation graphic from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Hgt</literal_col>
+        <col>Integer</col>
+        <col>Height of the animation graphic from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>OffX</literal_col>
+        <col>Integer</col>
+        <col>X-Offset at which to display the animation graphics.</col>
+      </row>
+      <row>
+        <literal_col>OffY</literal_col>
+        <col>Integer</col>
+        <col>Y-Offset at which to display the animation graphics.</col>
+      </row>
+      <row>
+        <literal_col>FacetBase</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the default facet (i.e., the facet shown if the object has no action) will be drawn behind the action facet.</col>
+      </row>
+      <row>
+        <literal_col>FacetTopFace</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the TopFace (see <emlink href="definition/defcore.html">DefCore.txt</emlink>) will be drawn using the animated facet.</col>
+      </row>
+      <row>
+        <literal_col>FacetTargetStretch</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the graphics will be stretched down towards the upper border of the ActionTarget. Used e.g. for the elevator line.</col>
+      </row>
+      <row>
+        <literal_col>NextAction</literal_col>
+        <col>String</col>
+        <col>Next action being set after the current one has reached its end. If it is not specified, the action will be kept and the animation phase resets to 0 and the animation begins anew. If it is "Hold", the action will also be kept but stops at the last animation frame. If it is "Idle", the object will have no action after this one.</col>
+      </row>
+      <row>
+        <literal_col>NoOtherAction</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, no other action can be set after this one (used e.g. for death or destruction).</col>
+      </row>
+      <row>
+        <literal_col>StartCall</literal_col>
+        <col>String</col>
+        <col>Object script function which is called when the activity is started.</col>
+      </row>
+      <row>
+        <literal_col>EndCall</literal_col>
+        <col>String</col>
+        <col>Called when an activity reaches the end of its animation.</col>
+      </row>
+      <row>
+        <literal_col>PhaseCall</literal_col>
+        <col>String</col>
+        <col>Called whenever the animation phase changes.</col>
+      </row>
+      <row>
+        <literal_col>AbortCall</literal_col>
+        <col>String</col>
+        <col>Called if an activity is being replaced by another before its regular end; i.e. not by a transition through NextAction. Parameters are the previous animation phase, previous ActionTarget and previous ActionTarget2.</col>
+      </row>
+      <row>
+        <literal_col>InLiquidAction</literal_col>
+        <col>String</col>
+        <col>Action to be set if the object plunges into water.</col>
+      </row>
+      <row>
+        <literal_col>Sound</literal_col>
+        <col>String</col>
+        <col>Permanent sound being played during this action. The same can be achieved with <funclink>Sound</funclink> which is the more flexible solution.</col>
+      </row>
+      <row>
+        <literal_col>ObjectDisabled</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. Restricted control of the object during this action.</col>
+      </row>
+      <row>
+        <literal_col>DigFree</literal_col>
+        <col>Integer</col>
+        <col>Area that is dug free during this action. If 1, the area covered by the object shape is freed (like the elevator case); otherwise, the value is taken as the radius of a circular area (like a digging Clonk).</col>
+      </row>
+      <row>
+        <literal_col>Animation</literal_col>
+        <col>String</col>
+        <col>Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href="definition/animations.html">Animations</emlink> for further documentation on animations.</col>
+      </row>
+    </table>
+  </text>
+  <h id="Example">Example</h>
+  <text>The ActMap is defined in the script, an example definition looks like this:</text>
+  <code>local ActMap = {
+Fly = {
+	Prototype = Action,
+	Name = "Fly",
+	Procedure = DFA_FLOAT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 1,
+	Delay = 10,
+	X = 0,
+	Y = 0,
+	Wdt = 24,
+	Hgt = 24,
+	NextAction = "Fly",
+	StartCall = "FlyingStart",
+},
+Flutter = {
+	Prototype = Action,
+	Name = "Flutter",
+	Procedure = DFA_FLOAT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 11,
+	Delay = 1,
+	X = 0,
+	Y = 0,
+	Wdt = 24,
+	Hgt = 24,
+	NextAction = "Flutter",
+	StartCall = "Fluttering",
+},
+};  </code>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
+  <author>Günther</author><date>2011-01</date>
+</doc>

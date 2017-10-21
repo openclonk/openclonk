@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetContactDensity</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>density</name>
+          <desc>Minimum material density to cause collisions with this object.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the minimum density of a material to cause an object to collide with the material. By default, objects collide with material that have a density of 50 (solid) or more.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;SetContactDensity(25);</code>
+        <text>Modifies the collision density of the selected clonk of the first player so that the selected clonk can now walk on liquids.</text>
+      </example>
+    </examples>
+    <related><emlink href="material\index.html">Material Definitions</emlink></related>
+  </func>
+  <author>Clonkonaut</author><date>2008-05</date>
+</funcs>

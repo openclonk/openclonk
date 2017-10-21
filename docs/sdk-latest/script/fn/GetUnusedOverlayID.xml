@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetUnusedOverlayID</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>base_index</name>
+          <desc>ID of the overlay after which you want to start the search.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns an unused overlay ID. The first unused overlay ID following base_index will be returned.</desc>
+    <remark>The main object image does not count as overlay, so base_index should be 1 or higher.</remark>
+    <related><funclink>SetGraphics</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2008-05</date>
+</funcs>

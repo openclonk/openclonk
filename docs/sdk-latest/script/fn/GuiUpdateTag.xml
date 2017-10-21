@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GuiUpdateTag</title>
+		<category>GUI</category>
+		<version>7.0 OC</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param>
+					<type>string</type>
+					<name>tag</name>
+					<desc>The new tag for the window and children.</desc>
+				</param>
+				<param>
+					<type>int</type>
+					<name>gui_id</name>
+					<desc>The ID of the gui window that was returned by <funclink>GuiOpen</funclink>().</desc>
+				</param>
+				<param>
+					<type>int</type>
+					<name>child_id</name>
+					<desc>Optional. If given, the sub-window of the menu_id window with the matching child_id will be updated. Should be used together with the parameter target.</desc>
+				</param>
+				<param>
+					<type>object</type>
+					<name>target</name>
+					<desc>Optional. Should be used together with child_id. The target of the sub-window that will be updated.</desc>
+				</param>
+			</params>
+		</syntax>
+		<desc>Changes the tag of an existing GUI window, that has previously been opened with <funclink>GuiOpen</funclink>(). It is possible to update only one certain sub-window by passing child_id and target. The tag will also be set for the children of the target window. Returns true if a window was found. </desc>
+		<remark>See the <emlink href="script/GUI.html">GUI documentation</emlink> for further explanations.</remark>
+		<examples>
+			<example>
+<code>
+var menu =
+{
+	BackgroundColor = 
+	{
+		Std = <funclink>RGB</funclink>(0, 0, 255),
+		GoGreen = <funclink>RGB</funclink>(0, 255, 0)
+	}
+};
+var menuID = <funclink>GuiOpen</funclink>(menu);
+GuiUpdateTag("GoGreen", menuID)
+</code>
+				<text>Opens a blue screen and then makes it go green.</text>
+			</example>
+		</examples>
+		<related><emlink href="script/GUI.html">GUI Documentation</emlink><funclink>GuiAction_Call</funclink><funclink>GuiAction_SetTag</funclink><funclink>GuiClose</funclink><funclink>GuiOpen</funclink><funclink>GuiUpdate</funclink></related>
+	</func>
+	<author>Zapper</author><date>2014-10</date>
+</funcs>

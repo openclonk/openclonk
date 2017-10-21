@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetCrewExtraData</title>
+    <category>Player</category>
+    <version>5.1 OC<extversion>5.2 OC</extversion></version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>data_name</name>
+          <desc>Name for the data.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <desc>Data to be saved.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>With this function additional data can be saved in a crew member's file the in player. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
+    <remark>No objects or arrays may be saved.</remark>
+    <remark>Because all scripts use the same storage in the crew member, the name for the data should be prefixed with the scenario or object name or your developer id.</remark>
+    <related>
+      <funclink>GetCrewExtraData</funclink>
+      <funclink>SetPlrExtraData</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2006-02</date>
+</funcs>

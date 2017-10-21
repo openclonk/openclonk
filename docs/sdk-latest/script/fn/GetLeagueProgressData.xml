@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetLeagueProgressData</title>
+    <category>Network</category>
+    <subcat>League</subcat>
+    <version>5.5 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player_id</name>
+          <desc>ID of player whose progress data shall be returned. Use <funclink>GetPlayerID</funclink>() to get the ID of a joined player.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Gets the league progress data. See <funclink>SetLeagueProgressData</funclink> for more information.</desc>
+    <related><funclink>SetLeagueProgressData</funclink><funclink>GetLeagueScore</funclink></related>
+  </func>
+  <author>Sven2</author><date>2014-04</date>
+</funcs>

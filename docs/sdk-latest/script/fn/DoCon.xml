@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DoCon</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>6.0 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of completion in percentage point (positive or negative).</desc>
+        </param>
+	    <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>If specified, the con value will be divided by this value. No value or 0 uses the default precision of 100.</desc>
+        </param>
+	    <param>
+          <type>bool</type>
+          <name>grow_from_center</name>
+          <desc>If specified, this parameter determines whether the object should grow from the bottommost vertex or from its center. The default value is false, which makes the object grow from the bottommost vertex.</desc>
+        </param>
+	  </params>
+    </syntax>
+    <desc>Adjusts the completion value of an object. This affects the completion of construction sites or the growth of trees and living beings. If completion drops below 0, the object is removed.</desc>
+    <examples>
+      <example>
+        <code>var obj;
+<funclink>for</funclink>(var obj in<funclink>FindObjects</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Construct</funclink>),<funclink>Find_NoContainer</funclink>(),<funclink>Find_Not</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Fullcon</funclink>)))) obj-&gt;DoCon(100);</code>
+        <text>Completes all construction sites.</text>
+      </example>
+      <example>
+        <code><funclink>GetCursor</funclink>(plr)-&gt;DoCon(-50);</code>
+        <text>Robs the selected crewmember half of its normal size, if the object was fully grown, its half-grown afterwards, if it was half-grown, it vanishes.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCon</funclink>
+      <funclink>SetCon</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>Marky</author><date>2015-01</date>
+</funcs>

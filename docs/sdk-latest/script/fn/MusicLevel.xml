@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>MusicLevel</title>
+    <category>Music</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>Desired volume (0-100).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the volume for playback of background music (see <funclink>Music</funclink>).</desc>
+    <examples>
+      <example>
+        <code>
+global func FadeOutMusic() { AddEffect("FadeOutMusic", nil, 1, 1, nil, nil); }
+
+global func FxFadeOutMusicTimer(object target, effect, int time)
+{
+	var volume = 100 - time;
+	MusicLevel(volume);
+	if(volume &lt;= 0)
+	{
+		<funclink>Music</funclink>();
+		return -1;
+	}
+}</code>
+        <text>Script for a function which will fade out the background music. FadeOutMusic creates the effect whose timer function will be called each frame. The function decreases the volume step by step until it is 0. Then the music will be turned off and the effect removed.</text>
+      </example>
+    </examples>
+    <related><funclink>Music</funclink></related>
+  </func>
+  <author>PeterW</author><date>2003-02</date>
+</funcs>

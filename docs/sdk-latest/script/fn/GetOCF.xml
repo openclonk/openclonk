@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetOCF</title>
+    <category>Objects</category>
+    <subcat>OCF</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the Object Character Flag of an object. This value describes the current state of an object. The return value is a bit mask and can be compared with OCF_x values using &amp;.</desc>
+    <examples>
+      <example>
+        <code>protected func Damage()
+{
+	// object is burning?
+	if(GetOCF() &amp; <funclink>OCF_OnFire</funclink>)
+		<funclink>Message</funclink>(&quot;Jippie, I am burning!&quot;);
+}		
+				</code>
+        <text>Masochist</text>
+      </example>
+    </examples>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
+</funcs>

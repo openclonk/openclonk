@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_Const</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Value to use.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Value provider for <funclink>PlayAnimation</funclink>, <funclink>SetAnimationPosition</funclink> or <funclink>SetAnimationWeight</funclink>: For the whole animation the given constant value will be used.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>(&quot;HangleStand&quot;, 5, <funclink>Anim_Linear</funclink>(0, 0, 2000, 100, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "HangleStand" and uses the value 1000 constantly for the animation's weight (full weight). The position of the animation is not contant but changes (linearily) with time, see <funclink>Anim_Linear</funclink>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_R</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_Dist</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GBackSky</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate. Offset in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Checks whether there is sky at the specified position in the landscape.</desc>
+    <examples>
+      <example>
+        <code><funclink>while</funclink>(!obj-&gt;GBackSky()) obj-&gt;<funclink>SetPosition</funclink>(obj-&gt;GetX(),obj-&gt;GetY()-5);</code>
+        <text>Moves an object into fresh air.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GBackSemiSolid</funclink>
+      <funclink>GBackSolid</funclink>
+      <funclink>GBackLiquid</funclink>
+      <funclink>GetMaterial</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>2002-04</date>
+</funcs>

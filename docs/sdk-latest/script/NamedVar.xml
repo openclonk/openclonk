@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Variables</title>
+  <h>Variables</h>
+  <part>
+    <text>Variables are placeholders for values stored in a script. A variable stores a value in one of several <emlink href="script/Typechecks.html">data types</emlink>.</text>
+    <text>There are three different scopes in which a variable can be declared. </text>
+    <text>
+      <table>
+        <row>
+          <col>Keyword</col>
+          <col>Scope</col>
+          <col>Location</col>
+        </row>
+        <row>
+          <col><code>var</code></col>
+          <col>function local</col>
+          <col>Function</col>
+        </row>
+        <row>
+          <col><code>local</code></col>
+          <col>object local</col>
+          <col>Object Script</col>
+        </row>
+        <row>
+          <col><code>static</code></col>
+          <col>global</col>
+          <col>any script</col>
+        </row>
+      </table>
+    </text>
+    <text>Variables are declared using the following syntax:</text>
+    <code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
+    <text>The variable's scope, followed by the variable's name.</text>
+    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is not possible for <code>static</code> variables. Without initialization variables always start with <code>nil</code>.</text>
+    <text>Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon.</text>
+    <h>Example:</h>
+    <code>static object_count;
+local  time_to_live = 100;
+
+protected func Initialize()
+{
+  object_count++;
+}
+
+protected func Destruction()
+{
+  object_count--;
+}
+
+protected func Timer()
+{
+  if(!--time_to_live)
+  {
+    <funclink>RemoveObject</funclink>();
+    <funclink>return</funclink>;
+  }
+
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk), <funclink>Sort_Distance</funclink>());
+
+  if(<funclink>ObjectDistance</funclink>(obj) &lt; 20)
+    <funclink>DoDamage</funclink>(-10, obj);
+
+  <funclink>return</funclink>;
+}</code>
+    <h>Addendum:</h>
+    <text>
+      <ul>
+        <li>Object local variable declarations are also valid in #appendto or #include script extensions.</li>
+        <li>When <code>this</code> is a definition, local variables are constant. That protects against accidental modifications that would appear to work fine while there is only one object of a kind, but break in subtle ways as soon as there are multiple instances.</li>
+        <li>Using the <code>obj.foo</code> or <code>obj["foo"]</code> notation one can access local variables in other objects.</li>
+        <li>If two variables of the same name but differing scope are valid at the same time, then the variable of the smaller scope will be used, meaning for example an object local variable will "cover up" a global variable within its own scope.</li>
+        <li>If the same variable is declared multiple times, the variable will still exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively.</li>
+        <li>A <code>static</code> variable may also be used in object scripts (see example). If a <code>static</code> variable of the same name is defined in another script, the name will refer to the same variable.</li>
+      </ul>
+    </text>
+  </part>
+  <author>PeterW</author><date>her-long ago</date>
+  <author>Günther</author><date>2010</date>
+</doc>

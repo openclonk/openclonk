@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetAmbientBrightness</title>
+    <category>Landscape</category>
+    <subcat>View</subcat>
+    <version>5.6 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>brightness</name>
+          <desc>New ambient brightness value. The value should be between 0 and 100, where 0 means no ambient light and 100 means full ambient light.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the brightness of the ambient light. In regions with less than 100% ambient light, light sources such as Clonks will generate dynamic light.</desc>
+    <examples>
+      <example>
+        <code>SetAmbientBrightness(0);</code>
+        <text>Disables ambient lighting completely, so that everywhere on the map only dynamic light sources make light.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAmbientBrightness</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2014-11</date>
+</funcs>

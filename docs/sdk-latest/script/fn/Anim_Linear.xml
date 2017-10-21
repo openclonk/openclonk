@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_Linear</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>position</name>
+          <desc>Start value. Should be inside the interval given by begin and end.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>begin</name>
+          <desc>Start of the interval.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>end</name>
+          <desc>End of the interval. If end is larger than begin then the value increases linearily with time, otherwise it decreases.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>length</name>
+          <desc>Number of frames for the animation to be played from begin to end.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>on_ending</name>
+          <desc>
+            Specifies what happens once end is reached. There are the following possibilities:
+            <table>
+              <rowh><col>Constant</col><col>Value</col><col>Description</col></rowh>
+              <row><col>ANIM_Loop</col><col>0</col><col>Once end is reached the value is reset to begin so the cycle restarts.</col></row>
+              <row><col>ANIM_Hold</col><col>1</col><col>Once end is reached the value remains constant.</col></row>
+              <row><col>ANIM_Remove</col><col>2</col><col>Once end is reached the corresponding animation is removed the same way as if <funclink>StopAnimation</funclink> were called to the exact point in time. For combination nodes the child node with the smaller weight is removed.</col></row>
+            </table>
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>The value increases or decreases (depending on whether end is smaller or larger than begin) linearily in time (in frames). Initially the value is set to position and it is moving towards end. One cycle from begin to end lasts for length frames. If position and begin are not the same then end will be reached earlier already. on_ending specifies what happens once the end is reached.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code>var start = 0;
+var end = <funclink>GetAnimationLength</funclink>(&quot;Turn&quot;);
+if(<funclink>GetWind</funclink>() &lt; 0)
+{
+  start = end;
+  end = 0;
+}
+
+if(<funclink>GetWind</funclink>() != 0)
+  <funclink>SetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5), <funclink>Anim_Linear</funclink>(<funclink>GetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5)), start, end, 7200/<funclink>GetWind</funclink>(), ANIM_Loop));
+else
+  <funclink>SetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5), <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5))));</code>
+        <text>Sets the speed with which the animation in slot 5 is played depending on the wind speed. If the wind blows to the left then the animation is played backwards. Another possibility would be to set the position each frame using <funclink>Anim_Const</funclink>, however with the solution using <funclink>Anim_Linear</funclink> it is enough to call the function every couple of frames since the windmill continues to turn with contstant speed between calls (in other words, it is assumed that the wind speed will not change much for small time intervals).</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>StopAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_R</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_Dist</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

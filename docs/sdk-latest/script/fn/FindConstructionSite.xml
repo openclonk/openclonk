@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FindConstructionSite</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>id of the desired building type.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Designated x-position of the construction site. Always global coordinates.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Designated y-position of the construction site. Always global coordinates.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Searches for a suitable construction site for a building of the specified type, starting at the specified position. If a site is found, the coordinates are returned in the array [x,y]. Otherwise, the function returns <code>nil</code>.</desc>
+    <examples>
+      <example>
+        <code>var xy;
+<funclink>if</funclink>(xy = FindConstructionSite(ToolsWorkshop, GetX(), GetY()))
+	<funclink>CreateConstruction</funclink>(ToolsWorkshop, xy[0], xy[1], <funclink>GetOwner</funclink>(), 1, true);</code>
+        <text>Searches a construction site for a hut, starting at the local position. If a site is found, construction is started.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateConstruction</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

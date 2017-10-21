@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DeepEqual</title>
+    <category>Script</category>
+    <version>5.5 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>value1</name>
+          <desc>First value for comparison.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>value2</name>
+          <desc>Second value for comparison.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Compares two values. Unlike the <emlink href="script/operatoren.html#equality">==-operator</emlink>, DeepEqual compares the elements of proplists and arrays if two non-equal proplists are passed.</desc>
+    <examples>
+      <example>
+        <code>var foo={a=1};
+var bar={a=1};
+<funclink>Log</funclink>("Pointer comparison: %v, deep comparison: %v", foo==bar, DeepEqual(foo, bar));</code>
+        <text>Logs "Pointer comparison: false, deep comparison: true".</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2014-04</date>
+</funcs>

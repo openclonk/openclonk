@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+	SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+	<title>Fuzzy Logic library</title>
+	<h>Fuzzy Logic library</h>
+	<part>
+		 <text>The fuzzy logic library, defined in Objects.ocd/Libraries.ocd/FuzzyLogic.ocd provides functionality for declaring and evaluating fuzzy logic rules and actions that can be used to deduce an action to be executed from some observations. For example, the fish uses fuzzy logic to navigate in a Clonk landscape while avoiding predators and heading towards food. To make the fuzzy logic functions available in a script, you need to include the library.</text>
+		<h>Creating a new fuzzy logic instance</h>
+		<text>The first step when working with the fuzzy logic library is to create a new instance and save it. All interface functions will be called on that instance later.</text>
+	<code>var fuzzy_logic = FuzzyLogic->Init();</code>
+		<text></text>
+	
+	<h>Set definitions</h>
+	<code>fuzzy_logic->AddSet(string set_name, string textual_value, array [[int first_value, int assignment], [int second_value, int assignment], [int third_value, int assignment]]);</code>
+	<text>First you have to define on which sets (imagine them like <i>categories</i>) your logic should work. One set could e.g. be <b>temperature</b> and the values in the set could be <b>{low, medium, high}</b>.</text>
+	<text>You also have to specify what numerical values describe the textual values in the set best. For example, we could say that a temperature between -20 and 0 is clearly <b>low</b> and then slowly becomes less <b>low</b> until 20. The definition would look like this:</text>
+	<code>fuzzy_logic->AddSet("temperature", "low", [[-20, 1], [0, 1], [20, 0]]);</code>
+	<text>The <i>assignment</i> parameter specifies how strongly the value belongs to the set (0 or 1). Values that lie between the given three are interpolated.</text>
+	<text>Similarly, we can also add definitions for <b>medium</b> and <b>high</b>.</text>
+<code>
+fuzzy_logic->AddSet("temperature", "medium", [[0, 0], [20, 1], [40, 0]]);
+fuzzy_logic->AddSet("temperature", "high",   [[10, 0], [40, 1], [100, 1]]);
+</code>
+	<text>In a similar way, you also have to add sets for your actions (as opposed to your observations, like the <b>temperature</b> above). To continue our example, we will create an automatic heater control that turns the heater higher when it's cold. Let's say the heater's power can go from 0 to 100. Then we could define the following set:</text>
+<code>
+fuzzy_logic->AddSet("heater", "full_power", [[80, 0], [100, 1], [100, 1]]);
+fuzzy_logic->AddSet("heater", "a_little",   [[10, 0], [30, 1],  [40, 0]]);
+fuzzy_logic->AddSet("heater", "off",        [[0, 1],  [0, 1],   [10, 0]]);
+</code>
+
+	<h>Rule definition</h>
+	<code>fuzzy_logic->AddRule(string/array condition, string result);</code>
+	<text>Now that we have defined our sets, we can also define rules that are based on those sets. A rule consists of one (or more) condition in the form of "&lt;set_name&gt;=&lt;textual_value&gt;" (e.g. "temperature=high") and exactly one resulting action in the same format (e.g. "heater=off"). There can be multiple different rules defined and the end result will take into account every definition. For our example above, we could define the rules as follows:</text>
+<code>
+fuzzy_logic->AddRule("temperature=low",    "heater=full_power");
+fuzzy_logic->AddRule("temperature=medium", "heater=a_little");
+fuzzy_logic->AddRule("temperature=high",   "heater=off");
+</code>
+	
+	<h>Rule operators</h>
+<code>
+fuzzy_logic->And(condition1, condition2);
+fuzzy_logic->Or(condition1, condition2);
+fuzzy_logic->Not(condition);
+</code>
+	<text>A simple example like above would obviously be boring. We can also combine different conditions into one rule. Imagine we would also have defined the set <b>window</b> with the textual value of <b>open</b>. Then we could adjust our rules as follows:</text>
+	<code>fuzzy_logic->AddRule(fuzzy_logic->And("temperature=medium", fuzzy_logic->Not("window=open")), "heater=a_little");</code>
+	
+	<h>Setting Values</h>
+<code>fuzzy_logic->Fuzzify(string set, int value);</code>
+	<text>After we have defined all sets and rules, we need to provide values for our sets. The function <i>Fuzzify</i> calculates how much a value fits to the different textual values of a set (e.g. how much the value 15 belongs to the textual <b>temperature</b> value <b>low</b>). The <i>Fuzzify</i> function can be called an arbitrary amount of times before the next <i>Execute</i>.</text>
+<code>
+local fuzzy_logic;
+private func Construction()
+{
+	fuzzy_logic = FuzzyLogic->Init();
+	// Define sets and rules here...
+	// ...
+	
+	// Update temperature every second.
+	AddTimer("UpdateTemperature", 30);
+}
+
+private func UpdateTemperature()
+{
+	fuzzy_logic->Fuzzify("temperature", <funclink>GetTemperature</funclink>());
+}
+</code>
+
+	<h>Getting actions</h>
+	<code>proplist fuzzy_logic->Execute();</code>
+	<text>After having set all necessary values, the resulting actions according to the rules are calculated when calling <i>Execute</i>. The return value is a proplist with all the sets that occur in the rule definitions as results. The values of the sets are the calculated values from set definitions.</text>
+<code>
+// Called regularly!
+private func ExecuteActions()
+{
+	// Calculate the resulting actions from our fuzzified values.
+	var actions = fuzzy_logic->Execute();
+	// The properties in 'actions' are the numerical values here.
+	Log("Turning the heater to %d%%!", actions["heater"]);
+}
+</code>
+	</part>
+	<author>Zapper</author><date>2015-09</date>
+</doc>

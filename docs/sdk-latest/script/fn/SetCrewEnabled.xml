@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetCrewEnabled</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>enabled</name>
+          <desc>Specifies whether the crew member is to be activated or deactivated.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Activates or deactivates crew members. Deactivated crew members can no longer be selected for control by a player. If all of a player's crew members are deactivated the player can not control any clonks but he is still not eliminated. Only valid for true crew member objects. Deactivated crew members are automatically deselected from player control.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;SetCrewEnabled(false);</code>
+        <text>Deactivates the selected clonk of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrewEnabled</funclink>
+      <funclink>MakeCrewMember</funclink>
+      <funclink>SelectCrew</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>DefCore.txt</title>
+  <h id="DefCoretxt">DefCore</h>
+  <part>
+    <text>The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id.</text>
+    <text>
+      <table>
+        <caption id="SektionDefCore">Section [DefCore]</caption>
+        <rowh>
+          <col>Value</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <literal_col>id</literal_col>
+          <col>definition id</col>
+          <col>Id of the object.</col>
+        </row>
+        <row>
+          <literal_col>Version</literal_col>
+          <col>3 Integers</col>
+          <col>Minimal engine version required by the object. Should be always the current engine version at the time of the last change.</col>
+        </row>
+		<row>
+          <literal_col>RequireDef</literal_col>
+          <col>Definition IDs</col>
+          <col>List of definition IDs this object depends upon.</col>
+		</row>
+        <row>
+          <literal_col>Category</literal_col>
+          <col>Integer</col>
+          <col>Category of the object. Also see <emlink href="definition/category.html">object categories</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>Width</literal_col>
+          <col>Integer</col>
+          <col>Width of the object.</col>
+        </row>
+        <row>
+          <literal_col>Height</literal_col>
+          <col>Integer</col>
+          <col>Height of the object.</col>
+        </row>
+        <row>
+          <literal_col>Offset</literal_col>
+          <col>2 Integer</col>
+          <col>Coordinate offset of the top left corner to the object center.</col>
+        </row>
+        <row>
+          <literal_col>Value</literal_col>
+          <col>Integer</col>
+          <col>Value of the object in money points.</col>
+        </row>
+        <row>
+          <literal_col>Mass</literal_col>
+          <col>Integer</col>
+          <col>Weight of the object. Rock 10, clonk 50, hut 1000, castle 10000.</col>
+        </row>
+        <row>
+          <literal_col>Components</literal_col>
+          <col>ID list</col>
+          <col>Elements from which the object is composed. Uncompleted or half grown objects will only have the respective fraction of the components.</col>
+        </row>
+        <row>
+          <literal_col>SolidMask</literal_col>
+          <col>6 integers</col>
+          <col>Solid areas of the object. Target rectangle from the <emlink href="definition/index.html#SolidMask">SolidMask.png</emlink> graphics onto the object.</col>
+        </row>
+        <row>
+          <literal_col>TopFace</literal_col>
+          <col>6 integers</col>
+          <col>Covering layer of the object graphics. Target rectangle from the source graphics onto the object.</col>
+        </row>
+        <row>
+          <literal_col>Picture</literal_col>
+          <col>4 integers</col>
+          <col>Representative image of the object. Rectangle from the source graphics.</col>
+        </row>
+        <row>
+          <literal_col>Vertices</literal_col>
+          <col>Integer</col>
+          <col>Number of vertices of the object. 1 to 30.</col>
+        </row>
+        <row>
+          <literal_col>VertexX</literal_col>
+          <col>up to 30 integers</col>
+          <col>List of horizontal vertex coordinates of the object. See <emlink href="definition/vertices.html">vertices</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>VertexY</literal_col>
+          <col>up to 30 integers</col>
+          <col>List of vertical coordinates of the object vertices.</col>
+        </row>
+        <row>
+          <literal_col>VertexCNAT</literal_col>
+          <col>up to 30 integers</col>
+          <col>List of direction indicators of the object vertices. See <emlink href="definition/cnat.html">CNAT</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>VertexFriction</literal_col>
+          <col>up to 30 integers</col>
+          <col>List of friction values of the object vertices, each 1 to 100.</col>
+        </row>
+        <row>
+          <literal_col>Entrance</literal_col>
+          <col>4 integers</col>
+          <col>Position of the entrance region relative to the object centre.</col>
+        </row>
+        <row>
+          <literal_col>Collection</literal_col>
+          <col>4 integers</col>
+          <col>Position of the intake region relative to the object centre.</col>
+        </row>
+        <row>
+          <literal_col>Exclusive</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. Determines whether the object blocks objects behind it. Exclusive objects also block the placement of a construction site at an overlapping location.</col>
+        </row>
+        <row>
+          <literal_col>Line</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1 the object is a line and exhibits special behaviour.</col>
+        </row>
+        <row>
+          <literal_col>CrewMember</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object is added to the player's crew upon purchase. Objects created using CreateObject have to be added to a player's crew manually using <emlink href="script/fn/MakeCrewMember">MakeCrewMember</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>Construction</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. Determines whether the object can be built.</col>
+        </row>
+        <row>
+          <literal_col>GrabPutGet</literal_col>
+          <col>Integer</col>
+          <col>Bit mask: bit 0 (value 1) putting possible, bit 1 (value 2) getting possible.</col>
+        </row>
+        <row>
+          <literal_col>Rotate</literal_col>
+          <col>Integer</col>
+          <col>0 no rotation, 1 full rotation, 2-360 limited rotation.</col>
+        </row>
+        <row>
+          <literal_col>Float</literal_col>
+          <col>Integer</col>
+          <col>Floatation in liquids: 0 no floatation, otherwise floatation height above the object center.</col>
+        </row>
+        <row>
+          <literal_col>ColorByOwner</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the specified sections of the object's graphcis are colored by the player color.</col>
+        </row>
+        <row>
+          <literal_col>HorizontalFix</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object can only move vertically.</col>
+        </row>
+        <row>
+          <literal_col>UprightAttach</literal_col>
+          <col>Integer</col>
+          <col>If not 0, the unrotated object attaches to solid areas (attachment directions 8-10).</col>
+        </row>
+        <row>
+          <literal_col>StretchGrowth</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the uncomplete object (see <emlink href="script/fn/GetCon.html">GetCon</emlink>) is scaled, not sliced from the bottom like a construction site.</col>
+        </row>
+        <row>
+          <literal_col>IncompleteActivity</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object can have activities set even if it's not complete.</col>
+        </row>
+        <row>
+          <literal_col>Oversize</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. The object can be scaled over 100% using DoCon.</col>
+        </row>
+        <row>
+          <literal_col>Fragile</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. The object should not be thrown.</col>
+        </row>
+        <row>
+          <literal_col>NoPushEnter</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. The object can not be pushed into another object's entrance (e.g. elevator case).</col>
+        </row>
+        <row>
+          <literal_col>VehicleControl</literal_col>
+          <col>Integer</col>
+          <col>Bit mask: bit 0 (value 1) object can be controlled by grabbing from the outside and/or bit 1 (value 2) from the inside. With active VehicleControl, clonk orders (commands) are also passed to the grabbed object as ControlCommand calls and can be processed and/or overloaded by the controlled object's script. See <emlink href="definition/script.html#ControlFunktionen">Control-Funktionen</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>Pathfinder</literal_col>
+          <col>Integer</col>
+          <col>1 - 10. Determines search depth of the pathfinder algorithm (default 1). Warning: higher values may slow down the game. By setting this value you can also enable non-CrewMember objects to use pathfinding when executing commands.</col>
+        </row>
+        <row>
+          <literal_col>NoMassFromContents</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object's contents is not added to the object's total mass. This can be used to prevent small container objects from turning into killer throwing items.</col>
+        </row>
+        <row>
+          <literal_col>NoStabilize</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object will not straighten itself to 0° if within a certain upright range.</col>
+        </row>
+        <row>
+          <literal_col>ClosedContainer</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, clonks inside this object can not lighten the Fog of War outside.</col>
+        </row>
+        <row>
+          <literal_col>SilentCommands</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. Can be used to prevent failure messages caused by failed commands.</col>
+        </row>
+        <row>
+          <literal_col>TemporaryCrew</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object is not stored in the permanent crew of a player.</col>
+        </row>
+        <row>
+          <literal_col>BlitMode</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. Value 1 for addtive drawing. Use <funclink>SetObjectBlitMode</funclink> for more flexibility.</col>
+        </row>
+        <row>
+          <literal_col>NoBreath</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object does not need oxygen, even if it's a living being.</col>
+        </row>
+        <row>
+          <literal_col>ConSizeOff</literal_col>
+          <col>Integer</col>
+          <col>Values grater than 0 are deducted from the top of necessary construction space.</col>
+        </row>
+        <row>
+          <literal_col>NoGet</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1 the object can not be taken from containers by a clonk.</col>
+        </row>
+        <row>
+          <literal_col>LiftTop</literal_col>
+          <col>Integer</col>
+          <col>If an object with Action procedure "<emlink href="definition/procedures.html">LIFT</emlink>" lifts its target to this value above object center the function LiftTop is called in the object script.</col>
+        </row>
+        <row>
+          <literal_col>RotatedEntrance</literal_col>
+          <col>Integer</col>
+          <col>0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees.</col>
+        </row>
+        <row>
+          <literal_col>MoveToRange</literal_col>
+          <col>Integer</col>
+          <col>Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5.</col>
+        </row>
+        <row>
+          <literal_col>NoTransferZones</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones.</col>
+        </row>
+        <row>
+          <literal_col>HideInCreator</literal_col>
+          <col>Boolean</col>
+          <col>false (default) or true. If true, the definition is not shown in the object creator window of the editor. Should be used for internal definitions, libraries, etc.</col>
+        </row>
+      </table>
+    </text>
+  </part>
+  <author>Newton</author><date>2013-11</date>
+</doc>

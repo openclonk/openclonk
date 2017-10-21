@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerControlAssignment</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player for whom the control set is queried.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>control</name>
+          <desc>Control to query. A CON_* constant should be used here.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>human_readable</name>
+          <desc>If true, some internal names such as JOY_* for joystick buttons are replaced by variants suitable for display to the player.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>short_name</name>
+          <desc>If true, short names are preferred if available. Currently effects Mac builds only.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the name of the key, mouse of joystick button assigned to a control for a player. If the player number is invalid, <code>nil</code> is returned. For unassigned or invalid controls, "" is returned.</desc>
+    <remark>For network games and replays, the returned value is not synchronized. If the function is called for a remote player or during replay, "" is always returned for valid player numbers.</remark>
+    <examples>
+      <example>
+        <code><funclink>Message</funclink>("Press &lt;c ffff00&gt;%s&lt;/c&gt; to walk left!", GetPlayerControlAssignment(<funclink>GetPlayerByIndex</funclink>(0, C4PT_User), CON_Left, true, true));</code>
+        <text>Tells the first player how to walk left.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2012-04</date>
+</funcs>

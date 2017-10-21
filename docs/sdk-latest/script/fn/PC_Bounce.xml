@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PC_Bounce</title>
+    <category>Particles</category>
+    <version>5.3.3 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+	   <params>
+        <param>
+          <type>int</type>
+          <name>bouncyness</name>
+          <desc>Factor to multiply the new speed with. 1000 equals a factor of 1.0. Defaults to 1000.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>A particle collision function. The particle will bounce off the ground on collision. If your particles get stuck instead of bouncing, you might need to increase the CollisionVertex value a bit.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PC_Die</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2013-10</date>
+</funcs>

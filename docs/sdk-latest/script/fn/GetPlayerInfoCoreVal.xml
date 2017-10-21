@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerInfoCoreVal</title>
+    <category>Get*Val</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>entry</name>
+          <desc>Name of the entry to be retrieved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>section</name>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player of which to retrieve an entry.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>entry_number</name>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the property value of a player by its name in the Player.txt.</desc>
+    <remark>For technical reasons there can not be a corresponding function SetPlayerVal.</remark>
+    <related>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
+</funcs>

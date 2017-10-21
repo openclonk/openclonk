@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Find_Func</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Function to call</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Parameters of the function.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects which return <code>true</code> to a call of the specified function. If the function is defined locally, the local function will be called, otherwiese a global function.</desc>
+    <remark><strong>Warning:</strong> never use this with a function which might have side effects. If your function may have side effects, do not use Find_Func but walk through the list of found objects instead.</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>FindObjects</funclink>(<funclink>Find_Func</funclink>(&quot;IsClonk&quot;))</code>
+        <text>Returns all clonks of any types (all clonks that return <code>true</code> on the call IsClonk).</text>
+      </example>
+    </examples>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
+</funcs>

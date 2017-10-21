@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RGBa</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>byR</name>
+          <desc>Red color part</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byG</name>
+          <desc>Green color part</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byB</name>
+          <desc>Blue color part</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byA</name>
+          <desc>Opacity</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Composes a 32 bit color value from the three base colors and a transparency value. Range 0-255 for all parameters.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetSkyAdjust</funclink>(RGBa(255,127,127,127),<funclink>RGB</funclink>(255,0,0));</code>
+        <text>Makes a ruddy sky.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RGB</funclink>
+      <funclink>HSL</funclink>
+      <funclink>HSLa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

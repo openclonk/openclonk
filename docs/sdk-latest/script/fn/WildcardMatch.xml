@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>WildcardMatch</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>String to compare.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>wildcard</name>
+          <desc>String to compare.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns whether two strings are equal. The comparison is case sensitive and wildcards are supported.</desc>
+    <remark>A * can represent any number of unknown characters (including none). A ? represents exactly one unknown character.</remark>
+    <examples>
+      <example>
+        <code>public func IsRiding() { return WildcardMatch(<funclink>GetAction</funclink>(), &quot;Ride*&quot;); }</code>
+        <text>Returns <code>true</code> for all actions starting with "Ride" ("Ride" itself, but also "RideStill", "RideThrow", etc.).</text>
+      </example>
+      <example>
+        <code>WildcardMatch(&quot;Explode1&quot;, &quot;Explode?&quot;);</code>
+        <text>Is <code>true</code>.</text>
+      </example>
+      <example>
+        <code>WildcardMatch(&quot;Explode10&quot;, &quot;Explode?&quot;);</code>
+        <text>Is <code>false</code>.</text>
+      </example>
+      <example>
+        <code>WildcardMatch(GetName(), &quot;*purz*&quot;);</code>
+        <text>Checks whether the name of the calling object contains "purz" (no matter where).</text>
+      </example>
+    </examples>
+  </func>
+  <author>Clonkonaut</author><date>2008-05</date>
+</funcs>

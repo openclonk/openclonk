@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>LaunchLightning</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xspeed</name>
+          <desc>Horizontal average speed of the lightning bolt.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xrange</name>
+          <desc>Maximum deviation of xspeed.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yspeed</name>
+          <desc>Vertical average speed of the lightning bolt.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yrange</name>
+          <desc>Maximum deviation of yspeed.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>do_gamma</name>
+          <desc>If <code>true</code>, the lightning will cause a screen flash for all players.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a bolt of lightning. This will then move from the starting position (iX, iY) at the specified speed and the specified deviation (iXRange, iYRange). Setting the deviation values to 0 would create a straight, linear bolt.<br/>Coordinates are global, even in local calls.</desc>
+    <examples>
+      <example>
+        <code>LaunchLightning(<funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 0, -20, 41, +5, 15);</code>
+        <text>This call creates normal weather lightning.</text>
+      </example>
+      <example>
+        <code>LaunchLightning(100, 100, +5, 15, -10, 21);</code>
+        <text>This will create a bolt such as the one in the magic lightning spell, directed to the right.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>LaunchEarthquake</funclink>
+      <funclink>LaunchVolcano</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2001-11</date>
+</funcs>

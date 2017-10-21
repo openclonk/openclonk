@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GrabObjectInfo</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>from</name>
+          <desc>Object (clonk) of which to retrieve the info section.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Transfers the info section from one object to another. The info section contains name, rank, permanent physicals, etc. Using this command you can e.g. perform reincarnations by transferring the info section from a dead clonk to a live one.</desc>
+    <remark>This command implies a <funclink>MakeCrewMember</funclink> for the owning player. So the clonk should not already be a crew member - this would cause a new crew member info to be created and immediately discarded.</remark>
+    <examples>
+      <example>
+        <code>protected func Death()
+{
+  var newclnk = <funclink>CreateObject</funclink>(<funclink>GetID</funclink>(), <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>())-<funclink>GetX</funclink>(), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>())-<funclink>GetY</funclink>(), <funclink>GetOwner</funclink>());
+  newclnk-&gt;GrabObjectInfo(<funclink>this</funclink>);
+  <funclink>return</funclink>;
+}</code>
+        <text>This part of a script would reincarnate a dead clonk at a random landscape position using the same name and physicals.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>MakeCrewMember</funclink>
+      <funclink>Kill</funclink>
+      <funclink>GetCrew</funclink>
+      <funclink>CrewMember</funclink>
+      <funclink>OCF_CrewMember</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
+</funcs>

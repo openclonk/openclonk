@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PlayerControl</title>
+    <category>Callbacks</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player who pressed the control.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>control</name>
+          <desc>Number of the pressed control, defined as a CON_ constant via PlayerControls.txt.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>control_extra</name>
+          <desc>Optional id defined with ExtraData in PlayerControls.txt.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate for mouse controls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate for mouse controls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>strength</name>
+          <desc>Current strength of the control. For key presses: 0 or 100. For analog stick or trigger movement (state = CONS_Moved): 0 to <code>PLRCON_MaxStrength</code>.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>repeated</name>
+          <desc>Whether the call is generated because of a held button.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>state</name>
+          <desc>
+            State of the key press. Possible values:
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>CONS_Down</literal_col>
+                <col>Key has been pressed down.</col>
+              </row>
+              <row>
+                <literal_col>CONS_Up</literal_col>
+                <col>Key has been released. Only generated for held keys.</col>
+              </row>
+              <row>
+                <literal_col>CONS_Moved</literal_col>
+                <col>An analog control on a gamepad has been moved. Only generated for held keys.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+	</params>
+    </syntax>
+    <desc>Called globally for each control command by players. See <emlink href="script/playercontrols.html">Player Controls</emlink>.</desc>
+    <related><funclink>GetPlayerControlState</funclink></related>
+    <related><emlink href="playercontrols.html">Player Controls</emlink></related>
+  </func>
+  <author>Luchs</author><date>2016-02</date>
+</funcs>

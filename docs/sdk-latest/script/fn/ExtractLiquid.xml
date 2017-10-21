@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ExtractLiquid</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position at which material is extracted. Offset in local calls.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position at which material is extracted. Offset in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sucks up one pixel of liquid at the specified position. Return value is the material number of the material actually extracted, or -1 if no liquid was there.</desc>
+    <examples>
+      <example>
+        <code>var mat=ExtractLiquid();
+if (mat!=-1) <funclink>InsertMaterial</funclink>(mat,0,-100)</code>
+        <text>Sucks up one pixel of liquid and reinserts it 100 pixel further above.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ExtractMaterialAmount</funclink>
+      <funclink>InsertMaterial</funclink>
+      <funclink>GBackLiquid</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

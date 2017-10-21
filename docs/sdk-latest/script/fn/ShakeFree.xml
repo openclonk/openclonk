@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ShakeFree</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X center position of the circular area to be shaken free. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y center position of the circular area to be shaken free. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Radius of the circular area to be shaken free.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Loosens instable material within a circular area. Loosened material will then begin to fall if there is room underneath. This can be used to collapse earth tunnels or similar.</desc>
+    <examples>
+      <example>
+        <code>ShakeFree(<funclink>LandscapeWidth</funclink>()/2, <funclink>LandscapeHeight</funclink>()/2, <funclink>Distance</funclink>(<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>())/2);</code>
+        <text>Shakes the complete landscape. Careful: this might kill you computer ;)</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ShakeObjects</funclink>
+      <funclink>CastPXS</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

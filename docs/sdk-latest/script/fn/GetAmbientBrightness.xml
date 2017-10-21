@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAmbientBrightness</title>
+    <category>Landscape</category>
+    <subcat>View</subcat>
+    <version>5.6 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+    </syntax>
+    <desc>Queries the ambient brightness value set with <funclink>SetAmbientBrightness</funclink>. The initial brightness value is 100%.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetAmbientBrightness</funclink>(<funclink>Min</funclink>(GetAmbientBrightness() + 10, 100));</code>
+        <text>Brightens up the ambient lighting by 10%, but does not exceed 100%.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetAmbientBrightness</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2014-11</date>
+</funcs>

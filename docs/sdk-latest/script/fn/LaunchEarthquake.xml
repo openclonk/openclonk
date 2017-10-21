@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>LaunchEarthquake</title>
+    <category>Environment</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an earthquake at the given position. Coordinates are global, even in local calls.</desc>
+    <related>
+      <funclink>LaunchLightning</funclink>
+      <funclink>LaunchVolcano</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2001-11</date>
+</funcs>

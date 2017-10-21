@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetObjectBlitMode</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>dwNewBlitMod</name>
+          <desc>New drawing mode (values see below). If 0 or unspecified, the object is reset to its definition blit mode. Otherwise bit 8 (user defined color value) is set implicitly.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>overlay_id</name>
+          <desc>If specified, this will change the blit mode of the graphics overlay instead. The overlay must have been created using <funclink>SetGraphics</funclink> first.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the drawing mode of the object. The possible values correspond to the BlitMode value in the DefCore (see notice). This function returns the previously set blit mode.</desc>
+    <remark>The blit mode does not affect additional overlay graphics. The blit mode of those must be set using <funclink>SetGraphics</funclink>.</remark>
+    <remark>
+      <table>
+        <rowh>
+          <col>Constant</col>
+          <col>Value</col>
+          <col>Meaning</col>
+        </rowh>
+        <row>
+          <col>GFX_BLIT_Additive</col>
+          <col>1</col>
+          <col>Additive (always base surface and overlay)</col>
+        </row>
+        <row>
+          <col>GFX_BLIT_Mod2</col>
+          <col>2</col>
+          <col>Additive Modulation: the color of the modulation value is added to the object color, then RGB(128,128,128) is subtracted. Only base surface.</col>
+        </row>
+        <row>
+          <col>GFX_BLIT_ClrSfc_OwnClr</col>
+          <col>4</col>
+          <col>The color modulation set via <funclink>SetClrModulation</funclink>() applies to the base surface only and the overlay is normally colored by the owner color (see <funclink>SetColor</funclink>()).</col>
+        </row>
+        <row>
+          <col>GFX_BLIT_ClrSfc_Mod2</col>
+          <col>8</col>
+          <col>The overlay (owner color) is drawn using additive modulation. This flag might have to be set independently of bit 2.</col>
+        </row>
+		<row>
+          <col>GFX_BLIT_Wireframe</col>
+          <col>16</col>
+          <col>Draws the mesh as a wireframe. Only works with meshes!</col>
+        </row>
+        <row>
+          <col>5-7</col>
+          <col>32, 64</col>
+          <col>reserved</col>
+        </row>
+        <row>
+          <col>GFX_BLIT_Custom</col>
+          <col>128</col>
+          <col>User defined color value. This value can be specified if no special color mode is desired and to overwrite a DefCore setting. Also, this bit is set in the return value of this function and <funclink>GetObjectBlitMode</funclink> if the current blit mode of the object does not correspond to the definition blit mode.</col>
+        </row>
+        <row>
+          <col>GFX_BLIT_Parent</col>
+          <col>256</col>
+          <col>Only for overlays: the blit mode of the base surface is used when drawing this overlay.</col>
+        </row>
+      </table>
+    </remark>
+    <examples>
+      <example>
+        <code>static g_cursor, g_prev_blit_mode, g_prev_mod;
+
+func Script100()
+{
+  g_cursor = <funclink>GetCursor</funclink>();
+  // save previous values
+  g_prev_blit_mode = g_cursor-&gt;<funclink>GetObjectBlitMode</funclink>();
+  g_prev_mod = g_cursor-&gt;<funclink>GetClrModulation</funclink>();
+  // color the no-ColorByOwner-parts of the clonk in a glowing green
+  g_cursor-&gt;SetObjectBlitMode(6);
+  g_cursor-&gt;<funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110));
+  // message
+  g_cursor-&gt;<funclink>Message</funclink>(&quot;Look, I can glow!&quot;);
+}
+
+func Script200()
+{
+  // reset color
+  g_cursor-&gt;SetObjectBlitMode(g_prev_blit_mode);
+  g_cursor-&gt;<funclink>SetClrModulation</funclink>(g_prev_mod);
+  // Nachricht
+  g_cursor-&gt;<funclink>Message</funclink>(&quot;Over already!&quot;);
+}</code>
+        <text>Part of a scenario script: colors the selected clonk of the first player bright green for a while.<br/>To handle the timing properly, it would be better to use an <emlink href="script/Effects.html">effect</emlink> in order to avoid conflicts with other scripts that might change the color at the same time.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetClrModulation</funclink>
+      <funclink>GetObjectBlitMode</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+</funcs>

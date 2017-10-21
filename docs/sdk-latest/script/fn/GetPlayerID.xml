@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerID</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player of which to retrieve the ID.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the player-ID of a joined player. Player-IDs are being counted upwards starting at 1. Other than player numbers, they won't be used again after a player has been eliminated. Each newly joined player has a unique ID.</desc>
+    <remark>In network games, player IDs are being assigned in the lobby phase. Because lobby players might be removed before the game start (either manually or by disconnecting clients), you cannot assume that all player-IDs from 1 to <funclink>GetPlayerCount</funclink>() are set.</remark>
+    <examples>
+      <example>
+        <code>static player_names, player_scores;
+
+protected func Initialize()
+{
+	if(!player_names) player_names = CreateArray();
+	if(!player_scores) player_scores = CreateArray();
+}
+				
+protected func RemovePlayer(int player)
+ {
+  var player_id = GetPlayerID(player);
+	player_names[player_id] = <funclink>GetPlayerName</funclink>(player);
+	player_scores[player_id] = <funclink>GetScore</funclink>(player);
+ }
+  
+protected func OnGameOver()
+{
+  <funclink>Log</funclink>(&quot;Scores of eliminated players:&quot;);
+  for (var i = 0; i &lt; <funclink>GetLength</funclink>(player_names); ++i)
+    if (player_names[i])
+      <funclink>Log</funclink>(<funclink>Format</funclink>(&quot;%s - %d&quot;, player_names[i], player_scores[i]));
+}</code>
+        <text>Saves the scores and names of all players in a list when they are eliminated. Once the round is over, this list is displayed in the log. Using player-IDs instead of player numbers as list indices guarantuees that rejoining players will not overwrite scores of previous players.</text>
+      </example>
+    </examples>
+    <related><funclink>GetPlayerTeam</funclink></related>
+  </func>
+  <author>Sven2</author><date>2006-03</date>
+</funcs>

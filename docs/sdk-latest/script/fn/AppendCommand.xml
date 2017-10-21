@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AppendCommand</title>
+    <category>Objects</category>
+    <subcat>Commands</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>command</name>
+          <desc>Command name (as string). See the table below.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <optional />
+          <desc>target object for the command</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <optional />
+          <desc>X target coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <optional />
+          <desc>Y target coordinate</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target2</name>
+          <optional />
+          <desc>secondary target object</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>delay</name>
+          <optional />
+          <desc>Time (in ticks or frames) until the command is terminated.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <optional />
+          <desc>additional data for the command</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>retries</name>
+          <optional />
+          <desc>Number of retries if the command fails, until the command fails completely.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>base_mode</name>
+          <optional />
+          <desc>Command stack mode. See <funclink>AddCommand</funclink> for values.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Appends a command to the command stack of an object. The appended command will be executed after the current other commands.<br/>For command descriptions see <funclink>SetCommand</funclink><br/>Notice: commands set by AppendCommand are not transferred to controlled vehicles (see VehicleControl).</desc>
+    <examples>
+      <example>
+        <code>var base = <funclink>FindBase</funclink>();
+<funclink>SetCommand</funclink>(&quot;MoveTo&quot;, base);
+AppendCommand(&quot;Throw&quot;, nil, base-&gt;<funclink>GetX</funclink>(), base-&gt;<funclink>GetY</funclink>());</code>
+        <text>Gives the clonk the command to go to the first found base and then throw the first carried object at the base.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetCommand</funclink>
+      <funclink>GetCommand</funclink>
+      <funclink>AddCommand</funclink>
+      <funclink>FinishCommand</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2001-11</date>
+</funcs>

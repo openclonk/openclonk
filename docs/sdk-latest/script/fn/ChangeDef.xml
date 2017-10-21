@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ChangeDef</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>new_def</name>
+          <desc>id of the new definition.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Assigns a new definition to an object.</desc>
+    <remark>ChangeDef does not affect object local variables. The values of named local variables are transferred to local variables of the same name in the target definition.</remark>
+    <remark>Warning: if an object applies ChangeDef to itself, the executed object script will no longer match the object definition after the call. Because of this, following a ChangeDef call you should neither call any local function (use <funclink>this</funclink>()-&gt;function(...) instead) nor access any local variables (even if a variable of the same name exists in the new definition).</remark>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>(0)-&gt;ChangeDef(Wipf);</code>
+        <text>Changes the selected clonk of the first player into a wipf.</text>
+      </example>
+    </examples>
+    <related><funclink>GetID</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DoCrewExp</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of the experience value.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Gives experience points to a clonk.</desc>
+    <remark>The receiving object must have an info section, meaning it must be a CrewMember and joined to a player's crew.</remark>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;DoCrewExp(100);
+<funclink>Sound</funclink>(&quot;Applause&quot;, true); <funclink>GameOver</funclink>();</code>
+        <text>Gives the selected clonk 100 points of experience, plays a sound and then ends the round.</text>
+      </example>
+    </examples>
+    <related><funclink>GetRank</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

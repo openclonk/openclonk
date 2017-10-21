@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CreateConstruction</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>object_id</name>
+          <desc>Type of object to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xoffset</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yoffset</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>owner</name>
+          <desc>Owner of the new object (valid player number or <funclink>NO_OWNER</funclink> for no-owner).</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>completion</name>
+          <desc>Determines the initial completion of the object in percent (minimum 1).</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>adjust_terrain</name>
+          <desc>Determines whether the landscape at the creation site has to be adjusted to the objects basement.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>check_site</name>
+          <desc>First checks the specified site for suitability.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Should be used instead of <funclink>CreateObject</funclink> to create a building or construction site. In local calls the specified position will be an offset to the position of the calling object. If check_site is 1, the site is checked for suitability before creating the object. If the site is not suitable (e.g. rough ground or not enough space), a message is displayed above the calling object and the function returns <code>nil</code>.</desc>
+    <examples>
+      <example>
+        <code>CreateConstruction(WindGenerator, 150,100,  0,100,1 );</code>
+        <text>Creates a complete wind generator at position 150/100 for player 1 and adjusts the landscape to the building.</text>
+      </example>
+      <example>
+        <code>CreateConstruction(SteamEngine, 200,100, <funclink>NO_OWNER</funclink>, 30,1 );</code>
+        <text>Creates a steam engine construction finished by 30% site at position 200/100 with no owner, also adjusting the landscape.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateObject</funclink>
+      <funclink>CreateContents</funclink>
+      <funclink>RemoveObject</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
+</funcs>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetProperty</title>
+    <category>Objects</category>
+    <subcat>Properties</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>key</name>
+          <desc>Property to be set.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>any</type>
+          <name>value</name>
+          <desc>Value to set the property to.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>obj</name>
+          <desc>Object to be changed. Can be <code>nil</code> in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the property <code>key</code> of <code>obj</code> to <code>value</code>. The property does not have to exist beforehand.</desc>
+    <related><funclink>GetProperty</funclink></related>
+  </func>
+  <author>Günther</author><date>2009-05</date>
+</funcs>

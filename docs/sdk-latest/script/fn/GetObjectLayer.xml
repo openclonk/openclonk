@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetObjectLayer</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+    </syntax>
+    <desc>Returns the layer the object is in.</desc>
+    <remark>Layers in OC do not affect the drawing of objects onto the screen, but they affect the interaction of objects. Objects in different layers do not interaction with each other. You can for example use layers to make sure NPCs can not be killed or thrown out of the landscape by the players.</remark>
+    <related>
+	  <funclink>SetObjectLayer</funclink>
+      <funclink>Find_Layer</funclink>
+      <funclink>Find_AnyLayer</funclink>
+      <funclink>FindObject</funclink>
+      <funclink>FindObjects</funclink>
+    </related>
+  </func>
+  <author>Maikel</author><date>2015-09</date>
+</funcs>

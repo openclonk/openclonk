@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetActMapVal</title>
+    <category>Get*Val</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>entry</name>
+          <desc>Name of the entry to be retrieved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>action</name>
+          <desc>Name of the activity of which to get an entry.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>Object definition of which to get action data. If not specified, the definition of the calling object is used.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>entry_number</name>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Gets activity data from <emlink href="definition/actmap.html">the ActMap</emlink> of an object.</desc>
+    <examples>
+      <example>
+        <code>var act_length = GetActMapVal(&quot;Length&quot;, <funclink>GetAction</funclink>()) * GetActMapVal(&quot;Delay&quot;, <funclink>GetAction</funclink>());</code>
+        <text>Calculates the time in ticks that the current action will take.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetDefCoreVal</funclink>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-04</date>
+</funcs>

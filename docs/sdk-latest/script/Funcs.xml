@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Functions</title>
+  <h>Functions</h>
+  <part>
+    <text>A script function represents a length of script code which can be called (or executed) from the engine or from other places in script. Basically, all scripting of a scenario or object is organized in functions.</text>
+    <h>Parameters and Return Values</h>
+    <text>Up to ten parameters can be passed in a function call. These are values which can then be used inside function execution. On completion, a function can pass a single value (the return value) back to the caller using the <funclink>return</funclink> statement.</text>
+    <h>Syntax</h>
+    <text>A simple function declaration could look like the following:</text>
+    <code>func MyFunction()
+{
+  <funclink>Log</funclink>(&quot;My function has been called!&quot;);
+}</code>
+    <text>A function script is delimited by { } brackets. Preceding this script block is the <b>function declaration</b>. The declaration starts with "<code>func</code>", followed by the <b>function name</b> (here: "MyFunction"). In the ( ) brackets following the function name the <b>function parameters</b> can be declared (see below).</text>
+    <text>When calling this function the message "My function has been called!" is displayed.</text>
+    <code>func ShowNumber(int number)
+{
+  <funclink>Log</funclink>(&quot;ShowNumber has been called with parameter %d!&quot;, number);
+}</code>
+    <text>Here, a parameter with the name "number" of type "int" is declared. When this function is called with a parameter, "number" will contain the value passed. In this example, the passed value is displayed within a message.</text>
+    <text>A call to the function "ShowNumber" could look like the following:</text>
+    <code>ShowNumber(42);</code>
+    <text>Performing this call example will have the message "ShowNumber has been called with parameter 42!" displayed.</text>
+    <text>In this example, multiple parameters are declared:</text>
+    <code>func ShowSum(number1, number2, number3, number4)
+{
+  <funclink>Log</funclink>(&quot;The sum of the first four parameters is %d.&quot;, number1 + number2 + number3 + number4);
+}</code>
+    <text>There are four parameters with the names "number1" through "number4", separated by comma.</text>
+    <text>The message displays the sum of the four values passed. The call</text>
+    <code>ShowSum(1, 2, 3, 4);</code>
+    <text>will result in the message "The sum of the first four parameters is 10.".</text>
+    <text>All functions also have a hidden parameter called <code>this</code>. When calling a function in another proplist (which can be an object, a definition, or any other type of proplist) with <code>p -> Foo();</code> or <code>p ->~ Foo();</code>, the function <code>Foo</code> gets the proplist <code>p</code> as <code>this</code>.</text>
+    <code>func Foo(proplist self) {
+	Log("this == self: %v", this == self);
+}
+func Bar() {
+	var p = { Baz = this.Foo };
+	p->Baz(p);
+	p->Baz("not p");
+	Foo(this);
+}</code>
+    <text>Calling Bar in this script results in this output:</text>
+    <code>this == self: true
+this == self: false
+this == self: true</code>
+    <text>The last call to <code>Foo</code> shows the reason for <code>this</code>: Most of the functions in an object need that object to do something with it, and passing the object to every function would result in a lot of repetitive code.</text>
+    <text>Note for everyone familiar with previous versions of C4Script: When calling a function in a definition like <code>Flint->Hit();</code>, the definition is returned from <code>this</code>. In the <code>Flint->Hit();</code> example, that will probably result in an error message from the engine like "passed proplist, but expected object", because the Hit function of the Flint is not designed to be called like that.</text>
+    <h id="parametertypen">Parameter Types</h>
+    <text>You can specify the data type that is to be accepted for a given parameter. To do this, simply write the desired <emlink href="script/Typechecks.html">type name</emlink> before the parameter name:</text>
+    <code>func TypeParameterFunction(object myClonk, id def, int count, string msg)
+{
+  <emlink href="for.html">for</emlink>(var i = 0; i &lt; count; i++)
+    <funclink>CreateContents</funclink>(def, myClonk);
+  myClonk-&gt;<funclink>Message</funclink>(msg);
+}</code>
+    <text>This functions creates a given number of a given type of objects inside the specified clonk and displays a variable message above his head. The function declaration ensures that only those values will be accepted that can be converted to the declared parameter types (see also <emlink href="script/Typechecks.html">Data Types</emlink>).</text>
+    <text>Making a call such as <code>TypeParameterFunction(1, Clonk, "Text", 5)</code> would cause a type checking error.</text>
+    <h id="spezial">Default Parameters</h>
+    <text>Unlike in other programming languages you can always pass fewer parameters than are declared in a function declaration.</text>
+    <text>The following calls to above function are perfectly legal:</text>
+    <code>ShowSum(1, 2);
+ShowSum(1, 2, 3, 4, 5, 6);</code>
+    <text>In the first call, there are fewer parameters passed to the function than specified in the function declaration. The 'missing' parameters will simply contain <code>nil</code>.</text>
+    <text>If you leave out a parameter it will be the same as passing <code>nil</code>.</text>
+    <text>In the second call, on the other hand, there are <em>more</em> parameters passed than specified. These are simply not used during function execution. However, a function is still able to access these extra parameters even if they weren't declared in the function declaration: to do this, you can use the <funclink>Par</funclink>() function.</text>
+    <h>Return Values</h>
+    <part>
+      <text>Every script function can pass a return value back to the caller. This is done using the <funclink>return</funclink>() function.</text>
+      <h>Example:</h>
+      <code>func Difference(number1, number2)
+{
+  <funclink>return</funclink>(<funclink>Abs</funclink>(number1 - number2));
+}</code>
+      <text>Here the difference of the two passed parameters is calculated and the result is "returned". The calling script could now use this function to calculate the difference of any two numbers:</text>
+      <code>func ShowDifference(number1, number2)
+{
+  <funclink>Log</funclink>(&quot;The difference between %d and %d is %d!&quot;, number1, number2, Difference(number1, number2));
+}	</code>
+      <text>The call "ShowDifference(5, 2)" will produce the message "The difference between 5 and 2 is 3!".</text>
+      <text>If the function does not return a value, an implicit <code>return nil;</code> is implied.</text>
+    </part>
+    <h>Global Functions</h>
+    <part>
+      <text>A function is declared globally by placing the "<code>global</code>" keyword before the <code>func</code> marker.</text>
+      <text>A <code>global</code> function can be called from any script. Its scope corresponds to that of the predefined engine functions. Global script functions can also be used to overload predefined engine functions in order to change their behaviour.</text>
+      <h>Example:</h>
+      <code>global func CreateContents(id, obj, count)
+{
+  var obj;
+  <emlink href="for.html">for</emlink>(var i = 0; i &lt; count; i++)
+    obj = <funclink>inherited</funclink>(id, obj);
+  return obj;
+}</code>
+      <text>This script redefines the engine function <funclink>CreateContents</funclink> while adding a new parameter declaration at the end of the parameter list which now allows to create multiple objects. Notice that <funclink>inherited</funclink> within this function refers to the overloaded engine function <funclink>CreateContents</funclink>.</text>
+      <h>Attention!</h>
+      <text>A global script function is executed with the context of the calling function. This means in particular that <funclink>this</funclink> is the calling object (if the global function was called from an object local scope), or <code>nil</code> (if called from a scenario script). Because of this, a global function may not use any object local variables or try to call any object local function. The following object script is illegal:</text>
+      <code>local number;
+func ObjectFunction()
+{
+  <funclink>Log</funclink>(&quot;ObjectFunction: local number has the value %d!&quot;, number);
+}
+
+global func GlobalFunction()
+{
+  ObjectFunction(); // Error!
+  number++; // Error!!
+}</code>
+      <text>Both attempts to access the object local elements will fail. This is understandable because the globally declared function may have been called from any script, even from a scenario script or the script of another object. It will thus not know the declared variable or object function. As the calling context can't be safely known, the engine will throw an error.</text>
+      <text>Notice: to call an object local function from a different context, use the syntax "<code>this-&gt;function(...)</code>". This will execute the function in the specified object's context and only cause an error if the function really isn't available.</text>
+    </part>
+  </part>
+  <author>PeterW</author><date>2002-07</date>
+  <author>matthes</author><date>2004-06</date>
+  <author>Günther</author><date>2010-08</date>
+</doc>

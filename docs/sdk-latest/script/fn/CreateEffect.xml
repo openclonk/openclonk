@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CreateEffect</title>
+    <category>Effects</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>proplist</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>prototype</name>
+	  <desc>A proplist containing the callback functions for the new Effect. The name (<funclink>GetName</funclink>) of this proplist becomes the name of the effect.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>priority</name>
+          <desc>Effect priority. Must be greater than zero.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>timer</name>
+          <optional />
+          <desc>Interval for the timer calls. With <code>nil</code>, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var1</name>
+          <optional />
+	  <desc>First extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var2</name>
+          <optional />
+	  <desc>Second extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var3</name>
+          <optional />
+	  <desc>Third extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var4</name>
+          <optional />
+	  <desc>Fourth extra parameter to be passed to <code>Construction</code>, <code>Start</code> and <code>Effect</code> callbacks.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an effect. Returns the effect if successful or <code>nil</code> if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is probably <code>nil</code>. Effects can be created on objects, <code>Global</code> and <code>Scenario</code>. This is passed as the first parameter to the effect callbacks.
+</desc>
+    <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
+    <related>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
+      <funclink>CheckEffect</funclink>
+      <funclink>GetEffectCount</funclink>
+      <funclink>EffectCall</funclink>
+      <funclink>GetEffect</funclink>
+      <funclink>RemoveEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+  <author>Günther</author><date>2014</date>
+</funcs>

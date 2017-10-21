@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Message</title>
+    <category>Messages</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>message</name>
+          <desc>Message to be displayed.</desc>
+        </param>
+        <param>
+          <name>...</name>
+          <optional />
+          <desc>Additional formatting parameters</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Displays a message. Text can be formatted in C formatting style (see <funclink>Format</funclink>).</desc>
+    <remark>Using the character "|" you can insert a line break.</remark>
+    <examples>
+      <example>
+        <code>Message(&quot;Hello %s!|I am your clonk %s!&quot;, <funclink>GetPlayerName</funclink>(<funclink>GetOwner</funclink>()), <funclink>GetName</funclink>());</code>
+        <text>This script will pop up a message above the clonk's head.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Log</funclink>
+      <funclink>PlayerMessage</funclink>
+      <funclink>CustomMessage</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2001-12</date>
+</funcs>

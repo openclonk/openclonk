@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetMass</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the mass of the calling objects (including the mass of all its contents) or the calling definition.</desc>
+    <examples>
+      <example>
+        <code>// anorexic?
+	if(<funclink>GetMass</funclink>() &lt; GetDefMass())
+		// Stomach acid etches to the outside
+		<funclink>CastPXS</funclink>(&quot;Acid&quot;, 150, 30);
+				</code>
+        <text>Anorexic</text>
+      </example>
+    </examples>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
+  <author>Sven2</author><date>2003-04</date>
+</funcs>

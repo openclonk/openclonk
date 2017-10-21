@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetEffect</title>
+    <category>Effects</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>name</name>
+          <desc>Name of the effect without preceding 'Fx'. You can use '*' and '?' wildcards.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Target object in which to access effects. If <code>nil</code>, the global effects are accessed.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Effect index. With name specified and multiple matches for the search this will give you the indicated effect from the list of results.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>max_priority</name>
+          <optional />
+          <desc>If not 0, only those effects are counted which have the specified priority or lower.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Retrieves a certain effect. If an effect cannot be found the return value is <code>nil</code>.</desc>
+    <examples>
+      <example>
+        <code>var i, effect;
+// Search all objects
+<funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(Find_And()))
+{
+  // Count down from the effect count because effects are being removed
+  i = <funclink>GetEffectCount</funclink>(0, obj);
+  <funclink>while</funclink> (i--)
+    <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, obj, i))
+      <funclink>RemoveEffect</funclink>(0, obj, effect);
+}
+// remove global effects
+i = <funclink>GetEffectCount</funclink>();
+<funclink>while</funclink> (i--)
+  <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, nil, i))
+    <funclink>RemoveEffect</funclink>(0, nil, effect);</code>
+        <text>Removes all magic effects from all objects and the global list.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
+      <funclink>CreateEffect</funclink>
+      <funclink>CheckEffect</funclink>
+      <funclink>GetEffectCount</funclink>
+      <funclink>EffectCall</funclink>
+      <funclink>RemoveEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+</funcs>

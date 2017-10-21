@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CastObjects</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>id </type>
+          <name>id</name>
+          <desc>Type of objects.</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>number</name>
+          <desc>Number of objects.</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>level</name>
+          <desc>Velocity of the objects.</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>x</name>
+          <desc>X casting position. In local calls offset to the calling object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>y</name>
+          <desc>Y casting position. In local calls offset to the calling object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>angle</name>
+          <desc>Angle into which to cast the objects.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>angle_variance</name>
+          <desc>Maximum deviation from that angle. If not given objects will be cast into all directions.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Casts number objects at the specified position with speed level. For local calls the created objects will have the same owner as the calling object. The objects that were created are returned in an array.</desc>
+    <examples>
+      <example>
+        <code>var num=<funclink>GetVertexNum</funclink>()-1;
+CastObjects(MagicSpark,1,20,<funclink>GetVertex</funclink>(num, 0)-<funclink>GetX</funclink>(), <funclink>GetVertex</funclink>(num, 1)-<funclink>GetY</funclink>());
+				</code>
+        <text>Creates a spark at the last vertex of a line. With multiple calls this will create the same effect as a lightning strike.</text>
+      </example>
+    </examples>
+    <related><funclink>CreateObject</funclink></related>
+  </func>
+  <author>Günther</author><date>2002-02</date>
+  <author>Newton</author><date>2009-07</date>
+  <author>Marky</author><date>2015-07</date>
+</funcs>

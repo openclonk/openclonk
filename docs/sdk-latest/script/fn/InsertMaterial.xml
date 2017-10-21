@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>InsertMaterial</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>material_index</name>
+          <desc>Material to be inserted (see <funclink>Material</funclink>()).</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X insert position or offset</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y insert position or offset</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+          <desc>horizontal speed of material pixel to be inserted</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+          <desc>vertical speed of material pixel to be inserted</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>out_insertpos</name>
+          <desc>If a writeable proplist is passed, members x and y are filled with the actual insertion position.</desc>
+          <optional />
+        </param>
+</params>
+    </syntax>
+    <desc>Inserts a material pixel at the given position and given speed.</desc>
+    <remark>If the target position already contains material of the same density as the inserted material, the engine will search upwards for a proper insertion position.</remark>
+    <remark>If the target position is outside the landscape (either because one of the parameters is outside the map or because insertion position search found such a position), no material is inserted. The function still returns success if the out-of-landscape position has the same or lower density than the inserted pixel. Out-of-landscape densities are controlled by *Open-parameters in the <emlink href="scenario/scenario.html#SektionLandscape">Scenario.txt [Landscape] section</emlink>.</remark>
+    <remark>For the sake of material insertion calculations, all densities above C4M_Solid are considered the same.</remark>
+    <related>
+      <funclink>Material</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2016-01</date>
+</funcs>

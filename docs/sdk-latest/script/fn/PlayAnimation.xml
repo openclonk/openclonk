@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PlayAnimation</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>animation</name>
+          <desc>Name of the animation to be played.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>slot</name>
+          <desc>Slot in the animation stack in which the animation should be inserted. See <emlink href="definition/animations.html">Animations</emlink>.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>position</name>
+          <desc>Specifies how to compute the position of the animation. The value needs to be created with one of the "Anim_" animation functions.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>weight</name>
+          <desc>Specifies how to compute the weight of the animation in case the animation is combined with another animation in the given slot. The value needs to be created with one of the "Anim_" animation functions.<br />If nil, the animation is created with constant weight 1000 and other animations in the same slot are removed.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>sibling</name>
+          <desc>If the animation is combined with another animation then this refers to the node with which the new node is combined. If not given or <code>nil</code> then the animation is combined with the animation at the top of the slot as returned by <funclink>GetRootAnimation</funclink>.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh on which the animation is to be played.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Starts playing a new animation. The return value of this function is the animation number of the animation node inserted which can be used to manipulate or remove the animation later. If there are already animations in the given slot then additionally a combination node is created. This combination node is assigned the returned number plus 1.</desc>
+    <remark>If a weight is specified, other animations remain in the slot and are automatically combined. Scripters are responsible for removing animations either by replacing them (pass nil as weight), calling <funclink>StopAnimation</funclink> or using the ANIM_Remove flag in the <funclink>Anim_Linear</funclink> function.</remark>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>(&quot;Scale&quot;, 5, <funclink>Anim_Y</funclink>(0, <funclink>GetAnimationLength</funclink>(&quot;Scale&quot;), 0, 15), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Scale" and overwrites any potentially existing animations in slot 5 without removing them. The animation position is chosen by the Y coordinate of the object so that the animation is synchronized with the movement of the clonk climbing.</text>
+      </example>
+      <example>
+        <code>var swim_up = <funclink>PlayAnimation</funclink>(&quot;SwimDiveUp&quot;, 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;SwimDiveUp&quot;), 40, ANIM_Loop), <funclink>Anim_Linear</funclink>(0, 0, 1000, 15, ANIM_Remove));
+var swim_down = <funclink>PlayAnimation</funclink>(&quot;SwimDiveDown&quot;, 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;SwimDiveDown&quot;), 40, ANIM_Loop), <funclink>Anim_Const</funclink>(500), swim_up);
+var swim_comb = swim_down + 1;</code>
+        <text>Superimposes a SwimDiveUp and a SwimDiveDown animation in such a way that both animations have the same weight. The result will be that lies horizontally in the water. If there is another animation being played in slot 5 then a transition lasting 15 frames is performed. At its end the previous animation will be removed. Using the variables swim_comb the weight of the two animations can be adapted to the swimming direction with additional code.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAnimationList</funclink>
+      <funclink>TransformBone</funclink>
+      <funclink>StopAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

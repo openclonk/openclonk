@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CustomMessage</title>
+    <category>Messages</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>message</name>
+          <desc>Message to be displayed</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>If not <code>nil</code>, the message is displayed above the specified object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>plr</name>
+          <desc>Player number for which the message should be displayed. Defaults to <code>NO_OWNER</code> which will display the message globally.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset_x</name>
+          <desc>x offset of the message position. For global messages this refers to the viewport center. For object messages this is relative to the standard message position above the object. For portrait messages (portrait!=0) the offset is relative to the upper left viewport corner.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset_y</name>
+          <desc>y offset of the message position.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>color</name>
+          <desc>Color of the message. Default is 0xffffff (white).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>deco</name>
+          <desc>ID of the object definition which is used for decoration of the message. If given the message will be surrounded by a border. Only valid for given portrait.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>portrait</name>
+          <desc>
+            Definition, object or image specification prop list to take the graphics from as a portrait.<br />
+            Image specification prop lists can contain the following members:
+            <table>
+              <rowh>
+                <col>Property</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <col>Source</col>
+                <col>Definition to draw graphics of.</col>
+              </row>
+              <row>
+                <col>Name</col>
+                <col>Name of graphics to draw from definition. Can be used to show a message e.g. of a skinned clonk. Default graphics are used if not specified.</col>
+              </row>
+              <row>
+                <col>Color</col>
+                <col>Color in which ColorByOwner surfaces of definition are drawn.</col>
+              </row>
+            </table>
+          </desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Bit mask specifying additional options. Possible values: 
+            <table>
+              <rowh>
+                <col>Bit</col>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <col>0</col>
+                <col>MSG_NoBreak</col>
+                <col>If set no automatic line breaks are inserted for long messages.</col>
+              </row>
+              <row>
+                <col>1</col>
+                <col>MSG_Bottom</col>
+                <col>Global messages only. For portrait messages with decoration frame: The message offset specifies the displacement relative to the bottom of the screen instead of relative to the top. For non-portrait messages the flag displaces the message a bit to the bottom.</col>
+              </row>
+              <row>
+                <col>2</col>
+                <col>MSG_Multiple</col>
+                <col>If set previous messages of the same type will not be removed.</col>
+              </row>
+			  <row>
+                <col>3</col>
+                <col>MSG_Top</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the top of the viewport.</col>
+              </row>
+			  <row>
+                <col>4</col>
+                <col>MSG_Left</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the left of the viewport.</col>
+              </row>
+			  <row>
+                <col>5</col>
+                <col>MSG_Right</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the right of the viewport and the text is aligned to the right.</col>
+              </row>
+			  <row>
+                <col>6</col>
+                <col>MSG_HCenter</col>
+                <col>Similar to MSG_Bottom. The x-offset is relative to the center of the viewport.</col>
+              </row>
+			  <row>
+                <col>7</col>
+                <col>MSG_VCenter</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the center of the viewport.</col>
+              </row>
+			  <row>
+                <col>8</col>
+                <col>MSG_DropSpeech</col>
+                <col>Currently not supported.</col>
+              </row>
+			  <row>
+                <col>9</col>
+                <col>MSG_WidthRel</col>
+                <col>The message width is a percentage of the viewport (0-100).</col>
+              </row>
+			  <row>
+                <col>10</col>
+                <col>MSG_XRel</col>
+                <col>The x-offset is a percentage of the viewport (0-100).</col>
+              </row>
+			  <row>
+                <col>11</col>
+                <col>MSG_YRel</col>
+                <col>The y-offset is a percentage of the viewport (0-100).</col>
+              </row>
+			  <row>
+                <col>12</col>
+                <col>MSG_Zoom</col>
+                <col>The message will be affected by ingame zoom.</col>
+              </row>
+            </table>
+
+          </desc>
+          <optional />
+        </param>
+		<param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the message. The unit is pixels if MSG_WidthRel is not set as a flag.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Displays a message.</desc>
+    <remark>This function unifies the functionalities of <funclink>Message</funclink> and <funclink>PlayerMessage</funclink> and offers additional options. To be able to add more parameters in future without having to define a new function it intentionally does not have additionaly format parameters. Instead they can be used via the function <funclink>Format</funclink>.</remark>
+    <remark>The usual message formating rules apply. If the message starts with an "@" then the message is displayed permanently until it is replaced by another message. The character "|" causes a line break. The message can be formatted using the tags &lt;i&gt; (italic) or &lt;c&gt; (colored).</remark>
+    <remark>Messages are displayed until a certain time which depends on the length of the message has passed, or the message is replaced by another message of the same class. A global message (i.e. obj=0) replaces all other global messages, and an object message (obj!=0) replaces all other object messages. To display multiple messages of the same class the flag MSG_Multiple can be used.</remark>
+    <examples>
+      <example>
+        <code>CustomMessage(&quot;This is &lt;i&gt;madness&lt;/i&gt;!&quot;,nil,0);</code>
+        <text>Shows the message "This is madness!" for player 0 only with the word "madness" being written in italic.</text>
+      </example>
+      <example>
+        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, nil, NO_OWNER, 100,100, 0, GUI_MenuDeco, Clonk);</code>
+        <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a clonk picture will be shown. The decoration definition GUI_MenuDeco needs to be loaded.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Message</funclink>
+      <funclink>PlayerMessage</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2008-07</date>
+</funcs>

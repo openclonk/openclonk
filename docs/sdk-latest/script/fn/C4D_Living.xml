@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4D_Living</title>
+    <category>Objects</category>
+    <subcat>Category</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int </rtype></syntax>
+    <desc>Objects with this category are alive when created.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetPlrKnowledge</funclink>(0, nil, 0, C4D_Living);</code>
+        <text>Returns the first type of living beings which can be built by player 1 - usually none.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCategory</funclink>
+      <funclink>SetCategory</funclink>
+      <funclink>GetAlive</funclink>
+      <funclink>GetDefinition</funclink>
+    </related>
+  </const>
+  <author>Günther</author><date>2002, 2011</date>
+</funcs>

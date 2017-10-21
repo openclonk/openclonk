@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Smoke</title>
+    <category>Environment</category>
+    <subcat>Effects</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the smoke. In a local call this is an offset.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the smoke. In a local call this is an offset.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>Size of the smoke.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates smoke at the specified position.</desc>
+    <examples>
+      <example>
+        <code>Smoke(0,0,50);</code>
+        <text>Object script: the object creates a puff of smoke.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
+</funcs>

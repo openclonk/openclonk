@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4D_Goal</title>
+    <category>Objects</category>
+    <subcat>Category</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Object category: game goal.</desc>
+    <examples>
+      <example>
+        <code>for(var obj in<funclink>FindObjects</funclink>(<funclink>Find_Category</funclink>(C4D_Goal)))
+	obj-&gt;<funclink>RemoveObject</funclink>();</code>
+        <text>Removes all game goals.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCategory</funclink>
+      <funclink>SetCategory</funclink>
+    </related>
+  </const>
+  <author>Sven2</author><date>2002-01</date>
+</funcs>

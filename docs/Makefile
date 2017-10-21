@@ -43,12 +43,12 @@ htmlfiles := $(addsuffix .html, $(basename $(xmlfiles)))
 sdk-de-dirs := $(subst sdk, sdk-de, $(sdk-dirs))
 
 # For openclonk.org
-online-dirs := $(foreach lang, en de, $(addprefix online/$(lang)/, $(sdk-dirs) images))
-online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
-online-extra-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(extra-files)))
+online-dirs := $(foreach lang, en de latest, $(addprefix online/$(lang)/, $(sdk-dirs) images))
+online-sdk-files := $(foreach lang, en de latest, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
+online-extra-files := $(foreach lang, en de latest, $(addprefix online/$(lang)/, $(extra-files)))
 
 # For Entwickler.chm
-chm-dirs := $(foreach lang, en de, $(addprefix chm/$(lang)/, . $(sdk-dirs) images))
+chm-dirs := $(foreach lang, en de latest, $(addprefix chm/$(lang)/, . $(sdk-dirs) images))
 
 .PHONY: all online-en chm install check clean
 
@@ -79,6 +79,9 @@ chm/en/Output.hhp: $(xmlfiles) chm/en/. build_hhp.py Template.hhp
 chm/de/Output.hhp: $(xmlfiles) chm/de/. build_hhp.py Template.de.hhp
 	@echo generate $@
 	@python2 build_hhp.py $@ Template.de.hhp $(xmlfiles)
+chm/latest/Output.hhp: $(xmlfiles) chm/latest/. build_hhp.py Template.hhp
+	@echo generate $@
+	@python2 build_hhp.py $@ Template.hhp $(xmlfiles)
 
 $(sdk-de-dirs) $(online-dirs) $(chm-dirs):
 	mkdir -p $@
@@ -108,28 +111,40 @@ online/%: chm=0
 chm/%: chm=1
 online/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 online/de/sdk/%.html: sdk-de/%.xml $(stylesheet) ; $(run-xslt)
+online/latest/sdk/%.html: sdk-latest/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 chm/de/sdk/%.html: sdk-de/%.xml $(stylesheet) ; $(run-xslt)
+chm/latest/sdk/%.html: sdk-latest/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/Output.hhc: stylesheet=hhc.xsl
 chm/de/Output.hhc: stylesheet=hhc.xsl
+chm/latest/Output.hhc: stylesheet=hhc.xsl
 chm/en/Output.hhc: sdk/content.xml hhc.xsl ; $(run-xslt)
 chm/de/Output.hhc: sdk-de/content.xml hhc.xsl ; $(run-xslt)
+chm/latest/Output.hhc: sdk-latest/content.xml hhc.xsl ; $(run-xslt)
 chm/en/Output.hhk: stylesheet=hhk.xsl
 chm/de/Output.hhk: stylesheet=hhk.xsl
+chm/latest/Output.hhk: stylesheet=hhk.xsl
 chm/en/Output.hhk: sdk/content.xml hhk.xsl ; $(run-xslt)
 chm/de/Output.hhk: sdk-de/content.xml hhk.xsl ; $(run-xslt)
+chm/latest/Output.hhk: sdk-latest/content.xml hhk.xsl ; $(run-xslt)
 
 $(filter online/en/%, $(online-extra-files)): online/en/%: %
 	$(CP) $< $@
 $(filter online/de/%, $(online-extra-files)): online/de/%: %
 	$(CP) $< $@
+$(filter online/latest/%, $(online-extra-files)): online/latest/%: %
+	$(CP) $< $@
 $(addprefix chm/en/, $(extra-files-chm)): chm/en/%: %
 	$(CP) $< $@
 $(addprefix chm/de/, $(extra-files-chm)): chm/de/%: %
+	$(CP) $< $@
+$(addprefix chm/latest/, $(extra-files-chm)): chm/latest/%: %
 	$(CP) $< $@
 
 chm/en/Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(addprefix chm/en/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
 	! "$(HHC)" $<
 chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
+	! "$(HHC)" $<
+chm/latest/Developer.chm: chm/latest/Output.hhp chm/latest/Output.hhk chm/latest/Output.hhc $(addprefix chm/latest/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
 	! "$(HHC)" $<
 

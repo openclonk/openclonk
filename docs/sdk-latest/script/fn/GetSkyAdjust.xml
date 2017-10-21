@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetSkyAdjust</title>
+    <category>Sky</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>back_color</name>
+          <desc>If not <code>false</code>, the secondary sky color is returned as specified in SetSkyAdjust.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the sky modulation as set by <funclink>SetSkyAdjust</funclink>. For more information see <funclink>SetSkyAdjust</funclink>.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; <funclink>RGB(255,255,255)</funclink>);</code>
+        <text>Ensures that the sky is drawn without any transparency (thoroughly covering any background color).</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetMatAdjust</funclink>
+      <funclink>SetSkyAdjust</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

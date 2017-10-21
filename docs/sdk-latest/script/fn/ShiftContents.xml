@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ShiftContents</title>
+    <category>Objects</category>
+    <subcat>Contents</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>shift_back</name>
+          <desc>If <code>true</code>, objects will be resorted backwards.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>target_id</name>
+          <desc>ID of the object type to be in front after the shift. If this parameter is specified, no call to ControlContents will be made. The object will be selected directly and without the selection sound. In this way you can overload the contents switching in ControlContents and add your own sounds or special events.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <desc>If <code>true</code>, calls to ControlContents and Selection will be made.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Resorts the contained objects so the next object with a differing ID will be in front. The most common application for this command is inventory selection.</desc>
+    <remark>This command calls the function "ControlContents" in the container object which can be used to overload the selection process. If the function ControlContents does not exist in the container object or returns <code>false</code>, the function "Selection" will be called in the newly selected inventory object. If the function Selection does not exist in the contained object or returns <code>false</code>, the engine will play the "Grab" sound effect for the container object (default behaviour for inventory selection). See also <emlink href="definition/script.html">object scripts</emlink>.</remark>
+    <remark>Notice: nowadays the function ShiftContents will also play the selection sound. To avoid double playback, object scripts should take this into consideration and not play their own selection sound or move the sound playback to the ControlContents function, as seen below.</remark>
+    <related>
+      <funclink>ScrollContents</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

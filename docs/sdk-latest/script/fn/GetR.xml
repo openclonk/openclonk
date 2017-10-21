@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetR</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the rotation of an object. Values range from -180° to +180°. 0° is unrotated.</desc>
+    <related>
+      <funclink>GetRDir</funclink>
+      <funclink>SetR</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
+</funcs>

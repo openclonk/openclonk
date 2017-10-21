@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Definition</title>
+    <category>Callbacks</category>
+    <subcat>Definition</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>def</name>
+          <desc>The definition being initialized.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Called after loading of the calling definition. This should only change the definition.</desc>
+  </func>
+  <author>GÃ¼nther</author><date>2009-05</date>
+</funcs>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DoScoreboardShow</title>
+    <category>Interface</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of visibility.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>for_player</name>
+          <desc>If greater than 0, this is the player number + 1 of the player for which scoreboard visibility is to be changed.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the visibility counter of the scoreboard. This internal counter starts at 0. If the counter value is greater than 0, the scoreboard is visible. If it is less than 0, it is removed. If it is equal to 0, the scoreboard is visible when the player presses the corresponding keyboard key (usually Tab).</desc>
+    <examples>
+      <example>
+        <text>For an example, see <funclink>SetScoreboardData</funclink>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetScoreboardData</funclink>
+      <funclink>SortScoreboard</funclink>
+      <funclink>ScoreboardCol</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2006-02</date>
+</funcs>

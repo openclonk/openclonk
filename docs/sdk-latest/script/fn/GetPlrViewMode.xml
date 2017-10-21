@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlrViewMode</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose view mode you want to determine.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Determines the current view mode of a player. The function returns the following values: 
+      <ul>
+        <li>0: Cursor - The player view follows the currently selected clonk (see <funclink>GetCursor</funclink>).</li>
+        <li>1: Target - The player view follows the object set by <funclink>SetPlrView</funclink>. Also see <funclink>GetPlrView</funclink>.</li>
+        <li>2: Scroll - The player is scrolling his view using the mouse.</li>
+      </ul>
+
+    </desc>
+    <remark>As mouse scrolling behaviour differs on every computer, this function always returns -1 whenever in Record, Replay, or network game mode.</remark>
+    <related>
+      <funclink>SetPlrView</funclink>
+      <funclink>GetPlrView</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
+</funcs>

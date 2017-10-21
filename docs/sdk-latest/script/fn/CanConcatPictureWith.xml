@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CanConcatPictureWith</title>
+    <category>Objects</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>other</name>
+          <desc>The object with which to compare.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Checks whether the pictures of two objects are the same and therefore can be stacked in contents menus.</desc>
+    <related>
+      <funclink>SetGraphics</funclink>
+      <funclink>SetClrModulation</funclink>
+    </related>
+  </func>
+  <author>Randrian</author><date>2009-09</date>
+</funcs>

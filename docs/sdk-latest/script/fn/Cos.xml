@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Cos</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>angle</name>
+          <desc>Angle in degrees</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Radius</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>If specified, the angle will be divided by this value. An angle of 445° and a precision value of 10 will thus result in a more precise angle of 45,5° internally.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns cos(angle) * radius.</desc>
+    <related>
+      <funclink>Sin</funclink>
+      <funclink>Tan</funclink>
+      <funclink>Angle</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
+  <author>Clonk-Karl</author><date>2004-09</date>
+</funcs>

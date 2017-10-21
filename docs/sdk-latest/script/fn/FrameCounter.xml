@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FrameCounter</title>
+    <category>Global</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current frame number. This counter starts at 0 at the beginning of each round and increases by roughly 37 frames per second, depending of the performance of the computer.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (FrameCounter()&gt;11100) <funclink>GameOver</funclink>();</code>
+        <text>Ends the game if it has been running for more than 5 minutes.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

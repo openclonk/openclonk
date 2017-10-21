@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetRDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>rdir</name>
+          <desc>Rotation speed divided by precision.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Precision. Default 10 if not specified.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the rotation speed of the object.</desc>
+    <related>
+      <funclink>GetRDir</funclink>
+      <funclink>SetR</funclink>
+      <funclink>SetXDir</funclink>
+      <funclink>SetYDir</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
+</funcs>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RGB2HSL</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>Val</name>
+          <desc>32 bit color value</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Converts a 32 bit color value into hue, saturation, and lightness values as know in paint programs.<br/>The HSL value is returned as int and can be processed using <funclink>GetRGBaValue</funclink> or <funclink>SplitRGBaValue</funclink>.<br/> All values range from 0-255.</desc>
+    <remark>Since there is no floating point data type in Clonk, these values may contain slight rounding errors (usually not greater than +1 to +1).</remark>
+    <examples>
+      <example>
+        <code>#appendto Clonk
+
+func Initialize() {
+  <funclink>AddEffect</funclink>(&quot;VariateHue&quot;,<funclink>this</funclink>,200,1,<funclink>this</funclink>);
+  <funclink>return</funclink> <funclink>_inherited</funclink>();
+}
+
+func FxVariateHueTimer() {
+  var hsl = RGB2HSL(<funclink>GetColor</funclink>());
+  var hsla_array = <funclink>SplitRGBaValue</funclink>(hsl);
+  hsla_array[0] += 2;
+  if(hsla_array[0] &gt; 255) hue = 0;
+  var rgb = <funclink>HSL2RGB</funclink>(<funclink>RGB</funclink>(hsla_array[0],hsla_array[1],hsla_array[2]));
+  <funclink>SetColor</funclink>(rgb);
+}</code>
+        <text>Creates an effect which will colorize every clonk in the game, running through the colors of the rainbow.<br/>To test this effects, best copy this function into a script contained in a scenario local System.ocg group.<br/>The hue value is deliberately increased by 2 in this sample, else rounding errors might cause nothing to happen.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>HSL2RGB</funclink>
+      <funclink>SetRGBaValue</funclink>
+      <funclink>RGB</funclink>
+    </related>
+  </func>
+  <author>Tyron</author><date>2004-09</date>
+</funcs>

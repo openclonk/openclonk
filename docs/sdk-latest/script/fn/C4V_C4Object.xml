@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4V_C4Object</title>
+    <category>Variables</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Data type: object pointer.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (x &amp;&amp; <funclink>GetType</funclink>(x)==C4V_C4Object) <funclink>Log</funclink>(&quot;x=%s&quot;, <funclink>GetName</funclink>(x));</code>
+        <text>Writes the name of x to the log if it is an object.</text>
+      </example>
+    </examples>
+    <related><funclink>GetType</funclink></related>
+  </const>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

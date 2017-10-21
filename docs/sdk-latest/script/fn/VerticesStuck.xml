@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>VerticesStuck</title>
+    <category>Objects</category>
+    <subcat>Vertices</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Target object</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the number of stuck vertices of *obj</desc>
+    <examples>
+      <example>
+        <code>var obj = FindObject(Find_ID(Dynamite));
+if (VerticesStuck(obj) > 1) RemoveObject(obj);</code>
+        <text>Removes obj if two or more of its vertices are stuck.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetVertex</funclink>
+      <funclink>Stuck</funclink>
+      <funclink>Unstick</funclink>
+    </related>
+  </func>
+  <author>flgr</author><date>2002-01</date>
+</funcs>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SortScoreboard</title>
+    <category>Interface</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>coloumn_id</name>
+          <desc>ID of the column by which you want to sort.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>reverse</name>
+          <desc>If <code>true</code>, sorting will be done in descendnig order. Otherwise ascending order.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sorts scoreboard lines by the extra data of a column. If two entries have the same value in this column, no sorting is done. In this way you can sort these entries by additional columns in subsequent calls to this function.</desc>
+    <examples>
+      <example>
+        <text>For an example, see <funclink>SetScoreboardData</funclink>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetScoreboardData</funclink>
+      <funclink>DoScoreboardShow</funclink>
+      <funclink>ScoreboardCol</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2006-02</date>
+</funcs>

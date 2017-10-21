@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetID</title>
+    <category>Objects</category>
+    <version>5.1 OC<extversion>5.4 OC</extversion></version>
+    <syntax><rtype>proplist</rtype></syntax>
+    <desc>Returns the definition of an object. This is most often a <code>def</code>, but can also be a <code>proplist</code> deriving from a <code>def</code>.</desc>
+    <examples>
+      <example>
+        <code><funclink>CreateObject</funclink>(GetID())</code>
+        <text>Creates a duplicate of the calling object.</text>
+      </example>
+    </examples>
+  </func>
+  <author>jwk</author><date>2002-04</date>
+  <author>Günther</author><date>2013</date>
+</funcs>

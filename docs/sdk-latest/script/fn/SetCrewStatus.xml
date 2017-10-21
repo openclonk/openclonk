@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetCrewStatus</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose crew you want to change.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>into_crew</name>
+          <desc><code>true</code> if you want to add a clonk to the crew and <code>false</code> if you want to remove him.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds or removes an object (usually a clonk) to or from the crew of a player. The object must have the CrewMember property set in the DefCore.
+    This does not add the object to the permanent crew of the player, use <funclink>MakeCrewMember</funclink> for that.</desc>
+    <examples>
+      <example>
+        <code>var nClonk = <funclink>CreateObject</funclink>(Clonk);
+nClonk-&gt;SetCrewStatus(<funclink>GetOwner</funclink>(), true);</code>
+        <text>This script creates a new clonk and adds it to the crew list of the owner.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrew</funclink>
+      <funclink>CrewMember</funclink>
+      <funclink>MakeCrewMember</funclink>
+      <funclink>OCF_CrewMember</funclink>
+      <funclink>GrabObjectInfo</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2008-05</date>
+</funcs>

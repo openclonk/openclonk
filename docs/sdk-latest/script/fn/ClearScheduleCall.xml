@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ClearScheduleCall</title>
+    <category>Script</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object for which to cancel scheduled function calls. <code>nil</code> for scheduled calls without object context.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Name of the scheduled function.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Cancels function calls which has been scheduled by <funclink>ScheduleCall</funclink>. All scheduled calls to the specified function will be cancelled.</desc>
+    <examples>
+      <example>
+        <code>ClearScheduleCall(<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk)), &quot;Redefine&quot;);</code>
+        <text>Cancels all scheduled calls to the function "Redefine" for the first clonk.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Schedule</funclink>
+      <funclink>ScheduleCall</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2005-08</date>
+</funcs>

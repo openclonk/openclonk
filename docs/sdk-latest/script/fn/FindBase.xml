@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FindBase</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose home base you are looking for.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Search index for finding multiple home base objects. index = 0 finds the first base, and so on.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Searches for the home base of a player. The home base is usually the building with the flag.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetCommand</funclink>(<funclink>GetCursor</funclink>(0), &quot;Enter&quot;, FindBase(0));</code>
+        <text>Gives the selected clonk the order to enter his home base.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

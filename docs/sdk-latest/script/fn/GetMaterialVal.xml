@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetMaterialVal</title>
+    <category>Get*Val</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>entry</name>
+          <desc>Name of the entry to be retrieved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>section</name>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>material</name>
+          <desc>Number of the material of which to retrieve an entry.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>entry_number</name>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the property value of a material definition by its name in the <emlink href="material/ocm.html">material file</emlink>.</desc>
+    <examples>
+      <example>
+        <code>GetMaterialVal(&quot;BlastFree&quot;, &quot;Material&quot;, <funclink>GetMaterial</funclink>(20, 0))</code>
+        <text>Tests whether the landscape on the right of the calling clonk can be blasted away.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetMaterial</funclink>
+      <funclink>Material</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
+</funcs>

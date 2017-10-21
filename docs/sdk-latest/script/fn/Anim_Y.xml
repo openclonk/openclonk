@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_Y</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>position</name>
+          <desc>Start value. Should be inside the interval given by begin and end.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>begin</name>
+          <desc>Start of the interval.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>end</name>
+          <desc>End of the interval. If end is greater than begin then the value increases with movement into positive Y direction, otherwise it decreases in that case.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>length</name>
+          <desc>Number of pixels that need to be moved in Y direction for the animation to be played from begin to end.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>The value depends on the movement of the object in Y direction. Each pixel the object moves into positive Y direction increases the value a little bit, and each pixel in negative Y direction decreases it. If end is reached then the value is reset to begin, and if begin is reached then the value is reset to end.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>(&quot;Scale&quot;, 5, <funclink>Anim_Y</funclink>(0, <funclink>GetAnimationLength</funclink>(&quot;Scale&quot;), 0, 15), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Scale" in slot 5, superimposing any other potential animations in slot 5. The animation is being played the faster the faster the object moves into Y direction. After the object moved 15 pixels the animation has been played form start to end and restarts from the beginning. Here we use <funclink>Anim_Y</funclink> instead of <funclink>Anim_AbsY</funclink> so that the animation is played in the opposite direction if scaling downwards. begin was chosen to be greater than end so that the animation is played forwards for movement in negative Y direction (climbing upwards) and so that it is played backwards for movement in positive Y direction (climbing downwards).</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_R</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_Dist</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

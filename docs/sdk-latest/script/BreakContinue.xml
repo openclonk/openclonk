@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>break and continue</title>
+  <h>break and continue</h>
+  <part>
+    <text>The keywords <code>break</code> and <code>continue</code> are used for finer control of loops:</text>
+    <text>
+      <ul>
+        <li id="break"><code>break</code> ends the enclosing loop. Execution is continued after the end of the loop.</li>
+        <li id="continue"><code>continue</code> ends the current loop execution and continues with the next loop item from the beginning of the loop.</li>
+      </ul>
+    </text>
+    <h>Example:</h>
+    <code>for(var i = 0; i &lt; 10; i++) 
+{
+  <funclink>Log</funclink>(&quot;Number: %d&quot;, i);
+  if(i &gt; 6) break;
+  if(i &gt; 2) continue;
+  Log(&quot;Number: %d (2. Ausgabe)&quot;, i);
+}
+Log(&quot;Final Number: %d&quot;,i);</code>
+    <h>Output:</h>
+    <code>Number: 0 
+Number: 0 (2.Ausgabe)
+Number: 1 
+Number: 1 (2.Ausgabe)
+Number: 2 
+Number: 2 (2.Ausgabe)
+Number: 3 
+Number: 4 
+Number: 5 
+Number: 6 
+Number: 7 
+Final Number: 7</code>
+    <text>This loops counts the variable <code>i</code> from 0 to 10.</text>
+    <text>If the first three loop executions (i from 0 to 2) the value is displayed twice.</text>
+    <text>From value 3 on <code>continue</code> is called after the first output. This will skip the current loop execution. The output is made only once.</text>
+    <text>If value 7 is reached, <code>break</code> is called. <code>break</code> will, as opposed to <code>continue</code>, not only skip current loop execution but will break out of the whole loop. You can notice by seeing that the value of <code>i</code> is 7 at the end, not 11.</text>
+  </part>
+  <author>Peter</author><date>2001-07</date>
+</doc>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>LaunchVolcano</title>
+    <category>Environment</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>strength</name>
+          <desc>Strength. Default: Relative to the height of the landscape</desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>material_name</name>
+          <desc>Name of the material. The default is "Lava"</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>angle</name>
+          <desc>Direction into which to erupt. 0 (default) is straight up.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Launches a volcano at the specified position.</desc>
+    <related>
+      <funclink>LaunchLightning</funclink>
+      <funclink>LaunchEarthquake</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2013-12</date>
+</funcs>

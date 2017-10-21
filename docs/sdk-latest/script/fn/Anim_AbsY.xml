@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_AbsY</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>position</name>
+          <desc>Start value. Should be inside the interval given by begin and end.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>begin</name>
+          <desc>Start of the interval.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>end</name>
+          <desc>End of the interval. If end is greater than begin then the value increases with every movement of the object, otherwise it decreases.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>length</name>
+          <desc>Number of pixels that need to be moved in Y direction for the animation to be played from begin to end.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>The value depends on the movement of the object into Y direction. Every pixel the object moves into Y direction increases the value a little bit. Once end is reached the value is reset to begin. In contrast to <funclink>Anim_Y</funclink> the value always moves towards end, not depending on whether the object moves upwards or downwards.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>(&quot;Lift&quot;, 5, <funclink>Anim_AbsY</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;Lift&quot;), 25), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Lift" in slot 5 and superimposes any other potential animations played in slot 5. The animation is playdethe faster the faster the object moves into Y direction. After it moved 25 pixels the animation has been played from its beginning to its end and will be restarted.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_R</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_Dist</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

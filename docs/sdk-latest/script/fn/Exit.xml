@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Exit</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Offset of the X exit position.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Offset of the Y exit position.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>iR</name>
+          <desc>Object rotation on exit in degrees.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+          <desc>Horizontal exit velocity. This is the actual speed value (with no precision multiplication).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+          <desc>Vertical exit velocity. This is the actual speed value (with no precision multiplication).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>rdir</name>
+          <desc>Rotational speed of the exiting object.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Moves an object from its container. Optionally, sets its exit velocity.</desc>
+    <examples>
+      <example>
+        <code><funclink>Contents</funclink>()-&gt;Exit(0,-20, <funclink>Random</funclink>(360), 0,-15, <funclink>Random</funclink>(11)-5);</code>
+        <text>Moves the first contained object from the calling object, rotates it randomly and throws it upwards.</text>
+      </example>
+    </examples>
+    <related><funclink>Enter</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>matthes</author><date>2004-10</date>
+</funcs>

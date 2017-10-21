@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Script</title>
+  <h>Script</h>
+  <part>
+    <h>Introduction</h>
+    <text>Clonk supports its own scripting language: C4Script.</text>
+    <text>Object definitions and scenarios can contain a script. Function calls made from scenario scripts are considered "global" calls. Function calls made within an object script are considered "local" calls.</text>
+    <text>For further information on the two types of script see <emlink href="definition/script.html">object scripts</emlink> and <emlink href="scenario/script.html">scenario scripts</emlink>.</text>
+    <text>C4Script uses a C-style syntax. It includes <emlink href="script/operatoren.html">operators</emlink>, <emlink href="script/NamedVar.html">variable declarations</emlink>, compound statements, conditional statements (<funclink>if</funclink>) and loops (<funclink>for</funclink> and <funclink>while</funclink>).</text>
+    <h id="Debugging">Debugging</h>
+    <text>Activate the debug mode in the developer section of the game options to have additional error messages displayed. Anyone writing scripts should do this.</text>
+    <h>Functions</h>
+    <text>As in other programming languages you can define <emlink href="script/Funcs.html">functions</emlink> in C4Script:</text>
+    <code>func CreateRock()
+{
+  <funclink>CreateObject</funclink>(Rock,50,50);
+  <funclink>return</funclink> 1;
+}
+</code>
+    <h id="VariablenParameter">Variables/Parameters</h>
+    <text>Variables can hold values of type <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> or <code>object</code>. Any parameter not directly specified in a function call will hold the default value <code>nil</code>. Functions can have a maximum of ten parameters.</text>
+    <h id="Kommentare">Comments</h>
+    <text>Scripts may contain code comments in C-style. Comment text will be completely ignored when the script is compiled for execution.</text>
+    <code>func MyFunction() // A comment until the end of the line
+{
+  <funclink>Message</funclink>(&quot;This code is executed&quot;);
+  /* A comment in
+     a block */ <funclink>Message</funclink>(&quot;This one is executed, too&quot;);
+  // <funclink>Message</funclink>(&quot;This code is not executed&quot;);
+  <funclink>return</funclink> 1;
+}
+</code>
+    <h id="Infos">Additional Information</h>
+    <text><emlink href="script/Funcs.html">Functions</emlink></text>
+    <text><emlink href="script/FuncCall.html">Calling Script Functions</emlink></text>
+    <text><emlink href="script/Typechecks.html">Data Types</emlink></text>
+    <text><emlink href="script/NamedVar.html">Variables and their Scope</emlink></text>
+    <text><emlink href="script/operatoren.html">Operators: +, -, = etc. in C4Script</emlink></text>
+    <text><emlink href="script/for.html">for Loop</emlink></text>
+    <text><emlink href="script/BreakContinue.html">Loop Control</emlink></text>
+    <text><emlink href="script/AppendTo.html">#appendto: for appending code to existing scripts</emlink></text>
+    <text><emlink href="script/Effects.html">Effects</emlink></text>
+    <text><emlink href="script/GetXXVal.html">Querying Game Data</emlink></text>
+    <text><emlink href="script/ScriptPlayers.html">Script Player (i.e. AI player)</emlink></text>
+    <text><emlink href="script/SoundModifiers.html">Sound modifiers</emlink></text>
+    <text><emlink href="script/Diagnostics.html">Diagnostic messages</emlink></text>
+    <h id="Infos">Libraries</h>
+    <text><emlink href="script/Shape.html">Shape</emlink></text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
+</doc>

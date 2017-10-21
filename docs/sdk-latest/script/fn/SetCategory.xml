@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetCategory</title>
+    <category>Objects</category>
+    <subcat>Category</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>category</name>
+          <desc>Object category. Should be a valid C4D_x value.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the category of an object.</desc>
+    <remark>Also see <emlink href="definition/category.html">object categories</emlink></remark>
+    <related><funclink>GetCategory</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
+</funcs>

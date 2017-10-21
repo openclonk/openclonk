@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>HSL</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>byH</name>
+          <desc>Hue of the color. 0 is red, 85 is green, 170 is blue, and 255 is red again.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byS</name>
+          <desc>Saturation of the color. This is the color contrast.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byL</name>
+          <desc>Brightness of the color. A brightness of 0 would correspond to <funclink>RGB</funclink>(0,0,0).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a 32 bit color value from three parameters. Range is 0-255 for all parameters.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetSkyAdjust</funclink>(HSL(0,255,127));</code>
+        <text>Makes a ruddy sky.</text>
+      </example>
+      <example>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;<funclink>SetColor</funclink>(HSL(<funclink>Random</funclink>(256),255,127));</code>
+        <text>Colors the highest ranking clonk of the first player in a strong, random color.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+      <funclink>HSLa</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2005-06</date>
+</funcs>

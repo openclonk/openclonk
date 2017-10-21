@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>The 'for' Loop</title>
+  <h>The 'for' Loop</h>
+  <part>
+    <text>The <code>for</code> loop is a convenient loop with starting initialization. It is most often used as <a href="#Zaehlschleife">counting loop</a>. It will take three statements as parameters, each separated by a ';' semicolon. Followed by the code block to be executed:</text>
+    <code>for([Initialization]; [Condition]; [Incrementation]))
+  [Statement to be executed];
+</code>
+    <text>
+      <ul>
+        <li>The first statement will be executed once at the beginning of the loop. This is a good place to initialize counter variables.</li>
+        <li>The second statement contains the loop condition. As soon as this condition returns 'false', the loop execution is stopped. The condition is checked before each loop execution.</li>
+        <li>The third statement is executed after each loop execution. This is a good place to count up or down your counter variables.</li>
+      </ul>
+    </text>
+    <text>It is possible to omit any of the three statements. If there is no condition statement, then the loop will run forever unless it is interrupted from the loop body (i.e. using the <code>break</code> keyword). This is an infinite loop:</text>
+    <code>for(;;)
+  <funclink>Log</funclink>(&quot;Fl00d!&quot;);
+</code>
+    <h id="Zaehlschleife">Using for as a counting loop</h>
+    <text>This is the most common use of the for loop. If, for example, you want to print all numbers from 1 to 10, you would write:</text>
+    <code>for(var i = 1; i &lt;= 10; ++i)
+  <funclink>Log</funclink>(&quot;%d&quot;, i);
+</code>
+    <text>Notice: the following <funclink>while</funclink> loop would do exactly the same:</text>
+    <code>var i = 1;
+<funclink>while</funclink>(i &lt;= 10) {
+  <funclink>Log</funclink>(&quot;%d&quot;, i);
+  ++i;
+}
+</code>
+    <h id="Arrayschleife">Using for to iterate over an array</h>
+    <text>Another function of the <code>for</code>-loop is iterating over arrays. Each element of the array is stored in the variable and the loop body executed for that element. The script looks like this:</text>
+    <code>for(var element in a)
+  <funclink>Log</funclink>(&quot;%v&quot;, element);
+</code>
+    <text>This script would output all elements of the array <code>a</code> to the log.</text>
+    <h>Further examples:</h>
+    <code>for(var i = 10; i &gt;= 1; i--)
+  <funclink>Log</funclink>(&quot;%d&quot;, i);
+</code>
+    <text>Counts backwards from 10 to 1.</text>
+  </part>
+  <author>Peter</author><date>2004-06</date>
+  <author>Günther</author><date>2010-08</date>
+</doc>

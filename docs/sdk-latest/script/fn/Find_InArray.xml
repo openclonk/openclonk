@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Find_InArray</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>6.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>search_array</name>
+          <desc>Array in which the object must be.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: Finds only objects in the array.</desc>
+    <remark>The implementation just checks for every object whether it is contained in the array. The object search is not reduced by checking only objects in the given array, so the criterion should not be used as an optimization to speed up object search. To perform such an optimization, a simple loop over the array should be used.</remark>
+    <examples>
+      <example>
+        <code>// A kind of healing spell for which people have to stay within a distance and cannot gain the healing effect if they are not present in Fx*Start
+
+func FxHealingStart(object target, proplist effect, bool temp)
+{
+  <funclink>if</funclink> (!temp) effect.targets = <funclink>FindObjects</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Find_Distance</funclink>(200));
+}
+
+func FxHealingTimer(object target, proplist effect)
+{
+  <funclink>for</funclink> (var target in <funclink>Find_Objects</funclink>(<funclink>Find_Distance</funclink>(200), Find_InArray(effect.targets)));
+    target-><funclink>DoEnergy</funclink>(+1);
+}
+</code>
+        <text>Objects are healed by the effect and need to stay within 200 range to keep being healed. The Find_InArray criterion ensures that only objects that were initially in the range retrieve healing.</text>
+      </example>
+    </examples>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Sven2</author><date>2015-04</date>
+</funcs>

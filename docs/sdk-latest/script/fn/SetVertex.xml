@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetVertex</title>
+    <category>Objects</category>
+    <subcat>Vertices</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the vertex to be changed.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>select</name>
+          <desc>
+            Determines which vertex data is to be changed. 
+            <table>
+              <rowh>
+                <col>Value</col>
+                <col>Meaning</col>
+              </rowh>
+              <row>
+                <col>VTX_X</col>
+                <col>X coordinate of the vertex.</col>
+              </row>
+              <row>
+                <col>VTX_Y</col>
+                <col>Y coordinate of the vertex</col>
+              </row>
+              <row>
+                <col>VTX_CNAT</col>
+                <col><emlink href="definition/cnat.html">CNAT value</emlink> of the vertex.</col>
+              </row>
+              <row>
+                <col>VTX_Friction</col>
+                <col>Friction of the vertex.</col>
+              </row>
+            </table>
+
+          </desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Value to be set to.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>set_custom_permanent</name>
+          <desc>Special vertex mode. If 1 or 2 the new value will be stored in the last 25 vertices and copied from there during the next shape update. Using this parameter, script changed vertices will be kept during stretch or rotation operations. With value 2, vertices will be updated immediately, not only with the next shape update.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the offset coordinates of a given object vertex (see<emlink href="definition/defcore.html">DefCore.txt</emlink>). Coordinates are relative to the object center.</desc>
+    <remark>Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected using the set_custom_permanent parameter.</remark>
+    <related>
+      <funclink>GetVertex</funclink>
+      <funclink>AddVertex</funclink>
+      <funclink>RemoveVertex</funclink>
+      <funclink>GetVertexNum</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
+  <author>Sven2</author><date>2004-06</date>
+</funcs>

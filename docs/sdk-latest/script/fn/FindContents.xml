@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FindContents</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>type</name>
+          <desc>Object type to be found.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the first found contained object of the specified type.</desc>
+    <related>
+      <funclink>FindOtherContents</funclink>
+      <funclink>Contents</funclink>
+      <funclink>FindObject</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

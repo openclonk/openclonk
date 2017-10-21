@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>FolderMap.txt</title>
+  <h>FolderMap.txt</h>
+  <part>
+    <text>Scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples.</text>
+    <text>
+      <table>
+        <caption id="SektionFolderMap">Section [FolderMap]</caption>
+        <rowh>
+          <col>Value</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>ScenInfoArea</col>
+          <col>4 integers</col>
+          <col>Coordinates (x, y, width, height) of the frame displaying the scenario's description.</col>
+        </row>
+        <row>
+          <col>MinResX</col>
+          <col>Integer</col>
+          <col>If the current screen resolution width is less than this value, the folder map is not displayed and classic scenario selection is used. This is useful if your graphical map is high resolution and might turn out unuseable in lower resolutions.</col>
+        </row>
+        <row>
+          <col>MinResY</col>
+          <col>Integer</col>
+          <col>Minimum screen height (see MinResY).</col>
+        </row>
+        <row>
+          <col>FullscreenBG</col>
+          <col>Integer</col>
+          <col>If not 0, the background image is stretched to full screen size. Notice that button controls may still only be placed in the inner area of the map.</col>
+        </row>
+      </table>
+    </text>
+    <text>
+      <table>
+        <caption id="SektionAccessGfx">Any number of sections [AccessGfx]</caption>
+        <rowh>
+          <col>Value</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>Access</col>
+          <col>String</col>
+          <col>If the player has gained the specified MissionAccess password, the graphical element specified in this section is displayed. This can be used to give access to certain scenarios only after other scenarios have been completed. See <funclink>GainMissionAccess</funclink>.</col>
+        </row>
+        <row>
+          <col>OverlayImage</col>
+          <col>String</col>
+          <col>Filename of the image to be displayed. The file should be available in the scenario folder.</col>
+        </row>
+        <row>
+          <col>Area</col>
+          <col>4 integers</col>
+          <col>Screen area in which to display the image. The coordinates are relative to the <emlink href="#background">background image</emlink>.</col>
+        </row>
+      </table>
+    </text>
+    <text>
+      <table>
+        <caption id="SektionScenario">Any number of sections [Scenario]</caption>
+        <rowh>
+          <literal_col>Value</literal_col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <literal_col>File</literal_col>
+          <col>String</col>
+          <col>Scenario file (including .ocs extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <funclink>GainMissionAccess</funclink>) is displayed.</col>
+        </row>
+        <row>
+          <literal_col>BaseImage</literal_col>
+          <col>String</col>
+          <col>Image to be displayed if the scenario is not selected. The image file should be available in the scenario folder.</col>
+        </row>
+        <row>
+          <literal_col>OverlayImage</literal_col>
+          <col>String</col>
+          <col>Image to be displayed if the scenario is selected or hovered over with the mouse. The image file should be available in the scenario folder.</col>
+        </row>
+        <row>
+          <literal_col>Area</literal_col>
+          <col>4 integers</col>
+          <col>Screen area in which to display the selection button. The coordinates are relative to the <emlink href="#background">background image</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>Title</literal_col>
+          <col>String</col>
+          <col>Text to be displayed on the selection button. If no localization is needed, you can also integrate the text directly into the base image or overlay image. If you specify the string TITLE, the localized title is loaded from the corresponding scenario.</col>
+        </row>
+        <row>
+          <literal_col>TitleFontSize</literal_col>
+          <col>Integer</col>
+          <col>Font size of the title. Relative to the unstretched background image.</col>
+        </row>
+        <row>
+          <literal_col>TitleColorInactive</literal_col>
+          <col>Integer</col>
+          <col>DWORD color value of the unselect button title.</col>
+        </row>
+        <row>
+          <literal_col>TitleColorActive</literal_col>
+          <col>Integer</col>
+          <col>DWORD color value of the unselect button title.</col>
+        </row>
+        <row>
+          <literal_col>TitleOffX</literal_col>
+          <col>Integer</col>
+          <col>Horizontal offset of the left aligned or centered position of the title from the left edge of the selection button.</col>
+        </row>
+        <row>
+          <literal_col>TitleOffY</literal_col>
+          <col>Integer</col>
+          <col>Vertical offset of the title from the upper edge of the selection button.</col>
+        </row>
+        <row>
+          <literal_col>TitleAlign</literal_col>
+          <col>Integer</col>
+          <col>Text alignment: 0 left, 1 centered, 2 right aligned.</col>
+        </row>
+        <row>
+          <literal_col>TitleUseBookFont</literal_col>
+          <col>Boolean</col>
+          <col>0 or 1. If 0, the regular in-game font is used. If 1, the shadow-less font of the fullscreen menu is used.</col>
+        </row>
+      </table>
+    </text>
+    <h id="order">Element Order</h>
+    <text>AccessGfx images drawn under the scenario selection buttons. Selection buttons appear in the order in which they are specified in the file. Thus you should specifiy sections in a meaningful order, from left to right and top to bottom as this will affect the tab stepping sequence when controlling the dialog with the keyboard or gamepad. Also, you should take care not to overlap any buttons.</text>
+    <h id="background">Background image</h>
+    <text>If the scenario folder contains a folder map, an image file of name FolderMap.png/.jpg/.jpeg is expected. The recommended size of this image depends on the screen resolution of the end user:</text>
+    <text>
+      <table>
+        <rowh>
+          <col>Resolution</col>
+          <col>Size of the folder map.</col>
+        </rowh>
+        <row>
+          <col>640x480</col>
+          <col>616x385</col>
+        </row>
+        <row>
+          <col>800x600</col>
+          <col>768x480</col>
+        </row>
+        <row>
+          <col>1024x768</col>
+          <col>984x616</col>
+        </row>
+      </table>
+    </text>
+    <text>The image is always stretched to the full available screen area. All coordinates given for section elements are relative to the unstretched background image.</text>
+    <h id="devel">Useful Hints</h>
+    <text>For testing purposes a folder map can be loaded from an unpacked scenario folder and reloaded an runtime using F5. If the classic scenario selection appears instead of the folder map, an error has occured in the folder map declaration, such as missing image files. With debug mode activated, there will also be an error message in OpenClonk.log.</text>
+  </part>
+  <author>Sven2</author><date>2006-09</date>
+</doc>

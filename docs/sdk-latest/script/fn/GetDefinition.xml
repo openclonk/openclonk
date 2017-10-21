@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetDefinition</title>
+    <category>Objects</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>id</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the definition.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the id of the indicated definition from the list of definitions as currently loaded by the engine.</desc>
+    <examples>
+      <example>
+        <code>var index = 0, weapon_def, weapon_list = [];
+while (weapon_def = GetDefinition(index))
+{
+	if (weapon_def->~IsWeapon())
+		weapon_list[GetLength(weapon_list)] = weapon_def;
+	index++;
+}
+var spawn_weapon = weapon_list[<funclink>Random</funclink>(<funclink>GetLength</funclink>(weapon_list))];
+<funclink>CreateObject</funclink>(spawn_weapon,<funclink>AbsX</funclink>(<funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>())),0);</code>
+				<text>Searches through all loaded definitions and all those which return <code>true</code> on call of the function "IsWeapon" are put into an array. After that, a random item of these defintions is selected to spawn at a random position in the landscape.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetBaseMaterial</funclink>
+      <funclink>GetPlrKnowledge</funclink>
+      <funclink>C4D_Goal</funclink>
+      <funclink>C4D_Living</funclink>
+      <funclink>C4D_Object</funclink>
+      <funclink>C4D_Rule</funclink>
+      <funclink>C4D_StaticBack</funclink>
+      <funclink>C4D_Structure</funclink>
+      <funclink>C4D_Vehicle</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>2002-02</date>
+</funcs>

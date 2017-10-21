@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DrawParticleLine</title>
+    <category>Particles</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>particle</name>
+          <desc>Type of particle to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x0</name>
+          <desc>X coordinate of the starting point. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y0</name>
+          <desc>Y coordinate of the starting point. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the end point. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the end point. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>prtdist</name>
+          <desc>Distance between particles. This may not be applied exactly as particles are always spread evenly over the total distance.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>xdir</name>
+          <desc>Initial horizontal velocity in 1/10th pixels per frame or as a value provider.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>ydir</name>
+          <desc>Initial vertical velocity in 1/10th pixels per frame or as a value provider.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>lifetime</name>
+          <desc>Duration of particle in frames or as a value provider.</desc>
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>prtdef</name>
+          <desc>Particle definition.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a line of particles between two points. Returns the number of particles created.</desc>
+    <remark>For more information about the value provider and particle definition parameters, see <funclink>CreateParticle</funclink>.</remark>
+    <examples>
+      <example>
+        <code>DrawParticleLine(&quot;MagicSpark&quot;, 0, 0, <funclink>GetCursor</funclink>()-><funclink>GetX</funclink>()-<funclink>GetX</funclink>(), <funclink>GetCursor</funclink>()-><funclink>GetY</funclink>()-<funclink>GetY</funclink>(), 20, 0, 0, 12, {Prototype = Particles_Flash(), Size = 20, R = 50, G = 50, B = 255});</code>
+        <text>Creates a line from the calling object to the selected clonk of the first player using a blue flash particle.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>CastParticles</funclink>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
+</funcs>

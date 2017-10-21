@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Animations</title>
+  <h>Animations</h>
+  <part>
+    <text>One of the new possibilities in OC to use 3D models as an object's graphics (see <emlink href="definition/meshes.html">meshes</emlink>) is to combine individual animations. This way the Clonk can easily throw an object while running or jumping, or there can be smooth transitions between single animations.</text>
+    <text>Every object has a so-called animation stack. It consists of an arbitrary number of entries with a unique priority, called slots. Slots with higher priority overwrite slots with lower priority, however this is only <code>true</code> for bones affected by one of the animations in the higher priority slot. To expand on the example above the throwing animation should be assigned a higher priority then the walking animation so that the movement of the Clonk's arms is taken from the throwing, not from the walking or jumping animation. However since there is no leg movement in the throwing animation the clonk continues to run or jump, respectively.</text>
+    <text>What still needs to be clarified is how the animations in the individual slots are determined. A slot can either be a single animation or an interpolation between two other animations (one or both of which can again be interpolations of two animations). If such an interpolation is used then additionally a weight value can be set which specifies how much the two animations contribute to the final interpolated animation. A weight of 0 means that only the first animation contributes (as if the second one would not be present) whereas a weight of 1000 means that only the second animation contributes. Values inbetween lead to a transition between the two animations. Again referring to the above example: If the Clonk is standing at the time it throws but then starts to move before the throwing animation has finished then it is suggestive to add a walking animation to the standing animation which gets more and more weight over time until the weight has reached the value of 1000 and the transition to walking has finished. Since the throwing animation is played in a different slot it is not affected by the transition and is played normally.</text>
+    <text>The following picture illustrates the concept based on the chosen example:</text>
+    <text><img src="../../images/AnimationStack.png" height="188" width="600" /></text>
+    <text>First the two animations "Walk" and "Stand" are combined. The result of this combination is used as the animation for slot 5 whereas the single "Throw" animation is used for Slot 10. Since 10 is greater than 5 Throw overwrites the result of the combination in slot 5 (for bones affected by "Throw"). The result of that will be eventually displayed on the screen.</text>
+    <h id="Play">Animation playing</h>
+    <text>The animation stack can be influenced by script functions, i.e. animations can be added or removed. For this purpose every contributes to an animation (called node), that is every animation itself but also every combination node of two other animations, is assigned a unique number, called the animation number. When inserting or removing an animation one or two new nodes are created (an animation node if the slot in question is empty or both an animation and a combination node if there are already nodes in the slot).</text>
+    <text>Both types of nodes have different properties. For animation nodes the current position of the animation is relevant, and for combination nodes it is the current weight. Both values need to be changed more or less frequently depending on the kind of animation. There are multiple possibilities: Simple animations should just play with time, others (such as the walking animation of the Clonk) could depend on the velocity of the object, the current mouse position (aiming animations) or the wind velocity (windmill).</text>
+    <text>To both allow playing simple animations without much scripting effort but also keep the possibility to make rather complex combinations the concept of so-called animation value providers (AVPs) has been introduced. They specify how to determine the current animation position or the interpolation weight. Two such AVPs need to be given as parameters to the script function which starts a new animation, <funclink>PlayAnimation</funclink>, one for the animation position and one for its weight. <funclink>SetAnimationPosition</funclink> and <funclink>SetAnimationWeight</funclink> can be used to modify the AVPs later.</text>
+    <text>The following AVPs are available:</text>
+    <text>
+      <table>
+        <caption id="AVP">Available value providers</caption>
+        <rowh>
+          <col>Function</col>
+          <col>Brief description</col>
+        </rowh>
+        <row>
+          <col><funclink>Anim_Const</funclink></col>
+          <col>A previously defined constant value is used. This is useful if the value should not change, or if none of the other AVPs is appropriate in which case each frame a new AVP of this type with a different value can be set.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_Linear</funclink></col>
+          <col>Increasing or decreasing linearly with time. This AVP can also be used if none of the others is appropriate but when it is too expensitve to compute the new position each frame. In that case the animation can be played with constant speed until the next exact position is computed.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_X</funclink></col>
+          <col>Linear with X position. When the object moves to the left the animation plays backwards. Can be used if the animation of an object should be synchronized to its horizontal movement.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_Y</funclink></col>
+          <col>Linear with Y position. When the object moves upwards the animation plays backwards. Can be used if the animation of an object should be synchronized to its vertical movement.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_R</funclink></col>
+          <col>Linear with rotation. When the object rotates counter-clockwise the animation plays backwards. Can be used if the animation of an object should be synchronized to its rotation.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_AbsX</funclink></col>
+          <col>Linear with X position. However, the animation is always played in the same direction, not taking into account whether the object moves left or right.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_AbsY</funclink></col>
+          <col>Linear with Y position. However, the animation is always played in the same direction, not taking into account whether the object moves upwards or downwards.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_Dist</funclink></col>
+          <col>Linear in distance travelled. This is basically a combination of <funclink>Anim_AbsX</funclink> and <funclink>Anim_AbsY</funclink> where both coordinates are taken into account.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_XDir</funclink></col>
+          <col>Proportional to the horizontal speed of the object.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_YDir</funclink></col>
+          <col>Proportional to the vertical speed of the object.</col>
+        </row>
+        <row>
+          <col><funclink>Anim_Action</funclink></col>
+          <col>Proportional to the phase of the currently executed action.</col>
+        </row>
+      </table>
+    </text>
+    <text>For examples to the individual AVPs see the documentation of their respective script functions.</text>
+    <h id="ActMap">ActMap animations</h>
+    <text>Individual activities specified in the <emlink href="definition/actmap.html">ActMap</emlink> can be assigned an animation. These animations are always played in slot 0. This means that, amongst others, at most one animation can be played in slot 0, animations cannot be combined. Also it is not possible to modify these animations via script functions such as <funclink>StopAnimation</funclink> or <funclink>SetAnimationPosition</funclink>. However it is allowed to query properties of ActMap animations, such as with <funclink>GetAnimationPosition</funclink>. Negative slot numbers do also exist so that own animations can be assigned a smaller priority than ActMap animations.</text>
+  </part>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</doc>

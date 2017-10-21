@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetDefinitionGroupPath</title>
+    <category>Objects</category>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+    </syntax>
+    <desc>Returns the editor group path of the calling definition. This is the path at which the definition is shown in the creator window and can be used to gorup definitions in large dropdown enumerations.</desc>
+    <examples>
+      <example>
+        <code>var index = 0, weapon_def, weapon_list = [];
+while (weapon_def = GetDefinition(index))
+{
+	if (<funclink>WildcardMatch</funclink>(weapon_def->GetDefinitionGroupPath(), "*/Weapons")
+		weapon_list[GetLength(weapon_list)] = weapon_def;
+	index++;
+}
+var spawn_weapon = weapon_list[<funclink>Random</funclink>(<funclink>GetLength</funclink>(weapon_list))];
+<funclink>CreateObject</funclink>(spawn_weapon,<funclink>AbsX</funclink>(<funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>())),0);</code>
+				<text>Searches through all loaded definitions and all that are placed directly in a group folder named "Weapons" are put into an array. After that, a random item of these defintions is selected to spawn at a random position in the landscape.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetDefinition</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2016-09</date>
+</funcs>

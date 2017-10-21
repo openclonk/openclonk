@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DrawDefMap</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left border of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top border of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>map_name</name>
+          <desc>Name of the map to be used from Landscape.txt.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Draws a dynamic map within the specified rectangle over the old landscape using a given map specification from Landscape.txt.</desc>
+    <remark>The Landscape.txt component is usually removed from memory after scenario initialization. To keep it in memory for later use by this command you should specify the option KeepMapCreator=1 in Scenario.txt section [Landscape].</remark>
+    <examples>
+      <example>
+        <code>DrawDefMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>(), &quot;TheMap&quot;);</code>
+        <text>Draws 'TheMap' over the complete landscape. 'TheMap' must be defined in Landscape.txt.</text>
+      </example>
+    </examples>
+    <related><funclink>DrawMap</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

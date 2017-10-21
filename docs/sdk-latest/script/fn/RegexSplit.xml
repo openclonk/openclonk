@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RegexSplit</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>String to split in parts.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>regex</name>
+          <desc>Regular expression matching the separator in ECMAScript syntax.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Bitmask of the following values:
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>Regex_CaseInsensitive</literal_col>
+                <col>Regular expression is case insensitive.</col>
+              </row>
+              <row>
+                <literal_col>Regex_FirstOnly</literal_col>
+                <col>Split the string only once.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Splits a string into an array of strings.
+    </desc>
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>("%v", RegexSplit("Harry!, Sven2 &amp; Maikel", "\\s*[,&amp;]\\s*"));</code>
+        <text>Splits a list of names, returning ["Harry!", "Sven2", "Maikel"].</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RegexSearch</funclink>
+      <funclink>RegexReplace</funclink>
+      <funclink>RegexMatch</funclink>
+    </related>
+  </func>
+  <author>Luchs</author><date>2016-09</date>
+</funcs>

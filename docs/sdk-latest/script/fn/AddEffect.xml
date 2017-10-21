@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddEffect</title>
+    <category>Effects</category>
+    <version>5.1 OC</version>
+    <deprecated />
+    <syntax>
+      <rtype>proplist</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>name</name>
+          <desc>Name of the effect without prepended 'Fx'.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Target object for the effect. If <code>nil</code>, <code>Global</code> is used, but the target parameter of the callbacks will get <code>nil</code>.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>priority</name>
+          <desc>Effect priority. Must be greater than zero.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>timer</name>
+          <optional />
+          <desc>Interval for the timer calls. With <code>nil</code>, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>command_target</name>
+          <optional />
+          <desc>Command target. If specified, all callbacks are executed in this object. Otherwise the callbacks are made without any object context. If the command target object is deleted, all effects belonging to this object are deleted without any further callbacks. If the target object changes its definition, belonging effects should reassign their callback functions using <code>effect.Name = effect.Name</code>.</desc>
+        </param>
+        <param>
+          <type>id </type>
+          <name>command_target_id</name>
+          <optional />
+          <desc>Definition in which callbacks are to be executed if no command target object is specified. If both command_target and command_target_id are <code>nil</code>, callbacks are made globally. For this, the Fx* must also be declared globally or they must be engine functions.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var1</name>
+          <optional />
+          <desc>First extra parameter to be passed to Fx*Start and Fx*Effect callbacks.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var2</name>
+          <optional />
+          <desc>Second extra parameter to be passed to Fx*Start and Fx*Effect callbacks.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var3</name>
+          <optional />
+          <desc>Third extra parameter to be passed to Fx*Start and Fx*Effect callbacks.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var4</name>
+          <optional />
+          <desc>Fourth extra parameter to be passed to Fx*Start and Fx*Effect callbacks.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an effect. Returns the effect if successful or <code>nil</code> if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is probably <code>nil</code>.</desc>
+    <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
+    <related>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
+      <funclink>CreateEffect</funclink>
+      <funclink>CheckEffect</funclink>
+      <funclink>GetEffectCount</funclink>
+      <funclink>EffectCall</funclink>
+      <funclink>GetEffect</funclink>
+      <funclink>RemoveEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+</funcs>

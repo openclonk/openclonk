@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddCommand</title>
+    <category>Objects</category>
+    <subcat>Commands</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>command</name>
+          <desc>Command name (as string). See the table below.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <optional />
+          <desc>target object for the command</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <optional />
+          <desc>X target coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <optional />
+          <desc>Y target coordinate</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target2</name>
+          <optional />
+          <desc>secondary target object</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>delay</name>
+          <optional />
+          <desc>Time (in ticks or frames) until the command is automatically aborted. Execution will continue with the next command in the stack.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <optional />
+          <desc>additional data for the command</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>retries</name>
+          <optional />
+          <desc>Number of retries if the command fails, until the command fails completely.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>base_mode</name>
+          <optional />
+          <desc>
+            Determines the behaviour if the command fails.<br/><br/>
+            <table>
+              <rowh>
+                <col>base_mode</col>
+                <col>Name</col>
+                <col>Description</col>
+                <col>Failure messages and CallFailed calls</col>
+                <col>Next command</col>
+              </rowh>
+              <row>
+                <col>0</col>
+                <col>C4CMD_SilentSub</col>
+                <col>Silent command</col>
+                <col>Only if this is the last command</col>
+                <col>Fails</col>
+              </row>
+              <row>
+                <col>3</col>
+                <col>C4CMD_Sub</col>
+                <col>Command</col>
+                <col>If the next command has no retries left or this is the last command.</col>
+                <col>Fails</col>
+              </row>
+              <row>
+                <col>2</col>
+                <col>C4CMD_SilentBase</col>
+                <col>Silent base command</col>
+                <col>Never</col>
+                <col>Does not fail</col>
+              </row>
+              <row>
+                <col>1</col>
+                <col>C4CMD_Base</col>
+                <col>Base command</col>
+                <col>Always</col>
+                <col>Does not fail</col>
+              </row>
+            </table>
+
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds a command to the top of the command stack of an object (also see <funclink>AppendCommand</funclink>). This command will be executed first, then the object will continue with the existing commands. If the command stack is empty, AddCommand does the same as <funclink>SetCommand</funclink>.<br/>For the list of commands see <funclink>SetCommand</funclink>.</desc>
+    <remark>Commands added using AddCommand are not passed to controlled vehicles (see VehicleControl).</remark>
+    <examples>
+      <example>
+        <code>
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_InRect</funclink>(-20, -40, 40, 40), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>));
+  if(obj)
+    if(obj-&gt;<funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>)
+      obj-&gt;<funclink>AddCommand</funclink>(&quot;Jump&quot;);
+  return;</code>
+        <text>If called from an object on the ground, this timer script makes any clonk passing the object from left to right jump. To do this, crew member objects are searched above the object. If one is found and he is moving from left to right (ComDir), he is given a 'Jump' command. Notice that this does not affect the previously set commands of the clonk - after completing the jump command, the clonk will continue with his previous commands. Using this script, you could e.g. ensure that clonks will always jump a given gap in the landscape.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetCommand</funclink>
+      <funclink>GetCommand</funclink>
+      <funclink>AppendCommand</funclink>
+      <funclink>FinishCommand</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2001-11</date>
+  <author>Günther</author><date>2005-01</date>
+</funcs>

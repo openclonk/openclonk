@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetRDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Precision. Default 10 if not specified.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the rotation speed of an object.</desc>
+    <related>
+      <funclink>SetRDir</funclink>
+      <funclink>GetR</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
+</funcs>

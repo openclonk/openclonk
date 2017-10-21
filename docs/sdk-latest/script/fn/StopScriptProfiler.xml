@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>StopScriptProfiler</title>
+    <category>Developer</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Stops the script profiler and writes the result to the log.</desc>
+    <remark>The script profiler can be used to measure how much processing time the scripting engine is using for executing certain script functions. This can be useful to find out which parts of a script are mainly slowing down execution in larger scenarios. The profiler measures the execution time between the commands StartScriptProfiler and StopScriptProfiler.</remark>
+    <examples>
+      <example>
+        <text>The script profiler is used by first entering <funclink>StartScriptProfiler</funclink> e.g. at the script command line when running the engine in developer mode. After a while, <funclink>StopScriptProfiler</funclink> is entered and the result is printed to the log, e.g. as follows:</text>
+        <code>Profiler statistics:
+==============================
+00037ms	global Explode
+00035ms	Firestone::Hit
+00020ms	Tree_Coniferous::Damage
+00020ms	Tree_Coniferous::ChopDown
+00018ms	game DeployPlayer
+00018ms	Loam::Hit
+00018ms	Bire::ControlDigDouble
+00012ms	Direct exec
+==============================</code>
+        <text>This output shows that explosions are the parts which are taking longest to execute. "global Explode" ist the globally defined script function Explode(). In second place is the impact function of the Superflint, Firestone::Hit. Notice that all execution times of a script function always include the execution time of all subroutines or functions called therein. The time taken in Explode is thus also included in Firestone::Hit. Functions calling themselves recursively will add to the execution time in the same way.</text>
+        <text>"game DeployPlayer" is a call in the scenario script. "Direct exec" is the sum of all scripts compiled and executed at run time. This may include <funclink>eval</funclink> or menu callbacks.</text>
+        <text>Notice that scripting functions may not be the only parts causing program execution to slow down. If an object creates large numbers of particles, this can also slow down the game without causing extra scripting execution time. Large numbers of objects would cause similar delays.</text>
+      </example>
+    </examples>
+    <related><funclink>StartScriptProfiler</funclink></related>
+  </func>
+  <author>Sven2</author><date>2007-03</date>
+</funcs>

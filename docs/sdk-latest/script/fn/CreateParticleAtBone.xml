@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CreateParticleAtBone</title>
+    <category>Particles</category>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>szName</name>
+          <desc>Name of the particle</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>szBoneName</name>
+          <desc>Name of the bone at which to create the particle</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>pos</name>
+          <desc>Vector of three elements with the X,Y and Z coordinates of the particle relative to the bone position and orientation.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>dir</name>
+          <desc>Vector of three elements with the X,Y and Z components of the velocity of theparticle relative to the bone orientation.</desc>
+        </param>
+		<param>
+          <type>int</type>
+          <name>lifetime</name>
+          <desc>Time in frames that the particle will be alive before it is removed. Can also be a value provider function.</desc>
+        </param>
+		<param>
+          <type>proplist</type>
+          <name>properties</name>
+          <desc>PropList with the particle attributes (see the <emlink href="particle/index.html#attributes">particle documentation</emlink>).</desc>
+        </param>
+		<param>
+          <type>int</type>
+          <name>amount</name>
+          <desc>Amount of particles to create. Defaults to 1.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a particle relative to a bone of the calling object's skeleton. The named particle definition must be loaded. For more information see the particle documentation.</desc>
+    <remark>This function returns <code>false</code> if the particle definition was not found, or the function is called for an object which does not have a mesh graphics, or the skeleton of the mesh does not have a bone called <code>szBoneName</code>. Otherwise, <code>true</code> is returned. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
+    <examples>
+      <example>
+        <code>func InitializePlayer(int plr)
+{
+  AddEffect("IntColorize", 0, 1, 1);
+}
+
+global func FxIntColorizeTimer()
+{
+        FindObject(Find_ID(Clonk))->CreateParticleAtBone("SphereSpark", "skeleton_body", [0, 0, 0], [0, 0, 0], PV_Random(20, 30), Particles_Spark());
+        FindObject(Find_ID(Clonk))->CreateParticleAtBone("Fire", "pos_hand1", [0, 0, 0], [0, 0, 0], PV_Random(5, 10), Particles_Fire());
+        FindObject(Find_ID(Clonk))->CreateParticleAtBone("Fire", "pos_hand2", [0, 0, 0], [0, 0, 0], PV_Random(5, 10), Particles_Fire());
+        return(0);
+}</code>
+        <text>Scenario script. Creates an effect which traces a Clonk's body, left hand and right hand with differently colored sparks.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateParticle</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2012-12</date>
+</funcs>

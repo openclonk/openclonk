@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>RemoveEffect</title>
+    <category>Effects</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>name</name>
+          <desc>Name of the effect without preceding 'Fx'. You can use '*' and '?' wildcards.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Target object from which to remove an effect. If <code>nil</code>, the global effects list will be searched.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>effect</name>
+          <desc>The effect. Instead to search by name, the effect can be directly removed if this parameter is given.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <optional />
+          <desc>If not <code>false</code>, no Stop calls will be made.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Deletes an effect.</desc>
+    <remark>See <funclink>GetEffect</funclink> for an example. Warning: if an effect is meant to delete itself using this function, only use effect, not name!</remark>
+    <related>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
+      <funclink>CreateEffect</funclink>
+      <funclink>CheckEffect</funclink>
+      <funclink>GetEffectCount</funclink>
+      <funclink>EffectCall</funclink>
+      <funclink>GetEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+  <author>Newton</author><date>2011-07</date>
+</funcs>

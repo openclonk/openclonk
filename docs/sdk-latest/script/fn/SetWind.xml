@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetWind</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>strength</name>
+          <desc>Wind velocity from -100 to 100.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Temporarily sets the global wind velocity and direction.</desc>
+    <examples>
+      <example>
+        <code>#appendto Cannon
+				
+func ControlLeft()
+{ 
+	SetWind(-100);
+	return <funclink>_inherited</funclink>(...);
+}
+
+func ControlRight()
+{
+	SetWind(100);
+	return <funclink>_inherited</funclink>(...);
+}
+				</code>
+        <text>The wind always blows into the direction the cannon is pushed towards.</text>
+      </example>
+    </examples>
+    <related><funclink>GetWind</funclink></related>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
+</funcs>

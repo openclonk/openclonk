@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetMaxPlayer</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>max</name>
+          <desc>New maximum player count.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adjusts the maximum number of players that can take part in the current round. Lowering this value will not eliminate active players. This value only affects the limit for joining players.</desc>
+    <examples>
+      <example>
+        <code>func Script100() { <funclink>return</funclink>(SetMaxPlayer()); }</code>
+        <text>Part of a scenario script: after a little while, no more players can join.</text>
+      </example>
+    </examples>
+    <related><funclink>GetPlayerCount</funclink></related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

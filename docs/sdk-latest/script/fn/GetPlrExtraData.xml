@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlrExtraData</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player for whom additional data is saved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>data_name</name>
+          <desc>Name for the data.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>This commands retrieves extra data stored in the player file by <funclink>SetPlrExtraData</funclink>.</desc>
+    <remark>For details see <funclink>SetPlrExtraData</funclink>.</remark>
+    <related>
+      <funclink>SetPlrExtraData</funclink>
+      <funclink>GetCrewExtraData</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-01</date>
+</funcs>

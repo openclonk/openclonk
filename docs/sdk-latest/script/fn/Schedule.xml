@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Schedule</title>
+    <category>Script</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object in which the call is to be made. Can be <code>nil</code> for no object context.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>script</name>
+          <desc>Script to be executed.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>delay</name>
+          <desc>Delay after which the first call is made. If repeat is greather than 1, this is also the delay inbetween subsequent calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>repeat</name>
+          <desc>Number of calls. If 0 or not specified, the call is made exactly once.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Executes a specified script command after a specified delay.</desc>
+    <remark>This function is implemented in System.ocg using the <emlink href="script/Effects.html">effect</emlink> "IntSchedule" in function <funclink>eval</funclink>.</remark>
+    <remark>Accordingly, the specified script can be a single command only. It may not contain multiple commands separated by ";".</remark>
+    <examples>
+      <example>
+        <code>Schedule(<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk)), &quot;<funclink>Explode</funclink>(50)&quot;<funclink></funclink>, 1000);</code>
+        <text>Makes a clonk explode after 1000 ticks delay.</text>
+      </example>
+      <example>
+        <code>Schedule(nil, &quot;<funclink>DoWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), 1)&quot;<funclink></funclink>, 1, 100);</code>
+        <text>Gives one unit of money per frame to the first player for 100 frames. Notice that if the first player is eliminated, the donations will continue for the next (first) player, since the receiving player is determined anew in each execution.</text>
+      </example>
+    </examples>
+    <related><funclink>ScheduleCall</funclink></related>
+  </func>
+  <author>PeterW</author><date>2005-08</date>
+</funcs>

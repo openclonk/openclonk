@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Object Scripts</title>
+  <h>Object Scripts</h>
+  <part>
+    <text>Object scripts control the complex behaviour of an object. For details on scripting see the <emlink href="script/index.html">C4Script</emlink> documentation.</text>
+    <h>Creation</h>
+    <text>For every object, the engine calls the function <a href="#Initialize">Initialize</a> in the object script when it is created and completed.</text>
+    <code>func Initialize()
+{
+  <emlink href="script/fn/CreateContents.html">CreateContents</emlink>(Rock);
+}  
+</code>
+    <text>An object with this script will be given a rock right after it has been created. The Initialize function is called only when the object has reached full size (a building only when its construction has been completed and a living being only when it is fully grown).</text>
+    <h>ActMap</h>
+    <text>An active object can also define activity script calls in its <emlink href="definition/actmap.html">ActMap</emlink>. The defined StartCall is made whenever an action begins (or repeats), an EndCall is made at the end of each activity. PhaseCall is called at each animation phase step and should only be used for very short animations. The call frequency of PhaseCalls is determined by the speed of the animation.</text>
+    <h>#include</h>
+    <text>An object script can also include the functionality of another script.</text>
+    <code>#include Clonk</code>
+    <text>At this position the complete script of the specified object definition (that of the clonk, in this case) is inserted, including all scripts that that script includes or got via <emlink href="script/AppendTo.html">#appendto</emlink>. The only exception is that every script is included only once, so including both the Clonk script and a script that is included by the Clonk script doesn't include that script twice. Other Obviously, the included definition must be valid and loaded. Declared functions can be overloaded by functions of the same name that occur later in the script. Also see <funclink>inherited</funclink>().</text>
+    <h>Interaction from other scripts</h>
+    <text>Other scripts can call functions of an object <code>obj</code> with the <code>-></code> and <code>->~</code> operators.</text>
+    <code>var obj = CreateObject(Flint); obj->Hit();</code>
+    <h id="ObjektCallsderEngine">Object calls made by the engine</h>
+    <text>
+      The engine calls the following functions is objects at the given time. 
+      <table>
+        <rowh>
+          <col>Function</col>
+          <col>Parameter</col>
+          <col>Description</col>
+        </rowh>
+        <row id="Initialize">
+          <literal_col>Definition</literal_col>
+          <col></col>
+          <col>Called in definition context after all definitions have been loaded and before definition properties are frozen. Use this callback to initialize complex definition properties such as EditorProps or dependencies between definitions. Definition() callbacks are performed in descending order of the DefinitionPriority property or 0 if that property is not defined.</col>
+        </row>
+        <row id="Initialize">
+          <literal_col>Initialize</literal_col>
+          <col></col>
+          <col>When the object is completed (<emlink href="script/fn/GetCon.html">Con</emlink> >= 100).</col>
+        </row>
+        <row id="Construction">
+          <literal_col>Construction</literal_col>
+          <col>object by_object</col>
+          <col>When the object is created. The parameter is a pointer to the object the script of which has created this object. Also see <emlink href="script/fn/Construction.html">Construction</emlink></col>
+        </row>
+        <row id="Destruction">
+          <literal_col>Destruction</literal_col>
+          <col></col>
+          <col>When the object is removed.</col>
+        </row>
+        <row id="EditorInitialize">
+          <literal_col>EditorInitialize</literal_col>
+          <col></col>
+          <col>Called after Construction and Initialize when the object is placed in the editor.</col>
+        </row>
+        <row id="Hit">
+          <literal_col>Hit</literal_col>
+          <col></col>
+          <col>When the object collides with the landscape or is collected at high velocity (&gt;=15).</col>
+        </row>
+        <row id="Hit2">
+          <literal_col>Hit2</literal_col>
+          <col></col>
+          <col>Like Hit, with speeds &gt;= 20 (see <emlink href="script/fn/OCF_HitSpeed2.html">OCF_HitSpeed2</emlink>).</col>
+        </row>
+        <row id="Hit3">
+          <literal_col>Hit3</literal_col>
+          <col></col>
+          <col>Like Hit, with speeds &gt;= 60 (see <emlink href="script/fn/OCF_HitSpeed3.html">OCF_HitSpeed3</emlink>).</col>
+        </row>
+        <row id="Grab">
+          <literal_col>Grab</literal_col>
+          <col>object target, bool grab</col>
+          <col>When the object grabs or lets go of another object.</col>
+        </row>
+        <row id="Grabbed">
+          <literal_col>Grabbed</literal_col>
+          <col>object by_object, bool grab</col>
+          <col>When the object is grabbed or let go by another object.</col>
+        </row>
+        <row id="Get">
+          <literal_col>Get</literal_col>
+          <col>object target</col>
+          <col>When the object takes another object from a container.</col>
+        </row>
+        <row id="Put">
+          <literal_col>Put</literal_col>
+          <col></col>
+          <col>When the object puts another object into a container.</col>
+        </row>
+		<row id="DigOutObject">
+          <literal_col>DigOutObject</literal_col>
+          <col>object obj</col>
+          <col>When the object dug out another object that was stuck in solid material or when a new object is created from material during digging.</col>
+        </row>
+		<row id="DugOut">
+          <literal_col>DugOut</literal_col>
+          <col>object object_by</col>
+          <col>When the object was spawned from dug out material. The object might get removed afterwards if the material has Dig2ObjectCollect=2.</col>
+        </row>
+        <row id="Damage">
+          <literal_col>Damage</literal_col>
+          <col>int change, int cause, int by_player</col>
+          <col>When the object is damaged. See <emlink href="script/Effects.html#damagecause">Fx*Damage</emlink>for <code>cause</code> values.</col>
+        </row>
+        <row id="DeepBreath">
+          <literal_col>DeepBreath</literal_col>
+          <col></col>
+          <col>When a living being surfaces after having used up more than half of its breath.</col>
+        </row>
+        <row id="Incineration">
+          <literal_col>Incineration</literal_col>
+          <col>int by_player</col>
+          <col>When the object is incinerated. Notice: with objects changing their definition via BurnTo, this call is made to the burned version!</col>
+        </row>
+        <row id="IncinerationEx">
+          <literal_col>IncinerationEx</literal_col>
+          <col>int by_player</col>
+          <col>When the object is incinerated in and immediately extinguished by a surrounding liquid. Otherwise as Incineration.</col>
+        </row>
+        <row id="Death">
+          <literal_col>Death</literal_col>
+          <col></col>
+          <col>When a living being dies.</col>
+        </row>
+        <row id="Activate">
+          <literal_col>Activate</literal_col>
+          <col>object by_object</col>
+          <col>Activation by double dig. Only applies to collected items or directly controlled crew objects. Called after internal handling of the double dig command has been completed (e.g. chopping of trees etc.)</col>
+        </row>
+        <row id="Contact_">
+          <literal_col>Contact_</literal_col>
+          <col></col>
+          <col>When the object collides with the landscape. See <emlink href="definition/cnat.html">CNAT - Contact Attachment</emlink>.</col>
+        </row>
+        <row id="Control_">
+          <literal_col>Control_</literal_col>
+          <col>object by_object</col>
+          <col>When the object is controlled from the outside. See <a href="#Control-Funktionen">Control Functions</a>.</col>
+        </row>
+        <row id="Contained_">
+          <literal_col>Contained_</literal_col>
+          <col>object by_object</col>
+          <col>When the object is controlled from the inside. See <a href="#Control-Funktionen">Control Functions</a>.</col>
+        </row>
+        <row id="ControlCommand">
+          <literal_col>ControlCommand</literal_col>
+          <col>string command, object target, int x, int y, object target2, int data, object command_object</col>
+          <col>When the object has received a command to be independently executed. See <a href="#Control-Funktionen">Control functions</a>.</col>
+        </row>
+        <row id="ControlCommandFinished">
+          <literal_col>ControlCommandFinished</literal_col>
+          <col>string command, object target, int x, int y, object target2, any Data</col>
+          <col>When the object has completed a command or execution of a command has failed.</col>
+        </row>
+        <row id="ControlTransfer">
+          <literal_col>ControlTransfer</literal_col>
+          <col>object obj, int x, int y</col>
+          <col>When an object (obj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point x/y. The transfer function can then help the object along by giving special script commands and returning <code>true</code>. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
+        </row>
+        <row id="OnSynchronized">
+          <literal_col>OnSynchronized</literal_col>
+          <col></col>
+          <col>When an object is loaded from a savegame or network synchronization is performed. Objects with a transfer zone should reset the zone in this call. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
+        </row>
+        <row id="MenuQueryCancel">
+          <literal_col>MenuQueryCancel</literal_col>
+          <col>int selection, object menu_object</col>
+          <col>When the player wants to close a user defined object menu. Return value <code>true</code> will keep the menu open.</col>
+        </row>
+        <row id="IsFulfilled">
+          <literal_col>IsFulfilled</literal_col>
+          <col></col>
+          <col>Only in game goal objects. A return value <code>true</code> indicates that this goal is fulfilled.</col>
+        </row>
+        <row id="ControlContents">
+          <literal_col>ControlContents</literal_col>
+          <col>id target</col>
+          <col>When a new inventory object is selected. See <a href="#Control-Funktionen">Control Functions</a>.</col>
+        </row>
+        <row id="Selection">
+          <literal_col>Selection</literal_col>
+          <col>object container</col>
+          <col>When the object is selected in an inventory change. If you are processing this event, the function should play its own selection sound.</col>
+        </row>
+        <row id="CatchBlow">
+          <literal_col>CatchBlow</literal_col>
+          <col>int level, object by</col>
+          <col>When the object is hit or punched by another object.</col>
+        </row>
+        <row id="QueryCatchBlow">
+          <literal_col>QueryCatchBlow</literal_col>
+          <col>object by</col>
+          <col>Called before the object is hit or punched by another object. By returning <code>true</code>, QueryCatchBlow can reject physical blows.</col>
+        </row>
+        <row id="OnLineBreak">
+          <literal_col>OnLineBreak</literal_col>
+          <col>int cause</col>
+          <col>When a line object is broken. cause: 0 by movement, 1 because of a missing or incomplete target object.</col>
+        </row>
+        <row id="OnLineChange">
+          <literal_col>OnLineChange</literal_col>
+          <col>int cause</col>
+          <col>When a line object is changed, that is when one of it vertices changed its position.</col>
+        </row>
+        <row id="AttachTargetLost">
+          <literal_col>AttachTargetLost</literal_col>
+          <col></col>
+          <col>When the object is in an ATTACH action and has lost its action target. At this time, the object's action has already been reset.</col>
+        </row>
+        <row id="CrewSelection">
+          <literal_col>CrewSelection</literal_col>
+          <col>bool deselect, bool cursor_only</col>
+          <col>When crew selection is changed. cursor_only specifies whether only that crew member has been selected which is also the cursor.</col>
+        </row>
+        <row id="GetObject2Drop">
+          <literal_col>GetObject2Drop</literal_col>
+          <col>object for_collection_of_object</col>
+          <col>Called to determine the least needed inventory object when a clonk tries to collect a new object and his inventory is full. The function should return the object to be dropped to gain space, or <code>nil</code> if none.</col>
+        </row>
+        <row id="OnMenuSelection">
+          <literal_col>OnMenuSelection</literal_col>
+          <col>int index, object menu_object</col>
+          <col>When an object menu entry is selected.</col>
+        </row>
+        <row id="CalcValue">
+          <literal_col>CalcValue</literal_col>
+          <col>object in_base, int for_player</col>
+          <col>Calculates the value of an object. Also see <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col>
+        </row>
+        <row id="CalcDefValue">
+          <literal_col>CalcDefValue</literal_col>
+          <col>object in_base, int for_player</col>
+          <col>Calculates the value of an object type available to buy. Also see <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col>
+        </row>
+        <row id="CalcBuyValue">
+          <literal_col>CalcBuyValue</literal_col>
+          <col>id item, int value</col>
+          <col>Returns the buying price of the object type.</col>
+        </row>
+        <row id="CalcSellValue">
+          <literal_col>CalcSellValue</literal_col>
+          <col>object obj, int object_value</col>
+          <col>Returns the selling price of the object type.</col>
+        </row>
+        <row id="LiftTop">
+          <literal_col>LiftTop</literal_col>
+          <col></col>
+          <col>When an object with LIFT action lifts its action target to the height specified in its DefCore or above.</col>
+        </row>
+        <row id="Stuck">
+          <literal_col>Stuck</literal_col>
+          <col></col>
+          <col>When the action target of the object's PUSH or LIFT action is stuck.</col>
+        </row>
+        <row id="GrabLost">
+          <literal_col>GrabLost</literal_col>
+          <col></col>
+          <col>When the action target of the object's PUSH or PULL action is lost.</col>
+        </row>
+        <row id="Collection">
+          <literal_col>Collection</literal_col>
+          <col>object obj, bool put</col>
+          <col>When the object has collected another object (obj) (by ingame collection or grabbing and getting).</col>
+        </row>
+        <row id="Collection2">
+          <literal_col>Collection2</literal_col>
+          <col>object obj</col>
+          <col>When the object has collected another object (obj) (in all cases, even in script controlled collection or entering).</col>
+        </row>
+        <row id="ContentsDestruction">
+          <literal_col>ContentsDestruction</literal_col>
+          <col>object destroyed</col>
+          <col>When an object contained in the object has been destroyed/removed. The object still exists when the callback is called, but will be destroyed afterwards.</col>
+        </row>
+        <row id="Departure">
+          <literal_col>Departure</literal_col>
+          <col>object container</col>
+          <col>When this object has left another object (container).</col>
+        </row>
+        <row id="Ejection">
+          <literal_col>Ejection</literal_col>
+          <col>object obj</col>
+          <col>When another object (obj) has left the contents of this object (also see script command Exit).</col>
+        </row>
+        <row id="Entrance">
+          <literal_col>Entrance</literal_col>
+          <col>object container</col>
+          <col>When the object has entered another object (container).</col>
+        </row>
+        <row id="ActivateEntrance">
+          <literal_col>ActivateEntrance</literal_col>
+          <col>object by_object</col>
+          <col>When another object is trying to enter this object through the entrance.</col>
+        </row>
+        <row id="RejectCollect">
+          <literal_col>RejectCollect</literal_col>
+          <col>id def, object obj</col>
+          <col>Called before Collection. If RejectCollect returns <code>true</code>, the collection of the other object is prevented.</col>
+        </row>
+        <row id="RejectEntrance">
+          <literal_col>RejectEntrance</literal_col>
+          <col>object into_object</col>
+          <col>Called before Entrance. If RejectEntrance returns <code>true</code>, then entrance of the other object is prevented.</col>
+        </row>
+        <row id="InitializePlayer">
+          <literal_col>InitializePlayer</literal_col>
+          <col>int player</col>
+          <col>Called in game goals, rules, or environment objects after the joining of a new player and before the corresponding call in the scenario script.</col>
+        </row>
+        <row id="SellTo">
+          <literal_col>SellTo</literal_col>
+          <col>int by_player</col>
+          <col>When the object is sold. Should return <code>nil</code> or the id of the object type which is actually added to the player's homebase material.</col>
+        </row>
+        <row id="Sale">
+          <literal_col>Sale</literal_col>
+          <col>int by_player</col>
+          <col>When the object is sold.</col>
+        </row>
+        <row id="Purchase">
+          <literal_col>Purchase</literal_col>
+          <col>int by_player, object buy_object</col>
+          <col>When the object is bought.</col>
+        </row>
+        <row id="Recruitment">
+          <literal_col>Recruitment</literal_col>
+          <col>int player</col>
+          <col>When the objet is added to the crew of a player.</col>
+        </row>
+        <row id="RejectTeamSwitch">
+          <literal_col>RejectTeamSwitch</literal_col>
+          <col>int player, int new_team</col>
+          <col>Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns <code>true</code>, the team switch of a player can be prevented (see <funclink>SetPlayerTeam</funclink>).</col>
+        </row>
+        <row id="OnTeamSwitch">
+          <literal_col>OnTeamSwitch</literal_col>
+          <col>int player, int new_team, int old_team</col>
+          <col>Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <funclink>SetPlayerTeam</funclink>).</col>
+        </row>
+        <row id="OnCompletionChange">
+          <literal_col>OnCompletionChange</literal_col>
+          <col>int old_con, int new_con</col>
+          <col>Callback in when the completion of the object has changed (see <funclink>GetCon</funclink>, <funclink>DoCon</funclink> and <funclink>SetCon</funclink>).</col>
+        </row>
+        <row id="EditCursorMoved">
+          <literal_col>EditCursorMoved</literal_col>
+          <col>int old_x, int old_y</col>
+          <col>When object is moved in editor. Callback is also done when moved in non-network pause mode. old_x, old_y contains object position before movement.</col>
+        </row>
+        <row id="SaveScenarioObject">
+          <literal_col>SaveScenarioObject</literal_col>
+          <col>proplist props</col>
+          <col>Called when scenario is saved from the editor. Object should write creation of itself and properties to the buffer props. Return true if the object should be saved and false if saving of this object should be omitted. See <emlink href="definition/script.html#ScenSave">Scenario saving</emlink>.</col>
+        </row>
+      </table>
+
+    </text>
+    <h id="ScenSave">Scenario saving</h>    <part>
+    <text>When the user chooses the "Save Scenario" option from the editor menu, the engine calls a global function SaveScenarioObjects defined in System.ocg/SaveScenario.c. This function writes all objects to the Objects.c file in their current state. The function stores all objects except the crew of currently joined human players and objects of a type that starts with GUI_. By default, objects are recreated using a call to <funclink>CreateObject</funclink> followed by setting a number of default properties like position, rotation, speed, action, if they are not in their default state.</text>
+    <text>For most object, the default saving method should be fine. However, it is possible to override the SaveScenarioObject callback to control how objects are created and which properties are set.</text>
+    <text>For example if a switch wants to save its target which is stored in a local variable called "target", the switch definition can override the callback:</text>
+
+<code>local target;
+
+func SetTarget(object new_target) { target = new_target; return true; }
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (target) props->AddCall("Target", this, "SetTarget", target);
+	return true;
+}</code>
+    <text>As a result, the generated Objects.c file will include the call to SetTarget if the switch is saved. Dependent objects should always either be passed to the AddCall function or stored as a string from the <funclink>MakeScenarioSaveName</funclink> function. If this is done, that object is marked as a dependency. The saving mechanism will ensure that any object this object depends on will be created before. In case of circular dependencies, the object property setting script is detached from object creation script.</text>
+    <text>If an object should not be saved in scenarios - for example, because it is just the helper of another object - the SaveScenarioObject callback should be overloaded to return false.</text>
+    <text>The object creation procedure can also be adjusted. For example, the waterfall object (defined in Objects.ocd/Environment.ocd/Waterfall.ocd) is created using the global functions CreateWaterfall and CreateLiquidDrain, which create a Waterfall object and attach an effect to it. To generate the creation functions from the effects, the waterfall overrides SaveScenarioObject:</text>
+<code>func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var fx_waterfall = GetEffect("IntWaterfall", this);
+	if (fx_waterfall)
+	{
+		props->RemoveCreation();
+		props->Add(SAVEOBJ_Creation, "CreateWaterfall(%d,%d,%d,%v)",fx_waterfall.X, fx_waterfall.Y, fx_waterfall.Strength, fx_waterfall.Material);
+	}
+	return true;
+}</code>
+    <text>The call to RemoveCreation removes the existing object creation using <funclink>CreateObject</funclink>.</text>
+    <text>If you need access to one of the objects created in the editor, you can set its "StaticSaveVar" property to the name of a static variable. The InitializeObjects() function will then save the object in that variable.</text>
+    <text>The following table lists standard properties that are saved if their value is different from the default and if it is not removed using a props->Remove call.
+      <table>
+        <rowh>
+          <col>Property name</col>
+          <col>Default value</col>
+          <col>Description</col>
+        </rowh>
+        <row id="defprops_Alive">
+          <literal_col>Alive</literal_col>
+          <col>true</col>
+          <col>Category C4D_Living only: If object is not alive, a call to SetKill is stored. See <funclink>GetAlive</funclink> and <funclink>Kill</funclink>.</col>
+        </row>
+        <row id="defprops_Action">
+          <literal_col>Action</literal_col>
+          <col>this.DefaultAction</col>
+          <col>Action as retrieved using <funclink>GetAction</funclink> and set using <funclink>SetAction</funclink>. Includes ActionTargets. Not stored by default but only if <funclink>SaveScenarioObjectAction</funclink> is called.</col>
+        </row>
+        <row id="defprops_Phase">
+          <literal_col>Phase</literal_col>
+          <col>0</col>
+          <col>Action phase (see <funclink>GetPhase</funclink> and <funclink>SetPhase</funclink>). Not stored by default but only if <funclink>SaveScenarioObjectAction</funclink> is called.</col>
+        </row>
+        <row id="defprops_Dir">
+          <literal_col>Dir</literal_col>
+          <col>DIR_Left</col>
+          <col>Animation direction (see <funclink>GetDir</funclink> and <funclink>SetDir</funclink>)</col>
+        </row>
+        <row id="defprops_ComDir">
+          <literal_col>ComDir</literal_col>
+          <col>COMD_Stop</col>
+          <col>Commanded movement direction (see <funclink>GetComDir</funclink> and <funclink>SetComDir</funclink>)</col>
+        </row>
+        <row id="defprops_Con">
+          <literal_col>Con</literal_col>
+          <col>100</col>
+          <col>Construction percentage, i.e. object size (see <funclink>GetCon</funclink> and <funclink>SetCon</funclink>)</col>
+        </row>
+        <row id="defprops_Category">
+          <literal_col>Category</literal_col>
+          <col>GetID()->GetCategory()</col>
+          <col>Object category (see <funclink>GetCategory</funclink> and <funclink>SetCategory</funclink>)</col>
+        </row>
+        <row id="defprops_R">
+          <literal_col>R</literal_col>
+          <col>0</col>
+          <col>Rotation (see <funclink>GetR</funclink> and <funclink>SetR</funclink>)</col>
+        </row>
+        <row id="defprops_XDir">
+          <literal_col>XDir</literal_col>
+          <col>0</col>
+          <col>Horizontal speed (see <funclink>GetXDir</funclink> and <funclink>SetXDir</funclink>)</col>
+        </row>
+        <row id="defprops_YDir">
+          <literal_col>YDir</literal_col>
+          <col>0</col>
+          <col>Vertical speed (see <funclink>GetYDir</funclink> and <funclink>SetYDir</funclink>). Vertical speed is not saved it is very small and the object touches the ground to avoid saving of speed on idle objects.</col>
+        </row>
+        <row id="defprops_RDir">
+          <literal_col>RDir</literal_col>
+          <col>0</col>
+          <col>Rotation speed (see <funclink>GetRDir</funclink> and <funclink>SetRDir</funclink>)</col>
+        </row>
+        <row id="defprops_Color">
+          <literal_col>Color</literal_col>
+          <col>0, 0xffffffff</col>
+          <col>Object color of ColorByOwner-surfaces (see <funclink>GetColo</funclink> and <funclink>SetColor</funclink>)</col>
+        </row>
+        <row id="defprops_ClrModulation">
+          <literal_col>ClrModulation</literal_col>
+          <col>0, 0xffffffff</col>
+          <col>Object color modulation of all surfaces (see <funclink>GetClrModulation</funclink> and <funclink>SetClrModulation</funclink>)</col>
+        </row>
+        <row id="defprops_BlitMode">
+          <literal_col>BlitMode</literal_col>
+          <col>0</col>
+          <col>Object drawing mode (see <funclink>GetObjectBlitMode</funclink> and <funclink>SetObjectBlitMode</funclink>)</col>
+        </row>
+        <row id="defprops_MeshMaterial">
+          <literal_col>MeshMaterial</literal_col>
+          <col>GetID()->GetMeshMaterial()</col>
+          <col>Custom assignments of mesh materials (see <funclink>GetMeshMaterial</funclink> and <funclink>SetMeshMaterial</funclink>)</col>
+        </row>
+        <row id="defprops_Name">
+          <literal_col>Name</literal_col>
+          <col>GetID()->GetName()</col>
+          <col>Object name (see <funclink>GetName</funclink> and <funclink>SetName</funclink>)</col>
+        </row>
+        <row id="defprops_MaxEnergy">
+          <literal_col>MaxEnergy</literal_col>
+          <col>GetID().MaxEnergy</col>
+          <col>Maximum energy (see <emlink href="definition/properties.html">Properties</emlink>)</col>
+        </row>
+        <row id="defprops_Energy">
+          <literal_col>Energy</literal_col>
+          <col>GetID().MaxEnergy/1000</col>
+          <col>Current energy level (see <funclink>GetEnergy</funclink> and <funclink>DoEnergy</funclink>)</col>
+        </row>
+        <row id="defprops_Visibility">
+          <literal_col>Visibility</literal_col>
+          <col>VIS_All</col>
+          <col>Object visibility (see <emlink href="definition/properties.html">Properties</emlink>)</col>
+        </row>
+        <row id="defprops_Plane">
+          <literal_col>Plane</literal_col>
+          <col>GetID().Plane</col>
+          <col>Object plane, i.e. z-order (see <emlink href="definition/properties.html">Properties</emlink>)</col>
+        </row>
+        <row id="defprops_Position">
+          <literal_col>Position</literal_col>
+          <col></col>
+          <col>Object position. This is only set if the object has a rotation and could not be created directly at the correct offset (see <funclink>SetPosition</funclink>)</col>
+        </row>
+        <row id="defprops_Commands">
+          <literal_col>Command</literal_col>
+          <col>None</col>
+          <col>Stores only the topmost command of the chain (see <funclink>GetCommand</funclink> and <funclink>SetCommand</funclink>)</col>
+        </row>
+        <row id="defprops_Fire">
+          <literal_col>Fire</literal_col>
+          <col></col>
+          <col>Fire effect.</col>
+        </row>
+      </table>
+    </text>
+    <text>Properties published to the editor as EditorProps can also be saved automatically by setting the Save property of the EditorProp to a string that serves as an identifier so saved properties can be removed by derived definitions. These properties are atuomatically saved if they are different from their default value. E.g.:</text>
+   <code>/* Define two properties that can be set in the editor */
+// foo is a property with a setter function
+local foo = 42;
+public func SetFoo(new_foo) { foo = new_foo; return true; }
+
+// bar is just a property without setter
+local bar = 23;
+
+local EditorProps = {
+  foo = { Type="int", Set="SetFoo", Save="Foo" }; // saved as object->SetFoo(value); unless foo is 42.
+  bar = { Type="int", Save="Bar"; } // saved as object.bar = value; unless bar is 23.
+};</code>
+    <text>By default, effects are not saved in scenarios. To force saving of an effect, define the Fx*SaveScen callback. For example, the fire effect saves itself like this:</text>
+<code>global func FxFireSaveScen(object obj, proplist fx, proplist props)
+{
+	// this is burning. Save incineration to scenario.
+	props->AddCall("Fire", obj, "Incinerate", fx.strength, fx.caused_by, fx.blasted, fx.incinerating_object);
+	return true;
+}</code>
+    <text>obj and fx refer to the object and effect proplist as for any effect call. save_name is the variable name of the effected object and is unset for global effects.</text>
+    
+    <h id="ScenSave">Scenario saving reference</h>
+    <text>The following functions are available to call on the "props" parameter passed to SaveScenarioObject callbacks:</text>
+
+    <h>AddCall</h>
+      <text><code>bool AddCall(string id, object target, string function, any par1, any par2, ...);</code></text>
+      <text>Adds a new call of format target->Function(par1, par2, ...) to the stored object script. Object parameters may be passed as is; strings must be quoted explicitely.</text>
+      <text>The id parameter is an identifier which can be used by derived objects to remove the property again.</text>
+
+    <h>Add</h>
+      <text><code>bool AddCall(string id, string script, any par1, any par2, ...);</code></text>
+      <text>Adds a custom script snippet of any format. script may contain format characters and parameters are formatted into the string using <funclink>Format</funclink>().</text>
+    
+    <h>Remove</h>
+      <text><code>int Remove(string id);</code></text>
+      <text>Remove all strings added previously using AddCall or Add with the given ID. Can also be used to remove default properties. Returns number of script lines removed.</text>
+
+    <h>RemoveCreation</h>
+      <text><code>bool RemoveCreation();</code></text>
+      <text>Remove all strings added previously using with IDs SAVEOBJ_Creation or SAVEOBJ_ContentsCreation.</text>
+
+    <h>Clear</h>
+      <text><code>bool Clear();</code></text>
+      <text>Remove all creation and property setting strings.</text>
+
+    </part>
+  </part>
+  <author>sulai</author><date>2003-11</date>
+  <author>matthes</author><date>2004-07</date>
+  <author>Clonkonaut</author><date>2008-04</date>
+  <author>Sven2</author><date>2013-12</date>
+</doc>

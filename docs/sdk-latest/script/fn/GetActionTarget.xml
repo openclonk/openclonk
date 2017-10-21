@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetActionTarget</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>0 for target, or 1 for target2</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the current action targets of the calling object.</desc>
+    <examples>
+      <example>
+        <code>GetActionTarget()-&gt;~ChopDown();</code>
+        <text>If executed in the StartCall of the Chop action, instantly fells the tree.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>GetActTime</funclink>
+      <funclink>GetPhase</funclink>
+      <funclink>SetAction</funclink>
+      <funclink>SetActionTargets</funclink>
+      <funclink>SetPhase</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>2002-04</date>
+</funcs>

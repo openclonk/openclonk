@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetEffectCount</title>
+    <category>Effects</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>mask</name>
+          <desc>Search mask for effect names. You can use '*' or '?' wildcards or specify an effect name directly. If unspecified, all effects are counted.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Target object the effects of which you want to count. If unspecified, the global effects will be counted.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>max_priority</name>
+          <desc>If not 0, only those effects are counted which have the specified priority or lower.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Counts object effects or global effects.</desc>
+    <remark>For an example see <funclink>GetEffect</funclink>.</remark>
+    <related>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
+      <funclink>CreateEffect</funclink>
+      <funclink>CheckEffect</funclink>
+      <funclink>EffectCall</funclink>
+      <funclink>GetEffect</funclink>
+      <funclink>RemoveEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+</funcs>

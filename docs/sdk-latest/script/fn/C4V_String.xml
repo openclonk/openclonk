@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4V_String</title>
+    <category>Variables</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Data type: string.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (x &amp;&amp; <funclink>GetType</funclink>(x)==C4V_String) <funclink>Log</funclink>(&quot;x=%s&quot;, x);</code>
+        <text>Writes x to the log if it is a string.</text>
+      </example>
+    </examples>
+    <related><funclink>GetType</funclink></related>
+  </const>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetMass</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>mass</name>
+          <desc>New mass of the object</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the mass of the object. The mass is initialized with <emlink href="definition/DefCore.html">DefCore.txt</emlink>/[DefCore]/Mass. The actual weight is the deadweight plus the weight of the contained objects.</desc>
+    <examples>
+      <example>
+        <code>private func GetOwnMass(object clonk)
+  {
+  var mass=clonk-&gt;<funclink>GetMass</funclink>(), i, obj;
+  <funclink>while</funclink>(obj = clonk-&gt;<funclink>Contents</funclink>(i++)) mass -= obj-&gt;<funclink>GetMass</funclink>();
+  <funclink>return</funclink> mass;
+  }
+
+protected func ControlUse(object clonk)
+{
+  clonk-&gt;SetMass(GetOwnMass(clonk) + 100);
+  clonk-&gt;<funclink>Sound</funclink>(&quot;ClonkMunch&quot;);
+  <funclink>RemoveObject</funclink>();
+  <funclink>return</funclink> true;
+}</code>
+        <text>Script for a cookie: when eating this cookie the mass of the clonk will increase.</text>
+      </example>
+    </examples>
+    <related><funclink>GetMass</funclink></related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

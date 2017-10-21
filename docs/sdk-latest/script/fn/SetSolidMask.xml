@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetSolidMask</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the top left corner of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the top left corner of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>target_x</name>
+          <desc>X target position of the SolidMask relative to the top left corner of the object graphic.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>target_y</name>
+          <desc>Y target position of the SolidMask relative to the top left corner of the object graphic.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the solid area of an object. The source rectangle determines which pixels from the definition's SolidMask.png graphic should be used. All pixels within the rectangle of less than 50% transparency will be solid. Also see the SolidMask entry in <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <remark>Solid areas will internally be drawn in the landscape using the "Vehicle" material.</remark>
+    <examples>
+      <example>
+        <code>SetSolidMask();</code>
+        <text>Removes the SolidMask for the calling object.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2014-01</date>
+</funcs>

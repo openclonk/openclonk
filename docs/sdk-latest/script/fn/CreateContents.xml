@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CreateContents</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>Type of object to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>count</name>
+          <desc>Number of objects to be created, if not specified, 1 is assumed.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an object of the specified type in the contents of another object.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;CreateContents(Rock);</code>
+        <text>The highest ranking clonk of this player receives a rock.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateConstruction</funclink>
+      <funclink>CreateObject</funclink>
+      <funclink>RemoveObject</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
+</funcs>

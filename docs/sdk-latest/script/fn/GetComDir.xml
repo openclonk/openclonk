@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetComDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current command direction of an object. This indicates the object's current intended heading. The exact evaluation of the command direction depends on the <emlink href="definition/procedures.html">procedure</emlink> of the current <emlink href="definition/actmap.html">activity</emlink>.</desc>
+    <related>
+      <emlink href="definition/procedures.html">Procedure</emlink>
+      <funclink>SetComDir</funclink>
+      <funclink>GetDir</funclink>
+      <funclink>GetProcedure</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
+</funcs>

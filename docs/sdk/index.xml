@@ -3,9 +3,10 @@
   SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-  <title>OpenClonk Documentation</title>
-  <h>OpenClonk Documentation</h>
+  <title>OpenClonk Documentation - 7.0 stable</title>
+  <h>OpenClonk Documentation - 7.0 stable</h>
   <part>
+	<text>Version: <strong>7.0 stable</strong> <emlink href="../../latest/sdk/index.html">(switch to 8.0 master)</emlink></text>
 	<img src="../images/cpem.gif" width="52" height="52" alt="" class="cpem" />
 	<text>Welcome to the developer documentation for the creation of custom game content. This documentation includes a thorough reference of the game data and its file hierarchy. <br/>	
 	Also included is a script reference which explains the syntax and semantics of Clonk's own scripting language - C4Script. In the script reference, all functions, constants and callbacks that are available for the scripter are documented with example usages. 

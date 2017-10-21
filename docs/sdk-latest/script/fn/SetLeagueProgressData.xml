@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetLeagueProgressData</title>
+    <category>Network</category>
+    <subcat>League</subcat>
+    <version>5.5 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>new_data</name>
+          <desc>New data string for this player in this scenario.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player_id</name>
+          <desc>ID of player whose progress data shall be set. Use <funclink>GetPlayerID</funclink>() to get the ID of a joined player.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the league progress data. This function can be used to store a per-scenario per-user data string in the league. The function is available for both melee and custom settlement leagues. The data is stored between league games and can later be retrieved using <funclink>GetLeagueProgressData</funclink>().</desc>
+    <remark>Each scenario may store up to 2048 characters. The string may only contain alphanumeric characters plus space (" ") and underscore ("_"). Invalid characters will be removed by the league and not returned when <funclink>GetLeagueProgressData</funclink> is called after the next scenario start.</remark>
+    <examples>
+      <example>
+        <code>func SetLeagueProgressScore(int plr, int new_progress)
+{
+	// Safety: Valid players only
+	var plrid = <funclink>GetPlayerID</funclink>(plr);
+	if (!plrid) return;
+	// Progress must be between 0 and 25
+	new_progress = <funclink>BoundBy</funclink>(new_progress, 0, 25);
+	// Get old progress from previous round
+	var progress_string = <funclink>GetLeagueProgressData</funclink>(plrid);
+	if (progress_string &amp;&amp; <funclink>GetLength</funclink>(progress_string))
+	{
+		var old_progress = <funclink>GetChar</funclink>(progress_string)-<funclink>GetChar</funclink>("A");
+		// If old progress was better than new progress, keep old progress
+		new_progress = <funclink>Max</funclink>(old_progress, new_progress);
+	}
+	// Set new progress
+	SetLeagueProgressData(<funclink>Format</funclink>("%c", <funclink>GetChar</funclink>("A") + new_progress));
+	<funclink>SetLeaguePerformance</funclink>(new_progress);
+	return true;
+}</code>
+        <text>Helper script for a scenario that is using custom scoring in the league. LeagueProgressData is used to remember the last progress and ensure that progress never decreases.</text>
+      </example>
+    </examples>
+    <related><funclink>GetLeagueProgressData</funclink><funclink>SetLeaguePerformance</funclink></related>
+  </func>
+  <author>Sven2</author><date>2014-04</date>
+</funcs>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetScenarioVal</title>
+    <category>Get*Val</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>entry</name>
+          <desc>Name of the entry to be retrieved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>section</name>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>entry_number</name>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the property value of the scenario by its name and section in the <emlink href="scenario/scenario.html">Scenario.txt</emlink>.</desc>
+    <remark>Warning: the retrieved values may differ from computer to computer and thus cause synchronization problems in network games.</remark>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>(&quot;You are playing \&quot;%s\&quot;!&quot;, GetScenTitle());</code>
+        <text>Displays the scenario title.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetDefCoreVal</funclink>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-04</date>
+</funcs>

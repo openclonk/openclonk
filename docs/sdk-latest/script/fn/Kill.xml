@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Kill</title>
+    <category>Objects</category>
+    <subcat>Living Beings</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>forced</name>
+          <desc>If set, the object will be killed, even if an effect tries to prevent this. .</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Kills an object. Applies to living beings only.</desc>
+    <examples>
+      <example>
+        <code><funclink>FindObject</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>()))-&gt;Kill();</code>
+        <text>Kills a living being.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Punch</funclink>
+      <funclink>RemoveObject</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
+</funcs>

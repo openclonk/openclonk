@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetSkyParallax</title>
+    <category>Sky</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>mode</name>
+          <desc>Scroll mode. 0 standard; 1 wind moves with the wind.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xpar</name>
+          <optional />
+          <desc>Horizontal parallaxity. With a value of 10 the sky is fixed to the landscape and thus appears to be on the same level as the landscape itself. Higher values will let the sky appear further away from the viewer.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ypar</name>
+          <optional />
+          <desc>Vertical parallaxity.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+					<optional />
+          <desc>Constant horizontal motion of the sky.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+					<optional />
+          <desc>Constant vertical motion of the sky.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+					<optional />
+          <desc>X scroll position of the sky.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+					<optional />
+          <desc>Y scroll position of the sky.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes parallaxity and scroll speed of the sky.</desc>
+    <remark>If you specify <code>nil</code> for one of the parameters or leave it out, the previous value will be kept.</remark>
+    <examples>
+      <example>
+        <code>SetSkyParallax(1, 20,20, 0,0, nil, nil);</code>
+        <text>Sets the sky to parallax and moving with the wind.</text>
+      </example>
+      <example>
+        <code>SetSkyParallax(0, nil, nil, 1);</code>
+        <text>Scrolls the sky constantly to the right, keeping the previously set parallaxity.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Newton</author><date>2011-07</date>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

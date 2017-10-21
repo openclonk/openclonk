@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PathFree2</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the start point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the start point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x2</name>
+          <desc>X coordinate of the end point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y2</name>
+          <desc>Y coordinate of the end point</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Works like <emlink href="script/fn/PathFree.html">PathFree</emlink>, but instead returns an array containing the coordinates of the first solid pixel found on line. Returns nil if the path is free.</desc>
+    <remark>All coordinates are global, even in local calls.</remark>
+    <examples>
+      <example>
+        <code>var x = <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()),
+	pos = PathFree2(x, 0, x, <funclink>LandscapeHeight</funclink>());
+if(pos)
+	<funclink>CreateObject</funclink>(Idol, pos[0], pos[1]);
+</code>
+        <text>Creates an Idol somewhere on the surface of the landscape.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetMaterial</funclink>
+      <funclink>GBackSolid</funclink>
+      <funclink>GetPathLength</funclink>
+      <funclink>PathFree</funclink>
+    </related>
+  </func>
+  <author>Apfelclonk</author><date>2014-04</date>
+</funcs>

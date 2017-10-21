@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetDefCoreVal</title>
+    <category>Get*Val</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>entry</name>
+          <desc>Name of the entry to be retrieved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>section</name>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>entry_number</name>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the property value of an object definition by its name in the <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <remark>If the requested entry is an id list (e.g. "Components" in DefCore.txt) an even entry_number will return the listed id and an uneven entry_number will return the matching count (see example).</remark>
+    <examples>
+      <example>
+        <code>var wdt = GetID()-&gt;GetDefCoreVal(&quot;Width&quot;, &quot;DefCore&quot;);</code>
+        <text>Determines the width an object.</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(&quot; A tools workshop requires the following material:&quot;);
+
+for(var i = 0;; i++)
+{
+  var id = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, ToolsWorkshop, i*2);
+  if(!id) break;
+  var cnt = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, ToolsWorkshop, i*2+1);
+
+  <funclink>Log</funclink>(&quot;%d x %s&quot;, cnt, id-&gt;<funclink>GetName</funclink>());
+}</code>
+        <text>Determines the necessary components for construction of a workshop.<br/>The loop will run until GetDefCoreVal returns id <code>nil</code> which means the end of the list.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-04</date>
+</funcs>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PlaceObjects</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>ID of the object to be created</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>amount</name>
+          <desc>Count of objects to be created</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>material_name</name>
+          <desc>
+            Material in which object are to be created. This can be a material name or a string as follows: 
+            <table>
+              <rowh>
+                <col>material_index</col>
+                <col>Create in</col>
+              </rowh>
+              <row>
+                <col>"GBackSolid"</col>
+                <col>Objects are created in solid material. Also see <funclink>GBackSolid</funclink>().</col>
+              </row>
+              <row>
+                <col>"GBackSemiSolid"</col>
+                <col>Objects are created in solid or liquid material. Also see <funclink>GBackSemiSolid</funclink>().</col>
+              </row>
+              <row>
+                <col>"GBackLiquid"</col>
+                <col>Objects are created in liquid material. Also see <funclink>GBackLiquid</funclink>().</col>
+              </row>
+              <row>
+                <col>"GBackSky"</col>
+                <col>Objects are created in mid-air. Also see <funclink>GBackSky</funclink>().</col>
+              </row>
+            </table>
+
+          </desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left boundary coordinate of the target rectangle (x coordinate).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top boundary coordinate of the target rectangle (y coordinate).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the target rectangle. If not specified, the right landscape boundary.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the target rectangle. If not specified, the bottom landscape boundary.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>on_surface</name>
+          <desc>If <code>true</code>, all objects will be created above the upper surface of the specified material (this might be outside the target rectangle).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_stuck</name>
+          <desc>If <code>true</code>, placement will not ensure that objects are in solid material. This is needed e.g. when placing objects in liquids.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates the specified number of objects in the specified target rectangle and target material (optional). Returns the number of iterations or -1 if creation has failed.</desc>
+    <remark>If there is only very little of the target material present in the landscape, placement calculation will take longer.<br/>However, endless retry loops are avoided.</remark>
+    <examples>
+      <example>
+        <code>PlaceObjects(Loam,20,&quot;Earth&quot;,100,0,200)</code>
+        <text>Create 20 chunks of loam in earth within the coordinates 100,0 and 200,LandscapeHeight().</text>
+      </example>
+      <example>
+        <code>PlaceObjects(Fish,10,&quot;GBackLiquid&quot;,0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
+        <text>Creates a total of 10 fishes in all liquids found in the upper half of the landscape.</text>
+      </example>
+    </examples>
+    <related><funclink>CreateObject</funclink></related>
+  </func>
+  <author>Tyron</author><date>2004-08</date>
+</funcs>

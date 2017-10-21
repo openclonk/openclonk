@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetActionTargets</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>target1</name>
+          <desc>First target object</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target2</name>
+          <desc>Second target object</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the activity targets of an object. The result depends on the <emlink href="definition/procedures.html">procedure</emlink> of the current action.</desc>
+    <examples>
+      <example>
+        <code>protected func Entrance(object into_object)
+{
+	SetActionTargets(into_object);
+}</code>
+        <text>Script for a shield spell using an ATTACH action: when the carrying clonk enters a building, the spell will attach itself to the building. This script will not, however, reattach the spell to the clonk when he leaves the building.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>GetProcedure</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

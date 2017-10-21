@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GuiUpdate</title>
+		<category>GUI</category>
+		<version>7.0 OC</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param>
+					<type>proplist</type>
+					<name>update</name>
+					<desc>The proplist containing the parts of the GUI window definition that need to be updated. The proplist is of the same format as the original menu definition that was used for <funclink>GuiOpen</funclink>(). </desc>
+				</param>
+				<param>
+					<type>int</type>
+					<name>gui_id</name>
+					<desc>The ID of the gui window that was returned by <funclink>GuiOpen</funclink>().</desc>
+				</param>
+				<param>
+					<type>int</type>
+					<name>child_id</name>
+					<desc>Optional. If given, the sub-window of the gui_id window with the matching child_id will be updated. Should be used together with the parameter target.</desc>
+				</param>
+				<param>
+					<type>object</type>
+					<name>target</name>
+					<desc>Optional. Should be used together with child_id. The target of the sub-window that will be updated.</desc>
+				</param>
+			</params>
+		</syntax>
+		<desc>
+		<text>Updates an existing GUI window, that has previously been opened with <funclink>GuiOpen</funclink>(). It is possible to update only one certain sub-window by passing child_id and target. The update definition looks similar to the original proplist that defined the GUI window for <funclink>GuiOpen</funclink>(). However, this function can not update certain properties such as the ID and the target. When the name of a sub-proplist matches the original name of a GUI window, the window is updated. If no existing window was found, a new window is added. Returns true if a window was found.</text>
+		<text>Because names starting with an underscore (e.g. <em>_child</em>) are anonymous, they will always lead to a new window being added when used in <funclink>GuiUpdate</funclink>.</text>
+		</desc>
+		<remark>See the <emlink href="script/GUI.html">GUI documentation</emlink> for further explanations. </remark>
+		<examples>
+			<example>
+<code>
+var menu =
+{
+	left_part = 
+	{
+		Right = "50%",
+		BackgroundColor = <funclink>RGB</funclink>(255, 0, 0),
+		icon =
+		{
+			Left = "50%-2em", Right="50%+2em", Bottom="4em",
+			Symbol = Clonk
+		}
+	},
+	right_part = 
+	{
+		Left = "50%",
+		BackgroundColor = <funclink>RGB</funclink>(0, 255, 0),
+		Text = "On the left site, you can see a Clonk"
+	}
+};
+var menuID = <funclink>GuiOpen</funclink>(menu);
+
+var update = 
+{
+	left_part =
+	{
+		icon =
+		{
+			Symbol = Rock
+		}
+	},
+	right_part = 
+	{
+		Text = "The Clonk is now a rock. :("
+	}
+}
+GuiUpdate(update, menuID)
+</code>
+				<text>Opens a menu window and then updates certain parts of it.</text>
+			</example>
+			
+			<example>
+<code>
+var menu =
+{
+	BackgroundColor = RGB(200, 100, 100)
+};
+var menuID = <funclink>GuiOpen</funclink>(menu);
+
+var update = 
+{
+	BackgroundColor = RGB(0, 255, 0)
+}
+for (var i = 0; i &lt; 5; i += 2)
+{
+	update.Left  = Format("%dem", i);
+	update.Right = Format("%dem", i + 1);
+	GuiUpdate({_child = update}, menuID);
+}
+</code>
+				<text>Opens a menu window and then adds three new children to that window.</text>
+			</example>
+			
+		</examples>
+		<related><emlink href="script/GUI.html">GUI Documentation</emlink><funclink>GuiAction_Call</funclink><funclink>GuiAction_SetTag</funclink><funclink>GuiClose</funclink><funclink>GuiOpen</funclink><funclink>GuiUpdateTag</funclink></related>
+	</func>
+	<author>Zapper</author><date>2014-10</date>
+</funcs>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ObjectNumber</title>
+    <category>Objects</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the object number of an object. This number always uniquely identifies an object, even in subsequent savegame runs. Using <funclink>Object</funclink> it can be converted back to an object pointer.</desc>
+    <examples>
+      <example>
+        <code>func Activate(caller)
+{
+  caller-&gt;<funclink>CreateMenu</funclink>(<funclink>GetID</funclink>(), caller, 0, &quot;No chopable objects in the vicinity!&quot;);
+  <funclink>for</funclink>(var obj in <funclink>FindObjects</funclink>(<funclink>Find_InRect</funclink>(-50, -50, 100, 100), <funclink>Find_OCF</funclink>(<funclink>OCF_Chop</funclink>), <funclink>Find_NoContainer</funclink>()))
+    caller-&gt;<funclink>AddMenuItem</funclink>(&quot;Chop down %s&quot;, <funclink>Format</funclink>(&quot;SetCommand(this, \&quot;Chop\&quot;, Object(%d))&quot;, obj-&gt;ObjectNumber()), obj-&gt;<funclink>GetID</funclink>());
+}</code>
+        <text>This function opens a menu in the calling object which contains all chopable objects (<funclink>OCF_Chop</funclink>) in the object's vicinity. Selecting a menu entry then uses <funclink>SetCommand</funclink> to set the command "Chop" in the object. Since this requires storage of the object pointer, the pointer is first converted into the object number.</text>
+      </example>
+    </examples>
+    <related><funclink>Object</funclink></related>
+  </func>
+  <author>PeterW</author><date>2003-02</date>
+</funcs>

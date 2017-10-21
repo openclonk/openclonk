@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Find_OnLine</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the starting point. Relative to the calling object's center in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the starting point. Relative to the calling object's center in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x2</name>
+          <desc>X coordinate of the end point. Relative to the calling object's center in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y2</name>
+          <desc>Y coordinate of the end point. Relative to the calling object's center in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects which overlap a line going from one point to the other.</desc>
+    <remark>This is equivalent to checking <funclink>Find_AtPoint</funclink> for each point on the line.</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>for</funclink>(var obj in <funclink>FindObjects</funclink>( <funclink>Find_OnLine</funclink>(0,0, <funclink>LandscapeWidth</funclink>()-<funclink>GetX</funclink>(),0), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>) ))
+  obj-&gt;<funclink>Kill</funclink>();</code>
+        <text>Railgun: Kills everything that's on the same height right of the executing object.</text>
+      </example>
+    </examples>
+    <related><funclink>FindObjects</funclink><funclink>FindObjects</funclink></related>
+  </func>
+  <author>PeterW</author><date>2011</date>
+</funcs>

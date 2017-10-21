@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Scenario Folder</title>
+  <h>Scenario Folder</h>
+  <part>
+    <text>Scenario folders are used to group a number of scenarios. Scenario folders are displayed with a book icon in the startup screen which can then be opened to list contained scenarios.</text>
+    <h id="Components">Scenario Components (ocs)</h>
+    <dl>
+      <dt id="ocs"><img height="16" src="../../images/icon_scenario.png" width="16"/><emlink href="scenario/index.html">*.ocs</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain any number of scenarios.</text>
+      </dd>
+      <dt id="ocf"><img height="16" src="../../images/icon_scenario_folder.png" width="16"/>*.ocf</dt>
+      <dd>
+        <text>Scenario folders can also contain other scenario folders.</text>
+      </dd>
+      <dt id="Title"><img height="16" src="../../images/icon_image.png" width="16"/>Title.png</dt>
+      <dd>
+        <text>The title picture of the scenario folder in png format. Size: 200x150 pixel.</text>
+      </dd>
+      <dt id="Icon"><img height="16" src="../../images/icon_image.png" width="16"/>Icon.png</dt>
+      <dd>
+        <text>The icon of a scenario folder which is to be displayed instead of the book icon. 24x24 pixels, alpha channel is used for transparency.</text>
+      </dd>
+      <dt id="Desc__txt"><img height="16" src="../../images/icon_text.png" width="16"/>Desc*.txt</dt>
+      <dd>
+        <text>The description of the folder. '__' must be replaced by the two digit language code, e.g. DE for German and US for American English. Multiple descriptions for several languages can be contained in a folder file of which the game will automatically load the one appropriate for the configured language.</text>
+        <text>The first line of the file will be used as a heading.</text>
+      </dd>
+      <dt id="Titletxt"><img height="16" src="../../images/icon_text.png" width="16"/>Title.txt</dt>
+      <dd>
+        <text>By default, the title of a scenario is set when renaming the scenario in the menu system and stored in section [Head] of Scenario.txt. The file name of the scenario group file may differ. For language dependent titles you should create a Title.txt component with the appropriate contents:</text>
+        <code>DE:Meine Rundensammlung
+US:My scenario collection</code>        <text>Important: No quotation marks and special characters should be used.</text>
+      </dd>
+      <dt id="Foldertxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="folder/folder.html">Folder.txt</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain a file with some properties for the folder.</text>
+      </dd>
+      <dt id="FolderMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
+      <dd>
+        <text>Scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
+      </dd>
+      <dt id="Loader"><img height="16" src="../../images/icon_image.png" width="16"/>Loader*.png</dt>
+      <dd>
+        <text>Scenario folders can contain local loader screens. Also see <emlink href="scenario/index.html">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="Materialocg"><img height="16" src="../../images/icon_system.png" width="16"/><emlink href="material/index.html">Material.ocg</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain local material definitions. Also see <emlink href="scenario/index.html#Materialocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="Graphicsocg"><img height="16" src="../../images/icon_system.png" width="16"/>Graphics.ocg</dt>
+      <dd>
+        <text>Scenario folders can overload individual entries of the global Graphics.ocg group. See <emlink href="#UeberladungenOCS">overloading rules</emlink>.</text>
+      </dd>
+      <dt id="Musicocg"><img height="16" src="../../images/icon_system.png" width="16"/>Music.ocg</dt>
+      <dd>
+        <text>Scenario folders can contain local music files. Also see <emlink href="scenario/index.html#Musicocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="ocd"><img height="16" src="../../images/icon_object_definition.png" width="16"/><emlink href="definition/index.html">*.ocd</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href="scenario/index.html#ocd">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="Infotxt"><img height="16" src="../../images/icon_text.png" width="16"/>Info.txt</dt>
+      <dd>
+        <text>Here an author can store additional information about the development of his scenario, his email address, or other information he wants to share with other developers.</text>
+      </dd>
+      <dt id="Authortxt"><img height="16" src="../../images/icon_text.png" width="16"/>Author.txt</dt>
+      <dd>
+        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time.</text>
+      </dd>
+    </dl>
+  </part>
+  <author>Sven2</author><date>2006-09</date>
+</doc>

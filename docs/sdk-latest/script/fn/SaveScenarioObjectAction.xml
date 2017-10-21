@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SaveScenarioObjectAction</title>
+    <category>System</category>
+    <version>5.3 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>props</name>
+          <desc>Handle to proplist for storage of this object.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Stores object action and phase for Objects.c scenario saving (See <emlink href="definition/script.html#ScenSave">Scenario objects saving</emlink>).</desc>
+    <examples>
+      <example>
+        <code>func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (!ActIdle())SaveScenarioObjectAction(props);
+	return false;
+}</code>
+        <text>In addition to default properties, this object also saved its current action unless it is idle.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="definition/script.html#ScenSave">Scenario objects saving</emlink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2013-12</date>
+</funcs>

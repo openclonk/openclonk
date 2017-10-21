@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetFilmView</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>for_player</name>
+          <desc>Number of the player whose view is to be displayed.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets film playback view to the specified player.</desc>
+    <examples>
+      <example>
+        <code>protected func InitializePlayer(int player)
+{
+	<funclink>if</funclink> (<funclink>GetPlayerName</funclink>(player) eq &quot;Camera&quot;) SetFilmView(player);
+}</code>
+        <text>This scenario script sets the playback view of the recorded round to the player with the name "Camera".</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
+</funcs>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetSkyAdjust</title>
+    <category>Sky</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>colorMod</name>
+          <desc>Primary color modulation.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>backgroundColor</name>
+          <desc>Background color. If the alpha byte in colorMod is not 0, this color will be used as background color behind the sky. In this way you can create lighter or more desaturated skies.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the sky color modulation. The sky colors will be mixed with the specified color as is done in ColorByOwner overlays.</desc>
+    <examples>
+      <example>
+        <code>SetSkyAdjust(<funclink>RGBa</funclink>(255,255,255,127), <funclink>RGB</funclink>(127,127,127));</code>
+        <text>Grays out the sky.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetSkyAdjust</funclink>
+      <funclink>SetMatAdjust</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
+</funcs>

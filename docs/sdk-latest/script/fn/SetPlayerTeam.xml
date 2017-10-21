@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetPlayerTeam</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose team assignment you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>new_team</name>
+          <desc>Team number of the team to be joined.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <desc>If <code>true</code>, calls to "RejectTeamSwitch" and "OnTeamSwitch" are not made. Also, player hostility is not automatically adjusted (this might have to be done manually instead).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Assigns a player to a new team. The player limit (MaxPlayer) of the team will be considered.</desc>
+    <remark>The function "RejectTeamSwitch" will be called in all game goal, rule, and environment objects. If any of these calls return <code>true</code>, then the team switch will not take place. If the team switch was performed successfully, the function "OnTeamSwitch" is called in all objects mentioned above (including the player number and new and old team numbers).</remark>
+    <related>
+      <emlink href="scenario/Teams.html">Teams</emlink>
+      <funclink>GetPlayerTeam</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2008-04</date>
+</funcs>

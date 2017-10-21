@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- <!DOCTYPE doc SYSTEM "../clonk.dtd"> -->
+<?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
+<toc>
+<title>Contents</title>
+<script>
+<![CDATA[
+	// Javascript aus mwForum, www.mwforum.org
+	function tb(listId) {
+		var toggle = document.getElementById('tgl' + listId);
+		var branch = toggle.parentNode;
+		if (!branch || !toggle) return;
+		if (branch.className != 'invisi') {
+			branch.className = 'invisi';
+			toggle.src = '../images/bullet_folder.png';
+			toggle.title = 'Zweig expandieren';
+			toggle.alt = '+';
+		} else {
+			branch.className = '';
+			toggle.src = '../images/bullet_folder_open.png';
+			toggle.title = 'Zweig zusammenklappen';
+			toggle.alt = '-';
+		}
+		return true;
+	}
+
+	function ta(listId) {
+		var branch = document.getElementById('tgl' + listId).parentNode;
+		var cls = '', img = 'bullet_folder_open.png', alt = '-';
+		if (branch.className != 'invisi') {
+			cls = 'invisi';
+			img = 'bullet_folder.png';
+			alt = '+';
+		}
+		var divs = document.getElementsByTagName('ul');
+		for (var i=0; i < divs.length; i++) {
+			divs[i].parentNode.className = cls;
+		}
+		var imgs = document.getElementsByTagName('img');
+		for (var i=0; i < imgs.length; i++) {
+			if (imgs[i].id.indexOf('tgl') == 0) {
+				imgs[i].src = '../images/' + img;
+				imgs[i].alt = alt;
+			}
+		}
+		return true;
+	}
+	
+	// Alle als anfaenglich geschlossen markierten Listitems unsichtbar machen
+	// Beim Laden sind sie sichtbar, damit die Seite ohne Javascript benutzbar ist
+	document.body.className = 'toggleinvisi';
+]]>
+</script>
+<h>Contents</h>
+<part>
+<ul class="contents">
+	<li><emlink href="index.html">Developer Mode</emlink>
+	<ul>
+		<li><emlink href="console.html">Engine</emlink></li>
+		<li><emlink href="cmdline.html">Command Line Parameters</emlink></li>
+	</ul>
+	</li>
+	<li><emlink href="files.html">Game content</emlink>
+	<ul>
+		<li><emlink href="definition/index.html">Object Definitions</emlink>
+		<ul>
+			<li><emlink href="definition/defcore.html">DefCore</emlink>
+			<ul>
+				<li><emlink href="definition/category.html">Category</emlink></li>
+				<li><emlink href="definition/ocf.html">OCF</emlink></li>
+				<li><emlink href="definition/vertices.html">Vertices</emlink></li>
+				<li><emlink href="definition/cnat.html">CNAT - Contact Attachment</emlink></li>
+			</ul>
+			</li>
+			<li><emlink href="definition/actmap.html">ActMap</emlink>
+			<ul>
+				<li><emlink href="definition/procedures.html">Procedures</emlink></li>
+			</ul>
+			</li>
+			<li><emlink href="definition/script.html">Scripts</emlink></li>
+			<li><emlink href="definition/properties.html">Properties</emlink></li>
+			<li><emlink href="particle/index.html">Particles</emlink></li>
+		</ul>
+		</li>
+		<li><emlink href="scenario/index.html">Scenarios</emlink>
+		<ul>
+			<li><emlink href="scenario/scenario.html">Scenario</emlink></li>
+			<li><emlink href="scenario/Teams.html">Multiplayer</emlink></li>
+			<li><emlink href="scenario/MapCreatorS2.html">Map Generator</emlink></li>
+			<li><emlink href="script/MapScript.html">Map Scripts</emlink></li>
+			<li><emlink href="scenario/script.html">Scripts</emlink></li>
+		</ul>
+		</li>
+		<li><emlink href="material/index.html">Materials</emlink>
+		<ul>
+			<li><emlink href="material/ocm.html">Definitions</emlink></li>
+		</ul>
+		</li>
+		<li><emlink href="lang.html">Internationalization</emlink></li>
+		<li><emlink href="playercontrols.html">Controls</emlink></li>
+	</ul>
+	</li>
+	<li><emlink href="script/index.html">Script</emlink>
+	<ul>
+		<li><emlink href="script/Funcs.html">Functions</emlink></li>
+		<li><emlink href="script/FuncCall.html">Function Call</emlink></li>
+		<li><emlink href="script/Typechecks.html">Data Types</emlink></li>
+		<li><emlink href="script/NamedVar.html">Variables</emlink></li>
+		<li><emlink href="script/operatoren.html">Operators</emlink></li>
+		<li><emlink href="script/for.html">for</emlink></li>
+		<li><emlink href="script/BreakContinue.html">Loop Control</emlink></li>
+		<li><emlink href="script/AppendTo.html">#appendto</emlink></li>
+		<li><emlink href="script/Effects.html">Effects</emlink></li>
+		<li><emlink href="script/GUI.html">Script GUIs</emlink></li>
+		<li><emlink href="script/GetXXVal.html">Querying Game Data</emlink></li>
+		<li><emlink href="script/ScriptPlayers.html">Script Players</emlink></li>
+		<li><emlink href="script/SoundModifiers.html">Sound Modifiers</emlink></li>
+		<li>Libraries
+			<ul>
+				<li><emlink href="script/Shape.html">Shape</emlink></li>
+				<li><emlink href="script/FuzzyLogic.html">Fuzzy Logic</emlink></li>
+			</ul>
+		</li>
+<!-- Insert Functions here -->
+	</ul>
+	</li>
+<!-- Insert Index here -->
+</ul>
+</part>
+<script>
+<![CDATA[
+(function() {
+	function navigate(url) {
+		var urlsplit = url.split("#");
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', urlsplit[0]);
+		xhr.onreadystatechange = function (e) {
+			if (xhr.readyState === 4) {
+				var d = parent.document;
+				var r = xhr.responseText;
+				d.getElementById("content").innerHTML = r.split('<div id="content">')[1];
+				d.title = r.slice(r.indexOf("<title>")+7, r.indexOf("</title>"));
+				if (urlsplit.length > 1) {
+					var scrolltarget = d.getElementById(urlsplit[1]);
+					if (scrolltarget) {
+						scrolltarget.scrollIntoView();
+					}
+				}
+			}
+		};
+		xhr.send();
+	}
+	function onclick(e) {
+		if (e.target.tagName != "A") return;
+		if (e.target.host != parent.location.host) return;
+		if (e.target.port != parent.location.port) return;
+		if (e.target.protocol != parent.location.protocol) return;
+		var url = e.target.href;
+		if (parent.history.pushState && window.XMLHttpRequest) {
+			navigate(url);
+			parent.history.pushState(url, "", url);
+			e.preventDefault();
+		}
+	}
+	if (parent == window) return;
+	parent.onpopstate = function(e) {
+		navigate(e.state);
+	}
+	parent.document.getElementById("content").onclick = onclick;
+	window.onclick = onclick;
+	if (parent.history.replaceState)
+		parent.history.replaceState(parent.location.href, "", parent.location.href);
+	var l = parent.location.href;
+	// recognize index file as such
+	if(l.charAt(l.length-1) == "/") l += "index";
+
+	var as = document.getElementsByTagName("a");
+	var i = 0, a;
+	var firsta;
+	while (a = as[i++]) {
+		if (a.href.indexOf(l) != -1) {
+			if (!firsta) {
+				firsta = a;
+			}
+			if (a.parentNode.tagName == "LI") {
+				if (a.parentNode.className == 'invisi') tb(a.parentNode.firstElementChild.id.slice(3));
+			}
+			var p = a.parentNode.parentNode;
+			while (p.tagName == "UL") {
+				if (p.parentNode.className == 'invisi') tb(p.parentNode.firstElementChild.id.slice(3));
+				p = p.parentNode.parentNode;
+			}
+		}
+	}
+	if (!firsta) return;
+	var el = firsta.parentNode.parentNode.parentNode;
+	var y0 = 0;
+	while (el) {
+		y0 += el.offsetTop;
+		el = el.offsetParent;
+	}
+	var y1 = 0;
+	el = firsta;
+	while (el) {
+		y1 += el.offsetTop;
+		el = el.offsetParent;
+	}
+	if (y0 < y1 - innerHeight + firsta.offsetHeight * 2) {
+		window.scrollTo(0, y1 - innerHeight / 2);
+	} else {
+		window.scrollTo(0, y0);
+	}
+})();
+]]>
+</script>
+</toc>

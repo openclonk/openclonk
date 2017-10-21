@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_X</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>position</name>
+          <desc>Start value. Should be inside the interval given by begin and end.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>begin</name>
+          <desc>Start of the interval.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>end</name>
+          <desc>End of the interval. If end is chosen to be greater than begin then the value increases with movement into positive X direction, otherwise it decreases.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>length</name>
+          <desc>Number of pixels to be moved into X direction for the animation to be played from begin to end.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>The value depends on the movement into X direction. Every pixel moved into positive X direction increases the value a little bit, and each pixel moved into negative X direction decreases it. If end was reached then the value is reset to begin and if begin was reached then the value is reset to end.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>(&quot;Drive&quot;, 5, <funclink>Anim_X</funclink>(0, <funclink>GetAnimationLength</funclink>(&quot;Drive&quot;), 0, 15), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Drive" in slot 5 and superimposes any other potential animations in slot 5. The animation is played the faster the faster the object moves into X direction. Once the object moved 15 pixels the animation will have been played from begin to end and it restarts from the beginning. Here we use <funclink>Anim_X</funclink> instead of <funclink>Anim_AbsX</funclink> so that the wheels of a vehicle turn backwards when driving backwards.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_R</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_Dist</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

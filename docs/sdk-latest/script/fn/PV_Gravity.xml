@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PV_Gravity</title>
+    <category>Particles</category>
+    <version>5.3.3 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>factor</name>
+          <desc>Factor for the speed. 1000 is a factor of 1.0.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>constant_value</name>
+          <desc>Value that is added to the result.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>The value will depend on the gravity.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Sin</funclink>
+      <funclink>PV_Wind</funclink>
+      <funclink>PC_Die</funclink>
+      <funclink>PC_Bounce</funclink>
+      <funclink>PC_Stop</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2013-10</date>
+</funcs>

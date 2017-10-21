@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>if</title>
+    <category>Script</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>condition</name>
+          <desc>Condition</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>If condition is non-zero the directly following command or script block will be executed.</desc>
+    <examples>
+      <example>
+        <code>if(!<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))) <funclink>CreateObject</funclink>(Rock);</code>
+        <text>Creates a rock if no other rocks are present.</text>
+        <code>if(!<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))) { <funclink>CreateObject</funclink>(Rock); <funclink>CreateObject</funclink>(Gold); }</code>
+        <text>Creates a rock and a chunk of gold if no rocks are present.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>while</funclink>
+      <emlink href="script/operatoren.html">Operators</emlink>
+      <emlink href="script">C4Script</emlink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
+</funcs>

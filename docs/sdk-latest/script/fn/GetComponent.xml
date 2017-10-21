@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetComponent</title>
+    <category>Objects</category>
+    <subcat>Components</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int / id</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>component</name>
+          <desc>Object component of which to determine the count. If not specified, index is used and the id of the component is returned.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the component to be returned. This parameter is ignored if component is specified. Returns the id of the indicated component which can then be used to determine the count in a subsequent call to GetComponent.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Used to determine object components.</desc>
+    <remark>Also see <emlink href="definition/properties.html">Properties</emlink>.</remark>
+    <examples>
+      <example>
+        <code>var i,cid,num;
+<funclink>while</funclink> (id = <funclink>GetID</funclink>()->GetComponent(nil, i++))
+	if ((num = GetComponent(id) - <funclink>GetID</funclink>()->GetComponent(id)) &gt; 0)
+		<funclink>while</funclink> (num--) <funclink>CreateObject</funclink>(id);</code>
+        <text>Creates all components which are still missing in the calling object (e.g. in a construction site) in front of the object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetComponent</funclink>
+      <funclink>Split2Components</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
+</funcs>

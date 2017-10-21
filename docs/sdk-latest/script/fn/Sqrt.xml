@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Sqrt</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Value of which you want to take the square root.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the square root of the first parameter. If the parameter is less than 0, the result is 0.</desc>
+    <examples>
+      <example>
+        <code>global func ObjectDistance(obj1, obj2)
+{
+  var dx = <funclink>GetX</funclink>(obj1) - <funclink>GetX</funclink>(obj2);
+  var dy = <funclink>GetY</funclink>(obj1) - <funclink>GetY</funclink>(obj2);
+  <funclink>return</funclink>(Sqrt(dx*dx+dy*dy));
+}</code>
+        <text>Returns the distance between two objects. Notice there's also an engine function <code>ObjectDistance</code>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Distance</funclink>
+      <funclink>ObjectDistance</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

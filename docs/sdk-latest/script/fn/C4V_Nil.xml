@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4V_Nil</title>
+    <category>Variables</category>
+    <version>5.2 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Data type: nil.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (<funclink>GetType</funclink>(<funclink>Par</funclink>()) == C4V_Nil) return;</code>
+        <text>Cancels the function if the data type of the first parameter is <code>nil</code>.</text>
+      </example>
+    </examples>
+    <related><funclink>GetType</funclink></related>
+  </const>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

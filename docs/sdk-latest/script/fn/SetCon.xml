@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetCon</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>6.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>con</name>
+          <desc>Completion/growth in percent</desc>
+        </param>
+		<param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>If specified, the con value will be divided by this value. No value or 0 uses the default precision of 100.</desc>
+        </param>
+	    <param>
+          <type>bool</type>
+          <name>grow_from_center</name>
+          <desc>If specified, this parameter determines whether the object should grow from the bottommost vertex or from its center. The default value is false, which makes the object grow from the bottommost vertex.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the completion of an object to the specified value.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCrew</funclink>(0,0)-&gt;SetCon(50);</code>
+        <text>Shrinks the first clonk of the first player to half size.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>DoCon</funclink>
+      <funclink>GetCon</funclink>
+      <funclink>OCF_FullCon</funclink>
+      <funclink>OCF_Construct</funclink>
+    </related>
+  </func>
+  <author>flgr</author><date>2002-01</date>
+  <author>matthes</author><date>2004-07</date>
+  <author>Marky</author><date>2015-01</date>
+</funcs>

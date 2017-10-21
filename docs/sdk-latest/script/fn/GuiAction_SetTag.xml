@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GuiAction_SetTag</title>
+		<category>GUI</category>
+		<version>7.0 OC</version>
+		<syntax>
+			<rtype>array</rtype>
+			<params>
+				<param>
+					<type>string</type>
+					<name>tag</name>
+					<desc>The new tag that will be set.</desc>
+				</param>
+				<param>
+					<type>int</type>
+					<name>subwindow_id</name>
+					<desc>ID of the subwindow of which the tag will be changed. If 0, the window containing this action will be affected.</desc>
+				</param>
+				<param>
+					<type>object</type>
+					<name>target</name>
+					<desc>Target of the subwindow of which the tag will be changed.</desc>
+				</param>
+			</params>
+		</syntax>
+		<desc>Action for a GUI window event such as OnClick.</desc>
+		<remark>Changing the tag of a window is not synchronized over network. This means that other players will not see when one player for example hovers over a menu window; if you need the tag to be set for all players, use <funclink>GuiAction_Call</funclink>() with <funclink>GuiUpdateTag</funclink>().</remark>
+		<remark>See the <emlink href="script/GUI.html">GUI documentation</emlink> for further explanations.</remark>
+		<examples>
+			<example>
+<code>
+var menu =
+{
+	BackgroundColor = 
+	{
+		Std = <funclink>RGB</funclink>(255, 0, 0),
+		Hover = <funclink>RGB</funclink>(0, 255, 0)
+	},
+	OnMouseIn = <funclink>GuiAction_SetTag</funclink>("Hover"),
+	OnMouseOut = <funclink>GuiAction_SetTag</funclink>("Std")
+};
+var menuID = <funclink>GuiOpen</funclink>(menu);
+</code>
+				<text>Defines a new GUI window that changes color when you hover over it.</text>
+			</example>
+		</examples>
+		<related><emlink href="script/GUI.html">GUI Documentation</emlink><funclink>GuiAction_Call</funclink><funclink>GuiClose</funclink><funclink>GuiOpen</funclink><funclink>GuiUpdate</funclink><funclink>GuiUpdateTag</funclink></related>
+	</func>
+	<author>Zapper</author><date>2014-10</date>
+</funcs>

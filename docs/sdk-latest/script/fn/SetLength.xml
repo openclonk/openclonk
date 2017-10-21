@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetLength</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>resize</name>
+          <desc>Array whose length is to be changed</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>size</name>
+          <desc>New length of the array.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the length of the array to the specified value. Surplus elements will be deleted, if necessary.</desc>
+    <related>
+      <funclink>GetLength</funclink>
+      <funclink>CreateArray</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
+</funcs>

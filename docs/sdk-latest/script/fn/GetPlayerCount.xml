@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerCount</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player_type</name>
+          <desc>If specified, only the number of players of the specified type is returned. For a list of all player types see <funclink>GetPlayerType</funclink>.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the number of players currently in the game.</desc>
+    <remark>As players may join and leave a game at runtime, there can be "gaps" in player indexing, meaning player numbers may skip certain values. GetPlayerCount returns the actual number of players, not the index of the last player plus one. To process all joined players you need special handling (see example) - you cannot simply run from index 0 to GetPlayerCount() - 1. See the example for <funclink>GetPlayerByIndex</funclink>.</remark>
+    <examples>
+      <example>
+        <text>See <funclink>GetPlayerByIndex</funclink>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetStartupPlayerCount</funclink>
+      <funclink>GetPlayerName</funclink>
+      <funclink>GetPlayerByIndex</funclink>
+      <funclink>EliminatePlayer</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2007-12</date>
+</funcs>

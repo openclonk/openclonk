@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FinishCommand</title>
+    <category>Objects</category>
+    <subcat>Commands</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>success</name>
+          <desc>Whether to evaluate the ended command as successful.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>command_num</name>
+          <optional />
+          <desc>Index of the command. 0 is the current command, other values indicate the following commands.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Ends a command in the command stack of an object. A finished command stays in the stack until it would be time for it to be executed and is removed only then.</desc>
+    <related>
+      <funclink>SetCommand</funclink>
+      <funclink>GetCommand</funclink>
+      <funclink>AppendCommand</funclink>
+      <funclink>AddCommand</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>2004-04</date>
+  <author>Newton</author><date>2013-12</date>
+</funcs>

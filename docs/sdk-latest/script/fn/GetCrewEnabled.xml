@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetCrewEnabled</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Determines whether a crew member can currently be selected.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (!<funclink>GetHiRank</funclink>()-&gt;GetCrewEnabled()) <funclink>GetHiRank</funclink>()-&gt;<funclink>SetCrewEnabled</funclink>(true);</code>
+        <text>Activates the highest ranking clonk of the first player if that one is not already activated.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetCrewEnabled</funclink>
+      <funclink>MakeCrewMember</funclink>
+      <funclink>SelectCrew</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
+</funcs>

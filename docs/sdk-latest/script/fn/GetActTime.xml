@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetActTime</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the time (in frames) that the object is already executing this same action.</desc>
+    <examples>
+      <example>
+        <code>private func Fusing()
+{
+	// Countdown (~10 seconds)
+	<funclink>Message</funclink>("@%d",(370-GetActTime())/37);
+	// if GetActTime is a multiple of 37 (=every 37 frames do...)
+	if(!GetActTime()%37)
+	{
+		// Sound "tick" if the count is even, "tack" if it is odd 
+		if(!(GetActTime()/37%2)) <funclink>Sound</funclink>("Tick");
+		else <funclink>Sound</funclink>("Tack");
+	}
+	// Explosion
+	if(GetActTime() > 370)
+		<funclink>Explode</funclink>(80);
+}
+</code>
+        <text>This could be the callback for the StartCall of a bomb's "Fuse" action. If the action goes on for less than 370 frames, only a countdown message is displayed and a sound played. If 370 or more frames have passed, the bomb explodes.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>GetPhase</funclink>
+      <funclink>SetAction</funclink>
+      <funclink>SetPhase</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>2002-04</date>
+</funcs>

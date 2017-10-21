@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetType</title>
+    <category>Variables</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>Value</name>
+          <desc>Data of which to determine the type.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the data type of a passed value.</desc>
+    <related>
+      <funclink>C4V_Nil</funclink>
+      <funclink>C4V_Int</funclink>
+      <funclink>C4V_Bool</funclink>
+      <funclink>C4V_String</funclink>
+      <funclink>C4V_Array</funclink>
+      <funclink>C4V_PropList</funclink>
+      <funclink>C4V_C4Object</funclink>
+	  <funclink>C4V_Def</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
+</funcs>

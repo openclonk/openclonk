@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerZoomLimits</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>5.5 OC</version>
+    <syntax>
+      <rtype>proplist</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose zoom limits are queried.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns currently set zoom limits for a player. The return value is a proplist with the following properties:
+      <table>
+        <rowh>
+          <col>Property</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <literal_col>MaxWidth</literal_col>
+          <col>Maximum width of landscpe in viewport, i.e. how far the player can view if zoomed out as far as possible. May be zero if MaxHeight is nonzero and zoom limits are determined by maximum view height only.</col>
+        </row>
+        <row>
+          <literal_col>MaxHeight</literal_col>
+          <col>Maximum height of landscpe in viewport. May be zero if MaxWidth is nonzero.</col>
+        </row>
+        <row>
+          <literal_col>MinWidth</literal_col>
+          <col>Minimum width of landscpe in viewport, i.e. how far the player can view if zoomed in as far as possible. May be zero if MinHeight is nonzero and zoom limits are determined by minimunm view height only.</col>
+        </row>
+        <row>
+          <literal_col>MinHeight</literal_col>
+          <col>Minimum height of landscpe in viewport. May be zero if MinWidth is nonzero.</col>
+        </row>
+        <row>
+          <literal_col>MaxValue</literal_col>
+          <col>Maximum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified.</col>
+        </row>
+        <row>
+          <literal_col>MinValue</literal_col>
+          <col>Minimum zoom if set as a direct pixel-to-landscape correspondance value using <funclink>SetPlayerZoom</funclink> function. Zero if a direct zoom value is not specified.</col>
+        </row>
+      </table>
+    </desc>
+    <remark>It is currently not possible to query the current zoom because these values are not synchronized.</remark>
+    <examples>
+      <example>
+        <code>func ReduceSight(int player)
+{
+  var zoom_limits = <funclink>GetPlayerZoomLimits</funclink>(player);
+  SetPlayerZoomByViewRange(player, zoom_limits.MaxWidth/2, zoom_limits.MaxHeight/2, PLRZOOM_LimitMax);
+  return true;
+}
+</code>
+        <text>Halves the view range of a player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlayerZoomByViewRange</funclink>
+      <funclink>SetPlayerZoom</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2014-05</date>
+</funcs>

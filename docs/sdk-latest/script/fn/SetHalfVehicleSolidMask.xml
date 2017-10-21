@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetHalfVehicleSolidMask</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>set</name>
+          <desc>Whether to activate or deactivate</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Change the material type of an activated solid mask. Activating HalfVehicle solid masks will allow objects to phase through the solid mask from below but keep normal behavior when standing on it or falling through. </desc>
+    <remark>Solid areas will internally be drawn in the landscape using the "Vehicle" material.</remark>
+    <examples>
+      <example>
+       <code>SetHalfVehicleSolidMask(true); // do not forget to pass the parameter!</code>
+       <text></text>
+      </example>
+    </examples>
+  </func>
+  <author>Caesar</author><date>2016-01</date>
+</funcs>

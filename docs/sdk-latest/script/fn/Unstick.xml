@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Unstick</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>max_range</name>
+          <desc>Maximum movement range. Defaults to 7.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Tries to move an object by a few pixels if it is stuck in solid ground. Returns whether the object was moved.</desc>
+    <related>
+      <funclink>SetPosition</funclink>
+      <funclink>Stuck</funclink>
+      <funclink>VerticesStuck</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2016-09</date>
+</funcs>

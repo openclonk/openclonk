@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>COMD_Stop</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Movement direction: stop, hence end current motion. For more information see <funclink>SetComDir</funclink>.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;<funclink>SetComDir</funclink>(COMD_None);</code>
+        <text>Makes the currently selected clonk of the first player stop.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetComDir</funclink>
+      <funclink>SetComDir</funclink>
+      <funclink>COMD_None</funclink>
+    </related>
+  </const>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

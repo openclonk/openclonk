@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetHostility</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player1</name>
+          <desc>Player whose hostility towards another player you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player2</name>
+          <desc>Player towards whom you want to change hostility.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>hostile</name>
+          <desc>If <code>true</code>, the relationship is hostile. Otherwise friendly.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>silent</name>
+          <desc>If not <code>false</code>, the hostility messages in the message board will be suppressed. Hostility messages are never displayed during the first frame of a round, regardless of the value of this parameter.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <desc>If not <code>false</code>, the callbacks RejectHostilityChange and OnHostilityChange are not executed.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets bilateral friendship of two players.</desc>
+    <examples>
+      <example>
+        <code>SetHostility(0,1,true,true); SetHostility(1,0,true,true);</code>
+        <text>Makes the first two players enemies without causing a message.</text>
+      </example>
+    </examples>
+    <related><funclink>Hostile</funclink></related>
+  </func>
+  <author>Sven2</author><date>2007-04</date>
+</funcs>

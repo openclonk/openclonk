@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetSeason</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>season</name>
+          <desc>Season from 0 (spring) to 100 (winter).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the season.</desc>
+    <examples>
+      <example>
+        <code>SetSeason(50);</code>
+        <text>Mid-summer.</text>
+      </example>
+    </examples>
+    <related><funclink>GetSeason</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
+</funcs>

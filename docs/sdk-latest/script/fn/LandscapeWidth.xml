@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>LandscapeWidth</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the width of the landscape in pixels.</desc>
+    <related><funclink>LandscapeHeight</funclink></related>
+  </func>
+  <author>PeterW</author><date>2001-11</date>
+</funcs>

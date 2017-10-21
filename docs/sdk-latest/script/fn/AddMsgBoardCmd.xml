@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddMsgBoardCmd</title>
+    <category>Interface</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>command</name>
+          <desc>Name of messageboard command</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>script</name>
+          <desc>Script to be executed</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a user-defined messageboard command. This command can be entered by any player using the syntax "/[command]" in the message board. This will execute the defined script. The script can use "%s" to incorporate parameters.</desc>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
+</funcs>

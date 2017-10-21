@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ArcCos</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Length of the adjacent leg</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Length of hypotenuse</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Calculates arc cosine of value/radius, or x = arccos(value/radius). This corresponds to cos(x) = value/radius. This function is used to calculate an angle from horizontal and vertical offsets. However, in most cases <funclink>Angle</funclink>() does what you need.</desc>
+    <related>
+      <funclink>Angle</funclink>
+      <funclink>ArcSin</funclink>
+      <funclink>Cos</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+</funcs>

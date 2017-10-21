@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetGraphics</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>gfx_name</name>
+          <desc>Name of the graphic to be set. If <code>nil</code>, the default graphic is set.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>source_definition</name>
+          <desc>Definition of which the graphics are to be used. If not specified, the definition of the changed object is used. If not specified and overlay!=0, that overlay is removed.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>overlay</name>
+          <desc>Index of the overlay graphics to be set. If specified, must be greater than 0 and will add an overlay of the given index to the object or changes an existing overlay of the given index. Overlays with higher index will be drawn on top of those with a lower index. If an object has only one overlay you can use the symbolic constant GFX_Overlay (=1).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>overlay_mode</name>
+          <desc>
+            Only in conjunction with overlay parameter: specifies how the overlay is to be drawn. The following constants are allowed: 
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Value</col>
+                <col>Effect</col>
+              </rowh>
+              <row>
+                <col>GFXOV_MODE_None</col>
+                <col>0</col>
+                <col>Invalid: do not use</col>
+              </row>
+              <row>
+                <col>GFXOV_MODE_Base</col>
+                <col>1</col>
+                <col>The base graphics of the specified definition, meaning the target rectangle (0,0,Width,Height,OffsetX,OffsetY), will be superimposed at the object position.</col>
+              </row>
+              <row>
+                <col>GFXOV_MODE_Action</col>
+                <col>2</col>
+                <col>The actiity of the specified object definition.</col>
+              </row>
+              <row>
+                <col>GFXOV_MODE_Picture</col>
+                <col>3</col>
+                <col>Only affects display of the object in inventory or menus (e.g. when activating in a building). The picture rectangle of the specified definition will be superimposed over the representative picture of the object. In this way you can superimpose a clonk image on a rock or a magic spell picture on a scroll.</col>
+              </row>
+              <row>
+                <col>GFXOV_MODE_IngamePicture</col>
+                <col>4</col>
+                <col>Overlays the picture graphics of the source definition over the shape of the target object.</col>
+              </row>
+              <row>
+                <col>GFXOV_MODE_Object</col>
+                <col>5</col>
+                <col>Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself!</col>
+              </row>
+              <row>
+                <col>GFXOV_MODE_ExtraGraphics</col>
+                <col>6</col>
+                <col>Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj.</col>
+              </row>
+            </table>
+
+          </desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>action</name>
+          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>dwBlitMode</name>
+          <desc>Blit mode of the overlayed graphics (e.g. additive). Siehe <funclink>SetObjectBlitMode</funclink></desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>overlay_object</name>
+          <desc>Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the graphics of the object. This affects the display of the given object everywhere in the game: in the landscape, in menus, or on control buttons.</desc>
+    <remark>With overlay=0 only the base graphics of an object are changed. The effect corresponds to replacing Graphics.png/Overlay.png in the object <emlink href="definition/index.html">definition</emlink>. Source information from <emlink href="definition/actmap.html">the ActMap</emlink> or <emlink href="definition/defcore.html">DefCore.txt</emlink> will not be modified by this command. So the given coordinates should always point to sensible areas in the bitmap (including SolidMask areas).</remark>
+    <examples>
+      <example>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))-&gt;SetGraphics(nil, Gold);</code>
+        <text>Gives a randomly chosen rock in the landscape the appearance of gold.</text>
+      </example>
+      <example>
+        <code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_And</funclink>())) obj-&gt;SetGraphics();</code>
+        <text>Restores the original graphics for all objects in the game.</text>
+      </example>
+      <example>
+        <code>SetGraphics(nil, Clonk, GFX_Overlay, GFXOV_MODE_Picture);
+<funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0,GFX_Overlay);</code>
+        <text>An object script: the calling object will have a small clonk image superimposed on its picture.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="definition/index.html#Graphicsex">Object definitions (ocd)</emlink>
+      <funclink>SetPicture</funclink>
+      <funclink>SetObjDrawTransform</funclink>
+      <funclink>SetObjectBlitMode</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2005-03</date>
+</funcs>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetYDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+          <desc>Vertical speed divided by precision.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Precision. Default 10 if not specified.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the vertical speed of the object.</desc>
+    <related>
+      <funclink>GetXDir</funclink>
+      <funclink>GetYDir</funclink>
+      <funclink>SetXDir</funclink>
+      <funclink>SetRDir</funclink>
+      <funclink>SetSpeed</funclink>
+      <funclink>SetR</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
+</funcs>

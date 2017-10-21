@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SplitRGBaValue</title>
+    <category>Arithmetics</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>rgba</name>
+          <desc>32 bit color value</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns an array with the red, green, blue, and alpha values of the specified 32 bit color value: [red, green, blue, alpha]</desc>
+    <examples>
+      <example>
+        <code>var rgba = SplitRGBaValue(<funclink>GetCursor</funclink>()-&gt;<funclink>GetColor</funclink>());
+<funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;R: %d|G: %d|B: %d|A: %d&quot;,rgba[0], rgba[1], rgba[2], rgba[3]);
+				</code>
+        <text>Displays the four color values of the currently selected clonk above the clonk's head.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetRGBaValue</funclink>
+      <funclink>SetRGBaValue</funclink>
+    </related>
+  </func>
+  <author>Tyron</author><date>2004-09</date>
+</funcs>

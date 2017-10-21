@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>InsertVertex</title>
+    <category>Objects</category>
+    <subcat>Vertices</subcat>
+    <version>8.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the vertex to be removed, ranges from 0 to <funclink>GetVertexNum</funclink>.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate, relative to the object center.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate, relative to the object center.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Inserts a new vertex to an object.</desc>
+    <remark>Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected.</remark>
+    <related>
+	  <funclink>AddVertex</funclink>
+      <funclink>GetVertex</funclink>
+      <funclink>SetVertex</funclink>
+      <funclink>GetVertexNum</funclink>
+      <funclink>RemoveVertex</funclink>
+    </related>
+  </func>
+  <author>Maikel</author><date>2016-03</date>
+</funcs>
