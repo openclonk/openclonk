@@ -19,28 +19,28 @@ ValueOverloads=Ruby=10;Amethyst=10
 [Player1]
 Wealth=25
 Crew=Clonk=1
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;DivingHelmet=1;
 BaseMaterial=Bread=25;
 BaseProduction=Bread=25;
 
 [Player2]
 Wealth=25
 Crew=Clonk=1
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;DivingHelmet=1;
 BaseMaterial=Bread=25;
 BaseProduction=Bread=25;
 
 [Player3]
 Wealth=25
 Crew=Clonk=1
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;DivingHelmet=1;
 BaseMaterial=Bread=25;
 BaseProduction=Bread=25;
 
 [Player4]
 Wealth=25
 Crew=Clonk=1
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;Lorry=1;Chest=1;WoodenBridge=1;DivingHelmet=1;
 BaseMaterial=Bread=25;
 BaseProduction=Bread=25;
 

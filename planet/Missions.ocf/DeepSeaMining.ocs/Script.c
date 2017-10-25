@@ -237,7 +237,7 @@ private func InitMainIsland()
 	}
 	
 	// If still more material is specified, create a larger settlement: sawmill, chemical lab, tools workshop.
-	// Also fill lorry a bit more with: Barrel (x1), Bucket(x1), Loam(x4), DynamiteBox(x2).
+	// Also fill lorry a bit more with: Barrel (x1), Bucket(x1), Loam(x4), DynamiteBox(x2), DivingHelmet (x1).
 	if (amount >= 3)
 	{
 		pos = FindMainIslandPosition(nil, nil, true);
@@ -253,6 +253,7 @@ private func InitMainIsland()
 		lorry->CreateContents(DynamiteBox, 1);
 		lorry->CreateContents(WallKit, 4);
 		//lorry->CreateContents(Boompack, 1);	
+		lorry->CreateContents(DivingHelmet, 1);
 		
 		lab->CreateContents(Dynamite, 5);
 		lab->CreateContents(DynamiteBox, 1);
