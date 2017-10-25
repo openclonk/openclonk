@@ -6,7 +6,7 @@ public func RejectCollect() { return true; }
 // Start the chest closed.
 public func Construction()
 {
-	inherited(...);
+	inherited();
 	
 	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 1, ANIM_Hold));
 	is_open = false;
