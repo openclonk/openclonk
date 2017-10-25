@@ -39,32 +39,32 @@
         <row>
           <literal_col>Global</literal_col>
           <col>Boolean</col>
-          <col>If true this is a global definition, i.e. not assigned to a particular player. See <emlink href="playercontrols.xml#Globals">Global definitions</emlink>.</col>
+          <col>If true this is a global definition, i.e. not assigned to a particular player. See <emlink href="playercontrols.html#Globals">Global definitions</emlink>.</col>
         </row>
         <row>
           <literal_col>Hold</literal_col>
           <col>Boolean</col>
-          <col>If true this command is interpreted as a held command. Such a command remembers whether the control key is pressed and generates another scripting event when it is released. See <emlink href="playercontrols.xml#Hold">Held keys</emlink>.</col>
+          <col>If true this command is interpreted as a held command. Such a command remembers whether the control key is pressed and generates another scripting event when it is released. See <emlink href="playercontrols.html#Hold">Held keys</emlink>.</col>
         </row>
         <row>
           <literal_col>RepeatDelay</literal_col>
           <col>Integer</col>
-          <col>Only valid if <em>Hold</em> is true. If greater than 0 then this key generates additional scripting events while pressed every that many number of frames. See <emlink href="playercontrols.xml#Repeat">Key repeats</emlink>.</col>
+          <col>Only valid if <em>Hold</em> is true. If greater than 0 then this key generates additional scripting events while pressed every that many number of frames. See <emlink href="playercontrols.html#Repeat">Key repeats</emlink>.</col>
         </row>
         <row>
           <literal_col>InitialRepeatDelay</literal_col>
           <col>Integer</col>
-          <col>If specified then the delay of the first key repeat event can be changed. See <emlink href="playercontrols.xml#Repeat">Key repeats</emlink>.</col>
+          <col>If specified then the delay of the first key repeat event can be changed. See <emlink href="playercontrols.html#Repeat">Key repeats</emlink>.</col>
         </row>
         <row>
           <literal_col>DefaultDisabled</literal_col>
           <col>Boolean</col>
-          <col>If true then the command is deactivated in the normal case and needs to be activated by script first. This is useful for commands that are only required in special situations. See <emlink href="playercontrols.xml#Deactivate">Deactivated commands</emlink>.</col>
+          <col>If true then the command is deactivated in the normal case and needs to be activated by script first. This is useful for commands that are only required in special situations. See <emlink href="playercontrols.html#Deactivate">Deactivated commands</emlink>.</col>
         </row>
         <row>
           <literal_col>ExtraData</literal_col>
           <col>C4ID</col>
-          <col>Optional ID that is passed to the script function. See <emlink href="playercontrols.xml#ExtraData">ExtraData</emlink>.</col>
+          <col>Optional ID that is passed to the script function. See <emlink href="playercontrols.html#ExtraData">ExtraData</emlink>.</col>
         </row>
         <row>
           <literal_col>CoordinateSpace</literal_col>
@@ -94,7 +94,7 @@
               </row>
               <row>
                 <literal_col>Script</literal_col>
-                <col>Execution of the script function <em>PlayerControl</em>. See <emlink href="playercontrols.xml#Script">Script callbacks</emlink>. (Default value)</col>
+                <col>Execution of the script function <em>PlayerControl</em>. See <emlink href="playercontrols.html#Script">Script callbacks</emlink>. (Default value)</col>
               </row>
               <row>
                 <literal_col>ZoomIn</literal_col>
@@ -184,17 +184,17 @@
        <row>
          <literal_col>Key</literal_col>
          <col>String</col>
-         <col>Specifies the key(s) of this mapping or a reference to another mapping. See <emlink href="playercontrols.xml#Keys">Key mappings</emlink>.</col>
+         <col>Specifies the key(s) of this mapping or a reference to another mapping. See <emlink href="playercontrols.html#Keys">Key mappings</emlink>.</col>
        </row>
        <row>
          <literal_col>ComboIsSequence</literal_col>
          <col>Boolean</col>
-         <col>If true then multiple keys are taken as a sequence, i.e. they need to be pressed one after the other instead of all at the same time. See <emlink href="playercontrols.xml#Keys">Key mappings</emlink>.</col>
+         <col>If true then multiple keys are taken as a sequence, i.e. they need to be pressed one after the other instead of all at the same time. See <emlink href="playercontrols.html#Keys">Key mappings</emlink>.</col>
        </row>
        <row>
          <literal_col>Control</literal_col>
          <col>String</col>
-         <col>Command that is combined with this mapping. The name should be equivalent to the <em>Identifier</em> of a command defined in a <emlink href="playercontrols.xml#ControlDef">[ControlDef]</emlink>.</col>
+         <col>Command that is combined with this mapping. The name should be equivalent to the <em>Identifier</em> of a command defined in a <emlink href="playercontrols.html#ControlDef">[ControlDef]</emlink>.</col>
        </row>
        <row>
          <literal_col>GUIName</literal_col>
@@ -239,11 +239,11 @@
              </row>
              <row>
                <literal_col>Hold</literal_col>
-               <col>The key changes the state of the command linked to to be held even if the key itself is pressed only shortly. Only valid if the <em>Hold</em> attribute is set for the command. This state remains until a corresponding mapping with trigger mode <em>Release</em> is being pressed. See <emlink href="playercontrols.xml#Hold">Held keys</emlink>.</col>
+               <col>The key changes the state of the command linked to to be held even if the key itself is pressed only shortly. Only valid if the <em>Hold</em> attribute is set for the command. This state remains until a corresponding mapping with trigger mode <em>Release</em> is being pressed. See <emlink href="playercontrols.html#Hold">Held keys</emlink>.</col>
              </row>
              <row>
                <literal_col>Release</literal_col>
-               <col>The key removes the held state. A key can have both Hold and Release set to toggle between the two states. See <emlink href="playercontrols.xml#Hold">Held keys</emlink>.</col>
+               <col>The key removes the held state. A key can have both Hold and Release set to toggle between the two states. See <emlink href="playercontrols.html#Hold">Held keys</emlink>.</col>
              </row>
              <row>
                <literal_col>AlwaysUnhandled</literal_col>
@@ -351,7 +351,7 @@
       <ul>
         <li>When released they also generate <funclink>PlayerControl</funclink> calls in the script with the <em>Release</em> flag set.</li>
         <li>Mappings can emulate permanent key presses using the <em>Hold</em>/<em>Release</em> flags.</li>
-        <li><emlink href="playercontrols.xml#Repeat">Key repeats</emlink> are generated.</li>
+        <li><emlink href="playercontrols.html#Repeat">Key repeats</emlink> are generated.</li>
         <li>The held state of the key can be queried in the script via <funclink>GetPlayerControlState</funclink>.</li>
         <li>If the command is bound to an analog stick or trigger on a controller, every change in position causes in a call to PlayerControl() with state = CONS_Moved.</li>
       </ul>
