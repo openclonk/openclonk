@@ -160,8 +160,9 @@ global func FxPlaneResetTimer(object target, effect, int time)
 	DrawParticleLine("Air", target->GetX()+3, target->GetY(), 3030, 315, 1, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(10, 30), particles);
 	
 	target->SetPosition(3030,315);
-	target->SetR(-90);
 	target->SetDir(0);
+	target->SetR(-90);
+	target->~RollPlane();
 }
 
 private func Doors()
