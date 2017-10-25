@@ -535,6 +535,8 @@ private func StopAutomaticMovement()
 // target will be checked again for COMD_Stop and distance after delay run out
 public func MoveTo(int y, int delay, object target, bool user_requested)
 {
+	if (IsSlave())
+		return partner->MoveTo(y, delay, target, user_requested);
 	// Not idle?
 	if (!CheckIdle() && !user_requested)
 		return;
