@@ -393,6 +393,8 @@ public func SaveScenarioObject(props, ...)
 		props->AddCall("FreeCrew", this, "SetFreeCrew", free_crew);
 	if (respawn_at_base)
 		props->AddCall("BaseRespawn", this, "SetBaseRespawn", respawn_at_base);
+	props->RemoveCreation();
+	props->Add(SAVEOBJ_Creation, "GetRelaunchRule()");
 	return true;
 }
 
