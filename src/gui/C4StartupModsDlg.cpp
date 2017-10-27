@@ -98,6 +98,13 @@ ModXMLData::ModXMLData(const TiXmlElement *xml, Source source)
 	assert(IsValidUtf8(description.c_str()));
 	// Additional meta-information.
 
+	for (const TiXmlElement *node = xml->FirstChildElement("dependency"); node != nullptr; node = node->NextSiblingElement("dependency"))
+	{
+		const char *depID = node->GetText();
+		if (depID != nullptr)
+			dependencies.push_back(depID);
+	}
+
 	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
 	{
 		// We guarantee that we do not modify the handle below, thus the const_cast is safe.
@@ -513,6 +520,9 @@ C4StartupModsDownloader::C4StartupModsDownloader(C4StartupModsDlg *parent, const
 
 void C4StartupModsDownloader::AddModToQueue(std::string modID, std::string name)
 {
+	// Not if already contained.
+	for (auto &mod : items)
+		if (mod->modID == modID) return;
 	items.emplace_back(std::move(std::make_unique<ModInfo>(modID, name)));
 }
 
@@ -552,6 +562,7 @@ void C4StartupModsDownloader::CancelRequest()
 	progressDialog = nullptr;
 
 	progressCallback = nullptr;
+	metadataQueriedForModIdx = -1;
 }
 
 void C4StartupModsDownloader::OnConfirmInstallation(C4GUI::Element *element)
@@ -559,7 +570,10 @@ void C4StartupModsDownloader::OnConfirmInstallation(C4GUI::Element *element)
 	CStdLock lock(&guiThreadResponse);
 
 	assert(!items.empty());
-	assert(!items[0]->files.empty());
+	bool hasFile = false;
+	for (auto & item : items)
+		if (!item->files.empty()) hasFile = true;
+	assert(hasFile);
 
 	GetProgressDialog()->SetTitle(LoadResStr("IDS_MODS_INSTALLANDDOWNLOAD"));
 	GetProgressDialog()->SetMessage("");
@@ -588,6 +602,7 @@ void C4StartupModsDownloader::ModInfo::FromXMLData(const ModXMLData &xmlData)
 	modID = xmlData.id;
 	name = xmlData.title;
 	slug = xmlData.slug;
+	dependencies = xmlData.dependencies;
 	originalXMLNode = xmlData.originalXMLElement->Clone();
 	hasOnlyIncompleteInformation = xmlData.requiresUpdate();
 
@@ -624,7 +639,9 @@ std::string C4StartupModsDownloader::ModInfo::GetPath()
 void C4StartupModsDownloader::ModInfo::CheckProgress()
 {
 	// Determining success or starting a new download.
-	if (!errorMessage.empty()) return;
+	if (HasError()) return;
+	if (files.empty())
+		successful = true;
 	if (successful) return;
 
 	if (postClient.get() == nullptr) // Start new file?
@@ -792,9 +809,10 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 	if (!postMetadataClient)
 	{
 		// Find first mod that requires an update.
-		for (auto &mod : items)
+		for (size_t i = static_cast<size_t>(metadataQueriedForModIdx + 1); i < items.size(); ++i)
 		{
-			if (!mod->RequiresMetadataUpdate()) continue;
+			auto &mod = items[i];
+			if (!mod->RequiresMetadataUpdate() || mod->HasError()) continue;
 			
 			StdStrBuf progressMessage;
 			progressMessage.Format(LoadResStr("IDS_MODS_INSTALL_UPDATEMETADATA_FOR"), mod->name.c_str());
@@ -808,27 +826,34 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 				return;
 			}
 			postMetadataClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);
-
 			// Do the actual request.
 			Application.InteractiveThread.AddProc(postMetadataClient.get());
 			postMetadataClient->Query(nullptr, false); // Empty query.
+			
+			metadataQueriedForModIdx = i;
 			return;
 		}
 		// Nothing to be updated found? Great, give execution back.
+		progressDialog->SetProgress(100);
 		progressCallback = std::bind(&C4StartupModsDownloader::ExecutePreRequestChecks, this);
 		return;
 	}
 
 	// We are already running a query!
+	assert(metadataQueriedForModIdx >= 0);
+	assert(metadataQueriedForModIdx < items.size());
+	auto &mod = items[metadataQueriedForModIdx];
 	// Check whether the data has arrived yet.
 	if (!postMetadataClient->isBusy())
 	{
 		if (!postMetadataClient->isSuccess())
 		{
 			Log(postMetadataClient->GetError());
-			// Destroy client and cancel.
-			CancelRequest();
-			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
+			// Destroy client and try next mod.
+			Application.InteractiveThread.RemoveProc(postMetadataClient.get());
+			postMetadataClient.reset();
+
+			mod->SetError(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"));
 			return;
 		}
 
@@ -869,6 +894,14 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 			assert(false);
 			return;
 		}
+		else
+		{
+			// The mod might have some additional dependencies that need to be retrieved.
+			const auto &mod{ items[foundIdx] };
+			
+			for (const std::string &dependency : mod->dependencies)
+				AddModToQueue(dependency, dependency);
+		}
 
 		Application.InteractiveThread.RemoveProc(postMetadataClient.get());
 		postMetadataClient.reset();
@@ -888,7 +921,7 @@ void C4StartupModsDownloader::ExecutePreRequestChecks()
 	// In case some of the mods need an information update, do that first.
 	for (auto &mod : items)
 	{
-		if (!mod->RequiresMetadataUpdate()) continue;
+		if (!mod->RequiresMetadataUpdate() || mod->HasError()) continue;
 		progressCallback = std::bind(&C4StartupModsDownloader::ExecuteMetadataUpdate, this);
 		GetProgressDialog()->SetTitle(LoadResStr("IDS_MODS_INSTALL_UPDATEMETADATA"));
 		return;

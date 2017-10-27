@@ -42,11 +42,12 @@ struct ModXMLData
 		std::string sha1;
 	};
 	std::vector<FileInfo> files;
+	std::vector<std::string> dependencies;
 	std::string title;
 	std::string id;
 	std::string description;
 	std::string slug;
-
+	
 	// Depending on the origin of the data, we might need an update query before doing anything.
 	enum class Source
 	{
@@ -161,6 +162,7 @@ private:
 		~ModInfo() { Clear(); }
 
 		std::vector<FileInfo> files;
+		std::vector<std::string> dependencies;
 		// All filenames are held separately, too, because the 'files' list will be manipulated.
 		std::set<std::string> requiredFilenames;
 
@@ -170,7 +172,9 @@ private:
 		void CancelRequest();
 
 		std::tuple<size_t, size_t> GetProgress() const { return std::make_tuple(downloadedBytes, totalBytes); }
-		bool WasSuccessful() const { return successful; }
+		void SetError(const std::string &e) { errorMessage += (errorMessage.empty() ? "" : " ") + e; }
+		bool HasError() const { return !errorMessage.empty(); }
+		bool WasSuccessful() const { return successful && !HasError(); }
 		bool IsBusy() const { return postClient.get() != nullptr; }
 		bool RequiresMetadataUpdate() const { return hasOnlyIncompleteInformation; }
 		std::string GetErrorMessage() const { if (errorMessage.empty()) return ""; return name + ": " + errorMessage; }
@@ -216,6 +220,7 @@ private:
 
 	void ExecuteMetadataUpdate();
 	std::unique_ptr<C4Network2HTTPClient> postMetadataClient;
+	int metadataQueriedForModIdx{ -1 };
 
 	std::function<void(void)> progressCallback;
 
