@@ -250,6 +250,11 @@ public func GetInventoryIconOverlay()
 }
 
 public func IsFoundryProduct() { return true; }
+public func GetSubstituteComponent(id component) // Can be made from earth or sand
+{
+	if (component == Earth)
+		return Sand;
+}
 
 local Collectible = 1;
 local Name = "$Name$";

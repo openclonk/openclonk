@@ -1,2 +1,2 @@
 Name=Loam
-Description=With loam one can build small loam bridges.|Needs a barrel of water and a bucket of earth to produce. Hold down the [Use] key to build a bridge, move the mouse to control where it is created.
+Description=With loam one can build small loam bridges. Hold down the [Use] key to build a bridge, move the mouse to control where it is created. Can be made from earth or sand, collected in a bucket.

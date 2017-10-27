@@ -1,0 +1,2 @@
+Name=Chunk of sand
+Description=Can only be transported with a bucket.|Can be dug out of the ground. Will crumble to powder on impact.
