@@ -271,6 +271,11 @@ protected func CancelUse(object clonk)
 /*-- Production --*/
 
 func IsInventorProduct() { return true; }
+public func GetSubstituteComponent(id component) // Can be made from earth or sand
+{
+	if (component == Diamond)
+		return [Ruby, Amethyst];
+}
 
 /*-- Display --*/
 
@@ -298,4 +303,4 @@ func Definition(def)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
-local Components = {Metal = 2};
+local Components = {Metal = 2, Diamond = 1};
