@@ -271,7 +271,7 @@ protected func CancelUse(object clonk)
 /*-- Production --*/
 
 func IsInventorProduct() { return true; }
-public func GetSubstituteComponent(id component) // Can be made from diamong, ruby or amethyst
+public func GetSubstituteComponent(id component) // Can also be made from items returned by this method
 {
 	if (component == Diamond)
 		return [Ruby, Amethyst];
