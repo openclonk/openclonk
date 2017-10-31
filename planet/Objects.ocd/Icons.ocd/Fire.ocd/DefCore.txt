@@ -1,0 +1,9 @@
+[DefCore]
+id=Icon_Flame
+Version=8,0
+Category=C4D_StaticBack
+Picture=0,0,128,128
+Width=128
+Height=128
+Offset=-64,-64
+HideInCreator=true

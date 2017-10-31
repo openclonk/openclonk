@@ -1,0 +1,2 @@
+Name=Verbrannter Gegenstand
+Description=War mal nützlich, ist jetzt aber verbrannt. Kann weiter verbrannt werden!

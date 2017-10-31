@@ -1,0 +1,2 @@
+Name=Burned object
+Description=Once useful, now just junk. Or fuel.

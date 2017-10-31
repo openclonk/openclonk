@@ -1,0 +1,17 @@
+[DefCore]
+id=BurnedObject
+Version=8,0
+Category=C4D_Object
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexY=0,0
+VertexCNAT=1,2
+VertexFriction=50,50
+Mass=1
+Rotate=1
+Picture=0,24,60,60
+Float=1
+StretchGrowth=1
