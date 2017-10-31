@@ -168,7 +168,12 @@ Stand = {
 		<row>
           <literal_col>ContactIncinerate</literal_col>
           <col>Integer</col>
-          <col>Probability of incineration by contact: 0 none, or 1 (high) to 5 (low).</col>
+          <col>Probability of incineration by contact: 0 none, or 1 (high) to 5 (low). Implies MaterialIncinerate.</col>
+        </row>
+		<row>
+          <literal_col>MaterialIncinerate</literal_col>
+          <col>bool</col>
+          <col>Incineration when submerged in incendiary material.</col>
         </row>
 		<row>
           <literal_col>EditCursorCommands</literal_col>

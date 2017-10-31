@@ -391,6 +391,7 @@ enum C4PropertyName
 	P_ContainBlast,
 	P_BlastIncinerate,
 	P_ContactIncinerate,
+	P_MaterialIncinerate,
 	P_Global,
 	P_Scenario,
 	P_JumpSpeed,
