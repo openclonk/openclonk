@@ -8,6 +8,8 @@
 
 #include Library_MeleeWeapon
 
+#include Library_Flammable
+
 local swing_anim;
 local using;
 local carry_bone;
@@ -423,6 +425,9 @@ local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local Components = {Wood = 1, Metal = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;
 // Damage dealt to trees when chopping.
 local ChopStrength = 10;
 // Damage dealt to living beings when hit with an axe.

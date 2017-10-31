@@ -6,6 +6,8 @@
 // Usage is handled by this library
 #include Library_Constructor
 
+#include Library_Flammable
+
 /*-- Engine Callbacks --*/
 
 func Hit(int x, int y)
@@ -55,3 +57,6 @@ local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local Components = {Wood = 1, Rock = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;

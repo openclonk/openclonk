@@ -5,6 +5,8 @@
 
 #include Library_MeleeWeapon
 
+#include Library_Flammable
+
 local animation_set;
 local fAiming;
 
@@ -284,3 +286,5 @@ local Description = "$Description$";
 local Collectible = true;
 local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;

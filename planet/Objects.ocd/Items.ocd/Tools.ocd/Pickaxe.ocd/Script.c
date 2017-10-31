@@ -5,6 +5,8 @@
 	@author: Randrian/Ringwaul
 */
 
+#include Library_Flammable
+
 local swingtime = 0;
 local using;
 
@@ -236,3 +238,6 @@ local MaxReach = 12;
 local MaxPickDensity = 70; // can't pick granite
 local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;

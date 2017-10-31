@@ -5,6 +5,8 @@
 	@author: Newton, Sven2, Zapper, Maikel
 */
 
+#include Library_Flammable
+
 local is_digging;
 
 /*-- Engine Callbacks --*/
@@ -247,3 +249,6 @@ local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local Components = {Wood = 1, Metal = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;

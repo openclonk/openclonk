@@ -10,6 +10,8 @@
 // Do mind that IsContainer is set to false, so the hook can't be taken out via the interaction menu (very important)
 // See below in Callbacks for IsContainer
 
+#include Library_Flammable
+
 local is_aiming;
 local animation_set;
 local hook;
@@ -281,6 +283,7 @@ func Definition(proplist def)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local BlastIncinerate = 30;
-local ContactIncinerate = 0;
 local Components = {Wood = 2, Metal = 1/*, Rope = 1*/};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;

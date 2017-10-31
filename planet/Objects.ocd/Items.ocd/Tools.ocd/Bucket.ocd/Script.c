@@ -9,6 +9,8 @@
 // Uses an extra-slot to store and display material.
 #include Library_HasExtraSlot
 
+#include Library_Flammable
+
 /*-- Engine Callbacks --*/
 
 protected func Hit()
@@ -170,3 +172,6 @@ local Collectible = true;
 local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 1};
 local ExtraSlotFilter = "IsBucketMaterial";
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;

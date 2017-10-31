@@ -8,6 +8,7 @@
 #include Library_CarryHeavy
 #include Library_LiquidContainer
 #include Library_HasExtraSlot
+#include Library_Flammable
 
 /*-- Engine Callbacks --*/
 

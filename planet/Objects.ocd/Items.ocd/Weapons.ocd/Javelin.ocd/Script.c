@@ -7,6 +7,7 @@
 
 #include Library_Stackable
 #include Library_RangedWeapon
+#include Library_Flammable
 
 // Default timing values for animation set
 // (Adjusted for speeed multiplier and stored in animation set by Library_RangedWeapon)
@@ -278,5 +279,7 @@ local Description = "$Description$";
 local Collectible = true;
 local ForceFreeHands = true;
 local Components = {Wood = 2, Metal = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
 // Multiplication factor to clonk.ThrowSpeed
 local shooting_strength = 21;

@@ -7,6 +7,7 @@
 
 #include Library_HasExtraSlot
 #include Library_RangedWeapon
+#include Library_Flammable
 
 local fAiming;
 local iArrowMesh;
@@ -249,10 +250,10 @@ func Definition(def)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
-local BlastIncinerate = 30;
-local ContactIncinerate = 5;
 local ForceFreeHands = true;
 local Components = {Wood = 3};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
 // Initial velocity of the arrow
 local shooting_strength = 100;
 

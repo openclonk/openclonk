@@ -3,6 +3,8 @@
 	Authors: Mimmo, Clonkonaut
 --*/
 
+#include Library_Flammable
+
 static const MOSS_MAXWETNESS = 30; // Moisture the moss can achieve. Dries out within 36*MOSS_MAXWETNESS frames
 static const MOSS_MAXDIST = 50; // Used for various distance checks
 local wetness;

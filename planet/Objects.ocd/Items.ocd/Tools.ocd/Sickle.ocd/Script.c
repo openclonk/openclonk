@@ -5,6 +5,8 @@
 	@author: Clonkonaut
 */
 
+#include Library_Flammable
+
 /*-- Engine Callbacks --*/
 
 private func Hit()
@@ -85,3 +87,6 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
 local Components = {Wood = 1, Metal = 1};
+local BlastIncinerate = 30;
+local MaterialIncinerate = true;
+local BurnDownTime = 140;

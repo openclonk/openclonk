@@ -6,6 +6,7 @@
 */
 
 #include Library_Seed
+#include Library_Flammable
 
 local lib_seed_plant = Cotton;
 

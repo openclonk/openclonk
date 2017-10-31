@@ -1,5 +1,7 @@
 /*--- The Log ---*/
 
+#include Library_Flammable
+
 protected func Hit()
 {
 	Sound("Hits::Materials::Wood::WoodHit?");
@@ -9,6 +11,7 @@ protected func Hit()
 func Incineration()
 {
 	SetClrModulation(RGB(48, 32, 32));
+	_inherited(...);
 }
 
 public func IsFuel() { return true; }
