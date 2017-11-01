@@ -1,0 +1,14 @@
+[DefCore]
+id=DestructibleFragment
+Version=8,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=20
+Mass=10
+Rotate=1
+StretchGrowth=1
