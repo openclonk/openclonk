@@ -6,6 +6,7 @@
 */
 
 #include Library_ElevatorControl
+#include Library_Destructible
 
 local aim_anim;
 local turn_anim;
@@ -357,7 +358,6 @@ private func GetSpawnInfoString(proplist enemy_data)
 	return Format("{{Catapult}}%s", EnemySpawn->GetAICreatureInfoString(enemy_data.Gunner));
 }
 
-
 /* Properties */
 
 local Name = "$Name$";
@@ -366,6 +366,7 @@ local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
 local Components = {Metal = 1, Wood = 6};
+local HitPoints = 100;
 
 local ActMap = {
 	Roll = {

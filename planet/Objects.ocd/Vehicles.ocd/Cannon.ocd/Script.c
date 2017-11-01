@@ -8,6 +8,7 @@
 
 #include Library_HasExtraSlot
 #include Library_ElevatorControl
+#include Library_Destructible
 
 local animAim;
 local animTurn;
@@ -300,3 +301,4 @@ local Touchable = 1;
 local BorderBound = C4D_Border_Sides;
 local ContactCalls = true;
 local Components = {Metal = 4, Wood = 2};
+local HitPoints = 150;

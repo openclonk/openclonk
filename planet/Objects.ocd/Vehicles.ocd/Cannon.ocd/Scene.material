@@ -21,3 +21,17 @@ material Cannon
 		}
 	}
 }
+
+material Cannon_Damaged : Cannon
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture CannonDamaged.png
+			}
+		}
+	}
+}
