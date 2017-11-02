@@ -13,14 +13,14 @@ static const AStar = new Global
 
 	// Distance heuristic for selecting nodes. A good heuristic will speed up
 	// A*, a bad heuristic can lead to non-optimal paths.
-	distance = func(node, goal) { FatalError("todo"); },
+	distance = func(node, goal) { FatalError("This function needs to be implemented by an actual algorithm. The generic function does not exist and throws this error on purpose."); },
 
 	// Cost between two neighboring nodes. You'll need a different
 	// implementation if your goal isn't a regular node.
 	cost = func() { return this->distance(...); },
 
 	// Returns an array of neighboring nodes.
-	successors = func(a) { FatalError("todo"); },
+	successors = func(a) { FatalError("This function needs to be implemented by an actual algorithm. The generic function does not exist and throws this error on purpose."); },
 
 	// Equality function for nodes. DeepEqual works well for for objects as
 	// well as state proplists, but you may be able to supply a more efficient
