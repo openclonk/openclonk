@@ -10,7 +10,7 @@
  Throws a fatal error if the index is outside the array bounds.
  Use this if you want to prevent expanding arrays.
 
- @par a The array in question.
+ @par arr The array in question.
  @par index The index that is checked.
  */
 global func AssertArrayBounds(array arr, int index)
@@ -46,6 +46,22 @@ global func AssertObjectContext(string function_name)
 	if (!this)
 	{
 		FatalError(Format("%s must be called from object context!", function_name ?? "The function"));
+	}
+}
+
+
+/*
+ Throws a fatal error if the .
+ Use this if you want to prevent expanding arrays.
+
+ @par value The value to check. Can be a string or array. 
+ @par index The index that is checked.
+ */
+global func AssertNotEmpty(value)
+{
+	if (GetLength(value) == 0)
+	{
+		FatalError("Input must not be empty, but you passed an empty string or array.");
 	}
 }
 
