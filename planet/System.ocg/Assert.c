@@ -51,11 +51,10 @@ global func AssertObjectContext(string function_name)
 
 
 /*
- Throws a fatal error if the .
+ Throws a fatal error if the tested parameter has a length of 0.
  Use this if you want to prevent expanding arrays.
 
  @par value The value to check. Can be a string or array. 
- @par index The index that is checked.
  */
 global func AssertNotEmpty(value)
 {
