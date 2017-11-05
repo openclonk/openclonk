@@ -26,8 +26,12 @@ public func IsHUDAdapter()
 private func GetHUDController()
 {
 	var plr = GetOwner();
-	if (GetPlayerType(plr) != C4PT_User) return nil;
+	// During runtime join, plr isn't a valid player in the joining client yet
+	// when this function is called from OnSynchronized(). This code previously
+	// checked player validity before returning a cached HUD object which would
+	// cause a desync.
 	if (HUDcontroller) return HUDcontroller;
+	if (GetPlayerType(plr) != C4PT_User) return nil;
 	var controllerDef = Library_HUDController->GetGUIControllerID();
 	HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(plr));
 	if (!HUDcontroller)
