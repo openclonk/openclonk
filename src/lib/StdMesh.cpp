@@ -1593,7 +1593,10 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 			pComp->excCorrupt("Invalid number of submeshes");
 		for(int32_t i = 0; i < iSubMeshCnt; ++i)
 			pComp->Value(mkNamingAdapt(*SubMeshInstances[i], "SubMesh"));
+#ifndef USE_CONSOLE
+		// The sorting predicate depends on having a gfx implementation.
 		std::stable_sort(SubMeshInstancesOrdered.begin(), SubMeshInstancesOrdered.end(), StdMeshSubMeshInstanceVisibilityCmpPred());
+#endif
 
 		int32_t iAnimCnt = AnimationStack.size();
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
