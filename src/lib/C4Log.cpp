@@ -53,7 +53,7 @@ bool OpenLog()
 	while (!(C4LogFile = _fsopen(Config.AtUserDataPath(sLogFileName.getData()), "wt", _SH_DENYWR)))
 #elif defined(HAVE_SYS_FILE_H)
 	int fd = 0;
-	while (!(fd = open(Config.AtUserDataPath(sLogFileName.getData()), O_WRONLY | O_CREAT)) || flock(fd, LOCK_EX|LOCK_NB))
+	while (!(fd = open(Config.AtUserDataPath(sLogFileName.getData()), O_WRONLY | O_CREAT, 0644)) || flock(fd, LOCK_EX|LOCK_NB))
 #else
 	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")))
 #endif
