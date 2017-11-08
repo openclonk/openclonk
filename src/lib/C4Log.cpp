@@ -71,7 +71,7 @@ bool OpenLog()
 		// try different name
 		sLogFileName.Format(C4CFN_LogEx, iLog++);
 	}
-#ifdef HAVE_SYS_FILE_H
+#if !defined(_WIN32) && defined(HAVE_SYS_FILE_H)
 	ftruncate(fd, 0);
 	C4LogFile = fdopen(fd, "wb");
 #endif
