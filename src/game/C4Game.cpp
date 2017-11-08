@@ -3128,7 +3128,6 @@ void C4Game::ShowGameOverDlg()
 
 void C4Game::SyncClearance()
 {
-	PXS.SyncClearance();
 	Objects.SyncClearance();
 }
 
@@ -3144,7 +3143,6 @@ void C4Game::Synchronize(bool fSavePlayerFiles)
 	::Definitions.Synchronize();
 	Landscape.Synchronize();
 	MassMover.Synchronize();
-	PXS.Synchronize();
 	Objects.Synchronize();
 	// synchronize local player files if desired
 	// this will reset any InActionTimes!

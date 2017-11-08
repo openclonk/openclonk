@@ -24,17 +24,16 @@
 
 class C4PXS
 {
-	C4PXS(): Mat(MNone), x(Fix0), y(Fix0), xdir(Fix0), ydir(Fix0) {}
 	friend class C4PXSSystem;
 protected:
-	int32_t Mat;
-	C4Real x,y,xdir,ydir;
+	int32_t Mat{MNone};
+	C4Real x{Fix0}, y{Fix0}, xdir{Fix0}, ydir{Fix0};
 protected:
-	void Execute();
+	bool Execute();
 	void Deactivate();
 };
 
-const size_t PXSChunkSize=500,PXSMaxChunk=20;
+const size_t PXSMax = 10000;
 
 class C4PXSSystem
 {
@@ -42,18 +41,14 @@ public:
 	C4PXSSystem();
 	~C4PXSSystem();
 public:
-	int32_t Count;
+	size_t Count;
 protected:
-	C4PXS *Chunk[PXSMaxChunk];
-	size_t iChunkPXS[PXSMaxChunk];
+	C4PXS PXS[PXSMax];
 public:
-	void Delete(C4PXS *pPXS);
 	void Default();
 	void Clear();
 	void Execute();
 	void Draw(C4TargetFacet &cgo);
-	void Synchronize();
-	void SyncClearance();
 	void Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t level);
 	bool Create(int32_t mat, C4Real ix, C4Real iy, C4Real ixdir=Fix0, C4Real iydir=Fix0);
 	bool Load(C4Group &hGroup);
