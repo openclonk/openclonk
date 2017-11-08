@@ -1918,18 +1918,19 @@ bool C4Landscape::ApplyDiff(C4Group &hGroup)
 {
 	std::unique_ptr<CSurface8> pDiff, pDiffBkg;
 	// Load diff landscape from group
-	if ((pDiff = GroupReadSurface8(hGroup, C4CFN_DiffLandscape)) == nullptr) return false;
-	if ((pDiffBkg = GroupReadSurface8(hGroup, C4CFN_DiffLandscapeBkg)) == nullptr) return false;
+	pDiff = GroupReadSurface8(hGroup, C4CFN_DiffLandscape);
+	pDiffBkg = GroupReadSurface8(hGroup, C4CFN_DiffLandscapeBkg);
+	if (pDiff == nullptr && pDiffBkg == nullptr) return false;
 
 	// convert all pixels: keep if same material; re-set if different material
 	BYTE byPix;
 	for (int32_t y = 0; y < GetHeight(); ++y) for (int32_t x = 0; x < GetWidth(); ++x)
 	{
-		if (pDiff->GetPix(x, y) != C4M_MaxTexIndex)
+		if (pDiff && pDiff->GetPix(x, y) != C4M_MaxTexIndex)
 			if (p->Surface8->_GetPix(x, y) != (byPix = pDiff->_GetPix(x, y)))
 				// material has changed here: readjust with new texture
 				p->Surface8->SetPix(x, y, byPix);
-		if (pDiffBkg->GetPix(x, y) != C4M_MaxTexIndex)
+		if (pDiffBkg && pDiffBkg->GetPix(x, y) != C4M_MaxTexIndex)
 			if (p->Surface8Bkg->_GetPix(x, y) != (byPix = pDiffBkg->_GetPix(x, y)))
 				p->Surface8Bkg->_SetPix(x, y, byPix);
 	}
