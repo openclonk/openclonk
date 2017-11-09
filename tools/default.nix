@@ -14,7 +14,7 @@ pkgs.stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  hardeningDisable = "format";
+  hardeningDisable = [ "format" ];
 
   nativeBuildInputs = with pkgs; [ cmake pkgconfig ];
 
