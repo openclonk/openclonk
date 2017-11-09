@@ -59,7 +59,7 @@ bool OpenLog()
 #endif
 	{
 		// Already locked by another instance?
-#ifdef HAVE_SYS_FILE_H
+#if !defined(_WIN32) && defined(HAVE_SYS_FILE_H)
 		if (fd) close(fd);
 #else
 		if (C4LogFile) fclose(C4LogFile);
