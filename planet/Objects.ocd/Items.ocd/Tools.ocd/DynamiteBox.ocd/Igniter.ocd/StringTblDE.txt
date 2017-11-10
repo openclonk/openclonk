@@ -1,2 +1,2 @@
 Name=Zünder
-Description=Bring Dich in Sicherheit und drücke [Benutzen], um das Dynamit zu zünden.
+Description=Bring Dich in Sicherheit und halte [Benutzen] gedrückt, um das Dynamit zu zünden.

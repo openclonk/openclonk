@@ -92,11 +92,12 @@ public func ChangeToIgniter()
 	ChangeDef(Igniter);
 	SetGraphics("Picture", Igniter, 1, GFXOV_MODE_Picture);
 	// Update carrier
-	if (Contained())
+	var container = Contained();
+	if (container)
 	{
-		var pos = Contained()->~GetItemPos(this);
-		Contained()->~UpdateAttach();
-		Contained()->~OnSlotFull(pos);
+		var pos = container->~GetItemPos(this);
+		container->~UpdateAttach();
+		container->~OnSlotFull(pos);
 	}
 	return true;
 }
