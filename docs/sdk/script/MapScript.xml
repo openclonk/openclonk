@@ -292,6 +292,10 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
     <text>Jumbles its operand around by moving points by a randomized offset.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
+            <col>Op</col>
+            <col></col>
+            <col>Algorithms that is being manipulated.</col>
+          </row><row>
             <col>Seed</col>
             <col>Random(65536)</col>
             <col>If nonzero, the offset map is generated from a fixed seed.</col>
