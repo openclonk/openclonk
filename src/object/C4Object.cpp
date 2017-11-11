@@ -306,7 +306,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 		if (fExitContents)
 		{
 			// move objects to parent container or exit them completely
-			if (!pCont || !cobj->Enter(pCont, false))
+			bool fRejectCollect;
+			if (!pCont || !cobj->Enter(pCont, true, false, &fRejectCollect))
 				cobj->Exit(GetX(), GetY());
 		}
 		else
