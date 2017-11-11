@@ -417,7 +417,7 @@ local Description = "$Description$";
 local MaxEnergy = 150000;
 local MaxBreath = 360; // 360 = ten seconds
 local Placement = 1;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BreatheWater = 1;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 

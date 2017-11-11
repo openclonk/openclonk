@@ -148,6 +148,6 @@ local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 1;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local ContactIncinerate = 2;
 local Components = {Barrel = 1, Coal = 1};

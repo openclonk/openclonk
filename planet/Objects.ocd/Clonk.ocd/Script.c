@@ -1251,7 +1251,7 @@ local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
 local MaxMagic = 50000;
 local JumpSpeed = 400;
 local ThrowSpeed = 294;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local ContactIncinerate = 10;
 local BorderBound = C4D_Border_Sides;
 

@@ -250,6 +250,6 @@ local Name = "$Name$";
 local MaxEnergy = 30000;
 local MaxBreath = 250;
 local Placement = 2;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 local ContactCalls = true;

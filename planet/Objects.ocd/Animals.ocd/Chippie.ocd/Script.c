@@ -312,7 +312,7 @@ public func GrowthSpeed() { return 0; }
 
 local MaxEnergy = 10000;
 local MaxBreath = 10000;
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 local ContactIncinerate = 15;
 local CorrosionResist = true;
 local BorderBound = C4D_Border_Sides;

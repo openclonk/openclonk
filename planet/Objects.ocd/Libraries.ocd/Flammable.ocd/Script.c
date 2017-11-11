@@ -12,7 +12,7 @@
 */
 
 // Obviously, we don't want these items to burn down
-local NoBurnDecay = 1;
+local NoBurnDecay = true;
 // Items will burn for roughly 2 seconds until changing into a 'burned item' (no longer functional)
 // Feel free to change this time in your object (in frames)
 local BurnDownTime = 70;
