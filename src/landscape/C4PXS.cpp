@@ -162,6 +162,7 @@ void C4PXSSystem::Default()
 
 void C4PXSSystem::Clear()
 {
+	Count=0;
 }
 
 C4PXS* C4PXSSystem::New()
