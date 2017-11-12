@@ -380,6 +380,17 @@ static bool FnCanInsertMaterial(C4PropList * _this, long mat, long x, long y, C4
 	return true;
 }
 
+static bool FnExecutePXS(C4PropList * _this, long frames, C4PropList *callback)
+{
+	for (long i = 0; i < frames; i++)
+	{
+		::PXS.Execute();
+		if (callback)
+			callback->Call(P_Timer, &C4AulParSet(i));
+	}
+	return true;
+}
+
 static long FnGetMaterialCount(C4PropList * _this, long iMaterial, bool fReal)
 {
 	if (!MatValid(iMaterial)) return -1;
@@ -2835,6 +2846,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(BlastFree);
 	F(InsertMaterial);
 	F(CanInsertMaterial);
+	F(ExecutePXS);
 	F(LandscapeWidth);
 	F(LandscapeHeight);
 	F(SetAmbientBrightness);
