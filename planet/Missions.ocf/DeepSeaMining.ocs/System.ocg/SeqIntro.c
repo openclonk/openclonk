@@ -27,11 +27,9 @@ func Intro_Start()
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0)); // Hat is seen in the cockpit!
 
 	this.plane->PlaneMount(this.pilot);
-	this.plane.FxIntPlaneTimer = this.Intro_PlaneTimer;
-	RemoveEffect("IntPlane", this.plane);
-	AddEffect("IntPlane",this.plane,1,1,this.plane);
+	this.plane->CreateEffect(FxFloatPlane, 1, 1);
 	this.plane->FaceRight();
-	this.plane->StartInstantFlight(90, 0);
+	this.plane->StartInstantFlight(90, 15);
 	g_intro_sky_moving = true;
 	
 
@@ -40,25 +38,19 @@ func Intro_Start()
 	return ScheduleNext(100, 1);
 }
 
-func Intro_PlaneTimer(...)
+local FxFloatPlane = new Effect
 {
-	// Plane flight overload: Just move sky and have plane do turbulent movement during initial part of intro
-	var rv = Call(Airplane.FxIntPlaneTimer, ...);
-	if (g_intro_sky_moving)
+	Timer = func(int time)
 	{
-		if (!Random(4)) this.rdir = BoundBy((80+Random(21)-GetR())/5,-1,1);
-		SetXDir(); SetYDir(GetR()*2-GetY()+Random(5),10);
+		if (g_intro_sky_moving)
+		{
+			var rdir = BoundBy((80 + Random(21) - Target->GetR()) / 5, -1, 1);
+			Target->SetR(Target->GetR() + rdir);
+			Target->SetXDir(0);
+			Target->SetYDir(Target->GetR() * 2 - Target->GetY() + Random(5), 10);
+		}
 	}
-	//propellor
-	var change = GetAnimationPosition(this.propanim) + 15 * 3;
-	if(change > GetAnimationLength("Propellor"))
-		change = (GetAnimationPosition(this.propanim) + 15 * 3) - GetAnimationLength("Propellor");
-	if(change < 0)
-		change = (GetAnimationLength("Propellor") - 15 * 3);
-
-	SetAnimationPosition(this.propanim, Anim_Const(change));
-	return rv;
-}
+};
 
 func Intro_JoinPlayer(int plr)
 {

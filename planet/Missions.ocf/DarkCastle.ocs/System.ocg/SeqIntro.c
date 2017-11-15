@@ -109,7 +109,7 @@ func Intro_6()
 	this.projectile->DoExplode();
 	this.plane->SetMeshMaterial("CrashedAirplane");
 	this.plane->CancelFlight();
-	RemoveEffect("IntPlane", this.plane);
+	this.plane->RemovePlaneControl();
 	this.plane->SetRDir(-10);
 	// Calc fling direction to land near flagpole
 	var tx = 135 - this.plane->GetX();

@@ -112,7 +112,7 @@ public func Intro_5()
 	this.airplane->SetMeshMaterial("CrashedAirplane");
 	this.airplane->MakeBroken();
 	this.airplane->CancelFlight();
-	RemoveEffect("IntPlane", this.airplane);
+	this.airplane->RemovePlaneControl();
 	this.airplane->SetRDir(10);
 	this.airplane->SetSpeed(46, -56);
 	// Forward plane hit call to sequence.

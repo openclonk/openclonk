@@ -8,6 +8,7 @@ NoBarrels=No more liquid!
 NoBalloons=No balloons!
 NoSpaceInInventory=Inventory full!|No space for the balloon!
 NoObjects=Empty!
+NoOil=No oil!
 
 SelectedAction=Firing mode:|%s ({{%i}})
 AirplaneSettings=Select airplane firing mode:
@@ -20,6 +21,7 @@ Bomb=Bomb drop
 Spray=Liquid spray
 Balloon=Balloon parachute
 Drop=Object drop
+Afterburner=Afterburner
 
 BulletInfo=Fire the main cannon, shooting bullets ({{LeadBullet}}). Shots available: %d.
 RocketInfo=Fire boompacks ({{Boompack}}) from the airplane. Rockets available: %d.
@@ -27,3 +29,4 @@ BombInfo=Drop bombs ({{IronBomb}} and {{Dynamite}}) from the airplane. Bombs ava
 SprayInfo=Spray liquids stored in barrels ({{Barrel}} and {{MetalBarrel}}) from the airplane. Barrels available: %d.
 BalloonInfo=Parachute from the airplane with a balloon ({{Balloon}}). This action will be available for passengers, too. Balloons available: %d.
 DropInfo=Drop contents from the airplane.
+AfterburnerInfo=Use oil to speed up the airplane.

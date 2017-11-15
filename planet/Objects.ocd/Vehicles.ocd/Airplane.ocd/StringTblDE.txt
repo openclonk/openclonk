@@ -8,6 +8,7 @@ NoBarrels=Keine Flüssigkeiten|mehr!
 NoBalloons=Keine Ballons!
 NoSpaceInInventory=Inventar voll!|Kein Platz für den Ballon!
 NoObjects=Leer!
+NoOil=Kein Öl!
 
 SelectedAction=Schussmodus:|%s ({{%i}})
 AirplaneSettings=Schussmodus auswählen:
@@ -20,6 +21,7 @@ Bomb=Bombenabwurf
 Spray=Flüssigkeitsabwurf
 Balloon=Ballon-Fallschirmsprung
 Drop=Objektabwurf
+Afterburner=Nachbrenner
 
 BulletInfo=Mit der Kanone schießen. Schießt Kugeln ({{LeadBullet}}). Kugeln verfügbar: %d.
 RocketInfo=Feuert Boompacks ({{Boompack}}) aus dem Flugzeug. Boompacks verfügbar: %d.
@@ -27,3 +29,4 @@ BombInfo=Werfe Bomben ({{IronBomb}} und {{Dynamite}}) ab. Bomben verfügbar: %d.
 SprayInfo=Überzieht die Landschaft mit einem Flüssigkeitsregen. Flüssigkeit muss in Fässern ({{Barrel}} und {{MetalBarrel}}) gelagert werden. Fässer verfügbar: %d.
 BalloonInfo=Mit einem Ballon ({{Balloon}}) vom Flugzeug abspringen. Diese Aktion kann auch von anderen Clonks, die das Flugzeug nicht steuern, ausgeführt werden. Ballons verfügbar: %d.
 DropInfo=Werfe Objekte aus dem Flugzeug ab.
+AfterburnerInfo=Verwende Öl um das Flugzeug zu beschleunigen.
