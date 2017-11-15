@@ -287,20 +287,20 @@ public func ToggleMainAction(object clonk)
 // Main action
 public func ContainedUseStart(object clonk, int x, int y)
 {
-	var call = Format("Use%s", main_action, x, y);
-	return this->Call(call, clonk);
+	var call = Format("Use%s", main_action);
+	return this->Call(call, clonk, x, y);
 }
 
 public func ContainedUseStop(object clonk, int x, int y)
 {
-	var call = Format("Cancel%s", main_action, x, y);
-	return this->Call(call, clonk);
+	var call = Format("Cancel%s", main_action);
+	return this->Call(call, clonk, x, y);
 }
 
 public func ContainedUseCancel(object clonk, int x, int y)
 {
-	var call = Format("Cancel%s", main_action, x, y);
-	return this->Call(call, clonk);
+	var call = Format("Cancel%s", main_action);
+	return this->Call(call, clonk, x, y);
 }
 
 // Alt Use: toggle firing mode
@@ -567,18 +567,18 @@ public func FireRocket(object rocket, int x, int y)
 	var launch_y = Sin(GetR() - 180 * (1 - dir), 10);
 	rocket->Exit(launch_x, launch_y, GetR(), GetXDir(), GetYDir());
 	rocket->Launch(GetR(), nil, this);
-	var effect = AddEffect("IntControlRocket", rocket, 100, 1, this);
-	effect.x = GetX() + x;
-	effect.y = GetY() + y;
+	var fx = AddEffect("IntControlRocket", rocket, 100, 1, this);
+	fx.x = GetX() + x;
+	fx.y = GetY() + y;
 	rocket->SetDirectionDeviation(0);
 }
 
-public func FxIntControlRocketTimer(object target, proplist effect, int time)
+public func FxIntControlRocketTimer(object target, effect fx, int time)
 {
 	// Remove gravity on rocket.
 	target->SetYDir(target->GetYDir(100) - GetGravity(), 100);
 	// Adjust angle to target.
-	var angle_to_target = Angle(target->GetX(), target->GetY(), effect.x, effect.y);
+	var angle_to_target = Angle(target->GetX(), target->GetY(), fx.x, fx.y);
 	var angle_rocket = target->GetR();
 	if (angle_rocket < 0)
 		angle_rocket += 360;
