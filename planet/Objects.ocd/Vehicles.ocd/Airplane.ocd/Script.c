@@ -1172,6 +1172,9 @@ public func PlaneDismount(object clonk)
 	clonk->StopAnimation(clonk->GetRootAnimation(15));
 	DetachMesh(clonkmesh);
 	clonkmesh = nil;
+	// Ensure the current use is cancelled.
+	if (clonk == pilot)
+		ContainedUseCancel(pilot, 0, 0);
 	pilot = nil;
 	CancelFlight();
 	return true;
