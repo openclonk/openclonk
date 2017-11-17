@@ -35,17 +35,18 @@ public func ControlUseStart(object clonk, int x, int y)
 		return true;
 	if (IsBeingIgnited())
 		return true;
+		
+	var ignite_time = 40;
+	// Launch the ignition effect.
+	CreateEffect(FxScheduleIgnite, 100, ignite_time, clonk);
 
 	// The clonk has to stand.
 	clonk->SetAction("Stand");
 	clonk->SetXDir(0);
 
-	var ignite_time = 40;
+	// Play ignite animation.
 	clonk->PlayAnimation("DoIgnite", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("DoIgnite"), ignite_time, ANIM_Hold), Anim_Const(1000));
 	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"), ignite_time, ANIM_Hold));
-
-	// Launch the ignition effect.
-	CreateEffect(FxScheduleIgnite, 100, ignite_time, clonk);
 	return true;
 }
 
@@ -84,7 +85,7 @@ local FxScheduleIgnite = new Effect
 
 public func IsBeingIgnited()
 {
-	return !! GetEffect("FxScheduleIgnite", this);
+	return !!GetEffect("FxScheduleIgnite", this);
 }
 
 public func Ignite(object clonk)
@@ -98,8 +99,6 @@ public func Ignite(object clonk)
 
 public func ResetClonk(object clonk, bool remove_igniter)
 {
-	Log("[%d]", FrameCounter());
-	LogCallStack();
 	// Reset animation of the clonk.
 	clonk->StopAnimation(clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms));
 	clonk->SetAction("Walk");
