@@ -40,12 +40,12 @@ public func ControlUseStart(object clonk, int x, int y)
 	clonk->SetAction("Stand");
 	clonk->SetXDir(0);
 
-	var ignite_time = 32;
+	var ignite_time = 40;
 	clonk->PlayAnimation("DoIgnite", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("DoIgnite"), ignite_time, ANIM_Hold), Anim_Const(1000));
 	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"), ignite_time, ANIM_Hold));
 
 	// Launch the ignition effect.
-	CreateEffect(FxScheduleIgnite, 100, ignite_time + 4, clonk);
+	CreateEffect(FxScheduleIgnite, 100, ignite_time, clonk);
 	return true;
 }
 
@@ -92,17 +92,19 @@ public func Ignite(object clonk)
 	// Ignite all connected wires
 	for (var obj in FindFuses())
 		obj->~StartFusing(this);
-
-	ScheduleCall(this, "ResetClonk", 12, 1, clonk, true);
+	ScheduleCall(this, "ResetClonk", 4, 1, clonk, true);
 	return;
 }
 
 public func ResetClonk(object clonk, bool remove_igniter)
 {
+	Log("[%d]", FrameCounter());
+	LogCallStack();
 	// Reset animation of the clonk.
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->StopAnimation(clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms));
 	clonk->SetAction("Walk");
-	clonk->DetachObject(this);
+	if (remove_igniter)
+		clonk->DetachObject(this);
 	// Reset animation of the igniter and remove it.
 	StopAnimation(GetRootAnimation(1));
 	if (remove_igniter)
