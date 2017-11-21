@@ -845,8 +845,6 @@ func PopActionSpeed(string action, int n) {
 
 func StartHangle()
 {
-/*	if(Clonk_HangleStates == nil)
-		Clonk_HangleStates = ["HangleStand", "Hangle"];*/
 	if(!GetEffect("IntHangle", this))
 		AddEffect("IntHangle", this, 1, 1, this);
 	// Set proper turn type
@@ -901,34 +899,43 @@ func FxIntHangleTimer(pTarget, effect, iTime)
 
 		SetAnimationPosition(effect.animation_id, Anim_Const(position % GetAnimationLength("Hangle")));
 
-		// Continue movement, if the clonk still has momentum
-		if(GetComDir() == COMD_Stop && iSpeed>10)
+		// Stop movement
+		if (GetComDir() == COMD_Stop)
 		{
-			// Make it stop after the current movement
-			effect.request_stop = 1;
-
-			if(GetDir())
-				SetComDir(COMD_Right);
+			if (!effect.request_stop)
+			{
+				// Delay the stop animation a little, for nicer looking motion of the clonk
+				// This is still the same variable name as in the previous implementation,
+				// although the functionality was changed a little - this should impact
+				// other parts of the script that maybe rely on this variable name 
+				// as little as possible.
+				// This also prevents a strange pose of the clonk if you hangle by
+				// tapping the left/right buttons repeatedly.
+				effect.request_stop = 10; // play the current animation for 10 more timer calls
+			}
 			else
-				SetComDir(COMD_Left);
+			{
+				// Start the hanging animation once the delay is over
+				effect.request_stop -= 1;
+				if (effect.request_stop == 0)
+				{
+					// Remember the pose (front or back)
+					if(GetAnimationPosition(effect.animation_id) > 2500 && GetAnimationPosition(effect.animation_id) < 7500)
+						effect.facing_front = 1;
+					else
+						effect.facing_front = 0;
+		
+					// Change to HangleStand animation
+					var begin = 4000*effect.facing_front;
+					var end = 2000+begin;
+					effect.animation_id = PlayAnimation("HangleStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(begin, begin, end, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+					effect.is_moving = 0;
+				}
+			}
 		}
-		// Stop movement if the clonk has lost his momentum
-		else if(iSpeed <= 10 && (GetComDir() == COMD_Stop || effect.request_stop))
+		else
 		{
-			effect.request_stop = 0;
-			SetComDir(COMD_Stop);
-
-			// and remeber the pose (front or back)
-			if(GetAnimationPosition(effect.animation_id) > 2500 && GetAnimationPosition(effect.animation_id) < 7500)
-				effect.facing_front = 1;
-			else
-				effect.facing_front = 0;
-
-			// Change to HangleStand animation
-			var begin = 4000*effect.facing_front;
-			var end = 2000+begin;
-			effect.animation_id = PlayAnimation("HangleStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(begin, begin, end, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-			effect.is_moving = 0;
+			effect.request_stop = 0; // Reset the delay
 		}
 	}
 	else
