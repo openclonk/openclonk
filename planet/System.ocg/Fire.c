@@ -78,10 +78,24 @@ global func Incinerate(
 // Called if the object is submerged in incendiary material (for example in lava).
 global func OnInIncendiaryMaterial()
 {
+	if (this->IsInFireproofContainer())
+		return;
 	this->DoEnergy(-7, false, FX_Call_EngFire, NO_OWNER);
 	// The object might have removed itself.
 	if (!this) return true;
 	return this->Incinerate(15, NO_OWNER);
+}
+
+global func IsInFireproofContainer()
+{
+	if (!this) return false;
+	if (this->Contained())
+	{
+		if (this->Contained().FireproofContainer)
+			return true;
+		return this->Contained()->IsInFireproofContainer();
+	}
+	return false;
 }
 
 // Makes the calling object non flammable.

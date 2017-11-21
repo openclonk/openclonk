@@ -89,5 +89,6 @@ local Name = "$Name$";
 local Description ="$Description$";
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
 local Components = {Wood = 3, Metal = 2, Loam = 2};

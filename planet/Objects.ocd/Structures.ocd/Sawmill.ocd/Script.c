@@ -310,5 +310,6 @@ local Description = "$Description$";
 local SpinStep = 30;
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
 local Components = {Rock = 4, Wood = 1};

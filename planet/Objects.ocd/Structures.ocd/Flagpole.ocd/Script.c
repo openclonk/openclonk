@@ -129,5 +129,6 @@ public func Definition(def, ...)
 local Name = "$Name$";
 local Description = "$Description$";
 local HitPoints = 60;
+local FireproofContainer = true;
 local neutral = false;
 local Components = {Wood = 3, Metal = 1};

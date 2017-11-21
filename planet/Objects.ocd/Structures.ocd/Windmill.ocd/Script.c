@@ -209,6 +209,7 @@ protected func Definition(def)
 
 local ContainBlast = true;
 local BlastIncinerate = 100;
+local FireproofContainer = true;
 local HitPoints = 70;
 local Name = "$Name$";
 local Description = "$Description$";

@@ -176,6 +176,11 @@ Stand = {
           <col>Incineration when submerged in incendiary material.</col>
         </row>
 		<row>
+          <literal_col>FireproofContainer</literal_col>
+          <col>bool</col>
+          <col>Anything contained in this object does not catch fire when submerged in incendiary material.</col>
+        </row>
+		<row>
           <literal_col>EditCursorCommands</literal_col>
           <col>Array</col>
           <col>Array of functions made available in the context menu when right-clicking an object in the editor. Functions may be either strings (like "Explode(20)") or function pointers (like this.Hit). Function pointers are always called by name.</col>
