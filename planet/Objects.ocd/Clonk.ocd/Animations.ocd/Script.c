@@ -890,7 +890,9 @@ func FxIntHangleTimer(pTarget, effect, iTime)
 	if(effect.is_moving)
 	{
 		// Use a cosine-shaped movement speed (the clonk only moves when he makes a "stroke")
-		var iSpeed = 50-Cos(GetAnimationPosition(effect.animation_id)/10*360*2/1000, 50);
+		// The speed factor used to be between 0 and 50 (radius 50 in the cos function),
+		// now it is between 25 and 50 for a motion that feels more fluid 
+		var iSpeed = 50-Cos(GetAnimationPosition(effect.animation_id)/10*360*2/1000, 25);
 		ActMap.Hangle.Speed = effect.hangle_speed*iSpeed/50;
 
 		// Exec movement animation (TODO: Use Anim_Linear?)
