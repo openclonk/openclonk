@@ -6,12 +6,6 @@
 --*/
 
 
-/*local fDrawn;
-local fAttack;
-local iAnimStrike;*/
-
-//local iWeaponChargeType;
-//local hWeaponMesh;
 local hWeaponAnimStrike;
 
 func Construction()
@@ -41,16 +35,9 @@ public func CanStrikeWithWeapon(clonk)
 	return true;
 }
 
-func FxDelayTranslateVelocityStart(pTarget, effect, temp, p1)
-{
-	if(temp) return;
-	//effect.var0 = p1; // old flinging behavior
-}
 
 func FxDelayTranslateVelocityTimer(pTarget, effect, iEffectTime)
 {
-	//if(iEffectNumber.var0)
-	//	if(iEffectTime > iEffectNumber.var0) return -1;
 	if(pTarget->GetContact(-1) & CNAT_Bottom) return -1;
 	return 1;
 }
@@ -84,65 +71,6 @@ func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 		return -1;
 	}
 	this->CheckStrike(iEffectTime);
-	
-	/*	var x, y;
-		var time = Min(iEffectTime, strikeTime);
-		var step=(((time*100) / GetStrikeTime()) * 180) / 100;
-		x=-Cos(step, 10);
-		y=-Sin(step, 6)-3;
-		if(GetChargeType() == L_WN_down) y*=-1;
-		if(pTarget->GetDir() == DIR_Left) x *= -1;
-		
-		var strength = 0;
-		if(iEffectTime <= GetStrikeTime())
-			strength = (((iEffectTime*100)/GetStrikeTime()) * this->WeaponSharpness()) / 100;
-		var bash = EffectCall(pTarget, iEffectNumber, "GetBash");
-		var bashAngle = Angle(0, 0, pTarget->GetXDir(), pTarget->GetYDir());
-		var found = false;
-		for(var obj in FindObjects(Find_AtPoint(x, y), Find_OCF(OCF_Alive), Find_Exclude(pTarget)))
-		{
-			var b = bash;
-			var b2;
-			var effect;
-			if(effect = GetEffect("IntWeaponCharge", obj))
-				if(pTarget->GetDir() != obj->GetDir()) // facing each other
-									b2 = EffectCall(0, effect, "GetBash");
-		
-			var xVel=Abs(pTarget->GetXDir());
-			if(BoundBy(pTarget->GetXDir(), -1, 1) != BoundBy(obj->GetXDir(), -1, 1))
-				xVel+=Abs(obj->GetXDir());
-			else xVel-=Abs(obj->GetXDir());
-			
-			var yVel=Abs(pTarget->GetYDir());
-			if(BoundBy(pTarget->GetYDir(), -1, 1) != BoundBy(obj->GetYDir(), -1, 1))
-				yVel+=Abs(obj->GetYDir());
-			else yVel-=Abs(obj->GetYDir());
-			b = (b*Sqrt((xVel**2)+(yVel**2)));
-			
-			var dmg = ((2*strength) + b) / 3;
-			if(b > strength) dmg = ((2*b) + strength) / 3;
-			var angle = 0;
-			if(bash != 0) angle = bashAngle;
-			dmg = Max(0, dmg - b2);
-			
-			if(dmg)
-				AddEffect("IntIsBeingStruck", obj, 1, 1, 0, GetID(), dmg, angle);
-			Log("b: %d  strength: %d  b2: %d dmg: %d xVel: %d yVel: %d", b, strength, b2, dmg);
-			found = true;
-		}
-		
-		if(found)
-		{
-			var velocity = Sqrt((pTarget->GetXDir())**2 + (pTarget->GetYDir())**2);
-			velocity = Min(1, velocity-1);
-			pTarget->SetSpeed(Sin(bashAngle, velocity), -Cos(bashAngle, velocity));
-		}
-		
-		if(iEffectTime == GetStrikeTime()+1)
-		{
-			effect.Interval = 3;
-			effect.Time = 0;
-		}*/
 }
 
 func FxIntWeaponChargeStop(pTarget, effect, iReason, iTemp)
@@ -152,7 +80,6 @@ func FxIntWeaponChargeStop(pTarget, effect, iReason, iTemp)
 	if(this)
 	{
 		this->StopWeaponAnimation(pTarget);
-		//this->DetachWeaponMesh(pTarget);
 		this->~OnWeaponHitCheckStop(pTarget);
 	}
 	
@@ -171,7 +98,6 @@ func FxIntWeaponChargeGetWeaponSlow(pTarget, effect)
 func FxIntWeaponChargeGetBash(pTarget, effect)
 {
 	return 0;
-	//return (this->WeaponBash() * Sqrt((pTarget->GetXDir())**2+(pTarget->GetYDir())**2)) / 1000;
 }
 
 func FxIntWeaponChargeHitByWeapon(pTarget, effect)
@@ -247,10 +173,6 @@ func FxIntIsBeingStruckAdd (object pTarget, effect, string szNewEffectName, int 
 
 func GetStrikeAnimation()
 {
-	/*if(iWeaponChargeType == L_WN_straight) return "StrikeArms";
-	if(iWeaponChargeType == L_WN_up) return "Strike2Arms";
-	if(iWeaponChargeType == L_WN_down) return "Strike3Arms";
-	DebugLog("WARNING: L_WN::GetStrikeAnimation() called at the wrong time!");*/
 	return "StrikeArms";
 }
 
@@ -268,11 +190,6 @@ func PlayWeaponAnimation(pTarget)
 	hWeaponAnimStrike = pTarget->PlayAnimation(...);
 }
 
-/*func StartWeaponAnimation(pTarget)
-{
-	if(hWeaponAnimStrike) StopWeaponAnimation(pTarget);
-	hWeaponAnimStrike = pTarget->PlayAnimation(GetStrikeAnimation(), CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, pTarget->GetAnimationLength(GetStrikeAnimation()), GetStrikeTime(), ANIM_Remove), Anim_Const(1000));
-}*/
 
 func GetRelativeVelocity(pObject1, pObject2)
 {
@@ -289,26 +206,6 @@ func GetRelativeVelocity(pObject1, pObject2)
 	b = Sqrt((xVel**2)+(yVel**2));
 	return b;
 }
-
-
-
-/*
-func AttachWeaponMesh(pTarget)
-{
-	if(hWeaponMesh)
-	{
-		DetachWeaponMesh(pTarget);
-	}
-	hWeaponMesh = pTarget->AttachMesh(GetID(), "pos_hand1", "Main", 130);
-}
-
-func DetachWeaponMesh(pTarget)
-{
-	if(!hWeaponMesh) return;
-	pTarget->DetachMesh(hWeaponMesh);
-	hWeaponMesh = 0;
-}
-*/
 
 
 func GetJumpLength(pClonk)
@@ -332,7 +229,6 @@ func ApplyShieldFactor(pFrom, pTo, damage)
 	
 	var state=0;
 	var shield=-1;
-	//for(var i = GetEffectCount(0, pTo); i--;)
 	for(;state <= 1;state++)
 	{
 		var effect_name="*Shield*";
@@ -341,8 +237,6 @@ func ApplyShieldFactor(pFrom, pTo, damage)
 		var i=0;
 		while(iEffect=GetEffect(effect_name, pTo, i++))
 		{
-			//iEffect = GetEffect("*Shield*", pTo, i);
-			//if(!iEffect) iEffect = GetEffect("IntWeaponCharge", pTo, i);
 			var s=EffectCall(pTo, iEffect, "HitByWeapon", pFrom, damage);
 			if(s && shield == -1) shield=s;
 			else if(s)
@@ -405,8 +299,6 @@ func TranslateVelocity(object pTarget, int angle, int iLimited, int iExtraVeloci
 	
 	if(iLimited)
 	{
-		//if(Abs(angle-a) > Abs(angle-(a+360)))
-		//	a=(a+360);
 		angle+=360;
 		a+=360;
 		angle=BoundBy(angle, a-iLimited, a+iLimited);
