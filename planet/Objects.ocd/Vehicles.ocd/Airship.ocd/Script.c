@@ -311,6 +311,9 @@ public func GetCrewMembers()
 // Only is a projectile target if the projectile hits the balloon part of the airship.
 public func IsProjectileTarget(object projectile, object shooter)
 {
+	// If there is no projectile assume it is a general request and thus return true.
+	if (!projectile)
+		return true;
 	// Ensure the hitbox overlaps roughly with the balloon part.
 	var dx = GetX() - projectile->GetX();
 	var dy = GetY() - projectile->GetY();
