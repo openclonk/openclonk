@@ -84,7 +84,7 @@ public func OnUnmount(clonk)
 
 public func IsProjectileTarget(object projectile)
 {
-	return projectile->GetID() != GetID();
+	return !projectile || projectile->GetID() != GetID();
 }
 
 public func OnProjectileHit(object projectile)

@@ -244,7 +244,7 @@ public func OnUnmount(object clonk)
 /*-- Explosion --*/
 
 // Don't get hit by projectiles shot from own rider.
-public func IsProjectileTarget(target,shooter) { return (!shooter) || (shooter->GetActionTarget() != this); }
+public func IsProjectileTarget(object projectile, object shooter) { return (!shooter) || (shooter->GetActionTarget() != this); }
 public func OnProjectileHit(object shot) { return DoFireworks(shot->GetController()); }
 
 public func ContactBottom() { return Hit(); }

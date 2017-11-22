@@ -28,9 +28,9 @@ global func FxHorizontalMovingTimer(object target, effect, int time)
 	return 1;
 }
 
-public func IsProjectileTarget(target,shooter)
+public func IsProjectileTarget(object projectile, object shooter)
 {
-	return 1;
+	return true;
 }
 
 public func OnProjectileHit(object projectile)

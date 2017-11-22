@@ -241,6 +241,9 @@ protected func OnUnmount(object clonk)
 
 public func IsProjectileTarget(object projectile, object shooter)
 {
+	// If there is no projectile assume it is a general request and thus return true.
+	if (!projectile)
+		return true;
 	// Exclude the bottom triangle edges from the hitbox such that projectiles can be shot while hanging on the balloon.
 	var dx = GetX() - projectile->GetX();
 	var dy = GetY() - projectile->GetY() + GetBottom();

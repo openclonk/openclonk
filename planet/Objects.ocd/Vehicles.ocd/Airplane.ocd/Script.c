@@ -94,7 +94,7 @@ public func Hit(int xdir, int ydir)
 
 public func IsContainer() { return true; }
 
-public func IsProjectileTarget(target, shooter) { return true; }
+public func IsProjectileTarget(object projectile, object shooter) { return true; }
 
 
 /*-- Interface --*/

@@ -215,10 +215,11 @@ func Damage()
 	Die(false);
 }
 
-func IsProjectileTarget(object weapon, object wielder)
+public func IsProjectileTarget(object projectile, object shooter)
 {
-	if(Random(20)) return false;
-	return ObjectDistance(this, weapon) < 15;
+	if(Random(20))
+		return false;
+	return !projectile || ObjectDistance(this, projectile) < 15;
 }
 
 func AttachTargetLost()
