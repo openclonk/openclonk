@@ -81,7 +81,6 @@ local FxCheckLocomotive = new Effect
 	{
 		if (Target->GetX() > LandscapeWidth() - 14)
 		{
-			Log("train passed after: %d", time);
 			if (time <= this.time_allowed)
 				this.goal->DoPassed(1);
 			Target->RemoveObject();

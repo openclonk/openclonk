@@ -8,4 +8,4 @@ Tipps:
 - There are infinite sources of rock, coal, ore and water on the left and right island.
 - You need a set up transport lines to get the necessary resources.
 - Use the switch to signify that the train line is ready.
-- To fulfill the goal 10 trains need to pass the line (protection for 5 minutes).
+- To fulfill the goal a number of trains need to pass the line.
