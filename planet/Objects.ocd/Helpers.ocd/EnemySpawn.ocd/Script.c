@@ -381,7 +381,7 @@ public func SpawnClonk(array pos, proplist clonk_data, proplist enemy_def, array
 	if (clonk_data.ScaleX != 100 || clonk_data.ScaleY != 100)
 	{
 		var scale_z = (clonk_data.ScaleX + clonk_data.ScaleY) / 2;
-		clonk->SetMeshTransformation(Trans_Scale(clonk_data.ScaleX, clonk_data.ScaleY, scale_z), 6);
+		clonk->SetMeshTransformation(Trans_Scale(clonk_data.ScaleX, clonk_data.ScaleY, scale_z), CLONK_MESH_TRANSFORM_SLOT_Scale);
 	}
 	if (clonk_data.Name && GetLength(clonk_data.Name))
 	{

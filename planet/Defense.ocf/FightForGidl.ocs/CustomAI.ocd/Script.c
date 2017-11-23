@@ -130,7 +130,7 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 			obj->SetSkin(enemy.Skin);
 	}
 	if (GetType(enemy.Backpack)) obj->~RemoveBackpack();
-	if (enemy.Scale) obj->SetMeshTransformation(Trans_Scale(enemy.Scale[0], enemy.Scale[1], enemy.Scale[2]), 6);
+	if (enemy.Scale) obj->SetMeshTransformation(Trans_Scale(enemy.Scale[0], enemy.Scale[1], enemy.Scale[2]), CLONK_MESH_TRANSFORM_SLOT_Scale);
 	if (enemy.Name) obj->SetName(enemy.Name);
 	obj->SetColor(enemy.Color);
 	// Physical properties

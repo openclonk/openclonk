@@ -123,7 +123,7 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 	if(iRot != effect.curr_rot)
 	{
 		effect.curr_rot += BoundBy(iRot-effect.curr_rot, -18, 18);
-		SetMeshTransformation(Trans_Rotate(effect.curr_rot, 0, 1, 0), 0);
+		SetMeshTransformation(Trans_Rotate(effect.curr_rot, 0, 1, 0), CLONK_MESH_TRANSFORM_SLOT_Turn);
 	}
 	effect.rot = iRot;
 	return;
@@ -702,7 +702,7 @@ func FxIntScaleRotTimer(target, eff, time)
 	eff.oldY += BoundBy(eff.yoff-eff.oldY, -500, 500);
 	var turnx = -1000;
 	var turny = 10000;
-	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR,0,0,1), Trans_Translate(turnx, turny)), 1);
+	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR,0,0,1), Trans_Translate(turnx, turny)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling);
 }
 
 func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, bool instant) {
@@ -714,7 +714,7 @@ func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, bool inst
 	if(instant)
 	{
 		RemoveEffect("IntScaleRot", this);
-		SetMeshTransformation(Trans_Mul(Trans_Translate(xoff-turnx, yoff-turny), Trans_Rotate(r,0,0,1), Trans_Translate(turnx, turny), Trans_Rotate(rotZ, 0, 1, 0)), 1);
+		SetMeshTransformation(Trans_Mul(Trans_Translate(xoff-turnx, yoff-turny), Trans_Rotate(r,0,0,1), Trans_Translate(turnx, turny), Trans_Rotate(rotZ, 0, 1, 0)), CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling);
 	}
 	else
 	{

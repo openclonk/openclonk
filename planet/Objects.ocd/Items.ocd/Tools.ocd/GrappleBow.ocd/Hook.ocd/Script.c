@@ -322,13 +322,13 @@ public func FxIntGrappleControlTimer(object target, proplist effect, int time)
 		}
 		var angle = rope->GetClonkAngle();
 		var off = rope->GetClonkOff();
-		target->SetMeshTransformation(Trans_Translate(-off[0] * 10 + 3000 * (1 - 2 * target->GetDir()), -off[1] * 10), 2);
-    	target->SetMeshTransformation(Trans_RotX(angle, 500, 11000), 3);
+		target->SetMeshTransformation(Trans_Translate(-off[0] * 10 + 3000 * (1 - 2 * target->GetDir()), -off[1] * 10), CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+    	target->SetMeshTransformation(Trans_RotX(angle, 500, 11000), CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 	}
 	else if (effect.ani_mode)
 	{
-		target->SetMeshTransformation(0, 2);
-		target->SetMeshTransformation(0, 3);
+		target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+		target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 		target->StopAnimation(target->GetRootAnimation(10));
 		if (!target->GetHandAction())
 			target->SetHandAction(0);
@@ -362,8 +362,8 @@ public func FxIntGrappleControlStop(object target, proplist effect, int reason, 
 	if (tmp) 
 		return FX_OK;
 	target->SetTurnType(0);
-	target->SetMeshTransformation(0, 2);
- 	target->SetMeshTransformation(0, 3);
+	target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Translation_Hook);
+ 	target->SetMeshTransformation(0, CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook);
 	target->StopAnimation(target->GetRootAnimation(10));
 	if (!target->GetHandAction())
 		target->SetHandAction(0);

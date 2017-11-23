@@ -163,7 +163,7 @@ private func UpdateEnemyVisuals(object enemy, proplist prop_enemy)
 			enemy->SetSkin(prop_enemy.Skin);
 	}
 	if (GetType(prop_enemy.Backpack)) enemy->~RemoveBackpack();
-	if (prop_enemy.Scale) enemy->SetMeshTransformation(Trans_Scale(prop_enemy.Scale[0], prop_enemy.Scale[1], prop_enemy.Scale[2]), 6);
+	if (prop_enemy.Scale) enemy->SetMeshTransformation(Trans_Scale(prop_enemy.Scale[0], prop_enemy.Scale[1], prop_enemy.Scale[2]), CLONK_MESH_TRANSFORM_SLOT_Scale);
 	if (prop_enemy.Name) enemy->SetName(prop_enemy.Name);
 	enemy->SetColor(prop_enemy.Color);
 	return;

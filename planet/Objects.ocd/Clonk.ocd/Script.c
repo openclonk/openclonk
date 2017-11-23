@@ -16,6 +16,13 @@
 
 #include Clonk_Animations
 
+static const CLONK_MESH_TRANSFORM_SLOT_Turn = 0;             // for turning the clonk
+static const CLONK_MESH_TRANSFORM_SLOT_Rotation_Scaling = 1; // for adjusting the rotation while scaling
+static const CLONK_MESH_TRANSFORM_SLOT_Translation_Hook = 2; // for adjusting the rotation while scaling
+static const CLONK_MESH_TRANSFORM_SLOT_Rotation_Hook = 3;    // for adjusting the rotation while scaling
+static const CLONK_MESH_TRANSFORM_SLOT_Rotation_Ladder = 5;  // for adjusting the rotation while climbing a rope ladder
+static const CLONK_MESH_TRANSFORM_SLOT_Scale = 6;            // for scaling the size of the clonk
+
 // ladder climbing
 #include Library_CanClimbLadder
 
