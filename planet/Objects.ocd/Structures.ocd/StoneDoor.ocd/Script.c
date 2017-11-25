@@ -63,7 +63,7 @@ private func ForceDigFree()
 /*-- Switch control --*/
 
 // Reaction to operation by a switch: if open_door is true the door opens, otherwise it closes
-public func OnInputSignalChanged(object operator, object switch, bool open_door)
+public func OnSetInputSignal(object operator, object switch, bool open_door)
 {
 	if (open_door)
 	{
