@@ -1,5 +1,4 @@
 Name=Bodenschalter
 Description=Antiker Gewichtssensor.
-Target=Ziel
 UpAction=Aktion 'Hoch'
 DownAction=Aktion 'Runter'

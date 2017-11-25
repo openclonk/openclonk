@@ -1,8 +1,6 @@
 Name=Spin Wheel
 Description=Open and close connected castle door with [Up] and [Down] respectively.
-Target=Target
 UpAction='Up' action
 DownAction='Down' action
-ConnectNearestDoor=Connect door
 ControlUp=Wheel up
 ControlDown=Wheel down

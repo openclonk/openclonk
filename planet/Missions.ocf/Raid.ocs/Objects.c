@@ -139,7 +139,7 @@ func InitializeObjects()
 	StoneDoor001->SetComDir(COMD_Down);
 
 	var SpinWheel001 = CreateObjectAbove(SpinWheel, 571, 1263);
-	SpinWheel001->SetStoneDoor(StoneDoor001);
+	SpinWheel001->SetSwitchTarget(StoneDoor001);
 
 	g_windmill = CreateObjectAbove(Windmill, 665, 351);
 	g_windmill->SetCategory(C4D_StaticBack);

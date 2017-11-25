@@ -18,7 +18,6 @@ TooltipClearCode=Clear the entered code.
 TooltipResetCode=Reset the keypad code.
 
 KeypadCode=Code
-KeypadTarget=Target
 OnCorrectCodeAction=Action 'correct code'
 OnWrongCodeAction=Action 'wrong code'
 HelpKeypadCode=Enter the keypad code the player must type in (must be digits only).

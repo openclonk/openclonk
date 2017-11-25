@@ -5,13 +5,14 @@
 	@author Maikel	
 */
 
+#include Library_Switch
+
 // Background colors for hovering and bars and description.
 static const KEYPADMENU_BackgroundColor = 0x77000000;
 static const KEYPADMENU_HoverColor = 0x99888888;
 static const KEYPADMENU_BarColor = 0x99888888;
 
 local code, correct_code;
-local target_door;
 local correct_code_action, wrong_code_action;
 local replacement_images;
 local menu, menu_id, menu_target, menu_controller;
@@ -39,26 +40,16 @@ public func SetKeypadCode(string to_code)
 	return;
 }
 
-public func SetStoneDoor(object door)
+public func GiveAccess(object clonk)
 {
-	target_door = door;
-	return true;
-}
-
-public func OpenDoor(object clonk)
-{
-	SetPlrView(clonk->GetController(), target_door);
-	var y_off = target_door->~GetFloorOffset();
-	Global->CreateLight(target_door->GetX(), target_door->GetY() + y_off, 30, Fx_Light.LGT_Temp, clonk->GetController(), 30, 50);
-	target_door->OpenDoor();
+	SetSwitchState(true, clonk);
 	return;
 }
 
 public func OnCorrectCodeEntered(object clonk)
 {
-	// Open door if specified.
-	if (target_door)
-		OpenDoor(clonk);
+	// Open door/switch on if specified.
+	GiveAccess(clonk);
 	// Perform user action last; it may delete the door/clonk/etc.
 	UserAction->EvaluateAction(correct_code_action, this, clonk);
 	return;
@@ -126,7 +117,6 @@ public func SaveScenarioObject(proplist props)
 {
 	if (!_inherited(props, ...)) return false;
 	if (correct_code) props->AddCall("Code", this, "SetKeypadCode", Format("%v", correct_code));
-	if (target_door) props->AddCall("Target", this, "SetStoneDoor", target_door);
 	if (correct_code_action || wrong_code_action) props->AddCall("Action", this, "SetCodeActions", correct_code_action, wrong_code_action);
 	if (replacement_images) props->AddCall("Replacements", this, "SetReplacementImages", replacement_images);
 	return true;
@@ -140,7 +130,6 @@ public func Definition(proplist def)
 	if (!def.EditorProps)
 		def.EditorProps = {};
 	def.EditorProps.correct_code = { Name = "$KeypadCode$", Type = "string", Set="SetKeypadCode", EditorHelp = "$HelpKeypadCode$" };	
-	def.EditorProps.target_door = { Name = "$KeypadTarget$", Type = "object", Filter = "IsSwitchTarget", EditorHelp = "$HelpKeypadTarget$" };
 	def.EditorProps.correct_code_action = new UserAction.Prop { Name = "$OnCorrectCodeAction$", EditorHelp = "$HelpOnCorrectCodeAction$" };
 	def.EditorProps.wrong_code_action = new UserAction.Prop { Name = "$OnWrongCodeAction$", EditorHelp = "$HelpOnWrongCodeAction$" };
 	return;

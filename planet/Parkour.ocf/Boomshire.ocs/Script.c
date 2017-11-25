@@ -173,7 +173,7 @@ private func Doors()
 
 	var gate = CreateObjectAbove(StoneDoor, 865, 1195, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 1045, 1165, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
@@ -188,48 +188,48 @@ private func Doors()
 
 	var gate = CreateObjectAbove(StoneDoor, 1875, 761, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 1752, 1148, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
 	var gate = CreateObjectAbove(StoneDoor, 1875, 864, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 1116, 1038, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
 	var gate = CreateObjectAbove(StoneDoor, 3115, 685, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 3140, 588, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
 	var gate = CreateObjectAbove(StoneDoor, 585, 915, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 853, 681, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
 	var gate = CreateObjectAbove(StoneDoor, 345, 740, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 60, 644, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
 	var gate = CreateObjectAbove(StoneDoor, 1935, 558, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 1900, 565, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 
 	var gate = CreateObjectAbove(StoneDoor, 2965, 316, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 3260, 328, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 
 	var gate = CreateObjectAbove(StoneDoor, 3285, 1150, NO_OWNER);
 	var wheel = CreateObjectAbove(SpinWheel, 3220, 1200, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	gate->CloseDoor();
 }
 

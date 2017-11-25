@@ -18,7 +18,6 @@ TooltipClearCode=Eingegebene Kennzahl löschen.
 TooltipResetCode=Die Kennzahl des Ziffernblocks zurücksetzen.
 
 KeypadCode=Kennzahl
-KeypadTarget=Ziel
 OnCorrectCodeAction=Aktion 'richtige Kennzahl'
 OnWrongCodeAction=Aktion 'falsche Kennzahl'
 HelpKeypadCode=Gib den Kennzahl ein der vom Spieler eingetippt werden muss (darf nur Zahlen enthalten).

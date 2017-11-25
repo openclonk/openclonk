@@ -1,0 +1,4 @@
+SwitchTarget=Ziel des Schalters
+InvertSignal=Schaltungslogik invertieren
+InvertSignalDesc=Wenn ein Schalter ein Eingangssignal seinem Ziel setzt, dann übernimmt das Ziel stattdessen den invertierten Wert.
+ConnectClosestSwitchTarget=Ziel verbinden

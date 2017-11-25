@@ -40,7 +40,7 @@ protected func Initialize()
 	DrawMaterialQuad("Tunnel-brickback", 688, 542, 688, 544, 696, 544, 696, 542);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObjectAbove(SpinWheel, 660, 552, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	
 	gate = CreateObjectAbove(StoneDoor, lwidth - 364, 448, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 361, 446, lwidth - 361, 448, lwidth - 365, 448, lwidth - 365, 446);
@@ -53,7 +53,7 @@ protected func Initialize()
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 689, 542, lwidth - 689, 544, lwidth - 697, 544, lwidth - 697, 542);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObjectAbove(SpinWheel, lwidth - 660, 552, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	wheel->SetSwitchTarget(gate);
 	
 	// Chests with weapons.
 	var chest;

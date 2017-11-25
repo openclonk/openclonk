@@ -1,6 +1,8 @@
 /*-- Switch --*/
 
-local target, handle, last_controlling_clonk;
+#include Library_Switch
+
+local handle, last_controlling_clonk;
 
 public func Initialize()
 {
@@ -12,7 +14,6 @@ public func Initialize()
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	if (target) props->AddCall("Target", this, "SetTarget", target);
 	if (handle)
 	{
 		var pos = GetHandlePosition();
@@ -22,25 +23,11 @@ public func SaveScenarioObject(props)
 	return true;
 }
 
-public func SetTarget(object trg)
-{
-	target = trg;
-	return true;
-}
-
 public func SetActions(new_left_action, new_right_action)
 {
 	left_action = new_left_action;
 	right_action = new_right_action;
 	return true;
-}
-
-public func ConnectNearestDoor()
-{
-	// EditCursor helper command: Connect to nearest door. Return connected door.
-	var door = FindObject(Find_ID(StoneDoor), Sort_Distance());
-	if (door) SetTarget(door);
-	return door;
 }
 
 public func ControlUp(object clonk)
@@ -73,7 +60,7 @@ public func ControlRight(object clonk)
 
 private func ControlSwitchDir(object clonk, int dir)
 {
-	if (!handle || (!target && !right_action && !left_action))
+	if (!handle || (!GetSwitchTarget() && !right_action && !left_action))
 	{
 		Sound("Structures::SwitchStuck");
 		Message("$MsgStuck$");
@@ -128,7 +115,7 @@ public func SetR(int to_r)
 
 private func SwitchingTimer(int dir)
 {
-	if (!handle || (!target && !right_action && !left_action))
+	if (!handle || (!GetSwitchTarget() && !right_action && !left_action))
 	{
 		Sound("Structures::SwitchStuck");
 		return SetAction("Idle");
@@ -154,17 +141,7 @@ private func DoSwitchFlip(object clonk, int dir)
 	if (dir > 0)
 	{
 		// Open/close should be aligned to vertical component of direction
-		if (target)
-		{
-			if (GetR() < 0)
-			{
-				target->~OpenDoor(this);
-			}
-			else
-			{
-				target->~CloseDoor(this);
-			}
-		}
+		SetSwitchState(GetR() < 0, clonk); // switch on if rotation < 0
 		// Action last; it may delete the door/clonk/etc.
 		if (right_action)
 			UserAction->EvaluateAction(right_action, this, clonk);
@@ -172,17 +149,7 @@ private func DoSwitchFlip(object clonk, int dir)
 	else
 	{
 		// Open/close should be aligned to vertical component of direction
-		if (target)
-		{	
-			if (GetR() < 0)
-			{
-				target->~CloseDoor(this);
-			}
-			else
-			{
-				target->~OpenDoor(this);
-			}
-		}
+		SetSwitchState(GetR() >= 0, clonk); // switch off if rotation < 0
 		// Action last; it may delete the door/clonk/etc.	
 		if (left_action)
 			UserAction->EvaluateAction(left_action, this, clonk);
@@ -226,19 +193,21 @@ local Components = { Rock = 3, Metal=1 };
 local left_action, right_action; // Custom editor-selected actions on switch handling
 
 local EditorActions = {
-	SwitchLeft = { Name = "$SwitchLeft$", Command = "ControlSwitchDir(nil, -1)" },
-	SwitchRight = { Name = "$SwitchRight$", Command = "ControlSwitchDir(nil, +1)" },
-	ConnectClosestDoor = { Name = "$ConnectNearestDoor$", Command = "ConnectNearestDoor()" },
-	Rotate = { Name = "$Rotate$", Command = "SetR((GetR()+135)/90*90)" }
 };
 
 func Definition(def)
 {
+	// Graphics
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(-30,0,1,0)), def);
 	SetProperty("MeshTransformation", Trans_Rotate(-13,0,1,0), def);
+	// Editor properties
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.target = { Name = "$Target$", Type = "object", Filter = "IsSwitchTarget" };
 	def.EditorProps.left_action = new UserAction.Prop { Name="$LeftAction$" };
 	def.EditorProps.right_action = new UserAction.Prop { Name="$RightAction$" };
+	// Actions
+	if (!def.EditorActions) def.EditorActions = {};
+	def.EditorActions.SwitchLeft = { Name = "$SwitchLeft$", Command = "ControlSwitchDir(nil, -1)" };
+	def.EditorActions.SwitchRight = { Name = "$SwitchRight$", Command = "ControlSwitchDir(nil, +1)" };
+	def.EditorActions.Rotate = { Name = "$Rotate$", Command = "SetR((GetR()+135)/90*90)" };
 	return _inherited(def, ...);
 }

@@ -5,7 +5,10 @@
 	@author Maikel
 */
 
-local target_door, y_position;
+#include Library_Switch
+
+
+local y_position;
 local up_action, down_action;
 
 public func Initialize()
@@ -42,24 +45,16 @@ public func CheckObjects()
 	{
 		if (desired_y == 0)
 		{
-			if (target_door)
-				target_door->CloseDoor();
+			SetSwitchState(false);
 			UserAction->EvaluateAction(up_action, this);
 		}
 		else if (desired_y == this.MoveDownDistance)
 		{
-			if (target_door)
-				target_door->OpenDoor();
+			SetSwitchState(true);
 			UserAction->EvaluateAction(down_action, this);
 		}
 	}
 	return;
-}
-
-public func SetStoneDoor(object door)
-{
-	target_door = door;
-	return true;
 }
 
 public func SetActions(new_up_action, new_down_action)
@@ -75,7 +70,6 @@ public func SetActions(new_up_action, new_down_action)
 public func SaveScenarioObject(proplist props)
 {
 	if (!inherited(props, ...)) return false;
-	if (target_door) props->AddCall("Target", this, "SetStoneDoor", target_door);
 	if (up_action || down_action) props->AddCall("Action", this, "SetActions", up_action, down_action);
 	return true;
 }
@@ -86,7 +80,6 @@ public func SaveScenarioObject(proplist props)
 public func Definition(proplist def)
 {
 	if (!def.EditorProps) def.EditorProps = {};
-	def.EditorProps.target_door = { Name = "$Target$", Type = "object", Filter = "IsSwitchTarget" };
 	def.EditorProps.up_action = new UserAction.Prop { Name="$UpAction$" };
 	def.EditorProps.down_action = new UserAction.Prop { Name="$DownAction$" };
 	return _inherited(def, ...);

@@ -5,6 +5,8 @@
 	@authors Ringwaul, Maikel	
 */
 
+#include Library_SwitchTarget
+
 protected func Initialize()
 {
 	SetAction("Door");
@@ -56,6 +58,23 @@ private func ForceDigFree()
 	SetSolidMask();
 	DigFreeRect(GetX() - 4, GetY() - 20, 8, 40, true);
 	SetSolidMask(0, 0, 8, 40);
+}
+
+/*-- Switch control --*/
+
+// Reaction to operation by a switch: if open_door is true the door opens, otherwise it closes
+public func OnInputSignalChanged(object operator, object switch, bool open_door)
+{
+	if (open_door)
+	{
+		OpenDoor();
+	}
+	else
+	{
+		CloseDoor();
+	}
+
+	_inherited(operator, switch, open_door, ...);
 }
 
 /*-- Automatic movement --*/
@@ -187,7 +206,6 @@ private func EvalAct_CloseDoor(props, context)
 
 /* Properties */
 
-public func IsSwitchTarget() { return true; }
 public func IsDoor() { return true; }
 
 local ActMap = {

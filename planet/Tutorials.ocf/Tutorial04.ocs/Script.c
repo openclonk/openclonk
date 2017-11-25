@@ -94,7 +94,7 @@ private func InitVillageMain()
 	// Stone door to protect the village.
 	var door = CreateObjectAbove(StoneDoor, 1004, 376);
 	var wheel = CreateObjectAbove(SpinWheel, 972, 376);
-	wheel->SetStoneDoor(door);
+	wheel->SetSwitchTarget(door);
 	
 	// Tools and armory down below.	
 	CreateObjectAbove(ToolsWorkshop, 698, 504)->MakeInvincible();
