@@ -411,16 +411,17 @@ func Footstep()
 	}
 }
 
-
-func GetWalkAnimationPosition(string anim, int pos)
+// Returns an animation position (Anim_* function) for new_anim depending on the position of the current animation
+// for smoother transitions. Does not work with replaced animations.
+func GetWalkAnimationPosition(string new_anim, int current_pos, string current_anim)
 {
 	var dir = -1;
 	if(GetDirection() == COMD_Right) dir = +1;
 	if(PropAnimations != nil)
-		if(GetProperty(Format("%s_Position", anim), PropAnimations))
+		if(GetProperty(Format("%s_Position", new_anim), PropAnimations))
 		{
-			var length = GetAnimationLength(anim), replacement;
-			if(replacement = GetProperty(anim, PropAnimations))
+			var length = GetAnimationLength(new_anim), replacement;
+			if(replacement = GetProperty(new_anim, PropAnimations))
 			{
 				// at this point /replacement/ may contain an array of two animations that signal a merge
 				// in that case, just take the first one..
@@ -428,25 +429,62 @@ func GetWalkAnimationPosition(string anim, int pos)
 					replacement = replacement[0];
 				length = GetAnimationLength(replacement);
 			}
-			return Anim_X(pos, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations)*dir);
+			return Anim_X(0, 0, length, GetProperty(Format("%s_Position", new_anim), PropAnimations)*dir);
 		}
-	// TODO: Choose proper starting positions, depending on the current
-	// animation and its position: For Stand->Walk or Stand->Run, start
-	// with a frame where one of the clonk's feets is on the ground and
-	// the other one is in the air. For Walk->Run and Run->Walk, fade to
-	// a state where its feets are at a similar position (just taking
-	// over previous animation's position might work, using
-	// GetAnimationPosition()). Walk->Stand is arbitrary I guess.
-	// First parameter of Anim_Linear/Anim_AbsX is initial position.
-	// Movement synchronization might also be tweaked somewhat as well.
-	if(anim == Clonk_WalkInside)
+
+	// Inside a container the position is always 0.
+	if(new_anim == Clonk_WalkInside)
 		return Anim_Const(0);
-	if(anim == Clonk_WalkStand)
-		return Anim_Linear(pos, 0, GetAnimationLength(anim), 35, ANIM_Loop);
-	else if(anim == Clonk_WalkWalk)
-		return Anim_X(pos, 0, GetAnimationLength(anim), 20*dir);
-	else if(anim == Clonk_WalkRun)
-		return Anim_X(pos, 0, GetAnimationLength(anim), 50*dir);
+	// Transitions into stand are always arbitrary. A nice transition is possible but is probably
+	// too much of a hassle for such a small effect and has nothing to do with the position of the
+	// Stand animation.
+	if(new_anim == Clonk_WalkStand)
+		return Anim_Linear(0, 0, GetAnimationLength(new_anim), 35, ANIM_Loop);
+	// Transition into the Walk animation
+	else if(new_anim == Clonk_WalkWalk)
+	{
+		// Transition from Inside or Stand:
+		// Start on a position where one foot is on the ground (the foreground one) and in the center
+		if (current_anim == Clonk_WalkInside || current_anim == Clonk_WalkStand)
+		{
+			var pos = 720;
+			if (dir == -1)
+				pos = 1896;
+			return Anim_X(pos, 0, GetAnimationLength(new_anim), 20*dir);
+		}
+		// Transition from run: position + 1200
+		if (current_anim == Clonk_WalkRun)
+		{
+			var pos = current_pos + 1200;
+			if (pos > 2400)
+				pos -= 2400;
+			return Anim_X(pos, 0, GetAnimationLength(new_anim), 20*dir);
+		}
+		if (current_anim == Clonk_WalkWalk) // why is this called?
+			return Anim_X(current_pos, 0, GetAnimationLength(new_anim), 20*dir);
+	}
+	else if(new_anim == Clonk_WalkRun)
+	{
+		// Transition from Inside or Stand:
+		// Start on a position where one foot is on the ground (the foreground one) and in the center
+		if (current_anim == Clonk_WalkInside || current_anim == Clonk_WalkStand)
+		{
+			var pos = 1824;
+			if (dir == -1)
+				pos = 600;
+			return Anim_X(pos, 0, GetAnimationLength(new_anim), 50*dir);
+		}
+		// Transition from walk: position + 1200
+		if (current_anim == Clonk_WalkWalk)
+		{
+			var pos = current_pos + 1200;
+			if (pos > 2400)
+				pos -= 2400;
+			return Anim_X(pos, 0, GetAnimationLength(new_anim), 50*dir);
+		}
+		if (current_anim == Clonk_WalkRun) // why is this called?
+			return Anim_X(current_pos, 0, GetAnimationLength(new_anim), 50*dir);
+	}
 }
 
 func FxIntWalkStart(pTarget, effect, fTmp)
@@ -493,7 +531,7 @@ func FxIntWalkTimer(pTarget, effect)
 	{
 		effect.animation_name = anim;
 		effect.idle_time = 0;
-		effect.animation_id = PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		effect.animation_id = PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, GetWalkAnimationPosition(anim, GetAnimationPosition(effect.animation_id), effect.animation_name), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 	// The clonk has to stand, not making a pause animation yet and not doing other actions with the hands (e.g. loading the bow)
 	else if(anim == Clonk_WalkStand && !GetHandAction() && GetMenu() == nil)
