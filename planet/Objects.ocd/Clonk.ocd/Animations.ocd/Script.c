@@ -821,6 +821,8 @@ func StartJump()
 		if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
 		{
 			PlayAnimation("JumpDive", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			if(!GetEffect("IntDiveJump", this))
+				AddEffect("IntDiveJump", this, 1, 1, this);
 			return 1;
 		}
 	}
@@ -1065,10 +1067,13 @@ protected func FxIntDelayedVertexTimer(object target, proplist effect, int time)
 func FxIntSwimStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
+	var enter_diving = GetEffect("IntDiveJump", this);
 
 	effect.animation_name = "SwimStand";
-	effect.animation = PlayAnimation("SwimStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-
+	if (!enter_diving)
+	{
+		effect.animation = PlayAnimation("SwimStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	}
 	// Set proper turn type
 	SetTurnType(0);
 	// Update carried items
@@ -1079,59 +1084,65 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 {
 	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
 	SetMeshTransformation(nil, CLONK_MESH_TRANSFORM_SLOT_Translation_Dive);
+	
+	var is_at_surface = !GBackSemiSolid(0, -5);
+	var enter_diving = GetEffect("IntDiveJump", this);
 
 	// TODO: Smaller transition time between dive<->swim, keep 15 for swimstand<->swim/swimstand<->dive
 
-	// Play stand animation when not moving
-	if(Abs(GetXDir()) < 1 && !GBackSemiSolid(0, -5))
+	if (is_at_surface && !enter_diving)
 	{
-		if (GetContact(-1) & CNAT_Bottom)
+		// Play stand animation when not moving
+		if(Abs(GetXDir()) < 1)
 		{
-			SetAction("Walk");
-			return -1;
-		}
-		if(effect.animation_name != "SwimStand")
-		{
-			effect.animation_name = "SwimStand";
-			effect.animation = PlayAnimation("SwimStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
-		}
-	}
-	// Swimming
-	else if(!GBackSemiSolid(0, -5))
-	{
-		if (GBackLiquid()) // re-check water background before effects to prevent waves in wrong color
-		{
-			var percent = GetAnimationPosition(GetRootAnimation(5)) * 200 / GetAnimationLength("Swim");
-			percent = (percent % 100);
-			if (percent < 40)
+			if (GetContact(-1) & CNAT_Bottom)
 			{
-				if (iTime % 5 == 0)
-				{
-					var phases = PV_Linear(0, 7);
-					if (GetDir() == 1) phases = PV_Linear(8, 15);
-					var color = GetAverageTextureColor(GetTexture(0, 0));
-					var particles =
-					{
-						Size = 16,
-						Phase = phases,
-						CollisionVertex = 750,
-						OnCollision = PC_Die(),
-						R = (color >> 16) & 0xff,
-						G = (color >> 8) & 0xff,
-						B = (color >> 0) & 0xff,
-						Attach = ATTACH_Front,
-					};
-					CreateParticle("Wave", 0, -4, (RandomX(-5, 5) - (-1 + 2 * GetDir()) * 4) / 4, 0, 16, particles);
-				}
-				Sound("Liquids::Swim?");
+				SetAction("Walk");
+				return -1;
+			}
+			if(effect.animation_name != "SwimStand")
+			{
+				effect.animation_name = "SwimStand";
+				effect.animation = PlayAnimation("SwimStand", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 			}
 		}
-		// Animation speed by X
-		if(effect.animation_name != "Swim")
+		// Swimming
+		else
 		{
-			effect.animation_name = "Swim";
-			// TODO: Determine starting position from previous animation
-			PlayAnimation("Swim", CLONK_ANIM_SLOT_Movement, Anim_AbsX(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			if (GBackLiquid()) // re-check water background before effects to prevent waves in wrong color
+			{
+				var percent = GetAnimationPosition(GetRootAnimation(5)) * 200 / GetAnimationLength("Swim");
+				percent = (percent % 100);
+				if (percent < 40)
+				{
+					if (iTime % 5 == 0)
+					{
+						var phases = PV_Linear(0, 7);
+						if (GetDir() == 1) phases = PV_Linear(8, 15);
+						var color = GetAverageTextureColor(GetTexture(0, 0));
+						var particles =
+						{
+							Size = 16,
+							Phase = phases,
+							CollisionVertex = 750,
+							OnCollision = PC_Die(),
+							R = (color >> 16) & 0xff,
+							G = (color >> 8) & 0xff,
+							B = (color >> 0) & 0xff,
+							Attach = ATTACH_Front,
+						};
+						CreateParticle("Wave", 0, -4, (RandomX(-5, 5) - (-1 + 2 * GetDir()) * 4) / 4, 0, 16, particles);
+					}
+					Sound("Liquids::Swim?");
+				}
+			}
+			// Animation speed by X
+			if(effect.animation_name != "Swim")
+			{
+				effect.animation_name = "Swim";
+				// TODO: Determine starting position from previous animation
+				PlayAnimation("Swim", CLONK_ANIM_SLOT_Movement, Anim_AbsX(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			}
 		}
 	}
 	// Diving
@@ -1155,6 +1166,11 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 		{
 			var iRot = Angle(-Abs(GetXDir()), GetYDir());
 			effect.rot += BoundBy(iRot - effect.rot, -4, 4);
+		}
+		
+		if (enter_diving)
+		{
+			effect.rot = Max(0, 180 - enter_diving.rot);
 		}
 
 		// TODO: Shouldn't weight go by sin^2 or cos^2 instead of linear in angle?
@@ -1180,6 +1196,28 @@ func GetSwimRotation()
 	var effect = GetEffect("IntSwim", this);
 	if(!effect) return 0;
 	return effect.rot*(-1+2*(GetDirection()==COMD_Right));
+}
+
+func FxIntDiveJumpTimer(pTarget, effect, iTime)
+{
+	if (GetAction() == "Jump") // Calculate the diving entry angle
+	{
+		effect.rot = BoundBy(150 * GetActTime() / 32, 0, 150);
+		return FX_OK;
+	}
+	else if (GetAction() == "Swim") // Diving already?
+	{
+		var idle = 0 == GetComDir();
+		if (idle && GetSpeed() < 10) // Swim upwards again without player interaction
+		{
+			SetComDir(COMD_Up);
+		}
+		if (idle || GetActTime() < 2) // Leave at least two frames, so that the dive animation can get the correct angle
+		{
+			return FX_OK;
+		}
+	}
+	return FX_Execute_Kill;
 }
 
 /*--
