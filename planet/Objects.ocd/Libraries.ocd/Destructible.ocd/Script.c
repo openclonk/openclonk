@@ -122,6 +122,7 @@ public func GetInteractionMenus(object clonk)
 	{
 		title = "$Damage$",
 		entries_callback = this.GetDamageMenuEntries,
+		entries_callback_target = this,
 		callback_hover = "OnDamageMenuHover",
 		callback_target = this,
 		BackgroundColor = RGB(75, 50, 0),
