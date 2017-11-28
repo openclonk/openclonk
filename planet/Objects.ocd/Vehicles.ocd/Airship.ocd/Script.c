@@ -6,6 +6,8 @@
 */
 
 #include Library_AlignVehicleRotation
+// Airship is destructible.
+#include Library_Destructible
 
 // Graphic module variables for animation
 local propanim, turnanim;
@@ -14,8 +16,8 @@ local propanim, turnanim;
 local throttle;
 local enginesound;
 
-//Rectangle defining where to look for objents contained in the gondola
-local gondola = [-20,-2,40,30];
+// Rectangle defining where to look for objects contained in the gondola.
+local gondola = [-20, -2, 40, 30];
 
 
 protected func Initialize()
@@ -34,15 +36,6 @@ protected func Initialize()
 
 	// Start the Airship behaviour
 	AddEffect("IntAirshipMovement", this, 1, 1, this);
-}
-
-public func Damage(int change, int cause, int by_player)
-{
-	if (GetDamage() >= this.HitPoints)
-	{
-		SetController(by_player);
-		AirshipDeath();
-	}
 }
 
 public func FxIntAirshipMovementStart(object target, proplist effect, int temporary)
@@ -321,9 +314,20 @@ public func IsProjectileTarget(object projectile, object shooter)
 }
 
 
-/* -- Airship Destruction --*/
+/*-- Destruction --*/
 
-func AirshipDeath()
+// Destroyed by any type of damage.
+public func IsDestroyedByExplosions() { return false; }
+
+// Custom explosion on callback from destructible library.
+public func OnDestruction(int change, int cause, int by_player)
+{
+	SetController(by_player);
+	AirshipDeath();
+	return true;
+}
+
+private func AirshipDeath()
 {
 	//First let's create the burnt airship
 	var burntairship = CreateObjectAbove(Airship_Burnt,0,27); //27 pixels down to align ruin with original
@@ -331,17 +335,18 @@ func AirshipDeath()
 	//Now let's copy it's animation, and hold it there
 	var animspot;
 	animspot = GetAnimationPosition(turnanim);
-	if(turnanim == -1) burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot)); // this doesn't make sense
+	if (turnanim == -1)
+		burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot)); // this doesn't make sense
 	else
 		burntairship->PlayAnimation("TurnRight", 10, Anim_Const(animspot));
 
 	// Set ruin on fire: set controller of the fire to the cause of the death (which is the current controller of the airship).
 	burntairship->Incinerate(100, GetController());
 
-	//Make sure engine sound is gone
+	// Make sure engine sound is gone
 	Sound("Structures::FanLoop",nil,nil,nil,-1);
 
-	//This object has served its purpose.
+	// This object has served its purpose.
 	Explode(20);
 }
 

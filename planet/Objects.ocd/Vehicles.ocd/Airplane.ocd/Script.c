@@ -5,6 +5,9 @@
 	@author: Ringwaul, Clonkonaut, Maikel
 */
 
+// Airplane is destructible.
+#include Library_Destructible
+
 local dir = DIR_Left;
 
 local prop_speed, prop_speed_target, prop_speed_timer; // current and target propeller speed [0, 100]
@@ -40,17 +43,6 @@ public func RejectCollect(id def, object obj)
 	return false;
 }
 
-public func Damage(int change, int cause, int by_player)
-{
-	if (GetDamage() >= this.HitPoints)
-	{
-		if (pilot)
-			PlaneDismount(pilot);
-		SetController(by_player);
-		PlaneDeath();
-	}
-}
-
 public func ActivateEntrance(object clonk)
 {
 	if (clonk->Contained() == this)
@@ -75,18 +67,6 @@ public func Ejection(object obj)
 	if (obj->Contained())
 		Exit();
 	obj->SetSpeed(this->GetXDir(), this->GetYDir());
-}
-
-// Inflict damage when hitting something with the plane and already damaged.
-public func Hit(int xdir, int ydir)
-{
-	var remaining_hp = this.HitPoints - GetDamage();
-	if (remaining_hp < 10)
-	{
-		var speed = Distance(0, 0, xdir, ydir) / 10;
-		if (speed > 4 * remaining_hp)
-			DoDamage(speed / 6, FX_Call_DmgScript, GetController());
-	}
 }
 
 
@@ -1185,14 +1165,8 @@ public func GetPilot()
 	return pilot;
 }
 
-/*-- Effects --*/
 
-private func PlaneDeath()
-{
-	while (Contents(0))
-		Contents(0)->Exit();
-	Explode(36);
-}
+/*-- Effects --*/
 
 // Instantly set new propeller speed
 public func SetPropellerSpeed(int new_speed)
@@ -1233,6 +1207,41 @@ private func SetPropellerSound(int speed)
 		return Sound("Objects::Plane::PropellerLoop", 0, 100, nil, -1);
 	else
 		return Sound("Objects::Plane::PropellerLoop", 0, 100, nil, 1, 0, (speed - 100) * 2 / 3);
+}
+
+
+/*-- Destruction --*/
+
+// Destroyed by any type of damage.
+public func IsDestroyedByExplosions() { return false; }
+
+// Custom explosion on callback from destructible library.
+public func OnDestruction(int change, int cause, int by_player)
+{
+	if (pilot)
+		PlaneDismount(pilot);
+	SetController(by_player);
+	PlaneDeath();
+	return true;
+}
+
+private func PlaneDeath()
+{
+	while (Contents(0))
+		Contents(0)->Exit();
+	Explode(36);
+}
+
+// Inflict damage when hitting something with the plane and already damaged.
+public func Hit(int xdir, int ydir)
+{
+	var remaining_hp = this.HitPoints - GetDamage();
+	if (remaining_hp < 10)
+	{
+		var speed = Distance(0, 0, xdir, ydir) / 10;
+		if (speed > 4 * remaining_hp)
+			DoDamage(speed / 6, FX_Call_DmgScript, GetController());
+	}
 }
 
 
