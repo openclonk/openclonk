@@ -310,7 +310,7 @@ public func GetInteractionMenus(object clonk)
 // Returns the contents of the "damage" section in the interaction menu.
 public func GetDamageMenuEntries()
 {
-	var is_invincible = this.HitPoints == nil;
+	var is_invincible = this.HitPoints == nil || this->IsInvincible();
 	var damage_text = "$Invincible$";
 	var color = RGB(0, 150, 0);
 	
@@ -334,8 +334,8 @@ public func GetDamageMenuEntries()
 		Bottom = "2em",
 		right =
 		{
-			Left = "2em",
-			Right = "100% - 0.5em",
+			Left = "2em + 0.2em",
+			Right = "100% - 0.2em",
 			bottom = {Top = "50%", Margin = "0.1em", BackgroundColor = RGB(0, 0, 0)},
 			top = {Text = damage_text, Style = GUI_TextHCenter}
 		},
@@ -345,19 +345,18 @@ public func GetDamageMenuEntries()
 			Symbol = Hammer
 		}
 	};
+	// Show hit points.
+	var percent = "100%";	
 	if (!is_invincible)
-	{
-		// Show HitPoints.
-		var percent = Format("%d%%", 100 * GetRemainingHitPoints() / GetHitPoints());
-		menu.right.bottom.fill = {BackgroundColor = color, Right = percent, Margin = "0.1em"};
+		percent = Format("%d%%", 100 * GetRemainingHitPoints() / GetHitPoints());
+	menu.right.bottom.fill = {BackgroundColor = color, Right = percent, Margin = "0.1em"};	
 		
-		if (GetDamage() == 0)
-		{
-			// Cross out hammer symbol.
-			menu.symbol.overlay = {Margin = "0.25em", Symbol = Icon_Cancel};
-		}
-	}
-	
+	// Cross out hammer symbol.
+	if (is_invincible || GetDamage() == 0)
+	{
+		menu.symbol.overlay = {Margin = "0.25em", Symbol = Icon_Cancel};
+	}	
+		
 	return [{symbol = Hammer, extra_data = "repair", custom = menu}];
 }
 
@@ -420,8 +419,8 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 public func OnRepairMenuHover(id symbol, string action, desc_menu_target, menu_id)
 {
 	var text = "$NoRepairNecessary$";
-	
-	if (GetDamage() > 0)
+	var is_invincible = this.HitPoints == nil || this->IsInvincible();
+	if (!is_invincible && GetDamage() > 0)
 	{
 		var materials = GetRepairMaterials();
 		text = "$RepairRequires$";
