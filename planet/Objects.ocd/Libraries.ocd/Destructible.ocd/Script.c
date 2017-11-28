@@ -100,3 +100,92 @@ func Damage(int change, int cause, int by_player)
 // Default behaviour: only explosion damage will cause the object to be destroyed
 // But any kind of damage will trigger a change of texture etc.
 public func IsDestroyedByExplosions() { return true; }
+
+
+/*-- Interaction Menu --*/
+
+// Always show an interaction menu with at least the damage entry.
+public func HasInteractionMenu() { return true; }
+
+public func RejectInteractionMenu(object clonk)
+{
+	if (GetCon() < 100)
+		return Format("$MsgNotFullyConstructed$", GetName());
+	return _inherited(clonk, ...);
+}
+
+// Show damage in the interaction menu.
+public func GetInteractionMenus(object clonk)
+{
+	var menus = _inherited(clonk, ...) ?? [];		
+	var damage_menu =
+	{
+		title = "$Damage$",
+		entries_callback = this.GetDamageMenuEntries,
+		callback_hover = "OnDamageMenuHover",
+		callback_target = this,
+		BackgroundColor = RGB(75, 50, 0),
+		Priority = 90
+	};
+	PushBack(menus, damage_menu);
+	return menus;
+}
+
+// Returns the contents of the "damage" section in the interaction menu.
+public func GetDamageMenuEntries()
+{
+	var is_invincible = this.HitPoints == nil || this->IsInvincible();
+	var damage_text = "$Invincible$";
+	var color = RGB(0, 150, 0);
+	
+	if (!is_invincible)
+	{
+		if (GetDamage() == 0)
+			damage_text = "$NotDamaged$";
+		else if (GetDamage() < this.HitPoints / 2)
+		{
+			damage_text = "$SlightlyDamaged$";
+			color = RGB(200, 150, 0);
+		}
+		else
+		{
+			damage_text = "<c ff0000>$HeavilyDamaged$</c>";
+			color = RGB(150, 0, 0);
+		}
+	}
+	
+	var menu = 
+	{
+		Bottom = "2em",
+		bar =
+		{
+			Left = "0.2em",
+			Right = "100% - 0.2em",
+			bottom = {Top = "50%", Margin = "0.1em", BackgroundColor = RGB(0, 0, 0)},
+			top = {Text = damage_text, Style = GUI_TextHCenter}
+		}
+	};
+	// Show hit points.
+	var percent = "100%";	
+	if (!is_invincible)
+		percent = Format("%d%%", 100 * (this.HitPoints - GetDamage()) / this.HitPoints);
+	menu.bar.bottom.fill = {BackgroundColor = color, Right = percent, Margin = "0.1em"};
+	return [{symbol = this, extra_data = "repair", custom = menu}];
+}
+
+// On hovering, show a list of materials that are needed for repairing the structure.
+public func OnDamageMenuHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	var is_invincible = this.HitPoints == nil || this->IsInvincible();
+	var damage_text = "$Invincible$";
+	if (!is_invincible)
+	{
+		if (GetDamage() == 0)
+			damage_text = "$NotDamaged$";
+		else if (GetDamage() < this.HitPoints / 2)
+			damage_text = "$SlightlyDamaged$";
+		else
+			damage_text = "<c ff0000>$HeavilyDamaged$</c>";
+	}		
+	GuiUpdateText(damage_text, menu_id, 1, desc_menu_target);
+}

@@ -106,6 +106,11 @@ global func MakeInvincible(bool allow_fire)
 	return true;
 }
 
+global func IsInvincible()
+{
+	return !!GetEffect("IntInvincible", this);
+}
+
 global func SetInvincibility(bool to_val)
 {
 	// Turn invincibility on or off
