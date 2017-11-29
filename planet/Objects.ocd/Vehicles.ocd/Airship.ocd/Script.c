@@ -5,7 +5,6 @@
 	@authors Ringwaul
 */
 
-#include Library_AlignVehicleRotation
 // Airship is destructible.
 #include Library_Destructible
 
@@ -153,7 +152,7 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 	return 1;
 }
 
-func TurnAirship(int to_dir, bool instant)
+public func TurnAirship(int to_dir, bool instant)
 {
 	// Default direction is left
 	var animName = "TurnLeft";
@@ -163,10 +162,6 @@ func TurnAirship(int to_dir, bool instant)
 	turnanim = PlayAnimation(animName, 10, Anim_Linear(0, GetAnimationLength(animName) * !!instant, GetAnimationLength(animName), 36, ANIM_Hold));
 	
 	SetAnimDir(to_dir);
-	
-	var g = gondola;
-	AlignObjectsToRotation(this, g[0],g[1],g[2],g[3]);
-	
 	return;
 }
 
