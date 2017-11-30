@@ -204,7 +204,8 @@ private func InitLeftIsland()
 {
 	var switch = CreateObjectAbove(Switch, 20, LandscapeHeight() / 2);
 	var goal = FindObject(Find_ID(Goal_LocomotiveHighway));
-	switch->SetTarget(goal);
+	goal->SetPlrViewOnSignalChange(false);
+	switch->SetSwitchTarget(goal);
 	switch->SetSwitchDir(-1);
 	
 	var guidepost = CreateObjectAbove(EnvPack_Guidepost2, 40, LandscapeHeight() / 2);
