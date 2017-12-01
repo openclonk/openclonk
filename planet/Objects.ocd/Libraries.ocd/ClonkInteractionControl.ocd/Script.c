@@ -190,7 +190,7 @@ private func SetNextInteraction(proplist to)
 		RemoveEffect(nil, this, e);
 	// And set & mark new one.
 	this.control.interaction_hud_controller->SetCurrentInteraction(to);
-	var interaction_cnt = GetLength(GetInteractableObjects());
+	var interaction_cnt = GetInteractableObjectsCount();
 	if (to)
 		AddEffect("IntHighlightInteraction", this, 1, 2, this, nil, to, interaction_cnt);
 }
@@ -465,6 +465,17 @@ func GetInteractableObjects(array sort)
 	}
 	
 	return possible_interactions;
+}
+
+// Returns the number of interactable objects, which is different from the total number of available interactions.
+private func GetInteractableObjectsCount()
+{
+	var interactions = GetInteractableObjects();
+	var interaction_objects = [];
+	for (var interaction in interactions)
+		PushBack(interaction_objects, interaction.interaction_object);
+	RemoveDuplicates(interaction_objects);
+	return GetLength(interaction_objects);
 }
 
 // executes interaction with an object. /action_info/ is a proplist as returned by GetInteractableObjects
