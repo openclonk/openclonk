@@ -3268,7 +3268,11 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		else if (pParent->fMultiCast && addr.GetPort() == pParent->iPort)
 			nPack.MCMode = ConnOKPacket::MCM_MC; // du ok, try multicast next
 		else
+		{
 			nPack.MCMode = ConnOKPacket::MCM_NoMC; // du ok
+			// no multicast => we're fully connected now
+			OnConn();
+		}
 		// send it
 		SendDirect(C4NetIOPacket(&nPack, sizeof(nPack), false, addr));
 	}
