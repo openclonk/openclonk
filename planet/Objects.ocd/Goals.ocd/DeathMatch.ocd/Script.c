@@ -27,15 +27,25 @@ func Initialize()
 	return _inherited(...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+public func OnPlayerRelaunch(int plr, int killer, bool relaunch)
 {
-	_inherited(plr, killer, ...);
-	// Show scoreboard for a while
+	_inherited(plr, killer, relaunch, ...);
+	RelaunchScoreboardUpdate(plr);
+}
+
+private func RelaunchScoreboardUpdate(int plr)
+{
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	NotifyHUD();
-	return;
 }
+
+public func RelaunchPlayer(int plr, int killer)
+{
+	_inherited(plr, killer, ...);
+	RelaunchScoreboardUpdate(plr);
+}
+
 public func IsFulfilled()
 {
 	// Check whether someone has reached the limit.
