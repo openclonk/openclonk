@@ -35,17 +35,19 @@ protected func InitializePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-protected func RelaunchPlayer(int plr, int killer, bool relaunch)
+protected func OnPlayerRelaunch(int plr, int killer, bool relaunch)
 {
 	if (relaunch)
 	{
 		var plrid = GetPlayerID(killer);
+		
 		// Only if killer exists and has not committed suicide.
 		if (killer == plr || killer == NO_OWNER)
-			return _inherited(plr, killer, ...);
+			return _inherited(plr, killer, relaunch, ...);
+		
 		// Only if killer and victim are on different teams.
 		if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr))
-			return _inherited(plr, killer, ...);
+			return _inherited(plr, killer, relaunch, ...);
 		// Modify scoreboard kill count entry for killer.
 		DoKillCount(plr, 1);
 	}
