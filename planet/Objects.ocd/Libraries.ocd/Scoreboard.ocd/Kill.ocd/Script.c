@@ -6,7 +6,7 @@
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
 			* InitializePlayer(int plr);
-			* RelaunchPlayer(int plr, int killer);
+			* OnPlayerRelaunch(int plr, int killer, bool relaunch);
 			* RemovePlayer(int plr);
 --*/
 
@@ -35,19 +35,21 @@ protected func InitializePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+protected func RelaunchPlayer(int plr, int killer, bool relaunch)
 {
-	var plrid = GetPlayerID(killer);
-	// Only if killer exists and has not committed suicide.
-	if (killer == plr || killer == NO_OWNER)
-		return _inherited(plr, killer, ...);
-	// Only if killer and victim are on different teams.
-	if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr))
-		return _inherited(plr, killer, ...);
-	// Modify scoreboard kill count entry for killer.
-	score_kill_list[plrid]++;
-	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[plrid]);
-	return _inherited(plr, killer, ...);
+	if (relaunch)
+	{
+		var plrid = GetPlayerID(killer);
+		// Only if killer exists and has not committed suicide.
+		if (killer == plr || killer == NO_OWNER)
+			return _inherited(plr, killer, ...);
+		// Only if killer and victim are on different teams.
+		if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr))
+			return _inherited(plr, killer, ...);
+		// Modify scoreboard kill count entry for killer.
+		DoKillCount(plr, 1);
+	}
+	return _inherited(plr, killer, relaunch, ...);
 }
 
 protected func RemovePlayer(int plr)

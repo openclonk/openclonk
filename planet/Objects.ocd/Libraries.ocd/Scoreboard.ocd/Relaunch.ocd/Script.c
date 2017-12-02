@@ -7,6 +7,7 @@
 			* Initialize();
 			* InitializePlayer(int plr);
 			* RelaunchPlayer(int plr, int killer);
+			* OnPlayerRelaunch(int plr, int killer, bool relaunch);
 			* RemovePlayer(int plr);
 --*/
 
@@ -38,11 +39,11 @@ protected func RelaunchPlayer(int plr, int killer)
 	return _inherited(plr, killer, ...);
 }
 
-protected func OnPlayerRelaunch(int plr)
+protected func OnPlayerRelaunch(int plr, int killer, bool relaunch)
 {
     if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
 	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
-	return _inherited(plr, ...);
+	return _inherited(plr, killer, relaunch, ...);
 }
 
 

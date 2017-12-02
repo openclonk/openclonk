@@ -6,7 +6,7 @@
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
 			* InitializePlayer(int plr);
-			* RelaunchPlayer(int plr, int killer);
+			* OnPlayerRelaunch(int plr, int killer, bool relaunch);
 			* RemovePlayer(int plr);
 --*/
 
@@ -45,13 +45,16 @@ protected func InitializePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+protected func OnPlayerRelaunch(int plr, int killer, bool relaunch)
 {
-	var plrid = GetPlayerID(plr);
-	// Modify scoreboard death count entry for this player.
-	score_death_list[plrid]++;
-	Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
-	return _inherited(plr, killer, ...);
+	if (relaunch)
+	{
+		var plrid = GetPlayerID(plr);
+		// Modify scoreboard death count entry for this player.
+		score_death_list[plrid]++;
+		Scoreboard->SetPlayerData(plr, "deaths", score_death_list[plrid]);
+	}
+	return _inherited(plr, killer, relaunch, ...);
 }
 
 protected func RemovePlayer(int plr)
