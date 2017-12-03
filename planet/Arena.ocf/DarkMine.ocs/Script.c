@@ -18,7 +18,6 @@ protected func Initialize()
 	if (SCENPAR_GameMode == GAMEMODE_Deathmatch)
 	{
 		CreateObject(Goal_DeathMatch);
-		GetRelaunchRule()->SetDefaultRelaunchCount(Max(SCENPAR_NrRelaunchesKills, 0));
 	}
 	else if (SCENPAR_GameMode == GAMEMODE_LastManStanding)
 	{
