@@ -6,7 +6,7 @@
 		Make sure that the following functions return _inherited(...);
 			* Initialize();
 			* InitializePlayer(int plr);
-			* RelaunchPlayer(int plr, int killer);
+			* OnClonkDeath(object clonk, int killer);
 			* RemovePlayer(int plr);
 --*/
 
@@ -25,17 +25,20 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
-    if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
+	if (GetRelaunchRule()->HasUnlimitedRelaunches())
+		return;
 	Scoreboard->NewPlayerEntry(plr);
 	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
 	return _inherited(plr, ...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+protected func OnClonkDeath(object clonk, int killer)
 {
-    if (GetRelaunchRule()->HasUnlimitedRelaunches()) return;
+	var plr = clonk->GetOwner();
+	if (GetRelaunchRule()->HasUnlimitedRelaunches())
+		return;
 	Scoreboard->SetPlayerData(plr, "relaunches", GetRelaunchRule()->GetPlayerRelaunchCount(plr));
-	return _inherited(plr, killer, ...);
+	return _inherited(clonk, killer, ...);
 }
 
 protected func OnPlayerRelaunch(int plr)

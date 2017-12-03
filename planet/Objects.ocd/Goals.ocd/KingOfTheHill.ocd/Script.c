@@ -44,6 +44,8 @@ func Initialize()
 	Scoreboard->SetTitle("King of the Hill");
 	//CalculatePosition();
 	ScheduleCall(this, "PostInitialize", 3);
+	// Assure relaunching is enabled and infinite.
+	GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	return _inherited(...);
 }
 
@@ -136,6 +138,7 @@ public func IsFulfilled()
 
 func OnClonkDeath(object clonk, int killer)
 {	
+	_inherited(clonk, killer, ...);
 	if (clonk->GetAlive()) return;
 		
 	if (GetPlayerName(clonk->GetOwner()))

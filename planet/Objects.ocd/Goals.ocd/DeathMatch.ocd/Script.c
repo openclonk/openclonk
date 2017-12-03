@@ -12,30 +12,30 @@
 
 local maxkills;
 
-local ShowBoardTime = 5; // Duration in seconds the scoreboard will be shown to a player on an event.static const ShowBoardTime = 5; // Duration in seconds the scoreboard will be shown to a player on an event.
+// Duration in seconds the scoreboard will be shown to a player on an event.
+local ShowBoardTime = 5;
 
 func Initialize()
 {
-	if(ObjectCount(Find_ID(GetID()), Find_Exclude(this)))
-	{
-		(FindObject(Find_ID(GetID()), Find_Exclude(this)).maxkills) += 2;
-		return RemoveObject();
-	}
 	maxkills = GameCall("WinKillCount");
-	if(maxkills == nil || maxkills < 1) maxkills = 4;
+	if (maxkills == nil || maxkills < 1)
+		maxkills = 4;
+	// Assure relaunching is enabled and infinite.
 	GetRelaunchRule()->SetDefaultRelaunchCount(nil);
 	return _inherited(...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+protected func OnClonkDeath(object clonk, int killer)
 {
-	_inherited(plr, killer, ...);
+	var plr = clonk->GetOwner();
+	_inherited(clonk, killer, ...);
 	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * ShowBoardTime);
 	NotifyHUD();
 	return;
 }
+
 public func IsFulfilled()
 {
 	// Check whether someone has reached the limit.

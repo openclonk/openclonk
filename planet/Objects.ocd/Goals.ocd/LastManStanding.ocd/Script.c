@@ -13,7 +13,6 @@
 // Include modular scoreboard columns, notice the reverse order.
 #include Scoreboard_KillStreak
 #include Scoreboard_Kill
-//#include Scoreboard_Death
 #include Scoreboard_Relaunch
 
 // Some rule default values
@@ -45,9 +44,10 @@ protected func InitializePlayer(int plr)
 	_inherited(plr, ...);
 }
 
-protected func RelaunchPlayer(int plr, int killer)
+protected func OnClonkDeath(object clonk, int killer)
 {
-	_inherited(plr, killer, ...);
+	var plr = clonk->GetOwner();
+	_inherited(clonk, killer, ...);
 	// the kill logs rule cares about logging the respawn
 	// ..
 	
