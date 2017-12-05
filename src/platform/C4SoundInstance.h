@@ -92,7 +92,7 @@ public:
 	void SetVolume(int32_t inVolume) { iVolume = inVolume; }
 	void SetPan(int32_t inPan) { iPan = inPan; }
 	void SetPitch(int32_t inPitch);
-	void SetVolumeByPos(int32_t x, int32_t y);
+	void SetVolumeByPos(int32_t x, int32_t y, int32_t relative_volume = 100);
 	void SetObj(C4Object *pnObj) { pObj = pnObj; }
 	void ClearPointers(C4Object *pObj);
 	bool Inside(int32_t iX, int32_t iY, int32_t iRad);

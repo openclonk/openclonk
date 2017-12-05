@@ -387,10 +387,10 @@ void C4SoundInstance::Execute()
 	}
 }
 
-void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y)
+void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y, int32_t relative_vol)
 {
 	int32_t vol_player = NO_OWNER;
-	iVolume = ::Viewports.GetAudibility(x, y, &iPan, 0, &vol_player);
+	iVolume = ::Viewports.GetAudibility(x, y, &iPan, 0, &vol_player) * relative_vol / 100.0f;
 	if (vol_player != player) SetPlayer(vol_player);
 }
 

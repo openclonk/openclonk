@@ -275,7 +275,7 @@ C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t i
 	// Create
 	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, nullptr, iCustomFallofDistance, iPitch, modifier);
 	// Set volume by position
-	if (pInst) pInst->SetVolumeByPos(iX, iY);
+	if (pInst) pInst->SetVolumeByPos(iX, iY, iVolume);
 	// Return
 	return pInst;
 }
