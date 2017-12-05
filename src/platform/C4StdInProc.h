@@ -32,7 +32,7 @@ public:
 #else
 	void GetFDs(std::vector<struct pollfd> & checkfds) override
 	{
-		pollfd pfd = { 0, POLLIN, 0 };
+		pollfd pfd = { 0, POLLIN | POLLERR | POLLHUP, 0 };
 		checkfds.push_back(pfd);
 	}
 #endif
