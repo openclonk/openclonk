@@ -331,6 +331,10 @@ int32_t C4MaterialMap::Load(C4Group &hGroup)
 	hGroup.ResetSearch(); int32_t cnt=0;
 	while (hGroup.FindNextEntry(C4CFN_MaterialFiles,entryname))
 	{
+		if (cnt >= mat_num) {
+			Log("Internal Error: More materials loaded than expected. Make sure your material file names are unique (ignoring case).");
+			break;
+		}
 		// Load mat
 		if (!pNewMap[cnt].Load(hGroup,entryname))
 			{ delete [] pNewMap; return 0; }
