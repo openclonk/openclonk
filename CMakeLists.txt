@@ -1475,7 +1475,6 @@ ENDIF()
 set(OC_C4GROUPS
 	Graphics.ocg
 	Material.ocg
-	Music.ocg
 	Sound.ocg
 	System.ocg
 	Objects.ocd
@@ -1487,6 +1486,9 @@ set(OC_C4GROUPS
 	Tutorials.ocf
 	Worlds.ocf
 )
+if(APPLE)
+	list(APPEND OC_C4GROUPS Music.ocg)
+endif()
 
 foreach(group ${OC_C4GROUPS})
 	if (APPLE)
@@ -1520,6 +1522,9 @@ foreach(group ${OC_C4GROUPS})
 endforeach()
 
 if(NOT APPLE)
+	if(NOT HEADLESS_ONLY)
+		install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/planet/Music.ocg DESTINATION share/games/openclonk)
+	endif()
 	# group files (game data)
 	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
 	set_property(TARGET groups PROPERTY FOLDER "Setup")
