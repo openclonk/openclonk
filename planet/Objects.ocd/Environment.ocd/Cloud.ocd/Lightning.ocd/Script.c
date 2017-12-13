@@ -59,7 +59,13 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 	var range = Distance(0, 0, xdir, ydir);
 	var cone_angle = Angle(0, 0, xdir, ydir);
 	var cone_width = 30 + Distance(0, 0, xdev, ydev);
-	var attractor = FindObject(Find_Cone(3 * range / 2, cone_angle, cone_width, oldx, oldy), Find_Property("IsLightningAttractor"), Find_Exclude(launcher), Find_NoContainer(), Sort_Distance(oldx, oldy));
+	
+	var exclude = nil;
+	if (GetType(launcher) == C4D_Object)
+	{
+		exclude = Find_Exclude(launcher);
+	}
+	var attractor = FindObject(Find_Cone(3 * range / 2, cone_angle, cone_width, oldx, oldy), Find_Property("IsLightningAttractor"), exclude, Find_NoContainer(), Sort_Distance(oldx, oldy));
 	if (attractor)
 	{
 		// Move to lightning attractor.
@@ -86,7 +92,7 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 	this.LightOffset = [newx, newy];
 	
 	// Strike objects on the line: only objects that are vehicle, items, alive or structures.
-	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle | C4D_Structure), Find_Func("IsLightningStrikable", this)), Find_Exclude(launcher), Find_NoContainer()))
+	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_Or(Find_Category(C4D_Object | C4D_Living | C4D_Vehicle | C4D_Structure), Find_Func("IsLightningStrikable", this)), exclude, Find_NoContainer()))
 	{
 		var damage = 3 + strength / 10;
 		// Check if the object rejects a lightning strike, also check if object still exists because an object
