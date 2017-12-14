@@ -1032,10 +1032,15 @@ void C4Network2::OnPuncherConnect(C4NetIO::addr_t addr)
 		}
 		// Do not ::Network.InvalidateReference(); yet, we're expecting an ID from the netpuncher
 	}
-	// Client connection: request packet from host.
-	if (!isHost())
+	auto family = maybe_v4.GetFamily();
+	if (isHost())
 	{
-		auto family = maybe_v4.GetFamily();
+		// Host connection: request ID from netpuncher
+		NetIO.SendPuncherPacket(C4NetpuncherPacketIDReq(), family);
+	}
+	else
+	{
+		// Client connection: request packet from host.
 		if (Status.getState() == GS_Init && getNetpuncherGameID(family))
 			NetIO.SendPuncherPacket(C4NetpuncherPacketSReq(getNetpuncherGameID(family)), family);
 	}

@@ -21,9 +21,10 @@
 #include "network/C4NetIO.h"
 
 enum C4NetpuncherPacketType {
-	PID_Puncher_AssID = 0x51, // Puncher announcing ID to client
+	PID_Puncher_AssID = 0x51, // Puncher announcing ID to host
 	PID_Puncher_SReq  = 0x52, // Client requesting to be served with punching (for an ID)
 	PID_Puncher_CReq  = 0x53, // Puncher requesting clients to punch (towards an address)
+	PID_Puncher_IDReq = 0x54, // Host requesting an ID
 	// extend this with exchanging ICE parameters, some day?
 };
 
@@ -46,6 +47,15 @@ public:
 protected:
 	virtual StdBuf PackInto() const = 0;
 	typedef C4NetpuncherID::value CID;
+};
+
+class C4NetpuncherPacketIDReq : public C4NetpuncherPacket {
+private:
+	StdBuf PackInto() const override { return StdBuf(); }
+public:
+	C4NetpuncherPacketIDReq() = default;
+	C4NetpuncherPacketIDReq(const C4NetIOPacket& rpack) { }
+	C4NetpuncherPacketType GetType() const final { return PID_Puncher_IDReq; }
 };
 
 template<C4NetpuncherPacketType TYPE>
