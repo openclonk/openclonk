@@ -2,4 +2,4 @@ Name=Ausbreitung
 
 #Goal window
 MsgGoalFulfilled=Du hast deine Ausbreitungsziele erreicht.
-MsgGoalUnFulfilled=Dehne deine Herrschaft aus, durch das bauen der Flaggen. Momentan kontrollierst du erst %d% der gefragter Herrschaft.
+MsgGoalUnFulfilled=Dehne deine Herrschaft aus, indem du Flaggen baust. Momentan kontrollierst du erst %d%% des notwendigen Bereichs.
