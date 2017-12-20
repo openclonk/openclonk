@@ -37,6 +37,8 @@ protected:
 	void OnUpdateBtn(C4GUI::Control *btn);
 #endif
 
+private:
+	void DrawPersonList(int title, struct PersonList&, C4Rect& rect);
 public:
 
 	void DoBack(); // back to main menu

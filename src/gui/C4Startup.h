@@ -32,6 +32,18 @@ const int32_t
 	C4StartupBtnBorderColor1 = 0xffccc3b4,
 	C4StartupBtnBorderColor2 = 0xff94846a;
 
+// Titles in StartupAboutTitles
+enum
+{
+    C4StartupAboutEngineAndTools,
+    C4StartupAboutScriptingAndContent,
+    C4StartupAboutAdministration,
+    C4StartupAboutArtAndContent,
+    C4StartupAboutMusicAndSound,
+    C4StartupAboutContributors,
+    C4StartupAboutTitleCount
+};
+
 // graphics needed only by startup
 class C4StartupGraphics
 {
@@ -40,8 +52,8 @@ private:
 
 public:
 	// backgrounds
-	C4FacetID fctPlrPropBG; // for player property subpage
-	C4FacetID fctAboutBG;   // for about screen
+	C4FacetID fctPlrPropBG;   // for player property subpage
+	C4FacetID fctAboutTitles; // for about screen
 	C4FacetID fctDlgPaper;
 
 	C4FacetID fctStartupLogo; // logo

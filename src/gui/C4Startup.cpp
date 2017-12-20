@@ -43,8 +43,8 @@ bool C4StartupGraphics::Init()
 	Game.SetInitProgress(38.0f);
 	if (!LoadFile(fctDlgPaper, "StartupDlgPaper")) return false;
 	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
-	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;
-	fctAboutBG.GetFace().SetBackground();
+	if (!LoadFile(fctAboutTitles, "StartupAboutTitles")) return false;
+	fctAboutTitles.Set(fctAboutTitles.Surface,0,0,fctAboutTitles.Surface->Wdt,fctAboutTitles.Surface->Hgt/C4StartupAboutTitleCount);
 	if (!LoadFile(fctStartupLogo, "StartupLogo")) return false;
 	::GraphicsResource.ProgressStart = 92;
 	::GraphicsResource.ProgressIncrement = 0.5;
