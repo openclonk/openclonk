@@ -435,7 +435,7 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	// determine needed texture size
 	if (dwHeight * iFontZoom > 40)
 		iSfcSizes = 512;
-	else if (dwDefFontHeight * iFontZoom > 20)
+	else if (dwHeight * iFontZoom > 20)
 		iSfcSizes = 256;
 	else
 		iSfcSizes = 128;
