@@ -19,6 +19,18 @@
 #include "lib/C4Markup.h"
 #include "graphics/C4BltTransform.h"
 
+using namespace std::string_literals;
+
+std::string C4MarkupTag::OpeningTag() const
+{
+	return "<"s + TagName() + ">";
+}
+
+std::string C4MarkupTag::ClosingTag() const
+{
+	return "</"s + TagName() + ">";
+}
+
 void C4MarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {
 	// do sheering
@@ -29,6 +41,12 @@ void C4MarkupTagColor::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {
 	// set color
 	if (fDoClr) dwClr = this->dwClr;
+}
+
+
+std::string C4MarkupTagColor::OpeningTag() const
+{
+	return "<c "s + FormatString("%x", dwClr).getData() + ">";
 }
 
 bool C4Markup::Read(const char **ppText, bool fSkip)
@@ -108,6 +126,23 @@ bool C4Markup::SkipTags(const char **ppText)
 	while (**ppText=='<') if (!Read(ppText, true)) break;
 	// return whether end is reached
 	return !**ppText;
+}
+
+
+std::string C4Markup::ClosingTags() const
+{
+	std::string result;
+	for (auto tag = pLast; tag; tag = tag->pPrev)
+		result += tag->ClosingTag();
+	return result;
+}
+
+std::string C4Markup::OpeningTags() const
+{
+	std::string result;
+	for (auto tag = pTags; tag; tag = tag->pNext)
+		result += tag->OpeningTag();
+	return result;
 }
 
 bool C4Markup::StripMarkup(char *szText)

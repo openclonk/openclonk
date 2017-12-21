@@ -28,7 +28,9 @@ public:
 	virtual ~C4MarkupTag() = default;    // dtor
 
 	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)=0; // assign markup
-	virtual const char *TagName()=0;  // get character string for this tag
+	virtual const char *TagName() const = 0;  // get character string for this tag
+	virtual std::string OpeningTag() const;   // get opening tag, i.e. "<{TagName()}>"
+	virtual std::string ClosingTag() const;   // get closing tag, i.e. "</{TagName()}>"
 };
 
 // markup tag for italic text
@@ -38,7 +40,7 @@ public:
 	C4MarkupTagItalic() : C4MarkupTag() { } // ctor
 
 	void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr) override; // assign markup
-	const char *TagName() override { return "i"; }
+	const char *TagName() const override { return "i"; }
 };
 
 // markup tag for colored text
@@ -50,15 +52,16 @@ public:
 	C4MarkupTagColor(DWORD dwClr) : C4MarkupTag(), dwClr(dwClr) { } // ctor
 
 	void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr) override; // assign markup
-	const char *TagName() override { return "c"; }
+	const char *TagName() const override { return "c"; }
+	std::string OpeningTag() const override;
 };
 
 // markup rendering functionality for text
 class C4Markup
 {
 private:
-	C4MarkupTag *pTags, *pLast;    // tag list; single linked
-	bool fDoClr;                  // set if color changes should be made (not in text shadow!)
+	C4MarkupTag *pTags, *pLast;  // tag list; double linked
+	bool fDoClr;                 // set if color changes should be made (not in text shadow!)
 
 	void Push(C4MarkupTag *pTag)
 	{ if ((pTag->pPrev=pLast)) pLast->pNext=pTag; else pTags=pTag; pLast=pTag; }
@@ -74,6 +77,10 @@ public:
 	void Apply(C4BltTransform &rBltTrf, DWORD &dwClr)  // assign markup to vertices
 	{ for (C4MarkupTag *pTag=pTags; pTag; pTag=pTag->pNext) pTag->Apply(rBltTrf, fDoClr, dwClr); }
 	bool Clean() { return !pTags; } // empty?
+
+	// The following two functions are for splitting a markup string.
+	std::string ClosingTags() const; // get all closing tags at the current location
+	std::string OpeningTags() const; // get all opening tags at the current location
 
 	static bool StripMarkup(char *szText); // strip any markup codes from given text buffer
 	static bool StripMarkup(StdStrBuf *sText); // strip any markup codes from given text buffer

@@ -217,6 +217,9 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 	}
 	else
 	{
+		C4Markup markup(false);
+		const char *markupPos = szLine;
+		std::string rline;
 		// output broken lines until there are any
 		int iLineIndex = 0;
 		while (*szLine)
@@ -232,11 +235,39 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 			// get number of characters printable into this line
 			const char *szNextLine;
 			int iNumChars = pFont->GetMessageBreak(szLine, &szNextLine, iBreakWdt);
+			// make sure not to break markup
+			if (fMarkup)
+			{
+				std::string opening = markup.OpeningTags();
+				while (markupPos < szNextLine)
+					if (*markupPos == '<')
+					{
+						markup.Read(&markupPos);
+						if (markupPos > szNextLine)
+						{
+							// The message break is within a tag.
+							iNumChars += markupPos - szNextLine + 1;
+							szNextLine = markupPos;
+						}
+					}
+					else
+						markupPos++;
+				std::string closing = markup.ClosingTags();
+				if (!opening.empty() || !closing.empty())
+				{
+					rline = std::move(opening);
+					rline.append(szLine, iNumChars);
+					rline.append(closing);
+					szLine = rline.c_str();
+					iNumChars = rline.size();
+				}
+			}
 			// add them
 			AppendSingleLine(szLine, iNumChars, iLineIndex ? szIndent : nullptr, pFont, dwClr, !iLineIndex);
 			// next line
 			szLine = szNextLine;
 			++iLineIndex;
+			rline.clear();
 		}
 	}
 }
