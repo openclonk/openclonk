@@ -34,7 +34,7 @@ protected func InitializeMap(proplist map)
 	
 	// Acid lake: draw first and let rest overwrite this layer.
 	var acid_lake = {Algo = MAPALGO_Rect, X = 0, Y = acid_level, Wdt = wdt, Hgt = hgt};
-	map->Draw("Acid:Sky", acid_lake);
+	map->Draw("Acid", acid_lake);
 	
 	// Draw the basic shape of the earth and add different earth types.
 	var ground = GetGroundShape(map, acid_level, acid_hills, acid_bottom);
