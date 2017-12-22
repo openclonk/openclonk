@@ -56,8 +56,6 @@ public:
 	void Draw(C4TargetFacet &cgo, class C4FoWRegion *pLight = nullptr);
 	void ScenarioInit();
 
-	void ScanSideOpen();
-
 	void DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
 
 	void RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt);

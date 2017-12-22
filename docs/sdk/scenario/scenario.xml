@@ -248,7 +248,7 @@
       <row>
         <literal_col>AutoScanSideOpen</literal_col>
         <col>Integer</col>
-        <col>0 or 1. If 1, LeftOpen and RightOpen will be set automatically depending on the landscape at game start.</col>
+        <col>0 or 1. If 1, the left and right borders are closed if the corresponding map pixel in the left or right row has tunnel background and open otherwise.</col>
       </row>
       <row>
         <literal_col>MapWidth</literal_col>
