@@ -248,7 +248,7 @@
       <row>
         <literal_col>AutoScanSideOpen</literal_col>
         <col>Integer</col>
-        <col>0 or 1. If 1, the left and right borders are closed if the corresponding map pixel in the left or right row has tunnel background and open otherwise.</col>
+        <col>0, 1, or 2. If 1, the left and right borders are closed if the corresponding map pixel in the left or right row has non-sky foreground or background and open otherwise. If 2, it only checks the background.</col>
       </row>
       <row>
         <literal_col>MapWidth</literal_col>

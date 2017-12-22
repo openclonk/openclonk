@@ -2072,14 +2072,19 @@ bool C4Landscape::P::InitBorderPix()
 
 	if (Game.C4S.Landscape.AutoScanSideOpen)
 	{
+		// Compatibility: check both foreground and background material per
+		// default, Top/BottomOpen=2-like behavior with AutoScanSideOpen=2.
+		bool only_bg = Game.C4S.Landscape.AutoScanSideOpen == 2;
 		LeftColPix.resize(Height);
 		RightColPix.resize(Height);
 		uint8_t map_pix;
 		for (int32_t y = 0; y < Height; ++y)
 		{
 			map_pix = MapBkg->GetPix(0, y / MapZoom);
+			if (!only_bg) map_pix += Map->GetPix(0, y / MapZoom);
 			LeftColPix[y] = ((map_pix != 0) ? MCVehic : 0);
 			map_pix = MapBkg->GetPix(Map->Wdt - 1, y / MapZoom);
+			if (!only_bg) map_pix += Map->GetPix(Map->Wdt - 1, y / MapZoom);
 			RightColPix[y] = ((map_pix != 0) ? MCVehic : 0);
 		}
 	}
