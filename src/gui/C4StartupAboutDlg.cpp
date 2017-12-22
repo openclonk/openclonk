@@ -123,7 +123,7 @@ static struct ContributorList : public PersonList
 
 // Sorted by commit count this release, e.g.: git shortlog -s v7.0.. | sort -rn
 const std::vector<ContributorList::Entry> ContributorList::contributorsThisRelease = {
-	{"Fulgen", nullptr},
+	{"George Tokmaji", "Fulgen"},
 	{"Linus Heckemann", "sphalerite"},
 	{"Dominik Bayerl", "Kanibal"},
 	{"Armin Schäfer", nullptr},
