@@ -240,18 +240,23 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 			{
 				std::string opening = markup.OpeningTags();
 				while (markupPos < szNextLine)
+				{
 					if (*markupPos == '<')
 					{
-						markup.Read(&markupPos);
-						if (markupPos > szNextLine)
+						if (markup.Read(&markupPos))
 						{
-							// The message break is within a tag.
-							iNumChars += markupPos - szNextLine + 1;
-							szNextLine = markupPos;
+							if (markupPos > szNextLine)
+							{
+								// The message break is within a tag.
+								iNumChars += markupPos - szNextLine + 1;
+								szNextLine = markupPos;
+							}
+							// Read already moved us over a valid tag.
+							continue;
 						}
 					}
-					else
-						markupPos++;
+					markupPos++;
+				}
 				std::string closing = markup.ClosingTags();
 				if (!opening.empty() || !closing.empty())
 				{
