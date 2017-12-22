@@ -2088,6 +2088,7 @@ bool C4Landscape::P::InitBorderPix()
 		int32_t LeftOpen = std::min(Height, Game.C4S.Landscape.LeftOpen);
 		int32_t RightOpen = std::min(Height, Game.C4S.Landscape.RightOpen);
 		LeftColPix.assign(Height, MCVehic);
+		RightColPix.assign(Height, MCVehic);
 		for (int32_t cy = 0; cy < LeftOpen; cy++)
 			LeftColPix[cy] = 0;
 		for (int32_t cy = 0; cy < RightOpen; cy++)
