@@ -23,8 +23,6 @@ Crew=Clonk=2
 Sky=Clouds1
 TopOpen=0
 BottomOpen=0
-AutoScanSideOpen=0
-LeftOpen=160
 MapWidth=150
 MapHeight=150
 
