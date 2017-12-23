@@ -217,7 +217,11 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom)
 {
 	// Fullscreen only
-	if (Application.isEditor) return false;
+	if (Application.isEditor)
+	{
+		Log(LoadResStr("IDS_PRC_SCREENSHOTERROREDITOR"));
+		return false;
+	}
 	// back surface must be present
 	if (!FullScreen.pSurface) return false;
 
