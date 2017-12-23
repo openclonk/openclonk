@@ -764,7 +764,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "screenshot"))
 	{
 		double zoom = atof(pCmdPar);
-		if (zoom<=0) return false;
+		if (zoom<=0) zoom = 2;
 		::GraphicsSystem.SaveScreenshot(true, zoom);
 		return true;
 	}
