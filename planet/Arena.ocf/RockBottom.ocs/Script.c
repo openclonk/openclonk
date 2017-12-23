@@ -119,6 +119,12 @@ global func CreateChestContents(id obj_id)
 }
 
 // GameCall from RelaunchContainer.
+public func OnClonkEnteredRelaunch(object clonk)
+{
+	clonk->CreateContents(Sword);
+}
+
+// GameCall from RelaunchContainer.
 public func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->SetPosition(RandomX(120, 160), -20);
@@ -132,4 +138,4 @@ public func RelaunchPosition()
 }
 
 public func KillsToRelaunch() { return 0; }
-public func RelaunchWeaponList() { return [Bow, Shield, Sword, Firestone, Dynamite, Javelin, Blunderbuss]; }
+public func RelaunchWeaponList() { return [Bow, Shield, Firestone, Dynamite, Javelin, Blunderbuss]; }
