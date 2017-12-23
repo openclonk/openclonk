@@ -5,29 +5,22 @@
 	@author Ringwaul
 */
 
+// If depth is nil, the function will always measure the depth of the material.
+// Otherwise, the function will return true if the material is as deep or deeper than depth (in pixels).
 global func MaterialDepthCheck(int x, int y, string mat, int depth)
 {
-	var travelled;
-	var xval = x;
-	var yval = y;
+	var travelled = 0;
+	var matnum = Material(mat);
 
-	//If depth is equal to zero, the function will always measure the depth of the material.
-	//If depth is not equal to zero, the function will return true if the material is as deep or deeper than depth (in pixels).
-	if (depth == nil)
-		depth = LandscapeHeight();
-
-	while (travelled != depth)
+	while (y+GetY() < LandscapeHeight() && GetMaterial(x, y) == matnum)
 	{
-		if (GetMaterial(xval, yval) == Material(mat))
-		{
-			travelled++;
-			yval++;
-		}
-		if (GetMaterial(xval, yval) != Material(mat))
-			return travelled; // Returns depth of material.
+		travelled++;
+		y++;
+		if (travelled == depth)
+			return true;
 	}
-	if (travelled == depth)
-		return true;
+	if (depth == nil)
+		return travelled;
 	return false;
 }
 

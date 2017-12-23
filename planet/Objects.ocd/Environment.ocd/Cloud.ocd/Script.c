@@ -70,15 +70,18 @@ protected func Initialize()
 	SetPhase(RandomX(1,16));
 
 	// Push low flying clouds up to proper height
-	while (MaterialDepthCheck(GetX(), GetY(), "Sky", 150) != true)
+	var xoff = 0, yoff = 0;
+	while (GetY() + yoff > 0 && !MaterialDepthCheck(xoff, yoff, "Sky", 150))
 	{
-		SetPosition(GetX(), GetY()-1);
+		yoff--;
 	}
 
 	// Failsafe for stupid grounded clouds
-	if (GetMaterial(0, 30) != Material("Sky")) 
-		SetPosition(GetX(), GetY() - 180);
-	
+	if (GetMaterial(xoff, yoff+30) != Material("Sky")) 
+		yoff -= 180;
+
+	SetPosition(GetX()+xoff, GetY()+yoff);
+
 	// Add effect to process all cloud features.
 	AddEffect("ProcessCloud", this, 100, 5, this);
 	return;
@@ -289,18 +292,25 @@ private func MoveCloud()
 	else
 		SetXDir(wind * 10, 1000);
 		
+	var x = GetX(), y = GetY();
 	// Loop clouds around the map.
-	if (GetX() >= LandscapeWidth() + wdt/2 - 10) 
-		SetPosition(12 - wdt/2, GetY());
-	else if (GetX() <= 10 - wdt/2) 
-		SetPosition(LandscapeWidth() + wdt/2 - 12, GetY());
+	if (x >= LandscapeWidth() + wdt/2 - 10) 
+		x = 12 - wdt/2;
+	else if (x <= 10 - wdt/2) 
+		x = LandscapeWidth() + wdt/2 - 12;
 		
 	// Some other safety.
-	if (GetY() <= 5) 
-		SetPosition(0, 6);
+	if (y <= 5) 
+		y = 6;
 	if (GetYDir() != 0) 
 		SetYDir(0);
-	while (Stuck()) 
+
+	if (x != GetX() || y != GetY())
+		SetPosition(x, y);
+
+	// We're moving the cloud to y = 6 above, so don't bother moving it higher
+	// than that.
+	while (Stuck() && GetY() > 10) 
 		SetPosition(GetX(), GetY() - 5);
 		
 	if (rain_sound_dummy)
