@@ -3448,6 +3448,7 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 		break;
 		// Exact: draw directly to landscape by color & pattern
 	case LandscapeMode::Exact:
+	{
 		C4Rect BoundingBox(iX - iGrade - 1, iY - iGrade - 1, iGrade * 2 + 2, iGrade * 2 + 2);
 		// Draw to landscape
 		p->PrepareChange(this, BoundingBox);
@@ -3455,6 +3456,8 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 		p->Surface8Bkg->Circle(iX, iY, iGrade, byColBkg);
 		p->FinishChange(this, BoundingBox);
 		break;
+	}
+	case LandscapeMode::Undefined: assert(false); break;
 	}
 	return true;
 }
@@ -3518,6 +3521,7 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		break;
 		// Exact: draw directly to landscape by color & pattern
 	case LandscapeMode::Exact:
+	{
 		// Set texture pattern & get material color
 		C4Rect BoundingBox(iX1 - iGrade, iY1 - iGrade, iGrade * 2 + 1, iGrade * 2 + 1);
 		BoundingBox.Add(C4Rect(iX2 - iGrade, iY2 - iGrade, iGrade * 2 + 1, iGrade * 2 + 1));
@@ -3526,6 +3530,8 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		ForLine(iX1, iY1, iX2, iY2, [this, line_color, line_color_bkg, iGrade](int32_t x, int32_t y) { return p->DrawLineLandscape(x, y, iGrade, line_color, line_color_bkg); });
 		p->FinishChange(this, BoundingBox);
 		break;
+	}
+	case LandscapeMode::Undefined: assert(false); break;
 	}
 	return true;
 }
@@ -3565,6 +3571,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		break;
 		// Exact: draw directly to landscape by color & pattern
 	case LandscapeMode::Exact:
+	{
 		C4Rect BoundingBox(iX1, iY1, iX2 - iX1 + 1, iY2 - iY1 + 1);
 		// Draw to landscape
 		p->PrepareChange(this, BoundingBox);
@@ -3572,6 +3579,8 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		p->Surface8Bkg->Box(iX1, iY1, iX2, iY2, byColBkg);
 		p->FinishChange(this, BoundingBox);
 		break;
+	}
+	case LandscapeMode::Undefined: assert(false); break;
 	}
 	return true;
 }
@@ -4186,13 +4195,13 @@ C4FoW * C4Landscape::GetFoW()
 
 int32_t C4Landscape::GetMatCount(int material) const
 {
-	assert(material >= 0 && material < p->MatCount.size());
+	assert(material >= 0 && (unsigned) material < p->MatCount.size());
 	return p->MatCount[material];
 }
 
 int32_t C4Landscape::GetEffectiveMatCount(int material) const
 {
-	assert(material >= 0 && material < p->EffectiveMatCount.size());
+	assert(material >= 0 && (unsigned) material < p->EffectiveMatCount.size());
 	return p->EffectiveMatCount[material];
 }
 
