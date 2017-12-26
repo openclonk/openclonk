@@ -25,7 +25,7 @@ public func AttachToTree(object tree)
 public func DetachFromTree(bool no_bounce)
 {
 	ClearScheduleCall(this, "DetachFromTree");
-	SetCategory(GetCategory() ^ C4D_StaticBack);
+	SetCategory(GetCategory() & (~C4D_StaticBack));
 	SetXDir(Random(3)-1);
 	if (mother) mother->LostCoconut();
 	mother = nil;
