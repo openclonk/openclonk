@@ -3747,11 +3747,11 @@ BYTE C4Landscape::GetBackPix(int32_t x, int32_t y) const // get landscape pixel 
 	// Border checks
 	if (x < 0)
 	{
-		return p->DefaultBkgMat(p->LeftColPix[y]);
+		return p->DefaultBkgMat(p->LeftColPix[Clamp(y, 0, GetHeight()-1)]);
 	}
 	if (static_cast<uint32_t>(x) >= static_cast<uint32_t>(GetWidth()))
 	{
-		return p->DefaultBkgMat(p->RightColPix[y]);
+		return p->DefaultBkgMat(p->RightColPix[Clamp(y, 0, GetHeight()-1)]);
 	}
 	if (y < 0)
 	{
