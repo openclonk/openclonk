@@ -93,19 +93,30 @@ public func Reset(clonk)
 
 func DoSwing(object clonk, int ix, int iy)
 {
-	var angle = Angle(0,0,ix,iy);
+	var angle = 180-Angle(0,0,ix,iy);
 
 	//Creates an imaginary line which runs for 'MaxReach' distance (units in pixels)
 	//or until it hits a solid wall.
 	var iDist=0;
-	while(!GBackSolid(Sin(180-angle,iDist),Cos(180-angle,iDist)) && iDist < MaxReach)
+	var x2, y2;
+	while (!GBackSolid((x2=Sin(angle,iDist)), (y2=Cos(angle,iDist))) && iDist < MaxReach)
 	{
+		// Check some additional surrounding pixels in a cone to make hitting single pixels easier.
+		for (var da = -StrikeCone/2; da <= StrikeCone/2; da += 2)
+		{
+			if (Abs(da) < 3) continue;
+			var x3 = Sin(angle+da,iDist), y3 = Cos(angle+da, iDist);
+			if (x3 != x2 || y3 != y2)
+			{
+				x2 = x3; y2 = y3;
+				if (GBackSolid(x2, y2))
+					break;
+			}
+		}
 		++iDist;
 	}
 	
 	//Point of contact, where the pick strikes the landscape
-	var x2 = Sin(180-angle,iDist);
-	var y2 = Cos(180-angle,iDist);
 	var is_solid = GBackSolid(x2,y2);
 	
 	// alternatively hit certain objects
@@ -235,6 +246,8 @@ local Description = "$Description$";
 local Collectible = true;
 //MaxReach is the length of the pick from the clonk's hand
 local MaxReach = 12;
+// StrikeCone is the size of the cone checked for material hits in degrees.
+local StrikeCone = 16;
 local MaxPickDensity = 70; // can't pick granite
 local ForceFreeHands = true;
 local Components = {Wood = 1, Metal = 1};
