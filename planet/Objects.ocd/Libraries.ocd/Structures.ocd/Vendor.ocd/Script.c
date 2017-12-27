@@ -262,6 +262,7 @@ public func GetBuyMenuEntries(object clonk)
 
 public func OnBuyMenuSelection(id def, extra_data, object clonk)
 {
+	if (!def) return;
 	// distinguish owners
 	var wealth_player = GetOwner();
 	var for_player = clonk->GetController();
