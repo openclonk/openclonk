@@ -287,7 +287,7 @@ global func Test4_OnStart(int plr)
 
 	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
 	foundry->CreateContents(Earth, 10);
-	foundry->AddToQueue(Loam, 2);
+	foundry->AddToQueue(Loam, 5);
 	
 	var pump = CreateObjectAbove(Pump, 84, 160, plr);
 	var source = CreateObject(Pipe, 168, 292, plr);
@@ -306,8 +306,13 @@ global func Test4_OnStart(int plr)
 
 global func Test4_Completed()
 {
-
-	return false;
+	// The test fails if lava is left in the new source rectangle,
+	// or if production can be completed (the foundry can produce
+	// only 2 loam instead of 5 if the connection changes)
+	var could_pump_lava = GetMaterial(20, 125) == Material("Sky");
+	var cannot_finish_production = ObjectCount(Find_ID(Loam)) <= 2;
+	var producing = FindObject(Find_ID(Foundry))->IsProducing();
+	return !producing && could_pump_lava && cannot_finish_production;
 }
 
 global func Test4_OnFinished()
@@ -326,20 +331,42 @@ global func Test5_OnStart(int plr)
 	engine->CreateContents(Coal, 10);
 	
 	var pump = CreateObjectAbove(Pump, 84, 160, plr);
-	var helmet = GetCursor(plr)->CreateContents(DivingHelmet);
+	var helmet = GetHiRank(plr)->CreateContents(DivingHelmet);
 	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
 	drain->ConnectPipeTo(helmet);
 	drain->ConnectPipeTo(pump, drain->GetPipeState());
 	
+	// Move player character over the basin
+	GetHiRank()->SetPosition(175, 150);
+	GetHiRank()->SetComDir(COMD_Down);
+	helmet->ControlUse(GetHiRank(plr));
+
 	// Log what the test is about.
-	Log("Test air supply to diving helmet.");
+	Log("Test air supply to diving helmet - dive down towards the ground");
 	return true;
 }
 
 global func Test5_Completed()
 {
-	if (ObjectCount(Find_ID(DivingHelmet), Find_NoContainer()) >= 1)
-		return true;
+	var is_down = GetHiRank()->GetY() > 280;
+	if (is_down)
+	{
+		GetHiRank()->SetComDir(COMD_Up);
+		var breath_before = GetHiRank()->GetBreath();
+		GetHiRank()->DoBreath(1000);
+		var breath_used = GetHiRank().MaxBreath - breath_before;
+
+		var pump = FindObject(Find_ID(Pump));
+		var is_pumping = pump->GetAction() == "Pump";
+		var has_air_pipe = pump->IsAirPipeConnected();
+		Log("The clonk used %d air, pump is pumping %v, has air pipe %v", breath_used, is_pumping, has_air_pipe);
+		if (breath_used <= 70 && is_pumping && has_air_pipe)
+		{
+			return true;
+		}
+		Log("There was no air supply to the diving helmet - skipping the failed test");
+		SkipTest();
+	}
 	return false;
 }
 
