@@ -84,7 +84,12 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	}
 
 	case C4FO_Exclude:
-		return new C4FindObjectExclude(Data[1].getObj());
+	{
+		C4Object *obj = Data[1].getObj();
+		if (!obj) return nullptr;
+
+		return new C4FindObjectExclude(obj);
+	}
 
 	case C4FO_ID:
 		return new C4FindObjectDef(Data[1].getPropList());
