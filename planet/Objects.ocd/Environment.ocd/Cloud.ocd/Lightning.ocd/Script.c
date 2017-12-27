@@ -24,7 +24,7 @@ global func LaunchLightning(int x, int y, int strength, int xdir, int ydir, int 
 	var lightning = CreateObject(Lightning, x - GetX(), y - GetY());
 	// Ignore the launching object if not called from effect, scenario, etc..
 	var launching_object = nil;
-	if (this && GetType(this) == C4D_Object)
+	if (this && GetType(this) == C4V_C4Object)
 		launching_object = this;
 	return lightning && lightning->Launch(x, y, strength, xdir, ydir, xdev, ydev, no_sound, launching_object);
 }
