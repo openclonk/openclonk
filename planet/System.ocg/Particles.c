@@ -381,7 +381,7 @@ global func Particles_Rain(int color)
 	{
 		CollisionVertex = 0,
 		OnCollision = PC_Die(),
-		ForceY = PV_Gravity(100),
+		ForceY = PV_Gravity(1000),
 		Size = PV_Random(10, 30),
 		R = GetRGBaValue(color, 1),
 		G = GetRGBaValue(color, 2),
@@ -415,18 +415,19 @@ global func Particles_Snow(int color)
 
 global func Particles_RainSmall(int color)
 {
-	return
+	return 
 	{
 		CollisionVertex = 0,
 		OnCollision = PC_Die(),
-		ForceY = PV_Gravity(60),
-		Size = 20,
+		ForceY = PV_Gravity(1000),
+		Size = 1,
 		R = GetRGBaValue(color, 1),
 		G = GetRGBaValue(color, 2),
 		B = GetRGBaValue(color, 3),
+		Alpha = 200,
 		Rotation = PV_Direction(),
-		CollisionDensity = 25,		
-		Stretch = PV_KeyFrames(0, 0, 1000, 500, 1000, 1000, 0),
+		CollisionDensity = 25,
+		Stretch = PV_Speed(4000),
 	};
 }
 
@@ -466,7 +467,7 @@ global func Particles_Hail(int color)
 	return
 	{
 		CollisionVertex = 0,
-		ForceY = PV_Gravity(60),
+		ForceY = PV_Gravity(1000),
 		OnCollision = PC_Stop(),
 		Size = 2,
 		Alpha = PV_KeyFrames(255, 0, 255, 500, 255, 1000, 0),

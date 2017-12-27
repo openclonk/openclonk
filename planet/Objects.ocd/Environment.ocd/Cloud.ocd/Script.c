@@ -427,7 +427,7 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 {
 	// Adjust position so that it's in the air.
 	var x = AbsX(x_orig), y = AbsY(y_orig);
-	while (GBackSemiSolid(x, y - 1)) y--;
+	while (y > 0 && GBackSemiSolid(x, y - 1)) y--;
 
 	// Add material at impact
 	if (rain_inserts_mat)
@@ -457,16 +457,16 @@ private func DropHit(string material_name, int color, int x_orig, int y_orig)
 	{
 		if( (material_name == "Acid" && GetMaterial(x,y) == Material("Earth")) || material_name == "Lava" || material_name == "DuroLava")
 			Smoke(x, y, 3, RGB(150,160,150));
-		CreateParticle("RaindropSplash", x, y-1, 0, 0, 5, Particles_Splash(color), 0);
+		CreateParticle("RaindropSplash", x, y, 0, 0, 5, Particles_Splash(color), 0);
 		if(material_name == "Ice")
 		{
 			particle_cache.hail = particle_cache.hail ?? Particles_Hail(color);
-			CreateParticle("Hail", x, y, RandomX(-2,2), -Random(10), PV_Random(300, 300), particle_cache.hail, 0);
+			CreateParticle("Hail", x, y - 1, RandomX(-2,2), -Random(10), PV_Random(300, 300), particle_cache.hail, 0);
 		}
 		else
 		{
 			particle_cache.small_rain = particle_cache.small_rain ?? Particles_RainSmall(color);
-			CreateParticle("RaindropSmall", x, y, RandomX(-4, 4), -Random(10), PV_Random(300, 300), particle_cache.small_rain, 0);
+			CreateParticle("SphereSpark", x, y - 1, PV_Random(-10, 10), PV_Random(-30, -10), PV_Random(200, 300), particle_cache.small_rain, 5);
 		}
 	}
 }
