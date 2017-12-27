@@ -1257,14 +1257,31 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 	for (var c = 0; c < GetLength(current_entries); ++c)
 	{
 		var old_entry = current_entries[c];
+		if (!old_entry) continue;
+		
 		var found = false;
 		var symbol_equal_index = -1;
 		for (var ni = 0; ni < GetLength(new_entries); ++ni)
 		{
 			var new_entry = new_entries[ni];
+			if (!new_entry) continue;
+			
 			if (!EntriesEqual(new_entry, old_entry))
 			{
-				if ((new_entry.symbol == old_entry.symbol) && (new_entry.extra_data == old_entry.extra_data) && (new_entry.fx == old_entry.fx))
+				// Exception for the inventory menus.. extra_data includes all the found objects, but they are allowed to differ here.
+				// So we check for equality excluding the objects.
+				var extra1 = new_entry.extra_data;
+				if (GetType(extra1) == C4V_PropList) extra1 = new extra1 {objects = nil};
+				var extra2 = old_entry.extra_data;
+				if (GetType(extra2) == C4V_PropList) extra2 = new extra2 {objects = nil};
+				// We also allow the symbols to change as long as the actual ID stays intact.
+				var symbol1 = new_entry.symbol;
+				var symbol2 = old_entry.symbol;
+				var symbols_equal = symbol1 == symbol2;
+				if (!symbols_equal && symbol1 && symbol2 && GetType(symbol1) == C4V_C4Object && GetType(symbol2) == C4V_C4Object)
+					symbols_equal = symbol1->~GetID() == symbol2->~GetID();
+
+				if (symbols_equal && DeepEqual(extra1, extra2) && DeepEqual(new_entry.custom, old_entry.custom) && (new_entry.fx == old_entry.fx))
 					symbol_equal_index = ni;
 				continue;
 			}
@@ -1341,8 +1358,8 @@ func EntriesEqual(proplist entry_a, proplist entry_b)
 {
 	return entry_a.symbol == entry_b.symbol
 	&& entry_a.text == entry_b.text
-	&& entry_a.extra_data == entry_b.extra_data
-	&& entry_a.custom == entry_b.custom;
+	&& DeepEqual(entry_a.extra_data, entry_b.extra_data)
+	&& DeepEqual(entry_a.custom, entry_b.custom);
 }
 
 func CreateDummy()
