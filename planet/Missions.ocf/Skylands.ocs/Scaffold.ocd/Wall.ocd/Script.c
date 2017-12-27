@@ -21,6 +21,7 @@ func SetLeftExtension(object host)
 	SetPosition(host->GetX()+13, host->GetY()+12);
 	SetSolidMask(0,0,32,4);
 	SetVertexXY(0,1+29,-27);
+	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
@@ -43,6 +44,7 @@ func SetRightExtension(object host)
 	SetPosition(host->GetX()+13, host->GetY()+12);
 	SetSolidMask(0,0,32,4);
 	SetVertexXY(0,1-29,-27);
+	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
@@ -54,6 +56,7 @@ func SetTopRightExtension(object host)
 	SetPosition(host->GetX()+15, host->GetY()-48);
 	SetSolidMask(0,0,2,32,2,0);
 	SetVertexXY(0,-27,1+32);
+	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
@@ -65,6 +68,7 @@ func SetTopLeftExtension(object host)
 	SetPosition(host->GetX()-16, host->GetY()-48);
 	SetSolidMask(0,0,2,32);
 	SetVertexXY(0,1,1+32);
+	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
@@ -76,6 +80,7 @@ func SetTop(object host)
 	SetPosition(host->GetX()-16, host->GetY()-16);
 	SetSolidMask(0,0,32,4);
 	SetVertexXY(0,1,1);
+	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
@@ -87,6 +92,7 @@ func SetBottom(object host)
 	SetPosition(host->GetX()-16, host->GetY()+12);
 	SetSolidMask(0,0,32,4);
 	SetVertexXY(0,1,-27);
+	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
