@@ -884,6 +884,7 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 
 private func OnContentsSelection(symbol, extra_data)
 {
+	if (!current_menus[extra_data.slot]) return;
 	var target = current_menus[extra_data.slot].target;
 	if (!target) return;
 	// no target to swap to?
