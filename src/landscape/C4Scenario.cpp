@@ -285,7 +285,7 @@ void C4SLandscape::Default()
 {
 	BottomOpen=0; TopOpen=1;
 	LeftOpen=0; RightOpen=0;
-	AutoScanSideOpen=true;
+	AutoScanSideOpen=1;
 	SkyDef[0]=0;
 	for (int & cnt : SkyDefFade) cnt=0;
 	VegLevel.Set(50,30,0,100);
@@ -336,7 +336,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               1));
 	pComp->Value(mkNamingAdapt(LeftOpen,                "LeftOpen",              0));
 	pComp->Value(mkNamingAdapt(RightOpen,               "RightOpen",             0));
-	pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      true));
+	pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      1));
 	pComp->Value(mkNamingAdapt(MapWdt,                  "MapWidth",              C4SVal(100,0,64,250), true));
 	pComp->Value(mkNamingAdapt(MapHgt,                  "MapHeight",             C4SVal(50,0,40,250), true));
 	pComp->Value(mkNamingAdapt(MapZoom,                 "MapZoom",               C4SVal(8,0,1,15), true));
