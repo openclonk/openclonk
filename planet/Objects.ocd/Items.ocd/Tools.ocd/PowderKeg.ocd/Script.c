@@ -101,9 +101,44 @@ public func Incineration(int caused_by)
 
 public func FxFuseTimer(object target, effect, int timer)
 {
-	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
+	// Particle effect
+	var lifetime = PV_Random(10, 40);
+	var amount = 6;
+	if (Contained() && Contained()->~IsClonk())
+	{
+		var prec = 10;
+		// Position, is always the same regardless of rotation
+		var x = 2, y = -6;
+		// Needs a loop for now, because CreateParticleAtBone seems to not use the PV_Random values in the dir array
+		for (var i = 0; i < amount; ++i)
+		{
+			// Positions for array: [-y, 0, -x]
+			Contained()->CreateParticleAtBone("Fire", "pos_tool1", [2 - y, 0, -1 - x], [prec * RandomX(-10, 20), 0, prec * RandomX(-10, 10)], lifetime, Particles_Glimmer(), 1);
+		}
+	}
+	else
+	{
+		var x, y;
+		
+		if (Contained())
+		{
+			// Display at the center if contained, because the fuse vertex might not be visible
+			x = 0; y = 0; 
+		}
+		else
+		{
+			// Display at a vertex, because this is easier than calculating the correct rotated position
+			var fuse_vertex = 1;
+			x = GetVertex(fuse_vertex, 0);
+			y = GetVertex(fuse_vertex, 1);
+		}
+		CreateParticle("Fire", x, y, PV_Random(-10, 10), PV_Random(-20, 10), lifetime, Particles_Glimmer(), amount);
+	}
+	// Explosion after timeout
 	if (timer > TimeToExplode)
+	{
 		Explode(GetExplosionStrength());
+	}
 }
 
 // Powderkeg explosion strength ranges from 17-32.
