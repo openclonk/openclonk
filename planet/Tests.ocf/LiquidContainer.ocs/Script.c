@@ -435,7 +435,7 @@ global func Test5_Execute()
 	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
 	pipeB->ConnectPipeTo(effect.engine);
 	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
-	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Neutral);
+	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
 	pipeB->ConnectPipeTo(effect.pump);
 	passed &= Test5_CheckConnections(effect, pipeA, effect.engine);
 	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, pipeB, PIPE_STATE_Drain);
@@ -499,7 +499,7 @@ global func Test5_Execute()
 	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
 	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
 	pipeA->ConnectPipeTo(effect.engine);
-	passed &= Test5_CheckConnections(effect, pipeA, effect.pump);
+	passed &= Test5_CheckConnections(effect, effect.engine, effect.pump);
 	passed &= Test5_CheckPipes(pipeA, PIPE_STATE_Source, nil, nil);
 	
 	pipeA->CutLineConnection(effect.pump);
@@ -510,8 +510,8 @@ global func Test5_Execute()
 
 global func Test5_CheckConnections(proplist effect, object expected_source, object expected_drain)
 {
-	var passed = doTest("Pump returns source object. Got %v, expected %v.", effect.pump->GetSourceObject(), expected_source);
-	passed &= doTest("Pump returns drain object. Got %v, expected %v.", effect.pump->GetDrainObject(), expected_drain);
+	var passed = doTest("Pump returns source object %v, expected %v.", effect.pump->GetSourceObject(), expected_source);
+	passed &= doTest("Pump returns drain object %v, expected %v.", effect.pump->GetDrainObject(), expected_drain);
 	return passed;
 }
 
@@ -527,7 +527,7 @@ global func Test5_CheckPipes(object pipeA, string stateA, object pipeB, string s
 		else if (stateA == PIPE_STATE_Neutral) functionA = pipeA.IsNeutralPipe;
 		
 		var test = pipeA->Call(functionA);
-		passed &= doTest(Format("Pipe A is a %s pipe? %s", stateA, "Got %v, expected %v.", test, true));
+		passed &= doTest(Format("Pipe A is a %s/%v pipe? %s", stateA, functionA, "Got %v, expected %v.", test, true));
 	}
 	
 	if (pipeB != nil)
@@ -538,7 +538,7 @@ global func Test5_CheckPipes(object pipeA, string stateA, object pipeB, string s
 	
 	
 		test = pipeB->Call(functionB);
-		passed &= doTest(Format("Pipe B is a %s pipe? %s", stateB, "Got %v, expected %v."), test, true);
+		passed &= doTest(Format("Pipe B is a %s/%v pipe? %s", stateB, functionB, "Got %v, expected %v."), test, true);
 	}
 	return passed;
 }
