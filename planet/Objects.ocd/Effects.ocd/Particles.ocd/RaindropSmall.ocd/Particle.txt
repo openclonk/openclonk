@@ -1,3 +1,0 @@
-[Particle]
-Name=RaindropSmall
-Face=0,0,64,64,-32,-32
