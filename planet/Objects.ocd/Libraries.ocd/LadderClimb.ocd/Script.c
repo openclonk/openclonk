@@ -120,7 +120,7 @@ private func IsBlockedLadder(object ladder)
 	var index = 0;
 	var fx;
 	while (fx = GetEffect("IntBlockLadder", this, index++))
-		if (fx.ladder->IsSameLadder(ladder))
+		if (fx.ladder && fx.ladder->IsSameLadder(ladder))
 			return true;
 	return false;
 }
