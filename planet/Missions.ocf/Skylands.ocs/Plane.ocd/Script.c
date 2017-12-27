@@ -33,6 +33,7 @@ func SetProgress(int new_progress)
 		SetGraphics();
 		SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
 		GameCall("OnPlaneFinished", this);
+		return true;
 	}
 	next_part = parts[progress];
 	return true;
