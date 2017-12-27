@@ -22,7 +22,11 @@ local launcher;
 global func LaunchLightning(int x, int y, int strength, int xdir, int ydir, int xdev, int ydev, bool no_sound)
 {
 	var lightning = CreateObject(Lightning, x - GetX(), y - GetY());
-	return lightning && lightning->Launch(x, y, strength, xdir, ydir, xdev, ydev, no_sound, this);
+	// Ignore the launching object if not called from effect, scenario, etc..
+	var launching_object = nil;
+	if (this && GetType(this) == C4D_Object)
+		launching_object = this;
+	return lightning && lightning->Launch(x, y, strength, xdir, ydir, xdev, ydev, no_sound, launching_object);
 }
 
 public func Launch(int x, int y, int to_strength, int to_xdir, int to_ydir, int to_xdev, int to_ydev, bool no_sound, to_launcher)
