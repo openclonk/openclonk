@@ -3696,11 +3696,11 @@ BYTE C4Landscape::GetPix(int32_t x, int32_t y) const // get landscape pixel (bou
 	// Border checks
 	if (x < 0)
 	{
-		return p->LeftColPix[y];
+		return p->LeftColPix[Clamp(y, 0, GetHeight()-1)];
 	}
 	if (static_cast<uint32_t>(x) >= static_cast<uint32_t>(p->Width))
 	{
-		return p->RightColPix[y];
+		return p->RightColPix[Clamp(y, 0, GetHeight()-1)];
 	}
 	if (y < 0)
 	{
