@@ -238,8 +238,8 @@ static const std::unordered_map<std::string, C4KeyCode> controllercodes =
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
-	// direct key code?
-	if (sName.getLength() > 2)
+	// direct key code, e.g. "$e" (Backspace)?
+	if (sName.getLength() > 1)
 	{
 		unsigned int dwRVal;
 		if (sscanf(sName.getData(), R"(\x%x)", &dwRVal) == 1) return dwRVal;
