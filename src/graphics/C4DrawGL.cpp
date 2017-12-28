@@ -346,6 +346,10 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 				LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : "");
 			}
 		}
+		if (!success)
+		{
+			pApp->MessageDialog("Error while initializing OpenGL. Check the log file for more information. This usually means your GPU is too old.");
+		}
 	}
 	if (!success)
 	{
