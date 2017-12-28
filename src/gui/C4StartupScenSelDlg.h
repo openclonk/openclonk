@@ -88,7 +88,7 @@ public:
 
 		static Entry *CreateEntryForFile(const StdStrBuf &sFilename, C4ScenarioListLoader *pLoader, Folder *pParent); // create correct entry type based on file extension
 
-		virtual bool CanOpen(StdStrBuf &sError) { return true; } // whether item can be started/opened (e.g. mission access, unregistered)
+		virtual bool CanOpen(StdStrBuf &sError, bool &CanHide) { return true; } // whether item can be started/opened (e.g. mission access, unregistered)
 		virtual bool IsGrayed() { return false; } // additional condition for graying out - notice unreg folders are grayed but can still be opened
 		virtual bool IsHidden() { return false; } // condition for hiding element completely
 		virtual bool HasMissionAccess() const { return true; }
@@ -126,7 +126,7 @@ public:
 		bool LoadCustomPre(C4Group &rGrp) override; // load scenario core
 		bool Start() override; // launch scenario!
 
-		bool CanOpen(StdStrBuf &sError) override; // check mission access, player count, etc.
+		bool CanOpen(StdStrBuf &sError, bool &CanHide) override; // check mission access, player count, etc.
 		bool IsGrayed() override { return false; } // additional option for graying out
 		bool IsHidden() override { return C4S.Head.Secret && !HasMissionAccess(); } // condition for hiding element completely
 		bool HasMissionAccess() const override { return !fNoMissionAccess; };         // check mission access only
@@ -176,7 +176,7 @@ public:
 		void Resort() { Sort(); }
 		Entry *FindEntryByName(const char *szFilename) const; // find entry by filename comparison
 
-		bool CanOpen(StdStrBuf &sError) override { return true; } // can always open folders
+		bool CanOpen(StdStrBuf &sError, bool &CanHide) override { return true; } // can always open folders
 		bool IsGrayed() override; // unreg folders can be opened to view stuff but they are still grayed out for clarity
 		StdStrBuf GetOpenText() override; // get open button text
 		StdStrBuf GetOpenTooltip() override;

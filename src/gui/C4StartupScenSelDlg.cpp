@@ -761,7 +761,7 @@ bool C4ScenarioListLoader::Scenario::Start()
 	return (C4StartupScenSelDlg::pInstance)->StartScenario(this);
 }
 
-bool C4ScenarioListLoader::Scenario::CanOpen(StdStrBuf &sErrOut)
+bool C4ScenarioListLoader::Scenario::CanOpen(StdStrBuf &sErrOut, bool &CanHide)
 {
 	// safety
 	C4StartupScenSelDlg *pDlg = C4StartupScenSelDlg::pInstance;
@@ -793,6 +793,14 @@ bool C4ScenarioListLoader::Scenario::CanOpen(StdStrBuf &sErrOut)
 			// Some scenarios have adjusted MaxPlayerCount to 0 after starting to prevent future joins
 			// make sure it's possible to start the savegame anyway
 			iMaxPlrCount = std::max<int32_t>(iMinPlrCount, iMaxPlrCount);
+
+			// <Sven2> Savegames store a lot of internal stuff. If you updated clonk in the meantime, many things tend to break
+			if (C4S.Head.C4XVer[0] != C4XVER1 || C4S.Head.C4XVer[1] != C4XVER2)
+			{
+				// Only show a warning to let players try it anyways.
+				sErrOut.Format(LoadResStr("IDS_MSG_SAVEGAMEVERSIONMISMATCH"), C4S.Head.C4XVer[0], C4S.Head.C4XVer[1]);
+				CanHide = false;
+			}
 		}
 		// normal scenarios: At least one player except in network mode, where it is possible to wait for the additional players
 		// Melees need at least two
@@ -803,6 +811,7 @@ bool C4ScenarioListLoader::Scenario::CanOpen(StdStrBuf &sErrOut)
 				// network game: Players may yet join in lobby
 				// only issue a warning for too few players (by setting the error but not returning false here)
 				sErrOut.Format(LoadResStr("IDS_MSG_TOOFEWPLAYERSNET"), (int) iMinPlrCount);
+				CanHide = true;
 			}
 			else
 			{
@@ -1298,8 +1307,8 @@ C4StartupScenSelDlg::ScenListItem::ScenListItem(C4GUI::ListBox *pForListBox, C4S
 {
 	assert(pScenListEntry);
 	CStdFont &rUseFont = C4Startup::Get()->Graphics.BookFont;
-	StdStrBuf sIgnore;
-	bool fEnabled = pScenListEntry->CanOpen(sIgnore) && !pScenListEntry->IsGrayed();
+	StdStrBuf sIgnore; bool bIgnore;
+	bool fEnabled = pScenListEntry->CanOpen(sIgnore, bIgnore) && !pScenListEntry->IsGrayed();
 	// calc height
 	int32_t iHeight = rUseFont.GetLineHeight() + 2 * IconLabelSpacing;
 	// create subcomponents
@@ -1779,7 +1788,8 @@ bool C4StartupScenSelDlg::DoOK()
 	if (!pSel) return false;
 	// check if open is possible
 	StdStrBuf sError;
-	if (!pSel->CanOpen(sError))
+	bool CanHide = false;
+	if (!pSel->CanOpen(sError, CanHide))
 	{
 		GetScreen()->ShowMessage(sError.getData(), LoadResStr("IDS_MSG_CANNOTSTARTSCENARIO"), C4GUI::Ico_Error);
 		return false;
@@ -1787,7 +1797,7 @@ bool C4StartupScenSelDlg::DoOK()
 	// if CanOpen returned true but set an error message, that means it's a warning. Display it!
 	if (sError.getLength())
 	{
-		if (!GetScreen()->ShowMessageModal(sError.getData(), LoadResStrNoAmp("IDS_DLG_STARTGAME"), C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Notify, &Config.Startup.HideMsgStartDedicated))
+		if (!GetScreen()->ShowMessageModal(sError.getData(), LoadResStrNoAmp("IDS_DLG_STARTGAME"), C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Notify, CanHide ? &Config.Startup.HideMsgStartDedicated : nullptr))
 			// user chose to not start it
 			return false;
 	}

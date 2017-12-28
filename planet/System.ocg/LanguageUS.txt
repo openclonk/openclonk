@@ -693,6 +693,7 @@ IDS_MSG_REPLAYPLRS_DESC=Starring
 IDS_MSG_RESOLUTION_DESC=Select screen resolution in fullscreen mode.
 IDS_MSG_RESTARTCHANGECFG=For changes to take effect the program has to be restarted.
 IDS_MSG_RNDTEAM=Random team
+IDS_MSG_SAVEGAMEVERSIONMISMATCH=This savegame was created in OpenClonk %d.%d. It will likely not work with this version of OpenClonk. Start anyways?
 IDS_MSG_SCENARIODESC=Scenario description
 IDS_MSG_SCENARIODESC_LOADING=Loading... (%d%%)
 IDS_MSG_SELECT=Select %s

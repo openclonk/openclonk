@@ -693,6 +693,7 @@ IDS_MSG_REPLAYPLRS_DESC=In den Hauptrollen
 IDS_MSG_RESOLUTION_DESC=Bildschirmauflösung im Vollbildmodus.
 IDS_MSG_RESTARTCHANGECFG=Änderungen werden erst übernommen, wenn das Spiel neu gestartet wurde.
 IDS_MSG_RNDTEAM=Zufallsteam
+IDS_MSG_SAVEGAMEVERSIONMISMATCH=Dieser Spielstand stammt aus OpenClonk %d.%d und wird mit hoher Warscheinlichkeit mit dieser OpenClonk-Version nicht funktionieren. Trotzdem starten?
 IDS_MSG_SCENARIODESC=Szenariobeschreibung
 IDS_MSG_SCENARIODESC_LOADING=Lade... (%d%%)
 IDS_MSG_SELECT=%s auswählen
