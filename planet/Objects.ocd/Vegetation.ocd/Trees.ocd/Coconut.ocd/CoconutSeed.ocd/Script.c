@@ -17,7 +17,7 @@ private func GetHangingTime() { return 4200; }
 
 public func AttachToTree(object tree)
 {
-	SetCategory(GetCategory() | C4D_StaticBack);
+	SetCategory((GetCategory() | C4D_StaticBack) & (~C4D_Object));
 	mother = tree;
 	ScheduleCall(this, "DetachFromTree", 4200 + Random(500));
 }
@@ -25,7 +25,8 @@ public func AttachToTree(object tree)
 public func DetachFromTree(bool no_bounce)
 {
 	ClearScheduleCall(this, "DetachFromTree");
-	SetCategory(GetCategory() & (~C4D_StaticBack));
+	SetCategory((GetCategory() | C4D_Object) & (~C4D_StaticBack));
+	SetYDir(0);
 	SetXDir(Random(3)-1);
 	if (mother) mother->LostCoconut();
 	mother = nil;
