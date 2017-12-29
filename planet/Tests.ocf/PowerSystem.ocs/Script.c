@@ -677,6 +677,7 @@ global func Test12_OnStart(int plr)
 	workshop->AddToQueue(Shovel, 4);
 	var lab = CreateObjectAbove(InventorsLab, 450, 248, plr);
 	lab->CreateContents(Metal, 8);
+	lab->CreateContents(Diamond, 4);
 	lab->AddToQueue(TeleGlove, 4);
 	lab->SetNoPowerNeed(true);
 	ScheduleCall(nil, "Log", 1, 0, "Lab has no power need (per script).");
@@ -844,6 +845,7 @@ global func Test14_OnStart(int plr)
 	// Power consumer: inventor's lab.
 	var lab = CreateObjectAbove(InventorsLab, 430, 248, plr);
 	lab->CreateContents(Metal, 40);
+	lab->CreateContents(Amethyst, 20);
 	lab->AddToQueue(TeleGlove, 20);
 
 	// Log what the test is about.
