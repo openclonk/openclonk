@@ -23,6 +23,7 @@
 */
 
 #include Library_PowerConsumer
+#include Library_LiquidContainer
 
 // Production queue, a list of items to be produced.
 // Contains proplists of format {Product = <objid>, Amount = <int>, Infinite = (optional)<bool>, ProducingPlayer = (optional)<int>}. /Infinite/ == true -> infinite production.
@@ -920,6 +921,9 @@ public func RejectCollect(id item_id, object item)
 	// Is the object a container? If so, try to empty it. Don't empty extra slots.
 	if ((item->~IsContainer() && !item->~HasExtraSlot()) || item->~IsLiquidContainer() || item->~IsBucket())
 	{
+		// this is not optimal, because it grabs everything, even things that should not go into the producer normally:
+		// the function GrabContents issues no callbacks - however, please don't change the behavior of GrabContents,
+		// the missing callbacks are a very good thing for certain purposes
 	 	GrabContents(item);
 	}
 	// Can we collect the object itself?

@@ -269,5 +269,5 @@ protected func RejectEntrance(object into)
 {
 	if (_inherited(into, ...)) return true;
 	if (into->GetAlive()) return true;
-	return !(into->~IsLiquidContainer() || into->~IsContainer());
+	return !(into->~IsLiquidContainer());
 }
