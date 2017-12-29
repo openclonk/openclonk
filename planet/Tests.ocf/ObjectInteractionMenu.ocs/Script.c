@@ -340,6 +340,8 @@ global func Test2_Transfer(object menu, tested_function, object source, object d
 	if (dest_arrow) dest_arrow->RemoveObject();
 	if (dest_javelin) dest_javelin->RemoveObject();
 	
+	RemoveAll(Find_Or(Find_ID(Arrow), Find_ID(Javelin)));
+	
 	return passed;
 }
 
@@ -409,6 +411,7 @@ global func Test3_Execute()
 	if (container_vehicle) container_vehicle->RemoveObject();
 	if (container_surrounding) container_surrounding->RemoveObject();
 	if (menu) menu->RemoveObject();
+	
 	return passed;
 }
 
@@ -448,6 +451,8 @@ global func Test3_Transfer(object menu, tested_function, object source, object d
 
 	passed &= doTest("Number of arrow stack was reduced. Got %d, expected %d.", count_stacks, number_stacks);
 	passed &= doTest("Number of individual arrows stayed the same. Got %d, expected %d.", count_arrows, number_arrows);
+	
+	RemoveAll(Find_ID(Arrow));
 
 	return passed;
 }
@@ -552,6 +557,9 @@ global func Test4_Transfer(object menu, tested_function, object source, object d
 
 	if (source_bow) source_bow->RemoveObject();
 	if (source_ammo) source_ammo->RemoveObject();
+	
+	
+	RemoveAll(Find_Or(Find_ID(Arrow), Find_ID(Bow)));
 
 	return passed;
 }
@@ -641,7 +649,7 @@ global func Test5_Transfer(object menu, tested_function, object source)
 	
 	for (var item in to_transfer) if (item) item->RemoveObject();
 
-	for (var item in FindObjects(Find_Or(Find_ID(Wood), Find_ID(Metal), Find_ID(Rock)))) item->RemoveObject();
+	RemoveAll(Find_Or(Find_ID(Wood), Find_ID(Metal), Find_ID(Rock)));
 
 	return passed;
 }
@@ -750,6 +758,8 @@ global func Test6_Transfer(object menu, tested_function, object source)
 	}
 	
 	for (var item in to_transfer) if (item) item->RemoveObject();
+	
+	RemoveAll(Find_Or(Find_ID(Arrow), Find_ID(Wood)));
 
 	return passed;
 }
@@ -834,6 +844,8 @@ global func Test7_Transfer(object menu, tested_function, object source, object d
 	passed &= doTest("The source has wood remaining. Got %d, expected %d.", source->ContentsCount(Wood), 1);
 	
 	for (var item in to_transfer) if (item) item->RemoveObject();
+	
+	RemoveAll(Find_ID(Wood));
 
 	return passed;
 }
@@ -922,6 +934,8 @@ global func Test8_Transfer(object menu, tested_function, object source, object d
 	
 	for (var item in to_transfer) if (item) item->RemoveObject();
 
+	RemoveAll(Find_ID(Wood));
+	
 	return passed;
 }
 
@@ -1028,6 +1042,9 @@ global func TestY_Transfer(object menu, tested_function, object source, object d
 	passed &= doTest("No water has been transferred to the destination. Got %v, expected %v.", destination->FindContents(Water), nil);
 
 	if (water) water->RemoveObject();
+	
+	
+	RemoveAll(Find_ID(Water));
 	
 	return passed;
 }
