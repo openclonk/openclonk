@@ -185,10 +185,12 @@ protected func Entrance(object container)
 {
 	// Only in buildings
 	if (container->GetCategory() & (C4D_StaticBack | C4D_Structure))
-		// Not if the building prohibits this action.
-		if (!container->~NoLorryEjection(this))
+		// Only if the building requests this action.
+		if (container->~LorryEjectionOnEntrance(this))
+		{
 			// Empty lorry.
 			container->GrabContents(this);
+		}
 }
 
 
