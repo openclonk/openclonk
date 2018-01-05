@@ -352,7 +352,7 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic) //
+			if (!IsSomeVehicle(*pPix)) //
 			{
 				// restore
 				assert(IsSomeVehicle(::Landscape.GetPix(x,y)));
@@ -373,7 +373,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic)
+			if (!IsSomeVehicle(*pPix))
 			{
 				// put
 				assert(::Landscape.GetPix(x,y)==*pPix);
@@ -394,7 +394,7 @@ void C4SolidMask::Repair(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic)
+			if (!IsSomeVehicle(*pPix))
 			{
 				// record changed landscape in MatBuff
 				*pPix = ::Landscape.GetPix(x,y);
