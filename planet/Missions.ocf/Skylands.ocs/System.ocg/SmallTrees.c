@@ -20,8 +20,8 @@ func FxIntGrowthTimer(object obj, effect, ...)
 // Yield 1-2 extra wood
 func Split2Components(...)
 {
-	CreateObject(Wood);
-	if (GetCon() > 25) CreateObject(Wood);
+	CreateContents(Wood);
+	if (GetCon() > 25) CreateContents(Wood);
 	return inherited(...);
 }
 
