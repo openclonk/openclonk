@@ -125,6 +125,7 @@ void C4Object::Default()
 	fOwnVertices=false;
 	Contents.Default();
 	SolidMask.Default();
+	HalfVehicleSolidMask=false;
 	PictureRect.Default();
 	Def=nullptr;
 	Info=nullptr;
@@ -1071,6 +1072,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	if (!Def->Rotateable) { fix_r=rdir=Fix0; }
 	// Reset solid mask
 	SolidMask=Def->SolidMask;
+	HalfVehicleSolidMask=false;
 	// Post change updates
 	UpdateGraphics(true);
 	UpdateMass();
@@ -2199,6 +2201,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkParAdapt(Shape, &Def->Shape));
 	pComp->Value(mkNamingAdapt( fOwnVertices,                     "OwnVertices",        false             ));
 	pComp->Value(mkNamingAdapt( SolidMask,                        "SolidMask",          Def->SolidMask    ));
+	pComp->Value(mkNamingAdapt( HalfVehicleSolidMask,             "HalfVehicleSolidMask", false           ));
 	pComp->Value(mkNamingAdapt( PictureRect,                      "Picture"                               ));
 	pComp->Value(mkNamingAdapt( Mobile,                           "Mobile",             false             ));
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
@@ -2469,6 +2472,7 @@ void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, 
 void C4Object::SetHalfVehicleSolidMask(bool set)
 {
 	if (!pSolidMaskData) return;
+	HalfVehicleSolidMask = set;
 	pSolidMaskData->SetHalfVehicle(set);
 }
 
@@ -4157,6 +4161,7 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 		else
 			pSolidMaskData->Remove(false);
 		pSolidMaskData->Put(true, nullptr, fRestoreAttachedObjects);
+		SetHalfVehicleSolidMask(HalfVehicleSolidMask);
 	}
 	// Otherwise, remove and destroy mask
 	else if (pSolidMaskData)
