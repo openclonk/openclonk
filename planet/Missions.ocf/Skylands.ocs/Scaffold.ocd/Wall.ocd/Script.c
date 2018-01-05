@@ -56,7 +56,6 @@ func SetTopRightExtension(object host)
 	SetPosition(host->GetX()+15, host->GetY()-48);
 	SetSolidMask(0,0,2,32,2,0);
 	SetVertexXY(0,-27,1+32);
-	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
@@ -68,7 +67,6 @@ func SetTopLeftExtension(object host)
 	SetPosition(host->GetX()-16, host->GetY()-48);
 	SetSolidMask(0,0,2,32);
 	SetVertexXY(0,1,1+32);
-	SetHalfVehicleSolidMask(true);
 	return true;
 }
 
