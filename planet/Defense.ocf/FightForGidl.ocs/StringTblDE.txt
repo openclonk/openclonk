@@ -5,7 +5,7 @@ MsgRelaunch=Relaunch %s.
 
 EnemyNewbie=Newbie
 EnemyAmazon=Amazone
-EnemyBow=Bogensch�tze
+EnemyBow=Bogenschütze
 EnemySuicide=Bomber
 EnemySwordman=Schwertie
 EnemySwordman2=Superschwertie
@@ -14,7 +14,7 @@ EnemyOgre=Oger
 EnemyArtillery=Artillerie
 EnemyRunner=Bekloppter
 
-WaveNewbies=Nur zum Aufw�rmen
+WaveNewbies=Nur zum Aufwärmen
 WaveBows=Fernkampfalarm!
 
 TeamAttackers=Angreifer
