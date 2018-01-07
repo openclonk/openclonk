@@ -122,24 +122,28 @@ static struct ContributorList : public PersonList
 } contributors;
 
 // Sorted by commit count this release, e.g.: git shortlog -s v7.0.. | sort -rn
+// Stuff from the milestone project sorted in-between as those commits usually end up squashed.
 const std::vector<ContributorList::Entry> ContributorList::contributorsThisRelease = {
-	{"George Tokmaji", "Fulgen"},
-	{"Linus Heckemann", "sphalerite"},
-	{"Dominik Bayerl", "Kanibal"},
-	{"Armin Schäfer", nullptr},
-	{"Tushar Maheshwari", nullptr},
-	{"jok", nullptr},
-	{"Philip Kern", "pkern"},
-	{"Matthias Mailänder", nullptr},
-	{"marsmoon", nullptr},
+	{"George Tokmaji", "Fulgen"},      // 75 commits
+	{"Martin Adam", "Win"},            // lava core animal
+	{"Merten Ehmig", "pluto"},         // helmet
+	{"Florian Graier", "Nachtfalter"}, // tree and guidepost
+	{"Foaly", nullptr},                // "another decorative deciduous tree"
+	{"Dominik Bayerl", "Kanibal"},     // 7 commits
+	{"Linus Heckemann", "sphalerite"}, // 6 commits
+	{"Pyrit", nullptr},                // texture to sproutberry bush
+	{"Armin Schäfer", nullptr},        // 5 commits
+	{"Tushar Maheshwari", nullptr},    // 4 commits
+	{"jok", nullptr},                  // 3 commits
+	{"Tarte", nullptr},                // fixed normal map for brick textures
+	{"Philip Kern", "pkern"},          // 2 commits
+	{"Matthias Mailänder", nullptr},   // 1 commit
+	{"marsmoon", nullptr},             // 1 commit
 };
 
 // First real names sorted by last name (sort -k2), then nicks (sort)
 const std::vector<ContributorList::Entry> ContributorList::contributors = {
-	{"Martin Adam", "Win"},
 	{"Tim Blume", nullptr},
-	{"Merten Ehmig", "pluto"},
-	{"Florian Graier", "Nachtfalter"},
 	{"Sven-Hendrik Haase", nullptr},
 	{"Carl-Philip Hänsch", "Carli"},
 	{"Jan Heberer", nullptr},
@@ -169,7 +173,6 @@ const std::vector<ContributorList::Entry> ContributorList::contributors = {
 	{"Koronis", nullptr},
 	{"mizipzor", nullptr},
 	{"Peewee", nullptr},
-	{"Pyrit", nullptr},
 	{"Russell", nullptr},
 	{"Stan", nullptr},
 	{"TomyLobo", nullptr},
