@@ -110,6 +110,7 @@ func InitializeRound()
 
 	SetSky(g_theme.Sky);
 	g_theme->InitializeRound();
+	g_theme->InitializeMusic();
 
 	return true;
 }
@@ -473,6 +474,21 @@ static const HotIce = new Global {
 	AltMatRatio = 50,
 	BackgroundMat = nil,
 	Sky = "Default",
+
+	PlayList = nil,
+	InitializeMusic = func()
+	{
+		// No special play list => music by Ambience
+		if (this.PlayList == nil)
+			InitializeAmbience();
+		else
+		{
+			// Remove Ambience to avoid interference.
+			RemoveAll(Find_ID(Ambience));
+			SetPlayList(this.PlayList, NO_OWNER, true);
+			SetGlobalSoundModifier(nil);
+		}
+	},
 };
 
 static const EciToh = new HotIce {
@@ -484,6 +500,11 @@ static const EciToh = new HotIce {
 static const MiamiIce = new HotIce {
 	MatNames = ["^BlackIce-black", "^BlackIce-black"],
 	Sky = "SkyMiami",
+	PlayList =
+	{
+		PlayList = "beach",
+		MusicBreakChance = 0,
+	},
 
 	InitializeRound = func()
 	{
