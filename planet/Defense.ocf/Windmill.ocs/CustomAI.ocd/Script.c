@@ -287,7 +287,7 @@ private func ExecuteRanged(effect fx)
 	// Look at target
 	this->ExecuteLookAtTarget(fx);
 	// Make sure we can shoot
-	if (!this->IsAimingOrLoading(fx) || !fx.aim_weapon)
+	if (!this->IsAimingOrLoading(fx) || !fx.aim_weapon || !fx.aim_weapon->~IsRangedWeapon())
 	{
 		CancelAiming(fx);
 		if (!this->CheckHandsAction(fx)) return true;

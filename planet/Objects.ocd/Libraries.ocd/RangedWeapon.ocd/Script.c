@@ -14,6 +14,11 @@ local DefaultLoadTime2 = nil;
 local DefaultShootTime = nil;
 local DefaultShootTime2 = nil;
 
+public func IsRangedWeapon()
+{
+	return true; // identify this as a ranged weapon for the AI
+}
+
 public func Initialize(...)
 {
 	// Set initial animation speeds
