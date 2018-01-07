@@ -128,7 +128,7 @@ const std::vector<ContributorList::Entry> ContributorList::contributorsThisRelea
 	{"Martin Adam", "Win"},            // lava core animal
 	{"Merten Ehmig", "pluto"},         // helmet
 	{"Florian Graier", "Nachtfalter"}, // tree and guidepost
-	{"Foaly", nullptr},                // "another decorative deciduous tree"
+	{"Philip Holzmann", "Foaly"},      // "another decorative deciduous tree"
 	{"Dominik Bayerl", "Kanibal"},     // 7 commits
 	{"Linus Heckemann", "sphalerite"}, // 6 commits
 	{"Pyrit", nullptr},                // texture to sproutberry bush
@@ -148,7 +148,6 @@ const std::vector<ContributorList::Entry> ContributorList::contributors = {
 	{"Carl-Philip Hänsch", "Carli"},
 	{"Jan Heberer", nullptr},
 	{"Benjamin Herr", "Loriel"},
-	{"Philip Holzmann", "Batman"},
 	{"Lauri Niskanen", "Ape"},
 	{"Johannes Nixdorf", "mixi"},
 	{"Misty de Meo", nullptr}, // note: three part name
