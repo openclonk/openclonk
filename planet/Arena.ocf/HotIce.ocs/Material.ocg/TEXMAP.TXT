@@ -13,7 +13,7 @@ OverloadTextures
 22=Acid-acid
 23=Lava-lava_red
 24=DuroLava-lava_red
-25=Water-water
+25=BlackWater-black
 #26=Oil-Smooth
 27=Acid-acid
 28=Lava-lava_red
@@ -59,7 +59,7 @@ OverloadTextures
 66=Ice-ice
 67=Ice-ice2
 68=Ice-ice2
-
+69=BlackIce-black
 70=Snow-snow1
 71=Snow-snow1
 72=Snow-snow1

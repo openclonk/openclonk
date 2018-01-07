@@ -1,4 +1,32 @@
 [ParameterDef]
+Name=$Theme$
+Description=$DescTheme$
+ID=Theme
+Default=1
+
+	[Options]
+
+		[Option]
+		Name=$HotIce$
+		Description=$DescHotIce$
+		Value=1
+
+		[Option]
+		Name=$RandomIce$
+		Description=$DescRandomIce$
+		Value=0
+
+		[Option]
+		Name=$MiamiIce$
+		Description=$DescMiamiIce$
+		Value=2
+
+		[Option]
+		Name=$EciToh$
+		Description=$DescEciToh$
+		Value=3
+
+[ParameterDef]
 Name=$MapType$
 Description=$DescMapType$
 ID=MapType

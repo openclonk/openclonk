@@ -1,21 +1,35 @@
+Theme=Theme
+DescTheme=In case you don't like ice.
+HotIce=Hot Ice
+DescHotIce=The standard setup: ice and lava
+RandomIce=Random Ice
+DescRandomIce=Random theme every round
+MiamiIce=Miami Ice
+DescMiamiIce=Cool Ice
+EciToh=Eci Toh
+DescEciToh=Battle on rocky islands!
+
 MapType=Map
 DescMapType=Defines the shape of the landscape.
 MapTypeBigIsland=Big island
 DescMapTypeBigIsland=One central main island with small spots of ice in the air above.
 MapTypeSpots=Small islands
 DescMapTypeSpots=Many small spots of ice in the air.
+
 Weapons=Weapons
 DescWeapons=Defines which weapons are available for players.
 WeaponsClassic=Classic
 DescWeaponsClassic=Bows, spears and clubs available in chests.
 WeaponsExplosive=Explosive
 DescWeaponsExplosive=Only grenade lauchers and wind bags available.
+
 SpawnType=Spawn points
 DescSpawn=Defines where the starting positions will be.
 ClassicSpawn=Classic
 DescClassicSpawn=All clonks start on the ice islands.
 BalloonSpawn=Balloons
 DescBalloonSpawn=The clonks will drop with balloons from the sky.
+
 Rounds=Number of rounds
 DescRounds=Play for multiple rounds.
 Stalemate=Stalemate!
