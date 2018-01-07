@@ -9,6 +9,7 @@
 
 local count;
 local TimeToExplode = 90; // Number of frames to pass until keg explodes
+local MaxContentsCount = 12;
 
 public func GetCarryTransform(clonk)
 {
@@ -19,19 +20,10 @@ public func GetCarryTransform(clonk)
 }
 public func GetCarryPhase() { return 900; }
 
-protected func Initialize()
-{
-	UpdatePicture();
-}
-
 protected func Construction()
 {
-	count = 12;
-	var effect = AddEffect("Update",this,1,1,this);
-	effect.oldcount = count;
+	SetPowderCount(MaxContentsCount);
 }
-
-local MaxContentsCount = 12;
 
 public func GetPowderCount()
 {
@@ -41,6 +33,9 @@ public func GetPowderCount()
 public func SetPowderCount(newcount)
 {
 	count = newcount;
+	this.Description = Format("%s||$RemainingPowder$: %d", this.Prototype.Description, this.count);
+	if (count == 0)
+		ScheduleCall(this, "CheckEmpty", 1, 0);
 	return;
 }
 
@@ -51,46 +46,47 @@ public func DoPowderCount(int change)
 	return SetPowderCount(GetPowderCount() + change);
 }
 
-public func FxUpdateTimer(object target, effect, int timer)
+private func CheckEmpty()
 {
-	if(count != effect.oldcount)
-		UpdatePicture();
-	if(count == 0)
+	if (count == 0)
 	{
 		ChangeDef(Barrel);
-		return -1;
+		this.Description = this.Prototype.Description;
+		this->~Initialize();
 	}
-	effect.oldcount = count;
-	return 1;
 }
 
-public func UpdatePicture()
+// Do not put differently filled kegs on top of each other.
+public func CanBeStackedWith(object other)
 {
-	var s = 400;
-	var yoffs = 14000;
-	var xoffs = 22000;
-	var spacing = 14000;
+	if (this.count != other.count) return false;
+	return inherited(other, ...);
+}
+
+// Display the powder as a bar over the keg icon.
+public func GetInventoryIconOverlay()
+{
+	if (this.count >= MaxContentsCount) return nil;
+
+	var percentage = 100 - 100 * this.count / this.MaxContentsCount;
 	
-	if (count == nil)
+	// Overlay a usage bar.
+	var overlay = 
 	{
-		SetGraphics(nil, nil, 11);
-		SetGraphics("Inf", Icon_Number, 12, GFXOV_MODE_Picture);
-		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
-		return;
-	}
+		Bottom = "0.75em", Margin = ["0.1em", "0.25em"],
+		BackgroundColor = RGB(0, 0, 0),
+		margin = 
+		{
+			Margin = "0.05em",
+			bar = 
+			{
+				BackgroundColor = RGB(150, 50, 50),
+				Right = Format("%d%%", percentage),
+			}
+		}
+	};
 	
-	var one = count % 10;
-	var ten = (count / 10) % 10;
-	if (ten > 0)
-	{
-		SetGraphics(Format("%d", ten), Icon_Number, 11, GFXOV_MODE_Picture);
-		SetObjDrawTransform(s, 0, xoffs - spacing, 0, s, yoffs, 11);
-	}
-	else
-		SetGraphics(nil, nil, 11);
-		
-	SetGraphics(Format("%d", one), Icon_Number, 12, GFXOV_MODE_Picture);
-	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
+	return overlay;
 }
 
 public func Incineration(int caused_by)
@@ -168,7 +164,7 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	var v = GetPowderCount();
-	if (v != 12) props->AddCall("Powder", this, "SetPowderCount", v);
+	if (v != MaxContentsCount) props->AddCall("Powder", this, "SetPowderCount", v);
 	return true;
 }
 

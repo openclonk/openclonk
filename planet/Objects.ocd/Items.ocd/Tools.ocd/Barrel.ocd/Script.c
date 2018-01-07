@@ -15,6 +15,7 @@
 func Initialize()
 {
 	AddTimer("Check", 5);
+	UpdateLiquidContainer();
 }
 
 func RejectCollect(id def, object new_contents)
