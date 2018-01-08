@@ -9,6 +9,7 @@ DlgChiefMetal=Yes, of course. The metal you can get to the surface you may keep,
 DlgChiefLorry=I got the lorry with metal up to the surface!
 DlgChiefKeepLorry=That's great, now we can use your method to keep excavating the mine! You may keep the lorry and its contents.
 DlgChiefReally=You can really keep the lorry and the metal.
+DlgChiefLorryUp=Almost there! Get the lorry up to the surface by calling the elevator.
 
 # Dialogue: Miner
 DlgMinerGreeting=Hi, I am %s, are you one of the miners?

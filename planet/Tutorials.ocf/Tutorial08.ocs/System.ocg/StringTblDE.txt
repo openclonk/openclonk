@@ -9,6 +9,7 @@ DlgChiefMetal=Ja, natürlich. Du darfst alles Metall behalten, wenn du nach hier
 DlgChiefLorry=Hier ist die Lore mit dem Metall!
 DlgChiefKeepLorry=Klasse gemacht. Wir können jetzt die gleiche Methode anwenden, um die Mine weiter auszubeuten. Du kannst alles Metall behalten.
 DlgChiefReally=Du kannst wirklich die Lore und das Metall behalten.
+DlgChiefLorryUp=Fast geschafft! Rufe den Fahrstuhl um die Lore hier hoch zu kriegen.
 
 # Dialogue: Miner
 DlgMinerGreeting=Hallo, ich bin %s. Bist du einer der Minenleute hier?

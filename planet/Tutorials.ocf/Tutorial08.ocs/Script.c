@@ -101,6 +101,7 @@ private func InitMines()
 	lantern->TurnOn();
 	var lorry = CreateObjectAbove(Lorry, 596, 886);
 	lorry->CreateContents(Metal, 32);
+	lorry.is_metal_lorry = true;
 	
 	// Another lorry with coal and ore in the lower part of the mines.
 	var lorry = CreateObjectAbove(Lorry, 517, 974);
@@ -410,11 +411,12 @@ protected func OnGuideMessageShown(int plr, int index)
 {
 	if (index == 0)
 	{
-		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182)));
+		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182), Find_Not(Find_Owner(plr))));
 	}	
 	if (index == 2)
 	{
 		TutArrowShowPos(302, 270, 180);
+		TutArrowShowTarget(FindObject(Find_ID(Lorry), Find_Property("is_metal_lorry")));
 	}	
 	if (index == 3)
 	{
@@ -424,7 +426,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	if (index == 4)
 	{
 		TutArrowShowPos(292, 850, 180);
-		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(604, 806)));
+		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(604, 806), Find_Not(Find_Owner(plr))));
 	}
 	if (index == 6)
 	{
@@ -437,7 +439,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	}
 	if (index == 9)
 	{
-		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182)));
+		TutArrowShowTarget(FindObject(Find_ID(Clonk), Find_AtPoint(218, 182), Find_Not(Find_Owner(plr))));
 	}
 	return;
 }
