@@ -99,20 +99,22 @@ protected func Destruction()
 /*-- Definition call interface --*/
 
 // Id call: Creates the indicated number of clouds.
+// May fail and will indicate the number of placed clouds.
 public func Place(int count)
 {
 	if (this != Cloud)
 		return;
-	while (count > 0)
+	var max_tries = count * 500;
+	for (var i = 0; i < count && max_tries > 0; max_tries--)
 	{
 		var pos;
 		if ((pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight())) && MaterialDepthCheck(pos[0], pos[1], "Sky", 200))
 		{
 			CreateObjectAbove(Cloud, pos[0], pos[1], NO_OWNER);
-			count--;
+			i++;
 		}
 	}
-	return;
+	return i;
 }	
 
 // Changes the precipitation type of this cloud.
