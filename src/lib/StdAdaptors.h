@@ -191,6 +191,22 @@ inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler:
 #define mkStringAdaptMI(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_Idtf)
 #define mkStringAdaptMIE(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_IdtfAllowEmpty)
 
+// * std::string adaptor
+struct StdStdStringAdapt
+{
+	std::string& string; StdCompiler::RawCompileType eRawType;
+	StdStdStringAdapt(std::string& string, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
+		: string(string), eRawType(eRawType) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		pComp->String(string, eRawType);
+	}
+	inline bool operator == (const char *szDefault) const { return string == szDefault; }
+	inline StdStdStringAdapt &operator = (const char *szDefault) { string = szDefault; return *this; }
+};
+inline StdStdStringAdapt mkStringAdapt(std::string& string, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
+{ return StdStdStringAdapt(string, eRawType); }
+
 // * Raw adaptor
 struct StdRawAdapt
 {

@@ -330,7 +330,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(VegLevel,                "VegetationLevel",       C4SVal(50,30,0,100), true));
 	pComp->Value(mkNamingAdapt(InEarth,                 "InEarth",               C4IDList()));
 	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
-	pComp->Value(mkNamingAdapt(SkyDef,                  "Sky",                   ""));
+	pComp->Value(mkNamingAdapt(mkStringAdapt(SkyDef, StdCompiler::RCT_All),"Sky",""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
 	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            0));
 	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               1));
