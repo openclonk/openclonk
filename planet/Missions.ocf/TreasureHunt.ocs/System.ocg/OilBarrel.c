@@ -1,15 +1,21 @@
+// Goal timer: Barrel has to be brought to the plane
+// Doesn't matter if container or not.
+
 #appendto MetalBarrel
 
-func Exit(...)
+public func Initialize(...)
 {
-	// dropping at plane? then put into plane
-	if (Contained() && Contained()->GetAlive())
-	{
-		var plane = FindObject(Find_ID(Airplane), Find_AtPoint());
-		if (plane)
-		{
-			ScheduleCall(nil, Global.GameCall, 1,1, "OnPlaneLoaded", plane, this);
-		}
-	}
-	return inherited(...);
+	AddTimer(this.CheckForPlane, 20);
+	return _inherited(...);
 }
+
+private func CheckForPlane()
+{
+	var plane = FindObject(Find_ID(Airplane), Find_AtPoint());
+	if (plane)
+	{
+		ScheduleCall(nil, Global.GameCall, 1,1, "OnPlaneLoaded", plane, this);
+		RemoveTimer(this.CheckForPlane);
+	}
+}
+
