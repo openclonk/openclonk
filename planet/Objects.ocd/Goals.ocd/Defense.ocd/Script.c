@@ -99,6 +99,15 @@ public func RelaunchPlayer(int plr)
 	return;
 }
 
+public func RemovePlayer(int plr)
+{
+	if (GetPlayerType(plr) == C4PT_User)
+		if (RemoveArrayValue(plrs_active, GetPlayerID(plr)))
+			if (GetLength(plrs_active) == 0)
+				EndRound();
+	return;
+}
+
 public func EndRound()
 {
 	// Set evaluation data.
