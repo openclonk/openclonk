@@ -29,7 +29,7 @@ public func Construction(object creator)
 {
 	var res = _inherited(creator, ...);
 	// If the concrete is created by the foundry we can safely assume it has been produced
-	// and set the stack count to 100. The only exceptions are CreateContents script calls.
+	// and set the stack count to 200. The only exceptions are CreateContents script calls.
 	if (creator && creator->~IsProducer())
 		SetStackCount(200);
 	return res;

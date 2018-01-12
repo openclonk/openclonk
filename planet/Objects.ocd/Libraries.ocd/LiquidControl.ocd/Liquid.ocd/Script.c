@@ -95,7 +95,7 @@ public func DisperseMaterial(string material_name, int amount, int strength, int
 	strength = strength ?? 30;
 	angle_variance = angle_variance ?? 30;
 	
-	CastPXS(material_name, amount, strength, 0, 0, angle, 30);
+	CastPXS(material_name, amount, strength, 0, 0, angle, angle_variance);
 }
 
 public func DisperseParticles(string particle_name, int amount, int strength, int angle, int angle_variance, proplist template, int lifetime)
@@ -212,7 +212,7 @@ public func RemoveLiquid(liquid_name, int amount, object destination)
 		FatalError(Format("You can remove positive amounts of liquid only, got %d", amount));
 	}
 	
-	if (GetType(liquid_name) != C4V_String && GetType(liquid_name) != C4V_Def)
+	if (liquid_name != nil && GetType(liquid_name) != C4V_String && GetType(liquid_name) != C4V_Def)
 	{
 		FatalError(Format("The first parameter of RemoveLiquid() must either be a string or definition. You passed %v.", GetType(liquid_name)));
 	}
