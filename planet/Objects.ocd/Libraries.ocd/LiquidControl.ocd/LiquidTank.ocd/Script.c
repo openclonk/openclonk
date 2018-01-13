@@ -243,8 +243,16 @@ public func DoSwapSourceDrain(object source, object drain)
 public func FindAvailablePipe(object container, find_state)
 {
 	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), find_state))
-		if (!this->~QueryConnectPipe(pipe, false))
-			return pipe;
+	{
+		if (this->~QueryConnectPipe(pipe, false))
+			continue;
+		// Because of the delayed entrance into the pipeline of 1 frame the pipe may still be considered available.
+		// Therefore check also there there exists no connection of the line to this object.
+		var line = pipe->GetConnectedLine();
+		if (line && line->IsConnectedTo(this, true))
+			continue;
+		return pipe;		
+	}
 	return nil;
 }
 

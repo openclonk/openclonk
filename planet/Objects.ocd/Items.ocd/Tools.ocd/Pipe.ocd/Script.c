@@ -254,7 +254,8 @@ public func AddLineConnectionTo(object target, bool block_cutting)
 			line->SwitchConnection(this, target);
 			SetPipeLine(line);
 			line.BlockPipeCutting = block_cutting;
-			ScheduleCall(this, this.Enter, 1, nil, line); // delayed entrance, so that the message is still displayed above the clonk
+			// Delayed entrance, so that the message is still displayed above the clonk.
+			ScheduleCall(this, this.Enter, 1, nil, line);
 			return line;
 		}
 		else
@@ -349,7 +350,7 @@ public func Report(string message)
 	var reporter = this;
 	var next = Contained();
 	
-	while(next)
+	while (next)
 	{
 		reporter = next;
 		next = reporter->Contained();
