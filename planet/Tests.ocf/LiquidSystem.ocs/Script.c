@@ -378,6 +378,43 @@ global func Test5_OnFinished()
 	return;
 }
 
+global func Test6_OnStart(int plr)
+{
+	var tank = CreateObjectAbove(LiquidTank, 70, 160, plr);
+	var pump1 = CreateObjectAbove(Pump, 16, 160, plr);
+	var pump2 = CreateObjectAbove(Pump, 124, 160, plr);
+	
+	var source = CreateObjectAbove(Pipe, 168, 292, plr);
+	source->ConnectPipeTo(pump1, PIPE_STATE_Source);
+	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+	drain->ConnectPipeTo(pump1, PIPE_STATE_Drain);
+	drain->ConnectPipeTo(tank, PIPE_STATE_Drain);
+	
+	var source = CreateObjectAbove(Pipe, 168, 292, plr);
+	source->ConnectPipeTo(pump2, PIPE_STATE_Source);
+	source->ConnectPipeTo(tank, PIPE_STATE_Source);
+	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+	drain->ConnectPipeTo(pump2, PIPE_STATE_Drain);
+	
+	// Log what the test is about.
+	Log("Test pumping into and from a liquid tank");
+	return true;
+}
+
+global func Test6_Completed()
+{
+	if (GetMaterial(240, 60) == Material("Water"))
+		return true;
+	return false;	
+}
+
+global func Test6_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(LiquidTank), Find_ID(Pump), Find_ID(Pipe)));
+	RestoreWaterLevels();
+	return;
+}
+
 
 /*-- Helper Functions --*/
 

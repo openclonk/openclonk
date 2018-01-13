@@ -1,0 +1,11 @@
+Name=Tank
+Description=Hier können Flüssigkeiten gespeichert werden, aber nur eine Art gleichzeitig.
+
+MsgConnectedPipe=Rohr angeschlossen.
+MsgPipeProhibited=Dieses Rohr kann nicht an den Tank angeschlossen werden.
+MsgHasPipes=Der Tank hat schon ein Zu- und Abflussrohr.
+MsgSourcePipeProhibited=Zuflussrohre können nicht an den Tank angeschlossen werden.
+MsgDrainPipeProhibited=Abflussrohre können nicht an den Tank angeschlossen werden.
+
+MsgOpenTank=Ventil öffnen
+MsgCloseTank=Ventil schließen

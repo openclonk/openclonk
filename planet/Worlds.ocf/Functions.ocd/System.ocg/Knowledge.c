@@ -59,7 +59,7 @@ global func GivePlayerPumpingKnowledge(int plr)
 {
 	var knowledge = [
 		// Stuff needed for pumping.
-		Pump, Pipe
+		Pump, Pipe /*,LiquidTank TODO: add when graphics are done*/
 	];
 	for (var plan in knowledge)
 		SetPlrKnowledge(plr, plan);

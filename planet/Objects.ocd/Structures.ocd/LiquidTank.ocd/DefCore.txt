@@ -1,0 +1,14 @@
+[DefCore]
+id=LiquidTank
+Version=8,0
+Category=C4D_Structure
+Width=40
+Height=72
+Offset=-20,-36
+Vertices=6
+VertexX=-16,16,-18,18,-18,18
+VertexY=35,35,0,0,-20,-20
+VertexFriction=100,100,50,50,50,50
+Mass=800
+Exclusive=1
+Construction=1

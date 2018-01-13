@@ -1,0 +1,11 @@
+Name=Liquid Tank
+Description=Liquids can be stored here, but only one type of liquid at the same time.
+
+MsgConnectedPipe=Connected pipe.
+MsgPipeProhibited=This pipe cannot be connected to the liquid tank.
+MsgHasPipes=Liquid tank already has a source and a drain pipe.
+MsgSourcePipeProhibited=Unable to connect source pipe to the liquid tank.
+MsgDrainPipeProhibited=Unable to connect drain pipe to the liquid tank.
+
+MsgOpenTank=Open valve
+MsgCloseTank=Close valve
