@@ -244,8 +244,9 @@ public func GetRepairMaterials()
 	{
 		material_value += material.count * material.id->GetValue();
 	}
+	// Multiply by 1000 to prevent issues with rounding.
+	var remaining_damage_value = 1000 * total_component_value * GetDamage() / GetHitPoints() - 1000 * material_value;
 	
-	var remaining_damage_value = total_component_value * GetDamage() / GetHitPoints() - material_value;
 	if (remaining_damage_value <= 0)
 	{
 		return lib_structure.repair_materials;
@@ -259,6 +260,7 @@ public func GetRepairMaterials()
 		
 		var current_offset = 0;
 		var component, i = 0;
+		var found = false;
 		while (component = GetComponent(nil, i++))
 		{
 			var count = GetComponent(component);
@@ -268,11 +270,16 @@ public func GetRepairMaterials()
 			
 			if (random_sample <= current_offset)
 			{
-				remaining_damage_value -= value;
+				remaining_damage_value -= 1000 * value;
 				AddRepairMaterial(component);
+				found = true;
 				break;
 			}
 		}
+		
+		// Failsafe. No components?
+		if (!found)
+			break;
 	}
 	
 	return lib_structure.repair_materials;
