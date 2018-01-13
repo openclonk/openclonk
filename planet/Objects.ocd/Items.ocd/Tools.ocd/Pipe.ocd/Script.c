@@ -205,9 +205,10 @@ public func SetAirPipe()
 /* ---------- Pipe Connection ---------- */
 
 
-func ConnectPipeTo(object target, string specific_pipe_state, bool block_cutting)
+public func ConnectPipeTo(object target, string specific_pipe_state, bool block_cutting)
 {
-	if (!target || target->~QueryConnectPipe(this)) return false;
+	if (!target || target->~QueryConnectPipe(this, true))
+		return false;
 	AddLineConnectionTo(target, block_cutting);
 	target->OnPipeConnect(this, specific_pipe_state);
 	Sound("Objects::Connect");
@@ -243,7 +244,7 @@ public func GetConnectedLine()
       
  @par target the target object
  */
-func AddLineConnectionTo(object target, bool block_cutting)
+public func AddLineConnectionTo(object target, bool block_cutting)
 {
 	var line = GetConnectedLine();
 	if (line)
@@ -276,7 +277,7 @@ func AddLineConnectionTo(object target, bool block_cutting)
  
  @par target the target object
  */
-func CutLineConnection(object target)
+public func CutLineConnection(object target)
 {
 	var line = GetConnectedLine();
 	if (!line) return;
@@ -316,7 +317,7 @@ public func QueryCutLineConnection(object target)
  @par target the target object.
  @return object the line that was created
  */
-func CreateLine(object target, bool block_cutting)
+public func CreateLine(object target, bool block_cutting)
 {
 	// Create and connect pipe line.
 	pipe_line = CreateObject(PipeLine, 0, 0, NO_OWNER);
@@ -333,7 +334,7 @@ protected func ControlUse(object clonk, int x, int y)
 	var target = FindObject(Find_AtPoint(), Find_Func("CanConnectPipe"));
 	if (target)
 	{
-		ConnectPipeTo(target);
+		ConnectPipeTo(target, GetPipeState());
 	}
 	return true;
 }
@@ -343,7 +344,7 @@ protected func ControlUse(object clonk, int x, int y)
  Displays a message at top-level container of this object.
  @par message the message
  */
-func Report(string message)
+public func Report(string message)
 {
 	var reporter = this;
 	var next = Contained();

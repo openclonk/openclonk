@@ -99,34 +99,34 @@ public func GetPipeControlMenuEntries(object clonk)
 	if (GetSourcePipe())
 	{
 		if (!GetSourcePipe()->QueryCutLineConnection(this))
-			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source));
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source, RGB(102, 136, 34)));
 	}
 	else if (source_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(source_pipe, "$MsgConnectSource$", 1, LIBRARY_TANK_Menu_Action_Add_Source));
+		PushBack(menu_entries, GetTankMenuEntry(source_pipe, "$MsgConnectSource$", 1, LIBRARY_TANK_Menu_Action_Add_Source, RGB(102, 136, 34)));
 
 	if (GetDrainPipe())
 	{
 		if (!GetDrainPipe()->QueryCutLineConnection(this))
-			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain));
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain, RGB(238, 102, 0)));
 	}
 	else if (drain_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, "$MsgConnectDrain$", 2, LIBRARY_TANK_Menu_Action_Add_Drain));
+		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, "$MsgConnectDrain$", 2, LIBRARY_TANK_Menu_Action_Add_Drain, RGB(238, 102, 0)));
 
 	if (GetNeutralPipe())
 	{
 		if (!GetNeutralPipe()->QueryCutLineConnection(this))
-			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutNeutral$", 3, LIBRARY_TANK_Menu_Action_Cut_Neutral));
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutNeutral$", 3, LIBRARY_TANK_Menu_Action_Cut_Neutral, RGB(80, 80, 120)));
 	}
 	else if (neutral_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral));
+		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral, RGB(80, 80, 120)));
 
-	if (GetSourcePipe() && GetDrainPipe())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, "$MsgSwapSourceDrain$", 4, LIBRARY_TANK_Menu_Action_Swap_SourceDrain));
+	if (IsAllowedSwapSourceDrain())
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, "$MsgSwapSourceDrain$", 4, LIBRARY_TANK_Menu_Action_Swap_SourceDrain, nil));
 
 	return menu_entries;
 }
 
-public func GetTankMenuEntry(symbol, string text, int priority, extra_data)
+public func GetTankMenuEntry(symbol, string text, int priority, extra_data, int clr)
 {
 	return {symbol = symbol, extra_data = extra_data, 
 		custom =
@@ -134,7 +134,7 @@ public func GetTankMenuEntry(symbol, string text, int priority, extra_data)
 			Prototype = lib_tank.custom_entry,
 			Priority = priority,
 			text = {Prototype = lib_tank.custom_entry.text, Text = text},
-			image = {Prototype = lib_tank.custom_entry.image, Symbol = symbol}
+			image = {Prototype = lib_tank.custom_entry.image, Symbol = symbol, BackgroundColor = clr},
 		}};
 }
 
@@ -213,22 +213,38 @@ public func DoCutPipe(object pipe)
 	}
 }
 
+public func IsAllowedSwapSourceDrain()
+{
+	if (!GetSourcePipe() || !GetDrainPipe())
+		return false;
+	var source_line = GetSourcePipe()->GetConnectedLine();
+	var drain_line = GetDrainPipe()->GetConnectedLine();
+	if (source_line && drain_line)
+	{
+		var source = source_line->GetConnectedObject(this);
+		var drain = drain_line->GetConnectedObject(this);
+		// Allow swapping if both ends are pipes.
+		if (source->GetID() == Pipe && drain->GetID() == Pipe)
+			return true;	
+	}
+	// TODO: Also allow swapping if non pipe objects are on the other end and accept the drain or source.
+	return false;
+}
+
 public func DoSwapSourceDrain(object source, object drain)
 {
-	// TODO: Check if swapping is even allowed.
 	SetDrainPipe(source);
 	SetSourcePipe(drain);
 	source->SetDrainPipe();
 	drain->SetSourcePipe();
+	// TODO: Also change the state of the objects on the other end of the pipe.
 }
 
 public func FindAvailablePipe(object container, find_state)
 {
 	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), find_state))
-	{
-		if (!this->~QueryConnectPipe(pipe))
+		if (!this->~QueryConnectPipe(pipe, false))
 			return pipe;
-	}
 	return nil;
 }
 

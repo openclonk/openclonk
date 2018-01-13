@@ -22,17 +22,13 @@ public func IsLiquidContainerForMaterial(string liquid)
 	return WildcardMatch("Oil", liquid);
 }
 
-public func QueryConnectPipe(object pipe)
+public func QueryConnectPipe(object pipe, bool do_msg)
 {
 	if (pipe->IsDrainPipe() || pipe->IsNeutralPipe())
-	{
 		return false;
-	}
-	else
-	{
+	if (do_msg)
 		pipe->Report("$MsgPipeProhibited$");
-		return true;
-	}
+	return true;
 }
 
 public func OnPipeConnect(object pipe, string specific_pipe_state)

@@ -152,23 +152,21 @@ public func GetConnectedPipe()
 }
 
 // Do not accept source pipes
-public func QueryConnectPipe(object pipe)
+public func QueryConnectPipe(object pipe, bool do_msg)
 {
 	if (GetConnectedPipe())
 	{
-		pipe->Report("$MsgHasPipe$");
+		if (do_msg)
+			pipe->Report("$MsgHasPipe$");
 		return true;
 	}
-
 	if (pipe->IsSourcePipe())
 	{
-		pipe->Report("$MsgPipeProhibited$");
+		if (do_msg)
+			pipe->Report("$MsgPipeProhibited$");
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 
@@ -255,10 +253,8 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 func FindAvailablePipe(object container)
 {
 	for (var pipe in FindObjects(Find_ID(Pipe), Find_Container(container), Find_Or(Find_Func("IsAirPipe"), Find_Func("IsDrainPipe"), Find_Func("IsNeutralPipe"))))
-	{
-		if (!this->~QueryConnectPipe(pipe))
+		if (!this->~QueryConnectPipe(pipe, false))
 			return pipe;
-	}
 	return nil;
 }
 

@@ -138,26 +138,26 @@ public func GetLiquidContainerMaxFillLevel(liquid_name)
 }
 
 // The foundry may have one drain and one source.
-public func QueryConnectPipe(object pipe)
+public func QueryConnectPipe(object pipe, bool do_msg)
 {
 	if (GetDrainPipe() && GetSourcePipe())
 	{
-		pipe->Report("$MsgHasPipes$");
+		if (do_msg) pipe->Report("$MsgHasPipes$");
 		return true;
 	}
 	else if (GetSourcePipe() && pipe->IsSourcePipe())
 	{
-		pipe->Report("$MsgSourcePipeProhibited$");
+		if (do_msg) pipe->Report("$MsgSourcePipeProhibited$");
 		return true;
 	}
 	else if (GetDrainPipe() && pipe->IsDrainPipe())
 	{
-		pipe->Report("$MsgDrainPipeProhibited$");
+		if (do_msg) pipe->Report("$MsgDrainPipeProhibited$");
 		return true;
 	}
 	else if (pipe->IsAirPipe())
 	{
-		pipe->Report("$MsgPipeProhibited$");
+		if (do_msg) pipe->Report("$MsgPipeProhibited$");
 		return true;
 	}
 	return false;

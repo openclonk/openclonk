@@ -182,26 +182,26 @@ private func SetInfoMessage(string msg)
 
 /*-- Pipe control --*/
 
-public func QueryConnectPipe(object pipe)
+public func QueryConnectPipe(object pipe, bool do_msg)
 {
 	if (GetDrainPipe() && GetSourcePipe())
 	{
-		pipe->Report("$MsgHasPipes$");
+		if (do_msg) pipe->Report("$MsgHasPipes$");
 		return true;
 	}
 	else if (pipe->IsSourcePipe() && GetSourcePipe())
 	{
-		pipe->Report("$MsgSourcePipeProhibited$");
+		if (do_msg) pipe->Report("$MsgSourcePipeProhibited$");
 		return true;
 	}
 	else if (pipe->IsDrainPipe() && GetDrainPipe())
 	{
-		pipe->Report("$MsgDrainPipeProhibited$");
+		if (do_msg) pipe->Report("$MsgDrainPipeProhibited$");
 		return true;
 	}
 	else if (pipe->IsAirPipe() && GetDrainPipe())
 	{
-		pipe->Report("$MsgAirPipeProhibited$");
+		if (do_msg) pipe->Report("$MsgAirPipeProhibited$");
 		return true;
 	}
 	return false;
@@ -254,10 +254,8 @@ public func OnPipeConnect(object pipe, string specific_pipe_state)
 public func OnPipeDisconnect(object pipe)
 {
 	_inherited(pipe, ...);
-
-	if (!pipe->IsAirPipe())
-		pipe->SetNeutralPipe();
-	else // Stop pumping to prevent errors from Pumping()
+	// Stop pumping to prevent errors from Pumping() function.
+	if (pipe->IsAirPipe())
 		CheckState();
 }
 

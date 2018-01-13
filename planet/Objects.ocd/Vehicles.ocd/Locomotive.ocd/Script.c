@@ -71,16 +71,18 @@ public func GetLiquidContainerMaxFillLevel(liquid_name)
 }
 
 // The locomotive may only have a drain pipe.
-public func QueryConnectPipe(object pipe)
+public func QueryConnectPipe(object pipe, bool do_msg)
 {
 	if (pipe->IsDrainPipe() && GetDrainPipe())
 	{
-		pipe->Report("$MsgHasDrainPipe$");
+		if (do_msg)
+			pipe->Report("$MsgHasDrainPipe$");
 		return true;
 	}
-	else if (pipe->IsSourcePipe() || pipe->IsAirPipe())
+	if (pipe->IsSourcePipe() || pipe->IsAirPipe())
 	{
-		pipe->Report("$MsgPipeProhibited$");
+		if (do_msg)
+			pipe->Report("$MsgPipeProhibited$");
 		return true;
 	}
 	return false;
