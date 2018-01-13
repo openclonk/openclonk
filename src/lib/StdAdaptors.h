@@ -206,6 +206,8 @@ struct StdStdStringAdapt
 };
 inline StdStdStringAdapt mkStringAdapt(std::string& string, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
 { return StdStdStringAdapt(string, eRawType); }
+inline StdStdStringAdapt mkStringAdaptA(std::string& string)
+{ return StdStdStringAdapt(string, StdCompiler::RCT_All); }
 
 // * Raw adaptor
 struct StdRawAdapt
