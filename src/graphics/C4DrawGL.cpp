@@ -357,6 +357,10 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	}
 	// creation selected the new context - switch back to previous context
 	RenderTarget = nullptr;
+#ifdef WITH_QT_EDITOR
+	// FIXME This is a hackfix for #1813 / #1956. The proper way to fix them would probably be to select a drawing context before invoking C4Player::FinalInit
+	if (!app->isEditor)
+#endif
 	pCurrCtx = nullptr;
 	// done
 	return pCtx;

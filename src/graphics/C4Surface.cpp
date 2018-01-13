@@ -511,7 +511,7 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 	{
 		// get+lock affected texture
 		if (!texture) return 0;
-		texture->Lock();
+		assert(texture->Lock());
 		pBuf=(BYTE *) texture->texLock.pBits.get();
 		iPitch=texture->texLock.Pitch;
 	}
