@@ -218,12 +218,12 @@ private func UpdateInventory()
 				if (contents)
 				{
 					extra_symbol = contents;
-					// Stack count: Some contents may provide their own stack count function just for inventory display
-					extra_symbol_stack_count = contents->~GetContainedDisplayStackCount();
-					if (!GetType(extra_symbol_stack_count))
+					// Stack count: either actual stack count or stacked object count.
+					extra_symbol_stack_count = contents->~GetStackCount();
+					if (extra_symbol_stack_count == nil)
 					{
 					    // Stack count fallback to actually stacked objects
-					    extra_symbol_stack_count = contents->~GetStackCount();
+					    extra_symbol_stack_count = item->ContentsCount(contents->GetID());
 					}
 				}
 				extra_slot_player = GetOwner();
@@ -243,7 +243,7 @@ private func UpdateInventory()
 			var extra_text = nil, number_symbol = nil;
 			if (extra_symbol && extra_symbol_stack_count)
 			{
-				if (contents->IsInfiniteStackCount())
+				if (contents->~IsInfiniteStackCount())
 					number_symbol = Icon_Number;
 				else extra_text = Format("%dx", extra_symbol_stack_count);
 			}
