@@ -914,8 +914,9 @@ C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
 C4ValueArray * C4PropList::GetProperties() const
 {
 	C4ValueArray * a;
-	int i;
-	if (GetPrototype())
+	int i = 0;
+	const bool hasInheritedProperties = GetPrototype() != nullptr;
+	if (hasInheritedProperties)
 	{
 		a = GetPrototype()->GetProperties();
 		i = a->GetSize();
@@ -929,11 +930,29 @@ C4ValueArray * C4PropList::GetProperties() const
 	const C4Property * p = Properties.First();
 	while (p)
 	{
-		assert(p->Key != nullptr && "Proplist key is nullpointer");
-		(*a)[i++] = C4VString(p->Key);
-		assert(((*a)[i - 1].GetType() == C4V_String) && "Proplist key is non-string");
+		C4String *newPropertyName = p->Key;
+		assert(newPropertyName != nullptr && "Proplist key is nullpointer");
+		// Do we need to check for duplicate property names?
+		bool skipProperty = false;
+		if (hasInheritedProperties)
+		{
+			for (size_t j = 0; j < i; ++j)
+			{
+				if ((*a)[j].getStr() != newPropertyName) continue;
+				skipProperty = true;
+				break;
+			}
+		}
+		if (!skipProperty)
+		{
+			(*a)[i++] = C4VString(newPropertyName);
+			assert(((*a)[i - 1].GetType() == C4V_String) && "Proplist key is non-string");
+		}
 		p = Properties.Next(p);
 	}
+	// We might have added less properties than initially intended.
+	if (hasInheritedProperties)
+		a->SetSize(i);
 	return a;
 }
 
