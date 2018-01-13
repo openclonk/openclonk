@@ -152,7 +152,7 @@ func StartGame()
 	// Init objects to defend
 	for (var obj in [g_statue, g_doorleft, g_doorright]) if (obj)
 	{
-		obj->SetCategory(C4D_Living | C4D_StaticBack);
+		obj->SetCategory(C4D_Living);
 		obj->SetAlive(true);
 		obj.MaxEnergy = 800000;
 		obj->DoEnergy(obj.MaxEnergy/1000);
@@ -161,6 +161,7 @@ func StartGame()
 	}
 	if (g_statue)
 	{
+		g_statue->SetCategory(C4D_Living | C4D_StaticBack);
 		g_statue.Death = Scenario.Statue_Death;
 	}
 	// Launch first wave!
