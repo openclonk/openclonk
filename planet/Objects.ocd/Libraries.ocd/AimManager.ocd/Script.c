@@ -121,7 +121,7 @@ func FxIntAimCheckProcedureStop(target, effect, reason, tmp)
 
 func PauseAim()
 {
-	if(!aim_weapon) return CancelAiming();
+	if(!aim_weapon || aim_stop) return CancelAiming();
 	// reissue the CON_Use command to the weapon when ready
 	this->PauseUse(aim_weapon);
 	CancelAiming();
