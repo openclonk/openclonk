@@ -1,6 +1,10 @@
 [Head]
 Title=Liquid System
 
+[Definitions]
+Definition1=Objects.ocd
+Definition2=Experimental.ocd
+
 [Landscape]
 NoScan=1
 
