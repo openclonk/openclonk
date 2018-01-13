@@ -34,3 +34,8 @@ MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.
 PumpMaterials=Pumpe Materialien
 MsgEnableMaterial=Schalte das Pumpen von Material %s ein.
 MsgDisableMaterial=Schalte das Pumpen von Material %s aus.
+
+MsgCutAirPipe=Luftrohr trennen
+MsgConnectAirPipe=Luftrohr anschließen
+DescCutAirPipe=Entfernt das Luftrohr.
+DescConnectAirPipe=Schließt ein Luftrohr an.

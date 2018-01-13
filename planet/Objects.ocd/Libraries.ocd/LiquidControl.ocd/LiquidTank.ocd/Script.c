@@ -121,7 +121,7 @@ public func GetPipeControlMenuEntries(object clonk)
 		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral, RGB(80, 80, 120)));
 
 	if (IsAllowedSwapSourceDrain())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, "$MsgSwapSourceDrain$", 4, LIBRARY_TANK_Menu_Action_Swap_SourceDrain, nil));
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, "$MsgSwapSourceDrain$", 10, LIBRARY_TANK_Menu_Action_Swap_SourceDrain, nil));
 
 	return menu_entries;
 }

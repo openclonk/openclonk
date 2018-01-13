@@ -34,3 +34,8 @@ MsgHasPipes=Pump already has a source and a drain pipe.
 PumpMaterials=Pump Materials
 MsgEnableMaterial=Enable the pumping of material %s.
 MsgDisableMaterial=Disable the pumping of material %s.
+
+MsgCutAirPipe=Cut off air pipe
+MsgConnectAirPipe=Connect air pipe
+DescCutAirPipe=Removes the air pipe.
+DescConnectAirPipe=Connects an air pipe.

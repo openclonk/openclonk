@@ -179,6 +179,70 @@ private func SetInfoMessage(string msg)
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
+static const LIBRARY_TANK_Menu_Action_Cut_AirPipe = "cutairpipe";
+static const LIBRARY_TANK_Menu_Action_Add_AirPipe = "addairpipe";
+
+// Extend liquid tank connection interface to air pipes.
+public func GetPipeControlMenuEntries(object clonk)
+{
+	var menu_entries = inherited(clonk, ...);
+	
+	var drain_pipe = GetDrainPipe();
+	// Modify cut drain pipe menu entry for air pipe.
+	if (drain_pipe && !drain_pipe->QueryCutLineConnection(this) && drain_pipe->IsAirPipe())
+	{
+		for (var entry in menu_entries)
+		{
+			if (entry.extra_data == LIBRARY_TANK_Menu_Action_Cut_Drain)
+			{
+				entry.extra_data = LIBRARY_TANK_Menu_Action_Cut_AirPipe;
+				entry.Priority = 4;
+				entry.custom.image.BackgroundColor = RGB(0, 153, 255);
+				entry.custom.text.Text = "$MsgCutAirPipe$";
+				break;
+			}
+		}
+	}
+	
+	// Add attach air pipe menu entry.
+	var air_pipe = FindAvailablePipe(clonk, Find_Func("IsAirPipe"));
+	if (!drain_pipe && air_pipe)
+		PushBack(menu_entries, GetTankMenuEntry(air_pipe, "$MsgConnectAirPipe$", 4, LIBRARY_TANK_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
+	return menu_entries;
+}
+
+public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
+	{
+		GuiUpdateText("$DescCutAirPipe$", menu_id, 1, desc_menu_target);
+		return;
+	}
+	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
+	{
+		GuiUpdateText("$DescConnectAirPipe$", menu_id, 1, desc_menu_target);
+		return;
+	}
+	return inherited(symbol, action, desc_menu_target, menu_id, ...);
+}
+
+public func OnPipeControl(symbol_or_object, string action, bool alt)
+{
+	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
+	{
+		this->DoCutPipe(GetDrainPipe());
+		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
+		return;
+	}
+	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
+	{
+		this->DoConnectPipe(symbol_or_object, PIPE_STATE_Air);
+		UpdateInteractionMenus(this.GetPipeControlMenuEntries);
+		return;
+	}
+	return inherited(symbol_or_object, action, alt, ...);
+}
+
 
 /*-- Pipe control --*/
 
