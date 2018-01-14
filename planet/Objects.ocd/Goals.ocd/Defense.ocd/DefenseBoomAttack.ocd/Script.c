@@ -277,8 +277,7 @@ private func DoFireworks(int killed_by)
 		rider->SetAction("Walk");
 		SetRider(nil);
 	}
-	// Notify defense goal for reward and score.
-	GameCallEx("OnRocketDeath", this, killed_by);
+	SetKiller(killed_by);
 	Fireworks();
 	Explode(40);
 	return;
@@ -286,6 +285,8 @@ private func DoFireworks(int killed_by)
 
 public func Destruction()
 {
+	// Notify defense goal for reward and score.
+	GameCallEx("OnRocketDeath", this, GetKiller());
 	// Notify friendly fire rule.
 	GameCallEx("OnDestructionRuleNoFF", this);
 }
