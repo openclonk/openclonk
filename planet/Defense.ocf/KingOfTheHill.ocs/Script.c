@@ -38,9 +38,9 @@ protected func InitializePlayer(int plr)
 	if (GetPlayerTeam(plr) != 1)
 		SetPlayerTeam(plr, 1);
 	
-	// Move crew to the island.
+	// Move crew to the initial position.
 	var crew = GetCrew(plr);
-	crew->SetPosition(128, 440);
+	crew->SetPosition(120 + Random(16), 440);
 	
 	// Set zoom ranges.
 	SetPlayerZoomByViewRange(plr, 1200, nil, PLRZOOM_LimitMax);
@@ -64,6 +64,19 @@ protected func InitializePlayer(int plr)
 }
 
 
+/*-- Scenario Control --*/
+
+public func OnWaveStarted(int wave_nr)
+{
+	// Fade out enemy ammunition.
+	var enemy_plr = Goal_Defense->GetEnemyPlayer();
+	for (var obj in FindObjects(Find_Func("IsArrow"), Find_NoContainer()))
+		if (obj->GetController() == enemy_plr)
+			obj->AddEffect("IntFadeOut", obj, 100, 1, nil, Rule_ObjectFade);
+	return;
+}
+
+
 /*-- Waves Control --*/
 
 public func GetAttackWave(int nr)
@@ -73,7 +86,7 @@ public func GetAttackWave(int nr)
 		return new DefenseEnemy.BreakWave { Duration = 120 };
 	
 	// Attack positions.
-	var pos_land = {X = LandscapeWidth(), Y = 760, Exact = true};
+	var pos_land = {X = LandscapeWidth(), Y = 756, Exact = true};
 	var pos_sky = {X = LandscapeWidth() - 100, Y = 0};
 	var pos_above = {X = 200, Y = 0};
 	
@@ -138,13 +151,16 @@ public func GetAttackWave(int nr)
 	return wave;
 }
 
-// The attackers should go for flagpoles.
+// The attackers should go for flagpoles, then crewmembers, and then hostile structures.
 public func GiveRandomAttackTarget(object attacker)
 {
 	var target = FindObject(Find_Category(C4D_Structure), Find_Func("IsFlagpole"), Find_Hostile(attacker->GetController()), Sort_Random());
 	if (target)
 		return target;
 	target = FindObject(Find_OCF(OCF_CrewMember), Find_Hostile(attacker->GetController()), Sort_Distance());
+	if (target)
+		return target;
+	var target = FindObject(Find_Category(C4D_Structure), Find_Hostile(attacker->GetController()), Sort_Random());
 	if (target)
 		return target;
 	return;
