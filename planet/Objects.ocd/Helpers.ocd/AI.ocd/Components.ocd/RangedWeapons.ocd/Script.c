@@ -52,8 +52,13 @@ private func ExecuteRanged(effect fx)
 	if (GetEffect("IntAimCheckProcedure", fx.Target) && !fx.Target->ReadyToAction()) 
 		return this->ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account.
-	// Also aim for the head (y-4) so it's harder to evade by jumping.
-	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY() - 4;
+	var x = fx.Target->GetX(), y = fx.Target->GetY(), tx = fx.target->GetX(), ty = fx.target->GetY();
+	// Aim for the head of crew members (y-4) so it's harder to evade by jumping.
+	if (fx.target->GetOCF() & OCF_CrewMember)
+		ty = ty - 4;
+	// Aim just above the base of structures, this makes the changes higher for explosives to detonate on the basement or solid material.
+	if (fx.target->GetCategory() & C4D_Structure)
+		ty = ty + fx.target->GetBottom() - 2;
 	var d = Distance(x, y, tx, ty);
 	// Projected travel time of the arrow.
 	var dt = d * 10 / fx.projectile_speed; 
