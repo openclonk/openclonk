@@ -447,7 +447,12 @@ func GetInteractableObjects(array sort)
 			var overlap = Shape->Intersect(entrance, shape);
 			// Interactable can be entered if the area of overlap is bigger than zero.
 			can_be_entered = overlap->GetArea() > 0;
-		}	
+			// Interactable can be entered if you are pushing a vehcile and the object is a container, see issue #1969
+			if (GetProcedure() == "PUSH")
+			{
+				can_be_entered &= interactable->~IsContainer();
+			}
+		}
 		if (can_be_entered && (!can_only_use_container || can_be_exited))
 		{
 			var priority = 29;
