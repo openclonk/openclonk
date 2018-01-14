@@ -169,8 +169,7 @@ protected func Death(int killed_by)
 		}
 	}
 	CloseEyes(1);
-	UpdateAttach();
-	
+
 	return true;
 }
 

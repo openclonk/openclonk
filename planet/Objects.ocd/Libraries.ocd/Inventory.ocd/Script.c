@@ -417,6 +417,7 @@ func Ejection(object obj)
 			this->~OnSlotEmpty(handpos);
 			obj->~Deselection(this, handpos);
 		}
+		this->~UpdateAttach();
 	}
 	
 	// we have over-weight? Put the next unindexed object inside that slot
