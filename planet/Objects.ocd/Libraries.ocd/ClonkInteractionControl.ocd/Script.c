@@ -450,7 +450,7 @@ func GetInteractableObjects(array sort)
 			// Interactable can be entered if you are pushing a vehcile and the object is a container, see issue #1969
 			if (GetProcedure() == "PUSH")
 			{
-				can_be_entered &= interactable->~IsContainer();
+				can_be_entered &= (interactable->~IsContainer() || interactable->~AllowsVehicleEntrance());
 			}
 		}
 		if (can_be_entered && (!can_only_use_container || can_be_exited))
