@@ -470,7 +470,8 @@ func IsFirestoneSpot(int x, int y)
 // ============= Themes =============
 static const HotIce = new Global {
 	InitializeRound = func() { },
-	MatNames = ["^Ice-ice", "^Ice-ice2"],
+	LavaMat = "^DuroLava",
+	IceMats = ["^Ice-ice", "^Ice-ice2"],
 	AltMatRatio = 50,
 	BackgroundMat = nil,
 	Sky = "Default",
@@ -492,13 +493,14 @@ static const HotIce = new Global {
 };
 
 static const EciToh = new HotIce {
-	MatNames = ["Coal", "Rock-rock"],
+	LavaMat = "DuroLava",
+	IceMats = ["Coal", "Rock-rock"],
 	AltMatRatio = 8,
 	BackgroundMat = "Tunnel",
 };
 
 static const MiamiIce = new HotIce {
-	MatNames = ["^BlackIce-black", "^BlackIce-black"],
+	IceMats = ["^BlackIce-black", "^BlackIce-black"],
 	Sky = "SkyMiami",
 	PlayList =
 	{
