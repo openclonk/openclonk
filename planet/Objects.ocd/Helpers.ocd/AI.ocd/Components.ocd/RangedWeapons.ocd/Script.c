@@ -90,7 +90,7 @@ private func ExecuteRanged(effect fx)
 		if (ally)
 		{
 			// Try to jump, if not possible just wait.
-			if (this->ExecuteJump()) 
+			if (this->ExecuteJump(fx)) 
 				return true;
 		}
 		else
