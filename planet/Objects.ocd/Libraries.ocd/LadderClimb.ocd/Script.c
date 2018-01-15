@@ -84,7 +84,7 @@ public func FxIntSearchLadderTimer(object target, proplist effect, int time)
 		
 	// Find a ladder which can be climbed.
 	var ladder;
-	for (ladder in FindObjects(Find_AtRect(-5, -10, 10, 8), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+	for (ladder in FindObjects(Find_AtRect(-5, -10, 10, 8), Find_NoContainer(), Find_Property("IsLadder"), Find_Layer(GetObjectLayer())))
 	{
 		// Don't climb ladders that are blocked.
 		if (ladder->~CanNotBeClimbed(false, this) || IsBlockedLadder(ladder))

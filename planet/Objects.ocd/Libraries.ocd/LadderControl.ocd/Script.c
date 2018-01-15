@@ -9,7 +9,8 @@ local master;
 local next_segment;
 local prev_segment;
 
-public func IsLadder() { return true; }
+// Ladders are being searched for by FindObject and friends using a property.
+local IsLadder = true;
 
 public func SetMaster(object new_master, int new_index)
 {
