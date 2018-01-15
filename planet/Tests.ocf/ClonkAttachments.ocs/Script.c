@@ -257,7 +257,7 @@ global func Test1_Run()
 		if (corpse) corpse.Visibility = VIS_None;
 		if (collector) collector.Visibility = VIS_None;
 		if (item) item->Enter(test.test1_store);
-		RemoveAll(Find_ID(Rock));
+		RemoveAll(Find_ID(Attacher));
 		test.test1_index += 1;
 		return;
 	}
@@ -302,7 +302,7 @@ global func Test1_Run()
 		
 		if (test.test1_corpse_display[index] == nil)
 		{
-			test.test1_corpse_display[index] = Test1_IsAttached(corpse, attachment_id);
+			test.test1_corpse_display[index] = Test1_IsAttached(corpse, attachment_id + 1); // the corpse also had the attacher
 		}
 		
 		if (item->Contained() != collector)
@@ -327,9 +327,9 @@ global func Test1_Run()
 		test.test1_corpse[index] = corpse = CreateObject(Clonk, cursor->GetX() + 100, cursor->GetY(), script_plr);
 		item->SetPosition(corpse->GetX(), corpse->GetY());
 		corpse->Collect(test.test1_item[index]);
-		corpse->CreateContents(Rock); // Create something else, so that the item is not displayed as a hand item
-		corpse->ShiftContents(nil, Rock);
-		corpse->FindContents(Rock).Visibility = VIS_None;
+		corpse->CreateContents(Attacher); // Create something else, so that the actual item is displayed in the quick slot
+		corpse->ShiftContents(nil, Attacher);
+		//corpse->FindContents(Attacher).Visibility = VIS_None;
 		Wait(collect_delay);
 	}
 }
