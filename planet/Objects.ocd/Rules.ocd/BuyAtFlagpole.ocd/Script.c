@@ -11,9 +11,9 @@ public func Construction(...)
 	return _inherited(...);
 }
 
-protected func Activate(int iByPlayer)
+public func Activate(int by_plr)
 {
-	MessageWindow(GetProperty("Description"), iByPlayer);
+	MessageWindow(this.Description, by_plr);
 	return true;
 }
 

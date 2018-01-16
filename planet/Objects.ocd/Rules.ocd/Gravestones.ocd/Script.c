@@ -69,9 +69,9 @@ local FxAddGravestone = new Effect
 	}
 };
 
-protected func Activate(int by_plr)
+public func Activate(int by_plr)
 {
-	MessageWindow(GetProperty("Description"), by_plr);
+	MessageWindow(this.Description, by_plr);
 	return true;
 }
 

@@ -1,11 +1,11 @@
-/*--
+/**
 	Goal control
-	Author: Sven2
-	
-	Include this to all C4D_Goal objects
-	Functions to be overloaded:
-		bool IsFullfilled(); - is the goal fulfilled?
---*/
+	Include this to all C4D_Goal objects. Functions to be overloaded:
+	 * bool IsFullfilled(); - is the goal fulfilled?
+	 * string GetDescription(int plr); - description of the goal
+		
+	@author Sven2
+*/
 
 local EditorPlacementLimit = 1; // Goals are to be placed only once (unless overloaded by the goal)
 
@@ -142,11 +142,11 @@ public func GetDescription(int plr)
 protected func Activate(plr)
 {
 	if (IsFulfilled())
-		return(MessageWindow("$MsgGoalFulfilled$", plr));
-	return MessageWindow(this->GetDescription(plr));
+		return MessageWindow("$MsgGoalFulfilled$", plr);
+	return MessageWindow(this->GetDescription(plr), plr);
 }
 
-// Scenario sacing
+// Scenario saving.
 func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;

@@ -79,10 +79,10 @@ protected func OnHostilityChange(int plr, int plr2, bool hostility, bool old_hos
 	return;
 }
 
-protected func Activate(int byplr)
+public func Activate(int by_plr)
 {
-	MessageWindow("$Description$", byplr);
-	return;
+	MessageWindow(this.Description, by_plr);
+	return true;
 }
 
 /*-- Proplist --*/

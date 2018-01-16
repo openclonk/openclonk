@@ -33,9 +33,9 @@ protected func Destruction()
 	return;
 }
 
-protected func Activate(int plr)
+public func Activate(int by_plr)
 {
-	MessageWindow(GetProperty("Description"), plr);
+	MessageWindow(this.Description, by_plr);
 	return true;
 }
 
