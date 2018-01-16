@@ -65,6 +65,10 @@ protected func InitializePlayer(int plr)
 
 	// Give the player the elementary base materials.
 	GivePlayerElementaryBaseMaterial(plr);
+
+	// When rejoining, try joining at a flag. The default position may
+	// otherwise be on the wrong side of the volcano.
+	var flag = FindObject(Find_ID(Flagpole));
 	
 	// Give crew some equipment.
 	var index = 0, crew;
@@ -75,6 +79,8 @@ protected func InitializePlayer(int plr)
 		if (index == 2)
 			crew->CreateContents(Axe);
 		crew->CreateContents(Shovel);
+		if (flag)
+			crew->SetPosition(flag->GetX(), flag->GetY());
 	}
 
 	// Initialize the intro sequence if not yet started.
