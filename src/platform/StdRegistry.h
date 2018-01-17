@@ -130,6 +130,7 @@ public:
 
 	// Separators
 	bool Separator(Sep eSep) override;
+	void NoSeparator() override;
 
 	// Data writers
 	void DWord(int32_t &rInt) override;

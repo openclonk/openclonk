@@ -525,6 +525,10 @@ bool StdCompilerConfigRead::Separator(Sep eSep)
 	}
 }
 
+void StdCompilerConfigRead::NoSeparator() {
+       has_separator_mismatch = false;
+}
+
 void StdCompilerConfigRead::DWord(int32_t &rInt)
 {
 	rInt = int32_t(ReadDWord());

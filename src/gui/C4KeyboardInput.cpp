@@ -18,6 +18,7 @@
 #include "C4Include.h"
 #include "gui/C4KeyboardInput.h"
 
+#include "gui/C4MouseControl.h"
 #include "c4group/C4Components.h"
 #include "platform/C4Window.h"
 
@@ -186,14 +187,53 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 };
 #endif
 
-C4KeyCodeEx::C4KeyCodeEx(C4KeyCode key, C4KeyShiftState Shift, bool fIsRepeated, int32_t deviceId)
+C4KeyCodeEx::C4KeyCodeEx(C4KeyCode key, DWORD Shift, bool fIsRepeated, int32_t deviceId)
 : Key(key), dwShift(Shift), fRepeated(fIsRepeated), deviceId(deviceId)
 {
+}
+
+C4KeyCodeEx C4KeyCodeEx::FromC4MC(int8_t mouse_id, int32_t iButton, DWORD dwKeyParam, bool *is_down)
+{
+	bool dummy;
+	if (!is_down)
+		is_down = &dummy;
+	*is_down = true;
+	C4KeyCode mouseevent_code;
+	int wheel_dir = 0;
+	if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyParam >> 16);
+	switch (iButton)
+	{
+	case C4MC_Button_None: mouseevent_code = KEY_MOUSE_Move; break;
+	case C4MC_Button_LeftDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+	case C4MC_Button_LeftUp: mouseevent_code = KEY_MOUSE_ButtonLeft; *is_down = false; break;
+	case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
+	case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonRight; break;
+	case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
+	case C4MC_Button_RightUp: mouseevent_code = KEY_MOUSE_ButtonRight; *is_down = false; break;
+	case C4MC_Button_MiddleDown: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
+	case C4MC_Button_MiddleUp: mouseevent_code = KEY_MOUSE_ButtonMiddle; *is_down = false; break;
+	case C4MC_Button_MiddleDouble: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
+	case C4MC_Button_X1Down: mouseevent_code = KEY_MOUSE_ButtonX1; break;
+	case C4MC_Button_X1Up: mouseevent_code = KEY_MOUSE_ButtonX1; *is_down = false; break;
+	case C4MC_Button_X1Double: mouseevent_code = KEY_MOUSE_ButtonX1Double; break;
+	case C4MC_Button_X2Down: mouseevent_code = KEY_MOUSE_ButtonX2; break;
+	case C4MC_Button_X2Up: mouseevent_code = KEY_MOUSE_ButtonX2; *is_down = false; break;
+	case C4MC_Button_X2Double: mouseevent_code = KEY_MOUSE_ButtonX2Double; break;
+	case C4MC_Button_Wheel:
+		if (!wheel_dir) assert("Attempted to record mouse wheel movement without a direction");
+		mouseevent_code = (wheel_dir > 0) ? KEY_MOUSE_Wheel1Up : KEY_MOUSE_Wheel1Down; break;
+	}
+	C4KeyCodeEx key{KEY_Mouse(mouse_id, mouseevent_code), KEYS_None};
+	if (dwKeyParam & MK_CONTROL) key.dwShift |= KEYS_Control;
+	if (dwKeyParam & MK_SHIFT) key.dwShift |= KEYS_Shift;
+	if (dwKeyParam & MK_ALT) key.dwShift |= KEYS_Alt;
+	return key;
 }
 
 void C4KeyCodeEx::FixShiftKeys()
 {
 	// reduce stuff like Ctrl+RightCtrl to simply RightCtrl
+	if ((dwShift & KEYS_Alt) && (Key == K_ALT_L || Key == K_ALT_R)) dwShift &= ~KEYS_Alt;
 	if ((dwShift & KEYS_Control) && (Key == K_CONTROL_L || Key == K_CONTROL_R)) dwShift &= ~KEYS_Control;
 	if ((dwShift & KEYS_Shift) && (Key == K_SHIFT_L || Key == K_SHIFT_R)) dwShift &= ~KEYS_Shift;
 }
@@ -272,37 +312,35 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 			{
 				// skip number
 				while (isdigit(*key_str)) ++key_str;
-				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
-				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move);
-				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up);
-				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down);
-				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
-				{
-					// check for known mouse button events
-					uint8_t mouseevent_id = 0;
+				// check for known mouse events (e.g. Mouse0Move or GameMouse0Wheel)
+				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id, KEY_MOUSE_Move);
+				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id, KEY_MOUSE_Wheel1Up);
+				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id, KEY_MOUSE_Wheel1Down);
+				// check for known mouse button events
+				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse0ButtonLeft or GameMouse0ButtonRightDouble (This line is left here to not break anything, the buttons are now named Mouse0Left)
 					key_str += 6;
-					if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
-					else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
-					else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
-					else if (SEqualNoCase(key_str, "X1",2)) { mouseevent_id=KEY_MOUSE_ButtonX1; key_str += 2; }
-					else if (SEqualNoCase(key_str, "X2",2)) { mouseevent_id=KEY_MOUSE_ButtonX2; key_str += 2; }
-					else if (isdigit(*key_str))
+				uint8_t mouseevent_id = 0;
+				if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
+				else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
+				else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
+				else if (SEqualNoCase(key_str, "X1",2)) { mouseevent_id=KEY_MOUSE_ButtonX1; key_str += 2; }
+				else if (SEqualNoCase(key_str, "X2",2)) { mouseevent_id=KEY_MOUSE_ButtonX2; key_str += 2; }
+				else if (isdigit(*key_str))
+				{
+					// indexed mouse button (e.g. Mouse0Button4 or Mouse0Button4Double)
+					int button_index;
+					if (sscanf(key_str, "%d",  &button_index) == 1)
 					{
-						// indexed mouse button (e.g. Mouse1Button4 or Mouse1Button4Double)
-						int button_index;
-						if (sscanf(key_str, "%d",  &button_index) == 1)
-						{
-							mouseevent_id=static_cast<uint8_t>(KEY_MOUSE_Button1+button_index-1);
-							while (isdigit(*key_str)) ++key_str;
-						}
+						mouseevent_id=static_cast<uint8_t>(KEY_MOUSE_Button1+button_index);
+						while (isdigit(*key_str)) ++key_str;
 					}
-					if (mouseevent_id)
-					{
-						// valid event if finished or followed by "Double"
-						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id);
-						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1));
-						// invalid mouse key...
-					}
+				}
+				if (mouseevent_id)
+				{
+					// valid event if finished or followed by "Double"
+					if (!*key_str) return KEY_Mouse(mouse_id, mouseevent_id);
+					if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1));
+					// invalid mouse key...
 				}
 			}
 		}
@@ -523,7 +561,16 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 			}
 			dwShift = dwSetShift;
 			Key = eCode;
-			if (pOutBuf) pOutBuf->Take(std::move(sCode));
+			if (pOutBuf) {
+				// FIXME: This function is used both, to deserialize things like CON_Right and Shift+$12
+				// For CON_…, eCode and dwShift will be zero, and sCode will contain the key name.
+				// For Shift+… sCode will only contain the last token. What is correct here?
+				// Reading C4PlayerControlAssignment::KeyComboItem::CompileFunc suggests that setting not value for parsed combinations may be correct.
+				if (eCode == 0)
+					pOutBuf->Take(std::move(sCode));
+				else
+					pOutBuf->Copy(ToString(false, false));
+			}
 		}
 	}
 	else

@@ -201,8 +201,6 @@ void C4PlayerControlAssignment::KeyComboItem::UpdateKeyName()
 {
 	// update key name from key
 	sKeyName.Copy(Key.ToString(false, false));
-	if (Key.dwShift)
-		sKeyName.Take(FormatString("%s+%s", C4KeyCodeEx::KeyShift2String((C4KeyShiftState) Key.dwShift).getData(), sKeyName.getData()));
 }
 
 void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
@@ -1394,40 +1392,11 @@ void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32
 	                        C4CustomKey::PRIO_PlrControl));
 }
 
-bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down, int wheel_dir)
+bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, DWORD modifier_flags)
 {
 	// convert moueevent to key code
-	uint8_t mouseevent_code;
-	C4KeyCodeEx mouseevent_keycode;
-	bool is_down = true;
-	switch (mouseevent)
-	{
-	case C4MC_Button_None: mouseevent_code = KEY_MOUSE_Move; break;
-	case C4MC_Button_LeftUp: is_down = false; // nobreak
-	case C4MC_Button_LeftDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
-	case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
-	case C4MC_Button_RightUp: is_down = false; // nobreak
-	case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonRight; break;
-	case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
-	case C4MC_Button_MiddleUp: is_down = false; // nobreak
-	case C4MC_Button_MiddleDown: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
-	case C4MC_Button_MiddleDouble: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
-	case C4MC_Button_X1Up: is_down = false; // nobreak
-	case C4MC_Button_X1Down: mouseevent_code = KEY_MOUSE_ButtonX1; break;
-	case C4MC_Button_X1Double: mouseevent_code = KEY_MOUSE_ButtonX1Double; break;
-	case C4MC_Button_X2Up: is_down = false; // nobreak
-	case C4MC_Button_X2Down: mouseevent_code = KEY_MOUSE_ButtonX2; break;
-	case C4MC_Button_X2Double: mouseevent_code = KEY_MOUSE_ButtonX2Double; break;
-	case C4MC_Button_Wheel:
-		if (!wheel_dir) return false;
-		mouseevent_code = (wheel_dir > 0) ? KEY_MOUSE_Wheel1Up : KEY_MOUSE_Wheel1Down; break;
-	default: assert(false); return false;
-	}
-	// compose keycode
-	if (is_ctrl_down) mouseevent_keycode.dwShift |= KEYS_Control;
-	if (is_shift_down) mouseevent_keycode.dwShift |= KEYS_Shift;
-	if (is_alt_down) mouseevent_keycode.dwShift |= KEYS_Alt;
-	mouseevent_keycode.Key = KEY_Mouse(mouse_id, mouseevent_code);
+	bool is_down;
+	C4KeyCodeEx mouseevent_keycode = C4KeyCodeEx::FromC4MC(mouse_id, mouseevent, modifier_flags, &is_down);
 	// first, try processing it as GUI mouse event. if not assigned, process as Game mous event
 	// TODO: May route this through Game.DoKeyboardInput instead - would allow assignment of mouse events in CustomConfig
 	//  and would get rid of the Game.KeyboardInput.SetLastKeyExtraData-hack

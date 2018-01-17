@@ -234,6 +234,7 @@ void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
 		SCopy(szPath,szFoldername,iBackslash);
 		// Open folder
 		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
+		{
 			if (Reloc.Open(hGroup, szFoldername))
 			{
 				// Check for contained defs
@@ -252,6 +253,7 @@ void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
 			{
 				LogF("Internal WARNING: Could not inspect folder %s for definitions.", szFoldername);
 			}
+		}
 	}
 }
 

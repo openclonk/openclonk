@@ -614,12 +614,12 @@
 		Priority=75
 
 		[Assignment]
-		Key=Mouse1Wheel1Up
+		Key=Mouse0Wheel1Up
 		GUIGroup=50
 		Control=InventoryShiftBackward
 
 		[Assignment]
-		Key=Mouse1Wheel1Down
+		Key=Mouse0Wheel1Down
 		GUIGroup=50
 		Control=InventoryShiftForward
 
@@ -741,7 +741,7 @@
 		# Use
 
 		[Assignment]
-		Key=Mouse1ButtonLeft
+		Key=Mouse0Left
 		Priority=100
 		GUIName=$KEY_MouseUse$
 		GUIDesc=$KEY_MouseUse_Desc$
@@ -750,7 +750,7 @@
 		Control=Use
 
 		[Assignment]
-		Key=Mouse1ButtonRight
+		Key=Mouse0Right
 		Priority=100
 		GUIName=$KEY_MouseThrow$
 		GUIDesc=$KEY_MouseThrow_Desc$
@@ -759,7 +759,7 @@
 		Control=Throw
 
 		[Assignment]
-		Key=Mouse1ButtonRight
+		Key=Mouse0Right
 		Priority=80
 		GUIName=$KEY_MouseUseAlt$
 		GUIDesc=$KEY_MouseUseAlt_Desc$
@@ -770,13 +770,13 @@
 		# Zoom
 
 		[Assignment]
-		Key=Ctrl+Mouse1Wheel1Up
+		Key=Ctrl+Mouse0Wheel1Up
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomIn
 
 		[Assignment]
-		Key=Ctrl+Mouse1Wheel1Down
+		Key=Ctrl+Mouse0Wheel1Down
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomOut
@@ -1034,24 +1034,24 @@
 		# click in gui
 
 		[Assignment]
-		Key=Mouse1ButtonLeft
+		Key=Mouse0Left
 		Priority=300
 		Control=GUIClick1
 
 		[Assignment]
-		Key=Mouse1ButtonRight
+		Key=Mouse0Right
 		Priority=300
 		Control=GUIClick2
 
 		# Aiming
 
 		[Assignment]
-		Key=Mouse1Move
+		Key=Mouse0Move
 		Control=Aim
 		Priority=50
 
 		[Assignment]
-		Key=Mouse1Move
+		Key=Mouse0Move
 		Control=GUICursor
 		Priority=100
 

@@ -148,8 +148,16 @@ C4StartupOptionsDlg::KeySelDialog::KeySelDialog(const C4PlayerControlAssignment 
 	: C4GUI::MessageDialog(GetDlgMessage(assignment, assignment_set).getData(), LoadResStr("IDS_MSG_DEFINEKEY"), C4GUI::MessageDialog::btnAbort | C4GUI::MessageDialog::btnReset, GetDlgIcon(assignment_set), C4GUI::MessageDialog::dsRegular),
 		key(KEY_Undefined), assignment(assignment), assignment_set(assignment_set)
 {
-	pKeyListener = new C4KeyBinding(
-		C4KeyCodeEx(KEY_Any, KEYS_None),
+	const uint32_t KEYS_Allmod = KEYS_Shift | KEYS_Control | KEYS_Alt;
+	C4CustomKey::CodeList keys;
+	static_assert(KEYS_None == 0, "");
+	for (uint32_t k = KEYS_None; k <= KEYS_Allmod; k++) {
+		if (~KEYS_Allmod & k) // There is some efficient bit-twiddling (k = KEYS_Allmod & (k - KEYS_Allmod) instead of k++), but I figure that's overkill. (Relies on (defined) unsigned overflow)
+			continue;
+		keys.emplace_back(KEY_Any, k);
+	}
+	KeyListeners = std::make_unique<C4KeyBinding>(
+		keys,
 		"DefineKey",
 		KEYSCOPE_Gui,
 		new C4GUI::DlgKeyCBPassKey<C4StartupOptionsDlg::KeySelDialog>(
@@ -187,13 +195,6 @@ C4GUI::Icons C4StartupOptionsDlg::KeySelDialog::GetDlgIcon(const C4PlayerControl
 	return C4GUI::Ico_Keyboard;
 }
 
-
-
-C4StartupOptionsDlg::KeySelDialog::~KeySelDialog()
-{
-	delete pKeyListener;
-}
-
 void C4StartupOptionsDlg::KeySelDialog::MouseInput(C4GUI::CMouse& rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 {
 	// Original action
@@ -212,40 +213,13 @@ void C4StartupOptionsDlg::KeySelDialog::MouseInput(C4GUI::CMouse& rMouse, int32_
 			else
 				return;
 		}
-	// Only process the input event if the user certainly didn't click a button or anything…
+	// Only process the input event if the user certainly didn't click a button or anything...
 
-	// Logic duplication of C4PlayerControl::DoMouseInput (and C4MouseControl::Move for the wheel_dir.) There has to be a better way. :(
-	uint8_t mouseevent_code;
-	int wheel_dir = 0;
-	if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyParam >> 16);
-	switch (iButton)
-	{
-	case C4MC_Button_LeftUp:
-	case C4MC_Button_RightUp:
-	case C4MC_Button_MiddleUp:
-	case C4MC_Button_X1Up:
-	case C4MC_Button_X2Up:
-	case C4MC_Button_None:
+	if (iButton == C4MC_Button_None) // mouse got moved
 		return;
-	case C4MC_Button_LeftDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
-	case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
-	case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonRight; break;
-	case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
-	case C4MC_Button_MiddleDown: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
-	case C4MC_Button_MiddleDouble: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
-	case C4MC_Button_X1Down: mouseevent_code = KEY_MOUSE_ButtonX1; break;
-	case C4MC_Button_X1Double: mouseevent_code = KEY_MOUSE_ButtonX1Double; break;
-	case C4MC_Button_X2Down: mouseevent_code = KEY_MOUSE_ButtonX2; break;
-	case C4MC_Button_X2Double: mouseevent_code = KEY_MOUSE_ButtonX2Double; break;
-	case C4MC_Button_Wheel:
-		if (!wheel_dir) return;
-		mouseevent_code = (wheel_dir > 0) ? KEY_MOUSE_Wheel1Up : KEY_MOUSE_Wheel1Down; break;
-	}
-	C4KeyCodeEx key{KEY_Mouse(0, mouseevent_code), KEYS_None};
-	if (dwKeyParam & MK_CONTROL) key.dwShift |= KEYS_Control;
-	if (dwKeyParam & MK_SHIFT) key.dwShift |= KEYS_Shift;
-	if (dwKeyParam & MK_ALT) key.dwShift |= KEYS_Alt;
-	KeyDown(key);
+	bool down;
+	auto key = C4KeyCodeEx::FromC4MC(0 /* FIXME: more mice! */, iButton, dwKeyParam, &down);
+	KeyPress(key, down);
 }
 
 bool C4StartupOptionsDlg::KeySelDialog::KeyPress(const C4KeyCodeEx &key, bool fDown)
@@ -266,12 +240,9 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyPress(const C4KeyCodeEx &key, bool fD
 		if (!assignment_set->HasKeyboard()) return false;
 	}
 	// FIXME: There doesn't seem to be any kind of KEY_IsModifier function…
-	switch (key.Key) {
-		case K_CONTROL_L: case K_SHIFT_L: case K_ALT_L:
-		case K_CONTROL_R: case K_SHIFT_R: case K_ALT_R:
-			if (fDown)
-				return false;
-	}
+	if ((KEY_IsModifier(key.Key) &&  fDown) ||
+	   (!KEY_IsModifier(key.Key) && !fDown))
+		return false;
 	// okay, use it
 	this->key=key;
 	Close(true);

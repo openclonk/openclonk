@@ -106,6 +106,7 @@ void C4MouseControl::Execute()
 		WORD wKeyState=0;
 		if (ControlDown) wKeyState|=MK_CONTROL;
 		if (ShiftDown) wKeyState|=MK_SHIFT;
+		if (AltDown) wKeyState|=MK_ALT;
 		Move(C4MC_Button_None, VpX, VpY, wKeyState);
 	}
 }
@@ -312,14 +313,8 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 			if (!TargetObject)
 				// safety (can't really happen in !IsPassive, but w/e
 				if (pPlayer && pPlayer->ControlSet)
-				{
 					if (!menuProcessed && pPlayer->ControlSet->IsMouseControlAssigned(iButton))
-					{
-						int wheel_dir = 0;
-						if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyFlags >> 16);
-						pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, (dwKeyFlags & MK_CONTROL) != 0, (dwKeyFlags & MK_SHIFT) != 0, (dwKeyFlags & MK_ALT) != 0, wheel_dir);
-					}
-				}
+						pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, dwKeyFlags);
 }
 
 void C4MouseControl::DoMoveInput()
@@ -330,7 +325,7 @@ void C4MouseControl::DoMoveInput()
 	if (!(pPlayer=::Players.Get(Player))) return;
 	if (!pPlayer->ControlSet) return;
 	if (!pPlayer->ControlSet->IsMouseControlAssigned(C4MC_Button_None)) return;
-	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, AltDown, 0);
+	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, (ControlDown && MK_CONTROL) | (ShiftDown && MK_SHIFT) | (AltDown && MK_ALT));
 }
 
 void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
