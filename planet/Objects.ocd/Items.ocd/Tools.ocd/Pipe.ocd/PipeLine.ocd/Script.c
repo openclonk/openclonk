@@ -126,7 +126,6 @@ private func OnLineChange()
 	var act2 = GetActionTarget(1);	
 	if (act1) act1->~OnPipeLengthChange(this);
 	if (act2) act2->~OnPipeLengthChange(this);
-	
 	// Break line if it is too long.
 	if (GetPipeLength() > this.PipeMaxLength)
 	{
@@ -163,8 +162,12 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	SaveScenarioObjectAction(props);
+	// Ensure vertices are moved to the action targets to ensure the shortest path length and prevent a line break.
+	if (GetActionTarget()) props->AddCall("VtxX", this, "SetVertexXY", 0, GetActionTarget()->GetX(), GetActionTarget()->GetY());
+	if (GetActionTarget(1)) props->AddCall("VtxX", this, "SetVertexXY", 1, GetActionTarget(1)->GetX(), GetActionTarget(1)->GetY());
 	if (pipe_kit) props->AddCall("PipeKit", this, "SetPipeKit", pipe_kit);
 	if (IsAirPipe()) props->AddCall("AirPipe", this, "SetAir");
+	if (this.BlockPipeCutting) props->AddSet("BlockPipeCutting", this, "BlockPipeCutting", this.BlockPipeCutting);
 	return true;
 }
 
