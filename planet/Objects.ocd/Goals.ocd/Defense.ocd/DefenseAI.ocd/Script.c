@@ -88,6 +88,13 @@ public func ExecuteBomber(effect fx)
 		fx.weapon->Explode(fx.weapon->GetExplosionStrength());
 		fx.Target->Kill();
 	}
+	// Are we stuck?
+	else if (fx.Target->Stuck())
+	{
+		// Also perform suicide, because we can safely assume the player somehow trapped this AI.
+		fx.weapon->Explode(fx.weapon->GetExplosionStrength());
+		fx.Target->Kill();
+	}
 	else
 	{
 		// Not in range. Walk there.

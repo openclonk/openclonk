@@ -134,7 +134,10 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 	{
 		for (var inv in ForceVal2Array(prop_enemy.Inventory))
 		{
+			// Action hacking to instantly pick up carry heavy objects.
+			enemy->SetAction("Jump");
 			var inv_obj = enemy->CreateContents(inv);
+			enemy->SetAction("Walk");
 			// Infinite ammo.
 			if (inv_obj)
 				inv_obj->~SetInfiniteStackCount();
@@ -268,7 +271,7 @@ local Spearman = new DefaultEnemy
 	Skin = CSKIN_Steampunk
 };
 
-// A clonk with javelins.
+// A clonk with a grenade launcher.
 local Grenadier = new DefaultEnemy
 {
 	Name = "$EnemyGrenadier$",

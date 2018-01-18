@@ -137,7 +137,7 @@ local FxFlight = new Effect
 			// At this distance, fly horizontally. When getting closer, gradually turn to direct flight into target.
 			if (!this.current_waypoint)
 			{
-				var aim_dist = 600; 
+				var aim_dist = 600;
 				dy = dy * (aim_dist - Abs(dx)) / aim_dist;
 			}
 		}
@@ -147,10 +147,11 @@ local FxFlight = new Effect
 			angle_rocket += 360;
 		// Gradually update the angle.
 		var angle_delta = angle_rocket - angle_to_target;
+		var angle_step = BoundBy(Target.FlySpeed / 25, 4, 8);
 		if (Inside(angle_delta, 0, 180) || Inside(angle_delta, -360, -180))
-			Target->SetR(Target->GetR() - Min(4, Abs(angle_delta)));
+			Target->SetR(Target->GetR() - Min(angle_step, Abs(angle_delta)));
 		else if (Inside(angle_delta, -180, 0) || Inside(angle_delta, 180, 360))
-			Target->SetR(Target->GetR() + Min(4, Abs(angle_delta)));	
+			Target->SetR(Target->GetR() + Min(angle_step, Abs(angle_delta)));
 
 		// Update velocity according to angle.
 		Target->SetXDir(Sin(Target->GetR(), Target.FlySpeed), 100);
@@ -158,7 +159,7 @@ local FxFlight = new Effect
 	
 		// Create exhaust fire.
 		var x = -Sin(Target->GetR(), 15);
-		var y = +Cos(Target->GetR(), 15);	
+		var y = +Cos(Target->GetR(), 15);
 		var xdir = Target->GetXDir() / 2;
 		var ydir = Target->GetYDir() / 2;
 		Target->CreateParticle("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
@@ -294,7 +295,7 @@ public func Destruction()
 public func HasNoNeedForAI() { return true; }
 
 
-/* Enemy spawn registration */
+/*-- Enemy spawn registration --*/
 
 public func Definition(def)
 {
@@ -320,7 +321,7 @@ private func SpawnBoomAttack(array pos, proplist enemy_data, proplist enemy_def,
 	// Boomattack settings
 	boom.FlySpeed = enemy_data.FlySpeed;
 	var wp0 = attack_path[0];
-	boom->SetR(Angle(0, 0, wp0.X - pos[0], wp0.Y - pos[1]) + Random(11)-5);
+	boom->SetR(Angle(0, 0, wp0.X - pos[0], wp0.Y - pos[1]) + Random(11) - 5);
 	boom->SetWaypoints(attack_path);
 	// Rider?
 	var clonk = EnemySpawn->SpawnAICreature(enemy_data.Rider, pos, enemy_def, [attack_path[-1]], spawner);

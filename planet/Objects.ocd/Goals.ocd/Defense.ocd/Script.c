@@ -28,7 +28,7 @@ local shared_wealth_remainder;
 local observer_container;
 local plrs_active;
 local plrs_bonus;
-local plrs_score;
+local plrs_kills;
 
 
 public func Construction()
@@ -46,11 +46,12 @@ public func Construction()
 	// Init player tracking.
 	plrs_active = [];
 	plrs_bonus = [];
-	plrs_score = [];
+	plrs_kills = [];
 	// Initialize scoreboard.
 	Scoreboard->SetTitle(Format("$MsgScoreboard$", GetScore()));
 	Scoreboard->Init([
-		{key = "bonus", title = Icon_Wealth, sorted = true, desc = true, default = "0", priority = 100}
+		{key = "bonus", title = Icon_Wealth, sorted = true, desc = true, default = "0", priority = 100},
+		{key = "kills", title = Scoreboard_Kill, sorted = true, desc = true, default = "0", priority = 50}
 	]);
 	// Create the enemy script player, the script player should be in the attackers team (id = 2).
 	CreateScriptPlayer("$PlayerAttackers$", nil, 2, CSPF_NoEliminationCheck | CSPF_NoScenarioInit | CSPF_NoScenarioSave, GetID());
@@ -72,7 +73,9 @@ public func InitializePlayer(int plr)
 	// Initialize scoreboard.
 	Scoreboard->NewPlayerEntry(plr);
 	plrs_bonus[plrid] = 0;
+	plrs_kills[plrid] = 0;
 	Scoreboard->SetPlayerData(plr, "bonus", plrs_bonus[plrid]);
+	Scoreboard->SetPlayerData(plr, "kills", plrs_kills[plrid]);
 	return;
 }
 
@@ -287,6 +290,12 @@ local FxWaveControl = new Effect
 		return FX_OK;
 	},
 	
+	Destruction = func()
+	{
+		// Remove clock, since not needed any more.
+		GUI_Clock->RemoveCountdown();
+	},
+	
 	OnWaveCompleted = func(int wave_nr)
 	{
 		// Set current wave to nil if it has been completed and has no duration in order to start new one.
@@ -444,7 +453,9 @@ public func OnClonkDeath(object clonk, int killed_by)
 		{
 			DoWealth(killed_by, clonk.Bounty);
 			plrs_bonus[plrid] += clonk.Bounty;
+			plrs_kills[plrid] += 1;
 			Scoreboard->SetPlayerData(killed_by, "bonus", plrs_bonus[plrid]);
+			Scoreboard->SetPlayerData(killed_by, "kills", plrs_kills[plrid]);			
 		}
 		else
 		{		
@@ -495,16 +506,22 @@ public func CheckAchievement()
 	return;
 }
 
-public func ConvertWaveToAchievement(int wave_nr)
+public func GetWaveToAchievement()
 {
 	// Get the number of waves needed for achieving stars.
-	var data = GameCall("GetWaveToAchievement");
+	var achievement_data = GameCall("GetWaveToAchievement");
 	// By default the stars are awarded for 5, 10 and 25 completed waves.
-	if (!data)
-		data = [5, 10, 25];
-	SortArray(data);
-	for (var index = GetLength(data); index >= 1; index--)
-		if (wave_nr >= data[index - 1])
+	if (!achievement_data || GetLength(achievement_data) != 3)
+		achievement_data = [5, 10, 25];
+	SortArray(achievement_data);	
+	return achievement_data;
+}
+
+public func ConvertWaveToAchievement(int wave_nr)
+{
+	var achievement_data = GetWaveToAchievement();
+	for (var index = GetLength(achievement_data); index >= 1; index--)
+		if (wave_nr >= achievement_data[index - 1])
 			return index;
 	return 0;
 }
@@ -559,7 +576,10 @@ public func GetDescription(int plr)
 	// Add wave and score.
 	wave_msg = Format("%s\n%s", wave_msg, Format("$MsgFinishedWave$", completed_waves, GetBestWave(plr)));
 	wave_msg = Format("%s\n%s", wave_msg, Format("$MsgCurrentScore$", GetScore(), GetBestScore(plr)));
-	return Format("%s\n\n%s", "$Description$", wave_msg);
+	// Get basic description and achievement information.
+	var achievement_data = GetWaveToAchievement();
+	var desc_msg = Format("$Description$", achievement_data[0], achievement_data[1], achievement_data[2]);
+	return Format("%s\n\n%s", desc_msg, wave_msg);
 }
 
 
