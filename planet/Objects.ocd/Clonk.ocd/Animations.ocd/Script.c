@@ -817,8 +817,8 @@ func StartJump()
 	//Dive jump (only if not aiming)
 	if(!this->~IsAiming())
 	{
-		var flight = SimFlight(AbsX(GetX()), AbsY(GetY()), GetXDir()*2, GetYDir()*2, 25); //I have no clue why the dirs must be doubled... but it seems to fix it
-		if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
+		var flight = SimFlight(0, GetBottom(), nil, nil, C4M_Liquid);
+		if (GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetBottom() - GetY()))
 		{
 			PlayAnimation("JumpDive", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			if(!GetEffect("IntDiveJump", this))
