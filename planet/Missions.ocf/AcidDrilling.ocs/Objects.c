@@ -604,5 +604,45 @@ func InitializeObjects()
 	Firestone014->SetPosition(251, 510);
 	var Firestone015 = CreateObject(Firestone, 263, 148);
 	Firestone015->SetPosition(263, 148);
+
+	var Idol001 = CreateObject(Idol, 2335, 256);
+	Idol001->SetR(-2);
+	Idol001->SetMeshMaterial("IdolGrayColor", 0);
+	Idol001->SetName("Fangor the El");
+	Idol001->SetPosition(2335, 256);
+
+	var Dialogue001 = Idol001->SetDialogue("Editor",true);
+	Dialogue001->SetUserDialogue({
+		Actions=[{
+			AfterMessage="next",
+			Function="message",
+			Options=[],
+			Speaker={Function="npc"},
+			TargetPlayers={Function="triggering_player_list"},
+			Text={Function="string_constant",
+				Value={
+					Function="Translate",
+					DE="Ich fühl mich so steif und verkalkt...",
+					US="I feel all stiff and rusty."
+				}
+			}
+		},{
+			AfterMessage="next",
+			Function="message",
+			Options=[],
+			Speaker={Function="npc"},
+			TargetPlayers={Function="triggering_player_list"},
+			Text={
+				Function="string_constant",
+				Value={
+					Function="Translate",
+					DE="Ich wünschte, jemand würde mir ein schönes, warmes Säurebad einlassen.",
+					US="I wish someone would give me a nice acid bath!"
+				}
+			}
+		}],
+		Function="sequence"
+	}, "player", true);
+
 	return true;
 }
