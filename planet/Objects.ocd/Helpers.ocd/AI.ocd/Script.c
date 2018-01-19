@@ -176,6 +176,7 @@ public func ExecuteThrow(effect fx)
 
 public func ExecuteArm(effect fx)
 {
+	
 	// Find shield.
 	fx.shield = fx.Target->FindContents(Shield);
 	// Vehicle control overrides all other weapons
@@ -192,7 +193,7 @@ public func ExecuteArm(effect fx)
 		}
 		else
 		{
-			this->LogAI_Info(fx, "Vehicle ammo is not ok. Weapon is %v, vehicle is %v", fx.weapon, fx.vehicle);
+			this->LogAI_Info(fx, Format("Vehicle ammo is not ok. Weapon is %v, vehicle is %v", fx.weapon, fx.vehicle));
 			fx.weapon = nil;
 		}
 	}

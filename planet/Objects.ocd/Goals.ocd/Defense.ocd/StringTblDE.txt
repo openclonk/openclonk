@@ -1,5 +1,5 @@
 Name=Verteidigung
-Description=Survive as many attack waves as possible, each wave and enemy eliminated earns you points. You need to survive %d waves (<c cd7f32>bronze</c>), %d waves (<c c0c0c0>silver</c>) or %d waves (<c ffd700>gold</c>) for the star achievement. 
+Description=Survive as many attack waves as possible, each wave and eliminated enemy earns you points. You need to survive %d waves (<c cd7f32>bronze</c>), %d waves (<c c0c0c0>silver</c>) or %d waves (<c ffd700>gold</c>) for the star achievement. 
 
 PlayerAttackers=Angreifer
 

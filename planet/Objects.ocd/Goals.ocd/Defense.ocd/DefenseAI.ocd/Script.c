@@ -27,6 +27,8 @@ public func FindTarget(effect fx)
 	// If target can't be attacked just take normal target again.
 	if (!this->HasWeaponForTarget(fx, target))
 		target = _inherited(fx, ...);
+	if (!target)
+		this->LogAI_Info(fx, Format("No target found by DefenseAI for %v.", fx.Target));
 	return target;
 }
 

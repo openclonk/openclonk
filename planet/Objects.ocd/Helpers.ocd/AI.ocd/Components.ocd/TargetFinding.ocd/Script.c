@@ -103,5 +103,8 @@ public func IsVehicleForTarget(effect fx, object vehicle, object target)
 	// Catapult may fire at everything.
 	if (vehicle->GetID() == Catapult)
 		return true;
+	// Airplanes can attack anything a priori.
+	if (vehicle->GetID() == Airplane)
+		return true;
 	return false;
 }

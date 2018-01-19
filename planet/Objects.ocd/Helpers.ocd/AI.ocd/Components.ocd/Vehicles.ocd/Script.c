@@ -10,7 +10,7 @@
 // AI Settings.
 local AirshipBoardDistance = 100; // How near must an airship be to the target to dispatch its troops.
 local AirshipLostDistance = 50; // How far the pilot must be away from an airship for it to find a new pilot.
-local AirshipOccludedTargetMaxDistance = 250; // IF a target is further than this and occluded, search for a new target
+local AirshipOccludedTargetMaxDistance = 250; // If a target is further than this and occluded, search for a new target.
 
 
 /*-- Public interface --*/
@@ -23,6 +23,7 @@ public func SetVehicle(object clonk, object new_vehicle)
 	if (!fx_ai)
 		return false;
 	fx_ai.vehicle = new_vehicle;
+	fx_ai.strategy = this.ExecuteVehicle;
 	return true;
 }
 
@@ -42,7 +43,7 @@ public func OnAddAI(proplist fx_ai)
 
 /*-- General Vehicle --*/
 
-private func ExecuteVehicle(effect fx)
+public func ExecuteVehicle(effect fx)
 {
 	// Do we have a vehicle?
 	if (!fx.vehicle)
@@ -56,17 +57,26 @@ private func ExecuteVehicle(effect fx)
 	if (fx.vehicle->GetID() == Airship)
 		return this->ExecuteAirship(fx);
 		
+	// Steer the airplane.
+	if (fx.vehicle->GetID() == Airplane)
+		return this->ExecuteAirplane(fx);
+		
 	// Don't know how to use this vehicle, so reset it.
 	fx.vehicle = nil;
 	return false;
 }
 
-private func CheckVehicleAmmo(effect fx, object vehicle)
+public func CheckVehicleAmmo(effect fx, object vehicle)
 {
 	// Check for specific vehicle.
 	if (vehicle->GetID() == Catapult)
 	{
 		if (this->CheckCatapultAmmo(fx, vehicle))
+			return true;		
+	}
+	if (vehicle->GetID() == Airplane)
+	{
+		if (this->CheckAirplaneAmmo(fx, vehicle))
 			return true;		
 	}
 	// These vehicles don't need ammo.
@@ -81,7 +91,7 @@ private func CheckVehicleAmmo(effect fx, object vehicle)
 
 /*-- Catapult --*/
 
-private func ExecuteCatapult(effect fx)
+public func ExecuteCatapult(effect fx)
 {
 	// Still pushing it?
 	if (fx.Target->GetProcedure() != "PUSH" || fx.Target->GetActionTarget() != fx.vehicle)
@@ -143,7 +153,7 @@ private func ExecuteCatapult(effect fx)
 	return true;
 }
 
-private func CheckCatapultAmmo(effect fx, object vehicle)
+public func CheckCatapultAmmo(effect fx, object vehicle)
 {
 	// Must have ammo in the catapult or in the clonk (or be respawning ammo)
 	return vehicle->ContentsCount() > 0 || fx.Target->ContentsCount() > 0 || fx.has_ammo_respawn;
@@ -316,4 +326,55 @@ public func GetCommanderCrew(effect fx)
 		if (clonk->~GetAI() && clonk->GetAI().commander == fx.Target)
 			PushBack(crew, clonk);
 	return crew;
+}
+
+
+/*-- Airplane --*/
+
+public func ExecuteAirplane(effect fx)
+{
+	if (fx.Target != fx.vehicle->GetPilot())
+	{
+		// Make pilot if possible.
+		if (!fx.vehicle->GetPilot())
+		{
+			fx.vehicle->PlaneMount(fx.Target);
+			return true;
+		}
+		fx.vehicle = nil;
+		return true;	
+	}
+	// Assume for now that the AI wants to bomb the enemy.
+	this->ExecuteAirplaneCarpetBomber(fx);
+	return true;
+}
+
+public func ExecuteAirplaneCarpetBomber(effect fx)
+{
+	if (!fx.vehicle->GetPilot())
+		return false;
+	// Drop iron bombs at enemies.
+	if	(fx.vehicle->GetBombAmount() <= 0)
+		return false;
+	// Calculate where the bomb would land and check if it would hit any enemies.
+	var bomb_flight = fx.vehicle->SimFlight(0, 12);
+	var bomb_target = FindObject(Find_Hostile(fx.Target->GetController()), Find_Distance(20, bomb_flight[0], bomb_flight[1]));
+	if (bomb_target && this->IsAirplaneTarget(fx, bomb_target, nil))
+	{
+		this->LogAI_Info(fx, Format("ExecuteAirplaneCarpetBomber for %v at (%d, %d) found bomb target %v at (%d, %d).", fx.vehicle, fx.vehicle->GetX(), fx.vehicle->GetY(), bomb_target, bomb_flight[0], bomb_flight[1]));
+		fx.vehicle->CancelBomb(fx.Target);
+	}
+	return true;
+}
+
+public func CheckAirplaneAmmo(effect fx, object vehicle)
+{
+	// Must have ammo in the airplane itself.
+	return vehicle->GetBombAmount() > 0;
+}
+
+public func IsAirplaneTarget(effect fx, object target, object weapon)
+{
+	var target_cat = target->GetCategory();
+	return target_cat & (C4D_Structure | C4D_Vehicle | C4D_Living);	
 }
