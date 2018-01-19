@@ -22,6 +22,7 @@ public func LampPosition(id def) { return [-11 * GetCalcDir(), 2]; }
 public func Construction(object creator)
 {
 	AddTimer("CollectionZone", 1);
+	SetAction("Default");
 	return _inherited(creator, ...);
 }
 
@@ -194,6 +195,20 @@ public func Definition(proplist def)
 	def.PictureTransformation = Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(30, 0, 1, 0));
 	return _inherited(def, ...);
 }
+
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};
 
 local Name = "$Name$";
 local Description = "$Description$";

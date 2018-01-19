@@ -55,6 +55,7 @@ public func Construction()
 }
 
 public func IsHammerBuildable() { return true; }
+public func NoConstructionFlip() { return true; }
 
 public func Initialize()
 {

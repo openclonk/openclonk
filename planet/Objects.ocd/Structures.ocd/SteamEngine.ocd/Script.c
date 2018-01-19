@@ -19,16 +19,22 @@ static const SteamEngine_produced_power = 120;
 
 local fuel_amount;
 
+public func Construction()
+{
+	SetAction("Default");
+	return _inherited(...);
+}
+
 protected func Initialize()
 {
 	fuel_amount = 0;
-	SetAction("Idle");
 	AddTimer("ContentsCheck", 10);
 	return _inherited(...);
 }
 
 public func IsHammerBuildable() { return true; }
-
+// This structure has a collection zone, which can not be flipped.
+public func NoConstructionFlip() { return true; }
 public func IsContainer() { return true; }
 
 protected func RejectCollect(id item, object obj)
@@ -91,7 +97,7 @@ public func OnPowerProductionStart(int amount)
 	// Check if there is fuel.
 	RefillFuel();
 	// There is enough fuel so start producing power and notify network of this.
-	if (GetAction() == "Idle") 
+	if (GetAction() == "Default") 
 		SetAction("Work");
 	return true;
 }
@@ -101,7 +107,7 @@ public func OnPowerProductionStop(int amount)
 {
 	// Set action to idle when it was working.
 	if (IsWorking())
-		SetAction("Idle");
+		SetAction("Default");
 	return true;
 }
 
@@ -124,7 +130,7 @@ protected func Working()
 	if (!GetFuelAmount())
 	{
 		// Set action to idle and unregister this producer as available from the network.
-		SetAction("Idle");
+		SetAction("Default");
 		UnregisterPowerProduction();
 	}
 	Smoking(); // Smoke from the exhaust shaft.
@@ -250,16 +256,16 @@ public func OnPipeConnect(object pipe, string specific_pipe_state)
 /*-- Properties --*/
 
 local ActMap = {
-	Idle = {
+	Default = {
 		Prototype = Action,
-		Name = "Idle",
+		Name = "Default",
 		Procedure = DFA_NONE,
 		Directions = 2,
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
 		FacetBase = 1,
-		NextAction = "Idle",
+		NextAction = "Default",
 	},
 	Work = {
 		Prototype = Action,
