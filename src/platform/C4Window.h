@@ -19,34 +19,32 @@
 #ifndef INC_STDWINDOW
 #define INC_STDWINDOW
 
+#include "C4ForbidLibraryCompilation.h"
+
 #if defined(USE_SDL_MAINLOOP)
-	#include <SDL.h>
-	#define MK_SHIFT (KMOD_LSHIFT | KMOD_RSHIFT)
-	#define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
-	#define MK_ALT (KMOD_LALT | KMOD_RALT)
+#include <SDL.h>
+#define MK_SHIFT (KMOD_LSHIFT | KMOD_RSHIFT)
+#define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
+#define MK_ALT (KMOD_LALT | KMOD_RALT)
+#elif defined(USE_CONSOLE)
+#ifndef _WIN32
+#define MK_SHIFT 0
+#define MK_CONTROL 0
+#endif
+#define MK_ALT 0
 #elif defined(USE_COCOA)
-	// declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
-	extern int MK_SHIFT;
-	extern int MK_CONTROL;
-	extern int MK_ALT;
+// declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
+extern int MK_SHIFT;
+extern int MK_CONTROL;
+extern int MK_ALT;
 #elif defined(USE_WIN32_WINDOWS)
-	#include "platform/C4windowswrapper.h"
-	#ifndef MK_ALT
-		#define MK_ALT 0x20 // as defined in oleidl.h
-	#endif
-#else
-       #if !defined(MK_SHIFT)
-               #define MK_SHIFT 0
-       #endif
-       #if !defined(MK_CONTROL)
-               #define MK_CONTROL 0
-       #endif
-       #if !defined(MK_ALT)
-               #define MK_ALT 0
-        #endif
+#include "platform/C4windowswrapper.h"
+#ifndef MK_ALT
+#define MK_ALT 0x20 // as defined in oleidl.h
+#endif
 #endif
 
-#if !defined(USE_COCOA)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_CONSOLE) || defined(USE_SDL_MAINLOOP)
 #define K_ESCAPE 1
 #define K_1 2
 #define K_2 3
@@ -159,7 +157,7 @@
 #define K_NUM0 K_INSERT
 #define K_DECIMAL K_DELETE
 #define K_DIVIDE K_SLASH
-#elif defined(USE_X11) || defined(USE_CONSOLE - Do not forget guard include when reenabling this comment)
+#elif defined(USE_X11) || defined(USE_CONSOLE)
 */
 #define K_NUM7 71
 #define K_NUM8 72
@@ -195,7 +193,7 @@
 #define K_PRINT 99
 #define K_CENTER 76
 
-#else // !defined(USE_COCOA)
+#elif defined(USE_COCOA)
 #import "platform/ObjectiveCAssociated.h"
 // FIXME
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers

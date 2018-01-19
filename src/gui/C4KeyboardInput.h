@@ -18,8 +18,6 @@
 #ifndef INC_C4KeyboardInput
 #define INC_C4KeyboardInput
 
-#include "platform/C4Window.h"
-
 // key context classifications
 enum C4KeyScope
 {
@@ -180,12 +178,7 @@ inline uint8_t Key_GetMouseEvent(C4KeyCode key)
 	return ((uint32_t)key) & uint8_t(0xff);
 }
 
-inline constexpr bool KEY_IsModifier(C4KeyCode k) {
-	return k == K_CONTROL_L || k == K_SHIFT_L || k == K_ALT_L ||
-	       k == K_CONTROL_R || k == K_SHIFT_R || k == K_ALT_R;
-}
-
-
+bool KEY_IsModifier(C4KeyCode k);
 
 #ifdef _WIN32
 #define TOUPPERIFX11(key) (key)

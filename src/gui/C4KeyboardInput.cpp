@@ -608,6 +608,12 @@ bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
 
 }
 
+bool KEY_IsModifier(C4KeyCode k) {
+	return k == K_CONTROL_L || k == K_SHIFT_L || k == K_ALT_L ||
+	       k == K_CONTROL_R || k == K_SHIFT_R || k == K_ALT_R;
+}
+
+
 /* ----------------- C4CustomKey------------------ */
 
 C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
