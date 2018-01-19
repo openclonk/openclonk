@@ -378,12 +378,12 @@ private func RainDrop()
 	{
 		var x = RandomX(-wdt, wdt);
 		var y = RandomX(-hgt, hgt);
-		var xdir = RandomX(GetWind(0,0,1)-5, GetWind(0,0,1)+5)/5;
+		var xdir = RandomX(GetWind(0, 0, true) - 5, GetWind(0, 0, true) + 5) / 5;
 		var ydir = 30;
 		if (!GBackSky(x, y))
 			continue;
 
-		if(mat == "Ice")
+		if (mat == "Ice")
 		{
 			// Ice (-> hail) falls faster.
 			xdir *= 4;
@@ -391,7 +391,7 @@ private func RainDrop()
 		}
 
 		// Snow is special.
-		if(mat == "Snow")
+		if (mat == "Snow")
 		{
 			CreateParticle("RaindropSnow", x, y, xdir, 10, PV_Random(2000, 3000), particle_cache.snow, 0);
 			if (!i && rain_inserts_mat)
@@ -400,14 +400,14 @@ private func RainDrop()
 		}		
 
 		var particle = new particle_cache.rain {};
-		if(Random(2))
+		if (Random(2))
 			particle.Attach = ATTACH_Back;
 		CreateParticle(particle_name, x, y, xdir, ydir, PV_Random(200, 300), particle, 0);
 
 		// Splash.
 		if (!i)
 		{
-			var hit = SimFlight(x, y, xdir, ydir, 25 /* Liquid */, nil, nil, 3);
+			var hit = SimFlight(x, y, xdir, ydir, C4M_Liquid);
 			var x_final = hit[0], y_final = hit[1], time_passed = hit[4];
 			if (time_passed > 0)
 			{

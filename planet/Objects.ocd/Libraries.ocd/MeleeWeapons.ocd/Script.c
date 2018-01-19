@@ -207,21 +207,6 @@ func GetRelativeVelocity(pObject1, pObject2)
 	return b;
 }
 
-
-func GetJumpLength(pClonk)
-{
-	if(!pClonk->~IsJumping()) return 0;
-	var x = pClonk->GetX(), y = pClonk->GetY(), xDir = pClonk->GetXDir(), yDir = pClonk->GetYDir();
-	//crash! var l=SimFlight(x, y, xDir, yDir, 0, 0, 100, 0); //SimFlight behavior changed (10/1/10)
-	var l=0;
-	if(!l) return 50;
-	else
-	{
-		// not a very good approximation. I really think SimFlight should return the number of iterations
-		return Sqrt((x - pClonk->GetX()) ** 2 + (y - pClonk->GetY()) ** 2);
-	}
-}
-
 func ApplyShieldFactor(pFrom, pTo, damage)
 {
 	// totally prevent the strike?
