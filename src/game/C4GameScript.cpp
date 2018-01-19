@@ -2172,20 +2172,20 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 
 static C4ValueArray* FnSimFlight(C4PropList * _this, int X, int Y, Nillable<int> pvrXDir, Nillable<int> pvrYDir, Nillable<int> pviDensityMin, Nillable<int> pviDensityMax, Nillable<int> pviIter, int iPrec)
 {
+	if (!iPrec) iPrec = 10;
 	// check and set parameters
 	if (Object(_this))
 	{
 		X += Object(_this)->GetX();
 		Y += Object(_this)->GetY();
 	}
-	int XDir = pvrXDir.IsNil() && Object(_this) ? fixtoi(Object(_this)->xdir) : static_cast<int>(pvrXDir);
-	int YDir = pvrXDir.IsNil() && Object(_this) ? fixtoi(Object(_this)->ydir) : static_cast<int>(pvrYDir);
+	int XDir = pvrXDir.IsNil() && Object(_this) ? fixtoi(Object(_this)->xdir, iPrec) : static_cast<int>(pvrXDir);
+	int YDir = pvrXDir.IsNil() && Object(_this) ? fixtoi(Object(_this)->ydir, iPrec) : static_cast<int>(pvrYDir);
 
 	int iDensityMin = pviDensityMin.IsNil() ? C4M_Solid : static_cast<int>(pviDensityMin);
 	int iDensityMax = pviDensityMax.IsNil() ? 100 : static_cast<int>(pviDensityMax);
 	int iIter = pviIter.IsNil() ? -1 : static_cast<int>(pviIter);
-	if (!iPrec) iPrec = 10;
-
+	
 	// convert to C4Real
 	C4Real x = itofix(X), y = itofix(Y),
 		xdir = itofix(XDir, iPrec), ydir = itofix(YDir, iPrec);

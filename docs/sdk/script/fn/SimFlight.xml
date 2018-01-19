@@ -56,7 +56,7 @@
         <param>
           <type>int</type>
           <name>precision</name>
-          <desc>Precision. Default 10 if not specified.</desc>
+          <desc>Precision of the velocity input and output parameters (<code>xdir</code>, <code>ydir</code>, <code>xdir_final</code> and <code>ydir_final</code>). Defaults to 10 if not specified.</desc>
           <optional />
         </param>
       </params>
