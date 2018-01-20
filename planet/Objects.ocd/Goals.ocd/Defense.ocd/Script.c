@@ -177,6 +177,16 @@ local FxTrackObservation = new Effect
 
 public func IsFulfilled() { return is_fulfilled; }
 
+// Can be called by a scenario if some other survival condition has failed.
+// For example if some object that needed to be defended has been destroyed.
+public func NotifyFailedSurvival()
+{
+	// Relaunch all players so that the goal is correctly fulfilled.
+	for (var plr in GetPlayers(C4PT_User))
+		RelaunchPlayer(plr);	
+	return;
+}
+
 
 /*-- Score --*/
 

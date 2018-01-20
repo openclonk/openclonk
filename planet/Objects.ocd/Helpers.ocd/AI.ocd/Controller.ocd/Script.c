@@ -314,7 +314,7 @@ public func OnActivateAI(proplist fx_ai)
 }
 
 // Callback when the AI is deactivated by a trigger
-public func OnDectivateAI(proplist fx_ai)
+public func OnDeactivateAI(proplist fx_ai)
 {
 	_inherited(fx_ai);
 }

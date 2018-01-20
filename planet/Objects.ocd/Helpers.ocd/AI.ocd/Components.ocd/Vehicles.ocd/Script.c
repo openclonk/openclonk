@@ -358,7 +358,7 @@ public func ExecuteAirplaneCarpetBomber(effect fx)
 		return false;
 	// Calculate where the bomb would land and check if it would hit any enemies.
 	var bomb_flight = fx.vehicle->SimFlight(0, 12);
-	var bomb_target = FindObject(Find_Hostile(fx.Target->GetController()), Find_Distance(20, bomb_flight[0], bomb_flight[1]));
+	var bomb_target = FindObject(Find_Hostile(fx.Target->GetController()), Find_Or(Find_AtPoint(bomb_flight[0], bomb_flight[1]), Find_Distance(20, bomb_flight[0], bomb_flight[1])));
 	if (bomb_target && this->IsAirplaneTarget(fx, bomb_target, nil))
 	{
 		this->LogAI_Info(fx, Format("ExecuteAirplaneCarpetBomber for %v at (%d, %d) found bomb target %v at (%d, %d).", fx.vehicle, fx.vehicle->GetX(), fx.vehicle->GetY(), bomb_target, bomb_flight[0], bomb_flight[1]));

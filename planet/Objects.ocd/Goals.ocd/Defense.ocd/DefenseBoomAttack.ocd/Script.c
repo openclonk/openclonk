@@ -49,10 +49,15 @@ local FxFlight = new Effect
 {
 	Construction = func()
 	{
+		// Add AI for logging purposes.
+		this.fx_ai = DefenseAI->AddAI(Target);
+		this.fx_ai->SetActive(false);
+		// Get a target.
 		this.target = GetRandomAttackTarget(Target);
 		// Get the boom attack waypoints from the scenario or make an array.
 		this.waypoints = GameCall("GetBoomAttackWaypoints", Target) ?? [];
 		this.current_waypoint = nil;
+		this.attack_on_way_point_flight = false;
 		if (this.target)
 		{
 			var dx = this.target->GetX() - Target->GetX();
@@ -73,6 +78,7 @@ local FxFlight = new Effect
 		if (!this.target)
 		{
 			this.target = GetRandomAttackTarget(Target);
+			DefenseAI->LogAI_Info(this.fx_ai, Format("BoomAttack lost target and updated it to %v.", this.target));
 			if (!this.target && !this.current_waypoint && GetLength(this.waypoints) == 0)
 			{
 				Target->DoFireworks(NO_OWNER);
@@ -81,9 +87,11 @@ local FxFlight = new Effect
 		}
 		
 		// Check if reached current waypoint.
-		if (this.current_waypoint)
-			if (Distance(this.current_waypoint.X, this.current_waypoint.Y, Target->GetX(), Target->GetY()) < 8)
-				this.current_waypoint = nil;
+		if (this.current_waypoint && Distance(this.current_waypoint.X, this.current_waypoint.Y, Target->GetX(), Target->GetY()) < 8)
+		{
+			DefenseAI->LogAI_Info(this.fx_ai, Format("BoomAttack reached waypoint (%d, %d).", this.current_waypoint.X, this.current_waypoint.Y));
+			this.current_waypoint = nil;
+		}
 		
 		// Get relative coordinates to target.
 		var dx, dy;
@@ -103,8 +111,20 @@ local FxFlight = new Effect
 			// Explode if close enough to target.
 			if (ObjectDistance(Target, this.target) < 12)
 			{
-				Target->DoFireworks(NO_OWNER);
+				DefenseAI->LogAI_Info(this.fx_ai, Format("BoomAttack is in reach of enemy %v and explodes now.", this.target));
+				Target->DoFireworks(NO_OWNER);				
 				return FX_Execute_Kill;	
+			}
+			
+			// Move to a nearby target if path is free and attacking is allowed.
+			var target_on_path = GetAttackTargetOnWaypointPath();
+			if (target_on_path && this.current_waypoint)
+			{
+				// Give up current and future waypoints and set to new target.
+				this.current_waypoint = nil;
+				this.waypoints = [];
+				this.target = target_on_path;
+				DefenseAI->LogAI_Info(this.fx_ai, Format("BoomAttack found new target %v on waypoint path.", target_on_path));
 			}
 			
 			// Get relative coordinates to target.
@@ -127,7 +147,8 @@ local FxFlight = new Effect
 						if (!PathFree(Target->GetX(), Target->GetY(), way_x, way_y) || !PathFree(this.target->GetX(), this.target->GetY(), way_x, way_y))
 							continue;
 						if (!Inside(way_x, 0, LandscapeWidth()) || !Inside(way_y, 0, LandscapeHeight()))
-							continue; 
+							continue;
+						DefenseAI->LogAI_Info(this.fx_ai, Format("BoomAttack at (%d, %d) is aiming for %v at (%d, %d) takes a new route through (%d, %d).", Target->GetX(), Target->GetY(), this.target, this.target->GetX(), this.target->GetY(), way_x, way_y));
 						this.current_waypoint = {X = way_x, Y = way_y};
 						break;
 					}
@@ -147,7 +168,7 @@ local FxFlight = new Effect
 			angle_rocket += 360;
 		// Gradually update the angle.
 		var angle_delta = angle_rocket - angle_to_target;
-		var angle_step = BoundBy(Target.FlySpeed / 25, 4, 8);
+		var angle_step = BoundBy(Target.FlySpeed / 25, 4, 10);
 		if (Inside(angle_delta, 0, 180) || Inside(angle_delta, -360, -180))
 			Target->SetR(Target->GetR() - Min(angle_step, Abs(angle_delta)));
 		else if (Inside(angle_delta, -180, 0) || Inside(angle_delta, 180, 360))
@@ -179,6 +200,21 @@ local FxFlight = new Effect
 	SetTarget = func(object target)
 	{
 		this.target = target;
+	},
+	
+	SetAttackOnWaypointPath = func(bool on)
+	{
+		this.attack_on_way_point_path = on;
+	},
+	
+	GetAttackTargetOnWaypointPath = func()
+	{
+		var attack_target = GameCall("GiveAttackTargetOnWaypointPath", Target);
+		if (attack_target && PathFree(Target->GetX(), Target->GetY(), attack_target->GetX(), attack_target->GetY()))
+			return attack_target;
+		if (!this.attack_on_way_point_path)
+			return nil;
+		return Target->FindObject(Find_Category(C4D_Structure | C4D_Living | C4D_Vehicle), Find_Hostile(Target->GetController()), Find_Distance(100), Target->Find_PathFree(), Sort_Distance());	
 	}
 };
 
