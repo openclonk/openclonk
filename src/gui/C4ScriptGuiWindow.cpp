@@ -720,7 +720,7 @@ void C4ScriptGuiWindow::SetMarginProperties(const C4Value &property, C4String *t
 	// always set all four margins
 	for (int i = 0; i < 4; ++i)
 	{
-		C4ScriptGuiWindowPropertyName relative, absolute;
+		C4ScriptGuiWindowPropertyName::type relative, absolute;
 		switch (i)
 		{
 		case 0:
@@ -769,7 +769,7 @@ C4Value C4ScriptGuiWindow::MarginsToC4Value()
 }
 
 // helper function
-void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute, C4String *tag)
+void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName::type relative, C4ScriptGuiWindowPropertyName::type absolute, C4String *tag)
 {
 	// the value might be a tagged proplist again
 	if (property.GetType() == C4V_Type::C4V_PropList)
@@ -836,7 +836,7 @@ void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4S
 }
 
 // for saving
-C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relativeName, C4ScriptGuiWindowPropertyName absoluteName)
+C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName::type relativeName, C4ScriptGuiWindowPropertyName::type absoluteName)
 {
 	// Go through all tags of the position attributes and save.
 	// Note that the tags for both the relative and the absolute attribute are always the same.
@@ -1379,7 +1379,7 @@ void C4ScriptGuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 }
 
 
-float C4ScriptGuiWindow::CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty)
+float C4ScriptGuiWindow::CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName::type absoluteProperty, C4ScriptGuiWindowPropertyName::type relativeProperty)
 {
 	const float widthOrHeight = Em2Pix(props[absoluteProperty].GetFloat())
 		+ float(parentWidthOrHeight) * props[relativeProperty].GetFloat();
@@ -1402,6 +1402,7 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		// calculate the space the child needs, correctly respecting the margins
+		using namespace C4ScriptGuiWindowPropertyName;
 		const float childLeftMargin = child->CalculateRelativeSize(width, leftMargin, relLeftMargin);
 		const float childTopMargin = child->CalculateRelativeSize(height, topMargin, relTopMargin);
 		const float childRightMargin = child->CalculateRelativeSize(width, rightMargin, relRightMargin);
@@ -1456,6 +1457,7 @@ void C4ScriptGuiWindow::UpdateLayoutTightGrid()
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		// calculate the space the child needs, correctly respecting the margins
+		using namespace C4ScriptGuiWindowPropertyName;
 		const float childLeftMargin = child->CalculateRelativeSize(width, leftMargin, relLeftMargin);
 		const float childTopMargin = child->CalculateRelativeSize(height, topMargin, relTopMargin);
 		const float childRightMargin = child->CalculateRelativeSize(width, rightMargin, relRightMargin);
@@ -1537,6 +1539,7 @@ void C4ScriptGuiWindow::UpdateLayoutVertical()
 
 		// Do the calculations in floats first to not lose accuracy.
 		// Take the height of the child and then add the margins.
+		using namespace C4ScriptGuiWindowPropertyName;
 		const float childTopMargin = child->CalculateRelativeSize(rcBounds.Hgt, topMargin, relTopMargin);
 		const float childBottomMargin = child->CalculateRelativeSize(rcBounds.Hgt, bottomMargin, relBottomMargin);
 

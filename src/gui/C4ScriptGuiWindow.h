@@ -22,66 +22,72 @@
 #include "gui/C4Gui.h"
 #include "script/C4Value.h"
 
-enum C4ScriptGuiWindowPropertyName
-{
-	left = 0,
-	top,
-	right,
-	bottom,
+namespace C4ScriptGuiWindowPropertyName {
+	enum type
+	{
+		left = 0,
+		top,
+		right,
+		bottom,
 
-	relLeft,
-	relRight,
-	relTop,
-	relBottom,
+		relLeft,
+		relRight,
+		relTop,
+		relBottom,
 
-	leftMargin,
-	topMargin,
-	rightMargin,
-	bottomMargin,
-	
-	relLeftMargin,
-	relRightMargin,
-	relTopMargin,
-	relBottomMargin,
+		leftMargin,
+		topMargin,
+		rightMargin,
+		bottomMargin,
 
-	backgroundColor,
-	frameDecoration,
-	symbolObject,
-	symbolDef,
-	symbolGraphicsName,
-	text,
-	onClickAction,
-	onMouseInAction,
-	onMouseOutAction,
-	onCloseAction,
-	style,
-	priority,
-	player,
-	tooltip,
-	_lastProp
-};
+		relLeftMargin,
+		relRightMargin,
+		relTopMargin,
+		relBottomMargin,
 
-enum C4ScriptGuiWindowActionID
-{
-	SetTag = 1,
-	Call,
-};
+		backgroundColor,
+		frameDecoration,
+		symbolObject,
+		symbolDef,
+		symbolGraphicsName,
+		text,
+		onClickAction,
+		onMouseInAction,
+		onMouseOutAction,
+		onCloseAction,
+		style,
+		priority,
+		player,
+		tooltip,
+		_lastProp
+	};
+}
 
-enum C4ScriptGuiWindowStyleFlag
-{
-	None = 0,
-	GridLayout = 1,
-	VerticalLayout = 2,
-	TextVCenter = 4,
-	TextHCenter = 8,
-	TextRight = 16,
-	TextBottom = 32,
-	FitChildren = 64,
-	Multiple = 128,
-	IgnoreMouse = 256,
-	NoCrop = 512,
-	TightGridLayout = 1024,
-};
+namespace C4ScriptGuiWindowActionID {
+	enum type
+	{
+		SetTag = 1,
+		Call,
+	};
+}
+
+namespace C4ScriptGuiWindowStyleFlag {
+	enum type
+	{
+		None = 0,
+		GridLayout = 1,
+		VerticalLayout = 2,
+		TextVCenter = 4,
+		TextHCenter = 8,
+		TextRight = 16,
+		TextBottom = 32,
+		FitChildren = 64,
+		Multiple = 128,
+		IgnoreMouse = 256,
+		NoCrop = 512,
+		TightGridLayout = 1024,
+	};
+}
 
 class C4ScriptGuiWindow;
 
@@ -214,8 +220,8 @@ public:
 	// will sort the child correctly into the children list
 	void ChildChangedPriority(C4ScriptGuiWindow *child);
 	// helper function to extract relative and absolute position values from a string
-	void SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute, C4String *tag);
-	C4Value PositionToC4Value(C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute);
+	void SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName::type relative, C4ScriptGuiWindowPropertyName::type absolute, C4String *tag);
+	C4Value PositionToC4Value(C4ScriptGuiWindowPropertyName::type relative, C4ScriptGuiWindowPropertyName::type absolute);
 	// sets all margins either from a string or from an array
 	void SetMarginProperties(const C4Value &property, C4String *tag);
 	C4Value MarginsToC4Value();
@@ -279,7 +285,7 @@ public:
 	void ClearPointers(C4Object *pObj);
 
 	// calculate the width/height based on a certain property (f.e. leftMargin and relLeftMargin) and the parent's width/height
-	float CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty);
+	float CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName::type absoluteProperty, C4ScriptGuiWindowPropertyName::type relativeProperty);
 
 	// schedules a layout update for the next drawing step
 	void RequestLayoutUpdate();
