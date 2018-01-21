@@ -158,10 +158,11 @@ private func LaunchEnemyAt(proplist prop_enemy, int wave_nr, int enemy_plr, prop
 	{
 		for (var inv in ForceToInventoryArray(prop_enemy.Inventory))
 		{
-			// Action hacking to instantly pick up carry heavy objects.
-			enemy->SetAction("Jump");
-			var inv_obj = enemy->CreateContents(inv);
-			enemy->SetAction("Walk");
+			// Special way to pick up carry heavy objects instantly.
+			if (inv->~IsCarryHeavy() && (enemy->GetOCF() & OCF_CrewMember))
+				inv_obj = enemy->CreateCarryHeavyContents(inv);
+			else
+				inv_obj = enemy->CreateContents(inv);
 			// Infinite ammo.
 			if (inv_obj)
 				inv_obj->~SetInfiniteStackCount();
