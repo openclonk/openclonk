@@ -192,8 +192,6 @@ static const Pyrit_Hammer_SwingTime = 40;
 
 func Dlg_Pyrit_Init(object clonk)
 {
-	// Pyit has a red hat!
-	clonk->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
 	// Clonk moves slowly.
 	clonk.ActMap = { Prototype = Clonk.ActMap, Walk = { Prototype = Clonk.ActMap.Walk } };
 	clonk.ActMap.Walk.Speed /= 3;
@@ -205,9 +203,14 @@ func Dlg_Pyrit_Init(object clonk)
 
 func FxPyritHammeringTimer(object c, proplist fx, int time)
 {
+	if (!fx.hat)
+	{
+		// Pyit has a red hat!
+		fx.hat = c->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
+	}
 	if (FrameCounter() < this.anim_continue_frame || c.has_sequence) return FX_OK;
 	this.anim = 0;
-	if (!fx.catapult) if (!(fx.catapult = FindObject(Find_ID(Catapult), Sort_Distance()))) return FX_OK;
+	if (!fx.catapult) if (!(fx.catapult = c->FindObject(Find_ID(Catapult), Sort_Distance()))) return FX_OK;
 	if ((!Random(20) && GetPlayerCount()) || this.was_walk_interrupted)
 	{
 		// Move between two places (only if players are joined so Pyrit stays in place for object saving)
@@ -221,8 +224,8 @@ func FxPyritHammeringTimer(object c, proplist fx, int time)
 		// Ensure proper direction
 		if ((c->GetDir()==DIR_Right) != (c->GetX() < fx.catapult->GetX())) { c->SetDir(!c->GetDir()); return FX_OK; }
 		// No movement: Swing hammer
-		var anim_idx = Random(4);
-		var anim_name = ["SwordSlash1.L", "SwordSlash1.R", "SwordSlash2.L", "SwordSlash2.R"][anim_idx];
+		var anim_idx = Random(2);
+		var anim_name = ["SwordSlash1.R", "SwordSlash2.R"][anim_idx];
 		var anim_len = c->GetAnimationLength(anim_name);
 		this.anim = c->PlayAnimation(anim_name, CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0,anim_len, Pyrit_Hammer_SwingTime, ANIM_Remove));
 		// Schedule effect when hammer hits object
