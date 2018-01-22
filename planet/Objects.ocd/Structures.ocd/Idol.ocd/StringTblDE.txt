@@ -20,3 +20,4 @@ PoseItemCentralHelp=Die Statue trägt mit beiden Händen einen Gegenstand vor si
 ChooseItemLeft=Linke Hand
 ChooseItemRight=Rechte Hand
 ChooseItemHelp=Legt einen dekorativen Gegenstand in die Hand der Statue.
+ChooseItemNone=Kein Gegenstand

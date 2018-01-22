@@ -1,3 +1,10 @@
+/**
+	Idol
+	A valuable piece of art.
+	
+	@author 
+*/
+
 
 #include Library_Ownable
 
@@ -7,16 +14,8 @@ static const IDOL_ITEM_RIGHT = 1 << 1;
 static const IDOL_BONE_LEFT = "Arm_L_Item";
 static const IDOL_BONE_RIGHT = "Arm_R_Item";
 
-/*-- Properties --*/
-
-local Name = "$Name$";
-local Description = "$Description$";
-local Touchable = 1;
-local Components = {GoldBar = 3};
-
-public func IsHammerBuildable() { return true; }
-
-public func NoConstructionFlip() { return true; }
+local left_hand_item;
+local right_hand_item;
 
 
 /*-- Engine callbacks --*/
@@ -51,7 +50,6 @@ public func Definition(proplist type)
 			EditorHelp = ActMap[action].EditorHelp ?? "$ChoosePoseHelp$",
 			Value = ActMap[action].Name,
 		};
-
 		PushBack(type.EditorProps.IdolPoses.Options, option);
 	}
 	
@@ -80,11 +78,12 @@ public func Definition(proplist type)
 			Set = "EditorSetItemRight",
 		};
 	}
+	
 	// Fill the list with items - this is currently implemented here, but should be implemented in the items.
 	// For now, I did not want to clutter the items with code that might not be included in the long run
-	
 	var rotate180 = Trans_Rotate(180, 0, 0, 1);
 	var scale = 1200;
+	EditorAddStatueItem(nil);
 	EditorAddStatueItem(Axe, rotate180, scale);
 	EditorAddStatueItem(Club, rotate180, scale);
 	EditorAddStatueItem(Sword, rotate180, scale);
@@ -97,6 +96,8 @@ public func Definition(proplist type)
 public func Initialize()
 {
 	SetAction("Default");
+	left_hand_item = {};
+	right_hand_item = {};
 	return _inherited(...);
 }
 
@@ -114,10 +115,17 @@ private func EditorAddStatueItem(def item, array mesh_transform, int scale, stri
 		Bone = child_bone,
 		MeshTransformation = mesh_transform,
 	};
-
+	
+	var name = "$ChooseItemNone$";
+	var editor_help = nil;
+	if (item)
+	{
+		name = item->GetName();
+		editor_help = item.EditorHelp ?? item->~GetEditorHelp();
+	}
 	var option = {
-		Name = item->GetName(),
-		EditorHelp = item.EditorHelp ?? item->~GetEditorHelp(),
+		Name = name,
+		EditorHelp = editor_help,
 		Value = item_info,
 	};
 
@@ -134,12 +142,12 @@ private func EditorAddStatueItem(def item, array mesh_transform, int scale, stri
 
 private func EditorSetItemLeft(proplist item_info)
 {
-	EditorSetItem(item_info, IDOL_BONE_LEFT, this.EditorProps.IdolItemL);
+	EditorSetItem(item_info, IDOL_BONE_LEFT, left_hand_item);
 }
 
 private func EditorSetItemRight(proplist item_info)
 {
-	EditorSetItem(item_info, IDOL_BONE_RIGHT, this.EditorProps.IdolItemR);
+	EditorSetItem(item_info, IDOL_BONE_RIGHT, right_hand_item);
 }
 
 private func EditorSetItem(proplist item_info, string parent_bone, proplist save_settings)
@@ -157,12 +165,12 @@ private func EditorSetItem(proplist item_info, string parent_bone, proplist save
 
 private func EditorGetItemLeft()
 {
-	return this.EditorProps.IdolItemL.Choice;
+	return left_hand_item.Choice;
 }
 
 private func EditorGetItemRight()
 {
-	return this.EditorProps.IdolItemR.Choice;
+	return right_hand_item.Choice;
 }
 
 
@@ -170,21 +178,29 @@ private func EditorGetItemRight()
 
 public func SaveScenarioObject(props)
 {
-	if (!inherited(props, ...)) return false;
-	
-	if (this.EditorProps)
-	{
-		if (this.EditorProps.IdolItemL && this.EditorProps.IdolItemL.Choice)
-		{
-			props->AddCall("IdolItemL", this, "EditorSetItemLeft", this.EditorProps.IdolItemL.Choice);
-		}
-		if (this.EditorProps.IdolItemR && this.EditorProps.IdolItemR.Choice)
-		{
-			props->AddCall("IdolItemR", this, "EditorSetItemRight", this.EditorProps.IdolItemR.Choice);
-		}
-	}
+	if (!inherited(props, ...))
+		return false;
+	// Save action.
+	SaveScenarioObjectAction(props);
+	// Save hand items.
+	if (left_hand_item.Choice)
+		props->AddCall("IdolItemLeft", this, "EditorSetItemLeft", left_hand_item.Choice);
+	if (right_hand_item.Choice)
+		props->AddCall("IdolItemRight", this, "EditorSetItemRight", right_hand_item.Choice);
 	return true;
 }
+
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Touchable = 1;
+local Components = {GoldBar = 3};
+
+public func IsHammerBuildable() { return true; }
+
+public func NoConstructionFlip() { return true; }
 
 
 /*-- Actions --*/
