@@ -1,5 +1,5 @@
 // Goal timer: Barrel has to be brought to the plane
-// Doesn't matter if container or not.
+// Doesn't matter if contained or not.
 
 #appendto MetalBarrel
 
@@ -18,4 +18,23 @@ private func CheckForPlane()
 		RemoveTimer(this.CheckForPlane);
 	}
 }
+
+// The barrel is always full with oil and does not accept anything else.
+private func AcceptMaterial(int material)
+{
+	return false;
+}
+
+// ...and can also not be emptied.
+public func RejectUse()
+{
+	return true;
+}
+
+// ...not even when it hits the ground
+public func Hit()
+{
+	this->PlayBarrelHitSound();
+}
+// (okay, you could still put it into a building and attach a pump)
 

@@ -166,6 +166,7 @@ func Dlg_Dagobert_Gem2(object clonk)
 	{
 		barrel->SetXDir(-15);
 		barrel->SetYDir(-20);
+		barrel->PutLiquid("Oil");
 	}
 	g_got_oil = true;
 	if (g_goal) g_goal->OnTreasureSold();

@@ -418,13 +418,17 @@ func InitializeObjects()
 
 	var MetalBarrel001 = CreateObjectAbove(MetalBarrel, 395, 1271);
 	MetalBarrel001->SetColor(0xff000000);
+	MetalBarrel001->PutLiquid("Oil");
 	var MetalBarrel002 = CreateObject(MetalBarrel, 421, 1268);
 	MetalBarrel002->SetR(-104);
 	MetalBarrel002->SetColor(0xff000000);
+	MetalBarrel002->PutLiquid("Oil");
 	var MetalBarrel003 = CreateObjectAbove(MetalBarrel, 411, 1271);
 	MetalBarrel003->SetColor(0xff000000);
+	MetalBarrel003->PutLiquid("Oil");
 	var MetalBarrel004 = CreateObjectAbove(MetalBarrel, 385, 1271);
 	MetalBarrel004->SetColor(0xff000000);
+	MetalBarrel004->PutLiquid("Oil");
 
 	var PowderKeg001 = CreateObject(PowderKeg, 378, 1268);
 	PowderKeg001->SetR(99);
