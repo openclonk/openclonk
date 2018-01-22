@@ -38,6 +38,8 @@ func Initialize()
 	npc_newton->SetAlternativeSkin("MaleBlackHair");
 	npc_pyrit->SetAlternativeSkin("MaleBrownHair");
 	npc_woody->SetAlternativeSkin("Youngster");
+	g_guidepost1->SetInscription("$Post1$");
+	g_guidepost2->SetInscription("$Post2$");
 	MakeRuinsOnDamage(); // see System.ocg/Ruins.c
 	PlaceGrass(40);
 	return true;
