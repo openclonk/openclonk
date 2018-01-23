@@ -317,7 +317,7 @@ local Spearman = new DefaultEnemy
 local Grenadier = new DefaultEnemy
 {
 	Name = "$EnemyGrenadier$",
-	Inventory = [GrenadeLauncher, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb],
+	Inventory = [GrenadeLauncher, [IronBomb, 8]],
 	Energy = 25,
 	Bounty = 5,
 	Color = 0xffa0a0ff,
@@ -380,7 +380,7 @@ local Bomber = new DefaultEnemy
 local AirshipPilot = new DefaultEnemy
 {
 	Name = "$EnemyAirshipPilot$",
-	Inventory = [Rock, Rock, Rock, Rock, Rock],
+	Inventory = [[Rock, 5]],
 	Energy = 35,
 	Bounty = 15,
 	Color = 0xffff00ff,

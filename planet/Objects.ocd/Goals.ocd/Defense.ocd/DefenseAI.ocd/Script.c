@@ -12,6 +12,15 @@
 local AltTargetDistance = 400; // Use the scenario given target if normal AI target is further away than this distance.
 
 
+// Special settings for the defense AI.
+public func AddAI(object clonk, id type)
+{
+	var fx_ai = inherited(clonk, type, ...);
+	// Make AI aggressive.
+	fx_ai.is_aggressive = true;
+	return fx_ai;
+}
+
 // Alternative target finding for defense scenarios: partially controlled by the scenario script.
 public func FindTarget(effect fx)
 {
@@ -27,8 +36,8 @@ public func FindTarget(effect fx)
 	// If target can't be attacked just take normal target again.
 	if (!this->HasWeaponForTarget(fx, target))
 		target = _inherited(fx, ...);
-	if (!target)
-		this->LogAI_Info(fx, Format("No target found by DefenseAI for %v.", fx.Target));
+	this->LogAI_Info(fx, Format("Defense AI %v found %v as a target to attack.", fx.Target, target));
+	this->LogAI_CallStack(fx);
 	return target;
 }
 
@@ -80,8 +89,15 @@ public func ExecuteBomber(effect fx)
 	// Still carrying the bomb?
 	if (fx.weapon->Contained() != fx.Target)
 	{
+		this->LogAI_Info(fx, Format("ExecuteBomber %v lost its bomb.", fx.Target));
 		fx.weapon = nil;
 		return false;
+	}
+	// Find a different target at random times, because the current target could not be the optimal any more.
+	if (!Random(40) && !PathFree(fx.Target->GetX(), fx.Target->GetY(), fx.target->GetX(), fx.target->GetY()))
+	{
+		fx.target = this->FindTarget(fx);
+		return true;
 	}
 	// Are we in range?
 	if (fx.Target->ObjectDistance(fx.target) < 16 || Distance(fx.Target->GetX(), fx.Target->GetY(), fx.target->GetX(), fx.target->GetY() + fx.target->GetBottom()) < 16)

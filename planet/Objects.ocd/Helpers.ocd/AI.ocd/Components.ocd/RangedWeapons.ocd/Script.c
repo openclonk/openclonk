@@ -110,8 +110,10 @@ private func ExecuteRanged(effect fx)
 			return true;
 		}
 	}
-	// Path not free or out of range. Just wait for enemy to come...
+	// Path not free or out of range. Just wait for enemy to come or move to it if in agressive mode.
 	fx.aim_weapon->ControlUseHolding(fx.Target, tx - x, ty - y);
+	if (fx.is_aggressive && d > 40)
+		fx.Target->SetCommand("MoveTo", nil, fx.target->GetX(), fx.target->GetY());
 	// Might also change target if current is unreachable.
 	var new_target;
 	if (!Random(3))

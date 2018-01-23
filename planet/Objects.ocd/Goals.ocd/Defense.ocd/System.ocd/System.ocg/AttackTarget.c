@@ -8,7 +8,7 @@ global func GetRandomAttackTarget(object attacker)
 		return target;
 	// Attack structures owned by the enemy of the attacker.
 	var controller = attacker->GetController();
-	for (var target in attacker->FindObjects(Find_Category(C4D_Structure), Find_Hostile(controller), Sort_Distance()))
+	for (var target in attacker->FindObjects(Find_Category(C4D_Structure), Find_Hostile(controller), attacker->Sort_Distance()))
 		if (target && PathFree(attacker->GetX(), attacker->GetY(), target->GetX(), target->GetY()))
 			return target;
 	// Otherwise return random enemy structure.
@@ -23,9 +23,9 @@ global func GetRandomSiegeTarget(object attacker)
 		return target;
 	// Attack structures owned by the enemy of the attacker.
 	var controller = attacker->GetController();
-	for (var target in attacker->FindObjects(Find_Category(C4D_Structure), Find_Hostile(controller), Sort_Distance()))
+	for (var target in attacker->FindObjects(Find_Category(C4D_Structure), Find_Hostile(controller), attacker->Sort_Distance()))
 		if (target && PathFree(attacker->GetX(), attacker->GetY(), target->GetX(), target->GetY()))
 			return target;
 	// Otherwise return random enemy structure.
-	return FindObject(Find_Category(C4D_Structure), Find_Hostile(controller), Sort_Random());
+	return attacker->FindObject(Find_Category(C4D_Structure), Find_Hostile(controller), Sort_Random());
 }
