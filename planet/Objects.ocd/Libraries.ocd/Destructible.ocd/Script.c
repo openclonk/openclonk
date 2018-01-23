@@ -70,8 +70,9 @@ func Damage(int change, int cause, int by_player)
 			var angle = Random(360);
 			var dx = Cos(angle, speed);
 			var dy = Sin(angle, speed);
-			obj->Exit(RandomX(-4, 4), RandomX(-4, 4), Random(360), dx, dy, RandomX(-20, 20));
+			// First set the controller, because on exit the object may be removed.
 			obj->SetController(by_player);
+			obj->Exit(RandomX(-4, 4), RandomX(-4, 4), Random(360), dx, dy, RandomX(-20, 20));
 		}
 
 		// Toss around some fragments with particles attached.
