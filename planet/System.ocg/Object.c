@@ -416,7 +416,7 @@ global func Buy(id buy_def, int for_plr, int pay_plr, object from_vendor, bool s
 	// not a vendor?
 	if (!from_vendor->~IsVendor())
 		return nil;
-	return from_vendor->DoBuy(buy_def, for_plr, pay_plr, nil, 0, show_errors);
+	return from_vendor->DoBuy(buy_def, for_plr, pay_plr, nil, false, show_errors);
 }
 
 // Sells an object. Returns true if it could be sold.
