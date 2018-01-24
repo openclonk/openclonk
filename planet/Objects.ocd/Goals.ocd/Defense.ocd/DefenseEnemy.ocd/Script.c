@@ -285,7 +285,7 @@ local DefaultEnemy =
 local Swordsman = new DefaultEnemy
 {
 	Name = "$EnemySwordsman$",
-	Inventory = Sword,
+	Inventory = [Sword, Helmet],
 	Energy = 30,
 	Bounty = 20,
 	Color=0xff0000ff

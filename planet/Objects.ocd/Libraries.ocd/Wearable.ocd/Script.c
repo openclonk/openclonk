@@ -45,14 +45,14 @@ func GetCarryMode: must(!) return CARRY_None whenever display_disabled is true, 
 /* Engine Callbacks */
 
 // It is assumed that a wearable must be contained in the clonk to be worn.
-func Departure()
+public func Departure()
 {
 	if (IsWorn())
 		TakeOff();
 	_inherited(...);
 }
 
-func Destruction()
+public func Destruction()
 {
 	if (IsWorn())
 		TakeOff();
@@ -72,10 +72,10 @@ public func PutOn(object clonk, bool no_force)
 	// Remove all other things before putting on
 	if (!no_force)
 	{
-		var effect;
-		for (var i = GetEffectCount("Wearing", clonk); effect = GetEffect("Wearing", clonk, i-1); i--)
-			if (effect.identifier == GetWearPlace())
-				RemoveEffect(nil, clonk, effect);
+		var fx;
+		for (var i = GetEffectCount("FxWearing", clonk); fx = GetEffect("FxWearing", clonk, i - 1); i--)
+			if (fx.identifier == GetWearPlace())
+				fx->Remove();
 	}
 
 	// It is not impossible that the item is currently held in the hand of the clonk.
@@ -84,7 +84,7 @@ public func PutOn(object clonk, bool no_force)
 	display_disabled =true;
 	clonk->~UpdateAttach();
 
-	wear_effect = clonk->CreateEffect(Wearing, 2, nil, GetWearPlace(), this);
+	wear_effect = clonk->CreateEffect(FxWearing, 2, nil, GetWearPlace(), this);
 
 	if (wear_effect == -1) // got rejected
 		wear_effect = nil;
@@ -109,13 +109,12 @@ public func IsWorn()
 
 public func TakeOff()
 {
-	if (!wear_effect)
-		return false;
-
-	return RemoveEffect(nil, nil, wear_effect);
+	if (wear_effect)
+		wear_effect->Remove();
+	return;
 }
 
-func TakenOff()
+public func TakenOff()
 {
 	wear_effect = nil;
 	if (Contained())
@@ -124,17 +123,31 @@ func TakenOff()
 	this->~OnTakenOff();
 }
 
+// Returns whether the clonk has a free place for this wearable.
+public func HasFreeWearPlace(object clonk)
+{
+	var fx;
+	for (var i = GetEffectCount("FxWearing", clonk); fx = GetEffect("FxWearing", clonk, i - 1); i--)
+		if (fx.identifier == GetWearPlace())
+			return false;
+	return true;
+}
+
+public func IsWearable() { return true; }
+
 /* Wearing effect */
 
-local Wearing = new Effect {
-	Construction = func(string wearing_identifier, object worn_item) {
+local FxWearing = new Effect {
+	Construction = func(string wearing_identifier, object worn_item)
+	{
 		// Save where this thing is worn
 		this.identifier = wearing_identifier;
 		// Save what is worn
 		this.item = worn_item;
 	},
 
-	Start = func() {
+	Start = func()
+	{
 		// Check if parameters are properly set
 		if (this.identifier == nil) return -1;
 		if (this.item == nil) return -1;
@@ -146,7 +159,8 @@ local Wearing = new Effect {
 		this.attach = Target->AttachMesh(this.item, this.identifier, attachment_bone, attachment_transform, attachment_flags);
 	},
 
-	Damage = func(int damage, int cause, int by_player) {
+	Damage = func(int damage, int cause, int by_player)
+	{
 		if (!this.item) return damage;
 
 		var ret = this.item->~OnDamage(damage, cause, by_player);
@@ -155,14 +169,16 @@ local Wearing = new Effect {
 		return ret;
 	},
 
-	Effect = func(string new_name, var1) {
+	Effect = func(string new_name, var1)
+	{
 		// Reject wearing effects if in the same place
-		if (new_name == "Wearing")
+		if (new_name == "FxWearing")
 			if (var1 == this.identifier)
 				return -1;
 	},
 
-	Stop = func(int reason) {
+	Stop = func(int reason)
+	{
 		// Items can prevent being removed from the clonk on death
 		if (reason == FX_Call_RemoveDeath)
 			if (this.item && this.item->~StayAfterDeath(this.Target))
@@ -172,7 +188,8 @@ local Wearing = new Effect {
 		this.attach = nil;
 	},
 
-	Destruction = func() {
+	Destruction = func()
+	{
 		if (this.attach != nil && this.Target)
 			this.Target->DetachMesh(this.attach);
 		if (this.item)

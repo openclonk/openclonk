@@ -11,6 +11,15 @@
 local HealingHitPointsThreshold = 30; // Number of hitpoints below which the AI will try to heal itself even in a dangerous situation.
 local AlertTime = 800; // Number of frames after alert after which AI no longer checks for projectiles.
 
+// Called when the AI is added.
+public func OnAddAI(effect fx_ai)
+{
+	_inherited(fx_ai);
+	
+	// Put on any useful wearables in the inventory.
+	this->ExecuteWearable(fx_ai);
+	return;
+}
 
 public func ExecuteProtection(effect fx)
 {
@@ -143,4 +152,15 @@ public func ExecuteHealing(effect fx)
 	if (food->~ControlUse(fx.Target))
 		return true;
 	return false;
+}
+
+public func ExecuteWearable(effect fx)
+{
+	// Put on wearable items in the current inventory. 
+	for (var wearable in fx.Target->FindObjects(Find_Container(fx.Target), Find_Func("IsWearable"))) // TODO: sort by usefulness.
+	{
+		if (wearable->HasFreeWearPlace(fx.Target))
+			wearable->PutOn(fx.Target, true);	
+	}
+	return;
 }
