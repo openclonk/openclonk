@@ -98,16 +98,8 @@ protected func FxLightningMoveTimer(object target, effect fx, int time)
 		if (obj && !obj->~RejectLightningStrike(this, damage))
 		{
 			var is_attractor = obj.IsLightningAttractor;
-			// Do a callback notifying the object that it has been struck by lightning.
-			obj->~OnLightningStrike(this, damage);
-			// Damage or hurt objects. Lightning strikes may have a controller, thus pass this for kill tracing.
-			if (obj)
-			{
-				if (obj->GetOCF() & OCF_Alive)
-					Punch(obj, damage);
-				else
-					obj->DoDamage(damage, FX_Call_DmgScript, GetController());
-			}
+			// Perform the strike on the object.
+			PerformLightningStrike(obj, damage);
 			// Reduce strength of the lightning if an object is struck.
 			strength -= damage;
 			// Remove lightning if too weak or an attractor has been struck.
@@ -169,6 +161,21 @@ private func DrawLightningLine(int x1, int y1, int x2, int y2, int distance, int
 	{
 		CreateParticle("LightningBolt", x1 + deltax * i / (count + 1), y1 + deltay * i / (count + 1), 0, 0, 20, particle_blue);
 		CreateParticle("LightningBolt", x1 + deltax * i / (count + 1), y1 + deltay * i / (count + 1), 0, 0, 20, particle_white);
+	}
+	return;
+}
+
+private func PerformLightningStrike(object target, int damage)
+{
+	// Do a callback notifying the object that it has been struck by lightning.
+	target->~OnLightningStrike(this, damage);
+	// Damage or hurt objects. Lightning strikes may have a controller, thus pass this for kill tracing.
+	if (target)
+	{
+		if (target->GetOCF() & OCF_Alive)
+			Punch(target, damage);
+		else
+			target->DoDamage(damage, FX_Call_DmgScript, GetController());
 	}
 	return;
 }

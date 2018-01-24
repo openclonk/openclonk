@@ -1,6 +1,6 @@
 /**
 	No Friendly Fire Rule
-	If this rule is activate non-hostile crew members can't hit each other.
+	If this rule is active non-hostile crew members can't hit each other.
 	Some of the implementation is in appendto scripts.
 	
 	@author Maikel
