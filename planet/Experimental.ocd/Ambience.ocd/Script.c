@@ -109,7 +109,7 @@ private func ExecutePlayer(int plr)
 	{
 		var last_env = last_environment[plr];
 		var x = cursor->GetX(), y = cursor->GetY();
-		for (test_environment in environments)
+		for (var test_environment in environments)
 		{
 			if (environment = test_environment->CheckPlayer(cursor, x, y, test_environment == last_env))
 			{
