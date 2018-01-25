@@ -199,7 +199,7 @@ public func GetPipeControlMenuEntries(object clonk)
 				entry.extra_data = LIBRARY_TANK_Menu_Action_Cut_AirPipe;
 				entry.Priority = 4;
 				entry.custom.image.BackgroundColor = RGB(0, 153, 255);
-				entry.custom.text.Text = "$MsgCutAirPipe$";
+				entry.custom.text.Text = GetConnectedPipeMessage("$MsgCutAirPipe$", GetDrainPipe());
 				break;
 			}
 		}
@@ -208,23 +208,23 @@ public func GetPipeControlMenuEntries(object clonk)
 	// Add attach air pipe menu entry.
 	var air_pipe = FindAvailablePipe(clonk, Find_Func("IsAirPipe"));
 	if (!drain_pipe && air_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(air_pipe, "$MsgConnectAirPipe$", 4, LIBRARY_TANK_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
+		PushBack(menu_entries, GetTankMenuEntry(air_pipe, GetConnectedPipeMessage("$MsgConnectAirPipe$", air_pipe), 4, LIBRARY_TANK_Menu_Action_Add_AirPipe, RGB(0, 153, 255)));
 	return menu_entries;
 }
 
-public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_id)
+public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target, menu_id)
 {
 	if (action == LIBRARY_TANK_Menu_Action_Cut_AirPipe)
 	{
-		GuiUpdateText("$DescCutAirPipe$", menu_id, 1, desc_menu_target);
+		GuiUpdateText(GetConnectedPipeDescription("$DescCutAirPipe$", GetDrainPipe()), menu_id, 1, desc_menu_target);
 		return;
 	}
 	if (action == LIBRARY_TANK_Menu_Action_Add_AirPipe)
 	{
-		GuiUpdateText("$DescConnectAirPipe$", menu_id, 1, desc_menu_target);
+		GuiUpdateText(GetConnectedPipeDescription("$DescConnectAirPipe$", symbol_or_object), menu_id, 1, desc_menu_target);
 		return;
 	}
-	return inherited(symbol, action, desc_menu_target, menu_id, ...);
+	return inherited(symbol_or_object, action, desc_menu_target, menu_id, ...);
 }
 
 public func OnPipeControl(symbol_or_object, string action, bool alt)

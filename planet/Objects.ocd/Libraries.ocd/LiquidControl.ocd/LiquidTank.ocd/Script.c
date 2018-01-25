@@ -99,29 +99,29 @@ public func GetPipeControlMenuEntries(object clonk)
 	if (GetSourcePipe())
 	{
 		if (!GetSourcePipe()->QueryCutLineConnection(this))
-			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutSource$", 1, LIBRARY_TANK_Menu_Action_Cut_Source, RGB(102, 136, 34)));
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, GetConnectedPipeMessage("$MsgCutSource$", GetSourcePipe()), 1, LIBRARY_TANK_Menu_Action_Cut_Source, RGB(102, 136, 34)));
 	}
 	else if (source_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(source_pipe, "$MsgConnectSource$", 1, LIBRARY_TANK_Menu_Action_Add_Source, RGB(102, 136, 34)));
+		PushBack(menu_entries, GetTankMenuEntry(source_pipe, GetConnectedPipeMessage("$MsgConnectSource$", source_pipe), 1, LIBRARY_TANK_Menu_Action_Add_Source, RGB(102, 136, 34)));
 
 	if (GetDrainPipe())
 	{
 		if (!GetDrainPipe()->QueryCutLineConnection(this))
-			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutDrain$", 2, LIBRARY_TANK_Menu_Action_Cut_Drain, RGB(238, 102, 0)));
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, GetConnectedPipeMessage("$MsgCutDrain$", GetDrainPipe()), 2, LIBRARY_TANK_Menu_Action_Cut_Drain, RGB(238, 102, 0)));
 	}
 	else if (drain_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, "$MsgConnectDrain$", 2, LIBRARY_TANK_Menu_Action_Add_Drain, RGB(238, 102, 0)));
+		PushBack(menu_entries, GetTankMenuEntry(drain_pipe, GetConnectedPipeMessage("$MsgConnectDrain$", drain_pipe), 2, LIBRARY_TANK_Menu_Action_Add_Drain, RGB(238, 102, 0)));
 
 	if (GetNeutralPipe())
 	{
 		if (!GetNeutralPipe()->QueryCutLineConnection(this))
-			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, "$MsgCutNeutral$", 3, LIBRARY_TANK_Menu_Action_Cut_Neutral, RGB(80, 80, 120)));
+			PushBack(menu_entries, GetTankMenuEntry(Icon_Cancel, GetConnectedPipeMessage("$MsgCutNeutral$", GetNeutralPipe()), 3, LIBRARY_TANK_Menu_Action_Cut_Neutral, RGB(80, 80, 120)));
 	}
 	else if (neutral_pipe)
-		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, "$MsgConnectNeutral$", 3, LIBRARY_TANK_Menu_Action_Add_Neutral, RGB(80, 80, 120)));
+		PushBack(menu_entries, GetTankMenuEntry(neutral_pipe, GetConnectedPipeMessage("$MsgConnectNeutral$", neutral_pipe), 3, LIBRARY_TANK_Menu_Action_Add_Neutral, RGB(80, 80, 120)));
 
 	if (IsAllowedSwapSourceDrain())
-		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, "$MsgSwapSourceDrain$", 10, LIBRARY_TANK_Menu_Action_Swap_SourceDrain, nil));
+		PushBack(menu_entries, GetTankMenuEntry(Icon_Swap, GetConnectedPipeMessage("$MsgSwapSourceDrain$", GetSourcePipe(), GetDrainPipe()), 10, LIBRARY_TANK_Menu_Action_Swap_SourceDrain, nil));
 
 	return menu_entries;
 }
@@ -138,16 +138,16 @@ public func GetTankMenuEntry(symbol, string text, int priority, extra_data, int 
 		}};
 }
 
-public func OnPipeControlHover(id symbol, string action, desc_menu_target, menu_id)
+public func OnPipeControlHover(symbol_or_object, string action, desc_menu_target, menu_id)
 {
 	var text = "";
-	if (action == LIBRARY_TANK_Menu_Action_Add_Drain) text = "$DescConnectDrain$";
-	else if (action == LIBRARY_TANK_Menu_Action_Cut_Drain) text = "$DescCutDrain$";
-	else if (action == LIBRARY_TANK_Menu_Action_Add_Source) text = "$DescConnectSource$";
-	else if (action == LIBRARY_TANK_Menu_Action_Cut_Source) text = "$DescCutSource$";
-	else if (action == LIBRARY_TANK_Menu_Action_Add_Neutral) text = "$DescConnectNeutral$";
-	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral) text = "$DescCutNeutral$";
-	else if (action == LIBRARY_TANK_Menu_Action_Swap_SourceDrain) text = "$DescSwapSourceDrain$";
+	if (action == LIBRARY_TANK_Menu_Action_Add_Drain) text = GetConnectedPipeDescription("$DescConnectDrain$", symbol_or_object);
+	else if (action == LIBRARY_TANK_Menu_Action_Cut_Drain) text = GetConnectedPipeDescription("$DescCutDrain$", GetDrainPipe());
+	else if (action == LIBRARY_TANK_Menu_Action_Add_Source) text = GetConnectedPipeDescription("$DescConnectSource$", symbol_or_object);
+	else if (action == LIBRARY_TANK_Menu_Action_Cut_Source) text = GetConnectedPipeDescription("$DescCutSource$", GetSourcePipe());
+	else if (action == LIBRARY_TANK_Menu_Action_Add_Neutral) text = GetConnectedPipeDescription("$DescConnectNeutral$", symbol_or_object);
+	else if (action == LIBRARY_TANK_Menu_Action_Cut_Neutral) text = GetConnectedPipeDescription("$DescCutNeutral$", GetNeutralPipe());
+	else if (action == LIBRARY_TANK_Menu_Action_Swap_SourceDrain) text = GetConnectedPipeDescription("$DescSwapSourceDrain$", GetSourcePipe(), GetDrainPipe());
 	else if (action == LIBRARY_TANK_Menu_Action_Description) text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
@@ -172,6 +172,29 @@ public func OnPipeControl(symbol_or_object, string action, bool alt)
 	UpdateInteractionMenus(this.GetPipeControlMenuEntries);
 }
 
+public func GetConnectedPipeMessage(string base_msg, object pipe1, object pipe2)
+{
+	var connected1 = (pipe1->GetConnectedObject(this) ?? pipe1->GetConnectedObject(pipe1)) ?? pipe1;
+	var msg = Format("%s $MsgConnectedTo$", base_msg, connected1->GetID());
+	if (pipe2)
+	{
+		var connected2 = (pipe2->GetConnectedObject(this) ?? pipe2->GetConnectedObject(pipe1)) ?? pipe2;
+		msg = Format("%s $MsgConnectedToMultiple$", base_msg, connected1->GetID(), connected2->GetID());
+	}
+	return msg;
+}
+
+public func GetConnectedPipeDescription(string base_desc, object pipe1, object pipe2)
+{
+	var connected1 = (pipe1->GetConnectedObject(this) ?? pipe1->GetConnectedObject(pipe1)) ?? pipe1;
+	var desc = Format("%s $DescConnectedTo$", base_desc, connected1->GetID());
+	if (pipe2)
+	{
+		var connected2 = (pipe2->GetConnectedObject(this) ?? pipe2->GetConnectedObject(pipe1)) ?? pipe2;
+		desc = Format("%s $DescConnectedToMultiple$", base_desc, connected1->GetID(), connected2->GetID());
+	}
+	return desc;
+}
 
 /*-- Handle Connections --*/
 

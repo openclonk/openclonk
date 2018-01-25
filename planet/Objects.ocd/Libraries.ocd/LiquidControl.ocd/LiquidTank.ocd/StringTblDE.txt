@@ -14,5 +14,10 @@ DescCutSource=Entfernt das Zuflussrohr.
 DescCutDrain=Entfernt das Abflussrohr.
 DescCutNeutral=Entfernt das angeschlossene Rohr.
 
+MsgConnectedTo=(verbunden mit {{%i}})
+MsgConnectedToMultiple=(verbunden mit {{%i}} und {{%i}})
+DescConnectedTo=Dieses Rohr ist momentan verbunden mit {{%i}}.
+DescConnectedToMultiple=Dieses Rohr ist momentan verbunden mit {{%i}} und {{%i}}.
+
 MsgSwapSourceDrain=Wechsele Zufluss und Abfluss
 DescSwapSourceDrain=Wechselt das Zuflussrohr mit dem Abflussrohr. 

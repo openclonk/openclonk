@@ -340,6 +340,13 @@ protected func ControlUse(object clonk, int x, int y)
 	return true;
 }
 
+// Returns to which object the given object is connected through this pipe.
+public func GetConnectedObject(object obj)
+{
+	if (!pipe_line)
+		return;
+	return pipe_line->GetConnectedObject(obj);
+}
 
 /**
  Displays a message at top-level container of this object.

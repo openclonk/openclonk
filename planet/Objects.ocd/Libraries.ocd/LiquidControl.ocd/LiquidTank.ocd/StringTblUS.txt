@@ -14,5 +14,10 @@ DescCutSource=Removes the source pipe.
 DescCutDrain=Removes the drain pipe.
 DescCutNeutral=Removes the connected pipe.
 
+MsgConnectedTo=(connected to {{%i}})
+MsgConnectedToMultiple=(connected to {{%i}} and {{%i}})
+DescConnectedTo=This pipe is currently connected to {{%i}}.
+DescConnectedToMultiple=This pipe is currently connected to {{%i}} and {{%i}}.
+
 MsgSwapSourceDrain=Swap source and drain
 DescSwapSourceDrain=Swaps the source and drain pipes.
