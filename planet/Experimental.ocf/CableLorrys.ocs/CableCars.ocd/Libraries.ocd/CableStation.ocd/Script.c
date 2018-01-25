@@ -64,16 +64,16 @@ func Destruction()
 {
 	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
-		if (! connection->~IsCableLine()) continue;
+		if (!connection->~IsCableLine()) continue;
 		var other_crossing = connection->~GetConnectedObject(this);
-		if (! other_crossing->~IsCableCrossing()) continue;
+		if (!other_crossing || !other_crossing->~IsCableCrossing()) continue;
 		other_crossing->ClearConnections(this);
 	}
 	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
-		if (! connection->~IsCableLine()) continue;
+		if (!connection->~IsCableLine()) continue;
 		var other_crossing = connection->~GetConnectedObject(this);
-		if (! other_crossing->~IsCableCrossing()) continue;
+		if (!other_crossing || !other_crossing->~IsCableCrossing()) continue;
 		other_crossing->RenewConnections(this);
 	}
 	return _inherited(...);
@@ -319,9 +319,9 @@ public func ClearConnections(object crossing)
 	destination_list = [];
 	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
-		if (! connection->~IsCableLine()) continue;
+		if (!connection->~IsCableLine()) continue;
 		var other_crossing = connection->~GetConnectedObject(this);
-		if (! other_crossing->~IsCableCrossing()) continue;
+		if (!other_crossing || !other_crossing->~IsCableCrossing()) continue;
 		other_crossing->ClearConnections();
 	}
 }
@@ -335,9 +335,9 @@ public func RenewConnections(object crossing)
 	clearing = false;
 	for(var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
-		if (! connection->~IsCableLine()) continue;
+		if (!connection->~IsCableLine()) continue;
 		var other_crossing = connection->~GetConnectedObject(this);
-		if (! other_crossing->~IsCableCrossing()) continue;
+		if (!other_crossing || !other_crossing->~IsCableCrossing()) continue;
 		if (other_crossing == crossing) continue;
 		destination_list[GetLength(destination_list)] = [other_crossing, other_crossing, ObjectDistance(other_crossing)];
 		AddCableDestinations(other_crossing->GetDestinations(), other_crossing);
