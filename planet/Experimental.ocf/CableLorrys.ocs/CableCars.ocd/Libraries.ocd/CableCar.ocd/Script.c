@@ -217,7 +217,8 @@ public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
 		text = Format("$DescEngage$", GetName(), symbol->GetName());
 	if (extra_data == "Go")
 		text = "$DescGo$";
-
+	if (extra_data == "Disengage")
+		text = Format("$DescDisengage$", GetName(), symbol->GetName());
 	GuiUpdate({ Text = text }, menu_id, 1, desc_menu_target);
 }
 
