@@ -4,3 +4,4 @@ Version=8,0
 Category=C4D_StaticBack
 Vertices=2
 Line=1
+HideInCreator=true
