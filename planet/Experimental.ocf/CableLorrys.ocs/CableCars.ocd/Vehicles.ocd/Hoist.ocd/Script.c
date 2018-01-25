@@ -183,6 +183,9 @@ public func IsAvailable(proplist requested, int amount)
 // Called when a station has asked to make a delivery
 public func IsReadyForDelivery(proplist requested, int amount, proplist requesting_station)
 {
+	// Is already on a delivery.
+	if (lib_ccar_delivery)
+		return false;
 	// Only if a lorry is connected
 	if (pickup && pickup->~IsLorry())
 	{
