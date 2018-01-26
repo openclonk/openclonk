@@ -66,9 +66,9 @@ public func Init(object cursor, object car, object station)
 		Target = this,
 		Decoration = GUI_MenuDeco,
 		BackgroundColor = RGB(0, 0, 0),
-		Bottom = "3em",
-		Left = "50% - 5em",
-		Right = "50% + 5em",
+		Bottom = "5em",
+		Left = "50% - 7.5em",
+		Right = "50% + 7.5em",
 		Priority = 1,
 		Player = cursor->GetOwner(),
 		caption = {
@@ -78,8 +78,14 @@ public func Init(object cursor, object car, object station)
 		},
 		buttons = {
 			Top = "1em",
+			Bottom = "4em",
 			Style = GUI_GridLayout,
 			Priority = 999
+		},
+		info = {
+			Top = "4em",
+			Text = nil,		
+			Priority = 9999	
 		}
 	};
 
@@ -93,8 +99,8 @@ func FillDestinationButtons(proplist menu, array list)
 	var priority = 1000;
 	// Left button
 	var left = {
-		Right = "2em",
-		Bottom = "2em",
+		Right = "3em",
+		Bottom = "3em",
 		Symbol = Icon_LibraryCableCar,
 		GraphicsName = "LeftGrey",
 		BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
@@ -109,8 +115,8 @@ func FillDestinationButtons(proplist menu, array list)
 	}
 	// List buttons
 	var list_button = {
-		Right = "2em",
-		Bottom = "2em",
+		Right = "3em",
+		Bottom = "3em",
 		BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
 		OnMouseOut = GuiAction_SetTag("Std")
 	};
@@ -119,12 +125,30 @@ func FillDestinationButtons(proplist menu, array list)
 	{
 		if (list[i])
 		{
-			buttons[i] = new list_button{
+			var connected = list[i].connected_building;
+			var connected_info = {};
+			if (connected)
+			{
+				connected_info = {
+					Left = "1em",
+					Top = "1.5em",
+					conn = {
+						Left = "0.5em",
+						Symbol = connected
+					},
+					symbol_conn = {
+						Right = "1em",
+						Symbol = ConstructionPreviewer_IconCombine
+					}
+				};
+			}
+			buttons[i] = new list_button {
 				Symbol = list[i],
 				Tooltip = Format("$SendTo$", list[i]->GetName()),
 				OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "PreviewDestination", list[i])],
 				OnClick = GuiAction_Call(this, "SelectDestination", list[i]),
-				Priority = ++priority
+				Priority = ++priority,
+				connected_to = connected_info
 			};
 		} else {
 			buttons[i] = new list_button {};
@@ -132,8 +156,8 @@ func FillDestinationButtons(proplist menu, array list)
 	}
 	// Right button
 	var right = {
-		Right = "2em",
-		Bottom = "2em",
+		Right = "3em",
+		Bottom = "3em",
 		Symbol = Icon_LibraryCableCar,
 		GraphicsName = "Grey",
 		BackgroundColor = { Std = RGB(0, 0, 0), Hover = RGB(100, 30, 30) },
@@ -166,6 +190,11 @@ func PreviewDestination(object to_preview, int plr, int menu_id, int submenu_id,
 
 	SetPlrView(plr, to_preview, true);
 	dummy->SetPosition(to_preview->GetX(), to_preview->GetY());
+	
+	// Update info on this destination.
+	var eta = this.cable_station->GetLengthToTarget(to_preview) / this.cable_car->GetCableSpeed() / 36;
+	var update = {info = {Text = Format("$InfoETA$", eta)}};
+	GuiUpdate(update, menu_id);
 }
 
 func ShiftSelection(object new_middle, int plr, int menu_id, int submenu_id, object target)
