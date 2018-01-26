@@ -40,11 +40,13 @@ func GetCableOffset(array position, int prec)
 
 func Engaged()
 {
+	this.Touchable = 0;
 	SetAction("OnRail");
 }
 
 func Disengaged()
 {
+	this.Touchable = 1;
 	SetAction("Idle");
 	if (pickup)
 		DropVehicle();
@@ -57,11 +59,11 @@ func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, obje
 	if (!pickup && GetRailTarget())
 	{
 		// Picking up vehicles
-		var vehicles = FindObjects(Find_AtPoint(), Find_Category(C4D_Vehicle), Find_Not(Find_Func("RejectCableHoistPickup", this)), Find_Exclude(this), Find_Func(pickup));
+		var vehicles = FindObjects(Find_AtPoint(), Find_Category(C4D_Vehicle), Find_Not(Find_Func("RejectCableCarPickup", this)), Find_Exclude(this));
 		var i = 0;
 		for (var vehicle in vehicles)
 		{
-			if (GetEffect("CableHoistPickup", vehicle)) continue;
+			if (GetEffect("FxCableHoistPickup", vehicle)) continue;
 
 			var to_pickup = new custom_entry {
 				Priority = 2000 + i,
@@ -86,49 +88,72 @@ func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, obje
 	}
 }
 
+public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
+{
+	if (symbol && extra_data == "Pickup")
+	{
+		GuiUpdate({ Text = Format("$DescPickup$", symbol->GetName()) }, menu_id, 1, desc_menu_target);
+		return;
+	}
+	if (symbol && extra_data == "Drop")
+	{
+		GuiUpdate({ Text = Format("$DescDrop$", symbol->GetName()) }, menu_id, 1, desc_menu_target);
+		return;
+	}
+	return _inherited(symbol, extra_data, desc_menu_target, menu_id, ...);
+}
+
 /* Picking up vehicles */
 
 public func PickupVehicle(object vehicle)
 {
 	if (!vehicle) return;
-	if (GetEffect("CableHoistPickup", vehicle)) return;
+	if (GetEffect("FxCableHoistPickup", vehicle)) return;
 	var width = vehicle->GetObjWidth() / 2;
 	var height = vehicle->GetObjHeight() / 2;
 	if (!Inside(GetX(), vehicle->GetX() - width, vehicle->GetX() + width))
 		if (!Inside(GetY(), vehicle->GetY() - height, vehicle->GetY() + height))
 			return;
-
-	AddEffect("CableHoistPickup", vehicle, 1, 1, this);
+	vehicle->CreateEffect(FxCableHoistPickup, 1, 1, this);
+	pickup = vehicle;
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 }
 
 public func DropVehicle()
 {
 	if (!pickup) return;
-	RemoveEffect("CableHoistPickup", pickup);
+	RemoveEffect("FxCableHoistPickup", pickup);
+	pickup = nil;
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 }
 
-func FxCableHoistPickupStart(object vehicle, proplist effect)
+local FxCableHoistPickup = new Effect
 {
-	vehicle->SetPosition(GetX(), GetY()+4);
-	vehicle->SetSpeed(0,0);
-	vehicle->SetR(GetR());
-	vehicle->SetRDir(0);
-
-	pickup = vehicle;
-}
-
-func FxCableHoistPickupTimer(object vehicle, proplist effect)
-{
-	vehicle->SetPosition(GetX(), GetY()+4);
-	vehicle->SetSpeed(0,0);
-}
-
-func FxCableHoistPickupStop(object vehicle, proplist effect)
-{
-	pickup = nil;
-}
+	Construction = func(object hoist)
+	{
+		
+		this.hoist = hoist;
+		this.vehicle_touchable = Target.Touchable;
+		Target.Touchable = 0;
+		// Follow motion of hoist.
+		Target->SetPosition(this.hoist->GetX(), this.hoist->GetY() + 4);
+		Target->SetSpeed(0, 0);
+		Target->SetR(this.hoist->GetR());
+		Target->SetRDir(0);
+	},
+	
+	Timer = func(int time)
+	{
+		// Follow motion of hoist.
+		Target->SetPosition(this.hoist->GetX(), this.hoist->GetY() + 4);
+		Target->SetSpeed(0, 0);
+	},
+	
+	Destruction = func()
+	{
+		Target.Touchable = this.vehicle_touchable;	
+	}
+};
 
 /* Actions */
 

@@ -60,6 +60,9 @@ public func SetCableSpeed(int value)
 	lib_ccar_speed = value;
 }
 
+// Returns the speed of this cable car.
+public func GetCableSpeed() { return lib_ccar_speed; }
+
 // Positioning of the car along the cable
 // This should be called regularly, see header comment!
 public func DoMovement()
@@ -103,6 +106,8 @@ public func DoMovement()
 /*--- Status ---*/
 
 public func IsCableCar() { return true; }
+
+public func RejectCableCarPickup() { return true; }
 
 public func GetRailTarget() { return lib_ccar_rail; }
 
