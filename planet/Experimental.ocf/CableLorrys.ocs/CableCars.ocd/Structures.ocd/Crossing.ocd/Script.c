@@ -332,3 +332,4 @@ public func SetManual() { manual_setting = true; return true; }
 local Name = "$Name$";
 local BlastIncinerate = 50;
 local LineAttach = [6,-9];
+local Components = {Metal = 1, Wood = 1};
