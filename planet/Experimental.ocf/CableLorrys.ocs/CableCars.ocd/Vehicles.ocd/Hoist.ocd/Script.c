@@ -136,7 +136,7 @@ local FxCableHoistPickup = new Effect
 		this.vehicle_touchable = Target.Touchable;
 		Target.Touchable = 0;
 		// Follow motion of hoist.
-		Target->SetPosition(this.hoist->GetX(), this.hoist->GetY() + 4);
+		Target->SetPosition(this.hoist->GetX(10), this.hoist->GetY(10) + 4, false, 10);
 		Target->SetSpeed(0, 0);
 		Target->SetR(this.hoist->GetR());
 		Target->SetRDir(0);
@@ -145,7 +145,7 @@ local FxCableHoistPickup = new Effect
 	Timer = func(int time)
 	{
 		// Follow motion of hoist.
-		Target->SetPosition(this.hoist->GetX(), this.hoist->GetY() + 4);
+		Target->SetPosition(this.hoist->GetX(10), this.hoist->GetY(10) + 4, false, 10);
 		Target->SetSpeed(0, 0);
 	},
 	
