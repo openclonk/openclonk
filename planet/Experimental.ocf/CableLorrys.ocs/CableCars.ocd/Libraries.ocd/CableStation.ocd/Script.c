@@ -49,7 +49,7 @@ public func IsAvailable(proplist requested, int amount)
 
 // Be sure to always call these via _inherited(...);
 
-func Initialize()
+public func Construction()
 {
 	destination_list = [];
 	request_queue = [];
@@ -60,7 +60,7 @@ func Initialize()
 	It first clears every waypoint from the network and then renews the whole information.
 	Optimisation welcome!
 */
-func Destruction()
+public func Destruction()
 {
 	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
