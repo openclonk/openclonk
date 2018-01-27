@@ -347,6 +347,7 @@ IDS_DLG_LEAGUESIGNUPON=League Login on %s
 IDS_DLG_LOBBY=Lobby
 IDS_DLG_LOG=Error Log
 IDS_DLG_MISSIONACCESS=Mission Access
+IDS_DLG_NETRESUME=You just saved a game in network mode.|It is unlikely that this save can be resumed as a network game.|This is a known error.
 IDS_DLG_NETSTART=Start Network Game
 IDS_DLG_NETWORK=Network
 IDS_DLG_NO=&No
