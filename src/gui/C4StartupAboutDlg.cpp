@@ -137,6 +137,7 @@ const std::vector<ContributorList::Entry> ContributorList::contributorsThisRelea
 	{"jok", nullptr},                  // 3 commits
 	{"Tarte", nullptr},                // fixed normal map for brick textures
 	{"Philip Kern", "pkern"},          // 2 commits
+	{"Arne Schauf", "NativeException"},// 1 commit
 	{"Matthias Mailänder", nullptr},   // 1 commit
 	{"marsmoon", nullptr},             // 1 commit
 };
