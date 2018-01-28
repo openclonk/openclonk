@@ -1537,6 +1537,18 @@ void C4StartupPlrPropertiesDlg::UserClose(bool fOK)
 	{
 		StdStrBuf PlrName(pNameEdit->GetText()), Filename;
 		if (!C4StartupPlrSelDlg::CheckPlayerName(PlrName, Filename, pForPlayer ? &pForPlayer->GetFilename() : nullptr, true)) return;
+
+		// Warn that gamepad controls are still unfinished.
+		C4PlayerControlAssignmentSet *control_set = Game.PlayerControlUserAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+		if (control_set && control_set->HasGamepad())
+		{
+			GetScreen()->ShowMessageModal(
+					LoadResStr("IDS_DLG_GAMEPADEXPERIMENTAL"),
+					LoadResStr("IDS_DLG_GAMEPADEXPTITLE"),
+					C4GUI::MessageDialog::btnOK,
+					C4GUI::Ico_Gamepad
+			);
+		}
 	}
 	Close(fOK);
 }
