@@ -1,7 +1,7 @@
 [Head]
 Icon=23
 Title=Crash
-Version=6,0
+Version=8,0
 Difficulty=30
 NoInitialize=true
 MissionAccess=S2Raid

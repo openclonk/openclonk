@@ -1,6 +1,6 @@
 [DefCore]
 id=Icon_Bubbles
-Version=6,1
+Version=8,0
 Category=C4D_StaticBack
 Picture=0,0,64,64
 Width=64

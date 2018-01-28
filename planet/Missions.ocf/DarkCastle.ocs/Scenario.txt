@@ -1,7 +1,7 @@
 [Head]
 Icon=36
 Title=DarkCastle
-Version=6,0
+Version=8,0
 Difficulty=45
 NoInitialize=true
 MissionAccess=S2Treasure

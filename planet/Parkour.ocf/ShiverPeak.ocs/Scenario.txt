@@ -1,7 +1,7 @@
 [Head]
 Icon=24
 Title=ShiverPeak
-Version=6,0
+Version=8,0
 Difficulty=10
 
 [Game]

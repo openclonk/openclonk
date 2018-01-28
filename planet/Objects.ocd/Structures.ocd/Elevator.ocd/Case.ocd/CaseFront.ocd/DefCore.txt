@@ -1,6 +1,6 @@
 [DefCore]
 id=Elevator_Case_Front
-Version=6,0
+Version=8,0
 Width=24
 Height=34
 Offset=-12,-17

@@ -1,6 +1,6 @@
 [Head]
 Title=HotIce
-Version=6,0
+Version=8,0
 MinPlayer=2
 MaxPlayer=20
 Icon=21

@@ -1,6 +1,6 @@
 [DefCore]
 id=Tree_Deciduous_Burned
-Version=6,1
+Version=8,0
 Category=C4D_StaticBack
 Width=46
 Height=70

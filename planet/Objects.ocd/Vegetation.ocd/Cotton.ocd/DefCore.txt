@@ -1,6 +1,6 @@
 [DefCore]
 id=Cotton
-Version=6,1
+Version=8,0
 Category=C4D_StaticBack
 Width=20
 Height=36

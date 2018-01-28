@@ -1,7 +1,7 @@
 [Head]
 Icon=1
 Title=IronPeak
-Version=6,0
+Version=8,0
 Difficulty=20
 
 [Definitions]

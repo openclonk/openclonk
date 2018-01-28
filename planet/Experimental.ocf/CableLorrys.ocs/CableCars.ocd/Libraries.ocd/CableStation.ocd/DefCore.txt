@@ -1,6 +1,6 @@
 [DefCore]
 id=Library_CableStation
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=20
 Height=20

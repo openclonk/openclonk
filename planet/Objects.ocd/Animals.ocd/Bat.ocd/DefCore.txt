@@ -1,6 +1,6 @@
 [DefCore]
 id=Bat
-Version=7,0
+Version=8,0
 Category=C4D_Living
 Width=12
 Height=12

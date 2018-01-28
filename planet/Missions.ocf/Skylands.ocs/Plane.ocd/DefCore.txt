@@ -1,6 +1,6 @@
 [DefCore]
 id=Airplane_Construction
-Version=6,0
+Version=8,0
 Category=C4D_Structure
 Width=60
 Height=29

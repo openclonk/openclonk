@@ -1,6 +1,6 @@
 [DefCore]
 id=Goal_Tutorial
-Version=5,4,0,0
+Version=8,0
 Category=C4D_StaticBack|C4D_Goal
 Width=64
 Height=64

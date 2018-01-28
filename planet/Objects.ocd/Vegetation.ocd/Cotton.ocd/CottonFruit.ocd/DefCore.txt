@@ -1,6 +1,6 @@
 [DefCore]
 id=Cotton_Fruit
-Version=6,1
+Version=8,0
 Width=11
 Height=11
 Offset=-5,-5

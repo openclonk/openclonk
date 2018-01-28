@@ -1,6 +1,6 @@
 [DefCore]
 id=Scoreboard
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=1
 Height=1

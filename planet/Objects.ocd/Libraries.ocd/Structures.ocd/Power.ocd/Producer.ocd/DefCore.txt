@@ -1,6 +1,6 @@
 [DefCore]
 id=Library_PowerProducer
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=13
 Height=19

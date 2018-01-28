@@ -1,6 +1,6 @@
 [DefCore]
 id=BalloonDeployed
-Version=6,0
+Version=8,0
 Category=C4D_None
 Width=32
 Height=40

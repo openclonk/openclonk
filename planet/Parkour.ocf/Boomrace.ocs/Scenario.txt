@@ -1,7 +1,7 @@
 [Head]
 Icon=39
 Title=Boomrace
-Version=6,0
+Version=8,0
 Difficulty=30
 
 [Game]

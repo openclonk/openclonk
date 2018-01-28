@@ -1,6 +1,6 @@
 [DefCore]
 id=Loom
-Version=6,0
+Version=8,0
 Category=C4D_Structure
 Width=52
 Height=40

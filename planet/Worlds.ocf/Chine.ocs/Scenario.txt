@@ -1,7 +1,7 @@
 [Head]
 Icon=36
 Title=Chine
-Version=6,0
+Version=8,0
 Difficulty=60
 
 [Definitions]

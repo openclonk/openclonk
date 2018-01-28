@@ -1,6 +1,6 @@
 [Head]
 Title=AI Test
-Version=6,0
+Version=8,0
 
 [Landscape]
 MapWidth=20

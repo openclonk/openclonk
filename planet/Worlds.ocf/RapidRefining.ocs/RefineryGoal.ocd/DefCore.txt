@@ -1,5 +1,5 @@
 [DefCore]
 id=Goal_Refinery
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack|C4D_Goal
 Picture=0,0,128,128

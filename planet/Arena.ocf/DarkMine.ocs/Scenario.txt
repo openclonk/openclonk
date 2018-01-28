@@ -1,6 +1,6 @@
 [Head]
 Title=DarkMine
-Version=6,0
+Version=8,0
 MinPlayer=2
 Icon=15
 

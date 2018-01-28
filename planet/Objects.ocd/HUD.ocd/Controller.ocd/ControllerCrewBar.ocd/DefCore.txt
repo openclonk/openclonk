@@ -1,6 +1,6 @@
 [DefCore]
 id=GUI_Controller_CrewBar
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=96
 Height=96

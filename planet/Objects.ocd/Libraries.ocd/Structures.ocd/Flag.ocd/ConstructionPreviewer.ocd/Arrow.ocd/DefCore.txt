@@ -1,6 +1,6 @@
 [DefCore]
 id=Library_Flag_ConstructionPreviewer_Arrow
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=16
 Height=36

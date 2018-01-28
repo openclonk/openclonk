@@ -1,6 +1,6 @@
 [DefCore]
 id=Puka
-Version=6,0
+Version=8,0
 Category=C4D_Living
 Width=15
 Height=10

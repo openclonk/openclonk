@@ -1,7 +1,7 @@
 [Head]
 Icon=34
 Title=Cavern
-Version=6,0
+Version=8,0
 Difficulty=20
 
 [Game]

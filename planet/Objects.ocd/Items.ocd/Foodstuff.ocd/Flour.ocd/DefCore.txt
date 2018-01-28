@@ -1,6 +1,6 @@
 [DefCore]
 id=Flour
-Version=6,0
+Version=8,0
 Category=C4D_Object
 Width=8
 Height=8

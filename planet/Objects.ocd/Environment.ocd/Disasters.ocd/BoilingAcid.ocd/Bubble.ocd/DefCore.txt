@@ -1,6 +1,6 @@
 [DefCore]
 id=BoilingAcid_Bubble
-Version=6,0
+Version=8,0
 Category=C4D_None
 Width=8
 Height=8

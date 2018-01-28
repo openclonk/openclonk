@@ -1,6 +1,6 @@
 [DefCore]
 id=Scoreboard_Relaunch
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack|C4D_Rule
 Picture=0,0,32,32
 Width=32

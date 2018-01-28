@@ -1,6 +1,6 @@
 [DefCore]
 id=CloudEffect
-Version=6,0
+Version=8,0
 Category=C4D_None | C4D_Parallax
 Width=10
 Height=10

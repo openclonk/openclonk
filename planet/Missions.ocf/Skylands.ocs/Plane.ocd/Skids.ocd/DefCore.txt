@@ -1,6 +1,6 @@
 [DefCore]
 id=Airplane_Skids
-Version=6,0
+Version=8,0
 Category=C4D_Vehicle
 Width=38
 Height=16

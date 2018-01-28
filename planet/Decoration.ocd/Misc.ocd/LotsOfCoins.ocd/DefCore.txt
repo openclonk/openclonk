@@ -1,6 +1,6 @@
 [DefCore]
 id=LotsOfCoins
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack
 Width=55
 Height=17

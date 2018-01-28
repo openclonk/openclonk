@@ -1,6 +1,6 @@
 [DefCore]
 id=Zap
-Version=6,1
+Version=8,0
 Category=C4D_Living
 Width=2
 Height=2

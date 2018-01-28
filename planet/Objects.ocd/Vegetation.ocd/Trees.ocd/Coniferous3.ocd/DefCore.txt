@@ -1,6 +1,6 @@
 [DefCore]
 id=Tree_Coniferous3
-Version=6,1
+Version=8,0
 Category=C4D_StaticBack
 Width=27
 Height=73

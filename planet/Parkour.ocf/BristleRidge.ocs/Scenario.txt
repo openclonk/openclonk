@@ -1,7 +1,7 @@
 [Head]
 Icon=34
 Title=BristleRidge
-Version=6,0
+Version=8,0
 Difficulty=40
 
 [Game]

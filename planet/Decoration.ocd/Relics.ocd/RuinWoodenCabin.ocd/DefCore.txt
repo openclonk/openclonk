@@ -1,6 +1,6 @@
 [DefCore]
 id=Ruin_WoodenCabin
-Version=6,0
+Version=8,0
 Category=C4D_Structure
 Width=94
 Height=43

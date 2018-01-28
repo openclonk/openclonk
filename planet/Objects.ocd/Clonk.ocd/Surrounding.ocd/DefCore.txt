@@ -1,6 +1,6 @@
 [DefCore]
 id=Helper_Surrounding
-Version=5,2,0,1
+Version=8,0
 Category=0
 Width=8
 Height=8

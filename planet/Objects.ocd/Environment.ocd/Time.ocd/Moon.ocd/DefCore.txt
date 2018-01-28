@@ -1,6 +1,6 @@
 [DefCore]
 id=Moon
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack|C4D_Background|C4D_Parallax
 Width=128
 Height=128

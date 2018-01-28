@@ -1,6 +1,6 @@
 [Head]
 Title=Raid
-Version=6,0
+Version=8,0
 Difficulty=10
 NoInitialize=true
 Icon=37
