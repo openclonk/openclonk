@@ -1,7 +1,7 @@
 [Head]
 Icon=26
 Title=Header
-Version=7
+Version=8,0
 NoInitialize=true
 
 [Player1]

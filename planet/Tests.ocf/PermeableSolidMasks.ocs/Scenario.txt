@@ -1,7 +1,7 @@
 [Head]
 Icon=15
 Title=PermeableSolidMasks
-Version=7
+Version=8,0
 Difficulty=10
 NoInitialize=true
 
