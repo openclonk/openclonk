@@ -1981,16 +1981,6 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 	// Success
 	Log(LoadResStr("IDS_CNS_GAMESAVED"));
-
-	// Warning about network saves
-	if (Network.isEnabled())
-		::pGUI->ShowMessageModal(
-			LoadResStr("IDS_DLG_NETRESUME"),
-			LoadResStr("IDS_CNS_GAMESAVED"),
-			C4GUI::MessageDialog::btnOK,
-			C4GUI::Ico_Error
-		);
-
 	return true;
 }
 

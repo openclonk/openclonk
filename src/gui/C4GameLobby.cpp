@@ -407,12 +407,34 @@ namespace C4GameLobby
 	{
 		// network savegame resumes: Warn if not all players have been associated
 		if (Game.C4S.Head.SaveGame)
+		{
 			if (Game.PlayerInfos.FindUnassociatedRestoreInfo(Game.RestorePlayerInfos))
 			{
 				StdStrBuf sMsg; sMsg.Ref(LoadResStr("IDS_MSG_NOTALLSAVEGAMEPLAYERSHAVE"));
 				if (!GetScreen()->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_SavegamePlayer, &Config.Startup.HideMsgPlrNoTakeOver))
 					return;
 			}
+
+			// warning about desync bug #1965
+			int i=0; C4ClientPlayerInfos *pkInfo;
+			while ((pkInfo = Game.PlayerInfos.GetIndexedInfo(i++))) {
+				C4PlayerInfo *pPlrInfo; int32_t iInfo=0;
+				while ((pPlrInfo = pkInfo->GetPlayerInfo(iInfo++)))
+					if (!pPlrInfo->GetAssociatedSavegamePlayerID())
+					{
+						bool ignore = GetScreen()->ShowMessageModal(
+							LoadResStr("IDS_DLG_NETRESUME"),
+							LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"),
+							C4GUI::MessageDialog::btnYesNo,
+							C4GUI::Ico_Error
+						);
+						if (ignore)
+							break;
+						else
+							return;
+					}
+			}
+		}
 		// validate countdown time
 		iCountdownTime = ValidatedCountdownTime(iCountdownTime);
 		// either direct start...
