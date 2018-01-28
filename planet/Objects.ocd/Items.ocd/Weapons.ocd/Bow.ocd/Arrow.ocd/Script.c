@@ -10,6 +10,7 @@
 */
 
 #include Library_Stackable
+#include Library_Flammable
 
 
 protected func Construction()
@@ -167,3 +168,5 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local Components = {Wood = 3};
+local BlastIncinerate = 5;
+local ContactIncinerate = 1;

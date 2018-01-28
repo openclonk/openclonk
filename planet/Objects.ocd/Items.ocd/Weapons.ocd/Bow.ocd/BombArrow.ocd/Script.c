@@ -35,6 +35,14 @@ public func HasExplosionOnImpact() { return !!GetEffect("InFlight", this); }
 
 public func IsExplosive() { return true; }
 
+private func OnBurnDown()
+{
+	// Got burned? Explode based on stack size.
+	Explode(10 + Random(3) + 23 * GetStackCount() / MaxStackCount());
+	_inherited(...);
+	return true; // Do not create burned object
+}
+
 
 /*-- Properties --*/
 
