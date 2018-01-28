@@ -144,6 +144,7 @@ func InitializeObjects()
 	CableLine019->SetConnectedObjects(CableCrossing019, CableCrossing003);
 
 	var ToolsWorkshop001 = CreateObjectAbove(ToolsWorkshop, 76, 388);
+	CableCrossing019->CombineWith(ToolsWorkshop001);
 
 	var CableHoist001 = CreateObjectAbove(CableHoist, 560, 384);
 	CableHoist001->SetComDir(COMD_None);

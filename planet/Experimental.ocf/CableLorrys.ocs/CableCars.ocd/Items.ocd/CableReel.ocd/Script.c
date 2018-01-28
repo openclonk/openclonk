@@ -1,4 +1,9 @@
-/*-- Cable reel --*/
+/**
+	Cable reel
+	Connects cable stations.
+	
+	@author Clonkonaut	
+*/
 
 protected func Hit()
 {
@@ -6,6 +11,7 @@ protected func Hit()
 }
 
 public func IsToolProduct() { return true; }
+
 
 /*-- Line connection --*/
 
@@ -32,7 +38,7 @@ protected func ControlUse(object clonk, int x, int y)
 		else
 		{
 			// Connect existing power line to obj.
-			if(line->GetActionTarget(0) == this)
+			if (line->GetActionTarget(0) == this)
 				line->SetActionTargets(obj, line->GetActionTarget(1));
 			else if(line->GetActionTarget(1) == this)
 				line->SetActionTargets(line->GetActionTarget(0), obj);
@@ -62,6 +68,9 @@ private func Find_CableLine(object obj)
 		obj = this;
 	return [C4FO_Func, "IsConnectedTo", obj];
 }
+
+
+/*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";

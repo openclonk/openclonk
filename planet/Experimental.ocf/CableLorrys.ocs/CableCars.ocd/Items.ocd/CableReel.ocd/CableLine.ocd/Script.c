@@ -1,6 +1,10 @@
-/*-- Cable line --*/
+/**
+	Cable line
 
-func Initialize()
+	@author Clonkonaut	
+*/
+
+public func Initialize()
 {
 	SetAction("Connect");
 	SetVertexXY(0, GetX(), GetY());
@@ -37,28 +41,44 @@ public func GetConnectedObject(object obj)
 		return GetActionTarget(0);
 }
 
-/* Breaking */
 
-func LineBreak(bool no_msg)
+/*-- Breaking --*/
+
+public func OnLineBreak(bool no_msg)
 {
 	Sound("Objects::Connect");
-	if (GetActionTarget(0)) GetActionTarget(0)->~CableDeactivation(activations);
-	if (GetActionTarget(1)) GetActionTarget(1)->~CableDeactivation(activations);
+	var act1 = GetActionTarget(0);
+	var act2 = GetActionTarget(1);
+	
+	SetAction("Idle");
+	if (act1)
+	{
+		act1->~CableDeactivation(activations);
+		act1->~RemoveCableConnection(this);
+	}
+	if (act2)
+	{
+		act2->~CableDeactivation(activations);
+		act2->~RemoveCableConnection(this);
+	}
 	if (!no_msg)
 		BreakMessage();
 }
 
-func BreakMessage()
+public func BreakMessage()
 {
 	var line_end = GetActionTarget(0);
-	if (line_end->GetID() != CableLorryReel)
+	if (!line_end || line_end->GetID() != CableLorryReel)
 		line_end = GetActionTarget(1);
-	if (line_end->Contained()) line_end = line_end->Contained();
-
-	line_end->Message("$TxtLinebroke$");
+	if (line_end && line_end->Contained())
+		line_end = line_end->Contained();
+	if (line_end)
+		line_end->Message("$TxtLinebroke$");
+	return;
 }
 
-/* Activation */
+
+/*-- Activation --*/
 
 local activations = 0;
 
@@ -67,7 +87,8 @@ local activations = 0;
 public func Activation(int count)
 {
 	// Count must be > 0
-	if (count < 1) return FatalError("Cable Line: Activation() was called with count < 1.");
+	if (count < 1)
+		return FatalError("Cable Line: Activation() was called with count < 1.");
 	activations += count;
 	if (GetActionTarget(0)) GetActionTarget(0)->~CableActivation(count);
 	if (GetActionTarget(1)) GetActionTarget(1)->~CableActivation(count);
@@ -78,21 +99,28 @@ public func Activation(int count)
 public func Deactivation(int count)
 {
 	// Count must be > 0
-	if (count < 1) return FatalError("Cable Line: Deactivation() was called with count < 1.");
+	if (count < 1)
+		return FatalError("Cable Line: Deactivation() was called with count < 1.");
 	activations -= count;
 	if (GetActionTarget(0)) GetActionTarget(0)->~CableDeactivation(count);
 	if (GetActionTarget(1)) GetActionTarget(1)->~CableDeactivation(count);
 }
 
-/* Saving */
+
+/*-- Saving --*/
 
 public func SaveScenarioObject(props)
 {
-	if (!inherited(props, ...)) return false;
+	if (!inherited(props, ...))
+		 return false;
 	SaveScenarioObjectAction(props);
-	if (IsCableLine()) props->AddCall("Connection", this, "SetConnectedObjects", GetActionTarget(0), GetActionTarget(1));
+	if (IsCableLine())
+		props->AddCall("Connection", this, "SetConnectedObjects", GetActionTarget(0), GetActionTarget(1));
 	return true;
 }
+
+
+/*-- Properties --*/
 
 local ActMap = {
 	Connect = {

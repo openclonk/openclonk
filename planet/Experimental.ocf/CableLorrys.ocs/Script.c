@@ -150,6 +150,10 @@ protected func InitializePlayer(int plr)
 	// No FOW here.
 	//SetFoW(false, plr);
 	JoinPlayer(plr);
+	// Give all knowledge.
+	var index = 0, def;
+	while (def = GetDefinition(index++))
+		SetPlrKnowledge(plr, def);
 	return;
 }
 

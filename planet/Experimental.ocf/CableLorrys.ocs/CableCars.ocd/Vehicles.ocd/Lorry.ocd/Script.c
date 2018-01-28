@@ -12,23 +12,23 @@ local empty_anim;
 
 /*-- Engine Callbacks --*/
 
-func Construction()
+public func Construction()
 {
 	SetProperty("MeshTransformation", Trans_Rotate(13, 0, 1, 0));
 }
 
-func Initialize()
+public func Initialize()
 {
 	drive_anim = PlayAnimation("Drive", 1, Anim_X(0,0, GetAnimationLength("Drive"), 30), Anim_Const(1000));
 	empty_anim = PlayAnimation("Empty", 2, Anim_Const(0), Anim_Const(0));
 }
 
-func Hit3()
+public func Hit3()
 {
 	Sound("Hits::Materials::Metal::DullMetalHit?");
 }
 
-func RejectCollect(id object_id, object obj)
+public func RejectCollect(id object_id, object obj)
 {
 	// Collection maybe blocked if this object was just dumped.
 	if (!obj->Contained() && GetEffect("BlockCollectionByLorry", obj))
@@ -59,7 +59,7 @@ func RejectCollect(id object_id, object obj)
 }
 
 // Automatic unloading in buildings.
-func Entrance(object container)
+public func Entrance(object container)
 {
 	// Only in buildings
 	if (container->GetCategory() & (C4D_StaticBack | C4D_Structure))
@@ -69,19 +69,19 @@ func Entrance(object container)
 			container->GrabContents(this);
 }
 
-func ContactLeft()
+public func ContactLeft()
 {
 	if (Stuck() && !Random(5))
 		SetRDir(RandomX(-7, +7));
 }
 
-func ContactRight()
+public func ContactRight()
 {
 	if (Stuck() && !Random(5))
 		SetRDir(RandomX(-7, +7));
 }
 
-func Damage(int change, int cause, int by_player)
+public func Damage(int change, int cause, int by_player)
 {
 	// Only explode the lorry on blast damage.
 	if (cause != FX_Call_DmgBlast)
@@ -144,7 +144,7 @@ public func DropContents(proplist station)
 	ScheduleCall(this, "Empty", 35);
 }
 
-func Empty()
+public func Empty()
 {
 	// Exit everything at once (as opposed to manual dumping below)
 	while (Contents())

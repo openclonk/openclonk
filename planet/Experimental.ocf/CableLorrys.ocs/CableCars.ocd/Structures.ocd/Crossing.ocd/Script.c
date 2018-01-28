@@ -1,11 +1,11 @@
-/*--
+/**
 	Cable Crossing
 	The standard crossing for the cable network.
 	The crossing will automatically be a station if it is at the end of the cable line (i.e. only one cable connected).
 	But the crossing can also manually be set to function as a station.
 
-	Author: Clonkonaut
---*/
+	@author Clonkonaut
+*/
 
 #include Library_CableStation
 
@@ -32,7 +32,8 @@ func Initialize()
 // Prevents the automatic change of the station status when manually set to station mode
 local manual_setting = false;
 
-/* Library functions: Cable Station */
+
+/*-- Library functions: Cable Station --*/
 
 public func DestinationsUpdated()
 {
@@ -44,6 +45,11 @@ public func DestinationsUpdated()
 	else
 		SetCableStation(false);
 	CheckStationStatus();
+	
+	// Inform all cars at station about the update.
+	for (var car in arrived_cars)
+		if (car)
+			car->~OnRailNetworkUpdate();
 }
 
 public func IsAvailable(proplist requested, int amount)
@@ -107,7 +113,8 @@ public func OnCableCarDelivery(object car, id requested, int amount)
 	}
 }
 
-/* Construction */
+
+/*-- Construction --*/
 
 public func IsHammerBuildable() { return true; }
 
@@ -124,7 +131,7 @@ public func ConstructionCombineOffset(proplist other)
 		return;
 
 	// Make sure the station preview is on the same ground level than the other building
-	var ret = [0,0];
+	var ret = [0, 0];
 	ret[1] = other->GetObjHeight()/2 - this->GetDefHeight()/2;
 	return ret;
 }
@@ -238,7 +245,9 @@ public func ToggleDropOff(bool silent)
 		if (!IsCableStation())
 			ToggleStation(true);
 		setting_dropoff = true;
-	} else {
+	}
+	else
+	{
 		setting_dropoff = false;
 	}
 	if (!silent)
@@ -246,7 +255,8 @@ public func ToggleDropOff(bool silent)
 	CheckStationStatus();
 }
 
-/* Cable Car Management */
+
+/*-- Cable Car Management --*/
 
 public func OnCableCarArrival(object car)
 {
@@ -256,6 +266,11 @@ public func OnCableCarArrival(object car)
 			car->~DropContents(this);
 
 	// Save the car
+	PushBack(arrived_cars, car);
+}
+
+public func OnCableCarStopped(object car)
+{
 	PushBack(arrived_cars, car);
 }
 
@@ -274,19 +289,23 @@ public func OnCableCarDisengaged(object car)
 	RemoveArrayValue(arrived_cars, car, true);
 }
 
-/* Visuals */
+public func OnCableCarDestruction(object car)
+{
+	RemoveArrayValue(arrived_cars, car, true);
+}
 
-func CheckStationStatus()
+
+/*-- Visuals --*/
+
+public func CheckStationStatus()
 {
 	if (IsCableStation())
 	{
 		// In order of priority
 		if (setting_dropoff)
-		{
 			SetMeshMaterial("CableCarStation_SignDropOff", 1);
-		} else {
+		else
 			SetMeshMaterial("CableCarStation_SignStation", 1);
-		}
 	}
 	else
 		SetMeshMaterial("CableCarStation_Sign", 1);
@@ -294,14 +313,14 @@ func CheckStationStatus()
 
 local activations = 0;
 
-func CableActivation(int count)
+public func CableActivation(int count)
 {
 	if (activations <= 0)
 		SetAnimationPosition(turn_anim, Anim_Linear(GetAnimationPosition(turn_anim), 0, GetAnimationLength("Engine"), 175, ANIM_Loop));
 	activations += count;
 }
 
-func CableDeactivation(int count)
+public func CableDeactivation(int count)
 {
 	activations -= count;
 	if (activations <= 0)
@@ -310,9 +329,10 @@ func CableDeactivation(int count)
 
 public func NoConstructionFlip() { return true; }
 
-/* Saving */
 
-func SaveScenarioObject(props)
+/*-- Saving --*/
+
+public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	if (IsCableStation() && manual_setting)
@@ -327,7 +347,8 @@ func SaveScenarioObject(props)
 
 public func SetManual() { manual_setting = true; return true; }
 
-/* Properties */
+
+/*-- Properties --*/
 
 local Name = "$Name$";
 local BlastIncinerate = 50;

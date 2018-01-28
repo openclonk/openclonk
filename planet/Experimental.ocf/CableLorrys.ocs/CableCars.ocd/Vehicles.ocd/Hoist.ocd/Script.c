@@ -1,20 +1,26 @@
-/*-- Cable Hoist --*/
+/**
+	Cable Hoist 
+
+	@author Clonkonaut
+*/
 
 #include Library_CableCar
 
 local pickup;
 
-/* Creation */
 
-func Construction()
+/*-- Creation --*/
+
+public func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(13,0,1,0));
+	this.MeshTransformation = Trans_Rotate(13, 0, 1, 0);
 	SetCableSpeed(1);
 }
 
-/* Engine Callbacks */
 
-func Damage(int change, int cause)
+/*-- Engine Callbacks --*/
+
+public func Damage(int change, int cause)
 {
 	if (cause == FX_Call_DmgBlast)
 	{
@@ -26,25 +32,28 @@ func Damage(int change, int cause)
 	}
 }
 
-/* Status */
+
+/*-- Status --*/
 
 public func IsToolProduct() { return true; }
 
-/* Cable Car Library */
 
-func GetCableOffset(array position, int prec)
+/*-- Cable Car Library --*/
+
+public func GetCableOffset(array position, int prec)
 {
-	if (!prec) prec = 1;
+	if (!prec)
+		prec = 1;
 	position[1] += 5 * prec;
 }
 
-func Engaged()
+public func Engaged()
 {
 	this.Touchable = 0;
 	SetAction("OnRail");
 }
 
-func Disengaged()
+public func Disengaged()
 {
 	this.Touchable = 1;
 	SetAction("Idle");
@@ -52,9 +61,10 @@ func Disengaged()
 		DropVehicle();
 }
 
-func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk)
+public func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk)
 {
-	if (IsTravelling()) return;
+	if (IsTravelling())
+		return;
 
 	if (!pickup && GetRailTarget())
 	{
@@ -103,7 +113,8 @@ public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
 	return _inherited(symbol, extra_data, desc_menu_target, menu_id, ...);
 }
 
-/* Picking up vehicles */
+
+/*-- Picking up vehicles --*/
 
 public func PickupVehicle(object vehicle)
 {
@@ -155,9 +166,10 @@ local FxCableHoistPickup = new Effect
 	}
 };
 
-/* Actions */
 
-func OnRail()
+/*-- Actions --*/
+
+public func OnRail()
 {
 	DoMovement();
 }
@@ -180,7 +192,8 @@ local ActMap = {
 		},
 };
 
-/* Callbacks */
+
+/*-- Callbacks --*/
 
 public func GetAttachedVehicle()
 {
@@ -230,15 +243,15 @@ public func OverridePriority(proplist requested, int amount, proplist requesting
 	// Check if the connected vehicle holds the requested objects and if yes, override the selection
 	if (pickup && pickup->ContentsCount(requested) >= amount)
 		return true;
-
 	return false;
 }
 
-/* Definition */
 
-func Definition(def)
+/*-- Definition --*/
+
+public func Definition(def)
 {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
+	def.PictureTransformation = Trans_Mul(Trans_Rotate(-25, 1, 0, 0), Trans_Rotate(40, 0, 1, 0));
 }
 
 local Name = "$Name$";

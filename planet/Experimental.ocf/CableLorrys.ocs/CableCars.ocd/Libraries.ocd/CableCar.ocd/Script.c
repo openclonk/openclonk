@@ -24,7 +24,8 @@ local lib_ccar_destination;
 // Current delivery the car is on, array: [starting station, target station, requested objects, amount]
 local lib_ccar_delivery;
 
-/*--- Overloads ---*/
+
+/*-- Overloads --*/
 
 // Overload these functions as you feel fit
 
@@ -52,7 +53,8 @@ func OnStart() {}
 // failed is true if the movement to a destination was cancelled (usually because the path broke in the meantime)
 func OnStop(bool failed) {}
 
-/*--- Interface ---*/
+
+/*-- Interface --*/
 
 // Sets the speed of the cable car
 public func SetCableSpeed(int value)
@@ -97,13 +99,14 @@ public func DoMovement()
 	var origin = CreateArray(2), ending = CreateArray(2);
 	lib_ccar_rail->GetActionTarget(start)->GetCablePosition(origin, prec);
 	lib_ccar_rail->GetActionTarget(end)->GetCablePosition(ending, prec);
-	position[0] = origin[0] + (ending[0] - origin[0]) * lib_ccar_progress/lib_ccar_max_progress;
-	position[1] = origin[1] + (ending[1] - origin[1]) * lib_ccar_progress/lib_ccar_max_progress;
+	position[0] = origin[0] + (ending[0] - origin[0]) * lib_ccar_progress / lib_ccar_max_progress;
+	position[1] = origin[1] + (ending[1] - origin[1]) * lib_ccar_progress / lib_ccar_max_progress;
 	GetCableOffset(position, prec);
 	SetPosition(position[0], position[1], 1, prec);
 }
 
-/*--- Status ---*/
+
+/*-- Status --*/
 
 public func IsCableCar() { return true; }
 
@@ -113,7 +116,8 @@ public func GetRailTarget() { return lib_ccar_rail; }
 
 public func IsTravelling() { return lib_ccar_destination; }
 
-/* Interaction */
+
+/*-- Interaction --*/
 
 // Provides an own interaction menu.
 public func HasInteractionMenu() { return true; }
@@ -185,7 +189,9 @@ public func GetCableCarMenuEntries(object clonk)
 			};
 			PushBack(menu_entries, { symbol = this, extra_data = "NoStation", custom = search });
 		}
-	} else {
+	}
+	else
+	{
 		// Start the trip
 		if (!IsTravelling())
 		{
@@ -227,12 +233,22 @@ public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
 	GuiUpdate({ Text = text }, menu_id, 1, desc_menu_target);
 }
 
-/*--- Travelling ---*/
+
+/*-- Travelling --*/
+
+// Called when the network is updated.
+public func OnRailNetworkUpdate()
+{
+	// The car may have been stuck on a request, continue it now.
+	ContinueRequest();
+	return;
+}
 
 // Attach the car onto a crossing
 public func EngageRail(object crossing, bool silent)
 {
-	if (! crossing->~IsCableCrossing()) return false;
+	if (!crossing->~IsCableCrossing())
+		return false;
 
 	var position = CreateArray(2);
 	crossing->GetCablePosition(position);
@@ -244,7 +260,8 @@ public func EngageRail(object crossing, bool silent)
 	SetComDir(COMD_None);
 	lib_ccar_rail = crossing;
 	lib_ccar_direction = nil;
-	if (!silent) Sound("Objects::Connect");
+	if (!silent)
+		Sound("Objects::Connect");
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 
 	Engaged();
@@ -262,21 +279,23 @@ public func DisengageRail()
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 
 	Disengaged();
-	if (lib_ccar_rail) lib_ccar_rail->OnCableCarDisengaged(this);
+	if (lib_ccar_rail)
+		lib_ccar_rail->OnCableCarDisengaged(this);
 }
 
 // Sets a target point for travelling and starts the movement process
 public func SetDestination(dest)
 {
-	if(GetType(dest) == C4V_Int)
+	if (GetType(dest) == C4V_Int)
 	{
 		dest = FindObjects(Find_Func("IsCableCrossing"))[dest];
-		if (!dest) return;
+		if (!dest)
+			return;
 	}
 
 	lib_ccar_destination = dest;
 
-	if(lib_ccar_direction == nil)
+	if (lib_ccar_direction == nil)
 	{
 		OnStart();
 		CrossingReached();
@@ -286,24 +305,25 @@ public func SetDestination(dest)
 }
 
 // Whenever a crossing is reached it must be queried for the next crossing to go to
-func CrossingReached()
+public func CrossingReached()
 {
 	var target;
-	if(lib_ccar_destination != lib_ccar_rail)
+	if (lib_ccar_destination != lib_ccar_rail)
 	{
-		if(target = lib_ccar_rail->GetNextWaypoint(lib_ccar_destination))
+		if (target = lib_ccar_rail->GetNextWaypoint(lib_ccar_destination))
 			MoveTo(target);
 		else
 			DestinationFailed();
 	}
 	// Destination reached
-	else {
+	else
+	{
 		DestinationReached();
 	}
 }
 
 // When the current destination is reached
-func DestinationReached()
+public func DestinationReached()
 {
 	lib_ccar_destination = nil;
 	lib_ccar_direction = nil;
@@ -321,8 +341,11 @@ func DestinationReached()
 }
 
 // When the way to the current destination has vanished somehow
-func DestinationFailed()
+public func DestinationFailed()
 {
+	if (lib_ccar_rail)
+		lib_ccar_rail->OnCableCarStopped(this);
+	
 	lib_ccar_destination = nil;
 	lib_ccar_direction = nil;
 	lib_ccar_progress = 0;
@@ -331,8 +354,14 @@ func DestinationFailed()
 	OnStop(true);
 }
 
+public func Destruction()
+{
+	if (lib_ccar_rail)
+		lib_ccar_rail->OnCableCarDestruction(this);
+}
+
 // Setup movement process
-func MoveToIndex(int dest)
+public func MoveToIndex(int dest)
 {
 	var dest_obj = FindObjects(Find_Func("IsCableCrossing"))[dest];
 	if (dest_obj) return MoveTo(dest_obj);
@@ -341,19 +370,19 @@ func MoveToIndex(int dest)
 public func MoveTo(object dest)
 {
 	var rail = 0;
-	for(var test_rail in FindObjects(Find_Func("IsConnectedTo", lib_ccar_rail)))
+	for (var test_rail in FindObjects(Find_Func("IsConnectedTo", lib_ccar_rail)))
 	{
-		if(test_rail->IsConnectedTo(dest))
+		if (test_rail->IsConnectedTo(dest))
 		{
 			rail = test_rail;
 			break;
 		}
 	}
-	if(!rail)
+	if (!rail)
 		return DestinationFailed(); // Shouldn't happen
 
 	// Target the first or second action target?
-	if(rail->GetActionTarget(0) == dest)
+	if (rail->GetActionTarget(0) == dest)
 		lib_ccar_direction = 0;
 	else
 		lib_ccar_direction = 1;
@@ -366,14 +395,14 @@ public func MoveTo(object dest)
 	lib_ccar_rail = rail;
 }
 
-/* Destination selection */
+
+/*-- Destination selection --*/
 
 public func OpenDestinationSelection(object clonk)
 {
 	if (!clonk) return;
 	if (!GetRailTarget()) return;
 
-	var plr = clonk->GetOwner();
 	// Close interaction menu
 	if (clonk->GetMenu())
 		if (!clonk->TryCancelMenu())
@@ -381,6 +410,7 @@ public func OpenDestinationSelection(object clonk)
 
 	GUI_DestinationSelectionMenu->CreateFor(clonk, this, GetRailTarget());
 }
+
 
 /*-- Delivery --*/
 
@@ -390,7 +420,15 @@ public func AddRequest(proplist requested, int amount, proplist target, proplist
 	SetDestination(target);
 }
 
-func FinishedRequest(object station)
+public func ContinueRequest()
+{
+	if (!lib_ccar_delivery)
+		return;
+	var target = lib_ccar_delivery[1];
+	SetDestination(target);
+}
+
+public func FinishedRequest(object station)
 {
 	if (station && lib_ccar_delivery)
 		station->RequestArrived(this, lib_ccar_delivery[2], lib_ccar_delivery[3]);
