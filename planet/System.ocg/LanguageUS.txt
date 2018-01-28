@@ -836,6 +836,7 @@ IDS_NET_NOJOIN_BADREF=Cannot join selected game: %s
 IDS_NET_NOJOIN_BADVER=Engine version mismatch: the game runs with %s - you have %s.
 IDS_NET_NOJOIN_NOREF=No reference selected. Select a game from the list or enter a direct join address below!
 IDS_NET_NOJOIN_NORUNTIME=The game has started already and runtime join is not allowed! Try joining anyway?
+IDS_NET_NOJOIN_RUNTIMEBROKEN=The game has started already. Unfortunately, runtime join is unstable in this release and will likely not work. Try joining anyway?
 IDS_NET_NONET=Network not active
 IDS_NET_NONETGAME=Transferred scenario does not contain network game data.
 IDS_NET_NOOFFICIALLEAGUE=Warning: when connecting to an unofficial internet server, you should NEVER use your password which you might use on official servers!

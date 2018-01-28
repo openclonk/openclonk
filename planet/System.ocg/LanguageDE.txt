@@ -836,6 +836,7 @@ IDS_NET_NOJOIN_BADREF=Beitritt in ausgewähltes Spiel gescheitert: %s!
 IDS_NET_NOJOIN_BADVER=Falsche Engine-Version: Spiel nutzt %s - vorhanden ist %s.
 IDS_NET_NOJOIN_NOREF=Keine Spielreferenz ausgewählt. Aus der Liste wählen oder Adresse für Direktbeitritt unten angeben!
 IDS_NET_NOJOIN_NORUNTIME=Das Spiel läuft schon und Laufzeitbeitritt ist deaktiviert. Soll trotzdem versucht werden beizutreten?
+IDS_NET_NOJOIN_RUNTIMEBROKEN=Das Spiel läuft schon. Leider funktioniert Laufzeitbeitritt in dieser Version nicht zuverlässig. Soll trotzdem versucht werden beizutreten?
 IDS_NET_NONET=Netzwerk nicht aktiv
 IDS_NET_NONETGAME=Übertragenes Szenario enthält keine Netzwerkspieldaten.
 IDS_NET_NOOFFICIALLEAGUE=Achtung: bei der Verwendung eines inoffiziellen Internetservers sollte auf gar keinen Fall ein Passwort, welches auch auf offiziellen Servern verwendet wird, eingegeben werden!
