@@ -50,7 +50,6 @@ public func StartScale() { return _inherited(...); }
 
 public func StartSearchLadder()
 {
-	Log("StartSearchLadder[%d](%v)", FrameCounter(), this);
 	// Call the overwriten old phase call.
 	if (GetAction() == "Jump" && this.ActMap.Jump.StartCallLadderOverloaded)
 		Call(this.ActMap.Jump.StartCallLadderOverloaded);
