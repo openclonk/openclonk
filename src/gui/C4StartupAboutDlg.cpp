@@ -22,6 +22,8 @@
 #include "graphics/C4GraphicsResource.h"
 #include "gui/C4UpdateDlg.h"
 
+#include <fstream>
+
 struct PersonList
 {
 	struct Entry
@@ -29,6 +31,7 @@ struct PersonList
 		const char *name, *nick;
 	};
 	virtual void WriteTo(C4GUI::TextWindow *textbox, CStdFont &font) = 0;
+	virtual std::string ToString() = 0;
 	virtual ~PersonList() { }
 };
 
@@ -44,6 +47,16 @@ static struct DeveloperList : public PersonList
 		{
 			textbox->AddTextLine(FormatString("%s <c f7f76f>(%s)</c>", p.name, p.nick).getData(), &font, C4GUI_MessageFontClr, false, true);
 		}
+	}
+
+	std::string ToString()
+	{
+		std::stringstream out;
+		for (auto& p : developers)
+		{
+			out << p.name << " (" << p.nick << ")\n";
+		}
+		return out.str();
 	}
 }
 // the following lists are all sorted by all-time commit count: git shortlog -s | sort -rn
@@ -86,38 +99,65 @@ static struct ContributorList : public PersonList
 {
 	static const std::vector<Entry> contributorsThisRelease, contributors, packageMaintainers;
 
-	StdStrBuf ConcatNames(const std::vector<Entry>& names)
+	std::string ConcatNames(const std::vector<Entry>& names, bool with_color)
 	{
-		StdStrBuf result;
+		const char *opening_tag = with_color ? "<c f7f76f>" : "";
+		const char *closing_tag = with_color ? "</c>" : "";
+		std::stringstream result;
+		bool first = true;
 		for (auto& p : names)
 		{
-			if (result.getLength()) result.Append(", ");
+			if (!first) result << ", ";
+			first = false;
 			if (p.nick)
-				result.AppendFormat("%s <c f7f76f>(%s)</c>", p.name, p.nick);
+				result << p.name << " " << opening_tag << "(" << p.nick << ")" << closing_tag;
 			else 
-				result.Append(p.name);
+				result << p.name;
 		}
-		return result;
+		return result.str();
+	}
+
+	template<typename Func>
+	std::string WriteLines(Func f, bool with_color)
+	{
+		const char *opening_tag = with_color ? "<c ff0000>" : "";
+		const char *closing_tag = with_color ? "</c>" : "";
+		std::stringstream text;
+
+		text << opening_tag << "Contributors for OpenClonk 8.0:" << closing_tag << " ";
+		text << ConcatNames(contributorsThisRelease, with_color);
+		f(text);
+
+		text << opening_tag << "Previous contributors:" << closing_tag << " ";
+		text << ConcatNames(contributors, with_color);
+		f(text);
+
+		text << opening_tag << "Also thanks to our Linux package maintainers" << closing_tag << " ";
+		text << ConcatNames(packageMaintainers, with_color);
+		text << ", and more";
+		f(text);
+
+		text << "Finally, a big thanks to Matthes Bender and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.";
+		f(text);
+
+		return text.str();
 	}
 
 	void WriteTo(C4GUI::TextWindow *textbox, CStdFont &font)
 	{
-		StdStrBuf text;
-		text = "<c ff0000>Contributors for OpenClonk 8.0:</c> ";
-		text.Append(ConcatNames(contributorsThisRelease));
-		textbox->AddTextLine(text.getData(), &font, C4GUI_MessageFontClr, false, true);
+		WriteLines([&](std::stringstream& text)
+		{
+			textbox->AddTextLine(text.str().c_str(), &font, C4GUI_MessageFontClr, false, true);
+			text.str("");
+		}, true);
+	}
 
-		text = "<c ff0000>Previous contributors:</c> ";
-		text.Append(ConcatNames(contributors));
-		textbox->AddTextLine(text.getData(), &font, C4GUI_MessageFontClr, false, true);
-
-		text = "<c ff0000>Also thanks to our Linux package maintainers</c> ";
-		text.Append(ConcatNames(packageMaintainers));
-		text.Append(", and more");
-		textbox->AddTextLine(text.getData(), &font, C4GUI_MessageFontClr, false, true);
-
-		text = "Finally, a big thanks to Matthes Bender and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.";
-		textbox->AddTextLine(text.getData(), &font, C4GUI_MessageFontClr, false, true);
+	std::string ToString()
+	{
+		return WriteLines([&](std::stringstream& text)
+		{
+			text << "\n";
+		}, false);
 	}
 } contributors;
 
@@ -226,6 +266,8 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"
 
 	DrawPersonList(C4StartupAboutContributors, contributors, caContributors.GetFromTop(caContributors.GetHeight()));
 
+	keySaveCredits = std::make_unique<C4KeyBinding>(C4KeyCodeEx(K_S, KEYS_Control), "StartupAboutSaveCredits", KEYSCOPE_Gui,
+			new C4GUI::DlgKeyCB<C4StartupAboutDlg>(*this, &C4StartupAboutDlg::SaveCredits), C4CustomKey::PRIO_CtrlOverride);
 }
 
 C4StartupAboutDlg::~C4StartupAboutDlg() = default;
@@ -245,6 +287,37 @@ void C4StartupAboutDlg::DrawPersonList(int title, PersonList& persons, C4Rect& r
 	textbox->SetDecoration(false, false, nullptr, true);
 	persons.WriteTo(textbox, rUseFont);
 	textbox->UpdateHeight();
+}
+
+bool C4StartupAboutDlg::SaveCredits()
+{
+	std::ofstream credits("Credits.txt", std::ios::out | std::ios::trunc);
+	if (!credits)
+	{
+		GetScreen()->ShowMessageModal("Couldn't open Credits.txt", "Credits", C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error, nullptr);
+		return true;
+	}
+
+	credits << "<Engine and Tools>\n";
+	credits << engineAndTools.ToString();
+	
+	credits << "\n<Scripting and Content>\n";
+	credits << scriptingAndContent.ToString();
+
+	credits << "\n<Art and Content>\n";
+	credits << artAndContent.ToString();
+
+	credits << "\n<Music and Sound>\n";
+	credits << musicAndSound.ToString();
+
+	credits << "\n<Administration>\n";
+	credits << administration.ToString();
+
+	credits << "\n<Special Thanks to Contributors>\n";
+	credits << contributors.ToString();
+
+	GetScreen()->ShowMessageModal("Saved to Credits.txt", "Credits", C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify, nullptr);
+	return true;
 }
 
 void C4StartupAboutDlg::DoBack()
