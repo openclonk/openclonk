@@ -453,8 +453,20 @@ public func OnRepairMenuHover(id symbol, string action, desc_menu_target, menu_i
 public func Flip()
 {
 	// Mirror structure
-	if (this->~NoConstructionFlip()) return false;
-	return SetDir(1-GetDir());
+	if (this->~NoConstructionFlip())
+		return false;
+	return SetDir(1 - GetDir());
+}
+
+private func FlipVertices()
+{
+	// Flips all vertices around the Y = 0 axis, this can be used to flip the vertices of asymmetric structures.
+	for (var cnt = 0; cnt < GetVertexNum(); cnt++)
+	{
+		SetVertex(cnt, VTX_X, -GetVertex(cnt, VTX_X));
+		SetVertex(cnt, VTX_Y, GetVertex(cnt, VTX_Y));
+	}
+	return;
 }
 
 

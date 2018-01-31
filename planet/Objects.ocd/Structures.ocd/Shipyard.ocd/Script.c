@@ -10,19 +10,32 @@ local meshAttach;
 
 public func LampPosition(id def) { return [GetCalcDir()*-6,30]; }
 
-func Initialize()
+public func Initialize()
 {
 	animWork = PlayAnimation("Work", 1, Anim_Const(0));
+	// Update vertices to fit shape of flipped building after construction is finished.
+	// Vertices are being reset when the construction is finished (i.e. on shape updates).
+	if (GetDir() == DIR_Right)
+		FlipVertices();
 	return _inherited(...);
 }
 
-func Construction(object creator)
+public func Construction(object creator)
 {
 	SetAction("Wait");
 	return _inherited(creator, ...);
 }
 
 public func IsHammerBuildable() { return true; }
+
+public func SetDir(int dir)
+{
+	// Update vertices to fit shape of flipped building when dir is changed.
+	if (GetDir() != dir)
+		FlipVertices();
+	return _inherited(dir, ...);
+}
+
 
 /*-- Production --*/
 
