@@ -1,5 +1,0 @@
-[Head]
-Title=Object interaction menu
-
-[Landscape]
-NoScan=1

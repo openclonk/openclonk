@@ -1,5 +1,0 @@
-[Head]
-Title=Append Skeleton
-
-[Landscape]
-NoScan=1

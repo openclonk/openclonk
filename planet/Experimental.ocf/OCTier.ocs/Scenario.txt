@@ -1,6 +1,0 @@
-[Head]
-Icon=26
-Title=pluto's OC Tier!
-
-[Definitions]
-LocalOnly=1

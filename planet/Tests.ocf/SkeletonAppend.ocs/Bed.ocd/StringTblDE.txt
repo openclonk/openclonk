@@ -1,3 +1,0 @@
-Name=Bett
-Description=Erholsamer Schlaf für müde Ritter.
-

@@ -1,1 +1,0 @@
-US:#1502: Translate() does not fall back when a string has no translation in the current object

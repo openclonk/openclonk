@@ -1,4 +1,0 @@
-[Head]
-Title=Test case for #1263
-[Definitions]
-LocalOnly=1

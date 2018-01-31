@@ -1,2 +1,0 @@
-TxtLinebroke=Seil gerissen
-Name=Seilbahnseil

@@ -1,8 +1,0 @@
-Difficulty=Difficulty
-Easy=Easy
-Hard=Hard
-DescDifficulty=Sets SCENPAR_Difficulty to a value.
-DescEasy=SCENPAR_Difficulty is 1
-DescHard=SCENPAR_Difficulty is 99
-AchvEasy=Finished on easy.
-AchvHard=Finished on hard.

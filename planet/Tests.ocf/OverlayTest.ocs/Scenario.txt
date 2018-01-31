@@ -1,5 +1,0 @@
-[Head]
-Title=Object Overlays
-
-[Landscape]
-NoScan=1

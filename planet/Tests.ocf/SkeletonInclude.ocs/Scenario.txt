@@ -1,5 +1,0 @@
-[Head]
-Title=Include Skeleton
-
-[Landscape]
-NoScan=1

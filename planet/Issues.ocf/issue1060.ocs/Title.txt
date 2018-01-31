@@ -1,1 +1,0 @@
-US:#1060: Incorrectly formatted TexMap causes nullpointer deref

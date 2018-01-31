@@ -1,9 +1,0 @@
-[Head]
-Title=KillTracing
-
-[Landscape]
-BottomOpen=1
-NoScan=1
-
-[Weather]
-Wind=0,0,-100,100

@@ -1,8 +1,0 @@
-[DefCore]
-id=Library_CableStation
-Version=8,0
-Category=C4D_StaticBack
-Width=20
-Height=20
-Offset=-10,-10
-Picture=0,0,64,64

@@ -1,5 +1,0 @@
-[Head]
-Title=Explode Container
-
-[Landscape]
-NoScan=1
