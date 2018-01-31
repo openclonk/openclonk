@@ -67,6 +67,7 @@ engineAndTools =
 	{"Nicolas Hake", "Isilkor"},
 	{"Armin Burgmeier", "Clonk-Karl"},
 	{"Lukas Werling", "Luchs"},
+	{"Martin Plicht", "Mortimer"},
 	{"Julius Michaelis", "JCaesar"},
 	{"Peter Wortmann", "PeterW"},
 },
