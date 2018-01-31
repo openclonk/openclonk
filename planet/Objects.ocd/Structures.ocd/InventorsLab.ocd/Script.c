@@ -9,13 +9,31 @@ local hold_production;
 
 public func LampPosition(id def) { return [GetCalcDir()*24,20]; }
 
-func Construction(object creator)
+public func Construction(object creator)
 {
 	SetAction("Default");
 	return _inherited(creator, ...);
 }
 
 public func IsHammerBuildable() { return true; }
+
+public func Initialize()
+{
+	// Update vertices to fit shape of flipped building after construction is finished.
+	// Vertices are being reset when the construction is finished (i.e. on shape updates).
+	if (GetDir() == DIR_Right)
+		FlipVertices();
+	return _inherited(...);
+}
+
+public func SetDir(int dir)
+{
+	// Update vertices to fit shape of flipped building when dir is changed.
+	if (GetDir() != dir)
+		FlipVertices();
+	return _inherited(dir, ...);
+}
+
 
 /*-- Production --*/
 
