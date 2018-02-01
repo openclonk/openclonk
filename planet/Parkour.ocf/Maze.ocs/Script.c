@@ -5,7 +5,6 @@
 	Dynamic maze
 --*/
 
-static g_caves, g_end_cave_x, g_end_cave_y;
 local goal_cave;
 
 func InitializePlayer(int plr)
