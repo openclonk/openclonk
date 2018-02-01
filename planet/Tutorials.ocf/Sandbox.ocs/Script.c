@@ -1,20 +1,16 @@
-
-/*
-
-	Sandbox Reloaded
-	
-	@author: K-Pone
-
+/**
+	Sandbox	
+	Author: K-Pone
 */
 
-func Initialize()
+public func Initialize()
 {
 	if (!MapGenSizeWidth) MapGenSizeWidth = 80;
 	if (!MapGenSizeHeight) MapGenSizeHeight = 50;
 	if (!MapGenPreset) MapGenPreset = "FlatLand";
 }
 
-func InitializePlayer(int plr)
+public func InitializePlayer(int plr)
 {
 	var crew = GetCrew(plr);
 	crew->ShowSandboxUI();
@@ -29,7 +25,7 @@ func InitializePlayer(int plr)
 	crew.MaxContentsCount = 8;
 }
 
-func GiveAllKnowledge()
+public func GiveAllKnowledge()
 {
 	var i, id;
 	while (id = GetDefinition(i++))

@@ -1,34 +1,30 @@
-
-/*
-
+/**
 	Teleporter
 	
-	@Author: K-Pone
-
+	@author K-Pone
 */
 
 local Name = "$Name$";
 local Description = "$Description$";
 
-func Initialize()
-{
-	
-}
 
-func ControlUse(object clonk, x, y)
+public func ControlUse(object clonk, int x, int y)
 {
-	var gx, gy;
-	
-	gx = clonk->GetX() + x;
-	gy = clonk->GetY() + y;
+	var gx = clonk->GetX() + x;
+	var gy = clonk->GetY() + y;
 	
 	if (gx < 0 || gx >= LandscapeWidth() || gy < 0 || gy >= LandscapeHeight())
 	{
 		clonk->Sound("UI::Error");
-		return;
+		return true;
 	}
-	
 	clonk->SetPosition(gx, gy);
 	clonk->Fireworks();
-	clonk->Sound("warp");
+	clonk->Sound("Warp");
+	return true;
+}
+
+public func QueryRejectDeparture(object clonk)
+{
+	return true;
 }

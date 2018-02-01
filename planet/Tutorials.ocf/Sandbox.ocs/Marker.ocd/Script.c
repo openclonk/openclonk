@@ -1,10 +1,7 @@
-
-/*
-
+/**
 	Marker
 	
-	@author: K-Pone
-
+	@author K-Pone
 */
 
 local Name = "$Name$";
@@ -13,13 +10,13 @@ local Description = "$Description$";
 local markerindex;
 local respawnmarker = false;
 
-func Initialize()
+public func Initialize()
 {
 	this.Visibility = VIS_Owner | VIS_God;
 	SetGraphics(nil, Dummy);
 }
 
-func SetIcon(number)
+public func SetIcon(number)
 {
 	markerindex = number;
 	SetGraphics(Format("%d", number), Icon_Number, 1, GFXOV_MODE_Base);
@@ -27,24 +24,24 @@ func SetIcon(number)
 	SetClrModulation(RGBa(255, 255, 255, 160) , 1);
 }
 
-func GetIndex()
+public func GetIndex()
 {
 	return markerindex;
 }
 
-func IsIndex(index)
+public func IsIndex(index)
 {
 	return index == markerindex;
 }
 
-func IsRespawnMarker() { return respawnmarker; }
+public func IsRespawnMarker() { return respawnmarker; }
 
-global func GetMarkerForIndex(index, plr)
+global func GetMarkerForIndex(int index, int plr)
 {
 	return FindObject(Find_ID(Marker), Find_Owner(plr), Find_Func("IsIndex", index));
 }
 
-global func GetNextFreeMarkerIndex(plr)
+global func GetNextFreeMarkerIndex(int plr)
 {
 	for (var i = 0; i <= 9; i++)
 	{

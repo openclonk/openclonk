@@ -1,4 +1,9 @@
+/**
+	Sandbox
+	Map drawing for sandbox scenario.
 
+	@author K_Pone
+*/
 
 func InitializeMap(proplist map)
 {

@@ -2126,6 +2126,6 @@ func RemoveMarker(marker)
 func GoToMarker(marker)
 {
 	this->SetPosition(marker->GetX(), marker->GetY());
-	this->Sound("warp");
+	this->Sound("Warp");
 	this->Fireworks();
 }

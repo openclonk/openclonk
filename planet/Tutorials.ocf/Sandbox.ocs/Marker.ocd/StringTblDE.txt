@@ -1,2 +1,2 @@
 Name=Marker
-Description=Ein einfacher Marker oder Wegpunkt
+Description=Ein einfacher Marker oder Wegpunkt.
