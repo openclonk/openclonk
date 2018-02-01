@@ -1,4 +1,8 @@
-/* Spray can */
+/**
+	Spray can
+	
+	@author K-Pone, Sven2	
+*/
 
 local last_x, last_y, last_ldx, last_ldy;
 local paint_col;

@@ -1,3 +1,5 @@
+Sandbox
+
 A scenario to play around with all the cool stuff.
 
 The following tools can be used:

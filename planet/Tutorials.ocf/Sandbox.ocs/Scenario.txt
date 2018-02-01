@@ -1,5 +1,5 @@
 [Head]
-Title=Sandbox Reloaded
+Title=Sandbox
 Icon=17
 
 [Landscape]

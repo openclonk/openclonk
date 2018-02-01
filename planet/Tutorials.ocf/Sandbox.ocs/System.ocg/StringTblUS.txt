@@ -1,0 +1,93 @@
+TooltipObjectspawn=Spawn objects
+TooltipLandscapeBrush=Draw landscape
+TooltipMarker=Marker
+TooltipMapGen=Map generator
+TooltipTweaks=Cheats and other cool stuff
+GodsHandDisplayTT=Dieses Objekt wird mit der Hand Gottes platziert (zum Ändern \"Objekte erzeugen\" aufrufen und \"Hand Gottes\" als Ziel auswählen)
+
+OSCatProductionResources=Resources
+OSCatFoodstuff=Nutrition
+OSCatLiquids=Liquids
+OSCatTools=Tools
+OSCatWeapons=Weapons
+OSCatExplosives=Explosives
+OSCatVehicles=Vehicles
+OSCatAnimals=Animals
+OSCatPlants=Plants
+OSCatGodTools=God's tools
+
+OSHintTarget=Tipp! Du kannst hiermit einstellen, wo du Objekte erzeugen möchtest. Stelle dies auf \"Hand Gottes\" um auszuwählen, welches Objekt du mit der Hand Gottes erzeugen möchtest.
+
+OSTargetClonk=Ziel: Clonk/Inventar
+OSTargetGodsHand=Ziel: Hand Gottes
+OSTargetClonkTT=Das Objekt wird (wenn möglich) im Inventar des Clonks erzeugt
+OSTargetGodsHandTT=Das Objekt kann mit der Hand Gottes erzeugt werden
+
+MatEarth=Earth
+MatEarthSpongy=Earth (spongy)
+MatEarthRoot=Earth (root)
+MatSand=Sand
+MatSandDry=Dry sand
+MatIce=Ice
+MatIce2=Ice (different)
+MatSnow=Snow
+MatRock=Rock
+MatRockSmooth=Rock (smooth)
+MatGranite=Granite
+MatOre=Ore
+MatGold=Gold
+MatCoal=Coal
+MatFirestone=Firestone
+MatRuby=Ruby
+MatAmethyst=Amethyst
+MatAshes=Ashes
+MatBrick=Brick
+MatBrickSoft=Brick (soft)
+MatEverrock=Everrock
+MatWater=Water
+MatAcid=Acid
+MatLava=Lava
+MatDuroLava=Magma
+MatOil=Oil
+MatTunnel=Tunnel (background)
+MatTunnelBrick=Brick tunnel (background)
+
+MatBgSky=Sky
+MatBgTunnel=Tunnel
+MatBgBricks=Brick
+
+MBMaterialFg=Material
+MBMaterialBg=Background material
+MBBrushSize=Brush size
+MBBrushMode=Brush mode
+
+MBBrushModeBrush=Brush
+MBBrushModeQuad=Square
+MBBrushModeErase=Eraser
+
+MarkerNotSet=Marker not set
+PlaceMarker=Set marker
+RemoveMarker=Remove marker
+GoToMarker=Teleport
+
+MapGenButtonGenerate=Generate map!
+MapGenSizeWidth=map width
+MapGenSizeHeight=map height
+MapGenMapType=map type
+
+MapGenTPCustom=Modify
+MapGenTPFlatLand=Flatland
+MapGenTPSkylands=Skylands
+MapGenTPCaves=Caves
+
+TweakInvincible=Invincibility (Gott-Modus)
+OptActivate=Activate
+OptDeactivate=Deactivate
+TweakInvincible_Activated=%s is now invincible
+TweakInvincible_Deactivated=%s is not invincible
+
+TweakSkinChoose=Choose skin
+OptSkin1=Adventurere
+OptSkin2=Steampunk
+OptSkin3=Alchemist
+OptSkin4=Farmer
