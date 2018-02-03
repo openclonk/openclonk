@@ -66,3 +66,14 @@ public func ControlUseHolding(object clonk, int new_x, int new_y)
 	return true;
 }
 
+public func QueryRejectDeparture(object clonk)
+{
+	return true;
+}
+
+public func Departure(object clonk)
+{
+	RemoveObject();
+	return;
+}
+

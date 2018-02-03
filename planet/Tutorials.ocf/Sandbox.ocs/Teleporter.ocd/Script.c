@@ -28,3 +28,9 @@ public func QueryRejectDeparture(object clonk)
 {
 	return true;
 }
+
+public func Departure(object clonk)
+{
+	RemoveObject();
+	return;
+}
