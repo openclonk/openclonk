@@ -173,6 +173,7 @@ const std::vector<ContributorList::Entry> ContributorList::contributorsThisRelea
 	{"Dominik Bayerl", "Kanibal"},     // 7 commits
 	{"Linus Heckemann", "sphalerite"}, // 6 commits
 	{"Pyrit", nullptr},                // texture to sproutberry bush
+	{"Thomas Wiest", "KKenny"},        // original Miami Ice
 	{"Armin Schäfer", nullptr},        // 5 commits
 	{"Tushar Maheshwari", nullptr},    // 4 commits
 	{"jok", nullptr},                  // 3 commits
