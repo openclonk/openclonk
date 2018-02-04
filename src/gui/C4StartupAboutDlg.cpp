@@ -267,8 +267,11 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"
 
 	DrawPersonList(C4StartupAboutContributors, contributors, caContributors.GetFromTop(caContributors.GetHeight()));
 
+	// FIXME: K_S is not defined for Cocoa builds.
+#ifndef USE_COCOA
 	keySaveCredits = std::make_unique<C4KeyBinding>(C4KeyCodeEx(K_S, KEYS_Control), "StartupAboutSaveCredits", KEYSCOPE_Gui,
 			new C4GUI::DlgKeyCB<C4StartupAboutDlg>(*this, &C4StartupAboutDlg::SaveCredits), C4CustomKey::PRIO_CtrlOverride);
+#endif
 }
 
 C4StartupAboutDlg::~C4StartupAboutDlg() = default;
