@@ -4,7 +4,7 @@ Icon=17
 
 [Definitions]
 Definition1=Objects.ocd
-Definition2=Decoration.ocd/Misc.ocd/SprayCan.ocd
+Definition2=Decoration.ocd\Misc.ocd\SprayCan.ocd
 
 [Landscape]
 SkyScrollMode=2
