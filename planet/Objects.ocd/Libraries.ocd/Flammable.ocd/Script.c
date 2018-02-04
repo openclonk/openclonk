@@ -56,12 +56,15 @@ local LibraryFlammable = new Effect {
 
 public func BurnDown(int caused_by)
 {
-	if (this->~OnBurnDown()) return;
-	var burned = CreateObject(BurnedObject, 0,0, GetOwner());
-	var x = GetDefWidth();
-	var y = GetDefHeight();
+	if (this->~OnBurnDown())
+		return;
+	var burned = CreateObject(BurnedObject, 0, 0, GetOwner());
 	var container = Contained();
+	// Take over movement and rotation.
+	burned->SetXDir(GetXDir(1000), 1000);
+	burned->SetYDir(GetYDir(1000), 1000);
 	burned->SetR(GetR());
+	burned->SetRDir(GetRDir(1000), 1000);
 	burned->Incinerate(100, caused_by);
 	RemoveObject(true);
 	if (container)
