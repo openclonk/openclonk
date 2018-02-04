@@ -131,7 +131,7 @@ void C4ScriptHost::Warn(const char *pMsg, ...)
 
 void C4AulParse::Warn(C4AulWarningId warning, ...)
 {
-	if (!pOrgScript->IsWarningEnabled(TokenSPos, warning))
+	if (!IsWarningEnabled(TokenSPos, warning))
 		return;
 	va_list args; va_start(args, warning);
 	StdStrBuf Buf = FormatStringV(C4AulWarningMessages[static_cast<size_t>(warning)], args);
@@ -139,6 +139,19 @@ void C4AulParse::Warn(C4AulWarningId warning, ...)
 	Buf.AppendFormat(" [%s]", C4AulWarningIDs[static_cast<size_t>(warning)]);
 	Engine->GetErrorHandler()->OnWarning(Buf.getData());
 	va_end(args);
+}
+
+bool C4AulParse::IsWarningEnabled(const char *pos, C4AulWarningId warning) const
+{
+	if (pOrgScript) return pOrgScript->IsWarningEnabled(pos, warning);
+	// In DirectExec, the default warnings are always active.
+	switch (warning)
+	{
+#define DIAG(id, text, enabled) case C4AulWarningId::id: return enabled;
+#include "C4AulWarnings.h"
+#undef DIAG
+	default: return false;
+	}
 }
 
 void C4AulParse::Error(const char *pMsg, ...)
