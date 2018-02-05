@@ -17,7 +17,7 @@ protected func Initialize()
 	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	CreateObject(Rule_KillLogs);
-	CreateObject(Rule_Gravestones);
+	CreateObject(Rule_Gravestones)->SetFadeOut(3 * 36);
 	GetRelaunchRule()->SetLastWeaponUse(false);
 	
 	//make lava collapse
@@ -101,7 +101,7 @@ global func FxDeathByFireTimer(object target, effect fx, int timer)
 		}
 	}
 
-	CreateParticle("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), fx.particles, 20);
+	CreateParticle("Fire", PV_Random(55, 95), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), fx.particles, 20);
 }
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)
