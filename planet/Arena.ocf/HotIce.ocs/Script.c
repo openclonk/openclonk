@@ -468,14 +468,14 @@ func IsFirestoneSpot(int x, int y)
 }
 
 // ============= Themes =============
-static const HotIce = new Global {
+static const DefaultTheme = new Global
+{
 	InitializeRound = func() { },
 	LavaMat = "^DuroLava",
 	IceMats = ["^Ice-ice", "^Ice-ice2"],
 	AltMatRatio = 50,
 	BackgroundMat = nil,
 	Sky = "Default",
-
 	PlayList = nil,
 	InitializeMusic = func()
 	{
@@ -489,17 +489,31 @@ static const HotIce = new Global {
 			SetPlayList(this.PlayList, NO_OWNER, true);
 			SetGlobalSoundModifier(nil);
 		}
-	},
+	}
 };
 
-static const EciToh = new HotIce {
+static const HotIce = new DefaultTheme
+{
+	InitializeRound = func() 
+	{
+		Stalactite->Place(10 + Random(3));
+	}
+};
+
+static const EciToh = new DefaultTheme
+{
 	LavaMat = "DuroLava",
 	IceMats = ["Coal", "Rock-rock"],
 	AltMatRatio = 8,
 	BackgroundMat = "Tunnel",
+	InitializeRound = func() 
+	{
+		Stalactite->Place(10 + Random(3));
+	}
 };
 
-static const MiamiIce = new HotIce {
+static const MiamiIce = new DefaultTheme
+{
 	IceMats = ["^BlackIce-black", "^BlackIce-black"],
 	Sky = "SkyMiami",
 	PlayList =
@@ -526,6 +540,5 @@ static const MiamiIce = new HotIce {
 				o->SetClrModulation(HSL(time, 255, 100));
 			}
 		},
-	},
-
+	}
 };
