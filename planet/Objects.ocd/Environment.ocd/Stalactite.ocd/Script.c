@@ -20,8 +20,6 @@ public func Construction()
 			transformation = Trans_Rotate(RandomX(-20, 20), 0, 0, 1);
 		sibling = TransformBone(bone, transformation, 1, Anim_Const(1000), sibling);
 	}
-	
-	AddRainDropEffect(nil, RandomX(80, 120), "Water", RandomX(1, 5));
 }
 
 private func Hit()
@@ -69,14 +67,23 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		return;
 	}
 	// Default parameters.
+	if (!settings) 
+		settings = {};
 	var loc_area = nil;
 	if (rectangle)
 		loc_area = Loc_InRect(rectangle);
+	var loc_background;
+	if (settings.underground == nil)
+		loc_background = Loc_Or(Loc_Sky(), Loc_Tunnel());
+	else if (settings.underground)
+		loc_background = Loc_Tunnel();
+	else
+		loc_background = Loc_Sky();
 
 	var stalactites = [];
 	for (var i = 0; i < amount; i++)
 	{
-		var loc = FindLocation(Loc_Tunnel(), Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Top), Loc_Space(40, CNAT_Bottom), loc_area);
+		var loc = FindLocation(loc_background, Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Top), Loc_Space(40, CNAT_Bottom), loc_area);
 		if (!loc)
 			continue;
 		var mat = MaterialName(GetMaterial(loc.x, loc.y - 1));
@@ -106,7 +113,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		if (ground_y)
 		{
 			height = ground_y - loc.y;
-			con = Min(con, BoundBy(100 * height / 60 / 2, 25, 100));
+			con = Min(con, BoundBy(100 * height / 120, 25, 100));
 			
 		}
 		
@@ -146,40 +153,26 @@ private func CreateStalactite(int x, int y, string mat, bool stalagmite)
 			colour = HSL(hue, 100, 200);
 			stalactite->SetClrModulation(colour);
 		}
-		if (!stalagmite && Random(2))
-			stalactite->DrawWaterSource();
 	}
 
 	if (stalagmite)
 	{
 		stalactite->SetR(180);
+		stalactite.MeshTransformation = Trans_Mul(Trans_Translate(0, 10 * stalactite->GetDefHeight() * stalactite->GetCon(), 0), stalactite.MeshTransformation);
+	}
+	else if (mat != "Ice")
+	{
+		// Add rain drop effect for stalactites only.
+		stalactite->AddRainDropEffect(nil, RandomX(80, 120), "Water", RandomX(1, 5), 0, 4);
 	}
 	
 	return stalactite;
 }
 
-private func DrawWaterSource()
+public func OnRainDropCreated(effect fx_drop)
 {
-	var xold = GetX();
-	var yold = GetY() - 2;
-	var xnew = xold;
-	var ynew = xnew;
-	for (var i = 0; i < RandomX(30, 140); i++)
-	{
-		ynew--;
-		xnew = xold + RandomX(-1, 1);
-		if (GBackSemiSolid(xnew-GetX(), ynew-GetY()))
-			DrawMaterialQuad("Water", xold,yold, xold+1,yold, xold+1,yold+1, xold,yold+1);	
-		else
-			return;
-		xold = xnew;
-		yold = ynew;
-	}
-}
-
-public func OnRainDropCreated()
-{
-	if (Random(9)) return;
+	if (Random(9))
+		return;
 	Sound("Liquids::Waterdrop*");
 }
 

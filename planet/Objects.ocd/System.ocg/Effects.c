@@ -88,30 +88,36 @@ Creates a raindrop effect upon the the calling object.
 @strength Specifies how many drops are created in a call.
 @return The created effect.
 */
-
-global func AddRainDropEffect(int duration, int interval, string material, int strength)
+global func AddRainDropEffect(int duration, int interval, string material, int strength, int offset_x, int offset_y)
 {
-	if(!this || GetType(this) != C4V_C4Object) FatalError(Format("AddRainDropEffect needs to be called from object context, not from %v", this));
-	
-	return this->CreateEffect(FxRainDrop, 1, interval ?? 10, duration, material, strength);
+	if (!this || GetType(this) != C4V_C4Object)
+		FatalError(Format("AddRainDropEffect needs to be called from object context, not from %v", this));
+	return this->CreateEffect(FxRainDrop, 1, interval ?? 10, duration, material, strength, [offset_x, offset_y]);
 }
 
-static const FxRainDrop = new Effect {
+static const FxRainDrop = new Effect
+{
 	duration = nil,
 	material = nil,
 	strength = nil,
+	offset = [0, 0],
 	particle_cache = {},
 	
-	Construction = func(int duration, string material, int strength) {
+	Construction = func(int duration, string material, int strength, array offset)
+	{
 		this.duration = duration;
 		this.material = material ?? "Water";
 		this.strength = strength ?? 1;
+		this.offset = offset ?? [0, 0];
 	},
 	
-	Timer = func(int time) {
-		if (!this.Target || (this.duration != nil && time > this.duration)) return FX_Execute_Kill;
+	Timer = func(int time)
+	{
+		if (!this.Target || (this.duration != nil && time > this.duration))
+			return FX_Execute_Kill;
 		
-		if (this.Target->GBackSemiSolid()) return;
+		if (this.Target->GBackSemiSolid(this.offset[0], this.offset[1]))
+			return FX_OK;
 		
 		var con = this.Target->GetCon();
 		var wdt = this.Target->GetDefWidth() * con / 500;
@@ -129,20 +135,18 @@ static const FxRainDrop = new Effect {
 		
 		if (this.material == "Lava" || this.material == "DuroLava")
 			particle_name = "RaindropLava";
-		
 		else
 			particle_name = "Raindrop";
-		
 		this.Target->CreateParticle(
 			particle_name,
-			PV_Random(-wdt, wdt),
-			PV_Random(-hgt, hgt),
+			PV_Random(this.offset[0] - wdt, this.offset[0] + wdt),
+			PV_Random(this.offset[1] - hgt, this.offset[1] + hgt),
 			PV_Random(-5, 5),
 			PV_Random(10, 30),
 			PV_Random(200, 300),
 			this.particle_cache.particle,
 			this.strength
-			);
+		);
 		
 		this.Target->~OnRainDropCreated(this);
 		return FX_OK;
