@@ -405,7 +405,7 @@ bool C4ConsoleQtNewScenarioDlg::CreateScenario()
 {
 	// Try to create scenario from template. Unpack if necessery.
 	QVariant tmpl_data = ui.templateComboBox->currentData();
-	LogF(tmpl_data.toString().toUtf8());
+	Log(tmpl_data.toString().toUtf8());
 	StdStrBuf template_filename;
 	template_filename.Copy(tmpl_data.toString().toUtf8());
 	if (DirectoryExists(template_filename.getData()))
