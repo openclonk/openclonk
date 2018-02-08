@@ -74,7 +74,7 @@ static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, cons
 		return;
 	}
 	const char *msg = C4AulWarningMessages[static_cast<size_t>(warning)];
-	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
+	std::string message = sizeof...(T) > 0 ? strprintf("%s", msg, std::forward<T>(args)...) : msg;
 	message += FormatCodePosition(host, SPos, target_host, func);
 
 	message += " [";
@@ -98,7 +98,7 @@ static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, cons
 template<class... T>
 static C4AulParseError Error(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, const char *msg, T &&...args)
 {
-	std::string message = sizeof...(T) > 0 ? strprintf(msg, std::forward<T>(args)...) : msg;
+	std::string message = sizeof...(T) > 0 ? strprintf("%s", msg, std::forward<T>(args)...) : msg;
 
 	message += FormatCodePosition(host, SPos, target_host, func);
 	return C4AulParseError(static_cast<C4ScriptHost*>(nullptr), message.c_str());
