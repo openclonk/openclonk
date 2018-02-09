@@ -66,6 +66,13 @@ bundle_dependencies() {
 		if [ ! -e "${_library_path}" -a -n "${_sysroot}" ]; then
 			_library_path="${_sysroot}${_library_path}"
 		fi
+
+		# Skip system libraries, e.g. libraries in /usr/lib,
+		# as well as any system frameworks.
+		if echo ${_library_path} | egrep -q "(^/usr/lib|^${_sysroot}/usr/lib|/System/Library/Frameworks)"; then
+			continue
+		fi
+
 		# If the library still isn't available there, there might be a YAML
 		# stub instead in more recent SDKs; if we find one of those, the
 		# library is part of the base install and doesn't need to be bundled
