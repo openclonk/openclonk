@@ -2,3 +2,5 @@ Name=Floor Switch
 Description=Ancient weight sensor.
 UpAction='Up' action
 DownAction='Down' action
+SwitchMassAction=Switch mass
+SwitchMassActionHelp=Mass needed to trigger the switch.
