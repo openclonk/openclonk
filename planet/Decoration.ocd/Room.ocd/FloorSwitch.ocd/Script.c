@@ -20,12 +20,18 @@ public func Initialize()
 
 public func CheckObjects()
 {
+	// Find all the objects on the switch.
+	var obj_on_switch = FindObjects(Find_InRect(-20, -30, 40, 30), Find_AtRect(-20, -10, 40, 8), Find_NoContainer(), Find_Not(Find_Category(C4D_StaticBack)));
+	for (var index = GetLength(obj_on_switch) - 1; index >= 0; index--) 
+	{	
+		var obj = obj_on_switch[index];
+		if (!obj->GetContact(-1, CNAT_Bottom) || obj->Stuck())
+			RemoveArrayIndex(obj_on_switch, index);
+	}
 	// Get the total mass on the switch.
-	var total_mass = 0;
-	var obj_on_switch = FindObjects(Find_InRect(-20, -30, 40, 30), Find_NoContainer(), Find_Not(Find_Category(C4D_StaticBack)));
-	for (var obj in obj_on_switch)
-		if (obj->GetContact(-1, CNAT_Bottom))
-      		total_mass += obj->GetMass();
+	var total_mass = 0;  
+	for (var obj in obj_on_switch)  		
+		total_mass += obj->GetMass();
 	// Determine desired position.
 	var desired_y = 0;
 	if (total_mass >= this.SwitchMass)
@@ -36,8 +42,7 @@ public func CheckObjects()
 	// Determine movement change and move switch plus object on it.
 	var change = BoundBy(desired_y - y_position, -1, 1);
 	for (var obj in obj_on_switch)
-		if (obj->GetContact(-1, CNAT_Bottom))
-      		obj->SetPosition(obj->GetX(), obj->GetY() + change);
+		obj->SetPosition(obj->GetX(), obj->GetY() + change);
 	SetPosition(GetX(), GetY() + change);
 	y_position += change;
 	// Do moving of target door or perform user actions.
@@ -71,6 +76,7 @@ public func SaveScenarioObject(proplist props)
 {
 	if (!inherited(props, ...)) return false;
 	if (up_action || down_action) props->AddCall("Action", this, "SetActions", up_action, down_action);
+	if (this.SwitchMass != GetID().SwitchMass)	props->AddSet("SwitchMass", this, "SwitchMass", this.SwitchMass);
 	return true;
 }
 
@@ -82,6 +88,7 @@ public func Definition(proplist def)
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.up_action = new UserAction.Prop { Name="$UpAction$" };
 	def.EditorProps.down_action = new UserAction.Prop { Name="$DownAction$" };
+	def.EditorProps.SwitchMass = { Type = "int", Name = "$SwitchMassAction$", EditorHelp = "$SwitchMassActionHelp$" }; 
 	return _inherited(def, ...);
 }
 

@@ -2,3 +2,5 @@ Name=Bodenschalter
 Description=Antiker Gewichtssensor.
 UpAction=Aktion 'Hoch'
 DownAction=Aktion 'Runter'
+SwitchMassAction=Schaltermasse
+SwitchMassActionHelp=Benötigte Masse um den Schalter aus zu lösen.
