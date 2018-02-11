@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>IsEditor</title>
+    <category>Global</category>
+    <version>8.0 OC</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Returns whether the current game is an editor game.</desc>
+    <examples>
+      <example>
+        <code>public func InitializePlayer(int plr)
+        {
+			if (IsEditor())
+				<funclink>SetWealth</funclink>funclink>(plr, 10**4);
+        }</code>
+        <text>Gives the player a lot of wealth for testing purposes in editor mode.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Maikel</author><date>2018-02</date>
+</funcs>
