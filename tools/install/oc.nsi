@@ -101,7 +101,7 @@ Section
   File "*.dll"
 
   SetOutPath "$INSTDIR\platforms"
-  File "platforms/*.dll"
+  File "platforms\"
 
   SetOutPath "$INSTDIR"
   

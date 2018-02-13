@@ -1187,6 +1187,15 @@ if(NOT HEADLESS_ONLY)
 	if(WITH_QT_EDITOR)
 		set_target_properties(openclonk PROPERTIES COMPILE_DEFINITIONS WITH_QT_EDITOR)
 		target_link_libraries(openclonk Qt5::Widgets)
+
+		# Deploy dependency libraries and platforms/ folder
+		if(WIN32)
+			include(DeployQt)
+			windeployqt(openclonk)
+		elseif(APPLE)
+			include(DeployQt)
+			macdeployqt(nitroshare-client)
+		endif()
 	endif()
 
 	if(HAVE_BACKWARD)
