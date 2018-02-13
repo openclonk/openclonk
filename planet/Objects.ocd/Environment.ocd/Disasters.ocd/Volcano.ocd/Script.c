@@ -41,7 +41,7 @@ public func SetMaterial(string material)
 }
 
 // Sets the minimum strength in 1/4 pixels, defaults to 4.
-public func SetMinStrength(string strength)
+public func SetMinStrength(int strength)
 {
 	if (this != Volcano)
 		return;
@@ -62,7 +62,7 @@ public func GetMinStrength()
 }
 
 // Sets the minimum strength in 1/4 pixels, defaults to 4.
-public func SetMaxStrength(string strength)
+public func SetMaxStrength(int strength)
 {
 	if (this != Volcano)
 		return;
