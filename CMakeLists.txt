@@ -1193,8 +1193,9 @@ if(NOT HEADLESS_ONLY)
 			include(DeployQt)
 			windeployqt(openclonk)
 		elseif(APPLE)
-			include(DeployQt)
-			macdeployqt(nitroshare-client)
+			# mac qt deploy disabled for now; doesn't seem to work on the autobuild server
+			# include(DeployQt)
+			# macdeployqt(nitroshare-client)
 		endif()
 	endif()
 
