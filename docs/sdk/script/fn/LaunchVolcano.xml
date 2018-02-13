@@ -13,23 +13,23 @@
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X position</desc>
+          <desc>X position, in global coordinates.</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y position</desc>
+          <desc>Y position, in global coordinates.</desc>
         </param>
         <param>
           <type>int</type>
           <name>strength</name>
-          <desc>Strength. Default: Relative to the height of the landscape</desc>
+          <desc>Strength of the volcano, the width of the lava stream in 1/4 pixels. Defaults to 4, maximum strength is 100.</desc>
           <optional />
         </param>
         <param>
           <type>string</type>
           <name>material_name</name>
-          <desc>Name of the material. The default is "Lava"</desc>
+          <desc>Name of the material. The default is "Lava".</desc>
           <optional />
         </param>
         <param>
@@ -47,4 +47,5 @@
     </related>
   </func>
   <author>Newton</author><date>2013-12</date>
+  <author>Marky</author><date>2018-02</date>
 </funcs>

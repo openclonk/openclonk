@@ -62,7 +62,7 @@ func FxIntVolcanoControlSaveScen(obj, fx, props)
 	return true;
 }
 
-
+// Launches a volcano at a given position, strength is measured in 1/4 pixels.
 global func LaunchVolcano(int x, int y, int strength, string material, int angle)
 {
 	var volcano = CreateObjectAbove(Volcano);
