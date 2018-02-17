@@ -1134,7 +1134,7 @@ bool C4StartupNetDlg::DoOK()
 		// (QProcessEnvironment? But then there's a Qt dependency in the network init code))
 		StdStrBuf tmpfn(Config.AtTempPath("ocjoin"), true);
 		MakeTempFilename(&tmpfn);
-		StdBuf join_data = DecompileToBuf<StdCompilerBinWrite>(*pRef);
+		StdStrBuf join_data = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*pRef, "Reference"));
 		if (join_data.getSize())
 		{
 			if (join_data.SaveToFile(tmpfn.getData()))
