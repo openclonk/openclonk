@@ -3215,10 +3215,10 @@ bool C4Game::InitNetworkFromReferenceFile(const char *temp_filename)
 	// Load reference from temp file + delete the temp file
 	bool success = false;
 	C4Network2Reference ref;
-	StdBuf join_data;
+	StdStrBuf join_data;
 	if (join_data.LoadFromFile(temp_filename))
 	{
-		CompileFromBuf<StdCompilerBinRead>(ref, join_data);
+		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(ref, "Reference"), join_data);
 		success = true;
 	}
 	EraseFile(temp_filename);
