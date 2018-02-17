@@ -98,7 +98,7 @@ bool RestartApplication(std::vector<const char *> parameters)
 		intptr_t iError = (intptr_t)::ShellExecute(nullptr, nullptr, buf, params.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
 		if (iError > 32) success = true;
 	}
-#else
+#elif defined(PROC_SELF_EXE)
 	pid_t pid;
 	switch (pid = fork())
 	{
@@ -108,7 +108,7 @@ bool RestartApplication(std::vector<const char *> parameters)
 		std::vector<const char*> params = {"openclonk"};
 		params.insert(params.end(), parameters.begin(), parameters.end());
 		params.push_back(nullptr);
-		execv("/proc/self/exe", const_cast<char *const *>(params.data()));
+		execv(PROC_SELF_EXE, const_cast<char *const *>(params.data()));
 		perror("editor launch failed");
 		exit(1);
 	}

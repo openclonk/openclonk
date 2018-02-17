@@ -299,6 +299,17 @@ if(UNIX AND NOT APPLE)
 	if(Backward_FOUND)
 		set(HAVE_BACKWARD 1)
 	endif()
+
+	if(NOT DEFINED PROC_SELF_EXE)
+		macro(FIND_PROC_SELF_EXE path)
+			if(EXISTS ${path})
+				set(PROC_SELF_EXE ${path} CACHE FILEPATH "Path to /proc/self/exe (Linux) or equivalent")
+			endif()
+		endmacro()
+		FIND_PROC_SELF_EXE(/proc/self/exe)     # Linux
+		FIND_PROC_SELF_EXE(/proc/curproc/file) # FreeBSD
+		FIND_PROC_SELF_EXE(/proc/curproc/exe)  # NetBSD
+	endif()
 endif()
 
 if (WIN32)
