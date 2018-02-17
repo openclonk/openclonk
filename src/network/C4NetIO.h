@@ -94,6 +94,7 @@ public:
 		HostAddress(const sockaddr *addr) { SetHost(addr); }
 
 		AddressFamily GetFamily() const;
+		size_t GetAddrLen() const;
 		
 		void SetScopeId(int scopeId);
 		int GetScopeId() const;
