@@ -59,6 +59,10 @@ static std::string FormatCodePosition(const C4ScriptHost *source_host, const cha
 	return s;
 }
 
+#pragma GCC diagnostic push
+// GCC does not properly handle that warning for strprintf in templated code, see #1992.
+#pragma GCC diagnostic ignored "-Wformat-security"
+
 template<class... T>
 static void Warn(const C4ScriptHost *target_host, const C4ScriptHost *host, const char *SPos, const C4AulScriptFunc *func, C4AulWarningId warning, T &&...args)
 {
@@ -114,6 +118,8 @@ static C4AulParseError Error(const C4ScriptHost *target_host, const C4ScriptHost
 {
 	return Error(target_host, host, static_cast<const char*>(nullptr), func, msg, std::forward<T>(args)...);
 }
+
+#pragma GCC diagnostic pop
 
 class C4AulCompiler::PreparseAstVisitor : public ::aul::DefaultRecursiveVisitor
 {
