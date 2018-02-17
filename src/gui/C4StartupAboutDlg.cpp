@@ -227,7 +227,7 @@ const std::vector<ContributorList::Entry> ContributorList::packageMaintainers = 
 	{"Philip Kern", "pkern"}, // Debian
 	{"Matthias Mailänder", nullptr}, // OpenSUSE
 	{"Julian Ospald", "hasufell"}, // Gentoo
-	{"Kevin Zeng", nullptr}, // FreeBSD
+	{"Kevin Zheng", nullptr}, // FreeBSD
 };
 
 // ------------------------------------------------
