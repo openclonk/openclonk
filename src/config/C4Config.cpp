@@ -443,9 +443,9 @@ void C4ConfigGeneral::DeterminePaths()
 	GetTempPathW(CFG_MaxString,apath);
 	TempPath = StdStrBuf(apath);
 	if (TempPath[0]) TempPath.AppendBackslash();
-#elif defined(__linux__)
+#elif defined(PROC_SELF_EXE)
 	ExePath.SetLength(1024);
-	ssize_t l = readlink("/proc/self/exe", ExePath.getMData(), 1024);
+	ssize_t l = readlink(PROC_SELF_EXE, ExePath.getMData(), 1024);
 	if (l < -1)
 	{
 		ExePath.Ref(".");

@@ -118,3 +118,6 @@
 
 /* Include OpenAL extensions (alext.h) for sound modifiers */
 #cmakedefine HAVE_ALEXT 1
+
+/* Path to /proc/self/exe (Linux) or equivalent */
+#cmakedefine PROC_SELF_EXE "${PROC_SELF_EXE}"
