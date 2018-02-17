@@ -192,7 +192,7 @@ void C4Application::ClearCommandLine()
 
 void C4Application::ParseCommandLine(int argc, char * argv[])
 {
-
+	argv0 = argv[0];
 	StdStrBuf CmdLine("Command line:");
 	for(int i = 0; i < argc; ++i) {
 		CmdLine.Append(" ");
