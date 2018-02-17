@@ -72,6 +72,7 @@ public:
 	const char *GetRevision() const { return Revision.c_str(); }
 
 	// set by ParseCommandLine
+	const char *argv0;
 	int isEditor{false};
 	// set by ParseCommandLine, for manually applying downloaded update packs
 	std::string IncomingUpdate;
