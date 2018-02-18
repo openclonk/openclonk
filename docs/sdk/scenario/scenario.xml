@@ -122,8 +122,13 @@
       </row>
       <row>
         <col>FoWEnabled</col>
-        <col>Integer</col>
+        <col>Bool</col>
         <col>0 or 1. If 0, FoW is disabled, and the whole landscape is visible. Default 1.</col>
+      </row>
+      <row>
+        <col>EvaluateOnAbort</col>
+        <col>Bool</col>
+        <col>If enabled, the game will be evaluated even when aborted by the player. This is intended for scenarios like Tower of Despair that save progress in players. Default false.</col>
       </row>
     </table>
   </text>

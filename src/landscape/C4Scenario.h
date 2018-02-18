@@ -126,6 +126,8 @@ public:
 
 	C4SRealism Realism;
 
+	bool EvaluateOnAbort;
+
 public:
 	bool IsMelee();
 	void Default();
