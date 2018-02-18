@@ -356,12 +356,11 @@ static C4KeyCode QtKeyToUnixScancode(const QKeyEvent &event)
 		}
 #endif
 		// Otherwise rely on native scan code to be the same on all platforms
-#ifdef Q_OS_LINUX
-		return event.nativeScanCode() - 8;
-#elif defined(Q_OS_DARWIN)
+#if defined(USE_WIN32_WINDOWS) || defined(Q_OS_DARWIN)
 		return event.nativeScanCode();
 #else
-		return event.nativeScanCode();
+		// Linux, FreeBSD, maybe others?
+		return event.nativeScanCode() - 8;
 #endif
 	}
 }
