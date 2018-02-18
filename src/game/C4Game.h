@@ -112,6 +112,7 @@ public:
 	int32_t HaltCount;
 	bool InitialPlayersJoined; // true after the InitializeFinal callback has been made
 	bool GameOver;
+	bool EvaluateOnAbort; // set in Scenario.txt, copied here because of sections
 	bool Evaluated;
 	bool GameOverDlgShown;
 	bool fScriptCreatedObjects;

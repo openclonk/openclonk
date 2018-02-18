@@ -217,6 +217,7 @@ void C4SGame::Default()
 	Goals.Clear();
 	Rules.Clear();
 	FoWEnabled = true;
+	EvaluateOnAbort = false;
 }
 
 void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
@@ -228,10 +229,11 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapePushPull),         "LandscapePushPull",   false));
 	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapeInsertThrust),     "LandscapeInsertThrust",true));
 
-	pComp->Value(mkNamingAdapt(mkParAdapt(Mode, StdCompiler::RCT_IdtfAllowEmpty), "Mode",        StdCopyStrBuf()));
-	pComp->Value(mkNamingAdapt(Goals,                                             "Goals",       C4IDList()));
-	pComp->Value(mkNamingAdapt(Rules,                                             "Rules",       C4IDList()));
-	pComp->Value(mkNamingAdapt(FoWEnabled,                                        "FoWEnabled",  true));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Mode, StdCompiler::RCT_IdtfAllowEmpty), "Mode",            StdCopyStrBuf()));
+	pComp->Value(mkNamingAdapt(Goals,                                             "Goals",           C4IDList()));
+	pComp->Value(mkNamingAdapt(Rules,                                             "Rules",           C4IDList()));
+	pComp->Value(mkNamingAdapt(FoWEnabled,                                        "FoWEnabled",      true));
+	pComp->Value(mkNamingAdapt(EvaluateOnAbort,                                   "EvaluateOnAbort", false));
 }
 
 void C4SPlrStart::Default()
