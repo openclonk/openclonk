@@ -34,5 +34,10 @@ target_sources(blake2
 	blake2-impl.h
 )
 
+include(CheckCCompilerFlag)
+CHECK_C_COMPILER_FLAG("-msse2" HAVE_CFLAG_MSSE2)
 target_compile_definitions(blake2 PRIVATE -DHAVE_SSE2)
+if(HAVE_CFLAG_MSSE2)
+	target_compile_options(blake2 PUBLIC -msse2)
+endif()
 target_include_directories(blake2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
