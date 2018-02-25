@@ -1090,6 +1090,8 @@ src/script/C4PropList.h
 src/script/C4Script.cpp
 src/script/C4ScriptHost.cpp
 src/script/C4ScriptHost.h
+src/script/C4ScriptLibraries.cpp
+src/script/C4ScriptLibraries.h
 src/script/C4StringTable.cpp
 src/script/C4StringTable.h
 src/script/C4Value.cpp
@@ -1099,8 +1101,9 @@ src/script/C4ValueArray.h
 src/script/C4ValueMap.cpp
 src/script/C4ValueMap.h
 )
-
-target_link_libraries(libc4script libmisc)
+add_subdirectory(thirdparty/blake2)
+set_property(TARGET blake2 PROPERTY FOLDER "Third-party libraries")
+target_link_libraries(libc4script blake2 libmisc)
 
 add_library(libopenclonk
 	src/c4group/C4Extra.cpp
