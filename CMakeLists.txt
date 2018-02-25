@@ -178,6 +178,12 @@ endif()
 ############################################################################
 # Check for compiler quirks and features
 ############################################################################
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CROSSCOMPILING)
+	include(HandleGccCrossIncludePaths)
+	HANDLE_GCC_CROSS_INCLUDE_PATHS(CXX c++)
+	HANDLE_GCC_CROSS_INCLUDE_PATHS(C c)
+endif()
+
 include(CheckCXXSourceCompiles)
 include(RequireCXXSourceCompiles)
 include(CheckCXXSymbolExists)
