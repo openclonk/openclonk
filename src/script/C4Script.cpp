@@ -23,6 +23,7 @@
 #include "lib/C4Random.h"
 #include "script/C4AulExec.h"
 #include "script/C4AulDefFunc.h"
+#include "script/C4ScriptLibraries.h"
 
 //========================== Some Support Functions =======================================
 
@@ -1113,6 +1114,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 {
+	C4ScriptLibrary::InstantiateAllLibraries(pEngine);
 	// add all def constants (all Int)
 	for (C4ScriptConstDef *pCDef = &C4ScriptConstMap[0]; pCDef->Identifier; pCDef++)
 	{
