@@ -109,7 +109,11 @@ private func FxSpawnTimer(object target, proplist effect, int time)
 		{
 			if (crew->ContentsCount() < crew.MaxContentsCount || (spawn_id->~IsCarryHeavy() && !crew->IsCarryingHeavy()))
 			{
-				spawn_list[plr] = crew->CreateContents(spawn_id);
+				// Special way to pick up carry heavy objects instantly without animation.
+				if (spawn_id->~IsCarryHeavy())
+					spawn_list[plr] = crew->CreateCarryHeavyContents(spawn_id);
+				else
+					spawn_list[plr] = crew->CreateContents(spawn_id);
 				UpdateVisibility(plr);
 				crew->~Get(spawn_list[plr]); // for sound
 			}
