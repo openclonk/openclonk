@@ -12,7 +12,7 @@ static const KEYPADMENU_BackgroundColor = 0x77000000;
 static const KEYPADMENU_HoverColor = 0x99888888;
 static const KEYPADMENU_BarColor = 0x99888888;
 
-local code, correct_code;
+local code, correct_code, correct_code_hashed;
 local correct_code_action, wrong_code_action;
 local replacement_images;
 local menu, menu_id, menu_target, menu_controller;
@@ -37,6 +37,12 @@ public func SetKeypadCode(string to_code)
 	}
 	// If code is valid, set it.	
 	correct_code = to_code;
+	return;
+}
+
+public func SetKeypadHashedCode(string to_code)
+{
+	correct_code_hashed = to_code;
 	return;
 }
 
@@ -115,10 +121,17 @@ private func UpdateKeypadGraphics()
 
 public func SaveScenarioObject(proplist props)
 {
-	if (!_inherited(props, ...)) return false;
-	if (correct_code) props->AddCall("Code", this, "SetKeypadCode", Format("%v", correct_code));
-	if (correct_code_action || wrong_code_action) props->AddCall("Action", this, "SetCodeActions", correct_code_action, wrong_code_action);
-	if (replacement_images) props->AddCall("Replacements", this, "SetReplacementImages", replacement_images);
+	if (!_inherited(props, ...))
+		return false;
+	// Store the hashed code, but override if the scenario designer changed the code.
+	if (correct_code)
+		props->AddCall("Code", this, "SetKeypadHashedCode", Format("%v", Crypto->ComputeHash(correct_code)));
+	else if (correct_code_hashed)
+		props->AddCall("Code", this, "SetKeypadHashedCode", Format("%v", correct_code_hashed));
+	if (correct_code_action || wrong_code_action)
+		props->AddCall("Action", this, "SetCodeActions", correct_code_action, wrong_code_action);
+	if (replacement_images)
+		props->AddCall("Replacements", this, "SetReplacementImages", replacement_images);
 	return true;
 }
 
@@ -358,13 +371,13 @@ public func EnterKeypadCode()
 	}
 	else
 	{
-		if (correct_code == nil)
+		if (correct_code == nil && correct_code_hashed == nil)
 		{
 			code = nil;
 			menu.code.value.Text = "$MsgNoCode$";
 			Sound("UI::Error", {player = menu_controller->GetOwner()});
 		}
-		else if (correct_code == code)
+		else if (correct_code == code || correct_code_hashed == Crypto->ComputeHash(code))
 		{
 			code = nil;
 			Sound("UI::Confirmed", {player = menu_controller->GetOwner()});
@@ -398,7 +411,7 @@ public func EnterKeypadCode()
 public func ResetKeypadCode()
 {
 	// Only allow resetting the code if the clonk (menu_target) has entered the correct code before.
-	if (correct_code == nil)
+	if (correct_code == nil && correct_code_hashed == nil)
 	{
 		menu_controller.code_reset_state = "reset";
 		menu.code.text.Text = "$MsgEnterNewCode$";
