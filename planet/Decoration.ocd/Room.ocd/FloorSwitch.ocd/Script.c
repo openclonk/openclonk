@@ -44,6 +44,10 @@ public func CheckObjects()
 	for (var obj in obj_on_switch)
 		obj->SetPosition(obj->GetX(), obj->GetY() + change);
 	SetPosition(GetX(), GetY() + change);
+	// Do not make objects stuck.
+	for (var obj in obj_on_switch)
+		if (obj->Stuck())
+			obj->SetPosition(obj->GetX(), obj->GetY() - change);
 	y_position += change;
 	// Do moving of target door or perform user actions.
 	if (y_position == desired_y)
