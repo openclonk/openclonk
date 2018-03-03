@@ -1,0 +1,5 @@
+Name=Stone Sign
+Description=Contains important information.
+MsgRead=Read
+Inscription=Inscription
+InscriptionHelp=Text that can be read by interacting with the stone sign.

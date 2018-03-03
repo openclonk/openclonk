@@ -1,0 +1,21 @@
+material StoneSign 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.06589147448539734 0.06589147448539734 0.06589147448539734 1.0 31.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture StoneSignDiffuse.jpg
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
