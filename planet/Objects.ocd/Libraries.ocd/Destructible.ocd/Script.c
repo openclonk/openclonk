@@ -17,7 +17,7 @@ local HitPoints = 0;
 // Don't override!
 local lib_destructible_is_damaged = false;
 
-func Damage(int change, int cause, int by_player)
+public func Damage(int change, int cause, int by_player)
 {
 	_inherited(change, cause, by_player, ...);
 
