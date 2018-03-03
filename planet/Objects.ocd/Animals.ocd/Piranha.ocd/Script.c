@@ -94,8 +94,6 @@ func DoEat(object obj)
 		obj->DoEnergy(-BiteStrength);
 	hunger -= 20;
 	if (hunger < 0) hunger = 0;
-	//CastParticles("MaterialParticle", 10, 10, 0, 0, 10, 20, RGB(200, 5, 5), RGB(200, 5, 5));
-	
 	DoEnergy(BiteStrength);
 }
 

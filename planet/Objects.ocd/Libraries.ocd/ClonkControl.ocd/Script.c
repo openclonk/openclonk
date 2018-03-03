@@ -110,7 +110,7 @@ protected func OnActionChanged(string oldaction)
 		Description	= A description of what the interaction does
 		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
 		IconName	= Name of the graphic for the icon (like GetInteractionMetaInfo)
-		Priority	= Where to sort in in the interaction-list. 0=front, 10=after script, 20=after vehicles, 30=after structures, nil means no preverence
+		Priority	= Where to sort in in the interaction-list. 0=front, 10=after script, 20=after vehicles, 30=after structures, nil means no preference
 */
 public func GetExtraInteractions()
 {

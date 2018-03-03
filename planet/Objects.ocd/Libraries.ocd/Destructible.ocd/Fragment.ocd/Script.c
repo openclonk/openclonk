@@ -8,7 +8,7 @@
 
 local alpha;
 
-func Initialize()
+public func Initialize()
 {
 	// Set graphics to a random fragment.
 	var graphic = Random(4);
@@ -20,7 +20,7 @@ func Initialize()
 	AddTimer("ProcessFragment", 4);
 }
 
-func ProcessFragment()
+public func ProcessFragment()
 {
 	// Remove object if con is too small or when alpha is too high.
 	if (GetCon() < 40 || alpha > 200)
