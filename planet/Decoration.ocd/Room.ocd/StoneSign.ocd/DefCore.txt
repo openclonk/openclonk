@@ -1,0 +1,7 @@
+[DefCore]
+id=StoneSign
+Version=9,0
+Category=C4D_StaticBack
+Width=10
+Height=8
+Offset=-5,-4
