@@ -21,4 +21,5 @@ public func Definition(def)
 	_inherited(def);
 	// Model file is way too large
 	def.MeshTransformation = Trans_Scale(130);
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-5000, -60000, 150000), Trans_Rotate(-20, 0, 1), Trans_Scale(400));
 }

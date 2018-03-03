@@ -13,7 +13,7 @@ public func IsInteractable() { return inscription != ""; }
 // Adapt appearance in the interaction bar.
 public func GetInteractionMetaInfo(object clonk)
 {
-	return { Description = "$MsgRead$", IconName = nil, IconID = GetID(), Selected = false };
+	return { Description = "$MsgRead$", Selected = false };
 }
 
 // Called on player interaction.
@@ -45,6 +45,7 @@ public func Definition(def)
 {
 	// Model file is way too large
 	def.MeshTransformation = Trans_Scale(360);
+	def.PictureTransformation = Trans_Scale(900);
 	// Inscription props
 	if (!def.EditorProps) def.EditorProps = {};
 	def.EditorProps.inscription = { Name="$Inscription$", Type="string", EditorHelp="$InscriptionHelp$", Set="SetInscription", Save="Inscription", Translatable=true };
