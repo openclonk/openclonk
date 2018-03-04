@@ -1,0 +1,7 @@
+[DefCore]
+id=WoodenSign
+Version=9,0
+Category=C4D_StaticBack
+Width=12
+Height=10
+Offset=-6,-5

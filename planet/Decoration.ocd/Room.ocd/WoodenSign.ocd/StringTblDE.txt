@@ -1,0 +1,4 @@
+Name=Holzbrett
+Description=Behält wichtige Informationen.
+Inscription=Beschriftung
+InscriptionHelp=Text der beim Lesen des Holzbrettes angezeigt wird.
