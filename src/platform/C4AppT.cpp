@@ -31,7 +31,10 @@ C4AbstractApp::C4AbstractApp()
 		: MainThread (pthread_self())
 #endif
 {
+	// C4StdInProc is broken on Windows
+#ifndef STDSCHEDULER_USE_EVENTS
 	Add(&InProc);
+#endif
 }
 
 C4AbstractApp::~C4AbstractApp()
