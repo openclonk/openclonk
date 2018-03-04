@@ -1,0 +1,14 @@
+Texture Sources:
+All textures have been modified.
+
+Rope Texture:
+Tim van de Vall <timvandevall.com>
+Special permission for use in OpenClonk under the CC BY 3.0 license.
+
+Wood Texture:
+Public Domain - CC0
+
+Metal Texture:
+"Grzesiek" <https://www.flickr.com/photos/stoyan/>
+<https://www.flickr.com/photos/stoyan/387961807/>
+CC BY 2.0 (licensed under CC BY 3.0 after modification)
