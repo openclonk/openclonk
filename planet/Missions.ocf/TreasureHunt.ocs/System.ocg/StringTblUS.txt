@@ -63,7 +63,7 @@ Riku6=Why don't you go search these switches then?
 Riku7=Why would I? I'll just enter the treasure chamber when someone else has done the work for me!
 Riku8=Hmpf. I guess I'll have to search then.
 RikuOil1=Almost. I'm looking for oil.
-RikuOil2=Hm, oil. Did you ask Dagobert outside this mountain? He might have an idea.
+RikuOil2=Hm, oil. Did you ask Scrooge outside this mountain? He might have an idea.
 RikuGem1=Hey Riku, I've found the gem.
 RikuGem2=That's cool bro! I'll stay here and keep the rest of the treasure then.
 
