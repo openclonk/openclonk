@@ -232,6 +232,12 @@ C4NetIO *C4Network2IO::DataIO() // by both
 
 bool C4Network2IO::Connect(const C4NetIO::addr_t &addr, C4Network2IOProtocol eProt, const C4ClientCore &nCCore, const char *szPassword) // by main thread
 {
+    return ConnectWithSocket(addr, eProt, nCCore, nullptr, szPassword);
+}
+
+
+bool C4Network2IO::ConnectWithSocket(const C4NetIO::addr_t &addr, C4Network2IOProtocol eProt, const C4ClientCore &nCCore, std::unique_ptr<C4NetIOTCP::Socket> socket, const char *szPassword) // by main thread
+{
 	// get network class
 	C4NetIO *pNetIO = getNetIO(eProt);
 	if (!pNetIO) return false;
@@ -244,6 +250,8 @@ bool C4Network2IO::Connect(const C4NetIO::addr_t &addr, C4Network2IOProtocol ePr
 	C4Network2IOConnection *pConn = new C4Network2IOConnection();
 	pConn->Set(pNetIO, eProt, paddr, addr, CS_Connect, szPassword, iConnID);
 	pConn->SetCCore(nCCore);
+	if (socket)
+		pConn->SetSocket(std::move(socket));
 	AddConnection(pConn);
 	// connect
 	if (!pConn->Connect())
@@ -1328,6 +1336,11 @@ void C4Network2IOConnection::Set(C4NetIO *pnNetClass, C4Network2IOProtocol enPro
 	iTimestamp = time(nullptr); iPingTime = -1;
 }
 
+void C4Network2IOConnection::SetSocket(std::unique_ptr<C4NetIOTCP::Socket> socket)
+{
+	TcpSimOpenSocket = std::move(socket);
+}
+
 void C4Network2IOConnection::SetRemoteID(uint32_t inRemoteID)
 {
 	iRemoteID = inRemoteID;
@@ -1433,6 +1446,11 @@ void C4Network2IOConnection::SetCCore(const C4ClientCore &nCCore)
 bool C4Network2IOConnection::Connect()
 {
 	if (!pNetClass) return false;
+	if (TcpSimOpenSocket)
+	{
+		auto pNetTCP = dynamic_cast<C4NetIOTCP*>(pNetClass);
+		return pNetTCP->Connect(ConnectAddr, std::move(TcpSimOpenSocket));
+	}
 	// try connect
 	return pNetClass->Connect(ConnectAddr);
 }

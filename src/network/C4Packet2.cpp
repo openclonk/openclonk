@@ -84,6 +84,7 @@ const C4PktHandlingData PktHandlingData[] =
 
 	// C4Network2ClientList (main thread)
 	{ PID_Addr,         PC_Network, "Client Address",             false,  false,  PH_C4Network2ClientList,  PKT_UNPACK(C4PacketAddr)        },
+	{ PID_TCPSimOpen,   PC_Network, "TCP simultaneous open req",  false,  false,  PH_C4Network2ClientList,  PKT_UNPACK(C4PacketTCPSimOpen)  },
 
 
 	// C4Network2ResList (network thread)

@@ -118,6 +118,7 @@ public:
 
 	// connections
 	bool Connect(const C4NetIO::addr_t &addr, C4Network2IOProtocol eProt, const C4ClientCore &nCCore, const char *szPassword = nullptr); // by main thread
+	bool ConnectWithSocket(const C4NetIO::addr_t &addr, C4Network2IOProtocol eProt, const C4ClientCore &nCCore, std::unique_ptr<C4NetIOTCP::Socket> socket, const char *szPassword = nullptr); // by main thread
 	void SetAcceptMode(bool fAcceptAll); // by main thread
 	void SetExclusiveConnMode(bool fExclusiveConn); // by main thread
 	int getConnectionCount(); // by main thread
@@ -223,6 +224,7 @@ protected:
 	class C4NetIO *pNetClass{nullptr};
 	C4Network2IOProtocol eProt;
 	C4NetIO::addr_t PeerAddr, ConnectAddr;
+	std::unique_ptr<C4NetIOTCP::Socket> TcpSimOpenSocket;
 
 	// status data
 	C4Network2IOConnStatus Status;
@@ -293,6 +295,7 @@ public:
 protected:
 	// called by C4Network2IO only
 	void Set(C4NetIO *pnNetClass, C4Network2IOProtocol eProt, const C4NetIO::addr_t &nPeerAddr, const C4NetIO::addr_t &nConnectAddr, C4Network2IOConnStatus nStatus, const char *szPassword, uint32_t iID);
+	void SetSocket(std::unique_ptr<C4NetIOTCP::Socket> socket);
 	void SetRemoteID(uint32_t iRemoteID);
 	void SetPeerAddr(const C4NetIO::addr_t &nPeerAddr);
 	void OnPing();

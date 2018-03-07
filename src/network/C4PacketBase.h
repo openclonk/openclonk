@@ -109,6 +109,9 @@ enum C4PacketType
 	// activation request
 	PID_ClientActReq  = 0x13,
 
+	// request to perform TCP simultaneous open
+	PID_TCPSimOpen    = 0x14,
+
 	// all data a client needs to get started
 	PID_JoinData      = 0x15,
 
