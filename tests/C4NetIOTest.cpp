@@ -83,3 +83,21 @@ TEST_F(C4NetIOTest, HostAddressCategories)
 		EXPECT_TRUE(check(addr.IsPrivate(), t->priv));
 	}
 }
+
+
+// Tests C4NetIOTCP::Bind
+TEST_F(C4NetIOTest, TCPBind)
+{
+	C4NetIOTCP NetIO;
+	ASSERT_TRUE(NetIO.Init());
+
+	C4NetIO::addr_t addr(StdStrBuf("[::1]:0"));
+	auto socket = NetIO.Bind(addr);
+	ASSERT_NE(socket, nullptr);
+	auto bound_addr = socket->GetAddress();
+	EXPECT_TRUE(bound_addr.IsLoopback());
+	EXPECT_EQ(bound_addr.GetFamily(), C4NetIO::addr_t::IPv6);
+	EXPECT_NE(bound_addr.GetPort(), 0);
+
+	NetIO.Close();
+}
