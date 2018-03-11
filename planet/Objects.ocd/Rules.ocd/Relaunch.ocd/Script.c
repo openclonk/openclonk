@@ -219,8 +219,9 @@ public func InitializePlayer(int plr)
 	// Check if relaunch is needed.
 	if (!initial_relaunch || !perform_restart)
 		return;	
-	// Scenario script callback.
-	if (GameCallEx("OnPlayerRelaunch", plr, false))
+	// Scenario script and goals callbacks.
+	GameCallEx("OnPlayerRelaunchCountChanged", plr);
+	if (GameCall("OnPlayerRelaunch", plr, false))
 		return;
 	return DoRelaunch(plr, nil, nil, true);
 }
@@ -241,7 +242,9 @@ public func OnClonkDeath(object clonk, int killer)
 			return;
 		}
 	}
-	if (GameCallEx("OnPlayerRelaunch", plr, true))
+	// Scenario script and goals callbacks.
+	GameCallEx("OnPlayerRelaunchCountChanged", plr);
+	if (GameCall("OnPlayerRelaunch", plr, true))
 		return;
 	return DoRelaunch(plr, clonk, nil);
 }
@@ -358,7 +361,7 @@ public func DoRelaunch(int plr, object clonk, array position, bool no_creation)
 	
 	if (!GetCursor(plr) || GetCursor(plr) == clonk)
 		SetCursor(plr, new_clonk);
-	new_clonk->DoEnergy(new_clonk.Energy ?? 100000);
+	new_clonk->DoEnergy(new_clonk.MaxEnergy ?? 100000);
 	
 	if (relaunch_time)
 	{
