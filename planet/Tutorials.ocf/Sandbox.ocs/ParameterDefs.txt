@@ -1,0 +1,123 @@
+[ParameterDef]
+Name=$MapSize$
+Description=$DescMapSize$
+ID=MapSize
+Default=4
+
+	[Options]
+		
+		[Option]
+		Name=$MapSizeNarrowSmall$
+		Value=0
+		
+		[Option]
+		Name=$MapSizeNarrowNormal$
+		Value=1
+		
+		[Option]
+		Name=$MapSizeNarrowLarge$
+		Value=2
+
+		[Option]
+		Name=$MapSizeBasicSmall$
+		Value=3
+		
+		[Option]
+		Name=$MapSizeBasicNormal$
+		Value=4
+		
+		[Option]
+		Name=$MapSizeBasicLarge$
+		Value=5
+		
+		[Option]
+		Name=$MapSizeWideSmall$
+		Value=6
+		
+		[Option]
+		Name=$MapSizeWideNormal$
+		Value=7
+		
+		[Option]
+		Name=$MapSizeWideLarge$
+		Value=8
+		
+[ParameterDef]
+Name=$MapType$
+Description=$DescMapType$
+ID=MapType
+Default=1
+	
+	[Options]
+		
+		[Option]
+		Name=$MapTypeEmpty$
+		Value=0
+		
+		[Option]
+		Name=$MapTypeFlatland$
+		Value=1
+		
+		[Option]
+		Name=$MapTypeHills$
+		Value=2
+		
+		[Option]
+		Name=$MapTypeMountains$
+		Value=3
+
+[ParameterDef]
+Name=$MapClimate$
+Description=$DescMapClimate$
+ID=MapClimate
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$MapClimateTemperate$
+		Value=0
+		
+		#[Option]
+		#Name=$MapClimateCold$
+		#Value=1
+
+[ParameterDef]
+Name=$Goal$
+Description=$DescGoal$
+ID=Goal
+Default=1
+	
+	[Options]
+		
+		[Option]
+		Name=$NoGoal$
+		Value=0
+		
+		[Option]
+		Name=$GoalMining$
+		Value=1
+		
+		[Option]
+		Name=$GoalExpansion$
+		Value=2
+		
+[ParameterDef]
+Name=$GodMode$
+Description=$DescGodMode$
+ID=GodMode
+Default=2
+
+	[Options]
+	
+		[Option]
+		Name=$GodModeOff$
+		Value=0
+		
+		[Option]
+		Name=$GodModeHost$
+		Value=1
+		
+		[Option]
+		Name=$GodModeAll$
+		Value=2

@@ -3,7 +3,7 @@ TooltipLandscapeBrush=Landschaft zeichnen
 TooltipMarker=Marker
 TooltipMapGen=Kartengenerator
 TooltipTweaks=Cheats und anderes tolles Zeugs
-GodsHandDisplayTT=Dieses Objekt wird mit der Hand Gottes platziert (zum Ändern \"Objekte erzeugen\" aufrufen und \"Hand Gottes\" als Ziel auswählen)
+TooltipGodsHand=Dieses Objekt wird mit der Hand Gottes platziert (zum Ändern \"Objekte erzeugen\" aufrufen und \"Hand Gottes\" als Ziel auswählen).
 
 OSCatProductionResources=Rohstoffe
 OSCatFoodstuff=Nahrungsmittel
@@ -20,8 +20,8 @@ OSHintTarget=Tipp! Du kannst hiermit einstellen, wo du Objekte erzeugen möchtes
 
 OSTargetClonk=Ziel: Clonk/Inventar
 OSTargetGodsHand=Ziel: Hand Gottes
-OSTargetClonkTT=Das Objekt wird (wenn möglich) im Inventar des Clonks erzeugt
-OSTargetGodsHandTT=Das Objekt kann mit der Hand Gottes erzeugt werden
+OSTargetClonkTT=Das Objekt wird (wenn möglich) im Inventar des Clonks erzeugt.
+OSTargetGodsHandTT=Das Objekt kann mit der Hand Gottes erzeugt werden.
 
 MatEarth=Erde
 MatEarthSpongy=Erde (Schwammig)
@@ -74,11 +74,16 @@ MapGenButtonGenerate=Karte generieren!
 MapGenSizeWidth=Kartenbreite
 MapGenSizeHeight=Kartenhöhe
 MapGenMapType=Kartentyp
+MapGenGoal=Spielziel
 
-MapGenTPCustom=Anpassen
-MapGenTPFlatLand=Flachland
-MapGenTPSkylands=Himmelsinseln
-MapGenTPCaves=Höhlen
+MapGenTPEmpty=Leer
+MapGenTPFlatland=Flachland
+MapGenTPHills=Hügeln
+MapGenTPMountains=Berge
+
+MapGenGoalNone=Kein Spielziel
+MapGenGoalMining=Bergbau
+MapGenGoalExpansion=Ausbreitung
 
 TweakInvincible=Unverwundbarkeit (Gott-Modus)
 OptActivate=Aktivieren
@@ -91,3 +96,14 @@ OptSkin1=Abenteurer
 OptSkin2=Steampunk
 OptSkin3=Alchemist
 OptSkin4=Farmer
+
+# Goal
+MsgGoalName=Sandkasten
+MsgGoalDescription=You did not select any goal, so you can just experiment and have fun! The host can enable and disable god mode by the message board command /godmode off/host/all.
+
+# Message board
+MessageBoardOnlyHost=Only the host can change god mode settings.
+MessageBoardModeOff=God mode is now off.
+MessageBoardModeHost=The host has now god mode.
+MessageBoardModeAll=All players now have god mode.
+MessageBoardInvalidPar=Wrong parameter, valid is /godmode off/host/all.

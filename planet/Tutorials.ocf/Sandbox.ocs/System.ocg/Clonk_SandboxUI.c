@@ -8,14 +8,16 @@ local idGuiHudOS_catselect = 100;
 local idGuiHudOS_objectselect = 101;
 local idGuiHudOS_switchspawndest = 102;
 
-protected func Death(int killed_by)
+public func Death(int killed_by)
 {
 	HideSandboxUI();
 	return _inherited(killed_by, ...);
 }
 
-func ShowSandboxUI()
+public func ShowSandboxUI()
 {
+	var object_spawn_key = GetPlayerControlAssignment(GetOwner(), CON_TutorialGuide, true, true);
+
 	var SandboxUI = 
 	{
 		Player = GetOwner(),
@@ -37,6 +39,9 @@ func ShowSandboxUI()
 				
 				Symbol = Hammer,
 				Tooltip = "$TooltipObjectspawn$",
+				
+				Text = Format("<c dddd00>[%s]</c>", object_spawn_key),
+				Style = GUI_TextBottom | GUI_TextRight,
 				
 				BackgroundColor = { Std = RGBa(128, 128, 128, 128), Hover = RGBa(128, 255, 128, 128) },
 				
@@ -121,7 +126,7 @@ func ShowSandboxUI()
 			Right = "20em",
 			Bottom = "3.5em",
 			BackgroundColor = RGBa(96,96,96,96),
-			Tooltip = "$GodsHandDisplayTT$",
+			Tooltip = "$TooltipGodsHand$",
 			
 			icon = 
 			{
@@ -151,7 +156,7 @@ func ShowSandboxUI()
 	return idHudSandbox;
 }
 
-func UpdateGodsHandDisplay()
+public func UpdateGodsHandDisplay()
 {
 	var update = 
 	{
@@ -172,7 +177,7 @@ func UpdateGodsHandDisplay()
 	GuiUpdate(update, idHudSandbox);
 }
 
-func HideSandboxUI()
+public func HideSandboxUI()
 {
 	if (idHudSandbox)
 	{
@@ -181,27 +186,27 @@ func HideSandboxUI()
 	}
 }
 
-func BtnObjectSpawnClick()
+public func BtnObjectSpawnClick()
 {
 	ShowObjectSpawnUI();
 }
 
-func BtnLandscapeBrushClick()
+public func BtnLandscapeBrushClick()
 {
 	ShowMaterialBrushUI();
 }
 
-func BtnMarkerClick()
+public func BtnMarkerClick()
 {
 	ShowMarkerUI();
 }
 
-func BtnMapGenClick()
+public func BtnMapGenClick()
 {
 	ShowMapGenUI();
 }
 
-func BtnTweaksClick()
+public func BtnTweaksClick()
 {
 	ShowTweaksUI();
 }
@@ -216,7 +221,7 @@ local ObjectSpawnMenuOpts =
 		Priority = 2,
 		Caption = "$OSCatProductionResources$",
 		Icon = Ore,
-		Items = [Rock, Ore, Coal, Firestone, Nugget, Metal, Wood, Moss, Ruby, Amethyst, GoldBar, Firestone, Ice]
+		Items = [Rock, Ore, Coal, Firestone, Nugget, Metal, Wood, Moss, Ruby, Amethyst, Diamond, GoldBar, Ice, Snow, Cloth, Loam, CottonSeed]
 	},
 	
 	Foodstuff = 
@@ -224,7 +229,7 @@ local ObjectSpawnMenuOpts =
 		Priority = 3,
 		Caption = "$OSCatFoodstuff$",
 		Icon = Bread,
-		Items = [Bread, Mushroom, CookedMushroom, Sproutberry, Coconut]
+		Items = [Flour, Bread, Mushroom, CookedMushroom, Sproutberry, Coconut]
 	},
 	
 	Liquids =
@@ -240,7 +245,7 @@ local ObjectSpawnMenuOpts =
 		Priority = 5,
 		Caption = "$OSCatTools$",
 		Icon = Hammer,
-		Items = [Hammer, Shovel, Axe, Pickaxe, Sickle, TeleGlove, Torch, WallKit, Ropeladder, Ropebridge, GrappleBow, Balloon, Boompack, WindBag, Lantern, Bucket, Barrel, MetalBarrel, Pipe, Crate, Dynamite, DynamiteBox, Lorry]
+		Items = [Hammer, Shovel, Axe, Pickaxe, Sickle, TeleGlove, Torch, WallKit, Ropeladder, Ropebridge, GrappleBow, Balloon, Boompack, WindBag, Lantern, Bucket, Barrel, MetalBarrel, Pipe, Crate, Dynamite, DynamiteBox, DivingHelmet, Lorry]
 	},
 	
 	Weapons = 
@@ -264,7 +269,7 @@ local ObjectSpawnMenuOpts =
 		Priority = 8,
 		Caption = "$OSCatVehicles$",
 		Icon = Airship,
-		Items = [Airship, Airplane]
+		Items = [Lorry, Catapult, Cannon, Locomotive, Airship, Airplane]
 	},
 	
 	Animals =
@@ -292,7 +297,7 @@ local ObjectSpawnMenuOpts =
 	}
 };
 
-func ShowObjectSpawnUI()
+public func ShowObjectSpawnUI()
 {
 	var SpawnUI = 
 	{
@@ -414,9 +419,9 @@ func ShowObjectSpawnUI()
 	return idHudOS;
 }
 
-func HideObjectSpawnUI()
+public func HideObjectSpawnUI()
 {
-	if (idHudOS)
+	if (idHudOS != nil)
 	{
 		GuiClose(idHudOS);
 		MenuClosed();
@@ -424,25 +429,25 @@ func HideObjectSpawnUI()
 	}
 }
 
-func GetObjectSpawnDest()
+public func GetObjectSpawnDest()
 {
 	if (ObjectSpawnTarget == 1) return "$OSTargetClonk$";
 	if (ObjectSpawnTarget == 2) return "$OSTargetGodsHand$";
 }
 
-func GetObjectSpawnDestSymbol()
+public func GetObjectSpawnDestSymbol()
 {
 	if (ObjectSpawnTarget == 1) return Clonk;
 	if (ObjectSpawnTarget == 2) return GodsHand;
 }
 
-func GetObjectSpawnDestTooltip()
+public func GetObjectSpawnDestTooltip()
 {
 	if (ObjectSpawnTarget == 1) return "$OSTargetClonkTT$";
 	if (ObjectSpawnTarget == 2) return "$OSTargetGodsHandTT$";
 }
 
-func SwitchObjectSpawnDest()
+public func SwitchObjectSpawnDest()
 {
 	ObjectSpawnTarget++;
 	if (ObjectSpawnTarget > 2) ObjectSpawnTarget = 1;
@@ -480,7 +485,7 @@ func SwitchObjectSpawnDest()
 	GuiUpdate(update, idHudOS);
 }
 
-func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, object target)
+public func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, object target)
 {
 	GuiClose(idHudOS, idGuiHudOS_objectselect);
 	var objectselect = 
@@ -535,7 +540,7 @@ func ObjectSpawnSelectCat(data, int player, int ID, int subwindowID, object targ
 	GuiUpdate(objectselect, idHudOS, idGuiHudOS_objectselect);
 }
 
-func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object target)
+public func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object target)
 {
 	var clonk = GetCursor(player);
 	var obj = data[0];
@@ -550,25 +555,25 @@ func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object t
 			return;
 		}
 		
-		var spawnlocation = 2; // 1 = Inventory, 2 = Outside, 3 = Outside Above
-		
-		// Normal objects can spawn in Inventory
+		// Normal objects can spawn in inventory.
 		if (obj->GetCategory() & C4D_Object)
-			spawnlocation = 1;
-		
+		{
+			clonk->Collect(clonk->CreateObject(obj));
+		}
 		// Livings spawn outside the clonk
-		if (obj->GetCategory() & C4D_Living)
-			spawnlocation = 2;
-		
+		else if (obj->GetCategory() & C4D_Living)
+		{
+			clonk->CreateObject(obj);
+		}
 		// Vehicles spawn above to avoid being stuck
-		if (obj->GetCategory() & C4D_Vehicle)
-			spawnlocation = 3;
-		
-		
-		//if (spawnlocation == 1) clonk->CreateContents(obj);
-		if (spawnlocation == 1) clonk->Collect(CreateObject(obj));
-		if (spawnlocation == 2) clonk->CreateObject(obj);
-		if (spawnlocation == 3) clonk->CreateObjectAbove(obj, 0, 0);
+		else if (obj->GetCategory() & C4D_Vehicle)
+		{
+			clonk->CreateObjectAbove(obj, 0, 0);
+		}
+		else
+		{
+			clonk->CreateObject(obj);
+		}
 	}
 	else if (ObjectSpawnTarget == 2)
 	{
@@ -577,9 +582,6 @@ func ObjectSpawnSelectObject(data, int player, int ID, int subwindowID, object t
 		HideObjectSpawnUI();
 		UpdateGodsHandDisplay();
 	}
-	
-	// TODO: Prüfung wo das Objekt erzeugt werden soll (Inventar/Aussen)
-	// TODO: Prüfen, was mit dem ausgewählten Objekt passieren soll (Spawn/Hand of god)
 }
 
 local SelectedBrushMaterial = "Earth-earth";
@@ -633,7 +635,7 @@ local idGuiHudMB_MatBgSelect = 301;
 local idGuiHudMB_SizeSelect = 302;
 local idGuiHudMB_ModeSelect = 303;
 
-func ShowMaterialBrushUI()
+public func ShowMaterialBrushUI()
 {
 	var bgBrush = { Std = 0, Hover = RGBa(128,128,192,128) };
 	var bgQuad  = bgBrush;
@@ -1002,7 +1004,7 @@ func ShowMaterialBrushUI()
 	return idHudMB;
 }
 
-func HideMaterialBrushUI()
+public func HideMaterialBrushUI()
 {
 	if (idHudMB)
 	{
@@ -1012,7 +1014,7 @@ func HideMaterialBrushUI()
 	}
 }
 
-func SelectBrushMaterial(data)
+public func SelectBrushMaterial(data)
 {
 	SelectedBrushMaterial = data;
 	
@@ -1074,7 +1076,7 @@ func SelectBrushMaterial(data)
 	GuiUpdate(update, idHudMB);
 }
 
-func SelectBrushBackgroundMaterial(data)
+public func SelectBrushBackgroundMaterial(data)
 {
 	SelectedBrushBgMaterial = data;
 	
@@ -1136,7 +1138,7 @@ func SelectBrushBackgroundMaterial(data)
 	GuiUpdate(update, idHudMB);
 }
 
-func BrushSizeChange(valuechange)
+public func BrushSizeChange(valuechange)
 {
 	SelectedBrushSize += valuechange;
 	if (SelectedBrushSize < 1) SelectedBrushSize = 1;
@@ -1161,7 +1163,7 @@ func BrushSizeChange(valuechange)
 	GuiUpdate(update, idHudMB);
 }
 
-func SelectBrushMode(data)
+public func SelectBrushMode(data)
 {
 	SelectedBrushMode = data;
 	
@@ -1206,7 +1208,7 @@ func SelectBrushMode(data)
 
 local idHudTW;
 
-func ShowTweaksUI()
+public func ShowTweaksUI()
 {
 	var TweaksUI =
 	{
@@ -1425,7 +1427,17 @@ func ShowTweaksUI()
 	return idHudTW;
 }
 
-func HideTweaksUI()
+public func TweaksUI_SetInvincibility(bool newValue)
+{
+	if (newValue)
+		Log("$TweakInvincible_Activated$", this->GetName());
+	else
+		Log("$TweakInvincible_Deactivated$", this->GetName());
+	
+	return this->SetInvincibility(newValue);
+}
+
+public func HideTweaksUI()
 {
 	if (idHudTW)
 	{
@@ -1437,52 +1449,70 @@ func HideTweaksUI()
 
 
 local idHudMG;
-static MapGenSizeWidth;
-static MapGenSizeHeight;
-
-static MapGenPreset;
-static MapGenTreesAmount;
 
 local idGuiHudMG_SizeSelectWidth = 400;
 local idGuiHudMG_SizeSelectHeight = 401;
 local idGuiHudMG_TypePresetList = 402;
+local idGuiHudMG_TypeGoal = 403;
 
 local MapGenTypePresetOpts =
 {
-	// Custom =
-	// {
-		// Priority = 1,
-		// Caption = "$MapGenTPCustom$",
-		// Icon = Hammer,
-		// Value = "Custom"
-	// },
-	
-	FlatLand =
+	Empty =
+	{
+		Priority = 1,
+		Caption = "$MapGenTPEmpty$",
+		Icon = Earth,
+		Value = CSETTING_MapType_Empty
+	},	
+	Flatland =
 	{
 		Priority = 2,
-		Caption = "$MapGenTPFlatLand$",
+		Caption = "$MapGenTPFlatland$",
 		Icon = Earth,
-		Value = "FlatLand"
+		Value = CSETTING_MapType_MapTypeFlatland
 	},
-	
-	Skylands =
+	Hills =
 	{
 		Priority = 3,
-		Caption = "$MapGenTPSkylands$",
-		Icon = Earth,
-		Value = "Skylands"
-	},
-	
-	Caves =
+		Caption = "$MapGenTPHills$",
+		Icon = Shovel,
+		Value = CSETTING_MapType_MapTypeHills
+	},	
+	Mountains = 
 	{
 		Priority = 4,
-		Caption = "$MapGenTPCaves$",
-		Icon = Earth,
-		Value = "Caves"
+		Caption = "$MapGenTPMountains$",
+		Icon = Rock,
+		Value = CSETTING_MapType_MapTypeMountains
 	}
 };
 
-func ShowMapGenUI()
+local MapGenGoalPresetOpts =
+{
+	NoGoal =
+	{
+		Priority = 1,
+		Caption = "$MapGenGoalNone$",
+		Icon = Goal_Tutorial,
+		Value = CSETTING_Goal_Tutorial
+	},	
+	Mining =
+	{
+		Priority = 2,
+		Caption = "$MapGenGoalMining$",
+		Icon = Goal_ResourceExtraction,
+		Value = CSETTING_Goal_Mining
+	},
+	Expansion =
+	{
+		Priority = 3,
+		Caption = "$MapGenGoalExpansion$",
+		Icon = Goal_Expansion,
+		Value = CSETTING_Goal_Expansion
+	}
+};
+
+public func ShowMapGenUI()
 {
 	var MapGenUI =
 	{
@@ -1519,14 +1549,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Minus",
-						Text = "10",
+						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", -10),
+						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", -50),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1537,14 +1567,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Minus",
-						Text = "1",
+						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", -1),
+						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", -5),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1553,7 +1583,7 @@ func ShowMapGenUI()
 					{
 						Priority = 3,
 						Style = GUI_TextHCenter | GUI_TextVCenter,
-						Text = Format("<c ffff00>%d</c>", MapGenSizeWidth),
+						Text = Format("<c ffff00>%d</c>", Settings_MapWdt),
 						
 						Right = "4em",
 						Bottom = "2em",
@@ -1565,14 +1595,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Plus",
-						Text = "1",
+						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", 1),
+						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", 5),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1583,14 +1613,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Plus",
-						Text = "10",
+						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", 10),
+						OnClick = GuiAction_Call(this, "MapGenSizeWidthChange", 50),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1621,14 +1651,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Minus",
-						Text = "10",
+						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", -10),
+						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", -50),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1639,14 +1669,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Minus",
-						Text = "1",
+						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", -1),
+						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", -5),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1655,7 +1685,7 @@ func ShowMapGenUI()
 					{
 						Priority = 3,
 						Style = GUI_TextHCenter | GUI_TextVCenter,
-						Text = Format("<c ffff00>%d</c>", MapGenSizeHeight),
+						Text = Format("<c ffff00>%d</c>", Settings_MapHgt),
 						
 						Right = "4em",
 						Bottom = "2em",
@@ -1667,14 +1697,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Plus",
-						Text = "1",
+						Text = "5",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", 1),
+						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", 5),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1685,14 +1715,14 @@ func ShowMapGenUI()
 						
 						Symbol = Icon_Number,
 						GraphicsName = "Plus",
-						Text = "10",
+						Text = "50",
 						Style = GUI_TextBottom | GUI_TextRight,
 						BackgroundColor = { Std = 0, Hover = RGBa(128,128,192,128) },
 						
 						Right = "2em",
 						Bottom = "2em",
 						
-						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", 10),
+						OnClick = GuiAction_Call(this, "MapGenSizeHeightChange", 50),
 						OnMouseIn = GuiAction_SetTag("Hover"),
 						OnMouseOut = GuiAction_SetTag("Std"),
 					},
@@ -1714,6 +1744,24 @@ func ShowMapGenUI()
 				Selection =
 				{
 					ID = idGuiHudMG_TypePresetList,
+				}
+			},
+			
+			OptGoal =
+			{
+				Priority = 4,
+				Bottom = "2em",
+				Style = GUI_FitChildren,
+				
+				Caption =
+				{
+					Text = "$MapGenGoal$",
+					Right = "12em",
+				},
+				
+				Selection =
+				{
+					ID = idGuiHudMG_TypeGoal,
 				}
 			}
 		},
@@ -1738,6 +1786,8 @@ func ShowMapGenUI()
 	SetMenu(idHudMG);
 	
 	UpdateMapGenPresetOptionList();
+	
+	UpdateMapGenGoalOptionList();
 	
 	return idHudMG;
 }
@@ -1779,7 +1829,8 @@ func UpdateMapGenPresetOptionList()
 		var entry = MapGenTypePresetOpts[property];
 		
 		var bgcolor = { Std = 0, Hover = RGBa(128,128,192,128) };
-		if (MapGenPreset == entry.Value) bgcolor = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
+		if (Settings_MapType == entry.Value)
+			bgcolor = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
 		
 		var subentry =
 		{
@@ -1809,24 +1860,86 @@ func UpdateMapGenPresetOptionList()
 		GuiAddSubwindow(subentry, update.OptionList.OptPreset.Selection);
 	}
 	
-	GuiUpdate(update, idHudMG);
-	
-	
+	GuiUpdate(update, idHudMG);	
 }
 
-func MapGenSelectPreset(data)
+func UpdateMapGenGoalOptionList()
+{	
+	GuiClose(idHudMG, idGuiHudMG_TypeGoal);
+	 
+	var update = 
+	{
+		OptionList =
+		{
+			OptGoal =
+			{
+				Selection =
+				{
+					ID = idGuiHudMG_TypeGoal,
+					Left = "12em",
+					Style = GUI_GridLayout | GUI_FitChildren,
+				}
+			}
+		}
+	};
+	
+	GuiUpdate(update, idHudMG);
+	
+	for (var property in GetProperties(MapGenGoalPresetOpts))
+	{
+		var entry = MapGenGoalPresetOpts[property];
+		
+		var bgcolor = { Std = 0, Hover = RGBa(128,128,192,128) };
+		if (Settings_Goal == entry.Value)
+			bgcolor = { Std = RGBa(128,192,128,128), Hover = RGBa(128,128,192,128) };
+		
+		var subentry =
+		{
+			Right = "10em",
+			Bottom = "2em",
+			Priority = entry.Priority,
+			BackgroundColor = bgcolor,
+			
+			icon =
+			{
+				Symbol = entry.Icon,
+				Right = "2em",
+			},
+			
+			text =
+			{
+				Text = entry.Caption,
+				Left = "2.5em",
+				Style = GUI_TextVCenter,
+			},
+			
+			OnClick = GuiAction_Call(this, "MapGenSelectGoal", entry.Value),
+			OnMouseIn = GuiAction_SetTag("Hover"),
+			OnMouseOut = GuiAction_SetTag("Std"),
+		};
+		
+		GuiAddSubwindow(subentry, update.OptionList.OptGoal.Selection);
+	}
+	
+	GuiUpdate(update, idHudMG);
+}
+
+public func MapGenSelectPreset(int data)
 {
-	MapGenPreset = data;
+	Settings_MapType = data;
 	UpdateMapGenPresetOptionList();
 }
 
-func MapGenSizeWidthChange(valuechange)
+public func MapGenSelectGoal(int data)
 {
-	MapGenSizeWidth += valuechange;
-	if (MapGenSizeWidth < 1) MapGenSizeWidth = 1;
-	if (MapGenSizeWidth > 1000) MapGenSizeWidth = 1000;
-	
-	var update =
+	Settings_Goal = data;
+	UpdateMapGenGoalOptionList();
+}
+
+public func MapGenSizeWidthChange(int change)
+{
+	Settings_MapWdt = BoundBy(Settings_MapWdt + change, CSETTING_MapSize_Min, CSETTING_MapSize_Max);
+	var update = 
 	{
 		OptionList =
 		{
@@ -1836,22 +1949,18 @@ func MapGenSizeWidthChange(valuechange)
 				{
 					Value =
 					{
-						Text = Format("<c ffff00>%d</c>", MapGenSizeWidth)
+						Text = Format("<c ffff00>%d</c>", Settings_MapWdt)
 					}
 				}
 			}
 		}
-	};
-	
+	};	
 	GuiUpdate(update, idHudMG);
 }
 
-func MapGenSizeHeightChange(valuechange)
+public func MapGenSizeHeightChange(int change)
 {
-	MapGenSizeHeight += valuechange;
-	if (MapGenSizeHeight < 1) MapGenSizeHeight = 1;
-	if (MapGenSizeHeight > 1000) MapGenSizeHeight = 1000;
-	
+	Settings_MapHgt = BoundBy(Settings_MapHgt + change, CSETTING_MapSize_Min, CSETTING_MapSize_Max);
 	var update =
 	{
 		OptionList =
@@ -1862,7 +1971,7 @@ func MapGenSizeHeightChange(valuechange)
 				{
 					Value =
 					{
-						Text = Format("<c ffff00>%d</c>", MapGenSizeHeight)
+						Text = Format("<c ffff00>%d</c>", Settings_MapHgt)
 					}
 				}
 			}
@@ -1872,7 +1981,7 @@ func MapGenSizeHeightChange(valuechange)
 	GuiUpdate(update, idHudMG);
 }
 
-func MakeNewMap()
+public func MakeNewMap()
 {
 	var clonks = [];
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
@@ -1897,6 +2006,8 @@ func MakeNewMap()
 	
 	LoadScenarioSection("main");
 	
+	GameCall("InitRound");
+	
 	for (var clonk in clonks)
 	{
 		clonk->SetObjectStatus(C4OS_NORMAL);
@@ -1905,21 +2016,16 @@ func MakeNewMap()
 		clonk->Unstick(20);
 	}
 	
-	for(var i = 0; i < GetPlayerCount(); i++)
-	{
-		GameCall("InitializePlayer", GetPlayerByIndex(i));
-	}
-	
-	// Things to do after the Clonks have respawned on new map
-	PostMapGen();
-	
+	for (var plr in GetPlayers())
+		GameCall("InitializePlayer", plr);
+	return;
 }
 
 
 local idHudMK;
 local idGuiHudMK_MarkerList = 610;
 
-func ShowMarkerUI()
+public func ShowMarkerUI()
 {
 	var MarkerUI =
 	{
@@ -1960,7 +2066,7 @@ func ShowMarkerUI()
 	return idHudMK;
 }
 
-func HideMarkerUI()
+public func HideMarkerUI()
 {
 	if (idHudMK)
 	{
@@ -1970,7 +2076,7 @@ func HideMarkerUI()
 	}
 }
 
-func UpdateMarkerList()
+public func UpdateMarkerList()
 {
 	if (!idHudMK) return;
 	
@@ -2095,7 +2201,7 @@ func UpdateMarkerList()
 	GuiUpdate(update, idHudMK, idGuiHudMK_MarkerList);
 }
 
-func PlaceNewMarker()
+public func PlaceNewMarker()
 {
 	var newindex = GetNextFreeMarkerIndex(GetOwner());
 	
@@ -2117,13 +2223,13 @@ func PlaceNewMarker()
 	}
 }
 
-func RemoveMarker(marker)
+public func RemoveMarker(marker)
 {
 	marker->RemoveObject();
 	UpdateMarkerList();
 }
 
-func GoToMarker(marker)
+public func GoToMarker(marker)
 {
 	this->SetPosition(marker->GetX(), marker->GetY());
 	this->Sound("Warp");

@@ -3,7 +3,7 @@ TooltipLandscapeBrush=Draw landscape
 TooltipMarker=Marker
 TooltipMapGen=Map generator
 TooltipTweaks=Cheats and other cool stuff
-GodsHandDisplayTT=Dieses Objekt wird mit der Hand Gottes platziert (zum Ändern \"Objekte erzeugen\" aufrufen und \"Hand Gottes\" als Ziel auswählen)
+TooltipGodsHand=This object will be place with God's hand (to change select a different object in the menu).
 
 OSCatProductionResources=Resources
 OSCatFoodstuff=Nutrition
@@ -16,12 +16,12 @@ OSCatAnimals=Animals
 OSCatPlants=Plants
 OSCatGodTools=God's tools
 
-OSHintTarget=Tipp! Du kannst hiermit einstellen, wo du Objekte erzeugen möchtest. Stelle dies auf \"Hand Gottes\" um auszuwählen, welches Objekt du mit der Hand Gottes erzeugen möchtest.
+OSHintTarget=Hint! You can select here where to create the objects. Set to \"God's hand\" to select which object you want to create with God's hand.
 
-OSTargetClonk=Ziel: Clonk/Inventar
-OSTargetGodsHand=Ziel: Hand Gottes
-OSTargetClonkTT=Das Objekt wird (wenn möglich) im Inventar des Clonks erzeugt
-OSTargetGodsHandTT=Das Objekt kann mit der Hand Gottes erzeugt werden
+OSTargetClonk=Target: Clonk/Inventory
+OSTargetGodsHand=Target: God's hand
+OSTargetClonkTT=The object will be placed into the clonks inventory if possible.
+OSTargetGodsHandTT=The object can now be placed with God's hand.
 
 MatEarth=Earth
 MatEarthSpongy=Earth (spongy)
@@ -74,13 +74,18 @@ MapGenButtonGenerate=Generate map!
 MapGenSizeWidth=map width
 MapGenSizeHeight=map height
 MapGenMapType=map type
+MapGenGoal=game goal
 
-MapGenTPCustom=Modify
-MapGenTPFlatLand=Flatland
-MapGenTPSkylands=Skylands
-MapGenTPCaves=Caves
+MapGenTPEmpty=Empty
+MapGenTPFlatland=Flatland
+MapGenTPHills=Hills
+MapGenTPMountains=Mountains
 
-TweakInvincible=Invincibility (Gott-Modus)
+MapGenGoalNone=No goal
+MapGenGoalMining=Mining
+MapGenGoalExpansion=Expansion
+
+TweakInvincible=Invincibility (God-Mode)
 OptActivate=Activate
 OptDeactivate=Deactivate
 TweakInvincible_Activated=%s is now invincible
@@ -91,3 +96,14 @@ OptSkin1=Adventurere
 OptSkin2=Steampunk
 OptSkin3=Alchemist
 OptSkin4=Farmer
+
+# Goal
+MsgGoalName=Sandbox
+MsgGoalDescription=You did not select any goal, so you can just experiment and have fun! The host can enable and disable god mode by the message board command /godmode off/host/all.
+
+# Message board
+MessageBoardOnlyHost=Only the host can change god mode settings.
+MessageBoardModeOff=God mode is now off.
+MessageBoardModeHost=The host has now god mode.
+MessageBoardModeAll=All players now have god mode.
+MessageBoardInvalidPar=Wrong parameter, valid is /godmode off/host/all.
