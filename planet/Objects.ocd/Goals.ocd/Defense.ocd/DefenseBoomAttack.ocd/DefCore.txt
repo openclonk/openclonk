@@ -13,3 +13,4 @@ VertexFriction=80,60,60,60
 Rotate=1
 NoStabilize=1
 IncompleteActivity=1
+HideInCreator=true

@@ -10,4 +10,4 @@ VertexX=0
 VertexFriction=20
 Value=0
 Mass=1
-
+HideInCreator=true
