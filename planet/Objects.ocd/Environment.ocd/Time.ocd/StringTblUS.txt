@@ -1,4 +1,5 @@
 Time=Time
+Description=Controls the time of the day and corresponding night time effects.
 TimeHelp=Current time of the day in minutes since midnight.
 CycleSpeed=Daily cycle speed
 CycleSpeedHelp=Speed of the day/night cycle in seconds per tick. Default 30.
