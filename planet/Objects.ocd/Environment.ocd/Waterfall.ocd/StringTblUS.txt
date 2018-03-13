@@ -1,1 +1,21 @@
 Name=Waterfall
+Description=Spawns liquid pixels at a regular interval, place at a cliff to create a waterfall. The waterfall sound is played at the position of this object.
+
+EditorSourceStrength=Source strength
+EditorSourceStrengthHelp=Amount of pixels the sources creates per 2 frames.
+EditorSourceMaterial=Source material
+EditorSourceMaterialHelp=The type of liquid to create.
+EditorSourceMaterialWater=Water
+EditorSourceMaterialAcid=Acid
+EditorSourceMaterialLava=Lava
+EditorSourceMaterialDuroLava=DuroLava
+EditorSourceMaterialOil=Oil
+EditorSourcePosition=Source position
+EditorSourcePositionHelp=Set the position of the source.
+EditorSourceDirection=Source direction
+EditorSourceDirectionHelp=Set the direction of liquid insertion, relative to the source position.
+
+EditorDrainStrength=Drain strength
+EditorDrainStrengthHelp=Amount of pixels the drain removes per 2 frames.
+EditorDrainPosition=Drain position
+EditorDrainPositionHelp=Set the position of the drain.

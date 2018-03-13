@@ -92,9 +92,9 @@ private func InitCaveEntrance()
 	trunk.MeshTransformation = [-70, 0, 998, 0, 0, 1000, 0, 0, -998, 0, -70, 0];
 	var waterfall;
 	waterfall = CreateWaterfall(325, 448, 2, "Water");
-	waterfall->SetDirection(2, 0, 3, 6);
+	waterfall->SetDirection(3, 3, 1, 3);
 	waterfall = CreateWaterfall(338, 450, 8, "Water");
-	waterfall->SetDirection(1, 0, 4, 8);
+	waterfall->SetDirection(3, 4, 2, 4);
 	CreateLiquidDrain(160, 648, 10);
 	CreateLiquidDrain(184, 648, 10);
 	CreateLiquidDrain(208, 648, 10);

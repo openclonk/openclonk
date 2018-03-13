@@ -144,7 +144,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	for (var i = 0; i < 16 + 4 * difficulty; i++)
 	{
 		var fall = CreateWaterfall(waterfall_x + 2, 0, RandomX(3, 4), "Water");
-		fall->SetDirection(RandomX(10, 12), 8, 8, 8);
+		fall->SetDirection(RandomX(14, 16), 12, 4, 4);
 		fall->SetSoundLocation(LandscapeWidth() / 2, Random(LandscapeHeight()));
 	}
 	var trunk = CreateObjectAbove(Trunk, waterfall_x + 2, 20);
