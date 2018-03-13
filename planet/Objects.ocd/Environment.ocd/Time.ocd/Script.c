@@ -220,11 +220,24 @@ protected func Initialize()
 	daycolour_global = [255, 255, 255];
 	
 	// Set the time to midday (12:00).
-	SetTime(12*60); 
+	SetTime(12 * 60);
 	
 	// Add effect that controls time cycle.
 	SetCycleSpeed(30);
 	AddEffect("IntTimeCycle", this, 100, 10, this);
+}
+
+public func Destruction()
+{
+	// Only if last object.
+	if (ObjectCount(Find_ID(Time)) > 1) 
+		return;
+	// Remove celestial objects.
+	RemoveAll(Find_Func("IsCelestial"));
+	// Reset sky shading and ambience.
+	SetTime(12 * 60);
+	DoSkyShade();
+	return;
 }
 
 // Cycles through day and night.
@@ -411,3 +424,6 @@ public func Definition(def)
 /*-- Properties --*/
 
 local Name = "Time";
+local Description = "$Description$";
+local Visibility = VIS_Editor;
+local EditorPlacementLimit = 1;
