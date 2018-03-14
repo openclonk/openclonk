@@ -144,6 +144,7 @@ public func MoveOnGraph(proplist graph)
 	movement = { Type = MovementType.Graph, Graph = graph };
 	OnGraphUpdate(movement.Graph);
 	var effect = AddEffect("MoveOnGraph", this, 100, 1, this);
+	effect.movement_graph = graph;
 	return;
 }
 
@@ -280,9 +281,9 @@ func FxMoveVerticalSaveScen(obj, fx, props)
 	return true;
 }
 
-func FxMoveGraphSaveScen(obj, fx, props)
+func FxMoveOnGraphSaveScen(obj, fx, props)
 {
-	props->AddCall("Move", obj, "MoveOnGraph", obj.movement_graph);
+	props->AddCall("Move", obj, "MoveOnGraph", fx.movement_graph);
 	return true;
 }
 
