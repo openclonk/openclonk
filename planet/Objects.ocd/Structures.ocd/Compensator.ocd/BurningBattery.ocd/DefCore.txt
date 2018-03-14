@@ -12,3 +12,4 @@ Mass=20
 Projectile=1
 Rotate=1
 NoStabilize=1
+HideInCreator=true
