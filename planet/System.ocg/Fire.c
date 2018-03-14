@@ -201,7 +201,6 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	effect.caused_by = caused_by; // used in C4Object::GetFireCause and timer! <- fixme?
 	effect.blasted = blasted;
 	effect.incinerating_obj = incinerating_object;
-	effect.no_burn_decay = target.NoBurnDecay;
 	
 	// store fire particles
 	effect.smoke =
@@ -451,7 +450,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 		if ((time*10) % 120 <= effect.strength)
 		{
 			target->DoDamage(2, FX_Call_DmgFire, effect.caused_by);
-			if (target && !Random(2) && !effect.no_burn_decay)
+			if (target && !Random(2) && !target.NoBurnDecay)
 			{
 				target->DoCon(-1);
 				if (target)
