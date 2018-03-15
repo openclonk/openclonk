@@ -519,7 +519,7 @@ bool C4Group::Open(const char *szGroupName, bool fCreate)
 	char szGroupNameN[_MAX_FNAME];
 	SCopy(szGroupName,szGroupNameN,_MAX_FNAME);
 	// Convert to native path
-	SReplaceChar(szGroupNameN, '\\', DirectorySeparator);
+	SReplaceChar(szGroupNameN, AltDirectorySeparator, DirectorySeparator);
 
 	// Real reference
 	if (FileExists(szGroupNameN))
