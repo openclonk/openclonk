@@ -315,9 +315,9 @@ global func FxTutorialFirestonesTimer()
 
 global func FxTutorialWipfHoleTimer()
 {
-	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(368, 496, 72, 56));
+	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(325, 525, 72, 56));
 	if (clonk)
-	{
+	{Log("this");
 		var plr = clonk->GetOwner();
 		var throw = GetPlayerControlAssignment(plr, CON_Throw, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialFoundWipf$", throw));
