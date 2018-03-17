@@ -317,7 +317,7 @@ global func FxTutorialWipfHoleTimer()
 {
 	var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(325, 525, 72, 56));
 	if (clonk)
-	{Log("this");
+	{
 		var plr = clonk->GetOwner();
 		var throw = GetPlayerControlAssignment(plr, CON_Throw, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialFoundWipf$", throw));
