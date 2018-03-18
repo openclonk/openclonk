@@ -117,6 +117,32 @@ public func OnInteractionControl(id symbol, string action, object clonk)
 }
 
 
+// Players can put materials into the construction site via space-key
+private func IsInteractable(object clonk)
+{
+	if (clonk) return !Hostile(GetOwner(), clonk->GetOwner());
+	return true;
+}
+
+
+// Adapt appearance in the interaction bar.
+private func GetInteractionMetaInfo(object clonk)
+{
+	return { Description = "$TxtMissingMaterial$", IconName = nil, IconID = Hammer };
+}
+
+
+// Called on player interaction.
+public func Interact(object clonk)
+{
+	if (clonk && IsInteractable(clonk))
+	{
+		TakeConstructionMaterials(clonk);
+	}
+	return true;
+}
+
+
 /*-- Engine callbacks --*/
 
 public func Deconstruct()
