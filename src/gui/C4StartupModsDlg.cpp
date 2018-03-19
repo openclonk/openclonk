@@ -1355,6 +1355,7 @@ void C4StartupModsDlg::CancelRequest()
 	if (!postClient.get()) return;
 	Application.InteractiveThread.RemoveProc(postClient.get());
 	postClient.reset();
+	lastQueryEndTime = time(nullptr);
 }
 
 void C4StartupModsDlg::ClearList()
@@ -1503,7 +1504,7 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 	}
 	else // Not running a query.
 	{
-		if (!queryWasSuccessful) // Last query failed?
+		if (!queryWasSuccessful && lastQueryEndTime + QueryRetryTimeout < time(nullptr)) // Last query failed?
 		{
 			QueryModList();
 			return;

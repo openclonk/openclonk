@@ -349,6 +349,9 @@ private:
 	bool fIsCollapsed; // set if the number of games in the list requires them to be displayed in a condensed format
 	// Whether the last query was successful. No re-fetching will be done.
 	bool queryWasSuccessful = false;
+	// The query will be retried on unsuccessful queries after QueryRetryTimeout seconds.
+	time_t lastQueryEndTime = 0;
+	static const time_t QueryRetryTimeout = 5;
 	// Constructing this automatically checks for existing mods in a different thread.
 	C4StartupModsLocalModDiscovery modsDiscovery;
 	bool requiredSyncWithDiscovery{ false };
