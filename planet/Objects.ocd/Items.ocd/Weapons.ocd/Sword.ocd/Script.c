@@ -40,16 +40,16 @@ public func OnWeaponHitCheckStop(clonk)
 {
 	carry_bone = nil;
 	clonk->UpdateAttach();
-	if(GetEffect("SwordStrikeSpeedUp", clonk))
+	if (GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
-
-	if(clonk->IsJumping())
+	
+	if (clonk->IsJumping())
 	{
-		if(!GetEffect("Fall", clonk))
-			AddEffect("Fall",clonk,1,1,clonk);
+		if (!GetEffect("Fall", clonk))
+			AddEffect("Fall", clonk, 1, 1, clonk);
 	}
 	
-	if(GetEffect("SwordStrikeStop", clonk))
+	if (GetEffect("SwordStrikeStop", clonk))
 		RemoveEffect("SwordStrikeStop", clonk);
 	
 	return;
@@ -63,70 +63,75 @@ public func RejectUse(object clonk)
 }
 
 public func ControlUse(object clonk, int x, int y)
-{	
-	var slow=GetEffect("SwordStrikeSlow", clonk);
-
+{
+	var slow = GetEffect("SwordStrikeSlow", clonk);
+	
 	var arm = "R";
 	carry_bone = "pos_hand2";
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
 	}
-	var rand = Random(2)+1;
+	var rand = Random(2) + 1;
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var animation_sword = Format("Strike%d", rand);
 	var downwards_stab = false;
 	
 	// figure out the kind of attack to use
 	var length = Sword_Standard_StrikingLength;
-	if(clonk->IsWalking())
+	if (clonk->IsWalking())
 	{
-		if(!GetEffect("SwordStrikeStop", clonk))
+		if (!GetEffect("SwordStrikeStop", clonk))
 			movement_effect = AddEffect("SwordStrikeStop", clonk, 2, length, this);
 	}
-	else
-	if(clonk->IsJumping())
+	else if (clonk->IsJumping())
 	{
 		rand = 1;
-		if(clonk->GetYDir() < -5) rand = 2;
-		animation = Format("SwordJump%d.%s",rand,arm);
+		if (clonk->GetYDir() < -5)
+		{
+			rand = 2;
+		}
+		animation = Format("SwordJump%d.%s", rand, arm);
 		
-		if(!slow && !GetEffect("DelayTranslateVelocity", clonk))
+		if (!slow && !GetEffect("DelayTranslateVelocity", clonk))
 		{
 			// check whether the player aims below the Clonk
-			var a=Angle(0, 0, x,y);
+			var a = Angle(0, 0, x, y);
 			var x_dir = Sin(a, 60);
 			
-			if(Inside(a, 35+90, 35+180)) // the player aims downwards
-			if((BoundBy(x_dir, -1, 1) == BoundBy(clonk->GetXDir(), -1, 1)) || (clonk->GetXDir() == 0)) // the player aims into the direction the Clonk is already jumping
-			{
-				clonk->SetXDir(x_dir);
-				clonk->SetYDir(-Cos(a, 60));
-				AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
-				
-				// modified animation
-				length = 50;
-				animation = Format("SwordSlash1.%s", arm);
-				downwards_stab = true;
-
-				if(GetEffect("Fall", clonk)) RemoveEffect("Fall", clonk);
-				
-				// visual effect
-				AddEffect("VisualJumpStrike", clonk, 1, 2, nil, Sword);
-			}
+			if (Inside(a, 35 + 90, 35 + 180))
+				// the player aims downwards
+				if ((BoundBy(x_dir, -1, 1) == BoundBy(clonk->GetXDir(), -1, 1)) || (clonk->GetXDir() == 0))
+				// the player aims into the direction the Clonk is already jumping
+				{
+					clonk->SetXDir(x_dir);
+					clonk->SetYDir(-Cos(a, 60));
+					AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
+					
+					// modified animation
+					length = 50;
+					animation = Format("SwordSlash1.%s", arm);
+					downwards_stab = true;
+					
+					if (GetEffect("Fall", clonk))
+						RemoveEffect("Fall", clonk);
+					
+					// visual effect
+					AddEffect("VisualJumpStrike", clonk, 1, 2, nil, Sword);
+				}
 		}
 	}
-
-	if(!downwards_stab)
+	
+	if (!downwards_stab)
 	{
 		PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 		PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
 	}
 	else
 	{
-		PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, (clonk->GetAnimationLength(animation)*3)/4, 5, ANIM_Hold), Anim_Const(1000));
-		PlayAnimation(animation_sword, 10, Anim_Linear(GetAnimationLength(animation_sword)/2, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
+		PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, (clonk->GetAnimationLength(animation) * 3) / 4, 5, ANIM_Hold), Anim_Const(1000));
+		PlayAnimation(animation_sword, 10, Anim_Linear(GetAnimationLength(animation_sword) / 2, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
 	}
 	clonk->UpdateAttach();
 	
@@ -144,14 +149,17 @@ func FxVisualJumpStrikeStart(target, effect, temp)
 {
 	if(temp) return;
 	effect.x_add = 20;
-	if(target->GetXDir() < 0) effect.x_add *= -1;
+	if (target->GetXDir() < 0)
+	{
+		effect.x_add *= -1;
+	}
 	effect.visual = CreateObjectAbove(Sword_JumpEffect, 0, 0, nil);
 	effect.visual->Point({x = target->GetX() + effect.x_add, y = target->GetY() + 10}, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
 }
 
 func FxVisualJumpStrikeTimer(target, effect, time)
 {
-	if(!target->~IsJumping())
+	if (!target->~IsJumping())
 	{
 		effect.visual->FadeOut();
 		effect.visual = nil;
@@ -169,31 +177,36 @@ func FxVisualJumpStrikeStop(target, effect, reason, temp)
 
 func SwordDamage(int shield)
 {
-	return ((100-shield)*9*1000 / 100);
+	return (100 - shield) * 9 * 1000 / 100;
 }
 
 func CheckStrike(iTime)
 {
 	//if(iTime < 20) return;
-	var  offset_x=7;
-	var offset_y=0;
-	if(Contained()->GetDir() == DIR_Left) offset_x*=-1;
+	var offset_x = 7;
+	var offset_y = 0;
+	if (Contained()->GetDir() == DIR_Left)
+		offset_x *= -1;
 	
-	if(!(Contained()->GetContact(-1) & CNAT_Bottom))
-		offset_y=10;
+	if (!(Contained()->GetContact(-1) & CNAT_Bottom))
+		offset_y = 10;
 	
-	var width=15;
-	var height=20;
-	var angle=0;
+	var width = 15;
+	var height = 20;
+	var angle = 0;
 	
-	var doBash=Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5;
-	if(!doBash) doBash=Contained()->GetContact(-1) & CNAT_Bottom;
-	
-	if(doBash)
+	var doBash = Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5;
+	if (!doBash)
 	{
-		if(Contained()->GetDir() == DIR_Left)
-			angle=-(Max(5, Abs(Contained()->GetXDir())));
-		else angle=(Max(5, Abs(Contained()->GetXDir())));
+		doBash = Contained()->GetContact(-1) & CNAT_Bottom;
+	}
+	
+	if (doBash)
+	{
+		if (Contained()->GetDir() == DIR_Left)
+			angle = -(Max(5, Abs(Contained()->GetXDir())));
+		else
+			angle = (Max(5, Abs(Contained()->GetXDir())));
 	}
 	
 	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
@@ -203,31 +216,31 @@ func CheckStrike(iTime)
 	{
 		if (obj->~IsProjectileTarget(this, Contained()))
 		{
-			var effect_name=Format("HasBeenHitBySwordEffect%d", magic_number);
-			var sword_name=Format("HasBeenHitBySword%d", this->ObjectNumber());
-			var first=true;
+			var effect_name = Format("HasBeenHitBySwordEffect%d", magic_number);
+			var sword_name = Format("HasBeenHitBySword%d", this->ObjectNumber());
+			var first = true;
 			// don't hit objects twice
-			if(!GetEffect(effect_name, obj))
+			if (!GetEffect(effect_name, obj))
 			{
 				AddEffect(effect_name, obj, 1, Sword_Standard_StrikingLength);
 				
-				if(GetEffect(sword_name, obj))
+				if (GetEffect(sword_name, obj))
 				{
 					//Log("successive hit");
-					first=false;
+					first = false;
 				}
 				else
 				{
 					//Log("first hit overall");
 					AddEffect(sword_name, obj, 1, 40);
 				}
-
 				
+
 				// Reduce damage by shield
-				var shield=ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
-				if(shield == 100)
+				var shield = ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
+				if (shield == 100)
 					continue;
-					
+				
 				// Sound before damage to prevent null pointer access if callbacks delete this
 				Sound("Objects::Weapons::WeaponHit?", false);
 				
@@ -236,16 +249,14 @@ func CheckStrike(iTime)
 				WeaponDamage(obj, damage, FX_Call_EngGetPunched, true);
 				
 				// object has not been deleted?
-				if(obj)
+				if (obj)
 				{
-					if(offset_y)
+					if (offset_y)
 						ApplyWeaponBash(obj, 100, 0);
-					else
-						if(!first)
-							ApplyWeaponBash(obj, damage/50, Angle(0, 0, angle, -10));
-					else
-						if(!offset_y)
-							DoWeaponSlow(obj, 300);
+					else if (!first)
+						ApplyWeaponBash(obj, damage / 50, Angle(0, 0, angle, -10));
+					else if (!offset_y)
+						DoWeaponSlow(obj, 300);
 					
 					// Particle effect
 					var particle =
@@ -255,12 +266,12 @@ func CheckStrike(iTime)
 						Attach = ATTACH_Front | ATTACH_MoveRelative,
 						Phase = PV_Linear(0, 3)
 					};
-
-					if(Contained()->GetDir() == DIR_Left)
+					
+					if (Contained()->GetDir() == DIR_Left)
 					{
 						particle.Phase = PV_Linear(4, 7);
-					} 
-					obj->CreateParticle("SwordSlice", RandomX(-1,1), RandomX(-1,1), 0, 0, 6, particle);
+					}
+					obj->CreateParticle("SwordSlice", RandomX(-1, 1), RandomX(-1, 1), 0, 0, 6, particle);
 				}
 				
 				// and done. We can only hit one target
@@ -268,20 +279,20 @@ func CheckStrike(iTime)
 			}
 		}
 	}
-
 }
 
 func FxSwordStrikeStopStart(pTarget, effect, iTemp)
 {
 	if(iTemp) return;
-	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
+	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed) / 100);
 }
 
 func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if(iTemp) return;
 	pTarget->PopActionSpeed("Walk");
-	if (this) movement_effect = nil;
+	if (this)
+		movement_effect = nil;
 }
 
 func FxSwordStrikeStopTimer(pTarget, effect)
@@ -297,9 +308,10 @@ func FxSwordStrikeSpeedUpStart(pTarget, effect, iTemp)
 
 func FxSwordStrikeSpeedUpTimer(pTarget, effect, iEffectTime)
 {
-	if(!pTarget->GetContact( -1) & CNAT_Bottom)
+	if (!pTarget->GetContact(-1) & CNAT_Bottom)
 		return -1;
-	if(iEffectTime > 35*2) return -1;
+	if (iEffectTime > 35 * 2)
+		return -1;
 }
 
 func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
@@ -320,7 +332,8 @@ func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)
 
 func FxSwordStrikeSlowTimer(pTarget, effect, iEffectTime)
 {
-	if(iEffectTime > effect.starttime) return -1;
+	if (iEffectTime > effect.starttime)
+		return -1;
 }
 
 func FxSwordStrikeSlowStop(pTarget, effect, iCause, iTemp)
@@ -339,7 +352,7 @@ public func GetCarryMode(object clonk, bool idle, bool nohand)
 {
 	if (idle)
 		return CARRY_Sword;
-
+	
 	return CARRY_HandBack;
 }
 
@@ -353,8 +366,9 @@ public func GetCarryTransform(clonk, sec, back)
 	return Trans_Rotate(-90, 1, 0, 0);
 }
 
-func Definition(def) {
-	SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
+func Definition(def)
+{
+	SetProperty("PictureTransformation", Trans_Rotate(20, 0, 0, 1), def);
 }
 
 /*-- Properties --*/

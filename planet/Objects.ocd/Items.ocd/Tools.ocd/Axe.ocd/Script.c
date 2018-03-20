@@ -21,7 +21,7 @@ local movement_effect;
 
 func Hit(int x, int y)
 {
-	StonyObjectHit(x,y);
+	StonyObjectHit(x, y);
 	return 1;
 }
 
@@ -57,61 +57,62 @@ public func HoldingEnabled()
 public func ControlUseStart(object clonk, int iX, int iY)
 {
 	/* Chopping */
-
+	
 	// Find tree that is closest to the clonk's axe when swung
 	var x_offs = 10;
-	if(clonk->GetDir() == DIR_Left) {
+	if (clonk->GetDir() == DIR_Left)
+	{
 		x_offs = -x_offs;
 	}
-
+	
 	if (clonk->IsWalking()) for (var tree in FindObjects(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer()))
-	{
-		//treedist - the x-distance the clonk is from the centre of a tree-trunk
-		var treedist = Abs(clonk->GetX() + x_offs - tree->GetX());
-		if(tree->IsStanding() && treedist <= 6)
 		{
-			using = 1;
-
-			//The clonk cannot hold other items in hand while swinging an axe
-			clonk->SetHandAction(1);
-
-			//Update the axe position in the clonk' hands and disable turning while he chops the tree
-			clonk->UpdateAttach();
-			clonk->SetTurnForced(clonk->GetDir());
-
-			//Make sure the clonk is holding the axe in the correct position
-			var hand = "Chop.R";
+			//treedist - the x-distance the clonk is from the centre of a tree-trunk
+			var treedist = Abs(clonk->GetX() + x_offs - tree->GetX());
+			if (tree->IsStanding() && treedist <= 6)
+			{
+				using = 1;
+				
+				//The clonk cannot hold other items in hand while swinging an axe
+				clonk->SetHandAction(1);
+				
+				//Update the axe position in the clonk' hands and disable turning while he chops the tree
+				clonk->UpdateAttach();
+				clonk->SetTurnForced(clonk->GetDir());
+				
+				//Make sure the clonk is holding the axe in the correct position
+				var hand = "Chop.R";
 			if((clonk->GetDir() == 0) != (clonk.Plane < tree.Plane)) hand = "Chop.L";
 			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(hand), SwingTime, ANIM_Loop), Anim_Const(1000));
 
-			//The timed effect for when the axe actually hits the tree
-			AddEffect("IntAxe", clonk, 1, 1, this, nil, tree);
-			return true;
-		}
-		if(! tree->IsStanding())
-		{
-			// Tree has already been felled
-			using = 1;
-
-			//The clonk cannot hold other items in hand while swinging an axe
-			clonk->SetHandAction(1);
-
-			//Refresh hands
-			clonk->UpdateAttach();
-
-			//Make sure the clonk is holding the axe in the correct position
-			var hand = "Chop.R";
+				//The timed effect for when the axe actually hits the tree
+				AddEffect("IntAxe", clonk, 1, 1, this, nil, tree);
+				return true;
+			}
+			if (!tree->IsStanding())
+			{
+				// Tree has already been felled
+				using = 1;
+				
+				//The clonk cannot hold other items in hand while swinging an axe
+				clonk->SetHandAction(1);
+				
+				//Refresh hands
+				clonk->UpdateAttach();
+				
+				//Make sure the clonk is holding the axe in the correct position
+				var hand = "Chop.R";
 			if(clonk->GetDir() == 0) hand = "Chop.L";
 			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("Chop.R"), SwingTime, ANIM_Loop), Anim_Const(1000));
 
-			//clonk cannot turn around to face the screen while chopping
-			clonk->SetTurnForced(clonk->GetDir());
-
-			//The timed effect for when the axe actually hits the tree
-			AddEffect("IntSplit", clonk, 1, 1, this, nil, tree);
-			return true;
+				//clonk cannot turn around to face the screen while chopping
+				clonk->SetTurnForced(clonk->GetDir());
+				
+				//The timed effect for when the axe actually hits the tree
+				AddEffect("IntSplit", clonk, 1, 1, this, nil, tree);
+				return true;
+			}
 		}
-	}
 	// Do combat strike if no tree can be found.
 	return ControlUse(clonk, iX, iY);
 }
@@ -119,44 +120,47 @@ public func ControlUseStart(object clonk, int iX, int iY)
 // Strike with the axe.
 public func ControlUse(object clonk, int iX, int iY)
 {
-	if(!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
+	if (!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
 	{
 		clonk->PauseUse(this, "ReadyToBeUsed", {clonk = clonk});
 		return true;
 	}
-
-	var rand = Random(2)+1;
+	
+	var rand = Random(2) + 1;
 	var arm = "R";
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	carry_bone = "pos_hand2";
-
-	if(clonk->IsWalking())
+	
+	if (clonk->IsWalking())
 	{
-		if(!GetEffect("AxeStrikeStop", clonk, 0))
+		if (!GetEffect("AxeStrikeStop", clonk, 0))
 			AddEffect("AxeStrikeStop", clonk, 2, StrikingLength, this);
 	}
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	if (clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
-		animation  = Format("SwordSlash%d.%s", rand, arm);
+		animation = Format("SwordSlash%d.%s", rand, arm);
 	}
-	if(clonk->IsJumping())
+	if (clonk->IsJumping())
 	{
 		rand = 1;
-		if(clonk->GetYDir() < -5) rand = 2;
-		animation = Format("SwordJump%d.%s",rand,arm);
+		if (clonk->GetYDir() < -5)
+		{
+			rand = 2;
+		}
+		animation = Format("SwordJump%d.%s", rand, arm);
 	}
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), StrikingLength, ANIM_Remove), Anim_Const(1000));
 
 	clonk->UpdateAttach();
-
+	
 	Sound("Objects::Weapons::WeaponSwing?", {pitch = -Random(10)});
-
-	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
+	
+	magic_number = ((magic_number + 1) % 10) + (ObjectNumber() * 10);
 	StartWeaponHitCheckEffect(clonk, StrikingLength, 1);
-
+	
 	return true;
 }
 
@@ -217,13 +221,14 @@ func FxIntAxeTimer(object clonk, effect, int time)
 	if (!clonk->IsWalking()) return -1;
 
 	//This block is executed when the axe hits the tree
-	if((time + 25) % SwingTime == 1)
+	if ((time + 25) % SwingTime == 1)
 	{
 		Sound("Environment::Tree::Chop?");
-
+		
 		//Which direction does the clonk face?
 		var x = 10;
-		if(clonk->GetDirection() == COMD_Left) x = x * -1;
+		if (clonk->GetDirection() == COMD_Left)
+			x = x * -1;
 		
 		//Create the woodchip particles
 		var particles = Particles_WoodChip();
@@ -232,7 +237,7 @@ func FxIntAxeTimer(object clonk, effect, int time)
 			particles = {Prototype = Particles_WoodChip(), Attach = ATTACH_Back};
 		clonk->CreateParticle("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 10);
 		// Damage tree
-		effect.tree->DoDamage(this.ChopStrength, FX_Call_DmgChop, clonk->GetOwner()); 
+		effect.tree->DoDamage(this.ChopStrength, FX_Call_DmgChop, clonk->GetOwner());
 	}
 	//Make sure the clonk does not move
 	clonk->SetComDir(COMD_Stop);
@@ -267,7 +272,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 	if ((time + 25) % SwingTime == 1)
 	{
 		Sound("Environment::Tree::Chop?");
-
+		
 		//Which direction does the clonk face?
 		var x = 10;
 		if(clonk->GetDirection() == COMD_Left) x = x * -1;
@@ -296,16 +301,17 @@ func FxIntSplitStop(object clonk, effect, int temp)
 
 func CheckStrike(iTime)
 {
-	var  offset_x=7;
-	var offset_y=0;
+	var offset_x = 7;
+	var offset_y = 0;
 	if(Contained()->GetDir() == DIR_Left) offset_x*=-1;
 
-	if(!(Contained()->GetContact(-1) & CNAT_Bottom))
-		offset_y=10;
-
-	var width=10;
-	var height=20;
-
+	
+	if (!(Contained()->GetContact(-1) & CNAT_Bottom))
+		offset_y = 10;
+	
+	var width = 10;
+	var height = 20;
+	
 	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
 							   Find_NoContainer(),
 							   Find_Exclude(Contained()),
@@ -313,35 +319,35 @@ func CheckStrike(iTime)
 	{
 		if (obj->~IsProjectileTarget(this, Contained()))
 		{
-			var effect_name=Format("HasBeenHitByAxeEffect%d", magic_number);
-			var axe_name=Format("HasBeenHitByAxe%d", this->ObjectNumber());
-			var first=true;
+			var effect_name = Format("HasBeenHitByAxeEffect%d", magic_number);
+			var axe_name = Format("HasBeenHitByAxe%d", this->ObjectNumber());
+			var first = true;
 			// don't hit objects twice
-			if(!GetEffect(effect_name, obj))
+			if (!GetEffect(effect_name, obj))
 			{
-				AddEffect(effect_name, obj, 1, 60 /* arbitrary */);
-
-				if(GetEffect(axe_name, obj))
+				AddEffect(effect_name, obj, 1, 60);
+				
+				if (GetEffect(axe_name, obj))
 				{
-					first=false;
+					first = false;
 				}
 				else
 				{
 					AddEffect(axe_name, obj, 1, 40);
 				}
-
+				
 				// Reduce damage by shield
-				var shield=ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
-				if(shield == 100)
+				var shield = ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
+				if (shield == 100)
 					continue;
-
+				
 				// fixed damage (3)
-				var damage = ((100-shield) * this.WeaponStrength * 1000 / 100);
+				var damage = (100 - shield) * this.WeaponStrength * 1000 / 100;
 				WeaponDamage(obj, damage, FX_Call_EngGetPunched, true);
-
+				
 				if (obj)
 					DoWeaponSlow(obj, 200);
-
+				
 				// sound and done. We can only hit one target
 				Sound("Objects::Weapons::WeaponHit?", false);
 				break;
@@ -352,7 +358,7 @@ func CheckStrike(iTime)
 
 func WeaponStrikeExpired()
 {
-	if(GetEffect("AxeStrikeStop", Contained()))
+	if (GetEffect("AxeStrikeStop", Contained()))
 		RemoveEffect("AxeStrikeStop", Contained());
 }
 
@@ -365,12 +371,13 @@ func OnWeaponHitCheckStop(clonk)
 func FxAxeStrikeStopStart(pTarget, effect, iTemp)
 {
 	if(iTemp) return;
-	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
+	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed) / 100);
 }
 
 func FxAxeStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if(iTemp) return;
+		return;
 	pTarget->PopActionSpeed("Walk");
 	movement_effect = nil;
 }
@@ -400,18 +407,18 @@ public func GetCarryTransform(object clonk, bool idle)
 	if (idle) return;
 
 	var act = clonk->GetAction();
-
-	if(act != "Walk" && act != "Jump")
-		return Trans_Mul(Trans_Translate(4500,0,0), Trans_Rotate(90,1,0,0), Trans_Rotate(180,0,1,0) );
-
+	
+	if (act != "Walk" && act != "Jump")
+		return Trans_Mul(Trans_Translate(4500, 0, 0), Trans_Rotate(90, 1, 0, 0), Trans_Rotate(180, 0, 1, 0));
+	
 	return Trans_Rotate(-90, 1, 0, 0);
 }
 
 public func GetCarrySpecial(clonk)
 {
-	if(using == 1) 
+	if (using == 1)
 	{
-		if(clonk->GetDir() == 1)
+		if (clonk->GetDir() == 1)
 			return "pos_hand2";
 		else
 			return "pos_hand1";
