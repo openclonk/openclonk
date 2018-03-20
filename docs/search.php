@@ -88,7 +88,7 @@ $lang = basename(dirname(__FILE__));
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" type="text/css" href="doku.css">
-<link rel="stylesheet" type="text/css" href="http://www.openclonk.org/header/header.css">
+<link rel="stylesheet" type="text/css" href="https://www.openclonk.org/header/header.css">
 <title>OpenClonk <?php echo $lang == 'de' ? 'Referenz' : 'Reference' ?></title>
 <style>
 ul {
@@ -107,7 +107,7 @@ text-decoration: none;
 </head>
 <body>
 <?php
-	readfile("http://www.openclonk.org/header/header.html");
+	readfile("https://www.openclonk.org/header/header.html");
 ?>
 <div id="iframe"><iframe src="sdk/content.html"></iframe></div>
 <div id="content">

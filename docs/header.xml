@@ -3,17 +3,17 @@ Unfortunately, xml documents can only have one root, so there needs to be a dumm
 header is an appropiate html element, so it's arbitrarily chosen.
 clonk.xsl also uses it to match the processing for it. -->
 <header>
-	<style type="text/css">@import url("http://www.openclonk.org/header/header.css");</style>
+	<style type="text/css">@import url("https://www.openclonk.org/header/header.css");</style>
 	
 	<div id="nav_header">
 
 		<div id="nav_doclangswitch">
-			<a href="http://docs.openclonk.org/en/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/gb.png"/></a>
-			<a href="http://docs.openclonk.org/de/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/de.png"/></a>
+			<a href="https://docs.openclonk.org/en/sdk/" target="_top"><img src="https://forum.openclonk.org/flags/gb.png"/></a>
+			<a href="https://docs.openclonk.org/de/sdk/" target="_top"><img src="https://forum.openclonk.org/flags/de.png"/></a>
 		</div>
 	
 		<div id="nav_search">
-		<form action="http://www.openclonk.org/header/search.php" id="nav_searchform" method="get" target="_top"><div>
+		<form action="https://www.openclonk.org/header/search.php" id="nav_searchform" method="get" target="_top"><div>
 				<input id="nav_searchInput" name="s" type="text" value="search" onfocus="if(this.value == 'search') { this.value = ''; }" onblur="if(this.value == '') { this.value = 'search'; }"/> in the 
 				<select value="docs" name="p">
 					<option  value="blog">blog</option>
@@ -29,21 +29,21 @@ clonk.xsl also uses it to match the processing for it. -->
 		</div>
 
 		<div id="nav_logo">
-			<a href="http://www.openclonk.org/" target="_top"><img src="http://www.openclonk.org/header/logo.png" width="450" height="94" alt="OpenClonk"/></a>
+			<a href="https://www.openclonk.org/" target="_top"><img src="https://www.openclonk.org/header/logo.png" width="450" height="94" alt="OpenClonk"/></a>
 		</div>
 
 		<div id="nav_navigation">
 			<div id="nav_links">
 				<ul>
-					<li><a href="http://www.openclonk.org/" target="_top">Home</a></li>
-					<li><a href="http://www.openclonk.org/download/" target="_top">Download</a></li>
-					<li><a href="http://blog.openclonk.org/" target="_top">Blog</a></li>
-					<li><a href="http://forum.openclonk.org/" target="_top">Forum</a></li>
-					<li><a href="http://league.openclonk.org/" target="_top">League</a></li>
-					<li><a href="http://wiki.openclonk.org/w/C4Script_Documentation" target="_top">Docs</a></li>
-					<li><a href="http://wiki.openclonk.org/w/Development" target="_top">Developers</a></li>
-					<li><a href="http://git.openclonk.org/openclonk.git" target="_top">Repository</a></li>
-					<li><a href="http://bugs.openclonk.org" target="_top">Bugs</a></li>
+					<li><a href="https://www.openclonk.org/" target="_top">Home</a></li>
+					<li><a href="https://www.openclonk.org/download/" target="_top">Download</a></li>
+					<li><a href="https://blog.openclonk.org/" target="_top">Blog</a></li>
+					<li><a href="https://forum.openclonk.org/" target="_top">Forum</a></li>
+					<li><a href="https://league.openclonk.org/" target="_top">League</a></li>
+					<li><a href="https://wiki.openclonk.org/w/C4Script_Documentation" target="_top">Docs</a></li>
+					<li><a href="https://wiki.openclonk.org/w/Development" target="_top">Developers</a></li>
+					<li><a href="https://git.openclonk.org/openclonk.git" target="_top">Repository</a></li>
+					<li><a href="https://bugs.openclonk.org" target="_top">Bugs</a></li>
 				</ul>
 			</div>
 		</div>
