@@ -376,7 +376,7 @@ func FxAxeStrikeStopStart(pTarget, effect, iTemp)
 
 func FxAxeStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
-	if(iTemp) return;
+	if (iTemp)
 		return;
 	pTarget->PopActionSpeed("Walk");
 	movement_effect = nil;
