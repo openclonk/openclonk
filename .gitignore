@@ -18,7 +18,7 @@ C4Version.h
 Makefile
 C4Include.h.gch
 intermediate
-build*
+/build*
 CMakeScripts
 CMakeFiles
 CMakeCache.txt
@@ -35,13 +35,15 @@ tests/CTestTestfile.cmake
 
 # Documentation
 *.pyc
-docs/online
-docs/chm
-docs/sdk-de
-docs/sdk/content.xml
-docs/*.mo
-docs/doku.pot
-docs/Functions.txt
+node_modules
+/docs/online
+/docs/chm
+/docs/sdk-de
+/docs/sdk/content.xml
+/docs/*.mo
+/docs/doku.pot
+/docs/Functions.txt
+/docs/lunr.js
 
 # Visual studio files
 openclonk.opensdf

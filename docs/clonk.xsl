@@ -35,7 +35,12 @@
     </title>
   </xsl:template>
   <xsl:template match="script">
-      <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
+      <xsl:copy>
+          <xsl:for-each select="@*">
+              <xsl:copy />
+          </xsl:for-each>
+          <xsl:apply-templates />
+      </xsl:copy>
   </xsl:template>
   <xsl:template match="func|const" mode="head">
     <xsl:apply-templates mode="head" />
@@ -349,16 +354,6 @@
     <caption><xsl:apply-templates select="@id|node()" /></caption>
   </xsl:template>
 
-  <xsl:template match="search">
-    <xsl:if test="not($chm)">
-      <form action="../search.php" method="get">
-        <input name="search" type="text"></input>
-        <input type="submit" name="func" value="Search"></input>
-        <input type="submit" name="fulltext" value="Fulltext"></input>
-      </form>
-    </xsl:if>
-  </xsl:template>
-  
   <xsl:template match="table/bitmask">
     <xsl:value-of select="." />:
     <input id="input" onKeyUp="Calc();" name="input" type="text">

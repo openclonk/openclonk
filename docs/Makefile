@@ -19,6 +19,7 @@ HHC = hhc.exe
 MKDIR_P = mkdir -p
 CP = cp
 CP_R = cp -r
+NODE = node
 
 stylesheet = clonk.xsl
 
@@ -29,9 +30,10 @@ sdk-dirs := $(shell find sdk -name '.*' -prune -o -type d -print)
 
 # find all *.xml files recursively in sdk/
 xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name 'content.xml' -prune -o -name \*.xml -print))
+xmlfiles-de := $(subst sdk, sdk-de, $(xmlfiles))
 
 # misc
-extra-files := $(sort $(wildcard *.css *.php *.js images/*.*))
+extra-files := $(sort $(wildcard *.css *.js images/*.*) lunr.js)
 extra-files-chm := $(sort $(wildcard *.css *.js images/*.*))
 
 # Targets:
@@ -46,15 +48,16 @@ sdk-de-dirs := $(subst sdk, sdk-de, $(sdk-dirs))
 online-dirs := $(foreach lang, en de, $(addprefix online/$(lang)/, $(sdk-dirs) images))
 online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
 online-extra-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(extra-files)))
+online-index-files := $(foreach lang, en de, $(addprefix online/$(lang)/, index.json))
 
 # For Entwickler.chm
 chm-dirs := $(foreach lang, en de, $(addprefix chm/$(lang)/, . $(sdk-dirs) images))
 
 .PHONY: all online-en chm install check clean
 
-all: $(sdk-de-dirs) $(online-dirs) $(online-sdk-files) $(online-extra-files)
+all: $(sdk-de-dirs) $(online-dirs) $(online-sdk-files) $(online-extra-files) $(online-index-files)
 
-online-en: $(addprefix online/en/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
+online-en: $(addprefix online/en/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files) index.json)
 
 chm: $(sdk-de-dirs) $(chm-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
 
@@ -69,23 +72,36 @@ clean:
 	rm -f *.mo Entwickler.chm Developer.chm doku.pot sdk/content.xml
 	rm -rf online sdk-de chm
 
-sdk/content.xml: sdk/content.xml.in $(xmlfiles) build_contents.py experimental.py
+sdk/content.xml: sdk/content.xml.in $(xmlfiles) tools/build_contents.py tools/experimental.py
 	@echo generate $@
-	@python2 build_contents.py $(xmlfiles)
+	@python2 tools/build_contents.py $(xmlfiles)
 
-chm/en/Output.hhp: $(xmlfiles) chm/en/. build_hhp.py Template.hhp
+# Node dependencies for index.
+node_modules/.make: package.json
+	npm install
+	@touch $@
+
+lunr.js: node_modules/.make
+	$(CP) node_modules/lunr/lunr.js $@
+
+online/en/index.json: node_modules/.make $(xmlfiles) tools/build_index.js
+	@$(NODE) tools/build_index.js $@ $(xmlfiles)
+online/de/index.json: node_modules/.make $(xmlfiles-de) tools/build_index.js
+	@$(NODE) tools/build_index.js $@ $(xmlfiles-de)
+
+chm/en/Output.hhp: $(xmlfiles) chm/en/. tools/build_hhp.py Template.hhp
 	@echo generate $@
-	@python2 build_hhp.py $@ Template.hhp $(xmlfiles)
-chm/de/Output.hhp: $(xmlfiles) chm/de/. build_hhp.py Template.de.hhp
+	@python2 tools/build_hhp.py $@ Template.hhp $(xmlfiles)
+chm/de/Output.hhp: $(xmlfiles) chm/de/. tools/build_hhp.py Template.de.hhp
 	@echo generate $@
-	@python2 build_hhp.py $@ Template.de.hhp $(xmlfiles)
+	@python2 tools/build_hhp.py $@ Template.de.hhp $(xmlfiles)
 
 $(sdk-de-dirs) $(online-dirs) $(chm-dirs):
 	mkdir -p $@
 
-doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
+doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in tools/xml2po.py tools/clonk.py
 	@echo extract strings to $@
-	@python2 xml2po.py -e -m clonk -o $@ $(xmlfiles) extra-strings.xml sdk/content.xml.in
+	@python2 tools/xml2po.py -e -m clonk -o $@ $(xmlfiles) extra-strings.xml sdk/content.xml.in
 
 %.po: doku.pot
 	@echo update $@
@@ -96,9 +112,9 @@ doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
 	@echo compile $@
 	@msgfmt --statistics -o $@ $<
 
-sdk-de/%.xml: sdk/%.xml de.mo xml2po.py clonk.py
+sdk-de/%.xml: sdk/%.xml de.mo tools/xml2po.py tools/clonk.py
 	@echo generate $@
-	@python2 xml2po.py -e -m clonk -t de.mo -o $@ $<
+	@python2 tools/xml2po.py -e -m clonk -t de.mo -o $@ $<
 
 define run-xslt
 @echo generate $@

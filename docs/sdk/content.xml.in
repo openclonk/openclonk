@@ -211,6 +211,10 @@
 		window.scrollTo(0, y0);
 	}
 })();
+// Collapse the index.
+document.querySelector('.index > img').onclick();
 ]]>
 </script>
+<script src="../lunr.js"></script>
+<script src="../search.js"></script>
 </toc>
