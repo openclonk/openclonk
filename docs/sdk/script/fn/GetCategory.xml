@@ -7,7 +7,7 @@
     <title>GetCategory</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Determines the category of an object. The category is usually specified in the <emlink href="definition/defcore.html">DefCore</emlink> but may in some cases haven been changed during the game by <funclink>SetCategory</funclink>. The category determines general placement and behaviour of the object. The returned category value can be compared with C4D_x constants using the &amp; operator.</desc>
     <examples>

@@ -7,7 +7,7 @@
     <title>GetActTime</title>
     <category>Objects</category>
     <subcat>Activity</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the time (in frames) that the object is already executing this same action.</desc>
     <examples>

@@ -7,7 +7,7 @@
     <title>COMD_Stop</title>
     <category>Objects</category>
     <subcat>Movement</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Movement direction: stop, hence end current motion. For more information see <funclink>SetComDir</funclink>.</desc>
     <examples>

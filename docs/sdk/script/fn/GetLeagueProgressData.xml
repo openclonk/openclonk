@@ -7,7 +7,7 @@
     <title>GetLeagueProgressData</title>
     <category>Network</category>
     <subcat>League</subcat>
-    <version>5.5 OC</version>
+    <version>5.0 OC</version>
     <syntax>
       <rtype>string</rtype>
       <params>

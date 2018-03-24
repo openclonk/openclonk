@@ -7,7 +7,7 @@
     <title>SetAmbientBrightness</title>
     <category>Landscape</category>
     <subcat>View</subcat>
-    <version>5.6 OC</version>
+    <version>6.0 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>

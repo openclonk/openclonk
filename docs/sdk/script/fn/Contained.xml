@@ -7,7 +7,7 @@
     <title>Contained</title>
     <category>Objects</category>
     <subcat>Contents</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>object</rtype></syntax>
     <desc>Returns the container object in which this object is contained. Returns <code>nil</code> if this object is not contained.</desc>
     <related><funclink>Contents</funclink></related>

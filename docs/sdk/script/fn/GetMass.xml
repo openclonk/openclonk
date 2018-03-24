@@ -7,7 +7,7 @@
     <title>GetMass</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the mass of the calling objects (including the mass of all its contents) or the calling definition.</desc>
     <examples>

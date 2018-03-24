@@ -6,7 +6,7 @@
   <func>
     <title>for</title>
     <category>Script</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>void</rtype></syntax>
     <desc>See <emlink href="script/for.html">the 'for' loop</emlink>.</desc>
   </func>

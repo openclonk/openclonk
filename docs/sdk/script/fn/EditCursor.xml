@@ -6,7 +6,7 @@
   <func>
     <title>EditCursor</title>
     <category>Developer</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>object</rtype></syntax>
     <desc>In the developer mode of the engine this function returns the object which is currently under the mouse cursor (in edit mode: select and move).</desc>
     <examples>

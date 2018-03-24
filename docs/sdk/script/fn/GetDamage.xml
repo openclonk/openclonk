@@ -7,7 +7,7 @@
     <title>GetDamage</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Determines the damage level of an object.</desc>
     <examples>

@@ -7,7 +7,7 @@
     <title>GetProperties</title>
     <category>Objects</category>
     <subcat>Properties</subcat>
-    <version>5.3 OC</version>
+    <version>3.0 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>

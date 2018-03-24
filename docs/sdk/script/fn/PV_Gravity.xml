@@ -6,7 +6,7 @@
   <func>
     <title>PV_Gravity</title>
     <category>Particles</category>
-    <version>5.3.3 OC</version>
+    <version>3.3 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>

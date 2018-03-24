@@ -6,7 +6,7 @@
   <func>
     <title>InLiquid</title>
     <category>Landscape</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Returns <code>true</code>, if the object is submerged in liquid.</desc>
     <related>

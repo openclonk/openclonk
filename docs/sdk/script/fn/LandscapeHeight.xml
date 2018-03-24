@@ -6,7 +6,7 @@
   <func>
     <title>LandscapeHeight</title>
     <category>Landscape</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the height of the landscape in pixels.</desc>
     <related><funclink>LandscapeWidth</funclink></related>

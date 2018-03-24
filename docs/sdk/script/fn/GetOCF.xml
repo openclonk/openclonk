@@ -7,7 +7,7 @@
     <title>GetOCF</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the Object Character Flag of an object. This value describes the current state of an object. The return value is a bit mask and can be compared with OCF_x values using &amp;.</desc>
     <examples>

@@ -6,7 +6,7 @@
   <func>
     <title>Incinerate</title>
     <category>Objects</category>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Incinerates the specified object. This may cause an Incineration() call in the object.</desc>
     <related>

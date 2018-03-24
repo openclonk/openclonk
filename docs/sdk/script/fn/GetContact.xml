@@ -7,7 +7,7 @@
     <title>GetContact</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>5.1 OC</version>
+    <version>1.0 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>

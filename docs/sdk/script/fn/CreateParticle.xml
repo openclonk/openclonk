@@ -6,7 +6,7 @@
   <func>
     <title>CreateParticle</title>
     <category>Particles</category>
-    <version>5.3.4 OC</version>
+    <version>3.4 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
