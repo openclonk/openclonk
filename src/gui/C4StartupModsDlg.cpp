@@ -1575,7 +1575,7 @@ void C4StartupModsDlg::UpdateSelection(bool fUpdateCollapsed)
 	btnInstall->SetEnabled(false);
 	btnRemove->SetEnabled(false);
 
-	if (selected != nullptr)
+	if (selected != nullptr && !selected->IsInfoEntry())
 	{
 		btnInstall->SetEnabled(true);
 
