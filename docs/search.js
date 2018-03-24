@@ -36,7 +36,7 @@
 
   function search(index, searchTerm) {
     return index.query(query => {
-      searchTerm.split(/\s+/).forEach(term => {
+      searchTerm.toLowerCase().split(/\s+/).forEach(term => {
         query.term(term, {
           fields: ["title"],
           boost: 10,
