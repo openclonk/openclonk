@@ -1431,6 +1431,8 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 			infoEntry->MakeInfoEntry();
 			infoEntry->OnNoResultsFound();
 		}
+		// Updating the local files is always successful. Prevent automatic retries.
+		queryWasSuccessful = true;
 	}
 
 	// Already running a query?
