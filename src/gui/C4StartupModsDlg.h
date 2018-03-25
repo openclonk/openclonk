@@ -43,10 +43,12 @@ struct ModXMLData
 	};
 	std::vector<FileInfo> files;
 	std::vector<std::string> dependencies;
+	std::vector<std::string> tags;
 	std::string title;
 	std::string id;
-	std::string description;
+	std::string description, longDescription;
 	std::string slug;
+	bool metadataMissing{ false };
 	
 	// Depending on the origin of the data, we might need an update query before doing anything.
 	enum class Source
@@ -176,6 +178,7 @@ private:
 		bool HasError() const { return !errorMessage.empty(); }
 		bool WasSuccessful() const { return successful && !HasError(); }
 		bool IsBusy() const { return postClient.get() != nullptr; }
+		bool HasFilesRemaining() const { return !files.empty(); }
 		bool RequiresMetadataUpdate() const { return hasOnlyIncompleteInformation; }
 		std::string GetErrorMessage() const { if (errorMessage.empty()) return ""; return name + ": " + errorMessage; }
 		std::string GetPath();
@@ -197,6 +200,7 @@ private:
 		bool successful{ false };
 		// Whether the information might be outdated or incomplete and needs an update prior to hash-checking.
 		bool hasOnlyIncompleteInformation{ true };
+		size_t totalSuccesfullyDownloadedBytes{ 0 };
 		size_t downloadedBytes{ 0 };
 		size_t totalBytes{ 0 };
 		std::unique_ptr<C4Network2HTTPClient> postClient;
@@ -248,25 +252,17 @@ public:
 	~C4StartupModsListEntry();
 
 
-	enum { InfoLabelCount = 5, MaxInfoIconCount = 10 };
+	enum { InfoLabelCount = 2, MaxInfoIconCount = 10 };
 
 private:
 	C4StartupModsDlg *pModsDlg;
 	C4GUI::ListBox *pList;
-
-	bool fError;                     // if set, the label was changed to an error message and no more updates are done
-	StdStrBuf sError;
 
 	C4GUI::Icon *pIcon;       // scenario icon
 	C4GUI::Label *pInfoLbl[InfoLabelCount]; // info labels for reference or query; left side
 	C4GUI::Label *pInfoLabelsRight[InfoLabelCount]; // info labels on the right side
 	C4GUI::Icon *pInfoIcons[MaxInfoIconCount]; // right-aligned status icons at topright position
 	int32_t iInfoIconCount;
-	int32_t iSortOrder;
-	bool fIsSmall;         // set if the item is in collapsed state
-	bool fIsCollapsed;     // set if the item is forced to collapsed state
-	bool fIsEnabled;       // if not set, the item is grayed out
-	bool fIsImportant;     // if set, the item is presented in yellow (lower priority than fIsEnabled)
 	bool isInfoEntry{ false };
 	C4Rect rctIconSmall;    // bounds for small icon
 	C4Rect rctIconLarge;    // bounds for large icon
@@ -274,15 +270,10 @@ private:
 	StdStrBuf sInfoText[InfoLabelCount];
 	StdStrBuf sInfoTextRight[InfoLabelCount];
 
-	void SetError(const char *szErrorText);      // change secondary label to error label, mark error and set a removal timer
-												 //C4StartupModsListEntry *AddReference(C4Network2Reference *pAddRef, C4GUI::Element *pInsertBefore); // add a reference list item to the same list
-	void InvalidateStatusIcons() { iInfoIconCount = 0; } // schedule all current status icons for removal when UpdateText is called next
-	void AddStatusIcon(C4GUI::Icons eIcon, const char *szToolTip); // add a status icon with the specified tooltip
+	void AddStatusIcon(C4GUI::Icons eIcon, const char *szToolTip, bool insertLeft=true); // add a status icon with the specified tooltip
 
-	void UpdateSmallState();
 	void UpdateEntrySize();
-	void UpdateText(); // strings to labels
-					   // Additional information that is required for downloading.
+	void UpdateText(); 
 	
 	C4GUI::Icons defaultIcon{ C4GUI::Icons::Ico_Resource };
 
@@ -290,18 +281,14 @@ private:
 	std::unique_ptr<ModXMLData> modXMLData;
 
 protected:
-	virtual int32_t GetListItemTopSpacing() { return fIsCollapsed ? 5 : 10; }
+	virtual int32_t GetListItemTopSpacing() { return 10; }
 	virtual void DrawElement(C4TargetFacet &cgo);
-
-	C4GUI::Element* GetNextLower(int32_t sortOrder); // returns the element before which this element should be inserted
-
 public:
 	void FromXML(const TiXmlElement *xml, ModXMLData::Source source, std::string fallbackID="", std::string fallbackName="");
 	const ModXMLData &GetModXMLData() const { assert(modXMLData); return *modXMLData.get(); }
-	void ClearRef();    // del any ref/refclient/error data
+	void Clear();    // del any ref/refclient/error data
 
 	bool Execute(); // update stuff - if false is returned, the item is to be removed
-	void UpdateCollapsed(bool fToCollapseValue);
 	void UpdateInstalledState(C4StartupModsLocalModDiscovery::ModsInfo *modInfo);
 	void SetVisibility(bool fToValue);
 
@@ -311,13 +298,7 @@ public:
 	void OnNoResultsFound();
 	void OnError(std::string message);
 	void ShowPageInfo(int page, int totalPages, int totalResults);
-	const char *GetError() { return fError ? sError.getData() : nullptr; } // return error message, if any is set
-																		   //C4Network2Reference *GrabReference(); // grab the reference so it won't be deleted when this item is removed
-																		   //C4Network2Reference *GetReference() const { return pRef; } // have a look at the reference
-																		   //bool IsSameHost(const C4Network2Reference *pRef2); // check whether the reference was created by the same host as this one
-																		   //bool IsSameAddress(const C4Network2Reference *pRef2); // check whether there is at least one matching address (address and port)
-	bool KeywordMatch(const char *szMatch); // check whether any of the reference contents match a given keyword
-
+	
 	const TiXmlNode *GetXMLNode() const { return GetModXMLData().originalXMLElement; }
 	std::string GetTitle() const { return GetModXMLData().title; }
 	const std::vector<ModXMLData::FileInfo> & GetFileInfos() const { return GetModXMLData().files; }
@@ -337,15 +318,14 @@ private:
 	C4GUI::Tabular *pMainTabular;   // main tabular control: Contains game selection list and chat control
 	C4GUI::ListBox *pGameSelList;        // game selection listbox
 	C4KeyBinding *pKeyRefresh, *pKeyBack, *pKeyForward;
-	//C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnUpdate;
+	
 	C4GUI::Button *btnInstall, *btnRemove;
 	C4GUI::Edit *pSearchFieldEdt;
 	struct _filters
 	{
 		C4GUI::CheckBox *showCompatible{ nullptr };
+		C4GUI::CheckBox *showPlayable{ nullptr };
 	} filters;
-	C4StartupModsListEntry *pMasterserverClient; // set if masterserver query is enabled: Checks clonk.de for new games
-	bool fIsCollapsed; // set if the number of games in the list requires them to be displayed in a condensed format
 	// Whether the last query was successful. No re-fetching will be done.
 	bool queryWasSuccessful = false;
 	// The query will be retried on unsuccessful queries after QueryRetryTimeout seconds.
@@ -371,16 +351,16 @@ protected:
 	virtual void OnShown();             // callback when shown: Start searching for games
 	virtual void OnClosed(bool fOK);    // callback when dlg got closed: Return to main screen
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
-	void OnRefreshBtn(C4GUI::Control *btn) { DoRefresh(); }
+	void OnSearchOnlineBtn(C4GUI::Control *btn) { KeyRefresh(); }
 	void OnInstallModBtn(C4GUI::Control *btn) { DoOK(); }
 	void OnShowInstalledBtn(C4GUI::Control *btn) { UpdateList(false, true); }
 	void OnUninstallModBtn(C4GUI::Control *btn) { CheckRemoveMod(); }
 	void OnUpdateAllBtn(C4GUI::Control *btn) { CheckUpdateAll(); }
-	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(true); }
+	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
 	void OnSortComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnSortComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
-	//void OnBtnUpdate(C4GUI::Control *btn);
+	
 	C4GUI::Edit::InputResult OnSearchFieldEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
 	{ DoOK(); return C4GUI::Edit::IR_Abort; }
 
@@ -389,6 +369,7 @@ private:
 	void CancelRequest();
 
 	static std::string GetBaseServerURL();
+	static std::string GetOpenClonkVersionStringTag();
 	void QueryModList(bool loadNextPage=false);
 	void ClearList();
 	void UpdateList(bool fGotReference = false, bool onlyWithLocalFiles = false);
@@ -403,8 +384,7 @@ private:
 		std::string id, name;
 	};
 	void AddToList(std::vector<TiXmlElementLoaderInfo> elements, ModXMLData::Source source);
-	void UpdateCollapsed();
-	void UpdateSelection(bool fUpdateCollapsed);
+	void UpdateSelection();
 	void CheckRemoveMod();
 	void OnConfirmRemoveMod(C4GUI::Element *element);
 	void CheckUpdateAll();
@@ -430,9 +410,22 @@ private:
 
 	struct _PageInfo
 	{
+		const int maxResultsPerQuery{ 30 };
 		int totalResults{ 0 };
-		int currentPage{ 0 };
-		int totalPages{ 0 };
+		int currentlySkipped{ 0 };
+
+		int getItemsToPage(int itemNumber) const
+		{
+			return itemNumber / maxResultsPerQuery + static_cast<int>(itemNumber % maxResultsPerQuery != 0);
+		}
+		int getCurrentPage() const
+		{
+			return getItemsToPage(currentlySkipped) + 1;
+		}
+		int getTotalPages() const
+		{
+			return getItemsToPage(totalResults);
+		}
 	} pageInfo;
 public:
 	// The "subscreen" is used by the clonk://installmod protocol and gives a mod ID to search.

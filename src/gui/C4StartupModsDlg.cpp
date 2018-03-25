@@ -56,22 +56,30 @@ ModXMLData::ModXMLData(const TiXmlElement *xml, Source source)
 	// Remember whether the loaded the element from a local file / overview, because we
 	// then still have to do a query if we want to update.
 	this->source = source;
+	// It is possible to instantiate this without valid XML.
+	if (xml == nullptr)
+	{
+		metadataMissing = true;
+		return;
+	}
 	// Remember the XML element in case we need to pretty-print it later.
 	originalXMLElement = xml->Clone();
-	id = getSafeStringValue(xml, "id", "", true);
+	id = getSafeStringValue(xml, "id", "");
 	title = getSafeStringValue(xml, "title", "");
 	assert(IsValidUtf8(title.c_str()));
 	slug = getSafeStringValue(xml, "slug", title);
 	assert(IsValidUtf8(slug.c_str()));
 	description = getSafeStringValue(xml, "description");
 	assert(IsValidUtf8(description.c_str()));
+	longDescription = getSafeStringValue(xml, "long_description");
 	if (!description.empty())
 	{
-		if (description.size() > 150)
+		const bool descriptionNeedsCut = description.size() > 150;
+		if (descriptionNeedsCut)
 		{
 			// Find a cutoff that is not inside a UTF-8 character.
 			std::string::size_type characterCount{ 0 };
-			for (const char *c = description.data(); *c != '\0';)
+			for (const char* c = description.data(); *c != '\0';)
 			{
 				const uint8_t val = *c;
 				if (val <= 127)
@@ -84,11 +92,11 @@ ModXMLData::ModXMLData(const TiXmlElement *xml, Source source)
 				}
 				characterCount += 1;
 
-				if ((characterCount > 140 && *c == ' ') || (characterCount > 150))
+				const bool shouldCutHere = characterCount >= 150;
+				if (shouldCutHere)
 				{
 					uint32_t byteDifference = c - description.data();
 					description.resize(byteDifference);
-					description += "...";
 					break;
 				}
 			}
@@ -97,43 +105,51 @@ ModXMLData::ModXMLData(const TiXmlElement *xml, Source source)
 	assert(IsValidUtf8(description.c_str()));
 	// Additional meta-information.
 
-	for (const TiXmlElement *node = xml->FirstChildElement("dependency"); node != nullptr; node = node->NextSiblingElement("dependency"))
-	{
-		const char *depID = node->GetText();
-		if (depID != nullptr)
-			dependencies.push_back(depID);
-	}
-
-	for (const TiXmlElement *filenode = xml->FirstChildElement("file"); filenode != nullptr; filenode = filenode->NextSiblingElement("file"))
-	{
-		// We guarantee that we do not modify the handle below, thus the const_cast is safe.
-		const TiXmlHandle nodeHandle(const_cast<TiXmlNode*> (static_cast<const TiXmlNode*> (filenode)));
-
-		const std::string handle = getSafeStringValue(filenode, "_id", "");
-		const std::string name = getSafeStringValue(filenode, "filename", "");
-		const std::string lengthString = getSafeStringValue(filenode, "length", "");
-
-		std::string hashSHA1 = "";
-		const auto hashNode = nodeHandle.FirstChild("metadata").FirstChild("hashes").Node();
-		if (hashNode != nullptr)
+	const TiXmlElement* dependencies_node = xml->FirstChildElement("dependencies");
+	if (dependencies_node != nullptr)
+		for (const TiXmlElement *node = dependencies_node->FirstChildElement("item"); node != nullptr; node = node->NextSiblingElement("item"))
 		{
-			hashSHA1 = getSafeStringValue(hashNode->ToElement(), "sha1", "");
+			const char *depID = node->GetText();
+			if (depID != nullptr)
+				dependencies.push_back(depID);
 		}
 
-		if (handle.empty() || name.empty() || lengthString.empty()) continue;
-		size_t length{ 0 };
-
-		try
+	const TiXmlElement* tags_node = xml->FirstChildElement("tags");
+	if (tags_node != nullptr)
+		for (const TiXmlElement *node = tags_node->FirstChildElement("item"); node != nullptr; node = node->NextSiblingElement("item"))
 		{
-			length = std::stoi(lengthString);
-		}
-		catch (...)
-		{
-			continue;
+			const std::string tag = node->GetText();
+			if (!tag.empty())
+				tags.push_back(tag);
 		}
 
-		files.emplace_back(FileInfo{ handle, length, name, hashSHA1 });
-	}
+	const TiXmlElement* files_node = xml->FirstChildElement("files");
+	if (files_node != nullptr)
+		for (const TiXmlElement *filenode = files_node->FirstChildElement("item"); filenode != nullptr; filenode = filenode->NextSiblingElement("item"))
+		{
+			// We guarantee that we do not modify the handle below, thus the const_cast is safe.
+			const TiXmlHandle nodeHandle(const_cast<TiXmlNode*> (static_cast<const TiXmlNode*> (filenode)));
+
+			const std::string handle = getSafeStringValue(filenode, "id", "");
+			const std::string name = getSafeStringValue(filenode, "filename", "");
+			const std::string lengthString = getSafeStringValue(filenode, "length", "");
+
+			const std::string hashSHA1 = getSafeStringValue(filenode, "sha1", "");
+
+			if (handle.empty() || name.empty() || lengthString.empty()) continue;
+			size_t length{ 0 };
+
+			try
+			{
+				length = std::stoi(lengthString);
+			}
+			catch (...)
+			{
+				continue;
+			}
+		 
+			files.emplace_back(FileInfo{ handle, length, name, hashSHA1 });
+		}
 }
 
 ModXMLData::~ModXMLData()
@@ -145,7 +161,7 @@ ModXMLData::~ModXMLData()
 // ----------- C4StartupNetListEntry -----------------------------------------------------------------------
 
 C4StartupModsListEntry::C4StartupModsListEntry(C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBefore, C4StartupModsDlg *pModsDlg)
-		: pModsDlg(pModsDlg), pList(pForListBox), fError(false), iInfoIconCount(0), iSortOrder(0), fIsSmall(false), fIsCollapsed(false), fIsEnabled(true), fIsImportant(false)
+		: pModsDlg(pModsDlg), pList(pForListBox), iInfoIconCount(0)
 {
 	// calc height
 	int32_t iLineHgt = ::GraphicsResource.TextFont.GetLineHeight(), iHeight = iLineHgt * 2 + 4;
@@ -180,6 +196,9 @@ C4StartupModsListEntry::C4StartupModsListEntry(C4GUI::ListBox *pForListBox, C4GU
 			const int alignment = alignments[c];
 			rcLabelBounds.y = 1 + i*(iLineHgt + 2);
 			rcLabelBounds.Wdt = iThisWdt - rcLabelBounds.x - 1;
+			// The first line leaves some extra space for the icons.
+			if (i == 0)
+				rcLabelBounds.Wdt -= rcIconRect.x;
 			C4GUI::Label * const pLbl = new C4GUI::Label("", rcLabelBounds, alignment, C4GUI_CaptionFontClr);
 			if (alignment == ALeft) pInfoLbl[i] = pLbl;
 			else if (alignment == ARight) pInfoLabelsRight[i] = pLbl;
@@ -190,14 +209,12 @@ C4StartupModsListEntry::C4StartupModsListEntry(C4GUI::ListBox *pForListBox, C4GU
 			pLbl->SetBounds(rcLabelBounds);
 		}
 	}
-	// update small state, which will resize this to a small entry
-	UpdateSmallState();
-	// Set*-function will fill icon and text and calculate actual size
+	UpdateEntrySize();
 }
 
 C4StartupModsListEntry::~C4StartupModsListEntry()
 {
-	ClearRef();
+	Clear();
 }
 
 void C4StartupModsListEntry::FromXML(const TiXmlElement *xml, ModXMLData::Source source, std::string fallbackID, std::string fallbackName)
@@ -205,6 +222,14 @@ void C4StartupModsListEntry::FromXML(const TiXmlElement *xml, ModXMLData::Source
 	modXMLData = std::make_unique<ModXMLData>(xml, source);
 	if (modXMLData->id.empty()) modXMLData->id = fallbackID;
 	if (modXMLData->title.empty()) modXMLData->title = fallbackName;
+	
+	// Fallback for when only the folder is available.
+	if (xml == nullptr)
+	{
+		sInfoText[0].Format(LoadResStr("IDS_MODS_TITLE"), fallbackName.c_str(), "???");
+		return;
+	}
+
 	if (source != ModXMLData::Source::Local)
 	{
 		std::string updated = getSafeStringValue(xml, "updatedAt", "");
@@ -215,26 +240,58 @@ void C4StartupModsListEntry::FromXML(const TiXmlElement *xml, ModXMLData::Source
 		}
 		else
 			updated = "/";
-		sInfoTextRight[0].Format(LoadResStr("IDS_MODS_METAINFO"),
-			updated.c_str(),
-			getSafeStringValue(xml->FirstChildElement("voting"), "sum", "0").c_str());
+		sInfoTextRight[0].Format(LoadResStr("IDS_MODS_METAINFO"), updated.c_str());
 	}
-	const std::string author = getSafeStringValue(xml->FirstChildElement("author"), "username", "???");
+	const std::string author = getSafeStringValue(xml, "author", "???");
 	const std::string title = modXMLData->title.empty() ? "???" : modXMLData->title;
 	sInfoText[0].Format(LoadResStr("IDS_MODS_TITLE"), title.c_str(), author.c_str());
 
-	for (auto &file : modXMLData->files)
+	bool hasScenario = false;
+	bool hasObjectPackage = false;
+	static std::string openclonkVersionStringTag;
+	if (openclonkVersionStringTag.empty())
+		openclonkVersionStringTag = C4StartupModsDlg::GetOpenClonkVersionStringTag();
+
+	std::ostringstream otherTagsStream;
+	bool isFirstOtherTag = true;
+
+	for (auto &tag : modXMLData->tags)
 	{
-		const auto &name = file.name;
-		if (name.find(".ocd") != std::string::npos)
-			defaultIcon = C4GUI::Icons::Ico_Definition;
-		else if (name.find(".ocs") != std::string::npos)
-			defaultIcon = C4GUI::Icons::Ico_Gfx;
-		else if (name.find(".ocf") != std::string::npos)
-			defaultIcon = C4GUI::Icons::Ico_Ex_GameList;
-		else continue;
-		break;
+		if ((tag == ".scenario") && !hasScenario)
+		{
+			AddStatusIcon(C4GUI::Icons::Ico_Gfx, LoadResStr("IDS_MODS_TAGS_SCENARIO"));
+			hasScenario = true;
+		}
+		else if (tag == ".objects")
+		{
+			AddStatusIcon(C4GUI::Icons::Ico_Definition, LoadResStr("IDS_MODS_TAGS_OBJECT"));
+			hasObjectPackage = true;
+		}
+		else if (tag == "multiplayer")
+			AddStatusIcon(C4GUI::Icons::Ico_Team, LoadResStr("IDS_MODS_TAGS_MULTIPLAYER"));
+		else if (tag == openclonkVersionStringTag)
+			AddStatusIcon(C4GUI::Icons::Ico_Clonk, LoadResStr("IDS_MODS_TAGS_COMPATIBLE"));
+		else if (!tag.empty() && tag.front() != '.')
+		{
+			otherTagsStream << (isFirstOtherTag ? "" : ", ") << tag;
+			isFirstOtherTag = false;
+		}
 	}
+
+	const std::string &otherTags = otherTagsStream.str();
+	if (!otherTags.empty())
+	{
+		AddStatusIcon(C4GUI::Icons::Ico_Star, (std::string(LoadResStr("IDS_MODS_TAGS_OTHERTAGS")) + otherTags).c_str(), false);
+	}
+
+
+	if (!modXMLData->metadataMissing && !modXMLData->longDescription.empty())
+		AddStatusIcon(C4GUI::Icons::Ico_Chart, modXMLData->longDescription.c_str(), false);
+
+	if (hasScenario)
+		defaultIcon = C4GUI::Icons::Ico_Gfx;
+	else if (hasObjectPackage)
+		defaultIcon = C4GUI::Icons::Ico_Definition;
 }
 
 void C4StartupModsListEntry::MakeInfoEntry()
@@ -248,7 +305,7 @@ void C4StartupModsListEntry::MakeInfoEntry()
 
 	// set info
 	sInfoText[0].Copy(LoadResStr("IDS_MODS_SEARCHING"));
-	UpdateSmallState(); UpdateText();
+	UpdateText();
 }
 
 void C4StartupModsListEntry::OnNoResultsFound()
@@ -277,30 +334,18 @@ void C4StartupModsListEntry::OnError(std::string message)
 void C4StartupModsListEntry::DrawElement(C4TargetFacet &cgo)
 {
 	typedef C4GUI::Window ParentClass;
-	// background if important and not selected
-	if (fIsImportant && !IsSelectedChild(this))
-	{
-		int32_t x1 = cgo.X+cgo.TargetX+rcBounds.x;
-		int32_t y1 = cgo.Y+cgo.TargetY+rcBounds.y;
-		pDraw->DrawBoxDw(cgo.Surface, x1,y1, x1+rcBounds.Wdt, y1+rcBounds.Hgt, C4GUI_ImportantBGColor);
-	}
 	// inherited
 	ParentClass::DrawElement(cgo);
 }
 
-void C4StartupModsListEntry::ClearRef()
+void C4StartupModsListEntry::Clear()
 {
-	fError = false;
-	sError.Clear();
 	int32_t i;
 	for (i = 0; i < InfoLabelCount; ++i)
 	{
 		sInfoText[i].Clear();
 		sInfoTextRight[i].Clear();
 	}
-	InvalidateStatusIcons();
-	fIsEnabled = true;
-	fIsImportant = false;
 }
 
 bool C4StartupModsListEntry::Execute()
@@ -308,46 +353,11 @@ bool C4StartupModsListEntry::Execute()
 	return true;
 }
 
-C4GUI::Element* C4StartupModsListEntry::GetNextLower(int32_t sortOrder)
-{
-	// search list for the next element of a lower sort order
-	for (C4GUI::Element *pElem = pList->GetFirst(); pElem; pElem = pElem->GetNext())
-	{
-		C4StartupModsListEntry *pEntry = static_cast<C4StartupModsListEntry *>(pElem);
-		if (pEntry->iSortOrder < sortOrder)
-			return pElem;
-	}
-	// none found: insert at start
-	return nullptr;
-}
-
-void C4StartupModsListEntry::UpdateCollapsed(bool fToCollapseValue)
-{
-	// if collapsed state changed, update the text
-	if (fIsCollapsed == fToCollapseValue) return;
-	fIsCollapsed = fToCollapseValue;
-	UpdateSmallState();
-}
-
-void C4StartupModsListEntry::UpdateSmallState()
-{
-	// small view: Always collapsed if there is no extended text
-	bool fNewIsSmall = !sInfoText[2].getLength() || fIsCollapsed;
-	if (fNewIsSmall == fIsSmall) return;
-	fIsSmall = fNewIsSmall;
-	for (int i = 2; i < InfoLabelCount; ++i)
-	{
-		pInfoLbl[i]->SetVisibility(!fIsSmall);
-		pInfoLabelsRight[i]->SetVisibility(!fIsSmall);
-	}
-	UpdateEntrySize();
-}
-
 void C4StartupModsListEntry::UpdateEntrySize()
 {
 	if(fVisible) {
 		// restack all labels by their size
-		const int32_t iLblCnt = (fIsSmall ? 2 : InfoLabelCount);
+		const int32_t iLblCnt = InfoLabelCount;
 		for (int c = 0; c < 2; ++c)
 		{
 			int iY = 1;
@@ -373,13 +383,17 @@ void C4StartupModsListEntry::UpdateInstalledState(C4StartupModsLocalModDiscovery
 
 	isInstalled = modInfo != nullptr;
 
-	std::string fullDescription = modXMLData->description;
+	std::string fullDescription = "";
+	if (!modXMLData->metadataMissing)
+		fullDescription = modXMLData->description;
+	else
+		fullDescription = LoadResStr("IDS_MODS_METADATA_MISSING");
 
 	if (modInfo != nullptr)
 	{
 		pIcon->SetIcon(C4GUI::Icons::Ico_Save);
 
-		fullDescription = std::string("<c 559955>") + LoadResStr("IDS_MODS_INSTALLED") + ".</c> " + modXMLData->description;
+		fullDescription = std::string("<c 559955>") + LoadResStr("IDS_MODS_INSTALLED") + ".</c> " + fullDescription;
 	}
 	else
 	{
@@ -427,7 +441,7 @@ void C4StartupModsListEntry::UpdateText()
 				}
 			}
 			infoLabel->SetText(BrokenText.getData());
-			infoLabel->SetColor(fIsEnabled ? C4GUI_MessageFontClr : C4GUI_InactMessageFontClr);
+			infoLabel->SetColor(C4GUI_MessageFontClr);
 		}
 	}
 	if (fRestackElements) UpdateEntrySize();
@@ -439,27 +453,27 @@ void C4StartupModsListEntry::SetVisibility(bool fToValue) {
 	if(fChange) UpdateEntrySize();
 }
 
-void C4StartupModsListEntry::AddStatusIcon(C4GUI::Icons eIcon, const char *szToolTip)
+void C4StartupModsListEntry::AddStatusIcon(C4GUI::Icons eIcon, const char *szToolTip, bool insertLeft)
 {
 	// safety
 	if (iInfoIconCount==MaxInfoIconCount) return;
-	// set icon to the left of the existing icons to the desired data
-	pInfoIcons[iInfoIconCount]->SetIcon(eIcon);
-	pInfoIcons[iInfoIconCount]->SetToolTip(szToolTip);
-	++iInfoIconCount;
-}
+	// default: set icon to the left of the existing icons to the desired data
+	auto insertPosition = iInfoIconCount;
+	
+	if (!insertLeft)
+	{
+		// Move all icons one slot and insert on the right side.
+		for (auto i = iInfoIconCount - 1; i >= 0; --i)
+		{
+			pInfoIcons[i + 1]->SetFacet(pInfoIcons[i]->GetFacet());
+			pInfoIcons[i + 1]->SetToolTip(pInfoIcons[i]->GetToolTip());
+		}
+		insertPosition = 0;
+	}
 
-void C4StartupModsListEntry::SetError(const char *szErrorText)
-{
-	// set error message
-	fError = true;
-	sInfoText[1].Copy(szErrorText);
-	for (int i=2; i<InfoLabelCount; ++i) sInfoText[i].Clear();
-	InvalidateStatusIcons();
-	UpdateSmallState(); UpdateText();
-	pIcon->SetIcon(C4GUI::Ico_Close);
-	pIcon->SetAnimated(false, 0);
-	pIcon->SetBounds(rctIconSmall);
+	pInfoIcons[insertPosition]->SetIcon(eIcon);
+	pInfoIcons[insertPosition]->SetToolTip(szToolTip);
+	++iInfoIconCount;
 }
 
 void C4StartupModsLocalModDiscovery::Execute()
@@ -499,11 +513,6 @@ void C4StartupModsLocalModDiscovery::ExecuteDiscovery()
 		const std::string name = leaf.substr(idSeparatorPosition + 1);
 		AddMod(id, filename, name);
 	}
-}
-
-bool C4StartupModsListEntry::KeywordMatch(const char *szMatch)
-{
-	return false;
 }
 
 C4StartupModsDownloader::C4StartupModsDownloader(C4StartupModsDlg *parent, const C4StartupModsListEntry *entry) : CStdTimerProc(30)
@@ -602,7 +611,7 @@ void C4StartupModsDownloader::ModInfo::FromXMLData(const ModXMLData &xmlData)
 	name = xmlData.title;
 	slug = xmlData.slug;
 	dependencies = xmlData.dependencies;
-	originalXMLNode = xmlData.originalXMLElement->Clone();
+	originalXMLNode = xmlData.originalXMLElement != nullptr ? xmlData.originalXMLElement->Clone() : nullptr;
 	hasOnlyIncompleteInformation = xmlData.requiresUpdate();
 
 	for (const auto & fileInfo : xmlData.files)
@@ -647,7 +656,7 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 	{
 		postClient = std::make_unique<C4Network2HTTPClient>();
 
-		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "media/" + files.back().handle + "?download").c_str()))
+		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "files/" + files.back().handle).c_str()))
 		{
 			assert(false);
 			return;
@@ -661,8 +670,11 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 	}
 
 	// Update progress bar.
-	downloadedBytes = postClient->getDownloadedSize();
-	totalBytes = postClient->getTotalSize();
+	// And add the expected size of all remaining and finished files.
+	downloadedBytes = postClient->getDownloadedSize() + totalSuccesfullyDownloadedBytes;
+	totalBytes = totalSuccesfullyDownloadedBytes;
+	for (const auto &file : files)
+		totalBytes += file.size;
 
 	if (!postClient->isBusy())
 	{
@@ -690,7 +702,9 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 				return;
 			}
 
-			os.write(static_cast<const char*>(postClient->getResultBin().getData()), postClient->getDownloadedSize());
+			const auto newDownloadedBytes = postClient->getDownloadedSize();;
+			totalSuccesfullyDownloadedBytes += newDownloadedBytes;
+			os.write(static_cast<const char*>(postClient->getResultBin().getData()), newDownloadedBytes);
 			os.close();
 
 			CancelRequest();
@@ -699,7 +713,7 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 			if (files.empty())
 			{
 				// Write mod metadata to info file - to bad we don't use tinyxml with STL support.
-				FILE *metadata = std::fopen((path + DirectorySeparator + "item.xml").c_str(), "w");
+				FILE *metadata = std::fopen((path + DirectorySeparator + "resource.xml").c_str(), "w");
 				if (metadata != nullptr)
 				{
 					originalXMLNode->Print(metadata, 0);
@@ -758,7 +772,7 @@ void C4StartupModsDownloader::ExecuteCheckDownloadProgress()
 		downloadedBytes += downloaded;
 		totalBytes += total;
 
-		if (mod->IsBusy())
+		if (mod->IsBusy() || (!mod->HasError() && mod->HasFilesRemaining()))
 		{
 			anyNotFinished = true;
 		}
@@ -859,6 +873,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 
 		TiXmlDocument xmlDocument;
 		xmlDocument.Parse(postMetadataClient->getResultString());
+		std::cout << postMetadataClient->getResultString();
 
 		if (xmlDocument.Error())
 		{
@@ -867,12 +882,22 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			return;
 		}
-		const char * resourceElementName = "upload";
+		const char * resourceElementName = "root";
 		const TiXmlElement *root = xmlDocument.RootElement();
 		assert(strcmp(root->Value(), resourceElementName) == 0);
 
 		// Re-use the parsing from the list entries.
 		ModXMLData modXMLData(root, ModXMLData::Source::DetailView);
+
+		// Empty reply? Skip.
+		if (modXMLData.id.empty())
+		{
+			mod->SetError(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"));
+			// Destroy client and try next mod.
+			Application.InteractiveThread.RemoveProc(postMetadataClient.get());
+			postMetadataClient.reset();
+			return;
+		}
 
 		// Find the mod matching the id from the metadata.
 		size_t foundIdx = 0;
@@ -889,6 +914,7 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 		// Somehow, the matching mod could not be found. That should not happen.
 		if (foundIdx == items.size())
 		{
+			Log((std::string("Answer for ") + modXMLData.id + " was not requested.").c_str());
 			CancelRequest();
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
 			assert(false);
@@ -1071,7 +1097,7 @@ void C4StartupModsDownloader::ModInfo::LocalDiscoveryCheck::Execute()
 				size_t index = 0;
 				for (size_t offset = 0; offset < hashString.size(); offset += byteLen, index += 1)
 				{
-					// Oddly, the indices of the byte array to not correspond 1-to-1 to a standard sha1 string.
+					// Oddly, the indices of the byte array do not correspond 1-to-1 to a standard sha1 string.
 					const size_t hashIndex = (index / 4 * 4) + (3 - (index % 4));
 					const BYTE &byte = hash[hashIndex];
 
@@ -1106,7 +1132,7 @@ void C4StartupModsDownloader::ModInfo::LocalDiscoveryCheck::Execute()
 
 // ----------- C4StartupNetDlg ---------------------------------------------------------------------------------
 
-C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")), pMasterserverClient(nullptr), fIsCollapsed(false), modsDiscovery(this)
+C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")), modsDiscovery(this)
 {
 	// ctor
 	// key bindings
@@ -1151,7 +1177,6 @@ C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")),
 	
 	sortingOptions =
 	{
-		{ "voting.sum", "IDS_MODS_SORT_RATING_DOWN", "IDS_MODS_SORT_RATING_UP" },
 		{ "title", "IDS_MODS_SORT_NAME_UP", "IDS_MODS_SORT_NAME_DOWN" },
 		{ "updatedAt", "IDS_MODS_SORT_DATE_DOWN", "IDS_MODS_SORT_DATE_UP" },
 	};
@@ -1221,13 +1246,20 @@ C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")),
 	}
 	{
 		CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
-		const char *szText = LoadResStr("IDS_MODS_FILTER_COMPATIBLE");
-		int iWdt = 100, iHgt = 12;
-		C4GUI::CheckBox::GetStandardCheckBoxSize(&iWdt, &iHgt, szText, pUseFont);
-		filters.showCompatible = new C4GUI::CheckBox(caConfigArea.GetFromTop(iHgt, iWdt), szText, true);
-		filters.showCompatible->SetToolTip(LoadResStr("IDS_MODS_FILTER_COMPATIBLE_DESC"));
-		AddElement(filters.showCompatible);
+		auto addCheckbox = [&pUseFont, &caConfigArea, this] (C4GUI::CheckBox**checkbox, const char *szText, const char *szTooltip)
+		{
+			int iWdt = 150, iHgt = 12;
+			C4GUI::CheckBox::GetStandardCheckBoxSize(&iWdt, &iHgt, szText, pUseFont);
+			*checkbox = new C4GUI::CheckBox(caConfigArea.GetFromTop(iHgt, -1), szText, true);
+			(*checkbox)->SetToolTip(szTooltip);
+			AddElement(*checkbox);
+		};
+		addCheckbox(&filters.showCompatible, LoadResStr("IDS_MODS_FILTER_COMPATIBLE"), LoadResStr("IDS_MODS_FILTER_COMPATIBLE_DESC"));
+		addCheckbox(&filters.showPlayable, LoadResStr("IDS_MODS_FILTER_PLAYABLE"), LoadResStr("IDS_MODS_FILTER_PLAYABLE_DESC"));
 	}
+	// Add button to manually search the database (as opposed to hitting F5).
+	AddElement(btn = new C4GUI::CallbackButton<C4StartupModsDlg>(LoadResStr("IDS_MODS_SEARCH_ONLINE"), caConfigArea.GetFromTop(iButtonHeight), &C4StartupModsDlg::OnSearchOnlineBtn));
+	btn->SetToolTip(LoadResStr("IDS_MODS_SEARCH_ONLINE_DESC"));
 	// initial focus
 	SetFocus(GetDlgModeFocusControl(), false);
 	
@@ -1249,6 +1281,11 @@ std::string C4StartupModsDlg::GetBaseServerURL()
 	return base;
 }
 
+std::string C4StartupModsDlg::GetOpenClonkVersionStringTag()
+{
+	return "openclonk-" + std::to_string(C4XVER1);
+}
+
 C4StartupModsDlg::~C4StartupModsDlg()
 {
 	CancelRequest();
@@ -1256,7 +1293,6 @@ C4StartupModsDlg::~C4StartupModsDlg()
 	Application.InteractiveThread.ClearCallback(Ev_HTTP_Response, this);
 
 	Application.Remove(this);
-	if (pMasterserverClient) delete pMasterserverClient;
 	// dtor
 	delete pKeyBack;
 	delete pKeyRefresh;
@@ -1281,7 +1317,6 @@ void C4StartupModsDlg::OnClosed(bool fOK)
 {
 	// dlg abort: return to main screen
 	CancelRequest();
-	if (pMasterserverClient) { delete pMasterserverClient; pMasterserverClient=nullptr; }
 	if (!fOK) DoBack();
 }
 
@@ -1313,7 +1348,7 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 
 	// First, construct the 'where' part of the query.
 	// Forward the filter-field to the server.
-	std::string whereClauseContents = "";
+	std::string searchQueryPostfix("?");
 	if (pSearchFieldEdt->GetText())
 	{
 		std::string searchText(pSearchFieldEdt->GetText());
@@ -1322,19 +1357,29 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 			// Sanity, escape quotes etc.
 			searchText = std::regex_replace(searchText, std::regex("\""), "\\\"");
 			searchText = std::regex_replace(searchText, std::regex("[ ]+"), "%20");
-			whereClauseContents += "%22$text%22:{%22$search%22:%22" + searchText + "%22}";
+			searchQueryPostfix += "q=%22" + searchText + "%22&";
 		}
 	}
+
+	std::vector<std::string> tagFilters;
+	tagFilters.reserve(4);
 	// Additional filter options set?
 	if (filters.showCompatible->GetChecked())
 	{
-		const std::string versionTag = std::string("%22OpenClonk%20") + std::to_string(C4XVER1) + std::string(".0%22");
-		whereClauseContents += std::string(whereClauseContents.empty() ? "" : ",") + "%22tags%22:" + versionTag;
+		static const std::string versionTag = GetOpenClonkVersionStringTag();
+		tagFilters.push_back(versionTag);
 	}
-	// 'where' part is done; close it.
-	std::string searchQueryPostfix("?");
-	if (!whereClauseContents.empty())
-		searchQueryPostfix += "where={" + whereClauseContents + "}&";
+	if (filters.showPlayable->GetChecked())
+	{
+		tagFilters.push_back(".scenario");
+	}
+	if (!tagFilters.empty())
+	{
+		std::ostringstream os;
+		for (size_t i = 0; i < tagFilters.size(); ++i)
+			os << ((i == 0) ? "tags=" : ",") << tagFilters[i];
+		searchQueryPostfix += os.str() + "&";
+	}
 
 	// Forward the sorting criterion to the server.
 	if (!sortKeySuffix.empty())
@@ -1343,10 +1388,9 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 	}
 
 	// Request the correct page.
-	const int requestedPage = loadNextPage ? pageInfo.currentPage + 1 : 1;
-	searchQueryPostfix += "page=" + std::to_string(requestedPage) + "&";
+	const int requestedOffset = loadNextPage ? pageInfo.currentlySkipped + pageInfo.maxResultsPerQuery: 0;
+	searchQueryPostfix += "limit=" + std::to_string(pageInfo.maxResultsPerQuery) + "&skip=" + std::to_string(requestedOffset) + "&";
 
-	Log(searchQueryPostfix.c_str());
 	// Initialize connection.
 	// Abort possible running request.
 	CancelRequest();
@@ -1367,11 +1411,6 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 	postClient->SetNotify(&Application.InteractiveThread);
 	Application.InteractiveThread.AddProc(postClient.get());
 	postClient->Query(nullptr, false); // Empty query.
-
-	/*pMasterserverClient = new C4StartupModsListEntry(pGameSelList, nullptr, this);
-	StdStrBuf strVersion; strVersion.Format("%d.%d", C4XVER1, C4XVER2);
-	StdStrBuf strQuery; strQuery.format("%s?version=%s&platform=%s", Config.Network.GetLeagueServerAddress(), strVersion.getData(), C4_OS);
-	pMasterserverClient->SetRefQuery(strQuery.getData(), C4StartupNetListEntry::NRQT_Masterserver);*/
 }
 
 void C4StartupModsDlg::CancelRequest()
@@ -1431,18 +1470,24 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 		for (const auto & modData: installedMods)
 		{
 			const auto &mod = modData.second;
-			std::ifstream metadata(mod.path + DirectorySeparator + "item.xml", std::ifstream::in);
-			if (!metadata.good()) continue;
+			TiXmlElement *metadataXMLElement{ nullptr };
 
-			std::stringstream stream;
-			stream << metadata.rdbuf();
+			// Try to read the metadata file. Show elements without file, though.
+			std::ifstream metadata(mod.path + DirectorySeparator + "resource.xml", std::ifstream::in);
+			if (metadata.good())
+			{
+				std::stringstream stream;
+				stream << metadata.rdbuf();
 
-			TiXmlDocument xmlDocument;
-			xmlDocument.Parse(stream.str().c_str());
-			if (xmlDocument.Error()) continue;
-
-			const TiXmlElement *root = xmlDocument.RootElement();
-			elements.emplace_back(static_cast<TiXmlElement*>(root->Clone()), mod.id, mod.name);
+				TiXmlDocument xmlDocument;
+				xmlDocument.Parse(stream.str().c_str());
+				if (!xmlDocument.Error())
+				{
+					const TiXmlElement *root = xmlDocument.RootElement();
+					metadataXMLElement = static_cast<TiXmlElement*>(root->Clone());
+				}
+			}
+			elements.emplace_back(metadataXMLElement, mod.id, mod.name);
 		}
 		AddToList(elements, ModXMLData::Source::Local);
 		// We took ownership, clear it.
@@ -1481,6 +1526,7 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 
 			TiXmlDocument xmlDocument;
 			xmlDocument.Parse(postClient->getResultString());
+			std::cout << postClient->getResultString() << std::endl;
 
 			if (xmlDocument.Error())
 			{
@@ -1489,36 +1535,40 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 				infoEntry->OnError(xmlDocument.ErrorDesc());
 				return;
 			}
-			const char * rootElementName = "uploads";
-			const char * resourceElementName = "upload";
+			const char * rootElementName = "root";
 			const TiXmlElement *root = xmlDocument.RootElement();
 			assert(strcmp(root->Value(), rootElementName) == 0);
 
 			// Parse pagination data.
-			pageInfo.currentPage = pageInfo.totalPages = pageInfo.totalResults = 0;
-			const TiXmlElement *meta = root->FirstChildElement("_meta");
-			const TiXmlElement *pagination = meta ? meta->FirstChildElement("pagination") : nullptr;
-			if (pagination != nullptr)
+			pageInfo.totalResults = pageInfo.currentlySkipped = 0;
+			const TiXmlElement *meta = root->FirstChildElement("meta");
+			if (meta != nullptr)
 			{
 				try
 				{
-					pageInfo.currentPage = std::stoi(getSafeStringValue(pagination, "page", "0"));
-					pageInfo.totalResults = std::stoi(getSafeStringValue(pagination, "total", "0"));
-					pageInfo.totalPages = std::stoi(getSafeStringValue(pagination, "pages", "0"));
+					pageInfo.totalResults = std::stoi(getSafeStringValue(meta, "total", "0"));
+					pageInfo.currentlySkipped = std::stoi(getSafeStringValue(meta, "skip", "0"));
 				}
 				catch (...) {}
 			}
+			const TiXmlElement* resources = root->FirstChildElement("resources");
+			const char* resourceElementName = "item";
 			std::vector<TiXmlElementLoaderInfo> elements;
-			for (const TiXmlElement* e = root->FirstChildElement(resourceElementName); e != NULL; e = e->NextSiblingElement(resourceElementName))
+			for (const TiXmlElement* e = resources->FirstChildElement(resourceElementName); e != NULL; e = e->NextSiblingElement(resourceElementName))
+			{
+				// Ignore empty elements.
+				if (e->FirstChild() == nullptr)
+					continue;
 				elements.push_back(e);
+			}
 			AddToList(elements, ModXMLData::Source::Overview);
 
 			// Nothing found? Notify!
 			if (elements.empty())
 				infoEntry->OnNoResultsFound();
-			else if (pageInfo.currentPage < pageInfo.totalPages)
+			else if (pageInfo.getCurrentPage() < pageInfo.getTotalPages())
 			{
-				infoEntry->ShowPageInfo(pageInfo.currentPage, pageInfo.totalPages, pageInfo.totalResults);
+				infoEntry->ShowPageInfo(pageInfo.getCurrentPage(), pageInfo.getTotalPages(), pageInfo.totalResults);
 				pGameSelList->RemoveElement(infoEntry);
 				pGameSelList->AddElement(infoEntry);
 			}
@@ -1563,40 +1613,13 @@ void C4StartupModsDlg::UpdateList(bool fGotReference, bool onlyWithLocalFiles)
 		}
 	}
 
-	// check whether view needs to be collapsed or uncollapsed
-	if (fIsCollapsed && fAnyRemoval)
-	{
-		// try uncollapsing
-		fIsCollapsed = false;
-		UpdateCollapsed();
-		// if scrolling is still necessary, the view will be collapsed again immediately
-	}
-	if (!fIsCollapsed && pGameSelList->IsScrollingNecessary())
-	{
-		fIsCollapsed = true;
-		UpdateCollapsed();
-	}
-
 	// done; selection might have changed
 	pGameSelList->UnFreezeScrolling();
-	UpdateSelection(false);
+	UpdateSelection();
 }
 
-void C4StartupModsDlg::UpdateCollapsed()
+void C4StartupModsDlg::UpdateSelection()
 {
-	// update collapsed state for all child entries
-	for (C4GUI::Element *pElem = pGameSelList->GetFirst(); pElem; pElem = pElem->GetNext())
-	{
-		C4StartupModsListEntry *pEntry = static_cast<C4StartupModsListEntry *>(pElem);
-		pEntry->UpdateCollapsed(fIsCollapsed && pElem != pGameSelList->GetSelectedItem());
-	}
-}
-
-void C4StartupModsDlg::UpdateSelection(bool fUpdateCollapsed)
-{
-	// in collapsed view, updating the selection may uncollapse something
-	if (fIsCollapsed && fUpdateCollapsed) UpdateCollapsed();
-
 	C4StartupModsListEntry *selected = static_cast<C4StartupModsListEntry*>(pGameSelList->GetSelectedItem());
 	btnInstall->SetEnabled(false);
 	btnRemove->SetEnabled(false);
@@ -1731,7 +1754,7 @@ bool C4StartupModsDlg::DoOK()
 		{
 			if (postClient.get() != nullptr) return false;
 			// Next page?
-			if (pageInfo.currentPage >= pageInfo.totalPages) return false;
+			if (pageInfo.getCurrentPage() >= pageInfo.getTotalPages()) return false;
 			QueryModList(true);
 			return true;
 		}
@@ -1761,7 +1784,7 @@ bool C4StartupModsDlg::KeyRefresh()
 
 void C4StartupModsDlg::DoRefresh()
 {
-	// restart masterserver query
+	// restart server query
 	QueryModList();
 	// done; update stuff
 	UpdateList();
