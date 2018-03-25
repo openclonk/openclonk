@@ -29,7 +29,6 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
-const std::string C4StartupModsDlg::baseServerURL = "frustrum.pictor.uberspace.de/larry/api/";
 
 // Used to parse values of subelements from an XML element.
 std::string getSafeStringValue(const TiXmlElement *xml, const char *childName, std::string fallback = "", bool isAttribute = false)
@@ -648,7 +647,7 @@ void C4StartupModsDownloader::ModInfo::CheckProgress()
 	{
 		postClient = std::make_unique<C4Network2HTTPClient>();
 
-		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::baseServerURL + "media/" + files.back().handle + "?download").c_str()))
+		if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "media/" + files.back().handle + "?download").c_str()))
 		{
 			assert(false);
 			return;
@@ -820,10 +819,11 @@ void C4StartupModsDownloader::ExecuteMetadataUpdate()
 
 			postMetadataClient = std::make_unique<C4Network2HTTPClient>();
 
-			if (!postMetadataClient->Init() || !postMetadataClient->SetServer((C4StartupModsDlg::baseServerURL + "uploads/" + mod->modID).c_str()))
+			if (!postMetadataClient->Init() || !postMetadataClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "uploads/" + mod->modID).c_str()))
 			{
-				assert(false);
-				return;
+				mod->SetError(LoadResStr("IDS_MODS_NOINSTALL_UPDATEMETADATAFAILED"));
+				postMetadataClient.reset();
+				continue;
 			}
 			postMetadataClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);
 			// Do the actual request.
@@ -988,6 +988,7 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	size_t totalSize{ 0 };
 	bool atLeastOneFileExisted = false;
 	std::string allMissingModNames;
+	std::string errorMessages;
 
 	for (auto &mod : items)
 	{
@@ -1001,7 +1002,8 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 				totalSize += file.size;
 			}
 		}
-
+		if (mod->HasError())
+			errorMessages += mod->GetErrorMessage() + "\n";
 	}
 
 	// Hide progress bar, so it's not behind the modal dialogs.
@@ -1011,10 +1013,19 @@ void C4StartupModsDownloader::ExecuteRequestConfirmation()
 	if (totalSize == 0)
 	{
 		CancelRequest();
+		auto icon = C4GUI::Ico_Resource;
+		if (!errorMessages.empty())
+			errorMessages += "\n";
 		if (atLeastOneFileExisted)
-			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_ALREADYINSTALLED"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Resource);
+		{
+			errorMessages += LoadResStr("IDS_MODS_NOINSTALL_ALREADYINSTALLED");
+		}
 		else
-			::pGUI->ShowMessageModal(LoadResStr("IDS_MODS_NOINSTALL_NODATA"), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		{
+			errorMessages += LoadResStr("IDS_MODS_NOINSTALL_NODATA");
+			icon = C4GUI::Ico_Error;
+		}
+		::pGUI->ShowMessageModal(errorMessages.c_str(), LoadResStr("IDS_MODS_NOINSTALL"), C4GUI::MessageDialog::btnOK, icon);
 		return;
 	}
 
@@ -1228,6 +1239,16 @@ C4StartupModsDlg::C4StartupModsDlg() : C4StartupDlg(LoadResStr("IDS_DLG_MODS")),
 
 }
 
+std::string C4StartupModsDlg::GetBaseServerURL()
+{
+	std::string base = Config.Network.GetModDatabaseServerAddress();
+	assert(!base.empty());
+	if (base.empty()) return base;
+	if (base.back() != '/')
+		base += "/";
+	return base;
+}
+
 C4StartupModsDlg::~C4StartupModsDlg()
 {
 	CancelRequest();
@@ -1332,9 +1353,12 @@ void C4StartupModsDlg::QueryModList(bool loadNextPage)
 	queryWasSuccessful = false;
 	postClient = std::make_unique<C4Network2HTTPClient>();
 	
-	if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::baseServerURL + "uploads" + searchQueryPostfix).c_str()))
+	if (!postClient->Init() || !postClient->SetServer((C4StartupModsDlg::GetBaseServerURL() + "uploads" + searchQueryPostfix).c_str()))
 	{
-		assert(false);
+		infoEntry->OnError(std::string(LoadResStr("IDS_MODS_INVALID_SERVER")) + C4StartupModsDlg::GetBaseServerURL());
+		postClient.reset();
+		// Don't retry.
+		queryWasSuccessful = true;
 		return;
 	}
 	postClient->SetExpectedResponseType(C4Network2HTTPClient::ResponseType::XML);

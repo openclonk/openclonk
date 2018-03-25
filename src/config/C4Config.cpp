@@ -182,6 +182,8 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *compiler)
 	compiler->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
 	compiler->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
 	compiler->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
+	compiler->Value(mkNamingAdapt(UseAlternateModDatabaseServer, "UseAlternateModDatabaseServer", 0));
+	compiler->Value(mkNamingAdapt(s(AlternateModDatabaseServerAddress), "AlternateModDatabaseServerAddress", "mods.openclonk.org/api"));
 	compiler->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
 	compiler->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
@@ -668,6 +670,16 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 	{
 		return "league.openclonk.org:80/league.php";
 	}
+}
+
+const char* C4ConfigNetwork::GetModDatabaseServerAddress()
+{
+	// Alternate (configurable) mod database server
+	if (UseAlternateModDatabaseServer)
+		return AlternateModDatabaseServerAddress;
+	// Standard (hardcoded) official mod database server
+	else
+		return "larry-api.asw.io/";
 }
 
 void C4ConfigNetwork::CheckPortsForCollisions()

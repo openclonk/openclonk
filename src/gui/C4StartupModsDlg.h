@@ -332,7 +332,6 @@ class C4StartupModsDlg : public C4StartupDlg, private C4InteractiveThread::Callb
 public:
 	C4StartupModsDlg(); // ctor
 	~C4StartupModsDlg(); // dtor
-	static const std::string baseServerURL;
 
 private:
 	C4GUI::Tabular *pMainTabular;   // main tabular control: Contains game selection list and chat control
@@ -389,6 +388,7 @@ private:
 	// Deletes lingering updates etc.
 	void CancelRequest();
 
+	static std::string GetBaseServerURL();
 	void QueryModList(bool loadNextPage=false);
 	void ClearList();
 	void UpdateList(bool fGotReference = false, bool onlyWithLocalFiles = false);
