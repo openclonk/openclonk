@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2015-2017, The OpenClonk Team and contributors
+ * Copyright (c) 2015-2018, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -82,6 +82,50 @@ TEST_F(AulDiagnosticsTest, empty_if)
 	{
 		EXPECT_WARNING(empty_if).Times(0);
 		RunCode("if (true) {} else {}");
+	}
+}
+
+TEST_F(AulDiagnosticsTest, suspicious_assignment)
+{
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; if (a = 0) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("var a = 0; if (a == 1) {}");
+		RunCode("var a = 0; if (a += 1) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("for (var a = 0; a = 0;) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("for (var a = 0; a == 1;) {}");
+		RunCode("for (var a = 0; a != 0;) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; while (a = 0) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("var a = 0; while (a == 1) {}");
+		RunCode("var a = 0; while (a *= 1) {}");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; return a = 0;");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment);
+		RunCode("var a = 0; return (a = 0);");
+	}
+	{
+		EXPECT_WARNING(suspicious_assignment).Times(0);
+		RunCode("var a = 0; return a == 0;");
+		RunCode("var a = 0; return (a = 0) == 0;");
 	}
 }
 

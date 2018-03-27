@@ -1,7 +1,7 @@
 /*
 * OpenClonk, http://www.openclonk.org
 *
-* Copyright (c) 2017, The OpenClonk Team and contributors
+* Copyright (c) 2017-2018, The OpenClonk Team and contributors
 *
 * Distributed under the terms of the ISC license; see accompanying file
 * "COPYING" for details.
@@ -38,5 +38,6 @@ DIAG(undeclared_varargs, "use of '%s' in a function forces it to take variable a
 DIAG(arg_count_mismatch, "call to '%s' passes %u arguments, of which only %u are used", true)
 DIAG(arg_type_mismatch, "parameter %u of call to '%s' passes %s (%s expected)", true)
 DIAG(empty_if, "empty controlled statement (use '{}' if this is intentional)", true)
+DIAG(suspicious_assignment, "suspicious assignment (was a comparison intended here?)", true)
 
 #pragma pop_macro("DIAG")

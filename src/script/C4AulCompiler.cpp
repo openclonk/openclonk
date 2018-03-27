@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2016, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2018, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -254,6 +254,14 @@ class C4AulCompiler::CodegenAstVisitor : public ::aul::DefaultRecursiveVisitor
 			}
 		}
 	};
+
+	void WarnOnAssignment(const ::aul::ast::ExprPtr &n) const
+	{
+		if (dynamic_cast<const ::aul::ast::AssignmentExpr*>(n.get()) != nullptr)
+		{
+			Warn(target_host, host, n.get(), Fn, C4AulWarningId::suspicious_assignment);
+		}
+	}
 
 public:
 	CodegenAstVisitor(C4ScriptHost *host, C4ScriptHost *source_host) : target_host(host), host(source_host) {}
@@ -1415,6 +1423,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Return *n)
 {
 	StackGuard g(this, 0);
 
+	WarnOnAssignment(n->value);
 	SafeVisit(n->value);
 	AddBCC(n->loc, AB_RETURN);
 }
@@ -1442,6 +1451,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::ForLoop *n)
 	PushLoop();
 	if (n->cond)
 	{
+		WarnOnAssignment(n->cond);
 		cond = AddJumpTarget();
 		SafeVisit(n->cond);
 		active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
@@ -1560,6 +1570,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::WhileLoop *n)
 {
 	int cond = AddJumpTarget();
 	PushLoop();
+	WarnOnAssignment(n->cond);
 	SafeVisit(n->cond);
 	active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	if (SafeVisit(n->body))
@@ -1583,6 +1594,7 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::Continue *n)
 
 void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::If *n)
 {
+	WarnOnAssignment(n->cond);
 	SafeVisit(n->cond);
 	int jump = AddBCC(n->loc, AB_CONDN);
 	// Warn if we're controlling a no-op ("if (...);")

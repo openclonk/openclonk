@@ -229,6 +229,24 @@ func g(a, ...) {
           </part>
         </col>
       </row>
+      <row>
+        <col>suspicious_assignment</col>
+        <col>
+          <text>
+            An assignment was found where an expression was expected. While
+            an assignment returns its own value, usually a comparison was
+            intended instead.
+          </text>
+          <part>
+            <code>if (a = b + 1) { /* Do something */}</code>
+          </part>
+          <text>
+            If the assignment is intentional, make this more obvious by
+            extracting it to a separate statement, or explicitly handle the
+            boolean conversion by adding a comparison operator.
+          </text>
+        </col>
+      </row>
     </table>
   </part>
 
