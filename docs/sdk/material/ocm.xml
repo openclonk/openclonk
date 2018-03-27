@@ -206,7 +206,7 @@
         <row>
           <col>OverlayType</col>
           <col>Integer</col>
-          <col>Bit mask for texture calculation on this material. Bit 0 (1): exact (no zoom), bit 1 (2): no texture, bit 2 (4): extra large zoom, bit 3 (8): calculate texture based on gray scale.</col>
+          <col>Bit mask for texture calculation on this material. Bit 0 (1): exact (no zoom), bit 1 (2): no texture, bit 2 (4): extra large zoom</col>
         </row>
         <row>
           <col>PXSGfx</col>
