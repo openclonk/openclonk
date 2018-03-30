@@ -185,8 +185,8 @@ public func AddCableConnection(object cable)
 	// Acquire destinations of the other crossing, all these are now in reach
 	AddCableDestinations(other_crossing->GetDestinations(), other_crossing);
 	// Send own destinations, now in reach for the other one
-	other_crossing->AddCableDestinations(GetDestinations(), this);
-	// Awesome, more power to the network!
+	other_crossing->AddCableDestinations(this->GetDestinations(), this);
+	// Destinations have been updated for this crossing.
 	DestinationsUpdated();
 	return true;
 }
@@ -384,8 +384,13 @@ public func RenewConnections()
 		var other_crossing = connection->~GetConnectedObject(this);
 		if (!other_crossing || !other_crossing->~IsCableCrossing())
 			continue;
-		PushBack(destination_list, [other_crossing, other_crossing, ObjectDistance(other_crossing)]);
+		// Acquire destinations of the other crossing, all these are now in reach
 		AddCableDestinations(other_crossing->GetDestinations(), other_crossing);
+		// Send own destinations, now in reach for the other one
+		other_crossing->AddCableDestinations(this->GetDestinations(), this);
+		// Destinations have been updated for this crossing.
+		DestinationsUpdated();
+		// Also update other connections.
 		other_crossing->RenewConnections();
 	}
 }

@@ -57,7 +57,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);
-	fx.testnr = 7;
+	fx.testnr = 1;
 	fx.launched = false;
 	fx.plr = plr;
 	return;
@@ -416,7 +416,7 @@ global func Test5_OnFinished()
 
 global func Test6_OnStart(int plr)
 {
-	SetWindFixed(50);
+	SetWindFixed(80);
 	CreateObjectAbove(WindGenerator, 30, 160, plr);
 
 	var crossing1 = CreateObjectAbove(CableCrossing, 70, 160, plr);
@@ -546,8 +546,42 @@ global func Test7_OnFinished()
 
 global func Test8_OnStart(int plr)
 {
-	ClearFreeRect(0, 0, LandscapeWidth(), LandscapeHeight());
+	var crossing1 = CreateObjectAbove(CableCrossing, 20, 160, plr);
+	var crossing2 = CreateObjectAbove(CableCrossing, 40, 160, plr);
+	var crossing3 = CreateObjectAbove(CableCrossing, 60, 160, plr);
+	var crossing4 = CreateObjectAbove(CableCrossing, 80, 160, plr);
+	var crossing5 = CreateObjectAbove(CableCrossing, 100, 160, plr);
+	var crossing6 = CreateObjectAbove(CableCrossing, 120, 160, plr);
+	var crossing7 = CreateObjectAbove(CableCrossing, 140, 160, plr);
 	
+	CreateCableCrossingsConnection(crossing1, crossing2);
+	CreateCableCrossingsConnection(crossing2, crossing3);
+	CreateCableCrossingsConnection(crossing3, crossing4);
+	CreateCableCrossingsConnection(crossing4, crossing5);
+	CreateCableCrossingsConnection(crossing5, crossing6);
+	CreateCableCrossingsConnection(crossing5, crossing7);
+			
+	// Log what the test is about.
+	Log("Specific network for which the creation and distance measures fail.");
+	return true;
+}
+
+global func Test8_Completed()
+{
+	if (IsSymmetricCableCarNetwork())
+		return true;
+	return false;
+}
+
+global func Test8_OnFinished()
+{
+	RemoveTestObjects();
+	return;
+}
+
+
+global func Test9_OnStart(int plr)
+{
 	var nr_crossings = RandomX(6, 12);
 	var connect_chance = 20; // In percent.
 	var start_time = GetTime();
@@ -575,14 +609,14 @@ global func Test8_OnStart(int plr)
 	return true;
 }
 
-global func Test8_Completed()
+global func Test9_Completed()
 {
 	if (IsSymmetricCableCarNetwork())
 		return true;
 	return false;
 }
 
-global func Test8_OnFinished()
+global func Test9_OnFinished()
 {
 	RemoveTestObjects();
 	return;
