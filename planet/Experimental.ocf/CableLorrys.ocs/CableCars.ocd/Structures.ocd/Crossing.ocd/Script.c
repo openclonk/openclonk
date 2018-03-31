@@ -21,7 +21,7 @@ local connected_building;
 // Array of all cable cars currently idling at this station
 local arrived_cars;
 
-func Initialize()
+public func Initialize()
 {
 	turn_anim = PlayAnimation("Engine", 1, Anim_Const(0), Anim_Const(1000));
 	arrived_cars = [];
@@ -147,7 +147,7 @@ public func CombineWith(object stick_to)
 	}
 }
 
-/* Interaction */
+/*-- Interaction --*/
 
 // Provides an own interaction menu.
 public func HasInteractionMenu() { return true; }
@@ -167,7 +167,6 @@ public func GetInteractionMenus(object clonk)
 		Priority = 20
 	};
 	PushBack(menus, crossing_menu);
-
 	return menus;
 }
 
@@ -188,8 +187,7 @@ public func GetSettingsMenuEntries()
 
 	var menu_entries = [];
 
-	// Clickable buttons
-
+	// Clickable buttons.
 	var station = new custom_entry {
 		Priority = 1000,
 		Tooltip = "$TooltipToggleStation$",
@@ -226,7 +224,7 @@ public func OnSettingsHover(symbol, extra_data, desc_menu_target, menu_id)
 	GuiUpdate({ Text = text }, menu_id, 1, desc_menu_target);
 }
 
-/* Settings */
+/*-- Settings --*/
 
 public func ToggleStation(bool silent)
 {
@@ -352,5 +350,5 @@ public func SetManual() { manual_setting = true; return true; }
 
 local Name = "$Name$";
 local BlastIncinerate = 50;
-local LineAttach = [6,-9];
+local LineAttach = [6, -9];
 local Components = {Metal = 1, Wood = 1};

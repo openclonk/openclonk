@@ -146,7 +146,7 @@ public func Deactivation(int count)
 
 /*-- Saving --*/
 
-public func SaveScenarioObject(props)
+public func SaveScenarioObject(proplist props)
 {
 	if (!inherited(props, ...))
 		 return false;

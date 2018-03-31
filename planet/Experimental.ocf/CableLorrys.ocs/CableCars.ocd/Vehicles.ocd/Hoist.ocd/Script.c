@@ -85,7 +85,9 @@ public func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entr
 			PushBack(menu_entries, { symbol = vehicle, extra_data = "Pickup", custom = to_pickup });
 			i++;
 		}
-	} else if (pickup && GetRailTarget()) {
+	}
+	else if (pickup && GetRailTarget())
+	{
 		// Drop the vehicle
 		var drop = new custom_entry {
 			Priority = 2000,
@@ -142,7 +144,6 @@ local FxCableHoistPickup = new Effect
 {
 	Construction = func(object hoist)
 	{
-		
 		this.hoist = hoist;
 		this.vehicle_touchable = Target.Touchable;
 		Target.Touchable = 0;

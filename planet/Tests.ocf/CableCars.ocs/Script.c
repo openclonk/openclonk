@@ -579,9 +579,13 @@ global func Test8_OnFinished()
 	return;
 }
 
-
 global func Test9_OnStart(int plr)
 {
+	var wdt = LandscapeWidth();
+	var hgt = LandscapeHeight();
+	DrawMaterialQuad("Gold", 0, 0, wdt, 0, wdt, hgt, 0, hgt, DMQ_Sky);
+	ClearFreeRect(0, 0, wdt, hgt);
+	
 	var nr_crossings = RandomX(6, 12);
 	var connect_chance = 20; // In percent.
 	var start_time = GetTime();
@@ -594,18 +598,31 @@ global func Test9_OnStart(int plr)
 	{
 		for (var c2 in crossings)
 		{
-			if (c1 != c2 && Random(100) < connect_chance)
+			if (c1 != c2 && Random(100) < connect_chance && !AreDirectlyConnectedStations(c1, c2))
 			{
 				CreateCableCrossingsConnection(c1, c2);
 				nr_connections++;
 			}
 		}
 	}
+	var time_network_creation = GetTime() - start_time;
+	
+	var random_cable = FindObject(Find_ID(CableLine), Sort_Random());
+	var c1 = random_cable->GetActionTarget(0);
+	var c2 = random_cable->GetActionTarget(1);
+	start_time = GetTime();
+	random_cable->RemoveObject();
+	var time_connection_removal = GetTime() - start_time;
+	
+	start_time = GetTime();
+	CreateCableCrossingsConnection(c1, c2);
+	var time_connection_recreation = GetTime() - start_time;
 	
 	// Log what the test is about.
 	Log("Test a random network for symmetric distance measures.");
-	var time = GetTime() - start_time;
-	Log("It took %d ms to create %d stations with %d connections.", time, nr_crossings, nr_connections);
+	Log("It took %d ms to create %d stations with %d connections.", time_network_creation, nr_crossings, nr_connections);
+	Log("It took %d ms to remove a random connection.", time_connection_removal);
+	Log("It took %d ms to recreate that random connection.", time_connection_recreation);	
 	return true;
 }
 
@@ -711,6 +728,11 @@ global func IsSymmetricCableCarNetwork()
 			if (dist_table[index1][index2] != dist_table[index2][index1])
 				is_symmetric = false;
 	return is_symmetric;
+}
+
+global func AreDirectlyConnectedStations(object c1, object c2)
+{
+	return !!FindObject(Find_Func("IsConnectedTo", c1), Find_Func("IsConnectedTo", c2));
 }
 
 

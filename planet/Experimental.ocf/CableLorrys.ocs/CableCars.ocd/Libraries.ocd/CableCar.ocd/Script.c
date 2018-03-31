@@ -30,28 +30,28 @@ local lib_ccar_delivery;
 // Overload these functions as you feel fit
 
 // Called after the car is attached to a rail
-func Engaged() {}
+public func Engaged() {}
 
 // Called after the car is detached from the rail
-func Disengaged() {}
+public func Disengaged() {}
 
 // To offset the position on the cable from the object's center
 // position is a 2-value-array [x,y]
 // prec is nil or a value to multiply your calculations with
-func GetCableOffset(array position, int prec) {}
+public func GetCableOffset(array position, int prec) {}
 
 // To add custom interaction menu entries after the regular cable car entries
 // custom_entry is a prototype for proper spacing of buttons
 // Use priorities > 2000 just to be sure
-func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk) {}
+public func GetCableCarExtraMenuEntries(array menu_entries, proplist custom_entry, object clonk) {}
 
 // Whenever movement is about to begin
 // Movement data like lib_ccar_direction is still nil at this moment
-func OnStart() {}
+public func OnStart() {}
 
 // Whenever the car stops its movement
 // failed is true if the movement to a destination was cancelled (usually because the path broke in the meantime)
-func OnStop(bool failed) {}
+public func OnStop(bool failed) {}
 
 
 /*-- Interface --*/
@@ -265,7 +265,7 @@ public func EngageRail(object crossing, bool silent)
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 
 	Engaged();
-	lib_ccar_rail->OnCableCarEngaged(this);
+	lib_ccar_rail->~OnCableCarEngaged(this);
 }
 
 // Detach the car from its current holding point (cable or crossing, does not matter)
@@ -280,7 +280,7 @@ public func DisengageRail()
 
 	Disengaged();
 	if (lib_ccar_rail)
-		lib_ccar_rail->OnCableCarDisengaged(this);
+		lib_ccar_rail->~OnCableCarDisengaged(this);
 }
 
 // Sets a target point for travelling and starts the movement process
@@ -336,7 +336,7 @@ public func DestinationReached()
 	{
 		if (lib_ccar_delivery)
 			FinishedRequest(lib_ccar_rail);
-		lib_ccar_rail->OnCableCarArrival(this);
+		lib_ccar_rail->~OnCableCarArrival(this);
 	}
 }
 
@@ -344,7 +344,7 @@ public func DestinationReached()
 public func DestinationFailed()
 {
 	if (lib_ccar_rail)
-		lib_ccar_rail->OnCableCarStopped(this);
+		lib_ccar_rail->~OnCableCarStopped(this);
 	
 	lib_ccar_destination = nil;
 	lib_ccar_direction = nil;
@@ -357,7 +357,7 @@ public func DestinationFailed()
 public func Destruction()
 {
 	if (lib_ccar_rail)
-		lib_ccar_rail->OnCableCarDestruction(this);
+		lib_ccar_rail->~OnCableCarDestruction(this);
 }
 
 // Setup movement process
