@@ -160,7 +160,7 @@ func InitializeObjects()
 	var Metal001 = ToolsWorkshop001->CreateContents(Metal);
 	Metal001->SetPosition(76, 369);
 
-	var CableLorryReel001 = CreateObjectAbove(CableLorryReel, 163, 386);
-	CableLorryReel001->Unstick(7);
+	var CableReel001 = CreateObjectAbove(CableReel, 163, 386);
+	CableReel001->Unstick(7);
 	return true;
 }

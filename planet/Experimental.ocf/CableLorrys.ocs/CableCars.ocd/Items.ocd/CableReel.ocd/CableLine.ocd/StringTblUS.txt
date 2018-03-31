@@ -1,2 +1,2 @@
-TxtLinebroke=Line broke
-Name=Cable line
+MsgCableBroke=Cable broke
+Name=Cable

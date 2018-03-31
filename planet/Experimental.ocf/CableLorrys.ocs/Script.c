@@ -49,7 +49,7 @@ protected func Initialize()
 	chest->CreateContents(Dynamite, 4);
 	chest->CreateContents(Shovel, 2);
 	chest->CreateContents(Hammer, 2);
-	chest->CreateContents(CableLorryReel, 2);
+	chest->CreateContents(CableReel, 2);
 	
 	// Tool workshop on the little mountain.
 	var tools = CreateObjectAbove(ToolsWorkshop, 540, 260);
