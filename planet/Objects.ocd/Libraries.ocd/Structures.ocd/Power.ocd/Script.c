@@ -104,6 +104,17 @@ public func UnregisterPowerProducer(object producer)
 	return;
 }
 
+// Definition call: checks whether producer is registered.
+public func IsRegisteredPowerProducer(object producer)
+{
+	// Definition call safety checks.
+	if (this != GetPowerSystem() || !producer || !producer->~IsPowerProducer())
+		return FatalError("IsRegisteredPowerProducer() either not called from definition context or no producer specified.");
+	GetPowerSystem()->Init();
+	var network = GetPowerNetwork(producer);
+	return !!network->GetProducerLink(producer);
+}
+
 // Definition call: registers a power consumer with specified amount.
 public func RegisterPowerConsumer(object consumer, int amount)
 {
@@ -128,6 +139,17 @@ public func UnregisterPowerConsumer(object consumer)
 	var network = GetPowerNetwork(consumer);	
 	network->RemovePowerConsumer(consumer);
 	return;
+}
+
+// Definition call: checks whether consumer is registered.
+public func IsRegisteredPowerConsumer(object consumer)
+{
+	// Definition call safety checks.
+	if (this != GetPowerSystem() || !consumer || !consumer->~IsPowerConsumer())
+		return FatalError("IsRegisteredPowerConsumer() either not called from definition context or no consumer specified.");
+	GetPowerSystem()->Init();
+	var network = GetPowerNetwork(consumer);
+	return !!network->GetConsumerLink(consumer);
 }
 
 // Definition call: transfers a power link from the network it is registered in to
@@ -337,6 +359,12 @@ private func RefreshPowerNetwork(object network)
 }
 
 /*-- Library Code --*/
+
+// Returns whether this power network is neutral.
+public func IsNeutralNetwork()
+{
+	return lib_power.neutral_network;
+}
 
 public func AddPowerProducer(object producer, int amount, int prio)
 {
@@ -584,7 +612,7 @@ public func GetPowerConsumption(bool exclude_storages)
 	{
 		var link = lib_power.active_consumers[index];
 		// If the link does not exist or has no power need, just continue.
-		if (!link || !link.obj->HasPowerNeed() || (exclude_storages && link.obj->~IsPowerStorage()))
+		if (!link || !link.obj || !link.obj->HasPowerNeed() || (exclude_storages && link.obj->~IsPowerStorage()))
 			continue;
 		total += link.cons_amount;
 	}
@@ -600,7 +628,7 @@ public func GetPowerConsumptionNeed()
 	{
 		var link = all_consumers[index];
 		// If the link does not exist, is a power storage or has no power need, just continue.
-		if (!link || link.obj->~IsPowerStorage() || !link.obj->HasPowerNeed())
+		if (!link || !link.obj || link.obj->~IsPowerStorage() || !link.obj->HasPowerNeed())
 			continue;
 		total += link.cons_amount;
 	}
@@ -729,7 +757,7 @@ private func RefreshConsumers(int power_available)
 	for (var index = GetLength(all_consumers) - 1; index >= 0; index--)
 	{
 		var link = all_consumers[index];
-		if (!link)
+		if (!link || !link.obj)
 			continue;
 		// Determine the consumption of this consumer, taking into account the power need.
 		var consumption = link.cons_amount;
@@ -837,6 +865,8 @@ private func UpdatePriorities(array link_list, bool for_consumers)
 {
 	for (var link in link_list)
 	{
+		if (!link || !link.obj)
+			continue;
 		if (for_consumers)
 			link.priority = link.obj->~GetConsumerPriority();
 		else
@@ -876,19 +906,19 @@ public func ContainsPowerLink(object link)
 }
 
 // Returns the producer link in this network.
-public func GetProducerLink(object link)
+public func GetProducerLink(object producer)
 {
 	for (var test_link in Concatenate(lib_power.idle_producers, lib_power.active_producers))
-		if (test_link.obj == link)
+		if (test_link.obj == producer)
 			return test_link;
 	return;
 }
 
 // Returns the consumer link in this network.
-public func GetConsumerLink(object link)
+public func GetConsumerLink(object consumer)
 {
 	for (var test_link in Concatenate(lib_power.waiting_consumers, lib_power.active_consumers))
-		if (test_link.obj == link)
+		if (test_link.obj == consumer)
 			return test_link;
 	return;
 }

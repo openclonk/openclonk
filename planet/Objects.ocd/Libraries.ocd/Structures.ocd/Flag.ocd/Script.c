@@ -316,6 +316,8 @@ public func RefreshLinkedFlags()
 		{
 			for (var flag in LIB_FLAG_FlagList)
 			{
+				if (!flag)
+					continue;				
 				// A new connected flag must be allied.
 				if (!IsAllied(flag->GetOwner(), owner)) 
 					continue;

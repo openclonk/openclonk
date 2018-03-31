@@ -67,6 +67,12 @@ private func UnregisterPowerRequest()
 	return;
 }
 
+// Call this function to see if the consumer currently requests power.
+private func HasRegisteredPowerRequest()
+{
+	return GetPowerSystem()->IsRegisteredPowerConsumer(this);
+}
+
 // Call this function in the power consuming structure to request and update from
 // the power network of this consumer.
 private func UpdatePowerRequest()
