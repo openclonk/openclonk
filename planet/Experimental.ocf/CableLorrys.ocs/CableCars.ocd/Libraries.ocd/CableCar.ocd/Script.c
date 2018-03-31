@@ -161,7 +161,6 @@ public func GetCableCarMenuEntries(object clonk)
 	var menu_entries = [];
 
 	// Clickable buttons
-
 	if (!GetRailTarget())
 	{
 		// Engaging onto a rail
@@ -434,3 +433,18 @@ public func FinishedRequest(object station)
 		station->RequestArrived(this, lib_ccar_delivery[2], lib_ccar_delivery[3]);
 	lib_ccar_delivery = nil;
 }
+
+
+/*-- Saving --*/
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...))
+		 return false;
+	if (lib_ccar_speed != nil) 
+		props->AddCall("Speed", this, "SetCableSpeed", lib_ccar_speed);
+	if (lib_ccar_rail)
+		props->AddCall("Rail", this, "EngageRail", lib_ccar_rail, true);
+	return true;
+}
+

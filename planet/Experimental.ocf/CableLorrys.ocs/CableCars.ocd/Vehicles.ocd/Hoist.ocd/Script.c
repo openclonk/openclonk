@@ -248,6 +248,18 @@ public func OverridePriority(proplist requested, int amount, proplist requesting
 }
 
 
+/*-- Saving --*/
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...))
+		 return false;
+	if (pickup) 
+		props->AddCall("Pickup", this, "PickupVehicle", pickup);
+	return true;
+}
+
+
 /*-- Definition --*/
 
 public func Definition(def)
