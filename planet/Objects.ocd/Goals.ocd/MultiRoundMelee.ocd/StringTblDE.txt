@@ -1,0 +1,11 @@
+Name=Mehrrundiges Melee
+
+MsgGoalFulfilled=Eure Gegner sind eliminiert.
+MsgGoalUnfulfilled=Es sind noch %d Gegner in der aktuellen Runde.
+
+Stalemate=Unentschieden!
+WinningTeam=Gewinner: %s
+RemainingRounds=Noch %d Runden.
+LastRound=Letzte Runde!
+Tiebreak=Entscheidende Runde!
+BonusRound=Bonusrunde!

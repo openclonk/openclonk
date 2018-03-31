@@ -1,2 +1,0 @@
-MsgGoalFulfilled=All opponents eliminated.
-MsgGoalUnfulfilled=There are still %d opponents in the game.
