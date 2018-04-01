@@ -107,34 +107,18 @@ public func GetCablePosition(array coordinates, int prec)
 	}
 }
 
-// Usually called by cable cars to retrieve selectable destinations for the destination selection menu.
-// Returns an array of three objects and one int, one station before and one station after the middle one and the middle one.
-// The int (fourth array value) is the overall amount of stations found.
-// If middle is not a station (anymore), the first three found objects are returned.
-public func GetDestinationList(object middle)
+// Called by cable cars to retrieve selectable destinations for the destination selection menu.
+// Returns the list of destinations sorted by shortest distance first.
+public func GetDestinationList()
 {
-	var list = CreateArray();
-	var ret = CreateArray(4);
+	var dest_list = [];
 	for (var destination in destination_list)
 		if (destination[const_finaldestination]->IsCableStation())
-			PushBack(list, destination[const_finaldestination]);
-	if (GetLength(list) == 0) return ret;
-	if (GetLength(list) == 1) return [nil, list[0], nil, 1];
-	if (GetLength(list) == 2) return [list[0], list[1], nil, 2];
-	if (GetLength(list) == 3) return [list[0], list[1], list[2], 3];
-
-	var middle_index = GetIndexOf(list, middle);
-	if (middle_index == -1) middle_index = 1;
-	var left_index = middle_index - 1;
-	if (left_index < 0) left_index = GetLength(list) - 1;
-	var right_index = middle_index + 1;
-	if (right_index >= GetLength(list)) right_index = 0;
-
-	ret[0] = list[left_index];
-	ret[1] = list[middle_index];
-	ret[2] = list[right_index];
-	ret[3] = GetLength(list);
-	return ret;
+			PushBack(dest_list, [destination[const_finaldestination], destination[const_distance]]);
+	SortArrayByArrayElement(dest_list, 1);
+	for (var index = 0; index < GetLength(dest_list); index++)
+		dest_list[index] = dest_list[index][0];
+	return dest_list;
 }
 
 /*--- Maintaining the destination list ---*/
