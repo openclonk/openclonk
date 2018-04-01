@@ -564,3 +564,4 @@ public func RemoveRequest(id requested, int amount)
 	RemoveArrayIndex(request_queue, i, true);
 	return true;
 }
+

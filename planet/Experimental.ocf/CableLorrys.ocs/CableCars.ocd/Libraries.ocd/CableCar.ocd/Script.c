@@ -9,6 +9,11 @@
 	E.g. using AddTimer("DoMovement", 1);
 */
 
+
+// The cable car is the consumer, but relays to the crossings for power supply.
+#include Library_PowerConsumer
+
+
 // The speed with which the car travels along rails
 local lib_ccar_speed;
 // The rail (cable or crossing) that is currently traveled along or stayed at
@@ -23,6 +28,10 @@ local lib_ccar_max_progress;
 local lib_ccar_destination;
 // Current delivery the car is on, array: [starting station, target station, requested objects, amount]
 local lib_ccar_delivery;
+// Whether the cable car has power currently and the network crossing it is being provided by.
+local lib_ccar_has_power;
+local lib_ccar_power_crossing;
+local lib_ccar_requesting_power;
 
 
 /*-- Overloads --*/
@@ -72,6 +81,12 @@ public func DoMovement()
 	if (!GetRailTarget()) return;
 	if (lib_ccar_destination == nil) return;
 	if (lib_ccar_direction == nil) return;
+	if (!lib_ccar_has_power)
+	{
+		RegisterPowerRequest(GetNeededPower());
+		lib_ccar_requesting_power = true;
+		return;
+	}
 
 	var start = 1;
 	var end = 0;
@@ -92,6 +107,10 @@ public func DoMovement()
 		SetPosition(position[0], position[1]);
 		lib_ccar_direction = nil;
 		CrossingReached();
+		// Reached crossing, thus unregister power request.
+		UnregisterPowerRequest();
+		lib_ccar_has_power = false;
+		lib_ccar_requesting_power = false;
 		return;
 	}
 
@@ -238,6 +257,10 @@ public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
 // Called when the network is updated.
 public func OnRailNetworkUpdate()
 {
+	// Remove any power request so that the car can find a new source if needed.
+	UnregisterPowerRequest();
+	lib_ccar_has_power = false;
+	lib_ccar_requesting_power = false;
 	// The car may have been stuck on a request, continue it now.
 	ContinueRequest();
 	return;
@@ -408,6 +431,68 @@ public func OpenDestinationSelection(object clonk)
 			return;
 
 	GUI_DestinationSelectionMenu->CreateFor(clonk, this, GetRailTarget());
+}
+
+
+/*-- Power consumption --*/
+
+private func GetNeededPower() { return 10; }
+
+public func GetConsumerPriority() { return 55; }
+
+public func GetActualPowerConsumer()
+{
+	// The actual power consumer can be any crossing in the network. We want to find the most suitable one.
+	// But only update it if there is currently no request being made, because otherwise it might unregister
+	// in the wrong network.
+	if (lib_ccar_rail && !lib_ccar_requesting_power)
+	{
+		var power_crossing = lib_ccar_rail;
+		if (!power_crossing->~IsCableCrossing())
+			power_crossing = power_crossing->GetActionTarget(0) ?? power_crossing->GetActionTarget(1);
+		lib_ccar_power_crossing = GetBestPowerCrossing(power_crossing);
+	}
+	return lib_ccar_power_crossing;
+}
+
+// Returns the best crossing in the network of this crossing.
+public func GetBestPowerCrossing(object crossing)
+{
+	// Get all connected crossings.
+	var network_crossings = [crossing];
+	for (var item in crossing->GetDestinations())
+	{
+		if (!item)
+			continue;
+		PushBack(network_crossings, item[Library_CableStation.const_finaldestination]);			
+	}
+	// Find the crossing with a positive power balance.
+	for (var test_crossing in network_crossings)
+	{
+		var power_network = Library_Power->GetPowerNetwork(test_crossing);
+		if (power_network->IsNeutralNetwork())
+			continue;
+		if (power_network->GetBarePowerAvailable() > power_network->GetPowerConsumptionNeed())
+			return test_crossing;
+	}
+	// Fallback to this crossing.
+	return this;
+}
+
+public func OnNotEnoughPower()
+{
+	lib_ccar_has_power = false;
+	return _inherited(...);
+}
+
+public func OnEnoughPower()
+{
+	lib_ccar_has_power = true;
+	// Do movement again because this frame there would be no movement otherwise.
+	DoMovement();
+	// The car may have been stuck on a request, continue it now.
+	ContinueRequest();
+	return _inherited(...);
 }
 
 

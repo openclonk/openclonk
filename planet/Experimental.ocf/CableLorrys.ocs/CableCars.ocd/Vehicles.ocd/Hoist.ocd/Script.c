@@ -15,6 +15,7 @@ public func Construction()
 {
 	this.MeshTransformation = Trans_Rotate(13, 0, 1, 0);
 	SetCableSpeed(1);
+	return _inherited(...);
 }
 
 
@@ -148,7 +149,8 @@ local FxCableHoistPickup = new Effect
 		this.vehicle_touchable = Target.Touchable;
 		Target.Touchable = 0;
 		// Follow motion of hoist.
-		Target->SetPosition(this.hoist->GetX(10), this.hoist->GetY(10) + 4, false, 10);
+		this.movement_prec = 100;
+		Target->SetPosition(this.hoist->GetX(this.movement_prec), this.hoist->GetY(this.movement_prec) + 4, false, this.movement_prec);
 		Target->SetSpeed(0, 0);
 		Target->SetR(this.hoist->GetR());
 		Target->SetRDir(0);
@@ -157,7 +159,7 @@ local FxCableHoistPickup = new Effect
 	Timer = func(int time)
 	{
 		// Follow motion of hoist.
-		Target->SetPosition(this.hoist->GetX(10), this.hoist->GetY(10) + 4, false, 10);
+		Target->SetPosition(this.hoist->GetX(this.movement_prec), this.hoist->GetY(this.movement_prec) + 4, false, this.movement_prec);
 		Target->SetSpeed(0, 0);
 	},
 	
