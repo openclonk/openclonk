@@ -57,7 +57,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);
-	fx.testnr = 1;
+	fx.testnr = 9;
 	fx.launched = false;
 	fx.plr = plr;
 	return;
@@ -169,6 +169,7 @@ global func Test1_OnStart(int plr)
 {
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
+	CreateObjectAbove(Flagpole, 240, 64, plr);
 
 	var crossing1 = CreateObjectAbove(CableCrossing, 70, 160, plr);
 	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
@@ -214,6 +215,7 @@ global func Test2_OnStart(int plr)
 	SetWindFixed(50);
 	CreateObjectAbove(WindGenerator, 90, 160, plr);
 	CreateObjectAbove(WindGenerator, 440, 104, plr);
+	CreateObjectAbove(Flagpole, 100, 160, plr);
 
 	var crossing1 = CreateObjectAbove(CableCrossing, 70, 160, plr);
 	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
@@ -314,6 +316,7 @@ global func Test3_OnFinished()
 	return;
 }
 
+
 global func Test4_OnStart(int plr)
 {
 	SetWindFixed(50);
@@ -363,6 +366,7 @@ global func Test4_OnFinished()
 	RemoveTestObjects();
 	return;
 }
+
 
 global func Test5_OnStart(int plr)
 {
@@ -414,6 +418,7 @@ global func Test5_OnFinished()
 	return;
 }
 
+
 global func Test6_OnStart(int plr)
 {
 	SetWindFixed(80);
@@ -426,7 +431,12 @@ global func Test6_OnStart(int plr)
 	var crossing5 = CreateObjectAbove(CableCrossing, 220, 160, plr);
 	var crossing6 = CreateObjectAbove(CableCrossing, 280, 160, plr);
 	var crossing7 = CreateObjectAbove(CableCrossing, 348, 104, plr);
-	var crossing8 = CreateObjectAbove(CableCrossing, 476, 312, plr);
+	var crossing8 = CreateObjectAbove(CableCrossing, 412, 124, plr);
+	var crossing9 = CreateObjectAbove(CableCrossing, 412, 248, plr);
+	var crossing10 = CreateObjectAbove(CableCrossing, 288, 248, plr);
+	var crossing11 = CreateObjectAbove(CableCrossing, 254, 280, plr);
+	var crossing12 = CreateObjectAbove(CableCrossing, 312, 312, plr);
+	var crossing13 = CreateObjectAbove(CableCrossing, 476, 312, plr);
 	
 	CreateCableCrossingsConnection(crossing1, crossing2);
 	CreateCableCrossingsConnection(crossing2, crossing3);
@@ -436,6 +446,11 @@ global func Test6_OnStart(int plr)
 	CreateCableCrossingsConnection(crossing6, crossing7);
 	CreateCableCrossingsConnection(crossing7, crossing4);
 	CreateCableCrossingsConnection(crossing7, crossing8);
+	CreateCableCrossingsConnection(crossing8, crossing9);
+	CreateCableCrossingsConnection(crossing9, crossing10);
+	CreateCableCrossingsConnection(crossing10, crossing11);
+	CreateCableCrossingsConnection(crossing11, crossing12);
+	CreateCableCrossingsConnection(crossing12, crossing13);
 	
 	var hoist, lorry;
 	hoist = crossing4->CreateObject(CableHoist);
@@ -444,9 +459,9 @@ global func Test6_OnStart(int plr)
 	hoist->PickupVehicle(lorry);
 	lorry->CreateContents(Rock, 4);
 	
-	hoist = crossing8->CreateObject(CableHoist);
-	hoist->EngageRail(crossing8);
-	lorry = crossing8->CreateObject(CableLorry);
+	hoist = crossing13->CreateObject(CableHoist);
+	hoist->EngageRail(crossing13);
+	lorry = crossing13->CreateObject(CableLorry);
 	hoist->PickupVehicle(lorry);
 		
 	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
@@ -489,6 +504,7 @@ global func Test6_OnFinished()
 	RemoveEffect("IntSchedule");
 	return;
 }
+
 
 global func Test7_OnStart(int plr)
 {
@@ -544,6 +560,7 @@ global func Test7_OnFinished()
 	return;
 }
 
+
 global func Test8_OnStart(int plr)
 {
 	var crossing1 = CreateObjectAbove(CableCrossing, 20, 160, plr);
@@ -579,7 +596,102 @@ global func Test8_OnFinished()
 	return;
 }
 
+
 global func Test9_OnStart(int plr)
+{
+	CreateObjectAbove(Flagpole, 216, 160, plr);
+	CreateObjectAbove(Flagpole, 20, 312, plr);
+	CreateObjectAbove(Compensator, 40, 312, plr);
+	CreateObjectAbove(Compensator, 60, 312, plr);
+	CreateObjectAbove(Compensator, 80, 312, plr);
+	CreateObjectAbove(Compensator, 100, 312, plr);
+	
+	var crossing1 = CreateObjectAbove(CableCrossing, 60, 160, plr);
+	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
+	var crossing3 = CreateObjectAbove(CableCrossing, 272, 64, plr);
+	var crossing4 = CreateObjectAbove(CableCrossing, 450, 104, plr);
+	var crossing5 = CreateObjectAbove(CableCrossing, 130, 160, plr);
+	var crossing6 = CreateObjectAbove(CableCrossing, 280, 160, plr);
+	var crossing7 = CreateObjectAbove(CableCrossing, 348, 104, plr);
+	var crossing8 = CreateObjectAbove(CableCrossing, 412, 124, plr);
+	var crossing9 = CreateObjectAbove(CableCrossing, 412, 248, plr);
+	var crossing10 = CreateObjectAbove(CableCrossing, 288, 248, plr);
+	var crossing11 = CreateObjectAbove(CableCrossing, 254, 280, plr);
+	var crossing12 = CreateObjectAbove(CableCrossing, 312, 312, plr);
+	var crossing13 = CreateObjectAbove(CableCrossing, 476, 312, plr);
+	var crossing14 = CreateObjectAbove(CableCrossing, 440, 248, plr);
+	
+	CreateCableCrossingsConnection(crossing1, crossing2);
+	CreateCableCrossingsConnection(crossing2, crossing3);
+	CreateCableCrossingsConnection(crossing3, crossing4);
+	CreateCableCrossingsConnection(crossing1, crossing5);
+	CreateCableCrossingsConnection(crossing5, crossing6);
+	CreateCableCrossingsConnection(crossing6, crossing7);
+	CreateCableCrossingsConnection(crossing7, crossing4);
+	CreateCableCrossingsConnection(crossing7, crossing8);
+	CreateCableCrossingsConnection(crossing8, crossing9);
+	CreateCableCrossingsConnection(crossing9, crossing10);
+	CreateCableCrossingsConnection(crossing10, crossing11);
+	CreateCableCrossingsConnection(crossing11, crossing12);
+	CreateCableCrossingsConnection(crossing12, crossing13);
+	CreateCableCrossingsConnection(crossing9, crossing14);
+	
+	var hoist, lorry;
+	hoist = crossing4->CreateObject(CableHoist);
+	hoist->EngageRail(crossing4);
+	lorry = crossing4->CreateObject(CableLorry);
+	hoist->PickupVehicle(lorry);
+	
+	hoist = crossing13->CreateObject(CableHoist);
+	hoist->EngageRail(crossing13);
+	lorry = crossing13->CreateObject(CableLorry);
+	hoist->PickupVehicle(lorry);
+	
+	hoist = crossing1->CreateObject(CableHoist);
+	hoist->EngageRail(crossing1);
+	lorry = crossing1->CreateObject(CableLorry);
+	hoist->PickupVehicle(lorry);
+		
+	var foundry = CreateObjectAbove(Foundry, 100, 160, plr);
+	foundry->AddToQueue(Metal, nil, true);
+	crossing5->CombineWith(foundry);
+	
+	var workshop = CreateObjectAbove(ToolsWorkshop, 30, 160, plr);
+	crossing1->CombineWith(workshop);
+	workshop->AddToQueue(Shovel, 10);
+		
+	var chemical_lab = CreateObjectAbove(ChemicalLab, 250, 160, plr);
+	crossing6->CombineWith(chemical_lab);
+	chemical_lab->AddToQueue(Dynamite, 10);
+	
+	var steam_engine = CreateObjectAbove(SteamEngine, 480, 248, plr);
+	crossing14->CombineWith(steam_engine);
+	steam_engine->CreateContents(Coal);
+	
+	var sawmill = CreateObjectAbove(Sawmill, 480, 104, plr);
+	sawmill->SetDir(DIR_Right);
+	for (var cnt = 0; cnt < 5; cnt++)
+		sawmill->CreateObjectAbove(Tree_Deciduous)->ChopDown();
+			
+	// Log what the test is about.
+	Log("Multiple producers and power supply which need resources from mines.");
+	return true;
+}
+
+global func Test9_Completed()
+{
+	
+	return false;
+}
+
+global func Test9_OnFinished()
+{
+	RemoveTestObjects();
+	return;
+}
+
+
+global func Test10_OnStart(int plr)
 {
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();
@@ -626,14 +738,14 @@ global func Test9_OnStart(int plr)
 	return true;
 }
 
-global func Test9_Completed()
+global func Test10_Completed()
 {
 	if (IsSymmetricCableCarNetwork())
 		return true;
 	return false;
 }
 
-global func Test9_OnFinished()
+global func Test10_OnFinished()
 {
 	RemoveTestObjects();
 	return;

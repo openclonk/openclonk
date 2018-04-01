@@ -815,6 +815,8 @@ public func OnProductEjection(object product)
 
 /*-- Cable Network --*/
 
+public func AcceptsCableStationConnection() { return true; }
+
 public func IsNoCableStationConnected() { return !cable_station; }
 
 public func ConnectCableStation(object station)
@@ -847,8 +849,8 @@ public func RequestObject(id item_id, int amount)
 		cable_station->AddRequest(item_id, amount);
 }
 
-/*-- Storage --*/
 
+/*-- Storage --*/
 
 // Whether an object could enter this storage.
 public func IsCollectionAllowed(object item)

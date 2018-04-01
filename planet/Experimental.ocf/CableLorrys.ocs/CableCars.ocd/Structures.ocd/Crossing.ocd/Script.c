@@ -39,8 +39,9 @@ public func DestinationsUpdated()
 {
 	// Do nothing if set manually
 	if (manual_setting) return;
-
-	if (GetLength(FindObjects(Find_Func("IsConnectedTo", this))) == 1)
+	
+	var is_endpoint = GetLength(FindObjects(Find_Func("IsConnectedTo", this))) == 1;
+	if (is_endpoint || connected_building)
 		SetCableStation(true);
 	else
 		SetCableStation(false);
@@ -140,10 +141,12 @@ public func CombineWith(object stick_to)
 {
 	if (!stick_to) return;
 
-	if (stick_to->~IsProducer())
+	if (stick_to->~AcceptsCableStationConnection())
 	{
 		connected_building = stick_to;
 		stick_to->ConnectCableStation(this);
+		SetCableStation(true);
+		CheckStationStatus();
 	}
 }
 
@@ -188,7 +191,8 @@ public func GetSettingsMenuEntries()
 	var menu_entries = [];
 
 	// Clickable buttons.
-	var station = new custom_entry {
+	var station = new custom_entry
+	{
 		Priority = 1000,
 		Tooltip = "$TooltipToggleStation$",
 		OnClick = GuiAction_Call(this, "ToggleStation", false),
@@ -198,7 +202,8 @@ public func GetSettingsMenuEntries()
 	station.image.GraphicsName = "Station";
 	PushBack(menu_entries, { symbol = CableCrossing_Icons, extra_data = "Station", custom = station });
 
-	var drop_off = new custom_entry {
+	var drop_off = new custom_entry
+	{
 		Priority = 1001,
 		Tooltip = "$TooltipToggleDropOff$",
 		OnClick = GuiAction_Call(this, "ToggleDropOff", false),
