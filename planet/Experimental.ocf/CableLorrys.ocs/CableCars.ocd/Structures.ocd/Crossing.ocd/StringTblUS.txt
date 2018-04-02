@@ -1,9 +1,13 @@
 Name=Cable Crossing
 
 StationSettings=Cable crossing settings
-
 TooltipToggleStation=Toggle station status
 TooltipToggleDropOff=Toggle item dropping status
-
 DescToggleStation=Manually set or unset this crossing to be a cable station. Cable stations are selectable as targets when engaging a cable car onto the cable.
 DescToggleDropOff=All arriving vehicle are emptied upon arrival at this station (giving it is the final stop). Will also be set as a cable station.
+
+StationUpgrades=Upgrades
+UpgradeChute=Add mining chute.
+DescUpgradeChute=Upgrade the crossing with a mining chute, this makes the crossing a container as well. You need to hold the hammer and one metal {{Metal}} to construct it. 
+YouNeedAHammer=You need a hammer to construct this upgrade.
+YouNeedMetal=You need one metal {{Metal}} for this upgrade.

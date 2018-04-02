@@ -8,6 +8,8 @@
 */
 
 #include Library_CableStation
+#include Library_Structure
+#include Library_Ownable
 
 // Animation
 local turn_anim;
@@ -20,6 +22,10 @@ local connected_building;
 
 // Array of all cable cars currently idling at this station
 local arrived_cars;
+
+// Whether this crossing accepts resources.
+local has_resource_chute;
+
 
 public func Initialize()
 {
@@ -159,6 +165,7 @@ public func HasInteractionMenu() { return true; }
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited(clonk, ...) ?? [];
+	// Crossing settings.
 	var crossing_menu =
 	{
 		title = "$StationSettings$",
@@ -170,6 +177,21 @@ public func GetInteractionMenus(object clonk)
 		Priority = 20
 	};
 	PushBack(menus, crossing_menu);
+	// Upgrade options.
+	if (!has_resource_chute)
+	{
+		var upgrade_menu =
+		{
+			title = "$StationUpgrades$",
+			entries_callback = this.GetUpgradeMenuEntries,
+			callback = "OnUpgradeSelected",
+			callback_hover = "OnUpgradeHover",
+			callback_target = this,
+			BackgroundColor = RGB(0, 50, 0),
+			Priority = 40
+		};
+		PushBack(menus, upgrade_menu);
+	}
 	return menus;
 }
 
@@ -212,7 +234,6 @@ public func GetSettingsMenuEntries()
 	drop_off.image.Symbol = CableCrossing_Icons;
 	drop_off.image.GraphicsName = "DropOff";
 	PushBack(menu_entries, { symbol = CableCrossing_Icons, extra_data = "DropOff", custom = drop_off });
-
 	return menu_entries;
 }
 
@@ -226,8 +247,104 @@ public func OnSettingsHover(symbol, extra_data, desc_menu_target, menu_id)
 	if (extra_data == "DropOff")
 		text = "$DescToggleDropOff$";
 
-	GuiUpdate({ Text = text }, menu_id, 1, desc_menu_target);
+	GuiUpdate({Text = text}, menu_id, 1, desc_menu_target);
 }
+
+public func GetUpgradeMenuEntries()
+{
+	var menu = 
+	{
+		Bottom = "2em",
+		entry = 
+		{
+			Bottom = "2em",
+			BackgroundColor = { Std = 0, Selected = RGB(100, 30, 30) },
+			OnMouseIn = GuiAction_SetTag("Selected"),
+			OnMouseOut = GuiAction_SetTag("Std"),
+			right =
+			{
+				Left = "2em + 0.2em",
+				Right = "100% - 0.2em",
+				Text = "$UpgradeChute$",
+				Style = GUI_TextVCenter
+			},
+			symbol = 
+			{
+				Right = "2em",
+				Symbol = CableCrossing_Icons
+			}
+		}
+	};		
+	return [{symbol = CableCrossing_Icons, extra_data = "upgrade", custom = menu}];
+}
+
+public func OnUpgradeHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	var text = "$DescUpgradeChute$";	
+	GuiUpdate({Text = text}, menu_id, 1, desc_menu_target);
+}
+
+public func OnUpgradeSelected(id symbol, string action, object cursor)
+{
+	var hammer = FindObject(Find_Container(cursor), Find_Func("IsConstructor"));
+	
+	if (!hammer)
+	{
+		PlayerMessage(cursor->GetOwner(), "$YouNeedAHammer$");
+		Sound("UI::Click2", {player = cursor->GetOwner()});
+		return;
+	}
+	
+	var metal = FindObject(Find_Container(cursor), Find_ID(Metal));
+	if (!metal)
+	{
+		PlayerMessage(cursor->GetOwner(), "$YouNeedMetal$");
+		Sound("UI::Click2", {player = cursor->GetOwner()});
+		return;
+	}
+	
+	metal->RemoveObject();
+	AddResourceChute();
+	Sound("Structures::Repair");
+	UpdateInteractionMenus();
+	return;
+}
+
+
+/*-- Resource Chute --*/ 
+
+public func AddResourceChute()
+{
+	// TODO: graphics.
+	has_resource_chute = true;
+	AddTimer("CheckResourceChute", 1);
+	return;
+}
+
+public func CheckResourceChute()
+{
+	if (GetCon() < 100)
+		return;
+	for (var obj in FindObjects(Find_InRect(-4, 3, 13, 13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(obj, true);
+}
+
+public func Collection(object obj, bool put)
+{
+	Sound("Objects::Clonk");
+}
+
+public func IsContainer() { return has_resource_chute; }
+
+local MaxContentsCount = 100;
+
+public func RejectCollect()
+{
+	if (ContentsCount() >= this.MaxContentsCount)
+		return true;
+	return false;
+}
+
 
 /*-- Settings --*/
 
@@ -354,6 +471,9 @@ public func SetManual() { manual_setting = true; return true; }
 /*-- Properties --*/
 
 local Name = "$Name$";
-local BlastIncinerate = 50;
+local BlastIncinerate = 90;
+local HitPoints = 80;
 local LineAttach = [6, -9];
 local Components = {Metal = 1, Wood = 1};
+local ContainBlast = true;
+local FireproofContainer = true;
