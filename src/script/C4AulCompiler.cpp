@@ -1570,7 +1570,10 @@ void C4AulCompiler::CodegenAstVisitor::visit(const ::aul::ast::WhileLoop *n)
 {
 	int cond = AddJumpTarget();
 	PushLoop();
-	WarnOnAssignment(n->cond);
+	// XXX:
+	// Assignments in the condition here should warn as well (like they do in
+	// for and if conditions) but a ton of code uses those assignments at the
+	// moment and people are divided about allowing it
 	SafeVisit(n->cond);
 	active_loops.top().breaks.push_back(AddBCC(n->cond->loc, AB_CONDN));
 	if (SafeVisit(n->body))

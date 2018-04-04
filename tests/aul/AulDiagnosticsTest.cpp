@@ -107,15 +107,6 @@ TEST_F(AulDiagnosticsTest, suspicious_assignment)
 	}
 	{
 		EXPECT_WARNING(suspicious_assignment);
-		RunCode("var a = 0; while (a = 0) {}");
-	}
-	{
-		EXPECT_WARNING(suspicious_assignment).Times(0);
-		RunCode("var a = 0; while (a == 1) {}");
-		RunCode("var a = 0; while (a *= 1) {}");
-	}
-	{
-		EXPECT_WARNING(suspicious_assignment);
 		RunCode("var a = 0; return a = 0;");
 	}
 	{
