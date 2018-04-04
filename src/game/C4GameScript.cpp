@@ -2549,7 +2549,7 @@ static bool FnPauseGame(C4PropList * _this, bool fToggle)
 	return true;
 }
 
-static bool FnSetNextMission(C4PropList * _this, C4String *szNextMission, C4String *szNextMissionText, C4String *szNextMissionDesc)
+static bool FnSetNextScenario(C4PropList * _this, C4String *szNextMission, C4String *szNextMissionText, C4String *szNextMissionDesc)
 {
 	if (!szNextMission || !szNextMission->GetData().getLength())
 	{
@@ -2929,7 +2929,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	::AddFunc(p, "PauseGame", FnPauseGame, false);
 	F(PathFree);
 	F(PathFree2);
-	F(SetNextMission);
+	F(SetNextScenario);
 	F(GetPlayerControlState);
 	F(SetPlayerControlEnabled);
 	F(GetPlayerControlEnabled);
