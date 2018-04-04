@@ -114,7 +114,7 @@ func InitializePlayer(int plr)
 
 func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/DeepSeaMining.ocs");
+	SetNextScenario("Missions.ocf/DeepSeaMining.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Crash");
 	return false;

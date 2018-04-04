@@ -149,7 +149,7 @@ func OnGoldBarCollected(object collector)
 
 public func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/DarkCastle.ocs");
+	SetNextScenario("Missions.ocf/DarkCastle.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Treasure");
 	UpdateLeagueScores();

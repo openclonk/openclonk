@@ -295,7 +295,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
-	SetNextMission("Missions.ocf/TreasureHunt.ocs");
+	SetNextScenario("Missions.ocf/TreasureHunt.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Sea");
 	StartSequence("Outro", 0);
