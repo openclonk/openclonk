@@ -9,13 +9,13 @@
 
 global func SetNextMission(string filename, string title, string description)
 {
-	LogLegacyWarning("SetNextMission", "SetNextScenario");
+	LogLegacyWarning("SetNextMission", "SetNextScenario", "10.0");
 	return SetNextScenario(filename, title, description);
 }
 
 /* -- Internal helpers -- */
 
-global func LogLegacyWarning(string function_name, string replacement_name)
+global func LogLegacyWarning(string function_name, string replacement_name, string version)
 {
-	Log("WARNING: Do not use the legacy function \"%s\" anymore; use \"%s\" instead.", function_name, replacement_name);
+	Log("WARNING: Do not use the legacy function \"%s\" anymore; use \"%s\" instead (complete removal is planned for \"%s\").", function_name, replacement_name, version);
 }
