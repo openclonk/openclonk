@@ -5,11 +5,25 @@
 	@author Marky
 */
 
+static const VERSION_10_0_OC = "10.0";
+
 /* -- Scenario stuff -- */
+
+global func GainMissionAccess(string password)
+{
+	LogLegacyWarning("GainMissionAccess", "GainScenarioAccess", VERSION_10_0_OC);
+	return GainScenarioAccess(password);
+}
+
+global func GetMissionAccess(string password)
+{
+	LogLegacyWarning("GetMissionAccess", "GetScenarioAccess", VERSION_10_0_OC);
+	return GetScenarioAccess(password);
+}
 
 global func SetNextMission(string filename, string title, string description)
 {
-	LogLegacyWarning("SetNextMission", "SetNextScenario", "10.0");
+	LogLegacyWarning("SetNextMission", "SetNextScenario", VERSION_10_0_OC);
 	return SetNextScenario(filename, title, description);
 }
 

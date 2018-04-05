@@ -41,7 +41,7 @@
         <text>If called in "MyScenarioFolder.ocf\MyScenario.ocs" this can be used to add a retry-option to that scenario.</text>
       </example>
     </examples>
-    <related><funclink>GainMissionAccess</funclink>, <funclink>GetMissionAccess</funclink></related>
+    <related><funclink>GainScenarioAccess</funclink>, <funclink>GetScenarioAccess</funclink></related>
     <related><emlink href="scenario/ParameterDefs.xml">Scenario parameter definitions</emlink></related>
   </func>
   <author>Marky</author><date>2018-04</date>

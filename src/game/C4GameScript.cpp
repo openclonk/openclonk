@@ -685,7 +685,7 @@ static bool FnGameOver(C4PropList * _this, long iGameOverValue /* provided for f
 	return !!Game.DoGameOver();
 }
 
-static bool FnGainMissionAccess(C4PropList * _this, C4String *szPassword)
+static bool FnGainScenarioAccess(C4PropList * _this, C4String *szPassword)
 {
 	if (std::strlen(Config.General.MissionAccess)+std::strlen(FnStringPar(szPassword))+3>CFG_MaxString) return false;
 	SAddModule(Config.General.MissionAccess,FnStringPar(szPassword));
@@ -1432,14 +1432,14 @@ static long FnSetMaxPlayer(C4PropList * _this, long iTo)
 	return true;
 }
 
-static bool FnGetMissionAccess(C4PropList * _this, C4String *strMissionAccess)
+static bool FnGetScenarioAccess(C4PropList * _this, C4String *strMissionAccess)
 {
 	// safety
 	if (!strMissionAccess) return false;
 
 	// non-sync mode: warn
 	if (::Control.SyncMode())
-		Log("Warning: using GetMissionAccess may cause desyncs when playing records!");
+		Log("Warning: using GetScenarioAccess may cause desyncs when playing records!");
 
 	return SIsModule(Config.General.MissionAccess, FnStringPar(strMissionAccess));
 }
@@ -2861,7 +2861,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetPlayerViewLock);
 	F(DoBaseMaterial);
 	F(DoBaseProduction);
-	F(GainMissionAccess);
+	F(GainScenarioAccess);
 	F(IsNetwork);
 	F(IsEditor);
 	F(GetLeague);
@@ -2872,7 +2872,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetMaxPlayer);
 	F(Object);
 	F(GetTime);
-	F(GetMissionAccess);
+	F(GetScenarioAccess);
 	F(MaterialName);
 	F(DrawMap);
 	F(DrawDefMap);
