@@ -151,7 +151,7 @@ public func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/DarkCastle.ocs");
 	GainScenarioAchievement("Done");
-	GainMissionAccess("S2Treasure");
+	GainScenarioAccess("S2Treasure");
 	UpdateLeagueScores();
 	// Return true to force goal rule to not call GameOver() yet, as it will be done by outro sequence
 	return true;

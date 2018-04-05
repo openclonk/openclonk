@@ -116,7 +116,7 @@ func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/DeepSeaMining.ocs");
 	GainScenarioAchievement("Done");
-	GainMissionAccess("S2Crash");
+	GainScenarioAccess("S2Crash");
 	return false;
 }
 

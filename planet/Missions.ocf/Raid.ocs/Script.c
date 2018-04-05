@@ -129,7 +129,7 @@ func OnPlaneLoaded(object plane, object oil)
 func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/Crash.ocs");
-	GainMissionAccess("S2Raid");
+	GainScenarioAccess("S2Raid");
 	GainScenarioAchievement("Done");
 	return true; // GameOver done by outro
 }

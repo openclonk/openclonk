@@ -297,7 +297,7 @@ public func OnGoalsFulfilled()
 {
 	SetNextScenario("Missions.ocf/TreasureHunt.ocs");
 	GainScenarioAchievement("Done");
-	GainMissionAccess("S2Sea");
+	GainScenarioAccess("S2Sea");
 	StartSequence("Outro", 0);
 	// Return true to force goal rule to not call GameOver() yet
 	return true;

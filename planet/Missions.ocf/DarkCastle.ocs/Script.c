@@ -122,6 +122,6 @@ public func ShroomCaveCheck()
 public func OnGoalsFulfilled()
 {
 	GainScenarioAchievement("Done");
-	GainMissionAccess("S2Castle");
+	GainScenarioAccess("S2Castle");
 	return false;
 }
