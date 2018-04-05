@@ -397,9 +397,14 @@ private func InitializeKnowledge(int plr)
 private func InitializeView(int plr)
 {
 	SetPlayerViewLock(plr, view_lock);
-	SetPlayerZoomByViewRange(plr, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
-	SetPlayerZoomByViewRange(plr, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+	// Zoom limit "nil" means default limits.
+	SetPlayerZoomByViewRange(plr, zoom_min, zoom_min, PLRZOOM_Direct | PLRZOOM_LimitMin);
+	SetPlayerZoomByViewRange(plr, zoom_max, zoom_max, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	// If no zoom value is specified: Assume what the player has set currently is the default.
+	if (zoom_set != nil)
+	{
+		SetPlayerZoomByViewRange(plr, zoom_set, zoom_set, PLRZOOM_Direct | PLRZOOM_Set);
+	}
 	return true;
 }
 
