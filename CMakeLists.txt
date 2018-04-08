@@ -48,6 +48,7 @@ CMAKE_DEPENDENT_OPTION(USE_WIN32_WINDOWS "Use Microsoft Desktop App User Interfa
 CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP  "Use SDL to create windows etc. Qt editor." ON "NOT USE_COCOA AND NOT USE_WIN32_WINDOWS AND NOT HEADLESS_ONLY" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 option(HEADLESS_ONLY "Only build headless parts. Somewhat reduces dependencies. (still needs libpng because that one's small and hard to remove.) Only tested with make/gcc/linux." OFF)
+option(C4GROUP_TOOL_ONLY "Only build c4group binary." OFF)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
 
@@ -230,25 +231,30 @@ CHECK_CXX_SOURCE_COMPILES("#include <getopt.h>\nint main(int argc, char * argv[]
 # Locate libraries
 ############################################################################
 SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
-if(NOT HEADLESS_ONLY)
+if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	find_package(Freetype REQUIRED)
 	include_directories(
 		${FREETYPE_INCLUDE_DIRS})
 	link_directories(
 		${FREETYPE_LIBRARY_DIRS})
 endif()
-find_package(JPEG REQUIRED)
-find_package(PNG REQUIRED)
+
+# Needed for c4group
 find_package(ZLIB REQUIRED)
-include_directories(
-	${JPEG_INCLUDE_DIR}
-	${PNG_INCLUDE_DIR}
-	${ZLIB_INCLUDE_DIR})
-if(CMAKE_SYSTEM MATCHES "Windows")
-	message(STATUS "Using Win32 threading.")
-else()
-	find_package("Threads" REQUIRED)
-	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
+
+if (NOT C4GROUP_TOOL_ONLY)
+	find_package(JPEG REQUIRED)
+	find_package(PNG REQUIRED)
+	include_directories(
+		${JPEG_INCLUDE_DIR}
+		${PNG_INCLUDE_DIR}
+		${ZLIB_INCLUDE_DIR})
+	if(CMAKE_SYSTEM MATCHES "Windows")
+		message(STATUS "Using Win32 threading.")
+	else()
+		find_package("Threads" REQUIRED)
+		SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
+	endif()
 endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
@@ -273,19 +279,20 @@ if(NOT HAVE_GETOPT_H)
 	set(GETOPT_LIBRARIES getopt)
 endif()
 
-# TinyXML
-find_package(TinyXML)
-if(NOT TinyXML_FOUND)
-	add_subdirectory(thirdparty/tinyxml)
-	set_property(TARGET tinyxml PROPERTY FOLDER "Third-party libraries")
-	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
-	set(TinyXML_LIBRARIES tinyxml)
-	set(TinyXML_FOUND TRUE)
+if (NOT C4GROUP_TOOL_ONLY)
+	# TinyXML
+	find_package(TinyXML)
+	if(NOT TinyXML_FOUND)
+		add_subdirectory(thirdparty/tinyxml)
+		set_property(TARGET tinyxml PROPERTY FOLDER "Third-party libraries")
+		set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
+		set(TinyXML_LIBRARIES tinyxml)
+		set(TinyXML_FOUND TRUE)
+	endif()
+	include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
 endif()
 
-include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
-
-if(NOT HEADLESS_ONLY)
+if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	find_package(OpenGL)
 	find_package(GLEW REQUIRED)
 	include_directories(${GLEW_INCLUDE_DIRS})
@@ -297,24 +304,26 @@ if(NOT HEADLESS_ONLY)
 	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 endif()
 
-if(UNIX AND NOT APPLE)
-	FINDLIB(X11_LIBRARIES X11)
+if(NOT C4GROUP_TOOL_ONLY)
+	if(UNIX AND NOT APPLE)
+		FINDLIB(X11_LIBRARIES X11)
 
-	set(Backward_DIR thirdparty/backward-cpp)
-	find_package(Backward)
-	if(Backward_FOUND)
-		set(HAVE_BACKWARD 1)
-	endif()
+		set(Backward_DIR thirdparty/backward-cpp)
+		find_package(Backward)
+		if(Backward_FOUND)
+			set(HAVE_BACKWARD 1)
+		endif()
 
-	if(NOT DEFINED PROC_SELF_EXE)
-		macro(FIND_PROC_SELF_EXE path)
-			if(EXISTS ${path})
-				set(PROC_SELF_EXE ${path} CACHE FILEPATH "Path to /proc/self/exe (Linux) or equivalent")
-			endif()
-		endmacro()
-		FIND_PROC_SELF_EXE(/proc/self/exe)     # Linux
-		FIND_PROC_SELF_EXE(/proc/curproc/file) # FreeBSD
-		FIND_PROC_SELF_EXE(/proc/curproc/exe)  # NetBSD
+		if(NOT DEFINED PROC_SELF_EXE)
+			macro(FIND_PROC_SELF_EXE path)
+				if(EXISTS ${path})
+					set(PROC_SELF_EXE ${path} CACHE FILEPATH "Path to /proc/self/exe (Linux) or equivalent")
+				endif()
+			endmacro()
+			FIND_PROC_SELF_EXE(/proc/self/exe)     # Linux
+			FIND_PROC_SELF_EXE(/proc/curproc/file) # FreeBSD
+			FIND_PROC_SELF_EXE(/proc/curproc/exe)  # NetBSD
+		endif()
 	endif()
 endif()
 
@@ -326,71 +335,75 @@ if (WIN32)
 	set(HAVE_DBGHELP ${DBGHELP_FOUND})
 endif()
 
-find_package(Upnp)
-if(UPNP_FOUND)
-	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
-endif()
+if(NOT C4GROUP_TOOL_ONLY)
+	find_package(Upnp)
+	if(UPNP_FOUND)
+		include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
+	endif()
 
-find_package(Readline)
-if(READLINE_FOUND)
-	include_directories(SYSTEM ${READLINE_INCLUDE_DIR})
-endif()
-SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
+	find_package(Readline)
+	if(READLINE_FOUND)
+		include_directories(SYSTEM ${READLINE_INCLUDE_DIR})
+	endif()
+	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 
-find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
+	find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
 
-# Select an audio library
-find_package("Audio")
-if(Audio_FOUND)
-	include_directories(${Audio_INCLUDE_DIRS})
-endif()
+	# Select an audio library
+	find_package("Audio")
+	if(Audio_FOUND)
+		include_directories(${Audio_INCLUDE_DIRS})
+	endif()
 
-# SDL
-if(USE_SDL_MAINLOOP)
-	find_package(SDL2 REQUIRED)
-else()
-	# for gamepads
-	find_package(SDL2)
-endif()
-set(HAVE_SDL ${SDL2_FOUND})
-include_directories(SYSTEM ${SDL2_INCLUDE_DIRS})
+	# SDL
+	if(USE_SDL_MAINLOOP)
+		find_package(SDL2 REQUIRED)
+	else()
+		# for gamepads
+		find_package(SDL2)
+	endif()
+	set(HAVE_SDL ${SDL2_FOUND})
+	include_directories(SYSTEM ${SDL2_INCLUDE_DIRS})
 
-# Qt5 for editor
-find_path(Qt5DIR qt.pro PATHS ${CMAKE_ADDITIONAL_DEPS_PATH}/qt-5.5.0)
-find_package(Qt5Widgets 5.4 PATHS ${Qt5DIR}/qtbase/lib/cmake/Qt5Widgets)
-if(Qt5Widgets_FOUND)
-	SET(WITH_QT_EDITOR ${Qt5Widgets_FOUND} "Qt editor dialogues available")
-	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTOUIC ON)
-	# As moc files are generated in the binary dir, tell CMake
-	# to always look for includes there:
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-else()
-	message("Qt5Widgets not found. Building openclonk without editor.")		
-	UNSET(WITH_QT_EDITOR)
+	# Qt5 for editor
+	find_path(Qt5DIR qt.pro PATHS ${CMAKE_ADDITIONAL_DEPS_PATH}/qt-5.5.0)
+	find_package(Qt5Widgets 5.4 PATHS ${Qt5DIR}/qtbase/lib/cmake/Qt5Widgets)
+	if(Qt5Widgets_FOUND)
+		SET(WITH_QT_EDITOR ${Qt5Widgets_FOUND} "Qt editor dialogues available")
+		set(CMAKE_AUTOMOC ON)
+		set(CMAKE_AUTOUIC ON)
+		# As moc files are generated in the binary dir, tell CMake
+		# to always look for includes there:
+		set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	else()
+		message("Qt5Widgets not found. Building openclonk without editor.")		
+		UNSET(WITH_QT_EDITOR)
+	endif()
 endif()
 
 ############################################################################
 # generated source files
 ############################################################################
-find_program(GLIB_COMPILE_RESOURCES glib-compile-resources)
+if(NOT C4GROUP_TOOL_ONLY)
+	find_program(GLIB_COMPILE_RESOURCES glib-compile-resources)
 
-add_custom_command(
-	OUTPUT mape-resource.c
-	COMMAND
-		${GLIB_COMPILE_RESOURCES} "--internal" "--generate"
-		"--target" "mape-resource.c"
-		"--sourcedir" ${CMAKE_CURRENT_SOURCE_DIR}/src/res
-		"${CMAKE_CURRENT_SOURCE_DIR}/src/res/mape.xml"
-	MAIN_DEPENDENCY src/res/mape.xml
-	DEPENDS
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico
-	VERBATIM
-)
+	add_custom_command(
+		OUTPUT mape-resource.c
+		COMMAND
+			${GLIB_COMPILE_RESOURCES} "--internal" "--generate"
+			"--target" "mape-resource.c"
+			"--sourcedir" ${CMAKE_CURRENT_SOURCE_DIR}/src/res
+			"${CMAKE_CURRENT_SOURCE_DIR}/src/res/mape.xml"
+		MAIN_DEPENDENCY src/res/mape.xml
+		DEPENDS
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico
+		VERBATIM
+	)
+endif()
 
 ############################################################################
 # Mac OS bundle setup
@@ -1174,7 +1187,7 @@ target_link_libraries(c4script
 	${GETOPT_LIBRARIES}
 )
 
-if(NOT HEADLESS_ONLY)
+if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	add_executable(openclonk WIN32 MACOSX_BUNDLE
 		${OC_SYSTEM_SOURCES}
 		${OC_GUI_SOURCES}
@@ -1214,40 +1227,42 @@ if(NOT HEADLESS_ONLY)
 	endif()
 endif()
 
-add_executable(openclonk-server
-	${OC_SYSTEM_SOURCES}
-	${OC_CLONK_SOURCES}
-	src/platform/C4AppT.cpp
-	src/platform/C4StdInProc.cpp
-	src/platform/C4StdInProc.h
-)
-target_compile_definitions(openclonk-server PRIVATE "USE_CONSOLE")
+if(NOT C4GROUP_TOOL_ONLY)
+	add_executable(openclonk-server
+		${OC_SYSTEM_SOURCES}
+		${OC_CLONK_SOURCES}
+		src/platform/C4AppT.cpp
+		src/platform/C4StdInProc.cpp
+		src/platform/C4StdInProc.h
+	)
+	target_compile_definitions(openclonk-server PRIVATE "USE_CONSOLE")
 
-target_link_libraries(openclonk-server
-	${PNG_LIBRARIES}
-	${JPEG_LIBRARIES}
-	${EXECINFO_LIBRARY}
-	${SDL2_LIBRARIES}
-	${READLINE_LIBRARIES}
-	${Audio_LIBRARIES}
-	${GETOPT_LIBRARIES}
-	${TinyXML_LIBRARIES}
-	${DBGHELP_LIBRARIES}
-	libmisc
-	libc4script
-	libopenclonk
-)
-if(UPNP_FOUND)
-	target_link_libraries(openclonk-server ${UPNP_LIBRARIES})
-endif()
-if(USE_COCOA)
-	target_link_libraries(openclonk-server "-framework Cocoa")
-endif()
-if(HAVE_BACKWARD)
-	target_link_libraries(openclonk-server Backward::Backward)
+	target_link_libraries(openclonk-server
+		${PNG_LIBRARIES}
+		${JPEG_LIBRARIES}
+		${EXECINFO_LIBRARY}
+		${SDL2_LIBRARIES}
+		${READLINE_LIBRARIES}
+		${Audio_LIBRARIES}
+		${GETOPT_LIBRARIES}
+		${TinyXML_LIBRARIES}
+		${DBGHELP_LIBRARIES}
+		libmisc
+		libc4script
+		libopenclonk
+	)
+	if(UPNP_FOUND)
+		target_link_libraries(openclonk-server ${UPNP_LIBRARIES})
+	endif()
+	if(USE_COCOA)
+		target_link_libraries(openclonk-server "-framework Cocoa")
+	endif()
+	if(HAVE_BACKWARD)
+		target_link_libraries(openclonk-server Backward::Backward)
+	endif()
 endif()
 
-if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY)
+if(GTK3_FOUND AND GTK3_gtksourceview_FOUND AND NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
 	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
 	set_property(TARGET mape PROPERTY FOLDER "Utilities")
@@ -1274,17 +1289,19 @@ target_link_libraries(c4group
 	libmisc
 )
 
-add_executable(netpuncher EXCLUDE_FROM_ALL
-	src/netpuncher/C4PuncherHash.h
-	src/netpuncher/main.cpp
-)
+if(NOT C4GROUP_TOOL_ONLY)
+	add_executable(netpuncher EXCLUDE_FROM_ALL
+		src/netpuncher/C4PuncherHash.h
+		src/netpuncher/main.cpp
+	)
 
-target_link_libraries(netpuncher
-	libmisc
-)
+	target_link_libraries(netpuncher
+		libmisc
+	)
 
-if(WIN32)
-	target_link_libraries(libmisc iphlpapi ws2_32)
+	if(WIN32)
+		target_link_libraries(libmisc iphlpapi ws2_32)
+	endif()
 endif()
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
@@ -1301,7 +1318,7 @@ if (APPLE AND NOT CMAKE_GENERATOR STREQUAL "Xcode")
 	set(EXECUTABLE_NAME openclonk)
 endif()
 
-if(NOT HEADLESS_ONLY)
+if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	set_target_properties(openclonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 endif()
 
@@ -1387,7 +1404,9 @@ endif()
 ############################################################################
 # Miscellaneous
 ############################################################################
-add_subdirectory(tests)
+if(NOT C4GROUP_TOOL_ONLY)
+	add_subdirectory(tests)
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -1435,18 +1454,20 @@ IF(WITH_AUTOMATIC_UPDATE)
 	INSTALL(CODE "MESSAGE(SEND_ERROR \"Installation is only supported for WITH_AUTOMATIC_UPDATE disabled\")")
 ENDIF()
 
-# hack to build the data on install, see
-# http://public.kitware.com/Bug/view.php?id=8438
-add_custom_target(data)
-set_property(TARGET data PROPERTY FOLDER "Setup")
-install(
-	CODE
-	"execute_process(
-		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target data
-	)"
-)
+if(NOT C4GROUP_TOOL_ONLY)
+	# hack to build the data on install, see
+	# http://public.kitware.com/Bug/view.php?id=8438
+	add_custom_target(data)
+	set_property(TARGET data PROPERTY FOLDER "Setup")
+	install(
+		CODE
+		"execute_process(
+			COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target data
+		)"
+	)
+endif()
 
-if (NOT APPLE)
+if (NOT APPLE AND NOT C4GROUP_TOOL_ONLY)
 	install(
 		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png
 		DESTINATION share/icons/hicolor/32x32/apps
@@ -1494,71 +1515,75 @@ ELSE()
 	SET(native_c4group c4group)
 ENDIF()
 
-# NOTE: The scripts that does the autobuilds and ultimately the automated
-# releases as well do keep their own list of group files around currently.
-# So if you change anything here, change it in the release scripts as well.
-# See openclonk-release-scripts.git/groupcontent.py
-set(OC_C4GROUPS
-	Graphics.ocg
-	Material.ocg
-	Sound.ocg
-	System.ocg
-	Objects.ocd
-	Decoration.ocd
-	Arena.ocf
-	Parkour.ocf
-	Defense.ocf
-	Missions.ocf
-	Tutorials.ocf
-	Worlds.ocf
-)
-if(APPLE)
-	list(APPEND OC_C4GROUPS Music.ocg)
-endif()
-
-foreach(group ${OC_C4GROUPS})
-	if (APPLE)
-		if (CMAKE_GENERATOR STREQUAL Xcode)
-			add_custom_command(TARGET openclonk
-				POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"$<TARGET_FILE:${native_c4group}>"
-				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
-				# leave out third parameter here so the script can figure out Xcode-ish paths as usual
-				DEPENDS "${native_c4group}"
-			)
-		else()
-			add_custom_command(TARGET openclonk
-				POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"$<TARGET_FILE:${native_c4group}>"
-				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
-				"${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources"
-				DEPENDS "${native_c4group}"
-			)
-		endif()
-	else()
-		add_custom_command(
-			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
-			COMMAND "${native_c4group}" ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
-			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-			DEPENDS "${native_c4group}"
-			VERBATIM
-		)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
+if(NOT C4GROUP_TOOL_ONLY)
+	# NOTE: The scripts that does the autobuilds and ultimately the automated
+	# releases as well do keep their own list of group files around currently.
+	# So if you change anything here, change it in the release scripts as well.
+	# See openclonk-release-scripts.git/groupcontent.py
+	set(OC_C4GROUPS
+		Graphics.ocg
+		Material.ocg
+		Sound.ocg
+		System.ocg
+		Objects.ocd
+		Decoration.ocd
+		Arena.ocf
+		Parkour.ocf
+		Defense.ocf
+		Missions.ocf
+		Tutorials.ocf
+		Worlds.ocf
+	)
+	if(APPLE)
+		list(APPEND OC_C4GROUPS Music.ocg)
 	endif()
-endforeach()
+
+	foreach(group ${OC_C4GROUPS})
+		if (APPLE)
+			if (CMAKE_GENERATOR STREQUAL Xcode)
+				add_custom_command(TARGET openclonk
+					POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+					"$<TARGET_FILE:${native_c4group}>"
+					"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
+					# leave out third parameter here so the script can figure out Xcode-ish paths as usual
+					DEPENDS "${native_c4group}"
+				)
+			else()
+				add_custom_command(TARGET openclonk
+					POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+					"$<TARGET_FILE:${native_c4group}>"
+					"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
+					"${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources"
+					DEPENDS "${native_c4group}"
+				)
+			endif()
+		else()
+			add_custom_command(
+				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
+				COMMAND "${native_c4group}" ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+				MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+				DEPENDS "${native_c4group}"
+				VERBATIM
+			)
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
+		endif()
+	endforeach()
+endif()
 
 if(NOT APPLE)
 	if(NOT HEADLESS_ONLY)
 		install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/planet/Music.ocg DESTINATION share/games/openclonk)
 	endif()
-	# group files (game data)
-	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
-	set_property(TARGET groups PROPERTY FOLDER "Setup")
-	add_dependencies(data groups)
+	if(NOT C4GROUP_TOOL_ONLY)
+		# group files (game data)
+		add_custom_target(groups DEPENDS ${OC_C4GROUPS})
+		set_property(TARGET groups PROPERTY FOLDER "Setup")
+		add_dependencies(data groups)
+	endif()
 	# Install binaries
 	install(TARGETS c4group DESTINATION bin)
 endif()
-if(NOT HEADLESS_ONLY)
+if(NOT HEADLESS_ONLY AND NOT C4GROUP_TOOL_ONLY)
 	if(NOT APPLE)
 		# Install new files
 		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
@@ -1584,26 +1609,28 @@ endif()
 # setup_openclonk.exe
 ############################################################################
 
-find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
+if(NOT C4GROUP_TOOL_ONLY)
+	find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
-if(NOT HEADLESS_ONLY)
-	add_custom_command(
-		OUTPUT setup_openclonk.exe
-		COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=$<TARGET_FILE_DIR:openclonk>\\$<TARGET_FILE_NAME:openclonk>" "-DC4GROUP=$<TARGET_FILE_DIR:c4group>\\$<TARGET_FILE_NAME:c4group>" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
-		MAIN_DEPENDENCY
-			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
-		DEPENDS
-			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
-			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
-			${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
-			${OC_C4GROUPS} openclonk c4group
-		VERBATIM
-	)
+	if(NOT HEADLESS_ONLY)
+		add_custom_command(
+			OUTPUT setup_openclonk.exe
+			COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=$<TARGET_FILE_DIR:openclonk>\\$<TARGET_FILE_NAME:openclonk>" "-DC4GROUP=$<TARGET_FILE_DIR:c4group>\\$<TARGET_FILE_NAME:c4group>" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+			MAIN_DEPENDENCY
+				${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
+			DEPENDS
+				${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
+				${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
+				${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
+				${OC_C4GROUPS} openclonk c4group
+			VERBATIM
+		)
 
-	add_custom_target(setup
-		DEPENDS setup_openclonk.exe groups
-	)
-	set_property(TARGET setup PROPERTY FOLDER "Setup")
+		add_custom_target(setup
+			DEPENDS setup_openclonk.exe groups
+		)
+		set_property(TARGET setup PROPERTY FOLDER "Setup")
+	endif()
 endif()
 
 ############################################################################
