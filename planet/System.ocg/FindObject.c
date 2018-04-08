@@ -214,9 +214,14 @@ global func Find_InArray(array a)
 }
 
 // documented in /docs/sdk/script/fn
-global func Find_Property(string s)
+global func Find_Property(string s, value)
 {
-	return [C4FO_Property, s];
+	// Ideally, we'd check the parameter count here, but this information is
+	// not available from the script.
+	if (value == nil)
+		return [C4FO_Property, s];
+	else
+		return [C4FO_Property, s, value];
 }
 
 // documented in /docs/sdk/script/fn
