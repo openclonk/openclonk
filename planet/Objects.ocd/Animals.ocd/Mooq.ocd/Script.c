@@ -522,9 +522,14 @@ func UpdateEnemy()
 func UpdateFood()
 {
 	// Need food?
-	if (GetEnergy() >= MaxEnergy/1000) return food = nil;
+	if (GetEnergy() >= MaxEnergy/1000)
+	{
+		food = nil;
+		return;
+	}
 	// Last one too far away now?
-	if (food && ObjectDistance(this, food) > 150) food = nil;
+	if (food && ObjectDistance(this, food) > 150)
+		food = nil;
 	// Slid in water?
 	if (food && food->GBackLiquid()) food = nil;
 

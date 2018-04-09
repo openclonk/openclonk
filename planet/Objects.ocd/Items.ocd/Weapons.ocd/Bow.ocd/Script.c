@@ -121,8 +121,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	if(!Contents(0))
 	{
 		// reload
-		var obj;
-		if(obj = FindObject(Find_Container(clonk), Find_Func("IsArrow")))
+		var obj = FindObject(Find_Container(clonk), Find_Func("IsArrow"));
+		if (obj)
 		{
 			obj->Enter(this);
 		}

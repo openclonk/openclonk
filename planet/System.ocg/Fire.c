@@ -367,8 +367,8 @@ global func FxFireTimer(object target, proplist effect, int time)
 	if (time % (20 + effect.FreqReduction) == 0)
 	{	
 		// Extinguish when in water-like materials.
-		var mat;
-		if (mat = GetMaterial())
+		var mat = GetMaterial();
+		if (mat)
 		{
 			if (GetMaterialVal("Extinguisher", "Material", mat))
 			{

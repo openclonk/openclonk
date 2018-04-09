@@ -156,9 +156,11 @@ private func BaseIntersection_IsPointContained(int x, int y)
 private func BaseIntersection_GetBoundingRectangle()
 {
 	// Bounding rectangle of intersection
-	var result, rt;
+	var result;
 	for (var area in this.areas)
-		if (rt = area->GetBoundingRectangle())
+	{
+		var rt = area->GetBoundingRectangle();
+		if (rt)
 		{
 			// first bounds determine area
 			if (!result)
@@ -182,6 +184,7 @@ private func BaseIntersection_GetBoundingRectangle()
 				}
 			}
 		}
+	}
 	return result;
 }
 
@@ -242,9 +245,11 @@ private func BaseCombination_IsPointContained(int x, int y)
 private func BaseCombination_GetBoundingRectangle()
 {
 	// Bounding rectangle of combination
-	var result, rt;
+	var result;
 	for (var area in this.areas)
-		if (rt = area->GetBoundingRectangle())
+	{
+		var rt =  area->GetBoundingRectangle();
+		if (rt)
 		{
 			// first bounds determine area
 			if (!result)
@@ -268,6 +273,7 @@ private func BaseCombination_GetBoundingRectangle()
 				}
 			}
 		}
+	}
 	return result;
 }
 

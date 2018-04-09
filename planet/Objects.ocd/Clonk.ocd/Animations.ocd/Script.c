@@ -271,15 +271,17 @@ public func PlayAnimation(string animation, int index, array position, array wei
 
 public func GetAnimationLength(string animation)
 {
-	var replacement;
-	if(PropAnimations != nil)
-		if(replacement = GetProperty(animation, PropAnimations))
+	if (PropAnimations != nil)
+	{
+		var replacement = GetProperty(animation, PropAnimations);
+		if (replacement)
 		{
 			if(GetType(replacement) == C4V_Array)
 				animation = replacement[0];
 			else
 				animation = replacement;
 		}
+	}
 	return inherited(animation, ...);
 }
 
@@ -420,8 +422,9 @@ func GetWalkAnimationPosition(string new_anim, int current_pos, string current_a
 	if(PropAnimations != nil)
 		if(GetProperty(Format("%s_Position", new_anim), PropAnimations))
 		{
-			var length = GetAnimationLength(new_anim), replacement;
-			if(replacement = GetProperty(new_anim, PropAnimations))
+			var length = GetAnimationLength(new_anim);
+			var replacement = GetProperty(new_anim, PropAnimations);
+			if (replacement)
 			{
 				// at this point /replacement/ may contain an array of two animations that signal a merge
 				// in that case, just take the first one..

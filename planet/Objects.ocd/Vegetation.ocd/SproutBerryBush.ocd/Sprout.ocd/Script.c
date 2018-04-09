@@ -295,7 +295,7 @@ func IsFullyGrown()
 func Remove()
 {
 	var t = GetActionTarget();
-	if(t)
+	if (t)
 	{
 		// not natural cause?
 		if(this.isDead)
@@ -307,8 +307,8 @@ func Remove()
 		
 		t->LoseSprout(this);
 	}
-	if(t = Contents())
-		t->RemoveObject();
+	if (Contents()) // TODO: Is this needed at all? Contents are removed on destruction.
+		t = Contents()->RemoveObject();
 	return RemoveObject();
 }
 

@@ -337,11 +337,13 @@ private func GainTechnology(proplist entry)
 	// Technology gain callback.
 	Call(Format("~Gain%s", entry.tech), entry, tier);
 	// Update any related techs that may become available
-	var n = GetLength(base_material), req;
+	var n = GetLength(base_material);
 	for (var i=0; i<n; ++i)
-		if (req = base_material[i].requirements)
-			if (GetIndexOf(req, entry.tech) >= 0)
-				UpdateIndexedItem(i);
+	{
+		var req = base_material[i].requirements;
+		if (req && GetIndexOf(req, entry.tech) >= 0)
+			UpdateIndexedItem(i);
+	}
 	return true;
 }
 

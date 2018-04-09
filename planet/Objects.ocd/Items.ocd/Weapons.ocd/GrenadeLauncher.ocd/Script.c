@@ -106,8 +106,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	if(!Contents(0))
 	{
 		// put something inside
-		var obj;
-		if(obj = FindObject(Find_Container(clonk), Find_Func("IsGrenadeLauncherAmmo")))
+		var obj = FindObject(Find_Container(clonk), Find_Func("IsGrenadeLauncherAmmo"));
+		if (obj)
 		{
 			obj->Enter(this);
 		}

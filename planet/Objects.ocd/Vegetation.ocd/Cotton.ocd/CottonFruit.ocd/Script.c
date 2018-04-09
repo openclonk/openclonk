@@ -243,10 +243,10 @@ public func SaveScenarioObject(proplist props)
 	if (Contained())
 		if (Contained()->GetID() == Cotton)
 			return false;
-	var effect;
-	if (effect = GetEffect("IntFlight", this))
+	var fx = GetEffect("IntFlight", this);
+	if (fx)
 	{
-		props->AddCall("Flight", this, "ResumeFlight", effect.time, effect.random);
+		props->AddCall("Flight", this, "ResumeFlight", fx.time, fx.random);
 	}
 	return true;
 }

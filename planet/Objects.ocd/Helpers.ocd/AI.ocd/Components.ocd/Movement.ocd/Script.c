@@ -180,7 +180,8 @@ public func ExecuteAttackPath(effect fx)
 		{
 			alive_check = Find_OCF(OCF_Alive);
 		}
-		if ((fx.target = FindObject(Find_AtPoint(next_pt.X, next_pt.Y), Find_Func("IsStructure"), alive_check)))
+		fx.target = FindObject(Find_AtPoint(next_pt.X, next_pt.Y), Find_Func("IsStructure"), alive_check);
+		if (fx.target)
 		{
 			// Do not advance on path unless target(s) destroyed.
 			return true;

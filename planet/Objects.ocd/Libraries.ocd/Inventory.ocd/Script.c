@@ -150,8 +150,8 @@ public func SetHandItemPos(int hand, int inv)
 			old_object->~Deselection(this, hand);
 			
 		// notify new hand2 item (which should be old hand-item) that it has been selected
-		var hand_item;
-		if (hand_item = GetHandItem(hand2))
+		var hand_item = GetHandItem(hand2);
+		if (hand_item)
 		{
 			this->~OnSlotFull(hand2);
 			// OnSlotFull might have done something to the item
@@ -171,8 +171,8 @@ public func SetHandItemPos(int hand, int inv)
 	}
 	
 	// notify the new item that it was selected
-	var item;
-	if(item = GetItem(inv))
+	var item = GetItem(inv);
+	if (item)
 	{
 		this->~OnSlotFull(hand);
 		// OnSlotFull might have done something to the item

@@ -71,8 +71,8 @@ func FxSproutCheckTimer(target, effect, time)
 	}
 	
 	// already a bush here?
-	var b;
-	if(b = FindObject(Find_Distance(20 + Random(10)), Find_ID(SproutBerryBush)))
+	var b = FindObject(Find_Distance(20 + Random(10)), Find_ID(SproutBerryBush));
+	if (b)
 	{
 		// extra fertilizer
 		b.saved_water += SproutBerryBush_water_per_berry * 2;

@@ -274,11 +274,9 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 
 private func EjectAllContents()
 {
-	var i = ContentsCount();
 	var obj;
-	while (i--) 
-		if (obj = Contents(i))
-			EjectContents(obj);
+	while (obj = Contents())
+		EjectContents(obj);
 }
 
 private func EjectContents(object contents)

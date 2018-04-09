@@ -80,8 +80,9 @@ func IsNeutral() { return neutral; }
 
 func SetNeutral(bool to_val)
 {
+	neutral = to_val;
 	// Neutral flagpoles: A bit smaller and different texture. No marker Radius.
-	if (neutral = to_val)
+	if (neutral)
 	{
 		SetMeshMaterial("NeutralFlagBanner",0);
 		//SetMeshMaterial("NeutralFlagPole",1);

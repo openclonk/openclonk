@@ -378,8 +378,8 @@ func GetInteractableObjects(array sort)
 	// Make sure that the Clonk's action target is always shown.
 	// You can push a lorry out of your bounding box and would, otherwise, then be unable to release it.
 	var main_criterion = Find_AtRect(-5, -10, 10, 20);
-	var action_target = nil;
-	if (action_target = GetActionTarget())
+	var action_target = GetActionTarget();
+	if (action_target)
 	{
 		main_criterion = Find_Or(main_criterion, Find_InArray([action_target]));
 	}

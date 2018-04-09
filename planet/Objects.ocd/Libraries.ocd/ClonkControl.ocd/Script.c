@@ -117,11 +117,11 @@ public func GetExtraInteractions()
 	var functions = _inherited(...) ?? [];
 	
 	// flipping construction-preview
-	var effect;
-	if(effect = GetEffect("ControlConstructionPreview", this))
+	var fx = GetEffect("ControlConstructionPreview", this);
+	if (fx)
 	{
-		if(effect.flipable)
-			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=effect.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
+		if (fx.flipable)
+			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=fx.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
 	}
 	// call elevator cases
 	var elevators = FindObjects(Find_ID(ElevatorCase), Find_InRect(-ELEVATOR_CALL_DISTANCE, AbsY(0), ELEVATOR_CALL_DISTANCE * 2, GetY() + AbsY(LandscapeHeight())), Find_Func("Ready", this));

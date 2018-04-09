@@ -42,11 +42,14 @@ public func MergeWithStacksIn(object to_building, ...)
 {
 	if (to_building && to_building->~IsProducer() && !to_building->~IsCollectionAllowed(this))
 	{
-		var i = ContentsCount(), contents, num_collected = 0;
+		var i = ContentsCount(), num_collected = 0;
 		while (i--)
-			if (contents = Contents(i))
+		{
+			var contents = Contents(i);
+			if (contents)
 				if (to_building->Collect(contents))
 					++num_collected;
+		}
 		// Return if contents transfer was successful.
 		if (num_collected > 0) return true;
 	}

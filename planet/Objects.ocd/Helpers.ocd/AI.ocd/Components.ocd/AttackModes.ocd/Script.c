@@ -217,7 +217,7 @@ func Departure_WeaponRespawn(object container, ...)
 	// Remove this weapon after a while
 	// (This function should be save to be called in foreign context)
 	ScheduleCall(this, Rule_ObjectFade.FadeOutObject, 120, 1, this);
-	// Revert to previou sdeparture call. No double-respawn in case it gets collected
+	// Revert to previous departure call. No double-respawn in case it gets collected
 	if ((this.Departure = this.WeaponRespawn_Departure))
 	{
 		return Call(this.Departure, container, ...);

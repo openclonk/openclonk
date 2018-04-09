@@ -261,10 +261,11 @@ private func TransferInventory(object from, object to)
 {
 	if (!from || !to) return;
 	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
-	var i = from->ContentsCount(), contents;
+	var i = from->ContentsCount();
 	while (i--)
 	{
-		if (contents = from->Contents(i))
+		var contents = from->Contents(i);
+		if (contents)
 		{
 			if (contents->~IsDroppedOnDeath(from))
 			{

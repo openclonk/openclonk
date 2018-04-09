@@ -8,7 +8,7 @@
 local radius; //actual effect radius to grab objects
 local radiusparticle; //radius of particles around object
 
-local aiming;
+local is_aiming;
 local anim_spin;
 
 local iAngle;
@@ -74,10 +74,10 @@ public func ControlUseStart(object clonk, ix, iy)
 
 public func ControlUseHolding(object clonk, ix, iy)
 {
-	if(!clonk->HasHandAction() || !aiming || (!clonk->IsWalking() && !clonk->IsJumping()))
+	if (!clonk->HasHandAction() || !is_aiming || (!clonk->IsWalking() && !clonk->IsJumping()))
 	{
 		CancelUse(clonk);
-		return 1;
+		return true;
 	}
 
 	UpdateGloveAngle(clonk, ix, iy);
@@ -184,7 +184,7 @@ func StartUsage(object clonk)
 		hand = "AimArmsGeneric.L";
 	}
 
-	aiming = 1;
+	is_aiming = true;
 
 	aim_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 	clonk->UpdateAttach();
@@ -260,9 +260,10 @@ protected func CancelUse(object clonk)
 {
 	EndUsage(clonk);
 	Sound("Objects::Electrical",nil,nil,nil,-1);
-	if(aiming = 1) PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold));
+	if (is_aiming)
+		PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold));
 	StopAnimation(anim_spin);
-	aiming = 0;
+	is_aiming = false;
 	if(target_object) LostTargetObject(target_object);
 	target_object = nil;
 	return true;

@@ -91,8 +91,8 @@ global func HalfVehicleFadeJumpStop()
 {
 	if (!this)
 		return FatalError("this function requires object context");
-	var fx;
-	if (fx = GetEffect("IntHalfVehicleFadeJump", this))
+	var fx = GetEffect("IntHalfVehicleFadeJump", this);
+	if (fx)
 		fx.Interval = 1;
 }
 

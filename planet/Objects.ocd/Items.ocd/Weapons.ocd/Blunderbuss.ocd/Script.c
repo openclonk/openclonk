@@ -107,8 +107,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	if (!Contents(0))
 	{
 		// Put some bullets into the blunderbuss.
-		var obj;
-		if (obj = FindObject(Find_Container(clonk), Find_Func("IsBullet")))
+		var obj = FindObject(Find_Container(clonk), Find_Func("IsBullet"));
+		if (obj)
 			obj->Enter(this);
 	}
 	

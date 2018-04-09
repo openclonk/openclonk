@@ -85,8 +85,8 @@ func Update()
 {
 	var p = (current * 100) / maximum;
 	var charge = (255 * p) / 100;
-	var clr;
-	if(clr = image->~GetBarColor(p))
+	var clr = image->~GetBarColor(p);
+	if (clr)
 	{
 		lr = clr.r;
 		lg = clr.g;
