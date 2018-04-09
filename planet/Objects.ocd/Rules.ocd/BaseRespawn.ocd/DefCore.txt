@@ -1,7 +1,0 @@
-[DefCore]
-id=Rule_BaseRespawn
-Version=8,0
-Category=C4D_StaticBack | C4D_Rule
-Width=32
-Height=32
-Offset=-16,-16

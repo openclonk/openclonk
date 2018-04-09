@@ -10,7 +10,7 @@ Definition1=Objects.ocd
 Definition2=Decoration.ocd
 
 [Game]
-Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;Rule_BaseRespawn=1;
+Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;
 
 [Player1]
 Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;GoldBar=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;InventorsLab=1;Sawmill=1;BombArrow=1;FireArrow=1;GrenadeLauncher=1;Torch=1;
