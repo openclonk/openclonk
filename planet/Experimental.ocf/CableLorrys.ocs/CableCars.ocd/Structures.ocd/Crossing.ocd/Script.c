@@ -27,6 +27,12 @@ local arrived_cars;
 local has_resource_chute;
 
 
+public func Construction()
+{
+	SetAction("Default");
+	return _inherited(...);
+}
+
 public func Initialize()
 {
 	turn_anim = PlayAnimation("Engine", 1, Anim_Const(0), Anim_Const(1000));
@@ -125,6 +131,13 @@ public func OnCableCarDelivery(object car, id requested, int amount)
 
 public func IsHammerBuildable() { return true; }
 
+public func SetDir(int dir)
+{
+	if (GetDir() != dir)
+		this.LineAttach = [-this.LineAttach[0], this.LineAttach[1]];
+	return _inherited(dir, ...);
+}
+
 public func ConstructionCombineWith() { return "IsNoCableStationConnected"; }
 
 public func ConstructionCombineDirection(object other)
@@ -136,11 +149,8 @@ public func ConstructionCombineOffset(proplist other)
 {
 	if (!other)
 		return;
-
 	// Make sure the station preview is on the same ground level than the other building
-	var ret = [0, 0];
-	ret[1] = other->GetObjHeight()/2 - this->GetDefHeight()/2;
-	return ret;
+	return [0, other->GetObjHeight() / 2 - this->GetDefHeight() / 2];
 }
 
 public func CombineWith(object stick_to)
@@ -325,7 +335,7 @@ public func CheckResourceChute()
 {
 	if (GetCon() < 100)
 		return;
-	for (var obj in FindObjects(Find_InRect(-4, 3, 13, 13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+	for (var obj in FindObjects(Find_InRect(-13 + 13 * GetDir(), 3, 13, 13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 		Collect(obj, true);
 }
 
@@ -447,8 +457,6 @@ public func CableDeactivation(int count)
 		SetAnimationPosition(turn_anim, Anim_Const(GetAnimationPosition(turn_anim)));
 }
 
-public func NoConstructionFlip() { return true; }
-
 
 /*-- Saving --*/
 
@@ -459,7 +467,6 @@ public func SaveScenarioObject(props)
 		props->AddCall("StationSetting", this, "ToggleStation", true);
 	if (!IsCableStation() && manual_setting)
 		props->AddCall("ManualSetting", this, "SetManual");
-
 	if (connected_building)
 		props->AddCall("Combination", this, "CombineWith", connected_building);
 	return true;
@@ -470,10 +477,24 @@ public func SetManual() { manual_setting = true; return true; }
 
 /*-- Properties --*/
 
+local ActMap = {
+	Default = {
+		Prototype = Action,
+		Name = "Default",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 0,
+		FacetBase = 1,
+		NextAction = "Default",
+	}
+};
+
 local Name = "$Name$";
 local BlastIncinerate = 90;
 local HitPoints = 80;
-local LineAttach = [6, -9];
+local LineAttach = [8, -9];
 local Components = {Metal = 1, Wood = 1};
 local ContainBlast = true;
 local FireproofContainer = true;
