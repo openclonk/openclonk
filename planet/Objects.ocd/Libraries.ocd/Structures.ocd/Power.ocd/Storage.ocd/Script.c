@@ -255,7 +255,7 @@ public func OnEnoughPower(int amount)
 }
 
 // Callback from the power library saying there is not enough power.
-public func OnNotEnoughPower(int amount)
+public func OnNotEnoughPower(int amount, bool initial_call)
 {
 	// Stop the consumption of power.
 	if (GetEffect("ConsumePower", this))

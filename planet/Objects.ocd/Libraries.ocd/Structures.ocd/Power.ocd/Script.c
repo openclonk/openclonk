@@ -14,7 +14,7 @@
 	 
 	Callbacks to the power consumers (see consumer library for details):
 	 * OnEnoughPower(int amount)
-	 * OnNotEnoughPower(int amount)
+	 * OnNotEnoughPower(int amount, bool initial_call)
 	 * GetConsumerPriority()
 	 * GetActualPowerConsumer()
 	 
@@ -493,7 +493,7 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 	// Consumer was in neither list, so add it to the list of waiting consumers.
 	PushBack(lib_power.waiting_consumers, {obj = consumer, cons_amount = amount, priority = prio});
 	// On not enough power callback to not yet active consumer.
-	consumer->OnNotEnoughPower(amount);
+	consumer->OnNotEnoughPower(amount, true);
 	// Check the power balance of this network, since a change has been made.
 	CheckPowerBalance();
 	return;
@@ -773,7 +773,7 @@ private func RefreshConsumers(int power_available)
 				PushBack(lib_power.waiting_consumers, link);
 				RemoveArrayIndex(lib_power.active_consumers, idx);
 				// On not enough power callback to the deactivated consumer.
-				link.obj->OnNotEnoughPower(consumption);
+				link.obj->OnNotEnoughPower(consumption, false);
 				VisualizePowerChange(link.obj, consumption, 0, true);
 			}
 		}
@@ -965,6 +965,19 @@ private func LogState(string tag)
 	Log("POWR - GetActivePowerAvailable() = %d", GetActivePowerAvailable());
 	Log("POWR - GetPowerConsumption() = %d", GetPowerConsumption());
 	Log("==========================================================================");
+	return;
+}
+
+// Definition call: registers a power producer with specified amount.
+public func LogPowerNetworks()
+{
+	// Definition call safety checks.
+	if (this != GetPowerSystem())
+		return FatalError("LogPowerNetworks() not called from definition context.");
+	GetPowerSystem()->Init();
+	for (var network in LIB_POWR_Networks)
+		if (network) 
+			network->LogState("");
 	return;
 }
 

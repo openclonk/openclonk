@@ -83,8 +83,15 @@ public func DoMovement()
 	if (lib_ccar_direction == nil) return;
 	if (!lib_ccar_has_power)
 	{
-		RegisterPowerRequest(GetNeededPower());
-		lib_ccar_requesting_power = true;
+		if (!lib_ccar_requesting_power)
+		{
+			RegisterPowerRequest(GetNeededPower());
+			lib_ccar_requesting_power = true;
+		}
+		else
+		{
+			CheckPowerCrossing();
+		}
 		return;
 	}
 
@@ -156,7 +163,6 @@ public func GetInteractionMenus(object clonk)
 		Priority = 20
 	};
 	PushBack(menus, cablecar_menu);
-
 	return menus;
 }
 
@@ -329,10 +335,10 @@ public func SetDestination(dest)
 // Whenever a crossing is reached it must be queried for the next crossing to go to
 public func CrossingReached()
 {
-	var target;
 	if (lib_ccar_destination != lib_ccar_rail)
 	{
-		if (target = lib_ccar_rail->GetNextWaypoint(lib_ccar_destination))
+		var target = lib_ccar_rail->GetNextWaypoint(lib_ccar_destination);
+		if (target)
 			MoveTo(target);
 		else
 			DestinationFailed();
@@ -447,12 +453,19 @@ public func GetActualPowerConsumer()
 	// in the wrong network.
 	if (lib_ccar_rail && !lib_ccar_requesting_power)
 	{
-		var power_crossing = lib_ccar_rail;
-		if (!power_crossing->~IsCableCrossing())
-			power_crossing = power_crossing->GetActionTarget(0) ?? power_crossing->GetActionTarget(1);
+		var power_crossing = GetClosestCrossing();
 		lib_ccar_power_crossing = GetBestPowerCrossing(power_crossing);
 	}
 	return lib_ccar_power_crossing;
+}
+
+// Returns the closest crossing the car is connected to.
+public func GetClosestCrossing()
+{
+	var power_crossing = lib_ccar_rail;
+	if (!power_crossing->~IsCableCrossing())
+		power_crossing = power_crossing->GetActionTarget(0) ?? power_crossing->GetActionTarget(1);
+	return power_crossing;
 }
 
 // Returns the best crossing in the network of this crossing.
@@ -466,26 +479,51 @@ public func GetBestPowerCrossing(object crossing)
 			continue;
 		PushBack(network_crossings, item[Library_CableStation.const_finaldestination]);			
 	}
-	// Find the crossing with a positive power balance.
+	// Find the crossing with the most positive power balance.
+	var best_crossing = crossing;
+	var power_overflow = nil;
 	for (var test_crossing in network_crossings)
 	{
 		var power_network = Library_Power->GetPowerNetwork(test_crossing);
 		if (power_network->IsNeutralNetwork())
 			continue;
-		if (power_network->GetBarePowerAvailable() > power_network->GetPowerConsumptionNeed())
-			return test_crossing;
+		var overflow = power_network->GetBarePowerAvailable() - power_network->GetPowerConsumptionNeed();
+		if (overflow > power_overflow || power_overflow == nil)
+		{
+			best_crossing = test_crossing;		
+			power_overflow = overflow;
+		}
 	}
-	// Fallback to this crossing.
-	return this;
+	return best_crossing;
 }
 
-public func OnNotEnoughPower()
+// Checks whether the current crossing is optimal for powering this cable car.
+public func CheckPowerCrossing()
+{
+	if (lib_ccar_requesting_power)
+	{
+		var power_crossing = GetClosestCrossing();
+		if (lib_ccar_power_crossing != GetBestPowerCrossing(power_crossing))
+		{
+			// Unregister current power request such that a new crossing can be chosen.
+			UnregisterPowerRequest();
+			lib_ccar_has_power = false;
+			lib_ccar_requesting_power = false;
+		}
+	}
+	return;
+}
+
+public func OnNotEnoughPower(int amount, bool initial_call)
 {
 	lib_ccar_has_power = false;
+	// Check the need for updating to a new crossing as the power source.
+	if (!initial_call)
+		CheckPowerCrossing();
 	return _inherited(...);
 }
 
-public func OnEnoughPower()
+public func OnEnoughPower(int amount)
 {
 	lib_ccar_has_power = true;
 	// Do movement again because this frame there would be no movement otherwise.
