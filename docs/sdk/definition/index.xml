@@ -27,9 +27,9 @@
 	</dl>
 	<h id="RasterGraphics">Raster Graphics</h>
 	<dl>
-      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics.png</dt>
+      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics.png/Graphics.*.png</dt>
       <dd>
-        <text>Graphics of the object. Base graphics, animation phases and a picture for display in menus are stored in a 32 bit picture with transparency channel (PNG format, 32 bit RGBA color, non interlaced).</text>
+        <text>Graphics of the object. Base graphics, animation phases and a picture for display in menus are stored in a 32 bit picture with transparency channel (PNG format, 32 bit RGBA color, non interlaced). An optional zoom factor for high-resolution graphics can be provided in the '*'-portion of the name.</text>
       </dd>
       <dt id="Overlaypng"><img height="16" src="../../images/icon_image.png" width="16"/>Overlay.png</dt>
       <dd>
@@ -39,7 +39,7 @@
       <dd>
         <text>An optional normal map for the object, where the red, green and blue components in the image correspond to the normal vectors to be used for the lighting of the object. If this file is not present, the normal vector at each pixel points straight into Z direction (outside of the screen).</text>
       </dd>
-      <dt id="Graphicsex"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics*.png/Overlay*.png</dt>
+      <dt id="Graphicsex"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics*.png/Overlay*.png (Graphics*.*.png/Overlay*.*.png)</dt>
       <dd>
         <text>Objects can also contain alternative sets of graphics which can be selected ingame using the script command <funclink>SetGraphics</funclink>(). The name corresponds to the file name portion following "Graphics". The matching overlay is automatically selected. For more information see <funclink>SetGraphics</funclink>().</text>
       </dd>
