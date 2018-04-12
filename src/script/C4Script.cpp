@@ -942,9 +942,9 @@ static long FnWildcardMatch(C4PropList * _this, C4String *psString, C4String *ps
 	return SWildcardMatchEx(FnStringPar(psString), FnStringPar(psWildcard));
 }
 
-static bool FnFatalError(C4PropList * _this, C4String *pErrorMsg)
+static C4Value FnFatalError(C4PropList * _this, C4Value * Pars)
 {
-	throw C4AulExecError(FormatString("script: %s", pErrorMsg ? pErrorMsg->GetCStr() : "(no error)").getData());
+	throw C4AulExecError(FormatString("script: %s", FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData()).getData());
 }
 
 static bool FnStartCallTrace(C4PropList * _this)
@@ -1106,6 +1106,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "EffectCall",    true, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
 	{ "Log",           true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
 	{ "DebugLog",      true, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
+	{ "FatalError",    true, C4V_Nil,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFatalError },
 	{ "Format",        true, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
 	{ "Trans_Mul",     true, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
 
@@ -1169,7 +1170,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(SetLength);
 	F(GetIndexOf);
 	F(DeepEqual);
-	F(FatalError);
 	F(StartCallTrace);
 	F(StartScriptProfiler);
 	F(StopScriptProfiler);
