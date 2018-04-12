@@ -205,24 +205,24 @@ public func GetAttachedVehicle()
 
 // Calls from the stations will mostly be forwarded to the attached vehicle
 
-public func DropContents(proplist station)
+public func DropContents(object station)
 {
 	if (pickup)
 		pickup->DropContents(station);
 }
 
 // Check for available contents
-public func IsAvailable(proplist requested, int amount)
+public func IsAvailable(id requested_id, int amount)
 {
 	// So far only do something if a lorry is connected, all other vehicles are considered off-limits
 	if (pickup && pickup->~IsLorry())
-		if (pickup->ContentsCount(requested) >= amount)
+		if (pickup->ContentsCount(requested_id) >= amount)
 			return true;
 	return false;
 }
 
 // Called when a station has asked to make a delivery
-public func IsReadyForDelivery(proplist requested, int amount, proplist requesting_station)
+public func IsReadyForDelivery(id requested_id, int amount, object requesting_station)
 {
 	// Is already on a delivery.
 	if (lib_ccar_delivery)
@@ -234,17 +234,17 @@ public func IsReadyForDelivery(proplist requested, int amount, proplist requesti
 		if (pickup->ContentsCount() + amount <= pickup.MaxContentsCount)
 			return true;
 		// ...or contain the requested objects
-		if (pickup->ContentsCount(requested) >= amount)
+		if (pickup->ContentsCount(requested_id) >= amount)
 			return true;
 	}
 	return false;
 }
 
 // Called when searching for a better option to deliver something
-public func OverridePriority(proplist requested, int amount, proplist requesting_station, proplist best)
+public func OverridePriority(id requested_id, int amount, object requesting_station, proplist best)
 {
 	// Check if the connected vehicle holds the requested objects and if yes, override the selection
-	if (pickup && pickup->ContentsCount(requested) >= amount)
+	if (pickup && pickup->ContentsCount(requested_id) >= amount)
 		return true;
 	return false;
 }

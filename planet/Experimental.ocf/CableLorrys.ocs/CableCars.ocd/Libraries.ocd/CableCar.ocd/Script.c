@@ -108,6 +108,7 @@ public func DoMovement()
 	if (lib_ccar_progress >= lib_ccar_max_progress)
 	{
 		lib_ccar_rail->~Deactivation(1);
+		lib_ccar_rail->~RemoveHangingCableCar(this);
 		lib_ccar_rail = lib_ccar_rail->GetActionTarget(end);
 		lib_ccar_rail->GetCablePosition(position);
 		GetCableOffset(position);
@@ -322,13 +323,10 @@ public func SetDestination(dest)
 	}
 
 	lib_ccar_destination = dest;
-
 	if (lib_ccar_direction == nil)
 	{
-		OnStart();
 		CrossingReached();
-		if (lib_ccar_rail)
-			lib_ccar_rail->~OnCableCarDeparture(this);
+		OnStart();
 	}
 }
 
@@ -388,26 +386,16 @@ public func Destruction()
 		lib_ccar_rail->~OnCableCarDestruction(this);
 }
 
-// Setup movement process
-public func MoveToIndex(int dest)
-{
-	var dest_obj = FindObjects(Find_Func("IsCableCrossing"))[dest];
-	if (dest_obj) return MoveTo(dest_obj);
-}
-
 public func MoveTo(object dest)
 {
-	var rail = 0;
-	for (var test_rail in FindObjects(Find_Func("IsConnectedTo", lib_ccar_rail)))
-	{
-		if (test_rail->IsConnectedTo(dest))
-		{
-			rail = test_rail;
-			break;
-		}
-	}
+	// Find cable that is connected to both initial and final crossing.
+	var rail = FindObject(Find_Func("IsConnectedTo", lib_ccar_rail), Find_Func("IsConnectedTo", dest));
 	if (!rail)
 		return DestinationFailed(); // Shouldn't happen
+
+	// Notify crossing a cable car has left.
+	if (lib_ccar_rail)
+		lib_ccar_rail->~OnCableCarDeparture(this);
 
 	// Target the first or second action target?
 	if (rail->GetActionTarget(0) == dest)
@@ -419,8 +407,10 @@ public func MoveTo(object dest)
 	rail->GetActionTarget(0)->GetCablePosition(origin);
 	rail->GetActionTarget(1)->GetCablePosition(ending);
 	rail->~Activation(1);
+	rail->~AddHangingCableCar(this);
 	lib_ccar_max_progress = Distance(origin[0], origin[1], ending[0], ending[1]);
 	lib_ccar_rail = rail;
+	return;	
 }
 
 
@@ -536,25 +526,54 @@ public func OnEnoughPower(int amount)
 
 /*-- Delivery --*/
 
-public func AddRequest(proplist requested, int amount, proplist target, proplist source)
+public func AddRequest(id requested_id, int amount, object target, object source)
 {
-	lib_ccar_delivery = [source, target, requested, amount];
-	SetDestination(target);
+	//Log("[%d]AddRequest(car %v at station %v) %v->%v->%v", FrameCounter(), this, lib_ccar_rail, source, [requested_id, amount], target);
+	lib_ccar_delivery = 
+	{
+		source = source,
+		target =  target,
+		requested_id = requested_id,
+		amount = amount
+	};
+	// First move to source if not already there.
+	if (lib_ccar_rail != lib_ccar_delivery.source)
+		return SetDestination(lib_ccar_delivery.source);
+	// Was at source already so move to target directly.
+	lib_ccar_delivery.source = nil;
+	SetDestination(lib_ccar_delivery.target);
 }
 
 public func ContinueRequest()
 {
 	if (!lib_ccar_delivery)
 		return;
-	var target = lib_ccar_delivery[1];
-	SetDestination(target);
+	//Log("[%d]ContinueRequest(car %v currently at station %v) %v", FrameCounter(), this, lib_ccar_rail, [lib_ccar_delivery.requested_id, lib_ccar_delivery.amount]);
+	// Continue moving to source or target.
+	SetDestination(lib_ccar_delivery.source ?? lib_ccar_delivery.target);
 }
 
 public func FinishedRequest(object station)
 {
-	if (station && lib_ccar_delivery)
-		station->RequestArrived(this, lib_ccar_delivery[2], lib_ccar_delivery[3]);
-	lib_ccar_delivery = nil;
+	if (!lib_ccar_delivery)
+		return;
+	//Log("[%d]FinishedRequest(car %v at station %v) %v", FrameCounter(), this, station, [lib_ccar_delivery.requested_id, lib_ccar_delivery.amount]);
+	// May have first arrived at the source station.
+	if (lib_ccar_delivery.source && station == lib_ccar_delivery.source)
+	{
+		// Load requested objects and move to target.
+		lib_ccar_delivery.source = nil;
+		station->RequestPickUp(this, lib_ccar_delivery.requested_id, lib_ccar_delivery.amount);
+		SetDestination(lib_ccar_delivery.target);
+		return;
+	}
+	// Arrived at delivery target station.
+	if (station == lib_ccar_delivery.target)
+	{
+		station->RequestArrived(this, lib_ccar_delivery.requested_id, lib_ccar_delivery.amount);
+		lib_ccar_delivery = nil;
+		return;
+	}
 }
 
 

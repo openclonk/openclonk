@@ -827,7 +827,7 @@ public func ConnectCableStation(object station)
 /**
 	Requests the necessary material from the cable network if available.
 */
-func RequestAllMissingComponents(id item_id)
+public func RequestAllMissingComponents(id item_id)
 {
 	if (!cable_station)
 		return false;
@@ -839,6 +839,14 @@ func RequestAllMissingComponents(id item_id)
 		var available = GetAvailableComponentAmount(mat_id);
 		if (available < mat_cost)
 			RequestObject(mat_id, mat_cost - available);
+	}
+	
+	// Also check item fuel need.
+	var fuel_needed = FuelNeed(item_id);
+	if (fuel_needed > 0)
+	{
+		// For now just use coal as a fuel.
+		RequestObject(Coal, 1 + (fuel_needed - 1) / Coal->GetFuelAmount());
 	}
 	return true;
 }

@@ -57,7 +57,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);
-	fx.testnr = 9;
+	fx.testnr = 1;
 	fx.launched = false;
 	fx.plr = plr;
 	return;
@@ -484,7 +484,8 @@ global func Test6_OnStart(int plr)
 	var drain = CreateObjectAbove(Pipe, 80, 300, plr);
 	drain->ConnectPipeTo(pump, PIPE_STATE_Drain);
 	
-	Schedule(nil, "CreateObject(Rock, 480, 274)", 36, 10**6);
+	crossing13->AddResourceChute();
+	Schedule(nil, "CreateObject(Rock, 472, 274)", 36, 10**6);
 	
 	// Log what the test is about.
 	Log("Test automated concrete production line.");
@@ -493,7 +494,7 @@ global func Test6_OnStart(int plr)
 
 global func Test6_Completed()
 {
-	if (GetMaterial(80, 240) == Material("Granite"))
+	if (GetMaterial(80, 280) == Material("Granite"))
 		return true;
 	return false;
 }
@@ -609,7 +610,7 @@ global func Test9_OnStart(int plr)
 	var crossing1 = CreateObjectAbove(CableCrossing, 60, 160, plr);
 	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
 	var crossing3 = CreateObjectAbove(CableCrossing, 272, 64, plr);
-	var crossing4 = CreateObjectAbove(CableCrossing, 450, 104, plr);
+	var crossing4 = CreateObjectAbove(CableCrossing, 446, 104, plr);
 	var crossing5 = CreateObjectAbove(CableCrossing, 130, 160, plr);
 	var crossing6 = CreateObjectAbove(CableCrossing, 280, 160, plr);
 	var crossing7 = CreateObjectAbove(CableCrossing, 348, 104, plr);
@@ -618,7 +619,7 @@ global func Test9_OnStart(int plr)
 	var crossing10 = CreateObjectAbove(CableCrossing, 288, 248, plr);
 	var crossing11 = CreateObjectAbove(CableCrossing, 254, 280, plr);
 	var crossing12 = CreateObjectAbove(CableCrossing, 312, 312, plr);
-	var crossing13 = CreateObjectAbove(CableCrossing, 476, 312, plr);
+	var crossing13 = CreateObjectAbove(CableCrossing, 420, 312, plr);
 	var crossing14 = CreateObjectAbove(CableCrossing, 440, 248, plr);
 	
 	CreateCableCrossingsConnection(crossing1, crossing2);
@@ -651,10 +652,13 @@ global func Test9_OnStart(int plr)
 	hoist->EngageRail(crossing1);
 	lorry = crossing1->CreateObject(CableLorry);
 	hoist->PickupVehicle(lorry);
+	lorry->CreateContents(Firestone, 10);
 		
-	var foundry = CreateObjectAbove(Foundry, 100, 160, plr);
+	var foundry = CreateObjectAbove(Foundry, 110, 160, plr);
 	foundry->AddToQueue(Metal, nil, true);
+	foundry->SetDir(DIR_Right);
 	crossing5->CombineWith(foundry);
+	crossing5->AddResourceChute();
 	
 	var workshop = CreateObjectAbove(ToolsWorkshop, 30, 160, plr);
 	crossing1->CombineWith(workshop);
@@ -668,10 +672,18 @@ global func Test9_OnStart(int plr)
 	crossing14->CombineWith(steam_engine);
 	steam_engine->CreateContents(Coal);
 	
-	var sawmill = CreateObjectAbove(Sawmill, 480, 104, plr);
+	var sawmill = CreateObjectAbove(Sawmill, 492, 104, plr);
 	sawmill->SetDir(DIR_Right);
 	for (var cnt = 0; cnt < 5; cnt++)
 		sawmill->CreateObjectAbove(Tree_Deciduous)->ChopDown();
+	crossing4->AddResourceChute();
+		
+	crossing5->CreateObject(Hammer);
+	crossing5->CreateObject(Metal);
+	
+	crossing13->AddResourceChute();
+	Schedule(crossing13, "CreateObject(Coal, -4, -5)", 36, 10**6);
+	Schedule(crossing13, "CreateObject(Ore, -4, -10)", 36, 10**6);
 			
 	// Log what the test is about.
 	Log("Multiple producers and power supply which need resources from mines.");
@@ -680,7 +692,8 @@ global func Test9_OnStart(int plr)
 
 global func Test9_Completed()
 {
-	
+	if (ObjectCount(Find_ID(Shovel)) >= 10 && ObjectCount(Find_ID(Dynamite)) >= 10)
+		return true;
 	return false;
 }
 
@@ -752,10 +765,57 @@ global func Test10_OnFinished()
 }
 
 
+global func Test11_OnStart(int plr)
+{
+	SetWindFixed(0);
+	CreateObjectAbove(WindGenerator, 90, 160, plr);
+	CreateObjectAbove(WindGenerator, 470, 104, plr);
+
+	var crossing1 = CreateObjectAbove(CableCrossing, 70, 160, plr);
+	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
+	var crossing3 = CreateObjectAbove(CableCrossing, 244, 64, plr);
+	var crossing4 = CreateObjectAbove(CableCrossing, 272, 64, plr);
+	var crossing5 = CreateObjectAbove(CableCrossing, 450, 104, plr);
+	
+	CreateCableCrossingsConnection(crossing1, crossing2);
+	CreateCableCrossingsConnection(crossing2, crossing3);
+	CreateCableCrossingsConnection(crossing3, crossing4);
+	CreateCableCrossingsConnection(crossing4, crossing5);
+	
+	var hoist = crossing1->CreateObject(CableHoist);
+	hoist->EngageRail(crossing1);
+	hoist->SetDestination(crossing5);
+
+	ScheduleCall(nil, "SetWindFixed", 20, 0, 50);
+	ScheduleCall(nil, "SetWindFixed", 40, 0, 0);
+	Schedule(nil, "DrawMaterialQuad(\"Rock\", 60, 80, 120, 80, 120, 140, 60, 140)", 60, 0);
+	ScheduleCall(nil, "SetWindFixed", 80, 0, 50);
+
+	// Log what the test is about.
+	Log("Specific network for which power supply fails.");
+	return true;
+}
+
+global func Test11_Completed()
+{
+	return !!FindObject(Find_ID(CableHoist), Find_Distance(20, 450, 104));
+}
+
+global func Test11_OnFinished()
+{
+	RemoveTestObjects();
+	ClearScheduleCall(nil, "SetWindFixed");
+	ClearFreeRect(60, 80, 60, 60);
+	return;
+}
+
+
 /*-- Cable Network Functions --*/
 
 global func CreateCableCrossingsConnection(object c1, object c2)
 {
+	if (!c1 || !c2)
+		return nil;	
 	var cable = c1->CreateObject(CableLine);
 	cable->SetConnectedObjects(c1, c2);
 	// Log the distance the cable covers of the cable.
@@ -784,6 +844,14 @@ global func CreateObjectAbove(id obj, ...)
 	var res = _inherited(obj, ...);
 	if (obj == CableCrossing)
 		res->Message("@<c aa0000>%d</c>", res->ObjectNumber());
+	return res;
+}
+
+global func CreateObject(id obj, ...)
+{
+	var res = _inherited(obj, ...);
+	if (obj == CableHoist)
+		res->Message("@<c 00aaaa>%d</c>", res->ObjectNumber());
 	return res;
 }
 
@@ -908,10 +976,17 @@ global func RemoveTestObjects()
 			Find_ID(CableLorry),
 			Find_ID(Flagpole),
 			Find_ID(ToolsWorkshop),
-			Find_ID(Rock)
+			Find_ID(Sawmill)
 		),
 		Find_Or(
-			Find_ID(Dynamite)
+			Find_ID(Dynamite),
+			Find_ID(Rock),
+			Find_ID(Coal),
+			Find_ID(Ore),
+			Find_ID(Compensator),
+			Find_ID(SteamEngine),
+			Find_ID(ChemicalLab),
+			Find_ID(Metal)
 		)
 	));
 	return;

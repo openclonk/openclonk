@@ -41,12 +41,15 @@ public func OnCableCarDisengaged(object car) { }
 // Called by a cable car that has been destroyed at this station
 public func OnCableCarDestruction(object car) { }
 
+// Called when a cable car wants to pick up resources for a delivery
+public func OnCableCarPickUp(object car, id requested, int amount) { }
+
 // Called when a cable car with a requested delivery arrives
 public func OnCableCarDelivery(object car, id requested, int amount) { }
 
 // Called by other stations to check if a certain object and amount are available for delivery at this station.
 // Return true if there are means to collect the required amount.
-public func IsAvailable(proplist requested, int amount)
+public func IsAvailable(id requested_id, int amount)
 {
 	return false;
 }
@@ -441,7 +444,7 @@ public func GetLengthToTarget(object end)
 local request_queue;
 
 // Add a new acquiring order
-public func AddRequest(proplist requested_id, int amount)
+public func AddRequest(id requested_id, int amount)
 {
 	if (!requested_id) return false;
 	if (!amount) amount = 1;
@@ -467,24 +470,29 @@ public func AddRequest(proplist requested_id, int amount)
 	return true;
 }
 
-// Check all connected stations for available objects
-public func CheckAvailability(proplist requested, int amount)
+// Check all connected stations for available objects.
+public func CheckAvailability(id requested_id, int amount)
 {
 	var nearest_station;
 	var length_to;
-	for (var destination in destination_list)
+	// Loop over all stations, including this one.
+	var network_stations = [this];
+	for (var station in GetDestinations())
+		if (station)
+			PushBack(network_stations, station[const_finaldestination]);
+	for (var station in network_stations)
 	{
-		if (destination[const_finaldestination]->IsAvailable(requested, amount))
+		if (station->IsAvailable(requested_id, amount))
 		{
-			var station = destination[const_finaldestination];
 			if (!nearest_station)
 			{
 				nearest_station = station;
 				length_to = GetLengthToTarget(nearest_station);
 			}
-			else {
+			else
+			{
 				// Storages (like chests) are always preferred over other producer because the items
-				// might be stored in another producer to produce something
+				// might be stored in another producer to produce something.
 				if (station->~IsStorage() && !nearest_station->~IsStorage())
 				{
 					nearest_station = station;
@@ -492,7 +500,7 @@ public func CheckAvailability(proplist requested, int amount)
 				}
 				else if (nearest_station->~IsStorage() && !station->~IsStorage())
 					continue;
-				// Otherwise the shorter the path, the better
+				// Otherwise the shorter the path, the better.
 				else if (GetLengthToTarget(station) < length_to)
 				{
 					nearest_station = station;
@@ -505,13 +513,19 @@ public func CheckAvailability(proplist requested, int amount)
 }
 
 // Check if there is a cable car ready for delivery
-public func GetAvailableCableCar(proplist requested, int amount, proplist requesting_station)
+public func GetAvailableCableCar(id requested_id, int amount, object requesting_station)
 {
 	
 }
 
+// A delivery needs to be picked up at this station.
+public func RequestPickUp(object car, id requested_id, int amount)
+{
+	OnCableCarPickUp(car, requested_id, amount);
+}
+
 // A delivery has arrived, remove it from the queue and handle the request
-public func RequestArrived(proplist car, proplist requested_id, int amount)
+public func RequestArrived(object car, id requested_id, int amount)
 {
 	if (!HasRequest(requested_id, amount))
 		return;
@@ -520,11 +534,11 @@ public func RequestArrived(proplist car, proplist requested_id, int amount)
 	RemoveRequest(requested_id, amount);
 }
 
-public func HasRequest(id requested, int amount)
+public func HasRequest(id requested_id, int amount)
 {
 	for (var i = 0; i < GetLength(request_queue); i++)
 	{
-		if (request_queue[i][0] != requested)
+		if (request_queue[i][0] != requested_id)
 			continue;
 		if (request_queue[i][1] != amount)
 			continue;
@@ -533,11 +547,11 @@ public func HasRequest(id requested, int amount)
 	return false;
 }
 
-public func RemoveRequest(id requested, int amount)
+public func RemoveRequest(id requested_id, int amount)
 {
 	for (var i = 0; i < GetLength(request_queue); i++)
 	{
-		if (request_queue[i][0] != requested)
+		if (request_queue[i][0] != requested_id)
 			continue;
 		if (request_queue[i][1] != amount)
 			continue;

@@ -4,8 +4,11 @@
 	@author Clonkonaut	
 */
 
+local hanging_cars;
+
 public func Initialize()
 {
+	hanging_cars = [];
 	SetAction("Connect");
 	SetVertexXY(0, GetX(), GetY());
 	SetVertexXY(1, GetX(), GetY());
@@ -21,7 +24,7 @@ public func IsConnectedTo(object obj)
 }
 
 /** Connects this cable to obj1 and obj2. */
-public func SetConnectedObjects(obj1, obj2)
+public func SetConnectedObjects(object obj1, object obj2)
 {
 	if (GetActionTarget(0)) GetActionTarget(0)->~CableDeactivation(activations);
 	if (GetActionTarget(1)) GetActionTarget(1)->~CableDeactivation(activations);
@@ -141,6 +144,28 @@ public func Deactivation(int count)
 	activations -= count;
 	if (GetActionTarget(0)) GetActionTarget(0)->~CableDeactivation(count);
 	if (GetActionTarget(1)) GetActionTarget(1)->~CableDeactivation(count);
+}
+
+
+/*-- Cable Cars --*/
+
+public func AddHangingCableCar(object car)
+{
+	PushBack(hanging_cars, car);
+	return;
+}
+
+public func RemoveHangingCar(object car)
+{
+	RemoveArrayValue(hanging_cars, car, true);
+	return;
+}
+
+public func OnRailNetworkUpdate()
+{
+	for (var car in hanging_cars)
+		car->~OnRailNetworkUpdate();
+	return;
 }
 
 
