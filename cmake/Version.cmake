@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-include(Version.txt)
+include(${OC_TOP_SOURCE_DIR}Version.txt)
 
 ############################################################################
 # Get revision from Git
@@ -47,7 +47,7 @@ else()
 	set(C4VERSION       "${C4VERSION} strange")
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/C4Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/C4Version.h ESCAPE_QUOTES)
+configure_file(${OC_TOP_SOURCE_DIR}src/C4Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/C4Version.h ESCAPE_QUOTES)
 if(WIN32)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/res/WindowsGamesExplorer.xml.in ${CMAKE_CURRENT_BINARY_DIR}/WindowsGamesExplorer.xml ESCAPE_QUOTES)
+	configure_file(${OC_TOP_SOURCE_DIR}src/res/WindowsGamesExplorer.xml.in ${CMAKE_CURRENT_BINARY_DIR}/WindowsGamesExplorer.xml ESCAPE_QUOTES)
 endif()
