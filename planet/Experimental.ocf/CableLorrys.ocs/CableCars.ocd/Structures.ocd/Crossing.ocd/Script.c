@@ -68,17 +68,17 @@ public func DestinationsUpdated()
 		cable->OnRailNetworkUpdate();
 }
 
-public func IsAvailable(id requested_id, int amount)
+public func IsAvailable(proplist order)
 {
 	// Check resource chute for contents.
-	if (has_resource_chute && ContentsCount(requested_id) >= amount)
+	if (has_resource_chute && ContentsCount(order.type) >= order.min_amount)
 			return true;
 	// Check cable cars idling at this station.
 	if (GetLength(arrived_cars))
 	{
 		for (var car in arrived_cars)
 		{
-			if (car->~IsAvailable(requested_id, amount))
+			if (car->~IsAvailable(order))
 				return true;
 		}
 	}
@@ -86,44 +86,52 @@ public func IsAvailable(id requested_id, int amount)
 	return false;
 }
 
-public func GetAvailableCableCar(id requested_id, int amount, object requesting_station)
+public func GetAvailableCableCar(proplist order, object requesting_station)
 {
 	// Check cars that are idling at this station
 	var best;
 	for (var car in arrived_cars)
 	{
-		if (!car->~IsReadyForDelivery(requested_id, amount, requesting_station))
+		if (!car->~IsReadyForDelivery(order, requesting_station))
 			continue;
 		if (!best)
 			best = car;
 		// A car might want to override the search for an available car, mainly because it holds the container
 		// which holds the requested items
-		else if (car->~OverridePriority(requested_id, amount, requesting_station, best))
+		else if (car->~OverridePriority(order, requesting_station, best))
 			best = car;
 	}
 	if (best)
 		return best;
 
-	// Check cars that are idling at the requesting station
+	// Check cars that are idling at other crossings in the network.
 	if (requesting_station != this)
 	{
-		var best = requesting_station->~GetAvailableCableCar(requested_id, amount, requesting_station);
-		if (best)
-			return best;
+		// Find closest cars first.
+		var destinations = GetDestinations();
+		SortArrayByArrayElement(destinations, this.const_distance, false);
+		for (dest in destinations)
+		{		
+			var station = dest[this.const_finaldestination];
+			var best = station->~GetAvailableCableCar(order, station);
+			if (best)
+				return best;
+		}
 	}
 	return nil;
 }
 
-public func OnCableCarPickUp(object car, id requested, int amount)
+public func OnCableCarPickUp(object car, proplist order)
 {
 	car = car->~GetAttachedVehicle() ?? car;
 	
 	// Take from resource chute if available.
 	if (has_resource_chute)
 	{
+		var amount = Max(order.min_amount, order.max_amount);
 		while (amount > 0)
 		{
-			var item = FindContents(requested);
+			var item = FindContents(order.type);
 			if (!item)
 				break;
 			item->Enter(car);
@@ -135,26 +143,27 @@ public func OnCableCarPickUp(object car, id requested, int amount)
 	if (connected_building)
 	{
 		// TODO: Do we even want this?
-	
 	}		
 	return;
 }
 
-public func OnCableCarDelivery(object car, id requested, int amount)
+public func OnCableCarDelivery(object car, proplist order)
 {
 	// Transfer the requested material to the connected producer
 	if (!connected_building)
 		return;
 
 	car = car->~GetAttachedVehicle() ?? car;
-
-	for (var i = 0; i < amount; i++)
+	var amount = Max(order.min_amount, order.max_amount);
+	while (amount > 0)
 	{
-		var item = car->FindContents(requested);
+		var item = car->FindContents(order.type);
 		if (!item)
 			break;
 		item->Enter(connected_building);
+		amount--;
 	}
+	return;
 }
 
 

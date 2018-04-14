@@ -277,7 +277,8 @@ public func RequestFuel()
 {
 	// For now just request coal as it is the safest type of fuel, that is least needed by other structures.
 	if (cable_station)
-		cable_station->AddRequest(Coal, 1);
+		cable_station->AddRequest({type = Coal, min_amount = 1, max_amount = 5});
+	return;
 }
 
 

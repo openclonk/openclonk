@@ -526,15 +526,14 @@ public func OnEnoughPower(int amount)
 
 /*-- Delivery --*/
 
-public func AddRequest(id requested_id, int amount, object target, object source)
+public func AddRequest(proplist order, object target, object source)
 {
-	//Log("[%d]AddRequest(car %v at station %v) %v->%v->%v", FrameCounter(), this, lib_ccar_rail, source, [requested_id, amount], target);
+	//Log("[%d]AddRequest(car %v at station %v) %v->%v->%v", FrameCounter(), this, lib_ccar_rail, source, order, target);
 	lib_ccar_delivery = 
 	{
 		source = source,
-		target =  target,
-		requested_id = requested_id,
-		amount = amount
+		target = target,
+		order = order
 	};
 	// First move to source if not already there.
 	if (lib_ccar_rail != lib_ccar_delivery.source)
@@ -548,7 +547,7 @@ public func ContinueRequest()
 {
 	if (!lib_ccar_delivery)
 		return;
-	//Log("[%d]ContinueRequest(car %v currently at station %v) %v", FrameCounter(), this, lib_ccar_rail, [lib_ccar_delivery.requested_id, lib_ccar_delivery.amount]);
+	//Log("[%d]ContinueRequest(car %v currently at station %v) %v", FrameCounter(), this, lib_ccar_rail, lib_ccar_delivery.order);
 	// Continue moving to source or target.
 	SetDestination(lib_ccar_delivery.source ?? lib_ccar_delivery.target);
 }
@@ -557,20 +556,20 @@ public func FinishedRequest(object station)
 {
 	if (!lib_ccar_delivery)
 		return;
-	//Log("[%d]FinishedRequest(car %v at station %v) %v", FrameCounter(), this, station, [lib_ccar_delivery.requested_id, lib_ccar_delivery.amount]);
+	//Log("[%d]FinishedRequest(car %v at station %v) %v", FrameCounter(), this, station, lib_ccar_delivery.order);
 	// May have first arrived at the source station.
 	if (lib_ccar_delivery.source && station == lib_ccar_delivery.source)
 	{
 		// Load requested objects and move to target.
 		lib_ccar_delivery.source = nil;
-		station->RequestPickUp(this, lib_ccar_delivery.requested_id, lib_ccar_delivery.amount);
+		station->RequestPickUp(this, lib_ccar_delivery.order);
 		SetDestination(lib_ccar_delivery.target);
 		return;
 	}
 	// Arrived at delivery target station.
 	if (station == lib_ccar_delivery.target)
 	{
-		station->RequestArrived(this, lib_ccar_delivery.requested_id, lib_ccar_delivery.amount);
+		station->RequestArrived(this, lib_ccar_delivery.order);
 		lib_ccar_delivery = nil;
 		return;
 	}

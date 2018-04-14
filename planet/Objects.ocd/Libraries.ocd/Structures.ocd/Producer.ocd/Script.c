@@ -497,7 +497,7 @@ private func ProcessQueue()
 	if (!Produce(product_id, producing_player))
 	{
 		// No material available? request from cable network.
-		RequestAllMissingComponents(product_id);
+		RequestAllMissingComponents(queue[0]);
 		// In the meanwhile, just cycle the queue and try the next one.
 		CycleQueue();
 		return FX_OK;
@@ -827,34 +827,47 @@ public func ConnectCableStation(object station)
 /**
 	Requests the necessary material from the cable network if available.
 */
-public func RequestAllMissingComponents(id item_id)
+public func RequestAllMissingComponents(proplist product)
 {
 	if (!cable_station)
 		return false;
-
+	
+	var item_id = product.Product;
+	var amount = product.Amount;
+	// Take by batches of five for infinite production.
+	// TODO: Can we somehow make this smarter? Take all available from source container?
+	if (product.Infinite)
+		amount = 5;
+	
+	// Request all currently unavailable components.
 	for (var item in ProductionCosts(item_id))
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
+		// No way to request liquids currently, player must use pumps instead.
+		if (mat_id->~IsLiquid())
+			continue;
 		var available = GetAvailableComponentAmount(mat_id);
 		if (available < mat_cost)
-			RequestObject(mat_id, mat_cost - available);
+			RequestObject(mat_id, mat_cost - available, amount * mat_cost - available);
 	}
 	
 	// Also check item fuel need.
 	var fuel_needed = FuelNeed(item_id);
 	if (fuel_needed > 0)
-	{
+	{	
 		// For now just use coal as a fuel.
-		RequestObject(Coal, 1 + (fuel_needed - 1) / Coal->GetFuelAmount());
+		var coal_needed = 1 + (fuel_needed - 1) / Coal->GetFuelAmount();
+		RequestObject(Coal, coal_needed, amount * coal_needed);
 	}
 	return true;
 }
 
-public func RequestObject(id item_id, int amount)
+public func RequestObject(id item_id, int min_amount, int max_amount)
 {
 	if (cable_station)
-		cable_station->AddRequest(item_id, amount);
+		cable_station->AddRequest({type = item_id, min_amount = min_amount, max_amount = max_amount});
+	return;
 }
 
 

@@ -42,14 +42,14 @@ public func OnCableCarDisengaged(object car) { }
 public func OnCableCarDestruction(object car) { }
 
 // Called when a cable car wants to pick up resources for a delivery
-public func OnCableCarPickUp(object car, id requested, int amount) { }
+public func OnCableCarPickUp(object car, proplist order) { }
 
 // Called when a cable car with a requested delivery arrives
-public func OnCableCarDelivery(object car, id requested, int amount) { }
+public func OnCableCarDelivery(object car, proplist order) { }
 
 // Called by other stations to check if a certain object and amount are available for delivery at this station.
 // Return true if there are means to collect the required amount.
-public func IsAvailable(id requested_id, int amount)
+public func IsAvailable(proplist order)
 {
 	return false;
 }
@@ -443,35 +443,40 @@ public func GetLengthToTarget(object end)
 
 local request_queue;
 
-// Add a new acquiring order
-public func AddRequest(id requested_id, int amount)
+// Add a new acquiring order, this order will be delivered to this station and is a proplist with information.
+// { type = <id of the object>, min_amount = <minimal amount to be delivered>, max_amount = <maximal amount to be delivered>}.
+public func AddRequest(proplist order)
 {
-	if (!requested_id) return false;
-	if (!amount) amount = 1;
+	if (!order || !order.type)
+		return false;
+	if (!order.min_amount)
+		order.min_amount = 1;
 
 	// First of all check if a similar request already is on the line
 	// Similar requests will be dismissed, even if they are technically new
 	for (var request in request_queue)
-		if (request[0] == requested_id)
-			if (request[1] == amount)
+		if (request.type == order.type)
+			if (request.min_amount == order.min_amount)
 				return true; // The request is considered handled
 
-	var source = CheckAvailability(requested_id, amount);
+	// Find source station which has the order's items.
+	var source = CheckAvailability(order);
 	if (!source)
-		return false; // Items are not available
+		return false;
 
-	var car = source->GetAvailableCableCar(requested_id, amount, this);
+	// Find cable car that is at source station or closest to source station.
+	var car = source->GetAvailableCableCar(order, this);
 	if (!car)
-		return false; // No cable car is available for delivery
+		return false;
 
 	// Great. Start working immediately
-	PushBack(request_queue, [requested_id, amount]);
-	car->AddRequest(requested_id, amount, this, source);
+	PushBack(request_queue, order);
+	car->AddRequest(order, this, source);
 	return true;
 }
 
 // Check all connected stations for available objects.
-public func CheckAvailability(id requested_id, int amount)
+public func CheckAvailability(proplist order)
 {
 	var nearest_station;
 	var length_to;
@@ -482,7 +487,7 @@ public func CheckAvailability(id requested_id, int amount)
 			PushBack(network_stations, station[const_finaldestination]);
 	for (var station in network_stations)
 	{
-		if (station->IsAvailable(requested_id, amount))
+		if (station->IsAvailable(order))
 		{
 			if (!nearest_station)
 			{
@@ -513,47 +518,42 @@ public func CheckAvailability(id requested_id, int amount)
 }
 
 // Check if there is a cable car ready for delivery
-public func GetAvailableCableCar(id requested_id, int amount, object requesting_station)
+public func GetAvailableCableCar(proplist order, object requesting_station)
 {
 	
 }
 
 // A delivery needs to be picked up at this station.
-public func RequestPickUp(object car, id requested_id, int amount)
+public func RequestPickUp(object car, proplist order)
 {
-	OnCableCarPickUp(car, requested_id, amount);
+	OnCableCarPickUp(car, order);
 }
 
 // A delivery has arrived, remove it from the queue and handle the request
-public func RequestArrived(object car, id requested_id, int amount)
+public func RequestArrived(object car, proplist order)
 {
-	if (!HasRequest(requested_id, amount))
+	if (!HasRequest(order))
 		return;
 
-	OnCableCarDelivery(car, requested_id, amount);
-	RemoveRequest(requested_id, amount);
+	OnCableCarDelivery(car, order);
+	RemoveRequest(order);
 }
 
-public func HasRequest(id requested_id, int amount)
+public func HasRequest(proplist order)
 {
-	for (var i = 0; i < GetLength(request_queue); i++)
-	{
-		if (request_queue[i][0] != requested_id)
-			continue;
-		if (request_queue[i][1] != amount)
-			continue;
-		return true;
-	}
+	for (var test_order in request_queue)
+		if (test_order.type == order.type && test_order.min_amount == order.min_amount)
+			return true;
 	return false;
 }
 
-public func RemoveRequest(id requested_id, int amount)
+public func RemoveRequest(proplist order)
 {
 	for (var i = 0; i < GetLength(request_queue); i++)
 	{
-		if (request_queue[i][0] != requested_id)
+		if (request_queue[i].type != order.type)
 			continue;
-		if (request_queue[i][1] != amount)
+		if (request_queue[i].min_amount != order.min_amount)
 			continue;
 		break;
 	}
