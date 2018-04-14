@@ -1,0 +1,7 @@
+[DefCore]
+id=Ambience_Sounds
+Version=8,0
+Category=C4D_StaticBack
+Width=16
+Height=16
+Offset=-8,-8
