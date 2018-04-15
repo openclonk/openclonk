@@ -119,7 +119,7 @@ public func OnCableCarHover(symbol, extra_data, desc_menu_target, menu_id)
 
 /*-- Picking up vehicles --*/
 
-public func PickupVehicle(object vehicle)
+public func PickupVehicle(object vehicle, bool no_rotation_copy)
 {
 	if (!vehicle) return;
 	if (GetEffect("FxCableHoistPickup", vehicle)) return;
@@ -128,7 +128,7 @@ public func PickupVehicle(object vehicle)
 	if (!Inside(GetX(), vehicle->GetX() - width, vehicle->GetX() + width))
 		if (!Inside(GetY(), vehicle->GetY() - height, vehicle->GetY() + height))
 			return;
-	vehicle->CreateEffect(FxCableHoistPickup, 1, 1, this);
+	vehicle->CreateEffect(FxCableHoistPickup, 1, 1, this, no_rotation_copy);
 	pickup = vehicle;
 	UpdateInteractionMenus(this.GetCableCarMenuEntries);
 }
@@ -143,7 +143,7 @@ public func DropVehicle()
 
 local FxCableHoistPickup = new Effect
 {
-	Construction = func(object hoist)
+	Construction = func(object hoist, bool no_rotation_copy)
 	{
 		this.hoist = hoist;
 		this.vehicle_touchable = Target.Touchable;
@@ -152,8 +152,11 @@ local FxCableHoistPickup = new Effect
 		this.movement_prec = 100;
 		Target->SetPosition(this.hoist->GetX(this.movement_prec), this.hoist->GetY(this.movement_prec) + 4, false, this.movement_prec);
 		Target->SetSpeed(0, 0);
-		Target->SetR(this.hoist->GetR());
-		Target->SetRDir(0);
+		if (!no_rotation_copy)
+		{
+			Target->SetR(this.hoist->GetR());
+			Target->SetRDir(0);
+		}
 	},
 	
 	Timer = func(int time)

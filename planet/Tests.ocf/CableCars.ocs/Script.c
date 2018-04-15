@@ -57,7 +57,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var fx = AddEffect("IntTestControl", nil, 100, 2);
-	fx.testnr = 1;
+	fx.testnr = 9;
 	fx.launched = false;
 	fx.plr = plr;
 	return;
@@ -672,11 +672,19 @@ global func Test9_OnStart(int plr)
 	crossing14->CombineWith(steam_engine);
 	steam_engine->CreateContents(Coal);
 	
-	var sawmill = CreateObjectAbove(Sawmill, 492, 104, plr);
+	var sawmill = CreateObjectAbove(Sawmill, 484, 104, plr);
+	crossing4->CombineWith(sawmill);
 	sawmill->SetDir(DIR_Right);
 	for (var cnt = 0; cnt < 5; cnt++)
-		sawmill->CreateObjectAbove(Tree_Deciduous)->ChopDown();
+	{
+		//sawmill->CreateObjectAbove(Tree_Deciduous)->ChopDown();
+		var tree = CreateObjectAbove(Tree_Deciduous, RandomX(40, 120), 160);
+		tree->ChopDown();
+		tree->SetR(Random(360));
+	}
 	crossing4->AddResourceChute();
+	hoist = crossing4->CreateObject(CableHoist);
+	hoist->EngageRail(crossing4);
 		
 	crossing5->CreateObject(Hammer);
 	crossing5->CreateObject(Metal);
@@ -705,6 +713,50 @@ global func Test9_OnFinished()
 
 
 global func Test10_OnStart(int plr)
+{
+	SetWindFixed(0);
+	CreateObjectAbove(WindGenerator, 90, 160, plr);
+	CreateObjectAbove(WindGenerator, 470, 104, plr);
+
+	var crossing1 = CreateObjectAbove(CableCrossing, 70, 160, plr);
+	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
+	var crossing3 = CreateObjectAbove(CableCrossing, 244, 64, plr);
+	var crossing4 = CreateObjectAbove(CableCrossing, 272, 64, plr);
+	var crossing5 = CreateObjectAbove(CableCrossing, 450, 104, plr);
+	
+	CreateCableCrossingsConnection(crossing1, crossing2);
+	CreateCableCrossingsConnection(crossing2, crossing3);
+	CreateCableCrossingsConnection(crossing3, crossing4);
+	CreateCableCrossingsConnection(crossing4, crossing5);
+	
+	var hoist = crossing1->CreateObject(CableHoist);
+	hoist->EngageRail(crossing1);
+	hoist->SetDestination(crossing5);
+
+	ScheduleCall(nil, "SetWindFixed", 20, 0, 50);
+	ScheduleCall(nil, "SetWindFixed", 40, 0, 0);
+	Schedule(nil, "DrawMaterialQuad(\"Rock\", 60, 80, 120, 80, 120, 140, 60, 140)", 60, 0);
+	ScheduleCall(nil, "SetWindFixed", 80, 0, 50);
+
+	// Log what the test is about.
+	Log("Specific network for which power supply fails.");
+	return true;
+}
+
+global func Test10_Completed()
+{
+	return !!FindObject(Find_ID(CableHoist), Find_Distance(20, 450, 104));
+}
+
+global func Test10_OnFinished()
+{
+	RemoveTestObjects();
+	ClearScheduleCall(nil, "SetWindFixed");
+	ClearFreeRect(60, 80, 60, 60);
+	return;
+}
+
+global func Test100_OnStart(int plr)
 {
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();
@@ -751,61 +803,16 @@ global func Test10_OnStart(int plr)
 	return true;
 }
 
-global func Test10_Completed()
+global func Test100_Completed()
 {
 	if (IsSymmetricCableCarNetwork())
 		return true;
 	return false;
 }
 
-global func Test10_OnFinished()
+global func Test100_OnFinished()
 {
 	RemoveTestObjects();
-	return;
-}
-
-
-global func Test11_OnStart(int plr)
-{
-	SetWindFixed(0);
-	CreateObjectAbove(WindGenerator, 90, 160, plr);
-	CreateObjectAbove(WindGenerator, 470, 104, plr);
-
-	var crossing1 = CreateObjectAbove(CableCrossing, 70, 160, plr);
-	var crossing2 = CreateObjectAbove(CableCrossing, 216, 64, plr);
-	var crossing3 = CreateObjectAbove(CableCrossing, 244, 64, plr);
-	var crossing4 = CreateObjectAbove(CableCrossing, 272, 64, plr);
-	var crossing5 = CreateObjectAbove(CableCrossing, 450, 104, plr);
-	
-	CreateCableCrossingsConnection(crossing1, crossing2);
-	CreateCableCrossingsConnection(crossing2, crossing3);
-	CreateCableCrossingsConnection(crossing3, crossing4);
-	CreateCableCrossingsConnection(crossing4, crossing5);
-	
-	var hoist = crossing1->CreateObject(CableHoist);
-	hoist->EngageRail(crossing1);
-	hoist->SetDestination(crossing5);
-
-	ScheduleCall(nil, "SetWindFixed", 20, 0, 50);
-	ScheduleCall(nil, "SetWindFixed", 40, 0, 0);
-	Schedule(nil, "DrawMaterialQuad(\"Rock\", 60, 80, 120, 80, 120, 140, 60, 140)", 60, 0);
-	ScheduleCall(nil, "SetWindFixed", 80, 0, 50);
-
-	// Log what the test is about.
-	Log("Specific network for which power supply fails.");
-	return true;
-}
-
-global func Test11_Completed()
-{
-	return !!FindObject(Find_ID(CableHoist), Find_Distance(20, 450, 104));
-}
-
-global func Test11_OnFinished()
-{
-	RemoveTestObjects();
-	ClearScheduleCall(nil, "SetWindFixed");
-	ClearFreeRect(60, 80, 60, 60);
 	return;
 }
 

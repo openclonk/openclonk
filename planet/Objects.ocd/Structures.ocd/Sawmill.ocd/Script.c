@@ -62,19 +62,14 @@ public func CollectTrees()
 {
 	if (GetCon() < 100)
 		return;
-	// Only take one tree at a time
-	if (!ContentsCount(Wood))
-		FindTrees();
-}
-
-// Automatically search for trees in front of sawmill. Temporary solution?
-private func FindTrees()
-{
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
+	// If there is no tree in front of the sawmill try to get one from the cable car network.
 	if (!tree)
-		return;
-	
-	return Saw(tree);
+		RequestTree();
+	// Only take one tree at a time.
+	if (!ContentsCount(Wood) && tree)
+		Saw(tree);
+	return;
 }
 
 // Returns whether the object is made purely out of wood.
@@ -283,6 +278,96 @@ private func SpinOff(int call)
 
 	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
 }
+
+
+/*-- Cable Network --*/
+
+local cable_station;
+
+public func AcceptsCableStationConnection() { return true; }
+
+public func IsNoCableStationConnected() { return !cable_station; }
+
+public func ConnectCableStation(object station)
+{
+	cable_station = station;
+}
+
+private func RequestTree()
+{
+	if (!cable_station)
+		return;
+	// Find a collectible tree on the network.
+	var collectible_tree = cable_station->FindObjectOnNetworkCables(Find_And(Find_Func("IsTree"), Find_Not(Find_Property("is_being_cable_car_collected"))));
+	if (!collectible_tree)
+		return;
+	// Find an available hoist in the network.
+	var hoist = cable_station->FindCableCar(Find_And(Find_Not(Find_Func("GetAttachedVehicle")), Find_Not(Find_Property("is_busy_collecting_tree"))));
+	if (!hoist)
+		return;
+	hoist->CreateEffect(Sawmill.FxCableCarCollectTree, 100, 1, collectible_tree, cable_station);
+	return;
+}
+
+local FxCableCarCollectTree = new Effect
+{
+	Construction = func(array collectible_tree, object sawmill_station)
+	{
+		this.tree = collectible_tree[0];
+		this.station_1 = collectible_tree[1];
+		this.station_2 = collectible_tree[2];
+		this.station_sawmill = sawmill_station;
+		this.tree.is_being_cable_car_collected = true;
+		Target.is_busy_collecting_tree = true;
+		Target->SetDestination(this.station_1);
+		return FX_OK;
+	},
+	Timer = func()
+	{
+		if (!this.station_1 || !this.station_2 || !this.station_sawmill)
+			return FX_Execute_Kill;
+		if (IsValueInArray(this.station_1->GetIdleCars(), Target))
+			Target->SetDestination(this.station_2);
+		if (IsValueInArray(this.station_2->GetIdleCars(), Target))
+			Target->SetDestination(this.station_sawmill);	
+		var tree = Target->FindObject(Target->Find_AtPoint(), Find_InArray([this.tree]));
+		if (tree && !tree.has_been_picked_up)
+		{
+			this.tree.has_been_picked_up = true;
+			this.tree->CreateEffect(Sawmill.FxCableCarRotateTree, 100, 1);
+			Target->PickupVehicle(this.tree);
+		}
+		if (IsValueInArray(this.station_sawmill->GetIdleCars(), Target))
+			return FX_Execute_Kill;
+		return FX_OK;
+	},
+	Destruction = func()
+	{
+		//this.tree.is_being_cable_car_collected = false;
+		Target.is_busy_collecting_tree = false;
+		Target->DropVehicle();
+	}
+};
+
+local FxCableCarRotateTree = new Effect
+{
+	Construction = func(int rotate_goal)
+	{
+		this.rotate_goal = 90;
+		if (Target->GetR() < 0)
+			this.rotate_goal = -90;
+	},
+	Timer = func()
+	{
+		var step = 3;
+		var dr = this.rotate_goal - Target->GetR();
+		if (Inside(dr, -step, step))
+			return FX_Execute_Kill;
+		Target->SetR(Target->GetR() + BoundBy(dr, -step, step));	
+		return FX_OK;	
+	}
+};
+
 
 /*-- Properties --*/
 

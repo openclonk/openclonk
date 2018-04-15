@@ -49,10 +49,11 @@ public func OnCableCarDelivery(object car, proplist order) { }
 
 // Called by other stations to check if a certain object and amount are available for delivery at this station.
 // Return true if there are means to collect the required amount.
-public func IsAvailable(proplist order)
-{
-	return false;
-}
+public func IsAvailable(proplist order) { return false; }
+
+// Called to get idle cable cars at this station.
+public func GetIdleCars() { return []; }
+
 
 /*--- Callbacks ---*/
 
@@ -101,6 +102,8 @@ public func GetCablePosition(array coordinates, int prec)
 {
 	if (!prec)
 		prec = 1;
+	if (!coordinates)
+		coordinates = [];
 	coordinates[0] = GetX(prec);
 	coordinates[1] = GetY(prec);
 	if (this.LineAttach)
@@ -108,6 +111,7 @@ public func GetCablePosition(array coordinates, int prec)
 		coordinates[0] += this.LineAttach[0] * prec;
 		coordinates[1] += this.LineAttach[1] * prec;
 	}
+	return coordinates;
 }
 
 // Called by cable cars to retrieve selectable destinations for the destination selection menu.
@@ -563,3 +567,51 @@ public func RemoveRequest(proplist order)
 	return true;
 }
 
+
+/*-- Misc Queries --*/
+
+// Returns the closest object satisfying find_crit that can be found on the cables of this network.
+// Returns {obj = <closest object>, station1 = <first station>, station2 = <second station>}.
+public func FindObjectOnNetworkCables(array find_crit)
+{
+	var destinations = GetDestinations();
+	SortArrayByArrayElement(destinations, this.const_distance, false);
+	PushFront(destinations, [this, this, 0]);
+	for (var dest in destinations)
+	{		
+		var station = dest[this.const_finaldestination];
+		// Check all cables to other stations.
+		for (var connection in FindObjects(Find_Func("IsConnectedTo", station)))
+		{
+			if (!connection->~IsCableLine())
+				continue;
+			var other_station = connection->~GetConnectedObject(station);
+			if (!other_station || !other_station->~IsCableCrossing())
+				continue;
+			var sx = station->GetCablePosition()[0];
+			var sy = station->GetCablePosition()[1];
+			var ox = other_station->GetCablePosition()[0];
+			var oy = other_station->GetCablePosition()[1];
+			var obj = Global->FindObject(Find_OnLine(sx, sy, ox, oy), find_crit);
+			if (obj)
+				return [obj, station, other_station];
+		}
+	}
+	return nil;
+}
+
+// Returns a free cable car satsfying find_crit on the network closest to this station.
+public func FindCableCar(array find_crit)
+{
+	var destinations = GetDestinations();
+	SortArrayByArrayElement(destinations, this.const_distance, false);
+	PushFront(destinations, [this, this, 0]);
+	for (var dest in destinations)
+	{		
+		var station = dest[this.const_finaldestination];
+		var car = Global->FindObject(Find_InArray(station->GetIdleCars()), find_crit);
+		if (car)
+			return car;
+	}
+	return nil;
+}

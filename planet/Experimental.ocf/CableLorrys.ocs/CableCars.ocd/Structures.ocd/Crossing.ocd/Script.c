@@ -110,7 +110,7 @@ public func GetAvailableCableCar(proplist order, object requesting_station)
 		// Find closest cars first.
 		var destinations = GetDestinations();
 		SortArrayByArrayElement(destinations, this.const_distance, false);
-		for (dest in destinations)
+		for (var dest in destinations)
 		{		
 			var station = dest[this.const_finaldestination];
 			var best = station->~GetAvailableCableCar(order, station);
@@ -465,6 +465,8 @@ public func OnCableCarDestruction(object car)
 {
 	RemoveArrayValue(arrived_cars, car, true);
 }
+
+public func GetIdleCars() { return arrived_cars; }
 
 
 /*-- Visuals --*/
