@@ -513,6 +513,7 @@ namespace
 		};
 		call.SetUniform4fv(C4SSU_ClrMod, 1, fMod);
 		call.SetUniform3fv(C4SSU_Gamma, 1, pDraw->gammaOut);
+		call.SetUniform2f(C4SSU_Resolution, outRect.Wdt, outRect.Hgt);
 
 		// Player color
 		const float fPlrClr[3] = {

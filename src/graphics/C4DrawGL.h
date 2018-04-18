@@ -55,6 +55,7 @@ enum C4SS_Uniforms
 
 	C4SSU_ClrMod, // always
 	C4SSU_Gamma, // always
+	C4SSU_Resolution, // always
 
 	C4SSU_BaseTex, // C4SSC_BASE
 	C4SSU_OverlayTex, // C4SSC_OVERLAY

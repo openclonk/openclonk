@@ -852,6 +852,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_NormalMatrix] = "normalMatrix";
 	uniformNames[C4SSU_ClrMod] = "clrMod";
 	uniformNames[C4SSU_Gamma] = "gamma";
+	uniformNames[C4SSU_Resolution] = "resolution";
 	uniformNames[C4SSU_BaseTex] = "baseTex"; // unused
 	uniformNames[C4SSU_OverlayTex] = "overlayTex"; // unused
 	uniformNames[C4SSU_OverlayClr] = "oc_PlayerColor";
