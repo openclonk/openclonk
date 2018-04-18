@@ -3638,6 +3638,7 @@ void C4Object::ExecAction()
 		if (GetX()==iTargetX) xdir=0;
 		else { if (GetX()<iTargetX) xdir=+limit; if (GetX()>iTargetX) xdir=-limit; }
 		// Phase by XDir
+		iPhaseAdvance=0;
 		if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left);  }
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
