@@ -43,7 +43,7 @@ bool EraseItemSafe(const char *szFilename)
 	return false;
 }
 
-void DisplayGroup(const C4Group &grp, const char *filter = nullptr)
+void DisplayGroup(C4Group &grp, const char *filter = nullptr)
 {
 	const C4GroupHeader &head = grp.GetHeader();
 	
@@ -52,9 +52,12 @@ void DisplayGroup(const C4Group &grp, const char *filter = nullptr)
 	uint32_t crc = 0;
 	bool crc_valid = GetFileCRC(grp.GetFullName().getData(), &crc);
 	if (crc_valid)
-		printf("CRC: %u (%X)\n", crc, crc);
+		printf("File CRC: %u (%X) ", crc, crc);
 	else
-		printf("CRC: <error accessing file>\n");
+		printf("File CRC: <error accessing file> ");
+
+	uint32_t contents_crc = grp.EntryCRC32();
+	printf("Contents CRC: %u (%X)\n", contents_crc, contents_crc);
 
 	// Find maximum file name length (matching filter)
 	size_t max_fn_len = 0;
