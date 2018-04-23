@@ -316,7 +316,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		case 'n': Game.NetworkActive = true; break;
 		case 'N': Game.NetworkActive = false; break;
 		// Language override by parameter
-		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString);
+		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString); break;
 		// port overrides
 		case 't': Config.Network.PortTCP = atoi(optarg); break;
 		case 'u': Config.Network.PortUDP = atoi(optarg); break;
