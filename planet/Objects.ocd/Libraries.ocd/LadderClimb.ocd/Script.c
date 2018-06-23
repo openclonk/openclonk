@@ -148,7 +148,6 @@ public func FxIntClimbControlStart(object target, effect fx, int tmp, object lad
 	fx.ladder = ladder;
 	SetXDir(0);
 	SetYDir(0);
-	SetComDir(COMD_Stop);
 	// Start on an even segment.
 	fx.odd = 0;
 	// Correctly initalize the relative y-position of the clonk to the segment.
@@ -345,6 +344,7 @@ public func FxIntClimbControlStop(object target, effect fx, int reason, bool tmp
 
 public func FxIntClimbControlControl(object target, effect fx, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
+	Log("ladder ctrl %v, status %v", ctrl, status);
 	// Only handle movement controls.
 	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) 
 		return false;
