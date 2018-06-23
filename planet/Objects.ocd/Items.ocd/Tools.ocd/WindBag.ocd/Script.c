@@ -248,7 +248,19 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool second_
 
 public func GetCarryPhase() { return 600; }
 
-func Definition(def)
+
+/*-- Saving --*/
+
+public func SaveScenarioObject(props, ...)
+{
+	if (!inherited(props, ...)) return false;
+	// Save fully loaded.
+	if (fill_amount == this.MaxIntake) props->AddCall("FullLoad", this, "DoFullLoad");
+	return true;
+}
+
+
+public func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(1500), Trans_Rotate(150, 0, 0, 1), Trans_Rotate(-170, 1, 0, 0), Trans_Rotate(10, 0, 1, 0)), def);
 }
