@@ -424,16 +424,17 @@ global func FxFireTimer(object target, proplist effect, int time)
 					continue;
 					
 				var old_fire_value = obj->OnFire();
-				if(old_fire_value < 100) // only if the object was not already fully ablaze
+				if (old_fire_value < 100) // only if the object was not already fully ablaze
 				{
 					// incinerate the other object a bit
-					obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
-				
-					// Incinerating other objects weakens the own fire.
-					// This is done in order to make fires spread slower especially as a chain reaction.
-					var min = Min(10, effect.strength);
-					if(effect.strength > 50) min = 50;
-					effect.strength = BoundBy(effect.strength - amount/2, min, 100);
+					if (obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj))
+					{
+						// Incinerating other objects weakens the own fire.
+						// This is done in order to make fires spread slower especially as a chain reaction.
+						var min = Min(10, effect.strength);
+						if (effect.strength > 50) min = 50;
+						effect.strength = BoundBy(effect.strength - amount / 2, min, 100);
+					}
 				}
 			}
 		}
