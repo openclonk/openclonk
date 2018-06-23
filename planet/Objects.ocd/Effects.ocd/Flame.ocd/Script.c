@@ -42,6 +42,7 @@ public func Burning()
 
 public func DoCon(...)
 {
+	LogCallStack();
 	var res = _inherited(...);
 	// Update any existing fire effect, because it does not do it internally when NoBurnDecay is active.
 	var fire_fx = GetEffect("Fire", this);
@@ -52,6 +53,7 @@ public func DoCon(...)
 
 public func SetCon(...)
 {
+	LogCallStack();
 	var res = _inherited(...);
 	// Update any existing fire effect, because it does not do it internally when NoBurnDecay is active.
 	var fire_fx = GetEffect("Fire", this);
@@ -69,6 +71,9 @@ public func SaveScenarioObject(proplist props)
 		return false;
 	// Don't incinerate twice in saved scenarios.
 	props->Remove("Fire");
+	// Store eternal flame type.
+	if (this.NoBurnDecay)
+		props->AddSet("NoBurnDecay", this, "NoBurnDecay", this.NoBurnDecay);
 	return true;
 }
 
