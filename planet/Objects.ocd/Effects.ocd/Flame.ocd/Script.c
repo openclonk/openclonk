@@ -42,7 +42,6 @@ public func Burning()
 
 public func DoCon(...)
 {
-	LogCallStack();
 	var res = _inherited(...);
 	// Update any existing fire effect, because it does not do it internally when NoBurnDecay is active.
 	var fire_fx = GetEffect("Fire", this);
@@ -53,7 +52,6 @@ public func DoCon(...)
 
 public func SetCon(...)
 {
-	LogCallStack();
 	var res = _inherited(...);
 	// Update any existing fire effect, because it does not do it internally when NoBurnDecay is active.
 	var fire_fx = GetEffect("Fire", this);

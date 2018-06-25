@@ -344,7 +344,6 @@ public func FxIntClimbControlStop(object target, effect fx, int reason, bool tmp
 
 public func FxIntClimbControlControl(object target, effect fx, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
-	Log("ladder ctrl %v, status %v", ctrl, status);
 	// Only handle movement controls.
 	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) 
 		return false;
