@@ -11,13 +11,19 @@ protected func Construction()
 protected func Check()
 {
 	if (GetTemperature() > 0)
-		Melt();
+		Melt(1);
 }
 
-private func Melt()
+private func Melt(int strength)
 {
-	CastPXS("Water", 2, 0);
-	DoCon(-2);
+	CastPXS("Water", 2 * strength, 0);
+	DoCon(-2 * strength);
+}
+
+public func OnInIncendiaryMaterial()
+{
+	// Melt a bit faster in incendiary materials.
+	return Melt(8);
 }
 
 private func Hit()
@@ -29,4 +35,5 @@ private func Hit()
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
+local MaterialIncinerate = true;
 local Plane = 450;
